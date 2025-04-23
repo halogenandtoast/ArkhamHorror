@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.SpiresOfCarcosa (spiresOfCarcosa, SpiresOfCarcosa 
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Investigate
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards

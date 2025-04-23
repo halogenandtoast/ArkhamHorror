@@ -53,8 +53,8 @@ import Arkham.Helpers.Enemy qualified as Msg
 import Arkham.Helpers.Investigator (
   canDiscoverCluesAtYourLocation,
   getCanDiscoverClues,
-  withLocationOf,
  )
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Playable (getIsPlayable)
@@ -2729,4 +2729,3 @@ flipCluesToDoom target n = push $ FlipClues (toTarget target) n
 
 allRandomDiscard :: (ReverseQueue m, Sourceable source) => source -> CardMatcher -> m ()
 allRandomDiscard source matcher = push $ AllRandomDiscard (toSource source) matcher
-

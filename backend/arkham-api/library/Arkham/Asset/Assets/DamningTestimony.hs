@@ -6,7 +6,8 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Customization
-import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
+import Arkham.Helpers.Investigator (getCanDiscoverClues)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Modifiers qualified as Msg

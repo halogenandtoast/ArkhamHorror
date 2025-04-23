@@ -42,6 +42,7 @@ import Arkham.Window (Window (..), WindowType (Healed))
 import Data.Foldable (foldrM)
 import Data.Function (on)
 import Data.List (nubBy)
+import Data.Map.Strict qualified as Map
 import Data.Monoid
 
 getSkillValue :: HasGame m => SkillType -> InvestigatorId -> m Int
@@ -208,7 +209,8 @@ getCanDiscoverClues isInvestigation iid lid = do
   match (CannotDiscoverCluesExceptAsResultOfInvestigation matcher) | isInvestigation == NotInvestigate = elem lid <$> select matcher
   match _ = pure False
 
-getCanSpendClues :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> m Bool
+getCanSpendClues
+  :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> m Bool
 getCanSpendClues (asId -> iid) = do
   modifiers <- getModifiers iid
   pure $ not (any match modifiers)
@@ -244,11 +246,15 @@ fitsAvailableSlots aid a = do
   -- every Accessory Slot as an Arcane Slot
   -- WARNING This only works if the slots are bidirectional and if we need it
   -- to work in other cases we'll need to alter this logic
+  let currentSlots =
+        concatMap (\(k, xs) -> replicate (count (elem aid . slotItems) xs) k)
+          $ Map.toList (a ^. slotsL)
+
   availableSlots <-
     concatForM
       (nub slotTypes)
       (\slotType -> map (const slotType) <$> availableSlotTypesFor slotType canHoldMap assetCard a)
-  let missingSlotTypes = slotTypes \\ availableSlots
+  let missingSlotTypes = slotTypes \\ (availableSlots <> currentSlots)
 
   if null missingSlotTypes
     then pure FitsSlots
@@ -425,7 +431,8 @@ defaultSlots iid =
     , (TarotSlot, [Slot (InvestigatorSource iid) []])
     ]
 
-getSpendableClueCount :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> m Int
+getSpendableClueCount
+  :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> m Int
 getSpendableClueCount (asId -> iid) = do
   canSpendClues <- getCanSpendClues iid
   if canSpendClues then field InvestigatorClues iid else pure 0
@@ -477,13 +484,6 @@ getMaybeLocation
   => investigator
   -> m (Maybe LocationId)
 getMaybeLocation = fmap join . fieldMay InvestigatorLocation . asId
-
-withLocationOf
-  :: (AsId investigator, IdOf investigator ~ InvestigatorId, HasGame m)
-  => investigator
-  -> (LocationId -> m ())
-  -> m ()
-withLocationOf = forField InvestigatorLocation . asId
 
 enemiesColocatedWith :: InvestigatorId -> EnemyMatcher
 enemiesColocatedWith = EnemyAt . LocationWithInvestigator . InvestigatorWithId

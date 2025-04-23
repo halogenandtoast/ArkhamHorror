@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.SpiritsTorment (spiritsTorment, SpiritsTorment (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards

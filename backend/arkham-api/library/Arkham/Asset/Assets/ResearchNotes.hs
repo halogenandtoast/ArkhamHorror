@@ -4,7 +4,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
+import Arkham.Helpers.Investigator (getCanDiscoverClues)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Window (placedTokens)
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Message (getChoiceAmount)

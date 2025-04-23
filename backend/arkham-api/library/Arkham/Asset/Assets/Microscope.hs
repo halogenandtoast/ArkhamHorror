@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (EnemyDefeated, EnemyEvaded)
 import Arkham.Asset.Uses
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))

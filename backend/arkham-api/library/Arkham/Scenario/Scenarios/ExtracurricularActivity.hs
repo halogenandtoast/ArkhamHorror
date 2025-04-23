@@ -20,7 +20,6 @@ import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.Scenarios.ExtracurricularActivity.FlavorText
 import Arkham.Scenarios.ExtracurricularActivity.Helpers
 
 newtype ExtracurricularActivity = ExtracurricularActivity ScenarioAttrs
@@ -128,29 +127,29 @@ instance RunMessage ExtracurricularActivity where
           record TheInvestigatorsFailedToSaveTheStudents
           addChaosToken Tablet
         Resolution 1 -> do
-          story resolution1
+          xp <- allGainXp' attrs
+          story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution1"
           record TheInvestigatorsRescuedProfessorWarrenRice
           addChaosToken Tablet
           investigators <- allInvestigators
           addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.professorWarrenRice
-          allGainXp attrs
         Resolution 2 -> do
-          story resolution2
+          xp <- allGainXp' attrs
+          story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution2"
           record ProfessorWarrenRiceWasKidnapped
           record TheStudentsWereRescued
-          allGainXp attrs
         Resolution 3 -> do
-          story resolution3
+          xp <- allGainXp' attrs
+          story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution3"
           record ProfessorWarrenRiceWasKidnapped
           record TheExperimentWasDefeated
-          allGainXp attrs
         Resolution 4 -> do
-          story resolution4
+          xp <- allGainXpWithBonus' attrs $ toBonus "resolution4" 1
+          story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution4"
           record InvestigatorsWereUnconsciousForSeveralHours
           record ProfessorWarrenRiceWasKidnapped
           record TheInvestigatorsFailedToSaveTheStudents
           addChaosToken Tablet
-          allGainXpWithBonus attrs $ toBonus "resolution4" 1
         other -> throwIO $ UnknownResolution other
       endOfScenario
       pure s

@@ -5,7 +5,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Helpers.Query
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations

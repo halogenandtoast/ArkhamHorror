@@ -5,7 +5,7 @@ import Arkham.Card.CardDef
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query hiding (matches)
-import Arkham.Enemy.Types (Field (..))
+import Arkham.Enemy.Types (EnemyAttrs, Field (..))
 import {-# SOURCE #-} Arkham.Helpers.Cost (getCanAffordCost)
 import Arkham.Helpers.GameValue (gameValueMatches)
 import Arkham.Helpers.Modifiers
@@ -87,11 +87,17 @@ placementLocation = \case
 class Locateable a where
   getLocationOf :: HasGame m => a -> m (Maybe LocationId)
 
+withLocationOf :: (Locateable a, HasGame m) => a -> (LocationId -> m ()) -> m ()
+withLocationOf a f = getLocationOf a >>= traverse_ f
+
 instance Locateable InvestigatorId where
   getLocationOf = field InvestigatorLocation
 
 instance Locateable EnemyId where
   getLocationOf = field EnemyLocation
+
+instance Locateable EnemyAttrs where
+  getLocationOf = field EnemyLocation . toId
 
 instance Locateable AssetId where
   getLocationOf = field AssetPlacement >=> placementLocation

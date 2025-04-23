@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Scenarios.InTooDeep.Helpers

@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.UnexpectedAmbush (unexpectedAmbush, UnexpectedAmbush (..)) where
 
 import Arkham.Attack
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Matcher

@@ -3,7 +3,7 @@ module Arkham.Event.Events.SpiritualEcho2 (spiritualEcho2) where
 import Arkham.Ability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Placement

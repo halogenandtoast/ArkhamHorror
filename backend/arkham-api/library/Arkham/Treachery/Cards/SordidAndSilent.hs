@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.SordidAndSilent (SordidAndSilent (..), sordidAndSilent) where
 
 import Arkham.Ability
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted

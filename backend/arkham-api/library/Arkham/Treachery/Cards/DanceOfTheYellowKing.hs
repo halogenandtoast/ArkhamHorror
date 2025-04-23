@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.DanceOfTheYellowKing (danceOfTheYellowKing) where
 
 import Arkham.Attack
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait

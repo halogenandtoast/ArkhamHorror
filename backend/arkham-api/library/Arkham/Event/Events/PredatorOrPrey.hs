@@ -3,7 +3,7 @@ module Arkham.Event.Events.PredatorOrPrey (predatorOrPrey, PredatorOrPrey (..)) 
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Movement (move)

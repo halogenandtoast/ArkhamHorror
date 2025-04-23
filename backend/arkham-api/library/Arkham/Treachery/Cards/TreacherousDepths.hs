@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.TreacherousDepths (treacherousDepths, TreacherousD
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Location.Projection ()
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

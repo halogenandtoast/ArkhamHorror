@@ -3,7 +3,7 @@ module Arkham.Event.Events.GetOverHere (getOverHere) where
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Fight
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Matcher
 
 newtype GetOverHere = GetOverHere EventAttrs

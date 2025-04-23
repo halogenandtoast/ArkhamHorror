@@ -5,7 +5,7 @@ import Arkham.Placement
 import Arkham.Evade.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move

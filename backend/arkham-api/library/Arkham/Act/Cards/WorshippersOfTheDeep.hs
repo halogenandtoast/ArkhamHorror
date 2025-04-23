@@ -3,7 +3,7 @@ module Arkham.Act.Cards.WorshippersOfTheDeep (WorshippersOfTheDeep (..), worship
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Helpers.Investigator (getMaybeLocation, withLocationOf)
+import Arkham.Helpers.Location (withLocationOf, getLocationOf)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
@@ -49,7 +49,7 @@ instance RunMessage WorshippersOfTheDeep where
       push $ if toResultDefault False attrs.meta then R1 else R2
       pure a
     Resign iid -> do
-      getMaybeLocation iid >>= \case
+      getLocationOf iid >>= \case
         Nothing -> pure a
         Just lid -> do
           isMoonRoom <- lid <=~> locationIs Locations.theMoonRoom

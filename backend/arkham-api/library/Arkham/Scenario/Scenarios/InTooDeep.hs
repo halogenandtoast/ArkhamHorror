@@ -10,7 +10,7 @@ import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Location (getConnectedLocations, getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectMaybe )
 import Arkham.Helpers.Xp

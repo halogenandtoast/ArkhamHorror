@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.Blindsense (blindsense, Blindsense (..)) where
 
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted

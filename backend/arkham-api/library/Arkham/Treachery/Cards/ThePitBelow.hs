@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.ThePitBelow (thePitBelow, ThePitBelow (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Placement

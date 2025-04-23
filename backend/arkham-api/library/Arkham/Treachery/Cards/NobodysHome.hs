@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.NobodysHome (nobodysHome, NobodysHome (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher

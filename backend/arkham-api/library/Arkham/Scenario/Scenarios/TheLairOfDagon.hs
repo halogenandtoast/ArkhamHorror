@@ -12,7 +12,7 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.ChaosBag
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest (withSkillTest)

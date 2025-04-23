@@ -2,15 +2,13 @@ module Arkham.Event.Events.KnowledgeIsPower (knowledgeIsPower) where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Card
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Window qualified as Window
 
@@ -27,8 +25,8 @@ cardMatcher =
     <> CardWithPerformableAbility (oneOf [AbilityIsActionAbility, AbilityIsFastAbility]) [IgnoreAllCosts]
 
 instance RunMessage KnowledgeIsPower where
-  runMessage msg e@(KnowledgeIsPower attrs) = case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
+  runMessage msg e@(KnowledgeIsPower attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       assets <-
         select
           $ assetControlledBy iid
@@ -36,27 +34,25 @@ instance RunMessage KnowledgeIsPower where
           <> AssetWithPerformableAbility (oneOf [AbilityIsActionAbility, AbilityIsFastAbility]) [IgnoreAllCosts]
 
       cards <- fieldMapM InvestigatorHand (filterM (`extendedCardMatch` cardMatcher)) iid
-      mDrawing <- drawCardsIfCan iid attrs 1
-      player <- getPlayer iid
 
-      push
-        $ chooseOne player
-        $ [ targetLabel asset [HandleTargetChoice iid (toSource attrs) (AssetTarget asset)] | asset <- assets
-          ]
-        <> [ targetLabel (toCardId card)
-               $ [ AddCardEntity card
-                 , HandleTargetChoice iid (toSource attrs) (AssetTarget $ AssetId $ unsafeCardIdToUUID $ toCardId card)
-                 , RemoveCardEntity card
-                 ]
-               <> [ chooseOne
-                      player
-                      [ Label "Discard to draw 1 card" [DiscardCard iid (toSource attrs) (toCardId card), drawing]
-                      , Label "Do not discard" []
-                      ]
-                  | drawing <- toList mDrawing
-                  ]
-           | card <- cards
-           ]
+      chooseOneM iid do
+        targets assets $ handleTarget iid attrs
+        targets cards \card -> do
+          pushAll
+            [ AddCardEntity card
+            , HandleTargetChoice iid (toSource attrs) (AssetTarget $ AssetId $ unsafeCardIdToUUID $ toCardId card)
+            , RemoveCardEntity card
+            , ForTarget (toTarget card.id) msg
+            ]
+      pure e
+    ForTarget (CardIdTarget cid) (PlayThisEvent iid (is attrs -> True)) -> do
+      inHand <- selectMap toCardId $ InHandOf NotForPlay (InvestigatorWithId iid)
+      when (cid `elem` inHand) do
+        chooseOneM iid do
+          labeled "Discard to draw 1 card" do
+            push $ DiscardCard iid (toSource attrs) cid
+            drawCards iid attrs 1
+          labeled "Do not discard" nothing
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       let
@@ -69,7 +65,6 @@ instance RunMessage KnowledgeIsPower where
           $ AssetAbility (AssetWithId aid)
           <> oneOf [AbilityIsActionAbility, AbilityIsFastAbility]
       abilities' <- filterM (getCanPerformAbility iid (Window.defaultWindows iid)) abilities
-      player <- getPlayer iid
-      push $ chooseOne player [AbilityLabel iid ab [] [] [] | ab <- abilities']
+      chooseOneM iid $ for_ abilities' \ab -> abilityLabeled iid ab nothing
       pure e
-    _ -> KnowledgeIsPower <$> runMessage msg attrs
+    _ -> KnowledgeIsPower <$> liftRunMessage msg attrs

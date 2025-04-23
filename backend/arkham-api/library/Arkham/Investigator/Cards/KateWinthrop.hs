@@ -2,7 +2,7 @@ module Arkham.Investigator.Cards.KateWinthrop (kateWinthrop, KateWinthrop (..)) 
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher

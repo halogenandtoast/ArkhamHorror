@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.WukWukWuk (wukWukWuk) where
 
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move

@@ -2,7 +2,7 @@ module Arkham.Event.Events.BreachTheDoor (breachTheDoor, BreachTheDoor (..)) whe
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Placement

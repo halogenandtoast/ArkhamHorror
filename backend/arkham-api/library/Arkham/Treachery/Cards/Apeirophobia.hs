@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.Apeirophobia (apeirophobia, Apeirophobia (..)) whe
 
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Helpers.ChaosBag
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Investigator.Projection ()
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards

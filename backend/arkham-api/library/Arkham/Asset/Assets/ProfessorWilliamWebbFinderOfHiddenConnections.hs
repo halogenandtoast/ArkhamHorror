@@ -8,7 +8,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Capability
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Message.Lifted.Choose

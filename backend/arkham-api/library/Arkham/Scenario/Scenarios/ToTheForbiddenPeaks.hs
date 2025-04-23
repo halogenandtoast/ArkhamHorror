@@ -16,7 +16,7 @@ import Arkham.Exception
 import Arkham.Field
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.Text
 import Arkham.Location.Cards qualified as Locations
@@ -66,7 +66,7 @@ instance HasChaosTokenValue ToTheForbiddenPeaks where
     Skull -> do
       row <-
         fromMaybe 0 <$> runMaybeT do
-          loc <- MaybeT $ getMaybeLocation iid
+          loc <- MaybeT $ getLocationOf iid
           pos <- MaybeT $ field LocationPosition loc
           pure $ positionRow pos
       pure $ toChaosTokenValue attrs Skull row (row + 2)
@@ -207,7 +207,7 @@ instance RunMessage ToTheForbiddenPeaks where
     ResolveChaosToken _ Cultist iid -> do
       void $ runMaybeT do
         guard (isHardExpert attrs)
-        loc <- MaybeT $ getMaybeLocation iid
+        loc <- MaybeT $ getLocationOf iid
         Pos _ y <- MaybeT $ field LocationPosition loc
         loc' <- MaybeT $ selectOne (LocationInRow (y - 1))
         lift $ afterSkillTest $ moveTo (toSource Cultist) iid loc'
@@ -217,7 +217,7 @@ instance RunMessage ToTheForbiddenPeaks where
       case token.face of
         Cultist | isEasyStandard attrs -> void $ runMaybeT do
           guard $ isHardExpert attrs
-          loc <- MaybeT $ getMaybeLocation iid
+          loc <- MaybeT $ getLocationOf iid
           Pos _ y <- MaybeT $ field LocationPosition loc
           loc' <- MaybeT $ selectOne (LocationInRow (y - 1))
           lift $ afterSkillTest $ moveTo (toSource Cultist) iid loc'

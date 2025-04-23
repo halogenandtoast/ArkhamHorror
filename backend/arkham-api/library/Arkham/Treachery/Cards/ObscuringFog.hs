@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.ObscuringFog (obscuringFog) where
 
 import Arkham.Ability
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 import Arkham.Placement

@@ -1,6 +1,6 @@
 module Arkham.Treachery.Cards.Avalanche (avalanche) where
 
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move

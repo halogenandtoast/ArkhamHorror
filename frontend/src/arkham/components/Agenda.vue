@@ -208,6 +208,10 @@ const isVertical = computed(() => {
   flex-direction: row;
   height: 2em;
   justify-content: flex-start;
+  button {
+    height: min-content;
+    align-self: center;
+  }
 }
 
 .button{

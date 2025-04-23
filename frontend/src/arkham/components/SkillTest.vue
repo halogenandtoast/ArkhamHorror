@@ -481,7 +481,7 @@ const tokenEffects = computed(() => {
   backdrop-filter: blur(0px);
   -webkit-backdrop-filter: blur(0px); /* Safari support */
   background: #75968600;
-  width: fit-content;
+  min-width: fit-content;
   text-align: center;
   z-index: 10;
   overflow: auto;

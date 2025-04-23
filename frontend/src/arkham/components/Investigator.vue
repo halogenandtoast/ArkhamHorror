@@ -521,11 +521,11 @@ i.action {
 
 .resources {
   display: flex;
-  align-self: center;
-  align-items: center;
   justify-content: space-between;
-  margin-right: 10px;
-  margin-top: 5px;
+  button {
+    height: min-content;
+    align-self: center;
+  }
 }
 
 .turn-info {
@@ -617,7 +617,7 @@ i.action {
 .player-card {
   display: flex;
   flex-direction: column;
-  width: calc(var(--card-width) * 1.4);
+  width: calc(var(--card-width) * var(--card-sideways-aspect));
 }
 
 .portrait {
@@ -704,7 +704,6 @@ i.action {
 
 .player-area {
   display: flex;
-  margin-right: 10px;
 }
 
 .player-buttons {
@@ -741,20 +740,6 @@ i.action {
 
 .investigator-image {
   position: relative;
-}
-
-.card-overlay {
-  width: auto;
-  height: var(--card-width);
-  position: absolute;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-}
-
-.investigator--can-interact ~ .card-overlay {
-  top: 2px;
-  left: 2px;
 }
 
 .card-row-cards {

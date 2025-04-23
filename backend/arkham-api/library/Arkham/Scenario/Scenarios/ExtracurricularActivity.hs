@@ -95,11 +95,10 @@ instance RunMessage ExtracurricularActivity where
       setActDeck [Acts.afterHours, Acts.ricesWhereabouts, Acts.campusSafety]
     ResolveChaosToken drawnToken ElderThing iid -> do
       let amount = if isEasyStandard attrs then 2 else 3
-      push $ DiscardTopOfDeck iid amount (toSource ElderThing) (Just $ ChaosTokenTarget drawnToken)
+      discardTopOfDeckAndHandle iid ElderThing amount (ChaosTokenTarget drawnToken)
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Skull)) _ _ -> do
-      let amount = if isEasyStandard attrs then 3 else 5
-      push $ DiscardTopOfDeck iid amount (toSource Skull) Nothing
+      discardTopOfDeck iid Skull $ if isEasyStandard attrs then 3 else 5
       pure s
     DiscardedTopOfDeck _iid cards _ target@(ChaosTokenTarget (chaosTokenFace -> ElderThing)) -> do
       let n = sum $ map (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef) cards

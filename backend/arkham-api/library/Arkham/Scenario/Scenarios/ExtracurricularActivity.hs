@@ -8,7 +8,9 @@ import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
 import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Xp
@@ -54,12 +56,25 @@ instance HasChaosTokenValue ExtracurricularActivity where
 instance RunMessage ExtracurricularActivity where
   runMessage msg s@(ExtracurricularActivity attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story intro
+      flavor $ scope "intro" do
+        h "title"
+        p "body"
       pure s
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     Setup -> runScenarioSetup ExtracurricularActivity attrs do
+      completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios
+
+      setup $ ul do
+        li "gatherSets"
+        li.nested "facultyOffices.body" do
+          li.validate (not completedTheHouseAlwaysWins) "facultyOffices.theNightIsStillYoung"
+          li.validate completedTheHouseAlwaysWins "facultyOffices.theHourIsLate"
+        li "setAside"
+        li "placeLocations"
+        unscoped $ li "shuffleRemainder"
+
       gather Set.ExtracurricularActivity
       gather Set.Sorcery
       gather Set.TheBeyond
@@ -78,7 +93,6 @@ instance RunMessage ExtracurricularActivity where
         , Locations.administrationBuilding
         ]
 
-      completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios
       setAside
         [ if completedTheHouseAlwaysWins
             then Locations.facultyOfficesTheHourIsLate
@@ -105,44 +119,39 @@ instance RunMessage ExtracurricularActivity where
       withSkillTest \sid ->
         push $ CreateChaosTokenValueEffect sid (-n) (toSource attrs) target
       pure s
-    ScenarioResolution NoResolution -> do
-      story noResolution
-      record ProfessorWarrenRiceWasKidnapped
-      record TheInvestigatorsFailedToSaveTheStudents
-      addChaosToken Tablet
-      allGainXpWithBonus attrs $ toBonus "noResolution" 1
-      endOfScenario
-      pure s
-    ScenarioResolution (Resolution 1) -> do
-      story resolution1
-      record TheInvestigatorsRescuedProfessorWarrenRice
-      addChaosToken Tablet
-      investigators <- allInvestigators
-      addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.professorWarrenRice
-      allGainXp attrs
-      endOfScenario
-      pure s
-    ScenarioResolution (Resolution 2) -> do
-      story resolution2
-      record ProfessorWarrenRiceWasKidnapped
-      record TheStudentsWereRescued
-      allGainXp attrs
-      endOfScenario
-      pure s
-    ScenarioResolution (Resolution 3) -> do
-      story resolution3
-      record ProfessorWarrenRiceWasKidnapped
-      record TheExperimentWasDefeated
-      allGainXp attrs
-      endOfScenario
-      pure s
-    ScenarioResolution (Resolution 4) -> do
-      story resolution4
-      record InvestigatorsWereUnconsciousForSeveralHours
-      record ProfessorWarrenRiceWasKidnapped
-      record TheInvestigatorsFailedToSaveTheStudents
-      addChaosToken Tablet
-      allGainXpWithBonus attrs $ toBonus "resolution4" 1
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> do
+          xp <- allGainXpWithBonus' attrs $ toBonus "noResolution" 1
+          story $ withVars ["xp" .= xp] $ i18nWithTitle "noResolution"
+          record ProfessorWarrenRiceWasKidnapped
+          record TheInvestigatorsFailedToSaveTheStudents
+          addChaosToken Tablet
+        Resolution 1 -> do
+          story resolution1
+          record TheInvestigatorsRescuedProfessorWarrenRice
+          addChaosToken Tablet
+          investigators <- allInvestigators
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.professorWarrenRice
+          allGainXp attrs
+        Resolution 2 -> do
+          story resolution2
+          record ProfessorWarrenRiceWasKidnapped
+          record TheStudentsWereRescued
+          allGainXp attrs
+        Resolution 3 -> do
+          story resolution3
+          record ProfessorWarrenRiceWasKidnapped
+          record TheExperimentWasDefeated
+          allGainXp attrs
+        Resolution 4 -> do
+          story resolution4
+          record InvestigatorsWereUnconsciousForSeveralHours
+          record ProfessorWarrenRiceWasKidnapped
+          record TheInvestigatorsFailedToSaveTheStudents
+          addChaosToken Tablet
+          allGainXpWithBonus attrs $ toBonus "resolution4" 1
+        other -> throwIO $ UnknownResolution other
       endOfScenario
       pure s
     _ -> ExtracurricularActivity <$> liftRunMessage msg attrs

@@ -532,6 +532,7 @@ footer {
 }
 
 .card {
+  user-select: none;
   box-shadow: var(--card-shadow);
 }
 

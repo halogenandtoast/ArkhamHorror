@@ -115,7 +115,11 @@ async function clicked() {
   if (interactAction.value !== -1) {
     emits('choose', interactAction.value)
   } else {
-    showAbilities.value = !showAbilities.value
+    if (abilities.value.length > 0) {
+      showAbilities.value = !showAbilities.value
+    } else {
+      showAbilities.value = false
+    }
   }
 }
 

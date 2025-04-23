@@ -169,6 +169,24 @@ const treacheries = computed(() => {
     .filter((e) => props.game.treacheries[e].placement.tag === 'AttachedToLocation')
 })
 
+const hasAttachments = computed(() => {
+  return treacheries.value.length > 0 || props.location.events.length > 0 || attachedEnemies.value.length > 0
+})
+
+const hasPool = computed(() => {
+  return keys.value.length > 0 ||
+    seals.value.length > 0 ||
+    (doom.value && doom.value > 0) ||
+    (horror.value && horror.value > 0) ||
+    (damage.value && damage.value > 0) ||
+    (resources.value && resources.value > 0) ||
+    (leylines.value && leylines.value > 0) ||
+    (depth.value && depth.value > 0) ||
+    (breaches.value && breaches.value > 0) ||
+    (props.location.brazier && props.location.brazier === 'Lit') ||
+    (props.location.cardsUnderneath.length > 0)
+})
+
 const blocked = computed(() => {
   const investigator = Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
   const { modifiers } = investigator ?? { modifiers: [] }
@@ -284,12 +302,12 @@ function onDrop(event: DragEvent) {
             />
           </div>
 
-          <div class="clues pool">
+          <div class="clues pool" v-if="(clues ?? 0) > 0 || floodLevel">
             <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
             <img v-if="floodLevel" :src="floodLevel" class="flood-level" />
           </div>
 
-          <div class="pool">
+          <div class="pool" v-if="hasPool">
             <Key v-for="key in keys" :key="key" :name="key" />
             <Seal v-for="seal in seals" :key="seal.sealKind" :seal="seal" />
             <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
@@ -318,7 +336,7 @@ function onDrop(event: DragEvent) {
           <button @click="debugging = true">Debug</button>
         </template>
       </div>
-      <div class="attachments">
+      <div class="attachments" v-if="hasAttachments">
         <Treachery
           v-for="treacheryId in treacheries"
           :key="treacheryId"
@@ -523,14 +541,6 @@ function onDrop(event: DragEvent) {
   &.clues {
     top: 10%;
   }
-  &:deep(.poolItem img) {
-    width: min(30px, 5vw) ;
-  }
-
-  &:deep(.poolItem) {
-    width: min(30px, 5vw);
-  }
-
   pointer-events: none;
 }
 

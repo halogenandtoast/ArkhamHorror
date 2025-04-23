@@ -5,6 +5,7 @@ import Arkham.Asset.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Prelude
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Projection
 import Control.Monad.Fail (fail)
 
@@ -20,8 +21,9 @@ instance HasModifiersFor QuickLearner4 where
     getSkillTest >>= traverse_ \st -> do
       maybeModified_ a (SkillTestTarget st.id) do
         guard $ controlledBy a st.investigator
+        inAction <- getGameInAction
         actionsTaken <- lift $ fieldMap InvestigatorActionsTaken length st.investigator
-        case actionsTaken of
+        case actionsTaken + if inAction then 1 else 0 of
           n | n < 2 -> pure [Difficulty 1]
           n | n > 2 -> pure [Difficulty (-1)]
           _ -> fail "Wrong number of actions taken"

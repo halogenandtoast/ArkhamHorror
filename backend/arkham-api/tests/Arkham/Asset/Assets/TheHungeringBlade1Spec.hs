@@ -38,6 +38,7 @@ spec = describe "The Hungering Blade (1)" do
       withProp @"combat" 0 self
       withProp @"resources" 3 self
       withProp @"hand" [theHungeringBladeCard] self
+      withDeck self [Assets.machete]
       enemy <- testEnemy & prop @"health" 3 & prop @"fight" 0
       location <- testLocation
       self `moveTo` location

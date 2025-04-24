@@ -15,10 +15,11 @@ spec = describe "Tommy Muldoon" $ do
 
     it "that asset is shuffled into your deck" . gameTestWith tommyMuldoon $ \self -> do
       beatCop2 <- self `putAssetIntoPlay` Assets.beatCop2
+      withDeck self [Assets.beatCop2]
       run $ DealAssetDamage beatCop2 (TestSource mempty) 3 1
       useReaction
       self.discard `shouldReturn` []
-      asDefs self.deck `shouldReturn` [Assets.beatCop2]
+      asDefs self.deck `shouldReturn` [Assets.beatCop2, Assets.beatCop2]
 
   context "elder sign" $ do
     it "is +2" . gameTestWith tommyMuldoon $ \self ->

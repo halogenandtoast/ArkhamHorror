@@ -49,6 +49,7 @@ spec = describe "Bloodlust" do
         withProp @"resources" 3 self
         withProp @"combat" 0 self
         withProp @"hand" [theHungeringBladeCard] self
+        withDeck self [Assets.machete]
         enemy <- testEnemy & prop @"health" 4 & prop @"fight" 0
         location <- testLocation
         self `moveTo` location
@@ -67,4 +68,4 @@ spec = describe "Bloodlust" do
           startSkillTest
           applyResults
           enemy.damage `shouldReturn` 3
-          (unDeck <$> self.deck) `shouldReturn` onlyPlayerCards [bloodlustCard]
+          (unDeck <$> self.deck) `shouldContainM` onlyPlayerCards [bloodlustCard]

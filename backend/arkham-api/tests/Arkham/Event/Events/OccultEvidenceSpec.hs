@@ -7,8 +7,9 @@ import TestImport.New
 spec :: Spec
 spec = describe "Occult Evidence" do
   it "Shuffle Occult Evidence into your deck." . gameTestWith mandyThompson $ \self -> do
+    withDeck self [Events.occultEvidence]
     self `playEvent` Events.occultEvidence
-    asDefs self.deck `shouldReturn` [Events.occultEvidence]
+    asDefs self.deck `shouldReturn` [Events.occultEvidence, Events.occultEvidence]
 
   context "When you search your deck and Occult Evidence is among the searched cards" do
     it "reveal it: Draw it and discover 1 clue at your location" . gameTestWith mandyThompson $ \self -> do

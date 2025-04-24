@@ -60,7 +60,7 @@ import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref (sourceToTarget)
-import Arkham.Helpers.Scenario (getInResolution)
+import Arkham.Helpers.Scenario (getInResolution, getIsStandalone)
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.UI qualified as Msg
 import Arkham.Helpers.Window qualified as Msg
@@ -1854,7 +1854,7 @@ withCost :: ReverseQueue m => InvestigatorId -> Cost -> QueueT Message m () -> m
 withCost iid cost f = batched \batchId -> payBatchCost batchId iid cost >> f
 
 oncePerCampaign :: ReverseQueue m => Text -> m () -> m ()
-oncePerCampaign k body = do
+oncePerCampaign k body = unlessM getIsStandalone do
   stored @Bool k >>= \case
     Nothing -> do
       push $ SetGlobal CampaignTarget (Aeson.fromText k) (toJSON True)

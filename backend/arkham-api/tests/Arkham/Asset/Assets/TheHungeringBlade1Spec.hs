@@ -38,7 +38,6 @@ spec = describe "The Hungering Blade (1)" do
       withProp @"combat" 0 self
       withProp @"resources" 3 self
       withProp @"hand" [theHungeringBladeCard] self
-      withDeck self [Assets.machete]
       enemy <- testEnemy & prop @"health" 3 & prop @"fight" 0
       location <- testLocation
       self `moveTo` location
@@ -47,6 +46,7 @@ spec = describe "The Hungering Blade (1)" do
         theHungeringBlade <- selectJust $ assetIs Assets.theHungeringBlade1
         run $ PlaceTokens (TestSource mempty) (toTarget theHungeringBlade) Offering 6
         run $ Helpers.drawCards (toId self) (TestSource mempty) 3
+        withDeck self [Assets.machete]
         enemy `spawnAt` location
         [doAttack] <- self `getActionsFrom` theHungeringBlade
         self `useAbility` doAttack

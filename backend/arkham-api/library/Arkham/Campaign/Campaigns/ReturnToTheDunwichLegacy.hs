@@ -53,4 +53,5 @@ instance RunMessage ReturnToTheDunwichLegacy where
         labeled' "extracurricularActivity" $ setNextCampaignStep ReturnToExtracurricularActivities
         labeled' "theHouseAlwaysWins" $ setNextCampaignStep ReturnToTheHouseAlwaysWins
       pure c
+    NextCampaignStep _ -> lift $ defaultCampaignRunner msg c
     _ -> ReturnToTheDunwichLegacy <$> liftRunMessage msg theDunwichLegacy'

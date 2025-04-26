@@ -68,6 +68,7 @@ import Arkham.Name (display, toName)
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Spawn
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait
@@ -242,14 +243,13 @@ instance RunMessage LocationAttrs where
       pure $ a & cardsUnderneathL %~ filter (/= PlayerCard pc)
     AddToEncounterDiscard ec -> do
       pure $ a & cardsUnderneathL %~ filter (/= EncounterCard ec)
-    Will next@(EnemySpawn miid lid eid) | lid == locationId -> do
-      shouldSpawnNonEliteAtConnectingInstead <-
-        getShouldSpawnNonEliteAtConnectingInstead a
-      when shouldSpawnNonEliteAtConnectingInstead $ do
+    Will next@(EnemySpawn details) | details.location == Just locationId -> do
+      let eid = details.enemy
+      whenM (getShouldSpawnNonEliteAtConnectingInstead a) do
         traits' <- field EnemyTraits eid
         unless (Elite `elem` traits') $ do
           activeInvestigatorId <- getActiveInvestigatorId
-          connectedLocationIds <- select $ AccessibleFrom $ LocationWithId lid
+          connectedLocationIds <- select $ AccessibleFrom $ LocationWithId a.id
           availableLocationIds <-
             flip filterM connectedLocationIds $ \locationId' -> do
               modifiers' <- getModifiers (LocationTarget locationId')
@@ -267,10 +267,9 @@ instance RunMessage LocationAttrs where
               push
                 $ chooseOne
                   player
-                  [ targetLabel
-                      lid'
-                      [Will (EnemySpawn miid lid' eid), EnemySpawn miid lid' eid]
+                  [ targetLabel lid' [Will (EnemySpawn details'), EnemySpawn details']
                   | lid' <- availableLocationIds
+                  , let details' = details {spawnDetailsSpawnAt = SpawnAtLocation lid'}
                   ]
       pure a
     MoveAllCluesTo source target | not (isTarget a target) -> do

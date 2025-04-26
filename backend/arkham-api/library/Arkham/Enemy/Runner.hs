@@ -332,6 +332,9 @@ instance RunMessage EnemyAttrs where
             =<< traverse
               (\eid' -> checkWindows (($ Window.EnemyEnters eid' lid) <$> [mkWhen]))
               (eid : swarm)
+          when (isOutOfPlayPlacement a.placement) do
+            pushM $ checkAfter $ Window.EnemySpawns eid lid
+            pushM $ checkWhen $ Window.EnemySpawns eid lid
           case a.placement of
             InThreatArea {} -> pure a
             _ -> pure $ a & placementL .~ AtLocation lid

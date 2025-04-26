@@ -441,14 +441,16 @@ getModifiedSkillTestDifficulty s = do
   modifiers' <- getModifiers (SkillTestTarget s.id)
   baseDifficulty <- getBaseSkillTestDifficulty s
   let preModifiedDifficulty = foldr applyPreModifier baseDifficulty modifiers'
-  foldrM applyModifier preModifiedDifficulty modifiers'
+  let doubledDifficulty = foldr applyDoubler preModifiedDifficulty modifiers'
+  max 0 <$> foldrM applyModifier doubledDifficulty modifiers'
  where
-  applyModifier (Difficulty m) n = pure $ max 0 (n + m)
+  applyModifier (Difficulty m) n = pure $ n + m
   applyModifier (CalculatedDifficulty calc) n = do
     m <- calculate calc
-    pure $ max 0 (n + m)
-  applyModifier DoubleDifficulty n = pure $ n * 2
+    pure $ n + m
   applyModifier _ n = pure n
+  applyDoubler DoubleDifficulty n = n * 2
+  applyDoubler _ n = n
   applyPreModifier (SetDifficulty m) _ = m
   applyPreModifier _ n = n
 

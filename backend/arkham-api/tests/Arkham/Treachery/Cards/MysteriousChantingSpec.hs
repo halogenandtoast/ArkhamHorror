@@ -1,13 +1,10 @@
-module Arkham.Treachery.Cards.MysteriousChantingSpec (
-  spec,
-) where
-
-import TestImport.Lifted
+module Arkham.Treachery.Cards.MysteriousChantingSpec (spec) where
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Matcher (defaultRemoveDoomMatchers)
 import Arkham.Treachery.Cards qualified as Cards
+import TestImport.Lifted
 
 spec :: Spec
 spec = describe "Mysterious Chanting" $ do
@@ -20,9 +17,13 @@ spec = describe "Mysterious Chanting" $ do
       , placedLocation location1
       , placedLocation location2
       , spawnAt cultist location1
-      , moveTo investigator location1
+      ]
+    chooseOnlyOption "use cultist ability"
+    pushAndRunAll
+      [ moveTo investigator location1
       , RemoveAllDoomFromPlay defaultRemoveDoomMatchers
       , drawEncounterCard investigator.id GameSource
       ]
+
     chooseOnlyOption "choose cultist"
     fieldAssert EnemyDoom (== 2) cultist

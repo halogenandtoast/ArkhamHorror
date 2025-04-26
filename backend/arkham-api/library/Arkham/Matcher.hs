@@ -46,6 +46,9 @@ class Locatable a where
 instance Locatable AbilityMatcher where
   at_ = AbilityOnLocation
 
+instance Locatable TreacheryMatcher where
+  at_ = TreacheryAt
+
 instance Locatable InvestigatorMatcher where
   at_ = InvestigatorAt
 

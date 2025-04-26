@@ -351,11 +351,6 @@ pattern Unblocked <- LocationWithoutModifier Blocked
   where
     Unblocked = LocationWithoutModifier Blocked
 
-pattern LocationOfThis :: LocationMatcher
-pattern LocationOfThis <- SameLocation
-  where
-    LocationOfThis = SameLocation
-
 pattern LocationNotOneOf :: [LocationMatcher] -> LocationMatcher
 pattern LocationNotOneOf inner = NotLocation (LocationMatchAny inner)
 

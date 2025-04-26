@@ -1663,6 +1663,11 @@ getLocationsMatching lmatcher = do
       flip filterM ls $ \l -> do
         lmEvents <- select $ EventAttachedTo $ TargetIs $ toTarget l
         pure . notNull $ List.intersect events lmEvents
+    LocationWithAttachedAsset assetMatcher -> do
+      assets <- select assetMatcher
+      flip filterM ls $ \l -> do
+        lmAssets <- select $ AssetAttachedTo $ TargetIs $ toTarget l
+        pure . notNull $ List.intersect assets lmAssets
     LocationWithAttachment -> do
       flip filterM ls $ \l -> do
         orM

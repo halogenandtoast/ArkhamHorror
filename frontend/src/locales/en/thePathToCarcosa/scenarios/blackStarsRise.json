@@ -12,5 +12,8 @@
       "tablet": "Reveal another token. If you do not succeed by at least 1, place 1 doom on each agenda.",
       "elderThing": "-3. If you fail, search the encounter deck and discard pile for a _Byakhee_ enemy and draw it."
     }
+  },
+  "remembered": {
+    "foundTheTowerKey": "You found the tower key."
   }
 }

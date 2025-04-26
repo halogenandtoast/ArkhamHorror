@@ -25,7 +25,9 @@ instance HasModifiersFor BearTrap where
 instance HasAbilities BearTrap where
   getAbilities (BearTrap x) =
     [ restricted x 1 restriction $ FastAbility Free
-    , mkAbility x 2 $ forced $ EnemyEnters #after LocationOfThis (enemyIs Cards.theRougarou)
+    , mkAbility x 2
+        $ forced
+        $ EnemyEnters #after (LocationWithAttachedAsset $ be x) (enemyIs Cards.theRougarou)
     ]
    where
     restriction = case x.placement of

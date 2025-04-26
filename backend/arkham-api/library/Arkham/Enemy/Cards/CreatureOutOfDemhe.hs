@@ -1,12 +1,11 @@
-module Arkham.Enemy.Cards.CreatureOutOfDemhe (creatureOutOfDemhe, CreatureOutOfDemhe (..)) where
+module Arkham.Enemy.Cards.CreatureOutOfDemhe (creatureOutOfDemhe) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
-import Arkham.Matcher qualified as Matcher
-import Arkham.Window
+import Arkham.Window hiding (FlipLocation)
 import Arkham.Window qualified as Window
 
 newtype CreatureOutOfDemhe = CreatureOutOfDemhe EnemyAttrs
@@ -21,7 +20,7 @@ creatureOutOfDemhe =
 
 instance HasAbilities CreatureOutOfDemhe where
   getAbilities (CreatureOutOfDemhe a) =
-    extend1 a $ mkAbility a 1 $ forced $ Matcher.FlipLocation #when Anyone $ orConnected LocationOfThis
+    extend1 a $ mkAbility a 1 $ forced $ FlipLocation #when Anyone $ orConnected $ locationWithEnemy a
 
 instance RunMessage CreatureOutOfDemhe where
   runMessage msg e@(CreatureOutOfDemhe attrs) = runQueueT $ case msg of

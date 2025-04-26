@@ -3,16 +3,13 @@ module Arkham.Location.Cards.WitchHauntedWoodsChildsTreeHouse (
 ) where
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype WitchHauntedWoodsChildsTreeHouse = WitchHauntedWoodsChildsTreeHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -29,30 +26,18 @@ witchHauntedWoodsChildsTreeHouse =
 
 instance HasAbilities WitchHauntedWoodsChildsTreeHouse where
   getAbilities (WitchHauntedWoodsChildsTreeHouse a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ DiscoveringLastClue Timing.After Anyone
-          $ LocationWithId
-          $ toId a
-      ]
+    extendRevealed1 a $ mkAbility a 1 $ forced $ DiscoveringLastClue #after Anyone (be a)
 
 instance RunMessage WitchHauntedWoodsChildsTreeHouse where
-  runMessage msg l@(WitchHauntedWoodsChildsTreeHouse attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      mEnemy <- findTopOfDiscard $ CardWithType EnemyType
+  runMessage msg l@(WitchHauntedWoodsChildsTreeHouse attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      mEnemy <- findTopOfDiscard #enemy
       lead <- getLead
-      push $ case mEnemy of
-        Nothing ->
-          DiscardUntilFirst
-            lead
-            (toSource attrs)
-            Deck.EncounterDeck
-            (BasicCardMatch $ CardWithType EnemyType)
-        Just enemy -> SpawnEnemyAt (EncounterCard enemy) (toId attrs)
+      case mEnemy of
+        Nothing -> discardUntilFirst lead attrs Deck.EncounterDeck #enemy
+        Just enemy -> spawnEnemyAt_ enemy attrs
       pure l
     RequestedEncounterCard (isSource attrs -> True) _ (Just ec) -> do
-      push $ SpawnEnemyAt (EncounterCard ec) (toId attrs)
+      spawnEnemyAt_ ec attrs
       pure l
-    _ -> WitchHauntedWoodsChildsTreeHouse <$> runMessage msg attrs
+    _ -> WitchHauntedWoodsChildsTreeHouse <$> liftRunMessage msg attrs

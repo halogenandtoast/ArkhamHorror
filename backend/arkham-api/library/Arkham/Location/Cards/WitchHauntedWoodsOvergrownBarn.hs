@@ -4,9 +4,9 @@ import Arkham.Ability
 import Arkham.Attack
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Spawn
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -24,53 +24,40 @@ witchHauntedWoodsOvergrownBarn =
 
 instance HasAbilities WitchHauntedWoodsOvergrownBarn where
   getAbilities (WitchHauntedWoodsOvergrownBarn a) =
-    withBaseAbilities
-      a
-      [ restrictedAbility a 1 Here
-          $ ReactionAbility
-            ( EnemyWouldSpawnAt
-                AnyEnemy
-                ( NotLocation (LocationWithId $ toId a)
-                    <> LocationWithTitle "Witch-Haunted Woods"
-                )
-            )
-            Free
-      ]
+    extendRevealed1 a
+      $ restricted a 1 Here
+      $ freeReaction
+      $ EnemyWouldSpawnAt AnyEnemy (not_ (be a) <> "Witch-Haunted Woods")
 
 instance RunMessage WitchHauntedWoodsOvergrownBarn where
-  runMessage msg l@(WitchHauntedWoodsOvergrownBarn attrs) = case msg of
+  runMessage msg l@(WitchHauntedWoodsOvergrownBarn attrs) = runQueueT $ case msg of
     UseCardAbility _ (isSource attrs -> True) 1 [(windowType -> Window.EnemyWouldSpawnAt enemyId _)] _ ->
       do
+        insteadOfMatchingWith
+          \case
+            When (EnemySpawn details) -> details.enemy == enemyId
+            _ -> False
+          \case
+            When (EnemySpawn details) ->
+              pure [When $ EnemySpawn $ details {spawnDetailsSpawnAt = SpawnAtLocation attrs.id}]
+            _ -> error "bad match"
+        insteadOfMatchingWith
+          \case
+            EnemySpawn details -> details.enemy == enemyId
+            _ -> False
+          \case
+            EnemySpawn details -> pure [EnemySpawn $ details {spawnDetailsSpawnAt = SpawnAtLocation attrs.id}]
+            _ -> error "bad match"
         iids <- select $ investigatorAt $ toId attrs
-        replaceMessageMatching
-          ( \case
-              When (EnemySpawn _ _ eid) -> eid == enemyId
-              _ -> False
-          )
-          ( \case
-              When (EnemySpawn _ _ eid) ->
-                [When $ EnemySpawn Nothing (toId attrs) eid]
-              _ -> error "bad match"
-          )
-        replaceMessageMatching
-          ( \case
-              EnemySpawn _ _ eid -> eid == enemyId
-              _ -> False
-          )
-          ( \case
-              EnemySpawn _ _ eid -> [EnemySpawn Nothing (toId attrs) eid]
-              _ -> error "bad match"
-          )
-        replaceMessageMatching
-          ( \case
-              After (EnemySpawn _ _ eid) -> eid == enemyId
-              _ -> False
-          )
-          ( \case
-              After (EnemySpawn _ _ eid) ->
-                After (EnemySpawn Nothing (toId attrs) eid)
-                  : map (InitiateEnemyAttack . enemyAttack eid attrs) iids
-              _ -> error "bad match"
-          )
+        insteadOfMatchingWith
+          \case
+            After (EnemySpawn details) -> details.enemy == enemyId
+            _ -> False
+          \case
+            After (EnemySpawn details) ->
+              pure
+                $ After (EnemySpawn $ details {spawnDetailsSpawnAt = SpawnAtLocation attrs.id})
+                : map (InitiateEnemyAttack . enemyAttack details.enemy attrs) iids
+            _ -> error "bad match"
         pure l
-    _ -> WitchHauntedWoodsOvergrownBarn <$> runMessage msg attrs
+    _ -> WitchHauntedWoodsOvergrownBarn <$> liftRunMessage msg attrs

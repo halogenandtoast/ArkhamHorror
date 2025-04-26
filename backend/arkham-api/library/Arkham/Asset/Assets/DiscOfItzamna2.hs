@@ -24,7 +24,7 @@ instance RunMessage DiscOfItzamna2 where
       -- this does not cancel so we must remove manually
       menemySpawnMessage <- fromQueue $ find ((== Just EnemySpawnMessage) . messageType)
       case menemySpawnMessage of
-        Just msg'@(EnemySpawn _ _ enemyId) ->
+        Just msg'@(EnemySpawn ((.enemy) -> enemyId)) ->
           replaceMessage
             msg'
             [ toDiscardBy iid (toAbilitySource attrs 1) attrs

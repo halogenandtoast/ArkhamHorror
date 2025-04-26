@@ -24,15 +24,17 @@ corpseDweller =
 
 instance RunMessage CorpseDweller where
   runMessage msg (CorpseDweller attrs) = case msg of
-    EnemySpawn miid lid eid | eid == toId attrs -> do
-      leadInvestigatorId <- getLead
-      let iid = fromMaybe leadInvestigatorId miid
-      humanoids <- select $ EnemyWithTrait Humanoid <> enemyAt lid
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ targetLabels humanoids
-        $ only
-        . toDiscard attrs
+    EnemySpawn details | details.enemy == attrs.id -> do
+      for_ details.location \lid -> do
+        let miid = details.investigator
+        leadInvestigatorId <- getLead
+        let iid = fromMaybe leadInvestigatorId miid
+        humanoids <- select $ EnemyWithTrait Humanoid <> enemyAt lid
+        player <- getPlayer iid
+        push
+          $ chooseOrRunOne player
+          $ targetLabels humanoids
+          $ only
+          . toDiscard attrs
       CorpseDweller <$> runMessage msg attrs
     _ -> CorpseDweller <$> runMessage msg attrs

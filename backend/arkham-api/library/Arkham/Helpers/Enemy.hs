@@ -48,6 +48,17 @@ isActionTarget a = isTarget a . toProxyTarget
 spawnAt
   :: (HasGame m, HasQueue Message m, MonadRandom m) => EnemyId -> Maybe InvestigatorId -> SpawnAt -> m ()
 spawnAt _ _ NoSpawn = pure ()
+spawnAt eid miid (SpawnAtLocation lid) = do
+  pushAll
+    $ windows [Window.EnemyWouldSpawnAt eid lid]
+    <> resolve
+      ( EnemySpawn
+          $ SpawnDetails
+            { spawnDetailsInvestigator = miid
+            , spawnDetailsSpawnAt = SpawnAtLocation lid
+            , spawnDetailsEnemy = eid
+            }
+      )
 spawnAt eid miid (SpawnAt locationMatcher) = do
   pushAll
     $ windows [Window.EnemyAttemptsToSpawnAt eid locationMatcher]
@@ -234,7 +245,15 @@ spawnAtOneOf miid eid targetLids = do
     [] -> push (toDiscard GameSource eid)
     [lid] -> do
       windows' <- checkWindows [mkWhen (Window.EnemyWouldSpawnAt eid lid)]
-      pushAll $ windows' : resolve (EnemySpawn miid lid eid)
+      pushAll $ windows'
+        : resolve
+          ( EnemySpawn
+              $ SpawnDetails
+                { spawnDetailsInvestigator = miid
+                , spawnDetailsSpawnAt = SpawnAtLocation lid
+                , spawnDetailsEnemy = eid
+                }
+          )
     lids -> do
       windowPairs <- for lids $ \lid -> do
         windows' <- checkWindows [mkWhen (Window.EnemyWouldSpawnAt eid lid)]
@@ -243,7 +262,15 @@ spawnAtOneOf miid eid targetLids = do
       push
         $ chooseOne
           player
-          [ targetLabel lid $ windows' : resolve (EnemySpawn miid lid eid)
+          [ targetLabel lid $ windows'
+              : resolve
+                ( EnemySpawn
+                    $ SpawnDetails
+                      { spawnDetailsEnemy = eid
+                      , spawnDetailsInvestigator = miid
+                      , spawnDetailsSpawnAt = SpawnAtLocation lid
+                      }
+                )
           | (windows', lid) <- windowPairs
           ]
 

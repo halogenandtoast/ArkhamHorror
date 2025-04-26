@@ -24,6 +24,7 @@ import Arkham.Placement
 import Arkham.SkillTest.Base
 import Arkham.SkillType
 import Arkham.Source
+import Arkham.Spawn
 import Arkham.Target
 import Arkham.Window (defaultWindows)
 import Data.UUID (nil)
@@ -41,7 +42,13 @@ moveAllTo :: Location -> Message
 moveAllTo = MoveAllTo (TestSource mempty) . toId
 
 spawnAt :: Enemy -> Location -> Message
-spawnAt e l = EnemySpawn Nothing (toId l) (toId e)
+spawnAt e l =
+  EnemySpawn
+    $ SpawnDetails
+      { spawnDetailsInvestigator = Nothing
+      , spawnDetailsSpawnAt = SpawnAtLocation (toId l)
+      , spawnDetailsEnemy = toId e
+      }
 
 loadDeck :: Investigator -> [PlayerCard] -> Message
 loadDeck i cs = LoadDeck (toId i) (Deck cs)

@@ -1200,7 +1200,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       & (discardL %~ filter (/= ec))
       & (encounterDeckL %~ withDeck (filter (/= ec)))
       & (decksL . each %~ filter (/= toCard ec))
-  When (EnemySpawn _ _ enemyId) -> do
+  When (EnemySpawn ((.enemy) -> enemyId)) -> do
     card <- field EnemyCard enemyId
     pure $ a & (victoryDisplayL %~ delete card)
   SetEncounterDeck encounterDeck -> do

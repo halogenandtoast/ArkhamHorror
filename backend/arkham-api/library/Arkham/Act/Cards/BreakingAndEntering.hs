@@ -12,6 +12,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
+import Arkham.Spawn
 
 newtype BreakingAndEntering = BreakingAndEntering ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -44,7 +45,12 @@ instance RunMessage BreakingAndEntering where
                 [ targetLabel iid [TakeControlOfSetAsideAsset iid haroldWalsted]
                 | iid <- investigatorIds
                 ]
-            , EnemySpawn Nothing lid eid
+            , EnemySpawn
+                $ SpawnDetails
+                  { spawnDetailsInvestigator = Nothing
+                  , spawnDetailsSpawnAt = SpawnAtLocation lid
+                  , spawnDetailsEnemy = eid
+                  }
             , Ready (EnemyTarget eid)
             , AdvanceActDeck (actDeckId attrs) (toSource attrs)
             ]

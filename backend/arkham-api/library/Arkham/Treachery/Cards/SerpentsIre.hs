@@ -8,6 +8,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Spawn
 import Arkham.Trait (Trait (Serpent))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -52,7 +53,12 @@ instance RunMessage SerpentsIre where
                 player
                 [ targetLabel
                     eid
-                    [ EnemySpawn (Just iid) lid eid
+                    [ EnemySpawn
+                        $ SpawnDetails
+                          { spawnDetailsInvestigator = (Just iid)
+                          , spawnDetailsSpawnAt = SpawnAtLocation lid
+                          , spawnDetailsEnemy = eid
+                          }
                     , HandleTargetChoice iid source (EnemyTarget eid)
                     ]
                 | eid <- choices

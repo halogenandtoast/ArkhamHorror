@@ -76,6 +76,7 @@ import Arkham.SkillTestResult qualified as SkillTest
 import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Source
+import Arkham.Spawn
 import Arkham.Target
 import Arkham.Tarot
 import Arkham.Token qualified as Token
@@ -663,7 +664,9 @@ data Message
   | EnemyMove EnemyId LocationId
   | EnemyEntered EnemyId LocationId
   | SetBearer Target InvestigatorId
-  | EnemySpawn (Maybe InvestigatorId) LocationId EnemyId
+  | SpawnEnemyAt Card LocationId
+  | SpawnEnemyAtEngagedWith Card LocationId InvestigatorId
+  | EnemySpawn SpawnDetails
   | EnemySpawnAtLocationMatching (Maybe InvestigatorId) LocationMatcher EnemyId
   | EnemySpawnEngagedWithPrey EnemyId
   | EnemySpawnEngagedWith EnemyId InvestigatorMatcher
@@ -996,8 +999,6 @@ data Message
   | EndSkillTestWindow
   | SkillTestResults SkillTestResultsData
   | SkillTestUncommitCard InvestigatorId Card
-  | SpawnEnemyAt Card LocationId
-  | SpawnEnemyAtEngagedWith Card LocationId InvestigatorId
   | SpendClues Int [InvestigatorId]
   | SpendResources InvestigatorId Int
   | SpendUses Source Target UseType Int
@@ -1136,6 +1137,18 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "EnemySpawn" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right details -> pure $ EnemySpawn details
+          Left (miid, lid, eid) ->
+            pure
+              $ EnemySpawn
+              $ SpawnDetails
+                { spawnDetailsEnemy = eid
+                , spawnDetailsInvestigator = miid
+                , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
+                }
       "FightEnemy" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

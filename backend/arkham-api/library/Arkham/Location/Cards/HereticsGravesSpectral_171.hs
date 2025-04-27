@@ -1,7 +1,6 @@
 module Arkham.Location.Cards.HereticsGravesSpectral_171 (
   hereticsGravesSpectral_171,
   hereticsGravesSpectral_171Effect,
-  HereticsGravesSpectral_171 (..),
 )
 where
 
@@ -9,9 +8,9 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Effect.Import
 import Arkham.GameValue
-import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isInvestigating)
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Import.Lifted
@@ -30,8 +29,7 @@ instance HasModifiersFor HereticsGravesSpectral_171 where
       Nothing -> pure mempty
       Just iid -> maybeModified_ a iid do
         liftGuardM $ isInvestigating iid a.id
-        willpower <- lift $ getSkillValue #willpower iid
-        pure [AnySkillValue willpower]
+        pure [AnySkillValueCalculated $ InvestigatorFieldCalculation iid InvestigatorWillpower]
 
 instance HasAbilities HereticsGravesSpectral_171 where
   getAbilities (HereticsGravesSpectral_171 a) =

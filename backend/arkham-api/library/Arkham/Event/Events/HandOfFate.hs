@@ -20,7 +20,7 @@ instance RunMessage HandOfFate where
       let currentAttack = getAttackDetails attrs.windows
       damage <- field EnemyHealthDamage currentAttack.enemy
       horror <- field EnemySanityDamage currentAttack.enemy
-      n <- max (damage + horror) <$> getRemainingBlessTokens
+      n <- min (damage + horror) <$> getRemainingBlessTokens
       cancelAttack attrs currentAttack
       replicateM_ n $ addChaosToken #bless
       pure e

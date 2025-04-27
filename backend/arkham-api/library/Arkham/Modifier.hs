@@ -373,7 +373,7 @@ data ModifierType
   | SetAttackDamageStrategy DamageStrategy
   | SetDifficulty Int
   | SetShroud Int
-  | SetSkillValue SkillType Int
+  | SetSkillValue { skillType :: SkillType, value :: Int }
   | SharesSlotWith Int CardMatcher -- card matcher allows us to check more easily from hand
   | ShroudModifier Int
   | ShuffleIntoAnyDeckInsteadOfDiscard
@@ -458,6 +458,11 @@ mconcat
         parseJSON = withObject "ModifierType" \v -> do
           tag :: Text <- v .: "tag"
           case tag of
+            "SetSkillValue" -> do
+              contents <- (Left <$> v .: "contents") <|> (Right <$> (SetSkillValue <$> v .: "skillType" <*> v .: "value"))
+              case contents of
+                Left (a, b) -> pure $ SetSkillValue a b
+                Right a -> pure a
             "CanPlayFromDiscard" -> do
               contents <- (Left <$> v .: "contents") <|> (Right <$> v .: "contents")
               case contents of

@@ -242,6 +242,12 @@ function calculateSkill(base: number, skillType: string, modifiers: Modifier[]) 
     }
   })
 
+  modifiers.forEach((modifier) => {
+    if (modifier.type.tag === "SetSkillValue" && modifier.type.skillType === skillType) {
+      modified = modifier.type.value
+    }
+  })
+
   return modified
 }
 

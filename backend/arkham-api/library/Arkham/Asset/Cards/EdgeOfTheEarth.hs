@@ -339,7 +339,7 @@ closeTheCircle1 =
     , cdSkills = [#combat, #agility]
     , cdSlots = [#arcane]
     , cdLevel = Just 1
-    , cdUses = Uses Charge (DifferentClassAmong $ oneOf [InPlayAreaOf You, IsThisCard])
+    , cdUses = Uses Charge (DifferentClassAmong You $ oneOf [InPlayAreaOf You, IsThisCard])
     }
 
 astronomicalAtlas3 :: CardDef

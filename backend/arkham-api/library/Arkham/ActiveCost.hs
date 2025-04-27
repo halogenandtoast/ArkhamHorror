@@ -75,7 +75,8 @@ import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Window (Window (..), mkAfter, mkWhen)
 import Arkham.Window qualified as Window
-import Control.Lens (non, transform)
+import Control.Lens (non, transform, over)
+import Data.Data.Lens (biplate)
 import GHC.Records
 
 activeCostActions :: ActiveCost -> [Action]
@@ -1360,9 +1361,26 @@ instance RunMessage ActiveCost where
             ForCard {} -> False
             _ -> True
 
+      mods <- case activeCostTarget c of
+        ForCard _ card -> getModifiers card
+        _ -> pure []
+
+      let
+        updateCost = \case
+          x@(UnlessFastActionCost {}) -> do
+            case activeCostTarget c of
+              ForCard _ card -> case card of
+                PlayerCard _ ->
+                  if isJust $ cdFastWindow (toCardDef card) <|> listToMaybe [w | BecomesFast w <- mods]
+                    then Free
+                    else x
+                _ -> x
+              _ -> x
+          x -> x
+
       canStillAfford <-
         withModifiers iid (toModifiers source [ExtraResources extraResources])
-          $ getCanAffordCost_ iid source actions c.windows canModify cost
+          $ getCanAffordCost_ iid source actions c.windows canModify $ over biplate (transform updateCost) cost
       if canStillAfford
         then payCost msg c iid skipAdditionalCosts cost
         else do

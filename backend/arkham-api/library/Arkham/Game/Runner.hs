@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game.Runner where
 
@@ -1341,27 +1341,31 @@ runGameMessage msg g = case msg of
   After (ShuffleIntoDeck _ (EventTarget eid)) ->
     pure $ g & entitiesL . eventsL %~ deleteMap eid
   ShuffleIntoDeck deck (TreacheryTarget treacheryId) -> do
-    treachery <- getTreachery treacheryId
-    adjustedDeck <- case deck of
-      Deck.InvestigatorDeck _ ->
-        maybe Deck.EncounterDeck Deck.InvestigatorDeck <$> field TreacheryOwner treacheryId
-      _ -> pure deck
+    maybeTreachery treacheryId >>= traverse_ \treachery -> do
+      adjustedDeck <- case deck of
+        Deck.InvestigatorDeck _ ->
+          maybe Deck.EncounterDeck Deck.InvestigatorDeck <$> field TreacheryOwner treacheryId
+        _ -> pure deck
 
-    pushAll
-      [ RemoveTreachery treacheryId
-      , ShuffleCardsIntoDeck adjustedDeck [toCard treachery]
-      ]
+      pushAll
+        [ RemoveTreachery treacheryId
+        , ShuffleCardsIntoDeck adjustedDeck [toCard treachery]
+        ]
     pure g
   ShuffleIntoDeck deck (EnemyTarget enemyId) -> do
-    -- The Thing That Follows
-    card <- field EnemyCard enemyId
-    pushAll $ resolve (RemoveEnemy enemyId) <> [ShuffleCardsIntoDeck deck [card]]
+    maybeEnemy enemyId >>= traverse_ \_ -> do
+      -- The Thing That Follows
+      card <- field EnemyCard enemyId
+      pushAll $ resolve (RemoveEnemy enemyId) <> [ShuffleCardsIntoDeck deck [card]]
     pure g
   ShuffleIntoDeck deck (LocationTarget locationId) -> do
-    -- The Thing That Follows
-    card <- field LocationCard locationId
-    push $ ShuffleCardsIntoDeck deck [card]
-    pure $ g & entitiesL . locationsL %~ deleteMap locationId
+    maybeLocation locationId >>= \case
+      Nothing -> pure g
+      Just _ -> do
+        -- The Thing That Follows
+        card <- field LocationCard locationId
+        push $ ShuffleCardsIntoDeck deck [card]
+        pure $ g & entitiesL . locationsL %~ deleteMap locationId
   PlayCard iid card _mtarget _payment windows' True -> do
     allModifiers <- mconcat <$> sequence [getModifiers card, getModifiers iid]
     let

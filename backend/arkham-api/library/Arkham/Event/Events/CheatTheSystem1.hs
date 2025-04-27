@@ -16,6 +16,6 @@ instance RunMessage CheatTheSystem1 where
   runMessage msg e@(CheatTheSystem1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       gainResourcesIfCan iid attrs
-        =<< calculate (DifferentClassAmong $ ControlledBy $ InvestigatorWithId iid)
+        =<< calculate (DifferentClassAmong (InvestigatorWithId iid) $ ControlledBy $ InvestigatorWithId iid)
       pure e
     _ -> CheatTheSystem1 <$> liftRunMessage msg attrs

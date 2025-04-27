@@ -108,12 +108,14 @@ calculate = go
       investigators <- select UneliminatedInvestigator
       alarmLevels <- traverse (fieldMap InvestigatorTokens (countTokens AlarmLevel)) investigators
       pure $ getMax0 $ foldMap Max0 alarmLevels
-    DifferentClassAmong matcher -> do
+    DifferentClassAmong who matcher -> do
+      iclasses <- selectField InvestigatorClass who
       cards <- select matcher
       pure
         $ length
         $ filter (`notElem` [Neutral, Mythos])
         . nub
+        . (iclasses <>)
         $ concatMap (toList . cdClassSymbols . toCardDef . toCard) cards
     DuringEventCalculation c1 c2 -> do
       inEvent <- selectAny ActiveEvent

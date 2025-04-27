@@ -657,6 +657,7 @@ getAsIfInHandCards iid = do
     modifiersPermitPlayOfDiscard discard c =
       any (modifierPermitsPlayOfDiscard discard c) modifiers
     modifierPermitsPlayOfDiscard discard (c, _) = \case
+      CanPlayFromDiscard cardMatcher -> c `cardMatch` cardMatcher && c `elem` discard
       CanPlayTopmostOfDiscard (mType, traits) ->
         let cardMatcher = maybe AnyCard CardWithType mType <> foldMap CardWithTrait traits
             allMatches = filter (`cardMatch` cardMatcher) discard

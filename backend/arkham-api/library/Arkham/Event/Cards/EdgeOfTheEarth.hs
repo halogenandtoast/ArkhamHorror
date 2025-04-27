@@ -146,7 +146,7 @@ cheatTheSystem1 =
     , cdCriteria =
         Just
           $ youExist can.gain.resources
-          <> Criteria.HasCalculation (DifferentClassAmong $ ControlledBy You) (atLeast 1)
+          <> Criteria.HasCalculation (DifferentClassAmong You $ ControlledBy You) (atLeast 1)
     , cdFastWindow = Just FastPlayerWindow
     , cdLevel = Just 1
     }

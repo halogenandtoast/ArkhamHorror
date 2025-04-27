@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.ThroughTheIce (throughTheIce, ThroughTheIce (..)) where
+module Arkham.Treachery.Cards.ThroughTheIce (throughTheIce) where
 
 import Arkham.Cost
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
@@ -30,7 +30,7 @@ instance HasModifiersFor ThroughTheIce where
 instance RunMessage ThroughTheIce where
   runMessage msg t@(ThroughTheIce attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      ls <- select $ NearestLocationTo iid $ LocationWithoutTreachery (treacheryIs Cards.kindredMist)
+      ls <- select $ NearestLocationTo iid $ LocationWithoutTreachery (treacheryIs Cards.throughTheIce)
       chooseTargetM iid ls $ place attrs . AttachedToLocation
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

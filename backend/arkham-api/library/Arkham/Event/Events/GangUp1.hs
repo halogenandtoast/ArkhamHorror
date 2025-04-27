@@ -17,7 +17,9 @@ instance RunMessage GangUp1 where
     PlayThisEvent iid eid | eid == toId attrs -> do
       sid <- getRandom
       skillTestModifier sid attrs iid
-        $ ForEach (DifferentClassAmong $ ControlledBy You) [SkillModifier #combat 1, DamageDealt 1]
+        $ ForEach
+          (DifferentClassAmong (InvestigatorWithId iid) $ ControlledBy (InvestigatorWithId iid))
+          [SkillModifier #combat 1, DamageDealt 1]
       chooseFightEnemy sid iid attrs
       pure e
     _ -> GangUp1 <$> liftRunMessage msg attrs

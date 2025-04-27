@@ -74,7 +74,7 @@ data GameCalculation
   | AssetTokenCountCalculation AssetId Token
   | MaxAlarmLevelCalculation -- getMaxAlarmLevel
   | VengeanceCalculation -- getVengeanceInVictoryDisplay
-  | DifferentClassAmong ExtendedCardMatcher
+  | DifferentClassAmong InvestigatorMatcher ExtendedCardMatcher
   | EnemyTargetFieldCalculation (Field Enemy Int)
   | CountChaosTokens ChaosTokenMatcher
   | GameValueCalculation GameValue

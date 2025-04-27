@@ -795,6 +795,12 @@ eachInvestigator f = do
 forInvestigator :: ReverseQueue m => InvestigatorId -> Message -> m ()
 forInvestigator iid msg = push $ ForInvestigator iid msg
 
+forEachInvestigator :: ReverseQueue m => QueueT Message m () -> m ()
+forEachInvestigator body = eachInvestigator (`forInvestigator'` body)
+
+forInvestigator' :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> m ()
+forInvestigator' iid = evalQueueT >=> traverse_ (forInvestigator iid)
+
 selectEach :: (Query a, HasGame m) => a -> (QueryElement a -> m ()) -> m ()
 selectEach matcher f = select matcher >>= traverse_ f
 

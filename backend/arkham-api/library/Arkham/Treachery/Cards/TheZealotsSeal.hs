@@ -1,12 +1,10 @@
-module Arkham.Treachery.Cards.TheZealotsSeal where
+module Arkham.Treachery.Cards.TheZealotsSeal (theZealotsSeal) where
 
-import Arkham.Classes
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Prelude
-import Arkham.Projection
+import Arkham.Helpers.Investigator (getHandCount)
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Source
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype TheZealotsSeal = TheZealotsSeal TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -16,22 +14,22 @@ theZealotsSeal :: TreacheryCard TheZealotsSeal
 theZealotsSeal = treachery TheZealotsSeal Cards.theZealotsSeal
 
 instance RunMessage TheZealotsSeal where
-  runMessage msg t@(TheZealotsSeal attrs) = case msg of
+  runMessage msg t@(TheZealotsSeal attrs) = runQueueT $ case msg of
     Revelation _ (isSource attrs -> True) -> do
-      investigatorIds <- getInvestigators
-      -- we must unshift this first for other effects happen before
-      for_ investigatorIds $ \iid' -> do
-        handCardCount <- fieldMap InvestigatorHand length iid'
+      forEachInvestigator $ doStep 1 msg
+      forEachInvestigator $ doStep 2 msg
+      pure t
+    ForInvestigator iid (DoStep 1 (Revelation _ (isSource attrs -> True))) -> do
+      handCardCount <- getHandCount iid
+      when (handCardCount <= 3) $ assignDamageAndHorror iid attrs 1 1
+      pure t
+    ForInvestigator iid (DoStep 2 (Revelation _ (isSource attrs -> True))) -> do
+      handCardCount <- getHandCount iid
+      when (handCardCount >= 4) do
         sid <- getRandom
-        push
-          $ if handCardCount <= 3
-            then assignDamageAndHorror iid' attrs 1 1
-            else revelationSkillTest sid iid' attrs #willpower (Fixed 2)
+        revelationSkillTest sid iid attrs #willpower (Fixed 2)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      pushAll
-        [ toMessage $ randomDiscard iid attrs
-        , toMessage $ randomDiscard iid attrs
-        ]
+      randomDiscardN iid attrs 2
       pure t
-    _ -> TheZealotsSeal <$> runMessage msg attrs
+    _ -> TheZealotsSeal <$> liftRunMessage msg attrs

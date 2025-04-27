@@ -85,6 +85,7 @@ export type ModifierType
   | OtherModifier
   | UIModifier
   | SkillModifier
+  | SetSkillValue
   | UseEncounterDeck
   | CannotCommitCards
   | DoNotDrawConnection
@@ -169,6 +170,12 @@ export type ActionSkillModifier = {
 
 export type SkillModifier = {
   tag: "SkillModifier"
+  skillType: string
+  value: number
+}
+
+export type SetSkillValue = {
+  tag: "SetSkillValue"
   skillType: string
   value: number
 }
@@ -305,6 +312,12 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
   JsonDecoder.object<SkillModifier>(
     {
       tag: JsonDecoder.literal('SkillModifier'),
+      skillType: JsonDecoder.string(),
+      value: JsonDecoder.number()
+    }, 'SkillModifier'),
+  JsonDecoder.object<SetSkillValue>(
+    {
+      tag: JsonDecoder.literal('SetSkillValue'),
       skillType: JsonDecoder.string(),
       value: JsonDecoder.number()
     }, 'SkillModifier'),

@@ -16,14 +16,19 @@ openGate = event OpenGate Cards.openGate
 
 instance HasModifiersFor OpenGate where
   getModifiersFor (OpenGate a) = case a.placement of
-    AttachedToLocation lid -> do
-      modifySelectMap a (not_ (be lid) <> LocationWithAttachedEvent (eventIs Cards.openGate)) \lid' ->
-        [ConnectedToWhen (LocationWithId lid') (LocationWithId lid)]
+    AttachedToLocation lid ->
+      modified_
+        a
+        lid
+        [ ConnectedToWhen
+            (LocationWithId lid)
+            (not_ (LocationWithId lid) <> LocationWithAttachedEvent (eventIs Cards.openGate))
+        ]
     _ -> pure ()
 
 instance RunMessage OpenGate where
   runMessage msg e@(OpenGate attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      withLocationOf iid $ place attrs
+      withLocationOf iid $ place attrs . AttachedToLocation
       pure e
     _ -> OpenGate <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game.Runner where
 
@@ -446,6 +446,9 @@ runGameMessage msg g = case msg of
       & (cardUsesL .~ mempty)
       & (windowStackL .~ mempty)
       & (windowDepthL .~ 0)
+      & (phaseHistoryL .~ mempty)
+      & (turnHistoryL .~ mempty)
+      & (roundHistoryL .~ mempty)
   StartScenario sid -> do
     -- NOTE: The campaign log and player decks need to be copied over for
     -- standalones because we effectively reset it here when we `setScenario`.
@@ -2767,6 +2770,8 @@ runGameMessage msg g = case msg of
         other -> other
     pure $ g & resolvingCardL .~ Nothing & activeCardL %~ unsetActiveCard
   InvestigatorDrewEncounterCard iid card -> do
+    runMessage (InvestigatorDrewEncounterCardFrom iid card Nothing) g
+  InvestigatorDrewEncounterCardFrom iid card _ -> do
     investigator <- getInvestigator iid
     if investigator.eliminated
       then do
@@ -2804,7 +2809,7 @@ runGameMessage msg g = case msg of
           else do
             pushAll [FocusCards [toCard card], whenDraw, UnfocusCards, Do msg]
             pure g
-  Do (InvestigatorDrewEncounterCard iid card) -> do
+  Do (InvestigatorDrewEncounterCardFrom iid card mdeck) -> do
     push $ ResolvedCard iid (toCard card)
     let
       deleteCard = filter ((/= Just card) . preview _EncounterCard)
@@ -2836,7 +2841,7 @@ runGameMessage msg g = case msg of
           & (activeCardL ?~ toCard card)
       TreacheryType -> do
         -- handles draw windows
-        pushAll [DrewTreachery iid (Just Deck.EncounterDeck) (toCard card)]
+        pushAll [DrewTreachery iid (mdeck <|> Just Deck.EncounterDeck) (toCard card)]
         pure g'
       EncounterAssetType -> do
         assetId <- getRandom

@@ -42,7 +42,7 @@ instance RunMessage EyesOfTheDreamer where
       let selected :: [ChaosTokenFace] = getMetaKeyDefault "eyesSelected" [] attrs
       let ignored :: [ChaosTokenFace] = getMetaKeyDefault "eyesIgnored" [] attrs
       when (any (`elem` ignored) selected) do
-        withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DamageDealt 2)
+        withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (getDrawSource -> drawSource) (totalUsesPayment -> n) -> do
       push

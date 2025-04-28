@@ -440,6 +440,8 @@ instance RunMessage LocationAttrs where
     UseResign iid source | isSource a source -> a <$ push (Resign iid)
     InvestigatorDrewEncounterCard _iid ec -> do
       pure $ a & cardsUnderneathL %~ filter ((/= ec.id) . (.id))
+    InvestigatorDrewEncounterCardFrom _iid ec _ -> do
+      pure $ a & cardsUnderneathL %~ filter ((/= ec.id) . (.id))
     InvestigatorDrewPlayerCardFrom _iid pc _ -> do
       pure $ a & cardsUnderneathL %~ filter ((/= pc.id) . (.id))
     UseDrawCardUnderneath iid source | isSource a source ->

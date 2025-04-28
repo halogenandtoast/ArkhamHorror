@@ -613,6 +613,8 @@ instance RunMessage AssetAttrs where
       pure $ a & cardsUnderneathL %~ filter (/= toCard card)
     InvestigatorDrewEncounterCard _ card -> do
       pure $ a & cardsUnderneathL %~ filter (/= toCard card)
+    InvestigatorDrewEncounterCardFrom _ card _ -> do
+      pure $ a & cardsUnderneathL %~ filter (/= toCard card)
     PlaceAsset aid placement | aid == assetId -> do
       let entersPlay = not (isInPlayPlacement a.placement) && isInPlayPlacement placement
       modifiers <- getCombinedModifiers [toTarget a, CardIdTarget (toCardId a)]

@@ -679,6 +679,16 @@ getInvestigatorsMatching matcher = do
   includeEliminated _ = False
   go [] = const (pure [])
   go as = \case
+    InvestigatorCanBeEngagedBy eid -> flip filterM as \i -> do
+      mods <- getModifiers (toId i)
+      if CannotBeEngaged `elem` mods
+        then pure False
+        else do
+          let enemyMatcher = mconcat [m | CannotBeEngagedBy m <- mods]
+          matches eid
+            $ EnemyWithoutModifier CannotBeEngaged
+            <> EnemyWithoutModifier (CannotEngage (toId i))
+            <> enemyMatcher
     InvestigatorCanGainXp -> flip filterM as $ \i -> do
       cardCodes <- map toCardCode . toList <$> getOriginalDeck (toId i)
       ok <- withoutModifier (toId i) CannotGainXP
@@ -2102,7 +2112,8 @@ getLocationsMatching lmatcher = do
             then filter ((`notElem` barricaded) . toId) <$> getLocationsMatching (Unblocked <> connectedTo)
             else pure []
       matcherSupreme <- foldMapM (fmap AnyLocationMatcher . Helpers.getConnectedMatcher) starts
-      allOptions <- (<> others) <$> getLocationsMatching (Unblocked <> getAnyLocationMatcher matcherSupreme)
+      allOptions <-
+        (<> others) <$> getLocationsMatching (Unblocked <> getAnyLocationMatcher matcherSupreme)
       pure $ filter (`elem` allOptions) ls
     LocationWhenCriteria criteria -> do
       iid <- getLead
@@ -3318,51 +3329,54 @@ enemyMatcherFilter es matcher' = case matcher' of
   CanEngageEnemy source -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers (InvestigatorTarget iid)
-    sourceModifiers <- case source of
-      AbilitySource abSource idx -> do
-        abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-        foldMapM (getModifiers . AbilityTarget iid) abilities
-      UseAbilitySource _ abSource idx -> do
-        abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-        foldMapM (getModifiers . AbilityTarget iid) abilities
-      _ -> pure []
-    let
-      isOverride = \case
-        EnemyEngageActionCriteria override -> Just override
-        CanModify (EnemyEngageActionCriteria override) -> Just override
-        _ -> Nothing
-      enemyFilters =
-        mapMaybe
-          ( \case
-              CannotBeEngagedBy m -> Just m
-              _ -> Nothing
-          )
-          modifiers'
-      window = mkWindow #when (Window.DuringTurn iid)
-    flip filterM es \enemy -> do
-      enemyModifiers <- getModifiers (EnemyTarget $ toId enemy)
-      let
-        overrides = mapMaybe isOverride (enemyModifiers <> sourceModifiers)
-        overrideFunc = case overrides of
-          [] -> id
-          [o] -> overrideAbilityCriteria o
-          _ -> error "multiple overrides found"
-      excluded <-
-        elem (toId enemy)
-          <$> select (mconcat $ EnemyWithModifier CannotBeEngaged : enemyFilters)
-      if excluded
-        then pure False
-        else
-          anyM
-            ( andM
-                . sequence
-                  [ pure . (`abilityIs` Action.Engage)
-                  , getCanPerformAbility iid [window]
-                      . (`decreaseAbilityActionCost` 1)
-                      . overrideFunc
-                  ]
-            )
-            (getAbilities enemy)
+    if CannotBeEngaged `elem` modifiers'
+      then pure []
+      else do
+        sourceModifiers <- case source of
+          AbilitySource abSource idx -> do
+            abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+            foldMapM (getModifiers . AbilityTarget iid) abilities
+          UseAbilitySource _ abSource idx -> do
+            abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+            foldMapM (getModifiers . AbilityTarget iid) abilities
+          _ -> pure []
+        let
+          isOverride = \case
+            EnemyEngageActionCriteria override -> Just override
+            CanModify (EnemyEngageActionCriteria override) -> Just override
+            _ -> Nothing
+          enemyFilters =
+            mapMaybe
+              ( \case
+                  CannotBeEngagedBy m -> Just m
+                  _ -> Nothing
+              )
+              modifiers'
+          window = mkWindow #when (Window.DuringTurn iid)
+        flip filterM es \enemy -> do
+          enemyModifiers <- getModifiers (EnemyTarget $ toId enemy)
+          let
+            overrides = mapMaybe isOverride (enemyModifiers <> sourceModifiers)
+            overrideFunc = case overrides of
+              [] -> id
+              [o] -> overrideAbilityCriteria o
+              _ -> error "multiple overrides found"
+          excluded <-
+            elem (toId enemy)
+              <$> select (mconcat $ EnemyWithModifier CannotBeEngaged : enemyFilters)
+          if excluded
+            then pure False
+            else
+              anyM
+                ( andM
+                    . sequence
+                      [ pure . (`abilityIs` Action.Engage)
+                      , getCanPerformAbility iid [window]
+                          . (`decreaseAbilityActionCost` 1)
+                          . overrideFunc
+                      ]
+                )
+                (getAbilities enemy)
   CanEngageEnemyWithOverride override -> do
     iid <- view activeInvestigatorIdL <$> getGame
     flip filterM es \enemy -> do

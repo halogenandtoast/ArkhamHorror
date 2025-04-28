@@ -10,7 +10,6 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenarios.FatalMirage.Helpers
 import Arkham.Story.Cards qualified as Stories
-import Arkham.Trait (Trait (Eidolon))
 
 newtype OttomanFront = OttomanFront LocationAttrs
   deriving anyclass IsLocation

@@ -183,7 +183,7 @@ getCanEngage a = do
 getAvailablePrey :: HasGame m => EnemyAttrs -> m [InvestigatorId]
 getAvailablePrey a = do
   enemyLocation <- field EnemyLocation a.id
-  iids <- fromMaybe [] <$> traverse (select . investigatorAt) enemyLocation
+  iids <- fromMaybe [] <$> traverse (select . (<> InvestigatorCanBeEngagedBy a.id) . investigatorAt) enemyLocation
   if null iids
     then pure []
     else do
@@ -442,6 +442,7 @@ instance RunMessage EnemyAttrs where
             pure $ a & placementL .~ AtLocation lid
           else a <$ push (EnemyCheckEngagement eid)
     After (EndTurn _) | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)
+    BeginRoundWindow | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)
     EnemyCheckEngagement eid | eid == enemyId && not (isSwarm a) && not enemyDelayEngagement -> do
       let isAttached = isJust a.placement.attachedTo
 
@@ -458,7 +459,7 @@ instance RunMessage EnemyAttrs where
                   CannotBeEngagedBy matcher -> notElem eid <$> select matcher
                   CannotBeEngaged -> pure False
                   _ -> pure True
-                pure $ canEngage && all (`notElem` mods) [EnemyCannotEngage iid, CannotBeEngaged]
+                pure $ canEngage && all (`notElem` mods) [CannotEngage iid, CannotBeEngaged]
         investigatorIds' <- filterM modifiedFilter =<< getInvestigatorsAtSameLocation a
         let valids = oneOf (map InvestigatorWithId investigatorIds')
 

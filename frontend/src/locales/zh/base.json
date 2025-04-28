@@ -26,11 +26,14 @@
   "username": "用户名",
   "usernameOrEmailAlreadyTaken": "用户名或电子邮件已被使用",
   "labels": {
-    "drawTopCardOfEncounterDeck": "抽取遭遇牌堆顶部的卡牌"
+    "drawTopCardOfEncounterDeck": "抽取遭遇牌堆顶部的卡牌",
+    "takeControlOfKey": "控制钥匙"
   },
   "tooltips": {
     "takeControlOfKey": "获得{key}钥匙的控制权"
   },
+  "shuffleRemainder": "将剩余的遭遇牌混洗，形成遭遇牌库。",
+  "readyToBegin": "你现在可以开始游戏了。",
 
   "Yes": "是",
   "No": "否",
@@ -46,5 +49,7 @@
   "Results": "结局",
   "Story": "故事",
   "ChooseOne": "选择一项",
-  "Choose": "选择"
+  "Choose": "选择",
+  "setup": "设置",
+  "addToken": "向混乱袋中加入一个 {'{'}{token}{'}'} 混乱标记，并持续到剧本结束。"
 }

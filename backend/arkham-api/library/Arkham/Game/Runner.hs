@@ -2739,7 +2739,12 @@ runGameMessage msg g = case msg of
         pure
           $ foldl'
             recordLimit
-            (g & entitiesL . eventsL . at eventId ?~ createEvent card iid eventId)
+            ( g
+                & entitiesL
+                . eventsL
+                . at eventId
+                ?~ overAttrs (\e -> e {eventPlacement = Limbo}) (createEvent card iid eventId)
+            )
             (cdLimits $ toCardDef card)
       PlayerEnemyType -> do
         enemyId <- getRandom

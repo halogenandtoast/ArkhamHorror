@@ -2,11 +2,11 @@ module Arkham.Asset.Assets.Pathfinder1 (pathfinder1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Location
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 
 newtype Pathfinder1 = Pathfinder1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -20,17 +20,17 @@ instance HasAbilities Pathfinder1 where
     [ controlled
         attrs
         1
-        (exists (You <> UnengagedInvestigator) <> exists AccessibleLocation <> DuringTurn You)
-        (FastAbility $ exhaust attrs)
+        ( youExist (UnengagedInvestigator <> InvestigatorCanMove)
+            <> exists AccessibleLocation
+            <> DuringTurn You
+        )
+        $ FastAbility (exhaust attrs)
     ]
 
 instance RunMessage Pathfinder1 where
-  runMessage msg a@(Pathfinder1 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg a@(Pathfinder1 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       locations <- getAccessibleLocations iid (attrs.ability 1)
-      player <- getPlayer iid
-      push
-        $ chooseOne player
-        $ [targetLabel lid [Move $ move (toAbilitySource attrs 1) iid lid] | lid <- locations]
+      chooseTargetM iid locations $ moveTo (attrs.ability 1) iid
       pure a
-    _ -> Pathfinder1 <$> runMessage msg attrs
+    _ -> Pathfinder1 <$> liftRunMessage msg attrs

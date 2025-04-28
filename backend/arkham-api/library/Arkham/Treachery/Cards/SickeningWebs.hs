@@ -22,13 +22,11 @@ sickeningWebs = treachery SickeningWebs Cards.sickeningWebs
 
 instance HasModifiersFor SickeningWebs where
   getModifiersFor (SickeningWebs attrs) = do
-    enemies <-
-      modifySelect
-        attrs
-        (EnemyWithTrait Spider <> at_ (locationWithTreachery attrs))
-        [AddKeyword Retaliate, AddKeyword Alert]
-    investigators <- modifySelect attrs (InvestigatorAt (locationWithTreachery attrs)) [CannotMove]
-    pure $ enemies <> investigators
+    modifySelect
+      attrs
+      (EnemyWithTrait Spider <> at_ (locationWithTreachery attrs))
+      [AddKeyword Retaliate, AddKeyword Alert]
+    modifySelect attrs (InvestigatorAt (locationWithTreachery attrs)) [CannotMove]
 
 instance HasAbilities SickeningWebs where
   getAbilities (SickeningWebs x) = [skillTestAbility $ restrictedAbility x 1 OnSameLocation actionAbility]

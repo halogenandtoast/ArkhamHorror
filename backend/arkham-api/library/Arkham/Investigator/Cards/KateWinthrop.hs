@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.KateWinthrop (kateWinthrop, KateWinthrop (..)) where
+module Arkham.Investigator.Cards.KateWinthrop (kateWinthrop) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
@@ -7,6 +7,7 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
 import Arkham.Token
+import Arkham.Window qualified as Window
 
 newtype KateWinthrop = KateWinthrop InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -21,7 +22,7 @@ kateWinthrop =
 
 instance HasAbilities KateWinthrop where
   getAbilities (KateWinthrop a) =
-    [ restrictedAbility
+    [ restricted
         a
         1
         ( Self
@@ -29,7 +30,7 @@ instance HasAbilities KateWinthrop where
             <> exists (oneOf [#science, #tool] <> AssetControlledBy You <> not_ AssetWithAnyClues)
         )
         $ FastAbility Free
-    , restrictedAbility a 2 (Self <> youExist (InvestigatorAt Anywhere))
+    , restricted a 2 (Self <> youExist (InvestigatorAt Anywhere))
         $ forced
         $ AssetLeavesPlay #when
         $ AssetControlledBy You
@@ -55,6 +56,7 @@ instance RunMessage KateWinthrop where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withLocationOf iid \lid -> do
         placeClues (attrs.ability 2) lid 1
+        checkAfter $ Window.InvestigatorPlacedFromTheirPool iid (attrs.ability 2) (toTarget lid) #clue 1
       pure i
     ElderSignEffect iid | iid == toId attrs -> do
       assets <- select $ assetControlledBy iid <> AssetWithAnyClues

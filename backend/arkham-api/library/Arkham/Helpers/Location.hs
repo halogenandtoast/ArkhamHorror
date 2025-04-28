@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Location where
 
 import Arkham.Asset.Types (AssetAttrs, Field (..))
@@ -204,7 +203,7 @@ getCanMoveToLocations
 getCanMoveToLocations iid source = do
   canMove <-
     iid <=~> (Matcher.InvestigatorCanMove <> not_ (Matcher.InVehicleMatching Matcher.AnyAsset))
-  if traceShowId canMove
+  if canMove
     then do
       selectOne (Matcher.locationWithInvestigator iid) >>= \case
         Nothing -> pure []
@@ -232,7 +231,7 @@ getCanMoveToMatchingLocations
   -> Matcher.LocationMatcher
   -> m [LocationId]
 getCanMoveToMatchingLocations iid source matcher = do
-  ls <- traceShowId <$> getCanMoveToLocations iid source
+  ls <- getCanMoveToLocations iid source
   filter (`elem` ls) <$> select matcher
 
 getConnectedMoveLocations

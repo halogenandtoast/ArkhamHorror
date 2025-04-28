@@ -127,6 +127,7 @@ instance RunMessage IntoTheMaelstrom where
       selectEach (investigatorWithRecord PossessesADivingSuit) \iid -> do
         divingSuit <- genCard Assets.divingSuit
         createAssetAt_ divingSuit (InPlayArea iid)
+      removeEvery [Assets.divingSuit]
 
       dagonIsAwake <- getHasRecord DagonHasAwakened
 

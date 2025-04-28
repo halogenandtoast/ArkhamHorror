@@ -93,6 +93,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait (Trait)
+import Arkham.Treachery.Types qualified as Field
 import Arkham.Window (Window, WindowType, defaultWindows)
 import Arkham.Window qualified as Window
 import Arkham.Xp
@@ -466,6 +467,12 @@ instance FetchCard AssetId where
 
 instance FetchCard EventId where
   fetchCard = field Field.EventCard
+
+instance FetchCard TreacheryId where
+  fetchCard = field Field.TreacheryCard
+
+instance FetchCard Field.TreacheryAttrs where
+  fetchCard = field Field.TreacheryCard . asId
 
 addCampaignCardToDeck
   :: (AsId investigator, IdOf investigator ~ InvestigatorId, ReverseQueue m, FetchCard card)

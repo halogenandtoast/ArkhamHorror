@@ -105,6 +105,9 @@ instance HasField "card" TreacheryAttrs Card where
 instance HasField "exhausted" TreacheryAttrs Bool where
   getField = treacheryExhausted
 
+instance HasField "drawnFrom" TreacheryAttrs (Maybe DeckSignifier) where
+  getField = treacheryDrawnFrom
+
 instance HasField "ready" TreacheryAttrs Bool where
   getField = not . treacheryExhausted
 

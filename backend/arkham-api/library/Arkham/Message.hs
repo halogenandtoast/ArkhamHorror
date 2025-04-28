@@ -769,6 +769,7 @@ data Message
       [Target]
   | InvestigatorDrawEnemy InvestigatorId EnemyId
   | InvestigatorDrewEncounterCard InvestigatorId EncounterCard
+  | InvestigatorDrewEncounterCardFrom InvestigatorId EncounterCard (Maybe DeckSignifier)
   | InvestigatorDrewPlayerCardFrom InvestigatorId PlayerCard (Maybe DeckSignifier)
   | InvestigatorEliminated InvestigatorId
   | InvestigatorKilled Source InvestigatorId

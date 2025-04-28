@@ -801,7 +801,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
 
     let encounterCards = onlyEncounterCards drew.cards
     when (notNull encounterCards) do
-      pushAll $ InvestigatorDrewEncounterCard iid <$> encounterCards
+      pushAll $ InvestigatorDrewEncounterCardFrom iid <$> encounterCards <*> pure (Just drew.deck)
 
     pure a
   Do (DrawCards iid drawing) | Just key <- Deck.deckSignifierToScenarioDeckKey drawing.deck -> do
@@ -1195,6 +1195,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   SpawnEnemyAtEngagedWith (EncounterCard ec) _ _ -> do
     pure $ a & discardL %~ filter (/= ec)
   InvestigatorDrewEncounterCard _ ec -> do
+    pure
+      $ a
+      & (discardL %~ filter (/= ec))
+      & (encounterDeckL %~ withDeck (filter (/= ec)))
+      & (decksL . each %~ filter (/= toCard ec))
+  InvestigatorDrewEncounterCardFrom _ ec _ -> do
     pure
       $ a
       & (discardL %~ filter (/= ec))

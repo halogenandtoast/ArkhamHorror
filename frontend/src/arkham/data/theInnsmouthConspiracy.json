@@ -67,7 +67,7 @@
   },
   {
       "id": "07274",
-      "name": "A Lair of Dagon",
+      "name": "The Lair of Dagon",
       "campaign": "07",
       "settings": [
         { "key": "TheMissionFailed", "type": "ToggleKey", "content": true },

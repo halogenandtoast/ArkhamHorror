@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.BestowResolve2 (bestowResolve2, BestowResolve2 (..)) where
+module Arkham.Asset.Assets.BestowResolve2 (bestowResolve2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -18,7 +18,7 @@ bestowResolve2 = asset BestowResolve2 Cards.bestowResolve2
 
 instance HasAbilities BestowResolve2 where
   getAbilities (BestowResolve2 a) =
-    [ controlledAbility
+    [ controlled
         a
         1
         ( DuringSkillTest
@@ -30,6 +30,7 @@ instance HasAbilities BestowResolve2 where
                   $ InHandOf NotForPlay You
                   <> basic (NonWeakness <> oneOf [CardWithAnySkills, SkillCard <> CardWithNoSkills])
               )
+            <> youExist (not_ $ HasMatchingAsset $ assetIs Cards.theKingInYellow)
         )
         $ FastAbility (assetUseCost a Charge 1)
     ]

@@ -100,6 +100,7 @@ import Arkham.Enemy.Enemies (
  )
 import Arkham.Event.Events (
   atACrossroads1Effect,
+  easyMark1Effect,
   backstab3Effect,
   bideYourTimeEffect,
   bindMonster2Effect,
@@ -493,6 +494,7 @@ allEffects =
     , ("05265", SomeEffect valentinosFateEffect)
     , ("05321", SomeEffect wither4Effect)
     , ("05322", SomeEffect sixthSense4Effect)
+    , ("06026", SomeEffect easyMark1Effect)
     , ("06056", SomeEffect enchantedWoodsLostWoodsEffect)
     , ("06082", SomeEffect corruptedOrderlyEffect)
     , ("06090", SomeEffect whispersOfHypnosEffect)

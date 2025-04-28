@@ -267,6 +267,7 @@ data WindowType
   | WouldPayCardCost InvestigatorId ActiveCostId BatchId Card
   | PlayCard InvestigatorId CardPlay
   | PlayEventDiscarding InvestigatorId EventId
+  | PlayEvent InvestigatorId EventId
   | PutLocationIntoPlay InvestigatorId LocationId
   | LocationEntersPlay LocationId
   | RevealLocation InvestigatorId LocationId

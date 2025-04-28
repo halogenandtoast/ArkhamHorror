@@ -198,19 +198,26 @@ export const abilityTypeDecoder: JsonDecoder.Decoder<AbilityType> = JsonDecoder.
   forcedWhenDecoder.map((fw: ForcedWhen) => fw.abilityType)
 ], 'AbilityType')
 
+export type DisplayAs = 'DisplayAsAction' | 'DisplayAsCard'
+
 export type Ability = {
   type: AbilityType
   source: Source
   tooltip: string | null
-  displayAsAction: boolean
+  displayAs: DisplayAs | null
   index: number
 }
+
+const displayAsDecoder = JsonDecoder.oneOf<DisplayAs>([
+  JsonDecoder.literal('DisplayAsAction'),
+  JsonDecoder.literal('DisplayAsCard')
+], 'DisplayAs')
 
 export const abilityDecoder = JsonDecoder.object(
   {
     type: abilityTypeDecoder,
     source: sourceDecoder,
     tooltip: JsonDecoder.nullable(JsonDecoder.string()),
-    displayAsAction: JsonDecoder.boolean(),
+    displayAs: JsonDecoder.nullable(displayAsDecoder),
     index: JsonDecoder.number()
   }, 'Ability')

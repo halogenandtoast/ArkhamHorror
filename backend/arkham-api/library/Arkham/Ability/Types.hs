@@ -22,6 +22,9 @@ import GHC.Records
 data AdditionalCostDelay = DelayAdditionalCosts | DelayAdditionalCostsWhen Criterion
   deriving stock (Show, Eq, Ord, Data)
 
+data AbilityDisplayAs = DisplayAsAction | DisplayAsCard
+  deriving stock (Show, Eq, Ord, Data)
+
 data Ability = Ability
   { abilitySource :: Source
   , abilityCardCode :: CardCode
@@ -34,7 +37,7 @@ data Ability = Ability
   , abilityDoesNotProvokeAttacksOfOpportunity :: Bool
   , abilityTooltip :: Maybe Text
   , abilityCanBeCancelled :: Bool
-  , abilityDisplayAsAction :: Bool
+  , abilityDisplayAs :: Maybe AbilityDisplayAs
   , abilityDelayAdditionalCosts :: Maybe AdditionalCostDelay
   , abilityBasic :: Bool
   , abilityAdditionalCosts :: [Cost]
@@ -67,7 +70,7 @@ buildAbility source idx abilityType =
     , abilityDoesNotProvokeAttacksOfOpportunity = False
     , abilityTooltip = Nothing
     , abilityCanBeCancelled = True
-    , abilityDisplayAsAction = False
+    , abilityDisplayAs = Nothing
     , abilityDelayAdditionalCosts = Nothing
     , abilityBasic = False
     , abilityAdditionalCosts = []
@@ -162,8 +165,8 @@ abilityDoesNotProvokeAttacksOfOpportunityL =
   lens abilityDoesNotProvokeAttacksOfOpportunity
     $ \m x -> m {abilityDoesNotProvokeAttacksOfOpportunity = x}
 
-abilityDisplayAsActionL :: Lens' Ability Bool
-abilityDisplayAsActionL = lens abilityDisplayAsAction $ \m x -> m {abilityDisplayAsAction = x}
+abilityDisplayAsL :: Lens' Ability (Maybe AbilityDisplayAs)
+abilityDisplayAsL = lens abilityDisplayAs $ \m x -> m {abilityDisplayAs = x}
 
 abilityDelayAdditionalCostsL :: Lens' Ability (Maybe AdditionalCostDelay)
 abilityDelayAdditionalCostsL = lens abilityDelayAdditionalCosts $ \m x -> m {abilityDelayAdditionalCosts = x}
@@ -174,9 +177,12 @@ delayAdditionalCosts = abilityDelayAdditionalCostsL ?~ DelayAdditionalCosts
 delayAdditionalCostsWhen :: Criterion -> Ability -> Ability
 delayAdditionalCostsWhen c = abilityDelayAdditionalCostsL ?~ DelayAdditionalCostsWhen c
 
-$(deriveJSON defaultOptions ''AdditionalCostDelay)
-$(deriveJSON defaultOptions ''AbilityMetadata)
-$(deriveToJSON (aesonOptions $ Just "ability") ''Ability)
+mconcat
+  [ deriveJSON defaultOptions ''AdditionalCostDelay
+  , deriveJSON defaultOptions ''AbilityMetadata
+  , deriveJSON defaultOptions ''AbilityDisplayAs
+  , deriveToJSON (aesonOptions $ Just "ability") ''Ability
+  ]
 
 instance FromJSON Ability where
   parseJSON = withObject "Ability" $ \o -> do
@@ -191,7 +197,8 @@ instance FromJSON Ability where
     abilityDoesNotProvokeAttacksOfOpportunity <- o .: "doesNotProvokeAttacksOfOpportunity"
     abilityTooltip <- o .:? "tooltip"
     abilityCanBeCancelled <- o .: "canBeCancelled"
-    abilityDisplayAsAction <- o .: "displayAsAction"
+    abilityDisplayAsAction <- o .:? "displayAsAction" .!= False
+    abilityDisplayAs <- o .:? "displayAs" .!= if abilityDisplayAsAction then Just DisplayAsAction else Nothing
     abilityDelayAdditionalCosts <-
       (o .: "delayAdditionalCosts" <&> \x -> if x then Just DelayAdditionalCosts else Nothing)
         <|> o

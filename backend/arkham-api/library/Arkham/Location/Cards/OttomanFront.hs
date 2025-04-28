@@ -37,7 +37,7 @@ instance HasModifiersFor OttomanFront where
           <> at_ (be a)
       )
       [ShroudModifier (-2)]
-    modifySelect a (EnemyWithTrait Eidolon <> at_ (be a)) [EnemyFight 2, RemoveKeyword Retaliate]
+    modifySelect a (NonEliteEnemy <> at_ (be a)) [EnemyFight 2, RemoveKeyword Retaliate]
     clearedOfMirages a mirageCards
 
 instance RunMessage OttomanFront where

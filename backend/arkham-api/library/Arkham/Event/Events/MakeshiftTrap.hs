@@ -37,7 +37,7 @@ instance HasAbilities MakeshiftTrap where
 
 instance HasModifiersFor MakeshiftTrap where
   getModifiersFor (MakeshiftTrap a) = do
-    enemies <- case a.placement of
+    case a.placement of
       AttachedToLocation lid -> modifySelectMapM a (EnemyAt $ LocationWithId lid) \eid -> do
         net <-
           fromMaybe [] <$> runMaybeT do
@@ -47,8 +47,7 @@ instance HasModifiersFor MakeshiftTrap where
 
         pure $ [EnemyFight (-1), EnemyEvade (-1)] <> net
       _ -> pure mempty
-    self <- modifySelfWhen a (a `hasCustomization` Simple) [BecomesFast FastPlayerWindow]
-    pure $ self <> enemies
+    modifySelfWhen a.cardId (a `hasCustomization` Simple) [BecomesFast FastPlayerWindow]
 
 -- We need to ensure all messages that run RemoveTokens directly are captured and handled here
 instance RunMessage MakeshiftTrap where

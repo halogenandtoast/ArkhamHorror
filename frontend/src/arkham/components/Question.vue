@@ -14,6 +14,7 @@ import Token from '@/arkham/components/Token.vue';
 import type { Game } from '@/arkham/types/Game';
 import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
+import AbilityButton from '@/arkham/components/AbilityButton.vue'
 
 export interface Props {
   game: Game
@@ -526,6 +527,13 @@ const cardPiles = computed(() => {
     </div>
 
     <template v-for="(choice, index) in choices" :key="index">
+      <template v-if="choice.tag === 'AbilityLabel' && ['DisplayAsCard'].includes(choice.ability.displayAs)">
+        <AbilityButton
+          :ability="choice"
+          :game="game"
+          @click="$emit('choose', index)"
+          />
+      </template>
       <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
         <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
       </template>

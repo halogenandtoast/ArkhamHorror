@@ -1872,6 +1872,15 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , event <=~> eventMatcher
           ]
       _ -> noMatch
+    Matcher.PlayEvent timing whoMatcher eventMatcher -> guardTiming timing $ \case
+      Window.PlayEvent who event ->
+        andM
+          [ matchWho iid who whoMatcher
+          , case eventMatcher of
+              EventWithId eid -> pure $ event == eid
+              _ -> event <=~> eventMatcher
+          ]
+      _ -> noMatch
     Matcher.AgendaEntersPlay timing agendaMatcher -> guardTiming timing $ \case
       Window.EnterPlay (AgendaTarget aid) -> elem aid <$> select agendaMatcher
       _ -> noMatch

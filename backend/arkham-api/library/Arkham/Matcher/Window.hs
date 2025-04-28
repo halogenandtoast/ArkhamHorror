@@ -191,6 +191,7 @@ data WindowMatcher
   | DrawsCards Timing Who ValueMatcher
   | PlayCard Timing Who ExtendedCardMatcher
   | PlayEventDiscarding Timing Who EventMatcher
+  | PlayEvent Timing Who EventMatcher
   | PhaseBegins Timing PhaseMatcher
   | PhaseEnds Timing PhaseMatcher
   | PlayerHasPlayableCard CostStatus ExtendedCardMatcher

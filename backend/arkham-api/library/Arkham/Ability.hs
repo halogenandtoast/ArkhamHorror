@@ -104,7 +104,10 @@ noAOO :: Ability -> Ability
 noAOO = doesNotProvokeAttacksOfOpportunity
 
 displayAsAction :: Ability -> Ability
-displayAsAction = set abilityDisplayAsActionL True
+displayAsAction = abilityDisplayAsL ?~ DisplayAsAction
+
+displayAsCard :: Ability -> Ability
+displayAsCard = abilityDisplayAsL ?~ DisplayAsCard
 
 limitedAbility :: AbilityLimit -> Ability -> Ability
 limitedAbility l a = a & abilityLimitL .~ l
@@ -264,7 +267,7 @@ mkAbility entity idx type' =
     , abilityDoesNotProvokeAttacksOfOpportunity = False
     , abilityTooltip = Nothing
     , abilityCanBeCancelled = True
-    , abilityDisplayAsAction = False
+    , abilityDisplayAs = Nothing
     , abilityDelayAdditionalCosts = Nothing
     , abilityBasic = False
     , abilityAdditionalCosts = []

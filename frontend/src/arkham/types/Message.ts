@@ -394,7 +394,7 @@ export function choiceRequiresModal(c: Message) {
     case 'SkillLabel': return true;
     case 'SkillLabelWithLabel': return true;
     case 'PortraitLabel': return true;
-    case 'AbilityLabel': return c.ability.displayAsAction;
+    case 'AbilityLabel': return c.ability.displayAs;
     case 'CardLabel': return true;
     case 'TarotLabel': return true;
     case 'ChaosTokenGroupChoice': return true;

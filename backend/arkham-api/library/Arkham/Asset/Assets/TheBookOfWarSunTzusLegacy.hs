@@ -18,7 +18,7 @@ instance HasAbilities TheBookOfWarSunTzusLegacy where
   getAbilities (TheBookOfWarSunTzusLegacy x) =
     [ restricted x 1 ControlsThis
         $ triggered
-          (PlayEventDiscarding #after You (#tactic <> EventWillNotBeRemoved))
+          (PlayEvent #after You (#tactic <> EventWillNotBeRemoved))
           (exhaust x <> assetUseCost x Secret 1)
     ]
 

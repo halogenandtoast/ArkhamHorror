@@ -89,6 +89,6 @@ instance RunMessage FriendsInLowPlaces where
         when (notNull playable) do
           chooseOneM iid do
             labeled "Do no play cards (Swift)" nothing
-            targets playable \card -> push $ PayCardCost iid card (defaultWindows iid)
+            targets playable (playCardPayingCost iid)
       pure e
     _ -> FriendsInLowPlaces . (`with` meta) <$> liftRunMessage msg attrs

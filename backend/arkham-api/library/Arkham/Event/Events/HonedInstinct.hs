@@ -15,14 +15,14 @@ honedInstinct = event HonedInstinct Cards.honedInstinct
 
 instance HasModifiersFor HonedInstinct where
   getModifiersFor (HonedInstinct a) =
-    modifySelfWhen a (a `hasCustomization` ImpulseControl) [ReduceCostOf (CardWithId a.cardId) 1]
+    modifySelfWhen a.cardId (a `hasCustomization` ImpulseControl) [ReduceCostOf (CardWithId a.cardId) 1]
 
 instance RunMessage HonedInstinct where
   runMessage msg e@(HonedInstinct attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       when (attrs `hasCustomization` SharpenedTalent) do
         eventModifiers attrs iid [SkillModifier sType 2 | sType <- [minBound ..]]
-      pushAll [GainActions iid (toSource attrs) 1, PlayerWindow iid [] True, DoStep 1 msg]
+      pushAll [GainActions iid (toSource attrs) 1, PlayerWindow iid [] False, DoStep 1 msg]
       pure e
     DoStep 1 (PlayThisEvent iid (is attrs -> True)) -> do
       when (attrs `hasCustomization` ForceOfHabit) do
@@ -30,7 +30,7 @@ instance RunMessage HonedInstinct where
           iid
           [ Label
               "Perform another action and remove this from game  (Force of Habit)"
-              [GainActions iid (toSource attrs) 1, PlayerWindow iid [] True, RemoveFromGame (toTarget attrs)]
+              [GainActions iid (toSource attrs) 1, PlayerWindow iid [] False, RemoveFromGame (toTarget attrs)]
           , Label "Do not perform another action" []
           ]
       pure e

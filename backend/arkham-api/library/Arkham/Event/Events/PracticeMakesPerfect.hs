@@ -1,6 +1,7 @@
 module Arkham.Event.Events.PracticeMakesPerfect where
 
 import Arkham.Event.Cards qualified as Cards
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers (
   ModifierType (..),
@@ -26,8 +27,11 @@ instance RunMessage PracticeMakesPerfect where
         $ defer attrs IsNotDraw
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
+      hasKingInYellow <- selectAny $ assetControlledBy iid <> assetIs Assets.theKingInYellow
       additionalTargets <- getAdditionalSearchTargets iid
-      committable <- ignoreCommitOneRestriction iid $ filterM (getIsCommittable iid) cards
+      committable <- if hasKingInYellow
+        then pure []
+        else ignoreCommitOneRestriction iid $ filterM (getIsCommittable iid) cards
       withSkillTest \sid -> do
         chooseNM iid (1 + additionalTargets) do
           when (null committable) $ labeled "No cards found" nothing

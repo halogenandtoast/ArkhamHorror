@@ -31,7 +31,10 @@ instance RunMessage AstronomicalAtlas3 where
       lookAt iid (attrs.ability 1) iid [(FromTopOfDeck 1, PutBack)] #any (defer attrs IsNotDraw)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      committable <- ignoreCommitOneRestriction iid $ filterM (getIsCommittable iid) attrs.cardsUnderneath
+      hasKingInYellow <- selectAny $ assetControlledBy iid <> assetIs Cards.theKingInYellow
+      committable <- if hasKingInYellow
+        then pure []
+        else ignoreCommitOneRestriction iid $ filterM (getIsCommittable iid) attrs.cardsUnderneath
       withSkillTest \sid ->
         focusCards attrs.cardsUnderneath do
           chooseOrRunOneM iid do

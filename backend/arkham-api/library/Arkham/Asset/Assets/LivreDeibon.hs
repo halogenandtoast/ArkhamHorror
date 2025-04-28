@@ -29,7 +29,8 @@ instance HasAbilities LivreDeibon where
         $ controlledAbility
           a
           2
-          ( DuringSkillTest SkillTestAtYourLocation <> exists (TopOfDeckOf You <> EligibleForCurrentSkillTest)
+          ( DuringSkillTest SkillTestAtYourLocation
+              <> exists (TopOfDeckOf You <> EligibleForCurrentSkillTest)
           )
         $ FastAbility (exhaust a)
     ]

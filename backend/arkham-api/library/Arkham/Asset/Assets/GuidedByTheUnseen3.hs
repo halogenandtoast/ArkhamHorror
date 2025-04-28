@@ -42,7 +42,10 @@ instance RunMessage GuidedByTheUnseen3 where
         else whenM (can.shuffle.deck iid) $ shuffleDeck iid
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
-      committable <- filterM (getIsCommittable iid) cards
+      hasKingInYellow <- selectAny $ assetControlledBy iid <> assetIs Cards.theKingInYellow
+      committable <- if hasKingInYellow
+        then pure []
+        else filterM (getIsCommittable iid) cards
       focusCards cards do
         if attrs.use Secret == 0 || null committable
           then continue_ iid

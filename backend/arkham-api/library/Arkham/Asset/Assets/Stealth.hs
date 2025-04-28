@@ -40,7 +40,7 @@ instance RunMessage Stealth where
         isYourTurn <- iid <=~> TurnInvestigator
         whenWindow <- checkWindows [mkWhen $ Window.EnemyEvaded iid eid]
         afterWindow <- checkWindows [mkAfter $ Window.EnemyEvaded iid eid]
-        enemyCannotEngage <- turnModifier iid attrs (toTarget eid) (EnemyCannotEngage iid)
+        enemyCannotEngage <- turnModifier iid attrs (toTarget eid) (CannotEngage iid)
         pushAll
           $ [enemyCannotEngage | isYourTurn]
           <> [whenWindow]

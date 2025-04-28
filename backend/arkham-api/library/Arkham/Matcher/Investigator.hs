@@ -119,6 +119,7 @@ data InvestigatorMatcher
   | InvestigatorWithoutModifier ModifierType
   | InvestigatorWithModifier ModifierType
   | InvestigatorEngagedWith EnemyMatcher
+  | InvestigatorCanBeEngagedBy EnemyId
   | InvestigatorWithActionsRemaining ValueMatcher
   | InvestigatorWithActionsPerformed ValueMatcher
   | InvestigatorWithClues ValueMatcher

@@ -42,6 +42,7 @@ instance RunMessage FriendsInLowPlaces where
       let traits = [t | ChosenTrait t <- concatMap snd (toList attrs.customizations)]
       let lookSources = [fromTopOfDeck $ if attrs `hasCustomization` Experienced then 9 else 6]
       lookAt iid' attrs iid' lookSources (basic $ mapOneOf CardWithTrait traits) (defer attrs IsNotDraw)
+      shuffleDeck iid'
       pure e
     SearchFound iid (isTarget attrs -> True) x cards -> do
       when (null cards) $ chooseOne iid [Label "No Cards Founds" []]

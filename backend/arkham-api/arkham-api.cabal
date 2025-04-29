@@ -3534,7 +3534,6 @@ library
       Arkham.Scenarios.TheHeartOfMadness.Helpers
       Arkham.Scenarios.TheHeartOfMadness.Pylon
       Arkham.Scenarios.TheHouseAlwaysWins.Helpers
-      Arkham.Scenarios.TheHouseAlwaysWins.Story
       Arkham.Scenarios.TheLairOfDagon.Helpers
       Arkham.Scenarios.TheLastKing.Story
       Arkham.Scenarios.TheMidnightMasks.Helpers

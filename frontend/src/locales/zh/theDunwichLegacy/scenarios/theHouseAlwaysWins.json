@@ -11,8 +11,42 @@
       "tablet": "-2. 丢弃3个资源。"
     }
   },
-  "xp": {
-    "resolution1": "回想起今晚的事件",
-    "resolution4": "回想起今晚的事件"
+  "intro": {
+    "title": "冒險 I–B: 百賭百勝",
+    "body": "<p>阿米蒂奇博士建議你去找摩爾根尋求幫助。他並不知道摩爾根現在的情況，但是他對摩爾根最近的作為很不滿意。摩爾根現在正在四葉草俱樂部，那是一個商業街上的地下賭場。要找到這個地方可不容易，你花了一點點小錢，才讓幾個餐館服務員乖乖開口。你找到了劇院附近的“月下美人”義大利餐館，當然這只是個掩飾，更深處藏著的，是銅臭味的秘密。</p><p>在月下美人餐館門口，一個穿著白色條紋西裝的男人，正打量著你。“好好享受吧。”他為你們打開了餐館的門，臉上浮現出一絲奸詐的笑容。</p>"
+  },
+  "setup": {
+    "gatherSets": "將下列遭遇組中的所有遭遇卡找出: *The House Always Wins*, *Bad Luck*, *Naomi’s Crew*, *Rats*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-house-always-wins.png' /><img src='{setImgPath}/bad-luck.png' /><img src='{setImgPath}/naomis-crew.png' /><img src='{setImgPath}/rats.png' /></section>",
+    "setAsideEncounterSets": "Set the *Hideous Abominations* and *Striking Fear* encounter sets aside, out of play. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "placeLocations": "將俱樂部大廳、俱樂部酒吧、俱樂部卡牌室、月下美人放置入場。每位調查員從月下美人開始遊戲。",
+    "placeCloverClubPitBoss": "將俱樂部賭場管理員放置入俱樂部大廳。",
+    "setAside": "將下列卡牌放在一邊：黑暗走廊、彼得·克勞佛、佛朗西斯·摩爾根博士，以及所有走廊後門。",
+    "note": "<p class='basic'>_注意：_ 在這場冒險開始時，密謀1a會給每個_罪犯_敵人冷漠關鍵詞，這些敵人不會自動與你交戰。在某個時間點，這些敵人會失去該關鍵詞，之後，這些敵人會按照正常規則，自動與你交戰</p>"
+  },
+  "resolutions": {
+    "xp": {
+      "resolution1": "回想起今晚的事件",
+      "resolution4": "回想起今晚的事件"
+    },
+    "noResolution": {
+      "title": "如果未達成任何結局",
+      "body": "<div class='resolution'><p class='basic'>_如果未達成任何結局(所有調查員都在場景3前投降，或被消滅)_: 你勉強活著離開了俱樂部。Go to _Resolution 1._</p></div>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<div class='resolution'><p>_Resolution 1_: <你飛一樣地逃出了餐館，直到離開這個街區。你停下大口喘著氣，突然間，地面輕微晃動起來，人們從家中湧出，來到大街上看到底發生了什麼。你推開人群衝到最前面，幾分鐘前你剛逃出來的月下美人，已經變成了一堆廢墟。連同摩爾根博士一起，在這個世界上消失了。/p><ul><li>In your Campaign Log, record that *歐巴尼恩幫對調查員不滿。*</li><li>In your Campaign Log, record that *Dr. Francis Morgan was kidnapped.*</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 1 experience as he or she reflects on the night’s events.<ul><li>_Experience_: {xp}</li></ul></li><li>If this is the first scenario of the campaign, proceed to Scenario I–A: Extracurricular Activity. Otherwise, proceed to Interlude I: Armitage’s Fate.</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<div class='resolution'><p>_Resolution 2_: “What in the world…?” Dr. Morgan finally breaks out of his daze as you make your way to safety. You ask him what he remembers, and he sputters and shakes his head. “It’s all a haze,” he explains, visibly exhausted. “I was having the run of my life! Perhaps I had one too many shots. But, those creatures—I haven’t seen anything like that since…” He trails off, and you can tell that his mind is racing. His eyes widen with realization and his face pales. “I may not be in the best shape, but I’ll help with your investigation. Whatever it takes.”</p><ul><li>In your Campaign Log, record that *the O’Bannion gang has a bone to pick with the investigators*.</li><li>In your Campaign Log, record that *the investigators rescued Dr. Francis Morgan*. Any one investigator may choose to add Dr. Francis Morgan to his or her deck. This card does not count toward that investigator’s deck size.</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Proceed to Scenario I–A: Extracurricular Activity.</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<div class='resolution'><p>_Resolution 3_: Although you were unable to find Dr. Morgan in the club, the man you rescued is grateful for your help. He introduces himself as Peter Clover, the owner of the establishment you’d just left. Despite the situation, he maintains an air of quiet professionalism. As you make your way towards the street, a well-polished Chrysler B-70 rolls up to you, and a gorgeous woman with long brown hair and narrow eyes exits. She is flanked by dangerous-looking men who slip their hands under their suit jackets when they see you. “Peter,” she says with a sigh of relief, “Good, you’re okay. I heard there was trouble?” She turns and glares at you with deadly eyes. “Who are they?”</p><p>Mr. Clover dusts off his vest, unworried. “Naomi, my dear, these are friends of mine. They…” he clears his throat. “They escorted me off the premises,” he explains after a short pause. “They have earned our gratitude.” The woman crosses her arms and takes a moment to size you up before giving you a smirk.</p><p>“Very well then. I must thank you for taking care of Peter. Run along now; we’ll handle things from here.” She nods to the goons flanking her and they walk past you toward the club’s rear entrance, pulling firearms out from underneath their coats. You’re not sure what ‘handling things’ means, but you’re pretty sure you don’t want to be here when the gunfire starts. You thank Naomi and Peter, and head off.</p><ul><li>In your Campaign Log, record that *Naomi has the investigators’ backs*.</li><li>In your Campaign Log, record that *Dr. Francis Morgan was kidnapped*.</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Proceed to Interlude I: Armitage’s Fate.</li></ul></div>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<div class='resolution'>_Resolution 4_: You are pulled from the debris by several firefighters, one of whom exclaims, “We’ve got a live one!” A few of them patch you up, and the cops ask you what happened. You’re certain they wouldn’t believe your story about horrible monstrosities demolishing the building from within. Unsure of what to say, you give a vague statement about not remembering much. “We’re bringing you to St. Mary’s,” one of the nurses says, pointing to a nearby ambulance. Knowing now how dire the situation is, you slip away while she is distracted by something else in the rubble…</p><ul><li>In your Campaign Log, record that *the O’Bannion gang has a bone to pick with the investigators*.</li><Li>In your Campaign Log, record that *Dr. Francis Morgan was kidnapped*.</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator suffers 1 physical trauma.</li><li>In your Campaign Log, record that the investigators were unconscious for several hours.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 1 experience as he or she reflects on the night’s events.<ul><li>_Experience_: {xp}</li></ul></li><li>If this is the first scenario of the campaign, proceed to Scenario I–A: Extracurricular Activity. Otherwise, proceed to Interlude I: Armitage’s Fate.</li></ul></div>"
+    }
   }
 }

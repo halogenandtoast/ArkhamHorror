@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheHouseAlwaysWins (theHouseAlwaysWins, TheHouseAlwaysWins(..)) where
+module Arkham.Scenario.Scenarios.TheHouseAlwaysWins (theHouseAlwaysWins, TheHouseAlwaysWins (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -7,7 +7,9 @@ import Arkham.Campaigns.TheDunwichLegacy.ChaosBag
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
 import Arkham.Helpers.Cost
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
@@ -17,7 +19,6 @@ import Arkham.Modifier
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheHouseAlwaysWins.Helpers
-import Arkham.Scenarios.TheHouseAlwaysWins.Story
 
 newtype TheHouseAlwaysWins = TheHouseAlwaysWins ScenarioAttrs
   deriving stock Generic
@@ -49,12 +50,24 @@ instance HasChaosTokenValue TheHouseAlwaysWins where
 instance RunMessage TheHouseAlwaysWins where
   runMessage msg s@(TheHouseAlwaysWins attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story intro
+      flavor $ scope "intro" do
+        h "title"
+        p "body"
       pure s
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     Setup -> runScenarioSetup TheHouseAlwaysWins attrs do
+      setup do
+        ul do
+          li "gatherSets"
+          li "setAsideEncounterSets"
+          li "placeLocations"
+          li "placeCloverClubPitBoss"
+          li "setAside"
+          unscoped $ li "shuffleRemainder"
+        p "note"
+
       gather Set.TheHouseAlwaysWins
       gather Set.BadLuck
       gather Set.NaomisCrew
@@ -98,47 +111,45 @@ instance RunMessage TheHouseAlwaysWins where
     FailedSkillTestWithToken iid Tablet | isEasyStandard attrs -> do
       spendResources iid 3
       pure s
-    ScenarioResolution NoResolution -> do
-      push R1
-      pure s
-    ScenarioResolution (Resolution 1) -> do
-      story resolution1
-      record OBannionGangHasABoneToPickWithTheInvestigators
-      record DrFrancisMorganWasKidnapped
-      cheaters <- cheated
-      unless (null cheaters) $ addChaosToken ElderThing
-      allGainXpWithBonus attrs $ toBonus "resolution1" 1
-      endOfScenario
-      pure s
-    ScenarioResolution (Resolution 2) -> do
-      investigatorIds <- allInvestigators
-      story resolution2
-      record OBannionGangHasABoneToPickWithTheInvestigators
-      record TheInvestigatorsRescuedDrFrancisMorgan
-      addCampaignCardToDeckChoice investigatorIds DoNotShuffleIn Assets.drFrancisMorgan
-      cheaters <- cheated
-      unless (null cheaters) $ addChaosToken ElderThing
-      allGainXp attrs
-      endOfScenario
-      pure s
-    ScenarioResolution (Resolution 3) -> do
-      story resolution3
-      record NaomiHasTheInvestigatorsBacks
-      record DrFrancisMorganWasKidnapped
-      cheaters <- cheated
-      unless (null cheaters) $ addChaosToken ElderThing
-      allGainXp attrs
-      endOfScenario
-      pure s
-    ScenarioResolution (Resolution 4) -> do
-      story resolution4
-      record OBannionGangHasABoneToPickWithTheInvestigators
-      record DrFrancisMorganWasKidnapped
-      record InvestigatorsWereUnconsciousForSeveralHours
-      eachInvestigator (`sufferPhysicalTrauma` 1)
-      cheaters <- cheated
-      unless (null cheaters) $ addChaosToken ElderThing
-      allGainXpWithBonus attrs $ toBonus "resolution4" 1
-      endOfScenario
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> push R1
+        Resolution 1 -> do
+          xp <- allGainXpWithBonus' attrs $ toBonus "resolution1" 1
+          story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution1"
+          record OBannionGangHasABoneToPickWithTheInvestigators
+          record DrFrancisMorganWasKidnapped
+          cheaters <- cheated
+          unless (null cheaters) $ addChaosToken ElderThing
+          endOfScenario
+        Resolution 2 -> do
+          xp <- allGainXp' attrs
+          story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution2"
+          record OBannionGangHasABoneToPickWithTheInvestigators
+          record TheInvestigatorsRescuedDrFrancisMorgan
+          investigatorIds <- allInvestigators
+          addCampaignCardToDeckChoice investigatorIds DoNotShuffleIn Assets.drFrancisMorgan
+          cheaters <- cheated
+          unless (null cheaters) $ addChaosToken ElderThing
+          endOfScenario
+        Resolution 3 -> do
+          xp <- allGainXp' attrs
+          story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution3"
+          record NaomiHasTheInvestigatorsBacks
+          record DrFrancisMorganWasKidnapped
+          cheaters <- cheated
+          unless (null cheaters) $ addChaosToken ElderThing
+          endOfScenario
+        Resolution 4 -> do
+          xp <- allGainXpWithBonus' attrs $ toBonus "resolution4" 1
+          story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution4"
+          record OBannionGangHasABoneToPickWithTheInvestigators
+          record DrFrancisMorganWasKidnapped
+          record InvestigatorsWereUnconsciousForSeveralHours
+          eachInvestigator (`sufferPhysicalTrauma` 1)
+          cheaters <- cheated
+          unless (null cheaters) $ addChaosToken ElderThing
+          endOfScenario
+        other -> throwIO $ UnknownResolution other
       pure s
     _ -> TheHouseAlwaysWins <$> liftRunMessage msg attrs

@@ -306,7 +306,9 @@ ul, :deep(ul) {
   display: flex;
   gap: 5px;
   margin-block: 10px;
+  justify-content: space-around;
   img {
+    align-self: center;
     width: 40px;
   }
 }

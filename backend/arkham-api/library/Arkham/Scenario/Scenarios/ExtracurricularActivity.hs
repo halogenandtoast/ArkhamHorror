@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.ExtracurricularActivity where
+module Arkham.Scenario.Scenarios.ExtracurricularActivity (extracurricularActivity, ExtracurricularActivity (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas

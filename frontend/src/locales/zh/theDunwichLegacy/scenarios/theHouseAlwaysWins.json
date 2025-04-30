@@ -16,12 +16,12 @@
     "body": "<p>阿米蒂奇博士建議你去找摩爾根尋求幫助。他並不知道摩爾根現在的情況，但是他對摩爾根最近的作為很不滿意。摩爾根現在正在四葉草俱樂部，那是一個商業街上的地下賭場。要找到這個地方可不容易，你花了一點點小錢，才讓幾個餐館服務員乖乖開口。你找到了劇院附近的“月下美人”義大利餐館，當然這只是個掩飾，更深處藏著的，是銅臭味的秘密。</p><p>在月下美人餐館門口，一個穿著白色條紋西裝的男人，正打量著你。“好好享受吧。”他為你們打開了餐館的門，臉上浮現出一絲奸詐的笑容。</p>"
   },
   "setup": {
-    "gatherSets": "將下列遭遇組中的所有遭遇卡找出: *The House Always Wins*, *Bad Luck*, *Naomi’s Crew*, *Rats*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-house-always-wins.png' /><img src='{setImgPath}/bad-luck.png' /><img src='{setImgPath}/naomis-crew.png' /><img src='{setImgPath}/rats.png' /></section>",
-    "setAsideEncounterSets": "Set the *Hideous Abominations* and *Striking Fear* encounter sets aside, out of play. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
-    "placeLocations": "將俱樂部大廳、俱樂部酒吧、俱樂部卡牌室、月下美人放置入場。每位調查員從月下美人開始遊戲。",
-    "placeCloverClubPitBoss": "將俱樂部賭場管理員放置入俱樂部大廳。",
-    "setAside": "將下列卡牌放在一邊：黑暗走廊、彼得·克勞佛、佛朗西斯·摩爾根博士，以及所有走廊後門。",
-    "note": "<p class='basic'>_注意：_ 在這場冒險開始時，密謀1a會給每個_罪犯_敵人冷漠關鍵詞，這些敵人不會自動與你交戰。在某個時間點，這些敵人會失去該關鍵詞，之後，這些敵人會按照正常規則，自動與你交戰</p>"
+    "gatherSets": "将下列遭遇组中的所有遭遇卡找出:: *百赌百胜*, *坏运*, *娜奥米的打手*, *老鼠*。 这些遭遇牌如下面图标所示：<section class='encounter-sets'><img src='{setImgPath}/the-house-always-wins.png' /><img src='{setImgPath}/bad-luck.png' /><img src='{setImgPath}/naomis-crew.png' /><img src='{setImgPath}/rats.png' /></section>",
+    "setAsideEncounterSets": "将遭遇牌*丑陋异形*和*恐惧打击*放在一旁，位于场外。 这些遭遇牌如下面图标所示：<section class='encounter-sets'><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "placeLocations": "将俱乐部大厅、俱乐部酒吧、俱乐部卡牌室、月下美人放置入场。每位调查员从月下美人开始游戏。",
+    "placeCloverClubPitBoss": "将俱乐部赌场管理员放置入俱乐部大厅。",
+    "setAside": "将下列卡牌放在一边：黑暗走廊、彼得·克劳佛、佛朗西斯·摩尔根博士，以及所有走廊后门。",
+    "note": "<p class='basic'>_注意：_ 在这场冒险开始时，密谋1a会给每个_罪犯_敌人冷漠关键词，这些敌人不会自动与你交战。在某个时间点，这些敌人会失去该关键词，之后，这些敌人会按照正常规则，自动与你交战。</p>"
   },
   "resolutions": {
     "xp": {
@@ -29,24 +29,24 @@
       "resolution4": "回想起今晚的事件"
     },
     "noResolution": {
-      "title": "如果未達成任何結局",
-      "body": "<div class='resolution'><p class='basic'>_如果未達成任何結局(所有調查員都在場景3前投降，或被消滅)_: 你勉強活著離開了俱樂部。Go to _Resolution 1._</p></div>"
+      "title": "如果未达成任何结局",
+      "body": "<div class='resolution'><p class='basic'>_如果未达成任何结局(所有调查员都在场景3前投降，或被消灭)_: 你勉强活着离开了俱乐部。推进至 _结局1_</p></div>"
     },
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1_: <你飛一樣地逃出了餐館，直到離開這個街區。你停下大口喘著氣，突然間，地面輕微晃動起來，人們從家中湧出，來到大街上看到底發生了什麼。你推開人群衝到最前面，幾分鐘前你剛逃出來的月下美人，已經變成了一堆廢墟。連同摩爾根博士一起，在這個世界上消失了。/p><ul><li>In your Campaign Log, record that *歐巴尼恩幫對調查員不滿。*</li><li>In your Campaign Log, record that *Dr. Francis Morgan was kidnapped.*</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 1 experience as he or she reflects on the night’s events.<ul><li>_Experience_: {xp}</li></ul></li><li>If this is the first scenario of the campaign, proceed to Scenario I–A: Extracurricular Activity. Otherwise, proceed to Interlude I: Armitage’s Fate.</li></ul></div>"
+      "title": "结局1",
+      "body": "<div class='resolution'><p>_结局 1_: 你飞一样地逃出了餐馆，直到离开这个街区。你停下大口喘着气，突然间，地面轻微晃动起来，人们从家中涌出，来到大街上看到底发生了什么。你推开人群冲到最前面，几分钟前你刚逃出来的月下美人，已经变成了一堆废墟。连同摩尔根博士一起，在这个世界上消失了。 /p><ul><li>在剧本日志中记录， *欧巴尼恩帮对调查员不满*。</li><li>在剧本日志中记录，*佛朗西斯·摩尔根博士被绑架*。</li><li>如果有调查员在冒险中“作弊”了，添加一个 {'{'}elderThing{'}'} 到混乱袋，并持续至剧本结束。</li><li>每位调查员获得等同于胜利牌区中胜利点数总值的经验。回想起今晚的恐惧，每位调查员获得额外1点经验。<ul><li>_经验_: {xp}</li></ul></li><li>如果这是本战役的第一个冒险，推进至 冒险 I–A: 课外活动。 否则，推进至幕间故事 I：阿米蒂奇的命运。</li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2_: “我到底怎麼了……”你們在逃跑時，摩爾根博士終於清醒過來。你詢問他還記得什麼，他迷茫地搖了搖頭。“一切都迷迷糊糊的，我那時連贏了好幾把，可能一下興奮就喝多了。但是，這個怪物。我從未見過那樣的生物……”他的聲音因為疲勞而變輕，你能看得出來，他正在飛速思考著。突然，他瞪大了眼睛，臉色也變得蒼白。“我可能現在狀況不太好，但我會不惜一切代價協助你們的調查。”</p><ul><li>In your Campaign Log, record that *the O’Bannion gang has a bone to pick with the investigators*.</li><li>In your Campaign Log, record that *the investigators rescued Dr. Francis Morgan*. Any one investigator may choose to add Dr. Francis Morgan to his or her deck. This card does not count toward that investigator’s deck size.</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Proceed to Scenario I–A: Extracurricular Activity.</li></ul></div>"
+      "title": "结局 2",
+      "body": "<div class='resolution'><p>_结局 2_: “我到底怎么了……”你们在逃跑时，摩尔根博士终于清醒过来。你询问他还记得什么，他迷茫地摇了摇头。“一切都迷迷糊糊的，我那时连赢了好几把，可能一下兴奋就喝多了。但是，这个怪物。我从未见过那样的生物……”他的声音因为疲劳而变轻，你能看得出来，他正在飞速思考著。突然，他瞪大了眼睛，脸色也变得苍白。“我可能现在状况不太好，但我会不惜一切代价协助你们的调查。”</p><ul><li>在剧本日志中记录，*欧巴尼恩帮对调查员不满*。</li><li>在剧本日志中，记录 *调查员解救了佛朗西斯·摩尔根博士*。任意一位调查员获得佛朗西斯·摩尔根博士，并可以加入其牌组中，该卡不计入卡牌张数限制。 </li><li>如果有调查员在冒险中“作弊”了，添加一个 {'{'}elderThing{'}'} 到混乱袋，并持续至剧本结束。</li><li>每位调查员获得等同于胜利牌区中胜利点数总值的经验。<ul><li>_经验_: {xp}</li></ul></li><li>进入冒险 I–A: 课外活动。</li></ul></div>"
     },
     "resolution3": {
-      "title": "Resolution 3",
-      "body": "<div class='resolution'><p>_Resolution 3_: 雖然你無法找到摩爾根博士，但你們救出的那個男人，十分感激你們的友善。他名叫彼得·克勞佛，是四葉草俱樂部所在大樓的主人。儘管發生了這種災難，他還是保持著專業的冷靜頭腦。你們向著街道走去，一輛B-70克萊斯勒高級轎車停在你們面前，從裡面走出一位留著褐色長髮，眼眸細長的美麗女士。她身後跟著一個目光兇惡，身著黑色西服的大漢。“彼得，”那女子看到你們時，好像鬆了一口氣。“你沒事真是太好了。我聽說你遇到麻煩了？”她轉頭看了看你們，“這些人是誰？”</p><p>克勞佛拍了拍肩上的灰塵，一臉輕鬆。“娜奧米，親愛的，這些是我的朋友。他們……”他清了清喉嚨。“他們護送我離開了房子，”他停頓了一下，簡短地解釋道。“我很感激他們。”那個女人叉起雙手放在胸前，仔細地打量著你們，然後是一個很明顯的假笑。</p><p>“那好吧。我謝謝你們照顧彼得。你們可以走了，剩下的事交給我們處理。”她向那個壯漢點了點頭，然後從後門走進了俱樂部，一邊從大衣下拿出了槍。你不太清楚他們會怎麼“處理”，不過你也不想知道具體方案。你們謝別了娜奧米和彼得，離開了這兒。</p><ul><li>In your Campaign Log, record that *Naomi has the investigators’ backs*.</li><li>In your Campaign Log, record that *Dr. Francis Morgan was kidnapped*.</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Proceed to Interlude I: Armitage’s Fate.</li></ul></div>"
+      "title": "结局 3",
+      "body": "<div class='resolution'><p>_结局 3_: 虽然你无法找到摩尔根博士，但你们救出的那个男人，十分感激你们的友善。他名叫彼得·克劳佛，是四叶草俱乐部所在大楼的主人。尽管发生了这种灾难，他还是保持着专业的冷静头脑。你们向着街道走去，一辆B-70克莱斯勒高级轿车停在你们面前，从里面走出一位留着褐色长发，眼眸细长的美丽女士。她身后跟着一个目光凶恶，身着黑色西服的大汉。 “彼得，”那女子看到你们时，好像松了一口气。 “你没事真是太好了。我听说你遇到麻烦了？”她转头看了看你们，“这些人是谁？”</p><p>克劳佛拍了拍肩上的灰尘，一脸轻松。 “娜奥米，亲爱的，这些是我的朋友。他们……”他清了清喉咙。 “他们护送我离开了房子，”他停顿了一下，简短地解释道。 “我很感激他们。”那个女人叉起双手放在胸前，仔细地打量着你们，然后是一个很明显的假笑。 </p><p>“那好吧。我谢谢你们照顾彼得。你们可以走了，剩下的事交给我们处理。”她向那个壮汉点了点头，然后从后门走进了俱乐部，一边从大衣下拿出了枪。你不太清楚他们会怎么“处理”，不过你也不想知道具体方案。你们谢别了娜奥米和彼得，离开了这儿。</p><ul><li>在剧本日志中记录，*调查员得到娜奥米的支持*。</li><li>在剧本日志中记录，*佛朗西斯·摩尔根博士被绑架*。</li><li>如果有调查员在冒险中“作弊”了，添加一个 {'{'}elderThing{'}'} 到混乱袋，并持续至剧本结束。</li><li>E每位调查员获得等同于胜利牌区中胜利点数总值的经验。<ul><li>_经验_: {xp}</li></ul></li><li>进入幕间故事 I：阿米蒂奇的命运。</li></ul></div>"
     },
     "resolution4": {
-      "title": "Resolution 4",
-      "body": "<div class='resolution'>_Resolution 4_: 你被消防員從廢墟中拉了出來，“這兒還有人活著！”然後你感到自己被人抱了起來，放在擔架上，有警察來盤問你發生了什麼。你很清楚，他們不會相信你的故事，那個建築裡的怪物若非親眼所見，有誰會信呢？你一下感到語塞，憋了半天，勉強講了一些話作為塘塞。“我們會把你帶回聖瑪莉醫院的，”一名護士把你送上了救護車。你感到事態已經開始變得複雜，於是趁著護士不注意，你偷偷地溜走了……</p><ul><li>In your Campaign Log, record that *the O’Bannion gang has a bone to pick with the investigators*.</li><Li>In your Campaign Log, record that *Dr. Francis Morgan was kidnapped*.</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator suffers 1 physical trauma.</li><li>In your Campaign Log, record that the investigators were unconscious for several hours.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 1 experience as he or she reflects on the night’s events.<ul><li>_Experience_: {xp}</li></ul></li><li>If this is the first scenario of the campaign, proceed to Scenario I–A: Extracurricular Activity. Otherwise, proceed to Interlude I: Armitage’s Fate.</li></ul></div>"
+      "title": "结局 4",
+      "body": "<div class='resolution'>_结局 4_: 你被消防员从废墟中拉了出来，“这儿还有人活著！”然后你感到自己被人抱了起来，放在担架上，有警察来盘问你发生了什么。你很清楚，他们不会相信你的故事，那个建筑里的怪物若非亲眼所见，有谁会信呢？你一下感到语塞，憋了半天，勉强讲了一些话作为塘塞。“我们会把你带回圣玛莉医院的，”一名护士把你送上了救护车。你感到事态已经开始变得复杂，于是趁著护士不注意，你偷偷地溜走了……</p><ul><li>在剧本日志中记录，*欧巴尼恩帮对调查员不满*。</li><Li>在剧本日志中记录，*佛朗西斯·摩尔根博士被绑架*。</li><li>如果有调查员在冒险中“作弊”了，添加一个 {'{'}elderThing{'}'} 到混乱袋，并持续至剧本结束。</li><li>每位调查员受到1点肉体创伤。</li><li>在冒险日志中记录，*调查员们昏迷了数小时*。</li><li>每位调查员获得等同于胜利牌区中胜利点数总值的经验。回想起今晚的恐惧，每位调查员获得额外1点经验。<ul><li>_经验_: {xp}</li></ul></li><li>如果这是本战役的第一个冒险，推进至 冒险 I–A: 课外活动。 否则，推进至幕间故事 I：阿米蒂奇的命运。</li></ul></div>"
     }
   }
 }

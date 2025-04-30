@@ -24,7 +24,7 @@
     "resolution2": "<div class='resolution'><p>_结局 2_:钟声响起，标示著午夜的来临。你们已经没有时间了，异教徒的仪式马上就要开始。你们试著赶紧整理现在获得的信息，但愿能从中推理出异教徒们的计划。你成功获取了一些关于邪教计划的信息。但愿这一些够用。</p><ul><li>在冒险日志中，“我们盘问过的异教徒”下，纪录下胜利牌区中，所有独特_异教徒_的名称。</li><li>在冒险日志中，“逃跑的异教徒”下，纪录下异教徒牌堆或场上的，所有独特_异教徒_的名称。.</li><li>在剧本日志中记录，*午夜已至。.*</li><li>如果食尸鬼祭司在胜利牌区，在冒险日志中划去 “*食尸鬼祭司还活着*”。</li><li>每位调查员获得等同于胜利牌区中胜利点数总值的经验。<ul><li>_经验_: {xp}</li></ul></li></ul></div>"
   },
   "setup": {
-    "gatherSets": "将下列遭遇组中的所有遭遇卡找出:  *午夜假面*, *寒冷刺骨*, *夜魇*, *黑暗异教徒*, and *上锁的门*. 这些遭遇牌如下面图标所示：<section class='encounter-sets'><img src='{setImgPath}/midnight-masks.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+    "gatherSets": "将下列遭遇组中的所有遭遇卡找出:  *午夜假面*, *寒冷刺骨*, *夜魇*, *黑暗异教徒*, and *上锁的门*。 这些遭遇牌如下面图标所示：<section class='encounter-sets'><img src='{setImgPath}/midnight-masks.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
     "cultistDeck": "<div class='columns simple'><p class='basic'>将遭遇组<i>乌默尔多斯的崇拜者</i>放在一边，作为独立的“异教徒牌堆”，并混洗。 这些遭遇牌如下面图标所示：</p><section class='encounter-sets'><img src='{setImgPath}/cult-of-umordhoth.png' /></section></div>",
     "placeLocations": "将2张商业区和2张南区中，各随机选择一张放置入场，将另一张同名卡牌移出游戏。然后。将北区、东城区、河岸城、圣玛丽医院、墓地、米斯卡塔尼克大学和你的房子放置入场。",
     "acolytes": {

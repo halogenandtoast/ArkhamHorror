@@ -38,7 +38,7 @@ instance RunMessage HeedTheDream2 where
             Just iid' ->
               if toCard c `cardMatch` WeaknessCard
                 then [ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid') [toCard c]]
-                else []
+                else [RemoveCard c.id]
             _ -> error "missing owner?"
 
       chooseOne

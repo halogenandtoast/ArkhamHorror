@@ -170,11 +170,13 @@ placeLocationIfNotInPlay_ :: (HasCallStack, ReverseQueue m) => CardDef -> m ()
 placeLocationIfNotInPlay_ = void . placeLocationIfNotInPlay
 
 placeLocationIfNotInPlay :: (HasCallStack, ReverseQueue m) => CardDef -> m LocationId
-placeLocationIfNotInPlay def = selectOne (locationIs def) >>= \case
-  Just lid -> pure lid
-  Nothing -> getSetAsideCardMaybe def >>= \case
-    Nothing -> error $ "Location not found in play or set aside: " <> show def
-    Just card -> placeLocation card
+placeLocationIfNotInPlay def =
+  selectOne (locationIs def) >>= \case
+    Just lid -> pure lid
+    Nothing ->
+      getSetAsideCardMaybe def >>= \case
+        Nothing -> error $ "Location not found in play or set aside: " <> show def
+        Just card -> placeLocation card
 
 placeRandomLocationGroupCards
   :: ReverseQueue m => Text -> [CardDef] -> m ()
@@ -580,7 +582,8 @@ createEnemyAt c lid = do
   push msg
   pure enemyId
 
-createEnemyAtLocationMatching_ :: (ReverseQueue m, FetchCard card) => card -> LocationMatcher -> m ()
+createEnemyAtLocationMatching_
+  :: (ReverseQueue m, FetchCard card) => card -> LocationMatcher -> m ()
 createEnemyAtLocationMatching_ c matcher = do
   card <- fetchCard c
   Msg.pushM $ Msg.createEnemyAtLocationMatching_ card matcher
@@ -2754,3 +2757,8 @@ flipCluesToDoom target n = push $ FlipClues (toTarget target) n
 
 allRandomDiscard :: (ReverseQueue m, Sourceable source) => source -> CardMatcher -> m ()
 allRandomDiscard source matcher = push $ AllRandomDiscard (toSource source) matcher
+
+discardEach
+  :: (ReverseQueue m, Query query, Sourceable source, Targetable (QueryElement query))
+  => source -> query -> m ()
+discardEach source query = selectEach query (toDiscard source)

@@ -906,14 +906,19 @@ h2 {
   border-radius: 10px;
   justify-content: center;
   gap: 10px;
+
+  .portrait {
+    min-width: unset;
+    width: calc(var(--card-width) / 2);
+  }
+
+  .card {
+    height: max(var(--card-width)* 2);
+  }
 }
 
 .card-pile:hover {
   background: rgba(255, 255, 255, 0.2);
-}
-
-.card-pile .portrait {
-  width: calc(var(--card-width) / 2);
 }
 
 .modal-contents {

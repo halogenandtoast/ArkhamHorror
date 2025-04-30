@@ -1913,6 +1913,12 @@ runGameMessage msg g = case msg of
 
     pure g
   AddToDiscard _ pc -> pure $ g & removedFromPlayL %~ filter (/= PlayerCard pc)
+  RemoveCard c -> do
+    pushAll [ObtainCard c, Do (RemoveCard c)]
+    pure g
+  Do (RemoveCard c) -> do
+    card <- getCard c
+    pure $ g & removedFromPlayL %~ (card:)
   AddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid
     pushAll

@@ -553,6 +553,7 @@ data Message
   | Continue Text
   | CreateEffect EffectBuilder
   | ObtainCard CardId
+  | RemoveCard CardId
   | ObtainChaosToken ChaosToken
   | CreateEnemy (EnemyCreation Message)
   | CreateSkill SkillId Card InvestigatorId Placement

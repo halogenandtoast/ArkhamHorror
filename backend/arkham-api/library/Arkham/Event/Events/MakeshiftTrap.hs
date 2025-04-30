@@ -32,7 +32,7 @@ instance HasAbilities MakeshiftTrap where
    where
     tripwireCriteria = case a.attachedTo of
       Just (LocationTarget lid) ->
-        mwhen (a `hasCustomization` Tripwire) (exists $ EnemyAt $ LocationWithId lid)
+        mwhen (a `hasCustomization` Tripwire) (exists $ NonEliteEnemy <> at_ (LocationWithId lid))
       _ -> NoRestriction
 
 instance HasModifiersFor MakeshiftTrap where

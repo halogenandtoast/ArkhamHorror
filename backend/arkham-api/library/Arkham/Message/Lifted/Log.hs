@@ -1,6 +1,6 @@
 module Arkham.Message.Lifted.Log (module Arkham.Message.Lifted.Log, module X) where
 
-import Arkham.Helpers.Log as X hiding (recordSetInsert, crossOutRecordSetEntries, recordSetReplace)
+import Arkham.Helpers.Log as X hiding (crossOutRecordSetEntries, recordSetInsert, recordSetReplace)
 
 import Arkham.CampaignLogKey
 import Arkham.Classes.HasQueue
@@ -31,6 +31,9 @@ recordForInvestigator iid k = push $ RecordForInvestigator (asId iid) (toCampaig
 
 crossOut :: (ReverseQueue m, IsCampaignLogKey k) => k -> m ()
 crossOut = push . CrossOutRecord . toCampaignLogKey
+
+crossOutWhen :: (ReverseQueue m, IsCampaignLogKey k) => Bool -> k -> m ()
+crossOutWhen cond k = when cond $ crossOut k
 
 recordSetInsert
   :: (Recordable a, MonoFoldable t, Element t ~ a, ReverseQueue m, IsCampaignLogKey k)

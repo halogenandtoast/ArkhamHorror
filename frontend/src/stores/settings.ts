@@ -7,5 +7,11 @@ export const useSettings = defineStore("settings", () => {
   function toggleSplitView() {
     splitView.value = !splitView.value
   }
-  return { splitView, toggleSplitView }
+
+  const showBonded = ref(false)
+
+  function toggleShowBonded() {
+    showBonded.value = !showBonded.value
+  }
+  return { splitView, toggleSplitView, showBonded, toggleShowBonded }
 })

@@ -18,9 +18,7 @@ instance HasModifiersFor ProfessorWarrenRice where
 
 instance HasAbilities ProfessorWarrenRice where
   getAbilities (ProfessorWarrenRice a) =
-    [ restricted a 1 ControlsThis
-        $ triggered (DiscoveringLastClue #after You YourLocation) (exhaust a)
-    ]
+    [restricted a 1 ControlsThis $ triggered (DiscoveringLastClue #after You YourLocation) (exhaust a)]
 
 instance RunMessage ProfessorWarrenRice where
   runMessage msg a@(ProfessorWarrenRice attrs) = runQueueT $ case msg of

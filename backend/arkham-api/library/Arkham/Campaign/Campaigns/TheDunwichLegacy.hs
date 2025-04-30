@@ -66,9 +66,12 @@ instance RunMessage TheDunwichLegacy where
         labeled' "theHouseAlwaysWins" $ setNextCampaignStep TheHouseAlwaysWins
       pure c
     CampaignStep (InterludeStep 1 _) -> scope "interlude1" do
-      let interlude k = storyBuild $ setTitle "title" >> p k
-      interlude "body"
       unconsciousForSeveralHours <- getHasRecord InvestigatorsWereUnconsciousForSeveralHours
+      let interlude k = storyBuild $ setTitle "title" >> p k
+      storyBuild do
+        setTitle "title"
+        p.validate unconsciousForSeveralHours "proceedToArmitagesFate1"
+        p.validate (not unconsciousForSeveralHours) "proceedToArmitagesFate2"
       if unconsciousForSeveralHours
         then do
           interlude "armitagesFate1"

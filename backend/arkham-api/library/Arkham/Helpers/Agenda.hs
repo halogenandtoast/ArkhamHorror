@@ -11,6 +11,12 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Projection
 
+currentAgendaStepIs :: HasGame m => (Int -> Bool) -> m Bool
+currentAgendaStepIs f = f <$> getCurrentAgendaStep
+
+whenCurrentAgendaStepIs :: HasGame m => (Int -> Bool) -> m () -> m ()
+whenCurrentAgendaStepIs f = whenM (f <$> getCurrentAgendaStep)
+
 getCurrentAgendaStep :: HasGame m => m Int
 getCurrentAgendaStep = getCurrentAgenda >>= getAgendaStep
 

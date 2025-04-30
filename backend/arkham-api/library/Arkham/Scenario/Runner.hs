@@ -547,12 +547,6 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       $ a
       & (setAsideCardsL %~ deleteFirstMatch (== card))
       & (decksL . at deckKey ?~ deck')
-  AddToEncounterDeck card -> do
-    encounterDeck <- withDeckM (shuffleM . (card :)) scenarioEncounterDeck
-    pure
-      $ a
-      & (setAsideCardsL %~ deleteFirstMatch (== EncounterCard card))
-      & (encounterDeckL .~ encounterDeck)
   AddToEncounterDiscard ec -> do
     handler <- getEncounterDeckHandler (toCardId ec)
     pure

@@ -326,6 +326,12 @@ cardDiscarded ((windowType -> Window.DiscardedFromHand _ _ c) : _) = c
 cardDiscarded ((windowType -> Window.Discarded _ _ c) : _) = c
 cardDiscarded (_ : xs) = cardDiscarded xs
 
+cardsDiscarded :: HasCallStack => [Window] -> [Card]
+cardsDiscarded [] = []
+cardsDiscarded ((windowType -> Window.DiscardedFromHand _ _ c) : ws) = c : cardsDiscarded ws
+cardsDiscarded ((windowType -> Window.Discarded _ _ c) : ws) = c : cardsDiscarded ws
+cardsDiscarded (_ : xs) = cardsDiscarded xs
+
 cardDrawnBy :: HasCallStack => [Window] -> (InvestigatorId, Card)
 cardDrawnBy [] = error "missing play card window"
 cardDrawnBy ((windowType -> Window.DrawCard iid c _) : _) = (iid, c)

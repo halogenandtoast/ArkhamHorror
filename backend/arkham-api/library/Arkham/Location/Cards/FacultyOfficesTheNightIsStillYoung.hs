@@ -25,7 +25,7 @@ instance HasAbilities FacultyOfficesTheNightIsStillYoung where
     extendRevealed
       x
       [ mkAbility x 1 $ forced $ RevealLocation #after Anyone (be x)
-      , restrictedAbility x 2 Here
+      , restricted x 2 Here
           $ FastAbility
           $ GroupClueCost (PerPlayer 2) (LocationWithTitle "Faculty Offices")
       ]

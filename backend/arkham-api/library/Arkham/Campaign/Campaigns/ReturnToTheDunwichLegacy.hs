@@ -48,7 +48,7 @@ returnToTheDunwichLegacy difficulty =
 
 instance RunMessage ReturnToTheDunwichLegacy where
   runMessage msg c@(ReturnToTheDunwichLegacy theDunwichLegacy') = runQueueT $ campaignI18n $ case msg of
-    CampaignStep PrologueStep -> do
+    CampaignStep PrologueStep -> scope "prologue" do
       storyWithChooseOneM' (setTitle "title" >> p "body") do
         labeled' "extracurricularActivity" $ setNextCampaignStep ReturnToExtracurricularActivities
         labeled' "theHouseAlwaysWins" $ setNextCampaignStep ReturnToTheHouseAlwaysWins

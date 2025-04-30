@@ -5,6 +5,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.TheHouseAlwaysWins
@@ -33,6 +34,16 @@ returnToTheHouseAlwaysWins difficulty =
 instance RunMessage ReturnToTheHouseAlwaysWins where
   runMessage msg (ReturnToTheHouseAlwaysWins theHouseAlwaysWins'@(TheHouseAlwaysWins attrs)) = runQueueT $ scenarioI18n $ case msg of
     Setup -> runScenarioSetup (ReturnToTheHouseAlwaysWins . TheHouseAlwaysWins) attrs do
+      setup do
+        ul do
+          li "gatherSets"
+          li "setAsideEncounterSets"
+          li "placeLocations"
+          li "placeCloverClubPitBoss"
+          li "setAside"
+          unscoped $ li "shuffleRemainder"
+        p "note"
+
       gather Set.ReturnToTheHouseAlwaysWins
       gather Set.TheHouseAlwaysWins
       gather Set.BadLuck

@@ -116,26 +116,17 @@ instance RunMessage TheGathering where
             addCampaignCardToDeckChoice valids' DoNotShuffleIn Assets.litaChantler
       case resolution of
         NoResolution -> do
-          xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 2
-          story
-            $ withVars ["xp" .= xp]
-            $ i18nWithTitle "noResolution"
+          resolutionWithXp "noResolution" $ allGainXpWithBonus' attrs $ toBonus "bonus" 2
           record YourHouseIsStillStanding
           record GhoulPriestIsStillAlive
           chooseToAddLita []
         Resolution 1 -> do
-          xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 2
-          story
-            $ withVars ["xp" .= xp]
-            $ i18nWithTitle "resolution1"
+          resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 2
           record YourHouseHasBurnedToTheGround
           chooseToAddLita []
           sufferMentalTrauma leadId 1
         Resolution 2 -> do
-          xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 2
-          story
-            $ withVars ["xp" .= xp]
-            $ i18nWithTitle "resolution2"
+          resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "bonus" 2
           record YourHouseIsStillStanding
           gainXp leadId attrs (ikey "xp.resolution2") 1
         Resolution 3 -> do

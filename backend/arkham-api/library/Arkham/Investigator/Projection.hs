@@ -24,6 +24,7 @@ import Arkham.Projection
 import Arkham.Queue
 import Arkham.Slot
 import GHC.Records
+import Arkham.Name qualified as Name
 
 instance HasField "name" InvestigatorId (QueueT Message GameT Name) where
   getField = field InvestigatorName
@@ -51,6 +52,11 @@ instance HasField "discard" InvestigatorId (QueueT Message GameT [PlayerCard]) w
 
 getSlots :: HasGame m => SlotType -> InvestigatorId -> m [Slot]
 getSlots sType iid = fieldMap InvestigatorSlots (findWithDefault [] sType) iid
+
+instance HasField "labeled" InvestigatorId (QueueT Message GameT (Name.Labeled InvestigatorId)) where
+  getField iid = do
+    name <- iid.name
+    pure $ Name.labeled name iid
 
 instance HasField "slots" InvestigatorId (SlotType -> QueueT Message GameT [Slot]) where
   getField iid sType = getSlots sType iid

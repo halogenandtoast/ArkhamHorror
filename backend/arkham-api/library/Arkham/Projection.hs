@@ -1,14 +1,10 @@
-module Arkham.Projection (
-  module Arkham.Projection,
-  module X,
-) where
-
-import Arkham.Prelude
+module Arkham.Projection (module Arkham.Projection, module X) where
 
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Field as X
 import Arkham.Id
+import Arkham.Prelude
 
 class Projection a where
   getAttrs :: (HasCallStack, HasGame m) => EntityId a -> m (EntityAttrs a)

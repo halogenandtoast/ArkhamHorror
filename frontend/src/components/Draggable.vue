@@ -266,6 +266,9 @@ onMounted(() => {
     flex-direction: column;
     gap: 10px;
     margin: 10px;
+    &:has(button.close) {
+      margin: 0;
+    }
     &:has(> .skill-test) {
       margin: 0px;
     }

@@ -18,13 +18,7 @@ import Arkham.Helpers.EncounterSet
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher (
-  CardMatcher (..),
-  EnemyMatcher (..),
-  ExtendedCardMatcher (..),
-  basic,
-  cardIs,
- )
+import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
@@ -177,34 +171,28 @@ instance RunMessage TheMidnightMasks where
       push R1
       pure s
     ScenarioResolution (Resolution n) -> scope "resolutions" do
-      cultistsWeInterrogated <-
-        selectMap toCardCode (VictoryDisplayCardMatch $ basic $ CardWithTrait Trait.Cultist <> CardIsUnique)
       agenda <- getCurrentAgendaStep
       inPlayCultistsWhoGotAway <-
-        selectField EnemyCardCode (InPlayEnemy $ EnemyWithTrait Trait.Cultist <> UniqueEnemy)
-      let
-        cultistsWhoGotAway =
-          inPlayCultistsWhoGotAway
-            <> map toCardCode (attrs ^. decksL . at CultistDeck . non [])
-            <> [toCardCode Enemies.theMaskedHunter | agenda == 1]
+        selectField EnemyCardCode (InPlayEnemy $ withTrait Trait.Cultist <> UniqueEnemy)
       ghoulPriestDefeated <- selectAny (VictoryDisplayCardMatch $ basic $ cardIs Enemies.ghoulPriest)
-      xp <- allGainXp' attrs
-      story
-        $ withVars ["xp" .= xp]
-        $ i18n
-        $ if n == 1 then "resolution1" else "resolution2"
-      recordSetInsert CultistsWeInterrogated cultistsWeInterrogated
-      recordSetInsert CultistsWhoGotAway cultistsWhoGotAway
-      when (n == 2) $ record ItIsPastMidnight
-      when ghoulPriestDefeated $ crossOut GhoulPriestIsStillAlive
+      resolutionWithXp
+        (if n == 1 then "resolution1" else "resolution2")
+        (allGainXp' attrs)
+      recordSetInsert CultistsWeInterrogated
+        =<< selectMap toCardCode (VictoryDisplayCardMatch $ basic $ withTrait Trait.Cultist <> CardIsUnique)
+      recordSetInsert CultistsWhoGotAway
+        $ inPlayCultistsWhoGotAway
+        <> map toCardCode (attrs ^. decksL . at CultistDeck . non [])
+        <> [toCardCode Enemies.theMaskedHunter | agenda == 1]
+      recordWhen (n == 2) ItIsPastMidnight
+      crossOutWhen ghoulPriestDefeated GhoulPriestIsStillAlive
       endOfScenario
       pure s
     HandleOption option -> do
-      whenM getIsStandalone $ do
-        case option of
-          AddLitaChantler -> do
-            investigators <- allInvestigators
-            forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.litaChantler
-          _ -> error $ "Unhandled option: " <> show option
+      whenM getIsStandalone $ case option of
+        AddLitaChantler -> do
+          investigators <- allInvestigators
+          forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.litaChantler
+        _ -> error $ "Unhandled option: " <> show option
       pure s
     _ -> TheMidnightMasks <$> liftRunMessage msg attrs

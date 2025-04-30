@@ -3,18 +3,15 @@ module Arkham.Act.Cards.BeginnersLuck (beginnersLuck) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.ChaosBag
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Investigator.Projection ()
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
-import Arkham.Name qualified as Name
-import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Trait
 import Arkham.Window qualified as Window
@@ -29,8 +26,7 @@ beginnersLuck = act (1, A) BeginnersLuck Cards.beginnersLuck Nothing
 
 instance HasAbilities BeginnersLuck where
   getAbilities (BeginnersLuck x) =
-    extend x
-      $ guard (onSide A x)
+    guard (onSide A x)
       *> [ groupLimit PerRound $ mkAbility x 1 $ freeReaction (RevealChaosToken #when You AnyChaosToken)
          , mkAbility x 2
              $ Objective
@@ -39,30 +35,27 @@ instance HasAbilities BeginnersLuck where
 
 instance RunMessage BeginnersLuck where
   runMessage msg a@(BeginnersLuck attrs) = runQueueT $ case msg of
-    UseCardAbility iid source 1 (Window.revealedChaosTokens -> [token]) _ | isSource attrs source -> do
+    UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> [token]) _ -> do
       chaosTokensInBag <- getBagChaosTokens
-      push $ FocusChaosTokens chaosTokensInBag
-      chooseOneM iid do
+      focusChaosTokens chaosTokensInBag \unfocus -> chooseOneM iid do
         targets chaosTokensInBag \token' -> do
-          chaosTokenEffect source token $ ChaosTokenFaceModifier [token'.face]
-          push UnfocusChaosTokens
+          chaosTokenEffect (attrs.ability 1) token $ ChaosTokenFaceModifier [token'.face]
+          push unfocus
           push $ FocusChaosTokens [token']
-      name <- field InvestigatorName iid
-      remember $ Cheated $ Name.labeled name iid
+      remember . Cheated =<< iid.labeled
       pure a
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      push $ AdvanceAct (toId a) source AdvancedWithClues
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      advancedWithClues attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
-      lead <- getLead
-      isAgenda1 <- (== 1) <$> getCurrentAgendaStep
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       placeSetAsideLocation_ Locations.darkenedHall
-      when isAgenda1 do
+      whenCurrentAgendaStepIs (== 1) do
+        lead <- getLead
         discardUntilFirst lead attrs Deck.EncounterDeck $ basic (#enemy <> CardWithTrait Criminal)
       advanceActDeck attrs
       pure a
-    RequestedEncounterCard source _ (Just ec) | isSource attrs source -> do
+    RequestedEncounterCard (isSource attrs -> True) _ (Just ec) -> do
       darkenedHallId <- selectJust $ LocationWithTitle "Darkened Hall"
-      push $ SpawnEnemyAt (EncounterCard ec) darkenedHallId
+      spawnEnemyAt_ ec darkenedHallId
       pure a
     _ -> BeginnersLuck <$> liftRunMessage msg attrs

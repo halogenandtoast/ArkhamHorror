@@ -115,40 +115,32 @@ instance RunMessage TheHouseAlwaysWins where
       case r of
         NoResolution -> push R1
         Resolution 1 -> do
-          xp <- allGainXpWithBonus' attrs $ toBonus "resolution1" 1
-          story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution1"
+          resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "resolution1" 1
           record OBannionGangHasABoneToPickWithTheInvestigators
           record DrFrancisMorganWasKidnapped
-          cheaters <- cheated
-          unless (null cheaters) $ addChaosToken ElderThing
+          unlessM (null <$> cheated) $ addChaosToken ElderThing
           endOfScenario
         Resolution 2 -> do
-          xp <- allGainXp' attrs
-          story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution2"
+          resolutionWithXp "resolution2" $ allGainXp' attrs
           record OBannionGangHasABoneToPickWithTheInvestigators
           record TheInvestigatorsRescuedDrFrancisMorgan
           investigatorIds <- allInvestigators
           addCampaignCardToDeckChoice investigatorIds DoNotShuffleIn Assets.drFrancisMorgan
-          cheaters <- cheated
-          unless (null cheaters) $ addChaosToken ElderThing
+          unlessM (null <$> cheated) $ addChaosToken ElderThing
           endOfScenario
         Resolution 3 -> do
-          xp <- allGainXp' attrs
-          story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution3"
+          resolutionWithXp "resolution3" $ allGainXp' attrs
           record NaomiHasTheInvestigatorsBacks
           record DrFrancisMorganWasKidnapped
-          cheaters <- cheated
-          unless (null cheaters) $ addChaosToken ElderThing
+          unlessM (null <$> cheated) $ addChaosToken ElderThing
           endOfScenario
         Resolution 4 -> do
-          xp <- allGainXpWithBonus' attrs $ toBonus "resolution4" 1
-          story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution4"
+          resolutionWithXp "resolution4" $ allGainXpWithBonus' attrs $ toBonus "resolution4" 1
           record OBannionGangHasABoneToPickWithTheInvestigators
           record DrFrancisMorganWasKidnapped
           record InvestigatorsWereUnconsciousForSeveralHours
           eachInvestigator (`sufferPhysicalTrauma` 1)
-          cheaters <- cheated
-          unless (null cheaters) $ addChaosToken ElderThing
+          unlessM (null <$> cheated) $ addChaosToken ElderThing
           endOfScenario
         other -> throwIO $ UnknownResolution other
       pure s

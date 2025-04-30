@@ -20,7 +20,6 @@ instance RunMessage QuietHalls where
         discardCount <- fieldLength InvestigatorDiscard iid
         when (discardCount >= 5) do
           assignHorror iid attrs $ if discardCount >= 10 then 2 else 1
-
       advanceAgendaDeck attrs
 
       completedTheHouseAlwaysWins <- any (`elem` ["02062", "51015"]) <$> getCompletedScenarios

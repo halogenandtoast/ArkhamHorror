@@ -2,16 +2,11 @@ module Arkham.Agenda.Cards.TheCloverClub (theCloverClub) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
+import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype TheCloverClub = TheCloverClub AgendaAttrs
@@ -23,42 +18,25 @@ theCloverClub = agenda (1, A) TheCloverClub Cards.theCloverClub (Static 4)
 
 instance HasModifiersFor TheCloverClub where
   getModifiersFor (TheCloverClub attrs) =
-    if onSide A attrs
-      then modifySelect attrs (EnemyWithTrait Criminal) [AddKeyword Aloof]
-      else pure mempty
+    when (onSide A attrs) $ modifySelect attrs (EnemyWithTrait Criminal) [AddKeyword Aloof]
 
 instance HasAbilities TheCloverClub where
   getAbilities (TheCloverClub x) =
-    [ mkAbility x 1
-        $ ForcedAbility
-        $ EnemyDealtDamage
-          Timing.When
-          AnyDamageEffect
-          (EnemyWithTrait Criminal)
-          AnySource
+    [ mkAbility x 1 $ forced $ EnemyDealtDamage #when AnyDamageEffect (EnemyWithTrait Criminal) AnySource
     | onSide A x
     ]
 
 instance RunMessage TheCloverClub where
-  runMessage msg a@(TheCloverClub attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push (AdvanceAgenda $ toId attrs)
+  runMessage msg a@(TheCloverClub attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advanceAgenda attrs
       pure a
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      lead <- getLeadPlayer
-      completedExtracurricularActivity <-
-        any (`elem` ["02041", "51012"]) <$> getCompletedScenarios
-      enemyIds <- select $ EnemyWithTrait Criminal
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      selectEach (EnemyWithTrait Criminal) enemyCheckEngagement
+      shuffleEncounterDiscardBackIn
+      advanceAgendaDeck attrs
 
-      let
-        continueMessages =
-          [ ShuffleEncounterDiscardBackIn
-          , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-          ]
-            <> [AdvanceCurrentAgenda | completedExtracurricularActivity]
-
-      pushAll
-        $ map EnemyCheckEngagement enemyIds
-        <> [chooseOne lead [Label "Continue" continueMessages]]
+      completedExtracurricularActivity <- any (`elem` ["02041", "51012"]) <$> getCompletedScenarios
+      when completedExtracurricularActivity $ push AdvanceCurrentAgenda
       pure a
-    _ -> TheCloverClub <$> runMessage msg attrs
+    _ -> TheCloverClub <$> liftRunMessage msg attrs

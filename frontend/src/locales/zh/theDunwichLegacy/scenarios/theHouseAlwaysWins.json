@@ -16,7 +16,7 @@
     "body": "<p>阿米蒂奇博士建议你去找摩尔根寻求帮助。他并不知道摩尔根现在的情况，但是他对摩尔根最近的作为很不满意。摩尔根现在正在四叶草俱乐部，那是一个商业街上的地下赌场。要找到这个地方可不容易，你花了一点点小钱，才让几个餐馆服务员乖乖开口。你找到了剧院附近的“月下美人”义大利餐馆，当然这只是个掩饰，更深处藏著的，是铜臭味的秘密。</p><p>在月下美人餐馆门口，一个穿著白色条纹西装的男人，正打量著你。“好好享受吧。”他为你们打开了餐馆的门，脸上浮现出一丝奸诈的笑容。</p>"
   },
   "setup": {
-    "gatherSets": "将下列遭遇组中的所有遭遇卡找出:: *百赌百胜*, *坏运*, *娜奥米的打手*, *老鼠*。 这些遭遇牌如下面图标所示：<section class='encounter-sets'><img src='{setImgPath}/the-house-always-wins.png' /><img src='{setImgPath}/bad-luck.png' /><img src='{setImgPath}/naomis-crew.png' /><img src='{setImgPath}/rats.png' /></section>",
+    "gatherSets": "将下列遭遇组中的所有遭遇卡找出: *百赌百胜*, *坏运*, *娜奥米的打手*, *老鼠*。 这些遭遇牌如下面图标所示：<section class='encounter-sets'><img src='{setImgPath}/the-house-always-wins.png' /><img src='{setImgPath}/bad-luck.png' /><img src='{setImgPath}/naomis-crew.png' /><img src='{setImgPath}/rats.png' /></section>",
     "setAsideEncounterSets": "将遭遇牌*丑陋异形*和*恐惧打击*放在一旁，位于场外。 这些遭遇牌如下面图标所示：<section class='encounter-sets'><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
     "placeLocations": "将俱乐部大厅、俱乐部酒吧、俱乐部卡牌室、月下美人放置入场。每位调查员从月下美人开始游戏。",
     "placeCloverClubPitBoss": "将俱乐部赌场管理员放置入俱乐部大厅。",

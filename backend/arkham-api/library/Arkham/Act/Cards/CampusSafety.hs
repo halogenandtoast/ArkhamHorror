@@ -1,10 +1,7 @@
-module Arkham.Act.Cards.CampusSafety where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.CampusSafety (campusSafety) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 
 newtype CampusSafety = CampusSafety ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -18,8 +15,8 @@ Campus Safety has an Objective but it is triggered by other cards so this is
 left off of this definition
 -}
 instance RunMessage CampusSafety where
-  runMessage msg a@(CampusSafety attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      push $ scenarioResolution 3
+  runMessage msg a@(CampusSafety attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      push R3
       pure a
-    _ -> CampusSafety <$> runMessage msg attrs
+    _ -> CampusSafety <$> liftRunMessage msg attrs

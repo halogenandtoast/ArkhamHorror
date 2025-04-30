@@ -166,6 +166,16 @@ placeLocation card = do
 placeLocation_ :: (ReverseQueue m, FetchCard card) => card -> m ()
 placeLocation_ = fetchCard >=> Msg.placeLocation_ >=> push
 
+placeLocationIfNotInPlay_ :: (HasCallStack, ReverseQueue m) => CardDef -> m ()
+placeLocationIfNotInPlay_ = void . placeLocationIfNotInPlay
+
+placeLocationIfNotInPlay :: (HasCallStack, ReverseQueue m) => CardDef -> m LocationId
+placeLocationIfNotInPlay def = selectOne (locationIs def) >>= \case
+  Just lid -> pure lid
+  Nothing -> getSetAsideCardMaybe def >>= \case
+    Nothing -> error $ "Location not found in play or set aside: " <> show def
+    Just card -> placeLocation card
+
 placeRandomLocationGroupCards
   :: ReverseQueue m => Text -> [CardDef] -> m ()
 placeRandomLocationGroupCards groupName = genCards >=> placeRandomLocationGroup groupName
@@ -570,8 +580,10 @@ createEnemyAt c lid = do
   push msg
   pure enemyId
 
-createEnemyAtLocationMatching_ :: (ReverseQueue m, IsCard card) => card -> LocationMatcher -> m ()
-createEnemyAtLocationMatching_ c = Msg.pushM . Msg.createEnemyAtLocationMatching_ (toCard c)
+createEnemyAtLocationMatching_ :: (ReverseQueue m, FetchCard card) => card -> LocationMatcher -> m ()
+createEnemyAtLocationMatching_ c matcher = do
+  card <- fetchCard c
+  Msg.pushM $ Msg.createEnemyAtLocationMatching_ card matcher
 
 createEnemyAtLocationMatching
   :: (ReverseQueue m, IsCard card) => card -> LocationMatcher -> m EnemyId

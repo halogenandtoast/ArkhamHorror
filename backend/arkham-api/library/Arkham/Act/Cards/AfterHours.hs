@@ -1,11 +1,9 @@
 module Arkham.Act.Cards.AfterHours (afterHours) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Classes
-import Arkham.Helpers.Query
-import Arkham.Prelude
+import Arkham.Deck qualified as Deck
 
 newtype AfterHours = AfterHours ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -15,13 +13,11 @@ afterHours :: ActCard AfterHours
 afterHours = act (1, A) AfterHours Cards.afterHours (groupClueCost (PerPlayer 3))
 
 instance RunMessage AfterHours where
-  runMessage msg a@(AfterHours attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
-      jazzMulligan <- getSetAsideEncounterCard Assets.jazzMulligan
-      pushAll
-        [ AddToEncounterDeck jazzMulligan
-        , ShuffleEncounterDiscardBackIn
-        , advanceActDeck attrs
-        ]
+  runMessage msg a@(AfterHours attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      jazzMulligan <- fetchCard Assets.jazzMulligan
+      shuffleCardsIntoDeck Deck.EncounterDeck (only jazzMulligan)
+      shuffleEncounterDiscardBackIn
+      advanceActDeck attrs
       pure a
-    _ -> AfterHours <$> runMessage msg attrs
+    _ -> AfterHours <$> liftRunMessage msg attrs

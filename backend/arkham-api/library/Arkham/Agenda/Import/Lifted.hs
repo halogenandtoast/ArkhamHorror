@@ -1,4 +1,4 @@
-module Arkham.Agenda.Import.Lifted (module X) where
+module Arkham.Agenda.Import.Lifted (module Arkham.Agenda.Import.Lifted, module X) where
 
 import Arkham.Agenda.Runner as X (
   AgendaAttrs (..),
@@ -44,3 +44,6 @@ import Arkham.Prelude as X
 import Arkham.Question as X
 import Arkham.Source as X
 import Arkham.Target as X
+
+advanceAgenda :: ReverseQueue m => AgendaAttrs -> m ()
+advanceAgenda attrs = push $ AdvanceAgenda attrs.id

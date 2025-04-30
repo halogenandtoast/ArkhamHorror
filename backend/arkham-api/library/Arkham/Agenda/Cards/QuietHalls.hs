@@ -1,13 +1,9 @@
 module Arkham.Agenda.Cards.QuietHalls (quietHalls) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
+import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Campaign
-import Arkham.Helpers.Query
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Prelude
 import Arkham.Projection
 
 newtype QuietHalls = QuietHalls AgendaAttrs
@@ -18,34 +14,16 @@ quietHalls :: AgendaCard QuietHalls
 quietHalls = agenda (1, A) QuietHalls Cards.quietHalls (Static 7)
 
 instance RunMessage QuietHalls where
-  runMessage msg a@(QuietHalls attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      investigatorIds <- getInvestigators
+  runMessage msg a@(QuietHalls attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      eachInvestigator \iid -> do
+        discardCount <- fieldLength InvestigatorDiscard iid
+        when (discardCount >= 5) do
+          assignHorror iid attrs $ if discardCount >= 10 then 2 else 1
+
+      advanceAgendaDeck attrs
+
       completedTheHouseAlwaysWins <- any (`elem` ["02062", "51015"]) <$> getCompletedScenarios
-      messages <- flip mapMaybeM investigatorIds $ \iid -> do
-        discardCount <- fieldMap InvestigatorDiscard length iid
-        if discardCount >= 5
-          then
-            pure
-              $ Just
-                ( InvestigatorAssignDamage
-                    iid
-                    (toSource attrs)
-                    DamageAny
-                    0
-                    (if discardCount >= 10 then 2 else 1)
-                )
-          else pure Nothing
-
-      let
-        continueMessages =
-          if completedTheHouseAlwaysWins
-            then
-              [ AdvanceAgendaDeck agendaDeckId (toSource attrs)
-              , AdvanceCurrentAgenda
-              ]
-            else [AdvanceAgendaDeck agendaDeckId (toSource attrs)]
-
-      pushAll $ messages <> continueMessages
+      when completedTheHouseAlwaysWins $ push AdvanceCurrentAgenda
       pure a
-    _ -> QuietHalls <$> runMessage msg attrs
+    _ -> QuietHalls <$> liftRunMessage msg attrs

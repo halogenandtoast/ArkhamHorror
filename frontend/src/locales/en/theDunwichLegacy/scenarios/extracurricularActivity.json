@@ -33,6 +33,10 @@
     "resolution4": {
       "title": "Resolution 4",
       "body": "<div class='resolution'><p>_Resolution 4_: You awaken hours later, exhausted and injured. You’re not sure what you saw, but the sight of it filled your mind with terror. From other survivors, you learn that a ‘rabid dog of some sort’ found its way into the university dormitories. The creature attacked the students inside, and many were mauled or killed in the attack.</p><ul><li>In your Campaign Log, record that *the investigators were unconscious for several hours*.</li><li>In your Campaign Log, record that *Professor Warren Rice was kidnapped*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 1 experience as he or she reflects on the night’s events.<ul><li>_Experience_: {xp}</li></ul></li><li>In your Campaign Log, record that *the investigators failed to save the students*. You are haunted by guilt. Add 1 {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.</li><li>If this is the first scenario of the campaign, advance to Scenario I–B: The House Always Wins. Otherwise, advance to Interlude I: Armitage’s Fate.</li></ul></div>"
+    },
+    "xp": {
+      "noResolution": "Reflects on the night’s events.",
+      "resolution4": "Reflects on the night’s events."
     }
   },
   "tokens": {
@@ -46,10 +50,6 @@
       "cultist": "-1 (-5 instead if there are 10 or more cards in your discard pile).",
       "elderThing": "-X. Discard the top 3 cards of your deck. X is the total printed cost of those discarded cards."
     }
-  },
-  "xp": {
-    "noResolution": "Reflects on the night’s events.",
-    "resolution4": "Reflects on the night’s events."
   },
   "tooltips": {
     "miskatonicQuad": {

@@ -12,6 +12,7 @@ import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
 import Arkham.Text
 import Control.Monad.State.Strict
+import GHC.Records
 
 setup :: (HasI18n, ReverseQueue m) => (HasI18n => FlavorTextBuilder ()) -> m ()
 setup body = scope "setup" $ flavor do
@@ -49,3 +50,10 @@ storyBuild :: ReverseQueue m => FlavorTextBuilder () -> m ()
 storyBuild builder = do
   players <- allPlayers
   push $ Msg.story players (buildFlavor builder)
+
+instance HasField "validate" (Scope -> FlavorTextBuilder ()) (Bool -> Scope -> FlavorTextBuilder ()) where
+  getField f cond t = do
+    let modifier = if cond then ValidEntry else InvalidEntry
+    for_ (buildFlavor (f t)).flavorBody \case
+      ModifyEntry mods inner' -> addEntry $ ModifyEntry (modifier : mods) inner'
+      inner' -> addEntry $ ModifyEntry [modifier] inner'

@@ -68,6 +68,10 @@ data FlavorText = FlavorText
   }
   deriving stock (Show, Eq, Ord, Data)
 
+mapFlavorText :: (FlavorTextEntry -> FlavorTextEntry) -> FlavorText -> FlavorText
+mapFlavorText f (FlavorText title entries) =
+  FlavorText title (map f entries)
+
 addFlavorEntry :: FlavorText -> FlavorTextEntry -> FlavorText
 addFlavorEntry (FlavorText title entries) entry' =
   FlavorText title (entries <> [entry'])

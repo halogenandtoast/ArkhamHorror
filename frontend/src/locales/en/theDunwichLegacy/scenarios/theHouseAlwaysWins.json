@@ -52,5 +52,11 @@
       "title": "Resolution 4",
       "body": "<div class='resolution'>_Resolution 4_: You are pulled from the debris by several firefighters, one of whom exclaims, “We’ve got a live one!” A few of them patch you up, and the cops ask you what happened. You’re certain they wouldn’t believe your story about horrible monstrosities demolishing the building from within. Unsure of what to say, you give a vague statement about not remembering much. “We’re bringing you to St. Mary’s,” one of the nurses says, pointing to a nearby ambulance. Knowing now how dire the situation is, you slip away while she is distracted by something else in the rubble…</p><ul><li>In your Campaign Log, record that *the O’Bannion gang has a bone to pick with the investigators*.</li><Li>In your Campaign Log, record that *Dr. Francis Morgan was kidnapped*.</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator suffers 1 physical trauma.</li><li>In your Campaign Log, record that the investigators were unconscious for several hours.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 1 experience as he or she reflects on the night’s events.<ul><li>_Experience_: {xp}</li></ul></li><li>If this is the first scenario of the campaign, proceed to Scenario I–A: Extracurricular Activity. Otherwise, proceed to Interlude I: Armitage’s Fate.</li></ul></div>"
     }
+  },
+  "label": {
+    "skull": {
+      "spend": "Spend 1 resource to treat this token as a 0, instead. | Spend {count} resources to treat this token as a 0, instead.",
+      "doNotSpend": "Do not spend resources"
+    }
   }
 }

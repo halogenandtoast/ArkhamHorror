@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.ChaosToken
 import Arkham.GameValue
 import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards (cloverClubCardroom)
 import Arkham.Location.Import.Lifted
 
@@ -27,7 +28,7 @@ instance RunMessage CloverClubCardroom where
       pure l
     RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
       chaosTokenFaces <- getModifiedChaosTokenFaces tokens
-      prompt_ iid "Apply results"
+      withI18n $ prompt_ iid "applyResults"
       for_ chaosTokenFaces \case
         ElderSign -> do
           gainClues iid (attrs.ability 1) 2

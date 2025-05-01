@@ -4,6 +4,7 @@ import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), getAdditionalSearchTargets)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Spawn
 import Arkham.Strategy
@@ -23,11 +24,11 @@ instance RunMessage OnTheHunt where
       search iid attrs EncounterDeckTarget [(FromTopOfDeck 9, ShuffleBackIn)] #any (defer attrs IsDraw)
       pure e
     SearchNoneFound iid (isTarget attrs -> True) -> do
-      prompt_ iid "No Cards were found."
+      withI18n $ prompt_ iid "noCardsFound"
       afterSearch $ drawEncounterCard iid attrs
       pure e
     SearchFound iid (isTarget attrs -> True) _ [] -> do
-      prompt_ iid "No Cards were found."
+      withI18n $ prompt_ iid "noCardsFound"
       afterSearch $ drawEncounterCard iid attrs
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards -> do
@@ -42,7 +43,7 @@ instance RunMessage OnTheHunt where
               [ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid), IgnoreRevelation]
             push $ InvestigatorDrewEncounterCard iid card
         else do
-          prompt_ iid "No enemies were found."
+          withI18n $ prompt_ iid "noEnemiesFound"
           afterSearch $ drawEncounterCard iid attrs
       pure e
     _ -> OnTheHunt <$> liftRunMessage msg attrs

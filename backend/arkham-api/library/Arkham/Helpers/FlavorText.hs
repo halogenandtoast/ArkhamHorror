@@ -5,7 +5,7 @@ import Arkham.FlavorText as X (li)
 import Arkham.FlavorText qualified as FT
 import Arkham.Helpers.Query (allPlayers)
 import Arkham.I18n
-import Arkham.I18n as X (scope, unscoped, withVars)
+import Arkham.I18n as X (scope, unscoped, withVars, withVar, countVar)
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (story)
 import Arkham.Message.Lifted.Queue

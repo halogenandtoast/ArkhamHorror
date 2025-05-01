@@ -882,8 +882,8 @@ prompt iid lbl body = do
   msgs <- evalQueueT body
   Arkham.Message.Lifted.chooseOne iid [Label lbl msgs]
 
-prompt_ :: ReverseQueue m => InvestigatorId -> Text -> m ()
-prompt_ iid lbl = Arkham.Message.Lifted.chooseOne iid [Label lbl []]
+prompt_ :: (HasI18n, ReverseQueue m) => InvestigatorId -> Text -> m ()
+prompt_ iid lbl = Arkham.Message.Lifted.chooseOne iid [Label ("$" <> ikey ("label." <> lbl)) []]
 
 aspect
   :: (ReverseQueue m, IsAspect a b, IsMessage b, Sourceable source)

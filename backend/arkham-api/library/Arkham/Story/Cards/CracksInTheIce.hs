@@ -1,5 +1,6 @@
 module Arkham.Story.Cards.CracksInTheIce (CracksInTheIce (..), cracksInTheIce) where
 
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
@@ -25,6 +26,6 @@ instance RunMessage CracksInTheIce where
       chooseOneM iid $ targets cards $ putCardOnBottomOfDeck iid TekeliliDeck
       pure s
     SearchFound iid (isTarget attrs -> True) _ [] -> do
-      prompt_ iid "No Cards Found"
+      withI18n $ prompt_ iid "noCardsFound"
       pure s
     _ -> CracksInTheIce <$> liftRunMessage msg attrs

@@ -1,5 +1,6 @@
 module Arkham.Asset.Assets.StickToThePlan3 (stickToThePlan3) where
 
+import Arkham.I18n
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
@@ -40,7 +41,7 @@ instance RunMessage StickToThePlan3 where
             $ filterCards (#event <> mapOneOf CardWithTrait [Trait.Tactic, Trait.Supply]) cards
       focusCards cards do
         if null tacticsAndSupplies
-          then prompt_ iid "No cards found"
+          then withI18n $ prompt_ iid "noCardsFound"
           else do
             totalTargets <- getTotalSearchTargets iid tacticsAndSupplies 3
             chooseUpToNM iid totalTargets "Choose no more events" do

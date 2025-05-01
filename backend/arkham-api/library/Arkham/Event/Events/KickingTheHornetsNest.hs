@@ -4,8 +4,9 @@ import Arkham.Card
 import Arkham.Enemy.Types (Field (EnemyHealth))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Matcher
 import Arkham.Helpers.Modifiers (ModifierType (..), getTotalSearchTargets)
+import Arkham.I18n
+import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Spawn
 import Arkham.Strategy
@@ -26,7 +27,7 @@ instance RunMessage KickingTheHornetsNest where
       let enemyCards = filterCards (IsEncounterCard <> #enemy) cards
       n <- getTotalSearchTargets iid enemyCards 1
       focusCards cards do
-        when (null enemyCards) $ prompt_ iid "No enemies found"
+        when (null enemyCards) $ withI18n $ prompt_ iid "noEnemiesFound"
         chooseNM iid n do
           targets enemyCards \card -> do
             searchModifier attrs card (ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid))

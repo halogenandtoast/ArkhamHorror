@@ -21,11 +21,12 @@ instance HasAbilities TempleOfTheElderThings where
     extendRevealed
       a
       [ restricted a 1 (DuringSkillTest $ SkillTestAt (be a)) $ forced $ RevealChaosToken #after You #frost
-      , restricted
-          a
-          2
-          (Here <> thisExists a (not_ LocationWithAnyClues) <> LocationCount 2 LocationWithAnyKeys)
-          actionAbility
+      , groupLimit PerGame
+          $ restricted
+            a
+            2
+            (Here <> thisExists a LocationWithoutClues <> LocationCount 2 LocationWithAnyKeys)
+            actionAbility
       ]
 
 instance RunMessage TempleOfTheElderThings where

@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Backpack (backpack, Backpack (..)) where
+module Arkham.Asset.Assets.Backpack (backpack) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -18,15 +18,13 @@ instance HasModifiersFor Backpack where
   getModifiersFor (Backpack a) = controllerGets a (AsIfInHand <$> a.cardsUnderneath)
 
 instance HasAbilities Backpack where
-  getAbilities (Backpack a) =
-    [restrictedAbility a 1 ControlsThis $ freeReaction $ AssetEntersPlay #after (be a)]
+  getAbilities (Backpack a) = [restricted a 1 ControlsThis $ freeReaction $ AssetEntersPlay #after (be a)]
 
 instance RunMessage Backpack where
   runMessage msg a@(Backpack attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = attrs.ability 1
       let matcher = basic $ NonWeakness <> oneOf [#item, #supply]
-      search iid source iid [fromTopOfDeck 6] matcher (defer attrs IsNotDraw)
+      search iid (attrs.ability 1) iid [fromTopOfDeck 6] matcher (defer attrs IsNotDraw)
       pure a
     SearchFound iid (isTarget attrs -> True) _ [] -> do
       chooseOne iid [Label "No Cards Found" []]
@@ -47,6 +45,9 @@ instance RunMessage Backpack where
       when (null remaining) $ toDiscardBy iid attrs attrs
       push msg
       pure $ Backpack $ attrs & cardsUnderneathL .~ remaining
+    ResolvedCard _ c | c.id == attrs.cardId -> do
+      when (null attrs.cardsUnderneath) $ toDiscard attrs attrs
+      pure a
     _ -> do
       let hadCards = notNull attrs.cardsUnderneath
       result <- liftRunMessage msg attrs

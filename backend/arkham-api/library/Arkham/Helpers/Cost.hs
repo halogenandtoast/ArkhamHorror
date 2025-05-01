@@ -47,6 +47,7 @@ import Arkham.Window qualified as Window
 import Control.Lens (non)
 import Control.Monad.State.Strict (evalStateT, get, put)
 import Data.List qualified as List
+import Data.Set qualified as Set
 
 getCanAffordCost
   :: (HasGame m, Sourceable source)
@@ -219,8 +220,13 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     withModifiers iid (toModifiers source [ExtraResources reduction]) do
       getCanAffordCost_ iid source actions windows' canModify cost
   RevealCost {} -> pure True
-  Costs xs ->
-    and <$> traverse (getCanAffordCost_ iid source actions windows' canModify) xs
+  Costs xs -> do
+    -- We need to check and make sure the costs don't try to exhaust the same thing twice
+    let targets = mapMaybe (preview _ExhaustCost) xs
+    let ok = length targets == length (Set.fromList targets)
+    if ok
+      then and <$> traverse (getCanAffordCost_ iid source actions windows' canModify) xs
+      else pure False
   OrCost xs ->
     or <$> traverse (getCanAffordCost_ iid source actions windows' canModify) xs
   ExhaustCost target -> case target of

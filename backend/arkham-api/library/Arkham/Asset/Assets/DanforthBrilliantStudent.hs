@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.DanforthBrilliantStudent (
-  danforthBrilliantStudent,
-  DanforthBrilliantStudent (..),
-)
-where
+module Arkham.Asset.Assets.DanforthBrilliantStudent (danforthBrilliantStudent) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -21,7 +17,7 @@ danforthBrilliantStudent = allyWith DanforthBrilliantStudent Cards.danforthBrill
 instance HasAbilities DanforthBrilliantStudent where
   getAbilities (DanforthBrilliantStudent x) =
     [ controlled x 1 (can.draw.cards You)
-        $ ReactionAbility
+        $ triggered
           (ResolvesTreachery #after You $ TreacheryWithTitle "Tekeli-li")
           (assetUseCost x Secret 1 <> exhaust x)
     ]

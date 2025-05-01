@@ -25,7 +25,7 @@ createTreachery a iid tid =
 
 instance RunMessage Treachery where
   runMessage msg t@(Treachery a) = case msg of
-    Revelation iid (isSource t -> True) -> Treachery <$> runMessage msg (overAttrs (resolvedL %~ insertSet iid) a)
+    Revelation iid (isSource t -> True) -> Treachery <$> runMessage msg (overAttrs ((resolvedL %~ insertSet iid) . (waitingL .~ True)) a)
     _ -> Treachery <$> runMessage msg a
 
 lookupTreachery :: CardCode -> InvestigatorId -> TreacheryId -> CardId -> Treachery

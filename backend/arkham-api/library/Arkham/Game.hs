@@ -1239,9 +1239,13 @@ getRemainingActsMatching matcher = do
 getTreacheriesMatching :: (HasCallStack, HasGame m) => TreacheryMatcher -> m [Treachery]
 getTreacheriesMatching matcher = do
   allGameTreacheries <- toList . view (entitiesL . treacheriesL) <$> getGame
-  filterM (matcherFilter matcher) allGameTreacheries
+  outOfPlayTreacheries <- case matcher of
+    IncludeOutOfPlayTreachery _ -> toList . view (actionRemovedEntitiesL . treacheriesL) <$> getGame
+    _ -> pure []
+  filterM (matcherFilter matcher) (allGameTreacheries <> outOfPlayTreacheries)
  where
   matcherFilter = \case
+    IncludeOutOfPlayTreachery m -> matcherFilter m
     AnyTreachery -> pure . const True
     NotTreachery m -> fmap not . matcherFilter m
     HiddenTreachery -> fieldMap TreacheryPlacement isHiddenPlacement . toId

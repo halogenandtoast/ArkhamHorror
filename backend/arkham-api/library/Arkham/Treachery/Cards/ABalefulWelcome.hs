@@ -16,7 +16,7 @@ instance RunMessage ABalefulWelcome where
   runMessage msg t@(ABalefulWelcome attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       isFirst <- isFirstCopyThisPhase attrs
-      chooseNM iid (if isFirst then 1 else 3) do
+      chooseNM iid (if isFirst then 2 else 3) do
         labeled "Investigate" do
           eachInvestigator \iid' -> roundModifier attrs iid' (CannotTakeAction #investigate)
         labeled "Fight" do

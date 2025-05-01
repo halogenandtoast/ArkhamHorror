@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedLabels #-}
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Enemy.Runner (module Arkham.Enemy.Runner, module X) where
 
@@ -1070,11 +1070,11 @@ instance RunMessage EnemyAttrs where
       pure $ a & tokensL %~ removeAllTokens Token.Damage & defeatedL .~ False
     Msg.EnemyDamage eid damageAssignment | eid == enemyId -> do
       let
-        source = damageAssignmentSource (traceShowId damageAssignment)
+        source = damageAssignmentSource damageAssignment
         damageEffect = damageAssignmentDamageEffect damageAssignment
         damageAmount = damageAssignmentAmount damageAssignment
       canDamage <- sourceCanDamageEnemy eid source
-      when (traceShowId canDamage) do
+      when canDamage do
         dealtDamageWhenMsg <-
           checkWindows [mkWhen $ Window.DealtDamage source damageEffect (toTarget a) damageAmount]
         dealtDamageAfterMsg <-

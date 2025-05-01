@@ -60,7 +60,7 @@ import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref (sourceToTarget)
-import Arkham.Helpers.Scenario (getInResolution, getIsStandalone)
+import Arkham.Helpers.Scenario (getEncounterDeckKey, getInResolution, getIsStandalone)
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.UI qualified as Msg
 import Arkham.Helpers.Window qualified as Msg
@@ -2259,6 +2259,7 @@ changeDrawnBy drawer newDrawer =
     \case
       Revelation me _ -> me == drawer
       Do (InvestigatorDrewEncounterCard me _) -> me == drawer
+      Do (InvestigatorDrewEncounterCardFrom me _ _) -> me == drawer
       InvestigatorDrawEnemy me _ -> me == drawer
       CheckWindows ws -> any (isDrawCard . Window.windowType) ws
       Do (CheckWindows ws) -> any (isDrawCard . Window.windowType) ws
@@ -2267,6 +2268,7 @@ changeDrawnBy drawer newDrawer =
       Revelation _ source' -> [Revelation newDrawer source']
       InvestigatorDrawEnemy _ eid -> [InvestigatorDrawEnemy newDrawer eid]
       Do (InvestigatorDrewEncounterCard _ c) -> [Do (InvestigatorDrewEncounterCard newDrawer c)]
+      Do (InvestigatorDrewEncounterCardFrom _ c frm) -> [Do (InvestigatorDrewEncounterCardFrom newDrawer c frm)]
       CheckWindows ws -> [CheckWindows $ map changeWindow ws]
       Do (CheckWindows ws) -> [Do (CheckWindows $ map changeWindow ws)]
       _ -> error "wrong message found"
@@ -2458,8 +2460,13 @@ discardUntilFirst
   -> deck
   -> ExtendedCardMatcher
   -> m ()
-discardUntilFirst iid source deck matcher = do
-  push $ DiscardUntilFirst iid (toSource source) (toDeck deck) matcher
+discardUntilFirst iid source deck matcher = case toDeck deck of
+  Deck.EncounterDeck -> whenM (can.target.encounterDeck iid) do
+    key <- getEncounterDeckKey iid
+    push $ DiscardUntilFirst iid (toSource source) (toDeck key) matcher
+  other@(Deck.EncounterDeckByKey _) -> whenM (can.target.encounterDeck iid) do
+    push $ DiscardUntilFirst iid (toSource source) other matcher
+  other -> push $ DiscardUntilFirst iid (toSource source) other matcher
 
 discardUntilN
   :: (ReverseQueue m, Sourceable source, IsDeck deck, Targetable target)

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Enemy where
 
 import Arkham.Asset.Types (Field (..))

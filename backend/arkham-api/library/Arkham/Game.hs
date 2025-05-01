@@ -2097,7 +2097,7 @@ getLocationsMatching lmatcher = do
           if valid then getLocationsMatching connectedTo else pure []
       matcherSupreme <- foldMapM (fmap AnyLocationMatcher . Helpers.getConnectedMatcher) starts
       allOptions <- (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
-      pure $ filter (`elem` allOptions) ls
+      pure $ filter ((`notElem` starts) . toId) $ filter (`elem` allOptions) ls
     AccessibleFrom matcher -> do
       -- we need to add the (ConnectedToWhen)
       -- NOTE: We need to not filter the starts

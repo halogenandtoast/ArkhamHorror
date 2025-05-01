@@ -56,7 +56,7 @@ instance RunMessage SixthSenseEffect where
           when (token.face `elem` [Skull, Cultist, Tablet, ElderThing]) $ do
             currentShroud <- fieldJust LocationShroud lid
             locations <-
-              selectWithField LocationShroud (ConnectedLocation <> RevealedLocation)
+              selectWithField LocationShroud (ConnectedFrom (locationWithInvestigator iid) <> RevealedLocation)
                 <&> mapMaybe (\(loc, mshroud) -> (loc,) <$> mshroud)
             locationsWithAdditionalCosts <- forMaybeM locations \location@(lid', _) -> do
               mods <- getModifiers lid'

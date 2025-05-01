@@ -55,7 +55,7 @@ instance RunMessage SixthSense4Effect where
     DoStep 1 (RevealChaosToken (SkillTestSource sid) iid token) | maybe False (isTarget sid) attrs.metaTarget -> do
       case attrs.target of
         InvestigationTarget iid' lid | iid == iid' -> do
-          when (token.face `elem` [Skull, Cultist, Tablet, ElderThing]) $ do
+          when (token.face `elem` [Skull, Cultist, Tablet, ElderThing]) do
             currentShroud <- fieldJust LocationShroud lid
             locations <-
               selectWithField
@@ -63,11 +63,12 @@ instance RunMessage SixthSense4Effect where
                 (LocationWithDistanceFromAtMost 2 (locationWithInvestigator iid) RevealedLocation)
                 <&> mapMaybe (\(loc, mshroud) -> (loc,) <$> mshroud)
 
-            locationsWithAdditionalCosts <- forMaybeM locations \location@(lid', _) -> do
+            locationsWithAdditionalCosts <- forMaybeM locations \location@(lid', _) -> runMaybeT do
+              guard $ lid /= lid'
               mods <- getModifiers lid'
               let costs = fold [m | AdditionalCostToInvestigate m <- mods]
-              canAfford <- getCanAffordCost iid attrs [#investigate] [] costs
-              pure $ guard canAfford $> (location, costs)
+              liftGuardM $ getCanAffordCost iid attrs [#investigate] [] costs
+              pure (location, costs)
             batchId <- getRandom
             currentTarget <- fromMaybe (toTarget lid) <$> getSkillTestTarget
             chooseOneM iid do

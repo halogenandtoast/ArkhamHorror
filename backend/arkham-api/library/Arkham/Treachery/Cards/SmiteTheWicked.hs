@@ -1,9 +1,8 @@
 module Arkham.Treachery.Cards.SmiteTheWicked (smiteTheWicked) where
 
+import Arkham.Deck qualified as Deck
 import Arkham.Ability
-import Arkham.Capability
 import Arkham.Enemy.Creation
-import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
@@ -25,9 +24,7 @@ instance HasAbilities SmiteTheWicked where
 instance RunMessage SmiteTheWicked where
   runMessage msg t@(SmiteTheWicked attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      whenM (can.target.encounterDeck iid) do
-        key <- getEncounterDeckKey iid
-        discardUntilFirst iid attrs key #enemy
+      discardUntilFirst iid attrs Deck.EncounterDeck #enemy
       pure t
     RequestedEncounterCard (isSource attrs -> True) _ (Just card) -> do
       focusCards [card] do

@@ -1,4 +1,5 @@
 import base from '@/locales/en/base.json'
+import label from '@/locales/en/label.json'
 import campaignLog from '@/locales/en/campaignLog.json'
 import nightOfTheZealot from '@/locales/en/nightOfTheZealot'
 import theDunwichLegacy from '@/locales/en/theDunwichLegacy'
@@ -12,4 +13,4 @@ import standalone from '@/locales/en/standalone'
 import gameBoard from '@/locales/en/gameBoard/gameBoard'
 import xp from '@/locales/en/xp.json'
 
-export default {...base, ...campaignLog, ...gameBoard, xp, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, standalone}
+export default {...base, ...campaignLog, ...gameBoard, label, xp, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, standalone}

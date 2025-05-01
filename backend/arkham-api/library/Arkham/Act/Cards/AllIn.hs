@@ -2,16 +2,14 @@ module Arkham.Act.Cards.AllIn (allIn) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
-import Arkham.Classes
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Resolution
 
 newtype AllIn = AllIn ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -21,41 +19,34 @@ allIn :: ActCard AllIn
 allIn = act (3, A) AllIn Cards.allIn Nothing
 
 instance HasAbilities AllIn where
-  getAbilities (AllIn x) =
-    withBaseAbilities x
-      $ guard (onSide A x)
-      *> [ skillTestAbility
-             $ restrictedAbility
-               (proxied (AssetMatcherSource $ assetIs Assets.drFrancisMorgan) x)
-               1
-               (Uncontrolled <> OnSameLocation)
-               parleyAction_
-         , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned
-             $ Objective
-             $ forced AnyWindow
-         ]
+  getAbilities = actAbilities \x ->
+    [ skillTestAbility
+        $ restricted
+          (proxied (assetIs Assets.drFrancisMorgan) x)
+          1
+          (Uncontrolled <> OnSameLocation)
+          parleyAction_
+    , restricted x 1 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
+    ]
 
 instance RunMessage AllIn where
-  runMessage msg a@(AllIn attrs@ActAttrs {..}) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ AdvanceAct (toId attrs) source AdvancedWithOther
+  runMessage msg a@(AllIn attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       resignedWithDrFrancisMorgan <- resignedWith Assets.drFrancisMorgan
-      push $ ScenarioResolution $ Resolution $ if resignedWithDrFrancisMorgan then 2 else 1
+      push $ if resignedWithDrFrancisMorgan then R2 else R1
       pure a
-    UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source && onSide A attrs -> do
-      aid <- selectJust $ assetIs Assets.drFrancisMorgan
+    UseThisAbility iid (ProxySource (AssetSource aid) (isSource attrs -> True)) 1 | onSide A attrs -> do
       sid <- getRandom
-      push $ parley sid iid source aid #willpower (Fixed 3)
+      parley sid iid attrs aid #willpower (Fixed 3)
       pure a
     PassedThisSkillTest iid (isSource attrs -> True) | onSide A attrs -> do
       aid <- selectJust $ assetIs Assets.drFrancisMorgan
       currentClueCount <- field AssetClues aid
       requiredClueCount <- perPlayer 1
-      push $ PlaceClues (toAbilitySource attrs 1) (AssetTarget aid) 1
-      pushWhen
-        (currentClueCount + 1 >= requiredClueCount)
-        (TakeControlOfAsset iid aid)
+      placeClues (attrs.ability 1) aid 1
+      when (currentClueCount + 1 >= requiredClueCount) $ takeControlOfAsset iid aid
       pure a
-    _ -> AllIn <$> runMessage msg attrs
+    _ -> AllIn <$> liftRunMessage msg attrs

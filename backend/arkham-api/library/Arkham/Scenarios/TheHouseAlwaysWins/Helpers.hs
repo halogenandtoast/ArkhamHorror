@@ -19,3 +19,10 @@ cheated = do
   pure $ flip mapMaybe allKeys $ \case
     Cheated (Labeled _ iid) -> Just iid
     _ -> Nothing
+
+hadDrinks :: HasGame m => m [InvestigatorId]
+hadDrinks = do
+  allKeys <- setToList <$> scenarioField ScenarioRemembered
+  pure $ flip mapMaybe allKeys $ \case
+    HadADrink x -> Just $ unLabel x
+    _ -> Nothing

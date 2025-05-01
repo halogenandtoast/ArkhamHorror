@@ -1,8 +1,4 @@
-module Arkham.Treachery.Cards.PushedIntoTheBeyond (
-  PushedIntoTheBeyond (..),
-  pushedIntoTheBeyond,
-  pushedIntoTheBeyondEffect,
-) where
+module Arkham.Treachery.Cards.PushedIntoTheBeyond (pushedIntoTheBeyond, pushedIntoTheBeyondEffect) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
@@ -28,12 +24,11 @@ instance RunMessage PushedIntoTheBeyond where
           $ assetControlledBy iid
           <> AssetNonStory
           <> AssetCanLeavePlayByNormalMeans
-      when (notNull choices) do
-        chooseOneM iid do
-          for_ choices \(aid, cardCode) ->
-            targeting aid do
-              shuffleIntoDeck iid aid
-              createCardEffect Cards.pushedIntoTheBeyond (Just (EffectCardCodes [cardCode])) attrs iid
+      chooseOneM iid do
+        for_ choices \(aid, cardCode) ->
+          targeting aid do
+            shuffleIntoDeck iid aid
+            createCardEffect Cards.pushedIntoTheBeyond (Just (EffectCardCodes [cardCode])) attrs iid
       pure t
     _ -> PushedIntoTheBeyond <$> liftRunMessage msg attrs
 
@@ -47,7 +42,7 @@ pushedIntoTheBeyondEffect = cardEffect PushedIntoTheBeyondEffect Cards.pushedInt
 instance RunMessage PushedIntoTheBeyondEffect where
   runMessage msg e@(PushedIntoTheBeyondEffect attrs) = runQueueT $ case msg of
     CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == attrs.id -> do
-      push $ DiscardTopOfDeck iid 3 attrs.source (Just $ EffectTarget eid)
+      discardTopOfDeckAndHandle iid attrs.source 3 (EffectTarget eid)
       pure e
     DiscardedTopOfDeck iid cards _ (EffectTarget eid) | eid == attrs.id -> do
       case attrs.metadata of

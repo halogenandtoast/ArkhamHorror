@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.HuntedDown (HuntedDown (..), huntedDown) where
+module Arkham.Treachery.Cards.HuntedDown (huntedDown) where
 
 import Arkham.Helpers.Location
 import Arkham.Matcher

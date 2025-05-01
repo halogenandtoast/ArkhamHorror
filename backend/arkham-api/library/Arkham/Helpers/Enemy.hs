@@ -19,7 +19,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref
 import Arkham.Helpers.Source (sourceMatches)
-import Arkham.Helpers.Window
+import Arkham.Helpers.Window hiding (attackSource)
 import Arkham.Id
 import Arkham.Keyword hiding (Surge)
 import Arkham.Matcher hiding (canEnterLocation)

@@ -1,15 +1,12 @@
 module Arkham.Enemy.Cards.ConglomerationOfSpheres (conglomerationOfSpheres) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Ref
+import Arkham.Helpers.Window (attackSource)
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype ConglomerationOfSpheres = ConglomerationOfSpheres EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -17,22 +14,16 @@ newtype ConglomerationOfSpheres = ConglomerationOfSpheres EnemyAttrs
 
 conglomerationOfSpheres :: EnemyCard ConglomerationOfSpheres
 conglomerationOfSpheres =
-  enemyWith ConglomerationOfSpheres Cards.conglomerationOfSpheres (1, Static 6, 4) (1, 1)
-    $ preyL
-    .~ Prey (InvestigatorWithLowestSkill #willpower UneliminatedInvestigator)
+  enemy ConglomerationOfSpheres Cards.conglomerationOfSpheres (1, Static 6, 4) (1, 1)
+    & setPrey (InvestigatorWithLowestSkill #willpower UneliminatedInvestigator)
 
 instance HasAbilities ConglomerationOfSpheres where
   getAbilities (ConglomerationOfSpheres x) =
-    extend x [mkAbility x 1 $ forced $ EnemyAttacked #after You (SourceWithTrait Melee) (be x)]
+    extend1 x $ mkAbility x 1 $ forced $ EnemyAttacked #after You (SourceWithTrait Melee) (be x)
 
 instance RunMessage ConglomerationOfSpheres where
-  runMessage msg e@(ConglomerationOfSpheres attrs) = case msg of
-    UseCardAbility
-      iid
-      (isSource attrs -> True)
-      1
-      [windowType -> Window.EnemyAttacked _ attackSource _]
-      _ -> do
-        push $ toDiscardBy iid (attrs.ability 1) (sourceToTarget attackSource)
-        pure e
-    _ -> ConglomerationOfSpheres <$> runMessage msg attrs
+  runMessage msg e@(ConglomerationOfSpheres attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 (attackSource -> source) _ -> do
+      toDiscardBy iid (attrs.ability 1) (sourceToTarget source)
+      pure e
+    _ -> ConglomerationOfSpheres <$> liftRunMessage msg attrs

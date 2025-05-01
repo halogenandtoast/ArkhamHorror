@@ -25,7 +25,7 @@ import {-# SOURCE #-} Arkham.Placement
 import Arkham.Prelude
 import {-# SOURCE #-} Arkham.Source
 import Arkham.Token
-import Arkham.Trait (Trait (Ghoul))
+import Arkham.Trait (Trait (Ghoul, Criminal))
 import Arkham.Zone
 import Control.Lens.Plated (Plated)
 import Data.Aeson.TH
@@ -164,6 +164,9 @@ instance IsLabel "unengaged" EnemyMatcher where
 
 instance IsLabel "ghoul" EnemyMatcher where
   fromLabel = EnemyWithTrait Ghoul
+
+instance IsLabel "criminal" EnemyMatcher where
+  fromLabel = EnemyWithTrait Criminal
 
 instance Semigroup EnemyMatcher where
   AnyEnemy <> x = x

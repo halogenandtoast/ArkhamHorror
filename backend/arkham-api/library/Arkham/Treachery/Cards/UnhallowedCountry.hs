@@ -1,9 +1,8 @@
-module Arkham.Treachery.Cards.UnhallowedCountry (UnhallowedCountry (..), unhallowedCountry) where
+module Arkham.Treachery.Cards.UnhallowedCountry (unhallowedCountry) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -15,15 +14,12 @@ unhallowedCountry :: TreacheryCard UnhallowedCountry
 unhallowedCountry = treachery UnhallowedCountry Cards.unhallowedCountry
 
 instance HasModifiersFor UnhallowedCountry where
-  getModifiersFor (UnhallowedCountry attrs) = case attrs.placement of
-    InThreatArea iid -> do
-      threat <- inThreatAreaGets attrs [CannotPlay (#asset <> #ally)]
-      assets <- modifySelect attrs (#ally <> assetControlledBy iid) [Blank]
-      pure $ threat <> assets
-    _ -> pure mempty
+  getModifiersFor (UnhallowedCountry attrs) = for_ attrs.placement.inThreatAreaOf \iid -> do
+    inThreatAreaGets attrs [CannotPlay (#asset <> #ally)]
+    modifySelect attrs (#ally <> assetControlledBy iid) [Blank]
 
 instance HasAbilities UnhallowedCountry where
-  getAbilities (UnhallowedCountry x) = [skillTestAbility $ restrictedAbility x 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You]
+  getAbilities (UnhallowedCountry x) = [skillTestAbility $ restricted x 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You]
 
 instance RunMessage UnhallowedCountry where
   runMessage msg t@(UnhallowedCountry attrs) = runQueueT $ case msg of

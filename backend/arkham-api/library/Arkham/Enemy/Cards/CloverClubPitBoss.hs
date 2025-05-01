@@ -1,11 +1,9 @@
-module Arkham.Enemy.Cards.CloverClubPitBoss (CloverClubPitBoss (..), cloverClubPitBoss) where
+module Arkham.Enemy.Cards.CloverClubPitBoss (cloverClubPitBoss) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype CloverClubPitBoss = CloverClubPitBoss EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -19,20 +17,13 @@ cloverClubPitBoss =
 
 instance HasAbilities CloverClubPitBoss where
   getAbilities (CloverClubPitBoss x) =
-    extend
-      x
-      [ restrictedAbility x 1 OnSameLocation
-          $ forced
-          $ GainsClues #after You AnyValue
-      ]
+    extend1 x $ restricted x 1 OnSameLocation $ forced $ GainsClues #after You AnyValue
 
 instance RunMessage CloverClubPitBoss where
-  runMessage msg e@(CloverClubPitBoss attrs) = case msg of
+  runMessage msg e@(CloverClubPitBoss attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushAll
-        $ [Ready (toTarget attrs) | enemyExhausted attrs]
-        <> [ EnemyEngageInvestigator (toId attrs) iid
-           , EnemyAttackIfEngaged (toId attrs) (Just iid)
-           ]
+      when attrs.exhausted $ readyThis attrs
+      enemyEngageInvestigator attrs iid
+      attackIfEngaged attrs (Just iid)
       pure e
-    _ -> CloverClubPitBoss <$> runMessage msg attrs
+    _ -> CloverClubPitBoss <$> liftRunMessage msg attrs

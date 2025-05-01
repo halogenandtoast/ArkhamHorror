@@ -2447,7 +2447,6 @@ library
       Arkham.Helpers.Investigator
       Arkham.Helpers.Location
       Arkham.Helpers.Log
-      Arkham.Helpers.Matchers
       Arkham.Helpers.Message
       Arkham.Helpers.Message.Discard
       Arkham.Helpers.Message.Discard.Lifted

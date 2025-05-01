@@ -27,6 +27,7 @@ import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
+import Arkham.Spawn
 import Arkham.Strategy
 import Arkham.Target
 import Arkham.Token
@@ -166,6 +167,16 @@ enemy f cardDef stats damageStats = enemyWith f cardDef stats damageStats id
 
 preyIsBearer :: EnemyAttrs -> EnemyAttrs
 preyIsBearer a = a {enemyPrey = BearerOf (toId a)}
+
+setPrey
+  :: (Entity a, EntityAttrs a ~ EnemyAttrs)
+  => InvestigatorMatcher -> CardBuilder EnemyId a -> CardBuilder EnemyId a
+setPrey prey = fmap (overAttrs (\a -> a {enemyPrey = Prey prey}))
+
+setSpawnAt
+  :: (Entity a, EntityAttrs a ~ EnemyAttrs)
+  => LocationMatcher -> CardBuilder EnemyId a -> CardBuilder EnemyId a
+setSpawnAt spawnAt = fmap (overAttrs (\a -> a {enemySpawnAt = Just (SpawnAt spawnAt)}))
 
 enemyWith
   :: (EnemyAttrs -> a)

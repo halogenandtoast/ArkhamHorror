@@ -1,13 +1,10 @@
-module Arkham.Asset.Assets.ZoeysCross (ZoeysCross (..), zoeysCross) where
+module Arkham.Asset.Assets.ZoeysCross (zoeysCross) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.DamageEffect
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Window
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Prelude
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype ZoeysCross = ZoeysCross AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -18,14 +15,13 @@ zoeysCross = asset ZoeysCross Cards.zoeysCross
 
 instance HasAbilities ZoeysCross where
   getAbilities (ZoeysCross x) =
-    [ restrictedAbility x 1 (ControlsThis <> CanDealDamage)
-        $ ReactionAbility (EnemyEngaged #after You AnyEnemy)
-        $ Costs [exhaust x, ResourceCost 1]
+    [ controlled x 1 CanDealDamage
+        $ triggered (EnemyEngaged #after You (canBeDamagedBy x)) (exhaust x <> ResourceCost 1)
     ]
 
 instance RunMessage ZoeysCross where
-  runMessage msg a@(ZoeysCross attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 [(windowType -> Window.EnemyEngaged _ eid)] _ -> do
-      push $ EnemyDamage eid $ nonAttack (Just iid) attrs 1
+  runMessage msg a@(ZoeysCross attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 (engagedEnemy -> eid) _ -> do
+      nonAttackEnemyDamage (Just iid) attrs 1 eid
       pure a
-    _ -> ZoeysCross <$> runMessage msg attrs
+    _ -> ZoeysCross <$> liftRunMessage msg attrs

@@ -30,12 +30,13 @@ instance RunMessage SmiteTheWicked where
         discardUntilFirst iid attrs key #enemy
       pure t
     RequestedEncounterCard (isSource attrs -> True) _ (Just card) -> do
-      for_ attrs.owner \ownerId -> do
-        createEnemyWith card (FarthestLocationFromInvestigator (be ownerId) Anywhere) \x ->
-          x
-            { enemyCreationInvestigator = Just ownerId
-            , enemyCreationBefore = [PlaceTreachery (toId attrs) (AttachedToEnemy $ enemyCreationEnemyId x)]
-            }
+      focusCards [card] do
+        for_ attrs.owner \ownerId -> do
+          createEnemyWith card (FarthestLocationFromInvestigator (be ownerId) Anywhere) \x ->
+            x
+              { enemyCreationInvestigator = Just ownerId
+              , enemyCreationBefore = [PlaceTreachery (toId attrs) (AttachedToEnemy $ enemyCreationEnemyId x)]
+              }
       pure t
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       for_ attrs.owner (`sufferMentalTrauma` 1)

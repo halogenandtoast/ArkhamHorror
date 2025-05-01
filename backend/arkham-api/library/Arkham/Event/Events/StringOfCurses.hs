@@ -1,4 +1,4 @@
-module Arkham.Event.Events.StringOfCurses (stringOfCurses, StringOfCurses (..)) where
+module Arkham.Event.Events.StringOfCurses (stringOfCurses) where
 
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
@@ -35,7 +35,7 @@ instance RunMessage StringOfCurses where
           labeled
             "Automatically evade that enemy and place 1 doom on it. It cannot take damage for the remainder of the round. Discover 1 clue at your location."
             do
-              push $ EnemyEvaded iid eid
+              automaticallyEvadeEnemy iid eid
               placeDoom attrs eid 1
               roundModifier attrs eid CannotBeDamaged
               discoverAtYourLocation NotInvestigate iid attrs 1

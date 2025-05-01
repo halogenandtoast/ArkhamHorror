@@ -8,7 +8,6 @@ import Arkham.Enemy.Runner (filterOutEnemyMessages)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Token
 
 newtype HuntingHorror = HuntingHorror EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -44,18 +43,13 @@ instance RunMessage HuntingHorror where
       push $ PlaceEnemyOutOfPlay VoidZone attrs.id
       pure e
     EnemySpawnFromOutOfPlay VoidZone _miid _lid eid | eid == attrs.id -> do
-      pure
-        . HuntingHorror
-        $ attrs
-        & (tokensL %~ removeAllTokens #doom . removeAllTokens #clue . removeAllTokens #damage)
-        & (defeatedL .~ False)
-        & (exhaustedL .~ False)
+      pure . HuntingHorror $ attrs & (defeatedL .~ False) & (exhaustedL .~ False)
     PlaceEnemyOutOfPlay VoidZone eid | eid == attrs.id -> do
       lift $ withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
       pure
         . HuntingHorror
         $ attrs
-        & (tokensL %~ removeAllTokens #doom . removeAllTokens #clue . removeAllTokens #damage)
+        & (tokensL %~ mempty)
         & (placementL .~ OutOfPlay VoidZone)
         & (defeatedL .~ False)
         & (exhaustedL .~ False)

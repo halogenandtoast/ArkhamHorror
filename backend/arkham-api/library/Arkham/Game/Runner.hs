@@ -3014,7 +3014,7 @@ runGameMessage msg g = case msg of
   UnsetActiveCard -> pure $ g & activeCardL .~ Nothing
   AfterRevelation iid treacheryId -> do
     afterResolve <- checkAfter $ Window.ResolvesTreachery iid treacheryId
-    push afterResolve
+    pushAll [afterResolve, Do msg]
     pure $ g & activeCardL .~ Nothing
   AddCardEntity card -> do
     let

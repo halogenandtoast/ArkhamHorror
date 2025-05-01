@@ -2142,6 +2142,7 @@ quietCancelCardDraw card = do
   mtarget <- getCardEntityTarget card
   lift $ Msg.removeAllMessagesMatching \case
     Do (InvestigatorDrewEncounterCard _ c) -> c.id == card.id
+    Do (InvestigatorDrewEncounterCardFrom _ c _) -> c.id == card.id
     InvestigatorDrewEncounterCard _ c -> c.id == card.id
     Do (InvestigatorDrewPlayerCardFrom _ c _) -> c.id == card.id
     InvestigatorDrewPlayerCardFrom _ c _ -> c.id == card.id

@@ -171,4 +171,6 @@ instance RunMessage TreacheryAttrs where
       pure a
     Ready (isTarget a -> True) -> do
       pure $ a & exhaustedL .~ False
+    Do (AfterRevelation _ tid) | tid == treacheryId -> do
+      pure $ a & waitingL .~ False
     _ -> pure a

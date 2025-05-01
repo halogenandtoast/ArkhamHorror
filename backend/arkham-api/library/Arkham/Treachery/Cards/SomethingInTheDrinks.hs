@@ -1,35 +1,19 @@
 module Arkham.Treachery.Cards.SomethingInTheDrinks (somethingInTheDrinks) where
 
-import Arkham.Classes
-import Arkham.Classes.HasGame
-import Arkham.Helpers.Scenario (scenarioField)
-import Arkham.Id
-import Arkham.Name
-import Arkham.Prelude
-import Arkham.Scenario.Types (Field (..))
-import Arkham.ScenarioLogKey
+import Arkham.Scenarios.TheHouseAlwaysWins.Helpers
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype SomethingInTheDrinks = SomethingInTheDrinks TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 somethingInTheDrinks :: TreacheryCard SomethingInTheDrinks
-somethingInTheDrinks =
-  treachery SomethingInTheDrinks Cards.somethingInTheDrinks
-
-hadDrinks :: HasGame m => m [InvestigatorId]
-hadDrinks = do
-  allKeys <- setToList <$> scenarioField ScenarioRemembered
-  pure $ flip mapMaybe allKeys $ \case
-    HadADrink (Labeled _ iid) -> Just iid
-    _ -> Nothing
+somethingInTheDrinks = treachery SomethingInTheDrinks Cards.somethingInTheDrinks
 
 instance RunMessage SomethingInTheDrinks where
-  runMessage msg t@(SomethingInTheDrinks attrs) = case msg of
-    Revelation _ source | isSource attrs source -> do
-      investigatorIds <- hadDrinks
-      pushAll $ [LoseActions iid source 1 | iid <- investigatorIds] <> [Continue "Continue"]
+  runMessage msg t@(SomethingInTheDrinks attrs) = runQueueT $ case msg of
+    Revelation _ (isSource attrs -> True) -> do
+      each_ hadDrinks \drinker -> loseActions drinker attrs 1
       pure t
-    _ -> SomethingInTheDrinks <$> runMessage msg attrs
+    _ -> SomethingInTheDrinks <$> liftRunMessage msg attrs

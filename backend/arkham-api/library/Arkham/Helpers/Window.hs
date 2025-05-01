@@ -259,6 +259,12 @@ attackedEnemy =
     (windowType -> Window.FailAttackEnemy _ eid _) -> Just eid
     _ -> Nothing
 
+attackSource :: HasCallStack => [Window] -> Source
+attackSource =
+  fromMaybe (error "missing enemy") . asum . map \case
+    (windowType -> Window.EnemyAttacked _ source _) -> Just source
+    _ -> Nothing
+
 evadedEnemy :: HasCallStack => [Window] -> EnemyId
 evadedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
@@ -1531,11 +1537,11 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         _ -> noMatch
     Matcher.EnemyAttacked timing whoMatcher sourceMatcher enemyMatcher ->
       guardTiming timing $ \case
-        Window.EnemyAttacked who attackSource enemyId ->
+        Window.EnemyAttacked who source' enemyId ->
           andM
             [ matchWho iid who whoMatcher
             , matches enemyId enemyMatcher
-            , sourceMatches attackSource sourceMatcher
+            , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
     Matcher.EnemyAttackedSuccessfully timing whoMatcher sourceMatcher enemyMatcher ->

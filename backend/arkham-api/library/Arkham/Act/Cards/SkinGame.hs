@@ -2,15 +2,13 @@ module Arkham.Act.Cards.SkinGame (skinGame) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Trait
 
 newtype SkinGame = SkinGame ActAttrs
@@ -25,33 +23,23 @@ skinGame =
     $ LocationWithTitle "VIP Area"
 
 instance RunMessage SkinGame where
-  runMessage msg a@(SkinGame attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+  runMessage msg a@(SkinGame attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       completedExtracurricularActivity <- anyM completedScenario ["02041", "51012"]
       lead <- getLead
-      peterClover <- genCard Assets.peterClover
-      drFrancisMorgan <- genCard Assets.drFrancisMorgan
-      cloverClubBarId <- getJustLocationByName "Clover Club Bar"
-      vipAreaId <- getJustLocationByName "VIP Area"
-      assetId <- getRandom
-      pushAll
-        $ if completedExtracurricularActivity
-          then
-            [ CreateAssetAt assetId peterClover (AtLocation cloverClubBarId)
-            , FindEncounterCard
-                lead
-                (toTarget attrs)
-                (FromEncounterDeck : allOutOfPlayZones)
-                (CardWithType EnemyType <> CardWithTrait Abomination)
-            , AdvanceToAct (actDeckId attrs) Acts.fold A (toSource attrs)
-            ]
-          else
-            [ CreateAssetAt assetId drFrancisMorgan (AtLocation vipAreaId)
-            , AdvanceToAct (actDeckId attrs) Acts.allIn A (toSource attrs)
-            ]
+      if completedExtracurricularActivity
+        then do
+          cloverClubBar <- getJustLocationByName "Clover Club Bar"
+          createAssetAt_ Assets.peterClover (AtLocation cloverClubBar)
+          findEncounterCardIn lead attrs (card_ $ #enemy <> withTrait Abomination) (#deck : allOutOfPlayZones)
+          advanceToAct attrs Acts.fold A
+        else do
+          vipArea <- getJustLocationByName "VIP Area"
+          createAssetAt_ Assets.drFrancisMorgan (AtLocation vipArea)
+          advanceToAct attrs Acts.allIn A
       pure a
-    FoundEncounterCard _ target ec | isTarget attrs target -> do
-      cloverClubBarId <- getJustLocationByName "Clover Club Bar"
-      push $ SpawnEnemyAt (EncounterCard ec) cloverClubBarId
+    FoundEncounterCard _ (isTarget attrs -> True) ec -> do
+      cloverClubBar <- getJustLocationByName "Clover Club Bar"
+      spawnEnemyAt_ ec cloverClubBar
       pure a
-    _ -> SkinGame <$> runMessage msg attrs
+    _ -> SkinGame <$> liftRunMessage msg attrs

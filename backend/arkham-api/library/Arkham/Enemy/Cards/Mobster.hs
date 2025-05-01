@@ -1,16 +1,9 @@
-module Arkham.Enemy.Cards.Mobster (
-  mobster,
-  Mobster (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.Mobster (mobster) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype Mobster = Mobster EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -21,18 +14,11 @@ mobster = enemy Mobster Cards.mobster (2, Static 2, 2) (1, 0)
 
 instance HasAbilities Mobster where
   getAbilities (Mobster x) =
-    withBaseAbilities
-      x
-      [ mkAbility x 1
-          $ ForcedAbility
-          $ EnemyAttacks Timing.After You AnyEnemyAttack
-          $ EnemyWithId
-          $ toId x
-      ]
+    extend1 x $ mkAbility x 1 $ forced $ EnemyAttacks #after You AnyEnemyAttack (be x)
 
 instance RunMessage Mobster where
-  runMessage msg e@(Mobster attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ LoseResources iid (attrs.ability 1) 1
+  runMessage msg e@(Mobster attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      loseResources iid (attrs.ability 1) 1
       pure e
-    _ -> Mobster <$> runMessage msg attrs
+    _ -> Mobster <$> liftRunMessage msg attrs

@@ -790,3 +790,8 @@ inThreatAreaGets a mods = case a.placement of
 
 pattern CannotMoveTo :: LocationMatcher -> ModifierType
 pattern CannotMoveTo lm = AdditionalCostToEnterMatching lm UnpayableCost
+
+everyoneGets
+  :: (Sourceable source, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => source -> [ModifierType] -> m ()
+everyoneGets attrs = modifySelect attrs Anyone

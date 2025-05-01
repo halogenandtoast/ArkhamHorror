@@ -1,10 +1,8 @@
-module Arkham.Enemy.Cards.LupineThrall (LupineThrall (..), lupineThrall) where
+module Arkham.Enemy.Cards.LupineThrall (lupineThrall) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype LupineThrall = LupineThrall EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -12,9 +10,9 @@ newtype LupineThrall = LupineThrall EnemyAttrs
 
 lupineThrall :: EnemyCard LupineThrall
 lupineThrall =
-  enemyWith LupineThrall Cards.lupineThrall (4, Static 3, 4) (1, 1)
-    $ (preyL .~ Prey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator))
-    . (spawnAtL ?~ SpawnAt (FarthestLocationFromYou Anywhere))
+  enemy LupineThrall Cards.lupineThrall (4, Static 3, 4) (1, 1)
+    & setPrey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
+    & setSpawnAt (FarthestLocationFromYou Anywhere)
 
 instance RunMessage LupineThrall where
   runMessage msg (LupineThrall attrs) = LupineThrall <$> runMessage msg attrs

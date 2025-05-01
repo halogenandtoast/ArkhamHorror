@@ -1,14 +1,13 @@
 module Arkham.Enemy.Cards.AvianThrall (avianThrall) where
 
 import Arkham.Action qualified as Action
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner hiding (EnemyFight)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Source
 import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier
-import Arkham.Prelude
 import Arkham.Trait
 
 newtype AvianThrall = AvianThrall EnemyAttrs
@@ -17,9 +16,8 @@ newtype AvianThrall = AvianThrall EnemyAttrs
 
 avianThrall :: EnemyCard AvianThrall
 avianThrall =
-  enemyWith AvianThrall Cards.avianThrall (5, Static 4, 3) (1, 1)
-    $ preyL
-    .~ Prey (InvestigatorWithLowestSkill #intellect UneliminatedInvestigator)
+  enemy AvianThrall Cards.avianThrall (5, Static 4, 3) (1, 1)
+    & setPrey (InvestigatorWithLowestSkill #intellect UneliminatedInvestigator)
 
 instance HasModifiersFor AvianThrall where
   getModifiersFor (AvianThrall a) = modifySelfMaybe a do

@@ -2041,6 +2041,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         locationWindowsBefore <- checkWindows [mkWhen (Window.DiscoverClues iid lid d.source clueCount)]
         locationWindowsAfter <-
           checkWindows $ mkAfter (Window.DiscoverClues iid lid d.source clueCount)
+            : mkAfter (Window.GainsClues iid d.source clueCount)
             : [mkAfter (Window.DiscoveringLastClue iid lid) | lastClue]
 
         pushAll

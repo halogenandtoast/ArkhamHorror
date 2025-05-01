@@ -21,8 +21,8 @@ import Arkham.Act.Runner as X (
   push,
   pushAll,
   targetLabel,
-  pattern PassedThisSkillTest,
   pattern FailedThisSkillTest,
+  pattern PassedThisSkillTest,
   pattern R1,
   pattern R2,
   pattern R3,
@@ -46,6 +46,7 @@ import Arkham.Source as X
 import Arkham.Target as X
 import Arkham.Text as X
 
+import Arkham.Ability.Types
 import Arkham.Card.CardDef
 import Arkham.Helpers.Act qualified as Msg
 import Arkham.Matcher
@@ -60,3 +61,6 @@ advanceVia method actId source = push $ Msg.advanceVia method actId source
 
 ifEnemyDefeated :: CardDef -> WindowMatcher
 ifEnemyDefeated = EnemyDefeated #after Anyone ByAny . enemyIs
+
+actAbilities :: (EntityAttrs act ~ ActAttrs, Entity act) => (ActAttrs -> [Ability]) -> act -> [Ability]
+actAbilities abilities (toAttrs -> attrs) = extend attrs $ guard (onSide A attrs) *> abilities attrs

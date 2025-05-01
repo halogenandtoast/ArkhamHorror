@@ -197,6 +197,9 @@ pattern ControlledAsset <- AssetControlledBy Anyone
 
 -- ** Enemy Patterns **
 
+pattern CanPlaceDoomOnEnemy :: EnemyMatcher
+pattern CanPlaceDoomOnEnemy = EnemyWithoutModifier CannotPlaceDoomOnThis
+
 pattern AnyInPlayEnemy :: EnemyMatcher
 pattern AnyInPlayEnemy = InPlayEnemy AnyEnemy
 

@@ -55,6 +55,11 @@ instance HasField "isAttached" Placement Bool where
 instance HasField "isInPlay" Placement Bool where
   getField = isInPlayPlacement
 
+instance HasField "inThreatAreaOf" Placement (Maybe InvestigatorId) where
+  getField = \case
+    InThreatArea iid -> Just iid
+    _ -> Nothing
+
 placementToAttached :: Placement -> Maybe Target
 placementToAttached = \case
   AttachedToLocation lid -> Just $ LocationTarget lid

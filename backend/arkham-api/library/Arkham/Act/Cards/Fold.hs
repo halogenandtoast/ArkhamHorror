@@ -2,15 +2,13 @@ module Arkham.Act.Cards.Fold (fold) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Action
+import Arkham.Act.Import.Lifted hiding (fold)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Types (Field (..))
-import Arkham.Classes
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher
-import Arkham.Prelude hiding (fold)
 import Arkham.Projection
 
 newtype Fold = Fold ActAttrs
@@ -21,41 +19,30 @@ fold :: ActCard Fold
 fold = act (3, A) Fold Cards.fold Nothing
 
 instance HasAbilities Fold where
-  getAbilities (Fold x) =
-    withBaseAbilities x
-      $ if onSide A x
-        then
-          [ skillTestAbility
-              $ restrictedAbility
-                (proxied (AssetMatcherSource $ assetIs Cards.peterClover) x)
-                1
-                (Uncontrolled <> OnSameLocation)
-                (ActionAbility [Parley] $ ActionCost 1)
-          , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned
-              $ Objective
-              $ ForcedAbility AnyWindow
-          ]
-        else []
+  getAbilities = actAbilities \x ->
+    [ skillTestAbility
+        $ restricted (proxied (assetIs Cards.peterClover) x) 1 (Uncontrolled <> OnSameLocation) parleyAction_
+    , restricted x 1 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
+    ]
 
 instance RunMessage Fold where
-  runMessage msg a@(Fold attrs@ActAttrs {..}) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ AdvanceAct (toId attrs) source AdvancedWithOther
+  runMessage msg a@(Fold attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       resignedWithPeterClover <- resignedWith Cards.peterClover
-      push $ scenarioResolution $ if resignedWithPeterClover then 3 else 1
+      push $ if resignedWithPeterClover then R3 else R1
       pure a
-    UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source && actSequence == Sequence 3 A -> do
-      aid <- selectJust $ assetIs Cards.peterClover
+    UseThisAbility iid (ProxySource (AssetSource aid) (isSource attrs -> True)) 1 | onSide A attrs -> do
       sid <- getRandom
-      push $ parley sid iid source (AssetTarget aid) #willpower (Fixed 3)
+      parley sid iid attrs aid #willpower (Fixed 3)
       pure a
-    PassedThisSkillTest iid (isSource attrs -> True) | actSequence == Sequence 3 A -> do
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
       aid <- selectJust $ assetIs Cards.peterClover
       currentClueCount <- field AssetClues aid
       requiredClueCount <- perPlayer 1
-      push $ PlaceClues (toAbilitySource attrs 1) (AssetTarget aid) 1
-      pushWhen (currentClueCount + 1 >= requiredClueCount) $ TakeControlOfAsset iid aid
+      placeClues (attrs.ability 1) aid 1
+      when (currentClueCount + 1 >= requiredClueCount) $ takeControlOfAsset iid aid
       pure a
-    _ -> Fold <$> runMessage msg attrs
+    _ -> Fold <$> liftRunMessage msg attrs

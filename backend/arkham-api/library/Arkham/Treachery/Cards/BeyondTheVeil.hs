@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.BeyondTheVeil (BeyondTheVeil (..), beyondTheVeil) where
+module Arkham.Treachery.Cards.BeyondTheVeil (beyondTheVeil) where
 
 import Arkham.Ability
 import Arkham.Investigator.Types (Field (..))

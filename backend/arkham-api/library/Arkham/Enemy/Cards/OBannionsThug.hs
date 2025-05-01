@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.OBannionsThug (oBannionsThug, OBannionsThug (..)) where
+module Arkham.Enemy.Cards.OBannionsThug (oBannionsThug) where
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted

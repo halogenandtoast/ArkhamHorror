@@ -1,11 +1,9 @@
-module Arkham.Enemy.Cards.Whippoorwill (Whippoorwill (..), whippoorwill) where
+module Arkham.Enemy.Cards.Whippoorwill (whippoorwill, Whippoorwill (..)) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype Whippoorwill = Whippoorwill EnemyAttrs
   deriving anyclass IsEnemy

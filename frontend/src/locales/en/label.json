@@ -1,0 +1,7 @@
+{
+  "assets": "Assets",
+  "events": "Events",
+  "skills": "Skills",
+  "cancelMove": "Cancel Move",
+  "discardTopOfYourDeck": "Discard the top {count} cards of your deck"
+}

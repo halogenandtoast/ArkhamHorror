@@ -2340,6 +2340,16 @@ attach a = push . toAttach a
 enemyCheckEngagement :: ReverseQueue m => EnemyId -> m ()
 enemyCheckEngagement = push . EnemyCheckEngagement
 
+attackIfEngaged
+  :: ( ReverseQueue m
+     , AsId enemy
+     , IdOf enemy ~ EnemyId
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
+  => enemy -> Maybe investigator -> m ()
+attackIfEngaged enemy minvestigator = push $ EnemyAttackIfEngaged (asId enemy) (fmap asId minvestigator)
+
 enemyEngageInvestigator
   :: ( ReverseQueue m
      , AsId enemy

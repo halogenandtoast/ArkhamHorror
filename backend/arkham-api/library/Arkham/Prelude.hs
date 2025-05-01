@@ -300,17 +300,12 @@ foldMapM f =
   foldlM
     ( \acc a -> do
         w <- f a
-        return $! mappend acc w
+        pure $! mappend acc w
     )
     mempty
 
 frequencies :: Ord a => [a] -> Map a Int
-frequencies as =
-  Map.map getSum
-    $ foldr (unionWith (<>)) mempty
-    $ map
-      (`Map.singleton` (Sum 1))
-      as
+frequencies as = Map.map getSum $ foldr (unionWith (<>) . (`Map.singleton` Sum 1)) mempty as
 
 groupOnKey :: Ord k => [(k, v)] -> Map k [v]
 groupOnKey = Map.fromListWith (++) . map (second pure)
@@ -405,6 +400,9 @@ instance Foldable Only where
 
 forMaybeM :: Monad m => [a] -> (a -> m (Maybe b)) -> m [b]
 forMaybeM xs f = catMaybes <$> traverse f xs
+
+each_ :: (Monad m, MonoFoldable as) => m as -> (Element as -> m ()) -> m ()
+each_ as f = traverse_ f =<< as
 
 upon :: Applicative m => m () -> Bool -> m ()
 upon = flip when

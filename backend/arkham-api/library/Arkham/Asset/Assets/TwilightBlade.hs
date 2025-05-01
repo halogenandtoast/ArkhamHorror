@@ -21,9 +21,11 @@ twilightBlade = asset TwilightBlade Cards.twilightBlade
 instance HasModifiersFor TwilightBlade where
   getModifiersFor (TwilightBlade a) = for_ a.controller \iid -> do
     underDiana <- filterCards (CardWithOneOf [#event, #skill]) <$> field InvestigatorCardsUnderneath iid
-    cards <- modifyEach a underDiana [AdditionalCost (ExhaustCost $ toTarget a)]
-    controller <- modified_ a iid $ map AsIfInHand underDiana
-    pure $ cards <> controller
+    modifyEach
+      a
+      underDiana
+      [AdditionalCost (ExhaustCost $ toTarget a), AdditionalCostToCommit iid (ExhaustCost $ toTarget a)]
+    modified_ a iid $ concatMap (\c -> [AsIfInHand c, CanCommitToSkillTestsAsIfInHand c]) underDiana
 
 instance HasAbilities TwilightBlade where
   getAbilities (TwilightBlade a) = [restricted a 1 ControlsThis fightAction_]

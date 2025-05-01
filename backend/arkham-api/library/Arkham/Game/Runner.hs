@@ -964,8 +964,10 @@ runGameMessage msg g = case msg of
     pure g
   RemoveTreachery tid -> do
     popMessageMatching_ $ \case
-      After (Revelation _ source) -> source == TreacherySource tid
+      After (Revelation _ source) -> isSource tid source
       _ -> False
+
+    push $ After (RemoveTreachery tid)
 
     maybeTreachery tid >>= \case
       Nothing -> pure $ g & entitiesL . treacheriesL %~ deleteMap tid

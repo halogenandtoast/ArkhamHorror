@@ -112,9 +112,7 @@ instance RunMessage TreacheryAttrs where
     After (RemoveTreachery tid) | tid == treacheryId -> do
       pure $ a & placementL .~ Unplaced
     PutOnBottomOfDeck iid deck target | a `isTarget` target -> do
-      pushAll
-        $ resolve (RemoveTreachery $ toId a)
-        <> [PutCardOnBottomOfDeck iid deck (toCard a)]
+      pushAll [RemoveTreachery $ toId a, PutCardOnBottomOfDeck iid deck (toCard a)]
       pure a
     AddToVictory target | target `elem` treacheryAttachedTarget a -> do
       push $ toDiscard GameSource a

@@ -21,6 +21,7 @@ import Arkham.Matcher.Base
 import Arkham.Matcher.Patterns
 import Arkham.Matcher.Types
 import Arkham.Modifier
+import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Trait (Trait)
 import Control.Lens (over, transform)
@@ -233,6 +234,9 @@ enemyAt = EnemyAt . LocationWithId . asId
 enemyAtLocationWith :: InvestigatorId -> EnemyMatcher
 enemyAtLocationWith = EnemyAt . locationWithInvestigator
 
+canBeDamagedBy :: Sourceable source => source -> EnemyMatcher
+canBeDamagedBy = EnemyCanBeDamagedBySource . toSource
+
 canParleyEnemy :: InvestigatorId -> EnemyMatcher
 canParleyEnemy = CanParleyEnemy . InvestigatorWithId
 
@@ -373,7 +377,8 @@ inPlayAreaOf = InPlayAreaOf . InvestigatorWithId
 inHandOf :: ForPlay -> InvestigatorId -> ExtendedCardMatcher
 inHandOf forPlay = InHandOf forPlay . InvestigatorWithId
 
-inDiscardOf :: (AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> ExtendedCardMatcher
+inDiscardOf
+  :: (AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> ExtendedCardMatcher
 inDiscardOf = InDiscardOf . InvestigatorWithId . asId
 
 basic :: CardMatcher -> ExtendedCardMatcher

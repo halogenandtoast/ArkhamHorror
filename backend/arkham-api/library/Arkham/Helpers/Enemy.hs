@@ -2,6 +2,7 @@ module Arkham.Helpers.Enemy where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Attack.Types
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
@@ -291,3 +292,12 @@ sourceCanDamageEnemy eid source = do
         (Matcher.SourceMatchesAny [Matcher.EncounterCardSource, matcher])
     CannotBeDamaged -> pure True
     _ -> pure False
+
+getDamageableEnemies
+  :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId, Sourceable source)
+  => investigator -> source -> EnemyMatcher -> m [EnemyId]
+getDamageableEnemies investigator source matcher = do
+  canDealDamage <- can.deal.damage (asId investigator)
+  if canDealDamage
+    then select $ matcher <> canBeDamagedBy source
+    else pure []

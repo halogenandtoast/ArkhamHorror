@@ -698,17 +698,17 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.AnyCriterion rs -> anyM (passesCriteria iid mcard source' requestor windows') rs
   Criteria.LocationExists matcher -> selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.LocationCount n matcher -> do
-    (== n) <$> selectCount (Matcher.replaceYouMatcher iid matcher)
+    (>= n) <$> selectCount (Matcher.replaceYouMatcher iid matcher)
   Criteria.AssetCount n matcher -> do
-    (== n) <$> selectCount (Matcher.replaceYouMatcher iid matcher)
+    (>= n) <$> selectCount (Matcher.replaceYouMatcher iid matcher)
   Criteria.BearerNotEliminated -> pure False
   Criteria.EnemyCount n matcher -> do
-    (== n) <$> selectCount (Matcher.replaceYouMatcher iid matcher)
+    (>= n) <$> selectCount (Matcher.replaceYouMatcher iid matcher)
   Criteria.EventCount valueMatcher matcher -> do
     n <- selectCount (Matcher.replaceYouMatcher iid matcher)
     gameValueMatches n valueMatcher
   Criteria.ExtendedCardCount n matcher ->
-    (== n) <$> selectCount matcher
+    (>= n) <$> selectCount matcher
   Criteria.AllLocationsMatch targetMatcher locationMatcher -> do
     targets <- select (Matcher.replaceYouMatcher iid targetMatcher)
     actual <- select (Matcher.replaceYouMatcher iid locationMatcher)

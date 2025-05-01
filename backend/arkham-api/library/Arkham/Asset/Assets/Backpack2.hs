@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Backpack2 (backpack2, Backpack2 (..)) where
+module Arkham.Asset.Assets.Backpack2 (backpack2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -18,8 +18,7 @@ instance HasModifiersFor Backpack2 where
   getModifiersFor (Backpack2 a) = controllerGets a (AsIfInHand <$> a.cardsUnderneath)
 
 instance HasAbilities Backpack2 where
-  getAbilities (Backpack2 a) =
-    [restrictedAbility a 1 ControlsThis $ freeReaction $ AssetEntersPlay #after (be a)]
+  getAbilities (Backpack2 a) = [restricted a 1 ControlsThis $ freeReaction $ AssetEntersPlay #after (be a)]
 
 instance RunMessage Backpack2 where
   runMessage msg a@(Backpack2 attrs) = runQueueT $ case msg of
@@ -46,6 +45,9 @@ instance RunMessage Backpack2 where
       when (null remaining) $ toDiscardBy iid attrs attrs
       push msg
       pure $ Backpack2 $ attrs & cardsUnderneathL .~ remaining
+    ResolvedCard _ c | c.id == attrs.cardId -> do
+      when (null attrs.cardsUnderneath) $ toDiscard attrs attrs
+      pure a
     _ -> do
       let hadCards = notNull $ attrs.cardsUnderneath
       result <- liftRunMessage msg attrs

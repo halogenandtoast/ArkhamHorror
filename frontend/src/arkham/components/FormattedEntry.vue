@@ -17,7 +17,6 @@ function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
     case 'HeaderEntry': return {}
     case 'CardEntry': {
       const mods = entry.imageModifiers.map((m) => { return { [imageModifierToStyle(m)]: true }})
-      console.log(mods)
       return [{"card": true}, {"no-overlay": true}, ...mods]
     }
 

@@ -51,7 +51,6 @@ const doShowBonded = computed(() => {
 watch(() => props.playerId, () => {
   if (!props.portrait) {
     if (props.playerId == props.investigator.playerId) {
-      console.log(`Adding menu entry for ${props.investigator.playerId}`)
       addEntry({
         id: `viewBonded-${props.investigator.playerId}`,
         icon: PaperClipIcon,
@@ -61,7 +60,6 @@ watch(() => props.playerId, () => {
         action: () => toggleShowBonded()
       })
     } else {
-      console.log(`Removing menu entry for ${props.investigator.playerId}`)
       removeEntry(`viewBonded-${props.investigator.playerId}`)
     }
   }

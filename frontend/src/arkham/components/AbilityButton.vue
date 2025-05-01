@@ -111,7 +111,6 @@ const abilityLabel = computed(() => {
     return tooltip.value.content
   }
 
-  console.log(props.ability)
   if (props.ability.tag === MessageType.ABILITY_LABEL) {
     if (props.ability.ability.displayAs === 'DisplayAsAction') {
       const { cost } = ability.value.type

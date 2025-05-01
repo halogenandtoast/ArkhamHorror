@@ -11,6 +11,7 @@ import Arkham.Classes.HasGame
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.GameT
 import Arkham.Helpers (Deck (..), unDeck)
+import Arkham.Helpers.Card (isDiscardable)
 import Arkham.Id
 import Arkham.Investigator.Types (InvestigatorAttrs)
 import Arkham.Investigator.Types as X (Field (..))
@@ -46,6 +47,9 @@ instance HasField "placement" InvestigatorId (QueueT Message GameT Placement) wh
 
 instance HasField "hand" InvestigatorAttrs (QueueT Message GameT [Card]) where
   getField = field InvestigatorHand . toId
+
+instance HasField "discardable" InvestigatorId (QueueT Message GameT [Card]) where
+  getField = fieldMap InvestigatorHand (filter isDiscardable)
 
 instance HasField "discard" InvestigatorId (QueueT Message GameT [PlayerCard]) where
   getField = field InvestigatorDiscard

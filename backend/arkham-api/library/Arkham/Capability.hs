@@ -51,6 +51,7 @@ instance Capable InvestigatorMatcher where
             { otherPlayers = InvestigatorWithoutModifier CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
             }
       , move = InvestigatorWithoutModifier CannotMove
+      , deal = DealCapabilities {damage = InvestigatorWithoutModifier CannotDealDamage}
       , target = TargetCapabilities {encounterDeck = InvestigatorCanTarget EncounterDeckTarget}
       , reveal = RevealCapabilities {cards = InvestigatorWithoutModifier CannotRevealCards}
       , heal =
@@ -116,6 +117,7 @@ data Capabilities a = Capabilities
   , move :: a
   , reveal :: RevealCapabilities a
   , heal :: HealCapabilities a
+  , deal :: DealCapabilities a
   }
   deriving stock Functor
 
@@ -183,5 +185,10 @@ data HaveAssetsCapabilities a = HaveAssetsCapabilities
 
 data TargetCapabilities a = TargetCapabilities
   { encounterDeck :: a
+  }
+  deriving stock Functor
+
+data DealCapabilities a = DealCapabilities
+  { damage :: a
   }
   deriving stock Functor

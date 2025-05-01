@@ -33,6 +33,9 @@ ikey t = intercalate "." (?scope <> [t]) <> varStr
     String n -> "s:" <> tshow n
     _ -> ""
 
+countVar :: HasI18n => Int -> (HasI18n => a) -> a
+countVar v a = withVar "count" (Number $ fromIntegral v) a
+
 withVar :: HasI18n => Text -> Value -> (HasI18n => a) -> a
 withVar k v a = let ?scopeVars = ?scopeVars <> singletonMap k v in a
 

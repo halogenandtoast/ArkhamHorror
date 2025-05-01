@@ -3,5 +3,8 @@
   "events": "Events",
   "skills": "Skills",
   "cancelMove": "Cancel Move",
-  "discardTopOfYourDeck": "Discard the top {count} cards of your deck"
+  "discardTopOfYourDeck": "Discard the top card of your deck | Discard the top {count} cards of your deck",
+  "noCardsFound": "No Cards Found.",
+  "noEnemiesFound": "No Enemies Found.",
+  "applyResults": "Apply Results"
 }

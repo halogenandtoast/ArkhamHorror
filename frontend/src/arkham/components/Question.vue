@@ -744,7 +744,6 @@ button:hover {
 .question-label {
   display: flex;
   flex-direction: column;
-  width: 75%;
 }
 
 .question-label p {

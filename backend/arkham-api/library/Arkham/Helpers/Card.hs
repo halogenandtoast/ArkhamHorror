@@ -225,6 +225,9 @@ passesLimits iid c = allM go (cdLimits $ toCardDef c)
   go = \case
     LimitInPlay m -> case toCardType c of
       EventType -> do
+        n <- selectCount $ Matcher.EventWithTitle (nameTitle $ toName c)
+        pure $ m > n
+      AssetType -> do
         n <- selectCount $ Matcher.AssetWithTitle (nameTitle $ toName c)
         pure $ m > n
       _ -> error $ "Not handling card type: " <> show (toCardType c)

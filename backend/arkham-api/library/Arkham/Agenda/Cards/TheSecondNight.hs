@@ -1,14 +1,10 @@
 module Arkham.Agenda.Cards.TheSecondNight (theSecondNight) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Card
-import Arkham.Classes
+import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheSecondNight = TheSecondNight AgendaAttrs
@@ -24,24 +20,15 @@ instance HasModifiersFor TheSecondNight where
     modifySelf a [OtherDoomSubtracts | moreConvictionThanDoubt]
 
 instance RunMessage TheSecondNight where
-  runMessage msg a@(TheSecondNight attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      msgs <- disengageEachEnemyAndMoveToConnectingLocation attrs
-      pushAll $ msgs <> [NextAdvanceAgendaStep (toId attrs) 2]
+  runMessage msg a@(TheSecondNight attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      disengageEachEnemyAndMoveToConnectingLocation attrs
+      doStep 1 msg
+      advanceAgendaDeck attrs
       pure a
-    NextAdvanceAgendaStep aid 2 | aid == toId attrs && onSide B attrs -> do
-      organistMsg <- moveOrganistAwayFromNearestInvestigator
-      spawnJordanPerryMessages <- do
-        spawnJordanPerry <- not <$> slain Enemies.jordanPerry
-        card <- genCard Enemies.jordanPerry
-        createJordanPerry <-
-          createEnemyAtLocationMatching_
-            card
-            (LocationWithTitle "Montparnasse")
-        pure [createJordanPerry | spawnJordanPerry]
-      pushAll
-        $ maybeToList organistMsg
-        <> spawnJordanPerryMessages
-        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+    DoStep 1 (AdvanceAgenda (isSide B attrs -> True)) -> do
+      moveOrganistAwayFromNearestInvestigator
+      whenM (not <$> slain Enemies.jordanPerry) do
+        createEnemyAtLocationMatching_ Enemies.jordanPerry (LocationWithTitle "Montparnasse")
       pure a
-    _ -> TheSecondNight <$> runMessage msg attrs
+    _ -> TheSecondNight <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.PursuingShadows (PursuingShadows (..), pursuingShadows) where
+module Arkham.Act.Cards.PursuingShadows (pursuingShadows) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -27,8 +27,7 @@ instance HasAbilities PursuingShadows where
 instance RunMessage PursuingShadows where
   runMessage msg a@(PursuingShadows attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      theOrganist <- getTheOrganist
-      placeClues (attrs.ability 1) theOrganist 1
+      withTheOrganist \theOrganist -> placeClues (attrs.ability 1) theOrganist 1
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advancedWithOther attrs

@@ -24,7 +24,7 @@ instance RunMessage StalkedByShadows where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid do
         labeled "Place 1 doom on the current agenda" $ placeDoomOnAgenda 1
-        labeled "Automatically evade The Organist" $ automaticallyEvadeEnemy iid =<< getTheOrganist
+        withTheOrganist $ labeled "Automatically evade The Organist" . automaticallyEvadeEnemy iid
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       intrudedOnASecretMeeting <- getHasRecord YouIntrudedOnASecretMeeting

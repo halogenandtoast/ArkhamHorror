@@ -4413,6 +4413,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTestOrAbility)
         )
       & (usedAbilitiesL %~ map (\u -> u {usedThisWindow = False}))
+  PerformEnemyAttack eid -> do
+    withMaybeField Field.EnemyAttacking eid \details -> do
+      when (any (isTarget a) details.targets) do
+        Lifted.updateHistory a $ HistoryItem HistoryEnemiesAttackedBy [eid]
+    pure a
   After (PerformEnemyAttack {}) -> do
     pure $ a & (usedAbilitiesL %~ filter (\ab -> ab.limitType /= Just PerAttack))
   PickSupply iid s | iid == toId a -> pure $ a & suppliesL %~ (s :)

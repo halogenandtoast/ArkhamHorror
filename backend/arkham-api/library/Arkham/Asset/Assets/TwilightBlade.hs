@@ -39,11 +39,10 @@ instance RunMessage TwilightBlade where
         labeled "Use {willpower}" $ chooseFightEnemyEdit sid iid source (withSkillType #willpower)
         labeled "Use {combat}" $ chooseFightEnemy sid iid source
       pure a
-    InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid -> do
+    InitiatePlayCard iid card _ _ ws _ | controlledBy attrs iid -> do
       underDiana <- field InvestigatorCardsUnderneath iid
       when (card `elem` underDiana) do
-        exhaustThis attrs
         cardResolutionModifier card attrs iid $ CannotTriggerAbilityMatching $ AbilityIs (toSource iid) 1
-        push msg
+        playCardPayingCostWithWindows iid card ws
       pure a
     _ -> TwilightBlade <$> liftRunMessage msg attrs

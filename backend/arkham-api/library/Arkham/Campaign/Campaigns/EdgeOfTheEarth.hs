@@ -54,8 +54,8 @@ instance IsCampaign EdgeOfTheEarth where
         | ToTheForbiddenPeaks `elem` campaignCompletedSteps (toAttrs a) ->
             Just (UpgradeDeckStep CityOfTheElderThings)
         | otherwise -> Just (UpgradeDeckStep ToTheForbiddenPeaks)
-    ToTheForbiddenPeaks -> Just (InterludeStep 2 Nothing)
-    CityOfTheElderThings -> Just (InterludeStep 3 Nothing)
+    ToTheForbiddenPeaks -> Just (UpgradeDeckStep $ InterludeStep 2 Nothing)
+    CityOfTheElderThings -> Just (UpgradeDeckStep $ InterludeStep 3 Nothing)
     TheHeartOfMadnessPart1 -> Just (UpgradeDeckStep $ CheckpointStep 3)
     TheHeartOfMadnessPart2 -> Just EpilogueStep
     EpilogueStep -> Nothing
@@ -166,18 +166,18 @@ instance RunMessage EdgeOfTheEarth where
         $ i18nWithTitle "restfulNight2"
       if shouldRestlessNight3
         then push $ CampaignStep (InterludeStepPart 1 Nothing 3)
-        else push $ NextCampaignStep $ Just ToTheForbiddenPeaks
+        else push $ NextCampaignStep $ Just $ UpgradeDeckStep ToTheForbiddenPeaks
       pure c
     CampaignStep (InterludeStepPart 1 _ 3) -> scope "interlude1" do
       storyWithChooseOneM (i18nWithTitle "restfulNight3") do
         labeled "Open the door and venture into the mirage."
           $ push
           $ NextCampaignStep
-          $ Just FatalMirage
+          $ Just $ UpgradeDeckStep FatalMirage
         labeled "Ignore the door and allow it to vanish"
           $ push
           $ NextCampaignStep
-          $ Just ToTheForbiddenPeaks
+          $ Just $ UpgradeDeckStep ToTheForbiddenPeaks
       pure c
     DoStep n msg'@(CampaignStep (InterludeStep 1 _)) | n > 0 -> scope "interlude1" do
       let choices :: [CardCode] =
@@ -699,29 +699,29 @@ instance RunMessage EdgeOfTheEarth where
       if
         | shouldEndlessNight3 -> push $ CampaignStep (InterludeStepPart 2 Nothing 3)
         | shouldEndlessNight4 -> push $ CampaignStep (InterludeStepPart 2 Nothing 4)
-        | otherwise -> push $ NextCampaignStep $ Just CityOfTheElderThings
+        | otherwise -> push $ NextCampaignStep $ Just $ UpgradeDeckStep CityOfTheElderThings
       pure c
     CampaignStep (InterludeStepPart 2 _ 3) -> scope "interlude2" do
       storyWithChooseOneM (i18nWithTitle "endlessNight3") do
         labeled "Open the door and venture once more into the mirage."
           $ push
           $ NextCampaignStep
-          $ Just FatalMirage
+          $ Just $ UpgradeDeckStep FatalMirage
         labeled "Ignore the door and allow it to vanish"
           $ push
           $ NextCampaignStep
-          $ Just CityOfTheElderThings
+          $ Just $ UpgradeDeckStep CityOfTheElderThings
       pure c
     CampaignStep (InterludeStepPart 2 _ 4) -> scope "interlude2" do
       storyWithChooseOneM (i18nWithTitle "endlessNight4") do
         labeled "Open the door and venture into the mirage."
           $ push
           $ NextCampaignStep
-          $ Just FatalMirage
+          $ Just $ UpgradeDeckStep FatalMirage
         labeled "Ignore the door and allow it to vanish"
           $ push
           $ NextCampaignStep
-          $ Just CityOfTheElderThings
+          $ Just $ UpgradeDeckStep CityOfTheElderThings
       pure c
     CampaignStep (InterludeStep 3 _) -> scope "interlude3" do
       story $ i18nWithTitle "finalNight1"
@@ -1005,22 +1005,22 @@ instance RunMessage EdgeOfTheEarth where
         labeled "Open the door and venture once more into the mirage."
           $ push
           $ NextCampaignStep
-          $ Just FatalMirage
+          $ Just $ UpgradeDeckStep FatalMirage
         labeled "Ignore the door and allow it to vanish"
           $ push
           $ NextCampaignStep
-          $ Just TheHeartOfMadnessPart1
+          $ Just $ UpgradeDeckStep TheHeartOfMadnessPart1
       pure c
     CampaignStep (InterludeStepPart 3 _ 4) -> scope "interlude3" do
       storyWithChooseOneM (i18nWithTitle "finalNight4") do
         labeled "Open the door and venture into the mirage."
           $ push
           $ NextCampaignStep
-          $ Just FatalMirage
+          $ Just $ UpgradeDeckStep FatalMirage
         labeled "Ignore the door and allow it to vanish"
           $ push
           $ NextCampaignStep
-          $ Just TheHeartOfMadnessPart1
+          $ Just $ UpgradeDeckStep TheHeartOfMadnessPart1
       pure c
     CampaignStep (CheckpointStep 3) -> scope "checkpoint3" do
       story $ i18nWithTitle "theOtherSide1"

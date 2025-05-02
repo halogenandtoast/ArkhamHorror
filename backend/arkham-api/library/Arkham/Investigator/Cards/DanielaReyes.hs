@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Investigator.Cards.DanielaReyes (danielaReyes) where
 
 import Arkham.Ability

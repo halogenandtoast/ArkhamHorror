@@ -31,18 +31,16 @@ instance HasAbilities MakeshiftTrap where
   getAbilities (MakeshiftTrap a) = [controlled a 1 tripwireCriteria $ forced $ RoundEnds #when]
    where
     tripwireCriteria = case a.attachedTo of
-      Just (LocationTarget lid) ->
-        mwhen (a `hasCustomization` Tripwire) (exists $ NonEliteEnemy <> at_ (LocationWithId lid))
+      Just (LocationTarget lid) -> mwhen (a `hasCustomization` Tripwire) (exists $ EnemyAt (be lid))
       _ -> NoRestriction
 
 instance HasModifiersFor MakeshiftTrap where
   getModifiersFor (MakeshiftTrap a) = do
     case a.placement of
-      AttachedToLocation lid -> modifySelectMapM a (EnemyAt $ LocationWithId lid) \eid -> do
+      AttachedToLocation lid -> modifySelectMapM a (NonEliteEnemy <> at_ (be lid)) \_ -> do
         net <-
           fromMaybe [] <$> runMaybeT do
             guard $ a `hasCustomization` Net
-            liftGuardM $ eid <=~> NonEliteEnemy
             pure [CannotMakeAttacksOfOpportunity, CannotMove]
 
         pure $ [EnemyFight (-1), EnemyEvade (-1)] <> net

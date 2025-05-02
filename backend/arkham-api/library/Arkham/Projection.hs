@@ -16,6 +16,16 @@ fieldMay fld eid = do
   hasEntity <- isJust <$> project @a eid
   if hasEntity then fieldMap fld Just eid else pure Nothing
 
+fieldMayJoin
+  :: forall a typ m. (HasGame m, Projection a) => Field a (Maybe typ) -> EntityId a -> m (Maybe typ)
+fieldMayJoin fld eid = do
+  hasEntity <- isJust <$> project @a eid
+  if hasEntity then field fld eid else pure Nothing
+
+withMaybeField
+  :: (Projection a, HasGame m) => Field a (Maybe typ) -> EntityId a -> (typ -> m ()) -> m ()
+withMaybeField fld eid f = fieldMayJoin fld eid >>= traverse_ f
+
 fieldWithDefault
   :: (Projection a, HasGame m, AsId b, IdOf b ~ EntityId a)
   => typ

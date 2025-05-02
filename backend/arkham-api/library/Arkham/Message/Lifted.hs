@@ -2748,7 +2748,7 @@ updateHistory
   => investigator
   -> HistoryItem
   -> m ()
-updateHistory investigator history = push $ UpdateHistory (asId investigator) history
+updateHistory investigator history = priority $ push $ UpdateHistory (asId investigator) history
 
 setGlobal :: (ReverseQueue m, Targetable target, ToJSON a) => target -> Aeson.Key -> a -> m ()
 setGlobal target k v = push $ SetGlobal (toTarget target) k (toJSON v)

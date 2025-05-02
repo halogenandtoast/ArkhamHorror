@@ -47,6 +47,7 @@ data History = History
   , historySuccessfulAttacks :: Int
   , historySuccessfulEvasions :: Int
   , historySuccessfulInvestigations :: Int
+  , historyEnemiesAttackedBy :: [EnemyId]
   }
   deriving stock (Show, Eq, Data)
 
@@ -55,6 +56,7 @@ data HistoryField k where
   HistoryEnemiesDrawn :: HistoryField [CardCode]
   HistoryDealtDamageTo :: HistoryField [Target]
   HistoryEnemiesDefeated :: HistoryField [DefeatedEnemyAttrs]
+  HistoryEnemiesAttackedBy :: HistoryField [EnemyId]
   HistoryMoved :: HistoryField Bool
   HistoryLocationsSuccessfullyInvestigated :: HistoryField (Set LocationId)
   HistorySuccessfulExplore :: HistoryField Bool
@@ -76,6 +78,7 @@ viewHistoryField = \case
   HistoryEnemiesDrawn -> historyEnemiesDrawn
   HistoryDealtDamageTo -> historyDealtDamageTo
   HistoryEnemiesDefeated -> historyEnemiesDefeated
+  HistoryEnemiesAttackedBy -> historyEnemiesAttackedBy
   HistoryMoved -> historyMoved
   HistoryLocationsSuccessfullyInvestigated -> historyLocationsSuccessfullyInvestigated
   HistorySuccessfulExplore -> historySuccessfulExplore
@@ -100,6 +103,7 @@ instance FromJSON SomeHistoryField where
     "HistoryTreacheriesDrawn" -> pure $ SomeHistoryField HistoryTreacheriesDrawn
     "HistoryDealtDamageTo" -> pure $ SomeHistoryField HistoryDealtDamageTo
     "HistoryEnemiesDefeated" -> pure $ SomeHistoryField HistoryEnemiesDefeated
+    "HistoryEnemiesAttackedBy" -> pure $ SomeHistoryField HistoryEnemiesAttackedBy
     "HistoryMoved" -> pure $ SomeHistoryField HistoryMoved
     "HistoryLocationsSuccessfullyInvestigated" -> pure $ SomeHistoryField HistoryLocationsSuccessfullyInvestigated
     "HistorySuccessfulExplore" -> pure $ SomeHistoryField HistorySuccessfulExplore
@@ -147,6 +151,7 @@ insertHistoryItem (HistoryItem fld k) h =
     HistoryTreacheriesDrawn -> h {historyTreacheriesDrawn = historyTreacheriesDrawn h <> k}
     HistoryDealtDamageTo -> h {historyDealtDamageTo = nub $ historyDealtDamageTo h <> k}
     HistoryEnemiesDefeated -> h {historyEnemiesDefeated = nub $ historyEnemiesDefeated h <> k}
+    HistoryEnemiesAttackedBy -> h {historyEnemiesAttackedBy = nub $ historyEnemiesAttackedBy h <> k}
     HistoryMoved -> h {historyMoved = historyMoved h || k}
     HistoryLocationsSuccessfullyInvestigated ->
       h
@@ -168,6 +173,7 @@ instance Semigroup History where
     History
       { historyTreacheriesDrawn = historyTreacheriesDrawn h <> historyTreacheriesDrawn g
       , historyEnemiesDrawn = historyEnemiesDrawn h <> historyEnemiesDrawn g
+      , historyEnemiesAttackedBy = historyEnemiesAttackedBy h <> historyEnemiesAttackedBy g
       , historyDealtDamageTo = historyDealtDamageTo h <> historyDealtDamageTo g
       , historyEnemiesDefeated = historyEnemiesDefeated h <> historyEnemiesDefeated g
       , historyMoved = historyMoved h || historyMoved g
@@ -186,7 +192,7 @@ instance Semigroup History where
       }
 
 instance Monoid History where
-  mempty = History [] [] [] [] False mempty False 0 [] [] mempty 0 0 0 0
+  mempty = History [] [] [] [] False mempty False 0 [] [] mempty 0 0 0 0 []
 
 insertHistory
   :: InvestigatorId
@@ -202,6 +208,7 @@ instance FromJSON History where
     historyTreacheriesDrawn <- o .: "historyTreacheriesDrawn"
     historyDealtDamageTo <- o .: "historyDealtDamageTo"
     historyEnemiesDefeated <- o .: "historyEnemiesDefeated"
+    historyEnemiesAttackedBy <- o .:? "historyEnemiesAttackedBy" .!= []
     historyMoved <- o .: "historyMoved"
     historyLocationsSuccessfullyInvestigated <- o .: "historyLocationsSuccessfullyInvestigated"
     historySuccessfulExplore <- o .: "historySuccessfulExplore"

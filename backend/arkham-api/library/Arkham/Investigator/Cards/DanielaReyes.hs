@@ -1,8 +1,10 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Investigator.Cards.DanielaReyes (danielaReyes) where
 
 import Arkham.Ability
 import Arkham.Attack
 import Arkham.Enemy.Types (Field (EnemyAttacking))
+import Arkham.Helpers.History (hasHistory)
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
@@ -11,10 +13,7 @@ import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
-data Metadata = Metadata
-  { enemiesThatAttackedYouSinceTheEndOfYourLastTurn :: [EnemyId]
-  , elderSignAutoSucceeds :: Bool
-  }
+newtype Metadata = Metadata {enemiesThatAttackedYouSinceTheEndOfYourLastTurn :: [EnemyId]}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -45,33 +44,32 @@ instance RunMessage DanielaReyes where
   runMessage msg i@(DanielaReyes attrs) = runQueueT $ case msg of
     SetupInvestigator iid | iid == attrs.id -> do
       attrs' <- liftRunMessage msg attrs
-      pure . DanielaReyes $ attrs' & setMeta (Metadata [] False)
+      pure . DanielaReyes $ attrs' & setMeta (Metadata [])
     UseCardAbility iid (isSource attrs -> True) 1 (getAttackDetails -> attackEnemy -> enemy) _ -> do
       canDamage <- enemy <=~> EnemyCanBeDamagedBySource (attrs.ability 1)
       canEvade <- enemy <=~> EnemyCanBeEvadedBy (attrs.ability 1)
       chooseOneM iid do
-        when canDamage $ labeled "Deal 1 damage to the enemy" $ nonAttackEnemyDamage (Just attrs.id) attrs 1 enemy
+        when canDamage
+          $ labeled "Deal 1 damage to the enemy"
+          $ nonAttackEnemyDamage (Just attrs.id) attrs 1 enemy
         when canEvade $ labeled "Automatically evade the enemy" $ automaticallyEvadeEnemy attrs.id enemy
 
       pure i
     PerformEnemyAttack eid -> do
+      attrs' <- liftRunMessage msg attrs
       fieldMay EnemyAttacking eid >>= \case
-        Just (Just details) | any (isTarget attrs) details.targets -> do
-          let meta = toResult attrs.meta
+        Just (Just details) | any (isTarget attrs') details.targets -> do
+          let meta = toResultDefault (Metadata []) attrs'.meta
           pure
             . DanielaReyes
-            $ attrs
-            & setMeta (Metadata (eid : enemiesThatAttackedYouSinceTheEndOfYourLastTurn meta) True)
-        _ -> pure i
-    EndRound -> do
-      attrs' <- liftRunMessage msg attrs
-      let meta = toResult attrs.meta
-      pure . DanielaReyes $ attrs' & setMeta (meta {elderSignAutoSucceeds = False})
+            $ attrs'
+            & setMeta (Metadata (eid : enemiesThatAttackedYouSinceTheEndOfYourLastTurn meta))
+        _ -> pure $ DanielaReyes attrs'
     EndTurn iid | iid == attrs.id -> do
       attrs' <- liftRunMessage msg attrs
-      let meta = toResult attrs.meta
+      let meta = toResultDefault (Metadata []) attrs.meta
       pure . DanielaReyes $ attrs' & setMeta (meta {enemiesThatAttackedYouSinceTheEndOfYourLastTurn = []})
     ElderSignEffect iid | attrs `is` iid -> do
-      pushWhen (elderSignAutoSucceeds $ toResult attrs.meta) PassSkillTest
+      whenM (hasHistory #round AttackedByAnyEnemies attrs.id) passSkillTest
       pure i
     _ -> DanielaReyes <$> liftRunMessage msg attrs

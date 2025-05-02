@@ -6,7 +6,7 @@ import Arkham.Matcher.Value
 import Arkham.Prelude
 import Data.Aeson.TH
 
-data HistoryMatcher = DefeatedEnemiesWithTotalHealth ValueMatcher
+data HistoryMatcher = DefeatedEnemiesWithTotalHealth ValueMatcher | AttackedByAnyEnemies
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''HistoryMatcher)

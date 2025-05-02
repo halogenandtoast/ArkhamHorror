@@ -24,9 +24,8 @@ instance HasAbilities RunningOutOfTime where
 instance RunMessage RunningOutOfTime where
   runMessage msg a@(RunningOutOfTime attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      allInvestigators >>= traverse_ \iid -> do
-        addTekelili iid =<< getTekelili 1
-      locations <- select $ LocationWithoutClues
+      allInvestigators >>= traverse_ \iid -> getTekelili 1 >>= addTekelili iid
+      locations <- select LocationWithoutClues
 
       if null locations
         then do

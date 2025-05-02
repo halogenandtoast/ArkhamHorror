@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -O0 #-}
+{-# OPTIONS_GHC -O0 -Wno-deprecations #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE NoFieldSelectors #-}
@@ -1836,12 +1836,12 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       guardTiming timing $ \case
         Window.DrawCard who card deck ->
           andM
-            [ matchWho iid who whoMatcher
-            , case cardMatcher of
+            [ traceShowId <$> matchWho iid who whoMatcher
+            , traceShowId <$> case cardMatcher of
                 Matcher.BasicCardMatch baseMatcher ->
                   pure $ cardMatch card baseMatcher
                 _ -> elem card <$> select cardMatcher
-            , deckMatch iid deck deckMatcher
+            , traceShowId <$> deckMatch iid deck deckMatcher
             ]
         _ -> noMatch
     Matcher.WouldDrawCard timing whoMatcher deckMatcher ->

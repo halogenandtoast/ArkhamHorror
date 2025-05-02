@@ -21,7 +21,6 @@ instance RunMessage TheMadnessWithin where
       cards <- getTekelili n
       unless (null cards) $ addTekelili iid cards
       let horror = n - length cards
-      when (horror > 0) do
-        assignHorror iid attrs horror
+      when (horror > 0) $ assignHorror iid attrs horror
       pure t
     _ -> TheMadnessWithin <$> liftRunMessage msg attrs

@@ -2,6 +2,7 @@ module Arkham.Treachery.Cards.GlimpseTheUnspeakable (glimpseTheUnspeakable) wher
 
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Modifier
+import Arkham.Scenario.Deck
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -19,6 +20,6 @@ instance RunMessage GlimpseTheUnspeakable where
       when (null cards) $ gainSurge attrs
       for_ cards \card -> do
         cardResolutionModifier card attrs card.id ShuffleIntoAnyDeckInsteadOfDiscard
-        drawCard iid card
+        drawCardFrom iid card TekeliliDeck
       pure t
     _ -> GlimpseTheUnspeakable <$> liftRunMessage msg attrs

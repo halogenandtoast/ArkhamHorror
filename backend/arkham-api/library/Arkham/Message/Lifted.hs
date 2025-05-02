@@ -2101,8 +2101,8 @@ repeated :: ReverseQueue m => Int -> m () -> m ()
 repeated 0 = const (pure ())
 repeated n = replicateM_ n
 
-disengageEnemy :: ReverseQueue m => InvestigatorId -> EnemyId -> m ()
-disengageEnemy iid eid = push $ Msg.DisengageEnemy iid eid
+disengageEnemy :: (ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId, AsId enemy, IdOf enemy ~ EnemyId) => investigator -> enemy -> m ()
+disengageEnemy investigator enemy = push $ Msg.DisengageEnemy (asId investigator) (asId enemy)
 
 disengageFromAll :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> m ()
 disengageFromAll enemy = push $ Msg.DisengageEnemyFromAll (asId enemy)

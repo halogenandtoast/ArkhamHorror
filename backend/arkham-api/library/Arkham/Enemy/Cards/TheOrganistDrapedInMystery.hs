@@ -1,12 +1,10 @@
 module Arkham.Enemy.Cards.TheOrganistDrapedInMystery (theOrganistDrapedInMystery) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheOrganistDrapedInMystery = TheOrganistDrapedInMystery EnemyAttrs
@@ -31,11 +29,11 @@ theOrganistDrapedInMystery =
     (healthL .~ Nothing)
 
 instance RunMessage TheOrganistDrapedInMystery where
-  runMessage msg e@(TheOrganistDrapedInMystery attrs) = case msg of
+  runMessage msg e@(TheOrganistDrapedInMystery attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      iids <- select $ investigatorEngagedWith (toId attrs)
-      if null iids
-        then moveOrganistAwayFromNearestInvestigator >>= traverse_ push
-        else pushAll [DisengageEnemy iid $ toId attrs | iid <- iids]
+      investigators <- select $ investigatorEngagedWith (toId attrs)
+      if null investigators
+        then moveOrganistAwayFromNearestInvestigator
+        else for_ investigators (`disengageEnemy` attrs)
       pure e
-    _ -> TheOrganistDrapedInMystery <$> runMessage msg attrs
+    _ -> TheOrganistDrapedInMystery <$> liftRunMessage msg attrs

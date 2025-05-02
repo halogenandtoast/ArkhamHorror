@@ -251,7 +251,6 @@ data WindowType
   | TakeControlOfKey InvestigatorId ArkhamKey
   | WouldAddChaosTokensToChaosBag (Maybe InvestigatorId) [ChaosTokenFace]
   | DeckWouldRunOutOfCards InvestigatorId
-  | DeckRanOutOfCards InvestigatorId
   | WouldSearchDeck InvestigatorId DeckSignifier
   | WouldLookAtDeck InvestigatorId DeckSignifier
   | SearchedDeck InvestigatorId DeckSignifier
@@ -334,6 +333,7 @@ mconcat
         parseJSON = withObject "WindowType" \o -> do
           tag :: Text <- o .: "tag"
           case tag of
+            "DeckRanOutOfCards" -> DeckHasNoCards <$> o .: "contents"
             "ScenarioEvent" -> do
               contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
               case contents of

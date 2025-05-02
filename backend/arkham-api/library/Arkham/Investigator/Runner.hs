@@ -2992,7 +2992,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               wouldDo
                 (EmptyDeck iid (Just $ drawCards iid source n))
                 (Window.DeckWouldRunOutOfCards iid)
-                (Window.DeckRanOutOfCards iid)
+                (Window.DeckHasNoCards iid)
             -- push $ EmptyDeck iid
             pure a
           else do
@@ -3306,7 +3306,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 . (handL %~ filter (/= card))
           )
           cards
-    pure $ a & update & foundCardsL %~ Map.map (filter (`notElem` cards))
+    let a' = a & update & foundCardsL %~ Map.map (filter (`notElem` cards))
+    when (null a'.deck) do
+      pushM $ checkWhen $ Window.DeckHasNoCards investigatorId
+      pushM $ checkAfter $ Window.DeckHasNoCards investigatorId
+    pure a'
   ChaosTokenCanceled iid source token | iid == investigatorId -> do
     whenWindow <- checkWindows [mkWhen (Window.CancelChaosToken iid token)]
     whenWindow2 <- checkWindows [mkWhen (Window.CancelledOrIgnoredCardOrGameEffect source)]

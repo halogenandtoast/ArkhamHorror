@@ -1,13 +1,10 @@
 module Arkham.Treachery.Cards.TorturousChords (torturousChords) where
 
-import Arkham.Classes
 import Arkham.Helpers.Modifiers (ModifierType (..), inThreatAreaGets)
 import Arkham.Matcher (CardMatcher (AnyCard), basic)
-import Arkham.Prelude
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype TorturousChords = TorturousChords TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
@@ -21,15 +18,15 @@ instance HasModifiersFor TorturousChords where
     inThreatAreaGets a [IncreaseCostOf (basic AnyCard) 1]
 
 instance RunMessage TorturousChords where
-  runMessage msg t@(TorturousChords attrs) = case msg of
+  runMessage msg t@(TorturousChords attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push $ revelationSkillTest sid iid attrs #willpower (Fixed 5)
+      revelationSkillTest sid iid attrs #willpower (Fixed 5)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      push $ placeInThreatArea attrs iid
+      placeInThreatArea attrs iid
       pure $ TorturousChords $ attrs & tokensL %~ setTokens Resource n
     PlayCard iid _ _ _ _ False | treacheryInThreatArea iid attrs -> do
-      pushWhen (treacheryResources attrs <= 1) (toDiscardBy iid (toSource attrs) attrs)
+      when (attrs.resources <= 1) (priority $ toDiscardBy iid attrs attrs)
       pure $ TorturousChords $ attrs & tokensL %~ subtractTokens Resource 1
-    _ -> TorturousChords <$> runMessage msg attrs
+    _ -> TorturousChords <$> liftRunMessage msg attrs

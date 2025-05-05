@@ -471,6 +471,11 @@ ifM_ body tVal fVal = do
   cond <- body
   pure $ if cond then tVal else fVal
 
+ifMM_ :: Monad m => m Bool -> m a -> m a -> m a
+ifMM_ body tVal fVal = do
+  cond <- body
+  if cond then tVal else fVal
+
 given :: (Monad m, Monoid a) => m a -> Bool -> m a
 given ma b = if b then ma else pure mempty
 

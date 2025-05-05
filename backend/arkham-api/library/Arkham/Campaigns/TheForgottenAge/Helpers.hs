@@ -87,6 +87,16 @@ getSetAsidePoisonedCount = do
 getIsPoisoned :: HasGame m => InvestigatorId -> m Bool
 getIsPoisoned iid = selectAny $ treacheryIs Treacheries.poisoned <> treacheryInThreatAreaOf iid
 
+unlessPoisoned :: HasGame m => InvestigatorId -> m () -> m ()
+unlessPoisoned iid body = do
+  ok <- not <$> getIsPoisoned iid
+  when ok body
+
+whenPoisoned :: HasGame m => InvestigatorId -> m () -> m ()
+whenPoisoned iid body = do
+  ok <- getIsPoisoned iid
+  when ok body
+
 getUnpoisoned :: HasGame m => m [InvestigatorId]
 getUnpoisoned = select $ NotInvestigator $ HasMatchingTreachery $ treacheryIs $ Treacheries.poisoned
 

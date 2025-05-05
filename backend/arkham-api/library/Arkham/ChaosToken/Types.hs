@@ -281,3 +281,6 @@ mconcat
       |]
   , deriveJSON defaultOptions ''ChaosTokenValue
   ]
+
+instance ToJSONKey ChaosTokenFace
+instance FromJSONKey ChaosTokenFace

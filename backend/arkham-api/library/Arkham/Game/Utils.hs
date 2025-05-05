@@ -271,66 +271,69 @@ createActiveCostForCard
 createActiveCostForCard iid card isPlayAction windows' = do
   acId <- getRandom
   allModifiers <- mconcat <$> sequence [getModifiers card, getModifiers iid]
-  resources <- getModifiedCardCost iid card
-  investigator' <- getInvestigator iid
-  let
-    actions = case cdActions (toCardDef card) of
-      [] -> [Action.Play | isPlayAction == IsPlayAction]
-      as -> as
-    sealingToCost = \case
-      Sealing matcher -> Just $ Cost.SealCost matcher
-      SealUpTo n matcher -> Just $ Cost.UpTo (Fixed n) $ Cost.SealCost matcher
-      SealOneOf (m1 :| rest) -> Just $ Cost.OrCost $ mapMaybe sealingToCost (m1 : rest)
-      SealUpToX _ -> Nothing
-    sealChaosTokenCosts =
-      flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
-        Keyword.Seal sealing -> sealingToCost sealing
-        _ -> Nothing
+  cost <-
+    if IgnoreAllCosts `elem` allModifiers
+      then pure Cost.Free
+      else do
+        resources <- getModifiedCardCost iid card
+        investigator' <- getInvestigator iid
+        let
+          actions = case cdActions (toCardDef card) of
+            [] -> [Action.Play | isPlayAction == IsPlayAction]
+            as -> as
+          sealingToCost = \case
+            Sealing matcher -> Just $ Cost.SealCost matcher
+            SealUpTo n matcher -> Just $ Cost.UpTo (Fixed n) $ Cost.SealCost matcher
+            SealOneOf (m1 :| rest) -> Just $ Cost.OrCost $ mapMaybe sealingToCost (m1 : rest)
+            SealUpToX _ -> Nothing
+          sealChaosTokenCosts =
+            flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
+              Keyword.Seal sealing -> sealingToCost sealing
+              _ -> Nothing
 
-    resourceCost =
-      if resources == 0
-        then
-          if isDynamic card
-            then case maxDynamic card of
-              Nothing -> Cost.UpTo (Fixed $ investigatorResources $ toAttrs investigator') (Cost.ResourceCost 1)
-              Just c ->
-                Cost.UpTo
-                  (MaxCalculation c (Fixed $ investigatorResources $ toAttrs investigator'))
-                  (Cost.ResourceCost 1)
-            else Cost.Free
-        else Cost.ResourceCost resources
+          resourceCost =
+            if resources == 0
+              then
+                if isDynamic card
+                  then case maxDynamic card of
+                    Nothing -> Cost.UpTo (Fixed $ investigatorResources $ toAttrs investigator') (Cost.ResourceCost 1)
+                    Just c ->
+                      Cost.UpTo
+                        (MaxCalculation c (Fixed $ investigatorResources $ toAttrs investigator'))
+                        (Cost.ResourceCost 1)
+                  else Cost.Free
+              else Cost.ResourceCost resources
 
-  additionalActionCosts <-
-    sum <$> flip mapMaybeM allModifiers \case
-      AdditionalCost (Cost.ActionCost n) -> pure $ Just n
-      AdditionalActionCostOf match n -> do
-        performedActions <- field InvestigatorActionsPerformed iid
-        takenActions <- field InvestigatorActionsTaken iid
-        let cardActions = if isPlayAction == IsPlayAction then #play : card.actions else card.actions
-        pure $ guard (any (matchTarget takenActions performedActions match) cardActions) $> n
-      _ -> pure Nothing
+        additionalActionCosts <-
+          sum <$> flip mapMaybeM allModifiers \case
+            AdditionalCost (Cost.ActionCost n) -> pure $ Just n
+            AdditionalActionCostOf match n -> do
+              performedActions <- field InvestigatorActionsPerformed iid
+              takenActions <- field InvestigatorActionsTaken iid
+              let cardActions = if isPlayAction == IsPlayAction then #play : card.actions else card.actions
+              pure $ guard (any (matchTarget takenActions performedActions match) cardActions) $> n
+            _ -> pure Nothing
 
-  actionCost <-
-    if isPlayAction == NotPlayAction
-      then pure $ if additionalActionCosts > 0 then Cost.ActionCost additionalActionCosts else Cost.Free
-      else Cost.ActionCost . (+ additionalActionCosts) <$> getActionCost (toAttrs investigator') actions
+        actionCost <-
+          if isPlayAction == NotPlayAction
+            then pure $ if additionalActionCosts > 0 then Cost.ActionCost additionalActionCosts else Cost.Free
+            else Cost.ActionCost . (+ additionalActionCosts) <$> getActionCost (toAttrs investigator') actions
 
-  additionalCosts <- flip mapMaybeM allModifiers $ \case
-    AdditionalCost (Cost.ActionCost _) -> pure Nothing
-    AdditionalCost c -> pure $ Just c
-    AdditionalPlayCostOf matcher additionalCost -> do
-      isMatch <- card <=~> matcher
-      pure $ guard isMatch $> additionalCost
-    _ -> pure Nothing
+        additionalCosts <- flip mapMaybeM allModifiers $ \case
+          AdditionalCost (Cost.ActionCost _) -> pure Nothing
+          AdditionalCost c -> pure $ Just c
+          AdditionalPlayCostOf matcher additionalCost -> do
+            isMatch <- card <=~> matcher
+            pure $ guard isMatch $> additionalCost
+          _ -> pure Nothing
 
-  let
-    cost =
-      mconcat
-        $ [resourceCost]
-        <> (maybe [] pure . cdAdditionalCost $ toCardDef card)
-        <> [actionCost]
-        <> additionalCosts
-        <> sealChaosTokenCosts
+        pure
+          $ mconcat
+          $ [resourceCost]
+          <> (maybe [] pure . cdAdditionalCost $ toCardDef card)
+          <> [actionCost]
+          <> additionalCosts
+          <> sealChaosTokenCosts
   pure
     ActiveCost
       { activeCostId = acId

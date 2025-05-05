@@ -1,5 +1,5 @@
 {-# LANGUAGE TypeAbstractions #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Investigator.Runner (
   module Arkham.Investigator.Runner,
@@ -3073,7 +3073,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     hasForesight <- hasModifier iid (Foresight $ toTitle card)
     let uiRevelation = getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
     case toCardType card of
-      PlayerEnemyType -> sendEnemy (toTitle a <> " drew Enemy") (toJSON $ toCard card)
+      PlayerEnemyType -> pure ()
       _ -> when (hasRevelation card) uiRevelation
     mWhenDraw <- for mDeck \deck ->
       checkWindows [mkWhen $ Window.DrawCard iid (toCard card) deck]
@@ -3893,7 +3893,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           ) -> do
           mods <- getModifiers iid
           let
-            applyMod (AdditionalTargets n) = over biplate (+ n)
+            applyMod (AdditionalTargets n) = over biplate (+ n) . traceShowId
             applyMod _ = id
             foundStrategy' = foldr applyMod foundStrategy mods
           targetCards <- traverse (filterM (`extendedCardMatch` cardMatcher)) foundCards

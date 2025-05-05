@@ -361,6 +361,12 @@ endOfScenario = push $ EndOfGame Nothing
 endOfScenarioThen :: ReverseQueue m => CampaignStep -> m ()
 endOfScenarioThen = push . EndOfGame . Just
 
+dealAssetDamage :: (ReverseQueue m, Sourceable source) => AssetId -> source -> Int -> m ()
+dealAssetDamage aid source damage = push $ Msg.DealAssetDamageWithCheck aid (toSource source) damage 0 True
+
+dealAssetHorror :: (ReverseQueue m, Sourceable source) => AssetId -> source -> Int -> m ()
+dealAssetHorror aid source horror = push $ Msg.DealAssetDamageWithCheck aid (toSource source) 0 horror True
+
 assignDamage
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 assignDamage iid (toSource -> source) damage = push $ Msg.assignDamage iid source damage

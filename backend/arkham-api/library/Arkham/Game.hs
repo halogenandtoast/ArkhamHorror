@@ -1284,6 +1284,10 @@ getTreacheriesMatching matcher = do
       case treachery.placement of
         AttachedToLocation lid -> lid <=~> mtchr
         _ -> pure False
+    TreacheryAttachedToAsset mtchr -> \treachery -> do
+      case treachery.placement of
+        AttachedToAsset aid _ -> aid <=~> mtchr
+        _ -> pure False
     TreacheryIsAttachedTo target -> \treachery -> do
       let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
       pure $ treacheryTarget == Just target

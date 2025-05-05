@@ -23,7 +23,7 @@ instance HasModifiersFor MiasmaticTorment where
 
 instance HasAbilities MiasmaticTorment where
   getAbilities (MiasmaticTorment a) =
-    [ restricted a 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You
+    [ restricted a 1 (thisExists a $ TreacheryAttachedToAsset $ AssetCanBeDamagedBySource (toSource a)) $ forced $ TurnEnds #when You
     , skillTestAbility $ restricted a 2 OnSameLocation actionAbility
     ]
 
@@ -37,10 +37,16 @@ instance RunMessage MiasmaticTorment where
           exhaustThis partner
           attachTreachery attrs partner
       pure t
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       case attrs.placement of
         AttachedToAsset aid _ -> do
-          push $ DealAssetDamageWithCheck aid (attrs.ability 1) 1 1 True
+          withHealth <- aid <=~> AssetWithHealth
+          withSanity <- aid <=~> AssetWithSanity
+          chooseOrRunOneM iid do
+            when withHealth do
+              labeled "Deal 1 damage" $ dealAssetDamage aid (attrs.ability 1) 1
+            when withSanity do
+              labeled "Deal 1 horror" $ dealAssetHorror aid (attrs.ability 1) 1
         _ -> pure ()
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do

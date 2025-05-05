@@ -6,6 +6,7 @@ module Arkham.Matcher.Treachery where
 import Arkham.Card.CardCode
 import Arkham.Card.Id
 import Arkham.Id
+import {-# SOURCE #-} Arkham.Matcher.Asset
 import Arkham.Matcher.Base
 import Arkham.Matcher.Enemy
 import {-# SOURCE #-} Arkham.Matcher.Investigator
@@ -39,6 +40,7 @@ data TreacheryMatcher
   | TreacheryIs CardCode
   | TreacheryIsAttachedTo Target
   | TreacheryAttachedToLocation LocationMatcher
+  | TreacheryAttachedToAsset AssetMatcher
   | TreacheryWithCardId CardId
   | TreacheryAt LocationMatcher
   | TreacheryWithVictory

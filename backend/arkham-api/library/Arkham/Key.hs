@@ -18,7 +18,7 @@ data ArkhamKey
   | WhiteKey
   | UnrevealedKey ArkhamKey
   deriving stock (Show, Eq, Ord, Generic, Data)
-  deriving anyclass ToJSON
+  deriving anyclass (ToJSON, ToJSONKey)
 
 class IsKey a where
   toKey :: a -> ArkhamKey
@@ -91,3 +91,5 @@ mconcat
             _ -> $(mkParseJSON defaultOptions ''ArkhamKey) o
       |]
   ]
+
+instance FromJSONKey ArkhamKey

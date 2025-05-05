@@ -1,6 +1,7 @@
 module Arkham.Event.Events.EasyMark1 (easyMark1, easyMark1Effect) where
 
 import Arkham.Ability
+import Arkham.Modifier
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -52,6 +53,8 @@ instance RunMessage EasyMark1Effect where
   runMessage msg e@(EasyMark1Effect attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       mcard <- selectOne $ inHandOf ForPlay iid <> basic (cardIs Cards.easyMark1)
-      for_ mcard $ putCardIntoPlay iid
+      for_ mcard \card -> do
+        costModifier attrs card IgnoreAllCosts
+        playCardPayingCost iid card
       pure e
     _ -> EasyMark1Effect <$> liftRunMessage msg attrs

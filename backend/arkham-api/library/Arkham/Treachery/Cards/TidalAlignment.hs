@@ -1,7 +1,6 @@
 module Arkham.Treachery.Cards.TidalAlignment (tidalAlignment) where
 
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
-import Arkham.Location.FloodLevel
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
@@ -22,9 +21,6 @@ instance RunMessage TidalAlignment where
       pure t
     HandleTargetChoice _iid (isSource attrs -> True) (LocationTarget lid) -> do
       selectEach (investigatorAt lid) \iid' -> assignDamage iid' attrs 1
-      fl <- getFloodLevel lid
-      if fl == FullyFlooded
-        then gainSurge attrs
-        else increaseThisFloodLevel lid
+      increaseThisFloodLevelOrElse lid (gainSurge attrs)
       pure t
     _ -> TidalAlignment <$> liftRunMessage msg attrs

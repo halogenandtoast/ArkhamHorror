@@ -2,11 +2,12 @@ module Arkham.Campaigns.TheInnsmouthConspiracy.Helpers where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
+import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Card.CardCode (HasCardCode)
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (HasQueue, push)
+import Arkham.Classes.Query
 import Arkham.Effect.Types (makeEffectBuilder)
 import Arkham.Helpers.Log hiding (recordSetInsert)
 import Arkham.Helpers.Scenario
@@ -63,8 +64,16 @@ needsAir a n =
     $ forced
     $ TurnBegins #when You
 
-getFloodLevel :: HasGame m => LocationId -> m FloodLevel
-getFloodLevel = fieldWithDefault Unflooded LocationFloodLevel
+getFloodLevel :: (HasGame m, AsId location, IdOf location ~ LocationId) => location -> m FloodLevel
+getFloodLevel = fieldWithDefault Unflooded LocationFloodLevel . asId
+
+canIncreaseFloodLevel
+  :: (HasGame m, AsId location, IdOf location ~ LocationId) => location -> m Bool
+canIncreaseFloodLevel = (<=~> CanHaveFloodLevelIncreased) . asId
+
+increaseThisFloodLevelOrElse
+  :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m () -> m ()
+increaseThisFloodLevelOrElse location = ifMM_ (canIncreaseFloodLevel location) (increaseThisFloodLevel location)
 
 increaseThisFloodLevel
   :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m ()

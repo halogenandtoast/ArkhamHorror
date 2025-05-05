@@ -172,10 +172,7 @@ instance RunMessage ALightInTheFog where
     DoStep 1 (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _n) -> do
       case token.face of
         Cultist -> withLocationOf iid \lid -> do
-          canIncreaseFloodLevel <- lid <=~> CanHaveFloodLevelIncreased 
-          if canIncreaseFloodLevel
-            then increaseThisFloodLevel lid
-            else when (isHardExpert attrs) $ assignHorror iid Cultist 1
+          increaseThisFloodLevelOrElse lid $ when (isHardExpert attrs) $ assignHorror iid Cultist 1
         _ -> pure ()
       pure s
     ForInvestigator iid (ScenarioSpecific "captured" _) -> do

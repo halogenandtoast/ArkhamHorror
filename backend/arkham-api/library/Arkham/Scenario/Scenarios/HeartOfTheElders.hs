@@ -3,8 +3,8 @@ module Arkham.Scenario.Scenarios.HeartOfTheElders (heartOfTheElders) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -12,6 +12,7 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.GameT (GameT)
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Layout
@@ -283,13 +284,25 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
   _ -> HeartOfTheElders . (`with` metadata) <$> liftRunMessage msg attrs
 
 instance RunMessage HeartOfTheElders where
-  runMessage msg s@(HeartOfTheElders (_ `With` metadata)) = runQueueT $ case msg of
+  runMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = runQueueT $ case msg of
     Explore iid _ _ -> do
       checkWhen $ Window.AttemptExplore iid
       push $ Do msg
       pure s
     Do (Explore iid source locationMatcher) -> do
       explore iid source locationMatcher PlaceExplored 1
+      pure s
+    ResolveChaosToken _ Tablet iid -> do
+      whenPoisoned iid failSkillTest
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Cultist -> withLocationOf iid \lid -> placeDoom Cultist lid 1
+        Tablet | isHardExpert attrs -> unlessPoisoned iid do
+          poison <- getSetAsidePoisoned
+          push $ CreateWeaknessInThreatArea poison iid
+        ElderThing -> assignHorror iid ElderThing 1
+        _ -> pure ()
       pure s
     _ -> case scenarioStep metadata of
       One -> runAMessage msg s

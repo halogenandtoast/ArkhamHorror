@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.MandyThompson (mandyThompson, MandyThompson (..)) where
+module Arkham.Investigator.Cards.MandyThompson (mandyThompson) where
 
 import Arkham.Ability
 import Arkham.Id
@@ -27,9 +27,9 @@ mandyThompson =
 instance HasAbilities MandyThompson where
   getAbilities (MandyThompson attrs) =
     [ playerLimit PerRound
-        $ restrictedAbility attrs 1 Self
+        $ restricted attrs 1 Self
         $ freeReaction
-        $ WouldSearchDeck #when (affectsOthers $ InvestigatorAt YourLocation)
+        $ WouldSearchDeck #when (affectsOthers $ at_ YourLocation)
         $ DeckOneOf [EncounterDeck, DeckOf ThatInvestigator]
     ]
 

@@ -26,10 +26,9 @@ mrRook = ally (MrRook . (`with` Metadata [])) Cards.mrRook (2, 2)
 
 instance HasAbilities MrRook where
   getAbilities (MrRook (a `With` _)) =
-    [ restrictedAbility a 1 ControlsThis
+    [ restricted a 1 ControlsThis
         $ (if tabooed TabooList20 a then actionAbilityWithCost else FastAbility)
-        $ exhaust a
-        <> assetUseCost a Secret 1
+          (exhaust a <> assetUseCost a Secret 1)
     ]
 
 instance RunMessage MrRook where
@@ -55,7 +54,7 @@ instance RunMessage MrRook where
         chosenWeakness = any (`cardMatch` WeaknessCard) (chosenCards meta)
         anyWeaknesses = any (`cardMatch` WeaknessCard) cards
         chosenNonWeakness = filter (not . (`cardMatch` WeaknessCard)) (chosenCards meta)
-        canChooseMore = length chosenNonWeakness < additionalTargets + 1
+        canChooseMore = length chosenNonWeakness < additionalTargets + 1 && length (chosenCards meta) < length cards
         needsToChooseWeakness = not chosenWeakness && anyWeaknesses
 
       -- if we need to draw weakness, or we need to draw more, repeat step 1

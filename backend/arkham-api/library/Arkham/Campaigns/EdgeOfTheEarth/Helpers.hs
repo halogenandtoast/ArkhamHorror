@@ -80,11 +80,12 @@ gatherTekelili = do
   storyCards <- concat . toList <$> getCampaignStoryCards
   let storyCardDefs = map toCardDef storyCards
   let filteredDefs = foldl' (flip (deleteFirstMatch . (==))) defs storyCardDefs
-  concat <$> for filteredDefs \def ->
-    traverse genCard $ replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def
+  traverse genCard filteredDefs
  where
   defs =
-    filter ((== Just Tekelili) . cdEncounterSet) $ toList allPlayerCards
+    concatMap (\def -> replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def)
+      $ filter ((== Just Tekelili) . cdEncounterSet)
+      $ toList allPlayerCards
 
 addTekelili :: ReverseQueue m => InvestigatorId -> [Card] -> m ()
 addTekelili _ [] = pure ()

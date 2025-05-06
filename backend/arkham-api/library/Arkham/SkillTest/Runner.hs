@@ -200,10 +200,20 @@ instance RunMessage SkillTest where
         x@HalfResourcesOf {} -> pure x
         x@FixedBaseValue {} -> pure x
 
+      mods <- getModifiers skillTestInvestigator
+
+      let
+        applyModifiers = \case
+          UseSkillInsteadOf x y -> map (\(k, v) -> if k == SkillIcon x then (SkillIcon y, v) else (k, v))
+          _ -> id
+
       let icons =
             if null skillTestIconValues
               then iconValuesForSkillTestType updatedSkillTestType
-              else skillTestIconValues
+              else
+                Map.unionsWith max
+                  $ map (uncurry Map.singleton)
+                  $ foldr applyModifiers (mapToList skillTestIconValues) mods
 
       pure
         $ s

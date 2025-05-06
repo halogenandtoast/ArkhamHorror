@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.DrAmyKenslerProfessorOfBiology (
-  drAmyKenslerProfessorOfBiology,
-  DrAmyKenslerProfessorOfBiology (..),
-)
-where
+module Arkham.Asset.Assets.DrAmyKenslerProfessorOfBiology (drAmyKenslerProfessorOfBiology) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards

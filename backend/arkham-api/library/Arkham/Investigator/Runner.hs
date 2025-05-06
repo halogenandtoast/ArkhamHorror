@@ -906,28 +906,37 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   DiscardHand iid source | iid == investigatorId -> do
     liftRunMessage (DiscardFromHand $ discardAll iid source AnyCard) a
   DiscardCard iid source cardId | iid == investigatorId -> do
-    let card = fromJustNote "must be in hand" $ find ((== cardId) . toCardId) investigatorHand
-    inMulligan <- getInMulligan
-    beforeWindowMsg <- checkWindows [mkWhen (Window.Discarded (Just iid) source card)]
-    afterWindowMsg <- checkWindows [mkAfter (Window.Discarded (Just iid) source card)]
-    afterHandWindowMsg <- checkWindows [mkAfter (Window.DiscardedFromHand iid source card)]
-    if inMulligan
-      then push (Do msg)
-      else pushAll [beforeWindowMsg, Do msg, afterWindowMsg, afterHandWindowMsg]
+    case find ((== cardId) . toCardId) investigatorHand of
+      Just card -> do
+        inMulligan <- getInMulligan
+        beforeWindowMsg <- checkWindows [mkWhen (Window.Discarded (Just iid) source card)]
+        afterWindowMsg <- checkWindows [mkAfter (Window.Discarded (Just iid) source card)]
+        afterHandWindowMsg <- checkWindows [mkAfter (Window.DiscardedFromHand iid source card)]
+        if inMulligan
+          then push (Do msg)
+          else pushAll [beforeWindowMsg, Do msg, afterWindowMsg, afterHandWindowMsg]
+      Nothing -> do
+        card <- getCard cardId
+        beforeWindowMsg <- checkWindows [mkWhen (Window.Discarded (Just iid) source card)]
+        afterWindowMsg <- checkWindows [mkAfter (Window.Discarded (Just iid) source card)]
+        pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
     pure a
   Do (DiscardCard iid _source cardId) | iid == investigatorId -> do
-    let card = fromJustNote "must be in hand" $ find ((== cardId) . toCardId) investigatorHand
-    case card of
-      PlayerCard pc -> do
-        let
-          updateHandDiscard handDiscard =
-            handDiscard
-              { discardAmount = max 0 (discardAmount handDiscard - 1)
-              }
-        push $ AddToDiscard iid pc
-        pure $ a & handL %~ filter (/= card) & discardingL %~ fmap updateHandDiscard
-      EncounterCard _ -> pure $ a & handL %~ filter (/= card) -- TODO: This should discard to the encounter discard
-      VengeanceCard _ -> error "vengeance card"
+    case find ((== cardId) . toCardId) investigatorHand of
+      Just card -> case card of
+        PlayerCard pc -> do
+          let
+            updateHandDiscard handDiscard =
+              handDiscard
+                { discardAmount = max 0 (discardAmount handDiscard - 1)
+                }
+          push $ AddToDiscard iid pc
+          pure $ a & handL %~ filter (/= card) & discardingL %~ fmap updateHandDiscard
+        EncounterCard _ -> pure $ a & handL %~ filter (/= card) -- TODO: This should discard to the encounter discard
+        VengeanceCard _ -> error "vengeance card"
+      Nothing -> do
+        push $ DiscardedCard cardId
+        pure a
   DoneDiscarding iid | iid == investigatorId -> case investigatorDiscarding of
     Nothing -> pure a
     Just handDiscard -> do

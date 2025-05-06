@@ -4404,8 +4404,6 @@ library
     , monad-logger
     , monoidal-containers
     , mtl >=2.3.1
-    , opentelemetry
-    , opentelemetry-plugin
     , parsec
     , path-pieces
     , persistent
@@ -4443,7 +4441,7 @@ library
     , yesod-websockets
   default-language: GHC2021
   if (flag(dev)) || (flag(library-only))
-    ghc-options: -Wall -fwarn-tabs -O0 -plugin-package opentelemetry-plugin -fplugin=OpenTelemetry.Plugin
+    ghc-options: -Wall -fwarn-tabs -O0
     cpp-options: -DDEVELOPMENT
   else
     ghc-options: -Wall -fwarn-tabs -O2 +RTS -V0 -RTS

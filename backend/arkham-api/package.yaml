@@ -46,8 +46,6 @@ library:
         - -Wall
         - -fwarn-tabs
         - -O0
-        - -plugin-package opentelemetry-plugin
-        - -fplugin=OpenTelemetry.Plugin
         cpp-options: -DDEVELOPMENT
       else:
         ghc-options:
@@ -58,7 +56,6 @@ library:
   dependencies:
     - MonadRandom
     - aeson
-    - opentelemetry-plugin
     - aeson-casing
     - aeson-diff
     - amazonka
@@ -98,7 +95,6 @@ library:
     - monad-logger
     - monoidal-containers
     - mtl >= 2.3.1
-    - opentelemetry
     - parsec
     - path-pieces
     - persistent

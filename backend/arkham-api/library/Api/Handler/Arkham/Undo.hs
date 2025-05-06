@@ -17,7 +17,6 @@ import Entity.Arkham.Step
 import Import hiding (delete, on, update, (<.), (=.), (==.), (>=.))
 import Json
 import Network.HTTP.Types.Status qualified as Status
-import OpenTelemetry.Eventlog (withSpan_)
 import Safe (fromJustNote)
 
 stepBackUntil :: UserId -> ArkhamGameId -> ArkhamGame -> (ArkhamGame -> Bool) -> Handler ArkhamGame
@@ -35,7 +34,7 @@ jsonErrorContents :: ToJSON v => v -> Text -> Handler a
 jsonErrorContents v msg = sendStatusJSON Status.status400 (object ["error" .= msg, "contents" .= v])
 
 stepBack :: UserId -> ArkhamGameId -> ArkhamGame -> Handler ArkhamGame
-stepBack userId gameId current@ArkhamGame {..} = withSpan_ "stepBack" do
+stepBack userId gameId current@ArkhamGame {..} = do
   Entity pid arkhamPlayer <- runDB $ getBy404 (UniquePlayer userId gameId)
   runDB (getBy (UniqueStep gameId arkhamGameStep)) >>= \case
     Nothing -> jsonError "Missing step"
@@ -43,14 +42,13 @@ stepBack userId gameId current@ArkhamGame {..} = withSpan_ "stepBack" do
       -- never delete the initial step as it can not be redone
       -- NOTE: actually we never want to step back if the patchOperations are empty, the first condition is therefor redundant
       when (arkhamStepStep step <= 0) $ jsonErrorContents step "Can't undo the first step"
-      when (null $ patchOperations $ choicePatchDown $ arkhamStepChoice step) $ withSpan_ "no update" do
+      when (null $ patchOperations $ choicePatchDown $ arkhamStepChoice step) do
         -- we don't need to apply any real updates so let's just remove the step
         arkhamGame <- runDB do
-          withSpan_ "lock game" do
-            void $ select do
-              game <- from $ table @ArkhamGame
-              where_ $ game.id ==. val gameId
-              locking forUpdate
+          void $ select do
+            game <- from $ table @ArkhamGame
+            where_ $ game.id ==. val gameId
+            locking forUpdate
           -- ensure previous step exists
           maybe (error $ "can not go back, at step: " <> tshow arkhamGameStep) (\_ -> pure ())
             =<< getBy (UniqueStep gameId (arkhamGameStep - 1))
@@ -69,46 +67,44 @@ stepBack userId gameId current@ArkhamGame {..} = withSpan_ "stepBack" do
         sendStatusJSON Status.status200 arkhamGame
 
       now <- liftIO getCurrentTime
-      patched <-
-        withSpan_ "patch" $ pure $ patch arkhamGameCurrentData (choicePatchDown $ arkhamStepChoice step)
+      let patched = patch arkhamGameCurrentData (choicePatchDown $ arkhamStepChoice step)
 
       case patched of
         -- TODO: We need to add back the gameActionDiff
         -- ensure previous step exists
-        Error e -> withSpan_ "patch error" $ error $ T.pack e
-        Success ge -> withSpan_ "patch success" do
-          runDB do
-            void $ select do
-              game <- from $ table @ArkhamGame
-              where_ $ game.id ==. val gameId
-              locking forUpdate
-            maybe (error $ "can not go back, at step: " <> tshow arkhamGameStep) (\_ -> pure ())
-              =<< getBy (UniqueStep gameId (arkhamGameStep - 1))
+        Error e -> error $ T.pack e
+        Success ge -> runDB do
+          void $ select do
+            game <- from $ table @ArkhamGame
+            where_ $ game.id ==. val gameId
+            locking forUpdate
+          maybe (error $ "can not go back, at step: " <> tshow arkhamGameStep) (\_ -> pure ())
+            =<< getBy (UniqueStep gameId (arkhamGameStep - 1))
 
-            let arkhamGame =
-                  ArkhamGame
-                    arkhamGameName
-                    ge
-                    (arkhamGameStep - 1)
-                    arkhamGameMultiplayerVariant
-                    arkhamGameCreatedAt
-                    now
+          let arkhamGame =
+                ArkhamGame
+                  arkhamGameName
+                  ge
+                  (arkhamGameStep - 1)
+                  arkhamGameMultiplayerVariant
+                  arkhamGameCreatedAt
+                  now
 
-            replace gameId arkhamGame
-            delete do
-              entries <- from $ table @ArkhamLogEntry
-              where_ $ entries.arkhamGameId ==. val gameId
-              where_ $ entries.step >=. val (arkhamGameStep - 1)
-            deleteKey stepId
+          replace gameId arkhamGame
+          delete do
+            entries <- from $ table @ArkhamLogEntry
+            where_ $ entries.arkhamGameId ==. val gameId
+            where_ $ entries.step >=. val (arkhamGameStep - 1)
+          deleteKey stepId
 
-            case arkhamGameMultiplayerVariant of
-              Solo ->
-                replace pid
-                  $ arkhamPlayer
-                    { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
-                    }
-              WithFriends -> pure ()
-            pure arkhamGame
+          case arkhamGameMultiplayerVariant of
+            Solo ->
+              replace pid
+                $ arkhamPlayer
+                  { arkhamPlayerInvestigatorId = coerce (view activeInvestigatorIdL ge)
+                  }
+            WithFriends -> pure ()
+          pure arkhamGame
 
 putApiV1ArkhamGameUndoR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoR gameId = do

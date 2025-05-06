@@ -27,6 +27,6 @@ instance RunMessage PrimevalTerror where
       revelationSkillTest sid iid attrs #willpower (Fixed $ 2 + distance)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      assignDamage iid attrs 2
+      assignHorror iid attrs 2
       pure t
     _ -> PrimevalTerror <$> liftRunMessage msg attrs

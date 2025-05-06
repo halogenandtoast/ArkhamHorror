@@ -5,6 +5,7 @@ import Arkham.Classes.HasQueue (withQueue_)
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Runner (filterOutEnemyMessages)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
@@ -36,7 +37,7 @@ instance RunMessage HuntingHorror where
       pure e
     RequestedChaosTokens (isSource attrs -> True) (Just iid) (map (.face) -> faces) -> do
       chooseOneM iid do
-        labeled "Continue" do
+        withI18n $ labeled' "continue" do
           when (any (`elem` faces) [#skull, #cultist, #tablet, #elderthing, #autofail]) $ readyThis attrs
       pure e
     UseThisAbility _ (isSource attrs -> True) 2 -> do

@@ -6,6 +6,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (museumEntrance)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 
 newtype MuseumEntrance = MuseumEntrance LocationAttrs
   deriving anyclass IsLocation
@@ -20,9 +21,7 @@ instance HasModifiersFor MuseumEntrance where
 
 instance HasAbilities MuseumEntrance where
   getAbilities (MuseumEntrance a) =
-    extendRevealed1 a
-      $ withTooltip "\"Eh, How important can a book really be, anyway?\""
-      $ locationResignAction a
+    extendRevealed1 a $ scenarioI18n $ withI18nTooltip "museumEntrance.resign" $ locationResignAction a
 
 instance RunMessage MuseumEntrance where
   runMessage msg (MuseumEntrance attrs) = MuseumEntrance <$> runMessage msg attrs

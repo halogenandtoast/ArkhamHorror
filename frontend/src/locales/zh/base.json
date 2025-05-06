@@ -25,7 +25,7 @@
   "updatePassword": "更新密码",
   "username": "用户名",
   "usernameOrEmailAlreadyTaken": "用户名或电子邮件已被使用",
-  "labels": {
+  "label": {
     "drawTopCardOfEncounterDeck": "抽取遭遇牌堆顶部的卡牌",
     "takeControlOfKey": "控制钥匙"
   },

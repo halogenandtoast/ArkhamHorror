@@ -234,6 +234,9 @@ placeLocationCardM = (>>= placeLocationCard)
 reveal :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => location -> m ()
 reveal = push . Msg.RevealLocation Nothing . asId
 
+revealMatching :: ReverseQueue m => LocationMatcher -> m ()
+revealMatching matcher = selectEach matcher (push . Msg.RevealLocation Nothing)
+
 revealBy
   :: ( AsId investigator
      , IdOf investigator ~ InvestigatorId

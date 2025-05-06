@@ -25,9 +25,10 @@
   "updatePassword": "Update Password",
   "username": "Username",
   "usernameOrEmailAlreadyTaken": "Username or Email already taken",
-  "labels": {
+  "label": {
     "drawTopCardOfEncounterDeck": "Draw the top card of the encounter deck",
-    "takeControlOfKey": "Take control of key"
+    "takeControlOfKey": "Take control of key",
+    "discardTopOfYourDeck": "Discard the top card of your deck | Discard the top {count} cards of your deck"
   },
   "tooltips": {
     "takeControlOfKey": "Take control of {key} key"

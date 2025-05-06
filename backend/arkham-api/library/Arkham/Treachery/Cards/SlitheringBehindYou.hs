@@ -1,8 +1,9 @@
-module Arkham.Treachery.Cards.SlitheringBehindYou (SlitheringBehindYou (..), slitheringBehindYou) where
+module Arkham.Treachery.Cards.SlitheringBehindYou (slitheringBehindYou) where
 
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Location
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
@@ -25,19 +26,13 @@ instance RunMessage SlitheringBehindYou where
         Just eid -> do
           placeDoom attrs eid 1
           shuffleDeck Deck.EncounterDeck
-        Nothing ->
-          push
-            $ FindEncounterCard
-              iid
-              (toTarget attrs)
-              [FromEncounterDeck, FromEncounterDiscard, FromVoid]
-              (cardIs Enemies.huntingHorror)
+        Nothing -> findEncounterCardIn iid attrs (cardIs Enemies.huntingHorror) [#deck, #discard, #void]
       pure t
-    FoundEncounterCard iid target ec | isTarget attrs target -> do
-      mlid <- field InvestigatorLocation iid
-      for_ mlid \lid -> push (SpawnEnemyAtEngagedWith (EncounterCard ec) lid iid)
+    FoundEncounterCard iid (isTarget attrs -> True) ec -> do
+      withLocationOf iid \lid -> do
+        push $ SpawnEnemyAtEngagedWith (EncounterCard ec) lid iid
       pure t
-    FoundEnemyInOutOfPlay VoidZone iid target eid | isTarget attrs target -> do
+    FoundEnemyInOutOfPlay VoidZone iid (isTarget attrs -> True) eid -> do
       push $ EnemySpawnEngagedWith eid $ InvestigatorWithId iid
       pure t
     _ -> SlitheringBehindYou <$> liftRunMessage msg attrs

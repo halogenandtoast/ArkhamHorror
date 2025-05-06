@@ -2,15 +2,14 @@ module Arkham.Act.Cards.BreakingAndEntering (breakingAndEntering) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Enemy (spawnAt)
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Spawn
 
@@ -19,67 +18,38 @@ newtype BreakingAndEntering = BreakingAndEntering ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 breakingAndEntering :: ActCard BreakingAndEntering
-breakingAndEntering =
-  act (2, A) BreakingAndEntering Cards.breakingAndEntering Nothing
+breakingAndEntering = act (2, A) BreakingAndEntering Cards.breakingAndEntering Nothing
 
 instance HasAbilities BreakingAndEntering where
   getAbilities (BreakingAndEntering x) =
     [mkAbility x 1 $ forced $ Enters #after You $ locationIs Cards.exhibitHallRestrictedHall]
 
 instance RunMessage BreakingAndEntering where
-  runMessage msg a@(BreakingAndEntering attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ AdvanceAct (toId attrs) source AdvancedWithOther
+  runMessage msg a@(BreakingAndEntering attrs) = runQueueT $ scenarioI18n $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      (leadInvestigatorId, lead) <- getLeadInvestigatorPlayer
-      investigatorIds <- getInvestigators
-      mHuntingHorror <- getHuntingHorror
-      haroldWalsted <- getSetAsideCard Assets.haroldWalsted
-      case mHuntingHorror of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      lead <- getLead
+      investigators <- getInvestigators
+      haroldWalsted <- fetchCard Assets.haroldWalsted
+      chooseOneM lead do
+        questionLabeled' "takeControlOfHaroldWalsted"
+        questionLabeledCard haroldWalsted
+        targets investigators (`takeControlOfSetAsideAsset` haroldWalsted)
+      getHuntingHorror >>= \case
         Just eid -> do
           lid <- getRestrictedHall
-          pushAll
-            [ chooseOne
-                lead
-                [ targetLabel iid [TakeControlOfSetAsideAsset iid haroldWalsted]
-                | iid <- investigatorIds
-                ]
-            , EnemySpawn
-                $ SpawnDetails
-                  { spawnDetailsInvestigator = Nothing
-                  , spawnDetailsSpawnAt = SpawnAtLocation lid
-                  , spawnDetailsEnemy = eid
-                  }
-            , Ready (EnemyTarget eid)
-            , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-            ]
-        Nothing ->
-          pushAll
-            [ chooseOne
-                lead
-                [ targetLabel iid [TakeControlOfSetAsideAsset iid haroldWalsted]
-                | iid <- investigatorIds
-                ]
-            , FindEncounterCard
-                leadInvestigatorId
-                (toTarget attrs)
-                [FromEncounterDeck, FromEncounterDiscard, FromVoid]
-                (cardIs Enemies.huntingHorror)
-            ]
+          spawnAt eid Nothing (SpawnAtLocation lid)
+          readyThis eid
+        Nothing -> findEncounterCardIn lead attrs (cardIs Enemies.huntingHorror) [#deck, #discard, #void]
+      advanceActDeck attrs
       pure a
-    FoundEnemyInOutOfPlay VoidZone _ target eid | isTarget attrs target -> do
+    FoundEnemyInOutOfPlay zone _ (isTarget attrs -> True) eid -> do
       lid <- getRestrictedHall
-      pushAll
-        [ EnemySpawnFromOutOfPlay VoidZone Nothing lid eid
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-        ]
+      push $ EnemySpawnFromOutOfPlay zone Nothing lid eid
       pure a
-    FoundEncounterCard _ target ec | isTarget attrs target -> do
-      lid <- getRestrictedHall
-      pushAll
-        [ SpawnEnemyAt (EncounterCard ec) lid
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-        ]
+    FoundEncounterCard _ (isTarget attrs -> True) ec -> do
+      spawnEnemyAt_ ec =<< getRestrictedHall
       pure a
-    _ -> BreakingAndEntering <$> runMessage msg attrs
+    _ -> BreakingAndEntering <$> liftRunMessage msg attrs

@@ -13,9 +13,13 @@ import Arkham.Skill.Skills
 createSkill :: IsCard a => a -> InvestigatorId -> SkillId -> Skill
 createSkill a iid sId =
   let this = lookupSkill (toCardCode a) iid sId (toCardId a)
-   in overAttrs (\attrs -> attrs {skillCustomizations = customizations}) this
+   in overAttrs (\attrs -> attrs {skillCustomizations = customizations, skillOwner = owner}) this
  where
-  customizations = case toCard a of
+  card = toCard a
+  owner = case card of
+    PlayerCard pc -> fromMaybe iid $ pcOwner pc
+    _ -> iid
+  customizations = case card of
     PlayerCard pc -> pcCustomizations pc
     _ -> mempty
 

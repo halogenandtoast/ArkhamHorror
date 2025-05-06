@@ -13,23 +13,25 @@ import Arkham.Event.Runner
 createEvent :: IsCard a => a -> InvestigatorId -> EventId -> Event
 createEvent a iid eid =
   let this = lookupEvent (toCardCode a) iid eid (toCardId a)
-   in overAttrs
-        ( \attrs ->
-            attrs
-              { eventCustomizations = customizations
-              , eventTaboo = tabooList
-              , eventMutated = mutated
-              }
-        )
-        this
+   in updateAttrs this \attrs ->
+        attrs
+          { eventCustomizations = customizations
+          , eventTaboo = tabooList
+          , eventMutated = mutated
+          , eventOwner = owner
+          }
  where
-  customizations = case toCard a of
+  card = toCard a
+  owner = case card of
+    PlayerCard pc -> fromMaybe iid $ pcOwner pc
+    _ -> iid
+  customizations = case card of
     PlayerCard pc -> pcCustomizations pc
     _ -> mempty
-  tabooList = case toCard a of
+  tabooList = case card of
     PlayerCard pc -> pcTabooList pc
     _ -> Nothing
-  mutated = case toCard a of
+  mutated = case card of
     PlayerCard pc -> tabooMutated tabooList pc
     _ -> Nothing
 

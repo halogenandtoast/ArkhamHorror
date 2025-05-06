@@ -1,4 +1,4 @@
-module Arkham.Event.Events.GritYourTeeth (gritYourTeeth, GritYourTeeth (..)) where
+module Arkham.Event.Events.GritYourTeeth (gritYourTeeth) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -13,7 +13,7 @@ gritYourTeeth = event GritYourTeeth Cards.gritYourTeeth
 
 instance RunMessage GritYourTeeth where
   runMessage msg e@(GritYourTeeth attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | eid == attrs.id -> do
-      roundModifier attrs iid $ AnySkillValue 1
+    PlayThisEvent iid (is attrs -> True) -> do
+      roundModifiers attrs iid [SkillModifier kind 1 | kind <- [minBound ..]]
       pure e
     _ -> GritYourTeeth <$> liftRunMessage msg attrs

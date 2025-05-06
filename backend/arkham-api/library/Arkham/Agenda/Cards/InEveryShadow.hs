@@ -1,17 +1,11 @@
-module Arkham.Agenda.Cards.InEveryShadow (InEveryShadow (..), inEveryShadow) where
+module Arkham.Agenda.Cards.InEveryShadow (inEveryShadow) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Card
-import Arkham.Classes
-import Arkham.Enemy.Cards qualified as Cards
-import Arkham.GameValue
+import Arkham.Agenda.Import.Lifted
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype InEveryShadow = InEveryShadow AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -22,26 +16,27 @@ inEveryShadow = agenda (3, A) InEveryShadow Cards.inEveryShadow (Static 7)
 
 instance HasAbilities InEveryShadow where
   getAbilities (InEveryShadow x) =
-    [mkAbility x 1 $ forced $ EnemySpawns #when Anywhere $ enemyIs Cards.huntingHorror]
+    [ groupLimit PerTestOrAbility
+        $ mkAbility x 1
+        $ forced
+        $ EnemySpawns #when Anywhere
+        $ enemyIs Enemies.huntingHorror
+    ]
 
 instance RunMessage InEveryShadow where
-  runMessage msg a@(InEveryShadow attrs) = case msg of
-    UseCardAbility _ source 1 [(windowType -> Window.EnemySpawns eid _)] _ | isSource attrs source -> do
-      mShadowSpawnedId <- selectOne $ treacheryIs Treacheries.shadowSpawned
-      shadowSpawned <- genCard Treacheries.shadowSpawned
-      case mShadowSpawnedId of
-        Just tid -> push $ PlaceResources (toAbilitySource attrs 1) (TreacheryTarget tid) 1
+  runMessage msg a@(InEveryShadow attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      selectOne (treacheryIs Treacheries.shadowSpawned) >>= \case
+        Just tid -> placeTokens (attrs.ability 1) tid #resource 1
         Nothing -> do
           tid <- getRandom
-          push $ AttachStoryTreacheryTo tid shadowSpawned (EnemyTarget eid)
+          shadowSpawned <- fetchCard Treacheries.shadowSpawned
+          huntingHorror <- selectJust $ enemyIs Enemies.huntingHorror
+          push $ AttachStoryTreacheryTo tid shadowSpawned (toTarget huntingHorror)
       pure a
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      iids <- select UneliminatedInvestigator
-      pushAll
-        $ concatMap
-          ( \iid ->
-              [SufferTrauma iid 1 0, InvestigatorDefeated (toSource attrs) iid]
-          )
-          iids
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      eachInvestigator \iid -> do
+        sufferPhysicalTrauma iid 1
+        investigatorDefeated attrs iid
       pure a
-    _ -> InEveryShadow <$> runMessage msg attrs
+    _ -> InEveryShadow <$> liftRunMessage msg attrs

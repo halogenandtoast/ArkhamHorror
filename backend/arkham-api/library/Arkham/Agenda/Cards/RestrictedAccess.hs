@@ -33,7 +33,7 @@ instance RunMessage RestrictedAccess where
         Just tid -> placeTokens (attrs.ability 1) tid #resource 1
         Nothing -> do
           huntingHorror <- selectJust $ enemyIs Enemies.huntingHorror
-          shadowSpawned <- getSetAsideCard Treacheries.shadowSpawned
+          shadowSpawned <- fetchCard Treacheries.shadowSpawned
           tid <- getRandom
           push $ AttachStoryTreacheryTo tid shadowSpawned (toTarget huntingHorror)
       pure a

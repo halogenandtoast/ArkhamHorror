@@ -23,7 +23,14 @@ instance HasModifiersFor MiasmaticTorment where
 
 instance HasAbilities MiasmaticTorment where
   getAbilities (MiasmaticTorment a) =
-    [ restricted a 1 (thisExists a $ TreacheryAttachedToAsset $ AssetCanBeDamagedBySource (toSource a)) $ forced $ TurnEnds #when You
+    [ restricted
+        a
+        1
+        ( thisExists a
+            $ TreacheryAttachedToAsset (AssetCanBeDamagedBySource (toSource a) <> AssetControlledBy You)
+        )
+        $ forced
+        $ TurnEnds #when You
     , skillTestAbility $ restricted a 2 OnSameLocation actionAbility
     ]
 

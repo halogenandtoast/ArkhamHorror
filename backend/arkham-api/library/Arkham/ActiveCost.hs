@@ -1407,27 +1407,30 @@ instance RunMessage ActiveCost where
     PayCostFinished acId | acId == c.id -> do
       case c.target of
         ForAbility ability -> do
-          let
-            isAction = isActionAbility ability && ability.index > 0
-            actions = nub $ [Action.Activate | abilityIsActivate ability] <> ability.actions
-            iid = c.investigator
-          whenActivateAbilityWindow <- checkWindows [mkWhen (Window.ActivateAbility iid c.windows ability)]
-          afterActivateAbilityWindow <- checkWindows [mkAfter (Window.ActivateAbility iid c.windows ability)]
-          afterMsgs <-
-            if isAction
-              then do
-                afterWindowMsgs <- checkWindows [mkAfter (Window.PerformAction iid action) | action <- actions]
-                pure [afterWindowMsgs, FinishAction, TakenActions iid actions]
-              else pure []
-          -- TODO: this will not work for ForcedWhen, but this currently only applies to IntelReport
-          isForced <- isForcedAbility iid ability
-          card <- sourceToCard ability.source
-          pushAll
-            $ [whenActivateAbilityWindow | not isForced]
-            <> [SealedChaosToken token (Just c.investigator) (toTarget card) | token <- c.sealedChaosTokens]
-            <> [UseCardAbility iid ability.source ability.index c.windows c.payments]
-            <> afterMsgs
-            <> [afterActivateAbilityWindow | not isForced]
+          if ability.index == NonActivateAbility
+            then push $ UseCardAbility c.investigator ability.source ability.index c.windows c.payments
+            else do
+              let
+                isAction = isActionAbility ability && ability.index > 0
+                actions = nub $ [Action.Activate | abilityIsActivate ability] <> ability.actions
+                iid = c.investigator
+              whenActivateAbilityWindow <- checkWindows [mkWhen (Window.ActivateAbility iid c.windows ability)]
+              afterActivateAbilityWindow <- checkWindows [mkAfter (Window.ActivateAbility iid c.windows ability)]
+              afterMsgs <-
+                if isAction
+                  then do
+                    afterWindowMsgs <- checkWindows [mkAfter (Window.PerformAction iid action) | action <- actions]
+                    pure [afterWindowMsgs, FinishAction, TakenActions iid actions]
+                  else pure []
+              -- TODO: this will not work for ForcedWhen, but this currently only applies to IntelReport
+              isForced <- isForcedAbility iid ability
+              card <- sourceToCard ability.source
+              pushAll
+                $ [whenActivateAbilityWindow | not isForced]
+                <> [SealedChaosToken token (Just c.investigator) (toTarget card) | token <- c.sealedChaosTokens]
+                <> [UseCardAbility iid ability.source ability.index c.windows c.payments]
+                <> afterMsgs
+                <> [afterActivateAbilityWindow | not isForced]
         ForCard isPlayAction card -> do
           let iid = c.investigator
           let actions = [#play | isPlayAction == IsPlayAction] <> card.actions

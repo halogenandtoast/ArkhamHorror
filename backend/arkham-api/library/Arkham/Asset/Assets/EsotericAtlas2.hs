@@ -2,11 +2,12 @@ module Arkham.Asset.Assets.EsotericAtlas2 (esotericAtlas2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.Helpers.Location
 import Arkham.Matcher
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 
 newtype EsotericAtlas2 = EsotericAtlas2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -25,17 +26,11 @@ instance HasAbilities EsotericAtlas2 where
     ]
 
 instance RunMessage EsotericAtlas2 where
-  runMessage msg a@(EsotericAtlas2 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg a@(EsotericAtlas2 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       locations <-
         getCanMoveToMatchingLocations iid (attrs.ability 1)
           $ oneOf [LocationWithDistanceFrom n (locationWithInvestigator iid) RevealedLocation | n <- [1 .. 3]]
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel location [Move $ move (toSource attrs) iid location]
-          | location <- locations
-          ]
+      chooseTargetM iid locations (moveTo (attrs.ability 1) iid)
       pure a
-    _ -> EsotericAtlas2 <$> runMessage msg attrs
+    _ -> EsotericAtlas2 <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.GrapplingHook (grapplingHook, grapplingHookEffect, GrapplingHook (..)) where
+module Arkham.Asset.Assets.GrapplingHook (grapplingHook, grapplingHookEffect) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards

@@ -11,10 +11,12 @@ import Arkham.Prelude
 createAsset :: IsCard a => a -> AssetId -> Asset
 createAsset a aId =
   let this = lookupAsset (toCardCode a) aId (toCardOwner a) (toCardId a)
-   in overAttrs
-        ( \attrs -> attrs {assetCustomizations = customizations, assetTaboo = tabooList, assetMutated = mutated}
-        )
-        this
+   in updateAttrs this \attrs ->
+        attrs
+          { assetCustomizations = customizations
+          , assetTaboo = tabooList
+          , assetMutated = mutated
+          }
  where
   customizations = case toCard a of
     PlayerCard pc -> pcCustomizations pc

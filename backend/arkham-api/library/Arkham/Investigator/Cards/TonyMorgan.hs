@@ -4,6 +4,7 @@ import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Uses
 import Arkham.Card
+import Arkham.Constants
 import Arkham.Fight
 import Arkham.Helpers.Action
 import Arkham.Helpers.Modifiers
@@ -43,7 +44,7 @@ instance HasAbilities TonyMorgan where
     [ doesNotProvokeAttacksOfOpportunity
         $ restricted
           attrs
-          1
+          NonActivateAbility
           (Self <> exists (EnemyWithBounty <> oneOf [CanFightEnemy source, CanEngageEnemy source]))
         $ ActionAbility [] mempty
     | BountyAction `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
@@ -58,7 +59,7 @@ instance HasChaosTokenValue TonyMorgan where
 
 instance RunMessage TonyMorgan where
   runMessage msg i@(TonyMorgan (attrs `With` meta)) = case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) NonActivateAbility -> do
       let windows' = defaultWindows iid
 
       -- we should move these to a helper function to reuse between the InvestigatorRunner and here
@@ -100,11 +101,11 @@ instance RunMessage TonyMorgan where
           (ChooseEngageEnemy iid source mTarget (matcherF enemyMatcher) isAction)
           attrs
       pure $ TonyMorgan . (`with` Meta False) $ result
-    DoStep 1 (UseThisAbility _ (isSource attrs -> True) 1) -> do
+    DoStep 1 (UseThisAbility _ (isSource attrs -> True) NonActivateAbility) -> do
       pure $ TonyMorgan $ attrs `with` Meta False
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       mBountyContracts <- selectOne $ assetIs Assets.bountyContracts
-      for_ mBountyContracts $ \bountyContracts -> 
+      for_ mBountyContracts $ \bountyContracts ->
         push $ AddUses #elderSign bountyContracts Bounty 1
       pure i
     ResetGame -> TonyMorgan . (`with` Meta False) <$> runMessage msg attrs

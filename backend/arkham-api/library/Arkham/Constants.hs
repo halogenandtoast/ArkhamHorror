@@ -61,3 +61,8 @@ pattern VehicleEnterExitAbility :: Int
 pattern VehicleEnterExitAbility <- 2000
   where
     VehicleEnterExitAbility = 2000
+
+pattern NonActivateAbility :: Int
+pattern NonActivateAbility <- 2001
+  where
+    NonActivateAbility = 2001

@@ -1,4 +1,4 @@
-module Arkham.Event.Events.ReadTheSigns (readTheSigns, ReadTheSigns (..)) where
+module Arkham.Event.Events.ReadTheSigns (readTheSigns) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -13,7 +13,7 @@ readTheSigns = event ReadTheSigns Cards.readTheSigns
 
 instance RunMessage ReadTheSigns where
   runMessage msg e@(ReadTheSigns attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | eid == attrs.id -> do
+    PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
       skillTestModifiers
         sid

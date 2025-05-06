@@ -78,7 +78,7 @@ abilityIsActionAbility a = case abilityType a of
 abilityIsActivate :: Ability -> Bool
 abilityIsActivate a = not a.basic && a.index `notElem` notActivateIndexes && abilityIsActionAbility a
  where
-  notActivateIndexes = [PlayAbility, ResourceAbility, AbilityAttack, AbilityInvestigate, AbilityEvade, AbilityEngage]
+  notActivateIndexes = [PlayAbility, ResourceAbility, AbilityAttack, AbilityInvestigate, AbilityEvade, AbilityEngage, NonActivateAbility]
 
 abilityIsFastAbility :: Ability -> Bool
 abilityIsFastAbility a = case abilityType a of

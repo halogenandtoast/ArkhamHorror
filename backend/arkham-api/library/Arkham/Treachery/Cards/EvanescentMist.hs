@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
+import Arkham.Placement
 import Arkham.Scenarios.FatalMirage.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -25,7 +26,7 @@ instance RunMessage EvanescentMist where
       -- Rest is handled by the @mirageRunner@
       locations <- select $ NearestLocationTo iid (not_ LocationClearedOfMirages)
       chooseOrRunOneM iid $ targets locations \location -> do
-        place attrs location
+        place attrs (AttachedToLocation location)
         placeClues attrs location 2
       pure t
     _ -> EvanescentMist <$> liftRunMessage msg attrs

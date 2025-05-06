@@ -238,18 +238,21 @@ instance RunMessage DimCarcosa where
           LT -> push R5
         Resolution 1 -> do
           story resolution1
+          record TheInvestigatorsPreventedHasturFromEscapingHisPrison
           eachInvestigator \iid -> sufferTrauma iid 2 2
           allGainXpWithBonus attrs $ toBonus "resolution1" 5
           recordPossessed
           endOfScenario
         Resolution 2 -> do
           story resolution2
+          record TheInvestigatorsPreventedHasturFromEscapingHisPrison
           eachInvestigator (`sufferMentalTrauma` 2)
           allGainXpWithBonus attrs $ toBonus "resolution2" 5
           recordPossessed
           endOfScenario
         Resolution 3 -> do
           story resolution3
+          record TheInvestigatorsPreventedHasturFromEscapingHisPrison
           eachInvestigator (`sufferPhysicalTrauma` 2)
           allGainXpWithBonus attrs $ toBonus "resolution3" 5
           recordPossessed

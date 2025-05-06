@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.PolarMirage (polarMirage, PolarMirage (..)) where
+module Arkham.Treachery.Cards.PolarMirage (polarMirage) where
 
 import Arkham.Ability
 import Arkham.Helpers.Message.Discard.Lifted
@@ -37,7 +37,7 @@ instance RunMessage PolarMirage where
       ls <-
         select
           $ NearestLocationTo iid
-          $ LocationWithoutTreachery (treacheryIs Cards.kindredMist)
+          $ LocationWithoutTreachery (treacheryIs Cards.polarMirage)
           <> LocationWithAnyClues
       chooseTargetM iid ls $ place attrs . AttachedToLocation
       pure t

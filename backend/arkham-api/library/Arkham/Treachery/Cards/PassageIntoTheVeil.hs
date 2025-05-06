@@ -1,12 +1,12 @@
-module Arkham.Treachery.Cards.PassageIntoTheVeil (passageIntoTheVeil, PassageIntoTheVeil (..)) where
+module Arkham.Treachery.Cards.PassageIntoTheVeil (passageIntoTheVeil) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype PassageIntoTheVeil = PassageIntoTheVeil TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -16,26 +16,20 @@ passageIntoTheVeil :: TreacheryCard PassageIntoTheVeil
 passageIntoTheVeil = treachery PassageIntoTheVeil Cards.passageIntoTheVeil
 
 instance RunMessage PassageIntoTheVeil where
-  runMessage msg t@(PassageIntoTheVeil attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(PassageIntoTheVeil attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       huntingHorrorAtYourLocation <-
         selectAny $ enemyIs Enemies.huntingHorror <> at_ (locationWithInvestigator iid)
       sid <- getRandom
-      push
-        $ revelationSkillTest sid iid source #willpower
+      revelationSkillTest sid iid attrs #willpower
         $ Fixed (if huntingHorrorAtYourLocation then 5 else 3)
       pure t
-    FailedThisSkillTest iid (isSource attrs -> True) -> do
-      assetIds <- select $ assetControlledBy iid <> #ally
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label "Discard the top 5 cards of your deck" [DiscardTopOfDeck iid 5 (toSource attrs) Nothing]
-          , Label
-              "Take 1 direct damage and deal 1 damage to each of your Ally assets"
-              $ InvestigatorDirectDamage iid (toSource attrs) 1 0
-              : [Msg.DealAssetDamage aid (toSource attrs) 1 0 | aid <- assetIds]
-          ]
+    FailedThisSkillTest iid (isSource attrs -> True) -> scenarioI18n do
+      assets <- select $ assetControlledBy iid <> #ally
+      chooseOneM iid do
+        unscoped $ countVar 5 $ labeled' "discardTopOfYourDeck" $ discardTopOfDeck iid attrs 5
+        labeled' "passageIntoTheVeil.damage" do
+          directDamage iid attrs 1
+          for_ assets \aid -> dealAssetDamage aid attrs 1
       pure t
-    _ -> PassageIntoTheVeil <$> runMessage msg attrs
+    _ -> PassageIntoTheVeil <$> liftRunMessage msg attrs

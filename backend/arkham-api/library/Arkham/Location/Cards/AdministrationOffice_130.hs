@@ -1,7 +1,4 @@
-module Arkham.Location.Cards.AdministrationOffice_130 (
-  administrationOffice_130,
-  AdministrationOffice_130 (..),
-) where
+module Arkham.Location.Cards.AdministrationOffice_130 (administrationOffice_130) where
 
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers

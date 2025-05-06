@@ -1,5 +1,6 @@
 module Arkham.Location.Cards.MuseumHalls (museumHalls) where
 
+import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Ability
 import Arkham.Draw.Types
 import Arkham.GameValue
@@ -26,8 +27,8 @@ instance HasAbilities MuseumHalls where
   getAbilities (MuseumHalls attrs) | attrs.unrevealed = do
     extend1
       attrs
-      $ withTooltip
-        "{action}: Test {combat} (5) to attempt to break down the door to the museum. If you are successful, immediately advance to Act 1b"
+      $ scenarioI18n
+      $ withI18nTooltip "museumHalls.action"
       $ restricted
         (proxied (LocationMatcherSource "Museum Entrance") attrs)
         1

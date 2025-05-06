@@ -196,6 +196,9 @@ p, :deep(p) {
 .invalid, :deep(.invalid) {
   &:not(li) {
     display: inline-flex;
+    &:has(.right) {
+      justify-content: flex-end;
+    }
   }
   align-items: center;
   color: #666;
@@ -226,6 +229,9 @@ h3, :deep(h3) {
 .valid, :deep(.valid) {
   &:not(li) {
     display: inline-flex;
+    &:has(.right) {
+      justify-content: flex-end;
+    }
   }
   align-items: center;
   &::before {

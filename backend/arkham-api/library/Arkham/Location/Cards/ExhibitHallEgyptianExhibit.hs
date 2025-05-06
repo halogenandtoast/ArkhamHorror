@@ -1,13 +1,10 @@
 module Arkham.Location.Cards.ExhibitHallEgyptianExhibit (exhibitHallEgyptianExhibit) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (exhibitHallEgyptianExhibit)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype ExhibitHallEgyptianExhibit = ExhibitHallEgyptianExhibit LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -15,29 +12,18 @@ newtype ExhibitHallEgyptianExhibit = ExhibitHallEgyptianExhibit LocationAttrs
 
 exhibitHallEgyptianExhibit :: LocationCard ExhibitHallEgyptianExhibit
 exhibitHallEgyptianExhibit =
-  location
-    ExhibitHallEgyptianExhibit
-    Cards.exhibitHallEgyptianExhibit
-    3
-    (PerPlayer 2)
+  location ExhibitHallEgyptianExhibit Cards.exhibitHallEgyptianExhibit 3 (PerPlayer 2)
 
 instance HasAbilities ExhibitHallEgyptianExhibit where
   getAbilities (ExhibitHallEgyptianExhibit x) =
-    withBaseAbilities
-      x
-      [ mkAbility x 1
-          $ ForcedAbility
-          $ SkillTestResult
-            Timing.After
-            You
-            (WhileInvestigating $ LocationWithId $ toId x)
-          $ FailureResult AnyValue
-      | locationRevealed x
-      ]
+    extendRevealed1 x
+      $ mkAbility x 1
+      $ forced
+      $ SkillTestResult #after You (WhileInvestigating $ be x) #failure
 
 instance RunMessage ExhibitHallEgyptianExhibit where
-  runMessage msg l@(ExhibitHallEgyptianExhibit attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          l <$ push (LoseActions iid (toSource attrs) 1)
-    _ -> ExhibitHallEgyptianExhibit <$> runMessage msg attrs
+  runMessage msg l@(ExhibitHallEgyptianExhibit attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      loseActions iid (attrs.ability 1) 1
+      pure l
+    _ -> ExhibitHallEgyptianExhibit <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.SecurityOffice_128 (securityOffice_128, SecurityOffice_128 (..)) where
+module Arkham.Location.Cards.SecurityOffice_128 (securityOffice_128) where
 
 import Arkham.Ability
 import Arkham.Location.Cards qualified as Cards (securityOffice_128)
@@ -15,9 +15,7 @@ securityOffice_128 = location SecurityOffice_128 Cards.securityOffice_128 2 (Per
 
 instance HasAbilities SecurityOffice_128 where
   getAbilities (SecurityOffice_128 x) =
-    extendRevealed
-      x
-      [playerLimit PerTurn $ restrictedAbility x 1 Here (ActionAbility [] $ ActionCost 2)]
+    extendRevealed x [playerLimit PerTurn $ restricted x 1 Here doubleActionAbility]
 
 instance RunMessage SecurityOffice_128 where
   runMessage msg l@(SecurityOffice_128 attrs) = runQueueT $ case msg of

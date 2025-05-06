@@ -168,7 +168,7 @@ portraitLabeled iid action = unterminated do
 labeledI18n :: (HasI18n, ReverseQueue m) => Text -> QueueT Message m () -> ChooseT m ()
 labeledI18n label action = unterminated do
   msgs <- lift $ evalQueueT action
-  tell [Label ("$" <> scope "labels" (ikey label)) msgs]
+  tell [Label ("$" <> scope "label" (ikey label)) msgs]
 
 damageLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 damageLabeled iid action = unterminated do
@@ -303,6 +303,9 @@ nothing = pure ()
 
 questionLabeled :: ReverseQueue m => Text -> ChooseT m ()
 questionLabeled label = modify $ \s -> s {Arkham.Message.Lifted.Choose.label = Just label}
+
+questionLabeled' :: (HasI18n, ReverseQueue m) => Text -> ChooseT m ()
+questionLabeled' label = modify $ \s -> s {Arkham.Message.Lifted.Choose.label = Just $ "$" <> ikey ("label." <> label)}
 
 questionLabeledCard :: (ReverseQueue m, HasCardCode a) => a -> ChooseT m ()
 questionLabeledCard a = modify $ \s -> s {Arkham.Message.Lifted.Choose.labelCardCode = Just (toCardCode a)}

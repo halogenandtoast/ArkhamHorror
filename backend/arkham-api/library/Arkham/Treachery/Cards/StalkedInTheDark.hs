@@ -1,16 +1,9 @@
-module Arkham.Treachery.Cards.StalkedInTheDark (
-  stalkedInTheDark,
-  StalkedInTheDark (..),
-) where
+module Arkham.Treachery.Cards.StalkedInTheDark (stalkedInTheDark) where
 
-import Arkham.Prelude
-
-import Arkham.Attack
-import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype StalkedInTheDark = StalkedInTheDark TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -20,15 +13,14 @@ stalkedInTheDark :: TreacheryCard StalkedInTheDark
 stalkedInTheDark = treachery StalkedInTheDark Cards.stalkedInTheDark
 
 instance RunMessage StalkedInTheDark where
-  runMessage msg t@(StalkedInTheDark attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      mHuntingHorrorId <- getInPlayHuntingHorror
-      case mHuntingHorrorId of
+  runMessage msg t@(StalkedInTheDark attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      getInPlayHuntingHorror >>= \case
         Just eid -> do
+          readyThis eid
+          enemyEngageInvestigator eid iid
           iids <- select $ colocatedWith iid
-          pushAll
-            $ [Ready (EnemyTarget eid), EnemyEngageInvestigator eid iid]
-            <> map (EnemyAttack . enemyAttack eid attrs) iids
-        Nothing -> push $ gainSurge attrs
+          for_ iids (initiateEnemyAttack eid attrs)
+        Nothing -> gainSurge attrs
       pure t
-    _ -> StalkedInTheDark <$> runMessage msg attrs
+    _ -> StalkedInTheDark <$> liftRunMessage msg attrs

@@ -2,12 +2,11 @@ module Arkham.Act.Cards.SearchingForTheTome (searchingForTheTome) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
-import Arkham.Helpers.Query
+import Arkham.Act.Import.Lifted
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 
 newtype SearchingForTheTome = SearchingForTheTome ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -18,31 +17,20 @@ searchingForTheTome =
   act (3, A) SearchingForTheTome Cards.searchingForTheTome Nothing
 
 instance HasAbilities SearchingForTheTome where
-  getAbilities (SearchingForTheTome x)
-    | onSide A x =
-        [ restrictedAbility
-            x
-            1
-            ( LocationExists
-                $ locationIs Cards.exhibitHallRestrictedHall
-                <> LocationWithoutClues
-            )
-            $ Objective
-            $ ForcedAbility AnyWindow
-        ]
-  getAbilities _ = []
+  getAbilities = actAbilities \x ->
+    [ restricted x 1 (exists $ locationIs Cards.exhibitHallRestrictedHall <> LocationWithoutClues)
+        $ Objective
+        $ forced AnyWindow
+    ]
 
 instance RunMessage SearchingForTheTome where
-  runMessage msg a@(SearchingForTheTome attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      lead <- getLeadPlayer
-      push
-        $ chooseOne
-          lead
-          [ Label "It's too dangerous to keep around. We have to destroy it. (-> R1)" [R1]
-          , Label "It's too valuable to destroy. We have to keep it safe. (-> R2)" [R2]
-          ]
+  runMessage msg a@(SearchingForTheTome attrs) = runQueueT $ scenarioI18n $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
-    _ -> SearchingForTheTome <$> runMessage msg attrs
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      leadChooseOneM do
+        labeled' "r1" $ push R1
+        labeled' "r2" $ push R2
+      pure a
+    _ -> SearchingForTheTome <$> liftRunMessage msg attrs

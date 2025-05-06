@@ -303,6 +303,7 @@ const cardLabelImage = (cardCode: string) => {
 }
 
 const questionImage = computed(() => {
+  console.log(question.value)
   if (!question.value) {
     return null
   }
@@ -574,8 +575,11 @@ const cardPiles = computed(() => {
 
     </template>
   </div>
-  <div v-else-if="question && question.tag === 'QuestionLabel' && question.question.tag !== 'DropDown'" class="standalone-label" v-html="label(question.label)">
-  </div>
+  <template v-else-if="question && question.tag === 'QuestionLabel' && question.question.tag !== 'DropDown'">
+    <div v-if="questionImage" class="question-image">
+      <img :src="questionImage" class="card" />
+    </div>
+  </template>
   <div v-if="doneLabel">
     <button class="done" @click="$emit('choose', doneLabel.index)" v-html="label(doneLabel.label)"></button>
   </div>

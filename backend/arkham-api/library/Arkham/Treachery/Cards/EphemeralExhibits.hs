@@ -1,9 +1,7 @@
-module Arkham.Treachery.Cards.EphemeralExhibits (ephemeralExhibits, EphemeralExhibits (..)) where
+module Arkham.Treachery.Cards.EphemeralExhibits (ephemeralExhibits) where
 
-import Arkham.Classes
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype EphemeralExhibits = EphemeralExhibits TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -13,12 +11,12 @@ ephemeralExhibits :: TreacheryCard EphemeralExhibits
 ephemeralExhibits = treachery EphemeralExhibits Cards.ephemeralExhibits
 
 instance RunMessage EphemeralExhibits where
-  runMessage msg t@(EphemeralExhibits attrs) = case msg of
+  runMessage msg t@(EphemeralExhibits attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push $ revelationSkillTest sid iid attrs #intellect (Fixed 3)
+      revelationSkillTest sid iid attrs #intellect (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      push $ LoseActions iid (toSource attrs) n
+      loseActions iid attrs n
       pure t
-    _ -> EphemeralExhibits <$> runMessage msg attrs
+    _ -> EphemeralExhibits <$> liftRunMessage msg attrs

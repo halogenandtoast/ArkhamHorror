@@ -163,12 +163,13 @@ instance RunMessage FatalMirage where
       gather Set.ChillingCold
 
       completedSteps <- getCompletedSteps
+      let fatalMirageTimes = count (== Step.FatalMirage) completedSteps + 1
 
       if
-        | CityOfTheElderThings `elem` completedSteps || attrs.hasOption FatalMiragePart3 -> do
+        | fatalMirageTimes == 3 || attrs.hasOption FatalMiragePart3 -> do
             setAgendaDeck [Agendas.etherealTangleV3]
             setActDeck [Acts.shadowOfThePastV3]
-        | ToTheForbiddenPeaks `elem` completedSteps || attrs.hasOption FatalMiragePart2 -> do
+        | fatalMirageTimes == 2 || attrs.hasOption FatalMiragePart2 -> do
             setAgendaDeck [Agendas.etherealTangleV2]
             setActDeck [Acts.shadowOfThePastV2]
         | otherwise -> do

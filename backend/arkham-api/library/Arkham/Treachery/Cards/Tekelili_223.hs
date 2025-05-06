@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.Tekelili_223 (tekelili_223, Tekelili_223 (..)) where
+module Arkham.Treachery.Cards.Tekelili_223 (tekelili_223) where
 
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Card

@@ -91,8 +91,19 @@ export default defineComponent({
     padding: 10px 20px;
     z-index: 5;
   }
-  :not(.simple) > * + * {
-    border-left: solid 1px black;
+
+  .composite {
+    position: relative;
+  }
+
+  .composite:not(:first-child)::after {
+    position: absolute;
+    bottom: -1rem;
+    left: 0;
+    height: calc(100% - 20px);
+    margin-bottom: 20px;
+    content: '';
+    border-left: 1px solid black;
   }
 
   &.simple {

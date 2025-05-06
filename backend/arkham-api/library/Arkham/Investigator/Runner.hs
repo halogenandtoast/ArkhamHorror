@@ -1,5 +1,5 @@
 {-# LANGUAGE TypeAbstractions #-}
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Investigator.Runner (
   module Arkham.Investigator.Runner,
@@ -3133,7 +3133,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       then
         if toCardType card == PlayerTreacheryType
           then pushAll $ DrewTreachery iid Nothing (toCard card) : maybeToList mAfterDraw
-          else pushAll $ Revelation iid (CardIdSource card.id) : maybeToList mAfterDraw
+          else pushAll $ Revelation iid (CardIdSource card.id) : maybeToList mAfterDraw <> [ResolvedCard iid $ toCard card]
       else
         if toCardType card == PlayerEnemyType
           then pushAll $ DrewPlayerEnemy iid (toCard card) : maybeToList mAfterDraw
@@ -3902,7 +3902,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           ) -> do
           mods <- getModifiers iid
           let
-            applyMod (AdditionalTargets n) = over biplate (+ n) . traceShowId
+            applyMod (AdditionalTargets n) = over biplate (+ n)
             applyMod _ = id
             foundStrategy' = foldr applyMod foundStrategy mods
           targetCards <- traverse (filterM (`extendedCardMatch` cardMatcher)) foundCards

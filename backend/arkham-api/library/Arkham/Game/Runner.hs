@@ -1505,7 +1505,7 @@ runGameMessage msg g = case msg of
         TreacheryType -> do
           tid <- getRandom
           let treachery = createTreachery card iid tid
-          pushAll [CardEnteredPlay iid card, PlaceTreachery tid (InThreatArea iid)]
+          pushAll [CardEnteredPlay iid card, PlaceTreachery tid (InThreatArea iid), ResolvedCard iid card]
           pure $ g & (entitiesL . treacheriesL %~ insertMap tid treachery)
         EncounterAssetType -> do
           -- asset might have been put into play via revelation
@@ -2972,12 +2972,13 @@ runGameMessage msg g = case msg of
 
     pushAll
       $ if ignoreRevelation
-        then [toDiscardBy iid GameSource (TreacheryTarget treacheryId)]
+        then [toDiscardBy iid GameSource (TreacheryTarget treacheryId), ResolvedCard iid (toCard treachery)]
         else
           [ When revelation
           , revelation
           , MoveWithSkillTest $ Run [After revelation, AfterRevelation iid treacheryId]
           , UnsetActiveCard
+          , ResolvedCard iid (toCard treachery)
           ]
     pure $ g & (if ignoreRevelation then activeCardL .~ Nothing else id)
   MoveWithSkillTest msg' -> do

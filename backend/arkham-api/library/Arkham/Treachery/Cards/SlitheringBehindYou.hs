@@ -4,9 +4,7 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Location
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted

@@ -4,6 +4,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option
+import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.EncounterSet qualified as Set
@@ -17,6 +18,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move (moveAllTo)
 import Arkham.Projection
@@ -53,9 +55,28 @@ instance RunMessage TheHeartOfMadnessPart1 where
       isStandalone <- getIsStandalone
       when (not isStandalone || attrs.hasOption PerformIntro) do
         story $ i18nWithTitle "part1Intro"
-      pure s
+
+      when (not isStandalone || attrs.hasOption IncludePartners) do
+        eachInvestigator (`forInvestigator` PreScenarioSetup)
+
+      if attrs.hasOption IncludePartners
+        then do
+          let addPartner partner = standaloneCampaignLogL . partnersL . at partner.cardCode ?~ CampaignLogPartner 0 0 Safe
+          pure $ TheHeartOfMadnessPart1 $ foldl' (flip addPartner) attrs expeditionTeam
+        else pure s
     StandaloneSetup -> do
       setChaosTokens (#elderthing : #elderthing : chaosBagContents attrs.difficulty)
+      pure s
+    ForInvestigator iid PreScenarioSetup -> do
+      partners <- getRemainingPartners
+      unless (null partners) do
+        chooseOneM iid do
+          questionLabeled "Choose a partner for this scenario"
+          labeled "Do not take a partner" nothing
+          for_ partners \partner -> do
+            inPlay <- selectAny $ assetIs partner.cardCode
+            unless inPlay do
+              cardLabeled partner.cardCode $ handleTarget iid ScenarioSource (CardCodeTarget partner.cardCode)
       pure s
     Setup -> runScenarioSetup TheHeartOfMadnessPart1 attrs do
       gather Set.TheHeartOfMadness

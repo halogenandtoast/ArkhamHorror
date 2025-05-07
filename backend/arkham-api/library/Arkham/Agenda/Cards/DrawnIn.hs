@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.DrawnIn (DrawnIn (..), drawnIn) where
+module Arkham.Agenda.Cards.DrawnIn (drawnIn) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
@@ -17,12 +17,9 @@ instance RunMessage DrawnIn where
   runMessage msg a@(DrawnIn attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
       lid <- leftmostLocation
-
       removeLocation lid
       removeLocation =<< selectJust (LocationInDirection RightOf $ LocationWithId lid)
-
       eachInvestigator $ discardAllClues attrs
-
       advanceAgendaDeck attrs
       pure a
     _ -> DrawnIn <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.ClawsOfSteam (clawsOfSteam, ClawsOfSteam (..)) where
+module Arkham.Treachery.Cards.ClawsOfSteam (clawsOfSteam) where
 
 import Arkham.Modifier
 import Arkham.Source

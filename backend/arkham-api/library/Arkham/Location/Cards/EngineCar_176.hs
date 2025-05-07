@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.EngineCar_176 (engineCar_176, EngineCar_176 (..)) where
+module Arkham.Location.Cards.EngineCar_176 (engineCar_176) where
 
 import Arkham.Ability
 import Arkham.Direction

@@ -3,11 +3,15 @@
   "assets": "Assets",
   "cancelMove": "Cancel Move",
   "continue": "Continue",
+  "discardCardsWithMatchingIcons": "Discard cards with at least 1 {'{'}{skillIcon}{'}'} icon | Discard cards with at least {count} {'{'}{skillIcon}{'}'} icons",
   "discardTopOfYourDeck": "Discard the top card of your deck | Discard the top {count} cards of your deck",
   "drawTopCardOfEncounterDeck": "Draw the top card of the encounter deck",
   "events": "Events",
   "noCardsFound": "No Cards Found.",
   "noEnemiesFound": "No Enemies Found.",
   "skills": "Skills",
-  "takeControlOfKey": "Take control of key"
+  "takeControlOfKey": "Take control of key",
+  "takeDamageAndHorror": "Take {damage} damage and {horror} horror",
+  "takeDamage": "Take {count} damage",
+  "takeHorror": "Take {count} damage"
 }

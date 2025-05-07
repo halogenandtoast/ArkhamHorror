@@ -178,6 +178,11 @@ setSpawnAt
   => LocationMatcher -> CardBuilder EnemyId a -> CardBuilder EnemyId a
 setSpawnAt spawnAt = fmap (overAttrs (\a -> a {enemySpawnAt = Just (SpawnAt spawnAt)}))
 
+setExhausted
+  :: (Entity a, EntityAttrs a ~ EnemyAttrs)
+  => CardBuilder EnemyId a -> CardBuilder EnemyId a
+setExhausted = fmap (overAttrs (\a -> a {enemyExhausted = True}))
+
 enemyWith
   :: (EnemyAttrs -> a)
   -> CardDef

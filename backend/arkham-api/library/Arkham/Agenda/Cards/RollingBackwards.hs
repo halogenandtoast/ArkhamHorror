@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.RollingBackwards (RollingBackwards (..), rollingBackwards) where
+module Arkham.Agenda.Cards.RollingBackwards (rollingBackwards) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted

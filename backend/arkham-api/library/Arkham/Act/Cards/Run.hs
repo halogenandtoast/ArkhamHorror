@@ -1,67 +1,45 @@
-module Arkham.Act.Cards.Run (
-  Run (..),
-  run,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.Run (run) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner hiding (Run)
-import Arkham.Classes
+import Arkham.Act.Import.Lifted hiding (Run)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 import Arkham.SkillTest.Type
 import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
-newtype Metadata = Metadata {advancingInvestigator :: Maybe InvestigatorId}
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON)
-
-newtype Run = Run (ActAttrs `With` Metadata)
+newtype Run = Run ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 run :: ActCard Run
-run = act (1, A) (Run . (`with` (Metadata Nothing))) Cards.run Nothing
+run = act (1, A) Run Cards.run Nothing
 
 instance HasAbilities Run where
-  getAbilities (Run x) =
-    [ mkAbility x 1
-        $ ForcedAbility
-        $ Enters Timing.When You
-        $ LocationWithTitle
-          "Engine Car"
-    ]
+  getAbilities (Run x) = [mkAbility x 1 $ forced $ Enters #after You "Engine Car"]
 
 instance RunMessage Run where
-  runMessage msg a@(Run (attrs `With` metadata)) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push (AdvanceAct (toId attrs) source AdvancedWithOther)
-      -- We need to know the investigator who entered
-      pure $ Run $ attrs `with` Metadata (Just iid)
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      case advancingInvestigator metadata of
-        Nothing -> error "investigator should have advanced"
-        Just iid -> do
-          player <- getPlayer iid
-          sid <- getRandom
-          pushAll
-            $ chooseOne
-              player
-              [ Label
-                  "Attempt to dodge the creature"
-                  [beginSkillTest sid iid attrs attrs #agility (Fixed 3)]
-              , Label
-                  "Attempt to endure the creature's extreme heat"
-                  [beginSkillTest sid iid attrs attrs #combat (Fixed 3)]
-              ]
-            : [advanceActDeck attrs]
+  runMessage msg a@(Run attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
-    FailedSkillTest iid _ source Initiator {} (SkillSkillTest SkillAgility) _ | isSource attrs source && onSide B attrs -> do
-      push (SufferTrauma iid 1 0)
+    AdvanceAct (isSide B attrs -> True) _ _ -> scenarioI18n do
+      investigators <- select $ InvestigatorAt "Engine Car"
+      lead <- getLead
+      sid <- getRandom
+      let runTest iid kind = beginSkillTest sid iid attrs attrs kind (Fixed 3)
+      chooseOrRunOneM lead do
+        targets investigators \iid -> do
+          chooseOneM iid do
+            labeled' "dodge" $ runTest iid #agility
+            labeled' "endure" $ runTest iid #combat
+      advanceActDeck attrs
       pure a
-    FailedSkillTest iid _ source Initiator {} (SkillSkillTest SkillCombat) _ | isSource attrs source && onSide B attrs -> do
-      push (SufferTrauma iid 1 0)
+    FailedSkillTest iid _ (isSource attrs -> True) Initiator {} (SkillSkillTest kind) _ | onSide B attrs -> do
+      case kind of
+        SkillAgility -> sufferMentalTrauma iid 1
+        SkillCombat -> sufferPhysicalTrauma iid 1
+        _ -> pure ()
       pure a
-    _ -> Run . (`with` metadata) <$> runMessage msg attrs
+    _ -> Run <$> liftRunMessage msg attrs

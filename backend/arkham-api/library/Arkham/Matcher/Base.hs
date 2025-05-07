@@ -9,6 +9,9 @@ class IsMatcher b => Be a b where
 class IsMatcher matcher => Has matcher a where
   has :: a -> matcher
 
+class FirstOf a where
+  firstOf :: [a] -> a
+
 class OneOf a where
   oneOf :: [a] -> a
 

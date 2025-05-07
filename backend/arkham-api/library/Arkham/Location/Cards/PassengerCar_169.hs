@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Helpers.Cost
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards (passengerCar_169)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -35,9 +36,9 @@ instance RunMessage PassengerCar_169 where
       hasSkills <- getCanAffordCost iid (toAbilitySource attrs 1) [] [mkWhen NonFast] cost
 
       if hasSkills
-        then chooseOneM iid do
-          labeled "Take 2 horror" $ assignHorror iid (attrs.ability 1) 2
-          labeled "Discard cards with at least 2 {willpower} icons" do
+        then chooseOneM iid $ withI18n do
+          countVar 2 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 2
+          countVar 2 $ skillIconVar #willpower $ labeled' "discardCardsWithMatchingIcons" do
             push $ PayForAbility (abilityEffect attrs [] cost) []
         else assignHorror iid (attrs.ability 1) 2
       pure l

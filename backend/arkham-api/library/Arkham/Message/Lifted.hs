@@ -735,6 +735,13 @@ spendClues
   -> m ()
 spendClues investigator n = push $ InvestigatorSpendClues (asId investigator) n
 
+spendCluesAsAGroup
+  :: (ReverseQueue m)
+  => [InvestigatorId]
+  -> Int
+  -> m ()
+spendCluesAsAGroup investigators n = push $ SpendClues n investigators
+
 gainClues
   :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
   => investigator

@@ -30,7 +30,7 @@ instance RunMessage BaseballBat2 where
         when (isAbilitySource attrs 1 source) do
           tokens <- map (.face) <$> getSkillTestRevealedChaosTokens
           when (any (`elem` [Skull, AutoFail]) tokens) do
-            afterSkillTest do
+            afterSkillTest iid "Baseball Bat (2)" do
               chooseOneM iid do
                 labeled "Return baseball Bat to your hand after this attack" $ returnToHand iid attrs
                 labeled "This attack deals an additional +1 damage. Discard Baseball Bat after this attack" do

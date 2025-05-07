@@ -158,7 +158,7 @@ instance RunMessage ALightInTheFog where
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _n -> do
       case token.face of
-        Cultist -> afterSkillTest $ doStep 1 msg
+        Cultist -> afterSkillTestQuiet $ doStep 1 msg
         Tablet -> whenAny (locationWithInvestigator iid <> FloodedLocation) do
             assignDamage iid Tablet $ if isEasyStandard attrs then 1 else 2
         ElderThing | isEasyStandard attrs -> withLocationOf iid \lid -> do

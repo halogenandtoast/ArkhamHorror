@@ -62,7 +62,7 @@ instance RunMessage Subject5U21 where
       push $ ForTarget (toTarget attrs) (DoStep 2 AllDrawCardAndResource)
       pure i
     ElderSignEffect (is attrs -> True) -> do
-      afterSkillTest $ push (Do msg)
+      afterSkillTest attrs.id "Subject 5U21" $ push (Do msg)
       pure i
     Do (ElderSignEffect iid) -> do
       mRavenous <-

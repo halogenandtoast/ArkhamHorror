@@ -29,7 +29,7 @@ instance RunMessage ButterflySwords2 where
       pure a
     AfterSkillTestEnds (isAbilitySource attrs 1 -> True) _ _ | not attrs.exhausted -> do
       iid <- fromJustNote "no investigator" <$> getSkillTestInvestigator
-      oncePerAbility attrs 1 $ afterSkillTest $ forInvestigator iid msg
+      oncePerAbility attrs 1 $ afterSkillTest iid "Butterfly Swords (2)" $ forInvestigator iid msg
       pure a
     ForInvestigator iid (AfterSkillTestEnds (isAbilitySource attrs 1 -> True) _ _) | not attrs.exhausted -> do
       canFight <- hasFightActions iid (attrs.ability 1) (DuringTurn You) (defaultWindows iid)

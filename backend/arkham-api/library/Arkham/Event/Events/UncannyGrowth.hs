@@ -19,7 +19,7 @@ instance RunMessage UncannyGrowth where
       investigate sid iid attrs
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      afterSkillTest do
+      afterSkillTest iid "Uncanny Growth" do
         when (n > 0) do
           mMyconid <- selectOne $ assetControlledBy iid <> AssetWithTitle "Ravenous Myconid"
           for_ mMyconid \myconid -> placeTokens attrs myconid Growth n

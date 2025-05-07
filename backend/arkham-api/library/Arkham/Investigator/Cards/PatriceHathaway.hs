@@ -39,7 +39,7 @@ instance RunMessage PatriceHathaway where
       drawCardsIfCan attrs ScenarioSource . (`subtract` 5) . length =<< attrs.hand
       pure i
     ElderSignEffect (is attrs -> True) -> do
-      afterSkillTest $ doStep 1 msg
+      afterSkillTest attrs.id "Patrice Hathaway" $ doStep 1 msg
       pure i
     DoStep 1 msg'@(ElderSignEffect (is attrs -> True)) -> do
       canModifyDeck <- can.manipulate.deck attrs.id

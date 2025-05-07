@@ -996,6 +996,8 @@ data Message
   | SkillTestEnds SkillTestId InvestigatorId Source
   | SkillTestEnded SkillTestId
   | AfterSkillTestEnds Source Target SkillTest.SkillTestResult
+  | AfterSkillTestOption InvestigatorId Text [Message]
+  | AfterSkillTestQuiet [Message]
   | EndSkillTestWindow
   | SkillTestResults SkillTestResultsData
   | SkillTestUncommitCard InvestigatorId Card

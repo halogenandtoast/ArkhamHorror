@@ -1,10 +1,13 @@
 {
+  "applyResults": "Apply Results",
   "assets": "Assets",
-  "events": "Events",
-  "skills": "Skills",
   "cancelMove": "Cancel Move",
+  "continue": "Continue",
   "discardTopOfYourDeck": "Discard the top card of your deck | Discard the top {count} cards of your deck",
+  "drawTopCardOfEncounterDeck": "Draw the top card of the encounter deck",
+  "events": "Events",
   "noCardsFound": "No Cards Found.",
   "noEnemiesFound": "No Enemies Found.",
-  "applyResults": "Apply Results"
+  "skills": "Skills",
+  "takeControlOfKey": "Take control of key"
 }

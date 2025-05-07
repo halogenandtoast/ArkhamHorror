@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (houseInTheReeds_211)
+import Arkham.Location.Helpers (drawCardUnderneathAction)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Trait
@@ -17,13 +18,11 @@ houseInTheReeds_211 = location HouseInTheReeds_211 Cards.houseInTheReeds_211 1 (
 
 instance HasAbilities HouseInTheReeds_211 where
   getAbilities (HouseInTheReeds_211 a) =
-    withDrawCardUnderneathAction a
-      <> extendRevealed1
-        a
-        ( mkAbility a 1
-            $ forced
-            $ RevealLocation #after Anyone (be a)
-        )
+    extendRevealed
+      a
+      [ drawCardUnderneathAction a
+      , mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
+      ]
 
 instance RunMessage HouseInTheReeds_211 where
   runMessage msg l@(HouseInTheReeds_211 attrs) = runQueueT $ case msg of

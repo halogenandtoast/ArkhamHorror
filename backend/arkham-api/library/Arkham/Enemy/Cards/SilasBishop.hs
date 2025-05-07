@@ -1,10 +1,8 @@
 module Arkham.Enemy.Cards.SilasBishop (silasBishop) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Prelude
 
 newtype SilasBishop = SilasBishop EnemyAttrs
   deriving anyclass IsEnemy

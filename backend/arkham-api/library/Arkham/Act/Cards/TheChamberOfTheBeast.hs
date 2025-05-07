@@ -2,15 +2,10 @@ module Arkham.Act.Cards.TheChamberOfTheBeast (theChamberOfTheBeast) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Resolution
-import Arkham.Timing qualified as Timing
 
 newtype TheChamberOfTheBeast = TheChamberOfTheBeast ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -21,44 +16,24 @@ theChamberOfTheBeast =
   act (2, A) TheChamberOfTheBeast Cards.theChamberOfTheBeast Nothing
 
 instance HasAbilities TheChamberOfTheBeast where
-  getAbilities (TheChamberOfTheBeast x)
-    | onSide A x =
-        [ mkAbility x 1
-            $ Objective
-            $ ForcedAbility
-            $ EnemyDefeated Timing.After Anyone ByAny
-            $ enemyIs Cards.silasBishop
-        , restrictedAbility
-            x
-            2
-            ( LocationExists
-                $ LocationWithTitle "The Hidden Chamber"
-                <> LocationWithoutClues
-            )
-            $ Objective
-            $ ForcedAbility AnyWindow
-        ]
-  getAbilities _ = []
+  getAbilities = actAbilities \x ->
+    [ mkAbility x 1 $ Objective $ forced $ EnemyDefeated #after Anyone ByAny $ enemyIs Cards.silasBishop
+    , restricted x 2 (exists $ LocationWithTitle "The Hidden Chamber" <> LocationWithoutClues)
+        $ Objective
+        $ forced AnyWindow
+    ]
 
 instance RunMessage TheChamberOfTheBeast where
-  runMessage msg a@(TheChamberOfTheBeast attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      lead <- getLeadPlayer
-      resolution <-
-        maybe 3 (const 2)
-          <$> selectOne (assetIs Cards.theNecronomiconOlausWormiusTranslation)
-      push
-        $ chooseOne
-          lead
-          [ Label
-              ("Resolution " <> tshow resolution)
-              [ScenarioResolution $ Resolution resolution]
-          ]
+  runMessage msg a@(TheChamberOfTheBeast attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      selectOne (assetIs Cards.theNecronomiconOlausWormiusTranslation) >>= \case
+        Just _ -> push R2
+        Nothing -> push R3
       pure a
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       push R1
       pure a
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      push (AdvanceAct (toId attrs) source AdvancedWithOther)
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      advancedWithOther attrs
       pure a
-    _ -> TheChamberOfTheBeast <$> runMessage msg attrs
+    _ -> TheChamberOfTheBeast <$> liftRunMessage msg attrs

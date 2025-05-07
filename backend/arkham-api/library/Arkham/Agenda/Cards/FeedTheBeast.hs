@@ -1,15 +1,7 @@
-module Arkham.Agenda.Cards.FeedTheBeast (
-  FeedTheBeast (..),
-  feedTheBeast,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.FeedTheBeast (feedTheBeast) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
-import Arkham.Matcher
+import Arkham.Agenda.Import.Lifted
 
 newtype FeedTheBeast = FeedTheBeast AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -19,8 +11,8 @@ feedTheBeast :: AgendaCard FeedTheBeast
 feedTheBeast = agenda (3, A) FeedTheBeast Cards.feedTheBeast (Static 7)
 
 instance RunMessage FeedTheBeast where
-  runMessage msg a@(FeedTheBeast attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      investigatorIds <- select UneliminatedInvestigator
-      a <$ pushAll [Resign iid | iid <- investigatorIds]
-    _ -> FeedTheBeast <$> runMessage msg attrs
+  runMessage msg a@(FeedTheBeast attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      eachInvestigator resign
+      pure a
+    _ -> FeedTheBeast <$> liftRunMessage msg attrs

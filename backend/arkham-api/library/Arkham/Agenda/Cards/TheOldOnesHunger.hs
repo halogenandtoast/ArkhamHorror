@@ -1,13 +1,10 @@
 module Arkham.Agenda.Cards.TheOldOnesHunger (theOldOnesHunger) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
+import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Choose
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
-import Arkham.Prelude
 import Arkham.Scenario.Deck
 
 newtype TheOldOnesHunger = TheOldOnesHunger AgendaAttrs
@@ -18,19 +15,15 @@ theOldOnesHunger :: AgendaCard TheOldOnesHunger
 theOldOnesHunger = agenda (2, A) TheOldOnesHunger Cards.theOldOnesHunger (Static 6)
 
 instance RunMessage TheOldOnesHunger where
-  runMessage msg a@(TheOldOnesHunger attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
+  runMessage msg a@(TheOldOnesHunger attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
       lead <- getLead
       scenarioDeckCount <- length <$> getScenarioDeck PotentialSacrifices
-      if scenarioDeckCount >= 2
-        then
-          pushAll
-            [ randomlyChooseFrom attrs lead PotentialSacrifices 1
-            , AdvanceAgendaDeck agendaDeckId (toSource attrs)
-            ]
-        else push (AdvanceAgendaDeck agendaDeckId (toSource attrs))
+      when (scenarioDeckCount >= 2) do
+        randomlyChooseFrom attrs lead PotentialSacrifices 1
+      advanceAgendaDeck attrs
       pure a
     ChoseCards _ chose | isTarget attrs chose.target -> do
-      push $ PlaceUnderneath AgendaDeckTarget chose.cards
+      placeUnderneath AgendaDeckTarget chose.cards
       pure a
-    _ -> TheOldOnesHunger <$> runMessage msg attrs
+    _ -> TheOldOnesHunger <$> liftRunMessage msg attrs

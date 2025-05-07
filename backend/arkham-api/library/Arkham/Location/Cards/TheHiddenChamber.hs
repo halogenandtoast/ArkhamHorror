@@ -34,12 +34,10 @@ instance RunMessage TheHiddenChamber where
     Revelation iid (isSource attrs -> True) -> do
       connectedLocation <- getJustLocation iid
       name <- field LocationName connectedLocation
-      pushAll
-        [ PlaceLocation (toId attrs) (toCard attrs)
-        , AddDirectConnection (toId attrs) connectedLocation
-        , AddDirectConnection connectedLocation (toId attrs)
-        , SetLocationLabel (toId attrs) $ nameToLabel name <> "HiddenChamber"
-        ]
+      push $ PlaceLocation (toId attrs) (toCard attrs)
+      push $ AddDirectConnection (toId attrs) connectedLocation
+      push $ AddDirectConnection connectedLocation (toId attrs)
+      setLocationLabel attrs $ nameToLabel name <> "HiddenChamber"
       TheHiddenChamber <$> liftRunMessage msg attrs
     -- Revealing will cause the other location to drop it's known connections
     -- So we must queue up to add it back

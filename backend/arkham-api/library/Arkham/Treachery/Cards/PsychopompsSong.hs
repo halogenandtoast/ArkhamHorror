@@ -17,7 +17,7 @@ psychopompsSong = treachery PsychopompsSong Cards.psychopompsSong
 
 instance HasAbilities PsychopompsSong where
   getAbilities (PsychopompsSong attrs) =
-    [ restrictedAbility attrs 1 (InThreatAreaOf You)
+    [ restricted attrs 1 (InThreatAreaOf You)
         $ forced
         $ InvestigatorWouldTakeDamage #when You AnySource AnyDamageType
     ]

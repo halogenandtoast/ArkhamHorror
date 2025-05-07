@@ -280,6 +280,12 @@ storyOnly iids flavor = do
   players <- traverse getPlayer iids
   push $ Msg.story players flavor
 
+storyOnly' :: (HasI18n, ReverseQueue m) => [InvestigatorId] -> Scope -> m ()
+storyOnly' [] _ = pure ()
+storyOnly' iids lbl = do
+  players <- traverse getPlayer iids
+  push $ Msg.story players (i18n lbl)
+
 storyWithChooseOne :: ReverseQueue m => FlavorText -> [UI Message] -> m ()
 storyWithChooseOne flavor choices = do
   players <- allPlayers

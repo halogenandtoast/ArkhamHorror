@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.ATearInReality (ATearInReality (..), aTearInReality) where
+module Arkham.Agenda.Cards.ATearInReality (aTearInReality) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted

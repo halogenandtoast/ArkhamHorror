@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Helpers.Cost
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards (passengerCar_171)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -35,9 +36,12 @@ instance RunMessage PassengerCar_171 where
       hasSkills <- getCanAffordCost iid (toAbilitySource attrs 1) [] [mkWhen NonFast] cost
 
       if hasSkills
-        then chooseOneM iid do
-          labeled "Take 1 damage and 1 horror" $ assignDamageAndHorror iid (attrs.ability 1) 1 1
-          labeled "Discard cards with at least 1 {wild} icons" do
+        then chooseOneM iid $ withI18n do
+          numberVar "damage" 1
+            $ numberVar "horror" 1
+            $ labeled' "takeDamageAndHorror"
+            $ assignDamageAndHorror iid (attrs.ability 1) 1 1
+          countVar 1 $ skillIconVar #wild $ labeled' "discardCardsWithMatchingIcons" do
             push $ PayForAbility (abilityEffect attrs [] cost) []
         else assignDamageAndHorror iid (attrs.ability 1) 1 1
       pure l

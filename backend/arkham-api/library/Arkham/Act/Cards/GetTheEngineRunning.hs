@@ -1,44 +1,30 @@
-module Arkham.Act.Cards.GetTheEngineRunning (
-  GetTheEngineRunning (..),
-  getTheEngineRunning,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.GetTheEngineRunning (getTheEngineRunning) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Matcher
-import Arkham.Resolution
 
 newtype GetTheEngineRunning = GetTheEngineRunning ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 getTheEngineRunning :: ActCard GetTheEngineRunning
-getTheEngineRunning =
-  act (2, A) GetTheEngineRunning Cards.getTheEngineRunning Nothing
+getTheEngineRunning = act (2, A) GetTheEngineRunning Cards.getTheEngineRunning Nothing
 
 instance HasAbilities GetTheEngineRunning where
-  getAbilities (GetTheEngineRunning x)
-    | onSide A x =
-        [ restrictedAbility
-            x
-            1
-            ( LocationExists $ LocationWithTitle "Engine Car" <> LocationWithoutClues
-            )
-            $ Objective
-            $ ForcedAbility AnyWindow
-        ]
-  getAbilities _ = []
+  getAbilities = actAbilities \x ->
+    [ restricted x 1 (exists $ LocationWithTitle "Engine Car" <> LocationWithoutClues)
+        $ Objective
+        $ forced AnyWindow
+    ]
 
 instance RunMessage GetTheEngineRunning where
-  runMessage msg a@(GetTheEngineRunning attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ _
-      | aid == actId && onSide B attrs ->
-          a <$ push (ScenarioResolution $ Resolution 1)
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
-    _ -> GetTheEngineRunning <$> runMessage msg attrs
+  runMessage msg a@(GetTheEngineRunning attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      push R1
+      pure a
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
+      pure a
+    _ -> GetTheEngineRunning <$> liftRunMessage msg attrs

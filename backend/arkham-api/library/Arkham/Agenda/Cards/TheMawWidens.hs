@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.TheMawWidens (TheMawWidens (..), theMawWidens) where
+module Arkham.Agenda.Cards.TheMawWidens (theMawWidens) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted

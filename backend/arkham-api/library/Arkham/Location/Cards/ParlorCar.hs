@@ -8,7 +8,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (parlorCar)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
 
 newtype ParlorCar = ParlorCar LocationAttrs
   deriving anyclass IsLocation
@@ -37,6 +36,6 @@ instance HasAbilities ParlorCar where
 instance RunMessage ParlorCar where
   runMessage msg l@(ParlorCar attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ Msg.DiscoverClues iid $ discover attrs (attrs.ability 1) 1
+      discoverAt NotInvestigate iid (attrs.ability 1) attrs 1
       pure l
     _ -> ParlorCar <$> liftRunMessage msg attrs

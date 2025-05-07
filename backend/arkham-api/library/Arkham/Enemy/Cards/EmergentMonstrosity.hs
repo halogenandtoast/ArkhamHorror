@@ -1,14 +1,8 @@
-module Arkham.Enemy.Cards.EmergentMonstrosity (
-  EmergentMonstrosity (..),
-  emergentMonstrosity,
-) where
+module Arkham.Enemy.Cards.EmergentMonstrosity (emergentMonstrosity) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Direction
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
 
 newtype EmergentMonstrosity = EmergentMonstrosity EnemyAttrs
@@ -17,17 +11,9 @@ newtype EmergentMonstrosity = EmergentMonstrosity EnemyAttrs
 
 emergentMonstrosity :: EnemyCard EmergentMonstrosity
 emergentMonstrosity =
-  enemyWith
-    EmergentMonstrosity
-    Cards.emergentMonstrosity
-    (4, Static 5, 3)
-    (2, 2)
-    ( ( spawnAtL
-          ?~ SpawnAt
-            (FirstLocation [LocationInDirection RightOf YourLocation, YourLocation])
-      )
-        . (exhaustedL .~ True)
-    )
+  enemy EmergentMonstrosity Cards.emergentMonstrosity (4, Static 5, 3) (2, 2)
+    & setSpawnAt (firstOf [LocationInDirection RightOf YourLocation, YourLocation])
+    & setExhausted
 
 instance RunMessage EmergentMonstrosity where
   runMessage msg (EmergentMonstrosity attrs) =

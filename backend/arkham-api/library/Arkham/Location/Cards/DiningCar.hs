@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.DiningCar (diningCar, DiningCar (..)) where
+module Arkham.Location.Cards.DiningCar (diningCar) where
 
 import Arkham.Ability
 import Arkham.Direction

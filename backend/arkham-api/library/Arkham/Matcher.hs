@@ -105,6 +105,9 @@ instance OneOf InvestigatorMatcher where
 instance OneOf LocationMatcher where
   oneOf = LocationMatchAny
 
+instance FirstOf LocationMatcher where
+  firstOf = FirstLocation
+
 instance OneOf EnemyMatcher where
   oneOf = EnemyOneOf
 

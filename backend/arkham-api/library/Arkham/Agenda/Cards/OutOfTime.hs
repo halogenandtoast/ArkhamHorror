@@ -1,16 +1,7 @@
-module Arkham.Agenda.Cards.OutOfTime (
-  OutOfTime (..),
-  outOfTime,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.OutOfTime (outOfTime) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
-import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Resolution
+import Arkham.Agenda.Import.Lifted
 
 newtype OutOfTime = OutOfTime AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -20,13 +11,11 @@ outOfTime :: AgendaCard OutOfTime
 outOfTime = agenda (5, A) OutOfTime Cards.outOfTime (Static 3)
 
 instance RunMessage OutOfTime where
-  runMessage msg a@(OutOfTime attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      investigatorIds <- select UneliminatedInvestigator
-      a
-        <$ pushAll
-          ( [InvestigatorDefeated (toSource attrs) iid | iid <- investigatorIds]
-              <> [SufferTrauma iid 0 1 | iid <- investigatorIds]
-              <> [ScenarioResolution $ Resolution 2]
-          )
-    _ -> OutOfTime <$> runMessage msg attrs
+  runMessage msg a@(OutOfTime attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      eachInvestigator \iid -> do
+        investigatorDefeated attrs iid
+        sufferMentalTrauma iid 1
+      push R2
+      pure a
+    _ -> OutOfTime <$> liftRunMessage msg attrs

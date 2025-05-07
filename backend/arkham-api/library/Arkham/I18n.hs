@@ -4,6 +4,7 @@
 module Arkham.I18n where
 
 import Arkham.Prelude hiding (intercalate)
+import Arkham.SkillType
 import Data.Aeson.Key qualified as K
 import Data.Aeson.Types (Pair)
 import Data.Map.Strict qualified as Map
@@ -17,6 +18,9 @@ withI18n a = let ?scope = ([] :: [Scope]); ?scopeVars = (mempty :: Map Text Valu
 
 scope :: HasI18n => Scope -> (HasI18n => a) -> a
 scope t a = let ?scope = ?scope <> [t] in a
+
+popScope :: HasI18n => (HasI18n => a) -> a
+popScope a = let ?scope = reverse (drop 1 $ reverse ?scope) in a
 
 unscoped :: HasI18n => (HasI18n => a) -> a
 unscoped a = let ?scope = [] in a
@@ -34,7 +38,20 @@ ikey t = intercalate "." (?scope <> [t]) <> varStr
     _ -> ""
 
 countVar :: HasI18n => Int -> (HasI18n => a) -> a
-countVar v a = withVar "count" (Number $ fromIntegral v) a
+countVar = numberVar "count"
+
+numberVar :: HasI18n => Text -> Int -> (HasI18n => a) -> a
+numberVar var val a = withVar var (Number $ fromIntegral val) a
+
+skillIconVar :: HasI18n => SkillIcon -> (HasI18n => a) -> a
+skillIconVar v a = case v of
+  SkillIcon kind -> case kind of
+    SkillWillpower -> withVar "skillIcon" (String "agility") a
+    SkillIntellect -> withVar "skillIcon" (String "intellect") a
+    SkillCombat -> withVar "skillIcon" (String "combat") a
+    SkillAgility -> withVar "skillIcon" (String "agility") a
+  WildIcon -> withVar "skillIcon" (String "wild") a
+  WildMinusIcon -> withVar "skillIcon" (String "wildMinus") a
 
 withVar :: HasI18n => Text -> Value -> (HasI18n => a) -> a
 withVar k v a = let ?scopeVars = ?scopeVars <> singletonMap k v in a

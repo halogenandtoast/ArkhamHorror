@@ -152,6 +152,9 @@ labeled' label action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [Label ("$" <> ikey ("label." <> label)) msgs]
 
+chooseTest :: (HasI18n, ReverseQueue m) => SkillType -> Int -> QueueT Message m () -> ChooseT m ()
+chooseTest skind n body = countVar n $ skillVar skind $ labeled' "test" body
+
 skip :: ReverseQueue m => Text -> ChooseT m ()
 skip = (`labeled` nothing)
 

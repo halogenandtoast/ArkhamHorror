@@ -13,5 +13,6 @@
   "takeControlOfKey": "Take control of key",
   "takeDamageAndHorror": "Take {damage} damage and {horror} horror",
   "takeDamage": "Take {count} damage",
-  "takeHorror": "Take {count} damage"
+  "takeHorror": "Take {count} damage",
+  "test": "Test {'{'}{skill}{'}'} ({count})"
 }

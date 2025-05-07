@@ -1,9 +1,10 @@
-module Arkham.Treachery.Cards.Kidnapped (kidnapped, Kidnapped (..)) where
+module Arkham.Treachery.Cards.Kidnapped (kidnapped) where
 
 import Arkham.Ability
-import Arkham.Choose
-import Arkham.Helpers.SkillTest qualified as Msg
+import Arkham.Helpers.Choose
+import Arkham.I18n
 import Arkham.Matcher hiding (PlaceUnderneath)
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -24,28 +25,22 @@ instance RunMessage Kidnapped where
   runMessage msg t@(Kidnapped attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      chooseOne
-        iid
-        [ Label "Test {willpower} (4)" [Msg.revelationSkillTest sid iid attrs #willpower (Fixed 4)]
-        , Label "Test {agility} (4)" [Msg.revelationSkillTest sid iid attrs #agility (Fixed 4)]
-        ]
+      chooseOneM iid $ withI18n do
+        chooseTest #willpower 4 $ revelationSkillTest sid iid attrs #willpower (Fixed 4)
+        chooseTest #agility 4 $ revelationSkillTest sid iid attrs #agility (Fixed 4)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       allies <- select $ assetControlledBy iid <> #ally
       if null allies
         then assignDamage iid attrs 2
         else do
-          chooseOne
-            iid
-            [ targetLabel aid [AddToScenarioDeck PotentialSacrifices (AssetTarget aid)]
-            | aid <- allies
-            ]
+          chooseTargetM iid allies $ push . AddToScenarioDeck PotentialSacrifices . toTarget
           selectJust AnyAgenda >>= attachTreachery attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ ChooseFrom iid $ chooseRandom attrs PotentialSacrifices 1
+      randomlyChooseFrom attrs iid PotentialSacrifices 1
       pure t
     ChoseCards _ chosen | isTarget attrs chosen.target -> do
-      push $ PlaceUnderneath AgendaDeckTarget chosen.cards
+      placeUnderneath AgendaDeckTarget chosen.cards
       pure t
     _ -> Kidnapped <$> liftRunMessage msg attrs

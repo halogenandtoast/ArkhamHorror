@@ -1,14 +1,8 @@
-module Arkham.Treachery.Cards.RottingRemainsBloodOnTheAltar (
-  rottingRemainsBloodOnTheAltar,
-  RottingRemainsBloodOnTheAltar (..),
-) where
+module Arkham.Treachery.Cards.RottingRemainsBloodOnTheAltar ( rottingRemainsBloodOnTheAltar,) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Cards.RottingRemains
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype RottingRemainsBloodOnTheAltar = RottingRemainsBloodOnTheAltar RottingRemains
   deriving anyclass (IsTreachery)

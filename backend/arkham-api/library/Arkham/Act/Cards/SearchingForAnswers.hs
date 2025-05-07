@@ -1,16 +1,10 @@
-module Arkham.Act.Cards.SearchingForAnswers (
-  SearchingForAnswers (..),
-  searchingForAnswers,
-) where
+module Arkham.Act.Cards.SearchingForAnswers ( searchingForAnswers,) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Card
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Prelude
 
 newtype SearchingForAnswers = SearchingForAnswers ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -24,20 +18,17 @@ instance HasAbilities SearchingForAnswers where
     [mkAbility x 1 $ forced $ Enters #when You "The Hidden Chamber"]
 
 instance RunMessage SearchingForAnswers where
-  runMessage msg a@(SearchingForAnswers attrs) = case msg of
+  runMessage msg a@(SearchingForAnswers attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ advancedWithOther attrs
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      unrevealedLocationIds <- select UnrevealedLocation
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      selectEach UnrevealedLocation reveal
+
       hiddenChamber <- selectJust (LocationWithTitle "The Hidden Chamber")
-      silasBishop <- genCard Enemies.silasBishop
-      createSilasBishop <- createEnemyAt_ silasBishop hiddenChamber Nothing
-      pushAll
-        $ [RevealLocation Nothing lid | lid <- unrevealedLocationIds]
-        <> [ MoveAllCluesTo (toSource attrs) (toTarget hiddenChamber)
-           , createSilasBishop
-           , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-           ]
+      push $ MoveAllCluesTo (toSource attrs) (toTarget hiddenChamber)
+
+      createEnemyAt_ Enemies.silasBishop hiddenChamber
+      advanceActDeck attrs
       pure a
-    _ -> SearchingForAnswers <$> runMessage msg attrs
+    _ -> SearchingForAnswers <$> liftRunMessage msg attrs

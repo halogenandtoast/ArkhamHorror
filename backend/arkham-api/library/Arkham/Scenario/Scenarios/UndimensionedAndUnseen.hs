@@ -11,7 +11,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Effect
-import Arkham.Helpers.Query
+import Arkham.Helpers.FlavorText
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (ChosenRandomLocation, RevealLocation)
@@ -85,22 +85,44 @@ instance HasChaosTokenValue UndimensionedAndUnseen where
       otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage UndimensionedAndUnseen where
-  runMessage msg s@(UndimensionedAndUnseen attrs) = runQueueT $ case msg of
-    PreScenarioSetup -> do
-      story intro
-      lead <- getLead
-      chooseOneM lead do
-        labeled "You try to calm down the townsfolk in order to learn more." $ doStep 1 msg
-        labeled "You try to warn the townsfolk and convince them to evacuate." $ doStep 2 msg
+  runMessage msg s@(UndimensionedAndUnseen attrs) = runQueueT $ scenarioI18n $ case msg of
+    PreScenarioSetup -> scope "intro" do
+      storyWithChooseOneM' (h "title" >> p "body") do
+        labeled' "calm" $ doStep 1 msg
+        labeled' "warn" $ doStep 2 msg
       pure s
-    DoStep n PreScenarioSetup -> do
-      story $ if n == 1 then introPart1 else introPart2
-      record $ if n == 1 then YouCalmedTheTownsfolk else YouWarnedTheTownsfolk
+    DoStep 1 PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "part1"
+      record YouCalmedTheTownsfolk
+      pure s
+    DoStep 2 PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "part2"
+      record YouWarnedTheTownsfolk
       pure s
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens
       pure . UndimensionedAndUnseen $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
     Setup -> runScenarioSetup UndimensionedAndUnseen attrs do
+      standalone <- getIsStandalone
+      sacrificedToYogSothoth <-
+        if standalone
+          then pure 3
+          else length <$> getRecordSet SacrificedToYogSothoth
+
+      setup do
+        ul do
+          li "gatherSets"
+          li "placeLocations"
+          li.nested "sacrificedToYogSothoth.instructions" do
+            li.validate (sacrificedToYogSothoth >= 4) "sacrificedToYogSothoth.fourOrMore"
+            li.validate (sacrificedToYogSothoth == 3) "sacrificedToYogSothoth.exactlyThree"
+            li.validate (sacrificedToYogSothoth == 2) "sacrificedToYogSothoth.exactlyTwo"
+            li.validate (sacrificedToYogSothoth <= 1) "sacrificedToYogSothoth.oneOrFewer"
+          li "setAside"
+          li "powderOfIbnGhazi"
+          li "randomBasicWeakness"
+          unscoped $ li "shuffleRemainder"
+
       gather Set.UndimensionedAndUnseen
       gather Set.Whippoorwills
       gather Set.BeastThralls
@@ -117,12 +139,6 @@ instance RunMessage UndimensionedAndUnseen where
       coldSpringGlen <- placeOneOf (Locations.coldSpringGlen_244, Locations.coldSpringGlen_245)
       blastedHeath <- placeOneOf (Locations.blastedHeath_248, Locations.blastedHeath_249)
       placeAll [tenAcreMeadow, whateleyRuins, devilsHopYard]
-
-      standalone <- getIsStandalone
-      sacrificedToYogSothoth <-
-        if standalone
-          then pure 3
-          else length <$> getRecordSet SacrificedToYogSothoth
 
       setAside $ replicate 4 Assets.esotericFormula
 
@@ -168,8 +184,9 @@ instance RunMessage UndimensionedAndUnseen where
         Just action | action `elem` [#evade, #fight] -> do
           getSkillTestTarget >>= \case
             Just (EnemyTarget eid) -> do
+              let allBroods = ["02255", "51042", "51043", "51044", "51045"]
               enemyCardCode <- field EnemyCardCode eid
-              when (enemyCardCode == "02255") $ initiateEnemyAttack eid attrs iid
+              when (enemyCardCode `elem` allBroods) $ initiateEnemyAttack eid attrs iid
             _ -> pure ()
         _ -> pure ()
       pure s
@@ -185,8 +202,9 @@ instance RunMessage UndimensionedAndUnseen where
       push R1
       pure s
     ScenarioResolution (Resolution 1) -> do
+      let allBroods = ["02255", "51042", "51043", "51044", "51045"]
       broodEscapedIntoTheWild <-
-        (+ count ((== "02255") . toCardCode) attrs.setAside)
+        (+ count ((`elem` allBroods) . toCardCode) attrs.setAside)
           . length
           <$> getBroodOfYogSothoth
       story resolution1

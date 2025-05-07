@@ -1,18 +1,11 @@
-module Arkham.Location.Cards.CongregationalChurch_208 (
-  congregationalChurch_208,
-  CongregationalChurch_208 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.CongregationalChurch_208 (congregationalChurch_208) where
 
 import Arkham.Ability
-import Arkham.Card
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (congregationalChurch_208)
-import Arkham.Location.Runner
+import Arkham.Location.Helpers (drawCardUnderneathAction)
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype CongregationalChurch_208 = CongregationalChurch_208 LocationAttrs
@@ -20,34 +13,23 @@ newtype CongregationalChurch_208 = CongregationalChurch_208 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 congregationalChurch_208 :: LocationCard CongregationalChurch_208
-congregationalChurch_208 =
-  location
-    CongregationalChurch_208
-    Cards.congregationalChurch_208
-    1
-    (PerPlayer 1)
+congregationalChurch_208 = location CongregationalChurch_208 Cards.congregationalChurch_208 1 (PerPlayer 1)
 
 instance HasAbilities CongregationalChurch_208 where
-  getAbilities (CongregationalChurch_208 attrs) =
-    let rest = withDrawCardUnderneathAction attrs
-     in rest
-          <> [ mkAbility attrs 1
-              $ ForcedAbility
-              $ RevealLocation Timing.After Anyone
-              $ LocationWithId
-              $ toId attrs
-             | locationRevealed attrs
-             ]
+  getAbilities (CongregationalChurch_208 a) =
+    extendRevealed
+      a
+      [ drawCardUnderneathAction a
+      , mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
+      ]
 
 instance RunMessage CongregationalChurch_208 where
-  runMessage msg l@(CongregationalChurch_208 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push
-        $ FindEncounterCard iid (toTarget attrs) [FromEncounterDeck]
-        $ CardWithType EnemyType
-        <> CardWithTrait Humanoid
+  runMessage msg l@(CongregationalChurch_208 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      findEncounterCardIn iid (toTarget attrs) (#enemy <> CardWithTrait Humanoid) [#deck]
       pure l
     FoundEncounterCard _iid target card | isTarget attrs target -> do
-      villageCommonsId <- selectJust $ LocationWithTitle "Village Commons"
-      l <$ push (SpawnEnemyAt (EncounterCard card) villageCommonsId)
-    _ -> CongregationalChurch_208 <$> runMessage msg attrs
+      villageCommons <- selectJust $ LocationWithTitle "Village Commons"
+      createEnemyAt_ card villageCommons
+      pure l
+    _ -> CongregationalChurch_208 <$> liftRunMessage msg attrs

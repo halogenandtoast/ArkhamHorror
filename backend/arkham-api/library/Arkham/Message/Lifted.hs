@@ -1946,10 +1946,16 @@ afterEnemyAttack enemy body = do
   push $ AfterEnemyAttack (asId enemy) msgs
 
 afterSkillTest
-  :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m)) => QueueT Message (t m) a -> t m ()
-afterSkillTest body = do
+  :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m), AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> Text -> QueueT Message (t m) a -> t m ()
+afterSkillTest investigator lbl body = do
   msgs <- evalQueueT body
-  insertAfterMatching msgs (== EndSkillTestWindow)
+  insertAfterMatching [AfterSkillTestOption (asId investigator) lbl msgs] (== EndSkillTestWindow)
+
+afterSkillTestQuiet
+  :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m)) => QueueT Message (t m) a -> t m ()
+afterSkillTestQuiet body = do
+  msgs <- evalQueueT body
+  insertAfterMatching [AfterSkillTestQuiet msgs] (== EndSkillTestWindow)
 
 afterSearch
   :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m)) => QueueT Message (t m) a -> t m ()

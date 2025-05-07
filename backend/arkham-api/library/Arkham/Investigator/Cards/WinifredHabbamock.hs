@@ -64,7 +64,7 @@ instance RunMessage WinifredHabbamockEffect where
           InvestigatorSource iid -> do
             cards <- field InvestigatorCommittedCards iid
             when (notNull cards) do
-              afterSkillTest do
+              afterSkillTest iid "Winifred Habbamock" do
                 focusCards cards do
                   chooseNM iid (min (n `div` 2) (length cards)) do
                     targets cards (returnToHand iid)

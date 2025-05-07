@@ -25,7 +25,7 @@ instance RunMessage BumsRush where
       push $ EnemyEvaded iid eid
       when (n >= 2) $ nonAttackEnemyDamage (Just iid) attrs 1 eid
       isElite <- eid <=~> EliteEnemy
-      unless isElite $ afterSkillTest $ push $ WillMoveEnemy eid msg
+      unless isElite $ afterSkillTest iid "Bum Rush" $ push $ WillMoveEnemy eid msg
       pure e
     WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _) | isTarget attrs target -> do
       choices <- select $ ConnectedFrom (locationWithInvestigator iid) <> LocationCanBeEnteredBy enemyId

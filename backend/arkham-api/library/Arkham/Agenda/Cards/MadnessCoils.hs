@@ -54,10 +54,10 @@ instance RunMessage MadnessCoils where
             placeDoomOnAgenda 1
       pure a
     FailedSkillTest _ _ source SkillTestInitiatorTarget {} (SkillSkillTest st) _ | isSource attrs source -> do
-      afterSkillTest $ push $ AdvanceAgenda (toId attrs)
+      afterSkillTestQuiet $ push $ AdvanceAgenda (toId attrs)
       pure $ MadnessCoils $ attrs `with` Metadata (insertSet st $ chosenSkills metadata)
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
-      afterSkillTest $ advanceAgendaDeck attrs
+      afterSkillTestQuiet $ advanceAgendaDeck attrs
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       push $ AdvanceAgenda (toId attrs)

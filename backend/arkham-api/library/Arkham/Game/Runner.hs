@@ -1773,6 +1773,54 @@ runGameMessage msg g = case msg of
           _ -> getPlayer (gameLeadInvestigatorId g)
         push $ chooseOneAtATime player $ map toUI as
     pure g
+  AfterSkillTestQuiet _ -> do
+    msgs <- popMessagesMatching \case
+      AfterSkillTestQuiet {} -> True
+      AfterSkillTestOption {} -> True
+      _ -> False
+
+    let
+      isQuiet = \case
+        AfterSkillTestQuiet {} -> True
+        _ -> False
+      (quietMsgs, options) = partition isQuiet msgs
+
+    pushAll options
+
+    for_ (msg : quietMsgs) \case
+      AfterSkillTestQuiet xs -> pushAll xs
+      _ -> pure ()
+    pure g
+  AfterSkillTestOption _ _ msgs' -> do
+    msgs <- popMessagesMatching \case
+      AfterSkillTestQuiet {} -> True
+      AfterSkillTestOption {} -> True
+      _ -> False
+
+    let
+      isQuiet = \case
+        AfterSkillTestQuiet {} -> True
+        _ -> False
+      (quietMsgs, options) = partition isQuiet msgs
+
+    if notNull quietMsgs
+      then do
+        pushAll $ msg : options
+
+        for_ quietMsgs \case
+          AfterSkillTestQuiet xs -> pushAll xs
+          _ -> pure ()
+      else do
+        if null options
+          then pushAll msgs'
+          else do
+            askMap <- fmap (QuestionLabel "Choose after skill test effect to resolve" Nothing . ChooseOneAtATime) . Map.unionsWith (<>) <$> forMaybeM (msg : options) \case
+              AfterSkillTestOption iid lbl xs -> do
+                playerId <- getPlayer iid
+                pure $ Just $ singletonMap playerId [Label lbl xs]
+              _ -> pure Nothing
+            push $ AskMap askMap
+    pure g
   SkillTestResultOption txt msgs -> do
     push $ SkillTestResultOptions [Label txt msgs]
     pure g

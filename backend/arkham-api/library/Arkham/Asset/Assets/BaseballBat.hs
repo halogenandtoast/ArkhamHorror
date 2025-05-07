@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.BaseballBat (BaseballBat (..), baseballBat) where
+module Arkham.Asset.Assets.BaseballBat (baseballBat) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -27,11 +27,9 @@ instance RunMessage BaseballBat where
       pure a
     SkillTestEnds _ iid _ -> do
       whenJustM getSkillTestSource \source ->
-        if isAbilitySource attrs 1 source
-          then do
-            tokens <- map (.face) <$> getSkillTestRevealedChaosTokens
-            when (any (`elem` [Skull, AutoFail]) tokens) do
-              afterSkillTest $ toDiscardBy iid (attrs.ability 1) attrs
-          else pure ()
+        when (isAbilitySource attrs 1 source) do
+          tokens <- map (.face) <$> getSkillTestRevealedChaosTokens
+          when (any (`elem` [Skull, AutoFail]) tokens) do
+            afterSkillTest iid "Baseball Bat" $ toDiscardBy iid (attrs.ability 1) attrs
       pure a
     _ -> BaseballBat <$> liftRunMessage msg attrs

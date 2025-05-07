@@ -210,7 +210,7 @@ instance RunMessage ToTheForbiddenPeaks where
         loc <- MaybeT $ getLocationOf iid
         Pos _ y <- MaybeT $ field LocationPosition loc
         loc' <- MaybeT $ selectOne (LocationInRow (y - 1))
-        lift $ afterSkillTest $ moveTo (toSource Cultist) iid loc'
+        lift $ afterSkillTestQuiet $ moveTo (toSource Cultist) iid loc'
 
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
@@ -220,7 +220,7 @@ instance RunMessage ToTheForbiddenPeaks where
           loc <- MaybeT $ getLocationOf iid
           Pos _ y <- MaybeT $ field LocationPosition loc
           loc' <- MaybeT $ selectOne (LocationInRow (y - 1))
-          lift $ afterSkillTest $ moveTo (toSource Cultist) iid loc'
+          lift $ afterSkillTestQuiet $ moveTo (toSource Cultist) iid loc'
         Tablet -> withLocationOf iid \loc -> do
           assets <- select $ assetControlledBy iid <> withTrait Expedition
           chooseTargetM iid assets (`P.place` loc)

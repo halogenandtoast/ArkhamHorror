@@ -23,7 +23,7 @@ instance RunMessage Nimble where
       connectingLocation <- notNull <$> getAccessibleLocations iid attrs
       if connectingLocation
         then do
-          afterSkillTest $ push $ ResolveSkill (toId attrs)
+          afterSkillTest iid "Nimble" $ push $ ResolveSkill (toId attrs)
           pure $ Nimble $ attrs `with` Metadata n
         else pure s
     ResolveSkill sId | sId == toId attrs && moveCount meta > 0 -> do

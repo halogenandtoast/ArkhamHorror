@@ -45,6 +45,6 @@ instance RunMessage OculaObscuraEsotericEyepiece where
         $ Choose (attrs.ability 2) 1 ResolveChoice [Resolved tokens] [] Nothing
       getSkillTestId >>= \case
         Nothing -> for_ attrs.sealedChaosTokens unsealChaosToken
-        Just _ -> afterSkillTest $ for_ attrs.sealedChaosTokens unsealChaosToken
+        Just _ -> afterSkillTestQuiet $ for_ attrs.sealedChaosTokens unsealChaosToken
       pure a
     _ -> OculaObscuraEsotericEyepiece <$> liftRunMessage msg attrs

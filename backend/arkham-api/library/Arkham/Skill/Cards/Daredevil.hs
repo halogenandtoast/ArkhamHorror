@@ -30,7 +30,7 @@ instance RunMessage Daredevil where
            | notNull weaknesses && not (tabooed TabooList21 attrs)
            ]
       when (tabooed TabooList21 attrs && notNull weaknesses) do
-        afterSkillTest do
+        afterSkillTest iid "Daredevil" do
           chooseOneAtATime
             iid
             [targetLabel weakness [AddToHand iid [toCard weakness]] | weakness <- weaknesses]

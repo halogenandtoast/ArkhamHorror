@@ -52,7 +52,7 @@ instance RunMessage TestingSprint where
       pushM $ mkInvestigateLocation sid iid attrs lid
       pure . TestingSprint $ attrs `with` Meta meta'
     PassedThisSkillTest iid (isSource attrs -> True) -> do
-      afterSkillTest do
+      afterSkillTest iid "Testing Spring" do
         push $ Do (InvestigatorPlayEvent iid attrs.id Nothing [] FromHand)
       pure e
     _ -> TestingSprint . (`with` meta) <$> liftRunMessage msg attrs

@@ -41,11 +41,11 @@ instance RunMessage ArkhamAsylum where
           advanceActDeck attrs
       pure a
     FailedSkillTest _ _ source Initiator {} (SkillSkillTest st) _ | isSource attrs source -> do
-      afterSkillTest do
+      afterSkillTestQuiet do
         push $ AdvanceAct (toId attrs) source AdvancedWithClues
       let metadata = toResult (actMeta attrs)
       pure $ ArkhamAsylum $ attrs & metaL .~ toJSON (insertSet st $ chosenSkills metadata)
     PassedSkillTest _ _ source Initiator {} _ _ | isSource attrs source -> do
-      afterSkillTest $ advanceActDeck attrs
+      afterSkillTestQuiet $ advanceActDeck attrs
       pure a
     _ -> ArkhamAsylum <$> liftRunMessage msg attrs

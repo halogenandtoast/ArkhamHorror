@@ -16,7 +16,7 @@ momentum1 = skill Momentum1 Cards.momentum1
 instance RunMessage Momentum1 where
   runMessage msg s@(Momentum1 attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ n | n > 0 -> do
-      afterSkillTest $ createCardEffect Cards.momentum1 (Just $ EffectInt (min 3 n)) attrs attrs.owner
+      afterSkillTestQuiet $ createCardEffect Cards.momentum1 (Just $ EffectInt (min 3 n)) attrs attrs.owner
       pure s
     _ -> Momentum1 <$> liftRunMessage msg attrs
 

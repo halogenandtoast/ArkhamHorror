@@ -140,7 +140,7 @@ instance RunMessage DarkSideOfTheMoon where
           alarmLevel <- getAlarmLevel iid
           skillValue <- getSkillTestModifiedSkillValue
           when (alarmLevel > skillValue) do
-            afterSkillTest $ drawEncounterCard iid Cultist
+            afterSkillTestQuiet $ drawEncounterCard iid Cultist
         Tablet -> do
           placeTokens TabletEffect iid AlarmLevel 1
         _ -> pure ()

@@ -36,12 +36,15 @@ instance RunMessage GlacialGrotto where
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       for_ (nonEmpty $ toList attrs.seals) \(k :| _) -> do
-        n <- getSpendableClueCount =<< select (investigatorAt attrs)
+        investigators <- select (investigatorAt attrs)
+        n <- getSpendableClueCount investigators
         x <- perPlayer 1
 
         when (n >= x) do
           chooseOneM iid do
-            labeled "Spend 1 {perPlayer} clues as a group to take control of the seal" $ placeSeal iid k
+            labeled "Spend 1 {perPlayer} clues as a group to take control of the seal" do
+              spendCluesAsAGroup investigators n
+              placeSeal iid k
             labeled "Do not spend clues" nothing
 
       pure l

@@ -88,7 +88,7 @@ const label = function(body: string) {
 
 const paymentAmountsLabel = computed(() => {
   if (question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
-    return formatContent(question.value.label)
+    return label(question.value.label)
   }
 
   return null
@@ -96,7 +96,7 @@ const paymentAmountsLabel = computed(() => {
 
 const amountsLabel = computed(() => {
   if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
-    return formatContent(question.value.label)
+    return label(question.value.label)
   }
 
   if (question.value?.tag === QuestionType.QUESTION_LABEL && question.value?.question?.tag === QuestionType.CHOOSE_AMOUNTS) {
@@ -303,7 +303,6 @@ const cardLabelImage = (cardCode: string) => {
 }
 
 const questionImage = computed(() => {
-  console.log(question.value)
   if (!question.value) {
     return null
   }
@@ -507,7 +506,7 @@ const cardPiles = computed(() => {
               <legend v-html="amountsLabel"></legend>
               <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.choiceId">
                 <div v-if="paymentChoice.maxBound !== 0">
-                  <label :for="`choice-${paymentChoice.choiceId}`" v-html="formatContent(paymentChoice.label)"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
+                  <label :for="`choice-${paymentChoice.choiceId}`" v-html="label(`$choice.${paymentChoice.label}`)"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
                 </div>
               </template>
               <button :disabled="unmetAmountRequirements">Submit</button>
@@ -958,7 +957,7 @@ h2 {
   border: 0;
   color: white;
   padding: 0.5em;
-  margin-left: 0.5em;
+  margin-top: 0.5em;
 }
 
 .amount-contents button[disabled] {

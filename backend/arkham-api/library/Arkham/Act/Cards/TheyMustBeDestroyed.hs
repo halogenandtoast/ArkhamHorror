@@ -1,11 +1,9 @@
-module Arkham.Act.Cards.TheyMustBeDestroyed (TheyMustBeDestroyed (..), theyMustBeDestroyed) where
+module Arkham.Act.Cards.TheyMustBeDestroyed (theyMustBeDestroyed) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype TheyMustBeDestroyed = TheyMustBeDestroyed ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -16,7 +14,7 @@ theyMustBeDestroyed = act (2, A) TheyMustBeDestroyed Cards.theyMustBeDestroyed N
 
 instance HasAbilities TheyMustBeDestroyed where
   getAbilities (TheyMustBeDestroyed x) | onSide A x = do
-    [ restrictedAbility
+    [ restricted
         x
         1
         ( not_
@@ -31,9 +29,11 @@ instance HasAbilities TheyMustBeDestroyed where
   getAbilities _ = []
 
 instance RunMessage TheyMustBeDestroyed where
-  runMessage msg a@(TheyMustBeDestroyed attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      a <$ push R2
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
-    _ -> TheyMustBeDestroyed <$> runMessage msg attrs
+  runMessage msg a@(TheyMustBeDestroyed attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      push R2
+      pure a
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
+      pure a
+    _ -> TheyMustBeDestroyed <$> liftRunMessage msg attrs

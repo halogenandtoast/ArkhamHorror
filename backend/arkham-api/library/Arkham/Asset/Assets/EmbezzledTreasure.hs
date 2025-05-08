@@ -5,7 +5,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (InvestigatorResigned)
 import Arkham.Investigator.Types (Field (InvestigatorResources))
 import Arkham.Matcher
-import Arkham.Message (getChoiceAmount)
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Token

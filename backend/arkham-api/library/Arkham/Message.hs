@@ -914,7 +914,6 @@ data Message
   | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep
   | ReplaceEntireDraw Source InvestigatorId ChaosBagStep
   | SetChaosBagChoice Source InvestigatorId ChaosBagStep -- internal
-  | RequestSetAsideCard Source CardCode
   | RequestChaosTokens Source (Maybe InvestigatorId) RevealStrategy RequestedChaosTokenStrategy
   | RequestedEncounterCard Source (Maybe InvestigatorId) (Maybe EncounterCard)
   | RequestedEncounterCards Target [EncounterCard]

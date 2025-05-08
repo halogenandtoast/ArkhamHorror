@@ -10,7 +10,6 @@ import Arkham.Event.Runner as X (
   afterPlayL,
   event,
   eventWith,
-  getChoiceAmount,
   getEventMeta,
   getMetaKey,
   getMetaKeyDefault,

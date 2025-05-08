@@ -1,11 +1,9 @@
-module Arkham.Treachery.Cards.RuinAndDestruction (ruinAndDestruction, RuinAndDestruction (..)) where
+module Arkham.Treachery.Cards.RuinAndDestruction (ruinAndDestruction) where
 
-import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype RuinAndDestruction = RuinAndDestruction TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -15,15 +13,16 @@ ruinAndDestruction :: TreacheryCard RuinAndDestruction
 ruinAndDestruction = treachery RuinAndDestruction Cards.ruinAndDestruction
 
 instance RunMessage RuinAndDestruction where
-  runMessage msg t@(RuinAndDestruction attrs) = case msg of
-    Revelation _iid source | isSource attrs source -> do
-      targetInvestigators <- select $ InvestigatorAt $ LocationWithEnemy $ EnemyWithTitle broodTitle
-      sid <- getRandom
-      pushAll
-        $ [revelationSkillTest sid iid' source #agility (Fixed 3) | iid' <- targetInvestigators]
-        <> [gainSurge attrs | null targetInvestigators]
+  runMessage msg t@(RuinAndDestruction attrs) = runQueueT $ case msg of
+    Revelation _iid (isSource attrs -> True) -> do
+      investigators <- select $ InvestigatorAt $ LocationWithEnemy $ EnemyWithTitle broodTitle
+      if null investigators
+        then gainSurge attrs
+        else for_ investigators \iid -> do
+          sid <- getRandom
+          revelationSkillTest sid iid attrs #agility (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      push $ assignDamage iid attrs n
+      assignDamage iid attrs n
       pure t
-    _ -> RuinAndDestruction <$> runMessage msg attrs
+    _ -> RuinAndDestruction <$> liftRunMessage msg attrs

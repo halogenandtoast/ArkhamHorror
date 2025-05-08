@@ -6,7 +6,6 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Fight
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (isSkillTestSource)
-import Arkham.Message (getChoiceAmount)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 

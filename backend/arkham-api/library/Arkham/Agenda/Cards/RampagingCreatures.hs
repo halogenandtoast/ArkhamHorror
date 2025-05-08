@@ -2,12 +2,10 @@ module Arkham.Agenda.Cards.RampagingCreatures (rampagingCreatures) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
-import Arkham.Helpers.Query
+import Arkham.Agenda.Import.Lifted
 import Arkham.Matcher hiding (ChosenRandomLocation)
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 
 newtype RampagingCreatures = RampagingCreatures AgendaAttrs
@@ -18,30 +16,28 @@ rampagingCreatures :: AgendaCard RampagingCreatures
 rampagingCreatures = agenda (1, A) RampagingCreatures Cards.rampagingCreatures (Static 5)
 
 instance HasAbilities RampagingCreatures where
-  getAbilities (RampagingCreatures x) = [mkAbility x 1 $ ForcedAbility $ PhaseEnds #when #enemy]
+  getAbilities (RampagingCreatures x) =
+    [ restricted x 1 (exists $ InPlayEnemy $ EnemyWithTitle "Brood of Yog-Sothoth")
+        $ forced
+        $ PhaseEnds #when #enemy
+    ]
 
 instance RunMessage RampagingCreatures where
-  runMessage msg a@(RampagingCreatures attrs) = case msg of
+  runMessage msg a@(RampagingCreatures attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      lead <- getLeadPlayer
-      broodOfYogSothoth <- selectTargets $ InPlayEnemy $ EnemyWithTitle "Brood of Yog-Sothoth"
-      pushWhen (notNull broodOfYogSothoth)
-        $ chooseOneAtATime lead
-        $ targetLabels broodOfYogSothoth (\target -> only $ ChooseRandomLocation target mempty)
+      broodOfYogSothoth <- select $ InPlayEnemy $ EnemyWithTitle "Brood of Yog-Sothoth"
+      leadChooseOneAtATimeM $ targets broodOfYogSothoth \x -> push $ ChooseRandomLocation (toTarget x) mempty
       pure a
     ChosenRandomLocation target@(EnemyTarget _) lid | onSide A attrs -> do
-      push $ MoveToward target (LocationWithId lid)
+      moveToward target lid
       pure a
     ChosenRandomLocation target lid | isTarget attrs target && onSide B attrs -> do
       setAsideBroodOfYogSothoth <- shuffleM =<< getSetAsideBroodOfYogSothoth
-      for_ (nonEmpty setAsideBroodOfYogSothoth) $ \(x :| _) ->
-        pushM $ createEnemyAt_ x lid Nothing
+      for_ (nonEmpty setAsideBroodOfYogSothoth) \(x :| _) -> createEnemyAt_ x lid
       pure a
-    AdvanceAgenda aid | aid == agendaId attrs && onSide B attrs -> do
-      pushAll
-        [ ShuffleEncounterDiscardBackIn
-        , ChooseRandomLocation (toTarget attrs) mempty
-        , advanceAgendaDeck attrs
-        ]
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      shuffleEncounterDiscardBackIn
+      push $ ChooseRandomLocation (toTarget attrs) mempty
+      advanceAgendaDeck attrs
       pure a
-    _ -> RampagingCreatures <$> runMessage msg attrs
+    _ -> RampagingCreatures <$> liftRunMessage msg attrs

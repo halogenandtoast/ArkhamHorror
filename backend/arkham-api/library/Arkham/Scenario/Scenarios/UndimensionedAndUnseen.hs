@@ -10,6 +10,7 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Exception
 import Arkham.Helpers.Effect
 import Arkham.Helpers.FlavorText
 import Arkham.Investigator.Types (Field (..))
@@ -21,7 +22,6 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
-import Arkham.Scenarios.UndimensionedAndUnseen.Story
 import Arkham.SkillTest
 import Arkham.Trait hiding (Cultist, ElderThing)
 
@@ -123,6 +123,10 @@ instance RunMessage UndimensionedAndUnseen where
           li "randomBasicWeakness"
           unscoped $ li "shuffleRemainder"
 
+      scope "choosingARandomLocation" $ flavor do
+        setTitle "title"
+        p "body"
+
       gather Set.UndimensionedAndUnseen
       gather Set.Whippoorwills
       gather Set.BeastThralls
@@ -198,26 +202,29 @@ instance RunMessage UndimensionedAndUnseen where
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
       for_ mcard $ \card -> shuffleCardsIntoDeck iid [PlayerCard card]
       pure s
-    ScenarioResolution NoResolution -> do
-      push R1
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> do
+          story $ i18nWithTitle "noResolution"
+          do_ R1
+        _ -> do_ msg
       pure s
-    ScenarioResolution (Resolution 1) -> do
-      let allBroods = ["02255", "51042", "51043", "51044", "51045"]
-      broodEscapedIntoTheWild <-
-        (+ count ((`elem` allBroods) . toCardCode) attrs.setAside)
-          . length
-          <$> getBroodOfYogSothoth
-      story resolution1
-      recordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
+    Do (ScenarioResolution r) -> scope "resolutions" do
+      case r of
+        Resolution 1 -> do
+          let allBroods = ["02255", "51042", "51043", "51044", "51045"]
+          broodEscapedIntoTheWild <-
+            (+ count ((`elem` allBroods) . toCardCode) attrs.setAside)
+              . length
+              <$> getBroodOfYogSothoth
+          resolutionWithXp "resolution1" $ allGainXp' attrs
+          recordCount BroodEscapedIntoTheWild broodEscapedIntoTheWild
+        Resolution 2 -> do
+          resolutionWithXp "resolution2" $ allGainXp' attrs
+          record NoBroodEscapedIntoTheWild
+        other -> throwIO $ UnknownResolution other
+
       removeCampaignCard Assets.powderOfIbnGhazi
-      allGainXp attrs
-      endOfScenario
-      pure s
-    ScenarioResolution (Resolution 2) -> do
-      story resolution2
-      record NoBroodEscapedIntoTheWild
-      removeCampaignCard Assets.powderOfIbnGhazi
-      allGainXp attrs
       endOfScenario
       pure s
     _ -> UndimensionedAndUnseen <$> liftRunMessage msg attrs

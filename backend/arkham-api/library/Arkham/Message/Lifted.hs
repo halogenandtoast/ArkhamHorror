@@ -76,7 +76,7 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..), Location)
 import Arkham.Matcher
 import Arkham.Message hiding (story)
-import Arkham.Message as X (AndThen (..))
+import Arkham.Message as X (AndThen (..), getChoiceAmount)
 import Arkham.Message.Lifted.Queue as X
 import Arkham.Modifier
 import Arkham.Phase (Phase)
@@ -1101,6 +1101,20 @@ chooseAmount iid label choiceLabel minVal maxVal target = do
   player <- getPlayer iid
   Msg.pushM
     $ Msg.chooseAmounts player label (MaxAmountTarget maxVal) [(choiceLabel, (minVal, maxVal))] target
+
+chooseAmount'
+  :: (Targetable target, ReverseQueue m, HasI18n)
+  => InvestigatorId
+  -> Text
+  -> Text
+  -> Int
+  -> Int
+  -> target
+  -> m ()
+chooseAmount' iid label choiceLabel minVal maxVal target = do
+  player <- getPlayer iid
+  Msg.pushM
+    $ Msg.chooseAmounts player ("$" <> ikey ("label." <> label)) (MaxAmountTarget maxVal) [(choiceLabel, (minVal, maxVal))] target
 
 chooseN :: ReverseQueue m => InvestigatorId -> Int -> [UI Message] -> m ()
 chooseN iid n msgs = do

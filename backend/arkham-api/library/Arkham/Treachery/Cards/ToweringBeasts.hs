@@ -1,13 +1,13 @@
 module Arkham.Treachery.Cards.ToweringBeasts (toweringBeasts) where
 
-import Arkham.Classes
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype ToweringBeasts = ToweringBeasts TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
@@ -22,19 +22,14 @@ instance HasModifiersFor ToweringBeasts where
     _ -> pure mempty
 
 instance RunMessage ToweringBeasts where
-  runMessage msg t@(ToweringBeasts attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      broodOfYogSothoth <- getBroodOfYogSothoth
-      unless (null broodOfYogSothoth) $ do
-        locationId <- getJustLocation iid
-        broodWithLocationIds <- for broodOfYogSothoth
-          $ \x -> (x,) <$> selectJust (LocationWithEnemy $ EnemyWithId x)
-        player <- getPlayer iid
-        push
-          $ chooseOne
-            player
-            [ targetLabel eid $ [attachTreachery attrs eid] <> [assignDamage iid source 1 | lid == locationId]
-            | (eid, lid) <- broodWithLocationIds
-            ]
+  runMessage msg t@(ToweringBeasts attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      broods <- getBroodOfYogSothoth
+      unless (null broods) do
+        chooseTargetM iid broods \brood -> do
+          attachTreachery attrs brood
+          withLocationOf iid \lid -> do
+            lid' <- selectJust (locationWithEnemy brood)
+            when (lid == lid') $ assignDamage iid attrs 1
       pure t
-    _ -> ToweringBeasts <$> runMessage msg attrs
+    _ -> ToweringBeasts <$> liftRunMessage msg attrs

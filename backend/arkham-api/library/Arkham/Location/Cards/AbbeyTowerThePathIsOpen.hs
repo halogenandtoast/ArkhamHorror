@@ -11,7 +11,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message (getChoiceAmount)
 import Arkham.ScenarioLogKey
 
 newtype AbbeyTowerThePathIsOpen = AbbeyTowerThePathIsOpen LocationAttrs

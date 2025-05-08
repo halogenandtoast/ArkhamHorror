@@ -1,15 +1,14 @@
 module Arkham.Location.Cards.ColdSpringGlen_244 (coldSpringGlen_244) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Exception
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards (coldSpringGlen_244)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Trait
 
 newtype ColdSpringGlen_244 = ColdSpringGlen_244 LocationAttrs
@@ -17,59 +16,35 @@ newtype ColdSpringGlen_244 = ColdSpringGlen_244 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coldSpringGlen_244 :: LocationCard ColdSpringGlen_244
-coldSpringGlen_244 =
-  location ColdSpringGlen_244 Cards.coldSpringGlen_244 3 (Static 2)
+coldSpringGlen_244 = location ColdSpringGlen_244 Cards.coldSpringGlen_244 3 (Static 2)
 
 instance HasModifiersFor ColdSpringGlen_244 where
   getModifiersFor (ColdSpringGlen_244 attrs) = modifySelect attrs (enemyAt attrs) [EnemyEvade (-1)]
 
 instance HasAbilities ColdSpringGlen_244 where
-  getAbilities (ColdSpringGlen_244 attrs) =
-    withResignAction
-      attrs
-      [ limitedAbility (GroupLimit PerGame 1)
-          $ restrictedAbility
-            attrs
-            1
-            ( Here
-                <> InvestigatorExists (You <> InvestigatorWithAnyClues)
-                <> EnemyCriteria
-                  (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Abomination)
-            )
-            (FastAbility Free)
-      | locationRevealed attrs
-      ]
+  getAbilities (ColdSpringGlen_244 a) =
+    extendRevealed1 a
+      $ restricted
+        a
+        1
+        ( Here
+            <> exists (InvestigatorWithAnyClues <> at_ (be a))
+            <> exists (at_ (be a) <> EnemyWithTrait Abomination)
+        )
+        (FastAbility Free)
 
 instance RunMessage ColdSpringGlen_244 where
-  runMessage msg l@(ColdSpringGlen_244 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      investigatorWithCluePairs <-
-        selectWithField InvestigatorClues
-          $ investigatorAt (toId attrs)
-          <> InvestigatorWithAnyClues
-      abominations <- selectTargets $ EnemyWithTrait Abomination <> enemyAt (toId attrs)
-      when
-        (null investigatorWithCluePairs || null abominations)
-        (throwIO $ InvalidState "should not have been able to use this ability")
-      player <- getPlayer iid
-      let
-        totalClues = sum $ map snd investigatorWithCluePairs
-        investigators = map fst investigatorWithCluePairs
-        placeClueOnAbomination =
-          chooseOne
-            player
-            [ targetLabel target [SpendClues 1 investigators, PlaceClues (toAbilitySource attrs 1) target 1]
-            | target <- abominations
-            ]
-
-      pushAll
-        $ placeClueOnAbomination
-        : [ chooseOne
-              player
-              [ Label "Spend a second clue" [placeClueOnAbomination]
-              , Label "Do not spend a second clue" []
-              ]
-          | totalClues > 1
-          ]
+  runMessage msg l@(ColdSpringGlen_244 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      total <- selectSum InvestigatorClues (at_ (be attrs) <> InvestigatorWithAnyClues)
+      scenarioI18n $ chooseAmount' iid "cluesToSpend" "clues" 0 (min 2 total) attrs
       pure l
-    _ -> ColdSpringGlen_244 <$> runMessage msg attrs
+    ResolveAmounts iid (getChoiceAmount "clues" -> n) (isTarget attrs -> True) | n > 0 -> do
+      investigators <- select $ at_ (be attrs) <> InvestigatorWithAnyClues
+      abominations <- select $ EnemyWithTrait Abomination <> at_ (be attrs)
+
+      chooseTargetM iid abominations \target -> do
+        push $ SpendClues n investigators
+        placeClues (attrs.ability 1) target n
+      pure l
+    _ -> ColdSpringGlen_244 <$> liftRunMessage msg attrs

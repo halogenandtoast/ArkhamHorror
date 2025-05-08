@@ -1,15 +1,10 @@
-module Arkham.Treachery.Cards.TheCreaturesTracks (
-  theCreaturesTracks,
-  TheCreaturesTracks (..),
-) where
+module Arkham.Treachery.Cards.TheCreaturesTracks (theCreaturesTracks) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
-import Arkham.Matcher hiding (ChosenRandomLocation)
+import Arkham.I18n
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype TheCreaturesTracks = TheCreaturesTracks TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -19,28 +14,18 @@ theCreaturesTracks :: TreacheryCard TheCreaturesTracks
 theCreaturesTracks = treachery TheCreaturesTracks Cards.theCreaturesTracks
 
 instance RunMessage TheCreaturesTracks where
-  runMessage msg t@(TheCreaturesTracks attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      anyBroodOfYogSothoth <- selectAny $ SetAsideCardMatch $ CardWithTitle broodTitle
-      if anyBroodOfYogSothoth
-        then do
-          player <- getPlayer iid
-          push
-            $ chooseOne
-              player
-              [ Label
-                  "Take 2 horror"
-                  [InvestigatorAssignDamage iid source DamageAny 0 2]
-              , Label
-                  "Spawn a set aside Brood of Yog-Sothoth at a random location"
-                  [ChooseRandomLocation (toTarget attrs) mempty]
-              ]
-        else push $ InvestigatorAssignDamage iid source DamageAny 0 2
+  runMessage msg t@(TheCreaturesTracks attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      canSpawn <- notNull <$> getSetAsideBroodOfYogSothoth
+      chooseOrRunOneM iid do
+        withI18n $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
+        when canSpawn $ scenarioI18n do
+          labeled' "spawnSetAsideBrood" $ push $ ChooseRandomLocation (toTarget attrs) mempty
       pure t
     ChosenRandomLocation target lid | isTarget attrs target -> do
       setAsideBroodOfYogSothoth <- getSetAsideBroodOfYogSothoth
-      for_ (nonEmpty setAsideBroodOfYogSothoth) $ \xs -> do
+      for_ (nonEmpty setAsideBroodOfYogSothoth) \xs -> do
         x <- sample xs
-        pushM $ createEnemyAt_ x lid Nothing
+        createEnemyAt_ x lid
       pure t
-    _ -> TheCreaturesTracks <$> runMessage msg attrs
+    _ -> TheCreaturesTracks <$> liftRunMessage msg attrs

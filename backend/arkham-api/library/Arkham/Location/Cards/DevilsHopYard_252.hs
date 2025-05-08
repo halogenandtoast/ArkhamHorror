@@ -1,18 +1,14 @@
-module Arkham.Location.Cards.DevilsHopYard_252 (
-  devilsHopYard_252,
-  DevilsHopYard_252 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.DevilsHopYard_252 (devilsHopYard_252) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Exception
 import Arkham.GameValue
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Investigator.Projection ()
 import Arkham.Location.Cards qualified as Cards (devilsHopYard_252)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Runner (locationEnemiesWithTrait, locationInvestigatorsWithClues)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Trait
 
 newtype DevilsHopYard_252 = DevilsHopYard_252 LocationAttrs
@@ -20,63 +16,33 @@ newtype DevilsHopYard_252 = DevilsHopYard_252 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 devilsHopYard_252 :: LocationCard DevilsHopYard_252
-devilsHopYard_252 =
-  location DevilsHopYard_252 Cards.devilsHopYard_252 1 (Static 2)
+devilsHopYard_252 = location DevilsHopYard_252 Cards.devilsHopYard_252 1 (Static 2)
 
 instance HasAbilities DevilsHopYard_252 where
-  getAbilities (DevilsHopYard_252 attrs) =
-    withBaseAbilities attrs
-      $ [ limitedAbility (GroupLimit PerGame 1)
-          $ restrictedAbility
-            attrs
-            1
-            ( Here
-                <> InvestigatorExists (You <> InvestigatorWithAnyClues)
-                <> EnemyCriteria
-                  ( EnemyExists
-                      $ EnemyAt YourLocation
-                      <> EnemyWithTrait Abomination
-                  )
-            )
-            (FastAbility Free)
-        | locationRevealed attrs
-        ]
+  getAbilities (DevilsHopYard_252 a) =
+    extendRevealed1 a
+      $ groupLimit PerGame
+      $ restricted
+        a
+        1
+        ( Here
+            <> exists (at_ (be a) <> InvestigatorWithAnyClues)
+            <> exists (at_ (be a) <> EnemyWithTrait Abomination)
+        )
+        (FastAbility Free)
 
 instance RunMessage DevilsHopYard_252 where
-  runMessage msg l@(DevilsHopYard_252 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      investigatorWithCluePairs <-
-        selectWithField InvestigatorClues $ investigatorAt (toId attrs) <> InvestigatorWithAnyClues
-      investigatorPlayersWithCluePairs <-
-        traverse (traverseToSnd $ getPlayer . fst) investigatorWithCluePairs
-      abominations <- selectTargets $ EnemyWithTrait Abomination <> enemyAt (toId attrs)
-      when
-        (null investigatorWithCluePairs || null abominations)
-        (throwIO $ InvalidState "should not have been able to use this ability")
-      let
-        placeClueOnAbomination iid' player' =
-          chooseOne
-            player'
-            [ targetLabel
-              target
-              [PlaceClues (toAbilitySource attrs 1) target 1, InvestigatorSpendClues iid' 1]
-            | target <- abominations
-            ]
-
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel iid'
-            $ placeClueOnAbomination iid' player'
-            : [ chooseOne
-                player'
-                [ Label "Spend a second clue" [placeClueOnAbomination iid' player']
-                , Label "Do not spend a second clue" []
-                ]
-              | clueCount > 1
-              ]
-          | ((iid', clueCount), player') <- investigatorPlayersWithCluePairs
-          ]
+  runMessage msg l@(DevilsHopYard_252 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      withClues <- locationInvestigatorsWithClues attrs
+      chooseTargetM iid withClues $ handleTarget iid (attrs.ability 1)
       pure l
-    _ -> DevilsHopYard_252 <$> runMessage msg attrs
+    HandleTargetChoice _ (isAbilitySource attrs 1 -> True) (InvestigatorTarget iid) -> do
+      total <- iid.clues
+      scenarioI18n $ chooseAmount' iid "cluesToSpend" "clues" 0 (min 2 total) attrs
+      pure l
+    ResolveAmounts iid (getChoiceAmount "clues" -> n) (isTarget attrs -> True) | n > 0 -> do
+      abominations <- locationEnemiesWithTrait attrs Abomination
+      chooseTargetM iid abominations \target -> moveTokens (attrs.ability 1) iid target #clue n
+      pure l
+    _ -> DevilsHopYard_252 <$> liftRunMessage msg attrs

@@ -36,5 +36,28 @@
     "setAside": "Set each copy of Esoteric Formula aside, out of play.",
     "powderOfIbnGhazi": "An investigator with the Powder of Ibn-Ghazi in his or her deck may search his or her deck for it and put it into play.",
     "randomBasicWeakness": "Each investigator searches the collection for a random basic _*Madness*_, _*Injury*_, or _*Pact*_ weakness and adds it to his or her deck for the remainder of the campaign."
+  },
+  "choosingARandomLocation": {
+    "title": "Choosing a Random Location",
+    "body": "During this scenario, you will often be instructed to choose a random location. This should be done by shuffling together the 6 locations removed from the game during setup (the versions of each location in play not currently being used) and drawing 1 at random."
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<div class='resolution'><p class='basic'>_If no resolution was reached (each investigator resigned or was defeated)_: Go to _Resolution 1_."
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<div class='resolution'><p>_Resolution 1_: You did all you could to stop the rampaging monsters, but there were more of them than you realized and you weren’t able to slay them all. Exhausted and terrified, you retreat to Zebulon’s home and hope to survive the night.</p><ul><li>In your Campaign Log, record that *X brood escaped into the wild*. X is the total number of Brood of Yog‑Sothoth still in play or set aside.</li><li>If an investigator’s deck contains the Powder of Ibn-Ghazi card, remove it from that investigator’s deck.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<div class='resolution'><p>_Resolution 2_: After slaying what seems to be the last of the rampaging monsters you retreat to Zebulon’s home, exhausted and rattled by your experience.</p><ul><li>In your Campaign Log, record that *no brood escaped into the wild*.</li><li>If an investigator’s deck contains the Powder of Ibn-Ghazi card, remove it from that investigator’s deck.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+    }
+  },
+  "label": {
+    "chooseInvestigatorToPlaceClue": "Choose an investigator to place a clue",
+    "cluesToSpend": "Number of clues to spend",
+    "spawnSetAsideBrood": "Spawn a set aside Brood of Yog-Sothoth at a random location"
   }
 }

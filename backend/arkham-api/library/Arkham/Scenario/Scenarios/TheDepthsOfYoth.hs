@@ -17,7 +17,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message (getChoiceAmount, questionLabel)
+import Arkham.Message (questionLabel)
 import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Projection

@@ -7,7 +7,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message (getChoiceAmount)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Name

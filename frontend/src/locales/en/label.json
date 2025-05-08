@@ -5,14 +5,16 @@
   "continue": "Continue",
   "discardCardsWithMatchingIcons": "Discard cards with at least 1 {'{'}{skillIcon}{'}'} icon | Discard cards with at least {count} {'{'}{skillIcon}{'}'} icons",
   "discardTopOfYourDeck": "Discard the top card of your deck | Discard the top {count} cards of your deck",
+  "doNotSpendClues": "Do not spend a clue | Do not spend {count} clues",
   "drawTopCardOfEncounterDeck": "Draw the top card of the encounter deck",
   "events": "Events",
   "noCardsFound": "No Cards Found.",
   "noEnemiesFound": "No Enemies Found.",
   "skills": "Skills",
+  "spendClues": "Spend a clue | Spend {count} clues",
   "takeControlOfKey": "Take control of key",
-  "takeDamageAndHorror": "Take {damage} damage and {horror} horror",
   "takeDamage": "Take {count} damage",
-  "takeHorror": "Take {count} damage",
+  "takeDamageAndHorror": "Take {damage} damage and {horror} horror",
+  "takeHorror": "Take {count} horror",
   "test": "Test {'{'}{skill}{'}'} ({count})"
 }

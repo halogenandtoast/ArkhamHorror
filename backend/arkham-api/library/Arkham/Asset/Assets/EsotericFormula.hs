@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.EsotericFormula (esotericFormula, EsotericFormula (..)) where
+module Arkham.Asset.Assets.EsotericFormula (esotericFormula) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)

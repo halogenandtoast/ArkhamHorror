@@ -8,7 +8,6 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Helpers.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
-import Arkham.Message (getChoiceAmount)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards

@@ -9,7 +9,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Matcher
-import Arkham.Message (getChoiceAmount)
 
 newtype TakadaHirokoAeroplaneMechanic = TakadaHirokoAeroplaneMechanic AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

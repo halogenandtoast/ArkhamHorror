@@ -1,14 +1,14 @@
 module Arkham.Location.Cards.WhateleyRuins_251 (whateleyRuins_251) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Enemy
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (whateleyRuins_251)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 
 newtype WhateleyRuins_251 = WhateleyRuins_251 LocationAttrs
@@ -23,25 +23,18 @@ instance HasModifiersFor WhateleyRuins_251 where
     modifySelect attrs (investigatorAt attrs) [SkillModifier #willpower (-1)]
 
 instance HasAbilities WhateleyRuins_251 where
-  getAbilities (WhateleyRuins_251 attrs) = withRevealedAbilities attrs [skillTestAbility $ restrictedAbility attrs 1 Here actionAbility]
+  getAbilities (WhateleyRuins_251 a) = extendRevealed1 a $ skillTestAbility $ restricted a 1 Here actionAbility
 
 instance RunMessage WhateleyRuins_251 where
-  runMessage msg l@(WhateleyRuins_251 attrs) = case msg of
+  runMessage msg l@(WhateleyRuins_251 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (toAbilitySource attrs 1) attrs #intellect (Fixed 4)
+      beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed 4)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       abominations <- getBroodOfYogSothoth
-      abominationsWithLocation <- forToSnd abominations (selectJust . locationWithEnemy)
-      abominationsWithLocationAndAccessibleLocations <- for abominationsWithLocation $ \(abomination, locationId) ->
-        (abomination,locationId,) <$> getEnemyAccessibleLocations abomination
-
-      player <- getPlayer iid
-      push
-        $ chooseOne player
-        $ [ targetLabel eid [chooseOne player $ targetLabels destinations (only . EnemyMove eid)]
-          | (eid, _, destinations) <- abominationsWithLocationAndAccessibleLocations
-          ]
+      chooseTargetM iid abominations \abomination -> do
+        destinations <- getEnemyAccessibleLocations abomination
+        chooseTargetM iid destinations $ enemyMoveTo abomination
       pure l
-    _ -> WhateleyRuins_251 <$> runMessage msg attrs
+    _ -> WhateleyRuins_251 <$> liftRunMessage msg attrs

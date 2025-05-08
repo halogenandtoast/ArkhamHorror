@@ -10,7 +10,7 @@ import Arkham.Investigator.Import.Lifted hiding (InvestigatorDamage)
 import Arkham.Investigator.Types (Field (InvestigatorDamage, InvestigatorHorror))
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message (getChoiceAmount, pattern MovedDamage, pattern MovedHorror)
+import Arkham.Message (pattern MovedDamage, pattern MovedHorror)
 import Arkham.Projection
 import Arkham.Window (Window, windowType)
 import Arkham.Window qualified as Window

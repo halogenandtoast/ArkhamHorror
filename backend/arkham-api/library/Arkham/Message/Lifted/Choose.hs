@@ -54,6 +54,11 @@ leadChooseOneM choices = do
   lead <- getLead
   chooseOneM lead choices
 
+leadChooseOneAtATimeM :: ReverseQueue m => ChooseT m a -> m ()
+leadChooseOneAtATimeM choices = do
+  lead <- getLead
+  chooseOneAtATimeM lead choices
+
 chooseOneM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOneM iid choices = do
   ((_, ChooseState {label, labelCardCode}), choices') <- runChooseT choices
@@ -71,6 +76,15 @@ chooseSomeM iid txt choices = do
     case label of
       Nothing -> chooseSome iid txt choices'
       Just l -> questionLabel l iid $ ChooseSome (Done txt : choices')
+
+chooseSomeM' :: (HasI18n, ReverseQueue m) => InvestigatorId -> Text -> ChooseT m a -> m ()
+chooseSomeM' iid txt choices = do
+  ((_, ChooseState {label}), choices') <- runChooseT choices
+  let lbl = "$" <> ikey ("label." <> txt)
+  unless (null choices') do
+    case label of
+      Nothing -> chooseSome iid lbl choices'
+      Just l -> questionLabel l iid $ ChooseSome (Done lbl : choices')
 
 chooseSome1M :: ReverseQueue m => InvestigatorId -> Text -> ChooseT m a -> m ()
 chooseSome1M iid txt choices = do

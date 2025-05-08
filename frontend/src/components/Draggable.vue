@@ -272,6 +272,9 @@ onMounted(() => {
     &:has(> .skill-test) {
       margin: 0px;
     }
+    &:has(.amount-modal) {
+      margin: 0px;
+    }
   }
 }
 </style>

@@ -5,7 +5,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Evade
-import Arkham.Message (getChoiceAmount)
 import Arkham.Modifier
 
 newtype Blur4 = Blur4 AssetAttrs

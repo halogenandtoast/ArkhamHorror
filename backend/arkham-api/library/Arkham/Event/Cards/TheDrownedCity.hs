@@ -271,7 +271,7 @@ shortRest =
           $ oneOf
             [ exists
                 $ oneOf
-                  [ HealableInvestigator ThisCard kind (InvestigatorAt YourLocation)
+                  [ HealableInvestigator ThisCard kind (colocatedWithMatch You)
                   | kind <- [#damage, #horror]
                   ]
             , exists

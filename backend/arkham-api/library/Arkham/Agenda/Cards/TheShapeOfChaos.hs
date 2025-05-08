@@ -33,12 +33,12 @@ instance RunMessage TheShapeOfChaos where
 
         for_ nyarlathoteps \(nyarlathotep, p) -> do
           case p of
-            StillInHand _ -> do
+            HiddenInHand _ -> do
               card <- field EnemyCard nyarlathotep
               push $ RevealCard (toCardId card)
             _ -> pure ()
 
-        let investigatorsWithNyarlathotep = [iid | (_, StillInHand iid) <- nyarlathoteps]
+        let investigatorsWithNyarlathotep = [iid | (_, HiddenInHand iid) <- nyarlathoteps]
         selectEach (not_ $ mapOneOf InvestigatorWithId investigatorsWithNyarlathotep) \iid -> do
           chooseOneM iid do
             labeled "Take 1 Damage" $ assignDamage iid attrs 1
@@ -46,7 +46,7 @@ instance RunMessage TheShapeOfChaos where
 
         for_ nyarlathoteps \(nyarlathotep, p) -> do
           case p of
-            StillInHand iid -> do
+            HiddenInHand iid -> do
               card <- field EnemyCard nyarlathotep
               focusCard card do
                 chooseOneM iid do

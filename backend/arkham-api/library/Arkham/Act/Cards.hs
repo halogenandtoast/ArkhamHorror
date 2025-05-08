@@ -207,6 +207,8 @@ allActCards =
       , thePit
       , theReallyBadOnesV1
       , theReallyBadOnesV2
+      , theReallyBadOnesV3
+      , theReallyBadOnesV4
       , theRelicIsMissing
       , theRescue
       , theReturnTrip
@@ -215,8 +217,11 @@ allActCards =
       , theSecondOath
       , theSpectralRealm
       , theStrangerACityAflame
+      , theStrangerAlaranMists
+      , theStrangerHereIsMyReply
       , theStrangerThePathIsMine
       , theStrangerTheShoresOfHali
+      , theStrangerUnderTheCity
       , theThingInTheRobes
       , theThirdOath
       , theTrialOfNashtAndKamanThah
@@ -891,6 +896,23 @@ mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering
 
 intoTheBeyondV2 :: CardDef
 intoTheBeyondV2 = act "51055" "Into the Beyond (v. II)" 2 ReturnToLostInTimeAndSpace
+
+theStrangerAlaranMists :: CardDef
+theStrangerAlaranMists = act "52015" "The Stranger" 2 ReturnToCurtainCall
+
+theStrangerUnderTheCity :: CardDef
+theStrangerUnderTheCity = act "52016" "The Stranger" 2 ReturnToCurtainCall
+
+theStrangerHereIsMyReply :: CardDef
+theStrangerHereIsMyReply = act "52017" "The Stranger" 2 ReturnToCurtainCall
+
+theReallyBadOnesV3 :: CardDef
+theReallyBadOnesV3 =
+  act "52035" "\"The Really Bad Ones\" (v. III)" 2 ReturnToTheUnspeakableOath
+
+theReallyBadOnesV4 :: CardDef
+theReallyBadOnesV4 =
+  act "52036" "\"The Really Bad Ones\" (v. IV)" 2 ReturnToTheUnspeakableOath
 
 findingLadyEsprit :: CardDef
 findingLadyEsprit = act "81005" "Finding Lady Esprit" 1 TheBayou

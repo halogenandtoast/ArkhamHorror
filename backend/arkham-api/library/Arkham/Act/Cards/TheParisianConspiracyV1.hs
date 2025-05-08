@@ -2,11 +2,13 @@ module Arkham.Act.Cards.TheParisianConspiracyV1 (theParisianConspiracyV1) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
+import Arkham.Card.CardCode
 import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheParisianConspiracyV1 = TheParisianConspiracyV1 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -21,9 +23,9 @@ instance HasAbilities TheParisianConspiracyV1 where
     extend1 a $ restricted a 1 (DoomCountIs $ atLeast 3) (Objective $ forced $ RoundEnds #when)
 
 instance RunMessage TheParisianConspiracyV1 where
-  runMessage msg a@(TheParisianConspiracyV1 attrs) = case msg of
+  runMessage msg a@(TheParisianConspiracyV1 attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+      advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ advanceMode -> do
       theOrganist <-
@@ -32,27 +34,22 @@ instance RunMessage TheParisianConspiracyV1 where
           <$> getSetAsideCardsMatching "The Organist"
       case advanceMode of
         AdvancedWithClues -> do
-          locationId <- selectJust LeadInvestigatorLocation
-          createTheOrganist <- createEnemyAt_ theOrganist locationId Nothing
-          pushAll
-            [ createTheOrganist
-            , advanceActDeck attrs
-            ]
+          location <- selectJust LeadInvestigatorLocation
+          createEnemyAt_ theOrganist location
         _ -> do
-          investigatorIds <- getInvestigators
-          locationIds <- select $ FarthestLocationFromAll Anywhere
-          lead <- getLeadPlayer
+          eachInvestigator \iid -> assignHorror iid attrs 2
+          locations <- select $ FarthestLocationFromAll Anywhere
+          leadChooseOneM do
+            scenarioI18n $ questionLabeled' "theParisianConspiracy.spawn"
+            targets locations (createEnemyAt_ theOrganist)
 
-          choices <- for locationIds $ \lid -> do
-            createTheOrganist <- createEnemyAt_ theOrganist lid Nothing
-            pure $ targetLabel lid [createTheOrganist]
-
-          pushAll
-            $ [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
-              | iid <- investigatorIds
-              ]
-            <> [ chooseOrRunOne lead choices
-               , advanceActDeck attrs
-               ]
+      whenM getIsReturnTo do
+        lead <- getLead
+        leadChooseOneM do
+          abilityLabeled
+            lead
+            (mkAbility (SourceableWithCardCode (CardCode "52040") ScenarioSource) 1 $ forced AnyWindow)
+            nothing
+      advanceActDeck attrs
       pure a
-    _ -> TheParisianConspiracyV1 <$> runMessage msg attrs
+    _ -> TheParisianConspiracyV1 <$> liftRunMessage msg attrs

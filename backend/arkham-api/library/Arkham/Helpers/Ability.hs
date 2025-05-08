@@ -91,6 +91,10 @@ preventedByInvestigatorModifiers iid ability = do
       EnemySource eid ->
         if a `elem` abilityActions ability then eid <=~> matcher else pure False
       _ -> pure False
+    AssetAction a matcher -> case abilitySource ability of
+      AssetSource eid ->
+        if a `elem` abilityActions ability then eid <=~> matcher else pure False
+      _ -> pure False
 
 meetsActionRestrictions
   :: HasGame m => InvestigatorId -> [Window] -> Ability -> m Bool

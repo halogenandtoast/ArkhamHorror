@@ -20,7 +20,7 @@ instance HasAbilities LiquidCourage1 where
         $ ControlsThis
         <> InvestigatorExists
           ( HealableInvestigator (toSource x) HorrorType
-              $ InvestigatorAt YourLocation
+              $ colocatedWithMatch You
           )
     ]
 

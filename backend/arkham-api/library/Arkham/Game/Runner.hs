@@ -28,7 +28,7 @@ import Arkham.Debug
 import Arkham.Deck qualified as Deck
 import Arkham.Decklist
 import Arkham.Effect
-import Arkham.Effect.Types (EffectAttrs (effectFinished))
+import Arkham.Effect.Types (EffectAttrs (effectFinished, effectOnDisable))
 import Arkham.Effect.Window (EffectWindow (EffectCardResolutionWindow))
 import Arkham.Enemy
 import Arkham.Enemy.Creation (EnemyCreation (..), EnemyCreationMethod (..))
@@ -148,6 +148,9 @@ getInvestigatorsInOrder = do
 
 runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
+  AfterThisTestResolves _sid msgs -> do
+    insertAfterMatching [AfterSkillTestQuiet msgs] (== EndSkillTestWindow)
+    pure g
   RemovePlayerCardFromGame addToRemovedFromGame card -> do
     when addToRemovedFromGame $ push $ RemovedFromGame card
     pure g
@@ -702,6 +705,8 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   DisableEffect effectId -> do
     mEffect <- maybeEffect effectId
+    for_ mEffect \effect ->
+      for_ (attr effectOnDisable effect) pushAll
     pure
       $ g
       & (entitiesL . effectsL %~ deleteMap effectId)
@@ -934,9 +939,8 @@ runGameMessage msg g = case msg of
     popMessageMatching_ $ \case
       Discard _ _ (EnemyTarget eid') -> eid == eid'
       _ -> False
-    mEnemy <- maybeEnemy eid
     -- enemy might already be gone (i.e. placed in void)
-    case mEnemy of
+    maybeEnemy eid >>= \case
       Nothing -> pure g
       Just enemy -> do
         swarms <- select $ SwarmOf eid
@@ -948,12 +952,19 @@ runGameMessage msg g = case msg of
           _ -> do
             pushAll $ map RemoveEnemy swarms
 
+        zone <-
+          case attr enemyPlacement enemy of
+            OutOfPlay VictoryDisplayZone -> do
+              mods <- getModifiers enemy.id
+              pure $ if StayInVictory `elem` mods then VictoryDisplayZone else RemovedZone
+            _ -> pure RemovedZone
+
         pure
           $ g
           & entitiesL
           . enemiesL
           . ix eid
-          %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay RemovedZone})
+          %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay zone})
   RemoveSkill sid -> do
     removedEntitiesF <-
       if notNull (gameActiveAbilities g)
@@ -1502,8 +1513,10 @@ runGameMessage msg g = case msg of
                   , eventPlacement = Limbo
                   }
 
+          whenPlayEvent <- checkWindows [mkWindow #when $ Window.PlayEvent iid eid]
           pushAll
             [ CardEnteredPlay iid card
+            , whenPlayEvent
             , InvestigatorPlayEvent iid eid mtarget windows' zone
             , FinishedEvent eid
             , ResolvedCard iid card
@@ -1981,8 +1994,9 @@ runGameMessage msg g = case msg of
     card <- getCard c
     pure $ g & removedFromPlayL %~ (card :)
   AddToVictory (EnemyTarget eid) -> do
+    mods <- getModifiers eid
     card <- field EnemyCard eid
-
+    let zone = if StayInVictory `elem` mods then VictoryDisplayZone else RemovedZone
     pushAll
       $ windows [Window.LeavePlay (EnemyTarget eid), Window.AddedToVictory card]
       <> [RemoveEnemy eid]
@@ -1996,9 +2010,11 @@ runGameMessage msg g = case msg of
       & entitiesL
       . enemiesL
       . ix eid
-      %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay RemovedZone, enemyKeys = mempty})
+      %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay zone, enemyKeys = mempty})
   DefeatedAddToVictory (EnemyTarget eid) -> do
+    mods <- getModifiers eid
     card <- field EnemyCard eid
+    let zone = if StayInVictory `elem` mods then VictoryDisplayZone else RemovedZone
     pushAll
       $ windows [Window.LeavePlay (EnemyTarget eid), Window.AddedToVictory card]
       <> [RemoveEnemy eid]
@@ -2007,7 +2023,7 @@ runGameMessage msg g = case msg of
       & entitiesL
       . enemiesL
       . ix eid
-      %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay RemovedZone})
+      %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay zone})
   AddToVictory (SkillTarget sid) -> do
     card <- field SkillCard sid
     pushAll $ windows [Window.AddedToVictory card]
@@ -2466,6 +2482,11 @@ runGameMessage msg g = case msg of
           $ g
           & (entitiesL . eventsL . at eventId ?~ event')
           & (activeCostL %~ insertMap (activeCostId cost) cost)
+  CreateTreacheryAt treacheryId card placement -> do
+    iid <- getActiveInvestigatorId
+    let treachery = createTreachery card iid treacheryId
+    push $ PlaceTreachery treacheryId placement
+    pure $ g & entitiesL . treacheriesL . at treacheryId ?~ treachery
   CreateWeaknessInThreatArea card iid -> do
     treacheryId <- getRandom
     let treachery = createTreachery card iid treacheryId

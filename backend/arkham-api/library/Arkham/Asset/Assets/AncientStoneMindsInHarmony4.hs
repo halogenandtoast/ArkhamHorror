@@ -22,7 +22,7 @@ instance HasAbilities AncientStoneMindsInHarmony4 where
         a
         1
         ( oneOf
-            [ exists (HealableInvestigator (a.ability 1) #horror $ InvestigatorAt YourLocation)
+            [ exists (HealableInvestigator (a.ability 1) #horror $ colocatedWithMatch You)
             , exists (HealableAsset (a.ability 1) #horror $ AssetAt YourLocation)
             ]
         )

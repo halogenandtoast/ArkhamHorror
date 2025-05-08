@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.MrPeabody (mrPeabody, mrPeabodyEffect, MrPeabody (..)) where
+module Arkham.Asset.Assets.MrPeabody (mrPeabody, mrPeabodyEffect) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -17,7 +17,7 @@ mrPeabody :: AssetCard MrPeabody
 mrPeabody = ally MrPeabody Cards.mrPeabody (2, 2)
 
 instance HasAbilities MrPeabody where
-  getAbilities (MrPeabody attrs) = [restrictedAbility attrs 1 ControlsThis $ actionAbilityWithCost (exhaust attrs)]
+  getAbilities (MrPeabody attrs) = [restricted attrs 1 ControlsThis $ actionAbilityWithCost (exhaust attrs)]
 
 instance RunMessage MrPeabody where
   runMessage msg a@(MrPeabody attrs) = runQueueT $ case msg of

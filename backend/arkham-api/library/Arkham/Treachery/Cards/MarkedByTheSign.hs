@@ -1,11 +1,9 @@
-module Arkham.Treachery.Cards.MarkedByTheSign (markedByTheSign, MarkedByTheSign (..)) where
+module Arkham.Treachery.Cards.MarkedByTheSign (markedByTheSign) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype MarkedByTheSign = MarkedByTheSign TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -15,18 +13,17 @@ markedByTheSign :: TreacheryCard MarkedByTheSign
 markedByTheSign = treachery MarkedByTheSign Cards.markedByTheSign
 
 instance RunMessage MarkedByTheSign where
-  runMessage msg t@(MarkedByTheSign attrs) = case msg of
+  runMessage msg t@(MarkedByTheSign attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       theManInThePallidMaskIsInPlay <- selectAny $ enemyIs Cards.theManInThePallidMask
       let difficulty = if theManInThePallidMaskIsInPlay then 4 else 2
       sid <- getRandom
-      push $ revelationSkillTest sid iid attrs #willpower (Fixed difficulty)
+      revelationSkillTest sid iid attrs #willpower (Fixed difficulty)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       theManInThePallidMaskIsInPlay <- selectAny $ enemyIs Cards.theManInThePallidMask
-      push
-        $ if theManInThePallidMaskIsInPlay
-          then InvestigatorDirectDamage iid (toSource attrs) 0 2
-          else InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
+      if theManInThePallidMaskIsInPlay
+        then directHorror iid attrs 2
+        else assignDamage iid attrs 2
       pure t
-    _ -> MarkedByTheSign <$> runMessage msg attrs
+    _ -> MarkedByTheSign <$> liftRunMessage msg attrs

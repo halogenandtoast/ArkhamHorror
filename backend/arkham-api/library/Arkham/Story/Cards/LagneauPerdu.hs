@@ -1,13 +1,9 @@
-module Arkham.Story.Cards.LagneauPerdu (
-  LagneauPerdu (..),
-  lagneauPerdu,
-) where
+module Arkham.Story.Cards.LagneauPerdu (lagneauPerdu) where
 
-import Arkham.Prelude
-
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype LagneauPerdu = LagneauPerdu StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -17,8 +13,8 @@ lagneauPerdu :: StoryCard LagneauPerdu
 lagneauPerdu = story LagneauPerdu Cards.lagneauPerdu
 
 instance RunMessage LagneauPerdu where
-  runMessage msg s@(LagneauPerdu attrs) = case msg of
-    ResolveStory _ _ story' | story' == toId attrs -> do
-      push $ Remember InterviewedJordan
+  runMessage msg s@(LagneauPerdu attrs) = runQueueT $ case msg of
+    ResolveStory _ _ (is attrs -> True) -> do
+      remember InterviewedJordan
       pure s
-    _ -> LagneauPerdu <$> runMessage msg attrs
+    _ -> LagneauPerdu <$> liftRunMessage msg attrs

@@ -21,7 +21,7 @@ spec = describe "Watcher from Another Dimension" do
       withProp @"deck" (Deck [flashlight]) self
       self `drawsCard` Enemies.watcherFromAnotherDimension
       assertAny
-        $ EnemyWithPlacement (StillInHand $ toId self)
+        $ EnemyWithPlacement (HiddenInHand $ toId self)
         <> enemyIs Enemies.watcherFromAnotherDimension
 
   for_ ([#fight, #evade] :: [Action]) \action -> do

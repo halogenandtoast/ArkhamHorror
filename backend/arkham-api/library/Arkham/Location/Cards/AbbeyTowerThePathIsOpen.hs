@@ -1,13 +1,11 @@
-module Arkham.Location.Cards.AbbeyTowerThePathIsOpen (
-  abbeyTowerThePathIsOpen,
-  AbbeyTowerThePathIsOpen (..),
-) where
+module Arkham.Location.Cards.AbbeyTowerThePathIsOpen (abbeyTowerThePathIsOpen) where
 
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Log
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -33,16 +31,11 @@ instance HasAbilities AbbeyTowerThePathIsOpen where
 
 instance RunMessage AbbeyTowerThePathIsOpen where
   runMessage msg l@(AbbeyTowerThePathIsOpen attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> withI18n do
       maxDiscardAmount <- selectCount $ inHandOf NotForPlay iid <> basic NonWeakness
-      chooseAmounts
-        iid
-        "Discard up to 3 cards from your hand"
-        (MaxAmountTarget 3)
-        [("Cards", (0, maxDiscardAmount))]
-        attrs
+      countVar 3 $ chooseAmount' iid "discardCardsFromHandUpTo" "$cards" 0 maxDiscardAmount attrs
       pure l
-    ResolveAmounts iid (getChoiceAmount "Cards" -> discardAmount) (isTarget attrs -> True) -> do
+    ResolveAmounts iid (getChoiceAmount "$cards" -> discardAmount) (isTarget attrs -> True) -> do
       repeated discardAmount $ chooseAndDiscardCard iid (attrs.ability 1)
       pure l
     _ -> AbbeyTowerThePathIsOpen <$> liftRunMessage msg attrs

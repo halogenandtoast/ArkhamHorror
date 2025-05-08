@@ -57,7 +57,7 @@ contraband2 =
     , cdCriteria =
         Just
           $ exists
-          $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
+          $ AssetControlledBy (affectsOthers $ colocatedWithMatch You)
           <> AssetNotAtUseLimit
           <> oneOf [AssetWithUseType Uses.Ammo, AssetWithUseType Uses.Supply]
     }

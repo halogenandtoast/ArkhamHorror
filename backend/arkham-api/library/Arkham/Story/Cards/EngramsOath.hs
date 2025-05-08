@@ -1,13 +1,9 @@
-module Arkham.Story.Cards.EngramsOath (
-  EngramsOath (..),
-  engramsOath,
-) where
+module Arkham.Story.Cards.EngramsOath (engramsOath) where
 
-import Arkham.Prelude
-
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype EngramsOath = EngramsOath StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -17,8 +13,8 @@ engramsOath :: StoryCard EngramsOath
 engramsOath = story EngramsOath Cards.engramsOath
 
 instance RunMessage EngramsOath where
-  runMessage msg s@(EngramsOath attrs) = case msg of
-    ResolveStory _ _ story' | story' == toId attrs -> do
-      push $ Remember InterviewedConstance
+  runMessage msg s@(EngramsOath attrs) = runQueueT $ case msg of
+    ResolveStory _ _ (is attrs -> True) -> do
+      remember InterviewedConstance
       pure s
-    _ -> EngramsOath <$> runMessage msg attrs
+    _ -> EngramsOath <$> liftRunMessage msg attrs

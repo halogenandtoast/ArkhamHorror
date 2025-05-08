@@ -1,17 +1,10 @@
-module Arkham.Location.Cards.AsylumHallsWesternPatientWing_168 (
-  asylumHallsWesternPatientWing_168,
-  AsylumHallsWesternPatientWing_168 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.AsylumHallsWesternPatientWing_168 (asylumHallsWesternPatientWing_168) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype AsylumHallsWesternPatientWing_168 = AsylumHallsWesternPatientWing_168 LocationAttrs
@@ -20,22 +13,17 @@ newtype AsylumHallsWesternPatientWing_168 = AsylumHallsWesternPatientWing_168 Lo
 
 asylumHallsWesternPatientWing_168 :: LocationCard AsylumHallsWesternPatientWing_168
 asylumHallsWesternPatientWing_168 =
-  location
-    AsylumHallsWesternPatientWing_168
-    Cards.asylumHallsWesternPatientWing_168
-    2
-    (Static 0)
+  location AsylumHallsWesternPatientWing_168 Cards.asylumHallsWesternPatientWing_168 2 (Static 0)
 
 instance HasAbilities AsylumHallsWesternPatientWing_168 where
-  getAbilities (AsylumHallsWesternPatientWing_168 attrs) =
-    withRevealedAbilities attrs
-      $ [ restrictedAbility attrs 1 Here
-            $ ReactionAbility (EnemyDefeated Timing.After You ByAny $ EnemyWithTrait Lunatic) Free
-        ]
+  getAbilities (AsylumHallsWesternPatientWing_168 a) =
+    extendRevealed1 a
+      $ restricted a 1 Here
+      $ freeReaction (EnemyDefeated #after You ByAny $ EnemyWithTrait Lunatic)
 
 instance RunMessage AsylumHallsWesternPatientWing_168 where
-  runMessage msg l@(AsylumHallsWesternPatientWing_168 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ drawCards iid (toAbilitySource attrs 1) 1
+  runMessage msg l@(AsylumHallsWesternPatientWing_168 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      drawCards iid (attrs.ability 1) 1
       pure l
-    _ -> AsylumHallsWesternPatientWing_168 <$> runMessage msg attrs
+    _ -> AsylumHallsWesternPatientWing_168 <$> liftRunMessage msg attrs

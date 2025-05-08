@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.ChoeurGothique_293 (choeurGothique_293, ChoeurGothique_293 (..)) where
+module Arkham.Location.Cards.ChoeurGothique_293 (choeurGothique_293) where
 
 import Arkham.Ability
 import Arkham.Agenda.Sequence (AgendaSide (C))

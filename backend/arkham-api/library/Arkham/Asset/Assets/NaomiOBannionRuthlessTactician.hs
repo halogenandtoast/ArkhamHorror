@@ -24,7 +24,7 @@ instance HasAbilities NaomiOBannionRuthlessTactician where
         a
         1
         (ControlsThis <> DuringSkillTest (mapOneOf SkillTestWithSkillType [#intellect, #combat]))
-        $ triggered (RevealChaosToken #after (InvestigatorAt YourLocation) (not_ #autofail)) (exhaust a)
+        $ triggered (RevealChaosToken #after (colocatedWithMatch You) (not_ #autofail)) (exhaust a)
     ]
 
 instance RunMessage NaomiOBannionRuthlessTactician where

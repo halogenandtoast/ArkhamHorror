@@ -20,7 +20,7 @@ instance HasAbilities Lobby where
     extendRevealed
       a
       [ mkAbility a 1 $ forced $ RevealLocation #when Anyone (be a)
-      , restricted a 2 (Here <> can.draw.cards You) $ ActionAbility [] $ ActionCost 2
+      , restricted a 2 (Here <> can.draw.cards You) doubleActionAbility
       ]
 
 instance RunMessage Lobby where

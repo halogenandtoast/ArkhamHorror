@@ -25,7 +25,7 @@ import Arkham.Message.Lifted.Placement (IsPlacement (..))
 import Arkham.Placement
 import Arkham.Prelude hiding ((.=))
 import Arkham.Scenario.Helpers (excludeBSides, excludeDoubleSided, hasBSide, isDoubleSided)
-import Arkham.Scenario.Runner (createEnemyWithPlacement_, pushM)
+import Arkham.Scenario.Runner (createEnemyWithPlacement_, createEnemyWithPlacement, pushM)
 import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
 import Arkham.Target
@@ -60,6 +60,7 @@ instance SampleOneOf (NonEmpty a) where
 data ScenarioBuilderState = ScenarioBuilderState
   { attrs :: ScenarioAttrs
   , otherCards :: [Card]
+  , isReturnTo :: Bool
   }
 
 attrsL :: Lens' ScenarioBuilderState ScenarioAttrs
@@ -67,6 +68,9 @@ attrsL = lens (.attrs) \m x -> m {attrs = x}
 
 otherCardsL :: Lens' ScenarioBuilderState [Card]
 otherCardsL = lens (.otherCards) \m x -> m {otherCards = x}
+
+isReturnToL :: Lens' ScenarioBuilderState Bool
+isReturnToL = lens (.isReturnTo) \m x -> m {isReturnTo = x}
 
 newtype ScenarioBuilderT m a = ScenarioBuilderT {unScenarioBuilderT :: StateT ScenarioBuilderState m a}
   deriving newtype (Functor, Applicative, Monad, MonadIO, MonadState ScenarioBuilderState, MonadTrans)
@@ -105,7 +109,7 @@ runScenarioSetup f attrs body =
     . (.attrs)
     <$> execStateT
       (clearCards >> body.unScenarioBuilderT >> shuffleEncounterDeck)
-      (ScenarioBuilderState attrs [])
+      (ScenarioBuilderState attrs [] False)
 
 shuffleEncounterDeck :: (HasGame m, MonadRandom m, MonadState ScenarioBuilderState m) => m ()
 shuffleEncounterDeck = do
@@ -348,6 +352,16 @@ placeEnemy def placement = do
   card <- genCard def
   pushM $ createEnemyWithPlacement_ card (toPlacement placement)
 
+placeEnemyCapture
+  :: (ReverseQueue m, IsPlacement placement) => CardDef -> placement -> ScenarioBuilderT m EnemyId
+placeEnemyCapture def placement = do
+  attrsL . encounterDeckL %= flip removeEachFromDeck [def]
+  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
+  card <- genCard def
+  (enemyId, msg) <- createEnemyWithPlacement card (toPlacement placement)
+  push msg
+  pure enemyId
+
 enemyAtMatching :: ReverseQueue m => CardDef -> LocationMatcher -> ScenarioBuilderT m ()
 enemyAtMatching def matcher = do
   attrsL . encounterDeckL %= flip removeEachFromDeck [def]
@@ -461,6 +475,27 @@ setLayout = (attrsL . locationLayoutL .=)
 
 setUsesGrid :: ReverseQueue m => ScenarioBuilderT m ()
 setUsesGrid = attrsL . usesGridL .= True
+
+setIsReturnTo :: ReverseQueue m => ScenarioBuilderT m ()
+setIsReturnTo = isReturnToL .= True
+
+whenReturnTo :: ReverseQueue m => ScenarioBuilderT m () -> ScenarioBuilderT m ()
+whenReturnTo a = do
+  isReturnTo' <- use isReturnToL
+  when isReturnTo' a
+
+orWhenReturnTo :: ReverseQueue m => ScenarioBuilderT m a -> ScenarioBuilderT m a -> ScenarioBuilderT m a
+orWhenReturnTo b a = do
+  isReturnTo' <- use isReturnToL
+  if isReturnTo' then a else b
+
+getIsReturnTo :: ReverseQueue m => ScenarioBuilderT m Bool
+getIsReturnTo = use isReturnToL
+
+ifReturnTo :: ReverseQueue m => ScenarioBuilderT m a -> ScenarioBuilderT m a -> ScenarioBuilderT m a
+ifReturnTo a b = do
+  isReturnTo' <- use isReturnToL
+  if isReturnTo' then a else b
 
 setMeta :: (ReverseQueue m, ToJSON a) => a -> ScenarioBuilderT m ()
 setMeta = (attrsL . metaL .=) . toJSON

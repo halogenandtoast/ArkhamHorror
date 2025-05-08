@@ -23,7 +23,7 @@ instance HasAbilities HallowedChalice where
     mustControl
     mustExist
       $ oneOf
-        [HealableInvestigator (a.ability 1) kind (InvestigatorAt YourLocation) | kind <- [#damage, #horror]]
+        [HealableInvestigator (a.ability 1) kind (colocatedWithMatch You) | kind <- [#damage, #horror]]
 
 instance RunMessage HallowedChalice where
   runMessage msg a@(HallowedChalice attrs) = runQueueT $ case msg of

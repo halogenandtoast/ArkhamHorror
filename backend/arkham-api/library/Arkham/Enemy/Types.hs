@@ -231,6 +231,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemyDelayEngagement = False
             , enemyCardsUnderneath = []
             , enemyLastKnownLocation = Nothing
+            , enemyReferenceCards = []
             }
     }
 

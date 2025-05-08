@@ -1,13 +1,11 @@
 module Arkham.Enemy.Cards.RoachSwarm (roachSwarm) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier
-import Arkham.Prelude
 import Arkham.Projection
 
 newtype RoachSwarm = RoachSwarm EnemyAttrs

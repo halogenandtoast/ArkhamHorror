@@ -1,12 +1,11 @@
 module Arkham.Location.Cards.QuietHalls_131 (quietHalls_131) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait
 
 newtype QuietHalls_131 = QuietHalls_131 LocationAttrs
@@ -15,35 +14,22 @@ newtype QuietHalls_131 = QuietHalls_131 LocationAttrs
 
 quietHalls_131 :: LocationCard QuietHalls_131
 quietHalls_131 =
-  locationWith
-    QuietHalls_131
-    Cards.quietHalls_131
-    3
-    (Static 0)
-    ( (connectedMatchersL <>~ [LocationWithTrait SecondFloor])
-        . (revealedConnectedMatchersL <>~ [LocationWithTrait SecondFloor])
-    )
+  locationWith QuietHalls_131 Cards.quietHalls_131 3 (Static 0)
+    $ (connectedMatchersL <>~ [LocationWithTrait SecondFloor])
+    . (revealedConnectedMatchersL <>~ [LocationWithTrait SecondFloor])
 
 instance HasAbilities QuietHalls_131 where
-  getAbilities (QuietHalls_131 attrs) =
-    withRevealedAbilities
-      attrs
-      [ restrictedAbility
-          attrs
-          1
-          ( Here
-              <> Negate (LocationExists UnrevealedLocation)
-              <> Negate
-                (LocationExists LocationWithAnyClues)
-          )
-          $ ActionAbility []
-          $ ActionCost 1
-      ]
+  getAbilities (QuietHalls_131 a) =
+    extendRevealed1 a
+      $ restricted
+        a
+        1
+        (Here <> notExists UnrevealedLocation <> notExists LocationWithAnyClues)
+        actionAbility
 
 instance RunMessage QuietHalls_131 where
-  runMessage msg l@(QuietHalls_131 attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      amount <- getPlayerCount
-      push $ PlaceClues (toAbilitySource attrs 1) (toTarget attrs) amount
+  runMessage msg l@(QuietHalls_131 attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeClues (attrs.ability 1) attrs =<< getPlayerCount
       pure l
-    _ -> QuietHalls_131 <$> runMessage msg attrs
+    _ -> QuietHalls_131 <$> liftRunMessage msg attrs

@@ -27,7 +27,7 @@ instance HasAbilities IkiaqTheCouncilsChosen3 where
         $ ReactionAbility
           ( DrawCard
               #when
-              (affectsOthers $ InvestigatorAt YourLocation)
+              (affectsOthers $ colocatedWithMatch You)
               (CanCancelRevelationEffect $ basic BasicWeaknessCard)
               AnyDeck
           )

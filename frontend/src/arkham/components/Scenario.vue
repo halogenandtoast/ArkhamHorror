@@ -17,10 +17,12 @@ import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import { TokenType } from '@/arkham/types/Token';
 import { Source } from '@/arkham/types/Source';
 import { Treachery } from '@/arkham/types/Treachery';
-import { Message } from '@/arkham/types/Message';
+import { Message, AbilityMessage, AbilityLabel } from '@/arkham/types/Message';
+import { MessageType } from '@/arkham/types/Message';
 import { waitForImagesToLoad, imgsrc, pluralize, groupBy } from '@/arkham/helpers';
 import { useMenu } from '@/composeable/menu';
 import { useSettings } from '@/stores/settings';
+import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Act from '@/arkham/components/Act.vue';
 import CardView from '@/arkham/components/Card.vue';
 import Draggable from '@/components/Draggable.vue';
@@ -156,6 +158,27 @@ const isVertical = function(area: string) {
 }
 
 const barriers = computed(() => props.scenario.meta?.barriers)
+
+function isAbility(v: Message): v is AbilityLabel {
+  if (v.tag !== MessageType.ABILITY_LABEL) {
+    return false
+  }
+
+  const { source } = v.ability;
+  return source.sourceTag === 'OtherSource' && source.tag === 'ScenarioSource' 
+}
+
+const abilities = computed(() => {
+  return choices
+    .value
+    .reduce<AbilityMessage[]>((acc, v, i) => {
+      if (isAbility(v)) {
+        return [...acc, { contents: v, displayAsAction: false, index: i }];
+      }
+
+      return acc;
+    }, []);
+})
 
 const locationStyles = computed(() => {
   const { locationLayout } = props.scenario
@@ -670,6 +693,13 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
                 class="card"
                 :src="reference"
               />
+              <AbilityButton
+                v-for="ability in abilities"
+                :key="ability.index"
+                :ability="ability.contents"
+                :game="game"
+                @click="choose(ability.index)"
+              />
             </div>
             <PoolItem class="depth" v-if="currentDepth" type="resource" :amount="currentDepth" />
             <div class="spent-keys" v-if="spentKeys.length > 0">
@@ -1165,7 +1195,7 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
 
 .can-interact {
   background: rgba(0, 0, 0, 0.5);
-  outline: 2px solid var(--select);
+  border: 2px solid var(--select);
   cursor: pointer;
 }
 

@@ -1,10 +1,8 @@
 module Arkham.Enemy.Cards.SebastienMoreau (sebastienMoreau) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Prelude
 
 newtype SebastienMoreau = SebastienMoreau EnemyAttrs
   deriving anyclass IsEnemy
@@ -17,5 +15,4 @@ instance HasModifiersFor SebastienMoreau where
   getModifiersFor (SebastienMoreau a) = modifySelf a [AttacksCannotBeCancelled]
 
 instance RunMessage SebastienMoreau where
-  runMessage msg (SebastienMoreau attrs) =
-    SebastienMoreau <$> runMessage msg attrs
+  runMessage msg (SebastienMoreau attrs) = SebastienMoreau <$> runMessage msg attrs

@@ -26,7 +26,7 @@ oldBookOfLore3 = asset OldBookOfLore3 Cards.oldBookOfLore3
 
 instance HasAbilities OldBookOfLore3 where
   getAbilities (OldBookOfLore3 a) =
-    [ controlledAbility a 1 (exists $ affectsOthers $ InvestigatorAt YourLocation <> can.search.deck)
+    [ controlledAbility a 1 (exists $ affectsOthers $ colocatedWithMatch You <> can.search.deck)
         $ actionAbilityWithCost (exhaust a)
     ]
 

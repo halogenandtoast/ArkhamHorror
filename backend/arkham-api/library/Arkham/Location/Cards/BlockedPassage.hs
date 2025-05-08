@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.BlockedPassage (blockedPassage, BlockedPassage (..)) where
+module Arkham.Location.Cards.BlockedPassage (blockedPassage) where
 
 import Arkham.Ability
 import Arkham.GameValue
@@ -14,7 +14,7 @@ newtype BlockedPassage = BlockedPassage LocationAttrs
 blockedPassage :: LocationCard BlockedPassage
 blockedPassage =
   locationWith BlockedPassage Cards.blockedPassage 7 (Static 0)
-    $ (connectsToL .~ adjacentLocations)
+    $ connectsToAdjacent
     . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasAbilities BlockedPassage where

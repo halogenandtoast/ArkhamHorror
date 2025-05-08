@@ -19,7 +19,7 @@ instance HasAbilities FalseCovenant2 where
   getAbilities (FalseCovenant2 a) =
     [ restricted a 1 ControlsThis
         $ triggered
-          (RevealChaosToken #when (affectsOthers $ InvestigatorAt YourLocation) #curse)
+          (RevealChaosToken #when (affectsOthers $ colocatedWithMatch You) #curse)
           (exhaust a)
     ]
 

@@ -42,7 +42,7 @@ dodge =
         Just
           $ EnemyAttacks
             #when
-            (affectsOthers $ InvestigatorAt YourLocation)
+            (affectsOthers $ colocatedWithMatch You)
             (CancelableEnemyAttack AnyEnemyAttack)
             AnyEnemy
     , cdAlternateCardCodes = ["01523", "60113"]

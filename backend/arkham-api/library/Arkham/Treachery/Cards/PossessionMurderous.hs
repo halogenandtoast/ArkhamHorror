@@ -23,7 +23,7 @@ instance HasAbilities PossessionMurderous where
   getAbilities (PossessionMurderous a) =
     [ restrictedAbility a 1 InYourHand
         $ actionAbilityWithCost
-          (InvestigatorDamageCost (toSource a) (InvestigatorAt YourLocation) DamageAny 2)
+          (InvestigatorDamageCost (toSource a) (colocatedWithMatch You) DamageAny 2)
     ]
 
 instance RunMessage PossessionMurderous where

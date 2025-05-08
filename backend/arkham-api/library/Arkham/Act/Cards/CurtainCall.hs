@@ -2,16 +2,13 @@ module Arkham.Act.Cards.CurtainCall (curtainCall) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Action qualified as Action
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Resolution
-import Arkham.Timing qualified as Timing
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.CurtainCall.Helpers
 
 newtype CurtainCall = CurtainCall ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -22,51 +19,34 @@ curtainCall = act (3, A) CurtainCall Cards.curtainCall Nothing
 
 instance HasAbilities CurtainCall where
   getAbilities (CurtainCall attrs) =
-    [ restrictedAbility
+    [ restricted
         (proxied (LocationMatcherSource $ locationIs Cards.lobby) attrs)
         1
-        ( Here
-            <> Negate
-              (EnemyCriteria $ EnemyExists $ enemyIs Enemies.theManInThePallidMask)
-        )
-        $ ActionAbility [Action.Resign]
-        $ ActionCost 1
-    , restrictedAbility
-        attrs
-        2
-        (exists $ LocationWithoutHorror <> ConnectedTo LocationWithAnyHorror)
-        $ ForcedAbility
-        $ RoundEnds Timing.When
+        (Here <> not_ (exists $ InPlayEnemy $ enemyIs Enemies.theManInThePallidMask))
+        $ ActionAbility [Action.Resign] (ActionCost 1)
+    , restricted attrs 2 (exists $ LocationWithoutHorror <> ConnectedTo LocationWithAnyHorror)
+        $ forced
+        $ RoundEnds #when
     ]
-      <> [ restrictedAbility attrs 3 AllUndefeatedInvestigatorsResigned
-             $ Objective
-             $ ForcedAbility AnyWindow
+      <> [ restricted attrs 3 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
          | onSide A attrs
          ]
 
 instance RunMessage CurtainCall where
-  runMessage msg a@(CurtainCall attrs) = case msg of
-    UseCardAbility iid (ProxySource _ (isSource attrs -> True)) 1 _ _ -> do
-      push $ Resign iid
+  runMessage msg a@(CurtainCall attrs) = runQueueT $ case msg of
+    UseThisAbility iid (ProxySource _ (isSource attrs -> True)) 1 -> do
+      resign iid
       pure a
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      targets <- selectTargets $ LocationWithoutHorror <> ConnectedTo LocationWithAnyHorror
-      pushAll $ map (\t -> PlaceHorror (toAbilitySource attrs 3) t 1) targets
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      selectEach (LocationWithoutHorror <> ConnectedTo LocationWithAnyHorror) \location ->
+        placeTokens (attrs.ability 2) location #horror 1
       pure a
-    UseCardAbility _ source 3 _ _ | isSource attrs source -> do
-      push $ AdvanceAct (toId attrs) source AdvancedWithOther
+    UseThisAbility _ (isSource attrs -> True) 3 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      lead <- getLeadPlayer
-      push
-        $ chooseOne
-          lead
-          [ Label
-              "We have to warn the police about what's going on! (-> R1)"
-              [ScenarioResolution $ Resolution 1]
-          , Label
-              "The police won't believe us. We have to solve this mystery on our own. (-> R2)"
-              [ScenarioResolution $ Resolution 2]
-          ]
+    AdvanceAct (isSide B attrs -> True) _ _ -> scenarioI18n do
+      leadChooseOneM do
+        labeled' "curtainCall.r1" $ push R1
+        labeled' "curtainCall.r2" $ push R2
       pure a
-    _ -> CurtainCall <$> runMessage msg attrs
+    _ -> CurtainCall <$> liftRunMessage msg attrs

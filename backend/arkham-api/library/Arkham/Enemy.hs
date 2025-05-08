@@ -517,6 +517,24 @@ allEnemies =
       SomeEnemyCard sethBishopThrallOfYogSothoth
     , -- Yog Sothoth's Emissaries
       SomeEnemyCard vassalOfTheLurker
+    , -- Return to the Path to Carcosa
+      --- Return to Curtain Call [rtptc]
+      SomeEnemyCard laComtesseSubverterOfPlans
+    , --- Return to the Last King [rtptc]
+      SomeEnemyCard dianneDevineKnowsWhatYoureUpTo
+    , SomeEnemyCard crazedGuest
+    , --- Return to Echoes of the Past [rtptc]
+      SomeEnemyCard keeperOfTheOath
+    , --- Return to The Unspeakable Oath [rtptc]
+      SomeEnemyCard hostOfInsanity
+    , --- Return to The Pallid Mask [rtptc]
+      SomeEnemyCard malformedSkeleton
+    , --- Return to Dim Carcosa [rtptc]
+      SomeEnemyCard highPriestOfHastur
+    , --- Decaying Reality [rtptc]
+      SomeEnemyCard maggotSwarm
+    , --- Hastur's Envoys [rtptc]
+      SomeEnemyCard preyingByakhee
     , -- Nathanial Cho
       SomeEnemyCard tommyMalloy
     , -- Curse of the Rougarou

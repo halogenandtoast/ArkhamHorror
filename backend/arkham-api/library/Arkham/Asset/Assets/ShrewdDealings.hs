@@ -24,7 +24,7 @@ instance HasAbilities ShrewdDealings where
     [ restrictedAbility
         x
         1
-        (ControlsThis <> exists (affectsOthers $ InvestigatorAt YourLocation <> NotYou))
+        (ControlsThis <> exists (affectsOthers $ colocatedWithMatch You <> NotYou))
         $ freeReaction (PlayCard #when You $ basic $ #asset <> #item <> NonSignature)
     ]
 

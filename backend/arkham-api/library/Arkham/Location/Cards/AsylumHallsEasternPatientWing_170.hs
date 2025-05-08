@@ -1,15 +1,11 @@
-module Arkham.Location.Cards.AsylumHallsEasternPatientWing_170 (
-  asylumHallsEasternPatientWing_170,
-) where
+module Arkham.Location.Cards.AsylumHallsEasternPatientWing_170 (asylumHallsEasternPatientWing_170) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Trait
 
 newtype AsylumHallsEasternPatientWing_170 = AsylumHallsEasternPatientWing_170 LocationAttrs
@@ -26,17 +22,12 @@ instance HasAbilities AsylumHallsEasternPatientWing_170 where
     extendRevealed1 attrs
       $ notSkillTestAbility
       $ restricted attrs 1 (Here <> exists (EnemyAt YourLocation <> EnemyWithTrait Lunatic))
-      $ ActionAbility [#evade]
-      $ Costs [ActionCost 1, HorrorCost (toSource attrs) YouTarget 1]
+      $ evadeAction (HorrorCost (toSource attrs) YouTarget 1)
 
 instance RunMessage AsylumHallsEasternPatientWing_170 where
-  runMessage msg l@(AsylumHallsEasternPatientWing_170 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg l@(AsylumHallsEasternPatientWing_170 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemies <- select $ EnemyAt YourLocation <> EnemyWithTrait Lunatic
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [targetLabel eid [Msg.EnemyEvaded iid eid] | eid <- enemies]
+      chooseTargetM iid enemies (automaticallyEvadeEnemy iid)
       pure l
-    _ -> AsylumHallsEasternPatientWing_170 <$> runMessage msg attrs
+    _ -> AsylumHallsEasternPatientWing_170 <$> liftRunMessage msg attrs

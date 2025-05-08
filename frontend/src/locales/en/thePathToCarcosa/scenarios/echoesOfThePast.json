@@ -15,5 +15,68 @@
   },
   "xp": {
     "resolution4": "Gains insight into the machinations of The King in Yellow."
+  },
+  "intro": {
+    "title": "Scenario III: Echoes of the Past",
+    "body": "<p>Your head throbs with a dull ache as you drive through the rainy streets of Arkham toward your next destination. The threat of the Stranger looms in your mind, and you find yourself glancing often at your rear-view mirror, expecting to see the expressionless visage of his mask haunting you. Instead, you see nothing but the misty, starless night, and the deserted road behind you.</p><p>Your thoughts once again wander, as they have often in the past few hours, to <span class='basic'>The King in Yellow</span> and to the city of Carcosa and its inhabitants. What was the message hidden inside that awful play, the meaning within its madness? A lone detail worms its way to the forefront of your thoughts, one made apparent by the discussions you’d overheard at Ms. Dumaine’s estate—that tonight’s performance of <span class='basic'>The King in Yellow</span> was not the first Arkham had seen of the foul play. There had been at least one other performance, directed by the same man: Nigel Engram.</p><p>There is one place in Arkham where records are often kept of important events occuring within the city: the Historical Society’s manor house in Southside. If there are any records of the previous show of <span class='basic'>The King in Yellow</span>, the Historical Society may have held onto them. Perhaps there you will find answers to the questions that burn in your mind.</p>",
+    "proceedToSebastiensInformation": "<div class='right'>Proceed to _Sebastien’s Information_.</div>",
+    "otherwise": "<div class='right'>Otherwise, skip to _Setup_.</div>",
+    "sebastiensInformation": "<p>_Sebastien’s Information_: You recall what Sebastien told you during the dinner party. The King in Yellow had come to Arkham several decades ago, long before the Ward Theatre was built. According to him, it isn’t surprising that few people remember­ —in fact, part of their goal tonight was to bring The King in Yellow to a wider audience. The Historical Society may have kept records pertaining to this earlier production, especially if it was followed by events similar to what has occurred tonight. Perhaps you can find some newspaper clippings or other articles describing what happened in the past.</p><ul><li>After you put Entry Hall into play during setup, place 1 {'{'}perPlayer{'}'} clues on it.</li></ul><div class='right'>Proceed to _Setup_.</div>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Echoes of the Past*, *Cult of the Yellow Sign*, *Delusions*, *The Midnight Masks*, *Locked Doors*, and *Dark Cult*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/echoes-of-the-past.png' /><img src='{setImgPath}/cult-of-the-yellow-sign.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/midnight-masks.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/dark-cult.png' /></section>When gathering *The Midnight Masks* encounter set, only gather the 5 treachery cards (2x False Lead and 3x Hunting Shadow). Do not gather the location, act, agenda, or scenario reference cards from that set.",
+    "chooseLocations": "Randomly choose one _*Ground Floor*_ Historical Society location, one _*Second Floor*_ Historical Society location, and one _*Third Floor*_ Historical Society location. Remove those locations from the game, without looking at their revealed sides.",
+    "placeLocations": "Put the following locations into play: Entry Hall, both copies of Quiet Halls, and the remaining 6 Historical Society locations. (see below for suggested location placement.) Each investigator begins play in the Entry Hall.",
+    "setAside": "Set the following cards aside, out of play: Hidden Library, Possessed Oathspeaker, Mr. Peabody, The Tattered Cloak, and Clasp of Black Onyx.",
+    "changes": {
+      "instructions": "Based on the number of players in the game:",
+      "exactly1": "If there is exactly 1 player in the game, no changes are made.",
+      "exactly2": "If there are exactly 2 players in the game, search the gathered encounter sets for 1 copy of Seeker of Carcosa. Spawn it at a _*Third Floor*_ Historical Society location.",
+      "exactly3": "If there are exactly 3 players in the game, search the gathered encounter sets for 2 copies of Seeker of Carcosa. Spawn each at a different _*Third Floor*_ Historical Society location.",
+      "exactly4": "If there are exactly 4 players in the game, search the gathered encounter sets for 3 copies of Seeker of Carcosa. Spawn each at different _*Second Floor*_ or _*Third Floor*_ Historical Society locations."
+    },
+    "fledTheDinnerParty": "Check Campaign Log. *If you fled the dinner party*: You arrive at the Historical Society with time to spare; each investigator can take 1 additional action during their first turn of this game."
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": "Gains insight into the machinations of The King in Yellow"
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<div class='resolution'>_If no resolution was reached (each investigator resigned or was defeated)_: You barely escape the building with your body and mind intact, and flee to safety. Read _Resolution 4_.</div>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<div class='resolution'><p>_Resolution 1_: There are no coincidences when it comes to The King in Yellow. There is no doubt in your mind that the object you’ve found is important. You decide to take it with you before continuing your investigation. The last record you find related to the original production of The King in Yellow is a psychiatric evaluation of one Daniel Chesterfield, a stagehand who lost his wits after the final show. It seems he was admitted to the asylum after the production ended. Perhaps he’s still there…</p><ul><li>In your Campaign Log, record that *you took the onyx clasp*. Mark one _Conviction_ in your Campaign Log. For the remainder of the campaign, one investigator must include the Clasp of Black Onyx weakness in his or her deck. This card does not count toward that investigator’s deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>If Sebastien Moreau (*Savage Hysteria*) is in the victory display, record his name in your Campaign Log, under “VIPs Slain.”</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}tablet{'}'} tokens to the chaos bag.</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<div class='resolution'><p>_Resolution 2_: This investigation would make anybody paranoid. Attributing some greater meaning to everything you find can be a dangerous proposition. You’re sure that this clasp is meaningless, perhaps even a prop from the original play. You leave it behind and continue your investigation. The last record you find related to the original production of The King in Yellow is a psychiatric evaluation of one Daniel Chesterfield, a stagehand who lost his wits after the final show. It seems he was admitted to the asylum after the production ended. Perhaps he’s still there...</p><ul><li>In your Campaign Log, record that *you left the onyx clasp behind*. Mark one _Doubt_ in your Campaign Log.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>If Sebastien Moreau (*Savage Hysteria*) is in the victory display, record his name in your Campaign Log, under “VIPs Slain.”</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}tablet{'}'} tokens to the chaos bag.</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<div class='resolution'><p>_Resolution 3_: The figure collapses to the ground, its warped, melting body writhing in agony. It wheezes and cries out, a yellow glow emanating from inside its mouth and behind its eyes. “Daniel,” the thing says in its cracking voice. “Seek Daniel... Daniel Chesterfield, the stagehand, he remembers!” Deep inside the man’s words, there is another voice behind it, whispering faintly in a melodic language. “Find him... He too has spoken the oath... The oath that doomed us all...!” With those final words, the skin melts off the man’s bones, and he rattles to the floor.</p><ul><li>In your Campaign Log, record that *you destroyed the oathspeaker*. Any one investigator may choose to add The Tattered Cloak to his or her deck. This card does not count toward that investigator’s deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>If Sebastien Moreau (Savage Hysteria) is in the victory display, record his name in your Campaign Log, under “VIPs Slain.”</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}tablet{'}'} tokens to the chaos bag.</li></ul></div>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<div class='resolution'><p>_Resolution 4_: The night’s events have left you exhausted. You were unable to learn anything at the Historical Society’s manor that could drive your investigation forward. Whoever those intruders were, they must have been looking for the same information you were. Distraught, you find your way to the closest bed you can find—in Ma’s Boarding House, not too far from the Historical Society. Dawn breaks as you reach the boarding house, the front doorknob and ferns on the porch covered in dew. You are lucky enough to get a vacant room for the day, and soon you are fast asleep.</p><p>Suddenly, you are falling. Above and all around you, a blinding radiance flares like an inferno. Your head twinges with pain and your vision swims with brilliant colors. Your skin is singed by the flames. Below you, the abyss opens and swallows you whole. You then find yourself in a dank, windowless cell, filled with a putrid stench. A man is huddled in a corner of the room, shivering from the cold, or from the hopelessness of his situation, or perhaps both. “No mask,” he mutters over and over, “no mask, no mask...” You take a few tentative steps forward, but before you can reach him, the metal slot on his cell door slides open, and you hear an orderly call to him. “Daniel, it’s time,” he says. “Daniel, wake up. Wake up, Daniel.” Then, you awaken.</p><ul><li>In your Campaign Log, record that *the followers of the sign have found the way forward*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 1 bonus experience as he or she gains insight into the machinations of The King in Yellow.<ul><li>_Experience_: {xp}</li></ul></li><li>If Sebastien Moreau (Savage Hysteria) is in the victory display, record his name in your Campaign Log, under “VIPs Slain.”</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 1 {'{'}cultist{'}'} token, 1 {'{'}tablet{'}'} token, and 1 {'{'}elderThing{'}'} token to the chaos bag.</li></ul></div>"
+    }
+  },
+  "label": {
+    "theOath": {
+      "r1": "This is an important discovery! We should take it. (-> R1)",
+      "r2": "It's just a silly trinket, and it would be wrong to steal from the Historical Society. Leave it behind (-> R2)"
+    },
+    "ledAstray": {
+      "placeClues": "Place 1 of your clues on a Cultist enemy"
+    }
+  },
+  "tooltips": {
+    "entryHall": {
+      "resign": "You flee, leaving the mysteries of the past to the mysterious cultists."
+    },
+    "historicalSocietyReadingRoom": {
+      "investigate": "{'{'}action{'}'}: _Investigate_. If you succeed, instead of discovering clues, choose an enemy with doom on it. Take 1 of that enemy's doom, flip it to its clue side, and place it on your investigator. (Group limit once per round)."
+    }
   }
 }

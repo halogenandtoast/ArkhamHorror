@@ -58,7 +58,7 @@ data WindowMatcher
   | PerformedSameTypeOfAction Timing Who ActionMatcher
   | PerformedDifferentTypesOfActionsInARow Timing Who Int ActionMatcher
   | DrawingStartingHand Timing Who
-  | InvestigatorDefeated Timing DefeatedByMatcher Who
+  | InvestigatorDefeated Timing DefeatedByMatcher Who 
   | InvestigatorWouldBeDefeated Timing DefeatedByMatcher Who
   | InvestigatorWouldTakeDamage Timing Who SourceMatcher DamageTypeMatcher
   | InvestigatorWouldTakeHorror Timing Who SourceMatcher
@@ -72,6 +72,7 @@ data WindowMatcher
   | EncounterDeckRunsOutOfCards
   | MovedBy Timing Who SourceMatcher
   | MovedButBeforeEnemyEngagement Timing Who Where
+  | WouldMoveFromHunter Timing EnemyMatcher
   | MovedFromHunter Timing EnemyMatcher
   | ChosenRandomLocation Timing LocationMatcher
   | PlaceUnderneath Timing TargetMatcher CardMatcher

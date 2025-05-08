@@ -2,16 +2,15 @@ module Arkham.Act.Cards.NoAsylum (noAsylum) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Action qualified as Action
-import Arkham.Classes
+import Arkham.Constants
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Resolution
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.TheUnspeakableOath.Helpers
 import Arkham.Trait
 
 newtype NoAsylum = NoAsylum ActAttrs
@@ -23,16 +22,15 @@ noAsylum = act (4, A) NoAsylum Cards.noAsylum Nothing
 
 instance HasAbilities NoAsylum where
   getAbilities (NoAsylum x) =
-    withBaseAbilities x
-      $ guard (onSide A x)
-      *> [ restricted
-             (proxied (LocationMatcherSource $ locationIs Locations.garden) x)
-             99
-             (Here <> not_ (exists $ ReadyEnemy <> EnemyAt YourLocation))
-             (ActionAbility [Action.Resign] $ ActionCost 1)
-         , restricted x 1 AllUndefeatedInvestigatorsResigned
-             $ Objective
-             $ ForcedAbility AnyWindow
+    guard (onSide A x)
+      *> [ scenarioI18n
+             $ withI18nTooltip "noAsylum.resign"
+             $ restricted
+               (proxied (LocationMatcherSource $ locationIs Locations.garden) x)
+               ResignAbility
+               (Here <> not_ (exists $ ReadyEnemy <> EnemyAt YourLocation))
+               (ActionAbility [Action.Resign] $ ActionCost 1)
+         , restricted x 1 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
          ]
 
 instance HasModifiersFor NoAsylum where
@@ -40,15 +38,15 @@ instance HasModifiersFor NoAsylum where
     modifySelect attrs UnrevealedLocation [TraitRestrictedModifier ArkhamAsylum Blank]
 
 instance RunMessage NoAsylum where
-  runMessage msg a@(NoAsylum attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push (AdvanceAct (toId attrs) source AdvancedWithOther)
+  runMessage msg a@(NoAsylum attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
-    UseCardAbility iid (isProxySource attrs -> True) 99 _ _ -> do
-      push (Resign iid)
+    UseCardAbility iid (isProxySource attrs -> True) ResignAbility _ _ -> do
+      resign iid
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       tookKeysByForce <- remembered YouTookTheKeysByForce
-      push $ ScenarioResolution $ Resolution $ if tookKeysByForce then 2 else 3
+      push $ if tookKeysByForce then R2 else R3
       pure a
-    _ -> NoAsylum <$> runMessage msg attrs
+    _ -> NoAsylum <$> liftRunMessage msg attrs

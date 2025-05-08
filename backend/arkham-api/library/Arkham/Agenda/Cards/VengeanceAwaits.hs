@@ -5,20 +5,17 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Classes.HasGame
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.GameValue
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Treacheries
-
-getIsReturnTo :: HasGame m => m Bool
-getIsReturnTo = (== "50032") <$> selectJust TheScenario
 
 newtype VengeanceAwaits = VengeanceAwaits AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

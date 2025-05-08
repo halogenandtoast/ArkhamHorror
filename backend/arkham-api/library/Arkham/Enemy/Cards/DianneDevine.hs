@@ -1,13 +1,12 @@
 module Arkham.Enemy.Cards.DianneDevine (dianneDevine) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Trait
 
 newtype DianneDevine = DianneDevine EnemyAttrs
@@ -25,16 +24,12 @@ instance HasModifiersFor DianneDevine where
       [CannotDiscoverClues, CannotTakeControlOfClues]
 
 instance HasAbilities DianneDevine where
-  getAbilities (DianneDevine a) =
-    withBaseAbilities a [mkAbility a 1 $ ForcedAbility $ PhaseBegins #when #enemy]
+  getAbilities (DianneDevine a) = extend1 a $ mkAbility a 1 $ forced $ PhaseBegins #when #enemy
 
 instance RunMessage DianneDevine where
-  runMessage msg e@(DianneDevine attrs) = case msg of
+  runMessage msg e@(DianneDevine attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      lead <- getLeadPlayer
       locations <- select $ LocationWithAsset $ AssetWithFewestClues $ AssetWithTrait Bystander
-      pushWhen (notNull locations)
-        $ chooseOne lead
-        $ targetLabels locations (only . EnemyMove (toId attrs))
+      leadChooseOneM $ targets locations $ enemyMoveTo attrs
       pure e
-    _ -> DianneDevine <$> runMessage msg attrs
+    _ -> DianneDevine <$> liftRunMessage msg attrs

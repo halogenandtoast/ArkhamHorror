@@ -98,6 +98,7 @@ data AssetMatcher
   | AssetWithAnyRemainingHealth
   | AssetWithAnyRemainingSanity
   | AssetWithFewestClues AssetMatcher
+  | AssetWithMostClues AssetMatcher
   | AssetCanBeAssignedDamageBy InvestigatorId
   | AssetCanBeDamagedBySource Source
   | AssetCanBeAssignedHorrorBy InvestigatorId

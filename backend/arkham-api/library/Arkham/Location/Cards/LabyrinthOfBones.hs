@@ -1,15 +1,13 @@
-module Arkham.Location.Cards.LabyrinthOfBones (labyrinthOfBones, LabyrinthOfBones (..)) where
+module Arkham.Location.Cards.LabyrinthOfBones (labyrinthOfBones) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Direction
 import Arkham.Draw.Types
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePallidMask.Helpers
 
@@ -20,30 +18,23 @@ newtype LabyrinthOfBones = LabyrinthOfBones LocationAttrs
 labyrinthOfBones :: LocationCard LabyrinthOfBones
 labyrinthOfBones =
   locationWith LabyrinthOfBones Cards.labyrinthOfBones 2 (PerPlayer 2)
-    $ (connectsToL .~ adjacentLocations)
-    . ( costToEnterUnrevealedL
-          .~ GroupClueCost (PerPlayer 1) YourLocation
-      )
+    $ connectsToAdjacent
+    . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasAbilities LabyrinthOfBones where
-  getAbilities (LabyrinthOfBones attrs) =
-    extendRevealed
-      attrs
-      [ restrictedAbility
-          attrs
-          1
-          (oneOf [notExists $ LocationInDirection dir (be attrs) | dir <- [Above, Below, RightOf]])
-          $ forced
-          $ RevealLocation #when Anyone (be attrs)
-      ]
+  getAbilities (LabyrinthOfBones a) =
+    extendRevealed1 a
+      $ restricted a 1 (oneOf [notExists $ LocationInDirection dir (be a) | dir <- [Above, Below, RightOf]])
+      $ forced
+      $ RevealLocation #when Anyone (be a)
 
 instance RunMessage LabyrinthOfBones where
-  runMessage msg l@(LabyrinthOfBones attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(LabyrinthOfBones attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- countM (directionEmpty attrs) [Above, Below, RightOf]
       push $ DrawCards iid $ targetCardDraw attrs CatacombsDeck n
       pure l
     DrewCards _ drewCards | maybe False (isTarget attrs) drewCards.target -> do
       placeDrawnLocations attrs drewCards.cards [Above, Below, RightOf]
       pure l
-    _ -> LabyrinthOfBones <$> runMessage msg attrs
+    _ -> LabyrinthOfBones <$> liftRunMessage msg attrs

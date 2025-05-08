@@ -30,7 +30,7 @@ instance HasAbilities StrangeSolutionRestorativeConcoction4 where
         ( ControlsThis
             <> InvestigatorExists
               ( HealableInvestigator (toSource x) DamageType
-                  $ InvestigatorAt YourLocation
+                  $ colocatedWithMatch You
               )
         )
         $ ActionAbility []

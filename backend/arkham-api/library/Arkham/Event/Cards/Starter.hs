@@ -71,7 +71,7 @@ standTogether =
     , cdSkills = [#willpower]
     , cdCriteria =
         Just
-          $ exists (affectsOthers $ NotYou <> InvestigatorAt YourLocation)
+          $ exists (affectsOthers $ NotYou <> colocatedWithMatch You)
           <> exists (affectsOthers $ InvestigatorAt YourLocation <> can.gain.resources)
     }
 

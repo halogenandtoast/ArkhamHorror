@@ -1,16 +1,16 @@
-module Arkham.Location.Cards.ShiveringPools (shiveringPools, ShiveringPools (..)) where
+module Arkham.Location.Cards.ShiveringPools (shiveringPools) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Direction
 import Arkham.Draw.Types
 import Arkham.GameValue
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePallidMask.Helpers
@@ -22,33 +22,26 @@ newtype ShiveringPools = ShiveringPools LocationAttrs
 shiveringPools :: LocationCard ShiveringPools
 shiveringPools =
   locationWith ShiveringPools Cards.shiveringPools 5 (PerPlayer 1)
-    $ (connectsToL .~ adjacentLocations)
+    $ connectsToAdjacent
     . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasAbilities ShiveringPools where
-  getAbilities (ShiveringPools attrs) =
+  getAbilities (ShiveringPools a) =
     extendRevealed
-      attrs
-      [ restrictedAbility attrs 1 Here $ forced $ TurnEnds #after You
-      , restrictedAbility
-          attrs
-          2
-          (oneOf [notExists $ LocationInDirection dir (be attrs) | dir <- [Below, RightOf]])
+      a
+      [ restricted a 1 Here $ forced $ TurnEnds #after You
+      , restricted a 2 (oneOf [notExists $ LocationInDirection dir (be a) | dir <- [Below, RightOf]])
           $ forced
-          $ RevealLocation #when Anyone (be attrs)
+          $ RevealLocation #when Anyone (be a)
       ]
 
 instance RunMessage ShiveringPools where
-  runMessage msg l@(ShiveringPools attrs) = case msg of
+  runMessage msg l@(ShiveringPools attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasResources <- fieldP InvestigatorResources (> 0) iid
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ Label "Take 1 direct damage" [directDamage iid (attrs.ability 1) 1]
-        : [ Label "Lose 5 resources" [LoseResources iid (attrs.ability 1) 5]
-          | hasResources
-          ]
+      chooseOrRunOneM iid $ withI18n do
+        countVar 1 $ labeled "takeDirectDamage" $ directDamage iid (attrs.ability 1) 1
+        when hasResources $ countVar 5 $ labeled' "loseResources" $ loseResources iid (attrs.ability 1) 5
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ DrawCards iid $ targetCardDraw attrs CatacombsDeck 1
@@ -56,16 +49,12 @@ instance RunMessage ShiveringPools where
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       case drewCards.cards of
         [card] -> do
-          placeBelow <- placeAtDirection Below attrs >>= \f -> f card
-          placeRight <- placeAtDirection RightOf attrs >>= \f -> f card
           belowEmpty <- directionEmpty attrs Below
           rightEmpty <- directionEmpty attrs RightOf
-          player <- getPlayer iid
-          push
-            $ chooseOrRunOne player
-            $ [Label "Place Below" placeBelow | belowEmpty]
-            <> [Label "Place to the Right" placeRight | rightEmpty]
+          chooseOrRunOneM iid $ scenarioI18n do
+            when belowEmpty $ labeled' "below" $ placeAtDirection_ Below attrs card
+            when rightEmpty $ labeled' "right" $ placeAtDirection_ RightOf attrs card
         [] -> pure ()
         _ -> error "wrong number of cards drawn"
       pure l
-    _ -> ShiveringPools <$> runMessage msg attrs
+    _ -> ShiveringPools <$> liftRunMessage msg attrs

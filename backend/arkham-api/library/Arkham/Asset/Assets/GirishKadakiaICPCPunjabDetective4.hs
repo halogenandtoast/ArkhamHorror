@@ -29,7 +29,7 @@ instance HasModifiersFor GirishKadakiaICPCPunjabDetective4 where
 
 instance HasAbilities GirishKadakiaICPCPunjabDetective4 where
   getAbilities (GirishKadakiaICPCPunjabDetective4 a) =
-    let criteria = DuringSkillTest $ SkillTestOfInvestigator $ affectsOthers $ InvestigatorAt YourLocation
+    let criteria = DuringSkillTest $ SkillTestOfInvestigator $ affectsOthers $ colocatedWithMatch You
      in [controlledAbility a 1 criteria $ FastAbility (exhaust a)]
 
 instance RunMessage GirishKadakiaICPCPunjabDetective4 where

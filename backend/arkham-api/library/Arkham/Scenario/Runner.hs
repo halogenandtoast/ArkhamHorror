@@ -426,6 +426,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   Remember logKey -> do
     send $ "Remember \"" <> format logKey <> "\""
     pure $ a & logL %~ insertSet logKey
+  Forget logKey -> do
+    send $ "Forgot \"" <> format logKey <> "\""
+    pure $ a & logL %~ deleteSet logKey
   ScenarioCountSet logKey n -> do
     pushM $ checkWindows [mkAfter $ Window.ScenarioCountIncremented logKey]
     pure $ a & countsL %~ Map.alter (const (Just n)) logKey
@@ -579,8 +582,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     card <- field AgendaCard aid
     pure $ a & (victoryDisplayL %~ nub . (card :))
   RemoveEnemy eid -> do
-    mplacement <- fieldMay EnemyPlacement eid
-    case mplacement of
+    fieldMay EnemyPlacement eid >>= \case
       Just (OutOfPlay Zone.VictoryDisplayZone) -> do
         mcard <- fieldMay EnemyCard eid
         pure $ case mcard of
@@ -650,6 +652,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           (PlacedUnderneath ActDeckTarget card)
           [Window.PlaceUnderneath ActDeckTarget card]
     pure a
+  PlaceUnderneath ScenarioTarget cards -> do
+    pure $ a & cardsUnderScenarioReferenceL <>~ cards
   CardEnteredPlay _ card -> liftRunMessage (ObtainCard card.id) a
   ObtainCard cardId -> do
     let

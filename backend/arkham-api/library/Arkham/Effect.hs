@@ -31,6 +31,9 @@ import Arkham.Act.Acts (
   theStrangerACityAflameEffect,
   theStrangerThePathIsMineEffect,
   theStrangerTheShoresOfHaliEffect,
+  theStrangerAlaranMistsEffect,
+  theStrangerUnderTheCityEffect,
+  theStrangerHereIsMyReplyEffect,
   theYithianRelicEffect,
  )
 import Arkham.Agenda.Agendas (
@@ -75,7 +78,6 @@ import Arkham.Asset.Assets (
   mrPeabodyEffect,
   pnakoticManuscripts5Effect,
   prismaticSpectaclesLensToTheOtherworld2Effect,
-  riteOfSeekingEffect,
   showmanshipEffect,
   shroudOfShadows4Effect,
   shroudOfShadowsEffect,
@@ -415,7 +417,7 @@ allEffects =
     , ("01066", SomeEffect $ noop "01066")
     , ("01069", SomeEffect $ noop "01069")
     , ("01074", SomeEffect $ noop "01074")
-    , ("02028", SomeEffect riteOfSeekingEffect)
+    , ("02028", SomeEffect $ noop "02028")
     , ("02031", SomeEffect bindMonster2Effect)
     , ("02100", SomeEffect pushedIntoTheBeyondEffect)
     , ("02112", SomeEffect $ noop "02112")
@@ -555,6 +557,9 @@ allEffects =
     , ("50044", SomeEffect jeremiahPierceEffect)
     , ("52007", SomeEffect $ noop "52007")
     , ("52008", SomeEffect stormOfSpirits3Effect)
+    , ("52015", SomeEffect theStrangerAlaranMistsEffect)
+    , ("52016", SomeEffect theStrangerUnderTheCityEffect)
+    , ("52017", SomeEffect theStrangerHereIsMyReplyEffect)
     , ("53007", SomeEffect mistsOfRlyeh2Effect)
     , ("54006", SomeEffect wellConnected3Effect)
     , ("60101", SomeEffect nathanielChoEffect)

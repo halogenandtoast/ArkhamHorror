@@ -1050,6 +1050,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       applyMatcherModifiers :: ModifierType -> EnemyMatcher -> EnemyMatcher
       applyMatcherModifiers (Modifier.AlternateFightField someField) original = case someField of
         SomeField Field.EnemyEvade -> original <> EnemyWithEvade
+        SomeField Field.EnemyFight -> original <> EnemyWithFight
         _ -> original
       applyMatcherModifiers _ n = n
       canFightMatcher = case overrides of
@@ -1448,11 +1449,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     canMove <- withoutModifier a CannotMove
     when canMove $ pushAll msgs
     pure a
-  Will (PassedSkillTest iid _ _ (InvestigatorTarget iid') _ _) | iid == iid' && iid == investigatorId -> do
-    pushM $ checkWindows [mkWhen (Window.WouldPassSkillTest iid)]
+  Will (PassedSkillTest iid _ _ (InvestigatorTarget iid') _ n) | iid == iid' && iid == investigatorId -> do
+    pushM $ checkWindows [mkWhen (Window.WouldPassSkillTest iid n)]
     pure a
-  Will (FailedSkillTest iid _ _ (InvestigatorTarget iid') _ _) | iid == iid' && iid == toId a -> do
-    pushM $ checkWindows [mkWhen (Window.WouldFailSkillTest iid)]
+  Will (FailedSkillTest iid _ _ (InvestigatorTarget iid') _ n) | iid == iid' && iid == toId a -> do
+    pushM $ checkWindows [mkWhen (Window.WouldFailSkillTest iid n)]
     pure a
   CancelDamage iid n | iid == investigatorId -> lift do
     withQueue_ \queue -> flip map queue $ \case

@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.NarrowShaft (narrowShaft, NarrowShaft (..)) where
+module Arkham.Location.Cards.NarrowShaft (narrowShaft) where
 
 import Arkham.Ability
 import Arkham.Direction
@@ -21,22 +21,16 @@ newtype NarrowShaft = NarrowShaft LocationAttrs
 narrowShaft :: LocationCard NarrowShaft
 narrowShaft =
   locationWith NarrowShaft Cards.narrowShaft 2 (PerPlayer 1)
-    $ (connectsToL .~ adjacentLocations)
+    $ connectsToAdjacent
     . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasAbilities NarrowShaft where
-  getAbilities (NarrowShaft attrs) =
+  getAbilities (NarrowShaft a) =
     extendRevealed
-      attrs
-      [ skillTestAbility
-          $ mkAbility attrs 1
-          $ forced
-          $ WouldMove #when You AnySource (be attrs) UnrevealedLocation
-      , restrictedAbility
-          attrs
-          2
-          (oneOf [notExists $ LocationInDirection dir (be attrs) | dir <- [Above, Below, RightOf]])
-          $ forced (RevealLocation #when Anyone $ be attrs)
+      a
+      [ skillTestAbility $ mkAbility a 1 $ forced $ WouldMove #when You AnySource (be a) UnrevealedLocation
+      , restricted a 2 (oneOf [notExists $ LocationInDirection dir (be a) | dir <- [Above, Below, RightOf]])
+          $ forced (RevealLocation #when Anyone $ be a)
       ]
 
 instance RunMessage NarrowShaft where
@@ -56,13 +50,11 @@ instance RunMessage NarrowShaft where
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       case drewCards.cards of
         [card] -> do
-          placeAbove <- placeAtDirection Above attrs >>= \f -> f card
-          placeRight <- placeAtDirection RightOf attrs >>= \f -> f card
           aboveEmpty <- directionEmpty attrs Above
           rightEmpty <- directionEmpty attrs RightOf
-          chooseOrRunOneM iid do
-            when aboveEmpty $ labeled "Place Above" $ pushAll placeAbove
-            when rightEmpty $ labeled "Place to the Right" $ pushAll placeRight
+          chooseOrRunOneM iid $ scenarioI18n do
+            when aboveEmpty $ labeled' "above" $ placeAtDirection_ Above attrs card
+            when rightEmpty $ labeled' "right" $ placeAtDirection_ RightOf attrs card
         [] -> pure ()
         _ -> error "wrong number of cards drawn"
       pure l

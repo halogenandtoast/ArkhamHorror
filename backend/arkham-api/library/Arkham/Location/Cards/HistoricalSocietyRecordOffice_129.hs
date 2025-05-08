@@ -1,6 +1,4 @@
-module Arkham.Location.Cards.HistoricalSocietyRecordOffice_129 (
-  historicalSocietyRecordOffice_129,
-) where
+module Arkham.Location.Cards.HistoricalSocietyRecordOffice_129 (historicalSocietyRecordOffice_129) where
 
 import Arkham.Ability
 import Arkham.GameValue

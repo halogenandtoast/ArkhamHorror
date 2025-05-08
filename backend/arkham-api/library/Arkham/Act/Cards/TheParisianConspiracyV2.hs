@@ -3,9 +3,12 @@ module Arkham.Act.Cards.TheParisianConspiracyV2 (theParisianConspiracyV2) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.Card.CardCode
 import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheParisianConspiracyV2 = TheParisianConspiracyV2 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -29,14 +32,21 @@ instance RunMessage TheParisianConspiracyV2 where
       case advanceMode of
         AdvancedWithClues -> do
           locations <- select $ FarthestLocationFromAll Anywhere
-          lead <- getLead
-          chooseOneM lead do
-            questionLabeled "Where to spawn the organist"
+          leadChooseOneM do
+            scenarioI18n $ questionLabeled' "theParisianConspiracy.spawn"
             targets locations $ createEnemyAt_ theOrganist
         _ -> do
           location <- selectJust LeadInvestigatorLocation
           createEnemyAt_ theOrganist location
           eachInvestigator \iid -> assignHorror iid attrs 2
+
+      whenM getIsReturnTo do
+        lead <- getLead
+        leadChooseOneM do
+          abilityLabeled
+            lead
+            (mkAbility (SourceableWithCardCode (CardCode "52040") ScenarioSource) 1 $ forced AnyWindow)
+            nothing
       advanceActDeck attrs
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do

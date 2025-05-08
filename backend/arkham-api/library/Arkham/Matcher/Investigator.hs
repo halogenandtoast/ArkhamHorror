@@ -69,12 +69,14 @@ data InvestigatorMatcher
   | IsDriverOf AssetMatcher
   | CanTakeUntakenAction
   | TakenActionThisRound ActionMatcher
+  | TakenActionThisTurn ActionMatcher
   | SuccessfullyEvadedThisRound
   | SuccessfullyAttackedThisRound
   | SuccessfullyInvestigatedThisRound
   | InvestigatorWithPlacement Placement
   | InvestigatorWhenCriteria Criterion
   | InvestigatorIs CardCode
+  | InvestigatorIfLocation LocationMatcher InvestigatorMatcher InvestigatorMatcher
   | KilledInvestigator
   | InsaneInvestigator
   | InvestigatorCanBeAssignedDamageBy InvestigatorId
@@ -139,6 +141,7 @@ data InvestigatorMatcher
   | InvestigatorMatches [InvestigatorMatcher]
   | InvestigatorWithLowestSkill SkillType InvestigatorMatcher
   | InvestigatorWithHighestSkill SkillType InvestigatorMatcher
+  | InvestigatorWithHiddenCard
   | AnyInvestigator [InvestigatorMatcher]
   | TurnInvestigator
   | ActiveInvestigator

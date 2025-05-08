@@ -41,7 +41,7 @@ instance HasAbilities Subject5U21 where
           1
           ( Self
               <> exists
-                ( ControlledBy (affectsOthers $ InvestigatorAt YourLocation)
+                ( ControlledBy (affectsOthers $ colocatedWithMatch You)
                     <> basic (not_ (CardWithType StoryType) <> not_ PermanentCard)
                 )
           )

@@ -4,6 +4,7 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.APhantomOfTruth.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -31,10 +32,10 @@ instance RunMessage DeadlyFate where
           -- attack,  and then remove it
           -- This technically means we have an enemy at no location
           focusCard c do
-            chooseOneM iid do
-              labeled "Draw enemy" $ drawCard iid c
-              labeled "That enemy attacks you (from the discard pile)" do
-                push $ AddToEncounterDiscard c
+            chooseOneM iid $ scenarioI18n do
+              labeled' "deadlyFate.drawEnemy" $ drawCard iid c
+              labeled' "deadlyFate.attack " do
+                addToEncounterDiscard (only c)
                 push $ EnemyAttackFromDiscard iid (toSource attrs) (EncounterCard c)
       pure t
     _ -> DeadlyFate <$> liftRunMessage msg attrs

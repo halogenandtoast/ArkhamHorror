@@ -114,9 +114,11 @@ data LocationMatcher
   | NearestLocationToYou LocationMatcher
   | NearestLocationTo InvestigatorId LocationMatcher
   | NearestLocationToAny LocationMatcher
+  | LocationSharesTraitWith LocationMatcher
   | LocationWithTrait Trait
   | LocationWithoutTrait Trait
   | LocationInDirection Direction LocationMatcher
+  | LocationWithSpaceInDirection Direction LocationMatcher
   | LocationWithTreachery TreacheryMatcher
   | LocationWithoutTreachery TreacheryMatcher
   | LocationWithoutModifier ModifierType

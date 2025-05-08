@@ -41,3 +41,43 @@ pattern DimCarcosa :: CampaignStep
 pattern DimCarcosa <- ScenarioStep "03316"
   where
     DimCarcosa = ScenarioStep "03316"
+
+pattern ReturnToCurtainCall :: CampaignStep
+pattern ReturnToCurtainCall <- ScenarioStep "52014"
+  where
+    ReturnToCurtainCall = ScenarioStep "52014"
+
+pattern ReturnToTheLastKing :: CampaignStep
+pattern ReturnToTheLastKing <- ScenarioStep "52021"
+  where
+    ReturnToTheLastKing = ScenarioStep "52021"
+
+pattern ReturnToEchoesOfThePast :: CampaignStep
+pattern ReturnToEchoesOfThePast <- ScenarioStep "52028"
+  where
+    ReturnToEchoesOfThePast = ScenarioStep "52028"
+
+pattern ReturnToTheUnspeakableOath :: CampaignStep
+pattern ReturnToTheUnspeakableOath <- ScenarioStep "52034"
+  where
+    ReturnToTheUnspeakableOath = ScenarioStep "52034"
+
+pattern ReturnToAPhantomOfTruth :: CampaignStep
+pattern ReturnToAPhantomOfTruth <- ScenarioStep "52040"
+  where
+    ReturnToAPhantomOfTruth = ScenarioStep "52040"
+
+pattern ReturnToThePallidMask :: CampaignStep
+pattern ReturnToThePallidMask <- ScenarioStep "52048"
+  where
+    ReturnToThePallidMask = ScenarioStep "52048"
+
+pattern ReturnToBlackStarsRise :: CampaignStep
+pattern ReturnToBlackStarsRise <- ScenarioStep "52054"
+  where
+    ReturnToBlackStarsRise = ScenarioStep "52054"
+
+pattern ReturnToDimCarcosa :: CampaignStep
+pattern ReturnToDimCarcosa <- ScenarioStep "52059"
+  where
+    ReturnToDimCarcosa = ScenarioStep "52059"

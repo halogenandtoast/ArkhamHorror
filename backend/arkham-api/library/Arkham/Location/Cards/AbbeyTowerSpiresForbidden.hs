@@ -1,7 +1,4 @@
-module Arkham.Location.Cards.AbbeyTowerSpiresForbidden (
-  abbeyTowerSpiresForbidden,
-  AbbeyTowerSpiresForbidden (..),
-) where
+module Arkham.Location.Cards.AbbeyTowerSpiresForbidden (abbeyTowerSpiresForbidden) where
 
 import Arkham.GameValue
 import Arkham.Helpers.Log

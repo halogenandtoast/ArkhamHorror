@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.TheManInThePallidMask (theManInThePallidMask, TheManInThePallidMask (..)) where
+module Arkham.Enemy.Cards.TheManInThePallidMask (theManInThePallidMask) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -19,9 +19,8 @@ newtype TheManInThePallidMask = TheManInThePallidMask EnemyAttrs
 
 theManInThePallidMask :: EnemyCard TheManInThePallidMask
 theManInThePallidMask =
-  enemyWith TheManInThePallidMask Cards.theManInThePallidMask (4, Static 3, 4) (0, 1)
-    $ spawnAtL
-    ?~ SpawnAt (FarthestLocationFromAll Anywhere)
+  enemy TheManInThePallidMask Cards.theManInThePallidMask (4, Static 3, 4) (0, 1)
+    & setSpawnAt (FarthestLocationFromAll Anywhere)
 
 instance HasAbilities TheManInThePallidMask where
   getAbilities (TheManInThePallidMask a) = extend1 a $ restricted a 1 OnSameLocation investigateAction_

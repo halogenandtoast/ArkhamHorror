@@ -2,13 +2,14 @@ module Arkham.Location.Cards.KnightsHall (knightsHall) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Investigate
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
-import Arkham.Prelude
+import Arkham.Location.Import.Lifted
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.BlackStarsRise.Helpers
 
 newtype KnightsHall = KnightsHall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,21 +20,18 @@ knightsHall = location KnightsHall Cards.knightsHall 2 (PerPlayer 1)
 
 instance HasAbilities KnightsHall where
   getAbilities (KnightsHall a) =
-    withBaseAbilities a
-      $ [ withTooltip
-            "{action} If there are no clues on Knight's Hall: _Investigate_. Investigate using {agility} instead of {intellect}. If you succeed, instead of discovering clues, remember that you have \"found the tower key.\""
-            $ restrictedAbility a 1 (Here <> NoCluesOnThis)
-            $ ActionAbility [Action.Investigate]
-            $ ActionCost 1
-        ]
+    extendRevealed1 a
+      $ scenarioI18n
+      $ withI18nTooltip "knightsHall.investigate"
+      $ restricted a 1 (Here <> NoCluesOnThis) investigateAction_
 
 instance RunMessage KnightsHall where
-  runMessage msg l@(KnightsHall attrs) = case msg of
+  runMessage msg l@(KnightsHall attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      pushM $ mkInvestigate sid iid (toAbilitySource attrs 1) <&> withSkillType #agility
+      investigateEdit_ sid iid (attrs.ability 1) (withSkillType #agility)
       pure l
-    Successful (Action.Investigate, _) _ (AbilitySource source 1) _ _ | isSource attrs source -> do
-      push $ Remember FoundTheTowerKey
+    Successful (Action.Investigate, _) _ (isAbilitySource attrs 1 -> True) _ _ -> do
+      remember FoundTheTowerKey
       pure l
-    _ -> KnightsHall <$> runMessage msg attrs
+    _ -> KnightsHall <$> liftRunMessage msg attrs

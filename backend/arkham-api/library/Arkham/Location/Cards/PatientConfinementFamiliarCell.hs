@@ -1,15 +1,11 @@
-module Arkham.Location.Cards.PatientConfinementFamiliarCell (
-  patientConfinementFamiliarCell,
-  PatientConfinementFamiliarCell (..),
-) where
+module Arkham.Location.Cards.PatientConfinementFamiliarCell (patientConfinementFamiliarCell) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
-import Arkham.Prelude
+import Arkham.Location.Import.Lifted
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype PatientConfinementFamiliarCell = PatientConfinementFamiliarCell LocationAttrs
@@ -26,17 +22,17 @@ patientConfinementFamiliarCell =
     (costToEnterUnrevealedL .~ ClueCost (Static 1))
 
 instance HasAbilities PatientConfinementFamiliarCell where
-  getAbilities (PatientConfinementFamiliarCell attrs) =
-    extendRevealed attrs [skillTestAbility $ restrictedAbility attrs 1 Here actionAbility]
+  getAbilities (PatientConfinementFamiliarCell a) =
+    extendRevealed1 a $ skillTestAbility $ restricted a 1 Here actionAbility
 
 instance RunMessage PatientConfinementFamiliarCell where
-  runMessage msg l@(PatientConfinementFamiliarCell attrs) = case msg of
+  runMessage msg l@(PatientConfinementFamiliarCell attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push
-        $ beginSkillTest sid iid (attrs.ability 1) attrs #willpower
+      beginSkillTest sid iid (attrs.ability 1) attrs #willpower
         $ InvestigatorFieldCalculation iid InvestigatorHorror
       pure l
-    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isAbilitySource attrs 1 source -> l <$ push (Remember RecalledTheWayOut)
-    _ -> PatientConfinementFamiliarCell <$> runMessage msg attrs
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+      remember RecalledTheWayOut
+      pure l
+    _ -> PatientConfinementFamiliarCell <$> liftRunMessage msg attrs

@@ -1,13 +1,12 @@
 module Arkham.Asset.Assets.HyperphysicalShotcasterTheoreticalDevice (
   hyperphysicalShotcasterTheoreticalDevice,
-  HyperphysicalShotcasterTheoreticalDevice (..),
 )
 where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Import.Lifted hiding (afterMove)
 import Arkham.Card
 import Arkham.Customization
 import Arkham.Discover
@@ -250,8 +249,8 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
           chooseOne
             iid
             [ targetLabel
-              (toCardId card)
-              [HandleTargetChoice iid (attrs.ability 1) (CardIdTarget $ toCardId card)]
+                (toCardId card)
+                [HandleTargetChoice iid (attrs.ability 1) (CardIdTarget $ toCardId card)]
             | card <- cards
             ]
         _ -> error "Invalid manifest"
@@ -344,15 +343,25 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       chooseOne iid
-        $ [ Label "Railshooter" [DoStep 0 msg] | attrs `hasCustomization` Railshooter, manifest meta /= Just Railshooter
+        $ [ Label "Railshooter" [DoStep 0 msg]
+          | attrs `hasCustomization` Railshooter
+          , manifest meta /= Just Railshooter
           ]
-        <> [ Label "Telescanner" [DoStep 1 msg] | attrs `hasCustomization` Telescanner, manifest meta /= Just Telescanner
+        <> [ Label "Telescanner" [DoStep 1 msg]
+           | attrs `hasCustomization` Telescanner
+           , manifest meta /= Just Telescanner
            ]
-        <> [ Label "Translocator" [DoStep 2 msg] | attrs `hasCustomization` Translocator, manifest meta /= Just Translocator
+        <> [ Label "Translocator" [DoStep 2 msg]
+           | attrs `hasCustomization` Translocator
+           , manifest meta /= Just Translocator
            ]
-        <> [ Label "Realitycollapser" [DoStep 3 msg] | attrs `hasCustomization` Realitycollapser, manifest meta /= Just Realitycollapser
+        <> [ Label "Realitycollapser" [DoStep 3 msg]
+           | attrs `hasCustomization` Realitycollapser
+           , manifest meta /= Just Realitycollapser
            ]
-        <> [ Label "Matterweaver" [DoStep 4 msg] | attrs `hasCustomization` Matterweaver, manifest meta /= Just Matterweaver
+        <> [ Label "Matterweaver" [DoStep 4 msg]
+           | attrs `hasCustomization` Matterweaver
+           , manifest meta /= Just Matterweaver
            ]
 
       pure a

@@ -663,6 +663,10 @@ section {
 }
 
 .intro-text {
+  &:deep(> div) {
+    overflow-y: auto;
+  }
+
   color: #222;
   max-width: 50vw;
   text-align: justify;

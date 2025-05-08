@@ -497,6 +497,7 @@ getIsCommittable a c = do
             cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
             let locationsCardCanBePlayedAt = [matcher | CanCommitToSkillTestPerformedByAnInvestigatorAt matcher <- cardModifiers]
             otherLocation <- field InvestigatorLocation iid
+            sameLocation <- maybe (pure False) (\x -> (mlid == Just x &&) <$> withoutModifier x CountsAsDifferentLocation) otherLocation
             otherLocationOk <-
               maybe
                 (pure False)
@@ -515,7 +516,7 @@ getIsCommittable a c = do
               $ and
                 [ not perilous
                 , CannotCommitToOtherInvestigatorsSkillTests `notElem` modifiers'
-                , isJust mlid && (mlid == otherLocation || otherLocationOk)
+                , isJust mlid && (sameLocation || otherLocationOk)
                 , not alreadyCommitted || IgnoreCommitOneRestriction `elem` modifiers'
                 ]
           else pure True

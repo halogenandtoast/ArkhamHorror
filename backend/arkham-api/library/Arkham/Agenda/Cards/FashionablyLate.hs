@@ -1,13 +1,9 @@
 module Arkham.Agenda.Cards.FashionablyLate (fashionablyLate) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
+import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.GameValue
-import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait
 
 newtype FashionablyLate = FashionablyLate AgendaAttrs
@@ -15,23 +11,17 @@ newtype FashionablyLate = FashionablyLate AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fashionablyLate :: AgendaCard FashionablyLate
-fashionablyLate =
-  agenda (1, A) FashionablyLate Cards.fashionablyLate (Static 3)
+fashionablyLate = agenda (1, A) FashionablyLate Cards.fashionablyLate (Static 3)
 
 instance RunMessage FashionablyLate where
-  runMessage msg a@(FashionablyLate attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      dianneDevine <- getSetAsideCard Cards.dianneDevine
-      createDianneDevine <-
-        createEnemyAtLocationMatching_ dianneDevine
-          $ LocationWithAsset
-          $ AssetWithFewestClues
-          $ AssetWithTrait Bystander
+  runMessage msg a@(FashionablyLate attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      createEnemyAtLocationMatching_ Cards.dianneDevine
+        $ LocationWithAsset
+        $ AssetWithFewestClues
+        $ AssetWithTrait Bystander
 
-      pushAll
-        [ createDianneDevine
-        , ShuffleEncounterDiscardBackIn
-        , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-        ]
+      shuffleEncounterDiscardBackIn
+      advanceAgendaDeck attrs
       pure a
-    _ -> FashionablyLate <$> runMessage msg attrs
+    _ -> FashionablyLate <$> liftRunMessage msg attrs

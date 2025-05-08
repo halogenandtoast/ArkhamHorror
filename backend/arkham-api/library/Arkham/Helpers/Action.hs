@@ -82,6 +82,7 @@ canDo iid action = do
       IsAction action' -> pure $ action == action'
       AnyActionTarget as -> anyM preventsAction as
       EnemyAction {} -> pure False
+      AssetAction {} -> pure False
       IsAnyAction {} -> pure True
 
   not <$> anyM prevents mods
@@ -142,6 +143,7 @@ matchTarget attrs (FirstOneOfPerformed as) action =
   action `elem` as && all (\a -> all (notElem a) $ investigatorActionsPerformed attrs) as
 matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
+matchTarget _ (AssetAction a _) action = action == a
 matchTarget _ IsAnyAction _ = True
 
 getActions :: (HasGame m, HasCallStack) => InvestigatorId -> [Window] -> m [Ability]

@@ -22,7 +22,7 @@ instance HasAbilities GrannyOrne where
   getAbilities (GrannyOrne a) =
     [ restricted a 1 ControlsThis
         $ ReactionAbility
-          (WouldHaveSkillTestResult #when (affectsOthers $ InvestigatorAt YourLocation) #any #failure)
+          (WouldHaveSkillTestResult #when (affectsOthers $ colocatedWithMatch You) #any #failure)
           (exhaust a)
     ]
 

@@ -5,9 +5,8 @@ import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Effect.Import
-import Arkham.Helpers.Investigator
 import Arkham.Investigate
+import Arkham.Matcher
 import Arkham.Modifier
 
 newtype RiteOfSeeking4 = RiteOfSeeking4 AssetAttrs
@@ -23,12 +22,15 @@ instance HasAbilities RiteOfSeeking4 where
 instance RunMessage RiteOfSeeking4 where
   runMessage msg a@(RiteOfSeeking4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = toAbilitySource attrs 1
-      lid <- getJustLocation iid
+      let source = attrs.ability 1
+      let tokens = oneOf [#skull, #cultist, #tablet, #elderthing, #autofail]
       sid <- getRandom
 
-      -- same effect as base
-      createCardEffect Cards.riteOfSeeking (effectMetaTarget sid) source (InvestigationTarget iid lid)
+      onRevealChaosTokenEffect sid tokens source attrs do
+        afterThisTestResolves sid do
+          setActions iid attrs 0
+          endYourTurn iid
+
       skillTestModifiers sid source iid [SkillModifier #willpower 2, DiscoveredClues 2]
       aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
       pure a

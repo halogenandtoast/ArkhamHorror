@@ -37,7 +37,7 @@ darkInsight =
             $ oneOf
               [ DrawCard
                   #when
-                  (affectsOthers $ InvestigatorAt YourLocation)
+                  (affectsOthers $ colocatedWithMatch You)
                   (CanCancelRevelationEffect $ basic $ NonPeril <> oneOf [IsEncounterCard, WeaknessCard])
                   AnyDeck
               , DrawCard

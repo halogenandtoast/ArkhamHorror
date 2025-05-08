@@ -98,7 +98,7 @@ preparedForTheWorst2 =
   (event "09036" "Prepared for the Worst" 0 Guardian)
     { cdSkills = [#intellect, #combat, #agility]
     , cdCardTraits = singleton Tactic
-    , cdCriteria = Just $ exists $ affectsOthers $ can.search.deck <> InvestigatorAt YourLocation
+    , cdCriteria = Just $ exists $ affectsOthers $ can.search.deck <> colocatedWithMatch You
     , cdLevel = Just 2
     }
 

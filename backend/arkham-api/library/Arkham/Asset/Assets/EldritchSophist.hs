@@ -26,7 +26,7 @@ instance HasAbilities EldritchSophist where
         ( AnyCriterion
             [ DifferentAssetsExist
                 (AssetControlledBy You <> AssetWithUses Charge)
-                ( AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
+                ( AssetControlledBy (affectsOthers $ colocatedWithMatch You)
                     <> oneOf [AssetWithUseType Charge, AssetWithoutUses]
                 )
             , DifferentAssetsExist

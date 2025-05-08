@@ -1,14 +1,12 @@
 module Arkham.Act.Cards.TheReallyBadOnesV2 (theReallyBadOnesV2) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Name
-import Arkham.Prelude
 import Arkham.Trait
 
 newtype TheReallyBadOnesV2 = TheReallyBadOnesV2 ActAttrs
@@ -16,28 +14,17 @@ newtype TheReallyBadOnesV2 = TheReallyBadOnesV2 ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theReallyBadOnesV2 :: ActCard TheReallyBadOnesV2
-theReallyBadOnesV2 =
-  act (2, A) TheReallyBadOnesV2 Cards.theReallyBadOnesV2 Nothing
+theReallyBadOnesV2 = act (2, A) TheReallyBadOnesV2 Cards.theReallyBadOnesV2 Nothing
 
 instance HasModifiersFor TheReallyBadOnesV2 where
   getModifiersFor (TheReallyBadOnesV2 attrs) = do
     modifySelect attrs UnrevealedLocation [TraitRestrictedModifier ArkhamAsylum Blank]
 
 instance RunMessage TheReallyBadOnesV2 where
-  runMessage msg a@(TheReallyBadOnesV2 attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      danielsCell <-
-        getJustLocationByName
-          ("Patient Confinement" <:> "Daniel's Cell")
-      danielChesterfield <- getSetAsideCard Enemies.danielChesterfield
-      createDanielChesterfield <-
-        createEnemyAt_
-          danielChesterfield
-          danielsCell
-          Nothing
-      pushAll
-        [ createDanielChesterfield
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-        ]
+  runMessage msg a@(TheReallyBadOnesV2 attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      danielsCell <- getJustLocationByName ("Patient Confinement" <:> "Daniel's Cell")
+      createEnemyAt_ Enemies.danielChesterfield danielsCell
+      advanceActDeck attrs
       pure a
-    _ -> TheReallyBadOnesV2 <$> runMessage msg attrs
+    _ -> TheReallyBadOnesV2 <$> liftRunMessage msg attrs

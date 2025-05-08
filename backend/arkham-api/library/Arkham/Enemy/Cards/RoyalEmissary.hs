@@ -1,46 +1,48 @@
-module Arkham.Enemy.Cards.RoyalEmissary (
-  royalEmissary,
-  RoyalEmissary (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.RoyalEmissary (royalEmissary) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.GameValue (getGameValue)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
+import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Matcher
 
 newtype RoyalEmissary = RoyalEmissary EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 royalEmissary :: EnemyCard RoyalEmissary
 royalEmissary =
-  enemyWith RoyalEmissary Cards.royalEmissary (4, Static 4, 2) (2, 0)
-    $ preyL
-    .~ Prey (InvestigatorWithLowestSkill #willpower UneliminatedInvestigator)
+  enemy RoyalEmissary Cards.royalEmissary (4, Static 4, 2) (2, 0)
+    & setPrey (InvestigatorWithLowestSkill #willpower UneliminatedInvestigator)
+
+instance HasModifiersFor RoyalEmissary where
+  getModifiersFor (RoyalEmissary a) = whenM getIsReturnTo do
+    n <- getGameValue (PerPlayer $ a.token #warning)
+    modifySelfWhen a (n > 0) [HealthModifier n]
 
 investigatorMatcher :: EnemyAttrs -> InvestigatorMatcher
 investigatorMatcher a =
-  AnyInvestigator
-    [ InvestigatorAt $ locationWithEnemy (toId a)
-    , InvestigatorAt $ AccessibleFrom $ locationWithEnemy (toId a)
+  oneOf
+    [ at_ $ locationWithEnemy (toId a)
+    , at_ $ AccessibleFrom $ locationWithEnemy (toId a)
     ]
 
 instance HasAbilities RoyalEmissary where
   getAbilities (RoyalEmissary a) =
-    withBaseAbilities a
-      $ [ restrictedAbility a 1 (InvestigatorExists $ investigatorMatcher a)
-            $ ForcedAbility
-            $ PhaseEnds #when #enemy
-        ]
+    extend
+      a
+      [ restricted a 1 (exists $ investigatorMatcher a) $ forced $ PhaseEnds #when #enemy
+      , restricted a 2 IsReturnTo $ forced $ AddedToVictory #after (CardWithId a.cardId)
+      ]
 
 instance RunMessage RoyalEmissary where
-  runMessage msg e@(RoyalEmissary attrs) = case msg of
+  runMessage msg e@(RoyalEmissary attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      let source = toAbilitySource attrs 1
-      investigators <- select $ investigatorMatcher attrs
-      pushAll $ map (\investigator -> assignHorror investigator source 1) investigators
+      selectEach (investigatorMatcher attrs) \investigator -> assignHorror investigator (attrs.ability 1) 1
       pure e
-    _ -> RoyalEmissary <$> runMessage msg attrs
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      placeTokens (attrs.ability 2) attrs #warning 1
+      pure e
+    _ -> RoyalEmissary <$> liftRunMessage msg attrs

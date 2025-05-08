@@ -22,7 +22,10 @@ const choose = async (idx: number) => emit('choose', idx)
 const enemiesInVictoryDisplay = computed(() => {
   return Object.values(props.game.enemies).filter((e) => e.placement.tag === 'OutOfPlay' && (['VictoryDisplayZone'] as string[]).includes(e.placement.contents))
 })
-const topOfVictoryDisplay = computed(() => props.victoryDisplay[0])
+const topOfVictoryDisplay = computed(() => {
+  const enemyCardIds = enemiesInVictoryDisplay.value.map(e => e.cardId)
+  return props.victoryDisplay.filter((c) => !enemyCardIds.includes(c.contents.id))[0]
+})
 
 const viewVictoryDisplayLabel = computed(() => pluralize(t('scenario.discardCard'), props.victoryDisplay.length))
 const showVictoryDisplay = () => emit('show')

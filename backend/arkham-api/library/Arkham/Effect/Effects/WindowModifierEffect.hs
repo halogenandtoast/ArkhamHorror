@@ -40,6 +40,7 @@ windowModifierEffect' eid metadata effectWindow source target =
       , effectTraits = mempty
       , effectWindow = Just effectWindow
       , effectDisableWindow = Nothing
+      , effectOnDisable = Nothing
       , effectFinished = False
       , effectExtraMetadata = Null
       , effectSkillTest = mSkillTest

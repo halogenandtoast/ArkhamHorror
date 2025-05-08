@@ -183,6 +183,19 @@ data EncounterSet
   | CreepingCold
   | ErraticFear
   | YogSothothsEmissaries
+  | ReturnToCurtainCall
+  | ReturnToTheLastKing
+  | ReturnToEchoesOfThePast
+  | ReturnToTheUnspeakableOath
+  | ReturnToAPhantomOfTruth
+  | ReturnToThePallidMask
+  | ReturnToBlackStarsRise
+  | ReturnToDimCarcosa
+  | DelusoryEvils
+  | DecayingReality
+  | HastursEnvoys 
+  | MaddeningDelusions
+  | NeuroticFear 
   | TheBayou
   | CurseOfTheRougarou
   | CarnevaleOfHorrors

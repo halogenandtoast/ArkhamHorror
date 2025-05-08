@@ -7,6 +7,7 @@ import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
@@ -40,6 +41,30 @@ returnToUndimensionedAndUnseen difficulty =
 instance RunMessage ReturnToUndimensionedAndUnseen where
   runMessage msg (ReturnToUndimensionedAndUnseen undimensionedAndUnseen'@(UndimensionedAndUnseen attrs)) = runQueueT $ scenarioI18n $ case msg of
     Setup -> runScenarioSetup (ReturnToUndimensionedAndUnseen . UndimensionedAndUnseen) attrs do
+      standalone <- getIsStandalone
+      sacrificedToYogSothoth <-
+        if standalone
+          then pure 3
+          else length <$> getRecordSet SacrificedToYogSothoth
+
+      setup do
+        ul do
+          li "gatherSets"
+          li "placeLocations"
+          li.nested "sacrificedToYogSothoth.instructions" do
+            li.validate (sacrificedToYogSothoth >= 4) "sacrificedToYogSothoth.fourOrMore"
+            li.validate (sacrificedToYogSothoth == 3) "sacrificedToYogSothoth.exactlyThree"
+            li.validate (sacrificedToYogSothoth == 2) "sacrificedToYogSothoth.exactlyTwo"
+            li.validate (sacrificedToYogSothoth <= 1) "sacrificedToYogSothoth.oneOrFewer"
+          li "setAside"
+          li "powderOfIbnGhazi"
+          li "randomBasicWeakness"
+          unscoped $ li "shuffleRemainder"
+
+      scope "choosingARandomLocation" $ flavor do
+        setTitle "title"
+        p "body"
+
       gather Set.ReturnToUndimensionedAndUnseen
       gather Set.UndimensionedAndUnseen
       gather Set.Whippoorwills
@@ -57,12 +82,6 @@ instance RunMessage ReturnToUndimensionedAndUnseen where
       coldSpringGlen <- placeOneOf (Locations.coldSpringGlen_244, Locations.coldSpringGlen_245)
       blastedHeath <- placeOneOf (Locations.blastedHeath_248, Locations.blastedHeath_249)
       placeAll [tenAcreMeadow, whateleyRuins, devilsHopYard]
-
-      standalone <- getIsStandalone
-      sacrificedToYogSothoth <-
-        if standalone
-          then pure 3
-          else length <$> getRecordSet SacrificedToYogSothoth
 
       setAside $ replicate 4 Assets.esotericFormula
 

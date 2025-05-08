@@ -5,6 +5,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.LostInTimeAndSpace
@@ -26,6 +27,17 @@ returnToLostInTimeAndSpace difficulty =
 instance RunMessage ReturnToLostInTimeAndSpace where
   runMessage msg (ReturnToLostInTimeAndSpace lostInTimeAndSpace'@(LostInTimeAndSpace attrs)) = runQueueT $ scenarioI18n $ case msg of
     Setup -> runScenarioSetup (ReturnToLostInTimeAndSpace . LostInTimeAndSpace) attrs do
+      setup do
+        ul do
+          li "gatherSets"
+          li "placeLocations"
+          li "setAside"
+          unscoped $ li "shuffleRemainder"
+
+      scope "locationsInTheEncounterDeck" $ flavor do
+        setTitle "title"
+        p "body"
+
       gather Set.ReturnToLostInTimeAndSpace
       gather Set.LostInTimeAndSpace
       gather Set.Sorcery

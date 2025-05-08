@@ -6,6 +6,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
+import Arkham.Helpers.FlavorText
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.ExtracurricularActivity
@@ -32,6 +33,17 @@ returnToExtracurricularActivities difficulty =
 instance RunMessage ReturnToExtracurricularActivities where
   runMessage msg (ReturnToExtracurricularActivities extracurricularActivity'@(ExtracurricularActivity attrs)) = runQueueT $ scenarioI18n $ case msg of
     Setup -> runScenarioSetup (ReturnToExtracurricularActivities . ExtracurricularActivity) attrs do
+      completedTheHouseAlwaysWins <- elem "51015" <$> getCompletedScenarios
+
+      setup $ ul do
+        li "gatherSets"
+        li.nested "facultyOffices.body" do
+          li.validate (not completedTheHouseAlwaysWins) "facultyOffices.theNightIsStillYoung"
+          li.validate completedTheHouseAlwaysWins "facultyOffices.theHourIsLate"
+        li "setAside"
+        li "placeLocations"
+        unscoped $ li "shuffleRemainder"
+
       gather Set.ReturnToExtracurricularActivities
       gather Set.ExtracurricularActivity
       gather Set.Sorcery
@@ -53,7 +65,6 @@ instance RunMessage ReturnToExtracurricularActivities where
       result <- sampleWithRest (Locations.orneLibrary :| [Locations.warrenObservatory])
       bifor_ result place_ removeEvery
 
-      completedTheHouseAlwaysWins <- elem "51015" <$> getCompletedScenarios
       setAside
         [ if completedTheHouseAlwaysWins
             then Locations.facultyOfficesTheHourIsLate

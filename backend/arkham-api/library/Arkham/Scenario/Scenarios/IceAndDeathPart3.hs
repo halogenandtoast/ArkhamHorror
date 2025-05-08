@@ -226,8 +226,8 @@ instance RunMessage IceAndDeathPart3 where
       let weaknesses = filter (`cardMatch` WeaknessCard) cards
       when (notNull weaknesses) $ addToHand iid weaknesses
       pure s
-    ScenarioResolution resolution -> scope "resolutions" do
-      case resolution of
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
         NoResolution -> do
           insight <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Enemies.seepingNightmare
           xp <-

@@ -162,8 +162,8 @@ instance RunMessage IntoTheMaelstrom where
             whenM (lid <=~> LocationWithAnyKeys) $ assignHorror iid ElderThing 1
         _ -> pure ()
       pure s
-    ScenarioResolution resolution -> scope "resolutions" do
-      case resolution of
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
         NoResolution -> do
           story $ i18nWithTitle "noResolution"
           push R8

@@ -235,22 +235,22 @@ instance RunMessage TheBoundaryBeyond where
           chooseTargetM iid ls \target -> placeTokens ElderThing target Clue 1
         _ -> pure ()
       pure s
-    ScenarioResolution resolution -> do
+    ScenarioResolution r -> do
       step <- getCurrentActStep
       locations <- selectTargets $ LocationWithTrait Trait.Tenochtitlan <> LocationWithoutClues
 
       let
         addLocationsToVictory =
-          and [step == 2, notNull locations, resolution `elem` [NoResolution, Resolution 2]]
+          and [step == 2, notNull locations, r `elem` [NoResolution, Resolution 2]]
 
-      story $ case resolution of
+      story $ case r of
         NoResolution -> noResolution
         Resolution 1 -> resolution1
         Resolution 2 -> resolution2
         _ -> error "invalid resolution"
       when addLocationsToVictory do
         for_ locations addToVictory
-      push $ ScenarioResolutionStep 1 resolution
+      push $ ScenarioResolutionStep 1 r
 
       vengeance <- getVengeanceInVictoryDisplay
       yigsFury <- getRecordCount YigsFury
@@ -267,10 +267,10 @@ instance RunMessage TheBoundaryBeyond where
           recordCount TheHarbingerIsStillAlive damage
       endOfScenario
       pure s
-    ScenarioResolutionStep 1 resolution -> do
+    ScenarioResolutionStep 1 r -> do
       n <- selectCount $ VictoryDisplayCardMatch $ basic $ CardWithTrait Trait.Tenochtitlan
       recordCount PathsAreKnownToYou n
-      recordWhen (n >= 3 && resolution == Resolution 1) IchtacaHasConfidenceInYou
+      recordWhen (n >= 3 && r == Resolution 1) IchtacaHasConfidenceInYou
       allGainXpWithBonus attrs $ toBonus "additional" n
       pure s
     _ -> TheBoundaryBeyond <$> liftRunMessage msg attrs

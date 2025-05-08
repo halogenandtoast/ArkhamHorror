@@ -199,8 +199,8 @@ instance RunMessage IceAndDeathPart1 where
       let weaknesses = filterCards WeaknessCard cards
       when (notNull weaknesses) $ addToHand iid weaknesses
       pure s
-    ScenarioResolution resolution -> scope "resolutions" do
-      case resolution of
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
         NoResolution -> do
           story $ i18nWithTitle "noResolution"
           locations <- selectWithField Location.LocationCard LocationWithoutClues

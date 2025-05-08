@@ -125,8 +125,8 @@ instance RunMessage ThePitOfDespair where
               withLocationOf iid \lid -> push $ EnemySpawnFromOutOfPlay TheDepths (Just iid) lid eid
           _ -> pure ()
       pure s
-    ScenarioResolution resolution -> scope "resolutions" do
-      case resolution of
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
         NoResolution -> story $ i18n "noResolution"
         Resolution 1 -> story $ i18n "resolution1"
         other -> throwIO $ UnknownResolution other

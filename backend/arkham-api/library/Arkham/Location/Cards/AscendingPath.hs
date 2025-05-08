@@ -7,6 +7,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Scenarios.WhereDoomAwaits.Helpers
 
 newtype AscendingPath = AscendingPath LocationAttrs
   deriving anyclass IsLocation
@@ -24,8 +25,8 @@ instance HasModifiersFor AscendingPath where
 instance HasAbilities AscendingPath where
   getAbilities (AscendingPath attrs) =
     extendRevealed1 attrs
-      $ withTooltip
-        "{action}: _Investigate_. If you succeed, instead of discovering clues, put a random set-aside Altered Path into play. (Limit once per round.)"
+      $ scenarioI18n
+      $ withI18nTooltip "ascendingPath.investigate"
       $ playerLimit PerRound
       $ investigateAbility attrs 1 mempty Here
 
@@ -37,7 +38,6 @@ instance RunMessage AscendingPath where
       pure l
     Successful (Action.Investigate, _) _ (isAbilitySource attrs 1 -> True) _ _ -> do
       alteredPaths <- getSetAsideCardsMatching "Altered Path"
-      for_ (nonEmpty alteredPaths) $ \ne -> do
-        placeLocation_ =<< sample ne
+      for_ (nonEmpty alteredPaths) (sample >=> placeLocation_)
       pure l
     _ -> AscendingPath <$> liftRunMessage msg attrs

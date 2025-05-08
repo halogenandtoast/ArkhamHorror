@@ -1,15 +1,12 @@
 module Arkham.Location.Cards.EerieGlade (eerieGlade) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards (eerieGlade)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype EerieGlade = EerieGlade LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,28 +16,16 @@ eerieGlade :: LocationCard EerieGlade
 eerieGlade = location EerieGlade Cards.eerieGlade 4 (PerPlayer 1)
 
 instance HasAbilities EerieGlade where
-  getAbilities (EerieGlade attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility
-            attrs
-            1
-            (InvestigatorExists $ You <> InvestigatorWithAnyActionsRemaining)
-            $ ForcedAbility
-            $ RevealLocation Timing.After You
-            $ LocationWithId
-            $ toId attrs
-        | locationRevealed attrs
-        ]
+  getAbilities (EerieGlade a) =
+    extendRevealed1 a
+      $ restricted a 1 (youExist InvestigatorWithAnyActionsRemaining)
+      $ forced
+      $ RevealLocation #after You (be a)
 
 instance RunMessage EerieGlade where
-  runMessage msg l@(EerieGlade attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg l@(EerieGlade attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       actionRemainingCount <- field InvestigatorRemainingActions iid
-      push
-        $ DiscardTopOfDeck
-          iid
-          (actionRemainingCount * 2)
-          (toAbilitySource attrs 1)
-          Nothing
+      discardTopOfDeck iid (attrs.ability 1) (actionRemainingCount * 2)
       pure l
-    _ -> EerieGlade <$> runMessage msg attrs
+    _ -> EerieGlade <$> liftRunMessage msg attrs

@@ -151,9 +151,9 @@ instance RunMessage TheWitchingHour where
       setAgendaDeck [Agendas.temperanceXIV, Agendas.theNightHowls]
       setActDeck
         [Acts.lostInTheWoods, Acts.witchHauntings, Acts.pathsIntoTwilight, Acts.aCircleUnbroken]
-    ScenarioResolution resolution -> do
+    ScenarioResolution r -> do
       step <- actStep <$> selectJustField ActSequence AnyAct
-      case resolution of
+      case r of
         NoResolution -> push $ if step == ActStep 4 then R4 else R3
         Resolution 1 -> do
           story resolution1

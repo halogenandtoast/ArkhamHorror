@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.YogSothoth (yogSothoth, yogSothothEffect, YogSothoth (..)) where
+module Arkham.Enemy.Cards.YogSothoth (yogSothoth, yogSothothEffect) where
 
 import Arkham.Ability
 import Arkham.Effect.Import
@@ -6,9 +6,11 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.LostInTimeAndSpace.Helpers
 
 newtype YogSothoth = YogSothoth EnemyAttrs
   deriving anyclass IsEnemy
@@ -27,21 +29,15 @@ instance HasAbilities YogSothoth where
     extend1 a $ mkAbility a 1 $ freeReaction (EnemyAttacks #when You AnyEnemyAttack $ be a)
 
 instance RunMessage YogSothoth where
-  runMessage msg e@(YogSothoth attrs) = runQueueT $ case msg of
+  runMessage msg e@(YogSothoth attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid $ for_ [0 .. attrs.sanityDamage] \n -> do
-        let label =
-              "Discard the top "
-                <> tshow n
-                <> " cards and take "
-                <> tshow (attrs.sanityDamage - n)
-                <> " horror"
-        labeled label do
+        numberVar "cards" n $ numberVar "horror" (attrs.sanityDamage - n) $ labeled' "yogSothoth" do
           enemyAttackModifier (attrs.ability 1) attrs $ HorrorDealt (-n)
           eid <- createCardEffectCapture Cards.yogSothoth (effectInt n) (attrs.ability 1) iid
           push $ DiscardTopOfDeck iid n (attrs.ability 1) Nothing
           disable eid
-          when (5 - n > 0) $ assignHorror iid (attrs.ability 1) (5 - n)
+          when (5 > n) $ assignHorror iid (attrs.ability 1) (5 - n)
       pure e
     _ -> YogSothoth <$> liftRunMessage msg attrs
 

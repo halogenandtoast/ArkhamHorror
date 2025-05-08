@@ -57,3 +57,9 @@ instance HasField "validate" (Scope -> FlavorTextBuilder ()) (Bool -> Scope -> F
     for_ (buildFlavor (f t)).flavorBody \case
       ModifyEntry mods inner' -> addEntry $ ModifyEntry (modifier : mods) inner'
       inner' -> addEntry $ ModifyEntry [modifier] inner'
+
+instance HasField "right" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBuilder ()) where
+  getField f t = for_ (buildFlavor (f t)).flavorBody \case
+    ModifyEntry mods inner' -> addEntry $ ModifyEntry (RightAligned : mods) inner'
+    inner' -> addEntry $ ModifyEntry [RightAligned] inner'
+

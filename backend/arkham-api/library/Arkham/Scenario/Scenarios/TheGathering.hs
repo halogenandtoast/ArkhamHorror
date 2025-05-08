@@ -105,7 +105,7 @@ instance RunMessage TheGathering where
         Cultist -> assignHorror iid (ChaosTokenSource token) (byDifficulty attrs 1 2)
         _ -> pure ()
       pure s
-    ScenarioResolution resolution -> scope "resolutions" do
+    ScenarioResolution r -> scope "resolutions" do
       resigned <- select ResignedInvestigator
       leadId <- getLead
       let
@@ -114,7 +114,7 @@ instance RunMessage TheGathering where
           valids' <- select $ InvestigatorCanAddCardsToDeck <> mapOneOf InvestigatorWithId valids
           unless (null valids') do
             addCampaignCardToDeckChoice valids' DoNotShuffleIn Assets.litaChantler
-      case resolution of
+      case r of
         NoResolution -> do
           resolutionWithXp "noResolution" $ allGainXpWithBonus' attrs $ toBonus "bonus" 2
           record YourHouseIsStillStanding

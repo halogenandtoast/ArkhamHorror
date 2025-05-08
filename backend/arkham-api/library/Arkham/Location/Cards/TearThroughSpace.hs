@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.TearThroughSpace (tearThroughSpace, TearThroughSpace (..)) where
+module Arkham.Location.Cards.TearThroughSpace (tearThroughSpace) where
 
 import Arkham.Ability
 import Arkham.GameValue
@@ -8,6 +8,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Name hiding (labeled)
+import Arkham.Scenarios.LostInTimeAndSpace.Helpers
 import Control.Monad.Extra (findM)
 
 newtype TearThroughSpace = TearThroughSpace LocationAttrs
@@ -23,10 +24,10 @@ instance HasAbilities TearThroughSpace where
 
 instance RunMessage TearThroughSpace where
   runMessage msg l@(TearThroughSpace attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> scenarioI18n do
       chooseOneM iid do
-        labeled "Place 1 doom on Tear through Space" $ placeDoom (attrs.ability 1) attrs 1
-        labeled "Discard Tear through Space" $ toDiscard (attrs.ability 1) attrs
+        labeled' "tearThroughSpace.placeDoom" $ placeDoom (attrs.ability 1) attrs 1
+        labeled' "tearThroughSpace.discard" $ toDiscard (attrs.ability 1) attrs
       pure l
     Revelation _ (isSource attrs -> True) -> do
       let labels = [nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 4]]

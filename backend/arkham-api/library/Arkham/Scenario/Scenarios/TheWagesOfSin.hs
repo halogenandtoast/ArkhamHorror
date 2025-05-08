@@ -160,8 +160,8 @@ instance RunMessage TheWagesOfSin where
           when (maybe False (`elem` [#fight, #evade]) mAction) $ runHauntedAbilities iid
         _ -> pure ()
       pure s
-    ScenarioResolution resolution -> do
-      case resolution of
+    ScenarioResolution r -> do
+      case r of
         NoResolution -> do
           anyResigned <- selectAny ResignedInvestigator
           push $ if anyResigned then R1 else R2

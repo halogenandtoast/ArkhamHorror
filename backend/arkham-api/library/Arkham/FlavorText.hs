@@ -95,6 +95,9 @@ extendModifiers modifier = \case
 instance HasField "blue" (Scope -> FlavorTextEntry) (Scope -> FlavorTextEntry) where
   getField f = extendModifiers BlueEntry . f
 
+instance HasField "right" (Scope -> FlavorTextEntry) (Scope -> FlavorTextEntry) where
+  getField f = extendModifiers RightAligned . f
+
 instance HasField "nested" (Scope -> FlavorTextEntry) (Scope -> FlavorTextEntry) where
   getField f = extendModifiers NestedEntry . f
 

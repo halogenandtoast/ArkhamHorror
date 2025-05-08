@@ -1,13 +1,10 @@
 module Arkham.Location.Cards.FrozenSpring (frozenSpring) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (frozenSpring)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype FrozenSpring = FrozenSpring LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -17,18 +14,12 @@ frozenSpring :: LocationCard FrozenSpring
 frozenSpring = location FrozenSpring Cards.frozenSpring 3 (PerPlayer 1)
 
 instance HasAbilities FrozenSpring where
-  getAbilities (FrozenSpring attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-            $ ForcedAbility
-            $ RevealLocation Timing.After You
-            $ LocationWithId
-            $ toId attrs
-        | locationRevealed attrs
-        ]
+  getAbilities (FrozenSpring a) = extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
 
 instance RunMessage FrozenSpring where
-  runMessage msg l@(FrozenSpring attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      l <$ pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
-    _ -> FrozenSpring <$> runMessage msg attrs
+  runMessage msg l@(FrozenSpring attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      setActions iid (attrs.ability 1) 0
+      endYourTurn iid
+      pure l
+    _ -> FrozenSpring <$> liftRunMessage msg attrs

@@ -12,6 +12,7 @@
   "noEnemiesFound": "No Enemies Found.",
   "skills": "Skills",
   "spendClues": "Spend a clue | Spend {count} clues",
+  "spendResources": "Spend a resource | Spend {count} resources",
   "takeControlOfKey": "Take control of key",
   "takeDamage": "Take {count} damage",
   "takeDamageAndHorror": "Take {damage} damage and {horror} horror",

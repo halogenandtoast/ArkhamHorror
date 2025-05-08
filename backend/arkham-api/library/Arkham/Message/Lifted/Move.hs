@@ -20,6 +20,9 @@ moveTo
   => source -> InvestigatorId -> location -> m ()
 moveTo (toSource -> source) iid location = push $ Move $ move source iid (asId location)
 
+moveToMatch :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> LocationMatcher -> m ()
+moveToMatch (toSource -> source) iid = push . Move . Arkham.Movement.moveToMatch source iid
+
 enemyMoveTo
   :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId, AsId location, IdOf location ~ LocationId)
   => enemy
@@ -54,10 +57,10 @@ instance AsMoveTo LocationId where
   asMoveTo = move
 
 instance AsMoveTo LocationMatcher where
-  asMoveTo = moveToMatch
+  asMoveTo = Arkham.Movement.moveToMatch
 
 instance AsMoveTo CardDef where
-  asMoveTo source target = moveToMatch source target . locationIs
+  asMoveTo source target = Arkham.Movement.moveToMatch source target . locationIs
 
 instance AsMoveTo MoveWrapper where
   asMoveTo source iid = \case

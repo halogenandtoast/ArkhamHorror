@@ -181,7 +181,7 @@ instance RunMessage ALightInTheFog where
     ForInvestigator iid (ScenarioSpecific "free" _) -> do
       let meta = toResultDefault emptyMeta attrs.meta
       pure $ ALightInTheFog $ attrs & metaL .~ toJSON (meta & capturedL %~ deleteFirst iid)
-    ScenarioResolution resolution -> scope "resolutions" do
+    ScenarioResolution r -> scope "resolutions" do
       let meta = toResultDefault emptyMeta attrs.meta
       let
         defaultResolution = do
@@ -193,7 +193,7 @@ instance RunMessage ALightInTheFog where
           for_ (meta ^. relicsAddedToHandL) (addCampaignCardToDeckChoice investigators DoNotShuffleIn)
           allGainXp attrs
           endOfScenario
-      case resolution of
+      case r of
         NoResolution -> do
           step <- agendaStep <$> selectJustField AgendaSequence AnyAgenda
           push $ if step < AgendaStep 4 then R4 else R3
@@ -211,7 +211,7 @@ instance RunMessage ALightInTheFog where
         Resolution 4 -> do
           story $ i18nWithTitle "resolution4"
           defaultResolution
-        _ -> throw $ UnknownResolution resolution
+        other -> throw $ UnknownResolution other
       pure s
     Resign iid -> do
       getLocationOf iid >>= \case

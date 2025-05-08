@@ -1,14 +1,12 @@
-module Arkham.Treachery.Cards.SpacesBetween (spacesBetween, SpacesBetween (..)) where
+module Arkham.Treachery.Cards.SpacesBetween (spacesBetween) where
 
-import Arkham.Classes
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype SpacesBetween = SpacesBetween TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -18,36 +16,32 @@ spacesBetween :: TreacheryCard SpacesBetween
 spacesBetween = treachery SpacesBetween Cards.spacesBetween
 
 instance RunMessage SpacesBetween where
-  runMessage msg t@(SpacesBetween attrs) = case msg of
-    Revelation _ source | isSource attrs source -> do
+  runMessage msg t@(SpacesBetween attrs) = runQueueT $ case msg of
+    Revelation _ (isSource attrs -> True) -> do
       nonSentinelHillLocations <- select $ LocationWithoutTrait SentinelHill
-      msgs <- flip concatMapM' nonSentinelHillLocations \flipLocation -> do
-        let locationMatcher = LocationWithId flipLocation
-        investigatorIds <- select $ InvestigatorAt locationMatcher
-        enemyIds <- select $ EnemyAt locationMatcher <> UnengagedEnemy
-        destination <-
-          fromJustNote "must be connected to a sentinel location"
-            <$> selectOne (ConnectedTo locationMatcher <> LocationWithTrait SentinelHill)
 
-        pure
-          $ [Move $ move source iid destination | iid <- investigatorIds]
-          <> [EnemyMove eid destination | eid <- enemyIds]
-          <> [RemoveAllClues (toSource attrs) (toTarget flipLocation), UnrevealLocation flipLocation]
+      for_ nonSentinelHillLocations \flipLocation -> do
+        let locationMatcher = LocationWithId flipLocation
+        mdestination <- selectOne $ ConnectedTo locationMatcher <> LocationWithTrait SentinelHill
+        for_ mdestination \destination -> do
+          selectEach (InvestigatorAt locationMatcher) \iid -> moveTo attrs iid destination
+          selectEach (at_ locationMatcher <> UnengagedEnemy) (`enemyMoveTo` destination)
+        removeAllClues attrs flipLocation
+        push $ UnrevealLocation flipLocation
 
       alteredPaths <-
-        shuffleM
+        shuffle
           =<< filterM (fieldP LocationUnrevealedName (== "Altered Path")) nonSentinelHillLocations
       divergingPaths <-
-        shuffleM
+        shuffle
           =<< filterM (fieldP LocationUnrevealedName (== "Diverging Path")) nonSentinelHillLocations
 
       pushAll
-        $ msgs
-        <> [ SetLocationLabel locationId $ "alteredPath" <> tshow idx
-           | (idx, locationId) <- withIndex1 alteredPaths
-           ]
+        $ [ SetLocationLabel locationId $ "alteredPath" <> tshow idx
+          | (idx, locationId) <- withIndex1 alteredPaths
+          ]
         <> [ SetLocationLabel locationId $ "divergingPath" <> tshow idx
            | (idx, locationId) <- withIndex1 divergingPaths
            ]
       pure t
-    _ -> SpacesBetween <$> runMessage msg attrs
+    _ -> SpacesBetween <$> liftRunMessage msg attrs

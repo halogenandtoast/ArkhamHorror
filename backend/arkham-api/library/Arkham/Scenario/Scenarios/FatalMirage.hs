@@ -236,19 +236,19 @@ instance RunMessage FatalMirage where
           chooseSelectM iid (EnemyWithTrait Eidolon) \enemy -> placeDoom ElderThing enemy 1
         _ -> pure ()
       pure s
-    ScenarioResolution resolution -> scope "resolutions" do
+    ScenarioResolution r -> scope "resolutions" do
       completed <- getCompletedSteps
       let step3 = CityOfTheElderThings `elem` completed
       let step2 = not step3 && ToTheForbiddenPeaks `elem` completed
       let step1 = not step3 && not step2
       story
-        $ setFlavorTitle (if resolution == NoResolution then "No Resolution" else "Resolution 1")
+        $ setFlavorTitle (if r == NoResolution then "No Resolution" else "Resolution 1")
         $ flavorText
         $ modifyEntry ResolutionEntry
         $ compose
-          [ p $ if resolution == NoResolution then "noResolution" else "resolution1"
+          [ p $ if r == NoResolution then "noResolution" else "resolution1"
           , ul do
-              li $ if resolution == NoResolution then "noSay" else "isThereADifference"
+              li $ if r == NoResolution then "noSay" else "isThereADifference"
               li "victory"
               li.nested "memoriesDiscovered" do
                 li "crossOutMemoriesDiscovered"

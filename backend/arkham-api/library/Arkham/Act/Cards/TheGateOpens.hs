@@ -1,15 +1,7 @@
-module Arkham.Act.Cards.TheGateOpens (
-  TheGateOpens (..),
-  theGateOpens,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheGateOpens (theGateOpens) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
-import Arkham.Matcher
-import Arkham.Resolution
+import Arkham.Act.Import.Lifted
 
 newtype TheGateOpens = TheGateOpens ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -17,15 +9,11 @@ newtype TheGateOpens = TheGateOpens ActAttrs
 
 theGateOpens :: ActCard TheGateOpens
 theGateOpens =
-  act
-    (3, A)
-    TheGateOpens
-    Cards.theGateOpens
-    (Just $ GroupClueCost (PerPlayer 2) (LocationWithTitle "Sentinel Peak"))
+  act (3, A) TheGateOpens Cards.theGateOpens (Just $ GroupClueCost (PerPlayer 2) "Sentinel Peak")
 
 instance RunMessage TheGateOpens where
-  runMessage msg a@(TheGateOpens attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ _
-      | aid == actId && onSide B attrs ->
-          a <$ push (ScenarioResolution $ Resolution 1)
-    _ -> TheGateOpens <$> runMessage msg attrs
+  runMessage msg a@(TheGateOpens attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      push R1
+      pure a
+    _ -> TheGateOpens <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.PrismaticCascade (prismaticCascade, PrismaticCascade (..)) where
+module Arkham.Location.Cards.PrismaticCascade (prismaticCascade) where
 
 import Arkham.Ability
 import Arkham.GameValue

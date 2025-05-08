@@ -393,10 +393,10 @@ instance RunMessage CityOfTheElderThings where
         when (isHardExpert attrs) $ assignDamage iid Tablet 1
         failSkillTest
       pure s
-    ScenarioResolution resolution -> scope "resolutions" do
+    ScenarioResolution r -> scope "resolutions" do
       let current = toResultDefault @(Map ChaosTokenFace Int) mempty attrs.meta
       let bonus = getSum $ foldMap (Sum . (`div` 2)) current
-      case resolution of
+      case r of
         NoResolution -> do
           story $ i18nWithTitle "noResolution"
           push R2
@@ -420,7 +420,7 @@ instance RunMessage CityOfTheElderThings where
             $ i18nWithTitle "resolution2"
           record TheTeamWasGuidedToTheHiddenTunnel
           endOfScenario
-        _ -> throwIO $ UnknownResolution resolution
+        _ -> throwIO $ UnknownResolution r
       pure s
     PlaceKey ScenarioTarget (TokenKey ct) -> do
       let current = toResultDefault @(Map ChaosTokenFace Int) mempty attrs.meta

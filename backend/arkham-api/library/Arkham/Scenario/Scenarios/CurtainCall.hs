@@ -105,9 +105,9 @@ instance RunMessage CurtainCall where
         , Acts.theStrangerTheShoresOfHali
         , Acts.curtainCall
         ]
-    ScenarioResolution resolution -> do
+    ScenarioResolution r -> do
       let stoleFromTheBoxOffice = member StoleFromTheBoxOffice attrs.log
-      case resolution of
+      case r of
         NoResolution -> story noResolution
         Resolution 1 -> do
           story resolution1

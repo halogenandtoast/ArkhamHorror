@@ -1,13 +1,7 @@
-module Arkham.Enemy.Cards.SethBishop (
-  sethBishop,
-  SethBishop (..),
-) where
+module Arkham.Enemy.Cards.SethBishop (sethBishop) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 
 newtype SethBishop = SethBishop EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

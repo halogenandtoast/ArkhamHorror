@@ -2,15 +2,13 @@ module Arkham.Location.Cards.TheEdgeOfTheUniverse (theEdgeOfTheUniverse) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (theEdgeOfTheUniverse)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Phase
-import Arkham.Prelude
 
 newtype TheEdgeOfTheUniverse = TheEdgeOfTheUniverse LocationAttrs
   deriving anyclass IsLocation
@@ -32,10 +30,7 @@ instance HasAbilities TheEdgeOfTheUniverse where
     flip map actions $ \action -> case abilityType action of
       ActionAbility actions' _
         | Action.Move `elem` actions' ->
-            action
-              & abilityCriteriaL
-              <>~ InvestigatorExists
-                (You <> InvestigatorWithClues (AtLeast $ Static 2))
+            action & abilityCriteriaL <>~ youExist (InvestigatorWithClues (atLeast 2))
       _ -> action
 
 instance RunMessage TheEdgeOfTheUniverse where

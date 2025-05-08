@@ -192,8 +192,8 @@ instance RunMessage TheLairOfDagon where
           field AgendaSequence aid >>= \case
             Sequence 3 B -> pure s
             _ -> TheLairOfDagon <$> liftRunMessage msg attrs
-    ScenarioResolution resolution -> scope "resolutions" do
-      case resolution of
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
         NoResolution -> do
           story $ i18nWithTitle "noResolution"
           record DagonHasAwakened

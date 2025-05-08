@@ -124,8 +124,8 @@ instance RunMessage TurnBackTime where
           for_ mlid $ \lid -> placeDoom ElderThing lid 1
         _ -> pure ()
       pure s
-    ScenarioResolution resolution -> do
-      case resolution of
+    ScenarioResolution r -> do
+      case r of
         NoResolution -> do
           record TheFabricOfTimeIsUnwoven
           eachInvestigator drivenInsane

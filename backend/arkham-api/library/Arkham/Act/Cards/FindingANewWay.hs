@@ -38,12 +38,11 @@ instance RunMessage FindingANewWay where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       push R1
       pure a
-    DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
+    DiscardedTopOfEncounterDeck iid cards _ (isTarget attrs -> True) -> do
       let locationCards = filterLocations cards
       focusCards locationCards do
-        chooseOneM iid do
-          targets locationCards \card -> do
-            unfocusCards
-            drawCard iid card
+        chooseTargetM iid locationCards \card -> do
+          unfocusCards
+          drawCard iid card
       pure a
     _ -> FindingANewWay <$> liftRunMessage msg attrs

@@ -197,7 +197,7 @@ instance RunMessage TheSecretName where
           { brownJenkinDefeated = brownJenkinDefeated meta || isBrownJenkin
           , nahabDefeated = nahabDefeated meta || isNahab
           }
-    ScenarioResolution resolution -> do
+    ScenarioResolution r -> do
       iids <- allInvestigators
       step <- getCurrentActStep
       lead <- getLead
@@ -209,7 +209,7 @@ instance RunMessage TheSecretName where
           targets iids \iid -> do
             addCampaignCardToDeck iid DoNotShuffleIn Assets.theBlackBook
             addChaosToken Skull
-      case resolution of
+      case r of
         NoResolution -> do
           story noResolution
           push R1

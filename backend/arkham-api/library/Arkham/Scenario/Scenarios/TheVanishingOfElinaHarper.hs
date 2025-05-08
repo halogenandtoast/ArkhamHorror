@@ -145,8 +145,8 @@ instance RunMessage TheVanishingOfElinaHarper where
           ElderThing -> placeCluesOnLocation iid ElderThing 1
           _ -> pure ()
       pure s
-    ScenarioResolution resolution -> scope "resolutions" do
-      case resolution of
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
         NoResolution -> do
           story $ i18n "noResolution"
           push R1
@@ -159,7 +159,7 @@ instance RunMessage TheVanishingOfElinaHarper where
             5 -> "resolution5"
             6 -> "resolution6"
             7 -> "resolution7"
-            _ -> throw $ UnknownResolution resolution
+            _ -> throw $ UnknownResolution r
           case n of
             1 -> record TheMissionFailed
             _ -> record TheMissionWasSuccessful

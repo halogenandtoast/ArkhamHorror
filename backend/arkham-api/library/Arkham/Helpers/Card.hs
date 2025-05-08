@@ -46,11 +46,12 @@ import Data.Proxy
 
 isDiscardable :: Card -> Bool
 isDiscardable = not . isWeakness
- where
-  isWeakness = \case
-    PlayerCard pc -> isJust $ cdCardSubType $ toCardDef pc
-    EncounterCard _ -> True -- maybe?
-    VengeanceCard _ -> False -- should be an error
+
+isWeakness :: IsCard card => card -> Bool
+isWeakness c = case toCard c of
+  PlayerCard pc -> isJust $ cdCardSubType $ toCardDef pc
+  EncounterCard _ -> True -- maybe?
+  VengeanceCard _ -> False -- should be an error
 
 getCardPayments :: HasGame m => Card -> m (Maybe Payment)
 getCardPayments c = do

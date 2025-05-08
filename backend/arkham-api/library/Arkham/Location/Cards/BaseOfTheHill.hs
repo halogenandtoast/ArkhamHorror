@@ -8,6 +8,7 @@ import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenarios.WhereDoomAwaits.Helpers
 
 newtype BaseOfTheHill = BaseOfTheHill LocationAttrs
   deriving anyclass IsLocation
@@ -21,18 +22,17 @@ baseOfTheHill =
 
 instance HasModifiersFor BaseOfTheHill where
   getModifiersFor (BaseOfTheHill a) = do
-    modifySelectWhen a a.revealed (LocationWithTitle "Diverging Path") [ConnectedToWhen (be a) Anywhere]
+    modifySelectWhen a a.revealed (location_ "Diverging Path") [ConnectedToWhen (be a) Anywhere]
 
 instance HasAbilities BaseOfTheHill where
-  getAbilities (BaseOfTheHill attrs) =
-    withResignAction
-      attrs
-      [ withTooltip
-          "{action}: _Investigate_. If you succeed, instead of discovering clues, put a random set-aside Diverging Path into play. (Limit once per round.)"
-          $ limitedAbility (PlayerLimit PerRound 1)
-          $ investigateAbility attrs 1 mempty Here
-      | attrs.revealed
-      ]
+  getAbilities (BaseOfTheHill a) =
+    extendRevealed a
+      $ scenarioI18n
+        [ withI18nTooltip "baseOfTheHill.resign" $ locationResignAction a
+        , withI18nTooltip "baseOfTheHill.investigate"
+            $ playerLimit PerRound
+            $ investigateAbility a 1 mempty Here
+        ]
 
 instance RunMessage BaseOfTheHill where
   runMessage msg l@(BaseOfTheHill attrs) = runQueueT $ case msg of

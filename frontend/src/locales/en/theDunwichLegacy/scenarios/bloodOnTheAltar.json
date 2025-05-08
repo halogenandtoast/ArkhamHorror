@@ -50,6 +50,9 @@
     "resolution3": {
       "title": "Resolution 3",
       "body": "<div class='resolution'><p>_Resolution 3_: With the creature that once was Silas lashing out at you from its chains, you have little time to react. Hoping there is something in the chamber you can use to your advantage, you fend off the abomination long enough to find a journal; many of its passages are written in Latin. It appears to be a handwritten excerpt from the Necronomicon, its purpose unknown. With no time to spare, you recite the incantation, stumbling over the words and feeling your throat tighten with each sentence. The creature’s body begins to shrink and melt away as the incantation continues, its cries terrifying and haunting. In the end, all that is left is a pile of wet and sticky ichor, and a rotten stench.</p><ul><li>In your Campaign Log, record that *the investigators banished Silas Bishop*.</li><li>In your Campaign Log, under “Sacrificed to Yog‑Sothoth,” record the names of each unique card that is underneath the agenda deck. Each of those cards are removed from all players’ decks and can no longer be included in any players’ decks for the remainder of the campaign.</li><li>If an investigator with The Necronomicon (*Olaus Wormius Translation*) in his or her deck was defeated, in your Campaign Log, record that the Necronomicon was stolen. The Necronomicon (*Olaus Wormius Translation*) must be removed from that investigator’s deck.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 2 bonus experience as he or she gains insight into the hidden world of the Mythos.<ul><li>_Experience_: {xp}</li></ul></li><li>Proceed to _Interlude II: The Survivors._</li></ul></div>"
+    },
+    "xp": {
+      "bonus": "Gains insight into the hidden world of the Mythos"
     }
   }
 }

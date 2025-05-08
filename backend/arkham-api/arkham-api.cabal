@@ -3512,7 +3512,6 @@ library
       Arkham.Scenarios.InTheClutchesOfChaos.Story
       Arkham.Scenarios.InTooDeep.Helpers
       Arkham.Scenarios.IntoTheMaelstrom.Helpers
-      Arkham.Scenarios.LostInTimeAndSpace.FlavorText
       Arkham.Scenarios.LostInTimeAndSpace.Helpers
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.FlavorText
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
@@ -3561,7 +3560,6 @@ library
       Arkham.Scenarios.WakingNightmare.InfestationBag
       Arkham.Scenarios.WeaverOfTheCosmos.Helpers
       Arkham.Scenarios.WhereDoomAwaits.Helpers
-      Arkham.Scenarios.WhereDoomAwaits.Story
       Arkham.Scenarios.WhereTheGodsDwell.Helpers
       Arkham.Script
       Arkham.Search

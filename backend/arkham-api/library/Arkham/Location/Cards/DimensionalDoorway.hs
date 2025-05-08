@@ -1,16 +1,16 @@
 module Arkham.Location.Cards.DimensionalDoorway (dimensionalDoorway) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.Scenario (scenarioField)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards (dimensionalDoorway)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Timing qualified as Timing
+import Arkham.Scenarios.LostInTimeAndSpace.Helpers
 import Arkham.Trait
 
 newtype DimensionalDoorway = DimensionalDoorway LocationAttrs
@@ -18,40 +18,22 @@ newtype DimensionalDoorway = DimensionalDoorway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dimensionalDoorway :: LocationCard DimensionalDoorway
-dimensionalDoorway =
-  location DimensionalDoorway Cards.dimensionalDoorway 2 (PerPlayer 1)
+dimensionalDoorway = location DimensionalDoorway Cards.dimensionalDoorway 2 (PerPlayer 1)
 
 instance HasAbilities DimensionalDoorway where
-  getAbilities (DimensionalDoorway attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility attrs 1 Here
-            $ ForcedAbility
-            $ TurnEnds
-              Timing.When
-              You
-        | locationRevealed attrs
-        ]
+  getAbilities (DimensionalDoorway a) = extendRevealed1 a $ restricted a 1 Here $ forced $ TurnEnds #when You
 
 instance RunMessage DimensionalDoorway where
-  runMessage msg l@(DimensionalDoorway attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg l@(DimensionalDoorway attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       encounterDiscard <- scenarioField ScenarioDiscard
-      for_ (find (member Hex . toTraits) encounterDiscard)
-        $ \hexCard -> push $ InvestigatorDrewEncounterCard iid hexCard
-      DimensionalDoorway <$> runMessage msg attrs
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      for_ (find (member Hex . toTraits) encounterDiscard) (drawCard iid)
+      DimensionalDoorway <$> liftRunMessage msg attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       resourceCount <- getSpendableResources iid
-      player <- getPlayer iid
-      push
-        $ if resourceCount >= 2
-          then
-            chooseOne
-              player
-              [ Label "Spend 2 resource" [SpendResources iid 2]
-              , Label
-                  "Shuffle Dimensional Doorway back into the encounter deck"
-                  [ShuffleBackIntoEncounterDeck $ toTarget attrs]
-              ]
-          else ShuffleBackIntoEncounterDeck (toTarget attrs)
+      chooseOrRunOneM iid do
+        when (resourceCount >= 2) do
+          withI18n $ countVar 2 $ labeled' "spendResources" $ spendResources iid 2
+        scenarioI18n $ labeled' "dimensionalDoorway.shuffle" $ shuffleBackIntoEncounterDeck attrs
       pure l
-    _ -> DimensionalDoorway <$> runMessage msg attrs
+    _ -> DimensionalDoorway <$> liftRunMessage msg attrs

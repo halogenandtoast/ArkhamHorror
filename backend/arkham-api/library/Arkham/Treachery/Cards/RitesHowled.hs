@@ -1,19 +1,11 @@
-module Arkham.Treachery.Cards.RitesHowled (
-  ritesHowled,
-  RitesHowled (..),
-) where
+module Arkham.Treachery.Cards.RitesHowled (ritesHowled) where
 
-import Arkham.Prelude
-
-import Arkham.Card
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Helpers.Card (isWeakness)
+import Arkham.Investigator.Projection ()
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype RitesHowled = RitesHowled TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -23,24 +15,14 @@ ritesHowled :: TreacheryCard RitesHowled
 ritesHowled = treachery RitesHowled Cards.ritesHowled
 
 instance RunMessage RitesHowled where
-  runMessage msg t@(RitesHowled attrs) = case msg of
-    Revelation _iid source | isSource attrs source -> do
-      investigatorIds <- getInvestigators
-      pushAll
-        $ [ DiscardTopOfDeck iid 3 (toSource attrs) (Just $ toTarget attrs)
-          | iid <- investigatorIds
-          ]
+  runMessage msg t@(RitesHowled attrs) = runQueueT $ case msg of
+    Revelation _iid (isSource attrs -> True) -> do
+      eachInvestigator \iid -> discardTopOfDeck iid attrs 3
+      doStep 2 msg
       pure t
-    DiscardedTopOfDeck iid _cards _ target | isTarget attrs target -> do
-      isAltered <-
-        selectAny $ LocationWithTrait Altered <> locationWithInvestigator iid
-      when isAltered $ do
-        discardPile <- field InvestigatorDiscard iid
-        push
-          $ ShuffleCardsIntoDeck
-            (Deck.InvestigatorDeck iid)
-            ( map PlayerCard
-                $ filter (isJust . cdCardSubType . toCardDef) discardPile
-            )
+    DoStep 2 (Revelation _iid (isSource attrs -> True)) -> do
+      selectEach (InvestigatorAt $ LocationWithTrait Altered) \iid -> do
+        weaknesses <- filter isWeakness <$> iid.discard
+        unless (null weaknesses) $ shuffleCardsIntoDeck iid weaknesses
       pure t
-    _ -> RitesHowled <$> runMessage msg attrs
+    _ -> RitesHowled <$> liftRunMessage msg attrs

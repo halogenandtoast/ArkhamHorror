@@ -135,8 +135,8 @@ instance RunMessage TheHeartOfMadnessPart1 where
     ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
       drawTekelili iid Tablet 1
       pure s
-    ScenarioResolution resolution -> scope "resolutions" do
-      case resolution of
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
         NoResolution -> do
           story $ i18nWithTitle "noResolution"
           push R2
@@ -177,7 +177,7 @@ instance RunMessage TheHeartOfMadnessPart1 where
           record TheSealWasUsedImproperly
           eachInvestigator (kill attrs)
           gameOver
-        _ -> throwIO $ UnknownResolution resolution
+        _ -> throwIO $ UnknownResolution r
       pure s
     HandleOption option -> do
       investigators <- allInvestigators

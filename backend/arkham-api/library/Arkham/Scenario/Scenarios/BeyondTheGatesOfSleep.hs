@@ -299,8 +299,8 @@ instance RunMessage BeyondTheGatesOfSleep where
             pushWhen isSwarming $ PlaceSwarmCards iid eid 1
           _ -> pure ()
       pure s
-    ScenarioResolution resolution -> do
-      record $ case resolution of
+    ScenarioResolution r -> do
+      record $ case r of
         NoResolution -> TheInvestigatorsWereSavedByRandolphCarder
         Resolution 1 -> TheCatsCollectedTheirTributeFromTheZoogs
         Resolution 2 -> TheInvestigatorsParleyedWithTheZoogs

@@ -8,10 +8,12 @@ import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
+import Arkham.Exception
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.EncounterSet
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Cards qualified as Locations
@@ -21,7 +23,7 @@ import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.Scenarios.WhereDoomAwaits.Story
+import Arkham.Scenarios.WhereDoomAwaits.Helpers
 import Arkham.Trait hiding (Cultist, ElderThing, Expert)
 
 newtype WhereDoomAwaits = WhereDoomAwaits ScenarioAttrs
@@ -89,15 +91,44 @@ instance HasChaosTokenValue WhereDoomAwaits where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage WhereDoomAwaits where
-  runMessage msg s@(WhereDoomAwaits attrs) = runQueueT $ case msg of
-    PreScenarioSetup -> do
-      story intro
-      whenHasRecord NaomiHasTheInvestigatorsBacks $ story introPart1
+  runMessage msg s@(WhereDoomAwaits attrs) = runQueueT $ scenarioI18n $ case msg of
+    PreScenarioSetup -> scope "intro" do
+      hasTheInvestigatorsBack <- getHasRecord NaomiHasTheInvestigatorsBacks
+      flavor do
+        h "title"
+        p "body"
+        p.right.validate hasTheInvestigatorsBack "proceedToPart1"
+        p.right.validate (not hasTheInvestigatorsBack) "otherwise"
+      when hasTheInvestigatorsBack do
+        flavor $ h "title" >> p "part1.body"
       pure s
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens
       pure . WhereDoomAwaits $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
     Setup -> runScenarioSetup WhereDoomAwaits attrs do
+      useV1 <- getHasRecord TheInvestigatorsRestoredSilasBishop
+      useV2 <-
+        liftA2
+          (||)
+          (getHasRecord TheInvestigatorsFailedToRecoverTheNecronomicon)
+          (getHasRecord TheNecronomiconWasStolen)
+
+      setup do
+        ul do
+          li "gatherSets"
+          li "placeLocations"
+          li "divergingPaths"
+          li "alteredPaths"
+          li "setAside"
+          li "adjustChaosBag"
+          li.nested "act2.instructions" do
+            li.validate useV1 "act2.v1"
+            li.validate useV2 "act2.v2"
+            li.validate (not $ useV1 || useV2) "act2.v3"
+          li "addDoom"
+          li "hideousAbominations"
+          unscoped $ li "shuffleRemainder"
+
       gather Set.WhereDoomAwaits
       gather Set.BeastThralls
       gather Set.Sorcery
@@ -112,17 +143,12 @@ instance RunMessage WhereDoomAwaits where
 
       setAgendaDeck [Agendas.callingForthTheOldOnes, Agendas.beckoningForPower]
       when (broodEscapedCount > 0) $ placeDoomOnAgenda broodEscapedCount
-      useV1 <- getHasRecord TheInvestigatorsRestoredSilasBishop
-      useV2 <-
-        liftA2
-          (||)
-          (getHasRecord TheInvestigatorsFailedToRecoverTheNecronomicon)
-          (getHasRecord TheNecronomiconWasStolen)
       let
-        ascendingTheHill = case (useV1, useV2) of
-          (True, _) -> Acts.ascendingTheHillV1
-          (False, True) -> Acts.ascendingTheHillV2
-          (False, False) -> Acts.ascendingTheHillV3
+        ascendingTheHill =
+          if
+            | useV1 -> Acts.ascendingTheHillV1
+            | useV2 -> Acts.ascendingTheHillV2
+            | otherwise -> Acts.ascendingTheHillV3
       setActDeck [Acts.thePathToTheHill, ascendingTheHill, Acts.theGateOpens]
 
       startAt =<< place Locations.baseOfTheHill
@@ -177,20 +203,23 @@ instance RunMessage WhereDoomAwaits where
       let n = sum $ map (toPrintedCost . fromMaybe (StaticCost 0) . cdCost . toCardDef) cards
       withSkillTest \sid -> push $ CreateChaosTokenValueEffect sid (-n) (toSource attrs) target
       pure s
-    ScenarioResolution NoResolution -> do
-      push R2
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> resolution "noResolution" >> do_ R2
+        _ -> do_ msg
       pure s
-    ScenarioResolution (Resolution 1) -> do
-      story resolution1
-      record TheInvestigatorsEnteredTheGate
-      allGainXp attrs
-      endOfScenario
-      pure s
-    ScenarioResolution (Resolution 2) -> do
-      story resolution2
-      record YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
-      eachInvestigator drivenInsane
-      gameOver
+    Do (ScenarioResolution r) -> scope "resolutions" do
+      case r of
+        Resolution 1 -> do
+          resolutionWithXp "resolution1" $ allGainXp' attrs
+          record TheInvestigatorsEnteredTheGate
+          endOfScenario
+        Resolution 2 -> do
+          resolution "resolution2"
+          record YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
+          eachInvestigator drivenInsane
+          gameOver
+        other -> throwIO $ UnknownResolution other
       pure s
     PlacedLocation name _ lid -> do
       when (name == "Altered Path") $ do

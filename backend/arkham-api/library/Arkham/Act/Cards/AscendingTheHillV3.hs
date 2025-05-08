@@ -2,14 +2,12 @@ module Arkham.Act.Cards.AscendingTheHillV3 (ascendingTheHillV3) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Card
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Creation
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait
 
 newtype AscendingTheHillV3 = AscendingTheHillV3 ActAttrs
@@ -27,18 +25,15 @@ instance HasAbilities AscendingTheHillV3 where
   getAbilities (AscendingTheHillV3 x) = [mkAbility x 1 $ forced $ Enters #when You "Sentinel Peak"]
 
 instance RunMessage AscendingTheHillV3 where
-  runMessage msg a@(AscendingTheHillV3 attrs) = case msg of
+  runMessage msg a@(AscendingTheHillV3 attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ AdvanceAct (toId attrs) (attrs.ability 1) #other
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       sentinelPeak <- selectJust $ LocationWithTitle "Sentinel Peak"
-      sethBishop <- genCard Enemies.sethBishop
-      createSethBishop <- createEnemyAt_ sethBishop sentinelPeak (Just $ toTarget attrs)
-      pushAll [createSethBishop, advanceActDeck attrs]
-      pure a
-    CreatedEnemyAt eid _ target | isTarget attrs target -> do
       damage <- perPlayer 1
-      push $ PlaceDamage (toSource attrs) (toTarget eid) damage
+      createSetAsideEnemyWith_ Enemies.sethBishop sentinelPeak \x ->
+        x {enemyCreationBefore = [PlaceTokens (toSource attrs) (toTarget x.enemy) #damage damage]}
+      advanceActDeck attrs
       pure a
-    _ -> AscendingTheHillV3 <$> runMessage msg attrs
+    _ -> AscendingTheHillV3 <$> liftRunMessage msg attrs

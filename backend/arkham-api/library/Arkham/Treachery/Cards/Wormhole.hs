@@ -1,17 +1,10 @@
-module Arkham.Treachery.Cards.Wormhole (
-  wormhole,
-  Wormhole (..),
-) where
+module Arkham.Treachery.Cards.Wormhole (wormhole) where
 
-import Arkham.Prelude
-
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
-import Arkham.Movement
+import Arkham.Message.Lifted.Move
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Wormhole = Wormhole TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -21,20 +14,12 @@ wormhole :: TreacheryCard Wormhole
 wormhole = treachery Wormhole Cards.wormhole
 
 instance RunMessage Wormhole where
-  runMessage msg t@(Wormhole attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      push
-        $ DiscardUntilFirst
-          iid
-          source
-          Deck.EncounterDeck
-          (BasicCardMatch $ CardWithType LocationType)
+  runMessage msg t@(Wormhole attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      discardUntilFirst iid attrs Deck.EncounterDeck (basic #location)
       pure t
-    RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) ->
-      do
-        pushAll
-          [ InvestigatorDrewEncounterCard iid card
-          , Move $ moveToMatch (toSource attrs) iid (LocationWithCardId $ toCardId card)
-          ]
-        pure t
-    _ -> Wormhole <$> runMessage msg attrs
+    RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) -> do
+      drawCard iid card
+      moveToMatch attrs iid (LocationWithCardId card.id)
+      pure t
+    _ -> Wormhole <$> liftRunMessage msg attrs

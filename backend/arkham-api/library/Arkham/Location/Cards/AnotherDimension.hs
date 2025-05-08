@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.AnotherDimension (anotherDimension, AnotherDimension (..)) where
+module Arkham.Location.Cards.AnotherDimension (anotherDimension) where
 
 import Arkham.Ability
 import Arkham.GameValue

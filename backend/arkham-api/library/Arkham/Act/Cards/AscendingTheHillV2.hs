@@ -2,13 +2,10 @@ module Arkham.Act.Cards.AscendingTheHillV2 (ascendingTheHillV2) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Card
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait
 
 newtype AscendingTheHillV2 = AscendingTheHillV2 ActAttrs
@@ -26,14 +23,13 @@ instance HasAbilities AscendingTheHillV2 where
   getAbilities (AscendingTheHillV2 x) = [mkAbility x 1 $ forced $ Enters #when You "Sentinel Peak"]
 
 instance RunMessage AscendingTheHillV2 where
-  runMessage msg a@(AscendingTheHillV2 attrs) = case msg of
+  runMessage msg a@(AscendingTheHillV2 attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ AdvanceAct (toId attrs) (attrs.ability 1) #other
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       sentinelPeak <- selectJust $ LocationWithTitle "Sentinel Peak"
-      sethBishop <- genCard Enemies.sethBishop
-      createSethBishop <- createEnemyAt_ sethBishop sentinelPeak Nothing
-      pushAll [createSethBishop, advanceActDeck attrs]
+      createEnemyAt_ Enemies.sethBishop sentinelPeak
+      advanceActDeck attrs
       pure a
-    _ -> AscendingTheHillV2 <$> runMessage msg attrs
+    _ -> AscendingTheHillV2 <$> liftRunMessage msg attrs

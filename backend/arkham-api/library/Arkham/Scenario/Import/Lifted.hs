@@ -53,3 +53,6 @@ resolutionWithXp :: (HasI18n, ReverseQueue m) => Scope -> m Int -> m ()
 resolutionWithXp s f = do
   xp <- f
   story $ withVars ["xp" .= xp] $ i18nWithTitle s
+
+resolution :: (HasI18n, ReverseQueue m) => Scope -> m ()
+resolution = story . i18nWithTitle

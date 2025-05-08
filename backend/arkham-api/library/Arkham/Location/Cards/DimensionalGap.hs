@@ -1,15 +1,11 @@
 module Arkham.Location.Cards.DimensionalGap (dimensionalGap) where
 
 import Arkham.Ability
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (dimensionalGap)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype DimensionalGap = DimensionalGap LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,22 +15,14 @@ dimensionalGap :: LocationCard DimensionalGap
 dimensionalGap = location DimensionalGap Cards.dimensionalGap 3 (PerPlayer 1)
 
 instance HasAbilities DimensionalGap where
-  getAbilities (DimensionalGap attrs) =
-    withRevealedAbilities
-      attrs
-      [ mkAbility attrs 1
-          $ ForcedAbility
-          $ RevealLocation Timing.After You
-          $ LocationWithId
-          $ toId attrs
-      ]
+  getAbilities (DimensionalGap a) = extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
 
 instance RunMessage DimensionalGap where
-  runMessage msg l@(DimensionalGap attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      lead <- getLead
-      push $ DiscardUntilFirst lead source Deck.EncounterDeck $ BasicCardMatch $ CardWithType EnemyType
+  runMessage msg l@(DimensionalGap attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      discardUntilFirst iid (attrs.ability 1) Deck.EncounterDeck #enemy
       pure l
-    RequestedEncounterCard source _ (Just ec) | isSource attrs source -> do
-      l <$ push (SpawnEnemyAt (EncounterCard ec) (toId attrs))
-    _ -> DimensionalGap <$> runMessage msg attrs
+    RequestedEncounterCard (isSource attrs -> True) _ (Just ec) -> do
+      spawnEnemyAt_ ec attrs
+      pure l
+    _ -> DimensionalGap <$> liftRunMessage msg attrs

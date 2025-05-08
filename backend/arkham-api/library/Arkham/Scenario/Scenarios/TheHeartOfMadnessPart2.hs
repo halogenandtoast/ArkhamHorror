@@ -207,8 +207,8 @@ instance RunMessage TheHeartOfMadnessPart2 where
       chooseTargetM lead ls (\l -> reveal l >> moveAllTo attrs l)
 
       pure s
-    ScenarioResolution resolution -> scope "resolutions" do
-      case resolution of
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
         NoResolution -> do
           story $ i18nWithTitle "noResolution"
           record TheNamelessMadnessEscaped
@@ -252,7 +252,7 @@ instance RunMessage TheHeartOfMadnessPart2 where
           eachInvestigator (`sufferPhysicalTrauma` 2)
           eachInvestigator (`sufferMentalTrauma` 2)
           endOfScenario
-        _ -> throwIO $ UnknownResolution resolution
+        _ -> throwIO $ UnknownResolution r
       pure s
     HandleOption option -> do
       investigators <- allInvestigators

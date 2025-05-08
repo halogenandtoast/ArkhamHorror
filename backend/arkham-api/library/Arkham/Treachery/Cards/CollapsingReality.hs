@@ -1,17 +1,9 @@
-module Arkham.Treachery.Cards.CollapsingReality (
-  collapsingReality,
-  CollapsingReality (..),
-) where
+module Arkham.Treachery.Cards.CollapsingReality (collapsingReality) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Types (Field (..))
-import Arkham.Projection
+import Arkham.Matcher
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype CollapsingReality = CollapsingReality TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -21,20 +13,12 @@ collapsingReality :: TreacheryCard CollapsingReality
 collapsingReality = treachery CollapsingReality Cards.collapsingReality
 
 instance RunMessage CollapsingReality where
-  runMessage msg t@(CollapsingReality attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      mlid <- field InvestigatorLocation iid
-      let other = assignDamage iid source 2
-      case mlid of
-        Nothing -> push other
+  runMessage msg t@(CollapsingReality attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      selectOne (locationWithInvestigator iid <> withTrait Extradimensional) >>= \case
+        Nothing -> assignDamage iid attrs 2
         Just lid -> do
-          isExtradimensional <- fieldP LocationTraits (member Extradimensional) lid
-          pushAll
-            $ if isExtradimensional
-              then
-                [ toDiscardBy iid attrs lid
-                , InvestigatorAssignDamage iid source DamageAny 1 0
-                ]
-              else [other]
+          toDiscardBy iid attrs lid
+          assignDamage iid attrs 1
       pure t
-    _ -> CollapsingReality <$> runMessage msg attrs
+    _ -> CollapsingReality <$> liftRunMessage msg attrs

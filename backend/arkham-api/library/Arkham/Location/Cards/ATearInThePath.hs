@@ -1,12 +1,10 @@
 module Arkham.Location.Cards.ATearInThePath (aTearInThePath) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (aTearInThePath)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype ATearInThePath = ATearInThePath LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -23,8 +21,8 @@ instance HasAbilities ATearInThePath where
       $ RevealLocation #after You (be attrs)
 
 instance RunMessage ATearInThePath where
-  runMessage msg l@(ATearInThePath attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push (InvestigatorAssignDamage iid source DamageAny 2 0)
+  runMessage msg l@(ATearInThePath attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignDamage iid (attrs.ability 1) 2
       pure l
-    _ -> ATearInThePath <$> runMessage msg attrs
+    _ -> ATearInThePath <$> liftRunMessage msg attrs

@@ -1,14 +1,8 @@
-module Arkham.Act.Cards.ThePathToTheHill (
-  ThePathToTheHill (..),
-  thePathToTheHill,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.ThePathToTheHill (thePathToTheHill) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
 
 newtype ThePathToTheHill = ThePathToTheHill ActAttrs
@@ -19,25 +13,21 @@ thePathToTheHill :: ActCard ThePathToTheHill
 thePathToTheHill = act (1, A) ThePathToTheHill Cards.thePathToTheHill Nothing
 
 instance HasAbilities ThePathToTheHill where
-  getAbilities (ThePathToTheHill x)
-    | onSide A x =
-        [ mkAbility x 1 $ Objective $ ForcedAbilityWithCost FastPlayerWindow (GroupClueCost (PerPlayer 2) Anywhere)
-        ]
-  getAbilities _ = []
+  getAbilities = actAbilities \x ->
+    [ mkAbility x 1
+        $ Objective
+        $ ForcedAbilityWithCost FastPlayerWindow (GroupClueCost (PerPlayer 2) Anywhere)
+    ]
 
 instance RunMessage ThePathToTheHill where
-  runMessage msg a@(ThePathToTheHill attrs@ActAttrs {..}) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithClues
+  runMessage msg a@(ThePathToTheHill attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithClues attrs
       pure a
-    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
-      locations <- selectTargets Anywhere
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      selectEach Anywhere (removeAllClues (attrs.ability 1))
       ascendingPath <- selectJust $ LocationWithTitle "Ascending Path"
-      pushAll
-        $ map (RemoveAllClues (toSource attrs)) locations
-        <> [ RevealLocation Nothing ascendingPath
-           , advanceActDeck attrs
-           ]
-
+      reveal ascendingPath
+      advanceActDeck attrs
       pure a
-    _ -> ThePathToTheHill <$> runMessage msg attrs
+    _ -> ThePathToTheHill <$> liftRunMessage msg attrs

@@ -2,11 +2,9 @@ module Arkham.Act.Cards.AscendingTheHillV1 (ascendingTheHillV1) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait
 
 newtype AscendingTheHillV1 = AscendingTheHillV1 ActAttrs
@@ -24,11 +22,11 @@ instance HasAbilities AscendingTheHillV1 where
   getAbilities (AscendingTheHillV1 x) = [mkAbility x 1 $ forced $ Enters #when You "Sentinel Peak"]
 
 instance RunMessage AscendingTheHillV1 where
-  runMessage msg a@(AscendingTheHillV1 attrs) = case msg of
+  runMessage msg a@(AscendingTheHillV1 attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ AdvanceAct (toId attrs) (attrs.ability 1) #other
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      push $ advanceActDeck attrs
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      advanceActDeck attrs
       pure a
-    _ -> AscendingTheHillV1 <$> runMessage msg attrs
+    _ -> AscendingTheHillV1 <$> liftRunMessage msg attrs

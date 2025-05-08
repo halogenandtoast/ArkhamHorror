@@ -189,8 +189,8 @@ instance RunMessage DevilReef where
             assignHorror iid ElderThing 1
           _ -> pure ()
       pure s
-    ScenarioResolution resolution -> do
-      case resolution of
+    ScenarioResolution r -> do
+      case r of
         NoResolution -> push R1
         Resolution 1 -> do
           story $ scope "resolutions" $ i18nWithTitle "resolution1"
@@ -222,6 +222,6 @@ instance RunMessage DevilReef where
               (False, False, True) -> HasBlackKey
               _ -> HasNoKeys
           endOfScenarioThen (InterludeStep 3 (Just interludeKey))
-        _ -> throw $ UnknownResolution resolution
+        _ -> throw $ UnknownResolution r
       pure s
     _ -> DevilReef <$> liftRunMessage msg attrs

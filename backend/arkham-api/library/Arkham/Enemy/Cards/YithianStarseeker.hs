@@ -1,16 +1,9 @@
-module Arkham.Enemy.Cards.YithianStarseeker (
-  yithianStarseeker,
-  YithianStarseeker (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.YithianStarseeker (yithianStarseeker) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype YithianStarseeker = YithianStarseeker EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -18,29 +11,19 @@ newtype YithianStarseeker = YithianStarseeker EnemyAttrs
 
 yithianStarseeker :: EnemyCard YithianStarseeker
 yithianStarseeker =
-  enemyWith
-    YithianStarseeker
-    Cards.yithianStarseeker
-    (3, Static 4, 5)
-    (2, 1)
-    (spawnAtL ?~ SpawnAt (LocationWithTitle "Another Dimension"))
+  enemy YithianStarseeker Cards.yithianStarseeker (3, Static 4, 5) (2, 1)
+    & setSpawnAt "Another Dimension"
 
 instance HasAbilities YithianStarseeker where
-  getAbilities (YithianStarseeker attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1
-          $ ForcedAbility
-          $ EnemyAttacks
-            Timing.When
-            (DiscardWith $ LengthIs $ GreaterThan $ Static 10)
-            AnyEnemyAttack
-          $ EnemyWithId
-          $ toId attrs
-      ]
+  getAbilities (YithianStarseeker a) =
+    extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ EnemyAttacks #when (DiscardWith $ LengthIs $ GreaterThan $ Static 10) AnyEnemyAttack (be a)
 
 instance RunMessage YithianStarseeker where
-  runMessage msg e@(YithianStarseeker attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      e <$ push (PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1)
-    _ -> YithianStarseeker <$> runMessage msg attrs
+  runMessage msg e@(YithianStarseeker attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeDoom (attrs.ability 1) attrs 1
+      pure e
+    _ -> YithianStarseeker <$> liftRunMessage msg attrs

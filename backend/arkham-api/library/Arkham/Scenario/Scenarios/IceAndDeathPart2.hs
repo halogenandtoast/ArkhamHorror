@@ -290,8 +290,8 @@ instance RunMessage IceAndDeathPart2 where
       let weaknesses = filter (`cardMatch` WeaknessCard) cards
       when (notNull weaknesses) $ addToHand iid weaknesses
       pure s
-    ScenarioResolution resolution -> scope "resolutions" do
-      case resolution of
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
         NoResolution -> do
           storyWithChooseOneM (i18nWithTitle "noResolution") do
             labeled "Proceed to _Resolution 1_" $ push R1

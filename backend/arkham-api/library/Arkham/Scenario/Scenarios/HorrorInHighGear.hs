@@ -196,15 +196,15 @@ instance RunMessage HorrorInHighGear where
     ResolveChaosToken _ ElderThing _iid -> do
       when (isHardExpert attrs) $ push HuntersMove
       pure s
-    ScenarioResolution resolution -> scope "resolutions" do
-      case resolution of
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
         NoResolution -> do
           story $ i18nWithTitle "noResolution"
           record TheInvestigatorsReachedFalconPointAfterSunrise
         Resolution 1 -> do
           story $ i18nWithTitle "resolution1"
           record TheInvestigatorsReachedFalconPointBeforeSunrise
-        _ -> throw $ UnknownResolution resolution
+        other -> throw $ UnknownResolution other
 
       allGainXp attrs
       endOfScenario

@@ -7,9 +7,8 @@ import Arkham.Label (mkLabel)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Choose
-import Arkham.Movement
+import Arkham.Message.Lifted.Move
 import Arkham.Name
 import Control.Monad.Extra (findM)
 
@@ -54,6 +53,6 @@ instance RunMessage StrangeGeometry where
       toDiscard attrs attrs
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ Move $ moveToMatch attrs iid $ RevealedLocation <> NotLocation (LocationWithId $ toId attrs)
+      moveToMatch attrs iid $ RevealedLocation <> NotLocation (LocationWithId $ toId attrs)
       pure l
     _ -> StrangeGeometry <$> liftRunMessage msg attrs

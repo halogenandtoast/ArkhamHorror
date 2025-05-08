@@ -1,27 +1,18 @@
-module Arkham.Agenda.Cards.BeckoningForPower (
-  BeckoningForPower (..),
-  beckoningForPower,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.BeckoningForPower (beckoningForPower) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
-import Arkham.Resolution
+import Arkham.Agenda.Import.Lifted
 
 newtype BeckoningForPower = BeckoningForPower AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 beckoningForPower :: AgendaCard BeckoningForPower
-beckoningForPower =
-  agenda (2, A) BeckoningForPower Cards.beckoningForPower (Static 10)
+beckoningForPower = agenda (2, A) BeckoningForPower Cards.beckoningForPower (Static 10)
 
 instance RunMessage BeckoningForPower where
-  runMessage msg a@(BeckoningForPower attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid
-      | aid == agendaId && onSide B attrs ->
-          a <$ push (ScenarioResolution $ Resolution 2)
-    _ -> BeckoningForPower <$> runMessage msg attrs
+  runMessage msg a@(BeckoningForPower attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      push R2
+      pure a
+    _ -> BeckoningForPower <$> liftRunMessage msg attrs

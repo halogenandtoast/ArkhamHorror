@@ -1,10 +1,12 @@
 module Arkham.Location.Cards.IndecipherableStairs (indecipherableStairs) where
 
 import Arkham.Ability
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.LostInTimeAndSpace.Helpers
 
 newtype IndecipherableStairs = IndecipherableStairs LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -24,7 +26,7 @@ instance RunMessage IndecipherableStairs where
       pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid do
-        labeled "Take 2 Horror" $ assignHorror iid (attrs.ability 1) 2
-        labeled "Discard Indecipherable Stairs" $ toDiscardBy iid (attrs.ability 1) attrs
+        withI18n $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 2
+        scenarioI18n $ labeled "indecipherableStairs.discard" $ toDiscardBy iid (attrs.ability 1) attrs
       pure l
     _ -> IndecipherableStairs <$> liftRunMessage msg attrs

@@ -1,10 +1,12 @@
 module Arkham.Location.Cards.UnstableVortex (unstableVortex) where
 
 import Arkham.Ability
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.LostInTimeAndSpace.Helpers
 
 newtype UnstableVortex = UnstableVortex LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -23,12 +25,12 @@ instance RunMessage UnstableVortex where
       tearThroughSpace <- select $ locationIs Cards.tearThroughSpace
       unless (null tearThroughSpace) do
         chooseOneM iid do
-          questionLabeled "Choose tear through space to discard"
+          scenarioI18n $ questionLabeled' "unstableVortex.chooseTearThroughSpace"
           targets tearThroughSpace $ toDiscardBy iid attrs
       pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid do
-        labeled "Draw the top card of the encounter deck" $ drawEncounterCard iid (attrs.ability 1)
-        labeled "Shuffle Unstable Vortex into the encounter deck" $ shuffleBackIntoEncounterDeck attrs
+        withI18n $ labeled' "drawTopCardOfEncounterDeck" $ drawEncounterCard iid (attrs.ability 1)
+        scenarioI18n $ labeled' "unstableVortex.shuffle" $ shuffleBackIntoEncounterDeck attrs
       pure l
     _ -> UnstableVortex <$> liftRunMessage msg attrs

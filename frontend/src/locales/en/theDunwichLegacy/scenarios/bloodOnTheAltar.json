@@ -54,6 +54,11 @@
     "xp": {
       "bonus": "Gains insight into the hidden world of the Mythos"
     }
+  },
+  "tooltips": {
+    "villageCommons": {
+      "resign": "\"This is suicide! We're better off hiding out the night.\""
+    }
   }
 }
 

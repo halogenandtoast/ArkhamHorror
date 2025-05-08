@@ -1,6 +1,7 @@
 module Arkham.Treachery.Cards.EldritchAccord (eldritchAccord) where
 
 import Arkham.Capability
+import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
@@ -20,16 +21,16 @@ instance RunMessage EldritchAccord where
       doStep 2 msg
       doStep 3 msg
       pure t
-    DoStep 1 (Revelation iid (isSource attrs -> True)) -> do
+    DoStep 1 (Revelation iid (isSource attrs -> True)) -> withI18n do
       whenM (can.draw.cards iid) do
         chooseOneM iid do
-          labeled "Draw 1 card" $ drawCards iid attrs 1
-          labeled "Do not draw" nothing
+          countVar 1 $ labeled' "drawCards" $ drawCards iid attrs 1
+          labeled' "doNotDraw" nothing
       pure t
-    DoStep 2 (Revelation iid (isSource attrs -> True)) -> do
+    DoStep 2 (Revelation iid (isSource attrs -> True)) -> withI18n do
       hand <- iid.hand
       focusCards hand do
-        chooseUpToNM iid 2 "Done discarding" do
+        chooseUpToNM' iid 2 "doneDiscarding" do
           targets hand (discardCard iid attrs)
       pure t
     DoStep 3 (Revelation iid (isSource attrs -> True)) -> do

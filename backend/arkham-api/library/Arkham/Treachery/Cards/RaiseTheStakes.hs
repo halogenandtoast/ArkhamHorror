@@ -1,7 +1,8 @@
 module Arkham.Treachery.Cards.RaiseTheStakes (raiseTheStakes) where
 
 import Arkham.Helpers.Act (getCurrentActStep)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectWhen)
+import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Keyword
 import Arkham.Matcher
@@ -11,6 +12,7 @@ import Arkham.Message.Lifted.Placement
 import Arkham.Name qualified as Name
 import Arkham.Placement
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.TheHouseAlwaysWins.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -27,8 +29,7 @@ instance HasModifiersFor RaiseTheStakes where
       InThreatArea iid -> do
         modifySelect attrs (EnemyAt $ locationWithInvestigator iid) [RemoveKeyword Aloof]
         n <- getCurrentActStep
-        when (n >= 2) do
-          modifySelect attrs (enemyEngagedWith iid) [EnemyFight 1, EnemyEvade 1]
+        modifySelectWhen attrs (n >= 2) (enemyEngagedWith iid) [EnemyFight 1, EnemyEvade 1]
       _ -> pure ()
 
 instance RunMessage RaiseTheStakes where
@@ -37,9 +38,8 @@ instance RunMessage RaiseTheStakes where
       name <- iid.name
       hasResources <- (> 0) <$> iid.resources
       chooseOneM iid do
-        labeled "Remember that you have \"cheated.\"" $ remember $ Cheated $ Name.labeled name iid
-        when hasResources do
-          labeled "Lose 5 resources" $ loseResources iid attrs 5
-        labeled "Put Raise the Stakes into play in your threat area" $ place attrs (InThreatArea iid)
+        scenarioI18n $ labeled' "cheated" $ remember $ Cheated $ Name.labeled name iid
+        when hasResources $ withI18n $ countVar 5 $ labeled' "loseResources" $ loseResources iid attrs 5
+        scenarioI18n $ labeled "raiseTheStakes.place" $ place attrs (InThreatArea iid)
       pure t
     _ -> RaiseTheStakes <$> liftRunMessage msg attrs

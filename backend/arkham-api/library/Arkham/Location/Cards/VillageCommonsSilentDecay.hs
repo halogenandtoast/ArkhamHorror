@@ -1,9 +1,11 @@
 module Arkham.Location.Cards.VillageCommonsSilentDecay (villageCommonsSilentDecay) where
 
+import Arkham.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenarios.BloodOnTheAltar.Helpers
 
 newtype VillageCommonsSilentDecay = VillageCommonsSilentDecay LocationAttrs
   deriving anyclass IsLocation
@@ -23,8 +25,9 @@ instance HasModifiersFor VillageCommonsSilentDecay where
     modifySelect a (investigatorAt a) [CannotTakeAction #draw, CannotTakeAction #resource]
 
 instance HasAbilities VillageCommonsSilentDecay where
-  getAbilities (VillageCommonsSilentDecay a) = extendRevealed1 a $ locationResignAction a
+  getAbilities (VillageCommonsSilentDecay a) =
+    extendRevealed1 a $ scenarioI18n $ withI18nTooltip "villageCommons.resign" $ locationResignAction a
 
 instance RunMessage VillageCommonsSilentDecay where
-  runMessage msg (VillageCommonsSilentDecay attrs) = runQueueT $ case msg of
-    _ -> VillageCommonsSilentDecay <$> liftRunMessage msg attrs
+  runMessage msg (VillageCommonsSilentDecay attrs) =
+    VillageCommonsSilentDecay <$> runMessage msg attrs

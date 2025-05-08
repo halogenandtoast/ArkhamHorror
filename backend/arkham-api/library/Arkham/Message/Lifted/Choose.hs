@@ -138,6 +138,11 @@ chooseUpToNM iid n done choices = do
   (_, choices') <- runChooseT choices
   unless (null choices') $ chooseUpToN iid n done choices'
 
+chooseUpToNM' :: (HasI18n, ReverseQueue m) => InvestigatorId -> Int -> Text -> ChooseT m a -> m ()
+chooseUpToNM' iid n done choices = do
+  let lbl = "$" <> ikey ("label." <> done)
+  chooseUpToNM iid n lbl choices
+
 chooseOneAtATimeM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOneAtATimeM iid choices = do
   (_, choices') <- runChooseT choices

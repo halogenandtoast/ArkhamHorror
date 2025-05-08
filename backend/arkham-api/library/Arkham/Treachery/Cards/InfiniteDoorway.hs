@@ -4,6 +4,7 @@ import Arkham.Card
 import Arkham.Cost
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
@@ -33,7 +34,7 @@ instance RunMessage InfiniteDoorway where
     Revelation iid (isSource attrs -> True) -> do
       withLocationOf iid $ attachTreachery attrs
       pure t
-    DiscardedTopOfDeck iid cards _ (isTarget attrs -> True) -> do
+    DiscardedTopOfDeck iid cards _ (isTarget attrs -> True) -> withI18n do
       for_ cards \card -> do
         if card `cardMatch` WeaknessCard
           then drawCard iid card
@@ -42,10 +43,10 @@ instance RunMessage InfiniteDoorway where
             assets <- select $ AssetWithTitle card.title <> assetInPlayAreaOf iid <> DiscardableAsset
             chooseOneAtATimeM iid do
               targets handCards \card' -> chooseOneM iid do
-                labeled "Discard from hand" $ discardCard iid attrs card'
-                labeled "Take 1 horror" $ assignHorror iid attrs 1
+                labeled' "discardFromHand" $ discardCard iid attrs card'
+                countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
               targets assets \asset -> chooseOneM iid do
-                labeled "Discard from play" $ toDiscardBy iid attrs asset
-                labeled "Take 1 horror" $ assignHorror iid attrs 1
+                labeled' "discardFromPlay" $ toDiscardBy iid attrs asset
+                countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
       pure t
     _ -> InfiniteDoorway <$> liftRunMessage msg attrs

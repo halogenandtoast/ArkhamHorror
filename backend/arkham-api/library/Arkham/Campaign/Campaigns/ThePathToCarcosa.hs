@@ -1,4 +1,4 @@
-module Arkham.Campaign.Campaigns.ThePathToCarcosa (thePathToCarcosa) where
+module Arkham.Campaign.Campaigns.ThePathToCarcosa (thePathToCarcosa, ThePathToCarcosa(..)) where
 
 import Arkham.Campaign.Import.Lifted
 import Arkham.CampaignLogKey

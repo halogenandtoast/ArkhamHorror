@@ -52,4 +52,5 @@ allCampaigns =
     , ("08", SomeCampaign edgeOfTheEarth)
     , ("50", SomeCampaign returnToNightOfTheZealot)
     , ("51", SomeCampaign returnToTheDunwichLegacy)
+    , ("52", SomeCampaign returnToThePathToCarcosa)
     ]

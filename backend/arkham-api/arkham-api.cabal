@@ -239,8 +239,11 @@ library
       Arkham.Act.Cards.TheSecondOath
       Arkham.Act.Cards.TheSpectralRealm
       Arkham.Act.Cards.TheStrangerACityAflame
+      Arkham.Act.Cards.TheStrangerAlaranMists
+      Arkham.Act.Cards.TheStrangerHereIsMyReply
       Arkham.Act.Cards.TheStrangerThePathIsMine
       Arkham.Act.Cards.TheStrangerTheShoresOfHali
+      Arkham.Act.Cards.TheStrangerUnderTheCity
       Arkham.Act.Cards.TheThingInTheRobes
       Arkham.Act.Cards.TheThirdOath
       Arkham.Act.Cards.TheTrialOfNashtAndKamanThah
@@ -1418,6 +1421,7 @@ library
       Arkham.Campaign.Campaigns.NightOfTheZealot
       Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot
       Arkham.Campaign.Campaigns.ReturnToTheDunwichLegacy
+      Arkham.Campaign.Campaigns.ReturnToThePathToCarcosa
       Arkham.Campaign.Campaigns.TheCircleUndone
       Arkham.Campaign.Campaigns.TheDreamEaters
       Arkham.Campaign.Campaigns.TheDunwichLegacy
@@ -3430,6 +3434,7 @@ library
       Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel
       Arkham.Scenario.Scenarios.PointOfNoReturn
       Arkham.Scenario.Scenarios.ReturnToBloodOnTheAltar
+      Arkham.Scenario.Scenarios.ReturnToCurtainCall
       Arkham.Scenario.Scenarios.ReturnToExtracurricularActivities
       Arkham.Scenario.Scenarios.ReturnToLostInTimeAndSpace
       Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow

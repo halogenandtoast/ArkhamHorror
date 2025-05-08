@@ -645,6 +645,7 @@ allScenarios =
     , ("51041", SomeScenario returnToUndimensionedAndUnseen)
     , ("51047", SomeScenario returnToWhereDoomAwaits)
     , ("51053", SomeScenario returnToLostInTimeAndSpace)
+    , ("52014", SomeScenario returnToCurtainCall)
     , ("81001", SomeScenario curseOfTheRougarou)
     , ("82001", SomeScenario carnevaleOfHorrors)
     , ("84001", SomeScenario murderAtTheExcelsiorHotel)

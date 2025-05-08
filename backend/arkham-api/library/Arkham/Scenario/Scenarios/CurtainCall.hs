@@ -1,10 +1,11 @@
-module Arkham.Scenario.Scenarios.CurtainCall (curtainCall) where
+module Arkham.Scenario.Scenarios.CurtainCall (curtainCall, CurtainCall (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location
 import Arkham.Helpers.Query
 import Arkham.Investigator.Types (Field (..))
@@ -18,7 +19,7 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.CurtainCall.Story
+import Arkham.Scenarios.CurtainCall.Helpers
 import Arkham.Token
 
 newtype CurtainCall = CurtainCall ScenarioAttrs
@@ -50,14 +51,22 @@ instance HasChaosTokenValue CurtainCall where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage CurtainCall where
-  runMessage msg s@(CurtainCall attrs) = runQueueT $ case msg of
+  runMessage msg s@(CurtainCall attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story intro
+      flavor $ scope "intro" $ h "title" >> p "body"
       pure s
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     Setup -> runScenarioSetup CurtainCall attrs do
+      setup do
+        ul do
+          li "gatherSets"
+          li "setAside"
+          li.nested "placeLocations.instructions" do
+            li "placeLocations.lola"
+          unscoped $ li "shuffleRemainder"
+
       gather Set.CurtainCall
       gather Set.EvilPortents
       gather Set.Delusions
@@ -105,17 +114,17 @@ instance RunMessage CurtainCall where
         , Acts.theStrangerTheShoresOfHali
         , Acts.curtainCall
         ]
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scope "resolutions" do
       let stoleFromTheBoxOffice = member StoleFromTheBoxOffice attrs.log
       case r of
-        NoResolution -> story noResolution
+        NoResolution -> resolutionWithXp "noResolution" $ allGainXp' attrs
         Resolution 1 -> do
-          story resolution1
+          resolutionWithXp "resolution1" $ allGainXp' attrs
           record YouTriedToWarnThePolice
           markConviction
           when stoleFromTheBoxOffice $ record ThePoliceAreSuspiciousOfYou
         Resolution 2 -> do
-          story resolution2
+          resolutionWithXp "resolution2" $ allGainXp' attrs
           record YouChoseNotToGoToThePolice
           markDoubt
           when stoleFromTheBoxOffice $ record ThePoliceAreSuspiciousOfYou
@@ -124,7 +133,6 @@ instance RunMessage CurtainCall where
       record TheStrangerIsOnToYou
       lead <- getLead
       addCampaignCardToDeck lead DoNotShuffleIn Enemies.theManInThePallidMask
-      allGainXp attrs
       endOfScenario
       pure s
     ResolveChaosToken _ chaosTokenFace iid | chaosTokenFace `elem` [Cultist, Tablet, ElderThing] -> do

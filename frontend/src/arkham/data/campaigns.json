@@ -391,7 +391,7 @@
       }
     ]
   },
-  { "id": "03", "name": "The Path to Carcosa" },
+  { "id": "03", "name": "The Path to Carcosa", "returnToId": "52" },
   { "id": "04", "name": "The Forgotten Age" },
   { "id": "05", "name": "The Circle Undone", "settings": [
     {

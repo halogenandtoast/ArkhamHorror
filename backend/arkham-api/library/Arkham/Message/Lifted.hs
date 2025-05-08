@@ -1964,9 +1964,11 @@ insertAfterMatching
   :: (HasCallStack, MonadTrans t, HasQueue msg m) => [msg] -> (msg -> Bool) -> t m ()
 insertAfterMatching msgs p = lift $ Msg.insertAfterMatching msgs p
 
--- Usage:
---      atEndOfTurn iid do
---        addToHand iid (toCard attrs)
+afterMove :: HasQueue Message m => a -> InvestigatorId -> QueueT Message m () -> m ()
+afterMove _a _iid body = do
+  _ <- evalQueueT body
+  pure ()
+
 atEndOfTurn
   :: (Sourceable a, HasQueue Message m)
   => a

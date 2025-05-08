@@ -215,8 +215,11 @@ allActCards =
       , theSecondOath
       , theSpectralRealm
       , theStrangerACityAflame
+      , theStrangerAlaranMists
+      , theStrangerHereIsMyReply
       , theStrangerThePathIsMine
       , theStrangerTheShoresOfHali
+      , theStrangerUnderTheCity
       , theThingInTheRobes
       , theThirdOath
       , theTrialOfNashtAndKamanThah
@@ -891,6 +894,15 @@ mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering
 
 intoTheBeyondV2 :: CardDef
 intoTheBeyondV2 = act "51055" "Into the Beyond (v. II)" 2 ReturnToLostInTimeAndSpace
+
+theStrangerAlaranMists :: CardDef
+theStrangerAlaranMists = act "52015" "The Stranger" 2 ReturnToCurtainCall
+
+theStrangerUnderTheCity :: CardDef
+theStrangerUnderTheCity = act "52016" "The Stranger" 2 ReturnToCurtainCall
+
+theStrangerHereIsMyReply :: CardDef
+theStrangerHereIsMyReply = act "52017" "The Stranger" 2 ReturnToCurtainCall
 
 findingLadyEsprit :: CardDef
 findingLadyEsprit = act "81005" "Finding Lady Esprit" 1 TheBayou

@@ -9,7 +9,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message (getChoiceAmount, pattern MovedClues)
+import Arkham.Message (pattern MovedClues)
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Projection
@@ -27,9 +27,9 @@ instance HasAbilities Room245 where
 instance RunMessage Room245 where
   runMessage msg l@(Room245 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
       fieldMap InvestigatorDiscard headMay iid >>= \case
         Just topOfDiscard -> do
+          sid <- getRandom
           skillTestModifier sid (attrs.ability 1) topOfDiscard.id PlaceOnBottomOfDeckInsteadOfDiscard
           eachInvestigator \investigator -> do
             skillTestModifiers sid (attrs.ability 1) investigator
@@ -41,8 +41,10 @@ instance RunMessage Room245 where
                 else [CannotCommitCards AnyCard]
         Nothing -> do
           eachInvestigator \investigator -> do
+            sid <- getRandom
             skillTestModifiers sid (attrs.ability 1) investigator [CannotCommitCards AnyCard]
 
+      sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

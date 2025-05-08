@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Divination1 (divination1, Divination1 (..)) where
+module Arkham.Asset.Assets.Divination1 (divination1) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -7,7 +7,6 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Investigate
-import Arkham.Message (getChoiceAmount)
 import Arkham.Modifier
 
 newtype Divination1 = Divination1 AssetAttrs
@@ -18,7 +17,7 @@ divination1 :: AssetCard Divination1
 divination1 = asset Divination1 Cards.divination1
 
 instance HasAbilities Divination1 where
-  getAbilities (Divination1 x) = [restrictedAbility x 1 ControlsThis investigateAction_]
+  getAbilities (Divination1 x) = [restricted x 1 ControlsThis investigateAction_]
 
 instance RunMessage Divination1 where
   runMessage msg a@(Divination1 attrs) = runQueueT $ case msg of

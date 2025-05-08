@@ -729,14 +729,6 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       & (encounterDecksL . each . _2 %~ filter (`notElem` encounterCards))
       & (encounterDecksL . each . _1 %~ withDeck (filter (`notElem` encounterCards)))
       & (decksL . each %~ filterOutCards)
-  RequestSetAsideCard target cardCode -> do
-    let
-      (before, rest) = break ((== cardCode) . toCardCode) scenarioSetAsideCards
-    case rest of
-      [] -> error "requested a card that is not set aside"
-      (x : xs) -> do
-        push (RequestedSetAsideCard target x)
-        pure $ a & setAsideCardsL .~ (before <> xs)
   TakeControlOfSetAsideAsset _ card -> do
     let
       cardCode = toCardCode card

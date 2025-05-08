@@ -159,7 +159,6 @@ import Arkham.Location.Locations (
   hereticsGravesSpectral_171Effect,
   longWayAroundEffect,
   restaurantEffect,
-  tenAcreMeadow_246Effect,
   unvisitedIsleMossCoveredStepsEffect,
   unvisitedIsleStandingStonesEffect,
  )
@@ -426,7 +425,7 @@ allEffects =
     , ("02228", SomeEffect exposeWeakness1Effect)
     , ("02230", SomeEffect luckyDice2Effect)
     , ("02236", SomeEffect undimensionedAndUnseenTabletToken)
-    , ("02246", SomeEffect tenAcreMeadow_246Effect)
+    , ("02246", SomeEffect $ noop "02246")
     , ("02270", SomeEffect $ noop "02270")
     , ("02323", SomeEffect yogSothothEffect)
     , ("03005", SomeEffect williamYorickEffect)

@@ -8,7 +8,6 @@ import Arkham.Asset.Uses
 import Arkham.Discard
 import Arkham.Helpers.Message.Discard (discardFromHand)
 import Arkham.Investigate
-import Arkham.Message (getChoiceAmount)
 import Arkham.Modifier
 
 newtype Divination4 = Divination4 AssetAttrs

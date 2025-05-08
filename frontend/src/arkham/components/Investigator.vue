@@ -385,6 +385,7 @@ function onDrop(event: DragEvent) {
           @click="$emit('choose', ability.index)"
           />
         <button
+          :class="{ active: endTurnAction !== -1 && investigator.remainingActions === 0 }"
           :disabled="endTurnAction == -1"
           @click="$emit('choose', endTurnAction)"
         >{{ $t('investigator.endTurn') }}</button>
@@ -792,5 +793,13 @@ i.action {
 
 .captured {
   rotate: 90deg;
+}
+
+button.active {
+  background-color: var(--select-dark-20);
+  border-color: var(--select-dark-20);
+  border-radius: 2px;
+  border-style: solid;
+  color: white;
 }
 </style>

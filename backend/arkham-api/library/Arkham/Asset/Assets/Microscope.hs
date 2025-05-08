@@ -9,7 +9,6 @@ import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message (getChoiceAmount)
 import Arkham.Modifier
 import Arkham.Projection
 

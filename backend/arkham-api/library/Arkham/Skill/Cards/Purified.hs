@@ -2,7 +2,6 @@ module Arkham.Skill.Cards.Purified (purified, Purified (..)) where
 
 import Arkham.Helpers.ChaosBag (getRemainingBlessTokens)
 import Arkham.Matcher
-import Arkham.Message (getChoiceAmount)
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
 

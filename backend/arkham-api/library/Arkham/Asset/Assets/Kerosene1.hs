@@ -7,7 +7,6 @@ import Arkham.Asset.Uses
 import Arkham.Damage
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message (getChoiceAmount)
 
 newtype Kerosene1 = Kerosene1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

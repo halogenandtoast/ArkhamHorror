@@ -8,7 +8,6 @@ import Arkham.Helpers.Investigator (searchBonded)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Message (getChoiceAmount)
 import Arkham.Message.Lifted.Log
 import Arkham.Name
 import Arkham.Projection

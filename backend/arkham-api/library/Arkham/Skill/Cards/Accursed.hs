@@ -4,7 +4,6 @@ import Arkham.ChaosToken
 import Arkham.Helpers.ChaosBag (getRemainingCurseTokens)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
-import Arkham.Message (getChoiceAmount)
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
 

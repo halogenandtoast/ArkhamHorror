@@ -1,17 +1,13 @@
-module Arkham.Location.Cards.DunwichVillage_242 (
-  dunwichVillage_242,
-  DunwichVillage_242 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.DunwichVillage_242 (dunwichVillage_242) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Exception
-import Arkham.GameValue
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards (dunwichVillage_242)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Runner (locationInvestigatorsWithClues)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Trait
 
 newtype DunwichVillage_242 = DunwichVillage_242 LocationAttrs
@@ -23,48 +19,24 @@ dunwichVillage_242 =
   location DunwichVillage_242 Cards.dunwichVillage_242 3 (Static 1)
 
 instance HasAbilities DunwichVillage_242 where
-  getAbilities (DunwichVillage_242 attrs) =
-    withResignAction
-      attrs
-      [ limitedAbility (GroupLimit PerGame 1)
-        $ restrictedAbility
-          attrs
-          1
-          ( Here
-              <> InvestigatorExists (You <> InvestigatorWithAnyClues)
-              <> EnemyCriteria (EnemyExists $ EnemyWithTrait Abomination)
-          )
-          (FastAbility Free)
-      | locationRevealed attrs
+  getAbilities (DunwichVillage_242 a) =
+    extendRevealed
+      a
+      [ scenarioI18n $ withI18nTooltip "dunwichVillage.resign" $ locationResignAction a
+      , groupLimit PerGame
+          $ restricted a 1 (Here <> youExist InvestigatorWithAnyClues <> exists (EnemyWithTrait Abomination))
+          $ FastAbility Free
       ]
 
 instance RunMessage DunwichVillage_242 where
-  runMessage msg l@(DunwichVillage_242 attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      investigatorsWithClues <- locationInvestigatorsWithClues attrs
-      investigatorPlayersWithClues <- traverse (traverseToSnd getPlayer) investigatorsWithClues
+  runMessage msg l@(DunwichVillage_242 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      investigators <- locationInvestigatorsWithClues attrs
       abominations <- select $ EnemyWithTrait Abomination
-      when
-        (null investigatorsWithClues || null abominations)
-        (throwIO $ InvalidState "should not have been able to use this ability")
-      pushAll
-        [ chooseOne
-          player
-          [ Label
-              "Place clue on Abomination"
-              [ chooseOne
-                  player
-                  [ targetLabel
-                    eid
-                    [ PlaceClues (toAbilitySource attrs 1) (toTarget eid) 1
-                    , InvestigatorSpendClues iid 1
-                    ]
-                  | eid <- abominations
-                  ]
-              ]
-          , Label "Do not place clue on Abomination" []
-          ]
-        | (iid, player) <- investigatorPlayersWithClues
-        ]
+      chooseOneM iid $ scenarioI18n do
+        countVar 1 $ questionLabeled' "chooseInvestigatorToPlaceClue"
+        targets investigators \iid' -> do
+          chooseOrRunOneM iid' do
+            targets abominations \eid -> moveTokens (attrs.ability 1) iid eid #clue 1
       pure l
-    _ -> DunwichVillage_242 <$> runMessage msg attrs
+    _ -> DunwichVillage_242 <$> liftRunMessage msg attrs

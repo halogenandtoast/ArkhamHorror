@@ -1,17 +1,14 @@
-module Arkham.Location.Cards.TenAcreMeadow_247 (
-  tenAcreMeadow_247,
-  TenAcreMeadow_247 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.TenAcreMeadow_247 (tenAcreMeadow_247) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Exception
 import Arkham.GameValue
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards (tenAcreMeadow_247)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Runner (locationEnemiesWithTrait, locationInvestigatorsWithClues)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Trait
 
 newtype TenAcreMeadow_247 = TenAcreMeadow_247 LocationAttrs
@@ -19,52 +16,30 @@ newtype TenAcreMeadow_247 = TenAcreMeadow_247 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tenAcreMeadow_247 :: LocationCard TenAcreMeadow_247
-tenAcreMeadow_247 =
-  location TenAcreMeadow_247 Cards.tenAcreMeadow_247 2 (Static 3)
+tenAcreMeadow_247 = location TenAcreMeadow_247 Cards.tenAcreMeadow_247 2 (Static 3)
 
 instance HasAbilities TenAcreMeadow_247 where
-  getAbilities (TenAcreMeadow_247 attrs) =
-    withBaseAbilities
-      attrs
-      [ limitedAbility (GroupLimit PerGame 1)
-        $ restrictedAbility
-          attrs
-          1
-          ( Here
-              <> exists (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
-              <> exists (EnemyAt YourLocation <> EnemyWithTrait Abomination)
-          )
-          (FastAbility Free)
-      | locationRevealed attrs
-      ]
+  getAbilities (TenAcreMeadow_247 a) =
+    extendRevealed1 a
+      $ groupLimit PerGame
+      $ restricted
+        a
+        1
+        ( Here
+            <> exists (at_ (be a) <> InvestigatorWithAnyClues)
+            <> exists (at_ (be a) <> EnemyWithTrait Abomination)
+        )
+        (FastAbility Free)
 
 instance RunMessage TenAcreMeadow_247 where
-  runMessage msg l@(TenAcreMeadow_247 attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      investigatorsWithClues <- locationInvestigatorsWithClues attrs
-      investigatorPlayersWithClues <- traverse (traverseToSnd getPlayer) investigatorsWithClues
+  runMessage msg l@(TenAcreMeadow_247 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      investigators <- locationInvestigatorsWithClues attrs
       abominations <- locationEnemiesWithTrait attrs Abomination
-      when
-        (null investigatorsWithClues || null abominations)
-        (throwIO $ InvalidState "should not have been able to use this ability")
-      pushAll
-        [ chooseOne
-          player
-          [ Label
-              "Place clue on Abomination"
-              [ chooseOne
-                  player
-                  [ targetLabel
-                    eid
-                    [ PlaceClues (toAbilitySource attrs 1) (EnemyTarget eid) 1
-                    , InvestigatorSpendClues iid 1
-                    ]
-                  | eid <- abominations
-                  ]
-              ]
-          , Label "Do not place clue on Abomination" []
-          ]
-        | (iid, player) <- investigatorPlayersWithClues
-        ]
+      withI18n $ chooseSomeM' iid "done" $ scenarioI18n do
+        countVar 1 $ questionLabeled' "chooseInvestigatorToPlaceClue"
+        targets investigators \iid' -> do
+          chooseOrRunOneM iid' do
+            targets abominations \eid -> moveTokens (attrs.ability 1) iid eid #clue 1
       pure l
-    _ -> TenAcreMeadow_247 <$> runMessage msg attrs
+    _ -> TenAcreMeadow_247 <$> liftRunMessage msg attrs

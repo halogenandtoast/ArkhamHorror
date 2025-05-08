@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.BroodOfYogSothoth (BroodOfYogSothoth (..), broodOfYogSothoth) where
+module Arkham.Enemy.Cards.BroodOfYogSothoth (broodOfYogSothoth) where
 
 import Arkham.Asset.Cards.TheDunwichLegacy qualified as Assets
 import Arkham.DamageEffect

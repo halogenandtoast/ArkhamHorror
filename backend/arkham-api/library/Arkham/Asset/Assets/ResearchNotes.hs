@@ -8,7 +8,6 @@ import Arkham.Helpers.Investigator (getCanDiscoverClues)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Window (placedTokens)
 import Arkham.Matcher hiding (DiscoverClues)
-import Arkham.Message (getChoiceAmount)
 import Arkham.Taboo
 
 newtype ResearchNotes = ResearchNotes AssetAttrs

@@ -2,7 +2,6 @@ module Arkham.Skill.Cards.DoubleDown2 (doubleDown2) where
 
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.SkillTest (withSkillTest)
-import Arkham.Message (getChoiceAmount)
 import Arkham.Modifier
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted

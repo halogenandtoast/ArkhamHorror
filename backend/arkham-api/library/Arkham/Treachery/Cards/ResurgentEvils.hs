@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.ResurgentEvils (resurgentEvils) where
 
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -13,11 +14,9 @@ resurgentEvils = treachery ResurgentEvils Cards.resurgentEvils
 
 instance RunMessage ResurgentEvils where
   runMessage msg t@(ResurgentEvils attrs) = runQueueT $ case msg of
-    Revelation iid (isSource attrs -> True) -> do
+    Revelation iid (isSource attrs -> True) -> withI18n do
       chooseOneM iid do
-        labeled "Draw the top 2 cards of the encounter deck." do
-          drawEncounterCards iid attrs 2
-        labeled "Place 1 doom on the current agenda. This effect can cause the current agenda to advance." do
-          placeDoomOnAgendaAndCheckAdvance 1
+        countVar 2 $ labeled' "drawTopCardOfEncounterDeck" $ drawEncounterCards iid attrs 2
+        countVar 1 $ labeled' "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
       pure t
     _ -> ResurgentEvils <$> liftRunMessage msg attrs

@@ -57,6 +57,10 @@
     "skull": {
       "spend": "Spend 1 resource to treat this token as a 0, instead. | Spend {count} resources to treat this token as a 0, instead.",
       "doNotSpend": "Do not spend resources"
+    },
+    "cheated": "Remember that you have \"cheated.\"",
+    "raiseTheStakes": {
+      "place": "Put Raise the Stakes into play in your threat area"
     }
   }
 }

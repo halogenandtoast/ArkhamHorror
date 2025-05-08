@@ -62,6 +62,22 @@
     "endlessBridge": {
       "placeDoom": "Place 1 doom on Endless Bridge",
       "discard": "Discard Endless Bridge"
+    },
+    "sethBishop": {
+      "move": "Move to Another Dimension after this attack",
+      "damage": "Seth Bishop deals +2 damage for this attack"
+    },
+    "indecipherableStairs": {
+      "discard": "Discard Indecipherable Stairs"
+    },
+    "toweringLuminosity": {
+      "doom": "Place 1 doom on Towering Luminosity",
+      "flipClue": "Flip 1 clue on Towering Luminosity to its doom side",
+      "discard": "Discard Towering Luminosity"
+    },
+    "unstableVortex": {
+      "chooseTearThroughSpaces": "Choose tear through space to discard",
+      "shuffle": "Shuffle Unstable Vortex into the encounter deck"
     }
   }
 }

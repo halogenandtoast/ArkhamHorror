@@ -1,10 +1,12 @@
 module Arkham.Location.Cards.ToweringLuminosity (toweringLuminosity) where
 
+import Arkham.Ability
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Message.Lifted.Choose
 import Arkham.Matcher
-import Arkham.Ability
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.LostInTimeAndSpace.Helpers
 
 newtype ToweringLuminosity = ToweringLuminosity LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -21,14 +23,13 @@ instance RunMessage ToweringLuminosity where
   runMessage msg l@(ToweringLuminosity attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       chooseOneM iid do
-        labeled "Place 1 doom on Towering Luminosity" $ placeDoom (attrs.ability 1) attrs 1
-        labeled "Take 2 Damage" $ assignDamage iid (attrs.ability 1) 2
+        scenarioI18n $ labeled' "toweringLuminosity.doom" $ placeDoom (attrs.ability 1) attrs 1
+        withI18n $ countVar 2 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 1) 2
       pure l
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> scenarioI18n do
       chooseOneM iid do
         when (attrs.clues > 0) do
-          labeled "Flip 1 clue on Towering Luminosity to its doom side" do
-            flipCluesToDoom attrs 1
-        labeled "Discard  Towering Luminosity" $ toDiscardBy iid (attrs.ability 1) attrs
+          labeled' "toweringLuminosity.flipClue" $ flipCluesToDoom attrs 1
+        labeled' "toweringLuminosity.discard" $ toDiscardBy iid (attrs.ability 1) attrs
       pure l
     _ -> ToweringLuminosity <$> liftRunMessage msg attrs

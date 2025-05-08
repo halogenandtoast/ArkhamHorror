@@ -8,6 +8,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
+import Arkham.Scenarios.LostInTimeAndSpace.Helpers
 
 newtype SethBishopThrallOfYogSothoth = SethBishopThrallOfYogSothoth EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -31,13 +32,12 @@ instance HasAbilities SethBishopThrallOfYogSothoth where
 
 instance RunMessage SethBishopThrallOfYogSothoth where
   runMessage msg e@(SethBishopThrallOfYogSothoth attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> scenarioI18n do
       chooseOneM iid do
-        labeled "Move to Another Dimension after this attack" do
+        labeled' "sethBishop.move" do
           afterEnemyAttack attrs do
             moveTo (attrs.ability 1) iid =<< selectJust (locationIs Locations.anotherDimension)
-        labeled "Seth Bishop deals +2 damage for this attack." do
-          enemyAttackModifier (attrs.ability 1) attrs (DamageDealt 2)
+        labeled' "sethBishop.damage" $ enemyAttackModifier (attrs.ability 1) attrs (DamageDealt 2)
       pure e
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       removeFromGame attrs

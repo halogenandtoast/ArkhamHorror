@@ -1,6 +1,7 @@
 module Arkham.Treachery.Cards.InexplicableCold (inexplicableCold) where
 
 import Arkham.Card
+import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -32,7 +33,7 @@ instance RunMessage InexplicableCold where
           chooseOneM iid do
             targets assets $ toDiscardBy iid attrs
             targets hand $ discardCard iid attrs
-            labeled "Take 1 damage" $ assignDamage iid attrs 1
+            withI18n $ countVar 1 $ labeled' "takeDamage" $ assignDamage iid attrs 1
           doStep (n - 1) msg'
 
       pure t

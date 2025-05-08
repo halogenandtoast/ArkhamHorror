@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.Corrosion (corrosion, Corrosion (..)) where
+module Arkham.Treachery.Cards.Corrosion (corrosion) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card

@@ -24,7 +24,7 @@ instance HasAbilities ShieldOfFaith2 where
           ( ReactionAbility
               ( EnemyAttacks
                   #when
-                  (affectsOthers $ InvestigatorAt YourLocation)
+                  (affectsOthers $ colocatedWithMatch You)
                   (CancelableEnemyAttack AnyEnemyAttack)
                   AnyEnemy
               )

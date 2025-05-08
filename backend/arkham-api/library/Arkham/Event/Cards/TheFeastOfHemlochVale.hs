@@ -68,7 +68,7 @@ absolution =
           $ oneOf
             [ Criteria.HasRemainingBlessTokens
             , oneOf
-                [ exists $ HealableInvestigator ThisCard #horror $ InvestigatorAt YourLocation
+                [ exists $ HealableInvestigator ThisCard #horror $ colocatedWithMatch You
                 , exists $ HealableAsset ThisCard #horror $ AssetAt YourLocation
                 ]
             ]

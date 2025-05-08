@@ -15,6 +15,7 @@ import Arkham.Message.Lifted as X hiding (story)
 import Arkham.Prelude as X
 import Arkham.Source as X
 import Arkham.Story.Runner as X (
+  Is (..),
   IsStory,
   StoryAttrs,
   StoryCard,

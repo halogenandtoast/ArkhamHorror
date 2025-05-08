@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -250,7 +250,6 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gameInSearchEntities = defaultEntities
         , gamePlayers = mempty
         , gameActionRemovedEntities = mempty
-        , gameOutOfPlayEntities = mempty
         , gameActivePlayerId = PlayerId nil
         , gameActiveInvestigatorId = InvestigatorId "00000"
         , gameTurnPlayerInvestigatorId = Nothing
@@ -528,8 +527,6 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       , "otherInvestigators" .= toJSON otherInvestigators
       , "enemies" .= toJSON (runReader (traverse withEnemyMetadata (gameEnemies g)) g)
       , "assets" .= toJSON (runReader (traverse withAssetMetadata (gameAssets g)) g)
-      , "outOfPlayEnemies"
-          .= toJSON (runReader (traverse withEnemyMetadata $ g ^. outOfPlayEntitiesL . each . enemiesL) g)
       , "acts" .= toJSON (runReader (traverse withActMetadata (gameActs g)) g)
       , "agendas" .= toJSON (runReader (traverse withAgendaMetadata (gameAgendas g)) g)
       , "treacheries" .= toJSON (runReader (traverse withTreacheryMetadata (gameTreacheries g)) g)
@@ -813,6 +810,11 @@ getInvestigatorsMatching matcher = do
     MostKeys -> flip filterM as $ \i -> do
       mostKeyCount <- getMax0 <$> selectAgg (Max0 . Set.size) InvestigatorKeys UneliminatedInvestigator
       pure $ mostKeyCount == Set.size (investigatorKeys $ toAttrs i)
+    InvestigatorWithHiddenCard -> flip filterM as $ \i -> do
+      andM
+        [ selectAny $ EnemyInHandOf (InvestigatorWithId $ toId i)
+        , selectAny $ TreacheryInHandOf (InvestigatorWithId $ toId i)
+        ]
     You -> flip filterM as $ \i -> do
       you <- getInvestigator . view activeInvestigatorIdL =<< getGame
       pure $ you == i
@@ -942,6 +944,9 @@ getInvestigatorsMatching matcher = do
     NotInvestigator x -> do
       as' <- go as x
       pure $ filter (`notElem` as') as
+    InvestigatorIfLocation lMatcher i1 i2 -> do
+      ok <- selectAny lMatcher
+      if ok then go as i1 else go as i2
     InvestigatorWithPlacement p -> pure $ filter ((== p) . (.placement)) as
     InVehicleMatching am -> flip filterM as \a -> case a.placement of
       InVehicle aid -> aid <=~> am
@@ -955,6 +960,12 @@ getInvestigatorsMatching matcher = do
     SuccessfullyInvestigatedThisRound -> flip filterM as $ \i -> do
       (> 0) <$> getHistoryField RoundHistory (toId i) HistorySuccessfulInvestigations
     TakenActionThisRound actionMatcher -> do
+      flip filterM as \a -> do
+        let iid = toId a
+        taken <- nub . concat <$> field InvestigatorActionsTaken iid
+        anyM (\action -> actionMatches iid action actionMatcher) taken
+    TakenActionThisTurn actionMatcher -> do
+      -- TODO: this is the same as round for now, but it probably isn't entirely correct
       flip filterM as \a -> do
         let iid = toId a
         taken <- nub . concat <$> field InvestigatorActionsTaken iid
@@ -1748,6 +1759,9 @@ getLocationsMatching lmatcher = do
       selectNone $ treacheryAt (toId l) <> matcher
     LocationWithTreachery matcher -> flip filterM ls $ \l -> do
       selectAny $ treacheryAt (toId l) <> matcher
+    LocationWithSpaceInDirection direction matcher -> do
+      starts <- go ls matcher
+      pure $ filter (isNothing . lookup direction . attr locationDirections) starts
     LocationInDirection direction matcher -> do
       starts <- getLocationsMatching matcher
       let matches' = concat $ mapMaybe (lookup direction . attr locationDirections) starts
@@ -1762,7 +1776,7 @@ getLocationsMatching lmatcher = do
           matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
           pure $ filter ((`elem` matches') . toId) ls
     FarthestLocationFromLocation start matcher -> do
-      matchingLocationIds <- map toId <$> getLocationsMatching matcher
+      matchingLocationIds <- traceShowId . map toId <$> getLocationsMatching matcher
       matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
       pure $ filter ((`elem` matches') . toId) ls
     LocationFartherFrom pivot matcher -> do
@@ -2049,6 +2063,10 @@ getLocationsMatching lmatcher = do
     YourLocation -> guardYourLocation $ fmap (\l -> [l | l `elem` ls]) . getLocation
     NotYourLocation -> guardYourLocation
       $ \yourLocation -> pure $ filter ((/= yourLocation) . toId) ls
+    LocationSharesTraitWith inner -> do
+      traits <- Set.unions <$> selectField LocationTraits inner
+      let hasMatchingTrait = fieldP LocationTraits (any (`member` traits)) . toId
+      filterM hasMatchingTrait ls
     LocationWithTrait trait -> do
       let hasMatchingTrait = fieldP LocationTraits (trait `member`) . toId
       filterM hasMatchingTrait ls
@@ -2453,6 +2471,9 @@ getAssetsMatching matcher = do
     AssetWithFewestClues assetMatcher -> do
       matches' <- filterMatcher as assetMatcher
       mins <$> forToSnd matches' (field AssetClues . toId)
+    AssetWithMostClues assetMatcher -> do
+      matches' <- filterMatcher as assetMatcher
+      maxes <$> forToSnd matches' (field AssetClues . toId)
     AssetWithUses uType -> filterM (fieldMap AssetUses ((> 0) . findWithDefault 0 uType) . toId) as
     AssetWithoutUses -> filterM (fieldMap AssetStartingUses (== NoUses) . toId) as
     AssetWithAnyRemainingHealth -> do
@@ -2597,9 +2618,8 @@ getEventsMatching :: HasGame m => EventMatcher -> m [Event]
 getEventsMatching matcher = case matcher of
   OutOfPlayEvent inner' -> do
     inPlay <- toList . view (entitiesL . eventsL) <$> getGame
-    outOfPlayEvents <- toList . view (outOfPlayEntitiesL . each . eventsL) <$> getGame
     removedEvents <- toList . view (actionRemovedEntitiesL . eventsL) <$> getGame
-    filterMatcher (inPlay <> outOfPlayEvents <> removedEvents) inner'
+    filterMatcher (inPlay <> removedEvents) inner'
   other -> do
     events <- toList . view (entitiesL . eventsL) <$> getGame
     filterMatcher events other
@@ -2791,6 +2811,9 @@ enemyMatcherFilter es matcher' = case matcher' of
     pure $ guard cond *> es
   EnemyWhenOtherEnemy otherEnemyMatcher -> flip filterM es \enemy ->
     selectAny (not_ (EnemyWithId $ toId enemy) <> otherEnemyMatcher)
+  EnemyIfReturnTo a b -> do
+    isReturnTo <- getIsReturnTo
+    enemyMatcherFilter es $ if isReturnTo then a else b
   EnemyWithHealth -> filterM (fieldMap EnemyHealth isJust . toId) es
   CanBeAttackedBy matcher -> do
     iids <- select matcher
@@ -3073,7 +3096,7 @@ enemyMatcherFilter es matcher' = case matcher' of
     iids <- select investigatorMatcher
     pure $ flip filter es \enemy -> do
       case enemyPlacement (toAttrs enemy) of
-        Placement.StillInHand iid -> iid `elem` iids
+        Placement.HiddenInHand iid -> iid `elem` iids
         _ -> False
   EnemyIsEngagedWith investigatorMatcher -> do
     iids <- select investigatorMatcher
@@ -3162,12 +3185,14 @@ enemyMatcherFilter es matcher' = case matcher' of
   CanFightEnemy source -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers iid
+    let cannotAttackEnemy e = CannotAttackEnemy e.id `elem` modifiers'
+    let es' = filter (not . cannotAttackEnemy) es
     case listToMaybe [x | MustFight x <- modifiers'] of
       Just eid -> do
         -- Dirty Fighting has to fight the evaded enemy, we are saying this is
         -- the one that must be fought
-        pure $ filter ((== eid) . toId) es
-      Nothing -> flip filterM es \enemy -> do
+        pure $ filter ((== eid) . toId) es'
+      Nothing -> flip filterM es' \enemy -> do
         enemyModifiers <- getModifiers enemy.id
         sourceModifiers <- case source of
           AbilitySource abSource idx -> do
@@ -3220,7 +3245,10 @@ enemyMatcherFilter es matcher' = case matcher' of
                   (map (setRequestor source) $ getAbilities enemy)
   CanFightEnemyWithOverride override -> do
     iid <- view activeInvestigatorIdL <$> getGame
-    flip filterM es \enemy -> do
+    imodifiers' <- getModifiers iid
+    let cannotAttackEnemy e = CannotAttackEnemy e.id `elem` imodifiers'
+    let es' = filter (not . cannotAttackEnemy) es
+    flip filterM es' \enemy -> do
       modifiers' <- getModifiers (EnemyTarget $ toId enemy)
       let
         enemyFilters =
@@ -3718,15 +3746,21 @@ getEnemyField f e = do
       if countAllDoom then getDoomCount else pure $ enemyDoom attrs
     EnemyEvade -> do
       let
+        applyBefore (Helpers.AlternateEvadeField someField) original = case someField of
+          SomeField EnemyFight -> enemyFight
+          _ -> original
+        applyBefore _ n = n
         applyModifier (Helpers.EnemyEvade m) n = max 0 (n + m)
         applyModifier _ n = n
         applyPreModifier (Helpers.EnemyEvadeWithMin m (Min minVal)) n = max (min n minVal) (n + m)
         applyPreModifier _ n = n
-      case enemyEvade of
+
+      modifiers' <- getModifiers (EnemyTarget enemyId)
+      let mFieldValue = foldr applyBefore enemyEvade modifiers'
+      case mFieldValue of
         Nothing -> pure Nothing
         Just x -> do
           n <- calculate x
-          modifiers' <- getModifiers (EnemyTarget enemyId)
           pure . Just $ foldr applyModifier (foldr applyPreModifier n modifiers') modifiers'
     EnemyFight -> do
       iid <- toId <$> getActiveInvestigator
@@ -3743,7 +3777,7 @@ getEnemyField f e = do
         applyAfterModifier _ n = n
       investigatorModifiers <- getModifiers iid
       modifiers' <- getModifiers (EnemyTarget enemyId)
-      let mFieldValue = foldr applyBefore enemyFight investigatorModifiers
+      let mFieldValue = foldr applyBefore enemyFight (investigatorModifiers <> modifiers')
 
       case mFieldValue of
         Nothing -> pure Nothing
@@ -3925,7 +3959,7 @@ instance Projection Investigator where
         -- Include in hand treacheries
         ts <- selectMapM (fmap toCard . getTreachery) (TreacheryInHandOf (InvestigatorWithId iid))
         -- Include enemies still in hand
-        es <- selectMapM (fmap toCard . getEnemy) (EnemyWithPlacement (StillInHand iid))
+        es <- selectMapM (fmap toCard . getEnemy) (EnemyWithPlacement (HiddenInHand iid))
         committed <- field InvestigatorCommittedCards attrs.id
         pure $ filter (`notElem` committed) $ investigatorHand <> ts <> es
       InvestigatorHandSize -> getHandSize (toAttrs i)

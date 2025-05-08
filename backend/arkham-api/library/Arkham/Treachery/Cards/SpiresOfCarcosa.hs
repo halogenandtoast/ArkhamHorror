@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.SpiresOfCarcosa (spiresOfCarcosa, SpiresOfCarcosa (..)) where
+module Arkham.Treachery.Cards.SpiresOfCarcosa (spiresOfCarcosa) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action

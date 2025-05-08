@@ -1,19 +1,17 @@
 module Arkham.Act.Cards.TheStrangerTheShoresOfHali (
-  TheStrangerTheShoresOfHali (..),
   theStrangerTheShoresOfHali,
   theStrangerTheShoresOfHaliEffect,
 ) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Card
+import Arkham.Helpers.SkillTest (getSkillTestTarget)
 import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Effect.Runner
+import Arkham.Effect.Import
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (Discarded)
-import Arkham.Prelude
 import Arkham.Scenarios.CurtainCall.Helpers
 import Arkham.Trait hiding (ElderThing)
 import Arkham.Window (getBatchId)
@@ -36,24 +34,21 @@ instance HasAbilities TheStrangerTheShoresOfHali where
     ]
 
 instance RunMessage TheStrangerTheShoresOfHali where
-  runMessage msg a@(TheStrangerTheShoresOfHali attrs) = case msg of
+  runMessage msg a@(TheStrangerTheShoresOfHali attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ advancedWithOther attrs
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      privateLocations <- selectTargets $ LocationWithTrait Private
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       card <- flipCard <$> genCard (toCardDef attrs)
-      enabled <- createCardEffect Cards.theStrangerTheShoresOfHali Nothing attrs attrs
-      pushAll
-        $ [AddChaosToken ElderThing, AddChaosToken ElderThing]
-        <> [PlaceHorror (toSource attrs) l 1 | l <- privateLocations]
-        <> [ enabled
-           , PlaceNextTo ActDeckTarget [card]
-           , advanceActDeck attrs
-           ]
+      addChaosToken ElderThing
+      addChaosToken ElderThing
+      selectEach (LocationWithTrait Private) \l -> placeTokens attrs l #horror 1
+      createCardEffect Cards.theStrangerTheShoresOfHali Nothing attrs attrs
+      push $ PlaceNextTo ActDeckTarget [card]
+      advanceActDeck attrs
       moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
       pure a
-    _ -> TheStrangerTheShoresOfHali <$> runMessage msg attrs
+    _ -> TheStrangerTheShoresOfHali <$> liftRunMessage msg attrs
 
 newtype TheStrangerTheShoresOfHaliEffect = TheStrangerTheShoresOfHaliEffect EffectAttrs
   deriving anyclass (IsEffect, HasModifiersFor)
@@ -70,15 +65,16 @@ instance HasAbilities TheStrangerTheShoresOfHaliEffect where
     ]
 
 instance RunMessage TheStrangerTheShoresOfHaliEffect where
-  runMessage msg e@(TheStrangerTheShoresOfHaliEffect attrs) = case msg of
+  runMessage msg e@(TheStrangerTheShoresOfHaliEffect attrs) = runQueueT $ case msg of
     UseCardAbility iid p@(isProxySource attrs -> True) 1 (getBatchId -> batchId) _ -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (AbilitySource p 1) (BatchTarget batchId) #agility (Fixed 2)
+      beginSkillTest sid iid (AbilitySource p 1) (BatchTarget batchId) #agility (Fixed 2)
       pure e
     FailedSkillTest iid _ (isProxyAbilitySource attrs 1 -> True) Initiator {} _ _ -> do
-      mtarget <- getSkillTestTarget
-      case mtarget of
-        Just (BatchTarget batchId) -> pushAll [assignDamage iid attrs 1, IgnoreBatch batchId]
+      getSkillTestTarget >>= \case
+        Just (BatchTarget batchId) -> do
+          assignDamage iid attrs 1
+          push $ IgnoreBatch batchId
         _ -> error "Invalid target"
       pure e
-    _ -> TheStrangerTheShoresOfHaliEffect <$> runMessage msg attrs
+    _ -> TheStrangerTheShoresOfHaliEffect <$> liftRunMessage msg attrs

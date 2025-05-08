@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.MessHall (messHall, MessHall (..)) where
+module Arkham.Location.Cards.MessHall (messHall) where
 
 import Arkham.Ability
 import Arkham.GameValue

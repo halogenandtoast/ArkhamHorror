@@ -29,7 +29,7 @@ instance HasAbilities EvanescentAscensionTheMorningStar where
           1
           ControlsThis
           ( ReactionAbility
-              (WouldHaveSkillTestResult #when (affectsOthers $ InvestigatorAt YourLocation) #any #failure)
+              (WouldHaveSkillTestResult #when (affectsOthers $ colocatedWithMatch You) #any #failure)
               (exhaust a <> assetUseCost a Wish 1)
           )
           : [ restrictedAbility a 2 (exists $ be a <> not_ (AssetWithUses Wish))

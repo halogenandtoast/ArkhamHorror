@@ -51,7 +51,7 @@ instance HasAbilities BobJenkins where
         ( Self
             <> PlayableCardExists
               (UnpaidCost NoAction)
-              (basic (#asset <> #item) <> InHandOf ForPlay (affectsOthers $ InvestigatorAt YourLocation))
+              (basic (#asset <> #item) <> InHandOf ForPlay (affectsOthers $ colocatedWithMatch You))
         )
         $ ActionAbility [] mempty
     | BobJenkinsAction `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)

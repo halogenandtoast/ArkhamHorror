@@ -18,7 +18,7 @@ instance HasAbilities ShortRest where
   getAbilities (ShortRest a) =
     [ restricted a 1 InYourHand
         $ freeReaction
-          (Arkham.Matcher.PlayEventDiscarding #after (InvestigatorAt YourLocation) (eventIs Cards.shortRest))
+          (Arkham.Matcher.PlayEventDiscarding #after (colocatedWithMatch You) (eventIs Cards.shortRest))
     ]
 
 instance RunMessage ShortRest where

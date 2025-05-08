@@ -626,6 +626,33 @@ allTreacheries =
       SomeTreacheryCard unspeakableOathBloodthirst
     , SomeTreacheryCard unspeakableOathCuriosity
     , SomeTreacheryCard unspeakableOathCowardice
+    , --- Return to the Last King [rtptc]
+      SomeTreacheryCard shockingDisplay
+    , --- Return to the Unspeakable Oath [rtptc]
+      SomeTreacheryCard radicalTreatment
+    , SomeTreacheryCard cloudedMemory
+    , --- Return to A Phantom of Truth [rtptc]
+      SomeTreacheryCard figureInTheShadows
+    , --- Return to Black Stars Rise [rtptc]
+      SomeTreacheryCard hastursGaze
+    , SomeTreacheryCard hastursGrasp
+    , --- Delusory Evils [rtptc]
+      SomeTreacheryCard delusoryEvils
+    , --- Decaying Reality [rtptc]
+      SomeTreacheryCard bleedingWalls
+    , SomeTreacheryCard fragileThoughts
+    , --- Hastur's Envoys [rtptc]
+      SomeTreacheryCard theSignOfHastur
+    , --- Maddening Delusions [rtptc]
+      SomeTreacheryCard visionsInYourMindHorrors
+    , SomeTreacheryCard visionsInYourMindFailure
+    , SomeTreacheryCard visionsInYourMindDeath
+    , SomeTreacheryCard visionsInYourMindHatred
+    , SomeTreacheryCard maddeningDelusions
+    , --- Neurotic Fear [rtptc]
+      SomeTreacheryCard voiceOfTrunembra
+    , SomeTreacheryCard melancholy
+    , SomeTreacheryCard painfulReflection
     , -- Return to the Forgotten Age
       SomeTreacheryCard offerYouCannotRefuse
     , SomeTreacheryCard finePrint

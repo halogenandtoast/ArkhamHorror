@@ -135,6 +135,7 @@ data ModifierType
   | CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
   | CannotAssignDamage InvestigatorId
   | CannotAttack
+  | CannotAttackEnemy EnemyId
   | CannotBeAdvancedByDoomThreshold
   | CannotBeAttacked
   | CannotBeAttackedBy EnemyMatcher
@@ -221,6 +222,7 @@ data ModifierType
   | ControlledAssetsCannotReady
   | CountAllDoomInPlay
   | CountsAsInvestigatorForHunterEnemies
+  | CountsAsDifferentLocation
   | DamageDealt Int
   | DamageDealtToInvestigator Int
   | DamageTaken Int
@@ -251,6 +253,7 @@ data ModifierType
   | EffectsCannotBeCanceled
   | EnemyEngageActionCriteria CriteriaOverride
   | EnemyEvade Int
+  | SwapFightAndEvade
   | EnemyEvadeActionCriteria CriteriaOverride
   | EnemyEvadeWithMin Int (Min Int)
   | EnemyFight Int
@@ -390,6 +393,7 @@ data ModifierType
   | StartingHand Int
   | StartingResources Int
   | StartsInEncounterDeck EncounterCard
+  | StayInVictory
   | SwarmingValue Int
   | TakeUpFewerSlots SlotType Int
   | TopCardOfDeckIsRevealed

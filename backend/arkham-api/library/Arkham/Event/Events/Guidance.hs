@@ -14,7 +14,7 @@ guidance = event Guidance Cards.guidance
 instance RunMessage Guidance where
   runMessage msg e@(Guidance attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      selectOneToHandle iid attrs $ NotYou <> InvestigatorAt YourLocation <> YetToTakeTurn
+      selectOneToHandle iid attrs $ NotYou <> colocatedWithMatch You <> YetToTakeTurn
       pure e
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget investigator) -> do
       push $ GainActions investigator (toSource attrs) 1

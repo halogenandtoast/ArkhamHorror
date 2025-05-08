@@ -1,13 +1,10 @@
 module Arkham.Location.Cards.PatientConfinementDanielsCell (patientConfinementDanielsCell) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype PatientConfinementDanielsCell = PatientConfinementDanielsCell LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -23,23 +20,12 @@ patientConfinementDanielsCell =
     (costToEnterUnrevealedL .~ ClueCost (Static 1))
 
 instance HasAbilities PatientConfinementDanielsCell where
-  getAbilities (PatientConfinementDanielsCell attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1
-          $ ForcedAbility
-          $ RevealLocation
-            Timing.After
-            Anyone
-            (LocationWithId $ toId attrs)
-      | locationRevealed attrs
-      ]
+  getAbilities (PatientConfinementDanielsCell a) =
+    extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
 
 instance RunMessage PatientConfinementDanielsCell where
-  runMessage msg l@(PatientConfinementDanielsCell attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      actIds <- select AnyAct
-      l
-        <$ pushAll
-          (map (\aid -> AdvanceAct aid source AdvancedWithOther) actIds)
-    _ -> PatientConfinementDanielsCell <$> runMessage msg attrs
+  runMessage msg l@(PatientConfinementDanielsCell attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advanceCurrentAct attrs
+      pure l
+    _ -> PatientConfinementDanielsCell <$> liftRunMessage msg attrs

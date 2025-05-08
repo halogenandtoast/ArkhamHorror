@@ -26,7 +26,7 @@ instance HasAbilities NkosiMabatiEnigmaticWarlock3 where
         $ ReactionAbility
           ( RevealChaosToken
               #when
-              (affectsOthers $ InvestigatorAt YourLocation)
+              (affectsOthers $ colocatedWithMatch You)
               (oneOf [#cultist, #tablet, #elderthing])
           )
           (exhaust a)

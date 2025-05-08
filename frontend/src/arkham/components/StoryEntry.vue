@@ -248,6 +248,15 @@ a.button {
     flex-direction: row;
     gap: 20px;
   }
+  :deep(div.wolgast) {
+    font-family: "Wolgast";
+    text-align: center;
+    margin-block: 30px;
+    p {
+      margin-block: -20px;
+      font-family: "Wolgast";
+    }
+  }
 }
 
 </style>

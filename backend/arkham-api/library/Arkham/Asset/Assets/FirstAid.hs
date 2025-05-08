@@ -17,7 +17,7 @@ instance HasAbilities FirstAid where
   getAbilities (FirstAid x) = [controlledAbility x 1 criteria $ actionAbilityWithCost $ assetUseCost x Supply 1]
    where
     criteria = exists $ oneOf $ map healable [#horror, #damage]
-    healable hType = HealableInvestigator (toAbilitySource x 1) hType $ InvestigatorAt YourLocation
+    healable hType = HealableInvestigator (toAbilitySource x 1) hType $ colocatedWithMatch You
 
 instance RunMessage FirstAid where
   runMessage msg a@(FirstAid attrs) = case msg of

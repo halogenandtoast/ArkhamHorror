@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheUnspeakableOath (theUnspeakableOath) where
+module Arkham.Scenario.Scenarios.TheUnspeakableOath (theUnspeakableOath, TheUnspeakableOath (..), setupTheUnspeakableOath) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -11,9 +11,12 @@ import Arkham.Cost
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
 import Arkham.Helpers
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
@@ -26,8 +29,9 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Helpers hiding (forceAddCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
-import Arkham.Scenarios.TheUnspeakableOath.Story
+import Arkham.Scenarios.TheUnspeakableOath.Helpers
 import Arkham.Trait hiding (Cultist, ElderThing, Expert)
+import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window qualified as Window
 
 newtype TheUnspeakableOath = TheUnspeakableOath ScenarioAttrs
@@ -84,28 +88,115 @@ standaloneChaosTokens =
   , ElderSign
   ]
 
-investigatorDefeat :: ReverseQueue m => m ()
-investigatorDefeat = do
-  defeated <- select DefeatedInvestigator
-  unless (null defeated) do
-    story defeat
-    for_ defeated drivenInsane
-    investigators <- allInvestigators
-    when (length defeated == length investigators) gameOver
+setupTheUnspeakableOath :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupTheUnspeakableOath attrs = do
+  setup do
+    ul do
+      li "gatherSets"
+      li "monsters"
+      li "lunatics"
+      li "chooseLocations"
+      li "setAside"
+      li "placeLocations"
+      li "adjustChaosBag"
+      li.nested "act2.instructions" do
+        li "act2.v1"
+        li "act2.v2"
+      unscoped $ li "shuffleRemainder"
+  whenReturnTo $ gather Set.ReturnToTheUnspeakableOath
+  gather Set.TheUnspeakableOath
+  gather Set.HastursGift
+  gather Set.InhabitantsOfCarcosa
+  gather Set.Delusions `orWhenReturnTo` gather Set.MaddeningDelusions
+  gather Set.DecayAndFilth `orWhenReturnTo` gather Set.DecayingReality
+  gather Set.AgentsOfHastur `orWhenReturnTo` gather Set.HastursEnvoys
+
+  placeAll
+    [ Locations.messHall
+    , Locations.kitchen
+    , Locations.yard
+    , Locations.garden
+    , Locations.infirmary
+    , Locations.basementHall
+    ]
+
+  setAside
+    [ Assets.danielChesterfield
+    , Locations.patientConfinementDrearyCell
+    , Locations.patientConfinementDanielsCell
+    , Locations.patientConfinementOccupiedCell
+    , Locations.patientConfinementFamiliarCell
+    ]
+
+  whenReturnTo $ setAside [Enemies.hostOfInsanity, Treacheries.radicalTreatment]
+
+  easternPatientWing <-
+    placeLabeled "asylumHallsEasternPatientWing"
+      =<< sample2 Locations.asylumHallsEasternPatientWing_170 Locations.asylumHallsEasternPatientWing_171
+
+  westernPatientWing <-
+    placeLabeled "asylumHallsWesternPatientWing"
+      =<< sample2 Locations.asylumHallsWesternPatientWing_168 Locations.asylumHallsWesternPatientWing_169
+
+  addChaosToken $ case attrs.difficulty of
+    Easy -> MinusTwo
+    Standard -> MinusThree
+    Hard -> MinusFour
+    Expert -> MinusFive
+
+  eachInvestigator \iid -> do
+    chooseTargetM iid [westernPatientWing, easternPatientWing] $ moveTo_ attrs iid
+
+  theReallyBadOnes <- do
+    isReturnTo <- getIsReturnTo
+    if not isReturnTo
+      then do
+        tookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp
+        pure $ if tookTheOnyxClasp then Acts.theReallyBadOnesV1 else Acts.theReallyBadOnesV2
+      else do
+        v3 <- liftA2 (>=) getConviction getDoubt
+        pure $ if v3 then Acts.theReallyBadOnesV3 else Acts.theReallyBadOnesV4
+
+  setActDeck
+    [ Acts.arkhamAsylum
+    , theReallyBadOnes
+    , Acts.planningTheEscape
+    , Acts.noAsylum
+    ]
+  setAgendaDeck [Agendas.lockedInside, Agendas.torturousDescent, Agendas.hisDomain]
+
+  addExtraDeck LunaticsDeck =<< shuffle =<< amongGathered (CardWithTrait Lunatic <> #enemy)
+  addExtraDeck MonstersDeck =<< shuffle =<< amongGathered (CardWithTrait Monster <> #enemy)
 
 instance RunMessage TheUnspeakableOath where
-  runMessage msg s@(TheUnspeakableOath attrs) = runQueueT $ case msg of
-    PreScenarioSetup -> do
+  runMessage msg s@(TheUnspeakableOath attrs) = runQueueT $ scenarioI18n $ case msg of
+    PreScenarioSetup -> scope "intro" do
       foundTheWayForward <- getHasRecord TheFollowersOfTheSignHaveFoundTheWayForward
-      story $ if foundTheWayForward then intro1 else intro2
-      story intro3
-      whenInterviewed Assets.constanceDumaine do
-        story constancesInformation
+      flavor do
+        h "title"
+        p.validate foundTheWayForward "foundTheWayForward"
+        p.validate (not foundTheWayForward) "didNotFindTheWayForward"
+      flavor do
+        h "title"
+        p $ if foundTheWayForward then "intro1" else "intro2"
+
+      didInterview <- interviewed Assets.constanceDumaine
+      flavor do
+        h "title"
+        p "intro3"
+        unscoped (campaignI18n (nameVar Assets.constanceDumaine $ p "checkIfInterviewed"))
+        p.right.validate didInterview "proceedToConstancesInformation"
+        p.right.validate (not didInterview) "otherwise"
+
+      when didInterview do
+        flavor do
+          h "title"
+          p "constancesInformation"
         eachInvestigator \iid -> do
           deck <- fieldMap InvestigatorDeck unDeck iid
           case deck of
             (x : _) -> do
-              let courage = x { pcCardCode = Assets.courage.cardCode }
+              let courage = x {pcCardCode = Assets.courage.cardCode}
               replaceCard courage.id (PlayerCard courage)
               obtainCard x
               push
@@ -122,61 +213,7 @@ instance RunMessage TheUnspeakableOath where
       randomToken <- sample (Cultist :| [Tablet, ElderThing])
       setChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
       pure s
-    Setup -> runScenarioSetup TheUnspeakableOath attrs do
-      gather Set.TheUnspeakableOath
-      gather Set.HastursGift
-      gather Set.InhabitantsOfCarcosa
-      gather Set.Delusions
-      gather Set.DecayAndFilth
-      gather Set.AgentsOfHastur
-
-      placeAll
-        [ Locations.messHall
-        , Locations.kitchen
-        , Locations.yard
-        , Locations.garden
-        , Locations.infirmary
-        , Locations.basementHall
-        ]
-
-      setAside
-        [ Assets.danielChesterfield
-        , Locations.patientConfinementDrearyCell
-        , Locations.patientConfinementDanielsCell
-        , Locations.patientConfinementOccupiedCell
-        , Locations.patientConfinementFamiliarCell
-        ]
-
-      easternPatientWing <-
-        placeLabeled "asylumHallsEasternPatientWing"
-          =<< sample2 Locations.asylumHallsEasternPatientWing_170 Locations.asylumHallsEasternPatientWing_171
-
-      westernPatientWing <-
-        placeLabeled "asylumHallsWesternPatientWing"
-          =<< sample2 Locations.asylumHallsWesternPatientWing_168 Locations.asylumHallsWesternPatientWing_169
-
-      addChaosToken $ case attrs.difficulty of
-        Easy -> MinusTwo
-        Standard -> MinusThree
-        Hard -> MinusFour
-        Expert -> MinusFive
-
-      eachInvestigator \iid -> do
-        chooseTargetM iid [westernPatientWing, easternPatientWing] $ moveTo_ attrs iid
-
-      tookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp
-      let theReallyBadOnes = if tookTheOnyxClasp then Acts.theReallyBadOnesV1 else Acts.theReallyBadOnesV2
-
-      setActDeck
-        [ Acts.arkhamAsylum
-        , theReallyBadOnes
-        , Acts.planningTheEscape
-        , Acts.noAsylum
-        ]
-      setAgendaDeck [Agendas.lockedInside, Agendas.torturousDescent, Agendas.hisDomain]
-
-      addExtraDeck LunaticsDeck =<< shuffle =<< amongGathered (CardWithTrait Lunatic <> #enemy)
-      addExtraDeck MonstersDeck =<< shuffle =<< amongGathered (CardWithTrait Monster <> #enemy)
+    Setup -> runScenarioSetup TheUnspeakableOath attrs $ setupTheUnspeakableOath attrs
     ResolveChaosToken _ Skull iid -> do
       when (isHardExpert attrs) $ drawAnotherChaosToken iid
       pure s
@@ -202,10 +239,19 @@ instance RunMessage TheUnspeakableOath where
         Tablet | isHardExpert attrs -> assignHorror iid Tablet 1
         _ -> pure ()
       pure s
-    ScenarioResolution NoResolution -> do
-      push R1
+    ScenarioResolution r -> scope "resolutions" do
+      defeated <- select DefeatedInvestigator
+      investigators <- allInvestigators
+      unless (null defeated) do
+        flavor $ scope "defeated" $ h "title" >> p "body"
+        for_ defeated drivenInsane
+      if length defeated == length investigators
+        then gameOver
+        else case r of
+          NoResolution -> do_ R1
+          _ -> do_ msg
       pure s
-    ScenarioResolution (Resolution n) -> do
+    Do (ScenarioResolution r) -> scope "resolutions" do
       constanceSlain <- selectOne (VictoryDisplayCardMatch $ basic $ cardIs Enemies.constanceDumaine)
       let danielWasAlly = toCardCode Assets.danielChesterfield `elem` attrs.resignedCardCodes
       danielWasEnemy <- selectAny (enemyIs Enemies.danielChesterfield)
@@ -219,17 +265,13 @@ instance RunMessage TheUnspeakableOath where
       let
         updateSlain = for_ constanceSlain \constance -> recordSetInsert VIPsSlain [toCardCode constance]
         replaceSymbolTokens symbol = do
-          removeAllChaosTokens Cultist
-          removeAllChaosTokens Tablet
-          removeAllChaosTokens ElderThing
-          replicateM_ 2 $ addChaosToken symbol
+          for_ [Cultist, Tablet, ElderThing] removeAllChaosTokens
+          twice $ addChaosToken symbol
 
-      investigatorDefeat
-      case n of
-        1 -> do
-          story resolution1
+      case r of
+        Resolution 1 -> do
+          resolutionWithXp "resolution1" $ allGainXp' attrs
           record TheKingClaimedItsVictims
-          allGainXp attrs
           whenHasRecord YouTookTheOnyxClasp do
             withOwner Assets.claspOfBlackOnyx \owner -> do
               removeCampaignCard Assets.claspOfBlackOnyx
@@ -241,21 +283,19 @@ instance RunMessage TheUnspeakableOath where
           updateSlain
           replaceSymbolTokens Cultist
           endOfScenario
-        2 -> do
-          story resolution2
+        Resolution 2 -> do
+          resolutionWithXp "resolution2" $ allGainXp' attrs
           record TheInvestigatorsWereAttackedAsTheyEscapedTheAsylum
           eachInvestigator (`sufferPhysicalTrauma` 1)
-          allGainXp attrs
           updateSlain
           replaceSymbolTokens Tablet
           endOfScenarioThen (InterludeStep 2 (Just interludeResult))
-        3 -> do
-          story resolution3
+        Resolution 3 -> do
+          resolutionWithXp "resolution3" $ allGainXp' attrs
           record TheInvestigatorsEscapedTheAsylum
-          allGainXp attrs
           updateSlain
           replaceSymbolTokens ElderThing
           endOfScenarioThen (InterludeStep 2 (Just interludeResult))
-        _ -> error "invalid resolution"
+        _ -> throw $ UnknownResolution r
       pure s
     _ -> TheUnspeakableOath <$> liftRunMessage msg attrs

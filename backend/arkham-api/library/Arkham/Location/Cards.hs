@@ -420,11 +420,14 @@ allLocationCards =
       , hiddenTunnelAWayOut
       , hiddenTunnelEntranceToTheDepths
       , hideousPalace
+      , historicalSocietyBoilerRoom
+      , historicalSocietyDustyArchives
       , historicalSocietyHistoricalLibrary_133
       , historicalSocietyHistoricalLibrary_136
       , historicalSocietyHistoricalMuseum_130
       , historicalSocietyHistoricalMuseum_132
       , historicalSocietyMeetingRoom
+      , historicalSocietyMuseumStorage
       , historicalSocietyPeabodysOffice
       , historicalSocietyReadingRoom
       , historicalSocietyRecordOffice_129
@@ -523,6 +526,7 @@ allLocationCards =
       , moonBeastGalley
       , moonForest
       , morgue
+      , moundOfBones
       , mouthOfKnYanTheCavernsMaw
       , mouthOfKnYanTheDepthsBeneath
       , mtNgranek
@@ -589,26 +593,40 @@ allLocationCards =
       , prismaticCascade
       , prisonOfMemories
       , privateRoom
+      , propShop
       , protoplasmicPool
       , pumpRoom
       , quietHalls_131
       , quietHalls_135
       , railroadStation
       , realmsBeyondAllInOne
+      , recessesOfYourOwnMind
       , recordsOffice
       , rehearsalRoom
       , remnantsOfLakesCamp
+      , researchSite
       , restaurant
       , returnToAttic
       , returnToBishopsBrook
       , returnToBurnedRuins
+      , returnToCanalSaintMartin
       , returnToCellar
+      , returnToCloister
       , returnToCloverClubLounge
       , returnToCongregationalChurch
       , returnToEngineCar
+      , returnToGardensOfLuxembourg
+      , returnToGrandGuignol
       , returnToHouseInTheReeds
+      , returnToKnightsHall
+      , returnToMontparnasse
+      , returnToNotreDame
       , returnToOsbornsGeneralStore
+      , returnToPalaceOfTheKing
+      , returnToPereLachaiseCemetery
+      , returnToQuietHalls
       , returnToSchoolhouse
+      , returnToSecretPassage
       , rialtoBridge
       , ritualGrounds
       , ritualSite
@@ -651,6 +669,7 @@ allLocationCards =
       , seaOfPitch_263
       , seaOfPitch_264
       , seaOfPitch_265
+      , seaOfSkulls
       , sealedExit
       , secondFloorHall
       , secretPassage
@@ -682,6 +701,7 @@ allLocationCards =
       , southside_294
       , southside_295
       , stMarysHospital
+      , stageOfTheWardTheatre
       , stairwell
       , standingStones
       , statuesInTheDeep
@@ -750,8 +770,10 @@ allLocationCards =
       , theMoonRoom
       , theOnyxCastle
       , theSummit
+      , theThroneRoom
       , theWhiteShip
       , theatre
+      , theatreLounge
       , tidalPool
       , tightTurn_a
       , tightTurn_b
@@ -8534,7 +8556,7 @@ ascendingPathWarpedAndTwisted =
     [Dunwich, SentinelHill]
     Square
     [Triangle, Diamond, T, Equals, Moon, Trefoil]
-    WhereDoomAwaits
+    ReturnToWhereDoomAwaits
 
 abandonedCamp :: CardDef
 abandonedCamp =
@@ -8610,6 +8632,148 @@ unstableVortex =
       Equals
       [Square, Moon, Plus, Squiggle]
       ReturnToLostInTimeAndSpace
+
+theatreLounge :: CardDef
+theatreLounge =
+  victory 1
+    $ locationWithUnrevealed
+      "52018"
+      "Lobby Doorway"
+      [Private]
+      Plus
+      [Triangle]
+      "Theatre Lounge"
+      [Private]
+      Plus
+      [Triangle]
+      ReturnToCurtainCall
+
+propShop :: CardDef
+propShop =
+  victory 1
+    $ locationWithUnrevealed
+      "52019"
+      "Backstage Doorway"
+      [Private]
+      Moon
+      [Diamond]
+      "Prop Shop"
+      [Private]
+      Moon
+      [Diamond]
+      ReturnToCurtainCall
+
+returnToQuietHalls :: CardDef
+returnToQuietHalls = location "52029" "Quiet Halls" [Basement] Droplet [Square] ReturnToEchoesOfThePast
+
+historicalSocietyDustyArchives :: CardDef
+historicalSocietyDustyArchives =
+  locationWithUnrevealed
+    "52030"
+    "Historical Society"
+    [Basement]
+    NoSymbol
+    [Droplet]
+    ("Historical Society" <:> "Dusty Archives")
+    [Basement, Passageway]
+    Trefoil
+    [Droplet]
+    ReturnToEchoesOfThePast
+
+historicalSocietyMuseumStorage :: CardDef
+historicalSocietyMuseumStorage =
+  locationWithUnrevealed
+    "52031"
+    "Historical Society"
+    [Basement]
+    NoSymbol
+    [Droplet]
+    ("Historical Society" <:> "Museum Storage")
+    [Basement, Passageway]
+    Trefoil
+    [Droplet]
+    ReturnToEchoesOfThePast
+
+historicalSocietyBoilerRoom :: CardDef
+historicalSocietyBoilerRoom =
+  locationWithUnrevealed
+    "52032"
+    "Historical Society"
+    [Basement]
+    NoSymbol
+    [Droplet]
+    ("Historical Society" <:> "Boiler Room")
+    [Basement, Passageway]
+    Trefoil
+    [Droplet]
+    ReturnToEchoesOfThePast
+
+returnToMontparnasse :: CardDef
+returnToMontparnasse =
+  location "52041" "Montparnasse" [Paris, Rail] Circle [Heart, Star, Plus] ReturnToAPhantomOfTruth
+
+returnToGrandGuignol :: CardDef
+returnToGrandGuignol =
+  victory 1
+    $ location
+      "52042"
+      ("Grand Guignol" <:> "Theatre of the Great Puppet")
+      [Paris]
+      Triangle
+      [Diamond, Square]
+      ReturnToAPhantomOfTruth
+
+returnToPereLachaiseCemetery :: CardDef
+returnToPereLachaiseCemetery =
+  victory 1
+    $ location "52043" "Père Lachaise Cemetery" [Paris] T [Equals, Moon] ReturnToAPhantomOfTruth
+
+returnToCanalSaintMartin :: CardDef
+returnToCanalSaintMartin =
+  victory 1
+    $ location "52044" "Canal Saint-Martin" [Paris] Equals [Square, T, Moon] ReturnToAPhantomOfTruth
+
+returnToNotreDame :: CardDef
+returnToNotreDame = location "52045" "Notre-Dame" [Paris, Rail] Plus [Circle, Moon, Star] ReturnToAPhantomOfTruth
+
+returnToGardensOfLuxembourg :: CardDef
+returnToGardensOfLuxembourg =
+  victory 1
+    $ location "52046" "Gardens of Luxembourg" [Paris] Star [Circle, Heart, Plus] ReturnToAPhantomOfTruth
+
+returnToSecretPassage :: CardDef
+returnToSecretPassage =
+  locationWithUnrevealed_ "52049" "Catacombs" [] "Secret Passage" [] ReturnToThePallidMask
+
+moundOfBones :: CardDef
+moundOfBones =
+  locationWithUnrevealed_ "52050" "Catacombs" [] "Mound of Bones" [] ReturnToThePallidMask
+
+researchSite :: CardDef
+researchSite =
+  locationWithUnrevealed_ "52051" "Catacombs" [] "Research Site" [] ReturnToThePallidMask
+
+seaOfSkulls :: CardDef
+seaOfSkulls =
+  locationWithUnrevealed_ "52052" "Catacombs" [] "Sea of Skulls" [] ReturnToThePallidMask
+
+returnToCloister :: CardDef
+returnToCloister = location "52055" "Cloister" [] Heart [Square, Hourglass] ReturnToBlackStarsRise
+
+returnToKnightsHall :: CardDef
+returnToKnightsHall = location "52056" "Knight's Hall" [] Hourglass [Square, Heart] ReturnToBlackStarsRise
+
+returnToPalaceOfTheKing :: CardDef
+returnToPalaceOfTheKing = storyOnBack $ location "52060" ("Palace of the King" <:> "Hastur's Domain") [Otherworld] Star [Triangle, Diamond, Heart, Droplet, Hourglass] ReturnToDimCarcosa
+
+recessesOfYourOwnMind :: CardDef
+recessesOfYourOwnMind = storyOnBack $ location "52061" "Recesses of Your Own Mind" [] Heart [Star] ReturnToDimCarcosa
+
+theThroneRoom :: CardDef
+theThroneRoom = storyOnBack $ location "52062" "The Throne Room" [] Droplet [Star] ReturnToDimCarcosa
+
+stageOfTheWardTheatre :: CardDef
+stageOfTheWardTheatre = storyOnBack $ location "52063" "Stage of the Ward Theatre" [] Hourglass [Star] ReturnToDimCarcosa
 
 cursedShores :: CardDef
 cursedShores =

@@ -933,6 +933,8 @@ allEncounterAssetCards =
       , elinaHarpersCarStopped
       , yhanthleiStatueMysteriousRelic
       , yhanthleiStatueDynamicRelic
+      , dianneDevineHidingAnOathUnspoken
+      , partyGuest
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef

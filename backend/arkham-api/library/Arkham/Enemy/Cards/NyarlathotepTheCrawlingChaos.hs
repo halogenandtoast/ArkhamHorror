@@ -25,6 +25,6 @@ nyarlathotepTheCrawlingChaos =
 instance RunMessage NyarlathotepTheCrawlingChaos where
   runMessage msg e@(NyarlathotepTheCrawlingChaos attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ PlaceEnemy attrs.id (StillInHand iid)
+      push $ PlaceEnemy attrs.id (HiddenInHand iid)
       pure e
     _ -> NyarlathotepTheCrawlingChaos <$> runMessage msg attrs

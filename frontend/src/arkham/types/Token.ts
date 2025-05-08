@@ -30,6 +30,7 @@ export type Token
   | 'Ticket'
   | 'Time'
   | 'Try'
+  | 'Warning'
   | 'Whistle'
   | 'Wish'
 
@@ -63,6 +64,7 @@ export const TokenType = {
   Ticket: 'Ticket',
   Time: 'Time',
   Try: 'Try',
+  Warning: 'Warning',
   Whistle: 'Whistle',
   Wish: 'Wish',
 } as const;
@@ -97,6 +99,7 @@ export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>
   JsonDecoder.literal('Ticket'),
   JsonDecoder.literal('Time'),
   JsonDecoder.literal('Try'),
+  JsonDecoder.literal('Warning'),
   JsonDecoder.literal('Whistle'),
   JsonDecoder.literal('Wish'),
 ], 'Token');

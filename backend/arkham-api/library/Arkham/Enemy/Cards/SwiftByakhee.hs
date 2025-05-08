@@ -18,9 +18,8 @@ newtype SwiftByakhee = SwiftByakhee EnemyAttrs
 
 swiftByakhee :: EnemyCard SwiftByakhee
 swiftByakhee =
-  enemyWith SwiftByakhee Cards.swiftByakhee (2, Static 3, 2) (1, 1)
-    $ preyL
-    .~ Prey LowestRemainingSanity
+  enemy SwiftByakhee Cards.swiftByakhee (2, Static 3, 2) (1, 1)
+    & setPrey LowestRemainingSanity
 
 instance HasAbilities SwiftByakhee where
   getAbilities (SwiftByakhee a) = extend1 a $ mkAbility a 1 $ forced $ MovedFromHunter #when (be a)

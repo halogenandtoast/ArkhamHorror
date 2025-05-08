@@ -492,6 +492,9 @@ directDamage iid (toSource -> source) damage = InvestigatorDirectDamage iid sour
 directHorror :: Sourceable source => InvestigatorId -> source -> Int -> Message
 directHorror iid (toSource -> source) horror = InvestigatorDirectDamage iid source 0 horror
 
+directDamageAndHorror :: Sourceable source => InvestigatorId -> source -> Int -> Int -> Message
+directDamageAndHorror iid (toSource -> source) damage horror = InvestigatorDirectDamage iid source damage horror
+
 findAndDrawEncounterCard :: IsCardMatcher a => InvestigatorId -> a -> Message
 findAndDrawEncounterCard investigator cardMatcher = FindAndDrawEncounterCard investigator (toCardMatcher cardMatcher) IncludeDiscard
 
@@ -677,3 +680,11 @@ createAssetAt c placement = do
 
 createAssetAt_ :: MonadRandom m => Card -> Placement -> m Message
 createAssetAt_ c placement = snd <$> createAssetAt c placement
+
+createTreacheryAt :: MonadRandom m => Card -> Placement -> m (TreacheryId, Message)
+createTreacheryAt c placement = do
+  treacheryId <- getRandom
+  pure (treacheryId, CreateTreacheryAt treacheryId c placement)
+
+createTreacheryAt_ :: MonadRandom m => Card -> Placement -> m Message
+createTreacheryAt_ c placement = snd <$> createTreacheryAt c placement

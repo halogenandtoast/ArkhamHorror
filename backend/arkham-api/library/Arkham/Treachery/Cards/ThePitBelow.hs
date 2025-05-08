@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.ThePitBelow (thePitBelow, ThePitBelow (..)) where
+module Arkham.Treachery.Cards.ThePitBelow (thePitBelow) where
 
 import Arkham.Ability
 import Arkham.Helpers.Location (withLocationOf)

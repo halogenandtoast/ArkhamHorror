@@ -1,16 +1,14 @@
-module Arkham.Treachery.Cards.GiftOfMadnessPity (giftOfMadnessPity, GiftOfMadnessPity (..)) where
+module Arkham.Treachery.Cards.GiftOfMadnessPity (giftOfMadnessPity) where
 
 import Arkham.Ability
 import Arkham.Choose
-import Arkham.Classes
 import Arkham.Helpers.Modifiers (ModifierType (CannotFight), modified_)
 import Arkham.Matcher hiding (PlaceUnderneath, treacheryInHandOf)
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype GiftOfMadnessPity = GiftOfMadnessPity TreacheryAttrs
   deriving anyclass IsTreachery
@@ -28,17 +26,15 @@ instance HasAbilities GiftOfMadnessPity where
   getAbilities (GiftOfMadnessPity a) = [restrictedAbility a 1 InYourHand actionAbility]
 
 instance RunMessage GiftOfMadnessPity where
-  runMessage msg t@(GiftOfMadnessPity attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      push $ addHiddenToHand iid attrs
+  runMessage msg t@(GiftOfMadnessPity attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      addHiddenToHand iid attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushAll
-        [ ChooseFrom iid $ chooseRandom attrs MonstersDeck 1
-        , toDiscardBy iid (attrs.ability 1) attrs
-        ]
+      push $ ChooseFrom iid $ chooseRandom attrs MonstersDeck 1
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
     ChoseCards _ chosen | isTarget attrs chosen.target -> do
-      push $ PlaceUnderneath ActDeckTarget chosen.cards
+      placeUnderneath ActDeckTarget chosen.cards
       pure t
-    _ -> GiftOfMadnessPity <$> runMessage msg attrs
+    _ -> GiftOfMadnessPity <$> liftRunMessage msg attrs

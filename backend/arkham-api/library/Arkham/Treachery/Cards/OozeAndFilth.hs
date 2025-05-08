@@ -1,13 +1,11 @@
 module Arkham.Treachery.Cards.OozeAndFilth (oozeAndFilth) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype OozeAndFilth = OozeAndFilth TreacheryAttrs
   deriving anyclass IsTreachery
@@ -20,22 +18,15 @@ instance HasModifiersFor OozeAndFilth where
   getModifiersFor (OozeAndFilth a) = modifySelect a Anywhere [ShroudModifier 1]
 
 instance HasAbilities OozeAndFilth where
-  getAbilities (OozeAndFilth a) =
-    [mkAbility a 1 $ ForcedAbility $ RoundEnds #when]
+  getAbilities (OozeAndFilth a) = [mkAbility a 1 $ forced $ RoundEnds #when]
 
 instance RunMessage OozeAndFilth where
-  runMessage msg t@(OozeAndFilth attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      targetAgendas <- selectMap AgendaTarget AnyAgenda
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [ TargetLabel target [attachTreachery attrs target]
-          | target <- targetAgendas
-          ]
+  runMessage msg t@(OozeAndFilth attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      agendas <- select AnyAgenda
+      chooseOrRunOneM iid $ targets agendas (attachTreachery attrs)
       pure t
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ toDiscard (toAbilitySource attrs 1) attrs
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      toDiscard (attrs.ability 1) attrs
       pure t
-    _ -> OozeAndFilth <$> runMessage msg attrs
+    _ -> OozeAndFilth <$> liftRunMessage msg attrs

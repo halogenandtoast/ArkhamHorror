@@ -20,7 +20,7 @@ instance HasAbilities ParadoxicalCovenant2 where
         attrs
         1
         ( DuringSkillTest
-            ( SkillTestOfInvestigator (InvestigatorAt YourLocation)
+            ( SkillTestOfInvestigator (colocatedWithMatch You)
                 <> SkillTestWithRevealedChaosToken #bless
                 <> SkillTestWithRevealedChaosToken #curse
             )

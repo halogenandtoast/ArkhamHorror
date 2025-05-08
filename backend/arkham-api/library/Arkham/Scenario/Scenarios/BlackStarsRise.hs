@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.BlackStarsRise (blackStarsRise) where
+module Arkham.Scenario.Scenarios.BlackStarsRise (setupBlackStarsRise, blackStarsRise, BlackStarsRise (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -10,7 +10,9 @@ import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (CanAdvance (..))
@@ -19,7 +21,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.Scenarios.BlackStarsRise.Story
+import Arkham.Scenarios.BlackStarsRise.Helpers
 import Arkham.SkillTest
 import Arkham.Trait qualified as Trait
 
@@ -97,11 +99,103 @@ standaloneChaosTokens =
   , ElderSign
   ]
 
+setupBlackStarsRise :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupBlackStarsRise attrs = do
+  setup do
+    ul do
+      li "gatherSets"
+      li "adjustChaosBag"
+      li.nested "version.instructions" do
+        li "version.createPiles"
+        li "version.randomizePiles"
+        li "version.choosePile"
+      li "agendaDecks"
+      li "setAside"
+      li "chooseSetAsideLocations"
+      li "chooseLocations"
+      li "addWeakness"
+      unscoped $ li "shuffleRemainder"
+  whenReturnTo $ gather Set.ReturnToBlackStarsRise
+  gather Set.BlackStarsRise
+  gather Set.EvilPortents
+  gather Set.Byakhee
+  gather Set.InhabitantsOfCarcosa
+  gather Set.TheStranger
+  gather Set.DarkCult
+  gather Set.AncientEvils `orWhenReturnTo` gather Set.DelusoryEvils
+
+  (agenda2a, agenda2c, abbeyTower, chapelOfStAubert) <-
+    sample versions <&> \case
+      TheVortexAbove ->
+        ( Agendas.letTheStormRageTheVortexAbove
+        , Agendas.theEntityAboveTheVortexAbove
+        , Locations.abbeyTowerThePathIsOpen
+        , Locations.chapelOfStAubertWatersForbidden
+        )
+      TheFloodBelow ->
+        ( Agendas.letTheStormRageTheFloodBelow
+        , Agendas.theEntityAboveTheFloodBelow
+        , Locations.abbeyTowerSpiresForbidden
+        , Locations.chapelOfStAubertThePathIsOpen
+        )
+
+  choeurGothique <- sample2 Locations.choeurGothique_292 Locations.choeurGothique_293
+
+  (cloister, knightsHall) <-
+    pure (Locations.cloister, Locations.knightsHall)
+      `orWhenReturnTo` sample2
+        (Locations.cloister, Locations.knightsHall)
+        (Locations.returnToCloister, Locations.returnToKnightsHall)
+
+  setAside
+    [ Enemies.tidalTerror
+    , Enemies.tidalTerror
+    , Enemies.riftSeeker
+    , Enemies.riftSeeker
+    , Acts.openThePathAbove
+    , Acts.openThePathBelow
+    , Enemies.beastOfAldebaran
+    , cloister
+    , knightsHall
+    , abbeyTower
+    , chapelOfStAubert
+    , choeurGothique
+    ]
+
+  northTower <- sample2 Locations.northTower_287 Locations.northTower_288
+  outerWall <- sample2 Locations.outerWall_285 Locations.outerWall_286
+  brokenSteps <- sample2 Locations.brokenSteps_289 Locations.brokenSteps_290
+
+  startAt =<< place Locations.porteDeLAvancee
+  placeAll [northTower, outerWall, brokenSteps, Locations.grandRue, Locations.abbeyChurch]
+
+  unlessStandalone do
+    eachInvestigator \iid ->
+      searchCollectionForRandom iid attrs
+        $ BasicWeaknessCard
+        <> mapOneOf CardWithTrait [Trait.Madness, Trait.Pact, Trait.Cultist, Trait.Detective]
+
+  addChaosToken $ case attrs.difficulty of
+    Easy -> MinusThree
+    Standard -> MinusFive
+    Hard -> MinusSix
+    Expert -> MinusSeven
+
+  setAgendaDeckN 1 [Agendas.theTideRises, agenda2a, Agendas.theCityFloods]
+  setAgendaDeckN 2 [Agendas.theRitualBeginsBlackStarsRise, agenda2c, Agendas.swallowedSky]
+
 instance RunMessage BlackStarsRise where
-  runMessage msg s@(BlackStarsRise attrs) = runQueueT $ case msg of
-    PreScenarioSetup -> do
-      story intro
-      whenInterviewed Assets.ashleighClarke $ story ashleighsInformation
+  runMessage msg s@(BlackStarsRise attrs) = runQueueT $ scenarioI18n $ case msg of
+    PreScenarioSetup -> scope "intro" do
+      didInterview <- interviewed Assets.ashleighClarke
+      flavor do
+        h "title"
+        p "body"
+        unscoped (campaignI18n (nameVar Assets.ashleighClarke $ p "checkIfInterviewed"))
+        p.validate didInterview "proceedToAshleighsInformation"
+        p.validate (not didInterview) "otherwise"
+      -- story intro
+      whenInterviewed Assets.ashleighClarke $ flavor $ p "ashleighsInformation"
       pure s
     StandaloneSetup -> do
       lead <- getLead
@@ -110,68 +204,7 @@ instance RunMessage BlackStarsRise where
       setChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
       shuffleCardsIntoDeck lead [theManInThePallidMask]
       pure s
-    Setup -> runScenarioSetup BlackStarsRise attrs do
-      gather Set.BlackStarsRise
-      gather Set.EvilPortents
-      gather Set.Byakhee
-      gather Set.InhabitantsOfCarcosa
-      gather Set.TheStranger
-      gather Set.DarkCult
-      gather Set.AncientEvils
-
-      (agenda2a, agenda2c, abbeyTower, chapelOfStAubert) <-
-        sample versions <&> \case
-          TheVortexAbove ->
-            ( Agendas.letTheStormRageTheVortexAbove
-            , Agendas.theEntityAboveTheVortexAbove
-            , Locations.abbeyTowerThePathIsOpen
-            , Locations.chapelOfStAubertWatersForbidden
-            )
-          TheFloodBelow ->
-            ( Agendas.letTheStormRageTheFloodBelow
-            , Agendas.theEntityAboveTheFloodBelow
-            , Locations.abbeyTowerSpiresForbidden
-            , Locations.chapelOfStAubertThePathIsOpen
-            )
-
-      choeurGothique <- sample2 Locations.choeurGothique_292 Locations.choeurGothique_293
-
-      setAside
-        [ Enemies.tidalTerror
-        , Enemies.tidalTerror
-        , Enemies.riftSeeker
-        , Enemies.riftSeeker
-        , Acts.openThePathAbove
-        , Acts.openThePathBelow
-        , Enemies.beastOfAldebaran
-        , Locations.cloister
-        , Locations.knightsHall
-        , abbeyTower
-        , chapelOfStAubert
-        , choeurGothique
-        ]
-
-      northTower <- sample2 Locations.northTower_287 Locations.northTower_288
-      outerWall <- sample2 Locations.outerWall_285 Locations.outerWall_286
-      brokenSteps <- sample2 Locations.brokenSteps_289 Locations.brokenSteps_290
-
-      startAt =<< place Locations.porteDeLAvancee
-      placeAll [northTower, outerWall, brokenSteps, Locations.grandRue, Locations.abbeyChurch]
-
-      unlessStandalone do
-        eachInvestigator \iid ->
-          searchCollectionForRandom iid attrs
-            $ BasicWeaknessCard
-            <> mapOneOf CardWithTrait [Trait.Madness, Trait.Pact, Trait.Cultist, Trait.Detective]
-
-      addChaosToken $ case attrs.difficulty of
-        Easy -> MinusThree
-        Standard -> MinusFive
-        Hard -> MinusSix
-        Expert -> MinusSeven
-
-      setAgendaDeckN 1 [Agendas.theTideRises, agenda2a, Agendas.theCityFloods]
-      setAgendaDeckN 2 [Agendas.theRitualBeginsBlackStarsRise, agenda2c, Agendas.swallowedSky]
+    Setup -> runScenarioSetup BlackStarsRise attrs $ setupBlackStarsRise attrs
     PlaceDoomOnAgenda n canAdvance -> do
       agendas <- select AnyAgenda
       lead <- getLead
@@ -200,49 +233,47 @@ instance RunMessage BlackStarsRise where
               liftGuardM $ fieldP EnemyDoom (> 0) eid
               pure False
           else selectNone $ EnemyWithAnyDoom <> at_ (locationWithInvestigator iid)
-      if drawAnother 
+      if drawAnother
         then drawAnotherChaosToken iid
         else failSkillTest
       pure s
     ResolveChaosToken _ Tablet iid -> do
       drawAnotherChaosToken iid
       pure s
-    ScenarioResolution res -> do
+    ScenarioResolution res -> scope "resolutions" do
+      case res of
+        NoResolution -> do
+          resolution "noResolution"
+          do_ R3
+        _ -> do_ msg
+      pure s
+    Do (ScenarioResolution res) -> scope "resolutions" do
       let
         updateSlain = selectForMaybeM (VictoryDisplayCardMatch $ basic $ cardIs Enemies.ashleighClarke) \ashleigh ->
           recordSetInsert VIPsSlain [toCardCode ashleigh]
-      case res of
-        NoResolution -> push R3
-        Resolution 1 -> do
-          story resolution1
-          record YouOpenedThePathBelow
+        updateTokens t1 t2 = do
           removeAllChaosTokens Cultist
           removeAllChaosTokens Tablet
           removeAllChaosTokens ElderThing
-          addChaosToken Cultist
-          addChaosToken Cultist
-          addChaosToken Tablet
-          addChaosToken Tablet
+          twice $ addChaosToken t1
+          twice $ addChaosToken t2
+      case res of
+        Resolution 1 -> do
+          record YouOpenedThePathBelow
+          updateTokens Cultist Tablet
           updateSlain
-          allGainXp attrs
+          resolutionWithXp "resolution1" $ allGainXp' attrs
           endOfScenario
         Resolution 2 -> do
-          story resolution2
           record YouOpenedThePathAbove
-          removeAllChaosTokens Cultist
-          removeAllChaosTokens Tablet
-          removeAllChaosTokens ElderThing
-          addChaosToken Cultist
-          addChaosToken Cultist
-          addChaosToken ElderThing
-          addChaosToken ElderThing
+          updateTokens Cultist ElderThing
           updateSlain
-          allGainXp attrs
+          resolutionWithXp "resolution2" $ allGainXp' attrs
           endOfScenario
         Resolution 3 -> do
-          story resolution3
           record TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
           eachInvestigator drivenInsane
+          resolution "resolution3"
           gameOver
         _ -> error "Unknown resolution"
       pure s

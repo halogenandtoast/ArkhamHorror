@@ -66,9 +66,11 @@ data EffectBuilder = EffectBuilder
   , effectBuilderMetadata :: Maybe (EffectMetadata Window Message)
   , effectBuilderWindow :: Maybe EffectWindow
   , effectBuilderDisableWindow :: Maybe EffectWindow
+  , effectBuilderOnDisable :: Maybe [Message]
   , effectBuilderFinished :: Bool
-  -- ^ Sometimes an effect may cause infinite recursion, this bool can be used
-  -- to track and escape recursion
+  {- ^ Sometimes an effect may cause infinite recursion, this bool can be used
+  to track and escape recursion
+  -}
   , effectBuilderExtraMetadata :: Value
   , effectBuilderSkillTest :: Maybe SkillTestId
   , effectBuilderEffectId :: Maybe EffectId
@@ -87,11 +89,13 @@ data EffectAttrs = EffectAttrs
   , effectWindow :: Maybe EffectWindow
   , effectDisableWindow :: Maybe EffectWindow
   , effectFinished :: Bool
-  -- ^ Sometimes an effect may cause infinite recursion, this bool can be used
-  -- to track and escape recursion
+  {- ^ Sometimes an effect may cause infinite recursion, this bool can be used
+  to track and escape recursion
+  -}
   , effectExtraMetadata :: Value
   , effectSkillTest :: Maybe SkillTestId
   , effectMetaKeys :: [Text]
+  , effectOnDisable :: Maybe [Message]
   }
   deriving stock (Show, Eq, Data)
 
@@ -186,6 +190,7 @@ baseAttrs cardCode eid EffectBuilder {..} =
     , effectTraits = effectBuilderTraits
     , effectWindow = effectBuilderWindow
     , effectDisableWindow = effectBuilderDisableWindow
+    , effectOnDisable = effectBuilderOnDisable
     , effectFinished = effectBuilderFinished
     , effectExtraMetadata = effectBuilderExtraMetadata
     , effectSkillTest = effectBuilderSkillTest
@@ -203,7 +208,7 @@ instance HasAbilities EffectAttrs
 
 isEndOfWindow :: EffectAttrs -> EffectWindow -> Bool
 isEndOfWindow EffectAttrs {effectWindow, effectDisableWindow} effectWindow' =
-    effectWindow' `elem` toEffectWindowList (effectDisableWindow <|> effectWindow)
+  effectWindow' `elem` toEffectWindowList (effectDisableWindow <|> effectWindow)
  where
   toEffectWindowList Nothing = []
   toEffectWindowList (Just (FirstEffectWindow xs)) = xs
@@ -295,6 +300,7 @@ makeEffectBuilder cardCode meffectMetadata rawSource@(toSource -> source) (toTar
       , effectBuilderTraits = mempty
       , effectBuilderWindow = Nothing
       , effectBuilderDisableWindow = Nothing
+      , effectBuilderOnDisable = Nothing
       , effectBuilderFinished = False
       , effectBuilderExtraMetadata = Null
       , effectBuilderSkillTest = mSkillTest
@@ -326,4 +332,5 @@ instance FromJSON EffectAttrs where
     effectExtraMetadata <- o .: "extraMetadata"
     effectSkillTest <- o .: "skillTest"
     effectMetaKeys <- o .:? "metaKeys" .!= []
+    effectOnDisable <- o .:? "onDisable"
     pure EffectAttrs {..}

@@ -1,13 +1,9 @@
 module Arkham.Agenda.Cards.SwallowedSky (swallowedSky) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
+import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Resolution
 import Arkham.Trait
 
 newtype SwallowedSky = SwallowedSky AgendaAttrs
@@ -18,12 +14,11 @@ swallowedSky :: AgendaCard SwallowedSky
 swallowedSky = agenda (3, C) SwallowedSky Cards.swallowedSky (Static 8)
 
 instance HasModifiersFor SwallowedSky where
-  getModifiersFor (SwallowedSky a) = do
-    modifySelect a (EnemyWithTrait Monster) [EnemyFight 1]
+  getModifiersFor (SwallowedSky a) = modifySelect a (EnemyWithTrait Monster) [EnemyFight 1]
 
 instance RunMessage SwallowedSky where
-  runMessage msg a@(SwallowedSky attrs) = case msg of
-    AdvanceAgenda aid
-      | aid == toId attrs && onSide D attrs ->
-          a <$ push (ScenarioResolution $ Resolution 3)
-    _ -> SwallowedSky <$> runMessage msg attrs
+  runMessage msg a@(SwallowedSky attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide D attrs -> True) -> do
+      push R3
+      pure a
+    _ -> SwallowedSky <$> liftRunMessage msg attrs

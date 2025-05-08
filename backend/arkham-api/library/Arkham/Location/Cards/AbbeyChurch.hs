@@ -22,7 +22,7 @@ abbeyChurch =
 anyDifferent :: Eq a => [a] -> Bool
 anyDifferent [] = False
 anyDifferent [_] = False
-anyDifferent (x : rest@(y : _)) = if x /= y then True else anyDifferent rest
+anyDifferent (x : rest@(y : _)) = x /= y || anyDifferent rest
 
 instance HasModifiersFor AbbeyChurch where
   getModifiersFor (AbbeyChurch a) = whenRevealed a $ maybeModifySelf a do

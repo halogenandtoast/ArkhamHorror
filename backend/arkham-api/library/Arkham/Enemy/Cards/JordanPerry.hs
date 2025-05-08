@@ -1,14 +1,8 @@
-module Arkham.Enemy.Cards.JordanPerry (
-  jordanPerry,
-  JordanPerry (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.JordanPerry (jordanPerry) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
 
 newtype JordanPerry = JordanPerry EnemyAttrs
@@ -20,15 +14,14 @@ jordanPerry = enemy JordanPerry Cards.jordanPerry (2, Static 8, 2) (1, 1)
 
 instance HasAbilities JordanPerry where
   getAbilities (JordanPerry a) =
-    withBaseAbilities a
-      $ [ restrictedAbility a 1 (EnemyCriteria $ ThisEnemy EnemyWithAnyDamage)
-            $ ForcedAbility
-            $ PhaseBegins #when #enemy
-        ]
+    extend1 a
+      $ restricted a 1 (EnemyCriteria $ ThisEnemy EnemyWithAnyDamage)
+      $ forced
+      $ PhaseBegins #when #enemy
 
 instance RunMessage JordanPerry where
-  runMessage msg e@(JordanPerry attrs) = case msg of
+  runMessage msg e@(JordanPerry attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ HealDamage (toTarget attrs) (toAbilitySource attrs 1) 1
+      healDamage attrs (attrs.ability 1) 1
       pure e
-    _ -> JordanPerry <$> runMessage msg attrs
+    _ -> JordanPerry <$> liftRunMessage msg attrs

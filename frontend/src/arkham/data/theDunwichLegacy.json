@@ -3,8 +3,8 @@
   { "id": "02062", "name": "The House Always Wins", "campaign": "02", "returnTo": "51015", "returnToName": "Return to the House Always Wins" },
   { "id": "02118", "name": "The Miskatonic Museum", "campaign": "02", "returnTo": "51020", "returnToName": "Return to the Miskatonic Museum" },
   { "id": "02159", "name": "The Essex County Express", "campaign": "02", "returnTo": "51025", "returnToName": "Return to the Essex County Express" },
-  { "id": "02195", "name": "Blood on the Altar", "campaign": "02" },
-  { "id": "02236", "name": "Undimensioned and Unseen", "campaign": "02" },
-  { "id": "02274", "name": "Where Doom Awaits", "campaign": "02" },
-  { "id": "02311", "name": "Lost in Time and Space", "campaign": "02" }
+  { "id": "02195", "name": "Blood on the Altar", "campaign": "02", "returnTo": "51032", "returnToName": "Return to Blood on the Altar" },
+  { "id": "02236", "name": "Undimensioned and Unseen", "campaign": "02", "returnTo": "51041", "returnToName": "Return to Undimensioned and Unseen" },
+  { "id": "02274", "name": "Where Doom Awaits", "campaign": "02", "returnTo": "51047", "returnToName": "Return to Where Doom Awaits" },
+  { "id": "02311", "name": "Lost in Time and Space", "campaign": "02", "returnTo": "51053", "returnToName": "Return to Lost in Time and Space" }
 ]

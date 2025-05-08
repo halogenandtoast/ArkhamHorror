@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.APhantomOfTruth (aPhantomOfTruth) where
+module Arkham.Scenario.Scenarios.APhantomOfTruth (setupAPhantomOfTruth, aPhantomOfTruth, APhantomOfTruth (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -8,6 +8,7 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Doom
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Xp
@@ -20,7 +21,6 @@ import Arkham.Modifier
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.APhantomOfTruth.Helpers
-import Arkham.Scenarios.APhantomOfTruth.Story
 import Arkham.Trait (Trait (Byakhee))
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -91,113 +91,58 @@ cultistEffect = do
       for_ xs \x -> targeting x $ moveToward eid x
   moveToward eid x = push $ MoveToward (toTarget eid) (locationWithInvestigator x)
 
-instance RunMessage APhantomOfTruth where
-  runMessage msg s@(APhantomOfTruth attrs) = runQueueT $ scenarioI18n $ case msg of
-    StandaloneSetup -> do
-      lead <- getLead
-      theManInThePallidMask <- genCard Enemies.theManInThePallidMask
-      randomToken <- sample (Cultist :| [Tablet, ElderThing])
-      setChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
-      chooseOneM lead do
-        labeled "Conviction" markConviction
-        labeled "Doubt" markDoubt
-      addCampaignCardToDeck lead ShuffleIn theManInThePallidMask
-      pure s
-    PreScenarioSetup -> do
-      theKingClaimedItsVictims <- getHasRecord TheKingClaimedItsVictims
-      youIntrudedOnASecretMeeting <- getHasRecord YouIntrudedOnASecretMeeting
-      youSlayedTheMonstersAtTheDinnerParty <- getHasRecord YouSlayedTheMonstersAtTheDinnerParty
-      thePoliceAreSuspiciousOfYou <- getHasRecord ThePoliceAreSuspiciousOfYou
-      chasingTheStranger <- getRecordCount ChasingTheStranger
+setupAPhantomOfTruth :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupAPhantomOfTruth _attrs = do
+  setup do
+    ul do
+      li "gatherSets"
+      li.nested "doubt.instructions" do
+        li "doubt.remove"
+        li "doubt.act"
+      li.nested "conviction.instructions" do
+        li "conviction.remove"
+        li "conviction.act"
+      li "chooseLocations"
+      li "placeLocations"
+      li "setAside"
+      li "lostSoul"
+      unscoped $ li "shuffleRemainder"
 
-      let
-        showDream4 =
-          not theKingClaimedItsVictims
-            && not youIntrudedOnASecretMeeting
-            && youSlayedTheMonstersAtTheDinnerParty
-        showDream7 =
-          not theKingClaimedItsVictims && thePoliceAreSuspiciousOfYou
+  whenReturnTo $ gather Set.ReturnToAPhantomOfTruth
+  gather Set.APhantomOfTruth
+  gather Set.EvilPortents
+  gather Set.Byakhee
+  gather Set.TheStranger
+  gather Set.AgentsOfHastur `orWhenReturnTo` gather Set.HastursEnvoys
 
-      let
-        dreamPath =
-          catMaybes
-            [ Just dream1
-            , Just dream2
-            , dream3 <$ guard (not theKingClaimedItsVictims && youIntrudedOnASecretMeeting)
-            , dream4 <$ guard showDream4
-            , dream6 <$ guard (not theKingClaimedItsVictims)
-            , dream7 <$ guard showDream7
-            , Just dream8
-            , dream9 <$ guard (chasingTheStranger <= 3)
-            , dream10 <$ guard (chasingTheStranger > 3)
-            ]
+  conviction <- getRecordCount Conviction
+  doubt <- getRecordCount Doubt
 
-      story $ if theKingClaimedItsVictims then intro1 else intro2
-      traverse_ story dreamPath
+  if conviction > doubt
+    then do
+      gatherJust Set.TheMidnightMasks [Treacheries.huntingShadow]
+      removeEvery [Treacheries.blackStarsRise]
+      setAside [Enemies.theOrganistHopelessIDefiedHim]
+    else do
+      gatherJust Set.TheMidnightMasks [Treacheries.falseLead]
+      removeEvery [Treacheries.twinSuns]
+      setAside [Enemies.theOrganistDrapedInMystery]
 
-      investigators <- allInvestigators
-      lead <- getLead
+  montparnasse <-
+    place Locations.montparnasse
+      `orWhenReturnTo` placeOneOf (Locations.montparnasse, Locations.returnToMontparnasse)
+  gareDOrsay <- place Locations.gareDOrsay
 
-      unlessStandalone do
-        lostSouls <- replicateM 4 (genCard Treacheries.lostSoul)
-        for_ (zip investigators lostSouls) \(iid, lostSoul) ->
-          shuffleCardsIntoDeck iid [lostSoul]
+  jordanInterviewed <- interviewed Assets.jordanPerry
+  startAt $ if jordanInterviewed then montparnasse else gareDOrsay
 
-      when showDream4 do
-        paranoia <- genCard Treacheries.paranoia
-        chooseTargetM lead investigators (`shuffleCardsIntoDeck` [paranoia])
+  placeOneOf_ (Locations.montmartre209, Locations.montmartre210)
+  placeOneOf_ (Locations.operaGarnier212, Locations.operaGarnier213)
+  placeOneOf_ (Locations.leMarais217, Locations.leMarais218)
 
-      when showDream7 do
-        eachInvestigator (`sufferMentalTrauma` 1)
-
-      when (chasingTheStranger > 3) do
-        chooseOneM lead do
-          labeled "“How could any of this be beautiful to you?”" $ doStep 11 PreScenarioSetup
-          labeled "“What exactly am I looking at?”" $ doStep 12 PreScenarioSetup
-      when (chasingTheStranger <= 3) $ doStep 13 PreScenarioSetup
-      pure s
-    DoStep n PreScenarioSetup -> do
-      when (n == 11) $ story dream11
-      when (n == 12) do
-        story dream12
-        markDoubt
-      story dream13
-      story awakening
-
-      whenInterviewed Assets.jordanPerry do
-        story jordansInformation
-        eachInvestigator \iid -> setupModifier attrs iid (StartingResources 3)
-      pure s
-    Setup -> runScenarioSetup APhantomOfTruth attrs do
-      gather Set.APhantomOfTruth
-      gather Set.EvilPortents
-      gather Set.Byakhee
-      gather Set.TheStranger
-      gather Set.AgentsOfHastur
-
-      conviction <- getRecordCount Conviction
-      doubt <- getRecordCount Doubt
-
-      if conviction > doubt
-        then do
-          gatherJust Set.TheMidnightMasks [Treacheries.huntingShadow]
-          removeEvery [Treacheries.blackStarsRise]
-          setAside [Enemies.theOrganistHopelessIDefiedHim]
-        else do
-          gatherJust Set.TheMidnightMasks [Treacheries.falseLead]
-          removeEvery [Treacheries.twinSuns]
-          setAside [Enemies.theOrganistDrapedInMystery]
-
-      montparnasse <- place Locations.montparnasse
-      gareDOrsay <- place Locations.gareDOrsay
-
-      jordanInterviewed <- interviewed Assets.jordanPerry
-      startAt $ if jordanInterviewed then montparnasse else gareDOrsay
-
-      placeOneOf_ (Locations.montmartre209, Locations.montmartre210)
-      placeOneOf_ (Locations.operaGarnier212, Locations.operaGarnier213)
-      placeOneOf_ (Locations.leMarais217, Locations.leMarais218)
-
+  isReturnTo <- getIsReturnTo
+  if not isReturnTo
+    then
       placeAll
         [ Locations.grandGuignol
         , Locations.canalSaintMartin
@@ -205,13 +150,129 @@ instance RunMessage APhantomOfTruth where
         , Locations.notreDame
         , Locations.gardensOfLuxembourg
         ]
+    else do
+      placeOneOf_ (Locations.grandGuignol, Locations.returnToGrandGuignol)
+      placeOneOf_ (Locations.canalSaintMartin, Locations.returnToCanalSaintMartin)
+      placeOneOf_ (Locations.pereLachaiseCemetery, Locations.returnToPereLachaiseCemetery)
+      placeOneOf_ (Locations.notreDame, Locations.returnToNotreDame)
+      placeOneOf_ (Locations.gardensOfLuxembourg, Locations.returnToGardensOfLuxembourg)
+      setAside [Treacheries.figureInTheShadows, Treacheries.figureInTheShadows]
+      addAdditionalReferences ["52040b"]
 
-      setActDeck
-        $ if conviction > doubt
-          then [Acts.theParisianConspiracyV2, Acts.stalkedByShadows]
-          else [Acts.theParisianConspiracyV1, Acts.pursuingShadows]
+  setActDeck
+    $ if conviction > doubt
+      then [Acts.theParisianConspiracyV2, Acts.stalkedByShadows]
+      else [Acts.theParisianConspiracyV1, Acts.pursuingShadows]
 
-      setAgendaDeck [Agendas.theFirstNight, Agendas.theSecondNight, Agendas.theThirdNight]
+  setAgendaDeck [Agendas.theFirstNight, Agendas.theSecondNight, Agendas.theThirdNight]
+
+instance RunMessage APhantomOfTruth where
+  runMessage msg s@(APhantomOfTruth attrs) = runQueueT $ scenarioI18n $ case msg of
+    StandaloneSetup -> do
+      lead <- getLead
+      theManInThePallidMask <- genCard Enemies.theManInThePallidMask
+      randomToken <- sample (Cultist :| [Tablet, ElderThing])
+      setChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
+      chooseOneM lead $ popScope do
+        labeled' "key.conviction" markConviction
+        labeled' "key.doubt" markDoubt
+      addCampaignCardToDeck lead ShuffleIn theManInThePallidMask
+      pure s
+    PreScenarioSetup -> scope "intro" do
+      theKingClaimedItsVictims <- getHasRecord TheKingClaimedItsVictims
+      youIntrudedOnASecretMeeting <- getHasRecord YouIntrudedOnASecretMeeting
+      youSlayedTheMonstersAtTheDinnerParty <- getHasRecord YouSlayedTheMonstersAtTheDinnerParty
+      thePoliceAreSuspiciousOfYou <- getHasRecord ThePoliceAreSuspiciousOfYou
+      chasingTheStranger <- getRecordCount ChasingTheStranger
+      investigators <- allInvestigators
+
+      let
+        showDream4 =
+          not theKingClaimedItsVictims
+            && not youIntrudedOnASecretMeeting
+            && youSlayedTheMonstersAtTheDinnerParty
+        showDream7 = not theKingClaimedItsVictims && thePoliceAreSuspiciousOfYou
+
+      flavor do
+        h "title"
+        p.validate theKingClaimedItsVictims "readIntro1"
+        p.validate (not theKingClaimedItsVictims) "readIntro2"
+      flavor $ h "title" >> p (if theKingClaimedItsVictims then "intro1" else "intro2")
+
+      flavor $ h "title" >> p "dream1"
+      unlessStandalone do
+        lostSouls <- replicateM 4 (genCard Treacheries.lostSoul)
+        for_ (zip investigators lostSouls) \(iid, lostSoul) ->
+          shuffleCardsIntoDeck iid [lostSoul]
+
+      flavor do
+        h "title"
+        p "dream2.body"
+        p.validate theKingClaimedItsVictims "dream2.dream8"
+        p.validate (not theKingClaimedItsVictims && youIntrudedOnASecretMeeting) "dream2.dream3"
+        p.validate showDream4 "dream2.dream4"
+        p.validate
+          ( not
+              $ or [theKingClaimedItsVictims, youIntrudedOnASecretMeeting, youSlayedTheMonstersAtTheDinnerParty]
+          )
+          "dream2.dream6"
+
+      when (not theKingClaimedItsVictims && youIntrudedOnASecretMeeting) do
+        flavor $ h "title" >> p "dream3"
+
+      when showDream4 do
+        flavor $ h "title" >> p "dream4"
+        paranoia <- genCard Treacheries.paranoia
+        lead <- getLead
+        chooseTargetM lead investigators (`shuffleCardsIntoDeck` [paranoia])
+
+      unless theKingClaimedItsVictims do
+        flavor do
+          h "title"
+          p "dream6.body"
+          p.validate showDream7 "dream6.dream7"
+          p.validate (not showDream7) "dream6.dream8"
+
+      when showDream7 do
+        flavor $ h "title" >> p "dream7"
+        eachInvestigator (`sufferMentalTrauma` 1)
+
+      flavor do
+        h "title"
+        p "dream8.body"
+        p.validate (chasingTheStranger <= 3) "dream8.dream9"
+        p.validate (chasingTheStranger > 3) "dream8.dream10"
+
+      when (chasingTheStranger <= 3) do
+        flavor $ h "title" >> p "dream9"
+        doStep 13 PreScenarioSetup
+
+      when (chasingTheStranger > 3) do
+        storyWithChooseOneM' (h "title" >> p "dream10") do
+          labeled' "dream10.dream11" $ doStep 11 PreScenarioSetup
+          labeled' "dream10.dream12" $ doStep 12 PreScenarioSetup
+
+      pure s
+    DoStep n PreScenarioSetup -> scope "intro" do
+      when (n == 11) $ flavor $ h "title" >> p "dream11"
+      when (n == 12) do
+        flavor $ h "title" >> p "dream12"
+        markDoubt
+      flavor $ h "title" >> p "dream13"
+
+      didInterview <- interviewed Assets.jordanPerry
+      flavor do
+        h "title"
+        p "awakening"
+        unscoped (campaignI18n (nameVar Assets.jordanPerry $ p "checkIfInterviewed"))
+        p.right.validate didInterview "proceedToJordansInformation"
+        p.right.validate (not didInterview) "otherwise"
+      -- story intro
+      whenInterviewed Assets.jordanPerry do
+        flavor $ p "jordansInformation"
+        eachInvestigator \iid -> setupModifier attrs iid (StartingResources 3)
+      pure s
+    Setup -> runScenarioSetup APhantomOfTruth attrs $ setupAPhantomOfTruth attrs
     ResolveChaosToken _ Cultist _ | isHardExpert attrs -> do
       cultistEffect
       pure s
@@ -226,7 +287,7 @@ instance RunMessage APhantomOfTruth where
         ElderThing -> push $ LoseResources iid (ChaosTokenEffectSource ElderThing) n
         _ -> pure ()
       pure s
-    ScenarioResolution res -> scope "resolutions" do
+    ScenarioResolution r -> scope "resolutions" do
       let
         replaceSymbolTokens token = do
           removeAllChaosTokens Cultist
@@ -234,24 +295,23 @@ instance RunMessage APhantomOfTruth where
           removeAllChaosTokens ElderThing
           addChaosToken token
           addChaosToken token
-      case res of
+      case r of
         NoResolution -> do
-          story noResolution
+          resolutionWithXp "noResolution" $ allGainXp' attrs
           record YouDidNotEscapeTheGazeOfThePhantom
         Resolution 1 -> do
-          story resolution1
+          resolutionWithXp "resolution1" $ allGainXp' attrs
           record YouFoundNigelsHome
         Resolution 2 -> do
-          story resolution2
+          resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs (toBonus "bonus" 2)
           record YouFoundNigelEngram
+          eachInvestigator (`sufferMentalTrauma` 1)
         Resolution 3 -> do
-          story resolution3
+          resolutionWithXp "resolution3" $ allGainXp' attrs
           record YouWereUnableToFindNigel
         _ -> error "Invalid resolution"
 
-      when (res == Resolution 2) $ eachInvestigator (`sufferMentalTrauma` 1)
-
-      replaceSymbolTokens $ case res of
+      replaceSymbolTokens $ case r of
         NoResolution -> ElderThing
         Resolution 1 -> Cultist
         Resolution 2 -> Tablet
@@ -260,7 +320,9 @@ instance RunMessage APhantomOfTruth where
 
       selectForMaybeM (VictoryDisplayCardMatch $ basic $ cardIs Enemies.jordanPerry) \jordan ->
         recordSetInsert VIPsSlain [toCardCode jordan]
-      allGainXpWithBonus attrs $ if res == Resolution 2 then toBonus "insight" 2 else NoBonus
       endOfScenario
+      pure s
+    UseCardAbility _ ScenarioSource 1 _ _ -> do
+      shuffleSetAsideIntoEncounterDeck $ cardIs Treacheries.figureInTheShadows
       pure s
     _ -> APhantomOfTruth <$> liftRunMessage msg attrs

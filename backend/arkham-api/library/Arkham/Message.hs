@@ -582,6 +582,7 @@ data Message
   | CreateEndOfRoundEffect Source [Message]
   | CreateAssetAt AssetId Card Placement
   | CreateEventAt InvestigatorId Card Placement
+  | CreateTreacheryAt TreacheryId Card Placement
   | PlaceAsset AssetId Placement
   | PlaceEvent EventId Placement
   | PlaceTreachery TreacheryId Placement
@@ -875,6 +876,7 @@ data Message
   | CrossOutRecordSetEntries CampaignLogKey [SomeRecorded]
   | RefillSlots InvestigatorId
   | Remember ScenarioLogKey
+  | Forget ScenarioLogKey
   | ScenarioCountSet ScenarioCountKey Int
   | ScenarioCountIncrementBy ScenarioCountKey Int
   | ScenarioCountDecrementBy ScenarioCountKey Int
@@ -994,6 +996,7 @@ data Message
   | SkillTestCommitCard InvestigatorId Card
   | SkillTestEnds SkillTestId InvestigatorId Source
   | SkillTestEnded SkillTestId
+  | AfterThisTestResolves SkillTestId [Message]
   | AfterSkillTestEnds Source Target SkillTest.SkillTestResult
   | AfterSkillTestOption InvestigatorId Text [Message]
   | AfterSkillTestQuiet [Message]
@@ -1108,6 +1111,7 @@ data Message
   | RotateTarot TarotCard
   | Incursion LocationId
   | SetInvestigatorForm InvestigatorId InvestigatorForm
+  | PlaceReferenceCard Target CardCode
   | -- The Dream Eaters
     PlaceSwarmCards InvestigatorId EnemyId Int
   | PlacedSwarmCard EnemyId Card

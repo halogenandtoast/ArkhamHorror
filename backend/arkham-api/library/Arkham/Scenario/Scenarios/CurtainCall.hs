@@ -1,12 +1,14 @@
-module Arkham.Scenario.Scenarios.CurtainCall (curtainCall) where
+module Arkham.Scenario.Scenarios.CurtainCall (setupCurtainCall, curtainCall, CurtainCall (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
@@ -14,12 +16,14 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.CurtainCall.Story
+import Arkham.Scenarios.CurtainCall.Helpers
 import Arkham.Token
+import Arkham.Zone
 
 newtype CurtainCall = CurtainCall ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -49,73 +53,95 @@ instance HasChaosTokenValue CurtainCall where
           pure $ toChaosTokenValue attrs face 4 5
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+setupCurtainCall :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupCurtainCall attrs = do
+  setup do
+    ul do
+      li "gatherSets"
+      li "setAside"
+      li.nested "placeLocations.instructions" do
+        li "placeLocations.lola"
+      unscoped $ li "shuffleRemainder"
+
+  whenReturnTo $ gather Set.ReturnToCurtainCall
+  gather Set.CurtainCall
+  gather Set.EvilPortents
+  gather Set.Delusions `orWhenReturnTo` gather Set.MaddeningDelusions
+  gather Set.Hauntings
+  gather Set.CultOfTheYellowSign
+  gather Set.StrikingFear `orWhenReturnTo` gather Set.NeuroticFear
+  gather Set.Rats
+
+  theatre <- place Locations.theatre
+  backstage <- place Locations.backstage
+  placeAll [Locations.lobby, Locations.balcony]
+
+  investigators <- allInvestigators
+  mLola <- selectOne $ InvestigatorWithTitle "Lola Hayes"
+  for_ mLola \lola -> do
+    chooseOneM lola do
+      targeting backstage do
+        reveal backstage
+        moveTo_ attrs lola backstage
+
+  let theatreInvestigators = maybe investigators (`deleteFirst` investigators) mLola
+
+  unless (null theatreInvestigators) do
+    lead <- getLead
+    chooseOneM lead do
+      targeting theatre do
+        reveal theatre
+        for_ theatreInvestigators \iid -> moveTo_ attrs iid theatre
+
+  setAside
+    [ Enemies.theManInThePallidMask
+    , Locations.lightingBox
+    , Locations.boxOffice
+    , Locations.greenRoom
+    , Locations.dressingRoom
+    , Locations.rehearsalRoom
+    , Locations.trapRoom
+    ]
+
+  whenReturnTo $ setAside [Locations.theatreLounge, Locations.propShop]
+
+  royalEmissary <- placeEnemyCapture Enemies.royalEmissary (OutOfPlay SetAsideZone)
+  whenReturnTo $ push $ PlaceReferenceCard (toTarget royalEmissary) "52014b"
+
+  setAgendaDeck [Agendas.theThirdAct, Agendas.encore]
+  isReturnTo <- getIsReturnTo
+
+  setActDeck
+    $ [ Acts.awakening
+      , Acts.theStrangerACityAflame
+      , Acts.theStrangerThePathIsMine
+      , Acts.theStrangerTheShoresOfHali
+      ]
+    <> ( guard isReturnTo
+           *> [Acts.theStrangerAlaranMists, Acts.theStrangerUnderTheCity, Acts.theStrangerHereIsMyReply]
+       )
+    <> [Acts.curtainCall]
+
 instance RunMessage CurtainCall where
-  runMessage msg s@(CurtainCall attrs) = runQueueT $ case msg of
+  runMessage msg s@(CurtainCall attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story intro
+      flavor $ scope "intro" $ h "title" >> p "body"
       pure s
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
-    Setup -> runScenarioSetup CurtainCall attrs do
-      gather Set.CurtainCall
-      gather Set.EvilPortents
-      gather Set.Delusions
-      gather Set.Hauntings
-      gather Set.CultOfTheYellowSign
-      gather Set.StrikingFear
-      gather Set.Rats
-
-      theatre <- place Locations.theatre
-      backstage <- place Locations.backstage
-      placeAll [Locations.lobby, Locations.balcony]
-
-      investigators <- allInvestigators
-      mLola <- selectOne $ InvestigatorWithTitle "Lola Hayes"
-      for_ mLola \lola -> do
-        chooseOneM lola do
-          targeting backstage do
-            reveal backstage
-            moveTo_ attrs lola backstage
-
-      let theatreInvestigators = maybe investigators (`deleteFirst` investigators) mLola
-
-      unless (null theatreInvestigators) do
-        lead <- getLead
-        chooseOneM lead do
-          targeting theatre do
-            reveal theatre
-            for_ theatreInvestigators \iid -> moveTo_ attrs iid theatre
-
-      setAside
-        [ Enemies.royalEmissary
-        , Enemies.theManInThePallidMask
-        , Locations.lightingBox
-        , Locations.boxOffice
-        , Locations.greenRoom
-        , Locations.dressingRoom
-        , Locations.rehearsalRoom
-        , Locations.trapRoom
-        ]
-      setAgendaDeck [Agendas.theThirdAct, Agendas.encore]
-      setActDeck
-        [ Acts.awakening
-        , Acts.theStrangerACityAflame
-        , Acts.theStrangerThePathIsMine
-        , Acts.theStrangerTheShoresOfHali
-        , Acts.curtainCall
-        ]
-    ScenarioResolution r -> do
+    Setup -> runScenarioSetup CurtainCall attrs $ setupCurtainCall attrs
+    ScenarioResolution r -> scope "resolutions" do
       let stoleFromTheBoxOffice = member StoleFromTheBoxOffice attrs.log
       case r of
-        NoResolution -> story noResolution
+        NoResolution -> resolutionWithXp "noResolution" $ allGainXp' attrs
         Resolution 1 -> do
-          story resolution1
+          resolutionWithXp "resolution1" $ allGainXp' attrs
           record YouTriedToWarnThePolice
           markConviction
           when stoleFromTheBoxOffice $ record ThePoliceAreSuspiciousOfYou
         Resolution 2 -> do
-          story resolution2
+          resolutionWithXp "resolution2" $ allGainXp' attrs
           record YouChoseNotToGoToThePolice
           markDoubt
           when stoleFromTheBoxOffice $ record ThePoliceAreSuspiciousOfYou
@@ -124,7 +150,6 @@ instance RunMessage CurtainCall where
       record TheStrangerIsOnToYou
       lead <- getLead
       addCampaignCardToDeck lead DoNotShuffleIn Enemies.theManInThePallidMask
-      allGainXp attrs
       endOfScenario
       pure s
     ResolveChaosToken _ chaosTokenFace iid | chaosTokenFace `elem` [Cultist, Tablet, ElderThing] -> do

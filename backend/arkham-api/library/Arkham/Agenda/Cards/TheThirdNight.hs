@@ -1,13 +1,8 @@
 module Arkham.Agenda.Cards.TheThirdNight (theThirdNight) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
+import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Resolution
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheThirdNight = TheThirdNight AgendaAttrs
@@ -23,14 +18,10 @@ instance HasModifiersFor TheThirdNight where
     modifySelf a [OtherDoomSubtracts | moreConvictionThanDoubt]
 
 instance RunMessage TheThirdNight where
-  runMessage msg a@(TheThirdNight attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+  runMessage msg a@(TheThirdNight attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
       conviction <- getConviction
       doubt <- getDoubt
-      actId <- selectJust AnyAct
-      push
-        $ if doubt >= conviction
-          then ScenarioResolution $ Resolution 3
-          else AdvanceAct actId (toSource attrs) AdvancedWithOther
+      if doubt >= conviction then push R3 else advanceCurrentAct attrs
       pure a
-    _ -> TheThirdNight <$> runMessage msg attrs
+    _ -> TheThirdNight <$> liftRunMessage msg attrs

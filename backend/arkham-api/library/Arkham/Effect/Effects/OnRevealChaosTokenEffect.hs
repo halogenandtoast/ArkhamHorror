@@ -36,6 +36,7 @@ onRevealChaosTokenEffect' eid skillTestId matchr source target msgs =
       , effectTraits = mempty
       , effectWindow = Nothing
       , effectDisableWindow = Nothing
+      , effectOnDisable = Nothing
       , effectFinished = False
       , effectExtraMetadata = toJSON matchr
       , effectSkillTest = Just skillTestId
@@ -67,6 +68,7 @@ instance RunMessage OnRevealChaosTokenEffect where
               AssetSource aid -> push $ If (Window.RevealChaosTokenAssetAbilityEffect iid [token] aid) msgs
               TreacherySource tid -> push $ If (Window.RevealChaosTokenTreacheryEffect iid [token] tid) msgs
               ChaosTokenEffectSource _ -> pushAll msgs
+              LocationSource _ -> pushAll msgs
               other -> error $ "Unhandled source for token effect: " <> show other
           _ -> pure ()
       pure e

@@ -1,12 +1,10 @@
 module Arkham.Location.Cards.Montparnasse (montparnasse) where
 
 import Arkham.Ability
-import Arkham.Classes
+import Arkham.Card.CardDef
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
-import Arkham.Prelude
-import Arkham.SkillType
+import Arkham.Location.Import.Lifted
 
 newtype Montparnasse = Montparnasse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -16,22 +14,18 @@ montparnasse :: LocationCard Montparnasse
 montparnasse = location Montparnasse Cards.montparnasse 2 (PerPlayer 1)
 
 instance HasAbilities Montparnasse where
-  getAbilities (Montparnasse attrs) =
-    withBaseAbilities
-      attrs
-      [ limitedAbility (PlayerLimit PerRound 1)
-          $ restrictedAbility attrs 1 Here
-          $ FastAbility
-          $ HandDiscardCost 1 #any
-      | locationRevealed attrs
-      ]
+  getAbilities (Montparnasse a) =
+    extendRevealed1 a
+      $ playerLimit PerRound
+      $ restricted a 1 Here
+      $ FastAbility
+      $ HandDiscardCost 1 #any
 
 instance RunMessage Montparnasse where
-  runMessage msg a@(Montparnasse attrs) = case msg of
-    UseCardAbility iid source 1 _ (DiscardCardPayment cards)
-      | isSource attrs source -> do
-          let
-            countWillpower = count (== SkillIcon SkillWillpower) . cdSkills . toCardDef
-            totalWillpower = sum $ map countWillpower cards
-          a <$ push (TakeResources iid totalWillpower (toAbilitySource attrs 1) False)
-    _ -> Montparnasse <$> runMessage msg attrs
+  runMessage msg a@(Montparnasse attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 _ (DiscardCardPayment cards) -> do
+      let countWillpower = count (== #willpower) . cdSkills . toCardDef
+      let totalWillpower = sum $ map countWillpower cards
+      gainResources iid (attrs.ability 1) totalWillpower
+      pure a
+    _ -> Montparnasse <$> liftRunMessage msg attrs

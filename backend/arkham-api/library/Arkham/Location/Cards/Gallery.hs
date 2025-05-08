@@ -1,16 +1,12 @@
 module Arkham.Location.Cards.Gallery (gallery) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype Gallery = Gallery LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -20,22 +16,17 @@ gallery :: LocationCard Gallery
 gallery = location Gallery Cards.gallery 1 (Static 0)
 
 instance HasAbilities Gallery where
-  getAbilities (Gallery attrs) =
-    withBaseAbilities
-      attrs
-      [ skillTestAbility $ restrictedAbility attrs 1 Here $ ForcedAbility $ TurnEnds Timing.After You
-      | locationRevealed attrs
-      ]
+  getAbilities (Gallery a) =
+    extendRevealed1 a $ skillTestAbility $ restricted a 1 Here $ forced $ TurnEnds #after You
 
 instance RunMessage Gallery where
-  runMessage msg l@(Gallery attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg l@(Gallery attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (attrs.ability 1) iid SkillWillpower (Fixed 2)
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 2)
       pure l
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isAbilitySource attrs 1 source -> do
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       clueCount <- field InvestigatorClues iid
-      when (clueCount > 0) $ do
-        pushAll [InvestigatorSpendClues iid 1, PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1]
+      when (clueCount > 0) $ moveTokens (attrs.ability 1) iid attrs #clue 1
       pure l
-    _ -> Gallery <$> runMessage msg attrs
+    _ -> Gallery <$> liftRunMessage msg attrs

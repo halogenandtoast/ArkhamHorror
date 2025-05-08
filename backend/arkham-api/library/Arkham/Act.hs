@@ -325,6 +325,14 @@ allActs =
     , -- Return to the Dunwich Legacy
       -- Return to Lost in Time and Space
       SomeActCard intoTheBeyondV2
+    , -- Return to the Path to Carcosa
+      -- Return to Curtain Call
+      SomeActCard theStrangerAlaranMists
+    , SomeActCard theStrangerUnderTheCity
+    , SomeActCard theStrangerHereIsMyReply
+    , -- Return to The Unspeakable Oath
+      SomeActCard theReallyBadOnesV3
+    , SomeActCard theReallyBadOnesV4
     , -- Curse of the Rougarou
       SomeActCard findingLadyEsprit
     , SomeActCard huntingTheRougarou

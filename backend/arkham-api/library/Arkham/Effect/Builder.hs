@@ -1,26 +1,26 @@
 {-# LANGUAGE ImplicitParams #-}
 
-module Arkham.Effect.Builder
-  ( module X
-  , module Arkham.Effect.Builder
-  ) where
+module Arkham.Effect.Builder (
+  module X,
+  module Arkham.Effect.Builder,
+) where
 
 import Arkham.Duration as X
 
-import Arkham.Calculation.IsCalculation
-import Arkham.Matcher.Location
 import Arkham.Calculation
-import Arkham.Criteria
+import Arkham.Calculation.IsCalculation
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
+import Arkham.Criteria
 import Arkham.Effect.Types
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.GameT
 import Arkham.Helpers.Modifiers (toModifiers)
+import Arkham.Matcher.Enemy
+import Arkham.Matcher.Location
 import Arkham.Message (Message (CreateEffect))
 import Arkham.Message.Lifted.Queue
-import Arkham.Matcher.Enemy
 import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Queue
@@ -41,8 +41,12 @@ class WithEffect m where
     builder <- execStateT (runEffectBuilder body) =<< makeEffectBuilder "genef" Nothing ?source target
     push $ CreateEffect builder {effectBuilderEffectId = Just effectId}
 
-instance WithEffect (QueueT Message GameT)
+instance WithEffect GameT
+instance WithEffect m => WithEffect (QueueT Message m)
 instance WithEffect m => WithEffect (StateT s m)
+
+withSource :: Sourceable source => source -> ((?source :: source, Sourceable source) => b) -> b
+withSource source inner = let ?source = source in inner
 
 enableOn :: Monad m => EffectWindow -> EffectBuilderT m ()
 enableOn window = EffectBuilderT $ do
@@ -64,6 +68,12 @@ removeOn window = EffectBuilderT $ do
     Just ws -> FirstEffectWindow [w, ws]
     Nothing -> w
 
+onDisable :: ReverseQueue m => QueueT Message m () -> EffectBuilderT m ()
+onDisable body = EffectBuilderT do
+  msgs <- lift $ evalQueueT body
+  b <- get
+  put $ b {effectBuilderOnDisable = Just $ maybe msgs (<> msgs) (effectBuilderOnDisable b)}
+
 instance (Monad m, a ~ ()) => Duration (EffectBuilderT m a) where
   type DurationOf (EffectBuilderT m a) = EffectWindow
   during window = do
@@ -72,7 +82,9 @@ instance (Monad m, a ~ ()) => Duration (EffectBuilderT m a) where
 
 applyWhen :: HasGame m => Criterion -> EffectBuilderT m () -> EffectBuilderT m ()
 applyWhen c inner = do
-  builder <- EffectBuilderT $ StateT $ \s -> (,s) <$> execStateT (runEffectBuilder inner) ((s :: EffectBuilder) {effectBuilderMetadata = Nothing})
+  builder <- EffectBuilderT $ StateT $ \s ->
+    (,s)
+      <$> execStateT (runEffectBuilder inner) ((s :: EffectBuilder) {effectBuilderMetadata = Nothing})
   case effectBuilderMetadata builder of
     Just (EffectModifiers mods) -> do
       for_ mods $ apply . CriteriaModifier c . modifierType

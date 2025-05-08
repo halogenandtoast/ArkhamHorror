@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.NorthTower_288 (northTower_288, NorthTower_288 (..)) where
+module Arkham.Location.Cards.NorthTower_288 (northTower_288) where
 
 import Arkham.Agenda.Sequence (AgendaSide (A, C))
 import Arkham.Agenda.Types (Field (AgendaDoom))
@@ -20,9 +20,8 @@ northTower_288 = location NorthTower_288 Cards.northTower_288 4 (PerPlayer 1)
 
 instance HasModifiersFor NorthTower_288 where
   getModifiersFor (NorthTower_288 a) = do
-    getSkillTest >>= \case
-      Nothing -> pure mempty
-      Just st -> maybeModified_ a (SkillTestTarget st.id) do
+    getSkillTest >>= traverse_ \st -> do
+      maybeModified_ a (SkillTestTarget st.id) do
         iid <- MaybeT getSkillTestInvestigator
         liftGuardM $ iid `isAt` a
         agendaA <- MaybeT $ selectOne $ AgendaWithSide A

@@ -1,50 +1,42 @@
 module Arkham.Act.Cards.MistakesOfThePast (mistakesOfThePast) where
 
+import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Classes
+import Arkham.Card.CardCode
 import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 
 newtype MistakesOfThePast = MistakesOfThePast ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 mistakesOfThePast :: ActCard MistakesOfThePast
-mistakesOfThePast =
-  act
-    (2, A)
-    MistakesOfThePast
-    Cards.mistakesOfThePast
-    (Just $ GroupClueCost (PerPlayer 2) Anywhere)
+mistakesOfThePast = act (2, A) MistakesOfThePast Cards.mistakesOfThePast (groupClueCost (PerPlayer 2))
 
 instance RunMessage MistakesOfThePast where
-  runMessage msg a@(MistakesOfThePast attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
-      locations <-
-        select
-          $ RevealedLocation
-          <> LocationWithTitle
-            "Historical Society"
-      mrPeabody <- getSetAsideCard Assets.mrPeabody
-      lead <- getLeadPlayer
-      investigatorIds <- getInvestigators
+  runMessage msg a@(MistakesOfThePast attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       playerCount <- getPlayerCount
-      placeHiddenLibrary <- placeSetAsideLocation_ Locations.hiddenLibrary
-      pushAll
-        $ [ PlaceCluesUpToClueValue location (toSource attrs) playerCount
-          | location <- locations
-          ]
-        <> [ chooseOne
-               lead
-               [ targetLabel iid [TakeControlOfSetAsideAsset iid mrPeabody]
-               | iid <- investigatorIds
-               ]
-           , placeHiddenLibrary
-           , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-           ]
+      selectEach (RevealedLocation <> "Historical Society") \location ->
+        push $ PlaceCluesUpToClueValue location (toSource attrs) playerCount
+      mrPeabody <- getSetAsideCard Assets.mrPeabody
+      investigators <- getInvestigators
+      leadChooseOneM $ targets investigators (`takeControlOfSetAsideAsset` mrPeabody)
+      placeSetAsideLocation_ Locations.hiddenLibrary
+      advanceActDeck attrs
+      whenM getIsReturnTo do
+        ok <- selectAny $ EmptyLocation <> "Historical Society"
+        when ok do
+          lead <- getLead
+          leadChooseOneM do
+            abilityLabeled
+              lead
+              (mkAbility (SourceableWithCardCode (CardCode "52028") ScenarioSource) 1 $ forced AnyWindow)
+              nothing
       pure a
-    _ -> MistakesOfThePast <$> runMessage msg attrs
+    _ -> MistakesOfThePast <$> liftRunMessage msg attrs

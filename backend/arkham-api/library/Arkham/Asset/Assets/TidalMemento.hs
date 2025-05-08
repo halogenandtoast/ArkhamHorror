@@ -37,7 +37,7 @@ instance HasAbilities TidalMemento where
             <> exists (EnemyWithSealedChaosTokens 1 $ oneOf [#curse, #bless])
         )
         $ freeReaction
-          (WouldRevealChaosToken #when $ affectsOthers $ InvestigatorAt YourLocation)
+          (WouldRevealChaosToken #when $ affectsOthers $ colocatedWithMatch You)
     ]
 
 instance RunMessage TidalMemento where

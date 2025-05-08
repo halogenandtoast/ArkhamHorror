@@ -3,6 +3,7 @@ module Arkham.Location.Cards.Montmartre209 (montmartre209) where
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Playable
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -30,7 +31,7 @@ instance RunMessage Montmartre209 where
           filterM (getIsPlayable iid (attrs.ability 1) (UnpaidCost NoAction) [mkWhen (Window.DuringTurn iid)])
             =<< select (TopOfDeckOf UneliminatedInvestigator)
         chooseOneM iid do
-          labeled "Play no cards" nothing
+          withI18n $ labeled' "playNoCards" nothing
           targets cards $ playCardPayingCost iid
       pure a
     _ -> Montmartre209 <$> liftRunMessage msg attrs

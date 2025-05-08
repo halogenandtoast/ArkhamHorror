@@ -3,6 +3,5 @@ module Arkham.Campaigns.ThePathToCarcosa.Import (
 ) where
 
 import Arkham.Campaigns.ThePathToCarcosa.ChaosBag as X
-import Arkham.Campaigns.ThePathToCarcosa.FlavorText as X
 import Arkham.Campaigns.ThePathToCarcosa.Key as X
 import Arkham.Campaigns.ThePathToCarcosa.Helpers as X

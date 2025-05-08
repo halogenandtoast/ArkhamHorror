@@ -515,13 +515,9 @@ instance RunMessage EnemyAttrs where
         when (wantsToMove && CannotMove `notElem` mods) $ do
           keywords <- getModifiedKeywords a
           when (Keyword.Hunter `elem` keywords) do
+            (batchId, windowMessages) <- wouldWindows $ Window.WouldMoveFromHunter (toId a)
             push
-              $ HandleGroupTarget
-                HunterGroup
-                (toTarget a)
-                [ CheckWindows [mkWhen $ Window.MovedFromHunter enemyId]
-                , HunterMove (toId a)
-                ]
+              $ HandleGroupTarget HunterGroup (toTarget a) [Would batchId $ windowMessages <> [HunterMove (toId a)]]
           -- We should never have a case where an enemy has both patrol and
           -- hunter and should only have one patrol keyword
           for_ keywords \case
@@ -646,7 +642,8 @@ instance RunMessage EnemyAttrs where
             [] -> pure a
             [lid] -> do
               pushAll
-                [ EnemyMove enemyId lid
+                [ CheckWindows [Window.mkWhen $ Window.MovedFromHunter enemyId]
+                , EnemyMove enemyId lid
                 , CheckWindows [mkAfter $ Window.MovedFromHunter enemyId]
                 , CheckWindows [mkAfter $ Window.EnemyMovesTo lid MovedViaHunter enemyId]
                 ]
@@ -657,7 +654,8 @@ instance RunMessage EnemyAttrs where
                   lead
                   [ targetLabel
                       l
-                      [ EnemyMove enemyId l
+                      [ CheckWindows [Window.mkWhen $ Window.MovedFromHunter enemyId]
+                      , EnemyMove enemyId l
                       , CheckWindows [mkAfter $ Window.MovedFromHunter enemyId]
                       , CheckWindows [mkAfter $ Window.EnemyMovesTo l MovedViaHunter enemyId]
                       ]
@@ -989,7 +987,7 @@ instance RunMessage EnemyAttrs where
           player <- getPlayer iid
           let
             attackMessage =
-              if AttackDealsEitherDamageOrHorror `elem` modifiers
+              if AttackDealsEitherDamageOrHorror `elem` (modifiers <> mods)
                 then
                   chooseOne
                     player
@@ -1278,6 +1276,8 @@ instance RunMessage EnemyAttrs where
       pure $ a & defeatedL .~ True
     DefeatedAddToVictory (isTarget a -> True) -> do
       pure $ a & placementL .~ OutOfPlay VictoryDisplayZone
+    EnemySpawnFromOutOfPlay _ _miid _lid eid | eid == a.id -> do
+      pure $ a & (defeatedL .~ False) & (exhaustedL .~ False)
     AddToVictory (isTarget a -> True) -> do
       pure $ a & placementL .~ OutOfPlay VictoryDisplayZone
     Discard miid source target | a `isTarget` target -> do
@@ -1541,6 +1541,8 @@ instance RunMessage EnemyAttrs where
       pure $ a & tokensL %~ flipDoom n
     ClearTokens target | isTarget a target -> do
       pure $ a & tokensL .~ mempty
+    PlaceReferenceCard (isTarget a -> True) cardCode -> do
+      pure $ a & referenceCardsL %~ (cardCode :)
     PlaceEnemy eid placement | eid == enemyId -> do
       case placement of
         AtLocation _ -> push $ EnemyCheckEngagement eid

@@ -22,7 +22,7 @@ instance HasAbilities OldBookOfLore where
         1
         ( exists
             $ affectsOthers
-            $ InvestigatorAt YourLocation
+            $ colocatedWithMatch You
             <> InvestigatorWithoutModifier CannotManipulateDeck
         )
         (actionAbilityWithCost $ exhaust a)

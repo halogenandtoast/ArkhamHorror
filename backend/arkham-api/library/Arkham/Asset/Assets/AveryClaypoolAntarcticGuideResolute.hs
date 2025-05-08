@@ -28,7 +28,7 @@ instance HasAbilities AveryClaypoolAntarcticGuideResolute where
   getAbilities (AveryClaypoolAntarcticGuideResolute a) =
     [ restricted a 1 ControlsThis
         $ ReactionAbility
-          (RevealChaosToken #when (affectsOthers $ InvestigatorAt YourLocation) #frost)
+          (RevealChaosToken #when (affectsOthers $ colocatedWithMatch You) #frost)
           (exhaust a)
     ]
 

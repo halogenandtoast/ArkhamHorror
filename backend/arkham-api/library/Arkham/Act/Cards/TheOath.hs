@@ -1,13 +1,12 @@
 module Arkham.Act.Cards.TheOath (theOath) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.EchoesOfThePast.Helpers
 import Arkham.Trait
 
 newtype TheOath = TheOath ActAttrs
@@ -30,16 +29,10 @@ instance HasModifiersFor TheOath where
       [ConnectedToWhen (LocationWithTrait Passageway) (LocationWithTrait Passageway)]
 
 instance RunMessage TheOath where
-  runMessage msg a@(TheOath attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      lead <- getLeadPlayer
-      push
-        $ chooseOne
-          lead
-          [ Label "This is an important discovery! We should take it. (-> R1)" [R1]
-          , Label
-              "It's just a silly trinket, and it would be wrong to steal from the Historical Society. Leave it behind (-> R2)"
-              [R2]
-          ]
+  runMessage msg a@(TheOath attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> scenarioI18n do
+      leadChooseOneM do
+        labeled' "theOath.r1" $ push R1
+        labeled' "theOath.r2" $ push R2
       pure a
-    _ -> TheOath <$> runMessage msg attrs
+    _ -> TheOath <$> liftRunMessage msg attrs

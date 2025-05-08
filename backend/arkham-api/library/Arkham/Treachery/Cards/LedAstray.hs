@@ -1,17 +1,14 @@
-module Arkham.Treachery.Cards.LedAstray (
-  ledAstray,
-  LedAstray (..),
-) where
+module Arkham.Treachery.Cards.LedAstray (ledAstray) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Scenarios.EchoesOfThePast.Helpers
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype LedAstray = LedAstray TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -21,30 +18,16 @@ ledAstray :: TreacheryCard LedAstray
 ledAstray = treachery LedAstray Cards.ledAstray
 
 instance RunMessage LedAstray where
-  runMessage msg t@(LedAstray attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(LedAstray attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       cultists <- selectMap EnemyTarget $ EnemyWithTrait Cultist
       hasNoClues <- fieldP InvestigatorClues (== 0) iid
-      let
-        advanceAgenda = [placeDoomOnAgendaAndCheckAdvance]
-        placeDoomOnCultist target =
-          TargetLabel
-            target
-            [InvestigatorSpendClues iid 1, PlaceClues (toSource attrs) target 1]
-      player <- getPlayer iid
-      pushAll
-        $ if null cultists || hasNoClues
-          then advanceAgenda
-          else
-            [ chooseOne
-                player
-                [ Label
-                    "Place 1 of your clues on a Cultist enemy"
-                    [chooseOne player $ map placeDoomOnCultist cultists]
-                , Label
-                    "Place 1 doom on the current agenda (this effect may cause the current agenda to advance)"
-                    advanceAgenda
-                ]
-            ]
+      if null cultists || hasNoClues
+        then placeDoomOnAgendaAndCheckAdvance 1
+        else do
+          chooseOneM iid do
+            scenarioI18n $ labeled' "ledAstray.placeClue" do
+              chooseTargetM iid cultists \cultist -> moveTokens attrs iid cultist #clue 1
+            withI18n $ countVar 1 $ labeled' "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
       pure t
-    _ -> LedAstray <$> runMessage msg attrs
+    _ -> LedAstray <$> liftRunMessage msg attrs

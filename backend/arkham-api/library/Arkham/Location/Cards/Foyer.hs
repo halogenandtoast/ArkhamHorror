@@ -1,14 +1,10 @@
-module Arkham.Location.Cards.Foyer (
-  foyer,
-  Foyer (..),
-) where
+module Arkham.Location.Cards.Foyer (foyer) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Scenarios.TheLastKing.Helpers
 
 newtype Foyer = Foyer LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -18,7 +14,8 @@ foyer :: LocationCard Foyer
 foyer = location Foyer Cards.foyer 2 (PerPlayer 1)
 
 instance HasAbilities Foyer where
-  getAbilities (Foyer attrs) = withResignAction attrs []
+  getAbilities (Foyer a) =
+    extendRevealed1 a $ scenarioI18n $ withI18nTooltip "foyer.resign" $ locationResignAction a
 
 instance RunMessage Foyer where
   runMessage msg (Foyer attrs) = Foyer <$> runMessage msg attrs

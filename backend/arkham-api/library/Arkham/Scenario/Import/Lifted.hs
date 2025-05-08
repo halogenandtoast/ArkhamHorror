@@ -15,7 +15,7 @@ import Arkham.Helpers.Message as X (
   pattern R7,
   pattern R8,
  )
-import Arkham.Helpers.Scenario as X
+import Arkham.Helpers.Scenario as X hiding (getIsReturnTo)
 import Arkham.Message as X (
   Message (..),
   ShuffleIn (..),
@@ -28,6 +28,7 @@ import Arkham.Question as X
 import Arkham.Scenario.Runner as X (
   IsScenario,
   ScenarioAttrs,
+  actStackL,
   additionalReferencesL,
   decksL,
   decksLayoutL,

@@ -3,10 +3,11 @@ module Arkham.Location.Cards.NotreDame (notreDame) where
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message (pattern RemoveDoom)
+import Arkham.Message.Lifted.Choose
 
 newtype NotreDame = NotreDame LocationAttrs
   deriving anyclass IsLocation
@@ -20,10 +21,8 @@ instance HasModifiersFor NotreDame where
     whenRevealed a $ modifySelect a (enemyAt a) [EnemyFight (-1), EnemyEvade 1]
 
 instance HasAbilities NotreDame where
-  getAbilities (NotreDame attrs) =
-    extendRevealed
-      attrs
-      [skillTestAbility $ groupLimit PerGame $ restrictedAbility attrs 1 Here actionAbility]
+  getAbilities (NotreDame a) =
+    extendRevealed1 a $ skillTestAbility $ groupLimit PerGame $ restricted a 1 Here actionAbility
 
 instance RunMessage NotreDame where
   runMessage msg l@(NotreDame attrs) = runQueueT $ case msg of
@@ -32,12 +31,10 @@ instance RunMessage NotreDame where
       beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 6)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      agenda <- selectJust AnyAgenda
-      hasDoom <- matches agenda AgendaWithAnyDoom
-      chooseOrRunOne iid
-        $ Label "Place 1 doom on current agenda" [PlaceDoom (attrs.ability 1) (toTarget agenda) 1]
-        : [ Label "Remove 1 doom on current agenda" [RemoveDoom (attrs.ability 1) (toTarget agenda) 1]
-          | hasDoom
-          ]
+      mAgenda <- selectOne AgendaWithAnyDoom
+      chooseOrRunOneM iid $ withI18n do
+        countVar 1 $ labeled' "placeAgendaDoom" $ placeDoomOnAgenda 1
+        for_ mAgenda \agenda -> do
+          countVar 1 $ labeled' "removeAgendaDoom" $ removeDoom (attrs.ability 1) agenda 1
       pure l
     _ -> NotreDame <$> liftRunMessage msg attrs

@@ -24,7 +24,7 @@ instance HasAbilities Bonesaw where
         $ controlledAbility
           a
           2
-          (exists $ HealableInvestigator (a.ability 2) #damage $ InvestigatorAt YourLocation)
+          (exists $ HealableInvestigator (a.ability 2) #damage $ colocatedWithMatch You)
           actionAbility
     ]
 

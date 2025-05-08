@@ -17,7 +17,7 @@ cloister = location Cloister Cards.cloister 2 (PerPlayer 1)
 
 instance HasAbilities Cloister where
   getAbilities (Cloister a) =
-    extendRevealed a [skillTestAbility $ restrictedAbility a 1 (Here <> NoCluesOnThis) parleyAction_]
+    extendRevealed1 a $ skillTestAbility $ restricted a 1 (Here <> NoCluesOnThis) parleyAction_
 
 instance RunMessage Cloister where
   runMessage msg l@(Cloister attrs) = runQueueT $ case msg of

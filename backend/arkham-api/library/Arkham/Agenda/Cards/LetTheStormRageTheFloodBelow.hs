@@ -3,16 +3,13 @@ module Arkham.Agenda.Cards.LetTheStormRageTheFloodBelow (letTheStormRageTheFlood
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Import.Lifted
 import Arkham.Card
-import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype LetTheStormRageTheFloodBelow = LetTheStormRageTheFloodBelow AgendaAttrs
@@ -21,11 +18,7 @@ newtype LetTheStormRageTheFloodBelow = LetTheStormRageTheFloodBelow AgendaAttrs
 
 letTheStormRageTheFloodBelow :: AgendaCard LetTheStormRageTheFloodBelow
 letTheStormRageTheFloodBelow =
-  agenda
-    (2, A)
-    LetTheStormRageTheFloodBelow
-    Cards.letTheStormRageTheFloodBelow
-    (Static 6)
+  agenda (2, A) LetTheStormRageTheFloodBelow Cards.letTheStormRageTheFloodBelow (Static 6)
 
 instance HasModifiersFor LetTheStormRageTheFloodBelow where
   getModifiersFor (LetTheStormRageTheFloodBelow a) = do
@@ -37,17 +30,15 @@ instance HasAbilities LetTheStormRageTheFloodBelow where
     [groupLimit PerRound $ mkAbility a 1 $ FastAbility $ GroupClueCost (PerPlayer 1) Anywhere]
 
 instance RunMessage LetTheStormRageTheFloodBelow where
-  runMessage msg a@(LetTheStormRageTheFloodBelow attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+  runMessage msg a@(LetTheStormRageTheFloodBelow attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      toDiscard GameSource attrs
       openThePathBelow <- getSetAsideCard Acts.openThePathBelow
-      pushAll [toDiscard GameSource attrs, AddAct 1 openThePathBelow]
+      push $ AddAct 1 openThePathBelow
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      investigatorIds <- getInvestigators
-      pushAll
-        $ [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
-        <> [ TakeResources iid 2 (toAbilitySource attrs 1) False
-           | iid <- investigatorIds
-           ]
+      placeDoom (attrs.ability 1) attrs 1
+      push AdvanceAgendaIfThresholdSatisfied
+      eachInvestigator \iid -> gainResources iid (attrs.ability 1) 2
       pure a
-    _ -> LetTheStormRageTheFloodBelow <$> runMessage msg attrs
+    _ -> LetTheStormRageTheFloodBelow <$> liftRunMessage msg attrs

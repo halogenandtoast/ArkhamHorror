@@ -96,8 +96,8 @@ const groupedTreacheries = computed(() => Object.entries(groupBy([...props.agend
 
 const debug = useDebug()
 const isVertical = computed(() => {
-  const cardCode = props.agenda.flipped ? id.value.replace(/a$/, 'b') : id.value
-  return ["c01121b", "c06169b", "c50026b", "c07164b", "c07165b", "c07199b", "c82002b", "c90033b", "c90066b"].includes(cardCode) 
+  const cardCode = props.agenda.flipped ? id.value.replace(/a?$/, 'b') : id.value
+  return ["c01121b", "c03241b", "c06169b", "c50026b", "c07164b", "c07165b", "c07199b", "c82002b", "c90033b", "c90066b"].includes(cardCode) 
 })
 </script>
 

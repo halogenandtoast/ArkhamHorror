@@ -224,6 +224,7 @@ data WindowType
   | MovedButBeforeEnemyEngagement InvestigatorId LocationId
   | MovedBy Source LocationId InvestigatorId
   | MovedFromHunter EnemyId
+  | WouldMoveFromHunter EnemyId
   | EnemyMovesTo LocationId MovesVia EnemyId
   | EnemyMoves EnemyId LocationId
   | HuntersMoveStep
@@ -301,8 +302,8 @@ data WindowType
   | EntityDiscarded Source Target
   | WouldBeShuffledIntoDeck DeckSignifier Card
   | WouldDrawEncounterCard InvestigatorId Phase
-  | WouldFailSkillTest InvestigatorId
-  | WouldPassSkillTest InvestigatorId
+  | WouldFailSkillTest InvestigatorId Int
+  | WouldPassSkillTest InvestigatorId Int
   | WouldReady Target
   | Readies Target
   | WouldRevealChaosToken Source InvestigatorId

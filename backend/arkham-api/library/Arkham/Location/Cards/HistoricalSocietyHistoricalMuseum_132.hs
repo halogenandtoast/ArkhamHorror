@@ -9,14 +9,12 @@ import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isInvestigating)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message qualified as Msg
 
 newtype HistoricalSocietyHistoricalMuseum_132 = HistoricalSocietyHistoricalMuseum_132 LocationAttrs
   deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-historicalSocietyHistoricalMuseum_132
-  :: LocationCard HistoricalSocietyHistoricalMuseum_132
+historicalSocietyHistoricalMuseum_132 :: LocationCard HistoricalSocietyHistoricalMuseum_132
 historicalSocietyHistoricalMuseum_132 =
   location
     HistoricalSocietyHistoricalMuseum_132
@@ -26,9 +24,8 @@ historicalSocietyHistoricalMuseum_132 =
 
 instance HasModifiersFor HistoricalSocietyHistoricalMuseum_132 where
   getModifiersFor (HistoricalSocietyHistoricalMuseum_132 a) =
-    getSkillTestInvestigator >>= \case
-      Nothing -> pure mempty
-      Just iid -> maybeModified_ a iid do
+    getSkillTestInvestigator >>= traverse_ \iid -> do
+      maybeModified_ a iid do
         liftGuardM $ isInvestigating iid a.id
         pure [SkillCannotBeIncreased #intellect]
 
@@ -43,6 +40,6 @@ instance HasAbilities HistoricalSocietyHistoricalMuseum_132 where
 instance RunMessage HistoricalSocietyHistoricalMuseum_132 where
   runMessage msg l@(HistoricalSocietyHistoricalMuseum_132 attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push (Msg.RevealLocation Nothing $ toId attrs)
+      reveal attrs
       pure l
     _ -> HistoricalSocietyHistoricalMuseum_132 <$> liftRunMessage msg attrs

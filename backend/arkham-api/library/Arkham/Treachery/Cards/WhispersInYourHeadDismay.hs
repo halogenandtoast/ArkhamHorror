@@ -2,13 +2,11 @@ module Arkham.Treachery.Cards.WhispersInYourHeadDismay (whispersInYourHeadDismay
 
 import Arkham.Ability
 import Arkham.Card.CardType
-import Arkham.Classes
 import Arkham.Helpers.Modifiers (ModifierType (CannotCommitCards), modified_)
 import Arkham.Matcher hiding (treacheryInHandOf)
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype WhispersInYourHeadDismay = WhispersInYourHeadDismay TreacheryAttrs
   deriving anyclass IsTreachery
@@ -20,18 +18,17 @@ whispersInYourHeadDismay = treachery WhispersInYourHeadDismay Cards.whispersInYo
 instance HasModifiersFor WhispersInYourHeadDismay where
   getModifiersFor (WhispersInYourHeadDismay a) = case a.placement of
     HiddenInHand iid -> modified_ a iid [CannotCommitCards $ CardWithType SkillType]
-    _ -> pure mempty
+    _ -> pure ()
 
 instance HasAbilities WhispersInYourHeadDismay where
-  getAbilities (WhispersInYourHeadDismay a) =
-    [restrictedAbility a 1 InYourHand $ ActionAbility [] $ ActionCost 2]
+  getAbilities (WhispersInYourHeadDismay a) = [restricted a 1 InYourHand doubleActionAbility]
 
 instance RunMessage WhispersInYourHeadDismay where
-  runMessage msg t@(WhispersInYourHeadDismay attrs) = case msg of
+  runMessage msg t@(WhispersInYourHeadDismay attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ addHiddenToHand iid attrs
+      addHiddenToHand iid attrs
       pure t
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ toDiscardBy iid (attrs.ability 1) attrs
+    InHand _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> WhispersInYourHeadDismay <$> runMessage msg attrs
+    _ -> WhispersInYourHeadDismay <$> liftRunMessage msg attrs

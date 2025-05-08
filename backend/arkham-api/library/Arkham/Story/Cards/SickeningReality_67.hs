@@ -1,19 +1,11 @@
-module Arkham.Story.Cards.SickeningReality_67 (
-  SickeningReality_67 (..),
-  sickeningReality_67,
-) where
-
-import Arkham.Prelude
+module Arkham.Story.Cards.SickeningReality_67 (sickeningReality_67) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Types (Field (..))
-import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
-import Arkham.Token
+import Arkham.Story.Import.Lifted
 
 newtype SickeningReality_67 = SickeningReality_67 StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -23,31 +15,13 @@ sickeningReality_67 :: StoryCard SickeningReality_67
 sickeningReality_67 = story SickeningReality_67 Cards.sickeningReality_67
 
 instance RunMessage SickeningReality_67 where
-  runMessage msg s@(SickeningReality_67 attrs) = case msg of
-    ResolveStory _ _ story' | story' == toId attrs -> do
-      let
-        (asset, enemy) =
-          (Assets.ishimaruHaruko, Enemies.ishimaruHaruko)
-
-      assetId <- selectJust (assetIs asset)
-      enemyCard <- genCard enemy
-      lid <- fieldJust AssetLocation assetId
-      iids <- select $ investigatorAt lid
-      clues <- field AssetClues assetId
-      enemyCreation <- createEnemyAt_ enemyCard lid Nothing
-      pushAll
-        $ [ InvestigatorAssignDamage
-            iid
-            (toSource attrs)
-            DamageAny
-            0
-            1
-          | iid <- iids
-          ]
-        <> [ RemoveTokens (toSource attrs) (AssetTarget assetId) Clue clues
-           , PlaceTokens (toSource attrs) (LocationTarget lid) Clue clues
-           , RemoveFromGame (AssetTarget assetId)
-           , enemyCreation
-           ]
+  runMessage msg s@(SickeningReality_67 attrs) = runQueueT $ case msg of
+    ResolveStory _ _ (is attrs -> True) -> do
+      haruko <- selectJust (assetIs Assets.ishimaruHaruko)
+      withLocationOf haruko \lid -> do
+        selectEach (investigatorAt lid) \iid -> assignHorror iid attrs 1
+        moveAllTokens attrs haruko lid #clue
+        removeFromGame haruko
+        createEnemyAt_ Enemies.ishimaruHaruko lid
       pure s
-    _ -> SickeningReality_67 <$> runMessage msg attrs
+    _ -> SickeningReality_67 <$> liftRunMessage msg attrs

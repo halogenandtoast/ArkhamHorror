@@ -29,6 +29,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Discover as X (IsInvestigate (..))
 import Arkham.Discover qualified as Msg
 import Arkham.Draw.Types
+import Arkham.Effect.Builder
 import Arkham.Effect.Types (EffectBuilder (effectBuilderEffectId), Field (..))
 import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.EncounterSet
@@ -399,6 +400,10 @@ directDamage iid source = push . Msg.directDamage iid source
 directHorror :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 directHorror iid source = push . Msg.directHorror iid source
 
+directDamageAndHorror
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> Int -> m ()
+directDamageAndHorror iid source d h = push $ Msg.directDamageAndHorror iid source d h
+
 findAndDrawEncounterCard
   :: (ReverseQueue m, IsCardMatcher a) => InvestigatorId -> a -> m ()
 findAndDrawEncounterCard iid matcher = push $ Msg.findAndDrawEncounterCard iid matcher
@@ -471,7 +476,10 @@ class FetchCard a where
   fetchCard :: (HasCallStack, ReverseQueue m) => a -> m Card
 
 instance FetchCard UniqueFetchCard where
-  fetchCard (UniqueFetchCard def) = maybe (genCard def) pure =<< findCard ((== def.cardCode) . toCardCode)
+  fetchCard (UniqueFetchCard def) = do
+    findCard ((== def.cardCode) . toCardCode) >>= \case
+      Nothing -> genCard def
+      Just card -> pure $ if cardCodeExactEq def.cardCode card.cardCode then card else flipCard card
 
 instance FetchCard CardDef where
   fetchCard def =
@@ -794,18 +802,21 @@ moveTokens
   -> m ()
 moveTokens source from destination token n = push $ Msg.MoveTokens (toSource source) (toSource from) (toTarget destination) token n
 
-sourceTokens :: (ReverseQueue m, Sourceable source) => source -> m Tokens
+sourceTokens :: (HasCallStack, ReverseQueue m, Sourceable source, Show source) => source -> m Tokens
 sourceTokens source = case toSource source of
   EnemySource eid -> field EnemyTokens eid
+  AssetSource eid -> field Field.AssetTokens eid
   _ ->
     error
-      "This bug is because I need to lookup the tokens for a source, but I was too lazy to impelement them all"
+      $ "This bug is because I need to lookup the tokens for a source, but I was too lazy to impelement them all: "
+      <> show source
 
 moveAllTokens
   :: ( ReverseQueue m
      , Sourceable source
      , Sourceable from
      , Targetable destination
+     , Show from
      )
   => source
   -> from
@@ -872,6 +883,10 @@ advanceActDeck attrs = push $ AdvanceActDeck (actDeckId attrs) (toSource attrs)
 advanceToAct :: ReverseQueue m => ActAttrs -> CardDef -> Act.ActSide -> m ()
 advanceToAct attrs nextAct actSide = push $ AdvanceToAct (actDeckId attrs) nextAct actSide (toSource attrs)
 
+advanceToAct'
+  :: (ReverseQueue m, Sourceable source) => source -> Int -> CardDef -> Act.ActSide -> m ()
+advanceToAct' source deckId nextAct actSide = push $ AdvanceToAct deckId nextAct actSide (toSource source)
+
 shuffleSetAsideEncounterSet :: ReverseQueue m => EncounterSet -> m ()
 shuffleSetAsideEncounterSet eset = do
   cards <- getSetAsideCardsMatching (fromSets [eset])
@@ -896,7 +911,7 @@ chooseOrRunOne iid msgs = do
   push $ Msg.chooseOrRunOne player msgs
 
 continue :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> m ()
-continue iid = prompt iid "Continue"
+continue iid = prompt iid "$label.continue"
 
 continue_ :: ReverseQueue m => InvestigatorId -> m ()
 continue_ iid = continue iid (pure ())
@@ -1964,9 +1979,12 @@ insertAfterMatching
   :: (HasCallStack, MonadTrans t, HasQueue msg m) => [msg] -> (msg -> Bool) -> t m ()
 insertAfterMatching msgs p = lift $ Msg.insertAfterMatching msgs p
 
--- Usage:
---      atEndOfTurn iid do
---        addToHand iid (toCard attrs)
+afterMove
+  :: (WithEffect m, ReverseQueue m, Sourceable a) => a -> InvestigatorId -> QueueT Message m () -> m ()
+afterMove a iid body = withSource a $ effect iid do
+  removeOn #move
+  onDisable body
+
 atEndOfTurn
   :: (Sourceable a, HasQueue Message m)
   => a
@@ -1995,6 +2013,11 @@ afterEnemyAttack
 afterEnemyAttack enemy body = do
   msgs <- evalQueueT body
   push $ AfterEnemyAttack (asId enemy) msgs
+
+afterThisTestResolves :: ReverseQueue m => SkillTestId -> QueueT Message m () -> m ()
+afterThisTestResolves sid body = do
+  msgs <- evalQueueT body
+  push $ AfterThisTestResolves sid msgs
 
 afterSkillTest
   :: ( MonadTrans t
@@ -2388,8 +2411,8 @@ whenNotAtMax def n f = do
     selectOne $ EffectWithCardCode "maxef" <> EffectWithTarget (CardCodeTarget $ toCardCode def)
   case mEffect of
     Nothing -> f n
-    Just effect -> do
-      meta <- field EffectMeta effect
+    Just eff -> do
+      meta <- field EffectMeta eff
       case meta of
         Just (Msg.EffectInt x) -> if x >= n then pure () else f (n - x)
         _ -> error "Invalid meta"
@@ -2400,10 +2423,10 @@ updateMax def n ew = do
     selectOne $ EffectWithCardCode "maxef" <> EffectWithTarget (CardCodeTarget $ toCardCode def)
   case mEffect of
     Nothing -> push =<< Msg.createMaxEffect def n ew
-    Just effect -> do
-      meta <- field EffectMeta effect
+    Just eff -> do
+      meta <- field EffectMeta eff
       case meta of
-        Just (Msg.EffectInt x) -> push $ UpdateEffectMeta effect (Msg.EffectInt $ x + n)
+        Just (Msg.EffectInt x) -> push $ UpdateEffectMeta eff (Msg.EffectInt $ x + n)
         _ -> error "Invalid meta"
 
 takeControlOfAsset
@@ -2575,6 +2598,12 @@ discardUntilN
   -> m ()
 discardUntilN n iid source target deck matcher = do
   push $ DiscardUntilN n iid (toSource source) (toTarget target) (toDeck deck) matcher
+
+createTreacheryAt_
+  :: (ReverseQueue m, FetchCard card) => card -> Placement -> m ()
+createTreacheryAt_ c placement = do
+  card <- fetchCard c
+  push =<< Msg.createTreacheryAt_ card placement
 
 createAssetAt_
   :: (ReverseQueue m, FetchCard card) => card -> Placement -> m ()
@@ -2757,6 +2786,11 @@ withBatchedTimings w body = do
 cancelBatch :: ReverseQueue m => BatchId -> m ()
 cancelBatch bId = push $ CancelBatch bId
 
+cancelEvent :: (MonadTrans t, HasQueue Message m) => EventId -> t m ()
+cancelEvent eId = matchingDon't \case
+  InvestigatorPlayEvent _ eId' _ _ _ -> eId == eId'
+  _ -> False
+
 cancelMovement
   :: (ReverseQueue m, Sourceable source, Targetable investigator) => source -> investigator -> m ()
 cancelMovement source investigator = movementModifier source investigator CannotMove
@@ -2789,6 +2823,21 @@ discardTopOfEncounterDeck
   -> m ()
 discardTopOfEncounterDeck investigator source n =
   push $ DiscardTopOfEncounterDeck (asId investigator) n (toSource source) Nothing
+
+discardTopOfEncounterDeckAndHandle
+  :: ( AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     , Sourceable source
+     , ReverseQueue m
+     , Targetable target
+     )
+  => investigator
+  -> source
+  -> Int
+  -> target
+  -> m ()
+discardTopOfEncounterDeckAndHandle investigator source n target =
+  push $ DiscardTopOfEncounterDeck (asId investigator) n (toSource source) (Just $ toTarget target)
 
 discardTopOfDeckAndHandle
   :: ( AsId investigator
@@ -2875,3 +2924,8 @@ discardEach
   :: (ReverseQueue m, Query query, Sourceable source, Targetable (QueryElement query))
   => source -> query -> m ()
 discardEach source query = selectEach query (toDiscard source)
+
+resolveHunterKeyword :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m) => enemy -> m ()
+resolveHunterKeyword enemy = do
+  let enemyId = asId enemy
+  push $ HandleGroupTarget HunterGroup (toTarget enemyId) [HunterMove enemyId]

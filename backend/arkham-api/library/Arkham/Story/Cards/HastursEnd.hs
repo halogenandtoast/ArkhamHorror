@@ -1,14 +1,10 @@
-module Arkham.Story.Cards.HastursEnd (
-  HastursEnd (..),
-  hastursEnd,
-) where
-
-import Arkham.Prelude
+module Arkham.Story.Cards.HastursEnd (hastursEnd) where
 
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype HastursEnd = HastursEnd StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -18,11 +14,9 @@ hastursEnd :: StoryCard HastursEnd
 hastursEnd = story HastursEnd Cards.hastursEnd
 
 instance RunMessage HastursEnd where
-  runMessage msg s@(HastursEnd attrs) = case msg of
-    ResolveStory _ _ story' | story' == toId attrs -> do
-      mhastur <- selectOne $ EnemyWithTitle "Hastur"
-      pushAll
-        $ [Remember KnowTheSecret]
-        <> [checkDefeated attrs hastur | hastur <- toList mhastur]
+  runMessage msg s@(HastursEnd attrs) = runQueueT $ case msg of
+    ResolveStory _ _ (is attrs -> True) -> do
+      remember KnowTheSecret
+      selectEach (EnemyWithTitle "Hastur") (checkDefeated attrs)
       pure s
-    _ -> HastursEnd <$> runMessage msg attrs
+    _ -> HastursEnd <$> liftRunMessage msg attrs

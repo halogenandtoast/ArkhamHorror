@@ -52,5 +52,5 @@ instance RunMessage BoneFilledCaverns where
     DrewCards _ drewCards | maybe False (isTarget attrs) drewCards.target -> do
       placeDrawnLocations attrs drewCards.cards [Below, RightOf]
       pure l
-    SkillTestEnds _ _ _ -> pure $ BoneFilledCaverns $ With attrs (Metadata Nothing)
+    SkillTestEnds {} -> pure $ BoneFilledCaverns $ With attrs (Metadata Nothing)
     _ -> BoneFilledCaverns . (`with` metadata) <$> liftRunMessage msg attrs

@@ -2,12 +2,12 @@ module Arkham.Treachery.Cards.ToughCrowd (toughCrowd) where
 
 import Arkham.Ability
 import Arkham.Action
-import Arkham.Classes
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Placement
+import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype ToughCrowd = ToughCrowd TreacheryAttrs
   deriving anyclass IsTreachery
@@ -17,18 +17,17 @@ toughCrowd :: TreacheryCard ToughCrowd
 toughCrowd = treachery ToughCrowd Cards.toughCrowd
 
 instance HasModifiersFor ToughCrowd where
-  getModifiersFor (ToughCrowd a) =
-    modifySelect a Anyone [AdditionalActionCostOf (IsAction Parley) 1]
+  getModifiersFor (ToughCrowd a) = modifySelect a Anyone [AdditionalActionCostOf (IsAction Parley) 1]
 
 instance HasAbilities ToughCrowd where
   getAbilities (ToughCrowd a) = [mkAbility a 1 $ forced $ RoundEnds #when]
 
 instance RunMessage ToughCrowd where
-  runMessage msg t@(ToughCrowd attrs) = case msg of
+  runMessage msg t@(ToughCrowd attrs) = runQueueT $ case msg of
     Revelation _ (isSource attrs -> True) -> do
-      push $ PlaceTreachery (toId attrs) NextToAgenda
+      place attrs NextToAgenda
       pure t
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ toDiscard (attrs.ability 1) attrs
+      toDiscard (attrs.ability 1) attrs
       pure t
-    _ -> ToughCrowd <$> runMessage msg attrs
+    _ -> ToughCrowd <$> liftRunMessage msg attrs

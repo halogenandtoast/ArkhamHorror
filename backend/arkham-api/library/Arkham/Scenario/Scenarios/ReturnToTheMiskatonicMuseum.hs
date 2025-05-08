@@ -5,6 +5,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
+import Arkham.Helpers.FlavorText
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
@@ -28,6 +29,19 @@ returnToTheMiskatonicMuseum difficulty =
 instance RunMessage ReturnToTheMiskatonicMuseum where
   runMessage msg (ReturnToTheMiskatonicMuseum theMiskatonicMuseum'@(TheMiskatonicMuseum attrs)) = runQueueT $ scenarioI18n $ case msg of
     Setup -> runScenarioSetup (ReturnToTheMiskatonicMuseum . TheMiskatonicMuseum) attrs do
+      setup do
+        ul do
+          li "gatherSets"
+          li "placeLocations"
+          li.nested "exhibitDeck.instructions" do
+            li "exhibitDeck.bottom"
+            li "exhibitDeck.top"
+          li "setAside"
+          unscoped $ li "shuffleRemainder"
+      scope "theVoid" $ flavor do
+        setTitle "title"
+        p "body"
+
       gather Set.ReturnToTheMiskatonicMuseum
       gather Set.TheMiskatonicMuseum
       gather Set.BadLuck
@@ -60,7 +74,8 @@ instance RunMessage ReturnToTheMiskatonicMuseum where
 
       (bottom, top) <-
         fmap (splitAt 2)
-          . genCards . drop 2
+          . genCards
+          . drop 2
           =<< shuffleM
             [ Locations.exhibitHallAthabaskanExhibit
             , Locations.exhibitHallMedusaExhibit

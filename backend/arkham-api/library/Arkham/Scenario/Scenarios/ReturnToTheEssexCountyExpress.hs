@@ -4,6 +4,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.EncounterSet qualified as Set
+import Arkham.Helpers.FlavorText
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Modifier
@@ -29,6 +30,20 @@ instance RunMessage ReturnToTheEssexCountyExpress where
   runMessage msg (ReturnToTheEssexCountyExpress theEssexCountyExpress'@(TheEssexCountyExpress attrs)) = runQueueT $ scenarioI18n $ case msg of
     Setup -> runScenarioSetup (ReturnToTheEssexCountyExpress . TheEssexCountyExpress) attrs do
       setUsesGrid
+
+      setup do
+        ul do
+          li "gatherSets"
+          li "placeLocations"
+          li "revealTrainCar"
+          li "setAside"
+          li "adjustChaosBag"
+          unscoped $ li "shuffleRemainder"
+
+      scope "moving" $ flavor do
+        setTitle "title"
+        p "body"
+
       gather Set.ReturnToTheEssexCountyExpress
       gather Set.TheEssexCountyExpress
       gather Set.BeyondTheThreshold

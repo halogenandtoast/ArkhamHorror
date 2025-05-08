@@ -7,6 +7,7 @@ import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getLead)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -36,6 +37,26 @@ returnToBloodOnTheAltar difficulty =
 instance RunMessage ReturnToBloodOnTheAltar where
   runMessage msg s@(ReturnToBloodOnTheAltar bloodOnTheAltar'@(BloodOnTheAltar attrs)) = runQueueT $ scenarioI18n $ case msg of
     Setup -> runScenarioSetup (ReturnToBloodOnTheAltar . BloodOnTheAltar) attrs do
+      oBannionGangHasABoneToPick <-
+        getHasRecordOrStandalone
+          OBannionGangHasABoneToPickWithTheInvestigators
+          False
+      setup do
+        ul do
+          li "gatherSets"
+          li "placeLocations"
+          li "placeRandomLocations"
+          li "potentialSacrifices"
+          li "setAside"
+          li "delayed"
+          unscoped $ li "shuffleRemainder"
+          li.validate oBannionGangHasABoneToPick "seekingVengeance"
+          li "placeUnderneath"
+
+      scope "hiddenChamber" $ flavor do
+        setTitle "title"
+        p "body"
+
       gather Set.ReturnToBloodOnTheAltar
       gather Set.BloodOnTheAltar
       gather Set.Dunwich
@@ -75,10 +96,6 @@ instance RunMessage ReturnToBloodOnTheAltar where
       encounterCardsToPutUnderneath <- map toCard <$> sampleEncounterDeck 3
 
       -- Return to makes sure Naomis Crew is not included
-      oBannionGangHasABoneToPick <-
-        getHasRecordOrStandalone
-          OBannionGangHasABoneToPickWithTheInvestigators
-          False
       when oBannionGangHasABoneToPick $ gather Set.NaomisCrew
 
       theHiddenChamber <- fromSetAside Locations.theHiddenChamber

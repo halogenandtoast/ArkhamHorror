@@ -8,6 +8,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.EncounterSet
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Location.Cards qualified as Locations
@@ -34,6 +35,29 @@ returnToWhereDoomAwaits difficulty =
 instance RunMessage ReturnToWhereDoomAwaits where
   runMessage msg (ReturnToWhereDoomAwaits whereDoomAwaits'@(WhereDoomAwaits attrs)) = runQueueT $ scenarioI18n $ case msg of
     Setup -> runScenarioSetup (ReturnToWhereDoomAwaits . WhereDoomAwaits) attrs do
+      useV1 <- getHasRecord TheInvestigatorsRestoredSilasBishop
+      useV2 <-
+        liftA2
+          (||)
+          (getHasRecord TheInvestigatorsFailedToRecoverTheNecronomicon)
+          (getHasRecord TheNecronomiconWasStolen)
+
+      setup do
+        ul do
+          li "gatherSets"
+          li "placeLocations"
+          li "divergingPaths"
+          li "alteredPaths"
+          li "setAside"
+          li "adjustChaosBag"
+          li.nested "act2.instructions" do
+            li.validate useV1 "act2.v1"
+            li.validate useV2 "act2.v2"
+            li.validate (not $ useV1 || useV2) "act2.v3"
+          li "addDoom"
+          li "hideousAbominations"
+          unscoped $ li "shuffleRemainder"
+
       gather Set.ReturnToWhereDoomAwaits
       gather Set.WhereDoomAwaits
       gather Set.BeastThralls
@@ -91,12 +115,6 @@ instance RunMessage ReturnToWhereDoomAwaits where
         investigators <- allInvestigators
         addCampaignCardToDeckChoice investigators ShuffleIn Assets.naomiOBannionRuthlessTactician
 
-      useV1 <- getHasRecord TheInvestigatorsRestoredSilasBishop
-      useV2 <-
-        liftA2
-          (||)
-          (getHasRecord TheInvestigatorsFailedToRecoverTheNecronomicon)
-          (getHasRecord TheNecronomiconWasStolen)
       let
         ascendingTheHill = case (useV1, useV2) of
           (True, _) -> Acts.ascendingTheHillV1

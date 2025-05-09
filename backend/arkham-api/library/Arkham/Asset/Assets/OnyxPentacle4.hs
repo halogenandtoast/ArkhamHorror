@@ -16,12 +16,11 @@ onyxPentacle4 :: AssetCard OnyxPentacle4
 onyxPentacle4 = asset OnyxPentacle4 Cards.onyxPentacle4
 
 instance HasModifiersFor OnyxPentacle4 where
-  getModifiersFor (OnyxPentacle4 a) = for_ a.controller \iid -> void $ runMaybeT do
-    guard a.ready
-    ab <- MaybeT $ selectOne (AbilityIs (toSource a) 1)
-    modified_
+  getModifiersFor (OnyxPentacle4 a) = for_ a.controller \iid ->
+    modifiedWhen_
       a
-      (AbilityTarget iid ab)
+      a.ready
+      (AbilityTarget iid $ AbilityRef (toSource a) 1)
       [ CanModify
           $ EnemyEvadeActionCriteria
           $ CriteriaOverride

@@ -64,7 +64,7 @@ data Target
   | AgendaMatcherTarget AgendaMatcher
   | CardMatcherTarget ExtendedCardMatcher
   | CampaignTarget
-  | AbilityTarget InvestigatorId Ability
+  | AbilityTarget InvestigatorId AbilityRef
   | BothTarget Target Target
   | TarotTarget TarotCard
   | BatchTarget BatchId
@@ -271,6 +271,11 @@ instance FromJSON Target where
   parseJSON = withObject "Target" \o -> do
     tag :: Text <- o .: "tag"
     case tag of
+      "AbilityTarget" -> do
+        contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+        case contents of
+          Right (iid, ref) -> pure $ AbilityTarget iid ref
+          Left (iid, ab) -> pure $ AbilityTarget iid (abilityToRef ab)
       "InvestigatorHandTarget" -> InvestigatorTarget <$> (o .: "contents")
       "CardTarget" -> do
         card :: Card <- o .: "contents"

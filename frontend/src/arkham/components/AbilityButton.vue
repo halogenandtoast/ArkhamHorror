@@ -33,7 +33,7 @@ const tooltip = computed(() => {
 
 const modifiers = computed(() => {
   return props.game.modifiers.filter((m) => {
-    if (m[0].tag === "AbilityTarget") {
+    if (m[0].tag === "AbilityRef") {
       return m[0].contents.ability.source.contents === ability.value?.source?.contents
         && m[0].contents.ability.index === ability.value?.index
     }

@@ -91,7 +91,7 @@ instance HasModifiersFor UnfinishedBusiness_JEffect where
           investigators <- getInvestigators
           modifyEach
             a
-            [AbilityTarget iid ab | iid <- investigators]
+            [AbilityTarget iid ab.ref | iid <- investigators]
             [ SetAbilityCost $ ClueCost (StaticWithPerPlayer 1 1)
             , SetAbilityCriteria
                 (CriteriaOverride $ OnSameLocation <> LocationExists (YourLocation <> LocationWithTrait Spectral))

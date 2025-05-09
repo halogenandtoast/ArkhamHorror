@@ -213,7 +213,7 @@ const displayAsDecoder = JsonDecoder.oneOf<DisplayAs>([
   JsonDecoder.literal('DisplayAsCard')
 ], 'DisplayAs')
 
-export const abilityDecoder = JsonDecoder.object(
+export const abilityDecoder = JsonDecoder.object<Ability>(
   {
     type: abilityTypeDecoder,
     source: sourceDecoder,
@@ -221,3 +221,14 @@ export const abilityDecoder = JsonDecoder.object(
     displayAs: JsonDecoder.nullable(displayAsDecoder),
     index: JsonDecoder.number()
   }, 'Ability')
+
+export type AbilityRef = {
+  source: Source
+  index: number
+}
+
+export const abilityRefDecoder = JsonDecoder.object<AbilityRef>(
+  {
+    source: sourceDecoder,
+    index: JsonDecoder.number()
+  }, 'AbilityRef')

@@ -36,7 +36,7 @@ instance RunMessage GrapplingHook where
       pure . GrapplingHook $ attrs `with` Metadata []
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
       abilities' <-
-        selectMap DifferentAbility
+        select
           $ PerformableAbility [ActionCostModifier (-1)]
           <> BasicAbility
           <> mapOneOf AbilityIsAction [#engage, #evade, #investigate, #move]
@@ -44,7 +44,7 @@ instance RunMessage GrapplingHook where
       builder <- makeEffectBuilder (toCardCode attrs) Nothing (attrs.ability 1) iid
       chooseOrRunOneM iid do
         labeled "Take no more actions" nothing
-        for_ (filter (`notElem` chosenAbilities meta) abilities') \(DifferentAbility ab) -> do
+        for_ (filter ((`notElem` chosenAbilities meta) . (.different)) abilities') \ab -> do
           if #investigate `elem` ab.actions
             then do
               abilityLabeledWithBefore
@@ -52,12 +52,12 @@ instance RunMessage GrapplingHook where
                 (overCost (`decreaseActionCost` 1) $ doesNotProvokeAttacksOfOpportunity ab)
                 [CreateEffect builder {effectBuilderEffectId = Just effectId}]
                 do
-                  handleTarget iid attrs (AbilityTarget iid ab)
+                  handleTarget iid attrs (AbilityTarget iid ab.ref)
                   disable effectId
                   doStep (n - 1) msg'
             else do
               abilityLabeled iid (overCost (`decreaseActionCost` 1) $ doesNotProvokeAttacksOfOpportunity ab) do
-                handleTarget iid attrs (AbilityTarget iid ab)
+                handleTarget iid attrs (AbilityTarget iid ab.ref)
                 doStep (n - 1) msg'
       pure a
     HandleTargetChoice _ (isSource attrs -> True) (AbilityTarget _ ab) -> do

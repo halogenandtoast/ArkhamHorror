@@ -44,7 +44,7 @@ marksmanship1 = event Marksmanship1 Cards.marksmanship1
 instance HasModifiersFor Marksmanship1 where
   getModifiersFor (Marksmanship1 a) = do
     abilities <- select (AbilityIsAction #fight)
-    modifyEachMaybe a (map (AbilityTarget a.owner) abilities) \case
+    modifyEachMaybe a (map (AbilityTarget a.owner . abilityToRef) abilities) \case
       AbilityTarget iid ab -> do
         traits <- sourceTraits ab.source
         guard $ any (`elem` traits) [Firearm, Ranged]

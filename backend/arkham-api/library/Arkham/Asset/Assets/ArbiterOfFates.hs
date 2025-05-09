@@ -19,7 +19,7 @@ arbiterOfFates = asset ArbiterOfFates Cards.arbiterOfFates
 instance HasModifiersFor ArbiterOfFates where
   getModifiersFor (ArbiterOfFates a) = unless a.exhausted do
     selectOne (AbilityIs (InvestigatorSource "60401") 1) >>= \case
-      Just ab -> modified_ a (AbilityTarget "60401" ab) [CanIgnoreLimit]
+      Just ab -> modified_ a (AbilityTarget "60401" ab.ref) [CanIgnoreLimit]
       Nothing -> pure ()
 
 instance HasAbilities ArbiterOfFates where
@@ -36,7 +36,7 @@ getAbility (_ : xs) = getAbility xs
 instance RunMessage ArbiterOfFates where
   runMessage msg a@(ArbiterOfFates attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getAbility -> ab) _ -> do
-      createCardEffect Cards.arbiterOfFates Nothing attrs (AbilityTarget iid ab)
+      createCardEffect Cards.arbiterOfFates Nothing attrs (AbilityTarget iid ab.ref)
       push $ DoNotCountUseTowardsAbilityLimit "60401" ab
       pure a
     _ -> ArbiterOfFates <$> liftRunMessage msg attrs

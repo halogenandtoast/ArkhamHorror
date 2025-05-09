@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.CircuitousTrail (circuitousTrail, CircuitousTrail (..)) where
+module Arkham.Location.Cards.CircuitousTrail (circuitousTrail) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Supply
@@ -17,13 +17,12 @@ circuitousTrail :: LocationCard CircuitousTrail
 circuitousTrail = location CircuitousTrail Cards.circuitousTrail 1 (PerPlayer 1)
 
 instance HasModifiersFor CircuitousTrail where
-  getModifiersFor (CircuitousTrail attrs) =
-    fromMaybe mempty <$> runMaybeT do
-      iid <- MaybeT $ selectOne ActiveInvestigator
-      liftGuardM $ iid `isAt` attrs
-      liftGuardM $ selectNone $ InvestigatorWithSupply Compass <> colocatedWith iid
-      abilities <- lift $ select $ mapOneOf AbilityIsAction [#investigate, #explore]
-      modifyEach attrs (map (AbilityTarget iid) abilities) [AdditionalCost (ResourceCost 3)]
+  getModifiersFor (CircuitousTrail attrs) = void $ runMaybeT do
+    iid <- MaybeT $ selectOne ActiveInvestigator
+    liftGuardM $ iid `isAt` attrs
+    liftGuardM $ selectNone $ InvestigatorWithSupply Compass <> colocatedWith iid
+    abilities <- lift $ select $ mapOneOf AbilityIsAction [#investigate, #explore]
+    modifyEach attrs (map (AbilityTarget iid . abilityToRef) abilities) [AdditionalCost (ResourceCost 3)]
 
 instance RunMessage CircuitousTrail where
   runMessage msg (CircuitousTrail attrs) = CircuitousTrail <$> runMessage msg attrs

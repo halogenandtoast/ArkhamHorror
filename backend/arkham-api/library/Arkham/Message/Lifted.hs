@@ -42,6 +42,7 @@ import Arkham.Fight
 import Arkham.Fight qualified as Fight
 import {-# SOURCE #-} Arkham.GameEnv (findCard)
 import Arkham.Helpers
+import Arkham.Helpers.Ability
 import Arkham.Helpers.Act
 import Arkham.Helpers.Action (getActionsWith)
 import Arkham.Helpers.Campaign
@@ -742,7 +743,7 @@ spendClues
 spendClues investigator n = push $ InvestigatorSpendClues (asId investigator) n
 
 spendCluesAsAGroup
-  :: (ReverseQueue m)
+  :: ReverseQueue m
   => [InvestigatorId]
   -> Int
   -> m ()
@@ -1114,7 +1115,12 @@ chooseAmount'
 chooseAmount' iid label choiceLabel minVal maxVal target = do
   player <- getPlayer iid
   Msg.pushM
-    $ Msg.chooseAmounts player ("$" <> ikey ("label." <> label)) (MaxAmountTarget maxVal) [(choiceLabel, (minVal, maxVal))] target
+    $ Msg.chooseAmounts
+      player
+      ("$" <> ikey ("label." <> label))
+      (MaxAmountTarget maxVal)
+      [(choiceLabel, (minVal, maxVal))]
+      target
 
 chooseN :: ReverseQueue m => InvestigatorId -> Int -> [UI Message] -> m ()
 chooseN iid n msgs = do
@@ -1973,7 +1979,13 @@ afterEnemyAttack enemy body = do
   push $ AfterEnemyAttack (asId enemy) msgs
 
 afterSkillTest
-  :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m), AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> Text -> QueueT Message (t m) a -> t m ()
+  :: ( MonadTrans t
+     , HasQueue Message m
+     , HasQueue Message (t m)
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
+  => investigator -> Text -> QueueT Message (t m) a -> t m ()
 afterSkillTest investigator lbl body = do
   msgs <- evalQueueT body
   insertAfterMatching [AfterSkillTestOption (asId investigator) lbl msgs] (== EndSkillTestWindow)
@@ -2143,7 +2155,14 @@ repeated :: ReverseQueue m => Int -> m () -> m ()
 repeated 0 = const (pure ())
 repeated n = replicateM_ n
 
-disengageEnemy :: (ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId, AsId enemy, IdOf enemy ~ EnemyId) => investigator -> enemy -> m ()
+disengageEnemy
+  :: ( ReverseQueue m
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     , AsId enemy
+     , IdOf enemy ~ EnemyId
+     )
+  => investigator -> enemy -> m ()
 disengageEnemy investigator enemy = push $ Msg.DisengageEnemy (asId investigator) (asId enemy)
 
 disengageFromAll :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> m ()
@@ -2221,7 +2240,10 @@ performActionAction
 performActionAction iid source action = do
   let windows' = defaultWindows iid
   let decreaseCost = flip applyAbilityModifiers [ActionCostModifier (-1)]
-  actions <- filter (`abilityIs` action) <$> getActionsWith iid windows' decreaseCost
+  actions <-
+    filterM (getCanPerformAbility iid windows')
+      . filter (`abilityIs` action)
+      =<< getActionsWith iid windows' decreaseCost
   handCards <- field InvestigatorHand iid
   let actionCards = filter (elem action . cdActions . toCardDef) handCards
   playableCards <- filterM (getIsPlayable iid source (UnpaidCost NoAction) windows') actionCards

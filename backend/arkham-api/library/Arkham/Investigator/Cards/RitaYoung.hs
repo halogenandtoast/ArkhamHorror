@@ -3,8 +3,8 @@ module Arkham.Investigator.Cards.RitaYoung (ritaYoung, ritaYoungElderSignEffect)
 import Arkham.Ability
 import Arkham.DamageEffect
 import Arkham.Effect.Import
-import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Location (getAccessibleLocations)
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window (evadedEnemy)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
@@ -73,11 +73,8 @@ ritaYoungElderSignEffect = cardEffect RitaYoungElderSignEffect Cards.ritaYoung
 
 instance HasModifiersFor RitaYoungElderSignEffect where
   getModifiersFor (RitaYoungElderSignEffect a) = case a.target of
-    InvestigatorTarget iid ->
-      selectOne (AbilityIs (toSource iid) 1) >>= \case
-        Nothing -> pure mempty
-        Just ab -> modified_ a (AbilityTarget iid ab) [IgnoreLimit]
-    _ -> pure mempty
+    InvestigatorTarget iid -> modified_ a (AbilityTarget iid $ AbilityRef (toSource iid) 1) [IgnoreLimit]
+    _ -> pure ()
 
 instance RunMessage RitaYoungElderSignEffect where
   runMessage msg e@(RitaYoungElderSignEffect attrs) = runQueueT $ case msg of

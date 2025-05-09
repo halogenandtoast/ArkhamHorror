@@ -119,11 +119,17 @@ instance HasField "ref" Ability AbilityRef where
   getField = abilityToRef
 
 data AbilityRef = AbilityRef Source Int
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 abilityToRef :: Ability -> AbilityRef
 abilityToRef a = AbilityRef a.source a.index
+
+instance HasField "source" AbilityRef Source where
+  getField (AbilityRef s _) = s
+
+instance HasField "index" AbilityRef Int where
+  getField (AbilityRef _ idx) = idx
 
 data AbilityMetadata
   = IntMetadata Int
@@ -198,7 +204,8 @@ instance FromJSON Ability where
     abilityTooltip <- o .:? "tooltip"
     abilityCanBeCancelled <- o .: "canBeCancelled"
     abilityDisplayAsAction <- o .:? "displayAsAction" .!= False
-    abilityDisplayAs <- o .:? "displayAs" .!= if abilityDisplayAsAction then Just DisplayAsAction else Nothing
+    abilityDisplayAs <-
+      o .:? "displayAs" .!= if abilityDisplayAsAction then Just DisplayAsAction else Nothing
     abilityDelayAdditionalCosts <-
       (o .: "delayAdditionalCosts" <&> \x -> if x then Just DelayAdditionalCosts else Nothing)
         <|> o
@@ -211,25 +218,31 @@ instance FromJSON Ability where
 
     pure Ability {..}
 
-newtype DifferentAbility = DifferentAbility Ability
+newtype DifferentAbility = DifferentAbility AbilityRef
   deriving newtype (Show, ToJSON, FromJSON)
+
+instance HasField "different" Ability DifferentAbility where
+  getField ab = DifferentAbility (abilityToRef ab)
+
+instance HasField "different" AbilityRef DifferentAbility where
+  getField = DifferentAbility
 
 instance Eq DifferentAbility where
   (DifferentAbility a) == (DifferentAbility b) =
-    case abilityIndex a of
-      100 -> abilityIndex b == 100 && sameSource
-      101 -> abilityIndex b == 101 && sameSource
-      102 -> abilityIndex b == 102 && sameSource
-      _ -> (abilityCardCode a == abilityCardCode b) && (abilityIndex a == abilityIndex b)
+    case a.index of
+      100 -> b.index == 100 && sameSource
+      101 -> b.index == 101 && sameSource
+      102 -> b.index == 102 && sameSource
+      _ -> (a.source == b.source) && (a.index == b.index)
    where
-    sameSource = case abilitySource a of
-      EnemySource _ -> case abilitySource b of
+    sameSource = case a.source of
+      EnemySource _ -> case b.source of
         EnemySource _ -> True
         _ -> False
-      LocationSource _ -> case abilitySource b of
+      LocationSource _ -> case b.source of
         LocationSource _ -> True
         _ -> False
-      InvestigatorSource _ -> case abilitySource b of
+      InvestigatorSource _ -> case b.source of
         InvestigatorSource _ -> True
         _ -> False
-      _ -> error $ "Unhandled samesource in DifferentAbility: " <> show (abilitySource a, abilitySource b)
+      _ -> error $ "Unhandled samesource in DifferentAbility: " <> show (a.source, b.source)

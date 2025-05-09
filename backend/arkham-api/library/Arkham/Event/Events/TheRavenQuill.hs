@@ -28,20 +28,19 @@ instance HasModifiersFor TheRavenQuill where
   getModifiersFor (TheRavenQuill a) = do
     case a.attachedTo >>= (.asset) of
       Just aid -> do
-        spectralBinding <-
-          modified_ a aid $ guardCustomization a SpectralBinding (DoNotTakeUpSlot <$> [minBound ..])
+        modified_ a aid $ guardCustomization a SpectralBinding (DoNotTakeUpSlot <$> [minBound ..])
         abilities <- select (AbilityOnAsset $ AssetWithId aid)
-        livingQuill <-
-          modifyEachMap a (map (AbilityTarget a.controller) abilities) \case
-            AbilityTarget _ ab -> guardCustomization a LivingQuill (ActionDoesNotCauseAttacksOfOpportunity <$> ab.actions)
-            _ -> error "invalid"
-        investigators <- maybeModified_ a a.controller do
+        modifyEachMap a (map (AbilityTarget a.controller . abilityToRef) abilities) \case
+          AbilityTarget _ ref -> case find ((== ref) . abilityToRef) abilities of
+            Just  ab -> guardCustomization a LivingQuill (ActionDoesNotCauseAttacksOfOpportunity <$> ab.actions)
+            _ -> []
+          _ -> error "invalid"
+        maybeModified_ a a.controller do
           guard $ a `hasCustomization` MysticVane
           source <- MaybeT getSkillTestSource
           guard $ isSource aid source
           guardM $ fmap (a.controller ==) (MaybeT getSkillTestInvestigator)
           pure [AnySkillValue 2]
-        pure $ spectralBinding <> livingQuill <> investigators
       _ -> pure mempty
 
 instance HasAbilities TheRavenQuill where

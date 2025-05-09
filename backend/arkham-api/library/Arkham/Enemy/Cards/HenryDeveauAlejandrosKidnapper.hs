@@ -1,13 +1,7 @@
-module Arkham.Enemy.Cards.HenryDeveauAlejandrosKidnapper (
-  henryDeveauAlejandrosKidnapper,
-  HenryDeveauAlejandrosKidnapper (..),
-) where
+module Arkham.Enemy.Cards.HenryDeveauAlejandrosKidnapper (henryDeveauAlejandrosKidnapper) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 
 newtype HenryDeveauAlejandrosKidnapper = HenryDeveauAlejandrosKidnapper EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

@@ -942,7 +942,7 @@ miasmicCrystalStrangeEvidence =
 
 mineralSpecimen :: CardDef
 mineralSpecimen =
-  (storyAsset "08618" "Mineral Specimen" 1 ToTheForbiddenPeaks)
+  (storyAsset "08618" "Mineral Specimen" 0 ToTheForbiddenPeaks)
     { cdCardTraits = setFromList [Item, Relic, Trait.Expedition]
     , cdCardType = AssetType
     , cdUses = uses Charge 3

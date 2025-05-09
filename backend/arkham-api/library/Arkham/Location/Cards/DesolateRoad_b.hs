@@ -33,7 +33,7 @@ instance RunMessage DesolateRoad_b where
       road 1 attrs
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 (getLeavingVehicle -> vehicle) _ -> do
-      n <- handleVehicleLeaves vehicle attrs.id 2
+      n <- handleVehicleLeaves vehicle attrs.id 1
       when (n > 0)
         $ discardUntilFirst iid (attrs.ability 2) Deck.EncounterDeck (basic $ #enemy <> withTrait Vehicle)
 

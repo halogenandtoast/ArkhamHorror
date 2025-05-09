@@ -942,7 +942,7 @@ miasmicCrystalStrangeEvidence =
 
 mineralSpecimen :: CardDef
 mineralSpecimen =
-  (storyAsset "08618" "Mineral Specimen" 1 ToTheForbiddenPeaks)
+  (storyAsset "08618" "Mineral Specimen" 0 ToTheForbiddenPeaks)
     { cdCardTraits = setFromList [Item, Relic, Trait.Expedition]
     , cdCardType = AssetType
     , cdUses = uses Charge 3
@@ -1104,12 +1104,11 @@ kenslersLog =
 
 sinhasMedicalKit :: CardDef
 sinhasMedicalKit =
-  fast
-    $ (storyAsset "08736" "Sinha's Medical Kit" 1 MemorialsOfTheLost)
-      { cdCardTraits = setFromList [Item, Science]
-      , cdSkills = [#willpower, #wild]
-      , cdUses = uses Supply 3
-      }
+  (storyAsset "08736" "Sinha's Medical Kit" 1 MemorialsOfTheLost)
+    { cdCardTraits = setFromList [Item, Science]
+    , cdSkills = [#willpower, #wild]
+    , cdUses = uses Supply 3
+    }
 
 anyuFaithfulCompanion :: CardDef
 anyuFaithfulCompanion =

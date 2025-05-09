@@ -26,7 +26,7 @@ instance HasModifiersFor TelescopicSight3 where
     case a.placement of
       AttachedToAsset aid _ -> do
         abilities <- select (AbilityOnAsset (AssetWithId aid) <> AbilityIsAction #fight)
-        modifyEachMaybe a (map (AbilityTarget a.controller) abilities) \_ -> do
+        modifyEachMaybe a (map (AbilityTarget a.controller . abilityToRef) abilities) \_ -> do
           lid <- MaybeT $ selectOne $ locationWithInvestigator a.controller
           engaged <- lift $ selectAny $ enemyEngagedWith a.controller
           let handleTaboo = if tabooed TabooList19 a then id else (<> not_ (enemyEngagedWith a.owner))

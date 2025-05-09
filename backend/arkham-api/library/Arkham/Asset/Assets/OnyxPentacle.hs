@@ -16,23 +16,19 @@ onyxPentacle :: AssetCard OnyxPentacle
 onyxPentacle = asset OnyxPentacle Cards.onyxPentacle
 
 instance HasModifiersFor OnyxPentacle where
-  getModifiersFor (OnyxPentacle a) = case a.controller of
-    Just iid | a.ready -> do
-      selectOne (AbilityIs (toSource a) 1) >>= \case
-        Nothing -> pure mempty
-        Just ab ->
-          modified_
-            a
-            (AbilityTarget iid ab)
-            [ CanModify
-                $ EnemyEvadeActionCriteria
-                $ CriteriaOverride
-                $ EnemyCriteria
-                $ ThisEnemy
-                $ EnemyCanBeEvadedBy (a.ability 1)
-                <> at_ (oneOf [YourLocation, ConnectedFrom YourLocation])
-            ]
-    _ -> pure mempty
+  getModifiersFor (OnyxPentacle a) = for_ a.controller \iid ->
+    modifiedWhen_
+      a
+      a.ready
+      (AbilityTarget iid $ AbilityRef (toSource a) 1)
+      [ CanModify
+          $ EnemyEvadeActionCriteria
+          $ CriteriaOverride
+          $ EnemyCriteria
+          $ ThisEnemy
+          $ EnemyCanBeEvadedBy (a.ability 1)
+          <> at_ (oneOf [YourLocation, ConnectedFrom YourLocation])
+      ]
 
 instance HasAbilities OnyxPentacle where
   getAbilities (OnyxPentacle a) = [restricted a 1 ControlsThis evadeAction_]

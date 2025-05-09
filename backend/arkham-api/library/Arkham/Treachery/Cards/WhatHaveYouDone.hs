@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.WhatHaveYouDone (whatHaveYouDone, WhatHaveYouDone (..)) where
+module Arkham.Treachery.Cards.WhatHaveYouDone (whatHaveYouDone) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
@@ -18,13 +18,15 @@ instance HasModifiersFor WhatHaveYouDone where
   getModifiersFor (WhatHaveYouDone attrs) = case attrs.placement of
     InThreatArea iid -> do
       abilities <- select (AbilityIsAction #parley)
-      modifyEach attrs (map (AbilityTarget iid) abilities) [AdditionalCost DiscardRandomCardCost]
+      modifyEach
+        attrs
+        (map (AbilityTarget iid . abilityToRef) abilities)
+        [AdditionalCost DiscardRandomCardCost]
     _ -> pure mempty
 
 instance HasAbilities WhatHaveYouDone where
   getAbilities (WhatHaveYouDone attrs) =
-    [ restrictedAbility attrs 1 (OnSameLocation <> CanManipulateDeck) actionAbility
-    ]
+    [restricted attrs 1 (OnSameLocation <> CanManipulateDeck) actionAbility]
 
 instance RunMessage WhatHaveYouDone where
   runMessage msg t@(WhatHaveYouDone attrs) = runQueueT $ case msg of

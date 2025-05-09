@@ -19,18 +19,17 @@ instance HasModifiersFor SpringfieldM19034 where
   getModifiersFor (SpringfieldM19034 a) =
     when (tabooed TabooList19 a) do
       for_ a.controller \iid -> do
-        selectOne (AbilityIs (toSource a) 1) >>= traverse_ \ab -> do
-          modified_
-            a
-            (AbilityTarget iid ab)
-            [ canFightOverride
-                $ EnemyWithoutModifier CannotBeAttacked
-                <> not_ (enemyEngagedWith iid)
-                <> oneOf
-                  [ at_ YourLocation
-                  , NonEliteEnemy <> at_ (ConnectedTo YourLocation)
-                  ]
-            ]
+        modified_
+          a
+          (AbilityTarget iid $ AbilityRef (toSource a) 1)
+          [ canFightOverride
+              $ EnemyWithoutModifier CannotBeAttacked
+              <> not_ (enemyEngagedWith iid)
+              <> oneOf
+                [ at_ YourLocation
+                , NonEliteEnemy <> at_ (ConnectedTo YourLocation)
+                ]
+          ]
 
 -- TODO: Can't fight enemies engaged, see Telescopic Sight (3)
 instance HasAbilities SpringfieldM19034 where

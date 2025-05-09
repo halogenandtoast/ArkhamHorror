@@ -11,38 +11,6 @@ type CardMatcher
   | { tag: 'CardWithOddNumberOfWordsInTitle' }
   | { tag: 'CardWithOddSkillIcons' }
 
-const cardTypeDecoder = JsonDecoder.oneOf<CardType>([
-  JsonDecoder.literal('SkillType')
-], 'CardType')
-
-const cardMatcherDecoder = JsonDecoder.oneOf<CardMatcher>([
-  JsonDecoder.object<CardMatcher>(
-    {
-      tag: JsonDecoder.literal('CardWithType'),
-      contents: cardTypeDecoder
-    },
-    'CardWithType'
-  ),
-  JsonDecoder.object<CardMatcher>(
-    {
-      tag: JsonDecoder.literal('AnyCard')
-    },
-    'AnyCard'
-  ),
-  JsonDecoder.object<CardMatcher>(
-    {
-      tag: JsonDecoder.literal('CardWithOddNumberOfWordsInTitle')
-    },
-    'CardWithOddNumberOfWordsInTitle'
-  ),
-  JsonDecoder.object<CardMatcher>(
-    {
-      tag: JsonDecoder.literal('CardWithOddSkillIcons')
-    },
-    'CardWithOddSkillIcons'
-  )
-], 'CardMatcher')
-
 export function cardMatcherToWords(m: CardMatcher): string {
   switch (m.tag) {
     case 'CardWithType':
@@ -361,7 +329,7 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
   JsonDecoder.object({
     tag: JsonDecoder.string()
   }, 'OtherModifier').map(({tag}) => ({ tag: 'OtherModifier', contents: tag})),
-], 'ModifierType');
+], 'ModifierType"');
 
 export const modifierDecoder = JsonDecoder.object<Modifier>({
   type: modifierTypeDecoder,

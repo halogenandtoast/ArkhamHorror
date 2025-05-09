@@ -60,7 +60,7 @@ instance HasModifiersFor HyperphysicalShotcasterTheoreticalDevice where
               Just ab ->
                 modified_
                   attrs
-                  (AbilityTarget iid ab)
+                  (AbilityTarget iid ab.ref)
                   [ CanModify
                       $ EnemyEvadeActionCriteria
                       $ CriteriaOverride

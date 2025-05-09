@@ -3160,10 +3160,10 @@ enemyMatcherFilter es matcher' = case matcher' of
         sourceModifiers <- case source of
           AbilitySource abSource idx -> do
             abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-            foldMapM (getModifiers . AbilityTarget iid) abilities
+            foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
           UseAbilitySource _ abSource idx -> do
             abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-            foldMapM (getModifiers . AbilityTarget iid) abilities
+            foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
           _ -> pure []
         let
           isOverride = \case
@@ -3242,10 +3242,10 @@ enemyMatcherFilter es matcher' = case matcher' of
     sourceModifiers <- case source of
       AbilitySource abSource idx -> do
         abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-        foldMapM (getModifiers . AbilityTarget iid) abilities
+        foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
       UseAbilitySource _ abSource idx -> do
         abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-        foldMapM (getModifiers . AbilityTarget iid) abilities
+        foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
       _ -> pure []
     let
       isOverride = \case
@@ -3343,10 +3343,10 @@ enemyMatcherFilter es matcher' = case matcher' of
         sourceModifiers <- case source of
           AbilitySource abSource idx -> do
             abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-            foldMapM (getModifiers . AbilityTarget iid) abilities
+            foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
           UseAbilitySource _ abSource idx -> do
             abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-            foldMapM (getModifiers . AbilityTarget iid) abilities
+            foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
           _ -> pure []
         let
           isOverride = \case

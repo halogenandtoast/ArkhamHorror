@@ -24,7 +24,7 @@ instance HasModifiersFor ForbiddenTomeSecretsRevealed3 where
     selectOne (AbilityIs (toSource a) 1) >>= traverse_ \ab -> do
       handCount <- getHandCount iid
       let n = handCount `div` 4
-      modifiedWhen_ a (n > 0) (AbilityTarget iid ab) [ActionCostModifier (-n)]
+      modifiedWhen_ a (n > 0) (AbilityTarget iid ab.ref) [ActionCostModifier (-n)]
 
 instance HasAbilities ForbiddenTomeSecretsRevealed3 where
   getAbilities (ForbiddenTomeSecretsRevealed3 a) =

@@ -1,8 +1,4 @@
-module Arkham.Treachery.Cards.UnspeakableOathCowardice (
-  unspeakableOathCowardice,
-  UnspeakableOathCowardice (..),
-)
-where
+module Arkham.Treachery.Cards.UnspeakableOathCowardice (unspeakableOathCowardice) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -35,10 +31,8 @@ instance HasModifiersFor UnspeakableOathCowardice where
   getModifiersFor (UnspeakableOathCowardice a) = do
     case a.placement of
       HiddenInHand iid -> do
-        selectOne (AbilityIs (toSource a) 2) >>= \case
-          Nothing -> pure mempty
-          Just ab -> modified_ a (AbilityTarget iid ab) [CanModify evasionCriteria]
-      _ -> pure mempty
+        modified_ a (AbilityTarget iid $ AbilityRef (toSource a) 2) [CanModify evasionCriteria]
+      _ -> pure ()
 
 instance HasAbilities UnspeakableOathCowardice where
   getAbilities (UnspeakableOathCowardice attrs) =

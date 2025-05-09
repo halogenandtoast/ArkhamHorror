@@ -40,7 +40,7 @@ instance RunMessage DisciplineBalanceOfBody where
       pure . DisciplineBalanceOfBody $ attrs `with` Metadata []
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
       abilities' <-
-        selectMap DifferentAbility
+        select
           $ PerformableAbility [ActionCostModifier (-1)]
           <> oneOf [AbilityIsAction #fight, AbilityIsAction #evade]
 
@@ -50,17 +50,17 @@ instance RunMessage DisciplineBalanceOfBody where
 
       chooseOrRunOneM iid do
         labeled "Take no more actions" nothing
-        for_ (filter (`notElem` chosenAbilities meta) abilities') \(DifferentAbility ab) -> do
+        for_ (filter ((`notElem` chosenAbilities meta) . (.different)) abilities') \ab -> do
           abilityLabeled iid (overCost (`decreaseActionCost` 1) ab) do
-            handleTarget iid (toSource attrs) (AbilityTarget iid ab)
+            handleTarget iid (toSource attrs) (AbilityTarget iid ab.ref)
             doStep (n - 1) msg'
         whenM (canDo iid #play) do
           targets playableCards \c -> do
             playCardPayingCost iid c
             doStep (n - 1) msg'
       pure a
-    HandleTargetChoice _ (isSource attrs -> True) (AbilityTarget _ ab) -> do
-      pure . DisciplineBalanceOfBody $ attrs `with` Metadata (DifferentAbility ab : chosenAbilities meta)
+    HandleTargetChoice _ (isSource attrs -> True) (AbilityTarget _ ref) -> do
+      pure . DisciplineBalanceOfBody $ attrs `with` Metadata (DifferentAbility ref : chosenAbilities meta)
     Flip iid _ (isTarget attrs -> True) -> do
       push $ ReplaceInvestigatorAsset iid attrs.id (flipCard $ toCard attrs)
       pure a

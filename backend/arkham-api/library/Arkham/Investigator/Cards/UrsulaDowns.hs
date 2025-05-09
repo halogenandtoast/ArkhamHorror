@@ -6,6 +6,7 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Modifier
 import Arkham.Movement
 
 newtype Metadata = Metadata {moveAfterTest :: Bool}
@@ -28,7 +29,19 @@ ursulaDowns =
 instance HasAbilities UrsulaDowns where
   getAbilities (UrsulaDowns (attrs `With` _)) =
     [ playerLimit PerRound
-        $ restricted attrs 1 Self
+        $ restricted
+          attrs
+          1
+          ( Self
+              <> oneOf
+                [ exists
+                    $ PerformableAbilityBy (InvestigatorWithId attrs.id) [ActionCostModifier (-1)]
+                    <> #investigate
+                , exists
+                    $ PlayableCard (UnpaidCost NoAction) (basic $ CardWithAction #investigate)
+                    <> InHandOf ForPlay (InvestigatorWithId attrs.id)
+                ]
+          )
         $ freeReaction (Moves #after You AnySource Anywhere Anywhere)
     ]
 
@@ -44,7 +57,7 @@ instance RunMessage UrsulaDowns where
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       pure $ UrsulaDowns $ attrs `with` Metadata True
-    SkillTestEnds _ _ _ | moveAfterTest metadata -> do
+    SkillTestEnds {} | moveAfterTest metadata -> do
       targets <- getAccessibleLocations (toId attrs) attrs
       player <- getPlayer (toId attrs)
       when (notNull targets) do

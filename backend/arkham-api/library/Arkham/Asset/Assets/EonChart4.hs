@@ -98,7 +98,7 @@ instance RunMessage EonChart4 where
                 (decreaseCost ab)
                 []
                 []
-                [ HandleTargetChoice iid (toSource attrs) (AbilityTarget iid $ decreaseCost ab)
+                [ HandleTargetChoice iid (toSource attrs) (AbilityTarget iid ab.ref)
                 , DoStep (n - 1) msg'
                 ]
             | ab <- abilities'

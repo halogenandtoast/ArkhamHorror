@@ -567,7 +567,7 @@ runGameMessage msg g = case msg of
     acId <- getRandom
     iid <- toId <$> getActiveInvestigator
     -- imods <- getModifiers iid
-    modifiers' <- getModifiers (AbilityTarget iid ability)
+    modifiers' <- getModifiers (AbilityTarget iid $ abilityToRef ability)
     -- TODO: we might want to check the ability index and source
     let
       -- isMovement = abilityIs ability #move

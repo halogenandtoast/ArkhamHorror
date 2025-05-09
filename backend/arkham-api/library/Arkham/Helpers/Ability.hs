@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Helpers.Ability where
 
 import Arkham.Ability
@@ -27,6 +29,9 @@ import Arkham.Target
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
+getAbility :: HasGame m => AbilityRef -> m (Maybe Ability)
+getAbility ref = selectOne (Matcher.AbilityIs ref.source ref.index)
+
 getCanPerformAbility
   :: (HasCallStack, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
 getCanPerformAbility !iid !ws !ability = do
@@ -34,7 +39,8 @@ getCanPerformAbility !iid !ws !ability = do
   -- it is in the right window
   -- passes restrictions
 
-  abilityModifiers <- getModifiers (AbilityTarget iid ability)
+  abilityModifiers <- getModifiers (AbilityTarget iid ability.ref)
+
   let
     mThatEnemy = getThatEnemy ws
     fixEnemy = maybe id Matcher.replaceThatEnemy mThatEnemy
@@ -53,12 +59,17 @@ getCanPerformAbility !iid !ws !ability = do
       Nothing -> abilityWindow ability
       Just lid -> Matcher.replaceThisLocation lid $ abilityWindow ability
 
-  andM
-    [ getCanAffordCost iid (toSource ability) actions ws cost
+  let
+    debug :: Show a => a -> a
+    debug = if ability.cardCode == "04073" && iid == "04002" then traceShowId else id
+
+  debug ability `seq` pure ()
+
+  debug <$> andM
+    [ getCanAffordCost iid ability.source actions ws (debug $ mconcat $ cost : additionalCosts)
     , meetsActionRestrictions iid ws ability
     , anyM (\window -> windowMatches iid (toSource ability) window abWindow) ws
     , withActiveInvestigator iid (passesCriteria iid Nothing ability.source ability.requestor ws criteria)
-    , allM (getCanAffordCost iid (abilitySource ability) actions ws) additionalCosts
     , not <$> preventedByInvestigatorModifiers iid ability
     ]
 
@@ -132,7 +143,7 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
                 pure $ cardCode `elem` restrictions
               _ -> pure False
     _ -> do
-      modifiers <- getModifiers $ AbilityTarget iid ab
+      modifiers <- getModifiers $ AbilityTarget iid ab.ref
       let
         isOverride = \case
           EnemyFightActionCriteria override -> Just override
@@ -148,12 +159,14 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
       locations <-
         selectAny
           $ Matcher.LocationWithModifier CanBeAttackedAsIfEnemy
-          <> if canMoveToConnected then Matcher.orConnected (Matcher.locationWithInvestigator iid) else Matcher.locationWithInvestigator iid
+          <> if canMoveToConnected
+            then Matcher.orConnected (Matcher.locationWithInvestigator iid)
+            else Matcher.locationWithInvestigator iid
       pure $ enemies || locations
   Action.Evade -> case abilitySource of
     EnemySource _ -> pure True
     _ -> do
-      modifiers <- getModifiers (AbilityTarget iid ab)
+      modifiers <- getModifiers (AbilityTarget iid ab.ref)
       let
         isOverride = \case
           EnemyEvadeActionCriteria override -> Just override
@@ -166,7 +179,7 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
   Action.Engage -> case abilitySource of
     EnemySource _ -> pure True
     _ -> do
-      modifiers <- getModifiers (AbilityTarget iid ab)
+      modifiers <- getModifiers (AbilityTarget iid ab.ref)
       let
         isOverride = \case
           EnemyEngageActionCriteria override -> Just override
@@ -214,7 +227,7 @@ getCanAffordAbility iid ability ws = do
 
 getCanAffordAbilityCost :: HasGame m => InvestigatorId -> Ability -> [Window] -> m Bool
 getCanAffordAbilityCost iid a@Ability {..} ws = do
-  modifiers <- getModifiers (AbilityTarget iid a)
+  modifiers <- getModifiers (AbilityTarget iid a.ref)
   doDelayAdditionalCosts <- case abilityDelayAdditionalCosts of
     Nothing -> pure False
     Just delay -> case delay of
@@ -310,7 +323,7 @@ filterDepthSpecificAbilities usedAbilities = do
 
 getAbilityLimit :: HasGame m => InvestigatorId -> Ability -> m AbilityLimit
 getAbilityLimit iid ability = do
-  ignoreLimit <- (IgnoreLimit `elem`) <$> getModifiers (AbilityTarget iid ability)
+  ignoreLimit <- (IgnoreLimit `elem`) <$> getModifiers (AbilityTarget iid ability.ref)
   pure $ if ignoreLimit then PlayerLimit PerWindow 1 else abilityLimit ability
 
 -- TODO: The limits that are correct are the one that check usedTimes Group
@@ -336,7 +349,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
   ignoreLimit <-
     or
       . sequence [(IgnoreLimit `elem`), (CanIgnoreLimit `elem`)]
-      <$> getModifiers (AbilityTarget iid ability)
+      <$> getModifiers (AbilityTarget iid ability.ref)
   if ignoreLimit && canIgnoreAbilityLimit == CanIgnoreAbilityLimit
     then do
       case abilityType ability of

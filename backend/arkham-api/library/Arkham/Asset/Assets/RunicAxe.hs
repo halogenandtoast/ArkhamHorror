@@ -63,7 +63,7 @@ instance HasModifiersFor RunicAxe where
         ab <- MaybeT $ selectOne (AbilityIs (toSource a) 1)
         modified_
           a
-          (AbilityTarget iid ab)
+          (AbilityTarget iid ab.ref)
           [CanModify $ EnemyFightActionCriteria $ override a iid]
 
 instance HasAbilities RunicAxe where

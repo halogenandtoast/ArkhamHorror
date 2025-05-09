@@ -24,7 +24,7 @@ instance HasModifiersFor EnchantedBow2 where
       modifiedWhen_
         a
         (hasUses a && meta)
-        (AbilityTarget iid ab)
+        (AbilityTarget iid ab.ref)
         [ CanModify
             $ EnemyFightActionCriteria
             $ CriteriaOverride

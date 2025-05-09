@@ -78,7 +78,7 @@ placementLocation = \case
   StillInHand _ -> pure Nothing
   StillInDiscard _ -> pure Nothing
   StillInEncounterDiscard -> pure Nothing
-  AsSwarm eid _ -> field EnemyLocation eid
+  AsSwarm eid _ -> fieldMayJoin EnemyLocation eid
   HiddenInHand _ -> pure Nothing
   OnTopOfDeck _ -> pure Nothing
   NextToAgenda -> pure Nothing

@@ -23,7 +23,7 @@ protoplasmicMass =
 instance HasAbilities ProtoplasmicMass where
   getAbilities (ProtoplasmicMass a) =
     extend1 a
-      $ restricted a 1 (exists $ mapOneOf InvestigatorWithSeal [minBound ..])
+      $ restricted a 1 (exists $ mapOneOf InvestigatorWithActiveSeal [minBound ..])
       $ forced
       $ PhaseEnds #when #enemy
 

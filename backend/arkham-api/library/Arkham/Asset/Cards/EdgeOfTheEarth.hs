@@ -1104,12 +1104,11 @@ kenslersLog =
 
 sinhasMedicalKit :: CardDef
 sinhasMedicalKit =
-  fast
-    $ (storyAsset "08736" "Sinha's Medical Kit" 1 MemorialsOfTheLost)
-      { cdCardTraits = setFromList [Item, Science]
-      , cdSkills = [#willpower, #wild]
-      , cdUses = uses Supply 3
-      }
+  (storyAsset "08736" "Sinha's Medical Kit" 1 MemorialsOfTheLost)
+    { cdCardTraits = setFromList [Item, Science]
+    , cdSkills = [#willpower, #wild]
+    , cdUses = uses Supply 3
+    }
 
 anyuFaithfulCompanion :: CardDef
 anyuFaithfulCompanion =

@@ -183,7 +183,9 @@ getCanEngage a = do
 getAvailablePrey :: HasGame m => EnemyAttrs -> m [InvestigatorId]
 getAvailablePrey a = do
   enemyLocation <- field EnemyLocation a.id
-  iids <- fromMaybe [] <$> traverse (select . (<> InvestigatorCanBeEngagedBy a.id) . investigatorAt) enemyLocation
+  iids <-
+    fromMaybe []
+      <$> traverse (select . (<> InvestigatorCanBeEngagedBy a.id) . investigatorAt) enemyLocation
   if null iids
     then pure []
     else do
@@ -502,7 +504,7 @@ instance RunMessage EnemyAttrs where
                   $ chooseOne lead
                   $ targetLabels xs (only . EnemyEngageInvestigator eid)
       pure a
-    HuntersMove | not enemyExhausted && not (isSwarm a) && not enemyDefeated -> do
+    HuntersMove | not enemyExhausted && not (isSwarm a) && isInPlayPlacement a.placement -> do
       -- TODO: unengaged or not engaged with only prey
       --
       let isAttached = isJust a.placement.attachedTo

@@ -1,7 +1,9 @@
-module Arkham.Treachery.Cards.TheyreCatchingUp (theyreCatchingUp, TheyreCatchingUp (..)) where
+module Arkham.Treachery.Cards.TheyreCatchingUp (theyreCatchingUp) where
 
+import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
+import Arkham.Name
 import Arkham.Trait (Trait (Vehicle))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -16,7 +18,7 @@ theyreCatchingUp = treachery TheyreCatchingUp Cards.theyreCatchingUp
 instance RunMessage TheyreCatchingUp where
   runMessage msg t@(TheyreCatchingUp attrs) = runQueueT $ case msg of
     Revelation _iid (isSource attrs -> True) -> do
-      push $ HuntersMove
+      push HuntersMove
       doStep 1 msg
       pure t
     EnemyMove {} -> do
@@ -25,7 +27,8 @@ instance RunMessage TheyreCatchingUp where
       unless (toResultDefault False attrs.meta) do
         discardUntilFirst iid attrs Deck.EncounterDeck (basic $ #enemy <> withTrait Vehicle)
       pure t
-    RequestedEncounterCard (isAbilitySource attrs 2 -> True) _ (Just card) -> do
+    RequestedEncounterCard (isSource attrs -> True) _ (Just card) -> do
+      sendEnemy ("They're Catching Up finds " <> toTitle card.name) (toJSON $ toCard card)
       createEnemyAtLocationMatching_ card RearmostLocation
       pure t
     _ -> TheyreCatchingUp <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.SwiftByakhee (swiftByakhee, SwiftByakhee (..)) where
+module Arkham.Enemy.Cards.SwiftByakhee (swiftByakhee) where
 
 import Arkham.Ability
 import Arkham.Distance
@@ -38,7 +38,7 @@ instance RunMessage SwiftByakhee where
         chooseOrRunOneM iid do
           for_ preyWithLocationsAndDistances \(iid', pathId, distance) -> do
             targeting iid' do
-              when (unDistance distance <= 1) $ phaseModifier attrs attrs CannotAttack
+              when (unDistance distance > 1) $ phaseModifier attrs attrs CannotAttack
               moveUntil attrs pathId
       pure e
     _ -> SwiftByakhee <$> liftRunMessage msg attrs

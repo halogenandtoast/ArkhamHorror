@@ -324,6 +324,7 @@ getPlayedEvent :: [Window] -> EventId
 getPlayedEvent = \case
   [] -> error "impossible"
   ((windowType -> Window.PlayEventDiscarding _ eventId) : _) -> eventId
+  ((windowType -> Window.PlayEvent _ eventId) : _) -> eventId
   (_ : rest) -> getPlayedEvent rest
 
 cardDiscarded :: HasCallStack => [Window] -> Card
@@ -1890,7 +1891,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           [ matchWho iid who whoMatcher
           , case eventMatcher of
               EventWithId eid -> pure $ event == eid
-              _ -> event <=~> eventMatcher
+              _ -> event <=~> OutOfPlayEvent eventMatcher
           ]
       _ -> noMatch
     Matcher.AgendaEntersPlay timing agendaMatcher -> guardTiming timing $ \case

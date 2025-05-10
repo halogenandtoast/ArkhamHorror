@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Helpers.Ability where
 
 import Arkham.Ability
@@ -59,17 +57,14 @@ getCanPerformAbility !iid !ws !ability = do
       Nothing -> abilityWindow ability
       Just lid -> Matcher.replaceThisLocation lid $ abilityWindow ability
 
-  let
-    debug :: Show a => a -> a
-    debug = if ability.cardCode == "04073" && iid == "04002" then traceShowId else id
-
-  debug ability `seq` pure ()
-
-  debug <$> andM
-    [ getCanAffordCost iid ability.source actions ws (debug $ mconcat $ cost : additionalCosts)
+  -- We use toSource to make sure we can track that we are talkign about an ability
+  andM
+    [ getCanAffordCost iid (toSource ability) actions ws (mconcat $ cost : additionalCosts)
     , meetsActionRestrictions iid ws ability
     , anyM (\window -> windowMatches iid (toSource ability) window abWindow) ws
-    , withActiveInvestigator iid (passesCriteria iid Nothing ability.source ability.requestor ws criteria)
+    , withActiveInvestigator
+        iid
+        (passesCriteria iid Nothing (toSource ability) ability.requestor ws criteria)
     , not <$> preventedByInvestigatorModifiers iid ability
     ]
 

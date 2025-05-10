@@ -2595,11 +2595,18 @@ getActiveInvestigatorModifiers :: HasGame m => m [ModifierType]
 getActiveInvestigatorModifiers = getModifiers . toTarget =<< getActiveInvestigator
 
 getEventsMatching :: HasGame m => EventMatcher -> m [Event]
-getEventsMatching matcher = do
-  events <- toList . view (entitiesL . eventsL) <$> getGame
-  filterMatcher events matcher
+getEventsMatching matcher = case matcher of
+  OutOfPlayEvent inner' -> do
+    inPlay <- toList . view (entitiesL . eventsL) <$> getGame
+    outOfPlayEvents <- toList . view (outOfPlayEntitiesL . each . eventsL) <$> getGame
+    removedEvents <- toList . view (actionRemovedEntitiesL . eventsL) <$> getGame
+    filterMatcher (inPlay <> outOfPlayEvents <> removedEvents) inner'
+  other -> do
+    events <- toList . view (entitiesL . eventsL) <$> getGame
+    filterMatcher events other
  where
   filterMatcher as = \case
+    OutOfPlayEvent inner -> filterMatcher as inner
     EnemyEvent eid -> filterM (fieldP EventPlacement (== AttachedToEnemy eid) . toId) as
     NotEvent matcher' -> do
       matches' <- getEventsMatching matcher'

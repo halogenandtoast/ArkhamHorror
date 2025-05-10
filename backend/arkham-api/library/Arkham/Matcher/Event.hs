@@ -53,6 +53,7 @@ data EventMatcher
   | ActiveEvent
   | EventWithMetaKey Key
   | EventIsAction ActionMatcher
+  | OutOfPlayEvent EventMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "upgrade" EventMatcher where

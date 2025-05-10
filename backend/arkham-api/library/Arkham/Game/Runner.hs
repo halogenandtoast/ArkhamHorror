@@ -915,12 +915,7 @@ runGameMessage msg g = case msg of
       Discard _ _ (EventTarget eid') -> eid == eid'
       _ -> False
     event' <- getEvent eid
-    let
-      removedEntitiesF =
-        if notNull (gameActiveAbilities g) || attr eventWaiting event'
-          then actionRemovedEntitiesL . eventsL %~ insertEntity event'
-          else id
-    pure $ g & entitiesL . eventsL %~ deleteMap eid & removedEntitiesF
+    pure $ g & entitiesL . eventsL %~ deleteMap eid & actionRemovedEntitiesL . eventsL %~ insertEntity event'
   RemoveEnemy eid -> do
     popMessageMatching_ $ \case
       EnemyDefeated eid' _ _ _ -> eid == eid'

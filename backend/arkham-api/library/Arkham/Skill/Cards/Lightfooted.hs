@@ -1,6 +1,6 @@
-module Arkham.Skill.Cards.Lightfooted (lightfooted, Lightfooted (..)) where
+module Arkham.Skill.Cards.Lightfooted (lightfooted) where
 
-import Arkham.Helpers.SkillTest (getSkillTestTarget, isEvading)
+import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy, isEvading)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Skill.Cards qualified as Cards
@@ -17,7 +17,7 @@ instance RunMessage Lightfooted where
   runMessage msg s@(Lightfooted attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
       void $ runMaybeT do
-        EnemyTarget eid <- MaybeT getSkillTestTarget
+        eid <- MaybeT getSkillTestTargetedEnemy
         liftGuardM $ isEvading eid
         otherEnemies <-
           select $ enemyAtLocationWith attrs.owner <> EnemyCanBeEvadedBy (toSource attrs) <> not_ (be eid)

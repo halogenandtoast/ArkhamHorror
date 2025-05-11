@@ -232,7 +232,8 @@ enemyAttackMatches youId details@EnemyAttackDetails {..} = \case
     modifiers' <- getModifiers (sourceToTarget attackSource)
     enemyModifiers <- getModifiers attackEnemy
     andM
-      [ pure $ EffectsCannotBeCanceled `notElem` modifiers'
+      [ pure attackCanBeCanceled
+      , pure $ EffectsCannotBeCanceled `notElem` modifiers'
       , pure $ AttacksCannotBeCancelled `notElem` enemyModifiers
       , enemyAttackMatches youId details matcher
       ]

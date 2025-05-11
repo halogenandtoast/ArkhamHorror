@@ -101,6 +101,7 @@ import Arkham.Xp
 import Control.Monad.State.Strict (MonadState, StateT, execStateT, get, put)
 import Control.Monad.Trans.Class
 import Data.Aeson.Key qualified as Aeson
+import Data.Map.Strict qualified as Map
 
 setChaosTokens :: ReverseQueue m => [ChaosTokenFace] -> m ()
 setChaosTokens = push . SetChaosTokens
@@ -1713,14 +1714,19 @@ revealing
 revealing iid (toSource -> source) (toTarget -> target) zone = Msg.push $ Msg.revealing iid source target zone
 
 shuffleIntoDeck :: (ReverseQueue m, IsDeck deck, Targetable target) => deck -> target -> m ()
-shuffleIntoDeck deck target = push $ Msg.shuffleIntoDeck deck target
+shuffleIntoDeck deck target = guardPlayerDeckIsNotEmpty deck do
+  push $ Msg.shuffleIntoDeck deck target
 
 shuffleCardsIntoDeck
   :: (ReverseQueue m, IsDeck deck, MonoFoldable cards, Element cards ~ card, IsCard card)
   => deck
   -> cards
   -> m ()
-shuffleCardsIntoDeck deck cards = push $ Msg.shuffleCardsIntoDeck deck cards
+shuffleCardsIntoDeck deck cards =
+  case length cards of
+    0 -> pure ()
+    1 -> guardPlayerDeckIsNotEmpty deck $ push $ Msg.shuffleCardsIntoDeck deck cards
+    _ -> push $ Msg.shuffleCardsIntoDeck deck cards
 
 shuffleCardsIntoTopOfDeck
   :: (ReverseQueue m, IsDeck deck, MonoFoldable cards, Element cards ~ card, IsCard card)
@@ -1728,10 +1734,22 @@ shuffleCardsIntoTopOfDeck
   -> Int
   -> cards
   -> m ()
-shuffleCardsIntoTopOfDeck deck n cards = push $ Msg.shuffleCardsIntoTopOfDeck deck n cards
+shuffleCardsIntoTopOfDeck deck n cards =
+  case length cards of
+    0 -> pure ()
+    1 -> guardPlayerDeckIsNotEmpty deck $ push $ Msg.shuffleCardsIntoTopOfDeck deck n cards
+    _ -> push $ Msg.shuffleCardsIntoTopOfDeck deck n cards
 
 shuffleDeck :: (ReverseQueue m, IsDeck deck) => deck -> m ()
-shuffleDeck deck = push $ ShuffleDeck (toDeck deck)
+shuffleDeck deck = guardPlayerDeckIsNotEmpty deck $ push $ ShuffleDeck (toDeck deck)
+
+guardPlayerDeckIsNotEmpty :: (ReverseQueue m, IsDeck deck) => deck -> m () -> m ()
+guardPlayerDeckIsNotEmpty deck body = case toDeck deck of
+  Deck.InvestigatorDeck iid -> whenM (fieldMap InvestigatorDeck (not . null) iid) body
+  Deck.InvestigatorDeckByKey iid deckKey -> do
+    mdeck <- Map.lookup deckKey <$> field InvestigatorDecks iid
+    when (maybe False (not . null) mdeck) body
+  _ -> body
 
 reduceCostOf :: (Sourceable source, IsCard card, ReverseQueue m) => source -> card -> Int -> m ()
 reduceCostOf source card n = Msg.pushM $ Msg.reduceCostOf source card n

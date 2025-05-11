@@ -901,7 +901,7 @@ instance RunMessage EnemyAttrs where
     InitiateEnemyAttack details | details.enemy == enemyId -> do
       whenWithoutModifier a CannotAttack do
         mods <- getModifiers a
-        let canBeCancelled = AttacksCannotBeCancelled `notElem` mods
+        let canBeCancelled = details.canBeCanceled && AttacksCannotBeCancelled `notElem` mods
         let strategy = fromMaybe details.strategy $ listToMaybe [s | SetAttackDamageStrategy s <- mods]
         push $ EnemyAttack $ details {attackCanBeCanceled = canBeCancelled, attackDamageStrategy = strategy}
       pure a

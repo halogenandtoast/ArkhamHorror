@@ -46,8 +46,8 @@ instance RunMessage ToeToToeEffect where
         cardSource = case attrs.source of
           BothSource _ x -> x
           _ -> error "invalid source"
-      if source == cardSource
-        then case attrs.meta of
+      when (source == cardSource) do
+        case attrs.meta of
           Just (EffectCost acId) -> do
             card <- case attrs.target of
               CardIdTarget cid -> getCard cid
@@ -56,6 +56,5 @@ instance RunMessage ToeToToeEffect where
             costModifier attrs (ActiveCostTarget acId) (AdditionalCost $ EnemyAttackCost enemy)
             cardResolutionModifier card attrs attrs.target (MetaModifier $ object ["chosenEnemy" .= enemy])
           _ -> error "invalid before effect meta"
-        else pure ()
       pure e
     _ -> ToeToToeEffect <$> liftRunMessage msg attrs

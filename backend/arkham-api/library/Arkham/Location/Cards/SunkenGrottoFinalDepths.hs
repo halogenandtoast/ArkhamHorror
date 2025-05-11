@@ -22,13 +22,13 @@ sunkenGrottoFinalDepths = location SunkenGrottoFinalDepths Cards.sunkenGrottoFin
 instance HasAbilities SunkenGrottoFinalDepths where
   getAbilities (SunkenGrottoFinalDepths a) =
     extendRevealed1 a
-      $ restricted a 1 (exists $ LocationInRow (-2) <> UnrevealedLocation)
+      $ restricted a 1 (exists $ LocationInRow (-3) <> UnrevealedLocation)
       $ FastAbility (GroupClueCost (PerPlayer 1) (be a))
 
 instance RunMessage SunkenGrottoFinalDepths where
   runMessage msg l@(SunkenGrottoFinalDepths attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      locations <- select $ LocationInRow (-2) <> UnrevealedLocation
+      locations <- select $ LocationInRow (-3) <> UnrevealedLocation
       chooseOrRunOneM iid do
         targets locations $ lookAtRevealed iid (attrs.ability 1)
       pure l

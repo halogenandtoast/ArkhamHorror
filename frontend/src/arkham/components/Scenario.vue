@@ -363,8 +363,7 @@ watchEffect(() => {
     if (c.tag !== "AbilityLabel") return false
     return isOutOfPlaySource(c.ability.source)
   }
-  const needsShowOutOfPlay = choices.value.some(isOutOfPlayChoice)
-  forcedShowOutOfPlay.value = needsShowOutOfPlay
+  forcedShowOutOfPlay.value = choices.value.some(isOutOfPlayChoice)
 })
 
 

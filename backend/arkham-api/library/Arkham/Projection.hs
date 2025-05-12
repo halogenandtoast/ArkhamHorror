@@ -82,7 +82,7 @@ forField
   -> EntityId a
   -> (typ -> m ())
   -> m ()
-forField f eid g = flip for_ g =<< field f eid
+forField f eid g = traverse_ g =<< field f eid
 
 filterByFieldM
   :: (EntityId a ~ Element seq, IsSequence seq, HasGame m, Projection a)

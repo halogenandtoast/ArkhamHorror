@@ -21,7 +21,7 @@ instance HasModifiersFor VirescentRot where
 
 instance HasAbilities VirescentRot where
   getAbilities (VirescentRot a) =
-    [ restrictedAbility a 1 ControlsThis $ forced $ EnemyLeavesPlay #when $ EnemyWithAttachedEvent (be a)
+    [ restricted a 1 ControlsThis $ forced $ EnemyLeavesPlay #when $ EnemyWithAttachedEvent (be a)
     ]
 
 instance RunMessage VirescentRot where

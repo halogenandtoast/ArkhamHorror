@@ -440,7 +440,7 @@ instance RunMessage EnemyAttrs where
             enemyLocation <- field EnemyLocation enemyId
             let leaveWindows = join $ map (\oldId -> windows [Window.EnemyLeaves eid oldId]) (maybeToList enemyLocation)
             afterWindow <- checkAfter $ Window.EnemyMoves eid lid
-            pushAll $ leaveWindows <> [EnemyEntered eid lid, EnemyCheckEngagement eid, afterWindow]
+            pushAll $ [EnemyEntered eid lid, EnemyCheckEngagement eid] <> leaveWindows <> [afterWindow]
             pure $ a & placementL .~ AtLocation lid
           else a <$ push (EnemyCheckEngagement eid)
     After (EndTurn _) | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)

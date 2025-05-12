@@ -1324,16 +1324,16 @@ runGameMessage msg g = case msg of
   RemovedFromPlay (TreacherySource treacheryId) -> do
     runMessage (RemoveTreachery treacheryId) g
   ReturnToHand iid (EventTarget eventId) -> do
+    event' <- getEvent eventId
     card <- field EventCard eventId
     push $ addToHand iid card
     removedEntitiesF <-
-      if gameInAction g
+      if gameInAction g || attr eventWaiting event'
         then do
-          entity <- getEvent eventId
           pure
             $ actionRemovedEntitiesL
             . eventsL
-            %~ insertEntity (overAttrs (\e -> e {eventPlacement = Unplaced}) entity)
+            %~ insertEntity (overAttrs (\e -> e {eventPlacement = Unplaced}) event')
         else pure id
     pure $ g & entitiesL . eventsL %~ deleteMap eventId & removedEntitiesF
   After (ShuffleIntoDeck _ (AssetTarget aid)) -> do

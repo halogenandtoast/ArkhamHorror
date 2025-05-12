@@ -34,7 +34,8 @@ instance RunMessage SwordCaneDesignedByTheCouncilOfPolls2 where
         labeled "Do not deal damage" nothing
         targets enemies (nonAttackEnemyDamage (Just iid) (attrs.ability 2) 1)
 
-      liftRunMessage (UseCardAbility iid (toSource attrs) 2 windows' payments) a
+      push $ UseCardAbility iid (toSource attrs) 2 windows' payments
+      pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
       fightableEnemies <- select $ CanFightEnemy source

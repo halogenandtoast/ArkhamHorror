@@ -2284,11 +2284,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     for_ assets $ \assetId -> do
       cardCode' <- field AssetCardCode assetId
       when (cardCode == cardCode') (push $ RemoveFromGame (AssetTarget assetId))
-    pure
-      $ a
-      & (deckL %~ Deck . filter ((/= cardCode) . toCardCode) . unDeck)
-      & (discardL %~ filter ((/= cardCode) . toCardCode))
-      & (handL %~ filter ((/= cardCode) . toCardCode))
+
+    for_ (unDeck investigatorDeck) \card -> do
+      when (cardCode == card.cardCode) (push $ RemoveCard card.id)
+
+    for_ investigatorDiscard \card -> do
+      when (cardCode == card.cardCode) (push $ RemoveCard card.id)
+
+    for_ investigatorHand \card -> do
+      when (cardCode == card.cardCode) (push $ RemoveCard card.id)
+
+    pure a
   PutCardIntoPlay _ card _ _ _ -> do
     pure
       $ a

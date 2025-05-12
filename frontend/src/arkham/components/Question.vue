@@ -148,6 +148,14 @@ const doneLabel = computed(() => {
   return null
 })
 
+const paymentChoiceLabel = function(text: string): string {
+  if (text.startsWith("$")) {
+    return label(`$choice.${text.slice(1)}`)
+  }
+
+  return text
+}
+
 onMounted(setInitialAmounts)
 
 watch(
@@ -506,7 +514,7 @@ const cardPiles = computed(() => {
               <legend v-html="amountsLabel"></legend>
               <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.choiceId">
                 <div v-if="paymentChoice.maxBound !== 0">
-                  <label :for="`choice-${paymentChoice.choiceId}`" v-html="label(`$choice.${paymentChoice.label}`)"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
+                  <label :for="`choice-${paymentChoice.choiceId}`" v-html="paymentChoiceLabel(paymentChoice.label)"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
                 </div>
               </template>
               <button :disabled="unmetAmountRequirements">Submit</button>

@@ -35,7 +35,8 @@ function parseInput(input: string) {
             // Match the pattern: name=type:value
             const match = token.match(/^([^=]+)=([is]):(.+)$/);
             if (!match) {
-                throw new Error(`Invalid parameter format: ${token}`);
+                console.log(`Invalid parameter format: ${token}\nFull: ${input}`);
+                return {key: input, params: {}}
             }
 
             const paramName = match[1];

@@ -204,8 +204,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pushAll [BeginGame, BeginRound, Begin InvestigationPhase]
     pure a
   ResolveAmounts iid choiceMap (LabeledTarget "Purchase Trauma" (isTarget a -> True)) -> do
-    let physical = getChoiceAmount "Physical" choiceMap
-    let mental = getChoiceAmount "Mental" choiceMap
+    let physical = getChoiceAmount "physical" choiceMap
+    let mental = getChoiceAmount "mental" choiceMap
     push $ SufferTrauma iid physical mental
     pure a
   PlaceLocationMatching cardMatcher -> do

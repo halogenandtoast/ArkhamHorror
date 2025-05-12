@@ -31,6 +31,6 @@ instance RunMessage ThroughTheGates where
           then pushAll [ObtainCard card.id, AddToHand iid [card]]
           else do
             send $ format (toCard attrs) <> " removed all copies of " <> format card <> " from the game"
-            pushAll [ObtainCard card.id, RemoveAllCopiesOfCardFromGame iid (toCardCode card)]
+            pushAll [RemoveCard card.id, RemoveAllCopiesOfCardFromGame iid (toCardCode card)]
       pure t
     _ -> ThroughTheGates <$> runMessage msg attrs

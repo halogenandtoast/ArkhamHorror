@@ -34,9 +34,9 @@ instance RunMessage BlastedHeath_248 where
   runMessage msg l@(BlastedHeath_248 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       total <- selectSum InvestigatorClues (at_ (be attrs) <> InvestigatorWithAnyClues)
-      scenarioI18n $ chooseAmount' iid "cluesToSpend" "clues" 0 (min 2 total) attrs
+      scenarioI18n $ chooseAmount' iid "cluesToSpend" "$clues" 0 (min 2 total) attrs
       pure l
-    ResolveAmounts iid (getChoiceAmount "clues" -> n) (isTarget attrs -> True) | n > 0 -> do
+    ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) | n > 0 -> do
       investigators <- select $ at_ (be attrs) <> InvestigatorWithAnyClues
       abominations <- select $ EnemyWithTrait Abomination <> at_ (be attrs)
 

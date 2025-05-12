@@ -50,6 +50,8 @@
   "addToken": "Add 1 {'{'}{token}{'}'} chaos token to the chaos bag for the remainder of the campaign.",
   "choice": {
     "clues": "Clues",
-    "resources": "Resources"
+    "resources": "Resources",
+    "physical": "Physical",
+    "mental": "Mental"
   }
 }

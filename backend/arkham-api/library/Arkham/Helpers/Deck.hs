@@ -90,7 +90,7 @@ initDeckTrauma deck' iid target = do
       pid
       ("Suffer " <> tshow anyTrauma <> " total physical and/or mental trauma")
       (TotalAmountTarget anyTrauma)
-      [("Physical", (0, anyTrauma)), ("Mental", (0, anyTrauma))]
+      [("$physical", (0, anyTrauma)), ("$mental", (0, anyTrauma))]
       (LabeledTarget "Purchase Trauma" target)
   pure
     $ [SufferTrauma iid physicalTrauma mentalTrauma | mentalTrauma > 0 || physicalTrauma > 0]

@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.RexsCurse (RexsCurse (..), rexsCurse) where
+module Arkham.Treachery.Cards.RexsCurse (rexsCurse) where
 
 import Arkham.Ability
 import Arkham.Matcher
@@ -19,7 +19,7 @@ rexsCurse = treachery (RexsCurse . (`with` Metadata False)) Cards.rexsCurse
 instance HasAbilities RexsCurse where
   getAbilities (RexsCurse (x `With` _)) =
     [ playerLimit PerTestOrAbility
-        $ restrictedAbility x 1 (InThreatAreaOf You)
+        $ restricted x 1 (InThreatAreaOf You)
         $ forced
         $ WouldHaveSkillTestResult #when You AnySkillTest #success
     ]

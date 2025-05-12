@@ -20,8 +20,9 @@ spec = describe "Rookie Mistake" $ do
     assertAny $ assetIs Assets.guardDog
 
   it "is shuffled back into your deck if no assets were discarded" . gameTestWith tommyMuldoon $ \self -> do
+    loadDeck self [Assets.machete]
     self `putCardIntoPlay` Assets.guardDog
     self `drawsCard` Treacheries.rookieMistake
     self.discard `shouldReturn` []
-    asDefs self.deck `shouldReturn` [Treacheries.rookieMistake]
+    asDefs self.deck `shouldContainM` [Treacheries.rookieMistake]
     assertAny $ assetIs Assets.guardDog

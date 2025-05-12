@@ -1,4 +1,4 @@
-module Arkham.Event.Events.ScarletRot (scarletRot, ScarletRot (..)) where
+module Arkham.Event.Events.ScarletRot (scarletRot) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -15,13 +15,10 @@ scarletRot = event ScarletRot Cards.scarletRot
 
 instance HasAbilities ScarletRot where
   getAbilities (ScarletRot a) =
-    [ restrictedAbility
-        a
-        1
-        (ControlsThis <> exists (EnemyWithAttachedEvent (be a) <> EnemyCanBeDamagedBySource (a.ability 1)))
+    [ controlled a 1 (exists (EnemyWithAttachedEvent (be a) <> EnemyCanBeDamagedBySource (a.ability 1)))
         $ forced
         $ RoundEnds #when
-    , restrictedAbility a 2 ControlsThis $ forced $ EnemyLeavesPlay #when $ EnemyWithAttachedEvent (be a)
+    , restricted a 2 ControlsThis $ forced $ EnemyLeavesPlay #when $ EnemyWithAttachedEvent (be a)
     ]
 
 instance RunMessage ScarletRot where

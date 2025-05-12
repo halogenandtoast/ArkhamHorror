@@ -20,18 +20,18 @@ instance HasModifiersFor GeneBeauregard3 where
 
 instance HasAbilities GeneBeauregard3 where
   getAbilities (GeneBeauregard3 x) =
-    [ controlledAbility
+    [ controlled
         x
         1
         ( DuringTurn You
-            <> AnyCriterion
+            <> oneOf
               [ exists (YourLocation <> CanMoveCluesFromLocation) <> exists ConnectedLocation
               , exists (ConnectedLocation <> CanMoveCluesFromLocation)
               , exists (NonEliteEnemy <> EnemyAt YourLocation <> EnemyCanEnter ConnectedLocation)
               , exists (NonEliteEnemy <> EnemyAt ConnectedLocation <> EnemyCanEnter YourLocation)
               ]
         )
-        $ ReactionAbility (Enters #after You Anywhere) (exhaust x)
+        $ triggered (Enters #after You Anywhere) (exhaust x)
     ]
 
 instance RunMessage GeneBeauregard3 where
@@ -89,7 +89,7 @@ instance RunMessage GeneBeauregard3 where
           player
           [ targetLabel
             enemy
-            [chooseOrRunOne player [targetLabel location [EnemyMove enemy location]] | location <- connected]
+            [chooseOrRunOne player [targetLabel location [EnemyMove enemy location] | location <- connected]]
           | enemy <- enemies
           ]
 

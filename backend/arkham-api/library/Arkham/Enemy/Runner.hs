@@ -235,6 +235,7 @@ instance RunMessage EnemyAttrs where
                       { spawnDetailsInvestigator = Just iid
                       , spawnDetailsSpawnAt = SpawnAtLocation lid
                       , spawnDetailsEnemy = eid
+                      , spawnDetailsOverridden = False
                       }
                 )
           | (iid, lid) <- toList iidsWithLocations
@@ -1431,6 +1432,7 @@ instance RunMessage EnemyAttrs where
                             { spawnDetailsInvestigator = Just iid
                             , spawnDetailsSpawnAt = SpawnAtLocation lid
                             , spawnDetailsEnemy = eid
+                            , spawnDetailsOverridden = False
                             }
                       )
                 else
@@ -1457,6 +1459,7 @@ instance RunMessage EnemyAttrs where
                     { spawnDetailsInvestigator = Nothing
                     , spawnDetailsSpawnAt = SpawnAtLocation lid
                     , spawnDetailsEnemy = eid
+                    , spawnDetailsOverridden = False
                     }
               )
         xs -> spawnAtOneOf Nothing eid xs

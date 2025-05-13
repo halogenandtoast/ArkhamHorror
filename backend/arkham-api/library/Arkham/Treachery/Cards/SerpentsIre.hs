@@ -55,9 +55,10 @@ instance RunMessage SerpentsIre where
                     eid
                     [ EnemySpawn
                         $ SpawnDetails
-                          { spawnDetailsInvestigator = (Just iid)
+                          { spawnDetailsInvestigator = Just iid
                           , spawnDetailsSpawnAt = SpawnAtLocation lid
                           , spawnDetailsEnemy = eid
+                          , spawnDetailsOverridden = False
                           }
                     , HandleTargetChoice iid source (EnemyTarget eid)
                     ]

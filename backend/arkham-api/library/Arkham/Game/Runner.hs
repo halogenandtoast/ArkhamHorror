@@ -1292,6 +1292,7 @@ runGameMessage msg g = case msg of
                 { spawnDetailsEnemy = enemyId
                 , spawnDetailsInvestigator = Nothing
                 , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
+                , spawnDetailsOverridden = False
                 }
           pushAll
             [ Will (EnemySpawn details)
@@ -1903,6 +1904,7 @@ runGameMessage msg g = case msg of
             { spawnDetailsInvestigator = miid
             , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
             , spawnDetailsEnemy = eid
+            , spawnDetailsOverridden = False
             }
       )
     pure $ g & (activeCardL .~ Nothing) & (focusedCardsL .~ mempty)
@@ -2517,6 +2519,7 @@ runGameMessage msg g = case msg of
           { spawnDetailsEnemy = enemyId
           , spawnDetailsInvestigator = Nothing
           , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
+          , spawnDetailsOverridden = False
           }
     windows' <- checkWindows [mkWhen (Window.EnemyWouldSpawnAt enemyId lid)]
     pushAll
@@ -2536,6 +2539,7 @@ runGameMessage msg g = case msg of
           { spawnDetailsEnemy = enemyId
           , spawnDetailsInvestigator = Just iid
           , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
+          , spawnDetailsOverridden = False
           }
     pushAll
       [ Will (EnemySpawn details)
@@ -2581,6 +2585,7 @@ runGameMessage msg g = case msg of
                 { spawnDetailsEnemy = enemyId
                 , spawnDetailsInvestigator = Just iid
                 , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
+                , spawnDetailsOverridden = True
                 }
         pushAll
           $ enemyCreationBefore enemyCreation
@@ -2598,6 +2603,7 @@ runGameMessage msg g = case msg of
                 { spawnDetailsEnemy = enemyId
                 , spawnDetailsInvestigator = Nothing
                 , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
+                , spawnDetailsOverridden = True
                 }
         pushAll
           $ windows'
@@ -2637,6 +2643,7 @@ runGameMessage msg g = case msg of
                       { spawnDetailsEnemy = enemyId
                       , spawnDetailsInvestigator = Nothing
                       , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
+                      , spawnDetailsOverridden = True
                       }
                in ( [Will (EnemySpawn details), When (EnemySpawn details)]
                   , [After (EnemySpawn details)]

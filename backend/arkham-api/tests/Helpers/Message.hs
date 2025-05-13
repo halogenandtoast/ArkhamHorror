@@ -48,6 +48,7 @@ spawnAt e l =
       { spawnDetailsInvestigator = Nothing
       , spawnDetailsSpawnAt = SpawnAtLocation (toId l)
       , spawnDetailsEnemy = toId e
+      , spawnDetailsOverridden = False
       }
 
 loadDeck :: Investigator -> [PlayerCard] -> Message

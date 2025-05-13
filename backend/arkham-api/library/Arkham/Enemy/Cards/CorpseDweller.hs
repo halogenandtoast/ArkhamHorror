@@ -1,11 +1,10 @@
 module Arkham.Enemy.Cards.CorpseDweller (corpseDweller) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Trait
 
 newtype CorpseDweller = CorpseDweller EnemyAttrs
@@ -23,18 +22,11 @@ corpseDweller =
     . (surgeIfUnableToSpawnL .~ True)
 
 instance RunMessage CorpseDweller where
-  runMessage msg (CorpseDweller attrs) = case msg of
-    EnemySpawn details | details.enemy == attrs.id -> do
+  runMessage msg (CorpseDweller attrs) = runQueueT $ case msg of
+    EnemySpawn details | details.enemy == attrs.id && not details.overridden -> do
       for_ details.location \lid -> do
-        let miid = details.investigator
-        leadInvestigatorId <- getLead
-        let iid = fromMaybe leadInvestigatorId miid
+        iid <- maybe getLead pure details.investigator
         humanoids <- select $ EnemyWithTrait Humanoid <> enemyAt lid
-        player <- getPlayer iid
-        push
-          $ chooseOrRunOne player
-          $ targetLabels humanoids
-          $ only
-          . toDiscard attrs
-      CorpseDweller <$> runMessage msg attrs
-    _ -> CorpseDweller <$> runMessage msg attrs
+        chooseOneM iid $ targets humanoids (toDiscard attrs)
+      CorpseDweller <$> liftRunMessage msg attrs
+    _ -> CorpseDweller <$> liftRunMessage msg attrs

@@ -1149,6 +1149,7 @@ instance FromJSON Message where
                 { spawnDetailsEnemy = eid
                 , spawnDetailsInvestigator = miid
                 , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
+                , spawnDetailsOverridden = False
                 }
       "FightEnemy" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")

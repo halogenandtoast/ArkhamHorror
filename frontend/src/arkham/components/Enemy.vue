@@ -212,7 +212,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
           <div class="card-wrapper" :class="{ exhausted: isExhausted }">
             <img v-if="isTrueForm" :src="image"
               class="card enemy"
-              :class="{ dragging, 'enemy--can-interact': canInteract, attached }"
+              :class="{ dragging, 'enemy--can-interact': canInteract, attached}"
               :data-id="id"
               :data-fight="fight"
               :data-evade="evade"
@@ -229,7 +229,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
               @dragstart="startDrag($event, enemy)"
               :src="isSwarm ? imgsrc('player_back.jpg') : image"
               class="card enemy"
-              :class="{ exhausted: isExhausted, 'enemy--can-interact': canInteract, attached}"
+              :class="{ 'enemy--can-interact': canInteract, attached}"
               :data-id="id"
               :data-image-id="imageId"
               :data-swarm="isSwarm || undefined"
@@ -384,10 +384,8 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
 }
 
 .exhausted {
-  :deep(img) {
-    transition: transform 0.2s linear;
-    transform: rotate(90deg) translateX(-10px);
-  }
+  transition: transform 0.2s linear;
+  transform: rotate(90deg) translateX(-10px);
 }
 
 :deep(.token) {

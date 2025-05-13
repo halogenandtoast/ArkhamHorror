@@ -58,6 +58,7 @@ spawnAt eid miid (SpawnAtLocation lid) = do
             { spawnDetailsInvestigator = miid
             , spawnDetailsSpawnAt = SpawnAtLocation lid
             , spawnDetailsEnemy = eid
+            , spawnDetailsOverridden = False
             }
       )
 spawnAt eid miid (SpawnAt locationMatcher) = do
@@ -254,6 +255,7 @@ spawnAtOneOf miid eid targetLids = do
                 { spawnDetailsInvestigator = miid
                 , spawnDetailsSpawnAt = SpawnAtLocation lid
                 , spawnDetailsEnemy = eid
+                , spawnDetailsOverridden = False
                 }
           )
     lids -> do
@@ -271,6 +273,7 @@ spawnAtOneOf miid eid targetLids = do
                       { spawnDetailsEnemy = eid
                       , spawnDetailsInvestigator = miid
                       , spawnDetailsSpawnAt = SpawnAtLocation lid
+                      , spawnDetailsOverridden = False
                       }
                 )
           | (windows', lid) <- windowPairs

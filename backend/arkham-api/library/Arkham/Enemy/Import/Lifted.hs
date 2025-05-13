@@ -33,6 +33,7 @@ import Arkham.Enemy.Runner as X (
   setPrey,
   setSpawnAt,
   spawnAtL,
+  surgeIfUnableToSpawnL,
   tokensL,
   pattern R3,
  )

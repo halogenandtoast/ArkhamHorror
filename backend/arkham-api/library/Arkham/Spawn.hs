@@ -13,8 +13,12 @@ data SpawnDetails = SpawnDetails
   { spawnDetailsEnemy :: EnemyId
   , spawnDetailsInvestigator :: Maybe InvestigatorId
   , spawnDetailsSpawnAt :: SpawnAt
+  , spawnDetailsOverridden :: Bool
   }
   deriving stock (Show, Eq, Ord, Data)
+
+instance HasField "overridden" SpawnDetails Bool where
+  getField = spawnDetailsOverridden
 
 instance HasField "enemy" SpawnDetails EnemyId where
   getField = spawnDetailsEnemy
@@ -57,5 +61,13 @@ instance IsSpawnAt InvestigatorMatcher where
 
 mconcat
   [ deriveJSON defaultOptions ''SpawnAt
-  , deriveJSON defaultOptions ''SpawnDetails
+  , deriveToJSON defaultOptions ''SpawnDetails
   ]
+
+instance FromJSON SpawnDetails where
+  parseJSON = withObject "SpawnDetails" $ \o -> do
+    spawnDetailsEnemy <- o .: "spawnDetailsEnemy"
+    spawnDetailsInvestigator <- o .:? "spawnDetailsInvestigator"
+    spawnDetailsSpawnAt <- o .: "spawnDetailsSpawnAt"
+    spawnDetailsOverridden <- o .:? "spawnDetailsOverridden" .!= False
+    pure SpawnDetails {..}

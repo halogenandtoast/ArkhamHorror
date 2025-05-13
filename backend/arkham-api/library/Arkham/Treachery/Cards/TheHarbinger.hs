@@ -33,8 +33,7 @@ instance RunMessage TheHarbinger where
       for_ (toPlayerCard attrs) (putCardOnTopOfDeck iid iid)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      removeTreachery attrs
-      obtainCard attrs
+      for_ (toPlayerCard attrs) obtainCard
       toDiscardBy iid (attrs.ability 1) attrs
       pure t
     _ -> TheHarbinger <$> liftRunMessage msg attrs

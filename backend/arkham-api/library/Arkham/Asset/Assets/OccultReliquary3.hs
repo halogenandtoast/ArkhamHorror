@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.OccultReliquary3 (occultReliquary3, OccultReliquary3 (..)) where
+module Arkham.Asset.Assets.OccultReliquary3 (occultReliquary3) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted

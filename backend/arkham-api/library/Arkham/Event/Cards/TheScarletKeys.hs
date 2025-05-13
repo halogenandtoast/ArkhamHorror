@@ -586,7 +586,7 @@ payYourDue =
     , cdLevel = Nothing
     , cdOutOfPlayEffects = [InHandEffect]
     , cdAdditionalCost = Just $ AdditionalActionsCostThatReducesResourceCostBy 5 mempty
-    , cdDeckRestrictions = [OnlyClass Seeker]
+    , cdDeckRestrictions = [OnlyClass Rogue]
     }
 
 underprepared :: CardDef

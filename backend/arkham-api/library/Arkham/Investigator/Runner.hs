@@ -80,7 +80,6 @@ import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Slot (
   canPutIntoSlot,
   emptySlot,
-  putIntoSlot,
   removeIfMatches,
   removeIfMatchesOnce,
   slotItems,
@@ -2741,34 +2740,39 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       pure $ foldr canHold mempty mods
 
     let
+      lookupSlot :: SlotType -> [(SlotType, Slot)] -> [Slot]
+      lookupSlot k = map snd . filter ((== k) . fst)
+      go :: HasGame m => [(AssetId, Card, SlotType)] -> [(SlotType, Slot)] -> m [SlotType]
       go [] _ = pure []
       go rs [] = pure $ map (\(_, _, sType) -> sType) rs
       go ((aid, card, slotType) : rs) slots = do
-        (availableSlots1, unused1) <-
-          partitionByM [canPutIntoSlot card . snd, pure . (== slotType) . fst] slots
-        case sort availableSlots1 of
+        (availableSlots1, unused1) <- partitionM (canPutIntoSlot card) (lookupSlot slotType slots)
+        case availableSlots1 of
           [] -> case findWithDefault [] slotType canHoldMap of
             [] -> (slotType :) <$> go rs slots
             [other] -> do
-              (availableSlots2, unused2) <-
-                partitionByM [canPutIntoSlot card . snd, pure . (== other) . fst] slots
-              case sort availableSlots2 of
+              (availableSlots2, unused2) <- partitionM (canPutIntoSlot card) (lookupSlot slotType slots)
+              case availableSlots2 of
                 [] -> (slotType :) <$> go rs slots
-                ((st, x) : rest) -> go rs ((st, putIntoSlot aid x) : rest <> unused2)
+                _ -> do
+                  slots' <- placeInAvailableSlot aid card availableSlots2
+                  go rs $ filter ((/= other) . fst) slots <> map (other,) slots' <> map (other,) unused2
             _ -> error "not designed to work with more than one yet"
-          ((st, x) : rest) -> go rs ((st, putIntoSlot aid x) : rest <> unused1)
+          _ -> do
+            slots' <- placeInAvailableSlot aid card availableSlots1
+            go rs $ filter ((/= slotType) . fst) slots <> map (slotType,) slots' <> map (slotType,) unused1
 
     let
       fill :: HasGame m => [(AssetId, Card, SlotType)] -> Map SlotType [Slot] -> m (Map SlotType [Slot])
       fill [] slots = pure slots
       fill ((aid, card, slotType) : rs) slots = do
         (availableSlots1, _unused1) <- partitionM (canPutIntoSlot card) (slots ^. at slotType . non [])
-        case nonEmptySlotsFirst (sort availableSlots1) of
+        case availableSlots1 of
           [] -> case findWithDefault [] slotType canHoldMap of
             [] -> error "can't be filled 1"
             [other] -> do
               (availableSlots2, _unused2) <- partitionM (canPutIntoSlot card) (slots ^. at other . non [])
-              case nonEmptySlotsFirst (sort availableSlots2) of
+              case availableSlots2 of
                 [] -> error "can't be filled 2"
                 _ -> do
                   slots' <- placeInAvailableSlot aid card (slots ^. at other . non [])

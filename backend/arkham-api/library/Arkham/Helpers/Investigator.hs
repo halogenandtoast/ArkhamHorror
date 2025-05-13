@@ -277,8 +277,11 @@ availableSlotTypesFor slotType canHoldMap a attrs = do
 nonEmptySlotsFirst :: [Slot] -> [Slot]
 nonEmptySlotsFirst = sortOn isEmptySlot
 
+standardSlotsLast :: [Slot] -> [Slot]
+standardSlotsLast = sortOn isStandardSlot
+
 placeInAvailableSlot :: (HasGame m, IsCard a) => AssetId -> a -> [Slot] -> m [Slot]
-placeInAvailableSlot aid card = go . nonEmptySlotsFirst
+placeInAvailableSlot aid card = go . nonEmptySlotsFirst . standardSlotsLast
  where
   go [] = pure []
   go (x : xs) = do

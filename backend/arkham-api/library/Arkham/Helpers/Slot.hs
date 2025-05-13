@@ -17,6 +17,10 @@ import Arkham.Slot as X
 isEmptySlot :: Slot -> Bool
 isEmptySlot = null . slotItems
 
+isStandardSlot :: Slot -> Bool
+isStandardSlot Slot {} = True
+isStandardSlot _ = False
+
 canPutIntoSlot :: (HasGame m, IsCard a) => a -> Slot -> m Bool
 canPutIntoSlot a = \case
   slot@(Slot _ []) -> pure $ isEmptySlot slot

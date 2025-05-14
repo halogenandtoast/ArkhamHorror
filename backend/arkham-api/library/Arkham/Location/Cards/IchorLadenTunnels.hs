@@ -42,7 +42,7 @@ instance RunMessage IchorLadenTunnels where
         when (n >= x) do
           chooseOneM iid do
             labeled "Spend 1 {perPlayer} clues as a group to take control of the seal" do
-              spendCluesAsAGroup investigators n
+              spendCluesAsAGroup investigators x
               placeSeal iid k
             labeled "Do not spend clues" nothing
       

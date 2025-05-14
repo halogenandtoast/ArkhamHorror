@@ -31,7 +31,7 @@ instance RunMessage LairOfDagon where
       sid <- getRandom
       chooseOrRunOneM iid do
         for_ choices \skill -> do
-          skillLabeled skill $ beginSkillTest sid iid (attrs.ability 1) iid skill (Fixed 2)
+          skillLabeled skill $ beginSkillTest sid iid (attrs.ability 1) iid skill (Fixed 3)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       assignHorror iid (attrs.ability 1) 1

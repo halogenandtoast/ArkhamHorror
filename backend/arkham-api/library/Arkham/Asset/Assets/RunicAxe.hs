@@ -43,7 +43,8 @@ override a iid =
     $ ThisEnemy
     $ EnemyWithoutModifier CannotBeAttacked
     <> oneOf
-      [ EnemyAt (AccessibleFrom $ locationWithInvestigator iid)
+      [ EnemyWhenInvestigator (InvestigatorWithId iid <> InvestigatorWithoutModifier CannotMove)
+          <> EnemyAt (AccessibleFrom $ locationWithInvestigator iid)
           <> (if a.use Charge > 1 then oneOf [not_ AloofEnemy, CanEngageEnemy (a.ability 1)] else not_ AloofEnemy)
       , enemyAtLocationWith iid <> AloofEnemy <> CanEngageEnemy (a.ability 1)
       , enemyAtLocationWith iid <> not_ AloofEnemy

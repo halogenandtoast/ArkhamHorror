@@ -34,8 +34,9 @@ const store = useUserStore()
 const settingsStore = useSiteSettingsStore()
 
 onMounted(async () => {
-  await settingsStore.init()
+  // order here is important, user must be loaded first
   await store.loadUserFromStorage()
+  await settingsStore.init()
   avifSupported.value = await checkAvifSupport();
 })
 const avifSupported = ref(true);

@@ -9,3 +9,4 @@ should-log-all: false
 redis-conn: "_env:REDIS_CONN:"
 mailtrap-api-token: "_env:MAILTRAP_API_TOKEN:empty"
 bugsnag-api-token: "_env:BUGSNAG_API_TOKEN:empty"
+asset-host: "_env:ASSET_HOST:"

@@ -9,6 +9,7 @@
       /#PasswordResetId ApiV1PasswordResetR PUT
     /whoami ApiV1CurrentUserR GET
     /settings ApiV1SettingsR PUT
+    /site-settings ApiV1SiteSettingsR GET
     /arkham ApiV1ArkhamP:
       /cards ApiV1ArkhamCardsR GET
       /card/#CardCode ApiV1ArkhamCardR GET

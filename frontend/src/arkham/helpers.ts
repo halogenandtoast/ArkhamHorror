@@ -2,6 +2,8 @@ import ita from '@/digests/ita.json'
 import es from '@/digests/es.json'
 import zh from '@/digests/zh.json'
 
+import { useSiteSettingsStore } from '@/stores/site_settings'
+
 export function toCapitalizedWords(name: string) {
   // const words = name.match(/[A-Z]+[a-z']+/g) || [];
   const words = name.match(/[A-Z]?[a-z']+|[A-Z]/g) || [];
@@ -26,22 +28,23 @@ export function lowercase(word: string) {
 export const baseUrl = import.meta.env.PROD ? "https://assets.arkhamhorror.app" : ''
 
 export function imgsrc(src: string) {
+  const store = useSiteSettingsStore()
   const language = localStorage.getItem('language') || 'en'
   const path = src.replace(/^\//, '')
   switch (language) {
     case 'it': {
       const exists = ita.includes(path)
-      return exists ? `${baseUrl}/img/arkham/ita/${src.replace(/^\//, '')}` : `${baseUrl}/img/arkham/${src.replace(/^\//, '')}`
+      return exists ? `${store.assetHost}/img/arkham/ita/${src.replace(/^\//, '')}` : `${store.assetHost}/img/arkham/${src.replace(/^\//, '')}`
     }
     case 'es': {
       const exists = es.includes(path)
-      return exists ? `${baseUrl}/img/arkham/es/${src.replace(/^\//, '')}` : `${baseUrl}/img/arkham/${src.replace(/^\//, '')}`
+      return exists ? `${store.assetHost}/img/arkham/es/${src.replace(/^\//, '')}` : `${store.assetHost}/img/arkham/${src.replace(/^\//, '')}`
     }
     case 'zh': {
       const exists = zh.includes(path)
-      return exists ? `${baseUrl}/img/arkham/zh/${src.replace(/^\//, '')}` : `${baseUrl}/img/arkham/${src.replace(/^\//, '')}`
+      return exists ? `${store.assetHost}/img/arkham/zh/${src.replace(/^\//, '')}` : `${store.assetHost}/img/arkham/${src.replace(/^\//, '')}`
     }
-    default: return `${baseUrl}/img/arkham/${src.replace(/^\//, '')}`
+    default: return `${store.assetHost}/img/arkham/${src.replace(/^\//, '')}`
   }
 }
 

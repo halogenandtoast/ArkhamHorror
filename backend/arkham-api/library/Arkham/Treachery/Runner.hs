@@ -31,6 +31,7 @@ import Arkham.Treachery.Types as X
 import Arkham.Ability.Type
 import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Helpers.Card (getHasVictoryPoints)
 import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows)
 import Arkham.Matcher.Base (Be (..))
@@ -121,9 +122,12 @@ instance RunMessage TreacheryAttrs where
       pushM $ checkWhen $ Window.ResolvingRevelation iid a.id
       pure a
     After (Revelation iid (isSource a -> True)) -> do
-      pushWhen
-        (treacheryPlacement == Limbo)
-        (toDiscardBy iid iid a)
+      when (treacheryPlacement == Limbo) do
+        hasVictory <- getHasVictoryPoints (toCard a)
+        push
+          $ if hasVictory
+            then AddToVictory (toTarget a)
+            else toDiscardBy iid iid a
       pure $ a & resolvedL %~ insertSet iid
     RemoveAllAttachments source target -> do
       case a.placement.attachedTo of

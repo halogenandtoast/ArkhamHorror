@@ -665,19 +665,13 @@ instance RunMessage EnemyAttrs where
                   ]
               pure $ a & movedFromHunterKeywordL .~ True
     PatrolMove eid lMatcher | eid == toId a && not enemyExhausted && not (isSwarm a) -> do
-      enemyLocation <- field EnemyLocation enemyId
-      case enemyLocation of
-        Nothing -> pure a
-        Just loc -> do
+      field EnemyLocation enemyId >>= traverse_ \loc ->
+        unlessM (loc <=~> lMatcher) do
           mods <- getModifiers enemyId
           let locationMatcherModifier = if CanEnterEmptySpace `elem` mods then IncludeEmptySpace else id
-
-          destinationLocationIds <-
-            select $ locationMatcherModifier $ NearestLocationToLocation loc lMatcher
-
+          destinations <- select $ locationMatcherModifier $ NearestLocationToLocation loc lMatcher
           lead <- getLeadPlayer
-          pathIds <-
-            concatForM destinationLocationIds (select . locationMatcherModifier . ClosestPathLocation loc)
+          pathIds <- concatForM destinations (select . locationMatcherModifier . ClosestPathLocation loc)
           case pathIds of
             [] -> pure ()
             [lid] -> do
@@ -696,7 +690,7 @@ instance RunMessage EnemyAttrs where
                       ]
                   | l <- ls
                   ]
-          pure a
+      pure a
     EnemiesAttack | not enemyExhausted && not enemyDefeated -> do
       mods <- getModifiers (EnemyTarget enemyId)
       unless (CannotAttack `elem` mods) do

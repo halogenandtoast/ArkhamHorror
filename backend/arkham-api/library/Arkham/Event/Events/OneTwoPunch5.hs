@@ -54,6 +54,19 @@ instance RunMessage OneTwoPunch5 where
               | isStillAlive
               ]
             <> [Label "Do not fight that enemy again" []]
-        _ -> error "invalid call"
+        LocationTarget lid -> do
+          isStillAlive <- selectAny $ LocationWithId lid
+          player <- getPlayer iid
+          sid <- getRandom
+          enabled <- skillTestModifiers sid attrs iid [SkillModifier #combat 3, DamageDealt 2]
+          push
+            $ chooseOrRunOne player
+            $ [ Label
+                "Fight that location again"
+                [BeginSkillTestWithPreMessages' [enabled] (resetSkillTest sid skillTest)]
+              | isStillAlive
+              ]
+            <> [Label "Do not fight that location again" []]
+        other -> error $ "invalid call: " <> show other
       pure . OneTwoPunch5 $ attrs `with` Metadata False
     _ -> OneTwoPunch5 . (`with` metadata) <$> runMessage msg attrs

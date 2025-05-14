@@ -389,6 +389,7 @@ passesCriteria iid mcard source' requestor windows' = \case
     let
       go = \case
         ProxySource (CardIdSource _) s -> go s
+        ProxySource (CardCodeSource _) s -> go s
         IndexedSource _ s -> go s
         ProxySource s _ -> go s
         AssetSource aid ->

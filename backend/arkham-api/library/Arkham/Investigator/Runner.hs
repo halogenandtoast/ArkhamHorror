@@ -120,6 +120,7 @@ import Arkham.Matcher (
   colocatedWith,
   enemyEngagedWith,
   locationWithInvestigator,
+  mapOneOf,
   oneOf,
   orConnected,
   treacheryInThreatAreaOf,
@@ -2720,7 +2721,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     push $ RefillSlots a.id
     pure $ a & slotsL . ix slotType %~ deleteFirstMatch (isSource source . slotSource)
   RefillSlots iid | iid == investigatorId && not investigatorEliminated -> do
-    assetIds <- select $ AssetWithPlacement (InPlayArea iid)
+    assetIds <- select $ mapOneOf AssetWithPlacement [InPlayArea iid, InThreatArea iid]
 
     requirements <- concatForM assetIds \assetId -> do
       assetCard <- field AssetCard assetId

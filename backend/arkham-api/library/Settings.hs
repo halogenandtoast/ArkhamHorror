@@ -89,6 +89,7 @@ data AppSettings = AppSettings
     -- ^ Redis Connection Info
     , appMailtrapApiToken :: Token
     , appBugsnagApiKey :: Text
+    , appAssetHost :: Maybe Text
     }
 
 instance FromJSON AppSettings where
@@ -116,6 +117,7 @@ instance FromJSON AppSettings where
         appRedisConnectionInfo <- o .:? "redis-conn"
         appMailtrapApiToken <- o .: "mailtrap-api-token"
         appBugsnagApiKey <- o .: "bugsnag-api-token"
+        appAssetHost <- o .:? "asset-host"
 
         pure AppSettings {..}
 

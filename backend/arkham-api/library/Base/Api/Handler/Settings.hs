@@ -21,6 +21,16 @@ data CurrentUser = CurrentUser
   deriving stock (Generic)
   deriving anyclass (ToJSON)
 
+newtype SiteSettings = SiteSettings
+  { assetHost :: Maybe Text
+  }
+
+instance ToJSON SiteSettings where
+  toJSON SiteSettings {assetHost} = object ["assetHost" .= assetHost]
+
+getApiV1SiteSettingsR :: Handler SiteSettings
+getApiV1SiteSettingsR = SiteSettings <$> getsApp (appAssetHost . appSettings)
+
 putApiV1SettingsR :: Handler CurrentUser
 putApiV1SettingsR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
@@ -28,6 +38,6 @@ putApiV1SettingsR = do
   runDB $ do
     update $ \u -> do
       set u [UserBeta =. val (betaSetting settings)]
-      where_ $ u ^. UserId ==. val (userId)
+      where_ $ u ^. UserId ==. val userId
     User {..} <- get404 userId
     pure $ CurrentUser userUsername userEmail userBeta

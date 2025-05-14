@@ -3230,19 +3230,21 @@ enemyMatcherFilter es matcher' = case matcher' of
         elem (toId enemy) <$> select (mconcat $ EnemyWithModifier CannotBeAttacked : enemyFilters)
       if excluded
         then pure False
-        else
-          anyM
-            ( andM
-                . sequence
-                  [ pure . (`abilityIs` Action.Fight)
-                  , -- Because ChooseFightEnemy happens after taking a fight action we
-                    -- need to decrement the action cost
-                    getCanPerformAbility iid [window]
-                      . (`applyAbilityModifiers` [ActionCostModifier (-1)])
-                      . overrideAbilityCriteria override
-                  ]
-            )
-            (getAbilities enemy)
+        else do
+          -- Because ChooseFightEnemy occurs after the action cost we ignore
+          -- it, we might want to ignore all costs here. Or this could be an
+          -- issue where we end up not paying some costs so if a bug opens up
+          -- about that, this might be the place to look. Alternatively we
+          -- might want to replace `IgnoreActionCost` with `IgnoreAllCosts`
+          Helpers.withModifiersOf iid GameSource [IgnoreActionCost] $
+            anyM
+              ( andM
+                  . sequence
+                    [ pure . (`abilityIs` #fight)
+                    , getCanPerformAbility iid [window] . overrideAbilityCriteria override
+                    ]
+              )
+              (getAbilities enemy)
   CanEvadeEnemy source -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers (InvestigatorTarget iid)

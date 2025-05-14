@@ -22,7 +22,7 @@ newtype ReturnToWhereDoomAwaits = ReturnToWhereDoomAwaits WhereDoomAwaits
 
 returnToWhereDoomAwaits :: Difficulty -> ReturnToWhereDoomAwaits
 returnToWhereDoomAwaits difficulty =
-  scenario
+  scenarioWith
     (ReturnToWhereDoomAwaits . WhereDoomAwaits)
     "51047"
     "Return to Where Doom Awaits"
@@ -31,6 +31,7 @@ returnToWhereDoomAwaits difficulty =
     , "baseOfTheHill ascendingPath sentinelPeak"
     , "alteredPath1 alteredPath2 alteredPath3"
     ]
+    (referenceL .~ "02274")
 
 instance RunMessage ReturnToWhereDoomAwaits where
   runMessage msg (ReturnToWhereDoomAwaits whereDoomAwaits'@(WhereDoomAwaits attrs)) = runQueueT $ scenarioI18n $ case msg of

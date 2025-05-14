@@ -25,7 +25,7 @@ newtype ReturnToUndimensionedAndUnseen = ReturnToUndimensionedAndUnseen Undimens
 
 returnToUndimensionedAndUnseen :: Difficulty -> ReturnToUndimensionedAndUnseen
 returnToUndimensionedAndUnseen difficulty =
-  scenario
+  scenarioWith
     (ReturnToUndimensionedAndUnseen . UndimensionedAndUnseen)
     "51041"
     "Return to Undimensioned and Unseen"
@@ -37,6 +37,7 @@ returnToUndimensionedAndUnseen difficulty =
     , ". coldSpringGlen whateleyRuins"
     , ". coldSpringGlen ."
     ]
+    (referenceL .~ "02236")
 
 instance RunMessage ReturnToUndimensionedAndUnseen where
   runMessage msg (ReturnToUndimensionedAndUnseen undimensionedAndUnseen'@(UndimensionedAndUnseen attrs)) = runQueueT $ scenarioI18n $ case msg of

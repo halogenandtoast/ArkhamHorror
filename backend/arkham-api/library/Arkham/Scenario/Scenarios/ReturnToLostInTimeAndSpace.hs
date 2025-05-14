@@ -17,12 +17,13 @@ newtype ReturnToLostInTimeAndSpace = ReturnToLostInTimeAndSpace LostInTimeAndSpa
 
 returnToLostInTimeAndSpace :: Difficulty -> ReturnToLostInTimeAndSpace
 returnToLostInTimeAndSpace difficulty =
-  scenario
+  scenarioWith
     (ReturnToLostInTimeAndSpace . LostInTimeAndSpace)
     "51053"
     "Return to Lost in Time and Space"
     difficulty
     scenarioLayout
+    (referenceL .~ "02311")
 
 instance RunMessage ReturnToLostInTimeAndSpace where
   runMessage msg (ReturnToLostInTimeAndSpace lostInTimeAndSpace'@(LostInTimeAndSpace attrs)) = runQueueT $ scenarioI18n $ case msg of

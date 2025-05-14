@@ -19,12 +19,13 @@ newtype ReturnToTheEssexCountyExpress = ReturnToTheEssexCountyExpress TheEssexCo
 
 returnToTheEssexCountyExpress :: Difficulty -> ReturnToTheEssexCountyExpress
 returnToTheEssexCountyExpress difficulty =
-  scenario
+  scenarioWith
     (ReturnToTheEssexCountyExpress . TheEssexCountyExpress)
     "51025"
     "Return to The Essex County Express"
     difficulty
     []
+    (referenceL .~ "02159")
 
 instance RunMessage ReturnToTheEssexCountyExpress where
   runMessage msg (ReturnToTheEssexCountyExpress theEssexCountyExpress'@(TheEssexCountyExpress attrs)) = runQueueT $ scenarioI18n $ case msg of

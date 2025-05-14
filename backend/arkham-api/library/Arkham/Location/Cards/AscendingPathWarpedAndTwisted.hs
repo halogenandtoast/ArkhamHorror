@@ -29,7 +29,7 @@ instance RunMessage AscendingPathWarpedAndTwisted where
   runMessage msg l@(AscendingPathWarpedAndTwisted attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (discoveredClues -> n) _ -> do
       spendClues iid n
-      divergingPaths <- getSetAsideCardsMatching $ CardWithTitle "Diverging Path"
-      for_ (nonEmpty divergingPaths) (sampleN n >=> traverse_ placeLocation_)
+      alteredPaths <- getSetAsideCardsMatching $ CardWithTitle "Altered Path"
+      for_ (nonEmpty alteredPaths) (sampleN n >=> traverse_ placeLocation_)
       pure l
     _ -> AscendingPathWarpedAndTwisted <$> liftRunMessage msg attrs

@@ -24,7 +24,7 @@ newtype ReturnToBloodOnTheAltar = ReturnToBloodOnTheAltar BloodOnTheAltar
 
 returnToBloodOnTheAltar :: Difficulty -> ReturnToBloodOnTheAltar
 returnToBloodOnTheAltar difficulty =
-  scenario
+  scenarioWith
     (ReturnToBloodOnTheAltar . BloodOnTheAltar)
     "51032"
     "Return to Blood on the Altar"
@@ -33,6 +33,7 @@ returnToBloodOnTheAltar difficulty =
     , "congregationalChurchHiddenChamber congregationalChurchHiddenChamber congregationalChurch congregationalChurch villageCommons  villageCommons osbornsGeneralStore osbornsGeneralStore osbornsGeneralStoreHiddenChamber osbornsGeneralStoreHiddenChamber"
     , ". burnedRuinsHiddenChamber burnedRuinsHiddenChamber burnedRuins burnedRuins bishopsBrook bishopsBrook bishopsBrookHiddenChamber bishopsBrookHiddenChamber ."
     ]
+    (referenceL .~ "02195")
 
 instance RunMessage ReturnToBloodOnTheAltar where
   runMessage msg s@(ReturnToBloodOnTheAltar bloodOnTheAltar'@(BloodOnTheAltar attrs)) = runQueueT $ scenarioI18n $ case msg of

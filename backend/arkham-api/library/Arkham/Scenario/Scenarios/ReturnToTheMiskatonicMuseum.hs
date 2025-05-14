@@ -19,12 +19,13 @@ newtype ReturnToTheMiskatonicMuseum = ReturnToTheMiskatonicMuseum TheMiskatonicM
 
 returnToTheMiskatonicMuseum :: Difficulty -> ReturnToTheMiskatonicMuseum
 returnToTheMiskatonicMuseum difficulty =
-  scenario
+  scenarioWith
     (ReturnToTheMiskatonicMuseum . TheMiskatonicMuseum)
     "51020"
     "Return to The Miskatonic Museum"
     difficulty
     scenarioLayout
+    (referenceL .~ "02118")
 
 instance RunMessage ReturnToTheMiskatonicMuseum where
   runMessage msg (ReturnToTheMiskatonicMuseum theMiskatonicMuseum'@(TheMiskatonicMuseum attrs)) = runQueueT $ scenarioI18n $ case msg of

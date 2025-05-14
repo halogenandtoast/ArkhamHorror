@@ -45,7 +45,7 @@ numberVar var val a = withVar var (Number $ fromIntegral val) a
 
 skillVar :: HasI18n => SkillType -> (HasI18n => a) -> a
 skillVar v a = case v of
-  SkillWillpower -> withVar "skill" (String "agility") a
+  SkillWillpower -> withVar "skill" (String "willpower") a
   SkillIntellect -> withVar "skill" (String "intellect") a
   SkillCombat -> withVar "skill" (String "combat") a
   SkillAgility -> withVar "skill" (String "agility") a
@@ -53,7 +53,7 @@ skillVar v a = case v of
 skillIconVar :: HasI18n => SkillIcon -> (HasI18n => a) -> a
 skillIconVar v a = case v of
   SkillIcon kind -> case kind of
-    SkillWillpower -> withVar "skillIcon" (String "agility") a
+    SkillWillpower -> withVar "skillIcon" (String "willpower") a
     SkillIntellect -> withVar "skillIcon" (String "intellect") a
     SkillCombat -> withVar "skillIcon" (String "combat") a
     SkillAgility -> withVar "skillIcon" (String "agility") a

@@ -153,7 +153,7 @@ const paymentChoiceLabel = function(text: string): string {
     return label(`$choice.${text.slice(1)}`)
   }
 
-  return text
+  return formatContent(text)
 }
 
 onMounted(setInitialAmounts)
@@ -946,7 +946,8 @@ h2 {
 
 .amount-contents {
   background: #735e7b;
-  padding: 10px;
+  padding: 0px;
+  padding-top: 10px;
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
   width: 100%;

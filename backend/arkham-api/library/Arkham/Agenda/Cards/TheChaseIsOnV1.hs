@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.TheChaseIsOnV1 (TheChaseIsOnV1 (..), theChaseIsOnV1) where
+module Arkham.Agenda.Cards.TheChaseIsOnV1 (theChaseIsOnV1) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards

@@ -2,11 +2,12 @@ module Arkham.Asset.Assets.RitualCandles (ritualCandles) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
 import Arkham.ChaosToken
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Modifiers qualified as Helpers
+import Arkham.Helpers.SkillTest (getSkillTestId)
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Taboo
 import Arkham.Window qualified as Window
 
@@ -19,19 +20,19 @@ ritualCandles = asset RitualCandles Cards.ritualCandles
 
 instance HasAbilities RitualCandles where
   getAbilities (RitualCandles x) =
-    [ restricted x 1 ControlsThis
+    [ controlled x 1 (DuringSkillTest $ YourSkillTest AnySkillTest)
         $ freeReaction
-        $ RevealChaosToken #when You
+        $ RevealChaosToken #when Anyone
         $ if tabooed TabooList20 x
           then IsSymbol
           else ChaosTokenMatchesAny $ map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing]
     ]
 
 instance RunMessage RitualCandles where
-  runMessage msg a@(RitualCandles attrs) = case msg of
+  runMessage msg a@(RitualCandles attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> tokens) _ -> do
       getSkillTestId >>= traverse_ \sid -> do
-        enable <- skillTestModifier sid attrs iid (AnySkillValue 1)
+        enable <- Helpers.skillTestModifier sid attrs iid (AnySkillValue 1)
         push $ If (Window.RevealChaosTokenAssetAbilityEffect iid tokens (toId attrs)) [enable]
       pure a
-    _ -> RitualCandles <$> runMessage msg attrs
+    _ -> RitualCandles <$> liftRunMessage msg attrs

@@ -110,12 +110,12 @@ lunacysReward3 =
   FlavorText
     (Just "Lunacy's Reward 3")
     [ BasicEntry "You dare not risk stepping back inside that\
-      \ madhouse. But you canbpt let the monstrosities run amok, either. You\
+      \ madhouse. But you can't let the monstrosities run amok, either. You\
       \ root through the open garage for a few supplies, finding an old hose, an\
       \ empty gasoline canister, and some matches. Knowing what you must do,\
-      \ you first siphon some gas from Mrs. Dumainebns Oakland 6-54A. You\
+      \ you first siphon some gas from Mrs. Dumaine's Oakland 6-54A. You\
       \ spread the gasoline across the front porch, inside the garage, and around\
-      \ the manorb s outer walls. From there, all it takes is several matches to\
+      \ the manor's outer walls. From there, all it takes is several matches to\
       \ start the blaze. You watch from the front yard as the manor is eventually\
       \ consumed by the flames. The sounds of crackling fire and snapping\
       \ wood and the screeching of dying horrors fills the street. Satisfied, you\

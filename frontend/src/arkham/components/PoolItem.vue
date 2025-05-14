@@ -31,6 +31,8 @@ const image = computed(() => {
 }
 
 .poolItem.poolItem-resource {
+  height: fit-content;
+  align-self: center;
   img { 
     width: var(--width);
   }

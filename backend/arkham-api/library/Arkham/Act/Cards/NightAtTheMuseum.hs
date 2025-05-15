@@ -27,7 +27,7 @@ instance RunMessage NightAtTheMuseum where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      getHuntingHorror >>= \case
+      getInPlayHuntingHorror >>= \case
         Just eid -> do
           enemyMoveTo eid =<< getRestrictedHall
           readyThis eid

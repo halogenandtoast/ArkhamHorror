@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Criteria where
 
 import Arkham.Ability.Type
@@ -649,7 +650,7 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.TargetExists matcher -> do
     selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.IsReturnTo -> do
-    campaign <- selectJust Matcher.TheCampaign
+    campaign <- traceShowId <$> selectJust Matcher.TheCampaign
     pure $ "5" `T.isPrefixOf` coerce campaign
   Criteria.DifferentAssetsExist matcher1 matcher2 -> do
     m1 <- select (Matcher.replaceYouMatcher iid matcher1)

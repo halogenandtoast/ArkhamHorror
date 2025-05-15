@@ -36,6 +36,7 @@ data Token
   | Ticket
   | Time
   | Try
+  | Warning
   | Wish
   | Whistle
   deriving stock (Show, Eq, Ord, Generic, Data)
@@ -69,6 +70,9 @@ instance IsLabel "clue" Token where
 
 instance IsLabel "doom" Token where
   fromLabel = Doom
+
+instance IsLabel "warning" Token where
+  fromLabel = Warning
 
 type Tokens = Map Token Int
 

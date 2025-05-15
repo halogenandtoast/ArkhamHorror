@@ -60,6 +60,7 @@ instance SampleOneOf (NonEmpty a) where
 data ScenarioBuilderState = ScenarioBuilderState
   { attrs :: ScenarioAttrs
   , otherCards :: [Card]
+  , isReturnTo :: Bool
   }
 
 attrsL :: Lens' ScenarioBuilderState ScenarioAttrs
@@ -67,6 +68,9 @@ attrsL = lens (.attrs) \m x -> m {attrs = x}
 
 otherCardsL :: Lens' ScenarioBuilderState [Card]
 otherCardsL = lens (.otherCards) \m x -> m {otherCards = x}
+
+isReturnToL :: Lens' ScenarioBuilderState Bool
+isReturnToL = lens (.isReturnTo) \m x -> m {isReturnTo = x}
 
 newtype ScenarioBuilderT m a = ScenarioBuilderT {unScenarioBuilderT :: StateT ScenarioBuilderState m a}
   deriving newtype (Functor, Applicative, Monad, MonadIO, MonadState ScenarioBuilderState, MonadTrans)
@@ -105,7 +109,7 @@ runScenarioSetup f attrs body =
     . (.attrs)
     <$> execStateT
       (clearCards >> body.unScenarioBuilderT >> shuffleEncounterDeck)
-      (ScenarioBuilderState attrs [])
+      (ScenarioBuilderState attrs [] False)
 
 shuffleEncounterDeck :: (HasGame m, MonadRandom m, MonadState ScenarioBuilderState m) => m ()
 shuffleEncounterDeck = do
@@ -471,6 +475,27 @@ setLayout = (attrsL . locationLayoutL .=)
 
 setUsesGrid :: ReverseQueue m => ScenarioBuilderT m ()
 setUsesGrid = attrsL . usesGridL .= True
+
+setIsReturnTo :: ReverseQueue m => ScenarioBuilderT m ()
+setIsReturnTo = isReturnToL .= True
+
+whenReturnTo :: ReverseQueue m => ScenarioBuilderT m () -> ScenarioBuilderT m ()
+whenReturnTo a = do
+  isReturnTo' <- use isReturnToL
+  when isReturnTo' a
+
+orWhenReturnTo :: ReverseQueue m => ScenarioBuilderT m () -> ScenarioBuilderT m () -> ScenarioBuilderT m ()
+orWhenReturnTo b a = do
+  isReturnTo' <- use isReturnToL
+  if isReturnTo' then a else b
+
+getIsReturnTo :: ReverseQueue m => ScenarioBuilderT m Bool
+getIsReturnTo = use isReturnToL
+
+ifReturnTo :: ReverseQueue m => ScenarioBuilderT m a -> ScenarioBuilderT m a -> ScenarioBuilderT m a
+ifReturnTo a b = do
+  isReturnTo' <- use isReturnToL
+  if isReturnTo' then a else b
 
 setMeta :: (ReverseQueue m, ToJSON a) => a -> ScenarioBuilderT m ()
 setMeta = (attrsL . metaL .=) . toJSON

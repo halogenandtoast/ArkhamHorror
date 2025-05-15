@@ -727,6 +727,7 @@ scenarioEncounterSets =
     , ("51041", EncounterSet.ReturnToUndimensionedAndUnseen)
     , ("51047", EncounterSet.ReturnToWhereDoomAwaits)
     , ("51053", EncounterSet.ReturnToLostInTimeAndSpace)
+    , ("52014", EncounterSet.ReturnToCurtainCall)
     , ("81001", EncounterSet.CurseOfTheRougarou)
     , ("82001", EncounterSet.CarnevaleOfHorrors)
     , ("84001", EncounterSet.MurderAtTheExcelsiorHotel)

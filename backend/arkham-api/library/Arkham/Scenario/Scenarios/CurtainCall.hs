@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.CurtainCall (curtainCall, CurtainCall (..)) where
+module Arkham.Scenario.Scenarios.CurtainCall (performSetup, curtainCall, CurtainCall (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -8,6 +8,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
@@ -15,12 +16,14 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.CurtainCall.Helpers
 import Arkham.Token
+import Arkham.Zone
 
 newtype CurtainCall = CurtainCall ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -50,6 +53,73 @@ instance HasChaosTokenValue CurtainCall where
           pure $ toChaosTokenValue attrs face 4 5
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+performSetup :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+performSetup attrs = do
+  setup do
+    ul do
+      li "gatherSets"
+      li "setAside"
+      li.nested "placeLocations.instructions" do
+        li "placeLocations.lola"
+      unscoped $ li "shuffleRemainder"
+
+  whenReturnTo $ gather Set.ReturnToCurtainCall
+  gather Set.CurtainCall
+  gather Set.EvilPortents
+  gather Set.Delusions `orWhenReturnTo` gather Set.MaddeningDelusions
+  gather Set.Hauntings
+  gather Set.CultOfTheYellowSign
+  gather Set.StrikingFear `orWhenReturnTo` gather Set.NeuroticFear
+  gather Set.Rats
+
+  theatre <- place Locations.theatre
+  backstage <- place Locations.backstage
+  placeAll [Locations.lobby, Locations.balcony]
+
+  investigators <- allInvestigators
+  mLola <- selectOne $ InvestigatorWithTitle "Lola Hayes"
+  for_ mLola \lola -> do
+    chooseOneM lola do
+      targeting backstage do
+        reveal backstage
+        moveTo_ attrs lola backstage
+
+  let theatreInvestigators = maybe investigators (`deleteFirst` investigators) mLola
+
+  unless (null theatreInvestigators) do
+    lead <- getLead
+    chooseOneM lead do
+      targeting theatre do
+        reveal theatre
+        for_ theatreInvestigators \iid -> moveTo_ attrs iid theatre
+
+  setAside
+    [ Enemies.theManInThePallidMask
+    , Locations.lightingBox
+    , Locations.boxOffice
+    , Locations.greenRoom
+    , Locations.dressingRoom
+    , Locations.rehearsalRoom
+    , Locations.trapRoom
+    ]
+
+  royalEmissary <- placeEnemyCapture Enemies.royalEmissary (OutOfPlay SetAsideZone)
+  whenReturnTo $ push $ PlaceReferenceCard (toTarget royalEmissary) "52014b"
+
+  setAgendaDeck [Agendas.theThirdAct, Agendas.encore]
+  isReturnTo <- getIsReturnTo
+
+  setActDeck
+    $ [ Acts.awakening
+      , Acts.theStrangerACityAflame
+      , Acts.theStrangerThePathIsMine
+      , Acts.theStrangerTheShoresOfHali
+      ]
+    <> ( guard isReturnTo
+           *> [Acts.theStrangerAlaranMists, Acts.theStrangerUnderTheCity, Acts.theStrangerHereIsMyReply]
+       )
+    <> [Acts.curtainCall]
+
 instance RunMessage CurtainCall where
   runMessage msg s@(CurtainCall attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
@@ -58,61 +128,7 @@ instance RunMessage CurtainCall where
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
-    Setup -> runScenarioSetup CurtainCall attrs do
-      setup do
-        ul do
-          li "gatherSets"
-          li "setAside"
-          li.nested "placeLocations.instructions" do
-            li "placeLocations.lola"
-          unscoped $ li "shuffleRemainder"
-
-      gather Set.CurtainCall
-      gather Set.EvilPortents
-      gather Set.Delusions
-      gather Set.Hauntings
-      gather Set.CultOfTheYellowSign
-      gather Set.StrikingFear
-      gather Set.Rats
-
-      theatre <- place Locations.theatre
-      backstage <- place Locations.backstage
-      placeAll [Locations.lobby, Locations.balcony]
-
-      investigators <- allInvestigators
-      mLola <- selectOne $ InvestigatorWithTitle "Lola Hayes"
-      for_ mLola \lola -> do
-        chooseOneM lola do
-          targeting backstage do
-            reveal backstage
-            moveTo_ attrs lola backstage
-
-      let theatreInvestigators = maybe investigators (`deleteFirst` investigators) mLola
-
-      unless (null theatreInvestigators) do
-        lead <- getLead
-        chooseOneM lead do
-          targeting theatre do
-            reveal theatre
-            for_ theatreInvestigators \iid -> moveTo_ attrs iid theatre
-
-      setAside
-        [ Enemies.theManInThePallidMask
-        , Locations.lightingBox
-        , Locations.boxOffice
-        , Locations.greenRoom
-        , Locations.dressingRoom
-        , Locations.rehearsalRoom
-        , Locations.trapRoom
-        ]
-      setAgendaDeck [Agendas.theThirdAct, Agendas.encore]
-      setActDeck
-        [ Acts.awakening
-        , Acts.theStrangerACityAflame
-        , Acts.theStrangerThePathIsMine
-        , Acts.theStrangerTheShoresOfHali
-        , Acts.curtainCall
-        ]
+    Setup -> runScenarioSetup CurtainCall attrs $ performSetup attrs
     ScenarioResolution r -> scope "resolutions" do
       let stoleFromTheBoxOffice = member StoleFromTheBoxOffice attrs.log
       case r of

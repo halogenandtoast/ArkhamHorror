@@ -26,6 +26,10 @@ import Control.Lens (non, _1, _2)
 import Control.Monad.Writer
 import Data.List.NonEmpty qualified as NE
 import Data.Map.Strict qualified as Map
+import Data.Text qualified as T
+
+getIsReturnTo :: HasGame m => m Bool
+getIsReturnTo = selectJust TheScenario <&> \(ScenarioId c) -> T.take 1 (unCardCode c) == "5"
 
 scenarioField :: (HasCallStack, HasGame m) => Field Scenario a -> m a
 scenarioField fld = scenarioFieldMap fld id

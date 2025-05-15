@@ -19,7 +19,7 @@ newtype ReturnToCurtainCall = ReturnToCurtainCall CurtainCall
 
 returnToCurtainCall :: Difficulty -> ReturnToCurtainCall
 returnToCurtainCall difficulty =
-  scenario
+  scenarioWith
     (ReturnToCurtainCall . CurtainCall)
     "52014"
     "Return to Curtain Call"
@@ -28,6 +28,7 @@ returnToCurtainCall difficulty =
     , "lobbyDoorway3 lobby theatre backstage backstageDoorway3"
     , "lobbyDoorway2 .     .       .         backstageDoorway2"
     ]
+    (referenceL .~ "03043")
 
 instance RunMessage ReturnToCurtainCall where
   runMessage msg (ReturnToCurtainCall curtainCall'@(CurtainCall attrs)) = runQueueT $ scenarioI18n $ case msg of

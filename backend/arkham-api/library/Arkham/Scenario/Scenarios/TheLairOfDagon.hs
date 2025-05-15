@@ -159,8 +159,8 @@ instance RunMessage TheLairOfDagon where
           chooseTargetM lead investigators (`takeControlOfAsset` thomasDawson)
         else setAside [Assets.thomasDawsonSoldierInANewWar]
     ResolveChaosToken _ Cultist iid -> do
-      drawAnotherChaosToken iid
       withSkillTest \sid -> onRevealChaosTokenEffect sid #curse Cultist sid failSkillTest
+      drawAnotherChaosToken iid
       pure s
     ResolveChaosToken _ Tablet iid -> do
       when (isHardExpert attrs) do

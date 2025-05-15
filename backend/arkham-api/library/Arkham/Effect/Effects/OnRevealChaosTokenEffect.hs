@@ -52,7 +52,7 @@ instance RunMessage OnRevealChaosTokenEffect where
         matchr :: ChaosTokenMatcher <- hoistMaybe $ maybeResult $ effectExtraMetadata attrs
         liftGuardM $ matches token matchr
         sid <- MaybeT getSkillTestId
-        guard $ maybe False (== sid) (effectSkillTest attrs)
+        guard $ Just sid == effectSkillTest attrs
         case attrs.metadata of
           Just (EffectMessages msgs) -> lift do
             push $ DisableEffect attrs.id
@@ -66,6 +66,7 @@ instance RunMessage OnRevealChaosTokenEffect where
                 other -> error $ "Unhandled ability source for token effect: " <> show other
               AssetSource aid -> push $ If (Window.RevealChaosTokenAssetAbilityEffect iid [token] aid) msgs
               TreacherySource tid -> push $ If (Window.RevealChaosTokenTreacheryEffect iid [token] tid) msgs
+              ChaosTokenEffectSource _ -> pushAll msgs
               other -> error $ "Unhandled source for token effect: " <> show other
           _ -> pure ()
       pure e

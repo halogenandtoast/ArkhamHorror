@@ -166,6 +166,7 @@ data WindowMatcher
   | EnemyAttemptsToSpawnAt Timing EnemyMatcher LocationMatcher
   | EnemyWouldSpawnAt EnemyMatcher LocationMatcher
   | EnemySpawns Timing Where EnemyMatcher
+  | EnemyEntersPlay Timing EnemyMatcher
   | EnemyMovedTo Timing Where MovesVia EnemyMatcher
   | EnemyMoves Timing Where EnemyMatcher
   | FastPlayerWindow

@@ -1907,7 +1907,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       Window.LeavePlay (AssetTarget aid) -> elem aid <$> select assetMatcher
       _ -> noMatch
     Matcher.EnemyEntersPlay timing enemyMatcher -> guardTiming timing $ \case
-      Window.EnterPlay (EnemyTarget eid) -> elem eid <$> select enemyMatcher
+      Window.EnterPlay (EnemyTarget eid) -> matches eid enemyMatcher
+      Window.EnemySpawns eid _ -> matches eid enemyMatcher
       _ -> noMatch
     Matcher.LocationLeavesPlay timing locationMatcher -> guardTiming timing $ \case
       Window.LeavePlay (LocationTarget aid) -> elem aid <$> select locationMatcher

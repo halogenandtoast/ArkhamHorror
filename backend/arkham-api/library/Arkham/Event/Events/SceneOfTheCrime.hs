@@ -18,7 +18,7 @@ sceneOfTheCrime = event SceneOfTheCrime Cards.sceneOfTheCrime
 instance RunMessage SceneOfTheCrime where
   runMessage msg e@(SceneOfTheCrime attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      hasEnemies <- selectAny $ enemyAtLocationWith iid
+      hasEnemies <- selectAny $ IncludeOmnipotent $ enemyAtLocationWith iid
       let clueCount = if hasEnemies then 2 else 1
       push $ Msg.DiscoverClues iid $ discoverAtYourLocation attrs clueCount
       pure e

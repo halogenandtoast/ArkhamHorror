@@ -1,12 +1,12 @@
 module Arkham.Enemy.Cards.TheNamelessMadness (theNamelessMadness) where
 
 import Arkham.Ability
-import Arkham.Message.Lifted.Choose
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.Window (getPassedBy)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype TheNamelessMadness = TheNamelessMadness EnemyAttrs
   deriving anyclass IsEnemy
@@ -20,13 +20,12 @@ theNamelessMadness =
     . (evadeL ?~ GameValueCalculation (PerPlayer 1))
 
 instance HasModifiersFor TheNamelessMadness where
-  getModifiersFor (TheNamelessMadness a) = do
-    modifySelf a [CannotBeDamaged]
+  getModifiersFor (TheNamelessMadness a) = modifySelf a [CannotBeDamaged]
 
 instance HasAbilities TheNamelessMadness where
   getAbilities (TheNamelessMadness a) =
     extend1 a
-      $ restricted a 1 (exists $ not_ (be a) <> enemyIs Cards.theNamelessMadness <> ReadyEnemy)
+      $ restricted a 1 (exists $ enemyIs Cards.theNamelessMadness <> ReadyEnemy)
       $ forced
       $ SkillTestResult
         #after
@@ -37,14 +36,10 @@ instance HasAbilities TheNamelessMadness where
 instance RunMessage TheNamelessMadness where
   runMessage msg e@(TheNamelessMadness attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (getPassedBy -> n) _ -> do
-      xs <- select $ enemyIs Cards.theNamelessMadness <> ReadyEnemy <> not_ (be attrs)
-      if length xs > n
-        then doStep n msg
-        else for_ xs exhaustEnemy
+      doStep n msg
       pure e
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
-      xs <-
-        select $ NearestEnemyTo iid $ enemyIs Cards.theNamelessMadness <> ReadyEnemy <> not_ (be attrs)
+      xs <- select $ NearestEnemyTo iid $ enemyIs Cards.theNamelessMadness <> ReadyEnemy
       if length xs <= n
         then do
           for_ xs exhaustEnemy

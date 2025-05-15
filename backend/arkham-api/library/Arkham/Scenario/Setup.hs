@@ -25,7 +25,7 @@ import Arkham.Message.Lifted.Placement (IsPlacement (..))
 import Arkham.Placement
 import Arkham.Prelude hiding ((.=))
 import Arkham.Scenario.Helpers (excludeBSides, excludeDoubleSided, hasBSide, isDoubleSided)
-import Arkham.Scenario.Runner (createEnemyWithPlacement_, pushM)
+import Arkham.Scenario.Runner (createEnemyWithPlacement_, createEnemyWithPlacement, pushM)
 import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
 import Arkham.Target
@@ -347,6 +347,16 @@ placeEnemy def placement = do
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
   card <- genCard def
   pushM $ createEnemyWithPlacement_ card (toPlacement placement)
+
+placeEnemyCapture
+  :: (ReverseQueue m, IsPlacement placement) => CardDef -> placement -> ScenarioBuilderT m EnemyId
+placeEnemyCapture def placement = do
+  attrsL . encounterDeckL %= flip removeEachFromDeck [def]
+  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
+  card <- genCard def
+  (enemyId, msg) <- createEnemyWithPlacement card (toPlacement placement)
+  push msg
+  pure enemyId
 
 enemyAtMatching :: ReverseQueue m => CardDef -> LocationMatcher -> ScenarioBuilderT m ()
 enemyAtMatching def matcher = do

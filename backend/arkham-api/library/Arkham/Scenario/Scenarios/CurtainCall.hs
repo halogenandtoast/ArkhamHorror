@@ -97,8 +97,7 @@ instance RunMessage CurtainCall where
             for_ theatreInvestigators \iid -> moveTo_ attrs iid theatre
 
       setAside
-        [ Enemies.royalEmissary
-        , Enemies.theManInThePallidMask
+        [ Enemies.theManInThePallidMask
         , Locations.lightingBox
         , Locations.boxOffice
         , Locations.greenRoom

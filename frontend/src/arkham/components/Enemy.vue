@@ -78,6 +78,8 @@ const swarmEnemies = computed(() =>
 
 const isSwarm = computed(() => props.enemy.placement.tag === 'AsSwarm')
 
+const referenceCards = computed(() => props.enemy.referenceCards)
+
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
     return true
@@ -272,6 +274,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
         </div>
 
       </template>
+      <img v-for="card in referenceCards" :src="imgsrc(`cards/${card.replace(/^c/, '')}.avif`)" :key="card" class="attached card" />
       <Treachery
         v-for="treacheryId in enemy.treacheries"
         :key="treacheryId"

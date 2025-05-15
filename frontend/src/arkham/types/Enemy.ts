@@ -32,6 +32,7 @@ export type Enemy = {
   meta: any;
   flipped: boolean;
   cardsUnderneath: Card[];
+  referenceCards: string[]
 }
 
 type DamageAssignment = { damageAssignmentAmount: number }
@@ -77,4 +78,5 @@ export const enemyDecoder = JsonDecoder.object<Enemy>({
   meta: JsonDecoder.succeed(),
   flipped: JsonDecoder.boolean(),
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'UnderneathCard[]'),
+  referenceCards: JsonDecoder.array<string>(JsonDecoder.string(), 'CardCode[]'),
 }, 'Enemy');

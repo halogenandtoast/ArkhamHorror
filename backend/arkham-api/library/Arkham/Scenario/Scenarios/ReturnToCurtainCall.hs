@@ -9,6 +9,8 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
+import Arkham.Placement
+import Arkham.Zone
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.CurtainCall
 import Arkham.Scenarios.CurtainCall.Helpers
@@ -64,8 +66,7 @@ instance RunMessage ReturnToCurtainCall where
             for_ theatreInvestigators \iid -> moveTo_ attrs iid theatre
 
       setAside
-        [ Enemies.royalEmissary
-        , Enemies.theManInThePallidMask
+        [ Enemies.theManInThePallidMask
         , Locations.lightingBox
         , Locations.boxOffice
         , Locations.greenRoom
@@ -73,6 +74,10 @@ instance RunMessage ReturnToCurtainCall where
         , Locations.rehearsalRoom
         , Locations.trapRoom
         ]
+
+      royalEmissary <- placeEnemyCapture Enemies.royalEmissary (OutOfPlay SetAsideZone)
+      push $ PlaceReferenceCard (toTarget royalEmissary) "52014b"
+
       setAgendaDeck [Agendas.theThirdAct, Agendas.encore]
       setActDeck
         [ Acts.awakening

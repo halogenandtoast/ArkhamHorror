@@ -60,6 +60,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyDelayEngagement :: Bool
   , enemyCardsUnderneath :: [Card]
   , enemyLastKnownLocation :: Maybe LocationId
+  , enemyReferenceCards :: [CardCode]
   }
   deriving stock (Show, Eq, Data)
 
@@ -156,4 +157,5 @@ instance FromJSON EnemyAttrs where
     enemyDelayEngagement <- v .:? "delayEngagement" .!= False
     enemyCardsUnderneath <- v .:? "cardsUnderneath" .!= []
     enemyLastKnownLocation <- v .:? "lastKnownLocation"
+    enemyReferenceCards <- v .:? "referenceCards" .!= []
     pure EnemyAttrs {..}

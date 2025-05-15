@@ -3,6 +3,7 @@ module Arkham.Act.Cards.Awakening (awakening) where
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Helpers.Query
 import Arkham.Matcher
@@ -21,6 +22,9 @@ awakening =
     Cards.awakening
     (Just $ GroupClueCost (PerPlayer 3) Anywhere)
 
+getIsReturnTo :: HasGame m => m Bool
+getIsReturnTo = (== "52014") <$> selectJust TheScenario
+
 instance RunMessage Awakening where
   runMessage msg a@(Awakening attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
@@ -33,11 +37,16 @@ instance RunMessage Awakening where
       -- spawn the set-aside The Man in the Pallid Mask enemy at that location
       theManInThePallidMask <- getSetAsideCard Cards.theManInThePallidMask
 
+      isReturnTo <- getIsReturnTo
       -- Advance to one of the 3 copies of act 2a, at random
       nextAct <-
         sample
           $ Cards.theStrangerACityAflame
-          :| [Cards.theStrangerThePathIsMine, Cards.theStrangerTheShoresOfHali]
+          :| ( [Cards.theStrangerThePathIsMine, Cards.theStrangerTheShoresOfHali]
+                 <> ( guard isReturnTo
+                        *> [Cards.theStrangerAlaranMists, Cards.theStrangerUnderTheCity, Cards.theStrangerHereIsMyReply]
+                    )
+             )
 
       createTheManInThePallidMask <-
         createEnemyAt_ theManInThePallidMask locationId Nothing

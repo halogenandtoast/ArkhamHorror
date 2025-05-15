@@ -1541,6 +1541,8 @@ instance RunMessage EnemyAttrs where
       pure $ a & tokensL %~ flipDoom n
     ClearTokens target | isTarget a target -> do
       pure $ a & tokensL .~ mempty
+    PlaceReferenceCard (isTarget a -> True) cardCode -> do
+      pure $ a & referenceCardsL %~ (cardCode:)
     PlaceEnemy eid placement | eid == enemyId -> do
       case placement of
         AtLocation _ -> push $ EnemyCheckEngagement eid

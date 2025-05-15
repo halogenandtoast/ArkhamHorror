@@ -487,3 +487,6 @@ class ToDisplay a where
 
 mapFold :: (Foldable t, Monoid m) => t a -> (a -> m) -> m
 mapFold = flip Data.Foldable.foldMap
+
+runDefaultMaybeT :: Functor f => b -> MaybeT f b -> f b
+runDefaultMaybeT def = fmap (fromMaybe def) . runMaybeT

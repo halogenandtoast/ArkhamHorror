@@ -59,7 +59,9 @@ getSkillValue st iid = do
   let canBeIncreased = SkillCannotBeIncreased st `notElem` mods
   x <-
     if canBeIncreased
-      then sum <$> sequence [calculate calc | CalculatedSkillModifier st' calc <- mods, st' == st]
+      then 
+        let flat = sum [v | SkillModifier st' v <- mods, st' == st]
+        in (+ flat) . sum <$> sequence [calculate calc | CalculatedSkillModifier st' calc <- mods, st' == st]
       else pure 0
   pure $ fromMaybe (x + base) $ minimumMay [n | SetSkillValue st' n <- mods, st' == st]
 

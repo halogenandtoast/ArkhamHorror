@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.LairOfDagon (lairOfDagon, LairOfDagon (..)) where
+module Arkham.Location.Cards.LairOfDagon (lairOfDagon) where
 
 import Arkham.Ability
 import Arkham.Helpers.Investigator

@@ -40,11 +40,12 @@ instance RunMessage TheNamelessMadness where
       pure e
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
       xs <- select $ NearestEnemyTo iid $ enemyIs Cards.theNamelessMadness <> ReadyEnemy
-      if length xs <= n
-        then do
-          for_ xs exhaustEnemy
-          doStep (n - length xs) msg'
-        else chooseNM iid n do
-          targets xs exhaustEnemy
+      unless (null xs) do
+        if length xs <= n
+          then do
+            for_ xs exhaustEnemy
+            doStep (n - length xs) msg'
+          else chooseNM iid n do
+            targets xs exhaustEnemy
       pure e
     _ -> TheNamelessMadness <$> liftRunMessage msg attrs

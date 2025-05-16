@@ -814,7 +814,6 @@ newGame investigator = do
         , gameEncounterDiscardEntities = defaultEntities
         , gameInHandEntities = mempty
         , gameInDiscardEntities = mempty
-        , gameOutOfPlayEntities = mempty
         , gameActionRemovedEntities = mempty
         , gameInSearchEntities = defaultEntities
         , gameGameState = IsActive

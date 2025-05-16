@@ -390,6 +390,7 @@ data ModifierType
   | StartingHand Int
   | StartingResources Int
   | StartsInEncounterDeck EncounterCard
+  | StayInVictory
   | SwarmingValue Int
   | TakeUpFewerSlots SlotType Int
   | TopCardOfDeckIsRevealed

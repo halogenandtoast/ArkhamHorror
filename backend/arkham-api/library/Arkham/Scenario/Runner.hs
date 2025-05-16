@@ -579,8 +579,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     card <- field AgendaCard aid
     pure $ a & (victoryDisplayL %~ nub . (card :))
   RemoveEnemy eid -> do
-    mplacement <- fieldMay EnemyPlacement eid
-    case mplacement of
+    fieldMay EnemyPlacement eid >>= \case
       Just (OutOfPlay Zone.VictoryDisplayZone) -> do
         mcard <- fieldMay EnemyCard eid
         pure $ case mcard of

@@ -4,8 +4,8 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue (getGameValue)
-import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
+import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Matcher
 
 newtype RoyalEmissary = RoyalEmissary EnemyAttrs

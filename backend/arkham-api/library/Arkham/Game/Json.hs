@@ -33,7 +33,6 @@ instance FromJSON Game where
     gameEntities <- o .: "gameEntities"
     gameActionRemovedEntities <- o .: "gameActionRemovedEntities"
     gamePlayers <- o .: "gamePlayers"
-    gameOutOfPlayEntities <- o .:? "gameOutOfPlayEntities" .!= mempty
     gameModifiers <- o .: "gameModifiers"
     gameEncounterDiscardEntities <- o .: "gameEncounterDiscardEntities"
     gameInHandEntities <- o .: "gameInHandEntities"

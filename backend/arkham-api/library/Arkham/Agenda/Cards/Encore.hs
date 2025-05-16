@@ -19,11 +19,9 @@ instance HasAbilities Encore where
 instance RunMessage Encore where
   runMessage msg a@(Encore attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      pushAll
-        [ RemoveAllDoomFromPlay defaultRemoveDoomMatchers
-        , ResetAgendaDeckToStage 1
-        , PlaceDoomOnAgenda 3 CanNotAdvance
-        ]
+      push $ RemoveAllDoomFromPlay defaultRemoveDoomMatchers
+      push $ ResetAgendaDeckToStage 1
+      placeDoomOnAgenda 3
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       eachInvestigator \iid -> assignHorror iid attrs 100

@@ -923,9 +923,8 @@ runGameMessage msg g = case msg of
     popMessageMatching_ $ \case
       Discard _ _ (EnemyTarget eid') -> eid == eid'
       _ -> False
-    mEnemy <- maybeEnemy eid
     -- enemy might already be gone (i.e. placed in void)
-    case mEnemy of
+    maybeEnemy eid >>= \case
       Nothing -> pure g
       Just enemy -> do
         swarms <- select $ SwarmOf eid
@@ -937,12 +936,19 @@ runGameMessage msg g = case msg of
           _ -> do
             pushAll $ map RemoveEnemy swarms
 
+        zone <-
+          case attr enemyPlacement enemy of
+            OutOfPlay VictoryDisplayZone -> do
+              mods <- getModifiers enemy.id
+              pure $ if StayInVictory `elem` mods then VictoryDisplayZone else RemovedZone
+            _ -> pure RemovedZone
+
         pure
           $ g
           & entitiesL
           . enemiesL
           . ix eid
-          %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay RemovedZone})
+          %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay zone})
   RemoveSkill sid -> do
     removedEntitiesF <-
       if notNull (gameActiveAbilities g)
@@ -1967,7 +1973,9 @@ runGameMessage msg g = case msg of
     card <- getCard c
     pure $ g & removedFromPlayL %~ (card:)
   AddToVictory (EnemyTarget eid) -> do
+    mods <- getModifiers eid
     card <- field EnemyCard eid
+    let zone = if StayInVictory `elem` mods then VictoryDisplayZone else RemovedZone
     pushAll
       $ windows [Window.LeavePlay (EnemyTarget eid), Window.AddedToVictory card]
       <> [RemoveEnemy eid]
@@ -1976,9 +1984,11 @@ runGameMessage msg g = case msg of
       & entitiesL
       . enemiesL
       . ix eid
-      %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay RemovedZone})
+      %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay zone})
   DefeatedAddToVictory (EnemyTarget eid) -> do
+    mods <- getModifiers eid
     card <- field EnemyCard eid
+    let zone = if StayInVictory `elem` mods then VictoryDisplayZone else RemovedZone
     pushAll
       $ windows [Window.LeavePlay (EnemyTarget eid), Window.AddedToVictory card]
       <> [RemoveEnemy eid]
@@ -1987,7 +1997,7 @@ runGameMessage msg g = case msg of
       & entitiesL
       . enemiesL
       . ix eid
-      %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay RemovedZone})
+      %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay zone})
   AddToVictory (SkillTarget sid) -> do
     card <- field SkillCard sid
     pushAll $ windows [Window.AddedToVictory card]

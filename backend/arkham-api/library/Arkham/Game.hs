@@ -250,7 +250,6 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gameInSearchEntities = defaultEntities
         , gamePlayers = mempty
         , gameActionRemovedEntities = mempty
-        , gameOutOfPlayEntities = mempty
         , gameActivePlayerId = PlayerId nil
         , gameActiveInvestigatorId = InvestigatorId "00000"
         , gameTurnPlayerInvestigatorId = Nothing
@@ -528,8 +527,6 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       , "otherInvestigators" .= toJSON otherInvestigators
       , "enemies" .= toJSON (runReader (traverse withEnemyMetadata (gameEnemies g)) g)
       , "assets" .= toJSON (runReader (traverse withAssetMetadata (gameAssets g)) g)
-      , "outOfPlayEnemies"
-          .= toJSON (runReader (traverse withEnemyMetadata $ g ^. outOfPlayEntitiesL . each . enemiesL) g)
       , "acts" .= toJSON (runReader (traverse withActMetadata (gameActs g)) g)
       , "agendas" .= toJSON (runReader (traverse withAgendaMetadata (gameAgendas g)) g)
       , "treacheries" .= toJSON (runReader (traverse withTreacheryMetadata (gameTreacheries g)) g)
@@ -2598,9 +2595,8 @@ getEventsMatching :: HasGame m => EventMatcher -> m [Event]
 getEventsMatching matcher = case matcher of
   OutOfPlayEvent inner' -> do
     inPlay <- toList . view (entitiesL . eventsL) <$> getGame
-    outOfPlayEvents <- toList . view (outOfPlayEntitiesL . each . eventsL) <$> getGame
     removedEvents <- toList . view (actionRemovedEntitiesL . eventsL) <$> getGame
-    filterMatcher (inPlay <> outOfPlayEvents <> removedEvents) inner'
+    filterMatcher (inPlay <> removedEvents) inner'
   other -> do
     events <- toList . view (entitiesL . eventsL) <$> getGame
     filterMatcher events other

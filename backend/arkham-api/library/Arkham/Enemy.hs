@@ -517,6 +517,9 @@ allEnemies =
       SomeEnemyCard sethBishopThrallOfYogSothoth
     , -- Yog Sothoth's Emissaries
       SomeEnemyCard vassalOfTheLurker
+    , -- Return to the Path to Carcosa
+      -- Return to Curtain Call
+      SomeEnemyCard laComtesseSubverterOfPlans
     , -- Nathanial Cho
       SomeEnemyCard tommyMalloy
     , -- Curse of the Rougarou

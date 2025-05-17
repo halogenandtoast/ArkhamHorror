@@ -340,6 +340,7 @@ allEncounterTreacheryCards =
       , lowOnSupplies
       , lunarPatrol
       , macabreMemento
+      , maddeningDelusions
       , malfunction
       , markOfTheOrder
       , markedByTheSign
@@ -348,6 +349,7 @@ allEncounterTreacheryCards =
       , maskedHorrors
       , massHysteria
       , meddlesomeFamiliar
+      , melancholy
       , memoryOfOblivion
       , mesmerize
       , miasmaticTorment
@@ -372,6 +374,7 @@ allEncounterTreacheryCards =
       , oppressiveMists
       , outbreak
       , overgrowth
+      , painfulReflection
       , passageIntoTheVeil
       , phantasmagoria
       , pitfall
@@ -484,8 +487,13 @@ allEncounterTreacheryCards =
       , vaultOfEarthlyDemise
       , violentCommands
       , violentOutburst
+      , visionsInYourMindDeath
+      , visionsInYourMindFailure
+      , visionsInYourMindHatred
+      , visionsInYourMindHorrors
       , visionsOfFuturesPast
       , voiceOfTheJungle
+      , voiceOfTrunembra
       , vortexOfTime
       , wallsClosingIn
       , watchersGaze
@@ -2881,6 +2889,60 @@ imperceptableCreature =
   (treachery "51046" "Imperceptable Creature" ReturnToUndimensionedAndUnseen 2)
     { cdCardTraits = setFromList [Power]
     , cdKeywords = setFromList [Keyword.Surge]
+    }
+
+visionsInYourMindHorrors :: CardDef
+visionsInYourMindHorrors =
+  (treachery "52071" ("Visions in Your Mind" <:> "Horrors") MaddeningDelusions 1)
+    { cdCardTraits = setFromList [Terror]
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    }
+
+visionsInYourMindFailure :: CardDef
+visionsInYourMindFailure =
+  (treachery "52072" ("Visions in Your Mind" <:> "Failure") MaddeningDelusions 1)
+    { cdCardTraits = setFromList [Terror]
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    }
+
+visionsInYourMindDeath :: CardDef
+visionsInYourMindDeath =
+  (treachery "52073" ("Visions in Your Mind" <:> "Death") MaddeningDelusions 1)
+    { cdCardTraits = setFromList [Terror]
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    }
+
+visionsInYourMindHatred :: CardDef
+visionsInYourMindHatred =
+  (treachery "52074" ("Visions in Your Mind" <:> "Hatred") MaddeningDelusions 1)
+    { cdCardTraits = setFromList [Terror]
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
+    }
+
+maddeningDelusions :: CardDef
+maddeningDelusions =
+  surge
+    (treachery "52075" "Maddening Delusions" MaddeningDelusions 2)
+      { cdCardTraits = setFromList [Terror]
+      }
+
+voiceOfTrunembra :: CardDef
+voiceOfTrunembra =
+  (treachery "52076" "Voice of Tru'nembra" NeuroticFear 3)
+    { cdCardTraits = setFromList [Terror]
+    , cdKeywords = setFromList [Keyword.Peril]
+    }
+
+melancholy :: CardDef
+melancholy =
+  (treachery "52077" "Melancholy" NeuroticFear 2)
+    { cdCardTraits = setFromList [Terror]
+    }
+
+painfulReflection :: CardDef
+painfulReflection =
+  (treachery "52078" "Painful Reflection" NeuroticFear 2)
+    { cdCardTraits = setFromList [Terror]
     }
 
 hauntingRecollections :: CardDef

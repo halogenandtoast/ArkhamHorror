@@ -247,6 +247,7 @@ allEncounterEnemyCards =
       , keeperOfTheGreatLibrary
       , knightOfTheInnerCircle
       , knightOfTheOuterVoid
+      , laComtesseSubverterOfPlans
       , laboringGug
       , legsOfAtlachNacha_347
       , legsOfAtlachNacha_348
@@ -2905,6 +2906,15 @@ vassalOfTheLurker =
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdVictoryPoints = Just 1
     }
+
+laComtesseSubverterOfPlans :: CardDef
+laComtesseSubverterOfPlans =
+  unique
+    $ ( enemy "52020" ("La Comtesse" <:> "Subverter of Plans") ReturnToCurtainCall 1
+      )
+      { cdCardTraits = setFromList [Humanoid, Servitor]
+      , cdKeywords = setFromList [Keyword.Hunter]
+      }
 
 
 tommyMalloy :: CardDef

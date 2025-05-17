@@ -1736,6 +1736,7 @@ library
       Arkham.Enemy.Cards.KnightOfTheInnerCircle
       Arkham.Enemy.Cards.KnightOfTheOuterVoid
       Arkham.Enemy.Cards.LaboringGug
+      Arkham.Enemy.Cards.LaComtesseSubverterOfPlans
       Arkham.Enemy.Cards.LegsOfAtlachNacha_347
       Arkham.Enemy.Cards.LegsOfAtlachNacha_348
       Arkham.Enemy.Cards.LegsOfAtlachNacha_349
@@ -3081,6 +3082,7 @@ library
       Arkham.Location.Cards.PrismaticCascade
       Arkham.Location.Cards.PrisonOfMemories
       Arkham.Location.Cards.PrivateRoom
+      Arkham.Location.Cards.PropShop
       Arkham.Location.Cards.ProtoplasmicPool
       Arkham.Location.Cards.PumpRoom
       Arkham.Location.Cards.QuietHalls_131
@@ -3214,6 +3216,7 @@ library
       Arkham.Location.Cards.TenAcreMeadow_246
       Arkham.Location.Cards.TenAcreMeadow_247
       Arkham.Location.Cards.Theatre
+      Arkham.Location.Cards.TheatreLounge
       Arkham.Location.Cards.TheBlackCore
       Arkham.Location.Cards.TheBlackStone
       Arkham.Location.Cards.TheBlackThrone
@@ -4064,6 +4067,7 @@ library
       Arkham.Treachery.Cards.LowOnSupplies
       Arkham.Treachery.Cards.LunarPatrol
       Arkham.Treachery.Cards.MacabreMemento
+      Arkham.Treachery.Cards.MaddeningDelusions
       Arkham.Treachery.Cards.Malfunction
       Arkham.Treachery.Cards.MarkedByTheSign
       Arkham.Treachery.Cards.MarkedForDeath
@@ -4072,6 +4076,7 @@ library
       Arkham.Treachery.Cards.MaskOfUmordhoth
       Arkham.Treachery.Cards.MassHysteria
       Arkham.Treachery.Cards.MeddlesomeFamiliar
+      Arkham.Treachery.Cards.Melancholy
       Arkham.Treachery.Cards.MemoryOfOblivion
       Arkham.Treachery.Cards.Mesmerize
       Arkham.Treachery.Cards.MiasmaticTorment
@@ -4103,6 +4108,7 @@ library
       Arkham.Treachery.Cards.OutOfBodyExperience
       Arkham.Treachery.Cards.Overgrowth
       Arkham.Treachery.Cards.Overzealous
+      Arkham.Treachery.Cards.PainfulReflection
       Arkham.Treachery.Cards.Panic
       Arkham.Treachery.Cards.Paranoia
       Arkham.Treachery.Cards.PassageIntoTheVeil
@@ -4257,9 +4263,14 @@ library
       Arkham.Treachery.Cards.VaultOfEarthlyDemise
       Arkham.Treachery.Cards.ViolentCommands
       Arkham.Treachery.Cards.ViolentOutburst
+      Arkham.Treachery.Cards.VisionsInYourMindDeath
+      Arkham.Treachery.Cards.VisionsInYourMindFailure
+      Arkham.Treachery.Cards.VisionsInYourMindHatred
+      Arkham.Treachery.Cards.VisionsInYourMindHorrors
       Arkham.Treachery.Cards.VisionsOfFuturesPast
       Arkham.Treachery.Cards.VoiceOfTheJungle
       Arkham.Treachery.Cards.VoiceOfTheMessenger
+      Arkham.Treachery.Cards.VoiceOfTrunembra
       Arkham.Treachery.Cards.VortexOfTime
       Arkham.Treachery.Cards.WallsClosingIn
       Arkham.Treachery.Cards.WatchersGaze

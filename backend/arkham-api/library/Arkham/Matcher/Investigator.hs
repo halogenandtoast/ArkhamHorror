@@ -69,6 +69,7 @@ data InvestigatorMatcher
   | IsDriverOf AssetMatcher
   | CanTakeUntakenAction
   | TakenActionThisRound ActionMatcher
+  | TakenActionThisTurn ActionMatcher
   | SuccessfullyEvadedThisRound
   | SuccessfullyAttackedThisRound
   | SuccessfullyInvestigatedThisRound

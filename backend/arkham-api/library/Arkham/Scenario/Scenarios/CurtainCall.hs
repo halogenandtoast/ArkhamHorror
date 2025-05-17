@@ -103,6 +103,8 @@ performSetup attrs = do
     , Locations.trapRoom
     ]
 
+  whenReturnTo $ setAside [Locations.theatreLounge, Locations.propShop]
+
   royalEmissary <- placeEnemyCapture Enemies.royalEmissary (OutOfPlay SetAsideZone)
   whenReturnTo $ push $ PlaceReferenceCard (toTarget royalEmissary) "52014b"
 

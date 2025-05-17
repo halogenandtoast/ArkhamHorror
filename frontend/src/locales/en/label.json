@@ -18,6 +18,7 @@
   "investigate": "Investigate",
   "loseActions": "Lose 1 action | Lose {count} actions",
   "loseResources": "Lose 1 resource | Lose {count} resources",
+  "minusToYourNextSkillTestThisRound": "You get -{count} to your next skill test this round",
   "move": "Move",
   "noCardsFound": "No Cards Found.",
   "noEnemiesFound": "No Enemies Found.",

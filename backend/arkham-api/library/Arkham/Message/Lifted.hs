@@ -399,6 +399,10 @@ directDamage iid source = push . Msg.directDamage iid source
 directHorror :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 directHorror iid source = push . Msg.directHorror iid source
 
+directDamageAndHorror
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> Int -> m ()
+directDamageAndHorror iid source d h = push $ Msg.directDamageAndHorror iid source d h
+
 findAndDrawEncounterCard
   :: (ReverseQueue m, IsCardMatcher a) => InvestigatorId -> a -> m ()
 findAndDrawEncounterCard iid matcher = push $ Msg.findAndDrawEncounterCard iid matcher
@@ -2756,6 +2760,11 @@ withBatchedTimings w body = do
 cancelBatch :: ReverseQueue m => BatchId -> m ()
 cancelBatch bId = push $ CancelBatch bId
 
+cancelEvent :: (MonadTrans t, HasQueue Message m) => EventId -> t m ()
+cancelEvent eId = matchingDon't \case
+  InvestigatorPlayEvent _ eId' _ _ _ -> eId == eId'
+  _ -> False
+
 cancelMovement
   :: (ReverseQueue m, Sourceable source, Targetable investigator) => source -> investigator -> m ()
 cancelMovement source investigator = do
@@ -2791,7 +2800,12 @@ discardTopOfEncounterDeck investigator source n =
   push $ DiscardTopOfEncounterDeck (asId investigator) n (toSource source) Nothing
 
 discardTopOfEncounterDeckAndHandle
-  :: (AsId investigator, IdOf investigator ~ InvestigatorId, Sourceable source, ReverseQueue m, Targetable target)
+  :: ( AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     , Sourceable source
+     , ReverseQueue m
+     , Targetable target
+     )
   => investigator
   -> source
   -> Int

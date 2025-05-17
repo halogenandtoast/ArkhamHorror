@@ -812,19 +812,19 @@ allLocations =
     , SomeLocationCard arkhamWoodsCorpseRiddenClearing
     , SomeLocationCard arkhamWoodsWoodenBridge
     , -- Return to The Dunwich Legacy
-      -- Return to Extracurricular Activities
+      --- Return to Extracurricular Activities
       SomeLocationCard warrenObservatory
-    , -- Return to The House Always Wins
+    , --- Return to The House Always Wins
       SomeLocationCard returnToCloverClubLounge
     , SomeLocationCard cloverClubStage
-    , -- Return to The Miskatonic Museum
+    , --- Return to The Miskatonic Museum
       SomeLocationCard exhibitHallMedievalExhibit
     , SomeLocationCard exhibitHallTheArchives
-    , -- Return to The Essex County Express
+    , --- Return to The Essex County Express
       SomeLocationCard returnToEngineCar
     , SomeLocationCard freightCar
     , SomeLocationCard baggageCar
-    , -- Return to Blood on the Altar
+    , --- Return to Blood on the Altar
       SomeLocationCard villageCommonsSilentDecay
     , SomeLocationCard returnToBishopsBrook
     , SomeLocationCard returnToBurnedRuins
@@ -832,16 +832,20 @@ allLocations =
     , SomeLocationCard returnToCongregationalChurch
     , SomeLocationCard returnToHouseInTheReeds
     , SomeLocationCard returnToSchoolhouse
-    , -- Return to Where Doom Awaits
+    , --- Return to Where Doom Awaits
       SomeLocationCard baseOfTheHillWarpedAndTwisted
     , SomeLocationCard ascendingPathWarpedAndTwisted
     , SomeLocationCard abandonedCamp
     , SomeLocationCard fathomlessLake
-    , -- Return to Lost in Time and Space
+    , --- Return to Lost in Time and Space
       SomeLocationCard realmsBeyondAllInOne
     , SomeLocationCard indecipherableStairs
     , SomeLocationCard toweringLuminosity
     , SomeLocationCard unstableVortex
+    , -- Return to The Path to Carcosa
+      --- Return to Curtain Call
+      SomeLocationCard theatreLounge
+    , SomeLocationCard propShop
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

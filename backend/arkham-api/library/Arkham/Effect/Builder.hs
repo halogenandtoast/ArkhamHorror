@@ -41,8 +41,12 @@ class WithEffect m where
     builder <- execStateT (runEffectBuilder body) =<< makeEffectBuilder "genef" Nothing ?source target
     push $ CreateEffect builder {effectBuilderEffectId = Just effectId}
 
-instance WithEffect (QueueT Message GameT)
+instance WithEffect GameT
+instance WithEffect m => WithEffect (QueueT Message m)
 instance WithEffect m => WithEffect (StateT s m)
+
+withSource :: (Sourceable source) => source -> ((?source :: source, Sourceable source) => b) -> b
+withSource source inner = let ?source = source in inner
 
 enableOn :: Monad m => EffectWindow -> EffectBuilderT m ()
 enableOn window = EffectBuilderT $ do

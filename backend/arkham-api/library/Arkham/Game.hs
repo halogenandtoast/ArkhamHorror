@@ -956,6 +956,12 @@ getInvestigatorsMatching matcher = do
         let iid = toId a
         taken <- nub . concat <$> field InvestigatorActionsTaken iid
         anyM (\action -> actionMatches iid action actionMatcher) taken
+    TakenActionThisTurn actionMatcher -> do
+      -- TODO: this is the same as round for now, but it probably isn't entirely correct
+      flip filterM as \a -> do
+        let iid = toId a
+        taken <- nub . concat <$> field InvestigatorActionsTaken iid
+        anyM (\action -> actionMatches iid action actionMatcher) taken
     CanTakeUntakenAction -> do
       flip filterM as \a -> do
         let iid = toId a

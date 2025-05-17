@@ -31,6 +31,9 @@ import Arkham.Act.Acts (
   theStrangerACityAflameEffect,
   theStrangerThePathIsMineEffect,
   theStrangerTheShoresOfHaliEffect,
+  theStrangerAlaranMistsEffect,
+  theStrangerUnderTheCityEffect,
+  theStrangerHereIsMyReplyEffect,
   theYithianRelicEffect,
  )
 import Arkham.Agenda.Agendas (
@@ -555,6 +558,10 @@ allEffects =
     , ("50044", SomeEffect jeremiahPierceEffect)
     , ("52007", SomeEffect $ noop "52007")
     , ("52008", SomeEffect stormOfSpirits3Effect)
+    , ("52015", SomeEffect theStrangerAlaranMistsEffect)
+    , ("52016", SomeEffect theStrangerUnderTheCityEffect)
+    , ("52017", SomeEffect theStrangerHereIsMyReplyEffect)
+    , ("03047b", SomeEffect theStrangerThePathIsMineEffect)
     , ("53007", SomeEffect mistsOfRlyeh2Effect)
     , ("54006", SomeEffect wellConnected3Effect)
     , ("60101", SomeEffect nathanielChoEffect)

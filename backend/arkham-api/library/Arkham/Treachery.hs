@@ -626,6 +626,16 @@ allTreacheries =
       SomeTreacheryCard unspeakableOathBloodthirst
     , SomeTreacheryCard unspeakableOathCuriosity
     , SomeTreacheryCard unspeakableOathCowardice
+    , -- Maddening Delusions
+      SomeTreacheryCard visionsInYourMindHorrors
+    , SomeTreacheryCard visionsInYourMindFailure
+    , SomeTreacheryCard visionsInYourMindDeath
+    , SomeTreacheryCard visionsInYourMindHatred
+    , SomeTreacheryCard maddeningDelusions
+    , -- Neurotic Fear
+      SomeTreacheryCard voiceOfTrunembra
+    , SomeTreacheryCard melancholy
+    , SomeTreacheryCard painfulReflection
     , -- Return to the Forgotten Age
       SomeTreacheryCard offerYouCannotRefuse
     , SomeTreacheryCard finePrint

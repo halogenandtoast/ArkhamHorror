@@ -589,6 +589,7 @@ allLocationCards =
       , prismaticCascade
       , prisonOfMemories
       , privateRoom
+      , propShop
       , protoplasmicPool
       , pumpRoom
       , quietHalls_131
@@ -752,6 +753,7 @@ allLocationCards =
       , theSummit
       , theWhiteShip
       , theatre
+      , theatreLounge
       , tidalPool
       , tightTurn_a
       , tightTurn_b
@@ -8610,6 +8612,36 @@ unstableVortex =
       Equals
       [Square, Moon, Plus, Squiggle]
       ReturnToLostInTimeAndSpace
+
+theatreLounge :: CardDef
+theatreLounge =
+  victory 1
+    $ locationWithUnrevealed
+      "52018"
+      "Lobby Doorway"
+      [Private]
+      Plus
+      [Triangle]
+      "Theatre Lounge"
+      [Private]
+      Plus
+      [Triangle]
+      ReturnToCurtainCall
+
+propShop :: CardDef
+propShop =
+  victory 1
+    $ locationWithUnrevealed
+      "52019"
+      "Backstage Doorway"
+      [Private]
+      Moon
+      [Diamond]
+      "Prop Shop"
+      [Private]
+      Moon
+      [Diamond]
+      ReturnToCurtainCall
 
 cursedShores :: CardDef
 cursedShores =

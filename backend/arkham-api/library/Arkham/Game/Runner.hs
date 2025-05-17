@@ -1495,8 +1495,10 @@ runGameMessage msg g = case msg of
                   , eventPlacement = Limbo
                   }
 
+          whenPlayEvent <- checkWindows [mkWindow #when $ Window.PlayEvent iid eid]
           pushAll
             [ CardEnteredPlay iid card
+            , whenPlayEvent
             , InvestigatorPlayEvent iid eid mtarget windows' zone
             , FinishedEvent eid
             , ResolvedCard iid card

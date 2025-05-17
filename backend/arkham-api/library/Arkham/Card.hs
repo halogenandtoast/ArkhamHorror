@@ -97,6 +97,9 @@ class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toCustomizations :: a -> Customizations
   toCustomizations _ = mempty
 
+toCards :: (IsCard a, Functor f) => f a -> f Card
+toCards = fmap toCard
+
 sameCard :: (IsCard a, IsCard b) => a -> b -> Bool
 sameCard a b = toCardId a == toCardId b
 

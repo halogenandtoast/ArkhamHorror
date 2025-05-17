@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.ResearchNotes (researchNotes, ResearchNotes (..)) where
+module Arkham.Asset.Assets.ResearchNotes (researchNotes) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -19,7 +19,7 @@ researchNotes = asset ResearchNotes Cards.researchNotes
 
 instance HasAbilities ResearchNotes where
   getAbilities (ResearchNotes a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ restricted a 1 ControlsThis
         $ freeReaction
         $ InvestigatorPlacedFromTheirPool
           #after
@@ -27,7 +27,7 @@ instance HasAbilities ResearchNotes where
           SourceIsPlayerCard
           (LocationTargetMatches YourLocation)
           Clue
-    , skillTestAbility $ restrictedAbility a 2 ControlsThis actionAbility
+    , skillTestAbility $ restricted a 2 ControlsThis actionAbility
     ]
 
 instance RunMessage ResearchNotes where

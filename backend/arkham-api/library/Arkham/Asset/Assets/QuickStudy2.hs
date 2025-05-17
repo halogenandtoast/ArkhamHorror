@@ -2,10 +2,10 @@ module Arkham.Asset.Assets.QuickStudy2 (quickStudy2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 
 newtype QuickStudy2 = QuickStudy2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -22,9 +22,8 @@ instance HasAbilities QuickStudy2 where
     ]
 
 instance RunMessage QuickStudy2 where
-  runMessage msg a@(QuickStudy2 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      withSkillTest \sid ->
-        pushM $ skillTestModifier sid attrs (InvestigatorTarget iid) $ AnySkillValue 3
+  runMessage msg a@(QuickStudy2 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      withSkillTest \sid -> skillTestModifier sid attrs iid (AnySkillValue 3)
       pure a
-    _ -> QuickStudy2 <$> runMessage msg attrs
+    _ -> QuickStudy2 <$> liftRunMessage msg attrs

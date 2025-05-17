@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Message.Lifted.Placement
 import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -29,7 +28,7 @@ instance HasAbilities TheHarbinger where
 instance RunMessage TheHarbinger where
   runMessage msg t@(TheHarbinger attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      place attrs $ OnTopOfDeck iid
+      push $ RemoveTreachery attrs.id
       for_ (toPlayerCard attrs) (putCardOnTopOfDeck iid iid)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do

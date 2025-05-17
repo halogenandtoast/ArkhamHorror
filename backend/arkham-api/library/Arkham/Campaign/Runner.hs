@@ -147,8 +147,8 @@ defaultCampaignRunner msg a = case msg of
     for_ mSpiritualHealing push
     pure a
   ResolveAmounts iid choiceMap (LabeledTarget "Purchase Trauma" CampaignTarget) -> do
-    let physical = getChoiceAmount "physical" choiceMap
-    let mental = getChoiceAmount "mental" choiceMap
+    let physical = getChoiceAmount "$physical" choiceMap
+    let mental = getChoiceAmount "$mental" choiceMap
     push $ SufferTrauma iid physical mental
     pure a
   UpgradeDeck iid mUrl deck -> do

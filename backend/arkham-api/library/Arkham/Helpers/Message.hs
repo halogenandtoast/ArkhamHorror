@@ -368,7 +368,7 @@ addToDiscard i (toCard -> c) = go c
  where
   go = \case
     VengeanceCard c' -> go c'
-    PlayerCard c' -> AddToDiscard i c'
+    PlayerCard c' -> AddToDiscard (fromMaybe i c'.owner) c'
     EncounterCard c' -> AddToEncounterDiscard c'
 
 drawToHand :: IsCard a => InvestigatorId -> a -> Message

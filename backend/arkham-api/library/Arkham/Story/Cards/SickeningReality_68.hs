@@ -1,19 +1,11 @@
-module Arkham.Story.Cards.SickeningReality_68 (
-  SickeningReality_68 (..),
-  sickeningReality_68,
-) where
-
-import Arkham.Prelude
+module Arkham.Story.Cards.SickeningReality_68 (sickeningReality_68) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Types (Field (..))
-import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
-import Arkham.Token
+import Arkham.Story.Import.Lifted
 
 newtype SickeningReality_68 = SickeningReality_68 StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -23,31 +15,13 @@ sickeningReality_68 :: StoryCard SickeningReality_68
 sickeningReality_68 = story SickeningReality_68 Cards.sickeningReality_68
 
 instance RunMessage SickeningReality_68 where
-  runMessage msg s@(SickeningReality_68 attrs) = case msg of
-    ResolveStory _ _ story' | story' == toId attrs -> do
-      let
-        (asset, enemy) =
-          (Assets.sebastienMoreau, Enemies.sebastienMoreau)
-
-      assetId <- selectJust (assetIs asset)
-      enemyCard <- genCard enemy
-      lid <- fieldJust AssetLocation assetId
-      iids <- select $ investigatorAt lid
-      clues <- field AssetClues assetId
-      enemyCreation <- createEnemyAt_ enemyCard lid Nothing
-      pushAll
-        $ [ InvestigatorAssignDamage
-            iid
-            (toSource attrs)
-            DamageAny
-            0
-            1
-          | iid <- iids
-          ]
-        <> [ RemoveTokens (toSource attrs) (AssetTarget assetId) Clue clues
-           , PlaceTokens (toSource attrs) (LocationTarget lid) Clue clues
-           , RemoveFromGame (AssetTarget assetId)
-           , enemyCreation
-           ]
+  runMessage msg s@(SickeningReality_68 attrs) = runQueueT $ case msg of
+    ResolveStory _ _ (is attrs -> True) -> do
+      sebastien <- selectJust (assetIs Assets.sebastienMoreau)
+      withLocationOf sebastien \lid -> do
+        selectEach (investigatorAt lid) \iid -> assignHorror iid attrs 1
+        moveAllTokens attrs sebastien lid #clue
+        removeFromGame sebastien
+        createEnemyAt_ Enemies.sebastienMoreau lid
       pure s
-    _ -> SickeningReality_68 <$> runMessage msg attrs
+    _ -> SickeningReality_68 <$> liftRunMessage msg attrs

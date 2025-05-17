@@ -1,17 +1,10 @@
-module Arkham.Enemy.Cards.Fanatic (
-  fanatic,
-  Fanatic (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.Fanatic (fanatic) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
-import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype Fanatic = Fanatic EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -19,43 +12,23 @@ newtype Fanatic = Fanatic EnemyAttrs
 
 fanatic :: EnemyCard Fanatic
 fanatic =
-  enemyWith
-    Fanatic
-    Cards.fanatic
-    (3, Static 2, 3)
-    (1, 0)
-    (spawnAtL ?~ SpawnAt (LocationWithMostClues RevealedLocation))
+  enemy Fanatic Cards.fanatic (3, Static 2, 3) (1, 0)
+    & setSpawnAt (LocationWithMostClues RevealedLocation)
 
 instance HasAbilities Fanatic where
   getAbilities (Fanatic a) =
-    withBaseAbilities
+    extend
       a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ EnemySpawns Timing.After LocationWithAnyClues
-          $ EnemyWithId
-          $ toId a
-      , mkAbility a 2
-          $ ForcedAbility
-          $ EnemyDefeated Timing.When You ByAny
-          $ EnemyWithId (toId a)
-          <> EnemyWithAnyClues
+      [ mkAbility a 1 $ forced $ EnemySpawns #after LocationWithAnyClues (be a)
+      , mkAbility a 2 $ forced $ EnemyDefeated #when You ByAny (be a <> EnemyWithAnyClues)
       ]
 
 instance RunMessage Fanatic where
-  runMessage msg e@(Fanatic attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      enemyLocation <- field EnemyLocation (toId attrs)
-      for_ enemyLocation $ \loc ->
-        pushAll
-          [ RemoveClues (toAbilitySource attrs 1) (LocationTarget loc) 1
-          , PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1
-          ]
+  runMessage msg e@(Fanatic attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      withLocationOf attrs \loc -> moveTokens (attrs.ability 1) loc attrs #clue 1
       pure e
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      pushAll
-        [ RemoveClues (toAbilitySource attrs 2) (toTarget attrs) (enemyClues attrs)
-        , GainClues iid (toAbilitySource attrs 2) (enemyClues attrs)
-        ]
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      moveAllTokens (attrs.ability 2) attrs iid #clue
       pure e
-    _ -> Fanatic <$> runMessage msg attrs
+    _ -> Fanatic <$> liftRunMessage msg attrs

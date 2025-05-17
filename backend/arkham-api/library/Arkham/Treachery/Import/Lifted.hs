@@ -6,6 +6,7 @@ where
 
 import Arkham.Calculation as X
 import Arkham.Classes as X
+import Arkham.Helpers.Choices as X
 import Arkham.Helpers.Query as X
 import Arkham.Id as X
 import Arkham.Message as X (
@@ -60,6 +61,7 @@ import Arkham.Classes.HasGame
 import Arkham.Helpers.History
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.SkillTest qualified as Msg
+import Arkham.Message.Lifted.Placement
 import Arkham.Placement
 import Arkham.SkillType
 import Arkham.Treachery.Helpers qualified as Msg
@@ -111,3 +113,6 @@ isFirstCopyThisPhase :: (HasGame m, HasCardCode a) => a -> m Bool
 isFirstCopyThisPhase attrs = do
   drawn <- getAllHistoryField #phase HistoryTreacheriesDrawn
   pure $ count (== toCardCode attrs) drawn == 1
+
+addHiddenToHand :: ReverseQueue m => InvestigatorId -> TreacheryAttrs -> m ()
+addHiddenToHand iid a = place a (HiddenInHand iid)

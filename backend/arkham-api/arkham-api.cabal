@@ -2429,6 +2429,7 @@ library
       Arkham.Helpers.ChaosBag
       Arkham.Helpers.ChaosBag.Lifted
       Arkham.Helpers.ChaosToken
+      Arkham.Helpers.Choices
       Arkham.Helpers.Choose
       Arkham.Helpers.Cost
       Arkham.Helpers.Criteria
@@ -3536,7 +3537,7 @@ library
       Arkham.Scenarios.TheHeartOfMadness.Pylon
       Arkham.Scenarios.TheHouseAlwaysWins.Helpers
       Arkham.Scenarios.TheLairOfDagon.Helpers
-      Arkham.Scenarios.TheLastKing.Story
+      Arkham.Scenarios.TheLastKing.Helpers
       Arkham.Scenarios.TheMidnightMasks.Helpers
       Arkham.Scenarios.TheMiskatonicMuseum.Helpers
       Arkham.Scenarios.ThePallidMask.Helpers

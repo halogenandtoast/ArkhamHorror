@@ -10,8 +10,12 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Query
+import Arkham.Helpers.Xp
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
@@ -25,7 +29,7 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.TheLastKing.Story
+import Arkham.Scenarios.TheLastKing.Helpers
 import Arkham.Story.Cards qualified as Story
 import Arkham.Token
 import Arkham.Trait qualified as Trait
@@ -85,9 +89,9 @@ interviewedToCardCode = \case
   _ -> Nothing
 
 instance RunMessage TheLastKing where
-  runMessage msg s@(TheLastKing attrs) = runQueueT $ case msg of
+  runMessage msg s@(TheLastKing attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story intro
+      flavor $ scope "intro" $ h "title" >> p "body"
       pure s
     StandaloneSetup -> do
       randomToken <- sample (Cultist :| [Tablet, ElderThing])
@@ -96,6 +100,17 @@ instance RunMessage TheLastKing where
       addCampaignCardToDeck lead ShuffleIn Enemies.theManInThePallidMask
       pure s
     Setup -> runScenarioSetup TheLastKing attrs do
+      setup do
+        ul do
+          li "gatherSets"
+          li "placeLocations"
+          li.nested "bystanders.instructions" do
+            li "bystanders.note"
+          li "setAside"
+          li.nested "sickeningReality.instructions" do
+            li "sickeningReality.note"
+          unscoped $ li "shuffleRemainder"
+
       gather Set.TheLastKing
       gather Set.HastursGift
       gather Set.DecayAndFilth
@@ -169,56 +184,72 @@ instance RunMessage TheLastKing where
         ElderThing | isHardExpert attrs -> assignDamage iid (ChaosTokenSource token) 1
         _ -> pure ()
       pure s
-    ScenarioResolution NoResolution -> do
-      anyResigned <- notNull <$> select ResignedInvestigator
-      push $ if anyResigned then R1 else R2
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> do
+          anyResigned <- notNull <$> select ResignedInvestigator
+          flavor do
+            p.validate anyResigned "goToR1"
+            p.validate (not anyResigned) "goToR2"
+          do_ $ if anyResigned then R1 else R2
+        _ -> do_ msg
       pure s
-    ScenarioResolution (Resolution n) -> do
-      story $ case n of
-        1 -> resolution1
-        2 -> resolution2
-        3 -> resolution3
-        _ -> error "Invalid resolution"
-
+    Do msg'@(ScenarioResolution r) -> scope "resolutions" do
       let interviewed = mapMaybe interviewedToCardCode (setToList attrs.log)
       when (notNull interviewed) $ recordSetInsert VIPsInterviewed interviewed
-      when (n == 3) $ crossOutRecordSetEntries VIPsInterviewed interviewed
-
       vipsSlain <- selectMap toCardCode $ VictoryDisplayCardMatch $ basic $ CardWithTrait Trait.Lunatic
       when (notNull vipsSlain) $ recordSetInsert VIPsSlain vipsSlain
 
-      -- Resolution handles XP in a special way, we must divvy up between investigators
-      -- evenly and apply, this will have a weird interaction with Hospital Debts so we
-      -- want to handle `getXp` in two phases. The first phase will essentially evenly
-      -- add XP modifiers to the players in order to have `getXp` resolve "normally"
-      clueCounts <- traverse (field ActClues) =<< select AnyAct
-      investigators <- allInvestigators
       let
-        extraXp = floor @Double (fromIntegral (sum clueCounts) / 2)
-        (assignedXp, remainingXp) = quotRem extraXp (length investigators)
-        assignXp amount iid =
-          resolutionModifier attrs iid
-            $ XPModifier "Clues that were on the act deck when the game ended" amount
-      for_ investigators (assignXp assignedXp)
+        handleExtraXp = do
+          -- Resolution handles XP in a special way, we must divvy up between investigators
+          -- evenly and apply, this will have a weird interaction with Hospital Debts so we
+          -- want to handle `getXp` in two phases. The first phase will essentially evenly
+          -- add XP modifiers to the players in order to have `getXp` resolve "normally"
+          clueCounts <- traverse (field ActClues) =<< select AnyAct
+          investigators <- allInvestigators
+          let
+            extraXp = floor @Double (fromIntegral (sum clueCounts) / 2)
+            (assignedXp, remainingXp) = quotRem extraXp (length investigators)
+            assignXp amount iid =
+              resolutionModifier attrs iid
+                $ XPModifier ("$" <> ikey "xp.bonus") amount
+          for_ investigators (assignXp assignedXp)
 
-      when (remainingXp > 0) do
-        lead <- getLead
-        chooseNM lead remainingXp do
-          for_ investigators \iid -> do
-            name <- field InvestigatorName iid
-            labeled ("Choose " <> display name <> " to gain 1 additional XP") $ lift $ assignXp 1 iid
+          when (remainingXp > 0) $ popScope do
+            lead <- getLead
+            chooseNM lead remainingXp do
+              for_ investigators \iid -> do
+                name <- field InvestigatorName iid
+                withVar "name" (String $ display name) $ labeled' "gainAdditionalXp" $ lift $ assignXp 1 iid
 
-      -- Assign XP now that the modifiers exist
-      doStep 1 msg
+          -- Assign XP now that the modifiers exist
+          doStep 1 msg'
+        adjustTokens = do
+          removeAllChaosTokens Cultist
+          removeAllChaosTokens Tablet
+          removeAllChaosTokens ElderThing
+          addChaosToken Cultist
+          addChaosToken Tablet
+          addChaosToken ElderThing
 
-      when (n == 2 || n == 3) do
-        removeAllChaosTokens Cultist
-        removeAllChaosTokens Tablet
-        removeAllChaosTokens ElderThing
-        addChaosToken Cultist
-        addChaosToken Tablet
-        addChaosToken ElderThing
-      if n == 1 then endOfScenarioThen $ InterludeStep 1 Nothing else endOfScenario
+      case r of
+        Resolution 1 -> do
+          resolutionWithXp "resolution1" (fst <$> getXp')
+          handleExtraXp
+          endOfScenarioThen $ InterludeStep 1 Nothing
+        Resolution 2 -> do
+          adjustTokens
+          resolutionWithXp "resolution2" (fst <$> getXp')
+          handleExtraXp
+          endOfScenario
+        Resolution 3 -> do
+          crossOutRecordSetEntries VIPsInterviewed interviewed
+          adjustTokens
+          resolutionWithXp "resolution3" (fst <$> getXp')
+          handleExtraXp
+          endOfScenario
+        _ -> throw $ UnknownResolution r
       pure s
     DoStep 1 (ScenarioResolution _) -> do
       allGainXp attrs

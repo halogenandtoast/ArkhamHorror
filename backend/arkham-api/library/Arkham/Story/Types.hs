@@ -2,8 +2,6 @@
 
 module Arkham.Story.Types where
 
-import Arkham.Prelude
-
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
@@ -11,8 +9,10 @@ import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Id
 import Arkham.Json
+import Arkham.Message (Is (..))
 import Arkham.Name
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Story.Cards
@@ -56,6 +56,10 @@ data StoryAttrs = StoryAttrs
   , storyCardsUnderneath :: [Card]
   }
   deriving stock (Show, Eq)
+
+instance Is StoryAttrs StoryId where
+  is = (==) . toId
+  {-# INLINE is #-}
 
 instance AsId StoryAttrs where
   type IdOf StoryAttrs = StoryId

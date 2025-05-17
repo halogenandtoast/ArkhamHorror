@@ -1,9 +1,8 @@
-module Arkham.Enemy.Cards.BeastOfAldebaran (beastOfAldebaran, BeastOfAldebaran (..)) where
+module Arkham.Enemy.Cards.BeastOfAldebaran (beastOfAldebaran) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
-import Arkham.Prelude
+import Arkham.Enemy.Import.Lifted
+import Arkham.Strategy
 
 newtype BeastOfAldebaran = BeastOfAldebaran EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -19,5 +18,4 @@ beastOfAldebaran =
     (damageStrategyL .~ SingleTarget)
 
 instance RunMessage BeastOfAldebaran where
-  runMessage msg (BeastOfAldebaran attrs) =
-    BeastOfAldebaran <$> runMessage msg attrs
+  runMessage msg (BeastOfAldebaran attrs) = BeastOfAldebaran <$> runMessage msg attrs

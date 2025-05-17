@@ -1,11 +1,11 @@
-module Arkham.Location.Cards.GreenRoom (greenRoom, GreenRoom (..)) where
+module Arkham.Location.Cards.GreenRoom (greenRoom) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Modifier
+import Arkham.Scenarios.CurtainCall.Helpers
 
 newtype GreenRoom = GreenRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -15,11 +15,11 @@ greenRoom :: LocationCard GreenRoom
 greenRoom = location GreenRoom Cards.greenRoom 5 (PerPlayer 1)
 
 instance HasAbilities GreenRoom where
-  getAbilities (GreenRoom attrs) =
-    extendRevealed1 attrs
-      $ withTooltip
-        "{action} _Investigate_. You get +3 {intellect} for this investigation. After this skill test ends, discard each card in your hand."
-      $ investigateAbility attrs 1 mempty Here
+  getAbilities (GreenRoom a) =
+    extendRevealed1 a
+      $ scenarioI18n
+      $ withI18nTooltip "greenRoom.investigate"
+      $ investigateAbility a 1 mempty Here
 
 instance RunMessage GreenRoom where
   runMessage msg l@(GreenRoom attrs) = runQueueT $ case msg of

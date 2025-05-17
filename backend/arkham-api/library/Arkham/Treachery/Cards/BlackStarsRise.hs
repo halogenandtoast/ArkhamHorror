@@ -1,10 +1,10 @@
-module Arkham.Treachery.Cards.BlackStarsRise (blackStarsRise, BlackStarsRise (..)) where
+module Arkham.Treachery.Cards.BlackStarsRise (blackStarsRise) where
 
-import Arkham.Classes
+import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype BlackStarsRise = BlackStarsRise TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -14,24 +14,15 @@ blackStarsRise :: TreacheryCard BlackStarsRise
 blackStarsRise = treachery BlackStarsRise Cards.blackStarsRise
 
 instance RunMessage BlackStarsRise where
-  runMessage msg t@(BlackStarsRise attrs) = case msg of
+  runMessage msg t@(BlackStarsRise attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push $ revelationSkillTest sid iid attrs #intellect (Fixed 4)
+      revelationSkillTest sid iid attrs #intellect (Fixed 4)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       hasAgenda <- selectAny AnyAgenda
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ [ Label
-            "Place 1 doom on current agenda. This effect can cause the current agenda to advance."
-            [placeDoomOnAgendaAndCheckAdvance]
-          | hasAgenda
-          ]
-        <> [ Label
-              ("Take " <> tshow n <> " horror")
-              [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 n]
-           ]
+      chooseOrRunOneM iid $ withI18n do
+        when hasAgenda $ labeled' "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
+        chooseTakeHorror iid attrs n
       pure t
-    _ -> BlackStarsRise <$> runMessage msg attrs
+    _ -> BlackStarsRise <$> liftRunMessage msg attrs

@@ -1,15 +1,9 @@
-module Arkham.Treachery.Cards.DescentIntoMadness (
-  descentIntoMadness,
-  DescentIntoMadness (..),
-) where
+module Arkham.Treachery.Cards.DescentIntoMadness (descentIntoMadness) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype DescentIntoMadness = DescentIntoMadness TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -19,8 +13,9 @@ descentIntoMadness :: TreacheryCard DescentIntoMadness
 descentIntoMadness = treachery DescentIntoMadness Cards.descentIntoMadness
 
 instance RunMessage DescentIntoMadness where
-  runMessage msg t@(DescentIntoMadness attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(DescentIntoMadness attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       horrorCount <- field InvestigatorHorror iid
-      t <$ when (horrorCount >= 3) (push $ LoseActions iid source 1)
-    _ -> DescentIntoMadness <$> runMessage msg attrs
+      when (horrorCount >= 3) (loseActions iid attrs 1)
+      pure t
+    _ -> DescentIntoMadness <$> liftRunMessage msg attrs

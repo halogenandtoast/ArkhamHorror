@@ -1,13 +1,10 @@
 module Arkham.Location.Cards.RehearsalRoom (rehearsalRoom) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype RehearsalRoom = RehearsalRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -17,22 +14,15 @@ rehearsalRoom :: LocationCard RehearsalRoom
 rehearsalRoom = location RehearsalRoom Cards.rehearsalRoom 1 (PerPlayer 1)
 
 instance HasAbilities RehearsalRoom where
-  getAbilities (RehearsalRoom attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1
-          $ ForcedAbility
-          $ SkillTestResult
-            Timing.After
-            You
-            (WhileInvestigating $ LocationWithId $ toId attrs)
-            (SuccessResult $ AtLeast $ Static 2)
-      | locationRevealed attrs
-      ]
+  getAbilities (RehearsalRoom a) =
+    extendRevealed1 a
+      $ mkAbility a 1
+      $ forced
+      $ SkillTestResult #after You (WhileInvestigating $ be a) (SuccessResult $ AtLeast $ Static 2)
 
 instance RunMessage RehearsalRoom where
-  runMessage msg l@(RehearsalRoom attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          l <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
-    _ -> RehearsalRoom <$> runMessage msg attrs
+  runMessage msg l@(RehearsalRoom attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignHorror iid (attrs.ability 1) 1
+      pure l
+    _ -> RehearsalRoom <$> liftRunMessage msg attrs

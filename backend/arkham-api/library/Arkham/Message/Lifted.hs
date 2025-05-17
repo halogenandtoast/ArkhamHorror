@@ -896,7 +896,7 @@ chooseOrRunOne iid msgs = do
   push $ Msg.chooseOrRunOne player msgs
 
 continue :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> m ()
-continue iid = prompt iid "Continue"
+continue iid = prompt iid "$label.continue"
 
 continue_ :: ReverseQueue m => InvestigatorId -> m ()
 continue_ iid = continue iid (pure ())
@@ -2789,6 +2789,16 @@ discardTopOfEncounterDeck
   -> m ()
 discardTopOfEncounterDeck investigator source n =
   push $ DiscardTopOfEncounterDeck (asId investigator) n (toSource source) Nothing
+
+discardTopOfEncounterDeckAndHandle
+  :: (AsId investigator, IdOf investigator ~ InvestigatorId, Sourceable source, ReverseQueue m, Targetable target)
+  => investigator
+  -> source
+  -> Int
+  -> target
+  -> m ()
+discardTopOfEncounterDeckAndHandle investigator source n target =
+  push $ DiscardTopOfEncounterDeck (asId investigator) n (toSource source) (Just $ toTarget target)
 
 discardTopOfDeckAndHandle
   :: ( AsId investigator

@@ -1,18 +1,13 @@
 module Arkham.Location.Cards.DiningRoom (diningRoom) where
 
 import Arkham.Ability
-import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.RequestedChaosTokenStrategy
 
 newtype DiningRoom = DiningRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,42 +17,23 @@ diningRoom :: LocationCard DiningRoom
 diningRoom = location DiningRoom Cards.diningRoom 2 (Static 0)
 
 instance HasAbilities DiningRoom where
-  getAbilities (DiningRoom attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility
-          attrs
-          1
-          ( Here
-              <> InvestigatorExists
-                (HealableInvestigator (toSource attrs) HorrorType You)
-          )
-          $ ActionAbility []
-          $ ActionCost 1
-      | locationRevealed attrs
-      ]
+  getAbilities (DiningRoom a) =
+    extendRevealed1 a
+      $ restricted a 1 (Here <> exists (HealableInvestigator (a.ability 1) #horror You)) actionAbility
 
 instance RunMessage DiningRoom where
-  runMessage msg l@(DiningRoom attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg l@(DiningRoom attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       canHeal <- canHaveHorrorHealed (attrs.ability 1) iid
-      pushAll
-        $ [HealHorror (toTarget iid) (attrs.ability 1) 1 | canHeal]
-        <> [RequestChaosTokens source (Just iid) (Reveal 1) SetAside]
+      when canHeal $ healHorror iid (attrs.ability 1) 1
+      requestChaosTokens iid attrs 1
       pure l
-    RequestedChaosTokens source (Just iid) tokens | isSource attrs source -> do
-      push $ ResetChaosTokens (toSource attrs)
+    RequestedChaosTokens (isSource attrs -> True) (Just iid) tokens -> do
+      resetChaosTokens attrs
       chaosTokenFaces <- getModifiedChaosTokenFaces tokens
-      pushAll
-        $ concatMap
-          ( \case
-              chaosTokenFace
-                | chaosTokenFace `elem` [Skull, AutoFail] ->
-                    [ InvestigatorAssignDamage iid source DamageAny 0 1
-                    , PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
-                    ]
-              _ -> []
-          )
-          chaosTokenFaces
+      for_ chaosTokenFaces \chaosTokenFace ->
+        when (chaosTokenFace `elem` [Skull, AutoFail]) do
+          assignHorror iid attrs 1
+          placeDoom (attrs.ability 1) attrs 1
       pure l
-    _ -> DiningRoom <$> runMessage msg attrs
+    _ -> DiningRoom <$> liftRunMessage msg attrs

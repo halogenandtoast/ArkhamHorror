@@ -46,8 +46,8 @@ instance RunMessage TheStrangerThePathIsMine where
       card <- flipCard <$> genCard (toCardDef attrs)
       push $ PlaceNextTo ActDeckTarget [card]
       createCardEffect Cards.theStrangerThePathIsMine Nothing attrs attrs
-      advanceActDeck attrs
       moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
+      advanceActDeck attrs
       pure a
     _ -> TheStrangerThePathIsMine <$> liftRunMessage msg attrs
 

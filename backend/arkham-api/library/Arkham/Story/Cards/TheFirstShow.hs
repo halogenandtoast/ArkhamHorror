@@ -1,13 +1,9 @@
-module Arkham.Story.Cards.TheFirstShow (
-  TheFirstShow (..),
-  theFirstShow,
-) where
+module Arkham.Story.Cards.TheFirstShow (theFirstShow) where
 
-import Arkham.Prelude
-
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype TheFirstShow = TheFirstShow StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -17,8 +13,8 @@ theFirstShow :: StoryCard TheFirstShow
 theFirstShow = story TheFirstShow Cards.theFirstShow
 
 instance RunMessage TheFirstShow where
-  runMessage msg s@(TheFirstShow attrs) = case msg of
-    ResolveStory _ _ story' | story' == toId attrs -> do
-      push $ Remember InterviewedSebastien
+  runMessage msg s@(TheFirstShow attrs) = runQueueT $ case msg of
+    ResolveStory _ _ (is attrs -> True) -> do
+      remember InterviewedSebastien
       pure s
-    _ -> TheFirstShow <$> runMessage msg attrs
+    _ -> TheFirstShow <$> liftRunMessage msg attrs

@@ -1,7 +1,6 @@
 module Arkham.Helpers.Story where
 
-import Arkham.Prelude
-
+import Arkham.Asset.Types (AssetAttrs)
 import Arkham.Card
 import Arkham.Classes.HasQueue
 import Arkham.Enemy.Types (EnemyAttrs)
@@ -10,6 +9,7 @@ import Arkham.Id
 import Arkham.Location.Types (LocationAttrs)
 import Arkham.Message
 import Arkham.Message.Lifted
+import Arkham.Prelude
 import Arkham.Window qualified as Window
 
 class Flippable a where
@@ -28,6 +28,12 @@ instance Flippable EnemyId where
   flipThis _ _ = pure ()
 
 instance Flippable EnemyAttrs where
+  flipThis _ _ = pure ()
+
+instance Flippable Card where
+  flipThis _ _ = pure ()
+
+instance Flippable AssetAttrs where
   flipThis _ _ = pure ()
 
 readStory

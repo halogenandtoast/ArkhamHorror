@@ -1,4 +1,4 @@
-module Arkham.Campaign.Campaigns.ThePathToCarcosa (thePathToCarcosa, ThePathToCarcosa(..)) where
+module Arkham.Campaign.Campaigns.ThePathToCarcosa (thePathToCarcosa, ThePathToCarcosa (..)) where
 
 import Arkham.Campaign.Import.Lifted
 import Arkham.CampaignLogKey
@@ -8,6 +8,7 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Xp
 import Arkham.Matcher hiding (EnemyDefeated)
@@ -43,13 +44,22 @@ thePathToCarcosa difficulty =
     (chaosBagContents difficulty)
 
 instance RunMessage ThePathToCarcosa where
-  runMessage msg c = runQueueT $ case msg of
-    CampaignStep PrologueStep -> do
-      story prologue
-      whenAny (InvestigatorWithTitle "Lola Hayes") $ story lolaPrologue
+  runMessage msg c = runQueueT $ campaignI18n $ case msg of
+    CampaignStep PrologueStep -> scope "prologue" do
+      flavor do
+        setTitle "yellowSign.title"
+        p "yellowSign.body"
+
+      isLola <- selectAny $ InvestigatorWithTitle "Lola Hayes"
+      flavor do
+        setTitle "title"
+        p "body"
+        p.right.validate isLola "ifLola"
+        p.right.validate (not isLola) "otherwise"
+      when isLola $ flavor $ p "lola" >> p.right "proceed"
       nextCampaignStep
       pure c
-    CampaignStep (InterludeStep 1 _) -> do
+    CampaignStep (InterludeStep 1 _) -> scope "interlude1" do
       vipsSlain <- getRecordSet VIPsSlain
       let unslain =
             recordedCardCodes
@@ -65,31 +75,28 @@ instance RunMessage ThePathToCarcosa where
       removeAllChaosTokens Cultist
       removeAllChaosTokens Tablet
       removeAllChaosTokens ElderThing
-      lead <- getLead
-      chooseOneM lead do
-        labeled
-          "Things seem to have calmed down. Perhaps we should go back inside and investigate further."
-          do
-            story lunacysReward1
-            record YouIntrudedOnASecretMeeting
-            markDoubt
-            addChaosToken ElderThing
-            addChaosToken ElderThing
-        labeled "I don't trust this place one bit. Let's block the door and get the hell out of here!" do
-          story lunacysReward2
+
+      let interlude k = storyBuild $ setTitle "title" >> p k
+
+      storyWithChooseOneM' (setTitle "title" >> p "body") do
+        labeled' "chooseLunacysReward1" do
+          interlude "lunacysReward1"
+          record YouIntrudedOnASecretMeeting
+          markDoubt
+          addChaosToken ElderThing
+          addChaosToken ElderThing
+        labeled' "chooseLunacysReward2" do
+          interlude "lunacysReward2"
           record YouFledTheDinnerParty
           addChaosToken Tablet
           addChaosToken Tablet
-        labeled
-          "If these people are allowed to live, these horrors will only repeat themselves. We have to put an end to this. We have to kill them."
-          do
-            story lunacysReward3
-            record YouSlayedTheMonstersAtTheDinnerParty
-            unless (null unslain) do
-              recordSetInsert VIPsSlain unslain
-            markConviction
-            addChaosToken Cultist
-            addChaosToken Cultist
+        labeled' "chooseLunacysReward3" do
+          interlude "lunacysReward3"
+          record YouSlayedTheMonstersAtTheDinnerParty
+          unless (null unslain) $ recordSetInsert VIPsSlain unslain
+          markConviction
+          addChaosToken Cultist
+          addChaosToken Cultist
 
       nextCampaignStep
       pure c

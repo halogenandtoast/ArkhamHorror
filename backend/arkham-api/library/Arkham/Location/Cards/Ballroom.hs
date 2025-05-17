@@ -1,12 +1,11 @@
-module Arkham.Location.Cards.Ballroom (ballroom, Ballroom (..)) where
+module Arkham.Location.Cards.Ballroom (ballroom) where
 
 import Arkham.Ability
-import Arkham.Classes
+import Arkham.Capability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype Ballroom = Ballroom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -16,18 +15,16 @@ ballroom :: LocationCard Ballroom
 ballroom = location Ballroom Cards.ballroom 4 (Static 0)
 
 instance HasAbilities Ballroom where
-  getAbilities (Ballroom attrs) =
-    withRevealedAbilities
-      attrs
-      [ groupLimit PerPhase
-          $ restrictedAbility attrs 1 Here
-          $ freeReaction
-          $ PerformAction #after You #parley
-      ]
+  getAbilities (Ballroom a) =
+    extendRevealed1 a
+      $ groupLimit PerPhase
+      $ restricted a 1 (Here <> youExist can.gain.resources)
+      $ freeReaction
+      $ PerformAction #after You #parley
 
 instance RunMessage Ballroom where
-  runMessage msg l@(Ballroom attrs) = case msg of
+  runMessage msg l@(Ballroom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ TakeResources iid 2 (attrs.ability 1) False
+      gainResources iid (attrs.ability 1) 2
       pure l
-    _ -> Ballroom <$> runMessage msg attrs
+    _ -> Ballroom <$> liftRunMessage msg attrs

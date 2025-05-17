@@ -2,11 +2,11 @@ module Arkham.Asset.Assets.ConstanceDumaine (constanceDumaine) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Card
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest.Lifted (parley)
+import Arkham.Helpers.Story
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
 
 newtype ConstanceDumaine = ConstanceDumaine AssetAttrs
@@ -26,18 +26,17 @@ instance HasAbilities ConstanceDumaine where
     ]
 
 instance RunMessage ConstanceDumaine where
-  runMessage msg a@(ConstanceDumaine attrs) = case msg of
+  runMessage msg a@(ConstanceDumaine attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ parley sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
+      parley sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      modifiers <- getModifiers (InvestigatorTarget iid)
-      when (assetClues attrs > 0 && CannotTakeControlOfClues `notElem` modifiers) do
-        pushAll [RemoveClues (attrs.ability 1) (toTarget attrs) 1, GainClues iid (attrs.ability 1) 1]
+      modifiers <- getModifiers iid
+      when (attrs.token #clue > 0 && CannotTakeControlOfClues `notElem` modifiers) do
+        moveTokens (attrs.ability 1) attrs iid #clue 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      engramsOath <- genCard Story.engramsOath
-      push $ ReadStory iid engramsOath ResolveIt (Just $ toTarget attrs)
+      readStory iid attrs Story.engramsOath
       pure a
-    _ -> ConstanceDumaine <$> runMessage msg attrs
+    _ -> ConstanceDumaine <$> liftRunMessage msg attrs

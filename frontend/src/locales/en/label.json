@@ -16,6 +16,7 @@
   "events": "Events",
   "fight": "Fight",
   "investigate": "Investigate",
+  "loseActions": "Lose 1 action | Lose {count} actions",
   "loseResources": "Lose 1 resource | Lose {count} resources",
   "move": "Move",
   "noCardsFound": "No Cards Found.",
@@ -29,6 +30,7 @@
   "takeControlOfKey": "Take control of key",
   "takeDamage": "Take {count} damage",
   "takeDamageAndHorror": "Take {damage} damage and {horror} horror",
+  "takeHorrorAndDamage": "Take {horror} horror and {damage} damage",
   "takeHorror": "Take {count} horror",
   "test": "Test {'{'}{skill}{'}'} ({count})"
 }

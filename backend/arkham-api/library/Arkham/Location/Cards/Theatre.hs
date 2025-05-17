@@ -1,14 +1,8 @@
-module Arkham.Location.Cards.Theatre (
-  theatre,
-  Theatre (..),
-) where
+module Arkham.Location.Cards.Theatre (theatre) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 
 newtype Theatre = Theatre LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -5,8 +5,8 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Campaigns.TheCircleUndone.Memento.Helpers
-import Arkham.Helpers.Modifiers (modifySelect)
 import Arkham.Helpers.Investigator (getJustLocation)
+import Arkham.Helpers.Modifiers (modifySelect)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Trait (Trait (Spectral))
@@ -32,16 +32,16 @@ instance HasAbilities InPursuitOfTheLiving where
   getAbilities (InPursuitOfTheLiving (a `With` meta)) =
     guard (onSide A a)
       *> [ restricted
-            a
-            1
-            ( OnLocation
-                $ LocationWithoutModifier CannotBeFlipped
-                <> locationNotOneOf (usedLocationIds meta)
-            )
-            $ FastAbility Free
+             a
+             1
+             ( OnLocation
+                 $ LocationWithoutModifier CannotBeFlipped
+                 <> locationNotOneOf (usedLocationIds meta)
+             )
+             $ FastAbility Free
          , restricted a 2 (ExtendedCardCount 4 $ VictoryDisplayCardMatch $ basic "Unfinished Business")
-            $ Objective
-            $ forced AnyWindow
+             $ Objective
+             $ forced AnyWindow
          ]
 
 instance RunMessage InPursuitOfTheLiving where
@@ -57,4 +57,5 @@ instance RunMessage InPursuitOfTheLiving where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advancedWithOther attrs
       pure a
+    EndRound -> pure . InPursuitOfTheLiving $ attrs `with` Metadata []
     _ -> InPursuitOfTheLiving . (`with` meta) <$> liftRunMessage msg attrs

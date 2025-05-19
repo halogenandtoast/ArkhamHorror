@@ -32,6 +32,7 @@ onNextTurnEffect' eid source iid msgs =
       , effectTraits = mempty
       , effectWindow = Nothing
       , effectDisableWindow = Nothing
+      , effectOnDisable = Nothing
       , effectFinished = False
       , effectExtraMetadata = Null
       , effectSkillTest = Nothing

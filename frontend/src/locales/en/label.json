@@ -1,7 +1,8 @@
 {
+  "addToHand": "Add {name} to hand",
   "applyResults": "Apply Results",
   "assets": "Assets",
-  "cancelMove": "Cancel Move",
+  "cancelMove": "Cancel the effects of the move",
   "continue": "Continue",
   "discardCardsWithMatchingIcons": "Discard cards with at least 1 {'{'}{skillIcon}{'}'} icon | Discard cards with at least {count} {'{'}{skillIcon}{'}'} icons",
   "discardFromHand": "Discard from hand",
@@ -25,6 +26,7 @@
   "placeAgendaDoomCanAdvance": "Place 1 doom on the current agenda. This effect can cause the current agenda to advance. | Place {count} doom on the current agenda. This effect can cause the current agenda to advance.",
   "placeCluesOnYourLocation": "Place 1 of your clues on your location | Place {count} of your clues on your location",
   "play": "Play",
+  "secretlyAddToHand": "Secretly add {name} to hand",
   "skills": "Skills",
   "spendClues": "Spend a clue | Spend {count} clues",
   "spendResources": "Spend a resource | Spend {count} resources",

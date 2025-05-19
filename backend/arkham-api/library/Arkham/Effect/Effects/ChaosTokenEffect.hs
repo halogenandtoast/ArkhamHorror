@@ -33,6 +33,7 @@ chaosTokenEffect' eid metadata source chaosToken =
       , effectTraits = mempty
       , effectWindow = Nothing
       , effectDisableWindow = Nothing
+      , effectOnDisable = Nothing
       , effectFinished = False
       , effectExtraMetadata = Null
       , effectSkillTest = Nothing

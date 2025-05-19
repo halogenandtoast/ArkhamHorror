@@ -145,5 +145,10 @@ allStories =
     , SomeStoryCard memoryOfATerribleDiscovery
     , SomeStoryCard memoryOfAnAlienTranslation
     , SomeStoryCard memoryOfAnUnrequitedLove
-    , SomeStoryCard realityAcid
+    , -- Return to The Path to Carcosa
+      --- Return to The Last King
+      SomeStoryCard returnToSickeningReality_23
+    , SomeStoryCard returnToSickeningReality_24
+    , -- The Blob that ate Everything ELSE!
+      SomeStoryCard realityAcid
     ]

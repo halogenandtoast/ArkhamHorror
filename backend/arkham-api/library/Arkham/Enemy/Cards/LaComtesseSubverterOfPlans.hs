@@ -1,9 +1,10 @@
 module Arkham.Enemy.Cards.LaComtesseSubverterOfPlans (laComtesseSubverterOfPlans) where
 
 import Arkham.Ability
+import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
 import Arkham.Placement
@@ -19,15 +20,17 @@ laComtesseSubverterOfPlans =
 
 instance HasModifiersFor LaComtesseSubverterOfPlans where
   getModifiersFor (LaComtesseSubverterOfPlans a) = case a.placement of
-    HiddenInHand _ -> modifySelf a [HandSizeCardCount 4]
+    HiddenInHand _ -> modified_ a (toCard a) [HandSizeCardCount 4]
     _ -> pure ()
 
+-- The Per Phase limit on the second ability is a bit incorrect, however it's
+-- easier than batching discards currently
 instance HasAbilities LaComtesseSubverterOfPlans where
   getAbilities (LaComtesseSubverterOfPlans a) =
     extend
       a
       [ mkAbility a 1 $ forced $ EnemyDefeated #after You ByAny (be a)
-      , restricted a 2 (InYourHand <> DuringPhase #upkeep) $ forced $ DiscardedFromHand #when You #any #any
+      , playerLimit PerPhase $ restricted a 2 (InYourHand <> DuringPhase #upkeep) $ forced $ DiscardedFromHand #after You #any #any
       ]
 
 instance RunMessage LaComtesseSubverterOfPlans where
@@ -35,8 +38,8 @@ instance RunMessage LaComtesseSubverterOfPlans where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       cancelEnemyDefeat attrs
       place attrs (HiddenInHand iid)
-      pure e
-    InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
+      pure $ LaComtesseSubverterOfPlans $ attrs & tokensL .~ mempty & defeatedL .~ False
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       assignHorror iid (attrs.ability 2) 1
       pure e
     _ -> LaComtesseSubverterOfPlans <$> liftRunMessage msg attrs

@@ -308,13 +308,13 @@ instance RunMessage SkillTest where
       withQueue_ $ filter $ \case
         Will FailedSkillTest {} -> False
         Will PassedSkillTest {} -> False
-        CheckWindows [Window Timing.When (Window.WouldFailSkillTest _) _] ->
+        CheckWindows [Window Timing.When (Window.WouldFailSkillTest _ _) _] ->
           False
-        CheckWindows [Window Timing.When (Window.WouldPassSkillTest _) _] ->
+        CheckWindows [Window Timing.When (Window.WouldPassSkillTest _ _) _] ->
           False
-        Do (CheckWindows [Window Timing.When (Window.WouldFailSkillTest _) _]) ->
+        Do (CheckWindows [Window Timing.When (Window.WouldFailSkillTest _ _) _]) ->
           False
-        Do (CheckWindows [Window Timing.When (Window.WouldPassSkillTest _) _]) ->
+        Do (CheckWindows [Window Timing.When (Window.WouldPassSkillTest _ _) _]) ->
           False
         Ask player' (ChooseOne [SkillTestApplyResultsButton])
           | player == player' -> False
@@ -815,13 +815,13 @@ instance RunMessage SkillTest where
         withQueue_ $ filter $ \case
           Will FailedSkillTest {} -> False
           Will PassedSkillTest {} -> False
-          CheckWindows [Window Timing.When (Window.WouldFailSkillTest _) _] ->
+          CheckWindows [Window Timing.When (Window.WouldFailSkillTest _ _) _] ->
             False
-          CheckWindows [Window Timing.When (Window.WouldPassSkillTest _) _] ->
+          CheckWindows [Window Timing.When (Window.WouldPassSkillTest _ _) _] ->
             False
-          Do (CheckWindows [Window Timing.When (Window.WouldFailSkillTest _) _]) ->
+          Do (CheckWindows [Window Timing.When (Window.WouldFailSkillTest _ _) _]) ->
             False
-          Do (CheckWindows [Window Timing.When (Window.WouldPassSkillTest _) _]) ->
+          Do (CheckWindows [Window Timing.When (Window.WouldPassSkillTest _ _) _]) ->
             False
           Ask player' (ChooseOne [SkillTestApplyResultsButton])
             | player == player' -> False

@@ -78,7 +78,6 @@ import Arkham.Asset.Assets (
   mrPeabodyEffect,
   pnakoticManuscripts5Effect,
   prismaticSpectaclesLensToTheOtherworld2Effect,
-  riteOfSeekingEffect,
   showmanshipEffect,
   shroudOfShadows4Effect,
   shroudOfShadowsEffect,
@@ -418,7 +417,7 @@ allEffects =
     , ("01066", SomeEffect $ noop "01066")
     , ("01069", SomeEffect $ noop "01069")
     , ("01074", SomeEffect $ noop "01074")
-    , ("02028", SomeEffect riteOfSeekingEffect)
+    , ("02028", SomeEffect $ noop "02028")
     , ("02031", SomeEffect bindMonster2Effect)
     , ("02100", SomeEffect pushedIntoTheBeyondEffect)
     , ("02112", SomeEffect $ noop "02112")
@@ -561,7 +560,6 @@ allEffects =
     , ("52015", SomeEffect theStrangerAlaranMistsEffect)
     , ("52016", SomeEffect theStrangerUnderTheCityEffect)
     , ("52017", SomeEffect theStrangerHereIsMyReplyEffect)
-    , ("03047b", SomeEffect theStrangerThePathIsMineEffect)
     , ("53007", SomeEffect mistsOfRlyeh2Effect)
     , ("54006", SomeEffect wellConnected3Effect)
     , ("60101", SomeEffect nathanielChoEffect)

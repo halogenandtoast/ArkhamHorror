@@ -10,7 +10,7 @@ import Arkham.Matcher.Enemy
 import {-# SOURCE #-} Arkham.Matcher.Investigator
 import Arkham.Matcher.Location
 import Arkham.Prelude
-import {-# SOURCE #-} Arkham.Target
+import Arkham.Target
 import Arkham.Trait (Trait)
 import Data.Aeson.TH
 import GHC.OverloadedLabels
@@ -58,6 +58,7 @@ matchTarget takenActions performedActions (AnyActionTarget as) a = any (\atarget
 matchTarget _takenActions performedActions (FirstOneOfPerformed as) action =
   action `elem` as && all (\a -> all (notElem a) performedActions) as
 matchTarget _ _ (IsAction a) action = action == a
+matchTarget _ _ (AssetAction a _) action = action == a
 matchTarget _ _ (EnemyAction a _) action = action == a
 matchTarget _ _ IsAnyAction _ = True
 

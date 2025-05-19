@@ -43,6 +43,9 @@
     "curtainCall": {
       "r1": "We have to warn the police about what's going on! (-> R1)",
       "r2": "The police won't believe us. We have to solve this mystery on our own. (-> R2)"
+    },
+    "theStrangerAlaranMists": {
+      "endYourTurn": "End your turn after completing the effects of the move"
     }
   },
   "tooltips": {

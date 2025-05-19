@@ -28,7 +28,7 @@ import Arkham.Debug
 import Arkham.Deck qualified as Deck
 import Arkham.Decklist
 import Arkham.Effect
-import Arkham.Effect.Types (EffectAttrs (effectFinished))
+import Arkham.Effect.Types (EffectAttrs (effectFinished, effectOnDisable))
 import Arkham.Effect.Window (EffectWindow (EffectCardResolutionWindow))
 import Arkham.Enemy
 import Arkham.Enemy.Creation (EnemyCreation (..), EnemyCreationMethod (..))
@@ -148,6 +148,9 @@ getInvestigatorsInOrder = do
 
 runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
+  AfterThisTestResolves _sid msgs -> do
+    insertAfterMatching [AfterSkillTestQuiet msgs] (== EndSkillTestWindow)
+    pure g
   RemovePlayerCardFromGame addToRemovedFromGame card -> do
     when addToRemovedFromGame $ push $ RemovedFromGame card
     pure g
@@ -702,6 +705,7 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   DisableEffect effectId -> do
     effect <- getEffect effectId
+    for_ (attr effectOnDisable effect) pushAll
     pure
       $ g
       & (entitiesL . effectsL %~ deleteMap effectId)
@@ -915,7 +919,14 @@ runGameMessage msg g = case msg of
       Discard _ _ (EventTarget eid') -> eid == eid'
       _ -> False
     event' <- getEvent eid
-    pure $ g & entitiesL . eventsL %~ deleteMap eid & actionRemovedEntitiesL . eventsL %~ insertEntity event'
+    pure
+      $ g
+      & entitiesL
+      . eventsL
+      %~ deleteMap eid
+      & actionRemovedEntitiesL
+      . eventsL
+      %~ insertEntity event'
   RemoveEnemy eid -> do
     popMessageMatching_ $ \case
       EnemyDefeated eid' _ _ _ -> eid == eid'
@@ -1818,11 +1829,12 @@ runGameMessage msg g = case msg of
         if null options
           then pushAll msgs'
           else do
-            askMap <- fmap (QuestionLabel "Choose after skill test effect to resolve" Nothing . ChooseOneAtATime) . Map.unionsWith (<>) <$> forMaybeM (msg : options) \case
-              AfterSkillTestOption iid lbl xs -> do
-                playerId <- getPlayer iid
-                pure $ Just $ singletonMap playerId [Label lbl xs]
-              _ -> pure Nothing
+            askMap <-
+              fmap (QuestionLabel "Choose after skill test effect to resolve" Nothing . ChooseOneAtATime) . Map.unionsWith (<>) <$> forMaybeM (msg : options) \case
+                AfterSkillTestOption iid lbl xs -> do
+                  playerId <- getPlayer iid
+                  pure $ Just $ singletonMap playerId [Label lbl xs]
+                _ -> pure Nothing
             push $ AskMap askMap
     pure g
   SkillTestResultOption txt msgs -> do
@@ -1973,7 +1985,7 @@ runGameMessage msg g = case msg of
     pure g
   Do (RemoveCard c) -> do
     card <- getCard c
-    pure $ g & removedFromPlayL %~ (card:)
+    pure $ g & removedFromPlayL %~ (card :)
   AddToVictory (EnemyTarget eid) -> do
     mods <- getModifiers eid
     card <- field EnemyCard eid

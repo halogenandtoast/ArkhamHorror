@@ -29,6 +29,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Discover as X (IsInvestigate (..))
 import Arkham.Discover qualified as Msg
 import Arkham.Draw.Types
+import Arkham.Effect.Builder
 import Arkham.Effect.Types (EffectBuilder (effectBuilderEffectId), Field (..))
 import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.EncounterSet
@@ -1968,10 +1969,10 @@ insertAfterMatching
   :: (HasCallStack, MonadTrans t, HasQueue msg m) => [msg] -> (msg -> Bool) -> t m ()
 insertAfterMatching msgs p = lift $ Msg.insertAfterMatching msgs p
 
-afterMove :: HasQueue Message m => a -> InvestigatorId -> QueueT Message m () -> m ()
-afterMove _a _iid body = do
-  _ <- evalQueueT body
-  pure ()
+afterMove :: (WithEffect m, ReverseQueue m, Sourceable a) => a -> InvestigatorId -> QueueT Message m () -> m ()
+afterMove a iid body = withSource a $ effect iid do
+  removeOn #move
+  onDisable body
 
 atEndOfTurn
   :: (Sourceable a, HasQueue Message m)
@@ -2001,6 +2002,11 @@ afterEnemyAttack
 afterEnemyAttack enemy body = do
   msgs <- evalQueueT body
   push $ AfterEnemyAttack (asId enemy) msgs
+
+afterThisTestResolves :: ReverseQueue m => SkillTestId -> QueueT Message m () -> m ()
+afterThisTestResolves sid body = do
+  msgs <- evalQueueT body
+  push $ AfterThisTestResolves sid msgs
 
 afterSkillTest
   :: ( MonadTrans t
@@ -2391,8 +2397,8 @@ whenNotAtMax def n f = do
     selectOne $ EffectWithCardCode "maxef" <> EffectWithTarget (CardCodeTarget $ toCardCode def)
   case mEffect of
     Nothing -> f n
-    Just effect -> do
-      meta <- field EffectMeta effect
+    Just eff -> do
+      meta <- field EffectMeta eff
       case meta of
         Just (Msg.EffectInt x) -> if x >= n then pure () else f (n - x)
         _ -> error "Invalid meta"
@@ -2403,10 +2409,10 @@ updateMax def n ew = do
     selectOne $ EffectWithCardCode "maxef" <> EffectWithTarget (CardCodeTarget $ toCardCode def)
   case mEffect of
     Nothing -> push =<< Msg.createMaxEffect def n ew
-    Just effect -> do
-      meta <- field EffectMeta effect
+    Just eff -> do
+      meta <- field EffectMeta eff
       case meta of
-        Just (Msg.EffectInt x) -> push $ UpdateEffectMeta effect (Msg.EffectInt $ x + n)
+        Just (Msg.EffectInt x) -> push $ UpdateEffectMeta eff (Msg.EffectInt $ x + n)
         _ -> error "Invalid meta"
 
 takeControlOfAsset

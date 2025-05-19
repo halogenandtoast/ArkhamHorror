@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheLastKing (theLastKing) where
+module Arkham.Scenario.Scenarios.TheLastKing (setupTheLastKing, theLastKing, TheLastKing (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Types (Field (..))
@@ -33,6 +33,7 @@ import Arkham.Scenarios.TheLastKing.Helpers
 import Arkham.Story.Cards qualified as Story
 import Arkham.Token
 import Arkham.Trait qualified as Trait
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheLastKing = TheLastKing ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -88,6 +89,78 @@ interviewedToCardCode = \case
   InterviewedAshleigh -> Just Assets.ashleighClarke.cardCode
   _ -> Nothing
 
+setupTheLastKing :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupTheLastKing attrs = do
+  setup do
+    ul do
+      li "gatherSets"
+      li "placeLocations"
+      li.nested "bystanders.instructions" do
+        li "bystanders.note"
+      li "setAside"
+      li.nested "sickeningReality.instructions" do
+        li "sickeningReality.note"
+      unscoped $ li "shuffleRemainder"
+
+  whenReturnTo $ gather Set.ReturnToTheLastKing
+  gather Set.TheLastKing
+  gather Set.HastursGift
+  gather Set.DecayAndFilth `orWhenReturnTo` gather Set.DecayingReality
+  gather Set.TheStranger
+  gather Set.AncientEvils `orWhenReturnTo` gather Set.DelusoryEvils
+
+  startAt =<< place Locations.foyer
+  otherLocations <-
+    placeAllCapture
+      [ Locations.courtyard
+      , Locations.livingRoom
+      , Locations.ballroom
+      , Locations.diningRoom
+      , Locations.gallery
+      ]
+
+  totalClues <- getPlayerCountValue (StaticWithPerPlayer 1 1)
+  bystanders <-
+    shuffleM
+      =<< genCards
+        [ Assets.constanceDumaine
+        , Assets.jordanPerry
+        , Assets.ishimaruHaruko
+        , Assets.sebastienMoreau
+        , Assets.ashleighClarke
+        ]
+  destinations <- shuffleM otherLocations
+  for_ (zip bystanders (map AtLocation destinations)) \(bystander, placement) -> do
+    assetId <- createAssetAt bystander placement
+    placeTokens attrs assetId Clue totalClues
+
+  isReturnTo <- getIsReturnTo
+
+  setAside [Enemies.dianneDevine]
+    `orWhenReturnTo` setAside [Assets.dianneDevineHidingAnOathUnspoken, Treacheries.shockingDisplay]
+
+  whenReturnTo $ removeEvery [Enemies.dianneDevine]
+
+  placeUnderScenarioReference
+    $ [ Story.sickeningReality_65
+      , Story.sickeningReality_66
+      , Story.sickeningReality_67
+      , Story.sickeningReality_68
+      , Story.sickeningReality_69
+      ]
+    <> ( guard isReturnTo
+           *> [ Story.returnToSickeningReality_23
+              , Story.returnToSickeningReality_24
+              , Story.returnToSickeningReality_24
+              ]
+       )
+
+  setAgendaDeck
+    [ if isReturnTo then Agendas.betterNeverThanLate else Agendas.fashionablyLate
+    , Agendas.theTerrifyingTruth
+    ]
+  setActDeck [Acts.discoveringTheTruth]
+
 instance RunMessage TheLastKing where
   runMessage msg s@(TheLastKing attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
@@ -99,60 +172,7 @@ instance RunMessage TheLastKing where
       lead <- getLead
       addCampaignCardToDeck lead ShuffleIn Enemies.theManInThePallidMask
       pure s
-    Setup -> runScenarioSetup TheLastKing attrs do
-      setup do
-        ul do
-          li "gatherSets"
-          li "placeLocations"
-          li.nested "bystanders.instructions" do
-            li "bystanders.note"
-          li "setAside"
-          li.nested "sickeningReality.instructions" do
-            li "sickeningReality.note"
-          unscoped $ li "shuffleRemainder"
-
-      gather Set.TheLastKing
-      gather Set.HastursGift
-      gather Set.DecayAndFilth
-      gather Set.TheStranger
-      gather Set.AncientEvils
-
-      startAt =<< place Locations.foyer
-      otherLocations <-
-        placeAllCapture
-          [ Locations.courtyard
-          , Locations.livingRoom
-          , Locations.ballroom
-          , Locations.diningRoom
-          , Locations.gallery
-          ]
-
-      totalClues <- getPlayerCountValue (StaticWithPerPlayer 1 1)
-      bystanders <-
-        shuffleM
-          =<< genCards
-            [ Assets.constanceDumaine
-            , Assets.jordanPerry
-            , Assets.ishimaruHaruko
-            , Assets.sebastienMoreau
-            , Assets.ashleighClarke
-            ]
-      destinations <- shuffleM otherLocations
-      for_ (zip bystanders (map AtLocation destinations)) \(bystander, placement) -> do
-        assetId <- createAssetAt bystander placement
-        placeTokens attrs assetId Clue totalClues
-
-      setAside [Enemies.dianneDevine]
-
-      placeUnderScenarioReference
-        [ Story.sickeningReality_65
-        , Story.sickeningReality_66
-        , Story.sickeningReality_67
-        , Story.sickeningReality_68
-        , Story.sickeningReality_69
-        ]
-      setAgendaDeck [Agendas.fashionablyLate, Agendas.theTerrifyingTruth]
-      setActDeck [Acts.discoveringTheTruth]
+    Setup -> runScenarioSetup TheLastKing attrs $ setupTheLastKing attrs
     ResolveChaosToken _ token iid | token `elem` [Skull, Cultist, Tablet] -> do
       case token of
         Skull -> drawAnotherChaosToken iid

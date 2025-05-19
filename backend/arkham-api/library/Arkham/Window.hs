@@ -301,8 +301,8 @@ data WindowType
   | EntityDiscarded Source Target
   | WouldBeShuffledIntoDeck DeckSignifier Card
   | WouldDrawEncounterCard InvestigatorId Phase
-  | WouldFailSkillTest InvestigatorId
-  | WouldPassSkillTest InvestigatorId
+  | WouldFailSkillTest InvestigatorId Int
+  | WouldPassSkillTest InvestigatorId Int
   | WouldReady Target
   | Readies Target
   | WouldRevealChaosToken Source InvestigatorId

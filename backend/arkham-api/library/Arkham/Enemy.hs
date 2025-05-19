@@ -518,8 +518,12 @@ allEnemies =
     , -- Yog Sothoth's Emissaries
       SomeEnemyCard vassalOfTheLurker
     , -- Return to the Path to Carcosa
-      -- Return to Curtain Call
+      --- Return to Curtain Call [rtptc]
       SomeEnemyCard laComtesseSubverterOfPlans
+    , --- Return to the Last King [rtptc]
+      SomeEnemyCard dianneDevineKnowsWhatYoureUpTo
+    , --- Decaying Reality [rtptc]
+      SomeEnemyCard dianneDevineKnowsWhatYoureUpTo
     , -- Nathanial Cho
       SomeEnemyCard tommyMalloy
     , -- Curse of the Rougarou

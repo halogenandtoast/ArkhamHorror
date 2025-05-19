@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.CurtainCall (performSetup, curtainCall, CurtainCall (..)) where
+module Arkham.Scenario.Scenarios.CurtainCall (setupCurtainCall, curtainCall, CurtainCall (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -53,8 +53,8 @@ instance HasChaosTokenValue CurtainCall where
           pure $ toChaosTokenValue attrs face 4 5
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-performSetup :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
-performSetup attrs = do
+setupCurtainCall :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupCurtainCall attrs = do
   setup do
     ul do
       li "gatherSets"
@@ -130,7 +130,7 @@ instance RunMessage CurtainCall where
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
-    Setup -> runScenarioSetup CurtainCall attrs $ performSetup attrs
+    Setup -> runScenarioSetup CurtainCall attrs $ setupCurtainCall attrs
     ScenarioResolution r -> scope "resolutions" do
       let stoleFromTheBoxOffice = member StoleFromTheBoxOffice attrs.log
       case r of

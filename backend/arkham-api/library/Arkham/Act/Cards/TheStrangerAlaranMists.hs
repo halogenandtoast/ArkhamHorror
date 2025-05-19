@@ -70,7 +70,7 @@ instance RunMessage TheStrangerAlaranMistsEffect where
       pure e
     FailedThisSkillTest iid (isProxyAbilitySource attrs 1 -> True) -> do
       withI18n $ chooseOneM iid do
-        labeled' "cancelEffectsOfTheMove" $ cancelMovement attrs.source iid
+        labeled' "cancelMove" $ cancelMovement attrs.source iid
         scenarioI18n $ labeled' "theStrangerAlaranMists.endYourTurn" do
           afterMove attrs.source iid do
             setActions iid attrs.source 0

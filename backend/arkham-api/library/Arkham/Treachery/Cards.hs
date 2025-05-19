@@ -36,6 +36,9 @@ surge def = def {cdKeywords = insertSet Keyword.Surge (cdKeywords def)}
 peril :: CardDef -> CardDef
 peril def = def {cdKeywords = insertSet Keyword.Peril (cdKeywords def)}
 
+hidden :: CardDef -> CardDef
+hidden def = def {cdKeywords = insertSet Keyword.Hidden (cdKeywords def)}
+
 weakness :: CardCode -> Name -> CardDef
 weakness cardCode name = baseTreachery cardCode name Nothing (Just Weakness)
 
@@ -207,6 +210,7 @@ allEncounterTreacheryCards =
       , beyondTheVeil
       , blackStarsRise
       , blasphemousVisions
+      , bleedingWalls
       , blindsense
       , bloodOnYourHands
       , brokenRails
@@ -249,6 +253,7 @@ allEncounterTreacheryCards =
       , deepOneAssault
       , deepOneInvasion
       , deeperSlumber
+      , delusoryEvils
       , descentIntoMadness
       , dholeTunnel
       , diabolicVoices
@@ -283,6 +288,7 @@ allEncounterTreacheryCards =
       , fogOverInnsmouth
       , forcedIntoHiding
       , fracturedConsciousness
+      , fragileThoughts
       , frostbitten
       , fromTheDepths
       , frozenInFear
@@ -424,6 +430,7 @@ allEncounterTreacheryCards =
       , shapesInTheMist
       , shapesInTheWater
       , shatteredAges
+      , shockingDisplay
       , sickeningWebs
       , slitheringBehindYou
       , snakeBite
@@ -2889,6 +2896,31 @@ imperceptableCreature =
   (treachery "51046" "Imperceptable Creature" ReturnToUndimensionedAndUnseen 2)
     { cdCardTraits = setFromList [Power]
     , cdKeywords = setFromList [Keyword.Surge]
+    }
+
+shockingDisplay :: CardDef
+shockingDisplay =
+  (treachery "52027" "Shocking Display" ReturnToTheLastKing 1)
+    { cdCardTraits = setFromList [Terror]
+    , cdVictoryPoints = Just 0
+    }
+
+delusoryEvils :: CardDef
+delusoryEvils =
+  hidden $ peril $ (treachery "52065" "Delusory Evils" DelusoryEvils 3)
+    { cdCardTraits = setFromList [Curse]
+    }
+
+bleedingWalls :: CardDef
+bleedingWalls =
+  (treachery "52066" "Bleeding Walls" DecayingReality 2)
+    { cdCardTraits = setFromList [Terror]
+    }
+
+fragileThoughts :: CardDef
+fragileThoughts =
+  (treachery "52067" "Fragile Thoughts" DecayingReality 2)
+    { cdCardTraits = setFromList [Terror]
     }
 
 visionsInYourMindHorrors :: CardDef

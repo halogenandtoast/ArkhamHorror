@@ -1165,7 +1165,7 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
 
 .can-interact {
   background: rgba(0, 0, 0, 0.5);
-  outline: 2px solid var(--select);
+  border: 2px solid var(--select);
   cursor: pointer;
 }
 

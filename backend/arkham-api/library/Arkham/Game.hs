@@ -2457,6 +2457,9 @@ getAssetsMatching matcher = do
     AssetWithFewestClues assetMatcher -> do
       matches' <- filterMatcher as assetMatcher
       mins <$> forToSnd matches' (field AssetClues . toId)
+    AssetWithMostClues assetMatcher -> do
+      matches' <- filterMatcher as assetMatcher
+      maxes <$> forToSnd matches' (field AssetClues . toId)
     AssetWithUses uType -> filterM (fieldMap AssetUses ((> 0) . findWithDefault 0 uType) . toId) as
     AssetWithoutUses -> filterM (fieldMap AssetStartingUses (== NoUses) . toId) as
     AssetWithAnyRemainingHealth -> do
@@ -3070,7 +3073,7 @@ enemyMatcherFilter es matcher' = case matcher' of
     iids <- select investigatorMatcher
     pure $ flip filter es \enemy -> do
       case enemyPlacement (toAttrs enemy) of
-        Placement.StillInHand iid -> iid `elem` iids
+        Placement.HiddenInHand iid -> iid `elem` iids
         _ -> False
   EnemyIsEngagedWith investigatorMatcher -> do
     iids <- select investigatorMatcher
@@ -3238,8 +3241,8 @@ enemyMatcherFilter es matcher' = case matcher' of
           -- issue where we end up not paying some costs so if a bug opens up
           -- about that, this might be the place to look. Alternatively we
           -- might want to replace `IgnoreActionCost` with `IgnoreAllCosts`
-          Helpers.withModifiersOf iid GameSource [IgnoreActionCost] $
-            anyM
+          Helpers.withModifiersOf iid GameSource [IgnoreActionCost]
+            $ anyM
               ( andM
                   . sequence
                     [ pure . (`abilityIs` #fight)
@@ -3922,7 +3925,7 @@ instance Projection Investigator where
         -- Include in hand treacheries
         ts <- selectMapM (fmap toCard . getTreachery) (TreacheryInHandOf (InvestigatorWithId iid))
         -- Include enemies still in hand
-        es <- selectMapM (fmap toCard . getEnemy) (EnemyWithPlacement (StillInHand iid))
+        es <- selectMapM (fmap toCard . getEnemy) (EnemyWithPlacement (HiddenInHand iid))
         committed <- field InvestigatorCommittedCards attrs.id
         pure $ filter (`notElem` committed) $ investigatorHand <> ts <> es
       InvestigatorHandSize -> getHandSize (toAttrs i)

@@ -1,12 +1,11 @@
 module Arkham.Story.Cards where
 
-import Arkham.Prelude
-
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.EncounterSet
 import Arkham.Name
+import Arkham.Prelude
 
 doubleSided :: CardCode -> CardDef -> CardDef
 doubleSided cCode def =
@@ -136,6 +135,8 @@ allStoryCards =
       , memoryOfATerribleDiscovery
       , memoryOfAnAlienTranslation
       , memoryOfAnUnrequitedLove
+      , returnToSickeningReality_23
+      , returnToSickeningReality_24
       , realityAcid
       ]
 
@@ -464,6 +465,12 @@ memoryOfAnAlienTranslation = victory 1 $ doubleSided "08582" $ story "08582b" "M
 
 memoryOfAnUnrequitedLove :: CardDef
 memoryOfAnUnrequitedLove = victory 1 $ doubleSided "08583" $ story "08583b" "Memory of an Unrequited Love" FatalMirage
+
+returnToSickeningReality_23 :: CardDef
+returnToSickeningReality_23 = story "52023" "Sickening Reality" ReturnToTheLastKing
+
+returnToSickeningReality_24 :: CardDef
+returnToSickeningReality_24 = story "52024" "Sickening Reality" ReturnToTheLastKing
 
 realityAcid :: CardDef
 realityAcid =

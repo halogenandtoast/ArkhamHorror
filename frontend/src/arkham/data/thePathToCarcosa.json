@@ -1,10 +1,10 @@
 [
-  { "id": "03043", "name": "Curtain Call", "campaign": "03" },
-  { "id": "03061", "name": "The Last King", "campaign": "03" },
-  { "id": "03120", "name": "Echoes of the Past", "campaign": "03" },
-  { "id": "03159", "name": "The Unspeakable Oath", "campaign": "03" },
-  { "id": "03200", "name": "A Phantom of Truth", "campaign": "03" },
-  { "id": "03240", "name": "The Pallid Mask", "campaign": "03" },
-  { "id": "03274", "name": "Black Stars Rise", "campaign": "03" },
-  { "id": "03316", "name": "Dim Carcosa", "campaign": "03" }
+  { "id": "03043", "name": "Curtain Call", "campaign": "03", "returnTo": "52014", "returnToName": "Return to Curtain Call" },
+  { "id": "03061", "name": "The Last King", "campaign": "03", "returnTo": "52021", "returnToName": "Return to The Last King" },
+  { "id": "03120", "name": "Echoes of the Past", "campaign": "03", "returnTo": "52028", "returnToName": "Return to Echoes of the Path" },
+  { "id": "03159", "name": "The Unspeakable Oath", "campaign": "03", "returnTo": "52034", "returnToName": "Return to The Unspeakable Oath" },
+  { "id": "03200", "name": "A Phantom of Truth", "campaign": "03", "returnTo": "52040", "returnToName": "Return to A Phantom of Truth" },
+  { "id": "03240", "name": "The Pallid Mask", "campaign": "03", "returnTo": "52048", "returnToName": "Return to The Pallid Mask" },
+  { "id": "03274", "name": "Black Stars Rise", "campaign": "03", "returnTo": "52054", "returnToName": "Return to Black Stars Rise" },
+  { "id": "03316", "name": "Dim Carcosa", "campaign": "03", "returnTo": "52059", "returnToName": "Return to Dim Carcosa" }
 ]

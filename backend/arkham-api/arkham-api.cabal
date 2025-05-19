@@ -294,6 +294,7 @@ library
       Arkham.Agenda.Cards.BeckoningForPower
       Arkham.Agenda.Cards.BehindTheCurtain
       Arkham.Agenda.Cards.BesetByMonsters
+      Arkham.Agenda.Cards.BetterNeverThanLate
       Arkham.Agenda.Cards.BidingItsTime
       Arkham.Agenda.Cards.BreakingThrough
       Arkham.Agenda.Cards.BreakingThroughV2
@@ -691,6 +692,7 @@ library
       Arkham.Asset.Assets.DialOfAncientsSignsOfCataclysm4
       Arkham.Asset.Assets.DialOfAncientsSignsOfRevelation4
       Arkham.Asset.Assets.DialOfAncientsUnidentified
+      Arkham.Asset.Assets.DianneDevineHidingAnOathUnspoken
       Arkham.Asset.Assets.DigDeep
       Arkham.Asset.Assets.DigDeep2
       Arkham.Asset.Assets.DigDeep4
@@ -1082,6 +1084,7 @@ library
       Arkham.Asset.Assets.Painkillers
       Arkham.Asset.Assets.Pantalone
       Arkham.Asset.Assets.ParadoxicalCovenant2
+      Arkham.Asset.Assets.PartyGuest
       Arkham.Asset.Assets.Pathfinder1
       Arkham.Asset.Assets.PatricesViolin
       Arkham.Asset.Assets.PeltShipment
@@ -1630,6 +1633,7 @@ library
       Arkham.Enemy.Cards.CorruptedOrderly
       Arkham.Enemy.Cards.CorsairOfLeng
       Arkham.Enemy.Cards.CovenInitiate
+      Arkham.Enemy.Cards.CrazedGuest
       Arkham.Enemy.Cards.CrazedShoggoth
       Arkham.Enemy.Cards.CreatureOutOfDemhe
       Arkham.Enemy.Cards.CultistOfTheEnclave
@@ -1648,6 +1652,7 @@ library
       Arkham.Enemy.Cards.DevoteeOfTheKey
       Arkham.Enemy.Cards.DholeOfTheWastes
       Arkham.Enemy.Cards.DianneDevine
+      Arkham.Enemy.Cards.DianneDevineKnowsWhatYoureUpTo
       Arkham.Enemy.Cards.DimensionalShambler
       Arkham.Enemy.Cards.DiscipleOfTheDevourer
       Arkham.Enemy.Cards.DonLagorio
@@ -1752,6 +1757,7 @@ library
       Arkham.Enemy.Cards.LurkerInTheDark
       Arkham.Enemy.Cards.LurkingDeepOne
       Arkham.Enemy.Cards.MadPatient
+      Arkham.Enemy.Cards.MaggotSwarm
       Arkham.Enemy.Cards.MalevolentSpirit
       Arkham.Enemy.Cards.Maniac
       Arkham.Enemy.Cards.ManifestationOfMadness
@@ -3445,6 +3451,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToTheEssexCountyExpress
       Arkham.Scenario.Scenarios.ReturnToTheGathering
       Arkham.Scenario.Scenarios.ReturnToTheHouseAlwaysWins
+      Arkham.Scenario.Scenarios.ReturnToTheLastKing
       Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks
       Arkham.Scenario.Scenarios.ReturnToTheMiskatonicMuseum
       Arkham.Scenario.Scenarios.ReturnToUndimensionedAndUnseen
@@ -3783,6 +3790,8 @@ library
       Arkham.Story.Cards.PennysFate
       Arkham.Story.Cards.PrisonOfMemories
       Arkham.Story.Cards.RealityAcid
+      Arkham.Story.Cards.ReturnToSickeningReality_23
+      Arkham.Story.Cards.ReturnToSickeningReality_24
       Arkham.Story.Cards.RiverviewTheatre
       Arkham.Story.Cards.RollingPits
       Arkham.Story.Cards.ScoutingTheVale
@@ -3884,6 +3893,7 @@ library
       Arkham.Treachery.Cards.BeyondTheVeil
       Arkham.Treachery.Cards.BlackStarsRise
       Arkham.Treachery.Cards.BlasphemousVisions
+      Arkham.Treachery.Cards.BleedingWalls
       Arkham.Treachery.Cards.Blindsense
       Arkham.Treachery.Cards.Bloodlust
       Arkham.Treachery.Cards.BloodOnYourHands
@@ -3947,6 +3957,7 @@ library
       Arkham.Treachery.Cards.DeeperSlumber
       Arkham.Treachery.Cards.DeepOneAssault
       Arkham.Treachery.Cards.DeepOneInvasion
+      Arkham.Treachery.Cards.DelusoryEvils
       Arkham.Treachery.Cards.DescentIntoMadness
       Arkham.Treachery.Cards.DetachedFromReality
       Arkham.Treachery.Cards.DholeTunnel
@@ -3995,6 +4006,7 @@ library
       Arkham.Treachery.Cards.FogOverInnsmouth
       Arkham.Treachery.Cards.ForcedIntoHiding
       Arkham.Treachery.Cards.FracturedConsciousness
+      Arkham.Treachery.Cards.FragileThoughts
       Arkham.Treachery.Cards.Frenzied
       Arkham.Treachery.Cards.FromTheDepths
       Arkham.Treachery.Cards.Frostbitten
@@ -4176,6 +4188,7 @@ library
       Arkham.Treachery.Cards.ShatteredAges
       Arkham.Treachery.Cards.ShellShock
       Arkham.Treachery.Cards.ShockingDiscovery
+      Arkham.Treachery.Cards.ShockingDisplay
       Arkham.Treachery.Cards.SickeningWebs
       Arkham.Treachery.Cards.SirenCall
       Arkham.Treachery.Cards.SlitheringBehindYou

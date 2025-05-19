@@ -136,7 +136,7 @@ instance RunMessage WhereTheGodsDwell where
             (placeDoomOnAgenda 1)
             (placeDoomOnAgendaAndCheckAdvance 1)
         Tablet -> do
-          nyarlathoteps <- select $ EnemyWithPlacement (StillInHand iid) <> EnemyWithTitle "Nyarlathotep"
+          nyarlathoteps <- select $ EnemyWithPlacement (HiddenInHand iid) <> EnemyWithTitle "Nyarlathotep"
           when (notNull nyarlathoteps)
             $ chooseOne
               iid

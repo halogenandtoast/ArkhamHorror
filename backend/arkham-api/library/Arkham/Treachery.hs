@@ -626,13 +626,20 @@ allTreacheries =
       SomeTreacheryCard unspeakableOathBloodthirst
     , SomeTreacheryCard unspeakableOathCuriosity
     , SomeTreacheryCard unspeakableOathCowardice
-    , -- Maddening Delusions
+    , --- Return to the Last King [rtptc]
+      SomeTreacheryCard shockingDisplay
+    , --- Delusory Evils [rtptc]
+      SomeTreacheryCard delusoryEvils
+    , --- Decaying Reality [rtptc]
+      SomeTreacheryCard bleedingWalls
+    , SomeTreacheryCard fragileThoughts
+    , --- Maddening Delusions [rtptc]
       SomeTreacheryCard visionsInYourMindHorrors
     , SomeTreacheryCard visionsInYourMindFailure
     , SomeTreacheryCard visionsInYourMindDeath
     , SomeTreacheryCard visionsInYourMindHatred
     , SomeTreacheryCard maddeningDelusions
-    , -- Neurotic Fear
+    , --- Neurotic Fear [rtptc]
       SomeTreacheryCard voiceOfTrunembra
     , SomeTreacheryCard melancholy
     , SomeTreacheryCard painfulReflection

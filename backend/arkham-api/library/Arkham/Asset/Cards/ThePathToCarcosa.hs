@@ -323,8 +323,7 @@ bookOfShadows1 =
 
 danielChesterfield :: CardDef
 danielChesterfield =
-  ( storyAsset "03182a" ("Daniel Chesterfield" <:> "He's Not Doing All Too Well") 0 TheUnspeakableOath
-  )
+  (storyAsset "03182a" ("Daniel Chesterfield" <:> "He's Not Doing All Too Well") 0 TheUnspeakableOath)
     { cdCardTraits = setFromList [Ally, Lunatic]
     , cdCost = Nothing
     , cdUnique = True
@@ -530,6 +529,24 @@ thePallidMask =
     , cdRevelation = IsRevelation
     , cdUnique = True
     , cdLevel = Nothing
+    }
+
+dianneDevineHidingAnOathUnspoken :: CardDef
+dianneDevineHidingAnOathUnspoken =
+  (storyAsset "52025" ("Dianne Devine" <:> "Hiding an Oath Unspoken") 0 ReturnToTheLastKing)
+    { cdCardTraits = singleton Cultist
+    , cdUnique = True
+    , cdCardType = EncounterAssetType
+    , cdCost = Nothing
+    }
+
+partyGuest :: CardDef
+partyGuest =
+  (storyAsset "52026" "Party Guest" 0 ReturnToTheLastKing)
+    { cdCardType = EncounterAssetType
+    , cdCost = Nothing
+    , cdRevelation = IsRevelation
+    , cdEncounterSetQuantity = Just 2
     }
 
 courage :: CardDef

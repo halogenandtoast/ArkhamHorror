@@ -255,6 +255,9 @@ onlyEnemyEngagedWith = OnlyEnemyEngagedWith . InvestigatorWithId
 enemyInThreatAreaOf :: InvestigatorId -> EnemyMatcher
 enemyInThreatAreaOf = enemyEngagedWith
 
+enemyInHandOf :: InvestigatorId -> EnemyMatcher
+enemyInHandOf = EnemyInHandOf . InvestigatorWithId
+
 -- ** Effect Helpers **
 
 effectFrom :: HasCardCode a => a -> EffectMatcher

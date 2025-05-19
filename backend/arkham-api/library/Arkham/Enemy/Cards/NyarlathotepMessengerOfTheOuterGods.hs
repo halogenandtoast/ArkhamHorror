@@ -25,6 +25,6 @@ nyarlathotepMessengerOfTheOuterGods =
 instance RunMessage NyarlathotepMessengerOfTheOuterGods where
   runMessage msg e@(NyarlathotepMessengerOfTheOuterGods attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ PlaceEnemy attrs.id (StillInHand iid)
+      push $ PlaceEnemy attrs.id (HiddenInHand iid)
       pure e
     _ -> NyarlathotepMessengerOfTheOuterGods <$> runMessage msg attrs

@@ -315,6 +315,7 @@ passesCriteria iid mcard source' requestor windows' = \case
             -- todo we should make a cleaner method for this
             maybe False (`elem` hand) <$> fieldMay InHandAssetCardId aid
       TreacherySource tid -> elem tid <$> select (Matcher.treacheryInHandOf iid)
+      EnemySource eid -> elem eid <$> select (Matcher.enemyInHandOf iid)
       _ -> error $ "source not handled for in your hand: " <> show source
   Criteria.InYourDiscard -> do
     inSetup <- getInSetup

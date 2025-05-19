@@ -3,6 +3,7 @@
 
 module Arkham.I18n where
 
+import Arkham.Name
 import Arkham.Prelude hiding (intercalate)
 import Arkham.SkillType
 import Data.Aeson.Key qualified as K
@@ -42,6 +43,9 @@ countVar = numberVar "count"
 
 numberVar :: HasI18n => Text -> Int -> (HasI18n => a) -> a
 numberVar var val a = withVar var (Number $ fromIntegral val) a
+
+nameVar :: (Named b, HasI18n) => b -> (HasI18n => a) -> a
+nameVar val a = withVar "name" (String $ toTitle val) a
 
 skillVar :: HasI18n => SkillType -> (HasI18n => a) -> a
 skillVar v a = case v of

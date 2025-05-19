@@ -305,13 +305,13 @@ const classObject = computed(() => {
 
 .forced-ability-button {
   background-color: #222;
-  outline: 2px solid var(--select);
+  border: 2px solid var(--select);
   color: #fff;
 }
 
 .delayed-ability-button {
   background-color: #222;
-  outline: 2px solid var(--select);
+  border: 2px solid var(--select);
   color: #fff;
 }
 

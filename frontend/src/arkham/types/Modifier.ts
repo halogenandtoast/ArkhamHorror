@@ -62,6 +62,7 @@ export type ModifierType
   | RevealAnotherChaosToken
   | DoubleDifficulty
   | DoubleSuccess
+  | HandSizeCardCount
 
 export type BaseSkillOf = {
   tag: "BaseSkillOf"
@@ -77,6 +78,11 @@ export type Difficulty = {
 export type ScenarioModifier = {
   tag: "ScenarioModifier"
   contents: string
+}
+
+export type HandSizeCardCount = {
+  tag: "HandSizeCardCount"
+  contents: number
 }
 
 export type RevealAnotherChaosToken = {
@@ -222,6 +228,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.literal('ScenarioModifier'),
       contents: JsonDecoder.string()
     }, 'ScenarioModifier'),
+  JsonDecoder.object<HandSizeCardCount>(
+    {
+      tag: JsonDecoder.literal('HandSizeCardCount'),
+      contents: JsonDecoder.number()
+    }, 'HandSizeCardCount'),
   JsonDecoder.object<DiscoveredClues>(
     {
       tag: JsonDecoder.literal('DiscoveredClues'),

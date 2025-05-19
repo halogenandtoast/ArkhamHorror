@@ -30,7 +30,7 @@ watcherFromAnotherDimension =
 
 instance HasAbilities WatcherFromAnotherDimension where
   getAbilities (WatcherFromAnotherDimension a) = case a.placement of
-    StillInHand iid ->
+    HiddenInHand iid ->
       [ restricted
           a
           AbilityAttack
@@ -47,20 +47,20 @@ instance HasAbilities WatcherFromAnotherDimension where
 instance RunMessage WatcherFromAnotherDimension where
   runMessage msg e@(WatcherFromAnotherDimension attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      place attrs (StillInHand iid)
+      place attrs (HiddenInHand iid)
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       initiateEnemyAttack attrs attrs iid
       pure e
     Successful (action, (isTarget attrs -> True)) iid _ _ _ | action `elem` [#fight, #evade] -> do
       case attrs.placement of
-        StillInHand _ -> do
+        HiddenInHand _ -> do
           toDiscardBy iid (toSource attrs) attrs
           pure e
         _ -> WatcherFromAnotherDimension <$> liftRunMessage msg attrs
     FailedSkillTest iid (Just action) _ (Initiator (isActionTarget attrs -> True)) _ _ | action `elem` [#fight, #evade] -> do
       case attrs.placement of
-        StillInHand _ -> do
+        HiddenInHand _ -> do
           push $ EnemySpawnAtLocationMatching (Just iid) (locationWithInvestigator iid) (toId attrs)
           pure e
         _ -> WatcherFromAnotherDimension <$> liftRunMessage msg attrs

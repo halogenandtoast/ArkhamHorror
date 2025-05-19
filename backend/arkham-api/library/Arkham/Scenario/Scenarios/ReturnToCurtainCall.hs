@@ -31,5 +31,5 @@ returnToCurtainCall difficulty =
 
 instance RunMessage ReturnToCurtainCall where
   runMessage msg (ReturnToCurtainCall curtainCall'@(CurtainCall attrs)) = runQueueT $ scenarioI18n $ case msg of
-    Setup -> runScenarioSetup (ReturnToCurtainCall . CurtainCall) attrs (setIsReturnTo >> performSetup attrs)
+    Setup -> runScenarioSetup (ReturnToCurtainCall . CurtainCall) attrs (setIsReturnTo >> setupCurtainCall attrs)
     _ -> ReturnToCurtainCall <$> liftRunMessage msg curtainCall'

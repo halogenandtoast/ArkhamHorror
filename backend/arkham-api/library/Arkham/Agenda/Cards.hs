@@ -36,6 +36,7 @@ allAgendaCards =
       , beckoningForPower
       , behindTheCurtain
       , besetByMonsters
+      , betterNeverThanLate
       , bidingItsTime
       , breakingThrough
       , breakingThroughV2
@@ -762,6 +763,9 @@ aTearInRealityV2 = agenda "51027" "A Tear in Reality (v. II)" 1 ReturnToTheEssex
 
 breakingThroughV2 :: CardDef
 breakingThroughV2 = agenda "51054" "Breaking Through (v. II)" 3 ReturnToLostInTimeAndSpace
+
+betterNeverThanLate :: CardDef
+betterNeverThanLate = agenda "52022" "Better Never Than Late" 1 ReturnToTheLastKing
 
 aCreatureOfTheBayou :: CardDef
 aCreatureOfTheBayou = agenda "81002" "A Creature of the Bayou" 1 TheBayou

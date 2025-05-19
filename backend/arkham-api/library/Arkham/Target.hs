@@ -14,6 +14,7 @@ import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.ChaosToken.Types
 import Arkham.Id
 import Arkham.Matcher.Agenda
+import {-# SOURCE #-} Arkham.Matcher.Asset
 import Arkham.Matcher.Card
 import Arkham.Matcher.Enemy
 import Arkham.Phase
@@ -227,6 +228,7 @@ data ActionTarget
   = FirstOneOfPerformed [Action]
   | IsAction Action
   | EnemyAction Action EnemyMatcher
+  | AssetAction Action AssetMatcher
   | IsAnyAction
   | AnyActionTarget [ActionTarget]
   deriving stock (Show, Eq, Ord, Data)

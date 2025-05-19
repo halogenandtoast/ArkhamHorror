@@ -1171,6 +1171,9 @@ allAssets =
     , --- survivor [rtptc]
       SomeAssetCard lantern2
     , SomeAssetCard gravediggersShovel2
+    , --- Return To the Last King [rtptc]
+      SomeAssetCard dianneDevineHidingAnOathUnspoken
+    , SomeAssetCard partyGuest
     , -- Return to the Forgotten Age
       --- guardian [rttfa]
       SomeAssetCard survivalKnife2

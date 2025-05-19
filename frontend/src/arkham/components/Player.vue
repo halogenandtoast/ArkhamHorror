@@ -88,7 +88,7 @@ const engagedEnemies = computed(() =>
 )
 
 const inHandEnemies = computed(() =>
-  Object.values(props.game.enemies).filter((e) => e.placement.tag === "StillInHand" && e.placement.contents === investigatorId.value)
+  Object.values(props.game.enemies).filter((e) => (e.placement.tag === "StillInHand" || e.placement.tag === "HiddenInHand") && e.placement.contents === investigatorId.value)
 )
 
 const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
@@ -192,11 +192,33 @@ const topOfDeckTreachery = computed(() => {
 })
 
 const inHandTreacheries = computed(() => Object.values(props.game.treacheries).
-  filter((t) => t.placement.tag === "HiddenInHand" && t.placement.contents === id.value).
-  map((t) => t.id))
+  filter((t) => t.placement.tag === "HiddenInHand" && t.placement.contents === id.value))
 
 const totalHandSize = computed(() => {
-  return playerHand.value.length + inHandTreacheries.value.length
+  const sizeModifiers: Record<string, number> = props.game.modifiers.reduce((a, m) => {
+    if (m[1][0].type?.tag === "HandSizeCardCount") {
+      if (m[0].tag === "CardIdTarget") {
+        if(typeof m[0].contents === 'string') {
+          return {...a, [m[0].contents]: m[1][0].type.contents}
+        }
+      }
+    }
+    return a
+  }, {})
+
+  const playerHandSize = playerHand.value.reduce((a, c) => {
+    return a + (sizeModifiers[toCardContents(c).id] ?? 1)
+  }, 0)
+
+  const treacheryHandSize = inHandTreacheries.value.reduce((a, c) => {
+    return a + (sizeModifiers[c.cardId] ?? 1)
+  }, 0)
+
+  const enemyHandSize = inHandEnemies.value.reduce((a, c) => {
+    return a + (sizeModifiers[c.cardId] ?? 1)
+  }, 0)
+
+  return playerHandSize + treacheryHandSize + enemyHandSize
 })
 
 const handSizeClasses = computed(() => ({
@@ -619,12 +641,12 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
             </div>
           </template>
 
-          <template v-for="treacheryId in inHandTreacheries" :key="treacheryId">
+          <template v-for="treachery in inHandTreacheries" :key="treachery.id">
             <Treachery
               v-if="solo || (playerId == investigator.playerId)"
-              :treachery="game.treacheries[treacheryId]"
+              :treachery="treachery"
               :game="game"
-              :data-index="treacheryId"
+              :data-index="treachery.id"
               :playerId="playerId"
               @choose="$emit('choose', $event)"
             />

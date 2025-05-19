@@ -284,11 +284,14 @@ allAgendas =
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey
     , -- Return to the Dunwich Legacy
-      -- Return to the Essex County Express
+      --- Return to the Essex County Express
       SomeAgendaCard whereTheresSmoke
     , SomeAgendaCard aTearInRealityV2
-    , -- Return to Lost in Time and Space
+    , --- Return to Lost in Time and Space
       SomeAgendaCard breakingThroughV2
+    , -- Return to the Path to Carcosa
+      --- Return to the LastKing
+      SomeAgendaCard betterNeverThanLate
     , -- Curse of the Rougarou
       SomeAgendaCard aCreatureOfTheBayou
     , SomeAgendaCard theRougarouFeeds

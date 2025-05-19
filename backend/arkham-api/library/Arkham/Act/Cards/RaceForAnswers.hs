@@ -1,9 +1,13 @@
 module Arkham.Act.Cards.RaceForAnswers (raceForAnswers) where
 
+import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.Card.CardCode
 import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype RaceForAnswers = RaceForAnswers ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -19,5 +23,14 @@ instance RunMessage RaceForAnswers where
       selectEach (RevealedLocation <> "Historical Society") \location ->
         push $ PlaceCluesUpToClueValue location (toSource attrs) playerCount
       advanceActDeck attrs
+      whenM getIsReturnTo do
+        ok <- selectAny $ EmptyLocation <> "Historical Society"
+        when ok do
+          lead <- getLead
+          leadChooseOneM do
+            abilityLabeled
+              lead
+              (mkAbility (SourceableWithCardCode (CardCode "52028") ScenarioSource) 1 $ forced AnyWindow)
+              nothing
       pure a
     _ -> RaceForAnswers <$> liftRunMessage msg attrs

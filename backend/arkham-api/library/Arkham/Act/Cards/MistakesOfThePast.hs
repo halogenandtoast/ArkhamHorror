@@ -4,6 +4,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -26,5 +27,14 @@ instance RunMessage MistakesOfThePast where
       leadChooseOneM $ targets investigators (`takeControlOfSetAsideAsset` mrPeabody)
       placeSetAsideLocation_ Locations.hiddenLibrary
       advanceActDeck attrs
+      whenM getIsReturnTo do
+        ok <- selectAny $ EmptyLocation <> "Historical Society"
+        when ok do
+          lead <- getLead
+          leadChooseOneM do
+            abilityLabeled
+              lead
+              (mkAbility (SourceableWithCardCode (CardCode "52028") ScenarioSource) 1 $ forced AnyWindow)
+              nothing
       pure a
     _ -> MistakesOfThePast <$> liftRunMessage msg attrs

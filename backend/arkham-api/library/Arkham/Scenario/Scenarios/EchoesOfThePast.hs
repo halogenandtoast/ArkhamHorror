@@ -229,34 +229,38 @@ instance RunMessage EchoesOfThePast where
       pure s
     Do (ScenarioResolution r) -> scope "resolutions" do
       investigators <- allInvestigators
-      removeAllChaosTokens Cultist
-      removeAllChaosTokens Tablet
-      removeAllChaosTokens ElderThing
+      for_ [Cultist, Tablet, ElderThing] removeAllChaosTokens
       case r of
         Resolution 1 -> do
           record YouTookTheOnyxClasp
           markConviction
-          replicateM_ 2 $ addChaosToken Cultist
+          twice $ addChaosToken Cultist
           resolutionWithXp "resolution1" $ allGainXp' attrs
           forceAddCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.claspOfBlackOnyx
         Resolution 2 -> do
           record YouLeftTheOnyxClaspBehind
-          replicateM_ 2 $ addChaosToken Tablet
+          twice $ addChaosToken Tablet
           markDoubt
           resolutionWithXp "resolution2" $ allGainXp' attrs
         Resolution 3 -> do
           record YouDestroyedTheOathspeaker
-          replicateM_ 2 $ addChaosToken Tablet
+          twice $ addChaosToken Tablet
           resolutionWithXp "resolution3" $ allGainXp' attrs
           addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.theTatteredCloak
         Resolution 4 -> do
           record TheFollowersOfTheSignHaveFoundTheWayForward
-          replicateM_ 2 $ addChaosToken ElderThing
+          twice $ addChaosToken ElderThing
           resolutionWithXp "resolution4" $ allGainXpWithBonus' attrs (toBonus "resolution4" 1)
         _ -> throw $ UnknownResolution r
 
       sebastienSlain <- selectOne (VictoryDisplayCardMatch $ basic $ cardIs Enemies.sebastienMoreau)
       for_ sebastienSlain \sebastien -> recordSetInsert VIPsSlain [toCardCode sebastien]
       endOfScenario
+      pure s
+    UseCardAbility _ ScenarioSource 1 _ _ -> do
+      keepers <- getSetAsideCardsMatching $ cardIs Enemies.keeperOfTheOath
+      case keepers of
+        (keeper : _) -> createEnemyAtLocationMatching_ keeper $ EmptyLocation <> "Historical Society"
+        _ -> pure ()
       pure s
     _ -> EchoesOfThePast <$> liftRunMessage msg attrs

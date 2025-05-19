@@ -522,8 +522,9 @@ allEnemies =
       SomeEnemyCard laComtesseSubverterOfPlans
     , --- Return to the Last King [rtptc]
       SomeEnemyCard dianneDevineKnowsWhatYoureUpTo
+    , SomeEnemyCard crazedGuest
     , --- Decaying Reality [rtptc]
-      SomeEnemyCard dianneDevineKnowsWhatYoureUpTo
+      SomeEnemyCard maggotSwarm
     , -- Nathanial Cho
       SomeEnemyCard tommyMalloy
     , -- Curse of the Rougarou

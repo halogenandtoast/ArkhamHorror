@@ -4,6 +4,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Story
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
@@ -23,7 +24,14 @@ instance RunMessage ReturnToSickeningReality_24 where
     ResolveStory iid ResolveIt story' | story' == toId attrs -> do
       partyGuests <- select (assetIs Assets.partyGuest)
       if null partyGuests
-        then push $ Msg.PlaceUnderneath ScenarioTarget [toCard attrs]
+        then do
+          storyCards <-
+            select $ UnderScenarioReferenceMatch $ #story <> not_ (cardIs Cards.returnToSickeningReality_24)
+          push $ Msg.PlaceUnderneath ScenarioTarget [toCard attrs]
+          for_ (nonEmpty storyCards) \xs -> do
+            card <- sample xs
+            obtainCard card
+            readStory iid card (toCardDef card)
         else chooseTargetM iid partyGuests \guest ->
           withLocationOf guest \lid -> do
             selectEach (investigatorAt lid) \iid' -> assignHorror iid' attrs 1

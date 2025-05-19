@@ -19,7 +19,10 @@ partyGuest = asset PartyGuest Cards.partyGuest
 
 instance HasModifiersFor PartyGuest where
   getModifiersFor (PartyGuest a) =
-    modifySelect a Anyone [CannotTakeAction $ AssetAction #parley $ AssetWithTrait Bystander]
+    modifySelect
+      a
+      Anyone
+      [CannotTakeAction $ AssetAction #parley $ AssetWithTrait Bystander <> at_ (locationWithAsset a)]
 
 instance HasAbilities PartyGuest where
   getAbilities (PartyGuest a) = [restricted a 1 OnSameLocation $ parleyAction (ResourceCost 2)]

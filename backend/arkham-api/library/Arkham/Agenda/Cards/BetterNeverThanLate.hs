@@ -4,6 +4,8 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -17,13 +19,14 @@ betterNeverThanLate = agenda (1, A) BetterNeverThanLate Cards.betterNeverThanLat
 instance RunMessage BetterNeverThanLate where
   runMessage msg a@(BetterNeverThanLate attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      ok <- selectAny $ AssetWithTrait Bystander <> AssetWithClues (atLeast 1)
-      when ok do
-        createEnemyAtLocationMatching_ Cards.dianneDevineHidingAnOathUnspoken
+      locations <-
+        select
           $ LocationWithAsset
           $ AssetWithFewestClues
           $ AssetWithTrait Bystander
           <> AssetWithClues (atLeast 1)
+      leadChooseOneM do
+        targets locations (createAssetAt_ Cards.dianneDevineHidingAnOathUnspoken . AtLocation)
 
       shuffleSetAsideIntoEncounterDeck $ cardIs Treacheries.shockingDisplay
       shuffleEncounterDiscardBackIn

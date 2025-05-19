@@ -649,6 +649,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           (PlacedUnderneath ActDeckTarget card)
           [Window.PlaceUnderneath ActDeckTarget card]
     pure a
+  PlaceUnderneath ScenarioTarget cards -> do
+    pure $ a & cardsUnderScenarioReferenceL <>~ cards
   CardEnteredPlay _ card -> liftRunMessage (ObtainCard card.id) a
   ObtainCard cardId -> do
     let

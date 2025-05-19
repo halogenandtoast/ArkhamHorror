@@ -799,18 +799,21 @@ moveTokens
   -> m ()
 moveTokens source from destination token n = push $ Msg.MoveTokens (toSource source) (toSource from) (toTarget destination) token n
 
-sourceTokens :: (ReverseQueue m, Sourceable source) => source -> m Tokens
+sourceTokens :: (HasCallStack, ReverseQueue m, Sourceable source, Show source) => source -> m Tokens
 sourceTokens source = case toSource source of
   EnemySource eid -> field EnemyTokens eid
+  AssetSource eid -> field Field.AssetTokens eid
   _ ->
     error
-      "This bug is because I need to lookup the tokens for a source, but I was too lazy to impelement them all"
+      $ "This bug is because I need to lookup the tokens for a source, but I was too lazy to impelement them all: "
+      <> show source
 
 moveAllTokens
   :: ( ReverseQueue m
      , Sourceable source
      , Sourceable from
      , Targetable destination
+     , Show from
      )
   => source
   -> from
@@ -1969,7 +1972,8 @@ insertAfterMatching
   :: (HasCallStack, MonadTrans t, HasQueue msg m) => [msg] -> (msg -> Bool) -> t m ()
 insertAfterMatching msgs p = lift $ Msg.insertAfterMatching msgs p
 
-afterMove :: (WithEffect m, ReverseQueue m, Sourceable a) => a -> InvestigatorId -> QueueT Message m () -> m ()
+afterMove
+  :: (WithEffect m, ReverseQueue m, Sourceable a) => a -> InvestigatorId -> QueueT Message m () -> m ()
 afterMove a iid body = withSource a $ effect iid do
   removeOn #move
   onDisable body

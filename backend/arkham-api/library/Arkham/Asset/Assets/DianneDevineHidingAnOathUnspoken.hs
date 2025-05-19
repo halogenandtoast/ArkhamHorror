@@ -26,7 +26,15 @@ instance HasModifiersFor DianneDevineHidingAnOathUnspoken where
 
 instance HasAbilities DianneDevineHidingAnOathUnspoken where
   getAbilities (DianneDevineHidingAnOathUnspoken a) =
-    [ restricted a 1 (exists $ withTrait Bystander <> AssetWithClues (atLeast 1))
+    [ restricted
+        a
+        1
+        ( exists
+            $ AssetMatches -- avoiding the automatic merge of AssetWithFewestClues
+              [ AssetWithFewestClues (withTrait Bystander <> AssetWithClues (atLeast 1))
+              , not_ (AssetAt $ locationWithAsset a)
+              ]
+        )
         $ forced
         $ PhaseBegins #when #enemy
     ]
@@ -34,7 +42,7 @@ instance HasAbilities DianneDevineHidingAnOathUnspoken where
 instance RunMessage DianneDevineHidingAnOathUnspoken where
   runMessage msg e@(DianneDevineHidingAnOathUnspoken attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      bystanders <- select $ withTrait Bystander <> AssetWithClues (atLeast 1)
+      bystanders <- select $ AssetWithFewestClues $ withTrait Bystander <> AssetWithClues (atLeast 1)
       leadChooseOneM $ targets bystanders (`withLocationOf` place attrs)
       pure e
     _ -> DianneDevineHidingAnOathUnspoken <$> liftRunMessage msg attrs

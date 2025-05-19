@@ -1,6 +1,4 @@
-module Arkham.Location.Cards.AsylumHallsWesternPatientWing_169 (
-  asylumHallsWesternPatientWing_169,
-) where
+module Arkham.Location.Cards.AsylumHallsWesternPatientWing_169 (asylumHallsWesternPatientWing_169) where
 
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers

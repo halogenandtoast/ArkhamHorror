@@ -218,6 +218,7 @@ allEncounterEnemyCards =
       , hitVan
       , hordeOfNight
       , horrifyingShade
+      , hostOfInsanity
       , hotelGuest
       , hotelManager
       , hotelSecurity
@@ -2910,6 +2911,14 @@ keeperOfTheOath =
   (enemy "52033" "Keeper of the Oath" ReturnToEchoesOfThePast 2)
     { cdCardTraits = setFromList [Humanoid, Cultist]
     , cdVictoryPoints = Just 0
+    }
+
+hostOfInsanity :: CardDef
+hostOfInsanity =
+  (enemy "52037" "Host of Insanity" ReturnToTheUnspeakableOath 1)
+    { cdCardTraits = setFromList [Avatar, Elite]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Hunter]
+    , cdVictoryPoints = Just 1
     }
 
 maggotSwarm :: CardDef

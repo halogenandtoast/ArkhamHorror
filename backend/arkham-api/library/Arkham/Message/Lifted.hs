@@ -880,6 +880,9 @@ advanceActDeck attrs = push $ AdvanceActDeck (actDeckId attrs) (toSource attrs)
 advanceToAct :: ReverseQueue m => ActAttrs -> CardDef -> Act.ActSide -> m ()
 advanceToAct attrs nextAct actSide = push $ AdvanceToAct (actDeckId attrs) nextAct actSide (toSource attrs)
 
+advanceToAct' :: (ReverseQueue m, Sourceable source) => source -> Int -> CardDef -> Act.ActSide -> m ()
+advanceToAct' source deckId nextAct actSide = push $ AdvanceToAct deckId nextAct actSide (toSource source)
+
 shuffleSetAsideEncounterSet :: ReverseQueue m => EncounterSet -> m ()
 shuffleSetAsideEncounterSet eset = do
   cards <- getSetAsideCardsMatching (fromSets [eset])
@@ -2588,6 +2591,12 @@ discardUntilN
   -> m ()
 discardUntilN n iid source target deck matcher = do
   push $ DiscardUntilN n iid (toSource source) (toTarget target) (toDeck deck) matcher
+
+createTreacheryAt_
+  :: (ReverseQueue m, FetchCard card) => card -> Placement -> m ()
+createTreacheryAt_ c placement = do
+  card <- fetchCard c
+  push =<< Msg.createTreacheryAt_ card placement
 
 createAssetAt_
   :: (ReverseQueue m, FetchCard card) => card -> Placement -> m ()

@@ -582,6 +582,7 @@ data Message
   | CreateEndOfRoundEffect Source [Message]
   | CreateAssetAt AssetId Card Placement
   | CreateEventAt InvestigatorId Card Placement
+  | CreateTreacheryAt TreacheryId Card Placement
   | PlaceAsset AssetId Placement
   | PlaceEvent EventId Placement
   | PlaceTreachery TreacheryId Placement
@@ -875,6 +876,7 @@ data Message
   | CrossOutRecordSetEntries CampaignLogKey [SomeRecorded]
   | RefillSlots InvestigatorId
   | Remember ScenarioLogKey
+  | Forget ScenarioLogKey
   | ScenarioCountSet ScenarioCountKey Int
   | ScenarioCountIncrementBy ScenarioCountKey Int
   | ScenarioCountDecrementBy ScenarioCountKey Int

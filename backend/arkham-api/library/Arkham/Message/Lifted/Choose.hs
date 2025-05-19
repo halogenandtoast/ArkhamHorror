@@ -59,6 +59,11 @@ leadChooseOneAtATimeM choices = do
   lead <- getLead
   chooseOneAtATimeM lead choices
 
+leadChooseOrRunOneM :: ReverseQueue m => ChooseT m a -> m ()
+leadChooseOrRunOneM choices = do
+  lead <- getLead
+  chooseOrRunOneM lead choices
+
 chooseOneM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOneM iid choices = do
   ((_, ChooseState {label, labelCardCode}), choices') <- runChooseT choices

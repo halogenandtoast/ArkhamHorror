@@ -525,6 +525,8 @@ allEnemies =
     , SomeEnemyCard crazedGuest
     , --- Return to Echoes of the Past [rtptc]
       SomeEnemyCard keeperOfTheOath
+    , --- Return to The Unspeakable Oath [rtptc]
+      SomeEnemyCard hostOfInsanity
     , --- Decaying Reality [rtptc]
       SomeEnemyCard maggotSwarm
     , -- Nathanial Cho

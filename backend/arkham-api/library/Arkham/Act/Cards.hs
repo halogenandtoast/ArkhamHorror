@@ -207,6 +207,8 @@ allActCards =
       , thePit
       , theReallyBadOnesV1
       , theReallyBadOnesV2
+      , theReallyBadOnesV3
+      , theReallyBadOnesV4
       , theRelicIsMissing
       , theRescue
       , theReturnTrip
@@ -903,6 +905,14 @@ theStrangerUnderTheCity = act "52016" "The Stranger" 2 ReturnToCurtainCall
 
 theStrangerHereIsMyReply :: CardDef
 theStrangerHereIsMyReply = act "52017" "The Stranger" 2 ReturnToCurtainCall
+
+theReallyBadOnesV3 :: CardDef
+theReallyBadOnesV3 =
+  act "52035" "\"The Really Bad Ones\" (v. III)" 2 ReturnToTheUnspeakableOath
+
+theReallyBadOnesV4 :: CardDef
+theReallyBadOnesV4 =
+  act "52036" "\"The Really Bad Ones\" (v. IV)" 2 ReturnToTheUnspeakableOath
 
 findingLadyEsprit :: CardDef
 findingLadyEsprit = act "81005" "Finding Lady Esprit" 1 TheBayou

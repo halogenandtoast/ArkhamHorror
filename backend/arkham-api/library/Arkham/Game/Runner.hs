@@ -2468,6 +2468,11 @@ runGameMessage msg g = case msg of
           $ g
           & (entitiesL . eventsL . at eventId ?~ event')
           & (activeCostL %~ insertMap (activeCostId cost) cost)
+  CreateTreacheryAt treacheryId card placement -> do
+    iid <- getActiveInvestigatorId
+    let treachery = createTreachery card iid treacheryId
+    push $ PlaceTreachery treacheryId placement
+    pure $ g & entitiesL . treacheriesL . at treacheryId ?~ treachery
   CreateWeaknessInThreatArea card iid -> do
     treacheryId <- getRandom
     let treachery = createTreachery card iid treacheryId

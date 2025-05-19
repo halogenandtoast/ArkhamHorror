@@ -186,12 +186,12 @@ instance RunMessage EchoesOfThePast where
   runMessage msg s@(EchoesOfThePast attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
       didInterview <- interviewed Assets.sebastienMoreau
-      flavor
-        $ h "title"
-        >> p "body"
-        >> unscoped (campaignI18n (nameVar Assets.sebastienMoreau $ p "checkIfInterviewed"))
-        >> p.validate didInterview "proceedToSebastiensInformation"
-        >> p.validate (not didInterview) "otherwise"
+      flavor do
+        h "title"
+        p "body"
+        unscoped (campaignI18n (nameVar Assets.sebastienMoreau $ p "checkIfInterviewed"))
+        p.validate didInterview "proceedToSebastiensInformation"
+        p.validate (not didInterview) "otherwise"
       -- story intro
       whenInterviewed Assets.sebastienMoreau $ flavor $ p "sebastiensInformation"
       -- story sebastiensInformation

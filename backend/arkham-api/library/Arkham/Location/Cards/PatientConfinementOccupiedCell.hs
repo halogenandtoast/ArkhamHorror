@@ -1,11 +1,10 @@
 module Arkham.Location.Cards.PatientConfinementOccupiedCell (patientConfinementOccupiedCell) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
-import Arkham.Prelude
+import Arkham.Location.Import.Lifted
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype PatientConfinementOccupiedCell = PatientConfinementOccupiedCell LocationAttrs
@@ -22,20 +21,16 @@ patientConfinementOccupiedCell =
     (costToEnterUnrevealedL .~ ClueCost (Static 1))
 
 instance HasAbilities PatientConfinementOccupiedCell where
-  getAbilities (PatientConfinementOccupiedCell attrs) =
-    withBaseAbilities
-      attrs
-      [ skillTestAbility $ restrictedAbility attrs 1 Here $ ActionAbility [] (ActionCost 1)
-      | locationRevealed attrs
-      ]
+  getAbilities (PatientConfinementOccupiedCell a) =
+    extendRevealed1 a $ skillTestAbility $ restricted a 1 Here actionAbility
 
 instance RunMessage PatientConfinementOccupiedCell where
-  runMessage msg l@(PatientConfinementOccupiedCell attrs) = case msg of
+  runMessage msg l@(PatientConfinementOccupiedCell attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (attrs.ability 1) attrs #combat (Fixed 2)
+      beginSkillTest sid iid (attrs.ability 1) attrs #combat (Fixed 2)
       pure l
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
-      push $ Remember ReleasedADangerousPatient
+      remember ReleasedADangerousPatient
       pure l
-    _ -> PatientConfinementOccupiedCell <$> runMessage msg attrs
+    _ -> PatientConfinementOccupiedCell <$> liftRunMessage msg attrs

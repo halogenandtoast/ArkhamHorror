@@ -1,12 +1,13 @@
-module Arkham.Treachery.Cards.WallsClosingIn (wallsClosingIn, WallsClosingIn (..)) where
+module Arkham.Treachery.Cards.WallsClosingIn (wallsClosingIn) where
 
 import Arkham.Choose
-import Arkham.Classes
+import Arkham.I18n
 import Arkham.Location.Types (Field (..))
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.TheUnspeakableOath.Helpers
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype WallsClosingIn = WallsClosingIn TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -16,25 +17,19 @@ wallsClosingIn :: TreacheryCard WallsClosingIn
 wallsClosingIn = treachery WallsClosingIn Cards.wallsClosingIn
 
 instance RunMessage WallsClosingIn where
-  runMessage msg t@(WallsClosingIn attrs) = case msg of
+  runMessage msg t@(WallsClosingIn attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push
-        $ revelationSkillTest sid iid attrs #willpower
+      revelationSkillTest sid iid attrs #willpower
         $ InvestigatorLocationMaybeFieldCalculation iid LocationShroud
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label ("Take " <> tshow n <> " horror") [assignHorror iid attrs n]
-          , Label
-              "Randomly choose 1 enemy from among the set-aside Monster enemies and place it beneath the act deck without looking at it"
-              [ChooseFrom iid $ chooseRandom attrs MonstersDeck 1]
-          ]
+      chooseOneM iid do
+        withI18n $ countVar n $ labeled' "takeHorror" $ assignHorror iid attrs n
+        scenarioI18n $ labeled' "wallsClosingIn.chooseEnemy" do
+          push $ ChooseFrom iid $ chooseRandom attrs MonstersDeck 1
       pure t
     ChoseCards _ chosen | isTarget attrs chosen.target -> do
-      push $ PlaceUnderneath ActDeckTarget chosen.cards
+      placeUnderneath ActDeckTarget chosen.cards
       pure t
-    _ -> WallsClosingIn <$> runMessage msg attrs
+    _ -> WallsClosingIn <$> liftRunMessage msg attrs

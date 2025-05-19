@@ -675,3 +675,11 @@ createAssetAt c placement = do
 
 createAssetAt_ :: MonadRandom m => Card -> Placement -> m Message
 createAssetAt_ c placement = snd <$> createAssetAt c placement
+
+createTreacheryAt :: MonadRandom m => Card -> Placement -> m (TreacheryId, Message)
+createTreacheryAt c placement = do
+  treacheryId <- getRandom
+  pure (treacheryId, CreateTreacheryAt treacheryId c placement)
+
+createTreacheryAt_ :: MonadRandom m => Card -> Placement -> m Message
+createTreacheryAt_ c placement = snd <$> createTreacheryAt c placement

@@ -58,7 +58,7 @@ data WindowMatcher
   | PerformedSameTypeOfAction Timing Who ActionMatcher
   | PerformedDifferentTypesOfActionsInARow Timing Who Int ActionMatcher
   | DrawingStartingHand Timing Who
-  | InvestigatorDefeated Timing DefeatedByMatcher Who
+  | InvestigatorDefeated Timing DefeatedByMatcher Who 
   | InvestigatorWouldBeDefeated Timing DefeatedByMatcher Who
   | InvestigatorWouldTakeDamage Timing Who SourceMatcher DamageTypeMatcher
   | InvestigatorWouldTakeHorror Timing Who SourceMatcher

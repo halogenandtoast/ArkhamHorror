@@ -1,10 +1,8 @@
 module Arkham.Enemy.Cards.AsylumGorger (asylumGorger) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Prelude
 
 newtype AsylumGorger = AsylumGorger EnemyAttrs
   deriving anyclass IsEnemy
@@ -16,9 +14,8 @@ instance HasModifiersFor AsylumGorger where
 
 asylumGorger :: EnemyCard AsylumGorger
 asylumGorger =
-  enemyWith AsylumGorger Cards.asylumGorger (4, Static 5, 4) (3, 3)
-    $ spawnAtL
-    ?~ SpawnAt "Basement Hall"
+  enemy AsylumGorger Cards.asylumGorger (4, Static 5, 4) (3, 3)
+    & setSpawnAt "Basement Hall"
 
 instance RunMessage AsylumGorger where
   runMessage msg (AsylumGorger attrs) = AsylumGorger <$> runMessage msg attrs

@@ -628,6 +628,9 @@ allTreacheries =
     , SomeTreacheryCard unspeakableOathCowardice
     , --- Return to the Last King [rtptc]
       SomeTreacheryCard shockingDisplay
+    , --- Return to the Unspeakable Oath [rtptc]
+      SomeTreacheryCard radicalTreatment
+    , SomeTreacheryCard cloudedMemory
     , --- Delusory Evils [rtptc]
       SomeTreacheryCard delusoryEvils
     , --- Decaying Reality [rtptc]

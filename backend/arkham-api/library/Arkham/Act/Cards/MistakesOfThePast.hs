@@ -1,8 +1,10 @@
 module Arkham.Act.Cards.MistakesOfThePast (mistakesOfThePast) where
 
+import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Card.CardCode
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Location.Cards qualified as Locations

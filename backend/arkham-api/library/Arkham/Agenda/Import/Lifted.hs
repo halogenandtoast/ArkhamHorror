@@ -45,5 +45,10 @@ import Arkham.Question as X
 import Arkham.Source as X
 import Arkham.Target as X
 
+import Arkham.Resolution
+
 advanceAgenda :: ReverseQueue m => AgendaAttrs -> m ()
 advanceAgenda attrs = push $ AdvanceAgenda attrs.id
+
+noResolution :: ReverseQueue m => m ()
+noResolution = push $ ScenarioResolution NoResolution

@@ -1,11 +1,9 @@
-module Arkham.Enemy.Cards.MadPatient (madPatient, MadPatient (..)) where
+module Arkham.Enemy.Cards.MadPatient (madPatient) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype MadPatient = MadPatient EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -13,21 +11,17 @@ newtype MadPatient = MadPatient EnemyAttrs
 
 madPatient :: EnemyCard MadPatient
 madPatient =
-  enemyWith
-    MadPatient
-    Cards.madPatient
-    (2, Static 2, 3)
-    (1, 0)
-    $ (preyL .~ Prey MostRemainingSanity)
-    . (spawnAtL ?~ SpawnAt (NearestLocationToYou "Asylum Halls"))
+  enemy MadPatient Cards.madPatient (2, Static 2, 3) (1, 0)
+    & setPrey MostRemainingSanity
+    & setSpawnAt (NearestLocationToYou "Asylum Halls")
 
 instance HasAbilities MadPatient where
   getAbilities (MadPatient a) =
     extend a [mkAbility a 1 $ forced $ EnemyAttacked #when You AnySource (be a)]
 
 instance RunMessage MadPatient where
-  runMessage msg e@(MadPatient attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ assignHorror iid source 1
+  runMessage msg e@(MadPatient attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignHorror iid (attrs.ability 1) 1
       pure e
-    _ -> MadPatient <$> runMessage msg attrs
+    _ -> MadPatient <$> liftRunMessage msg attrs

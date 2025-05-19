@@ -330,6 +330,9 @@ allActs =
       SomeActCard theStrangerAlaranMists
     , SomeActCard theStrangerUnderTheCity
     , SomeActCard theStrangerHereIsMyReply
+    , -- Return to The Unspeakable Oath
+      SomeActCard theReallyBadOnesV3
+    , SomeActCard theReallyBadOnesV4
     , -- Curse of the Rougarou
       SomeActCard findingLadyEsprit
     , SomeActCard huntingTheRougarou

@@ -24,6 +24,9 @@ recordCount k = push . RecordCount (toCampaignLogKey k)
 remember :: ReverseQueue m => ScenarioLogKey -> m ()
 remember = push . Remember
 
+forget :: ReverseQueue m => ScenarioLogKey -> m ()
+forget = push . Forget
+
 recordForInvestigator
   :: (IsCampaignLogKey k, ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
   => investigator -> k -> m ()

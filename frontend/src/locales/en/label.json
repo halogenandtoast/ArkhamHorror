@@ -1,5 +1,6 @@
 {
   "addToHand": "Add {name} to hand",
+  "anyInvestigatorTests": "Any investigator tests {'{'}{skill}{'}'} ({count})",
   "applyResults": "Apply Results",
   "assets": "Assets",
   "cancelMove": "Cancel the effects of the move",

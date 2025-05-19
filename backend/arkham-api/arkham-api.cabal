@@ -231,6 +231,8 @@ library
       Arkham.Act.Cards.ThePit
       Arkham.Act.Cards.TheReallyBadOnesV1
       Arkham.Act.Cards.TheReallyBadOnesV2
+      Arkham.Act.Cards.TheReallyBadOnesV3
+      Arkham.Act.Cards.TheReallyBadOnesV4
       Arkham.Act.Cards.TheRelicIsMissing
       Arkham.Act.Cards.TheRescue
       Arkham.Act.Cards.TheReturnTrip
@@ -1709,6 +1711,7 @@ library
       Arkham.Enemy.Cards.Hoods
       Arkham.Enemy.Cards.HordeOfNight
       Arkham.Enemy.Cards.HorrifyingShade
+      Arkham.Enemy.Cards.HostOfInsanity
       Arkham.Enemy.Cards.HotelGuest
       Arkham.Enemy.Cards.HotelManager
       Arkham.Enemy.Cards.HotelSecurity
@@ -3460,6 +3463,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToTheLastKing
       Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks
       Arkham.Scenario.Scenarios.ReturnToTheMiskatonicMuseum
+      Arkham.Scenario.Scenarios.ReturnToTheUnspeakableOath
       Arkham.Scenario.Scenarios.ReturnToUndimensionedAndUnseen
       Arkham.Scenario.Scenarios.ReturnToWhereDoomAwaits
       Arkham.Scenario.Scenarios.ShatteredAeons
@@ -3562,7 +3566,7 @@ library
       Arkham.Scenarios.TheSearchForKadath.Helpers
       Arkham.Scenarios.TheSecretName.Helpers
       Arkham.Scenarios.TheSecretName.Story
-      Arkham.Scenarios.TheUnspeakableOath.Story
+      Arkham.Scenarios.TheUnspeakableOath.Helpers
       Arkham.Scenarios.TheUntamedWilds.Story
       Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
       Arkham.Scenarios.TheWagesOfSin.Helpers
@@ -3927,6 +3931,7 @@ library
       Arkham.Treachery.Cards.Chronophobia
       Arkham.Treachery.Cards.ClawsOfSteam
       Arkham.Treachery.Cards.CloseWatch
+      Arkham.Treachery.Cards.CloudedMemory
       Arkham.Treachery.Cards.CollapsingReality
       Arkham.Treachery.Cards.Confiscation
       Arkham.Treachery.Cards.ConspiracyOfBlood
@@ -4151,6 +4156,7 @@ library
       Arkham.Treachery.Cards.PulledByTheStars
       Arkham.Treachery.Cards.Punishment
       Arkham.Treachery.Cards.PushedIntoTheBeyond
+      Arkham.Treachery.Cards.RadicalTreatment
       Arkham.Treachery.Cards.RaiseTheStakes
       Arkham.Treachery.Cards.RationalThought
       Arkham.Treachery.Cards.RealityAcid5U21

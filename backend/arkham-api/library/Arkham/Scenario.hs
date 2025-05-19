@@ -57,86 +57,68 @@ fromTarot t = SourceableWithCardCode (CardCode $ tshow t.arcana) (TarotSource t)
 
 instance HasAbilities TarotCard where
   getAbilities c@(TarotCard facing arcana) = case arcana of
-    TheLoversVI ->
-      [ restrictedAbility
-          (fromTarot c)
-          1
-          AffectedByTarot
-          $ ForcedAbility (Matcher.GameBegins #when)
-      ]
+    TheLoversVI -> [restricted (fromTarot c) 1 AffectedByTarot $ forced (Matcher.GameBegins #when)]
     StrengthVIII | facing == Upright -> do
-      [ restrictedAbility
-          (fromTarot c)
-          1
-          AffectedByTarot
-          $ ForcedAbility (Matcher.GameBegins #when)
-        ]
+      [restricted (fromTarot c) 1 AffectedByTarot $ forced (Matcher.GameBegins #when)]
     WheelOfFortuneX -> case facing of
       Upright ->
-        [ restrictedAbility (fromTarot c) 1 (AffectedByTarot <> ActExists Matcher.ActCanWheelOfFortuneX)
-            $ ReactionAbility (Matcher.RevealChaosToken #when Matcher.You #autofail) Free
+        [ restricted (fromTarot c) 1 (AffectedByTarot <> ActExists Matcher.ActCanWheelOfFortuneX)
+            $ freeReaction (Matcher.RevealChaosToken #when Matcher.You #autofail)
         ]
       Reversed ->
-        [ restrictedAbility
+        [ restricted
             (fromTarot c)
             1
             (AffectedByTarot <> AgendaExists Matcher.AgendaCanWheelOfFortuneX)
-            $ ForcedAbility (Matcher.RevealChaosToken #when Matcher.You #eldersign)
+            $ forced (Matcher.RevealChaosToken #when Matcher.You #eldersign)
         ]
     JusticeXI -> case facing of
       Upright ->
         [ groupLimit PerGame
-            $ restrictedAbility (fromTarot c) 1 AffectedByTarot
-            $ ForcedAbility
-              ( Matcher.WouldPlaceDoomCounter
-                  #when
-                  Matcher.AnySource
-                  (Matcher.AgendaTargetMatches Matcher.FinalAgenda)
-              )
+            $ restricted (fromTarot c) 1 AffectedByTarot
+            $ forced
+            $ Matcher.WouldPlaceDoomCounter
+              #when
+              Matcher.AnySource
+              (Matcher.AgendaTargetMatches Matcher.FinalAgenda)
         ]
       Reversed ->
-        [ restrictedAbility (fromTarot c) 1 AffectedByTarot
-            $ ForcedAbility (Matcher.AgendaEntersPlay #when Matcher.FinalAgenda)
+        [ restricted (fromTarot c) 1 AffectedByTarot
+            $ forced (Matcher.AgendaEntersPlay #when Matcher.FinalAgenda)
         ]
-    TheDevilXV ->
-      [restrictedAbility (fromTarot c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameBegins #when)]
+    TheDevilXV -> [restricted (fromTarot c) 1 AffectedByTarot $ forced (Matcher.GameBegins #when)]
     TheTowerXVI -> do
       -- This is handled by SetupInvestigators below
-      [restrictedAbility (fromTarot c) 1 AffectedByTarot $ ForcedAbility Matcher.NotAnyWindow]
+      [restricted (fromTarot c) 1 AffectedByTarot $ forced Matcher.NotAnyWindow]
     TheStarXVII -> case facing of
       Upright ->
-        [ restrictedAbility
+        [ restricted
             (fromTarot c)
             1
             ( AffectedByTarot
                 <> DuringSkillTest Matcher.AnySkillTest
-                <> InvestigatorExists
+                <> exists
                   ( Matcher.AnyInvestigator
                       [ Matcher.HealableInvestigator (TarotSource c) DamageType Matcher.You
                       , Matcher.HealableInvestigator (TarotSource c) HorrorType Matcher.You
                       ]
                   )
             )
-            $ ForcedAbility (Matcher.RevealChaosToken #when Matcher.You #eldersign)
+            $ forced (Matcher.RevealChaosToken #when Matcher.You #eldersign)
         ]
       Reversed ->
-        [ restrictedAbility
-            (fromTarot c)
-            1
-            (AffectedByTarot <> DuringSkillTest Matcher.AnySkillTest)
-            $ ForcedAbility (Matcher.RevealChaosToken #when Matcher.You #autofail)
+        [ restricted (fromTarot c) 1 (AffectedByTarot <> DuringSkillTest Matcher.AnySkillTest)
+            $ forced (Matcher.RevealChaosToken #when Matcher.You #autofail)
         ]
     TheMoonXVIII -> case facing of
       Upright ->
         [ playerLimit PerGame
-            $ restrictedAbility (fromTarot c) 1 AffectedByTarot
-            $ ForcedAbility (Matcher.DeckWouldRunOutOfCards #when Matcher.You)
+            $ restricted (fromTarot c) 1 AffectedByTarot
+            $ forced (Matcher.DeckWouldRunOutOfCards #when Matcher.You)
         ]
-      Reversed -> [restrictedAbility (fromTarot c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameBegins #when)]
-    JudgementXX ->
-      [restrictedAbility (fromTarot c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameBegins #when)]
-    TheWorldXXI ->
-      [restrictedAbility (fromTarot c) 1 AffectedByTarot $ ForcedAbility (Matcher.GameEnds #when)]
+      Reversed -> [restricted (fromTarot c) 1 AffectedByTarot $ forced (Matcher.GameBegins #when)]
+    JudgementXX -> [restricted (fromTarot c) 1 AffectedByTarot $ forced (Matcher.GameBegins #when)]
+    TheWorldXXI -> [restricted (fromTarot c) 1 AffectedByTarot $ forced (Matcher.GameEnds #when)]
     _ -> []
 
 tarotInvestigator :: HasGame m => TarotCard -> m (Maybe InvestigatorId)
@@ -647,6 +629,7 @@ allScenarios =
     , ("51053", SomeScenario returnToLostInTimeAndSpace)
     , ("52014", SomeScenario returnToCurtainCall)
     , ("52021", SomeScenario returnToTheLastKing)
+    , ("52028", SomeScenario returnToEchoesOfThePast)
     , ("81001", SomeScenario curseOfTheRougarou)
     , ("82001", SomeScenario carnevaleOfHorrors)
     , ("84001", SomeScenario murderAtTheExcelsiorHotel)
@@ -730,6 +713,7 @@ scenarioEncounterSets =
     , ("51053", EncounterSet.ReturnToLostInTimeAndSpace)
     , ("52014", EncounterSet.ReturnToCurtainCall)
     , ("52021", EncounterSet.ReturnToTheLastKing)
+    , ("52028", EncounterSet.ReturnToEchoesOfThePast)
     , ("81001", EncounterSet.CurseOfTheRougarou)
     , ("82001", EncounterSet.CarnevaleOfHorrors)
     , ("84001", EncounterSet.MurderAtTheExcelsiorHotel)

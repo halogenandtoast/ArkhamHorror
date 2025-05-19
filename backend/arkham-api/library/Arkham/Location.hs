@@ -846,6 +846,11 @@ allLocations =
       --- Return to Curtain Call
       SomeLocationCard theatreLounge
     , SomeLocationCard propShop
+    , --- Return to Echoes of the Past
+      SomeLocationCard returnToQuietHalls
+    , SomeLocationCard historicalSocietyDustyArchives
+    , SomeLocationCard historicalSocietyMuseumStorage
+    , SomeLocationCard historicalSocietyBoilerRoom
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

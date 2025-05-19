@@ -247,6 +247,7 @@ allEncounterEnemyCards =
       , kamanThah
       , keeperOfSecrets
       , keeperOfTheGreatLibrary
+      , keeperOfTheOath
       , knightOfTheInnerCircle
       , knightOfTheOuterVoid
       , laComtesseSubverterOfPlans
@@ -2901,6 +2902,13 @@ crazedGuest =
   (enemy "52024b" "Crazed Guest" ReturnToTheLastKing 2)
     { cdCardTraits = setFromList [Humanoid, Monster, Lunatic]
     , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 0
+    }
+
+keeperOfTheOath :: CardDef
+keeperOfTheOath =
+  (enemy "52033" "Keeper of the Oath" ReturnToEchoesOfThePast 2)
+    { cdCardTraits = setFromList [Humanoid, Cultist]
     , cdVictoryPoints = Just 0
     }
 

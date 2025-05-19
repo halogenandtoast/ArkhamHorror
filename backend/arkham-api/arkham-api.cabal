@@ -1738,6 +1738,7 @@ library
       Arkham.Enemy.Cards.KamanThah
       Arkham.Enemy.Cards.KeeperOfSecrets
       Arkham.Enemy.Cards.KeeperOfTheGreatLibrary
+      Arkham.Enemy.Cards.KeeperOfTheOath
       Arkham.Enemy.Cards.KnightOfTheInnerCircle
       Arkham.Enemy.Cards.KnightOfTheOuterVoid
       Arkham.Enemy.Cards.LaboringGug
@@ -2919,11 +2920,14 @@ library
       Arkham.Location.Cards.HiddenTunnelAWayOut
       Arkham.Location.Cards.HiddenTunnelEntranceToTheDepths
       Arkham.Location.Cards.HideousPalace
+      Arkham.Location.Cards.HistoricalSocietyBoilerRoom
+      Arkham.Location.Cards.HistoricalSocietyDustyArchives
       Arkham.Location.Cards.HistoricalSocietyHistoricalLibrary_133
       Arkham.Location.Cards.HistoricalSocietyHistoricalLibrary_136
       Arkham.Location.Cards.HistoricalSocietyHistoricalMuseum_130
       Arkham.Location.Cards.HistoricalSocietyHistoricalMuseum_132
       Arkham.Location.Cards.HistoricalSocietyMeetingRoom
+      Arkham.Location.Cards.HistoricalSocietyMuseumStorage
       Arkham.Location.Cards.HistoricalSocietyPeabodysOffice
       Arkham.Location.Cards.HistoricalSocietyReadingRoom
       Arkham.Location.Cards.HistoricalSocietyRecordOffice_129
@@ -3108,6 +3112,7 @@ library
       Arkham.Location.Cards.ReturnToEngineCar
       Arkham.Location.Cards.ReturnToHouseInTheReeds
       Arkham.Location.Cards.ReturnToOsbornsGeneralStore
+      Arkham.Location.Cards.ReturnToQuietHalls
       Arkham.Location.Cards.ReturnToSchoolhouse
       Arkham.Location.Cards.RialtoBridge
       Arkham.Location.Cards.RitualGrounds
@@ -3445,6 +3450,7 @@ library
       Arkham.Scenario.Scenarios.PointOfNoReturn
       Arkham.Scenario.Scenarios.ReturnToBloodOnTheAltar
       Arkham.Scenario.Scenarios.ReturnToCurtainCall
+      Arkham.Scenario.Scenarios.ReturnToEchoesOfThePast
       Arkham.Scenario.Scenarios.ReturnToExtracurricularActivities
       Arkham.Scenario.Scenarios.ReturnToLostInTimeAndSpace
       Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow
@@ -3516,7 +3522,6 @@ library
       Arkham.Scenarios.DimCarcosa.Story
       Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Story
       Arkham.Scenarios.EchoesOfThePast.Helpers
-      Arkham.Scenarios.EchoesOfThePast.Story
       Arkham.Scenarios.ExtracurricularActivity.Helpers
       Arkham.Scenarios.FatalMirage.Helpers
       Arkham.Scenarios.ForTheGreaterGood.Helpers

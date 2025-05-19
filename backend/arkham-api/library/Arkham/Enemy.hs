@@ -523,6 +523,8 @@ allEnemies =
     , --- Return to the Last King [rtptc]
       SomeEnemyCard dianneDevineKnowsWhatYoureUpTo
     , SomeEnemyCard crazedGuest
+    , --- Return to Echoes of the Past [rtptc]
+      SomeEnemyCard keeperOfTheOath
     , --- Decaying Reality [rtptc]
       SomeEnemyCard maggotSwarm
     , -- Nathanial Cho

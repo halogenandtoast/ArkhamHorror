@@ -140,6 +140,7 @@ data InvestigatorMatcher
   | InvestigatorMatches [InvestigatorMatcher]
   | InvestigatorWithLowestSkill SkillType InvestigatorMatcher
   | InvestigatorWithHighestSkill SkillType InvestigatorMatcher
+  | InvestigatorWithHiddenCard
   | AnyInvestigator [InvestigatorMatcher]
   | TurnInvestigator
   | ActiveInvestigator

@@ -420,11 +420,14 @@ allLocationCards =
       , hiddenTunnelAWayOut
       , hiddenTunnelEntranceToTheDepths
       , hideousPalace
+      , historicalSocietyBoilerRoom
+      , historicalSocietyDustyArchives
       , historicalSocietyHistoricalLibrary_133
       , historicalSocietyHistoricalLibrary_136
       , historicalSocietyHistoricalMuseum_130
       , historicalSocietyHistoricalMuseum_132
       , historicalSocietyMeetingRoom
+      , historicalSocietyMuseumStorage
       , historicalSocietyPeabodysOffice
       , historicalSocietyReadingRoom
       , historicalSocietyRecordOffice_129
@@ -609,6 +612,7 @@ allLocationCards =
       , returnToEngineCar
       , returnToHouseInTheReeds
       , returnToOsbornsGeneralStore
+      , returnToQuietHalls
       , returnToSchoolhouse
       , rialtoBridge
       , ritualGrounds
@@ -8536,7 +8540,7 @@ ascendingPathWarpedAndTwisted =
     [Dunwich, SentinelHill]
     Square
     [Triangle, Diamond, T, Equals, Moon, Trefoil]
-    WhereDoomAwaits
+    ReturnToWhereDoomAwaits
 
 abandonedCamp :: CardDef
 abandonedCamp =
@@ -8642,6 +8646,51 @@ propShop =
       Moon
       [Diamond]
       ReturnToCurtainCall
+
+returnToQuietHalls :: CardDef
+returnToQuietHalls = location "52029" "Quiet Halls" [Basement] Droplet [Square] ReturnToEchoesOfThePast
+
+historicalSocietyDustyArchives :: CardDef
+historicalSocietyDustyArchives =
+  locationWithUnrevealed
+    "52030"
+    "Historical Society"
+    [Basement]
+    NoSymbol
+    [Droplet]
+    ("Historical Society" <:> "Dusty Archives")
+    [Basement, Passageway]
+    Trefoil
+    [Droplet]
+    ReturnToEchoesOfThePast
+
+historicalSocietyMuseumStorage :: CardDef
+historicalSocietyMuseumStorage =
+  locationWithUnrevealed
+    "52031"
+    "Historical Society"
+    [Basement]
+    NoSymbol
+    [Droplet]
+    ("Historical Society" <:> "Museum Storage")
+    [Basement, Passageway]
+    Trefoil
+    [Droplet]
+    ReturnToEchoesOfThePast
+
+historicalSocietyBoilerRoom :: CardDef
+historicalSocietyBoilerRoom =
+  locationWithUnrevealed
+    "52032"
+    "Historical Society"
+    [Basement]
+    NoSymbol
+    [Droplet]
+    ("Historical Society" <:> "Boiler Room")
+    [Basement, Passageway]
+    Trefoil
+    [Droplet]
+    ReturnToEchoesOfThePast
 
 cursedShores :: CardDef
 cursedShores =

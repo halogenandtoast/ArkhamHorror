@@ -810,6 +810,11 @@ getInvestigatorsMatching matcher = do
     MostKeys -> flip filterM as $ \i -> do
       mostKeyCount <- getMax0 <$> selectAgg (Max0 . Set.size) InvestigatorKeys UneliminatedInvestigator
       pure $ mostKeyCount == Set.size (investigatorKeys $ toAttrs i)
+    InvestigatorWithHiddenCard -> flip filterM as $ \i -> do
+      andM
+        [ selectAny $ EnemyInHandOf (InvestigatorWithId $ toId i)
+        , selectAny $ TreacheryInHandOf (InvestigatorWithId $ toId i)
+        ]
     You -> flip filterM as $ \i -> do
       you <- getInvestigator . view activeInvestigatorIdL =<< getGame
       pure $ you == i
@@ -2052,6 +2057,10 @@ getLocationsMatching lmatcher = do
     YourLocation -> guardYourLocation $ fmap (\l -> [l | l `elem` ls]) . getLocation
     NotYourLocation -> guardYourLocation
       $ \yourLocation -> pure $ filter ((/= yourLocation) . toId) ls
+    LocationSharesTraitWith inner -> do
+      traits <- Set.unions <$> selectField LocationTraits inner
+      let hasMatchingTrait = fieldP LocationTraits (any (`member` traits)) . toId
+      filterM hasMatchingTrait ls
     LocationWithTrait trait -> do
       let hasMatchingTrait = fieldP LocationTraits (trait `member`) . toId
       filterM hasMatchingTrait ls

@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.SeekerOfCarcosa (seekerOfCarcosa, SeekerOfCarcosa (..)) where
+module Arkham.Enemy.Cards.SeekerOfCarcosa (seekerOfCarcosa) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
@@ -14,9 +14,8 @@ newtype SeekerOfCarcosa = SeekerOfCarcosa EnemyAttrs
 
 seekerOfCarcosa :: EnemyCard SeekerOfCarcosa
 seekerOfCarcosa =
-  enemyWith SeekerOfCarcosa Cards.seekerOfCarcosa (2, Static 3, 2) (0, 1)
-    $ spawnAtL
-    ?~ SpawnAt (EmptyLocation <> "Historical Society")
+  enemy SeekerOfCarcosa Cards.seekerOfCarcosa (2, Static 3, 2) (0, 1)
+    & setSpawnAt (EmptyLocation <> "Historical Society")
 
 instance HasAbilities SeekerOfCarcosa where
   getAbilities (SeekerOfCarcosa attrs) =

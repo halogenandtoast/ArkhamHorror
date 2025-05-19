@@ -1,6 +1,4 @@
-module Arkham.Location.Cards.HistoricalSocietyRecordOffice_138 (
-  historicalSocietyRecordOffice_138,
-) where
+module Arkham.Location.Cards.HistoricalSocietyRecordOffice_138 (historicalSocietyRecordOffice_138) where
 
 import Arkham.Ability
 import Arkham.GameValue
@@ -8,7 +6,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message qualified as Msg
 
 newtype HistoricalSocietyRecordOffice_138 = HistoricalSocietyRecordOffice_138 LocationAttrs
   deriving anyclass IsLocation
@@ -38,6 +35,6 @@ instance HasAbilities HistoricalSocietyRecordOffice_138 where
 instance RunMessage HistoricalSocietyRecordOffice_138 where
   runMessage msg l@(HistoricalSocietyRecordOffice_138 attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ Msg.RevealLocation Nothing attrs.id
+      reveal attrs
       pure l
     _ -> HistoricalSocietyRecordOffice_138 <$> liftRunMessage msg attrs

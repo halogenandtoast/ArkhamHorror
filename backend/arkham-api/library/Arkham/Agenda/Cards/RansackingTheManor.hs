@@ -2,17 +2,12 @@ module Arkham.Agenda.Cards.RansackingTheManor (ransackingTheManor) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.GameValue
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Phase
-import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -21,37 +16,25 @@ newtype RansackingTheManor = RansackingTheManor AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ransackingTheManor :: AgendaCard RansackingTheManor
-ransackingTheManor =
-  agenda (2, A) RansackingTheManor Cards.ransackingTheManor (PerPlayer 2)
+ransackingTheManor = agenda (2, A) RansackingTheManor Cards.ransackingTheManor (PerPlayer 2)
 
 instance HasModifiersFor RansackingTheManor where
   getModifiersFor (RansackingTheManor attrs) =
-    modified_ attrs (PhaseTarget MythosPhase) [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
+    modified_ attrs (PhaseTarget #mythos) [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
 
 instance HasAbilities RansackingTheManor where
   getAbilities (RansackingTheManor attrs) =
-    [ mkAbility attrs 1
-        $ ForcedAbility
-        $ PlacedCounterOnEnemy #after AnyEnemy AnySource #clue AnyValue
-    ]
+    [mkAbility attrs 1 $ forced $ PlacedCounterOnEnemy #after AnyEnemy AnySource #clue AnyValue]
 
 instance RunMessage RansackingTheManor where
-  runMessage msg a@(RansackingTheManor attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      spawnSebastienMoreau <- not <$> slain Enemies.sebastienMoreau
-      spawnSebastienMoreauMessages <- do
-        card <- genCard Enemies.sebastienMoreau
-        createEnemyAtLocationMatching_ card "Entry Hall"
-      spawnPossessedOathspeaker <- do
-        possessedOathspeaker <- getSetAsideCard Enemies.possessedOathspeaker
-        createEnemyAtLocationMatching_ possessedOathspeaker "Entry Hall"
-
-      pushAll
-        $ spawnPossessedOathspeaker
-        : [spawnSebastienMoreauMessages | spawnSebastienMoreau]
-          <> [advanceAgendaDeck attrs]
+  runMessage msg a@(RansackingTheManor attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      createEnemyAtLocationMatching_ Enemies.possessedOathspeaker "Entry Hall"
+      whenM (not <$> slain Enemies.sebastienMoreau) do
+        createEnemyAtLocationMatching_ Enemies.sebastienMoreau "Entry Hall"
+      advanceAgendaDeck attrs
       pure a
-    UseCardAbility _ (isSource attrs -> True) 1 [(windowType -> Window.PlacedClues _ target n)] _ -> do
-      push $ FlipClues target n
+    UseCardAbility _ (isSource attrs -> True) 1 [windowType -> Window.PlacedClues _ target n] _ -> do
+      flipCluesToDoom target n
       pure a
-    _ -> RansackingTheManor <$> runMessage msg attrs
+    _ -> RansackingTheManor <$> liftRunMessage msg attrs

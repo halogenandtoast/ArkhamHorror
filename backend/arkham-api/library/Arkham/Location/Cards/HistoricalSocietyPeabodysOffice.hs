@@ -1,6 +1,4 @@
-module Arkham.Location.Cards.HistoricalSocietyPeabodysOffice (
-  historicalSocietyPeabodysOffice,
-) where
+module Arkham.Location.Cards.HistoricalSocietyPeabodysOffice (historicalSocietyPeabodysOffice) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
@@ -9,7 +7,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message qualified as Msg
 
 newtype HistoricalSocietyPeabodysOffice = HistoricalSocietyPeabodysOffice LocationAttrs
   deriving anyclass IsLocation
@@ -17,11 +14,7 @@ newtype HistoricalSocietyPeabodysOffice = HistoricalSocietyPeabodysOffice Locati
 
 historicalSocietyPeabodysOffice :: LocationCard HistoricalSocietyPeabodysOffice
 historicalSocietyPeabodysOffice =
-  location
-    HistoricalSocietyPeabodysOffice
-    Cards.historicalSocietyPeabodysOffice
-    4
-    (PerPlayer 2)
+  location HistoricalSocietyPeabodysOffice Cards.historicalSocietyPeabodysOffice 4 (PerPlayer 2)
 
 instance HasModifiersFor HistoricalSocietyPeabodysOffice where
   getModifiersFor (HistoricalSocietyPeabodysOffice a) =
@@ -41,6 +34,6 @@ instance HasAbilities HistoricalSocietyPeabodysOffice where
 instance RunMessage HistoricalSocietyPeabodysOffice where
   runMessage msg l@(HistoricalSocietyPeabodysOffice attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ Msg.RevealLocation Nothing attrs.id
+      reveal attrs
       pure l
     _ -> HistoricalSocietyPeabodysOffice <$> liftRunMessage msg attrs

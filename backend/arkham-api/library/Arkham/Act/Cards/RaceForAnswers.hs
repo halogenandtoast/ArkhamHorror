@@ -1,37 +1,23 @@
 module Arkham.Act.Cards.RaceForAnswers (raceForAnswers) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype RaceForAnswers = RaceForAnswers ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 raceForAnswers :: ActCard RaceForAnswers
-raceForAnswers =
-  act
-    (1, A)
-    RaceForAnswers
-    Cards.raceForAnswers
-    (Just $ GroupClueCost (PerPlayer 2) Anywhere)
+raceForAnswers = act (1, A) RaceForAnswers Cards.raceForAnswers (groupClueCost (PerPlayer 2))
 
 instance RunMessage RaceForAnswers where
-  runMessage msg a@(RaceForAnswers attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
-      locations <-
-        select
-          $ RevealedLocation
-          <> LocationWithTitle
-            "Historical Society"
+  runMessage msg a@(RaceForAnswers attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       playerCount <- getPlayerCount
-      pushAll
-        $ [ PlaceCluesUpToClueValue location (toSource attrs) playerCount
-          | location <- locations
-          ]
-        <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]
+      selectEach (RevealedLocation <> "Historical Society") \location ->
+        push $ PlaceCluesUpToClueValue location (toSource attrs) playerCount
+      advanceActDeck attrs
       pure a
-    _ -> RaceForAnswers <$> runMessage msg attrs
+    _ -> RaceForAnswers <$> liftRunMessage msg attrs

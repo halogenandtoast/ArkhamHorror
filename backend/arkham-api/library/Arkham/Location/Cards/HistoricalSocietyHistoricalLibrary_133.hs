@@ -3,14 +3,11 @@ module Arkham.Location.Cards.HistoricalSocietyHistoricalLibrary_133 (
 ) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Discover
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
 
 newtype HistoricalSocietyHistoricalLibrary_133 = HistoricalSocietyHistoricalLibrary_133 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -26,27 +23,26 @@ historicalSocietyHistoricalLibrary_133 =
     (PerPlayer 2)
 
 instance HasAbilities HistoricalSocietyHistoricalLibrary_133 where
-  getAbilities (HistoricalSocietyHistoricalLibrary_133 attrs) =
-    withBaseAbilities attrs
-      $ if attrs.revealed
+  getAbilities (HistoricalSocietyHistoricalLibrary_133 a) =
+    withBaseAbilities a
+      $ if a.revealed
         then
           [ playerLimit PerRound
               $ reaction
-                attrs
+                a
                 1
-                (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (LocationWithId attrs.id))
-                (HorrorCost (toSource attrs) YouTarget 2)
-              $ SkillTestResult #after You (whileInvestigating attrs) (SuccessResult AnyValue)
+                (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (be a))
+                (HorrorCost (toSource a) YouTarget 2)
+              $ SkillTestResult #after You (whileInvestigating a) #success
           ]
-        else
-          [mkAbility attrs 1 $ forced $ EnemySpawns #when (LocationWithId attrs.id) AnyEnemy]
+        else [mkAbility a 1 $ forced $ EnemySpawns #when (be a) AnyEnemy]
 
 instance RunMessage HistoricalSocietyHistoricalLibrary_133 where
-  runMessage msg l@(HistoricalSocietyHistoricalLibrary_133 attrs) = case msg of
+  runMessage msg l@(HistoricalSocietyHistoricalLibrary_133 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 | attrs.revealed -> do
-      push $ Msg.DiscoverClues iid $ discover attrs (attrs.ability 1) 1
+      discoverAt NotInvestigate iid (attrs.ability 1) attrs 1
       pure l
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ Msg.RevealLocation Nothing attrs.id
+      reveal attrs
       pure l
-    _ -> HistoricalSocietyHistoricalLibrary_133 <$> runMessage msg attrs
+    _ -> HistoricalSocietyHistoricalLibrary_133 <$> liftRunMessage msg attrs

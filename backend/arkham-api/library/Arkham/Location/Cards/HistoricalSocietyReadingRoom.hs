@@ -1,17 +1,13 @@
-module Arkham.Location.Cards.HistoricalSocietyReadingRoom (
-  historicalSocietyReadingRoom,
-) where
+module Arkham.Location.Cards.HistoricalSocietyReadingRoom (historicalSocietyReadingRoom) where
 
-import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Investigate
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.EchoesOfThePast.Helpers
 
 newtype HistoricalSocietyReadingRoom = HistoricalSocietyReadingRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -23,35 +19,29 @@ historicalSocietyReadingRoom = location HistoricalSocietyReadingRoom Cards.histo
 instance HasAbilities HistoricalSocietyReadingRoom where
   getAbilities (HistoricalSocietyReadingRoom attrs) =
     withBaseAbilities attrs
-      $ if locationRevealed attrs
+      $ if attrs.revealed
         then
-          [ withTooltip
-              "{action}: _Investigate_. If you succeed, instead of discovering clues, choose an enemy with doom on it. Take 1 of that enemy's doom, flip it to its clue side, and place it on your investigator. (Group limit once per round)."
+          [ scenarioI18n
+              $ withI18nTooltip "historicalSocietyReadingRoom.investigate"
               $ groupLimit PerRound
               $ investigateAbility attrs 1 mempty Here
           ]
         else [mkAbility attrs 1 $ ForcedAbility $ EnemySpawns #when (LocationWithId $ toId attrs) AnyEnemy]
 
 instance RunMessage HistoricalSocietyReadingRoom where
-  runMessage msg l@(HistoricalSocietyReadingRoom attrs) = case msg of
+  runMessage msg l@(HistoricalSocietyReadingRoom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 | locationRevealed attrs -> do
       sid <- getRandom
-      pushM $ mkInvestigate sid iid (toAbilitySource attrs 1)
+      investigate sid iid (attrs.ability 1)
       pure l
     UseThisAbility _ (isSource attrs -> True) 1 | not (locationRevealed attrs) -> do
-      push $ Msg.RevealLocation Nothing (toId attrs)
+      reveal attrs
       pure l
     Successful (Action.Investigate, _) iid (isAbilitySource attrs 1 -> True) _ _ -> do
-      enemies <- selectMap EnemyTarget $ EnemyWithDoom $ atLeast 1
-      player <- getPlayer iid
-      pushIfAny enemies
-        $ chooseOrRunOne player
-        $ [ targetLabel
-            target
-            [ RemoveDoom (toAbilitySource attrs 1) target 1
-            , PlaceClues (toAbilitySource attrs 1) (InvestigatorTarget iid) 1
-            ]
-          | target <- enemies
-          ]
+      enemies <- select $ EnemyWithDoom $ atLeast 1
+      chooseOrRunOneM iid do
+        targets enemies \enemy -> do
+          removeDoom (attrs.ability 1) enemy 1
+          placeClues (attrs.ability 1) iid 1
       pure l
-    _ -> HistoricalSocietyReadingRoom <$> runMessage msg attrs
+    _ -> HistoricalSocietyReadingRoom <$> liftRunMessage msg attrs

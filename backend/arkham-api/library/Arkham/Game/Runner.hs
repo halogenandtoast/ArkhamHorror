@@ -1047,6 +1047,8 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . actsL . at aid ?~ either throw id (lookupAct aid deckNum $ toCardId card)
   AddAgenda agendaDeckNum card -> do
     let aid = AgendaId $ toCardCode card
+    let (before, _, after) = frame (Window.EnterPlay $ toTarget aid)
+    pushAll [before, after]
     pure $ g & entitiesL . agendasL . at aid ?~ lookupAgenda aid agendaDeckNum (toCardId card)
   ReassignHorror source target n -> do
     replaceWindowMany

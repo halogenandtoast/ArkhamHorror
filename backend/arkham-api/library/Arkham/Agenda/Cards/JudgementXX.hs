@@ -25,7 +25,7 @@ judgementXX = agenda (1, A) JudgementXX Cards.judgementXX (Static 12)
 
 instance HasAbilities JudgementXX where
   getAbilities (JudgementXX a) =
-    [ mkAbility a 1 $ forced $ PlacedDoomCounter #after AnySource AnyTarget
+    [ restricted a 1 NotSetup $ forced $ PlacedDoomCounter #after AnySource AnyTarget
     , mkAbility a 2 $ forced $ InvestigatorDefeated #when ByAny You
     ]
 

@@ -37,6 +37,7 @@ data SkillTest = SkillTest
   , skillTestType :: SkillTestType
   , skillTestBaseValue :: SkillTestBaseValue
   , skillTestDifficulty :: SkillTestDifficulty
+  , skillTestOriginalDifficulty :: Maybe SkillTestDifficulty
   , skillTestSetAsideChaosTokens :: [ChaosToken]
   , skillTestRevealedChaosTokens :: [ChaosToken] -- tokens may change from physical representation
   , skillTestResolvedChaosTokens :: [ChaosToken]
@@ -146,6 +147,7 @@ buildSkillTest sid iid (toSource -> source) (toTarget -> target) stType bValue d
     , skillTestType = stType
     , skillTestBaseValue = bValue
     , skillTestDifficulty = difficulty
+    , skillTestOriginalDifficulty = Just difficulty
     , skillTestSetAsideChaosTokens = mempty
     , skillTestRevealedChaosTokens = mempty
     , skillTestResolvedChaosTokens = mempty
@@ -185,6 +187,7 @@ resetSkillTest sid skillTest =
     , skillTestCommittedCards = mempty
     , skillTestSubscribers = [toTarget $ skillTestInvestigator skillTest]
     , skillTestId = sid
+    , skillTestDifficulty = fromMaybe (skillTestDifficulty skillTest) (skillTestOriginalDifficulty skillTest)
     }
 
 $(deriveJSON defaultOptions ''SkillTestBaseValue)
@@ -199,6 +202,7 @@ instance FromJSON SkillTest where
     skillTestType <- o .: "type"
     skillTestBaseValue <- o .: "baseValue"
     skillTestDifficulty <- o .: "difficulty"
+    skillTestOriginalDifficulty <- o .:? "originalDifficulty"
     skillTestSetAsideChaosTokens <- o .: "setAsideChaosTokens"
     skillTestRevealedChaosTokens <- o .: "revealedChaosTokens"
     skillTestResolvedChaosTokens <- o .: "resolvedChaosTokens"

@@ -369,4 +369,7 @@ defaultCampaignRunner msg a = case msg of
           | step == normalizedCampaignStep (campaignStep attrs) ->
               attrs & xpBreakdownL .~ (step, report' <> report) : rest
         _ -> attrs & xpBreakdownL %~ ((normalizedCampaignStep (campaignStep attrs), report) :)
+  UseAbility _ ab _ | ab.source == CampaignSource -> do
+    push $ Do msg
+    pure a
   _ -> pure a

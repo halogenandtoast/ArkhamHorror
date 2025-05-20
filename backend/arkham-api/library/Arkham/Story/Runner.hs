@@ -46,4 +46,7 @@ instance RunMessage StoryAttrs where
       pure attrs
     PlaceUnderneath target cards | isTarget attrs target -> do
       pure $ attrs & cardsUnderneathL <>~ cards
+    UseAbility _ ab _ | isSource attrs ab.source -> do
+      push $ Do msg
+      pure attrs
     _ -> pure attrs

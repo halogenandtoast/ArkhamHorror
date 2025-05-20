@@ -33,6 +33,9 @@ sourceCardL = lens skillTestSourceCard $ \m x -> m {skillTestSourceCard = x}
 difficultyL :: Lens' SkillTest SkillTestDifficulty
 difficultyL = lens skillTestDifficulty $ \m x -> m {skillTestDifficulty = x}
 
+originalDifficultyL :: Lens' SkillTest (Maybe SkillTestDifficulty)
+originalDifficultyL = lens skillTestOriginalDifficulty $ \m x -> m {skillTestOriginalDifficulty = x}
+
 subscribersL :: Lens' SkillTest [Target]
 subscribersL = lens skillTestSubscribers $ \m x -> m {skillTestSubscribers = x}
 

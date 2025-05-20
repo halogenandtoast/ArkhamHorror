@@ -47,6 +47,11 @@
       "v2": "Otherwise, use Act 2—”The Really Bad Ones” (v. II)"
     }
   },
+  "tooltips": {
+    "noAsylum": {
+      "resign": "Finally, a way out!"
+    }
+  },
   "label": {
     "cloudedMemory": {
       "forget": "Forget something an investigator has \"remembered\" from an ability on a location. (It is no longer true.)",
@@ -54,15 +59,15 @@
       "horror": "Take 1 horror and Clouded Memory gains surge."
 
     },
-    "noAsylum": {
-      "resign": "Finally, a way out!"
-    },
     "infirmary": {
       "healDamage": "Heal 1 damage and take 1 direct horror",
       "healHorror": "Heal 1 horror and take 1 direct damage"
     },
     "wallsClosingIn": {
       "chooseEnemy": "Randomly choose 1 enemy from among the set-aside Monster enemies and place it beneath the act deck without looking at it"
+    },
+    "arkhamAsylum": {
+      "youKnockHerOverAndGrabTheKeys": "You knock her over and grab the keys"
     }
   },
   "resolutions": {

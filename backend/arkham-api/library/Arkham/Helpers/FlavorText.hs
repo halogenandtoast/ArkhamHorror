@@ -5,7 +5,8 @@ import Arkham.FlavorText as X (li)
 import Arkham.FlavorText qualified as FT
 import Arkham.Helpers.Query (allPlayers)
 import Arkham.I18n
-import Arkham.I18n as X (scope, unscoped, withVars, withVar, countVar)
+import Arkham.I18n as X (countVar, scope, unscoped, withVar, withVars)
+import Arkham.Id
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (story)
 import Arkham.Message.Lifted.Queue
@@ -63,3 +64,8 @@ instance HasField "right" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBu
     ModifyEntry mods inner' -> addEntry $ ModifyEntry (RightAligned : mods) inner'
     inner' -> addEntry $ ModifyEntry [RightAligned] inner'
 
+storyOnlyBuild :: ReverseQueue m => [InvestigatorId] -> FlavorTextBuilder () -> m ()
+storyOnlyBuild [] _ = pure ()
+storyOnlyBuild iids builder = do
+  players <- traverse getPlayer iids
+  push $ Msg.story players (buildFlavor builder)

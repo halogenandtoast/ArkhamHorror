@@ -9,7 +9,6 @@ import Arkham.ChaosToken
 import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Xp
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Message.Lifted.Choose
@@ -100,41 +99,41 @@ instance RunMessage ThePathToCarcosa where
 
       nextCampaignStep
       pure c
-    CampaignStep (InterludeStep 2 mInterludeKey) -> do
+    CampaignStep (InterludeStep 2 mInterludeKey) -> scope "interlude2" do
+      let interlude k = storyBuild $ setTitle "title" >> p k
+      let
+        handleWarning = do
+          labeled' "ignoreTheWarning" do
+            interlude "ignoreTheWarning"
+            record YouIgnoredDanielsWarning
+            markDoubtN 2
+          labeled' "heedTheWarning" do
+            interlude "heedTheWarning"
+            record YouHeadedDanielsWarning
+            markConvictionN 2
+            interludeXpAll (toBonus "bonus" 1)
       case mInterludeKey of
         Nothing -> error "Missing key from The Unspeakable Oath"
         Just DanielSurvived -> do
-          story danielSurvived
-          interludeXpAll (WithBonus "Gain insight into the machinations of the Tattered King." 2)
-        Just DanielDidNotSurvive -> story danielDidNotSurvive
-        Just DanielWasPossessed -> story danielWasPossessed
+          storyWithChooseOneM' (setTitle "title" >> p "danielSurvived") handleWarning
+          interludeXpAll (toBonus "bonus" 2)
+        Just DanielDidNotSurvive ->
+          storyWithChooseOneM' (setTitle "title" >> p "danielDidNotSurvive") handleWarning
+        Just DanielWasPossessed ->
+          storyWithChooseOneM' (setTitle "title" >> p "danielWasPossessed") handleWarning
         Just _ -> error "Invalid key for The Unspeakable Oath"
-
-      lead <- getLead
-      chooseOneM lead do
-        labeled
-          "Possession? Oaths? There must be another explanation for all of this. Proceed to Ignore the Warning."
-          do
-            story ignoreTheWarning
-            record YouIgnoredDanielsWarning
-            markDoubtN 2
-        labeled
-          "We must heed Daniel’s warning. We must not speak the name of the King in Yellow. Proceed to Heed the Warning."
-          do
-            story headTheWarning
-            record YouHeadedDanielsWarning
-            markConvictionN 2
-            interludeXpAll (WithBonus "Gain insight into the machinations of the Tattered King." 1)
 
       nextCampaignStep
       pure c
-    CampaignStep EpilogueStep -> do
+    CampaignStep EpilogueStep -> scope "epilogue" do
       possessed <- getRecordSet Possessed
       let
         investigators = flip mapMaybe possessed $ \case
           SomeRecorded RecordableCardCode (Recorded cardCode) -> Just (InvestigatorId cardCode)
           _ -> Nothing
-      unless (null investigators) $ storyOnly investigators epilogue
+      unless (null investigators) $ storyOnlyBuild investigators do
+        setTitle "title"
+        p "body"
       gameOver
       pure c
     EnemyDefeated _ cardId _ _ -> do

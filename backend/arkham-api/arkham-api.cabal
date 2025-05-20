@@ -1488,7 +1488,6 @@ library
       Arkham.Campaigns.TheInnsmouthConspiracy.Memory
       Arkham.Campaigns.ThePathToCarcosa.CampaignSteps
       Arkham.Campaigns.ThePathToCarcosa.ChaosBag
-      Arkham.Campaigns.ThePathToCarcosa.FlavorText
       Arkham.Campaigns.ThePathToCarcosa.Helpers
       Arkham.Campaigns.ThePathToCarcosa.Import
       Arkham.Campaigns.ThePathToCarcosa.Key

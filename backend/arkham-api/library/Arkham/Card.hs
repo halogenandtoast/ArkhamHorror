@@ -33,11 +33,11 @@ import Arkham.Queue
 import Arkham.SkillType
 import Arkham.Taboo.Types
 import Arkham.Trait
+import Control.Monad.State.Strict (StateT)
+import Control.Monad.Writer.Strict (WriterT)
 import Data.Aeson.TH
 import Data.Text qualified as T
 import GHC.Records
-import Control.Monad.State.Strict (StateT)
-import Control.Monad.Writer.Strict (WriterT)
 
 lookupCard
   :: (HasCallStack, HasCardCode cardCode) => cardCode -> CardId -> Card
@@ -315,10 +315,12 @@ instance HasTraits Card where
     PlayerCard pc -> case pc.cardCode of
       "09021" ->
         let customizations = cdCustomizations $ toCardDef pc
-        in toTraits pc <> if hasCustomization_ customizations (pcCustomizations pc) Enchanted then singleton Relic else mempty
+         in toTraits pc
+              <> if hasCustomization_ customizations (pcCustomizations pc) Enchanted then singleton Relic else mempty
       "09022" ->
         let customizations = cdCustomizations $ toCardDef pc
-        in toTraits pc <> if hasCustomization_ customizations (pcCustomizations pc) Heirloom then singleton Relic else mempty
+         in toTraits pc
+              <> if hasCustomization_ customizations (pcCustomizations pc) Heirloom then singleton Relic else mempty
       _ -> toTraits pc
     EncounterCard ec -> toTraits ec
     VengeanceCard c -> toTraits c
@@ -400,7 +402,9 @@ instance Eq Card where
 flipCard :: Card -> Card
 flipCard (EncounterCard ec) =
   if cdDoubleSided (toCardDef ec)
-    then EncounterCard $ ec {ecIsFlipped = not <$> ecIsFlipped ec}
+    then case cdOtherSide (toCardDef ec) of
+      Just otherSideCode -> EncounterCard $ ec {ecCardCode = otherSideCode, ecOriginalCardCode = otherSideCode}
+      Nothing -> EncounterCard $ ec {ecIsFlipped = not <$> ecIsFlipped ec}
     else EncounterCard ec {ecIsFlipped = Just False}
 flipCard (PlayerCard pc) = case cdOtherSide (toCardDef pc) of
   Just otherSide -> PlayerCard $ pc {pcCardCode = otherSide}

@@ -973,9 +973,7 @@ danielChesterfield =
   unique
     $ ( enemy
           "03182b"
-          ( "Daniel Chesterfield"
-              <:> "…Or At Least, What's Left of Him"
-          )
+          ("Daniel Chesterfield" <:> "…Or At Least, What's Left of Him")
           TheUnspeakableOath
           1
       )

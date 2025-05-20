@@ -476,7 +476,10 @@ class FetchCard a where
   fetchCard :: (HasCallStack, ReverseQueue m) => a -> m Card
 
 instance FetchCard UniqueFetchCard where
-  fetchCard (UniqueFetchCard def) = maybe (genCard def) pure =<< findCard ((== def.cardCode) . toCardCode)
+  fetchCard (UniqueFetchCard def) = do
+    findCard ((== def.cardCode) . toCardCode) >>= \case
+      Nothing -> genCard def
+      Just card -> pure $ if cardCodeExactEq def.cardCode card.cardCode then card else flipCard card
 
 instance FetchCard CardDef where
   fetchCard def =
@@ -880,7 +883,8 @@ advanceActDeck attrs = push $ AdvanceActDeck (actDeckId attrs) (toSource attrs)
 advanceToAct :: ReverseQueue m => ActAttrs -> CardDef -> Act.ActSide -> m ()
 advanceToAct attrs nextAct actSide = push $ AdvanceToAct (actDeckId attrs) nextAct actSide (toSource attrs)
 
-advanceToAct' :: (ReverseQueue m, Sourceable source) => source -> Int -> CardDef -> Act.ActSide -> m ()
+advanceToAct'
+  :: (ReverseQueue m, Sourceable source) => source -> Int -> CardDef -> Act.ActSide -> m ()
 advanceToAct' source deckId nextAct actSide = push $ AdvanceToAct deckId nextAct actSide (toSource source)
 
 shuffleSetAsideEncounterSet :: ReverseQueue m => EncounterSet -> m ()

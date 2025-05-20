@@ -123,6 +123,11 @@ button {
 }
 
 @font-face {
+  font-family: "Wolgast";
+  src: url("/fonts/WolgastScript.ttf");
+}
+
+@font-face {
   font-family: "ArkhamFlavor";
   src: url("/fonts/ArnoPro-ItalicCaption.ttf");
 }

@@ -74,4 +74,7 @@ instance RunMessage SkillAttrs where
         : [UnsealChaosToken token | token <- skillSealedChaosTokens a]
           <> [RemovedFromPlay source]
       pure a
+    UseAbility _ ab _ | isSource a ab.source -> do
+      push $ Do msg
+      pure a
     _ -> pure a

@@ -4360,7 +4360,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             | iid' <- x : xs
             ]
     pure a
-  UseAbility iid ability windows | iid == investigatorId -> do
+  UseAbility _ ab _ | isSource a ab.source -> do
+    push $ Do msg
+    pure a
+  Do (UseAbility iid ability windows) | iid == investigatorId -> do
     activeInvestigator <- selectOne ActiveInvestigator
     mayIgnoreLocationEffectsAndKeywords <- hasModifier iid MayIgnoreLocationEffectsAndKeywords
     let

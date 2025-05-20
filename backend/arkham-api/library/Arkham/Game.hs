@@ -5072,6 +5072,7 @@ runMessages mLogger = do
                   PayCosts {} -> False
                   Run {} -> False
                   UseAbility {} -> False
+                  Do (UseAbility {}) -> False
                   When {} -> False
                   WhenCanMove {} -> False
                   Would {} -> False

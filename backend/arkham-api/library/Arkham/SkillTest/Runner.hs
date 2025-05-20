@@ -151,7 +151,7 @@ instance RunMessage SkillTest where
               skillTestTarget
               skillTestType
               skillTestBaseValue
-              skillTestDifficulty
+              (fromMaybe skillTestDifficulty skillTestOriginalDifficulty)
           )
           { skillTestAction = skillTestAction
           }
@@ -412,6 +412,7 @@ instance RunMessage SkillTest where
       pure
         $ s
         & (resultL .~ SucceededBy Automatic modifiedSkillValue')
+        & (originalDifficultyL .~ skillTestOriginalDifficulty)
         & (difficultyL .~ SkillTestDifficulty (Fixed 0))
     PassSkillTestBy n -> do
       player <- getPlayer skillTestInvestigator

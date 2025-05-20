@@ -1430,4 +1430,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       <> [PlacedLocationDirection lid RightOf leftLocation | leftLocation <- maybeToList mLeftLocation]
     pure $ a & gridL .~ grid
   ForTarget ScenarioTarget msg' -> liftRunMessage msg' a
+  UseAbility _ ab _ | isSource a ab.source -> do
+    push $ Do msg
+    pure a
   _ -> pure a

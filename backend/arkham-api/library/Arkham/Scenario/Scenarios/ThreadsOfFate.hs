@@ -286,8 +286,9 @@ instance RunMessage ThreadsOfFate where
 
       record $ if act3dCompleted then TheInvestigatorsRescuedAlejandro else AlejandroIsMissing
 
+      forgingYourOwnPath <- getHasRecord YouAreForgingYourOwnWay
       alejandroOwned <- getIsAlreadyOwned Assets.alejandroVela
-      when (act3dCompleted && not alejandroOwned) do
+      when (act3dCompleted && not alejandroOwned && not forgingYourOwnPath) do
         addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.alejandroVela
 
       unless act3dCompleted do
@@ -295,11 +296,13 @@ instance RunMessage ThreadsOfFate where
 
       record $ if act3fCompleted then TheInvestigatorsForgedABondWithIchtaca else IchtacaIsInTheDark
 
-      when act3fCompleted do
+      when (act3fCompleted && not forgingYourOwnPath) do
         addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.ichtacaTheForgottenGuardian
 
       addCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.expeditionJournal
-      allGainXpWithBonus attrs $ toBonus "bonus" act1sCompleted
+      allGainXpWithBonus attrs $ mconcat $ toBonus "bonus" act1sCompleted
+        : [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath]
+          <> [toBonus "forgingYourOwnPath" 2 | act3fCompleted && forgingYourOwnPath]
       endOfScenario
       pure s
     _ -> ThreadsOfFate <$> liftRunMessage msg attrs

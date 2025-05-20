@@ -1,13 +1,10 @@
-module Arkham.Treachery.Cards.MysteriousChanting where
+module Arkham.Treachery.Cards.MysteriousChanting (mysteriousChanting) where
 
-import Arkham.Prelude
-
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype MysteriousChanting = MysteriousChanting TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -17,16 +14,11 @@ mysteriousChanting :: TreacheryCard MysteriousChanting
 mysteriousChanting = treachery MysteriousChanting Cards.mysteriousChanting
 
 instance RunMessage MysteriousChanting where
-  runMessage msg t@(MysteriousChanting attrs) = case msg of
+  runMessage msg t@(MysteriousChanting attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      enemies <- select $ NearestEnemyTo iid $ EnemyWithTrait Cultist
+      enemies <- select $ NearestEnemyToFallback iid $ EnemyWithTrait Cultist
       case enemies of
-        [] -> push $ findAndDrawEncounterCard iid $ CardWithType EnemyType <> CardWithTrait Cultist
-        xs -> do
-          player <- getPlayer iid
-          pushAll
-            [ chooseOne player
-                $ [targetLabel eid [PlaceDoom (toSource attrs) (toTarget eid) 2] | eid <- xs]
-            ]
+        [] -> findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Cultist
+        xs -> chooseTargetM iid xs \x -> placeDoom attrs x 2
       pure t
-    _ -> MysteriousChanting <$> runMessage msg attrs
+    _ -> MysteriousChanting <$> liftRunMessage msg attrs

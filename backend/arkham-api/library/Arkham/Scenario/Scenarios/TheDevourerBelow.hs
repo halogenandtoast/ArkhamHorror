@@ -127,7 +127,7 @@ instance RunMessage TheDevourerBelow where
       when pastMidnight $ twice $ allRandomDiscard attrs AnyCard
     ResolveChaosToken _ Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
-      enemies <- select $ NearestEnemyTo iid AnyEnemy
+      enemies <- select $ NearestEnemyToFallback iid AnyEnemy
       chooseOrRunOneM iid $ targets enemies \x -> placeTokens Cultist x #doom doom
       pure s
     ResolveChaosToken _ Tablet iid -> do

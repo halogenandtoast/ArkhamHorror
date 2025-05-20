@@ -37,7 +37,7 @@ instance RunMessage MasterBedroom where
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       enemies <-
         select
-          $ NearestEnemyToLocation
+          $ NearestEnemyToLocationFallback
             (toId attrs)
             ( EnemyWithTrait SilverTwilight
                 <> EnemyWithoutModifier CannotPlaceDoomOnThis

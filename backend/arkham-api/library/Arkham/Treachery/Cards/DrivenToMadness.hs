@@ -41,7 +41,7 @@ instance HasAbilities DrivenToMadness where
 instance RunMessage DrivenToMadness where
   runMessage msg t@(DrivenToMadness attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      humanoids <- select $ NearestEnemyTo iid $ EnemyWithTrait Humanoid
+      humanoids <- select $ NearestEnemyToFallback iid $ EnemyWithTrait Humanoid
       if null humanoids
         then push $ gainSurge attrs
         else do

@@ -1,4 +1,4 @@
-module Arkham.Event.Events.Confound3 (confound3, Confound3 (..)) where
+module Arkham.Event.Events.Confound3 (confound3) where
 
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
@@ -25,12 +25,10 @@ instance RunMessage Confound3 where
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       discoverAtYourLocationAndThen NotInvestigate iid attrs 2 do
-        getSkillTestTarget >>= \case
-          Just (EnemyTarget eid) -> do
-            whenM (eid <=~> NonEliteEnemy) do
-              automaticallyEvadeEnemy iid eid
-              nextPhaseModifier #upkeep attrs eid DoesNotReadyDuringUpkeep
-          _ -> pure ()
+        getSkillTestTargetedEnemy >>= traverse_ \eid -> do
+          whenM (eid <=~> NonEliteEnemy) do
+            automaticallyEvadeEnemy iid eid
+            nextPhaseModifier #upkeep attrs eid DoesNotReadyDuringUpkeep
 
       pure e
     _ -> Confound3 <$> liftRunMessage msg attrs

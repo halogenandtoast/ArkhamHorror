@@ -146,7 +146,7 @@ instance RunMessage TheMidnightMasks where
 
       when ghoulPriestStillAlive $ addToEncounterDeck (Only Enemies.ghoulPriest)
     ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do
-      closestCultists <- select $ NearestEnemyTo iid $ EnemyWithTrait Trait.Cultist
+      closestCultists <- select $ NearestEnemyToFallback iid $ EnemyWithTrait Trait.Cultist
       when (notNull closestCultists) do
         chooseOrRunOne iid
           $ [ targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom 1]

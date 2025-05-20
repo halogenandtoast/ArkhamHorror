@@ -25,7 +25,7 @@ instance RunMessage TasteOfLifeblood where
       pure t
     DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
       clues <- field InvestigatorClues iid
-      enemies <- select $ NearestEnemyTo iid AnyEnemy
+      enemies <- select $ NearestEnemyToFallback iid AnyEnemy
       player <- getPlayer iid
       chooseOrRunOne iid
         $ [Label "Take 1 damage" [Msg.assignDamage iid attrs 1]]

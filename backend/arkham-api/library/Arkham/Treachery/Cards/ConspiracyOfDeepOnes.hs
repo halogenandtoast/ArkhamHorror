@@ -24,7 +24,7 @@ instance RunMessage ConspiracyOfDeepOnes where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       nearest <-
         select
-          $ NearestEnemyTo iid
+          $ NearestEnemyToFallback iid
           $ withTrait AncientOne
           <> mapOneOf enemyIs [Enemies.dagonAwakenedAndEnragedIntoTheMaelstrom, Enemies.hydraAwakenedAndEnraged]
       chooseOneM iid do

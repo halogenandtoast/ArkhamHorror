@@ -2922,3 +2922,14 @@ discardEach
   :: (ReverseQueue m, Query query, Sourceable source, Targetable (QueryElement query))
   => source -> query -> m ()
 discardEach source query = selectEach query (toDiscard source)
+
+resolveHunterKeyword :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m) => enemy -> m ()
+resolveHunterKeyword enemy = do
+  let enemyId = asId enemy
+  push
+    $ HandleGroupTarget
+      HunterGroup
+      (toTarget enemyId)
+      [ CheckWindows [Window.mkWhen $ Window.MovedFromHunter enemyId]
+      , HunterMove enemyId
+      ]

@@ -31,11 +31,10 @@ instance RunMessage NotreDame where
       beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 6)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      agenda <- selectJust AnyAgenda
-      hasDoom <- matches agenda AgendaWithAnyDoom
+      mAgenda <- selectOne AgendaWithAnyDoom
       chooseOrRunOneM iid $ withI18n do
-        countVar 1 $ labeled' "placeAgendaDoom" $ placeDoom (attrs.ability 1) agenda 1
-        when hasDoom do
+        countVar 1 $ labeled' "placeAgendaDoom" $ placeDoomOnAgenda 1
+        for_ mAgenda \agenda -> do
           countVar 1 $ labeled' "removeAgendaDoom" $ removeDoom (attrs.ability 1) agenda 1
       pure l
     _ -> NotreDame <$> liftRunMessage msg attrs

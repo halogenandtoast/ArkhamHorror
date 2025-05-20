@@ -3108,12 +3108,18 @@ library
       Arkham.Location.Cards.ReturnToAttic
       Arkham.Location.Cards.ReturnToBishopsBrook
       Arkham.Location.Cards.ReturnToBurnedRuins
+      Arkham.Location.Cards.ReturnToCanalSaintMartin
       Arkham.Location.Cards.ReturnToCellar
       Arkham.Location.Cards.ReturnToCloverClubLounge
       Arkham.Location.Cards.ReturnToCongregationalChurch
       Arkham.Location.Cards.ReturnToEngineCar
+      Arkham.Location.Cards.ReturnToGardensOfLuxembourg
+      Arkham.Location.Cards.ReturnToGrandGuignol
       Arkham.Location.Cards.ReturnToHouseInTheReeds
+      Arkham.Location.Cards.ReturnToMontparnasse
+      Arkham.Location.Cards.ReturnToNotreDame
       Arkham.Location.Cards.ReturnToOsbornsGeneralStore
+      Arkham.Location.Cards.ReturnToPereLachaiseCemetery
       Arkham.Location.Cards.ReturnToQuietHalls
       Arkham.Location.Cards.ReturnToSchoolhouse
       Arkham.Location.Cards.RialtoBridge
@@ -3450,6 +3456,7 @@ library
       Arkham.Scenario.Scenarios.LostInTimeAndSpace
       Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel
       Arkham.Scenario.Scenarios.PointOfNoReturn
+      Arkham.Scenario.Scenarios.ReturnToAPhantomOfTruth
       Arkham.Scenario.Scenarios.ReturnToBloodOnTheAltar
       Arkham.Scenario.Scenarios.ReturnToCurtainCall
       Arkham.Scenario.Scenarios.ReturnToEchoesOfThePast
@@ -4007,6 +4014,7 @@ library
       Arkham.Treachery.Cards.FalseAwakeningPointOfNoReturn
       Arkham.Treachery.Cards.FalseLead
       Arkham.Treachery.Cards.FateOfAllFools
+      Arkham.Treachery.Cards.FigureInTheShadows
       Arkham.Treachery.Cards.FinalMistake
       Arkham.Treachery.Cards.FinalRhapsody
       Arkham.Treachery.Cards.FinalRhapsodyAdvanced

@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.APhantomOfTruth (aPhantomOfTruth) where
+module Arkham.Scenario.Scenarios.APhantomOfTruth (setupAPhantomOfTruth, aPhantomOfTruth, APhantomOfTruth (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -8,6 +8,7 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Doom
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Xp
@@ -91,6 +92,81 @@ cultistEffect = do
       for_ xs \x -> targeting x $ moveToward eid x
   moveToward eid x = push $ MoveToward (toTarget eid) (locationWithInvestigator x)
 
+setupAPhantomOfTruth :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupAPhantomOfTruth _attrs = do
+  setup do
+    ul do
+      li "gatherSets"
+      li.nested "doubt.instructions" do
+        li "doubt.remove"
+        li "doubt.act"
+      li.nested "conviction.instructions" do
+        li "conviction.remove"
+        li "conviction.act"
+      li "chooseLocations"
+      li "placeLocations"
+      li "setAside"
+      li "lostSoul"
+      unscoped $ li "shuffleRemainder"
+
+  whenReturnTo $ gather Set.ReturnToAPhantomOfTruth
+  gather Set.APhantomOfTruth
+  gather Set.EvilPortents
+  gather Set.Byakhee
+  gather Set.TheStranger
+  gather Set.AgentsOfHastur `orWhenReturnTo` gather Set.HastursEnvoys
+
+  conviction <- getRecordCount Conviction
+  doubt <- getRecordCount Doubt
+
+  if conviction > doubt
+    then do
+      gatherJust Set.TheMidnightMasks [Treacheries.huntingShadow]
+      removeEvery [Treacheries.blackStarsRise]
+      setAside [Enemies.theOrganistHopelessIDefiedHim]
+    else do
+      gatherJust Set.TheMidnightMasks [Treacheries.falseLead]
+      removeEvery [Treacheries.twinSuns]
+      setAside [Enemies.theOrganistDrapedInMystery]
+
+  montparnasse <-
+    place Locations.montparnasse
+      `orWhenReturnTo` placeOneOf (Locations.montparnasse, Locations.returnToMontparnasse)
+  gareDOrsay <- place Locations.gareDOrsay
+
+  jordanInterviewed <- interviewed Assets.jordanPerry
+  startAt $ if jordanInterviewed then montparnasse else gareDOrsay
+
+  placeOneOf_ (Locations.montmartre209, Locations.montmartre210)
+  placeOneOf_ (Locations.operaGarnier212, Locations.operaGarnier213)
+  placeOneOf_ (Locations.leMarais217, Locations.leMarais218)
+
+  isReturnTo <- getIsReturnTo
+  if not isReturnTo
+    then
+      placeAll
+        [ Locations.grandGuignol
+        , Locations.canalSaintMartin
+        , Locations.pereLachaiseCemetery
+        , Locations.notreDame
+        , Locations.gardensOfLuxembourg
+        ]
+    else do
+      placeOneOf_ (Locations.grandGuignol, Locations.returnToGrandGuignol)
+      placeOneOf_ (Locations.canalSaintMartin, Locations.returnToCanalSaintMartin)
+      placeOneOf_ (Locations.pereLachaiseCemetery, Locations.returnToPereLachaiseCemetery)
+      placeOneOf_ (Locations.notreDame, Locations.returnToNotreDame)
+      placeOneOf_ (Locations.gardensOfLuxembourg, Locations.returnToGardensOfLuxembourg)
+      setAside [Treacheries.figureInTheShadows, Treacheries.figureInTheShadows]
+      addAdditionalReferences ["52040b"]
+
+  setActDeck
+    $ if conviction > doubt
+      then [Acts.theParisianConspiracyV2, Acts.stalkedByShadows]
+      else [Acts.theParisianConspiracyV1, Acts.pursuingShadows]
+
+  setAgendaDeck [Agendas.theFirstNight, Agendas.theSecondNight, Agendas.theThirdNight]
+
 instance RunMessage APhantomOfTruth where
   runMessage msg s@(APhantomOfTruth attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
@@ -168,50 +244,7 @@ instance RunMessage APhantomOfTruth where
         story jordansInformation
         eachInvestigator \iid -> setupModifier attrs iid (StartingResources 3)
       pure s
-    Setup -> runScenarioSetup APhantomOfTruth attrs do
-      gather Set.APhantomOfTruth
-      gather Set.EvilPortents
-      gather Set.Byakhee
-      gather Set.TheStranger
-      gather Set.AgentsOfHastur
-
-      conviction <- getRecordCount Conviction
-      doubt <- getRecordCount Doubt
-
-      if conviction > doubt
-        then do
-          gatherJust Set.TheMidnightMasks [Treacheries.huntingShadow]
-          removeEvery [Treacheries.blackStarsRise]
-          setAside [Enemies.theOrganistHopelessIDefiedHim]
-        else do
-          gatherJust Set.TheMidnightMasks [Treacheries.falseLead]
-          removeEvery [Treacheries.twinSuns]
-          setAside [Enemies.theOrganistDrapedInMystery]
-
-      montparnasse <- place Locations.montparnasse
-      gareDOrsay <- place Locations.gareDOrsay
-
-      jordanInterviewed <- interviewed Assets.jordanPerry
-      startAt $ if jordanInterviewed then montparnasse else gareDOrsay
-
-      placeOneOf_ (Locations.montmartre209, Locations.montmartre210)
-      placeOneOf_ (Locations.operaGarnier212, Locations.operaGarnier213)
-      placeOneOf_ (Locations.leMarais217, Locations.leMarais218)
-
-      placeAll
-        [ Locations.grandGuignol
-        , Locations.canalSaintMartin
-        , Locations.pereLachaiseCemetery
-        , Locations.notreDame
-        , Locations.gardensOfLuxembourg
-        ]
-
-      setActDeck
-        $ if conviction > doubt
-          then [Acts.theParisianConspiracyV2, Acts.stalkedByShadows]
-          else [Acts.theParisianConspiracyV1, Acts.pursuingShadows]
-
-      setAgendaDeck [Agendas.theFirstNight, Agendas.theSecondNight, Agendas.theThirdNight]
+    Setup -> runScenarioSetup APhantomOfTruth attrs $ setupAPhantomOfTruth attrs
     ResolveChaosToken _ Cultist _ | isHardExpert attrs -> do
       cultistEffect
       pure s
@@ -262,5 +295,8 @@ instance RunMessage APhantomOfTruth where
         recordSetInsert VIPsSlain [toCardCode jordan]
       allGainXpWithBonus attrs $ if res == Resolution 2 then toBonus "insight" 2 else NoBonus
       endOfScenario
+      pure s
+    UseCardAbility _ ScenarioSource 1 _ _ -> do
+      shuffleSetAsideIntoEncounterDeck $ cardIs Treacheries.figureInTheShadows
       pure s
     _ -> APhantomOfTruth <$> liftRunMessage msg attrs

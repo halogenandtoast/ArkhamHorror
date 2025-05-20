@@ -284,6 +284,7 @@ allEncounterTreacheryCards =
       , eyesInTheWalls
       , falseLead
       , fateOfAllFools
+      , figureInTheShadows
       , finalMistake
       , fineDining
       , fogOverInnsmouth
@@ -2918,6 +2919,12 @@ cloudedMemory :: CardDef
 cloudedMemory =
   peril (treachery "52039" "Clouded Memory" ReturnToTheUnspeakableOath 1)
     { cdCardTraits = setFromList [Terror]
+    }
+
+figureInTheShadows :: CardDef
+figureInTheShadows =
+  (treachery "52047" "Figure in the Shadows" ReturnToAPhantomOfTruth 2)
+    { cdCardTraits = setFromList [Scheme]
     }
 
 delusoryEvils :: CardDef

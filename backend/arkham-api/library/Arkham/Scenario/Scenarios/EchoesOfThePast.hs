@@ -250,7 +250,7 @@ instance RunMessage EchoesOfThePast where
         Resolution 4 -> do
           record TheFollowersOfTheSignHaveFoundTheWayForward
           twice $ addChaosToken ElderThing
-          resolutionWithXp "resolution4" $ allGainXpWithBonus' attrs (toBonus "resolution4" 1)
+          resolutionWithXp "resolution4" $ allGainXpWithBonus' attrs (toBonus "bonus" 1)
         _ -> throw $ UnknownResolution r
 
       sebastienSlain <- selectOne (VictoryDisplayCardMatch $ basic $ cardIs Enemies.sebastienMoreau)

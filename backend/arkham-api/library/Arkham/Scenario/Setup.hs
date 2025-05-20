@@ -484,7 +484,7 @@ whenReturnTo a = do
   isReturnTo' <- use isReturnToL
   when isReturnTo' a
 
-orWhenReturnTo :: ReverseQueue m => ScenarioBuilderT m () -> ScenarioBuilderT m () -> ScenarioBuilderT m ()
+orWhenReturnTo :: ReverseQueue m => ScenarioBuilderT m a -> ScenarioBuilderT m a -> ScenarioBuilderT m a
 orWhenReturnTo b a = do
   isReturnTo' <- use isReturnToL
   if isReturnTo' then a else b

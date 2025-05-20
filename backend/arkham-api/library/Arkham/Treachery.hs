@@ -631,6 +631,8 @@ allTreacheries =
     , --- Return to the Unspeakable Oath [rtptc]
       SomeTreacheryCard radicalTreatment
     , SomeTreacheryCard cloudedMemory
+    , --- Return to A Phantom of Truth [rtptc]
+      SomeTreacheryCard figureInTheShadows
     , --- Delusory Evils [rtptc]
       SomeTreacheryCard delusoryEvils
     , --- Decaying Reality [rtptc]

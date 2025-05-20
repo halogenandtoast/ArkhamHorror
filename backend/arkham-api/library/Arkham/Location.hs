@@ -851,6 +851,13 @@ allLocations =
     , SomeLocationCard historicalSocietyDustyArchives
     , SomeLocationCard historicalSocietyMuseumStorage
     , SomeLocationCard historicalSocietyBoilerRoom
+    , --- Return to A Phantom of Truth
+      SomeLocationCard returnToMontparnasse
+    , SomeLocationCard returnToGrandGuignol
+    , SomeLocationCard returnToPereLachaiseCemetery
+    , SomeLocationCard returnToCanalSaintMartin
+    , SomeLocationCard returnToNotreDame
+    , SomeLocationCard returnToGardensOfLuxembourg
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

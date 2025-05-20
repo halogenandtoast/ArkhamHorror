@@ -38,6 +38,9 @@
     "fledTheDinnerParty": "Check Campaign Log. *If you fled the dinner party*: You arrive at the Historical Society with time to spare; each investigator can take 1 additional action during their first turn of this game."
   },
   "resolutions": {
+    "xp": {
+      "bonus": "Gains insight into the machinations of The King in Yellow"
+    },
     "noResolution": {
       "title": "No Resolution",
       "body": "<div class='resolution'>_If no resolution was reached (each investigator resigned or was defeated)_: You barely escape the building with your body and mind intact, and flee to safety. Read _Resolution 4_.</div>"

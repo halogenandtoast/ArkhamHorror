@@ -17,5 +17,22 @@
     "xp": {
       "insight": "Gained insight into the machinations of the Tattered King."
     }
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *A Phantom of Truth*, *Evil Portents*, *Byakhee*, *The Stranger*, *Agents of Hastur*, and *The Midnight Masks*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/a-phantom-of-truth.png' /><img src='{setImgPath}/evil-portents.png' /><img src='{setImgPath}/byakhee.png' /><img src='{setImgPath}/the-stranger.png' /><img src='{setImgPath}/agents-of-hastur.png' /><img src='{setImgPath}/midnight-masks.png' /></section>When gathering *The Midnight Masks* encounter set, only gather the 5 treachery cards (2x False Lead and 3x Hunting Shadow). Do not gather the location, act, agenda, or scenario reference cards from that set.",
+    "doubt": {
+      "instructions": "Check Campaign Log. If you have more (or equal) _Doubt_ than _Conviction_:",
+      "remove": "Search the gathered encounter sets for both copies of Twin Suns and all 3 copies of Hunting Shadow, and remove them from the game.",
+      "act": "During this scenario, use Act 1—The Parisian Conspiracy (v. I). The other version of Act 1 is removed from the game."
+    },
+    "conviction": {
+      "instructions": "If you have more _Conviction_ than _Doubt_:",
+      "remove": "Search the gathered encounter sets for both copies of Black Stars Rise and both copies of False Lead, and remove them from the game.",
+      "act": "During this scenario, use Act 1—The Parisian Conspiracy (v. II). The other version of Act 1 is removed from the game."
+    },
+    "chooseLocations": "Choose one of the two Montmartre locations, one of the two Opéra Garnier locations, and one of the two Le Marais locations, at random. Put the chosen locations into play. Remove the other versions of those locations from the game.",
+    "placeLocations": "Put the remaining locations (Montparnasse, Gare d’Orsay, Grand Guignol, Canal Saint-Martin, Père Lachaise Cemetery, Notre-Dame, and Gardens of Luxembourg) into play. (See below for suggested placement.) Each investigator begins play at Gare d’Orsay.",
+    "setAside": "Set the double-sided The Organist enemy aside, out of play.",
+    "lostSoul": "If there are any remaining copies of the Lost Soul weakness, set them aside, out of play."
   }
 }

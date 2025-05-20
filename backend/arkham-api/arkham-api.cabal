@@ -3511,7 +3511,6 @@ library
       Arkham.Scenarios.ALightInTheFog.Helpers
       Arkham.Scenarios.ALightInTheFog.Helpers.Location
       Arkham.Scenarios.APhantomOfTruth.Helpers
-      Arkham.Scenarios.APhantomOfTruth.Story
       Arkham.Scenarios.AtDeathsDoorstep.Story
       Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
       Arkham.Scenarios.BeforeTheBlackThrone.Helpers

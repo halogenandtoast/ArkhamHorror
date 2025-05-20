@@ -2289,10 +2289,9 @@ getLocationsMatching lmatcher = do
     SameLocation -> pure []
     ThisLocation -> pure []
 
-guardYourLocation :: HasGame m => (LocationId -> m [a]) -> m [a]
+guardYourLocation :: (HasCallStack, HasGame m) => (LocationId -> m [a]) -> m [a]
 guardYourLocation body = do
-  mlid <-
-    fmap join . fieldMay InvestigatorLocation . view activeInvestigatorIdL =<< getGame
+  mlid <- fmap join . fieldMay InvestigatorLocation . view activeInvestigatorIdL =<< getGame
   case mlid of
     Nothing -> pure []
     Just lid -> body lid
@@ -3236,8 +3235,8 @@ enemyMatcherFilter es matcher' = case matcher' of
           -- issue where we end up not paying some costs so if a bug opens up
           -- about that, this might be the place to look. Alternatively we
           -- might want to replace `IgnoreActionCost` with `IgnoreAllCosts`
-          Helpers.withModifiersOf iid GameSource [IgnoreActionCost] $
-            anyM
+          Helpers.withModifiersOf iid GameSource [IgnoreActionCost]
+            $ anyM
               ( andM
                   . sequence
                     [ pure . (`abilityIs` #fight)
@@ -3866,7 +3865,7 @@ instance Projection Investigator where
             _ -> Nothing
         case investigatorPlacement of
           AtLocation lid -> pure $ mAsIfAt <|> Just lid
-          InVehicle aid -> (mAsIfAt <|>) <$> field AssetLocation aid
+          InVehicle aid -> (mAsIfAt <|>) . join <$> fieldMay AssetLocation aid
           _ -> pure mAsIfAt
       InvestigatorWillpower -> skillValueFor #willpower Nothing attrs.id
       InvestigatorIntellect -> skillValueFor #intellect Nothing attrs.id

@@ -6,8 +6,8 @@ import Arkham.Helpers.Window (cardDiscarded)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Projection ()
-import Arkham.Message.Lifted.Choose
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype GeorgeBarnaby = GeorgeBarnaby InvestigatorAttrs
   deriving anyclass IsInvestigator
@@ -27,9 +27,11 @@ instance HasModifiersFor GeorgeBarnaby where
 instance HasAbilities GeorgeBarnaby where
   getAbilities (GeorgeBarnaby x) =
     [ playerLimit PerPhase
-        $ restricted x 1 (Self <> NotSetup)
+        $ restricted x 1 (Self <> NotSetup <> criteria)
         $ freeReaction (DiscardedFromHand #after You AnySource #any)
     ]
+   where
+    criteria = if length (investigatorCardsUnderneath x) < 5 then NoRestriction else Never
 
 instance HasChaosTokenValue GeorgeBarnaby where
   getChaosTokenValue iid ElderSign (GeorgeBarnaby attrs) | iid == toId attrs = do

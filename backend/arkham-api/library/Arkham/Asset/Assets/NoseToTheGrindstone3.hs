@@ -28,9 +28,9 @@ instance HasAbilities NoseToTheGrindstone3 where
 
 instance RunMessage NoseToTheGrindstone3 where
   runMessage msg a@(NoseToTheGrindstone3 attrs) = runQueueT $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid -> do
-        skillTestModifier sid (attrs.ability 1) sid (AnySkillValue 2)
+        skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 2)
         onFailedByEffect sid (atLeast 0) (attrs.ability 1) sid $ doStep 1 msg
       pure a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do

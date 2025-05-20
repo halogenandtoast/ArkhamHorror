@@ -32,7 +32,7 @@ instance HasModifiersFor AbandonedToMadness where
 instance RunMessage AbandonedToMadness where
   runMessage msg t@(AbandonedToMadness attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      enemies <- select $ NearestEnemyTo iid $ EnemyWithTrait Possessed
+      enemies <- select $ NearestEnemyToFallback iid $ EnemyWithTrait Possessed
       if null enemies
         then findEncounterCard iid attrs $ CardWithTrait Possessed <> #enemy
         else chooseTargetM iid enemies \enemy -> do

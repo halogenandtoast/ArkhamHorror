@@ -152,7 +152,7 @@ instance RunMessage TheEssexCountyExpress where
         ]
       setActDeck [Acts.run, Acts.getTheEngineRunning]
     ResolveChaosToken _ Tablet iid | isEasyStandard attrs -> do
-      closestCultists <- select $ NearestEnemyTo iid $ EnemyWithTrait Trait.Cultist
+      closestCultists <- select $ NearestEnemyToFallback iid $ EnemyWithTrait Trait.Cultist
       case closestCultists of
         [] -> pure ()
         [x] -> push $ PlaceTokens (toSource attrs) (EnemyTarget x) Doom 1

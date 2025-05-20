@@ -126,7 +126,7 @@ instance RunMessage TheVanishingOfElinaHarper where
       let amount = if isEasyStandard attrs then 1 else 2
       case token.face of
         Cultist -> do
-          closestEnemy <- select $ NearestEnemyTo iid AnyEnemy
+          closestEnemy <- select $ NearestEnemyToFallback iid AnyEnemy
           chooseTargetM iid closestEnemy \x -> placeDoom Cultist x amount
         Tablet ->
           if isEasyStandard attrs
@@ -139,7 +139,7 @@ instance RunMessage TheVanishingOfElinaHarper where
       when (isHardExpert attrs) do
         case token.face of
           Cultist -> do
-            closestEnemy <- select $ NearestEnemyTo iid AnyEnemy
+            closestEnemy <- select $ NearestEnemyToFallback iid AnyEnemy
             chooseTargetM iid closestEnemy \x -> placeDoom Cultist x 1
           Tablet -> assignHorror iid Tablet 1
           ElderThing -> placeCluesOnLocation iid ElderThing 1

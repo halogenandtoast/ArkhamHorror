@@ -49,15 +49,15 @@ instance RunMessage Duke where
       selectForMaybeM (BasicInvestigate lid) \ab ->
         whenM (getCanPerformAbility iid (defaultWindows iid) (decrease_ ab 1)) do
           sid <- getRandom
-          skillTestModifiers sid ab iid [BaseSkillOf #intellect 4]
-          investigate' <- mkInvestigateLocation sid iid attrs lid
+          skillTestModifiers sid (attrs.ability 2) iid [BaseSkillOf #intellect 4]
+          investigate' <- mkInvestigateLocation sid iid (attrs.ability 2) lid
           push $ CheckAdditionalActionCosts iid (toTarget lid) #investigate [toMessage investigate']
       pure a
     UseThisAbility iid (ProxySource (LocationSource lid) (isAbilitySource attrs 2 -> True)) _ -> do
       selectForMaybeM (BasicInvestigate lid) \ab ->
         whenM (getCanPerformAbility iid (defaultWindows iid) $ decrease_ ab 1) do
           sid <- getRandom
-          skillTestModifiers sid ab iid [BaseSkillOf #intellect 4]
-          pushM $ mkInvestigateLocation sid iid attrs lid
+          skillTestModifiers sid (attrs.ability 2) iid [BaseSkillOf #intellect 4]
+          pushM $ mkInvestigateLocation sid iid (attrs.ability 2) lid
       pure a
     _ -> Duke <$> liftRunMessage msg attrs

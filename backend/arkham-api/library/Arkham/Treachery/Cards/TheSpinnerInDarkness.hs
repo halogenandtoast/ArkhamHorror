@@ -33,7 +33,7 @@ instance HasAbilities TheSpinnerInDarkness where
 instance RunMessage TheSpinnerInDarkness where
   runMessage msg t@(TheSpinnerInDarkness attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      enemies <- select $ NearestEnemyTo iid $ EnemyWithTrait AncientOne
+      enemies <- select $ NearestEnemyToFallback iid $ EnemyWithTrait AncientOne
       when (notNull enemies) do
         chooseOrRunOne iid [targetLabel enemy [Msg.attachTreachery attrs enemy] | enemy <- enemies]
       pure t

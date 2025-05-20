@@ -2301,10 +2301,9 @@ getLocationsMatching lmatcher = do
     SameLocation -> pure []
     ThisLocation -> pure []
 
-guardYourLocation :: HasGame m => (LocationId -> m [a]) -> m [a]
+guardYourLocation :: (HasCallStack, HasGame m) => (LocationId -> m [a]) -> m [a]
 guardYourLocation body = do
-  mlid <-
-    fmap join . fieldMay InvestigatorLocation . view activeInvestigatorIdL =<< getGame
+  mlid <- fmap join . fieldMay InvestigatorLocation . view activeInvestigatorIdL =<< getGame
   case mlid of
     Nothing -> pure []
     Just lid -> body lid
@@ -2989,6 +2988,12 @@ enemyMatcherFilter es matcher' = case matcher' of
                   pure $ mdistance == Just minDistance
             _ -> pure False
         else pure False
+  NearestEnemyToFallback iid inner -> do
+    xs <- enemyMatcherFilter es (NearestEnemyTo iid inner)
+    if null xs then enemyMatcherFilter es inner else pure xs
+  NearestEnemyToLocationFallback lid inner -> do
+    xs <- enemyMatcherFilter es (NearestEnemyToLocation lid inner)
+    if null xs then enemyMatcherFilter es inner else pure xs
   NearestEnemyToAnInvestigator enemyMatcher -> do
     eids <- select enemyMatcher
     mins <$> flip mapMaybeM es \enemy -> runMaybeT do
@@ -3880,7 +3885,7 @@ instance Projection Investigator where
             _ -> Nothing
         case investigatorPlacement of
           AtLocation lid -> pure $ mAsIfAt <|> Just lid
-          InVehicle aid -> (mAsIfAt <|>) <$> field AssetLocation aid
+          InVehicle aid -> (mAsIfAt <|>) . join <$> fieldMay AssetLocation aid
           _ -> pure mAsIfAt
       InvestigatorWillpower -> skillValueFor #willpower Nothing attrs.id
       InvestigatorIntellect -> skillValueFor #intellect Nothing attrs.id

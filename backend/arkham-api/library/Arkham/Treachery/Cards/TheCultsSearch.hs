@@ -16,7 +16,7 @@ theCultsSearch = treachery TheCultsSearch Cards.theCultsSearch
 instance RunMessage TheCultsSearch where
   runMessage msg t@(TheCultsSearch attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      cultists <- selectWithField EnemyDoom $ EnemyWithTrait Cultist <> EnemyWithAnyDoom
+      cultists <- selectWithField EnemyDoom $ InPlayEnemy $ EnemyWithTrait Cultist <> EnemyWithAnyDoom
       if null cultists
         then findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Cultist
         else do

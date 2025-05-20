@@ -14,7 +14,8 @@
     }
   },
   "xp": {
-    "bonus": "Gains insight into the schemes of the Brotherhood."
+    "bonus": "Gains insight into the schemes of the Brotherhood.",
+    "forgingYourOwnPath": "Forging Your Own Path"
   },
   "remembered": {
     "youListenedToIchtacasTale": "You listened to Ichtaca's tale.",

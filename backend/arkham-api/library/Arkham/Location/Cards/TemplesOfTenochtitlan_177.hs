@@ -25,7 +25,7 @@ instance HasAbilities TemplesOfTenochtitlan_177 where
   getAbilities (TemplesOfTenochtitlan_177 a) =
     extendRevealed
       a
-      [ restricted a 1 (exists $ NearestEnemyToLocation a.id AnyEnemy)
+      [ restricted a 1 (exists $ NearestEnemyToLocationFallback a.id AnyEnemy)
           $ forced
           $ PutLocationIntoPlay #after Anyone (be a)
       , groupLimit PerRound

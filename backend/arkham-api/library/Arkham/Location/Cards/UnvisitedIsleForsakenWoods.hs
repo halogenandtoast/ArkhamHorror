@@ -48,7 +48,7 @@ instance RunMessage UnvisitedIsleForsakenWoods where
       circleTest sid iid (attrs.ability 1) attrs [#willpower, #combat] (Fixed 11)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      whippoorwills <- select $ NearestEnemyTo iid $ enemyIs Enemies.whippoorwill
+      whippoorwills <- select $ NearestEnemyToFallback iid $ enemyIs Enemies.whippoorwill
       chooseOrRunOneM iid do
         labeled
           "Search the encounter deck and discard pile for a Whippoorwill and spawn it at this location"

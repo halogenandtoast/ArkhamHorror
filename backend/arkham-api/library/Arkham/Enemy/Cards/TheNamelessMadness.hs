@@ -39,7 +39,7 @@ instance RunMessage TheNamelessMadness where
       doStep n msg
       pure e
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
-      xs <- select $ NearestEnemyTo iid $ enemyIs Cards.theNamelessMadness <> ReadyEnemy
+      xs <- select $ NearestEnemyToFallback iid $ enemyIs Cards.theNamelessMadness <> ReadyEnemy
       unless (null xs) do
         if length xs <= n
           then do

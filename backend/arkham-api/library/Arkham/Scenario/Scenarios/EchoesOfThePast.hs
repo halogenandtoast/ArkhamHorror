@@ -202,7 +202,7 @@ instance RunMessage EchoesOfThePast where
       pure s
     Setup -> runScenarioSetup EchoesOfThePast attrs $ setupEchoesOfThePast attrs
     ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
-      es <- select $ NearestEnemyTo iid AnyEnemy
+      es <- select $ NearestEnemyToFallback iid AnyEnemy
       chooseTargetM iid es \target -> placeDoom Cultist target 1
       pure s
     ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
@@ -214,7 +214,7 @@ instance RunMessage EchoesOfThePast where
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ | isEasyStandard attrs -> do
       case chaosTokenFace token of
         Cultist -> do
-          es <- select $ NearestEnemyTo iid AnyEnemy
+          es <- select $ NearestEnemyToFallback iid AnyEnemy
           chooseTargetM iid es \target -> placeDoom Cultist target 1
         Tablet -> randomDiscard iid Tablet
         ElderThing -> whenAny (EnemyAt YourLocation) $ assignHorror iid ElderThing 1

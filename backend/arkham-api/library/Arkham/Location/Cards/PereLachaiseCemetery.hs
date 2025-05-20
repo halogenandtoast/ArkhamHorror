@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.PereLachaiseCemetery (pereLachaiseCemetery, PereLachaiseCemetery (..)) where
+module Arkham.Location.Cards.PereLachaiseCemetery (pereLachaiseCemetery) where
 
 import Arkham.Ability
 import Arkham.GameValue
@@ -20,7 +20,7 @@ instance HasAbilities PereLachaiseCemetery where
     extendRevealed1 attrs
       $ restricted attrs 1 Here
       $ forced
-      $ SkillTestResult #after You (WhileInvestigating $ be attrs) (SuccessResult AnyValue)
+      $ SkillTestResult #after You (WhileInvestigating $ be attrs) #success
 
 instance RunMessage PereLachaiseCemetery where
   runMessage msg a@(PereLachaiseCemetery attrs) = runQueueT $ case msg of

@@ -1,13 +1,12 @@
 module Arkham.Location.Cards.GareDOrsay (gareDOrsay) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Trait
 
 newtype GareDOrsay = GareDOrsay LocationAttrs
@@ -18,21 +17,12 @@ gareDOrsay :: LocationCard GareDOrsay
 gareDOrsay = location GareDOrsay Cards.gareDOrsay 4 (PerPlayer 1)
 
 instance HasAbilities GareDOrsay where
-  getAbilities (GareDOrsay attrs) =
-    withBaseAbilities
-      attrs
-      [restrictedAbility attrs 1 Here $ ActionAbility [] $ ActionCost 1]
+  getAbilities (GareDOrsay a) = extendRevealed1 a $ restricted a 1 Here actionAbility
 
 instance RunMessage GareDOrsay where
-  runMessage msg l@(GareDOrsay attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      rails <- filter (/= toId attrs) <$> select (LocationWithTrait Rail)
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel lid [Move $ move attrs iid lid]
-          | lid <- rails
-          ]
+  runMessage msg l@(GareDOrsay attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      rails <- select $ LocationWithTrait Rail <> not_ (be attrs)
+      chooseTargetM iid rails (moveTo (attrs.ability 1) iid)
       pure l
-    _ -> GareDOrsay <$> runMessage msg attrs
+    _ -> GareDOrsay <$> liftRunMessage msg attrs

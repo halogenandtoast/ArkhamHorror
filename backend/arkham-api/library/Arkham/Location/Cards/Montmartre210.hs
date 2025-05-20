@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.Montmartre210 (montmartre210, Montmartre210 (..)) where
+module Arkham.Location.Cards.Montmartre210 (montmartre210) where
 
 import Arkham.Ability
 import Arkham.Asset.Uses

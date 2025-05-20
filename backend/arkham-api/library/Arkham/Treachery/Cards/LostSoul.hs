@@ -1,11 +1,8 @@
-module Arkham.Treachery.Cards.LostSoul (lostSoul, LostSoul (..)) where
+module Arkham.Treachery.Cards.LostSoul (lostSoul) where
 
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
-import Arkham.Classes
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype LostSoul = LostSoul TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -15,20 +12,15 @@ lostSoul :: TreacheryCard LostSoul
 lostSoul = treachery LostSoul Cards.lostSoul
 
 instance RunMessage LostSoul where
-  runMessage msg t@(LostSoul attrs) = case msg of
+  runMessage msg t@(LostSoul attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       moreConvictionThanDoubt <- getMoreConvictionThanDoubt
       sid <- getRandom
-      push
-        $ if moreConvictionThanDoubt
-          then
-            revelationSkillTest sid iid attrs #willpower
-              $ InvestigatorFieldCalculation iid InvestigatorIntellect
-          else
-            revelationSkillTest sid iid attrs #intellect
-              $ InvestigatorFieldCalculation iid InvestigatorWillpower
+      if moreConvictionThanDoubt
+        then revelationSkillTest sid iid attrs #willpower $ InvestigatorFieldCalculation iid #intellect
+        else revelationSkillTest sid iid attrs #intellect $ InvestigatorFieldCalculation iid #willpower
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
+      assignDamage iid attrs 2
       pure t
-    _ -> LostSoul <$> runMessage msg attrs
+    _ -> LostSoul <$> liftRunMessage msg attrs

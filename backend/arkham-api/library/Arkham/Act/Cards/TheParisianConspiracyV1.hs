@@ -8,6 +8,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheParisianConspiracyV1 = TheParisianConspiracyV1 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -39,6 +40,7 @@ instance RunMessage TheParisianConspiracyV1 where
           eachInvestigator \iid -> assignHorror iid attrs 2
           locations <- select $ FarthestLocationFromAll Anywhere
           leadChooseOneM do
+            scenarioI18n $ questionLabeled' "theParisianConspiracy.spawn"
             targets locations (createEnemyAt_ theOrganist)
 
       whenM getIsReturnTo do

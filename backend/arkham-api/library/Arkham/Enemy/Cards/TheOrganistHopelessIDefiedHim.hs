@@ -1,7 +1,4 @@
-module Arkham.Enemy.Cards.TheOrganistHopelessIDefiedHim (
-  theOrganistHopelessIDefiedHim,
-  TheOrganistHopelessIDefiedHim (..),
-) where
+module Arkham.Enemy.Cards.TheOrganistHopelessIDefiedHim (theOrganistHopelessIDefiedHim) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards

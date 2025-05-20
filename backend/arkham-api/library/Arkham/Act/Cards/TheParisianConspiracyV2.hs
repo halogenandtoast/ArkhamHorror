@@ -8,6 +8,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheParisianConspiracyV2 = TheParisianConspiracyV2 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -31,9 +32,8 @@ instance RunMessage TheParisianConspiracyV2 where
       case advanceMode of
         AdvancedWithClues -> do
           locations <- select $ FarthestLocationFromAll Anywhere
-          lead <- getLead
-          chooseOneM lead do
-            questionLabeled "Where to spawn the organist"
+          leadChooseOneM do
+            scenarioI18n $ questionLabeled' "theParisianConspiracy.spawn"
             targets locations $ createEnemyAt_ theOrganist
         _ -> do
           location <- selectJust LeadInvestigatorLocation

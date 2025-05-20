@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.LeMarais218 (leMarais218, LeMarais218 (..)) where
+module Arkham.Location.Cards.LeMarais218 (leMarais218) where
 
 import Arkham.Ability
 import Arkham.GameValue

@@ -17,6 +17,16 @@
     "dream10": {
       "dream11": "“How could any of this be beautiful to you?”",
       "dream12": "“What exactly am I looking at?”"
+    },
+    "theParisianConspiracy": {
+      "spawn": "Where to spawn the organist"
+    },
+    "grandGuignol": {
+      "shuffle": "Shuffle all non-weakness cards from your hand into your deck, then draw an equal number of cards"
+    },
+    "deadlyFate": {
+      "attack": "That enemy attacks you (from the discard pile)",
+      "drawEnemy": "Draw enemy"
     }
   },
   "intro": {

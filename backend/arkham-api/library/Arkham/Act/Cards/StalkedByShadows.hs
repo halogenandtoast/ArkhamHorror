@@ -4,8 +4,10 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.ThePathToCarcosa.Key
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Choose
+import Arkham.Name
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype StalkedByShadows = StalkedByShadows ActAttrs
@@ -22,9 +24,11 @@ instance HasAbilities StalkedByShadows where
 instance RunMessage StalkedByShadows where
   runMessage msg a@(StalkedByShadows attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseOneM iid do
-        labeled "Place 1 doom on the current agenda" $ placeDoomOnAgenda 1
-        withTheOrganist $ labeled "Automatically evade The Organist" . automaticallyEvadeEnemy iid
+      chooseOneM iid $ withI18n do
+        countVar 1 $ labeled' "placeAgendaDoom" $ placeDoomOnAgenda 1
+        nameVar (mkName "The Organist")
+          $ labeled' "automaticallyEvade"
+          $ withTheOrganist (automaticallyEvadeEnemy iid)
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       intrudedOnASecretMeeting <- getHasRecord YouIntrudedOnASecretMeeting

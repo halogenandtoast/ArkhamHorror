@@ -215,7 +215,7 @@ instance RunMessage ShatteredAeons where
       when (chaosTokenFace token == Cultist) $ do
         if isEasyStandard attrs
           then do
-            cultists <- select $ NearestEnemyTo iid $ EnemyWithTrait Trait.Cultist
+            cultists <- select $ NearestEnemyToFallback iid $ EnemyWithTrait Trait.Cultist
             chooseTargetM iid cultists \cultist -> placeDoom Cultist cultist 1
           else do
             cultists <- select $ EnemyWithTrait Trait.Cultist
@@ -225,7 +225,7 @@ instance RunMessage ShatteredAeons where
       when (token.face == Cultist) $ do
         if isEasyStandard attrs
           then do
-            cultists <- select $ NearestEnemyTo iid $ EnemyWithTrait Trait.Cultist
+            cultists <- select $ NearestEnemyToFallback iid $ EnemyWithTrait Trait.Cultist
             chooseTargetM iid cultists \cultist -> placeDoom Cultist cultist 1
           else do
             cultists <- select $ EnemyWithTrait Trait.Cultist

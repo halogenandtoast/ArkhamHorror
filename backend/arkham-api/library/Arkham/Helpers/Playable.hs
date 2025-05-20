@@ -27,6 +27,7 @@ import Arkham.Helpers.Modifiers (
   toModifiers,
   withGrantedActions,
   withModifiers,
+  withoutModifier,
  )
 import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Helpers.Slot
@@ -303,9 +304,11 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
                 (defaultWindows iid <> windows')
         else pure False
 
-    canInvestigate <-
-      ((#investigate `elem` pcDef.actions) &&)
-        <$> (maybe (pure False) (<=~> InvestigatableLocation) =<< field InvestigatorLocation iid)
+    canInvestigate <- runValidT do
+      guard $ #investigate `elem` pcDef.actions
+      loc <- MaybeT $ field InvestigatorLocation iid
+      liftGuardM $ loc <=~> InvestigatableLocation
+      liftGuardM $ withoutModifier iid (CannotInvestigateLocation loc)
 
     passesLimits' <- passesLimits iid c
 

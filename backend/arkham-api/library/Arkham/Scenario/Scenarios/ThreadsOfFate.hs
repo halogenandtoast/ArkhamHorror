@@ -222,11 +222,11 @@ instance RunMessage ThreadsOfFate where
         Cultist | isEasyStandard attrs && n < 1 -> assignDamage iid Cultist 1
         Cultist | isHardExpert attrs && n < 2 -> directDamage iid Cultist 1
         Tablet | isEasyStandard attrs && n < 1 -> do
-          es <- selectTargets $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
+          es <- selectTargets $ NearestEnemyToFallback iid (EnemyWithTrait Trait.Cultist)
           chooseOrRunOneM iid do
             targets es \target -> placeDoom Tablet target 1
         Tablet | isHardExpert attrs && n < 2 -> do
-          es <- selectTargets $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
+          es <- selectTargets $ NearestEnemyToFallback iid (EnemyWithTrait Trait.Cultist)
           for_ es \target -> placeDoom Tablet target 1
         _ -> pure ()
       pure s
@@ -235,11 +235,11 @@ instance RunMessage ThreadsOfFate where
         Cultist | isEasyStandard attrs -> assignDamage iid Cultist 1
         Cultist | isHardExpert attrs -> directDamage iid Cultist 1
         Tablet | isEasyStandard attrs -> do
-          es <- selectTargets $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
+          es <- selectTargets $ NearestEnemyToFallback iid (EnemyWithTrait Trait.Cultist)
           chooseOrRunOneM iid do
             targets es \target -> placeDoom Tablet target 1
         Tablet | isHardExpert attrs -> do
-          es <- selectTargets $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist)
+          es <- selectTargets $ NearestEnemyToFallback iid (EnemyWithTrait Trait.Cultist)
           for_ es \target -> placeDoom Tablet target 1
         ElderThing -> removeTokens ElderThing iid #clue 1
         _ -> pure ()

@@ -18,7 +18,7 @@ shadowed = treachery Shadowed Cards.shadowed
 instance RunMessage Shadowed where
   runMessage msg t@(Shadowed attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      cultists <- select (NearestEnemyTo iid $ EnemyWithTrait Cultist <> EnemyWithFight)
+      cultists <- select (NearestEnemyToFallback iid $ EnemyWithTrait Cultist <> EnemyWithFight)
       if null cultists
         then
           pushAll

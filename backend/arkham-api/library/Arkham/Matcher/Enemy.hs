@@ -77,7 +77,9 @@ data EnemyMatcher
   | FarthestEnemyFrom InvestigatorId EnemyMatcher
   | FarthestEnemyFromAll EnemyMatcher
   | NearestEnemyTo InvestigatorId EnemyMatcher
+  | NearestEnemyToFallback InvestigatorId EnemyMatcher
   | NearestEnemyToLocation LocationId EnemyMatcher
+  | NearestEnemyToLocationFallback LocationId EnemyMatcher
   | NearestEnemyToAnInvestigator EnemyMatcher
   | EnemyIs CardCode
   | EnemyWithCardId CardId

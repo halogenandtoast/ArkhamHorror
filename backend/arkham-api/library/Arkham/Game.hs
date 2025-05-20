@@ -2974,6 +2974,12 @@ enemyMatcherFilter es matcher' = case matcher' of
                   pure $ mdistance == Just minDistance
             _ -> pure False
         else pure False
+  NearestEnemyToFallback iid inner -> do
+    xs <- enemyMatcherFilter es (NearestEnemyTo iid inner)
+    if null xs then enemyMatcherFilter es inner else pure xs
+  NearestEnemyToLocationFallback lid inner -> do
+    xs <- enemyMatcherFilter es (NearestEnemyToLocation lid inner)
+    if null xs then enemyMatcherFilter es inner else pure xs
   NearestEnemyToAnInvestigator enemyMatcher -> do
     eids <- select enemyMatcher
     mins <$> flip mapMaybeM es \enemy -> runMaybeT do

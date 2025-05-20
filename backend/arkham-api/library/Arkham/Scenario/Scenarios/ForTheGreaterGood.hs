@@ -189,7 +189,7 @@ instance RunMessage ForTheGreaterGood where
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Tablet)) _ _ -> do
       if isEasyStandard attrs
         then do
-          closestCultists <- select $ NearestEnemyTo iid $ EnemyWithTrait Trait.Cultist
+          closestCultists <- select $ NearestEnemyToFallback iid $ EnemyWithTrait Trait.Cultist
           chooseTargetM iid closestCultists \cultist -> placeDoom Cultist cultist 1
         else do
           cultists <- select $ EnemyWithTrait Trait.Cultist
@@ -198,7 +198,7 @@ instance RunMessage ForTheGreaterGood where
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderThing)) _ _ -> do
       if isEasyStandard attrs
         then do
-          closestCultists <- select $ NearestEnemyTo iid (EnemyWithTrait Trait.Cultist) <> EnemyWithAnyDoom
+          closestCultists <- select $ NearestEnemyToFallback iid (EnemyWithTrait Trait.Cultist) <> EnemyWithAnyDoom
           chooseTargetM iid closestCultists \cultist -> do
             removeDoom ElderThing cultist 1
             placeDoomOnAgenda 1

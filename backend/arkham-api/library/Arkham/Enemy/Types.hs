@@ -316,6 +316,9 @@ instance HasField "id" Enemy EnemyId where
 instance HasField "placement" Enemy Placement where
   getField = (.placement) . toAttrs
 
+instance HasField "keys" Enemy (Set ArkhamKey) where
+  getField = (.keys) . toAttrs
+
 instance Data Enemy where
   gunfold _ _ _ = error "gunfold(Enemy)"
   toConstr _ = error "toConstr(Enemy)"

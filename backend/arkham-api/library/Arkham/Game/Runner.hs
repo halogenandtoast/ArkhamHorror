@@ -1970,15 +1970,21 @@ runGameMessage msg g = case msg of
     pure $ g & removedFromPlayL %~ (card:)
   AddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid
+      
     pushAll
       $ windows [Window.LeavePlay (EnemyTarget eid), Window.AddedToVictory card]
       <> [RemoveEnemy eid]
+
+    mloc <- field EnemyLocation eid
+    for_ mloc \loc -> do
+      enemy <- getEnemy eid
+      for_ enemy.keys (push . PlaceKey (toTarget loc))
     pure
       $ g
       & entitiesL
       . enemiesL
       . ix eid
-      %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay RemovedZone})
+      %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay RemovedZone, enemyKeys = mempty})
   DefeatedAddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid
     pushAll

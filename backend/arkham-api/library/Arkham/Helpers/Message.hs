@@ -75,7 +75,9 @@ drawCardsIfCanWith i source n f = do
   canDraw <- can.draw.cards (sourceToFromSource source) (asId i)
   pure $ guard canDraw $> drawCardsWith (asId i) source n f
 
-drawEncounterCardsWith :: Sourceable source => InvestigatorId -> source -> Int -> (CardDraw Message -> CardDraw Message) -> Message
+drawEncounterCardsWith
+  :: Sourceable source
+  => InvestigatorId -> source -> Int -> (CardDraw Message -> CardDraw Message) -> Message
 drawEncounterCardsWith i source n f = DrawCards i $ f $ newCardDraw source Deck.EncounterDeck n
 
 sourceToFromSource :: Sourceable source => source -> FromSource
@@ -502,15 +504,15 @@ chooseEngageEnemy :: Sourceable source => InvestigatorId -> source -> Message
 chooseEngageEnemy iid (toSource -> source) = ChooseEngageEnemy iid source Nothing mempty False
 
 search
-  :: (Targetable target, Sourceable source)
-  => InvestigatorId
+  :: (Targetable target, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
   -> source
   -> target
   -> [(Zone, ZoneReturnStrategy)]
   -> ExtendedCardMatcher
   -> FoundCardsStrategy
   -> Message
-search iid (toSource -> source) (toTarget -> target) zones matcher strategy = Do (Search $ mkSearch Searching iid source target zones matcher strategy)
+search (asId -> iid) (toSource -> source) (toTarget -> target) zones matcher strategy = Do (Search $ mkSearch Searching iid source target zones matcher strategy)
 
 lookAt
   :: (Targetable target, Sourceable source)
@@ -548,7 +550,9 @@ gainResourcesIfCan a source n = do
 assignEnemyDamage :: DamageAssignment -> EnemyId -> Message
 assignEnemyDamage = flip EnemyDamage
 
-nonAttackEnemyDamage :: (AsId enemy, IdOf enemy ~ EnemyId, Sourceable a) => Maybe InvestigatorId -> a -> Int -> enemy -> Message
+nonAttackEnemyDamage
+  :: (AsId enemy, IdOf enemy ~ EnemyId, Sourceable a)
+  => Maybe InvestigatorId -> a -> Int -> enemy -> Message
 nonAttackEnemyDamage miid source damage enemy = EnemyDamage (asId enemy) (nonAttack miid source damage)
 
 placeDoom :: (Sourceable source, Targetable target) => source -> target -> Int -> Message

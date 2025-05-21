@@ -49,4 +49,13 @@ instance RunMessage StoryAttrs where
     UseAbility _ ab _ | isSource attrs ab.source || isProxySource attrs ab.source -> do
       push $ Do msg
       pure attrs
+    InSearch msg'@(UseAbility _ ab _) | isSource attrs ab.source || isProxySource attrs ab.source -> do
+      push $ Do msg'
+      pure attrs
+    InDiscard _ msg'@(UseAbility _ ab _) | isSource attrs ab.source || isProxySource attrs ab.source -> do
+      push $ Do msg'
+      pure attrs
+    InHand _ msg'@(UseAbility _ ab _) | isSource attrs ab.source || isProxySource attrs ab.source -> do
+      push $ Do msg'
+      pure attrs
     _ -> pure attrs

@@ -877,6 +877,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.DrawingStartingHand timing whoMatcher -> guardTiming timing $ \case
       Window.DrawingStartingHand who -> matchWho iid who whoMatcher
       _ -> noMatch
+    Matcher.WouldMoveFromHunter timing enemyMatcher -> guardTiming timing $ \case
+      Window.WouldMoveFromHunter eid -> elem eid <$> select enemyMatcher
+      _ -> noMatch
     Matcher.MovedFromHunter timing enemyMatcher -> guardTiming timing $ \case
       Window.MovedFromHunter eid -> elem eid <$> select enemyMatcher
       _ -> noMatch

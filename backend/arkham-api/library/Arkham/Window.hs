@@ -224,6 +224,7 @@ data WindowType
   | MovedButBeforeEnemyEngagement InvestigatorId LocationId
   | MovedBy Source LocationId InvestigatorId
   | MovedFromHunter EnemyId
+  | WouldMoveFromHunter EnemyId
   | EnemyMovesTo LocationId MovesVia EnemyId
   | EnemyMoves EnemyId LocationId
   | HuntersMoveStep

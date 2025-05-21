@@ -72,6 +72,7 @@ data WindowMatcher
   | EncounterDeckRunsOutOfCards
   | MovedBy Timing Who SourceMatcher
   | MovedButBeforeEnemyEngagement Timing Who Where
+  | WouldMoveFromHunter Timing EnemyMatcher
   | MovedFromHunter Timing EnemyMatcher
   | ChosenRandomLocation Timing LocationMatcher
   | PlaceUnderneath Timing TargetMatcher CardMatcher

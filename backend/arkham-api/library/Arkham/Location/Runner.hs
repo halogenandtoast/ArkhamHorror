@@ -115,6 +115,18 @@ getModifiedRevealClueCountWithMods mods attrs =
 
 instance RunMessage LocationAttrs where
   runMessage msg a@LocationAttrs {..} = case msg of
+    UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
+      push $ Do msg
+      pure a
+    InSearch msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+      push $ Do msg'
+      pure a
+    InDiscard _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+      push $ Do msg'
+      pure a
+    InHand _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+      push $ Do msg'
+      pure a
     SetGlobal target key v | isTarget a target -> pure $ a & globalMetaL %~ insertMap key v
     UpdateLocation lid upd | lid == locationId -> do
       -- TODO: we may want life cycles around this, generally this might just be a bad idea

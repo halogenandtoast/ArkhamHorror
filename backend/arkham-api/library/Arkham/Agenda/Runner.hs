@@ -156,4 +156,7 @@ instance RunMessage AgendaAttrs where
           , enabled
           ]
         pure $ a {agendaUsedWheelOfFortuneX = True}
+    UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
+      push $ Do msg
+      pure a
     _ -> pure a

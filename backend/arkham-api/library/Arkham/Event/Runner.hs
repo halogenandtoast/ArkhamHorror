@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Event.Runner (
   module X,
@@ -286,4 +286,16 @@ runEventMessage msg a@EventAttrs {..} = case msg of
       else do
         pushWhen (tType == Horror) $ checkDefeated source a
         pure $ a & tokensL %~ addTokens tType n
+  UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
+    push $ Do msg
+    pure a
+  InSearch msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+    push $ Do msg'
+    pure a
+  InDiscard _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+    push $ Do msg'
+    pure a
+  InHand _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+    push $ Do msg'
+    pure a
   _ -> pure a

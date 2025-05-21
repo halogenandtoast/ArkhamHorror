@@ -46,4 +46,16 @@ instance RunMessage StoryAttrs where
       pure attrs
     PlaceUnderneath target cards | isTarget attrs target -> do
       pure $ attrs & cardsUnderneathL <>~ cards
+    UseAbility _ ab _ | isSource attrs ab.source || isProxySource attrs ab.source -> do
+      push $ Do msg
+      pure attrs
+    InSearch msg'@(UseAbility _ ab _) | isSource attrs ab.source || isProxySource attrs ab.source -> do
+      push $ Do msg'
+      pure attrs
+    InDiscard _ msg'@(UseAbility _ ab _) | isSource attrs ab.source || isProxySource attrs ab.source -> do
+      push $ Do msg'
+      pure attrs
+    InHand _ msg'@(UseAbility _ ab _) | isSource attrs ab.source || isProxySource attrs ab.source -> do
+      push $ Do msg'
+      pure attrs
     _ -> pure attrs

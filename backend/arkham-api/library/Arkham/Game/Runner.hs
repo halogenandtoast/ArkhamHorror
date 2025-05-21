@@ -2287,6 +2287,11 @@ runGameMessage msg g = case msg of
   Msg.PhaseStep step msgs -> do
     pushAll msgs
     pure $ g & phaseStepL ?~ step
+  AllDrawCardAndResource -> do
+    investigators <- filterM (fmap not . isEliminated) =<< getInvestigatorsInOrder
+    push $ SetActiveInvestigator $ g ^. activeInvestigatorIdL
+    for_ (reverse investigators) \iid -> push $ ForInvestigator iid AllDrawCardAndResource
+    pure g
   AllDrawEncounterCard -> do
     investigators <- filterM (fmap not . isEliminated) =<< getInvestigatorsInOrder
     push $ SetActiveInvestigator $ g ^. activeInvestigatorIdL
@@ -3328,6 +3333,12 @@ instance RunMessage Game where
 
 runPreGameMessage :: Runner Game
 runPreGameMessage msg g = case msg of
+  ForInvestigator iid _ -> do
+    player <- getPlayer iid
+    pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player
+  DrawCards iid _ -> do
+    player <- getPlayer iid
+    pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player
   ResetGame -> do
     let
       promoteHomunculus (k, i) =

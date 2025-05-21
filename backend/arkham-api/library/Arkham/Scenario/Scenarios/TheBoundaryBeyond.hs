@@ -215,7 +215,7 @@ instance RunMessage TheBoundaryBeyond where
       drawAnotherChaosToken iid
       pure s
     ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
-      ls <- select $ NearestLocationToYou $ LocationWithTrait Trait.Ancient
+      ls <- select $ NearestLocationTo iid $ LocationWithTrait Trait.Ancient
       chooseTargetM iid ls \target -> placeTokens ElderThing target Clue 1
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
@@ -231,7 +231,7 @@ instance RunMessage TheBoundaryBeyond where
             then chooseTargetM iid serpents \serpent -> initiateEnemyAttack serpent attrs iid
             else for_ serpents \serpent -> initiateEnemyAttack serpent attrs iid
         ElderThing | isEasyStandard attrs -> do
-          ls <- select $ NearestLocationToYou $ LocationWithTrait Trait.Ancient
+          ls <- select $ NearestLocationTo iid $ LocationWithTrait Trait.Ancient
           chooseTargetM iid ls \target -> placeTokens ElderThing target Clue 1
         _ -> pure ()
       pure s

@@ -125,4 +125,7 @@ instance RunMessage ActAttrs where
       pure $ a & keysL %~ insertSet k
     PlaceKey (isTarget a -> False) k -> do
       pure $ a & keysL %~ deleteSet k
+    UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
+      push $ Do msg
+      pure a
     _ -> pure a

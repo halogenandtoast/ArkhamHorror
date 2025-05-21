@@ -1,4 +1,4 @@
-module Arkham.Event.Events.Beguile (beguile, Beguile (..)) where
+module Arkham.Event.Events.Beguile (beguile) where
 
 import Arkham.Ability
 import Arkham.Constants
@@ -22,18 +22,18 @@ beguile = event Beguile Cards.beguile
 instance HasAbilities Beguile where
   getAbilities (Beguile x) = case x.placement.attachedTo of
     Just (EnemyTarget eid) ->
-      [ controlledAbility
+      [ controlled
           x
           1
-          ( exists (EnemyWithId eid <> CanParleyEnemy You)
+          ( exists (be eid <> CanParleyEnemy You)
               <> oneOf
                 [ exists (RevealedLocation <> LocationCanBeEnteredBy eid <> ConnectedFrom (locationWithEnemy eid))
                 , exists
                     ( PerformableAbility [ActionCostModifier (-1), IgnoreOnSameLocation]
                         <> BasicAbility
                         <> oneOf
-                          [ AbilityIsAction #investigate <> AbilityOnLocation (locationWithEnemy eid)
-                          , AbilityIsAction #evade <> AbilityOnEnemy (EnemyAt (locationWithEnemy eid))
+                          [ #investigate <> AbilityOnLocation (locationWithEnemy eid)
+                          , #evade <> AbilityOnEnemy (at_ (locationWithEnemy eid))
                           ]
                     )
                 ]
@@ -50,7 +50,7 @@ instance RunMessage Beguile where
     HandleTargetChoice _iid (isSource attrs -> True) (EnemyTarget eid) -> do
       push $ PlaceEvent attrs.id $ AttachedToEnemy eid
       pure e
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseAbility iid ab _ | isSource attrs ab.source && ab.index == 1 -> do
       case attrs.placement.attachedTo of
         Just (EnemyTarget eid) -> do
           locations <-
@@ -59,54 +59,54 @@ instance RunMessage Beguile where
             selectAny
               $ PerformableAbility [ActionCostModifier (-1), IgnoreOnSameLocation]
               <> BasicAbility
-              <> AbilityIsAction #investigate
+              <> #investigate
               <> AbilityOnLocation (locationWithEnemy eid)
 
           evade <-
             selectAny
               $ PerformableAbility [ActionCostModifier (-1), IgnoreOnSameLocation, IgnoreEngagementRequirement]
               <> BasicAbility
-              <> AbilityIsAction #evade
-              <> AbilityOnEnemy (EnemyAt (locationWithEnemy eid))
+              <> #evade
+              <> AbilityOnEnemy (at_ (locationWithEnemy eid))
 
-          chooseOrRunOne
-            iid
+          chooseOrRunOne iid
             $ [Label "Move attached enemy to a revealed connecting location" [DoStep 1 msg] | locations]
             <> [Label "Perform a basic investigate action at it's location" [DoStep 2 msg] | investigate']
             <> [Label "Perform a basic evade action at it's location" [DoStep 3 msg] | evade]
         _ -> error "Beguile: EnemyTarget not found"
       pure e
-    DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      case attrs.placement.attachedTo of
-        Just (EnemyTarget eid) -> do
-          locations <-
-            select $ RevealedLocation <> LocationCanBeEnteredBy eid <> ConnectedFrom (locationWithEnemy eid)
-          chooseOne iid [targetLabel location [EnemyMove eid location] | location <- locations]
-        _ -> error "Beguile: EnemyTarget not found"
-      pure e
-    DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      case attrs.placement.attachedTo of
-        Just (EnemyTarget eid) ->
-          field EnemyLocation eid >>= traverse_ \lid -> do
-            abilities <-
-              filter (and . sequence [abilityBasic, (== AbilityInvestigate) . abilityIndex])
-                <$> field LocationAbilities lid
-            case abilities of
-              [x] ->
-                push
-                  $ UseAbility
-                    iid
-                    (doesNotProvokeAttacksOfOpportunity $ decreaseAbilityActionCost x 1)
-                    (defaultWindows iid)
-              _ -> error "expected exactly 1 investigate action on location"
-        _ -> error "Beguile: EnemyTarget not found"
-      pure e
-    DoStep 3 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      case attrs.placement.attachedTo of
-        Just (EnemyTarget eid) ->
-          field EnemyLocation eid >>= traverse_ \lid -> do
-            sid <- getRandom
-            chooseEvadeEnemyMatch sid iid (toSource iid) $ evadeOverride $ EnemyAt $ LocationWithId lid
+    DoStep n (UseAbility iid ab ws) | isSource attrs ab.source && ab.index == 1 -> do
+      push . Do $ case n of
+        1 -> UseAbility iid ab ws
+        2 -> UseAbility iid (overAbilityActions (#investigate :) ab) ws
+        3 -> UseAbility iid (overAbilityActions (#evade :) ab) ws
+        _ -> error "Beguile: unexpected step"
+      pure $ overAttrs (setMeta n) e
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      case attrs.placement.attachedTo.enemy of
+        Just eid -> case fromMaybe (1 :: Int) (getEventMeta attrs) of
+          1 -> do
+            locations <-
+              select $ RevealedLocation <> LocationCanBeEnteredBy eid <> ConnectedFrom (locationWithEnemy eid)
+            chooseOne iid [targetLabel location [EnemyMove eid location] | location <- locations]
+          2 -> do
+            field EnemyLocation eid >>= traverse_ \lid -> do
+              abilities <-
+                filter (and . sequence [abilityBasic, (== AbilityInvestigate) . abilityIndex])
+                  <$> field LocationAbilities lid
+              case abilities of
+                [x] ->
+                  push
+                    $ UseAbility
+                      iid
+                      (overAbilityActions (const []) $ doesNotProvokeAttacksOfOpportunity $ decreaseAbilityActionCost x 1)
+                      (defaultWindows iid)
+                _ -> error "expected exactly 1 investigate action on location"
+          3 -> do
+            field EnemyLocation eid >>= traverse_ \lid -> do
+              sid <- getRandom
+              chooseEvadeEnemyMatch sid iid (toSource iid) $ evadeOverride $ at_ (be lid)
+          _ -> error "Beguile: unexpected step"
         _ -> error "Beguile: EnemyTarget not found"
       pure e
     FailedSkillTest {} -> do

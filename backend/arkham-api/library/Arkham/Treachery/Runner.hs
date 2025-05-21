@@ -175,4 +175,16 @@ instance RunMessage TreacheryAttrs where
       pure $ a & exhaustedL .~ False
     Do (AfterRevelation _ tid) | tid == treacheryId -> do
       pure $ a & waitingL .~ False
+    UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
+      push $ Do msg
+      pure a
+    InSearch msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+      push $ Do msg'
+      pure a
+    InDiscard _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+      push $ Do msg'
+      pure a
+    InHand _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+      push $ Do msg'
+      pure a
     _ -> pure a

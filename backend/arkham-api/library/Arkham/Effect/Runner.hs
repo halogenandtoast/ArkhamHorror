@@ -113,4 +113,16 @@ instance RunMessage EffectAttrs where
           modifiers' <- traverse updateModifier modifiers
           pure $ a {effectMetadata = Just $ EffectModifiers modifiers'}
         _ -> pure a
+    UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
+      push $ Do msg
+      pure a
+    InSearch msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+      push $ Do msg'
+      pure a
+    InDiscard _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+      push $ Do msg'
+      pure a
+    InHand _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+      push $ Do msg'
+      pure a
     _ -> pure a

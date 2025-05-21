@@ -1,4 +1,4 @@
-module Arkham.Event.Events.AstoundingRevelation (astoundingRevelation, AstoundingRevelation (..)) where
+module Arkham.Event.Events.AstoundingRevelation (astoundingRevelation) where
 
 import Arkham.Ability
 import Arkham.Asset.Uses
@@ -18,15 +18,15 @@ instance HasAbilities AstoundingRevelation where
   getAbilities (AstoundingRevelation x) =
     [ playerLimit (PerSearch Research)
         $ mkAbility x 1
-        $ ReactionAbility (AmongSearchedCards You) (DiscardCost FromDeck $ SearchedCardTarget x.cardId)
+        $ triggered (AmongSearchedCards You) (DiscardCost FromDeck $ SearchedCardTarget x.cardId)
     ]
 
 instance RunMessage AstoundingRevelation where
   runMessage msg e@(AstoundingRevelation attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       secretAssets <- select $ assetControlledBy iid <> AssetWithUseType Secret
-      chooseOne iid
-        $ ResourceLabel iid [TakeResources iid 2 (attrs.ability 1) False]
-        : [targetLabel aid [AddUses (attrs.ability 1) aid Secret 1] | aid <- secretAssets]
+      chooseOneM iid do
+        resourceLabeled iid $ gainResources iid (attrs.ability 1) 2
+        targets secretAssets \aid -> addUses (attrs.ability 1) aid Secret 1
       pure e
     _ -> AstoundingRevelation <$> liftRunMessage msg attrs

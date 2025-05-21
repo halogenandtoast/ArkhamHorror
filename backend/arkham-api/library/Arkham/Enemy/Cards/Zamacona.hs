@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.Zamacona (zamacona, Zamacona (..)) where
+module Arkham.Enemy.Cards.Zamacona (zamacona) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
@@ -15,29 +15,26 @@ newtype Zamacona = Zamacona (EnemyAttrs `With` Meta)
   deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-instance HasModifiersFor Zamacona where
-  getModifiersFor (Zamacona (With attrs _)) =
-    modifySelect
-      attrs
-      (investigatorIs Investigators.alessandraZorzi)
-      [CannotParleyWith (EnemyWithId attrs.id)]
-
-instance HasAbilities Zamacona where
-  getAbilities (Zamacona (attrs `With` meta)) =
-    extend
-      attrs
-      [ restrictedAbility attrs 1 (youExist (investigatorIs Investigators.alessandraZorzi) <> criteria)
-          $ forced
-          $ FirstTimeParleyingThisRound #when (investigatorIs Investigators.alessandraZorzi)
-      ]
-   where
-    criteria = if punishParley meta then NoRestriction else Never
-
 zamacona :: EnemyCard Zamacona
 zamacona =
   enemyWith (Zamacona . (`with` Meta True)) Cards.zamacona (3, Static 3, 3) (1, 0)
     $ spawnAtL
     ?~ SpawnAtFirst [SpawnAt (NearestLocationToYou EmptyLocation), SpawnAt YourLocation]
+
+instance HasModifiersFor Zamacona where
+  getModifiersFor (Zamacona (With attrs _)) =
+    modifySelect attrs (investigatorIs Investigators.alessandraZorzi) [CannotParleyWith (be attrs)]
+
+instance HasAbilities Zamacona where
+  getAbilities (Zamacona (attrs `With` meta)) =
+    extend
+      attrs
+      [ restricted attrs 1 (youExist (investigatorIs Investigators.alessandraZorzi) <> criteria)
+          $ forced
+          $ FirstTimeParleyingThisRound #when (investigatorIs Investigators.alessandraZorzi)
+      ]
+   where
+    criteria = if punishParley meta then NoRestriction else Never
 
 instance RunMessage Zamacona where
   runMessage msg (Zamacona (With attrs meta)) = runQueueT $ case msg of

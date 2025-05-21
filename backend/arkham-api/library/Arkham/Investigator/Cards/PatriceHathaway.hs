@@ -30,12 +30,12 @@ instance HasChaosTokenValue PatriceHathaway where
 
 instance RunMessage PatriceHathaway where
   runMessage msg i@(PatriceHathaway attrs) = runQueueT $ case msg of
-    SendMessage (isTarget attrs -> True) AllDrawCardAndResource | attrs.inGame -> do
+    SendMessage (isTarget attrs -> True) (ForInvestigator iid AllDrawCardAndResource) | attrs.inGame && iid == attrs.id -> do
       discards <- filterCards DiscardableCard <$> attrs.hand
       chooseOneAtATimeM attrs.id $ targets discards $ discardCard attrs attrs
       doStep 1 msg
       pure i
-    DoStep 1 (SendMessage (isTarget attrs -> True) AllDrawCardAndResource) | attrs.inGame -> do
+    DoStep 1 (SendMessage (isTarget attrs -> True) (ForInvestigator _ AllDrawCardAndResource)) | attrs.inGame -> do
       drawCardsIfCan attrs ScenarioSource . (`subtract` 5) . length =<< attrs.hand
       pure i
     ElderSignEffect (is attrs -> True) -> do

@@ -27,7 +27,7 @@ biancaDieKatzSingingYourSong = ally (BiancaDieKatzSingingYourSong . (`with` Meta
 
 instance HasAbilities BiancaDieKatzSingingYourSong where
   getAbilities (BiancaDieKatzSingingYourSong (With x _)) =
-    [skillTestAbility $ restrictedAbility x 1 ControlsThis parleyAction_]
+    [skillTestAbility $ restricted x 1 ControlsThis (parleyAction $ exhaust x)]
 
 instance RunMessage BiancaDieKatzSingingYourSong where
   runMessage msg a@(BiancaDieKatzSingingYourSong (With attrs meta)) = runQueueT $ case msg of

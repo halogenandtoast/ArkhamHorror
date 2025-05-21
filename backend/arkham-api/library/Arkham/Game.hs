@@ -2005,7 +2005,7 @@ getLocationsMatching lmatcher = do
         overallDistances = distanceAggregates $ foldr (unionWith min) mempty distances
         resultIds = maybe [] coerce . headMay . map snd . sortOn (Down . fst) . mapToList $ overallDistances
       pure $ filter ((`elem` resultIds) . toId) ls
-    NearestLocationToYou matcher -> guardYourLocation $ \start -> do
+    NearestLocationToYou matcher -> guardYourLocation \start -> do
       currentMatch <- start <=~> matcher
       matches' <-
         if currentMatch

@@ -1605,7 +1605,7 @@ instance RunMessage EnemyAttrs where
       -- generic DoBatch handler
       runMessage (Do msg') a
     ForTarget (isTarget a -> True) msg' -> runMessage msg' a
-    UseAbility _ ab _ | isSource a ab.source -> do
+    UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
       push $ Do msg
       pure a
     _ -> pure a

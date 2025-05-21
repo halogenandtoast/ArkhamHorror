@@ -55,11 +55,11 @@ instance HasChaosTokenValue Subject5U21 where
 
 instance RunMessage Subject5U21 where
   runMessage msg i@(Subject5U21 (With attrs meta)) = runQueueT $ case msg of
-    AllDrawCardAndResource | not (attrs ^. defeatedL || attrs ^. resignedL) -> do
+    ForInvestigator iid AllDrawCardAndResource | iid == attrs.id && not (attrs ^. defeatedL || attrs ^. resignedL) -> do
       unlessM (hasModifier attrs CannotDrawCards) $ do
         push $ DrawCards attrs.id $ newCardDraw ScenarioSource attrs.id 2
         push $ Devour attrs.id
-      push $ ForTarget (toTarget attrs) (DoStep 2 AllDrawCardAndResource)
+      push $ ForTarget (toTarget attrs) (DoStep 2 (ForInvestigator iid AllDrawCardAndResource))
       pure i
     ElderSignEffect (is attrs -> True) -> do
       afterSkillTest attrs.id "Subject 5U21" $ push (Do msg)

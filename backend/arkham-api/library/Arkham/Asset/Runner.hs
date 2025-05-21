@@ -670,7 +670,7 @@ instance RunMessage AssetAttrs where
         $ resolve (RemoveAsset $ toId a)
         <> [PutCardOnBottomOfDeck iid deck (toCard a)]
       pure a
-    UseAbility _ ab _ | isSource a ab.source -> do
+    UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
       push $ Do msg
       pure a
     _ -> pure a

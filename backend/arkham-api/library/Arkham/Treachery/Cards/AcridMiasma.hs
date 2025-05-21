@@ -20,8 +20,8 @@ instance HasAbilities AcridMiasma where
 
 instance RunMessage AcridMiasma where
   runMessage msg t@(AcridMiasma attrs) = runQueueT $ case msg of
-    Revelation _ (isSource attrs -> True) -> do
-      mLocation <- selectOne $ NearestLocationToYou $ locationWithoutTreachery Cards.acridMiasma
+    Revelation iid (isSource attrs -> True) -> do
+      mLocation <- selectOne $ NearestLocationTo iid $ locationWithoutTreachery Cards.acridMiasma
       for_ mLocation $ attachTreachery (toId attrs)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do

@@ -269,6 +269,11 @@ instance HasModifiersFor Scenario where
     getModifiersFor a
     traverse_ getModifiersFor (concat . toList $ attr scenarioTarotCards a)
 
+isTarotSource :: Ability -> Bool
+isTarotSource ab = case ab.source of
+ TarotSource _ -> True
+ _ -> False
+
 instance RunMessage Scenario where
   runMessage msg x@(Scenario s) = case msg of
     UseThisAbility _ source@(TarotSource card@(TarotCard facing TheLoversVI)) 1 -> do
@@ -307,6 +312,9 @@ instance RunMessage Scenario where
 
         pure $ Just $ chooseOne player $ Label "Do not play asset" [] : choices
       pushAll msgs
+      pure x
+    UseAbility _ (isTarotSource -> True) _ -> do
+      push $ Do msg
       pure x
     UseCardAbility _ source@(TarotSource card@(TarotCard facing JusticeXI)) 1 ws _ -> do
       case facing of

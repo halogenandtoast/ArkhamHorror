@@ -253,8 +253,8 @@ instance HasModifiersFor Scenario where
 
 isTarotSource :: Ability -> Bool
 isTarotSource ab = case ab.source of
- TarotSource _ -> True
- _ -> False
+  TarotSource _ -> True
+  _ -> False
 
 instance RunMessage Scenario where
   runMessage msg x@(Scenario s) = case msg of
@@ -640,6 +640,7 @@ allScenarios =
     , ("52028", SomeScenario returnToEchoesOfThePast)
     , ("52034", SomeScenario returnToTheUnspeakableOath)
     , ("52040", SomeScenario returnToAPhantomOfTruth)
+    , ("52048", SomeScenario returnToThePallidMask)
     , ("81001", SomeScenario curseOfTheRougarou)
     , ("82001", SomeScenario carnevaleOfHorrors)
     , ("84001", SomeScenario murderAtTheExcelsiorHotel)
@@ -726,6 +727,7 @@ scenarioEncounterSets =
     , ("52028", EncounterSet.ReturnToEchoesOfThePast)
     , ("52034", EncounterSet.ReturnToTheUnspeakableOath)
     , ("52040", EncounterSet.ReturnToAPhantomOfTruth)
+    , ("52048", EncounterSet.ReturnToThePallidMask)
     , ("81001", EncounterSet.CurseOfTheRougarou)
     , ("82001", EncounterSet.CarnevaleOfHorrors)
     , ("84001", EncounterSet.MurderAtTheExcelsiorHotel)

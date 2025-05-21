@@ -529,6 +529,8 @@ allEnemies =
       SomeEnemyCard hostOfInsanity
     , --- Decaying Reality [rtptc]
       SomeEnemyCard maggotSwarm
+    , --- Hastur's Envoys [rtptc]
+      SomeEnemyCard preyingByakhee
     , -- Nathanial Cho
       SomeEnemyCard tommyMalloy
     , -- Curse of the Rougarou

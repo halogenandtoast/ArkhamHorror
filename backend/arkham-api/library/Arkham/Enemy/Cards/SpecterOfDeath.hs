@@ -1,17 +1,13 @@
-module Arkham.Enemy.Cards.SpecterOfDeath (
-  specterOfDeath,
-  SpecterOfDeath (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.SpecterOfDeath (specterOfDeath) where
 
 import Arkham.Ability
 import Arkham.Attack
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Location.Grid
 import Arkham.Matcher
-import Arkham.Scenarios.ThePallidMask.Helpers
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype SpecterOfDeath = SpecterOfDeath EnemyAttrs
@@ -25,7 +21,7 @@ specterOfDeath =
     Cards.specterOfDeath
     (3, PerPlayer 5, 3)
     (2, 2)
-    (spawnAtL ?~ SpawnAt (LocationWithLabel $ positionToLabel startPosition))
+    (spawnAtL ?~ SpawnAt (LocationInPosition $ Pos 0 0))
 
 instance HasAbilities SpecterOfDeath where
   getAbilities (SpecterOfDeath a) =

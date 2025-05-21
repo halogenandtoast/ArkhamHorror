@@ -1811,6 +1811,7 @@ library
       Arkham.Enemy.Cards.Poleman
       Arkham.Enemy.Cards.Poltergeist
       Arkham.Enemy.Cards.PossessedOathspeaker
+      Arkham.Enemy.Cards.PreyingByakhee
       Arkham.Enemy.Cards.PriestessOfTheCoven
       Arkham.Enemy.Cards.PriestOfAThousandMasks
       Arkham.Enemy.Cards.PriestOfDagon
@@ -3469,6 +3470,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToTheLastKing
       Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks
       Arkham.Scenario.Scenarios.ReturnToTheMiskatonicMuseum
+      Arkham.Scenario.Scenarios.ReturnToThePallidMask
       Arkham.Scenario.Scenarios.ReturnToTheUnspeakableOath
       Arkham.Scenario.Scenarios.ReturnToUndimensionedAndUnseen
       Arkham.Scenario.Scenarios.ReturnToWhereDoomAwaits
@@ -3565,7 +3567,6 @@ library
       Arkham.Scenarios.TheMidnightMasks.Helpers
       Arkham.Scenarios.TheMiskatonicMuseum.Helpers
       Arkham.Scenarios.ThePallidMask.Helpers
-      Arkham.Scenarios.ThePallidMask.Story
       Arkham.Scenarios.ThePitOfDespair.Helpers
       Arkham.Scenarios.TheSearchForKadath.FlavorText
       Arkham.Scenarios.TheSearchForKadath.Helpers
@@ -4259,6 +4260,7 @@ library
       Arkham.Treachery.Cards.ThePriceOfFailure
       Arkham.Treachery.Cards.TheSecretMustBeKept
       Arkham.Treachery.Cards.TheShadowBehindYou
+      Arkham.Treachery.Cards.TheSignOfHastur
       Arkham.Treachery.Cards.TheSpinnerInDarkness
       Arkham.Treachery.Cards.TheYellowSign
       Arkham.Treachery.Cards.TheyreCatchingUp

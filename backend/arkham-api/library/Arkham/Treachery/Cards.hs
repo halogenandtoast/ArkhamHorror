@@ -469,6 +469,7 @@ allEncounterTreacheryCards =
       , thePitBelow
       , theSecretMustBeKept
       , theShadowBehindYou
+      , theSignOfHastur
       , theSpinnerInDarkness
       , theYellowSign
       , theZealotsSeal
@@ -2943,6 +2944,12 @@ fragileThoughts :: CardDef
 fragileThoughts =
   (treachery "52067" "Fragile Thoughts" DecayingReality 2)
     { cdCardTraits = setFromList [Terror]
+    }
+
+theSignOfHastur :: CardDef
+theSignOfHastur =
+  peril (treachery "52070" "The Sign of Hastur" HastursEnvoys 2)
+    { cdCardTraits = setFromList [Pact, Power]
     }
 
 visionsInYourMindHorrors :: CardDef

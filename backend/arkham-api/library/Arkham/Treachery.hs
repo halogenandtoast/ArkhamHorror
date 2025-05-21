@@ -638,6 +638,8 @@ allTreacheries =
     , --- Decaying Reality [rtptc]
       SomeTreacheryCard bleedingWalls
     , SomeTreacheryCard fragileThoughts
+    , --- Hastur's Envoys [rtptc]
+      SomeTreacheryCard theSignOfHastur
     , --- Maddening Delusions [rtptc]
       SomeTreacheryCard visionsInYourMindHorrors
     , SomeTreacheryCard visionsInYourMindFailure

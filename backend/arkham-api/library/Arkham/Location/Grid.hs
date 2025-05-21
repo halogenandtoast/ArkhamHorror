@@ -81,8 +81,8 @@ insertGrid loc c =
 viewGrid :: Pos -> Grid -> Maybe GridLocation
 viewGrid (Pos x y) (Grid above center below) =
   case compare y 0 of
-    LT -> maybe Nothing viewGridRow (Seq.lookup (abs y - 1) below)
-    GT -> maybe Nothing viewGridRow (Seq.lookup (Seq.length above - y) above)
+    LT -> viewGridRow =<< Seq.lookup (abs y - 1) below
+    GT -> viewGridRow =<< Seq.lookup (Seq.length above - y) above
     EQ -> viewGridRow center
  where
   viewGridRow (GridRow left middle right) =
@@ -175,8 +175,7 @@ extendGridRight (Grid above center below) =
 extendGridUp :: Grid -> Grid
 extendGridUp c@(Grid above center below) =
   Grid
-    ( (GridRow (Seq.replicate leftAmount Nothing) Nothing (Seq.replicate rightAmount Nothing)) <| above
-    )
+    (GridRow (Seq.replicate leftAmount Nothing) Nothing (Seq.replicate rightAmount Nothing) <| above)
     center
     below
  where
@@ -188,9 +187,7 @@ extendGridDown c@(Grid above center below) =
   Grid
     above
     center
-    ( below
-        |> (GridRow (Seq.replicate leftAmount Nothing) Nothing (Seq.replicate rightAmount Nothing))
-    )
+    (below |> GridRow (Seq.replicate leftAmount Nothing) Nothing (Seq.replicate rightAmount Nothing))
  where
   leftAmount = gridLeftAmount c
   rightAmount = gridRightAmount c

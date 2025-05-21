@@ -315,6 +315,7 @@ allEncounterEnemyCards =
       , poleman
       , poltergeist
       , possessedOathspeaker
+      , preyingByakhee
       , priestOfAThousandMasks
       , priestOfDagon
       , priestessOfTheCoven
@@ -2923,6 +2924,13 @@ maggotSwarm :: CardDef
 maggotSwarm =
   (enemy "52068" "Maggot Swarm" DecayingReality 2)
     { cdCardTraits = setFromList [Creature]
+    }
+
+preyingByakhee :: CardDef
+preyingByakhee =
+  (enemy "52069" "Preying Byakhee" HastursEnvoys 2)
+    { cdCardTraits = setFromList [Monster, Byakhee]
+    , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 tommyMalloy :: CardDef

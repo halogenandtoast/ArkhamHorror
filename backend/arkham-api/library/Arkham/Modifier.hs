@@ -251,6 +251,7 @@ data ModifierType
   | EffectsCannotBeCanceled
   | EnemyEngageActionCriteria CriteriaOverride
   | EnemyEvade Int
+  | SwapFightAndEvade
   | EnemyEvadeActionCriteria CriteriaOverride
   | EnemyEvadeWithMin Int (Min Int)
   | EnemyFight Int

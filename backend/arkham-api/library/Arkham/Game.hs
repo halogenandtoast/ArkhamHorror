@@ -3732,15 +3732,21 @@ getEnemyField f e = do
       if countAllDoom then getDoomCount else pure $ enemyDoom attrs
     EnemyEvade -> do
       let
+        applyBefore (Helpers.AlternateEvadeField someField) original = case someField of
+          SomeField EnemyFight -> enemyFight
+          _ -> original
+        applyBefore _ n = n
         applyModifier (Helpers.EnemyEvade m) n = max 0 (n + m)
         applyModifier _ n = n
         applyPreModifier (Helpers.EnemyEvadeWithMin m (Min minVal)) n = max (min n minVal) (n + m)
         applyPreModifier _ n = n
-      case enemyEvade of
+
+      modifiers' <- getModifiers (EnemyTarget enemyId)
+      let mFieldValue = foldr applyBefore enemyEvade modifiers'
+      case mFieldValue of
         Nothing -> pure Nothing
         Just x -> do
           n <- calculate x
-          modifiers' <- getModifiers (EnemyTarget enemyId)
           pure . Just $ foldr applyModifier (foldr applyPreModifier n modifiers') modifiers'
     EnemyFight -> do
       iid <- toId <$> getActiveInvestigator
@@ -3757,7 +3763,7 @@ getEnemyField f e = do
         applyAfterModifier _ n = n
       investigatorModifiers <- getModifiers iid
       modifiers' <- getModifiers (EnemyTarget enemyId)
-      let mFieldValue = foldr applyBefore enemyFight investigatorModifiers
+      let mFieldValue = foldr applyBefore enemyFight (investigatorModifiers <> modifiers')
 
       case mFieldValue of
         Nothing -> pure Nothing

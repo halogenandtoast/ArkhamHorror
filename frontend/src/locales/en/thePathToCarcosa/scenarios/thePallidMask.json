@@ -13,6 +13,12 @@
       "elderThing": "-4. If you fail, search the encounter deck and discard pile for a _Ghoul_ or _Geist_ enemy and draw it."
     }
   },
+  "label": {
+    "above": "Place Above",
+    "below": "Place Below",
+    "right": "Place to the Right",
+    "left": "Place to the Left"
+  },
   "intro": {
     "title": "Scenario VI: The Pallid Mask",
     "readIntro1": "Check Campaign Log. *If you did not escape the gaze of the phantom*, or *if you were unable to find Nigel*: Read _Intro 1_.",

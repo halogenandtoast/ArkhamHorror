@@ -106,10 +106,13 @@ setupThePallidMask attrs = do
       li "theManInThePallidMask"
       unscoped $ li "shuffleRemainder"
 
+  whenReturnTo $ gather Set.ReturnToThePallidMask
   gather Set.ThePallidMask
   gather Set.Ghouls
   gather Set.Hauntings
   gather Set.ChillingCold
+
+  isReturnTo <- getIsReturnTo
 
   let
     otherCatacombs =
@@ -125,6 +128,13 @@ setupThePallidMask attrs = do
       , Locations.narrowShaft
       , Locations.shiveringPools
       ]
+        <> ( guard isReturnTo
+               *> [ Locations.returnToSecretPassage
+                  , Locations.moundOfBones
+                  , Locations.researchSite
+                  , Locations.seaOfSkulls
+                  ]
+           )
 
   didNotEscapeGazeOfThePhantom <- getHasRecord YouDidNotEscapeTheGazeOfThePhantom
   unableToFindNigel <- getHasRecord YouWereUnableToFindNigel
@@ -132,7 +142,12 @@ setupThePallidMask attrs = do
   (start, remainingCatacombs) <-
     if awokeInsideTheCatacombs
       then do
-        shuffled <- shuffle (Locations.theGateToHell : otherCatacombs)
+        let
+          validStart = \case
+            (x : _) -> x /= Locations.researchSite
+            _ -> True
+          
+        shuffled <- retryUntil validStart $ shuffle (Locations.theGateToHell : otherCatacombs)
         case shuffled of
           (x : xs) -> (,xs) <$> placeInGrid (Pos 0 0) x
           _ -> error "invalid setup"
@@ -145,7 +160,7 @@ setupThePallidMask attrs = do
   push $ RemoveFromBearersDeckOrDiscard theManInThePallidMask
   setAside [Enemies.theManInThePallidMask]
 
-  let (bottom3, rest) = splitAt 3 remainingCatacombs
+  let (bottom3, rest) = splitAt 3 $ if isReturnTo then drop 4 remainingCatacombs else remainingCatacombs
   bottom <- shuffleM ([Locations.tombOfShadows, Locations.blockedPassage] <> bottom3)
   addExtraDeck CatacombsDeck =<< genCards (rest <> bottom)
 
@@ -157,6 +172,7 @@ setupThePallidMask attrs = do
     , Acts.theWayOut
     , Acts.leadingTheWay
     ]
+  whenReturnTo $ addAdditionalReferences ["52048b"]
 
 instance RunMessage ThePallidMask where
   runMessage msg s@(ThePallidMask attrs) = runQueueT $ scenarioI18n $ case msg of

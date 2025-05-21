@@ -1762,6 +1762,7 @@ library
       Arkham.Enemy.Cards.MadPatient
       Arkham.Enemy.Cards.MaggotSwarm
       Arkham.Enemy.Cards.MalevolentSpirit
+      Arkham.Enemy.Cards.MalformedSkeleton
       Arkham.Enemy.Cards.Maniac
       Arkham.Enemy.Cards.ManifestationOfMadness
       Arkham.Enemy.Cards.MariaDeSilvaKnowsMoreThanSheLetsOn
@@ -3029,6 +3030,7 @@ library
       Arkham.Location.Cards.MoonBeastGalley
       Arkham.Location.Cards.MoonForest
       Arkham.Location.Cards.Morgue
+      Arkham.Location.Cards.MoundOfBones
       Arkham.Location.Cards.MouthOfKnYanTheCavernsMaw
       Arkham.Location.Cards.MouthOfKnYanTheDepthsBeneath
       Arkham.Location.Cards.MtNgranek
@@ -3105,6 +3107,7 @@ library
       Arkham.Location.Cards.RecordsOffice
       Arkham.Location.Cards.RehearsalRoom
       Arkham.Location.Cards.RemnantsOfLakesCamp
+      Arkham.Location.Cards.ResearchSite
       Arkham.Location.Cards.Restaurant
       Arkham.Location.Cards.ReturnToAttic
       Arkham.Location.Cards.ReturnToBishopsBrook
@@ -3123,6 +3126,7 @@ library
       Arkham.Location.Cards.ReturnToPereLachaiseCemetery
       Arkham.Location.Cards.ReturnToQuietHalls
       Arkham.Location.Cards.ReturnToSchoolhouse
+      Arkham.Location.Cards.ReturnToSecretPassage
       Arkham.Location.Cards.RialtoBridge
       Arkham.Location.Cards.RitualGrounds
       Arkham.Location.Cards.RitualSite
@@ -3166,6 +3170,7 @@ library
       Arkham.Location.Cards.SeaOfPitch_263
       Arkham.Location.Cards.SeaOfPitch_264
       Arkham.Location.Cards.SeaOfPitch_265
+      Arkham.Location.Cards.SeaOfSkulls
       Arkham.Location.Cards.SecondFloorHall
       Arkham.Location.Cards.SecretPassage
       Arkham.Location.Cards.SecurityOffice_128

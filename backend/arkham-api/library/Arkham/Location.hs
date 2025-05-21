@@ -858,6 +858,11 @@ allLocations =
     , SomeLocationCard returnToCanalSaintMartin
     , SomeLocationCard returnToNotreDame
     , SomeLocationCard returnToGardensOfLuxembourg
+    , --- Return to The Pallid Mask
+      SomeLocationCard returnToSecretPassage
+    , SomeLocationCard moundOfBones
+    , SomeLocationCard researchSite
+    , SomeLocationCard seaOfSkulls
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

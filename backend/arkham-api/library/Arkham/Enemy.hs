@@ -527,6 +527,8 @@ allEnemies =
       SomeEnemyCard keeperOfTheOath
     , --- Return to The Unspeakable Oath [rtptc]
       SomeEnemyCard hostOfInsanity
+    , --- Return to The Pallid Mask [rtptc]
+      SomeEnemyCard malformedSkeleton
     , --- Decaying Reality [rtptc]
       SomeEnemyCard maggotSwarm
     , --- Hastur's Envoys [rtptc]

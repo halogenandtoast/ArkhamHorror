@@ -46,10 +46,13 @@ placeDrawnLocations attrs cards directions = do
   msgs <- zipWithM ($) placements cards
   pushAll msgs
 
-placeAtDirection :: MonadRandom m => Direction -> LocationAttrs -> m (Card -> m [Message])
-placeAtDirection direction attrs = do
+placeAtDirection_ :: MonadRandom m => Direction -> LocationAttrs -> Card -> m Message
+placeAtDirection_ direction attrs card = snd <$> placeAtDirection direction attrs card
+
+placeAtDirection :: MonadRandom m => Direction -> LocationAttrs -> Card -> m (LocationId, Message)
+placeAtDirection direction attrs card = do
   case attrs.position of
     Nothing -> error "Missing position"
     Just pos -> do
       let pos' = Grid.updatePosition pos (toGridDirection direction)
-      pure $ fmap (pure . snd) . placeLocationInGrid pos'
+      placeLocationInGrid pos' card

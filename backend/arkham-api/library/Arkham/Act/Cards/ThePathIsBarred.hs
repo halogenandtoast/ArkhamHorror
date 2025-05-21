@@ -6,12 +6,14 @@ import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Card
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
+import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 
 newtype ThePathIsBarred = ThePathIsBarred ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thePathIsBarred :: ActCard ThePathIsBarred
@@ -21,6 +23,11 @@ thePathIsBarred =
     ThePathIsBarred
     Cards.thePathIsBarred
     (Just $ GroupClueCost (PerPlayer 2) (locationIs Locations.tombOfShadows))
+
+instance HasModifiersFor ThePathIsBarred where
+  getModifiersFor (ThePathIsBarred a) = do
+    isReturnTo <- getIsReturnTo
+    modifySelectWhen a isReturnTo (enemyIs Enemies.theManInThePallidMask) [CannotMove, CannotBeMoved]
 
 instance HasAbilities ThePathIsBarred where
   getAbilities (ThePathIsBarred a) =

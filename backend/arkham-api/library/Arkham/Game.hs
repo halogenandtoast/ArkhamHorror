@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -1756,6 +1756,9 @@ getLocationsMatching lmatcher = do
       selectNone $ treacheryAt (toId l) <> matcher
     LocationWithTreachery matcher -> flip filterM ls $ \l -> do
       selectAny $ treacheryAt (toId l) <> matcher
+    LocationWithSpaceInDirection direction matcher -> do
+      starts <- go ls matcher
+      pure $ filter (isNothing . lookup direction . attr locationDirections) starts
     LocationInDirection direction matcher -> do
       starts <- getLocationsMatching matcher
       let matches' = concat $ mapMaybe (lookup direction . attr locationDirections) starts
@@ -1770,7 +1773,7 @@ getLocationsMatching lmatcher = do
           matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
           pure $ filter ((`elem` matches') . toId) ls
     FarthestLocationFromLocation start matcher -> do
-      matchingLocationIds <- map toId <$> getLocationsMatching matcher
+      matchingLocationIds <- traceShowId . map toId <$> getLocationsMatching matcher
       matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
       pure $ filter ((`elem` matches') . toId) ls
     LocationFartherFrom pivot matcher -> do
@@ -2805,6 +2808,9 @@ enemyMatcherFilter es matcher' = case matcher' of
     pure $ guard cond *> es
   EnemyWhenOtherEnemy otherEnemyMatcher -> flip filterM es \enemy ->
     selectAny (not_ (EnemyWithId $ toId enemy) <> otherEnemyMatcher)
+  EnemyIfReturnTo a b -> do
+    isReturnTo <- getIsReturnTo
+    enemyMatcherFilter es $ if isReturnTo then a else b
   EnemyWithHealth -> filterM (fieldMap EnemyHealth isJust . toId) es
   CanBeAttackedBy matcher -> do
     iids <- select matcher

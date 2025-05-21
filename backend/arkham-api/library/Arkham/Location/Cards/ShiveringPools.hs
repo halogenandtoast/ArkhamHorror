@@ -56,15 +56,15 @@ instance RunMessage ShiveringPools where
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       case drewCards.cards of
         [card] -> do
-          placeBelow <- placeAtDirection Below attrs >>= \f -> f card
-          placeRight <- placeAtDirection RightOf attrs >>= \f -> f card
+          placeBelow <- placeAtDirection_ Below attrs card
+          placeRight <- placeAtDirection_ RightOf attrs card
           belowEmpty <- directionEmpty attrs Below
           rightEmpty <- directionEmpty attrs RightOf
           player <- getPlayer iid
           push
             $ chooseOrRunOne player
-            $ [Label "Place Below" placeBelow | belowEmpty]
-            <> [Label "Place to the Right" placeRight | rightEmpty]
+            $ [Label "Place Below" [placeBelow] | belowEmpty]
+            <> [Label "Place to the Right" [placeRight] | rightEmpty]
         [] -> pure ()
         _ -> error "wrong number of cards drawn"
       pure l

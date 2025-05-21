@@ -526,6 +526,7 @@ allLocationCards =
       , moonBeastGalley
       , moonForest
       , morgue
+      , moundOfBones
       , mouthOfKnYanTheCavernsMaw
       , mouthOfKnYanTheDepthsBeneath
       , mtNgranek
@@ -602,6 +603,7 @@ allLocationCards =
       , recordsOffice
       , rehearsalRoom
       , remnantsOfLakesCamp
+      , researchSite
       , restaurant
       , returnToAttic
       , returnToBishopsBrook
@@ -620,6 +622,7 @@ allLocationCards =
       , returnToPereLachaiseCemetery
       , returnToQuietHalls
       , returnToSchoolhouse
+      , returnToSecretPassage
       , rialtoBridge
       , ritualGrounds
       , ritualSite
@@ -662,6 +665,7 @@ allLocationCards =
       , seaOfPitch_263
       , seaOfPitch_264
       , seaOfPitch_265
+      , seaOfSkulls
       , sealedExit
       , secondFloorHall
       , secretPassage
@@ -8728,6 +8732,22 @@ returnToGardensOfLuxembourg :: CardDef
 returnToGardensOfLuxembourg =
   victory 1
     $ location "52046" "Gardens of Luxembourg" [Paris] Star [Circle, Heart, Plus] ReturnToAPhantomOfTruth
+
+returnToSecretPassage :: CardDef
+returnToSecretPassage =
+  locationWithUnrevealed_ "52049" "Catacombs" [] "Secret Passage" [] ReturnToThePallidMask
+
+moundOfBones :: CardDef
+moundOfBones =
+  locationWithUnrevealed_ "52050" "Catacombs" [] "Mound of Bones" [] ReturnToThePallidMask
+
+researchSite :: CardDef
+researchSite =
+  locationWithUnrevealed_ "52051" "Catacombs" [] "Research Site" [] ReturnToThePallidMask
+
+seaOfSkulls :: CardDef
+seaOfSkulls =
+  locationWithUnrevealed_ "52052" "Catacombs" [] "Sea of Skulls" [] ReturnToThePallidMask
 
 cursedShores :: CardDef
 cursedShores =

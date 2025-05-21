@@ -136,6 +136,7 @@ data EnemyMatcher
   | EnemyWhenLocation LocationMatcher
   | EnemyWhenInvestigator InvestigatorMatcher
   | EnemyWhenOtherEnemy EnemyMatcher
+  | EnemyIfReturnTo EnemyMatcher EnemyMatcher
   | EnemyWithAnyCardsUnderneath
   | -- | Must be replaced
     ThatEnemy

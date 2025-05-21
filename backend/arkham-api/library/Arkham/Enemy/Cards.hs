@@ -269,6 +269,7 @@ allEncounterEnemyCards =
       , madPatient
       , maggotSwarm
       , malevolentSpirit
+      , malformedSkeleton
       , maniac
       , manifestationOfMadness
       , mariaDeSilvaKnowsMoreThanSheLetsOn
@@ -2918,6 +2919,13 @@ hostOfInsanity =
     { cdCardTraits = setFromList [Avatar, Elite]
     , cdKeywords = setFromList [Keyword.Massive, Keyword.Hunter]
     , cdVictoryPoints = Just 1
+    }
+
+malformedSkeleton :: CardDef
+malformedSkeleton =
+  (enemy "52053" "Malformed Skeleton" ReturnToThePallidMask 1)
+    { cdCardTraits = setFromList [Monster]
+    , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 maggotSwarm :: CardDef

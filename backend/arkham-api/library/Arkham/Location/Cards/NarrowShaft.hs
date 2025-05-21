@@ -56,13 +56,13 @@ instance RunMessage NarrowShaft where
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       case drewCards.cards of
         [card] -> do
-          placeAbove <- placeAtDirection Above attrs >>= \f -> f card
-          placeRight <- placeAtDirection RightOf attrs >>= \f -> f card
+          placeAbove <- placeAtDirection_ Above attrs card
+          placeRight <- placeAtDirection_ RightOf attrs card
           aboveEmpty <- directionEmpty attrs Above
           rightEmpty <- directionEmpty attrs RightOf
           chooseOrRunOneM iid do
-            when aboveEmpty $ labeled "Place Above" $ pushAll placeAbove
-            when rightEmpty $ labeled "Place to the Right" $ pushAll placeRight
+            when aboveEmpty $ labeled "Place Above" $ push placeAbove
+            when rightEmpty $ labeled "Place to the Right" $ push placeRight
         [] -> pure ()
         _ -> error "wrong number of cards drawn"
       pure l

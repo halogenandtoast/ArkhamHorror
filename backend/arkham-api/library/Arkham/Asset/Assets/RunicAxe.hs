@@ -45,8 +45,18 @@ override a iid =
     <> oneOf
       [ EnemyWhenInvestigator (InvestigatorWithId iid <> InvestigatorWithoutModifier CannotMove)
           <> EnemyAt (AccessibleFrom $ locationWithInvestigator iid)
-          <> (if a.use Charge > 1 then oneOf [not_ AloofEnemy, CanEngageEnemy (a.ability 1)] else not_ AloofEnemy)
-      , enemyAtLocationWith iid <> AloofEnemy <> CanEngageEnemy (a.ability 1)
+          <> ( if a.use Charge > 1
+                 then
+                   oneOf
+                     [ not_ AloofEnemy
+                     , EnemyIsEngagedWith Anyone
+                     , CanEngageEnemyWithOverride (CriteriaOverride $ EnemyCriteria $ ThisEnemy AnyEnemy)
+                     ]
+                 else oneOf [not_ AloofEnemy, EnemyIsEngagedWith Anyone]
+             )
+      , enemyAtLocationWith iid
+          <> AloofEnemy
+          <> oneOf [EnemyIsEngagedWith Anyone, CanEngageEnemy (a.ability 1)]
       , enemyAtLocationWith iid <> not_ AloofEnemy
       ]
 
@@ -97,7 +107,8 @@ instance RunMessage RunicAxe where
       skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)
       if attrs `hasCustomization` InscriptionOfTheHunt && attrs.use Charge > 0
         then
-          chooseFightEnemyMatch sid iid (attrs.ability 1) $ CanFightEnemyWithOverride (override attrs iid)
+          chooseFightEnemyMatch sid iid (attrs.ability 1)
+            $ CanFightEnemyWithOverride (override attrs iid)
         else chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     ChoseEnemy _sid iid (isAbilitySource attrs 1 -> True) eid -> do
@@ -105,7 +116,9 @@ instance RunMessage RunicAxe where
         needsHunt <-
           andM
             [ not
-                <$> (eid <=~> (enemyAtLocationWith iid <> oneOf [AloofEnemy <> enemyEngagedWith iid, not_ AloofEnemy]))
+                <$> ( eid
+                        <=~> (enemyAtLocationWith iid <> oneOf [AloofEnemy <> EnemyIsEngagedWith Anyone, not_ AloofEnemy])
+                    )
             , not <$> (coerce eid <=~> locationWithInvestigator iid)
             ]
         let imbueAgain = if attrs `hasCustomization` Scriptweaver then [Do msg, msg] else [msg]
@@ -172,7 +185,7 @@ instance RunMessage RunicAxe where
           >>= traverse_ \target -> do
             case target of
               EnemyTarget eid -> do
-                enemies <- select $ enemyEngagedWith iid <> not_ (EnemyWithId eid)
+                enemies <- select $ EnemyIsEngagedWith Anyone <> not_ (EnemyWithId eid)
                 for_ enemies \eid' -> push $ EnemyDamage eid' $ Msg.delayDamage $ Msg.attack (attrs.ability 1) furyCount
                 pushAll $ Msg.checkDefeated (attrs.ability 1) <$> enemies
               _ -> pure ()

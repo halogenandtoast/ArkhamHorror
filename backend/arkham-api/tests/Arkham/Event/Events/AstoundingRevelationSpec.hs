@@ -11,8 +11,7 @@ spec = describe "Astounding Revelation" do
       it "gain 2 resources" . gameTest $ \self -> do
         astoundingRevelation <- genPlayerCard Events.astoundingRevelation
         withProp @"deck" (Deck [astoundingRevelation]) self
-        run
-          $ search (toId self) (TestSource mempty) (toTarget self) [fromDeck] #any (DrawFound (toId self) 1)
+        run $ search self (TestSource mempty) self [fromDeck] #any (DrawFound self.id 1)
         useReaction
         chooseOnlyOption "Take resources"
         self.resources `shouldReturn` 2
@@ -22,8 +21,7 @@ spec = describe "Astounding Revelation" do
         forbiddenKnowledge <- self `putAssetIntoPlay` Assets.forbiddenKnowledge
         astoundingRevelation <- genPlayerCard Events.astoundingRevelation
         withProp @"deck" (Deck [astoundingRevelation]) self
-        run
-          $ search (toId self) (TestSource mempty) (toTarget self) [fromDeck] #any (DrawFound (toId self) 1)
+        run $ search self (TestSource mempty) self [fromDeck] #any (DrawFound self.id 1)
         useReaction
         chooseTarget forbiddenKnowledge
         self.resources `shouldReturn` 0
@@ -34,8 +32,7 @@ spec = describe "Astounding Revelation" do
         astoundingRevelation1 <- genPlayerCard Events.astoundingRevelation
         astoundingRevelation2 <- genPlayerCard Events.astoundingRevelation
         withProp @"deck" (Deck [astoundingRevelation1, astoundingRevelation2]) self
-        run
-          $ search (toId self) (TestSource mempty) (toTarget self) [fromDeck] #any (DrawFound (toId self) 1)
+        run $ search self (TestSource mempty) self [fromDeck] #any (DrawFound self.id 1)
         useReactionOf (EventSource $ EventId $ unsafeCardIdToUUID $ toCardId astoundingRevelation1)
         chooseOnlyOption "Take resources"
         chooseOnlyOption "Add other to hand"

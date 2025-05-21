@@ -2,19 +2,16 @@ module Arkham.Agenda.Cards.LetTheStormRageTheVortexAbove (letTheStormRageTheVort
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype LetTheStormRageTheVortexAbove = LetTheStormRageTheVortexAbove AgendaAttrs
@@ -23,11 +20,7 @@ newtype LetTheStormRageTheVortexAbove = LetTheStormRageTheVortexAbove AgendaAttr
 
 letTheStormRageTheVortexAbove :: AgendaCard LetTheStormRageTheVortexAbove
 letTheStormRageTheVortexAbove =
-  agenda
-    (2, A)
-    LetTheStormRageTheVortexAbove
-    Cards.letTheStormRageTheVortexAbove
-    (Static 6)
+  agenda (2, A) LetTheStormRageTheVortexAbove Cards.letTheStormRageTheVortexAbove (Static 6)
 
 instance HasModifiersFor LetTheStormRageTheVortexAbove where
   getModifiersFor (LetTheStormRageTheVortexAbove a) = do
@@ -39,34 +32,23 @@ instance HasAbilities LetTheStormRageTheVortexAbove where
     [groupLimit PerRound $ mkAbility a 1 $ FastAbility $ GroupClueCost (PerPlayer 1) Anywhere]
 
 instance RunMessage LetTheStormRageTheVortexAbove where
-  runMessage msg a@(LetTheStormRageTheVortexAbove attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      lead <- getLead
-      beast <- getSetAsideCard Enemies.beastOfAldebaran
+  runMessage msg a@(LetTheStormRageTheVortexAbove attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
       mAbbeyTower <- selectOne $ LocationWithTitle "Abbey Tower"
-      spawnAshleighClarkeMessages <- do
-        spawnAshleighClarke <- not <$> slain Enemies.ashleighClarke
-        port <- selectJust $ locationIs $ Locations.porteDeLAvancee
-        card <- genCard Enemies.ashleighClarke
-        createAshleighClarke <- createEnemyAt_ card port Nothing
-        pure [createAshleighClarke | spawnAshleighClarke]
+      for_ mAbbeyTower (createEnemyAt_ Enemies.beastOfAldebaran)
 
-      createBeastOfAldebaran <- for (toList mAbbeyTower)
-        $ \abbeyTower -> createEnemyAt_ beast abbeyTower Nothing
+      spawnAshleighClarke <- not <$> slain Enemies.ashleighClarke
+      when spawnAshleighClarke do
+        port <- selectJust $ locationIs Locations.porteDeLAvancee
+        createEnemyAt_ Enemies.ashleighClarke port
 
-      pushAll
-        $ createBeastOfAldebaran
-        <> spawnAshleighClarkeMessages
-        <> [ RemoveAllCopiesOfCardFromGame lead "03281"
-           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-           ]
+      lead <- getLead
+      push $ RemoveAllCopiesOfCardFromGame lead "03281"
+      advanceAgendaDeck attrs
       pure a
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      investigatorIds <- getInvestigators
-      pushAll
-        $ [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
-        <> [ TakeResources iid 2 (toAbilitySource attrs 1) False
-           | iid <- investigatorIds
-           ]
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeDoom (attrs.ability 1) attrs 1
+      push AdvanceAgendaIfThresholdSatisfied
+      eachInvestigator \iid -> gainResources iid (attrs.ability 1) 2
       pure a
-    _ -> LetTheStormRageTheVortexAbove <$> runMessage msg attrs
+    _ -> LetTheStormRageTheVortexAbove <$> liftRunMessage msg attrs

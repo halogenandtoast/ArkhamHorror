@@ -43,7 +43,7 @@ instance RunMessage StoneArchways where
       pure l
     DrewCards _ drewCards | maybe False (isTarget attrs) drewCards.target -> do
       case drewCards.cards of
-        [card] -> placeAtDirection_ RightOf attrs card >>= push
+        [card] -> placeAtDirection_ RightOf attrs card
         [] -> pure ()
         _ -> error "wrong number of cards drawn"
       pure l

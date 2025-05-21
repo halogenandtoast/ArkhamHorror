@@ -55,16 +55,13 @@ instance RunMessage ResearchSite where
       attrs' <- getAttrs @Location lid
       case drewCards.cards of
         [card] -> do
-          placeAbove <- placeAtDirection_ Above attrs' card
-          placeBelow <- placeAtDirection_ Below attrs' card
-          placeRight <- placeAtDirection_ RightOf attrs' card
           aboveEmpty <- directionEmpty attrs' Above
           belowEmpty <- directionEmpty attrs' Below
           rightEmpty <- directionEmpty attrs' RightOf
           chooseOrRunOneM iid $ scenarioI18n do
-            when aboveEmpty $ labeled' "above" $ push placeAbove
-            when belowEmpty $ labeled' "below" $ push placeBelow
-            when rightEmpty $ labeled' "right" $ push placeRight
+            when aboveEmpty $ labeled' "above" $ placeAtDirection_ Above attrs' card
+            when belowEmpty $ labeled' "below" $ placeAtDirection_ Below attrs' card
+            when rightEmpty $ labeled' "right" $ placeAtDirection_ RightOf attrs' card
         [] -> pure ()
         _ -> error "wrong number of cards drawn"
       pure l

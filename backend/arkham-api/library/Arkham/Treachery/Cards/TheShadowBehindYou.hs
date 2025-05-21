@@ -1,6 +1,7 @@
 module Arkham.Treachery.Cards.TheShadowBehindYou (theShadowBehindYou) where
 
 import Arkham.Ability
+import Arkham.I18n
 import Arkham.Investigator.Types
 import Arkham.Keyword
 import Arkham.Matcher
@@ -55,14 +56,14 @@ instance RunMessage TheShadowBehindYou where
         hasNonHiddenCards = any (notElem Hidden . toKeywords) handCards
         hasHiddenCards = any (elem Hidden . toKeywords) handCards
 
-      chooseOrRunOneM iid do
+      chooseOrRunOneM iid $ withI18n do
         when hasNonHiddenCards do
-          labeled "Discard all cards in your hand" do
+          labeled' "discardAllCardsFromHand" do
             push $ DiscardHand iid (toSource attrs)
             unless hasHiddenCards $ toDiscardBy iid (attrs.ability 2) attrs
 
         when hasResources do
-          labeled "Lose all resources" do
+          labeled' "loseAllResources" do
             push $ LoseAllResources iid (attrs.ability 1)
             toDiscardBy iid (attrs.ability 2) attrs
       pure t

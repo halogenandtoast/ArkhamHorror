@@ -11,14 +11,8 @@ newtype TidalTerror = TidalTerror EnemyAttrs
 
 tidalTerror :: EnemyCard TidalTerror
 tidalTerror =
-  enemyWith TidalTerror Cards.tidalTerror (4, Static 4, 2) (1, 2)
-    $ spawnAtL
-    ?~ SpawnAt
-      ( oneOf
-          [ locationIs Locations.porteDeLAvancee
-          , LocationWithTitle "Chapel of St. Aubert"
-          ]
-      )
+  enemy TidalTerror Cards.tidalTerror (4, Static 4, 2) (1, 2)
+    & setSpawnAt (oneOf [locationIs Locations.porteDeLAvancee, "Chapel of St. Aubert"])
 
 instance RunMessage TidalTerror where
   runMessage msg (TidalTerror attrs) = TidalTerror <$> runMessage msg attrs

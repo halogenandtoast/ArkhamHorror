@@ -1,15 +1,14 @@
-module Arkham.Treachery.Cards.WorldsMerge (worldsMerge, WorldsMerge (..)) where
+module Arkham.Treachery.Cards.WorldsMerge (worldsMerge) where
 
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types (Field (AgendaSequence))
-import Arkham.Classes
 import Arkham.Classes.HasGame
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype WorldsMerge = WorldsMerge TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -26,15 +25,14 @@ getStep (Just agenda) = do
     AS.AgendaStep step -> pure step
 
 instance RunMessage WorldsMerge where
-  runMessage msg t@(WorldsMerge attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(WorldsMerge attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push $ revelationSkillTest sid iid source #willpower (Fixed 3)
+      revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
       n <- getStep =<< selectOne (AgendaWithSide AS.C)
-      pushAll
-        $ InvestigatorAssignDamage iid source DamageAny 0 n
-        : replicate n (toMessage $ chooseAndDiscardCard iid attrs)
+      assignHorror iid attrs n
+      chooseAndDiscardCards iid attrs n
       pure t
-    _ -> WorldsMerge <$> runMessage msg attrs
+    _ -> WorldsMerge <$> liftRunMessage msg attrs

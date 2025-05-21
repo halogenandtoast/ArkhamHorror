@@ -633,6 +633,9 @@ allTreacheries =
     , SomeTreacheryCard cloudedMemory
     , --- Return to A Phantom of Truth [rtptc]
       SomeTreacheryCard figureInTheShadows
+    , --- Return to Black Stars Rise [rtptc]
+      SomeTreacheryCard hastursGaze
+    , SomeTreacheryCard hastursGrasp
     , --- Delusory Evils [rtptc]
       SomeTreacheryCard delusoryEvils
     , --- Decaying Reality [rtptc]

@@ -2,8 +2,8 @@ module Arkham.Location.Cards.TombOfShadows (tombOfShadows) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Modifiers
 import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
@@ -31,7 +31,6 @@ instance HasAbilities TombOfShadows where
 instance RunMessage TombOfShadows where
   runMessage msg l@(TombOfShadows attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      actIds <- select AnyAct
-      pushAll $ map (\aid -> AdvanceAct aid (attrs.ability 1) #other) actIds
+      advanceCurrentAct (attrs.ability 1)
       pure l
     _ -> TombOfShadows <$> liftRunMessage msg attrs

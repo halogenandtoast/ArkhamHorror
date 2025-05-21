@@ -863,6 +863,9 @@ allLocations =
     , SomeLocationCard moundOfBones
     , SomeLocationCard researchSite
     , SomeLocationCard seaOfSkulls
+    , --- Return to Black Stars Rise
+      SomeLocationCard returnToCloister
+    , SomeLocationCard returnToKnightsHall
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

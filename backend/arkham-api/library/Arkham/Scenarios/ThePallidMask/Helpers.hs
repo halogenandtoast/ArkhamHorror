@@ -13,6 +13,7 @@ import Arkham.Location.Grid (Pos (..))
 import Arkham.Location.Grid qualified as Grid
 import Arkham.Location.Types
 import Arkham.Matcher.Location
+import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
 import Control.Monad (zipWithM)
 
@@ -46,13 +47,15 @@ placeDrawnLocations attrs cards directions = do
   msgs <- zipWithM ($) placements cards
   pushAll msgs
 
-placeAtDirection_ :: MonadRandom m => Direction -> LocationAttrs -> Card -> m Message
-placeAtDirection_ direction attrs card = snd <$> placeAtDirection direction attrs card
+placeAtDirection_ :: ReverseQueue m => Direction -> LocationAttrs -> Card -> m ()
+placeAtDirection_ direction attrs card = void $ placeAtDirection direction attrs card
 
-placeAtDirection :: MonadRandom m => Direction -> LocationAttrs -> Card -> m (LocationId, Message)
+placeAtDirection :: ReverseQueue m => Direction -> LocationAttrs -> Card -> m LocationId
 placeAtDirection direction attrs card = do
   case attrs.position of
     Nothing -> error "Missing position"
     Just pos -> do
       let pos' = Grid.updatePosition pos (toGridDirection direction)
-      placeLocationInGrid pos' card
+      (lid, msg) <- placeLocationInGrid pos' card
+      push msg
+      pure lid

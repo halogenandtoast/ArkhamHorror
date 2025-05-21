@@ -1,16 +1,9 @@
-module Arkham.Act.Cards.OpenThePathAbove (
-  OpenThePathAbove (..),
-  openThePathAbove,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.OpenThePathAbove (openThePathAbove) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Matcher
-import Arkham.Resolution
 
 newtype OpenThePathAbove = OpenThePathAbove ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -20,27 +13,19 @@ openThePathAbove :: ActCard OpenThePathAbove
 openThePathAbove = act (3, A) OpenThePathAbove Cards.openThePathAbove Nothing
 
 instance HasAbilities OpenThePathAbove where
-  getAbilities (OpenThePathAbove x)
-    | onSide A x =
-        [ restrictedAbility
-            x
-            1
-            ( EachUndefeatedInvestigator
-                $ InvestigatorAt
-                $ LocationWithTitle "Abbey Tower"
-                <> LocationWithoutClues
-            )
-            $ Objective
-            $ ForcedAbility AnyWindow
-        ]
-  getAbilities _ = []
+  getAbilities (OpenThePathAbove x) =
+    [ restricted x 1 (EachUndefeatedInvestigator $ at_ $ "Abbey Tower" <> LocationWithoutClues)
+        $ Objective
+        $ forced AnyWindow
+    | onSide A x
+    ]
 
 instance RunMessage OpenThePathAbove where
-  runMessage msg a@(OpenThePathAbove attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push (AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther)
+  runMessage msg a@(OpenThePathAbove attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      push $ ScenarioResolution $ Resolution 2
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      push R2
       pure a
-    _ -> OpenThePathAbove <$> runMessage msg attrs
+    _ -> OpenThePathAbove <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.GrandRue (grandRue, GrandRue (..)) where
+module Arkham.Location.Cards.GrandRue (grandRue) where
 
 import Arkham.Ability
 import Arkham.Agenda.Types (Field (AgendaDoom))
@@ -28,7 +28,6 @@ instance RunMessage GrandRue where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       maxDoom <- fieldMax AgendaDoom AnyAgenda
       agendas <- select $ AgendaWithDoom $ EqualTo $ Static maxDoom
-      chooseOrRunOneM iid do
-        targets agendas \agenda -> placeDoom (attrs.ability 1) agenda 1
+      chooseOrRunOneM iid $ targets agendas \agenda -> placeDoom (attrs.ability 1) agenda 1
       pure l
     _ -> GrandRue <$> liftRunMessage msg attrs

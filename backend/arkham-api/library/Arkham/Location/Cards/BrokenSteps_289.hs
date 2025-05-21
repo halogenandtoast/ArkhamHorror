@@ -2,17 +2,17 @@ module Arkham.Location.Cards.BrokenSteps_289 (brokenSteps_289) where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Scenario (scenarioField)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Timing qualified as Timing
+import Arkham.Scenarios.BlackStarsRise.Helpers
 import Arkham.Trait
 
 newtype BrokenSteps_289 = BrokenSteps_289 LocationAttrs
@@ -23,33 +23,21 @@ brokenSteps_289 :: LocationCard BrokenSteps_289
 brokenSteps_289 = location BrokenSteps_289 Cards.brokenSteps_289 4 (Static 0)
 
 instance HasAbilities BrokenSteps_289 where
-  getAbilities (BrokenSteps_289 a) =
-    withBaseAbilities a
-      $ [ mkAbility a 1
-            $ ForcedAbility
-            $ Enters Timing.After You
-            $ LocationWithId
-            $ toId a
-        ]
+  getAbilities (BrokenSteps_289 a) = extendRevealed1 a $ mkAbility a 1 $ forced $ Enters #after You (be a)
 
 instance RunMessage BrokenSteps_289 where
-  runMessage msg l@(BrokenSteps_289 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg l@(BrokenSteps_289 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       actionsRemaining <- field InvestigatorRemainingActions iid
       mOmenCard <-
         find (`cardMatch` (CardWithTrait Omen <> CardWithType TreacheryType))
           <$> scenarioField ScenarioDiscard
-      let
-        choices =
-          [ Label "Lose 1 Action" [LoseActions iid source 1]
-          | actionsRemaining > 0
-          ]
-            <> [ Label
-                   "Draw the topmost omen treachery in the encounter discard pile"
-                   [findAndDrawEncounterCard iid (CardWithId $ toCardId c)]
-               | c <- maybeToList mOmenCard
-               ]
-      player <- getPlayer iid
-      unless (null choices) $ push $ chooseOne player choices
+      chooseOneM iid do
+        when (actionsRemaining > 0) do
+          withI18n $ countVar 1 $ labeled' "loseActions" $ loseActions iid (attrs.ability 1) 1
+        for_ mOmenCard \c ->
+          scenarioI18n
+            $ labeled' "brokenSteps.omen"
+            $ findAndDrawEncounterCard iid (CardWithId c.id)
       pure l
-    _ -> BrokenSteps_289 <$> runMessage msg attrs
+    _ -> BrokenSteps_289 <$> liftRunMessage msg attrs

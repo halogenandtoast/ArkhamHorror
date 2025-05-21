@@ -1,14 +1,11 @@
 module Arkham.Agenda.Cards.TheCityFloods (theCityFloods) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Import.Lifted
 import Arkham.Card
-import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword qualified as Keyword
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheCityFloods = TheCityFloods AgendaAttrs
@@ -24,8 +21,8 @@ instance HasModifiersFor TheCityFloods where
     modifyEach a ancientEvils [AddKeyword Keyword.Surge]
 
 instance RunMessage TheCityFloods where
-  runMessage msg a@(TheCityFloods attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+  runMessage msg a@(TheCityFloods attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
       push R3
       pure a
-    _ -> TheCityFloods <$> runMessage msg attrs
+    _ -> TheCityFloods <$> liftRunMessage msg attrs

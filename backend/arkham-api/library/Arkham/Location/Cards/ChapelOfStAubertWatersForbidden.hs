@@ -1,7 +1,4 @@
-module Arkham.Location.Cards.ChapelOfStAubertWatersForbidden (
-  chapelOfStAubertWatersForbidden,
-  ChapelOfStAubertWatersForbidden (..),
-) where
+module Arkham.Location.Cards.ChapelOfStAubertWatersForbidden (chapelOfStAubertWatersForbidden) where
 
 import Arkham.GameValue
 import Arkham.Helpers.Log

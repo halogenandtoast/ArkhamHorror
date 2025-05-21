@@ -36,6 +36,6 @@ instance RunMessage TheTideRises where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       placeDoom (attrs.ability 1) attrs 1
       push AdvanceAgendaIfThresholdSatisfied
-      eachInvestigator \iid -> gainResourcesIfCan iid (attrs.ability 1) 2
+      eachInvestigator \iid -> gainResources iid (attrs.ability 1) 2
       pure a
     _ -> TheTideRises <$> liftRunMessage msg attrs

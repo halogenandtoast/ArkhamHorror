@@ -86,7 +86,7 @@
   },
   "resolutions": {
     "xp": {
-      "insight": "Gained insight into the machinations of the Tattered King."
+      "bonus": "Gained insight into the machinations of the Tattered King."
     },
     "noResolution": {
       "title": "No Resolution",

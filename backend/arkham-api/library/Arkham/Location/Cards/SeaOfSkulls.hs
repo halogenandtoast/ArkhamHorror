@@ -69,18 +69,15 @@ instance RunMessage SeaOfSkulls where
       case drewCards.cards of
         [card] -> chooseOrRunOneM iid $ scenarioI18n do
           whenM (directionEmpty attrs' Above) $ labeled' "above" do
-            (lid', placeAbove) <- placeAtDirection Above attrs' card
-            push placeAbove
+            lid' <- placeAtDirection Above attrs' card
             placeTokens (attrs.ability 1) lid' #horror 1
             push $ AddDirectConnection attrs.id lid'
           whenM (directionEmpty attrs' Below) $ labeled' "below" do
-            (lid', placeBelow) <- placeAtDirection Below attrs' card
-            push placeBelow
+            lid' <- placeAtDirection Below attrs' card
             placeTokens (attrs.ability 1) lid' #horror 1
             push $ AddDirectConnection attrs.id lid'
           whenM (directionEmpty attrs' RightOf) $ labeled' "right" do
-            (lid', placeRight) <- placeAtDirection RightOf attrs' card
-            push placeRight
+            lid' <- placeAtDirection RightOf attrs' card
             placeTokens (attrs.ability 1) lid' #horror 1
             push $ AddDirectConnection attrs.id lid'
         [] -> pure ()

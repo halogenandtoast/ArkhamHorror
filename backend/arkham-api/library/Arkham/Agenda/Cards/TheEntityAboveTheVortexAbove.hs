@@ -3,13 +3,10 @@ module Arkham.Agenda.Cards.TheEntityAboveTheVortexAbove (theEntityAboveTheVortex
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
+import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait
 
 newtype TheEntityAboveTheVortexAbove = TheEntityAboveTheVortexAbove AgendaAttrs
@@ -29,16 +26,15 @@ instance HasAbilities TheEntityAboveTheVortexAbove where
     [groupLimit PerRound $ mkAbility a 1 $ FastAbility $ GroupClueCost (PerPlayer 1) Anywhere]
 
 instance RunMessage TheEntityAboveTheVortexAbove where
-  runMessage msg a@(TheEntityAboveTheVortexAbove attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide D attrs -> do
+  runMessage msg a@(TheEntityAboveTheVortexAbove attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide D attrs -> True) -> do
+      toDiscard GameSource attrs
       openThePathAbove <- getSetAsideCard Acts.openThePathAbove
-      pushAll [toDiscard GameSource attrs, AddAct 2 openThePathAbove]
+      push $ AddAct 2 openThePathAbove
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      drawing <- map (\iid -> drawCards iid (attrs.ability 1) 1) <$> getInvestigators
-      pushAll
-        $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
-        : AdvanceAgendaIfThresholdSatisfied
-        : drawing
+      placeDoom (attrs.ability 1) attrs 1
+      push AdvanceAgendaIfThresholdSatisfied
+      eachInvestigator \iid -> drawCards iid (attrs.ability 1) 1
       pure a
-    _ -> TheEntityAboveTheVortexAbove <$> runMessage msg attrs
+    _ -> TheEntityAboveTheVortexAbove <$> liftRunMessage msg attrs

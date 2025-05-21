@@ -3114,12 +3114,14 @@ library
       Arkham.Location.Cards.ReturnToBurnedRuins
       Arkham.Location.Cards.ReturnToCanalSaintMartin
       Arkham.Location.Cards.ReturnToCellar
+      Arkham.Location.Cards.ReturnToCloister
       Arkham.Location.Cards.ReturnToCloverClubLounge
       Arkham.Location.Cards.ReturnToCongregationalChurch
       Arkham.Location.Cards.ReturnToEngineCar
       Arkham.Location.Cards.ReturnToGardensOfLuxembourg
       Arkham.Location.Cards.ReturnToGrandGuignol
       Arkham.Location.Cards.ReturnToHouseInTheReeds
+      Arkham.Location.Cards.ReturnToKnightsHall
       Arkham.Location.Cards.ReturnToMontparnasse
       Arkham.Location.Cards.ReturnToNotreDame
       Arkham.Location.Cards.ReturnToOsbornsGeneralStore
@@ -3463,6 +3465,7 @@ library
       Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel
       Arkham.Scenario.Scenarios.PointOfNoReturn
       Arkham.Scenario.Scenarios.ReturnToAPhantomOfTruth
+      Arkham.Scenario.Scenarios.ReturnToBlackStarsRise
       Arkham.Scenario.Scenarios.ReturnToBloodOnTheAltar
       Arkham.Scenario.Scenarios.ReturnToCurtainCall
       Arkham.Scenario.Scenarios.ReturnToEchoesOfThePast
@@ -3523,7 +3526,7 @@ library
       Arkham.Scenarios.BeforeTheBlackThrone.Helpers
       Arkham.Scenarios.BeforeTheBlackThrone.Story
       Arkham.Scenarios.BeyondTheGatesOfSleep.FlavorText
-      Arkham.Scenarios.BlackStarsRise.Story
+      Arkham.Scenarios.BlackStarsRise.Helpers
       Arkham.Scenarios.BloodOnTheAltar.Helpers
       Arkham.Scenarios.CarnevaleOfHorrors.FlavorText
       Arkham.Scenarios.CarnevaleOfHorrors.Helpers
@@ -4050,6 +4053,8 @@ library
       Arkham.Treachery.Cards.HangingOnTheEdge
       Arkham.Treachery.Cards.HardTimes
       Arkham.Treachery.Cards.HarvestedBrain
+      Arkham.Treachery.Cards.HastursGaze
+      Arkham.Treachery.Cards.HastursGrasp
       Arkham.Treachery.Cards.HastyRepairs
       Arkham.Treachery.Cards.Haunted
       Arkham.Treachery.Cards.HauntingRecollections

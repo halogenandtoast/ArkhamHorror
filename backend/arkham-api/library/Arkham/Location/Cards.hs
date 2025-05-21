@@ -610,12 +610,14 @@ allLocationCards =
       , returnToBurnedRuins
       , returnToCanalSaintMartin
       , returnToCellar
+      , returnToCloister
       , returnToCloverClubLounge
       , returnToCongregationalChurch
       , returnToEngineCar
       , returnToGardensOfLuxembourg
       , returnToGrandGuignol
       , returnToHouseInTheReeds
+      , returnToKnightsHall
       , returnToMontparnasse
       , returnToNotreDame
       , returnToOsbornsGeneralStore
@@ -8719,11 +8721,13 @@ returnToGrandGuignol =
 
 returnToPereLachaiseCemetery :: CardDef
 returnToPereLachaiseCemetery =
-  victory 1 $ location "52043" "Père Lachaise Cemetery" [Paris] T [Equals, Moon] ReturnToAPhantomOfTruth
+  victory 1
+    $ location "52043" "Père Lachaise Cemetery" [Paris] T [Equals, Moon] ReturnToAPhantomOfTruth
 
 returnToCanalSaintMartin :: CardDef
 returnToCanalSaintMartin =
-  victory 1 $ location "52044" "Canal Saint-Martin" [Paris] Equals [Square, T, Moon] ReturnToAPhantomOfTruth
+  victory 1
+    $ location "52044" "Canal Saint-Martin" [Paris] Equals [Square, T, Moon] ReturnToAPhantomOfTruth
 
 returnToNotreDame :: CardDef
 returnToNotreDame = location "52045" "Notre-Dame" [Paris, Rail] Plus [Circle, Moon, Star] ReturnToAPhantomOfTruth
@@ -8748,6 +8752,12 @@ researchSite =
 seaOfSkulls :: CardDef
 seaOfSkulls =
   locationWithUnrevealed_ "52052" "Catacombs" [] "Sea of Skulls" [] ReturnToThePallidMask
+
+returnToCloister :: CardDef
+returnToCloister = location "52055" "Cloister" [] Heart [Square, Hourglass] ReturnToBlackStarsRise
+
+returnToKnightsHall :: CardDef
+returnToKnightsHall = location "52056" "Knight's Hall" [] Hourglass [Square, Heart] ReturnToBlackStarsRise
 
 cursedShores :: CardDef
 cursedShores =

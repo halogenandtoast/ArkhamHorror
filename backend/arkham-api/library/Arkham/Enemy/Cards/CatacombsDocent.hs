@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.CatacombsDocent (catacombsDocent, CatacombsDocent (..)) where
+module Arkham.Enemy.Cards.CatacombsDocent (catacombsDocent) where
 
 import Arkham.Ability
 import Arkham.Classes

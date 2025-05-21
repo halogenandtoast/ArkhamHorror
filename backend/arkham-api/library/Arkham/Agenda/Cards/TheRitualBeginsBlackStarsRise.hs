@@ -37,6 +37,6 @@ instance RunMessage TheRitualBeginsBlackStarsRise where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       placeDoom (attrs.ability 1) attrs 1
       push AdvanceAgendaIfThresholdSatisfied
-      eachInvestigator \iid -> drawCardsIfCan iid (attrs.ability 1) 1
+      eachInvestigator \iid -> drawCards iid (attrs.ability 1) 1
       pure a
     _ -> TheRitualBeginsBlackStarsRise <$> liftRunMessage msg attrs

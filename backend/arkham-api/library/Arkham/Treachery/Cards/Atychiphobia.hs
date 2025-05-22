@@ -17,7 +17,7 @@ instance HasAbilities Atychiphobia where
     [ restrictedAbility a 1 (InThreatAreaOf You)
         $ forced
         $ SkillTestResult #after You AnySkillTest #failure
-    , restrictedAbility a 2 (InThreatAreaOf $ InvestigatorAt YourLocation)
+    , restrictedAbility a 2 (InThreatAreaOf $ colocatedWithMatch You)
         $ ActionAbility []
         $ ActionCost 2
     ]

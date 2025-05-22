@@ -149,6 +149,11 @@ allStories =
       --- Return to The Last King
       SomeStoryCard returnToSickeningReality_23
     , SomeStoryCard returnToSickeningReality_24
+    , --- Return to Dim Carcosa
+      SomeStoryCard hastursLastStand
+    , SomeStoryCard theWriter
+    , SomeStoryCard theEntity
+    , SomeStoryCard theDelusion
     , -- The Blob that ate Everything ELSE!
       SomeStoryCard realityAcid
     ]

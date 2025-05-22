@@ -24,7 +24,7 @@ instance HasAbilities DrMalaSinhaDaringPhysicianResolute where
         a
         1
         ( oneOf
-            [ exists $ HealableInvestigator (a.ability 1) #damage (at_ YourLocation)
+            [ exists $ HealableInvestigator (a.ability 1) #damage (colocatedWithMatch You)
             , exists $ HealableAsset (a.ability 1) #damage (at_ YourLocation <> not_ (be a))
             ]
         )

@@ -31,7 +31,7 @@ instance HasAbilities ForbiddenTomeDarkKnowledge3 where
         1
         ( exists (EnemyAt YourLocation)
             <> AnyCriterion
-              [ exists $ HealableInvestigator (toSource a) DamageType $ InvestigatorAt YourLocation
+              [ exists $ HealableInvestigator (toSource a) DamageType $ colocatedWithMatch You
               , exists $ HealableAsset (toSource a) DamageType $ AssetAt YourLocation
               ]
         )

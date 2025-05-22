@@ -57,7 +57,9 @@
     "gainAdditionalXp": "Choose {name} to gain 1 additional XP",
     "youngPsychopath": {
       "fight": "Young Psycopath gets +3 fight until the end of the investigation phase"
-    }
+    },
+    "conviction": "Conviction",
+    "doubt": "Doubt"
   },
   "interlude1": {
     "title": "Interlude I: Lunacy’s Reward",

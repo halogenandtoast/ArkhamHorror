@@ -74,7 +74,7 @@ solemnVow =
       , cdCardTraits = singleton Spirit
       , cdKeywords = singleton Keyword.Myriad
       , cdCriteria =
-          Just $ Criteria.InvestigatorExists $ affectsOthers $ NotYou <> InvestigatorAt YourLocation
+          Just $ Criteria.InvestigatorExists $ affectsOthers $ NotYou <> colocatedWithMatch You
       }
 
 segmentOfOnyx1 :: CardDef

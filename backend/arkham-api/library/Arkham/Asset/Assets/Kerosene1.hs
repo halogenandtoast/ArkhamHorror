@@ -23,7 +23,7 @@ instance HasAbilities Kerosene1 where
         ( exists
             (locationWithAsset a <> LocationWithDefeatedEnemyThisRound)
             <> oneOf
-              [ exists $ HealableInvestigator (a.ability 1) #horror $ InvestigatorAt YourLocation
+              [ exists $ HealableInvestigator (a.ability 1) #horror $ colocatedWithMatch You
               , exists
                   $ HealableAsset (toSource a) #horror
                   $ AssetAt YourLocation

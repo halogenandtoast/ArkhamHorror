@@ -23,7 +23,7 @@ instance HasAbilities Bulwark2 where
           (SealCost $ oneOf [#eldersign, #"+1"])
     , restricted a 2 ControlsThis
         $ triggered
-          (EnemyWouldAttack #when (affectsOthers $ InvestigatorAt YourLocation) AnyEnemyAttack AnyEnemy)
+          (EnemyWouldAttack #when (affectsOthers $ colocatedWithMatch You) AnyEnemyAttack AnyEnemy)
           (exhaust a <> ReleaseChaosTokensCost 1 #any)
     ]
 

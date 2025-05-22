@@ -24,7 +24,7 @@ instance HasModifiersFor RandolphCarterExpertDreamer where
 instance HasAbilities RandolphCarterExpertDreamer where
   getAbilities (RandolphCarterExpertDreamer x) =
     [ controlled x 1 (exists $ You <> can.draw.cards FromPlayerCardEffect)
-        $ triggered (RevealChaosToken #when (InvestigatorAt YourLocation) $ ChaosTokenFaceIs Tablet)
+        $ triggered (RevealChaosToken #when (colocatedWithMatch You) $ ChaosTokenFaceIs Tablet)
         $ exhaust x
     ]
 

@@ -196,7 +196,7 @@ customAmmunition3 =
     , cdCriteria =
         Just
           $ exists
-          $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
+          $ AssetControlledBy (affectsOthers $ colocatedWithMatch You)
           <> #firearm
           <> NotAsset (AssetWithAttachedEvent $ EventCardMatch $ cardIs customAmmunition3)
     , cdFastWindow = Just $ DuringTurn You

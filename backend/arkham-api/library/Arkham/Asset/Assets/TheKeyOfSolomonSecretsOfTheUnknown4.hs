@@ -28,7 +28,7 @@ instance HasAbilities TheKeyOfSolomonSecretsOfTheUnknown4 where
           ( HasMoreBlessThanCurseTokens
               <> oneOf
                 [ any_
-                    [ HealableInvestigator (a.ability 1) kind $ InvestigatorAt YourLocation
+                    [ HealableInvestigator (a.ability 1) kind $ colocatedWithMatch You
                     | kind <- [#damage, #horror]
                     ]
                 , any_

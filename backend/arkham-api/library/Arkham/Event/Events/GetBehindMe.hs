@@ -35,7 +35,7 @@ instance HasAbilities GetBehindMeEffect where
     InvestigatorTarget iid ->
       [ restrictedAbility x 1 (youExist $ InvestigatorWithId iid)
           $ SilentForcedAbility
-          $ EnemyWouldAttack #when (InvestigatorAt YourLocation) AnyEnemyAttack AnyEnemy
+          $ EnemyWouldAttack #when (colocatedWithMatch You) AnyEnemyAttack AnyEnemy
       ]
     _ -> error "invalid target for effect"
 

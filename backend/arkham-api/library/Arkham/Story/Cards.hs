@@ -49,8 +49,12 @@ allStoryCards =
       , theArchway
       , theHeightOfTheDepths
       , stepsOfThePalace
+      , theDelusion
+      , theEntity
       , theFall
+      , theWriter
       , hastursEnd
+      , hastursLastStand
       , yigsMercy
       , anotherWay
       , josefsPlan
@@ -471,6 +475,18 @@ returnToSickeningReality_23 = story "52023" "Sickening Reality" ReturnToTheLastK
 
 returnToSickeningReality_24 :: CardDef
 returnToSickeningReality_24 = story "52024" "Sickening Reality" ReturnToTheLastKing
+
+hastursLastStand :: CardDef
+hastursLastStand = story "52060b" "Hastur's Last Stand" ReturnToDimCarcosa
+
+theWriter :: CardDef
+theWriter = story "52061b" "The Writer" ReturnToDimCarcosa
+
+theEntity :: CardDef
+theEntity = story "52062b" "The Entity" ReturnToDimCarcosa
+
+theDelusion :: CardDef
+theDelusion = story "52063b" "The Delision" ReturnToDimCarcosa
 
 realityAcid :: CardDef
 realityAcid =

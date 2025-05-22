@@ -23,7 +23,7 @@ instance HasAbilities Venturer where
         a
         1
         ( exists
-            $ AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation)
+            $ AssetControlledBy (affectsOthers $ colocatedWithMatch You)
             <> AssetOneOf [AssetWithUseType Supply, AssetWithUseType Ammo]
             <> AssetNotAtUseLimit
             <> NotAsset (AssetWithId $ toId a)

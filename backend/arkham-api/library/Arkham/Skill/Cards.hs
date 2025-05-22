@@ -543,7 +543,7 @@ selfSacrifice :: CardDef
 selfSacrifice =
   (skill "06157" "Self-Sacrifice" [] Guardian)
     { cdCardTraits = singleton Spirit
-    , cdCommitRestrictions = [OnlyInvestigator $ NotYou <> InvestigatorAt YourLocation]
+    , cdCommitRestrictions = [OnlyInvestigator $ NotYou <> colocatedWithMatch You]
     }
 
 bruteForce1 :: CardDef

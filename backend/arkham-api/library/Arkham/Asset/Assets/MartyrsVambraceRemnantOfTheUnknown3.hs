@@ -36,7 +36,7 @@ instance HasAbilities MartyrsVambraceRemnantOfTheUnknown3 where
         $ triggered
           ( DrawCard
               #after
-              (affectsOthers $ NotYou <> InvestigatorAt YourLocation)
+              (affectsOthers $ NotYou <> colocatedWithMatch You)
               (basic $ NonPeril <> IsEncounterCard)
               AnyDeck
           )

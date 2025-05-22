@@ -23,7 +23,7 @@ instance HasAbilities CrystalPendulum where
   getAbilities (CrystalPendulum a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-          (InitiatedSkillTest Timing.After (InvestigatorAt YourLocation) AnySkillType AnySkillTestValue #any)
+          (InitiatedSkillTest Timing.After (colocatedWithMatch You) AnySkillType AnySkillTestValue #any)
           (exhaust a)
     ]
 

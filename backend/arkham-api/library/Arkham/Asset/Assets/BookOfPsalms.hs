@@ -21,7 +21,7 @@ instance HasAbilities BookOfPsalms where
         x
         1
         ( oneOf
-            [ exists (HealableInvestigator (toAbilitySource x 1) #horror $ InvestigatorAt YourLocation)
+            [ exists (HealableInvestigator (toAbilitySource x 1) #horror $ colocatedWithMatch You)
             , HasRemainingBlessTokens
             ]
         )

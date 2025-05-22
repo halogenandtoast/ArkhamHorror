@@ -21,8 +21,8 @@ instance HasAbilities MedicalStudent where
         ( AnyCriterion
             [ exists
                 $ oneOf
-                  [ HealableInvestigator (toSource x) #horror $ InvestigatorAt YourLocation
-                  , HealableInvestigator (toSource x) #damage $ InvestigatorAt YourLocation
+                  [ HealableInvestigator (toSource x) #horror $ colocatedWithMatch You
+                  , HealableInvestigator (toSource x) #damage $ colocatedWithMatch You
                   ]
             , exists
                 $ oneOf

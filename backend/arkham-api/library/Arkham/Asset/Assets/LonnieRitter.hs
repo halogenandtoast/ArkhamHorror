@@ -28,7 +28,7 @@ instance HasAbilities LonnieRitter where
             $ HealableAsset
               (toSource a)
               DamageType
-              (AssetWithTrait Item <> AssetControlledBy (affectsOthers $ InvestigatorAt YourLocation))
+              (AssetWithTrait Item <> AssetControlledBy (affectsOthers $ colocatedWithMatch You))
         )
         $ FastAbility
         $ exhaust a

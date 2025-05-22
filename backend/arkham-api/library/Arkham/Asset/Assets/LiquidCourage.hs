@@ -19,7 +19,7 @@ instance HasAbilities LiquidCourage where
     [ controlledAbility
         x
         1
-        (exists (HealableInvestigator (toSource x) #horror $ InvestigatorAt YourLocation))
+        (exists (HealableInvestigator (toSource x) #horror $ colocatedWithMatch You))
         $ actionAbilityWithCost (assetUseCost x Supply 1)
     ]
 

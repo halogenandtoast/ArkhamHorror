@@ -159,7 +159,14 @@ notInvestigator = NotInvestigator . InvestigatorWithId
 
 colocatedWith
   :: (AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> InvestigatorMatcher
-colocatedWith = InvestigatorAt . LocationWithInvestigator . InvestigatorWithId . asId
+colocatedWith investigator = colocatedWithMatch (InvestigatorWithId $ asId investigator)
+
+colocatedWithMatch :: InvestigatorMatcher -> InvestigatorMatcher
+colocatedWithMatch matcher =
+  InvestigatorIfLocation
+    (LocationWithInvestigator matcher <> LocationWithModifier CountsAsDifferentLocation)
+    matcher
+    (InvestigatorAt $ LocationWithInvestigator matcher)
 
 investigatorEngagedWith :: (AsId enemy, IdOf enemy ~ EnemyId) => enemy -> InvestigatorMatcher
 investigatorEngagedWith = InvestigatorEngagedWith . EnemyWithId . asId

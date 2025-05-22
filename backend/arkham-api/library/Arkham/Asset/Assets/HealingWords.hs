@@ -24,7 +24,7 @@ instance HasAbilities HealingWords where
         a
         1
         ( ControlsThis
-            <> exists (HealableInvestigator (toAbilitySource a 1) #damage $ InvestigatorAt YourLocation)
+            <> exists (HealableInvestigator (toAbilitySource a 1) #damage $ colocatedWithMatch You)
         )
         $ actionAbilityWithCost
         $ assetUseCost a Charge 1

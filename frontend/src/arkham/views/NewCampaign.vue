@@ -129,7 +129,8 @@ const defaultCampaignName = computed(() => {
   }
 
   if (gameMode.value === 'Standalone' && scenario.value) {
-    return `${scenario.value.name}`;
+    const returnToPrefix = returnTo.value ? "Return to " : ""
+    return `${returnToPrefix}${scenario.value.name}`;
   }
 
   if (gameMode.value === 'SideStory' && scenario.value) {
@@ -161,11 +162,12 @@ const campaign = computed(() =>
 async function start() {
   if (gameMode.value === 'Standalone' || gameMode.value === 'SideStory') {
     if (scenario.value && currentCampaignName.value) {
+      const scenarioId = returnTo.value && scenario.value.returnTo ? scenario.value.returnTo : scenario.value.id
       newGame(
         deckIds.value,
         playerCount.value,
         null,
-        scenario.value.id,
+        scenarioId,
         selectedDifficulty.value,
         currentCampaignName.value,
         multiplayerVariant.value,
@@ -241,7 +243,7 @@ async function start() {
             <!-- </select> -->
           </template>
 
-          <div v-if="gameMode === 'Campaign' && selectedCampaign && selectedCampaignReturnToId" class="options">
+          <div v-if="(gameMode === 'Campaign' || gameMode === 'Standalone') && selectedCampaign && selectedCampaignReturnToId" class="options">
             <input type="radio" v-model="returnTo" :value="false" id="normal"> <label for="normal">{{$t('create.normal')}}</label>
             <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">{{$t('create.returnTo')}}</label>
           </div>

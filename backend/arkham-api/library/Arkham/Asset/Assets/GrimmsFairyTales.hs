@@ -31,7 +31,7 @@ instance HasAbilities GrimmsFairyTales where
               ( HealableInvestigator
                   (toSource a)
                   HorrorType
-                  (InvestigatorAt YourLocation)
+                  (colocatedWithMatch You)
               )
               AnySkillTest
               $ FailureResult

@@ -49,7 +49,7 @@ instance HasAbilities JeromeDavids where
     [ playerLimit PerRound
         $ restricted a 1 Self
         $ ReactionAbility
-          (DrawCard #when (InvestigatorAt YourLocation) #treachery EncounterDeck)
+          (DrawCard #when (colocatedWithMatch You) #treachery EncounterDeck)
           (SkillIconCost 2 $ singleton #intellect)
     ]
 

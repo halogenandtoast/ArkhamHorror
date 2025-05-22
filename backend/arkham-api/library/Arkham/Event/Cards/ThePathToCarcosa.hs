@@ -63,7 +63,7 @@ noStoneUnturned =
     { cdSkills = [#wild]
     , cdCardTraits = singleton Insight
     , cdCriteria =
-        Just $ exists $ affectsOthers $ InvestigatorAt YourLocation <> can.manipulate.deck
+        Just $ exists $ affectsOthers $ colocatedWithMatch You <> can.manipulate.deck
     }
 
 sleightOfHand :: CardDef

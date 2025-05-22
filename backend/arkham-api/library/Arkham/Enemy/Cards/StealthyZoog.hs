@@ -18,7 +18,7 @@ newtype StealthyZoog = StealthyZoog EnemyAttrs
 stealthyZoog :: EnemyCard StealthyZoog
 stealthyZoog =
   enemyWith StealthyZoog Cards.stealthyZoog (1, Static 1, 3) (0, 1)
-    $ (spawnAtL ?~ SpawnEngagedWith (InvestigatorWithLowestSkill #agility $ InvestigatorAt YourLocation))
+    $ (spawnAtL ?~ SpawnEngagedWith (InvestigatorWithLowestSkill #agility $ colocatedWithMatch You))
     . (preyL .~ Prey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator))
 
 instance RunMessage StealthyZoog where

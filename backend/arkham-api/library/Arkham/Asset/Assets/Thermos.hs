@@ -28,7 +28,7 @@ instance HasAbilities Thermos where
         $ controlledAbility
           a
           1
-          (exists $ HealableInvestigator (toSource a) DamageType $ InvestigatorAt YourLocation)
+          (exists $ HealableInvestigator (toSource a) DamageType $ colocatedWithMatch You)
         $ ActionAbility []
         $ ActionCost 1
         <> ExhaustCost (toTarget a)

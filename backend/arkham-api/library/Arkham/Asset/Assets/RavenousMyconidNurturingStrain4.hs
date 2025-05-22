@@ -45,7 +45,7 @@ instance HasAbilities RavenousMyconidNurturingStrain4 where
                 [ exists (oneOf [HealableAsset (a.ability 2) kind (be a) | kind <- [#damage, #horror]])
                 , exists
                     ( affectsOthers
-                        $ InvestigatorAt YourLocation
+                        $ colocatedWithMatch You
                         <> oneOf [InvestigatorWithAnyDamage, InvestigatorWithAnyHorror]
                     )
                 , exists (AssetAt YourLocation <> #ally <> oneOf [AssetWithDamage, AssetWithHorror])

@@ -27,7 +27,7 @@ instance HasAbilities Bandages where
                   (HealableAsset (toSource a) #damage $ AssetAt YourLocation <> #ally)
               , InvestigatorTakeDamage
                   #after
-                  (HealableInvestigator (toSource a) #damage $ InvestigatorAt YourLocation)
+                  (HealableInvestigator (toSource a) #damage $ colocatedWithMatch You)
                   AnySource
               ]
           )

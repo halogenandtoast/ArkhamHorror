@@ -17,7 +17,7 @@ dialOfAncientsSignsOfCataclysm4 = asset DialOfAncientsSignsOfCataclysm4 Cards.di
 instance HasAbilities DialOfAncientsSignsOfCataclysm4 where
   getAbilities (DialOfAncientsSignsOfCataclysm4 a) =
     [ controlled a 1 (exists $ RevealedChaosTokens #any)
-        $ triggered (SkillTestResult #when (InvestigatorAt YourLocation) AnySkillTest #failure) (exhaust a)
+        $ triggered (SkillTestResult #when (colocatedWithMatch You) AnySkillTest #failure) (exhaust a)
     , controlled a 2 criteria $ forced $ RoundEnds #when
     ]
    where

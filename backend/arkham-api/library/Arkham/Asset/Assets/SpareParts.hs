@@ -22,7 +22,7 @@ instance HasAbilities SpareParts where
         1
         ( oneOf
             [ exists $ AssetAt YourLocation <> AssetCanHaveUses Supply
-            , exists $ InvestigatorAt YourLocation <> can.gain.resources
+            , exists $ colocatedWithMatch You <> can.gain.resources
             ]
         )
         $ FastAbility (exhaust a <> assetUseCost a Supply 1)

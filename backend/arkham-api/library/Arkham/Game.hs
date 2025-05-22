@@ -944,6 +944,9 @@ getInvestigatorsMatching matcher = do
     NotInvestigator x -> do
       as' <- go as x
       pure $ filter (`notElem` as') as
+    InvestigatorIfLocation lMatcher i1 i2 -> do
+      ok <- selectAny lMatcher
+      if ok then go as i1 else go as i2
     InvestigatorWithPlacement p -> pure $ filter ((== p) . (.placement)) as
     InVehicleMatching am -> flip filterM as \a -> case a.placement of
       InVehicle aid -> aid <=~> am
@@ -3182,12 +3185,14 @@ enemyMatcherFilter es matcher' = case matcher' of
   CanFightEnemy source -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers iid
+    let cannotAttackEnemy e = CannotAttackEnemy e.id `elem` modifiers'
+    let es' = filter (not . cannotAttackEnemy) es
     case listToMaybe [x | MustFight x <- modifiers'] of
       Just eid -> do
         -- Dirty Fighting has to fight the evaded enemy, we are saying this is
         -- the one that must be fought
-        pure $ filter ((== eid) . toId) es
-      Nothing -> flip filterM es \enemy -> do
+        pure $ filter ((== eid) . toId) es'
+      Nothing -> flip filterM es' \enemy -> do
         enemyModifiers <- getModifiers enemy.id
         sourceModifiers <- case source of
           AbilitySource abSource idx -> do
@@ -3240,7 +3245,10 @@ enemyMatcherFilter es matcher' = case matcher' of
                   (map (setRequestor source) $ getAbilities enemy)
   CanFightEnemyWithOverride override -> do
     iid <- view activeInvestigatorIdL <$> getGame
-    flip filterM es \enemy -> do
+    imodifiers' <- getModifiers iid
+    let cannotAttackEnemy e = CannotAttackEnemy e.id `elem` imodifiers'
+    let es' = filter (not . cannotAttackEnemy) es
+    flip filterM es' \enemy -> do
       modifiers' <- getModifiers (EnemyTarget $ toId enemy)
       let
         enemyFilters =

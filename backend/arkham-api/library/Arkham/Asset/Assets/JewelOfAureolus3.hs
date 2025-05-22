@@ -25,7 +25,7 @@ instance HasAbilities JewelOfAureolus3 where
   getAbilities (JewelOfAureolus3 x) =
     [ restrictedAbility x 1 ControlsThis
         $ ReactionAbility
-          ( RevealChaosToken Timing.When (InvestigatorAt YourLocation)
+          ( RevealChaosToken Timing.When (colocatedWithMatch You)
               $ if tabooed TabooList20 x
                 then IsSymbol
                 else ChaosTokenMatchesAny (map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail])

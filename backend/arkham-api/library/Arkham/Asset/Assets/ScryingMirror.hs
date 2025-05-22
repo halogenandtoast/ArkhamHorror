@@ -18,7 +18,7 @@ instance HasAbilities ScryingMirror where
   getAbilities (ScryingMirror a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-          (InitiatedSkillTest #when (InvestigatorAt YourLocation) AnySkillType AnySkillTestValue #any)
+          (InitiatedSkillTest #when (colocatedWithMatch You) AnySkillType AnySkillTestValue #any)
           (exhaust a <> assetUseCost a Secret 1)
     ]
 

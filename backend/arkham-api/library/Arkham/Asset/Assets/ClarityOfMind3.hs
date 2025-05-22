@@ -22,7 +22,7 @@ instance HasAbilities ClarityOfMind3 where
     [ controlledAbility
         a
         1
-        (exists $ HealableInvestigator (a.ability 1) #horror $ InvestigatorAt YourLocation)
+        (exists $ HealableInvestigator (a.ability 1) #horror $ colocatedWithMatch You)
         $ actionAbilityWithCost (assetUseCost a Charge 1)
     ]
 

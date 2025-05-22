@@ -28,7 +28,7 @@ teamwork =
     { cdCardTraits = setFromList [Tactic]
     , cdSkills = [#wild]
     , cdCriteria =
-        Just $ exists $ affectsOthers $ NotInvestigator You <> InvestigatorAt YourLocation
+        Just $ exists $ affectsOthers $ NotInvestigator You <> colocatedWithMatch You
     }
 
 taunt2 :: CardDef

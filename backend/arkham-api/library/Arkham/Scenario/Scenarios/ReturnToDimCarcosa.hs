@@ -14,15 +14,15 @@ returnToDimCarcosa difficulty = scenarioWith
   "52059"
   "Return to Dim Carcosa"
   difficulty
-  [ ".          darkSpires      ."
-  , ".          depthsOfDemhe   ."
-  , "dimStreets palaceOfTheKing ruinsOfCarcosa"
-  , ".          bleakPlains     ."
-  , ".          shoresOfHali    ."
+  [ ".             darkSpires      ."
+  , ".             depthsOfDemhe   recessesOfYourOwnMind"
+  , "dimStreets    palaceOfTheKing ruinsOfCarcosa"
+  , "theThroneRoom bleakPlains     stageOfTheWardTheatre"
+  , ".             shoresOfHali    ."
   ]
   (referenceL .~ "03316")
 
 instance RunMessage ReturnToDimCarcosa where
   runMessage msg (ReturnToDimCarcosa dimCarcosa'@(DimCarcosa attrs)) = runQueueT $ scenarioI18n $ case msg of
-    Setup -> runScenarioSetup (ReturnToDimCarcosa . DimCarcosa) attrs $ setupDimCarcosa attrs
+    Setup -> runScenarioSetup (ReturnToDimCarcosa . DimCarcosa) attrs $ setIsReturnTo >> setupDimCarcosa attrs
     _ -> ReturnToDimCarcosa <$> liftRunMessage msg dimCarcosa'

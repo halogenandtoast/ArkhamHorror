@@ -135,6 +135,7 @@ data ModifierType
   | CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
   | CannotAssignDamage InvestigatorId
   | CannotAttack
+  | CannotAttackEnemy EnemyId
   | CannotBeAdvancedByDoomThreshold
   | CannotBeAttacked
   | CannotBeAttackedBy EnemyMatcher
@@ -221,6 +222,7 @@ data ModifierType
   | ControlledAssetsCannotReady
   | CountAllDoomInPlay
   | CountsAsInvestigatorForHunterEnemies
+  | CountsAsDifferentLocation
   | DamageDealt Int
   | DamageDealtToInvestigator Int
   | DamageTaken Int

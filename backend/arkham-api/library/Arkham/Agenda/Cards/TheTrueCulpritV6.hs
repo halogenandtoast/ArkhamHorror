@@ -23,7 +23,7 @@ instance HasAbilities TheTrueCulpritV6 where
             1
             ControlsThis
             $ ReactionAbility
-              (EnemyWouldAttack #when (InvestigatorAt YourLocation) AnyEnemyAttack $ enemyIs Cards.hotelManager)
+              (EnemyWouldAttack #when (colocatedWithMatch You) AnyEnemyAttack $ enemyIs Cards.hotelManager)
               (AssetClueCost "Time-worn Locket" (assetIs Cards.timeWornLocket) $ Static 2)
          , mkAbility attrs 2
             $ Objective

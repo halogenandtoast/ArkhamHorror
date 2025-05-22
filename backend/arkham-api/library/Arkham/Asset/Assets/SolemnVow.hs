@@ -19,7 +19,7 @@ instance HasAbilities SolemnVow where
   getAbilities (SolemnVow attrs) =
     [ restrictedAbility attrs 1 ControlsThis (FastAbility $ exhaust attrs)
         `withCriteria` exists (You <> oneOf [InvestigatorHasCardWithDamage, InvestigatorHasCardWithHorror])
-        `withCriteria` exists (affectsOthers $ InvestigatorAt YourLocation <> OwnsAsset (be attrs))
+        `withCriteria` exists (affectsOthers $ colocatedWithMatch You <> OwnsAsset (be attrs))
     ]
 
 instance RunMessage SolemnVow where

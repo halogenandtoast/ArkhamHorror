@@ -987,7 +987,7 @@ instance RunMessage EnemyAttrs where
           player <- getPlayer iid
           let
             attackMessage =
-              if AttackDealsEitherDamageOrHorror `elem` modifiers
+              if AttackDealsEitherDamageOrHorror `elem` (modifiers <> mods)
                 then
                   chooseOne
                     player

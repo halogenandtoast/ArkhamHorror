@@ -1705,6 +1705,7 @@ library
       Arkham.Enemy.Cards.Heretic_K
       Arkham.Enemy.Cards.HermanCollins
       Arkham.Enemy.Cards.HighPriestNotToBeDescribed
+      Arkham.Enemy.Cards.HighPriestOfHastur
       Arkham.Enemy.Cards.HiredGun
       Arkham.Enemy.Cards.HitVan
       Arkham.Enemy.Cards.Hoods
@@ -3104,6 +3105,7 @@ library
       Arkham.Location.Cards.QuietHalls_135
       Arkham.Location.Cards.RailroadStation
       Arkham.Location.Cards.RealmsBeyondAllInOne
+      Arkham.Location.Cards.RecessesOfYourOwnMind
       Arkham.Location.Cards.RecordsOffice
       Arkham.Location.Cards.RehearsalRoom
       Arkham.Location.Cards.RemnantsOfLakesCamp
@@ -3125,6 +3127,7 @@ library
       Arkham.Location.Cards.ReturnToMontparnasse
       Arkham.Location.Cards.ReturnToNotreDame
       Arkham.Location.Cards.ReturnToOsbornsGeneralStore
+      Arkham.Location.Cards.ReturnToPalaceOfTheKing
       Arkham.Location.Cards.ReturnToPereLachaiseCemetery
       Arkham.Location.Cards.ReturnToQuietHalls
       Arkham.Location.Cards.ReturnToSchoolhouse
@@ -3202,6 +3205,7 @@ library
       Arkham.Location.Cards.Southside_295
       Arkham.Location.Cards.SouthsideHistoricalSociety
       Arkham.Location.Cards.SouthsideMasBoardingHouse
+      Arkham.Location.Cards.StageOfTheWardTheatre
       Arkham.Location.Cards.Stairwell
       Arkham.Location.Cards.StandingStones
       Arkham.Location.Cards.StatuesInTheDeep
@@ -3273,6 +3277,7 @@ library
       Arkham.Location.Cards.TheMoonRoom
       Arkham.Location.Cards.TheOnyxCastle
       Arkham.Location.Cards.TheSummit
+      Arkham.Location.Cards.TheThroneRoom
       Arkham.Location.Cards.TheWhiteShip
       Arkham.Location.Cards.TidalPool
       Arkham.Location.Cards.TightTurn_a
@@ -3468,6 +3473,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToBlackStarsRise
       Arkham.Scenario.Scenarios.ReturnToBloodOnTheAltar
       Arkham.Scenario.Scenarios.ReturnToCurtainCall
+      Arkham.Scenario.Scenarios.ReturnToDimCarcosa
       Arkham.Scenario.Scenarios.ReturnToEchoesOfThePast
       Arkham.Scenario.Scenarios.ReturnToExtracurricularActivities
       Arkham.Scenario.Scenarios.ReturnToLostInTimeAndSpace
@@ -3534,11 +3540,9 @@ library
       Arkham.Scenarios.CurseOfTheRougarou.FlavorText
       Arkham.Scenarios.CurseOfTheRougarou.Helpers
       Arkham.Scenarios.CurtainCall.Helpers
-      Arkham.Scenarios.CurtainCall.Story
       Arkham.Scenarios.DarkSideOfTheMoon.Helpers
       Arkham.Scenarios.DevilReef.Helpers
       Arkham.Scenarios.DimCarcosa.Helpers
-      Arkham.Scenarios.DimCarcosa.Story
       Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Story
       Arkham.Scenarios.EchoesOfThePast.Helpers
       Arkham.Scenarios.ExtracurricularActivity.Helpers

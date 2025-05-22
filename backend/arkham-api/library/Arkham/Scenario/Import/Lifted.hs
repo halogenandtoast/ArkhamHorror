@@ -28,6 +28,7 @@ import Arkham.Question as X
 import Arkham.Scenario.Runner as X (
   IsScenario,
   ScenarioAttrs,
+  actStackL,
   additionalReferencesL,
   decksL,
   decksLayoutL,

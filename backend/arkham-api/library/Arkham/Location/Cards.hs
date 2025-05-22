@@ -600,6 +600,7 @@ allLocationCards =
       , quietHalls_135
       , railroadStation
       , realmsBeyondAllInOne
+      , recessesOfYourOwnMind
       , recordsOffice
       , rehearsalRoom
       , remnantsOfLakesCamp
@@ -621,6 +622,7 @@ allLocationCards =
       , returnToMontparnasse
       , returnToNotreDame
       , returnToOsbornsGeneralStore
+      , returnToPalaceOfTheKing
       , returnToPereLachaiseCemetery
       , returnToQuietHalls
       , returnToSchoolhouse
@@ -699,6 +701,7 @@ allLocationCards =
       , southside_294
       , southside_295
       , stMarysHospital
+      , stageOfTheWardTheatre
       , stairwell
       , standingStones
       , statuesInTheDeep
@@ -767,6 +770,7 @@ allLocationCards =
       , theMoonRoom
       , theOnyxCastle
       , theSummit
+      , theThroneRoom
       , theWhiteShip
       , theatre
       , theatreLounge
@@ -8758,6 +8762,18 @@ returnToCloister = location "52055" "Cloister" [] Heart [Square, Hourglass] Retu
 
 returnToKnightsHall :: CardDef
 returnToKnightsHall = location "52056" "Knight's Hall" [] Hourglass [Square, Heart] ReturnToBlackStarsRise
+
+returnToPalaceOfTheKing :: CardDef
+returnToPalaceOfTheKing = storyOnBack $ location "52060" ("Palace of the King" <:> "Hastur's Domain") [Otherworld] Star [Triangle, Diamond, Heart, Droplet, Hourglass] ReturnToDimCarcosa
+
+recessesOfYourOwnMind :: CardDef
+recessesOfYourOwnMind = storyOnBack $ location "52061" "Recesses of Your Own Mind" [] Heart [Star] ReturnToDimCarcosa
+
+theThroneRoom :: CardDef
+theThroneRoom = storyOnBack $ location "52062" "The Throne Room" [] Droplet [Star] ReturnToDimCarcosa
+
+stageOfTheWardTheatre :: CardDef
+stageOfTheWardTheatre = storyOnBack $ location "52063" "Stage of the Ward Theatre" [] Hourglass [Star] ReturnToDimCarcosa
 
 cursedShores :: CardDef
 cursedShores =

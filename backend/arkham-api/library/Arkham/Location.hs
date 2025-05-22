@@ -866,6 +866,11 @@ allLocations =
     , --- Return to Black Stars Rise
       SomeLocationCard returnToCloister
     , SomeLocationCard returnToKnightsHall
+    , --- Return to Dim Carcosa
+      SomeLocationCard returnToPalaceOfTheKing
+    , SomeLocationCard recessesOfYourOwnMind
+    , SomeLocationCard theThroneRoom
+    , SomeLocationCard stageOfTheWardTheatre
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

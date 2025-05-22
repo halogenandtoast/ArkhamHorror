@@ -214,6 +214,7 @@ allEncounterEnemyCards =
       , heretic_K
       , hermanCollins
       , highPriestNotToBeDescribed
+      , highPriestOfHastur
       , hiredGun
       , hitVan
       , hordeOfNight
@@ -2925,6 +2926,13 @@ malformedSkeleton :: CardDef
 malformedSkeleton =
   (enemy "52053" "Malformed Skeleton" ReturnToThePallidMask 1)
     { cdCardTraits = setFromList [Monster]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+highPriestOfHastur :: CardDef
+highPriestOfHastur =
+  (enemy "52064" "High Priest of Hastur" ReturnToDimCarcosa 1)
+    { cdCardTraits = setFromList [Humanoid, Cultist, Elite]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
 

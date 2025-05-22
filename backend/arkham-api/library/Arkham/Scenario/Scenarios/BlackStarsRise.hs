@@ -107,8 +107,8 @@ setupBlackStarsRise attrs = do
       li "adjustChaosBag"
       li.nested "version.instructions" do
         li "version.createPiles"
-        li "verison.randomizePiles"
-        li "verison.choosePile"
+        li "version.randomizePiles"
+        li "version.choosePile"
       li "agendaDecks"
       li "setAside"
       li "chooseSetAsideLocations"
@@ -240,14 +240,14 @@ instance RunMessage BlackStarsRise where
     ResolveChaosToken _ Tablet iid -> do
       drawAnotherChaosToken iid
       pure s
-    ScenarioResolution res -> do
+    ScenarioResolution res -> scope "resolutions" do
       case res of
         NoResolution -> do
           resolution "noResolution"
           do_ R3
         _ -> do_ msg
       pure s
-    Do (ScenarioResolution res) -> do
+    Do (ScenarioResolution res) -> scope "resolutions" do
       let
         updateSlain = selectForMaybeM (VictoryDisplayCardMatch $ basic $ cardIs Enemies.ashleighClarke) \ashleigh ->
           recordSetInsert VIPsSlain [toCardCode ashleigh]

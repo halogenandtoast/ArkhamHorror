@@ -529,6 +529,8 @@ allEnemies =
       SomeEnemyCard hostOfInsanity
     , --- Return to The Pallid Mask [rtptc]
       SomeEnemyCard malformedSkeleton
+    , --- Return to Dim Carcosa [rtptc]
+      SomeEnemyCard highPriestOfHastur
     , --- Decaying Reality [rtptc]
       SomeEnemyCard maggotSwarm
     , --- Hastur's Envoys [rtptc]

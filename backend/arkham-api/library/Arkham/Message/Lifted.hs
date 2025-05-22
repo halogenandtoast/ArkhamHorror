@@ -2759,8 +2759,7 @@ cancelBatch bId = push $ CancelBatch bId
 
 cancelMovement
   :: (ReverseQueue m, Sourceable source, Targetable investigator) => source -> investigator -> m ()
-cancelMovement source investigator = do
-  movementModifier source investigator CannotMove
+cancelMovement source investigator = movementModifier source investigator CannotMove
 
 sendMessage :: (ReverseQueue m, Targetable target) => target -> Message -> m ()
 sendMessage target msg = push $ SendMessage (toTarget target) msg

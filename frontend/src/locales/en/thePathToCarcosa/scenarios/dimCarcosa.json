@@ -17,11 +17,6 @@
     "useV2": "Use Search For the Stranger (v. II)",
     "useV3": "Use Search For the Stranger (v. III)"
   },
-  "xp": {
-    "resolution1": "Truimphed over his or her own self—the most dangerous of foes.",
-    "resolution2": "Learned the truth behind The King in Yellow.",
-    "resolution3": "Learned the truth behind The King in Yellow."
-  },
   "remembered": {
     "knowTheSecret": "You know the secret."
   },
@@ -59,6 +54,10 @@
     "takeHorror": "Each investigator takes direct horror equal to half his or her sanity, rounded down (*cannot be prevented*). This horror cannot cause you to become defeated (see “Sanity in the Realm of Carcosa,” below)."
   },
   "resolutions": {
+    "xp": {
+      "self": "Truimphed over his or her own self—the most dangerous of foes.",
+      "truth": "Learned the truth behind The King in Yellow."
+    },
     "noResolution": {
       "title": "No Resolution",
       "body": "<div class='resolution'><p>_If no resolution was reached (each investigator was defeated)_: Check Campaign Log.</p><ul><li>If you have more (or equal) _Conviction_ than _Doubt_, go to _Resolution 4_.</li><li>If you have more _Doubt_ than _Conviction_, go to _Resolution 5_.</li></ul></div>"

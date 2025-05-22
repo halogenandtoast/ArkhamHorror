@@ -8,7 +8,7 @@ newtype MadnessAndDeath = MadnessAndDeath AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 madnessAndDeath :: AgendaCard MadnessAndDeath
-madnessAndDeath = agenda (6, A) MadnessAndDeath Cards.madnessAndDeath (Static 12)
+madnessAndDeath = agenda (6, A) MadnessAndDeath Cards.madnessAndDeath (Static 6)
 
 instance RunMessage MadnessAndDeath where
   runMessage msg a@(MadnessAndDeath attrs) = runQueueT $ case msg of

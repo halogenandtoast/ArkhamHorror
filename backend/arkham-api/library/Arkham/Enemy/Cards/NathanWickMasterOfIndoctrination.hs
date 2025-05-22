@@ -1,16 +1,9 @@
-module Arkham.Enemy.Cards.NathanWickMasterOfIndoctrination (
-  nathanWickMasterOfIndoctrination,
-  NathanWickMasterOfIndoctrination (..),
-)
-where
+module Arkham.Enemy.Cards.NathanWickMasterOfIndoctrination (nathanWickMasterOfIndoctrination) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype NathanWickMasterOfIndoctrination = NathanWickMasterOfIndoctrination EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -25,21 +18,16 @@ nathanWickMasterOfIndoctrination =
     (1, 1)
 
 instance HasAbilities NathanWickMasterOfIndoctrination where
-  getAbilities (NathanWickMasterOfIndoctrination attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1
-          $ ForcedAbility
-          $ SkillTestResult
-            Timing.After
-            You
-            (WhileEvadingAnEnemy $ EnemyWithId $ toId attrs)
-            (SuccessResult $ AtLeast $ Static 3)
-      ]
+  getAbilities (NathanWickMasterOfIndoctrination a) =
+    extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ SkillTestResult #after You (WhileEvadingAnEnemy $ be a) (SuccessResult $ atLeast 3)
 
 instance RunMessage NathanWickMasterOfIndoctrination where
-  runMessage msg e@(NathanWickMasterOfIndoctrination attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ AddToVictory (toTarget attrs)
+  runMessage msg e@(NathanWickMasterOfIndoctrination attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      for_ attrs.keys (placeKey iid)
+      addToVictory attrs
       pure e
-    _ -> NathanWickMasterOfIndoctrination <$> runMessage msg attrs
+    _ -> NathanWickMasterOfIndoctrination <$> liftRunMessage msg attrs

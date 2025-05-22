@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Message (module Arkham.Helpers.Message, module X) where
 
 import Arkham.Prelude

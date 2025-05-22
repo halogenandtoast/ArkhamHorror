@@ -704,15 +704,19 @@ runGameMessage msg g = case msg of
     push $ CreatedEffect effectId Nothing source GameTarget
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   DisableEffect effectId -> do
-    effect <- getEffect effectId
-    for_ (attr effectOnDisable effect) pushAll
+    mEffect <- maybeEffect effectId
+    for_ mEffect \effect -> for_ (attr effectOnDisable effect) pushAll
     pure
       $ g
       & (entitiesL . effectsL %~ deleteMap effectId)
-      & ( actionRemovedEntitiesL
-            . effectsL
-            %~ insertEntity (overAttrs (\a -> a {effectFinished = True}) effect)
+      & maybe
+        id
+        ( \effect ->
+            actionRemovedEntitiesL
+              . effectsL
+              %~ insertEntity (overAttrs (\a -> a {effectFinished = True}) effect)
         )
+        mEffect
   FocusCards cards -> pure $ g & focusedCardsL %~ (cards :)
   UnfocusCards -> pure $ g & focusedCardsL %~ drop 1
   ClearFound FromDeck -> do
@@ -1992,15 +1996,21 @@ runGameMessage msg g = case msg of
     mods <- getModifiers eid
     card <- field EnemyCard eid
     let zone = if StayInVictory `elem` mods then VictoryDisplayZone else RemovedZone
+
     pushAll
       $ windows [Window.LeavePlay (EnemyTarget eid), Window.AddedToVictory card]
       <> [RemoveEnemy eid]
+
+    mloc <- field EnemyLocation eid
+    for_ mloc \loc -> do
+      enemy <- getEnemy eid
+      for_ enemy.keys (push . PlaceKey (toTarget loc))
     pure
       $ g
       & entitiesL
       . enemiesL
       . ix eid
-      %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay zone})
+      %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay zone, enemyKeys = mempty})
   DefeatedAddToVictory (EnemyTarget eid) -> do
     mods <- getModifiers eid
     card <- field EnemyCard eid
@@ -2315,8 +2325,7 @@ runGameMessage msg g = case msg of
   BeginSkillTestWithPreMessages' pre skillTest -> do
     runQueueT $ handleSkillTestNesting skillTest.id msg g do
       let iid = skillTest.investigator
-      let windows' = windows [Window.InitiatedSkillTest skillTest]
-      let defaultCase = windows' <> [BeginSkillTestAfterFast]
+      let defaultCase = [BeginSkillTestAfterFast]
 
       performRevelationSkillTestWindow <-
         checkWindows [mkWhen $ Window.WouldPerformRevelationSkillTest iid skillTest.id]
@@ -2339,7 +2348,6 @@ runGameMessage msg g = case msg of
                       , skillType' /= skillType
                       ]
                 ]
-                  <> windows'
                   <> [BeginSkillTestAfterFast]
         AndSkillTest types -> do
           availableSkills <- for types $ traverseToSnd (`getAvailableSkillsFor` iid)
@@ -2364,7 +2372,6 @@ runGameMessage msg g = case msg of
                           ]
                   )
                   skillsWithChoice
-                <> windows'
                 <> [BeginSkillTestAfterFast]
 
       msgs' <-

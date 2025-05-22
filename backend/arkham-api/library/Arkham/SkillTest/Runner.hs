@@ -177,8 +177,11 @@ instance RunMessage SkillTest where
     BeforeSkillTest stId | stId == s.id -> do
       pure $ s & stepL .~ CommitCardsFromHandToSkillTestStep
     BeginSkillTestAfterFast -> do
+      let windows' = windows [Window.InitiatedSkillTest s]
       windowMsg <- checkWindows [mkWindow #when Window.FastPlayerWindow]
-      pushAll [windowMsg, BeforeSkillTest s.id, EndSkillTestWindow]
+      pushAll
+        $ windows'
+        <> [Do BeginSkillTestAfterFast, windowMsg, BeforeSkillTest s.id, EndSkillTestWindow]
       mAbilityCardId <- case skillTestSource of
         AbilitySource src _ -> fmap toCardId <$> sourceToMaybeCard src
         UseAbilitySource _ src _ -> fmap toCardId <$> sourceToMaybeCard src
@@ -219,10 +222,11 @@ instance RunMessage SkillTest where
         $ s
         & (targetCardL .~ mTargetCardId)
         & (sourceCardL .~ (mAbilityCardId <|> mSourceCardId))
-        & (stepL .~ SkillTestFastWindow1)
         & (skillTestTypeL .~ updatedSkillTestType)
         & (iconValuesL .~ icons)
         & (baseValueL .~ updatedBaseValue)
+    Do BeginSkillTestAfterFast -> do
+      pure $ s & (stepL .~ SkillTestFastWindow1)
     ReplaceSkillTestSkill (FromSkillType fsType) (ToSkillType tsType) -> do
       let
         stType = case skillTestType of

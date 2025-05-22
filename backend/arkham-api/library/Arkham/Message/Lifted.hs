@@ -2098,8 +2098,11 @@ nonAttackEnemyDamage
   :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m, Sourceable a)
   => Maybe InvestigatorId -> a -> Int -> enemy -> m ()
 nonAttackEnemyDamage miid source damage enemy = do
-  whenM (asId enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
-    push $ Msg.EnemyDamage (asId enemy) (nonAttack miid source damage)
+  isLocation <- selectAny $ LocationWithId $ coerce @_ @LocationId (asId enemy)
+  if isLocation
+    then push $ Msg.EnemyDamage (asId enemy) (nonAttack miid source damage)
+    else whenM (asId enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
+      push $ Msg.EnemyDamage (asId enemy) (nonAttack miid source damage)
 
 attackEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
 attackEnemyDamage source damage enemy = do
@@ -2790,8 +2793,7 @@ cancelEvent eId = matchingDon't \case
 
 cancelMovement
   :: (ReverseQueue m, Sourceable source, Targetable investigator) => source -> investigator -> m ()
-cancelMovement source investigator = do
-  movementModifier source investigator CannotMove
+cancelMovement source investigator = movementModifier source investigator CannotMove
 
 sendMessage :: (ReverseQueue m, Targetable target) => target -> Message -> m ()
 sendMessage target msg = push $ SendMessage (toTarget target) msg

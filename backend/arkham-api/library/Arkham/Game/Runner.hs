@@ -701,14 +701,18 @@ runGameMessage msg g = case msg of
     push $ CreatedEffect effectId Nothing source GameTarget
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   DisableEffect effectId -> do
-    effect <- getEffect effectId
+    mEffect <- maybeEffect effectId
     pure
       $ g
       & (entitiesL . effectsL %~ deleteMap effectId)
-      & ( actionRemovedEntitiesL
-            . effectsL
-            %~ insertEntity (overAttrs (\a -> a {effectFinished = True}) effect)
+      & maybe
+        id
+        ( \effect ->
+            actionRemovedEntitiesL
+              . effectsL
+              %~ insertEntity (overAttrs (\a -> a {effectFinished = True}) effect)
         )
+        mEffect
   FocusCards cards -> pure $ g & focusedCardsL %~ (cards :)
   UnfocusCards -> pure $ g & focusedCardsL %~ drop 1
   ClearFound FromDeck -> do
@@ -915,7 +919,14 @@ runGameMessage msg g = case msg of
       Discard _ _ (EventTarget eid') -> eid == eid'
       _ -> False
     event' <- getEvent eid
-    pure $ g & entitiesL . eventsL %~ deleteMap eid & actionRemovedEntitiesL . eventsL %~ insertEntity event'
+    pure
+      $ g
+      & entitiesL
+      . eventsL
+      %~ deleteMap eid
+      & actionRemovedEntitiesL
+      . eventsL
+      %~ insertEntity event'
   RemoveEnemy eid -> do
     popMessageMatching_ $ \case
       EnemyDefeated eid' _ _ _ -> eid == eid'
@@ -1812,11 +1823,12 @@ runGameMessage msg g = case msg of
         if null options
           then pushAll msgs'
           else do
-            askMap <- fmap (QuestionLabel "Choose after skill test effect to resolve" Nothing . ChooseOneAtATime) . Map.unionsWith (<>) <$> forMaybeM (msg : options) \case
-              AfterSkillTestOption iid lbl xs -> do
-                playerId <- getPlayer iid
-                pure $ Just $ singletonMap playerId [Label lbl xs]
-              _ -> pure Nothing
+            askMap <-
+              fmap (QuestionLabel "Choose after skill test effect to resolve" Nothing . ChooseOneAtATime) . Map.unionsWith (<>) <$> forMaybeM (msg : options) \case
+                AfterSkillTestOption iid lbl xs -> do
+                  playerId <- getPlayer iid
+                  pure $ Just $ singletonMap playerId [Label lbl xs]
+                _ -> pure Nothing
             push $ AskMap askMap
     pure g
   SkillTestResultOption txt msgs -> do
@@ -1967,10 +1979,10 @@ runGameMessage msg g = case msg of
     pure g
   Do (RemoveCard c) -> do
     card <- getCard c
-    pure $ g & removedFromPlayL %~ (card:)
+    pure $ g & removedFromPlayL %~ (card :)
   AddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid
-      
+
     pushAll
       $ windows [Window.LeavePlay (EnemyTarget eid), Window.AddedToVictory card]
       <> [RemoveEnemy eid]
@@ -2297,8 +2309,7 @@ runGameMessage msg g = case msg of
   BeginSkillTestWithPreMessages' pre skillTest -> do
     runQueueT $ handleSkillTestNesting skillTest.id msg g do
       let iid = skillTest.investigator
-      let windows' = windows [Window.InitiatedSkillTest skillTest]
-      let defaultCase = windows' <> [BeginSkillTestAfterFast]
+      let defaultCase = [BeginSkillTestAfterFast]
 
       performRevelationSkillTestWindow <-
         checkWindows [mkWhen $ Window.WouldPerformRevelationSkillTest iid skillTest.id]
@@ -2321,7 +2332,6 @@ runGameMessage msg g = case msg of
                       , skillType' /= skillType
                       ]
                 ]
-                  <> windows'
                   <> [BeginSkillTestAfterFast]
         AndSkillTest types -> do
           availableSkills <- for types $ traverseToSnd (`getAvailableSkillsFor` iid)
@@ -2346,7 +2356,6 @@ runGameMessage msg g = case msg of
                           ]
                   )
                   skillsWithChoice
-                <> windows'
                 <> [BeginSkillTestAfterFast]
 
       msgs' <-

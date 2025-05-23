@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.SordidAndSilent (SordidAndSilent (..), sordidAndSilent) where
+module Arkham.Treachery.Cards.SordidAndSilent (sordidAndSilent) where
 
 import Arkham.Ability
 import Arkham.Helpers.Location (withLocationOf)

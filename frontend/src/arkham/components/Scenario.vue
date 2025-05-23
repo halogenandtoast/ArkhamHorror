@@ -687,6 +687,7 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
                 class="card"
                 :src="scenarioGuide"
                 :data-spent-keys="JSON.stringify(spentKeys)"
+                :data-depth="currentDepth"
               />
               <img
                 v-for="reference in additionalReferences"
@@ -1156,6 +1157,7 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
     bottom: 0;
     right: 0;
     pointer-events: none;
+    z-index: 10;
   }
 
   .signOfTheGods {

@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { imgsrc, toCamelCase } from '@/arkham/helpers'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import Key from '@/arkham/components/Key.vue';
+import PoolItem from '@/arkham/components/PoolItem.vue';
 
 const cardOverlay = ref<HTMLElement | null>(null)
 const hoveredElement = ref<HTMLElement | null>(null)
@@ -211,6 +212,12 @@ const health = computed(() => {
   return hoveredElement.value.dataset.health
 })
 
+const depth = computed(() => {
+  if (!hoveredElement.value) return null
+  const {depth} = hoveredElement.value.dataset
+  return depth ? parseInt(depth) : null
+})
+
 const damage = computed(() => {
   if (!hoveredElement.value) return null
   return hoveredElement.value.dataset.damage
@@ -350,6 +357,7 @@ const getImage = (el: HTMLElement): string | null => {
     <img class="horror horror-1" v-if="horror && horror >= 1" :src="imgsrc('horror-overlay.png')"/>
     <img class="horror horror-2" v-if="horror && horror >= 2" :src="imgsrc('horror-overlay.png')"/>
     <img class="horror horror-3" v-if="horror && horror >= 3" :src="imgsrc('horror-overlay.png')"/>
+    <PoolItem class="depth" v-if="depth" type="resource" :amount="depth" />
     <div class="spent-keys" v-if="spentKeys.length > 0">
       <Key v-for="key in spentKeys" :key="key" :name="key" />
     </div>
@@ -2019,7 +2027,7 @@ const getImage = (el: HTMLElement): string | null => {
 }
 
 .card-overlay {
-  width: 100%;
+  width: max-content;
   height: auto;
   position: absolute;
   top: 0;
@@ -2036,18 +2044,18 @@ const getImage = (el: HTMLElement): string | null => {
   width: 33%;
 }
 
-.brianBurnham { top: 32.4%; }
-.otheraGilman { top: 36.4%; }
-.joyceLittle { top: 41%; }
-.barnabasMarsh { top: 45.4%; }
-.zadokAllen { top: 49.5%; }
-.robertFriendly { top: 54%; }
-.innsmouthJail { top: 67%; }
-.shorewardSlums { top: 71.4%; }
-.sawboneAlley { top: 75.6%; }
-.theHouseOnWaterStreet { top: 80%; width: 50%; }
-.esotericOrderOfDagon { top: 84.2%; width: 50%; }
-.newChurchGreen { top: 88.7%; }
+.brianBurnham { top: 31.8%; }
+.otheraGilman { top: 36.0%; }
+.joyceLittle { top: 40.4%; }
+.barnabasMarsh { top: 44.2%; }
+.zadokAllen { top: 48.5%; }
+.robertFriendly { top: 53%; }
+.innsmouthJail { top: 65.4%; }
+.shorewardSlums { top: 69.5%; }
+.sawboneAlley { top: 73.9%; }
+.theHouseOnWaterStreet { top: 78%; width: 50%; }
+.esotericOrderOfDagon { top: 82.2%; width: 50%; }
+.newChurchGreen { top: 86.7%; }
 
 .spent-keys {
   position: absolute;
@@ -2070,6 +2078,13 @@ const getImage = (el: HTMLElement): string | null => {
   align-self: center;
   justify-content: center;
   width: fit-content;
+}
+
+.depth {
+  left: calc(50% - 20px);
+  bottom: 16%;
+  position: absolute;
+  width: 40px;
 }
 
 </style>

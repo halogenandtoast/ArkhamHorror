@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -1776,7 +1776,7 @@ getLocationsMatching lmatcher = do
           matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
           pure $ filter ((`elem` matches') . toId) ls
     FarthestLocationFromLocation start matcher -> do
-      matchingLocationIds <- traceShowId . map toId <$> getLocationsMatching matcher
+      matchingLocationIds <- map toId <$> getLocationsMatching matcher
       matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
       pure $ filter ((`elem` matches') . toId) ls
     LocationFartherFrom pivot matcher -> do

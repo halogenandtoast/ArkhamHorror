@@ -129,7 +129,6 @@ import Arkham.Event.Events (
   oneInTheChamberEffect,
   pilfer3Effect,
   sleightOfHandEffect,
-  slipAway2Effect,
   snipe1Effect,
   spectralRazor2Effect,
   spectralRazorEffect,
@@ -569,7 +568,7 @@ allEffects =
     , ("60301", SomeEffect winifredHabbamockEffect)
     , ("60305", SomeEffect lockpicksEffect)
     , ("60323", SomeEffect cheapShot2Effect)
-    , ("60324", SomeEffect slipAway2Effect)
+    , ("60324", SomeEffect $ noop "60324")
     , ("60328", SomeEffect pilfer3Effect)
     , ("60329", SomeEffect backstab3Effect)
     , ("60330", SomeEffect copycat3Effect)

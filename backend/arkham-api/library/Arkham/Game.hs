@@ -3876,7 +3876,7 @@ instance Projection Investigator where
       InvestigatorSettings -> pure investigatorSettings
       InvestigatorTaboo -> pure investigatorTaboo
       InvestigatorSealedChaosTokens -> pure investigatorSealedChaosTokens
-      InvestigatorRemainingActions -> pure investigatorRemainingActions
+      InvestigatorRemainingActions -> pure $ investigatorRemainingActions
       InvestigatorAdditionalActions -> getAdditionalActions attrs
       InvestigatorHealth -> do
         let

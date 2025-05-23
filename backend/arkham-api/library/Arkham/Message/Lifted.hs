@@ -770,6 +770,10 @@ placeDoom
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
 placeDoom source target n = push $ PlaceDoom (toSource source) (toTarget target) n
 
+placeDoomOn
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Int -> target -> m ()
+placeDoomOn source n target = placeDoom source target n
+
 removeDoom
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
 removeDoom source target n = push $ RemoveDoom (toSource source) (toTarget target) n

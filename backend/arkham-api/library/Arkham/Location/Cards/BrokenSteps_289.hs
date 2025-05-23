@@ -3,14 +3,13 @@ module Arkham.Location.Cards.BrokenSteps_289 (brokenSteps_289) where
 import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
+import Arkham.Helpers.Investigator (getCanLoseActions)
 import Arkham.Helpers.Scenario (scenarioField)
 import Arkham.I18n
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Scenarios.BlackStarsRise.Helpers
 import Arkham.Trait
@@ -28,16 +27,12 @@ instance HasAbilities BrokenSteps_289 where
 instance RunMessage BrokenSteps_289 where
   runMessage msg l@(BrokenSteps_289 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      actionsRemaining <- field InvestigatorRemainingActions iid
-      mOmenCard <-
-        find (`cardMatch` (CardWithTrait Omen <> CardWithType TreacheryType))
-          <$> scenarioField ScenarioDiscard
+      canLoseActions <- getCanLoseActions iid
+      omens <- filterCards (CardWithTrait Omen <> #treachery) <$> scenarioField ScenarioDiscard
       chooseOneM iid do
-        when (actionsRemaining > 0) do
+        when canLoseActions do
           withI18n $ countVar 1 $ labeled' "loseActions" $ loseActions iid (attrs.ability 1) 1
-        for_ mOmenCard \c ->
-          scenarioI18n
-            $ labeled' "brokenSteps.omen"
-            $ findAndDrawEncounterCard iid (CardWithId c.id)
+        for_ (take 1 omens) \c ->
+          scenarioI18n $ labeled' "brokenSteps.omen" $ findAndDrawEncounterCard iid (CardWithId c.id)
       pure l
     _ -> BrokenSteps_289 <$> liftRunMessage msg attrs

@@ -1,14 +1,8 @@
-module Arkham.Skill.Cards.Opportunist2 (
-  opportunist2,
-  Opportunist2 (..),
-) where
+module Arkham.Skill.Cards.Opportunist2 (opportunist2) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype Opportunist2 = Opportunist2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -18,8 +12,8 @@ opportunist2 :: SkillCard Opportunist2
 opportunist2 = skill Opportunist2 Cards.opportunist2
 
 instance RunMessage Opportunist2 where
-  runMessage msg s@(Opportunist2 attrs@SkillAttrs {..}) = case msg of
-    PassedSkillTest iid _ _ (SkillTarget sid) _ n
-      | sid == skillId && n >= 2 ->
-          s <$ push (ReturnToHand iid (SkillTarget skillId))
-    _ -> Opportunist2 <$> runMessage msg attrs
+  runMessage msg s@(Opportunist2 attrs) = runQueueT $ case msg of
+    PassedSkillTest iid _ _ (isTarget attrs -> True) _ n | n >= 2 -> do
+      returnToHand iid attrs
+      pure s
+    _ -> Opportunist2 <$> liftRunMessage msg attrs

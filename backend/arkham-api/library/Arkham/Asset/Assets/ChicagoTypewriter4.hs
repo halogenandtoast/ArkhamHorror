@@ -2,10 +2,9 @@ module Arkham.Asset.Assets.ChicagoTypewriter4 (chicagoTypewriter4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Fight
-import Arkham.Helpers.Modifiers
-import Arkham.Prelude
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
+import Arkham.Modifier
 
 newtype ChicagoTypewriter4 = ChicagoTypewriter4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -28,12 +27,10 @@ getActionsSpent (Payments ps) = sum $ map getActionsSpent ps
 getActionsSpent _ = 0
 
 instance RunMessage ChicagoTypewriter4 where
-  runMessage msg a@(ChicagoTypewriter4 attrs) = case msg of
+  runMessage msg a@(ChicagoTypewriter4 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (getActionsSpent -> actionsSpent) -> do
       sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
-      enabled <-
-        skillTestModifiers sid attrs iid [DamageDealt 2, SkillModifier #combat (2 * actionsSpent)]
-      pushAll [enabled, chooseFight]
+      skillTestModifiers sid attrs iid [DamageDealt 2, SkillModifier #combat (2 * actionsSpent)]
+      chooseFightEnemy sid iid (attrs.ability 1)
       pure a
-    _ -> ChicagoTypewriter4 <$> runMessage msg attrs
+    _ -> ChicagoTypewriter4 <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Streetwise3 (streetwise3, Streetwise3 (..)) where
+module Arkham.Asset.Assets.Streetwise3 (streetwise3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards

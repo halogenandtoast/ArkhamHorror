@@ -2,10 +2,10 @@ module Arkham.Asset.Assets.BloodPact3 (bloodPact3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 
 newtype BloodPact3 = BloodPact3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -29,13 +29,11 @@ instance HasAbilities BloodPact3 where
     ]
 
 instance RunMessage BloodPact3 where
-  runMessage msg a@(BloodPact3 attrs) = case msg of
+  runMessage msg a@(BloodPact3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      withSkillTest \sid ->
-        pushM $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 3)
+      withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 3)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      withSkillTest \sid ->
-        pushM $ skillTestModifier sid (attrs.ability 2) iid (SkillModifier #combat 3)
+      withSkillTest \sid -> skillTestModifier sid (attrs.ability 2) iid (SkillModifier #combat 3)
       pure a
-    _ -> BloodPact3 <$> runMessage msg attrs
+    _ -> BloodPact3 <$> liftRunMessage msg attrs

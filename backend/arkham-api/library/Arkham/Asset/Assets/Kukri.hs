@@ -1,9 +1,8 @@
-module Arkham.Asset.Assets.Kukri (kukri, Kukri (..)) where
+module Arkham.Asset.Assets.Kukri (kukri) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Fight
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted.Choose
@@ -18,7 +17,7 @@ kukri :: AssetCard Kukri
 kukri = asset Kukri Cards.kukri
 
 instance HasAbilities Kukri where
-  getAbilities (Kukri a) = [restrictedAbility a 1 ControlsThis fightAction_]
+  getAbilities (Kukri a) = [restricted a 1 ControlsThis fightAction_]
 
 instance RunMessage Kukri where
   runMessage msg a@(Kukri attrs) = runQueueT $ case msg of
@@ -26,7 +25,7 @@ instance RunMessage Kukri where
       let source = attrs.ability 1
       sid <- getRandom
       skillTestModifier sid source iid (SkillModifier #combat 1)
-      pushM $ mkChooseFight sid iid source
+      chooseFightEnemy sid iid source
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       withSkillTest \sid -> do
@@ -34,7 +33,7 @@ instance RunMessage Kukri where
         when (actionRemainingCount > 0) do
           chooseOneM iid do
             labeled "Spend 1 action to deal +1 damage" do
-              push $ LoseActions iid (attrs.ability 1) 1
+              loseActions iid (attrs.ability 1) 1
               skillTestModifier sid attrs iid (DamageDealt 1)
             labeled "Skip additional Kukri damage" nothing
       pure a

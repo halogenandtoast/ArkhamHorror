@@ -1,13 +1,8 @@
-module Arkham.Event.Events.Teamwork (
-  teamwork,
-  Teamwork (..),
-) where
+module Arkham.Event.Events.Teamwork (teamwork) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Classes.HasQueue (HasQueue)
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher
 import Arkham.Trait
 
@@ -19,28 +14,27 @@ teamwork :: EventCard Teamwork
 teamwork = event Teamwork Cards.teamwork
 
 instance RunMessage Teamwork where
-  runMessage msg e@(Teamwork attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid mtarget windows' _ | eid == eventId -> do
-      push $ ResolveEvent iid eid mtarget windows'
+  runMessage msg e@(Teamwork attrs) = runQueueT $ case msg of
+    PlayThisEvent _ (is attrs -> True) -> do
+      do_ msg
       pure e
-    ResolveEvent iid eid mtarget windows' | eid == eventId -> do
+    Do msg'@(PlayThisEvent iid (is attrs -> True)) -> do
       investigators <- select $ colocatedWith iid
       assetsWithInvestigator <- concatForM investigators \investigator -> do
-        selectMap (investigator,)
-          $ assetControlledBy investigator
-          <> oneOf (map AssetWithTrait [Ally, Item])
-      player <- getPlayer iid
-      let beginTrade iid' x = BeginTrade iid' (toSource attrs) x (investigators \\ [iid'])
-      let resolveAgain = ResolveEvent iid eid mtarget windows'
+        selectMap (investigator,) $ assetControlledBy investigator <> mapOneOf AssetWithTrait [Ally, Item]
+      let
+        beginTrade :: (Targetable target, HasQueue Message m) => InvestigatorId -> target -> m ()
+        beginTrade iid' x = push $ BeginTrade iid' (toSource attrs) (toTarget x) (investigators \\ [iid'])
+      let resolveAgain = do_ msg'
 
-      push
-        $ chooseOne player
-        $ Done "Done Trading"
-        : [ targetLabel aid [beginTrade iid' (toTarget aid), resolveAgain]
-          | (iid', aid) <- assetsWithInvestigator
-          ]
-          <> [ targetLabel iid' [beginTrade iid' (ResourceTarget iid), resolveAgain]
-             | iid' <- investigators
-             ]
+      chooseOneM iid do
+        labeled "Done Trading" nothing
+        for_ assetsWithInvestigator \(iid', aid) -> do
+          targeting aid do
+            beginTrade iid' aid
+            resolveAgain
+        targets investigators \iid' -> do
+          beginTrade iid' (ResourceTarget iid)
+          resolveAgain
       pure e
-    _ -> Teamwork <$> runMessage msg attrs
+    _ -> Teamwork <$> liftRunMessage msg attrs

@@ -1,13 +1,10 @@
 module Arkham.Treachery.Cards.Indebted (indebted) where
 
-import Arkham.Classes
 import Arkham.Helpers.Modifiers (modifiedWith_)
 import Arkham.Modifier
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Indebted = Indebted TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
@@ -23,8 +20,8 @@ instance HasModifiersFor Indebted where
     _ -> pure mempty
 
 instance RunMessage Indebted where
-  runMessage msg t@(Indebted attrs) = case msg of
+  runMessage msg t@(Indebted attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ placeInThreatArea attrs iid
+      placeInThreatArea attrs iid
       pure t
-    _ -> Indebted <$> runMessage msg attrs
+    _ -> Indebted <$> liftRunMessage msg attrs

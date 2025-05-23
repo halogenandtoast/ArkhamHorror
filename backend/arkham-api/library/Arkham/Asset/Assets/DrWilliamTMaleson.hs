@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.DrWilliamTMaleson (drWilliamTMaleson, DrWilliamTMaleson (..)) where
+module Arkham.Asset.Assets.DrWilliamTMaleson (drWilliamTMaleson) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -17,8 +17,8 @@ drWilliamTMaleson = ally DrWilliamTMaleson Cards.drWilliamTMaleson (2, 2)
 
 instance HasAbilities DrWilliamTMaleson where
   getAbilities (DrWilliamTMaleson attrs) =
-    [ restrictedAbility attrs 1 ControlsThis
-        $ ReactionAbility
+    [ restricted attrs 1 ControlsThis
+        $ triggered
           (DrawCard #when You (basic IsEncounterCard) EncounterDeck)
           (exhaust attrs <> PlaceClueOnLocationCost 1)
     ]

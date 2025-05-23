@@ -2,10 +2,9 @@ module Arkham.Asset.Assets.Switchblade2 (switchblade2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Fight
-import Arkham.Helpers.Modifiers
-import Arkham.Prelude
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Modifier
 
 newtype Switchblade2 = Switchblade2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -15,20 +14,17 @@ switchblade2 :: AssetCard Switchblade2
 switchblade2 = asset Switchblade2 Cards.switchblade2
 
 instance HasAbilities Switchblade2 where
-  getAbilities (Switchblade2 a) =
-    [restrictedAbility a 1 ControlsThis fightAction_]
+  getAbilities (Switchblade2 a) = [restricted a 1 ControlsThis fightAction_]
 
 instance RunMessage Switchblade2 where
-  runMessage msg a@(Switchblade2 attrs) = case msg of
+  runMessage msg a@(Switchblade2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFight sid iid source
-      enabled <- skillTestModifier sid source iid (SkillModifier #combat 2)
-      pushAll [enabled, chooseFight]
+      skillTestModifier sid source iid (SkillModifier #combat 2)
+      chooseFightEnemy sid iid source
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
-      withSkillTest \sid ->
-        pushM $ skillTestModifier sid attrs iid (DamageDealt 1)
+      withSkillTest \sid -> skillTestModifier sid attrs iid (DamageDealt 1)
       pure a
-    _ -> Switchblade2 <$> runMessage msg attrs
+    _ -> Switchblade2 <$> liftRunMessage msg attrs

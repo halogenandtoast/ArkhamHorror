@@ -1,15 +1,9 @@
-module Arkham.Skill.Cards.StrokeOfLuck2 (
-  strokeOfLuck2,
-  StrokeOfLuck2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.StrokeOfLuck2 (strokeOfLuck2) where
 
 import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Message
+import Arkham.Message.Lifted.Choose
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype StrokeOfLuck2 = StrokeOfLuck2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -19,16 +13,12 @@ strokeOfLuck2 :: SkillCard StrokeOfLuck2
 strokeOfLuck2 = skill StrokeOfLuck2 Cards.strokeOfLuck2
 
 instance RunMessage StrokeOfLuck2 where
-  runMessage msg s@(StrokeOfLuck2 attrs) = case msg of
+  runMessage msg s@(StrokeOfLuck2 attrs) = runQueueT $ case msg of
     RevealChaosToken _ iid token | chaosTokenFace token /= AutoFail -> do
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label
-              "Exile Stroke of Luck to automatically succeed"
-              [Exile (toTarget attrs), PassSkillTest]
-          , Label "Do not exile" []
-          ]
+      chooseOneM iid do
+        labeled "Exile Stroke of Luck to automatically succeed" do
+          exile attrs
+          passSkillTest
+        labeled "Do not exile" nothing
       pure s
-    _ -> StrokeOfLuck2 <$> runMessage msg attrs
+    _ -> StrokeOfLuck2 <$> liftRunMessage msg attrs

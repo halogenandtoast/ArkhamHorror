@@ -1,14 +1,10 @@
-module Arkham.Asset.Assets.Painkillers (
-  painkillers,
-  Painkillers (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Painkillers (painkillers) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Damage
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
+import Arkham.Helpers.Investigator
 import Arkham.Matcher hiding (FastPlayerWindow)
 
 newtype Painkillers = Painkillers AssetAttrs
@@ -20,23 +16,13 @@ painkillers = asset Painkillers Cards.painkillers
 
 instance HasAbilities Painkillers where
   getAbilities (Painkillers a) =
-    [ restrictedAbility
-        a
-        1
-        (ControlsThis <> InvestigatorExists (HealableInvestigator (toSource a) DamageType You))
-        ( FastAbility
-            ( Costs
-                [ UseCost (AssetWithId $ toId a) Supply 1
-                , ExhaustCost (toTarget a)
-                , HorrorCost (toSource a) YouTarget 1
-                ]
-            )
-        )
+    [ controlled a 1 (exists (HealableInvestigator (toSource a) #damage You))
+        $ FastAbility (assetUseCost a Supply 1 <> exhaust a <> HorrorCost (toSource a) YouTarget 1)
     ]
 
 instance RunMessage Painkillers where
-  runMessage msg a@(Painkillers attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ HealDamage (InvestigatorTarget iid) (toSource attrs) 1
+  runMessage msg a@(Painkillers attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      whenM (canHaveDamageHealed (attrs.ability 1) iid) $ healDamage iid (attrs.ability 1) 1
       pure a
-    _ -> Painkillers <$> runMessage msg attrs
+    _ -> Painkillers <$> liftRunMessage msg attrs

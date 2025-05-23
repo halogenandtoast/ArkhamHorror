@@ -129,6 +129,25 @@ investigateEdit_
   -> m ()
 investigateEdit_ sid iid source f = withLocationOf iid (push . toMessage . f <=< mkInvestigateLocation sid iid source)
 
+investigateLocationEdit_
+  :: (Sourceable source, ReverseQueue m, AsId location, IdOf location ~ LocationId)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> location
+  -> (I.Investigate -> I.Investigate)
+  -> m ()
+investigateLocationEdit_ sid iid source lid f = push . toMessage . f =<< mkInvestigateLocation sid iid source (asId lid)
+
+investigateLocation_
+  :: (Sourceable source, ReverseQueue m, AsId location, IdOf location ~ LocationId)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> location
+  -> m ()
+investigateLocation_ sid iid source lid = investigateLocationEdit_ sid iid source lid id
+
 investigate
   :: (Sourceable source, Targetable target, ReverseQueue m)
   => SkillTestId

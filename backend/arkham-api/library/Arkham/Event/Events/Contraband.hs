@@ -1,4 +1,4 @@
-module Arkham.Event.Events.Contraband (contraband, Contraband (..)) where
+module Arkham.Event.Events.Contraband (contraband) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -20,10 +20,8 @@ instance RunMessage Contraband where
         select (AssetWithUseType k <> AssetNotAtUseLimit <> mapOneOf assetControlledBy investigators)
           >>= traverse (\aid -> (k,aid,) <$> getAssetUses k aid)
 
-      chooseOne
-        iid
-        [ targetLabel assetId [AddUses (toSource attrs) assetId useType' assetUseCount]
-        | (useType', assetId, assetUseCount) <- assets
-        ]
+      chooseOneM iid do
+        for_ assets \(useType', assetId, assetUseCount) ->
+          targeting assetId $ addUses attrs assetId useType' assetUseCount
       pure e
     _ -> Contraband <$> liftRunMessage msg attrs

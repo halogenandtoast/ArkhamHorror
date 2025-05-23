@@ -1,14 +1,13 @@
 module Arkham.Skill.Cards.SurvivalInstinct2 (survivalInstinct2) where
 
 import Arkham.Action qualified as Action
-import Arkham.Classes
 import Arkham.Helpers.Location
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype SurvivalInstinct2 = SurvivalInstinct2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -18,31 +17,19 @@ survivalInstinct2 :: SkillCard SurvivalInstinct2
 survivalInstinct2 = skill SurvivalInstinct2 Cards.survivalInstinct2
 
 instance RunMessage SurvivalInstinct2 where
-  runMessage msg s@(SurvivalInstinct2 attrs@SkillAttrs {..}) = case msg of
-    PassedSkillTest iid (Just Action.Evade) _ (SkillTarget sid) _ _ | sid == skillId -> do
-      engagedEnemyIds <- select EnemyEngagedWithYou
-      unblockedConnectedLocationIds <- getAccessibleLocations iid attrs
-      player <- getPlayer iid
-      let
-        moveOptions =
-          chooseOrRunOne player
-            $ [Label "Do not move to a connecting location" []]
-            <> [ targetLabel lid [Move $ move attrs iid lid]
-               | lid <- unblockedConnectedLocationIds
-               ]
+  runMessage msg s@(SurvivalInstinct2 attrs) = runQueueT $ case msg of
+    PassedSkillTest iid (Just Action.Evade) _ (isTarget attrs -> True) _ _ -> do
+      enemies <- select EnemyEngagedWithYou
 
-      case engagedEnemyIds of
-        [] -> push moveOptions
-        es ->
-          pushAll
-            $ [ chooseOne
-                  player
-                  [ Label
-                      "Evade each other enemy"
-                      [EnemyEvaded iid eid | eid <- es]
-                  , Label "Skip" []
-                  ]
-              ]
-            <> [moveOptions | notNull unblockedConnectedLocationIds]
+      unless (null enemies) do
+        chooseOneM iid do
+          labeled "Evade each other enemy" do
+            for_ enemies (push . EnemyEvaded iid)
+          labeled "Skip" nothing
+
+      locations <- getAccessibleLocations iid attrs
+      unless (null locations) $ chooseOrRunOneM iid do
+        labeled "Do not move to a connecting location" nothing
+        targets locations (moveTo attrs iid)
       pure s
-    _ -> SurvivalInstinct2 <$> runMessage msg attrs
+    _ -> SurvivalInstinct2 <$> liftRunMessage msg attrs

@@ -1,16 +1,9 @@
-module Arkham.Event.Events.Oops (
-  oops,
-  Oops (..),
-) where
+module Arkham.Event.Events.Oops (oops) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Window
 import Arkham.Matcher
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype Oops = Oops EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -19,25 +12,13 @@ newtype Oops = Oops EventAttrs
 oops :: EventCard Oops
 oops = event Oops Cards.oops
 
-toEnemyId :: [Window] -> EnemyId
-toEnemyId = \case
-  [windowType -> Window.FailAttackEnemy _ enemy _] -> enemy
-  _ -> error "expected one FailAttackEnemy window"
-
 instance RunMessage Oops where
-  runMessage msg e@(Oops attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ (toEnemyId -> enemy) _ | eid == toId attrs -> do
-      player <- getPlayer iid
-      enemies <- filter (/= enemy) <$> select (enemyAtLocationWith iid)
-      let
-        damageMsg = case enemies of
-          [] -> error "event should not have been playable"
-          [x] -> InvestigatorDamageEnemy iid x (toSource enemy)
-          xs ->
-            chooseOne player
-              $ [ targetLabel x [InvestigatorDamageEnemy iid x (toSource enemy)]
-                | x <- xs
-                ]
-      push damageMsg
+  runMessage msg e@(Oops attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      let enemy = attackedEnemy attrs.windows
+      select (enemyAtLocationWith iid <> not_ (be enemy)) >>= \case
+        [] -> error "event should not have been playable"
+        [x] -> push $ InvestigatorDamageEnemy iid x (toSource enemy)
+        xs -> chooseTargetM iid xs \x -> push $ InvestigatorDamageEnemy iid x (toSource enemy)
       pure e
-    _ -> Oops <$> runMessage msg attrs
+    _ -> Oops <$> liftRunMessage msg attrs

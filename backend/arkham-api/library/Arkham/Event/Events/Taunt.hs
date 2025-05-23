@@ -1,10 +1,8 @@
-module Arkham.Event.Events.Taunt (taunt, Taunt (..)) where
+module Arkham.Event.Events.Taunt (taunt) where
 
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator
-import Arkham.Prelude
 
 newtype Taunt = Taunt EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -14,16 +12,9 @@ taunt :: EventCard Taunt
 taunt = event Taunt Cards.taunt
 
 instance RunMessage Taunt where
-  runMessage msg e@(Taunt attrs@EventAttrs {..}) = case msg of
-    PlayThisEvent iid eid | eid == eventId -> do
-      enemyIds <- select $ enemiesColocatedWith iid
-      player <- getPlayer iid
-      push
-        $ chooseSome
-          player
-          "Done engaging enemies"
-          [ targetLabel enemyId [EngageEnemy iid enemyId Nothing False]
-          | enemyId <- enemyIds
-          ]
+  runMessage msg e@(Taunt attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      enemies <- select $ enemiesColocatedWith iid
+      chooseSomeM iid "Done engaging enemies" $ targets enemies $ engageEnemy iid
       pure e
-    _ -> Taunt <$> runMessage msg attrs
+    _ -> Taunt <$> liftRunMessage msg attrs

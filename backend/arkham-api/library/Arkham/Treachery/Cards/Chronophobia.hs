@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.Chronophobia (chronophobia, Chronophobia (..)) where
+module Arkham.Treachery.Cards.Chronophobia (chronophobia) where
 
 import Arkham.Ability
 import Arkham.Matcher
@@ -14,8 +14,8 @@ chronophobia = treachery Chronophobia Cards.chronophobia
 
 instance HasAbilities Chronophobia where
   getAbilities (Chronophobia x) =
-    [ restrictedAbility x 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You
-    , restrictedAbility x 2 OnSameLocation $ ActionAbility [] $ ActionCost 2
+    [ restricted x 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You
+    , restricted x 2 OnSameLocation doubleActionAbility
     ]
 
 instance RunMessage Chronophobia where

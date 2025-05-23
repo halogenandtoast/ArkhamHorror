@@ -1,12 +1,10 @@
 module Arkham.Skill.Cards.Leadership (leadership) where
 
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
-import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype Leadership = Leadership SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)

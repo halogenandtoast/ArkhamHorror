@@ -2,8 +2,7 @@ module Arkham.Investigator.Cards.JennyBarnes where
 
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
-import Arkham.Prelude
+import Arkham.Investigator.Import.Lifted
 
 newtype JennyBarnes = JennyBarnes InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)

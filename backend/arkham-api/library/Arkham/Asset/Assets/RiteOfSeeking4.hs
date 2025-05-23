@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.RiteOfSeeking4 (riteOfSeeking4, RiteOfSeeking4 (..)) where
+module Arkham.Asset.Assets.RiteOfSeeking4 (riteOfSeeking4) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)

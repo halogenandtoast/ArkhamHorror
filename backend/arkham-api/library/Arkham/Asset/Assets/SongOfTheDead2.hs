@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.SongOfTheDead2 (songOfTheDead2, SongOfTheDead2 (..)) where
+module Arkham.Asset.Assets.SongOfTheDead2 (songOfTheDead2) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)

@@ -1,13 +1,7 @@
-module Arkham.Event.Events.DelveTooDeep (
-  delveTooDeep,
-  DelveTooDeep (..),
-) where
+module Arkham.Event.Events.DelveTooDeep (delveTooDeep) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 
@@ -19,23 +13,14 @@ delveTooDeep :: EventCard DelveTooDeep
 delveTooDeep = event DelveTooDeep Cards.delveTooDeep
 
 instance RunMessage DelveTooDeep where
-  runMessage msg e@(DelveTooDeep attrs) = case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
-      investigators <-
-        traverse (traverseToSnd getPlayer)
-          =<< select
-          =<< guardAffectsOthers iid UneliminatedInvestigator
-      eachInvestigator <- getInvestigators
-      pushAll
-        $ [ chooseOne
-            player
-            [ TargetLabel
-                EncounterDeckTarget
-                [drawEncounterCard iid' attrs]
-            ]
-          | (iid', player) <- investigators
-          ]
-        <> [SetActiveInvestigator iid]
-        <> [AddToVictory (toTarget attrs) | map fst investigators == eachInvestigator]
+  runMessage msg e@(DelveTooDeep attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      investigators <- select =<< guardAffectsOthers iid UneliminatedInvestigator
+      for_ investigators \iid' ->
+        chooseOneM iid' $ targeting EncounterDeckTarget $ drawEncounterCard iid' attrs
+      push $ SetActiveInvestigator iid
+
+      allInvestigators <- select UneliminatedInvestigator
+      when (length investigators == length allInvestigators) $ addToVictory attrs
       pure e
-    _ -> DelveTooDeep <$> runMessage msg attrs
+    _ -> DelveTooDeep <$> liftRunMessage msg attrs

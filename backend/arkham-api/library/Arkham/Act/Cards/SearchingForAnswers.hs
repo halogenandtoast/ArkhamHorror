@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.SearchingForAnswers ( searchingForAnswers,) where
+module Arkham.Act.Cards.SearchingForAnswers (searchingForAnswers) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards

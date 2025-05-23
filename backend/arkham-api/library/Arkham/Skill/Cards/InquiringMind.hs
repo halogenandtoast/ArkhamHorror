@@ -1,13 +1,7 @@
-module Arkham.Skill.Cards.InquiringMind (
-  inquiringMind,
-  InquiringMind (..),
-) where
+module Arkham.Skill.Cards.InquiringMind (inquiringMind) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype InquiringMind = InquiringMind SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

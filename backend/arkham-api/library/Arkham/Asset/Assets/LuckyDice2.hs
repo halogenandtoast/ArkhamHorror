@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.LuckyDice2 (luckyDice2, luckyDice2Effect, LuckyDice2 (..)) where
+module Arkham.Asset.Assets.LuckyDice2 (luckyDice2, luckyDice2Effect) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -19,8 +19,8 @@ luckyDice2 = asset LuckyDice2 Cards.luckyDice2
 
 instance HasAbilities LuckyDice2 where
   getAbilities (LuckyDice2 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (RevealChaosToken #after You (not_ #autofail)) (ResourceCost 2)
+    [ restricted a 1 ControlsThis
+        $ triggered (RevealChaosToken #after You (not_ #autofail)) (ResourceCost 2)
     ]
 
 instance RunMessage LuckyDice2 where
@@ -53,5 +53,5 @@ instance RunMessage LuckyDice2Effect where
       when (not hasDrawn && token.face == AutoFail) do
         for_ attrs.source.asset removeFromGame
       pure $ LuckyDice2Effect $ attrs `with` Metadata True
-    SkillTestEnds _ _ _ -> disableReturn e
+    SkillTestEnds {} -> disableReturn e
     _ -> LuckyDice2Effect . (`with` Metadata hasDrawn) <$> liftRunMessage msg attrs

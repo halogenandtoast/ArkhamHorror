@@ -1,4 +1,4 @@
-module Arkham.Event.Events.DecipheredReality5 (decipheredReality5, DecipheredReality5 (..)) where
+module Arkham.Event.Events.DecipheredReality5 (decipheredReality5) where
 
 import Arkham.Action qualified as Action
 import Arkham.Discover

@@ -1,9 +1,9 @@
 module Arkham.Asset.Assets.FineClothes (fineClothes) where
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Prelude
+import Arkham.Helpers.SkillTest (getSkillTest, isParley)
 
 newtype FineClothes = FineClothes AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

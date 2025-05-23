@@ -23,6 +23,7 @@ instance HasAbilities ChicagoTypewriter4 where
 
 getActionsSpent :: Payment -> Int
 getActionsSpent (ActionPayment n) = n
+getActionsSpent AdditionalActionPayment = 1
 getActionsSpent (Payments ps) = sum $ map getActionsSpent ps
 getActionsSpent _ = 0
 

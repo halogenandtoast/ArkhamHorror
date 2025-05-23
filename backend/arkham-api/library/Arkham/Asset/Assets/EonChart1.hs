@@ -8,7 +8,7 @@ import Arkham.Card
 import Arkham.Helpers.Action (getActionsWith)
 import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message qualified as Msg
 import Arkham.Modifier
 import Arkham.Projection
@@ -24,15 +24,16 @@ eonChart1 = asset EonChart1 Cards.eonChart1
 
 instance HasAbilities EonChart1 where
   getAbilities (EonChart1 attrs) =
-    [ controlledAbility
+    [ controlled
         attrs
         1
-        ( oneOf
-            [ exists $ oneOf [#move, #investigate, #evade] <> PerformableAbility [ActionCostModifier (-1)]
-            , PlayableCardExists
-                (UnpaidCost NoAction)
-                (basic $ oneOf $ map CardWithAction [#move, #investigate, #evade])
-            ]
+        ( DuringTurn You
+            <> oneOf
+              [ exists $ oneOf [#move, #investigate, #evade] <> PerformableAbility [ActionCostModifier (-1)]
+              , PlayableCardExists
+                  (UnpaidCost NoAction)
+                  (basic $ mapOneOf CardWithAction [#move, #investigate, #evade])
+              ]
         )
         $ FastAbility (exhaust attrs <> assetUseCost attrs Secret 1)
     ]
@@ -47,18 +48,12 @@ instance RunMessage EonChart1 where
       handCards <- field InvestigatorHand iid
       let
         cards =
-          if tabooed TabooList20 attrs
-            then []
-            else filter (any (`elem` canDoActions) . cdActions . toCardDef) handCards
+          guard (not (tabooed TabooList20 attrs))
+            *> filter (any (`elem` canDoActions) . cdActions . toCardDef) handCards
       playableCards <- filterM (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) windows') cards
       player <- getPlayer iid
       let validAction x = any (abilityIs x) [#move, #evade, #investigate]
-      let
-        valid x =
-          validAction x
-            && if tabooed TabooList20 attrs
-              then abilityBasic x
-              else True
+      let valid x = validAction x && (not (tabooed TabooList20 attrs) || abilityBasic x)
       push
         $ AskPlayer
         $ Msg.chooseOne player

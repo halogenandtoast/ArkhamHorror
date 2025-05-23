@@ -718,3 +718,9 @@ getMaybeCardAttachments :: (HasGame m, HasCardCode c) => InvestigatorId -> c -> 
 getMaybeCardAttachments iid c = do
   settings <- field InvestigatorSettings iid
   pure $ cardAttachments <$> lookup (toCardCode c) (perCardSettings settings)
+
+getCanLoseActions :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> m Bool
+getCanLoseActions (asId -> iid) = do
+  remaining <- field InvestigatorRemainingActions iid
+  additional <- fieldLength InvestigatorAdditionalActions iid
+  pure $ remaining + additional > 0

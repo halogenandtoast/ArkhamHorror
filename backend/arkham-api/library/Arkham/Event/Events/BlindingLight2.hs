@@ -1,4 +1,4 @@
-module Arkham.Event.Events.BlindingLight2 (blindingLight2, BlindingLight2 (..)) where
+module Arkham.Event.Events.BlindingLight2 (blindingLight2) where
 
 import Arkham.Aspect hiding (aspect)
 import Arkham.Evade
@@ -19,7 +19,7 @@ instance RunMessage BlindingLight2 where
     PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
       onRevealChaosTokenEffect sid (oneOf [#skull, #cultist, #tablet, #elderthing, #autofail]) attrs iid do
-        push $ LoseActions iid (toSource attrs) 1
+        loseActions iid attrs 1
         assignHorror iid attrs 1
       aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvade sid iid attrs)
       pure e

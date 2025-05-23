@@ -13,7 +13,7 @@
       "elderThing": "-3. If you fail, search the encounter deck and discard pile for a _Byakhee_ enemy and draw it."
     }
   },
-  "labels": {
+  "label": {
     "brokenSteps": {
       "omen": "Draw the topmost omen treachery in the encounter discard pile",
       "cultist": "Draw the topmost cultist treachery in the encounter discard pile"

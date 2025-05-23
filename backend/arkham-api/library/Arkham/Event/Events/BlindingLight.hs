@@ -1,4 +1,4 @@
-module Arkham.Event.Events.BlindingLight where
+module Arkham.Event.Events.BlindingLight (blindingLight) where
 
 import Arkham.Aspect hiding (aspect)
 import Arkham.Evade

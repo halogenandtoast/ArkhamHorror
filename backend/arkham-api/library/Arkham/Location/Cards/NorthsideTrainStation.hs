@@ -1,13 +1,12 @@
-module Arkham.Location.Cards.NorthsideTrainStation ( northsideTrainStation,) where
+module Arkham.Location.Cards.NorthsideTrainStation (northsideTrainStation) where
 
-import Arkham.Prelude
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (northsideTrainStation)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Movement
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Trait
 
 newtype NorthsideTrainStation = NorthsideTrainStation LocationAttrs
@@ -15,29 +14,16 @@ newtype NorthsideTrainStation = NorthsideTrainStation LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 northsideTrainStation :: LocationCard NorthsideTrainStation
-northsideTrainStation =
-  location NorthsideTrainStation Cards.northsideTrainStation 2 (PerPlayer 1)
+northsideTrainStation = location NorthsideTrainStation Cards.northsideTrainStation 2 (PerPlayer 1)
 
 instance HasAbilities NorthsideTrainStation where
-  getAbilities (NorthsideTrainStation attrs) =
-    withBaseAbilities attrs
-      $ [ limitedAbility (PlayerLimit PerGame 1)
-          $ restrictedAbility attrs 1 Here
-          $ ActionAbility []
-          $ ActionCost 1
-        | locationRevealed attrs
-        ]
+  getAbilities (NorthsideTrainStation a) =
+    extendRevealed1 a $ playerLimit PerGame $ restricted a 1 Here actionAbility
 
 instance RunMessage NorthsideTrainStation where
-  runMessage msg l@(NorthsideTrainStation attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      locationIds <- select $ LocationWithTrait Arkham
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel lid [Move $ move (toSource attrs) iid lid]
-          | lid <- locationIds
-          ]
+  runMessage msg l@(NorthsideTrainStation attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      locations <- select $ LocationWithTrait Arkham
+      chooseTargetM iid locations $ moveTo (attrs.ability 1) iid
       pure l
-    _ -> NorthsideTrainStation <$> runMessage msg attrs
+    _ -> NorthsideTrainStation <$> liftRunMessage msg attrs

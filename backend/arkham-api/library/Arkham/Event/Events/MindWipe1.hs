@@ -1,4 +1,4 @@
-module Arkham.Event.Events.MindWipe1 (mindWipe1, MindWipe1 (..)) where
+module Arkham.Event.Events.MindWipe1 (mindWipe1) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted

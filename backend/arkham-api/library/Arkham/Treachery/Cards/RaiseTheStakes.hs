@@ -10,7 +10,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Placement
 import Arkham.Name qualified as Name
-import Arkham.Placement
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheHouseAlwaysWins.Helpers
 import Arkham.Treachery.Cards qualified as Cards

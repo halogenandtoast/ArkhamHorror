@@ -8,7 +8,6 @@ import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTest)
 import Arkham.Helpers.SkillTest.Lifted (investigateEdit_)
 import Arkham.Matcher
-import Arkham.Placement
 
 newtype MapTheArea = MapTheArea EventAttrs
   deriving anyclass (IsEvent, HasAbilities)

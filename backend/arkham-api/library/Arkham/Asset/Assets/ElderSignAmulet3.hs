@@ -1,9 +1,7 @@
-module Arkham.Asset.Assets.ElderSignAmulet3 where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.ElderSignAmulet3 (elderSignAmulet3) where
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 
 newtype ElderSignAmulet3 = ElderSignAmulet3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)

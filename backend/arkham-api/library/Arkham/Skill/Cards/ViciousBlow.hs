@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.ViciousBlow (viciousBlow, ViciousBlow (..)) where
+module Arkham.Skill.Cards.ViciousBlow (viciousBlow) where
 
 import Arkham.Action
 import Arkham.Helpers.SkillTest (withSkillTest)

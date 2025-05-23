@@ -6,7 +6,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Upgrade
 import Arkham.Modifier
-import Arkham.Placement
 
 newtype FineTuning1 = FineTuning1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)

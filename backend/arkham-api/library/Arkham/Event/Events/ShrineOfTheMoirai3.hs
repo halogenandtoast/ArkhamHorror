@@ -7,7 +7,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Matcher
-import Arkham.Placement
 
 newtype ShrineOfTheMoirai3 = ShrineOfTheMoirai3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)

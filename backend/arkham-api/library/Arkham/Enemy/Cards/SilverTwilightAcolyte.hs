@@ -1,14 +1,8 @@
-module Arkham.Enemy.Cards.SilverTwilightAcolyte (
-  SilverTwilightAcolyte (..),
-  silverTwilightAcolyte,
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.SilverTwilightAcolyte (silverTwilightAcolyte) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Matcher
 
 newtype SilverTwilightAcolyte = SilverTwilightAcolyte EnemyAttrs
@@ -22,12 +16,11 @@ silverTwilightAcolyte =
 
 instance HasAbilities SilverTwilightAcolyte where
   getAbilities (SilverTwilightAcolyte a) =
-    withBaseAbilities a
-      $ [forcedAbility a 1 $ EnemyAttacks #after Anyone AnyEnemyAttack $ EnemyWithId (toId a)]
+    extend1 a $ forcedAbility a 1 $ EnemyAttacks #after Anyone AnyEnemyAttack (be a)
 
 instance RunMessage SilverTwilightAcolyte where
-  runMessage msg e@(SilverTwilightAcolyte attrs) = case msg of
+  runMessage msg e@(SilverTwilightAcolyte attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push placeDoomOnAgenda
+      placeDoomOnAgenda 1
       pure e
-    _ -> SilverTwilightAcolyte <$> runMessage msg attrs
+    _ -> SilverTwilightAcolyte <$> liftRunMessage msg attrs

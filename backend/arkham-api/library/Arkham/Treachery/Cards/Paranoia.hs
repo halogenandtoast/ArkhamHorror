@@ -1,12 +1,7 @@
-module Arkham.Treachery.Cards.Paranoia where
+module Arkham.Treachery.Cards.Paranoia (paranoia) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Paranoia = Paranoia TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -16,9 +11,8 @@ paranoia :: TreacheryCard Paranoia
 paranoia = treachery Paranoia Cards.paranoia
 
 instance RunMessage Paranoia where
-  runMessage msg t@(Paranoia attrs) = case msg of
+  runMessage msg t@(Paranoia attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      resourceCount' <- field InvestigatorResources iid
-      push $ LoseResources iid (toSource attrs) resourceCount'
+      loseAllResources iid attrs
       pure t
-    _ -> Paranoia <$> runMessage msg attrs
+    _ -> Paranoia <$> liftRunMessage msg attrs

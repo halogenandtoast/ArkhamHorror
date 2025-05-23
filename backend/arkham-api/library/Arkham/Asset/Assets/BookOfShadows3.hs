@@ -2,10 +2,10 @@ module Arkham.Asset.Assets.BookOfShadows3 (bookOfShadows3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Slot
 import Arkham.Trait
 
@@ -21,21 +21,18 @@ slot attrs = Slot (toSource attrs) []
 
 instance HasAbilities BookOfShadows3 where
   getAbilities (BookOfShadows3 a) =
-    [ controlledAbility a 1 (exists $ AssetControlledBy You <> withTrait Spell)
+    [ controlled a 1 (exists $ AssetControlledBy You <> withTrait Spell)
         $ actionAbilityWithCost (exhaust a)
     ]
 
 instance RunMessage BookOfShadows3 where
-  runMessage msg a@(BookOfShadows3 attrs) = case msg of
+  runMessage msg a@(BookOfShadows3 attrs) = runQueueT $ case msg of
     -- Slots need to be added before the asset is played so we hook into played card
     CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       push $ AddSlot iid #arcane (slot attrs)
-      BookOfShadows3 <$> runMessage msg attrs
+      BookOfShadows3 <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       spellAssets <- select $ assetControlledBy iid <> withTrait Spell
-      player <- getPlayer iid
-      pushIfAny spellAssets
-        $ chooseOne player
-        $ targetLabels spellAssets (\spellAsset -> only $ AddUses (attrs.ability 1) spellAsset Charge 1)
+      chooseTargetM iid spellAssets $ addUsesOn (attrs.ability 1) #charge 1
       pure a
-    _ -> BookOfShadows3 <$> runMessage msg attrs
+    _ -> BookOfShadows3 <$> liftRunMessage msg attrs

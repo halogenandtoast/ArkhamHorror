@@ -8,7 +8,6 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 import Arkham.Projection
 
 newtype HuntingDeepOne = HuntingDeepOne EnemyAttrs

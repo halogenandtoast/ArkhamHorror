@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.HardKnocks2 (HardKnocks2 (..), hardKnocks2) where
+module Arkham.Asset.Assets.HardKnocks2 (hardKnocks2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -18,10 +18,10 @@ instance HasAbilities HardKnocks2 where
   getAbilities (HardKnocks2 a) =
     [ withTooltip "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
         $ wantsSkillTest (YourSkillTest #combat)
-        $ controlledAbility a 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
+        $ controlled a 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     , withTooltip "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
         $ wantsSkillTest (YourSkillTest #agility)
-        $ controlledAbility a 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
+        $ controlled a 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]
 
 instance RunMessage HardKnocks2 where

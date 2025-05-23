@@ -20,8 +20,8 @@ import Arkham.Asset.Runner as X (
   driverL,
   flippedL,
   getAssetMetaDefault,
-  getMetaKeyDefault,
   getMetaKey,
+  getMetaKeyDefault,
   handleTargetChoice,
   hasUses,
   healthL,
@@ -47,9 +47,9 @@ import Arkham.Asset.Runner as X (
   whenNoUsesL,
  )
 
-import Arkham.Helpers.Modifiers as X (toModifiers, modified)
 import Arkham.Calculation as X
 import Arkham.Classes as X
+import Arkham.Helpers.Modifiers as X (modified, toModifiers)
 import Arkham.Id as X
 import Arkham.Message as X (
   Message (..),
@@ -57,6 +57,7 @@ import Arkham.Message as X (
   pattern FailedThisSkillTestBy,
   pattern PassedThisSkillTest,
   pattern PassedThisSkillTestBy,
+  pattern SuccessfulInvestigationWith,
   pattern UseThisAbility,
  )
 import Arkham.Message.Lifted as X

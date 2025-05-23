@@ -1,15 +1,11 @@
 module Arkham.Event.Events.DynamiteBlast2 (dynamiteBlast2) where
 
-import Arkham.Classes
-import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.UI
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Prelude
-import Arkham.Projection
+import Arkham.Modifier
 
 newtype DynamiteBlast2 = DynamiteBlast2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -19,28 +15,19 @@ dynamiteBlast2 :: EventCard DynamiteBlast2
 dynamiteBlast2 = event DynamiteBlast2 Cards.dynamiteBlast2
 
 instance RunMessage DynamiteBlast2 where
-  -- TODO: Does not provoke attacks of opportunity
-  runMessage msg e@(DynamiteBlast2 attrs@EventAttrs {..}) = case msg of
-    PlayThisEvent iid eid | eid == eventId -> do
-      currentLocationId <- fieldJust InvestigatorLocation iid
-      connectedLocationIds <- select $ AccessibleFrom $ LocationWithId currentLocationId
-      canDealDamage <- withoutModifier iid CannotDealDamage
-      choices <- forMaybeM (currentLocationId : connectedLocationIds) $ \lid -> do
-        enemyIds <- if canDealDamage then select (enemyAt lid) else pure []
-        investigatorIds <- select $ investigatorAt lid
-        if null enemyIds && null investigatorIds
-          then pure Nothing
-          else do
-            animation <- uiEffect attrs lid Explosion
-            pure
-              $ Just
-                ( lid
-                , animation
-                    : map (\enid -> EnemyDamage enid $ nonAttack (Just iid) attrs 3) enemyIds
-                      <> map (\iid' -> assignDamage iid' eid 3) investigatorIds
-                )
-      let availableChoices = map (\(l, c) -> targetLabel l c) $ filter (notNull . snd) choices
-      player <- getPlayer iid
-      pushAll [chooseOne player availableChoices]
+  runMessage msg e@(DynamiteBlast2 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      withLocationOf iid \current -> do
+        connectedLocationIds <- select $ accessibleFrom current
+        canDealDamage <- withoutModifier iid CannotDealDamage
+        chooseOneM iid do
+          for_ (current : connectedLocationIds) \lid -> do
+            enemies <- if canDealDamage then select (enemyAt lid) else pure []
+            investigators <- select $ investigatorAt lid
+            unless (null enemies && null investigators) do
+              targeting lid do
+                uiEffect attrs lid Explosion
+                for_ enemies $ nonAttackEnemyDamage (Just iid) attrs 3
+                for_ investigators \iid' -> assignDamage iid' attrs 3
       pure e
-    _ -> DynamiteBlast2 <$> runMessage msg attrs
+    _ -> DynamiteBlast2 <$> liftRunMessage msg attrs

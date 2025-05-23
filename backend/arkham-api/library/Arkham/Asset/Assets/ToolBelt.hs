@@ -7,7 +7,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 
 newtype ToolBelt = ToolBelt AssetAttrs
   deriving anyclass IsAsset

@@ -2,10 +2,10 @@ module Arkham.Asset.Assets.StrayCat (strayCat) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Helpers.Modifiers
-import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Prelude
+import Arkham.Asset.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 
 newtype StrayCat = StrayCat AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -16,19 +16,15 @@ strayCat = ally StrayCat Cards.strayCat (1, 0)
 
 instance HasAbilities StrayCat where
   getAbilities (StrayCat a) =
-    [ controlledAbility
-        a
-        1
-        (exists (EnemyAt YourLocation <> NonEliteEnemy <> EnemyWithoutModifier CannotBeEvaded))
+    [ controlled a 1 (exists (at_ YourLocation <> NonEliteEnemy <> EnemyWithoutModifier CannotBeEvaded))
         $ FastAbility
         $ discardCost a
     ]
 
 instance RunMessage StrayCat where
-  runMessage msg a@(StrayCat attrs) = case msg of
+  runMessage msg a@(StrayCat attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy <> EnemyWithoutModifier CannotBeEvaded
-      player <- getPlayer iid
-      push $ chooseOne player $ targetLabels enemies (only . EnemyEvaded iid)
+      chooseTargetM iid enemies (automaticallyEvadeEnemy iid)
       pure a
-    _ -> StrayCat <$> runMessage msg attrs
+    _ -> StrayCat <$> liftRunMessage msg attrs

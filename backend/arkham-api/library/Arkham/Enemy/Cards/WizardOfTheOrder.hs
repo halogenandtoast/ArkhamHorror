@@ -1,16 +1,9 @@
-module Arkham.Enemy.Cards.WizardOfTheOrder (
-  WizardOfTheOrder (..),
-  wizardOfTheOrder,
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.WizardOfTheOrder (wizardOfTheOrder) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype WizardOfTheOrder = WizardOfTheOrder EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -27,12 +20,11 @@ wizardOfTheOrder =
 
 instance HasAbilities WizardOfTheOrder where
   getAbilities (WizardOfTheOrder a) =
-    withBaseAbilities a
-      $ [restrictedAbility a 1 CanPlaceDoomOnThis $ ForcedAbility $ PhaseEnds Timing.When #mythos]
+    extend1 a $ restricted a 1 CanPlaceDoomOnThis $ forced $ PhaseEnds #when #mythos
 
 instance RunMessage WizardOfTheOrder where
-  runMessage msg e@(WizardOfTheOrder attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ placeDoom (toAbilitySource attrs 1) attrs 1
+  runMessage msg e@(WizardOfTheOrder attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeDoom (attrs.ability 1) attrs 1
       pure e
-    _ -> WizardOfTheOrder <$> runMessage msg attrs
+    _ -> WizardOfTheOrder <$> liftRunMessage msg attrs

@@ -1,13 +1,11 @@
 module Arkham.Location.Cards.Bedroom (bedroom) where
 
-import Arkham.Prelude
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Location.Cards qualified as Cards (bedroom)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype Bedroom = Bedroom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -17,21 +15,15 @@ bedroom :: LocationCard Bedroom
 bedroom = location Bedroom Cards.bedroom 2 (PerPlayer 1)
 
 instance HasAbilities Bedroom where
-  getAbilities (Bedroom attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-          $ ForcedAbility
-          $ SkillTestResult
-            Timing.After
-            You
-            (WhileInvestigating $ LocationWithId $ toId attrs)
-          $ FailureResult AnyValue
-        | locationRevealed attrs
-        ]
+  getAbilities (Bedroom a) =
+    extendRevealed1 a
+      $ mkAbility a 1
+      $ forced
+      $ SkillTestResult #after You (WhileInvestigating $ be a) #failure
 
 instance RunMessage Bedroom where
-  runMessage msg l@(Bedroom attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ toMessage $ randomDiscard iid $ toAbilitySource attrs 1
+  runMessage msg l@(Bedroom attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      randomDiscard iid $ attrs.ability 1
       pure l
-    _ -> Bedroom <$> runMessage msg attrs
+    _ -> Bedroom <$> liftRunMessage msg attrs

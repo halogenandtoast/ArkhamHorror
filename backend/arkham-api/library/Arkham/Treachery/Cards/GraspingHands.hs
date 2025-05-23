@@ -1,9 +1,7 @@
-module Arkham.Treachery.Cards.GraspingHands (GraspingHands (..), graspingHands) where
+module Arkham.Treachery.Cards.GraspingHands (graspingHands) where
 
-import Arkham.Classes
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype GraspingHands = GraspingHands TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -13,12 +11,12 @@ graspingHands :: TreacheryCard GraspingHands
 graspingHands = treachery GraspingHands Cards.graspingHands
 
 instance RunMessage GraspingHands where
-  runMessage msg t@(GraspingHands attrs) = case msg of
+  runMessage msg t@(GraspingHands attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push $ revelationSkillTest sid iid attrs #agility (Fixed 3)
+      revelationSkillTest sid iid attrs #agility (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      push $ assignDamage iid attrs n
+      assignDamage iid attrs n
       pure t
-    _ -> GraspingHands <$> runMessage msg attrs
+    _ -> GraspingHands <$> liftRunMessage msg attrs

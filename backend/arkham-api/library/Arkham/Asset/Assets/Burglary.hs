@@ -1,15 +1,9 @@
-module Arkham.Asset.Assets.Burglary (
-  Burglary (..),
-  burglary,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Burglary (burglary) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Investigate
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.SkillTest.Lifted
 
 newtype Burglary = Burglary AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -22,12 +16,12 @@ instance HasAbilities Burglary where
   getAbilities (Burglary a) = [investigateAbility a 1 (exhaust a) ControlsThis]
 
 instance RunMessage Burglary where
-  runMessage msg a@(Burglary attrs) = case msg of
+  runMessage msg a@(Burglary attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      pushM $ mkInvestigate sid iid (toAbilitySource attrs 1) <&> setTarget attrs
+      investigateEdit_ sid iid (attrs.ability 1) (setTarget attrs)
       pure a
-    Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
-      push $ TakeResources iid 3 (toAbilitySource attrs 1) False
+    SuccessfulInvestigationWith iid (isTarget attrs -> True) -> do
+      gainResources iid (attrs.ability 1) 3
       pure a
-    _ -> Burglary <$> runMessage msg attrs
+    _ -> Burglary <$> liftRunMessage msg attrs

@@ -3,10 +3,10 @@ module Arkham.Asset.Assets.GrotesqueStatue4 (grotesqueStatue4) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.ChaosBagStepState
-import Arkham.Matcher
 import Arkham.Asset.Uses
-import Arkham.Window (Window (..))
+import Arkham.ChaosBagStepState
+import Arkham.Helpers.Window (getDrawSource)
+import Arkham.Matcher
 import Arkham.Window qualified as Window
 
 newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
@@ -23,14 +23,9 @@ instance HasAbilities GrotesqueStatue4 where
         $ assetUseCost x Charge 1
     ]
 
-toDrawSource :: [Window] -> Source
-toDrawSource [] = error "missing draw source"
-toDrawSource ((windowType -> Window.WouldRevealChaosToken drawSource _) : _) = drawSource
-toDrawSource (_ : rest) = toDrawSource rest
-
 instance RunMessage GrotesqueStatue4 where
   runMessage msg a@(GrotesqueStatue4 attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (toDrawSource -> drawSource) _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 (getDrawSource -> drawSource) _ -> do
       checkWhen $ Window.WouldRevealChaosTokens drawSource iid
       push
         $ ReplaceCurrentDraw drawSource iid

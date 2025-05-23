@@ -7,7 +7,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Upgrade
-import Arkham.Placement
 import Arkham.Projection
 import Arkham.Trait (Trait (Relic))
 

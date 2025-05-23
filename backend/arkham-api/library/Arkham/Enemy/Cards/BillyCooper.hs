@@ -1,12 +1,10 @@
 module Arkham.Enemy.Cards.BillyCooper (billyCooper) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Window
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait
 
 newtype BillyCooper = BillyCooper EnemyAttrs
@@ -17,19 +15,17 @@ billyCooper :: EnemyCard BillyCooper
 billyCooper = enemyWith BillyCooper Cards.billyCooper (5, Static 4, 2) (2, 0) (spawnAtL ?~ SpawnAt "Easttown")
 
 instance HasAbilities BillyCooper where
-  getAbilities (BillyCooper attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1
-          $ forced
-          $ defeated #after
-          $ EnemyAt (locationWithEnemy $ toId attrs)
-          <> withTrait Monster
-      ]
+  getAbilities (BillyCooper a) =
+    extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ defeated #after
+      $ EnemyAt (locationWithEnemy a)
+      <> withTrait Monster
 
 instance RunMessage BillyCooper where
-  runMessage msg e@(BillyCooper attrs) = case msg of
+  runMessage msg e@(BillyCooper attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ addToVictory attrs
+      addToVictory attrs
       pure e
-    _ -> BillyCooper <$> runMessage msg attrs
+    _ -> BillyCooper <$> liftRunMessage msg attrs

@@ -5,7 +5,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Placement
 
 newtype OpenGate = OpenGate EventAttrs
   deriving anyclass (IsEvent, HasAbilities)

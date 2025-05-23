@@ -1,17 +1,13 @@
 module Arkham.Location.Cards.MiskatonicUniversityMiskatonicMuseum (
-  MiskatonicUniversityMiskatonicMuseum (..),
   miskatonicUniversityMiskatonicMuseum,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (
   miskatonicUniversityMiskatonicMuseum,
  )
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 
 newtype MiskatonicUniversityMiskatonicMuseum = MiskatonicUniversityMiskatonicMuseum LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -27,18 +23,13 @@ miskatonicUniversityMiskatonicMuseum =
     (PerPlayer 1)
 
 instance HasAbilities MiskatonicUniversityMiskatonicMuseum where
-  getAbilities (MiskatonicUniversityMiskatonicMuseum attrs) =
-    withRevealedAbilities attrs
-      $ [ limitedAbility (PlayerLimit PerGame 1)
-            $ restrictedAbility attrs 1 Here
-            $ ActionAbility []
-            $ ActionCost 1
-        ]
+  getAbilities (MiskatonicUniversityMiskatonicMuseum a) =
+    extendRevealed1 a $ playerLimit PerGame $ restricted a 1 Here actionAbility
 
 instance RunMessage MiskatonicUniversityMiskatonicMuseum where
-  runMessage msg l@(MiskatonicUniversityMiskatonicMuseum attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      pushAll
-        [InvestigatorAssignDamage iid source DamageAny 0 2, GainClues iid (toAbilitySource attrs 1) 1]
+  runMessage msg l@(MiskatonicUniversityMiskatonicMuseum attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignHorror iid (attrs.ability 1) 2
+      gainClues iid (attrs.ability 1) 1
       pure l
-    _ -> MiskatonicUniversityMiskatonicMuseum <$> runMessage msg attrs
+    _ -> MiskatonicUniversityMiskatonicMuseum <$> liftRunMessage msg attrs

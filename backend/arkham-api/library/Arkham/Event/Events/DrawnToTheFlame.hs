@@ -1,12 +1,7 @@
-module Arkham.Event.Events.DrawnToTheFlame where
+module Arkham.Event.Events.DrawnToTheFlame (drawnToTheFlame) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
-import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Message qualified as Msg
+import Arkham.Event.Import.Lifted
 
 newtype DrawnToTheFlame = DrawnToTheFlame EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -16,11 +11,9 @@ drawnToTheFlame :: EventCard DrawnToTheFlame
 drawnToTheFlame = event DrawnToTheFlame Cards.drawnToTheFlame
 
 instance RunMessage DrawnToTheFlame where
-  runMessage msg e@(DrawnToTheFlame attrs) = case msg of
-    PlayThisEvent iid eid | attrs `is` eid -> do
-      pushAll
-        [ drawEncounterCard iid attrs
-        , Msg.DiscoverClues iid $ discoverAtYourLocation attrs 2
-        ]
+  runMessage msg e@(DrawnToTheFlame attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      drawEncounterCard iid attrs
+      discoverAtYourLocation NotInvestigate iid attrs 2
       pure e
-    _ -> DrawnToTheFlame <$> runMessage msg attrs
+    _ -> DrawnToTheFlame <$> liftRunMessage msg attrs

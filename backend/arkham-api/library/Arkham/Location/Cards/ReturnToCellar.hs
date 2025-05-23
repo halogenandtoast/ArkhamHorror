@@ -1,13 +1,10 @@
 module Arkham.Location.Cards.ReturnToCellar (returnToCellar) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype ReturnToCellar = ReturnToCellar LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -17,20 +14,12 @@ returnToCellar :: LocationCard ReturnToCellar
 returnToCellar = location ReturnToCellar Cards.returnToCellar 2 (PerPlayer 1)
 
 instance HasAbilities ReturnToCellar where
-  getAbilities (ReturnToCellar attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-            $ ForcedAbility
-            $ RevealLocation Timing.After You
-            $ LocationWithId
-            $ toId attrs
-        | locationRevealed attrs
-        ]
+  getAbilities (ReturnToCellar a) =
+    extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
 
 instance RunMessage ReturnToCellar where
-  runMessage msg l@(ReturnToCellar attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      placeDeepBelowYourHouse <- placeSetAsideLocation_ Cards.deepBelowYourHouse
-      push placeDeepBelowYourHouse
+  runMessage msg l@(ReturnToCellar attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeSetAsideLocation_ Cards.deepBelowYourHouse
       pure l
-    _ -> ReturnToCellar <$> runMessage msg attrs
+    _ -> ReturnToCellar <$> liftRunMessage msg attrs

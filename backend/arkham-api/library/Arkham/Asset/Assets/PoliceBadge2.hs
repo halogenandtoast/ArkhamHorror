@@ -2,10 +2,9 @@ module Arkham.Asset.Assets.PoliceBadge2 (policeBadge2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype PoliceBadge2 = PoliceBadge2 AssetAttrs
   deriving anyclass IsAsset
@@ -20,12 +19,11 @@ instance HasModifiersFor PoliceBadge2 where
 instance HasAbilities PoliceBadge2 where
   getAbilities (PoliceBadge2 a) = [controlled a 1 criteria $ FastAbility $ DiscardCost FromPlay (toTarget a)]
    where
-    criteria = exists (affectsOthers $ TurnInvestigator <> at_ YourLocation)
+    criteria = exists (affectsOthers $ TurnInvestigator <> colocatedWithMatch You)
 
 instance RunMessage PoliceBadge2 where
-  runMessage msg a@(PoliceBadge2 attrs) = case msg of
+  runMessage msg a@(PoliceBadge2 attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      iid <- selectJust TurnInvestigator
-      push $ GainActions iid (attrs.ability 1) 2
+      selectEach TurnInvestigator \iid -> gainActions iid (attrs.ability 1) 2
       pure a
-    _ -> PoliceBadge2 <$> runMessage msg attrs
+    _ -> PoliceBadge2 <$> liftRunMessage msg attrs

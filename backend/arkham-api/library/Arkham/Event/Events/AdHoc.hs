@@ -8,7 +8,6 @@ import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Upgrade
 import Arkham.Modifier
-import Arkham.Placement
 import Arkham.Window (defaultWindows)
 
 newtype AdHoc = AdHoc EventAttrs

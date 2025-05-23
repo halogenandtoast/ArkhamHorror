@@ -8,7 +8,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Placement
 import Arkham.Projection
 import Arkham.Window (defaultWindows)
 

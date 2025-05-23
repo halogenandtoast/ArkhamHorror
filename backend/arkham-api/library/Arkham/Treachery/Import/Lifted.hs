@@ -62,7 +62,6 @@ import Arkham.Helpers.History
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 import Arkham.SkillType
 import Arkham.Treachery.Helpers qualified as Msg
 

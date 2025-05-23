@@ -1,12 +1,8 @@
-module Arkham.Skill.Cards.Fearless where
+module Arkham.Skill.Cards.Fearless (fearless) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Helpers.Investigator
-import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype Fearless = Fearless SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -16,9 +12,8 @@ fearless :: SkillCard Fearless
 fearless = skill Fearless Cards.fearless
 
 instance RunMessage Fearless where
-  runMessage msg s@(Fearless attrs) = case msg of
+  runMessage msg s@(Fearless attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      canHeal <- canHaveHorrorHealed attrs (skillOwner attrs)
-      pushWhen canHeal $ HealHorror (toTarget $ skillOwner attrs) (toSource attrs) 1
+      whenM (canHaveHorrorHealed attrs attrs.owner) $ healHorror attrs.owner attrs 1
       pure s
-    _ -> Fearless <$> runMessage msg attrs
+    _ -> Fearless <$> liftRunMessage msg attrs

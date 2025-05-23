@@ -1,15 +1,11 @@
-module Arkham.Location.Cards.MainPath (
-  MainPath (..),
-  mainPath,
-) where
+module Arkham.Location.Cards.MainPath (mainPath) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (mainPath)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenarios.TheDevourerBelow.Helpers
 import Arkham.Trait
 
 newtype MainPath = MainPath LocationAttrs
@@ -27,11 +23,7 @@ mainPath =
 
 instance HasAbilities MainPath where
   getAbilities (MainPath a) =
-    withRevealedAbilities a
-      $ [ withTooltip
-            "\"There's nothing we can do to stop them!\" You flee from the woods, leaving Arkham to its grisly fate."
-            $ locationResignAction a
-        ]
+    extendRevealed1 a $ scenarioI18n $ withI18nTooltip "mainPath.resign" $ locationResignAction a
 
 instance RunMessage MainPath where
   runMessage msg (MainPath attrs) = MainPath <$> runMessage msg attrs

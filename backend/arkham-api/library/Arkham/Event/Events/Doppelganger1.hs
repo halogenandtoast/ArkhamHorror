@@ -8,7 +8,6 @@ import Arkham.Helpers.Location
 import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
-import Arkham.Placement
 
 newtype Doppelganger1 = Doppelganger1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)

@@ -10,6 +10,7 @@ import Arkham.Text as X
 import Arkham.Ability.Types
 import Arkham.Act.Sequence
 import Arkham.Action hiding (Explore)
+import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Agenda.Sequence
 import Arkham.Asset.Uses
@@ -324,6 +325,9 @@ newtype FromSkillType = FromSkillType SkillType
 newtype ToSkillType = ToSkillType SkillType
   deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
+
+pattern SuccessfulInvestigationWith :: InvestigatorId -> Target -> Message
+pattern SuccessfulInvestigationWith iid target <- Successful (Action.Investigate, _) iid _ target _
 
 pattern BeginSkillTest :: SkillTest -> Message
 pattern BeginSkillTest skillTest <- BeginSkillTestWithPreMessages' [] skillTest

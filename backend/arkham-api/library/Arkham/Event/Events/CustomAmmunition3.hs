@@ -7,7 +7,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Message.Lifted.Upgrade
-import Arkham.Placement
 import Arkham.Trait
 
 newtype CustomAmmunition3 = CustomAmmunition3 EventAttrs

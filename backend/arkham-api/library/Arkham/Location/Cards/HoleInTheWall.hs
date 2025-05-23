@@ -1,12 +1,11 @@
 module Arkham.Location.Cards.HoleInTheWall where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards (holeInTheWall)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype HoleInTheWall = HoleInTheWall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -16,23 +15,14 @@ holeInTheWall :: LocationCard HoleInTheWall
 holeInTheWall = location HoleInTheWall Cards.holeInTheWall 1 (Static 0)
 
 instance HasAbilities HoleInTheWall where
-  getAbilities (HoleInTheWall attrs) =
-    withRevealedAbilities attrs
-      $ [ mkAbility attrs 1
-            $ ForcedAbility
-            $ RevealLocation #after You
-            $ LocationWithId
-            $ toId attrs
-        ]
+  getAbilities (HoleInTheWall a) =
+    extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
 
 instance RunMessage HoleInTheWall where
-  runMessage msg l@(HoleInTheWall attrs) = case msg of
+  runMessage msg l@(HoleInTheWall attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      noAttic <- selectNone $ LocationWithTitle "Attic"
-      noCellar <- selectNone $ LocationWithTitle "Cellar"
-      pushAll
-        $ [PlaceLocationMatching "Attic" | noAttic]
-        <> [PlaceLocationMatching "Cellar" | noCellar]
-        <> [PlaceLocationMatching "Parlor"]
+      getSetAsideCardsMatching "Attic" >>= traverse_ placeLocation
+      getSetAsideCardsMatching "Cellar" >>= traverse_ placeLocation
+      getSetAsideCardsMatching "Parlor" >>= traverse_ placeLocation
       pure l
-    _ -> HoleInTheWall <$> runMessage msg attrs
+    _ -> HoleInTheWall <$> liftRunMessage msg attrs

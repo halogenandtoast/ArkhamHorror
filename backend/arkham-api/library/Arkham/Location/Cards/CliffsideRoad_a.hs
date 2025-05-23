@@ -1,3 +1,4 @@
+{- HLINT ignore "Use camelCase" -}
 module Arkham.Location.Cards.CliffsideRoad_a (cliffsideRoad_a, CliffsideRoad_a (..)) where
 
 import Arkham.Ability
@@ -10,7 +11,6 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenarios.HorrorInHighGear.Helpers
 

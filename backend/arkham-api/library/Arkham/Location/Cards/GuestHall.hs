@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.GuestHall where
+module Arkham.Location.Cards.GuestHall (guestHall) where
 
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers

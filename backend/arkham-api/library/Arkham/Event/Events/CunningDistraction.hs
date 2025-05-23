@@ -1,10 +1,7 @@
 module Arkham.Event.Events.CunningDistraction where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher hiding (EnemyEvaded)
 
 newtype CunningDistraction = CunningDistraction EventAttrs
@@ -15,9 +12,8 @@ cunningDistraction :: EventCard CunningDistraction
 cunningDistraction = event CunningDistraction Cards.cunningDistraction
 
 instance RunMessage CunningDistraction where
-  runMessage msg e@(CunningDistraction attrs) = case msg of
-    PlayThisEvent iid eid | attrs `is` eid -> do
-      enemyIds <- select $ enemyAtLocationWith iid
-      pushAll $ map (EnemyEvaded iid) enemyIds
+  runMessage msg e@(CunningDistraction attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      selectEach (enemyAtLocationWith iid) (automaticallyEvadeEnemy iid)
       pure e
-    _ -> CunningDistraction <$> runMessage msg attrs
+    _ -> CunningDistraction <$> liftRunMessage msg attrs

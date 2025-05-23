@@ -1,11 +1,8 @@
-module Arkham.Location.Cards.ArkhamWoodsTangledThicket where
+module Arkham.Location.Cards.ArkhamWoodsTangledThicket (arkhamWoodsTangledThicket) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 
 newtype ArkhamWoodsTangledThicket = ArkhamWoodsTangledThicket LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

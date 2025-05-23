@@ -22,7 +22,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Message.Lifted.Queue
 import Arkham.Modifier
-import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Queue
 import Arkham.Slot

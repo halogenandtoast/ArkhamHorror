@@ -7,7 +7,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Helpers.Modifiers (ModifierType (..), getAdditionalSearchTargets)
 import Arkham.Matcher
-import Arkham.Placement
 import Arkham.Spawn
 import Arkham.Strategy
 

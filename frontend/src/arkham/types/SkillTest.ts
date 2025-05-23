@@ -51,6 +51,7 @@ export type SkillTest = {
   // result: SkillTestResult;
   committedCards: Card[]
   source: Source;
+  id: string
   action: string | null;
   targetCard?: string | null;
   sourceCard?: string | null;
@@ -91,6 +92,7 @@ const skillTestStepDecoder = JsonDecoder.oneOf<SkillTestStep>(
 export const skillTestDecoder = JsonDecoder.object<SkillTest>(
   {
     investigator: JsonDecoder.string(),
+    id: JsonDecoder.string(),
     action: JsonDecoder.nullable(JsonDecoder.string()),
     modifiedDifficulty: JsonDecoder.number(),
     setAsideChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),

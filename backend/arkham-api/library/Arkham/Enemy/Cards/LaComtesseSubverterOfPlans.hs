@@ -7,7 +7,6 @@ import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 
 newtype LaComtesseSubverterOfPlans = LaComtesseSubverterOfPlans EnemyAttrs
   deriving anyclass IsEnemy

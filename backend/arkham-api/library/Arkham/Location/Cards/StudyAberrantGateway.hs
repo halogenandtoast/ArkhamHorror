@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.StudyAberrantGateway (StudyAberrantGateway (..), studyAberrantGateway) where
+module Arkham.Location.Cards.StudyAberrantGateway (studyAberrantGateway) where
 
 import Arkham.Ability
 import Arkham.GameValue
@@ -31,7 +31,7 @@ getMatcher (_ : rest) = getMatcher rest
 instance RunMessage StudyAberrantGateway where
   runMessage msg l@(StudyAberrantGateway attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      drawCardsIfCan iid (attrs.ability 1) 3
+      drawCards iid (attrs.ability 1) 3
       pure l
     UseCardAbility _ (isSource attrs -> True) 2 (getMatcher -> matcher) _ -> do
       case matcher of

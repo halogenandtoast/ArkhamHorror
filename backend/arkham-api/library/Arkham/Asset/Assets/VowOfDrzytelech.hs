@@ -7,7 +7,6 @@ import Arkham.Capability
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 
 newtype VowOfDrzytelech = VowOfDrzytelech AssetAttrs
   deriving anyclass IsAsset

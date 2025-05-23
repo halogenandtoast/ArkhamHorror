@@ -18,7 +18,6 @@ import Arkham.Helpers.SkillTest (
  )
 import Arkham.Matcher
 import Arkham.Message.Lifted.Upgrade
-import Arkham.Placement
 import Arkham.Trait (Trait (Upgrade))
 import Arkham.Window (revealedChaosTokens)
 

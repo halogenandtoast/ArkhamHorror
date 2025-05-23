@@ -1,14 +1,10 @@
-module Arkham.Location.Cards.ArkhamWoodsLakeside where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ArkhamWoodsLakeside (arkhamWoodsLakeside) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner hiding (RevealChaosToken)
+import Arkham.Location.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype ArkhamWoodsLakeside = ArkhamWoodsLakeside LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -18,22 +14,15 @@ arkhamWoodsLakeside :: LocationCard ArkhamWoodsLakeside
 arkhamWoodsLakeside = location ArkhamWoodsLakeside Cards.arkhamWoodsLakeside 2 (PerPlayer 1)
 
 instance HasAbilities ArkhamWoodsLakeside where
-  getAbilities (ArkhamWoodsLakeside attrs) =
-    withRevealedAbilities attrs
-      $ [ restrictedAbility
-            attrs
-            1
-            ( Here
-                <> DuringSkillTest
-                  (WhileInvestigating $ LocationWithId $ toId attrs)
-            )
-            $ ForcedAbility
-            $ RevealChaosToken Timing.After You AnyChaosToken
-        ]
+  getAbilities (ArkhamWoodsLakeside a) =
+    extendRevealed1 a
+      $ restricted a 1 (Here <> DuringSkillTest (WhileInvestigating $ be a))
+      $ forced
+      $ RevealChaosToken #after You AnyChaosToken
 
 instance RunMessage ArkhamWoodsLakeside where
-  runMessage msg l@(ArkhamWoodsLakeside attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push (DrawAnotherChaosToken iid)
+  runMessage msg l@(ArkhamWoodsLakeside attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      drawAnotherChaosToken iid
       pure l
-    _ -> ArkhamWoodsLakeside <$> runMessage msg attrs
+    _ -> ArkhamWoodsLakeside <$> liftRunMessage msg attrs

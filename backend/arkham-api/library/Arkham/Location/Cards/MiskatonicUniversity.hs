@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.MiskatonicUniversity (MiskatonicUniversity (..), miskatonicUniversity) where
+module Arkham.Location.Cards.MiskatonicUniversity (miskatonicUniversity) where
 
 import Arkham.Ability
 import Arkham.Capability

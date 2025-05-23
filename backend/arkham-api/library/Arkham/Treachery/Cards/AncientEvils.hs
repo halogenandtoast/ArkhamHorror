@@ -1,9 +1,7 @@
-module Arkham.Treachery.Cards.AncientEvils where
+module Arkham.Treachery.Cards.AncientEvils (ancientEvils) where
 
-import Arkham.Classes
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype AncientEvils = AncientEvils TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -13,8 +11,8 @@ ancientEvils :: TreacheryCard AncientEvils
 ancientEvils = treachery AncientEvils Cards.ancientEvils
 
 instance RunMessage AncientEvils where
-  runMessage msg t@(AncientEvils attrs) = case msg of
+  runMessage msg t@(AncientEvils attrs) = runQueueT $ case msg of
     Revelation _ (isSource attrs -> True) -> do
-      push placeDoomOnAgendaAndCheckAdvance
+      placeDoomOnAgendaAndCheckAdvance 1
       pure t
-    _ -> AncientEvils <$> runMessage msg attrs
+    _ -> AncientEvils <$> liftRunMessage msg attrs

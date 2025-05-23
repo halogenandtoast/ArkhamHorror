@@ -2,11 +2,10 @@ module Arkham.Asset.Assets.Flashlight (flashlight) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Helpers.Investigator
-import Arkham.Helpers.Modifiers
-import Arkham.Investigate
-import Arkham.Prelude
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Location
+import Arkham.Helpers.SkillTest.Lifted (investigate_)
+import Arkham.Modifier
 
 newtype Flashlight = Flashlight AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -16,15 +15,13 @@ flashlight :: AssetCard Flashlight
 flashlight = asset Flashlight Cards.flashlight
 
 instance HasAbilities Flashlight where
-  getAbilities (Flashlight x) = [investigateAbility x 1 (assetUseCost x Supply 1) ControlsThis]
+  getAbilities (Flashlight x) = [investigateAbility x 1 (assetUseCost x #supply 1) ControlsThis]
 
 instance RunMessage Flashlight where
-  runMessage msg a@(Flashlight attrs) = case msg of
+  runMessage msg a@(Flashlight attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      lid <- getJustLocation iid
       sid <- getRandom
-      investigation <- mkInvestigate sid iid (toAbilitySource attrs 1)
-      enabled <- skillTestModifier sid attrs lid (ShroudModifier (-2))
-      pushAll [enabled, toMessage investigation]
+      withLocationOf iid \lid -> skillTestModifier sid attrs lid (ShroudModifier (-2))
+      investigate_ sid iid (attrs.ability 1)
       pure a
-    _ -> Flashlight <$> runMessage msg attrs
+    _ -> Flashlight <$> liftRunMessage msg attrs

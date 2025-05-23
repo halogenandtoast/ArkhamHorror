@@ -2,6 +2,7 @@ module Arkham.Location.Cards.ArkhamWoodsGreatWillow (arkhamWoodsGreatWillow) whe
 
 import Arkham.Ability
 import Arkham.GameValue
+import Arkham.Helpers.Message (gainSurge)
 import Arkham.Helpers.SkillTest (getSkillTestSource)
 import Arkham.Location.Cards qualified as Cards (arkhamWoodsGreatWillow)
 import Arkham.Location.Import.Lifted
@@ -18,16 +19,16 @@ arkhamWoodsGreatWillow =
 instance HasAbilities ArkhamWoodsGreatWillow where
   getAbilities (ArkhamWoodsGreatWillow attrs) =
     extendRevealed1 attrs
-      $ restrictedAbility attrs 1 Here
+      $ restricted attrs 1 Here
       $ forced
       $ SkillTestResult #after You (SkillTestOnTreachery AnyTreachery) #success
 
 instance RunMessage ArkhamWoodsGreatWillow where
-  runMessage msg l@(ArkhamWoodsGreatWillow attrs) = case msg of
+  runMessage msg l@(ArkhamWoodsGreatWillow attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       void $ runMaybeT do
         source <- MaybeT getSkillTestSource
         tid <- hoistMaybe source.treachery
-        lift $ push $ GainSurge (toSource attrs) (toTarget tid)
+        lift $ push $ gainSurge tid
       pure l
-    _ -> ArkhamWoodsGreatWillow <$> runMessage msg attrs
+    _ -> ArkhamWoodsGreatWillow <$> liftRunMessage msg attrs

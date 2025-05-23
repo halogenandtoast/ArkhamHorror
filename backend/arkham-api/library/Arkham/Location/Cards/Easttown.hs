@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.Easttown where
+module Arkham.Location.Cards.Easttown (easttown) where
 
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers

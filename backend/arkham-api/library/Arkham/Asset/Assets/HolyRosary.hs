@@ -1,9 +1,8 @@
 module Arkham.Asset.Assets.HolyRosary (holyRosary) where
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Prelude
 
 newtype HolyRosary = HolyRosary AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

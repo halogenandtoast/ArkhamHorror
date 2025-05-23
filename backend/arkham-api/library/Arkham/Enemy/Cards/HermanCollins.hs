@@ -1,15 +1,8 @@
-module Arkham.Enemy.Cards.HermanCollins (
-  HermanCollins (..),
-  hermanCollins,
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.HermanCollins (hermanCollins) where
 
 import Arkham.Ability
-import Arkham.Action
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 
 newtype HermanCollins = HermanCollins EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -19,16 +12,12 @@ hermanCollins :: EnemyCard HermanCollins
 hermanCollins = enemyWith HermanCollins Cards.hermanCollins (3, Static 4, 4) (1, 1) (spawnAtL ?~ "Graveyard")
 
 instance HasAbilities HermanCollins where
-  getAbilities (HermanCollins attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility attrs 1 OnSameLocation
-            $ ActionAbility [Parley]
-            $ Costs [ActionCost 1, HandDiscardCost 4 #any]
-        ]
+  getAbilities (HermanCollins a) =
+    extend1 a $ restricted a 1 OnSameLocation $ parleyAction (HandDiscardCost 4 #any)
 
 instance RunMessage HermanCollins where
-  runMessage msg e@(HermanCollins attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ AddToVictory $ toTarget attrs
+  runMessage msg e@(HermanCollins attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      addToVictory attrs
       pure e
-    _ -> HermanCollins <$> runMessage msg attrs
+    _ -> HermanCollins <$> liftRunMessage msg attrs

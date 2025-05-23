@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.Psychosis (Psychosis (..), psychosis) where
+module Arkham.Treachery.Cards.Psychosis (psychosis) where
 
 import Arkham.Ability
 import Arkham.Matcher
@@ -14,8 +14,8 @@ psychosis = treachery Psychosis Cards.psychosis
 
 instance HasAbilities Psychosis where
   getAbilities (Psychosis a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $ forced $ DealtHorror #after AnySource You
-    , restrictedAbility a 2 OnSameLocation $ ActionAbility [] (ActionCost 2)
+    [ restricted a 1 (InThreatAreaOf You) $ forced $ DealtHorror #after AnySource You
+    , restricted a 2 OnSameLocation doubleActionAbility
     ]
 
 instance RunMessage Psychosis where

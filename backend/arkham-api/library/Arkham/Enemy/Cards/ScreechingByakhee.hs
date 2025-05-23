@@ -1,13 +1,11 @@
 module Arkham.Enemy.Cards.ScreechingByakhee (screechingByakhee) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner hiding (EnemyEvade)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier
-import Arkham.Prelude
 
 newtype ScreechingByakhee = ScreechingByakhee EnemyAttrs
   deriving anyclass IsEnemy
@@ -15,9 +13,8 @@ newtype ScreechingByakhee = ScreechingByakhee EnemyAttrs
 
 screechingByakhee :: EnemyCard ScreechingByakhee
 screechingByakhee =
-  enemyWith ScreechingByakhee Cards.screechingByakhee (3, Static 4, 3) (1, 2)
-    $ preyL
-    .~ Prey LowestRemainingSanity
+  enemy ScreechingByakhee Cards.screechingByakhee (3, Static 4, 3) (1, 2)
+    & setPrey LowestRemainingSanity
 
 instance HasModifiersFor ScreechingByakhee where
   getModifiersFor (ScreechingByakhee attrs) = do

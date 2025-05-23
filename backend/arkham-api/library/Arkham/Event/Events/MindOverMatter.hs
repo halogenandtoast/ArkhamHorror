@@ -1,4 +1,4 @@
-module Arkham.Event.Events.MindOverMatter (MindOverMatter, mindOverMatter) where
+module Arkham.Event.Events.MindOverMatter (mindOverMatter) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted

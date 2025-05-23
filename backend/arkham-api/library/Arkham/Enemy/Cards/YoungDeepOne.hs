@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.YoungDeepOne (YoungDeepOne (..), youngDeepOne) where
+module Arkham.Enemy.Cards.YoungDeepOne (youngDeepOne) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
@@ -11,12 +11,11 @@ newtype YoungDeepOne = YoungDeepOne EnemyAttrs
 
 youngDeepOne :: EnemyCard YoungDeepOne
 youngDeepOne =
-  enemyWith YoungDeepOne Cards.youngDeepOne (3, Static 3, 3) (1, 1)
-    $ preyL
-    .~ Prey (InvestigatorWithLowestSkill #combat UneliminatedInvestigator)
+  enemy YoungDeepOne Cards.youngDeepOne (3, Static 3, 3) (1, 1)
+    & setPrey (InvestigatorWithLowestSkill #combat UneliminatedInvestigator)
 
 instance HasAbilities YoungDeepOne where
-  getAbilities (YoungDeepOne a) = extend a [forcedAbility a 1 $ EnemyEngaged #after You (be a)]
+  getAbilities (YoungDeepOne a) = extend1 a $ forcedAbility a 1 $ EnemyEngaged #after You (be a)
 
 instance RunMessage YoungDeepOne where
   runMessage msg e@(YoungDeepOne attrs) = runQueueT $ case msg of

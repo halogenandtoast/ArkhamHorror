@@ -20,8 +20,8 @@ instance HasModifiersFor DrMilanChristopher where
 instance HasAbilities DrMilanChristopher where
   getAbilities (DrMilanChristopher x) =
     [ playerLimit PerTestOrAbility
-        $ restrictedAbility x 1 ControlsThis
-        $ ReactionAbility
+        $ restricted x 1 ControlsThis
+        $ triggered
           (SuccessfulInvestigation #after You Anywhere)
           (mwhen (maybe False (> TabooList15) x.taboo) (exhaust x))
     ]
@@ -29,6 +29,6 @@ instance HasAbilities DrMilanChristopher where
 instance RunMessage DrMilanChristopher where
   runMessage msg a@(DrMilanChristopher attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      gainResourcesIfCan iid (attrs.ability 1) 1
+      gainResources iid (attrs.ability 1) 1
       pure a
     _ -> DrMilanChristopher <$> liftRunMessage msg attrs

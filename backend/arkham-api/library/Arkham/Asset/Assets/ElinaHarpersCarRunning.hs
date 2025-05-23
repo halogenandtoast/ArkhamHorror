@@ -13,7 +13,6 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Name
-import Arkham.Placement
 import Arkham.Trait (Trait (Road))
 import Arkham.Window qualified as Window
 

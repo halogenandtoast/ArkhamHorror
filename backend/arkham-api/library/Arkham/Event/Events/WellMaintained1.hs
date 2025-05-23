@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher
-import Arkham.Placement
 
 newtype WellMaintained1 = WellMaintained1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)

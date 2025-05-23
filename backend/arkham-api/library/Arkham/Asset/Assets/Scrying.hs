@@ -1,16 +1,13 @@
-module Arkham.Asset.Assets.Scrying (
-  Scrying (..),
-  scrying,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Scrying (scrying) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Strategy
 
 newtype Scrying = Scrying AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,25 +18,17 @@ scrying = asset Scrying Cards.scrying
 
 instance HasAbilities Scrying where
   getAbilities (Scrying a) =
-    [ controlledAbility
-        a
-        1
-        (exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck])
-        $ actionAbilityWithCost
-        $ assetUseCost a Charge 1
-        <> exhaust a
+    [ controlled a 1 (exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck])
+        $ actionAbilityWithCost (assetUseCost a #charge 1 <> exhaust a)
     ]
 
 instance RunMessage Scrying where
-  runMessage msg a@(Scrying attrs) = case msg of
+  runMessage msg a@(Scrying attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      targets <- selectTargets =<< guardAffectsOthers iid can.manipulate.deck
+      decks <- selectTargets =<< guardAffectsOthers iid can.manipulate.deck
       hasEncounterDeck <- can.target.encounterDeck iid
-      let source = toAbilitySource attrs 1
-      player <- getPlayer iid
-      push
-        $ chooseOne player
-        $ targetLabels ([EncounterDeckTarget | hasEncounterDeck] <> targets)
-        $ \target -> only $ lookAt iid source target [(FromTopOfDeck 3, PutBackInAnyOrder)] #any ReturnCards
+      chooseOneM iid do
+        targets ([EncounterDeckTarget | hasEncounterDeck] <> decks) \target ->
+          lookAt iid (attrs.ability 1) target [(FromTopOfDeck 3, PutBackInAnyOrder)] #any ReturnCards
       pure a
-    _ -> Scrying <$> runMessage msg attrs
+    _ -> Scrying <$> liftRunMessage msg attrs

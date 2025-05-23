@@ -287,6 +287,24 @@ const tokenEffects = computed(() => {
           + formatContent(t(`${scenarioToI18n(scenario)}.tokens.${difficulty}.${lowerFirst(face)}`)) + `</span>`
           )
 })
+
+const createModifier = (target: {tag: string, contents: string}, modifier: {tag: string, contents: any}) => 
+  debug.send(props.game.id,
+    { tag: 'CreateWindowModifierEffect'
+    , contents:
+      [ {tag: 'EffectSkillTestWindow', contents: props.skillTest.id}
+      , { tag: 'EffectModifiers'
+        , contents:
+          [ { source: {tag: 'GameSource'}
+            , type: modifier
+            , activeDuringSetup: false
+            , card: null}
+          ]
+        }
+      , {tag: 'GameSource'}
+      , target
+      ]
+    })
 </script>
 
 <template>
@@ -319,7 +337,15 @@ const tokenEffects = computed(() => {
         <Card v-else-if="targetCard" :game="game" :card="targetCard" class="target-card" :revealed="true" playerId="" />
         <div class="test-status">
           <div class="test-difficulty">
+            <button
+                v-if="debug.active"
+                @click="createModifier({tag: 'SkillTestTarget', contents: skillTest.id}, {tag: 'Difficulty', contents: -1})"
+            >-</button>
             <span class="difficulty">{{skillTest.modifiedDifficulty}}</span>
+            <button
+                v-if="debug.active"
+                @click="createModifier({tag: 'SkillTestTarget', contents: skillTest.id}, {tag: 'Difficulty', contents: 1})"
+            >+</button>
           </div>
           <div class="vs">
             <div v-if="skills.length > 0" class="skills">
@@ -333,7 +359,15 @@ const tokenEffects = computed(() => {
             <span>VS</span>
           </div>
           <div class="modified-skill">
+            <button
+                v-if="debug.active"
+                @click="createModifier({tag: 'InvestigatorTarget', contents: skillTest.investigator}, {tag: 'AnySkillValue', contents: -1})"
+            >-</button>
             <span class="skill">{{skillValue}}</span>
+            <button
+                v-if="debug.active"
+                @click="createModifier({tag: 'InvestigatorTarget', contents: skillTest.investigator}, {tag: 'AnySkillValue', contents: 1})"
+            >+</button>
           </div>
         </div>
         <div class="test-source">
@@ -512,9 +546,18 @@ const tokenEffects = computed(() => {
 
 .test-difficulty {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
   gap: 5px;
+  align-items: center;
+  button {
+    width: fit-content;
+    height: auto;
+    display: inline-block;
+    aspect-ratio: 2;
+    padding: 2px 4px;
+    box-sizing: border-box;
+    border-radius: 2px;
+  }
 }
 
 .difficulty {
@@ -543,9 +586,18 @@ const tokenEffects = computed(() => {
 
 .modified-skill {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   gap: 5px;
+  button {
+    width: fit-content;
+    height: auto;
+    display: inline-block;
+    aspect-ratio: 2;
+    padding: 2px 4px;
+    box-sizing: border-box;
+    border-radius: 2px;
+  }
 }
 
 .portrait {

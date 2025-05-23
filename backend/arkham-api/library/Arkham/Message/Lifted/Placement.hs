@@ -1,4 +1,4 @@
-module Arkham.Message.Lifted.Placement where
+module Arkham.Message.Lifted.Placement (module Arkham.Message.Lifted.Placement, module Arkham.Placement) where
 
 import Arkham.Asset.Types
 import Arkham.Classes.HasQueue

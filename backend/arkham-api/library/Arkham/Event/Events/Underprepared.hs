@@ -3,7 +3,6 @@ module Arkham.Event.Events.Underprepared (underprepared, Underprepared (..)) whe
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Placement
 
 newtype Underprepared = Underprepared EventAttrs
   deriving anyclass (IsEvent, HasAbilities)

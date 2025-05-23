@@ -2,10 +2,9 @@ module Arkham.Asset.Assets.MagnifyingGlass1 (magnifyingGlass1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype MagnifyingGlass1 = MagnifyingGlass1 AssetAttrs
   deriving anyclass IsAsset
@@ -19,11 +18,11 @@ instance HasModifiersFor MagnifyingGlass1 where
 
 instance HasAbilities MagnifyingGlass1 where
   getAbilities (MagnifyingGlass1 a) =
-    [controlledAbility a 1 (exists $ YourLocation <> LocationWithoutClues) $ FastAbility Free]
+    [controlled a 1 (exists $ YourLocation <> LocationWithoutClues) $ FastAbility Free]
 
 instance RunMessage MagnifyingGlass1 where
-  runMessage msg a@(MagnifyingGlass1 attrs) = case msg of
+  runMessage msg a@(MagnifyingGlass1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ ReturnToHand iid (toTarget attrs)
+      returnToHand iid attrs
       pure a
-    _ -> MagnifyingGlass1 <$> runMessage msg attrs
+    _ -> MagnifyingGlass1 <$> liftRunMessage msg attrs

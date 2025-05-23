@@ -1,11 +1,9 @@
-module Arkham.Enemy.Cards.JeremiahPierce (JeremiahPierce (..), jeremiahPierce, jeremiahPierceEffect) where
+module Arkham.Enemy.Cards.JeremiahPierce (jeremiahPierce) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Effect.Runner
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
-import Arkham.Prelude
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.SkillTest.Lifted
 
 newtype JeremiahPierce = JeremiahPierce EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -18,34 +16,17 @@ jeremiahPierce =
     ?~ SpawnAtFirst ["Your House", "Rivertown"]
 
 instance HasAbilities JeremiahPierce where
-  getAbilities (JeremiahPierce attrs) =
-    withBaseAbilities attrs [skillTestAbility $ restrictedAbility attrs 1 OnSameLocation parleyAction_]
+  getAbilities (JeremiahPierce a) =
+    extend a [skillTestAbility $ restricted a 1 OnSameLocation parleyAction_]
 
 instance RunMessage JeremiahPierce where
-  runMessage msg e@(JeremiahPierce attrs) = case msg of
+  runMessage msg e@(JeremiahPierce attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enabled <- createCardEffect Cards.jeremiahPierce Nothing (attrs.ability 1) iid
-      pushAll
-        [ AddToVictory (toTarget attrs)
-        , enabled
-        ]
-      pure e
-    _ -> JeremiahPierce <$> runMessage msg attrs
-
-newtype JeremiahPierceEffect = JeremiahPierceEffect EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-
-jeremiahPierceEffect :: EffectArgs -> JeremiahPierceEffect
-jeremiahPierceEffect = cardEffect JeremiahPierceEffect Cards.jeremiahPierce
-
-instance RunMessage JeremiahPierceEffect where
-  runMessage msg e@(JeremiahPierceEffect attrs) = case msg of
-    CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == effectId attrs -> do
+      addToVictory attrs
       sid <- getRandom
-      pushAll [parley sid iid attrs iid #willpower (Fixed 4), disable attrs]
+      parley sid iid attrs iid #willpower (Fixed 4)
       pure e
     FailedThisSkillTestBy _ (isSource attrs -> True) n -> do
-      push $ PlaceDoomOnAgenda n CanAdvance
+      placeDoomOnAgendaAndCheckAdvance n
       pure e
-    _ -> JeremiahPierceEffect <$> runMessage msg attrs
+    _ -> JeremiahPierce <$> liftRunMessage msg attrs

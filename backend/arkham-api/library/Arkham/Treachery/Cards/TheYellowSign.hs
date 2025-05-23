@@ -1,6 +1,5 @@
-module Arkham.Treachery.Cards.TheYellowSign where
+module Arkham.Treachery.Cards.TheYellowSign (theYellowSign) where
 
-import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Source
 import Arkham.Strategy

@@ -7,7 +7,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message (MessageType (CheckWindowMessage), pattern CancelNext)
-import Arkham.Placement
 import Arkham.RequestedChaosTokenStrategy
 
 newtype Premonition = Premonition EventAttrs

@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.ArkhamWoodsQuietGlade (ArkhamWoodsQuietGlade (..), arkhamWoodsQuietGlade) where
+module Arkham.Location.Cards.ArkhamWoodsQuietGlade (arkhamWoodsQuietGlade) where
 
 import Arkham.Ability
 import Arkham.GameValue

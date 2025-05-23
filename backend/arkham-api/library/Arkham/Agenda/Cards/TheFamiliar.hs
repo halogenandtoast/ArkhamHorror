@@ -13,7 +13,6 @@ import Arkham.Helpers.Query (getPlayerCount, getSetAsideCard, getSetAsideCardsMa
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheFamiliar = TheFamiliar AgendaAttrs

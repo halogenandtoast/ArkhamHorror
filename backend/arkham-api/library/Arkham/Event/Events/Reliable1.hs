@@ -8,7 +8,6 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Upgrade
-import Arkham.Placement
 import Arkham.Projection
 import Arkham.Trait
 

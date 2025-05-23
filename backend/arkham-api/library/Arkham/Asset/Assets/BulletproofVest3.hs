@@ -1,9 +1,7 @@
-module Arkham.Asset.Assets.BulletproofVest3 where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.BulletproofVest3 (bulletproofVest3) where
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 
 newtype BulletproofVest3 = BulletproofVest3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)

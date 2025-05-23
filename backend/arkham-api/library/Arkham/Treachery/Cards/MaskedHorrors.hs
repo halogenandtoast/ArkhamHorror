@@ -1,12 +1,9 @@
-module Arkham.Treachery.Cards.MaskedHorrors where
+module Arkham.Treachery.Cards.MaskedHorrors (maskedHorrors) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Projection
+import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype MaskedHorrors = MaskedHorrors TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -16,24 +13,14 @@ maskedHorrors :: TreacheryCard MaskedHorrors
 maskedHorrors = treachery MaskedHorrors Cards.maskedHorrors
 
 instance RunMessage MaskedHorrors where
-  runMessage msg t@(MaskedHorrors attrs) = case msg of
-    Revelation _ source | isSource attrs source -> do
-      iids <- getInvestigators
-      targetInvestigators <-
+  runMessage msg t@(MaskedHorrors attrs) = runQueueT $ case msg of
+    Revelation _ (isSource attrs -> True) -> do
+      investigators <-
         map fst
           . filter ((>= 2) . snd)
-          <$> for
-            iids
-            ( \iid -> do
-                clueCount <- field InvestigatorClues iid
-                pure (iid, clueCount)
-            )
-      if null targetInvestigators
-        then push placeDoomOnAgendaAndCheckAdvance
-        else
-          pushAll
-            [ InvestigatorAssignDamage iid source DamageAny 0 2
-            | iid <- targetInvestigators
-            ]
+          <$> selectWithField InvestigatorClues UneliminatedInvestigator
+      if null investigators
+        then placeDoomOnAgendaAndCheckAdvance 1
+        else for_ investigators \iid -> assignHorror iid attrs 2
       pure t
-    _ -> MaskedHorrors <$> runMessage msg attrs
+    _ -> MaskedHorrors <$> liftRunMessage msg attrs

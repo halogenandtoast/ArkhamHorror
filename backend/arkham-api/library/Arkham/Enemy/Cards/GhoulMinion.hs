@@ -1,13 +1,7 @@
-module Arkham.Enemy.Cards.GhoulMinion (
-  ghoulMinion,
-  GhoulMinion (..),
-) where
+module Arkham.Enemy.Cards.GhoulMinion ( ghoulMinion,) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 
 newtype GhoulMinion = GhoulMinion EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

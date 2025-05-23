@@ -6,7 +6,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Upgrade
-import Arkham.Placement
 import Arkham.Projection
 import Arkham.SlotType
 

@@ -4,7 +4,6 @@ import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher
-import Arkham.Placement
 import Arkham.Zone
 
 newtype DimensionalVortex5 = DimensionalVortex5 EventAttrs

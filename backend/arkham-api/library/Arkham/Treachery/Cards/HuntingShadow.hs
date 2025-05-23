@@ -1,11 +1,10 @@
-module Arkham.Treachery.Cards.HuntingShadow where
+module Arkham.Treachery.Cards.HuntingShadow (huntingShadow) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Helpers.Investigator
+import Arkham.I18n
+import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype HuntingShadow = HuntingShadow TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -15,13 +14,11 @@ huntingShadow :: TreacheryCard HuntingShadow
 huntingShadow = treachery HuntingShadow Cards.huntingShadow
 
 instance RunMessage HuntingShadow where
-  runMessage msg t@(HuntingShadow attrs) = case msg of
+  runMessage msg t@(HuntingShadow attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      canSpendClues <- getCanSpendNClues iid 1
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ [Label "Spend 1 clue" [SpendClues 1 [iid]] | canSpendClues]
-        <> [Label "Take 2 damage" [assignDamage iid attrs 2]]
+      chooseOrRunOneM iid $ withI18n do
+        whenM (getCanSpendNClues iid 1) do
+          countVar 1 $ labeled' "spendClues" $ spendClues iid 1
+        countVar 2 $ labeled' "takeDamage" $ assignDamage iid attrs 2
       pure t
-    _ -> HuntingShadow <$> runMessage msg attrs
+    _ -> HuntingShadow <$> liftRunMessage msg attrs

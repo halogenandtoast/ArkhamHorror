@@ -273,7 +273,7 @@ placeLocationInGrid pos c = do
 placeLocation_ :: MonadRandom m => Card -> m Message
 placeLocation_ = fmap snd . placeLocation
 
-placeSetAsideLocation :: (MonadRandom m, HasGame m) => CardDef -> m (LocationId, Message)
+placeSetAsideLocation :: (HasCallStack, MonadRandom m, HasGame m) => CardDef -> m (LocationId, Message)
 placeSetAsideLocation = placeLocation <=< getSetAsideCard
 
 placeSetAsideLocation_ :: (MonadRandom m, HasGame m) => CardDef -> m Message

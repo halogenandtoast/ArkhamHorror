@@ -7,7 +7,6 @@ import Arkham.Matcher
 import Arkham.Helpers.Modifiers (ModifierType(..), modifySelect)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 

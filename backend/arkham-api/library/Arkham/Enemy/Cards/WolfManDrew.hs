@@ -1,16 +1,9 @@
-module Arkham.Enemy.Cards.WolfManDrew (
-  WolfManDrew (..),
-  wolfManDrew,
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.WolfManDrew (wolfManDrew) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype WolfManDrew = WolfManDrew EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -21,12 +14,11 @@ wolfManDrew = enemyWith WolfManDrew Cards.wolfManDrew (4, Static 4, 2) (2, 0) (s
 
 instance HasAbilities WolfManDrew where
   getAbilities (WolfManDrew a) =
-    withBaseAbilities a
-      $ [forcedAbility a 1 $ EnemyAttacks Timing.When Anyone AnyEnemyAttack (EnemyWithId $ toId a)]
+    extend1 a $ forcedAbility a 1 $ EnemyAttacks #when Anyone AnyEnemyAttack (be a)
 
 instance RunMessage WolfManDrew where
-  runMessage msg e@(WolfManDrew attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ HealDamage (toTarget attrs) (toAbilitySource attrs 1) 1
+  runMessage msg e@(WolfManDrew attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      healDamage attrs (attrs.ability 1) 1
       pure e
-    _ -> WolfManDrew <$> runMessage msg attrs
+    _ -> WolfManDrew <$> liftRunMessage msg attrs

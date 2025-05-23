@@ -2,12 +2,12 @@ module Arkham.Asset.Assets.CatBurglar1 (catBurglar1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 
 newtype CatBurglar1 = CatBurglar1 AssetAttrs
   deriving anyclass IsAsset
@@ -27,16 +27,11 @@ instance HasAbilities CatBurglar1 where
     ]
 
 instance RunMessage CatBurglar1 where
-  runMessage msg (CatBurglar1 attrs) = case msg of
+  runMessage msg a@(CatBurglar1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      engagedEnemyIds <- select $ enemyEngagedWith iid
-      canDisengage <- iid <=~> InvestigatorCanDisengage
-      accessibleLocationIds <- getAccessibleLocations iid attrs
-      player <- getPlayer iid
-      pushAll
-        $ [DisengageEnemy iid eid | canDisengage, eid <- engagedEnemyIds]
-        <> [ chooseOne player $ targetLabels accessibleLocationIds (only . Move . move attrs iid)
-           | notNull accessibleLocationIds
-           ]
-      pure $ CatBurglar1 $ attrs & exhaustedL .~ True
-    _ -> CatBurglar1 <$> runMessage msg attrs
+      whenM (iid <=~> InvestigatorCanDisengage) do
+        selectEach (enemyEngagedWith iid) (disengageEnemy iid)
+      locations <- getAccessibleLocations iid attrs
+      chooseTargetM iid locations $ moveTo attrs iid
+      pure a
+    _ -> CatBurglar1 <$> liftRunMessage msg attrs

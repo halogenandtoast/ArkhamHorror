@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 import Arkham.Scenarios.FatalMirage.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted

@@ -1,11 +1,9 @@
-module Arkham.Enemy.Cards.RelentlessDarkYoung (relentlessDarkYoung, RelentlessDarkYoung (..)) where
+module Arkham.Enemy.Cards.RelentlessDarkYoung (relentlessDarkYoung) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype RelentlessDarkYoung = RelentlessDarkYoung EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -13,17 +11,15 @@ newtype RelentlessDarkYoung = RelentlessDarkYoung EnemyAttrs
 
 relentlessDarkYoung :: EnemyCard RelentlessDarkYoung
 relentlessDarkYoung =
-  enemyWith RelentlessDarkYoung Cards.relentlessDarkYoung (4, Static 5, 2) (2, 1)
-    $ preyL
-    .~ Prey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
+  enemy RelentlessDarkYoung Cards.relentlessDarkYoung (4, Static 5, 2) (2, 1)
+    & setPrey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
 
 instance HasAbilities RelentlessDarkYoung where
-  getAbilities (RelentlessDarkYoung attrs) =
-    extend attrs [mkAbility attrs 1 $ forced $ RoundEnds #when]
+  getAbilities (RelentlessDarkYoung attrs) = extend1 attrs $ mkAbility attrs 1 $ forced $ RoundEnds #when
 
 instance RunMessage RelentlessDarkYoung where
-  runMessage msg e@(RelentlessDarkYoung attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ HealDamage (toTarget attrs) (toSource attrs) 2
+  runMessage msg e@(RelentlessDarkYoung attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      healDamage attrs attrs 2
       pure e
-    _ -> RelentlessDarkYoung <$> runMessage msg attrs
+    _ -> RelentlessDarkYoung <$> liftRunMessage msg attrs

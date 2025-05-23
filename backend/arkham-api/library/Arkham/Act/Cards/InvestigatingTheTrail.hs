@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.InvestigatingTheTrail where
+module Arkham.Act.Cards.InvestigatingTheTrail (investigatingTheTrail) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers

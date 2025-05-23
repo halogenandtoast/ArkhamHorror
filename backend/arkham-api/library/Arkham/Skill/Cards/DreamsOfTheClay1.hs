@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
 

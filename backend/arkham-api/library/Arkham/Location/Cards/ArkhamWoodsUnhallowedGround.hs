@@ -1,14 +1,10 @@
-module Arkham.Location.Cards.ArkhamWoodsUnhallowedGround where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ArkhamWoodsUnhallowedGround (arkhamWoodsUnhallowedGround) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (arkhamWoodsUnhallowedGround)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype ArkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -16,28 +12,19 @@ newtype ArkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround LocationAttrs
 
 arkhamWoodsUnhallowedGround :: LocationCard ArkhamWoodsUnhallowedGround
 arkhamWoodsUnhallowedGround =
-  location
-    ArkhamWoodsUnhallowedGround
-    Cards.arkhamWoodsUnhallowedGround
-    4
-    (PerPlayer 1)
+  location ArkhamWoodsUnhallowedGround Cards.arkhamWoodsUnhallowedGround 4 (PerPlayer 1)
 
 instance HasAbilities ArkhamWoodsUnhallowedGround where
   getAbilities (ArkhamWoodsUnhallowedGround x) =
-    withRevealedAbilities x
-      $ [ skillTestAbility
-            $ forcedAbility x 1
-            $ Enters Timing.After You
-            $ LocationWithId (toId x)
-        ]
+    extendRevealed1 x $ skillTestAbility $ forcedAbility x 1 $ Enters #after You (be x)
 
 instance RunMessage ArkhamWoodsUnhallowedGround where
-  runMessage msg l@(ArkhamWoodsUnhallowedGround attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg l@(ArkhamWoodsUnhallowedGround attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (toAbilitySource attrs 1) iid #willpower (Fixed 4)
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 4)
       pure l
-    FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
-      push $ assignDamageAndHorror iid attrs 1 1
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      assignDamageAndHorror iid attrs 1 1
       pure l
-    _ -> ArkhamWoodsUnhallowedGround <$> runMessage msg attrs
+    _ -> ArkhamWoodsUnhallowedGround <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheDevourerBelow where
+module Arkham.Scenario.Scenarios.TheDevourerBelow (setupTheDevourerBelow, theDevourerBelow, TheDevourerBelow (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -15,6 +15,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Message (pushWhenM)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message hiding (chooseOrRunOne, story)
@@ -61,13 +62,62 @@ instance HasChaosTokenValue TheDevourerBelow where
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 5 7
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-actDeck :: [CardDef]
-actDeck =
-  [Acts.investigatingTheTrail, Acts.intoTheDarkness, Acts.disruptingTheRitual]
+setupTheDevourerBelow :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupTheDevourerBelow attrs = do
+  cultistsWhoGotAway <- getRecordedCardCodes CultistsWhoGotAway
+  pastMidnight <- getHasRecord ItIsPastMidnight
+  ghoulPriestIsStillAlive <- getHasRecord GhoulPriestIsStillAlive
+  setup $ ul do
+    li "gatherSets"
+    li "placeLocations"
+    li "setOutOfPlay"
+    li "randomSet"
+    scope "cultistsWhoGotAway" $ li.nested "instructions" do
+      li.validate (null cultistsWhoGotAway) "zeroNames"
+      li.validate (length cultistsWhoGotAway `elem` [1, 2]) "oneOrTwoNames"
+      li.validate (length cultistsWhoGotAway `elem` [3, 4]) "threeOrFourNames"
+      li.validate (length cultistsWhoGotAway `elem` [5, 6]) "fiveOrSixNames"
+    unscoped $ withVars ["token" .= String "elderThing"] $ li "addToken"
+    li.validate pastMidnight "pastMidnight"
+    li.validate ghoulPriestIsStillAlive "ghoulPriest"
 
-agendaDeck :: [CardDef]
-agendaDeck =
-  [Agendas.theArkhamWoods, Agendas.theRitualBegins, Agendas.vengeanceAwaits]
+  whenReturnTo $ gather EncounterSet.ReturnToTheDevourerBelow
+  gather EncounterSet.TheDevourerBelow
+  gather EncounterSet.AncientEvils
+  gather EncounterSet.StrikingFear
+  gather EncounterSet.Ghouls `orWhenReturnTo` gather EncounterSet.GhoulsOfUmordhoth
+  gather EncounterSet.DarkCult `orWhenReturnTo` gather EncounterSet.TheDevourersCult
+  gatherOneOf
+    $ EncounterSet.AgentsOfYogSothoth
+    :| [EncounterSet.AgentsOfShubNiggurath, EncounterSet.AgentsOfCthulhu, EncounterSet.AgentsOfHastur]
+
+  setAside [Locations.ritualSite, Enemies.umordhoth]
+  when ghoulPriestIsStillAlive $ addToEncounterDeck (Only Enemies.ghoulPriest)
+
+  setActDeck [Acts.investigatingTheTrail, Acts.intoTheDarkness, Acts.disruptingTheRitual]
+  setAgendaDeck [Agendas.theArkhamWoods, Agendas.theRitualBegins, Agendas.vengeanceAwaits]
+  addChaosToken ElderThing
+
+  startAt =<< place Locations.mainPath
+  isReturnTo <- getIsReturnTo
+  placeGroupChooseN 4 "woods"
+    $ Locations.arkhamWoodsUnhallowedGround
+    :| [ Locations.arkhamWoodsTwistingPaths
+       , Locations.arkhamWoodsOldHouse
+       , Locations.arkhamWoodsCliffside
+       , Locations.arkhamWoodsTangledThicket
+       , Locations.arkhamWoodsQuietGlade
+       ]
+    <> ( guard isReturnTo
+           *> [ Locations.arkhamWoodsGreatWillow
+              , Locations.arkhamWoodsLakeside
+              , Locations.arkhamWoodsCorpseRiddenClearing
+              , Locations.arkhamWoodsWoodenBridge
+              ]
+       )
+
+  placeDoomOnAgenda $ (length cultistsWhoGotAway + 1) `div` 2
+  when pastMidnight $ twice $ allRandomDiscard attrs AnyCard
 
 instance RunMessage TheDevourerBelow where
   runMessage msg s@(TheDevourerBelow attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -79,52 +129,7 @@ instance RunMessage TheDevourerBelow where
         h "title"
         p "body"
       pure s
-    Setup -> runScenarioSetup TheDevourerBelow attrs do
-      cultistsWhoGotAway <- getRecordedCardCodes CultistsWhoGotAway
-      pastMidnight <- getHasRecord ItIsPastMidnight
-      ghoulPriestIsStillAlive <- getHasRecord GhoulPriestIsStillAlive
-      setup $ ul do
-        li "gatherSets"
-        li "placeLocations"
-        li "setOutOfPlay"
-        li "randomSet"
-        scope "cultistsWhoGotAway" $ li.nested "instructions" do
-          li.validate (null cultistsWhoGotAway) "zeroNames"
-          li.validate (length cultistsWhoGotAway `elem` [1, 2]) "oneOrTwoNames"
-          li.validate (length cultistsWhoGotAway `elem` [3, 4]) "threeOrFourNames"
-          li.validate (length cultistsWhoGotAway `elem` [5, 6]) "fiveOrSixNames"
-        unscoped $ withVars ["token" .= String "elderThing"] $ li "addToken"
-        li.validate pastMidnight "pastMidnight"
-        li.validate ghoulPriestIsStillAlive "ghoulPriest"
-      gather EncounterSet.TheDevourerBelow
-      gather EncounterSet.AncientEvils
-      gather EncounterSet.StrikingFear
-      gather EncounterSet.Ghouls
-      gather EncounterSet.DarkCult
-      gatherOneOf
-        $ EncounterSet.AgentsOfYogSothoth
-        :| [EncounterSet.AgentsOfShubNiggurath, EncounterSet.AgentsOfCthulhu, EncounterSet.AgentsOfHastur]
-
-      setAside [Locations.ritualSite, Enemies.umordhoth]
-      when ghoulPriestIsStillAlive $ addToEncounterDeck (Only Enemies.ghoulPriest)
-
-      setActDeck actDeck
-      setAgendaDeck agendaDeck
-      addChaosToken ElderThing
-
-      startAt =<< place Locations.mainPath
-      placeGroupChooseN 4 "woods"
-        $ Locations.arkhamWoodsUnhallowedGround
-        :| [ Locations.arkhamWoodsTwistingPaths
-           , Locations.arkhamWoodsOldHouse
-           , Locations.arkhamWoodsCliffside
-           , Locations.arkhamWoodsTangledThicket
-           , Locations.arkhamWoodsQuietGlade
-           ]
-
-      let placeDoomAmount = (length cultistsWhoGotAway + 1) `div` 2
-      pushWhen (placeDoomAmount > 0) $ PlaceDoomOnAgenda placeDoomAmount CanNotAdvance
-      when pastMidnight $ twice $ allRandomDiscard attrs AnyCard
+    Setup -> runScenarioSetup TheDevourerBelow attrs $ setupTheDevourerBelow attrs
     ResolveChaosToken _ Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
       enemies <- select $ NearestEnemyToFallback iid AnyEnemy

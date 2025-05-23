@@ -2,7 +2,6 @@ module Arkham.Treachery.Cards.TerrorInTheNight (terrorInTheNight) where
 
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted

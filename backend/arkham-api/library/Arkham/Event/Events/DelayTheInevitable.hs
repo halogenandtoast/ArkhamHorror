@@ -6,7 +6,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Placement
 import Arkham.Projection
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window

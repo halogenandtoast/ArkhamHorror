@@ -2,9 +2,10 @@ module Arkham.Asset.Assets.FirstAid (firstAid) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 
 newtype FirstAid = FirstAid AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -14,25 +15,20 @@ firstAid :: AssetCard FirstAid
 firstAid = assetWith FirstAid Cards.firstAid discardWhenNoUses
 
 instance HasAbilities FirstAid where
-  getAbilities (FirstAid x) = [controlledAbility x 1 criteria $ actionAbilityWithCost $ assetUseCost x Supply 1]
+  getAbilities (FirstAid x) = [controlled x 1 criteria $ actionAbilityWithCost $ assetUseCost x #supply 1]
    where
-    criteria = exists $ oneOf $ map healable [#horror, #damage]
-    healable hType = HealableInvestigator (toAbilitySource x 1) hType $ colocatedWithMatch You
+    criteria = exists $ mapOneOf healable [#horror, #damage]
+    healable hType = HealableInvestigator (x.ability 1) hType $ colocatedWithMatch You
 
 instance RunMessage FirstAid where
-  runMessage msg a@(FirstAid attrs) = case msg of
+  runMessage msg a@(FirstAid attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      withHorror <- select $ HealableInvestigator source #horror $ colocatedWith iid
-      withDamage <- select $ HealableInvestigator source #damage $ colocatedWith iid
-      player <- getPlayer iid
-      choices <- for (toList $ withHorror <> withDamage) \i -> do
-        pure
-          $ targetLabel i
-          . only
-          $ chooseOrRunOne player
-          $ [DamageLabel i [HealDamage (toTarget i) source 1] | i `elem` withDamage]
-          <> [HorrorLabel i [HealHorror (toTarget i) source 1] | i `elem` withHorror]
-      pushIfAny choices $ chooseOne player choices
+      investigators <- select $ colocatedWith iid
+      chooseOrRunOneM iid do
+        targets investigators \i -> do
+          chooseOrRunOneM iid do
+            whenM (canHaveDamageHealed source i) $ damageLabeled i $ healDamage i source 1
+            whenM (canHaveHorrorHealed source i) $ horrorLabeled i $ healHorror i source 1
       pure a
-    _ -> FirstAid <$> runMessage msg attrs
+    _ -> FirstAid <$> liftRunMessage msg attrs

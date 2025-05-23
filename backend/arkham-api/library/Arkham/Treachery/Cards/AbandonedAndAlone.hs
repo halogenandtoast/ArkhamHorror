@@ -1,8 +1,8 @@
 module Arkham.Treachery.Cards.AbandonedAndAlone (abandonedAndAlone) where
 
+import Arkham.Script
 import Arkham.Treachery.Cards qualified as Cards (abandonedAndAlone)
 import Arkham.Treachery.Import.Lifted hiding (directHorror)
-import Arkham.Script
 
 newtype AbandonedAndAlone = AbandonedAndAlone TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)

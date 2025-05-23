@@ -18,10 +18,12 @@ seepingNightmare = enemy SeepingNightmare Cards.seepingNightmare (3, Static 6, 3
 instance HasModifiersFor SeepingNightmare where
   getModifiersFor (SeepingNightmare a) = do
     when (null $ enemyCardsUnderneath a) $ modifySelf a [AddKeyword Hunter]
-    modifySelectMap
-      a
-      (LocationWithEnemy $ MovingEnemy <> EnemyAt (locationWithEnemy a) <> EnemyWithTrait Eidolon)
-      \lid -> [ConnectedToWhen (LocationWithModifier $ ScenarioModifier "camp") (LocationWithId lid)]
+    modifySelectMap a (locationWithEnemy a)
+      $ const
+        [ ConnectedToWhen
+            (LocationWithEnemy $ MovingEnemy <> EnemyWithTrait Eidolon)
+            (LocationWithModifier $ ScenarioModifier "camp")
+        ]
 
 instance HasAbilities SeepingNightmare where
   getAbilities (SeepingNightmare a) =

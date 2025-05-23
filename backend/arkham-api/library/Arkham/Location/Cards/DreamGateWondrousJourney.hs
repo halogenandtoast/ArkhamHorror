@@ -23,16 +23,13 @@ dreamGateWondrousJourney =
 
 instance HasModifiersFor DreamGateWondrousJourney where
   getModifiersFor (DreamGateWondrousJourney a) = do
-    locations <-
-      modifySelect
-        a
-        (not_ $ LocationWithId a.id)
-        [ConnectedToWhen RevealedLocation (LocationWithId $ toId a)]
-    self <- modifySelf a [CannotBeEnteredBy AnyEnemy]
-    investigators <-
-      modifySelect a (not_ $ investigatorIs Investigators.lukeRobinson) [CannotEnter (toId a)]
-    enemies <- modifySelect a AnyEnemy [CannotSpawnIn (be a)]
-    pure $ self <> investigators <> enemies <> locations
+    modifySelect
+      a
+      (not_ $ LocationWithId a.id)
+      [ConnectedToWhen RevealedLocation (LocationWithId $ toId a)]
+    modifySelf a [CannotBeEnteredBy AnyEnemy]
+    modifySelect a (not_ $ investigatorIs Investigators.lukeRobinson) [CannotEnter (toId a)]
+    modifySelect a AnyEnemy [CannotSpawnIn (be a)]
 
 instance HasAbilities DreamGateWondrousJourney where
   getAbilities (DreamGateWondrousJourney attrs) =

@@ -57,6 +57,7 @@
   "label": {
     "fineDining": {
       "place": "Place 1 of your clues on a Bystander asset in play"
-    }
+    },
+    "gainAdditionalXp": "{name} gains 1 additional experience point"
   }
 }

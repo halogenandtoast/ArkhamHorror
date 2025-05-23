@@ -11,8 +11,7 @@ newtype WhispersInYourHeadDread = WhispersInYourHeadDread TreacheryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whispersInYourHeadDread :: TreacheryCard WhispersInYourHeadDread
-whispersInYourHeadDread =
-  treachery WhispersInYourHeadDread Cards.whispersInYourHeadDread
+whispersInYourHeadDread = treachery WhispersInYourHeadDread Cards.whispersInYourHeadDread
 
 instance HasModifiersFor WhispersInYourHeadDread where
   getModifiersFor (WhispersInYourHeadDread a) = case a.placement of
@@ -27,7 +26,7 @@ instance RunMessage WhispersInYourHeadDread where
     Revelation iid (isSource attrs -> True) -> do
       addHiddenToHand iid attrs
       pure t
-    InHand _ (UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       toDiscardBy iid (attrs.ability 1) attrs
       pure t
     _ -> WhispersInYourHeadDread <$> liftRunMessage msg attrs

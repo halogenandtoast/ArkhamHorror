@@ -28,7 +28,7 @@ instance RunMessage WhispersInYourHeadDoubt where
     Revelation iid (isSource attrs -> True) -> do
       addHiddenToHand iid attrs
       pure t
-    InHand _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       toDiscardBy iid (attrs.ability 1) attrs
       pure t
     _ -> WhispersInYourHeadDoubt <$> liftRunMessage msg attrs

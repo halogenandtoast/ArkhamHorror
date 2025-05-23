@@ -1,4 +1,4 @@
-module Arkham.Event.Events.EmergencyCache3 (emergencyCache3, EmergencyCache3 (..)) where
+module Arkham.Event.Events.EmergencyCache3 (emergencyCache3) where
 
 import Arkham.Asset.Uses
 import Arkham.Event.Cards qualified as Cards

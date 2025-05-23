@@ -2,11 +2,10 @@ module Arkham.Asset.Assets.BrotherXavier1 (brotherXavier1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (AssetDefeated)
-import Arkham.DamageEffect
+import Arkham.Asset.Import.Lifted hiding (AssetDefeated)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 
 newtype BrotherXavier1 = BrotherXavier1 AssetAttrs
   deriving anyclass IsAsset
@@ -33,13 +32,10 @@ instance HasAbilities BrotherXavier1 where
     ]
 
 instance RunMessage BrotherXavier1 where
-  runMessage msg a@(BrotherXavier1 attrs) = case msg of
+  runMessage msg a@(BrotherXavier1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemies <- select $ EnemyAt $ locationWithInvestigator iid
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [targetLabel eid [EnemyDamage eid $ nonAttack (Just iid) (attrs.ability 1) 2] | eid <- enemies]
+      chooseOrRunOneM iid do
+        targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 2
       pure a
-    _ -> BrotherXavier1 <$> runMessage msg attrs
+    _ -> BrotherXavier1 <$> liftRunMessage msg attrs

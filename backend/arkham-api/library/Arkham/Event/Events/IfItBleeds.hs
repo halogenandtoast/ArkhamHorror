@@ -1,14 +1,8 @@
-module Arkham.Event.Events.IfItBleeds (
-  ifItBleeds,
-  IfItBleeds (..),
-) where
+module Arkham.Event.Events.IfItBleeds (ifItBleeds) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
@@ -27,16 +21,13 @@ getWindowEnemyIds iid = mapMaybe \case
   _ -> Nothing
 
 instance RunMessage IfItBleeds where
-  runMessage msg e@(IfItBleeds attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ (getWindowEnemyIds iid -> enemyIds) _ | eid == toId attrs -> do
-      choices <- for enemyIds $ \enemyId -> do
-        horrorValue <- field EnemySanityDamage enemyId
-        investigators <- select $ HealableInvestigator (toSource attrs) #horror $ colocatedWith iid
-        pure
-          $ targetLabel
-            enemyId
-            [HealHorror (toTarget investigator) (toSource attrs) horrorValue | investigator <- investigators]
-      player <- getPlayer iid
-      push $ chooseOne player choices
+  runMessage msg e@(IfItBleeds attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      let enemyIds = getWindowEnemyIds iid attrs.windows
+      chooseOneM iid do
+        targets enemyIds $ \enemyId -> do
+          horrorValue <- field EnemySanityDamage enemyId
+          investigators <- select $ HealableInvestigator (toSource attrs) #horror $ colocatedWith iid
+          for_ investigators \investigator -> healHorror investigator attrs horrorValue
       pure e
-    _ -> IfItBleeds <$> runMessage msg attrs
+    _ -> IfItBleeds <$> liftRunMessage msg attrs

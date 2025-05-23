@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.InternalInjury (internalInjury, InternalInjury (..)) where
+module Arkham.Treachery.Cards.InternalInjury (internalInjury) where
 
 import Arkham.Ability
 import Arkham.Matcher
@@ -14,8 +14,8 @@ internalInjury = treachery InternalInjury Cards.internalInjury
 
 instance HasAbilities InternalInjury where
   getAbilities (InternalInjury x) =
-    [ restrictedAbility x 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You
-    , restrictedAbility x 2 OnSameLocation $ ActionAbility [] $ ActionCost 2
+    [ restricted x 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You
+    , restricted x 2 OnSameLocation doubleActionAbility
     ]
 
 instance RunMessage InternalInjury where

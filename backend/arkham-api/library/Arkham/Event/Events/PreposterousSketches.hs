@@ -1,13 +1,7 @@
-module Arkham.Event.Events.PreposterousSketches (
-  preposterousSketches,
-  PreposterousSketches (..),
-) where
+module Arkham.Event.Events.PreposterousSketches (preposterousSketches) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 
 newtype PreposterousSketches = PreposterousSketches EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -17,8 +11,8 @@ preposterousSketches :: EventCard PreposterousSketches
 preposterousSketches = event PreposterousSketches Cards.preposterousSketches
 
 instance RunMessage PreposterousSketches where
-  runMessage msg e@(PreposterousSketches attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      push $ drawCards iid attrs 3
+  runMessage msg e@(PreposterousSketches attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      drawCards iid attrs 3
       pure e
-    _ -> PreposterousSketches <$> runMessage msg attrs
+    _ -> PreposterousSketches <$> liftRunMessage msg attrs

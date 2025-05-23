@@ -3,12 +3,11 @@ module Arkham.Asset.Assets.FireAxe (fireAxe) where
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Fight
-import Arkham.Helpers.Modifiers
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
+import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestSource, withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
 
 newtype FireAxe = FireAxe AssetAttrs
@@ -37,13 +36,12 @@ instance HasAbilities FireAxe where
     ]
 
 instance RunMessage FireAxe where
-  runMessage msg a@(FireAxe attrs) = case msg of
+  runMessage msg a@(FireAxe attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      pushM $ mkChooseFight sid iid (attrs.ability 1)
+      chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      withSkillTest \sid ->
-        pushM $ skillTestModifier sid attrs iid (SkillModifier #combat 2)
+      withSkillTest \sid -> skillTestModifier sid attrs iid (SkillModifier #combat 2)
       pure a
-    _ -> FireAxe <$> runMessage msg attrs
+    _ -> FireAxe <$> liftRunMessage msg attrs

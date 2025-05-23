@@ -26,7 +26,5 @@ instance HasModifiersFor ShadowSpawned where
 
 instance RunMessage ShadowSpawned where
   runMessage msg t@(ShadowSpawned attrs) = runQueueT $ case msg of
-    PlaceEnemyOutOfPlay VoidZone eid
-      | toTarget eid `elem` attrs.attached ->
-          pure t
+    PlaceEnemyOutOfPlay VoidZone eid | toTarget eid `elem` attrs.attached -> pure t
     _ -> ShadowSpawned <$> liftRunMessage msg attrs

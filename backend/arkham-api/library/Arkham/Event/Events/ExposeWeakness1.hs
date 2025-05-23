@@ -1,15 +1,14 @@
-module Arkham.Event.Events.ExposeWeakness1 (exposeWeakness1, exposeWeakness1Effect, ExposeWeakness1 (..)) where
+module Arkham.Event.Events.ExposeWeakness1 (exposeWeakness1, exposeWeakness1Effect) where
 
 import Arkham.Action qualified as Action
-import Arkham.Classes
-import Arkham.Effect.Runner
+import Arkham.Effect.Import
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers hiding (EnemyFight)
 import Arkham.Helpers.Modifiers qualified as Mods
+import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy)
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype ExposeWeakness1 = ExposeWeakness1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -19,28 +18,18 @@ exposeWeakness1 :: EventCard ExposeWeakness1
 exposeWeakness1 = event ExposeWeakness1 Cards.exposeWeakness1
 
 instance RunMessage ExposeWeakness1 where
-  runMessage msg e@(ExposeWeakness1 attrs) = case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
+  runMessage msg e@(ExposeWeakness1 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       enemies <- select $ enemyAtLocationWith iid <> EnemyWithFight
-      player <- getPlayer iid
       sid <- getRandom
-      push
-        $ chooseOne
-          player
-          [ targetLabel
-            enemy
-            [beginSkillTest sid iid attrs enemy #intellect (EnemyMaybeFieldCalculation enemy EnemyFight)]
-          | enemy <- enemies
-          ]
+      chooseTargetM iid enemies \enemy ->
+        beginSkillTest sid iid attrs enemy #intellect (EnemyMaybeFieldCalculation enemy EnemyFight)
       pure e
     PassedThisSkillTestBy _ (isSource attrs -> True) n -> do
-      mtarget <- getSkillTestTarget
-      case mtarget of
-        Just (EnemyTarget enemyId) ->
-          push =<< createCardEffect Cards.exposeWeakness1 (Just $ EffectInt n) attrs enemyId
-        _ -> error "had to have an enemy"
+      getSkillTestTargetedEnemy
+        >>= traverse_ (createCardEffect Cards.exposeWeakness1 (Just $ EffectInt n) attrs)
       pure e
-    _ -> ExposeWeakness1 <$> runMessage msg attrs
+    _ -> ExposeWeakness1 <$> liftRunMessage msg attrs
 
 newtype ExposeWeakness1Effect = ExposeWeakness1Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -51,19 +40,15 @@ exposeWeakness1Effect = cardEffect ExposeWeakness1Effect Cards.exposeWeakness1
 
 instance HasModifiersFor ExposeWeakness1Effect where
   getModifiersFor (ExposeWeakness1Effect attrs) = do
-    case effectMetadata attrs of
+    case attrs.meta of
       Just (EffectInt n) -> modified_ attrs attrs.target [Mods.EnemyFight (-n)]
       _ -> error "invalid effect metadata"
 
 instance RunMessage ExposeWeakness1Effect where
-  runMessage msg e@(ExposeWeakness1Effect attrs) = case msg of
+  runMessage msg e@(ExposeWeakness1Effect attrs) = runQueueT $ case msg of
     PassedSkillTest _ (Just Action.Fight) _ (Initiator target) _ _ | target == attrs.target -> do
-      push $ disable attrs
-      pure e
+      disableReturn e
     FailedSkillTest _ (Just Action.Fight) _ (Initiator target) _ _ | target == attrs.target -> do
-      push $ disable attrs
-      pure e
-    EndPhase -> do
-      push $ disable attrs
-      pure e
-    _ -> ExposeWeakness1Effect <$> runMessage msg attrs
+      disableReturn e
+    EndPhase -> disableReturn e
+    _ -> ExposeWeakness1Effect <$> liftRunMessage msg attrs

@@ -1,11 +1,10 @@
-module Arkham.Asset.Assets.StrangeSolution (strangeSolution, StrangeSolution (..)) where
+module Arkham.Asset.Assets.StrangeSolution (strangeSolution) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.CampaignLogKey
-import Arkham.Capability
-import Arkham.Prelude
+import Arkham.Message.Lifted.Log
 
 newtype StrangeSolution = StrangeSolution AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -15,20 +14,17 @@ strangeSolution :: AssetCard StrangeSolution
 strangeSolution = asset StrangeSolution Cards.strangeSolution
 
 instance HasAbilities StrangeSolution where
-  getAbilities (StrangeSolution x) = [skillTestAbility $ restrictedAbility x 1 ControlsThis actionAbility]
+  getAbilities (StrangeSolution x) = [skillTestAbility $ restricted x 1 ControlsThis actionAbility]
 
 instance RunMessage StrangeSolution where
-  runMessage msg a@(StrangeSolution attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg a@(StrangeSolution attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 4)
+      beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 4)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      let drawing = drawCards iid (attrs.ability 1) 2
-      canDraw <- can.draw.cards iid
-      pushAll
-        $ toDiscardBy iid (attrs.ability 1) attrs
-        : [drawing | canDraw]
-          <> [Record YouHaveIdentifiedTheSolution]
+      toDiscardBy iid (attrs.ability 1) attrs
+      drawCards iid (attrs.ability 1) 2
+      record YouHaveIdentifiedTheSolution
       pure a
-    _ -> StrangeSolution <$> runMessage msg attrs
+    _ -> StrangeSolution <$> liftRunMessage msg attrs

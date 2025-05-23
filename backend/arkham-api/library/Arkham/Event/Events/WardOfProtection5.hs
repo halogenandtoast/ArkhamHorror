@@ -1,4 +1,4 @@
-module Arkham.Event.Events.WardOfProtection5 (wardOfProtection5, WardOfProtection5 (..)) where
+module Arkham.Event.Events.WardOfProtection5 (wardOfProtection5) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted

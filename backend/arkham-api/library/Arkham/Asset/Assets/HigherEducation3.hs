@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.HigherEducation3 (higherEducation3, HigherEducation3 (..)) where
+module Arkham.Asset.Assets.HigherEducation3 (higherEducation3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards

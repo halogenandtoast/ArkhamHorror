@@ -1,9 +1,8 @@
 module Arkham.Asset.Assets.Bandolier (bandolier) where
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Prelude
 import Arkham.Slot
 import Arkham.Trait
 
@@ -18,9 +17,9 @@ slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Weapon []
 
 instance RunMessage Bandolier where
-  runMessage msg (Bandolier attrs) = case msg of
+  runMessage msg (Bandolier attrs) = runQueueT $ case msg of
     -- Slots need to be added before the asset is played so we hook into played card
     CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       push $ AddSlot iid HandSlot (slot attrs)
-      Bandolier <$> runMessage msg attrs
-    _ -> Bandolier <$> runMessage msg attrs
+      Bandolier <$> liftRunMessage msg attrs
+    _ -> Bandolier <$> liftRunMessage msg attrs

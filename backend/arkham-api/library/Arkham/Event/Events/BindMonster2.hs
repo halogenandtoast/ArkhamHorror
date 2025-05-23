@@ -1,4 +1,4 @@
-module Arkham.Event.Events.BindMonster2 (bindMonster2, bindMonster2Effect, BindMonster2 (..)) where
+module Arkham.Event.Events.BindMonster2 (bindMonster2, bindMonster2Effect) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -66,5 +66,5 @@ instance RunMessage BindMonster2Effect where
           disable attrs
         _ -> pure ()
       pure e
-    SkillTestEnds _ _ _ -> disableReturn e
+    SkillTestEnds {} -> disableReturn e
     _ -> BindMonster2Effect <$> liftRunMessage msg attrs

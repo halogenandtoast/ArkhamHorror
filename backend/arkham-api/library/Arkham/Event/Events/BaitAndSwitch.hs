@@ -1,8 +1,7 @@
-module Arkham.Event.Events.BaitAndSwitch where
+module Arkham.Event.Events.BaitAndSwitch (baitAndSwitch) where
 
 import Arkham.Action qualified as Action
 import Arkham.Classes.HasQueue (evalQueueT)
-import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards (baitAndSwitch)
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher hiding (EnemyEvaded)
@@ -16,9 +15,9 @@ baitAndSwitch = event BaitAndSwitch Cards.baitAndSwitch
 
 instance RunMessage BaitAndSwitch where
   runMessage msg e@(BaitAndSwitch attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | eid == attrs.id -> do
+    PlayThisEvent iid (is attrs -> True)-> do
       sid <- getRandom
-      pushM $ setTarget attrs <$> mkChooseEvade sid iid attrs
+      chooseEvadeEnemyEdit sid iid attrs (setTarget attrs)
       pure e
     Successful (Action.Evade, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
       nonElite <- elem eid <$> select NonEliteEnemy

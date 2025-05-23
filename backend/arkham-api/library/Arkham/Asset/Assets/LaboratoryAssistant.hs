@@ -2,10 +2,9 @@ module Arkham.Asset.Assets.LaboratoryAssistant (laboratoryAssistant) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype LaboratoryAssistant = LaboratoryAssistant AssetAttrs
   deriving anyclass IsAsset
@@ -25,8 +24,8 @@ instance HasAbilities LaboratoryAssistant where
     ]
 
 instance RunMessage LaboratoryAssistant where
-  runMessage msg a@(LaboratoryAssistant attrs) = case msg of
+  runMessage msg a@(LaboratoryAssistant attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ drawCards iid (toAbilitySource attrs 1) 2
+      drawCards iid (attrs.ability 1) 2
       pure a
-    _ -> LaboratoryAssistant <$> runMessage msg attrs
+    _ -> LaboratoryAssistant <$> liftRunMessage msg attrs

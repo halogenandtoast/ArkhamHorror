@@ -1,14 +1,7 @@
-module Arkham.Event.Events.EmergencyAid (
-  emergencyAid,
-  EmergencyAid (..),
-) where
+module Arkham.Event.Events.EmergencyAid (emergencyAid) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
-import Arkham.Damage
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 
@@ -20,35 +13,19 @@ emergencyAid :: EventCard EmergencyAid
 emergencyAid = event EmergencyAid Cards.emergencyAid
 
 instance RunMessage EmergencyAid where
-  runMessage msg e@(EmergencyAid attrs@EventAttrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
+  runMessage msg e@(EmergencyAid attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       iids <- select =<< guardAffectsColocated iid
 
-      player <- getPlayer iid
-      choices <- flip mapMaybeM iids $ \iid' -> do
-        healableAllies <-
-          select
-            $ HealableAsset (toSource attrs) DamageType
-            $ AllyAsset
-            <> assetControlledBy iid'
-        healable <- canHaveDamageHealed attrs iid'
+      chooseOneM iid do
+        for_ iids \iid' -> do
+          healableAllies <-
+            select $ HealableAsset (toSource attrs) #damage $ AllyAsset <> assetControlledBy iid'
 
-        pure
-          $ if healable || notNull healableAllies
-            then
-              Just
-                $ targetLabel
-                  iid'
-                  [ chooseOrRunOne player
-                      $ [ targetLabel iid' [HealDamage (InvestigatorTarget iid') (toSource attrs) 2]
-                        | healable
-                        ]
-                      <> [ targetLabel asset [HealDamage (AssetTarget asset) (toSource attrs) 2]
-                         | asset <- healableAllies
-                         ]
-                  ]
-            else Nothing
-
-      pushAll [chooseOne player choices]
+          targeting iid' do
+            chooseOrRunOneM iid do
+              whenM (canHaveDamageHealed attrs iid') $ targeting iid' $ healDamage iid' attrs 2
+              for_ healableAllies \asset ->
+                targeting asset $ healDamage asset attrs 2
       pure e
-    _ -> EmergencyAid <$> runMessage msg attrs
+    _ -> EmergencyAid <$> liftRunMessage msg attrs

@@ -1,11 +1,9 @@
 module Arkham.Skill.Cards.DoubleOrNothing (doubleOrNothing) where
 
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestId)
-import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype DoubleOrNothing = DoubleOrNothing SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
@@ -21,5 +19,4 @@ instance HasModifiersFor DoubleOrNothing where
       Just sid -> modified_ attrs (SkillTestTarget sid) [DoubleDifficulty, DoubleSuccess]
 
 instance RunMessage DoubleOrNothing where
-  runMessage msg (DoubleOrNothing attrs) =
-    DoubleOrNothing <$> runMessage msg attrs
+  runMessage msg (DoubleOrNothing attrs) = DoubleOrNothing <$> runMessage msg attrs

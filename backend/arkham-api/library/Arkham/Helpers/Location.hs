@@ -20,7 +20,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Treachery.Types (Field (..))
+import Arkham.Treachery.Types (Field (..), TreacheryAttrs)
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -103,6 +103,12 @@ instance Locateable AssetId where
   getLocationOf = field AssetPlacement >=> placementLocation
 
 instance Locateable AssetAttrs where
+  getLocationOf = getLocationOf . toId
+
+instance Locateable TreacheryId where
+  getLocationOf = field TreacheryPlacement >=> placementLocation
+
+instance Locateable TreacheryAttrs where
   getLocationOf = getLocationOf . toId
 
 instance Locateable Placement where

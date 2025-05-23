@@ -1,16 +1,10 @@
-module Arkham.Skill.Cards.RiseToTheOccasion3 (
-  riseToTheOccasion3,
-  RiseToTheOccasion3 (..),
-) where
+module Arkham.Skill.Cards.RiseToTheOccasion3 (riseToTheOccasion3) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype RiseToTheOccasion3 = RiseToTheOccasion3 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)

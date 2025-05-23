@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.LoneWolf (loneWolf, LoneWolf (..)) where
+module Arkham.Asset.Assets.LoneWolf (loneWolf) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -13,7 +13,7 @@ loneWolf :: AssetCard LoneWolf
 loneWolf = asset LoneWolf Cards.loneWolf
 
 instance HasAbilities LoneWolf where
-  getAbilities (LoneWolf x) = [controlledAbility x 1 InvestigatorIsAlone $ freeReaction $ TurnBegins #when You]
+  getAbilities (LoneWolf x) = [controlled x 1 InvestigatorIsAlone $ freeReaction $ TurnBegins #when You]
 
 instance RunMessage LoneWolf where
   runMessage msg a@(LoneWolf attrs) = runQueueT $ case msg of

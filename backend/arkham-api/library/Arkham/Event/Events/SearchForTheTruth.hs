@@ -1,10 +1,8 @@
-module Arkham.Event.Events.SearchForTheTruth where
+module Arkham.Event.Events.SearchForTheTruth (searchForTheTruth) where
 
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Prelude
 import Arkham.Projection
 
 newtype SearchForTheTruth = SearchForTheTruth EventAttrs
@@ -15,9 +13,9 @@ searchForTheTruth :: EventCard SearchForTheTruth
 searchForTheTruth = event SearchForTheTruth Cards.searchForTheTruth
 
 instance RunMessage SearchForTheTruth where
-  runMessage msg e@(SearchForTheTruth attrs) = case msg of
+  runMessage msg e@(SearchForTheTruth attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       x <- fieldMap InvestigatorClues (min 5) iid
-      push $ drawCards iid attrs x
+      drawCards iid attrs x
       pure e
-    _ -> SearchForTheTruth <$> runMessage msg attrs
+    _ -> SearchForTheTruth <$> liftRunMessage msg attrs

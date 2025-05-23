@@ -1,13 +1,7 @@
-module Arkham.Skill.Cards.RiseToTheOccasion (
-  riseToTheOccasion,
-  RiseToTheOccasion (..),
-) where
+module Arkham.Skill.Cards.RiseToTheOccasion (riseToTheOccasion) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype RiseToTheOccasion = RiseToTheOccasion SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -17,5 +11,4 @@ riseToTheOccasion :: SkillCard RiseToTheOccasion
 riseToTheOccasion = skill RiseToTheOccasion Cards.riseToTheOccasion
 
 instance RunMessage RiseToTheOccasion where
-  runMessage msg (RiseToTheOccasion attrs) =
-    RiseToTheOccasion <$> runMessage msg attrs
+  runMessage msg (RiseToTheOccasion attrs) = RiseToTheOccasion <$> runMessage msg attrs

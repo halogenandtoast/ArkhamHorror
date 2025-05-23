@@ -1,4 +1,4 @@
-module Arkham.Event.Events.IveGotAPlan (iveGotAPlan, IveGotAPlan (..)) where
+module Arkham.Event.Events.IveGotAPlan (iveGotAPlan) where
 
 import Arkham.Aspect hiding (aspect)
 import Arkham.Event.Cards qualified as Cards
@@ -16,7 +16,7 @@ iveGotAPlan = event IveGotAPlan Cards.iveGotAPlan
 
 instance RunMessage IveGotAPlan where
   runMessage msg e@(IveGotAPlan attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | eid == attrs.id -> do
+    PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
       skillTestModifier sid attrs iid
         $ ForEach

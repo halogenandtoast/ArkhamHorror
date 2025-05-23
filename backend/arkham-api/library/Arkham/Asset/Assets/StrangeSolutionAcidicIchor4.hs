@@ -3,10 +3,10 @@ module Arkham.Asset.Assets.StrangeSolutionAcidicIchor4 (strangeSolutionAcidicIch
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Fight
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.Helpers.Modifiers
-import Arkham.Prelude
+import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestSource)
 import Arkham.SkillType
 import Arkham.Taboo
 
@@ -30,9 +30,9 @@ instance HasModifiersFor StrangeSolutionAcidicIchor4 where
       pure [BaseSkillOf SkillCombat 6, DamageDealt $ if tabooed TabooList20 a then 1 else 2]
 
 instance RunMessage StrangeSolutionAcidicIchor4 where
-  runMessage msg a@(StrangeSolutionAcidicIchor4 attrs) = case msg of
+  runMessage msg a@(StrangeSolutionAcidicIchor4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      pushM $ mkChooseFight sid iid (attrs.ability 1)
+      chooseFightEnemy sid iid (attrs.ability 1)
       pure a
-    _ -> StrangeSolutionAcidicIchor4 <$> runMessage msg attrs
+    _ -> StrangeSolutionAcidicIchor4 <$> liftRunMessage msg attrs

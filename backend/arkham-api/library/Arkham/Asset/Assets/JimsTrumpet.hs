@@ -1,11 +1,11 @@
-module Arkham.Asset.Assets.JimsTrumpet (JimsTrumpet (..), jimsTrumpet) where
+module Arkham.Asset.Assets.JimsTrumpet (jimsTrumpet) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Helpers.Investigator
+import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
+import Arkham.Helpers.Location
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 
 newtype JimsTrumpet = JimsTrumpet AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -16,31 +16,25 @@ jimsTrumpet = asset JimsTrumpet Cards.jimsTrumpet
 
 instance HasAbilities JimsTrumpet where
   getAbilities (JimsTrumpet x) =
-    [ controlledAbility
+    [ controlled
         x
         1
         ( exists (HealableInvestigator (toSource x) #horror $ at_ (oneOf [YourLocation, ConnectedLocation]))
             <> DuringSkillTest AnySkillTest
         )
-        $ ReactionAbility (RevealChaosToken #when Anyone #skull) (exhaust x)
+        $ triggered (RevealChaosToken #when Anyone #skull) (exhaust x)
     ]
 
 instance RunMessage JimsTrumpet where
-  runMessage msg a@(JimsTrumpet attrs) = case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      case attrs.controller of
-        Just controller -> do
-          location <- getJustLocation controller
+  runMessage msg a@(JimsTrumpet attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      for_ attrs.controller \controller -> do
+        withLocationOf controller \loc -> do
           investigators <-
             select
               $ HealableInvestigator (attrs.ability 1) #horror
-              $ oneOf [colocatedWith controller, InvestigatorAt (accessibleFrom location)]
+              $ oneOf [colocatedWith controller, InvestigatorAt (accessibleFrom loc)]
 
-          player <- getPlayer controller
-          push
-            $ chooseOne
-              player
-              [targetLabel iid [HealHorror (toTarget iid) (attrs.ability 1) 1] | iid <- investigators]
-          pure a
-        _ -> error "Invalid call"
-    _ -> JimsTrumpet <$> runMessage msg attrs
+          chooseTargetM iid investigators \x -> healHorror x (attrs.ability 1) 1
+      pure a
+    _ -> JimsTrumpet <$> liftRunMessage msg attrs

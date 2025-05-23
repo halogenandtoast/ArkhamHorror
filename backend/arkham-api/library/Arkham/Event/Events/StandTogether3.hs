@@ -1,4 +1,4 @@
-module Arkham.Event.Events.StandTogether3 (standTogether3, StandTogether3 (..)) where
+module Arkham.Event.Events.StandTogether3 (standTogether3) where
 
 import Arkham.Capability
 import Arkham.Event.Cards qualified as Cards

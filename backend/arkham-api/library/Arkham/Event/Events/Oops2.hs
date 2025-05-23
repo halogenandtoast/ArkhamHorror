@@ -1,4 +1,4 @@
-module Arkham.Event.Events.Oops2 (oops2, Oops2 (..)) where
+module Arkham.Event.Events.Oops2 (oops2) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted

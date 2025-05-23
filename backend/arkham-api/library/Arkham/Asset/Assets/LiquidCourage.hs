@@ -1,11 +1,12 @@
-module Arkham.Asset.Assets.LiquidCourage (liquidCourage, LiquidCourage (..)) where
+module Arkham.Asset.Assets.LiquidCourage (liquidCourage) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Damage
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 
 newtype LiquidCourage = LiquidCourage AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -16,37 +17,25 @@ liquidCourage = asset LiquidCourage Cards.liquidCourage
 
 instance HasAbilities LiquidCourage where
   getAbilities (LiquidCourage x) =
-    [ controlledAbility
-        x
-        1
-        (exists (HealableInvestigator (toSource x) #horror $ colocatedWithMatch You))
+    [ controlled x 1 (exists (HealableInvestigator (toSource x) #horror $ colocatedWithMatch You))
         $ actionAbilityWithCost (assetUseCost x Supply 1)
     ]
 
 instance RunMessage LiquidCourage where
-  runMessage msg a@(LiquidCourage attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      iids <- select $ HealableInvestigator (toSource attrs) HorrorType $ colocatedWith iid
-      player <- getPlayer iid
+  runMessage msg a@(LiquidCourage attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      iids <- select $ HealableInvestigator (toSource attrs) #horror $ colocatedWith iid
       sid <- getRandom
-      pushIfAny iids
-        $ chooseOrRunOne
-          player
-          [ targetLabel
-            iid'
-            [ HealHorrorWithAdditional (toTarget iid') (toSource attrs) 1
-            , beginSkillTest sid iid' (attrs.ability 1) iid' #willpower (Fixed 2)
-            ]
-          | iid' <- iids
-          ]
+      chooseOrRunOneM iid do
+        targets iids \iid' -> do
+          push $ HealHorrorWithAdditional (toTarget iid') (toSource attrs) 1
+          beginSkillTest sid iid' (attrs.ability 1) iid' #willpower (Fixed 2)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ AdditionalHealHorror (toTarget iid) (toSource attrs) 1
       pure a
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      pushAll
-        [ AdditionalHealHorror (toTarget iid) (toSource attrs) 0
-        , toMessage $ randomDiscard iid (toSource attrs)
-        ]
+      push $ AdditionalHealHorror (toTarget iid) (toSource attrs) 0
+      randomDiscard iid (toSource attrs)
       pure a
-    _ -> LiquidCourage <$> runMessage msg attrs
+    _ -> LiquidCourage <$> liftRunMessage msg attrs

@@ -2,11 +2,14 @@ module Arkham.Asset.Assets.Blackjack2 (blackjack2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Fight
-import Arkham.Helpers.Modifiers
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
+import Arkham.Helpers.SkillTest (
+  getSkillTestInvestigator,
+  getSkillTestSource,
+  getSkillTestTargetedEnemy,
+ )
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype Blackjack2 = Blackjack2 AssetAttrs
   deriving anyclass IsAsset
@@ -20,7 +23,7 @@ instance HasModifiersFor Blackjack2 where
     getSkillTestInvestigator >>= \case
       Just iid -> maybeModified_ attrs iid do
         (isAbilitySource attrs 1 -> True) <- MaybeT getSkillTestSource
-        EnemyTarget eid <- MaybeT getSkillTestTarget
+        eid <- MaybeT getSkillTestTargetedEnemy
         guardM $ lift $ selectAny $ investigatorEngagedWith eid <> notInvestigator iid
         pure [DamageDealt 1]
       Nothing -> pure mempty
@@ -29,13 +32,11 @@ instance HasAbilities Blackjack2 where
   getAbilities (Blackjack2 a) = [fightAbility a 1 mempty ControlsThis]
 
 instance RunMessage Blackjack2 where
-  runMessage msg a@(Blackjack2 attrs) = case msg of
+  runMessage msg a@(Blackjack2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
       sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFight sid iid source
-      enabled <-
-        skillTestModifiers sid source iid [SkillModifier #combat 2, DoesNotDamageOtherInvestigator]
-      pushAll [enabled, chooseFight]
+      skillTestModifiers sid source iid [SkillModifier #combat 2, DoesNotDamageOtherInvestigator]
+      chooseFightEnemy sid iid source
       pure a
-    _ -> Blackjack2 <$> runMessage msg attrs
+    _ -> Blackjack2 <$> liftRunMessage msg attrs

@@ -1,10 +1,9 @@
 module Arkham.Asset.Assets.Newspaper (newspaper) where
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Prelude
 import Arkham.Projection
 
 newtype Newspaper = Newspaper AssetAttrs

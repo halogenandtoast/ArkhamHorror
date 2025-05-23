@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Shrivelling5 (Shrivelling5 (..), shrivelling5) where
+module Arkham.Asset.Assets.Shrivelling5 (shrivelling5) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)

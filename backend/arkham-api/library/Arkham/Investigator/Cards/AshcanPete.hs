@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.AshcanPete (AshcanPete (..), ashcanPete) where
+module Arkham.Investigator.Cards.AshcanPete (ashcanPete) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets

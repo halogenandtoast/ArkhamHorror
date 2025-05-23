@@ -3,10 +3,10 @@ module Arkham.Asset.Assets.StrangeSolutionFreezingVariant4 (strangeSolutionFreez
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Evade
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.Helpers.Modifiers
-import Arkham.Prelude
+import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestSource)
 
 newtype StrangeSolutionFreezingVariant4 = StrangeSolutionFreezingVariant4 AssetAttrs
   deriving anyclass IsAsset
@@ -18,7 +18,7 @@ strangeSolutionFreezingVariant4 =
 
 instance HasAbilities StrangeSolutionFreezingVariant4 where
   getAbilities (StrangeSolutionFreezingVariant4 attrs) =
-    [restrictedAbility attrs 1 ControlsThis $ evadeAction $ assetUseCost attrs Supply 1]
+    [restricted attrs 1 ControlsThis $ evadeAction $ assetUseCost attrs Supply 1]
 
 instance HasModifiersFor StrangeSolutionFreezingVariant4 where
   getModifiersFor (StrangeSolutionFreezingVariant4 a) = case a.controller of
@@ -30,9 +30,9 @@ instance HasModifiersFor StrangeSolutionFreezingVariant4 where
       pure [BaseSkillOf #agility 6]
 
 instance RunMessage StrangeSolutionFreezingVariant4 where
-  runMessage msg a@(StrangeSolutionFreezingVariant4 attrs) = case msg of
+  runMessage msg a@(StrangeSolutionFreezingVariant4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      pushM $ mkChooseEvade sid iid (attrs.ability 1)
+      chooseEvadeEnemy sid iid (attrs.ability 1)
       pure a
-    _ -> StrangeSolutionFreezingVariant4 <$> runMessage msg attrs
+    _ -> StrangeSolutionFreezingVariant4 <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.KeenEye3 (keenEye3, KeenEye3 (..)) where
+module Arkham.Asset.Assets.KeenEye3 (keenEye3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards

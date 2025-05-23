@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.WrackedByNightmares (WrackedByNightmares (..), wrackedByNightmares) where
+module Arkham.Treachery.Cards.WrackedByNightmares (wrackedByNightmares) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
@@ -19,7 +19,7 @@ instance HasModifiersFor WrackedByNightmares where
     inThreatAreaGets attrs [ControlledAssetsCannotReady]
 
 instance HasAbilities WrackedByNightmares where
-  getAbilities (WrackedByNightmares a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]
+  getAbilities (WrackedByNightmares a) = [restricted a 1 OnSameLocation doubleActionAbility]
 
 instance RunMessage WrackedByNightmares where
   runMessage msg t@(WrackedByNightmares attrs) = runQueueT $ case msg of

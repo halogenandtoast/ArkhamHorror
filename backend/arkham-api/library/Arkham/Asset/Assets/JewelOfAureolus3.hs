@@ -1,17 +1,13 @@
-module Arkham.Asset.Assets.JewelOfAureolus3 (
-  jewelOfAureolus3,
-  JewelOfAureolus3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.JewelOfAureolus3 (jewelOfAureolus3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
+import Arkham.Capability
 import Arkham.ChaosToken
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Taboo
-import Arkham.Timing qualified as Timing
 import Arkham.Window qualified as Window
 
 newtype JewelOfAureolus3 = JewelOfAureolus3 AssetAttrs
@@ -23,9 +19,9 @@ jewelOfAureolus3 = asset JewelOfAureolus3 Cards.jewelOfAureolus3
 
 instance HasAbilities JewelOfAureolus3 where
   getAbilities (JewelOfAureolus3 x) =
-    [ restrictedAbility x 1 ControlsThis
-        $ ReactionAbility
-          ( RevealChaosToken Timing.When (colocatedWithMatch You)
+    [ restricted x 1 ControlsThis
+        $ triggered
+          ( RevealChaosToken #when (colocatedWithMatch You)
               $ if tabooed TabooList20 x
                 then IsSymbol
                 else ChaosTokenMatchesAny (map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail])
@@ -34,17 +30,15 @@ instance HasAbilities JewelOfAureolus3 where
     ]
 
 instance RunMessage JewelOfAureolus3 where
-  runMessage msg a@(JewelOfAureolus3 attrs) = case msg of
+  runMessage msg a@(JewelOfAureolus3 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> tokens) _ -> do
-      let drawing = drawCards iid (toAbilitySource attrs 1) 1
-      player <- getPlayer iid
-      push
-        $ If (Window.RevealChaosTokenAssetAbilityEffect iid tokens (toId attrs))
-        $ [ chooseOne
-              player
-              [ Label "Draw 1 Card" [drawing]
-              , Label "Take 2 Resources" [TakeResources iid 2 (toAbilitySource attrs 1) False]
-              ]
-          ]
+      push $ If (Window.RevealChaosTokenAssetAbilityEffect iid tokens (toId attrs)) [Do msg]
       pure a
-    _ -> JewelOfAureolus3 <$> runMessage msg attrs
+    Do (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      chooseOneM iid do
+        whenM (can.draw.cards iid) do
+          labeled "Draw 1 Card" $ drawCards iid (attrs.ability 1) 1
+        whenM (can.gain.resources iid) do
+          labeled "Take 2 Resources" $ gainResources iid (attrs.ability 1) 2
+      pure a
+    _ -> JewelOfAureolus3 <$> liftRunMessage msg attrs

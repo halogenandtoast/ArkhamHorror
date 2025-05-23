@@ -1,12 +1,12 @@
 module Arkham.Investigator.Cards.WendyAdams (wendyAdams) where
 
 import Arkham.Ability
-import Arkham.Script
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Import.Lifted hiding (drawAnotherChaosToken, cancelChaosToken)
+import Arkham.Investigator.Import.Lifted hiding (cancelChaosToken, drawAnotherChaosToken)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
+import Arkham.Script
 
 newtype WendyAdams = WendyAdams InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -27,7 +27,7 @@ instance HasAbilities WendyAdams where
   getAbilities (WendyAdams attrs) =
     [ playerLimit PerTestOrAbility
         $ restricted attrs 1 Self
-        $ ReactionAbility (Matcher.RevealChaosToken #when You $ CancelableChaosToken AnyChaosToken)
+        $ triggered (Matcher.RevealChaosToken #when You $ CancelableChaosToken AnyChaosToken)
         $ HandDiscardCost 1 #any
     ]
 

@@ -59,6 +59,9 @@ instance IsLabel "horror" Token where
 instance IsLabel "resource" Token where
   fromLabel = Resource
 
+instance IsLabel "supply" Token where
+  fromLabel = Supply
+
 instance IsLabel "charge" Token where
   fromLabel = Charge
 

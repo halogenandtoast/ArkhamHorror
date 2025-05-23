@@ -31,6 +31,7 @@ instance HasAbilities TheNecronomicon where
 instance RunMessage TheNecronomicon where
   runMessage = script do
     revelation placeInYourThreatArea
-    onAbilityThen 1
+    onAbilityThen
+      1
       (moveTokens this you #horror 1)
       (when (this.horror == 0) discardThis)

@@ -1,10 +1,10 @@
 module Arkham.Asset.Assets.HeirloomOfHyperborea (heirloomOfHyperborea) where
 
 import Arkham.Ability hiding (you)
-import Arkham.Script
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PlayCard)
 import Arkham.Matcher
+import Arkham.Script
 
 newtype HeirloomOfHyperborea = HeirloomOfHyperborea AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

@@ -485,6 +485,11 @@ getDamageSource = \case
   ((windowType -> Window.DealtExcessDamage source _ _ _) : _) -> source
   (_ : rest) -> getDamageSource rest
 
+getDamageSourceEnemy :: HasCallStack => [Window] -> EnemyId
+getDamageSourceEnemy ws = case (getDamageSource ws).enemy of
+  Nothing -> error "Source was not enemy"
+  Just eid -> eid
+
 getDamageOrHorrorSource :: HasCallStack => [Window] -> Source
 getDamageOrHorrorSource = \case
   [] -> error "No damage"

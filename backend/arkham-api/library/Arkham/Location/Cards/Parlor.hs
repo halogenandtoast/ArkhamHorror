@@ -8,6 +8,7 @@ import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenarios.TheGathering.Helpers
 
 newtype Parlor = Parlor LocationAttrs
   deriving anyclass IsLocation
@@ -23,8 +24,7 @@ instance HasAbilities Parlor where
   getAbilities (Parlor a) =
     extendRevealed
       a
-      [ withTooltip "\"This is too much for me!\" You run out the front door, fleeing in panic."
-          $ locationResignAction a
+      [ scenarioI18n $ withI18nTooltip "parlor.resign" $ locationResignAction a
       , skillTestAbility
           $ restricted (proxied (assetIs Cards.litaChantler) a) 1 (Uncontrolled <> OnSameLocation) #parley
       ]

@@ -1,4 +1,4 @@
-module Arkham.Event.Events.WorkingAHunch where
+module Arkham.Event.Events.WorkingAHunch (workingAHunch) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted

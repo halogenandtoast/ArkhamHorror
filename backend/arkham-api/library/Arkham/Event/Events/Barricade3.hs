@@ -6,7 +6,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Placement
 import Arkham.Projection
 
 newtype Barricade3 = Barricade3 EventAttrs

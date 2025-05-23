@@ -1,11 +1,9 @@
 module Arkham.Enemy.Cards.AcolyteOfUmordhoth (acolyteOfUmordhoth) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype AcolyteOfUmordhoth = AcolyteOfUmordhoth EnemyAttrs
   deriving anyclass IsEnemy
@@ -13,9 +11,8 @@ newtype AcolyteOfUmordhoth = AcolyteOfUmordhoth EnemyAttrs
 
 acolyteOfUmordhoth :: EnemyCard AcolyteOfUmordhoth
 acolyteOfUmordhoth =
-  enemyWith AcolyteOfUmordhoth Cards.acolyteOfUmordhoth (3, Static 3, 2) (1, 1)
-    $ preyL
-    .~ Prey FewestCardsInHand
+  enemy AcolyteOfUmordhoth Cards.acolyteOfUmordhoth (3, Static 3, 2) (1, 1)
+    & setPrey FewestCardsInHand
 
 instance HasModifiersFor AcolyteOfUmordhoth where
   getModifiersFor (AcolyteOfUmordhoth a) = do

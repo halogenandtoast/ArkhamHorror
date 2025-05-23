@@ -1,11 +1,10 @@
 module Arkham.Event.Events.Elusive (elusive) where
 
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Location
 import Arkham.Matcher
-import Arkham.Movement
+import Arkham.Message.Lifted.Move
 import Arkham.Taboo
 
 newtype Elusive = Elusive EventAttrs
@@ -28,8 +27,7 @@ instance RunMessage Elusive where
             then AccessibleFrom (locationWithInvestigator iid)
             else RevealedLocation
       for_ enemies $ disengageEnemy iid
-      when (notNull ts) do
-        chooseOrRunOne iid $ targetLabels ts (only . Move . move attrs iid)
+      chooseOrRunOneM iid $ targets ts (moveTo attrs iid)
       for_ enemies enemyCheckEngagement
       pure e
     _ -> Elusive <$> liftRunMessage msg attrs

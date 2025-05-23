@@ -1,18 +1,12 @@
-module Arkham.Location.Cards.RivertownAbandonedWarehouse (
-  RivertownAbandonedWarehouse (..),
-  rivertownAbandonedWarehouse,
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.RivertownAbandonedWarehouse (rivertownAbandonedWarehouse) where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (rivertownAbandonedWarehouse)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Message.Lifted.Choose
 import Arkham.Trait
 
 newtype RivertownAbandonedWarehouse = RivertownAbandonedWarehouse LocationAttrs
@@ -21,41 +15,25 @@ newtype RivertownAbandonedWarehouse = RivertownAbandonedWarehouse LocationAttrs
 
 rivertownAbandonedWarehouse :: LocationCard RivertownAbandonedWarehouse
 rivertownAbandonedWarehouse =
-  location
-    RivertownAbandonedWarehouse
-    Cards.rivertownAbandonedWarehouse
-    4
-    (PerPlayer 1)
+  location RivertownAbandonedWarehouse Cards.rivertownAbandonedWarehouse 4 (PerPlayer 1)
 
 instance HasAbilities RivertownAbandonedWarehouse where
-  getAbilities (RivertownAbandonedWarehouse attrs) =
-    withRevealedAbilities
-      attrs
-      $ [ limitedAbility (GroupLimit PerGame 1)
-            $ restrictedAbility attrs 1 Here
-            $ ActionAbility []
-            $ Costs
-              [ActionCost 1, HandDiscardCost 1 $ basic $ CardWithSkillIcon #willpower]
-        ]
+  getAbilities (RivertownAbandonedWarehouse a) =
+    extendRevealed1 a
+      $ groupLimit PerGame
+      $ restricted a 1 Here
+      $ actionAbilityWithCost (HandDiscardCost 1 $ basic $ CardWithSkillIcon #willpower)
 
 willpowerCount :: Payment -> Int
-willpowerCount (DiscardCardPayment cards) =
-  sum $ map (count (== SkillIcon SkillWillpower) . cdSkills . toCardDef) cards
+willpowerCount (DiscardCardPayment cards) = sum $ map (count (== #willpower) . cdSkills . toCardDef) cards
 willpowerCount (Payments xs) = sum $ map willpowerCount xs
 willpowerCount _ = 0
 
 instance RunMessage RivertownAbandonedWarehouse where
-  runMessage msg l@(RivertownAbandonedWarehouse attrs) = case msg of
-    UseCardAbility iid source 1 _ payments | isSource attrs source -> do
+  runMessage msg l@(RivertownAbandonedWarehouse attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 _ payments -> do
       let doomToRemove = willpowerCount payments
       cultists <- select $ EnemyWithTrait Cultist
-      player <- getPlayer iid
-      unless (null cultists)
-        $ push
-        $ chooseOne
-          player
-          [ targetLabel eid [RemoveDoom (toAbilitySource attrs 1) (EnemyTarget eid) doomToRemove]
-          | eid <- cultists
-          ]
+      chooseTargetM iid cultists \eid -> removeDoom (attrs.ability 1) eid doomToRemove
       pure l
-    _ -> RivertownAbandonedWarehouse <$> runMessage msg attrs
+    _ -> RivertownAbandonedWarehouse <$> liftRunMessage msg attrs

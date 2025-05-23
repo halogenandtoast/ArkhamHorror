@@ -1,14 +1,7 @@
-module Arkham.Enemy.Cards.CorpseHungryGhoul (
-  corpseHungryGhoul,
-  CorpseHungryGhoul (..),
-) where
+module Arkham.Enemy.Cards.CorpseHungryGhoul (corpseHungryGhoul) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
-import Arkham.Matcher
+import Arkham.Enemy.Import.Lifted
 
 newtype CorpseHungryGhoul = CorpseHungryGhoul EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -16,13 +9,8 @@ newtype CorpseHungryGhoul = CorpseHungryGhoul EnemyAttrs
 
 corpseHungryGhoul :: EnemyCard CorpseHungryGhoul
 corpseHungryGhoul =
-  enemyWith
-    CorpseHungryGhoul
-    Cards.corpseHungryGhoul
-    (4, Static 3, 3)
-    (2, 2)
-    (spawnAtL ?~ SpawnAt (LocationWithTitle "Bedroom"))
+  enemy CorpseHungryGhoul Cards.corpseHungryGhoul (4, Static 3, 3) (2, 2)
+    & setSpawnAt "Bedroom"
 
 instance RunMessage CorpseHungryGhoul where
-  runMessage msg (CorpseHungryGhoul attrs) =
-    CorpseHungryGhoul <$> runMessage msg attrs
+  runMessage msg (CorpseHungryGhoul attrs) = CorpseHungryGhoul <$> runMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.Hypochondria (Hypochondria (..), hypochondria) where
+module Arkham.Treachery.Cards.Hypochondria (hypochondria) where
 
 import Arkham.Ability
 import Arkham.Matcher
@@ -14,8 +14,8 @@ hypochondria = treachery Hypochondria Cards.hypochondria
 
 instance HasAbilities Hypochondria where
   getAbilities (Hypochondria a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $ forced $ DealtDamage #after AnySource You
-    , restrictedAbility a 2 OnSameLocation $ ActionAbility [] (ActionCost 2)
+    [ restricted a 1 (InThreatAreaOf You) $ forced $ DealtDamage #after AnySource You
+    , restricted a 2 OnSameLocation doubleActionAbility
     ]
 
 instance RunMessage Hypochondria where

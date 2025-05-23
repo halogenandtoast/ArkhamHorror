@@ -1,14 +1,9 @@
 module Arkham.Agenda.Cards.TheRitualBegins (theRitualBegins) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Card
-import Arkham.Classes
-import Arkham.GameValue
+import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait
 
 newtype TheRitualBegins = TheRitualBegins AgendaAttrs
@@ -16,33 +11,24 @@ newtype TheRitualBegins = TheRitualBegins AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theRitualBegins :: AgendaCard TheRitualBegins
-theRitualBegins =
-  agenda (2, A) TheRitualBegins Cards.theRitualBegins (Static 5)
+theRitualBegins = agenda (2, A) TheRitualBegins Cards.theRitualBegins (Static 5)
 
 instance HasModifiersFor TheRitualBegins where
   getModifiersFor (TheRitualBegins attrs) =
-    if onSide A attrs
-      then modifySelect attrs AnyEnemy [EnemyFight 1, EnemyEvade 1]
-      else pure mempty
+    when (onSide A attrs) $ modifySelect attrs AnyEnemy [EnemyFight 1, EnemyEvade 1]
 
 instance RunMessage TheRitualBegins where
-  runMessage msg a@(TheRitualBegins attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      investigators <- getInvestigators
-      sid <- getRandom
-      pushAll
-        $ [ beginSkillTest sid investigator attrs investigator #willpower (Fixed 6)
-          | investigator <- investigators
-          ]
-        <> [advanceAgendaDeck attrs]
+  runMessage msg a@(TheRitualBegins attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      eachInvestigator \iid -> do
+        sid <- getRandom
+        beginSkillTest sid iid attrs iid #willpower (Fixed 6)
+      advanceAgendaDeck attrs
       pure a
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
-      push
-        $ SearchCollectionForRandom iid (toSource attrs)
-        $ CardWithTrait Madness
-        <> BasicWeaknessCard
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      searchCollectionForRandomBasicWeakness iid attrs [Madness]
       pure a
-    RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
-      for_ mcard $ push . addToHand iid . PlayerCard
+    RequestedPlayerCard iid (isSource attrs -> True) (Just card) _ -> do
+      addToHand iid (only card)
       pure a
-    _ -> TheRitualBegins <$> runMessage msg attrs
+    _ -> TheRitualBegins <$> liftRunMessage msg attrs

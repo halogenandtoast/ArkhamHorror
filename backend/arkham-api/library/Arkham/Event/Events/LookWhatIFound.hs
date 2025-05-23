@@ -1,13 +1,7 @@
-module Arkham.Event.Events.LookWhatIFound where
+module Arkham.Event.Events.LookWhatIFound (lookWhatIFound) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
-import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Investigator
-import Arkham.Message qualified as Msg
+import Arkham.Event.Import.Lifted
 
 newtype LookWhatIFound = LookWhatIFound EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -17,9 +11,8 @@ lookWhatIFound :: EventCard LookWhatIFound
 lookWhatIFound = event LookWhatIFound Cards.lookWhatIFound
 
 instance RunMessage LookWhatIFound where
-  runMessage msg e@(LookWhatIFound attrs) = case msg of
-    PlayThisEvent iid eid | attrs `is` eid -> do
-      lid <- getJustLocation iid
-      push $ Msg.DiscoverClues iid $ discover lid attrs 2
+  runMessage msg e@(LookWhatIFound attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      discoverAtYourLocation NotInvestigate iid attrs 2
       pure e
-    _ -> LookWhatIFound <$> runMessage msg attrs
+    _ -> LookWhatIFound <$> liftRunMessage msg attrs

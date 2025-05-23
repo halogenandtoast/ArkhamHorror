@@ -1,12 +1,12 @@
-module Arkham.Treachery.Cards.FalseLead where
+module Arkham.Treachery.Cards.FalseLead (falseLead) where
 
-import Arkham.Classes
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype FalseLead = FalseLead TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -16,17 +16,16 @@ falseLead :: TreacheryCard FalseLead
 falseLead = treachery FalseLead Cards.falseLead
 
 instance RunMessage FalseLead where
-  runMessage msg t@(FalseLead attrs) = case msg of
+  runMessage msg t@(FalseLead attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       playerClueCount <- field InvestigatorClues iid
-      player <- getPlayer iid
-      sid <- getRandom
-      push
-        $ if playerClueCount == 0
-          then chooseOne player [Label "Surge" [gainSurge attrs]]
-          else revelationSkillTest sid iid attrs #intellect (Fixed 4)
+      if playerClueCount == 0
+        then withI18n $ chooseOneM iid $ labeled' "gainSurge" $ gainSurge attrs
+        else do
+          sid <- getRandom
+          revelationSkillTest sid iid attrs #intellect (Fixed 4)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      push $ InvestigatorPlaceCluesOnLocation iid (toSource attrs) n
+      placeCluesOnLocation iid attrs n
       pure t
-    _ -> FalseLead <$> runMessage msg attrs
+    _ -> FalseLead <$> liftRunMessage msg attrs

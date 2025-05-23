@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Encyclopedia2 (Encyclopedia2 (..), encyclopedia2) where
+module Arkham.Asset.Assets.Encyclopedia2 (encyclopedia2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards

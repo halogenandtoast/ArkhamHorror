@@ -1,4 +1,4 @@
-module Arkham.Event.Events.Backstab where
+module Arkham.Event.Events.Backstab (backstab) where
 
 import Arkham.Aspect hiding (aspect)
 import Arkham.Event.Cards qualified as Cards

@@ -7,7 +7,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Location
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Modifier
-import Arkham.Placement
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 

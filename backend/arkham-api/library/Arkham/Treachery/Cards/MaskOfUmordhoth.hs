@@ -1,15 +1,13 @@
 module Arkham.Treachery.Cards.MaskOfUmordhoth (maskOfUmordhoth) where
 
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype MaskOfUmordhoth = MaskOfUmordhoth TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
@@ -27,17 +25,14 @@ instance HasModifiersFor MaskOfUmordhoth where
     _ -> pure mempty
 
 instance RunMessage MaskOfUmordhoth where
-  runMessage msg t@(MaskOfUmordhoth attrs@TreacheryAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(MaskOfUmordhoth attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       enemies <- select $ FarthestEnemyFrom iid $ EnemyWithTrait Cultist
-      case enemies of
-        [] ->
-          pushAll
-            [ findAndDrawEncounterCard iid $ CardWithType EnemyType <> CardWithTrait Cultist
-            , Revelation iid source
-            ]
-        eids -> do
-          player <- getPlayer iid
-          push $ chooseOrRunOne player [targetLabel eid [attachTreachery treacheryId eid] | eid <- eids]
+      when (null enemies) $ findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Cultist
+      do_ msg
       pure t
-    _ -> MaskOfUmordhoth <$> runMessage msg attrs
+    Do (Revelation iid (isSource attrs -> True)) -> do
+      enemies <- select $ FarthestEnemyFrom iid $ EnemyWithTrait Cultist
+      chooseOrRunOneM iid $ targets enemies $ attachTreachery attrs
+      pure t
+    _ -> MaskOfUmordhoth <$> liftRunMessage msg attrs

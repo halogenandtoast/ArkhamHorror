@@ -1,7 +1,4 @@
-module Arkham.Location.Cards.SouthsideMasBoardingHouse (
-  SouthsideMasBoardingHouse (..),
-  southsideMasBoardingHouse,
-) where
+module Arkham.Location.Cards.SouthsideMasBoardingHouse (southsideMasBoardingHouse) where
 
 import Arkham.Ability
 import Arkham.Location.Cards qualified as Cards (southsideMasBoardingHouse)
@@ -17,7 +14,7 @@ southsideMasBoardingHouse = location SouthsideMasBoardingHouse Cards.southsideMa
 
 instance HasAbilities SouthsideMasBoardingHouse where
   getAbilities (SouthsideMasBoardingHouse x) =
-    extendRevealed x [playerLimit PerGame $ restrictedAbility x 1 Here actionAbility]
+    extendRevealed1 x $ playerLimit PerGame $ restricted x 1 Here actionAbility
 
 instance RunMessage SouthsideMasBoardingHouse where
   runMessage msg l@(SouthsideMasBoardingHouse attrs) = runQueueT $ case msg of

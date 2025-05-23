@@ -12,5 +12,14 @@
     "theRitualToSummonUmordhothWasBroken": "The ritual to summon Umordhoth was broken",
     "theInvestigatorsRepelledUmordoth": "The investigators repelled Umordoth",
     "theInvestigatorsSacrificedLitaChantlerToUmordhoth": "The investigators sacrificed Lita Chantler to Umordhoth"
+  },
+  "label": {
+    "offerOfPower": {
+      "drawAndPlaceDoom": "Draw 2 cards and place 2 doom on agenda"
+    },
+    "discipleOfTheDevourer": {
+      "doom": "Place 1 doom on Disciple of the Devourer",
+      "clue": "Place one of your clues on it's location"
+    }
   }
 }

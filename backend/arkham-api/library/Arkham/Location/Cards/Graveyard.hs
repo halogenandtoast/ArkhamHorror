@@ -1,13 +1,16 @@
 module Arkham.Location.Cards.Graveyard (graveyard) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Location
+import Arkham.Helpers.Query (getJustLocationByName)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards (graveyard)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
+import Arkham.Name
 
 newtype Graveyard = Graveyard LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -17,21 +20,19 @@ graveyard :: LocationCard Graveyard
 graveyard = location Graveyard Cards.graveyard 1 (PerPlayer 2)
 
 instance HasAbilities Graveyard where
-  getAbilities (Graveyard x) = withRevealedAbilities x [skillTestAbility $ mkAbility x 1 $ forced $ Enters #after You (be x)]
+  getAbilities (Graveyard x) = extendRevealed1 x $ skillTestAbility $ mkAbility x 1 $ forced $ Enters #after You (be x)
 
 instance RunMessage Graveyard where
-  runMessage msg l@(Graveyard attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(Graveyard attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       rivertown <- getJustLocationByName "Rivertown"
-      player <- getPlayer iid
-      canMoveToRivertown <- getCanMoveTo iid attrs rivertown
-      push
-        $ chooseOne player
-        $ [Label "Take 2 horror" [assignHorror iid (attrs.ability 1) 2]]
-        <> [Label "Move to Rivertown" [Move $ move (attrs.ability 1) iid rivertown] | canMoveToRivertown]
+      chooseOneM iid $ withI18n do
+        countVar 2 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 2
+        whenM (getCanMoveTo iid attrs rivertown) do
+          nameVar (mkName "Rivertown") $ labeled' "moveTo" $ moveTo (attrs.ability 1) iid rivertown
       pure l
-    _ -> Graveyard <$> runMessage msg attrs
+    _ -> Graveyard <$> liftRunMessage msg attrs

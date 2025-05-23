@@ -1,13 +1,10 @@
 module Arkham.Treachery.Cards.DissonantVoices (dissonantVoices) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Helpers.Modifiers (ModifierType (..), inThreatAreaGets)
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype DissonantVoices = DissonantVoices TreacheryAttrs
   deriving anyclass IsTreachery
@@ -18,21 +15,18 @@ dissonantVoices = treachery DissonantVoices Cards.dissonantVoices
 
 instance HasModifiersFor DissonantVoices where
   getModifiersFor (DissonantVoices attrs) =
-    inThreatAreaGets
-      attrs
-      [ CannotPlay (CardWithOneOf [#asset, #event])
-      ]
+    inThreatAreaGets attrs [CannotPlay (CardWithOneOf [#asset, #event])]
 
 instance HasAbilities DissonantVoices where
   getAbilities (DissonantVoices a) =
-    [restrictedAbility a 1 (InThreatAreaOf You) $ forced $ RoundEnds #when]
+    [restricted a 1 (InThreatAreaOf You) $ forced $ RoundEnds #when]
 
 instance RunMessage DissonantVoices where
-  runMessage msg t@(DissonantVoices attrs) = case msg of
+  runMessage msg t@(DissonantVoices attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ placeInThreatArea attrs iid
+      placeInThreatArea attrs iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ toDiscardBy iid (attrs.ability 1) attrs
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> DissonantVoices <$> runMessage msg attrs
+    _ -> DissonantVoices <$> liftRunMessage msg attrs

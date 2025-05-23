@@ -1,6 +1,5 @@
 module Arkham.Location.Cards.ArkhamWoodsCorpseRiddenClearing (arkhamWoodsCorpseRiddenClearing) where
 
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (arkhamWoodsCorpseRiddenClearing)

@@ -11,7 +11,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source

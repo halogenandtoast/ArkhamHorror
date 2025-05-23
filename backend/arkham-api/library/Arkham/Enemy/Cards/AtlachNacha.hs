@@ -15,7 +15,6 @@ import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Movement
-import Arkham.Placement
 import Arkham.Projection
 
 newtype Meta = Meta {rotation :: Int}

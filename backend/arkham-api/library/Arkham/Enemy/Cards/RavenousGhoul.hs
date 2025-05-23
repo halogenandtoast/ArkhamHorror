@@ -1,13 +1,7 @@
-module Arkham.Enemy.Cards.RavenousGhoul (
-  ravenousGhoul,
-  RavenousGhoul (..),
-) where
+module Arkham.Enemy.Cards.RavenousGhoul (ravenousGhoul) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
 
 newtype RavenousGhoul = RavenousGhoul EnemyAttrs

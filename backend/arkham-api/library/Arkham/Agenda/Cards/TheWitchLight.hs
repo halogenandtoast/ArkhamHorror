@@ -12,7 +12,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 
 newtype TheWitchLight = TheWitchLight AgendaAttrs
   deriving anyclass IsAgenda

@@ -5,7 +5,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Placement
 import Arkham.Token
 
 newtype BreachTheDoor = BreachTheDoor EventAttrs

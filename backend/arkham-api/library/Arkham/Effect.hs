@@ -96,7 +96,6 @@ import Arkham.Enemy.Enemies (
   boaConstrictorEffect,
   corruptedOrderlyEffect,
   ichtacaScionOfYigEffect,
-  jeremiahPierceEffect,
   tommyMalloyEffect,
   yogSothothEffect,
  )
@@ -553,7 +552,7 @@ allEffects =
     , ("10131", SomeEffect dawnStar1Effect)
     , ("11079", SomeEffect deliverance3Effect)
     , ("11124", SomeEffect dimensionalVortex5Effect)
-    , ("50044", SomeEffect jeremiahPierceEffect)
+    , ("50044", SomeEffect $ noop "50044")
     , ("52007", SomeEffect $ noop "52007")
     , ("52008", SomeEffect stormOfSpirits3Effect)
     , ("52015", SomeEffect theStrangerAlaranMistsEffect)

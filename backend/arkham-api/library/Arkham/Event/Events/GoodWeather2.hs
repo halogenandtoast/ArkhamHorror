@@ -6,7 +6,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher.Investigator
 import Arkham.Matcher.Window
-import Arkham.Placement
 
 newtype GoodWeather2 = GoodWeather2 EventAttrs
   deriving anyclass IsEvent

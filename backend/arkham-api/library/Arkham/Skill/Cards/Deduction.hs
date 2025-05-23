@@ -1,13 +1,11 @@
 module Arkham.Skill.Cards.Deduction where
 
 import Arkham.Action qualified as Action
-import Arkham.Classes
-import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Message
-import Arkham.Prelude
+import Arkham.Modifier
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype Deduction = Deduction SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -17,9 +15,8 @@ deduction :: SkillCard Deduction
 deduction = skill Deduction Cards.deduction
 
 instance RunMessage Deduction where
-  runMessage msg s@(Deduction attrs) = case msg of
+  runMessage msg s@(Deduction attrs) = runQueueT $ case msg of
     PassedSkillTest iid (Just Action.Investigate) _ (isTarget attrs -> True) _ _ -> do
-      withSkillTest \sid ->
-        pushM $ skillTestModifier sid attrs iid (DiscoveredClues 1)
+      withSkillTest \sid -> skillTestModifier sid attrs iid (DiscoveredClues 1)
       pure s
-    _ -> Deduction <$> runMessage msg attrs
+    _ -> Deduction <$> liftRunMessage msg attrs

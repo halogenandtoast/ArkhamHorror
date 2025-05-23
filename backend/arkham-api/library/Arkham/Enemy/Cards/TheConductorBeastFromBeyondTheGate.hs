@@ -8,7 +8,6 @@ import Arkham.Helpers.Agenda
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 
 newtype TheConductorBeastFromBeyondTheGate = TheConductorBeastFromBeyondTheGate EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

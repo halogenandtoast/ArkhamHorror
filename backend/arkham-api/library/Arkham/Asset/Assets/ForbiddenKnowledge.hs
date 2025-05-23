@@ -1,33 +1,26 @@
-module Arkham.Asset.Assets.ForbiddenKnowledge where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.ForbiddenKnowledge (forbiddenKnowledge) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 
 newtype ForbiddenKnowledge = ForbiddenKnowledge AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forbiddenKnowledge :: AssetCard ForbiddenKnowledge
-forbiddenKnowledge =
-  assetWith ForbiddenKnowledge Cards.forbiddenKnowledge
-    $ whenNoUsesL
-    ?~ DiscardWhenNoUses
+forbiddenKnowledge = assetWith ForbiddenKnowledge Cards.forbiddenKnowledge discardWhenNoUses
 
 instance HasAbilities ForbiddenKnowledge where
   getAbilities (ForbiddenKnowledge a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ FastAbility
-        $ assetUseCost a Secret 1
-        <> HorrorCost (toSource a) YouTarget 1
-        <> exhaust a
+    [ restricted a 1 ControlsThis
+        $ FastAbility (assetUseCost a Secret 1 <> HorrorCost (toSource a) YouTarget 1 <> exhaust a)
     ]
 
 instance RunMessage ForbiddenKnowledge where
-  runMessage msg a@(ForbiddenKnowledge attrs) = case msg of
+  runMessage msg a@(ForbiddenKnowledge attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ TakeResources iid 1 (toAbilitySource attrs 1) False
+      gainResources iid (attrs.ability 1) 1
       pure a
-    _ -> ForbiddenKnowledge <$> runMessage msg attrs
+    _ -> ForbiddenKnowledge <$> liftRunMessage msg attrs

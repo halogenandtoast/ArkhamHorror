@@ -1,14 +1,9 @@
 module Arkham.Event.Events.ExtraAmmunition1 where
 
-import Arkham.Prelude
-
-import Arkham.Asset.Uses
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Trait
 
 newtype ExtraAmmunition1 = ExtraAmmunition1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -18,14 +13,10 @@ extraAmmunition1 :: EventCard ExtraAmmunition1
 extraAmmunition1 = event ExtraAmmunition1 Cards.extraAmmunition1
 
 instance RunMessage ExtraAmmunition1 where
-  runMessage msg e@(ExtraAmmunition1 attrs) = case msg of
-    PlayThisEvent iid eid | attrs `is` eid -> do
+  runMessage msg e@(ExtraAmmunition1 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       investigatorTargets <- guardAffectsColocated iid
-      firearms <- select $ AssetWithTrait Firearm <> AssetControlledBy investigatorTargets
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [targetLabel firearm [AddUses (toSource attrs) firearm Ammo 3] | firearm <- firearms]
+      firearms <- select $ #firearm <> AssetControlledBy investigatorTargets
+      chooseOrRunOneM iid $ targets firearms $ addUsesOn attrs #ammo 3
       pure e
-    _ -> ExtraAmmunition1 <$> runMessage msg attrs
+    _ -> ExtraAmmunition1 <$> liftRunMessage msg attrs

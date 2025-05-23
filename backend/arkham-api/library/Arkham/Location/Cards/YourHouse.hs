@@ -34,7 +34,7 @@ instance HasAbilities YourHouse where
 instance RunMessage YourHouse where
   runMessage msg l@(YourHouse attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      drawCardsIfCan iid (attrs.ability 2) 1
-      gainResourcesIfCan iid (attrs.ability 2) 1
+      drawCards iid (attrs.ability 2) 1
+      gainResources iid (attrs.ability 2) 1
       pure l
     _ -> YourHouse <$> liftRunMessage msg attrs

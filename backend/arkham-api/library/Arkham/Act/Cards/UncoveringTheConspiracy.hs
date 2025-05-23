@@ -1,15 +1,10 @@
-module Arkham.Act.Cards.UncoveringTheConspiracy (
-  UncoveringTheConspiracy (..),
-  uncoveringTheConspiracy,
-) where
+module Arkham.Act.Cards.UncoveringTheConspiracy (uncoveringTheConspiracy) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Draw.Types
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Trait
 
@@ -22,7 +17,7 @@ uncoveringTheConspiracy = act (1, A) UncoveringTheConspiracy Cards.uncoveringThe
 
 instance HasAbilities UncoveringTheConspiracy where
   getAbilities (UncoveringTheConspiracy a) | onSide A a = do
-    [ restrictedAbility a 1 (ScenarioDeckWithCard CultistDeck)
+    [ restricted a 1 (ScenarioDeckWithCard CultistDeck)
         $ actionAbilityWithCost (GroupClueCost (PerPlayer 2) Anywhere)
       , mkAbility a 2 (Objective $ forced AnyWindow)
           `withCriteria` InVictoryDisplay
@@ -32,14 +27,14 @@ instance HasAbilities UncoveringTheConspiracy where
   getAbilities _ = []
 
 instance RunMessage UncoveringTheConspiracy where
-  runMessage msg a@(UncoveringTheConspiracy attrs) = case msg of
+  runMessage msg a@(UncoveringTheConspiracy attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ DrawCards iid $ newCardDraw (attrs.ability 1) CultistDeck 1
+      drawEncounterCardsEdit iid (attrs.ability 1) 1 (setDrawDeck CultistDeck)
       pure a
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ AdvanceAct (toId attrs) (InvestigatorSource iid) AdvancedWithOther
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       push R1
       pure a
-    _ -> UncoveringTheConspiracy <$> runMessage msg attrs
+    _ -> UncoveringTheConspiracy <$> liftRunMessage msg attrs

@@ -1,7 +1,6 @@
-module Arkham.Treachery.Cards.Amnesia where
+module Arkham.Treachery.Cards.Amnesia (amnesia) where
 
-import Arkham.Discard
-import Arkham.Helpers.Message.Discard
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Investigator.Types
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
@@ -18,6 +17,6 @@ instance RunMessage Amnesia where
   runMessage msg t@(Amnesia attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       hand <- fieldMap InvestigatorHand length iid
-      pushWhen (hand > 1) $ toMessage $ discardFromHand iid attrs DiscardChoose (hand - 1)
+      when (hand > 1) $ chooseAndDiscardCards iid attrs (hand - 1)
       pure t
     _ -> Amnesia <$> liftRunMessage msg attrs

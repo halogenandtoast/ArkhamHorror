@@ -8,7 +8,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window (spawnedEnemy)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Placement
 import Arkham.Projection
 
 newtype Ambush1 = Ambush1 EventAttrs

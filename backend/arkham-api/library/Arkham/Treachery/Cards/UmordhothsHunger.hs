@@ -1,13 +1,11 @@
-module Arkham.Treachery.Cards.UmordhothsHunger where
+module Arkham.Treachery.Cards.UmordhothsHunger (umordhothsHunger) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype UmordhothsHunger = UmordhothsHunger TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -17,17 +15,13 @@ umordhothsHunger :: TreacheryCard UmordhothsHunger
 umordhothsHunger = treachery UmordhothsHunger Cards.umordhothsHunger
 
 instance RunMessage UmordhothsHunger where
-  runMessage msg t@(UmordhothsHunger attrs) = case msg of
+  runMessage msg t@(UmordhothsHunger attrs) = runQueueT $ case msg of
     Revelation _ (isSource attrs -> True) -> do
-      investigatorIds <- getInvestigators
-      msgs <- for investigatorIds $ \iid -> do
+      eachInvestigator \iid -> do
         handCount <- fieldMap InvestigatorHand length iid
-        pure
-          $ if handCount == 0
-            then InvestigatorKilled (toSource attrs) iid
-            else toMessage $ randomDiscard iid attrs
-      targets <- selectMap EnemyTarget AnyInPlayEnemy
-      pushAll
-        (msgs <> [HealDamage target (toSource attrs) 1 | target <- targets])
+        if handCount == 0
+          then kill attrs iid
+          else randomDiscard iid attrs
+      selectEach AnyInPlayEnemy \enemy -> healDamage enemy attrs 1
       pure t
-    _ -> UmordhothsHunger <$> runMessage msg attrs
+    _ -> UmordhothsHunger <$> liftRunMessage msg attrs

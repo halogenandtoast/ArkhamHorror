@@ -13,7 +13,6 @@ import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_, modified_, m
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, getSkillTestSource)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Upgrade
-import Arkham.Placement
 import Arkham.Strategy
 import Arkham.Window (defaultWindows)
 

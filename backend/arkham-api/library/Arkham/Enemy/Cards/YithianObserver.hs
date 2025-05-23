@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.YithianObserver (YithianObserver (..), yithianObserver) where
+module Arkham.Enemy.Cards.YithianObserver (yithianObserver) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
@@ -15,15 +15,12 @@ newtype YithianObserver = YithianObserver EnemyAttrs
 
 yithianObserver :: EnemyCard YithianObserver
 yithianObserver =
-  enemyWith YithianObserver Cards.yithianObserver (4, Static 4, 3) (1, 1)
-    $ preyL
-    .~ Prey FewestCardsInHand
+  enemy YithianObserver Cards.yithianObserver (4, Static 4, 3) (1, 1)
+    & setPrey FewestCardsInHand
 
 instance HasAbilities YithianObserver where
   getAbilities (YithianObserver a) =
-    extend1 a
-      $ forcedAbility a 1
-      $ EnemyAttacks #when You AnyEnemyAttack (be a)
+    extend1 a $ forcedAbility a 1 $ EnemyAttacks #when You AnyEnemyAttack (be a)
 
 instance RunMessage YithianObserver where
   runMessage msg e@(YithianObserver attrs) = runQueueT $ case msg of

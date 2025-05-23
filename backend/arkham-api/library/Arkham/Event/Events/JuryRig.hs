@@ -8,7 +8,6 @@ import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Upgrade
 import Arkham.Modifier
-import Arkham.Placement
 
 newtype JuryRig = JuryRig EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)

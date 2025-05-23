@@ -7,7 +7,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Healing
 import Arkham.Helpers.Window (getDamageOrHorrorSource, getTotalDamageAmounts)
 import Arkham.Matcher
-import Arkham.Placement
 import Arkham.Projection
 import Arkham.Token
 

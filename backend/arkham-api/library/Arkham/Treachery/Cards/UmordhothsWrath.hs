@@ -1,11 +1,12 @@
-module Arkham.Treachery.Cards.UmordhothsWrath (umordhothsWrath, UmordhothsWrath (..)) where
+module Arkham.Treachery.Cards.UmordhothsWrath (umordhothsWrath) where
 
-import Arkham.Classes
+import Arkham.Helpers.Message.Discard.Lifted
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype UmordhothsWrath = UmordhothsWrath TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -15,32 +16,25 @@ umordhothsWrath :: TreacheryCard UmordhothsWrath
 umordhothsWrath = treachery UmordhothsWrath Cards.umordhothsWrath
 
 instance RunMessage UmordhothsWrath where
-  runMessage msg t@(UmordhothsWrath attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(UmordhothsWrath attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push $ revelationSkillTest sid iid attrs #willpower (Fixed 5)
+      revelationSkillTest sid iid attrs #willpower (Fixed 5)
       pure t
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n -> do
-      push $ HandlePointOfFailure iid (toTarget attrs) n
+    FailedThisSkillTestBy _iid (isSource attrs -> True) n -> do
+      doStep n msg
       pure t
-    HandlePointOfFailure _ target 0 | isTarget attrs target -> pure t
-    HandlePointOfFailure iid target n | isTarget attrs target -> do
+    DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
       hasCards <- fieldMap InvestigatorHand notNull iid
-      player <- getPlayer iid
-      pushAll
-        $ if hasCards
-          then
-            [ chooseOne player
-                $ [ Label "Discard a card from your hand"
-                      $ [toMessage $ chooseAndDiscardCard iid attrs]
-                  , Label "Take 1 damage and 1 horror"
-                      $ [assignDamageAndHorror iid attrs 1 1]
-                  ]
-            , HandlePointOfFailure iid (toTarget attrs) (n - 1)
-            ]
-          else
-            [ assignDamageAndHorror iid attrs 1 1
-            , HandlePointOfFailure iid (toTarget attrs) (n - 1)
-            ]
+      if hasCards
+        then chooseOneM iid $ withI18n do
+          countVar 1 $ labeled' "discardCardsFromHand" $ chooseAndDiscardCard iid attrs
+          numberVar "damage" 1
+            $ numberVar "horror" 1
+            $ labeled' "takeDamageAndHorror"
+            $ assignDamageAndHorror iid attrs 1 1
+        else assignDamageAndHorror iid attrs 1 1
+
+      doStep (n - 1) msg'
       pure t
-    _ -> UmordhothsWrath <$> runMessage msg attrs
+    _ -> UmordhothsWrath <$> liftRunMessage msg attrs

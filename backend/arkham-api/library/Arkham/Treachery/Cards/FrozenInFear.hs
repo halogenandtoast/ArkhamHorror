@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.FrozenInFear where
+module Arkham.Treachery.Cards.FrozenInFear (frozenInFear, FrozenInFear(..)) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), inThreatAreaGets)

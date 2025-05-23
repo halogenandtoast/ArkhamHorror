@@ -1,10 +1,10 @@
-module Arkham.Asset.Assets.ArcaneInitiate (arcaneInitiate, ArcaneInitiate (..)) where
+module Arkham.Asset.Assets.ArcaneInitiate (arcaneInitiate) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Message qualified as Msg
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
 
 newtype ArcaneInitiate = ArcaneInitiate AssetAttrs
@@ -16,8 +16,8 @@ arcaneInitiate = ally ArcaneInitiate Cards.arcaneInitiate (1, 2)
 
 instance HasAbilities ArcaneInitiate where
   getAbilities (ArcaneInitiate a) =
-    [ restrictedAbility a 1 ControlsThis $ forced $ AssetEntersPlay #when (be a)
-    , restrictedAbility a 2 ControlsThis $ FastAbility (exhaust a)
+    [ restricted a 1 ControlsThis $ forced $ AssetEntersPlay #when (be a)
+    , restricted a 2 ControlsThis $ FastAbility (exhaust a)
     ]
 
 instance RunMessage ArcaneInitiate where
@@ -27,8 +27,6 @@ instance RunMessage ArcaneInitiate where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
-      chooseOne
-        iid
-        [targetLabel iid [Msg.search iid source iid [fromTopOfDeck 3] #spell $ DrawFound iid 1]]
+      chooseOneM iid $ targeting iid $ search iid source iid [fromTopOfDeck 3] #spell (DrawFound iid 1)
       pure a
     _ -> ArcaneInitiate <$> liftRunMessage msg attrs

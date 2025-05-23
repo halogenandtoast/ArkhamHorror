@@ -1,10 +1,7 @@
-module Arkham.Skill.Cards.UnexpectedCourage where
+module Arkham.Skill.Cards.UnexpectedCourage (unexpectedCourage) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype UnexpectedCourage = UnexpectedCourage SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

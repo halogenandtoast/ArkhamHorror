@@ -1,4 +1,4 @@
-module Arkham.Event.Events.Lucky where
+module Arkham.Event.Events.Lucky (lucky) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -14,7 +14,7 @@ lucky = event Lucky Cards.lucky
 
 instance RunMessage Lucky where
   runMessage msg e@(Lucky attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | attrs `is` eid -> do
+    PlayThisEvent iid (is attrs -> True) -> do
       withSkillTest \sid -> do
         skillTestModifier sid attrs iid (AnySkillValue 2)
         push RerunSkillTest

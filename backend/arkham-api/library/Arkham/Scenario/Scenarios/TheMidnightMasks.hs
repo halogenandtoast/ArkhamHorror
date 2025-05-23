@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheMidnightMasks where
+module Arkham.Scenario.Scenarios.TheMidnightMasks (setupTheMidnightMasks, theMidnightMasks, TheMidnightMasks (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -9,7 +9,7 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
-import Arkham.EncounterSet qualified as EncounterSet
+import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
@@ -17,6 +17,7 @@ import Arkham.Helpers.Doom
 import Arkham.Helpers.EncounterSet
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
@@ -61,17 +62,81 @@ instance HasChaosTokenValue TheMidnightMasks where
     Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-allCultists :: [CardCode]
-allCultists =
-  map
-    toCardCode
-    [ Enemies.wolfManDrew
-    , Enemies.hermanCollins
-    , Enemies.peterWarren
-    , Enemies.victoriaDevereux
-    , Enemies.ruthTurner
-    , Enemies.theMaskedHunter
-    ]
+setupTheMidnightMasks :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupTheMidnightMasks _attrs = do
+  burnedToTheGround <- getHasRecord YourHouseHasBurnedToTheGround
+  ghoulPriestStillAlive <- getHasRecord GhoulPriestIsStillAlive
+  n <- getPlayerCount
+  setup $ ul do
+    li "gatherSets"
+    li "cultistDeck"
+    li "placeLocations"
+
+    li.nested "acolytes.instructions" do
+      li.validate (n == 1) "acolytes.onePlayer"
+      li.validate (n == 2) "acolytes.twoPlayer"
+      li.validate (n == 3) "acolytes.threePlayer"
+      li.validate (n == 4) "acolytes.fourPlayer"
+
+    li.validate burnedToTheGround "burnedToTheGround"
+    li.validate (not burnedToTheGround) "houseStillStanding"
+
+    unscoped $ li "shuffleRemainder"
+
+    li.validate ghoulPriestStillAlive "ghoulPriest"
+
+  whenReturnTo $ gather Set.ReturnToTheMidnightMasks
+  gather Set.TheMidnightMasks
+  gather Set.ChillingCold
+  gather Set.Nightgaunts
+  gather Set.LockedDoors
+  gather Set.DarkCult
+
+  isReturnTo <- getIsReturnTo
+  predatorOrPrey <-
+    if isReturnTo
+      then sample2 Agendas.predatorOrPrey Agendas.returnToPredatorOrPrey
+      else pure Agendas.predatorOrPrey
+  setAgendaDeck [predatorOrPrey, Agendas.timeIsRunningShort]
+  setActDeck [Acts.uncoveringTheConspiracy]
+
+  rivertown <-
+    if isReturnTo
+      then placeOneOf (Locations.rivertown, Locations.rivertownAbandonedWarehouse)
+      else place Locations.rivertown
+
+  southside <- placeOneOf (Locations.southsideHistoricalSociety, Locations.southsideMasBoardingHouse)
+  downtown <- placeOneOf (Locations.downtownFirstBankOfArkham, Locations.downtownArkhamAsylum)
+  graveyard <- place Locations.graveyard
+
+  if isReturnTo
+    then do
+      place_ Locations.stMarysHospital
+      placeOneOf_ (Locations.miskatonicUniversity, Locations.miskatonicUniversityMiskatonicMuseum)
+      placeOneOf_ (Locations.easttown, Locations.easttownArkhamPoliceStation)
+      placeOneOf_ (Locations.northside, Locations.northsideTrainStation)
+    else
+      placeAll
+        [Locations.easttown, Locations.miskatonicUniversity, Locations.northside, Locations.stMarysHospital]
+
+  cultOfUmordhoth <- gatherEncounterSet Set.CultOfUmordhoth
+  cultistCards <-
+    if isReturnTo
+      then do
+        returnCultOfUmordhoth <- gatherEncounterSet Set.ReturnCultOfUmordhoth
+        drop 3 <$> shuffle (cultOfUmordhoth <> returnCultOfUmordhoth)
+      else pure cultOfUmordhoth
+  addExtraDeck CultistDeck =<< shuffle cultistCards
+
+  if burnedToTheGround
+    then startAt rivertown
+    else startAt =<< place Locations.yourHouse
+
+  count' <- getPlayerCount
+  let acolytes = replicate (count' - 1) Enemies.acolyte
+  zipWithM_ enemyAt acolytes [southside, downtown, graveyard]
+
+  when ghoulPriestStillAlive $ addToEncounterDeck (only Enemies.ghoulPriest)
 
 instance RunMessage TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -96,55 +161,7 @@ instance RunMessage TheMidnightMasks where
     DoStep 3 PreScenarioSetup -> do
       story $ i18n "intro3"
       pure s
-    Setup -> runScenarioSetup TheMidnightMasks attrs do
-      burnedToTheGround <- getHasRecord YourHouseHasBurnedToTheGround
-      ghoulPriestStillAlive <- getHasRecord GhoulPriestIsStillAlive
-      n <- getPlayerCount
-      setup $ ul do
-        li "gatherSets"
-        li "cultistDeck"
-        li "placeLocations"
-
-        li.nested "acolytes.instructions" do
-          li.validate (n == 1) "acolytes.onePlayer"
-          li.validate (n == 2) "acolytes.twoPlayer"
-          li.validate (n == 3) "acolytes.threePlayer"
-          li.validate (n == 4) "acolytes.fourPlayer"
-
-        li.validate burnedToTheGround "burnedToTheGround"
-        li.validate (not burnedToTheGround) "houseStillStanding"
-
-        unscoped $ li "shuffleRemainder"
-
-        li.validate ghoulPriestStillAlive "ghoulPriest"
-
-      gather EncounterSet.TheMidnightMasks
-      gather EncounterSet.ChillingCold
-      gather EncounterSet.Nightgaunts
-      gather EncounterSet.LockedDoors
-      gather EncounterSet.DarkCult
-
-      setAgendaDeck [Agendas.predatorOrPrey, Agendas.timeIsRunningShort]
-      setActDeck [Acts.uncoveringTheConspiracy]
-
-      rivertown <- place Locations.rivertown
-      southside <- placeOneOf (Locations.southsideHistoricalSociety, Locations.southsideMasBoardingHouse)
-      downtown <- placeOneOf (Locations.downtownFirstBankOfArkham, Locations.downtownArkhamAsylum)
-      graveyard <- place Locations.graveyard
-      placeAll
-        [Locations.easttown, Locations.miskatonicUniversity, Locations.northside, Locations.stMarysHospital]
-
-      addExtraDeck CultistDeck =<< shuffle =<< gatherEncounterSet EncounterSet.CultOfUmordhoth
-
-      if burnedToTheGround
-        then startAt rivertown
-        else startAt =<< place Locations.yourHouse
-
-      count' <- getPlayerCount
-      let acolytes = replicate (count' - 1) Enemies.acolyte
-      zipWithM_ enemyAt acolytes [southside, downtown, graveyard]
-
-      when ghoulPriestStillAlive $ addToEncounterDeck (Only Enemies.ghoulPriest)
+    Setup -> runScenarioSetup TheMidnightMasks attrs $ setupTheMidnightMasks attrs
     ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do
       closestCultists <- select $ NearestEnemyToFallback iid $ EnemyWithTrait Trait.Cultist
       when (notNull closestCultists) do

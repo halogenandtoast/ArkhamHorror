@@ -1,11 +1,9 @@
-module Arkham.Event.Events.SureGamble3 where
+module Arkham.Event.Events.SureGamble3 (sureGamble3) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Modifier
 import Arkham.Window
 
 newtype SureGamble3 = SureGamble3 EventAttrs
@@ -16,9 +14,10 @@ sureGamble3 :: EventCard SureGamble3
 sureGamble3 = event SureGamble3 Cards.sureGamble3
 
 instance RunMessage SureGamble3 where
-  runMessage msg e@(SureGamble3 attrs) = case msg of
-    InvestigatorPlayEvent _ eid _ (revealedChaosTokens -> [token]) _ | attrs `is` eid -> do
+  runMessage msg e@(SureGamble3 attrs) = runQueueT $ case msg of
+    PlayThisEvent _ (is attrs -> True) -> do
       withSkillTest \sid ->
-        pushM $ skillTestModifier sid attrs (ChaosTokenTarget token) NegativeToPositive
+        for_ (revealedChaosTokens attrs.windows) \token ->
+          skillTestModifier sid attrs (ChaosTokenTarget token) NegativeToPositive
       pure e
-    _ -> SureGamble3 <$> runMessage msg attrs
+    _ -> SureGamble3 <$> liftRunMessage msg attrs

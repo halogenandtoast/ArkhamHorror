@@ -6,7 +6,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Placement
 import Arkham.Projection
 
 newtype Barricade = Barricade EventAttrs
@@ -27,9 +26,9 @@ instance HasAbilities Barricade where
 
 instance RunMessage Barricade where
   runMessage msg e@(Barricade attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | attrs `is` eid -> do
+    PlayThisEvent iid (is attrs -> True) -> do
       lid <- fieldJust InvestigatorLocation iid
-      push $ PlaceEvent eid (AttachedToLocation lid)
+      place attrs (AttachedToLocation lid)
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       toDiscardBy iid (attrs.ability 1) attrs

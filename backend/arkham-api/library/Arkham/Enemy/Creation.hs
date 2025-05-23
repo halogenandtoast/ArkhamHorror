@@ -82,3 +82,6 @@ instance WithTarget (EnemyCreation msg) where
 
 instance HasField "enemy" (EnemyCreation msg) EnemyId where
   getField = enemyCreationEnemyId
+
+instance HasField "cardCode" (EnemyCreation msg) CardCode where
+  getField = toCardCode . enemyCreationCard

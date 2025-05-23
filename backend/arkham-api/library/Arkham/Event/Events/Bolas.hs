@@ -8,7 +8,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
-import Arkham.Placement
 
 newtype Bolas = Bolas EventAttrs
   deriving anyclass IsEvent

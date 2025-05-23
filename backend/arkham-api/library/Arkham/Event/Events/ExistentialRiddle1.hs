@@ -8,7 +8,6 @@ import Arkham.Helpers.SkillTest.Target
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Placement
 import Arkham.Projection
 
 newtype ExistentialRiddle1 = ExistentialRiddle1 EventAttrs

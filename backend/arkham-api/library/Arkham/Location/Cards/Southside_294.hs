@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.Southside_294 (southside_294, Southside_294 (..)) where
+module Arkham.Location.Cards.Southside_294 (southside_294) where
 
 import Arkham.Ability
 import Arkham.Card

@@ -2,14 +2,11 @@ module Arkham.Enemy.Cards.Umordhoth (umordhoth) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype Umordhoth = Umordhoth EnemyAttrs
   deriving anyclass IsEnemy
@@ -24,21 +21,23 @@ instance HasModifiersFor Umordhoth where
     modifySelf a [HealthModifier healthModifier]
 
 instance HasAbilities Umordhoth where
-  getAbilities (Umordhoth attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1 $ ForcedAbility $ TurnEnds Timing.After Anyone
-      , withCriteria (mkAbility attrs 2 $ ActionAbility [] $ ActionCost 1)
-          $ OnSameLocation
-          <> AssetExists (AssetControlledBy You <> assetIs Cards.litaChantler)
+  getAbilities (Umordhoth a) =
+    extend
+      a
+      [ mkAbility a 1 $ forced $ TurnEnds #after Anyone
+      , restricted
+          a
+          2
+          (OnSameLocation <> exists (AssetControlledBy You <> assetIs Cards.litaChantler))
+          actionAbility
       ]
 
 instance RunMessage Umordhoth where
-  runMessage msg e@(Umordhoth attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ Ready $ toTarget attrs
+  runMessage msg e@(Umordhoth attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      readyThis attrs
       pure e
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
       push R3
       pure e
-    _ -> Umordhoth <$> runMessage msg attrs
+    _ -> Umordhoth <$> liftRunMessage msg attrs

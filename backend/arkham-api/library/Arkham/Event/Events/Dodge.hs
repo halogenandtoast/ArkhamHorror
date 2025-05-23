@@ -13,7 +13,7 @@ dodge = event Dodge Cards.dodge
 
 instance RunMessage Dodge where
   runMessage msg e@(Dodge attrs) = runQueueT $ case msg of
-    PlayThisEvent _ eid | attrs `is` eid -> do
+    PlayThisEvent _ (is attrs -> True) -> do
       cancelAttack attrs (getAttackDetails attrs.windows)
       pure e 
     _ -> Dodge <$> liftRunMessage msg attrs

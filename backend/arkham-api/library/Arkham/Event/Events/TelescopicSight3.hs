@@ -10,7 +10,6 @@ import Arkham.Helpers.Window ()
 import Arkham.Keyword (Keyword (Aloof, Retaliate))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Upgrade
-import Arkham.Placement
 import Arkham.Taboo
 import Arkham.Window qualified as Window
 

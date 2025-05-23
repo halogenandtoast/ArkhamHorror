@@ -7,7 +7,6 @@ import Arkham.Capability
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 
 newtype MaimedHand = MaimedHand AssetAttrs
   deriving anyclass IsAsset

@@ -1,4 +1,4 @@
-module Arkham.Event.Events.Lucky2 where
+module Arkham.Event.Events.Lucky2 (lucky2) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted

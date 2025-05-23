@@ -10,9 +10,8 @@ newtype GhoulPriest = GhoulPriest EnemyAttrs
 
 ghoulPriest :: EnemyCard GhoulPriest
 ghoulPriest =
-  enemyWith GhoulPriest Cards.ghoulPriest (4, PerPlayer 5, 4) (2, 2)
-    $ preyL
-    .~ Prey (InvestigatorWithHighestSkill #combat UneliminatedInvestigator)
+  enemy GhoulPriest Cards.ghoulPriest (4, PerPlayer 5, 4) (2, 2)
+    & setPrey (InvestigatorWithHighestSkill #combat UneliminatedInvestigator)
 
 instance RunMessage GhoulPriest where
   runMessage msg (GhoulPriest attrs) = GhoulPriest <$> runMessage msg attrs

@@ -8,7 +8,6 @@ import Arkham.Helpers.SkillTest (getSkillTestId)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (PlayCard)
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 import Arkham.Projection
 
 newtype TheKingInYellow = TheKingInYellow AssetAttrs

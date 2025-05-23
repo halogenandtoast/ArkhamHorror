@@ -1,16 +1,9 @@
-module Arkham.Location.Cards.StMarysHospital (
-  StMarysHospital (..),
-  stMarysHospital,
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.StMarysHospital (stMarysHospital) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype StMarysHospital = StMarysHospital LocationAttrs
@@ -22,16 +15,13 @@ stMarysHospital = location StMarysHospital Cards.stMarysHospital 2 (PerPlayer 1)
 
 instance HasAbilities StMarysHospital where
   getAbilities (StMarysHospital x) =
-    withRevealedAbilities x
-      $ [ limitedAbility (PlayerLimit PerGame 1)
-            $ withCriteria (mkAbility x 1 (ActionAbility [] $ ActionCost 1))
-            $ Here
-            <> InvestigatorExists (HealableInvestigator (toSource x) DamageType You)
-        ]
+    extendRevealed1 x
+      $ playerLimit PerGame
+      $ restricted x 1 (Here <> exists (HealableInvestigator (toSource x) #damage You)) doubleActionAbility
 
 instance RunMessage StMarysHospital where
-  runMessage msg l@(StMarysHospital attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ HealDamage (toTarget iid) (toAbilitySource attrs 1) 3
+  runMessage msg l@(StMarysHospital attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      healDamage iid (attrs.ability 1) 3
       pure l
-    _ -> StMarysHospital <$> runMessage msg attrs
+    _ -> StMarysHospital <$> liftRunMessage msg attrs

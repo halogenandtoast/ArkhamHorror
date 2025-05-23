@@ -1,10 +1,8 @@
-module Arkham.Event.Events.WillToSurvive3 where
+module Arkham.Event.Events.WillToSurvive3 (willToSurvive3) where
 
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
-import Arkham.Prelude
+import Arkham.Event.Import.Lifted
+import Arkham.Modifier
 
 newtype WillToSurvive3 = WillToSurvive3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -14,8 +12,8 @@ willToSurvive3 :: EventCard WillToSurvive3
 willToSurvive3 = event WillToSurvive3 Cards.willToSurvive3
 
 instance RunMessage WillToSurvive3 where
-  runMessage msg e@(WillToSurvive3 attrs) = case msg of
-    PlayThisEvent iid eid | attrs `is` eid -> do
-      pushM $ turnModifier iid attrs iid DoNotDrawChaosTokensForSkillChecks
+  runMessage msg e@(WillToSurvive3 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      turnModifier iid attrs iid DoNotDrawChaosTokensForSkillChecks
       pure e
-    _ -> WillToSurvive3 <$> runMessage msg attrs
+    _ -> WillToSurvive3 <$> liftRunMessage msg attrs

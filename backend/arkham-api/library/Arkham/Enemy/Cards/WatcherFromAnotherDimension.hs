@@ -13,7 +13,6 @@ import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Placement
 import Arkham.Modifier
-import Arkham.Placement
 
 newtype WatcherFromAnotherDimension = WatcherFromAnotherDimension EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

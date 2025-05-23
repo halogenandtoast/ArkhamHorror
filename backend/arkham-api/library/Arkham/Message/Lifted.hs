@@ -387,6 +387,10 @@ assignHorror
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 assignHorror iid (toSource -> source) horror = push $ Msg.assignHorror iid source horror
 
+assignHorrorTo
+  :: (ReverseQueue m, Sourceable source) => source -> Int -> InvestigatorId -> m ()
+assignHorrorTo source horror iid = assignHorror iid source horror
+
 assignDamageAndHorror
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> Int -> m ()
 assignDamageAndHorror _ _ 0 0 = pure ()
@@ -791,6 +795,10 @@ placeTokens source lid token n = push $ PlaceTokens (toSource source) (toTarget 
 addUses
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
 addUses = placeTokens
+
+addUsesOn
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Token -> Int -> target -> m ()
+addUsesOn src tkn n trgt = placeTokens src trgt tkn n
 
 removeTokens
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
@@ -1600,6 +1608,9 @@ takeResources a source n = push $ Msg.takeResources (asId a) source n
 
 loseResources :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 loseResources iid source n = push $ Msg.LoseResources iid (toSource source) n
+
+loseAllResources :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
+loseAllResources iid source = loseResources iid source =<< field InvestigatorResources iid
 
 drawEncounterCard :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 drawEncounterCard i source = push $ Msg.drawEncounterCards i source 1

@@ -13,7 +13,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Customization
 import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher hiding (DiscoverClues, EnemyEvaded)
-import Arkham.Placement
 import Arkham.Projection
 import Arkham.Taboo
 import Data.Map.Strict qualified as Map

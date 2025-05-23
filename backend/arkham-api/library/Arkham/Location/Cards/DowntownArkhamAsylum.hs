@@ -1,17 +1,10 @@
-module Arkham.Location.Cards.DowntownArkhamAsylum (
-  DowntownArkhamAsylum (..),
-  downtownArkhamAsylum,
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.DowntownArkhamAsylum (downtownArkhamAsylum) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards (downtownArkhamAsylum)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype DowntownArkhamAsylum = DowntownArkhamAsylum LocationAttrs
@@ -23,17 +16,13 @@ downtownArkhamAsylum = location DowntownArkhamAsylum Cards.downtownArkhamAsylum 
 
 instance HasAbilities DowntownArkhamAsylum where
   getAbilities (DowntownArkhamAsylum x) =
-    withRevealedAbilities x
-      $ [ limitedAbility (PlayerLimit PerGame 1)
-            $ withCriteria (mkAbility x 1 $ ActionAbility [] $ ActionCost 1)
-            $ Here
-            <> InvestigatorExists (HealableInvestigator (toSource x) HorrorType You)
-        ]
+    extendRevealed1 x
+      $ playerLimit PerGame
+      $ restricted x 1 (Here <> exists (HealableInvestigator (toSource x) #horror You)) actionAbility
 
 instance RunMessage DowntownArkhamAsylum where
-  runMessage msg l@(DowntownArkhamAsylum attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      canHeal <- canHaveHorrorHealed (attrs.ability 1) iid
-      pushWhen canHeal $ HealHorror (toTarget iid) (attrs.ability 1) 3
+  runMessage msg l@(DowntownArkhamAsylum attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      whenM (canHaveHorrorHealed (attrs.ability 1) iid) $ healHorror iid (attrs.ability 1) 3
       pure l
-    _ -> DowntownArkhamAsylum <$> runMessage msg attrs
+    _ -> DowntownArkhamAsylum <$> liftRunMessage msg attrs

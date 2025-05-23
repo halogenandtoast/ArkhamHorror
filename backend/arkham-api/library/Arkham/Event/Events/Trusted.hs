@@ -5,7 +5,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Upgrade
-import Arkham.Placement
 
 newtype Trusted = Trusted EventAttrs
   deriving anyclass (IsEvent, HasAbilities)

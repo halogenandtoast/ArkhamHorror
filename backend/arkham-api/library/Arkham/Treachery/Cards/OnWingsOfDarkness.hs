@@ -1,10 +1,8 @@
-module Arkham.Treachery.Cards.OnWingsOfDarkness where
+module Arkham.Treachery.Cards.OnWingsOfDarkness (onWingsOfDarkness) where
 
-import Arkham.Classes
 import Arkham.Helpers.Location (getCanMoveToMatchingLocations)
 import Arkham.Matcher
 import Arkham.Movement
-import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted

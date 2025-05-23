@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.DigDeep2 (DigDeep2 (..), digDeep2) where
+module Arkham.Asset.Assets.DigDeep2 (digDeep2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -18,10 +18,10 @@ instance HasAbilities DigDeep2 where
   getAbilities (DigDeep2 a) =
     [ withTooltip "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
         $ wantsSkillTest (YourSkillTest #willpower)
-        $ controlledAbility a 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
+        $ controlled a 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     , withTooltip "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
         $ wantsSkillTest (YourSkillTest #agility)
-        $ controlledAbility a 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
+        $ controlled a 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]
 
 instance RunMessage DigDeep2 where

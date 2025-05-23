@@ -5,7 +5,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher hiding (PlaceUnderneath)
-import Arkham.Placement
 import Arkham.Projection
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window hiding (DrawCard, PlaceUnderneath)

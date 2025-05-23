@@ -1,14 +1,9 @@
-module Arkham.Location.Cards.SouthsideHistoricalSociety (
-  SouthsideHistoricalSociety (..),
-  southsideHistoricalSociety,
-) where
+module Arkham.Location.Cards.SouthsideHistoricalSociety (southsideHistoricalSociety) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (southsideHistoricalSociety)
-import Arkham.Location.Runner
-import Arkham.Prelude
+import Arkham.Location.Import.Lifted
 
 newtype SouthsideHistoricalSociety = SouthsideHistoricalSociety LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,11 +14,11 @@ southsideHistoricalSociety = location SouthsideHistoricalSociety Cards.southside
 
 instance HasAbilities SouthsideHistoricalSociety where
   getAbilities (SouthsideHistoricalSociety x) =
-    extendRevealed x [playerLimit PerGame $ restrictedAbility x 1 (Here <> CanDrawCards) actionAbility]
+    extendRevealed1 x $ playerLimit PerGame $ restricted x 1 (Here <> CanDrawCards) actionAbility
 
 instance RunMessage SouthsideHistoricalSociety where
-  runMessage msg l@(SouthsideHistoricalSociety attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ drawCards iid (attrs.ability 1) 3
+  runMessage msg l@(SouthsideHistoricalSociety attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      drawCards iid (attrs.ability 1) 3
       pure l
-    _ -> SouthsideHistoricalSociety <$> runMessage msg attrs
+    _ -> SouthsideHistoricalSociety <$> liftRunMessage msg attrs

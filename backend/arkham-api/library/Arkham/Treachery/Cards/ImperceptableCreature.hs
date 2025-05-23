@@ -4,7 +4,6 @@ import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
-import Arkham.Placement
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Trait (Trait (Elite))
 import Arkham.Treachery.Cards qualified as Cards

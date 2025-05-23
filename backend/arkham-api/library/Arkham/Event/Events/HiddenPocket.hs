@@ -4,7 +4,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Upgrade
-import Arkham.Placement
 import Arkham.Slot
 import Arkham.Trait (Trait (Armor, Clothing, Illicit))
 

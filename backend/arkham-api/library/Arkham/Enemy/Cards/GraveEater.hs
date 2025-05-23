@@ -1,16 +1,10 @@
-module Arkham.Enemy.Cards.GraveEater (
-  graveEater,
-  GraveEater (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.GraveEater (graveEater) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype GraveEater = GraveEater EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -21,18 +15,11 @@ graveEater = enemy GraveEater Cards.graveEater (2, Static 2, 2) (1, 1)
 
 instance HasAbilities GraveEater where
   getAbilities (GraveEater x) =
-    withBaseAbilities
-      x
-      [ mkAbility x 1
-          $ ForcedAbility
-          $ EnemyAttacks Timing.After You AnyEnemyAttack
-          $ EnemyWithId
-          $ toId x
-      ]
+    extend1 x $ mkAbility x 1 $ forced $ EnemyAttacks #after You AnyEnemyAttack (be x)
 
 instance RunMessage GraveEater where
-  runMessage msg e@(GraveEater attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ toMessage $ randomDiscard iid attrs
+  runMessage msg e@(GraveEater attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      randomDiscard iid attrs
       pure e
-    _ -> GraveEater <$> runMessage msg attrs
+    _ -> GraveEater <$> liftRunMessage msg attrs

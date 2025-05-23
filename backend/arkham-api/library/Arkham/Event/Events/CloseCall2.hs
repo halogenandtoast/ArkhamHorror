@@ -1,4 +1,4 @@
-module Arkham.Event.Events.CloseCall2 (closeCall2, CloseCall2 (..)) where
+module Arkham.Event.Events.CloseCall2 (closeCall2) where
 
 import Arkham.Deck
 import Arkham.Event.Cards qualified as Cards

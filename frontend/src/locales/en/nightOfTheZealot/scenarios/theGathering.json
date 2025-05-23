@@ -43,6 +43,13 @@
   },
   "label": {
     "r1": "It was never much of a home. Burn it down! (→ _R1_)",
-    "r2": "This \"hell-pit\" is my home! No way we are burning it! (→ _R2_)"
+    "r2": "This \"hell-pit\" is my home! No way we are burning it! (→ _R2_)",
+    "whatsGoingOn": {
+      "horror": "The lead investigator takes 2 horror",
+      "discard": "Each investigator discards 1 card at random from his or her hand"
+    },
+    "parlor": {
+      "resign": "\"This is too much for me!\" You run out the front door, fleeing in panic."
+    }
   }
 }

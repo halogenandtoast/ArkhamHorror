@@ -1,11 +1,8 @@
-module Arkham.Location.Cards.ArkhamWoodsOldHouse where
+module Arkham.Location.Cards.ArkhamWoodsOldHouse (arkhamWoodsOldHouse) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 
 newtype ArkhamWoodsOldHouse = ArkhamWoodsOldHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

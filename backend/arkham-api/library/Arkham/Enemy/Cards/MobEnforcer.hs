@@ -1,14 +1,8 @@
-module Arkham.Enemy.Cards.MobEnforcer (
-  MobEnforcer (..),
-  mobEnforcer,
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.MobEnforcer (mobEnforcer) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
 
 newtype MobEnforcer = MobEnforcer EnemyAttrs
@@ -21,12 +15,11 @@ mobEnforcer =
     $ \a -> a & preyL .~ BearerOf (toId a)
 
 instance HasAbilities MobEnforcer where
-  getAbilities (MobEnforcer attrs) =
-    withBaseAbilities attrs [restrictedAbility attrs 1 OnSameLocation $ parleyAction (ResourceCost 4)]
+  getAbilities (MobEnforcer a) = extend1 a $ restricted a 1 OnSameLocation $ parleyAction (ResourceCost 4)
 
 instance RunMessage MobEnforcer where
-  runMessage msg e@(MobEnforcer attrs) = case msg of
+  runMessage msg e@(MobEnforcer attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+      toDiscardBy iid (attrs.ability 1) attrs
       pure e
-    _ -> MobEnforcer <$> runMessage msg attrs
+    _ -> MobEnforcer <$> liftRunMessage msg attrs

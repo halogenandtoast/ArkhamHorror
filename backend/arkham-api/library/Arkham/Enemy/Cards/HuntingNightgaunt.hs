@@ -1,10 +1,9 @@
 module Arkham.Enemy.Cards.HuntingNightgaunt (huntingNightgaunt) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Prelude
+import Arkham.Helpers.SkillTest (getSkillTest, isEvading)
 
 newtype HuntingNightgaunt = HuntingNightgaunt EnemyAttrs
   deriving anyclass IsEnemy
@@ -15,12 +14,10 @@ huntingNightgaunt = enemy HuntingNightgaunt Cards.huntingNightgaunt (3, Static 4
 
 instance HasModifiersFor HuntingNightgaunt where
   getModifiersFor (HuntingNightgaunt a) =
-    getSkillTest >>= \case
-      Nothing -> pure mempty
-      Just st ->
-        fromMaybe mempty <$> runMaybeT do
-          liftGuardM $ isEvading a
-          modifyEach a (map ChaosTokenTarget st.revealedChaosTokens) [DoubleNegativeModifiersOnChaosTokens]
+    getSkillTest >>= traverse_ \st -> do
+      fromMaybe mempty <$> runMaybeT do
+        liftGuardM $ isEvading a
+        modifyEach a (map ChaosTokenTarget st.revealedChaosTokens) [DoubleNegativeModifiersOnChaosTokens]
 
 instance RunMessage HuntingNightgaunt where
   runMessage msg (HuntingNightgaunt attrs) =

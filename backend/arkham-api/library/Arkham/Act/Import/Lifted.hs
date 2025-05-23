@@ -22,6 +22,7 @@ import Arkham.Act.Runner as X (
   pushAll,
   targetLabel,
   pattern FailedThisSkillTest,
+  pattern FailedThisSkillTestBy,
   pattern PassedThisSkillTest,
   pattern R1,
   pattern R2,

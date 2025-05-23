@@ -8,7 +8,6 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Placement
 import Arkham.Projection
 
 newtype Transmogrify = Transmogrify EventAttrs

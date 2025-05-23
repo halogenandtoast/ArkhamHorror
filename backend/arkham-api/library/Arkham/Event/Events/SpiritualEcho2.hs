@@ -6,7 +6,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Placement
 import Arkham.Trait (Trait (Ritual, Spell))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window

@@ -6,7 +6,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Window (attackedEnemy)
 import Arkham.Matcher
-import Arkham.Placement
 
 newtype GrievousWound = GrievousWound EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)

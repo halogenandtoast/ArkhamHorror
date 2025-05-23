@@ -1,21 +1,20 @@
-module Arkham.Scenario.Scenarios.TheGathering where
+module Arkham.Scenario.Scenarios.TheGathering (setupTheGathering, theGathering, TheGathering (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.NightOfTheZealot.Import
-import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
-import Arkham.FlavorText (ikey)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
-import Arkham.Helpers.Scenario
+import Arkham.Helpers.Scenario hiding (getIsReturnTo)
 import Arkham.Helpers.Xp
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
@@ -52,8 +51,41 @@ instance HasChaosTokenValue TheGathering where
     Tablet -> pure $ toChaosTokenValue attrs Tablet 2 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-theGatheringAgendaDeck :: [CardDef]
-theGatheringAgendaDeck = [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas.theyreGettingOut]
+setupTheGathering :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupTheGathering _attrs = do
+  setup $ ul do
+    li "gatherSets"
+    li "placeLocations"
+    li "setOutOfPlay"
+    unscoped $ li "shuffleRemainder"
+
+  whenReturnTo $ gather Set.ReturnToTheGathering
+  gather Set.TheGathering
+  gather Set.Rats
+  gather Set.Ghouls `orWhenReturnTo` gather Set.GhoulsOfUmordhoth
+  gather Set.StrikingFear
+  gather Set.AncientEvils
+  gather Set.ChillingCold
+
+  isReturnTo <- getIsReturnTo
+
+  setAgendaDeck [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas.theyreGettingOut]
+  setActDeck
+    [if isReturnTo then Acts.mysteriousGateway else Acts.trapped, Acts.theBarrier, Acts.whatHaveYouDone]
+
+  cellar <-
+    if isReturnTo then sample2 Locations.returnToCellar Locations.cellar else pure Locations.cellar
+  attic <-
+    if isReturnTo then sample2 Locations.returnToAttic Locations.attic else pure Locations.attic
+
+  setAside [Enemies.ghoulPriest, Assets.litaChantler, attic, cellar, Locations.parlor]
+  setAside
+    $ if isReturnTo
+      then [Locations.holeInTheWall, Locations.deepBelowYourHouse, Locations.farAboveYourHouse]
+      else [Locations.hallway]
+
+  startAt =<< place (if isReturnTo then Locations.studyAberrantGateway else Locations.study)
+  whenReturnTo $ placeAll [Locations.guestHall, Locations.bedroom, Locations.bathroom]
 
 instance RunMessage TheGathering where
   runMessage msg s@(TheGathering attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -65,33 +97,7 @@ instance RunMessage TheGathering where
         h "title"
         p "body"
       pure s
-    Setup -> runScenarioSetup TheGathering attrs do
-      setup $ ul do
-        li "gatherSets"
-        li "placeLocations"
-        li "setOutOfPlay"
-        unscoped $ li "shuffleRemainder"
-
-      gather Set.TheGathering
-      gather Set.Rats
-      gather Set.Ghouls
-      gather Set.StrikingFear
-      gather Set.AncientEvils
-      gather Set.ChillingCold
-
-      setAgendaDeck theGatheringAgendaDeck
-      setActDeck [Acts.trapped, Acts.theBarrier, Acts.whatHaveYouDone]
-
-      setAside
-        [ Enemies.ghoulPriest
-        , Assets.litaChantler
-        , Locations.hallway
-        , Locations.attic
-        , Locations.cellar
-        , Locations.parlor
-        ]
-
-      startAt =<< place Locations.study
+    Setup -> runScenarioSetup TheGathering attrs $ setupTheGathering attrs
     ResolveChaosToken _ Cultist iid -> do
       when (isHardExpert attrs) $ drawAnotherChaosToken iid
       pure s

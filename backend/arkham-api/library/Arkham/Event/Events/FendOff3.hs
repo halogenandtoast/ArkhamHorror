@@ -5,7 +5,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.Window (spawnedEnemy)
-import Arkham.Placement
 import Arkham.Projection
 
 newtype FendOff3 = FendOff3 EventAttrs

@@ -2,14 +2,10 @@ module Arkham.Act.Cards.IntoTheDarkness (intoTheDarkness) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Card
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype IntoTheDarkness = IntoTheDarkness ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -19,37 +15,24 @@ intoTheDarkness :: ActCard IntoTheDarkness
 intoTheDarkness = act (2, A) IntoTheDarkness Cards.intoTheDarkness Nothing
 
 instance HasAbilities IntoTheDarkness where
-  getAbilities (IntoTheDarkness attrs) | onSide A attrs = do
-    [ mkAbility attrs 1
-        $ Objective
-        $ ForcedAbility
-        $ Enters Timing.After Anyone
-        $ LocationWithTitle "Ritual Site"
-      ]
-  getAbilities _ = []
+  getAbilities (IntoTheDarkness attrs) =
+    [mkAbility attrs 1 $ Objective $ forced $ Enters #after Anyone "Ritual Site" | onSide A attrs]
 
 instance RunMessage IntoTheDarkness where
-  runMessage msg a@(IntoTheDarkness attrs@ActAttrs {..}) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ AdvanceAct actId (toSource attrs) AdvancedWithOther
+  runMessage msg a@(IntoTheDarkness attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       playerCount <- getPlayerCount
+      shuffleEncounterDiscardBackIn
       lead <- getLead
-      pushAll
-        $ [ ShuffleEncounterDiscardBackIn
-          , DiscardUntilFirst lead (ActSource actId) Deck.EncounterDeck
-              $ BasicCardMatch (CardWithType EnemyType)
-          ]
-        <> [ DiscardUntilFirst lead (ActSource actId) Deck.EncounterDeck
-               $ BasicCardMatch (CardWithType EnemyType)
-           | playerCount > 3
-           ]
-        <> [advanceActDeck attrs]
+      discardUntilFirst lead attrs Deck.EncounterDeck #enemy
+      when (playerCount > 3) do
+        discardUntilFirst lead attrs Deck.EncounterDeck #enemy
+      advanceActDeck attrs
       pure a
-    RequestedEncounterCard (ActSource aid) _ mcard | aid == actId -> do
-      for_ mcard \card -> do
-        ritualSite <- getJustLocationByName "Ritual Site"
-        push $ SpawnEnemyAt (EncounterCard card) ritualSite
+    RequestedEncounterCard (isSource attrs -> True) _ (Just card) -> do
+      spawnEnemyAt_ card =<< getJustLocationByName "Ritual Site"
       pure a
-    _ -> IntoTheDarkness <$> runMessage msg attrs
+    _ -> IntoTheDarkness <$> liftRunMessage msg attrs

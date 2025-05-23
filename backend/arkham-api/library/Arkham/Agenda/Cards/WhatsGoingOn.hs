@@ -1,12 +1,14 @@
-module Arkham.Agenda.Cards.WhatsGoingOn (WhatsGoingOn(..), whatsGoingOn) where
+module Arkham.Agenda.Cards.WhatsGoingOn (WhatsGoingOn (..), whatsGoingOn) where
 
 -- Constructor is only exported for testing purposes
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Matcher
 import Arkham.Helpers.Query (getLead)
+import Arkham.I18n
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheGathering.Helpers
 
 newtype WhatsGoingOn = WhatsGoingOn AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -17,14 +19,13 @@ whatsGoingOn = agenda (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 3)
 
 instance RunMessage WhatsGoingOn where
   runMessage msg a@(WhatsGoingOn attrs) = runQueueT $ case msg of
-    AdvanceAgenda (isSide B attrs -> True) -> do
+    AdvanceAgenda (isSide B attrs -> True) -> scenarioI18n do
       lead <- getLead
-      chooseOneM lead do
-        labeled "The lead investigator takes 2 horror" $ assignHorror lead attrs 2
+      chooseOneM lead $ scope "whatsGoingOn" do
+        labeled' "horror" $ assignHorror lead attrs 2
 
         whenAny InvestigatorWithNonEmptyHand do
-          labeled "Each investigator discards 1 card at random from his or her hand" do
-            push $ AllRandomDiscard (toSource attrs) AnyCard
+          labeled' "discard" $ push $ AllRandomDiscard (toSource attrs) AnyCard
       advanceAgendaDeck attrs
       pure a
     _ -> WhatsGoingOn <$> liftRunMessage msg attrs

@@ -115,6 +115,10 @@ instance HasField "investigator" Target (Maybe InvestigatorId) where
     ProxyTarget t _ -> t.investigator
     _ -> Nothing
 
+instance HasField "investigator" (Maybe Target) (Maybe InvestigatorId) where
+  getField Nothing = Nothing
+  getField (Just t) = t.investigator
+
 target_ :: Target -> Target
 target_ = id
 {-# INLINE target_ #-}

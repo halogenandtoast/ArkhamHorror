@@ -10,7 +10,6 @@ import Arkham.Event.Cards qualified as Cards (bindMonster2)
 import Arkham.Event.Import.Lifted
 import Arkham.Exception
 import Arkham.Matcher
-import Arkham.Placement
 
 newtype BindMonster2 = BindMonster2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)

@@ -1,9 +1,10 @@
-module Arkham.Treachery.Cards.OfferOfPower where
+module Arkham.Treachery.Cards.OfferOfPower (offerOfPower) where
 
-import Arkham.Classes
-import Arkham.Prelude
+import Arkham.Campaigns.NightOfTheZealot.Helpers
+import Arkham.I18n
+import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype OfferOfPower = OfferOfPower TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -13,14 +14,12 @@ offerOfPower :: TreacheryCard OfferOfPower
 offerOfPower = treachery OfferOfPower Cards.offerOfPower
 
 instance RunMessage OfferOfPower where
-  runMessage msg t@(OfferOfPower attrs) = case msg of
+  runMessage msg t@(OfferOfPower attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      let drawing = drawCards iid attrs 2
-      player <- getPlayer iid
-      push
-        $ chooseOne player
-        $ [ Label "Draw 2 cards and place 2 doom on agenda" [drawing, PlaceDoomOnAgenda 2 CanAdvance]
-          , Label "Take 2 horror" [assignHorror iid attrs 2]
-          ]
+      chooseOneM iid do
+        campaignI18n $ labeled' "offerOfPower.drawAndPlaceDoom" do
+          drawCards iid attrs 2
+          placeDoomOnAgendaAndCheckAdvance 2
+        withI18n $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
       pure t
-    _ -> OfferOfPower <$> runMessage msg attrs
+    _ -> OfferOfPower <$> liftRunMessage msg attrs

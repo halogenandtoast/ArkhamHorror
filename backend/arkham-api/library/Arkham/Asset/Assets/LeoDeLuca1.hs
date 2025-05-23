@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.LeoDeLuca1 where
+module Arkham.Asset.Assets.LeoDeLuca1 (leoDeLuca1) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted

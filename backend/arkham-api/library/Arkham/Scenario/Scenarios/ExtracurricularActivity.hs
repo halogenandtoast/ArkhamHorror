@@ -121,8 +121,7 @@ instance RunMessage ExtracurricularActivity where
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          xp <- allGainXpWithBonus' attrs $ toBonus "noResolution" 1
-          story $ withVars ["xp" .= xp] $ i18nWithTitle "noResolution"
+          resolutionWithXp "noResolution" $ allGainXpWithBonus' attrs $ toBonus "noResolution" 1
           record ProfessorWarrenRiceWasKidnapped
           record TheInvestigatorsFailedToSaveTheStudents
           addChaosToken Tablet

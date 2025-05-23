@@ -85,7 +85,10 @@ instance RunMessage GloriaGoldberg where
               for_ propheciesOfTheEnd \prophecy -> do
                 let ab =
                       buildAbility
-                        (SourceableWithCardCode prophecy (TreacherySource $ unsafeFromCardId prophecy.id))
+                        ( SourceableWithCardCode
+                            prophecy
+                            (ProxySource (TreacherySource $ unsafeFromCardId prophecy.id) (toSource iid))
+                        )
                         1
                         (forced AnyWindow)
                 abilityLabeled iid ab nothing
@@ -99,7 +102,7 @@ instance RunMessage GloriaGoldberg where
                     obtainCard card
                     placeUnderneath iid [card]
       pure . GloriaGoldberg $ attrs & setMeta (object ["gloria" .= False])
-    UseThisAbility iid (TreacherySource tid) 1 -> do
+    UseThisAbility iid (ProxySource (TreacherySource tid) (isSource attrs -> True)) 1 -> do
       mcard <- findCard ((== unsafeToCardId tid) . toCardId)
       case mcard of
         Just card | cardMatch card (cardIs Treacheries.prophecyOfTheEnd) -> do
@@ -115,7 +118,7 @@ instance RunMessage GloriaGoldberg where
           doStep 1 msg
         _ -> pure ()
       pure i
-    DoStep 1 (UseThisAbility iid (TreacherySource tid) 1) -> do
+    DoStep 1 (UseThisAbility iid (ProxySource (TreacherySource tid) (isSource attrs -> True)) 1) -> do
       mcard <- findCard ((== unsafeToCardId tid) . toCardId)
       case mcard of
         Just card | cardMatch card (cardIs Treacheries.prophecyOfTheEnd) -> do

@@ -120,12 +120,20 @@ const hasPool = computed(() => {
   return doom.value || clues.value || resources.value || damage.value || horror.value || lostSouls.value
 })
 
+const forceSideways = computed(() => {
+  const { cardCode, isFlipped } = cardContents.value
+  if (isFlipped) {
+    return ["c04242"].includes(cardCode)
+  }
+  return false
+})
+
 </script>
 
 <template>
   <div class="card-container" :data-index="id">
     <img
-      :class="{'card--can-interact': cardAction !== -1}"
+      :class="{'card--can-interact': cardAction !== -1, 'sideways': forceSideways}"
       class="card"
       :src="image"
       :data-customizations="JSON.stringify(cardContents.customizations)"

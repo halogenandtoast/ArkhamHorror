@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Enemy.Types (Field (EnemyLocation))
+import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
@@ -39,7 +40,7 @@ instance RunMessage LostResearcher where
       sid <- getRandom
       chooseOneM iid do
         for_ [#willpower, #intellect] \sType ->
-          skillLabeled sType $ beginSkillTest sid iid (attrs.ability 2) iid sType (Fixed 3)
+          skillLabeled sType $ parley sid iid (attrs.ability 2) iid sType (Fixed 3)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       when (attrs.token #doom > 0) do

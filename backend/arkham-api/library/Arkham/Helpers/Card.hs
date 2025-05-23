@@ -173,6 +173,7 @@ getCardEntityTarget card = case toCardType card of
   LocationType -> toTarget <$$> selectOne (LocationWithCardId $ toCardId card)
   AssetType -> toTarget <$$> selectOne (AssetWithCardId $ toCardId card)
   EncounterAssetType -> toTarget <$$> selectOne (AssetWithCardId $ toCardId card)
+  SkillType -> toTarget <$$> selectOne (SkillWithCardId $ toCardId card)
   other -> error $ "Unhandled type: " <> show other
 
 -- NOTE: this used to call drawThisPlayerCard but we changed that because we

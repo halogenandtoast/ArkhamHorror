@@ -25,6 +25,6 @@ instance RunMessage RoaldEllsworthIntrepidExplorer where
   runMessage msg a@(RoaldEllsworthIntrepidExplorer attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseSelectM iid (TreacheryAttachedToLocation Anywhere) \x -> do
-        turnModifier iid (attrs.ability 1) x Blank
+        currentTurnModifier (attrs.ability 1) x Blank
       pure a
     _ -> RoaldEllsworthIntrepidExplorer <$> liftRunMessage msg attrs

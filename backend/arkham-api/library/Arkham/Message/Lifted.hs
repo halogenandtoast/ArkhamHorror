@@ -1325,6 +1325,15 @@ skillTestModifiers
 skillTestModifiers sid (toSource -> source) (toTarget -> target) mods =
   Msg.pushM $ Msg.skillTestModifiers sid source target mods
 
+currentTurnModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => source
+  -> target
+  -> ModifierType
+  -> m ()
+currentTurnModifier source target modifier =
+  selectOne TurnInvestigator >>= traverse_ \iid -> turnModifier iid source target modifier
+
 turnModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
   => InvestigatorId

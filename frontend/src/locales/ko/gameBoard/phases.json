@@ -1,0 +1,32 @@
+{
+    "playerWindow": "플레이어의 행동 기회",
+
+    "mythosPhase": "신화 단계",
+    "mythosPhaseBeginsStep": "라운드를 시작합니다. 신화 단계를 시작합니다.",
+    "placeDoomOnAgendaStep": "현재 주요 사건에 파멸 토큰을 1개 올려놓습니다.",
+    "checkDoomThresholdStep": "파멸 토큰의 한계값을 확인합니다.",
+    "eachInvestigatorDrawsEncounterCardStep": "모든 조사자는 조우 카드를 1장씩 뽑습니다.",
+    "mythosPhaseEndsStep": "신화 단계가 끝납니다.",
+
+    "investigationPhase": "조사 단계",
+    "investigationPhaseBeginsStep": "조사 단계를 시작합니다.",
+    "nextInvestigatorsTurnBeginsStep": "다음 조사자의 차례를 시작합니다.",
+    "investigatorTakesActionStep": "가능하다면, 활성 조사자가 행동을 수행합니다. 행동 하나를 한 후, 이전 ‘플레이어의 행동 기회’로 돌아갑니다. 아무 행동도 하지 않는다면(할 수 없다면), 2.2.2로 진행합니다.",
+    "investigatorsTurnEndsStep": "조사자의 차례가 끝납니다. 이번 단계에 아직 차례를 진행하지 않은 조사자가 있다면, 2.2로 돌아갑니다. 모든 조사자가 이번 단계에 모두 차레를 진행했다면, 2.3으로 진행합니다.",
+    "investigationPhaseEndsStep": "조사 단계가 끝납니다.",
+
+    "enemyPhase": "적 단계",
+    "enemyPhaseBeginsStep": "적 단계를 시작합니다.",
+    "hunterEnemiesMoveStep": "사냥꾼 키워드를 가진 적이 움직입니다.",
+    "resolveAttacksStep": "다음 조사자가 교전 중인 적의 공격을 해결합니다. 이번 단게에 적의 공격을 해결하지 않은 조사자가 남았다면, 이전 ‘플레이어의 행동 기회’로 돌아갑니다. 마지막 조사자까지 교전 중인 적의 공격을 해결한 후, 다음 ‘플레이어의 행동 기회’를 진행합니다.",
+    "enemyPhaseEndsStep": "적 단계가 끝납니다.",
+
+    "upkeepPhase": "정리 단계",
+    "upkeepPhaseBeginsStep": "정리 단계를 시작합니다.",
+    "resetActionsStep": "행동이 초기화됩니다.",
+    "readyExhaustedStep": "모든 소진된 카드를 전부 준비 상태로 바꿉니다.",
+    "drawCardAndGainResourceStep": "모든 조사자는 카드를 1장 뽑고 자원을 1개 획득합니다.",
+    "checkHandSizeStep": "모든 조사자는 손에 들 수 있는 카드 장수를 확인합니다.",
+    "upkeepPhaseEndsStep": "정리 단계가 끝납니다. 라운드를 종료합니다."
+  }
+  

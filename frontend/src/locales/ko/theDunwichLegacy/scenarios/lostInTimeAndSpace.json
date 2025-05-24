@@ -1,0 +1,83 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 for each _Extradimensional_ location in play (max -5).",
+      "cultist": "Reveal another token. If you fail, after this skill test, discard cards from the top of the encounter deck until a location is discarded. Put that location into play and move there.",
+      "tablet": "-3. If Yog-Sothoth is in play, it attacks you after this skill test.",
+      "elderThing": "-X. X is the shroud value of your location. If you fail and your location is _Extradimensional_, discard it."
+    },
+    "hardExpert": {
+      "skull": "-1 for each _Extradimensional_ location in play.",
+      "cultist": "Reveal another token. After this skill test, discard cards from the top of the encounter deck until a location is discarded. Put that location into play and move there.",
+      "tablet": "-5. If Yog-Sothoth is in play, it attacks you after this skill test.",
+      "elderThing": "-X. X is twice the shroud value of your location. If you fail and your location is _Extradimensional_, discard it."
+    }
+  },
+  "intro": {
+    "title": "Scenario VII: Lost in Time and Space",
+    "body": "<p>Passing through the gate is unlike anything you’ve ever experienced. You feel your body twisting and distorting, churning through realities as the gate pulls you to its ultimate destination­ —a place beyond the scope of human imagination.</p><p>Suddenly, all is quiet and the chaos of the journey is replaced with a sense of solitude and dread. You are in an unfathomable place, vast beyond your ability to reason and utterly alien besides. The landscape is surreal and strange, the architecture impossible. You are so far from home that home has become a threadbare dream you can barely recall. Even should you find a way out of this awful place, you may never be the same again.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Lost in Time and Space*, *Sorcery*, *The Beyond*, *Hideous Abominations*, *Agents of Yog-Sothoth*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/lost-in-time-and-space.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/agents-of-yog.png' /></section>",
+    "placeLocations": "Put Another Dimension into play. Each investigator begins play in Another Dimension.",
+    "setAside": "Set the following cards aside, out of play: The Edge of the Universe, Tear Through Time, and Yog-Sothoth."
+  },
+  "locationsInTheEncounterDeck": {
+    "title": "Locations in the Encounter Deck",
+    "body": "<p class='basic'>This scenario includes several single-sided locations that are shuffled into the encounter deck along with the rest of the gathered encounter sets. These locations only have a revealed side, and have a _Revelation_ effect that puts them into play when drawn.</p><p class='basic'>When put into play, a single-sided location is put into play with its revealed side faceup, because it has no unrevealed side. Otherwise, it functions as a normal location in every other way.</p>"
+  },
+  "resolutions": {
+    "defeated": "<div class='resolution'><p class='basic'>_Before resolving any other resolution, if at least 1 investigator was defeated_: The defeated investigators read _Investigator Defeat_ first.</p><p>_Investigator Defeat_: Where did you come from? Why are you here? Are you dreaming, or is this place real? Now that you think about it, haven’t you been here before? Or perhaps you’ve been here all along. Now you remember. This is your real home. The path you now walk is but one ledge, with many more below. You only have to fall and you will be where you belong. One more step…</p><ul><li>Each defeated investigator is _killed_.</li><li>If another resolution was reached, the other investigators read that resolution.</li><li>If no resolution was reached (each investigator was defeated) and the investigators were at Act 4 when the scenario ended, go to _Resolution 2_.</li><li>If no resolution was reached (each investigator was defeated) and the investigators were at Act 1, 2, or 3 when the scenario ended, go to _Resolution 4_.</li></ul></div>",
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<div class='resolution'><p>_Resolution 1_: Lying on your back in a patch of wet grass, you find yourself staring longingly at the night sky. Somehow, you are once again atop Sentinel Hill, unable to recall exactly how you got here. You are mesmerized by the night sky. Seconds become minutes, and minutes become hours. Eventually, you are found and lifted to your feet by a group of Dunwich citizens. “What happened? What are ya doin’ here?” they ask you, frightened but curious. You can’t seem to find the right words to describe the events that occurred beyond the gate…if they ever truly occurred. There doesn’t appear to be any trace of Seth Bishop, of the creatures you fought earlier, or of the phantasmal and otherworldly gate. But every time you sleep, you dream—and when you dream, it all comes rushing back.</p><ul><li>In your Campaign Log, record that *the investigators closed the tear in reality*.</li><li>Each investigator suffers 2 physical trauma and 2 mental trauma, as he or she never fully recovers from his or her time spent outside the realm of reality.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 5 bonus experience, as he or she saved the world from being torn apart.<ul><li>_Experience_: {xp}</li></ul></li><li>The investigators win the campaign!</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<div class='resolution'><p>_Resolution 2_: Several of the villagers from Dunwich heard the ruckus on Sentinel Hill and went to investigate. What they found there answered none of their questions.</p><p>“What d’you think happened?” a frightened Curtis Whateley asks as they examine the hilltop. The other villagers shake their heads, unable to say. “Last thing I saw, the sky’d open’d up an’ there was a bright flash,” one of them says, looking up at the starry sky from the top of Sentinel Hill.</p><p>“Those Arkham fellas ain’t nowhere to be seen,” Curtis adds, looking down at the cracked stone altar. “Not even of a hint of ‘em. Mr. Bishop and his pals, now, that’s a diff’rent story.” The young man motions toward several corpses on the ground.</p><p>“Think we should get ahold of those coppers outta Aylesbury?”</p><p>“Why, so they can laugh at us again?” Curtis spits. “They ain’t never gonna believe us ‘bout all this anyway.” He glances at the stone altar, fidgeting nervously. “Better t’ forget about the whole thing. C’mon, let’s bury the dead and get outta here.”</p><ul><li>The investigators win the campaign…and are never seen or heard from again.</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<div class='resolution'><p>_Resolution 3_: The creature erupts in a cosmic fury of sound, color, and distorted space, hurling you back and away from it. You watch in horror as one of its arms tears through the fabric of the world, and its amorphous shape funnels through the rift, pulling the threads of the world along with it. You try to cling to something, but you are inexorably sucked into the rift. You feel as if your body is stretching and your mind is being crushed. Then, everything goes black.</p><ul><li>In your Campaign Log, record that *Yog-Sothoth has fled to another dimension*.</li><li>Each investigator is _killed_.</li><li>The investigators win the campaign…and are never seen or heard from again.</li></ul></div>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<div class='resolution'><p>_Resolution 4_: The sorcerers from Dunwich, seeking arcane power from beyond this realm, have accomplished what Wilbur and Old Whateley could not. Through blood sacrifice and indescribable experiments, the dark power the sorcerers sought is now within their reach. However, they will never get the chance to truly wield this power. In beseeching Wilbur’s father for knowledge, they have drawn the creature forth from its extradimensional realm. Yog-Sothoth emerges from the open rift above Sentinel Hill, blotting out the sky and enveloping the world. Now it has come to Earth, and it rules where humanity once tread.</p><ul><li>In your Campaign Log, record that *Yog-Sothoth tore apart the barriers between worlds, and became one with all reality*.</li><li>Each surviving investigator is driven _insane_.</li><li>The investigators lose the campaign.</li></ul></div>"
+    },
+    "xp": {
+      "bonus": "Saved the world from being torn apart"
+    }
+  },
+  "tooltips": {
+    "tearThroughTime": {
+      "resign": "You find a new path and hope that it leads back to safety."
+    }
+  },
+  "label": {
+    "yogSothoth": "Discard the top {cards} cards and take {horror} horror",
+    "tearThroughSpaces": {
+      "placeDoom": "Place 1 doom on Tear through Space",
+      "discard": "Discard Tear through Space"
+    },
+    "endlessBridge": {
+      "placeDoom": "Place 1 doom on Endless Bridge",
+      "discard": "Discard Endless Bridge"
+    },
+    "sethBishop": {
+      "move": "Move to Another Dimension after this attack",
+      "damage": "Seth Bishop deals +2 damage for this attack"
+    },
+    "indecipherableStairs": {
+      "discard": "Discard Indecipherable Stairs"
+    },
+    "toweringLuminosity": {
+      "doom": "Place 1 doom on Towering Luminosity",
+      "flipClue": "Flip 1 clue on Towering Luminosity to its doom side",
+      "discard": "Discard Towering Luminosity"
+    },
+    "unstableVortex": {
+      "chooseTearThroughSpaces": "Choose tear through space to discard",
+      "shuffle": "Shuffle Unstable Vortex into the encounter deck"
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "Reveal another token. If you fail, place 1 doom on a _Possessed_ enemy in play.",
+      "cultist": "-2. If you fail, place 1 of your clues on your location.",
+      "tablet": "-4. If you fail, take 1 horror.",
+      "elderThing": "-X. X is the shroud value of your location."
+    },
+    "hardExpert": {
+      "skull": "Reveal another token. If you fail, place 1 doom on the _Possessed_ enemy in play with the most remaining health.",
+      "cultist": "-3. Place 1 of your clues on your location.",
+      "tablet": "-4. Take 1 horror.",
+      "elderThing": "-X. X is the shroud value of your location. If you fail, take 1 damage."
+    }
+  },
+  "intro": {
+    "title": "Scenario II: The Last King",
+    "body": "<p>If anyone has the answers to the questions that burn in your mind, it’s the cast and crew of The King in Yellow. With no other leads to pursue, you put on your best clothes and head to 1452 Atlantic Avenue, where a woman named Constance Dumaine is hosting an event in celebration of the play’s one-night engagement in Arkham.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *The Last King*, *Hastur’s Gift*, *Decay & Filth*, *The Stranger*, *Ancient Evils*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-last-king.png' /><img src='{setImgPath}/hasturs-gift.png' /><img src='{setImgPath}/decay-and-filth.png' /><img src='{setImgPath}/the-stranger.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
+    "placeLocations": "Put all 6 locations into play (Foyer, Courtyard, Living Room, Ballroom, Dining Room, and Gallery). See below for suggested placement. Each investigator begins play in the Foyer.",
+    "bystanders": {
+      "instructions": "Shuffle the 5 _*Bystander*_ assets depicted here (Constance Dumaine, Jordan Perry, Ishimaru Haruko, Sebastien Moreau, and Ashleigh Clarke) and randomly place one in each location except for the Foyer. Place 1 clue on each of these assets, plus 1 additional clue per investigator.",
+      "note": "*Note: These cards are double-sided and have story cards on their other side. For the best experience, do not look at the other side unless an effect instructs you to do so.*"
+    },
+    "setAside": "Set the Dianne Devine enemy aside, out of play.",
+    "sickeningReality": {
+      "instructions": "Place the 5 “Sickening Reality” story cards underneath the scenario reference card.",
+      "note": "*Note: These cards are double‑sided and have encounter cards on their other side. For the best experience, do not look at the other side unless an effect instructs you to do so.*"
+    }
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": "Clues that were on the act deck when the game ended"
+    },
+    "goToR1": "_If no resolution was reached and at least one investigator resigned_: Go to _Resolution 1_.",
+    "goToR2": "_If no resolution was reached because each investigator was defeated_: Go to _Resolution 2_.",
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<div class='resolution'><p>_Resolution 1_: The brisk autumn air embraces you as you exit the manor. There is no doubt in your mind that the cast and crew of The King in Yellow have become affected by madness. Perhaps it’s getting to you, as well. You feel an encroaching darkness, a presence in your mind not unlike the gaze of the Stranger. Startled, you peer about the front yard for the first time since escaping the manor. The scene is…different. The front windows are not smashed as they were when you first approached. The trail of blood you had noticed on the porch has been wiped clean, and instead of the disturbingly warped music you had heard upon entering, the soothing tones of slow jazz drift out from the courtyard.</p><ul><li>In your Campaign Log, under “VIPs Interviewed,” record the name of each character you “interviewed.”</li><li>In your Campaign Log, under “VIPs Slain,” record the name of each unique _*Lunatic*_ enemy in the victory display.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>For every 2 clues that were on the act deck when the game ended, choose an investigator to earn 1 additional experience point. Experience from this reward must be divided as evenly among the investigators as possible.</li><li>Proceed to _Interlude I: Lunacy’s Reward_.</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<div class='resolution'><p>_Resolution 2_: “Excuse me, but it’s very late,” you hear a server say as he gently taps you on your shoulder. You realize that you are sitting on a couch in the manor’s living room, and that you have been asleep for some time. The party appears to be winding down. No music fills the halls, the food is all but gone, and only a few guests remain. “Perhaps you would like for me to get your coat?” the server asks with a trained smile. You wobble as you rise to your feet, leaning against the couch’s armrest. Your head pounds with a dizzying intensity, and your vision is spotted. You insist that you are fine, and begin walking toward the foyer.</p><P>You no longer see any of the guests you were searching for earlier, not even the hostess, Mrs. Dumaine. All traces of the madness and horror you’ve experienced are gone. Even the oddities you witnessed upon entering the manor have vanished—the signs of struggle, the broken windows, the blood trail on the porch… Every piece of evidence has been erased. But you still remember the night’s events, and in your memory you will find your answers.</p><ul><li>In your Campaign Log, under “VIPs Interviewed,” record the name of each character you “interviewed.”</li><ul>In your Campaign Log, under “VIPs Slain,” record the name of each unique _*Lunatic*_ enemy in the victory display.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>For every 2 clues that were on the act deck when the game ended, choose an investigator to earn 1 additional experience point. Experience from this reward must be divided as evenly among the investigators as possible.</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 1 {'{'}cultist{'}'} token, 1 {'{'}tablet{'}'} token, and 1 {'{'}elderThing{'}'} token to the chaos bag.</li><li>Skip _Interlude I: Lunacy’s Reward_, and proceed directly to _Scenario III: Echoes of the Past_.</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<div class='resolution'><p>_Resolution 3_: Several days later, you find yourself reminiscing about the party you attended at 1452 Atlantic Avenue. What a roaring good time you had! And yet, your memory is hazy. You can’t help but feel you are forgetting something important. Something about the play you’d watched earlier that night—The King in Yellow. That nagging sensation pursues you in every waking moment. Try as you might to recall the night’s events in full, there remains a gaping hole in your memory. As you strain to remember, your concern grows, almost to the point of obsession. Deciding that you absolutely must know what occurred that night, you head toward the manor of the Historical Society in Southside. Perhaps there you can learn more about The King in Yellow play…</p><ul><li>In your Campaign Log, under “VIPs Interviewed,” record the name of each character you “interviewed.” Then, cross off each of those names, since you forgot everything that happened that night.</li><li>In your Campaign Log, under “VIPs Slain,” record the name of each unique _*Lunatic*_ enemy in the victory display.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>For every 2 clues that were on the act deck when the game ended, choose an investigator to earn 1 additional experience point. Experience from this reward must be divided as evenly among the investigators as possible.</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 1 {'{'}cultist{'}'} token, 1 {'{'}tablet{'}'} token, and 1 {'{'}elderThing{'}'} token to the chaos bag.</li><li>Skip _Interlude I: Lunacy’s Reward_, and proceed directly to _Scenario III: Echoes of the Past_.</li></ul></div>"
+    }
+  },
+  "tooltips": {
+    "foyer": {
+      "resign": "Having found valuable information about the production, you depart and plan your next move. (*If each undefeated investigator has resigned, proceed to \"if no resolution was reached\" in the Campaign Guide.*)"
+    }
+  },
+  "label": {
+    "fineDining": {
+      "place": "Place 1 of your clues on a Bystander asset in play"
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "intro": {
+    "title": "Scenario VI: A Light in the Fog",
+    "body": "<p>Crimson-tinted fog bathes the sky as you reach the gatehouse of Falcon Point. Atop the cliffs above you, the lighthouse beacon pierces through the mist. Considering the state of Innsmouth, you wonder what purpose the signal serves now. You doubt there are any ships out at sea given the inclement weather.</p><p>Somewhere inside is the evidence you found weeks ago. You suspect that Oceiros—the man who captured you and left you in that pit to die—also resides within. “Are you ready?” Agent Harper asks. “We have no real escape route here, should things go south. Be prepared for anything.”</p><p>You nod. It’s too late to turn back now. Steadily, you make your way toward the cliffs. One way or another, this ends today.</p>"
+  },
+  "flashback12": {
+    "title": "Flashback XII",
+    "body": "<p>You peer up at Falcon Point lighthouse, but from much farther below. You are aboard Mr. Moore’s fishing vessel, during your voyage to Devil Reef several weeks earlier. The ship sways back and forth as angry waves thrash against its hull. “’Fraid it’s gon’ be a bit rocky,” the ship captain shouts over the crashing of the tumultuous sea. “Weather’s been awful wild of late. Strange tides an’ stranger winds.”</p><p>But still you stare up at the ominous lighthouse, its beacon a guiding light, a warning sign, or both. Curious what knowledge he might have, you ask Mr. Moore about the lighthouse. “That ol’ thing? Been there longer’n Innsmouth itself. Marsh family’s kept it runnin’ as long as I remember. Oceiros is keeper now. Strange fella, that Oceiros. They say the only place in town he visits is the Order o’ Dagon hall by New Church Green.” He shakes his head.</p><p>You wonder if there are more secrets inside that lighthouse than meets the eye. Mr. Moore seems to note your curiosity. “I’ve heard them Marshes’ve carved out caverns beneath the lighthouse goin’ all the way down to sea level an’ beyond,” he claims. “Dunno if that’s true, but sometimes when I’m out ta sea I’ve seen groups of ‘em up by the cliffside, all wavin’ an’ kneelin’ like they’re prayin’ or something. Never really paid it much mind, but...” his voice grows quieter. “Jus’ thought you oughta know.”</p><p>You nod and thank him. If what he’s saying is true, perhaps you should give this lighthouse a visit. You make a mental note to research more about Falcon Point once you return to town.</p><p>When your mind snaps back to the present, you recall the legwork you’d done after your expedition to Devil Reef, and the information you found on the vast network of tunnels beneath the lighthouse..."
+  },
+  "flashback13": {
+    "title": "Flashback XIII",
+    "body": "<p>You speak with one of the many sailors who frequent a ramshackle tavern by the docks of Innsmouth, somewhere in the southeastern slums of the decrepit seaport. He’s found his own little corner of the pub in which to hide and drown himself in alcohol. So much the better—you’d prefer to keep your investigation quiet.</p><p>You jot down notes as the drunken man rambles on about the creatures he’s seen swimming off the coast and prowling around the reefs. “Deep Ones,” he names them. “Caught one in my net once,” he blabbers through slurred speech. “She an’ her eggs—tha’s right!—’er eggs, bigger’n your fist, an’ squirmin’ an’ wrigglin’, too!”</p><p>Absorbed in the ritual of telling a tale for his fellow sailors, he elaborates: “She had one of ’em in her arms. Tiny little devil, with bulgin’, hateful eyes. Couldn’t stand the sight of it. I threw the net o’er as soon as I realized what I’d caught, an’ came right back ’ere. If I had my way I’d never sail ’gain.”</p><p>You mull this new information over in your head. If this man speaks the truth, these creatures seem to have a lifecycle similar to that of a fish. But then, what is the purpose of the uncanny hybrid creatures you have seen skulking about the town? Are they but figments of your frightened imagination? Or is there a much more sinister part of this lifecycle that you are missing?</p>"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>Exhausted, you throw yourself onto the rocky shore. Waves lap at your ankles as you stare up into the sky. Behind the clouds, deep crimson hues spell an ominous end for all of humankind. Your skull pounds with agony as you struggle to remember why. The moon and sun slide into alignment. A thunderous crash resounds in the distance. Dark, churning clouds swirl and seethe over the hateful ocean. What does it all mean? What is the truth behind the Esoteric Order of Dagon? The truth hidden in Devil Reef? Darkness overtakes your senses once more.</p>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>Exhaustion and despair eat at your muscles as you escape into the dark woods surrounding Falcon Point. You know it is too dangerous to stop moving, but you can hardly stand. You brace yourself against a nearby tree and stare up into the sky. Behind the clouds, deep crimson hues spell an ominous end for all of humankind. Your skull pounds as you struggle to remember why. The moon and sun slide into alignment. A thunderous crash resounds in the distance. Dark, churning clouds swirl and seethe above the hateful ocean. What does it all mean? What is the truth behind the Esoteric Order of Dagon? The truth hidden in Devil Reef? Darkness overtakes your senses once more.</p>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>You panic as the water level rises all the way to the ceiling of the cavern. There is no air left to breathe. You feel the currents pulling you deeper and deeper below the surface, where the bulging, glowing eyes of Deep Ones lie in wait. Desperately, you swim up to the cellar door of the lighthouse. Your only hope is to force it open and crawl up into the buildings above, where sweet oxygen awaits. You shove and push with all of your might, hoping, imagining, praying that any moment now your strength will spring the hatch open. Your lungs are about to burst. No! This cannot be the end! You struggle and fight for survival, but the lock does not budge. Hungry for air, your lungs give. Your throat fills with cold saltwater. The sensation of your ankles being gripped by webbed hands is the last thing you feel.</p>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>Coming here was a terrible mistake. Falcon Point is no simple lighthouse, but a headquarters for the Order of Dagon, even more hostile and deadly than the town of Innsmouth you left behind. With danger at every turn and the hateful lighthouse keeper hot on your tail, you leave the secrets of the lighthouse behind and flee into the dark woods.</p><p>By the time you are too deep into the treeline to see the lighthouse beacon, you are utterly exhausted. You know it is too dangerous to stop moving, but you can hardly stand. You brace yourself against a nearby tree and stare up into the sky. Behind the clouds, deep crimson hues spell an ominous end for all of humankind. Your skull pounds as you struggle to remember why. The moon and sun slide into alignment. A thunderous crash resounds in the distance. Dark, churning clouds swirl and seethe above the hateful ocean. What does it all mean? What is the truth behind the Esoteric Order of Dagon? The truth hidden in Devil Reef? Darkness overtakes you once more.</p>"
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1. If your location is flooded, reveal an additional chaos token.",
+      "cultist": "-2. If you fail, after this test ends, increase the flood level of your location.",
+      "tablet": "-3. If you fail this test and your location is flooded, take 1 damage.",
+      "elderThing": "-4. If you fail, move the nearest ready unengaged enemy once toward your location. It loses aloof during this movement."
+    },
+    "hardExpert": {
+      "skull": "-2. If your location is flooded, reveal an additional chaos token.",
+      "cultist": "-2. If you fail, after this test ends, increase the flood level of your location (if you cannot, take 1 horror instead).",
+      "tablet": "-3. If you fail this test and your location is flooded, take 2 damage.",
+      "elderThing": "-4. Move the nearest unengaged enemy once toward your location. It loses aloof during this movement."
+    }
+  }
+}

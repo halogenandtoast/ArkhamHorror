@@ -1,0 +1,13 @@
+{
+    "fastPlayerWindow": "{'{fast}'} 플레이어 행동 기회",
+
+    "determineSkillOfTestStep": "테스트할 능력을 정합니다. 해당 능력 테스트를 시작합니다.",
+    "commitCardsFromHandToSkillTestStep": "손에 든 카드를 선택해 능력 테스트에 소모합니다.",
+    "revealChaosTokenStep": "혼돈 토큰을 공개합니다.",
+    "resolveChaosSymbolEffectsStep": "공개된 혼돈 토큰 기호의 효과를 적용합니다.",
+    "determineInvestigatorsModifiedSkillValueStep": "조사자의 보정된 능력값을 결정합니다.",
+    "determineSuccessOrFailureOfSkillTestStep": "능력 테스트의 성공/실패를 결정합니다.",
+    "applySkillTestResultsStep": "능력 테스트의 결과를 적용합니다.",
+    "skillTestEndsStep": "능력 테스트가 끝납니다."
+
+}

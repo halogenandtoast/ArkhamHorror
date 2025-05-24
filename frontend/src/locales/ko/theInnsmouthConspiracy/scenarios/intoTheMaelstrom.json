@@ -1,0 +1,66 @@
+{
+  "intro": {
+    "title": "Scenario VIII: Into the Maelstrom",
+    "body": "<p>Your plan is simple. Foolish, but simple. The knowledge you’ve gathered leads you to conclude that the Esoteric Order of Dagon is the cause of both the rising tides and the appearance of the horrific “Deep Ones.” Not only that, but over the course of the last few decades, the Order has transformed the townsfolk into more of the horrific creatures, using them to infiltrate Innsmouth from within. But worst of all, the entity the cult worships—Dagon— is just one of two. His mate, Hydra, still slumbers in the depths below Innsmouth, waiting to awaken and stake her claim over an endless ocean.</p><p>These are the conclusions that have led you to your plan: Travel once more to Devil Reef, descend into the city of the Deep Ones that lies hidden at the bottom of the ocean, and put a stop to the Deep Ones’ plans once and for all. Agent Harper helps you prepare, loading your possessions onto the boat you managed to steal from what remained of Innsmouth’s docks. “We only have one shot at this,” Harper says. “I don’t think I need to remind you what might happen if we fail.” She looks pointedly at the flooded ruins of Innsmouth. “Are you ready?”</p> "
+  },
+  "flashback14": {
+    "title": "Flashback XIV",
+    "body": "<p>You are deep below the Esoteric Order of Dagon’s headquarters once more, emerging from the hall where you had disrupted the Order’s ritual. You follow Agent Dawson through a series of winding, flooded corridors flanked by statues of aquatic monstrosities and malformed beasts. You ask Dawson where exactly you’re headed, but he doesn’t reply. Finally, you enter another chamber, similar to the last. Its walls are covered in otherworldly effigies and a depiction of ocean waves swirling below an alignment of celestial bodies. Another familiar pool dominates the cavern, inside which the dark shape of something massive slumbers. To your surprise, Agent Harper stands in front of the pool, gazing into its dark reflection. She turns with a start when she hears you approach, relaxing only once she sees who you are. “Is it done?” Dawson asks.</p><p>She nods. “This one isn’t waking up anytime soon.”</p><p>“Good. The Order is on to us. We have no time to spare. Let’s get to the vault and take what we came for.”</p><p>You reel. What exactly is going on here? Both of the agents notice your confusion at the same time. A moment of grim understanding dawns as you realize the truth of the situation. The agency didn’t come here to investigate criminal activity in Innsmouth at all. They came here for something else. And the only vaults you’ve seen so far in these depths are the ones filled with archaic riches. The material wealth that has kept the town of Innsmouth afloat all these years—perhaps the very riches that persuaded so many of the townsfolk to follow the Order and forsake their own humanity.</p><p>Stifling your frustration, you ask how much of Dawson’s briefing was a lie. “Not all of it,” he says calmly. “Agent Harper was missing when I contacted you, that much was true. But she was sent here on a different mission. One we must complete this very moment or risk losing everything we’ve worked for. And you’re going to help us.”</p><p>You cross your arms in defiance. It’s one thing to be kept in the dark by the two agents you’ve risked your life for. It’s another to help them smuggle treasure on behalf of the government, especially when so much more is at stake.</p><p>“I don’t think you understand,” Dawson replies, his voice surprisingly level. “You are an asset of the agency and under my authority. You will do as I command.” As the silence between you grows more and more tense, you spot Dawson’s hand twitching toward his holstered weapon. Is he truly willing to go that far…?</p><p>Just then, you hear shouting down the hall. “Shit. They’re here.” Dawson turns to Harper, his orders terse and quiet: “Take the exit through Devil Reef. We’ll head back the way we came. Meet up at the vault.”</p><p>The next minute is a blur. Dawson and Harper split up. Despite your anger, you decide it is best to follow Agent Dawson, since you are familiar with that escape route. A torrent of footsteps and hollers follows close behind. You don’t get far before you are cornered. An elderly man with wide, unblinking eyes and long robes blocks your exit. “Take them,” he says. The rest you recall only in flashes of horror. The interrogation. The dark, flooded pit. Dawson’s fate. Harper discovering you on the beach—</p><p>—You turn on Harper, your vision adjusting back to the present. She seems to understand what you have seen. Her hand hovers dangerously near her handgun. “Dammit,” she says. “I was hoping you wouldn’t remember what happened the last time we were in this room…” She draws in a shaky breath as the two of you silently judge one another. “So, what now?” she asks. “I still have a job to do. Are you going to get in my way?”</p>"
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": "Bonus"
+    },
+    "noResolution": {
+      "title": "No resolution",
+      "body": "<p><b>If no resolution was reached because each investigator was defeated:</b> The chanting of the Deep Ones rises to a crescendo. The alien walls of Y’ha-nthlei twist and contort before your eyes, like lungs desperately clawing for breath. The air becomes thin. Water seeps through the walls. Nothing can stop the pull of the tide now. Nothing can stop the great flood. A triumphant roar sounds throughout the city, and the citizens of the deep rise to meet the cry in their jubilance. You collapse in exhaustion and resignation. Your part is over, now. The part of humanity will be soon to follow.</p>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p><b>Resolution 1:</b> You frantically make your way back to the entrance to the undersea city, hoping desperately to escape alive. You feel the familiar tugging of the currents all around you as you emerge on the other side of the otherworldly threshold. Your heart does not stop racing until you finally break the surface of the water and collapse on an outcropping of rock.</p>"
+
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p><b>Resolution 2:</b> As you emerge from the caverns of Devil Reef and look up into the sky, you are relieved to see the sun and moon no longer in alignment. The tide appears to be retreating, as well. The seas seem to have finally calmed.</p>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p><b>Resolution 3:</b> As you emerge from the caverns of Devil Reef and look up into the sky, your throat clenches tight. The sun and moon are still locked in unholy alignment, and the sea still swallows most of the coast.</p>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p><b>Resolution 4:</b> Agent Harper is the first to speak. “We did it. I can’t believe we did it.” You nod. Not only were you able to stop the Deep Ones, but you helped Harper accomplish her mission as well. She digs through her belongings for a bright orange firearm with a large barrel, loads a flare into it, and launches the bright light into the sky with a victorious smirk. “They’ll be coming for us any minute now. I’m sure you’ll be rewarded handsomely for your help. So long as you agree to speak to nobody about any of this, of course,” she says. You nod. It’s not like anyone would believe you, anyway.</p>"
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "<p><b>Resolution 5:</b> There is no sign of Agent Harper anywhere. Perhaps she never made it out of the city alive. You hold out hope that she is out there, somewhere. Still, you are relieved that at the very least, nobody will ever be able to use the riches of Y’ha-nthlei to manipulate humanity ever again. Not the government, not the Deep Ones—nobody.</p>"
+    },
+    "resolution6": {
+      "title": "Resolution 6",
+      "body": "<p><b>Resolution 6:</b> Agent Harper is the first to speak. “Well. Mission accomplished, I suppose.” You bite your lip. She may have accomplished her mission, but the toll of the Deep Ones’ ritual on the world will never fade. She digs through her belongings for a bright orange firearm with a large barrel, loads a flare into it, and launches the bright light into the sky with a victorious smirk. “They’ll be coming for us any minute now. Then we’ll blow that city apart, and hopefully, this will all be over,” she says. You aren’t so sure. Much of the damage has already been done. Will it ever truly end? Or are you just delaying the inevitable?</p>"
+    },
+    "resolution7": {
+      "title": "Resolution 7",
+      "body": "<p><b>Resolution 7:</b> There is no sign of Agent Harper anywhere. Perhaps she never made it out of the city alive. You hold out hope that she is out there, somewhere. Still, you are relieved that at the very least, nobody will ever be able to use the riches of Y’ha-nthlei to manipulate humanity ever again. Not the government, not the Deep Ones—nobody. You peer out once more to the waves thrashing across the horizon. The flood seems to have halted. Perhaps you have harmed the Deep Ones and their masters enough that their ritual has been foiled. Or perhaps they are merely biding their time, waiting until they can emerge once more. Is this truly over? Or did you merely delay the inevitable?</p>"
+    },
+    "resolution8": {
+      "title": "Resolution 8",
+      "body": "<p><b>Resolution 8:</b> As the ritual concludes, the eastern seaboard becomes the first coastline drowned by the rising sea. The rest of the continent is swift to follow. The icecaps melt, consuming the remainder of the Earth. Cities fall. Humanity is no longer. All that is left is the ocean and the ever-static alignment of celestial bodies that looms overhead. And of course, the inheritors of this new Earth: Hydra, Dagon, and their children.</p>"
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 (-3 instead if there are 4 or more unflooded _Y'ha-nthlei_ locations in play).",
+      "cultist": "-3. If you fail, place 1 doom on the current agenda (this may cause the current agenda to advance).",
+      "tablet": "-4. If you fail, you must either increase the flood level of your location or take 1 damage.",
+      "elderThing": "-5. If you fail and there is a key on your location, take 1 horror."
+    },
+    "hardExpert": {
+      "skull": "-2 (-4 instead if there are 4 or more unflooded _Y'ha-nthlei_ locations in play).",
+      "cultist": "-4. If you fail, place 1 doom on the current agenda (this may cause the current agenda to advance).",
+      "tablet": "-5. If you fail, you must either increase the flood level of your location or take 1 damage.",
+      "elderThing": "-6. If you fail and there is a key on your location, take 1 horror."
+    }
+  }
+}

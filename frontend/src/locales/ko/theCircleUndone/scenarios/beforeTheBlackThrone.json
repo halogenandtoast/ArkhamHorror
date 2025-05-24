@@ -1,0 +1,21 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half of the doom on Azathoth (rounded up), to a minimum of 2.",
+      "cultist": "Reveal another token. If you fail, search the encounter deck and discard pile for a _Cultist_ enemy and draw it. Shuffle the encounter deck.",
+      "tablet": "-2. If you fail, Azathoth attacks you.",
+      "elderThing": "-4. If your modified skill value for this test is 0, place 1 doom on Azathoth."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the amount of doom on Azathoth, to a minimum of 2.",
+      "cultist": "Reveal another token. If you fail, search the encounter deck and discard pile for a _Cultist_ enemy and draw it. Shuffle the encounter deck.",
+      "tablet": "-3. If you fail, Azathoth attacks you.",
+      "elderThing": "-6. If your modified skill value for this test is 0, place 1 doom on Azathoth."
+    }
+  },
+  "xp": {
+    "resolution2": "Saved the universe from being devoured.",
+    "resolution3": "Saved the universe from being devoured.",
+    "resolution5": "Learned the innermost secrets of the Black Book."
+  }
+}

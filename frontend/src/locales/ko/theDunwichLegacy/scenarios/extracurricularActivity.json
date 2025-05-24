@@ -1,0 +1,65 @@
+{
+  "intro": {
+    "title": "Scenario I-A: Extracurricular Activity",
+    "body": "<p>Dr. Armitage is worried his colleague, Professor Warren Rice, might be in trouble, so he has asked for your help in finding his friend. He seems unreasonably nervous about his colleague’s disappearance considering Professor Rice has only been “missing” for a matter of hours…</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Extracurricular Activity*, *Sorcery*, *The Beyond*, *Bishop’s Thralls*, *Whippoorwills*, *Ancient Evils*, *Locked Doors*, and *Agents of Yog‑Sothoth*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/extracurricular-activity.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/bishops-thralls.png' /><img src='{setImgPath}/whippoorwills.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/agents-of-yog.png' /></section>",
+    "facultyOffices": {
+      "body": "Depending on the following circumstances, a different version of Faculty Offices should be used in this scenario.",
+      "theNightIsStillYoung": "If Extracurricular Activity is the first scenario of the campaign, use Faculty Offices (*The Night is Still Young*). Set it aside, out of play. Remove Faculty Offices (*The Hour is Late*) from the game.",
+      "theHourIsLate": "If you have completed The House Always Wins, use Faculty Offices (*The Hour is Late*). Set it aside, out of play. Remove Faculty Offices (*The Night is Still Young*) from the game."
+    },
+    "setAside": "Set the following cards aside, out of play: “Jazz” Mulligan, Alchemical Concoction, The Experiment, Professor Warren Rice, Dormitories, and Alchemy Labs.",
+    "placeLocations": "Put the Miskatonic Quad, Orne Library, Humanities Building, Student Union, Science Building, and Administration Building locations into play. Each investigator begins play at the Miskatonic Quad."
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<div class='resolution'><p>_If no resolution was reached (each investigator resigned or was defeated)_: As you flee from the university, you hear screaming from the northern end of the campus. An ambulance passes you by, and you fear the worst. Hours later, you learn that a ‘rabid dog of some sort’ found its way into the university dormitories. The creature attacked the students inside and many were mauled or killed in the attack.</p><ul><li>In your Campaign Log, record that Professor Warren Rice was kidnapped.</li><li>In your Campaign Log, record that the investigators failed to save the students. You are haunted by guilt. Add 1 {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 1 experience as he or she reflects on the night’s events.<ul><li>_Experience_: {xp}</li></ul></li><li>If this is the first scenario of the campaign, proceed to Scenario I–B: The House Always Wins. Otherwise, proceed to Interlude I: Armitage’s Fate.</li></ul></div>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<div class='resolution'><p>_Resolution 1_: You find Professor Rice bound and gagged in the closet of his office. When you free him, he informs you that the strange men and women wandering around the campus had been stalking him for hours. They cornered him in his office and tied him up, although for what purpose, Rice isn’t sure. You inform him that Dr. Armitage sent you, and Rice looks relieved, although he suspects that Dr. Morgan might be in danger as well. Because the strangers on campus seem to have been targeting Professor Rice, you decide that the best course of action is to escort him away from the campus as quickly as possible. As you leave the university, you hear screaming from the northern end of the campus. An ambulance passes you by, and you fear the worst. Hours later, you learn that a ‘rabid dog of some sort’ found its way into the university dormitories. The creature attacked the students inside, and many were mauled or killed in the attack.</p><ul><li>In your Campaign Log, record that *the investigators rescued Professor Warren Rice*. Any one investigator may choose to add Professor Warren Rice to his or her deck. This card does not count toward that investigator’s deck size.</li><li>In your Campaign Log, record that *the investigators failed to save the students*. You are haunted by guilt. Add 1 {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Proceed to Scenario I–B: The House Always Wins.</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<div class='resolution'><p>_Resolution 2_: You pull each of the dormitory’s fire alarms and usher the students out of the building’s north exit, hoping to make your way off campus. Many of the students are confused and exhausted, but you believe an attempt to explain the situation will do more harm than good. Minutes later, a terrible screech echoes across the campus, piercing and shrill. You tell the students to wait and head back to the dormitories to investigate. Oddly, you find no trace of the strange creature—a prospect that worries you more than it relieves you. You hurry to the faculty offices to find Professor Rice, but there is no sign of him anywhere.</p><ul><li>In your Campaign Log, record that *Professor Warren Rice was kidnapped*.</li><li>In your Campaign Log, record that *the students were rescued*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>If this is the first scenario of the campaign, proceed to Scenario I–B: The House Always Wins. Otherwise, proceed to Interlude I: Armitage’s Fate.</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<div class='resolution'><p>_Resolution 3_: After defeating the strange and terrifying creature from the Department of Alchemy, you rush to the faculty offices to find Professor Rice. By the time you get to his office, there is no sign of him anywhere.</p><ul><li>In your Campaign Log, record that *Professor Warren Rice was kidnapped*.</li><li>In your Campaign Log, record that *the Experiment was defeated*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>If this is the first scenario of the campaign, advance to The House Always Wins. Otherwise, advance to Interlude I—Armitage’s Fate.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<div class='resolution'><p>_Resolution 4_: You awaken hours later, exhausted and injured. You’re not sure what you saw, but the sight of it filled your mind with terror. From other survivors, you learn that a ‘rabid dog of some sort’ found its way into the university dormitories. The creature attacked the students inside, and many were mauled or killed in the attack.</p><ul><li>In your Campaign Log, record that *the investigators were unconscious for several hours*.</li><li>In your Campaign Log, record that *Professor Warren Rice was kidnapped*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 1 experience as he or she reflects on the night’s events.<ul><li>_Experience_: {xp}</li></ul></li><li>In your Campaign Log, record that *the investigators failed to save the students*. You are haunted by guilt. Add 1 {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.</li><li>If this is the first scenario of the campaign, advance to Scenario I–B: The House Always Wins. Otherwise, advance to Interlude I: Armitage’s Fate.</li></ul></div>"
+    },
+    "xp": {
+      "noResolution": "Reflects on the night’s events.",
+      "resolution4": "Reflects on the night’s events."
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1. If you fail, discard the top 3 cards of your deck.",
+      "cultist": "-1 (-3 instead if there are 10 or more cards in your discard pile).",
+      "elderThing": "-X. Discard the top 2 cards of your deck. X is the total printed cost of those discarded cards."
+    },
+    "hardExpert": {
+      "skull": "-2. If you fail, discard the top 5 cards of your deck.",
+      "cultist": "-1 (-5 instead if there are 10 or more cards in your discard pile).",
+      "elderThing": "-X. Discard the top 3 cards of your deck. X is the total printed cost of those discarded cards."
+    }
+  },
+  "tooltips": {
+    "miskatonicQuad": {
+      "resign": "\"We can't find Rice anywhere...\" You leave the campus, hoping Armitage will forgive you."
+    },
+    "alchemyLabs": {
+      "action": {
+        "can": "{'{'}action{'}'}: _Investigate_. If you are successful, instead of discovering clues, take the Alchemical Concoction from underneath this location if able.",
+        "cannot": "{'{'}action{'}'}: _Investigate_. If you are successful, instead of discovering clues, take the Alchemical Concoction from underneath this location if able (YOU CANNOT)."
+      }
+    }
+  }
+}

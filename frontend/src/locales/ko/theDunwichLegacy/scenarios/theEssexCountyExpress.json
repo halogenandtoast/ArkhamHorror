@@ -1,0 +1,46 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the current Agenda #.",
+      "cultist": "-1. If you fail and it is your turn, lose all remaining actions and end your turn immediately.",
+      "tablet": "-2. Add 1 doom token to the nearest Cultist enemy.",
+      "elderThing": "-3. If you fail, choose and discard a card from your hand."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the current Agenda #.",
+      "cultist": "Reveal another token. If you fail and it is your turn, lose all remaining actions and end your turn immediately.",
+      "tablet": "-4. Add 1 doom token to each Cultist enemy in play.",
+      "elderThing": "-3. If you fail, choose and discard a card from your hand for each point you failed by."
+    }
+  },
+  "intro": {
+    "title": "Scenario III: The Essex County Express",
+    "body": "<p>Recent events in the Museum have forced you to re-evaluate Armitage’s tale about Dunwich. It cannot be a coincidence—Wilbur Whateley, the Necronomicon, the creature from Dunwich, and the people and creatures who attacked here in Arkham­ —everything must be connected. You’re certain now where you must head: the lonely and dismal town of Dunwich Village.</p><p>You consider telling the Massachusetts State Police what you know, but the negative consequences outweigh the potential gain. Given the nature of your story, they would likely write your stories off as an absurd hoax. Worse, they could lock you up. After all, you were present in an illegal speakeasy, and you also trespassed in the museum. Instead, you decide to head to Dunwich yourself, in order to investigate further.</p><p>You pack everything you think you might need and manage to get some rest for the night. In the morning, you head to the train station in Northside and purchase a last-minute express ticket. Dunwich is several hours by train northwest along the Miskatonic River Valley. There is no train station in Dunwich, but you manage to phone one of Armitage’s acquaintances in the small village: a man by the name of Zebulon Whateley who was present during the events several months ago.</p><p>Armitage’s notes indicate that the Whateley family is spread across many branches, some decadent and unscrupulous, others “undecayed” or otherwise untouched by nefarious and diabolic rites. According to Armitage, Zebulon’s branch of the family lay somewhere between the decayed and undecayed Whateleys, who knew of the traditions of his ancestors, but was not corrupted by them. He agrees to pick you up at the closest station and drive you into town.</p><p>As the train departs from Arkham, you feel the events of the previous night catching up to you, and exhaustion sets in. But before you can safely reach your destination, the train car suddenly rumbles and shakes, startling you out of your reverie. The train loudly skids to a violent halt, and you hear a rattling noise behind you…</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *The Essex County Express*, *The Beyond*, *Striking Fear*, *Ancient Evils*, *Dark Cult*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-essex-county-express.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/dark-cult.png' /></section>",
+    "placeLocations": "Put one of the three Engine Car locations into play at random. Remove the other versions of Engine Car from the game. Then, put six of the eight Train Car locations into play at random, in a straight line to the left of the Engine Car. Remove the remaining two Train Car locations from the game.",
+    "revealTrainCar": "Reveal the leftmost Train Car. Each investigator begins play in that location. (If that location has a ‘forced’ effect that triggers upon entering that location, ignore it.)",
+    "setAside": "Set all 4 copies of Across Space and Time aside, out of play.",
+    "adjustChaosBag": "Based on your difficulty level, add the following chaos token(s) to the chaos bag, for the remainder of the campaign:<div class='columns'><ul><li>_Easy_: -2</li><li>_Standard_: -3</li></ul><ul><li>_Hard_: -4</li><li>_Expert_: -5</li></ul></div>"
+  },
+  "moving": {
+    "title": "Moving on the Train: “Left” and “Right”",
+    "body": "<p class='basic'>During this scenario, locations are lined up from left to right, with the Engine Car as the rightmost location. Whenever a card effect refers to “the location to the left,” or “the location to the right,” it refers to the location immediately to your location’s left or right.</p><p class='basic'>Any card effects that reference a direction (left or right) should be interpreted from the perspective of the diagram on the previous page.</p>"
+  },
+  "resolutions": {
+    "defeat": "<div class='resolution'><p class='basic'>_Before resolving any other resolution, if at least 1 investigator was defeated_: The defeated investigators read _Investigator Defeat_ first.</p><p>_Investigator Defeat_: Your experience beyond the gate is simultaneously terrifying and impossible to recall with clarity. A hypnotic spectacle of lights, otherworldly sensations, and altered geometry dances at the tattered edges of your mind. An unearthly voice from beyond rings in your ears, its significance an enigma. When you awaken, you find yourself in the woods, several miles from the Miskatonic River. Destroyed train cars surround you. They are crumpled as if from a severe impact; they are also decayed as if years of rust and squalor have claimed them. There is no sign of the other passengers.</p><ul><li>Each investigator who was defeated has acquired the Across Space and Time weakness and must add 1 copy of it to his or her deck. This card does not count toward that investigator’s deck size.</li><li>Each investigator who was defeated earns 1 bonus experience as his or her experience beyond the gate grants them insight into the cosmos.</li><li>If an investigator with The Necronomicon (*Olaus Wormius Translation*) in his or her deck was defeated, in your Campaign Log, record that the Necronomicon was stolen. The Necronomicon (*Olaus Wormius Translation*) must be removed from that investigator’s deck.</li><li>If an investigator with the Dr. Henry Armitage card, the Professor Warren Rice card, or the Dr. Francis Morgan card in his or her deck was defeated, in your Campaign Log, record that the character in question *was kidnapped*. The associated card must be removed from that investigator’s deck.</li><li>If no resolution was reached (each investigator was defeated): Go to _Resolution 2_.</li></ul></div>",
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<div class='resolution'><p>_Resolution 1_: You breathe a sigh of relief as the gate behind the train collapses harmlessly upon itself. The few passengers who survived the ordeal seem unable to comprehend what just happened. One passenger mentions “a pipe bursting in the rear car,” and that quickly becomes the explanation for the innocent and ignorant, those who either cannot or choose not to delve further into the mystery. You, on the other hand, know better… although in hindsight, you wish you didn’t.</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<div class='resolution'><p>_Resolution 2 (read Investigator Defeat first!)_: Rattled, you begin walking alongside the train tracks, making your way towards Dunwich.</p><ul><li>In your Campaign Log, record that *the investigators were delayed on their way to Dunwich*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+    }
+  },
+  "label": {
+    "dodge": "Test {'{'}agility{'}'} (3) to attempt to dodge the creature. If you fail, you leap too far and barely grip the side of the train, hanging on for dear life. Although you manage to pull yourself up, the experience is terrifying. You suffer 1 mental trauma.",
+    "endure": "Test {'{'}combat{'}'} (3) to attempt to endure the creature's extreme heat. If you fail, the creature flies through you and the heat burns you. You suffer 1 physical trauma."
+  }
+}

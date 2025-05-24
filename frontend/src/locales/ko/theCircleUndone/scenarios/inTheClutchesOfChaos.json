@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the total amount of doom and breaches on your location.",
+      "cultist": "Reveal another token. If there are fewer than 3 breaches on your location, place 1 breach on your location.",
+      "tablet": "-2. For each point you fail by, remove 1 breach from the current act.",
+      "elderSign": "-3. If you fail, place 1 breach on a random location."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 higher than the total amount of doom and breaches on your location.",
+      "cultist": "Reveal another token. If there are fewer than 3 breaches on your location, place 1 breach on your location.",
+      "tablet": "-3. For each point you fail by, remove 1 breach from the current act.",
+      "elderSign": "-4. If you fail, place 1 breach on a random location."
+    }
+  }
+}

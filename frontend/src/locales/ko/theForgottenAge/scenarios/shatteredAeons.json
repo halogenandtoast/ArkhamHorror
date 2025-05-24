@@ -1,0 +1,19 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-2 (-4 instead if the Relic of Ages is at your location).",
+      "cultist": "-2. If you do not succeed by at least 1, place 1 doom on the nearest _Cultist_ enemy.",
+      "tablet": "-2. If you are poisoned, this test automatically fails instead.",
+      "elderThing": "-2. If you fail, shuffle the topmost _Hex_ treachery in the encounter discard pile into the exploration deck."
+    },
+    "hardExpert": {
+      "skull": "-3 (-5 instead if the Relic of Ages is at your location).",
+      "cultist": "-3. If you do not succeed by at least 1, place 1 doom on each _Cultist_ enemy.",
+      "tablet": "-3. If you are poisoned, this test automatically fails instead. If you are not poisoned and you fail, put a set-aside Poisoned weakness into play in your threat area.",
+      "elderThing": "-3. Shuffle the topmost _Hex_ treachery in the encounter discard pile into the exploration deck."
+    }
+  },
+  "xp": {
+    "resolution1": "Mended the shattered timeline and saved the Earth from catastrophe."
+  }
+}

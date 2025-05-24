@@ -1,0 +1,30 @@
+{
+  "intro": {
+   "title": "Scenario V: Horror in High Gear",
+   "body": "<p>Trees whizz by as you rumble along the old dirt road just outside of Innsmouth. The sun has set over the western horizon, leaving only the full moon to bathe the dusty roads in its brilliant, eerie glow. “Here,” Agent Harper shouts from the passenger seat over the rumbling of the automobile engine. She points to a spot on the map she has spread across her lap, tapping it repeatedly. “Falcon Point Lighthouse. That’s where Oceiros should be.” A shudder courses up your spine. If your memories are to be believed, Oceiros is the man who left you to die in those tidal tunnels. You ask Harper how far Falcon Point is from Innsmouth, hoping to arrive before the Order realizes you’ve escaped. She sighs. “It’s not that far, but these roads are meandering. They could be difficult to navigate. One wrong turn and—” both you and Harper see the lights in your rearview mirror at the same time. Headlights. And they’re growing larger and brighter by the second. Harper curses under her breath. “I don’t suppose those are friends of yours?” You shake your head and tighten your grip on the wheel. It seems the Order has already caught wind of your flight from Innsmouth. You tell Agent Harper to hold on and slam your foot on the accelerator.</p>"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p><b>If no resolution was reached (each investigator was defeated):</b> Your drive to Falcon Point is no joyride. Between the cultists on your tail and the creatures that dwell in the woods outside Innsmouth, your vehicle is harried at every turn. With no way to escape unharmed, you are forced to abandon your vehicle and sneak through the woods on foot. By the time you see the distant lighthouse beacon, dawn already bathes the sky in orange radiance. “Finally,” Agent Harper groans. With no time to rest, you continue the trek to the Falcon Point lighthouse, exhausted but resolute.</p>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p><b>Resolution 1:</b> You breathe a sigh of relief as you see the distant lighthouse beacon pierce the fog. “Let’s pull over here and make the rest of the trip on foot,” Harper suggests. “If there’s anybody still in that lighthouse, it would be best if they didn’t hear us approach.” Her advice is sound. You’re not sure what to expect once you reach Falcon Point, but all signs point to it being another outpost for the Order. You double‑check to make sure you aren’t being followed, then pull over by the side of the road. Gathering your belongings from the car’s trunk, you begin the trek to the Falcon Point lighthouse…</p>"
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 (-3 instead if there are 6 or fewer locations remaining in the Road deck).",
+      "cultist": "-1. For each point you fail by, an investigator in your vehicle places 1 of their clues on your location.",
+      "tablet": "-2. For each point you fail by, an investigator in your vehicle loses 1 resource.",
+      "elderThing": "-4. If you fail, resolve the hunter keyword on each enemy in play."
+    },
+    "hardExpert": {
+      "skull": "-2 (-4 instead if there are 6 or fewer locations remaining in the Road deck).",
+      "cultist": "-2. For each point you fail by, an investigator in your vehicle places 1 of their clues on your location.",
+      "tablet": "-3. For each point you fail by, an investigator in your vehicle loses 1 resource.",
+      "elderThing": "-4. Resolve the hunter keyword on each enemy in play."
+    }
+  }
+}

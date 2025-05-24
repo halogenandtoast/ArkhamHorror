@@ -1,0 +1,50 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the highest number of doom on a _Cultist_ enemy in play.",
+      "cultist": "-2. Place 1 doom on the nearest _Cultist_ enemy.",
+      "tablet": "-3. If you fail, place 1 of your clues on your location."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the total number of doom in play.",
+      "cultist": "-2. Place 1 doom on each _Cultist_ enemy in play. If there are no _Cultist_ enemies in play, reveal another token.",
+      "tablet": "-4. If you fail, place all your clues on your location."
+    }
+  },
+  "intro": {
+    "title": "Part II: The Midnight Masks",
+    "body": "<p class='basic'>Check Campaign Log. *If Lita was forced to find others to help her cause*: Read _Intro 1_.</p><p class='basic'>Otherwise, skip to _Intro 2_.</p>"
+  },
+  "intro1": "<p>_Intro 1_: The woman came to you in a panic, raving about monsters emerging from the ground in a home near Rivertown. “I managed to trap them,” she explains, “but there are others. Other pits. Other domains.” Only last week, you would have thought she was a lunatic. Recent events, however, have challenged your preconceptions of normality. You decide to hear her out. She introduces herself as Lita Chantler and lays out a tale that strains the limits of your belief. “The creatures I speak of ,” she claims, “are called ghouls—cruel beings who plague the crypts, caverns, and tunnels beneath the city of Arkham…”</p><p class='basic right'>Continue to _Intro 3_.</p>",
+  "intro2": "<p>_Intro 2_: In the wake of the disaster at your home, Lita Chantler, the red‑haired woman from your parlor, lays out a tale that—even in light of what you have just witnessed—strains the limits of your belief. “The creatures in your home,” she claims, “are called ghouls—cruel beings who plague the crypts, caverns, and tunnels beneath the city of Arkham…”</p><p class='basic right'>Continue to _Intro 3_.</p>",
+  "intro3": "<p>_Intro 3_: “These creatures feed on the corpses of humans, and they are served by a dark cult within Arkham whose members have inexplicably come to worship the ancient master of the ghouls. This cult has been killing innocent people and feeding them to the ghouls, satiating a monstrous hunger. A dark balance was maintained. Until now. Recently,” Lita continues, “one of their lairs, where the corpses were stored, was destroyed. Since then, the ghouls have been more active than usual. I have tracked their movements and tried my best to stop them from running amok throughout the city. But I think there is something worse going on. The cult has been planning something darker, and more ominous, than anything I have yet observed. Indications are that this plan shall come to fruition tonight, shortly after midnight. Beyond that, I cannot fathom what to expect.</p><p>“Many of the cultists,” Lita continues, “will seem like everyday people, despite their foul intentions. Whenever the cult meets, its members don masks shaped like the skulls of various animals to protect their identities from one another. These masks are our mark. Symbols of death and decay. We must unmask the cultists to expose and derail their plans. We have but a few hours. The more cultists we find before midnight, the better.”</p><p class='basic right'>Continue to _Setup_.</p>",
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<div class='resolution'><p class='basic'>_If no resolution was reached (each investigator resigned or was defeated):_ Read _Resolution 1_.</p></div>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<div class='resolution'><p>_Resolution 1_: You’ve managed to obtain some useful information about the cult and its plans. You can only hope it’s enough.</p><ul><li>In your Campaign Log, under “Cultists We Interrogated,” record the names of each unique _Cultist_ enemy in the victory display.</li><li>In your Campaign Log, under “Cultists Who Got Away,” record the name of each unique enemy still remaining in the Cultist deck or in play. If it is Agenda 1, record “The Masked Hunter” here as well.</li><li>If the Ghoul Priest is in the victory display, cross out “*the Ghoul Priest is still alive*” in your Campaign Log.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<div class='resolution'><p>_Resolution 2_: Twelve bells ring out, signaling midnight. You’re out of time; the cult’s ritual will begin shortly. You’ve managed to obtain some useful information about the cult and its plans. You can only hope it’s enough.</p><ul><li>In your Campaign Log, under “Cultists We Interrogated,” record the names of each unique _Cultist_ enemy in the victory display.</li><li>In your Campaign Log, under “Cultists Who Got Away,” record the name of each unique enemy still remaining in the Cultist deck or in play.</li><li>In your Campaign Log, record that *it is past midnight.*</li><li>If the Ghoul Priest is in the victory display, cross out “*the Ghoul Priest is still alive*” in your Campaign Log.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+    }
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *The Midnight Masks*, *Chilling Cold*, *Nightgaunts*, *Dark Cult*, and *Locked Doors*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/midnight-masks.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+    "cultistDeck": "<div class='columns simple'><p class='basic'>Set the *Cult of Umôrdhoth* encounter set aside as a separate “Cultist deck,” and shuffle it. This set is indicated by the following icon:</p><section class='encounter-sets'><img src='{setImgPath}/cult-of-umordhoth.png' /></section></div>",
+    "placeLocations": "Choose one of the two Downtown locations and one of the two Southside locations at random and put them into play. Remove the other versions of Downtown and Southside from the game. Then, put the Northside, Easttown, Rivertown, St. Mary’s Hospital, Graveyard, Miskatonic University, and Your House locations into play. (See next page for suggested placement.)",
+    "acolytes": {
+      "instructions": "Based on the number of players in the game:",
+      "onePlayer": "If there is exactly 1 player in the game, no changes are made.",
+      "twoPlayer": "If there are exactly 2 players in the game, search the gathered encounter sets for 1 copy of Acolyte and spawn it at Southside.",
+      "threePlayer": "If there are exactly 3 players in the game, search the gathered encounter sets for 2 copies of Acolyte. Spawn 1 at Southside and 1 at Downtown.",
+      "fourPlayer": "If there are exactly 4 players in the game, search the gathered encounter sets for 3 copies of Acolyte. Spawn 1 at Southside, 1 at Downtown, and 1 at the Graveyard."
+    },
+    "burnedToTheGround": "Check Campaign Log. If *your house has burned to the ground*: Remove Your House from the game. Each investigator begins play at Rivertown.",
+    "houseStillStanding": "Check Campaign Log. If *your house is still standing*: Each investigator begins play at Your House.",
+    "ghoulPriest": "Check Campaign Log. If *the Ghoul Priest is still alive*: Shuffle it into the encounter deck."
+  }
+}

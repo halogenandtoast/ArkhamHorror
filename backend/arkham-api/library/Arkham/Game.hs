@@ -1773,8 +1773,11 @@ getLocationsMatching lmatcher = do
         Nothing -> pure []
         Just start -> do
           matchingLocationIds <- map toId <$> getLocationsMatching matcher
-          matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
-          pure $ filter ((`elem` matches') . toId) ls
+          if null matchingLocationIds
+            then pure []
+            else do
+              matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
+              pure $ filter ((`elem` matches') . toId) ls
     FarthestLocationFromLocation start matcher -> do
       matchingLocationIds <- map toId <$> getLocationsMatching matcher
       matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))

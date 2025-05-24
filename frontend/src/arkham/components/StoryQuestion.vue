@@ -285,6 +285,9 @@ button {
       align-content: center;
       justify-items: flex-start;
       flex: 1;
+      display: flex;
+      align-self: center;
+      gap: 10px;
     }
   }
   button {

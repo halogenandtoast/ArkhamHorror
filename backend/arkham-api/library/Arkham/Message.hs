@@ -97,6 +97,7 @@ messageType Revelation {} = Just RevelationMessage
 messageType DrawChaosToken {} = Just DrawChaosTokenMessage
 messageType ResolveChaosToken {} = Just ResolveChaosTokenMessage
 messageType EnemySpawn {} = Just EnemySpawnMessage
+messageType EnemySpawnAtLocationMatching {} = Just EnemySpawnMessage
 messageType InvestigatorDrawEnemy {} = Just DrawEnemyMessage
 messageType EnemyDefeated {} = Just EnemyDefeatedMessage
 messageType (Discard _ GameSource (EnemyTarget _)) = Just EnemyDefeatedMessage
@@ -108,12 +109,14 @@ messageType InvestigatorDefeated {} = Just InvestigatorDefeatedMessage
 messageType InvestigatorIsDefeated {} = Just InvestigatorDefeatedMessage
 messageType CheckWindows {} = Just CheckWindowMessage
 messageType Explore {} = Just ExploreMessage
-messageType (Do msg) = messageType msg
-messageType (MoveWithSkillTest msg) = messageType msg
-messageType (MovedWithSkillTest _ msg) = messageType msg
 messageType DealAssetDamageWithCheck {} = Just AssetDamageMessage
 messageType DealAssetDirectDamage {} = Just AssetDamageMessage
 messageType AssignAssetDamageWithCheck {} = Just AssetDamageMessage
+messageType (MoveWithSkillTest msg) = messageType msg
+messageType (MovedWithSkillTest _ msg) = messageType msg
+messageType (Do msg) = messageType msg
+messageType (When msg) = messageType msg
+messageType (After msg) = messageType msg
 messageType _ = Nothing
 
 isBlanked :: Message -> Bool

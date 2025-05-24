@@ -1,17 +1,10 @@
-module Arkham.Enemy.Cards.TemporalDevourer (
-  temporalDevourer,
-  TemporalDevourer (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.TemporalDevourer (temporalDevourer) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Location
 import Arkham.Matcher
-import Arkham.Projection
-import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Extradimensional, Shattered))
 
 newtype TemporalDevourer = TemporalDevourer EnemyAttrs
@@ -25,34 +18,19 @@ temporalDevourer =
     Cards.temporalDevourer
     (4, Static 5, 4)
     (1, 1)
-    $ ( spawnAtL
-          ?~ SpawnAt
-            ( FarthestLocationFromYou
-                (LocationMatchAny $ map LocationWithTrait [Shattered, Extradimensional])
-            )
-      )
+    $ (spawnAtL ?~ SpawnAt (FarthestLocationFromYou $ hasAnyTrait [Shattered, Extradimensional]))
     . (surgeIfUnableToSpawnL .~ True)
 
 instance HasAbilities TemporalDevourer where
   getAbilities (TemporalDevourer a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ EnemyEnters
-            Timing.After
-            ( LocationMatchAny
-                $ map LocationWithTrait [Shattered, Extradimensional]
-            )
-          $ EnemyWithId
-          $ toId a
-      ]
+    extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ EnemyEnters #after (hasAnyTrait [Shattered, Extradimensional]) (be a)
 
 instance RunMessage TemporalDevourer where
-  runMessage msg e@(TemporalDevourer attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      mlid <- field EnemyLocation (toId e)
-      for_ mlid $ \lid -> do
-        push $ PlaceClues (toAbilitySource attrs 1) (toTarget lid) 1
+  runMessage msg e@(TemporalDevourer attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      withLocationOf attrs \lid -> placeTokens (attrs.ability 1) lid #clue 1
       pure e
-    _ -> TemporalDevourer <$> runMessage msg attrs
+    _ -> TemporalDevourer <$> liftRunMessage msg attrs

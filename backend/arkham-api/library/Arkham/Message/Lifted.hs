@@ -2953,3 +2953,10 @@ resolveHunterKeyword :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m) => en
 resolveHunterKeyword enemy = do
   let enemyId = asId enemy
   push $ HandleGroupTarget HunterGroup (toTarget enemyId) [HunterMove enemyId]
+
+changeSpawnAt :: (MonadTrans t, HasQueue Message m) => EnemyId -> LocationId -> t m ()
+changeSpawnAt enemyId locationId = lift $ replaceAllMessagesMatching ((== Just EnemySpawnMessage) . messageType) \case
+  When (EnemySpawnAtLocationMatching miid _ eid) | eid == enemyId -> [When (EnemySpawnAtLocationMatching miid (LocationWithId locationId) eid)]
+  EnemySpawnAtLocationMatching miid _ eid | eid == enemyId -> [EnemySpawnAtLocationMatching miid (LocationWithId locationId) eid]
+  After (EnemySpawnAtLocationMatching miid _ eid) | eid == enemyId -> [After (EnemySpawnAtLocationMatching miid (LocationWithId locationId) eid)]
+  other -> [other]

@@ -193,12 +193,8 @@ instance RunMessage BloodOnTheAltar where
         _ -> pure ()
       pure s
     ScenarioResolution r -> scope "resolutions" do
-      sacrificed <- filterCards CardIsUnique <$> scenarioField ScenarioCardsUnderAgendaDeck
-      let doGainXp = allGainXpWithBonus' attrs $ toBonus "bonus" 2
       case r of
         NoResolution -> do
-          resolutionWithXp "noResolution" doGainXp
-          record TheRitualWasCompleted
           let
             potentialSacrifices =
               case lookup PotentialSacrifices attrs.decks of
@@ -206,7 +202,16 @@ instance RunMessage BloodOnTheAltar where
                 _ -> error "missing deck"
           agendaId <- selectJust AnyAgenda
           placeUnderneath agendaId potentialSacrifices
-          for_ potentialSacrifices removeCampaignCard
+        _ -> pure ()
+      do_ msg
+      pure s
+    Do (ScenarioResolution r) -> scope "resolutions" do
+      sacrificed <- filterCards CardIsUnique <$> scenarioField ScenarioCardsUnderAgendaDeck
+      let doGainXp = allGainXpWithBonus' attrs $ toBonus "bonus" 2
+      case r of
+        NoResolution -> do
+          resolutionWithXp "noResolution" doGainXp
+          record TheRitualWasCompleted
           removeNecronomicon
         Resolution 1 -> do
           resolutionWithXp "resolution1" doGainXp
@@ -218,10 +223,10 @@ instance RunMessage BloodOnTheAltar where
         Resolution 3 -> do
           resolutionWithXp "resolution3" doGainXp
           record TheInvestigatorsBanishedSilasBishop
-          recordSetInsert SacrificedToYogSothoth $ map toCardCode sacrificed
           removeNecronomicon
         other -> throwIO $ UnknownResolution other
 
+      recordSetInsert SacrificedToYogSothoth $ map toCardCode sacrificed
       for_ sacrificed removeCampaignCard
       endOfScenario
       pure s

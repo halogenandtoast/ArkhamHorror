@@ -281,6 +281,7 @@ spawnedEnemy :: HasCallStack => [Window] -> EnemyId
 spawnedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
     (windowType -> Window.EnemySpawns eid _) -> Just eid
+    (windowType -> Window.EnemyAttemptsToSpawnAt eid _) -> Just eid
     _ -> Nothing
 
 placedTokens :: Token -> [Window] -> Int

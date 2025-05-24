@@ -1,12 +1,11 @@
-module Arkham.Story.Cards.TheKingsParade (TheKingsParade (..), theKingsParade) where
+module Arkham.Story.Cards.TheKingsParade (theKingsParade) where
 
 import Arkham.Helpers.Query
-import Arkham.Helpers.SkillTest
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message (ReplaceStrategy (DefaultReplace))
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype TheKingsParade = TheKingsParade StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -16,7 +15,7 @@ theKingsParade :: StoryCard TheKingsParade
 theKingsParade = story TheKingsParade Cards.theKingsParade
 
 instance RunMessage TheKingsParade where
-  runMessage msg s@(TheKingsParade attrs) = case msg of
+  runMessage msg s@(TheKingsParade attrs) = runQueueT $ case msg of
     ResolveStory iid _ story' | story' == toId attrs -> do
       setAsideDimStreets <- getSetAsideCardsMatching $ CardWithTitle "Dim Streets"
       otherDimStreets <- case nonEmpty setAsideDimStreets of
@@ -24,16 +23,12 @@ instance RunMessage TheKingsParade where
         Just xs -> sample xs
       dimStreets <- selectJust $ locationIs Locations.dimStreetsTheKingsParade
       sid <- getRandom
-      pushAll
-        [ beginSkillTest sid iid attrs iid #combat (Fixed 2)
-        , ReplaceLocation dimStreets otherDimStreets DefaultReplace
-        ]
+      beginSkillTest sid iid attrs iid #combat (Fixed 2)
+      push $ ReplaceLocation dimStreets otherDimStreets DefaultReplace
       pure s
     PassedThisSkillTest _ (isSource attrs -> True) -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
-      investigatorIds <- select $ investigatorEngagedWith hastur
-      pushAll
-        $ Exhaust (EnemyTarget hastur)
-        : [DisengageEnemy iid' hastur | iid' <- investigatorIds]
+      exhaustThis hastur
+      selectEach (investigatorEngagedWith hastur) (`disengageEnemy` hastur)
       pure s
-    _ -> TheKingsParade <$> runMessage msg attrs
+    _ -> TheKingsParade <$> liftRunMessage msg attrs

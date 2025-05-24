@@ -1,13 +1,9 @@
-module Arkham.Story.Cards.MappingTheStreets (MappingTheStreets (..), mappingTheStreets) where
+module Arkham.Story.Cards.MappingTheStreets (mappingTheStreets) where
 
-import Arkham.DamageEffect
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Helpers.SkillTest
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype MappingTheStreets = MappingTheStreets StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -17,18 +13,15 @@ mappingTheStreets :: StoryCard MappingTheStreets
 mappingTheStreets = story MappingTheStreets Cards.mappingTheStreets
 
 instance RunMessage MappingTheStreets where
-  runMessage msg s@(MappingTheStreets attrs) = case msg of
+  runMessage msg s@(MappingTheStreets attrs) = runQueueT $ case msg of
     ResolveStory iid _ story' | story' == toId attrs -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- perPlayer 1
       sid <- getRandom
-      pushAll
-        [ beginSkillTest sid iid attrs iid #intellect (Fixed 3)
-        , Msg.EnemyDamage hastur $ storyDamage iid n
-        ]
+      beginSkillTest sid iid attrs iid #intellect (Fixed 3)
+      storyEnemyDamage iid n hastur
       pure s
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
-      | isSource attrs source -> do
-          push $ InvestigatorAssignDamage iid source DamageAny 0 n
-          pure s
-    _ -> MappingTheStreets <$> runMessage msg attrs
+    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
+      assignHorror iid attrs n
+      pure s
+    _ -> MappingTheStreets <$> liftRunMessage msg attrs

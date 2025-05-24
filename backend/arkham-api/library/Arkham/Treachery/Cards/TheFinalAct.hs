@@ -1,16 +1,9 @@
-module Arkham.Treachery.Cards.TheFinalAct (
-  theFinalAct,
-  TheFinalAct (..),
-) where
+module Arkham.Treachery.Cards.TheFinalAct (theFinalAct) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype TheFinalAct = TheFinalAct TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -20,12 +13,9 @@ theFinalAct :: TreacheryCard TheFinalAct
 theFinalAct = treachery TheFinalAct Cards.theFinalAct
 
 instance RunMessage TheFinalAct where
-  runMessage msg t@(TheFinalAct attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      agenda <- selectJust AnyAgenda
+  runMessage msg t@(TheFinalAct attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       noRemainingSanity <- fieldP InvestigatorRemainingSanity (== 0) iid
-      when noRemainingSanity
-        $ pushAll
-          [PlaceDoom (toSource attrs) (AgendaTarget agenda) 2, AdvanceAgendaIfThresholdSatisfied]
+      when noRemainingSanity $ placeDoomOnAgendaAndCheckAdvance 2
       pure t
-    _ -> TheFinalAct <$> runMessage msg attrs
+    _ -> TheFinalAct <$> liftRunMessage msg attrs

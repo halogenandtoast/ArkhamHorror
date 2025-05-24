@@ -15,7 +15,14 @@
   },
   "labels": {
     "useV2": "Use Search For the Stranger (v. II)",
-    "useV3": "Use Search For the Stranger (v. III)"
+    "useV3": "Use Search For the Stranger (v. III)",
+    "theFall": {
+      "cannot": "You cannot bring yourself to do what must be done.",
+      "push": "Realizing what you must do, you step forward and push her."
+    },
+    "aMomentsRest": {
+      "chooseEnemy": "Choose an enemy in play. Exhaust that enemy and disengage it from all investigators"
+    }
   },
   "remembered": {
     "knowTheSecret": "You know the secret."

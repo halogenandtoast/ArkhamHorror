@@ -1,12 +1,9 @@
 module Arkham.Story.Cards.StepsOfThePalace (stepsOfThePalace) where
 
-import Arkham.DamageEffect
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype StepsOfThePalace = StepsOfThePalace StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -16,15 +13,12 @@ stepsOfThePalace :: StoryCard StepsOfThePalace
 stepsOfThePalace = story StepsOfThePalace Cards.stepsOfThePalace
 
 instance RunMessage StepsOfThePalace where
-  runMessage msg s@(StepsOfThePalace attrs) = case msg of
+  runMessage msg s@(StepsOfThePalace attrs) = runQueueT $ case msg of
     ResolveStory iid _ story' | story' == toId attrs -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
-      investigatorIds <- select $ investigatorEngagedWith hastur
       n <- perPlayer 1
-      pushAll
-        $ [ Msg.EnemyDamage hastur $ storyDamage iid n
-          , Exhaust (EnemyTarget hastur)
-          ]
-        <> [DisengageEnemy iid' hastur | iid' <- investigatorIds]
+      storyEnemyDamage iid n hastur
+      exhaustThis hastur
+      selectEach (investigatorEngagedWith hastur) (`disengageEnemy` hastur)
       pure s
-    _ -> StepsOfThePalace <$> runMessage msg attrs
+    _ -> StepsOfThePalace <$> liftRunMessage msg attrs

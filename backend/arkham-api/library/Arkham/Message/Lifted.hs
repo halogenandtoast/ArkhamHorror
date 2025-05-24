@@ -2133,6 +2133,9 @@ attackEnemyDamage source damage enemy = do
   whenM (enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
     push $ Msg.EnemyDamage enemy (attack source damage)
 
+storyEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
+storyEnemyDamage source damage enemy = push $ Msg.EnemyDamage enemy (storyDamage source damage)
+
 exile :: (ReverseQueue m, Targetable target) => target -> m ()
 exile (toTarget -> target) = push $ Msg.Exile target
 

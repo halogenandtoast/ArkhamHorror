@@ -24,6 +24,7 @@
   "events": "Events",
   "fight": "Fight",
   "gainSurge": "Gain surge",
+  "healHorror": "Heal {count} horror",
   "investigate": "Investigate",
   "loseActions": "Lose 1 action | Lose {count} actions",
   "loseResources": "Lose 1 resource | Lose {count} resources",

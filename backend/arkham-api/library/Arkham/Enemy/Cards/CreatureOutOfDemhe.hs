@@ -24,7 +24,7 @@ instance HasAbilities CreatureOutOfDemhe where
 
 instance RunMessage CreatureOutOfDemhe where
   runMessage msg e@(CreatureOutOfDemhe attrs) = runQueueT $ case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 [(windowType -> Window.FlipLocation _ lid)] _ -> do
+    UseCardAbility _ (isSource attrs -> True) 1 [windowType -> Window.FlipLocation _ lid] _ -> do
       selectEach (InvestigatorAt $ LocationWithId lid) $ initiateEnemyAttack attrs (attrs.ability 1)
       pure e
     _ -> CreatureOutOfDemhe <$> liftRunMessage msg attrs

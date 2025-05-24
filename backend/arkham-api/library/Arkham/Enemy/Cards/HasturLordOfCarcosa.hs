@@ -1,14 +1,14 @@
 module Arkham.Enemy.Cards.HasturLordOfCarcosa (hasturLordOfCarcosa) where
 
 import Arkham.ChaosToken (ChaosTokenFace (..))
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest (getSkillTest, isEvading, isFighting)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Strategy
 
 newtype HasturLordOfCarcosa = HasturLordOfCarcosa EnemyAttrs
   deriving anyclass IsEnemy

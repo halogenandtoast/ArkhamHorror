@@ -2,14 +2,11 @@ module Arkham.Agenda.Cards.MadnessDrowns (madnessDrowns) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
+import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype MadnessDrowns = MadnessDrowns AgendaAttrs
   deriving anyclass IsAgenda
@@ -19,38 +16,27 @@ madnessDrowns :: AgendaCard MadnessDrowns
 madnessDrowns = agenda (2, A) MadnessDrowns Cards.madnessDrowns (Static 7)
 
 instance HasModifiersFor MadnessDrowns where
-  getModifiersFor (MadnessDrowns a) = do
-    modifySelect a (EnemyWithTitle "Hastur") [EnemyFight 1]
+  getModifiersFor (MadnessDrowns a) = modifySelect a (EnemyWithTitle "Hastur") [EnemyFight 1]
 
 instance HasAbilities MadnessDrowns where
   getAbilities (MadnessDrowns a)
     | onSide A a =
-        [ restricted
-            a
-            1
-            (exists $ EnemyWithTitle "Hastur" <> EnemyWithDamage (AtLeast $ PerPlayer 5))
+        [ restricted a 1 (exists $ EnemyWithTitle "Hastur" <> EnemyWithDamage (AtLeast $ PerPlayer 5))
             $ Objective
             $ forced AnyWindow
         ]
   getAbilities _ = []
 
 instance RunMessage MadnessDrowns where
-  runMessage msg a@(MadnessDrowns attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+  runMessage msg a@(MadnessDrowns attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
       palaceOfTheKing <- getJustLocationByName "Palace of the King"
       beastOfAldebaran <- getSetAsideCard Enemies.beastOfAldebaran
-      createBeastOfAldebaran <-
-        createEnemyAt_
-          beastOfAldebaran
-          palaceOfTheKing
-          Nothing
-      pushAll
-        [ createBeastOfAldebaran
-        , ShuffleEncounterDiscardBackIn
-        , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-        ]
+      createEnemyAt_ beastOfAldebaran palaceOfTheKing
+      shuffleEncounterDiscardBackIn
+      advanceAgendaDeck attrs
       pure a
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ AdvanceAgenda (toId attrs)
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advanceAgenda attrs
       pure a
-    _ -> MadnessDrowns <$> runMessage msg attrs
+    _ -> MadnessDrowns <$> liftRunMessage msg attrs

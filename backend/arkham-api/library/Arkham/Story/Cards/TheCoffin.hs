@@ -1,12 +1,9 @@
 module Arkham.Story.Cards.TheCoffin (theCoffin) where
 
-import Arkham.DamageEffect
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype TheCoffin = TheCoffin StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -16,10 +13,10 @@ theCoffin :: StoryCard TheCoffin
 theCoffin = story TheCoffin Cards.theCoffin
 
 instance RunMessage TheCoffin where
-  runMessage msg s@(TheCoffin attrs) = case msg of
+  runMessage msg s@(TheCoffin attrs) = runQueueT $ case msg of
     ResolveStory iid _ story' | story' == toId attrs -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- perPlayer 1
-      push $ Msg.EnemyDamage hastur $ storyDamage iid n
+      storyEnemyDamage iid n hastur
       pure s
-    _ -> TheCoffin <$> runMessage msg attrs
+    _ -> TheCoffin <$> liftRunMessage msg attrs

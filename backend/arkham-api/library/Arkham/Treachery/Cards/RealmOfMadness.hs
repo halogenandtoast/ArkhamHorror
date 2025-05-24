@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.RealmOfMadness (realmOfMadness, RealmOfMadness (..)) where
+module Arkham.Treachery.Cards.RealmOfMadness (realmOfMadness) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card

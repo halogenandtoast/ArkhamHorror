@@ -1,12 +1,9 @@
 module Arkham.Story.Cards.BleakDesolation (bleakDesolation) where
 
-import Arkham.DamageEffect
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype BleakDesolation = BleakDesolation StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -16,10 +13,10 @@ bleakDesolation :: StoryCard BleakDesolation
 bleakDesolation = story BleakDesolation Cards.bleakDesolation
 
 instance RunMessage BleakDesolation where
-  runMessage msg s@(BleakDesolation attrs) = case msg of
+  runMessage msg s@(BleakDesolation attrs) = runQueueT $ case msg of
     ResolveStory iid _ story' | story' == toId attrs -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- perPlayer 2
-      push $ Msg.EnemyDamage hastur $ storyDamage iid n
+      storyEnemyDamage iid n hastur
       pure s
-    _ -> BleakDesolation <$> runMessage msg attrs
+    _ -> BleakDesolation <$> liftRunMessage msg attrs

@@ -1,7 +1,4 @@
-module Arkham.Treachery.Cards.PossessionMurderous (
-  possessionMurderous,
-  PossessionMurderous (..),
-) where
+module Arkham.Treachery.Cards.PossessionMurderous (possessionMurderous) where
 
 import Arkham.Ability
 import Arkham.Investigator.Types (Field (..))
@@ -21,7 +18,7 @@ possessionMurderous = treachery PossessionMurderous Cards.possessionMurderous
 
 instance HasAbilities PossessionMurderous where
   getAbilities (PossessionMurderous a) =
-    [ restrictedAbility a 1 InYourHand
+    [ restricted a 1 InYourHand
         $ actionAbilityWithCost
           (InvestigatorDamageCost (toSource a) (colocatedWithMatch You) DamageAny 2)
     ]

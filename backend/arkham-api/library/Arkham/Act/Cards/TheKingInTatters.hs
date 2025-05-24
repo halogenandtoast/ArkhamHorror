@@ -2,15 +2,10 @@ module Arkham.Act.Cards.TheKingInTatters (theKingInTatters) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Query
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Types (Field (..))
+import Arkham.Helpers.Location
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Projection
 
 newtype TheKingInTatters = TheKingInTatters ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -21,35 +16,20 @@ theKingInTatters = act (3, A) TheKingInTatters Cards.theKingInTatters Nothing
 
 instance HasAbilities TheKingInTatters where
   getAbilities (TheKingInTatters a) =
-    [ restricted a 1 (OnLocation $ LocationWithoutClues <> LocationCanBeFlipped)
-        $ FastAbility Free
-    , mkAbility a 2
-        $ forced
-        $ EnemyWouldBeDefeated #when
-        $ EnemyWithTitle "Hastur"
+    [ restricted a 1 (OnLocation $ LocationWithoutClues <> LocationCanBeFlipped) $ FastAbility Free
+    , mkAbility a 2 $ forced $ EnemyWouldBeDefeated #when $ EnemyWithTitle "Hastur"
     ]
 
 instance RunMessage TheKingInTatters where
-  runMessage msg a@(TheKingInTatters attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      mlid <- field InvestigatorLocation iid
-      for_ mlid $ \lid -> do
-        iids <- getInvestigators
-        noClues <- fieldP LocationClues (== 0) lid
-        when noClues
-          $ pushAll
-          $ map (InvestigatorDiscardAllClues (toAbilitySource attrs 1)) iids
-          <> [Flip iid source (LocationTarget lid)]
+  runMessage msg a@(TheKingInTatters attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      withLocationOf iid \lid -> do
+        whenMatch lid LocationWithoutClues $ eachInvestigator $ discardAllClues (attrs.ability 1)
+        flipOverBy iid (attrs.ability 1) lid
       pure a
-    UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      whenM (selectAny $ enemyIs Enemies.hasturTheTatteredKing)
-        $ push
-        $ scenarioResolution 1
-      whenM (selectAny $ enemyIs Enemies.hasturTheKingInYellow)
-        $ push
-        $ scenarioResolution 2
-      whenM (selectAny $ enemyIs Enemies.hasturLordOfCarcosa)
-        $ push
-        $ scenarioResolution 3
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      whenM (selectAny $ enemyIs Enemies.hasturTheTatteredKing) $ push R1
+      whenM (selectAny $ enemyIs Enemies.hasturTheKingInYellow) $ push R2
+      whenM (selectAny $ enemyIs Enemies.hasturLordOfCarcosa) $ push R3
       pure a
-    _ -> TheKingInTatters <$> runMessage msg attrs
+    _ -> TheKingInTatters <$> liftRunMessage msg attrs

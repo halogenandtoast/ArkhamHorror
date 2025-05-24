@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.MadnessCoils (MadnessCoils (..), madnessCoils) where
+module Arkham.Agenda.Cards.MadnessCoils (madnessCoils) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -60,6 +60,6 @@ instance RunMessage MadnessCoils where
       afterSkillTestQuiet $ advanceAgendaDeck attrs
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ AdvanceAgenda (toId attrs)
+      advanceAgenda attrs
       pure a
     _ -> MadnessCoils . (`with` metadata) <$> liftRunMessage msg attrs

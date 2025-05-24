@@ -7,7 +7,9 @@ import Arkham.Message as X (
   Message (..),
   UI (..),
   pattern FailedThisSkillTest,
+  pattern FailedThisSkillTestBy,
   pattern PassedThisSkillTest,
+  pattern PassedThisSkillTestBy,
   pattern PlaceClues,
   pattern UseThisAbility,
  )

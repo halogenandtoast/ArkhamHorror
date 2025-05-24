@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.InTheKnow1 (inTheKnow1, InTheKnow1 (..)) where
+module Arkham.Asset.Assets.InTheKnow1 (inTheKnow1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards

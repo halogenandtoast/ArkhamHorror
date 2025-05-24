@@ -2,14 +2,11 @@ module Arkham.Asset.Assets.Lantern (lantern) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.DamageEffect
-import Arkham.Helpers.Modifiers
-import Arkham.Investigate
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Location
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Projection
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 
 newtype Lantern = Lantern AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,26 +18,21 @@ lantern = asset Lantern Cards.lantern
 instance HasAbilities Lantern where
   getAbilities (Lantern x) =
     [ investigateAbility x 1 mempty ControlsThis
-    , doesNotProvokeAttacksOfOpportunity
-        $ restrictedAbility x 2 (ControlsThis <> CanDealDamage <> enemyExists (EnemyAt YourLocation))
+    , noAOO
+        $ controlled x 2 (CanDealDamage <> exists (at_ YourLocation <> canBeDamagedBy (x.ability 2)))
         $ actionAbilityWithCost (discardCost x)
     ]
 
 instance RunMessage Lantern where
-  runMessage msg a@(Lantern attrs) = case msg of
+  runMessage msg a@(Lantern attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      lid <- fieldJust InvestigatorLocation iid
-      let source = toAbilitySource attrs 1
-      sid <- getRandom
-      investigation <- mkInvestigate sid iid source
-      enabled <- skillTestModifier sid source lid (ShroudModifier (-1))
-      pushAll [enabled, toMessage investigation]
+      withLocationOf iid \lid -> do
+        sid <- getRandom
+        skillTestModifier sid (attrs.ability 1) lid (ShroudModifier (-1))
+        investigate sid iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      let source = toAbilitySource attrs 2
-      enemies <- select $ enemyAtLocationWith iid
-      player <- getPlayer iid
-      push
-        $ chooseOne player [targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) source 1] | enemy <- enemies]
+      enemies <- select $ enemyAtLocationWith iid <> canBeDamagedBy (attrs.ability 2)
+      chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 2) 1
       pure a
-    _ -> Lantern <$> runMessage msg attrs
+    _ -> Lantern <$> liftRunMessage msg attrs

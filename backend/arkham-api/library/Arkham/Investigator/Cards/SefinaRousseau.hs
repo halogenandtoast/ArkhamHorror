@@ -1,13 +1,15 @@
 module Arkham.Investigator.Cards.SefinaRousseau where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers
+import Arkham.Helpers.Investigator (drawOpeningHand)
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
+import Arkham.Investigator.Types (discardL, handL)
+import Arkham.Matcher.Card
+import Arkham.Message.Lifted.Choose
 
 newtype SefinaRousseau = SefinaRousseau InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -26,38 +28,25 @@ instance HasChaosTokenValue SefinaRousseau where
 
 instance HasAbilities SefinaRousseau where
   getAbilities (SefinaRousseau attrs) =
-    [ doesNotProvokeAttacksOfOpportunity $ restrictedAbility attrs 1 Self actionAbility
-    | notNull attrs.cardsUnderneath
-    ]
+    [noAOO $ restricted attrs 1 Self actionAbility | notNull attrs.cardsUnderneath]
 
 instance RunMessage SefinaRousseau where
-  runMessage msg i@(SefinaRousseau attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      player <- getPlayer iid
-      push
-        $ chooseOne player
-        $ [targetLabel (toCardId card) [addToHand (toId i) card] | card <- attrs.cardsUnderneath]
+  runMessage msg i@(SefinaRousseau attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseTargetM iid attrs.cardsUnderneath (addToHand iid . only)
       pure i
-    ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
-      player <- getPlayer iid
-      pushWhen (notNull $ investigatorCardsUnderneath attrs)
-        $ chooseOne player
-        $ Done "Do not use elder sign ability"
-        : [targetLabel (toCardId card) [addToHand (toId i) card] | card <- attrs.cardsUnderneath]
+    ElderSignEffect (is attrs -> True) -> do
+      chooseOrRunOneM attrs.id do
+        labeled "Do not use elder sign ability" nothing
+        targets attrs.cardsUnderneath (addToHand attrs.id . only)
       pure i
-    DrawStartingHand iid | iid == toId attrs -> do
-      player <- getPlayer iid
+    DrawStartingHand (is attrs -> True) -> do
       (discard', hand, deck) <- drawOpeningHand attrs 13
-      let
-        events =
-          filter (and . sequence [(== EventType) . toCardType, (/= Events.thePaintedWorld) . toCardDef]) hand
-      pushAll [ShuffleDiscardBackIn iid, CheckHandSize $ toId attrs]
-      pushWhen (notNull events)
-        $ chooseUpToN player 5 "Done Choosing Events"
-        $ [ targetLabel (toCardId event)
-            $ [RemoveCardFromHand iid (toCardId event), PlaceUnderneath (toTarget iid) [event]]
-          | event <- events
-          ]
+      let events = filterCards (#event <> not_ (cardIs Events.thePaintedWorld)) hand
+      shuffleDiscardBackIn attrs.id
+      push $ CheckHandSize attrs.id
+      when (notNull events) do
+        chooseUpToNM attrs.id 5 "Done Choosing Events" $ targets events (placeUnderneath attrs.id . only)
       pure . SefinaRousseau $ attrs & discardL .~ discard' & handL .~ hand & deckL .~ Deck deck
-    InvestigatorMulligan iid | iid == toId attrs -> pure i
-    _ -> SefinaRousseau <$> runMessage msg attrs
+    InvestigatorMulligan (is attrs -> True) -> pure i
+    _ -> SefinaRousseau <$> liftRunMessage msg attrs

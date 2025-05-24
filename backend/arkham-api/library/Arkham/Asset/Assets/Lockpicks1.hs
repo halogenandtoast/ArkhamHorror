@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Lockpicks1 (lockpicks1, lockpicks1Effect, Lockpicks1 (..)) where
+module Arkham.Asset.Assets.Lockpicks1 (lockpicks1, lockpicks1Effect) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards

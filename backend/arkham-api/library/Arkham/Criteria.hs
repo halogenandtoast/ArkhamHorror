@@ -142,6 +142,11 @@ pattern InYourThreatArea <- InThreatAreaOf You
   where
     InYourThreatArea = InThreatAreaOf You
 
+pattern DuringYourSkillTest :: Criterion
+pattern DuringYourSkillTest <- DuringSkillTest (YourSkillTest AnySkillTest)
+  where
+    DuringYourSkillTest = DuringSkillTest (YourSkillTest AnySkillTest)
+
 pattern DuringAnySkillTest :: Criterion
 pattern DuringAnySkillTest <- DuringSkillTest AnySkillTest
   where

@@ -1,19 +1,17 @@
 module Arkham.Event.Events.ThePaintedWorld (thePaintedWorld, thePaintedWorldEffect) where
 
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Cost
-import Arkham.Effect.Runner
+import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Playable
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Matcher qualified as Matcher
-import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
+import Arkham.Strategy
 import Arkham.Window
 
 newtype ThePaintedWorld = ThePaintedWorld EventAttrs
@@ -24,20 +22,12 @@ thePaintedWorld :: EventCard ThePaintedWorld
 thePaintedWorld = eventWith ThePaintedWorld Cards.thePaintedWorld $ afterPlayL .~ RemoveThisFromGame
 
 instance RunMessage ThePaintedWorld where
-  runMessage msg e@(ThePaintedWorld attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      candidates <-
-        fieldMap
-          InvestigatorCardsUnderneath
-          (filter (`cardMatch` (NonExceptional <> Matcher.EventCard)))
-          iid
-      let
-        playableWindows = nub $ mkWindow Timing.When (DuringTurn iid) : windows'
-      playableCards <-
-        filterM
-          (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) playableWindows)
-          candidates
-      enabled <- createCardEffect Cards.thePaintedWorld Nothing (toCardId attrs) (toCardId attrs)
+  runMessage msg e@(ThePaintedWorld attrs) = runQueueT $ case msg of
+    InvestigatorPlayEvent iid (is attrs -> True) _ windows' _ -> do
+      candidates <- fieldMap InvestigatorCardsUnderneath (filterCards (NonExceptional <> #event)) iid
+      let playableWindows = nub $ mkWhen (DuringTurn iid) : windows'
+      playableCards <- filterM (getIsPlayable iid attrs (UnpaidCost NoAction) playableWindows) candidates
+      enabled <- Msg.createCardEffect Cards.thePaintedWorld Nothing (toCardId attrs) (toCardId attrs)
 
       push
         $ InitiatePlayCardAsChoose
@@ -50,7 +40,7 @@ instance RunMessage ThePaintedWorld where
           playableWindows
           True
       pure e
-    _ -> ThePaintedWorld <$> runMessage msg attrs
+    _ -> ThePaintedWorld <$> liftRunMessage msg attrs
 
 newtype ThePaintedWorldEffect = ThePaintedWorldEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -69,5 +59,4 @@ instance HasModifiersFor ThePaintedWorldEffect where
       _ -> pure mempty
 
 instance RunMessage ThePaintedWorldEffect where
-  runMessage msg (ThePaintedWorldEffect attrs) =
-    ThePaintedWorldEffect <$> runMessage msg attrs
+  runMessage msg (ThePaintedWorldEffect attrs) = ThePaintedWorldEffect <$> runMessage msg attrs

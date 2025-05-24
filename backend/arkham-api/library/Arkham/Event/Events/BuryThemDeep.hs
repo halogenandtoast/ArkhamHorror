@@ -1,4 +1,4 @@
-module Arkham.Event.Events.BuryThemDeep (buryThemDeep, BuryThemDeep (..)) where
+module Arkham.Event.Events.BuryThemDeep (buryThemDeep) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted

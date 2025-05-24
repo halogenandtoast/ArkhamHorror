@@ -1,7 +1,4 @@
-module Arkham.Asset.Assets.AlchemicalTransmutation (
-  alchemicalTransmutation,
-  AlchemicalTransmutation (..),
-) where
+module Arkham.Asset.Assets.AlchemicalTransmutation (alchemicalTransmutation) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards

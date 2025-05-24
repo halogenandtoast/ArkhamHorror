@@ -1,11 +1,10 @@
-module Arkham.Event.Events.NoStoneUnturned (noStoneUnturned, NoStoneUnturned (..)) where
+module Arkham.Event.Events.NoStoneUnturned (noStoneUnturned) where
 
 import Arkham.Capability
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Strategy
 
 newtype NoStoneUnturned = NoStoneUnturned EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -15,15 +14,9 @@ noStoneUnturned :: EventCard NoStoneUnturned
 noStoneUnturned = event NoStoneUnturned Cards.noStoneUnturned
 
 instance RunMessage NoStoneUnturned where
-  runMessage msg e@(NoStoneUnturned attrs) = case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
+  runMessage msg e@(NoStoneUnturned attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       iids <- select $ affectsOthers $ colocatedWith iid <> can.manipulate.deck
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel iid' [search iid' attrs iid' [fromTopOfDeck 6] #any (DrawFound iid' 1)]
-          | iid' <- iids
-          ]
+      chooseTargetM iid iids \iid' -> search iid' attrs iid' [fromTopOfDeck 6] #any (DrawFound iid' 1)
       pure e
-    _ -> NoStoneUnturned <$> runMessage msg attrs
+    _ -> NoStoneUnturned <$> liftRunMessage msg attrs

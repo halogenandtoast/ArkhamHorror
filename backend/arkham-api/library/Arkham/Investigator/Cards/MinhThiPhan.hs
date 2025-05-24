@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.MinhThiPhan (minhThiPhan, MinhThiPhan (..)) where
+module Arkham.Investigator.Cards.MinhThiPhan (minhThiPhan) where
 
 import Arkham.Ability
 import Arkham.Helpers.SkillTest (withSkillTest)

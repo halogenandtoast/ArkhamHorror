@@ -1,14 +1,11 @@
 module Arkham.Event.Events.HidingSpot (hidingSpot) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Placement
-import Arkham.Prelude
 
 newtype HidingSpot = HidingSpot EventAttrs
   deriving anyclass IsEvent
@@ -19,25 +16,23 @@ hidingSpot = event HidingSpot Cards.hidingSpot
 
 instance HasModifiersFor HidingSpot where
   getModifiersFor (HidingSpot attrs) =
-    case eventAttachedTarget attrs of
-      Just (LocationTarget lid) -> modifySelect attrs (EnemyAt $ LocationWithId lid) [AddKeyword Aloof]
-      _ -> pure mempty
+    case attrs.attachedTo.location of
+      Just lid -> modifySelect attrs (enemyAt lid) [AddKeyword Aloof]
+      _ -> pure ()
 
 instance HasAbilities HidingSpot where
   getAbilities (HidingSpot x) =
-    [ restrictedAbility x 1 (EnemyCriteria $ EnemyExistsAtAttachedLocation AnyEnemy)
-        $ ForcedAbility
+    [ restricted x 1 (EnemyCriteria $ EnemyExistsAtAttachedLocation AnyEnemy)
+        $ forced
         $ PhaseEnds #when #enemy
     ]
 
 instance RunMessage HidingSpot where
-  runMessage msg e@(HidingSpot attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      locations <- select Anywhere
-      player <- getPlayer iid
-      push $ chooseOne player $ targetLabels locations (only . PlaceEvent eid . AttachedToLocation)
+  runMessage msg e@(HidingSpot attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      chooseSelectM iid Anywhere $ place attrs . AttachedToLocation
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+      toDiscardBy iid (attrs.ability 1) attrs
       pure e
-    _ -> HidingSpot <$> runMessage msg attrs
+    _ -> HidingSpot <$> liftRunMessage msg attrs

@@ -1,15 +1,11 @@
 module Arkham.Skill.Cards.TheHomeFront (theHomeFront) where
 
 import Arkham.Action
-import Arkham.Classes
-import Arkham.DamageEffect
 import Arkham.Helpers.Enemy
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Message hiding (InvestigatorDamage)
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted hiding (InvestigatorDamage)
 import Arkham.SkillTest
 
 newtype TheHomeFront = TheHomeFront SkillAttrs
@@ -20,20 +16,13 @@ theHomeFront :: SkillCard TheHomeFront
 theHomeFront = skill TheHomeFront Cards.theHomeFront
 
 instance RunMessage TheHomeFront where
-  runMessage msg s@(TheHomeFront attrs@SkillAttrs {..}) = case msg of
-    PassedSkillTest _ (Just Fight) _ target _ _ | isTarget attrs target -> do
-      mSkillTestTarget <- getSkillTestTarget
-      damageCount <- field InvestigatorDamage skillOwner
-      case mSkillTestTarget of
-        Just (EnemyTarget eid) -> do
-          canDamage <- sourceCanDamageEnemy eid (toSource attrs)
-          when
-            (canDamage && damageCount > 0)
-            do
-              pushAll
-                [ HealDamageDirectly (InvestigatorTarget skillOwner) (toSource attrs) 1
-                , EnemyDamage eid $ nonAttack (Just skillOwner) attrs 1
-                ]
-        _ -> pure ()
+  runMessage msg s@(TheHomeFront attrs) = runQueueT $ case msg of
+    PassedSkillTest _ (Just Fight) _ (isTarget attrs -> True) _ _ -> do
+      getSkillTestTargetedEnemy >>= traverse_ \eid -> do
+        damageCount <- field InvestigatorDamage attrs.owner
+        canDamage <- sourceCanDamageEnemy eid (toSource attrs)
+        when (canDamage && damageCount > 0) do
+          push $ HealDamageDirectly (InvestigatorTarget attrs.owner) (toSource attrs) 1
+          nonAttackEnemyDamage (Just attrs.owner) attrs 1 eid
       pure s
-    _ -> TheHomeFront <$> runMessage msg attrs
+    _ -> TheHomeFront <$> liftRunMessage msg attrs

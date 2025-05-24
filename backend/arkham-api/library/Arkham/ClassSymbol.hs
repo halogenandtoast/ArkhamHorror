@@ -1,6 +1,4 @@
-module Arkham.ClassSymbol (
-  ClassSymbol (..),
-) where
+module Arkham.ClassSymbol (ClassSymbol (..)) where
 
 import Arkham.Prelude
 import GHC.OverloadedLabels

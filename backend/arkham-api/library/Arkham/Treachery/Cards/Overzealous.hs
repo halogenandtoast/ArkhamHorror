@@ -1,15 +1,11 @@
-module Arkham.Treachery.Cards.Overzealous (
-  overzealous,
-  Overzealous (..),
-) where
+module Arkham.Treachery.Cards.Overzealous (overzealous) where
 
-import Arkham.Prelude
-
-import Arkham.Capability
 import Arkham.Card
-import Arkham.Classes
+import Arkham.Deck
+import Arkham.Keyword qualified as Keyword
+import Arkham.Modifier
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Overzealous = Overzealous TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -19,18 +15,13 @@ overzealous :: TreacheryCard Overzealous
 overzealous = treachery Overzealous Cards.overzealous
 
 instance RunMessage Overzealous where
-  runMessage msg t@(Overzealous attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      hasEncounterDeck <- can.target.encounterDeck iid
-      pushWhen hasEncounterDeck $ DrawEncounterCards (toTarget attrs) 1
+  runMessage msg t@(Overzealous attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      drawEncounterCardsEdit iid attrs 1 (setTarget attrs)
       pure t
-    RequestedEncounterCards target [card] | isTarget attrs target ->
-      withTreacheryOwner
-        attrs
-        \iid ->
-          t
-            <$ pushAll
-              [ GainSurge (toSource attrs) (toTarget $ toCardId card)
-              , InvestigatorDrewEncounterCard iid card
-              ]
-    _ -> Overzealous <$> runMessage msg attrs
+    DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
+      for_ drewCards.cards \card -> do
+        cardResolutionModifier card attrs card (AddKeyword Keyword.Surge)
+        drawCardFrom iid (toCard card) EncounterDeck
+      pure t
+    _ -> Overzealous <$> liftRunMessage msg attrs

@@ -1,19 +1,14 @@
-module Arkham.Treachery.Cards.CrisisOfIdentity (
-  crisisOfIdentity,
-  CrisisOfIdentity (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.CrisisOfIdentity (crisisOfIdentity) where
 
 import Arkham.Card.CardDef
 import Arkham.ClassSymbol
-import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Taboo
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype CrisisOfIdentity = CrisisOfIdentity TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -23,36 +18,23 @@ crisisOfIdentity :: TreacheryCard CrisisOfIdentity
 crisisOfIdentity = treachery CrisisOfIdentity Cards.crisisOfIdentity
 
 instance RunMessage CrisisOfIdentity where
-  runMessage msg t@(CrisisOfIdentity attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(CrisisOfIdentity attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       role <- field InvestigatorClass iid
-      assets <- select $ assetControlledBy iid <> AssetWithClass role <> DiscardableAsset
-      events <- select $ eventControlledBy iid <> EventWithClass role
-      skills <- select $ skillControlledBy iid <> SkillWithClass role
+      assets <- selectTargets $ assetControlledBy iid <> AssetWithClass role <> DiscardableAsset
+      events <- selectTargets $ eventControlledBy iid <> EventWithClass role
+      skills <- selectTargets $ skillControlledBy iid <> SkillWithClass role
 
       if tabooed TabooList20 attrs
         then do
-          player <- getPlayer iid
-          cards <- select $ inHandOf NotForPlay iid <> basic (CardWithClass role)
-          let targets = map toTarget assets <> map toTarget events <> map toTarget skills <> map toTarget cards
-          pushAll
-            $ [ chooseOne
-                player
-                [ targetLabel target [toDiscardBy iid attrs target]
-                | target <- targets
-                ]
-              | notNull targets
-              ]
-            <> [ DiscardTopOfDeck iid 1 (toSource attrs) (Just $ toTarget attrs)
-               ]
+          cards <- selectTargets $ inHandOf NotForPlay iid <> basic (CardWithClass role)
+          chooseTargetM iid (assets <> events <> skills <> cards) $ toDiscardBy iid attrs
+          discardTopOfDeckAndHandle iid attrs 1 attrs
         else do
-          pushAll
-            $ map (toDiscardBy iid attrs) assets
-            <> map (toDiscardBy iid attrs) events
-            <> map (toDiscardBy iid attrs) skills
-            <> [DiscardTopOfDeck iid 1 (toSource attrs) (Just $ toTarget attrs)]
+          for_ (assets <> events <> skills) (toDiscardBy iid attrs)
+          discardTopOfDeckAndHandle iid attrs 1 attrs
       pure t
-    DiscardedTopOfDeck iid [card] _ target | isTarget attrs target -> do
+    DiscardedTopOfDeck iid [card] _ (isTarget attrs -> True) -> do
       push $ SetRole iid $ fromMaybe Neutral . headMay . toList $ cdClassSymbols $ toCardDef card
       pure t
-    _ -> CrisisOfIdentity <$> runMessage msg attrs
+    _ -> CrisisOfIdentity <$> liftRunMessage msg attrs

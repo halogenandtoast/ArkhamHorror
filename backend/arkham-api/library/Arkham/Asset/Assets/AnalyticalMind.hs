@@ -2,10 +2,10 @@ module Arkham.Asset.Assets.AnalyticalMind (analyticalMind) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype AnalyticalMind = AnalyticalMind AssetAttrs
   deriving anyclass IsAsset
@@ -25,8 +25,8 @@ instance HasModifiersFor AnalyticalMind where
     modified_ a iid [CanCommitToSkillTestPerformedByAnInvestigatorAt Anywhere]
 
 instance RunMessage AnalyticalMind where
-  runMessage msg a@(AnalyticalMind attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ drawCards iid (toAbilitySource attrs 1) 1
+  runMessage msg a@(AnalyticalMind attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      drawCards iid (attrs.ability 1) 1
       pure a
-    _ -> AnalyticalMind <$> runMessage msg attrs
+    _ -> AnalyticalMind <$> liftRunMessage msg attrs

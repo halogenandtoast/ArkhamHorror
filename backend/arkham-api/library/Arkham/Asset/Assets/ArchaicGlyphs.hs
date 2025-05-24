@@ -1,15 +1,12 @@
-module Arkham.Asset.Assets.ArchaicGlyphs (
-  archaicGlyphs,
-  ArchaicGlyphs (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.ArchaicGlyphs (archaicGlyphs) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.CampaignLogKey
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.SkillType
 
@@ -22,37 +19,32 @@ newtype ArchaicGlyphs = ArchaicGlyphs (AssetAttrs `With` Metadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 archaicGlyphs :: AssetCard ArchaicGlyphs
-archaicGlyphs =
-  asset (ArchaicGlyphs . (`with` Metadata False)) Cards.archaicGlyphs
+archaicGlyphs = asset (ArchaicGlyphs . (`with` Metadata False)) Cards.archaicGlyphs
 
 instance HasAbilities ArchaicGlyphs where
   getAbilities (ArchaicGlyphs (attrs `With` meta)) =
-    [ restrictedAbility attrs 1 ControlsThis
+    [ restricted attrs 1 ControlsThis
         $ actionAbilityWithCost
         $ SkillIconCost 1 (singleton $ SkillIcon #intellect)
-    , controlledAbility attrs 2 ability2Criteria $ ForcedAbility AnyWindow
+    , controlled attrs 2 ability2Criteria $ forced AnyWindow
     ]
    where
     ability2Criteria =
       if discarding meta
         then Never
-        else
-          exists
-            (AssetWithId (toId attrs) <> AssetWithUseCount Secret (atLeast 3))
+        else exists (be attrs <> AssetWithUseCount Secret (atLeast 3))
 
 instance RunMessage ArchaicGlyphs where
-  runMessage msg a@(ArchaicGlyphs (attrs `With` meta)) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ AddUses (attrs.ability 1) (toId attrs) Secret 1
+  runMessage msg a@(ArchaicGlyphs (attrs `With` meta)) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeTokens (attrs.ability 1) attrs Secret 1
       pure a
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      case assetPlacement attrs of
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      case attrs.placement of
         InPlayArea controllerId -> do
-          pushAll
-            [ toDiscardBy iid attrs attrs
-            , TakeResources controllerId 5 (toAbilitySource attrs 2) False
-            , Record YouHaveTranslatedTheGlyphs
-            ]
+          toDiscardBy iid attrs attrs
+          gainResources controllerId (attrs.ability 2) 5
+          record YouHaveTranslatedTheGlyphs
         _ -> error "must be controlled"
       pure . ArchaicGlyphs $ attrs `with` Metadata True
-    _ -> ArchaicGlyphs . (`with` meta) <$> runMessage msg attrs
+    _ -> ArchaicGlyphs . (`with` meta) <$> liftRunMessage msg attrs

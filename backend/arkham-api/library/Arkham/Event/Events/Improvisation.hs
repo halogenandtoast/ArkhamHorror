@@ -1,14 +1,13 @@
-module Arkham.Event.Events.Improvisation (improvisation, improvisationEffect, Improvisation (..)) where
+module Arkham.Event.Events.Improvisation (improvisation, improvisationEffect) where
 
 import Arkham.Card
-import Arkham.Classes
-import Arkham.Effect.Runner
+import Arkham.ClassSymbol
+import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
 
 newtype Improvisation = Improvisation EventAttrs
@@ -18,18 +17,15 @@ newtype Improvisation = Improvisation EventAttrs
 improvisation :: EventCard Improvisation
 improvisation = event Improvisation Cards.improvisation
 
-switchRole :: PlayerId -> InvestigatorId -> Message
-switchRole pid iid = chooseOne pid [Label (tshow role) [SetRole iid role] | role <- [minBound .. maxBound]]
-
 instance RunMessage Improvisation where
-  runMessage msg e@(Improvisation attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      let drawing = drawCards iid attrs 1
-      player <- getPlayer iid
-      enabled <- createCardEffect Cards.improvisation Nothing attrs iid
-      pushAll [switchRole player iid, enabled, drawing]
+  runMessage msg e@(Improvisation attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      let roles = filter (/= Mythos) [minBound .. maxBound]
+      chooseOneM iid $ for_ roles \role -> labeled (tshow role) $ push $ SetRole iid role
+      createCardEffect Cards.improvisation Nothing attrs iid
+      drawCards iid attrs 1
       pure e
-    _ -> Improvisation <$> runMessage msg attrs
+    _ -> Improvisation <$> liftRunMessage msg attrs
 
 newtype ImprovisationEffect = ImprovisationEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -46,14 +42,11 @@ instance HasModifiersFor ImprovisationEffect where
     _ -> pure mempty
 
 instance RunMessage ImprovisationEffect where
-  runMessage msg e@(ImprovisationEffect attrs) = case msg of
-    CardEnteredPlay iid card | effectTarget attrs == InvestigatorTarget iid -> do
+  runMessage msg e@(ImprovisationEffect attrs) = runQueueT $ case msg of
+    CardEnteredPlay iid card | isTarget iid attrs.target -> do
       role <- field InvestigatorClass iid
-      pushWhen
-        (maybe False (== role) . headMay . toList $ cdClassSymbols (toCardDef card))
-        (disable attrs)
+      when ((== Just role) . headMay . toList $ cdClassSymbols (toCardDef card)) (disable attrs)
       pure e
     EndTurn iid | attrs.target == InvestigatorTarget iid -> do
-      push $ disable attrs
-      pure e
-    _ -> ImprovisationEffect <$> runMessage msg attrs
+      disableReturn e
+    _ -> ImprovisationEffect <$> liftRunMessage msg attrs

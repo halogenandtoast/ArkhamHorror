@@ -2,10 +2,9 @@ module Arkham.Asset.Assets.ThirtyTwoColt (thirtyTwoColt) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Fight
-import Arkham.Helpers.Modifiers
-import Arkham.Prelude
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
+import Arkham.Modifier
 
 newtype ThirtyTwoColt = ThirtyTwoColt AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -18,12 +17,10 @@ instance HasAbilities ThirtyTwoColt where
   getAbilities (ThirtyTwoColt a) = [fightAbility a 1 (assetUseCost a Ammo 1) ControlsThis]
 
 instance RunMessage ThirtyTwoColt where
-  runMessage msg a@(ThirtyTwoColt attrs) = case msg of
+  runMessage msg a@(ThirtyTwoColt attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = attrs.ability 1
       sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFight sid iid source
-      enabled <- skillTestModifier sid source iid (DamageDealt 1)
-      pushAll [enabled, chooseFight]
+      skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+      chooseFightEnemy sid iid (attrs.ability 1)
       pure a
-    _ -> ThirtyTwoColt <$> runMessage msg attrs
+    _ -> ThirtyTwoColt <$> liftRunMessage msg attrs

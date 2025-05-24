@@ -1,14 +1,11 @@
-module Arkham.Asset.Assets.SpiritSpeaker (
-  spiritSpeaker,
-  SpiritSpeaker (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.SpiritSpeaker (spiritSpeaker) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.Matcher hiding (FastPlayerWindow)
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
 newtype SpiritSpeaker = SpiritSpeaker AssetAttrs
@@ -19,41 +16,26 @@ spiritSpeaker :: AssetCard SpiritSpeaker
 spiritSpeaker = asset SpiritSpeaker Cards.spiritSpeaker
 
 instance HasAbilities SpiritSpeaker where
-  getAbilities (SpiritSpeaker attrs) =
-    [ restrictedAbility
-        attrs
-        1
-        (ControlsThis <> AssetExists (AssetControlledBy You <> AssetWithUseType Charge))
-        (FastAbility $ ExhaustCost $ toTarget attrs)
+  getAbilities (SpiritSpeaker a) =
+    [ controlled a 1 (exists (AssetControlledBy You <> AssetWithUseType Charge)) (FastAbility $ exhaust a)
     ]
 
 instance RunMessage SpiritSpeaker where
-  runMessage msg a@(SpiritSpeaker attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      assetIds <- select $ AssetControlledBy You <> AssetWithUseType Charge
-      discardableAssetIds <-
-        select $ assetControlledBy iid <> AssetWithUseType Charge <> DiscardableAsset
+  runMessage msg a@(SpiritSpeaker attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assetIds <- select $ assetControlledBy iid <> AssetWithUseType Charge
+      discardableAssetIds <- select $ assetControlledBy iid <> AssetWithUseType Charge <> DiscardableAsset
       assetIdsWithChargeCounts <- forToSnd assetIds $ fieldMap AssetUses (findWithDefault 0 Charge)
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ TargetLabel
-            target
-            [ chooseOne
-                player
-                $ Label "Return to hand" [ReturnToHand iid target]
-                : [ Label
-                    "Move all charges to your resource pool"
-                    [ SpendUses (attrs.ability 1) target Charge n
-                    , TakeResources iid n (toAbilitySource attrs 1) False
-                    , toDiscardBy iid (toAbilitySource attrs 1) target
-                    ]
-                  | aid `elem` discardableAssetIds
-                  ]
-            ]
-          | (aid, n) <- assetIdsWithChargeCounts
-          , let target = AssetTarget aid
-          ]
+      chooseOneM iid do
+        for_ assetIdsWithChargeCounts \(aid, n) -> do
+          targeting aid do
+            chooseOneM iid do
+              labeled "Return to hand" $ returnToHand iid aid
+              when (aid `elem` discardableAssetIds) do
+                labeled "Move all charges to your resource pool" do
+                  spendUses (attrs.ability 1) aid Charge n
+                  gainResources iid (attrs.ability 1) n
+                  toDiscardBy iid (attrs.ability 1) aid
+
       pure a
-    _ -> SpiritSpeaker <$> runMessage msg attrs
+    _ -> SpiritSpeaker <$> liftRunMessage msg attrs

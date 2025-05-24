@@ -2,14 +2,10 @@ module Arkham.Asset.Assets.Stealth (stealth) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Evade
-import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Window
+import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 import Arkham.SkillTestResult
-import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 
 newtype Stealth = Stealth AssetAttrs
@@ -23,29 +19,24 @@ instance HasAbilities Stealth where
   getAbilities (Stealth attrs) = [evadeAbility attrs 1 (ActionCost 1 <> exhaust attrs) ControlsThis]
 
 instance RunMessage Stealth where
-  runMessage msg a@(Stealth attrs) = case msg of
+  runMessage msg a@(Stealth attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      pushM $ setTarget attrs <$> mkChooseEvade sid iid (attrs.ability 1)
+      chooseEvadeEnemyEdit sid iid (attrs.ability 1) (setTarget attrs)
       pure a
     ChosenEvadeEnemy sid source@(isSource attrs -> True) eid -> do
-      pushM $ skillTestModifier sid source eid (EnemyEvade (-2))
+      skillTestModifier sid source eid (EnemyEvade (-2))
       pure a
     AfterSkillTestEnds
       (isAbilitySource attrs 1 -> True)
       (ProxyTarget (EnemyTarget eid) _)
       (SucceededBy {}) -> do
-        let iid = getController attrs
-        canDisengage <- iid <=~> InvestigatorCanDisengage
-        isYourTurn <- iid <=~> TurnInvestigator
-        whenWindow <- checkWindows [mkWhen $ Window.EnemyEvaded iid eid]
-        afterWindow <- checkWindows [mkAfter $ Window.EnemyEvaded iid eid]
-        enemyCannotEngage <- turnModifier iid attrs (toTarget eid) (CannotEngage iid)
-        pushAll
-          $ [enemyCannotEngage | isYourTurn]
-          <> [whenWindow]
-          <> [DisengageEnemy iid eid | canDisengage]
-          <> [EnemyCheckEngagement eid | canDisengage]
-          <> [afterWindow]
+        for_ attrs.controller \iid -> do
+          whenMatch iid TurnInvestigator $ turnModifier iid attrs eid (CannotEngage iid)
+          checkWhen $ Window.EnemyEvaded iid eid
+          whenMatch iid InvestigatorCanDisengage do
+            disengageEnemy iid eid
+            enemyCheckEngagement eid
+          checkAfter $ Window.EnemyEvaded iid eid
         pure a
-    _ -> Stealth <$> runMessage msg attrs
+    _ -> Stealth <$> liftRunMessage msg attrs

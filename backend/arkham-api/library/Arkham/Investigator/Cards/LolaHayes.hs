@@ -1,11 +1,12 @@
 module Arkham.Investigator.Cards.LolaHayes (lolaHayes) where
 
-import Arkham.Classes.HasGame
+import Arkham.Ability
+import Arkham.ClassSymbol
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Taboo
 
 newtype LolaHayes = LolaHayes InvestigatorAttrs
@@ -28,27 +29,24 @@ instance HasChaosTokenValue LolaHayes where
 
 instance HasAbilities LolaHayes where
   getAbilities (LolaHayes attrs) =
-    [ restrictedAbility attrs 1 Self
-        $ (if tabooed TabooList20 attrs then SilentForcedAbility else ForcedAbility)
+    [ restricted attrs 1 Self
+        $ (if tabooed TabooList20 attrs then SilentForcedAbility else forced)
         $ DrawingStartingHand #after You
-    , playerLimit PerRound $ restrictedAbility attrs 2 Self (FastAbility Free)
+    , playerLimit PerRound $ restricted attrs 2 Self (FastAbility Free)
     ]
-      <> [ doesNotProvokeAttacksOfOpportunity $ restrictedAbility attrs 2 Self actionAbility
-         | tabooed TabooList20 attrs
-         ]
+      <> [noAOO $ restricted attrs 2 Self actionAbility | tabooed TabooList20 attrs]
 
-switchRole :: (HasGame m, HasQueue Message m) => InvestigatorAttrs -> m ()
+switchRole :: ReverseQueue m => InvestigatorAttrs -> m ()
 switchRole attrs = do
   let roles = filter (/= Mythos) [minBound .. maxBound]
-  player <- getPlayer (toId attrs)
-  push $ chooseOne player [Label (tshow role) [SetRole attrs.id role] | role <- roles]
+  chooseOneM attrs.id $ for_ roles \role -> labeled (tshow role) $ push $ SetRole attrs.id role
 
 instance RunMessage LolaHayes where
-  runMessage msg i@(LolaHayes attrs) = case msg of
+  runMessage msg i@(LolaHayes attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) n | n `elem` [1, 2, 3] -> do
       switchRole attrs
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       switchRole attrs
       pure i
-    _ -> LolaHayes <$> runMessage msg attrs
+    _ -> LolaHayes <$> liftRunMessage msg attrs

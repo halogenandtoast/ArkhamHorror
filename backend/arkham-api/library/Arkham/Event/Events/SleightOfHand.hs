@@ -1,4 +1,4 @@
-module Arkham.Event.Events.SleightOfHand (sleightOfHand, sleightOfHandEffect, SleightOfHand (..)) where
+module Arkham.Event.Events.SleightOfHand (sleightOfHand, sleightOfHandEffect) where
 
 import Arkham.Cost
 import Arkham.Cost.Status qualified as Cost

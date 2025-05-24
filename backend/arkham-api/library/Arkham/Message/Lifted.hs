@@ -904,6 +904,10 @@ shuffleSetAsideEncounterSet eset = do
   cards <- getSetAsideCardsMatching (fromSets [eset])
   push $ ShuffleCardsIntoDeck Deck.EncounterDeck cards
 
+shuffleDiscardBackIn
+  :: (ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> m ()
+shuffleDiscardBackIn investigator = push $ ShuffleDiscardBackIn (asId investigator)
+
 shuffleEncounterDiscardBackIn :: ReverseQueue m => m ()
 shuffleEncounterDiscardBackIn = push ShuffleEncounterDiscardBackIn
 
@@ -1613,10 +1617,10 @@ loseAllResources :: (ReverseQueue m, Sourceable source) => InvestigatorId -> sou
 loseAllResources iid source = loseResources iid source =<< field InvestigatorResources iid
 
 drawEncounterCard :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
-drawEncounterCard i source = push $ Msg.drawEncounterCards i source 1
+drawEncounterCard i source = drawEncounterCards i source 1
 
 drawEncounterCards :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
-drawEncounterCards i source n = push $ Msg.drawEncounterCards i source n
+drawEncounterCards i source n = whenM (can.target.encounterDeck i) $ push $ Msg.drawEncounterCards i source n
 
 drawEncounterCardsEdit
   :: (ReverseQueue m, Sourceable source)

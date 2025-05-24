@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.TheKingInYellow (theKingInYellow, TheKingInYellow (..)) where
+module Arkham.Asset.Assets.TheKingInYellow (theKingInYellow) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -16,9 +16,7 @@ newtype TheKingInYellow = TheKingInYellow AssetAttrs
 
 theKingInYellow :: AssetCard TheKingInYellow
 theKingInYellow =
-  assetWith TheKingInYellow Cards.theKingInYellow
-    $ canLeavePlayByNormalMeansL
-    .~ False
+  assetWith TheKingInYellow Cards.theKingInYellow (canLeavePlayByNormalMeansL .~ False)
 
 instance HasAbilities TheKingInYellow where
   getAbilities (TheKingInYellow x) =
@@ -30,15 +28,10 @@ instance HasAbilities TheKingInYellow where
 instance HasModifiersFor TheKingInYellow where
   getModifiersFor (TheKingInYellow a) = case a.placement of
     InThreatArea minh ->
-      getSkillTestId >>= \case
-        Nothing -> pure mempty
-        Just stId -> do
-          commitedCardsCount <- fieldMap InvestigatorCommittedCards length minh
-          modified_
-            a
-            (SkillTestTarget stId)
-            [CannotPerformSkillTest | commitedCardsCount == 1 || commitedCardsCount == 2]
-    _ -> pure mempty
+      getSkillTestId >>= traverse_ \stId -> do
+        commitedCardsCount <- fieldMap InvestigatorCommittedCards length minh
+        modified_ a stId [CannotPerformSkillTest | commitedCardsCount == 1 || commitedCardsCount == 2]
+    _ -> pure ()
 
 instance RunMessage TheKingInYellow where
   runMessage msg a@(TheKingInYellow attrs) = runQueueT $ case msg of
@@ -47,7 +40,7 @@ instance RunMessage TheKingInYellow where
       pure a
     CardEnteredPlay iid card | card.id == attrs.cardId -> do
       place attrs.id (InThreatArea iid)
-      pure $ a
+      pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       toDiscardBy iid (attrs.ability 1) attrs
       pure a

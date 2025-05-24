@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.MarkHarrigan (markHarrigan, MarkHarrigan (..)) where
+module Arkham.Investigator.Cards.MarkHarrigan (markHarrigan) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
@@ -20,7 +20,7 @@ markHarrigan =
 instance HasAbilities MarkHarrigan where
   getAbilities (MarkHarrigan attrs) =
     [ playerLimit PerPhase
-        $ restrictedAbility attrs 1 Self
+        $ restricted attrs 1 Self
         $ freeReaction
         $ PlacedToken #after AnySource (TargetControlledBy You) #damage
     ]

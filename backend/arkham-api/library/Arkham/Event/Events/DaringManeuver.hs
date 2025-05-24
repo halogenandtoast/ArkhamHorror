@@ -1,4 +1,4 @@
-module Arkham.Event.Events.DaringManeuver (daringManeuver, DaringManeuver (..)) where
+module Arkham.Event.Events.DaringManeuver (daringManeuver) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted

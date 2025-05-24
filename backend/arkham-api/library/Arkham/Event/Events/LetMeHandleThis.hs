@@ -1,4 +1,4 @@
-module Arkham.Event.Events.LetMeHandleThis (letMeHandleThis, LetMeHandleThis (..)) where
+module Arkham.Event.Events.LetMeHandleThis (letMeHandleThis) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted

@@ -1,13 +1,12 @@
 module Arkham.Story.Cards.TheFall (theFall) where
 
-import Arkham.DamageEffect
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype TheFall = TheFall StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -17,23 +16,15 @@ theFall :: StoryCard TheFall
 theFall = story TheFall Cards.theFall
 
 instance RunMessage TheFall where
-  runMessage msg s@(TheFall attrs) = case msg of
+  runMessage msg s@(TheFall attrs) = runQueueT $ case msg of
     ResolveStory iid _ story' | story' == toId attrs -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- perPlayer 2
       lid <- selectJust $ locationIs Locations.darkSpires
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label
-              "You cannot bring yourself to do what must be done."
-              [SetFlippable lid True]
-          , Label
-              "Realizing what you must do, you step forward and push her."
-              [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
-              , Msg.EnemyDamage hastur $ storyDamage iid n
-              ]
-          ]
+      chooseOneM iid $ scenarioI18n do
+        labeled' "theFall.cannot" $ push $ SetFlippable lid False
+        labeled' "theFall.push" do
+          assignHorror iid attrs 2
+          storyEnemyDamage iid n hastur
       pure s
-    _ -> TheFall <$> runMessage msg attrs
+    _ -> TheFall <$> liftRunMessage msg attrs

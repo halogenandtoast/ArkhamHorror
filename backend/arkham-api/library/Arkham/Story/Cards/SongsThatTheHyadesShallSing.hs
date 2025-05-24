@@ -1,12 +1,9 @@
 module Arkham.Story.Cards.SongsThatTheHyadesShallSing (songsThatTheHyadesShallSing) where
 
-import Arkham.DamageEffect
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype SongsThatTheHyadesShallSing = SongsThatTheHyadesShallSing StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -16,15 +13,12 @@ songsThatTheHyadesShallSing :: StoryCard SongsThatTheHyadesShallSing
 songsThatTheHyadesShallSing = story SongsThatTheHyadesShallSing Cards.songsThatTheHyadesShallSing
 
 instance RunMessage SongsThatTheHyadesShallSing where
-  runMessage msg s@(SongsThatTheHyadesShallSing attrs) = case msg of
+  runMessage msg s@(SongsThatTheHyadesShallSing attrs) = runQueueT $ case msg of
     ResolveStory iid _ story' | story' == toId attrs -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
-      investigatorIds <- select $ investigatorEngagedWith hastur
       n <- perPlayer 1
-      pushAll
-        $ [ Msg.EnemyDamage hastur $ storyDamage iid n
-          , Exhaust (EnemyTarget hastur)
-          ]
-        <> [DisengageEnemy iid' hastur | iid' <- investigatorIds]
+      storyEnemyDamage iid n hastur
+      exhaustThis hastur
+      selectEach (investigatorEngagedWith hastur) (`disengageEnemy` hastur)
       pure s
-    _ -> SongsThatTheHyadesShallSing <$> runMessage msg attrs
+    _ -> SongsThatTheHyadesShallSing <$> liftRunMessage msg attrs

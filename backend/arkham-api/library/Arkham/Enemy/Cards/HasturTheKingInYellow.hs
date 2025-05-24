@@ -1,15 +1,13 @@
 module Arkham.Enemy.Cards.HasturTheKingInYellow (hasturTheKingInYellow) where
 
 import Arkham.Ability
-import Arkham.Attack hiding (damageStrategyL)
-import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
-import Arkham.Helpers.Query
+import Arkham.Enemy.Import.Lifted
+import Arkham.Enemy.Types (Field (EnemyFight))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Prelude
+import Arkham.Strategy
 
 newtype HasturTheKingInYellow = HasturTheKingInYellow EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -23,31 +21,28 @@ hasturTheKingInYellow =
 
 instance HasAbilities HasturTheKingInYellow where
   getAbilities (HasturTheKingInYellow a) =
-    withBaseAbilities a
-      $ [ restrictedAbility a 1 (enemyExists $ EnemyWithId (toId a) <> ReadyEnemy)
-            $ ForcedAbility
-            $ PhaseBegins #when #enemy
-        , skillTestAbility $ mkAbility a 2 $ ActionAbility [] $ ActionCost 1
-        ]
+    extend
+      a
+      [ restricted a 1 (thisExists a ReadyEnemy) $ forced $ PhaseBegins #when #enemy
+      , skillTestAbility $ mkAbility a 2 actionAbility
+      ]
 
 instance RunMessage HasturTheKingInYellow where
-  runMessage msg e@(HasturTheKingInYellow attrs) = case msg of
+  runMessage msg e@(HasturTheKingInYellow attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      iids <- getInvestigators
-      pushAll $ map (InitiateEnemyAttack . enemyAttack (toId attrs) attrs) iids
+      eachInvestigator $ initiateEnemyAttack attrs (attrs.ability 1)
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
-      push
-        $ beginSkillTest sid iid (toAbilitySource attrs 2) attrs #willpower
+      beginSkillTest sid iid (toAbilitySource attrs 2) attrs #willpower
         $ EnemyMaybeFieldCalculation attrs.id EnemyFight
       pure e
     PassedThisSkillTest _ (isSource attrs -> True) -> do
-      push $ Exhaust (toTarget attrs)
+      exhaustThis attrs
       pure e
     Msg.EnemyDamage eid assignment
       | eid == toId attrs
       , damageAssignmentDamageEffect assignment == StoryCardDamageEffect -> do
-          HasturTheKingInYellow <$> runMessage msg attrs
+          HasturTheKingInYellow <$> liftRunMessage msg attrs
     Msg.EnemyDamage eid _ | eid == toId attrs -> pure e
-    _ -> HasturTheKingInYellow <$> runMessage msg attrs
+    _ -> HasturTheKingInYellow <$> liftRunMessage msg attrs

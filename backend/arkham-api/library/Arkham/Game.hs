@@ -3001,13 +3001,13 @@ enemyMatcherFilter es matcher' = case matcher' of
             _ -> pure False
         else pure False
   NearestEnemyToFallback iid inner -> do
-    xs <- enemyMatcherFilter es (NearestEnemyTo iid inner)
-    if null xs then enemyMatcherFilter es inner else pure xs
+    xs <- enemyMatcherFilter es (InPlayEnemy $ NearestEnemyTo iid inner)
+    if null xs then enemyMatcherFilter es (InPlayEnemy inner) else pure xs
   NearestEnemyToLocationFallback lid inner -> do
-    xs <- enemyMatcherFilter es (NearestEnemyToLocation lid inner)
-    if null xs then enemyMatcherFilter es inner else pure xs
+    xs <- enemyMatcherFilter es (InPlayEnemy $ NearestEnemyToLocation lid inner)
+    if null xs then enemyMatcherFilter es (InPlayEnemy inner) else pure xs
   NearestEnemyToAnInvestigator enemyMatcher -> do
-    eids <- select enemyMatcher
+    eids <- select (InPlayEnemy enemyMatcher)
     mins <$> flip mapMaybeM es \enemy -> runMaybeT do
       guard $ enemy.id `elem` eids
       iid <- MaybeT $ selectOne $ NearestToEnemy (EnemyWithId enemy.id)
@@ -3017,7 +3017,7 @@ enemyMatcherFilter es matcher' = case matcher' of
         then pure (enemy, 0)
         else (enemy,) . unDistance <$> MaybeT (getDistance ilid elid)
   NearestEnemyToLocation ilid enemyMatcher -> do
-    eids <- select enemyMatcher
+    eids <- select (InPlayEnemy enemyMatcher)
     flip filterM es \enemy -> do
       if toId enemy `elem` eids
         then do

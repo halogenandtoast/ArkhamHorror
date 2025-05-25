@@ -231,6 +231,7 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
     when (notNull theJungleWatchesCardDefs) do
       placeInVictory theJungleWatchesCardDefs
 
+    removeEvery [Locations.mouthOfKnYanTheCavernsMaw]
     startAt =<< place Locations.mouthOfKnYanTheDepthsBeneath
 
     setAsidePoisonedCount <- getSetAsidePoisonedCount

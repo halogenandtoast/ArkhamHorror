@@ -2688,13 +2688,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                  [ Label "Move too" [Move $ move iid' iid' lid]
                  , Label "Skip" []
                  ]
-             | (iid', player) <- moveWith
+             | movement.means /= Place
+             , (iid', player) <- moveWith
              ]
           <> moveAfter movement
-          <> [ afterEntering
-             , afterMoveButBeforeEnemyEngagement
-             , CheckEnemyEngagement iid
-             ]
+          <> [afterEntering]
+          <> [afterMoveButBeforeEnemyEngagement | movement.means /= Place]
+          <> [CheckEnemyEngagement iid]
         pure a
   Do (WhenWillEnterLocation iid lid) | iid == investigatorId -> do
     pure $ a & placementL .~ AtLocation lid
@@ -3265,7 +3265,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           push
             $ chooseOrRunOne
               pid
-              [targetLabel target [SendMessage target (ForInvestigator investigatorId AllDrawCardAndResource)] | target <- alternateUpkeepDraws]
+              [ targetLabel target [SendMessage target (ForInvestigator investigatorId AllDrawCardAndResource)]
+              | target <- alternateUpkeepDraws
+              ]
         else push $ drawCards investigatorId ScenarioSource 1
     push $ ForTarget (toTarget a) (DoStep 2 (ForInvestigator investigatorId AllDrawCardAndResource))
     pure a

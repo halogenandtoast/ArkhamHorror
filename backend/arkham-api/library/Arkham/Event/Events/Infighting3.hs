@@ -1,4 +1,4 @@
-module Arkham.Event.Events.Infighting3 (infighting3, Infighting3 (..)) where
+module Arkham.Event.Events.Infighting3 (infighting3) where
 
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards

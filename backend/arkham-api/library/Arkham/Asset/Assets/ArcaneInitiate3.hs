@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.ArcaneInitiate3 (arcaneInitiate3, ArcaneInitiate3 (..)) where
+module Arkham.Asset.Assets.ArcaneInitiate3 (arcaneInitiate3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards

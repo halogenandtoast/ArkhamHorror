@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Stealth3 (stealth3, Stealth3 (..)) where
+module Arkham.Asset.Assets.Stealth3 (stealth3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards

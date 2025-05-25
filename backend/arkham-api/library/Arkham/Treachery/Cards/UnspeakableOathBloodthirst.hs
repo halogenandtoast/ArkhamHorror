@@ -1,8 +1,4 @@
-module Arkham.Treachery.Cards.UnspeakableOathBloodthirst (
-  unspeakableOathBloodthirst,
-  UnspeakableOathBloodthirst (..),
-)
-where
+module Arkham.Treachery.Cards.UnspeakableOathBloodthirst (unspeakableOathBloodthirst) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..))

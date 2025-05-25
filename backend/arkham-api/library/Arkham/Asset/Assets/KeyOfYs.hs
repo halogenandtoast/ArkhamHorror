@@ -2,10 +2,9 @@ module Arkham.Asset.Assets.KeyOfYs (keyOfYs) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype KeyOfYs = KeyOfYs AssetAttrs
   deriving anyclass IsAsset
@@ -15,7 +14,7 @@ keyOfYs :: AssetCard KeyOfYs
 keyOfYs = assetWith KeyOfYs Cards.keyOfYs (sanityL ?~ 4)
 
 instance HasModifiersFor KeyOfYs where
-  getModifiersFor (KeyOfYs a) = controllerGets a [AnySkillValue $ assetHorror a]
+  getModifiersFor (KeyOfYs a) = controllerGets a [AnySkillValue a.horror]
 
 instance HasAbilities KeyOfYs where
   getAbilities (KeyOfYs x) =
@@ -24,11 +23,11 @@ instance HasAbilities KeyOfYs where
     ]
 
 instance RunMessage KeyOfYs where
-  runMessage msg a@(KeyOfYs attrs) = case msg of
+  runMessage msg a@(KeyOfYs attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ ReassignHorror (toSource iid) (toTarget attrs) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ DiscardTopOfDeck iid 10 (toAbilitySource attrs 2) Nothing
+      discardTopOfDeck iid (attrs.ability 2) 10
       pure a
-    _ -> KeyOfYs <$> runMessage msg attrs
+    _ -> KeyOfYs <$> liftRunMessage msg attrs

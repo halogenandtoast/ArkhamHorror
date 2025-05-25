@@ -2,14 +2,12 @@ module Arkham.Skill.Cards.TorrentOfPower (torrentOfPower) where
 
 import Arkham.Asset.Uses
 import Arkham.Calculation
-import Arkham.Classes
 import Arkham.Cost
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype TorrentOfPower = TorrentOfPower SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)

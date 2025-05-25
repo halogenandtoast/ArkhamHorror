@@ -17,8 +17,8 @@ instance RunMessage MysteriousChanting where
   runMessage msg t@(MysteriousChanting attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       enemies <- select $ NearestEnemyToFallback iid $ EnemyWithTrait Cultist
-      case enemies of
-        [] -> findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Cultist
-        xs -> chooseTargetM iid xs \x -> placeDoom attrs x 2
+      if null enemies
+        then findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Cultist
+        else chooseTargetM iid xs \x -> placeDoom attrs x 2
       pure t
     _ -> MysteriousChanting <$> liftRunMessage msg attrs

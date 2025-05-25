@@ -2,11 +2,9 @@ module Arkham.Asset.Assets.TrenchKnife (trenchKnife) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Fight
-import Arkham.Helpers.Modifiers
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype TrenchKnife = TrenchKnife AssetAttrs
   deriving anyclass IsAsset
@@ -19,16 +17,15 @@ instance HasModifiersFor TrenchKnife where
   getModifiersFor (TrenchKnife attrs) = controllerGets attrs [ActionDoesNotCauseAttacksOfOpportunity #engage]
 
 instance HasAbilities TrenchKnife where
-  getAbilities (TrenchKnife attrs) = [restrictedAbility attrs 1 ControlsThis fightAction_]
+  getAbilities (TrenchKnife attrs) = [restricted attrs 1 ControlsThis fightAction_]
 
 instance RunMessage TrenchKnife where
-  runMessage msg a@(TrenchKnife attrs) = case msg of
+  runMessage msg a@(TrenchKnife attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemyCount <- selectCount $ enemyEngagedWith iid
       let source = attrs.ability 1
       sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFight sid iid source
-      enabled <- skillTestModifier sid attrs iid (SkillModifier #combat enemyCount)
-      pushAll [enabled, chooseFight]
+      enemyCount <- selectCount $ enemyEngagedWith iid
+      skillTestModifier sid attrs iid (SkillModifier #combat enemyCount)
+      chooseFightEnemy sid iid source
       pure a
-    _ -> TrenchKnife <$> runMessage msg attrs
+    _ -> TrenchKnife <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Event.Events.SneakAttack2 (sneakAttack2, SneakAttack2 (..)) where
+module Arkham.Event.Events.SneakAttack2 (sneakAttack2) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted

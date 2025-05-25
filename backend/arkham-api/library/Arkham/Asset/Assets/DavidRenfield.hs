@@ -2,10 +2,10 @@ module Arkham.Asset.Assets.DavidRenfield (davidRenfield) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Prelude
 import Arkham.Taboo
+import Arkham.Message.Lifted.Choose
 
 newtype DavidRenfield = DavidRenfield AssetAttrs
   deriving anyclass IsAsset
@@ -22,23 +22,16 @@ instance HasAbilities DavidRenfield where
   getAbilities (DavidRenfield a) = [restricted a 1 ControlsThis $ FastAbility $ exhaust a]
 
 instance RunMessage DavidRenfield where
-  runMessage msg a@(DavidRenfield attrs) = case msg of
-    UseCardAbility iid source 1 windows' p | isSource attrs source -> do
-      let
-        resolveAbility =
-          UseCardAbilityChoice iid source 1 NoAbilityMetadata windows' p
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label
-              "Place doom on David Renfield"
-              [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1, resolveAbility]
-          , Label "Do not place doom on David Renfield" [resolveAbility]
-          ]
+  runMessage msg a@(DavidRenfield attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseOneM iid do
+        labeled "Place doom on David Renfield" $ placeDoom (attrs.ability 1) attrs 1
+        labeled "Do not place doom on David Renfield" nothing
+
+      doStep 1 msg
       pure a
-    UseCardAbilityChoice iid source 1 _ _ _ | isSource attrs source -> do
+    DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       let tabooMax = if tabooed TabooList21 attrs then min 3 else id
-      push $ TakeResources iid (tabooMax $ assetDoom attrs) (toAbilitySource attrs 1) False
+      gainResources iid (attrs.ability 1) (tabooMax attrs.doom)
       pure a
-    _ -> DavidRenfield <$> runMessage msg attrs
+    _ -> DavidRenfield <$> liftRunMessage msg attrs

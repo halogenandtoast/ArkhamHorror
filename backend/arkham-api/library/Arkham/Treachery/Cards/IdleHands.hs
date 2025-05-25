@@ -33,4 +33,5 @@ instance RunMessage IdleHands where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       assignHorror iid attrs 1
       pure t
+    Do (AfterRevelation _ tid) | tid == attrs.id -> pure t
     _ -> IdleHands <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Event.Events.AnatomicalDiagrams (anatomicalDiagrams, AnatomicalDiagrams (..)) where
+module Arkham.Event.Events.AnatomicalDiagrams (anatomicalDiagrams) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted

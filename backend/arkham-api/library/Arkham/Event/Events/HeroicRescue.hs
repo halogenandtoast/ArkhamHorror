@@ -1,18 +1,11 @@
-module Arkham.Event.Events.HeroicRescue (
-  heroicRescue,
-  HeroicRescue (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.HeroicRescue (heroicRescue) where
 
 import Arkham.Attack
-import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
+import Arkham.Helpers.Window
 
 newtype HeroicRescue = HeroicRescue EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -22,13 +15,19 @@ heroicRescue :: EventCard HeroicRescue
 heroicRescue = event HeroicRescue Cards.heroicRescue
 
 instance RunMessage HeroicRescue where
-  runMessage msg e@(HeroicRescue attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ [windowType -> Window.EnemyWouldAttack details'] _ | eid == toId attrs -> do
+  runMessage msg e@(HeroicRescue attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      let details = getAttackDetails attrs.windows
+      let enemy = attackEnemy details
       canDealDamage <- withoutModifier iid CannotDealDamage
-      let enemy = attackEnemy details'
-      pushAll
-        $ EnemyEngageInvestigator enemy iid
-        : ChangeEnemyAttackTarget enemy (toTarget iid)
-        : [AfterEnemyAttack enemy [EnemyDamage enemy $ nonAttack (Just iid) attrs 1] | canDealDamage]
+
+      engageEnemy iid enemy
+      changeAttackDetails enemy
+        $ details
+          { attackTarget = SingleAttackTarget (toTarget iid)
+          , attackAfter =
+              attackAfter details <> [EnemyDamage enemy $ nonAttack (Just iid) attrs 1 | canDealDamage]
+          }
+
       pure e
-    _ -> HeroicRescue <$> runMessage msg attrs
+    _ -> HeroicRescue <$> liftRunMessage msg attrs

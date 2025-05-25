@@ -2,10 +2,10 @@ module Arkham.Asset.Assets.Moxie1 (moxie1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype Moxie1 = Moxie1 AssetAttrs
   deriving anyclass IsAsset
@@ -28,13 +28,11 @@ instance HasModifiersFor Moxie1 where
   getModifiersFor (Moxie1 a) = modifySelf a [NonDirectHorrorMustBeAssignToThisFirst]
 
 instance RunMessage Moxie1 where
-  runMessage msg a@(Moxie1 attrs) = case msg of
+  runMessage msg a@(Moxie1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      withSkillTest \sid ->
-        pushM $ skillTestModifier sid attrs iid (SkillModifier #willpower 1)
+      withSkillTest \sid -> skillTestModifier sid attrs iid (SkillModifier #willpower 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      withSkillTest \sid ->
-        pushM $ skillTestModifier sid attrs iid (SkillModifier #agility 1)
+      withSkillTest \sid -> skillTestModifier sid attrs iid (SkillModifier #agility 1)
       pure a
-    _ -> Moxie1 <$> runMessage msg attrs
+    _ -> Moxie1 <$> liftRunMessage msg attrs

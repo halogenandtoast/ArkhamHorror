@@ -13,7 +13,7 @@ spec = do
       self `putCardIntoPlay` Events.darkMemory
       click "Advance agenda"
       chooseOptionMatching "have to choose horror option to avoid discard" \case
-        Label "The lead investigator takes 2 horror" _ -> True
+        Label "$nightOfTheZealot.theGathering.label.whatsGoingOn.horror" _ -> True
         _ -> False
       applyAllHorror
       assert $ Events.darkMemory `isInDiscardOf` self

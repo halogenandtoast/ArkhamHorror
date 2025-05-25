@@ -1,0 +1,19 @@
+{
+    "skillTestTitle": "능력 테스트",
+
+    "waitingForMorePlayers": "다른 플레이어를 기다리는 중",
+    "showInviteLink": "다음 주소로 다른 플레이어를 초대하세요:",
+
+    "gameOver": "게임 종료",
+    "watchReplay": "다시 보기",
+
+    "submit": "확인",
+    "sancel": "취소",
+    "close": "닫기",
+
+    "outOfSyncHint": "게임이 동기화되지 않았습니다: 재접속을 시도 중...",
+
+    "error": "에러",
+    "errorContent": "버그일 가능성이 높으니, 버그 리포트를 제출해 주십시오.",
+    "fileBug": "버그 파일"
+}

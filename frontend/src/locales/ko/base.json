@@ -1,0 +1,57 @@
+{
+  "about": "About",
+  "activeGames": "활성화된 게임",
+  "cancel": "취소",
+  "cards": "카드",
+  "continue": "계속",
+  "debugGame": "게임 디버깅",
+  "doDeleteGame": "이 게임을 정말 삭제하길 원하십니까?",
+  "email": "이메일",
+  "finishedGames": "종료된 게임",
+  "forgotPassword": "암호를 잊었습니다",
+  "home": "메인 화면",
+  "invalidEmailOrPassword": "유효하지 않은 이메일 또는 암호입니다.",
+  "language": "언어",
+  "logIn": "로그인",
+  "myDecks": "내 덱",
+  "newGame": "새로운 게임",
+  "newPassword": "새로운 암호",
+  "password": "암호",
+  "passwordResetRequested": "암호 초기화가 요청됨",
+  "passwordUpdatedSuccessfully": "암호가 성공적으로 갱신됨",
+  "register": "등록",
+  "resetPassword": "암호 초기화",
+  "settings": "설정",
+  "updatePassword": "암호 갱신",
+  "username": "사용자 명",
+  "usernameOrEmailAlreadyTaken": "해당 사용자 명 또는 이메일이 사용 중입니다.",
+  "tooltips": {
+    "takeControlOfKey": "{key} 열쇠 조종하기"
+  },
+  "shuffleRemainder": "남은 조우 카드를 함께 섞어, 조우 덱을 만듭니다.",
+  "readyToBegin": "이제 시작할 준비가 되었습니다.",
+
+  "Yes": "예",
+  "No": "아니오",
+
+  "Evade": "회피",
+  "Fight": "전투",
+  "Engage": "교전",
+  "Forced": "강제",
+  "Delayed": "지연됨",
+  "Objective": "주요목적",
+  "Haunted": "신들린",
+
+  "Results": "결말",
+  "Story": "이야기",
+  "ChooseOne": "하나만 선택",
+  "Choose": "선택",
+  "setup": "게임 준비",
+  "addToken": "남은 캠페인 동안, 혼돈 주머니에 {'{'}{token}{'}'} 토큰 1개를 추가합니다.",
+  "choice": {
+    "clues": "단서",
+    "resources": "자원",
+    "physical": "육체적",
+    "mental": "정신적"
+  }
+}

@@ -1,0 +1,8 @@
+{
+    "discards": "버리기",
+    "endTurn": "차례 마치기",
+    "skipTriggers": "격발 건너뛰기",
+    "devouredCards": "{count}장 집어삼켜짐",
+    "underneathCards": "{count}장 아래에 놓임"
+
+}

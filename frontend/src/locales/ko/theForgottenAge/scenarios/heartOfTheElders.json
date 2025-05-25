@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 (-3 instead if you are in a _Cave_ location).",
+      "cultist": "-2. If you fail, place 1 doom on your location.",
+      "tablet": "-2. If you are poisoned, this test automatically fails instead.",
+      "elderThing": "-3. If you fail, take 1 horror."
+    },
+    "hardExpert": {
+      "skull": "-2 (-4 instead if you are in a _Cave_ location).",
+      "cultist": "-3. If you fail, place 1 doom on your location.",
+      "tablet": "-3. If you are poisoned, this test automatically fails instead. If you are not poisoned and you fail, put a set-aside Poisoned weakness into play in your threat area.",
+      "elderThing": "-4. If you fail, take 1 horror."
+    }
+  }
+}

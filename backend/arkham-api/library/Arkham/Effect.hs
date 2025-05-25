@@ -115,7 +115,6 @@ import Arkham.Event.Events (
   explosiveWardEffect,
   exposeWeakness1Effect,
   exposeWeakness3Effect,
-  fightOrFlightEffect,
   followedEffect,
   getBehindMeEffect,
   hitAndRunEffect,
@@ -442,7 +441,7 @@ allEffects =
     , ("03141", SomeEffect mrPeabodyEffect)
     , ("03149", SomeEffect charlesRossEsqEffect)
     , ("03153", SomeEffect $ noop "03153")
-    , ("03155", SomeEffect fightOrFlightEffect)
+    , ("03155", SomeEffect $ noop "03155")
     , ("03158", SomeEffect callingInFavorsEffect)
     , ("03209", SomeEffect $ noop "03209")
     , ("03254", SomeEffect $ noop "03254")

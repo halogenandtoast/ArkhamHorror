@@ -25,6 +25,7 @@ import Arkham.Keyword hiding (Surge)
 import Arkham.Matcher hiding (canEnterLocation)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
+import Arkham.Message.Lifted.Queue
 import Arkham.Modifier qualified as Modifier
 import Arkham.Placement
 import Arkham.Prelude
@@ -305,3 +306,7 @@ getDamageableEnemies investigator source matcher = do
   if canDealDamage
     then select $ matcher <> canBeDamagedBy source
     else pure []
+
+disengageEnemyFromAll :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> m ()
+disengageEnemyFromAll e = push $ DisengageEnemyFromAll (asId e)
+

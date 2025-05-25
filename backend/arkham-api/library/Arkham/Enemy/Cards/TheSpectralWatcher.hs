@@ -1,9 +1,9 @@
-module Arkham.Enemy.Cards.TheSpectralWatcher (theSpectralWatcher, TheSpectralWatcher (..)) where
+module Arkham.Enemy.Cards.TheSpectralWatcher (theSpectralWatcher) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Helpers.Enemy (disengageEnemyFromAll)
 import Arkham.Matcher
 
 newtype TheSpectralWatcher = TheSpectralWatcher EnemyAttrs
@@ -15,9 +15,11 @@ theSpectralWatcher = enemy TheSpectralWatcher Cards.theSpectralWatcher (3, Stati
 
 instance HasAbilities TheSpectralWatcher where
   getAbilities (TheSpectralWatcher a) =
-    extend
-      a
-      [groupLimit PerTestOrAbility $ mkAbility a 1 $ forced $ EnemyDefeated #when Anyone ByAny (be a)]
+    extend1 a
+      $ groupLimit PerTestOrAbility
+      $ mkAbility a 1
+      $ forced
+      $ EnemyDefeated #when Anyone ByAny (be a)
 
 instance RunMessage TheSpectralWatcher where
   runMessage msg e@(TheSpectralWatcher attrs) = runQueueT $ case msg of

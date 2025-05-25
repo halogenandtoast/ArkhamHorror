@@ -196,7 +196,7 @@ allEvents =
     , --- survivor [tuo]
       SomeEventCard fightOrFlight
     , SomeEventCard aTestOfWill1
-    , SomeEventCard devilsLuck
+    , SomeEventCard devilsLuck1
     , --- neutral [tuo]
       SomeEventCard callingInFavors
     , -- A Phantom of Truth

@@ -70,9 +70,6 @@ import Arkham.Queue
 import Arkham.Window qualified as Window
 import Control.Monad.Trans
 
-disengageEnemyFromAll :: ReverseQueue m => EnemyAttrs -> m ()
-disengageEnemyFromAll attrs = push $ DisengageEnemyFromAll attrs.id
-
 insteadOfDiscarding
   :: HasQueue Message m => EnemyAttrs -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
 insteadOfDiscarding attrs body = do

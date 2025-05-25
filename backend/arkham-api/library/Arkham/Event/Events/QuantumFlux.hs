@@ -1,13 +1,8 @@
-module Arkham.Event.Events.QuantumFlux (
-  quantumFlux,
-  QuantumFlux (..),
-) where
+module Arkham.Event.Events.QuantumFlux (quantumFlux) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
+import Arkham.Strategy
 
 newtype QuantumFlux = QuantumFlux EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -17,11 +12,9 @@ quantumFlux :: EventCard QuantumFlux
 quantumFlux = eventWith QuantumFlux Cards.quantumFlux $ afterPlayL .~ RemoveThisFromGame
 
 instance RunMessage QuantumFlux where
-  runMessage msg e@(QuantumFlux attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      pushAll
-        [ ShuffleDiscardBackIn iid
-        , drawCards iid attrs 1
-        ]
+  runMessage msg e@(QuantumFlux attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      shuffleDiscardBackIn iid
+      drawCards iid attrs 1
       pure e
-    _ -> QuantumFlux <$> runMessage msg attrs
+    _ -> QuantumFlux <$> liftRunMessage msg attrs

@@ -41,5 +41,5 @@ instance RunMessage WrackedByTime where
       for_ assets \(aid, mowner) -> do
         let deck = maybe EncounterDeck InvestigatorDeck mowner
         shuffleIntoDeck deck aid
-      pure t
+      WrackedByTime . (`with` meta) <$> liftRunMessage msg attrs
     _ -> WrackedByTime . (`with` meta) <$> liftRunMessage msg attrs

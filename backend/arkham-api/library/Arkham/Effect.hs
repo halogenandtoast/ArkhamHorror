@@ -29,11 +29,11 @@ import Arkham.Window (Window)
 import Arkham.Act.Acts (
   infiltratingTheLodgeEffect,
   theStrangerACityAflameEffect,
+  theStrangerAlaranMistsEffect,
+  theStrangerHereIsMyReplyEffect,
   theStrangerThePathIsMineEffect,
   theStrangerTheShoresOfHaliEffect,
-  theStrangerAlaranMistsEffect,
   theStrangerUnderTheCityEffect,
-  theStrangerHereIsMyReplyEffect,
   theYithianRelicEffect,
  )
 import Arkham.Agenda.Agendas (
@@ -101,7 +101,6 @@ import Arkham.Enemy.Enemies (
  )
 import Arkham.Event.Events (
   atACrossroads1Effect,
-  easyMark1Effect,
   backstab3Effect,
   bideYourTimeEffect,
   bindMonster2Effect,
@@ -111,6 +110,7 @@ import Arkham.Event.Events (
   dawnStar1Effect,
   deliverance3Effect,
   dimensionalVortex5Effect,
+  easyMark1Effect,
   eideticMemory3Effect,
   explosiveWardEffect,
   exposeWeakness1Effect,
@@ -132,7 +132,6 @@ import Arkham.Event.Events (
   spectralRazor2Effect,
   spectralRazorEffect,
   stormOfSpirits3Effect,
-  stormOfSpiritsEffect,
   telescopicSight3Effect,
   thePaintedWorldEffect,
   thirdTimesACharm2Effect,
@@ -442,7 +441,7 @@ allEffects =
     , ("03100", SomeEffect theKingsEdictEffect)
     , ("03141", SomeEffect mrPeabodyEffect)
     , ("03149", SomeEffect charlesRossEsqEffect)
-    , ("03153", SomeEffect stormOfSpiritsEffect)
+    , ("03153", SomeEffect $ noop "03153")
     , ("03155", SomeEffect fightOrFlightEffect)
     , ("03158", SomeEffect callingInFavorsEffect)
     , ("03209", SomeEffect $ noop "03209")

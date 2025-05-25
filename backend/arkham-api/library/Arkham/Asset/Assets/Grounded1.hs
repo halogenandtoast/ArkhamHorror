@@ -2,10 +2,10 @@ module Arkham.Asset.Assets.Grounded1 (grounded1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait
 
 newtype Grounded1 = Grounded1 AssetAttrs
@@ -27,9 +27,9 @@ instance HasModifiersFor Grounded1 where
   getModifiersFor (Grounded1 attrs) = modifySelf attrs [NonDirectHorrorMustBeAssignToThisFirst]
 
 instance RunMessage Grounded1 where
-  runMessage msg a@(Grounded1 attrs) = case msg of
+  runMessage msg a@(Grounded1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        pushM $ skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
+        skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
       pure a
-    _ -> Grounded1 <$> runMessage msg attrs
+    _ -> Grounded1 <$> liftRunMessage msg attrs

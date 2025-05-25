@@ -1,13 +1,7 @@
-module Arkham.Skill.Cards.DesperateSearch (
-  desperateSearch,
-  DesperateSearch (..),
-) where
+module Arkham.Skill.Cards.DesperateSearch (desperateSearch) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype DesperateSearch = DesperateSearch SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -17,5 +11,4 @@ desperateSearch :: SkillCard DesperateSearch
 desperateSearch = skill DesperateSearch Cards.desperateSearch
 
 instance RunMessage DesperateSearch where
-  runMessage msg (DesperateSearch attrs) =
-    DesperateSearch <$> runMessage msg attrs
+  runMessage msg (DesperateSearch attrs) = DesperateSearch <$> runMessage msg attrs

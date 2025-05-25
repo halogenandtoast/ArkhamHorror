@@ -1,13 +1,7 @@
-module Arkham.Skill.Cards.RunForYourLife (
-  runForYourLife,
-  RunForYourLife (..),
-) where
+module Arkham.Skill.Cards.RunForYourLife (runForYourLife) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype RunForYourLife = RunForYourLife SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -17,5 +11,4 @@ runForYourLife :: SkillCard RunForYourLife
 runForYourLife = skill RunForYourLife Cards.runForYourLife
 
 instance RunMessage RunForYourLife where
-  runMessage msg (RunForYourLife attrs) =
-    RunForYourLife <$> runMessage msg attrs
+  runMessage msg (RunForYourLife attrs) = RunForYourLife <$> runMessage msg attrs

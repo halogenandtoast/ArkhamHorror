@@ -1,4 +1,4 @@
-module Arkham.Event.Events.Ambush1 (ambush1, Ambush1 (..)) where
+module Arkham.Event.Events.Ambush1 (ambush1) where
 
 import Arkham.Ability
 import Arkham.DamageEffect
@@ -20,8 +20,8 @@ ambush1 = event Ambush1 Cards.ambush1
 instance HasAbilities Ambush1 where
   getAbilities (Ambush1 attrs) = case attrs.attachedTo of
     Just (LocationTarget lid) ->
-      [ restrictedAbility attrs 1 (exists $ LocationWithId lid <> LocationWithoutInvestigators) Anytime
-      , restrictedAbility attrs 2 ControlsThis $ forced $ EnemySpawns #after (LocationWithId lid) AnyEnemy
+      [ restricted attrs 1 (exists $ LocationWithId lid <> LocationWithoutInvestigators) Anytime
+      , restricted attrs 2 ControlsThis $ forced $ EnemySpawns #after (LocationWithId lid) AnyEnemy
       ]
     _ -> []
 

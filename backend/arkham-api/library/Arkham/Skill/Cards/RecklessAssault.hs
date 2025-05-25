@@ -1,13 +1,7 @@
-module Arkham.Skill.Cards.RecklessAssault (
-  recklessAssault,
-  RecklessAssault (..),
-) where
+module Arkham.Skill.Cards.RecklessAssault (recklessAssault) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype RecklessAssault = RecklessAssault SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -17,5 +11,4 @@ recklessAssault :: SkillCard RecklessAssault
 recklessAssault = skill RecklessAssault Cards.recklessAssault
 
 instance RunMessage RecklessAssault where
-  runMessage msg (RecklessAssault attrs) =
-    RecklessAssault <$> runMessage msg attrs
+  runMessage msg (RecklessAssault attrs) = RecklessAssault <$> runMessage msg attrs

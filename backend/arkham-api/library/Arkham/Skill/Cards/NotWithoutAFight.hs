@@ -1,12 +1,10 @@
-module Arkham.Skill.Cards.NotWithoutAFight (notWithoutAFight, NotWithoutAFight (..)) where
+module Arkham.Skill.Cards.NotWithoutAFight (notWithoutAFight) where
 
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype NotWithoutAFight = NotWithoutAFight SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)

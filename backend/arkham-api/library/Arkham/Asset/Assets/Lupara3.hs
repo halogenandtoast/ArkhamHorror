@@ -2,10 +2,9 @@ module Arkham.Asset.Assets.Lupara3 (lupara3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Fight
-import Arkham.Helpers.Modifiers
-import Arkham.Prelude
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
+import Arkham.Modifier
 
 newtype Metadata = Metadata {justPlayed :: Bool}
   deriving stock (Show, Eq, Generic)
@@ -19,17 +18,16 @@ lupara3 :: AssetCard Lupara3
 lupara3 = asset (Lupara3 . (`with` Metadata True)) Cards.lupara3
 
 instance HasAbilities Lupara3 where
-  getAbilities (Lupara3 a) = [restrictedAbility a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1]
+  getAbilities (Lupara3 a) = [restricted a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1]
 
 instance RunMessage Lupara3 where
-  runMessage msg a@(Lupara3 (attrs `With` metadata)) = case msg of
+  runMessage msg a@(Lupara3 (attrs `With` metadata)) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let n = if justPlayed metadata then 2 else 1
       let source = attrs.ability 1
       sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFight sid iid source
-      enabled <- skillTestModifiers sid source iid [DamageDealt n, SkillModifier #combat n]
-      pushAll [enabled, chooseFight]
+      skillTestModifiers sid source iid [DamageDealt n, SkillModifier #combat n]
+      chooseFightEnemy sid iid source
       pure a
     EndTurn _ -> pure . Lupara3 $ attrs `with` Metadata False
-    _ -> Lupara3 . (`with` metadata) <$> runMessage msg attrs
+    _ -> Lupara3 . (`with` metadata) <$> liftRunMessage msg attrs

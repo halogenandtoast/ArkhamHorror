@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.GravediggersShovel2 (gravediggersShovel2, GravediggersShovel2 (..)) where
+module Arkham.Asset.Assets.GravediggersShovel2 (gravediggersShovel2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -16,7 +16,7 @@ gravediggersShovel2 = asset GravediggersShovel2 Cards.gravediggersShovel2
 instance HasAbilities GravediggersShovel2 where
   getAbilities (GravediggersShovel2 x) =
     [ fightAbility x 1 mempty ControlsThis
-    , controlledAbility x 2 (youExist $ InvestigatorCanDiscoverCluesAt YourLocation)
+    , controlled x 2 (youExist $ InvestigatorCanDiscoverCluesAt YourLocation)
         $ actionAbilityWithCost (OrCost [discardCost x, removeCost x])
     ]
 

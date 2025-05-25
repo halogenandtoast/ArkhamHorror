@@ -1,8 +1,4 @@
-module Arkham.Treachery.Cards.UnspeakableOathCuriosity (
-  unspeakableOathCuriosity,
-  UnspeakableOathCuriosity (..),
-)
-where
+module Arkham.Treachery.Cards.UnspeakableOathCuriosity (unspeakableOathCuriosity) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..))

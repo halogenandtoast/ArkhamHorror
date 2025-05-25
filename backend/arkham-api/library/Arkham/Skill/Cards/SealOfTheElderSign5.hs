@@ -1,16 +1,11 @@
-module Arkham.Skill.Cards.SealOfTheElderSign5 (
-  sealOfTheElderSign5,
-  SealOfTheElderSign5 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.SealOfTheElderSign5 (sealOfTheElderSign5) where
 
 import Arkham.ChaosToken
-import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
+import Arkham.Strategy
 
 newtype SealOfTheElderSign5 = SealOfTheElderSign5 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
@@ -18,19 +13,15 @@ newtype SealOfTheElderSign5 = SealOfTheElderSign5 SkillAttrs
 
 instance HasModifiersFor SealOfTheElderSign5 where
   getModifiersFor (SealOfTheElderSign5 attrs) = do
-    getSkillTest >>= \case
-      Just st ->
-        modified_
-          attrs
-          st.investigator
-          [DoNotDrawChaosTokensForSkillChecks, TreatRevealedChaosTokenAs ElderSign]
-      Nothing -> pure mempty
+    getSkillTest >>= traverse_ \st -> do
+      modified_
+        attrs
+        st.investigator
+        [DoNotDrawChaosTokensForSkillChecks, TreatRevealedChaosTokenAs ElderSign]
 
 sealOfTheElderSign5 :: SkillCard SealOfTheElderSign5
 sealOfTheElderSign5 =
-  skillWith SealOfTheElderSign5 Cards.sealOfTheElderSign5
-    $ afterPlayL
-    .~ RemoveThisFromGame
+  skillWith SealOfTheElderSign5 Cards.sealOfTheElderSign5 $ afterPlayL .~ RemoveThisFromGame
 
 instance RunMessage SealOfTheElderSign5 where
   runMessage msg (SealOfTheElderSign5 attrs) =

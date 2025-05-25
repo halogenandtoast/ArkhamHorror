@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.ArmorOfArdennes5 (armorOfArdennes5, ArmorOfArdennes5 (..)) where
+module Arkham.Asset.Assets.ArmorOfArdennes5 (armorOfArdennes5) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -15,8 +15,8 @@ armorOfArdennes5 = assetWith ArmorOfArdennes5 Cards.armorOfArdennes5 (healthL ?~
 
 instance HasAbilities ArmorOfArdennes5 where
   getAbilities (ArmorOfArdennes5 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (AssetDealtDamage #when AnyCancellableSource $ be a) (exhaust a)
+    [ restricted a 1 ControlsThis
+        $ triggered (AssetDealtDamage #when AnyCancellableSource $ be a) (exhaust a)
     ]
 
 instance RunMessage ArmorOfArdennes5 where

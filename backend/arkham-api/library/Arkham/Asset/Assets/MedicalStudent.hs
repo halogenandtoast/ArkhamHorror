@@ -2,9 +2,10 @@ module Arkham.Asset.Assets.MedicalStudent (medicalStudent) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Damage
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 
 newtype MedicalStudent = MedicalStudent AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -13,102 +14,38 @@ newtype MedicalStudent = MedicalStudent AssetAttrs
 medicalStudent :: AssetCard MedicalStudent
 medicalStudent = ally MedicalStudent Cards.medicalStudent (1, 1)
 
+healableAsset :: Sourceable source => source -> DamageType -> LocationMatcher -> AssetMatcher
+healableAsset (toSource -> source) hType loc = HealableAsset source hType $ at_ loc <> AssetControlledBy (affectsOthers Anyone)
+
 instance HasAbilities MedicalStudent where
   getAbilities (MedicalStudent x) =
-    [ controlled
-        x
-        1
-        ( AnyCriterion
-            [ exists
-                $ oneOf
-                  [ HealableInvestigator (toSource x) #horror $ colocatedWithMatch You
-                  , HealableInvestigator (toSource x) #damage $ colocatedWithMatch You
-                  ]
-            , exists
-                $ oneOf
-                  [ HealableAsset (toSource x) #horror
-                      $ AssetAt YourLocation
-                      <> AssetControlledBy (affectsOthers Anyone)
-                  , HealableAsset (toSource x) #damage
-                      $ AssetAt YourLocation
-                      <> AssetControlledBy (affectsOthers Anyone)
-                  ]
-            ]
-        )
-        $ freeReaction (AssetEntersPlay #when $ AssetWithId (toId x))
-    ]
+    [controlled x 1 criteria $ freeReaction (AssetEntersPlay #when (be x))]
+   where
+    healable hType = HealableInvestigator (toSource x) hType $ at_ YourLocation
+    criteria =
+      oneOf
+        [ exists $ oneOf $ map healable [#horror, #damage]
+        , exists $ oneOf [healableAsset x kind YourLocation | kind <- [#damage, #horror]]
+        ]
 
 instance RunMessage MedicalStudent where
-  runMessage msg a@(MedicalStudent attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg a@(MedicalStudent attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       -- [ALERT] [SAME] FirstAid3
-      let
-        componentLabel component target = case target of
-          InvestigatorTarget iid' ->
-            ComponentLabel (InvestigatorComponent iid' component)
-          AssetTarget aid -> ComponentLabel (AssetComponent aid component)
-          _ -> error "unhandled target"
+      let source = attrs.ability 1
+      chooseOneM iid do
+        horrorInvestigators <- select $ HealableInvestigator source #horror $ colocatedWith iid
+        damageInvestigators <- select $ HealableInvestigator source #damage $ colocatedWith iid
+        targets (nub $ horrorInvestigators <> damageInvestigators) \i -> do
+          chooseOneAtATimeM iid do
+            when (i `elem` damageInvestigators) $ damageLabeled iid $ healDamage iid source 1
+            when (i `elem` horrorInvestigators) $ horrorLabeled iid $ healHorror iid source 1
 
-      player <- getPlayer iid
-
-      assetChoices <- do
-        horrorAssets <-
-          select
-            $ HealableAsset (toSource attrs) #horror
-            $ AssetAt (locationWithInvestigator iid)
-            <> AssetControlledBy (affectsOthers Anyone)
-        damageAssets <-
-          select
-            $ HealableAsset (toSource attrs) #damage
-            $ AssetAt (locationWithInvestigator iid)
-            <> AssetControlledBy (affectsOthers Anyone)
-        let allAssets = horrorAssets <> damageAssets
-        pure $ flip map allAssets $ \asset' ->
-          let target = AssetTarget asset'
-           in targetLabel
-                asset'
-                [ chooseOneAtATime player
-                    $ [ componentLabel
-                          DamageToken
-                          target
-                          [HealDamage target (toSource attrs) 1]
-                      | asset' `elem` damageAssets
-                      ]
-                    <> [ componentLabel
-                           HorrorToken
-                           target
-                           [HealHorror target (toSource attrs) 1]
-                       | asset' `elem` horrorAssets
-                       ]
-                ]
-
-      investigatorChoices <- do
-        horrorInvestigators <-
-          select
-            $ HealableInvestigator (toSource attrs) #horror
-            $ colocatedWith iid
-        damageInvestigators <-
-          select
-            $ HealableInvestigator (toSource attrs) #damage
-            $ colocatedWith iid
-        let allInvestigators = horrorInvestigators <> damageInvestigators
-        for allInvestigators $ \i -> do
-          let target = InvestigatorTarget i
-          pure
-            $ targetLabel
-              i
-              [ chooseOneAtATime player
-                  $ [ componentLabel
-                        DamageToken
-                        target
-                        [HealDamage target (toSource attrs) 1]
-                    | i `elem` damageInvestigators
-                    ]
-                  <> [ componentLabel HorrorToken target [HealHorror target (toSource attrs) 1]
-                     | i `elem` horrorInvestigators
-                     ]
-              ]
-
-      push $ chooseOne player $ assetChoices <> investigatorChoices
+        horrorAssets <- select $ healableAsset source #horror (locationWithInvestigator iid)
+        damageAssets <- select $ healableAsset source #damage (locationWithInvestigator iid)
+        targets (nub $ horrorAssets <> damageAssets) \asset' -> do
+          chooseOneAtATimeM iid do
+            when (asset' `elem` damageAssets) $ assetDamageLabeled asset' $ healDamage asset' source 1
+            when (asset' `elem` horrorAssets) $ assetHorrorLabeled asset' $ healHorror asset' source 1
       pure a
-    _ -> MedicalStudent <$> runMessage msg attrs
+    _ -> MedicalStudent <$> liftRunMessage msg attrs

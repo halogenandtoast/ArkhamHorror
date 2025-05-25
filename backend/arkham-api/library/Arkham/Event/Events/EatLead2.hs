@@ -1,22 +1,14 @@
-module Arkham.Event.Events.EatLead2 (
-  eatLead2,
-  EatLead2 (..),
-) where
+module Arkham.Event.Events.EatLead2 (eatLead2) where
 
-import Arkham.Prelude
-
-import Arkham.Ability
 import Arkham.Asset.Types (Field (AssetUses))
 import Arkham.Asset.Uses
 import Arkham.ChaosBag.RevealStrategy
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Window
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Modifier
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..), mkWindow)
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype Metadata = Metadata {asset :: Maybe AssetId}
@@ -31,33 +23,20 @@ eatLead2 :: EventCard EatLead2
 eatLead2 = event (EatLead2 . (`With` Metadata Nothing)) Cards.eatLead2
 
 instance RunMessage EatLead2 where
-  runMessage msg e@(EatLead2 (attrs `With` metadata)) = case msg of
-    InvestigatorPlayEvent iid eid _ [(windowType -> Window.ActivateAbility _ _ ability)] _ | eid == toId attrs -> do
-      case abilitySource ability of
-        AssetSource aid -> do
+  runMessage msg e@(EatLead2 (attrs `With` metadata)) = runQueueT $ case msg of
+    InvestigatorPlayEvent iid eid _ [windowType -> Window.ActivateAbility _ _ ability] _ | eid == toId attrs -> do
+      case ability.source.asset of
+        Just aid -> do
           uses <- fieldMap AssetUses (findWithDefault 0 Ammo) aid
-          player <- getPlayer iid
-          pushM
-            $ chooseAmounts
-              player
-              "Additional ammo to spend"
-              (MaxAmountTarget uses)
-              [("Ammo", (0, uses))]
-              (toTarget attrs)
+          chooseAmounts iid "Additional ammo to spend" (MaxAmountTarget uses) [("Ammo", (0, uses))] attrs
           pure . EatLead2 $ attrs `with` Metadata (Just aid)
         _ -> error "Invalid source"
     ResolveAmounts iid (getChoiceAmount "Ammo" -> ammo) target | isTarget attrs target -> do
-      let
-        aid = fromJustNote "asset must be set" (asset metadata)
+      let aid = fromJustNote "asset must be set" (asset metadata)
       when (ammo > 0) $ do
-        ignoreWindow <-
-          checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
         withSkillTest \sid -> do
-          enabled <- skillTestModifier sid attrs iid (ChangeRevealStrategy $ RevealAndChoose ammo 1)
-          pushAll
-            [ SpendUses (toSource attrs) (AssetTarget aid) Ammo ammo
-            , enabled
-            , ignoreWindow
-            ]
+          push $ SpendUses (toSource attrs) (AssetTarget aid) Ammo ammo
+          skillTestModifier sid attrs iid (ChangeRevealStrategy $ RevealAndChoose ammo 1)
+          checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs
       pure e
-    _ -> EatLead2 . (`with` metadata) <$> runMessage msg attrs
+    _ -> EatLead2 . (`with` metadata) <$> liftRunMessage msg attrs

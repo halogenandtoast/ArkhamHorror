@@ -1,0 +1,28 @@
+{
+  "base": {
+    "key": {
+      "drivenInsaneInvestigators": "미친 조사자",
+      "killedInvestigators": "사망한 조사자",
+      "theRougarouContinuesToHauntTheBayou": "The Rougarou continues to haunt the Bayou",
+      "theRougarouIsDestroyed": "The Rougarou is destroyed",
+      "theRougarouEscapedAndYouEmbracedTheCurse": "The Rougarou escaped and you embraced the curse",
+      "manyWereSacrificedToCnidathquaDuringTheCarnivale": "Many were sacrificed to Cnidathqua during the Carnivale",
+      "theSunBanishedCnidathquaIntoTheDepths": "The sun banished Cnidathqua into the depths",
+      "cnidathquaRetreatedToNurseItsWounds": "Cnidathqua retreated to nurse its wounds",
+      "theExcelsiorClaimsAnotherVictim": "The Excelsior claims another victim",
+      "theInvestigatorsFledTheSceneOfTheCrime": "The investigators fled the scene of the crime",
+      "theExcelsiorIsQuietForNow": "The Excelsior is quiet for now",
+      "theMurdersContinueUnsolved": "The murders continue unsolved",
+      "youHaveIdentifiedTheSolution": "You have identified the solution",
+      "youHaveTranslatedTheGlyphs": "You have translated the glyphs",
+      "youHaveIdentifiedTheStone": "You have identified the stone",
+      "doomApproaches": "파멸이 한계값에 도달하였습니다",
+      "theHourIsNigh": "The hour is nigh",
+      "youHaveTranslatedTheTome": "You have translated the tome",
+      "youHaveInterpretedTheDreams": "You have interpreted the dreams",
+      "youHaveTranslatedTheGrimoire": "You have translated the grimoire",
+      "youHaveIdentifiedTheGateway": "You have identified the gateway",
+      "youHaveClassifiedANewSpecies": "You have classified a new species"
+    }
+  }
+}

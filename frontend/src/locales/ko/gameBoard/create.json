@@ -1,0 +1,39 @@
+{
+    "newGame": "새 게임",
+
+    "numberOfPlayers" : "플레이어 수",
+    "withFriends": "친구와 함께",
+    "multihandedSolo": "혼자서 여러 조사자",
+
+    "campaign": "캠페인",
+    "standalone": "독립 시나리오",
+    "sideStory": "외전 이야기",
+
+    "alphaWarning": "이 캠페인은 현재 작업 중입니다. 아직 작동하지 않을 가능성이 높으므로 버그 리포트를 하지 마세요.",
+    "betaWarning": "이 캠페인은 테스트 준비가 완료되었지만 게임이 자주 중단될 것으로 예상됩니다.",
+
+    "normal": "기본",
+    "returnTo": "돌아온...",
+    
+    "fullCampaign": "전체 캠페인",
+    "partialCampaign": "부분 캠페인",
+
+    "difficulty": "난이도",
+    "Easy": "쉬움",
+    "Standard": "보통",
+    "Hard": "어려움",
+    "Expert": "전문가",
+
+    "includeTarotReadings": "타로 점치기 포함하기",
+
+    "gameName": "게임 이름",
+    "create": "생성하기",
+
+    "chooseYourDeck": "덱 선택하기",
+    "tabooList": "금기 목록: {tabooList}",
+    "useExistingDeck": "미리 생성한 덱 사용하기",
+    "loadNewDeck": "새로운 덱 불러오기",
+    "selectADeck": "-- 덱 선택하기 --",
+    "deckUrlPlaceholder": "아컴디비(ko.arkhamdb.com) 또는 아컴빌드(arkham.build) 사이트의 덱 주소",
+    "choose": "선택하기"
+}

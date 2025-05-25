@@ -1,4 +1,4 @@
-module Arkham.Event.Events.ATestOfWill1 (aTestOfWill1, ATestOfWill1 (..)) where
+module Arkham.Event.Events.ATestOfWill1 (aTestOfWill1) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -15,6 +15,6 @@ instance RunMessage ATestOfWill1 where
   runMessage msg e@(ATestOfWill1 attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent _iid eid _ (cardDrawn -> card) _ | eid == toId attrs -> do
       cancelRevelation attrs card
-      push $ Exile $ toTarget attrs
+      exile attrs
       pure e
     _ -> ATestOfWill1 <$> liftRunMessage msg attrs

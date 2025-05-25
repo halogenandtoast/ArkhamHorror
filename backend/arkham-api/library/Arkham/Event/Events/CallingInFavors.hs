@@ -1,4 +1,4 @@
-module Arkham.Event.Events.CallingInFavors (callingInFavors, callingInFavorsEffect, CallingInFavors (..)) where
+module Arkham.Event.Events.CallingInFavors (callingInFavors, callingInFavorsEffect) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes.HasQueue (evalQueueT)

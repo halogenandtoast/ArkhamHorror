@@ -127,7 +127,7 @@ allPlayerEventCards =
       , delveTooDeep
       , denyExistence
       , denyExistence5
-      , devilsLuck
+      , devilsLuck1
       , dimensionalVortex5
       , dirtyDeeds3
       , dodge

@@ -182,6 +182,9 @@ instance IsLabel "combat" (Field Investigator Int) where
 instance IsLabel "resources" (Field Investigator Int) where
   fromLabel = InvestigatorResources
 
+instance IsLabel "horror" (Field Investigator Int) where
+  fromLabel = InvestigatorHorror
+
 instance ToJSON (Field Investigator typ) where
   toJSON = toJSON . show
 

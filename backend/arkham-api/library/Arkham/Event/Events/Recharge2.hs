@@ -1,4 +1,4 @@
-module Arkham.Event.Events.Recharge2 (recharge2, Recharge2 (..)) where
+module Arkham.Event.Events.Recharge2 (recharge2) where
 
 import Arkham.Asset.Uses
 import Arkham.ChaosToken

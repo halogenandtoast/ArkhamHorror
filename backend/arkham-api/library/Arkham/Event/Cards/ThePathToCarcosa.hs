@@ -208,8 +208,8 @@ aTestOfWill1 =
     , cdLevel = Just 1
     }
 
-devilsLuck :: CardDef
-devilsLuck =
+devilsLuck1 :: CardDef
+devilsLuck1 =
   (event "03157" "Devil's Luck" 1 Survivor)
     { cdSkills = [#agility]
     , cdCardTraits = singleton Fortune

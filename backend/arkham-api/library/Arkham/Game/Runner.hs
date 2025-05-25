@@ -2829,7 +2829,7 @@ runGameMessage msg g = case msg of
         sendRevelation pid (toJSON $ toCard card)
         eventId <- getRandom
         pushAll $ resolve $ Revelation iid (EventSource eventId)
-        obtainCard card
+        push $ ObtainCard card.id
         let
           recordLimit g'' = \case
             MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1

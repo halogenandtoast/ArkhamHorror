@@ -5,7 +5,6 @@ module Arkham.Agenda.Cards.WhatsGoingOn (WhatsGoingOn (..), whatsGoingOn) where
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Query (getLead)
-import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.TheGathering.Helpers
@@ -21,11 +20,11 @@ instance RunMessage WhatsGoingOn where
   runMessage msg a@(WhatsGoingOn attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> scenarioI18n do
       lead <- getLead
-      chooseOneM lead $ scope "whatsGoingOn" do
-        labeled' "horror" $ assignHorror lead attrs 2
+      chooseOneM lead do
+        labeled' "whatsGoingOn.horror" $ assignHorror lead attrs 2
 
         whenAny InvestigatorWithNonEmptyHand do
-          labeled' "discard" $ push $ AllRandomDiscard (toSource attrs) AnyCard
+          labeled' "whatsGoingOn.discard" $ push $ AllRandomDiscard (toSource attrs) AnyCard
       advanceAgendaDeck attrs
       pure a
     _ -> WhatsGoingOn <$> liftRunMessage msg attrs

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
+import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, modifiedWhen_)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Matcher qualified as Matcher
@@ -30,7 +30,8 @@ instance RunMessage Fence1 where
   runMessage msg a@(Fence1 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
       let source = attrs.ability 1
-      if isFastCard card
+      mods <- getModifiers card
+      if isFastCard card || BecomesFast FastPlayerWindow `elem` mods
         then costModifier source iid (ReduceCostOf (CardWithId card.id) 1)
         else cardResolutionModifier card source card (BecomesFast FastPlayerWindow)
       pure a

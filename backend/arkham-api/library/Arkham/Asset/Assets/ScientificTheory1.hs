@@ -2,10 +2,10 @@ module Arkham.Asset.Assets.ScientificTheory1 (scientificTheory1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype ScientificTheory1 = ScientificTheory1 AssetAttrs
   deriving anyclass IsAsset
@@ -19,23 +19,21 @@ instance HasAbilities ScientificTheory1 where
   getAbilities (ScientificTheory1 x) =
     [ withTooltip "{fast} Spend 1 resource: You get +1 {intellect} for this skill test."
         $ wantsSkillTest (YourSkillTest #intellect)
-        $ controlledAbility x 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
+        $ controlled x 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     , withTooltip "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
         $ wantsSkillTest (YourSkillTest #combat)
-        $ controlledAbility x 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
+        $ controlled x 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]
 
 instance HasModifiersFor ScientificTheory1 where
   getModifiersFor (ScientificTheory1 a) = modifySelf a [NonDirectHorrorMustBeAssignToThisFirst]
 
 instance RunMessage ScientificTheory1 where
-  runMessage msg a@(ScientificTheory1 attrs) = case msg of
+  runMessage msg a@(ScientificTheory1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      withSkillTest \sid ->
-        pushM $ skillTestModifier sid attrs iid (SkillModifier #intellect 1)
+      withSkillTest \sid -> skillTestModifier sid attrs iid (SkillModifier #intellect 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      withSkillTest \sid ->
-        pushM $ skillTestModifier sid attrs iid (SkillModifier #combat 1)
+      withSkillTest \sid -> skillTestModifier sid attrs iid (SkillModifier #combat 1)
       pure a
-    _ -> ScientificTheory1 <$> runMessage msg attrs
+    _ -> ScientificTheory1 <$> liftRunMessage msg attrs

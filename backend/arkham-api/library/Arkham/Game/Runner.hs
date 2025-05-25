@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game.Runner where
 
@@ -988,13 +988,11 @@ runGameMessage msg g = case msg of
 
     maybeTreachery tid >>= \case
       Nothing -> pure $ g & entitiesL . treacheriesL %~ deleteMap tid
-      Just treachery' -> do
-        removedEntitiesF <-
-          if gameInAction g || attr treacheryWaiting treachery'
-            then pure $ actionRemovedEntitiesL . treacheriesL %~ insertEntity treachery'
-            else pure id
-
-        pure $ g & entitiesL . treacheriesL %~ deleteMap tid & removedEntitiesF
+      Just treachery' ->
+        pure
+          $ g
+          & (entitiesL . treacheriesL %~ deleteMap tid)
+          & (actionRemovedEntitiesL . treacheriesL %~ insertEntity treachery')
   When (RemoveLocation lid) -> do
     pushM $ checkWindows [mkWhen (Window.LeavePlay $ toTarget lid)]
     pure g

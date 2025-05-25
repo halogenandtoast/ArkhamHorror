@@ -3,11 +3,10 @@ module Arkham.Asset.Assets.Knuckleduster (knuckleduster) where
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Fight
-import Arkham.Helpers.Modifiers
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
+import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestSource, getSkillTestTargetedEnemy)
 import Arkham.Keyword qualified as Keyword
-import Arkham.Prelude
 
 newtype Knuckleduster = Knuckleduster AssetAttrs
   deriving anyclass IsAsset
@@ -28,12 +27,10 @@ instance HasModifiersFor Knuckleduster where
         pure [AddKeyword Keyword.Retaliate]
 
 instance RunMessage Knuckleduster where
-  runMessage msg a@(Knuckleduster attrs) = case msg of
+  runMessage msg a@(Knuckleduster attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = attrs.ability 1
       sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFight sid iid source
-      enabled <- skillTestModifier sid source iid (DamageDealt 1)
-      pushAll [enabled, chooseFight]
+      skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+      chooseFightEnemy sid iid (attrs.ability 1)
       pure a
-    _ -> Knuckleduster <$> runMessage msg attrs
+    _ -> Knuckleduster <$> liftRunMessage msg attrs

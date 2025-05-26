@@ -1275,7 +1275,7 @@ instance RunMessage EnemyAttrs where
         _ -> pure ()
       pure $ a & defeatedL .~ True
     DefeatedAddToVictory (isTarget a -> True) -> do
-      pure $ a & placementL .~ OutOfPlay VictoryDisplayZone
+      pure $ a & placementL .~ OutOfPlay VictoryDisplayZone & tokensL %~ mempty
     EnemySpawnFromOutOfPlay _ _miid _lid eid | eid == a.id -> do
       pure $ a & (defeatedL .~ False) & (exhaustedL .~ False)
     AddToVictory (isTarget a -> True) -> do

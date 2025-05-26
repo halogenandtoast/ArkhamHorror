@@ -45,4 +45,8 @@ instance RunMessage RoyalEmissary where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       placeTokens (attrs.ability 2) attrs #warning 1
       pure e
+    DefeatedAddToVictory (isTarget attrs -> True) -> do
+      let warnings = attrs.token #warning
+      attrs' <- liftRunMessage msg attrs
+      pure $ RoyalEmissary $ attrs' & tokensL %~ insertMap #warning warnings
     _ -> RoyalEmissary <$> liftRunMessage msg attrs

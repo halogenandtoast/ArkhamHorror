@@ -74,6 +74,7 @@ const abilities = computed(() => {
 const doom = computed(() => props.treachery.tokens[TokenType.Doom])
 const clues = computed(() => props.treachery.tokens[TokenType.Clue])
 const resources = computed(() => props.treachery.tokens[TokenType.Resource])
+const charges = computed(() => props.treachery.tokens[TokenType.Charge])
 const horror = computed(() => props.treachery.tokens[TokenType.Horror])
 const evidence = computed(() => props.treachery.tokens[TokenType.Evidence])
 
@@ -111,6 +112,11 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
         v-if="resources && resources > 0"
         type="resource"
         :amount="resources"
+      />
+      <PoolItem
+        v-if="charges && charges > 0"
+        type="resource"
+        :amount="charges"
       />
       <PoolItem
         v-if="doom && doom > 0"

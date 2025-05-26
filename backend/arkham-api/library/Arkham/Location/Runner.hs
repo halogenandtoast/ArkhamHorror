@@ -318,6 +318,7 @@ instance RunMessage LocationAttrs where
             pushAll $ windows [Window.PlacedResources source (toTarget a) n]
           pure $ a & tokensL %~ addTokens tType n
     MoveTokens s source _ tType n | isSource a source -> runMessage (RemoveTokens s (toTarget a) tType n) a
+    MoveTokens _s (InvestigatorSource _) target Clue _ | isTarget a target -> pure a
     MoveTokens s _ target tType n | isTarget a target -> runMessage (PlaceTokens s target tType n) a
     RemoveTokens _ target tType n | isTarget a target -> do
       if tType == Clue

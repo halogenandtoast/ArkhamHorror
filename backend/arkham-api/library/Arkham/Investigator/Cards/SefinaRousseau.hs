@@ -43,10 +43,10 @@ instance RunMessage SefinaRousseau where
     DrawStartingHand (is attrs -> True) -> do
       (discard', hand, deck) <- drawOpeningHand attrs 13
       let events = filterCards (#event <> not_ (cardIs Events.thePaintedWorld)) hand
-      shuffleDiscardBackIn attrs.id
-      push $ CheckHandSize attrs.id
       when (notNull events) do
         chooseUpToNM attrs.id 5 "Done Choosing Events" $ targets events (placeUnderneath attrs.id . only)
+      push $ CheckHandSize attrs.id
+      shuffleDiscardBackIn attrs.id
       pure . SefinaRousseau $ attrs & discardL .~ discard' & handL .~ hand & deckL .~ Deck deck
     InvestigatorMulligan (is attrs -> True) -> pure i
     _ -> SefinaRousseau <$> liftRunMessage msg attrs

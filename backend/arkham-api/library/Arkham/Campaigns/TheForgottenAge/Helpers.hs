@@ -10,6 +10,7 @@ import Arkham.Classes.Query
 import Arkham.Deck
 import Arkham.Draw.Types
 import Arkham.Helpers.Card
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Message ()
 import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Helpers.Scenario (getVictoryDisplay, scenarioField, scenarioFieldMap)
@@ -76,7 +77,7 @@ getVengeanceInVictoryDisplay = do
 getExplorationDeck :: HasGame m => m [Card]
 getExplorationDeck = scenarioFieldMap ScenarioDecks (findWithDefault [] ExplorationDeck)
 
-setExplorationDeck :: (ReverseQueue m) => [Card] -> m ()
+setExplorationDeck :: ReverseQueue m => [Card] -> m ()
 setExplorationDeck = setScenarioDeck ExplorationDeck
 
 getSetAsidePoisonedCount :: HasGame m => m Int
@@ -115,8 +116,9 @@ explore :: ReverseQueue m => InvestigatorId -> Source -> CardMatcher -> ExploreR
 explore iid source cardMatcher exploreRule matchCount = do
   explorationDeck <- getExplorationDeck
   canMove <- iid <=~> InvestigatorCanMove
+  mlid <- getLocationOf iid
   let
-    cardMatcher' = CardWithOneOf [CardWithType TreacheryType, cardMatcher]
+    cardMatcher' = CardWithOneOf [CardWithType EnemyType, CardWithType TreacheryType, cardMatcher]
     splitAtMatch d = case break (`cardMatch` cardMatcher') d of
       (l, []) -> (l, [])
       (l, x : xs) -> (l <> [x], xs)
@@ -161,7 +163,7 @@ explore iid source cardMatcher exploreRule matchCount = do
 
           when (canMove && exploreRule == PlaceExplored) $ moveTo source iid lid
           updateHistory iid $ HistoryItem HistorySuccessfulExplore True
-          checkAfter $ Window.Explored iid (Success lid)
+          checkAfter $ Window.Explored iid mlid (Success lid)
           when (exploreRule == ReplaceExplored) do
             setGlobal lid "replacedIsRevealed" replacedIsRevealed
             setGlobal lid "replacedIsWithoutClues" replacedIsWithoutClues
@@ -176,7 +178,7 @@ explore iid source cardMatcher exploreRule matchCount = do
               , cardDrewRules = mempty
               , cardDrewTarget = Nothing
               }
-          checkAfter $ Window.Explored iid (Failure x)
+          checkAfter $ Window.Explored iid mlid (Failure x)
     xs -> do
       deck' <- if null notMatched then pure rest else shuffle $ rest <> notMatched
       focusCards drawn do
@@ -191,7 +193,7 @@ explore iid source cardMatcher exploreRule matchCount = do
         updateHistory iid $ HistoryItem HistorySuccessfulExplore True
 
         checkWindows
-          [ mkAfter $ Window.Explored iid (Success lid)
+          [ mkAfter $ Window.Explored iid mlid (Success lid)
           | lid <- locations
           ]
 

@@ -1554,6 +1554,7 @@ library
       Arkham.Effect
       Arkham.Effect.Builder
       Arkham.Effect.Effects
+      Arkham.Effect.Effects.AbilityEffect
       Arkham.Effect.Effects.ChaosTokenEffect
       Arkham.Effect.Effects.EndOfRoundEffect
       Arkham.Effect.Effects.EndOfTurnEffect
@@ -2729,6 +2730,7 @@ library
       Arkham.Location.Cards.CliffsideRoad_a
       Arkham.Location.Cards.CliffsideRoad_b
       Arkham.Location.Cards.Cloister
+      Arkham.Location.Cards.CloudForest
       Arkham.Location.Cards.CloverClubBar
       Arkham.Location.Cards.CloverClubCardroom
       Arkham.Location.Cards.CloverClubLounge
@@ -3137,6 +3139,7 @@ library
       Arkham.Location.Cards.RitualGrounds
       Arkham.Location.Cards.RitualSite
       Arkham.Location.Cards.RiverCanyon
+      Arkham.Location.Cards.RiversideTemple
       Arkham.Location.Cards.Rivertown
       Arkham.Location.Cards.Rivertown_292
       Arkham.Location.Cards.Rivertown_293
@@ -3294,6 +3297,7 @@ library
       Arkham.Location.Cards.TowerOfKoth
       Arkham.Location.Cards.TowersOfPnakotus
       Arkham.Location.Cards.TownHall
+      Arkham.Location.Cards.TrailOfTheDead
       Arkham.Location.Cards.TrainTracks
       Arkham.Location.Cards.TrappersCabin
       Arkham.Location.Cards.TrapRoom
@@ -3341,6 +3345,7 @@ library
       Arkham.Location.Cards.WaitingRoom
       Arkham.Location.Cards.WalterGilmansRoom
       Arkham.Location.Cards.WarrenObservatory
+      Arkham.Location.Cards.Waterfall
       Arkham.Location.Cards.WavewornIsland
       Arkham.Location.Cards.WellOfSouls
       Arkham.Location.Cards.WhateleyRuins_250
@@ -3588,7 +3593,6 @@ library
       Arkham.Scenarios.TheSecretName.Story
       Arkham.Scenarios.TheUnspeakableOath.Helpers
       Arkham.Scenarios.TheUntamedWilds.Helpers
-      Arkham.Scenarios.TheUntamedWilds.Story
       Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
       Arkham.Scenarios.TheWagesOfSin.Helpers
       Arkham.Scenarios.TheWagesOfSin.Story

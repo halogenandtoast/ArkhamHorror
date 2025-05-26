@@ -14,7 +14,7 @@ newtype CircuitousTrail = CircuitousTrail LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 circuitousTrail :: LocationCard CircuitousTrail
-circuitousTrail = location CircuitousTrail Cards.circuitousTrail 1 (PerPlayer 1)
+circuitousTrail = symbolLabel $ location CircuitousTrail Cards.circuitousTrail 1 (PerPlayer 1)
 
 instance HasModifiersFor CircuitousTrail where
   getModifiersFor (CircuitousTrail attrs) = void $ runMaybeT do

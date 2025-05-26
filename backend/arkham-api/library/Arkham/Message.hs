@@ -579,8 +579,8 @@ data Message
   | PaidCost ActiveCostId InvestigatorId (Maybe Action) Payment
   | PaidAllCosts
   | -- end  new payment bs
-    CreateWindowModifierEffect EffectWindow (EffectMetadata Window Message) Source Target
-  | CreateChaosTokenEffect (EffectMetadata Window Message) Source ChaosToken
+    CreateWindowModifierEffect EffectWindow (EffectMetadata Message) Source Target
+  | CreateChaosTokenEffect (EffectMetadata Message) Source ChaosToken
   | CreateOnRevealChaosTokenEffect SkillTestId ChaosTokenMatcher Source Target [Message]
   | CreateOnSucceedByEffect SkillTestId ValueMatcher Source Target [Message]
   | CreateOnFailedByEffect SkillTestId ValueMatcher Source Target [Message]
@@ -600,8 +600,8 @@ data Message
   | CreateStoryAssetAtLocationMatching Card LocationMatcher
   | CreateChaosTokenValueEffect SkillTestId Int Source Target
   | CreateWeaknessInThreatArea Card InvestigatorId
-  | CreatedEffect EffectId (Maybe (EffectMetadata Window Message)) Source Target
-  | UpdateEffectMeta EffectId (EffectMetadata Window Message)
+  | CreatedEffect EffectId (Maybe (EffectMetadata Message)) Source Target
+  | UpdateEffectMeta EffectId (EffectMetadata Message)
   | CrossOutRecord CampaignLogKey
   | SetCampaignLog CampaignLog
   | DeckHasNoCards InvestigatorId (Maybe Target)

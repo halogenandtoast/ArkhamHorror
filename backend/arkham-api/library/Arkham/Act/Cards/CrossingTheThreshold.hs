@@ -24,7 +24,8 @@ crossingTheThreshold =
 
 instance HasAbilities CrossingTheThreshold where
   getAbilities (CrossingTheThreshold (a `With` _)) =
-    [ mkAbility a 1 $ Objective $ forced $ Explored #after You $ SuccessfulExplore Anywhere | onSide A a
+    [ mkAbility a 1 $ Objective $ forced $ Explored #after You Anywhere $ SuccessfulExplore Anywhere
+    | onSide A a
     ]
 
 instance RunMessage CrossingTheThreshold where

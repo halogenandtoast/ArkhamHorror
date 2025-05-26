@@ -1206,10 +1206,13 @@ returnToHand iid = push . ReturnToHand iid . toTarget
 addToVictory :: (ReverseQueue m, Targetable target) => target -> m ()
 addToVictory = push . AddToVictory . toTarget
 
+createAbilityEffect :: ReverseQueue m => Msg.EffectWindow -> Ability -> m ()
+createAbilityEffect ew ab = push =<< Msg.createAbilityEffect ew ab
+
 createCardEffect
   :: (ReverseQueue m, Sourceable source, Targetable target)
   => CardDef
-  -> Maybe (EffectMetadata Window Message)
+  -> Maybe (EffectMetadata Message)
   -> source
   -> target
   -> m ()
@@ -1218,7 +1221,7 @@ createCardEffect def mMeta source target = push =<< Msg.createCardEffect def mMe
 createCardEffectCapture
   :: (ReverseQueue m, Sourceable source, Targetable target)
   => CardDef
-  -> Maybe (EffectMetadata Window Message)
+  -> Maybe (EffectMetadata Message)
   -> source
   -> target
   -> m EffectId
@@ -1940,7 +1943,10 @@ insteadOfMatchingWith
 insteadOfMatchingWith pred f = lift $ replaceMessageMatchingM pred f
 
 don't :: (MonadTrans t, HasQueue Message m) => Message -> t m ()
-don't msg = lift $ popMessageMatching_ (== msg)
+don't msg = don'tMatching (== msg)
+
+don'tMatching :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
+don'tMatching f = lift $ popMessageMatching_ f
 
 don'tAddToVictory :: (MonadTrans t, HasQueue Message m) => EnemyId -> t m ()
 don'tAddToVictory eid = don't $ DefeatedAddToVictory (toTarget eid)
@@ -2306,6 +2312,15 @@ cancelEnemyDefeat
   => enemy
   -> t m ()
 cancelEnemyDefeat enemy = lift $ Msg.cancelEnemyDefeat (asId enemy)
+
+cancelEnemyDamage
+  :: (MonadTrans t, HasQueue Message m, AsId enemy, IdOf enemy ~ EnemyId)
+  => enemy
+  -> t m ()
+cancelEnemyDamage enemy =
+  don'tMatching \case
+    EnemyDamaged eid _ -> eid == asId enemy
+    _ -> False
 
 moveWithSkillTest :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
 moveWithSkillTest f = lift $ Arkham.Classes.HasQueue.mapQueue \msg -> if f msg then MoveWithSkillTest msg else msg

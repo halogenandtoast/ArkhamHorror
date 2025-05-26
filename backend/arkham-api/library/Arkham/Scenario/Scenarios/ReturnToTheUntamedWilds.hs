@@ -14,12 +14,12 @@ returnToTheUntamedWilds difficulty = scenarioWith
   "53016"
   "Return to The Untamed Wilds"
   difficulty
-  [ ".               .             ruinsOfEztli   .               ."
-  , ".               serpentsHaven ruinsOfEztli   circuitousTrail ."
-  , "templeOfTheFang serpentsHaven riverCanyon    circuitousTrail overgrownRuins"
-  , "templeOfTheFang pathOfThorns  riverCanyon    ropeBridge      overgrownRuins"
-  , ".               pathOfThorns  expeditionCamp ropeBridge      ."
-  , ".               .             expeditionCamp .               ."
+  [ ".        .        hourglass .     ."
+  , ".        triangle hourglass heart ."
+  , "squiggle triangle diamond   heart t"
+  , "squiggle square   diamond   moon  t"
+  , ".        square   circle    moon  ."
+  , ".        .        circle    .     ."
   ]
   (referenceL .~ "04043")
 

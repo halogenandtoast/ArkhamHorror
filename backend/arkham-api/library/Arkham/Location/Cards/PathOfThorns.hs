@@ -1,44 +1,32 @@
-module Arkham.Location.Cards.PathOfThorns ( pathOfThorns,) where
+module Arkham.Location.Cards.PathOfThorns (pathOfThorns) where
 
-import Arkham.Prelude
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype PathOfThorns = PathOfThorns LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pathOfThorns :: LocationCard PathOfThorns
-pathOfThorns = location PathOfThorns Cards.pathOfThorns 3 (PerPlayer 1)
+pathOfThorns = symbolLabel $ location PathOfThorns Cards.pathOfThorns 3 (PerPlayer 1)
 
 instance HasAbilities PathOfThorns where
   getAbilities (PathOfThorns a) =
-    withBaseAbilities
+    extendRevealed
       a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ SkillTestResult
-            Timing.After
-            You
-            (WhileInvestigating $ LocationWithId $ toId a)
-            (FailureResult AnyValue)
-      , restrictedAbility a 2 Here
-          $ ForcedAbility
-          $ Explored Timing.After You
-          $ FailedExplore AnyCard
+      [ mkAbility a 1 $ forced $ SkillTestResult #after You (WhileInvestigating $ be a) #failure
+      , mkAbility a 2 $ forced $ Explored #after You (be a) $ FailedExplore AnyCard
       ]
 
 instance RunMessage PathOfThorns where
-  runMessage msg l@(PathOfThorns attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ InvestigatorAssignDamage iid source DamageAny 1 0
+  runMessage msg l@(PathOfThorns attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignDamage iid (attrs.ability 1) 1
       pure l
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      push $ InvestigatorAssignDamage iid source DamageAny 1 0
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      assignDamage iid (attrs.ability 2) 1
       pure l
-    _ -> PathOfThorns <$> runMessage msg attrs
+    _ -> PathOfThorns <$> liftRunMessage msg attrs

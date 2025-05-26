@@ -16,7 +16,7 @@ newtype RiverCanyon = RiverCanyon LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riverCanyon :: LocationCard RiverCanyon
-riverCanyon = location RiverCanyon Cards.riverCanyon 4 (PerPlayer 1)
+riverCanyon = symbolLabel $ location RiverCanyon Cards.riverCanyon 4 (PerPlayer 1)
 
 instance HasAbilities RiverCanyon where
   getAbilities (RiverCanyon attrs) =

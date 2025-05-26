@@ -871,6 +871,12 @@ allLocations =
     , SomeLocationCard recessesOfYourOwnMind
     , SomeLocationCard theThroneRoom
     , SomeLocationCard stageOfTheWardTheatre
+    , -- Return to The Forgotten Age
+      --- Return to Rainforest
+      SomeLocationCard riversideTemple
+    , SomeLocationCard waterfall
+    , SomeLocationCard trailOfTheDead
+    , SomeLocationCard cloudForest
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

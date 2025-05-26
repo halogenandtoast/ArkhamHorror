@@ -1,13 +1,17 @@
 module Arkham.Scenario.Scenarios.TheUntamedWilds (setupTheUntamedWilds, theUntamedWilds, TheUntamedWilds (..)) where
 
+import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as AS
 import Arkham.Act.Types
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Import
+import Arkham.Card.CardCode
+import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.I18n
@@ -21,7 +25,6 @@ import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheUntamedWilds.Helpers
-import Arkham.Scenarios.TheUntamedWilds.Story
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window qualified as Window
 
@@ -36,12 +39,12 @@ theUntamedWilds difficulty =
     "04043"
     "The Untamed Wilds"
     difficulty
-    [ ".               .             ruinsOfEztli   .               ."
-    , ".               serpentsHaven ruinsOfEztli   circuitousTrail ."
-    , "templeOfTheFang serpentsHaven riverCanyon    circuitousTrail overgrownRuins"
-    , "templeOfTheFang pathOfThorns  riverCanyon    ropeBridge      overgrownRuins"
-    , ".               pathOfThorns  expeditionCamp ropeBridge      ."
-    , ".               .             expeditionCamp .               ."
+    [ ".        .        hourglass .     ."
+    , ".        triangle hourglass heart ."
+    , "squiggle triangle diamond   heart t"
+    , "squiggle square   diamond   moon  t"
+    , ".        square   circle    moon  ."
+    , ".        .        circle    .     ."
     ]
 
 instance HasChaosTokenValue TheUntamedWilds where
@@ -72,10 +75,13 @@ setupTheUntamedWilds _attrs = do
       li "setAside"
       unscoped $ li "shuffleRemainder"
 
+  -- no return to set
   gather Set.TheUntamedWilds
   gather Set.Rainforest
+  whenReturnTo $ gather Set.ReturnToRainforest
+
   gather Set.Serpents
-  gather Set.Expedition
+  gather Set.Expedition `orWhenReturnTo` gather Set.DoomedExpedition
   gather Set.GuardiansOfTime
   gather Set.Poison
   gather Set.AncientEvils
@@ -83,16 +89,16 @@ setupTheUntamedWilds _attrs = do
 
   gatherAndSetAside Set.AgentsOfYig
   setAside
-    $ [ Locations.ruinsOfEztli
-      , Locations.templeOfTheFang
-      , Locations.overgrownRuins
-      , Assets.alejandroVela
-      , Enemies.ichtaca
-      , Treacheries.poisoned
-      , Treacheries.poisoned
-      , Treacheries.poisoned
-      , Treacheries.poisoned
-      ]
+    [ Locations.ruinsOfEztli
+    , Locations.templeOfTheFang
+    , Locations.overgrownRuins
+    , Assets.alejandroVela
+    , Enemies.ichtaca
+    , Treacheries.poisoned
+    , Treacheries.poisoned
+    , Treacheries.poisoned
+    , Treacheries.poisoned
+    ]
 
   setAgendaDeck [Agendas.expeditionIntoTheWild, Agendas.intruders]
   setActDeck
@@ -102,19 +108,32 @@ setupTheUntamedWilds _attrs = do
     , Acts.theGuardedRuins
     ]
 
+  square <- Locations.pathOfThorns `orSampleIfReturnTo` [Locations.riversideTemple]
+  moon <- Locations.ropeBridge `orSampleIfReturnTo` [Locations.waterfall]
+  triangle <- Locations.serpentsHaven `orSampleIfReturnTo` [Locations.trailOfTheDead]
+  heart <- Locations.circuitousTrail `orSampleIfReturnTo` [Locations.cloudForest]
+
+  isReturnTo <- getIsReturnTo
+
+  let
+    treacheries =
+      guard (not isReturnTo)
+        *> [ Treacheries.lostInTheWilds
+           , Treacheries.overgrowth
+           , Treacheries.snakeBite
+           , Treacheries.lowOnSupplies
+           , Treacheries.arrowsFromTheTrees
+           ]
+
   addExtraDeck ExplorationDeck
-    =<< shuffle
-      [ Locations.pathOfThorns
-      , Locations.riverCanyon
-      , Locations.ropeBridge
-      , Locations.serpentsHaven
-      , Locations.circuitousTrail
-      , Treacheries.lostInTheWilds
-      , Treacheries.overgrowth
-      , Treacheries.snakeBite
-      , Treacheries.lowOnSupplies
-      , Treacheries.arrowsFromTheTrees
-      ]
+    =<< shuffle ([square, Locations.riverCanyon, moon, triangle, heart] <> treacheries)
+
+  whenReturnTo do
+    addAdditionalReferences ["53016b"]
+    createAbilityEffect EffectGameWindow
+      $ mkAbility (SourceableWithCardCode (CardCode "53016b") ScenarioSource) 1
+      $ forced
+      $ Explored #after Anyone Anywhere (SuccessfulExplore Anywhere)
 
 instance RunMessage TheUntamedWilds where
   runMessage msg s@(TheUntamedWilds attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -136,18 +155,17 @@ instance RunMessage TheUntamedWilds where
       pure s
     Explore iid _ _ -> do
       checkWhen $ Window.AttemptExplore iid
-      push $ Do msg
+      do_ msg
       pure s
     Do (Explore iid source locationMatcher) -> do
       explore iid source locationMatcher PlaceExplored 1
       pure s
     ScenarioResolution res -> do
       investigators <- allInvestigators
-      actStep <- fieldMap ActSequence (AS.unActStep . AS.actStep) =<< selectJust AnyAct
-      vengeance <- getVengeanceInVictoryDisplay
       case res of
         NoResolution -> do
-          story noResolution
+          actStep <- fieldMap ActSequence (AS.unActStep . AS.actStep) =<< selectJust AnyAct
+          resolutionWithXp "noResolution" $ allGainXp' attrs
           record TheInvestigatorsWereForcedToWaitForAdditionalSupplies
           recordWhen (actStep < 3) IchtacaObservedYourProgressWithKeenInterest
           foughtWithIchtaca <- remembered YouFoughtWithIchtaca
@@ -157,27 +175,20 @@ instance RunMessage TheUntamedWilds where
           whenM (remembered IchtachaIsLeadingTheWay) do
             record TheInvestigatorsHaveEarnedIchtacasTrust
             record AlejandroChoseToRemainAtCamp
-          recordCount YigsFury vengeance
-          allGainXp attrs
-          endOfScenario
         Resolution 1 -> do
-          story resolution1
+          resolutionWithXp "resolution1" $ allGainXp' attrs
           record TheInvestigatorsClearedAPathToTheEztliRuins
           record AlejandroChoseToRemainAtCamp
           record TheInvestigatorsHaveEarnedIchtacasTrust
-          recordCount YigsFury vengeance
-          allGainXp attrs
-          endOfScenario
         Resolution 2 -> do
-          story resolution2
+          resolutionWithXp "resolution2" $ allGainXp' attrs
           record TheInvestigatorsClearedAPathToTheEztliRuins
           record AlejandroFollowedTheInvestigatorsIntoTheRuins
           addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.alejandroVela
           record IchtacaIsWaryOfTheInvestigators
-          recordCount YigsFury vengeance
-          allGainXp attrs
-          endOfScenario
         _ -> error "invalid resolution"
+      recordCount YigsFury =<< getVengeanceInVictoryDisplay
+      endOfScenario
       pure s
     ChooseLeadInvestigator -> do
       standalone <- getIsStandalone
@@ -187,4 +198,9 @@ instance RunMessage TheUntamedWilds where
           push $ ChoosePlayer iid SetLeadInvestigator
           pure s
         Nothing -> TheUntamedWilds <$> liftRunMessage msg attrs
+    UseCardAbility _ ScenarioSource 1 _ _ -> do
+      getEncounterDeck >>= \case
+        Deck [] -> pure ()
+        Deck (x : _) -> shuffleCardsIntoDeck ExplorationDeck [x]
+      pure s
     _ -> TheUntamedWilds <$> liftRunMessage msg attrs

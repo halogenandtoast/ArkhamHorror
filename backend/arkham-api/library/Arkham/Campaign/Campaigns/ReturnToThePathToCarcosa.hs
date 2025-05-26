@@ -5,9 +5,6 @@ import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.ThePathToCarcosa.CampaignSteps
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Campaigns.ThePathToCarcosa.Import
--- import Arkham.Helpers.FlavorText
--- import Arkham.Message.Lifted.Choose
--- import Arkham.Resolution
 
 newtype ReturnToThePathToCarcosa = ReturnToThePathToCarcosa ThePathToCarcosa
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
@@ -38,6 +35,6 @@ returnToThePathToCarcosa difficulty =
     (chaosBagContents difficulty)
 
 instance RunMessage ReturnToThePathToCarcosa where
-  runMessage msg c@(ReturnToThePathToCarcosa theDunwichLegacy') = runQueueT $ campaignI18n $ case msg of
+  runMessage msg c@(ReturnToThePathToCarcosa thePathToCarcosa') = runQueueT $ campaignI18n $ case msg of
     NextCampaignStep _ -> lift $ defaultCampaignRunner msg c
-    _ -> ReturnToThePathToCarcosa <$> liftRunMessage msg theDunwichLegacy'
+    _ -> ReturnToThePathToCarcosa <$> liftRunMessage msg thePathToCarcosa'

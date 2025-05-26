@@ -257,6 +257,18 @@ a.button {
       font-family: "Wolgast";
     }
   }
+  :deep(div.anke) {
+    font-family: "Anke";
+    text-align: center;
+    margin-block: 30px;
+    p {
+      margin-block: -20px;
+      font-family: "Anke";
+    }
+  }
+  :deep(p.anke) {
+    font-family: "Anke";
+  }
 }
 
 </style>

@@ -1426,6 +1426,7 @@ library
       Arkham.Campaign.Campaigns.NightOfTheZealot
       Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot
       Arkham.Campaign.Campaigns.ReturnToTheDunwichLegacy
+      Arkham.Campaign.Campaigns.ReturnToTheForgottenAge
       Arkham.Campaign.Campaigns.ReturnToThePathToCarcosa
       Arkham.Campaign.Campaigns.TheCircleUndone
       Arkham.Campaign.Campaigns.TheDreamEaters
@@ -3486,6 +3487,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToTheMiskatonicMuseum
       Arkham.Scenario.Scenarios.ReturnToThePallidMask
       Arkham.Scenario.Scenarios.ReturnToTheUnspeakableOath
+      Arkham.Scenario.Scenarios.ReturnToTheUntamedWilds
       Arkham.Scenario.Scenarios.ReturnToUndimensionedAndUnseen
       Arkham.Scenario.Scenarios.ReturnToWhereDoomAwaits
       Arkham.Scenario.Scenarios.ShatteredAeons
@@ -3585,6 +3587,7 @@ library
       Arkham.Scenarios.TheSecretName.Helpers
       Arkham.Scenarios.TheSecretName.Story
       Arkham.Scenarios.TheUnspeakableOath.Helpers
+      Arkham.Scenarios.TheUntamedWilds.Helpers
       Arkham.Scenarios.TheUntamedWilds.Story
       Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
       Arkham.Scenarios.TheWagesOfSin.Helpers

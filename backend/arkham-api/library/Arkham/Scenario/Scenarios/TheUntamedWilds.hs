@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheUntamedWilds (theUntamedWilds) where
+module Arkham.Scenario.Scenarios.TheUntamedWilds (setupTheUntamedWilds, theUntamedWilds, TheUntamedWilds (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as AS
@@ -8,7 +8,9 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Import
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
@@ -18,6 +20,7 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.TheUntamedWilds.Helpers
 import Arkham.Scenarios.TheUntamedWilds.Story
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window qualified as Window
@@ -59,58 +62,69 @@ instance HasChaosTokenValue TheUntamedWilds where
         else pure $ toChaosTokenValue attrs ElderThing 2 3
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+setupTheUntamedWilds :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupTheUntamedWilds _attrs = do
+  setup do
+    ul do
+      li "gatherSets"
+      li "placeLocations"
+      li "explorationDeck"
+      li "setAside"
+      unscoped $ li "shuffleRemainder"
+
+  gather Set.TheUntamedWilds
+  gather Set.Rainforest
+  gather Set.Serpents
+  gather Set.Expedition
+  gather Set.GuardiansOfTime
+  gather Set.Poison
+  gather Set.AncientEvils
+  startAt =<< place Locations.expeditionCamp
+
+  gatherAndSetAside Set.AgentsOfYig
+  setAside
+    $ [ Locations.ruinsOfEztli
+      , Locations.templeOfTheFang
+      , Locations.overgrownRuins
+      , Assets.alejandroVela
+      , Enemies.ichtaca
+      , Treacheries.poisoned
+      , Treacheries.poisoned
+      , Treacheries.poisoned
+      , Treacheries.poisoned
+      ]
+
+  setAgendaDeck [Agendas.expeditionIntoTheWild, Agendas.intruders]
+  setActDeck
+    [ Acts.exploringTheRainforest
+    , Acts.huntressOfTheEztli
+    , Acts.searchForTheRuins
+    , Acts.theGuardedRuins
+    ]
+
+  addExtraDeck ExplorationDeck
+    =<< shuffle
+      [ Locations.pathOfThorns
+      , Locations.riverCanyon
+      , Locations.ropeBridge
+      , Locations.serpentsHaven
+      , Locations.circuitousTrail
+      , Treacheries.lostInTheWilds
+      , Treacheries.overgrowth
+      , Treacheries.snakeBite
+      , Treacheries.lowOnSupplies
+      , Treacheries.arrowsFromTheTrees
+      ]
+
 instance RunMessage TheUntamedWilds where
-  runMessage msg s@(TheUntamedWilds attrs) = runQueueT $ case msg of
+  runMessage msg s@(TheUntamedWilds attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story intro
+      flavor $ scope "intro" $ h "title" >> p "body"
       pure s
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
-    Setup -> runScenarioSetup TheUntamedWilds attrs do
-      gather Set.TheUntamedWilds
-      gather Set.Rainforest
-      gather Set.Serpents
-      gather Set.Expedition
-      gather Set.GuardiansOfTime
-      gather Set.Poison
-      gather Set.AncientEvils
-      startAt =<< place Locations.expeditionCamp
-
-      gatherAndSetAside Set.AgentsOfYig
-      setAside
-        $ [ Locations.ruinsOfEztli
-          , Locations.templeOfTheFang
-          , Locations.overgrownRuins
-          , Assets.alejandroVela
-          , Enemies.ichtaca
-          , Treacheries.poisoned
-          , Treacheries.poisoned
-          , Treacheries.poisoned
-          , Treacheries.poisoned
-          ]
-
-      setAgendaDeck [Agendas.expeditionIntoTheWild, Agendas.intruders]
-      setActDeck
-        [ Acts.exploringTheRainforest
-        , Acts.huntressOfTheEztli
-        , Acts.searchForTheRuins
-        , Acts.theGuardedRuins
-        ]
-
-      addExtraDeck ExplorationDeck
-        =<< shuffle
-          [ Locations.pathOfThorns
-          , Locations.riverCanyon
-          , Locations.ropeBridge
-          , Locations.serpentsHaven
-          , Locations.circuitousTrail
-          , Treacheries.lostInTheWilds
-          , Treacheries.overgrowth
-          , Treacheries.snakeBite
-          , Treacheries.lowOnSupplies
-          , Treacheries.arrowsFromTheTrees
-          ]
+    Setup -> runScenarioSetup TheUntamedWilds attrs $ setupTheUntamedWilds attrs
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
         ElderThing | isHardExpert attrs -> do

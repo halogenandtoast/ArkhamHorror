@@ -181,6 +181,12 @@ p, :deep(p) {
   margin: 10px;
 }
 
+p.anke, :deep(p.anke) {
+  font-family: "Anke";
+  font-weight: 500;
+  margin: 10px;
+}
+
 :deep(strong), :deep(b), b, strong {
   font-weight: bolder !important;
   font-style: normal !important;

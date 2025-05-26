@@ -196,6 +196,22 @@ data EncounterSet
   | HastursEnvoys 
   | MaddeningDelusions
   | NeuroticFear 
+  | ReturnToTheUntamedWilds
+  | ReturnToTheDoomOfEztli
+  | ReturnToThreadsOfFate
+  | ReturnToTheBoundaryBeyond
+  | ReturnToTheHeartOfTheElders
+  | ReturnToPillarsOfJudgement
+  | ReturnToKnYan
+  | ReturnToTheCityOfArchives
+  | ReturnToTheDepthsOfYoth
+  | ReturnToShatteredAeons
+  | ReturnToTurnBackTime
+  | ReturnToRainforest
+  | CultOfPnakotus
+  | DoomedExpedition
+  | TemporalHunters
+  | VenomousHate
   | TheBayou
   | CurseOfTheRougarou
   | CarnevaleOfHorrors

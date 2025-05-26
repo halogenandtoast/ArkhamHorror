@@ -1,10 +1,10 @@
 [
-  { "id": "04043", "name": "The Untamed Wilds", "campaign": "04" },
-  { "id": "04054", "name": "The Doom of Eztli", "campaign": "04" },
-  { "id": "04113", "name": "Threads of Fate", "campaign": "04" },
-  { "id": "04161", "name": "The Boundary Beyond", "campaign": "04" },
-  { "id": "04205", "name": "Heart of the Elders", "campaign": "04" },
-  { "id": "04237", "name": "The City of Archives", "campaign": "04" },
-  { "id": "04277", "name": "The Depths of Yoth", "campaign": "04" },
-  { "id": "04314", "name": "Shattered Aeons", "campaign": "04" }
+  { "id": "04043", "name": "The Untamed Wilds", "campaign": "04", "returnTo": "53016", "returnToName": "Return to The Untamed Wilds" },
+  { "id": "04054", "name": "The Doom of Eztli", "campaign": "04", "returnTo": "53017", "returnToName": "Return to The Doom of Eztli" },
+  { "id": "04113", "name": "Threads of Fate", "campaign": "04", "returnTo": "53028", "returnToName": "Return to Threads of Fate" },
+  { "id": "04161", "name": "The Boundary Beyond", "campaign": "04", "returnTo": "53038", "returnToName": "Return to The Boundary Beyond" },
+  { "id": "04205", "name": "Heart of the Elders", "campaign": "04", "returnTo": "53045", "returnToName": "Return to Heart of the Elders" },
+  { "id": "04237", "name": "The City of Archives", "campaign": "04", "returnTo": "53053", "returnToName": "Return to The City of Archives" },
+  { "id": "04277", "name": "The Depths of Yoth", "campaign": "04", "returnTo": "53059", "returnToName": "Return to The Depths of Yoth" },
+  { "id": "04314", "name": "Shattered Aeons", "campaign": "04", "returnTo": "53061", "returnToName": "Return to Shattered Aeons" }
 ]

@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { PickSupplies  } from '@/arkham/types/Question';
 import { MessageType } from '@/arkham/types/Message';
 import { imgsrc } from '@/arkham/helpers';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   game: Game,
@@ -11,7 +12,7 @@ const props = defineProps<{
 }>()
 const emit = defineEmits(['choose'])
 const choose = (idx: number) => emit('choose', idx)
-
+const { t } = useI18n()
 
 const investigatorId = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)?.id)
 const pointsRemaining = computed(() => props.question.pointsRemaining)
@@ -36,37 +37,46 @@ const portrait = (investigatorId: string) => {
 
 </script>
 <template>
-  <img :src="portrait(investigatorId)" alt="Investigator Portrait" class="portrait" />
-  <div class="pick-supplies">
-    <h2>Pick Supplies ({{pointsRemaining}} points remaining)</h2>
+  <div id="pick-supplies">
+    <div class="pick-supplies-top">
+      <img :src="portrait(investigatorId)" alt="Investigator Portrait" class="portrait" />
+      <div><ul><li v-html="t('theForgottenAge.prologue.pickSupplies')"></li></ul></div>
+    </div>
+    <div class="pick-supplies">
+      <h2>Pick Supplies ({{pointsRemaining}} points remaining)</h2>
 
-    <div class="supply-choices">
-      <template v-for="(choice, index) in supplies" :key="index">
-        <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
-          <button @click="choose(index + 1)" v-tooltip="choice.tooltip">{{choice.label}}</button>
+      <div class="supply-choices">
+        <template v-for="(choice, index) in supplies" :key="index">
+          <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
+            <button @click="choose(index + 1)" v-tooltip="choice.tooltip">{{choice.label}}</button>
+          </template>
         </template>
-      </template>
+      </div>
+
+      <button class="done-button" @click="choose(0)">Done</button>
     </div>
 
-    <button class="done-button" @click="choose(0)">Done</button>
-  </div>
+    <div class="pick-supplies" v-if="chosenSupplies.size > 0">
+      <h2>Chosen Supplies</h2>
 
-  <div class="pick-supplies" v-if="chosenSupplies.size > 0">
-    <h2>Chosen Supplies</h2>
-
-    <ul>
-      <template v-for="([supply, count], index) in chosenSupplies" :key="index">
-        <li v-if="count > 1">{{supply}} ({{count}})</li>
-        <li v-else>{{supply}}</li>
-      </template>
-    </ul>
+      <ul>
+        <template v-for="([supply, count], index) in chosenSupplies" :key="index">
+          <li v-if="count > 1">{{supply}} ({{count}})</li>
+          <li v-else>{{supply}}</li>
+        </template>
+      </ul>
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+#pick-supplies {
+  width: 100%;
+}
+
 .supply-choices {
   display: grid;
-  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  grid-template-columns: repeat(4, minmax(calc(25vw - 20px), 1fr));
   row-gap: 20px;
 }
 
@@ -142,6 +152,59 @@ ul li {
 }
 
 .portrait {
-  width: 150px;
+  max-width: 25vw;
+  min-width: min-content;
+  min-height: fit-content;
+  object-fit: cover;
+}
+
+.pick-supplies-top {
+  display: flex;
+  margin: 10px;
+  background: #DCD6D0;
+  box-shadow: inset 0 0 170px rgba(0, 0, 0, 0.5), 1px 1px 3px rgba(0, 0, 0, 0.6);
+  container-type: inline-size;
+  @container (width < 500px) {
+    .portrait {
+      object-fit: contain;
+      max-width: 10vw;
+      min-width: 10vw;
+      margin: 20px;
+    }
+  }
+  ul {
+    height: 100%;
+    list-style-type: "\0059";
+    padding-inline: 20px;
+    li {
+      background: unset;
+      text-transform: none;
+      font-weight: normal;
+      padding-left: 10px;
+      margin-left: 10px;
+      margin-bottom: 5px;
+      text-align: left;
+
+      ul, :deep(ul) {
+        margin-block: 10px;
+        list-style-type: "\e91a";
+        li::marker {
+          font-family: "ArkhamIcons";
+        }
+      }
+
+      :deep(li) {
+        padding-left: 10px;
+        margin-bottom: 10px;
+      }
+    }
+
+    li::marker, :deep(li::marker) {
+      font-family: "ArkhamSlim";
+      color: var(--spooky-green-dark);
+      padding-left: 10px;
+      margin-left: 10px;
+    }
+  }
 }
 </style>

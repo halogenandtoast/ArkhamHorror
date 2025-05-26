@@ -128,6 +128,11 @@ button {
 }
 
 @font-face {
+  font-family: "Anke";
+  src: url("/fonts/ankecallig-fg.ttf");
+}
+
+@font-face {
   font-family: "ArkhamFlavor";
   src: url("/fonts/ArnoPro-ItalicCaption.ttf");
 }

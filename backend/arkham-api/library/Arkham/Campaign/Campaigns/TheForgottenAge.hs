@@ -1,4 +1,4 @@
-module Arkham.Campaign.Campaigns.TheForgottenAge (theForgottenAge) where
+module Arkham.Campaign.Campaigns.TheForgottenAge (theForgottenAge, TheForgottenAge (..)) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
@@ -10,6 +10,7 @@ import Arkham.Classes.HasGame
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Campaign (getOwner)
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
@@ -76,20 +77,22 @@ initialResupplyPoints :: HasGame m => m Int
 initialResupplyPoints = getPlayerCountValue (ByPlayerCount 8 5 4 3)
 
 instance RunMessage TheForgottenAge where
-  runMessage msg c@(TheForgottenAge attrs) = runQueueT do
+  runMessage msg c@(TheForgottenAge attrs) = runQueueT $ campaignI18n do
     let metadata = toResultDefault mempty (campaignMeta attrs)
     case msg of
-      CampaignStep PrologueStep -> do
+      CampaignStep PrologueStep -> scope "prologue" do
         totalSupplyPoints <- initialSupplyPoints
         expeditionLeaders <- select $ mapOneOf investigatorIs [ursulaDowns, leoAnderson, montereyJack]
         supplyMap <- mapFromList . map (,totalSupplyPoints) <$> allInvestigators
         let metadata' = Metadata supplyMap (yithians metadata) (expeditionLeader metadata)
-
-        story prologue
+        storyBuild do
+          setTitle "title"
+          p "body"
+          ul $ li.validate (notNull expeditionLeaders) "expeditionLeader"
         when (notNull expeditionLeaders) do
           lead <- getLead
           chooseOneM lead do
-            questionLabeled "Choose an expedition leader"
+            questionLabeled' "expeditionLeader"
             for_ expeditionLeaders \target -> cardLabeled target do
               push $ SetCampaignMeta $ toJSON (metadata' {expeditionLeader = Just target})
         eachInvestigator (`forInvestigator` msg)

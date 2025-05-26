@@ -2131,6 +2131,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (foundCardsL . each %~ filter ((/= cardId) . toCardId))
       & (bondedCardsL %~ filter ((/= cardId) . toCardId))
       & (decksL . each %~ filter ((/= cardId) . toCardId))
+  ReplaceCard cardId card -> do
+    let doReplace c = if c.id == cardId then card else c
+    let
+      doReplaceP c =
+        case card of
+          PlayerCard pc -> if c.id == cardId then pc else c
+          _ -> c
+    pure
+      $ a
+      & (handL %~ map doReplace)
+      & (discardL %~ map doReplaceP)
+      & (deckL %~ map doReplaceP)
+      & (cardsUnderneathL %~ map doReplace)
+      & (foundCardsL . each %~ map doReplace)
+      & (bondedCardsL %~ map doReplace)
+      & (decksL . each %~ map doReplace)
   PutCampaignCardIntoPlay iid cardDef | iid == investigatorId -> do
     let mcard = find ((== cardDef) . toCardDef) (unDeck investigatorDeck)
     case mcard of

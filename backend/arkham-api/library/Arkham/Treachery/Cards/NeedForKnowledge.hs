@@ -21,7 +21,7 @@ instance RunMessage NeedForKnowledge where
         then gainSurge attrs
         else do
           sid <- getRandom
-          revelationSkillTest sid iid attrs #willpower (Fixed clues)
+          revelationSkillTest sid iid attrs #intellect (Fixed clues)
       pure t
     FailedThisSkillTestBy _iid (isSource attrs -> True) n -> do
       doStep n msg

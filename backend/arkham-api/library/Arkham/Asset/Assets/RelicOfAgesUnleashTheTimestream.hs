@@ -1,18 +1,11 @@
-module Arkham.Asset.Assets.RelicOfAgesUnleashTheTimestream (
-  relicOfAgesUnleashTheTimestream,
-  RelicOfAgesUnleashTheTimestream (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.RelicOfAgesUnleashTheTimestream (relicOfAgesUnleashTheTimestream) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Deck
 import Arkham.Matcher
 import Arkham.Scenario.Deck
-import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -21,27 +14,20 @@ newtype RelicOfAgesUnleashTheTimestream = RelicOfAgesUnleashTheTimestream AssetA
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 relicOfAgesUnleashTheTimestream :: AssetCard RelicOfAgesUnleashTheTimestream
-relicOfAgesUnleashTheTimestream =
-  asset RelicOfAgesUnleashTheTimestream Cards.relicOfAgesUnleashTheTimestream
+relicOfAgesUnleashTheTimestream = asset RelicOfAgesUnleashTheTimestream Cards.relicOfAgesUnleashTheTimestream
 
 instance HasAbilities RelicOfAgesUnleashTheTimestream where
   getAbilities (RelicOfAgesUnleashTheTimestream a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ForcedAbility
-        $ Explored Timing.After You
-        $ FailedExplore
-        $ CardWithType TreacheryType
-    ]
+    [restricted a 1 ControlsThis $ forced $ Explored #after You Anywhere $ FailedExplore #treachery]
 
 getFailureCard :: [Window] -> Card
 getFailureCard [] = error "invalid window"
-getFailureCard ((windowType -> Window.Explored _ (Window.Failure c)) : _) = c
+getFailureCard ((windowType -> Window.Explored _ _ (Window.Failure c)) : _) = c
 getFailureCard (_ : xs) = getFailureCard xs
 
 instance RunMessage RelicOfAgesUnleashTheTimestream where
-  runMessage msg a@(RelicOfAgesUnleashTheTimestream attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (getFailureCard -> card) _ ->
-      do
-        push $ ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) [card]
-        pure a
-    _ -> RelicOfAgesUnleashTheTimestream <$> runMessage msg attrs
+  runMessage msg a@(RelicOfAgesUnleashTheTimestream attrs) = runQueueT $ case msg of
+    UseCardAbility _ (isSource attrs -> True) 1 (getFailureCard -> card) _ -> do
+      shuffleCardsIntoDeck ExplorationDeck [card]
+      pure a
+    _ -> RelicOfAgesUnleashTheTimestream <$> liftRunMessage msg attrs

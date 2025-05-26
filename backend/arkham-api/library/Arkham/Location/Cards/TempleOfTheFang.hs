@@ -14,7 +14,7 @@ newtype TempleOfTheFang = TempleOfTheFang LocationAttrs
 
 templeOfTheFang :: LocationCard TempleOfTheFang
 templeOfTheFang =
-  location TempleOfTheFang Cards.templeOfTheFang 2 (PerPlayer 1)
+  symbolLabel $ location TempleOfTheFang Cards.templeOfTheFang 2 (PerPlayer 1)
 
 instance HasModifiersFor TempleOfTheFang where
   getModifiersFor (TempleOfTheFang a) = do

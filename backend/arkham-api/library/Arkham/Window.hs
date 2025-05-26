@@ -311,7 +311,7 @@ data WindowType
   | WouldTakeDamage Source Target Int DamageStrategy
   | WouldTakeDamageOrHorror Source Target Int Int
   | WouldTakeHorror Source Target Int
-  | Explored InvestigatorId (Result Card LocationId)
+  | Explored InvestigatorId (Maybe LocationId) (Result Card LocationId)
   | AttemptExplore InvestigatorId
   | EnemiesAttackStep
   | AddingToCurrentDepth

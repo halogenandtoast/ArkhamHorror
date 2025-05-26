@@ -12,7 +12,6 @@ import Arkham.Effect.Runner
 import {-# SOURCE #-} Arkham.GameEnv (getPhase)
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Window (Window)
 import Control.Monad.Writer.Class
 import Data.Map.Monoidal.Strict (MonoidalMap (..))
 
@@ -24,12 +23,7 @@ genericEffect :: EffectArgs -> GenericEffect
 genericEffect = GenericEffect . uncurry (baseAttrs "genef")
 
 genericEffect'
-  :: EffectId
-  -> EffectMetadata Window Message
-  -> EffectWindow
-  -> Source
-  -> Target
-  -> GenericEffect
+  :: EffectId -> EffectMetadata Message -> EffectWindow -> Source -> Target -> GenericEffect
 genericEffect' eid metadata effectWindow source target =
   GenericEffect
     $ EffectAttrs
@@ -87,8 +81,8 @@ instance HasModifiersFor GenericEffect where
     resolveModifiers [] = pure []
     resolveModifiers (x@(modifierType -> (CriteriaModifier (EnemyCriteria (EnemyExists matcher)) m)) : ms) = do
       valid <- selectAny matcher
-      if valid then (x { modifierType = m } :) <$> resolveModifiers ms else resolveModifiers ms
-    resolveModifiers (m : ms) = (m:) <$> resolveModifiers ms
+      if valid then (x {modifierType = m} :) <$> resolveModifiers ms else resolveModifiers ms
+    resolveModifiers (m : ms) = (m :) <$> resolveModifiers ms
 
 instance RunMessage GenericEffect where
   runMessage msg (GenericEffect attrs) =

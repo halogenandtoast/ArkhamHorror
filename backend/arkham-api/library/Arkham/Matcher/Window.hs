@@ -209,7 +209,7 @@ data WindowMatcher
   | CommittedCards Timing Who CardListMatcher
   | CommittedCard Timing Who CardMatcher
   | ActivateAbility Timing Who AbilityMatcher
-  | Explored Timing Who ExploreMatcher
+  | Explored Timing Who LocationMatcher ExploreMatcher
   | AttemptExplore Timing Who
   | PhaseStep Timing PhaseStepMatcher
   | SkillTestStep Timing SkillTestStep
@@ -229,7 +229,7 @@ data WindowMatcher
   | TakeControlOfKey Timing Who KeyMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
 
-data ExploreMatcher = SuccessfulExplore LocationMatcher | FailedExplore CardMatcher
+data ExploreMatcher = SuccessfulExplore LocationMatcher | FailedExplore CardMatcher | AnyExplore
   deriving stock (Show, Eq, Ord, Data)
 
 data DefeatedByMatcher

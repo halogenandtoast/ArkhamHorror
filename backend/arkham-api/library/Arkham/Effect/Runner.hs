@@ -15,13 +15,13 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Card
-import Arkham.Modifier
 import Arkham.Classes.Query (selectOne, (<=~>))
 import Arkham.Classes.RunMessage
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher.Scenario
+import Arkham.Modifier
 
-intFromMetadata :: EffectMetadata window a -> Int
+intFromMetadata :: EffectMetadata a -> Int
 intFromMetadata = \case
   EffectInt n -> n
   _ -> 0
@@ -111,7 +111,7 @@ instance RunMessage EffectAttrs where
             updateModifier = \case
               x@(modifierType -> OnCommitCardModifier iid' matcher m) | iid == iid' -> do
                 ok <- card <=~> matcher
-                pure $ if ok then x { modifierType = m } else x
+                pure $ if ok then x {modifierType = m} else x
               other -> pure other
           modifiers' <- traverse updateModifier modifiers
           pure $ a {effectMetadata = Just $ EffectModifiers modifiers'}

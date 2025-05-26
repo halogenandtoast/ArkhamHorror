@@ -224,6 +224,7 @@ allLocationCards =
       , cliffsideRoad_a
       , cliffsideRoad_b
       , cloister
+      , cloudForest
       , cloverClubBar
       , cloverClubCardroom
       , cloverClubLounge
@@ -631,6 +632,7 @@ allLocationCards =
       , ritualGrounds
       , ritualSite
       , riverCanyon
+      , riversideTemple
       , rivertown
       , rivertownAbandonedWarehouse
       , rivertown_292
@@ -788,6 +790,7 @@ allLocationCards =
       , toweringLuminosity
       , towersOfPnakotus
       , townHall
+      , trailOfTheDead
       , trainTracks
       , trapRoom
       , trappersCabin
@@ -835,6 +838,7 @@ allLocationCards =
       , waitingRoom
       , walterGilmansRoom
       , warrenObservatory
+      , waterfall
       , wavewornIsland
       , wellOfSouls
       , whateleyRuins_250
@@ -8764,7 +8768,15 @@ returnToKnightsHall :: CardDef
 returnToKnightsHall = location "52056" "Knight's Hall" [] Hourglass [Square, Heart] ReturnToBlackStarsRise
 
 returnToPalaceOfTheKing :: CardDef
-returnToPalaceOfTheKing = storyOnBack $ location "52060" ("Palace of the King" <:> "Hastur's Domain") [Otherworld] Star [Triangle, Diamond, Heart, Droplet, Hourglass] ReturnToDimCarcosa
+returnToPalaceOfTheKing =
+  storyOnBack
+    $ location
+      "52060"
+      ("Palace of the King" <:> "Hastur's Domain")
+      [Otherworld]
+      Star
+      [Triangle, Diamond, Heart, Droplet, Hourglass]
+      ReturnToDimCarcosa
 
 recessesOfYourOwnMind :: CardDef
 recessesOfYourOwnMind = storyOnBack $ location "52061" "Recesses of Your Own Mind" [] Heart [Star] ReturnToDimCarcosa
@@ -8774,6 +8786,52 @@ theThroneRoom = storyOnBack $ location "52062" "The Throne Room" [] Droplet [Sta
 
 stageOfTheWardTheatre :: CardDef
 stageOfTheWardTheatre = storyOnBack $ location "52063" "Stage of the Ward Theatre" [] Hourglass [Star] ReturnToDimCarcosa
+
+riversideTemple :: CardDef
+riversideTemple =
+  singleSided
+    $ location
+      "53067"
+      "Riverside Temple"
+      [Ancient, Jungle]
+      Square
+      [Circle, Diamond, Triangle, Squiggle]
+      ReturnToRainforest
+
+waterfall :: CardDef
+waterfall =
+  singleSided
+    $ location
+      "53068"
+      "Waterfall"
+      [Jungle]
+      Moon
+      [Circle, Diamond, Heart, T]
+      ReturnToRainforest
+
+trailOfTheDead :: CardDef
+trailOfTheDead =
+  victory 1
+    $ singleSided
+    $ location
+      "53069"
+      "Trail of the Dead"
+      [Jungle]
+      Triangle
+      [Squiggle, Square, Diamond, Hourglass]
+      ReturnToRainforest
+
+cloudForest :: CardDef
+cloudForest =
+  victory 1
+    $ singleSided
+    $ location
+      "53070"
+      "Cloud Forest"
+      [Jungle]
+      Heart
+      [Hourglass, Diamond, Moon, T]
+      ReturnToRainforest
 
 cursedShores :: CardDef
 cursedShores =

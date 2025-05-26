@@ -25,7 +25,7 @@ instance HasAbilities BurialPit where
   getAbilities (BurialPit attrs) =
     withBaseAbilities
       attrs
-      [mkAbility attrs 1 $ forced $ Explored #after You (SuccessfulExplore $ be attrs)]
+      [mkAbility attrs 1 $ forced $ Explored #after You Anywhere (SuccessfulExplore $ be attrs)]
 
 instance RunMessage BurialPit where
   runMessage msg l@(BurialPit attrs) = case msg of

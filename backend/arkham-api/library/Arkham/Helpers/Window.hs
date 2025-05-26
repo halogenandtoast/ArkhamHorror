@@ -1925,8 +1925,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.EnemyLeavesPlay timing enemyMatcher -> guardTiming timing $ \case
       Window.LeavePlay (EnemyTarget eid) -> elem eid <$> select enemyMatcher
       _ -> noMatch
-    Matcher.Explored timing whoMatcher resultMatcher -> guardTiming timing $ \case
-      Window.Explored who result ->
+    Matcher.Explored timing whoMatcher fromLocationMatcher resultMatcher -> guardTiming timing $ \case
+      Window.Explored who mwhere result ->
         andM
           [ matchWho iid who whoMatcher
           , case resultMatcher of
@@ -1936,6 +1936,10 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
               Matcher.FailedExplore cardMatcher -> case result of
                 Window.Success _ -> noMatch
                 Window.Failure card -> pure $ cardMatch card cardMatcher
+              Matcher.AnyExplore -> pure True
+          , case fromLocationMatcher of
+              Matcher.Anywhere -> pure True
+              other -> maybe (pure False) (<=~> other) mwhere
           ]
       _ -> noMatch
     Matcher.AttemptExplore timing whoMatcher -> guardTiming timing $ \case

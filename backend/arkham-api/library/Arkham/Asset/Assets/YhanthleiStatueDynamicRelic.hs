@@ -37,7 +37,7 @@ instance RunMessage YhanthleiStatueDynamicRelic where
       chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
-      n <- min <$> getRemainingBlessTokens <*> selectCount (ChaosTokenFaceIs #curse)
+      n <- (min 2 .) . min <$> getRemainingBlessTokens <*> selectCount (ChaosTokenFaceIs #curse)
       repeated n $ removeChaosToken #curse
       repeated n $ addChaosToken #bless
       pure a

@@ -503,10 +503,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     resources <- getSpendableResources iid
     pure $ resources >= n
   SupplyCost locationMatcher supply ->
-    iid
-      <=~> ( Matcher.InvestigatorWithSupply supply
-               <> Matcher.InvestigatorAt locationMatcher
-           )
+    iid <=~> (Matcher.InvestigatorWithSupply supply <> Matcher.InvestigatorAt locationMatcher)
   ResolveEachHauntedAbility _ -> pure True
 
 getSpendableResources :: HasGame m => InvestigatorId -> m Int
@@ -514,19 +511,14 @@ getSpendableResources iid = do
   mods <- getModifiers iid
   let extraResources = sum [x | ExtraResources x <- mods]
   familyInheritanceResources <-
-    getSum
-      <$> selectAgg
-        Sum
-        AssetResources
-        (Matcher.assetIs Assets.familyInheritance)
+    selectSum AssetResources $ Matcher.assetIs Assets.familyInheritance <> Matcher.assetControlledBy iid
   fieldMap InvestigatorResources (+ (familyInheritanceResources + extraResources)) iid
 
 getSpendableClueCount :: HasGame m => [InvestigatorId] -> m Int
 getSpendableClueCount investigatorIds =
   getSum <$> foldMapM (fmap Sum . Investigator.getSpendableClueCount) investigatorIds
 
-applyActionCostModifier
-  :: [[Action]] -> [[Action]] -> [Action] -> ModifierType -> Int -> Int
+applyActionCostModifier :: [[Action]] -> [[Action]] -> [Action] -> ModifierType -> Int -> Int
 applyActionCostModifier _ _ actions (ActionCostOf (IsAction action') m) n
   | action' `elem` actions = n + m
 applyActionCostModifier _ performedActions actions (ActionCostOf (FirstOneOfPerformed as) m) n

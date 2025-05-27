@@ -994,6 +994,7 @@ data Message
   | ShuffleCardsIntoDeck DeckSignifier [Card]
   | ShuffleDiscardBackIn InvestigatorId
   | ShuffleEncounterDiscardBackIn
+  | ShuffleEncounterDiscardBackInByKey ScenarioEncounterDeckKey
   | ShuffleDeck DeckSignifier
   | ShuffleIntoDeck DeckSignifier Target
   | ShuffleCardsIntoTopOfDeck DeckSignifier Int [Card]

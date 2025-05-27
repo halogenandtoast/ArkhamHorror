@@ -5118,7 +5118,10 @@ runMessages mLogger = do
               runWithEnv do
                 overGameM preloadEntities
                 overGameM $ runPreGameMessage msg
-                overGameM $ if shouldPreloadModifiers msg then preloadModifiers else pure
+                overGameM
+                  $ if shouldPreloadModifiers msg
+                    then preloadModifiers >=> handleTraitRestrictedModifiers >=> handleBlanked
+                    else pure
 
                 overGameM
                   $ if shouldPreloadModifiers msg

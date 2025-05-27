@@ -1875,20 +1875,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               DamageDirect -> pure [damageInvestigator iid True]
               DamageFromHastur -> go DamageAny
               DamageAny -> do
-                mustBeAssignedDamageFirstBeforeInvestigator <-
-                  select
-                    $ AssetCanBeAssignedHorrorBy iid
-                    <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
-                    <> AssetCanBeDamagedBySource source
+                mustBeAssignedHorrorFirstBeforeInvestigator <- flip filterM sanityDamageableAssets \aid -> do
+                  mods <- getModifiers aid
+                  pure $ NonDirectHorrorMustBeAssignToThisFirst `elem` mods
                 let
                   targetCount =
-                    if null mustBeAssignedDamageFirstBeforeInvestigator
+                    if null mustBeAssignedHorrorFirstBeforeInvestigator
                       then 1 + length sanityDamageableAssets + length sanityDamageableInvestigators
                       else length sanityDamageableAssets + length sanityDamageableInvestigators
 
                 let applyAll = targetCount == 1
 
-                pure $ [damageInvestigator iid applyAll | null mustBeAssignedDamageFirstBeforeInvestigator]
+                pure $ [damageInvestigator iid applyAll | null mustBeAssignedHorrorFirstBeforeInvestigator]
                   <> map (`damageAsset` applyAll) sanityDamageableAssets
                   <> map (`damageInvestigator` applyAll) sanityDamageableInvestigators
               DamageFirst def -> do

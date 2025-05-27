@@ -66,7 +66,9 @@ const logTitles = logTitle && otherLogTitle ? [logTitle, otherLogTitle].sort() :
 
 const campaignLog = ref(mainLog)
 
-const recorded = computed(() => campaignLog.value.recorded.map(formatKey))
+const recorded = computed(() => campaignLog.value.recorded.filter((r) => {
+  return !["Teachings1", "Teachings2", "Teachings3"].includes(r.tag)
+}).map(formatKey))
 const recordedSets = computed(() => campaignLog.value.recordedSets)
 const recordedCounts = computed(() => campaignLog.value.recordedCounts)
 const partners = computed(() => campaignLog.value.partners)
@@ -76,7 +78,7 @@ const loadedCards = ref<CardDef[]>([]);
 
 // Function to load missing cards
 async function loadMissingCards() {
-  const nonCardKeys = ['theCircleUndone.key.mementosDiscovered', 'MemoriesRecovered', 'PossibleSuspects', 'PossibleHideouts', 'edgeOfTheEarth.key.suppliesRecovered', 'edgeOfTheEarth.key.sealsPlaced', 'edgeOfTheEarth.key.sealsRecovered'];
+  const nonCardKeys = ['theCircleUndone.key.mementosDiscovered', 'theInnsmouthConspiracy.key.memoriesRecovered', 'theInnsmouthConspiracy.key.possibleSuspects', 'theInnsmouthConspiracy.key.possibleHideouts', 'edgeOfTheEarth.key.suppliesRecovered', 'edgeOfTheEarth.key.sealsPlaced', 'edgeOfTheEarth.key.sealsRecovered'];
   const missingCardCodes = new Set();
   for (const [key, setValue] of Object.entries(recordedSets.value)) {
     if (nonCardKeys.includes(key)) continue;
@@ -259,7 +261,7 @@ const emptyLog = computed(() => {
           <ul>
             <li v-for="record in recorded" :key="record">{{t(record)}}</li>
             <template v-for="i in game.investigators" :key="i.id">
-              <li v-for="record in i.log.recorded" :key="`${i.id}${record}`">{{fullName(i.name)}} {{toCapitalizedWords(record).toLowerCase()}}.</li>
+              <li v-for="record in i.log.recorded" :key="`${i.id}${record}`">{{fullName(i.name)}} {{t(formatKey(record))}}.</li>
             </template>
           </ul>
         </div>

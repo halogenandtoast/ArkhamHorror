@@ -5080,8 +5080,14 @@ runMessages mLogger = do
               -- > While an enemy is moving, Hidden Library gains the Passageway trait.
               -- Therefor we must track the "while" aspect
               case msg of
-                HunterMove eid -> overGame $ enemyMovingL ?~ eid
-                WillMoveEnemy eid _ -> overGame $ enemyMovingL ?~ eid
+                HunterMove eid -> do
+                  overGame $ enemyMovingL ?~ eid
+                  -- because some modifiers depend on the enemy moving we need to preload them here
+                  overGameM preloadModifiers
+                WillMoveEnemy eid _ -> do
+                  overGame $ enemyMovingL ?~ eid
+                  -- because some modifiers depend on the enemy moving we need to preload them here
+                  overGameM preloadModifiers
                 CheckWindows (getEvadedEnemy -> Just eid) -> overGame $ enemyEvadingL ?~ eid
                 Do (CheckWindows (getEvadedEnemy -> Just eid)) -> overGame $ enemyEvadingL ?~ eid
                 _ -> pure ()
@@ -5092,16 +5098,41 @@ runMessages mLogger = do
 
               asIfLocations <- runWithEnv getAsIfLocationMap
 
+              let
+                shouldPreloadModifiers = \case
+                  Ask {} -> False
+                  BeginAction {} -> False
+                  CheckAttackOfOpportunity {} -> False
+                  CheckEnemyEngagement {} -> False
+                  CheckWindows {} -> False
+                  Do (CheckWindows {}) -> False
+                  ClearUI {} -> False
+                  CreatedCost {} -> False
+                  EndCheckWindow {} -> False
+                  PaidAllCosts {} -> False
+                  PayForAbility {} -> False
+                  PayCost {} -> False
+                  PayCosts {} -> False
+                  Run {} -> False
+                  UseAbility {} -> False
+                  Do (UseAbility {}) -> False
+                  When {} -> False
+                  WhenCanMove {} -> False
+                  Would {} -> False
+                  _ -> True
+
               runWithEnv do
                 overGameM preloadEntities
                 overGameM $ runPreGameMessage msg
                 overGameM
-                  $ preloadModifiers
-                  >=> handleTraitRestrictedModifiers
-                  >=> handleBlanked
-                  >=> handleAsIfChanges asIfLocations
-
-                overGameM $ runMessage msg
+                  $ if shouldPreloadModifiers msg
+                    then
+                      runMessage msg
+                        >=> preloadModifiers
+                        >=> handleAsIfChanges asIfLocations
+                        >=> handleTraitRestrictedModifiers
+                        >=> handleBlanked
+                    else runMessage msg
                 overGame $ set enemyMovingL Nothing . set enemyEvadingL Nothing
               runMessages mLogger
         go msg

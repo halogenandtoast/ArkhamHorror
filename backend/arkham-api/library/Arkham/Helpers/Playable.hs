@@ -68,13 +68,9 @@ getPlayableDiscards source investigator costStatus windows' = do
     (possibleCards attrs modifiers)
  where
   possibleCards attrs@InvestigatorAttrs {..} modifiers =
-    map (PlayerCard . snd)
-      $ filter
-        (canPlayFromDiscard attrs modifiers)
-        (withIndex investigatorDiscard)
+    map (PlayerCard . snd) $ filter (canPlayFromDiscard attrs modifiers) (withIndex investigatorDiscard)
   canPlayFromDiscard attrs modifiers (n, card) =
-    cdPlayableFromDiscard (toCardDef card)
-      || any (allowsPlayFromDiscard attrs n card) modifiers
+    cdPlayableFromDiscard (toCardDef card) || any (allowsPlayFromDiscard attrs n card) modifiers
   allowsPlayFromDiscard InvestigatorAttrs {..} 0 card (CanPlayTopmostOfDiscard (mcardType, traits)) =
     let cardMatcher = maybe AnyCard CardWithType mcardType <> foldMap CardWithTrait traits
         allMatches = filter (`cardMatch` cardMatcher) investigatorDiscard
@@ -231,10 +227,8 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
       canAffordCost =
         if canAffordCost'
           then canAffordCost'
-          else
-            modifiedCardCostWithChuckFergus
-              + auxiliaryResourceCosts
-              <= (availableResources + additionalResources)
+          else modifiedCardCostWithChuckFergus + auxiliaryResourceCosts
+              <= availableResources + additionalResources
       needsChuckFergus = not canAffordCost' && canAffordCost
       handleCriteriaReplacement _ (CanPlayWithOverride (Criteria.CriteriaOverride cOverride)) = Just cOverride
       handleCriteriaReplacement m _ = m

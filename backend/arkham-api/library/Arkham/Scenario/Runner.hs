@@ -808,11 +808,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           <> ", could not find deck in scenario"
   Do (DrawCards iid drawing) | drawing.deck == Deck.EncounterDeck -> do
     handler <- getEncounterDeckHandler iid
+    key <- getEncounterDeckKey iid
     case unDeck (a ^. deckLens handler) of
       [] -> do
-        -- This case should not happen but this safeguards against it
         when (notNull (a ^. discardLens handler)) $ do
-          pushAll [ShuffleEncounterDiscardBackIn, Do (DrawCards iid drawing)]
+          pushAll [ShuffleEncounterDiscardBackInByKey key, Do (DrawCards iid drawing)]
         pure a
       xs -> do
         let (drew, rest) = splitAt drawing.amount xs
@@ -820,12 +820,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           then do
             when (null rest && not scenarioInShuffle) do
               windows' <- checkWindows [mkWhen Window.EncounterDeckRunsOutOfCards]
-              pushAll [windows', ShuffleEncounterDiscardBackIn]
+              pushAll [windows', ShuffleEncounterDiscardBackInByKey key]
             push $ DrewCards iid $ finalizeDraw drawing $ drawing.alreadyDrawn <> map toCard drew
           else do
             when (null rest && not scenarioInShuffle) do
               windows' <- checkWindows [mkWhen Window.EncounterDeckRunsOutOfCards]
-              pushAll [windows', ShuffleEncounterDiscardBackIn]
+              pushAll [windows', ShuffleEncounterDiscardBackInByKey key]
 
             push
               $ Do
@@ -957,20 +957,22 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   ShuffleDeck Deck.EncounterDeck -> do
     encounterDeck <- withDeckM shuffleM scenarioEncounterDeck
     pure $ a & encounterDeckL .~ encounterDeck
+  ShuffleEncounterDiscardBackInByKey key -> do
+    case key of
+      RegularEncounterDeck -> do
+        push ShuffleEncounterDiscardBackIn
+        pure a
+      other -> do
+        let otherDiscardL = encounterDecksL . at other . non (Deck [], []) . _2
+        let discards = a ^. otherDiscardL
+        encounterDeck <- withDeckM (shuffleM . (<> discards)) (view (encounterDeckLensFromKey other) a)
+        pure $ a & encounterDecksL . at other . non (Deck [], []) .~ (encounterDeck, mempty)
   ShuffleEncounterDiscardBackIn -> do
-    encounterDeck <-
-      withDeckM
-        (shuffleM . (<> scenarioDiscard))
-        scenarioEncounterDeck
+    encounterDeck <- withDeckM (shuffleM . (<> scenarioDiscard)) scenarioEncounterDeck
     pure $ a & encounterDeckL .~ encounterDeck & discardL .~ mempty
   ShuffleAllInEncounterDiscardBackIn cardCode -> do
-    let
-      (toShuffleBackIn, discard) =
-        partition ((== cardCode) . toCardCode) scenarioDiscard
-    encounterDeck <-
-      withDeckM
-        (shuffleM . (<> toShuffleBackIn))
-        scenarioEncounterDeck
+    let (toShuffleBackIn, discard) = partition ((== cardCode) . toCardCode) scenarioDiscard
+    encounterDeck <- withDeckM (shuffleM . (<> toShuffleBackIn)) scenarioEncounterDeck
     pure $ a & encounterDeckL .~ encounterDeck & discardL .~ discard
   ShuffleBackIntoEncounterDeck (EnemyTarget eid) -> do
     placement <- field EnemyPlacement eid

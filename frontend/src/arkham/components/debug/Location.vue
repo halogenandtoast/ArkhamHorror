@@ -71,11 +71,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
             <img :src="image" class="card-no-overlay" />
           </div>
           <div v-if="hasPool" class="pool">
-            <PoolItem
-              v-if="clues > 0"
-              type="clue"
-              :amount="clues"
-            />
+            <PoolItem v-if="clues > 0" type="clue" :amount="clues" />
           </div>
         </div>
       </div>

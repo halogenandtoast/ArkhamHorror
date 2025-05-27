@@ -466,7 +466,7 @@ const cardPiles = computed(() => {
                   :card="card"
                   :game="game"
                   :playerId="playerId"
-                  :key="`${group}-${card}`"
+                  :key="`${group}-${toCardContents(card).id}`"
                   @choose="$emit('choose', $event)"
                 />
               </div>
@@ -503,7 +503,7 @@ const cardPiles = computed(() => {
                   :card="card"
                   :game="game"
                   :playerId="playerId"
-                  :key="`${group}-${card}`"
+                  :key="`${group}-${toCardContents(card).id}`"
                   @choose="$emit('choose', $event)"
                 />
               </div>

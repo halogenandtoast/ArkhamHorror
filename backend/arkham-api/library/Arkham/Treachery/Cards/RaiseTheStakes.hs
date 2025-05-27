@@ -14,6 +14,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheHouseAlwaysWins.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
+import Arkham.Trait (Trait(Criminal))
 
 newtype RaiseTheStakes = RaiseTheStakes TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
@@ -26,9 +27,9 @@ instance HasModifiersFor RaiseTheStakes where
   getModifiersFor (RaiseTheStakes attrs) = do
     case attrs.placement of
       InThreatArea iid -> do
-        modifySelect attrs (EnemyAt $ locationWithInvestigator iid) [RemoveKeyword Aloof]
+        modifySelect attrs (enemyAtLocationWith iid <> withTrait Criminal) [RemoveKeyword Aloof]
         n <- getCurrentActStep
-        modifySelectWhen attrs (n >= 2) (enemyEngagedWith iid) [EnemyFight 1, EnemyEvade 1]
+        modifySelectWhen attrs (n >= 2) (enemyEngagedWith iid <> withTrait Criminal) [EnemyFight 1, EnemyEvade 1]
       _ -> pure ()
 
 instance RunMessage RaiseTheStakes where

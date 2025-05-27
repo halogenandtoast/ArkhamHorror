@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game.Runner where
 
@@ -3334,8 +3334,6 @@ instance RunMessage Game where
         >>= runGameMessage msg
       )
       <&> handleActionDiff g
-      . set enemyMovingL Nothing
-      . set enemyEvadingL Nothing
 
 runPreGameMessage :: Runner Game
 runPreGameMessage msg g = case msg of

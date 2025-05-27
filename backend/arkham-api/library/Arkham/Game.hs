@@ -5092,46 +5092,16 @@ runMessages mLogger = do
 
               asIfLocations <- runWithEnv getAsIfLocationMap
 
-              let
-                shouldPreloadModifiers = \case
-                  Ask {} -> False
-                  BeginAction {} -> False
-                  CheckAttackOfOpportunity {} -> False
-                  CheckEnemyEngagement {} -> False
-                  CheckWindows {} -> False
-                  Do (CheckWindows {}) -> False
-                  ClearUI {} -> False
-                  CreatedCost {} -> False
-                  EndCheckWindow {} -> False
-                  PaidAllCosts {} -> False
-                  PayForAbility {} -> False
-                  PayCost {} -> False
-                  PayCosts {} -> False
-                  Run {} -> False
-                  UseAbility {} -> False
-                  Do (UseAbility {}) -> False
-                  When {} -> False
-                  WhenCanMove {} -> False
-                  Would {} -> False
-                  _ -> True
-
               runWithEnv do
                 overGameM preloadEntities
                 overGameM $ runPreGameMessage msg
                 overGameM
-                  $ if shouldPreloadModifiers msg
-                    then preloadModifiers >=> handleTraitRestrictedModifiers >=> handleBlanked
-                    else pure
+                  $ preloadModifiers
+                  >=> handleTraitRestrictedModifiers
+                  >=> handleBlanked
+                  >=> handleAsIfChanges asIfLocations
 
-                overGameM
-                  $ if shouldPreloadModifiers msg
-                    then
-                      runMessage msg
-                        >=> preloadModifiers
-                        >=> handleAsIfChanges asIfLocations
-                        >=> handleTraitRestrictedModifiers
-                        >=> handleBlanked
-                    else runMessage msg
+                overGameM $ runMessage msg
                 overGame $ set enemyMovingL Nothing . set enemyEvadingL Nothing
               runMessages mLogger
         go msg

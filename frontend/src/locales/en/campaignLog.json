@@ -22,7 +22,10 @@
       "youHaveInterpretedTheDreams": "You have interpreted the dreams",
       "youHaveTranslatedTheGrimoire": "You have translated the grimoire",
       "youHaveIdentifiedTheGateway": "You have identified the gateway",
-      "youHaveClassifiedANewSpecies": "You have classified a new species"
+      "youHaveClassifiedANewSpecies": "You have classified a new species",
+      "teachings1": "Teachings",
+      "teachings2": "Teachings",
+      "teachings3": "Teachings"
     }
   }
 }

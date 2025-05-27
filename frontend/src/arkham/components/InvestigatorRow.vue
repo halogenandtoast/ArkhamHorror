@@ -39,9 +39,11 @@ const storyCards = computed(() => props.game.campaign.storyCards[props.investiga
       <div><strong>Mental Trauma:</strong> {{investigator.mentalTrauma}}</div>
       <section v-if="storyCards.length > 0" class="inner-section">
         <h2>Earned Cards</h2>
-        <div v-for="card in storyCards">
-          <Card :game="game" :card="card" :playerId="investigator.id" />
-        </div>
+        <section class='earned-cards'>
+          <div v-for="card in storyCards">
+            <Card :game="game" :card="card" :playerId="investigator.id" />
+          </div>
+        </section>
       </section>
     </div>
   </div>
@@ -185,6 +187,13 @@ svg.expanded {
   :deep(.card) {
     width: 10vw;
   }
+}
+
+.earned-cards {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 </style>

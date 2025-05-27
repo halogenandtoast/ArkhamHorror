@@ -593,7 +593,7 @@ onUnmounted(() => {
     <div class="game-bar">
       <div class="game-bar-item">
         <div>
-          <button @click="showLog = !showLog"><DocumentTextIcon aria-hidden="true" /> {{ showLog ? $t('gameBar.closeLog') : $t('gameBar.viewLog') }}</button>
+          <button @click="router.push({name: 'CampaignLog', params: { gameId }})"><DocumentTextIcon aria-hidden="true" /> {{ showLog ? $t('gameBar.closeLog') : $t('gameBar.viewLog') }}</button>
         </div>
       </div>
       <div>

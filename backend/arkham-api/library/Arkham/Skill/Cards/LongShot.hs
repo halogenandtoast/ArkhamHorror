@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.LongShot (longShot, LongShot (..)) where
+module Arkham.Skill.Cards.LongShot (longShot) where
 
 import Arkham.Action
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)

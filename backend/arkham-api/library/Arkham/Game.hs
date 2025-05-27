@@ -174,6 +174,7 @@ import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
 import Arkham.SkillTest.Runner hiding (stepL)
 import Arkham.SkillTestResult
 import Arkham.Source
+import Arkham.Spawn (SpawnAt (..))
 import Arkham.Story
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Story.Types (Field (..), StoryAttrs (..))
@@ -202,7 +203,7 @@ import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (emptyArray, parse, parseMaybe)
 import Data.List qualified as List
-import Data.List.Extra (groupOn)
+import Data.List.Extra (groupOn, nubOrdOn)
 import Data.Map.Monoidal.Strict (getMonoidalMap)
 import Data.Map.Monoidal.Strict qualified as MonoidalMap
 import Data.Map.Strict qualified as Map
@@ -2913,6 +2914,11 @@ enemyMatcherFilter es matcher' = case matcher' of
         else select $ locationMatcher <> not_ (mconcat noSpawn)
 
     pure $ notNull locations
+  EnemyWantsToSpawnIn locationMatcher -> pure $ flip filter es \enemy ->
+    case attr enemySpawnAt enemy of
+      Just (SpawnAt (LocationMatchAll inner)) -> locationMatcher `elem` inner
+      Just (SpawnAt inner) -> inner == locationMatcher
+      _ -> False
   EnemyCanBeDamagedBySource source -> flip filterM es \enemy -> do
     modifiers <- getModifiers (toTarget enemy)
     flip allM modifiers $ \case
@@ -4813,7 +4819,7 @@ instance Projection Scenario where
       ScenarioDecks -> pure scenarioDecks
       ScenarioVictoryDisplay -> do
         enemies <- selectField EnemyCard $ EnemyWithPlacement (OutOfPlay VictoryDisplayZone)
-        pure $ scenarioVictoryDisplay <> enemies
+        pure $ nubOrdOn (.id) (scenarioVictoryDisplay <> enemies)
       ScenarioRemembered -> pure scenarioLog
       ScenarioCounts -> pure scenarioCounts
       ScenarioStandaloneCampaignLog -> pure scenarioStandaloneCampaignLog

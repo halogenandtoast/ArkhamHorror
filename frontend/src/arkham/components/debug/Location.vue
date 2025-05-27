@@ -41,6 +41,24 @@ const hasPool = computed(() => {
   return clues.value > 0;
 })
 
+const createModifier = (target: {tag: string, contents: string}, modifier: {tag: string, contents: any}) => 
+  debug.send(props.game.id,
+    { tag: 'CreateWindowModifierEffect'
+    , contents:
+      [ {tag: 'EffectGameWindow'}
+      , { tag: 'EffectModifiers'
+        , contents:
+          [ { source: {tag: 'GameSource'}
+            , type: modifier
+            , activeDuringSetup: false
+            , card: null}
+          ]
+        }
+      , {tag: 'GameSource'}
+      , target
+      ]
+    })
+
 </script>
 
 <template>
@@ -62,6 +80,7 @@ const hasPool = computed(() => {
         </div>
       </div>
       <div class="buttons">
+        <button v-if="location.cardCode == 'c03139'" @click="createModifier({tag: 'LocationTarget', contents: id}, {tag: 'AddTrait', contents: 'Passageway'})">Add Passageway</button>
         <button v-if="!location.revealed" @click="debug.send(game.id, {tag: 'RevealLocation', contents: [null, id]})">Reveal</button>
         <button v-if="clues && clues > 0" @click="debug.send(game.id, {tag: 'RemoveTokens', contents: [{ tag: 'TestSource', contents: []}, { tag: 'LocationTarget', contents: id }, 'Clue', clues]})">Remove Clues</button>
         <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'TestSource', contents: []}, { tag: 'LocationTarget', contents: id }, 'Clue', 1]})">Place Clue</button>

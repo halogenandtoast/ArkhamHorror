@@ -1575,8 +1575,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       toList <$> getHealthDamageableAssets iid matcher source health damageTargets horrorTargets
     healthDamageableInvestigators <- select $ InvestigatorCanBeAssignedDamageBy iid
 
-    canBeAssignedDamage <- select $ AssetCanBeAssignedDamageBy iid <> AssetCanBeDamagedBySource source
-    mustBeDamagedFirstBeforeInvestigator <- forMaybeM canBeAssignedDamage $ \aid -> do
+    mustBeDamagedFirstBeforeInvestigator <- forMaybeM healthDamageableAssets $ \aid -> do
       mods <- getModifiers aid
       let n = sum [x | NonDirectDamageMustBeAssignToThisN x <- mods]
       let mustAssignRemaining = n > 0 && health <= n && count (== toTarget aid) damageTargets < n
@@ -1683,8 +1682,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       getSanityDamageableAssets iid matcher source sanity damageTargets horrorTargets
     sanityDamageableInvestigators <- select $ InvestigatorCanBeAssignedHorrorBy iid
 
-    canBeAssignedDamage <- select $ AssetCanBeAssignedDamageBy iid <> AssetCanBeDamagedBySource source
-    mustBeAssignedDamageFirstBeforeInvestigator <- forMaybeM canBeAssignedDamage $ \aid -> do
+    mustBeAssignedDamageFirstBeforeInvestigator <- forMaybeM (toList healthDamageableAssets) \aid -> do
       mods <- getModifiers aid
       let n = sum [x | NonDirectDamageMustBeAssignToThisN x <- mods]
       let mustAssignRemaining = n > 0 && health <= n && count (== toTarget aid) damageTargets < n
@@ -1692,10 +1690,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
 
     mustBeAssignedHorrorFirstBeforeInvestigator <-
       select
-        ( AssetCanBeAssignedHorrorBy iid
-            <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
-            <> AssetCanBeDamagedBySource source
-        )
+        $ AssetCanBeAssignedHorrorBy iid
+        <> AssetWithModifier NonDirectHorrorMustBeAssignToThisFirst
+        <> AssetCanBeDamagedBySource source
 
     let
       damageableAssets = toList $ healthDamageableAssets `union` sanityDamageableAssets
@@ -1791,13 +1788,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               DamageDirect -> pure [damageInvestigator iid True]
               DamageFromHastur -> go DamageAny
               DamageAny -> do
-                canBeAssignedDamage <- select $ AssetCanBeAssignedDamageBy iid <> AssetCanBeDamagedBySource source
-                mustBeAssignedDamage <- flip filterM canBeAssignedDamage \aid -> do
+                mustBeAssignedDamage <- flip filterM healthDamageableAssets \aid -> do
                   mods <- getModifiers aid
                   let n = sum [x | NonDirectDamageMustBeAssignToThisN x <- mods]
                   pure $ n > 0 && health <= n && count (== toTarget aid) damageTargets < n
 
-                mustBeAssignedDamageFirstBeforeInvestigator <- flip filterM canBeAssignedDamage \aid -> do
+                mustBeAssignedDamageFirstBeforeInvestigator <- flip filterM healthDamageableAssets \aid -> do
                   mods <- getModifiers aid
                   pure $ NonDirectDamageMustBeAssignToThisFirst `elem` mods
 

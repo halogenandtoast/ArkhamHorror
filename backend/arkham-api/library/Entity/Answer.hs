@@ -320,6 +320,26 @@ handleAnswer Game {..} playerId = \case
     Read t (BasicReadChoices qs) mcs -> case qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ Read t (BasicReadChoices qs) mcs]
       Just msg -> [uiToRun msg]
+    Read t (BasicReadChoicesN n qs) mcs -> do
+      let (mm, msgs') = extract (qrChoice response) qs
+      case (mm, msgs') of
+        (Just m', []) -> [uiToRun m']
+        (Just m', _) ->
+          if n - 1 == 0
+            then [uiToRun m']
+            else [uiToRun m', Ask playerId $ f $ Read t (BasicReadChoicesN (n - 1) msgs') mcs]
+        (Nothing, msgs'') -> [Ask playerId $ f $ Read t (BasicReadChoicesN n msgs'') mcs]
+    Read t (BasicReadChoicesUpToN n qs) mcs -> do
+      let (mm, msgs') = extract (qrChoice response) qs
+      case (mm, msgs') of
+        (Just m', []) -> [uiToRun m']
+        (Just m'@(Done _), _) -> [uiToRun m']
+        (Just m', [Done _]) -> [uiToRun m']
+        (Just m', msgs'') ->
+          if n - 1 == 0
+            then [uiToRun m']
+            else [uiToRun m', Ask playerId $ f $ Read t (BasicReadChoicesUpToN (n - 1) msgs'') mcs]
+        (Nothing, msgs'') -> [Ask playerId $ f $ Read t (BasicReadChoicesUpToN n msgs'') mcs]
     Read t (LeadInvestigatorMustDecide qs) mcs -> case qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ Read t (LeadInvestigatorMustDecide qs) mcs]
       Just msg -> [uiToRun msg]

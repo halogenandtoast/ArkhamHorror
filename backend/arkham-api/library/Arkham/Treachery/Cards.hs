@@ -208,6 +208,7 @@ allEncounterTreacheryCards =
       , beastOfTheBayou
       , bedeviled
       , beneathTheLodge
+      , bestLaidPlans
       , betweenWorlds
       , beyondTheVeil
       , blackStarsRise
@@ -410,6 +411,7 @@ allEncounterTreacheryCards =
       , raiseTheStakes
       , realmOfMadness
       , realmOfTorment
+      , resentfulWilds
       , restlessJourneyFallacy
       , restlessJourneyHardship
       , restlessJourneyLies
@@ -3126,6 +3128,21 @@ finePrint = (weakness "53014" "Fine Print") {cdCardTraits = singleton Pact}
 
 sellYourSoul :: CardDef
 sellYourSoul = (weakness "53015" "Sell Your Soul") {cdCardTraits = singleton Pact}
+
+resentfulWilds :: CardDef
+resentfulWilds =
+    (treachery "53074" "Resentful Wilds" DoomedExpedition 2)
+      { cdCardTraits = setFromList [Hazard]
+      , cdVengeancePoints = Just 1
+      }
+
+bestLaidPlans :: CardDef
+bestLaidPlans =
+  peril
+    (treachery "53075" "Best-Laid Plans" DoomedExpedition 3)
+      { cdCardTraits = setFromList [Blunder]
+      }
+
 
 damned :: CardDef
 damned =

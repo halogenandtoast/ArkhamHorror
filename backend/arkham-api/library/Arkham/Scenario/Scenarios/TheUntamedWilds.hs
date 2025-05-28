@@ -160,7 +160,7 @@ instance RunMessage TheUntamedWilds where
     Do (Explore iid source locationMatcher) -> do
       explore iid source locationMatcher PlaceExplored 1
       pure s
-    ScenarioResolution res -> do
+    ScenarioResolution res -> scope "resolutions" do
       investigators <- allInvestigators
       case res of
         NoResolution -> do

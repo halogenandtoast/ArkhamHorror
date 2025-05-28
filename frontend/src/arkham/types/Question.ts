@@ -271,6 +271,14 @@ export const readChoicesDecoder: JsonDecoder.Decoder<ReadChoices> = JsonDecoder.
     contents: JsonDecoder.array(messageDecoder, 'Message[]')
   }, 'BasicReadChoices'),
   JsonDecoder.object({
+    tag: JsonDecoder.literal('BasicReadChoicesN'),
+    contents: JsonDecoder.tuple([JsonDecoder.number(), JsonDecoder.array(messageDecoder, 'Message[]')], 'contents')
+  }, 'BasicReadChoicesN').map(({ contents }) => ({ tag: 'BasicReadChoices', contents: contents[1] })),
+  JsonDecoder.object({
+    tag: JsonDecoder.literal('BasicReadChoicesUpToN'),
+    contents: JsonDecoder.tuple([JsonDecoder.number(), JsonDecoder.array(messageDecoder, 'Message[]')], 'contents')
+  }, 'BasicReadChoicesUpToN').map(({ contents }) => ({ tag: 'BasicReadChoices', contents: contents[1] })),
+  JsonDecoder.object({
     tag: JsonDecoder.literal('LeadInvestigatorMustDecide'),
     contents: JsonDecoder.array(messageDecoder, 'Message[]')
     }, 'LeadInvestigatorMustDecide')

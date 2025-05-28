@@ -81,6 +81,7 @@ instance RunMessage TheForgottenAge where
     let metadata = toResultDefault mempty (campaignMeta attrs)
     case msg of
       CampaignStep PrologueStep -> scope "prologue" do
+        flavor $ setTitle "earthIsNotOurs.title" >> p "earthIsNotOurs.body"
         totalSupplyPoints <- initialSupplyPoints
         expeditionLeaders <- select $ mapOneOf investigatorIs [ursulaDowns, leoAnderson, montereyJack]
         supplyMap <- mapFromList . map (,totalSupplyPoints) <$> allInvestigators
@@ -101,8 +102,7 @@ instance RunMessage TheForgottenAge where
       ForInvestigator investigatorId (CampaignStep PrologueStep) -> do
         pickSupplies investigatorId metadata prologueSupplies msg
         pure c
-      CampaignStep (InterludeStep 1 mkey) -> do
-        lead <- getLead
+      CampaignStep (InterludeStep 1 mkey) -> scope "interlude1" do
         investigators <- allInvestigators
         withBlanket <- getInvestigatorsWithSupply Blanket
         withoutBlanket <- getInvestigatorsWithoutSupply Blanket
@@ -120,61 +120,68 @@ instance RunMessage TheForgottenAge where
           binoculars <- fieldMap InvestigatorSupplies (elem Binoculars) iid
           pure (iid, binoculars)
 
-        storyOnly withBlanket restfulSleep
+        storyOnlyBuild withBlanket do
+          compose.green do
+            p "blanket"
+            p.valid "restfulSleep"
+            p.invalid "tossingAndTurning"
+
         for_ withoutBlanket \iid -> do
-          storyOnly [iid] tossingAndTurning
-          chooseOneM iid do
-            questionLabeled "Choose trauma"
+          storyOnlyBuild [iid] do
+            compose.green do
+              p "blanket"
+              p.invalid "restfulSleep"
+              p.valid "tossingAndTurning"
+
+          chooseOneM iid $ unscoped do
+            questionLabeled' "chooseTrauma"
             questionLabeledCard iid
-            labeled "Suffer physical trauma" $ sufferPhysicalTrauma iid 1
-            labeled "Suffer mental trauma" $ sufferMentalTrauma iid 1
+            countVar 1 $ labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
+            countVar 1 $ labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
 
         let useProvisions = take (length investigators) provisions
         for_ useProvisions (uncurry useSupply)
 
         let lowOnRationsCount = length investigators - length provisions
-        chooseNM lead lowOnRationsCount do
-          questionLabeled
-            "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read Low on Rations"
-
+        storyWithChooseNM' lowOnRationsCount (p.green "provisions") do
           for_ investigators \iid -> do
             cardLabeled iid do
-              storyOnly [iid] lowOnRations
+              storyOnlyBuild [iid] $ p.green "lowOnRations"
               handleTarget iid CampaignSource iid
 
-        chooseOneM lead do
-          questionLabeled
-            "The lead investigator must choose one investigator to be the group’s lookout. Then, that investigator checks his or her supplies. If he or she has binoculars, he or she reads Shapes in the Trees. Otherwise, he or she reads Eyes in the Dark."
-
+        storyWithChooseOneM' (p.green "lookout") do
           for_ investigatorsWithBinocularsPairs \(iid, hasBinoculars) -> do
             cardLabeled (unInvestigatorId iid) do
               if hasBinoculars
                 then do
-                  storyOnly [iid] shapesInTheTrees
+                  storyOnlyBuild [iid] $ p.green "shapesInTheTrees"
                   interludeXp iid (WithBonus "Gain further insight into the motivations of the Eztli." 2)
                 else do
-                  storyOnly [iid] eyesInTheDark
+                  storyOnlyBuild [iid] $ p.green "eyesInTheDark"
                   sufferMentalTrauma iid 1
 
         when (notNull withMedicine && notNull withPoisoned) do
-          chooseUpToNM lead (min (length withMedicine) (length withPoisoned)) "Do not use medicine" do
-            questionLabeled "Choose an investigator to remove Poisoned by using a medicine"
-            for_ (zip withPoisoned withMedicine) \(poisoned, doctor) -> do
-              cardLabeled (unInvestigatorId poisoned) do
-                removeCampaignCardFromDeck poisoned Treacheries.poisoned
-                useSupply doctor Medicine
+          storyWithChooseUpToNM'
+            (min (length withMedicine) (length withPoisoned))
+            "doNotUseMedicine"
+            (p.green "medicine")
+            do
+              for_ (zip withPoisoned withMedicine) \(poisoned, doctor) -> do
+                cardLabeled (unInvestigatorId poisoned) do
+                  removeCampaignCardFromDeck poisoned Treacheries.poisoned
+                  useSupply doctor Medicine
 
         push $ CampaignStep (InterludeStepPart 1 mkey 2)
         nextCampaignStep
         pure c
-      CampaignStep (InterludeStepPart 1 _ 2) -> do
+      CampaignStep (InterludeStepPart 1 _ 2) -> scope "interlude1" do
         let
           withPoisoned =
             flip mapMaybe (mapToList attrs.decks)
               $ \(iid, Deck cards) -> guard (any (`cardMatch` CardWithTitle "Poisoned") cards) $> iid
 
         unless (null withPoisoned) do
-          storyOnly withPoisoned thePoisonSpreads
+          storyOnlyBuild withPoisoned (p.green "thePoisonSpreads")
           for_ withPoisoned (`sufferPhysicalTrauma` 1)
         pure c
       CampaignStep (InterludeStep 2 mkey) -> do

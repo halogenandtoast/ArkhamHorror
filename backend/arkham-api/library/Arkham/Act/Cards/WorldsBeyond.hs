@@ -20,7 +20,7 @@ worldsBeyond = act (1, A) WorldsBeyond Cards.worldsBeyond (groupClueCost $ PerPl
 
 instance HasAbilities WorldsBeyond where
   getAbilities (WorldsBeyond a) =
-    extend1 a $ mkAbility a 1 $ forced $ EnemyAttemptsToSpawnAt #when AnyEnemy LocationNotInPlay
+    extend1 a $ mkAbility a 1 $ forced $ EnemyAttemptsToSpawnAt #when (EnemyWantsToSpawnIn EmptyLocation) LocationNotInPlay
 
 instance RunMessage WorldsBeyond where
   runMessage msg a@(WorldsBeyond attrs) = runQueueT $ case msg of

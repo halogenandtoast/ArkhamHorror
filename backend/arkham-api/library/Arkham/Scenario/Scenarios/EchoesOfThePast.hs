@@ -10,6 +10,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
@@ -149,7 +150,7 @@ setupEchoesOfThePast attrs = do
     setAside [Enemies.keeperOfTheOath, Enemies.keeperOfTheOath]
     addAdditionalReferences ["52028b"]
 
-  whenInterviewed Assets.sebastienMoreau $ placeTokens attrs entryHall Clue 1
+  whenInterviewed Assets.sebastienMoreau $ placeTokens attrs entryHall Clue =<< perPlayer 1
 
   case pc of
     1 -> pure ()
@@ -192,9 +193,7 @@ instance RunMessage EchoesOfThePast where
         unscoped (campaignI18n (nameVar Assets.sebastienMoreau $ p "checkIfInterviewed"))
         p.validate didInterview "proceedToSebastiensInformation"
         p.validate (not didInterview) "otherwise"
-      -- story intro
       whenInterviewed Assets.sebastienMoreau $ flavor $ p "sebastiensInformation"
-      -- story sebastiensInformation
       pure s
     StandaloneSetup -> do
       randomToken <- sample (Cultist :| [Tablet, ElderThing])

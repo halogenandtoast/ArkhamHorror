@@ -28,11 +28,15 @@ const emit = defineEmits<{
 }>()
 
 const id = computed(() => props.agenda.id)
+
 const image = computed(() => {
   if (props.agenda.flipped) {
-    return imgsrc(`cards/${id.value.replace('c', '').replace(/a$/, '')}b.avif`);
+    if (["c03276a", "c03279a"].includes(id.value)) {
+      return imgsrc(`cards/${id.value.replace(/^c/, '')}b.avif`);
+    }
+    return imgsrc(`cards/${id.value.replace(/^c/, '').replace(/a$/, '')}b.avif`);
   }
-  return imgsrc(`cards/${id.value.replace('c', '')}.avif`);
+  return imgsrc(`cards/${id.value.replace(/^c/, '')}.avif`);
 })
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))

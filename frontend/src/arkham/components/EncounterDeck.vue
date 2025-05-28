@@ -93,7 +93,7 @@ const debug = useDebug()
         :class="{ 'can-interact': deckAction !== -1, 'revealed': revealTopCard, 'card': revealTopCard }"
         @click="$emit('choose', deckAction)"
       />
-      <span class="deck-size">{{props.spectral || game.encounterDeckSize}}</span>
+      <span class="deck-size">{{props.spectral === undefined ? game.encounterDeckSize : props.spectral}}</span>
       <span v-if="deckLabel" class="deck-label">{{deckLabel}}</span>
     </div>
     <img

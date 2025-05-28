@@ -55,6 +55,7 @@ data EnemyMatcher
   | EnemyAttachedTo TargetMatcher
   | EnemyCanEnter LocationMatcher
   | EnemyCanSpawnIn LocationMatcher
+  | EnemyWantsToSpawnIn LocationMatcher
   | EnemyCanMove
   | EnemyWillMoveWith InvestigatorMatcher
   | EnemyWithSealedChaosTokens Int ChaosTokenMatcher

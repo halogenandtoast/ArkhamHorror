@@ -155,7 +155,11 @@ data Question msg
   | PickCampaignSettings
   deriving stock (Show, Eq, Data)
 
-data ReadChoices msg = BasicReadChoices [UI msg] | LeadInvestigatorMustDecide [UI msg]
+data ReadChoices msg
+  = BasicReadChoices [UI msg]
+  | BasicReadChoicesN Int [UI msg]
+  | BasicReadChoicesUpToN Int [UI msg]
+  | LeadInvestigatorMustDecide [UI msg]
   deriving stock (Show, Eq, Data)
 
 data ChoosePlayerChoice = SetLeadInvestigator | SetTurnPlayer

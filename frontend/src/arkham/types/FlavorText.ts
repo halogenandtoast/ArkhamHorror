@@ -1,6 +1,6 @@
 import * as JsonDecoder from 'ts.data.json';
 
-export type FlavorTextModifier = 'BlueEntry' | 'NestedEntry' | 'RightAligned' | 'PlainText' | 'InvalidEntry' | 'ValidEntry' | 'EntrySplit' | 'ResolutionEntry' | 'CheckpointEntry' | 'InterludeEntry'
+export type FlavorTextModifier = 'BlueEntry' | 'GreenEntry' | 'NestedEntry' | 'RightAligned' | 'PlainText' | 'InvalidEntry' | 'ValidEntry' | 'EntrySplit' | 'ResolutionEntry' | 'CheckpointEntry' | 'InterludeEntry'
 
 export type ImageModifier = 'RemoveImage' | 'SelectImage'
 
@@ -34,6 +34,7 @@ export const imageModifierDecoder = JsonDecoder.oneOf<ImageModifier>([
 
 export const flavorTextModifierDecoder = JsonDecoder.oneOf<FlavorTextModifier>([
   JsonDecoder.literal('BlueEntry'),
+  JsonDecoder.literal('GreenEntry'),
   JsonDecoder.literal('NestedEntry'),
   JsonDecoder.literal('ResolutionEntry'),
   JsonDecoder.literal('CheckpointEntry'),

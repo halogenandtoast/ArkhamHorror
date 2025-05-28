@@ -353,6 +353,16 @@ storyWithChooseOneM' builder choices = do
   (_, choices') <- runChooseT choices
   storyWithChooseOne (buildFlavor builder) choices'
 
+storyWithChooseNM' :: ReverseQueue m => Int -> FlavorTextBuilder () -> ChooseT m a -> m ()
+storyWithChooseNM' n builder choices = do
+  (_, choices') <- runChooseT choices
+  storyWithChooseN n (buildFlavor builder) choices'
+
+storyWithChooseUpToNM' :: (HasI18n, ReverseQueue m) => Int -> Scope -> FlavorTextBuilder () -> ChooseT m a -> m ()
+storyWithChooseUpToNM' n scp builder choices = do
+  (_, choices') <- runChooseT choices
+  storyWithChooseUpToN n (buildFlavor builder) (Done (toI18n scp) : choices')
+
 chooseSome1M' :: (HasI18n, ReverseQueue m) => InvestigatorId -> Text -> ChooseT m a -> m ()
 chooseSome1M' iid txt choices = do
   ((_, ChooseState {label}), choices') <- runChooseT choices

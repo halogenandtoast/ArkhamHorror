@@ -146,6 +146,20 @@ storyWithChooseOne lead pids flavor choices =
         [(pid, Read flavor (BasicReadChoices $ if pid == lead then choices else []) Nothing) | pid <- pids]
     )
 
+storyWithChooseN :: PlayerId -> [PlayerId] -> Int -> FlavorText -> [UI Message] -> Message
+storyWithChooseN lead pids n flavor choices =
+  AskMap
+    ( mapFromList
+        [(pid, Read flavor (BasicReadChoicesN n $ if pid == lead then choices else []) Nothing) | pid <- pids]
+    )
+
+storyWithChooseUpToN :: PlayerId -> [PlayerId] -> Int -> FlavorText -> [UI Message] -> Message
+storyWithChooseUpToN lead pids n flavor choices =
+  AskMap
+    ( mapFromList
+        [(pid, Read flavor (BasicReadChoicesUpToN n $ if pid == lead then choices else []) Nothing) | pid <- pids]
+    )
+
 data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
   deriving stock (Generic, Eq, Show, Data)
   deriving anyclass (FromJSON, ToJSON)

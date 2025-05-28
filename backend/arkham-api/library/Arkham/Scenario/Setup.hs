@@ -25,7 +25,7 @@ import Arkham.Message.Lifted.Placement (IsPlacement (..))
 import Arkham.Placement
 import Arkham.Prelude hiding ((.=))
 import Arkham.Scenario.Helpers (excludeBSides, excludeDoubleSided, hasBSide, isDoubleSided)
-import Arkham.Scenario.Runner (createEnemyWithPlacement_, createEnemyWithPlacement, pushM)
+import Arkham.Scenario.Runner (createEnemyWithPlacement, createEnemyWithPlacement_, pushM)
 import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
 import Arkham.Target
@@ -36,6 +36,7 @@ import Control.Monad.State.Strict
 import Data.Function (on)
 import Data.List (nubBy)
 import Data.List.NonEmpty qualified as NE
+import Data.Typeable
 
 class SampleOneOf a where
   type Sampled a
@@ -484,7 +485,8 @@ whenReturnTo a = do
   isReturnTo' <- use isReturnToL
   when isReturnTo' a
 
-orWhenReturnTo :: ReverseQueue m => ScenarioBuilderT m a -> ScenarioBuilderT m a -> ScenarioBuilderT m a
+orWhenReturnTo
+  :: ReverseQueue m => ScenarioBuilderT m a -> ScenarioBuilderT m a -> ScenarioBuilderT m a
 orWhenReturnTo b a = do
   isReturnTo' <- use isReturnToL
   if isReturnTo' then a else b
@@ -494,8 +496,15 @@ orDoReturnTo b a = do
   isReturnTo' <- use isReturnToL
   if isReturnTo' then a else pure b
 
-orSampleIfReturnTo :: ReverseQueue m => a -> [a] -> ScenarioBuilderT m a
-orSampleIfReturnTo b as = b `orDoReturnTo` sample (b :| as)
+orSampleIfReturnTo
+  :: forall a m. (Eq a, Typeable a, ReverseQueue m) => a -> [a] -> ScenarioBuilderT m a
+orSampleIfReturnTo b as =
+  b `orDoReturnTo` do
+    (a, rest) <- sampleWithRest (b :| as)
+    case eqT @a @CardDef of
+      Just Refl -> removeEvery rest
+      Nothing -> pure ()
+    pure a
 
 getIsReturnTo :: ReverseQueue m => ScenarioBuilderT m Bool
 getIsReturnTo = use isReturnToL

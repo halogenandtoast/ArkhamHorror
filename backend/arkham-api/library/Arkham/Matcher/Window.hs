@@ -34,6 +34,7 @@ import Arkham.ScenarioLogKey
 import Arkham.SkillTest.Step
 import Arkham.Timing
 import Data.Aeson.TH
+import GHC.OverloadedLabels
 
 data MovesVia = MovedViaHunter | MovedViaOther | MovedViaAny
   deriving stock (Show, Eq, Ord, Generic, Data)
@@ -58,7 +59,7 @@ data WindowMatcher
   | PerformedSameTypeOfAction Timing Who ActionMatcher
   | PerformedDifferentTypesOfActionsInARow Timing Who Int ActionMatcher
   | DrawingStartingHand Timing Who
-  | InvestigatorDefeated Timing DefeatedByMatcher Who 
+  | InvestigatorDefeated Timing DefeatedByMatcher Who
   | InvestigatorWouldBeDefeated Timing DefeatedByMatcher Who
   | InvestigatorWouldTakeDamage Timing Who SourceMatcher DamageTypeMatcher
   | InvestigatorWouldTakeHorror Timing Who SourceMatcher
@@ -231,6 +232,9 @@ data WindowMatcher
 
 data ExploreMatcher = SuccessfulExplore LocationMatcher | FailedExplore CardMatcher | AnyExplore
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "success" ExploreMatcher where
+  fromLabel = SuccessfulExplore Anywhere
 
 data DefeatedByMatcher
   = ByHorror

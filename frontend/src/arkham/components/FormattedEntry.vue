@@ -35,6 +35,7 @@ function imageModifierToStyle(modifier: ImageModifier): string {
 function modifierToStyle(modifier: FlavorTextModifier): string {
   switch (modifier) {
     case 'BlueEntry': return 'blue'
+    case 'GreenEntry': return 'green'
     case 'NestedEntry': return 'nested'
     case 'ResolutionEntry': return 'resolution'
     case 'CheckpointEntry': return 'checkpoint'
@@ -148,6 +149,38 @@ export default defineComponent({
   &::after {
     border-radius: 55px;
     box-shadow: inset 0 0 15px color-mix(in srgb, #3a4a69, transparent 10%), 1px 1px 3px color-mix(in srgb, #3a4a69, transparent 30%);
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  > p:first-child {
+    margin-left: 35px;
+  }
+}
+
+.green, :deep(.green), p.green, :deep(p.green) {
+  --color: #213C35;
+  min-height: 6em;
+  place-content: center;
+  border: 3px solid ;
+  border-radius: 55px;
+  background-color: color-mix(in srgb, var(--color), transparent 90%);
+  padding: 20px;
+  position: relative;
+  z-index: 0;
+
+  &.nested {
+    border: 0;
+    &::after {
+      filter: grayscale(1);
+    }
+  }
+
+  &::after {
+    border-radius: 55px;
+    box-shadow: inset 0 0 15px color-mix(in srgb, var(--color), transparent 10%), 1px 1px 3px color-mix(in srgb, var(--color), transparent 30%);
     content: "";
     position: absolute;
     inset: 0;

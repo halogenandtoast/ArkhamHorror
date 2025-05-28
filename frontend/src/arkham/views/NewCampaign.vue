@@ -28,7 +28,7 @@ const alpha = computed(() => {
   return queryParams.alpha !== undefined || localStorage.getItem('alpha') === 'true'
 })
 
-type GameMode = 'Campaign' | 'Standalone' | 'SideStory'
+type GameMode = 'Campaign' | 'SideStory'
 
 const gameMode = ref<GameMode>('Campaign')
 
@@ -79,9 +79,11 @@ const playerCount = ref(1)
 
 type MultiplayerVariant = 'WithFriends' | 'TrueSolo'
 
+type CampaignType = 'FullCampaign' | 'PartialCampaign' | 'Standalone'
+
 const selectedDifficulty = ref<Difficulty>('Easy')
 const deckIds = ref<(string | null)[]>([null, null, null, null])
-const fullCampaign = ref(true)
+const fullCampaign = ref<CampaignType>('FullCampaign')
 const selectedCampaign = ref<string | null>(null)
 const selectedScenario = ref<string | null>(null)
 const campaignName = ref<string | null>(null)
@@ -114,7 +116,7 @@ const selectedCampaignReturnToId = computed(() => {
 })
 
 const disabled = computed(() => {
-  if (gameMode.value === 'Standalone' || gameMode.value === 'SideStory') {
+  if (fullCampaign.value === 'Standalone' || gameMode.value === 'SideStory') {
     return !(scenario.value && currentCampaignName.value)
   } else {
     const mcampaign = campaigns.value.find((campaign) => campaign.id === selectedCampaign.value);
@@ -128,7 +130,7 @@ const defaultCampaignName = computed(() => {
     return `${returnToPrefix}${campaign.value.name}`;
   }
 
-  if (gameMode.value === 'Standalone' && scenario.value) {
+  if (fullCampaign.value === 'Standalone' && scenario.value) {
     const returnToPrefix = returnTo.value ? "Return to " : ""
     return `${returnToPrefix}${scenario.value.name}`;
   }
@@ -160,7 +162,7 @@ const campaign = computed(() =>
 )
 
 async function start() {
-  if (gameMode.value === 'Standalone' || gameMode.value === 'SideStory') {
+  if (fullCampaign.value === 'Standalone' || gameMode.value === 'SideStory') {
     if (scenario.value && currentCampaignName.value) {
       const scenarioId = returnTo.value && scenario.value.returnTo ? scenario.value.returnTo : scenario.value.id
       newGame(
@@ -203,23 +205,8 @@ async function start() {
           <slot name="cancel"></slot>
         </header>
         <form id="new-campaign" @submit.prevent="start">
-          <p>{{$t('create.numberOfPlayers')}}</p>
-          <div class="options">
-            <input type="radio" v-model="playerCount" :value="1" id="player1" /><label for="player1">1</label>
-            <input type="radio" v-model="playerCount" :value="2" id="player2" /><label for="player2">2</label>
-            <input type="radio" v-model="playerCount" :value="3" id="player3" /><label for="player3">3</label>
-            <input type="radio" v-model="playerCount" :value="4" id="player4" /><label for="player4">4</label>
-          </div>
-          <transition name="slide">
-            <div v-if="playerCount > 1" class="options">
-              <input type="radio" v-model="multiplayerVariant" value="WithFriends" id="friends" /><label for="friends">{{$t('create.withFriends')}}</label>
-              <input type="radio" v-model="multiplayerVariant" value="Solo" id="solo" /><label for="solo">{{$t('create.multihandedSolo')}}</label>
-            </div>
-          </transition>
-
           <div class="options">
             <input type="radio" v-model="gameMode" :value="'Campaign'" id="campaign"> <label for="campaign">{{$t('create.campaign')}}</label>
-            <input type="radio" v-model="gameMode" :value="'Standalone'" id="standalone"> <label for="standalone">{{$t('create.standalone')}}</label>
             <input type="radio" v-model="gameMode" :value="'SideStory'" id="sideStory"> <label for="sideStory">{{$t('create.sideStory')}}</label>
           </div>
 
@@ -233,9 +220,11 @@ async function start() {
           <template v-else>
             <!-- <select v-model="selectedCampaign"> -->
               <div class="campaigns">
-                <div v-for="campaign in campaigns" :key="campaign.id" class="campaign" :class="{ beta: campaign.beta, alpha: campaign.alpha }">
-                  <input type="image" class="campaign-box" :class="{ 'selected-campaign': selectedCampaign == campaign.id }" :src="imgsrc(`boxes/${campaign.id}.jpg`)" @click.prevent="selectCampaign(campaign.id)">
-                </div>
+                <template v-for="c in campaigns" :key="c.id">
+                  <div class="campaign" :class="{ beta: c.beta, alpha: c.alpha }">
+                    <input type="image" class="campaign-box" :class="{ 'selected-campaign': selectedCampaign == c.id }" :src="imgsrc(`boxes/${c.id}.jpg`)" @click.prevent="selectCampaign(c.id)">
+                  </div>
+                </template>
               </div>
 
               <div class="alpha-warning" v-if="campaign && campaign.alpha">{{$t('create.alphaWarning')}}</div>
@@ -243,62 +232,80 @@ async function start() {
             <!-- </select> -->
           </template>
 
-          <div v-if="(gameMode === 'Campaign' || gameMode === 'Standalone') && selectedCampaign && selectedCampaignReturnToId" class="options">
-            <input type="radio" v-model="returnTo" :value="false" id="normal"> <label for="normal">{{$t('create.normal')}}</label>
-            <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">{{$t('create.returnTo')}}</label>
-          </div>
-
-          <div v-if="gameMode === 'Campaign' && campaign && campaign.settings" class="options">
-            <input type="radio" v-model="fullCampaign" :value="true" id="full"> <label for="full">{{$t('create.fullCampaign')}}</label>
-            <input type="radio" v-model="fullCampaign" :value="false" id="partial"> <label for="partial">{{$t('create.partialCampaign')}}</label>
-          </div>
-
-          <template v-if="(gameMode === 'Standalone' || (gameMode !== 'SideStory' && !fullCampaign)) && selectedCampaign">
-            <div class="scenarios">
-              <div v-for="scenario in campaignScenarios" :key="scenario.id">
-                <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="imgsrc(`boxes/${scenario.id}.jpg`)" @click="selectedScenario = scenario.id">
-              </div>
+          <template v-if="campaign !== undefined || scenario !== undefined">
+            <p>{{$t('create.numberOfPlayers')}}</p>
+            <div class="options">
+              <input type="radio" v-model="playerCount" :value="1" id="player1" /><label for="player1">1</label>
+              <input type="radio" v-model="playerCount" :value="2" id="player2" /><label for="player2">2</label>
+              <input type="radio" v-model="playerCount" :value="3" id="player3" /><label for="player3">3</label>
+              <input type="radio" v-model="playerCount" :value="4" id="player4" /><label for="player4">4</label>
             </div>
-          </template>
+            <transition name="slide">
+              <div v-if="playerCount > 1" class="options">
+                <input type="radio" v-model="multiplayerVariant" value="WithFriends" id="friends" /><label for="friends">{{$t('create.withFriends')}}</label>
+                <input type="radio" v-model="multiplayerVariant" value="Solo" id="solo" /><label for="solo">{{$t('create.multihandedSolo')}}</label>
+              </div>
+            </transition>
 
-          <p>{{$t('create.difficulty')}}</p>
-          <div class="options">
-            <template v-for="difficulty in difficulties" :key="difficulty">
+
+            <div v-if="(gameMode === 'Campaign' || fullCampaign === 'Standalone') && selectedCampaign && selectedCampaignReturnToId" class="options">
+              <input type="radio" v-model="returnTo" :value="false" id="normal"> <label for="normal">{{$t('create.normal')}}</label>
+              <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">{{$t('create.returnTo')}}</label>
+            </div>
+
+            <div v-if="gameMode === 'Campaign' && campaign && campaign.settings" class="options">
+              <input type="radio" v-model="fullCampaign" :value="'FullCampaign'" id="full"> <label for="full">{{$t('create.fullCampaign')}}</label>
+              <input type="radio" v-model="fullCampaign" :value="'Standalone'" id="standalone"> <label for="standalone">{{$t('create.standalone')}}</label>
+              <input type="radio" v-model="fullCampaign" :value="'PartialCampaign'" id="partial"> <label for="partial">{{$t('create.partialCampaign')}}</label>
+            </div>
+
+            <template v-if="['Standalone', 'PartialCampaign'].includes(fullCampaign) && selectedCampaign">
+              <div class="scenarios">
+                <div v-for="scenario in campaignScenarios" :key="scenario.id">
+                  <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="imgsrc(`boxes/${scenario.id}.jpg`)" @click="selectedScenario = scenario.id">
+                </div>
+              </div>
+            </template>
+
+            <p>{{$t('create.difficulty')}}</p>
+            <div class="options">
+              <template v-for="difficulty in difficulties" :key="difficulty">
+                <input
+                  type="radio"
+                  v-model="selectedDifficulty"
+                  :value="difficulty"
+                  :checked="difficulty === selectedDifficulty"
+                  :id="`difficulty${difficulty}`"
+                />
+                <label :for="`difficulty${difficulty}`">{{$t('create.'+difficulty)}}</label>
+              </template>
+            </div>
+
+            <p>{{$t('create.includeTarotReadings')}}</p>
+            <div class="options">
               <input
                 type="radio"
-                v-model="selectedDifficulty"
-                :value="difficulty"
-                :checked="difficulty === selectedDifficulty"
-                :id="`difficulty${difficulty}`"
+                v-model="includeTarotReadings"
+                :value="false"
+                :checked="!includeTarotReadings"
+                id="tarotNo"
               />
-              <label :for="`difficulty${difficulty}`">{{$t('create.'+difficulty)}}</label>
-            </template>
-          </div>
+              <label for="tarotNo">{{$t('No')}}</label>
+              <input
+                type="radio"
+                v-model="includeTarotReadings"
+                :value="true"
+                :checked="includeTarotReadings"
+                id="tarotYes"
+              />
+              <label for="tarotYes">{{$t('Yes')}}</label>
+            </div>
 
-          <p>{{$t('create.includeTarotReadings')}}</p>
-          <div class="options">
-            <input
-              type="radio"
-              v-model="includeTarotReadings"
-              :value="false"
-              :checked="!includeTarotReadings"
-              id="tarotNo"
-            />
-            <label for="tarotNo">{{$t('No')}}</label>
-            <input
-              type="radio"
-              v-model="includeTarotReadings"
-              :value="true"
-              :checked="includeTarotReadings"
-              id="tarotYes"
-            />
-            <label for="tarotYes">{{$t('Yes')}}</label>
-          </div>
-
-          <div>
-            <p>{{$t('create.gameName')}}</p>
-            <input type="text" v-model="campaignName" :placeholder="currentCampaignName" />
-          </div>
+            <div>
+              <p>{{$t('create.gameName')}}</p>
+              <input type="text" v-model="campaignName" :placeholder="currentCampaignName" />
+            </div>
+          </template>
 
           <button type="submit" :disabled="disabled">{{$t('create.create')}}</button>
         </form>
@@ -512,7 +519,7 @@ header {
 .scenarios {
   display: grid;
   line-height: 0;
-  grid-template-columns: repeat(auto-fill, calc((1 / 4 * 100%) - 8px));
+  grid-template-columns: repeat(auto-fill, calc((1 / 6 * 100%) - 9px));
   gap: 10px;
   margin-bottom: 10px;
 

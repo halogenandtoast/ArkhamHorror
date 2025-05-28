@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { handleI18n } from '@/arkham/i18n';
 import type { Game } from '@/arkham/types/Game';
 import { QuestionType } from '@/arkham/types/Question';
 import { Done, CardLabel, Label, MessageType, PortraitLabel, TooltipLabel } from '@/arkham/types/Message';
@@ -18,8 +20,15 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const question = computed(() => props.game.question[props.playerId])
+const { t } = useI18n()
 const cardLabelImage = (cardCode: string) => {
   return imgsrc(`cards/${cardCode.replace('c', '')}.avif`);
+}
+const label = function(body: string) {
+  if (body.startsWith("$")) {
+    return formatContent(handleI18n(body.slice(1), t))
+  }
+  return formatContent(body)
 }
 
 const portraitLabelImage = (investigatorId: string) => {
@@ -112,7 +121,7 @@ const choose = (idx: number) => emit('choose', idx)
       <img :src="questionImage" class="card" />
     </div>
     <div class="question-content">
-      <h2 v-html="formatContent(question.label)"></h2>
+      <h2 v-html="label(question.label)"></h2>
 
       <div class="portrait-choices" v-if="portraitChoices.length > 0">
         <template v-for="[choice, index] in portraitChoices" :key="index">
@@ -139,7 +148,7 @@ const choose = (idx: number) => emit('choose', idx)
             <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
           </template>
           <template v-if="choice.tag === MessageType.LABEL">
-            <button @click="choose(index)">{{$t(choice.label)}}</button>
+            <button @click="choose(index)">{{label(choice.label)}}</button>
           </template>
           <template v-if="choice.tag === MessageType.DONE">
             <button @click="choose(index)">{{$t(choice.label)}}</button>
@@ -193,6 +202,14 @@ const choose = (idx: number) => emit('choose', idx)
 </template>
 
 <style lang="scss" scoped>
+.question-content {
+  width: 60%;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  color: white;
+  border-radius: 15px;
+  &:has(h2) { padding: 0; }
+}
 .question-label {
   display: flex;
   flex-direction: column;
@@ -230,6 +247,7 @@ button {
   flex-wrap: wrap;
   flex-direction: column;
   gap: 10px;
+  margin: 10px;
 }
 
 .card-labels {
@@ -250,6 +268,11 @@ button {
   width: calc(var(--card-width) * 2);
 }
 
+.question-label:not(:has(> .question-image)) {
+  h2 {
+    padding: 10px 20px;
+  }
+}
 .question-label:has(> .question-image) {
   display: flex;
   flex-direction: row;

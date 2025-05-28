@@ -10,7 +10,6 @@ import Arkham.Investigator.Import.Lifted hiding (InvestigatorDamage)
 import Arkham.Investigator.Types (Field (InvestigatorDamage, InvestigatorHorror))
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message (pattern MovedDamage, pattern MovedHorror)
 import Arkham.Projection
 import Arkham.Window (Window, windowType)
 import Arkham.Window qualified as Window
@@ -96,18 +95,21 @@ instance RunMessage TommyMuldoon where
         chooseOrRunOne attrs.id
           $ [Label "Done moving damage/horror" [] | n == 11]
           <> [ AssetHorrorLabel asset
-                 $ MovedHorror #elderSign (toSource attrs.id) (toTarget asset) 1
+                 $ MoveTokensNoDefeated #elderSign (toSource attrs.id) (toTarget asset) #horror 1
                  : [HandleAbilityOption attrs.id (toSource ElderSign) 11 | n == 1]
              | hasHorror
              , asset <- assetsWithSanity
              ]
           <> [ AssetDamageLabel asset
-                 $ MovedDamage #elderSign (toSource attrs.id) (toTarget asset) 1
+                 $ MoveTokensNoDefeated #elderSign (toSource attrs.id) (toTarget asset) #damage 1
                  : [HandleAbilityOption attrs.id (toSource ElderSign) 11 | n == 1]
              | hasDamage
              , asset <- assetsWithHealth
              ]
 
+      when (n == 11) do
+        assets <- select $ oneOf [AssetWithDamage, AssetWithHorror]
+        for_ assets (checkDefeated ElderSign )
       pure i
     HandleAbilityOption (is attrs -> True) _ n | n `elem` [2, 22] -> do
       assetsWithDamage <- select (AssetWithDamage <> assetControlledBy attrs.id)
@@ -116,12 +118,12 @@ instance RunMessage TommyMuldoon where
         chooseOrRunOne attrs.id
           $ [Label "Done moving damage/horror" [] | n == 22]
           <> [ AssetHorrorLabel asset
-                 $ MovedHorror #elderSign (toSource asset) (toTarget attrs) 1
+                 $ MoveTokensNoDefeated #elderSign (toSource asset) (toTarget attrs) #horror 1
                  : [HandleAbilityOption attrs.id (toSource ElderSign) 22 | n == 2]
              | asset <- assetsWithHorror
              ]
           <> [ AssetDamageLabel asset
-                 $ MovedDamage #elderSign (toSource asset) (toTarget attrs) 1
+                 $ MoveTokensNoDefeated #elderSign (toSource asset) (toTarget attrs) #damage 1
                  : [HandleAbilityOption attrs.id (toSource ElderSign) 22 | n == 2]
              | asset <- assetsWithDamage
              ]

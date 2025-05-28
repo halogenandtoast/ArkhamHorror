@@ -139,6 +139,7 @@ data EnemyMatcher
   | EnemyWhenOtherEnemy EnemyMatcher
   | EnemyIfReturnTo EnemyMatcher EnemyMatcher
   | EnemyWithAnyCardsUnderneath
+  | SignatureEnemy
   | -- | Must be replaced
     ThatEnemy
   deriving stock (Show, Eq, Ord, Data)

@@ -52,6 +52,9 @@ instance Placeable EnemyId where
 instance Placeable EnemyAttrs where
   place attrs placement = push $ PlaceEnemy attrs.id (toPlacement placement)
 
+instance Placeable TreacheryId where
+  place tid placement = push $ PlaceTreachery tid (toPlacement placement)
+
 instance Placeable SkillAttrs where
   place attrs placement = push $ PlaceSkill attrs.id (toPlacement placement)
 

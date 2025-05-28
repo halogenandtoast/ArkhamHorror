@@ -156,7 +156,7 @@ getHandSize :: HasGame m => InvestigatorAttrs -> m Int
 getHandSize attrs = do
   modifiers <- getModifiers (InvestigatorTarget $ investigatorId attrs)
   let ignoreReduction = IgnoreHandSizeReduction `elem` modifiers
-  pure $ foldr applyMaxModifier (foldr (applyModifier ignoreReduction) 8 modifiers) modifiers
+  pure $ foldr (applyModifier ignoreReduction) (foldr applyMaxModifier 8 modifiers) modifiers
  where
   applyModifier ignoreReduction (HandSize m) n
     | m > 0 || not ignoreReduction = max 0 (n + m)

@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game.Runner where
 
@@ -1276,6 +1276,11 @@ runGameMessage msg g = case msg of
       $ g
       & (focusedCardsL %~ map (filter (/= EncounterCard card)))
       . (foundCardsL . each %~ filter (/= EncounterCard card))
+  Msg.PlaceUnderneath _ cards -> do
+    pure
+      $ g
+      & (focusedCardsL %~ map (filter (`notElem` cards)))
+      . (foundCardsL . each %~ filter (`notElem` cards))
   ReturnToHand iid (SkillTarget skillId) -> do
     card <- field SkillCard skillId
     pushAll [RemoveFromPlay (toSource skillId), addToHand iid card]
@@ -3334,8 +3339,6 @@ instance RunMessage Game where
         >>= runGameMessage msg
       )
       <&> handleActionDiff g
-      . set enemyMovingL Nothing
-      . set enemyEvadingL Nothing
 
 runPreGameMessage :: Runner Game
 runPreGameMessage msg g = case msg of

@@ -113,6 +113,9 @@ run = pushAndRun
 pushAndRunAll :: [Message] -> TestAppT ()
 pushAndRunAll msgs = pushAll msgs >> runMessages
 
+tick :: TestAppT ()
+tick = run Noop
+
 runAll :: [Message] -> TestAppT ()
 runAll = pushAndRunAll
 

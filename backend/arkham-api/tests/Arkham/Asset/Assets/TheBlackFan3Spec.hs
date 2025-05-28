@@ -22,6 +22,7 @@ spec = describe "The Black Fan (3)" $ do
       self `gainResources` 15
       self.additionalActions `shouldSatisfyM` notNull
       self `spendResources` 1
+      tick
       self.additionalActions `shouldSatisfyM` null
 
   context "with 20 or more resources" $ do

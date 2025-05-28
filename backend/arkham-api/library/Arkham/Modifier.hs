@@ -52,6 +52,7 @@ data ModifierType
   | AddSkillToOtherSkill SkillType SkillType
   | AddSkillValue SkillType
   | AddSkillValueOf SkillType InvestigatorId
+  | WhileEnemyMovingModifier ModifierType
   | AddTrait Trait
   | AdditionalActionCostOf ActionTarget Int
   | AdditionalActions Text Source Int

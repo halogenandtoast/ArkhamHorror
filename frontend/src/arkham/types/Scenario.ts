@@ -257,6 +257,7 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c51032": return "theDunwichLegacy.bloodOnTheAltar"
     case "c51041": return "theDunwichLegacy.undimensionedAndUnseen"
     case "c51047": return "theDunwichLegacy.whereDoomAwaits"
+    case "c51053": return "theDunwichLegacy.lostInTimeAndSpace"
     case "c52014": return "thePathToCarcosa.curtainCall"
     case "c52021": return "thePathToCarcosa.theLastKing"
     case "c52028": return "thePathToCarcosa.echoesOfThePast"

@@ -174,6 +174,7 @@ import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
 import Arkham.SkillTest.Runner hiding (stepL)
 import Arkham.SkillTestResult
 import Arkham.Source
+import Arkham.Spawn (SpawnAt (..))
 import Arkham.Story
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Story.Types (Field (..), StoryAttrs (..))
@@ -202,7 +203,7 @@ import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (emptyArray, parse, parseMaybe)
 import Data.List qualified as List
-import Data.List.Extra (groupOn)
+import Data.List.Extra (groupOn, nubOrdOn)
 import Data.Map.Monoidal.Strict (getMonoidalMap)
 import Data.Map.Monoidal.Strict qualified as MonoidalMap
 import Data.Map.Strict qualified as Map
@@ -2115,23 +2116,19 @@ getLocationsMatching lmatcher = do
           pure $ filter (and . sequence [(`elem` allOptions), (`notElem` barricades) . toId]) ls
         _ -> error "not designed to handle no or multiple starts"
     ConnectedFrom matcher -> do
-      -- we need to add the (ConnectedToWhen)
-      -- NOTE: We need to not filter the starts
       starts <- select matcher
-      others :: [Location] <- concatForM starts \l -> do
+      others <- concatForM starts \l -> do
         mods <- getModifiers l
         let checks = [(isValid, connectedTo) | ConnectedToWhen isValid connectedTo <- mods]
-        concatForM checks $ \(isValid, connectedTo) -> do
+        concatForM checks \(isValid, connectedTo) -> do
           valid <- l <=~> isValid
           if valid then getLocationsMatching connectedTo else pure []
       matcherSupreme <- foldMapM (fmap AnyLocationMatcher . Helpers.getConnectedMatcher) starts
       allOptions <- (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
       pure $ filter ((`notElem` starts) . toId) $ filter (`elem` allOptions) ls
     AccessibleFrom matcher -> do
-      -- we need to add the (ConnectedToWhen)
-      -- NOTE: We need to not filter the starts
       starts <- select matcher
-      others :: [Location] <- concatForM starts \l -> do
+      others <- concatForM starts \l -> do
         mods <- getModifiers l
         let barricaded = concat [xs | Barricades xs <- mods]
         let checks = [(isValid, connectedTo) | ConnectedToWhen isValid connectedTo <- mods]
@@ -2913,6 +2910,11 @@ enemyMatcherFilter es matcher' = case matcher' of
         else select $ locationMatcher <> not_ (mconcat noSpawn)
 
     pure $ notNull locations
+  EnemyWantsToSpawnIn locationMatcher -> pure $ flip filter es \enemy ->
+    case attr enemySpawnAt enemy of
+      Just (SpawnAt (LocationMatchAll inner)) -> locationMatcher `elem` inner
+      Just (SpawnAt inner) -> inner == locationMatcher
+      _ -> False
   EnemyCanBeDamagedBySource source -> flip filterM es \enemy -> do
     modifiers <- getModifiers (toTarget enemy)
     flip allM modifiers $ \case
@@ -4813,7 +4815,7 @@ instance Projection Scenario where
       ScenarioDecks -> pure scenarioDecks
       ScenarioVictoryDisplay -> do
         enemies <- selectField EnemyCard $ EnemyWithPlacement (OutOfPlay VictoryDisplayZone)
-        pure $ scenarioVictoryDisplay <> enemies
+        pure $ nubOrdOn (.id) (scenarioVictoryDisplay <> enemies)
       ScenarioRemembered -> pure scenarioLog
       ScenarioCounts -> pure scenarioCounts
       ScenarioStandaloneCampaignLog -> pure scenarioStandaloneCampaignLog
@@ -5078,12 +5080,16 @@ runMessages mLogger = do
               -- > While an enemy is moving, Hidden Library gains the Passageway trait.
               -- Therefor we must track the "while" aspect
               case msg of
-                HunterMove eid -> overGame $ enemyMovingL ?~ eid
-                WillMoveEnemy eid _ -> overGame $ enemyMovingL ?~ eid
-                CheckWindows (getEvadedEnemy -> Just eid) ->
-                  overGame $ enemyEvadingL ?~ eid
-                Do (CheckWindows (getEvadedEnemy -> Just eid)) ->
-                  overGame $ enemyEvadingL ?~ eid
+                HunterMove eid -> do
+                  overGame $ enemyMovingL ?~ eid
+                  -- because some modifiers depend on the enemy moving we need to preload them here
+                  overGameM preloadModifiers
+                WillMoveEnemy eid _ -> do
+                  overGame $ enemyMovingL ?~ eid
+                  -- because some modifiers depend on the enemy moving we need to preload them here
+                  overGameM preloadModifiers
+                CheckWindows (getEvadedEnemy -> Just eid) -> overGame $ enemyEvadingL ?~ eid
+                Do (CheckWindows (getEvadedEnemy -> Just eid)) -> overGame $ enemyEvadingL ?~ eid
                 _ -> pure ()
 
               -- Before we preload, store the as if at's
@@ -5119,14 +5125,15 @@ runMessages mLogger = do
                 overGameM preloadEntities
                 overGameM $ runPreGameMessage msg
                 overGameM
-                  $ runMessage msg
-                  >=> if shouldPreloadModifiers msg
+                  $ if shouldPreloadModifiers msg
                     then
-                      preloadModifiers
+                      runMessage msg
+                        >=> preloadModifiers
                         >=> handleAsIfChanges asIfLocations
                         >=> handleTraitRestrictedModifiers
                         >=> handleBlanked
-                    else pure
+                    else runMessage msg
+                overGame $ set enemyMovingL Nothing . set enemyEvadingL Nothing
               runMessages mLogger
         go msg
 
@@ -5204,7 +5211,7 @@ preloadModifiers g = case gameMode g of
   _ -> flip runReaderT g $ do
     let modifierFilter = if gameInSetup g then modifierActiveDuringSetup else const True
     allModifiers <-
-      traverse (foldMapM expandForEach) =<< execWriterT do
+      traverse (foldMapM expandForEach . foldMap handleMoving) =<< execWriterT do
         getModifiersFor $ gameEntities g
         traverse_ getModifiersFor $ gameInHandEntities g
         traverse_ getModifiersFor $ gameInDiscardEntities g
@@ -5219,6 +5226,8 @@ preloadModifiers g = case gameMode g of
     n <- calculate calc
     pure $ map (\m -> x {modifierType = m}) (concat @[[ModifierType]] $ replicate n ms)
   expandForEach m = pure [m]
+  handleMoving m@(modifierType -> WhileEnemyMovingModifier x) = if isJust (view enemyMovingL g) then [m {modifierType = x}] else []
+  handleMoving m = [m]
 
 handleTraitRestrictedModifiers :: Monad m => Game -> m Game
 handleTraitRestrictedModifiers g = do

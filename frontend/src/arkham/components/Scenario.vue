@@ -599,7 +599,6 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
             />
           </div>
 
-
           <EncounterDeck
             v-if="spectralEncounterDeck"
             :spectral="spectralEncounterDeck.length"

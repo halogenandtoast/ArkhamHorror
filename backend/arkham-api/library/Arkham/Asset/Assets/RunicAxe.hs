@@ -111,7 +111,7 @@ instance RunMessage RunicAxe where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)
-      if traceShowId (attrs `hasCustomization` InscriptionOfTheHunt && attrs.use Charge > 0)
+      if attrs `hasCustomization` InscriptionOfTheHunt && attrs.use Charge > 0
         then do
           let hasPower = attrs `hasCustomization` AncientPower
           let distance = if hasPower then min 3 (attrs.use Charge) else 1

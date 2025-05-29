@@ -443,23 +443,30 @@ skillTestModifiers sid (toSource -> source) (toTarget -> target) mods = do
   pure $ CreateWindowModifierEffect (#skillTest sid) ems source target
 
 nextSkillTestModifier
-  :: (Sourceable source, Targetable target, HasGame m)
-  => source
+  :: (Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId, Targetable target, HasGame m)
+  => investigator
+  -> source
   -> target
   -> ModifierType
   -> m Message
-nextSkillTestModifier source target modifier =
-  nextSkillTestModifiers source target [modifier]
+nextSkillTestModifier investigator source target modifier =
+  nextSkillTestModifiers investigator source target [modifier]
 
 nextSkillTestModifiers
-  :: (Sourceable source, Targetable target, HasGame m)
-  => source
+  :: (Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId, HasGame m, Targetable target)
+  => investigator
+  -> source
   -> target
   -> [ModifierType]
   -> m Message
-nextSkillTestModifiers (toSource -> source) (toTarget -> target) mods = do
+nextSkillTestModifiers investigator (toSource -> source) (toTarget -> target) mods = do
   ems <- effectModifiers source mods
-  pure $ CreateWindowModifierEffect EffectNextSkillTestWindow ems source target
+  pure
+    $ CreateWindowModifierEffect
+      (EffectNextSkillTestWindow (asId investigator))
+      ems
+      source
+      target
 
 effectModifiers
   :: (HasGame m, Sourceable a) => a -> [ModifierType] -> m (EffectMetadata Window Message)

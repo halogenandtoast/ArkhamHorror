@@ -356,6 +356,9 @@ class (Ord (QueryElement a), Eq (QueryElement a)) => Query a where
 matches :: (HasCallStack, HasGame m, Query a) => QueryElement a -> a -> m Bool
 matches a matcher = elem a <$> select matcher
 
+guardMatches :: (HasCallStack, HasGame m, Query a, Alternative m) => QueryElement a -> a -> m ()
+guardMatches a matcher = guardM $ elem a <$> select matcher
+
 (<=~>) :: (HasGame m, Query a) => QueryElement a -> a -> m Bool
 (<=~>) = matches
 

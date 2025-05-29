@@ -103,7 +103,7 @@ replaceNextSkillTest :: SkillTestId -> EffectAttrs -> EffectAttrs
 replaceNextSkillTest sid e = e {effectWindow = replaceNextSkillTestWindow e.window}
  where
   replaceNextSkillTestWindow = \case
-    Just EffectNextSkillTestWindow -> Just $ EffectSkillTestWindow sid
+    Just (EffectNextSkillTestWindow _) -> Just $ EffectSkillTestWindow sid
     a -> a
 
 instance HasCardCode EffectAttrs where

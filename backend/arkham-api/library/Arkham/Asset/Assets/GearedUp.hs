@@ -21,30 +21,39 @@ gearedUp = asset GearedUp Cards.gearedUp
 
 instance HasAbilities GearedUp where
   getAbilities (GearedUp attrs) =
-    [ playerLimit PerGame $ restrictedAbility attrs 1 ControlsThis $ forced $ TurnBegins #when You
-    ]
+    [playerLimit PerGame $ restricted attrs 1 ControlsThis $ forced $ TurnBegins #when You]
 
 instance RunMessage GearedUp where
   runMessage msg a@(GearedUp attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ LoseActions iid (attrs.ability 1) 3
-      push $ DoStep 1 msg
+      loseActions iid (attrs.ability 1) 3
+      if tabooed TabooList21 attrs
+        then doStep 5 msg
+        else do_ msg
       pure a
-    DoStep _ msg'@(UseThisAbility iid (isSource attrs -> True) 1) -> do
+
+    Do msg'@(UseThisAbility iid (isSource attrs -> True) 1) -> do
       cards <- withModifiers iid (toModifiers attrs [ReduceCostOf AnyCard 1]) $ do
         filter (`cardMatch` card_ (#asset <> #item))
           <$> getPlayableCards (attrs.ability 1) iid (UnpaidCost NoAction) (defaultWindows iid)
       when (notNull cards) do
-        ( if tabooed TabooList21 attrs
-            then chooseUpToNM iid 5 "Done Playing Items"
-            else chooseOneM iid
-          )
-          do
-            unless (tabooed TabooList21 attrs) $ labeled "Done Playing Items" nothing
-            for_ cards \card -> do
-              targeting card do
-                reduceCostOf (attrs.ability 1) card 1
-                push $ PayCardCost iid card (defaultWindows iid)
-                doStep 1 msg'
+        chooseOneM iid do
+          labeled "Done Playing Items" nothing
+          targets cards \card -> do
+            reduceCostOf (attrs.ability 1) card 1
+            push $ PayCardCost iid card (defaultWindows iid)
+            do_ msg'
+      pure a
+    DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
+      cards <- withModifiers iid (toModifiers attrs [ReduceCostOf AnyCard 1]) $ do
+        filter (`cardMatch` card_ (#asset <> #item))
+          <$> getPlayableCards (attrs.ability 1) iid (UnpaidCost NoAction) (defaultWindows iid)
+      when (notNull cards) do
+        chooseOneM iid do
+          labeled "Done Playing Items" nothing
+          targets cards \card -> do
+            reduceCostOf (attrs.ability 1) card 1
+            push $ PayCardCost iid card (defaultWindows iid)
+            doStep (n - 1) msg'
       pure a
     _ -> GearedUp <$> liftRunMessage msg attrs

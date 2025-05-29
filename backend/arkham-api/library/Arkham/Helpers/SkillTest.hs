@@ -15,6 +15,7 @@ import Arkham.Classes.HasQueue (HasQueue, popMessageMatching_, pushAfter)
 import Arkham.Classes.Query hiding (matches)
 import Arkham.Classes.Query qualified as Query
 import Arkham.CommitRestriction
+import Arkham.Asset.Types qualified as Field
 import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Action
@@ -328,6 +329,7 @@ getIsScenarioAbility = do
       -- If treachery has a subtype then it is a weakness not an encounter card
       isNothing . cdCardSubType <$> field TreacheryCardDef tid
     ActSource _ -> pure True
+    AssetSource aid -> isJust . cdEncounterSet . toCardDef <$> field Field.AssetCard aid
     _ -> pure False
 
 getAttackedEnemy :: HasGame m => m (Maybe EnemyId)

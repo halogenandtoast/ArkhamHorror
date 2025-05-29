@@ -6,6 +6,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Helpers.Agenda
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement
 
@@ -35,8 +36,8 @@ instance HasAbilities TheConductorBeastFromBeyondTheGate where
 
 instance RunMessage TheConductorBeastFromBeyondTheGate where
   runMessage msg e@(TheConductorBeastFromBeyondTheGate attrs) = runQueueT $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      cancelEnemyDefeat attrs
+    UseThisAbility _iid (isSource attrs -> True) 1 -> pure e
+    Do (Msg.EnemyDefeated eid _ _ _) | eid == attrs.id -> do
       agenda <- getCurrentAgenda
       place attrs $ AttachedToAgenda agenda
       pure e

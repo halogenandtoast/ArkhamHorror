@@ -1,6 +1,5 @@
 module Arkham.Treachery.Cards.DismalCurse (dismalCurse) where
 
-import Arkham.GameValue
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, maybeModifyThisSkillTest)
 import Arkham.Investigator.Projection ()

@@ -10,7 +10,7 @@ newtype FathomlessLake = FathomlessLake LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fathomlessLake :: LocationCard FathomlessLake
-fathomlessLake = location FathomlessLake Cards.fathomlessLake 0 (Static 0)
+fathomlessLake = location FathomlessLake Cards.fathomlessLake 4 (PerPlayer 1)
 
 instance HasAbilities FathomlessLake where
   getAbilities (FathomlessLake a) =

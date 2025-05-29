@@ -1239,16 +1239,7 @@ instance RunMessage EnemyAttrs where
       miid <- getSourceController source
       whenMsg <- checkWindows [mkWhen $ Window.EnemyDefeated miid defeatedBy eid]
       afterMsg <- checkWindows [mkAfter $ Window.EnemyDefeated miid defeatedBy eid]
-      victory <- getVictoryPoints eid
       mloc <- field EnemyLocation a.id
-      vengeance <- getVengeancePoints eid
-      let
-        placeInVictory = isJust (victory <|> vengeance)
-        victoryMsgs = [DefeatedAddToVictory $ toTarget a | placeInVictory]
-        defeatMsgs =
-          if placeInVictory
-            then resolve $ RemoveEnemy eid
-            else [Discard miid GameSource $ toTarget a]
 
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
 
@@ -1260,14 +1251,29 @@ instance RunMessage EnemyAttrs where
                  Just lid -> [PlaceKey (toTarget lid) ekey | ekey <- toList enemyKeys]
                  _ -> []
            )
-        <> [afterMsg]
-        <> victoryMsgs
-        <> windows [Window.EntityDiscarded source (toTarget a)]
-        <> defeatMsgs
+        <> [afterMsg, Do msg]
       pure
         $ a
         & (keysL .~ mempty)
         & (lastKnownLocationL .~ mloc)
+    Do (EnemyDefeated eid _ source _) | eid == toId a -> do
+      miid <- getSourceController source
+      victory <- getVictoryPoints eid
+      vengeance <- getVengeancePoints eid
+
+      let
+        placeInVictory = isJust (victory <|> vengeance)
+        victoryMsgs = [DefeatedAddToVictory $ toTarget a | placeInVictory]
+        defeatMsgs =
+          if placeInVictory
+            then resolve $ RemoveEnemy eid
+            else [Discard miid GameSource $ toTarget a]
+
+      pushAll $ 
+        victoryMsgs
+        <> windows [Window.EntityDiscarded source (toTarget a)]
+        <> defeatMsgs
+      pure $ a
         & (if placeInVictory then placementL .~ OutOfPlay VictoryDisplayZone else id)
     After (EnemyDefeated eid _ source _) | eid == toId a -> do
       case a.placement of

@@ -33,17 +33,20 @@ instance RunMessage Sharpshooter3 where
           "This attack uses {agility} instead of {combat}. All modifiers to your {combat} for this attack modify your instead."
           do
             nextSkillTestModifiers
+              iid
               attrs
               iid
               [UseSkillInsteadOf #combat #agility, SkillModifiersAffectOtherSkill #combat #agility]
         when anyFightableWithEvade do
           labeled "Use the attacked enemy's evade value for this attack, instead of their fight value." do
             nextSkillTestModifier
+              iid
               attrs
               iid
               (AlternateFightField (SomeField Field.EnemyEvade))
           labeled "Do both" do
             nextSkillTestModifiers
+              iid
               attrs
               iid
               [ UseSkillInsteadOf #combat #agility

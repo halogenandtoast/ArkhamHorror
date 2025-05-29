@@ -20,6 +20,6 @@ instance HasAbilities Fieldwork where
 
 instance RunMessage Fieldwork where
   runMessage = script $ onAbility 1 $ effect you do
-    during #nextSkillTest
-    removeOn #endOfCurrentPhase
+    during yourNextSkillTest
+    removeOn endOfCurrentPhase
     apply $ AnySkillValue 2

@@ -49,7 +49,9 @@ import Arkham.Target
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
+import Control.Monad.Writer.Class
 import Data.Foldable (foldrM)
+import Data.Map.Monoidal.Strict (MonoidalMap (..))
 
 getBaseValueDifferenceForSkillTest
   :: HasGame m => InvestigatorId -> SkillTest -> m Int
@@ -126,11 +128,12 @@ getSkillTestSkillTypes =
     Nothing -> []
 
 getSkillTestMatchingSkillIcons :: HasGame m => m (Set SkillIcon)
-getSkillTestMatchingSkillIcons = getSkillTest >>= \case
-  Nothing -> pure mempty
-  Just st -> do
-    mods <- getModifiers st.investigator
-    pure $ setFromList $ foldr applyModifiers (keys $ skillTestIconValues st) mods
+getSkillTestMatchingSkillIcons =
+  getSkillTest >>= \case
+    Nothing -> pure mempty
+    Just st -> do
+      mods <- getModifiers st.investigator
+      pure $ setFromList $ foldr applyModifiers (keys $ skillTestIconValues st) mods
  where
   applyModifiers (UseSkillInsteadOf x y) = map (\z -> if z == SkillIcon x then SkillIcon y else z)
   applyModifiers _ = id
@@ -497,7 +500,11 @@ getIsCommittable a c = do
             cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
             let locationsCardCanBePlayedAt = [matcher | CanCommitToSkillTestPerformedByAnInvestigatorAt matcher <- cardModifiers]
             otherLocation <- field InvestigatorLocation iid
-            sameLocation <- maybe (pure False) (\x -> (mlid == Just x &&) <$> withoutModifier x CountsAsDifferentLocation) otherLocation
+            sameLocation <-
+              maybe
+                (pure False)
+                (\x -> (mlid == Just x &&) <$> withoutModifier x CountsAsDifferentLocation)
+                otherLocation
             otherLocationOk <-
               maybe
                 (pure False)
@@ -567,9 +574,10 @@ getIsCommittable a c = do
 
                 passesCommitRestrictions <- allM passesCommitRestriction (cdCommitRestrictions $ toCardDef card)
                 icons <- iconsForCard c
-                otherAdditionalCosts <- fold <$> for allCommittedCards \c' -> do
-                  mods <- getModifiers c'
-                  pure $ fold [cst | AdditionalCostToCommit iid' cst <- mods, iid' == a]
+                otherAdditionalCosts <-
+                  fold <$> for allCommittedCards \c' -> do
+                    mods <- getModifiers c'
+                    pure $ fold [cst | AdditionalCostToCommit iid' cst <- mods, iid' == a]
                 cmods <- getModifiers (CardIdTarget $ toCardId c)
                 let costToCommit = fold [cst | AdditionalCostToCommit iid' cst <- cmods, iid' == a]
                 affordable <- getCanAffordCost a (toSource a) [] [] (costToCommit <> otherAdditionalCosts)
@@ -819,3 +827,17 @@ onNextTurnEffect
   -> Message
 onNextTurnEffect source investigator msgs = CreateOnNextTurnEffect (toSource source) (asId investigator) msgs
 
+maybeModifyThisSkillTest
+  :: ( Sourceable source
+     , HasGame m
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => source
+  -> MaybeT m [ModifierType]
+  -> m ()
+maybeModifyThisSkillTest a body = do
+  getSkillTest >>= traverse_ \st ->
+    maybeModified_ a (SkillTestTarget st.id) do
+      source <- MaybeT getSkillTestSource
+      guard $ isSource a source
+      body

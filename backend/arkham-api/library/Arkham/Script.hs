@@ -495,3 +495,9 @@ shuffleDrawnCardBackIntoDeck = Msg.shuffleCardsIntoDeck drawnCard.drawnFrom draw
 cancelCardDraw :: (?windows :: [Window], ?source :: Source) => ScriptT a ()
 cancelCardDraw = Script $ lift $ lift $ lift do
   Msg.cancelCardDraw ?source (Window.cardDrawn windows)
+
+yourNextSkillTest :: (?you :: InvestigatorId) => EffectWindow
+yourNextSkillTest = #nextSkillTest ?you
+
+endOfCurrentPhase :: EffectWindow
+endOfCurrentPhase = #endOfCurrentPhase

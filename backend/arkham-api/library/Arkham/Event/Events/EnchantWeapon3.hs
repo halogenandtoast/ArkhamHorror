@@ -50,6 +50,6 @@ instance RunMessage EnchantWeapon3 where
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       owner <- field EventOwner (toId attrs)
-      nextSkillTestModifiers (attrs.ability 1) iid [AddSkillValueOf #willpower owner, DamageDealt 1]
+      nextSkillTestModifiers iid (attrs.ability 1) iid [AddSkillValueOf #willpower owner, DamageDealt 1]
       pure e
     _ -> EnchantWeapon3 <$> liftRunMessage msg attrs

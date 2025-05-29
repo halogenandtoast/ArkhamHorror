@@ -32,7 +32,7 @@ instance RunMessage FluxStabilizerActive where
       ems <- effectModifiers (attrs.ability 1) [AnySkillValue 2]
       push
         $ CreateWindowModifierEffect
-          (FirstEffectWindow [EffectNextSkillTestWindow, EffectPhaseWindow])
+          (FirstEffectWindow [EffectNextSkillTestWindow iid, EffectPhaseWindow])
           ems
           (attrs.ability 1)
           (toTarget iid)

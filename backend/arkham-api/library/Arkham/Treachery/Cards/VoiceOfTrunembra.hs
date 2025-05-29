@@ -4,6 +4,7 @@ import Arkham.Effect.Builder
 import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
+import Arkham.Script
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -29,8 +30,8 @@ instance RunMessage VoiceOfTrunembra where
     DoStep 3 (FailedThisSkillTestBy iid (isSource attrs -> True) _) -> do
       -- we have to delay calling this until outside of the question in order
       -- to affect the queue correctly
-      afterSkillTestQuiet $ withSource attrs $ effect iid do
-        during #nextSkillTest
+      afterSkillTestQuiet $ withSource attrs $ withYou iid $ effect iid do
+        during yourNextSkillTest
         removeOn #round
         apply $ AnySkillValue (-2)
       pure t

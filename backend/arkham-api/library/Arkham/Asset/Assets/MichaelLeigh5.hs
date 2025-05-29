@@ -35,6 +35,6 @@ instance RunMessage MichaelLeigh5 where
       push $ AddUses (attrs.ability 1) (toId a) Evidence 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      nextSkillTestModifier (attrs.ability 2) iid (DamageDealt 1)
+      nextSkillTestModifier iid (attrs.ability 2) iid (DamageDealt 1)
       pure a
     _ -> MichaelLeigh5 <$> liftRunMessage msg attrs

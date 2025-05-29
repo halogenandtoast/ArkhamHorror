@@ -48,6 +48,6 @@ instance RunMessage ZoeySamarasParallel where
       push $ AddChaosToken #bless
       pure i
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      nextSkillTestModifier (attrs.ability 2) iid (DamageDealt 1)
+      nextSkillTestModifier iid (attrs.ability 2) iid (DamageDealt 1)
       pure i
     _ -> ZoeySamarasParallel <$> liftRunMessage msg attrs

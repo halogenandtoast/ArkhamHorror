@@ -15,11 +15,11 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Card
-import Arkham.Modifier
 import Arkham.Classes.Query (selectOne, (<=~>))
 import Arkham.Classes.RunMessage
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher.Scenario
+import Arkham.Modifier
 
 intFromMetadata :: EffectMetadata window a -> Int
 intFromMetadata = \case
@@ -64,8 +64,15 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     BeginAction | isEndOfWindow a EffectNextActionWindow -> do
       a <$ push (DisableEffect effectId)
-    SkillTestEnded sid | isEndOfWindow a (EffectSkillTestWindow sid) || isEndOfWindow a EffectNextSkillTestWindow -> do
-      a <$ push (DisableEffect effectId)
+    SkillTestEnded sid -> do
+      mInvestigator <- getSkillTestInvestigator
+      when
+        ( isEndOfWindow a (EffectSkillTestWindow sid)
+            || maybe False (isEndOfWindow a . EffectNextSkillTestWindow) mInvestigator
+        )
+        do
+          push (DisableEffect effectId)
+      pure a
     CancelSkillEffects -> case effectSource of
       (SkillSource _) -> a <$ push (DisableEffect effectId)
       _ -> pure a
@@ -111,7 +118,7 @@ instance RunMessage EffectAttrs where
             updateModifier = \case
               x@(modifierType -> OnCommitCardModifier iid' matcher m) | iid == iid' -> do
                 ok <- card <=~> matcher
-                pure $ if ok then x { modifierType = m } else x
+                pure $ if ok then x {modifierType = m} else x
               other -> pure other
           modifiers' <- traverse updateModifier modifiers
           pure $ a {effectMetadata = Just $ EffectModifiers modifiers'}

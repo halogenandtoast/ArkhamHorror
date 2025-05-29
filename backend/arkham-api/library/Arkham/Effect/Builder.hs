@@ -17,6 +17,7 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.GameT
 import Arkham.Helpers.Modifiers (toModifiers)
+import Arkham.Id
 import Arkham.Matcher.Enemy
 import Arkham.Matcher.Location
 import Arkham.Message (Message (CreateEffect))
@@ -47,6 +48,9 @@ instance WithEffect m => WithEffect (StateT s m)
 
 withSource :: Sourceable source => source -> ((?source :: source, Sourceable source) => b) -> b
 withSource source inner = let ?source = source in inner
+
+withYou :: InvestigatorId -> ((?you :: InvestigatorId) => b) -> b
+withYou iid inner = let ?you = iid in inner
 
 enableOn :: Monad m => EffectWindow -> EffectBuilderT m ()
 enableOn window = EffectBuilderT $ do

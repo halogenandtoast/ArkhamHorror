@@ -29,7 +29,7 @@ anyuChoices attrs iid = do
     ems <- effectModifiers (attrs.ability 1) [AnySkillValue 2]
     push
       $ CreateWindowModifierEffect
-        (FirstEffectWindow [EffectNextSkillTestWindow, EffectRoundWindow])
+        (FirstEffectWindow [EffectNextSkillTestWindow iid, EffectRoundWindow])
         ems
         (attrs.ability 1)
         (toTarget iid)

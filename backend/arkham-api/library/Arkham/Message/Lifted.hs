@@ -1409,24 +1409,24 @@ skillTestModifier sid (toSource -> source) (toTarget -> target) x =
   Msg.pushM $ Msg.skillTestModifier sid source target x
 
 nextSkillTestModifier
-  :: forall target source m
-   . (ReverseQueue m, Sourceable source, Targetable target)
-  => source
+  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId, Targetable target)
+  => investigator
+  -> source
   -> target
   -> ModifierType
   -> m ()
-nextSkillTestModifier (toSource -> source) (toTarget -> target) x =
-  Msg.pushM $ Msg.nextSkillTestModifier source target x
+nextSkillTestModifier investigator source target x =
+  Msg.pushM $ Msg.nextSkillTestModifier investigator source target x
 
 nextSkillTestModifiers
-  :: forall target source m
-   . (ReverseQueue m, Sourceable source, Targetable target)
-  => source
+  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId, Targetable target)
+  => investigator
+  -> source
   -> target
   -> [ModifierType]
   -> m ()
-nextSkillTestModifiers (toSource -> source) (toTarget -> target) x =
-  Msg.pushM $ Msg.nextSkillTestModifiers source target x
+nextSkillTestModifiers investigator source target xs =
+  Msg.pushM $ Msg.nextSkillTestModifiers investigator source target xs
 
 searchModifier
   :: forall target source m

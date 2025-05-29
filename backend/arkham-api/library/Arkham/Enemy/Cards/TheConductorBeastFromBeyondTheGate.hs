@@ -16,12 +16,12 @@ newtype TheConductorBeastFromBeyondTheGate = TheConductorBeastFromBeyondTheGate 
 
 theConductorBeastFromBeyondTheGate :: EnemyCard TheConductorBeastFromBeyondTheGate
 theConductorBeastFromBeyondTheGate =
-  enemyWith
+  enemy
     TheConductorBeastFromBeyondTheGate
     Cards.theConductorBeastFromBeyondTheGate
     (3, Static 4, 3)
     (2, 1)
-    (spawnAtL ?~ SpawnAt LeftmostLocation)
+    & setSpawnAt LeftmostLocation
 
 instance HasAbilities TheConductorBeastFromBeyondTheGate where
   getAbilities (TheConductorBeastFromBeyondTheGate a) = case a.placement of

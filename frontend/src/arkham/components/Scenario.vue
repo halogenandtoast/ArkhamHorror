@@ -1192,6 +1192,7 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
 .empty-grid-position {
   content: " ";
   box-shadow: unset;
+  justify-self: center;
 }
 
 .can-interact {

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (AssetExhausted)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype BonnieWalshLoyalAssistant = BonnieWalshLoyalAssistant AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

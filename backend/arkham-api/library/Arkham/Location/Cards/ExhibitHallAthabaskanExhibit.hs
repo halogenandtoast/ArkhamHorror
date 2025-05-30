@@ -26,6 +26,7 @@ instance HasAbilities ExhibitHallAthabaskanExhibit where
 instance RunMessage ExhibitHallAthabaskanExhibit where
   runMessage msg l@(ExhibitHallAthabaskanExhibit attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushAll [SetActions iid (attrs.ability 1) 0, ChooseEndTurn iid]
+      setActions iid (attrs.ability 1) 0
+      endYourTurn iid
       pure l
     _ -> ExhibitHallAthabaskanExhibit <$> liftRunMessage msg attrs

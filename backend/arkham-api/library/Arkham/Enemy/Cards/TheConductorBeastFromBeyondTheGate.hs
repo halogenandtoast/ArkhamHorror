@@ -37,10 +37,11 @@ instance HasAbilities TheConductorBeastFromBeyondTheGate where
 instance RunMessage TheConductorBeastFromBeyondTheGate where
   runMessage msg e@(TheConductorBeastFromBeyondTheGate attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> pure e
-    Do (Msg.EnemyDefeated eid _ _ _) | eid == attrs.id -> do
+    Do (Msg.EnemyDefeated eid _ source _) | eid == attrs.id -> do
       agenda <- getCurrentAgenda
       place attrs $ AttachedToAgenda agenda
-      pure e
+      push $ RemoveAllAttachments source (toTarget attrs)
+      pure $ TheConductorBeastFromBeyondTheGate $ attrs & tokensL .~ mempty
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       mLocation <- selectOne $ LocationInDirection RightOf (locationWithEnemy attrs)
       for_ mLocation (enemyMoveTo attrs)

@@ -783,18 +783,19 @@ instance RunMessage EnemyAttrs where
         ]
       pure a
     Failed (Action.Fight, _) iid _source target _ | isTarget a target -> do
-      mods <- getModifiers iid
+      mods <- getCombinedModifiers [toTarget iid, toTarget a]
       keywords <- getModifiedKeywords a
-      pushAll
-        [ EnemyAttack
-            $ (enemyAttack enemyId a iid)
-              { attackDamageStrategy = enemyDamageStrategy
-              , attackType = RetaliateAttack
-              }
-        | Keyword.Retaliate `elem` keywords
-        , IgnoreRetaliate `notElem` mods
-        , not enemyExhausted || CanRetaliateWhileExhausted `elem` mods
-        ]
+
+      pushWhen
+        ( (Keyword.Retaliate `elem` keywords)
+            && (IgnoreRetaliate `notElem` mods)
+            && (not enemyExhausted || CanRetaliateWhileExhausted `elem` mods)
+        )
+        $ EnemyAttack
+        $ (enemyAttack enemyId a iid)
+          { attackDamageStrategy = enemyDamageStrategy
+          , attackType = RetaliateAttack
+          }
       pure a
     EnemyAttackIfEngaged eid miid | eid == enemyId -> do
       case miid of
@@ -1269,11 +1270,12 @@ instance RunMessage EnemyAttrs where
             then resolve $ RemoveEnemy eid
             else [Discard miid GameSource $ toTarget a]
 
-      pushAll $ 
-        victoryMsgs
+      pushAll
+        $ victoryMsgs
         <> windows [Window.EntityDiscarded source (toTarget a)]
         <> defeatMsgs
-      pure $ a
+      pure
+        $ a
         & (if placeInVictory then placementL .~ OutOfPlay VictoryDisplayZone else id)
     After (EnemyDefeated eid _ source _) | eid == toId a -> do
       case a.placement of

@@ -29,7 +29,9 @@ instance RunMessage MollyMaxwell where
         $ ( "Trait that won't match"
           , RevealUntilFirst iid (toSource attrs) (toDeck iid) (basic $ NotCard AnyCard)
           )
-        : [ (tshow trait, RevealUntilFirst iid (toSource attrs) (toDeck iid) (basic $ CardWithTrait trait))
+        : [ ( tshow trait
+            , RevealUntilFirst iid (toSource attrs) (toDeck iid) (basic $ CardWithTrait trait <> #asset)
+            )
           | trait <- toList (unions $ map toTraits cards)
           ]
       pure a

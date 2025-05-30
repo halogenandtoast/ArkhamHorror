@@ -2,9 +2,7 @@ module Arkham.Treachery.Cards.BlasphemousVisions (blasphemousVisions) where
 
 import Arkham.Ability
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
-import Arkham.Card
 import Arkham.EncounterSet (EncounterSet (Tekelili))
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher.Card
 import Arkham.Treachery.Cards qualified as Cards
@@ -18,9 +16,7 @@ blasphemousVisions :: TreacheryCard BlasphemousVisions
 blasphemousVisions = treachery BlasphemousVisions Cards.blasphemousVisions
 
 instance HasModifiersFor BlasphemousVisions where
-  getModifiersFor (BlasphemousVisions a) = do
-    cards <- findAllCards (`cardMatch` CardFromEncounterSet Tekelili)
-    for_ cards \card -> modified_ a card [ResolveEffectsAgain]
+  getModifiersFor (BlasphemousVisions a) = inThreatAreaGets a [ResolveEffectsAgainMatch (CardFromEncounterSet Tekelili)]
 
 instance HasAbilities BlasphemousVisions where
   getAbilities (BlasphemousVisions a) =

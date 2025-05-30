@@ -1,9 +1,7 @@
-module Arkham.Treachery.Cards.Tekelili_227 (tekelili_227, tekelili_227Effect, Tekelili_227 (..)) where
+module Arkham.Treachery.Cards.Tekelili_227 (tekelili_227, tekelili_227Effect) where
 
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
-import Arkham.Card
 import Arkham.Effect.Import
-import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier)
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -20,7 +18,7 @@ instance RunMessage Tekelili_227 where
     Revelation iid (isSource attrs -> True) -> do
       isTurn <- iid <=~> TurnInvestigator
 
-      n <- ifM_ (hasModifier (toCard attrs) ResolveEffectsAgain) 2 1
+      n <- ifM_ (getShouldResolveEffectsAgain iid attrs) 2 1
       repeated n
         $ if isTurn
           then loseActions iid attrs 1

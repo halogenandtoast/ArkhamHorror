@@ -1506,6 +1506,7 @@ instance RunMessage EnemyAttrs where
     RemoveTokens _ target token amount | isTarget a target -> do
       pure $ a & tokensL %~ subtractTokens token amount
     MoveTokens s source _ tType n | isSource a source -> runMessage (RemoveTokens s (toTarget a) tType n) a
+    MoveTokens _s (InvestigatorSource _) target Clue _ | isTarget a target -> pure a
     MoveTokens s _ target tType n | isTarget a target -> runMessage (PlaceTokens s (toTarget a) tType n) a
     PlaceTokens source target token n | isTarget a target -> do
       if token == #doom

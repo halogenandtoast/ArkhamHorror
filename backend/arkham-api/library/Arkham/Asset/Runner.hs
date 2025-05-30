@@ -238,6 +238,7 @@ instance RunMessage AssetAttrs where
             _ -> pure $ a & tokensL %~ addTokens tType n
     MoveTokens s source _ tType n | isSource a source -> do
       runMessage (RemoveTokens s (toTarget a) tType n) a
+    MoveTokens _s (InvestigatorSource _) target Clue _ | isTarget a target -> pure a
     MoveTokens s _ target tType n | isTarget a target -> do
       pushWhen (tType `elem` [Horror, Damage]) $ checkDefeated s a
       runMessage (PlaceTokens s (toTarget a) tType n) a

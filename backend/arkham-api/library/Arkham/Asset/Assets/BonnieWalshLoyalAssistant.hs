@@ -18,7 +18,7 @@ instance HasAbilities BonnieWalshLoyalAssistant where
         $ controlled
           x
           1
-          (exists (#exhausted <> AssetControlledBy (HasMatchingAsset (be x)) <> not_ (be x)))
+          (exists (#exhausted <> #ally <> AssetControlledBy (HasMatchingAsset (be x)) <> not_ (be x)))
         $ freeReaction
         $ Exhausts #after You (TargetIs $ toTarget x)
     ]
@@ -26,9 +26,7 @@ instance HasAbilities BonnieWalshLoyalAssistant where
 instance RunMessage BonnieWalshLoyalAssistant where
   runMessage msg a@(BonnieWalshLoyalAssistant attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      assets <- select $ AssetExhausted <> assetControlledBy iid <> not_ (be attrs)
-      when (notNull assets) do
-        chooseOne iid [targetLabel x [Ready (toTarget x)] | x <- assets]
-
+      assets <- select $ #ally <> AssetExhausted <> assetControlledBy iid <> not_ (be attrs)
+      chooseTargetM iid assets readyThis
       pure a
     _ -> BonnieWalshLoyalAssistant <$> liftRunMessage msg attrs

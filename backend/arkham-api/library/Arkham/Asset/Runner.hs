@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Asset.Runner (module X, hasUses) where
 
@@ -518,7 +518,7 @@ instance RunMessage AssetAttrs where
           <> [RemovedFromPlay source]
       pure a
     PlaceInBonded _iid card -> do
-      when (toCard a == card) do
+      when (traceShowId $ traceShowId (toCard a) == traceShowId card) do
         removeAllMessagesMatching \case
           Discarded (AssetTarget aid) _ _ -> aid == a.id
           CheckWindows ws -> flip any ws \case

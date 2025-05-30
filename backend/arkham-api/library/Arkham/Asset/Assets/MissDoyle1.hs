@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv (findCard)
+import {-# SOURCE #-} Arkham.GameEnv (findAllCards)
 import Arkham.Helpers.Investigator hiding (findCard)
 import Arkham.Matcher
 
@@ -32,9 +32,9 @@ instance RunMessage MissDoyle1 where
       for_ playCat $ putCardIntoPlay iid
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      mhope <- findCard (`cardMatch` (cardIs Cards.hope <> CardOwnedBy iid))
-      mzeal <- findCard (`cardMatch` (cardIs Cards.zeal <> CardOwnedBy iid))
-      maugur <- findCard (`cardMatch` (cardIs Cards.augur <> CardOwnedBy iid))
-      for_ (catMaybes [mhope, mzeal, maugur]) (placeInBonded iid)
+      hope <- findAllCards (`cardMatch` (cardIs Cards.hope <> CardOwnedBy iid))
+      zeal <- findAllCards (`cardMatch` (cardIs Cards.zeal <> CardOwnedBy iid))
+      augur <- findAllCards (`cardMatch` (cardIs Cards.augur <> CardOwnedBy iid))
+      for_ (concat [hope, zeal, augur]) (placeInBonded iid)
       pure a
     _ -> MissDoyle1 <$> liftRunMessage msg attrs

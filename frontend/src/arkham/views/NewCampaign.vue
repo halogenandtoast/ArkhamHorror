@@ -326,6 +326,8 @@ async function start() {
   color: #FFF;
   border-radius: 3px;
   margin-bottom: 20px;
+  display: grid;
+  gap: 10px;
   button {
     outline: 0;
     padding: 15px;
@@ -382,6 +384,8 @@ async function start() {
     margin: 0;
     padding: 0;
     text-transform: uppercase;
+    text-box-trim: trim-both;
+    text-box-edge: cap alphabetic;
   }
 }
 
@@ -484,7 +488,6 @@ header {
 
 .options {
   display: flex;
-  margin-bottom: 10px;
   label {
     flex: 1;
     text-align: center;
@@ -499,11 +502,10 @@ header {
   display: grid;
   gap: 10px;
   line-height: 0;
-  grid-template-columns: repeat(auto-fill, calc((1 / 6 * 100%) - 9px));
-  margin-bottom: 10px;
+  grid-template-columns: repeat(6, auto);
 
   @media (max-width: 1500px) {
-    grid-template-columns: repeat(auto-fill, calc((1 / 3 * 100%) - 7px));
+    grid-template-columns: repeat(3, auto);
   }
 
   img {
@@ -519,7 +521,7 @@ header {
 .scenarios {
   display: grid;
   line-height: 0;
-  grid-template-columns: repeat(auto-fill, calc((1 / 6 * 100%) - 9px));
+  grid-template-columns: repeat(4, auto);
   gap: 10px;
   margin-bottom: 10px;
 

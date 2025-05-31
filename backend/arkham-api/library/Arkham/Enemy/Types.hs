@@ -305,6 +305,9 @@ instance HasField "doom" EnemyAttrs Int where
 instance HasField "resources" EnemyAttrs Int where
   getField = countTokens Resource . enemyTokens
 
+instance HasField "damage" EnemyAttrs Int where
+  getField = enemyDamage
+
 data Enemy = forall a. IsEnemy a => Enemy a
 
 instance AsId Enemy where

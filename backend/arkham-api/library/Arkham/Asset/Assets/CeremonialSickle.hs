@@ -38,7 +38,7 @@ instance RunMessage CeremonialSickle where
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       push $ Exhaust (toTarget attrs)
       placeDoom (attrs.ability 1) attrs 1
-      nextSkillTestModifiers (attrs.ability 1) iid [AnySkillValue 1, DamageDealt 1]
+      nextSkillTestModifiers iid (attrs.ability 1) iid [AnySkillValue 1, DamageDealt 1]
       pure a
     DoStep 2 (UseThisAbility _ (isSource attrs -> True) 1) -> do
       pure $ overAttrs (setMetaKey "option2" True) a

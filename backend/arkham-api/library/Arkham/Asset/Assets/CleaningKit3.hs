@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.CleaningKit3 (cleaningKit3, CleaningKit3 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Import.Lifted hiding (AbilityIsSkillTest)
 import Arkham.Asset.Uses
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Matcher
@@ -33,6 +33,6 @@ instance HasAbilities CleaningKit3 where
 instance RunMessage CleaningKit3 where
   runMessage msg a@(CleaningKit3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      nextSkillTestModifier (attrs.ability 1) iid (AnySkillValue 2)
+      nextSkillTestModifier iid (attrs.ability 1) iid (AnySkillValue 2)
       pure a
     _ -> CleaningKit3 <$> liftRunMessage msg attrs

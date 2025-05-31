@@ -19,7 +19,7 @@ data EffectWindow
   | EffectUntilEndOfNextPhaseWindowFor Phase
   | EffectCostWindow
   | EffectSkillTestWindow SkillTestId
-  | EffectNextSkillTestWindow
+  | EffectNextSkillTestWindow InvestigatorId
   | EffectRoundWindow
   | EffectNextActionWindow
   | EffectSetupWindow
@@ -45,10 +45,10 @@ data EffectWindow
 instance IsLabel "endOfCurrentPhase" EffectWindow where
   fromLabel = EffectPhaseWindow
 
-instance IsLabel "endOfNextSkillTest" EffectWindow where
+instance IsLabel "endOfNextSkillTest" (InvestigatorId -> EffectWindow) where
   fromLabel = EffectNextSkillTestWindow
 
-instance IsLabel "nextSkillTest" EffectWindow where
+instance IsLabel "nextSkillTest" (InvestigatorId -> EffectWindow) where
   fromLabel = EffectNextSkillTestWindow
 
 instance IsLabel "round" EffectWindow where

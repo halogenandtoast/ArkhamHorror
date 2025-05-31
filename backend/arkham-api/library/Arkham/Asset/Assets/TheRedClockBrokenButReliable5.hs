@@ -36,7 +36,7 @@ instance RunMessage TheRedClockBrokenButReliable5 where
       pure a
     Do msg'@(UseThisAbility iid (isSource attrs -> True) 1) -> do
       case attrs.use Charge of
-        1 -> nextSkillTestModifier (attrs.ability 1) iid (AnySkillValue 4)
+        1 -> nextSkillTestModifier iid (attrs.ability 1) iid (AnySkillValue 4)
         2 -> doStep 3 msg'
         3 -> push $ GainActions iid (attrs.ability 1) 2
         _ -> pure ()

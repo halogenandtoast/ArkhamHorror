@@ -2,17 +2,13 @@ module Arkham.Enemy.Cards.HarbingerOfValusia (harbingerOfValusia) where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Placement
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
+import Arkham.Message.Lifted.Placement
 import Arkham.Token
-import Arkham.Token qualified as Token
 
 newtype HarbingerOfValusia = HarbingerOfValusia EnemyAttrs
   deriving anyclass IsEnemy
@@ -27,39 +23,26 @@ instance HasModifiersFor HarbingerOfValusia where
 
 instance HasAbilities HarbingerOfValusia where
   getAbilities (HarbingerOfValusia a) =
-    withBaseAbilities
-      a
-      [ limitedAbility (PlayerLimit PerTestOrAbility 1)
-          $ mkAbility a 1
-          $ ForcedAbility
-          $ OrWindowMatcher
-            [ SkillTestResult
-                Timing.After
-                You
-                (WhileEvadingAnEnemy $ EnemyWithId $ toId a)
-                (SuccessResult AnyValue)
-            , SkillTestResult
-                Timing.After
-                You
-                (WhileAttackingAnEnemy $ EnemyWithId $ toId a)
-                (SuccessResult AnyValue)
-            ]
-      ]
+    extend1 a
+      $ playerLimit PerTestOrAbility
+      $ mkAbility a 1
+      $ forced
+      $ oneOf
+        [ SkillTestResult #after You (WhileEvadingAnEnemy $ be a) #success
+        , SkillTestResult #after You (WhileAttackingAnEnemy $ be a) #success
+        ]
 
 instance RunMessage HarbingerOfValusia where
-  runMessage msg e@(HarbingerOfValusia attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+  runMessage msg e@(HarbingerOfValusia attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       n <- getPlayerCountValue (PerPlayer 2)
-      if enemyResources attrs + 1 >= n
+      if attrs.resources + 1 >= n
         then do
-          let
-            damage = enemyDamage attrs
-            enemy' =
-              overAttrs (tokensL %~ setTokens Token.Damage damage)
-                $ cbCardBuilder harbingerOfValusia (toCardId attrs) (toId attrs)
-          push $ PlaceEnemy attrs.id (OutOfPlay SetAsideZone)
-          pure enemy'
+          place attrs (OutOfPlay SetAsideZone)
+          pure
+            $ overAttrs (tokensL %~ setTokens #damage attrs.damage)
+            $ cbCardBuilder harbingerOfValusia attrs.cardId attrs.id
         else do
-          push $ PlaceResources (toAbilitySource attrs 1) (toTarget attrs) 1
+          placeTokens (attrs.ability 1) attrs #resource 1
           pure e
-    _ -> HarbingerOfValusia <$> runMessage msg attrs
+    _ -> HarbingerOfValusia <$> liftRunMessage msg attrs

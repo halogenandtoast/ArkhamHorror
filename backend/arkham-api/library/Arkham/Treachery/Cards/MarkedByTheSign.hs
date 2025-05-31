@@ -24,6 +24,6 @@ instance RunMessage MarkedByTheSign where
       theManInThePallidMaskIsInPlay <- selectAny $ enemyIs Cards.theManInThePallidMask
       if theManInThePallidMaskIsInPlay
         then directHorror iid attrs 2
-        else assignDamage iid attrs 2
+        else assignHorror iid attrs 2
       pure t
     _ -> MarkedByTheSign <$> liftRunMessage msg attrs

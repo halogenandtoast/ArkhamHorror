@@ -12,7 +12,7 @@ newtype AbandonedCamp = AbandonedCamp LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 abandonedCamp :: LocationCard AbandonedCamp
-abandonedCamp = location AbandonedCamp Cards.abandonedCamp 0 (Static 0)
+abandonedCamp = location AbandonedCamp Cards.abandonedCamp 2 (PerPlayer 1)
 
 instance HasAbilities AbandonedCamp where
   getAbilities (AbandonedCamp a) =

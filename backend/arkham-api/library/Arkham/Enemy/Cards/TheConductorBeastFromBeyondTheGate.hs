@@ -6,6 +6,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Helpers.Agenda
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement
 
@@ -15,17 +16,16 @@ newtype TheConductorBeastFromBeyondTheGate = TheConductorBeastFromBeyondTheGate 
 
 theConductorBeastFromBeyondTheGate :: EnemyCard TheConductorBeastFromBeyondTheGate
 theConductorBeastFromBeyondTheGate =
-  enemyWith
+  enemy
     TheConductorBeastFromBeyondTheGate
     Cards.theConductorBeastFromBeyondTheGate
     (3, Static 4, 3)
     (2, 1)
-    (spawnAtL ?~ SpawnAt LeftmostLocation)
+    & setSpawnAt LeftmostLocation
 
 instance HasAbilities TheConductorBeastFromBeyondTheGate where
   getAbilities (TheConductorBeastFromBeyondTheGate a) = case a.placement of
-    AttachedToAgenda {} ->
-      [mkAbility a 3 $ SilentForcedAbility $ AgendaAdvances #after AnyAgenda]
+    AttachedToAgenda {} -> [mkAbility a 3 $ SilentForcedAbility $ AgendaAdvances #after AnyAgenda]
     _ ->
       extend
         a
@@ -35,11 +35,12 @@ instance HasAbilities TheConductorBeastFromBeyondTheGate where
 
 instance RunMessage TheConductorBeastFromBeyondTheGate where
   runMessage msg e@(TheConductorBeastFromBeyondTheGate attrs) = runQueueT $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      cancelEnemyDefeat attrs
+    UseThisAbility _iid (isSource attrs -> True) 1 -> pure e
+    Do (Msg.EnemyDefeated eid _ source _) | eid == attrs.id -> do
       agenda <- getCurrentAgenda
       place attrs $ AttachedToAgenda agenda
-      pure e
+      push $ RemoveAllAttachments source (toTarget attrs)
+      pure $ TheConductorBeastFromBeyondTheGate $ attrs & tokensL .~ mempty
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       mLocation <- selectOne $ LocationInDirection RightOf (locationWithEnemy attrs)
       for_ mLocation (enemyMoveTo attrs)

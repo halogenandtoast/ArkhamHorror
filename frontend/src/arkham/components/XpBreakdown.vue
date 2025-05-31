@@ -69,7 +69,7 @@ const perInvestigator = computed(() => {
     const gains = props.entries.filter((entry: XpEntry) => entry.tag === 'InvestigatorGainXp' && entry.investigator === id)
     const losses = props.entries.filter((entry: XpEntry) => entry.tag === 'InvestigatorLoseXp' && entry.investigator === id)
 
-    let total = gains.reduce((acc, entry) => acc + entry.details.amount, 0) - losses.reduce((acc, entry) => acc + entry.details.amount, 0)
+    let total = gains.reduce((acc, entry) => acc + entry.details.amount, 0) + losses.reduce((acc, entry) => acc + entry.details.amount, 0)
 
     return [investigator.name.title, [...gains, ...losses], total]
   }).filter(([_, xp,]) => xp.length > 0)
@@ -104,7 +104,7 @@ function format(s: string) {
         <div v-for="(entry, idx) in entries" :key="idx" class="box entry">
           <span v-html="format(entry.details.sourceName)"></span> 
           <span v-if="entry.tag !== 'InvestigatorLoseXp'" class="amount">+{{entry.details.amount}}</span>
-          <span v-if="entry.tag === 'InvestigatorLoseXp'" class="amount amount--negative">-{{entry.details.amount}}</span>
+          <span v-if="entry.tag === 'InvestigatorLoseXp'" class="amount amount--negative">{{entry.details.amount}}</span>
         </div>
       </section>
     </div>

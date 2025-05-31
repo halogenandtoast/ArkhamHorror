@@ -24,18 +24,19 @@ instance RunMessage Avalanche where
           then doStep 1 msg
           else gainSurge attrs
       pure t
-    DoStep 1 (Revelation iid (isSource attrs -> True)) -> do
+    DoStep 1 msg'@(Revelation iid (isSource attrs -> True)) -> do
       withLocationOf iid \loc -> do
         row <- maybe 0 (.row) <$> field LocationPosition loc
         when (row >= 1 && row <= 4) do
           moveTo_ attrs iid (LocationInRow (row - 1))
-          doStep 2 msg
+          doStep 2 msg'
       pure t
     DoStep 2 (Revelation iid (isSource attrs -> True)) -> do
       withLocationOf iid \loc -> do
         row <- maybe 0 (.row) <$> field LocationPosition loc
-        sid <- getRandom
-        beginSkillTest sid iid attrs iid #willpower (Fixed row)
+        when (row >= 1 && row <= 4) do
+          sid <- getRandom
+          beginSkillTest sid iid attrs iid #willpower (Fixed row)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       doStep 1 (Revelation iid (toSource attrs))

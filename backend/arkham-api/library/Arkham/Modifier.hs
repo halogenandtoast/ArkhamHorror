@@ -359,6 +359,7 @@ data ModifierType
   | RemoveTrait Trait
   | ReplaceAllSkillIconsWithWild
   | ResolveEffectsAgain -- NOTE: If used for more than Tekelili, need to figure out what to do
+  | ResolveEffectsAgainMatch CardMatcher -- NOTE: If used for more than Tekelili, need to figure out what to do
   | ResolvesFailedEffects
   | ReturnBlessedToChaosBag
   | ReturnCursedToChaosBag

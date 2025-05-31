@@ -16,6 +16,7 @@ import Arkham.Helpers.GameValue
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.I18n
+import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
@@ -231,6 +232,7 @@ instance RunMessage TheLastKing where
           let
             extraXp = floor @Double (fromIntegral (sum clueCounts) / 2)
             (assignedXp, remainingXp) = quotRem extraXp (length investigators)
+            assignXp :: ReverseQueue m => Int -> InvestigatorId -> m ()
             assignXp amount iid =
               resolutionModifier attrs iid
                 $ XPModifier ("$" <> ikey "xp.bonus") amount
@@ -241,7 +243,7 @@ instance RunMessage TheLastKing where
             chooseNM lead remainingXp do
               for_ investigators \iid -> do
                 name <- field InvestigatorName iid
-                withVar "name" (String $ display name) $ labeled' "gainAdditionalXp" $ lift $ assignXp 1 iid
+                withVar "name" (String $ display name) $ labeled' "gainAdditionalXp" $ assignXp 1 iid
 
           -- Assign XP now that the modifiers exist
           doStep 1 msg'

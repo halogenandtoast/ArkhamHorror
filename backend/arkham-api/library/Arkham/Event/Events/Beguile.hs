@@ -8,6 +8,7 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.Window (defaultWindows)
 
@@ -95,15 +96,18 @@ instance RunMessage Beguile where
                   <$> field LocationAbilities lid
               case abilities of
                 [x] ->
-                  push
-                    $ UseAbility
+                  pushAll
+                    [ Msg.AbilityIsSkillTest $ AbilityRef (toSource attrs) 1
+                    , UseAbility
                       iid
                       (overAbilityActions (const []) $ doesNotProvokeAttacksOfOpportunity $ decreaseAbilityActionCost x 1)
                       (defaultWindows iid)
+                    ]
                 _ -> error "expected exactly 1 investigate action on location"
           3 -> do
             field EnemyLocation eid >>= traverse_ \lid -> do
               sid <- getRandom
+              push $ Msg.AbilityIsSkillTest $ AbilityRef (toSource attrs) 1
               chooseEvadeEnemyMatch sid iid (toSource iid) $ evadeOverride $ at_ (be lid)
           _ -> error "Beguile: unexpected step"
         _ -> error "Beguile: EnemyTarget not found"

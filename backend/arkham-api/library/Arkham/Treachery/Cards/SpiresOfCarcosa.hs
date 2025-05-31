@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.SpiresOfCarcosa (spiresOfCarcosa) where
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Investigate
+import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -17,11 +17,10 @@ spiresOfCarcosa = treachery SpiresOfCarcosa Cards.spiresOfCarcosa
 
 instance HasAbilities SpiresOfCarcosa where
   getAbilities (SpiresOfCarcosa a) =
-    [ investigateAbility a 1 mempty OnSameLocation
-    ]
+    [investigateAbility a 1 mempty OnSameLocation]
       <> case a.attached of
         Just (LocationTarget lid) ->
-          [restrictedAbility a 2 (exists $ LocationWithId lid <> LocationWithoutDoom) Anytime]
+          [restricted a 2 (exists $ LocationWithId lid <> LocationWithoutDoom) Anytime]
         _ -> []
 
 instance RunMessage SpiresOfCarcosa where
@@ -33,12 +32,10 @@ instance RunMessage SpiresOfCarcosa where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      pushM $ mkInvestigate sid iid (attrs.ability 1) <&> setTarget attrs
+      investigateEdit_ sid iid (attrs.ability 1) (setTarget attrs)
       pure t
     Successful (Action.Investigate, _) _ _ (isTarget attrs -> True) _ -> do
-      case attrs.attached of
-        Just location -> removeDoom (attrs.ability 1) location 1
-        Nothing -> error "must be attached to location to trigger ability"
+      for_ attrs.attached.location \location -> removeDoom (attrs.ability 1) location 1
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       toDiscardBy iid (attrs.ability 2) attrs

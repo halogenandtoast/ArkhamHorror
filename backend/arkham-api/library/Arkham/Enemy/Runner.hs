@@ -783,18 +783,19 @@ instance RunMessage EnemyAttrs where
         ]
       pure a
     Failed (Action.Fight, _) iid _source target _ | isTarget a target -> do
-      mods <- getModifiers iid
+      mods <- getCombinedModifiers [toTarget iid, toTarget a]
       keywords <- getModifiedKeywords a
-      pushAll
-        [ EnemyAttack
-            $ (enemyAttack enemyId a iid)
-              { attackDamageStrategy = enemyDamageStrategy
-              , attackType = RetaliateAttack
-              }
-        | Keyword.Retaliate `elem` keywords
-        , IgnoreRetaliate `notElem` mods
-        , not enemyExhausted || CanRetaliateWhileExhausted `elem` mods
-        ]
+
+      pushWhen
+        ( (Keyword.Retaliate `elem` keywords)
+            && (IgnoreRetaliate `notElem` mods)
+            && (not enemyExhausted || CanRetaliateWhileExhausted `elem` mods)
+        )
+        $ EnemyAttack
+        $ (enemyAttack enemyId a iid)
+          { attackDamageStrategy = enemyDamageStrategy
+          , attackType = RetaliateAttack
+          }
       pure a
     EnemyAttackIfEngaged eid miid | eid == enemyId -> do
       case miid of
@@ -1239,16 +1240,7 @@ instance RunMessage EnemyAttrs where
       miid <- getSourceController source
       whenMsg <- checkWindows [mkWhen $ Window.EnemyDefeated miid defeatedBy eid]
       afterMsg <- checkWindows [mkAfter $ Window.EnemyDefeated miid defeatedBy eid]
-      victory <- getVictoryPoints eid
       mloc <- field EnemyLocation a.id
-      vengeance <- getVengeancePoints eid
-      let
-        placeInVictory = isJust (victory <|> vengeance)
-        victoryMsgs = [DefeatedAddToVictory $ toTarget a | placeInVictory]
-        defeatMsgs =
-          if placeInVictory
-            then resolve $ RemoveEnemy eid
-            else [Discard miid GameSource $ toTarget a]
 
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
 
@@ -1260,14 +1252,30 @@ instance RunMessage EnemyAttrs where
                  Just lid -> [PlaceKey (toTarget lid) ekey | ekey <- toList enemyKeys]
                  _ -> []
            )
-        <> [afterMsg]
-        <> victoryMsgs
-        <> windows [Window.EntityDiscarded source (toTarget a)]
-        <> defeatMsgs
+        <> [afterMsg, Do msg]
       pure
         $ a
         & (keysL .~ mempty)
         & (lastKnownLocationL .~ mloc)
+    Do (EnemyDefeated eid _ source _) | eid == toId a -> do
+      miid <- getSourceController source
+      victory <- getVictoryPoints eid
+      vengeance <- getVengeancePoints eid
+
+      let
+        placeInVictory = isJust (victory <|> vengeance)
+        victoryMsgs = [DefeatedAddToVictory $ toTarget a | placeInVictory]
+        defeatMsgs =
+          if placeInVictory
+            then resolve $ RemoveEnemy eid
+            else [Discard miid GameSource $ toTarget a]
+
+      pushAll
+        $ victoryMsgs
+        <> windows [Window.EntityDiscarded source (toTarget a)]
+        <> defeatMsgs
+      pure
+        $ a
         & (if placeInVictory then placementL .~ OutOfPlay VictoryDisplayZone else id)
     After (EnemyDefeated eid _ source _) | eid == toId a -> do
       case a.placement of
@@ -1335,7 +1343,8 @@ instance RunMessage EnemyAttrs where
               massive <- eid <=~> MassiveEnemy
               mlid <- getMaybeLocation iid
               enemyLocation <- field EnemyLocation eid
-              when (not massive) do
+              canEnter <-  maybe (pure False) (canEnterLocation enemyId) mlid
+              when (not massive && canEnter) do
                 pushAll
                   $ [before, PlaceEnemy eid (InThreatArea iid)]
                   <> [EnemyEntered eid lid | lid <- maybeToList mlid, Just lid /= enemyLocation]
@@ -1498,6 +1507,7 @@ instance RunMessage EnemyAttrs where
     RemoveTokens _ target token amount | isTarget a target -> do
       pure $ a & tokensL %~ subtractTokens token amount
     MoveTokens s source _ tType n | isSource a source -> runMessage (RemoveTokens s (toTarget a) tType n) a
+    MoveTokens _s (InvestigatorSource _) target Clue _ | isTarget a target -> pure a
     MoveTokens s _ target tType n | isTarget a target -> runMessage (PlaceTokens s (toTarget a) tType n) a
     PlaceTokens source target token n | isTarget a target -> do
       if token == #doom

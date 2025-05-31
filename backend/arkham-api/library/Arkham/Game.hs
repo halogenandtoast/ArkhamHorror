@@ -1303,6 +1303,7 @@ getTreacheriesMatching matcher = do
     TreacheryIsAttachedTo target -> \treachery -> do
       let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
       pure $ treacheryTarget == Just target
+    SignatureTreachery -> pure . isSignature . toCardDef
     TreacheryInHandOf investigatorMatcher -> \treachery -> do
       iids <- select investigatorMatcher
       pure $ case treachery.placement of
@@ -1368,7 +1369,7 @@ abilityMatches a@Ability {..} = \case
   ActiveAbility -> do
     active <- view activeAbilitiesL <$> getGame
     pure $ a `elem` active
-  AbilityIsSkillTest -> pure abilityTriggersSkillTest
+  Arkham.Matcher.AbilityIsSkillTest -> pure abilityTriggersSkillTest
   AbilityOnCardControlledBy iid -> do
     let
       sourceMatch = \case
@@ -1454,7 +1455,7 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
     ActiveAbility -> do
       active <- view activeAbilitiesL <$> getGame
       pure $ filter (`elem` active) as
-    AbilityIsSkillTest -> pure $ filter abilityTriggersSkillTest as
+    Arkham.Matcher.AbilityIsSkillTest -> pure $ filter abilityTriggersSkillTest as
     AbilityOnCardControlledBy iid -> do
       let
         sourceMatch = \case
@@ -3097,6 +3098,7 @@ enemyMatcherFilter es matcher' = case matcher' of
   AnyEnemy -> pure es
   EnemyIs cardCode -> pure $ filter ((== cardCode) . toCardCode) es
   NonWeaknessEnemy -> pure $ filter (isNothing . cdCardSubType . toCardDef) es
+  SignatureEnemy -> pure $ filter (isSignature . toCardDef) es
   EnemyInHandOf investigatorMatcher -> do
     iids <- select investigatorMatcher
     pure $ flip filter es \enemy -> do

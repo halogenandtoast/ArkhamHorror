@@ -2337,7 +2337,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   DoStep 1 (Msg.InvestigatorDamage iid _ damage horror) | iid == investigatorId -> do
     pure $ a & assignedHealthDamageL +~ max 0 damage & assignedSanityDamageL +~ max 0 horror
   DrivenInsane iid | iid == investigatorId -> do
-    pure $ a & mentalTraumaL .~ investigatorSanity & drivenInsaneL .~ True
+    pure $ a & mentalTraumaL .~ investigatorSanity & drivenInsaneL .~ True & defeatedL .~ True
   CheckDefeated source (isTarget a -> True) | not (a ^. defeatedL || a ^. resignedL) -> do
     facingDefeat <- getFacingDefeat a
     if facingDefeat
@@ -3512,7 +3512,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       else pure a'
   SetActions iid _ 0 | iid == investigatorId -> do
     additionalActions <- getAdditionalActions a
-    pure $ a & remainingActionsL .~ 0 & usedAdditionalActionsL .~ additionalActions
+    pure $ a & remainingActionsL .~ 0 & usedAdditionalActionsL .~ nub (investigatorUsedAdditionalActions <> additionalActions)
   SetActions iid _ n | iid == investigatorId -> do
     pure $ a & remainingActionsL .~ n
   SetAsideCards cards -> do
@@ -4087,10 +4087,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     push $ CheckTrauma iid
     pure $ a & physicalTraumaL +~ physical & mentalTraumaL +~ mental
   CheckTrauma iid | iid == investigatorId -> do
-    pushWhen (investigatorMentalTrauma >= investigatorSanity)
-      $ DrivenInsane iid
-    pushWhen (investigatorPhysicalTrauma >= investigatorHealth)
-      $ InvestigatorKilled (toSource a) iid
+    pushWhen (investigatorMentalTrauma >= investigatorSanity) $ DrivenInsane iid
+    pushWhen (investigatorPhysicalTrauma >= investigatorHealth) $ InvestigatorKilled (toSource a) iid
+    pushWhen (investigatorMentalTrauma >= investigatorSanity || investigatorPhysicalTrauma >= investigatorHealth) CheckForRemainingInvestigators
     pure a
   HealTrauma iid physical mental | iid == investigatorId -> do
     pure

@@ -55,7 +55,7 @@
   },
   "label": {
     "yogSothoth": "Discard the top {cards} cards and take {horror} horror",
-    "tearThroughSpaces": {
+    "tearThroughSpace": {
       "placeDoom": "Place 1 doom on Tear through Space",
       "discard": "Discard Tear through Space"
     },

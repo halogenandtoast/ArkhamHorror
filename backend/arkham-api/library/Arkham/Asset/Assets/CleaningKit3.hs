@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.CleaningKit3 (cleaningKit3, CleaningKit3 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Import.Lifted hiding (AbilityIsSkillTest)
 import Arkham.Asset.Uses
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Matcher

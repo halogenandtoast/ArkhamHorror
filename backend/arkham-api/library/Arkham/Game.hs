@@ -1369,7 +1369,7 @@ abilityMatches a@Ability {..} = \case
   ActiveAbility -> do
     active <- view activeAbilitiesL <$> getGame
     pure $ a `elem` active
-  AbilityIsSkillTest -> pure abilityTriggersSkillTest
+  Arkham.Matcher.AbilityIsSkillTest -> pure abilityTriggersSkillTest
   AbilityOnCardControlledBy iid -> do
     let
       sourceMatch = \case
@@ -1455,7 +1455,7 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
     ActiveAbility -> do
       active <- view activeAbilitiesL <$> getGame
       pure $ filter (`elem` active) as
-    AbilityIsSkillTest -> pure $ filter abilityTriggersSkillTest as
+    Arkham.Matcher.AbilityIsSkillTest -> pure $ filter abilityTriggersSkillTest as
     AbilityOnCardControlledBy iid -> do
       let
         sourceMatch = \case

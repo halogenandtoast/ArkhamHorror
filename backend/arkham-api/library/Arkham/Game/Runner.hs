@@ -1202,10 +1202,23 @@ runGameMessage msg g = case msg of
       & (actionRemovedEntitiesL . skillsL %~ Map.foldr' (\s m -> Map.insert s.id s m) skills')
       & setTurnHistory
   Msg.SkillTestEnded _ -> do
+    let abilitiesToResolve = filter abilityTriggersSkillTest (g ^. activeAbilitiesL)
+    replaceAllMessagesMatching
+      \case
+        ResolvedAbility ab -> ab `elem` abilitiesToResolve
+        _ -> False
+      \case
+        ResolvedAbility ab -> [Priority $ ResolvedAbility ab]
+        other -> [other]
+
     pure
       $ g
       & (skillTestL .~ Nothing)
       & (skillTestResultsL .~ Nothing)
+      & (activeAbilitiesL %~ filter (not . abilityTriggersSkillTest))
+  Msg.AbilityIsSkillTest aref -> do
+    let updateAbility ab = if ab.ref == aref then ab { abilityTriggersSkillTest = True } else ab
+    pure $ g & (activeAbilitiesL %~ map updateAbility)
   Do msg'@(Search {}) -> do
     inSearch <- fromQueue (elem FinishedSearch)
     if inSearch

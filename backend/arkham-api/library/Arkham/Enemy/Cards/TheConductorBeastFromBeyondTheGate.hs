@@ -25,8 +25,7 @@ theConductorBeastFromBeyondTheGate =
 
 instance HasAbilities TheConductorBeastFromBeyondTheGate where
   getAbilities (TheConductorBeastFromBeyondTheGate a) = case a.placement of
-    AttachedToAgenda {} ->
-      [mkAbility a 3 $ SilentForcedAbility $ AgendaAdvances #after AnyAgenda]
+    AttachedToAgenda {} -> [mkAbility a 3 $ SilentForcedAbility $ AgendaAdvances #after AnyAgenda]
     _ ->
       extend
         a

@@ -37,7 +37,7 @@ instance HasAbilities MiasmaticTorment where
 instance RunMessage MiasmaticTorment where
   runMessage msg t@(MiasmaticTorment attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      partners <- select $ AssetWithKeyword Partner
+      partners <- select $ AssetWithKeyword Partner <> assetControlledBy iid
       if null partners
         then gainSurge attrs
         else chooseOneM iid $ targets partners \partner -> do

@@ -1,13 +1,16 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Agenda.Cards.BreakingThroughV2 (breakingThroughV2) where
 
+import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted hiding (EncounterCardSource)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Ability
 import Arkham.Message.Lifted.Move
+import Arkham.Modifier
 
 newtype BreakingThroughV2 = BreakingThroughV2 AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -31,7 +34,9 @@ instance RunMessage BreakingThroughV2 where
           (getJustLocationByName "Another Dimension")
           (getLocationByName "The Edge of the Universe")
       yog <- selectJust $ enemyIs Enemies.yogSothoth
-      enemyMoveTo yog yogMoveTo
+      selectOne (locationIs Locations.realmsBeyondAllInOne) >>= \case
+        Nothing -> enemyMoveTo yog yogMoveTo
+        Just loc -> temporaryModifier loc attrs Blank $ enemyMoveTo yog yogMoveTo
       selectOne (locationIs Locations.realmsBeyondAllInOne) >>= traverse_ removeLocation
       advanceAgendaDeck attrs
       pure a

@@ -40,7 +40,10 @@ instance RunMessage HoldingCells where
     ForInvestigator iid (ScenarioSpecific "captured" _) -> do
       assets <- select $ assetControlledBy iid <> #hand
       for_ assets $ returnToHand iid
+      enemies <- select $ enemyEngagedWith iid
+      for_ enemies (disengageEnemy iid)
       place iid attrs.id
+      for_ enemies enemyCheckEngagement
       checkWhen $ Window.ScenarioEvent "captured" (Just iid) (toJSON iid)
       pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do

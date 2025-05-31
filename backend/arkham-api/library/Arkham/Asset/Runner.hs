@@ -519,7 +519,7 @@ instance RunMessage AssetAttrs where
           <> [RemovedFromPlay source]
       pure a
     PlaceInBonded _iid card -> do
-      when (traceShowId $ traceShowId (toCard a) == traceShowId card) do
+      when (toCard a == card) do
         removeAllMessagesMatching \case
           Discarded (AssetTarget aid) _ _ -> aid == a.id
           CheckWindows ws -> flip any ws \case

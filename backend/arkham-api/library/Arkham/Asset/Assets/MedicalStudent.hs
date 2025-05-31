@@ -38,8 +38,8 @@ instance RunMessage MedicalStudent where
         damageInvestigators <- select $ HealableInvestigator source #damage $ colocatedWith iid
         targets (nub $ horrorInvestigators <> damageInvestigators) \i -> do
           chooseOneAtATimeM iid do
-            when (i `elem` damageInvestigators) $ damageLabeled iid $ healDamage iid source 1
-            when (i `elem` horrorInvestigators) $ horrorLabeled iid $ healHorror iid source 1
+            when (i `elem` damageInvestigators) $ damageLabeled i $ healDamage i source 1
+            when (i `elem` horrorInvestigators) $ horrorLabeled i $ healHorror i source 1
 
         horrorAssets <- select $ healableAsset source #horror (locationWithInvestigator iid)
         damageAssets <- select $ healableAsset source #damage (locationWithInvestigator iid)

@@ -7,14 +7,12 @@ import Arkham.Asset.Uses
 import Arkham.Classes.HasGame
 import Arkham.DamageEffect qualified as Msg
 import Arkham.Discover
-import Arkham.Enemy.Types (Field (EnemyLocation))
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed)
-import Arkham.Helpers.Location (getAccessibleLocations, withLocationOf)
+import Arkham.Helpers.Location (getAccessibleLocations, getLocationOf, withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest.Target
-import Arkham.Investigator.Types (Field (InvestigatorLocation))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (DiscoverClues, EnemyDefeated)
 import Arkham.Movement
@@ -36,21 +34,21 @@ newtype RunicAxe = RunicAxe (AssetAttrs `With` Metadata)
 runicAxe :: AssetCard RunicAxe
 runicAxe = asset (RunicAxe . (`with` Metadata [])) Cards.runicAxe
 
-override :: AssetAttrs -> InvestigatorId -> CriteriaOverride
-override a iid =
+override :: AssetAttrs -> InvestigatorId -> Int -> CriteriaOverride
+override a iid distance =
   CriteriaOverride
     $ EnemyCriteria
     $ ThisEnemy
     $ EnemyWithoutModifier CannotBeAttacked
     <> oneOf
       [ EnemyWhenInvestigator (InvestigatorWithId iid <> InvestigatorWithoutModifier CannotMove)
-          <> EnemyAt (AccessibleFrom $ locationWithInvestigator iid)
           <> ( if a.use Charge > 1
                  then
                    oneOf
-                     [ not_ AloofEnemy
-                     , EnemyIsEngagedWith Anyone
+                     [ not_ AloofEnemy <> atDistance distance
+                     , EnemyIsEngagedWith Anyone <> atDistance distance
                      , CanEngageEnemyWithOverride (CriteriaOverride $ EnemyCriteria $ ThisEnemy AnyEnemy)
+                         <> atDistance (distance - 1)
                      ]
                  else oneOf [not_ AloofEnemy, EnemyIsEngagedWith Anyone]
              )
@@ -59,6 +57,12 @@ override a iid =
           <> oneOf [EnemyIsEngagedWith Anyone, CanEngageEnemy (a.ability 1)]
       , enemyAtLocationWith iid <> not_ AloofEnemy
       ]
+ where
+  atDistance n =
+    EnemyAt
+      $ if n == 1
+        then AccessibleFrom (locationWithInvestigator iid)
+        else LocationWithAccessiblePath (toSource a) n (InvestigatorWithId iid) Anywhere
 
 instance HasModifiersFor RunicAxe where
   getModifiersFor (RunicAxe (With a _)) = do
@@ -72,10 +76,12 @@ instance HasModifiersFor RunicAxe where
       void $ runMaybeT do
         guard (a.use Charge > 0 && a `hasCustomization` InscriptionOfTheHunt)
         ab <- MaybeT $ selectOne (AbilityIs (toSource a) 1)
+        let hasPower = a `hasCustomization` AncientPower
+        let distance = if hasPower then min 3 (a.use Charge) else 1
         modified_
           a
           (AbilityTarget iid ab.ref)
-          [CanModify $ EnemyFightActionCriteria $ override a iid]
+          [CanModify $ EnemyFightActionCriteria $ override a iid distance]
 
 instance HasAbilities RunicAxe where
   getAbilities (RunicAxe (With a _)) = [restrictedAbility a 1 ControlsThis fightAction_]
@@ -106,9 +112,11 @@ instance RunMessage RunicAxe where
       sid <- getRandom
       skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)
       if attrs `hasCustomization` InscriptionOfTheHunt && attrs.use Charge > 0
-        then
+        then do
+          let hasPower = attrs `hasCustomization` AncientPower
+          let distance = if hasPower then min 3 (attrs.use Charge) else 1
           chooseFightEnemyMatch sid iid (attrs.ability 1)
-            $ CanFightEnemyWithOverride (override attrs iid)
+            $ CanFightEnemyWithOverride (override attrs iid distance)
         else chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     ChoseEnemy _sid iid (isAbilitySource attrs 1 -> True) eid -> do
@@ -154,21 +162,22 @@ instance RunMessage RunicAxe where
         Glory -> pure ()
         Elders -> pure ()
         Hunt -> do
-          mLoc <- field InvestigatorLocation iid
+          mLoc <- getLocationOf iid
           isLocation <- coerce eid <=~> Anywhere
           if isLocation
             then push $ Move $ move (attrs.ability 1) iid (coerce eid)
             else
-              field EnemyLocation eid >>= traverse_ \loc -> do
+              getLocationOf eid >>= traverse_ \loc -> do
                 if Just loc /= mLoc
-                  then push $ Move $ move (attrs.ability 1) iid loc
+                  then do
+                    for_ mLoc \loc' -> do
+                      accessibleLocations <- getAccessibleLocations iid (attrs.ability 1)
+                      closestLocationIds <- select $ ClosestPathLocation loc' loc
+                      let locations = filter (`elem` closestLocationIds) accessibleLocations
+                      chooseOne iid $ targetLabels locations (only . Move . move (attrs.ability 1) iid)
                   else do
                     engaged <- eid <=~> enemyEngagedWith iid
-                    if engaged
-                      then do
-                        accessibleLocations <- getAccessibleLocations iid (attrs.ability 1)
-                        chooseOne iid $ targetLabels accessibleLocations (only . Move . move (attrs.ability 1) iid)
-                      else push $ EngageEnemy iid eid Nothing False
+                    unless engaged $ enemyEngageInvestigator eid iid
         Fury -> pure ()
       RunicAxe . (`with` Metadata (inscription : inscriptions meta)) <$> liftRunMessage msg attrs
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do

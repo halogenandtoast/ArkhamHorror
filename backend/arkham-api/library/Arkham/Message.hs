@@ -399,6 +399,7 @@ data Message
   | AddSubscriber Target
   | SetInvestigator PlayerId Investigator
   | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
+  | AbilityIsSkillTest AbilityRef
   | -- Story Card Messages
     ReadStory InvestigatorId Card StoryMode (Maybe Target)
   | ReadStoryWithPlacement InvestigatorId Card StoryMode (Maybe Target) Placement

@@ -22,7 +22,7 @@ instance RunMessage NarrowEscape where
       ems <- effectModifiers attrs [AnySkillValue 2]
       push
         $ CreateWindowModifierEffect
-          (FirstEffectWindow [EffectNextSkillTestWindow, EffectTurnWindow iid'])
+          (FirstEffectWindow [EffectNextSkillTestWindow iid, EffectTurnWindow iid'])
           ems
           (toSource attrs)
           (InvestigatorTarget iid)

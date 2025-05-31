@@ -2,6 +2,7 @@
 
 module Arkham.Script where
 
+import Arkham.Calculation
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.Entity
@@ -13,6 +14,7 @@ import Arkham.Effect.Builder
 import Arkham.Effect.Types
 import Arkham.Effect.Window
 import Arkham.GameT
+import Arkham.Helpers.SkillTest.Lifted qualified as Msg (revelationSkillTest)
 import Arkham.Helpers.Window qualified as Window
 import Arkham.Id
 import Arkham.Matcher
@@ -24,6 +26,8 @@ import Arkham.Message.Lifted.Queue
 import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Queue
+import Arkham.SkillType
+import Arkham.Investigator.Projection ()
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
@@ -98,9 +102,9 @@ onMessage match h = Script $ tell [CardHandler match h]
 
 revelation
   :: (?this :: a, Sourceable (EntityAttrs a), Entity a)
-  => ((?you :: InvestigatorId, ?source :: Source) => ScriptT a ()) -> ScriptT a ()
+  => ((?you :: InvestigatorId, ?source :: Source, ?revelation :: Bool) => ScriptT a ()) -> ScriptT a ()
 revelation handler = onMessage matchHandler \case
-  Revelation iid s | isSource (toAttrs ?this) s -> let ?you = iid; ?source = s in handler
+  Revelation iid s | isSource (toAttrs ?this) s -> let ?you = iid; ?source = s; ?revelation = True in handler
   _ -> pure ()
  where
   matchHandler (Revelation _ s) = isSource (toAttrs ?this) s
@@ -227,6 +231,7 @@ script
 script dsl msg a = runQueueT do
   let ?msg = msg
   let ?this = a
+  let ?revelation = False
   handlers <- evalStateT (execWriterT $ runReaderT (runScriptT dsl) initScriptState) a
   let result = foldr (\h acc -> acc <|> runHandler h msg) Nothing handlers
   fromMaybe (overAttrsM (liftRunMessage msg) a) result
@@ -495,3 +500,39 @@ shuffleDrawnCardBackIntoDeck = Msg.shuffleCardsIntoDeck drawnCard.drawnFrom draw
 cancelCardDraw :: (?windows :: [Window], ?source :: Source) => ScriptT a ()
 cancelCardDraw = Script $ lift $ lift $ lift do
   Msg.cancelCardDraw ?source (Window.cardDrawn windows)
+
+yourNextSkillTest :: (?you :: InvestigatorId) => EffectWindow
+yourNextSkillTest = #nextSkillTest ?you
+
+endOfCurrentPhase :: EffectWindow
+endOfCurrentPhase = #endOfCurrentPhase
+
+test
+  :: (?source :: Source, ?you :: InvestigatorId, ?revelation :: Bool)
+  => SkillType -> GameCalculation -> ScriptT a () -> ScriptT a ()
+test skillType calculation body = do
+  sid <- getRandom
+  let ?skillTestId = sid
+  if ?revelation
+    then Script $ lift $ lift $ lift $ Msg.revelationSkillTest sid you source skillType calculation
+    else Script $ lift $ lift $ lift $ Msg.beginSkillTest sid you source you skillType calculation
+  body
+
+onFail
+  :: (?this :: a, Sourceable (EntityAttrs a), Entity a)
+  => ((?you :: InvestigatorId, ?source :: Source) => ScriptT a ()) -> ScriptT a ()
+onFail handler = onMessage matchHandler \case
+  FailedThisSkillTest iid s | isSource (toAttrs ?this) s -> let ?you = iid; ?source = s in handler
+  _ -> pure ()
+ where
+  matchHandler (FailedThisSkillTest _ s) = isSource (toAttrs ?this) s
+  matchHandler _ = False
+
+takeDamage :: (?source :: Source, ?you :: InvestigatorId) => Int -> ScriptT a ()
+takeDamage n = Script $ lift $ lift $ lift $ Msg.assignDamage you ?source n
+
+horrorOn :: InvestigatorId -> ScriptT a Int
+horrorOn iid = Script $ lift $ lift $ lift iid.horror
+
+sanityOf :: InvestigatorId -> ScriptT a Int
+sanityOf iid = Script $ lift $ lift $ lift iid.sanity

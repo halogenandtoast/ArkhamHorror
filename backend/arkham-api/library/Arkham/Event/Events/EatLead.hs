@@ -18,7 +18,7 @@ instance RunMessage EatLead where
     PlayThisEvent iid (is attrs -> True) -> do
       for_ (getWindowAsset attrs.windows) \aid -> do
         spendUses attrs aid Ammo 1
-        nextSkillTestModifier attrs iid (DrawAdditionalChaosTokens 1)
+        nextSkillTestModifier iid attrs iid (DrawAdditionalChaosTokens 1)
         cancelledOrIgnoredCardOrGameEffect attrs
       pure e
     _ -> EatLead <$> liftRunMessage msg attrs

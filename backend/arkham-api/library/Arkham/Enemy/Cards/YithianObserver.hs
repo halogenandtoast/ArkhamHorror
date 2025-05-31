@@ -27,7 +27,7 @@ instance RunMessage YithianObserver where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       emptyHand <- fieldMap InvestigatorHand null iid
       if emptyHand
-        then nextSkillTestModifiers attrs attrs [DamageDealt 1, HorrorDealt 1]
+        then nextSkillTestModifiers iid attrs attrs [DamageDealt 1, HorrorDealt 1]
         else randomDiscard iid attrs
       pure e
     _ -> YithianObserver <$> liftRunMessage msg attrs

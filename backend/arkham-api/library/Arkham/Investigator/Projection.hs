@@ -73,3 +73,9 @@ instance HasField "keys" InvestigatorId (QueueT Message GameT (Set ArkhamKey)) w
 
 instance HasField "remainingActions" InvestigatorId (QueueT Message GameT Int) where
   getField = field InvestigatorRemainingActions
+
+instance HasField "horror" InvestigatorId (QueueT Message GameT Int) where
+  getField = field InvestigatorHorror
+
+instance HasField "sanity" InvestigatorId (QueueT Message GameT Int) where
+  getField = field InvestigatorSanity

@@ -1,9 +1,9 @@
 module Arkham.Treachery.Cards.DismalCurse (dismalCurse) where
 
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
-import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestSource)
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Projection
+import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.SkillTest (getSkillTestInvestigator, maybeModifyThisSkillTest)
+import Arkham.Investigator.Projection ()
+import Arkham.Matcher
 import Arkham.Source
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -16,12 +16,10 @@ dismalCurse :: TreacheryCard DismalCurse
 dismalCurse = treachery DismalCurse Cards.dismalCurse
 
 instance HasModifiersFor DismalCurse where
-  getModifiersFor (DismalCurse a) = do
-    getSkillTest >>= traverse_ \st -> do
-      maybeModified_ a (SkillTestTarget st.id) do
-        source <- MaybeT getSkillTestSource
-        guard $ isSource a source
-        pure [Difficulty 2]
+  getModifiersFor (DismalCurse a) = maybeModifyThisSkillTest a do
+    iid <- MaybeT getSkillTestInvestigator
+    guardMatches iid $ InvestigatorWithRemainingSanity (atMost 0)
+    pure [Difficulty 2]
 
 instance RunMessage DismalCurse where
   runMessage msg t@(DismalCurse attrs) = runQueueT $ case msg of
@@ -30,9 +28,8 @@ instance RunMessage DismalCurse where
       revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      horror <- field InvestigatorHorror iid
-      sanity <- field InvestigatorSanity iid
-      let damage = if horror > sanity * 2 then 4 else 2
-      assignDamage iid attrs damage
+      horror <- iid.horror
+      sanity <- iid.sanity
+      assignDamage iid attrs $ if horror > sanity * 2 then 4 else 2
       pure t
     _ -> DismalCurse <$> liftRunMessage msg attrs

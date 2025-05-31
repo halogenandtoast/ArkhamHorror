@@ -96,6 +96,7 @@ instance RunMessage TreacheryAttrs where
       pure $ a & tokensL %~ addTokens token n
     RemoveTokens _ (isTarget a -> True) token n -> pure $ a & tokensL %~ subtractTokens token n
     MoveTokens s source _ tType n | isSource a source -> runMessage (RemoveTokens s (toTarget a) tType n) a
+    MoveTokens _s (InvestigatorSource _) target Clue _ | isTarget a target -> pure a
     MoveTokens s _ target tType n | isTarget a target -> runMessage (PlaceTokens s (toTarget a) tType n) a
     RemoveAllDoom _ (isTarget a -> True) -> do
       pure $ a & tokensL %~ removeAllTokens Doom

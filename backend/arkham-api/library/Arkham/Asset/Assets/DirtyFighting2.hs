@@ -33,8 +33,8 @@ instance HasAbilities DirtyFighting2 where
 instance RunMessage DirtyFighting2 where
   runMessage msg a@(DirtyFighting2 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (evadedEnemy -> enemy) _ -> do
-      nextSkillTestModifier (attrs.ability 1) enemy IgnoreAloof
-      nextSkillTestModifier (attrs.ability 1) iid (MustFight enemy)
+      nextSkillTestModifier iid (attrs.ability 1) enemy IgnoreAloof
+      nextSkillTestModifier iid (attrs.ability 1) iid (MustFight enemy)
       doStep 1 msg
       pure a
     DoStep _ (UseThisAbility iid (isSource attrs -> True) 1) -> do

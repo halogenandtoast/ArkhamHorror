@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed, inject } from 'vue';
 import { upgradeDeck } from '@/arkham/api';
-import { imgsrc } from '@/arkham/helpers';
+import { imgsrc, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
 import { Investigator } from '@/arkham/types/Investigator';
 import { baseKey } from '@/arkham/types/Log';
@@ -77,7 +77,7 @@ const currentDeckUrl = computed(() => {
 
 const isArkhamDBDeck = computed(() => {
   if (!currentDeckUrl.value) { return false }
-  return currentDeckUrl.value.startsWith('https://arkhamdb.com')
+  return currentDeckUrl.value.startsWith('https://arkhamdb.com') || currentDeckUrl.value.startsWith(localizeArkhamDBBaseUrl())
 })
 
 const isArkhamBuildDeck = computed(() => {
@@ -94,14 +94,14 @@ function viewDeck() {
     const arkhamDbApiRegex = /https:\/\/(?:[a-zA-Z0-9-]+\.)?arkhamdb\.com\/api\/public\/deck\/([^/]+)/
     const matches = currentDeckUrl.value.match(arkhamDbApiRegex)
     if (matches) {
-      window.open(`https://arkhamdb.com/deck/view/${matches[1]}`)
+      window.open(`${localizeArkhamDBBaseUrl()}/deck/view/${matches[1]}`)
       return
     }
 
     const arkhamDbDecklistRegex = /https:\/\/(?:[a-zA-Z0-9-]+\.)?arkhamdb\.com\/api\/public\/decklist\/([^/]+)/
     const dlmatches = currentDeckUrl.value.match(arkhamDbDecklistRegex)
     if (dlmatches) {
-      window.open(`https://arkhamdb.com/decklist/view/${dlmatches[1]}`)
+      window.open(`${localizeArkhamDBBaseUrl()}/decklist/view/${dlmatches[1]}`)
       return
     }
 
@@ -133,7 +133,7 @@ async function syncUpgrade() {
           content = { ...data, url: nextUrl };
 
           if (data.next_deck != null) {
-            nextUrl = `https://arkhamdb.com/api/public/deck/${data.next_deck}`;
+            nextUrl = `${localizeArkhamDBBaseUrl()}/api/public/deck/${data.next_deck}`;
           } else {
             nextUrl = null;
           }
@@ -192,7 +192,7 @@ function loadDeck() {
   
   let matches
   if ((matches = deck.value.match(arkhamDbRegex))) {
-    deckUrl.value = `https://arkhamdb.com/api/public/${matches[1]}/${matches[4]}`
+    deckUrl.value = `${localizeArkhamDBBaseUrl()}/api/public/${matches[1]}/${matches[4]}`
   } else if ((matches = deck.value.match(arkhamBuildRegex))) {
     deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[1]}`
   } else {

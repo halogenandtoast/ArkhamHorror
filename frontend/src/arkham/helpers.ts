@@ -232,3 +232,13 @@ export function groupBy<T, K extends string | number | symbol>(
     return result;
   }, {} as Record<K, T[]>);
 }
+
+export function localizeArkhamDBBaseUrl() {
+  const language = localStorage.getItem('language') || 'en'
+
+  const baseUrl = new URL('https://arkhamdb.com');
+  if (language === "en") return baseUrl.origin;
+
+  baseUrl.hostname = `${language}.${baseUrl.hostname}`;
+  return baseUrl.origin;
+}

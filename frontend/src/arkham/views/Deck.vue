@@ -2,7 +2,7 @@
 import { watch, ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { fetchDeck, deleteDeck, fetchCards, syncDeck } from '@/arkham/api';
-import { imgsrc } from '@/arkham/helpers';
+import { imgsrc, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/CardDef';
 import type {Deck} from '@/arkham/types/Deck';
 import * as DeckHelpers from '@/arkham/types/Deck';
@@ -179,7 +179,7 @@ const deckUrlToPage = (url: string): string => {
   // OR
   // converts https://arkhamdb.com/api/public/deck/25027
   // to https://arkhamdb.com/deck/view/25027
-  return url.replace("/api/public/decklist", "/decklist/view").replace("/api/public/deck", "/deck/view")
+  return url.replace("https://arkhamdb.com", localizeArkhamDBBaseUrl()).replace("/api/public/decklist", "/decklist/view").replace("/api/public/deck", "/deck/view")
 }
 
 const deckInvestigator = computed(() => {

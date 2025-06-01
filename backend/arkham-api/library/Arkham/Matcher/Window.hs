@@ -206,6 +206,7 @@ data WindowMatcher
   | InvestigatorResigned Timing Who
   | AnyWindow
   | NotAnyWindow
+  | NotWindow WindowMatcher
   | CommittedCards Timing Who CardListMatcher
   | CommittedCard Timing Who CardMatcher
   | ActivateAbility Timing Who AbilityMatcher
@@ -228,6 +229,9 @@ data WindowMatcher
   | TakeControlOfClues Timing Who SourceMatcher
   | TakeControlOfKey Timing Who KeyMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
+
+instance Not WindowMatcher where
+  not_ = NotWindow
 
 data ExploreMatcher = SuccessfulExplore LocationMatcher | FailedExplore CardMatcher
   deriving stock (Show, Eq, Ord, Data)

@@ -2,6 +2,7 @@ module Arkham.Investigator.Cards.TrishScarborough (trishScarborough) where
 
 import Arkham.Ability
 import Arkham.Discover
+import Arkham.Helpers.Investigator (getCanDiscoverClues)
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.SkillTest
@@ -32,7 +33,7 @@ instance HasAbilities TrishScarborough where
    where
     tabooModifier = if tabooed TabooList21 a then (NonEliteEnemy <>) else id
     locationWithAdditionalClues = LocationBeingDiscovered <> LocationWithAnyClues
-    evadableEnemy = tabooModifier $ CanEvadeEnemy (toSource a)
+    evadableEnemy = tabooModifier $ EnemyCanBeEvadedBy (toSource a)
 
 instance HasChaosTokenValue TrishScarborough where
   getChaosTokenValue iid ElderSign (TrishScarborough attrs) | iid == toId attrs = do
@@ -43,10 +44,13 @@ instance RunMessage TrishScarborough where
   runMessage msg i@(TrishScarborough attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (discoveredLocation -> lid) _ -> do
       let source = attrs.ability 1
+      ok <- getCanDiscoverClues IsInvestigate iid lid
+      enemies <- select $ enemyAt lid <> EnemyCanBeEvadedBy source
       chooseOrRunOneM iid do
-        labeled "Discover 1 additional clue at that location" $ discoverAt NotInvestigate iid source lid 1
+        when ok do
+          labeled "Discover 1 additional clue at that location" $ discoverAt NotInvestigate iid source lid 1
         labeled "Automatically evade that enemy" do
-          chooseSelectM iid (enemyAt lid <> EnemyCanBeEvadedBy source) $ automaticallyEvadeEnemy iid
+          chooseTargetM iid enemies $ automaticallyEvadeEnemy iid
       pure i
     ElderSignEffect (is attrs -> True) -> do
       whenM isInvestigation do

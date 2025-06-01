@@ -1317,9 +1317,11 @@ runGameMessage msg g = case msg of
         _ -> False
 
       card <- field AssetCard assetId
+      underneath <- field AssetCardsUnderneath assetId
       if assetIsStory $ toAttrs asset
         then push $ toDiscard GameSource $ toTarget assetId
         else pushAll [RemoveFromPlay (toSource assetId), addToHand iid card]
+      for_ underneath (push . addToDiscard iid)
     pure g
   PlaceEnemy enemyId placement | not (isOutOfPlayZonePlacement placement) -> do
     enemy <- getEnemy enemyId

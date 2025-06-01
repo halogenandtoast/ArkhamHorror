@@ -1409,7 +1409,12 @@ skillTestModifier sid (toSource -> source) (toTarget -> target) x =
   Msg.pushM $ Msg.skillTestModifier sid source target x
 
 nextSkillTestModifier
-  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId, Targetable target)
+  :: ( ReverseQueue m
+     , Sourceable source
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     , Targetable target
+     )
   => investigator
   -> source
   -> target
@@ -1419,7 +1424,12 @@ nextSkillTestModifier investigator source target x =
   Msg.pushM $ Msg.nextSkillTestModifier investigator source target x
 
 nextSkillTestModifiers
-  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId, Targetable target)
+  :: ( ReverseQueue m
+     , Sourceable source
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     , Targetable target
+     )
   => investigator
   -> source
   -> target
@@ -2174,7 +2184,11 @@ discoverAtYourLocation
   :: (ReverseQueue m, Sourceable source) => IsInvestigate -> InvestigatorId -> source -> Int -> m ()
 discoverAtYourLocation isInvestigate iid s n = do
   whenM (canDiscoverCluesAtYourLocation isInvestigate iid) do
-    push $ Msg.DiscoverClues iid $ Msg.discoverAtYourLocation s n
+    push
+      $ Msg.DiscoverClues iid
+      $ (Msg.discoverAtYourLocation s n)
+        { Msg.discoverAction = if isInvestigate == IsInvestigate then Just #investigate else Nothing
+        }
 
 discoverAtYourLocationAndThen
   :: (ReverseQueue m, Sourceable source)

@@ -2,11 +2,12 @@ module Arkham.Asset.Assets.GeneBeauregard3 (geneBeauregard3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 
 newtype GeneBeauregard3 = GeneBeauregard3 AssetAttrs
   deriving anyclass IsAsset
@@ -35,7 +36,7 @@ instance HasAbilities GeneBeauregard3 where
     ]
 
 instance RunMessage GeneBeauregard3 where
-  runMessage msg a@(GeneBeauregard3 attrs) = case msg of
+  runMessage msg a@(GeneBeauregard3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let connectedLocation = ConnectedTo (locationWithInvestigator iid)
       option1 <-
@@ -43,67 +44,42 @@ instance RunMessage GeneBeauregard3 where
       option2 <- selectAny $ connectedLocation <> LocationWithAnyClues
       option3 <- selectAny $ NonEliteEnemy <> enemyAtLocationWith iid <> EnemyCanEnter connectedLocation
       option4 <-
-        selectAny
-          $ NonEliteEnemy
-          <> EnemyAt connectedLocation
-          <> EnemyCanEnter (locationWithInvestigator iid)
-      player <- getPlayer iid
-      let chooseOption = HandleAbilityOption iid (toSource attrs)
+        selectAny $ NonEliteEnemy <> at_ connectedLocation <> EnemyCanEnter (locationWithInvestigator iid)
+      let chooseOption = push . HandleAbilityOption iid (toSource attrs)
 
-      push
-        $ chooseOrRunOne player
-        $ [Label "Move 1 clue from your location to a connecting location" [chooseOption 1] | option1]
-        <> [Label "Move 1 clue from a connecting location to your location" [chooseOption 2] | option2]
-        <> [Label "Move an enemy from your location to a connecting location" [chooseOption 3] | option3]
-        <> [Label "Move an enemy from a connecting location to your location" [chooseOption 4] | option4]
+      chooseOrRunOneM iid do
+        when option1 do
+          labeled "Move 1 clue from your location to a connecting location" $ chooseOption 1
+        when option2 do
+          labeled "Move 1 clue from a connecting location to your location" $ chooseOption 2
+        when option3 do
+          labeled "Move an enemy from your location to a connecting location" $ chooseOption 3
+        when option4 do
+          labeled "Move an enemy from a connecting location to your location" $ chooseOption 4
 
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 1 -> do
       yourLocation <- selectJust $ locationWithInvestigator iid <> LocationWithAnyClues
       connected <- select $ ConnectedTo (locationWithInvestigator iid)
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [ targetLabel l [MovedClues (attrs.ability 1) (toSource yourLocation) (toTarget l) 1] | l <- connected
-          ]
-
+      chooseOrRunOneM iid do
+        targets connected \l -> moveTokens (attrs.ability 1) yourLocation l #clue 1
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 2 -> do
       yourLocation <- selectJust $ locationWithInvestigator iid
       connected <- select $ ConnectedTo (locationWithInvestigator iid) <> LocationWithAnyClues
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [ targetLabel l [MovedClues (attrs.ability 1) (toSource l) (toTarget yourLocation) 1] | l <- connected
-          ]
-
+      chooseOrRunOneM iid do
+        targets connected \l -> moveTokens (attrs.ability 1) l yourLocation #clue 1
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 3 -> do
       enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy
       connected <- select $ ConnectedTo (locationWithInvestigator iid)
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [ targetLabel
-            enemy
-            [chooseOrRunOne player [targetLabel location [EnemyMove enemy location] | location <- connected]]
-          | enemy <- enemies
-          ]
-
+      chooseOrRunOneM iid do
+        targets enemies \enemy ->
+          chooseOrRunOneM iid $ targets connected (enemyMoveTo enemy)
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 4 -> do
       enemies <- select $ at_ (ConnectedTo (locationWithInvestigator iid)) <> NonEliteEnemy
       location <- getJustLocation iid
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [ targetLabel location [EnemyMove enemy location]
-          | enemy <- enemies
-          ]
-
+      chooseOrRunOneM iid $ targets enemies (`enemyMoveTo` location)
       pure a
-    _ -> GeneBeauregard3 <$> runMessage msg attrs
+    _ -> GeneBeauregard3 <$> liftRunMessage msg attrs

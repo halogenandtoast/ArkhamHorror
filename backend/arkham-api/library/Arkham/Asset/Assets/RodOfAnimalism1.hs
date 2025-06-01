@@ -1,6 +1,6 @@
 module Arkham.Asset.Assets.RodOfAnimalism1 (rodOfAnimalism1) where
 
-import Arkham.Ability
+import Arkham.Ability hiding (DuringTurn)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PlayCard)
 import Arkham.Card

@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.AlejandroVela (alejandroVela, AlejandroVela (..)) where
+module Arkham.Asset.Assets.AlejandroVela (alejandroVela) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -17,15 +17,14 @@ alejandroVela :: AssetCard AlejandroVela
 alejandroVela = ally AlejandroVela Cards.alejandroVela (2, 2)
 
 instance HasModifiersFor AlejandroVela where
-  getModifiersFor (AlejandroVela a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> maybeModified_ a iid do
+  getModifiersFor (AlejandroVela a) = for_ a.controller \iid ->
+    maybeModified_ a iid do
       liftGuardM $ isInvestigationOf $ LocationWithTrait Ancient
       pure [AnySkillValue 1]
 
 instance HasAbilities AlejandroVela where
   getAbilities (AlejandroVela a) =
-    [ controlledAbility a 1 (can.draw.cards You <> OnLocation (LocationWithTrait Ancient))
+    [ controlled a 1 (can.draw.cards You <> OnLocation (withTrait Ancient))
         $ actionAbilityWithCost (exhaust a)
     ]
 

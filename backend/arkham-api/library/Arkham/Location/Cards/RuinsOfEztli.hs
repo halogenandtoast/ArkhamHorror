@@ -1,12 +1,10 @@
 module Arkham.Location.Cards.RuinsOfEztli (ruinsOfEztli) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype RuinsOfEztli = RuinsOfEztli LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -17,13 +15,14 @@ ruinsOfEztli = symbolLabel $ location RuinsOfEztli Cards.ruinsOfEztli 3 (PerPlay
 
 instance HasAbilities RuinsOfEztli where
   getAbilities (RuinsOfEztli attrs) =
-    withBaseAbilities
-      attrs
-      [mkAbility attrs 1 $ forced $ SkillTestResult #after You (WhileInvestigating $ be attrs) #failure]
+    extendRevealed1 attrs
+      $ mkAbility attrs 1
+      $ forced
+      $ SkillTestResult #after You (WhileInvestigating $ be attrs) #failure
 
 instance RunMessage RuinsOfEztli where
-  runMessage msg l@(RuinsOfEztli attrs) = case msg of
+  runMessage msg l@(RuinsOfEztli attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ drawEncounterCard iid attrs
+      drawEncounterCard iid attrs
       pure l
-    _ -> RuinsOfEztli <$> runMessage msg attrs
+    _ -> RuinsOfEztli <$> liftRunMessage msg attrs

@@ -535,6 +535,9 @@ allEnemies =
       SomeEnemyCard maggotSwarm
     , --- Hastur's Envoys [rtptc]
       SomeEnemyCard preyingByakhee
+    , -- Return to The Forgotten Age
+      --- Return to The Doom of Eztli [rttfa]
+      SomeEnemyCard harbingerOfValusiaTheSleeperReturns
     , -- Nathanial Cho
       SomeEnemyCard tommyMalloy
     , -- Curse of the Rougarou

@@ -10,7 +10,7 @@ import Arkham.Classes.Query
 import Arkham.Deck
 import Arkham.Draw.Types
 import Arkham.Helpers.Card
-import Arkham.Helpers.Location (getLocationOf)
+import Arkham.Helpers.Location (getLocationOf, toConnections)
 import Arkham.Helpers.Message ()
 import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Helpers.Scenario (getVictoryDisplay, scenarioField, scenarioFieldMap)
@@ -98,6 +98,11 @@ whenPoisoned iid body = do
   ok <- getIsPoisoned iid
   when ok body
 
+eachUnpoisoned :: HasGame m => (InvestigatorId -> m ()) -> m ()
+eachUnpoisoned body = do
+  unpoisoned <- getUnpoisoned
+  for_ unpoisoned body
+
 getUnpoisoned :: HasGame m => m [InvestigatorId]
 getUnpoisoned = select $ NotInvestigator $ HasMatchingTreachery $ treacheryIs $ Treacheries.poisoned
 
@@ -109,6 +114,16 @@ getSetAsidePoisoned =
 
 data ExploreRule = PlaceExplored | ReplaceExplored
   deriving stock Eq
+
+runExplore
+  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator -> source -> m ()
+runExplore (asId -> iid) (toSource -> source) = do
+  matcher <-
+    getLocationOf iid >>= \case
+      Just lid -> mapOneOf CardWithPrintedLocationSymbol <$> toConnections lid
+      Nothing -> pure $ NotCard AnyCard
+  push $ Explore iid source matcher
 
 -- ReplaceExplored should actually place the location on "top"
 

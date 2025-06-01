@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.SearchForTheRuins (SearchForTheRuins (..), searchForTheRuins) where
+module Arkham.Act.Cards.SearchForTheRuins (searchForTheRuins) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
@@ -20,9 +20,8 @@ searchForTheRuins =
 
 instance HasModifiersFor SearchForTheRuins where
   getModifiersFor (SearchForTheRuins a) = do
-    guardian <- modifySelect a (EnemyWithTitle "Eztli Guardian") [CannotAttack, CannotBeAttacked]
-    arrows <- modifySelect a (treacheryIs Treacheries.arrowsFromTheTrees) [IgnoreRevelation]
-    pure $ guardian <> arrows
+    modifySelect a (EnemyWithTitle "Eztli Guardian") [CannotAttack, CannotBeAttacked]
+    modifySelect a (treacheryIs Treacheries.arrowsFromTheTrees) [IgnoreRevelation]
 
 instance RunMessage SearchForTheRuins where
   runMessage msg a@(SearchForTheRuins attrs) = runQueueT $ case msg of

@@ -1424,7 +1424,12 @@ skillTestModifier sid (toSource -> source) (toTarget -> target) x =
   Msg.pushM $ Msg.skillTestModifier sid source target x
 
 nextSkillTestModifier
-  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId, Targetable target)
+  :: ( ReverseQueue m
+     , Sourceable source
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     , Targetable target
+     )
   => investigator
   -> source
   -> target
@@ -1434,7 +1439,12 @@ nextSkillTestModifier investigator source target x =
   Msg.pushM $ Msg.nextSkillTestModifier investigator source target x
 
 nextSkillTestModifiers
-  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId, Targetable target)
+  :: ( ReverseQueue m
+     , Sourceable source
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     , Targetable target
+     )
   => investigator
   -> source
   -> target
@@ -2689,6 +2699,9 @@ placeKey target key = push $ Msg.PlaceKey (toTarget target) key
 investigatorDefeated :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> m ()
 investigatorDefeated source iid = push $ Msg.InvestigatorDefeated (toSource source) iid
 
+shuffleSetAsideEncounterSetIntoEncounterDeck :: ReverseQueue m => EncounterSet -> m ()
+shuffleSetAsideEncounterSetIntoEncounterDeck = getSetAsideEncounterSet >=> shuffleCardsIntoDeck Deck.EncounterDeck
+
 shuffleSetAsideIntoEncounterDeck :: (ReverseQueue m, IsCardMatcher matcher) => matcher -> m ()
 shuffleSetAsideIntoEncounterDeck matcher = do
   cards <- getSetAsideCardsMatching (toCardMatcher matcher)
@@ -2994,3 +3007,10 @@ changeSpawnAt enemyId locationId = lift $ replaceAllMessagesMatching ((== Just E
   EnemySpawnAtLocationMatching miid _ eid | eid == enemyId -> [EnemySpawnAtLocationMatching miid (LocationWithId locationId) eid]
   After (EnemySpawnAtLocationMatching miid _ eid) | eid == enemyId -> [After (EnemySpawnAtLocationMatching miid (LocationWithId locationId) eid)]
   other -> [other]
+
+createWeaknessInThreatArea
+  :: (FetchCard card, AsId investigator, IdOf investigator ~ InvestigatorId, ReverseQueue m)
+  => card -> investigator -> m ()
+createWeaknessInThreatArea card iid = do
+  c <- fetchCard card
+  push $ CreateWeaknessInThreatArea c (asId iid)

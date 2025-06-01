@@ -2,17 +2,10 @@ module Arkham.Agenda.Cards.ExpeditionIntoTheWild (expeditionIntoTheWild) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Helpers
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet
-import Arkham.GameValue
-import Arkham.Helpers.Investigator
-import Arkham.Helpers.Location
-import Arkham.Helpers.Query
-import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype ExpeditionIntoTheWild = ExpeditionIntoTheWild AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -25,29 +18,22 @@ instance HasAbilities ExpeditionIntoTheWild where
   getAbilities (ExpeditionIntoTheWild a) = [mkAbility a 1 exploreAction_]
 
 instance RunMessage ExpeditionIntoTheWild where
-  runMessage msg a@(ExpeditionIntoTheWild attrs) = case msg of
+  runMessage msg a@(ExpeditionIntoTheWild attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      locationSymbols <- toConnections =<< getJustLocation iid
-      let source = toAbilitySource attrs 1
-      push $ Explore iid source (oneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+      runExplore iid (attrs.ability 1)
       pure a
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      setAsideAgentsOfYig <- getSetAsideEncounterSet AgentsOfYig
-      iids <- getInvestigators
-      sid <- getRandom
-      pushAll
-        $ [ ShuffleEncounterDiscardBackIn
-          , ShuffleCardsIntoDeck Deck.EncounterDeck setAsideAgentsOfYig
-          ]
-        <> [beginSkillTest sid iid attrs iid #willpower (Fixed 3) | iid <- iids]
-        <> [advanceAgendaDeck attrs]
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      shuffleEncounterDiscardBackIn
+      shuffleSetAsideEncounterSetIntoEncounterDeck AgentsOfYig
+      eachInvestigator \iid -> do
+        sid <- getRandom
+        beginSkillTest sid iid attrs iid #willpower (Fixed 3)
+      advanceAgendaDeck attrs
       pure a
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       isPoisoned <- getIsPoisoned iid
       if isPoisoned
-        then push $ assignDamageAndHorror iid attrs 1 1
-        else do
-          poisoned <- getSetAsidePoisoned
-          push $ CreateWeaknessInThreatArea poisoned iid
+        then assignDamageAndHorror iid attrs 1 1
+        else createWeaknessInThreatArea Treacheries.poisoned iid
       pure a
-    _ -> ExpeditionIntoTheWild <$> runMessage msg attrs
+    _ -> ExpeditionIntoTheWild <$> liftRunMessage msg attrs

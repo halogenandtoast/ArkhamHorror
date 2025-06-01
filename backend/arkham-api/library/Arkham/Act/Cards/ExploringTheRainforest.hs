@@ -2,12 +2,9 @@ module Arkham.Act.Cards.ExploringTheRainforest (exploringTheRainforest) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
-import Arkham.Helpers.Query
+import Arkham.Act.Import.Lifted
+import Arkham.Helpers.Location
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype ExploringTheRainforest = ExploringTheRainforest ActAttrs
@@ -22,26 +19,19 @@ instance HasAbilities ExploringTheRainforest where
   getAbilities (ExploringTheRainforest x) =
     [ mkAbility x 1
         $ Objective
-        $ ReactionAbility (RoundEnds Timing.When)
-        $ GroupClueCost (PerPlayer 3) (NotLocation $ LocationWithTrait Campsite)
+        $ triggered (RoundEnds #when)
+        $ GroupClueCost (PerPlayer 3) (not_ $ LocationWithTrait Campsite)
     ]
 
 instance RunMessage ExploringTheRainforest where
-  runMessage msg a@(ExploringTheRainforest attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a <$ push (AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues)
-    AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
-      ichtaca <-
-        fromJustNote "Ichtaca was not set aside"
-          . listToMaybe
-          <$> getSetAsideCardsMatching (CardWithTitle "Ichtaca")
-      locationId <- selectJust LeadInvestigatorLocation
-      createIchtaca <- createEnemyAt_ ichtaca locationId Nothing
-      pushAll
-        [ createIchtaca
-        , ShuffleEncounterDiscardBackIn
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-        ]
+  runMessage msg a@(ExploringTheRainforest attrs) = runQueueT $ case msg of
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      advancedWithClues attrs
       pure a
-    _ -> ExploringTheRainforest <$> runMessage msg attrs
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      lead <- getLead
+      withLocationOf lead (createEnemyAt_ (SetAsideCardMatch $ CardWithTitle "Ichtaca"))
+      shuffleEncounterDiscardBackIn
+      advanceActDeck attrs
+      pure a
+    _ -> ExploringTheRainforest <$> liftRunMessage msg attrs

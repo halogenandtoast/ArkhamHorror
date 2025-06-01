@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.Ichtaca (ichtaca, Ichtaca (..)) where
+module Arkham.Enemy.Cards.Ichtaca (ichtaca) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
@@ -14,7 +14,7 @@ ichtaca = enemy Ichtaca Cards.ichtaca (5, Static 4, 4) (2, 0)
 
 instance HasAbilities Ichtaca where
   getAbilities (Ichtaca a) =
-    extend a [skillTestAbility $ restrictedAbility a 1 OnSameLocation $ parleyAction_]
+    extend a [skillTestAbility $ restricted a 1 OnSameLocation parleyAction_]
 
 instance RunMessage Ichtaca where
   runMessage msg e@(Ichtaca attrs) = runQueueT $ case msg of

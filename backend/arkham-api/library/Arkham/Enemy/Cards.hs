@@ -201,6 +201,7 @@ allEncounterEnemyCards =
       , gugSentinel
       , handOfTheBrotherhood
       , harbingerOfValusia
+      , harbingerOfValusiaTheSleeperReturns
       , harlanEarnstoneCrazedByTheCurse
       , hasturLordOfCarcosa
       , hasturTheKingInYellow
@@ -2948,6 +2949,20 @@ preyingByakhee =
     { cdCardTraits = setFromList [Monster, Byakhee]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
+
+harbingerOfValusiaTheSleeperReturns :: CardDef
+harbingerOfValusiaTheSleeperReturns =
+  unique
+    $ ( enemy
+          "53018"
+          ("Harbinger of Valusia" <:> "The Sleeper Returns")
+          ReturnToTheDoomOfEztli
+          1
+      )
+      { cdCardTraits = setFromList [Humanoid, Serpent, Monster, Elite]
+      , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
+      , cdVengeancePoints = Just 5
+      }
 
 tommyMalloy :: CardDef
 tommyMalloy =

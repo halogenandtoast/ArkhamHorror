@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.WoundedBystanderOnDeathsDoorstep (
-  woundedBystanderOnDeathsDoorstep,
-  WoundedBystanderOnDeathsDoorstep (..),
-)
-where
+module Arkham.Asset.Assets.WoundedBystanderOnDeathsDoorstep (woundedBystanderOnDeathsDoorstep) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -30,7 +26,9 @@ instance HasAbilities WoundedBystanderOnDeathsDoorstep where
         $ forced
         $ InvestigatorWouldTakeDamage #when You AnySource IsNonDirectDamage
     , restrictedAbility a 2 ControlsThis $ forced $ AssetDefeated #when ByAny (be a)
-    , controlledAbility a 3 (exists $ be a <> not_ AssetWithDamage) $ SilentForcedAbility AnyWindow
+    , controlledAbility a 3 (exists (be a <> not_ AssetWithDamage))
+        $ SilentForcedAbility
+          (not_ $ oneOf [AssetHealed t #damage (be a) AnySource | t <- [#when, #at, #after]])
     ]
 
 instance RunMessage WoundedBystanderOnDeathsDoorstep where

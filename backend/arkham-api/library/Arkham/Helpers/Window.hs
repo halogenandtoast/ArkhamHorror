@@ -584,6 +584,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
   let guardTiming t body = if timing' == t then body wType else noMatch
   let mtchr = Matcher.replaceYouMatcher iid umtchr
   case mtchr of
+    Matcher.NotWindow inner -> not <$> windowMatches iid rawSource window' inner
     Matcher.TakeControlOfKey timing whoMatcher _keyMatcher -> guardTiming timing \case
       Window.TakeControlOfKey who _ -> matchWho iid who whoMatcher
       _ -> noMatch

@@ -1,6 +1,6 @@
 module Arkham.Scenarios.TheDoomOfEztli.Helpers where
 
-import Arkham.Campaigns.ThePathToCarcosa.Helpers
+import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.I18n
 import Arkham.Prelude
 

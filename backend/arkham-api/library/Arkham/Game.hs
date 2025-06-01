@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -4110,7 +4110,7 @@ instance Query ChaosTokenMatcher where
           ChaosTokenValue _ (NegativeModifier _) -> True
           ChaosTokenValue _ (DoubleNegativeModifier _) -> True
           _ -> False
-      ChaosTokenFaceIs face -> fmap (elem face) . getModifiedChaosTokenFace
+      ChaosTokenFaceIs face -> fmap (elem face) . fmap traceShowId . getModifiedChaosTokenFace
       ChaosTokenFaceIsNot face -> fmap not . go (ChaosTokenFaceIs face)
       AnyChaosToken -> pure . const True
       CancelableChaosToken inner -> \t ->

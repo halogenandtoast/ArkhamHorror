@@ -34,7 +34,7 @@ instance HasChaosTokenValue JimCulver where
 
 instance RunMessage JimCulver where
   runMessage msg i@(JimCulver attrs) = runQueueT $ case msg of
-    When (RevealChaosToken _ iid token) | iid == attrs.id -> do
+    Will (RevealChaosToken _ iid token) | iid == attrs.id -> do
       faces <- getModifiedChaosTokenFace token
       when (ElderSign `elem` faces) do
         chooseOneM iid do

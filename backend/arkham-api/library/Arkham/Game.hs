@@ -3746,6 +3746,7 @@ getEnemyField f e = do
     EnemyKeys -> pure enemyKeys
     EnemySpawnedBy -> pure enemySpawnedBy
     EnemyAttacking -> pure enemyAttacking
+    EnemyWantsToAttack -> pure enemyWantsToAttack
     EnemyBearer -> pure enemyBearer
     EnemyTokens -> pure enemyTokens
     EnemyDoom -> do
@@ -4360,15 +4361,13 @@ instance Query ExtendedCardMatcher where
             <$> getGame
         go cs matcher' >>= filterM (getIsPlayable active GameSource costStatus windows')
       PlayableCardWithCriteria actionStatus override matcher' -> do
-        mTurnInvestigator <- selectOne TurnInvestigator
-        active <- selectJust ActiveInvestigator
-        let iid = fromMaybe active mTurnInvestigator
+        iid <- fromMaybeM (selectJust ActiveInvestigator) (selectOne TurnInvestigator)
         let windows' = Window.defaultWindows iid
         go cs matcher'
           >>= filterM
             ( \r ->
                 Helpers.withModifiers (toCardId r) (toModifiers GameSource [CanPlayWithOverride override])
-                  $ getIsPlayable active GameSource (UnpaidCost actionStatus) windows' r
+                  $ getIsPlayable iid GameSource (UnpaidCost actionStatus) windows' r
             )
       CommittableCard imatch matcher' -> do
         iid <- selectJust imatch

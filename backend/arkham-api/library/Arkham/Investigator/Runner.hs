@@ -1,5 +1,5 @@
 {-# LANGUAGE TypeAbstractions #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Investigator.Runner (
   module Arkham.Investigator.Runner,
@@ -457,7 +457,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         , investigatorDeckUrl = investigatorDeckUrl
         , investigatorKilled = investigatorKilled
         , investigatorDrivenInsane = investigatorDrivenInsane
-        , investigatorSettings = investigatorSettings
+        , investigatorSettings = traceShowId investigatorSettings
         }
   AddDeckBuildingAdjustment iid adjustment | iid == investigatorId -> do
     pure $ a & deckBuildingAdjustmentsL %~ (adjustment :)
@@ -827,7 +827,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     inHandCount <- getInHandCount a
     when (inHandCount > handSize) $ do
       send $ format a <> " must discard down to " <> tshow handSize <> " cards"
-      push $ Do msg
+      pushAll [SetActiveInvestigator iid, Do msg]
     pure a
   Do (CheckHandSize iid) | iid == investigatorId -> do
     handSize <- getHandSize a
@@ -3512,7 +3512,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       else pure a'
   SetActions iid _ 0 | iid == investigatorId -> do
     additionalActions <- getAdditionalActions a
-    pure $ a & remainingActionsL .~ 0 & usedAdditionalActionsL .~ nub (investigatorUsedAdditionalActions <> additionalActions)
+    pure
+      $ a
+      & remainingActionsL
+      .~ 0
+      & usedAdditionalActionsL
+      .~ nub (investigatorUsedAdditionalActions <> additionalActions)
   SetActions iid _ n | iid == investigatorId -> do
     pure $ a & remainingActionsL .~ n
   SetAsideCards cards -> do
@@ -4089,7 +4094,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   CheckTrauma iid | iid == investigatorId -> do
     pushWhen (investigatorMentalTrauma >= investigatorSanity) $ DrivenInsane iid
     pushWhen (investigatorPhysicalTrauma >= investigatorHealth) $ InvestigatorKilled (toSource a) iid
-    pushWhen (investigatorMentalTrauma >= investigatorSanity || investigatorPhysicalTrauma >= investigatorHealth) CheckForRemainingInvestigators
+    pushWhen
+      (investigatorMentalTrauma >= investigatorSanity || investigatorPhysicalTrauma >= investigatorHealth)
+      CheckForRemainingInvestigators
     pure a
   HealTrauma iid physical mental | iid == investigatorId -> do
     pure
@@ -4423,7 +4430,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         Nothing -> pushAll [toDiscard GameSource (toTarget enemy) | enemy <- enemies]
 
     pure $ a & placementL .~ placement
-  _ -> pure a
+  _ -> traceShowId investigatorSettings `seq` pure a
 
 investigatorLocation :: InvestigatorAttrs -> Maybe LocationId
 investigatorLocation a = case a.placement of

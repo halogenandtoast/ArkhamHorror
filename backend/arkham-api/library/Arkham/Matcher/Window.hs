@@ -207,6 +207,7 @@ data WindowMatcher
   | AnyWindow
   | NotAnyWindow
   | NotWindow WindowMatcher
+  | CommittingCardsFromHandToSkillTestStep Timing Who
   | CommittedCards Timing Who CardListMatcher
   | CommittedCard Timing Who CardMatcher
   | ActivateAbility Timing Who AbilityMatcher

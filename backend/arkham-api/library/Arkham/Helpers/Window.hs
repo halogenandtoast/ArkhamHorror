@@ -918,6 +918,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , abilityMatches ability abilityMatcher
           ]
       _ -> noMatch
+    Matcher.CommittingCardsFromHandToSkillTestStep timing whoMatcher -> guardTiming timing $ \case
+      Window.CommittingCardsFromHandToSkillTestStep who -> matchWho iid who whoMatcher
+      _ -> noMatch
     Matcher.CommittedCard timing whoMatcher cardMatcher -> guardTiming timing $ \case
       Window.CommittedCard who card ->
         andM

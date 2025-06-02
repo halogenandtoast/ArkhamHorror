@@ -4111,7 +4111,7 @@ instance Query ChaosTokenMatcher where
           ChaosTokenValue _ (NegativeModifier _) -> True
           ChaosTokenValue _ (DoubleNegativeModifier _) -> True
           _ -> False
-      ChaosTokenFaceIs face -> fmap (elem face) . fmap traceShowId . getModifiedChaosTokenFace
+      ChaosTokenFaceIs face -> fmap (elem face) . getModifiedChaosTokenFace
       ChaosTokenFaceIsNot face -> fmap not . go (ChaosTokenFaceIs face)
       AnyChaosToken -> pure . const True
       CancelableChaosToken inner -> \t ->

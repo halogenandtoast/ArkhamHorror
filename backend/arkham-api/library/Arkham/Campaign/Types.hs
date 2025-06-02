@@ -3,8 +3,6 @@
 
 module Arkham.Campaign.Types where
 
-import Arkham.Prelude
-
 import Arkham.CampaignLog
 import Arkham.CampaignStep
 import Arkham.Card
@@ -20,6 +18,7 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Modifier
 import Arkham.PlayerCard
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Source

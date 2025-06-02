@@ -19,6 +19,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Modifier (setActiveDuringSetup)
 import Arkham.Projection
 import Arkham.Question (Question (Read), ReadChoices (..))
 import Arkham.Source
@@ -566,7 +567,7 @@ instance RunMessage TheForgottenAge where
         setNextCampaignStep TurnBackTime
         pure c
       HandleTargetChoice _ CampaignSource (InvestigatorTarget iid) -> do
-        mods <- toModifiers CampaignSource [StartingResources (-3)]
+        mods <- map setActiveDuringSetup <$> toModifiers CampaignSource [StartingResources (-3)]
         pure . TheForgottenAge $ attrs & (modifiersL %~ insertWith (<>) iid mods)
       EndOfScenario _ -> do
         pure . TheForgottenAge $ attrs & modifiersL .~ mempty

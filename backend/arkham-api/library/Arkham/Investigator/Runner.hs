@@ -457,7 +457,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         , investigatorDeckUrl = investigatorDeckUrl
         , investigatorKilled = investigatorKilled
         , investigatorDrivenInsane = investigatorDrivenInsane
-        , investigatorSettings = traceShowId investigatorSettings
+        , investigatorSettings = investigatorSettings
         }
   AddDeckBuildingAdjustment iid adjustment | iid == investigatorId -> do
     pure $ a & deckBuildingAdjustmentsL %~ (adjustment :)
@@ -4430,7 +4430,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         Nothing -> pushAll [toDiscard GameSource (toTarget enemy) | enemy <- enemies]
 
     pure $ a & placementL .~ placement
-  _ -> traceShowId investigatorSettings `seq` pure a
+  _ -> investigatorSettings `seq` pure a
 
 investigatorLocation :: InvestigatorAttrs -> Maybe LocationId
 investigatorLocation a = case a.placement of

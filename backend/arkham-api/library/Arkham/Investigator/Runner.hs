@@ -2786,11 +2786,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         (availableSlots1, _unused1) <- partitionM (canPutIntoSlot card) (slots ^. at slotType . non [])
         case availableSlots1 of
           [] -> case findWithDefault [] slotType canHoldMap of
-            [] -> error "can't be filled 1"
+            [] -> pure slots -- suppose we get dendromorphosis and the king in yellow
             [other] -> do
               (availableSlots2, _unused2) <- partitionM (canPutIntoSlot card) (slots ^. at other . non [])
               case availableSlots2 of
-                [] -> error "can't be filled 2"
+                [] -> pure slots
                 _ -> do
                   slots' <- placeInAvailableSlot aid card (slots ^. at other . non [])
                   fill rs (slots & at other . non [] .~ slots')

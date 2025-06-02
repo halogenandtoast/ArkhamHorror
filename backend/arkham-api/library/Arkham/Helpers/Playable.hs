@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Playable where
 
 import Arkham.Action.Additional

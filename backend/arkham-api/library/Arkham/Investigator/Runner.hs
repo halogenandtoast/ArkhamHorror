@@ -1,5 +1,5 @@
 {-# LANGUAGE TypeAbstractions #-}
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Investigator.Runner (
   module Arkham.Investigator.Runner,
@@ -4022,7 +4022,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 pure (zone, cards')
               let
                 choices =
-                  [ targetLabel (toCardId card) [addToHand who card, PayCardCost iid card windows']
+                  [ targetLabel (toCardId card) [PayCardCost iid card windows']
                   | (_, cards) <- playableCards
                   , card <- cards
                   ]
@@ -4034,9 +4034,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 pure (zone, cards')
               let
                 choices =
-                  [ targetLabel
-                      (toCardId card)
-                      [addToHand who card, PutCardIntoPlay iid card Nothing NoPayment windows']
+                  [ targetLabel (toCardId card) [PutCardIntoPlay iid card Nothing NoPayment windows']
                   | (_, cards) <- playableCards
                   , card <- cards
                   ]

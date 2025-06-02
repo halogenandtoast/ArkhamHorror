@@ -1398,6 +1398,7 @@ instance RunMessage EnemyAttrs where
             , attackAfter = []
             , attackDamaged = mempty
             , attackDealDamage = True
+            , attackDespiteExhausted = False
             }
       pure a
     InvestigatorDrawEnemy iid eid | eid == enemyId -> runQueueT do

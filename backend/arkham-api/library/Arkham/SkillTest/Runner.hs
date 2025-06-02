@@ -20,7 +20,7 @@ import Arkham.Helpers.Message
 import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
 import Arkham.Helpers.Query (getActiveInvestigatorId, getLeadPlayer)
 import Arkham.Helpers.Ref (sourceToMaybeCard, targetToMaybeCard)
-import Arkham.Helpers.Window (checkAfter, checkWindows, windows)
+import Arkham.Helpers.Window (checkWhen, checkAfter, checkWindows, windows)
 import Arkham.Id
 import Arkham.Matcher hiding (IgnoreChaosToken, RevealChaosToken)
 import Arkham.Message qualified as Msg
@@ -175,6 +175,8 @@ instance RunMessage SkillTest where
         & (resolvedChaosTokensL %~ filter (`notElem` tokens))
         & (toResolveChaosTokensL %~ filter (`notElem` tokens))
     BeforeSkillTest stId | stId == s.id -> do
+      windowMsg <- checkWhen (Window.CommittingCardsFromHandToSkillTestStep s.investigator)
+      push windowMsg
       pure $ s & stepL .~ CommitCardsFromHandToSkillTestStep
     BeginSkillTestAfterFast -> do
       let windows' = windows [Window.InitiatedSkillTest s]

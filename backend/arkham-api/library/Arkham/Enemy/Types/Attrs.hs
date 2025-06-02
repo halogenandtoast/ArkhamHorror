@@ -57,6 +57,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyMeta :: Value
   , enemyFlipped :: Bool
   , enemyAttacking :: Maybe EnemyAttackDetails
+  , enemyWantsToAttack :: Bool
   , enemyDelayEngagement :: Bool
   , enemyCardsUnderneath :: [Card]
   , enemyLastKnownLocation :: Maybe LocationId
@@ -154,6 +155,7 @@ instance FromJSON EnemyAttrs where
     enemyMeta <- v .: "meta"
     enemyFlipped <- v .: "flipped"
     enemyAttacking <- v .:? "attacking"
+    enemyWantsToAttack <- v .:? "wantsToAtack" .!= False
     enemyDelayEngagement <- v .:? "delayEngagement" .!= False
     enemyCardsUnderneath <- v .:? "cardsUnderneath" .!= []
     enemyLastKnownLocation <- v .:? "lastKnownLocation"

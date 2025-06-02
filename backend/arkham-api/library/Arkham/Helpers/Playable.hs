@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Playable where
 
 import Arkham.Action.Additional
@@ -223,7 +224,8 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
         s -> s
       replaceThisCardSource :: Data a => a -> a
       replaceThisCardSource = over biplate (replaceThisCard' c)
-      canAffordCost' = modifiedCardCost + auxiliaryResourceCosts <= availableResources + additionalResources
+      debug = if toCardCode c == "06203" then traceShowId else id
+      canAffordCost' = debug (modifiedCardCost + auxiliaryResourceCosts) <= debug (availableResources + additionalResources)
       canAffordCost =
         if canAffordCost'
           then canAffordCost'

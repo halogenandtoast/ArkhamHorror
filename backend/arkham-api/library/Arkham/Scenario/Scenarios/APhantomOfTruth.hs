@@ -222,9 +222,7 @@ instance RunMessage APhantomOfTruth where
 
       when showDream4 do
         flavor $ h "title" >> p "dream4"
-        paranoia <- genCard Treacheries.paranoia
-        lead <- getLead
-        chooseTargetM lead investigators (`shuffleCardsIntoDeck` [paranoia])
+        eachInvestigator (`sufferMentalTrauma` 1)
 
       unless theKingClaimedItsVictims do
         flavor do
@@ -235,7 +233,9 @@ instance RunMessage APhantomOfTruth where
 
       when showDream7 do
         flavor $ h "title" >> p "dream7"
-        eachInvestigator (`sufferMentalTrauma` 1)
+        paranoia <- genCard Treacheries.paranoia
+        lead <- getLead
+        chooseTargetM lead investigators (`shuffleCardsIntoDeck` [paranoia])
 
       flavor do
         h "title"
@@ -254,7 +254,9 @@ instance RunMessage APhantomOfTruth where
 
       pure s
     DoStep n PreScenarioSetup -> scope "intro" do
-      when (n == 11) $ flavor $ h "title" >> p "dream11"
+      when (n == 11) do
+        flavor $ h "title" >> p "dream11"
+        markConviction
       when (n == 12) do
         flavor $ h "title" >> p "dream12"
         markDoubt

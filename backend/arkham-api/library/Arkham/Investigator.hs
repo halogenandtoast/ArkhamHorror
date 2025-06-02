@@ -199,7 +199,8 @@ handleInvestigator o@(Investigator a) f = maybe o f (cast a)
 returnToBody :: Investigator -> Investigator
 returnToBody i =
   i
-    `handleInvestigator` ( \(BodyOfAYithian (_ `With` meta)) -> case fromJSON (originalBody meta) of
-                             Success x -> x
+    `handleInvestigator` ( \(BodyOfAYithian (attrs `With` meta)) -> case fromJSON (originalBody meta) of
+                             Success x ->
+                               overAttrs (\a -> a {investigatorSettings = investigatorSettings attrs <> investigatorSettings a}) x
                              _ -> error "Investigator mind is too corrupted to return to their body"
                          )

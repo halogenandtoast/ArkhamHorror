@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.HiddenTunnelEntranceToTheDepths (hiddenTunnelEntranceToTheDepths) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
@@ -51,9 +51,11 @@ instance RunMessage HiddenTunnelEntranceToTheDepths where
       pure l
     DoStep n (UseThisAbility iid (isSource attrs -> True) 1) -> do
       sid <- getRandom
+      when (n == 2) do
+        skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 5)
       chooseOneM iid do
         for_ [minBound ..] \kind ->
-          skillLabeled kind $ beginSkillTest sid iid (attrs.ability n) iid kind (Fixed 4)
+          skillLabeled kind $ beginSkillTest sid iid (attrs.ability 1) iid kind (Fixed 4)
       pure l
     PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
       removeTokens (attrs.ability 1) attrs #clue 1

@@ -4140,8 +4140,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   After (FailedSkillTest iid mAction _ (InvestigatorTarget iid') _ n) | iid == iid' && iid == toId a -> do
     mTarget <- getSkillTestTarget
     mCurrentLocation <- field InvestigatorLocation iid
+
+    modifiers' <- getSkillTestId >>= \case
+      Just sid -> getModifiers (toTarget sid)
+      Nothing -> pure []
+
     let
       windows = do
+        guard $ CancelEffects `notElem` modifiers'
         Action.Investigate <- maybeToList mAction
         go =<< maybeToList mTarget
       go = \case
@@ -4153,7 +4159,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         BothTarget t1 t2 -> go t1 <> go t2
         _ -> []
       windows' =
-        if null windows
+        if null windows && CancelEffects `notElem` modifiers'
           then case mCurrentLocation of
             Just currentLocation ->
               [ mkWhen $ Window.FailInvestigationSkillTest iid currentLocation n

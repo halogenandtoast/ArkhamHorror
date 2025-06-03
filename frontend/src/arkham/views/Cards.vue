@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { watchEffect, ref, computed } from 'vue';
 import { fetchCards } from '@/arkham/api';
-import { imgsrc } from '@/arkham/helpers';
+import { imgsrc, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/CardDef';
 
 import sets from '@/arkham/data/sets.json'
@@ -323,7 +323,7 @@ const setSet = (set: CardSet) => {
         </div>
       </header>
       <div class="cards" v-if="view == View.Image">
-        <a v-for="card in cards" :key="card.art" target="_blank" :href="`https://arkhamdb.com/card/${card.art}`">
+        <a v-for="card in cards" :key="card.art" target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">
           <img class="card" :src="image(card)" />
         </a>
       </div>
@@ -333,7 +333,7 @@ const setSet = (set: CardSet) => {
         </thead>
         <tbody>
           <tr v-for="card in cards" :key="card.art">
-            <td><a target="_blank" :href="`https://arkhamdb.com/card/${card.art}`">{{cardName(card)}}{{levelText(card)}}</a></td>
+            <td><a target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">{{cardName(card)}}{{levelText(card)}}</a></td>
             <td>{{card.classSymbols.join(', ')}}</td>
             <td>{{cardCost(card)}}</td>
             <td>{{cardType(card)}}</td>

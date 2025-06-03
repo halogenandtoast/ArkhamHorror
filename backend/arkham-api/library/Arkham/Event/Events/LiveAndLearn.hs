@@ -1,4 +1,4 @@
-module Arkham.Event.Events.LiveAndLearn (liveAndLearn, LiveAndLearn (..)) where
+module Arkham.Event.Events.LiveAndLearn (liveAndLearn) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted

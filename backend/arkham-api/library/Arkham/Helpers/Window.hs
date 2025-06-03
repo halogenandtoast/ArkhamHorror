@@ -1839,10 +1839,11 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.LastClueRemovedFromAsset timing assetMatcher -> guardTiming timing $ \case
       Window.LastClueRemovedFromAsset aid -> elem aid <$> select assetMatcher
       _ -> noMatch
-    Matcher.DrawsCards timing whoMatcher valueMatcher -> guardTiming timing $ \case
+    Matcher.DrawsCards timing whoMatcher cardListMatcher valueMatcher -> guardTiming timing $ \case
       Window.DrawCards who cards ->
         andM
           [ matchWho iid who whoMatcher
+          , cardListMatches cards cardListMatcher
           , gameValueMatches (length cards) valueMatcher
           ]
       _ -> noMatch

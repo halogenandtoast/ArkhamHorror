@@ -2283,7 +2283,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             pure $ slots' & ix sType .~ slots''
           _ -> error "Too many slots found, we expect at max two and one must be the original slot"
 
-    slots <- foldM handleSlotType (a ^. slotsL) slotTypes
+
+    slots <- foldM handleSlotType (removeFromSlots aid $ a ^. slotsL) slotTypes
 
     pure $ a & handL %~ filter (/= assetCard) & slotsL .~ slots
   RemoveCampaignCard cardDef -> do

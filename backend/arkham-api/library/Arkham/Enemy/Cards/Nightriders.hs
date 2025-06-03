@@ -19,7 +19,7 @@ instance HasModifiersFor Nightriders where
   getModifiersFor (Nightriders a) = do
     isHost <- toId a <=~> IsHost
     noSwarm <- selectNone $ SwarmOf (toId a)
-    modifySelfWhen a (isHost && noSwarm) [Mod.EnemyEvade (-5)]
+    modifySelfWhen a (isHost && noSwarm) [Mod.EnemyEvade (-3)]
 
 instance HasAbilities Nightriders where
   getAbilities (Nightriders a) =

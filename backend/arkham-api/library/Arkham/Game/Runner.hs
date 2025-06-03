@@ -1217,7 +1217,7 @@ runGameMessage msg g = case msg of
       & (skillTestResultsL .~ Nothing)
       & (activeAbilitiesL %~ filter (not . abilityTriggersSkillTest))
   Msg.AbilityIsSkillTest aref -> do
-    let updateAbility ab = if ab.ref == aref then ab { abilityTriggersSkillTest = True } else ab
+    let updateAbility ab = if ab.ref == aref then ab {abilityTriggersSkillTest = True} else ab
     pure $ g & (activeAbilitiesL %~ map updateAbility)
   Do msg'@(Search {}) -> do
     inSearch <- fromQueue (elem FinishedSearch)
@@ -1468,6 +1468,9 @@ runGameMessage msg g = case msg of
           <> tshow card
           <> " but it is not in the list of playable cards"
         pure g
+  PutCardIntoPlayById iid cardId mtarget payment windows' -> do
+    c <- getCard cardId
+    runMessage (PutCardIntoPlay iid c mtarget payment windows') g
   PutCardIntoPlay iid card mtarget payment windows' -> do
     let cardId = toCardId card
     case card of

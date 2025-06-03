@@ -19,6 +19,12 @@ fence1 = asset Fence1 Cards.fence1
 instance HasModifiersFor Fence1 where
   getModifiersFor (Fence1 a) = for_ a.controller \iid -> do
     modifiedWhen_ a a.ready iid [CanBecomeFast #illicit, CanReduceCostOf (#illicit <> FastCard) 1]
+    when a.ready do
+      mOtherFence <- selectOne $ assetControlledBy iid <> assetIs Cards.fence1 <> not_ (be a) <> #ready
+      for_ mOtherFence \otherFence -> do
+        -- We can only have one more fence, so let's just give the lowest id one this value
+        modifiedWhen_ a (a.id < otherFence) iid [CanReduceCostOf #illicit 1]
+
 
 instance HasAbilities Fence1 where
   getAbilities (Fence1 a) =

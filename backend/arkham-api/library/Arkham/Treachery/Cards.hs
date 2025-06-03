@@ -108,8 +108,6 @@ allPlayerTreacheryCards =
       , glimpseTheVoid
       , greed
       , hardTimes
-      , hastursGaze
-      , hastursGrasp
       , hastyRepairs
       , haunted
       , hospitalDebts
@@ -310,6 +308,8 @@ allEncounterTreacheryCards =
       , graveLightSpectral
       , hangingOnTheEdge
       , harvestedBrain
+      , hastursGaze
+      , hastursGrasp
       , hauntingRecollections
       , heraldsOfTheDeep
       , hideousLullaby

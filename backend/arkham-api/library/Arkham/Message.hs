@@ -866,6 +866,7 @@ data Message
   | ResolvedPlayCard InvestigatorId Card
   | PlayerWindow InvestigatorId [UI Message] Bool
   | PutCampaignCardIntoPlay InvestigatorId CardDef
+  | PutCardIntoPlayById InvestigatorId CardId (Maybe Target) Payment [Window]
   | PutCardIntoPlay InvestigatorId Card (Maybe Target) Payment [Window]
   | PutCardIntoPlayWithAdditionalCosts InvestigatorId Card (Maybe Target) Payment [Window]
   | PutCardOnTopOfDeck InvestigatorId DeckSignifier Card

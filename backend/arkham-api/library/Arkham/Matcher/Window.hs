@@ -190,7 +190,7 @@ data WindowMatcher
   | WouldDrawEncounterCard Timing Who PhaseMatcher
   | WouldDrawCard Timing Who DeckMatcher
   | DrawCard Timing Who ExtendedCardMatcher DeckMatcher
-  | DrawsCards Timing Who ValueMatcher
+  | DrawsCards Timing Who CardListMatcher ValueMatcher
   | PlayCard Timing Who ExtendedCardMatcher
   | PlayEventDiscarding Timing Who EventMatcher
   | PlayEvent Timing Who EventMatcher
@@ -272,6 +272,11 @@ instance FromJSON WindowMatcher where
   parseJSON = withObject "WindowMatcher" $ \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "DrawsCards" -> do
+        econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case econtents of
+          Left (a, b, c) -> pure $ DrawsCards a b AnyCards c
+          Right (a, b, c, d) -> pure $ DrawsCards a b c d
       "ScenarioEvent" -> do
         econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case econtents of

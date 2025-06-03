@@ -360,6 +360,7 @@ data DiscardedPlayerCardMatcher
 data CardListMatcher
   = LengthIs ValueMatcher
   | HasCard CardMatcher
+  | NotCards CardListMatcher
   | AnyCards
   | DifferentLengthIsAtLeast Int CardMatcher
   | NoCards

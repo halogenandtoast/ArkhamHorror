@@ -1398,8 +1398,8 @@ instance RunMessage ActiveCost where
                       $ getCanAffordCost_ iid source actions c.windows canModify cost'
                   if canStillAfford'
                     then payCost msg c iid skipAdditionalCosts cost'
-                    else throw $ InvalidState $ "Can't afford cost: " <> tshow cost'
-                else throw $ InvalidState $ "Can't afford cost: " <> tshow cost
+                    else throw $ InvalidState $ "Can't afford cost (a): " <> tshow cost'
+                else throw $ InvalidState $ "Can't afford cost (b): " <> tshow cost
     SetCost acId cost | acId == c.id -> do
       pure $ c {activeCostCosts = cost}
     PaidCost acId _ _ payment | acId == c.id -> do

@@ -27,17 +27,22 @@ instance HasAbilities SwiftByakhee where
 instance RunMessage SwiftByakhee where
   runMessage msg e@(SwiftByakhee attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemyLocation <- field EnemyLocation (toId attrs)
-      for_ enemyLocation \loc -> do
-        prey <- select (enemyPrey attrs)
-        preyWithLocationsAndDistances <- forMaybeM prey \preyId -> runMaybeT do
-          lid <- MaybeT $ selectOne $ locationWithInvestigator preyId
-          distance <- lift $ fromMaybe (Distance 1000) <$> getDistance loc lid
-          pure (preyId, lid, distance)
-        chooseOrRunOneM iid do
-          for_ preyWithLocationsAndDistances \(iid', pathId, distance) -> do
-            targeting iid' do
-              when (unDistance distance > 1) $ phaseModifier attrs attrs CannotAttack
-              moveUntil attrs pathId
+      insteadOfMatching
+        \case
+          EnemyMove eid _ -> eid == attrs.id
+          _ -> False
+        do
+          enemyLocation <- field EnemyLocation (toId attrs)
+          for_ enemyLocation \loc -> do
+            prey <- select (enemyPrey attrs)
+            preyWithLocationsAndDistances <- forMaybeM prey \preyId -> runMaybeT do
+              lid <- MaybeT $ selectOne $ locationWithInvestigator preyId
+              distance <- lift $ fromMaybe (Distance 1000) <$> getDistance loc lid
+              pure (preyId, lid, distance)
+            chooseOrRunOneM iid do
+              for_ preyWithLocationsAndDistances \(iid', pathId, distance) -> do
+                targeting iid' do
+                  when (unDistance distance > 1) $ phaseModifier attrs attrs CannotAttack
+                  moveUntil attrs pathId
       pure e
     _ -> SwiftByakhee <$> liftRunMessage msg attrs

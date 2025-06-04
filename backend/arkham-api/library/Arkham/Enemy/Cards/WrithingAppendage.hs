@@ -9,7 +9,7 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Runner hiding (EnemyDefeated)
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message qualified as Msg
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers

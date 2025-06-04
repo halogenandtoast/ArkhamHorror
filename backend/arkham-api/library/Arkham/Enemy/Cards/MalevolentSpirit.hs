@@ -3,7 +3,7 @@ where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Runner hiding (EnemyDefeated)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Keyword (Keyword (Hunter))

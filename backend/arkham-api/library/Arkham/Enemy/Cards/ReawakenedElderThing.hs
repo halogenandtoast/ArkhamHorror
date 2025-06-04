@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.ReawakenedElderThing (reawakenedElderThing) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Enemy.Types (Field (..), keysL)
+import Arkham.Enemy.Types (Field (EnemyLocation), keysL)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Matcher hiding (EnemyDefeated)

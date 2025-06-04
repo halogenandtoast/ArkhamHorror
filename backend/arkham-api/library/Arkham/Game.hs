@@ -3732,6 +3732,7 @@ getEnemyField :: HasGame m => Field Enemy typ -> Enemy -> m typ
 getEnemyField f e = do
   let attrs@EnemyAttrs {..} = toAttrs e
   case f of
+    Arkham.Enemy.Types.EnemyDefeated -> pure enemyDefeated
     EnemyEngagedInvestigators -> case enemyPlacement of
       InThreatArea iid -> pure $ singleton iid
       _ -> do

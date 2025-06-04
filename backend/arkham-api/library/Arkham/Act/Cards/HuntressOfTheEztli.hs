@@ -36,11 +36,12 @@ instance RunMessage HuntressOfTheEztli where
       advancedWithOther attrs
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
-      advancedWithClues attrs
+      advancedWithOther attrs
       pure a
-    AdvanceAct (isSide B attrs -> True) _ method -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      ichtacaDefeated <- selectAny $ DefeatedEnemy "Ichtaca"
       ruins <- getSetAsideCardsMatching $ CardWithTrait Ruins
-      if method == AdvancedWithOther
+      if ichtacaDefeated
         then do
           investigators <- getInvestigators
           alejandroVela <-

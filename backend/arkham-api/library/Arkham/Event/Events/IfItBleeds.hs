@@ -1,6 +1,6 @@
 module Arkham.Event.Events.IfItBleeds (ifItBleeds) where
 
-import Arkham.Enemy.Types (Field (..))
+import Arkham.Enemy.Types (Field (EnemySanityDamage))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Matcher hiding (EnemyDefeated)

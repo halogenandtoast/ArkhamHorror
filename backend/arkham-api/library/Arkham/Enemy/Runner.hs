@@ -1137,7 +1137,7 @@ instance RunMessage EnemyAttrs where
                   defeatMsgs =
                     if ExhaustIfDefeated `elem` modifiers'
                       then [Exhaust (toTarget a) | not enemyExhausted]
-                      else [EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)]
+                      else [Arkham.Message.EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)]
 
                 pushAll $ [whenMsg, afterMsg] <> defeatMsgs
           pure a
@@ -1188,7 +1188,7 @@ instance RunMessage EnemyAttrs where
                     if ExhaustIfDefeated `elem` modifiers'
                       then [Exhaust (toTarget a) | not enemyExhausted]
                       else
-                        [EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)]
+                        [Arkham.Message.EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)]
                           <> ( guard (notNull excessDamageTargets && excess > 0)
                                  *> [ ExcessDamage
                                         eid
@@ -1230,9 +1230,9 @@ instance RunMessage EnemyAttrs where
         )
           <$> maybe (pure True) (sourceMatches source) mOnlyBeDefeatedByModifier
       when validDefeat do
-        push $ EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)
+        push $ Arkham.Message.EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)
       pure a
-    EnemyDefeated eid _ source _ | eid == toId a -> do
+    Arkham.Message.EnemyDefeated eid _ source _ | eid == toId a -> do
       modifiedHealth <- fieldJust EnemyHealth (toId a)
       let
         defeatedByDamage = enemyDamage a >= modifiedHealth
@@ -1257,7 +1257,7 @@ instance RunMessage EnemyAttrs where
         $ a
         & (keysL .~ mempty)
         & (lastKnownLocationL .~ mloc)
-    Do (EnemyDefeated eid _ source _) | eid == toId a -> do
+    Do (Arkham.Message.EnemyDefeated eid _ source _) | eid == toId a -> do
       miid <- getSourceController source
       victory <- getVictoryPoints eid
       vengeance <- getVengeancePoints eid
@@ -1277,7 +1277,7 @@ instance RunMessage EnemyAttrs where
       pure
         $ a
         & (if placeInVictory then placementL .~ OutOfPlay VictoryDisplayZone else id)
-    After (EnemyDefeated eid _ source _) | eid == toId a -> do
+    After (Arkham.Message.EnemyDefeated eid _ source _) | eid == toId a -> do
       case a.placement of
         AsSwarm eid' _ -> push $ CheckDefeated source (toTarget eid')
         _ -> pure ()

@@ -12,7 +12,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Types (Field (..))
+import Arkham.Enemy.Types (Field (EnemyClues, EnemyForcedRemainingHealth))
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Projection

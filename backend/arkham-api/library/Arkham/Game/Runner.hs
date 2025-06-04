@@ -771,7 +771,7 @@ runGameMessage msg g = case msg of
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  EnemyDefeated eid _ source _ -> do
+  Arkham.Helpers.Message.EnemyDefeated eid _ source _ -> do
     attrs <- toAttrs <$> getEnemy eid
     mlid <- field EnemyLocation eid
     miid <- getSourceController source
@@ -934,7 +934,7 @@ runGameMessage msg g = case msg of
       %~ insertEntity event'
   RemoveEnemy eid -> do
     popMessageMatching_ $ \case
-      EnemyDefeated eid' _ _ _ -> eid == eid'
+      Arkham.Helpers.Message.EnemyDefeated eid' _ _ _ -> eid == eid'
       _ -> False
     popMessageMatching_ $ \case
       Discard _ _ (EnemyTarget eid') -> eid == eid'

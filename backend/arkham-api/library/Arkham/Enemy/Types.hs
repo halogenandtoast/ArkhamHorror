@@ -55,6 +55,7 @@ class
 type EnemyCard a = CardBuilder EnemyId a
 
 data instance Field Enemy :: Type -> Type where
+  EnemyDefeated :: Field Enemy Bool
   EnemyEngagedInvestigators :: Field Enemy (Set InvestigatorId)
   EnemyDoom :: Field Enemy Int
   EnemyEvade :: Field Enemy (Maybe Int)
@@ -107,6 +108,7 @@ instance Typeable typ => FromJSON (Field Enemy typ) where
 
 instance FromJSON (SomeField Enemy) where
   parseJSON = withText "Field Enemy" $ \case
+    "EnemyDefeated" -> pure $ SomeField Arkham.Enemy.Types.EnemyDefeated
     "EnemyEngagedInvestigators" -> pure $ SomeField EnemyEngagedInvestigators
     "EnemyDoom" -> pure $ SomeField EnemyDoom
     "EnemyEvade" -> pure $ SomeField Arkham.Enemy.Types.EnemyEvade
@@ -430,6 +432,7 @@ makeLensesWith suffixedFields ''EnemyAttrs
 
 fieldLens :: Field Enemy typ -> Lens' EnemyAttrs typ
 fieldLens = \case
+  Arkham.Enemy.Types.EnemyDefeated -> defeatedL
   EnemyEngagedInvestigators -> virtual
   EnemyDoom -> tokensL . at Doom . non 0
   EnemyTokens -> tokensL

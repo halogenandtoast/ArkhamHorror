@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.KamanThah (kamanThah) where
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Runner hiding (EnemyDefeated)
 import Arkham.Helpers.GameValue
 import Arkham.Matcher
 import Arkham.Prelude
@@ -21,7 +21,7 @@ instance HasAbilities KamanThah where
     withBaseAbilities
       x
       [ skillTestAbility $ mkAbility x 1 parleyAction_
-      , mkAbility x 2 $ ForcedAbility $ EnemyDefeated #after You ByAny $ EnemyWithId $ toId x
+      , mkAbility x 2 $ forced $ EnemyDefeated #after You ByAny $ EnemyWithId $ toId x
       ]
 
 instance RunMessage KamanThah where

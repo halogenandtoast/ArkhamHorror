@@ -787,7 +787,7 @@ data Message
     InvestigatorPlaceAllCluesOnLocation InvestigatorId Source
   | InvestigatorPlaceCluesOnLocation InvestigatorId Source Int
   | InvestigatorPlayAsset InvestigatorId AssetId
-  | InvestigatorClearUnusedAssetSlots InvestigatorId
+  | InvestigatorClearUnusedAssetSlots InvestigatorId [AssetId]
   | InvestigatorAdjustAssetSlots InvestigatorId AssetId
   | InvestigatorAdjustSlot InvestigatorId Slot SlotType SlotType
   | InvestigatorPlayedAsset InvestigatorId AssetId
@@ -883,7 +883,7 @@ data Message
   | RecordSetInsert CampaignLogKey [SomeRecorded]
   | RecordSetReplace CampaignLogKey SomeRecorded SomeRecorded
   | CrossOutRecordSetEntries CampaignLogKey [SomeRecorded]
-  | RefillSlots InvestigatorId
+  | RefillSlots InvestigatorId [AssetId]
   | Remember ScenarioLogKey
   | Forget ScenarioLogKey
   | ScenarioCountSet ScenarioCountKey Int
@@ -1152,6 +1152,16 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "RefillSlots" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (iid, xs) -> pure $ RefillSlots iid xs
+          Left iid -> pure $ RefillSlots iid []
+      "InvestigatorClearUnusedAssetSlots" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (iid, xs) -> pure $ InvestigatorClearUnusedAssetSlots iid xs
+          Left iid -> pure $ InvestigatorClearUnusedAssetSlots iid []
       "EnemySpawn" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

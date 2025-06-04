@@ -43,7 +43,7 @@ instance RunMessage BoneFilledCaverns where
   runMessage msg l@(BoneFilledCaverns (attrs `With` metadata)) = runQueueT $ case msg of
     Investigate investigation | investigation.location == toId attrs && not investigation.isAction -> do
       result <- liftRunMessage msg attrs
-      push $ RefillSlots investigation.investigator
+      push $ RefillSlots investigation.investigator []
       pure $ BoneFilledCaverns $ With result (Metadata $ Just investigation.investigator)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- countM (directionEmpty attrs) [Below, RightOf]

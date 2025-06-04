@@ -421,6 +421,9 @@ instance Sourceable InvestigatorAttrs where
     iid == investigatorId
   isSource _ _ = False
 
+instance HasField "slots" InvestigatorAttrs (Map SlotType [Slot]) where
+  getField = investigatorSlots
+
 instance HasField "eliminated" InvestigatorAttrs Bool where
   getField = investigatorEliminated
 

@@ -46,7 +46,7 @@ instance RunMessage EnchantWeapon3 where
           field AssetController asset >>= traverse_ \controller ->
             targeting asset do
               place attrs $ AttachedToAsset asset Nothing
-              push $ RefillSlots controller
+              push $ RefillSlots controller []
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       owner <- field EventOwner (toId attrs)

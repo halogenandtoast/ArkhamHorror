@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Safeguard2 (safeguard2, Safeguard2 (..)) where
+module Arkham.Asset.Assets.Safeguard2 (safeguard2) where
 
 import Arkham.Ability hiding (DuringTurn)
 import Arkham.Asset.Cards qualified as Cards
@@ -15,7 +15,10 @@ safeguard2 = asset Safeguard2 Cards.safeguard2
 
 instance HasAbilities Safeguard2 where
   getAbilities (Safeguard2 a) =
-    [noLimit $ restricted a 1 ControlsThis $ ReactionAbility (DuringTurn NotYou) (exhaust a)]
+    [ noLimit
+        $ restricted a 1 ControlsThis
+        $ triggered (DuringTurn $ not_ $ HasMatchingAsset (be a)) (exhaust a)
+    ]
 
 instance RunMessage Safeguard2 where
   runMessage msg a@(Safeguard2 attrs) = runQueueT $ case msg of

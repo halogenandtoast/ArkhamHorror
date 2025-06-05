@@ -5223,9 +5223,7 @@ getTurnInvestigator :: HasGame m => m (Maybe Investigator)
 getTurnInvestigator = getGame >>= maybe (pure Nothing) getInvestigatorMaybe . gameTurnPlayerInvestigatorId
 
 asIfTurn :: HasGame m => InvestigatorId -> (forall n. HasGame n => n a) -> m a
-asIfTurn iid body = do
-  g <- getGame
-  runReaderT body (g {gameTurnPlayerInvestigatorId = Just iid})
+asIfTurn = asActive
 
 asActive :: HasGame m => InvestigatorId -> (forall n. HasGame n => n a) -> m a
 asActive iid body = do

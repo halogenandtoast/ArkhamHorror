@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.BlackStarsRise (setupBlackStarsRise, blackStarsRise, BlackStarsRise (..)) where
 
+import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Agenda.Types (Field (..))
@@ -7,6 +8,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
@@ -197,7 +199,14 @@ instance RunMessage BlackStarsRise where
       -- story intro
       whenInterviewed Assets.ashleighClarke do
         flavor $ p "ashleighsInformation"
-      
+
+        createAbilityEffect EffectGameWindow
+          $ groupLimit PerGame
+          $ popScope -- pop off intro
+          $ withI18nTooltip "ashleighsInformation.ability"
+          $ restricted (SourceableWithCardCode (CardCode "03274") ScenarioSource) 1 (exists AgendaWithAnyDoom)
+          $ FastAbility Free
+
       pure s
     StandaloneSetup -> do
       lead <- getLead
@@ -281,5 +290,8 @@ instance RunMessage BlackStarsRise where
       pure s
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
       for_ mcard $ push . AddCardToDeckForCampaign iid
+      pure s
+    UseCardAbility iid ScenarioSource 1 _ _ -> do
+      chooseSelectM iid AgendaWithAnyDoom \agenda -> removeDoom ScenarioSource agenda 1
       pure s
     _ -> BlackStarsRise <$> liftRunMessage msg attrs

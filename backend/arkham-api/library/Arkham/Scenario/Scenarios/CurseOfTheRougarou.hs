@@ -159,6 +159,9 @@ instance RunMessage CurseOfTheRougarou where
       rougarouAtYourLocation <- selectAny $ enemyIs Enemies.theRougarou <> enemyAtLocationWith iid
       pushWhen rougarouAtYourLocation (DrawAnotherChaosToken iid)
       pure s
+    ResolveChaosToken _ Tablet iid -> do
+      drawAnotherChaosToken iid
+      pure s
     ResolveChaosToken _ ElderThing iid -> do
       if isEasyStandard attrs
         then do

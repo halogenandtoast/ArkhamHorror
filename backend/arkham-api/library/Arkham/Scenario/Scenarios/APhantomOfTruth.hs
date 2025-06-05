@@ -203,7 +203,7 @@ instance RunMessage APhantomOfTruth where
       unlessStandalone do
         lostSouls <- replicateM 4 (genCard Treacheries.lostSoul)
         for_ (zip investigators lostSouls) \(iid, lostSoul) ->
-          shuffleCardsIntoDeck iid [lostSoul]
+          addCampaignCardToDeck iid ShuffleIn lostSoul
 
       flavor do
         h "title"

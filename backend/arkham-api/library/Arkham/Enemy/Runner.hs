@@ -89,7 +89,7 @@ import Data.Function (on)
 import Data.List (nubBy)
 import Data.List qualified as List
 import Data.List.Extra (firstJust)
-import Data.Monoid (First (..))
+import Data.Monoid (Any (..), First (..))
 
 {- | Handle when enemy no longer exists
 When an enemy is defeated we need to remove related messages from choices
@@ -893,12 +893,14 @@ instance RunMessage EnemyAttrs where
         ]
       pure a
     InitiateEnemyAttack details | details.enemy == enemyId -> do
-      whenWithoutModifier a CannotAttack do
-        mods <- getModifiers a
-        let canBeCancelled = details.canBeCanceled && AttacksCannotBeCancelled `notElem` mods
-        let strategy = fromMaybe details.strategy $ listToMaybe [s | SetAttackDamageStrategy s <- mods]
-        push $ EnemyAttack $ details {attackCanBeCanceled = canBeCancelled, attackDamageStrategy = strategy}
-      pure a
+      mods <- getModifiers a
+      if CannotAttack `elem` mods
+        then pure a
+        else do
+          let canBeCancelled = details.canBeCanceled && AttacksCannotBeCancelled `notElem` mods
+          let strategy = fromMaybe details.strategy $ listToMaybe [s | SetAttackDamageStrategy s <- mods]
+          push $ EnemyAttack $ details {attackCanBeCanceled = canBeCancelled, attackDamageStrategy = strategy}
+          pure $ a & wantsToAttackL .~ True
     ChangeEnemyAttackTarget eid target | eid == enemyId -> do
       let details = fromJustNote "missing attack details" enemyAttacking
           details' = details {attackTarget = SingleAttackTarget target}
@@ -931,7 +933,7 @@ instance RunMessage EnemyAttrs where
                   push $ chooseOne player [Label "Ignore attack of opportunity" [], Label "Do not ignore" [Do msg]]
               else push $ Do msg
           _ -> push $ Do msg
-      pure a
+      pure $ a & wantsToAttackL .~ False
     Do (EnemyAttack details) | attackEnemy details == enemyId -> do
       mods <- getModifiers a
       let canBeCancelled = AttacksCannotBeCancelled `notElem` mods
@@ -983,6 +985,13 @@ instance RunMessage EnemyAttrs where
           else pure 0
       sanityDamage <- field EnemySanityDamage (toId a)
 
+      let
+        swarmMatcher =
+          case enemyPlacement of
+            AsSwarm host _ -> oneOf [EnemyWithId host, SwarmOf host]
+            _ -> oneOf [EnemyWithId enemyId, SwarmOf enemyId]
+      swarmExhaust <- not . getAny <$> selectAgg Any EnemyWantsToAttack swarmMatcher
+
       case attackTarget details of
         SingleAttackTarget (InvestigatorTarget iid) -> do
           player <- getPlayer iid
@@ -1023,6 +1032,7 @@ instance RunMessage EnemyAttrs where
             $ [attackMessage | allowAttack]
             <> [ Exhaust (toTarget a)
                | allowAttack
+               , swarmExhaust
                , attackExhaustsEnemy details
                , DoNotExhaust `notElem` mods
                ]
@@ -1041,6 +1051,7 @@ instance RunMessage EnemyAttrs where
               ]
             <> [ Exhaust (toTarget a)
                | allowAttack
+               , swarmExhaust
                , attackExhaustsEnemy details
                , DoNotExhaust `notElem` mods
                ]
@@ -1343,7 +1354,7 @@ instance RunMessage EnemyAttrs where
               massive <- eid <=~> MassiveEnemy
               mlid <- getMaybeLocation iid
               enemyLocation <- field EnemyLocation eid
-              canEnter <-  maybe (pure False) (canEnterLocation enemyId) mlid
+              canEnter <- maybe (pure False) (canEnterLocation enemyId) mlid
               when (not massive && canEnter) do
                 pushAll
                   $ [before, PlaceEnemy eid (InThreatArea iid)]

@@ -1765,31 +1765,29 @@ runGameMessage msg g = case msg of
       CannotBeAttackedBy matcher ->
         elem (attackEnemy details) <$> select matcher
       _ -> pure False
-    if not cannotBeAttacked
-      then do
-        mNextMessage <- peekMessage
-        case mNextMessage of
-          Just (EnemyAttacks as) -> do
-            _ <- popMessage
-            push $ EnemyAttacks (EnemyAttack details : as)
-          Just aoo@(CheckAttackOfOpportunity _ _) -> do
-            _ <- popMessage
-            pushAll [aoo, msg]
-          Just (EnemyWillAttack details2) -> do
-            _ <- popMessage
-            modifiers2' <- maybe (pure []) getModifiers details2.singleTarget
-            cannotBeAttacked2 <- flip anyM modifiers2' $ \case
-              CannotBeAttackedBy matcher ->
-                elem (attackEnemy details2) <$> select matcher
-              _ -> pure False
-            if not cannotBeAttacked2
-              then
-                push
-                  $ EnemyAttacks [EnemyAttack details, EnemyAttack details2]
-              else push $ EnemyAttacks [EnemyAttack details]
-          _ -> push (EnemyAttack details)
-        pure g
-      else pure g
+    unless cannotBeAttacked do
+      mNextMessage <- peekMessage
+      case mNextMessage of
+        Just (EnemyAttacks as) -> do
+          _ <- popMessage
+          push $ EnemyAttacks (EnemyAttack details : as)
+        Just aoo@(CheckAttackOfOpportunity _ _) -> do
+          _ <- popMessage
+          pushAll [aoo, msg]
+        Just (EnemyWillAttack details2) -> do
+          _ <- popMessage
+          modifiers2' <- maybe (pure []) getModifiers details2.singleTarget
+          cannotBeAttacked2 <- flip anyM modifiers2' $ \case
+            CannotBeAttackedBy matcher ->
+              elem (attackEnemy details2) <$> select matcher
+            _ -> pure False
+          if not cannotBeAttacked2
+            then
+              push
+                $ EnemyAttacks [EnemyAttack details, EnemyAttack details2]
+            else push $ EnemyAttacks [EnemyAttack details]
+        _ -> push (EnemyAttack details)
+    pure g
   EnemyAttacks as -> do
     mNextMessage <- peekMessage
     let
@@ -1799,23 +1797,39 @@ runGameMessage msg g = case msg of
       attackedInvestigator = \case
         EnemyAttack details -> details.investigator
         _ -> Nothing
+      attackingEnemies = nub $ mapMaybe attackingEnemy as
+      attackingEnemy = \case
+        EnemyAttack details -> Just details.enemy
+        _ -> Nothing
     case mNextMessage of
       Just (EnemyAttacks as2) -> do
         _ <- popMessage
         push $ EnemyAttacks $ as ++ as2
+        pure g
       Just aoo@(CheckAttackOfOpportunity _ _) -> do
         _ <- popMessage
         pushAll [aoo, msg]
+        pure g
       Just (EnemyWillAttack details2) -> do
         _ <- popMessage
         push $ EnemyAttacks (EnemyAttack details2 : as)
+        pure g
       _ -> do
         let allAttacked = nub $ mapMaybe attackedInvestigator as
         player <- case allAttacked of
           [iid] -> getPlayer iid
           _ -> getPlayer (gameLeadInvestigatorId g)
         push $ chooseOneAtATime player $ map toUI as
-    pure g
+        pure
+          $ g
+          & entitiesL
+          . enemiesL
+          %~ map
+            ( \e ->
+                if e.id `elem` attackingEnemies
+                  then overAttrs (\a -> a {enemyWantsToAttack = True}) e
+                  else e
+            )
   AfterSkillTestQuiet _ -> do
     msgs <- popMessagesMatching \case
       AfterSkillTestQuiet {} -> True

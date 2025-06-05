@@ -155,7 +155,7 @@ instance FromJSON EnemyAttrs where
     enemyMeta <- v .: "meta"
     enemyFlipped <- v .: "flipped"
     enemyAttacking <- v .:? "attacking"
-    enemyWantsToAttack <- v .:? "wantsToAtack" .!= False
+    enemyWantsToAttack <- v .:? "wantsToAttack" .!= False
     enemyDelayEngagement <- v .:? "delayEngagement" .!= False
     enemyCardsUnderneath <- v .:? "cardsUnderneath" .!= []
     enemyLastKnownLocation <- v .:? "lastKnownLocation"

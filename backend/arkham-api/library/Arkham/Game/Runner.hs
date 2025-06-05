@@ -1441,7 +1441,7 @@ runGameMessage msg g = case msg of
             then AskMap $ Map.fromList $ (pid, q) : [(pid', q') | WindowAsk _ pid' q' <- others]
             else Ask pid q
         )
-      : [Do (CheckWindows ws)]
+      : [Do (CheckWindows ws) | notNull ws]
 
     pure g
   PlayCard iid card mtarget payment windows' False -> do
@@ -3387,7 +3387,7 @@ runPreGameMessage msg g = case msg of
           then ("11068b", overAttrs (\x -> x {Investigator.investigatorId = "11068b"}) i)
           else (k, i)
     pure $ g & (entitiesL . investigatorsL %~ mapFromList . map promoteHomunculus . mapToList)
-  CheckWindows ws -> do
+  CheckWindows ws | notNull ws -> do
     pushAll [Do (CheckWindows ws), EndCheckWindow]
     pure $ g & windowDepthL +~ 1 & (windowStackL %~ Just . maybe [ws] (ws :))
   EndCheckWindow -> do

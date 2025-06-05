@@ -191,7 +191,7 @@ data WindowMatcher
   | WouldDrawEncounterCard Timing Who PhaseMatcher
   | WouldDrawCard Timing Who DeckMatcher
   | DrawCard Timing Who ExtendedCardMatcher DeckMatcher
-  | DrawsCards Timing Who ValueMatcher
+  | DrawsCards Timing Who CardListMatcher ValueMatcher
   | PlayCard Timing Who ExtendedCardMatcher
   | PlayEventDiscarding Timing Who EventMatcher
   | PlayEvent Timing Who EventMatcher
@@ -207,6 +207,8 @@ data WindowMatcher
   | InvestigatorResigned Timing Who
   | AnyWindow
   | NotAnyWindow
+  | NotWindow WindowMatcher
+  | CommittingCardsFromHandToSkillTestStep Timing Who
   | CommittedCards Timing Who CardListMatcher
   | CommittedCard Timing Who CardMatcher
   | ActivateAbility Timing Who AbilityMatcher
@@ -230,8 +232,12 @@ data WindowMatcher
   | TakeControlOfKey Timing Who KeyMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
 
+
 data ExploreMatcher = SuccessfulExplore LocationMatcher | FailedExplore CardMatcher | AnyExplore
   deriving stock (Show, Eq, Ord, Data)
+
+instance Not WindowMatcher where
+  not_ = NotWindow
 
 instance IsLabel "success" ExploreMatcher where
   fromLabel = SuccessfulExplore Anywhere
@@ -271,6 +277,11 @@ instance FromJSON WindowMatcher where
   parseJSON = withObject "WindowMatcher" $ \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "DrawsCards" -> do
+        econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case econtents of
+          Left (a, b, c) -> pure $ DrawsCards a b AnyCards c
+          Right (a, b, c, d) -> pure $ DrawsCards a b c d
       "ScenarioEvent" -> do
         econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case econtents of

@@ -248,7 +248,7 @@ fitsAvailableSlots aid a = do
   availableSlots <-
     concatForM
       (nub slotTypes)
-      (\slotType -> map (const slotType) <$> availableSlotTypesFor slotType canHoldMap assetCard a)
+      (\slotType -> map (const slotType) <$> availableSlotTypesFor slotType canHoldMap assetCard a.slots)
   let missingSlotTypes = slotTypes \\ (availableSlots <> currentSlots)
 
   if null missingSlotTypes
@@ -260,12 +260,12 @@ availableSlotTypesFor
   => SlotType
   -> Map SlotType [SlotType]
   -> a
-  -> InvestigatorAttrs
+  -> Map SlotType [Slot]
   -> m [SlotType]
-availableSlotTypesFor slotType canHoldMap a attrs = do
+availableSlotTypesFor slotType canHoldMap a initSlots = do
   let possibleSlotTypes = slotType : findWithDefault [] slotType canHoldMap
   concatForM possibleSlotTypes $ \sType -> do
-    let slots = findWithDefault [] sType (attrs ^. slotsL)
+    let slots = findWithDefault [] sType initSlots
     xs <- filterM (canPutIntoSlot a) slots
     pure $ replicate (length xs) sType
 

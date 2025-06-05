@@ -29,8 +29,12 @@ data EnemyAttackDetails = EnemyAttackDetails
   , attackAfter :: [Message]
   , attackDamaged :: Map Target (Int, Int)
   , attackDealDamage :: Bool
+  , attackDespiteExhausted :: Bool
   }
   deriving stock (Show, Eq, Data)
+
+instance HasField "despiteExhausted" EnemyAttackDetails Bool where
+  getField = attackDespiteExhausted
 
 instance HasField "kind" EnemyAttackDetails EnemyAttackType where
   getField = attackType
@@ -93,4 +97,5 @@ instance FromJSON EnemyAttackDetails where
     attackAfter <- o .: "attackAfter"
     attackDamaged <- o .: "attackDamaged"
     attackDealDamage <- o .:? "attackDealDamage" .!= True
+    attackDespiteExhausted <- o .:? "attackDespiteExhausted" .!= False
     pure $ EnemyAttackDetails {..}

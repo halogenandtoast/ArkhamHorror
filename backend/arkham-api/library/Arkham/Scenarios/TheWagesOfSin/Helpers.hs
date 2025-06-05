@@ -8,7 +8,7 @@ import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Classes.RunMessage.Internal
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Runner hiding (EnemyDefeated)
 import Arkham.Helpers
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers

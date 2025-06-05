@@ -22,7 +22,7 @@ ancientStoneTransientThoughts4 = asset AncientStoneTransientThoughts4 Cards.anci
 instance HasAbilities AncientStoneTransientThoughts4 where
   getAbilities (AncientStoneTransientThoughts4 a) =
     [ controlledAbility a 1 (youExist can.move)
-        $ ReactionAbility (DrawsCards #when You AnyValue) (DynamicUseCost (be a) Secret DrawnCardsValue)
+        $ ReactionAbility (DrawsCards #when You AnyCards AnyValue) (DynamicUseCost (be a) Secret DrawnCardsValue)
     ]
 
 instance RunMessage AncientStoneTransientThoughts4 where

@@ -192,6 +192,9 @@ portraitLabeled iid action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [PortraitLabel iid msgs]
 
+portraits :: ReverseQueue m => [InvestigatorId] -> (InvestigatorId -> QueueT Message m ()) -> ChooseT m ()
+portraits iids action = unterminated $ for_ iids \iid -> portraitLabeled iid (action iid)
+
 labeledI18n :: (HasI18n, ReverseQueue m) => Text -> QueueT Message m () -> ChooseT m ()
 labeledI18n label action = unterminated do
   msgs <- lift $ evalQueueT action

@@ -78,7 +78,7 @@ instance RunMessage TheRavenQuill where
           $ when (notNull assets)
           $ chooseOne
             iid
-            [ targetLabel asset [PlaceEvent attrs.id (AttachedToAsset asset Nothing), RefillSlots iid]
+            [ targetLabel asset [PlaceEvent attrs.id (AttachedToAsset asset Nothing), RefillSlots iid []]
             | asset <- assets
             ]
 

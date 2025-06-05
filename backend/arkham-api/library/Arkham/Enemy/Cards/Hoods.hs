@@ -1,6 +1,7 @@
-module Arkham.Enemy.Cards.Hoods (hoods, Hoods (..)) where
+module Arkham.Enemy.Cards.Hoods (hoods) where
 
 import Arkham.Ability
+import Arkham.Attack.Types
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Matcher
@@ -21,6 +22,6 @@ instance HasAbilities Hoods where
 instance RunMessage Hoods where
   runMessage msg e@(Hoods attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      initiateEnemyAttack attrs (attrs.ability 1) iid
+      initiateEnemyAttackWith attrs (attrs.ability 1) iid \x -> x {attackDespiteExhausted = True}
       pure e
     _ -> Hoods <$> liftRunMessage msg attrs

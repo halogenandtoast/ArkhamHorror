@@ -19,6 +19,12 @@ fence1 = asset Fence1 Cards.fence1
 instance HasModifiersFor Fence1 where
   getModifiersFor (Fence1 a) = for_ a.controller \iid -> do
     modifiedWhen_ a a.ready iid [CanBecomeFast #illicit, CanReduceCostOf (#illicit <> FastCard) 1]
+    when a.ready do
+      mOtherFence <- selectOne $ assetControlledBy iid <> assetIs Cards.fence1 <> not_ (be a) <> #ready
+      for_ mOtherFence \otherFence -> do
+        -- We can only have one more fence, so let's just give the lowest id one this value
+        modifiedWhen_ a (a.id < otherFence) iid [CanReduceCostOf #illicit 1]
+
 
 instance HasAbilities Fence1 where
   getAbilities (Fence1 a) =
@@ -28,11 +34,11 @@ instance HasAbilities Fence1 where
 
 instance RunMessage Fence1 where
   runMessage msg a@(Fence1 attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
+    UseCardAbility _iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
       let source = attrs.ability 1
       mods <- getModifiers card
       if isFastCard card || BecomesFast FastPlayerWindow `elem` mods
-        then costModifier source iid (ReduceCostOf (CardWithId card.id) 1)
+        then reduceCostOf source card 1
         else cardResolutionModifier card source card (BecomesFast FastPlayerWindow)
       pure a
     _ -> Fence1 <$> liftRunMessage msg attrs

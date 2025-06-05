@@ -322,8 +322,13 @@ instance HasField "doom" EnemyId (TestAppT Int) where
 instance HasField "doom" AssetId (TestAppT Int) where
   getField = field AssetDoom
 
-instance HasField "doom" Agenda (TestAppT Int) where
-  getField = field AgendaDoom . toEntityId
+newtype Updated a = Updated a
+
+instance HasField "updated" Agenda (Updated Agenda) where
+  getField = Updated
+
+instance HasField "doom" (Updated Agenda) (TestAppT Int) where
+  getField (Updated x) = field AgendaDoom (toEntityId x)
 
 instance HasField "health" AssetId (TestAppT (Maybe Int)) where
   getField = field AssetRemainingHealth

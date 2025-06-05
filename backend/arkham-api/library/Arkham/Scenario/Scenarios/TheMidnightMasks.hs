@@ -184,7 +184,7 @@ instance RunMessage TheMidnightMasks where
           (InvestigatorPlaceAllCluesOnLocation iid (ChaosTokenEffectSource Tablet))
       pure s
     ScenarioResolution NoResolution -> scope "resolutions" do
-      story $ i18n "noResolution"
+      resolution "noResolution"
       push R1
       pure s
     ScenarioResolution (Resolution n) -> scope "resolutions" do

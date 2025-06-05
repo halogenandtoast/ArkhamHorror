@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (EnemyAttacks, EnemyDefeated)
 import Arkham.Attack.Types
 import Arkham.Card
-import Arkham.Enemy.Types (Field (..))
+import Arkham.Enemy.Types (Field (EnemyCard))
 import Arkham.Helpers.Window (defeatedEnemy, getAttackDetails)
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Projection

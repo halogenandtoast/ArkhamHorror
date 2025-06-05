@@ -99,7 +99,7 @@ messageType ResolveChaosToken {} = Just ResolveChaosTokenMessage
 messageType EnemySpawn {} = Just EnemySpawnMessage
 messageType EnemySpawnAtLocationMatching {} = Just EnemySpawnMessage
 messageType InvestigatorDrawEnemy {} = Just DrawEnemyMessage
-messageType EnemyDefeated {} = Just EnemyDefeatedMessage
+messageType Arkham.Message.EnemyDefeated {} = Just EnemyDefeatedMessage
 messageType (Discard _ GameSource (EnemyTarget _)) = Just EnemyDefeatedMessage
 messageType RevealChaosToken {} = Just RevealChaosTokenMessage
 messageType InvestigatorDamage {} = Just DamageMessage
@@ -801,7 +801,7 @@ data Message
     InvestigatorPlaceAllCluesOnLocation InvestigatorId Source
   | InvestigatorPlaceCluesOnLocation InvestigatorId Source Int
   | InvestigatorPlayAsset InvestigatorId AssetId
-  | InvestigatorClearUnusedAssetSlots InvestigatorId
+  | InvestigatorClearUnusedAssetSlots InvestigatorId [AssetId]
   | InvestigatorAdjustAssetSlots InvestigatorId AssetId
   | InvestigatorAdjustSlot InvestigatorId Slot SlotType SlotType
   | InvestigatorPlayedAsset InvestigatorId AssetId
@@ -880,6 +880,7 @@ data Message
   | ResolvedPlayCard InvestigatorId Card
   | PlayerWindow InvestigatorId [UI Message] Bool
   | PutCampaignCardIntoPlay InvestigatorId CardDef
+  | PutCardIntoPlayById InvestigatorId CardId (Maybe Target) Payment [Window]
   | PutCardIntoPlay InvestigatorId Card (Maybe Target) Payment [Window]
   | PutCardIntoPlayWithAdditionalCosts InvestigatorId Card (Maybe Target) Payment [Window]
   | PutCardOnTopOfDeck InvestigatorId DeckSignifier Card
@@ -896,7 +897,7 @@ data Message
   | RecordSetInsert CampaignLogKey [SomeRecorded]
   | RecordSetReplace CampaignLogKey SomeRecorded SomeRecorded
   | CrossOutRecordSetEntries CampaignLogKey [SomeRecorded]
-  | RefillSlots InvestigatorId
+  | RefillSlots InvestigatorId [AssetId]
   | Remember ScenarioLogKey
   | Forget ScenarioLogKey
   | ScenarioCountSet ScenarioCountKey Int
@@ -1165,6 +1166,16 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "RefillSlots" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (iid, xs) -> pure $ RefillSlots iid xs
+          Left iid -> pure $ RefillSlots iid []
+      "InvestigatorClearUnusedAssetSlots" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (iid, xs) -> pure $ InvestigatorClearUnusedAssetSlots iid xs
+          Left iid -> pure $ InvestigatorClearUnusedAssetSlots iid []
       "EnemySpawn" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

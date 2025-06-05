@@ -160,6 +160,8 @@ setupDimCarcosa attrs = do
 
   isReturnTo <- getIsReturnTo
 
+  whenReturnTo $ removeOneOf Locations.palaceOfTheKing
+
   placeAll
     [ bleakPlains
     , ruinsOfCarcosa

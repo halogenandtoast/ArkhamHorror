@@ -50,6 +50,7 @@ instance HasChaosTokenValue CityOfTheElderThings where
       pure
         $ ChaosTokenValue ElderSign
         $ CalculatedModifier
+        $ Negated
         $ if isEasyStandard attrs
           then InvestigatorKeyCountCalculation (InvestigatorWithId iid)
           else SumCalculation [Fixed 2, InvestigatorKeyCountCalculation (InvestigatorWithId iid)]

@@ -18,7 +18,7 @@ oppressiveMists = treachery OppressiveMists Cards.oppressiveMists
 instance HasAbilities OppressiveMists where
   getAbilities (OppressiveMists a) = case a.attached.location of
     Just lid ->
-      [ forcedAbility a 1 $ DrawsCards #after (You <> at_ (be lid)) AnyValue
+      [ forcedAbility a 1 $ DrawsCards #after (You <> at_ (be lid)) AnyCards AnyValue
       , restricted a 2 OnSameLocation doubleActionAbility
       ]
     _ -> []

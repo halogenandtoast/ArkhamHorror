@@ -11,6 +11,7 @@ import Arkham.Prelude
 import Control.Lens (non)
 import Control.Monad.Fail (fail)
 import Data.Data
+import Data.Map.Strict qualified as Map
 
 data SetGlobalSetting
   = SetIgnoreUnrelatedSkillTestTriggers Bool
@@ -27,11 +28,19 @@ data CardSettings = CardSettings
   deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
+instance Semigroup CardSettings where
+  CardSettings g1 p1 <> CardSettings g2 p2 =
+    CardSettings (g1 <> g2) (Map.unionWith (<>) p1 p2)
+
 data GlobalSettings = GlobalSettings
   { ignoreUnrelatedSkillTestTriggers :: Bool
   }
   deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
+
+instance Semigroup GlobalSettings where
+  GlobalSettings i1 <> GlobalSettings i2 =
+    GlobalSettings (i1 || i2)
 
 data PerCardSettings = PerCardSettings
   { cardIgnoreUnrelatedSkillTestTriggers :: Bool
@@ -39,7 +48,11 @@ data PerCardSettings = PerCardSettings
   , cardAttachments :: [CardCode]
   }
   deriving stock (Show, Eq, Generic, Data)
-  deriving anyclass (ToJSON)
+  deriving anyclass ToJSON
+
+instance Semigroup PerCardSettings where
+  PerCardSettings i1 d1 a1 <> PerCardSettings i2 d2 a2 =
+    PerCardSettings (i1 || i2) (d1 || d2) (a1 <> a2)
 
 instance FromJSON PerCardSettings where
   parseJSON = withObject "PerCardSettings" \o -> do
@@ -252,7 +265,6 @@ updateCardSetting cCode = \case
       . non defaultPerCardSettings
       . cardIgnoreDuringSkillTestsL
       .~ v
-
   SetCardSetting CardAttachments v ->
     perCardSettingsL
       . at cCode

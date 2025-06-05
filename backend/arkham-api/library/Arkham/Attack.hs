@@ -29,6 +29,7 @@ enemyAttack (asId -> enemyId) (toSource -> source) (toTarget -> target) =
     , attackAfter = []
     , attackDamaged = mempty
     , attackDealDamage = True
+    , attackDespiteExhausted = False
     }
 
 attackOfOpportunity
@@ -45,7 +46,7 @@ viaAlert a = a {attackType = AlertAttack}
 
 attackIsValid :: HasGame m => EnemyAttackDetails -> EnemyAttrs -> m Bool
 attackIsValid details attrs = do
-  if attrs.ready
+  if attrs.ready || details.despiteExhausted
     then pure True
     else case details.kind of
       RetaliateAttack -> hasModifier details.enemy CanRetaliateWhileExhausted

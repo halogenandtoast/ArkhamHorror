@@ -166,6 +166,9 @@ instance Data Agenda where
 instance HasField "id" Agenda AgendaId where
   getField = toId
 
+instance HasField "doom" Agenda Int where
+  getField = (.doom) . toAttrs
+
 instance Eq Agenda where
   (Agenda (a :: a)) == (Agenda (b :: b)) = case eqT @a @b of
     Just Refl -> a == b

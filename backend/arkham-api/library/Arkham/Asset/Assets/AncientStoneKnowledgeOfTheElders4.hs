@@ -21,7 +21,7 @@ ancientStoneKnowledgeOfTheElders4 = asset AncientStoneKnowledgeOfTheElders4 Card
 instance HasAbilities AncientStoneKnowledgeOfTheElders4 where
   getAbilities (AncientStoneKnowledgeOfTheElders4 a) =
     [ controlledAbility a 1 (exists (EnemyAt YourLocation) <> CanDealDamage)
-        $ ReactionAbility (DrawsCards #when You AnyValue) (DynamicUseCost (be a) Secret DrawnCardsValue)
+        $ ReactionAbility (DrawsCards #when You AnyCards AnyValue) (DynamicUseCost (be a) Secret DrawnCardsValue)
     ]
 
 instance RunMessage AncientStoneKnowledgeOfTheElders4 where

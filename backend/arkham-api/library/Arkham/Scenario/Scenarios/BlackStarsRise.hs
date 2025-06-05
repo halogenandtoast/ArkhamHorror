@@ -195,7 +195,9 @@ instance RunMessage BlackStarsRise where
         p.validate didInterview "proceedToAshleighsInformation"
         p.validate (not didInterview) "otherwise"
       -- story intro
-      whenInterviewed Assets.ashleighClarke $ flavor $ p "ashleighsInformation"
+      whenInterviewed Assets.ashleighClarke do
+        flavor $ p "ashleighsInformation"
+      
       pure s
     StandaloneSetup -> do
       lead <- getLead
@@ -212,7 +214,7 @@ instance RunMessage BlackStarsRise where
         placeDoom attrs agenda n
         pushWhen (canAdvance == CanAdvance) AdvanceAgendaIfThresholdSatisfied
       pure s
-    PassedSkillTest _ _ _ (ChaosTokenTarget token) _ n | n < 1 -> do
+    PassedSkillTest _ _ _ (ChaosTokenTarget token) _ n | isHardExpert attrs && n < 1 -> do
       when (chaosTokenFace token == Tablet) $ do
         selectEach AnyAgenda \agenda -> placeDoom attrs agenda 1
       pure s

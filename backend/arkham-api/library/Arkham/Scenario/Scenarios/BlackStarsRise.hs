@@ -195,7 +195,9 @@ instance RunMessage BlackStarsRise where
         p.validate didInterview "proceedToAshleighsInformation"
         p.validate (not didInterview) "otherwise"
       -- story intro
-      whenInterviewed Assets.ashleighClarke $ flavor $ p "ashleighsInformation"
+      whenInterviewed Assets.ashleighClarke do
+        flavor $ p "ashleighsInformation"
+      
       pure s
     StandaloneSetup -> do
       lead <- getLead

@@ -6,7 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Effect.Types as X
 import Arkham.Effect.Window as X
-import Arkham.EffectMetadata as X
+import Arkham.EffectMetadata as X hiding (EffectAbilities)
 import Arkham.Helpers.Message as X
 import Arkham.Helpers.Query as X
 import Arkham.Helpers.SkillTest as X
@@ -21,7 +21,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher.Scenario
 import Arkham.Modifier
 
-intFromMetadata :: EffectMetadata window a -> Int
+intFromMetadata :: EffectMetadata a -> Int
 intFromMetadata = \case
   EffectInt n -> n
   _ -> 0

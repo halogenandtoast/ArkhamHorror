@@ -12,21 +12,21 @@ import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Target
 
-data EffectMetadata window a
+data EffectMetadata a
   = EffectInt Int
   | EffectMessages [a]
   | EffectModifiers [Modifier]
   | EffectCardCodes [CardCode]
   | EffectMetaTarget Target
   | EffectMetaSkill SkillType
-  | EffectAbility (Ability, [window])
+  | EffectAbilities [Ability]
   | EffectCost ActiveCostId
   | EffectText Text
   deriving stock (Eq, Show, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
-effectInt :: Int -> Maybe (EffectMetadata window a)
+effectInt :: Int -> Maybe (EffectMetadata a)
 effectInt = Just . EffectInt
 
-effectMetaTarget :: Targetable target => target -> Maybe (EffectMetadata window a)
+effectMetaTarget :: Targetable target => target -> Maybe (EffectMetadata a)
 effectMetaTarget = Just . EffectMetaTarget . toTarget

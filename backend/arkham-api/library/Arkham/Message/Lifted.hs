@@ -1213,7 +1213,7 @@ addToVictory = push . AddToVictory . toTarget
 createCardEffect
   :: (ReverseQueue m, Sourceable source, Targetable target)
   => CardDef
-  -> Maybe (EffectMetadata Window Message)
+  -> Maybe (EffectMetadata Message)
   -> source
   -> target
   -> m ()
@@ -1222,7 +1222,7 @@ createCardEffect def mMeta source target = push =<< Msg.createCardEffect def mMe
 createCardEffectCapture
   :: (ReverseQueue m, Sourceable source, Targetable target)
   => CardDef
-  -> Maybe (EffectMetadata Window Message)
+  -> Maybe (EffectMetadata Message)
   -> source
   -> target
   -> m EffectId

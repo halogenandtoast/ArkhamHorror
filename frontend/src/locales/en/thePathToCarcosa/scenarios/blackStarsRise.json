@@ -26,6 +26,9 @@
   "tooltips": {
     "knightsHall": {
       "investigate": "{'{'}action{'}'} If there are no clues on Knight's Hall: _Investigate_. Investigate using {agility} instead of {'{'}intellect{'}'}. If you succeed, instead of discovering clues, remember that you have \"found the tower key.\""
+    },
+    "ashleighsInformation": {
+      "ability": "{'{'}fast{'}'} Remove 1 doom from an agenda in play. (Group limit once per game.)"
     }
   },
   "remembered": {

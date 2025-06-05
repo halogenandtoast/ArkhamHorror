@@ -28,6 +28,9 @@ instance RunMessage TheKingInTatters where
         flipOverBy iid (attrs.ability 1) lid
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
+      advancedWithOther attrs
+      pure a
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       whenM (selectAny $ enemyIs Enemies.hasturTheTatteredKing) $ push R1
       whenM (selectAny $ enemyIs Enemies.hasturTheKingInYellow) $ push R2
       whenM (selectAny $ enemyIs Enemies.hasturLordOfCarcosa) $ push R3

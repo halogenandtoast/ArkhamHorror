@@ -421,6 +421,9 @@ getChaosToken = \case
   [] -> error "No chaos token drawn"
   ((windowType -> Window.RevealChaosToken _ token) : _) -> token
   ((windowType -> Window.ResolvesChaosToken _ token) : _) -> token
+  ((windowType -> Window.ScenarioEvent _ _ val) : rest) -> case maybeResult val of
+    Just token -> token
+    Nothing -> getChaosToken rest
   (_ : rest) -> getChaosToken rest
 
 getThatEnemy :: [Window] -> Maybe EnemyId

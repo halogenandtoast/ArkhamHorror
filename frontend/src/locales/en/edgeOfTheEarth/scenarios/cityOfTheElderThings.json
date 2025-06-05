@@ -67,5 +67,19 @@
   "remembered": {
     "theTeamStudiedTheHistoryOfTheElderThings": "The team studied the history of the Elder Things.",
     "theTeamDiscernedTheOriginOfTheShoggoths": "The team discerned the origin of the Shoggoths."
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "–X. X is the number of keys you control.",
+      "cultist": "–2. If you fail, place a key you control on your location.",
+      "tablet": "–3. If a {'{'}frost{'}'} token was revealed during this test, you automatically fail, instead.",
+      "elderThing": "–4. If you fail, the nearest enemy moves once toward you. If it is engaged with you, it attacks."
+    },
+    "hardExpert": {
+      "skull": "–X. X is 2 plus the number of keys you control.",
+      "cultist": "–2. Place a key you control on your location.",
+      "tablet": "–4. If a {'{'}frost{'}'} token was revealed during this test, take 1 damage and you automatically fail, instead.",
+      "elderThing": "–5. If you fail, the nearest enemy moves once toward you. If it is engaged with you, it attacks."
+    }
   }
 }

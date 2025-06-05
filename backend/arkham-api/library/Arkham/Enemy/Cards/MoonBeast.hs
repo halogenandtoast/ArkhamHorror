@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.MoonBeast (moonBeast, MoonBeast (..)) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Runner hiding (EnemyDefeated)
 import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Prelude

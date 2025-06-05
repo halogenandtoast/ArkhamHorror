@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Agenda.Cards.BreakingThroughV2 (breakingThroughV2) where
 
 import Arkham.Ability

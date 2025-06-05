@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.SummonedBeast (summonedBeast) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner hiding (EnemyEvade, EnemyFight)
+import Arkham.Enemy.Runner hiding (EnemyEvade, EnemyFight, EnemyDefeated)
 import Arkham.Helpers.Doom
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query

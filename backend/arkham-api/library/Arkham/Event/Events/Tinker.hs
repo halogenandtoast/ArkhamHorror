@@ -47,9 +47,9 @@ instance RunMessage Tinker where
         (True, True) -> chooseOne iid [Label "Hand" [DoStep 1 msg], Label "Accessory" [DoStep 2 msg]]
       pure e
     DoStep 1 (HandleTargetChoice iid (isSource attrs -> True) _) -> do
-      push $ InvestigatorClearUnusedAssetSlots iid
+      push $ InvestigatorClearUnusedAssetSlots iid []
       pure . Tinker $ attrs `with` Meta {ignoredSlot = Just #hand}
     DoStep 2 (HandleTargetChoice iid (isSource attrs -> True) _) -> do
-      push $ InvestigatorClearUnusedAssetSlots iid
+      push $ InvestigatorClearUnusedAssetSlots iid []
       pure . Tinker $ attrs `with` Meta {ignoredSlot = Just #accessory}
     _ -> Tinker . (`with` meta) <$> liftRunMessage msg attrs

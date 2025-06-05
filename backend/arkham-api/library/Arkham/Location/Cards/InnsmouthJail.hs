@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.InnsmouthJail (innsmouthJail, InnsmouthJail (..)) where
 
 import Arkham.Ability
-import Arkham.Enemy.Types (Field (..))
+import Arkham.Enemy.Types (Field (EnemyCard))
 import Arkham.Helpers.Window
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted

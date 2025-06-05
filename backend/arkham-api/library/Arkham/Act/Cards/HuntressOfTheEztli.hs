@@ -4,10 +4,10 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.ChaosToken
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query
-import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -20,8 +20,7 @@ newtype HuntressOfTheEztli = HuntressOfTheEztli ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 huntressOfTheEztli :: ActCard HuntressOfTheEztli
-huntressOfTheEztli =
-  act (2, A) HuntressOfTheEztli Cards.huntressOfTheEztli Nothing
+huntressOfTheEztli = act (2, A) HuntressOfTheEztli Cards.huntressOfTheEztli Nothing
 
 instance HasAbilities HuntressOfTheEztli where
   getAbilities = actAbilities \x ->
@@ -40,14 +39,17 @@ instance RunMessage HuntressOfTheEztli where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      ichtacaDefeated <- inVictoryDisplay "Ichtaca"
+      ichtacaDefeated <- selectAny $ DefeatedEnemy "Ichtaca"
       ruins <- getSetAsideCardsMatching $ CardWithTrait Ruins
       if ichtacaDefeated
         then do
-          remember YouFoughtWithIchtaca
-          alejandroVela <- fetchCard $ SetAsideCardMatch "Alejandro Vela"
           investigators <- getInvestigators
-          leadChooseOneM $ targets investigators (`takeControlOfSetAsideAsset` alejandroVela)
+          alejandroVela <- fetchCard $ SetAsideCardMatch "Alejandro Vela"
+          remember YouFoughtWithIchtaca
+          leadChooseOneM do
+            questionLabeled "Take control of Alejandro Vela"
+            questionLabeledCard Assets.alejandroVela
+            portraits investigators (`takeControlOfSetAsideAsset` alejandroVela)
           addChaosToken Tablet
           shuffleCardsIntoDeck ExplorationDeck ruins
           advanceToAct attrs Acts.theGuardedRuins A

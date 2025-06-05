@@ -52,7 +52,7 @@ instance RunMessage AbigailForeman4 where
         targets as \x -> do
           place x $ AttachedToAsset (toId attrs) (Just $ InPlayArea iid)
           for_ mAttachedAsset (`place` InPlayArea iid)
-          push $ RefillSlots iid
+          push $ RefillSlots iid []
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (getAbility -> (ab, ws)) _ -> do
       push $ UseAbility iid (ignoreAllCosts ab) ws

@@ -421,6 +421,9 @@ getChaosToken = \case
   [] -> error "No chaos token drawn"
   ((windowType -> Window.RevealChaosToken _ token) : _) -> token
   ((windowType -> Window.ResolvesChaosToken _ token) : _) -> token
+  ((windowType -> Window.ScenarioEvent _ _ val) : rest) -> case maybeResult val of
+    Just token -> token
+    Nothing -> getChaosToken rest
   (_ : rest) -> getChaosToken rest
 
 getThatEnemy :: [Window] -> Maybe EnemyId
@@ -584,6 +587,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
   let guardTiming t body = if timing' == t then body wType else noMatch
   let mtchr = Matcher.replaceYouMatcher iid umtchr
   case mtchr of
+    Matcher.NotWindow inner -> not <$> windowMatches iid rawSource window' inner
     Matcher.TakeControlOfKey timing whoMatcher _keyMatcher -> guardTiming timing \case
       Window.TakeControlOfKey who _ -> matchWho iid who whoMatcher
       _ -> noMatch
@@ -916,6 +920,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           [ matchWho iid who whoMatcher
           , abilityMatches ability abilityMatcher
           ]
+      _ -> noMatch
+    Matcher.CommittingCardsFromHandToSkillTestStep timing whoMatcher -> guardTiming timing $ \case
+      Window.CommittingCardsFromHandToSkillTestStep who -> matchWho iid who whoMatcher
       _ -> noMatch
     Matcher.CommittedCard timing whoMatcher cardMatcher -> guardTiming timing $ \case
       Window.CommittedCard who card ->
@@ -1835,10 +1842,11 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.LastClueRemovedFromAsset timing assetMatcher -> guardTiming timing $ \case
       Window.LastClueRemovedFromAsset aid -> elem aid <$> select assetMatcher
       _ -> noMatch
-    Matcher.DrawsCards timing whoMatcher valueMatcher -> guardTiming timing $ \case
+    Matcher.DrawsCards timing whoMatcher cardListMatcher valueMatcher -> guardTiming timing $ \case
       Window.DrawCards who cards ->
         andM
           [ matchWho iid who whoMatcher
+          , cardListMatches cards cardListMatcher
           , gameValueMatches (length cards) valueMatcher
           ]
       _ -> noMatch

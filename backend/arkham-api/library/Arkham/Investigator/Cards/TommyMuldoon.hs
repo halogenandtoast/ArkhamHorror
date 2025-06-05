@@ -109,7 +109,7 @@ instance RunMessage TommyMuldoon where
 
       when (n == 11) do
         assets <- select $ oneOf [AssetWithDamage, AssetWithHorror]
-        for_ assets (checkDefeated ElderSign )
+        for_ assets (checkDefeated ElderSign)
       pure i
     HandleAbilityOption (is attrs -> True) _ n | n `elem` [2, 22] -> do
       assetsWithDamage <- select (AssetWithDamage <> assetControlledBy attrs.id)

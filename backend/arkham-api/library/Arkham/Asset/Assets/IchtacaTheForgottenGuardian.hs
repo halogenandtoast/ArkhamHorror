@@ -21,17 +21,21 @@ ichtacaTheForgottenGuardian :: AssetCard IchtacaTheForgottenGuardian
 ichtacaTheForgottenGuardian = ally IchtacaTheForgottenGuardian Cards.ichtacaTheForgottenGuardian (3, 2)
 
 instance HasModifiersFor IchtacaTheForgottenGuardian where
-  getModifiersFor (IchtacaTheForgottenGuardian a) = controllerGetsMaybe a \_ -> do
-    enemy <- MaybeT getSkillTestTargetedEnemy
-    liftGuardM $ enemy <=~> InPlayEnemy (EnemyWithId enemy)
-    MaybeT getSkillTestAction >>= \case
-      Action.Fight -> do
-        combat <- lift $ maybe 1 (const 2) <$> getVengeancePoints enemy
-        pure [SkillModifier #combat combat]
-      Action.Evade -> do
-        agility <- lift $ maybe 1 (const 2) <$> getVengeancePoints enemy
-        pure [SkillModifier #agility agility]
-      _ -> pure mempty
+  getModifiersFor (IchtacaTheForgottenGuardian a) = for_ a.controller \iid -> do
+    (combat, agility) <-
+      fromMaybe (1, 1) <$> runMaybeT do
+        enemy <- MaybeT getSkillTestTargetedEnemy
+        liftGuardM $ enemy <=~> InPlayEnemy (EnemyWithId enemy)
+        MaybeT getSkillTestAction >>= \case
+          Action.Fight -> do
+            combat <- lift $ maybe 1 (const 2) <$> getVengeancePoints enemy
+            pure (combat, 1)
+          Action.Evade -> do
+            agility <- lift $ maybe 1 (const 2) <$> getVengeancePoints enemy
+            pure (1, agility)
+          _ -> pure (1, 1)
+
+    modified_ a iid [SkillModifier #agility agility, SkillModifier #combat combat]
 
 instance HasAbilities IchtacaTheForgottenGuardian where
   getAbilities (IchtacaTheForgottenGuardian a) = case a.placement of

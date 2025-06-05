@@ -1199,6 +1199,36 @@ getAgendasMatching matcher = do
       modifiers' <- getModifiers (toTarget a)
       pure $ modifierType `elem` modifiers'
     AgendaCanWheelOfFortuneX -> pure . not . attr agendaUsedWheelOfFortuneX
+    AgendaWantsToAdvance -> \a -> do
+      cannotBeAdvanced <- hasModifier a CannotBeAdvancedByDoomThreshold
+      if cannotBeAdvanced
+        then pure False
+        else do
+          case attr agendaDoomThreshold a of
+            Nothing -> pure False
+            Just threshold -> do
+              perPlayerDoomThreshold <- getPlayerCountValue threshold
+              modifiers' <- getModifiers (toTarget a)
+              let
+                modifyDoomThreshold acc = \case
+                  DoomThresholdModifier n -> max 0 (acc + n)
+                  _ -> acc
+                modifiedPerPlayerDoomThreshold =
+                  foldl' modifyDoomThreshold perPlayerDoomThreshold modifiers'
+                otherDoomSubtracts = OtherDoomSubtracts `elem` modifiers'
+              -- handle multiple agendas, this might need to be specific to the
+              -- scenario, but for now given there is only once scenario and the rules
+              -- are likely to be the same in the future
+              otherAgendaDoom <-
+                getSum
+                  <$> selectAgg Sum AgendaDoom (NotAgenda $ AgendaWithId $ toId a)
+              doomCount <- if otherDoomSubtracts then getSubtractDoomCount else getDoomCount
+              let
+                totalDoom =
+                  if otherDoomSubtracts
+                    then a.doom - (doomCount - a.doom)
+                    else subtract otherAgendaDoom doomCount
+              pure $ totalDoom >= modifiedPerPlayerDoomThreshold
     FinalAgenda -> \a -> do
       card <- field AgendaCard (toId a)
       let agendas =
@@ -3732,6 +3762,7 @@ getEnemyField :: HasGame m => Field Enemy typ -> Enemy -> m typ
 getEnemyField f e = do
   let attrs@EnemyAttrs {..} = toAttrs e
   case f of
+    Arkham.Enemy.Types.EnemyDefeated -> pure enemyDefeated
     EnemyEngagedInvestigators -> case enemyPlacement of
       InThreatArea iid -> pure $ singleton iid
       _ -> do
@@ -3746,6 +3777,7 @@ getEnemyField f e = do
     EnemyKeys -> pure enemyKeys
     EnemySpawnedBy -> pure enemySpawnedBy
     EnemyAttacking -> pure enemyAttacking
+    EnemyWantsToAttack -> pure enemyWantsToAttack
     EnemyBearer -> pure enemyBearer
     EnemyTokens -> pure enemyTokens
     EnemyDoom -> do
@@ -4360,15 +4392,13 @@ instance Query ExtendedCardMatcher where
             <$> getGame
         go cs matcher' >>= filterM (getIsPlayable active GameSource costStatus windows')
       PlayableCardWithCriteria actionStatus override matcher' -> do
-        mTurnInvestigator <- selectOne TurnInvestigator
-        active <- selectJust ActiveInvestigator
-        let iid = fromMaybe active mTurnInvestigator
+        iid <- fromMaybeM (selectJust ActiveInvestigator) (selectOne TurnInvestigator)
         let windows' = Window.defaultWindows iid
         go cs matcher'
           >>= filterM
             ( \r ->
                 Helpers.withModifiers (toCardId r) (toModifiers GameSource [CanPlayWithOverride override])
-                  $ getIsPlayable active GameSource (UnpaidCost actionStatus) windows' r
+                  $ getIsPlayable iid GameSource (UnpaidCost actionStatus) windows' r
             )
       CommittableCard imatch matcher' -> do
         iid <- selectJust imatch
@@ -5194,9 +5224,7 @@ getTurnInvestigator :: HasGame m => m (Maybe Investigator)
 getTurnInvestigator = getGame >>= maybe (pure Nothing) getInvestigatorMaybe . gameTurnPlayerInvestigatorId
 
 asIfTurn :: HasGame m => InvestigatorId -> (forall n. HasGame n => n a) -> m a
-asIfTurn iid body = do
-  g <- getGame
-  runReaderT body (g {gameTurnPlayerInvestigatorId = Just iid})
+asIfTurn = asActive
 
 asActive :: HasGame m => InvestigatorId -> (forall n. HasGame n => n a) -> m a
 asActive iid body = do

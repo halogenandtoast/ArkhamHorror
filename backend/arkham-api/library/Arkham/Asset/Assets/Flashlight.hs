@@ -21,7 +21,7 @@ instance RunMessage Flashlight where
   runMessage msg a@(Flashlight attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      withLocationOf iid \lid -> skillTestModifier sid attrs lid (ShroudModifier (-2))
+      withLocationOf iid \lid -> skillTestModifier sid (attrs.ability 1) lid (ShroudModifier (-2))
       investigate_ sid iid (attrs.ability 1)
       pure a
     _ -> Flashlight <$> liftRunMessage msg attrs

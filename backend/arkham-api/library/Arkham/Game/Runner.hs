@@ -771,7 +771,7 @@ runGameMessage msg g = case msg of
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  EnemyDefeated eid _ source _ -> do
+  Arkham.Helpers.Message.EnemyDefeated eid _ source _ -> do
     attrs <- toAttrs <$> getEnemy eid
     mlid <- field EnemyLocation eid
     miid <- getSourceController source
@@ -934,7 +934,7 @@ runGameMessage msg g = case msg of
       %~ insertEntity event'
   RemoveEnemy eid -> do
     popMessageMatching_ $ \case
-      EnemyDefeated eid' _ _ _ -> eid == eid'
+      Arkham.Helpers.Message.EnemyDefeated eid' _ _ _ -> eid == eid'
       _ -> False
     popMessageMatching_ $ \case
       Discard _ _ (EnemyTarget eid') -> eid == eid'
@@ -1217,7 +1217,7 @@ runGameMessage msg g = case msg of
       & (skillTestResultsL .~ Nothing)
       & (activeAbilitiesL %~ filter (not . abilityTriggersSkillTest))
   Msg.AbilityIsSkillTest aref -> do
-    let updateAbility ab = if ab.ref == aref then ab { abilityTriggersSkillTest = True } else ab
+    let updateAbility ab = if ab.ref == aref then ab {abilityTriggersSkillTest = True} else ab
     pure $ g & (activeAbilitiesL %~ map updateAbility)
   Do msg'@(Search {}) -> do
     inSearch <- fromQueue (elem FinishedSearch)
@@ -1317,9 +1317,11 @@ runGameMessage msg g = case msg of
         _ -> False
 
       card <- field AssetCard assetId
+      underneath <- field AssetCardsUnderneath assetId
       if assetIsStory $ toAttrs asset
         then push $ toDiscard GameSource $ toTarget assetId
         else pushAll [RemoveFromPlay (toSource assetId), addToHand iid card]
+      for_ underneath (push . addToDiscard iid)
     pure g
   PlaceEnemy enemyId placement | not (isOutOfPlayZonePlacement placement) -> do
     enemy <- getEnemy enemyId
@@ -1439,7 +1441,7 @@ runGameMessage msg g = case msg of
             then AskMap $ Map.fromList $ (pid, q) : [(pid', q') | WindowAsk _ pid' q' <- others]
             else Ask pid q
         )
-      : [Do (CheckWindows ws)]
+      : [Do (CheckWindows ws) | notNull ws]
 
     pure g
   PlayCard iid card mtarget payment windows' False -> do
@@ -1466,6 +1468,9 @@ runGameMessage msg g = case msg of
           <> tshow card
           <> " but it is not in the list of playable cards"
         pure g
+  PutCardIntoPlayById iid cardId mtarget payment windows' -> do
+    c <- getCard cardId
+    runMessage (PutCardIntoPlay iid c mtarget payment windows') g
   PutCardIntoPlay iid card mtarget payment windows' -> do
     let cardId = toCardId card
     case card of
@@ -1760,31 +1765,29 @@ runGameMessage msg g = case msg of
       CannotBeAttackedBy matcher ->
         elem (attackEnemy details) <$> select matcher
       _ -> pure False
-    if not cannotBeAttacked
-      then do
-        mNextMessage <- peekMessage
-        case mNextMessage of
-          Just (EnemyAttacks as) -> do
-            _ <- popMessage
-            push $ EnemyAttacks (EnemyAttack details : as)
-          Just aoo@(CheckAttackOfOpportunity _ _) -> do
-            _ <- popMessage
-            pushAll [aoo, msg]
-          Just (EnemyWillAttack details2) -> do
-            _ <- popMessage
-            modifiers2' <- maybe (pure []) getModifiers details2.singleTarget
-            cannotBeAttacked2 <- flip anyM modifiers2' $ \case
-              CannotBeAttackedBy matcher ->
-                elem (attackEnemy details2) <$> select matcher
-              _ -> pure False
-            if not cannotBeAttacked2
-              then
-                push
-                  $ EnemyAttacks [EnemyAttack details, EnemyAttack details2]
-              else push $ EnemyAttacks [EnemyAttack details]
-          _ -> push (EnemyAttack details)
-        pure g
-      else pure g
+    unless cannotBeAttacked do
+      mNextMessage <- peekMessage
+      case mNextMessage of
+        Just (EnemyAttacks as) -> do
+          _ <- popMessage
+          push $ EnemyAttacks (EnemyAttack details : as)
+        Just aoo@(CheckAttackOfOpportunity _ _) -> do
+          _ <- popMessage
+          pushAll [aoo, msg]
+        Just (EnemyWillAttack details2) -> do
+          _ <- popMessage
+          modifiers2' <- maybe (pure []) getModifiers details2.singleTarget
+          cannotBeAttacked2 <- flip anyM modifiers2' $ \case
+            CannotBeAttackedBy matcher ->
+              elem (attackEnemy details2) <$> select matcher
+            _ -> pure False
+          if not cannotBeAttacked2
+            then
+              push
+                $ EnemyAttacks [EnemyAttack details, EnemyAttack details2]
+            else push $ EnemyAttacks [EnemyAttack details]
+        _ -> push (EnemyAttack details)
+    pure g
   EnemyAttacks as -> do
     mNextMessage <- peekMessage
     let
@@ -1794,23 +1797,39 @@ runGameMessage msg g = case msg of
       attackedInvestigator = \case
         EnemyAttack details -> details.investigator
         _ -> Nothing
+      attackingEnemies = nub $ mapMaybe attackingEnemy as
+      attackingEnemy = \case
+        EnemyAttack details -> Just details.enemy
+        _ -> Nothing
     case mNextMessage of
       Just (EnemyAttacks as2) -> do
         _ <- popMessage
         push $ EnemyAttacks $ as ++ as2
+        pure g
       Just aoo@(CheckAttackOfOpportunity _ _) -> do
         _ <- popMessage
         pushAll [aoo, msg]
+        pure g
       Just (EnemyWillAttack details2) -> do
         _ <- popMessage
         push $ EnemyAttacks (EnemyAttack details2 : as)
+        pure g
       _ -> do
         let allAttacked = nub $ mapMaybe attackedInvestigator as
         player <- case allAttacked of
           [iid] -> getPlayer iid
           _ -> getPlayer (gameLeadInvestigatorId g)
         push $ chooseOneAtATime player $ map toUI as
-    pure g
+        pure
+          $ g
+          & entitiesL
+          . enemiesL
+          %~ map
+            ( \e ->
+                if e.id `elem` attackingEnemies
+                  then overAttrs (\a -> a {enemyWantsToAttack = True}) e
+                  else e
+            )
   AfterSkillTestQuiet _ -> do
     msgs <- popMessagesMatching \case
       AfterSkillTestQuiet {} -> True
@@ -3368,7 +3387,7 @@ runPreGameMessage msg g = case msg of
           then ("11068b", overAttrs (\x -> x {Investigator.investigatorId = "11068b"}) i)
           else (k, i)
     pure $ g & (entitiesL . investigatorsL %~ mapFromList . map promoteHomunculus . mapToList)
-  CheckWindows ws -> do
+  CheckWindows ws | notNull ws -> do
     pushAll [Do (CheckWindows ws), EndCheckWindow]
     pure $ g & windowDepthL +~ 1 & (windowStackL %~ Just . maybe [ws] (ws :))
   EndCheckWindow -> do

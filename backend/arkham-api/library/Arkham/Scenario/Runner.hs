@@ -9,6 +9,7 @@ import Arkham.Target as X
 
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Act.Types (Field (..))
+import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Types (Field (..))
@@ -53,6 +54,7 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted (fetchCard)
+import Arkham.Message.Lifted.Choose
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Placement
@@ -1283,7 +1285,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure a
   RemoveAllDoomFromPlay matchers -> do
     let Matcher.RemoveDoomMatchers {..} = matchers
-    targets <-
+    xs <-
       fold
         <$> sequence
           [ selectMap LocationTarget (removeDoomLocations <> Matcher.LocationWithAnyDoom)
@@ -1298,7 +1300,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           , selectMap EventTarget removeDoomEvents
           , selectMap SkillTarget removeDoomSkills
           ]
-    pushAll [RemoveAllDoom (toSource a) target | target <- targets]
+    pushAll [RemoveAllDoom (toSource a) target | target <- xs]
     pure a
   SetupInvestigators -> do
     iids <- allInvestigators
@@ -1390,7 +1392,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         TarotCard Reversed arcana' | arcana' == arcana -> TarotCard Upright arcana'
         c -> c
     pure $ a & tarotCardsL . each %~ map rotate
-  After (EnemyDefeated eid _ _ _) -> do
+  After (X.EnemyDefeated eid _ _ _) -> do
     eattrs <- getAttrs @Enemy eid
     printedHealth <- calculatePrinted (enemyHealth eattrs)
     enemyHealth <- fieldWithDefault printedHealth EnemyHealth eid
@@ -1438,5 +1440,17 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   ForTarget ScenarioTarget msg' -> liftRunMessage msg' a
   UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
     push $ Do msg
+    pure a
+  AdvanceAgendaIfThresholdSatisfied -> do
+    select Matcher.AgendaWantsToAdvance >>= \case
+      [x] -> do
+        whenMsg <- checkWindows [mkWhen (Window.AgendaWouldAdvance DoomThreshold x)]
+        afterMsg <- checkWindows [mkAfter (Window.AgendaWouldAdvance DoomThreshold x)]
+        pushAll [whenMsg, afterMsg, ForTarget (toTarget x) AdvanceAgendaIfThresholdSatisfied]
+      xs -> leadChooseOneM do
+        targets xs \x -> do
+          whenMsg <- checkWindows [mkWhen (Window.AgendaWouldAdvance DoomThreshold x)]
+          afterMsg <- checkWindows [mkAfter (Window.AgendaWouldAdvance DoomThreshold x)]
+          pushAll [whenMsg, afterMsg, ForTarget (toTarget x) AdvanceAgendaIfThresholdSatisfied]
     pure a
   _ -> pure a

@@ -425,114 +425,133 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
     event.dataTransfer.setData('text/plain', JSON.stringify({ "tag": "CardTarget", "contents": cardId }))
   }
 }
+
+function onDrop(event: DragEvent) {
+  event.preventDefault()
+  if (event.dataTransfer) {
+    const data = event.dataTransfer.getData('text/plain')
+    if (data) {
+      const json = JSON.parse(data)
+      if (json.tag === "CardTarget") {
+        debug.send(props.game.id, {tag: 'PutCardIntoPlayById', contents: [props.investigator.id, json.contents, null, { tag: 'NoPayment' }, []]})
+      }
+    }
+  }
+}
 </script>
 
 <template>
-  <div class="player-cards">
+  <div class="player-cards" >
     <transition name="grow">
-      <transition-group tag="section" class="in-play" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
+      <section
+        class="in-play"
+          @drop="onDrop($event)"
+          @dragover.prevent="dragover($event)"
+          @dragenter.prevent
+        >
+        <transition-group @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
+          <template v-if="tarotCards.length > 0">
+            <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana" :data-index="tarotCard.arcana">
+              <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="$emit('choose', tarotCardAbility(tarotCard))"/>
+            </div>
+          </template>
 
-        <template v-if="tarotCards.length > 0">
-          <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana" :data-index="tarotCard.arcana">
-            <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="$emit('choose', tarotCardAbility(tarotCard))"/>
+          <img
+            v-if="investigatorId === 'c89001'"
+            class="card"
+            @click="realityAcid = realityAcid === '89005' ? '89005b' : '89005'"
+            :src="imgsrc(`cards/${realityAcid}.avif`)"
+          />
+
+          <Treachery
+            v-for="treachery in currentTreacheries"
+            :key="treachery.id"
+            :treachery="treachery"
+            :game="game"
+            :data-index="treachery.cardId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+
+          <Skill
+            v-for="skill in skills"
+            :skill="skill"
+            :game="game"
+            :playerId="playerId"
+            :key="skill.id"
+            :data-index="skill.cardId"
+            @choose="$emit('choose', $event)"
+            @showCards="doShowCards"
+          />
+          <Event
+            v-for="event in events"
+            :event="event"
+            :game="game"
+            :playerId="playerId"
+            :key="event.id"
+            :data-index="event.cardId"
+            @choose="$emit('choose', $event)"
+            @showCards="doShowCards"
+          />
+          <Asset
+            v-for="asset in assets"
+            :asset="asset"
+            :game="game"
+            :playerId="playerId"
+            :key="asset.id"
+            :data-index="asset.cardId"
+            @choose="$emit('choose', $event)"
+            @showCards="doShowCards"
+          />
+
+          <Story
+            v-for="story in stories"
+            :key="story.id"
+            :story="story"
+            :game="game"
+            :data-index="story.cardId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+
+
+          <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot}${idx}`">
+            <img :src="slotImg(slot)" />
           </div>
-        </template>
 
-        <img
-          v-if="investigatorId === 'c89001'"
-          class="card"
-          @click="realityAcid = realityAcid === '89005' ? '89005b' : '89005'"
-          :src="imgsrc(`cards/${realityAcid}.avif`)"
-        />
+          <Enemy
+            v-for="enemy in engagedEnemies"
+            :key="enemy.id"
+            :enemy="enemy"
+            :game="game"
+            :data-index="enemy.cardId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
 
-        <Treachery
-          v-for="treachery in currentTreacheries"
-          :key="treachery.id"
-          :treachery="treachery"
-          :game="game"
-          :data-index="treachery.cardId"
-          :playerId="playerId"
-          @choose="$emit('choose', $event)"
-        />
+          <Treachery
+            v-for="treacheryId in investigator.treacheries"
+            :key="treacheryId"
+            :treachery="game.treacheries[treacheryId]"
+            :game="game"
+            :data-index="game.treacheries[treacheryId].cardId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
 
-        <Skill
-          v-for="skill in skills"
-          :skill="skill"
-          :game="game"
-          :playerId="playerId"
-          :key="skill.id"
-          :data-index="skill.cardId"
-          @choose="$emit('choose', $event)"
-          @showCards="doShowCards"
-        />
-        <Event
-          v-for="event in events"
-          :event="event"
-          :game="game"
-          :playerId="playerId"
-          :key="event.id"
-          :data-index="event.cardId"
-          @choose="$emit('choose', $event)"
-          @showCards="doShowCards"
-        />
-        <Asset
-          v-for="asset in assets"
-          :asset="asset"
-          :game="game"
-          :playerId="playerId"
-          :key="asset.id"
-          :data-index="asset.cardId"
-          @choose="$emit('choose', $event)"
-          @showCards="doShowCards"
-        />
-
-        <Story
-          v-for="story in stories"
-          :key="story.id"
-          :story="story"
-          :game="game"
-          :data-index="story.cardId"
-          :playerId="playerId"
-          @choose="$emit('choose', $event)"
-        />
-
-
-        <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot}${idx}`">
-          <img :src="slotImg(slot)" />
-        </div>
-
-        <Enemy
-          v-for="enemy in engagedEnemies"
-          :key="enemy.id"
-          :enemy="enemy"
-          :game="game"
-          :data-index="enemy.cardId"
-          :playerId="playerId"
-          @choose="$emit('choose', $event)"
-        />
-
-        <Treachery
-          v-for="treacheryId in investigator.treacheries"
-          :key="treacheryId"
-          :treachery="game.treacheries[treacheryId]"
-          :game="game"
-          :data-index="game.treacheries[treacheryId].cardId"
-          :playerId="playerId"
-          @choose="$emit('choose', $event)"
-        />
-
-        <Location
-          v-for="(location, key) in locations"
-          class="location"
-          :key="key"
-          :game="game"
-          :playerId="playerId"
-          :location="location"
-          :data-index="location.cardId"
-          :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
-          @choose="$emit('choose', $event)"
-        />
-      </transition-group>
+          <Location
+            v-for="(location, key) in locations"
+            class="location"
+            :key="key"
+            :game="game"
+            :playerId="playerId"
+            :location="location"
+            :data-index="location.cardId"
+            :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
+            @choose="$emit('choose', $event)"
+          />
+        </transition-group>
+      </section>
     </transition>
 
     <ChoiceModal

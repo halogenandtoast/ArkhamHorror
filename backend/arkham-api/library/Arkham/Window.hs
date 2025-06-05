@@ -162,6 +162,7 @@ data WindowType
   | ChosenRandomLocation LocationId
   | CommittedCard InvestigatorId Card
   | CommittedCards InvestigatorId [Card]
+  | CommittingCardsFromHandToSkillTestStep InvestigatorId
   | DealtDamage Source DamageEffect Target Int
   | DealtExcessDamage Source DamageEffect Target Int
   | DealtHorror Source Target Int

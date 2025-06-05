@@ -13,7 +13,6 @@ import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Target as X
 
-import Arkham.Agenda.AdvancementReason
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Helpers.ChaosToken
@@ -25,7 +24,6 @@ import Arkham.Helpers.Window
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Prelude
 import Arkham.Tarot
-import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 
 advanceAgendaDeck :: AgendaAttrs -> Message
@@ -71,37 +69,7 @@ instance RunMessage AgendaAttrs where
         $ a
         & (sequenceL .~ Sequence (unAgendaStep $ agendaStep agendaSequence) D)
         & (flippedL .~ True)
-    AdvanceAgendaIfThresholdSatisfied -> do
-      cannotBeAdvanced <- hasModifier a CannotBeAdvancedByDoomThreshold
-      unless cannotBeAdvanced $ do
-        for_ (a ^. doomThresholdL) $ \threshold -> do
-          perPlayerDoomThreshold <- getPlayerCountValue threshold
-          modifiers' <- getModifiers (toTarget a)
-          let
-            modifyDoomThreshold acc = \case
-              DoomThresholdModifier n -> max 0 (acc + n)
-              _ -> acc
-            modifiedPerPlayerDoomThreshold =
-              foldl' modifyDoomThreshold perPlayerDoomThreshold modifiers'
-            otherDoomSubtracts = OtherDoomSubtracts `elem` modifiers'
-          -- handle multiple agendas, this might need to be specific to the
-          -- scenario, but for now given there is only once scenario and the rules
-          -- are likely to be the same in the future
-          otherAgendaDoom <-
-            getSum
-              <$> selectAgg Sum AgendaDoom (NotAgenda $ AgendaWithId $ toId a)
-          doomCount <- if otherDoomSubtracts then getSubtractDoomCount else getDoomCount
-          let
-            totalDoom =
-              if otherDoomSubtracts
-                then a.doom - (doomCount - a.doom)
-                else subtract otherAgendaDoom doomCount
-          when (totalDoom >= modifiedPerPlayerDoomThreshold) do
-            whenMsg <- checkWindows [mkWhen (Window.AgendaWouldAdvance DoomThreshold $ toId a)]
-            afterMsg <- checkWindows [mkAfter (Window.AgendaWouldAdvance DoomThreshold $ toId a)]
-            pushAll [whenMsg, afterMsg, Do AdvanceAgendaIfThresholdSatisfied]
-      pure a
-    Do AdvanceAgendaIfThresholdSatisfied -> do
+    ForTarget (isTarget a -> True) AdvanceAgendaIfThresholdSatisfied -> do
       case a ^. doomThresholdL of
         Nothing -> error "can not advance without threshold"
         Just threshold -> do

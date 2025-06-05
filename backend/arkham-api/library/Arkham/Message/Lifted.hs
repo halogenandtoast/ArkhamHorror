@@ -385,6 +385,10 @@ endOfScenario = push $ EndOfGame Nothing
 endOfScenarioThen :: ReverseQueue m => CampaignStep -> m ()
 endOfScenarioThen = push . EndOfGame . Just
 
+dealAssetDirectDamageAndHorror :: (ReverseQueue m, Sourceable source, AsId asset, IdOf asset ~ AssetId) => asset -> source -> Int -> Int -> m ()
+dealAssetDirectDamageAndHorror asset source damage horror =
+  push $ DealAssetDirectDamage (asId asset) (toSource source) damage horror
+
 dealAssetDamage :: (ReverseQueue m, Sourceable source) => AssetId -> source -> Int -> m ()
 dealAssetDamage aid source damage = push $ Msg.DealAssetDamageWithCheck aid (toSource source) damage 0 True
 
@@ -2202,7 +2206,11 @@ discoverAtYourLocation
   :: (ReverseQueue m, Sourceable source) => IsInvestigate -> InvestigatorId -> source -> Int -> m ()
 discoverAtYourLocation isInvestigate iid s n = do
   whenM (canDiscoverCluesAtYourLocation isInvestigate iid) do
-    push $ Msg.DiscoverClues iid $ Msg.discoverAtYourLocation s n
+    push
+      $ Msg.DiscoverClues iid
+      $ (Msg.discoverAtYourLocation s n)
+        { Msg.discoverAction = if isInvestigate == IsInvestigate then Just #investigate else Nothing
+        }
 
 discoverAtYourLocationAndThen
   :: (ReverseQueue m, Sourceable source)

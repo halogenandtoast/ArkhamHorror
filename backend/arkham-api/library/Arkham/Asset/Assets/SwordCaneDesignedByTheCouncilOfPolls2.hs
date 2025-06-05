@@ -21,8 +21,8 @@ instance HasAbilities SwordCaneDesignedByTheCouncilOfPolls2 where
     [ controlled x 1 (any_ [CanEvadeEnemy (x.ability 2), CanFightEnemy (x.ability 2), EnemyIsEngagedWith You <> EnemyCanBeDamagedBySource (x.ability 2)])
         $ freeReaction
         $ AssetEntersPlay #after (be x)
-    , restricted x 1 ControlsThis $ fightAction $ exhaust x
-    , restricted x 2 ControlsThis $ evadeAction $ exhaust x
+    , displayAsAction $ restricted x 2 ControlsThis $ fightAction $ exhaust x
+    , displayAsAction $ restricted x 2 ControlsThis $ evadeAction $ exhaust x
     ]
 
 instance RunMessage SwordCaneDesignedByTheCouncilOfPolls2 where

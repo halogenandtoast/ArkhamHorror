@@ -848,12 +848,17 @@ instance RunMessage ChaosBag where
                 (SkillTestSource _, _) -> const []
                 (_, Nothing) -> const []
                 (_, Just iid) -> map (RevealChaosToken source iid)
+            willRevealF =
+              case (source, miid) of
+                (_, Nothing) -> const []
+                (_, Just iid) -> map (Will . RevealChaosToken source iid)
 
           pushAll
             ( FocusChaosTokens tokens'
-                : checkWindowMsgs
-                  <> revealF tokens'
-                  <> [RequestedChaosTokens source miid tokens', UnfocusChaosTokens]
+                : willRevealF tokens'
+                <> checkWindowMsgs
+                <> revealF tokens'
+                <> [RequestedChaosTokens source miid tokens', UnfocusChaosTokens]
             )
           pure $ c & choiceL .~ Nothing & totalRevealedChaosTokensL %~ (nub . (<> tokens'))
         _ -> do

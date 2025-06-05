@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
-import {imgsrc, investigatorClass} from '@/arkham/helpers';
+import {imgsrc, localizeArkhamDBBaseUrl, investigatorClass} from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/Deck'
 
 interface Props {
@@ -17,7 +17,7 @@ const deckUrlToPage = (url: string): string => {
   // OR
   // converts https://arkhamdb.com/api/public/deck/25027
   // to https://arkhamdb.com/deck/view/25027
-  return url.replace("/api/public/decklist", "/decklist/view").replace("/api/public/deck", "/deck/view")
+  return url.replace("https://arkhamdb.com", localizeArkhamDBBaseUrl()).replace("/api/public/decklist", "/decklist/view").replace("/api/public/deck", "/deck/view")
 }
 
 const deckInvestigator = computed(() => {

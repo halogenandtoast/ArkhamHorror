@@ -263,6 +263,14 @@ watch(uiLock, async () => {
   if (r) handleResult(r)
 })
 
+const mouseX = ref(0);
+const mouseY = ref(0);
+
+document.addEventListener('mousemove', (event) => {
+  mouseX.value = event.clientX;
+  mouseY.value = event.clientY;
+});
+
 // Keyboard Shortcuts
 const handleKeyPress = (event: KeyboardEvent) => {
   if (filingBug.value) return
@@ -332,6 +340,20 @@ const handleKeyPress = (event: KeyboardEvent) => {
   }
 
   if (event.key === 'e') {
+    if(!game.value || !playerId.value) return
+    const elementUnderMouse = document.elementFromPoint(mouseX.value, mouseY.value);
+    if (elementUnderMouse) {
+      const dataId = elementUnderMouse.getAttribute('data-id')
+      if (dataId && game.value.assets[dataId]) {
+        const exhausted = elementUnderMouse.classList.contains('exhausted')
+        if (exhausted) {
+          debug.send(game.value.id, { tag: 'Ready', contents: { tag: 'AssetTarget', contents: dataId } })
+        } else {
+          debug.send(game.value.id, { tag: 'Exhaust', contents: { tag: 'AssetTarget', contents: dataId } })
+        }
+        return
+      }
+    }
     const endTurn = choices.value.findIndex((c) => {
       if (c.tag !== Message.MessageType.END_TURN_BUTTON) return false
       return game.value?.investigators[c.investigatorId]?.playerId === playerId.value

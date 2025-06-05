@@ -1199,6 +1199,36 @@ getAgendasMatching matcher = do
       modifiers' <- getModifiers (toTarget a)
       pure $ modifierType `elem` modifiers'
     AgendaCanWheelOfFortuneX -> pure . not . attr agendaUsedWheelOfFortuneX
+    AgendaWantsToAdvance -> \a -> do
+      cannotBeAdvanced <- hasModifier a CannotBeAdvancedByDoomThreshold
+      if cannotBeAdvanced
+        then pure False
+        else do
+          case attr agendaDoomThreshold a of
+            Nothing -> pure False
+            Just threshold -> do
+              perPlayerDoomThreshold <- getPlayerCountValue threshold
+              modifiers' <- getModifiers (toTarget a)
+              let
+                modifyDoomThreshold acc = \case
+                  DoomThresholdModifier n -> max 0 (acc + n)
+                  _ -> acc
+                modifiedPerPlayerDoomThreshold =
+                  foldl' modifyDoomThreshold perPlayerDoomThreshold modifiers'
+                otherDoomSubtracts = OtherDoomSubtracts `elem` modifiers'
+              -- handle multiple agendas, this might need to be specific to the
+              -- scenario, but for now given there is only once scenario and the rules
+              -- are likely to be the same in the future
+              otherAgendaDoom <-
+                getSum
+                  <$> selectAgg Sum AgendaDoom (NotAgenda $ AgendaWithId $ toId a)
+              doomCount <- if otherDoomSubtracts then getSubtractDoomCount else getDoomCount
+              let
+                totalDoom =
+                  if otherDoomSubtracts
+                    then a.doom - (doomCount - a.doom)
+                    else subtract otherAgendaDoom doomCount
+              pure $ totalDoom >= modifiedPerPlayerDoomThreshold
     FinalAgenda -> \a -> do
       card <- field AgendaCard (toId a)
       let agendas =

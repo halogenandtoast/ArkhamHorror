@@ -27,7 +27,7 @@ instance RunMessage MystifyingSong where
   runMessage msg e@(MystifyingSong attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       popMessageMatching_ $ \case
-        Do AdvanceAgendaIfThresholdSatisfied -> True
+        ForTarget _ AdvanceAgendaIfThresholdSatisfied -> True
         _ -> False
       popMessageMatching_ $ \case
         CheckWindows ws -> any isAfterAgendaWouldAdvanceWindow ws

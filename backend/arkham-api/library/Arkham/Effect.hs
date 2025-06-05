@@ -22,7 +22,6 @@ import Arkham.Message
 import Arkham.Modifier
 import Arkham.Source
 import Arkham.Target
-import Arkham.Window (Window)
 
 -- start importing directly
 
@@ -216,7 +215,7 @@ createChaosTokenValueEffect sid n source target = do
 createWindowModifierEffect
   :: MonadRandom m
   => EffectWindow
-  -> EffectMetadata Window Message
+  -> EffectMetadata Message
   -> Source
   -> Target
   -> m (EffectId, Effect)
@@ -229,7 +228,7 @@ createWindowModifierEffect effectWindow effectMetadata source target = do
 
 createChaosTokenEffect
   :: MonadRandom m
-  => EffectMetadata Window Message
+  => EffectMetadata Message
   -> Source
   -> ChaosToken
   -> m (EffectId, Effect)
@@ -345,7 +344,7 @@ buildChaosTokenValueEffect sid eid n source target = do
 
 buildWindowModifierEffect
   :: EffectId
-  -> EffectMetadata Window Message
+  -> EffectMetadata Message
   -> EffectWindow
   -> Source
   -> Target
@@ -354,7 +353,7 @@ buildWindowModifierEffect eid metadata effectWindow source target =
   Effect $ windowModifierEffect' eid metadata effectWindow source target
 
 buildChaosTokenEffect
-  :: EffectId -> EffectMetadata Window Message -> Source -> ChaosToken -> Effect
+  :: EffectId -> EffectMetadata Message -> Source -> ChaosToken -> Effect
 buildChaosTokenEffect eid metadata source token =
   Effect $ chaosTokenEffect' eid metadata source token
 

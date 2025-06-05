@@ -16,7 +16,6 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
-import Arkham.Window
 
 lookupEffectCard :: HasGame m => EffectId -> m (Maybe CardDef)
 lookupEffectCard eid = do
@@ -26,7 +25,7 @@ lookupEffectCard eid = do
 createCardEffect
   :: (Sourceable source, Targetable target, HasGame m)
   => CardDef
-  -> Maybe (EffectMetadata Window Message)
+  -> Maybe (EffectMetadata Message)
   -> source
   -> target
   -> m Message

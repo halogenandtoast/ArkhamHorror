@@ -21,7 +21,6 @@ import Arkham.Prelude
 import Arkham.Query
 import Arkham.Source
 import Arkham.Target
-import Arkham.Window (Window)
 import Control.Lens (each, sumOf)
 import Control.Monad.Trans.Class
 import Control.Monad.Writer.Class
@@ -469,7 +468,7 @@ nextSkillTestModifiers investigator (toSource -> source) (toTarget -> target) mo
       target
 
 effectModifiers
-  :: (HasGame m, Sourceable a) => a -> [ModifierType] -> m (EffectMetadata Window Message)
+  :: (HasGame m, Sourceable a) => a -> [ModifierType] -> m (EffectMetadata Message)
 effectModifiers source ms = EffectModifiers <$> toModifiers source ms
 
 createWindowModifierEffect

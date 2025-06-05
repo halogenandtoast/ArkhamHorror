@@ -12,7 +12,6 @@ import Arkham.Effect.Runner
 import {-# SOURCE #-} Arkham.GameEnv (getPhase)
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Window (Window)
 import Control.Monad.Writer.Class
 import Data.Map.Monoidal.Strict (MonoidalMap (..))
 
@@ -25,7 +24,7 @@ genericEffect = GenericEffect . uncurry (baseAttrs "genef")
 
 genericEffect'
   :: EffectId
-  -> EffectMetadata Window Message
+  -> EffectMetadata Message
   -> EffectWindow
   -> Source
   -> Target

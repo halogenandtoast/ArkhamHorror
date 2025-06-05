@@ -4202,8 +4202,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pushM $ checkWindows $ mkAfter (Window.PassSkillTest mAction source iid n) : windows
     pure a
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
+    mTurnInvestigator <- maybeToList <$> selectOne TurnInvestigator
     let
-      windows = [mkWhen (Window.DuringTurn iid), mkWhen Window.FastPlayerWindow, mkWhen Window.NonFast]
+      windows =
+        map (mkWhen . Window.DuringTurn) mTurnInvestigator
+          <> [mkWhen Window.FastPlayerWindow, mkWhen Window.NonFast]
 
     actions <- asIfTurn iid (getActions iid windows)
     anyForced <- anyM (isForcedAbility iid) actions
@@ -4267,7 +4270,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           <> effectActions
     pure a
   PlayerWindow iid additionalActions isAdditional | iid /= investigatorId && a.inGame -> do
-    let windows = [mkWhen (Window.DuringTurn iid), mkWhen Window.FastPlayerWindow]
+    let windows = [mkWhen Window.FastPlayerWindow]
     actions <- getActions investigatorId windows
     anyForced <- anyM (isForcedAbility investigatorId) actions
     unless anyForced $ do

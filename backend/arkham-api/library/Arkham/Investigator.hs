@@ -201,6 +201,20 @@ returnToBody i =
   i
     `handleInvestigator` ( \(BodyOfAYithian (attrs `With` meta)) -> case fromJSON (originalBody meta) of
                              Success x ->
-                               overAttrs (\a -> a {investigatorSettings = investigatorSettings attrs <> investigatorSettings a}) x
+                               overAttrs
+                                 ( \a ->
+                                     a
+                                       { investigatorSettings = investigatorSettings attrs <> investigatorSettings a
+                                       , investigatorXp = investigatorXp attrs
+                                       , investigatorPhysicalTrauma = investigatorPhysicalTrauma attrs
+                                       , investigatorMentalTrauma = investigatorMentalTrauma attrs
+                                       , investigatorTokens = investigatorTokens attrs
+                                       , investigatorUsedAbilities = filter onlyCampaignAbilities (investigatorUsedAbilities a)
+                                       , investigatorLog = investigatorLog a
+                                       , investigatorKilled = investigatorKilled a
+                                       , investigatorDrivenInsane = investigatorDrivenInsane a
+                                       }
+                                 )
+                                 x
                              _ -> error "Investigator mind is too corrupted to return to their body"
                          )

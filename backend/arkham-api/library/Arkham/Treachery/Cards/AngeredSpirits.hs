@@ -16,7 +16,7 @@ angeredSpirits = treachery AngeredSpirits Cards.angeredSpirits
 instance HasAbilities AngeredSpirits where
   getAbilities (AngeredSpirits a) =
     restricted a 1 OnSameLocation (FastAbility $ ExhaustAssetCost $ #spell <> AssetControlledBy You)
-      : [ restricted a 2 (ChargesOnThis $ lessThan 4) (forcedOnElimination iid)
+      : [ restricted a 2 (TokensOnThis #charge $ lessThan 4) (forcedOnElimination iid)
         | iid <- maybeToList a.owner
         ]
 

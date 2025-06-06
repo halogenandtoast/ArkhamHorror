@@ -8,7 +8,9 @@ newtype GrandChamberRearrangedByTime = GrandChamberRearrangedByTime LocationAttr
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grandChamberRearrangedByTime :: LocationCard GrandChamberRearrangedByTime
-grandChamberRearrangedByTime = location GrandChamberRearrangedByTime Cards.grandChamberRearrangedByTime 2 (PerPlayer 1)
+grandChamberRearrangedByTime =
+  location GrandChamberRearrangedByTime Cards.grandChamberRearrangedByTime 2 (PerPlayer 1)
+    & setLabel "grandChamber"
 
 instance HasAbilities GrandChamberRearrangedByTime where
   getAbilities (GrandChamberRearrangedByTime attrs) =

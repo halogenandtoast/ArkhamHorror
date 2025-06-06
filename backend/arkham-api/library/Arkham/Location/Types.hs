@@ -450,3 +450,13 @@ instance Be LocationAttrs LocationMatcher where
 symbolLabel
   :: (Entity a, EntityAttrs a ~ LocationAttrs) => CardBuilder LocationId a -> CardBuilder LocationId a
 symbolLabel = fmap (overAttrs (\attrs -> attrs & labelL .~ (T.toLower . tshow $ locationSymbol attrs)))
+
+setLabel
+  :: (Entity a, EntityAttrs a ~ LocationAttrs)
+  => Text -> CardBuilder LocationId a -> CardBuilder LocationId a
+setLabel lbl = fmap (overAttrs (\a -> a {locationLabel = lbl}))
+
+setConnectsTo
+  :: (Entity a, EntityAttrs a ~ LocationAttrs)
+  => Set Direction -> CardBuilder LocationId a -> CardBuilder LocationId a
+setConnectsTo connections = fmap (overAttrs (\a -> a {locationConnectsTo = connections}))

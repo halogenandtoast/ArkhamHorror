@@ -8,7 +8,9 @@ newtype AncientHallRearrangedByTime = AncientHallRearrangedByTime LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ancientHallRearrangedByTime :: LocationCard AncientHallRearrangedByTime
-ancientHallRearrangedByTime = location AncientHallRearrangedByTime Cards.ancientHallRearrangedByTime 3 (PerPlayer 1)
+ancientHallRearrangedByTime =
+  location AncientHallRearrangedByTime Cards.ancientHallRearrangedByTime 3 (PerPlayer 1)
+    & setLabel "ancientHall"
 
 instance HasAbilities AncientHallRearrangedByTime where
   getAbilities (AncientHallRearrangedByTime attrs) =

@@ -15,11 +15,13 @@ returnToTheDoomOfEztli difficulty =
     "53017"
     "Return to The Doom of Eztli"
     difficulty
-    [ ".        ancientHall  undergroundRuins .             .             .    ."
-    , "entryway ancientHall  undergroundRuins secretPassage chamberOfTime .    ."
-    , "entryway grandChamber burialPit        secretPassage chamberOfTime .    ."
-    , ".        grandChamber burialPit        .             .             .    ."
-    , "pos1     pos2         pos3             pos4          pos5          pos6 pos7"
+    [ ".        ancientHall   mosaicChamber    snakePit          .             .    .    .    ."
+    , ".        ancientHall   mosaicChamber    snakePit          .             .    .    .    ."
+    , "entryway sealedPassage .                .                 chamberOfTime .    .    .    ."
+    , "entryway sealedPassage .                .                 chamberOfTime .    .    .    ."
+    , ".        grandChamber  throneRoom       tombOfTheAncients .             .    .    .    ."
+    , ".        grandChamber  throneRoom       tombOfTheAncients .             .    .    .    ."
+    , "pos1     pos2          pos3             pos4              pos5          pos6 pos7 pos8 pos9"
     ]
     (referenceL .~ "04054")
 

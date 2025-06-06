@@ -39,8 +39,10 @@ const portrait = (investigatorId: string) => {
 <template>
   <div id="pick-supplies">
     <div class="pick-supplies-top">
-      <img :src="portrait(investigatorId)" alt="Investigator Portrait" class="portrait" />
-      <div><ul><li v-html="t('theForgottenAge.prologue.pickSupplies')"></li></ul></div>
+      <div class="pick-supplies-portrait">
+        <img :src="portrait(investigatorId)" alt="Investigator Portrait" class="portrait" />
+      </div>
+      <div class="pick-supplies-contents"><ul><li v-html="t('theForgottenAge.prologue.pickSupplies')"></li></ul></div>
     </div>
     <div class="pick-supplies">
       <h2>Pick Supplies ({{pointsRemaining}} points remaining)</h2>
@@ -72,11 +74,14 @@ const portrait = (investigatorId: string) => {
 <style lang="scss" scoped>
 #pick-supplies {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .supply-choices {
   display: grid;
-  grid-template-columns: repeat(4, minmax(calc(25vw - 20px), 1fr));
+  grid-template-columns: repeat(4, minmax(calc(25% - 20px), 1fr));
   row-gap: 20px;
 }
 
@@ -95,15 +100,36 @@ button {
   }
 }
 
+.pick-supplies-container {
+  background: #DCD6D0;
+  box-shadow: inset 0 0 170px rgba(0,0,0,0.5), 1px 1px 3px rgba(0,0,0,0.6);
+  width: calc(100% - 20px);
+  margin: 0 auto;
+  gap: 10px;
+  p {
+    margin: 0;
+    padding: 0;
+  }
+}
+
 .pick-supplies {
   background: #DCD6D0;
   box-shadow: inset 0 0 170px rgba(0,0,0,0.5), 1px 1px 3px rgba(0,0,0,0.6);
   width: calc(100% - 20px);
   margin: 0 auto;
-  margin-top: 20px;
+  border-radius: 10px;
+  gap: 10px;
   p {
     margin: 0;
     padding: 0;
+  }
+  button {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+  h2 {
+    margin-block: 10px;
+    font-weight: bold;
   }
 }
 
@@ -152,17 +178,33 @@ ul li {
 }
 
 .portrait {
-  max-width: 25vw;
-  min-width: min-content;
-  min-height: fit-content;
-  object-fit: cover;
+  width: 25vw;
+  max-width: 200px;
+}
+
+.pick-supplies-contents {
+  display: flex;
+  align-items: center;
+  background: #DCD6D0;
+  border-radius: 10px;
+  box-shadow: inset 0 0 170px rgba(0, 0, 0, 0.5), 1px 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.pick-supplies-portrait {
+  align-self: center;
+  min-width: fit-content;
+
+  img {
+    border-radius: 10px;
+    box-shadow: inset 0 0 170px rgba(0, 0, 0, 0.5), 1px 1px 3px rgba(0, 0, 0, 0.6);
+  }
 }
 
 .pick-supplies-top {
   display: flex;
-  margin: 10px;
-  background: #DCD6D0;
-  box-shadow: inset 0 0 170px rgba(0, 0, 0, 0.5), 1px 1px 3px rgba(0, 0, 0, 0.6);
+  gap: 10px;
+  border-radius: 10px;
+  margin-inline: 10px;
   container-type: inline-size;
   @container (width < 500px) {
     .portrait {
@@ -173,7 +215,6 @@ ul li {
     }
   }
   ul {
-    height: 100%;
     list-style-type: "\0059";
     padding-inline: 20px;
     li {

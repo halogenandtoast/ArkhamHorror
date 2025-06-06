@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.TheDoomOfEztli (theDoomOfEztli, TheDoomOfEztli (..), setupTheDoomOfEztli) where
 
+import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -7,15 +8,18 @@ import Arkham.CampaignLog
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheForgottenAge.Meta qualified as CampaignMeta
+import Arkham.Card.CardCode
+import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types hiding (metaL)
+import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
-import Arkham.Helpers.Scenario
+import Arkham.Helpers.Scenario hiding (getIsReturnTo)
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types hiding (metaL)
@@ -29,7 +33,6 @@ import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
 import Arkham.Scenarios.TheDoomOfEztli.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window qualified as Window
-import Arkham.Zone
 
 newtype TheDoomOfEztli = TheDoomOfEztli ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -119,39 +122,67 @@ setupTheDoomOfEztli attrs = do
   gather Set.Poison
   gather Set.ChillingCold
 
-  entryway <- place Locations.entryway
+  entryway <- place Locations.entryway `orWhenReturnTo` place Locations.entrywayRearrangedByTime
   let resolution4Count = toResultDefault 0 attrs.meta
   when (resolution4Count > 0) $ placeDoom attrs entryway resolution4Count
   startAt entryway
 
+  isReturnTo <- getIsReturnTo
   setAsidePoisonedCount <- getSetAsidePoisonedCount
   setAside
-    $ [ Locations.chamberOfTime
+    $ [ if isReturnTo then Locations.chamberOfTimeRearrangedByTime else Locations.chamberOfTime
       , Assets.relicOfAgesADeviceOfSomeSort
-      , Enemies.harbingerOfValusia
+      , if isReturnTo then Enemies.harbingerOfValusiaTheSleeperReturns else Enemies.harbingerOfValusia
       ]
     <> replicate setAsidePoisonedCount Treacheries.poisoned
 
   whenReturnTo $ amongGathered (cardIs Enemies.pitViper) >>= setAside
-
   setActDeck [Acts.intoTheRuins, Acts.magicAndScience, Acts.escapeTheRuins]
   setAgendaDeck [Agendas.somethingStirs, Agendas.theTempleWarden]
 
-  addExtraDeck ExplorationDeck
-    =<< shuffle
-      [ Locations.ancientHall
-      , Locations.grandChamber
-      , Locations.burialPit
+  let
+    explorationDeck =
+      if isReturnTo
+        then
+          [ Locations.sealedPassage
+          , Locations.mosaicChamber
+          , Locations.tombOfTheAncients
+          , Locations.throneRoom
+          , Locations.snakePit
+          , Locations.ancientHallRearrangedByTime
+          , Locations.grandChamberRearrangedByTime
+          ]
+        else
+          [ Locations.ancientHall
+          , Locations.grandChamber
+          , Locations.burialPit
+          , Locations.undergroundRuins
+          , Locations.secretPassage
+          , Treacheries.illOmen
+          , Treacheries.deepDark
+          , Treacheries.finalMistake
+          , Treacheries.entombed
+          , Treacheries.cryptChill
+          ]
+
+  addExtraDeck ExplorationDeck =<< shuffle explorationDeck
+
+  whenReturnTo do
+    removeEvery
+      [ Locations.burialPit
       , Locations.undergroundRuins
       , Locations.secretPassage
-      , Treacheries.illOmen
-      , Treacheries.deepDark
-      , Treacheries.finalMistake
-      , Treacheries.entombed
-      , Treacheries.cryptChill
+      , Locations.entryway
+      , Locations.chamberOfTime
+      , Locations.ancientHall
+      , Locations.grandChamber
+      , Enemies.harbingerOfValusia
       ]
-
-  whenReturnTo $ addAdditionalReferences ["53017b"]
+    addAdditionalReferences ["53017b"]
+    createAbilityEffect EffectGameWindow
+      $ mkAbility (SourceableWithCardCode (CardCode "53016b") ScenarioSource) 1
+      $ forced
+      $ Explored #after Anyone Anywhere (SuccessfulExplore Anywhere)
 
 instance RunMessage TheDoomOfEztli where
   runMessage msg s@(TheDoomOfEztli attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -273,4 +304,9 @@ instance RunMessage TheDoomOfEztli where
           push $ ChoosePlayer iid SetLeadInvestigator
           pure s
         Nothing -> TheDoomOfEztli <$> liftRunMessage msg attrs
+    UseCardAbility _ ScenarioSource 1 _ _ -> do
+      getEncounterDeck >>= \case
+        Deck [] -> pure ()
+        Deck (x : _) -> shuffleCardsIntoDeck ExplorationDeck [x]
+      pure s
     _ -> TheDoomOfEztli <$> liftRunMessage msg attrs

@@ -290,6 +290,8 @@ supplyLabel s = case s of
       "(2 supply point): Too small to be used as a reliable weapon, but easily concealed."
   Pickaxe ->
     go "Pickaxe" "(2 supply point): For breaking apart rocky surfaces."
+
+  KeyOfEztli -> go "Key of Eztli" "can not purchase"
  where
   go label tooltip = TooltipLabel label (Tooltip tooltip)
 

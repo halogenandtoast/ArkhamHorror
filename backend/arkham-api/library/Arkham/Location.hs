@@ -872,7 +872,17 @@ allLocations =
     , SomeLocationCard theThroneRoom
     , SomeLocationCard stageOfTheWardTheatre
     , -- Return to The Forgotten Age
-      --- Return to Rainforest
+      -- Return to The Doom of Eztli
+      SomeLocationCard entrywayRearrangedByTime
+    , SomeLocationCard sealedPassage
+    , SomeLocationCard mosaicChamber
+    , SomeLocationCard tombOfTheAncients
+    , SomeLocationCard throneRoom
+    , SomeLocationCard snakePit
+    , SomeLocationCard ancientHallRearrangedByTime
+    , SomeLocationCard grandChamberRearrangedByTime
+    , SomeLocationCard chamberOfTimeRearrangedByTime
+    , --- Return to Rainforest
       SomeLocationCard riversideTemple
     , SomeLocationCard waterfall
     , SomeLocationCard trailOfTheDead

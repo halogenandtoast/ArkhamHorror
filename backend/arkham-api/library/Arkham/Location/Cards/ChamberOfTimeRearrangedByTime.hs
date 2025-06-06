@@ -8,7 +8,9 @@ newtype ChamberOfTimeRearrangedByTime = ChamberOfTimeRearrangedByTime LocationAt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chamberOfTimeRearrangedByTime :: LocationCard ChamberOfTimeRearrangedByTime
-chamberOfTimeRearrangedByTime = location ChamberOfTimeRearrangedByTime Cards.chamberOfTimeRearrangedByTime 4 (PerPlayer 2)
+chamberOfTimeRearrangedByTime =
+  location ChamberOfTimeRearrangedByTime Cards.chamberOfTimeRearrangedByTime 4 (PerPlayer 2)
+    & setLabel "chamberOfTime"
 
 instance HasAbilities ChamberOfTimeRearrangedByTime where
   getAbilities (ChamberOfTimeRearrangedByTime attrs) =

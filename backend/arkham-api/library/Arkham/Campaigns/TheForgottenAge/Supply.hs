@@ -3,7 +3,6 @@
 module Arkham.Campaigns.TheForgottenAge.Supply where
 
 import Arkham.Prelude
-
 import Data.Aeson.TH
 
 data Supply
@@ -21,6 +20,7 @@ data Supply
   | Gasoline
   | Pocketknife
   | Pickaxe
+  | KeyOfEztli
   deriving stock (Show, Eq, Bounded, Enum, Ord, Data)
 
 prologueSupplies :: [Supply]
@@ -70,4 +70,4 @@ supplyCost = \case
   Pocketknife -> 2
   Pickaxe -> 2
   Pendant -> 1
-
+  KeyOfEztli -> 0

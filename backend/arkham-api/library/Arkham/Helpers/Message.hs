@@ -571,7 +571,7 @@ addToVictory (toTarget -> target) = AddToVictory target
 -- However we find the correct message and only remove the amount indicated
 cancelDoom :: HasQueue Message m => Target -> Int -> m ()
 cancelDoom target n = do
-  replaceMessageMatching
+  replaceAllMessagesMatching
     \case
       CheckWindows [window] -> case windowType window of
         Window.WouldPlaceDoom _ target' _ -> target == target'
@@ -596,6 +596,7 @@ cancelDoom target n = do
   let
     findNewAmount [] = error "mismatches"
     findNewAmount (Do (PlaceDoom _ target' n') : _) | target == target' = n' - n
+    findNewAmount (DoBatch _ (PlaceDoom _ target' n') : _) | target == target' = n' - n
     findNewAmount (_ : rest) = findNewAmount rest
 
     replaceWindowTypeDoomAmount m = \case
@@ -610,12 +611,14 @@ cancelDoom target n = do
       CheckWindows ws -> CheckWindows (map (replaceWindowDoomAmount m) ws)
       Do (CheckWindows ws) -> Do (CheckWindows (map (replaceWindowDoomAmount m) ws))
       Do (PlaceTokens source' target' Token.Doom _) | target == target' -> Do (PlaceTokens source' target' Token.Doom m)
+      DoBatch bId (PlaceTokens source' target' Token.Doom _) | target == target' -> DoBatch bId (PlaceTokens source' target' Token.Doom m)
       other -> other
 
-  replaceMessageMatching
+  replaceAllMessagesMatching
     \case
       Would _ msgs -> flip any msgs $ \case
         Do (PlaceDoom _ target' _) -> target == target'
+        DoBatch _ (PlaceDoom _ target' _) -> target == target'
         _ -> False
       _ -> False
     \case

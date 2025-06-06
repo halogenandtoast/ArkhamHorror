@@ -3296,7 +3296,11 @@ preloadEntities g = do
       let
         discardEffectCards =
           map PlayerCard
-            . filter (or . sequence [cdCardInDiscardEffects, and . sequence [(/= AssetType) . cdCardType, cdCardInHandEffects]] . toCardDef)
+            . filter
+              ( or
+                  . sequence [cdCardInDiscardEffects, and . sequence [(/= AssetType) . cdCardType, cdCardInHandEffects]]
+                  . toCardDef
+              )
             $ investigatorDiscard (toAttrs investigator')
       pure
         $ if null discardEffectCards

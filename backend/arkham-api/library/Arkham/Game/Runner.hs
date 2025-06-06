@@ -3291,10 +3291,12 @@ preloadEntities g = do
              in
               insertMap (toId investigator') handEntities entities
     preloadDiscardEntities entities investigator' = do
+      -- NOTE: recently added the asset type check here to avoid the "Do
+      -- (DiscardCard..." message's action removed entity conflicting with this
       let
         discardEffectCards =
           map PlayerCard
-            . filter (or . sequence [cdCardInDiscardEffects, cdCardInHandEffects] . toCardDef)
+            . filter (or . sequence [cdCardInDiscardEffects, and . sequence [(/= AssetType) . cdCardType, cdCardInHandEffects]] . toCardDef)
             $ investigatorDiscard (toAttrs investigator')
       pure
         $ if null discardEffectCards

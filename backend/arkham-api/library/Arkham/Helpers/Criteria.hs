@@ -72,6 +72,7 @@ import Arkham.SkillTest.Base
 import Arkham.Source
 import Arkham.Story.Types (Field (..))
 import Arkham.Target
+import Arkham.Token qualified as Token
 import Arkham.Trait
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkWhen)
@@ -431,10 +432,11 @@ passesCriteria iid mcard source' requestor windows' = \case
     case mSkillTest of
       Nothing -> pure False
       Just skillTest -> skillTestMatches iid source skillTest skillTestMatcher
-  Criteria.ChargesOnThis valueMatcher -> case source of
+  Criteria.TokensOnThis tokenKind valueMatcher -> case source of
     TreacherySource tid ->
-      (`gameValueMatches` valueMatcher) =<< field TreacheryResources tid
-    _ -> error "missing ChargesOnThis check"
+      (`gameValueMatches` valueMatcher) . Token.countTokens tokenKind =<< field TreacheryTokens tid
+    _ -> error "missing TokensOnThis check"
+  Criteria.ChargesOnThis valueMatcher -> passesCriteria iid mcard source' requestor windows' $ Criteria.TokensOnThis #charge valueMatcher
   Criteria.ResourcesOnThis valueMatcher -> case source of
     TreacherySource tid ->
       (`gameValueMatches` valueMatcher) =<< field TreacheryResources tid

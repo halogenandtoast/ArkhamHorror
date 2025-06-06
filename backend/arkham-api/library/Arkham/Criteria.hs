@@ -46,6 +46,7 @@ import Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.Taboo.Types
+import Arkham.Token
 import Arkham.Trait
 import Arkham.Zone
 import Control.Lens (Plated, Prism', prism')
@@ -184,6 +185,7 @@ data Criterion
   | CardExists CardMatcher
   | CardInDiscard DiscardSignifier CardMatcher
   | ChargesOnThis ValueMatcher
+  | TokensOnThis Token ValueMatcher
   | ClueOnLocation
   | CluesOnThis ValueMatcher
   | DuringSkillTest SkillTestMatcher

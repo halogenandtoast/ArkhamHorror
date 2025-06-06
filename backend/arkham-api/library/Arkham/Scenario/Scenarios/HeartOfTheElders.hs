@@ -55,16 +55,16 @@ heartOfTheElders difficulty =
     "04205"
     "Heart of the Elders"
     difficulty
-    [ ".               .               timeWrackedWoods timeWrackedWoods .               ."
-    , ".               .               timeWrackedWoods timeWrackedWoods .               ."
-    , "pathOfThorns    pathOfThorns    riverCanyon      riverCanyon      ropeBridge      ropeBridge"
-    , "pathOfThorns    pathOfThorns    riverCanyon      riverCanyon      ropeBridge      ropeBridge"
-    , ".               serpentsHaven   serpentsHaven    circuitousTrail  circuitousTrail ."
-    , ".               serpentsHaven   serpentsHaven    circuitousTrail  circuitousTrail ."
-    , "templeOfTheFang templeOfTheFang stoneAltar       stoneAltar       overgrownRuins overgrownRuins"
-    , "templeOfTheFang templeOfTheFang stoneAltar       stoneAltar       overgrownRuins overgrownRuins"
-    , ".               .               mouthOfKnYan     mouthOfKnYan     .              ."
-    , ".               .               mouthOfKnYan     mouthOfKnYan     .              ."
+    [ ".        .        circle    circle    .     ."
+    , ".        .        circle    circle    .     ."
+    , "square   square   diamond   diamond   moon  moon"
+    , "square   square   diamond   diamond   moon  moon"
+    , ".        triangle triangle  heart     heart ."
+    , ".        triangle triangle  heart     heart ."
+    , "squiggle squiggle hourglass hourglass t     t"
+    , "squiggle squiggle hourglass hourglass t     t"
+    , ".        .        equals    equals    .     ."
+    , ".        .        equals    equals    .     ."
     ]
 
 part2Locations :: [GridTemplateRow]

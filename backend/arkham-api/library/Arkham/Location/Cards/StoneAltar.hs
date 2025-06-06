@@ -14,7 +14,7 @@ newtype StoneAltar = StoneAltar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stoneAltar :: LocationCard StoneAltar
-stoneAltar = location StoneAltar Cards.stoneAltar 3 (PerPlayer 1)
+stoneAltar = symbolLabel $ location StoneAltar Cards.stoneAltar 3 (PerPlayer 1)
 
 instance HasAbilities StoneAltar where
   getAbilities (StoneAltar a) = extendRevealed1 a $ forcedAbility a 1 $ Enters #after You (be a)

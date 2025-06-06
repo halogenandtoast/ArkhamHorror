@@ -15,7 +15,7 @@ newtype TimeWrackedWoods = TimeWrackedWoods LocationAttrs
 
 timeWrackedWoods :: LocationCard TimeWrackedWoods
 timeWrackedWoods =
-  location TimeWrackedWoods Cards.timeWrackedWoods 4 (PerPlayer 2)
+  symbolLabel $ location TimeWrackedWoods Cards.timeWrackedWoods 4 (PerPlayer 2)
 
 instance HasAbilities TimeWrackedWoods where
   getAbilities (TimeWrackedWoods attrs) =

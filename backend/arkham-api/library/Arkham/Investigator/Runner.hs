@@ -4279,11 +4279,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         usesAction = not isAdditional
         choices =
           additionalActions
-            <> [ targetLabel c [InitiatePlayCard investigatorId c Nothing NoPayment windows usesAction]
+            <> [ targetLabel
+                   c
+                   [ InitiatePlayCard investigatorId c Nothing NoPayment windows usesAction
+                   , PlayerWindow iid additionalActions isAdditional
+                   ]
                | c <- playableCards
                ]
             <> map
-              ((\f -> f windows [] []) . AbilityLabel investigatorId)
+              ((\f -> f windows [] [PlayerWindow iid additionalActions isAdditional]) . AbilityLabel investigatorId)
               (filter (not . isActionAbility) actions)
       player <- getPlayer investigatorId
       unless (null choices) $ push $ AskPlayer $ Ask player $ PlayerWindowChooseOne choices

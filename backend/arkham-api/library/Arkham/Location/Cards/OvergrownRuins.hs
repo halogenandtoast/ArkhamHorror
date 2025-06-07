@@ -1,13 +1,10 @@
-module Arkham.Location.Cards.OvergrownRuins ( overgrownRuins,) where
+module Arkham.Location.Cards.OvergrownRuins (overgrownRuins) where
 
-import Arkham.Prelude
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype OvergrownRuins = OvergrownRuins LocationAttrs
@@ -19,23 +16,15 @@ overgrownRuins = symbolLabel $ location OvergrownRuins Cards.overgrownRuins 5 (P
 
 instance HasAbilities OvergrownRuins where
   getAbilities (OvergrownRuins a) =
-    withBaseAbilities a
-      $ [ restrictedAbility
-            a
-            1
-            ( TreacheryExists
-                $ treacheryIs Treacheries.poisoned
-                <> TreacheryInThreatAreaOf You
-            )
-            $ ForcedAbility
-            $ Enters Timing.After You
-            $ LocationWithId
-            $ toId a
-        ]
+    extendRevealed1 a
+      $ restricted a 1 (exists $ treacheryIs Treacheries.poisoned <> TreacheryInThreatAreaOf You)
+      $ forced
+      $ Enters #after You (be a)
 
 instance RunMessage OvergrownRuins where
-  runMessage msg l@(OvergrownRuins attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      pushAll [SetActions iid source 0, ChooseEndTurn iid]
+  runMessage msg l@(OvergrownRuins attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      setActions iid (attrs.ability 1) 0
+      endYourTurn iid
       pure l
-    _ -> OvergrownRuins <$> runMessage msg attrs
+    _ -> OvergrownRuins <$> liftRunMessage msg attrs

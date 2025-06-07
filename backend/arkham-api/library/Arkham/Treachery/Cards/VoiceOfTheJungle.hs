@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.VoiceOfTheJungle (voiceOfTheJungle, VoiceOfTheJungle (..)) where
+module Arkham.Treachery.Cards.VoiceOfTheJungle (voiceOfTheJungle) where
 
 import Arkham.Ability
 import Arkham.Matcher
@@ -14,10 +14,10 @@ voiceOfTheJungle = treachery VoiceOfTheJungle Cards.voiceOfTheJungle
 
 instance HasAbilities VoiceOfTheJungle where
   getAbilities (VoiceOfTheJungle x) =
-    [ restrictedAbility x 1 (InThreatAreaOf You <> youExist NoSuccessfulExploreThisTurn)
+    [ restricted x 1 (InThreatAreaOf You <> youExist NoSuccessfulExploreThisTurn)
         $ forced
         $ TurnEnds #at You
-    , skillTestAbility $ restrictedAbility x 2 OnSameLocation actionAbility
+    , skillTestAbility $ restricted x 2 OnSameLocation actionAbility
     ]
 
 instance RunMessage VoiceOfTheJungle where

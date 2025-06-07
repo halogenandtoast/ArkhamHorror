@@ -10,6 +10,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheDoomOfEztli.Helpers
 
 newtype SnakePit = SnakePit LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -33,9 +34,9 @@ instance RunMessage SnakePit where
       hasBinoculars <- selectAny $ InvestigatorWithSupply Binoculars <> at_ (locationWithInvestigator iid)
 
       when hasBinoculars do
-        chooseOneM iid do
-          labeled "Do not move to snake pit" $ cancelMovement (attrs.ability 1) iid
-          labeled "Move to Snake Pit" nothing
+        chooseOneM iid $ scenarioI18n do
+          labeled "snakePit.doNotMove" $ cancelMovement (attrs.ability 1) iid
+          labeled "snakePit.move" nothing
 
       pure l
     _ -> SnakePit <$> liftRunMessage msg attrs

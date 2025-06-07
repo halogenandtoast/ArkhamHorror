@@ -17,6 +17,22 @@
     "snakePit": {
       "move": "Move to the Snake Pit",
       "doNotMove": "Do not move to the Snake Pit"
+    },
+    "ancientHall": {
+      "instructions": "_Forced_ - At the end of the round: Flip 1 of the clues on Ancient Hall to its doom side. Any investigator at Ancient Hall may spend 3 resources to cancel this effect.",
+      "doNotSpendResources": "Do not spend resources"
+    },
+    "burialPit": {
+      "draw": "Draw a card from the top of the encounter deck",
+      "doom": "Place 1 doom on Burial Pit"
+    },
+    "ancestralFear": {
+      "placeDoom": "Place 1 doom on your location and discard Ancestral Fear (instead of placing it in the victory display).",
+      "addToVictory": "Place Ancestral Fear in the victory display."
+    },
+    "serpentsCall": {
+      "poisoned": "Put a set-aside Poisoned weakness into play in your threat area",
+      "drawEncounterCards": "Draw the top 2 cards of the encounter deck"
     }
   },
   "intro": {

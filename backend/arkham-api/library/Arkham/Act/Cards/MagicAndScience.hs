@@ -44,7 +44,7 @@ instance RunMessage MagicAndScience where
   runMessage msg a@(MagicAndScience attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      push $ Explore iid (attrs.ability 1) (mapOneOf CardWithPrintedLocationSymbol locationSymbols)
+      push $ Explore iid (attrs.ability 1) $ mapOneOf CardWithPrintedLocationSymbol locationSymbols
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       lead <- getLead

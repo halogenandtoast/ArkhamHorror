@@ -2,15 +2,12 @@ module Arkham.Agenda.Cards.SomethingStirs (somethingStirs) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
+import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.GameValue
-import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
+import Arkham.Message.Lifted.Choose
 
 newtype SomethingStirs = SomethingStirs AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -18,38 +15,26 @@ newtype SomethingStirs = SomethingStirs AgendaAttrs
 
 somethingStirs :: AgendaCard SomethingStirs
 somethingStirs =
-  agendaWith
-    (1, A)
-    SomethingStirs
-    Cards.somethingStirs
-    (StaticWithPerPlayer 6 1)
+  agendaWith (1, A) SomethingStirs Cards.somethingStirs (StaticWithPerPlayer 6 1)
     $ removeDoomMatchersL
     %~ (\m -> m {removeDoomLocations = Nowhere})
 
-instance HasAbilities SomethingStirs where
-  getAbilities (SomethingStirs a) =
-    [ mkAbility a 1
-        $ ForcedAbility
-        $ AgendaAdvances Timing.When
-        $ AgendaWithId
-        $ toId a
-    ]
-
 -- ability does not do anything, just triggers the button
+instance HasAbilities SomethingStirs where
+  getAbilities (SomethingStirs a) = [mkAbility a 1 $ forced $ AgendaAdvances #when (be a)]
+
 instance RunMessage SomethingStirs where
-  runMessage msg a@(SomethingStirs attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      pure a
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+  runMessage msg a@(SomethingStirs attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> pure a
+    AdvanceAgenda (isSide B attrs -> True) -> do
       maxDoom <- fieldMax LocationDoom Anywhere
-      targets <- select $ LocationWithDoom $ EqualTo (Static maxDoom)
-      harbingerOfValusia <- getSetAsideCard Enemies.harbingerOfValusia
-      lead <- getLeadPlayer
-      choices <- for targets $ \target -> do
-        choice <- createEnemyAt_ harbingerOfValusia target Nothing
-        pure $ targetLabel target [choice]
-      pushAll
-        $ chooseOne lead choices
-        : [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      locations <- select $ LocationWithDoom (static maxDoom)
+      isReturnTo <- getIsReturnTo
+      leadChooseOneM
+        $ targets locations
+        $ createEnemyAt_
+        $ if isReturnTo then Enemies.harbingerOfValusiaTheSleeperReturns else Enemies.harbingerOfValusia
+
+      advanceAgendaDeck attrs
       pure a
-    _ -> SomethingStirs <$> runMessage msg attrs
+    _ -> SomethingStirs <$> liftRunMessage msg attrs

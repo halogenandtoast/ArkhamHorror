@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.EztliGuardian (eztliGuardian, EztliGuardian (..)) where
+module Arkham.Enemy.Cards.EztliGuardian (eztliGuardian) where
 
 import Arkham.Ability
 import Arkham.Attack
@@ -22,13 +22,11 @@ atConnected eid = InvestigatorAt $ ConnectedFrom $ locationWithEnemy eid
 
 instance HasAbilities EztliGuardian where
   getAbilities (EztliGuardian a) =
-    extend
-      a
-      [ groupLimit PerPhase
-          $ restrictedAbility a 1 (exists $ be a <> #ready <> #unengaged <> EnemyCanAttack (atConnected a.id))
-          $ forced
-          $ PhaseStep #when EnemiesAttackStep
-      ]
+    extend1 a
+      $ groupLimit PerPhase
+      $ restricted a 1 (exists $ be a <> #ready <> #unengaged <> EnemyCanAttack (atConnected a.id))
+      $ forced
+      $ PhaseStep #when EnemiesAttackStep
 
 instance RunMessage EztliGuardian where
   runMessage msg e@(EztliGuardian attrs) = runQueueT $ case msg of

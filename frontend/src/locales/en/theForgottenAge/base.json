@@ -51,6 +51,15 @@
   "label": {
     "bestLaidPlans": {
       "shuffle": "Shuffle the top card of the encounter deck into the exploration deck"
+    },
+    "snakeBite": {
+      "damageAlly": "Deal 5 damage to an _*Ally*_ asset you control",
+      "damageSelf": "Take 1 direct damage. If you are not poisoned, put a set-aside Poisoned weakness into play in your threat area."
+    },
+    "lowOnSupplies": {
+      "resources": "Each investigator loses 2 resources.",
+      "damage": "Each investigator takes 1 damage.",
+      "discardAsset": "Each investigator chooses and discards an asset he or she controls."
     }
   },
   "prologue": {

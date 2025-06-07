@@ -28,8 +28,8 @@ instance HasAbilities SerpentsHaven where
   getAbilities (SerpentsHaven attrs) =
     extendRevealed
       attrs
-      [ restrictedAbility attrs 0 activeCriteria $ silent (trigger #when)
-      , restrictedAbility attrs 1 criteria $ forced (trigger #after)
+      [ restricted attrs 0 activeCriteria $ silent (trigger #when)
+      , restricted attrs 1 criteria $ forced (trigger #after)
       ]
    where
     trigger timing = PerformAction timing You (oneOf [#investigate, #explore])

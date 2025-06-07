@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.RopeBridge (ropeBridge, RopeBridge (..)) where
+module Arkham.Location.Cards.RopeBridge (ropeBridge) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers

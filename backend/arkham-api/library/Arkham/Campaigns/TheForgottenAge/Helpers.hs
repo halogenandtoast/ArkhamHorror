@@ -12,6 +12,7 @@ import Arkham.Draw.Types
 import Arkham.Helpers.Card
 import Arkham.Helpers.Location (getLocationOf, toConnections)
 import Arkham.Helpers.Message ()
+import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Helpers.Scenario (getVictoryDisplay, scenarioField, scenarioFieldMap)
 import Arkham.History
@@ -214,7 +215,12 @@ explore iid source cardMatcher exploreRule matchCount = do
           ]
 
 getVengeancePoints :: (HasCallStack, ConvertToCard c, HasGame m) => c -> m (Maybe Int)
-getVengeancePoints = getCardField cdVengeancePoints
+getVengeancePoints c = do
+  card <- convertToCard c
+  mods <- getModifiers card
+  if ScenarioModifier "noVengeance" `elem` mods
+    then pure Nothing
+    else getCardField cdVengeancePoints card
 
 getHasVengeancePoints :: (ConvertToCard c, HasGame m) => c -> m Bool
 getHasVengeancePoints c = isJust <$> getVengeancePoints c

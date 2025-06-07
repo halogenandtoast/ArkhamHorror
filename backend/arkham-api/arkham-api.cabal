@@ -1846,6 +1846,7 @@ library
       Arkham.Enemy.Cards.SeekerOfCarcosa
       Arkham.Enemy.Cards.SeepingNightmare
       Arkham.Enemy.Cards.SerpentFromYoth
+      Arkham.Enemy.Cards.SerpentGuardian
       Arkham.Enemy.Cards.SerpentOfTenochtitlan
       Arkham.Enemy.Cards.SerpentsOfYig
       Arkham.Enemy.Cards.SerpentsOfYigAdvanced
@@ -1907,6 +1908,7 @@ library
       Arkham.Enemy.Cards.ValentinoRivas
       Arkham.Enemy.Cards.VassalOfTheLurker
       Arkham.Enemy.Cards.VengefulHound
+      Arkham.Enemy.Cards.VengefulSerpent
       Arkham.Enemy.Cards.VengefulShade
       Arkham.Enemy.Cards.VengefulSpecter
       Arkham.Enemy.Cards.VengefulWitch
@@ -4371,6 +4373,7 @@ library
       Arkham.Treachery.Cards.Wracked
       Arkham.Treachery.Cards.WrackedByNightmares
       Arkham.Treachery.Cards.WrackedByTime
+      Arkham.Treachery.Cards.WrathOfYig
       Arkham.Treachery.Cards.WukWukWuk
       Arkham.Treachery.Cards.Yaztaroth
       Arkham.Treachery.Cards.YithianPresence

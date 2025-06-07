@@ -1,12 +1,11 @@
 module Arkham.Treachery.Cards.Shadowed (shadowed) where
 
-import Arkham.Classes
 import Arkham.Enemy.Types
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Shadowed = Shadowed TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -16,30 +15,20 @@ shadowed :: TreacheryCard Shadowed
 shadowed = treachery Shadowed Cards.shadowed
 
 instance RunMessage Shadowed where
-  runMessage msg t@(Shadowed attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      cultists <- select (NearestEnemyToFallback iid $ EnemyWithTrait Cultist <> EnemyWithFight)
+  runMessage msg t@(Shadowed attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      cultists <- select $ NearestEnemyToFallback iid $ EnemyWithTrait Cultist <> EnemyWithFight
       if null cultists
-        then
-          pushAll
-            [ InvestigatorAssignDamage iid source DamageAny 0 1
-            , gainSurge attrs
-            ]
+        then do
+          assignHorror iid attrs 1
+          gainSurge attrs
         else do
-          player <- getPlayer iid
           sid <- getRandom
-          push
-            $ chooseOrRunOne
-              player
-              [ targetLabel
-                  cultist
-                  [ PlaceDoom (toSource attrs) (toTarget cultist) 1
-                  , revelationSkillTest sid iid source #willpower (EnemyMaybeFieldCalculation cultist EnemyFight)
-                  ]
-              | cultist <- cultists
-              ]
+          chooseOrRunOneM iid $ targets cultists \cultist -> do
+            placeDoom attrs cultist 1
+            revelationSkillTest sid iid attrs #willpower (EnemyMaybeFieldCalculation cultist EnemyFight)
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
-      push $ InvestigatorAssignDamage iid source DamageAny 0 2
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      assignHorror iid attrs 2
       pure t
-    _ -> Shadowed <$> runMessage msg attrs
+    _ -> Shadowed <$> liftRunMessage msg attrs

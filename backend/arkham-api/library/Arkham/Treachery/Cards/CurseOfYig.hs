@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.CurseOfYig (curseOfYig, CurseOfYig (..)) where
+module Arkham.Treachery.Cards.CurseOfYig (curseOfYig) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
@@ -21,7 +21,7 @@ instance HasModifiersFor CurseOfYig where
     _ -> pure mempty
 
 instance HasAbilities CurseOfYig where
-  getAbilities (CurseOfYig a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]
+  getAbilities (CurseOfYig a) = [skillTestAbility $ restricted a 1 OnSameLocation actionAbility]
 
 instance RunMessage CurseOfYig where
   runMessage msg t@(CurseOfYig attrs) = runQueueT $ case msg of

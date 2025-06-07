@@ -1900,6 +1900,7 @@ library
       Arkham.Enemy.Cards.TheWingedSerpent
       Arkham.Enemy.Cards.Thrall
       Arkham.Enemy.Cards.TidalTerror
+      Arkham.Enemy.Cards.TindalosAlpha
       Arkham.Enemy.Cards.TommyMalloy
       Arkham.Enemy.Cards.TonysQuarry
       Arkham.Enemy.Cards.Umordhoth
@@ -4147,6 +4148,7 @@ library
       Arkham.Treachery.Cards.MeddlesomeFamiliar
       Arkham.Treachery.Cards.Melancholy
       Arkham.Treachery.Cards.MemoryOfOblivion
+      Arkham.Treachery.Cards.MergingTimelines
       Arkham.Treachery.Cards.Mesmerize
       Arkham.Treachery.Cards.MiasmaticTorment
       Arkham.Treachery.Cards.MorbidAwareness

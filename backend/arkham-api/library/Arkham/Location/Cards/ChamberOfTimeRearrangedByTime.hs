@@ -1,5 +1,6 @@
 module Arkham.Location.Cards.ChamberOfTimeRearrangedByTime (chamberOfTimeRearrangedByTime) where
 
+import Arkham.Direction
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 
@@ -11,6 +12,7 @@ chamberOfTimeRearrangedByTime :: LocationCard ChamberOfTimeRearrangedByTime
 chamberOfTimeRearrangedByTime =
   location ChamberOfTimeRearrangedByTime Cards.chamberOfTimeRearrangedByTime 4 (PerPlayer 2)
     & setLabel "chamberOfTime"
+    & setConnectsTo (singleton RightOf)
 
 instance HasAbilities ChamberOfTimeRearrangedByTime where
   getAbilities (ChamberOfTimeRearrangedByTime attrs) =

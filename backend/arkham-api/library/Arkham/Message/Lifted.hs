@@ -1259,6 +1259,10 @@ resolutionModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 resolutionModifier source target modifier = Msg.pushM $ Msg.resolutionModifier source target modifier
 
+actModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+actModifier source target modifier = Msg.pushM $ Msg.actModifier source target modifier
+
 gameModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 gameModifier source target modifier = Msg.pushM $ Msg.gameModifier source target modifier

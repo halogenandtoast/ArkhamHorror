@@ -537,6 +537,10 @@ roundModifiers
   :: (Sourceable source, Targetable target, HasGame m) => source -> target -> [ModifierType] -> m Message
 roundModifiers = createRoundModifier
 
+actModifier
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
+actModifier source target modifier = createWindowModifierEffect EffectActWindow source target [modifier]
+
 gameModifier
   :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
 gameModifier source target modifier = createWindowModifierEffect EffectGameWindow source target [modifier]

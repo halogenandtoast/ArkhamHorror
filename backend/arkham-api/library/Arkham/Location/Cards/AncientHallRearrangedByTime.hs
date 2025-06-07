@@ -1,5 +1,6 @@
 module Arkham.Location.Cards.AncientHallRearrangedByTime (ancientHallRearrangedByTime) where
 
+import Arkham.Direction
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 
@@ -11,6 +12,7 @@ ancientHallRearrangedByTime :: LocationCard AncientHallRearrangedByTime
 ancientHallRearrangedByTime =
   location AncientHallRearrangedByTime Cards.ancientHallRearrangedByTime 3 (PerPlayer 1)
     & setLabel "ancientHall"
+    & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasAbilities AncientHallRearrangedByTime where
   getAbilities (AncientHallRearrangedByTime attrs) =

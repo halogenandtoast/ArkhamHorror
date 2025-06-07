@@ -103,6 +103,7 @@ import Control.Monad.State.Strict (MonadState, StateT, execStateT, get, put)
 import Control.Monad.Trans.Class
 import Data.Aeson.Key qualified as Aeson
 import Data.Map.Strict qualified as Map
+import Data.Monoid (First (..))
 
 setChaosTokens :: ReverseQueue m => [ChaosTokenFace] -> m ()
 setChaosTokens = push . SetChaosTokens
@@ -385,7 +386,9 @@ endOfScenario = push $ EndOfGame Nothing
 endOfScenarioThen :: ReverseQueue m => CampaignStep -> m ()
 endOfScenarioThen = push . EndOfGame . Just
 
-dealAssetDirectDamageAndHorror :: (ReverseQueue m, Sourceable source, AsId asset, IdOf asset ~ AssetId) => asset -> source -> Int -> Int -> m ()
+dealAssetDirectDamageAndHorror
+  :: (ReverseQueue m, Sourceable source, AsId asset, IdOf asset ~ AssetId)
+  => asset -> source -> Int -> Int -> m ()
 dealAssetDirectDamageAndHorror asset source damage horror =
   push $ DealAssetDirectDamage (asId asset) (toSource source) damage horror
 
@@ -398,6 +401,10 @@ dealAssetHorror aid source horror = push $ Msg.DealAssetDamageWithCheck aid (toS
 assignDamage
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 assignDamage iid (toSource -> source) damage = push $ Msg.assignDamage iid source damage
+
+assignDamageTo
+  :: (ReverseQueue m, Sourceable source) => source -> Int -> InvestigatorId -> m ()
+assignDamageTo source damage iid = assignDamage iid source damage
 
 assignHorror
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
@@ -493,43 +500,49 @@ newtype UniqueFetchCard = UniqueFetchCard CardDef
   deriving newtype (Show, Eq, ToJSON, FromJSON)
 
 class FetchCard a where
-  fetchCard :: (HasCallStack, ReverseQueue m) => a -> m Card
+  fetchCardMaybe :: (HasCallStack, ReverseQueue m) => a -> m (Maybe Card)
+
+fetchCard :: (HasCallStack, ReverseQueue m, FetchCard a) => a -> m Card
+fetchCard a = fromJustNote "Card not found" <$> fetchCardMaybe a
 
 instance FetchCard UniqueFetchCard where
-  fetchCard (UniqueFetchCard def) = do
+  fetchCardMaybe (UniqueFetchCard def) = do
     findCard ((== def.cardCode) . toCardCode) >>= \case
-      Nothing -> genCard def
-      Just card -> pure $ if cardCodeExactEq def.cardCode card.cardCode then card else flipCard card
+      Nothing -> Just <$> genCard def
+      Just card -> pure $ Just $ if cardCodeExactEq def.cardCode card.cardCode then card else flipCard card
 
 instance FetchCard CardDef where
-  fetchCard def =
+  fetchCardMaybe def =
     if def.unique
-      then fetchCard (UniqueFetchCard def)
-      else maybe (genCard def) pure =<< maybeGetSetAsideCard def
+      then fetchCardMaybe (UniqueFetchCard def)
+      else maybe (Just <$> genCard def) (pure . Just) =<< maybeGetSetAsideCard def
+
+instance FetchCard [CardDef] where
+  fetchCardMaybe defs = getFirst . foldMap First <$> traverse fetchCardMaybe defs
 
 instance FetchCard ExtendedCardMatcher where
-  fetchCard = selectJust
+  fetchCardMaybe = selectOne
 
 instance FetchCard Card where
-  fetchCard = pure
+  fetchCardMaybe = pure . Just
 
 instance FetchCard EncounterCard where
-  fetchCard = pure . toCard
+  fetchCardMaybe = pure . Just . toCard
 
 instance FetchCard PlayerCard where
-  fetchCard = pure . toCard
+  fetchCardMaybe = pure . Just . toCard
 
 instance FetchCard AssetId where
-  fetchCard = field Field.AssetCard
+  fetchCardMaybe = fieldMap Field.AssetCard Just
 
 instance FetchCard EventId where
-  fetchCard = field Field.EventCard
+  fetchCardMaybe = fieldMap Field.EventCard Just
 
 instance FetchCard TreacheryId where
-  fetchCard = field Field.TreacheryCard
+  fetchCardMaybe = fieldMap Field.TreacheryCard Just
 
 instance FetchCard Field.TreacheryAttrs where
-  fetchCard = field Field.TreacheryCard . asId
+  fetchCardMaybe = fieldMap Field.TreacheryCard Just . asId
 
 addCampaignCardToDeck
   :: (AsId investigator, IdOf investigator ~ InvestigatorId, ReverseQueue m, FetchCard card)
@@ -1646,6 +1659,9 @@ takeResources a source n = push $ Msg.takeResources (asId a) source n
 loseResources :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 loseResources iid source n = push $ Msg.LoseResources iid (toSource source) n
 
+loseResourcesOf :: (ReverseQueue m, Sourceable source) => source -> Int -> InvestigatorId -> m ()
+loseResourcesOf source n iid = loseResources iid source n
+
 loseAllResources :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 loseAllResources iid source = loseResources iid source =<< field InvestigatorResources iid
 
@@ -2597,6 +2613,13 @@ spendResources
   -> Int
   -> m ()
 spendResources investigator n = push $ SpendResources (asId investigator) n
+
+spendResourcesOf
+  :: (ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => Int
+  -> investigator
+  -> m ()
+spendResourcesOf = flip spendResources
 
 discardCard
   :: ( ReverseQueue m

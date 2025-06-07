@@ -18,9 +18,7 @@ newtype Entryway = Entryway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 entryway :: LocationCard Entryway
-entryway =
-  location Entryway Cards.entryway 2 (PerPlayer 1)
-    & setConnectsTo (singleton LeftOf)
+entryway = location Entryway Cards.entryway 2 (PerPlayer 1) & setConnectsTo (singleton LeftOf)
 
 instance HasAbilities Entryway where
   getAbilities (Entryway a) =

@@ -1,13 +1,13 @@
-module Arkham.Location.Cards.AncientHall (ancientHall, AncientHall (..)) where
+module Arkham.Location.Cards.AncientHall (ancientHall) where
 
 import Arkham.Ability
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheDoomOfEztli.Helpers
 
 newtype AncientHall = AncientHall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -15,26 +15,22 @@ newtype AncientHall = AncientHall LocationAttrs
 
 ancientHall :: LocationCard AncientHall
 ancientHall =
-  locationWith AncientHall Cards.ancientHall 3 (PerPlayer 2)
-    $ connectsToL
-    .~ setFromList [LeftOf, RightOf]
+  location AncientHall Cards.ancientHall 3 (PerPlayer 2)
+    & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasAbilities AncientHall where
-  getAbilities (AncientHall attrs) =
-    withRevealedAbilities attrs [restrictedAbility attrs 1 (cluesOnThis 1) (forced $ RoundEnds #when)]
+  getAbilities (AncientHall a) =
+    extendRevealed1 a $ restricted a 1 (cluesOnThis 1) (forced $ RoundEnds #when)
 
 instance RunMessage AncientHall where
-  runMessage msg l@(AncientHall attrs) = case msg of
+  runMessage msg l@(AncientHall attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      iids <- select $ investigatorAt (toId attrs) <> InvestigatorCanSpendResources (Static 3)
-      lead <- getLeadPlayer
-      let flipClue = FlipClues (toTarget attrs) 1
-      if null iids
-        then push flipClue
-        else
-          push
-            $ chooseOne lead
-            $ Label "Do not spend 3 resources to cancel this effect" [flipClue]
-            : [targetLabel iid [SpendResources iid 3] | iid <- iids]
+      investigators <- select $ investigatorAt (toId attrs) <> InvestigatorCanSpendResources (Static 3)
+      if null investigators
+        then flipCluesToDoom attrs 1
+        else leadChooseOneM $ scenarioI18n do
+          questionLabeled' "ancientHall.instructions"
+          labeled "ancientHall.doNotSpendResources" $ flipCluesToDoom attrs 1
+          targets investigators $ spendResourcesOf 3
       pure l
-    _ -> AncientHall <$> runMessage msg attrs
+    _ -> AncientHall <$> liftRunMessage msg attrs

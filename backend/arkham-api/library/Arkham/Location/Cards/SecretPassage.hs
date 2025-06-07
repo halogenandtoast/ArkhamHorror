@@ -4,11 +4,11 @@ import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Direction
 import Arkham.GameValue
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
+import Arkham.Message.Lifted.Choose
 
 newtype SecretPassage = SecretPassage LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -16,41 +16,24 @@ newtype SecretPassage = SecretPassage LocationAttrs
 
 secretPassage :: LocationCard SecretPassage
 secretPassage =
-  locationWith
-    SecretPassage
-    Cards.secretPassage
-    5
-    (PerPlayer 1)
-    (connectsToL .~ setFromList [LeftOf, RightOf])
+  location SecretPassage Cards.secretPassage 5 (PerPlayer 1)
+    & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasAbilities SecretPassage where
-  getAbilities (SecretPassage attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility
-          attrs
-          1
-          ( Negate
-              $ InvestigatorExists
-                (investigatorAt (toId attrs) <> InvestigatorWithSupply Rope)
-          )
-          $ ForcedAbility
-          $ Enters Timing.After You
-          $ LocationWithId
-          $ toId attrs
-      ]
+  getAbilities (SecretPassage a) =
+    extendRevealed1 a
+      $ restricted a 1 (notExists $ investigatorAt a.id <> InvestigatorWithSupply Rope)
+      $ forced
+      $ Enters #after You (be a)
 
 instance RunMessage SecretPassage where
-  runMessage msg l@(SecretPassage attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label
-              "Take 1 horror and 1 damage"
-              [InvestigatorAssignDamage iid source DamageAny 1 1]
-          , Label "Place 1 doom on secret passage" [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1]
-          ]
+  runMessage msg l@(SecretPassage attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseOneM iid $ withI18n do
+        numberVar "damage" 1
+          $ numberVar "horror" 1
+          $ labeled "Take 1 horror and 1 damage"
+          $ assignDamageAndHorror iid (attrs.ability 1) 1 1
+        nameVar attrs $ countVar 1 $ labeled "placeDoom" $ placeDoom (attrs.ability 1) attrs 1
       pure l
-    _ -> SecretPassage <$> runMessage msg attrs
+    _ -> SecretPassage <$> liftRunMessage msg attrs

@@ -1,14 +1,7 @@
-module Arkham.Treachery.Cards.Poisoned (
-  poisoned,
-  Poisoned (..),
-)
-where
+module Arkham.Treachery.Cards.Poisoned (poisoned) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Poisoned = Poisoned TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -19,5 +12,5 @@ poisoned = treachery Poisoned Cards.poisoned
 
 instance RunMessage Poisoned where
   runMessage msg t@(Poisoned attrs) = case msg of
-    Revelation _iid source | isSource attrs source -> pure t
+    Revelation _iid (isSource attrs -> True) -> pure t
     _ -> Poisoned <$> runMessage msg attrs

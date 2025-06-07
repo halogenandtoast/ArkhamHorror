@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.SerpentsCall (serpentsCall, SerpentsCall (..)) where
+module Arkham.Treachery.Cards.SerpentsCall (serpentsCall) where
 
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Message.Lifted.Choose
@@ -19,10 +19,8 @@ instance RunMessage SerpentsCall where
         True -> drawEncounterCards iid attrs 2
         False -> do
           poisoned <- getSetAsidePoisoned
-          chooseOneM iid do
-            labeled "Put a set-aside Poisoned weakness into play in your threat area" do
-              push $ CreateWeaknessInThreatArea poisoned iid
-            labeled "Draw the top 2 cards of the encounter deck" do
-              drawEncounterCards iid attrs 2
+          chooseOneM iid $ campaignI18n do
+            labeled' "serpentsCall.poisoned" $ createWeaknessInThreatArea poisoned iid
+            labeled' "serpentsCall.drawEncounterCards" $ drawEncounterCards iid attrs 2
       pure t
     _ -> SerpentsCall <$> liftRunMessage msg attrs

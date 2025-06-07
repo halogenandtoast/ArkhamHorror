@@ -346,6 +346,7 @@ allEncounterEnemyCards =
       , seekerOfCarcosa
       , seepingNightmare
       , serpentFromYoth
+      , serpentGuardian
       , serpentOfTenochtitlan
       , servantOfManyMouths
       , servantOfTheLurker
@@ -396,6 +397,7 @@ allEncounterEnemyCards =
       , unsealedPhantasm
       , valentinoRivas
       , vassalOfTheLurker
+      , vengefulSerpent
       , vengefulSpecter
       , vengefulWitch
       , victoriaDevereux
@@ -2963,6 +2965,21 @@ harbingerOfValusiaTheSleeperReturns =
       , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
       , cdVengeancePoints = Just 5
       }
+
+vengefulSerpent :: CardDef
+vengefulSerpent =
+  (enemy "53078" "Vengeful Serpent" VenomousHate 3)
+    { cdCardTraits = setFromList [Humanoid, Monster, Serpent]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVengeancePoints = Just 0
+    }
+
+serpentGuardian :: CardDef
+serpentGuardian =
+  (enemy "53079" "Serpent Guardian" VenomousHate 1)
+    { cdCardTraits = setFromList [Construct, Serpent]
+    , cdKeywords = setFromList [Keyword.Aloof]
+    }
 
 tommyMalloy :: CardDef
 tommyMalloy =

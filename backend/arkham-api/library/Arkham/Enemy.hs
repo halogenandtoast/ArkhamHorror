@@ -538,6 +538,9 @@ allEnemies =
     , -- Return to The Forgotten Age
       --- Return to The Doom of Eztli [rttfa]
       SomeEnemyCard harbingerOfValusiaTheSleeperReturns
+    , --- Venomous Hate [rttfa]
+      SomeEnemyCard vengefulSerpent
+    , SomeEnemyCard serpentGuardian
     , -- Nathanial Cho
       SomeEnemyCard tommyMalloy
     , -- Curse of the Rougarou

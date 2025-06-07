@@ -4,10 +4,8 @@ import Arkham.Ability
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype GrandChamber = GrandChamber LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -15,30 +13,20 @@ newtype GrandChamber = GrandChamber LocationAttrs
 
 grandChamber :: LocationCard GrandChamber
 grandChamber =
-  locationWith
-    GrandChamber
-    Cards.grandChamber
-    2
-    (PerPlayer 1)
-    (connectsToL .~ setFromList [LeftOf, RightOf])
+  location GrandChamber Cards.grandChamber 2 (PerPlayer 1)
+    & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasAbilities GrandChamber where
-  getAbilities (GrandChamber attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1
-          $ ForcedAbility
-          $ SkillTestResult
-            Timing.When
-            You
-            (WhileInvestigating $ LocationWithId $ toId attrs)
-          $ ResultOneOf
-            [FailureResult AnyValue, SuccessResult $ LessThan $ Static 2]
-      ]
+  getAbilities (GrandChamber a) =
+    extendRevealed1 a
+      $ mkAbility a 1
+      $ forced
+      $ SkillTestResult #when You (WhileInvestigating $ be a)
+      $ ResultOneOf [#failure, SuccessResult $ LessThan $ Static 2]
 
 instance RunMessage GrandChamber where
-  runMessage msg l@(GrandChamber attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ FlipClues (toTarget attrs) 1
+  runMessage msg l@(GrandChamber attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      flipCluesToDoom attrs 1
       pure l
-    _ -> GrandChamber <$> runMessage msg attrs
+    _ -> GrandChamber <$> liftRunMessage msg attrs

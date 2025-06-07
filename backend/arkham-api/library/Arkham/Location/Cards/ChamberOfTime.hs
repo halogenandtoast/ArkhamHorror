@@ -1,44 +1,30 @@
-module Arkham.Location.Cards.ChamberOfTime (chamberOfTime, ChamberOfTime (..)) where
+module Arkham.Location.Cards.ChamberOfTime (chamberOfTime) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Prelude
 
 newtype ChamberOfTime = ChamberOfTime LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chamberOfTime :: LocationCard ChamberOfTime
-chamberOfTime =
-  locationWith ChamberOfTime Cards.chamberOfTime 4 (PerPlayer 2) (connectsToL .~ singleton RightOf)
+chamberOfTime = location ChamberOfTime Cards.chamberOfTime 4 (PerPlayer 2) & setConnectsTo (singleton RightOf)
 
 instance HasAbilities ChamberOfTime where
-  getAbilities (ChamberOfTime attrs) =
-    extendRevealed1 attrs
-      $ mkAbility attrs 1
-      $ forced
-      $ PutLocationIntoPlay #after Anyone (be attrs)
+  getAbilities (ChamberOfTime a) =
+    extendRevealed1 a $ mkAbility a 1 $ forced $ PutLocationIntoPlay #after Anyone (be a)
 
 instance RunMessage ChamberOfTime where
-  runMessage msg l@(ChamberOfTime attrs) = case msg of
+  runMessage msg l@(ChamberOfTime attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      mRelicOfAges <-
-        getSetAsideCardsMatching
-          (mapOneOf cardIs [Assets.relicOfAgesRepossessThePast, Assets.relicOfAgesADeviceOfSomeSort])
-      case listToMaybe mRelicOfAges of
-        Nothing -> error "Missing relic of ages"
-        Just relicOfAges -> do
-          assetId <- getRandom
-          pushAll
-            [ CreateAssetAt assetId relicOfAges (AttachedToLocation $ toId attrs)
-            , PlaceDoom (attrs.ability 1) (toTarget attrs) 1
-            ]
+      relicOfAges <- fetchCard [Assets.relicOfAgesRepossessThePast, Assets.relicOfAgesADeviceOfSomeSort]
+      createAssetAt_ relicOfAges (AttachedToLocation attrs.id)
+      placeDoom (attrs.ability 1) attrs 1
       pure l
-    _ -> ChamberOfTime <$> runMessage msg attrs
+    _ -> ChamberOfTime <$> liftRunMessage msg attrs

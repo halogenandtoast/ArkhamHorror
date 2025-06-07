@@ -1,11 +1,9 @@
 module Arkham.Enemy.Cards.FangOfYig (fangOfYig) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype FangOfYig = FangOfYig EnemyAttrs
@@ -14,9 +12,8 @@ newtype FangOfYig = FangOfYig EnemyAttrs
 
 fangOfYig :: EnemyCard FangOfYig
 fangOfYig =
-  enemyWith FangOfYig Cards.fangOfYig (3, Static 3, 3) (1, 1)
-    $ preyL
-    .~ Prey (HasMatchingTreachery $ treacheryIs Treacheries.poisoned)
+  enemy FangOfYig Cards.fangOfYig (3, Static 3, 3) (1, 1)
+    & setPrey (HasMatchingTreachery $ treacheryIs Treacheries.poisoned)
 
 instance HasModifiersFor FangOfYig where
   getModifiersFor (FangOfYig a) = do

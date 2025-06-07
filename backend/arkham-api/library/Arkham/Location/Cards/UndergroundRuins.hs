@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.UndergroundRuins (undergroundRuins, UndergroundRuins (..)) where
+module Arkham.Location.Cards.UndergroundRuins (undergroundRuins) where
 
 import Arkham.Ability
 import Arkham.Direction
@@ -14,9 +14,8 @@ newtype UndergroundRuins = UndergroundRuins LocationAttrs
 
 undergroundRuins :: LocationCard UndergroundRuins
 undergroundRuins =
-  locationWith UndergroundRuins Cards.undergroundRuins 2 (PerPlayer 1)
-    $ connectsToL
-    .~ setFromList [LeftOf, RightOf]
+  location UndergroundRuins Cards.undergroundRuins 2 (PerPlayer 1)
+    & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasModifiersFor UndergroundRuins where
   getModifiersFor (UndergroundRuins a) =

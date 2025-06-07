@@ -92,7 +92,6 @@ import Arkham.Asset.Assets (
 import Arkham.Campaigns.TheInnsmouthConspiracy.Effects.NoAir (noAirEffect)
 import Arkham.Enemy.Enemies (
   alejandroVelaEffect,
-  boaConstrictorEffect,
   corruptedOrderlyEffect,
   ichtacaScionOfYigEffect,
   tommyMalloyEffect,
@@ -446,7 +445,7 @@ allEffects =
     , ("04004", SomeEffect $ noop "04004")
     , ("04029", SomeEffect mistsOfRlyehEffect)
     , ("04035", SomeEffect yaotl1Effect)
-    , ("04079", SomeEffect boaConstrictorEffect)
+    , ("04079", SomeEffect $ noop "04079")
     , ("04104", SomeEffect marksmanship1Effect)
     , ("04108", SomeEffect $ noop "04108")
     , ("04155", SomeEffect hatchetManEffect)

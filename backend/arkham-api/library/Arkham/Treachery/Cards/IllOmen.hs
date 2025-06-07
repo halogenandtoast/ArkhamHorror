@@ -1,14 +1,9 @@
-module Arkham.Treachery.Cards.IllOmen (
-  illOmen,
-  IllOmen (..),
-) where
+module Arkham.Treachery.Cards.IllOmen (illOmen) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype IllOmen = IllOmen TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -18,24 +13,11 @@ illOmen :: TreacheryCard IllOmen
 illOmen = treachery IllOmen Cards.illOmen
 
 instance RunMessage IllOmen where
-  runMessage msg t@(IllOmen attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      lids <- select $ LocationWithInvestigator UneliminatedInvestigator
-      locationsWithInvestigators <- forToSnd lids (select . investigatorAt)
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel
-            lid
-            ( PlaceDoom (toSource attrs) (toTarget lid) 1
-                : map
-                  ( \i ->
-                      InvestigatorAssignDamage i (toSource attrs) DamageAny 0 1
-                  )
-                  investigators
-            )
-          | (lid, investigators) <- locationsWithInvestigators
-          ]
+  runMessage msg t@(IllOmen attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      locations <- select $ LocationWithInvestigator UneliminatedInvestigator
+      chooseTargetM iid locations \lid -> do
+        placeDoom attrs lid 1
+        selectEach (investigatorAt lid) \i -> assignHorror i attrs 1
       pure t
-    _ -> IllOmen <$> runMessage msg attrs
+    _ -> IllOmen <$> liftRunMessage msg attrs

@@ -660,6 +660,8 @@ allTreacheries =
     , --- Doom Expedition
       SomeTreacheryCard resentfulWilds
     , SomeTreacheryCard bestLaidPlans
+    , --- Venoumous Hate
+      SomeTreacheryCard wrathOfYig
     , -- Return to the Circle Undone
       SomeTreacheryCard damned
     , -- Nathaniel Cho

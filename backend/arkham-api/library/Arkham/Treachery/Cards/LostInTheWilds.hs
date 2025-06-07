@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.LostInTheWilds (lostInTheWilds, LostInTheWilds (..)) where
+module Arkham.Treachery.Cards.LostInTheWilds (lostInTheWilds) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
@@ -14,15 +14,10 @@ lostInTheWilds :: TreacheryCard LostInTheWilds
 lostInTheWilds = treachery LostInTheWilds Cards.lostInTheWilds
 
 instance HasModifiersFor LostInTheWilds where
-  getModifiersFor (LostInTheWilds attrs) =
-    inThreatAreaGets attrs [CannotMove, CannotExplore]
+  getModifiersFor (LostInTheWilds attrs) = inThreatAreaGets attrs [CannotMove, CannotExplore]
 
 instance HasAbilities LostInTheWilds where
-  getAbilities (LostInTheWilds a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You)
-        $ forced
-        $ TurnEnds #when You
-    ]
+  getAbilities (LostInTheWilds a) = [restricted a 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You]
 
 instance RunMessage LostInTheWilds where
   runMessage msg t@(LostInTheWilds attrs) = runQueueT $ case msg of

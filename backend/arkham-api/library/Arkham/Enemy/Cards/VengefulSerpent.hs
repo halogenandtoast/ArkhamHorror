@@ -17,12 +17,12 @@ instance HasAbilities VengefulSerpent where
     extend1 a
       $ restricted a 1 (exists $ VictoryDisplayCardMatch $ basic $ cardIs Cards.vengefulSerpent)
       $ forced
-      $ EnemySpawns #when Anywhere (be a)
+      $ EnemySpawns #after Anywhere (be a)
 
 instance RunMessage VengefulSerpent where
   runMessage msg e@(VengefulSerpent attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      serpents <- select $ SetAsideCardMatch $ cardIs Cards.vengefulSerpent
+      serpents <- select $ VictoryDisplayCardMatch $ basic $ cardIs Cards.vengefulSerpent
       for_ serpents obtainCard
       for_ serpents (drawCard iid)
       pure e

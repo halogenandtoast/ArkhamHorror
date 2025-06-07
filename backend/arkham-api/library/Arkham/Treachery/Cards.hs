@@ -362,6 +362,7 @@ allEncounterTreacheryCards =
       , meddlesomeFamiliar
       , melancholy
       , memoryOfOblivion
+      , mergingTimelines
       , mesmerize
       , miasmaticTorment
       , morbidAwareness
@@ -3151,6 +3152,12 @@ bestLaidPlans =
     (treachery "53075" "Best-Laid Plans" DoomedExpedition 3)
       { cdCardTraits = setFromList [Blunder]
       }
+
+mergingTimelines :: CardDef
+mergingTimelines =
+  (treachery "53076" "Merging Timelines" TemporalHunters 3)
+    { cdCardTraits = setFromList [Hex]
+    }
 
 wrathOfYig :: CardDef
 wrathOfYig =

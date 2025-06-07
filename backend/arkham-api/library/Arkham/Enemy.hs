@@ -538,6 +538,8 @@ allEnemies =
     , -- Return to The Forgotten Age
       --- Return to The Doom of Eztli [rttfa]
       SomeEnemyCard harbingerOfValusiaTheSleeperReturns
+    , --- Temporal Hunters [rttfa]
+      SomeEnemyCard tindalosAlpha
     , --- Venomous Hate [rttfa]
       SomeEnemyCard vengefulSerpent
     , SomeEnemyCard serpentGuardian

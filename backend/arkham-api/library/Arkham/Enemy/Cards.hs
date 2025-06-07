@@ -393,6 +393,7 @@ allEncounterEnemyCards =
       , theWingedSerpent
       , thrall
       , tidalTerror
+      , tindalosAlpha
       , umordhoth
       , unsealedPhantasm
       , valentinoRivas
@@ -2965,6 +2966,13 @@ harbingerOfValusiaTheSleeperReturns =
       , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
       , cdVengeancePoints = Just 5
       }
+
+tindalosAlpha :: CardDef
+tindalosAlpha =
+  (enemy "53077" "Tindalos Alpha" TemporalHunters 2)
+    { cdCardTraits = setFromList [Monster, Extradimensional, Tindalos]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
+    }
 
 vengefulSerpent :: CardDef
 vengefulSerpent =

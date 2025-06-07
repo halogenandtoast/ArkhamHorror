@@ -660,6 +660,8 @@ allTreacheries =
     , --- Doom Expedition
       SomeTreacheryCard resentfulWilds
     , SomeTreacheryCard bestLaidPlans
+    , --- Temporal Hunters
+      SomeTreacheryCard mergingTimelines
     , --- Venoumous Hate
       SomeTreacheryCard wrathOfYig
     , -- Return to the Circle Undone

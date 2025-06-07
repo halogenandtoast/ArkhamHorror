@@ -136,7 +136,8 @@ setupTheDoomOfEztli attrs = do
       ]
     <> replicate setAsidePoisonedCount Treacheries.poisoned
 
-  whenReturnTo $ amongGathered (cardIs Enemies.pitViper) >>= setAside
+  whenReturnTo $ setAside $ replicate 3 Enemies.pitViper
+
   setActDeck [Acts.intoTheRuins, Acts.magicAndScience, Acts.escapeTheRuins]
   setAgendaDeck [Agendas.somethingStirs, Agendas.theTempleWarden]
 

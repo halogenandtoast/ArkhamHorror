@@ -13,6 +13,12 @@
       "elderThing": "Reveal another chaos token. Place 1 doom on your location."
     }
   },
+  "label": {
+    "snakePit": {
+      "move": "Move to the Snake Pit",
+      "doNotMove": "Do not move to the Snake Pit"
+    }
+  },
   "intro": {
     "title": "Scenario II: The Doom of Eztli",
     "readIntro1": "Check Campaign Log. *If the investigators were forced to wait for additional supplies:* Read _Intro 1_.",

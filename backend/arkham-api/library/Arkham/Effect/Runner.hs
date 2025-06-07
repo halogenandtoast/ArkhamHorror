@@ -64,6 +64,10 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     BeginAction | isEndOfWindow a EffectNextActionWindow -> do
       a <$ push (DisableEffect effectId)
+    ReplaceAct {} | isEndOfWindow a EffectActWindow -> do
+      a <$ push (DisableEffect effectId)
+    Discard _ _ (ActTarget _) | isEndOfWindow a EffectActWindow -> do
+      a <$ push (DisableEffect effectId)
     SkillTestEnded sid -> do
       mInvestigator <- getSkillTestInvestigator
       when

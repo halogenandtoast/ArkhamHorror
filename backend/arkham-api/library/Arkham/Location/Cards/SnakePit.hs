@@ -1,5 +1,6 @@
 module Arkham.Location.Cards.SnakePit (snakePit) where
 
+import Arkham.Direction
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 
@@ -8,7 +9,9 @@ newtype SnakePit = SnakePit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 snakePit :: LocationCard SnakePit
-snakePit = location SnakePit Cards.snakePit 1 (PerPlayer 1)
+snakePit =
+  location SnakePit Cards.snakePit 1 (PerPlayer 1)
+    & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasAbilities SnakePit where
   getAbilities (SnakePit attrs) =

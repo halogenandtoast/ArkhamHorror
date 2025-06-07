@@ -22,6 +22,7 @@ data EffectWindow
   | EffectNextSkillTestWindow InvestigatorId
   | EffectRoundWindow
   | EffectNextActionWindow
+  | EffectActWindow
   | EffectSetupWindow
   | EffectScenarioSetupWindow ScenarioId
   | EffectTurnWindow InvestigatorId

@@ -27,7 +27,7 @@ instance RunMessage HandHook where
   runMessage msg a@(HandHook attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      skillTestModifier sid (attrs.ability 1) iid (SkillModifier #agility 1)
+      skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTest iid (isSource attrs -> True) -> do

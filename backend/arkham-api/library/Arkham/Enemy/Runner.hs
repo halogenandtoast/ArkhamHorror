@@ -1354,7 +1354,8 @@ instance RunMessage EnemyAttrs where
               massive <- eid <=~> MassiveEnemy
               mlid <- getMaybeLocation iid
               enemyLocation <- field EnemyLocation eid
-              canEnter <- maybe (pure False) (canEnterLocation enemyId) mlid
+              canEnter <-
+                maybe (pure False) (\loc -> (enemyLocation == Just loc ||) <$> canEnterLocation enemyId loc) mlid
               when (not massive && canEnter) do
                 pushAll
                   $ [before, PlaceEnemy eid (InThreatArea iid)]

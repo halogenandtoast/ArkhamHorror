@@ -62,7 +62,7 @@ function isCardAction(c: Message): boolean {
 
   // we also allow the move action to cause card interaction
   if (c.tag == "AbilityLabel" && "contents" in c.ability.source) {
-    return c.ability.type.tag === "ActionAbility" && c.ability.type.actions.includes("Move") && c.ability.source.contents === id.value && c.ability.index === 102 && abilities.value.length == 1
+    return c.ability.type.tag === "ActionAbility" && c.ability.type.actions.includes("Move") && c.ability.source.contents === id.value && c.ability.index === 102
   }
 
   return false
@@ -70,19 +70,38 @@ function isCardAction(c: Message): boolean {
 
 const cardAction = computed(() => choices.value.findIndex(isCardAction))
 const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
+let clickTimeout: number | null = null;
+let clickCount = 0;
 
-async function clicked() {
-  if(cardAction.value !== -1) {
-    emits('choose', cardAction.value)
-  } else if (abilities.value.length > 0) {
-    showAbilities.value = !showAbilities.value
-    await nextTick()
-    if (showAbilities.value === true) {
-      abilitiesEl.value?.focus()
-    } else {
-      abilitiesEl.value?.blur()
+async function clicked(e:MouseEvent) {
+  clickCount++;
+  if (clickTimeout) {
+    clearTimeout(clickTimeout);
+  }  
+  clickTimeout = setTimeout(async () => {
+    if (clickCount === 1){
+      if(cardAction.value !== -1) {
+        emits('choose', cardAction.value)
+      } 
+      else if (abilities.value.length > 0) {
+        showAbilities.value = !showAbilities.value
+        await nextTick()
+        if (showAbilities.value === true) {
+          abilitiesEl.value?.focus()
+        } 
+        else {
+          abilitiesEl.value?.blur()
+        }
+      }
     }
-  }
+    //else if (clickCount === 2) {
+      // Handle double click
+    //}
+
+    // Reset click count and timeout
+    clickCount = 0;
+    clickTimeout = null;
+  }, 300);
 }
 
 async function chooseAbility(ability: number) {
@@ -291,7 +310,7 @@ function onDrop(event: DragEvent) {
             <div class="wave" v-if="location.floodLevel" :class="{ [location.floodLevel]: true }"></div>
             <img
               :data-id="id"
-              class="card"
+              class="card card--locations"
               :src="image"
               :class="{ 'location--can-interact': canInteract }"
               draggable="false"
@@ -326,7 +345,7 @@ function onDrop(event: DragEvent) {
           v-model="showAbilities"
           :abilities="abilities"
           :frame="frame"
-          :show-move="abilities.length > 1"
+          :show-move="false"
           :game="game"
           position="left"
           @choose="chooseAbility"
@@ -412,6 +431,15 @@ function onDrop(event: DragEvent) {
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
+.card.card--locations {
+  //border-radius: 5px;
+  width: min(calc(10vw + 20px), 60px);
+  //max-width: 300px;
+  //height: auto;
+  //aspect-ratio: var(--card-aspect);
+  //box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+}
+
 .location-column :deep(.enemy) {
   width: calc(var(--card-width) * 0.8);
 
@@ -449,7 +477,7 @@ function onDrop(event: DragEvent) {
   flex-direction: column;
   position: relative;
   grid-area: location;
-  width: var(--card-width);
+  width: min(calc(10vw + 20px), 60px);//var(--card-width);
 }
 
 .pool {
@@ -511,7 +539,18 @@ function onDrop(event: DragEvent) {
   &:deep(.card) {
     width: calc(var(--card-width) * 0.8) !important;
   }
-
+  &:deep(.pool) {
+    width: 200%!important;
+    height: fit-content;
+    top:1em;
+    font-size: .5em;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+  &:deep(.poolItem) {
+    width: calc(var(--card-width) * 0.4) !important;
+  }
   &:hover {
     animation-fill-mode:forwards;
     div:not(:last-child) {
@@ -538,10 +577,22 @@ function onDrop(event: DragEvent) {
   align-self: flex-start;
   align-items: flex-end;
   gap: 2px;
+  pointer-events: none;
   &.clues {
     top: 10%;
   }
-  pointer-events: none;
+  @media (max-width: 800px) and (orientation: portrait) {
+      &:deep(.poolItem) {
+        width: calc(var(--card-width) * 0.6) !important;
+      }
+      top:35%!important;
+      left:80%;
+      width: fit-content;
+      height: fit-content;
+      :deep(span) {
+        width: fit-content!important;
+      }
+  }
 }
 
 .card-frame {
@@ -688,6 +739,9 @@ function onDrop(event: DragEvent) {
     "investigators attachments assetsAndEnemies";
   grid-template-columns: 60px 1fr 60px;
   grid-column-gap: 10px;
+  @media (max-width: 800px) and (orientation: portrait) {
+    grid-column-gap: .5px;
+  }
 }
 
 .flood-level {

@@ -235,7 +235,7 @@ function oilPaintEffect(canvas, radius, intensity) {
   <div class="card-container" :data-index="id" v-if="solo || (investigatorId == ownerId) || revealed">
     <img
       :class="classObject"
-      class="card"
+      class="card in-hand"
       :src="image"
       :data-customizations="JSON.stringify(card.contents.customizations)"
       @click="$emit('choose', cardAction)"
@@ -254,7 +254,7 @@ function oilPaintEffect(canvas, radius, intensity) {
 
   </div>
   <div class="card-container" v-else>
-    <img class="card" :src="cardBack" />
+    <img class="card in-hand" :src="cardBack" />
   </div>
 </template>
 

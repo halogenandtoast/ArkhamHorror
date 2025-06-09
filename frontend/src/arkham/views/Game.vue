@@ -382,7 +382,7 @@ async function undo() {
   uiLock.value = false
   if (undoLock.value) return
   undoLock.value = true
-  await undoChoice(props.gameId)
+  await undoChoice(props.gameId, debug.active)
   undoLock.value = false
 }
 

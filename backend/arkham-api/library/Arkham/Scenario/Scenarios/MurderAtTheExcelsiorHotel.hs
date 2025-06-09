@@ -157,9 +157,13 @@ instance RunMessage MurderAtTheExcelsiorHotel where
                 skillTestModifier sid Tablet token (ChangeChaosTokenModifier (NegativeModifier n))
               labeled "Skip" nothing
       pure s
-    ResolveChaosToken _ ElderThing iid -> do
-      innocentInVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ #enemy <> withTrait Innocent
-      when innocentInVictory $ assignHorror iid (ChaosTokenEffectSource Tablet) 1
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        ElderThing -> do
+          n <- selectCount $ VictoryDisplayCardMatch $ basic $ #enemy <> withTrait Innocent
+          when (n > 0) do
+            assignHorror iid (ChaosTokenEffectSource Tablet) $ if isEasyStandard attrs then 1 else n
+        _ -> pure ()
       pure s
     ScenarioResolution r -> do
       lead <- getLead

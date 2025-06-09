@@ -1,15 +1,9 @@
 module Arkham.Enemy.Helpers where
 
-import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
-import Arkham.DefeatedBy
-import Arkham.Enemy.Types qualified as Field
-import Arkham.Helpers.Source (getSourceController)
-import Arkham.Helpers.Window (checkWindows)
 import Arkham.Id
 import Arkham.Message
 import Arkham.Prelude
-import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Window qualified as Window
@@ -34,7 +28,7 @@ cancelEnemyDefeat eid = do
       _ -> False
   withQueue_ $ filter (not . isDiscardEnemy)
 
-cancelEnemyDefeatWithWindows :: (HasGame m, HasQueue Message m) => EnemyId -> m ()
+cancelEnemyDefeatWithWindows :: HasQueue Message m => EnemyId -> m ()
 cancelEnemyDefeatWithWindows eid = do
   let
     isDiscardEnemy = \case

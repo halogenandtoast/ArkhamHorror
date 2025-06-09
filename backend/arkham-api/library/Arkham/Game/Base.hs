@@ -95,6 +95,7 @@ data Game = Game
   , -- perform tarot readings
     gamePerformTarotReadings :: Bool
   , gameCurrentBatchId :: Maybe BatchId
+  , gameScenarioSteps :: Int
   }
   deriving stock (Eq, Show)
 

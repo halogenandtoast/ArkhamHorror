@@ -844,6 +844,7 @@ newGame investigator = do
         , gameAllowEmptySpaces = False
         , gamePerformTarotReadings = False
         , gameCurrentBatchId = Nothing
+        , gameScenarioSteps = 0
         }
 
   liftIO $ do

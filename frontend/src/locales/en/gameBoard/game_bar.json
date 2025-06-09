@@ -35,6 +35,7 @@
     "debugExport": "Debug Export",
 
     "undo": "Undo",
+    "restartScenario": "Restart Scenario",
 
     "fileABug": "File A Bug",
     "fileBugPart1": "This will store the current game state, and fill in a GitHub issue. You will need a GitHub account in order to proceed.",

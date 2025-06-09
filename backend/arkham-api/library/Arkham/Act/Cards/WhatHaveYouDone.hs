@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.TheGathering.Helpers
 
@@ -21,6 +22,7 @@ instance HasAbilities WhatHaveYouDone where
 instance RunMessage WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      selectEach (InPlayEnemy $ enemyIs Cards.ghoulPriest) addToVictory
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do

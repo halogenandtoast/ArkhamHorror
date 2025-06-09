@@ -61,7 +61,7 @@ advanceVia
 advanceVia method actId source = push $ Msg.advanceVia method actId source
 
 ifEnemyDefeated :: CardDef -> WindowMatcher
-ifEnemyDefeated = EnemyDefeated #after Anyone ByAny . enemyIs
+ifEnemyDefeated = IfEnemyDefeated #after Anyone ByAny . enemyIs
 
 actAbilities :: (EntityAttrs act ~ ActAttrs, Entity act) => (ActAttrs -> [Ability]) -> act -> [Ability]
 actAbilities abilities (toAttrs -> attrs) = extend attrs $ guard (onSide A attrs) *> abilities attrs

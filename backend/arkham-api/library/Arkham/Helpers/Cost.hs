@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Cost where
 
 import Arkham.Action (Action)

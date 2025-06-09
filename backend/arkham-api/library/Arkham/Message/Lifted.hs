@@ -2363,6 +2363,12 @@ cancelEnemyDefeat
   -> t m ()
 cancelEnemyDefeat enemy = lift $ Msg.cancelEnemyDefeat (asId enemy)
 
+cancelEnemyDefeatWithWindows
+  :: (MonadTrans t, HasGame m, HasQueue Message m, AsId enemy, IdOf enemy ~ EnemyId)
+  => enemy
+  -> t m ()
+cancelEnemyDefeatWithWindows enemy = lift $ Msg.cancelEnemyDefeatWithWindows (asId enemy)
+
 cancelEnemyDamage
   :: (MonadTrans t, HasQueue Message m, AsId enemy, IdOf enemy ~ EnemyId)
   => enemy

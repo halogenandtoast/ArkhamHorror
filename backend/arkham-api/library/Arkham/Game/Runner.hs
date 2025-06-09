@@ -3293,13 +3293,19 @@ preloadEntities g = do
     preloadDiscardEntities entities investigator' = do
       -- NOTE: recently added the asset type check here to avoid the "Do
       -- (DiscardCard..." message's action removed entity conflicting with this
+      --
+      -- #2128: prevent duplicates in entities in hand and discard, prefer in hand
+
+      asIfInHandCards <- getAsIfInHandCards (toId investigator')
       let
         discardEffectCards =
           map PlayerCard
             . filter
-              ( or
-                  . sequence [cdCardInDiscardEffects, and . sequence [(/= AssetType) . cdCardType, cdCardInHandEffects]]
-                  . toCardDef
+              ( \card ->
+                  let def = toCardDef card
+                   in cdCardInDiscardEffects def
+                        || (cdCardType def /= AssetType && cdCardInHandEffects def)
+                        && (PlayerCard card `notElem` asIfInHandCards)
               )
             $ investigatorDiscard (toAttrs investigator')
       pure

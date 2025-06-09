@@ -59,9 +59,9 @@ getSkillValue st iid = do
   let canBeIncreased = SkillCannotBeIncreased st `notElem` mods
   x <-
     if canBeIncreased
-      then 
+      then
         let flat = sum [v | SkillModifier st' v <- mods, st' == st]
-        in (+ flat) . sum <$> sequence [calculate calc | CalculatedSkillModifier st' calc <- mods, st' == st]
+         in (+ flat) . sum <$> sequence [calculate calc | CalculatedSkillModifier st' calc <- mods, st' == st]
       else pure 0
   pure $ fromMaybe (x + base) $ minimumMay [n | SetSkillValue st' n <- mods, st' == st]
 
@@ -214,13 +214,13 @@ getCanSpendClues (asId -> iid) = do
   match _ = False
 
 providedSlot :: Sourceable source => InvestigatorAttrs -> source -> Bool
-providedSlot attrs source = any (isSlotSource source) $ concat $ toList (investigatorSlots attrs)
+providedSlot attrs source = any (any (isSlotSource source)) $ toList attrs.slots
 
-removeFromSlots
-  :: AssetId -> Map SlotType [Slot] -> Map SlotType [Slot]
+removeFromSlots :: AssetId -> Map SlotType [Slot] -> Map SlotType [Slot]
 removeFromSlots aid = fmap (map (removeIfMatches aid))
 
 data FitsSlots = FitsSlots | MissingSlots [SlotType]
+  deriving stock Show
 
 fitsAvailableSlots :: HasGame m => AssetId -> InvestigatorAttrs -> m FitsSlots
 fitsAvailableSlots aid a = do
@@ -251,9 +251,7 @@ fitsAvailableSlots aid a = do
       (\slotType -> map (const slotType) <$> availableSlotTypesFor slotType canHoldMap assetCard a.slots)
   let missingSlotTypes = slotTypes \\ (availableSlots <> currentSlots)
 
-  if null missingSlotTypes
-    then pure FitsSlots
-    else pure $ MissingSlots missingSlotTypes
+  pure $ if null missingSlotTypes then FitsSlots else MissingSlots missingSlotTypes
 
 availableSlotTypesFor
   :: (IsCard a, HasGame m)
@@ -712,7 +710,8 @@ getMaybeCardAttachments iid c = do
   settings <- field InvestigatorSettings iid
   pure $ cardAttachments <$> lookup (toCardCode c) (perCardSettings settings)
 
-getCanLoseActions :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> m Bool
+getCanLoseActions
+  :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> m Bool
 getCanLoseActions (asId -> iid) = do
   remaining <- field InvestigatorRemainingActions iid
   additional <- fieldLength InvestigatorAdditionalActions iid

@@ -62,7 +62,7 @@ function isCardAction(c: Message): boolean {
 
   // we also allow the move action to cause card interaction
   if (c.tag == "AbilityLabel" && "contents" in c.ability.source) {
-    return c.ability.type.tag === "ActionAbility" && c.ability.type.actions.includes("Move") && c.ability.source.contents === id.value && c.ability.index === 102
+    return c.ability.type.tag === "ActionAbility" && c.ability.type.actions.includes("Move") && c.ability.source.contents === id.value && c.ability.index === 102 && abilities.value.length == 1
   }
 
   return false
@@ -345,7 +345,7 @@ function onDrop(event: DragEvent) {
           v-model="showAbilities"
           :abilities="abilities"
           :frame="frame"
-          :show-move="false"
+          :show-move="abilities.length > 1"
           :game="game"
           position="left"
           @choose="chooseAbility"

@@ -3430,7 +3430,7 @@ runPreGameMessage msg g = case msg of
       & (entitiesL . investigatorsL %~ map returnToBody)
       & (removedFromPlayL .~ [])
   Setup -> pure $ g & inSetupL .~ True
-  StartScenario _ -> pure $ g & inSetupL .~ True
+  StartScenario _ -> pure $ g & inSetupL .~ True & scenarioStepsL .~ 0
   EndSetup -> pure $ g & inSetupL .~ False
   _ -> pure g
 

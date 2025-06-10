@@ -169,7 +169,6 @@ export const joinGame = (gameId: string): Promise<Game> => api
   .then((resp) => gameDecoder.decodePromise(resp.data));
 
 export const undoChoice = (gameId: string, debug: boolean): Promise<void> => {
-  console.log(debug)
   if (debug) {
     return api.put(`arkham/games/${gameId}/undo?debug`);
   } else {

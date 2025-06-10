@@ -23,7 +23,10 @@ instance HasAbilities ChamberOfTime where
 instance RunMessage ChamberOfTime where
   runMessage msg l@(ChamberOfTime attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      relicOfAges <- fetchCard [Assets.relicOfAgesRepossessThePast, Assets.relicOfAgesADeviceOfSomeSort]
+      relicOfAges <-
+        fetchCard
+          $ SetAsideCard
+          <$> [Assets.relicOfAgesRepossessThePast, Assets.relicOfAgesADeviceOfSomeSort]
       createAssetAt_ relicOfAges (AttachedToLocation attrs.id)
       placeDoom (attrs.ability 1) attrs 1
       pure l

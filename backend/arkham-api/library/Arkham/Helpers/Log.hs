@@ -102,6 +102,9 @@ getCrossedOutCardCodes k = mapMaybe onlyCrossedOut <$> getRecordSet k
 remembered :: HasGame m => ScenarioLogKey -> m Bool
 remembered k = member k <$> scenarioField ScenarioRemembered
 
+whenRemembered :: HasGame m => ScenarioLogKey -> m () -> m ()
+whenRemembered k = whenM (remembered k)
+
 scenarioCount :: HasGame m => ScenarioCountKey -> m Int
 scenarioCount k = fromMaybe 0 . lookup k <$> scenarioField ScenarioCounts
 

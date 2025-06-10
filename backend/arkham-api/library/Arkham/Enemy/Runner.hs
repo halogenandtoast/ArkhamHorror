@@ -281,7 +281,9 @@ instance RunMessage EnemyAttrs where
                   push $ PlaceSwarmCards lead eid n
                 _ -> error "more than one swarming value"
 
-              if (all (`notElem` keywords) [#aloof, #massive] && not enemyExhausted) || forcedEngagement
+              if (all (`notElem` keywords) [#aloof, #massive] && not enemyExhausted)
+                || forcedEngagement
+                || details.overridden
                 then do
                   prey <- getPreyMatcher a
                   let

@@ -266,7 +266,7 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
           2 -> resolution2B
           _ -> error "invalid resolution"
 
-        vengeance <- getVengeanceInVictoryDisplay
+        vengeance <- getTotalVengeanceInVictoryDisplay
         yigsFury <- getRecordCount YigsFury
         recordCount YigsFury (yigsFury + vengeance)
 

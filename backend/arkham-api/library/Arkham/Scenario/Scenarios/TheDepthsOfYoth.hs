@@ -248,7 +248,7 @@ instance RunMessage TheDepthsOfYoth where
                   Nothing -> getRecordCount TheHarbingerIsStillAlive
               recordCount TheHarbingerIsStillAlive damage
 
-          vengeance <- getVengeanceInVictoryDisplay
+          vengeance <- getTotalVengeanceInVictoryDisplay
           yigsFury <- getRecordCount YigsFury
           recordCount YigsFury (yigsFury + vengeance)
 

@@ -187,7 +187,7 @@ instance RunMessage TheUntamedWilds where
           record IchtacaIsWaryOfTheInvestigators
           resolutionWithXp "resolution2" $ allGainXp' attrs
         _ -> error "invalid resolution"
-      recordCountM YigsFury getVengeanceInVictoryDisplay
+      recordCountM YigsFury getTotalVengeanceInVictoryDisplay
       endOfScenario
       pure s
     ChooseLeadInvestigator -> do

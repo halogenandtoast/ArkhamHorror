@@ -335,7 +335,7 @@ investigator f cardDef Stats {..} =
                 , investigatorPlayerId = pid
                 , investigatorName = cdName cardDef
                 , investigatorCardCode = cdCardCode cardDef
-                , investigatorArt = cdCardCode cardDef
+                , investigatorArt = CardCodeExact $ cdCardCode cardDef
                 , investigatorClass =
                     fromJustNote "missing class symbol"
                       . headMay

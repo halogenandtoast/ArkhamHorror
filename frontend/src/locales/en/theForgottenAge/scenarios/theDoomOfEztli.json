@@ -25,14 +25,6 @@
     "burialPit": {
       "draw": "Draw a card from the top of the encounter deck",
       "doom": "Place 1 doom on Burial Pit"
-    },
-    "ancestralFear": {
-      "placeDoom": "Place 1 doom on your location and discard Ancestral Fear (instead of placing it in the victory display).",
-      "addToVictory": "Place Ancestral Fear in the victory display."
-    },
-    "serpentsCall": {
-      "poisoned": "Put a set-aside Poisoned weakness into play in your threat area",
-      "drawEncounterCards": "Draw the top 2 cards of the encounter deck"
     }
   },
   "intro": {

@@ -60,6 +60,14 @@
       "resources": "Each investigator loses 2 resources.",
       "damage": "Each investigator takes 1 damage.",
       "discardAsset": "Each investigator chooses and discards an asset he or she controls."
+    },
+    "ancestralFear": {
+      "placeDoom": "Place 1 doom on your location and discard Ancestral Fear (instead of placing it in the victory display).",
+      "addToVictory": "Place Ancestral Fear in the victory display."
+    },
+    "serpentsCall": {
+      "poisoned": "Put a set-aside Poisoned weakness into play in your threat area",
+      "drawEncounterCards": "Draw the top 2 cards of the encounter deck"
     }
   },
   "prologue": {

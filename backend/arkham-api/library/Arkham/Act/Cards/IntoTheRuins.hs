@@ -25,14 +25,12 @@ instance RunMessage IntoTheRuins where
   runMessage msg a@(IntoTheRuins attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       locationSymbols <- toConnections =<< getJustLocation iid
-      let source = attrs.ability 1
-      push $ Explore iid source $ mapOneOf CardWithPrintedLocationSymbol locationSymbols
+      push $ Explore iid (attrs.ability 1) $ mapOneOf CardWithPrintedLocationSymbol locationSymbols
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       chamberOfTime <- fetchCard Locations.chamberOfTime
       shuffleCardsIntoDeck ExplorationDeck (only chamberOfTime)
-      hasChalk <- getAnyHasSupply Chalk
-      unless hasChalk $ addToVictory attrs
+      unlessAnyHasSupply Chalk $ addToVictory attrs
       advanceActDeck attrs
       pure a
     _ -> IntoTheRuins <$> liftRunMessage msg attrs

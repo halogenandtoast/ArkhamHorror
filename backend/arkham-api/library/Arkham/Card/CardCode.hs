@@ -42,7 +42,9 @@ instance Eq CardCode where
 cardCodeExactEq :: CardCode -> CardCode -> Bool
 cardCodeExactEq (CardCode a) (CardCode b) = a == b
 
-newtype CardCodeExact = CardCodeExact {unCardCodeExact :: CardCode}
+newtype CardCodeExact = CardCodeExact CardCode
+  deriving newtype (Show, Typeable, IsString, FromJSON, ToJSON)
+  deriving stock Data
 
 instance Eq CardCodeExact where
   (CardCodeExact a) == (CardCodeExact b) = cardCodeExactEq a b

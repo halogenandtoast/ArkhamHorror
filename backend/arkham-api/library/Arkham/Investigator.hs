@@ -20,7 +20,7 @@ import Data.Typeable
 lookupInvestigator :: InvestigatorId -> PlayerId -> Investigator
 lookupInvestigator iid pid = case lookup (toCardCode iid) allInvestigators of
   Nothing -> lookupPromoInvestigator iid pid
-  Just c -> overAttrs (artL .~ toCardCode iid) $ toInvestigator c pid
+  Just c -> overAttrs (artL .~ CardCodeExact (toCardCode iid)) $ toInvestigator c pid
 
 normalizeInvestigatorId :: InvestigatorId -> InvestigatorId
 normalizeInvestigatorId iid = findWithDefault iid iid promoInvestigators
@@ -46,7 +46,7 @@ promoInvestigators =
 lookupPromoInvestigator :: InvestigatorId -> PlayerId -> Investigator
 lookupPromoInvestigator iid pid = case lookup iid promoInvestigators of
   Nothing -> error $ "Unknown promo investigator: " <> show iid
-  Just iid' -> overAttrs (artL .~ toCardCode iid) $ lookupInvestigator iid' pid
+  Just iid' -> overAttrs (artL .~ CardCodeExact (toCardCode iid)) $ lookupInvestigator iid' pid
 
 instance FromJSON Investigator where
   parseJSON = withObject "Investigator" $ \o -> do
@@ -197,24 +197,18 @@ handleInvestigator :: IsInvestigator a => Investigator -> (a -> Investigator) ->
 handleInvestigator o@(Investigator a) f = maybe o f (cast a)
 
 returnToBody :: Investigator -> Investigator
-returnToBody i =
-  i
-    `handleInvestigator` ( \(BodyOfAYithian (attrs `With` meta)) -> case fromJSON (originalBody meta) of
-                             Success x ->
-                               overAttrs
-                                 ( \a ->
-                                     a
-                                       { investigatorSettings = investigatorSettings attrs <> investigatorSettings a
-                                       , investigatorXp = investigatorXp attrs
-                                       , investigatorPhysicalTrauma = investigatorPhysicalTrauma attrs
-                                       , investigatorMentalTrauma = investigatorMentalTrauma attrs
-                                       , investigatorTokens = investigatorTokens attrs
-                                       , investigatorUsedAbilities = filter onlyCampaignAbilities (investigatorUsedAbilities a)
-                                       , investigatorLog = investigatorLog a
-                                       , investigatorKilled = investigatorKilled a
-                                       , investigatorDrivenInsane = investigatorDrivenInsane a
-                                       }
-                                 )
-                                 x
-                             _ -> error "Investigator mind is too corrupted to return to their body"
-                         )
+returnToBody = flip handleInvestigator \(BodyOfAYithian (attrs `With` meta)) ->
+  case fromJSON (originalBody meta) of
+    Success x -> updateAttrs x \a ->
+      a
+        { investigatorSettings = investigatorSettings attrs <> investigatorSettings a
+        , investigatorXp = investigatorXp attrs
+        , investigatorPhysicalTrauma = investigatorPhysicalTrauma attrs
+        , investigatorMentalTrauma = investigatorMentalTrauma attrs
+        , investigatorTokens = investigatorTokens attrs
+        , investigatorUsedAbilities = filter onlyCampaignAbilities (investigatorUsedAbilities a)
+        , investigatorLog = investigatorLog a
+        , investigatorKilled = investigatorKilled a
+        , investigatorDrivenInsane = investigatorDrivenInsane a
+        }
+    _ -> error "Investigator mind is too corrupted to return to their body"

@@ -61,7 +61,11 @@ instance RunMessage UnfinishedBusiness_H where
       player <- getPlayer iid
       push
         $ chooseOne player
-        $ [Label "Lose 2 resources" [toMessage $ discardFromHand iid attrs DiscardChoose 2] | hasCards]
+        $ [ Label
+              "Choose and discard 2 cards from your hand"
+              [toMessage $ discardFromHand iid attrs DiscardChoose 2]
+          | hasCards
+          ]
         <> [ Label "Flip this back over" [Flip iid (toAbilitySource attrs 1) (toTarget attrs)]
            ]
       pure s

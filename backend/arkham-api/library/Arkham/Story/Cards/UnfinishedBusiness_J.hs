@@ -43,6 +43,7 @@ instance RunMessage UnfinishedBusiness_J where
         else case mEnemy of
           Just enemy -> do
             cancelEnemyDefeat enemy
+            healAllDamage attrs enemy
             place enemy attrs.placement
             createCardEffect Cards.unfinishedBusiness_J Nothing attrs (toTarget enemy)
             afterStoryResolution attrs do

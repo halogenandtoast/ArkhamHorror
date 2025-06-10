@@ -517,7 +517,12 @@ instance FetchCard CardDef where
       then fetchCardMaybe (UniqueFetchCard def)
       else maybe (Just <$> genCard def) (pure . Just) =<< maybeGetSetAsideCard def
 
-instance FetchCard [CardDef] where
+newtype SetAsideCard = SetAsideCard CardDef
+
+instance FetchCard SetAsideCard where
+  fetchCardMaybe (SetAsideCard def) = maybeGetSetAsideCard def
+
+instance FetchCard a => FetchCard [a] where
   fetchCardMaybe defs = getFirst . foldMap First <$> traverse fetchCardMaybe defs
 
 instance FetchCard ExtendedCardMatcher where

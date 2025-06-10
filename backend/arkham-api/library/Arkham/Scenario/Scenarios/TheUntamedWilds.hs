@@ -2,8 +2,6 @@ module Arkham.Scenario.Scenarios.TheUntamedWilds (setupTheUntamedWilds, theUntam
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Act.Sequence qualified as AS
-import Arkham.Act.Types
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Import
@@ -12,13 +10,13 @@ import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers (Deck (..))
+import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
-import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
@@ -147,10 +145,9 @@ instance RunMessage TheUntamedWilds where
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
         ElderThing | isHardExpert attrs -> do
-          isPoisoned <- getIsPoisoned iid
-          unless isPoisoned $ do
+          unlessM (getIsPoisoned iid) do
             poisoned <- getSetAsidePoisoned
-            push $ CreateWeaknessInThreatArea poisoned iid
+            createWeaknessInThreatArea poisoned iid
         _ -> pure ()
       pure s
     Explore iid _ _ -> do
@@ -164,30 +161,33 @@ instance RunMessage TheUntamedWilds where
       investigators <- allInvestigators
       case res of
         NoResolution -> do
-          actStep <- fieldMap ActSequence (AS.unActStep . AS.actStep) =<< selectJust AnyAct
-          resolutionWithXp "noResolution" $ allGainXp' attrs
           record TheInvestigatorsWereForcedToWaitForAdditionalSupplies
-          recordWhen (actStep < 3) IchtacaObservedYourProgressWithKeenInterest
-          foughtWithIchtaca <- remembered YouFoughtWithIchtaca
-          recordWhen foughtWithIchtaca IchtacaIsWaryOfTheInvestigators
-          recordWhen (actStep < 3 || foughtWithIchtaca) AlejandroFollowedTheInvestigatorsIntoTheRuins
-          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.alejandroVela
-          whenM (remembered IchtachaIsLeadingTheWay) do
+          actStep <- getCurrentActStep
+          when (actStep < 3) do
+            record IchtacaObservedYourProgressWithKeenInterest
+            record AlejandroFollowedTheInvestigatorsIntoTheRuins
+            addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.alejandroVela
+          whenRemembered YouFoughtWithIchtaca do
+            record IchtacaIsWaryOfTheInvestigators
+            record AlejandroFollowedTheInvestigatorsIntoTheRuins
+            addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.alejandroVela
+          whenRemembered IchtachaIsLeadingTheWay do
             record TheInvestigatorsHaveEarnedIchtacasTrust
             record AlejandroChoseToRemainAtCamp
+          resolutionWithXp "noResolution" $ allGainXp' attrs
         Resolution 1 -> do
-          resolutionWithXp "resolution1" $ allGainXp' attrs
           record TheInvestigatorsClearedAPathToTheEztliRuins
           record AlejandroChoseToRemainAtCamp
           record TheInvestigatorsHaveEarnedIchtacasTrust
+          resolutionWithXp "resolution1" $ allGainXp' attrs
         Resolution 2 -> do
-          resolutionWithXp "resolution2" $ allGainXp' attrs
           record TheInvestigatorsClearedAPathToTheEztliRuins
           record AlejandroFollowedTheInvestigatorsIntoTheRuins
           addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.alejandroVela
           record IchtacaIsWaryOfTheInvestigators
+          resolutionWithXp "resolution2" $ allGainXp' attrs
         _ -> error "invalid resolution"
-      recordCount YigsFury =<< getVengeanceInVictoryDisplay
+      recordCountM YigsFury getVengeanceInVictoryDisplay
       endOfScenario
       pure s
     ChooseLeadInvestigator -> do

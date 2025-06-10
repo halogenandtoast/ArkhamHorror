@@ -177,7 +177,6 @@ explore iid source cardMatcher exploreRule matchCount = do
           replacedIsRevealed <- field LocationRevealed lid
           replacedIsWithoutClues <- lid <=~> LocationWithoutClues
 
-          checkAfter $ Window.PutLocationIntoPlay iid lid
           when (canMove && exploreRule == PlaceExplored) $ moveTo source iid lid
           updateHistory iid $ HistoryItem HistorySuccessfulExplore True
           checkAfter $ Window.Explored iid mlid (Success lid)

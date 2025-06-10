@@ -21,6 +21,9 @@ recordWhen False = pure . const ()
 recordCount :: (ReverseQueue m, IsCampaignLogKey k) => k -> Int -> m ()
 recordCount k = push . RecordCount (toCampaignLogKey k)
 
+recordCountM :: (ReverseQueue m, IsCampaignLogKey k) => k -> m Int -> m ()
+recordCountM k action = action >>= recordCount k
+
 remember :: ReverseQueue m => ScenarioLogKey -> m ()
 remember = push . Remember
 

@@ -219,26 +219,35 @@ instance RunMessage TheDoomOfEztli where
           withLocationOf iid \lid -> placeDoom ElderThing lid 1
         _ -> pure ()
       pure s
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scope "resolutions" do
       defeated <- select DefeatedInvestigator
-      yigsFury <- getRecordCount YigsFury
-      unless (null defeated) do
-        if yigsFury >= 4
-          then do
-            flavor $ scope "defeated" $ h "title" >> p "body"
-            for_ defeated $ kill attrs
-            investigators <- allInvestigators
-            when (length defeated == length investigators) gameOver
-          else recordCount YigsFury (yigsFury + 3)
-      case r of
-        NoResolution -> do
-          anyDefeated <- selectAny DefeatedInvestigator
-          unless anyDefeated $ flavor $ scope "noResolution" $ h "title" >> p "body"
-          do_ $ if anyDefeated && yigsFury >= 4 then R2 else R3
-        _ -> do_ msg
+
+      if null defeated
+        then case r of
+          NoResolution -> when (null defeated) (do_ R3)
+          _ -> do_ msg
+        else do
+          yigsFury <- getRecordCount YigsFury
+          storyOnlyBuild defeated $ scope "defeated" $ h "title" >> p "body"
+
+          if yigsFury >= 4
+            then do
+              for_ defeated $ kill attrs
+              investigators <- allInvestigators
+              if length defeated == length investigators
+                then gameOver
+                else case r of
+                  NoResolution -> do_ R2
+                  _ -> do_ msg
+            else do
+              recordCount YigsFury (yigsFury + 3)
+              case r of
+                NoResolution -> do_ R3
+                _ -> do_ msg
+
       pure s
-    Do (ScenarioResolution n) -> do
-      vengeance <- getVengeanceInVictoryDisplay
+    Do (ScenarioResolution n) -> scope "resolutions" do
+      vengeance <- getTotalVengeanceInVictoryDisplay
       yigsFury <- getRecordCount YigsFury
       inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
       setAsideHarbinger <- selectOne $ OutOfPlayEnemy SetAsideZone $ enemyIs Enemies.harbingerOfValusia
@@ -270,8 +279,8 @@ instance RunMessage TheDoomOfEztli where
         Resolution 3 -> do
           resolution "resolution3"
           leadChooseOneM do
-            labeled' "goBackInside" $ push R4
-            labeled "thisPlaceMustBeDestroyed" $ push R5
+            labeled' "goBackInside" $ do_ R4
+            labeled' "thisPlaceMustBeDestroyed" $ do_ R5
           pure s
         Resolution 4 -> do
           standalone <- getIsStandalone

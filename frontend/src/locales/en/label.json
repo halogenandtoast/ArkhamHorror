@@ -51,6 +51,7 @@
   "sufferPhysicalTrauma": "Suffer physical trauma | Suffer {count} physical trauma",
   "sufferMentalTrauma": "Suffer mental trauma | Suffer {count} mental trauma",
   "takeControlOfKey": "Take control of key",
+  "takeControlOf": "Take control of {name}",
   "takeDamage": "Take {count} damage",
   "takeDamageAndHorror": "Take {damage} damage and {horror} horror",
   "takeDirectDamage": "Take {count} direct damage",

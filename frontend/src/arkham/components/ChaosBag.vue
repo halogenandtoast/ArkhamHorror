@@ -154,6 +154,11 @@ const choose = (idx: number) => emit('choose', idx)
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+   @media (max-width: 800px) and (orientation: portrait) {
+    position:absolute;
+    width: 100%;
+    left: 0;
+   }
 }
 
 .token-preview {
@@ -161,6 +166,37 @@ const choose = (idx: number) => emit('choose', idx)
   flex-wrap: wrap;
   flex-direction: row;
   justify-content: center;
+  @media (max-width: 800px) and (orientation: portrait) {
+    display: grid;
+    grid-template-columns: 0.11fr 0.11fr 0.11fr 0.33fr 0.11fr 0.11fr 0.11fr;
+    img{
+      margin: 0 auto;
+    }
+    img:nth-child(6n+1) {
+      grid-column: 1;
+    }
+
+    img:nth-child(6n+2) {
+      grid-column: 2;
+    }
+
+    img:nth-child(6n+3) {
+      grid-column: 3;
+    }
+
+    img:nth-child(6n+4) {
+      grid-column: 5;
+    }
+
+    img:nth-child(6n+5) {
+      grid-column: 6;
+    }
+
+    img:nth-child(6n) {
+      grid-column: 7;
+    }
+  }
+  
   img {
     width: 30px;
     height: auto;

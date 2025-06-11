@@ -7,6 +7,7 @@ import * as Arkham from '@/arkham/types/CardDef';
 
 import sets from '@/arkham/data/sets.json'
 import cycles from '@/arkham/data/cycles.json'
+import { shallowRef } from 'vue';
 
 enum View {
   Image = "IMAGE",
@@ -23,11 +24,10 @@ const fromView = (view: View): string => {
   return "LIST"
 }
 
-
 const router = useRouter()
 const route = useRoute()
 const queryText = route.query.q ? route.query.q.toString() : "e:core"
-const allCards = ref<Arkham.CardDef[] | null>(null)
+const allCards = shallowRef<Arkham.CardDef[] | null>(null)
 const query = ref<string>(queryText)
 const view = ref(route.query.view? toView(route.query.view) : View.List)
 
@@ -41,8 +41,6 @@ const fetchData = async () => {
     })
   })
 }
-
-watch(() => route.query.includeEncounter, fetchData, { immediate: true })
 
 interface Filter {
   cardTypes: string[]
@@ -72,8 +70,11 @@ interface CardCycle {
 
 const filter = ref<Filter>({ cardTypes: [], text: [], level: null, cycle: null, set: "core", classes: [], traits: []})
 
+await fetchData()
+
 watch(() => includeEncounter.value, (newIncludeEncounter) => {
   router.push({ name: 'Cards', query: { ...route.query, includeEncounter: newIncludeEncounter ? 'true' : undefined}})
+  fetchData()
 })
 
 watch(() => view.value, (newView) => {

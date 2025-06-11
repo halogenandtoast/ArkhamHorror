@@ -63,13 +63,14 @@ instance RunMessage Act where
   runMessage msg (Act a) = Act <$> runMessage msg a
 
 onFrontSide :: ActAttrs -> Bool
-onFrontSide = (`elem` [A, C, E]) . actSide . actSequence
+onFrontSide = (`elem` [A, C, E, G]) . actSide . actSequence
 
 backSide :: ActAttrs -> ActSide
 backSide attrs = case actSide $ actSequence attrs of
   A -> B
   C -> D
   E -> F
+  G -> H
   _ -> error "backSide: not on front side"
 
 instance RunMessage ActAttrs where

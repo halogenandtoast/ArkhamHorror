@@ -19,6 +19,7 @@ import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Scenario.Import.Lifted
@@ -80,6 +81,16 @@ setupThreadsOfFate _attrs = do
   setup do
     ul do
       li "gatherSets"
+      li "beforeDrawingOpeningHands"
+      li "placeLocations"
+      li "setAside"
+      li "actDecks"
+      unscoped $ li "shuffleRemainder"
+
+  scope "threeActsThreeThreads" $ flavor do
+    setTitle "title"
+    h "title"
+    p "body"
 
   whenReturnTo $ gather Set.ReturnToThreadsOfFate
   gather Set.ThreadsOfFate
@@ -166,6 +177,11 @@ setupThreadsOfFate _attrs = do
           , Acts.strangeOccurences
           , Acts.theBrotherhoodIsRevealed
           ]
+  whenReturnTo $ leadChooseOneM $ scope "setup" do
+    questionLabeled' "chooseActDeck4"
+    questionLabeledCard (CardCode "53028b")
+    labeled' "findSource" $ doStep 1 Setup
+    labeled' "findRoot" $ doStep 2 Setup
 
 instance RunMessage ThreadsOfFate where
   runMessage msg s@(ThreadsOfFate attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -210,6 +226,21 @@ instance RunMessage ThreadsOfFate where
           $ record TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
       pure s
     Setup -> runScenarioSetup ThreadsOfFate attrs $ setupThreadsOfFate attrs
+    DoStep 1 Setup -> do
+      seekingTrouble <- sample2 Acts.seekingTroubleSentFromAnotherTime Acts.seekingTroubleLoadingDocks
+      Msg.setActDeckN
+        4
+        [Acts.searchForTheSource, seekingTrouble, Acts.discoverTheTruth, Acts.impossiblePursuit]
+      push SetActDeck
+      pure s
+    DoStep 2 Setup -> do
+      overgrownEstate <-
+        sample2 Acts.theOvergrownEstateSentFromAnotherTime Acts.theOvergrownEstateClintonFreeman
+      Msg.setActDeckN
+        4
+        [Acts.searchForTheMeaning, overgrownEstate, Acts.discoverTheTruth, Acts.impossiblePursuit]
+      push SetActDeck
+      pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case chaosTokenFace token of
         Cultist | isEasyStandard attrs && n < 1 -> assignDamage iid Cultist 1

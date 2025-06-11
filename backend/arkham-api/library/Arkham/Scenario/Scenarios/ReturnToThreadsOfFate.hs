@@ -15,21 +15,18 @@ returnToThreadsOfFate difficulty =
     "53028"
     "Return to Threads of Fate"
     difficulty
-    [ ".                .                trainTracks  trainTracks          townHall             townHall  arkhamPoliceStation  arkhamPoliceStation .           ."
-    , "curiositieShoppe curiositieShoppe northside    northside            downtown             downtown  easttown             easttown            velmasDiner velmasDiner"
-    , ".                eztliExhibit     eztliExhibit miskatonicUniversity miskatonicUniversity rivertown rivertown            blackCave           blackCave   ."
+    [ ".                .                trainTracks  trainTracks          townHall             townHall     arkhamPoliceStation arkhamPoliceStation .           ."
+    , "curiositieShoppe curiositieShoppe northside    northside            downtown             downtown     easttown            easttown            velmasDiner velmasDiner"
+    , ".                eztliExhibit     eztliExhibit miskatonicUniversity miskatonicUniversity rivertown    rivertown           blackCave           blackCave   ."
+    , ".                .                .            .                    .                    loadingDocks loadingDocks        .                   .           ."
     ]
-    ( decksLayoutL
-        .~ [ ".       act1"
-           , ".       act1"
-           , ".       act2"
-           , "agenda1 act2"
-           , "agenda1 act3"
-           , ".       act3"
-           , ".       act4"
-           , ".       act4"
+    (( decksLayoutL
+        .~ [ ".       act1 act2"
+           , "agenda1 act1 act2"
+           , "agenda1 act3 act4"
+           , ".       act3 act4"
            ]
-    )
+    ) . (referenceL .~ "04113"))
 
 instance RunMessage ReturnToThreadsOfFate where
   runMessage msg (ReturnToThreadsOfFate threadsOfFate'@(ThreadsOfFate attrs)) = runQueueT $ scenarioI18n $ case msg of

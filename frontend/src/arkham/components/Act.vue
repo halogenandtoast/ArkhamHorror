@@ -47,9 +47,18 @@ const cardCode = computed(() => {
     newId = newId.replace(/e$/, '')
   }
 
+  if (sidePart == 'h') {
+    newId = newId.replace(/g$/, '')
+  }
+
   // handle threads of fate as hardcoded values because I don't want to deal with it
   if (parseInt(newId) >= 4117 && parseInt(newId) <= 4140) {
     const adjustedSidePart = sidePart.replace(/[ace]/, '').replace(/[df]/, 'b')
+    return `${newId}${adjustedSidePart}`
+  }
+
+  if (parseInt(newId) >= 53030 && parseInt(newId) <= 53036) {
+    const adjustedSidePart = sidePart.replace(/[g]/, '').replace(/[h]/, 'b')
     return `${newId}${adjustedSidePart}`
   }
 

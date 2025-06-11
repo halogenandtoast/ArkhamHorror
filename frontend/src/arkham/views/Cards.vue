@@ -131,12 +131,12 @@ const cards = computed(() => {
     if (c.cardCode === "cx05184") return false
     if (cycleSets) {
       const cSet = cardSet(c)
-      if (cSet && !cycleSets.includes(cSet)) return false
+      if (!cSet || !cycleSets.includes(cSet)) return false
     }
 
     if (set) {
       let cCode = cardSet(c)?.code
-      if (cCode && cCode !== set) return false
+      if (!cCode || cCode !== set) return false
     }
 
     if (classes.length > 0) {
@@ -154,6 +154,7 @@ const cards = computed(() => {
     }
 
     if (level && c.level !== level) return false
+
     if (cardTypes.length > 0) {
       const sanitizedCardTypes = cardTypes.map((ct) => ct.toLowerCase().trim())
       console.log(sanitizedCardTypes, cardType(c))

@@ -35,8 +35,8 @@ instance RunMessage SnakePit where
 
       when hasBinoculars do
         chooseOneM iid $ scenarioI18n do
-          labeled "snakePit.doNotMove" $ cancelMovement (attrs.ability 1) iid
-          labeled "snakePit.move" nothing
+          labeled' "snakePit.doNotMove" $ cancelMovement (attrs.ability 1) iid
+          labeled' "snakePit.move" nothing
 
       pure l
     _ -> SnakePit <$> liftRunMessage msg attrs

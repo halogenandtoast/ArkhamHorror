@@ -15,7 +15,7 @@ actStep (Sequence num _) = ActStep num
 actSide :: ActSequence -> ActSide
 actSide (Sequence _ side) = side
 
-data ActSide = A | B | C | D | E | F
+data ActSide = A | B | C | D | E | F | G | H
   deriving stock (Eq, Show, Ord, Data)
 
 data ActSequence = Sequence Int ActSide

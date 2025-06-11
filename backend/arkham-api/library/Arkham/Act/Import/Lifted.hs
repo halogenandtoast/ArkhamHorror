@@ -63,5 +63,18 @@ advanceVia method actId source = push $ Msg.advanceVia method actId source
 ifEnemyDefeated :: CardDef -> WindowMatcher
 ifEnemyDefeated = IfEnemyDefeated #after Anyone ByAny . enemyIs
 
-actAbilities :: (EntityAttrs act ~ ActAttrs, Entity act) => (ActAttrs -> [Ability]) -> act -> [Ability]
-actAbilities abilities (toAttrs -> attrs) = extend attrs $ guard (onSide A attrs) *> abilities attrs
+actAbilities
+  :: (EntityAttrs act ~ ActAttrs, Entity act) => (ActAttrs -> [Ability]) -> act -> [Ability]
+actAbilities = actAbilities' A
+
+actAbilities1
+  :: (EntityAttrs act ~ ActAttrs, Entity act) => (ActAttrs -> Ability) -> act -> [Ability]
+actAbilities1 = actAbilities1' A
+
+actAbilities'
+  :: (EntityAttrs act ~ ActAttrs, Entity act) => ActSide -> (ActAttrs -> [Ability]) -> act -> [Ability]
+actAbilities' side abilities (toAttrs -> attrs) = extend attrs $ guard (onSide side attrs) *> abilities attrs
+
+actAbilities1'
+  :: (EntityAttrs act ~ ActAttrs, Entity act) => ActSide -> (ActAttrs -> Ability) -> act -> [Ability]
+actAbilities1' side ability (toAttrs -> attrs) = extend attrs $ guard (onSide side attrs) *> [ability attrs]

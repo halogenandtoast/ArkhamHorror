@@ -27,6 +27,11 @@
       "doom": "Place 1 doom on Burial Pit"
     }
   },
+  "tooltips": {
+    "entryway": {
+      "resign": "You've escaped ...for now."
+    }
+  },
   "intro": {
     "title": "Scenario II: The Doom of Eztli",
     "readIntro1": "Check Campaign Log. *If the investigators were forced to wait for additional supplies:* Read _Intro 1_.",

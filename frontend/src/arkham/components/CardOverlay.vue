@@ -65,7 +65,10 @@ onMounted(() => {
   if (!isMobile) {
     document.addEventListener('mouseover', handleMouseover)
   } else {
-    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('contextmenu', (e) => { 
+      if (e.target.tagName.toLowerCase() === 'input') return
+      e.preventDefault()
+    })
     document.addEventListener('touchstart', handlePress)
     document.addEventListener('touchmove', filterMove)
     document.addEventListener('touchend', filterPress)

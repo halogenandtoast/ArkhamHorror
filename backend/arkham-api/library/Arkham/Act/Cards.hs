@@ -61,6 +61,7 @@ allActCards =
       , darkKnowledgeV1
       , darkKnowledgeV2
       , descentIntoDark
+      , discoverTheTruth
       , discoveringTheTruth
       , disruptingTheRitual
       , dormancy
@@ -90,6 +91,7 @@ allActCards =
       , hiddenAgendas
       , huntingTheRougarou
       , huntressOfTheEztli
+      , impossiblePursuit
       , inAzathothsDomain
       , infiltratingTheLodge
       , intoTheBeyond
@@ -145,9 +147,11 @@ allActCards =
       , searchForACampSite
       , searchForAlejandro
       , searchForTheBrotherhood
+      , searchForTheMeaning
       , searchForThePatient
       , searchForThePattern
       , searchForTheRuins
+      , searchForTheSource
       , searchForTheStrangerV1
       , searchForTheStrangerV2
       , searchForTheStrangerV3
@@ -155,6 +159,8 @@ allActCards =
       , searchingForTheTome
       , searchingTheUnnamable
       , seekOutTheNight
+      , seekingTroubleLoadingDocks
+      , seekingTroubleSentFromAnotherTime
       , shadowOfThePastV1
       , shadowOfThePastV2
       , shadowOfThePastV3
@@ -199,6 +205,8 @@ allActCards =
       , theKingsDecree
       , theMoonsCore
       , theOath
+      , theOvergrownEstateClintonFreeman
+      , theOvergrownEstateSentFromAnotherTime
       , theParisianConspiracyV1
       , theParisianConspiracyV2
       , thePath
@@ -913,6 +921,30 @@ theReallyBadOnesV3 =
 theReallyBadOnesV4 :: CardDef
 theReallyBadOnesV4 =
   act "52036" "\"The Really Bad Ones\" (v. IV)" 2 ReturnToTheUnspeakableOath
+
+searchForTheMeaning :: CardDef
+searchForTheMeaning = act "53029" "Search for the Meaning" 1 ReturnToThreadsOfFate
+
+searchForTheSource :: CardDef
+searchForTheSource = act "53030" "Search for the Source" 1 ReturnToThreadsOfFate
+
+theOvergrownEstateSentFromAnotherTime :: CardDef
+theOvergrownEstateSentFromAnotherTime = act "53031" "The Overgrown Estate" 2 ReturnToThreadsOfFate
+
+theOvergrownEstateClintonFreeman :: CardDef
+theOvergrownEstateClintonFreeman = act "53032" "The Overgrown Estate" 2 ReturnToThreadsOfFate
+
+seekingTroubleSentFromAnotherTime :: CardDef
+seekingTroubleSentFromAnotherTime = act "53033" "Seeking Trouble" 2 ReturnToThreadsOfFate
+
+seekingTroubleLoadingDocks :: CardDef
+seekingTroubleLoadingDocks = act "53034" "Seeking Trouble" 2 ReturnToThreadsOfFate
+
+discoverTheTruth :: CardDef
+discoverTheTruth = act "53035" "Discover the Truth" 3 ReturnToThreadsOfFate
+
+impossiblePursuit :: CardDef
+impossiblePursuit = act "53036" "Impossible Pursuit" 3 ReturnToThreadsOfFate
 
 findingLadyEsprit :: CardDef
 findingLadyEsprit = act "81005" "Finding Lady Esprit" 1 TheBayou

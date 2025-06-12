@@ -1626,6 +1626,7 @@ library
       Arkham.Enemy.Cards.BroodOfYogSothothChargingBeast
       Arkham.Enemy.Cards.BroodOfYogSothothSwellingDevourer
       Arkham.Enemy.Cards.BroodOfYogSothothThrashingSpawn
+      Arkham.Enemy.Cards.BrotherhoodAcolyte
       Arkham.Enemy.Cards.BrotherhoodCultist
       Arkham.Enemy.Cards.BrownJenkin
       Arkham.Enemy.Cards.CarlSanfordDeathlessFanatic
@@ -1879,6 +1880,7 @@ library
       Arkham.Enemy.Cards.StalkingManticore
       Arkham.Enemy.Cards.StealthyByakhee
       Arkham.Enemy.Cards.StealthyZoog
+      Arkham.Enemy.Cards.StolenMind
       Arkham.Enemy.Cards.StubbornDetective
       Arkham.Enemy.Cards.SummonedBeast
       Arkham.Enemy.Cards.SuspiciousOrderly

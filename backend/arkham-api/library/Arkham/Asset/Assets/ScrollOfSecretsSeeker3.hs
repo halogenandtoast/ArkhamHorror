@@ -34,7 +34,7 @@ instance RunMessage ScrollOfSecretsSeeker3 where
       xs <- selectTargets $ affectsOthers can.manipulate.deck
       hasEncounterDeck <- can.target.encounterDeck iid
       chooseTargetM iid ([EncounterDeckTarget | hasEncounterDeck] <> xs) \target -> do
-        lookAt iid attrs target [fromBottomOfDeck 3] #any (defer attrs IsNotDraw)
+        lookAt iid attrs target [(FromBottomOfDeck 3, DoNothing)] #any (defer attrs IsNotDraw)
       pure a
     SearchFound _ (isTarget attrs -> True) _ cards | notNull cards -> do
       doStep 1 msg

@@ -90,6 +90,7 @@ data LocationMatcher
   | LocationWithShroudLessThanOrEqualToLessThanEnemyMaybeField EnemyId (Field Enemy (Maybe Int))
   | LocationWithMostClues LocationMatcher
   | LocationWithMostInvestigators LocationMatcher
+  | LocationWithMostEnemies LocationMatcher EnemyMatcher
   | LocationWithEnemy EnemyMatcher
   | LocationCanBeEnteredBy EnemyId
   | LocationWithAsset AssetMatcher

@@ -33,7 +33,7 @@ instance RunMessage DiabolicalLuck where
           sid
           (attrs.ability 1)
           (CardIdTarget $ toCardId attrs)
-          (AddSkillIcons [#wild, #wild])
+          (AddSkillIcons [#wild, #wild, #wild])
 
         push $ CommitCard iid (toCard attrs)
       pure s

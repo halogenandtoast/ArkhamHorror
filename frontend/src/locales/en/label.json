@@ -46,6 +46,7 @@
   "removeAgendaDoom": "Remove 1 doom from the current agenda | Remove {count} doom from the current agenda",
   "secretlyAddToHand": "Secretly add {name} to hand",
   "skills": "Skills",
+  "skip": "Skip",
   "spendClues": "Spend a clue | Spend {count} clues",
   "spendResources": "Spend a resource | Spend {count} resources",
   "sufferPhysicalTrauma": "Suffer physical trauma | Suffer {count} physical trauma",

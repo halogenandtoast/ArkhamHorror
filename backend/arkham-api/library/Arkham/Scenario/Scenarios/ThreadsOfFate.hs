@@ -25,7 +25,6 @@ import Arkham.Message.Lifted.Log
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThreadsOfFate.Helpers
-import Arkham.Scenarios.ThreadsOfFate.Story
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.IntMap.Strict qualified as IntMap
@@ -151,11 +150,9 @@ setupThreadsOfFate _attrs = do
       sample2 Acts.friendsInHighPlacesHenrysInformation Acts.friendsInHighPlacesHenryDeveau
     genCards
       [Acts.searchForAlejandro, friendsInHighPlaces, Acts.alejandrosPrison, Acts.alejandrosPlight]
-  chooseOneM lead do
-    labeled "Go to the police to inform them of Alejandro's disappearance"
-      $ push
-      $ SetActDeckCards 2 act2Deck1
-    labeled "Look for Alejandro on your own" $ push $ SetActDeckCards 2 act2Deck2
+  chooseOneM lead $ scope "setup" do
+    labeled' "goToThePolice" $ push $ SetActDeckCards 2 act2Deck1
+    labeled' "lookOnYourOwn" $ push $ SetActDeckCards 2 act2Deck2
 
   listenedToIchtacasTale <- remembered YouListenedToIchtacasTale
   setActDeckN 3
@@ -185,45 +182,49 @@ setupThreadsOfFate _attrs = do
 
 instance RunMessage ThreadsOfFate where
   runMessage msg s@(ThreadsOfFate attrs) = runQueueT $ scenarioI18n $ case msg of
-    PreScenarioSetup -> do
+    PreScenarioSetup -> scope "intro" do
       traverse_ obtainCard =<< findCard (`cardMatch` cardIs Assets.relicOfAgesADeviceOfSomeSort)
       traverse_ obtainCard =<< findCard (`cardMatch` cardIs Assets.alejandroVela)
-
       gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
-      story intro1
-      storyWithChooseOneM (if gaveCustodyToHarlan then intro3 else intro2) do
-        labeled "“You’re not going anywhere until you tell me what is going on.” - Skip to Intro 4."
-          $ doStep 4 msg
-        labeled "“Have it your way.” - Skip to Intro 5." $ doStep 5 msg
+      storyWithContinue' (h "title" >> p "intro1")
+      doStep (if gaveCustodyToHarlan then 3 else 2) PreScenarioSetup
       pure s
-    DoStep 4 PreScenarioSetup -> do
+    DoStep 2 PreScenarioSetup -> scope "intro" do
+      storyWithChooseOneM' (h "title" >> p "intro2") do
+        labeled' "skipToIntro4" $ doStep 4 PreScenarioSetup
+        labeled' "skipToIntro5" $ doStep 5 PreScenarioSetup
+      pure s
+    DoStep 3 PreScenarioSetup -> scope "intro" do
+      storyWithChooseOneM' (h "title" >> p "intro3") do
+        labeled' "skipToIntro4" $ doStep 4 PreScenarioSetup
+        labeled' "skipToIntro5" $ doStep 5 PreScenarioSetup
+      pure s
+    DoStep 4 PreScenarioSetup -> scope "intro" do
+      storyWithContinue' (h "title" >> p "intro4")
       remember YouListenedToIchtacasTale
       unlessStandalone $ addChaosToken Cultist
       pure s
-    DoStep 5 PreScenarioSetup -> do
+    DoStep 5 PreScenarioSetup -> scope "intro" do
+      storyWithContinue' (h "title" >> p "intro5")
       remember IchtacaLeftWithoutYou
       whenHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone $ doStep 6 PreScenarioSetup
       pure s
-    DoStep 6 PreScenarioSetup -> do
-      storyWithChooseOneM intro6 do
-        labeled "“We should be wary of them.”" do
+    DoStep 6 PreScenarioSetup -> scope "intro" do
+      storyWithChooseOneM' (h "title" >> p "intro6") do
+        labeled' "beWary" do
           record YouAreForgingYourOwnWay
           unlessStandalone do
             removeAllChaosTokens Cultist
             removeAllChaosTokens Tablet
             addChaosToken ElderThing
-        labeled "“Maybe I should listen to them after all...”" nothing
+        labeled' "listen" nothing
       pure s
-    StandaloneSetup -> do
+    StandaloneSetup -> scope "standalone" do
       lead <- getLead
       setChaosTokens standaloneChaosTokens
       chooseOneM lead do
-        labeled
-          "The investigators gave custody of the relic to Alejandro."
-          $ record TheInvestigatorsGaveCustodyOfTheRelicToAlejandro
-        labeled
-          "The investigators gave custody of the relic to Harlan Earnstone."
-          $ record TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
+        labeled' "gaveCustodyToAlejandro" $ record TheInvestigatorsGaveCustodyOfTheRelicToAlejandro
+        labeled' "gaveCustodyToHarlan" $ record TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
       pure s
     Setup -> runScenarioSetup ThreadsOfFate attrs $ setupThreadsOfFate attrs
     DoStep 1 Setup -> do
@@ -255,20 +256,19 @@ instance RunMessage ThreadsOfFate where
         _ -> pure ()
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
-      case chaosTokenFace token of
+      case token.face of
         Cultist | isEasyStandard attrs -> assignDamage iid Cultist 1
         Cultist | isHardExpert attrs -> directDamage iid Cultist 1
         Tablet | isEasyStandard attrs -> do
           es <- selectTargets $ NearestEnemyToFallback iid (EnemyWithTrait Trait.Cultist)
-          chooseOrRunOneM iid do
-            targets es \target -> placeDoom Tablet target 1
+          chooseOrRunOneM iid $ targets es \target -> placeDoom Tablet target 1
         Tablet | isHardExpert attrs -> do
           es <- selectTargets $ NearestEnemyToFallback iid (EnemyWithTrait Trait.Cultist)
           for_ es \target -> placeDoom Tablet target 1
         ElderThing -> removeTokens ElderThing iid #clue 1
         _ -> pure ()
       pure s
-    ScenarioResolution _ -> do
+    ScenarioResolution _ -> scope "resolutions" do
       -- because we have multiple acts we might have an act that triggered the
       -- resolution and would not be counted so we need to determine that as
       -- well
@@ -297,36 +297,34 @@ instance RunMessage ThreadsOfFate where
       iids <- allInvestigators
       lead <- getLead
 
-      story resolution1
-
       record $ if act3bCompleted then TheInvestigatorsFoundTheMissingRelic else TheRelicIsMissing
+      record $ if act3dCompleted then TheInvestigatorsRescuedAlejandro else AlejandroIsMissing
+      record $ if act3fCompleted then TheInvestigatorsForgedABondWithIchtaca else IchtacaIsInTheDark
+
+      unless act3bCompleted $ removeCampaignCard Assets.relicOfAgesADeviceOfSomeSort
+      unless act3dCompleted $ removeCampaignCard Assets.alejandroVela
+
+      forgingYourOwnPath <- getHasRecord YouAreForgingYourOwnWay
+      alejandroOwned <- getIsAlreadyOwned Assets.alejandroVela
+
+      resolutionWithXp "resolution1"
+        $ allGainXpWithBonus' attrs
+        $ mconcat
+        $ toBonus "bonus" act1sCompleted
+        : [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath]
+          <> [toBonus "forgingYourOwnPath" 2 | act3fCompleted && forgingYourOwnPath]
 
       relicOwned <- getIsAlreadyOwned Assets.relicOfAgesADeviceOfSomeSort
       when (act3bCompleted && not relicOwned) do
         forceAddCampaignCardToDeckChoice iids DoNotShuffleIn Assets.relicOfAgesADeviceOfSomeSort
 
-      unless act3bCompleted do
-        removeCampaignCard Assets.relicOfAgesADeviceOfSomeSort
-
-      record $ if act3dCompleted then TheInvestigatorsRescuedAlejandro else AlejandroIsMissing
-
-      forgingYourOwnPath <- getHasRecord YouAreForgingYourOwnWay
-      alejandroOwned <- getIsAlreadyOwned Assets.alejandroVela
       when (act3dCompleted && not alejandroOwned && not forgingYourOwnPath) do
         addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.alejandroVela
-
-      unless act3dCompleted do
-        removeCampaignCard Assets.alejandroVela
-
-      record $ if act3fCompleted then TheInvestigatorsForgedABondWithIchtaca else IchtacaIsInTheDark
 
       when (act3fCompleted && not forgingYourOwnPath) do
         addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.ichtacaTheForgottenGuardian
 
       addCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.expeditionJournal
-      allGainXpWithBonus attrs $ mconcat $ toBonus "bonus" act1sCompleted
-        : [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath]
-          <> [toBonus "forgingYourOwnPath" 2 | act3fCompleted && forgingYourOwnPath]
       endOfScenario
       pure s
     _ -> ThreadsOfFate <$> liftRunMessage msg attrs

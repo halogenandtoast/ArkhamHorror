@@ -392,7 +392,7 @@
     ]
   },
   { "id": "03", "name": "The Path to Carcosa", "returnToId": "52" },
-  { "id": "04", "name": "The Forgotten Age" },
+  { "id": "04", "name": "The Forgotten Age", "returnToId": "53" },
   { "id": "05", "name": "The Circle Undone", "settings": [
     {
       "key": "Disappearance at the Twilight Estate",

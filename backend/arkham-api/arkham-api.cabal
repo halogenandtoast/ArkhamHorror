@@ -3630,7 +3630,6 @@ library
       Arkham.Scenarios.TheWitchingHour.Helpers
       Arkham.Scenarios.TheWitchingHour.Story
       Arkham.Scenarios.ThreadsOfFate.Helpers
-      Arkham.Scenarios.ThreadsOfFate.Story
       Arkham.Scenarios.ToTheForbiddenPeaks.Helpers
       Arkham.Scenarios.TurnBackTime.Story
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers

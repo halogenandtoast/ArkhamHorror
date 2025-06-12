@@ -192,7 +192,8 @@ portraitLabeled iid action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [PortraitLabel iid msgs]
 
-portraits :: ReverseQueue m => [InvestigatorId] -> (InvestigatorId -> QueueT Message m ()) -> ChooseT m ()
+portraits
+  :: ReverseQueue m => [InvestigatorId] -> (InvestigatorId -> QueueT Message m ()) -> ChooseT m ()
 portraits iids action = unterminated $ for_ iids \iid -> portraitLabeled iid (action iid)
 
 labeledI18n :: (HasI18n, ReverseQueue m) => Text -> QueueT Message m () -> ChooseT m ()
@@ -348,8 +349,8 @@ storyWithChooseOneM txt choices = do
   (_, choices') <- runChooseT choices
   storyWithChooseOne txt choices'
 
-storyWithContinue' :: ReverseQueue m => FlavorTextBuilder () -> Text -> m ()
-storyWithContinue' builder button = storyWithChooseOneM' builder $ labeled button nothing
+storyWithContinue' :: (HasI18n, ReverseQueue m) => FlavorTextBuilder () -> m ()
+storyWithContinue' builder = storyWithChooseOneM' builder $ unscoped $ labeled' "continue" nothing
 
 storyWithChooseOneM' :: ReverseQueue m => FlavorTextBuilder () -> ChooseT m a -> m ()
 storyWithChooseOneM' builder choices = do
@@ -361,7 +362,8 @@ storyWithChooseNM' n builder choices = when (n > 0) do
   (_, choices') <- runChooseT choices
   storyWithChooseN n (buildFlavor builder) choices'
 
-storyWithChooseUpToNM' :: (HasI18n, ReverseQueue m) => Int -> Scope -> FlavorTextBuilder () -> ChooseT m a -> m ()
+storyWithChooseUpToNM'
+  :: (HasI18n, ReverseQueue m) => Int -> Scope -> FlavorTextBuilder () -> ChooseT m a -> m ()
 storyWithChooseUpToNM' n scp builder choices = do
   (_, choices') <- runChooseT choices
   storyWithChooseUpToN n (buildFlavor builder) (Done (toI18n scp) : choices')

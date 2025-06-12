@@ -71,14 +71,15 @@ function isCardAction(c: Message): boolean {
 const cardAction = computed(() => choices.value.findIndex(isCardAction))
 const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
 let clickTimeout: number | null = null;
+// clickCount is used to determine if the user clicked once or twice
 let clickCount = 0;
-
 async function clicked(e:MouseEvent) {
   clickCount++;
   if (clickTimeout) {
     clearTimeout(clickTimeout);
   }  
   clickTimeout = setTimeout(async () => {
+    // Ensure this does not conflict with the double-click zoom-in functionality (toggleZoom in Scenario.vue)
     if (clickCount === 1){
       if(cardAction.value !== -1) {
         emits('choose', cardAction.value)
@@ -94,9 +95,6 @@ async function clicked(e:MouseEvent) {
         }
       }
     }
-    //else if (clickCount === 2) {
-      // Handle double click
-    //}
 
     // Reset click count and timeout
     clickCount = 0;
@@ -432,12 +430,7 @@ function onDrop(event: DragEvent) {
 }
 
 .card.card--locations {
-  //border-radius: 5px;
   width: min(calc(10vw + 20px), 60px);
-  //max-width: 300px;
-  //height: auto;
-  //aspect-ratio: var(--card-aspect);
-  //box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
 .location-column :deep(.enemy) {
@@ -540,7 +533,7 @@ function onDrop(event: DragEvent) {
     width: calc(var(--card-width) * 0.8) !important;
   }
   &:deep(.pool) {
-    width: 200%!important;
+    width: 200% !important;
     height: fit-content;
     top:1em;
     font-size: .5em;
@@ -585,12 +578,12 @@ function onDrop(event: DragEvent) {
       &:deep(.poolItem) {
         width: calc(var(--card-width) * 0.6) !important;
       }
-      top:35%!important;
+      top: 35% !important;
       left:80%;
       width: fit-content;
       height: fit-content;
       :deep(span) {
-        width: fit-content!important;
+        width: fit-content !important;
       }
   }
 }

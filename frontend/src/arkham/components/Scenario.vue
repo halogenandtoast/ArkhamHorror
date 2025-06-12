@@ -1017,7 +1017,6 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
   scroll-padding: 30%;
   place-content: safe center;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   flex-shrink: 0;
 }
 

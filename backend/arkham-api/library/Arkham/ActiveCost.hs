@@ -75,7 +75,7 @@ import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Window (Window (..), mkAfter, mkWhen)
 import Arkham.Window qualified as Window
-import Control.Lens (non, transform, over)
+import Control.Lens (non, over, transform)
 import Data.Data.Lens (biplate)
 import GHC.Records
 
@@ -289,7 +289,7 @@ payCost msg c iid skipAdditionalCosts cost = do
             ]
       pure c
     EnemyAttackCost eid -> do
-      push $ toMessage $ (enemyAttack eid source iid) { attackCanBeCanceled = False }
+      push $ toMessage $ (enemyAttack eid source iid) {attackCanBeCanceled = False}
       pure c
     DrawEncounterCardsCost n -> do
       pushAll $ replicate n $ drawEncounterCard iid source
@@ -1380,7 +1380,8 @@ instance RunMessage ActiveCost where
 
       canStillAfford <-
         withModifiers iid (toModifiers source [ExtraResources extraResources])
-          $ getCanAffordCost_ iid source actions c.windows canModify $ over biplate (transform updateCost) cost
+          $ getCanAffordCost_ iid source actions c.windows canModify
+          $ over biplate (transform updateCost) cost
       if canStillAfford
         then payCost msg c iid skipAdditionalCosts cost
         else do

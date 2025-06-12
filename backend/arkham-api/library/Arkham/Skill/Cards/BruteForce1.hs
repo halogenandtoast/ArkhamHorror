@@ -23,7 +23,7 @@ instance HasModifiersFor BruteForce1 where
 
 instance RunMessage BruteForce1 where
   runMessage msg s@(BruteForce1 attrs) = runQueueT $ case msg of
-    PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
+    PassedSkillTest _ _ _ (isTarget attrs -> True) _ n | n >= 2 -> do
       void $ runMaybeT do
         Action.Fight <- MaybeT getSkillTestAction
         AbilitySource (EnemySource _) AbilityAttack <- MaybeT getSkillTestAbilitySource

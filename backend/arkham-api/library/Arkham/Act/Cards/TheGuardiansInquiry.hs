@@ -1,15 +1,8 @@
-module Arkham.Act.Cards.TheGuardiansInquiry (
-  TheGuardiansInquiry (..),
-  theGuardiansInquiry,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheGuardiansInquiry (theGuardiansInquiry) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Matcher
 import Arkham.Placement
 
@@ -25,14 +18,10 @@ theGuardiansInquiry =
     $ LocationWithTitle "Northside"
 
 instance RunMessage TheGuardiansInquiry where
-  runMessage msg a@(TheGuardiansInquiry attrs) = case msg of
-    AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
-      mariaDeSilva <- genCard Assets.mariaDeSilva
+  runMessage msg a@(TheGuardiansInquiry attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide F attrs -> True) _ _ -> do
       curiositieShoppe <- selectJust $ LocationWithTitle "Curiositie Shoppe"
-      assetId <- getRandom
-      pushAll
-        [ CreateAssetAt assetId mariaDeSilva (AtLocation curiositieShoppe)
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-        ]
+      createAssetAt_ Assets.mariaDeSilva (AtLocation curiositieShoppe)
+      advanceActDeck attrs
       pure a
-    _ -> TheGuardiansInquiry <$> runMessage msg attrs
+    _ -> TheGuardiansInquiry <$> liftRunMessage msg attrs

@@ -65,6 +65,9 @@ instance AsId StoryAttrs where
   type IdOf StoryAttrs = StoryId
   asId = storyId
 
+instance HasField "cardId" StoryAttrs CardId where
+  getField = storyCardId
+
 instance HasField "id" StoryAttrs StoryId where
   getField = storyId
 

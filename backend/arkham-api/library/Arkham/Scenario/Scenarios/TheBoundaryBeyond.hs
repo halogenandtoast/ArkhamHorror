@@ -252,7 +252,7 @@ instance RunMessage TheBoundaryBeyond where
         for_ locations addToVictory
       push $ ScenarioResolutionStep 1 r
 
-      vengeance <- getVengeanceInVictoryDisplay
+      vengeance <- getTotalVengeanceInVictoryDisplay
       yigsFury <- getRecordCount YigsFury
       recordCount YigsFury (yigsFury + vengeance)
 

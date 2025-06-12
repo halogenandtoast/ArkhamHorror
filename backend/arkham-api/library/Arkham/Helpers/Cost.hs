@@ -358,7 +358,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     card <- getCard cardId
     cost <- getModifiedCardCost iid card
     resources <- getSpendableResources iid
-    pure $ resources >= (cost + n)
+    pure $ resources >= cost + n
   ResourceCost n -> do
     resources <- getSpendableResources iid
     pure $ resources >= n

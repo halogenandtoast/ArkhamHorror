@@ -490,6 +490,7 @@ allLocationCards =
       , lightingBox
       , limestoneCaverns
       , livingRoom
+      , loadingDocks
       , lobby
       , lobbyMembersOnly
       , lobbyWeveBeenExpectingYou
@@ -771,6 +772,7 @@ allLocationCards =
       , theGreatWebWebStairs
       , theGreatWebWebWovenIsland
       , theGuardian
+      , theHastingsEstate
       , theHiddenChamber
       , theHouseOnWaterStreet
       , theHouseOnWaterStreetInTooDeep
@@ -8898,6 +8900,30 @@ chamberOfTimeRearrangedByTime =
       Hourglass
       [Squiggle, Triangle, T]
       ReturnToTheDoomOfEztli
+
+theHastingsEstate :: CardDef
+theHastingsEstate =
+  victory 1
+    $ singleSided
+    $ location
+      "53029b"
+      "The Hastings Estate"
+      [Arkham]
+      Square
+      [Diamond, Circle]
+      ReturnToThreadsOfFate
+
+loadingDocks :: CardDef
+loadingDocks =
+  victory 1
+    $ singleSided
+    $ location
+      "53034b"
+      "Loading Docks"
+      [Arkham]
+      Squiggle
+      [Circle]
+      ReturnToThreadsOfFate
 
 riversideTemple :: CardDef
 riversideTemple =

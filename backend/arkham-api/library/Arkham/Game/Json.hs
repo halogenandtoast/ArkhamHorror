@@ -71,5 +71,6 @@ instance FromJSON Game where
     gameAllowEmptySpaces <- o .: "gameAllowEmptySpaces"
     gamePerformTarotReadings <- o .: "gamePerformTarotReadings"
     gameCurrentBatchId <- o .: "gameCurrentBatchId"
+    gameScenarioSteps <- o .:? "gameScenarioSteps" .!= 0
 
     pure Game {..}

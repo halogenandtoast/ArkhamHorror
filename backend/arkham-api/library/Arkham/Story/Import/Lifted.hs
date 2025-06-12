@@ -45,3 +45,6 @@ afterStoryResolution attrs body = do
 
 removeStory :: (AsId story, IdOf story ~ StoryId, ReverseQueue m) => story -> m ()
 removeStory x = push $ RemoveStory $ asId x
+
+resolveStory :: (AsId investigator, IdOf investigator ~ InvestigatorId, AsId story, IdOf story ~ StoryId, ReverseQueue m) => investigator -> story -> m ()
+resolveStory (asId -> iid) (asId -> storyId) = push $ ResolveStory iid ResolveIt storyId

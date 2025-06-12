@@ -584,6 +584,31 @@ relicOfAgesUnleashTheTimestream =
     , cdUnique = True
     }
 
+merleGarvinUnhelpfulGuide :: CardDef
+merleGarvinUnhelpfulGuide =
+  (storyAsset "53030b" ("Merle Garvin" <:> "Unhelpful Guide") 0 ReturnToThreadsOfFate)
+    { cdCardTraits = setFromList [Bystander, Wayfarer]
+    , cdCost = Nothing
+    , cdUnique = True
+    }
+
+clintonFreemanShouldHaveStayedHome :: CardDef
+clintonFreemanShouldHaveStayedHome =
+  (storyAsset "53032b" ("Clinton Freeman" <:> "Should Have Stayed Home") 0 ReturnToThreadsOfFate)
+    { cdCardTraits = setFromList [Bystander, Wayfarer]
+    , cdCost = Nothing
+    , cdUnique = True
+    }
+
+vedaWhitsleySkilledBotanist :: CardDef
+vedaWhitsleySkilledBotanist =
+  (storyAsset "53037" ("Veda Whitsley" <:> "Skilled Botanist") 1 ReturnToThreadsOfFate)
+    { cdCardTraits = setFromList [Ally, Wayfarer]
+    , cdUnique = True
+    , cdSlots = [#ally]
+    , cdSkills = [#willpower, #agility, #wild, #wild]
+    }
+
 -- created via the Intepid Skill
 intrepid :: CardDef
 intrepid =

@@ -283,6 +283,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gameAllowEmptySpaces = False
         , gamePerformTarotReadings = includeTarotReadings
         , gameCurrentBatchId = Nothing
+        , gameScenarioSteps = 0
         }
  where
   mode = case scenarioOrCampaignId of
@@ -5095,7 +5096,7 @@ runMessages mLogger = do
                   withQueue_ (map updateChooseDeck)
                   runMessages mLogger
                 else
-                  runWithEnv (toExternalGame (g & activePlayerIdL .~ pid) (singletonMap pid q)) >>= putGame
+                  runWithEnv (toExternalGame (g & activePlayerIdL .~ pid & scenarioStepsL +~ 1) (singletonMap pid q)) >>= putGame
             AskMap askMap -> do
               -- Read might have only one player being prompted so we need to find the active player
               let current = g ^. activePlayerIdL
@@ -5105,7 +5106,7 @@ runMessages mLogger = do
                   whenBeingQuestioned (pid, _) = Just pid
               let activePids = mapMaybe whenBeingQuestioned $ mapToList askMap
               let activePid = fromMaybe current $ find (`elem` activePids) (current : keys askMap)
-              runWithEnv (toExternalGame (g & activePlayerIdL .~ activePid) askMap) >>= putGame
+              runWithEnv (toExternalGame (g & activePlayerIdL .~ activePid & scenarioStepsL +~ 1) askMap) >>= putGame
             CheckWindows {} | not (gameRunWindows g) -> runMessages mLogger
             Do (CheckWindows {}) | not (gameRunWindows g) -> runMessages mLogger
             _ -> do

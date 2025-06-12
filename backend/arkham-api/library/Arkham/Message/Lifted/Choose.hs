@@ -357,7 +357,7 @@ storyWithChooseOneM' builder choices = do
   storyWithChooseOne (buildFlavor builder) choices'
 
 storyWithChooseNM' :: ReverseQueue m => Int -> FlavorTextBuilder () -> ChooseT m a -> m ()
-storyWithChooseNM' n builder choices = do
+storyWithChooseNM' n builder choices = when (n > 0) do
   (_, choices') <- runChooseT choices
   storyWithChooseN n (buildFlavor builder) choices'
 

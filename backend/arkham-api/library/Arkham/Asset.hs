@@ -1191,6 +1191,10 @@ allAssets =
       SomeAssetCard backpack2
     , --- weakness [rttfa]
       SomeAssetCard dendromorphosis
+    , --- Thread of Fate [rttfa]
+      SomeAssetCard merleGarvinUnhelpfulGuide
+    , SomeAssetCard clintonFreemanShouldHaveStayedHome
+    , SomeAssetCard vedaWhitsleySkilledBotanist
     , -- Return to the circle undone
       -- guardian [rttcu]
       SomeAssetCard theStarXvii3

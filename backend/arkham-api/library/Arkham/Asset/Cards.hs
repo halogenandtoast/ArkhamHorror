@@ -177,6 +177,7 @@ allPlayerAssetCards =
       , claypoolsFurs
       , cleaningKit
       , cleaningKit3
+      , clintonFreemanShouldHaveStayedHome
       , closeTheCircle1
       , collectedWorksOfPoe
       , coltVestPocket
@@ -535,6 +536,7 @@ allPlayerAssetCards =
       , medicalTexts
       , medicalTexts2
       , medicoDellaPeste
+      , merleGarvinUnhelpfulGuide
       , miasmicCrystalStrangeEvidence
       , michaelLeigh5
       , microscope
@@ -867,6 +869,7 @@ allPlayerAssetCards =
       , untilTheEndOfTime
       , valentinoRivas
       , vaultOfKnowledge
+      , vedaWhitsleySkilledBotanist
       , venturer
       , versatile2
       , violaCase

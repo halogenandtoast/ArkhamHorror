@@ -284,10 +284,8 @@ const handleKeyPress = (event: KeyboardEvent) => {
   }
 
   if (event.key === 'U') {
-    if (!import.meta.env.PROD) {
-      undoScenario()
-      return
-    }
+    undoScenario()
+    return
   }
 
   if (event.key === 'D') {
@@ -384,7 +382,7 @@ async function undo() {
   uiLock.value = false
   if (undoLock.value) return
   undoLock.value = true
-  await undoChoice(props.gameId)
+  await undoChoice(props.gameId, debug.active)
   undoLock.value = false
 }
 
@@ -572,6 +570,8 @@ onUnmounted(() => {
         <dd>{{ $t('gameBar.shortcutSkipTriggers') }}</dd>
         <dt>u</dt>
         <dd>{{ $t('gameBar.shortcutUndo') }}</dd>
+        <dt>U</dt>
+        <dd>{{ $t('gameBar.shortcutRestartScenario') }}</dd>
         <dt>D</dt>
         <dd>{{ $t('gameBar.shortcutToggleDebug') }}</dd>
         <dt>?</dt>
@@ -646,7 +646,7 @@ onUnmounted(() => {
           {{ $t('gameBar.debug') }}
           <template #items>
             <MenuItem v-slot="{ active }">
-              <button :class="{ active }" @click="debug.toggle"><BugAntIcon aria-hidden="true" />  {{ $t('gameBar.toggleDebug') }} <span class="shortcut">D</span></button>
+              <button :class="{ active }" @click="debug.toggle"><BugAntIcon aria-hidden="true" /> {{ $t('gameBar.toggleDebug') }} <span class="shortcut">D</span></button>
             </MenuItem>
             <MenuItem v-slot="{ active }">
               <button :class="{ active }" @click="debugExport"><DocumentArrowDownIcon aria-hidden="true" /> {{ $t('gameBar.debugExport') }} </button>
@@ -654,7 +654,20 @@ onUnmounted(() => {
           </template>
         </Menu>
       </div>
-      <div><button @click="undo"><BackwardIcon aria-hidden="true" /> {{ $t('gameBar.undo') }} </button></div>
+      <div>
+        <Menu>
+          <BackwardIcon aria-hidden="true" />
+          {{ $t('gameBar.undo') }}
+          <template #items>
+            <MenuItem v-slot="{ active }">
+              <button :class="{ active }" @click="undo"><BackwardIcon aria-hidden="true" /> {{ $t('gameBar.undo') }} <span class='shortcut'>u</span></button>
+            </MenuItem>
+            <MenuItem v-slot="{ active }">
+              <button :class="{ active }" @click="undoScenario"><BackwardIcon aria-hidden="true" /> {{ $t('gameBar.restartScenario') }} <span class='shortcut'>U</span></button>
+            </MenuItem>
+          </template>
+        </Menu>
+      </div>
       <div><button @click="filingBug = true"><ExclamationTriangleIcon aria-hidden="true" /> {{ $t('fileBug') }} </button></div>
       <div v-for="item in menuItems" :key="item.id">
         <template v-if="item.nested === null || item.nested === undefined">

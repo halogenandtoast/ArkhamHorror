@@ -273,7 +273,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorPlayerId :: PlayerId
   , investigatorName :: Name
   , investigatorCardCode :: CardCode
-  , investigatorArt :: CardCode
+  , investigatorArt :: CardCodeExact
   , investigatorClass :: ClassSymbol
   , investigatorHealth :: Int
   , investigatorAssignedHealthDamage :: Int

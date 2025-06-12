@@ -25,9 +25,9 @@ instance RunMessage MoonlightRitual where
       chooseOneM iid do
         when (investigatorDoomCount > 0) do
           targeting iid $ removeDoom attrs iid investigatorDoomCount
-          for_ assets \(aid, assetDoomCount) ->
-            targeting aid $ removeDoom attrs aid assetDoomCount
-          for_ events \(eventId, eventDoomCount) ->
-            targeting eventId $ removeDoom attrs eventId eventDoomCount
+        for_ assets \(aid, assetDoomCount) ->
+          targeting aid $ removeDoom attrs aid assetDoomCount
+        for_ events \(eventId, eventDoomCount) ->
+          targeting eventId $ removeDoom attrs eventId eventDoomCount
       pure e
     _ -> MoonlightRitual <$> liftRunMessage msg attrs

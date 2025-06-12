@@ -1,13 +1,13 @@
 module Arkham.Enemy.Cards.SummonedBeast (summonedBeast) where
 
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner hiding (EnemyEvade, EnemyFight, EnemyDefeated)
+import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Types qualified as Field
 import Arkham.Helpers.Doom
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait (Trait (Humanoid))
 
 newtype SummonedBeast = SummonedBeast EnemyAttrs
@@ -23,33 +23,26 @@ instance HasModifiersFor SummonedBeast where
     modifySelf attrs [EnemyFight n, EnemyEvade n, DamageDealt n, HorrorDealt n]
 
 instance HasAbilities SummonedBeast where
-  getAbilities (SummonedBeast attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility
-          attrs
-          1
-          (enemyExists $ EnemyAt (locationWithEnemy $ toId attrs) <> EnemyWithTrait Humanoid)
-          $ ForcedAbility
+  getAbilities (SummonedBeast a) =
+    extend
+      a
+      [ restricted a 1 (exists $ at_ (locationWithEnemy a) <> EnemyWithTrait Humanoid)
+          $ forced
           $ PhaseBegins #when #enemy
-      , mkAbility attrs 2
-          $ Objective
-          $ ForcedAbility
-          $ EnemyDefeated #when Anyone ByAny (EnemyWithId $ toId attrs)
+      , mkAbility a 2 $ Objective $ forced $ EnemyDefeated #when Anyone ByAny (be a)
       ]
 
 instance RunMessage SummonedBeast where
-  runMessage msg e@(SummonedBeast attrs) = case msg of
+  runMessage msg e@(SummonedBeast attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       lead <- getLead
-      humanoids <- select $ EnemyAt (locationWithEnemy $ toId attrs) <> EnemyWithTrait Humanoid
-      doom <- selectSum EnemyDoom $ EnemyOneOf $ map EnemyWithId humanoids
-      defeatMessages <- for humanoids $ \humanoid -> do
-        defeatEnemy humanoid lead (toAbilitySource attrs 1)
-
-      pushAll $ concat defeatMessages <> [placeDoom (toAbilitySource attrs 1) attrs doom]
+      humanoids <-
+        selectWithField Field.EnemyDoom $ at_ (locationWithEnemy attrs) <> EnemyWithTrait Humanoid
+      for_ humanoids \(humanoid, _) -> defeatEnemy humanoid lead (attrs.ability 1)
+      placeDoom (attrs.ability 1) attrs (sum $ map snd humanoids)
       pure e
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
+      addToVictory attrs
       push R3
       pure e
-    _ -> SummonedBeast <$> runMessage msg attrs
+    _ -> SummonedBeast <$> liftRunMessage msg attrs

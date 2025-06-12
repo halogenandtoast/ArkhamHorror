@@ -2,16 +2,12 @@ module Arkham.Act.Cards.RecoverTheRelic (recoverTheRelic) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Resolution
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.ThreadsOfFate.Helpers
-import Arkham.Timing qualified as Timing
 
 newtype RecoverTheRelic = RecoverTheRelic ActAttrs
   deriving anyclass IsAct
@@ -28,30 +24,24 @@ instance HasAbilities RecoverTheRelic where
   getAbilities (RecoverTheRelic a) =
     [ mkAbility a 1
         $ Objective
-        $ ForcedAbility
-        $ EnemyLeavesPlay Timing.When
+        $ forced
+        $ EnemyLeavesPlay #when
         $ EnemyWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
     ]
 
 instance RunMessage RecoverTheRelic where
-  runMessage msg a@(RecoverTheRelic attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+  runMessage msg a@(RecoverTheRelic attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
-      lead <- getLeadPlayer
-      deckCount <- getActDecksInPlayCount
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       relicOfAges <- selectJust $ assetIs Assets.relicOfAgesADeviceOfSomeSort
       iids <- select $ NearestToEnemy $ EnemyWithAsset $ assetIs Assets.relicOfAgesADeviceOfSomeSort
-      let
-        takeControlMessage =
-          chooseOrRunOne
-            lead
-            [targetLabel iid [TakeControlOfAsset iid relicOfAges] | iid <- iids]
-        nextMessage =
-          if deckCount <= 1
-            then ScenarioResolution $ Resolution 1
-            else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
-      pushAll [takeControlMessage, nextMessage]
+      leadChooseOrRunOneM $ targets iids (`takeControlOfAsset` relicOfAges)
+      deckCount <- getActDecksInPlayCount
+      push
+        $ if deckCount <= 1
+          then R1
+          else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
       pure a
-    _ -> RecoverTheRelic <$> runMessage msg attrs
+    _ -> RecoverTheRelic <$> liftRunMessage msg attrs

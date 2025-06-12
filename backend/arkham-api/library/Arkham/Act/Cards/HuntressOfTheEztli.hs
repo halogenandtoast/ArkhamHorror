@@ -8,6 +8,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.ChaosToken
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -46,8 +47,8 @@ instance RunMessage HuntressOfTheEztli where
           investigators <- getInvestigators
           alejandroVela <- fetchCard $ SetAsideCardMatch "Alejandro Vela"
           remember YouFoughtWithIchtaca
-          leadChooseOneM do
-            questionLabeled "Take control of Alejandro Vela"
+          leadChooseOneM $ withI18n do
+            nameVar Assets.alejandroVela $ questionLabeled' "takeControlOf"
             questionLabeledCard Assets.alejandroVela
             portraits investigators (`takeControlOfSetAsideAsset` alejandroVela)
           addChaosToken Tablet

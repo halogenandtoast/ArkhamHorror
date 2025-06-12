@@ -16,7 +16,7 @@ newtype DarkHollow = DarkHollow LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkHollow :: LocationCard DarkHollow
-darkHollow = location DarkHollow Cards.darkHollow 3 (PerPlayer 1)
+darkHollow = symbolLabel $ location DarkHollow Cards.darkHollow 3 (PerPlayer 1)
 
 instance HasAbilities DarkHollow where
   getAbilities (DarkHollow attrs) =

@@ -191,6 +191,7 @@ data WindowType
   | EnemyAttacksEvenIfCancelled EnemyAttackDetails
   | EnemyAttemptsToSpawnAt EnemyId LocationMatcher
   | EnemyDefeated (Maybe InvestigatorId) DefeatedBy EnemyId
+  | IfEnemyDefeated (Maybe InvestigatorId) DefeatedBy EnemyId
   | EnemyEngaged InvestigatorId EnemyId
   | EnemyEnters EnemyId LocationId
   | EnemyEvaded InvestigatorId EnemyId

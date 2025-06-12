@@ -1,17 +1,49 @@
 <script lang="ts" setup>
-import { watchEffect, ref, computed } from 'vue';
+import { watch, ref, computed } from 'vue';
 import { fetchCards } from '@/arkham/api';
 import { imgsrc, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
+import { useRouter, useRoute, LocationQueryValue } from 'vue-router';
 import * as Arkham from '@/arkham/types/CardDef';
 
 import sets from '@/arkham/data/sets.json'
 import cycles from '@/arkham/data/cycles.json'
+import { shallowRef } from 'vue';
 
-const allCards = ref<Arkham.CardDef[] | null>(null)
-const includeEncounter = ref(false)
+enum View {
+  Image = "IMAGE",
+  List = "LIST",
+}
+
+const toView = (view: string | LocationQueryValue[]): View => {
+  if (view === "IMAGE") return View.Image
+  return View.List
+}
+
+const fromView = (view: View): string => {
+  if (view === View.Image) return "IMAGE"
+  return "LIST"
+}
+
+const router = useRouter()
+const route = useRoute()
+const queryText = route.query.q ? route.query.q.toString() : "e:core"
+const allCards = shallowRef<Arkham.CardDef[] | null>(null)
+const query = ref<string>(queryText)
+const view = ref(route.query.view? toView(route.query.view) : View.List)
+
+const includeEncounter = computed(() => route.query.includeEncounter === "true")
+const fetchData = async () => {
+  fetchCards(includeEncounter.value).then(async (response) => {
+    allCards.value = response.sort((a, b) => {
+      if (a.art < b.art) return -1
+      if (a.art > b.art) return 1
+      return 0
+    })
+  })
+}
 
 interface Filter {
-  cardType: string | null
+  cardTypes: string[]
   text: string[]
   level: number | null
   cycle: number | null
@@ -36,19 +68,17 @@ interface CardCycle {
   code: string
 }
 
-enum View {
-  Image = "IMAGE",
-  List = "LIST",
-}
+const filter = ref<Filter>({ cardTypes: [], text: [], level: null, cycle: null, set: "core", classes: [], traits: []})
 
-watchEffect(async () => {
-  await fetchCards(includeEncounter.value).then(async (response) => {
-    allCards.value = response.sort((a, b) => {
-      if (a.art < b.art) return -1
-      if (a.art > b.art) return 1
-      return 0
-    })
-  })
+await fetchData()
+
+watch(() => includeEncounter.value, (newIncludeEncounter) => {
+  router.push({ name: 'Cards', query: { ...route.query, includeEncounter: newIncludeEncounter ? 'true' : undefined}})
+  fetchData()
+})
+
+watch(() => view.value, (newView) => {
+  router.push({ name: 'Cards', query: { ...route.query, view: fromView(newView) }})
 })
 
 const cycleCount = (cycle: CardCycle) => {
@@ -90,72 +120,66 @@ const setCountText = (set: CardSet) => {
 }
 
 const image = (card: Arkham.CardDef) => imgsrc(`cards/${card.art}.avif`)
-const view = ref(View.List)
-
-const query = ref("e:core")
-const filter = ref<Filter>({ cardType: null, text: [], level: null, cycle: null, set: "core", classes: [], traits: [] })
 
 const cards = computed(() => {
   if (!allCards.value) return []
-  let all = allCards.value
 
-  const { classes, traits, cycle, set, text, level, cardType: cardTypeText } = filter.value
+  const { classes, traits, cycle, set, text, level, cardTypes } = filter.value
+  const cycleSets = cycle ? sets.filter((s) => s.cycle == cycle) : null
 
-  if (cycle) {
-    const cycleSets = sets.filter((s) => s.cycle == cycle)
-    all = all.filter((c) => {
+  return allCards.value.filter((c) => {
+    if (c.cardCode === "cx05184") return false
+    if (cycleSets) {
       const cSet = cardSet(c)
-      return cSet ? cycleSets.includes(cSet) : false
-    })
-  }
+      if (!cSet || !cycleSets.includes(cSet)) return false
+    }
 
-  if (set) {
-    all = all.filter((c) => cardSet(c)?.code == set)
-  }
+    if (set) {
+      let cCode = cardSet(c)?.code
+      if (!cCode || cCode !== set) return false
+    }
 
-  if (classes.length > 0) {
-    all = all.filter((c) => c.classSymbols.some((cs) => classes.includes(cs.toLowerCase())))
-  }
+    if (classes.length > 0) {
+      if (!c.classSymbols.some((cs) => classes.includes(cs.toLowerCase()))) return false
+    }
 
-  if (traits.length > 0) {
-    all = all.filter((c) => c.cardTraits.some((cs) => traits.includes(cs.toLowerCase())))
-  }
+    if (traits.length > 0) {
+      if (!c.cardTraits.some((cs) => traits.includes(cs.toLowerCase()))) return false
+    }
 
-  if (text.length > 0) {
-    all = all.filter((c) => {
+    if (text.length > 0) {
       const cardNameMatches = text.some((t) => cardName(c).toLowerCase().includes(t.toLowerCase()))
       const cardCodeMatches = text.some((t) => c.cardCode == `c${t.toLowerCase()}`)
-      return cardNameMatches || cardCodeMatches
-    })
-  }
+      if (!cardNameMatches && !cardCodeMatches) return false
+    }
 
-  if (level) {
-    all = all.filter((c) => c.level == level)
-  }
+    if (level && c.level !== level) return false
 
-  if (cardTypeText) {
-    all = all.filter((c) => cardType(c).toLowerCase() === cardTypeText.toLowerCase())
-  }
+    if (cardTypes.length > 0) {
+      const sanitizedCardTypes = cardTypes.map((ct) => ct.toLowerCase().trim())
+      console.log(sanitizedCardTypes, cardType(c))
+      if (!sanitizedCardTypes.includes(cardType(c).toLowerCase().trim())) return false
+    }
 
-  return all.filter((c) => c.cardCode !== "cx05184")
+    return true
+  })
 })
 
 const setFilter = () => {
-
+  router.push({ name: 'Cards', query: { ...route.query, q: query.value }})
   let queryString = query.value
-  let cardType = null
+  let cardTypes: string[] = []
   let level = null
   let cycle = null
   let set = null
   let classes : string[] = []
   let traits : string[] = []
 
-  // const matchCardType = queryString.match(/t:("(?:[^"\\]|\\.)*"|[^ ]*)/)
-  const matchCardType = queryString.match(/t:([^ ]*)/)
+  const matchCardTypes = queryString.match(/t:([^ ]*)/)
 
-  if (matchCardType) {
+  if (matchCardTypes) {
     queryString = queryString.replace(/t:([^ ]*)/, '')
-    cardType = matchCardType[1]
+    cardTypes = matchCardTypes[1].split('|')
   }
 
   const matchLevel = queryString.match(/p:([1-9][0-9]*)/)
@@ -186,7 +210,6 @@ const setFilter = () => {
     set = matchSet[1]
   }
 
-
   const matchTraits = queryString.match(/k:([^ ]*)/)
 
   if (matchTraits) {
@@ -194,8 +217,41 @@ const setFilter = () => {
     traits = matchTraits[1].split('|')
   }
 
-  filter.value = { classes, cycle, set, cardType, level, traits, text: queryString.trim() !== "" ? queryString.trim().split('|') : []}
+  filter.value = { classes, cycle, set, cardTypes, level, traits, text: queryString.trim() !== "" ? queryString.trim().split('|') : []}
+
 }
+
+const filterString = (f: Filter): string => {
+  let result = f.text.join('|')
+
+  if (f.cardTypes.length > 0) {
+    result += ` t:${f.cardTypes.join('|')}`
+  }
+
+  if (f.level) {
+    result += ` p:${f.level}`
+  }
+
+  if (f.cycle) {
+    result += ` y:${f.cycle}`
+  }
+
+  if (f.set) {
+    result += ` e:${f.set}`
+  }
+
+  if (f.classes.length > 0) {
+    result += ` f:${f.classes.join('|')}`
+  }
+
+  if (f.traits.length > 0) {
+    result += ` k:${f.traits.join('|')}`
+  }
+
+  return result.trim()
+}
+
+setFilter()
 
 const cardName = (card: Arkham.CardDef) => {
   const subtitle = card.name.subtitle === null ? "" : `: ${card.name.subtitle}`
@@ -283,13 +339,18 @@ const cycleSets = (cycle: CardCycle) => {
 }
 
 const setCycle = (cycle: CardCycle) => {
-  query.value = `y:${cycle.cycle}`
-  filter.value = { cardType: null, text: [], level: null, cycle: cycle.cycle, set: null, classes: [], traits: [] }
+  query.value = filterString({...filter.value, set: null, cycle: cycle.cycle})
+  setFilter()
 }
 
 const setSet = (set: CardSet) => {
-  query.value = `e:${set.code}`
-  filter.value = { cardType: null, text: [], level: null, cycle: null, set: set.code, classes: [], traits: [] }
+  query.value = filterString({...filter.value, cycle: null, set: set.code})
+  setFilter()
+}
+
+const toggleIncludeEncounter = () => {
+  const includeEncounter = route.query.includeEncounter === 'true'
+  router.push({ name: 'Cards', query: { ...route.query, includeEncounter: !includeEncounter ? 'true' : undefined }})
 }
 </script>
 
@@ -317,7 +378,7 @@ const setSet = (set: CardSet) => {
         <button @click.prevent="view = View.Image" :class="{ pressed: view == View.Image }"><font-awesome-icon icon="image" /></button>
         <div>
           <label for="include-encounter">
-            <input type="checkbox" v-model="includeEncounter" id="include-encounter" />
+            <input type="checkbox" @click="toggleIncludeEncounter" :checked="includeEncounter" id="include-encounter" />
             Include Encounter
           </label>
         </div>
@@ -363,6 +424,7 @@ const setSet = (set: CardSet) => {
 }
 .card {
   width: calc(100% - 20px);
+  max-width: 250px;
   margin: 10px;
   border-radius: 10px;
 }
@@ -370,8 +432,12 @@ const setSet = (set: CardSet) => {
 .cards {
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit,minmax(250px, auto));
   padding: 10px;
+
+  a {
+    max-width: fit-content;
+  }
 }
 
 .willpower {

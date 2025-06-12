@@ -872,7 +872,7 @@ allLocations =
     , SomeLocationCard theThroneRoom
     , SomeLocationCard stageOfTheWardTheatre
     , -- Return to The Forgotten Age
-      -- Return to The Doom of Eztli
+      --- Return to The Doom of Eztli
       SomeLocationCard entrywayRearrangedByTime
     , SomeLocationCard sealedPassage
     , SomeLocationCard mosaicChamber
@@ -882,6 +882,9 @@ allLocations =
     , SomeLocationCard ancientHallRearrangedByTime
     , SomeLocationCard grandChamberRearrangedByTime
     , SomeLocationCard chamberOfTimeRearrangedByTime
+    , --- Return to Threads of Fate
+      SomeLocationCard theHastingsEstate
+    , SomeLocationCard loadingDocks
     , --- Return to Rainforest
       SomeLocationCard riversideTemple
     , SomeLocationCard waterfall

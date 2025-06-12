@@ -171,7 +171,7 @@ getActionsWith iid ws f = do
     if null abilityFilters
       then pure unfilteredActions
       else do
-        ignored <- select (mconcat abilityFilters)
+        ignored <- select (AbilityOneOf abilityFilters)
         pure $ filter (`notElem` ignored) unfilteredActions
   actionsWithSources <-
     concat <$> for actions' \action -> do

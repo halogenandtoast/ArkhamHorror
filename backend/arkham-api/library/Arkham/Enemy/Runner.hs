@@ -281,7 +281,9 @@ instance RunMessage EnemyAttrs where
                   push $ PlaceSwarmCards lead eid n
                 _ -> error "more than one swarming value"
 
-              if (all (`notElem` keywords) [#aloof, #massive] && not enemyExhausted) || forcedEngagement
+              if (all (`notElem` keywords) [#aloof, #massive] && not enemyExhausted)
+                || forcedEngagement
+                || details.overridden
                 then do
                   prey <- getPreyMatcher a
                   let
@@ -1269,9 +1271,14 @@ instance RunMessage EnemyAttrs where
         & (keysL .~ mempty)
         & (lastKnownLocationL .~ mloc)
     Do (Arkham.Message.EnemyDefeated eid _ source _) | eid == toId a -> do
+      modifiedHealth <- fieldJust EnemyHealth (toId a)
+      let
+        defeatedByDamage = enemyDamage a >= modifiedHealth
+        defeatedBy = if defeatedByDamage then DefeatedByDamage source else DefeatedByOther source
       miid <- getSourceController source
       victory <- getVictoryPoints eid
       vengeance <- getVengeancePoints eid
+      afterMsg <- checkWindows [mkAfter $ Window.IfEnemyDefeated miid defeatedBy eid]
 
       let
         placeInVictory = isJust (victory <|> vengeance)
@@ -1285,6 +1292,7 @@ instance RunMessage EnemyAttrs where
         $ victoryMsgs
         <> windows [Window.EntityDiscarded source (toTarget a)]
         <> defeatMsgs
+        <> [afterMsg]
       pure
         $ a
         & (if placeInVictory then placementL .~ OutOfPlay VictoryDisplayZone else id)

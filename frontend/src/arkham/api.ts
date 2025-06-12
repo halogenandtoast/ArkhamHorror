@@ -168,8 +168,13 @@ export const joinGame = (gameId: string): Promise<Game> => api
   .put(`arkham/games/${gameId}/join`)
   .then((resp) => gameDecoder.decodePromise(resp.data));
 
-export const undoChoice = (gameId: string): Promise<void> => api
-  .put(`arkham/games/${gameId}/undo`)
+export const undoChoice = (gameId: string, debug: boolean): Promise<void> => {
+  if (debug) {
+    return api.put(`arkham/games/${gameId}/undo?debug`);
+  } else {
+    return api.put(`arkham/games/${gameId}/undo`)
+  }
+}
 
 export const undoScenarioChoice = (gameId: string): Promise<void> => api
   .put(`arkham/games/${gameId}/undo/scenario`)

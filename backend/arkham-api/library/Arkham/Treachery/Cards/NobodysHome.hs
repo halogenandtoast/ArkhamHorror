@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.NobodysHome (nobodysHome, NobodysHome (..)) where
+module Arkham.Treachery.Cards.NobodysHome (nobodysHome) where
 
 import Arkham.Ability
 import Arkham.Helpers.Location
@@ -20,12 +20,11 @@ nobodysHome = treachery NobodysHome Cards.nobodysHome
 instance HasModifiersFor NobodysHome where
   getModifiersFor (NobodysHome attrs) = case attrs.placement of
     AttachedToLocation lid -> modified_ attrs lid [AdditionalCostToInvestigate (ActionCost 1)]
-    _ -> pure mempty
+    _ -> pure ()
 
 instance HasAbilities NobodysHome where
-  getAbilities (NobodysHome a) = case a.attached of
-    Just (LocationTarget lid) ->
-      [restrictedAbility a 1 (exists $ be lid <> LocationWithoutClues) $ ForcedAbility AnyWindow]
+  getAbilities (NobodysHome a) = case a.attached.location of
+    Just lid -> [restricted a 1 (exists $ be lid <> LocationWithoutClues) $ forced AnyWindow]
     _ -> []
 
 instance RunMessage NobodysHome where

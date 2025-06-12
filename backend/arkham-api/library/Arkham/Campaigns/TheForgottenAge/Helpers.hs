@@ -47,11 +47,23 @@ getSupplyCount iid s = fieldMap InvestigatorSupplies (length . filter (== s)) ii
 getAnyHasSupply :: HasGame m => Supply -> m Bool
 getAnyHasSupply = fmap notNull . getInvestigatorsWithSupply
 
+unlessAnyHasSupply :: HasGame m => Supply -> m () -> m ()
+unlessAnyHasSupply s = unlessM (getAnyHasSupply s)
+
 getInvestigatorsWithSupply :: HasGame m => Supply -> m [InvestigatorId]
 getInvestigatorsWithSupply s = getInvestigators >>= filterM (`getHasSupply` s)
 
 getInvestigatorsWithoutSupply :: HasGame m => Supply -> m [InvestigatorId]
 getInvestigatorsWithoutSupply s = getInvestigators >>= filterM (fmap not . (`getHasSupply` s))
+
+getTotalVengeanceInVictoryDisplay :: forall m. (HasCallStack, HasGame m) => m Int
+getTotalVengeanceInVictoryDisplay = do
+  n <- getVengeanceInVictoryDisplay
+  locationVengeance <- fmap getSum . toVengeance =<< select (RevealedLocation <> LocationWithoutClues)
+  pure $ n + locationVengeance
+ where
+  toVengeance :: ConvertToCard c => [c] -> m (Sum Int)
+  toVengeance = fmap (mconcat . map Sum . catMaybes) . traverse getVengeancePoints
 
 getVengeanceInVictoryDisplay :: forall m. (HasCallStack, HasGame m) => m Int
 getVengeanceInVictoryDisplay = do
@@ -63,17 +75,13 @@ getVengeanceInVictoryDisplay = do
     inVictoryDisplay' =
       sum $ map (fromMaybe 0 . cdVengeancePoints . toCardDef) victoryDisplay
     vengeanceCards = count isVengeanceCard victoryDisplay
-  locationVengeance <- fmap getSum . toVengeance =<< select (RevealedLocation <> LocationWithoutClues)
   locationsWithModifier <-
     getSum
       <$> selectAgg
         (Sum . fromMaybe 0)
         LocationVengeance
         (LocationWithModifier InVictoryDisplayForCountingVengeance)
-  pure $ inVictoryDisplay' + locationsWithModifier + vengeanceCards + locationVengeance
- where
-  toVengeance :: ConvertToCard c => [c] -> m (Sum Int)
-  toVengeance = fmap (mconcat . map Sum . catMaybes) . traverse getVengeancePoints
+  pure $ inVictoryDisplay' + locationsWithModifier + vengeanceCards
 
 getExplorationDeck :: HasGame m => m [Card]
 getExplorationDeck = scenarioFieldMap ScenarioDecks (findWithDefault [] ExplorationDeck)
@@ -177,7 +185,6 @@ explore iid source cardMatcher exploreRule matchCount = do
           replacedIsRevealed <- field LocationRevealed lid
           replacedIsWithoutClues <- lid <=~> LocationWithoutClues
 
-          checkAfter $ Window.PutLocationIntoPlay iid lid
           when (canMove && exploreRule == PlaceExplored) $ moveTo source iid lid
           updateHistory iid $ HistoryItem HistorySuccessfulExplore True
           checkAfter $ Window.Explored iid mlid (Success lid)

@@ -69,12 +69,12 @@ heartOfTheElders difficulty =
 
 part2Locations :: [GridTemplateRow]
 part2Locations =
-  [ ".            perilousGulch .              ."
-  , ".            perilousGulch crystalPillars ."
-  , "mouthOfKnYan vastPassages  crystalPillars descentToYoth"
-  , "mouthOfKnYan vastPassages  hallOfIdolatry descentToYoth"
-  , ".            darkHollow    hallOfIdolatry ."
-  , ".            darkHollow    .              ."
+  [ ".      diamond  .      ."
+  , ".      diamond  moon   ."
+  , "equals circle   moon   heart"
+  , "equals circle   square heart"
+  , ".      triangle square ."
+  , ".      triangle .      ."
   ]
 
 standaloneChaosTokens :: [ChaosTokenFace]
@@ -266,7 +266,7 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
           2 -> resolution2B
           _ -> error "invalid resolution"
 
-        vengeance <- getVengeanceInVictoryDisplay
+        vengeance <- getTotalVengeanceInVictoryDisplay
         yigsFury <- getRecordCount YigsFury
         recordCount YigsFury (yigsFury + vengeance)
 

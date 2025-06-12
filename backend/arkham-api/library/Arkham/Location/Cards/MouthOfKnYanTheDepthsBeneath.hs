@@ -15,7 +15,8 @@ newtype MouthOfKnYanTheDepthsBeneath = MouthOfKnYanTheDepthsBeneath LocationAttr
 
 mouthOfKnYanTheDepthsBeneath :: LocationCard MouthOfKnYanTheDepthsBeneath
 mouthOfKnYanTheDepthsBeneath =
-  location MouthOfKnYanTheDepthsBeneath Cards.mouthOfKnYanTheDepthsBeneath 2 (PerPlayer 1)
+  symbolLabel
+    $ location MouthOfKnYanTheDepthsBeneath Cards.mouthOfKnYanTheDepthsBeneath 2 (PerPlayer 1)
 
 instance HasAbilities MouthOfKnYanTheDepthsBeneath where
   getAbilities (MouthOfKnYanTheDepthsBeneath attrs) =

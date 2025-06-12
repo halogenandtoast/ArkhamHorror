@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.ExpeditionJournal (expeditionJournal, ExpeditionJournal (..)) where
+module Arkham.Asset.Assets.ExpeditionJournal (expeditionJournal) where
 
 import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Cards

@@ -14,7 +14,7 @@ newtype PerilousGulch = PerilousGulch LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 perilousGulch :: LocationCard PerilousGulch
-perilousGulch = location PerilousGulch Cards.perilousGulch 4 (PerPlayer 1)
+perilousGulch = symbolLabel $ location PerilousGulch Cards.perilousGulch 4 (PerPlayer 1)
 
 instance HasAbilities PerilousGulch where
   getAbilities (PerilousGulch attrs) =

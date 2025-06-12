@@ -32,8 +32,8 @@ instance RunMessage SecretPassage where
       chooseOneM iid $ withI18n do
         numberVar "damage" 1
           $ numberVar "horror" 1
-          $ labeled "Take 1 horror and 1 damage"
+          $ labeled' "takeHorrorAndDamage"
           $ assignDamageAndHorror iid (attrs.ability 1) 1 1
-        nameVar attrs $ countVar 1 $ labeled "placeDoom" $ placeDoom (attrs.ability 1) attrs 1
+        nameVar attrs $ countVar 1 $ labeled' "placeDoomOn" $ placeDoom (attrs.ability 1) attrs 1
       pure l
     _ -> SecretPassage <$> liftRunMessage msg attrs

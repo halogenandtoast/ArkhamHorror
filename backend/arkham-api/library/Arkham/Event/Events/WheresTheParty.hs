@@ -22,7 +22,7 @@ instance RunMessage WheresTheParty where
       findEncounterCard iid attrs $ card_ $ #enemy <> not_ (withTrait Elite)
       pure e
     FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) -> do
-      createEnemyWith card iid (\ec -> ec {enemyCreationAfter = [Exhaust (toTarget ec.enemy)]})
+      createEnemyWith card iid (\ec -> ec {enemyCreationExhausted = True})
         >>= (`forTarget` msg)
       pure e
     ForTarget (EnemyTarget enemy) (FoundEncounterCard iid (isTarget attrs -> True) _) -> do

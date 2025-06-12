@@ -2523,13 +2523,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     -- afterWindow <- checkWindows [mkAfter $ Window.Healed #horror (toTarget a) source n]
 
     unless cannotHealHorror do
+      hrrTreacheries <-
+        selectWithField TreacheryCard $ treacheryInThreatAreaOf investigatorId <> TreacheryWithModifier IsPointOfHorror
       mods <- getModifiers a
       let onlyTargets = [targetLabel t [HealHorror t source 1] | CannotHealHorrorOnOtherCards t <- mods]
       let additionalTargets =
             guard (null onlyTargets)
               *> [targetLabel t [HealHorror t source 1] | HealHorrorAsIfOnInvestigator t x <- mods, x > 0]
 
-      let remainingHorror = investigatorSanityDamage a - sum (toList investigatorAssignedSanityHeal)
+      let remainingHorror = length hrrTreacheries + investigatorSanityDamage a - sum (toList investigatorAssignedSanityHeal)
       if null additionalTargets && null onlyTargets
         then do
           let canHealAtFullSources = [sourceMatcher | CanHealAtFull sourceMatcher DamageType <- mods]

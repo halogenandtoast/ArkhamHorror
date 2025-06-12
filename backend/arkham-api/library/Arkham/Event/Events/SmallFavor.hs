@@ -1,4 +1,4 @@
-module Arkham.Event.Events.SmallFavor (smallFavor, SmallFavor (..)) where
+module Arkham.Event.Events.SmallFavor (smallFavor) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -21,22 +21,22 @@ instance HasAbilities SmallFavor where
   getAbilities (SmallFavor a) =
     [ withTooltip
         "{reaction} When you play Small Favor, increase its cost by 2: Change \"Deal 1 damage\" to \"Deal 2 damage.\""
-        $ restrictedAbility a 1 InYourHand
-        $ ReactionAbility
+        $ restricted a 1 InYourHand
+        $ triggered
           (PlayCard #when You (basic $ CardWithId $ toCardId a))
           (IncreaseCostOfThis (toCardId a) 2)
     , withTooltip
         "{reaction} When you play Small Favor, increase its cost by 2: Change \"at your location\" to \"at a location up to 2 connections away.\""
-        $ restrictedAbility a 2 InYourHand
-        $ ForcedWhen (Negate $ EnemyCriteria $ EnemyExists $ EnemyAt YourLocation <> NonEliteEnemy)
-        $ ReactionAbility
+        $ restricted a 2 InYourHand
+        $ ForcedWhen (not_ $ exists $ EnemyAt YourLocation <> NonEliteEnemy)
+        $ triggered
           (PlayCard #when You (basic $ CardWithId $ toCardId a))
           (IncreaseCostOfThis (toCardId a) 2)
     ]
 
 instance RunMessage SmallFavor where
   runMessage msg e@(SmallFavor attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | eid == attrs.id -> do
+    PlayThisEvent iid (is attrs -> True) -> do
       modifiers' <- getModifiers (toTarget $ toCardId attrs)
 
       let

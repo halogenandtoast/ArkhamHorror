@@ -58,7 +58,10 @@ mirage a clues locations =
   restricted a MirageAbility (Here <> SetAsideCardExists (mapOneOf cardIs locations))
     $ FastAbility
     $ CostWhenTreacheryElse
-      (TreacheryAt (LocationWithId $ asId a) <> treacheryIs Treacheries.evanescentMist)
+      ( TreacheryAt (LocationWithId $ asId a)
+          <> treacheryIs Treacheries.evanescentMist
+          <> not_ (TreacheryWithModifier Blank)
+      )
       ( OrCost
           [ GroupClueCost (StaticWithPerPlayer 2 clues) YourLocation
           , InvestigatorDamageCost (toSource a) (at_ YourLocation) DamageAny 2

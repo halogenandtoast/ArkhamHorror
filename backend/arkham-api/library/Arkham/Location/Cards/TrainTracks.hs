@@ -4,9 +4,8 @@ import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype TrainTracks = TrainTracks LocationAttrs
   deriving anyclass IsLocation
@@ -20,15 +19,15 @@ instance HasModifiersFor TrainTracks where
     modifySelectMap a (locationIs Cards.northside) \lid -> [ConnectedToWhen (LocationWithId lid) (be a)]
 
 instance HasAbilities TrainTracks where
-  getAbilities (TrainTracks attrs) =
-    withBaseAbilities
-      attrs
-      [ playerLimit PerGame $ restrictedAbility attrs 1 Here $ actionAbilityWithCost (ClueCost $ Static 1)
-      ]
+  getAbilities (TrainTracks a) =
+    extendRevealed1 a
+      $ playerLimit PerGame
+      $ restricted a 1 Here
+      $ actionAbilityWithCost (ClueCost $ Static 1)
 
 instance RunMessage TrainTracks where
-  runMessage msg l@(TrainTracks attrs) = case msg of
+  runMessage msg l@(TrainTracks attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ drawCards iid (attrs.ability 1) 4
+      drawCards iid (attrs.ability 1) 4
       pure l
-    _ -> TrainTracks <$> runMessage msg attrs
+    _ -> TrainTracks <$> liftRunMessage msg attrs

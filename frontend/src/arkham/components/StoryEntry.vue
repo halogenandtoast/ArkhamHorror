@@ -81,6 +81,7 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
 
 <style lang="scss" scoped>
 .entry {
+  border-radius: 5px;
   background: #DCD6D0;
   padding: 20px;
   box-shadow: inset 0 0 170px rgba(0,0,0,0.5), 1px 1px 3px rgba(0,0,0,0.6);
@@ -284,7 +285,17 @@ a.button {
 .pick-cards {
   display: flex;
   margin-block: 20px;
+  gap: 10px;
   justify-content: center;
+
+  img {
+    transition: box-shadow 0.1s ease-in-out, transform 0.1s ease-in-out;
+  }
+
+  img:hover {
+    box-shadow: 0 0 10px rgba(0,0,0,0.9);
+    transform: scale(1.05);
+  }
 }
 
 .pick {

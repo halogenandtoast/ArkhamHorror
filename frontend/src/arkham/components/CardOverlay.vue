@@ -7,7 +7,7 @@ import PoolItem from '@/arkham/components/PoolItem.vue';
 
 const cardOverlay = ref<HTMLElement | null>(null)
 const hoveredElement = ref<HTMLElement | null>(null)
-
+let canDisablePress = false
 onMounted(() => {
   const handleMouseover = (event: Event) => {
     const target = event.target as HTMLElement
@@ -23,29 +23,54 @@ onMounted(() => {
       } else {
         hoveredElement.value = target
       }
-    } else {
-      hoveredElement.value = null
+      canDisablePress = true
+    }
+    else{
+      if (!isMobile){
+        hoveredElement.value = null
+      }
     }
   }
 
   const isMobile = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   let pressTimer : number | undefined = undefined
-
   const handlePress = (event: Event) => {
     pressTimer = setTimeout(() => handleMouseover(event), 200)
-    event.preventDefault()
   }
   const disablePress = () => {
-    hoveredElement.value = null
+    if (canDisablePress) {
+      // disablePress is ready for next click, so reset the flag
+      canDisablePress = false
+    }
+    else{
+      hoveredElement.value = null
+      clearTimeout(pressTimer)
+    }
+  }
+  const filterPress = () => {
+    if (hoveredElement.value?.classList.contains('in-hand')) {
+        hoveredElement.value = null
+    }
+    clearTimeout(pressTimer)
+  }
+
+  const filterMove = () => {
+    if (hoveredElement.value?.classList.contains('card--locations')) {
+        hoveredElement.value = null
+    }
     clearTimeout(pressTimer)
   }
 
   if (!isMobile) {
     document.addEventListener('mouseover', handleMouseover)
   } else {
-    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('contextmenu', (e) => {
+      if (e.target.tagName.toLowerCase() === 'input') return
+      e.preventDefault()
+    })
     document.addEventListener('touchstart', handlePress)
-    document.addEventListener('touchend', disablePress)
+    document.addEventListener('touchmove', filterMove)
+    document.addEventListener('touchend', filterPress)
     document.addEventListener('mouseup', disablePress)
   }
 
@@ -488,10 +513,12 @@ const getImage = (el: HTMLElement): string | null => {
   }
   &.sideways {
     height: 300px !important;
-    width: fit-content !important;
-    height: 300px;
+    //width: fit-content !important;
     //aspect-ratio: var(--card-sideways-aspect);
     width: auto;
+    @media (max-width: 800px) and (orientation: portrait){
+      overflow: auto;
+    }
     img {
       aspect-ratio: var(--card-sideways-aspect);
       border-radius: 15px;
@@ -2032,7 +2059,7 @@ const getImage = (el: HTMLElement): string | null => {
   position: absolute;
   top: 0;
   left: 2px;
-  pointer-events: none;
+  pointer-events: auto;
   animation: fadeIn 0.5s;
 }
 

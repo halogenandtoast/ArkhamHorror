@@ -6,6 +6,7 @@ import Arkham.Helpers.SkillTest.Target as X
 import Arkham.Ability
 import Arkham.Action
 import Arkham.Action qualified as Action
+import Arkham.Asset.Types qualified as Field
 import Arkham.Calculation
 import Arkham.Card
 import Arkham.ChaosToken.Types
@@ -15,7 +16,7 @@ import Arkham.Classes.HasQueue (HasQueue, popMessageMatching_, pushAfter)
 import Arkham.Classes.Query hiding (matches)
 import Arkham.Classes.Query qualified as Query
 import Arkham.CommitRestriction
-import Arkham.Asset.Types qualified as Field
+import Arkham.Constants
 import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Action
@@ -90,6 +91,13 @@ isSkillTestInvestigator iid = (== Just iid) <$> getSkillTestInvestigator
 
 getSkillTestSource :: HasGame m => m (Maybe Source)
 getSkillTestSource = getsSkillTest skillTestSource
+
+isBasicEvade :: HasGame m => m Bool
+isBasicEvade =
+  fromMaybe False <$> runMaybeT do
+    Action.Evade <- MaybeT getSkillTestAction
+    AbilitySource (EnemySource _) AbilityEvade <- MaybeT getSkillTestAbilitySource
+    pure True
 
 getSkillTestAbilitySource :: HasGame m => m (Maybe Source)
 getSkillTestAbilitySource = runMaybeT do

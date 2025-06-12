@@ -1,7 +1,4 @@
-module Arkham.Act.Cards.StrangeRelicsMariaDeSilva (
-  StrangeRelicsMariaDeSilva (..),
-  strangeRelicsMariaDeSilva,
-) where
+module Arkham.Act.Cards.StrangeRelicsMariaDeSilva (strangeRelicsMariaDeSilva) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
@@ -21,39 +18,30 @@ newtype StrangeRelicsMariaDeSilva = StrangeRelicsMariaDeSilva ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeRelicsMariaDeSilva :: ActCard StrangeRelicsMariaDeSilva
-strangeRelicsMariaDeSilva =
-  act (2, E) StrangeRelicsMariaDeSilva Cards.strangeRelicsMariaDeSilva Nothing
+strangeRelicsMariaDeSilva = act (2, E) StrangeRelicsMariaDeSilva Cards.strangeRelicsMariaDeSilva Nothing
 
 instance HasAbilities StrangeRelicsMariaDeSilva where
-  getAbilities (StrangeRelicsMariaDeSilva a) =
-    [ restrictedAbility
-      a
-      1
-      (exists $ assetIs Assets.mariaDeSilva <> AssetWithClues (AtLeast $ PerPlayer 1))
+  getAbilities = actAbilities1' E \a ->
+    restricted a 1 (exists $ assetIs Assets.mariaDeSilva <> AssetWithClues (AtLeast $ PerPlayer 1))
       $ Objective
-      $ ForcedAbility AnyWindow
-    | onSide E a
-    ]
+      $ forced AnyWindow
 
 instance RunMessage StrangeRelicsMariaDeSilva where
   runMessage msg a@(StrangeRelicsMariaDeSilva attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
+    AdvanceAct (isSide F attrs -> True) _ _ -> do
       maria <- selectJust $ assetIs Assets.mariaDeSilva
-      mariasLocation <- selectJust $ LocationWithAsset $ AssetWithId maria
+      mariasLocation <- selectJust $ locationWithAsset maria
       enemyMaria <- lookupCard Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn <$> field AssetCardId maria
       createEnemyAt_ enemyMaria mariasLocation
-      pushAll
-        [ Flipped (toSource maria) enemyMaria
-        , NextAdvanceActStep aid 1
-        , AdvanceToAct (actDeckId attrs) Acts.theBrotherhoodIsRevealed E (toSource attrs)
-        ]
+      push $ Flipped (toSource maria) enemyMaria
+      doStep 1 msg
+      advanceToAct attrs Acts.theBrotherhoodIsRevealed E
       pure a
-    NextAdvanceActStep (isSide F attrs -> True) 1 -> do
+    DoStep 1 (AdvanceAct (isSide F attrs -> True) _ _) -> do
       maria <- selectJust (enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn)
-      card <- field EnemyCard maria
-      rememberIchtacasPrey maria card
+      rememberIchtacasPrey maria =<< field EnemyCard maria
       pure a
     _ -> StrangeRelicsMariaDeSilva <$> liftRunMessage msg attrs

@@ -19,7 +19,6 @@ import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Spectral))
 import Control.Lens (non, _1, _2)
 import Control.Monad.Writer.Class
@@ -70,7 +69,7 @@ hereticAbilities (toAttrs -> a) =
   withBaseAbilities
     a
     [ restrictedAbility a 1 OnSameLocation $ FastAbility' (ClueCost $ Static 1) [#parley]
-    , mkAbility a 2 $ ForcedAbility $ EnemyDefeated Timing.After Anyone ByAny $ EnemyWithId $ toId a
+    , mkAbility a 2 $ forced $ EnemyDefeated #after Anyone ByAny $ EnemyWithId $ toId a
     ]
 
 hereticRunner

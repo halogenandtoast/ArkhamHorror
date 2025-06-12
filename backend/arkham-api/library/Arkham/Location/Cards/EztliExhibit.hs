@@ -4,10 +4,8 @@ import Arkham.Ability
 import Arkham.ChaosToken
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner hiding (RevealChaosToken)
+import Arkham.Location.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype EztliExhibit = EztliExhibit LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -17,22 +15,16 @@ eztliExhibit :: LocationCard EztliExhibit
 eztliExhibit = location EztliExhibit Cards.eztliExhibit 3 (PerPlayer 2)
 
 instance HasAbilities EztliExhibit where
-  getAbilities (EztliExhibit attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility
-          attrs
-          1
-          (DuringSkillTest $ WhileInvestigating $ LocationWithId $ toId attrs)
-          $ ForcedAbility
-          $ RevealChaosToken Timing.After You
-          $ ChaosTokenMatchesAny
-          $ map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail]
-      ]
+  getAbilities (EztliExhibit a) =
+    extendRevealed1 a
+      $ restricted a 1 (DuringSkillTest $ WhileInvestigating $ be a)
+      $ forced
+      $ RevealChaosToken #after You
+      $ mapOneOf ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail]
 
 instance RunMessage EztliExhibit where
-  runMessage msg l@(EztliExhibit attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ InvestigatorAssignDamage iid source DamageAny 0 1
+  runMessage msg l@(EztliExhibit attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignHorror iid (attrs.ability 1) 1
       pure l
-    _ -> EztliExhibit <$> runMessage msg attrs
+    _ -> EztliExhibit <$> liftRunMessage msg attrs

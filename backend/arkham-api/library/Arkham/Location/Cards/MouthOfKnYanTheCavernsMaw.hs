@@ -15,14 +15,14 @@ newtype MouthOfKnYanTheCavernsMaw = MouthOfKnYanTheCavernsMaw LocationAttrs
 
 mouthOfKnYanTheCavernsMaw :: LocationCard MouthOfKnYanTheCavernsMaw
 mouthOfKnYanTheCavernsMaw =
-  location MouthOfKnYanTheCavernsMaw Cards.mouthOfKnYanTheCavernsMaw 2 (Static 0)
+  symbolLabel $ location MouthOfKnYanTheCavernsMaw Cards.mouthOfKnYanTheCavernsMaw 2 (Static 0)
 
 instance HasAbilities MouthOfKnYanTheCavernsMaw where
-  getAbilities (MouthOfKnYanTheCavernsMaw attrs) =
+  getAbilities (MouthOfKnYanTheCavernsMaw a) =
     extendRevealed
-      attrs
-      [ withTooltip "Let's make camp and solve this puzzle tomorrow" (locationResignAction attrs)
-      , restricted attrs 2 (Here <> HasSupply Compass) actionAbility
+      a
+      [ withTooltip "Let's make camp and solve this puzzle tomorrow" (locationResignAction a)
+      , restricted a 2 (Here <> HasSupply Compass) actionAbility
       ]
 
 instance RunMessage MouthOfKnYanTheCavernsMaw where

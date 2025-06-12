@@ -320,19 +320,29 @@ allActs =
       SomeActCard collapseThePylons
     , SomeActCard theFinalMirage
     , -- Return to Night of the Zealot
-      -- Return to the Gathering
+      --- Return to the Gathering
       SomeActCard mysteriousGateway
     , -- Return to the Dunwich Legacy
-      -- Return to Lost in Time and Space
+      --- Return to Lost in Time and Space
       SomeActCard intoTheBeyondV2
     , -- Return to the Path to Carcosa
-      -- Return to Curtain Call
+      --- Return to Curtain Call
       SomeActCard theStrangerAlaranMists
     , SomeActCard theStrangerUnderTheCity
     , SomeActCard theStrangerHereIsMyReply
-    , -- Return to The Unspeakable Oath
+    , --- Return to The Unspeakable Oath
       SomeActCard theReallyBadOnesV3
     , SomeActCard theReallyBadOnesV4
+    , -- Return to The Forgotten Age
+      --- Return to Threads of Fate
+      SomeActCard searchForTheMeaning
+    , SomeActCard searchForTheSource
+    , SomeActCard theOvergrownEstateSentFromAnotherTime
+    , SomeActCard theOvergrownEstateClintonFreeman
+    , SomeActCard seekingTroubleSentFromAnotherTime
+    , SomeActCard seekingTroubleLoadingDocks
+    , SomeActCard discoverTheTruth
+    , SomeActCard impossiblePursuit
     , -- Curse of the Rougarou
       SomeActCard findingLadyEsprit
     , SomeActCard huntingTheRougarou

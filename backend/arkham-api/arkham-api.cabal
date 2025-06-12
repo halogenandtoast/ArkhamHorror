@@ -86,6 +86,7 @@ library
       Arkham.Act.Cards.DarkKnowledgeV2
       Arkham.Act.Cards.DescentIntoDark
       Arkham.Act.Cards.DiscoveringTheTruth
+      Arkham.Act.Cards.DiscoverTheTruth
       Arkham.Act.Cards.DisruptingTheRitual
       Arkham.Act.Cards.Dormancy
       Arkham.Act.Cards.EnteringTheDreamlands
@@ -114,6 +115,7 @@ library
       Arkham.Act.Cards.HiddenAgendas
       Arkham.Act.Cards.HuntingTheRougarou
       Arkham.Act.Cards.HuntressOfTheEztli
+      Arkham.Act.Cards.ImpossiblePursuit
       Arkham.Act.Cards.InAzathothsDomain
       Arkham.Act.Cards.InfiltratingTheLodge
       Arkham.Act.Cards.InLostCarcosa
@@ -169,15 +171,19 @@ library
       Arkham.Act.Cards.SearchForACampSite
       Arkham.Act.Cards.SearchForAlejandro
       Arkham.Act.Cards.SearchForTheBrotherhood
+      Arkham.Act.Cards.SearchForTheMeaning
       Arkham.Act.Cards.SearchForThePatient
       Arkham.Act.Cards.SearchForThePattern
       Arkham.Act.Cards.SearchForTheRuins
+      Arkham.Act.Cards.SearchForTheSource
       Arkham.Act.Cards.SearchForTheStrangerV1
       Arkham.Act.Cards.SearchForTheStrangerV2
       Arkham.Act.Cards.SearchForTheStrangerV3
       Arkham.Act.Cards.SearchingForAnswers
       Arkham.Act.Cards.SearchingForTheTome
       Arkham.Act.Cards.SearchingTheUnnamable
+      Arkham.Act.Cards.SeekingTroubleLoadingDocks
+      Arkham.Act.Cards.SeekingTroubleSentFromAnotherTime
       Arkham.Act.Cards.SeekOutTheNight
       Arkham.Act.Cards.ShadowOfThePastV1
       Arkham.Act.Cards.ShadowOfThePastV2
@@ -223,6 +229,8 @@ library
       Arkham.Act.Cards.TheLostExpedition
       Arkham.Act.Cards.TheMoonsCore
       Arkham.Act.Cards.TheOath
+      Arkham.Act.Cards.TheOvergrownEstateClintonFreeman
+      Arkham.Act.Cards.TheOvergrownEstateSentFromAnotherTime
       Arkham.Act.Cards.TheParisianConspiracyV1
       Arkham.Act.Cards.TheParisianConspiracyV2
       Arkham.Act.Cards.ThePath
@@ -645,6 +653,7 @@ library
       Arkham.Asset.Assets.ClaypoolsFurs
       Arkham.Asset.Assets.CleaningKit
       Arkham.Asset.Assets.CleaningKit3
+      Arkham.Asset.Assets.ClintonFreemanShouldHaveStayedHome
       Arkham.Asset.Assets.CloseTheCircle1
       Arkham.Asset.Assets.CollectedWorksOfPoe
       Arkham.Asset.Assets.ColtVestPocket
@@ -1020,6 +1029,7 @@ library
       Arkham.Asset.Assets.MedicalTexts
       Arkham.Asset.Assets.MedicalTexts2
       Arkham.Asset.Assets.MedicoDellaPeste
+      Arkham.Asset.Assets.MerleGarvinUnhelpfulGuide
       Arkham.Asset.Assets.MiasmicCrystalStrangeEvidence
       Arkham.Asset.Assets.MichaelLeigh5
       Arkham.Asset.Assets.Microscope
@@ -1364,6 +1374,7 @@ library
       Arkham.Asset.Assets.UntilTheEndOfTime
       Arkham.Asset.Assets.ValentinoRivas
       Arkham.Asset.Assets.VaultOfKnowledge
+      Arkham.Asset.Assets.VedaWhitsleySkilledBotanist
       Arkham.Asset.Assets.Venturer
       Arkham.Asset.Assets.Versatile2
       Arkham.Asset.Assets.ViolaCase
@@ -1615,6 +1626,7 @@ library
       Arkham.Enemy.Cards.BroodOfYogSothothChargingBeast
       Arkham.Enemy.Cards.BroodOfYogSothothSwellingDevourer
       Arkham.Enemy.Cards.BroodOfYogSothothThrashingSpawn
+      Arkham.Enemy.Cards.BrotherhoodAcolyte
       Arkham.Enemy.Cards.BrotherhoodCultist
       Arkham.Enemy.Cards.BrownJenkin
       Arkham.Enemy.Cards.CarlSanfordDeathlessFanatic
@@ -1868,6 +1880,7 @@ library
       Arkham.Enemy.Cards.StalkingManticore
       Arkham.Enemy.Cards.StealthyByakhee
       Arkham.Enemy.Cards.StealthyZoog
+      Arkham.Enemy.Cards.StolenMind
       Arkham.Enemy.Cards.StubbornDetective
       Arkham.Enemy.Cards.SummonedBeast
       Arkham.Enemy.Cards.SuspiciousOrderly
@@ -3001,6 +3014,7 @@ library
       Arkham.Location.Cards.LightSideOfTheMoon
       Arkham.Location.Cards.LimestoneCaverns
       Arkham.Location.Cards.LivingRoom
+      Arkham.Location.Cards.LoadingDocks
       Arkham.Location.Cards.Lobby
       Arkham.Location.Cards.LobbyMembersOnly
       Arkham.Location.Cards.LobbyWeveBeenExpectingYou
@@ -3284,6 +3298,7 @@ library
       Arkham.Location.Cards.TheGreatWebWebStairs
       Arkham.Location.Cards.TheGreatWebWebWovenIsland
       Arkham.Location.Cards.TheGuardian
+      Arkham.Location.Cards.TheHastingsEstate
       Arkham.Location.Cards.TheHiddenChamber
       Arkham.Location.Cards.TheHouseOnWaterStreet
       Arkham.Location.Cards.TheHouseOnWaterStreetInTooDeep
@@ -3507,6 +3522,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToThePallidMask
       Arkham.Scenario.Scenarios.ReturnToTheUnspeakableOath
       Arkham.Scenario.Scenarios.ReturnToTheUntamedWilds
+      Arkham.Scenario.Scenarios.ReturnToThreadsOfFate
       Arkham.Scenario.Scenarios.ReturnToUndimensionedAndUnseen
       Arkham.Scenario.Scenarios.ReturnToWhereDoomAwaits
       Arkham.Scenario.Scenarios.ShatteredAeons
@@ -3614,7 +3630,6 @@ library
       Arkham.Scenarios.TheWitchingHour.Helpers
       Arkham.Scenarios.TheWitchingHour.Story
       Arkham.Scenarios.ThreadsOfFate.Helpers
-      Arkham.Scenarios.ThreadsOfFate.Story
       Arkham.Scenarios.ToTheForbiddenPeaks.Helpers
       Arkham.Scenarios.TurnBackTime.Story
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers

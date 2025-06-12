@@ -1,6 +1,5 @@
 module Arkham.Scenarios.ThreadsOfFate.Helpers where
 
-import Arkham.Prelude
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
@@ -14,6 +13,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Log
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 
@@ -41,8 +41,8 @@ isIchtacasDestination lid = scenarioFieldMap ScenarioRemembered $ any $ \case
   IchtacasDestination (Labeled _ lid') -> lid == lid'
   _ -> False
 
-rememberIchtacasPrey :: ReverseQueue m => EnemyId -> Card -> m ()
-rememberIchtacasPrey eid card = remember $ IchtacasPrey $ Labeled (toName card) eid `With` Envelope @"cardCode" card.cardCode
+rememberIchtacasPrey :: (ReverseQueue m, IsCard card) => EnemyId -> card -> m ()
+rememberIchtacasPrey eid (toCard -> card) = remember $ IchtacasPrey $ Labeled (toName card) eid `With` Envelope @"cardCode" card.cardCode
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "threadsOfFate" a

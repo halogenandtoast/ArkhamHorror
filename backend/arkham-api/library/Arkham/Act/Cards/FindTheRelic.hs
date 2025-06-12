@@ -25,7 +25,7 @@ instance HasAbilities FindTheRelic where
     restricted
       a
       1
-      (exists $ LocationWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort) <> LocationWithoutClues)
+      (exists $ locationWithAssetIs Assets.relicOfAgesADeviceOfSomeSort <> LocationWithoutClues)
       $ Objective
       $ forced AnyWindow
 

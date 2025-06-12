@@ -280,6 +280,10 @@ locationWithAsset :: (AsId a, IdOf a ~ AssetId) => a -> LocationMatcher
 locationWithAsset = LocationWithAsset . AssetWithId . asId
 {-# INLINE locationWithAsset #-}
 
+locationWithAssetIs :: HasCardCode a => a -> LocationMatcher
+locationWithAssetIs = LocationWithAsset . assetIs
+{-# INLINE locationWithAssetIs #-}
+
 locationWithEnemy :: (AsId a, IdOf a ~ EnemyId) => a -> LocationMatcher
 locationWithEnemy = LocationWithEnemy . EnemyWithId . asId
 {-# INLINE locationWithEnemy #-}

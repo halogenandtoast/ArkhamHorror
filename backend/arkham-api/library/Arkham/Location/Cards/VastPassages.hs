@@ -13,7 +13,7 @@ newtype VastPassages = VastPassages LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 vastPassages :: LocationCard VastPassages
-vastPassages = location VastPassages Cards.vastPassages 2 (PerPlayer 1)
+vastPassages = symbolLabel $ location VastPassages Cards.vastPassages 2 (PerPlayer 1)
 
 instance HasModifiersFor VastPassages where
   getModifiersFor (VastPassages a) = do

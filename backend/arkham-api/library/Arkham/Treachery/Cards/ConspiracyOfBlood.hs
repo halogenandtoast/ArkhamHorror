@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.ConspiracyOfBlood (conspiracyOfBlood, ConspiracyOfBlood (..)) where
+module Arkham.Treachery.Cards.ConspiracyOfBlood (conspiracyOfBlood) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
@@ -25,7 +25,7 @@ instance HasModifiersFor ConspiracyOfBlood where
 instance HasAbilities ConspiracyOfBlood where
   getAbilities (ConspiracyOfBlood attrs) =
     [ skillTestAbility
-        $ restrictedAbility
+        $ restricted
           (proxied (EnemyMatcherSource $ EnemyWithTrait Cultist) attrs)
           1
           OnSameLocation

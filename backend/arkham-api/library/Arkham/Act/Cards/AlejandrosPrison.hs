@@ -2,13 +2,11 @@ module Arkham.Act.Cards.AlejandrosPrison (alejandrosPrison) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype AlejandrosPrison = AlejandrosPrison ActAttrs
@@ -23,33 +21,24 @@ instance HasModifiersFor AlejandrosPrison where
     modifySelect a (LocationWithAsset (assetIs Assets.alejandroVela)) [ShroudModifier 2]
 
 instance HasAbilities AlejandrosPrison where
-  getAbilities (AlejandrosPrison a) =
-    [ restrictedAbility
-        a
-        1
-        (exists $ LocationWithAsset (assetIs Assets.alejandroVela) <> LocationWithoutClues)
-        $ Objective
-        $ forced AnyWindow
-    | onSide C a
-    ]
+  getAbilities = actAbilities1' C \a ->
+    restricted a 1 (exists $ LocationWithAsset (assetIs Assets.alejandroVela) <> LocationWithoutClues)
+      $ Objective
+      $ forced AnyWindow
 
 instance RunMessage AlejandrosPrison where
-  runMessage msg a@(AlejandrosPrison attrs) = case msg of
+  runMessage msg a@(AlejandrosPrison attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == actId attrs && onSide D attrs -> do
-      lead <- getLeadPlayer
+    AdvanceAct (isSide D attrs -> True) _ _ -> do
       deckCount <- getActDecksInPlayCount
       alejandroVela <- selectJust $ assetIs Assets.alejandroVela
       iids <- select $ NearestToLocation $ LocationWithAsset $ assetIs Assets.alejandroVela
-      let
-        takeControlMessage =
-          chooseOrRunOne lead [targetLabel iid [TakeControlOfAsset iid alejandroVela] | iid <- iids]
-        nextMessage =
-          if deckCount <= 1
-            then R1
-            else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
-      pushAll [takeControlMessage, nextMessage]
+      leadChooseOrRunOneM $ targets iids (`takeControlOfAsset` alejandroVela)
+      push
+        $ if deckCount <= 1
+          then R1
+          else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
       pure a
-    _ -> AlejandrosPrison <$> runMessage msg attrs
+    _ -> AlejandrosPrison <$> liftRunMessage msg attrs

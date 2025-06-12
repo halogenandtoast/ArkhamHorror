@@ -13,7 +13,7 @@ newtype HallOfIdolatry = HallOfIdolatry LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hallOfIdolatry :: LocationCard HallOfIdolatry
-hallOfIdolatry = location HallOfIdolatry Cards.hallOfIdolatry 3 (PerPlayer 2)
+hallOfIdolatry = symbolLabel $ location HallOfIdolatry Cards.hallOfIdolatry 3 (PerPlayer 2)
 
 instance HasAbilities HallOfIdolatry where
   getAbilities (HallOfIdolatry attrs) =

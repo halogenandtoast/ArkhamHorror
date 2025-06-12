@@ -2,15 +2,12 @@ module Arkham.Act.Cards.AtTheExhibitTheRelicsLocation (atTheExhibitTheRelicsLoca
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Classes
 import Arkham.Helpers.GameValue
-import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype AtTheExhibitTheRelicsLocation = AtTheExhibitTheRelicsLocation ActAttrs
@@ -24,37 +21,21 @@ atTheExhibitTheRelicsLocation =
     $ GroupClueCost (PerPlayer 2) "Eztli Exhibit"
 
 instance RunMessage AtTheExhibitTheRelicsLocation where
-  runMessage msg a@(AtTheExhibitTheRelicsLocation attrs) = case msg of
-    AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
-      mTownHall <- selectOne $ LocationWithTitle "Town Hall"
+  runMessage msg a@(AtTheExhibitTheRelicsLocation attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       deckCount <- getActDecksInPlayCount
-      relicOfAges <- getSetAsideCard Assets.relicOfAgesADeviceOfSomeSort
       n <- perPlayer 1
-      (townHallId, msgs) <- case mTownHall of
-        Just townHall -> do
-          pure
-            ( townHall
-            ,
-              [ PlaceClues
-                  (toSource attrs)
-                  (LocationTarget townHall)
-                  (n + if deckCount <= 2 then n else 0)
-              ]
-            )
-        Nothing -> do
-          townHall <- getSetAsideCard Locations.townHall
-          locationId <- getRandom
-          pure
-            ( locationId
-            , PlaceLocation locationId townHall
-                : [PlaceClues (toSource attrs) (LocationTarget locationId) n | deckCount <= 2]
-            )
+      townHallId <-
+        selectOne (LocationWithTitle "Town Hall") >>= \case
+          Just townHall -> do
+            placeClues attrs townHall $ n + if deckCount <= 2 then n else 0
+            pure townHall
+          Nothing -> do
+            locationId <- placeLocation =<< getSetAsideCard Locations.townHall
+            when (deckCount <= 2) $ placeClues attrs locationId n
+            pure locationId
 
-      assetId <- getRandom
-      pushAll
-        $ msgs
-        <> [ CreateAssetAt assetId relicOfAges (AttachedToLocation townHallId)
-           , AdvanceToAct (actDeckId attrs) Acts.findTheRelic A (toSource attrs)
-           ]
+      createAssetAt_ Assets.relicOfAgesADeviceOfSomeSort (AttachedToLocation townHallId)
+      advanceToAct attrs Acts.findTheRelic A
       pure a
-    _ -> AtTheExhibitTheRelicsLocation <$> runMessage msg attrs
+    _ -> AtTheExhibitTheRelicsLocation <$> liftRunMessage msg attrs

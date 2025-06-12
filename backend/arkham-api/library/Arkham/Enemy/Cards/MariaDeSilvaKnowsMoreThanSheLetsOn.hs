@@ -1,13 +1,7 @@
-module Arkham.Enemy.Cards.MariaDeSilvaKnowsMoreThanSheLetsOn (
-  mariaDeSilvaKnowsMoreThanSheLetsOn,
-  MariaDeSilvaKnowsMoreThanSheLetsOn (..),
-) where
+module Arkham.Enemy.Cards.MariaDeSilvaKnowsMoreThanSheLetsOn (mariaDeSilvaKnowsMoreThanSheLetsOn) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 
 newtype MariaDeSilvaKnowsMoreThanSheLetsOn = MariaDeSilvaKnowsMoreThanSheLetsOn EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

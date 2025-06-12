@@ -93,6 +93,9 @@ instance IsLabel "discard" ScenarioZone where
 instance IsLabel "void" ScenarioZone where
   fromLabel = FromVoid
 
+instance IsLabel "victory" ScenarioZone where
+  fromLabel = FromOutOfPlayArea VictoryDisplayZone
+
 allOutOfPlayZones :: [ScenarioZone]
 allOutOfPlayZones = map FromOutOfPlayArea [minBound .. maxBound]
 

@@ -47,6 +47,9 @@ getSupplyCount iid s = fieldMap InvestigatorSupplies (length . filter (== s)) ii
 getAnyHasSupply :: HasGame m => Supply -> m Bool
 getAnyHasSupply = fmap notNull . getInvestigatorsWithSupply
 
+unlessAnyHasSupply :: HasGame m => Supply -> m () -> m ()
+unlessAnyHasSupply s = unlessM (getAnyHasSupply s)
+
 getInvestigatorsWithSupply :: HasGame m => Supply -> m [InvestigatorId]
 getInvestigatorsWithSupply s = getInvestigators >>= filterM (`getHasSupply` s)
 

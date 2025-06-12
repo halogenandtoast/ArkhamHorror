@@ -3,16 +3,13 @@ module Arkham.Act.Cards.FriendsInHighPlacesHenryDeveau (friendsInHighPlacesHenry
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Query
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Projection
 
 newtype FriendsInHighPlacesHenryDeveau = FriendsInHighPlacesHenryDeveau ActAttrs
@@ -21,61 +18,32 @@ newtype FriendsInHighPlacesHenryDeveau = FriendsInHighPlacesHenryDeveau ActAttrs
 
 friendsInHighPlacesHenryDeveau :: ActCard FriendsInHighPlacesHenryDeveau
 friendsInHighPlacesHenryDeveau =
-  act
-    (2, C)
-    FriendsInHighPlacesHenryDeveau
-    Cards.friendsInHighPlacesHenryDeveau
-    Nothing
+  act (2, C) FriendsInHighPlacesHenryDeveau Cards.friendsInHighPlacesHenryDeveau Nothing
 
 instance HasAbilities FriendsInHighPlacesHenryDeveau where
-  getAbilities (FriendsInHighPlacesHenryDeveau a) =
-    [ restrictedAbility
-        a
-        1
-        ( AssetExists
-            $ assetIs Assets.henryDeveau
-            <> AssetWithClues
-              (AtLeast $ PerPlayer 1)
-        )
-        $ Objective
-        $ ForcedAbility AnyWindow
-    | onSide C a
-    ]
+  getAbilities = actAbilities1' C \a ->
+    restricted a 1 (exists $ assetIs Assets.henryDeveau <> AssetWithClues (AtLeast $ PerPlayer 1))
+      $ Objective
+      $ forced AnyWindow
 
 instance RunMessage FriendsInHighPlacesHenryDeveau where
-  runMessage msg a@(FriendsInHighPlacesHenryDeveau attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+  runMessage msg a@(FriendsInHighPlacesHenryDeveau attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == actId attrs && onSide D attrs -> do
+    AdvanceAct (isSide D attrs -> True) _ _ -> do
       henryDeveau <- selectJust $ assetIs Assets.henryDeveau
       henrysLocation <- selectJust $ locationWithAsset henryDeveau
       cardId <- field AssetCardId henryDeveau
-      let
-        henryDeveauAlejandrosKidnapper =
-          lookupCard Enemies.henryDeveauAlejandrosKidnapper cardId
-
-      createHenryDeveau <-
-        createEnemyAt_
-          henryDeveauAlejandrosKidnapper
-          henrysLocation
-          Nothing
-
-      pushAll
-        [ createHenryDeveau
-        , Flipped (toSource henryDeveau) henryDeveauAlejandrosKidnapper
-        , NextAdvanceActStep aid 1
-        , AdvanceToAct
-            (actDeckId attrs)
-            Acts.alejandrosPlight
-            C
-            (toSource attrs)
-        ]
+      let henryDeveauAlejandrosKidnapper = lookupCard Enemies.henryDeveauAlejandrosKidnapper cardId
+      createEnemyAt_ henryDeveauAlejandrosKidnapper henrysLocation
+      push $ Flipped (toSource henryDeveau) henryDeveauAlejandrosKidnapper
+      doStep 1 msg
+      advanceToAct attrs Acts.alejandrosPlight C
       pure a
-    NextAdvanceActStep aid 1 | aid == actId attrs && onSide D attrs -> do
+    DoStep 1 (AdvanceAct (isSide D attrs -> True) _ _) -> do
       alejandroVela <- getSetAsideCard Assets.alejandroVela
       henryDeveau <- selectJust $ enemyIs Enemies.henryDeveauAlejandrosKidnapper
-      assetId <- getRandom
-      pushAll [CreateAssetAt assetId alejandroVela (AttachedToEnemy henryDeveau)]
+      createAssetAt_ alejandroVela (AttachedToEnemy henryDeveau)
       pure a
-    _ -> FriendsInHighPlacesHenryDeveau <$> runMessage msg attrs
+    _ -> FriendsInHighPlacesHenryDeveau <$> liftRunMessage msg attrs

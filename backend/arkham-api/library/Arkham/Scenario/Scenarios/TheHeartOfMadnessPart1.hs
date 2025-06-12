@@ -7,6 +7,7 @@ import Arkham.Campaign.Option
 import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
+import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Exception
 import Arkham.FlavorText
@@ -18,9 +19,11 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move (moveAllTo)
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
@@ -77,6 +80,14 @@ instance RunMessage TheHeartOfMadnessPart1 where
             inPlay <- selectAny $ assetIs partner.cardCode
             unless inPlay do
               cardLabeled partner.cardCode $ handleTarget iid ScenarioSource (CardCodeTarget partner.cardCode)
+      pure s
+    HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
+      for_ (lookupCardDef cardCode) \def -> do
+        card <- genCard def
+        assetId <- createAssetAt card (InPlayArea iid)
+        partner <- getPartner cardCode
+        pushWhen (partner.damage > 0) $ Msg.PlaceDamage CampaignSource (toTarget assetId) partner.damage
+        pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
       pure s
     Setup -> runScenarioSetup TheHeartOfMadnessPart1 attrs do
       gather Set.TheHeartOfMadness

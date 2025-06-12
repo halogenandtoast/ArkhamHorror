@@ -2,19 +2,17 @@ module Arkham.Act.Cards.StrangeOccurences (strangeOccurences) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.History
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Treachery.Types
@@ -24,8 +22,7 @@ newtype StrangeOccurences = StrangeOccurences ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeOccurences :: ActCard StrangeOccurences
-strangeOccurences =
-  act (3, E) StrangeOccurences Cards.strangeOccurences Nothing
+strangeOccurences = act (3, E) StrangeOccurences Cards.strangeOccurences Nothing
 
 instance HasModifiersFor StrangeOccurences where
   getModifiersFor (StrangeOccurences a) = do
@@ -37,44 +34,29 @@ instance HasModifiersFor StrangeOccurences where
       pure [AddKeyword Keyword.Surge]
 
 instance HasAbilities StrangeOccurences where
-  getAbilities (StrangeOccurences a) =
-    [ restrictedAbility
-        a
-        1
-        (AllLocationsMatch IsIchtacasDestination LocationWithoutClues)
-        $ Objective
-        $ ForcedAbility AnyWindow
-    | onSide E a
-    ]
+  getAbilities = actAbilities1' E \a ->
+    restricted a 1 (AllLocationsMatch IsIchtacasDestination LocationWithoutClues)
+      $ Objective
+      $ forced AnyWindow
 
 instance RunMessage StrangeOccurences where
-  runMessage msg a@(StrangeOccurences attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+  runMessage msg a@(StrangeOccurences attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
+    AdvanceAct (isSide F attrs -> True) _ _ -> do
       deckCount <- getActDecksInPlayCount
-      lead <- getLeadPlayer
       isTownHall <- selectAny $ locationIs Locations.townHall <> IsIchtacasDestination
       ichtaca <- genCard Assets.ichtacaTheForgottenGuardian
       iids <-
         select
           $ NearestToLocation
           $ locationIs
-          $ if isTownHall
-            then Locations.townHall
-            else Locations.rivertown
-      let
-        takeControlMessage =
-          chooseOrRunOne
-            lead
-            [ targetLabel iid [TakeControlOfSetAsideAsset iid ichtaca]
-            | iid <- iids
-            ]
-        nextMessage =
-          if deckCount <= 1
-            then scenarioResolution 1
-            else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
-      pushAll [takeControlMessage, nextMessage]
+          $ if isTownHall then Locations.townHall else Locations.rivertown
+      leadChooseOrRunOneM $ targets iids (`takeControlOfSetAsideAsset` ichtaca)
+      push
+        $ if deckCount <= 1
+          then R1
+          else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
       pure a
-    _ -> StrangeOccurences <$> runMessage msg attrs
+    _ -> StrangeOccurences <$> liftRunMessage msg attrs

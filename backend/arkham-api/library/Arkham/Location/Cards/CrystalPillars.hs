@@ -12,7 +12,7 @@ newtype CrystalPillars = CrystalPillars LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crystalPillars :: LocationCard CrystalPillars
-crystalPillars = location CrystalPillars Cards.crystalPillars 1 (PerPlayer 2)
+crystalPillars = symbolLabel $ location CrystalPillars Cards.crystalPillars 1 (PerPlayer 2)
 
 instance HasAbilities CrystalPillars where
   getAbilities (CrystalPillars attrs) =

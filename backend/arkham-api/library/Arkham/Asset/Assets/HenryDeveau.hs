@@ -1,10 +1,10 @@
-module Arkham.Asset.Assets.HenryDeveau (henryDeveau, HenryDeveau (..)) where
+module Arkham.Asset.Assets.HenryDeveau (henryDeveau) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype HenryDeveau = HenryDeveau AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -16,17 +16,17 @@ henryDeveau = asset HenryDeveau Cards.henryDeveau
 instance HasAbilities HenryDeveau where
   getAbilities (HenryDeveau a) =
     [ skillTestAbility
-        $ restrictedAbility a 1 OnSameLocation
+        $ restricted a 1 OnSameLocation
         $ parleyAction (DiscardFromCost 1 (FromHandOf You) AnyCard)
     ]
 
 instance RunMessage HenryDeveau where
-  runMessage msg a@(HenryDeveau attrs) = case msg of
+  runMessage msg a@(HenryDeveau attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ parley sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
+      parley sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
       pure a
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
-      push $ PlaceClues (attrs.ability 1) (toTarget attrs) 1
+      placeClues (attrs.ability 1) attrs 1
       pure a
-    _ -> HenryDeveau <$> runMessage msg attrs
+    _ -> HenryDeveau <$> liftRunMessage msg attrs

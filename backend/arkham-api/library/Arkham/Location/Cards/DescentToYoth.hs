@@ -22,11 +22,12 @@ newtype DescentToYoth = DescentToYoth (LocationAttrs `With` Metadata)
 
 descentToYoth :: LocationCard DescentToYoth
 descentToYoth =
-  location
-    (DescentToYoth . (`with` Metadata False))
-    Cards.descentToYoth
-    3
-    (Static 0)
+  symbolLabel
+    $ location
+      (DescentToYoth . (`with` Metadata False))
+      Cards.descentToYoth
+      3
+      (Static 0)
 
 instance HasAbilities DescentToYoth where
   getAbilities (DescentToYoth (attrs `With` _)) =
@@ -47,14 +48,14 @@ instance RunMessage DescentToYoth where
       investigators <- getInvestigatorPlayers
       pushAll
         [ chooseOne
-          player
-          [ Label
-              "Place 1 doom on Descent to Yoth"
-              [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1]
-          , Label
-              "Draw the top 2 cards of the encounter deck"
-              [drawEncounterCards iid attrs 2]
-          ]
+            player
+            [ Label
+                "Place 1 doom on Descent to Yoth"
+                [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1]
+            , Label
+                "Draw the top 2 cards of the encounter deck"
+                [drawEncounterCards iid attrs 2]
+            ]
         | (iid, player) <- investigators
         ]
       pure l

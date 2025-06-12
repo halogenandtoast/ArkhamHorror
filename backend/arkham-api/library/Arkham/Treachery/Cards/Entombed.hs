@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.Entombed (entombed) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest qualified as Msg
+import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -31,13 +31,10 @@ instance RunMessage Entombed where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      let
-        difficulty = max 0 (4 - difficultyReduction metadata)
-        testChoice sType =
-          SkillLabel
-            sType
-            [Msg.beginSkillTest sid iid (attrs.ability 1) attrs sType (Fixed difficulty)]
-      chooseOne iid [testChoice #agility, testChoice #combat]
+      let difficulty = max 0 (4 - difficultyReduction metadata)
+      chooseOneM iid do
+        for_ [#agility, #combat] \kind ->
+          skillLabeled kind $ beginSkillTest sid iid (attrs.ability 1) attrs kind (Fixed difficulty)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs

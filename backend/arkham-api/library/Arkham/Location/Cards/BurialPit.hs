@@ -27,7 +27,7 @@ instance RunMessage BurialPit where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       repeated 2 do
         chooseOneM iid $ scenarioI18n do
-          labeled "burialPit.draw" $ drawEncounterCard iid attrs
-          labeled "burialPit.doom" $ placeDoom (attrs.ability 1) attrs 1
+          labeled' "burialPit.draw" $ drawEncounterCard iid attrs
+          labeled' "burialPit.doom" $ placeDoom (attrs.ability 1) attrs 1
       pure l
     _ -> BurialPit <$> liftRunMessage msg attrs

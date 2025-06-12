@@ -4,6 +4,7 @@ import Arkham.Action qualified as Action
 import Arkham.Constants
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Choose
 import Arkham.Skill.Cards qualified as Cards
@@ -29,7 +30,10 @@ instance RunMessage ExpeditiousRetreat1 where
         AbilitySource (EnemySource eid) AbilityEvade <- MaybeT getSkillTestAbilitySource
         iid <- MaybeT getSkillTestInvestigator
         enemies <-
-          select $ enemyAtLocationWith iid <> not_ (EnemyWithId eid) <> CanEvadeEnemy (toSource iid)
-        lift $ chooseTargetM iid enemies $ automaticallyEvadeEnemy iid
+          select $ enemyAtLocationWith iid <> not_ (EnemyWithId eid) <> EnemyCanBeEvadedBy (toSource iid)
+        unless (null enemies) do
+          lift $ chooseOneM iid $ withI18n do
+            labeled' "skip" nothing
+            targets enemies $ automaticallyEvadeEnemy iid
       pure s
     _ -> ExpeditiousRetreat1 <$> liftRunMessage msg attrs

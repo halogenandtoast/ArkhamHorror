@@ -129,6 +129,9 @@ placeSetAsideLocation card = do
   push msg
   pure lid
 
+selectOrPlaceSetAsideLocation :: ReverseQueue m => CardDef -> m LocationId
+selectOrPlaceSetAsideLocation def = maybe (placeSetAsideLocation def) pure =<< selectOne (locationIs def)
+
 placeSetAsideLocation_ :: ReverseQueue m => CardDef -> m ()
 placeSetAsideLocation_ = push <=< Msg.placeSetAsideLocation_
 
@@ -695,6 +698,17 @@ createEnemyWith card creation f = do
   push $ toMessage (f msg)
   pure msg.enemy
 
+createEnemyWithM
+  :: (ReverseQueue m, IsCard card, IsEnemyCreationMethod creation)
+  => card
+  -> creation
+  -> (EnemyCreation Message -> m (EnemyCreation Message))
+  -> m EnemyId
+createEnemyWithM card creation f = do
+  msg <- Msg.createEnemy card creation
+  push . toMessage =<< f msg
+  pure msg.enemy
+
 createEnemyWithAfter_
   :: (ReverseQueue m, IsCard card, IsEnemyCreationMethod creation)
   => card
@@ -713,6 +727,20 @@ createEnemyWith_
   -> (EnemyCreation Message -> EnemyCreation Message)
   -> m ()
 createEnemyWith_ card creation f = void $ createEnemyWith card creation f
+
+createEnemyWithM_
+  :: (ReverseQueue m, IsCard card, IsEnemyCreationMethod creation)
+  => card
+  -> creation
+  -> (EnemyCreation Message -> m (EnemyCreation Message))
+  -> m ()
+createEnemyWithM_ card creation f = void $ createEnemyWithM card creation f
+
+setAfter
+  :: ReverseQueue m => EnemyCreation Message -> QueueT Message m () -> m (EnemyCreation Message)
+setAfter builder after = do
+  msgs <- evalQueueT after
+  pure $ builder {enemyCreationAfter = msgs}
 
 createEnemyCard_
   :: (ReverseQueue m, FetchCard card, IsEnemyCreationMethod creation)
@@ -781,6 +809,10 @@ placeClues source target n = push $ PlaceClues (toSource source) (toTarget targe
 removeClues
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
 removeClues source target n = push $ RemoveClues (toSource source) (toTarget target) n
+
+removeCluesFrom
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Int -> target -> m ()
+removeCluesFrom source n target = removeClues source target n
 
 spendClues
   :: (ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
@@ -2774,10 +2806,10 @@ placeCluesOnLocation
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 placeCluesOnLocation iid source n = push $ InvestigatorPlaceCluesOnLocation iid (toSource source) n
 
-drawCardFrom :: (IsDeck deck, ReverseQueue m) => InvestigatorId -> Card -> deck -> m ()
-drawCardFrom iid card deck = do
+drawCardFrom :: (IsDeck deck, IsCard card, ReverseQueue m) => InvestigatorId -> card -> deck -> m ()
+drawCardFrom iid (toCard -> card) deck = do
   obtainCard card
-  case toCard card of
+  case card of
     EncounterCard ec -> push $ InvestigatorDrewEncounterCardFrom iid ec (Just $ toDeck deck)
     PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc (Just $ toDeck deck)
     VengeanceCard vc -> Arkham.Message.Lifted.drawCardFrom iid vc deck

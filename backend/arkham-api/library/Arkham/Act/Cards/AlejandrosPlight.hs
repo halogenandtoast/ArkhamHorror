@@ -2,14 +2,12 @@ module Arkham.Act.Cards.AlejandrosPlight (alejandrosPlight) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Classes
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype AlejandrosPlight = AlejandrosPlight ActAttrs
@@ -34,22 +32,18 @@ instance HasAbilities AlejandrosPlight where
     ]
 
 instance RunMessage AlejandrosPlight where
-  runMessage msg a@(AlejandrosPlight attrs) = case msg of
+  runMessage msg a@(AlejandrosPlight attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == actId attrs && onSide D attrs -> do
-      lead <- getLeadPlayer
-      deckCount <- getActDecksInPlayCount
+    AdvanceAct (isSide D attrs -> True) _ _ -> do
       alejandroVela <- selectJust $ assetIs Assets.alejandroVela
       iids <- select $ NearestToEnemy $ EnemyWithAsset $ assetIs Assets.alejandroVela
-      let
-        takeControlMessage =
-          chooseOrRunOne lead [targetLabel iid [TakeControlOfAsset iid alejandroVela] | iid <- iids]
-        nextMessage =
-          if deckCount <= 1
-            then R1
-            else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
-      pushAll [takeControlMessage, nextMessage]
+      leadChooseOrRunOneM $ targets iids (`takeControlOfAsset` alejandroVela)
+      deckCount <- getActDecksInPlayCount
+      push
+        $ if deckCount <= 1
+          then R1
+          else RemoveCompletedActFromGame (actDeckId attrs) (toId attrs)
       pure a
-    _ -> AlejandrosPlight <$> runMessage msg attrs
+    _ -> AlejandrosPlight <$> liftRunMessage msg attrs

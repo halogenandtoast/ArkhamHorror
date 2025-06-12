@@ -9,11 +9,7 @@ newtype HenryDeveauAlejandrosKidnapper = HenryDeveauAlejandrosKidnapper EnemyAtt
 
 henryDeveauAlejandrosKidnapper :: EnemyCard HenryDeveauAlejandrosKidnapper
 henryDeveauAlejandrosKidnapper =
-  enemy
-    HenryDeveauAlejandrosKidnapper
-    Cards.henryDeveauAlejandrosKidnapper
-    (4, Static 3, 2)
-    (1, 1)
+  enemy HenryDeveauAlejandrosKidnapper Cards.henryDeveauAlejandrosKidnapper (4, Static 3, 2) (1, 1)
 
 instance RunMessage HenryDeveauAlejandrosKidnapper where
   runMessage msg (HenryDeveauAlejandrosKidnapper attrs) =

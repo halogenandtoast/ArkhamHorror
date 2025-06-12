@@ -2,15 +2,12 @@ module Arkham.Act.Cards.AtTheStationTrainTracks (atTheStationTrainTracks) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
-import Arkham.Classes
-import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Prelude
 
 newtype AtTheStationTrainTracks = AtTheStationTrainTracks ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -24,16 +21,11 @@ atTheStationTrainTracks =
     $ LocationWithTitle "Arkham Police Station"
 
 instance RunMessage AtTheStationTrainTracks where
-  runMessage msg a@(AtTheStationTrainTracks attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide D attrs -> do
-      trainTracks <- genCard Locations.trainTracks
-      (locationId, placeTrainTracks) <- placeLocation trainTracks
+  runMessage msg a@(AtTheStationTrainTracks attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide D attrs -> True) _ _ -> do
+      locationId <- placeLocation =<< genCard Locations.trainTracks
       alejandroVela <- getSetAsideCard Assets.alejandroVela
-      assetId <- getRandom
-      pushAll
-        [ placeTrainTracks
-        , CreateAssetAt assetId alejandroVela (AttachedToLocation locationId)
-        , AdvanceToAct (actDeckId attrs) Acts.alejandrosPrison C (toSource attrs)
-        ]
+      createAssetAt_ alejandroVela (AttachedToLocation locationId)
+      advanceToAct attrs Acts.alejandrosPrison C
       pure a
-    _ -> AtTheStationTrainTracks <$> runMessage msg attrs
+    _ -> AtTheStationTrainTracks <$> liftRunMessage msg attrs

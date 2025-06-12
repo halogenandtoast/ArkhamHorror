@@ -2,13 +2,14 @@ module Arkham.Location.Cards.BlackCave (blackCave) where
 
 import Arkham.Ability
 import Arkham.GameValue
+import Arkham.Helpers.Message.Discard.Lifted
+import Arkham.I18n
 import Arkham.Investigator.Types
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype BlackCave = BlackCave LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -18,32 +19,15 @@ blackCave :: LocationCard BlackCave
 blackCave = location BlackCave Cards.blackCave 3 (PerPlayer 2)
 
 instance HasAbilities BlackCave where
-  getAbilities (BlackCave attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility attrs 1 Here
-            $ ForcedAbility
-            $ TurnEnds
-              Timing.When
-              You
-        | locationRevealed attrs
-        ]
+  getAbilities (BlackCave a) = extendRevealed1 a $ restricted a 1 Here $ forced $ TurnEnds #when You
 
 instance RunMessage BlackCave where
-  runMessage msg l@(BlackCave attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg l@(BlackCave attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       cardsInHand <- fieldMap InvestigatorHand length iid
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ Label
-          "Take 1 horror"
-          [InvestigatorAssignDamage iid source DamageAny 0 1]
-        : [ Label
-              "Choose and discard 2 cards from your hand"
-              [ toMessage $ chooseAndDiscardCard iid (toAbilitySource attrs 1)
-              , toMessage $ chooseAndDiscardCard iid (toAbilitySource attrs 1)
-              ]
-          | cardsInHand >= 2
-          ]
+      chooseOrRunOneM iid $ withI18n do
+        countVar 1 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+        when (cardsInHand >= 2) do
+          countVar 2 $ labeled' "discardCardsFromHand" $ chooseAndDiscardCards iid (attrs.ability 1) 2
       pure l
-    _ -> BlackCave <$> runMessage msg attrs
+    _ -> BlackCave <$> liftRunMessage msg attrs

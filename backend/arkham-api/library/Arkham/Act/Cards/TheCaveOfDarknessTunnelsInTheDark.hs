@@ -1,18 +1,14 @@
-module Arkham.Act.Cards.TheCaveOfDarknessTunnelsInTheDark (
-  theCaveOfDarknessTunnelsInTheDark,
-) where
+module Arkham.Act.Cards.TheCaveOfDarknessTunnelsInTheDark (theCaveOfDarknessTunnelsInTheDark) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Card
-import Arkham.Classes
-import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Name
-import Arkham.Prelude
 import Arkham.ScenarioLogKey
 
 newtype TheCaveOfDarknessTunnelsInTheDark = TheCaveOfDarknessTunnelsInTheDark ActAttrs
@@ -21,21 +17,11 @@ newtype TheCaveOfDarknessTunnelsInTheDark = TheCaveOfDarknessTunnelsInTheDark Ac
 
 theCaveOfDarknessTunnelsInTheDark :: ActCard TheCaveOfDarknessTunnelsInTheDark
 theCaveOfDarknessTunnelsInTheDark =
-  act
-    (2, E)
-    TheCaveOfDarknessTunnelsInTheDark
-    Cards.theCaveOfDarknessTunnelsInTheDark
-    Nothing
+  act (2, E) TheCaveOfDarknessTunnelsInTheDark Cards.theCaveOfDarknessTunnelsInTheDark Nothing
 
 instance HasAbilities TheCaveOfDarknessTunnelsInTheDark where
   getAbilities (TheCaveOfDarknessTunnelsInTheDark attrs) =
-    [ restrictedAbility
-        attrs
-        999
-        ( LocationExists
-            $ LocationWithTitle "Black Cave"
-            <> LocationWithoutClues
-        )
+    [ restricted attrs 999 (exists $ LocationWithTitle "Black Cave" <> LocationWithoutClues)
         $ Objective
         $ FastAbility
         $ GroupClueCost (PerPlayer 2)
@@ -43,38 +29,18 @@ instance HasAbilities TheCaveOfDarknessTunnelsInTheDark where
     ]
 
 instance RunMessage TheCaveOfDarknessTunnelsInTheDark where
-  runMessage msg a@(TheCaveOfDarknessTunnelsInTheDark attrs) = case msg of
-    AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
+  runMessage msg a@(TheCaveOfDarknessTunnelsInTheDark attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide F attrs -> True) _ _ -> do
       blackCave <- selectJust $ locationIs Locations.blackCave
-      mTownHall <- selectOne $ locationIs Locations.townHall
-      townHallMessages <- case mTownHall of
-        Just townHall ->
-          pure
-            [ Remember $ IchtacasDestination $ labeled Locations.townHall townHall
-            , AddDirectConnection blackCave townHall
-            , AddDirectConnection townHall blackCave
-            ]
-        Nothing -> do
-          (townHallId, placeTownHall) <- placeSetAsideLocation Locations.townHall
-          pure
-            [ placeTownHall
-            , Remember $ IchtacasDestination $ labeled Locations.townHall townHallId
-            , AddDirectConnection blackCave townHallId
-            , AddDirectConnection townHallId blackCave
-            ]
-      iids <- getInvestigators
-      pushAll
-        $ townHallMessages
-        <> [DiscardTopOfEncounterDeck iid 1 (toSource attrs) (Just $ toTarget attrs) | iid <- iids]
-        <> [ AdvanceToAct
-               (actDeckId attrs)
-               Acts.strangeOccurences
-               E
-               (toSource attrs)
-           ]
+      townHall <- selectOrPlaceSetAsideLocation Locations.townHall
+      remember $ IchtacasDestination $ labeled Locations.townHall townHall
+      push $ AddDirectConnection blackCave townHall
+      push $ AddDirectConnection townHall blackCave
+      eachInvestigator \iid -> discardTopOfEncounterDeckAndHandle iid attrs 1 attrs
+      advanceToAct attrs Acts.strangeOccurences E
       pure a
     DiscardedTopOfEncounterDeck iid [card] _ target | isTarget attrs target -> do
       when (toCardType card == TreacheryType) $ do
         push $ InvestigatorDrewEncounterCard iid card
       pure a
-    _ -> TheCaveOfDarknessTunnelsInTheDark <$> runMessage msg attrs
+    _ -> TheCaveOfDarknessTunnelsInTheDark <$> liftRunMessage msg attrs

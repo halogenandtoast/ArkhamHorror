@@ -2,15 +2,12 @@ module Arkham.Act.Cards.AtTheStationInShadowedTalons (atTheStationInShadowedTalo
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype AtTheStationInShadowedTalons = AtTheStationInShadowedTalons ActAttrs
@@ -25,60 +22,25 @@ atTheStationInShadowedTalons =
     $ LocationWithTitle "Arkham Police Station"
 
 instance RunMessage AtTheStationInShadowedTalons where
-  runMessage msg a@(AtTheStationInShadowedTalons attrs) = case msg of
-    AdvanceAct aid _ _ | aid == actId attrs && onSide D attrs -> do
-      leadInvestigatorId <- getLead
-      pushAll
-        [ FindEncounterCard
-            leadInvestigatorId
-            (toTarget attrs)
-            [FromEncounterDeck, FromEncounterDiscard, FromOutOfPlayArea VictoryDisplayZone]
-            (cardIs Enemies.huntingNightgaunt)
-        , NextAdvanceActStep aid 1
-        , AdvanceToAct
-            (actDeckId attrs)
-            Acts.alejandrosPlight
-            C
-            (toSource attrs)
-        ]
+  runMessage msg a@(AtTheStationInShadowedTalons attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide D attrs -> True) _ _ -> do
+      lead <- getLead
+      findEncounterCardIn lead attrs (cardIs Enemies.huntingNightgaunt) [#deck, #discard, #victory]
+      doStep 1 msg
+      advanceToAct attrs Acts.alejandrosPlight C
       pure a
-    NextAdvanceActStep aid 1 | aid == actId attrs && onSide D attrs -> do
-      lead <- getLeadPlayer
-      huntingNightgaunts <- select $ enemyIs Enemies.huntingNightgaunt
-      farthestHuntingNightGaunts <-
-        select
-          $ FarthestEnemyFromAll
-          $ enemyIs
-            Enemies.huntingNightgaunt
+    DoStep 1 (AdvanceAct (isSide D attrs -> True) _ _) -> do
+      selectEach (enemyIs Enemies.huntingNightgaunt) (healAllDamage attrs)
+      farthestHuntingNightGaunts <- select $ FarthestEnemyFromAll $ enemyIs Enemies.huntingNightgaunt
       deckCount <- getActDecksInPlayCount
       alejandroVela <- getSetAsideCard Assets.alejandroVela
-      assetId <- getRandom
-      pushAll
-        $ map
-          ((`HealAllDamage` toSource attrs) . EnemyTarget)
-          huntingNightgaunts
-        <> [ chooseOrRunOne
-               lead
-               [ targetLabel huntingNightgaunt
-                   $ CreateAssetAt
-                     assetId
-                     alejandroVela
-                     (AttachedToEnemy huntingNightgaunt)
-                   : [ PlaceDoom (toSource attrs) (EnemyTarget huntingNightgaunt) 1
-                     | deckCount <= 2
-                     ]
-               | huntingNightgaunt <- farthestHuntingNightGaunts
-               ]
-           ]
+      leadChooseOrRunOneM do
+        targets farthestHuntingNightGaunts \huntingNightgaunt -> do
+          createAssetAt_ alejandroVela (AttachedToEnemy huntingNightgaunt)
+          when (deckCount <= 2) $ placeDoom attrs huntingNightgaunt 1
       pure a
     FoundEncounterCard _ target card | isTarget attrs target -> do
       locations <- select $ FarthestLocationFromAll Anywhere
-      lead <- getLeadPlayer
-      push
-        $ chooseOrRunOne
-          lead
-          [ targetLabel location [SpawnEnemyAt (EncounterCard card) location]
-          | location <- locations
-          ]
+      leadChooseOrRunOneM $ targets locations (spawnEnemyAt_ card)
       pure a
-    _ -> AtTheStationInShadowedTalons <$> runMessage msg attrs
+    _ -> AtTheStationInShadowedTalons <$> liftRunMessage msg attrs

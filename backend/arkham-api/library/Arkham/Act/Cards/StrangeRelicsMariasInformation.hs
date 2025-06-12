@@ -3,15 +3,14 @@ module Arkham.Act.Cards.StrangeRelicsMariasInformation (strangeRelicsMariasInfor
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
-import Arkham.Classes
-import Arkham.Helpers.Query
+import Arkham.Deck qualified as Deck
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Name
-import Arkham.Prelude
 import Arkham.ScenarioLogKey
 
 newtype StrangeRelicsMariasInformation = StrangeRelicsMariasInformation ActAttrs
@@ -20,52 +19,28 @@ newtype StrangeRelicsMariasInformation = StrangeRelicsMariasInformation ActAttrs
 
 strangeRelicsMariasInformation :: ActCard StrangeRelicsMariasInformation
 strangeRelicsMariasInformation =
-  act
-    (2, E)
-    StrangeRelicsMariasInformation
-    Cards.strangeRelicsMariasInformation
-    Nothing
+  act (2, E) StrangeRelicsMariasInformation Cards.strangeRelicsMariasInformation Nothing
 
 instance HasAbilities StrangeRelicsMariasInformation where
-  getAbilities (StrangeRelicsMariasInformation a) =
-    [ restrictedAbility
-        a
-        1
-        (exists $ assetIs Assets.mariaDeSilva <> AssetWithClues (AtLeast $ PerPlayer 1))
-        $ Objective
-        $ ForcedAbility AnyWindow
-    | onSide E a
-    ]
+  getAbilities = actAbilities1' E \a ->
+    restricted a 1 (exists $ assetIs Assets.mariaDeSilva <> AssetWithClues (AtLeast $ PerPlayer 1))
+      $ Objective
+      $ forced AnyWindow
 
 instance RunMessage StrangeRelicsMariasInformation where
-  runMessage msg a@(StrangeRelicsMariasInformation attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+  runMessage msg a@(StrangeRelicsMariasInformation attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
+    AdvanceAct (isSide F attrs -> True) _ _ -> do
       downtown <- selectJust $ locationIs Locations.downtownFirstBankOfArkham
       rivertown <- selectJust $ locationIs Locations.rivertown
-      iids <- getInvestigators
-      pushAll
-        $ [ Remember $ IchtacasDestination (Labeled (toName Locations.downtownFirstBankOfArkham) downtown)
-          , Remember $ IchtacasDestination (Labeled (toName Locations.rivertown) rivertown)
-          ]
-        <> [ DiscardTopOfEncounterDeck
-               iid
-               1
-               (toSource attrs)
-               (Just $ toTarget attrs)
-           | iid <- iids
-           ]
-        <> [ AdvanceToAct
-               (actDeckId attrs)
-               Acts.strangeOccurences
-               E
-               (toSource attrs)
-           ]
+      remember $ IchtacasDestination $ Labeled (toName Locations.downtownFirstBankOfArkham) downtown
+      remember $ IchtacasDestination $ Labeled (toName Locations.rivertown) rivertown
+      eachInvestigator \iid -> discardTopOfEncounterDeckAndHandle iid attrs 1 attrs
+      advanceToAct attrs Acts.strangeOccurences E
       pure a
-    DiscardedTopOfEncounterDeck iid [card] _ target | isTarget attrs target -> do
-      when (toCardType card == TreacheryType) $ do
-        push $ InvestigatorDrewEncounterCard iid card
+    DiscardedTopOfEncounterDeck iid [card] _ (isTarget attrs -> True) -> do
+      when (toCardType card == TreacheryType) $ drawCardFrom iid card Deck.EncounterDeck
       pure a
-    _ -> StrangeRelicsMariasInformation <$> runMessage msg attrs
+    _ -> StrangeRelicsMariasInformation <$> liftRunMessage msg attrs

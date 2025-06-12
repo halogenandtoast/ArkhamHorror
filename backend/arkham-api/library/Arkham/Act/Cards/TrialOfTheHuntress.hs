@@ -1,13 +1,8 @@
-module Arkham.Act.Cards.TrialOfTheHuntress (
-  TrialOfTheHuntress (..),
-  trialOfTheHuntress,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TrialOfTheHuntress (trialOfTheHuntress) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
+import Arkham.Card
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 
@@ -23,12 +18,9 @@ trialOfTheHuntress =
     $ locationIs Locations.rivertown
 
 instance RunMessage TrialOfTheHuntress where
-  runMessage msg a@(TrialOfTheHuntress attrs) = case msg of
-    AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
-      placeBlackCave <- placeLocationCard_ Locations.blackCave
-      pushAll
-        [ placeBlackCave
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-        ]
+  runMessage msg a@(TrialOfTheHuntress attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide F attrs -> True) _ _ -> do
+      placeLocation_ =<< genCard Locations.blackCave
+      advanceActDeck attrs
       pure a
-    _ -> TrialOfTheHuntress <$> runMessage msg attrs
+    _ -> TrialOfTheHuntress <$> liftRunMessage msg attrs

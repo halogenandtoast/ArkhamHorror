@@ -69,12 +69,12 @@ heartOfTheElders difficulty =
 
 part2Locations :: [GridTemplateRow]
 part2Locations =
-  [ ".            perilousGulch .              ."
-  , ".            perilousGulch crystalPillars ."
-  , "mouthOfKnYan vastPassages  crystalPillars descentToYoth"
-  , "mouthOfKnYan vastPassages  hallOfIdolatry descentToYoth"
-  , ".            darkHollow    hallOfIdolatry ."
-  , ".            darkHollow    .              ."
+  [ ".      diamond  .      ."
+  , ".      diamond  moon   ."
+  , "equals circle   moon   heart"
+  , "equals circle   square heart"
+  , ".      triangle square ."
+  , ".      triangle .      ."
   ]
 
 standaloneChaosTokens :: [ChaosTokenFace]

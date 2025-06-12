@@ -83,14 +83,12 @@ async function clicked(e:MouseEvent) {
     if (clickCount === 1){
       if(cardAction.value !== -1) {
         emits('choose', cardAction.value)
-      } 
-      else if (abilities.value.length > 0) {
+      } else if (abilities.value.length > 0) {
         showAbilities.value = !showAbilities.value
         await nextTick()
         if (showAbilities.value === true) {
           abilitiesEl.value?.focus()
-        } 
-        else {
+        } else {
           abilitiesEl.value?.blur()
         }
       }
@@ -575,16 +573,16 @@ function onDrop(event: DragEvent) {
     top: 10%;
   }
   @media (max-width: 800px) and (orientation: portrait) {
-      &:deep(.poolItem) {
-        width: calc(var(--card-width) * 0.6) !important;
-      }
-      top: 35% !important;
-      left:80%;
-      width: fit-content;
-      height: fit-content;
-      :deep(span) {
-        width: fit-content !important;
-      }
+    &:deep(.poolItem) {
+      width: calc(var(--card-width) * 0.6) !important;
+    }
+    top: 35% !important;
+    left: 80%;
+    width: fit-content;
+    height: fit-content;
+    :deep(span) {
+      width: fit-content !important;
+    }
   }
 }
 

@@ -95,9 +95,6 @@ async function clicked(e:MouseEvent) {
         }
       }
     }
-    //else if (clickCount === 2) {
-      // Handle double click
-    //}
 
     // Reset click count and timeout
     clickCount = 0;
@@ -433,12 +430,7 @@ function onDrop(event: DragEvent) {
 }
 
 .card.card--locations {
-  //border-radius: 5px;
   width: min(calc(10vw + 20px), 60px);
-  //max-width: 300px;
-  //height: auto;
-  //aspect-ratio: var(--card-aspect);
-  //box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
 .location-column :deep(.enemy) {

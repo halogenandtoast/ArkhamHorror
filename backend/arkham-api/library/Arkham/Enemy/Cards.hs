@@ -126,6 +126,7 @@ allEncounterEnemyCards =
       , broodOfYogSothothChargingBeast
       , broodOfYogSothothSwellingDevourer
       , broodOfYogSothothThrashingSpawn
+      , brotherhoodAcolyte
       , brotherhoodCultist
       , brownJenkin
       , carlSanfordDeathlessFanatic
@@ -364,6 +365,7 @@ allEncounterEnemyCards =
       , stalkingManticore
       , stealthyByakhee
       , stealthyZoog
+      , stolenMind
       , summonedBeast
       , suspiciousOrderly
       , swampLeech
@@ -2966,6 +2968,20 @@ harbingerOfValusiaTheSleeperReturns =
       , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
       , cdVengeancePoints = Just 5
       }
+
+brotherhoodAcolyte :: CardDef
+brotherhoodAcolyte =
+  (enemy "53071" "Brotherhood Acolyte" CultOfPnakotus 3)
+    { cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdKeywords = setFromList [Keyword.Aloof]
+    }
+
+stolenMind :: CardDef
+stolenMind =
+  (enemy "53072" "Stolen Mind" CultOfPnakotus 1)
+    { cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdKeywords = setFromList [Keyword.Retaliate]
+    }
 
 tindalosAlpha :: CardDef
 tindalosAlpha =

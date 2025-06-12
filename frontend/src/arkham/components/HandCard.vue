@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { computed, inject, ref, Ref } from 'vue'
+import { computed, inject, Ref } from 'vue'
 import { CardContents, type Card } from '@/arkham/types/Card'
 import type { Game } from '@/arkham/types/Game'
-import { useDebug } from '@/arkham/debug';
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import { MessageType} from '@/arkham/types/Message'
 import { imgsrc } from '@/arkham/helpers'
@@ -17,9 +16,6 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
-
-const debug = useDebug()
-const dragging = ref(false)
 
 const investigator = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId))
 const investigatorId = computed(() => investigator.value?.id)
@@ -100,15 +96,6 @@ const image = computed(() => {
   const mutatedSuffix = mutated ? `_${mutated}` : ''
   return imgsrc(`cards/${cardCode.replace('c', '')}${mutatedSuffix}.avif`);
 })
-
-function startDrag(event: DragEvent) {
-  dragging.value = true
-  if (event.dataTransfer) {
-    console.log('dragging', id.value)
-    event.dataTransfer.effectAllowed = 'move'
-    event.dataTransfer.setData('text/plain', JSON.stringify({ "tag": "CardIdTarget", "contents": id.value }))
-  }
-}
 
 /*
 const painted = computed(() => {
@@ -239,8 +226,6 @@ function oilPaintEffect(canvas, radius, intensity) {
       :src="image"
       :data-customizations="JSON.stringify(card.contents.customizations)"
       @click="$emit('choose', cardAction)"
-      @dragstart="startDrag($event)"
-      :draggable="debug.active"
     />
 
     <AbilityButton

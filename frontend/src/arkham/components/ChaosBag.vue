@@ -168,7 +168,7 @@ const choose = (idx: number) => emit('choose', idx)
   justify-content: center;
   @media (max-width: 800px) and (orientation: portrait) {
     display: grid;
-    grid-template-columns: 0.11fr 0.11fr 0.11fr 0.33fr 0.11fr 0.11fr 0.11fr;
+    grid-template-columns: 1fr 1fr 1fr 3fr 1fr 1fr 1fr;
     img{
       margin: 0 auto;
     }

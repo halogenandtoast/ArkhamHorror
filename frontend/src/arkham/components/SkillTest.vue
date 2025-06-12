@@ -816,9 +816,6 @@ i.iconSkillAgility {
   .step {
     flex: 1;
     text-align: center;
-    @media (max-width: 800px) and (orientation: portrait) {
-      font-size:0.9em;
-    }
   }
 
   .step:nth-child(odd) {

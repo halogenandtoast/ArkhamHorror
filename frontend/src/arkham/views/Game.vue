@@ -869,7 +869,6 @@ header {
 .invite-link {
   flex: 1;
   input {
-    //color: #26283B;
     font-size: 1.3em;
     width: 60%;
     border-right: 0;

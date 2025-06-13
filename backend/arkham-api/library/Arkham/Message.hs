@@ -1403,6 +1403,22 @@ chooseAmounts pid label total choiceMap (toTarget -> target) = do
   amountChoices rs = map toAmountChoice (zip rs choiceMap)
   toAmountChoice (choiceId, (l, (m, n))) = AmountChoice choiceId l m n
 
+chooseAmountsLabeled
+  :: (Targetable target, MonadRandom m)
+  => PlayerId
+  -> Text
+  -> Text
+  -> AmountTarget
+  -> [(Text, (Int, Int))]
+  -> target
+  -> m Message
+chooseAmountsLabeled pid title label total choiceMap (toTarget -> target) = do
+  rs <- getRandoms
+  pure $ Ask pid (QuestionLabel title Nothing $ ChooseAmounts label total (amountChoices rs) target)
+ where
+  amountChoices rs = map toAmountChoice (zip rs choiceMap)
+  toAmountChoice (choiceId, (l, (m, n))) = AmountChoice choiceId l m n
+
 chooseUpgradeDeck :: PlayerId -> Message
 chooseUpgradeDeck pid = Ask pid ChooseUpgradeDeck
 

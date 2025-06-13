@@ -50,5 +50,6 @@ data TheForgottenAgeKey
   | TheFabricOfTimeIsUnwoven
   | TheInvestigatorsTurnedBackTime
   | TheInvestigatorsSealedTheRelicOfAgesForever
+  | TheInvestigatorsRecruitedTheHelpOfAnotherExpedition
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

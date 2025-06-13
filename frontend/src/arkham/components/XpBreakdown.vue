@@ -49,6 +49,19 @@ const name = computed(() => {
   return "Unknown step: " + props.step.tag
 })
 
+const unspendableXp = computed(() => {
+  if (!props.game.campaign?.meta?.bonusXp) return null;
+
+  if (props.step.tag === 'ScenarioStep') {
+    const scenarioId = props.step.contents.slice(1)
+    const investigator = Object.entries(props.game.investigators).find(([,p]) => p.playerId === props.playerId)
+    if (!investigator) return null
+    if (scenarioId == "53028") return props.game.campaign.meta.bonusXp[investigator[0]] || null
+  }
+
+  return null
+})
+
 const allGainXp = computed(() => {
   return props.entries.filter((entry: XpEntry) => entry.tag === 'AllGainXp')
 })
@@ -90,6 +103,9 @@ function format(s: string) {
   <div class="breakdown column box">
     <header class="breakdown-header"><h2 class="title">{{name}}</h2><span class="amount" :class="{ 'amount--negative': scenarioTotal < 0 }">{{ $t('upgrade.xp', {total: scenarioTotal}) }}</span></header>
     <div class="sections">
+      <section class="box column group" v-if="unspendableXp">
+        <header class="entry-header"><h3>{{ $t('upgrade.unspendableXp') }}</h3><span class="amount unspendable">{{ unspendableXp }}</span></header>
+      </section>
       <section class="box column group" v-if="totalVictoryDisplay > 0">
         <header class="entry-header"><h3>{{ $t('upgrade.victoryDisplay') }}</h3><span class="amount" :class="{ 'amount--negative': totalVictoryDisplay < 0 }">{{ $t('upgrade.xp', {total: totalVictoryDisplay}) }}</span></header>
         <div class="column">
@@ -140,6 +156,10 @@ h3 {
       background: darkred;
     }
   }
+}
+
+.unspendable {
+  background: teal !important;
 }
 
 .entry-header {

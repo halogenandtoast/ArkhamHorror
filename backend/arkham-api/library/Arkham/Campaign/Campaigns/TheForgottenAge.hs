@@ -231,22 +231,6 @@ instance RunMessage TheForgottenAge where
         story expeditionsEnd5
         nextCampaignStep
         pure c
-      -- CampaignStep ResupplyPoint -> do
-      --   -- eachInvestigator \iid -> do
-      --   --   let bonusXp = Map.lookup iid (bonusXp metadata)
-      --   --   for_ bonusXp \xp -> do
-      --      -- Instead, it must be spent to remove poison or cure trauma, or it
-      --      -- must be converted to supply points, as outlined below
-      --      --
-      --      -- During the Resupply Point at the end of this scenario, there is
-      --      -- no longer a limit on how much experience may be spent to remove
-      --      -- trauma. Additionally, each investigator may convert up to 10 of
-      --      -- their experience to supply points, at a rate of 1 supply point
-      --      -- for every 2 experience converted.
-      --
-
-      --   do_ msg
-      --   pure c
       CampaignStep ResupplyPoint -> do
         eachInvestigator (`forInvestigator` msg)
         totalResupplyPoints <- initialResupplyPoints

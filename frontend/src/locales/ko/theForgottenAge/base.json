@@ -47,5 +47,54 @@
     "theFabricOfTimeIsUnwoven": "The fabric of time is unwoven",
     "theInvestigatorsTurnedBackTime": "The investigators turned back time",
     "theInvestigatorsSealedTheRelicOfAgesForever": "The investigators sealed the Relic of Ages forever"
+  },
+  "label": {
+    "bestLaidPlans": {
+      "shuffle": "Shuffle the top card of the encounter deck into the exploration deck"
+    },
+    "snakeBite": {
+      "damageAlly": "Deal 5 damage to an _*Ally*_ asset you control",
+      "damageSelf": "Take 1 direct damage. If you are not poisoned, put a set-aside Poisoned weakness into play in your threat area."
+    },
+    "lowOnSupplies": {
+      "resources": "Each investigator loses 2 resources.",
+      "damage": "Each investigator takes 1 damage.",
+      "discardAsset": "Each investigator chooses and discards an asset he or she controls."
+    },
+    "ancestralFear": {
+      "placeDoom": "Place 1 doom on your location and discard Ancestral Fear (instead of placing it in the victory display).",
+      "addToVictory": "Place Ancestral Fear in the victory display."
+    },
+    "serpentsCall": {
+      "poisoned": "Put a set-aside Poisoned weakness into play in your threat area",
+      "drawEncounterCards": "Draw the top 2 cards of the encounter deck"
+    }
+  },
+  "prologue": {
+    "earthIsNotOurs": {
+      "title": "Earth Is Not Ours",
+      "body": "<p>“Primal myth and modern delusion joined in their assumption that mankind is only one—perhaps the least—of the highly evolved and dominant races of this planet’s long and largely unknown career.”</p><p class='right'>– H. P. Lovecraft, “The Shadow out of Time”</p>"
+    },
+    "title": "Prologue",
+    "body": "<p class='anke'>Tuesday, June 2nd, 1925</p><p>There will be no rest for us this summer, it seems.</p><p>Today I met with Harlan Earnstone, a historical theorist at Miskatonic University and an old friend of mine. He’d said he had a job offer for me, but frankly, I didn’t know what to expect.</p><p>Harlan introduced me to an associate of his: Alejandro Vela, a distinguished historian from across the southern border. Mr. Vela is a graduate of a prestigious university in Mexico City, and has spent many years researching the Aztec Empire. He claims that he has found evidence regarding the existence of an unheard-of Aztec city-state called Eztli. His strange and unprecedented findings were not accepted by the university, and he’s become a pariah among his peers.</p><p>Alejandro came to Arkham to seek funding for an expedition into the rainforests of southern Mexico, where he believes that the ruins of the Eztli altepetl lie undiscovered. His description of this city‑state’s origins defies modern understanding of Mesoamerican history. Despite this— or, knowing my old friend, because of this­ —Harlan is enthralled by Alejandro’s discoveries. Miskatonic University has agreed to fund the expedition (albeit meagerly), and Harlan wants me to go along.</p><p>The way I see it, there’s a good chance we’re looking for something that doesn’t even exist. But if there’s even a slight chance these Eztli people existed, the historical significance would be profound. We debated the issue for some time, but in the end, we accepted Alejandro’s offer. Preparations are underway, and we should be setting off by the end of the month. With any luck, we’ll have this journal filled with all manner of interesting discoveries. If not, perhaps it’ll be a nice wedge to place beneath Harlan’s lopsided desk.</p>",
+    "expeditionLeader": "If Ursula Downs, Leo Anderson, or Monterey Jack was chosen as an investigator for this campaign: Choose one of those investigators to be the expedition leader. That investigator begins Scenarios I and II as the lead investigator.",
+    "label": {
+      "expeditionLeader": "Choose an Expedition Leader"
+    },
+    "pickSupplies": "As an outcast from academia, funding for Alejandro’s expedition is limited. Each investigator must choose supplies to bring for the expedition. In the Campaign Log, under each investigator’s “Supplies” section, record the supplies that investigator chose to bring. (<em>Note: Provisions and Medicine can be taken more than once by recording their name multiple times and spending the appropriate number of supply points each time.</em>)<ul><li><p>Each investigator may spend supply points to purchase one or more of the supplies listed below. The number of supply points available to each investigator is based on the number of investigators in the campaign:</p><p><strong>1 investigator:</strong> 10 supply points</p><p><strong>2 investigators:</strong> 7 supply points each</p><p><strong>3 investigators:</strong> 5 supply points each</p><p><strong>4 investigators:</strong> 4 supply points each</p></li><li>The description of each supply below gives some insight into how it might be used during the campaign. Choose wisely.</li></ul>"
+
+  },
+  "interlude1": {
+    "blanket": "<p class='basic'>Check your supplies. Each investigator with a blanket reads _Restful Sleep_. The rest read _Tossing and Turning_.</p>",
+    "restfulSleep": "<p>_Restful Sleep_: Mercifully, I was able to sleep through each night. However, while my body rested, my mind was plagued by nightmares. A cavern like a gaping maw, bathed in dim red light…the walls slithering with the glimmering scales of a hundred vipers…it might have been better had I not slept at all.</p><p class='basic right'>You suffer no ill effects.</p>",
+    "tossingAndTurning": "<p>_Tossing and Turning_: Those nights in the jungle, I barely slept. A strange fog rolled through the camp each night, plunging the area in an intense and peculiar cold. My bedroll offered some protection against the elements, but we hadn’t been prepared for this unnatural weather. Flies and mosquitoes buzzed in my ears every time I began to drift off. Even when I finally slept, I would soon be startled awake by the crawling of an insect or lizard across my face. I wager I’ll get very little sleep on this journey…</p><p class='basic right'>You suffer 1 physical or mental trauma (your choice).</p>",
+    "lookout": "The lead investigator must choose one investigator to be the group’s lookout. Then, that investigator checks his or her supplies. If he or she has binoculars, he or she reads _Shapes in the Trees_. Otherwise, he or she reads _Eyes in the Dark_.",
+    "shapesInTheTrees": "<p>_Shapes in the Trees_: Most of the nights passed without incident, but on this night, I was startled by the rustling of tree branches along the southern border of our camp’s clearing. Despite the darkness, I was able to use my binoculars to see shapes moving in the trees. The shapes appeared human, but…why? Why do they only watch us from afar? What is their purpose?</p><p class='basic right'>You earn 2 additional experience as you gain further insight into the motivations of the Eztli.</p>",
+    "eyesInTheDark": "<p>_Eyes in the Dark_: Each night, I was watched. I didn’t just feel watched: I saw the eyes peering out from the inky darkness that surrounded our camp. They knew we were there. The yellow eyes watched me, alert, my weapons drawn, ready to defend the camp if the need arose. Our eyes met, and a darkness seized my heart.</p><p class='basic right'>You suffer 1 mental trauma.</p>",
+    "provisions": "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read _Low on Rations_",
+    "lowOnRations": "<p>_Low on Rations_: We thought we’d brought enough food and water for everybody, but the journey had taken its toll on our supplies. When the sun rose and it came time to eat, we discovered we were already running out of provisions.</p><p class='basic right'>You begin the next scenario with 3 fewer resources.</p>",
+    "medicine": "Check your supplies. Each investigator with medicine may cross it off from their supplies to choose and remove a Poisoned weakness from any investigator’s deck. Each investigator who still has a Poisoned weakness in his or her deck reads _The Poison Spreads_.",
+    "doNotUseMedicine": "Do not use medicine",
+    "thePoisonSpreads": "<p>_The Poison Spreads_: As the days went by, the poison continued to spread through my body. By the second night, my skin was drenched in sweat. I started having difficutly breathing, and I began every morning by retching up most of the previous night’s dinner.</p><p class='basic right'>You suffer 1 physical trauma.</p>"
   }
 }

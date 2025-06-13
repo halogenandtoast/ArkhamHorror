@@ -52,6 +52,7 @@
     "clues": "Clues",
     "resources": "Resources",
     "physical": "Physical",
-    "mental": "Mental"
+    "mental": "Mental",
+    "supplyPoints": "Supply Points to Gain"
   }
 }

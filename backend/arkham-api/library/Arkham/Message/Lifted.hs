@@ -1187,6 +1187,20 @@ chooseAmounts iid label total choiceMap target = do
   player <- getPlayer iid
   Msg.pushM $ Msg.chooseAmounts player label total choiceMap target
 
+-- Don't use this yet
+chooseAmountsLabeled
+  :: (Targetable target, ReverseQueue m)
+  => InvestigatorId
+  -> Text
+  -> Text
+  -> AmountTarget
+  -> [(Text, (Int, Int))]
+  -> target
+  -> m ()
+chooseAmountsLabeled iid title label total choiceMap target = do
+  player <- getPlayer iid
+  Msg.pushM $ Msg.chooseAmountsLabeled player title label total choiceMap target
+
 chooseAmount
   :: (Targetable target, ReverseQueue m)
   => InvestigatorId
@@ -1200,6 +1214,22 @@ chooseAmount iid label choiceLabel minVal maxVal target = do
   player <- getPlayer iid
   Msg.pushM
     $ Msg.chooseAmounts player label (MaxAmountTarget maxVal) [(choiceLabel, (minVal, maxVal))] target
+
+-- Don't use this yet
+chooseAmountLabeled
+  :: (Targetable target, ReverseQueue m)
+  => InvestigatorId
+  -> Text
+  -> Text
+  -> Text
+  -> Int
+  -> Int
+  -> target
+  -> m ()
+chooseAmountLabeled iid title label choiceLabel minVal maxVal target = do
+  player <- getPlayer iid
+  Msg.pushM
+    $ Msg.chooseAmountsLabeled player title label (MaxAmountTarget maxVal) [(choiceLabel, (minVal, maxVal))] target
 
 chooseAmount'
   :: (Targetable target, ReverseQueue m, HasI18n)
@@ -1215,6 +1245,28 @@ chooseAmount' iid label choiceLabel minVal maxVal target = do
   Msg.pushM
     $ Msg.chooseAmounts
       player
+      ("$" <> ikey ("label." <> label))
+      (MaxAmountTarget maxVal)
+      [(choiceLabel, (minVal, maxVal))]
+      target
+
+-- Don't use this yet
+chooseAmountLabeled'
+  :: (Targetable target, ReverseQueue m, HasI18n)
+  => InvestigatorId
+  -> Text
+  -> Text
+  -> Text
+  -> Int
+  -> Int
+  -> target
+  -> m ()
+chooseAmountLabeled' iid title label choiceLabel minVal maxVal target = do
+  player <- getPlayer iid
+  Msg.pushM
+    $ Msg.chooseAmountsLabeled
+      player
+      ("$" <> ikey ("label." <> title))
       ("$" <> ikey ("label." <> label))
       (MaxAmountTarget maxVal)
       [(choiceLabel, (minVal, maxVal))]

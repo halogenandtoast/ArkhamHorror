@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import * as Arkham from '@/arkham/types/Game'
-import { ref,computed } from 'vue';
+import { ref, computed } from 'vue';
 import { Investigator } from '@/arkham/types/Investigator';
 import Card from '@/arkham/components/Card.vue'
 import {imgsrc} from '@/arkham/helpers'
@@ -8,9 +8,12 @@ import {imgsrc} from '@/arkham/helpers'
 export interface Props {
   investigator: Investigator
   game: Arkham.Game
+  bonusXp?: number | null;
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  bonusXp: null
+})
 
 const expanded = ref(false)
 
@@ -34,7 +37,7 @@ const storyCards = computed(() => props.game.campaign.storyCards[props.investiga
       </section>
     </div>
     <div v-if="expanded" class="expanded-details">
-      <div><strong>Total XP:</strong> {{investigator.xp}}</div>
+      <div><strong>Total XP:</strong> {{investigator.xp}}<span v-if="bonusXp" class="bonus-xp"> ({{bonusXp}} unspendable)</span></div>
       <div><strong>Physical Trauma:</strong> {{investigator.physicalTrauma}}</div>
       <div><strong>Mental Trauma:</strong> {{investigator.mentalTrauma}}</div>
       <section v-if="storyCards.length > 0" class="inner-section">
@@ -196,4 +199,7 @@ svg.expanded {
   gap: 10px;
 }
 
+.bonus-xp {
+  font-size: 0.8em;
+}
 </style>

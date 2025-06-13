@@ -202,6 +202,11 @@ const emptyLog = computed(() => {
   return true;
 })
 
+const bonusXp = computed(() => {
+  if (!props.game.campaign?.meta?.bonusXp) return null;
+  return props.game.campaign.meta.bonusXp;
+})
+
 </script>
 
 <template>
@@ -220,7 +225,7 @@ const emptyLog = computed(() => {
   </svg>
   <div class="content column">
     <div class="investigators-log">
-      <InvestigatorRow v-for="investigator in Object.values(game.investigators)" :key="investigator.id" :investigator="investigator" :game="game" />
+      <InvestigatorRow v-for="investigator in Object.values(game.investigators)" :key="investigator.id" :investigator="investigator" :game="game" :bonus-xp="bonusXp[investigator.id]" />
     </div>
     <div class="campaign-log column">
       <h1>Campaign Log: {{game.name}}</h1>

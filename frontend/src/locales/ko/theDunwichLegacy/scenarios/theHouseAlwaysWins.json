@@ -62,5 +62,10 @@
     "raiseTheStakes": {
       "place": "Put Raise the Stakes into play in your threat area"
     }
+  },
+  "tooltips": {
+    "laBellaLuna": {
+      "resign": "This was a bust"
+    }
   }
 }

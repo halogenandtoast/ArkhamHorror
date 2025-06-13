@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Source where
 
 import Arkham.Card
@@ -205,7 +206,7 @@ sourceMatches s = \case
         BothSource a b -> go a || go b
         TarotSource {} -> True
         BatchSource {} -> False
-    pure $ go s
+    pure $ go $ traceShowId s
   Matcher.SourceIsType t -> case t of
     AssetType -> case s of
       AssetSource _ -> pure True

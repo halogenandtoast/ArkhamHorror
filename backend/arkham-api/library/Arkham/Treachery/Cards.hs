@@ -292,6 +292,7 @@ allEncounterTreacheryCards =
       , forcedIntoHiding
       , fracturedConsciousness
       , fragileThoughts
+      , fromAnotherTime
       , frostbitten
       , fromTheDepths
       , frozenInFear
@@ -3138,6 +3139,12 @@ finePrint = (weakness "53014" "Fine Print") {cdCardTraits = singleton Pact}
 
 sellYourSoul :: CardDef
 sellYourSoul = (weakness "53015" "Sell Your Soul") {cdCardTraits = singleton Pact}
+
+fromAnotherTime :: CardDef
+fromAnotherTime =
+  (treachery "53073" "From Another Time" CultOfPnakotus 2)
+    { cdCardTraits = setFromList [Scheme]
+    }
 
 resentfulWilds :: CardDef
 resentfulWilds =

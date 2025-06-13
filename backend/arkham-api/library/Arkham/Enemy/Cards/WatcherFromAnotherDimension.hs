@@ -1,8 +1,4 @@
-module Arkham.Enemy.Cards.WatcherFromAnotherDimension (
-  watcherFromAnotherDimension,
-  WatcherFromAnotherDimension (..),
-)
-where
+module Arkham.Enemy.Cards.WatcherFromAnotherDimension (watcherFromAnotherDimension) where
 
 import Arkham.Ability
 import Arkham.Constants
@@ -51,7 +47,7 @@ instance RunMessage WatcherFromAnotherDimension where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       initiateEnemyAttack attrs attrs iid
       pure e
-    Successful (action, (isTarget attrs -> True)) iid _ _ _ | action `elem` [#fight, #evade] -> do
+    Successful (action, isTarget attrs -> True) iid _ _ _ | action `elem` [#fight, #evade] -> do
       case attrs.placement of
         HiddenInHand _ -> do
           toDiscardBy iid (toSource attrs) attrs
@@ -60,7 +56,7 @@ instance RunMessage WatcherFromAnotherDimension where
     FailedSkillTest iid (Just action) _ (Initiator (isActionTarget attrs -> True)) _ _ | action `elem` [#fight, #evade] -> do
       case attrs.placement of
         HiddenInHand _ -> do
-          push $ EnemySpawnAtLocationMatching (Just iid) (locationWithInvestigator iid) (toId attrs)
+          push $ EnemySpawnEngagedWith (toId attrs) (InvestigatorWithId iid)
           pure e
         _ -> WatcherFromAnotherDimension <$> liftRunMessage msg attrs
     _ -> WatcherFromAnotherDimension <$> liftRunMessage msg attrs

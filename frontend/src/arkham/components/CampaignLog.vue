@@ -225,7 +225,7 @@ const bonusXp = computed(() => {
   </svg>
   <div class="content column">
     <div class="investigators-log">
-      <InvestigatorRow v-for="investigator in Object.values(game.investigators)" :key="investigator.id" :investigator="investigator" :game="game" :bonus-xp="bonusXp[investigator.id]" />
+      <InvestigatorRow v-for="investigator in Object.values(game.investigators)" :key="investigator.id" :investigator="investigator" :game="game" :bonus-xp="bonusXp && bonusXp[investigator.id]" />
     </div>
     <div class="campaign-log column">
       <h1>Campaign Log: {{game.name}}</h1>

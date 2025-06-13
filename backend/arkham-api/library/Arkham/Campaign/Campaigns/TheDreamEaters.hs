@@ -89,7 +89,7 @@ setCampaignPart part c@(TheDreamEaters attrs) step =
                   }
               )
 
-getHasRecord :: (IsCampaignLogKey k, HasGame m) => CampaignPart -> k -> m Bool
+getHasRecord :: (IsCampaignLogKey k, HasGame m, HasCallStack) => CampaignPart -> k -> m Bool
 getHasRecord part key = do
   isCurrent <- getIsPartialCampaign part
   if isCurrent
@@ -680,76 +680,81 @@ instance RunMessage TheDreamEaters where
             ]
         pure c
       CampaignStep EpilogueStep -> do
-        invasionHasBegun <- getHasRecord TheDreamQuest Nyarlathotep'sInvasionHasBegun
-        awoke <- getHasRecord TheDreamQuest TheDreamersAwoke
-        stayed <- getHasRecord TheDreamQuest TheDreamersStayedInTheDreamlandsForever
-        traveled <- getHasRecord TheDreamQuest TheDreamersTraveledBeneathTheMonastery
-        bridgeCompleted <- getHasRecord TheWebOfDreams TheBridgeWasCompleted
-        returned <- getHasRecord TheWebOfDreams TheInvestigatorsReturnedToReality
-        neverEscaped <- getHasRecord TheWebOfDreams TheInvestigatorsNeverEscaped
-        stillInDreamlands <- getHasRecord TheWebOfDreams TheInvestigatorsAreStillInTheDreamlands
-        if
-          | invasionHasBegun ->
-              if
-                | bridgeCompleted -> do
-                    story $ i18n "theDreamEaters.epilogue1"
-                    setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
-                | returned -> do
-                    story $ i18n "theDreamEaters.epilogue2"
-                    setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
-                | neverEscaped -> do
-                    story $ i18n "theDreamEaters.epilogue3"
-                    setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
-                | stillInDreamlands -> do
-                    story $ i18n "theDreamEaters.epilogue4"
-                    setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
-                | otherwise -> error "invalid"
-          | awoke ->
-              if
-                | bridgeCompleted -> do
-                    story $ i18n "theDreamEaters.epilogue5"
-                    setCampaignPart TheDreamQuest c (EpilogueStepPart 5)
-                | returned -> do
-                    story $ i18n "theDreamEaters.epilogue6"
-                    setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
-                | neverEscaped -> do
-                    story $ i18n "theDreamEaters.epilogue7"
-                    setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
-                | stillInDreamlands -> do
-                    story $ i18n "theDreamEaters.epilogue8"
-                    setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
-                | otherwise -> error "invalid"
-          | stayed ->
-              if
-                | bridgeCompleted -> do
-                    story $ i18n "theDreamEaters.epilogue9"
-                    setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
-                | returned -> do
-                    story $ i18n "theDreamEaters.epilogue10"
-                    setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
-                | neverEscaped -> do
-                    story $ i18n "theDreamEaters.epilogue11"
-                    setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
-                | stillInDreamlands -> do
-                    story $ i18n "theDreamEaters.epilogue12"
-                    setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
-                | otherwise -> error "invalid"
-          | traveled ->
-              if
-                | bridgeCompleted -> do
-                    story $ i18n "theDreamEaters.epilogue13"
-                    setCampaignPart TheDreamQuest c (EpilogueStepPart 13)
-                | returned -> do
-                    story $ i18n "theDreamEaters.epilogue14"
-                    setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
-                | neverEscaped -> do
-                    story $ i18n "theDreamEaters.epilogue15"
-                    setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
-                | stillInDreamlands -> do
-                    story $ i18n "theDreamEaters.epilogue16"
-                    setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
-                | otherwise -> error "invalid"
-          | otherwise -> error "invalid"
+        case campaignMode meta of
+          PartialMode _ -> do
+            push GameOver
+            pure c
+          FullMode -> do
+            invasionHasBegun <- getHasRecord TheDreamQuest Nyarlathotep'sInvasionHasBegun
+            awoke <- getHasRecord TheDreamQuest TheDreamersAwoke
+            stayed <- getHasRecord TheDreamQuest TheDreamersStayedInTheDreamlandsForever
+            traveled <- getHasRecord TheDreamQuest TheDreamersTraveledBeneathTheMonastery
+            bridgeCompleted <- getHasRecord TheWebOfDreams TheBridgeWasCompleted
+            returned <- getHasRecord TheWebOfDreams TheInvestigatorsReturnedToReality
+            neverEscaped <- getHasRecord TheWebOfDreams TheInvestigatorsNeverEscaped
+            stillInDreamlands <- getHasRecord TheWebOfDreams TheInvestigatorsAreStillInTheDreamlands
+            if
+              | invasionHasBegun ->
+                  if
+                    | bridgeCompleted -> do
+                        story $ i18n "theDreamEaters.epilogue1"
+                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                    | returned -> do
+                        story $ i18n "theDreamEaters.epilogue2"
+                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                    | neverEscaped -> do
+                        story $ i18n "theDreamEaters.epilogue3"
+                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                    | stillInDreamlands -> do
+                        story $ i18n "theDreamEaters.epilogue4"
+                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                    | otherwise -> error "invalid"
+              | awoke ->
+                  if
+                    | bridgeCompleted -> do
+                        story $ i18n "theDreamEaters.epilogue5"
+                        setCampaignPart TheDreamQuest c (EpilogueStepPart 5)
+                    | returned -> do
+                        story $ i18n "theDreamEaters.epilogue6"
+                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                    | neverEscaped -> do
+                        story $ i18n "theDreamEaters.epilogue7"
+                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                    | stillInDreamlands -> do
+                        story $ i18n "theDreamEaters.epilogue8"
+                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                    | otherwise -> error "invalid"
+              | stayed ->
+                  if
+                    | bridgeCompleted -> do
+                        story $ i18n "theDreamEaters.epilogue9"
+                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                    | returned -> do
+                        story $ i18n "theDreamEaters.epilogue10"
+                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                    | neverEscaped -> do
+                        story $ i18n "theDreamEaters.epilogue11"
+                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                    | stillInDreamlands -> do
+                        story $ i18n "theDreamEaters.epilogue12"
+                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                    | otherwise -> error "invalid"
+              | traveled ->
+                  if
+                    | bridgeCompleted -> do
+                        story $ i18n "theDreamEaters.epilogue13"
+                        setCampaignPart TheDreamQuest c (EpilogueStepPart 13)
+                    | returned -> do
+                        story $ i18n "theDreamEaters.epilogue14"
+                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                    | neverEscaped -> do
+                        story $ i18n "theDreamEaters.epilogue15"
+                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                    | stillInDreamlands -> do
+                        story $ i18n "theDreamEaters.epilogue16"
+                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                    | otherwise -> error "invalid"
+              | otherwise -> error "invalid"
       CampaignStep (EpilogueStepPart 5) -> do
         eachInvestigator (kill attrs)
         push $ CampaignStep (EpilogueStepPart 17)

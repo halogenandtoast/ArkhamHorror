@@ -2524,7 +2524,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
 
     unless cannotHealHorror do
       hrrTreacheries <-
-        selectWithField TreacheryCard $ treacheryInThreatAreaOf investigatorId <> TreacheryWithModifier IsPointOfHorror
+        selectWithField TreacheryCard $ treacheryInThreatAreaOf investigatorId
+          <> TreacheryWithModifier IsPointOfHorror
       mods <- getModifiers a
       let onlyTargets = [targetLabel t [HealHorror t source 1] | CannotHealHorrorOnOtherCards t <- mods]
       let additionalTargets =
@@ -4255,7 +4256,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           $ PlayerWindowChooseOne
           $ nub
           $ additionalActions
-          <> [ ResourceLabel iid [TakeResources iid 1 GameSource usesAction]
+          <> [ ResourceLabel iid [TakeResources iid 1 (ResourceSource iid) usesAction]
              | canAffordTakeResources && canTakeResource
              ]
           <> [ ComponentLabel (InvestigatorDeckComponent iid) [drawing]
@@ -4490,7 +4491,7 @@ takeUpkeepResources a = do
             $ chooseOne
               player
               [ Label "Do not take resource(s)" []
-              , Label "Take resource(s)" [TakeResources (toId a) amount GameSource False]
+              , Label "Take resource(s)" [TakeResources (toId a) amount (ResourceSource $ toId a) False]
               ]
           pure a
         else

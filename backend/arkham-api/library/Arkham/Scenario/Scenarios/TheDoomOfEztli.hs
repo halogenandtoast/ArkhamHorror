@@ -20,7 +20,6 @@ import Arkham.Helpers.Location
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario hiding (getIsReturnTo)
-import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types hiding (metaL)
 import Arkham.Matcher hiding (RevealLocation)

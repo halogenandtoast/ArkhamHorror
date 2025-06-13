@@ -872,6 +872,7 @@ allLocationCards =
       , yuggoth
       , zocalo
       , zulanThek
+      , tmgLobby
       ]
 
 withMeta :: ToJSON a => (Text, a) -> CardDef -> CardDef
@@ -9299,3 +9300,13 @@ betweenWorlds =
 emptySpace :: CardDef
 emptySpace =
   location "xempty" "EmptySpace" [] NoSymbol [] BeforeTheBlackThrone
+
+tmgLobby :: CardDef
+tmgLobby =
+  location
+    "71007"
+    "Lobby"
+    [Manor, GroundFloor]
+    Diamond
+    [Moon, Spade, Triangle, Square, Star]
+    TheMidwinterGala

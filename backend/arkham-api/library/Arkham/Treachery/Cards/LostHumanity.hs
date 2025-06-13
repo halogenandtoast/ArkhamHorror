@@ -1,11 +1,8 @@
-module Arkham.Treachery.Cards.LostHumanity (lostHumanity, LostHumanity (..)) where
+module Arkham.Treachery.Cards.LostHumanity (lostHumanity) where
 
-import Arkham.Classes
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Prelude
-import Arkham.Projection
+import Arkham.Investigator.Projection ()
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype LostHumanity = LostHumanity TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -15,21 +12,20 @@ lostHumanity :: TreacheryCard LostHumanity
 lostHumanity = treachery LostHumanity Cards.lostHumanity
 
 instance RunMessage LostHumanity where
-  runMessage msg t@(LostHumanity attrs) = case msg of
+  runMessage msg t@(LostHumanity attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      pushAll
-        [ revelationSkillTest sid iid attrs #willpower (Fixed 5)
-        , RevelationChoice iid (toSource attrs) 1
-        ]
+      revelationSkillTest sid iid attrs #willpower (Fixed 5)
+      doStep 1 msg
       pure t
-    RevelationChoice iid (isSource attrs -> True) 1 -> do
-      handCount <- fieldMap InvestigatorHand length iid
-      deckCount <- fieldMap InvestigatorDeck length iid
-      discardCount <- fieldMap InvestigatorDiscard length iid
-      when (handCount + deckCount + discardCount < 10) $ push $ DrivenInsane iid
+    DoStep 1 (Revelation iid (isSource attrs -> True)) -> do
+      handCount <- length <$> iid.hand
+      deckCount <- length <$> iid.deck
+      discardCount <- length <$> iid.discard
+      when (handCount + deckCount + discardCount < 10) $ drivenInsane iid
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      push $ DiscardTopOfDeck iid n (toSource attrs) Nothing
+      cards <- iid.topOfDeckN n
+      for_ cards removeCardFromGame
       pure t
-    _ -> LostHumanity <$> runMessage msg attrs
+    _ -> LostHumanity <$> liftRunMessage msg attrs

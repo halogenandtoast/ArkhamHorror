@@ -33,6 +33,12 @@ instance HasField "name" InvestigatorId (QueueT Message GameT Name) where
 instance HasField "deck" InvestigatorId (QueueT Message GameT [PlayerCard]) where
   getField = fieldMap InvestigatorDeck unDeck
 
+instance HasField "topOfDeck" InvestigatorId (QueueT Message GameT (Maybe PlayerCard)) where
+  getField = fieldMap InvestigatorDeck (headMay . unDeck)
+
+instance HasField "topOfDeckN" InvestigatorId (Int -> QueueT Message GameT [PlayerCard]) where
+  getField iid n = fieldMap InvestigatorDeck (take n . unDeck) iid
+
 instance HasField "hand" InvestigatorId (QueueT Message GameT [Card]) where
   getField = field InvestigatorHand
 

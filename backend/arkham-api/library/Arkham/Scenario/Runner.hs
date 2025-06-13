@@ -1015,6 +1015,19 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       (x : xs) -> do
         push (RequestedEncounterCard source (Just iid) (Just x))
         pure $ a & encounterDeckL .~ Deck xs & discardL %~ (reverse discards <>)
+  DiscardUntilFirst iid source (Deck.EncounterDeckByKey k) matcher -> do
+    (discards, remainingDeck) <- breakM (`extendedCardMatch` matcher) (unDeck $ a ^. encounterDeckLensFromKey k)
+    case remainingDeck of
+      [] -> do
+        let otherDiscardL = encounterDecksL . at k . non (Deck [], []) . _2
+        let currentDiscard = a ^. otherDiscardL
+        push $ RequestedEncounterCard source (Just iid) Nothing
+        encounterDeck <- shuffle (discards <> currentDiscard)
+        pure $ a & encounterDecksL . at k . non (Deck [], []) .~ (Deck encounterDeck, mempty)
+      (x : xs) -> do
+        push $ RequestedEncounterCard source (Just iid) (Just x)
+        -- pure $ a & encounterDeckL .~ Deck xs & discardL %~ (reverse discards <>)
+        pure $ a & encounterDecksL . at k . non (Deck [], []) %~ (\(_, zs) -> (Deck xs, x:zs))
   DiscardUntilN n iid source target Deck.EncounterDeck matcher -> do
     push $ DiscardUntilN n iid source target (Deck.EncounterDeckByKey RegularEncounterDeck) matcher
     pure a

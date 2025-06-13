@@ -1,22 +1,14 @@
-module Arkham.Treachery.Cards.BaneOfTheLiving (
-  baneOfTheLiving,
-  BaneOfTheLiving (..),
-)
-where
+module Arkham.Treachery.Cards.BaneOfTheLiving (baneOfTheLiving) where
 
-import Arkham.Prelude
-
-import Arkham.Card
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Matcher hiding (StoryCard)
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Story.Types (Field (..))
 import Arkham.Trait (Trait (Geist))
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype BaneOfTheLiving = BaneOfTheLiving TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -26,51 +18,34 @@ baneOfTheLiving :: TreacheryCard BaneOfTheLiving
 baneOfTheLiving = treachery BaneOfTheLiving Cards.baneOfTheLiving
 
 instance RunMessage BaneOfTheLiving where
-  runMessage msg t@(BaneOfTheLiving attrs) = case msg of
+  runMessage msg t@(BaneOfTheLiving attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       hasUnfinishedBusiness <- selectAny $ StoryWithTitle "Unfinished Business"
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ [ Label
+      chooseOrRunOneM iid do
+        when hasUnfinishedBusiness do
+          labeled
             "Choose an Unfinished Business card in play, flip it to its Heretic side, and place damage on it equal to half its health."
-            [RevelationChoice iid (toSource attrs) 1]
-          | hasUnfinishedBusiness
-          ]
-        <> [ Label
-              "Discard cards from the top of the spectral encounter deck until a Geist enemy is discarded. Spawn that enemy engaged with you."
-              [RevelationChoice iid (toSource attrs) 2]
-           ]
+            $ doStep 1 msg
+        labeled
+          "Discard cards from the top of the spectral encounter deck until a Geist enemy is discarded. Spawn that enemy engaged with you."
+          $ doStep 2 msg
       pure t
-    RevelationChoice iid (isSource attrs -> True) 1 -> do
+    DoStep 1 (Revelation iid (isSource attrs -> True)) -> do
       stories <- selectWithField StoryCard $ StoryWithTitle "Unfinished Business"
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel
-            story'
-            [ Flip iid (toSource attrs) (toTarget story')
-            , HandleTargetChoice iid (toSource attrs) (CardIdTarget $ toCardId card)
-            ]
-          | (story', card) <- stories
-          ]
+      chooseOneM iid $ for_ stories \(story', card) ->
+        targeting story' do
+          flipOverBy iid attrs story'
+          handleTarget iid attrs card.id
       pure t
     HandleTargetChoice _ (isSource attrs -> True) (CardIdTarget cardId) -> do
       e <- selectJust $ EnemyWithCardId cardId
       health <- fieldJust EnemyHealth e
-      push $ PlaceDamage (toSource attrs) (toTarget e) (health `div` 2)
+      placeTokens attrs e #damage (health `div` 2)
       pure t
-    RevelationChoice iid (isSource attrs -> True) 2 -> do
-      push
-        $ DiscardUntilFirst
-          iid
-          (toSource attrs)
-          (Deck.EncounterDeckByKey SpectralEncounterDeck)
-          (BasicCardMatch $ CardWithType EnemyType <> CardWithTrait Geist)
+    DoStep 2 (Revelation iid (isSource attrs -> True)) -> do
+      discardUntilFirst iid attrs SpectralEncounterDeck (basic $ #enemy <> CardWithTrait Geist)
       pure t
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) -> do
-      creation <- createEnemy card iid
-      push $ toMessage creation
+      createEnemy_ card iid
       pure t
-    _ -> BaneOfTheLiving <$> runMessage msg attrs
+    _ -> BaneOfTheLiving <$> liftRunMessage msg attrs

@@ -83,9 +83,11 @@ test:
 .PHONY: data
 data:
 	cd data && \
-	curl https://arkhamdb.com/api/public/cards/?encounter=1 > cards.json && \
-	curl https://arkhamdb.com/api/public/packs/ | jq ".[].code" | xargs sh -c 'for arg in "$$@"; do mkdir -p $$arg; curl https://arkhamdb.com/api/public/cards/$$arg > $$arg/cards.json & done; wait' && \
-	for f in $$(find ./ -name "*json"); do echo $$f ; python3 -mjson.tool $$f > /tmp/1 && cp /tmp/1 $$f & done; wait \
+	for lang in en it ko es zh; do \
+	test $${lang} = "en" && prefix="" || prefix=$${lang}"."; \
+	test $${lang} = "en" && postfix="" || postfix="_"$${lang}; \
+	curl -L https://$${prefix}arkhamdb.com/api/public/cards/?encounter=1 | jq . > cards$${postfix}.json && \
+	curl https://arkhamdb.com/api/public/packs/ | jq ".[].code" | prefix=$${prefix} postfix=$${postfix} xargs sh -c 'for arg in "$$@"; do mkdir -p $$arg; curl -L https://$${prefix}arkhamdb.com/api/public/cards/$$arg | jq . > $$arg/cards$${postfix}.json & done; wait'; done \
 
 .PHONY: eventlog
 eventlog:

@@ -32,12 +32,55 @@ const query = ref<string>(queryText)
 const view = ref(route.query.view? toView(route.query.view) : View.List)
 
 const includeEncounter = computed(() => route.query.includeEncounter === "true")
+
+interface ArkhamDBCard {
+  code: string
+  name: string
+  faction_name: string
+  type_name: string
+  pack_name: string
+  subname?: string
+  traits?: string
+}
+
 const fetchData = async () => {
   fetchCards(includeEncounter.value).then(async (response) => {
     allCards.value = response.sort((a, b) => {
       if (a.art < b.art) return -1
       if (a.art > b.art) return 1
       return 0
+    })
+    
+    const language = localStorage.getItem('language') || 'en'
+    if (language === 'en') return;
+    
+    fetch(`/cards_${language}.json`.replace(/^\//, '')).then(async (cardResponse) => {
+      const dbCards = ref<ArkhamDBCard[]>(await cardResponse.json())
+      if (!dbCards.value || dbCards.value.length < 1) return;
+      
+      for(const card of allCards.value) {
+        const match = dbCards.value.find((c: ArkhamDBCard) => c.code == card.art)
+        if (!match) continue
+        
+        // Name
+        card.name.title = match.name
+        if (match.subname) card.name.subtitle = match.subname
+        
+        // Class
+        if (match.faction_name && card.classSymbols.length > 0) card.classSymbols[0] = match.faction_name
+        if (match.faction2_name && card.classSymbols.length > 1) {
+          card.classSymbols[1] = match.faction2_name
+          if (match.faction3_name && card.classSymbols.length > 2) card.classSymbols[2] = match.faction3_name
+        }
+        
+        // Type
+        card.cardType = match.type_name
+        
+        // Traits
+        if (match.traits) card.cardTraits = match.traits.split('.').filter(item => item != "" && item != " ")
+      }
+      
+      allCards.value = [...allCards.value]
     })
   })
 }

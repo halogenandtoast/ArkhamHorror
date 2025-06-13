@@ -17,7 +17,6 @@ import Arkham.Helpers.Doom
 import Arkham.Helpers.EncounterSet
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
-import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
@@ -90,7 +89,7 @@ setupTheMidnightMasks _attrs = do
   gather Set.ChillingCold
   gather Set.Nightgaunts
   gather Set.LockedDoors
-  gather Set.DarkCult
+  gather Set.DarkCult `orWhenReturnTo` gather Set.TheDevourersCult
 
   isReturnTo <- getIsReturnTo
   predatorOrPrey <-

@@ -618,14 +618,17 @@ allLocationCards =
       , returnToBurnedRuins
       , returnToCanalSaintMartin
       , returnToCellar
+      , returnToChapultepecPark
       , returnToCloister
       , returnToCloverClubLounge
       , returnToCongregationalChurch
+      , returnToCoyoacan
       , returnToEngineCar
       , returnToGardensOfLuxembourg
       , returnToGrandGuignol
       , returnToHouseInTheReeds
       , returnToKnightsHall
+      , returnToMetropolitanCathedral
       , returnToMontparnasse
       , returnToNotreDame
       , returnToOsbornsGeneralStore
@@ -634,6 +637,9 @@ allLocationCards =
       , returnToQuietHalls
       , returnToSchoolhouse
       , returnToSecretPassage
+      , returnToTempleRuins
+      , returnToXochimilco
+      , returnToZocalo
       , rialtoBridge
       , ritualGrounds
       , ritualSite
@@ -8925,6 +8931,66 @@ loadingDocks =
       Squiggle
       [Circle]
       ReturnToThreadsOfFate
+
+returnToTempleRuins :: CardDef
+returnToTempleRuins =
+  location
+    "53039"
+    "Temple Ruins"
+    [MexicoCity, PresentDay]
+    Circle
+    [Diamond, Star]
+    ReturnToTheBoundaryBeyond
+
+returnToMetropolitanCathedral :: CardDef
+returnToMetropolitanCathedral =
+  location
+    "53040"
+    "Metropolitan Cathedral"
+    [MexicoCity, PresentDay]
+    Square
+    [Diamond]
+    ReturnToTheBoundaryBeyond
+
+returnToChapultepecPark :: CardDef
+returnToChapultepecPark =
+  location
+    "53041"
+    "Chapultepec Park"
+    [MexicoCity, PresentDay]
+    Triangle
+    [Star]
+    ReturnToTheBoundaryBeyond
+
+returnToZocalo :: CardDef
+returnToZocalo =
+  location
+    "53042"
+    "Zócalo"
+    [MexicoCity, PresentDay]
+    Diamond
+    [Heart, Square, Star, Circle]
+    ReturnToTheBoundaryBeyond
+
+returnToXochimilco :: CardDef
+returnToXochimilco =
+  location
+    "54043"
+    "Xochimilco"
+    [MexicoCity, PresentDay]
+    Heart
+    [Diamond, Star]
+    ReturnToTheBoundaryBeyond
+
+returnToCoyoacan :: CardDef
+returnToCoyoacan =
+  location
+    "54044"
+    "Coyoacán"
+    [MexicoCity, PresentDay]
+    Star
+    [Diamond, Triangle, Circle, Heart]
+    ReturnToTheBoundaryBeyond
 
 riversideTemple :: CardDef
 riversideTemple =

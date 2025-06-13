@@ -885,6 +885,13 @@ allLocations =
     , --- Return to Threads of Fate
       SomeLocationCard theHastingsEstate
     , SomeLocationCard loadingDocks
+    , --- Return to The Boundary Beyond
+      SomeLocationCard returnToTempleRuins
+    , SomeLocationCard returnToMetropolitanCathedral
+    , SomeLocationCard returnToChapultepecPark
+    , SomeLocationCard returnToZocalo
+    , SomeLocationCard returnToXochimilco
+    , SomeLocationCard returnToCoyoacan
     , --- Return to Rainforest
       SomeLocationCard riversideTemple
     , SomeLocationCard waterfall

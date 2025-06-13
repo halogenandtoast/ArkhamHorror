@@ -17,7 +17,6 @@ import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
-import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted qualified as Msg
@@ -190,6 +189,8 @@ instance RunMessage ThreadsOfFate where
       gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
       storyWithContinue' (h "title" >> p "intro1")
       doStep (if gaveCustodyToHarlan then 3 else 2) PreScenarioSetup
+      isReturnTo <- Arkham.Helpers.Scenario.getIsReturnTo
+      when isReturnTo $ doStep 7 PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
       storyWithChooseOneM' (h "title" >> p "intro2") do
@@ -220,6 +221,9 @@ instance RunMessage ThreadsOfFate where
             removeAllChaosTokens Tablet
             addChaosToken ElderThing
         labeled' "listen" nothing
+      pure s
+    DoStep 7 PreScenarioSetup -> scope "intro" do
+      storyWithContinue' (h "title" >> p "intro7")
       pure s
     StandaloneSetup -> scope "standalone" do
       lead <- getLead

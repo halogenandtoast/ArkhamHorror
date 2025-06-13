@@ -57,7 +57,7 @@ const cardCode = computed(() => {
     return `${newId}${adjustedSidePart}`
   }
 
-  if (parseInt(newId) >= 53030 && parseInt(newId) <= 53036) {
+  if (parseInt(newId) >= 53029 && parseInt(newId) <= 53036) {
     const adjustedSidePart = sidePart.replace(/[g]/, '').replace(/[h]/, 'b')
     return `${newId}${adjustedSidePart}`
   }

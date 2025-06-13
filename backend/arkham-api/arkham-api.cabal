@@ -3142,14 +3142,17 @@ library
       Arkham.Location.Cards.ReturnToBurnedRuins
       Arkham.Location.Cards.ReturnToCanalSaintMartin
       Arkham.Location.Cards.ReturnToCellar
+      Arkham.Location.Cards.ReturnToChapultepecPark
       Arkham.Location.Cards.ReturnToCloister
       Arkham.Location.Cards.ReturnToCloverClubLounge
       Arkham.Location.Cards.ReturnToCongregationalChurch
+      Arkham.Location.Cards.ReturnToCoyoacan
       Arkham.Location.Cards.ReturnToEngineCar
       Arkham.Location.Cards.ReturnToGardensOfLuxembourg
       Arkham.Location.Cards.ReturnToGrandGuignol
       Arkham.Location.Cards.ReturnToHouseInTheReeds
       Arkham.Location.Cards.ReturnToKnightsHall
+      Arkham.Location.Cards.ReturnToMetropolitanCathedral
       Arkham.Location.Cards.ReturnToMontparnasse
       Arkham.Location.Cards.ReturnToNotreDame
       Arkham.Location.Cards.ReturnToOsbornsGeneralStore
@@ -3158,6 +3161,9 @@ library
       Arkham.Location.Cards.ReturnToQuietHalls
       Arkham.Location.Cards.ReturnToSchoolhouse
       Arkham.Location.Cards.ReturnToSecretPassage
+      Arkham.Location.Cards.ReturnToTempleRuins
+      Arkham.Location.Cards.ReturnToXochimilco
+      Arkham.Location.Cards.ReturnToZocalo
       Arkham.Location.Cards.RialtoBridge
       Arkham.Location.Cards.RitualGrounds
       Arkham.Location.Cards.RitualSite
@@ -3511,6 +3517,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToEchoesOfThePast
       Arkham.Scenario.Scenarios.ReturnToExtracurricularActivities
       Arkham.Scenario.Scenarios.ReturnToLostInTimeAndSpace
+      Arkham.Scenario.Scenarios.ReturnToTheBoundaryBeyond
       Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow
       Arkham.Scenario.Scenarios.ReturnToTheDoomOfEztli
       Arkham.Scenario.Scenarios.ReturnToTheEssexCountyExpress
@@ -4079,6 +4086,7 @@ library
       Arkham.Treachery.Cards.FracturedConsciousness
       Arkham.Treachery.Cards.FragileThoughts
       Arkham.Treachery.Cards.Frenzied
+      Arkham.Treachery.Cards.FromAnotherTime
       Arkham.Treachery.Cards.FromTheDepths
       Arkham.Treachery.Cards.Frostbitten
       Arkham.Treachery.Cards.FrozenInFear

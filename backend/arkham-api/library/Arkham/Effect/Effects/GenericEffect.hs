@@ -73,6 +73,7 @@ instance HasModifiersFor GenericEffect where
         isTurn <- iid <=~> TurnInvestigator
         modifiers' <- resolveModifiers modifiers
         when isTurn $ tell $ MonoidalMap $ singletonMap attrs.target modifiers'
+      Just (EffectNextSkillTestWindow {}) -> pure ()
       _ -> do
         modifiers' <- resolveModifiers modifiers
         tell $ MonoidalMap $ singletonMap attrs.target modifiers'

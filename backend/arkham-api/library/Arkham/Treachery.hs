@@ -653,16 +653,18 @@ allTreacheries =
     , SomeTreacheryCard painfulReflection
     , --- Yog Sothoth's Emissaries
       SomeTreacheryCard eldritchAccord
-    , -- Return to the Forgotten Age
+    , -- Return to the Forgotten Age [rttfa]
       SomeTreacheryCard offerYouCannotRefuse
     , SomeTreacheryCard finePrint
     , SomeTreacheryCard sellYourSoul
-    , --- Doom Expedition
+    , --- Cult of Pnakotus [rttfa]
+      SomeTreacheryCard fromAnotherTime
+    , --- Doom Expedition [rttfa]
       SomeTreacheryCard resentfulWilds
     , SomeTreacheryCard bestLaidPlans
-    , --- Temporal Hunters
+    , --- Temporal Hunters [rttfa]
       SomeTreacheryCard mergingTimelines
-    , --- Venoumous Hate
+    , --- Venoumous Hate [rttfa]
       SomeTreacheryCard wrathOfYig
     , -- Return to the Circle Undone
       SomeTreacheryCard damned

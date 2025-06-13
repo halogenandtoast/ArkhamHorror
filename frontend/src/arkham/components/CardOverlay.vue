@@ -357,6 +357,145 @@ const getImage = (el: HTMLElement): string | null => {
 
   return null
 }
+
+interface ArkhamDBCard {
+  code: string
+  name: string
+  xp?: number
+  subname?: string
+  traits?: string
+  text?: string
+  back_name?: string
+  back_traits?: string
+  back_text?: string
+  customization_text?: string
+  real_name: string
+  real_traits: string
+  real_text: string
+}
+
+const dbCards = ref<ArkhamDBCard[]>([])
+
+const updateDBCards = async () => {
+  const language = localStorage.getItem('language') || 'en'
+  
+  if (language !== 'en') {
+    fetch(`/cards_${language}.json`.replace(/^\//, '')).then(async (cardResponse) => {
+      dbCards.value = await cardResponse.json()
+    })
+  }
+}
+
+await updateDBCards()
+
+const dbCardName = ref<string>("")
+const dbCardTraits = ref<string>("")
+const dbCardText = ref<string>("")
+const dbCardCustomizationText = ref<string>("")
+
+const dbCardData = computed(() : boolean => {
+  if (!dbCards.value) return false
+  
+  if (card.value) {
+    const pattern = /(\d+b?)(_.*)?\.avif/
+    const match = card.value.match(pattern)
+    const code = match[1]
+    
+    if (code) {
+      const language = localStorage.getItem('language') || 'en'
+      
+      if (imgsrc(`cards/${match[0]}`).search(language) < 0) {
+        const dbCard = dbCards.value.find(
+          (c: ArkhamDBCard) => c.code == code || (`${c.code}b` == code)
+        )
+        
+        if (dbCard) {
+          const needBack = (dbCard.code !== code)
+          
+          dbCardName.value = `${(match[2])?"[Taboo] ": ""}${getCardName(dbCard, needBack)}`
+          dbCardTraits.value = getCardTraits(dbCard, needBack)
+          dbCardText.value = getCardText(dbCard, needBack)
+          dbCardCustomizationText.value = getCardCustomizationText(dbCard)
+          
+          return true
+        }
+      }
+    }
+  }
+
+  if (dbCardName.value) dbCardName.value = ""
+  if (dbCardTraits.value) dbCardTraits.value = ""
+  if (dbCardText.value) dbCardText.value = ""
+  if (dbCardCustomizationText.value) dbCardCustomizationText.value = ""
+  
+  return false
+})
+
+const getCardName = (dbCard: ArkhamDBCard, needBack: boolean) => {
+  if (dbCard.name == dbCard.real_name) return null
+  
+  const cardName = ref<string>("")
+  if (needBack && dbCard.back_name) cardName.value = dbCard.back_name
+  else cardName.value = dbCard.name
+  
+  if (dbCard.subname) cardName.value = `${cardName.value}: ${dbCard.subname}`
+  if ((dbCard.xp || 0) > 0) cardName.value = `${cardName.value} (${dbCard.xp})`
+  return cardName.value
+}
+
+const getCardTraits = (dbCard: ArkhamDBCard, needBack: boolean) => {
+  if (dbCard.traits == dbCard.real_traits) return null
+  
+  if (needBack && dbCard.back_traits) return dbCard.back_traits || null
+  return dbCard.traits || null
+}
+
+const getCardText = (dbCard: ArkhamDBCard, needBack: boolean) => {
+  if (dbCard.text == dbCard.real_text) return null
+  
+  const targetText = ref<string>()
+  if (needBack && dbCard.back_text) targetText.value = dbCard.back_text
+  else targetText.value = dbCard.text || ""
+  
+  return replaceText(targetText.value)
+}
+
+const getCardCustomizationText = (dbCard: ArkhamDBCard) => {
+  if (dbCard.text == dbCard.real_text) return null
+  return replaceText(dbCard.customization_text || "")
+}
+
+const replaceText = (text: string) => {
+  if (!text) return ""
+  
+  return text.
+    replaceAll('[[', `<span style="font-style: italic; font-weight: bold">`).replaceAll(']]', '</span>').
+    replaceAll('<i>', `<span style="font-style: italic;">`).replaceAll('</i>', '</span>').
+    replaceAll('[action]', '<span class="action-icon"></span>').
+    replaceAll('[fast]', '<span class="fast-icon"></span>').
+    replaceAll('[free]', '<span class="free-icon"></span>').
+    replaceAll('[reaction]', '<span class="reaction-icon"></span>').
+    replaceAll('[willpower]', '<span class="willpower-icon"></span>').
+    replaceAll('[intellect]', '<span class="intellect-icon"></span>').
+    replaceAll('[combat]', '<span class="combat-icon"></span>').
+    replaceAll('[agility]', '<span class="agility-icon"></span>').
+    replaceAll('[wild]', '<span class="wild-icon"></span>').
+    replaceAll('[guardian]', '<span class="guardian-icon"></span>').
+    replaceAll('[seeker]', '<span class="seeker-icon"></span>').
+    replaceAll('[rogue]', '<span class="rogue-icon"></span>').
+    replaceAll('[mystic]', '<span class="mystic-icon"></span>').
+    replaceAll('[survivor]', '<span class="survivor-icon"></span>').
+    replaceAll('[elder_sign]', '<span class="elder-sign"></span>').
+    replaceAll('[auto_fail]', '<span class="auto-fail"></span>').
+    replaceAll('[skull]', '<span class="skull-icon"></span>').
+    replaceAll('[cultist]', '<span class="cultist-icon"></span>').
+    replaceAll('[tablet]', '<span class="tablet-icon"></span>').
+    replaceAll('[elder_thing]', '<span class="elder-thing-icon"></span>').
+    replaceAll('[bless]', '<span class="bless-icon"></span>').
+    replaceAll('[curse]', '<span class="curse-icon"></span>').
+    replaceAll('[frost]', '<span class="frost-icon"></span>').
+    replaceAll('[per_player]', '<span class="per-player"></span>')
+}
 </script>
 
 <template>
@@ -369,6 +508,12 @@ const getImage = (el: HTMLElement): string | null => {
         :src="overlay"
       />
       <div v-for="entry in crossedOff" :key="entry" class="crossed-off" :class="{ [toCamelCase(entry)]: true }"></div>
+    </div>
+    <div class="card-data" v-if="dbCardData">
+      <p style="font-size: 1.0em;"><b>{{ dbCardName }}</b></p>
+      <p v-if="dbCardTraits"><span style="font-style: italic;">{{ dbCardTraits }}</span></p>
+      <p v-if="dbCardText"><br></p>
+      <p v-if="dbCardText" v-html="dbCardText" style="font-size: 0.875em;"></p>
     </div>
     <span class="swarm" v-if="swarm"><BugAntIcon aria-hidden="true" /></span>
     <span class="fight" v-if="fight">{{ fight }}</span>
@@ -403,7 +548,9 @@ const getImage = (el: HTMLElement): string | null => {
       <div v-for="tick in customizationTicks" :key="tick" :class="`tick tick-${cardCode} ${tick}`">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg>
       </div>
-
+    </div>
+    <div class="card-data" v-if="dbCardCustomizationText">
+      <p v-if="dbCardCustomizationText" v-html="dbCardCustomizationText" style="font-size: 0.875em;"></p>
     </div>
   </div>
 </template>
@@ -463,6 +610,28 @@ const getImage = (el: HTMLElement): string | null => {
   left:13%;
   font-weight: bold;
   font-size: 0.8em;
+}
+
+.card-data {
+  position: relative;
+  width: 300px;
+  min-height: inherit;
+  overflow-y: visible;
+  margin-left: 2px;
+  padding: 5px;
+  border-radius: 15px;
+  font-family: Arial;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  aspect-ratio: var(--card-aspect);
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  scroll-behavior: smooth;
+  background-color: rgba(185, 185, 185, 0.85);
+}
+
+.card-data::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera*/
 }
 
 .card-overlay {

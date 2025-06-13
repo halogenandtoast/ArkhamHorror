@@ -206,7 +206,7 @@ sourceMatches s = \case
         BothSource a b -> go a || go b
         TarotSource {} -> True
         BatchSource {} -> False
-    pure $ go $ traceShowId s
+    pure $ go s
   Matcher.SourceIsType t -> case t of
     AssetType -> case s of
       AssetSource _ -> pure True

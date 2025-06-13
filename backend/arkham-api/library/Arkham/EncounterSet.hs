@@ -222,6 +222,7 @@ data EncounterSet
   | VileExperiments
   | SinsOfThePast
   | TheBlobThatAteEverythingELSE
+  | TheMidwinterGala
   | Test
   deriving stock (Show, Eq, Ord, Bounded, Enum, Data)
 

@@ -845,6 +845,9 @@ onUnmounted(() => {
   border-radius: 5px;
   text-align: center;
   p { margin: 0; padding: 0; margin-bottom: 20px; font-size: 1.3em; }
+  @media (max-width: 800px) and (orientation: portrait){
+    width: 100%;
+  }
 }
 
 .invite-container {
@@ -866,7 +869,6 @@ header {
 .invite-link {
   flex: 1;
   input {
-    color: #26283B;
     font-size: 1.3em;
     width: 60%;
     border-right: 0;

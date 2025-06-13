@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted, nextTick } from 'vue'
+import { IsMobile } from '@/arkham/isMobile';
 
 const draggable = ref<HTMLElement | null>(null)
 const isMinimized = ref(false)
@@ -7,6 +8,7 @@ const initialMouseX = ref(0)
 const initialMouseY = ref(0)
 const initialLeft = ref(0)
 const initialTop = ref(0)
+const { isMobile } = IsMobile();
 
 // Variables to store the modal's position and size before minimizing
 const originalLeft = ref(0)
@@ -151,8 +153,10 @@ onMounted(() => {
     const windowHeight = window.innerHeight
 
     const initialLeftPosition = (windowWidth - rect.width) / 2
-    const initialTopPosition = (windowHeight - rect.height) / 2
-
+    let initialTopPosition = (windowHeight - rect.height) / 2
+    if(isMobile.value){
+      initialTopPosition = 60
+    }
     el.style.left = `${initialLeftPosition}px`
     el.style.top = `${initialTopPosition}px`
     el.style.position = 'absolute'
@@ -203,6 +207,10 @@ onMounted(() => {
   max-height: 80%;
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
 
   &.minimized {
     header .header-title {

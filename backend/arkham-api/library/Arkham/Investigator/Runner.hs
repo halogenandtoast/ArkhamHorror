@@ -4255,7 +4255,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           $ PlayerWindowChooseOne
           $ nub
           $ additionalActions
-          <> [ ResourceLabel iid [TakeResources iid 1 (toSource a) usesAction]
+          <> [ ResourceLabel iid [TakeResources iid 1 GameSource usesAction]
              | canAffordTakeResources && canTakeResource
              ]
           <> [ ComponentLabel (InvestigatorDeckComponent iid) [drawing]
@@ -4490,7 +4490,7 @@ takeUpkeepResources a = do
             $ chooseOne
               player
               [ Label "Do not take resource(s)" []
-              , Label "Take resource(s)" [TakeResources (toId a) amount (toSource a) False]
+              , Label "Take resource(s)" [TakeResources (toId a) amount GameSource False]
               ]
           pure a
         else

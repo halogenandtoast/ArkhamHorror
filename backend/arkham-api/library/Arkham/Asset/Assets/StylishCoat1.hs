@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.StylishCoat1 (stylishCoat1, StylishCoat1 (..)) where
+module Arkham.Asset.Assets.StylishCoat1 (stylishCoat1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -15,8 +15,8 @@ stylishCoat1 = assetWith StylishCoat1 Cards.stylishCoat1 $ (healthL ?~ 1) . (san
 
 instance HasAbilities StylishCoat1 where
   getAbilities (StylishCoat1 a) =
-    [ controlledAbility a 1 (DuringTurn You)
-        $ ReactionAbility
+    [ controlled a 1 (DuringTurn You)
+        $ triggered
           (GainsResources #when You (SourceIsPlayerCard <> SourceIsCardEffect) (atLeast 1))
           (exhaust a)
     ]

@@ -15,7 +15,6 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Message (pushWhenM)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
-import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message hiding (chooseOrRunOne, story)

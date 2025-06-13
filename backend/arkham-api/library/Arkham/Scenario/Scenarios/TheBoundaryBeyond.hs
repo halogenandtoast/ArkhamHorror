@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheBoundaryBeyond (theBoundaryBeyond) where
+module Arkham.Scenario.Scenarios.TheBoundaryBeyond (setupTheBoundaryBeyond, theBoundaryBeyond, TheBoundaryBeyond (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -13,9 +13,10 @@ import Arkham.Enemy.Types (Field (EnemyDamage))
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers hiding (setupModifier)
-import Arkham.Helpers.Scenario
+import Arkham.Helpers.Scenario hiding (getIsReturnTo)
 import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (LocationName))
@@ -89,6 +90,80 @@ standaloneChaosTokens =
   , ElderSign
   ]
 
+setupTheBoundaryBeyond :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupTheBoundaryBeyond attrs = do
+  setup do
+    ul do
+      li "gatherSets"
+
+  whenReturnTo $ gather Set.ReturnToTheBoundaryBeyond
+  gather Set.TheBoundaryBeyond
+  gather Set.TemporalFlux `orWhenReturnTo` gather Set.TemporalHunters
+  gather Set.Poison
+
+  tokens <- getBagChaosTokens
+  let
+    cultistCount = count ((== Cultist) . chaosTokenFace) tokens
+    tabletCount = count ((== Tablet) . chaosTokenFace) tokens
+
+  when (cultistCount >= 2) do
+    gather Set.PnakoticBrotherhood
+    gather Set.DarkCult `orWhenReturnTo` gather Set.CultOfPnakotus
+
+  when (tabletCount >= 2) do
+    gather Set.YigsVenom `orWhenReturnTo` gather Set.VenomousHate
+    gather Set.GuardiansOfTime
+
+  when (cultistCount < 2 && tabletCount < 2) do
+    gather Set.PnakoticBrotherhood
+    gather Set.GuardiansOfTime
+
+  zocalo <- place =<< Locations.zocalo `orSampleIfReturnTo` [Locations.returnToZocalo]
+  coyoacan <- place =<< Locations.coyoacan `orSampleIfReturnTo` [Locations.returnToCoyoacan]
+  place_
+    =<< Locations.metropolitanCathedral
+    `orSampleIfReturnTo` [Locations.returnToMetropolitanCathedral]
+  place_ =<< Locations.templeRuins `orSampleIfReturnTo` [Locations.returnToTempleRuins]
+  place_ =<< Locations.xochimilco `orSampleIfReturnTo` [Locations.returnToXochimilco]
+  place_ =<< Locations.chapultepecPark `orSampleIfReturnTo` [Locations.returnToChapultepecPark]
+
+  isReturnTo <- getIsReturnTo
+  let treacheries =
+        guard (not isReturnTo)
+          *> [ Treacheries.windowToAnotherTime
+             , Treacheries.timelineDestabilization
+             , Treacheries.aTearInTime
+             , Treacheries.lostInTime
+             ]
+
+  addExtraDeck ExplorationDeck
+    =<< shuffle
+      ( [ Locations.temploMayor_174
+        , Locations.temploMayor_175
+        , Locations.templesOfTenochtitlan_176
+        , Locations.templesOfTenochtitlan_177
+        , Locations.chapultepecHill_178
+        , Locations.chapultepecHill_179
+        , Locations.canalsOfTenochtitlan_180
+        , Locations.canalsOfTenochtitlan_181
+        , Locations.lakeXochimilco_182
+        , Locations.lakeXochimilco_183
+        , Locations.sacredWoods_184
+        , Locations.sacredWoods_185
+        ]
+          <> treacheries
+      )
+
+  setAsidePoisonedCount <- getSetAsidePoisonedCount
+  setAside
+    $ [Enemies.padmaAmrita, Acts.theReturnTrip, Agendas.timeCollapsing]
+    <> replicate setAsidePoisonedCount Treacheries.poisoned
+
+  whenReturnTo $ setAside [Enemies.harbingerOfValusiaTheSleeperReturns]
+  eachInvestigator \iid -> chooseTargetM iid [zocalo, coyoacan] $ moveTo_ attrs iid
+  setAgendaDeck [Agendas.theBoundaryBroken, Agendas.theBarrierIsThin]
+  setActDeck [Acts.crossingTheThreshold, Acts.pastAndPresent]
+
 instance RunMessage TheBoundaryBeyond where
   runMessage msg s@(TheBoundaryBeyond attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
@@ -129,66 +204,7 @@ instance RunMessage TheBoundaryBeyond where
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens
       pure s
-    Setup -> runScenarioSetup TheBoundaryBeyond attrs do
-      gather Set.TheBoundaryBeyond
-      gather Set.TemporalFlux
-      gather Set.Poison
-
-      tokens <- getBagChaosTokens
-      let
-        cultistCount = count ((== Cultist) . chaosTokenFace) tokens
-        tabletCount = count ((== Tablet) . chaosTokenFace) tokens
-
-      when (cultistCount >= 2) do
-        gather Set.PnakoticBrotherhood
-        gather Set.DarkCult
-
-      when (tabletCount >= 2) do
-        gather Set.YigsVenom
-        gather Set.GuardiansOfTime
-
-      when (cultistCount < 2 && tabletCount < 2) do
-        gather Set.PnakoticBrotherhood
-        gather Set.GuardiansOfTime
-
-      zocalo <- place Locations.zocalo
-      coyoacan <- place Locations.coyoacan
-
-      placeAll
-        [ Locations.metropolitanCathedral
-        , Locations.templeRuins
-        , Locations.xochimilco
-        , Locations.chapultepecPark
-        ]
-
-      addExtraDeck ExplorationDeck
-        =<< shuffle
-          [ Locations.temploMayor_174
-          , Locations.temploMayor_175
-          , Locations.templesOfTenochtitlan_176
-          , Locations.templesOfTenochtitlan_177
-          , Locations.chapultepecHill_178
-          , Locations.chapultepecHill_179
-          , Locations.canalsOfTenochtitlan_180
-          , Locations.canalsOfTenochtitlan_181
-          , Locations.lakeXochimilco_182
-          , Locations.lakeXochimilco_183
-          , Locations.sacredWoods_184
-          , Locations.sacredWoods_185
-          , Treacheries.windowToAnotherTime
-          , Treacheries.timelineDestabilization
-          , Treacheries.aTearInTime
-          , Treacheries.lostInTime
-          ]
-
-      setAsidePoisonedCount <- getSetAsidePoisonedCount
-      setAside
-        $ [Enemies.padmaAmrita, Acts.theReturnTrip, Agendas.timeCollapsing]
-        <> replicate setAsidePoisonedCount Treacheries.poisoned
-
-      eachInvestigator \iid -> chooseTargetM iid [zocalo, coyoacan] $ moveTo_ attrs iid
-      setAgendaDeck [Agendas.theBoundaryBroken, Agendas.theBarrierIsThin]
-      setActDeck [Acts.crossingTheThreshold, Acts.pastAndPresent]
+    Setup -> runScenarioSetup TheBoundaryBeyond attrs $ setupTheBoundaryBeyond attrs
     Explore iid _ _ -> do
       checkWhen $ Window.AttemptExplore iid
       push $ Do msg

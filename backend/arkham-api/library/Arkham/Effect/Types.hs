@@ -98,11 +98,11 @@ data EffectAttrs = EffectAttrs
   }
   deriving stock (Show, Eq, Data)
 
-replaceNextSkillTest :: SkillTestId -> EffectAttrs -> EffectAttrs
-replaceNextSkillTest sid e = e {effectWindow = replaceNextSkillTestWindow e.window}
+replaceNextSkillTest :: SkillTestId -> InvestigatorId -> EffectAttrs -> EffectAttrs
+replaceNextSkillTest sid iid e = e {effectWindow = replaceNextSkillTestWindow e.window}
  where
   replaceNextSkillTestWindow = \case
-    Just (EffectNextSkillTestWindow _) -> Just $ EffectSkillTestWindow sid
+    Just (EffectNextSkillTestWindow iid') | iid == iid' -> Just $ EffectSkillTestWindow sid
     a -> a
 
 instance HasCardCode EffectAttrs where

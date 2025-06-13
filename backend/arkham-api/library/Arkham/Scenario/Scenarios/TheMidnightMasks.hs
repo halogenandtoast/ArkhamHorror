@@ -89,7 +89,7 @@ setupTheMidnightMasks _attrs = do
   gather Set.ChillingCold
   gather Set.Nightgaunts
   gather Set.LockedDoors
-  gather Set.DarkCult
+  gather Set.DarkCult `orWhenReturnTo` Set.TheDevourersCult
 
   isReturnTo <- getIsReturnTo
   predatorOrPrey <-

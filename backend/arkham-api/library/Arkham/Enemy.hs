@@ -598,4 +598,5 @@ allEnemies =
       SomeEnemyCard savageShantak
       SomeEnemyCard rookieCop
       SomeEnemyCard theBloodlessMan
+      SomeEnemyCard theBloodlessManUnleashed
     ]

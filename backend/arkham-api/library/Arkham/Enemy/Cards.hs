@@ -346,6 +346,7 @@ allEncounterEnemyCards =
       , salvatoreNeri
       , savageShantak
       , theBloodlessMan
+      , theBloodlessManUnleashed
       , savioCorvi
       , scholarFromYith
       , scientistOfYith
@@ -3320,7 +3321,7 @@ rookieCop :: CardDef
 rookieCop =
   (enemy "71020" "Rookie Cop" TheMidwinterGala 1)
     { cdCardTraits = setFromList [Humanoid, Police, Rival]
-    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+    , cdKeywords = setFromList [Keyword.Surge, Keyword.Aloof, Keyword.Hunter]
     }
 
 theBloodlessMan :: CardDef
@@ -3328,5 +3329,18 @@ theBloodlessMan =
   unique
     $ (enemy "71045" "The Bloodless Man" TheMidwinterGala 1)
         { cdCardTraits = setFromList [Humanoid, LanternClub, Elite]
-        , cdKeywords = setFromList [Keyword.Aloof]
+        , cdKeywords =
+            setFromList
+              [ Keyword.Aloof
+              , Keyword.Patrol (NearestLocationToYou $ LocationWithAsset $ AssetWithTrait Guest)
+              ]
+        }
+
+theBloodlessManUnleashed :: CardDef
+theBloodlessManUnleashed =
+  unique
+    $ (enemy "71045b" "The Bloodless Man" TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Monster, Abomination, Elite]
+        , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+        , cdVictoryPoints = Just 1
         }

@@ -8974,7 +8974,7 @@ returnToZocalo =
 returnToXochimilco :: CardDef
 returnToXochimilco =
   location
-    "54043"
+    "53043"
     "Xochimilco"
     [MexicoCity, PresentDay]
     Heart
@@ -8984,7 +8984,7 @@ returnToXochimilco =
 returnToCoyoacan :: CardDef
 returnToCoyoacan =
   location
-    "54044"
+    "53044"
     "Coyoacán"
     [MexicoCity, PresentDay]
     Star

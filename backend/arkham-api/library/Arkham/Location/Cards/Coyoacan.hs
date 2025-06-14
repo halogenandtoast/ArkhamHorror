@@ -22,8 +22,8 @@ instance HasAbilities Coyoacan where
       $ OrCost [DamageCost (a.ability 1) YouTarget 1, HorrorCost (a.ability 1) YouTarget 1]
 
 instance RunMessage Coyoacan where
-  runMessage msg l@(Coyoacan attrs) = case msg of
+  runMessage msg l@(Coyoacan attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ Explore iid (attrs.ability 1) $ CardWithPrintedLocationSymbol $ locationSymbol attrs
       pure l
-    _ -> Coyoacan <$> runMessage msg attrs
+    _ -> Coyoacan <$> liftRunMessage msg attrs

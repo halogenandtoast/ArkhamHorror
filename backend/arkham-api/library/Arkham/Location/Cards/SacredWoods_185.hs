@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.SacredWoods_185 (sacredWoods_185, SacredWoods_185 (..)) where
+module Arkham.Location.Cards.SacredWoods_185 (sacredWoods_185) where
 
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
@@ -12,17 +12,16 @@ newtype SacredWoods_185 = SacredWoods_185 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 sacredWoods_185 :: LocationCard SacredWoods_185
-sacredWoods_185 = locationWith SacredWoods_185 Cards.sacredWoods_185 6 (PerPlayer 1) (labelL .~ "star")
+sacredWoods_185 = symbolLabel $ location SacredWoods_185 Cards.sacredWoods_185 6 (PerPlayer 1)
 
 instance HasModifiersFor SacredWoods_185 where
   getModifiersFor (SacredWoods_185 a) = whenRevealed a $ do
-    investigators <- modifySelect a (investigatorAt a) [IncreaseCostOf (basic AnyCard) 2]
-    self <- maybeModifySelf a do
+    modifySelect a (investigatorAt a) [IncreaseCostOf (basic AnyCard) 2]
+    maybeModifySelf a do
       iid <- MaybeT getSkillTestInvestigator
       liftGuardM $ getIsBeingInvestigated a.id
       n <- lift $ selectCount $ assetControlledBy iid
       pure [ShroudModifier (-n)]
-    pure $ investigators <> self
 
 instance RunMessage SacredWoods_185 where
   runMessage msg (SacredWoods_185 attrs) = SacredWoods_185 <$> runMessage msg attrs

@@ -1,7 +1,4 @@
-module Arkham.Location.Cards.TemplesOfTenochtitlan_176 (
-  templesOfTenochtitlan_176,
-  TemplesOfTenochtitlan_176 (..),
-) where
+module Arkham.Location.Cards.TemplesOfTenochtitlan_176 (templesOfTenochtitlan_176) where
 
 import Arkham.Ability
 import Arkham.GameValue

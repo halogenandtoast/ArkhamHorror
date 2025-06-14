@@ -1,13 +1,12 @@
-module Arkham.Location.Cards.SacredWoods_184 (sacredWoods_184, SacredWoods_184 (..)) where
+module Arkham.Location.Cards.SacredWoods_184 (sacredWoods_184) where
 
 import Arkham.Ability
 import Arkham.Discover
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
 import Arkham.Projection
 
 newtype SacredWoods_184 = SacredWoods_184 LocationAttrs
@@ -15,7 +14,7 @@ newtype SacredWoods_184 = SacredWoods_184 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sacredWoods_184 :: LocationCard SacredWoods_184
-sacredWoods_184 = locationWith SacredWoods_184 Cards.sacredWoods_184 4 (PerPlayer 1) (labelL .~ "star")
+sacredWoods_184 = symbolLabel $ location SacredWoods_184 Cards.sacredWoods_184 4 (PerPlayer 1)
 
 instance HasAbilities SacredWoods_184 where
   getAbilities (SacredWoods_184 a) =
@@ -33,13 +32,12 @@ instance HasAbilities SacredWoods_184 where
       ]
 
 instance RunMessage SacredWoods_184 where
-  runMessage msg l@(SacredWoods_184 attrs) = case msg of
+  runMessage msg l@(SacredWoods_184 attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      iids <- select $ investigatorAt attrs
-      pushAll [DiscardTopOfDeck iid 10 (attrs.ability 1) Nothing | iid <- iids]
+      selectEach (investigatorAt attrs) \iid -> discardTopOfDeck iid (attrs.ability 1) 10
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       n <- field LocationClues attrs.id
-      push $ Msg.DiscoverClues iid $ discover attrs (attrs.ability 1) n
+      discoverAt NotInvestigate iid (attrs.ability 1) attrs n
       pure l
-    _ -> SacredWoods_184 <$> runMessage msg attrs
+    _ -> SacredWoods_184 <$> liftRunMessage msg attrs

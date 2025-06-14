@@ -1,14 +1,11 @@
-module Arkham.Treachery.Cards.TimelineDestabilization (timelineDestabilization, TimelineDestabilization (..)) where
+module Arkham.Treachery.Cards.TimelineDestabilization (timelineDestabilization) where
 
-import Arkham.Classes
-import Arkham.Deck
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Trait (Trait (Ancient))
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype TimelineDestabilization = TimelineDestabilization TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -18,19 +15,16 @@ timelineDestabilization :: TreacheryCard TimelineDestabilization
 timelineDestabilization = treachery TimelineDestabilization Cards.timelineDestabilization
 
 instance RunMessage TimelineDestabilization where
-  runMessage msg t@(TimelineDestabilization attrs) = case msg of
+  runMessage msg t@(TimelineDestabilization attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push
-        $ revelationSkillTest sid iid attrs #willpower
+      revelationSkillTest sid iid attrs #willpower
         $ SumCalculation [Fixed 1, CountLocations (LocationWithTrait Ancient)]
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       card <- field TreacheryCard (toId attrs)
-      pushAll
-        [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1
-        , RemoveTreachery (toId attrs)
-        , ShuffleCardsIntoDeck (ScenarioDeckByKey ExplorationDeck) [card]
-        ]
+      assignDamageAndHorror iid attrs 1 1
+      removeTreachery attrs
+      shuffleCardsIntoDeck ExplorationDeck [card]
       pure t
-    _ -> TimelineDestabilization <$> runMessage msg attrs
+    _ -> TimelineDestabilization <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.LakeXochimilco_182 (lakeXochimilco_182, LakeXochimilco_182 (..)) where
+module Arkham.Location.Cards.LakeXochimilco_182 (lakeXochimilco_182) where
 
 import Arkham.Ability
 import Arkham.GameValue
@@ -35,7 +35,6 @@ instance HasAbilities LakeXochimilco_182 where
 instance RunMessage LakeXochimilco_182 where
   runMessage msg l@(LakeXochimilco_182 attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      iids <- select $ investigatorAt (toId attrs)
-      pushAll [SetActions iid (attrs.ability 1) 0 | iid <- iids]
+      selectEach (investigatorAt (toId attrs)) (\iid -> setActions iid (attrs.ability 1) 0)
       pure l
     _ -> LakeXochimilco_182 <$> liftRunMessage msg attrs

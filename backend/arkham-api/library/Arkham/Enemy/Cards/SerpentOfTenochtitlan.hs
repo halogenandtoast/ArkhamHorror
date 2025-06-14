@@ -2,13 +2,11 @@ module Arkham.Enemy.Cards.SerpentOfTenochtitlan (serpentOfTenochtitlan) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait (Trait (Ancient))
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -35,9 +33,9 @@ instance HasAbilities SerpentOfTenochtitlan where
       $ DealtDamage #after (SourceIsEnemyAttack $ be a) You
 
 instance RunMessage SerpentOfTenochtitlan where
-  runMessage msg e@(SerpentOfTenochtitlan attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg e@(SerpentOfTenochtitlan attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       poisoned <- getSetAsidePoisoned
-      push $ CreateWeaknessInThreatArea poisoned iid
+      createWeaknessInThreatArea poisoned iid
       pure e
-    _ -> SerpentOfTenochtitlan <$> runMessage msg attrs
+    _ -> SerpentOfTenochtitlan <$> liftRunMessage msg attrs

@@ -83,7 +83,7 @@ test:
 .PHONY: data
 data:
 	cd data && \
-	for lang in en it ko es zh; do \
+	for lang in en it ko es zh de fr uk pl ru pt; do \
 	test $${lang} = "en" && prefix="" || prefix=$${lang}"."; \
 	test $${lang} = "en" && postfix="" || postfix="_"$${lang}; \
 	curl -L https://$${prefix}arkhamdb.com/api/public/cards/?encounter=1 | jq . > cards$${postfix}.json && \

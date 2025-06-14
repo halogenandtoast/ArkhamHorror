@@ -206,3 +206,14 @@ ravenousUncontrolledHunger =
       { cdCardTraits = setFromList [Flaw]
       , cdOtherSide = Just "89002"
       }
+
+archibaldHudsonCard :: CardDef
+archibaldHudsonCard =
+  (storyAsset "71017" ("Archibald Hudson" <:> "Astute Agent") 2 TheMidwinterGala)
+    { cdCardTraits = setFromList [Ally, Guest, Agency]
+    , cdSkills = [#willpower, #intellect]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdHealth = Just 2
+    , cdSanity = Just 2
+    }

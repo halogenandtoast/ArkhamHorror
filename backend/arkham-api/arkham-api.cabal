@@ -545,6 +545,7 @@ library
       Arkham.Asset.Assets.ArchaicGlyphsMarkingsOfIsis3
       Arkham.Asset.Assets.ArchaicGlyphsProphecyForetold3
       Arkham.Asset.Assets.ArchibaldMacVeighBeleaguredLecturer5
+      Arkham.Asset.Assets.ArchibaldHudson
       Arkham.Asset.Assets.ArchiveOfConduitsGatewayToAcheron4
       Arkham.Asset.Assets.ArchiveOfConduitsGatewayToAldebaran4
       Arkham.Asset.Assets.ArchiveOfConduitsGatewayToParadise4
@@ -1851,6 +1852,7 @@ library
       Arkham.Enemy.Cards.RoaldEllsworthIntrepidExplorer
       Arkham.Enemy.Cards.RobertFriendlyDisgruntledDockworker
       Arkham.Enemy.Cards.RoyalEmissary
+      Arkham.Enemy.Cards.RookieCop
       Arkham.Enemy.Cards.RuthTurner
       Arkham.Enemy.Cards.SacrificialBeast
       Arkham.Enemy.Cards.SalvatoreNeri
@@ -1903,6 +1905,7 @@ library
       Arkham.Enemy.Cards.TheConductorBeastFromBeyondTheGate
       Arkham.Enemy.Cards.TheCrawlingMist
       Arkham.Enemy.Cards.TheExperiment
+      Arkham.Enemy.Cards.TheBloodlessMan
       Arkham.Enemy.Cards.TheManInThePallidMask
       Arkham.Enemy.Cards.TheMaskedHunter
       Arkham.Enemy.Cards.TheNamelessMadness

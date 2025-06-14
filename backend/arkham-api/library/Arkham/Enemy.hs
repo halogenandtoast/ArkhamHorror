@@ -596,4 +596,6 @@ allEnemies =
       SomeEnemyCard enragedGug
       SomeEnemyCard lanternClubMember
       SomeEnemyCard savageShantak
+      SomeEnemyCard rookieCop
+      SomeEnemyCard theBloodlessMan
     ]

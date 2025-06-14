@@ -341,9 +341,11 @@ allEncounterEnemyCards =
       , roaldEllsworthIntrepidExplorer
       , robertFriendlyDisgruntledDockworker
       , royalEmissary
+      , rookieCop
       , ruthTurner
       , salvatoreNeri
       , savageShantak
+      , theBloodlessMan
       , savioCorvi
       , scholarFromYith
       , scientistOfYith
@@ -3313,3 +3315,18 @@ lanternClubMember =
   (enemy "71053" "Lantern Club Member" TheMidwinterGala 1)
     { cdCardTraits = setFromList [Humanoid, LanternClub]
     }
+
+rookieCop :: CardDef
+rookieCop =
+  (enemy "71020" "Rookie Cop" TheMidwinterGala 1)
+    { cdCardTraits = setFromList [Humanoid, Police, Rival]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+    }
+
+theBloodlessMan :: CardDef
+theBloodlessMan =
+  unique
+    $ (enemy "71045" "The Bloodless Man" TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, LanternClub, Elite]
+        , cdKeywords = setFromList [Keyword.Aloof]
+        }

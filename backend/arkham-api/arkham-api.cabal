@@ -3606,7 +3606,6 @@ library
       Arkham.Scenarios.ShatteredAeons.Helpers
       Arkham.Scenarios.ShatteredAeons.Story
       Arkham.Scenarios.TheBoundaryBeyond.Helpers
-      Arkham.Scenarios.TheBoundaryBeyond.Story
       Arkham.Scenarios.TheCityOfArchives.Helpers
       Arkham.Scenarios.TheCityOfArchives.Story
       Arkham.Scenarios.TheDepthsOfYoth.Helpers

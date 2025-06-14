@@ -31,10 +31,9 @@ instance RunMessage ChapultepecPark where
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
-      exploreTest sid iid (toAbilitySource attrs 2) iid #willpower (Fixed 3)
+      exploreTest sid iid (attrs.ability 2) iid #willpower (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
-      let source = toAbilitySource attrs 2
-      push $ Explore iid source $ CardWithPrintedLocationSymbol $ locationSymbol attrs
+      push $ Explore iid (attrs.ability 2) $ CardWithPrintedLocationSymbol $ locationSymbol attrs
       pure l
     _ -> ChapultepecPark <$> liftRunMessage msg attrs

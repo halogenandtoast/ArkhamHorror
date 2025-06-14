@@ -1,13 +1,9 @@
-module Arkham.Act.Cards.CrossingTheThreshold (CrossingTheThreshold (..), crossingTheThreshold) where
+module Arkham.Act.Cards.CrossingTheThreshold (crossingTheThreshold) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Card
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
+import Arkham.Act.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait
 
 newtype Metadata = Metadata {advancingInvestigator :: Maybe InvestigatorId}
@@ -29,25 +25,20 @@ instance HasAbilities CrossingTheThreshold where
     ]
 
 instance RunMessage CrossingTheThreshold where
-  runMessage msg a@(CrossingTheThreshold (attrs `With` metadata)) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+  runMessage msg a@(CrossingTheThreshold (attrs `With` metadata)) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure . CrossingTheThreshold $ attrs `with` Metadata (Just iid)
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       let iid = fromJustNote "no advancing investigator" $ advancingInvestigator metadata
       sid <- getRandom
-      pushAll
-        [ beginSkillTest sid iid attrs iid #willpower (Fixed 4)
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-        ]
+      beginSkillTest sid iid attrs iid #willpower (Fixed 4)
+      advanceActDeck attrs
       pure a
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      push
-        $ SearchCollectionForRandom iid (toSource attrs)
-        $ BasicWeaknessCard
-        <> CardWithOneOf (map CardWithTrait [Madness, Injury])
+      searchCollectionForRandom iid (toSource attrs) $ BasicWeaknessCard <> hasAnyTrait [Madness, Injury]
       pure a
     RequestedPlayerCard iid (isSource attrs -> True) (Just card) _ -> do
-      push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
+      addCampaignCardToDeck iid ShuffleIn card
       pure a
-    _ -> CrossingTheThreshold . (`with` metadata) <$> runMessage msg attrs
+    _ -> CrossingTheThreshold . (`with` metadata) <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.LakeXochimilco_183 (lakeXochimilco_183, LakeXochimilco_183 (..)) where
+module Arkham.Location.Cards.LakeXochimilco_183 (lakeXochimilco_183) where
 
 import Arkham.Ability
 import Arkham.GameValue

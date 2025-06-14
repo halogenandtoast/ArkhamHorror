@@ -44,7 +44,10 @@ theMidwinterGala difficulty =
     "00000" -- TODO scenario code
     "The Midwinter Gala"
     difficulty
-    [] -- TODO map layout
+    [ "secondFloor1 secondFloor2 secondFloor3 ."
+    , "lobby       groundFloor1 groundFloor2 groundFloor3"
+    , "lanternRoom .           .           ."
+    ]
 
 instance HasChaosTokenValue TheMidwinterGala where
   getChaosTokenValue iid tokenFace (TheMidwinterGala attrs) = case tokenFace of
@@ -79,7 +82,15 @@ instance RunMessage TheMidwinterGala where
       story intro1
       pure s
     Setup -> runScenarioSetup TheMidwinterGala attrs do
-      -- TODO: scenario setup steps
+      gather Set.TheMidwinterGala
+
+      lobby <- place Locations.lobby
+      place_ Locations.lanternRoom
+
+      placeGroup "groundFloor" =<< shuffle [Locations.ballroom, Locations.kitchen, Locations.study]
+      setAside =<< shuffle [Locations.bedroom, Locations.masterBedroom, Locations.bathroom]
+
+      startAt lobby
       pure ()
     StandaloneSetup -> do
       let

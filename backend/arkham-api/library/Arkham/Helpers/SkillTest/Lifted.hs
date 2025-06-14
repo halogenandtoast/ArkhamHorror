@@ -24,7 +24,6 @@ import Arkham.Helpers.SkillTest as X hiding (
   beginSkillTestEdit,
   cancelTokenDraw,
   evade,
-  exploreTest,
   fight,
   investigate,
   isSkillTestInvestigator,
@@ -78,17 +77,6 @@ parley
   -> GameCalculation
   -> m ()
 parley sid iid source target sType n = push $ Msg.parley sid iid source target sType n
-
-exploreTest
-  :: (Sourceable source, Targetable target, ReverseQueue m)
-  => SkillTestId
-  -> InvestigatorId
-  -> source
-  -> target
-  -> SkillType
-  -> GameCalculation
-  -> m ()
-exploreTest sid iid source target sType n = push $ Msg.exploreTest sid iid source target sType n
 
 fight
   :: (Sourceable source, Targetable target, ReverseQueue m)

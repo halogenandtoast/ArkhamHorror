@@ -1,6 +1,7 @@
 module Arkham.Campaigns.TheForgottenAge.Helpers where
 
 import Arkham.Ability
+import Arkham.Calculation
 import Arkham.Campaigns.TheForgottenAge.Meta
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
@@ -21,7 +22,7 @@ import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Location.Types
 import Arkham.Matcher
-import Arkham.Message (Message (..), ReplaceStrategy (..), pattern CancelNext)
+import Arkham.Message (Message (..), ReplaceStrategy (..), pattern CancelNext, pattern BeginSkillTest)
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -32,7 +33,10 @@ import Arkham.Projection
 import Arkham.Question (Question (..), UI (..))
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types
+import Arkham.SkillTest.Base
+import Arkham.SkillType (SkillType)
 import Arkham.Source
+import Arkham.Target
 import Arkham.Text (Tooltip (..))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Result (..), mkAfter)
@@ -311,3 +315,19 @@ supplyLabel s = case s of
 
 useSupply :: ReverseQueue m => InvestigatorId -> Supply -> m ()
 useSupply iid s = push $ UseSupply iid s
+
+exploreTest
+  :: (Sourceable source, Targetable target, ReverseQueue m)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> target
+  -> SkillType
+  -> GameCalculation
+  -> m ()
+exploreTest sid iid (toSource -> source) (toTarget -> target) sType n =
+  push
+    $ BeginSkillTest
+    $ (initSkillTest sid iid source target sType (SkillTestDifficulty n))
+      { skillTestAction = Just #explore
+      }

@@ -259,21 +259,6 @@ parley sid iid (toSource -> source) (toTarget -> target) sType n =
       { skillTestAction = Just Parley
       }
 
-exploreTest
-  :: (Sourceable source, Targetable target)
-  => SkillTestId
-  -> InvestigatorId
-  -> source
-  -> target
-  -> SkillType
-  -> GameCalculation
-  -> Message
-exploreTest sid iid (toSource -> source) (toTarget -> target) sType n =
-  BeginSkillTest
-    $ (initSkillTest sid iid source target sType (SkillTestDifficulty n))
-      { skillTestAction = Just Arkham.Action.Explore
-      }
-
 fight
   :: (Sourceable source, Targetable target)
   => SkillTestId

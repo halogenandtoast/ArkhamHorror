@@ -3411,6 +3411,14 @@ library
       Arkham.Location.Cards.Yuggoth
       Arkham.Location.Cards.Zocalo
       Arkham.Location.Cards.ZulanThek
+      Arkham.Location.Cards.TMGLobby
+      Arkham.Location.Cards.TMGLanternChamber
+      Arkham.Location.Cards.TMGArtGallery
+      Arkham.Location.Cards.TMGBallroom
+      Arkham.Location.Cards.TMGBarroom
+      Arkham.Location.Cards.TMGBedroom
+      Arkham.Location.Cards.TMGLibrary
+      Arkham.Location.Cards.TMGParlor
       Arkham.Location.FloodLevel
       Arkham.Location.Grid
       Arkham.Location.Helpers
@@ -3517,6 +3525,7 @@ library
       Arkham.Scenario.Scenarios.IntoTheMaelstrom
       Arkham.Scenario.Scenarios.LostInTimeAndSpace
       Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel
+      Arkham.Scenario.Scenarios.TheMidwinterGala
       Arkham.Scenario.Scenarios.PointOfNoReturn
       Arkham.Scenario.Scenarios.ReturnToAPhantomOfTruth
       Arkham.Scenario.Scenarios.ReturnToBlackStarsRise
@@ -3612,6 +3621,8 @@ library
       Arkham.Scenarios.LostInTimeAndSpace.Helpers
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.FlavorText
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
+      Arkham.Scenarios.TheMidwinterGala.FlavorText
+      Arkham.Scenarios.TheMidwinterGala.Helpers
       Arkham.Scenarios.ShatteredAeons.Helpers
       Arkham.Scenarios.ShatteredAeons.Story
       Arkham.Scenarios.TheBoundaryBeyond.Helpers

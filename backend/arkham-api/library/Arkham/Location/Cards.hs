@@ -879,6 +879,13 @@ allLocationCards =
       , zocalo
       , zulanThek
       , tmgLobby
+      , tmgLanternChamber
+      , tmgArtGallery
+      , tmgBallroom
+      , tmgBarroom
+      , tmgBedroom
+      , tmgLibrary
+      , tmgParlor
       ]
 
 withMeta :: ToJSON a => (Text, a) -> CardDef -> CardDef
@@ -9375,4 +9382,75 @@ tmgLobby =
     [Manor, GroundFloor]
     Diamond
     [Moon, Spade, Triangle, Square, Star]
+    TheMidwinterGala
+
+tmgLanternChamber :: CardDef
+tmgLanternChamber =
+  victory 1
+    $ location
+        "71008"
+        "Lantern Chamber"
+        [Manor, Private, Basement]
+        NoSymbol
+        []
+        TheMidwinterGala
+
+tmgArtGallery :: CardDef
+tmgArtGallery =
+  location
+    "71009"
+    "Art Gallery"
+    [Manor, GroundFloor]
+    NoSymbol
+    []
+    TheMidwinterGala
+
+tmgBallroom :: CardDef
+tmgBallroom =
+  location
+    "71010"
+    "Ballroom"
+    [Manor, GroundFloor]
+    NoSymbol
+    []
+    TheMidwinterGala
+
+tmgBarroom :: CardDef
+tmgBarroom =
+  location
+    "71011"
+    "Barroom"
+    [Manor, GroundFloor]
+    NoSymbol
+    []
+    TheMidwinterGala
+
+tmgBedroom :: CardDef
+tmgBedroom =
+  location
+    "71012"
+    "Bedroom"
+    [Manor, Private, SecondFloor]
+    NoSymbol
+    []
+    TheMidwinterGala
+
+tmgLibrary :: CardDef
+tmgLibrary =
+  location
+    "71013"
+    "Library"
+    [Manor, Private, SecondFloor]
+    NoSymbol
+    []
+    TheMidwinterGala
+
+tmgParlor :: CardDef
+tmgParlor =
+  location
+    "71014"
+    "Parlor"
+    [Manor, Private, SecondFloor]
+    NoSymbol
+    []
     TheMidwinterGala

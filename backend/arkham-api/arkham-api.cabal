@@ -1661,6 +1661,7 @@ library
       Arkham.Enemy.Cards.DanforthBrilliantStudent
       Arkham.Enemy.Cards.DanielChesterfield
       Arkham.Enemy.Cards.DarkYoungHost
+      Arkham.Enemy.Cards.DeclanPearce
       Arkham.Enemy.Cards.DeepOneBull
       Arkham.Enemy.Cards.DeepOneHatchling
       Arkham.Enemy.Cards.DeepOneNursemaid
@@ -1772,6 +1773,7 @@ library
       Arkham.Enemy.Cards.LodgeEnforcer
       Arkham.Enemy.Cards.LodgeJailor
       Arkham.Enemy.Cards.LodgeNeophyte
+      Arkham.Enemy.Cards.LanternClubMember
       Arkham.Enemy.Cards.LostResearcher
       Arkham.Enemy.Cards.LumberingGug
       Arkham.Enemy.Cards.LupineThrall
@@ -1852,6 +1854,7 @@ library
       Arkham.Enemy.Cards.RuthTurner
       Arkham.Enemy.Cards.SacrificialBeast
       Arkham.Enemy.Cards.SalvatoreNeri
+      Arkham.Enemy.Cards.SavageShantak
       Arkham.Enemy.Cards.SavioCorvi
       Arkham.Enemy.Cards.ScholarFromYith
       Arkham.Enemy.Cards.ScientistOfYith

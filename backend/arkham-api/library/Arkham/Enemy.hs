@@ -592,5 +592,8 @@ allEnemies =
       SomeEnemyCard serpentsOfYigAdvanced
     , -- The Midwinter Gala
       SomeEnemyCard abhorrentMoonBeast
+      SomeEnemyCard declanPearce
       SomeEnemyCard enragedGug
+      SomeEnemyCard lanternClubMember
+      SomeEnemyCard savageShantak
     ]

@@ -161,6 +161,7 @@ allEncounterEnemyCards =
       , danforthBrilliantStudent
       , danielChesterfield
       , darkYoungHost
+      , declanPearce
       , deepOneBull
       , deepOneHatchling
       , deepOneNursemaid
@@ -267,6 +268,7 @@ allEncounterEnemyCards =
       , lodgeEnforcer
       , lodgeJailor
       , lodgeNeophyte
+      , lanternClubMember
       , lostResearcher
       , lumberingGug
       , lupineThrall
@@ -341,6 +343,7 @@ allEncounterEnemyCards =
       , royalEmissary
       , ruthTurner
       , salvatoreNeri
+      , savageShantak
       , savioCorvi
       , scholarFromYith
       , scientistOfYith
@@ -3288,4 +3291,25 @@ enragedGug =
   (enemy "71050" "Enraged Gug" TheMidwinterGala 1)
     { cdCardTraits = setFromList [Monster, Dreamlands, Gug]
     , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
+    }
+
+savageShantak :: CardDef
+savageShantak =
+  (enemy "71051" "Savage Shantak" TheMidwinterGala 1)
+    { cdCardTraits = setFromList [Monster, Dreamlands, Shantak]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+declanPearce :: CardDef
+declanPearce =
+  unique
+    $ (enemy "71052" "Declan Pearce" TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, LanternClub, Elite]
+        , cdKeywords = setFromList [Keyword.Hunter]
+        }
+
+lanternClubMember :: CardDef
+lanternClubMember =
+  (enemy "71053" "Lantern Club Member" TheMidwinterGala 1)
+    { cdCardTraits = setFromList [Humanoid, LanternClub]
     }

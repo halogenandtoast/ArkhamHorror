@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Helpers.Investigator where
 
@@ -440,7 +440,7 @@ drawOpeningHand
   :: (HasCallStack, HasGame m) => InvestigatorAttrs -> Int -> m ([PlayerCard], [Card], [PlayerCard])
 drawOpeningHand a n = do
   replaceWeaknesses <- not <$> hasModifier a CannotReplaceWeaknesses
-  pure $ go replaceWeaknesses (max 0 n) (a ^. discardL, a ^. handL, coerce (traceShowId $ a ^. deckL))
+  pure $ go replaceWeaknesses (max 0 n) (a ^. discardL, a ^. handL, coerce (a ^. deckL))
  where
   go _ 0 (d, h, cs) = (d, h, cs)
   go _ _ (_, _, []) =

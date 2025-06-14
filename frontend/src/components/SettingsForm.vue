@@ -26,11 +26,17 @@ const updateLanguage = (a: Event) => {
         <legend>{{$t('language')}}</legend>
         <p>This will change the language of the cards and app, but will default to English if a card or text is not available in the selected language.</p>
         <select v-model="$i18n.locale" @change="updateLanguage">
+          <option value="de">Deutsch/German</option>
           <option value="en">English</option>
-          <option value="it">Italiano</option>
+          <option value="es">Español/Spanish</option>
+          <option value="fr">Français/French</option>
+          <option value="it">Italiano/Italian</option>
           <option value="ko">한국어/Korean</option>
-          <option value="es">Español</option>
-          <option value="zh">中文</option>
+          <option value="pl">Polski/Polish</option>
+          <option value="po">Português/Portuguese</option>
+          <option value="ru">Русский/Russian</option>
+          <option value="uk">українська/Ukrainian</option>
+          <option value="zh">中文/Chinese</option>
         </select>
       </fieldset>
 

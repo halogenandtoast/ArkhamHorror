@@ -440,11 +440,11 @@ drawOpeningHand
   :: (HasCallStack, HasGame m) => InvestigatorAttrs -> Int -> m ([PlayerCard], [Card], [PlayerCard])
 drawOpeningHand a n = do
   replaceWeaknesses <- not <$> hasModifier a CannotReplaceWeaknesses
-  pure $ go replaceWeaknesses n (a ^. discardL, a ^. handL, coerce (a ^. deckL))
+  pure $ go replaceWeaknesses (max 0 n) (a ^. discardL, a ^. handL, coerce (a ^. deckL))
  where
   go _ 0 (d, h, cs) = (d, h, cs)
   go _ _ (_, _, []) =
-    error "this should never happen, it means the deck was empty during drawing"
+    error $ "this should never happen, it means the deck was empty during drawing: " <> show a.id
   go replaceWeaknesses m (d, h, c : cs) =
     if isJust (cdCardSubType $ toCardDef c) && cdCanReplace (toCardDef c) && replaceWeaknesses
       then go replaceWeaknesses m (c : d, h, cs)
@@ -454,7 +454,7 @@ canCommitToAnotherLocation
   :: HasGame m => InvestigatorId -> LocationId -> m Bool
 canCommitToAnotherLocation iid otherLocation = do
   modifiers <- getModifiers iid
-  if any (`elem` modifiers) [CannotCommitToOtherInvestigatorsSkillTests]
+  if CannotCommitToOtherInvestigatorsSkillTests `elem` modifiers
     then pure False
     else anyM permit modifiers
  where

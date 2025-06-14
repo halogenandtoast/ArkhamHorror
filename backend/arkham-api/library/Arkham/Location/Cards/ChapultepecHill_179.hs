@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.ChapultepecHill_179 (chapultepecHill_179, ChapultepecHill_179 (..)) where
+module Arkham.Location.Cards.ChapultepecHill_179 (chapultepecHill_179) where
 
 import Arkham.Ability
 import Arkham.Discover

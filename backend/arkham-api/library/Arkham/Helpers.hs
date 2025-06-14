@@ -44,6 +44,7 @@ newtype Deck a = Deck {unDeck :: [a]}
     , Monoid
     , ToJSON
     , FromJSON
+    , Show
     , Eq
     , MonoFoldable
     , SemiSequence
@@ -57,9 +58,6 @@ instance Data a => Data (Deck a) where
   dataTypeOf _ = error "dataTypeOf"
 
 type instance Element (Deck a) = a
-
-instance Show (Deck a) where
-  show _ = "<Deck>"
 
 newtype Bag a = Bag {unBag :: [a]}
   deriving newtype (Semigroup, Monoid, ToJSON, FromJSON)

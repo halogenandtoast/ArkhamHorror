@@ -399,6 +399,7 @@ const dbCardData = computed(() : boolean => {
   if (card.value) {
     const pattern = /(\d+b?)(_.*)?\.avif/
     const match = card.value.match(pattern)
+    if (!match) return false
     const code = match[1]
     
     if (code) {
@@ -412,26 +413,31 @@ const dbCardData = computed(() : boolean => {
         if (dbCard) {
           const needBack = (dbCard.code !== code)
           
-          dbCardName.value = `${(match[2])?"[Taboo] ": ""}${getCardName(dbCard, needBack)}`
-          dbCardTraits.value = getCardTraits(dbCard, needBack)
-          dbCardText.value = getCardText(dbCard, needBack)
-          dbCardCustomizationText.value = getCardCustomizationText(dbCard)
+          let localizedCardName = getCardName(dbCard, needBack)
+          let localizedCardTraits = getCardTraits(dbCard, needBack)
+          let localizedCardText = getCardText(dbCard, needBack)
+          let localizedCustomizationText = getCardCustomizationText(dbCard)
+
+          dbCardName.value = localizedCardName ? `${(match[2])?"[Taboo] ": ""}${localizedCardName}` : ""
+          dbCardTraits.value = localizedCardTraits ? localizedCardTraits : ""
+          dbCardText.value = localizedCardText ? localizedCardText : ""
+          dbCardCustomizationText.value = localizedCustomizationText ? localizedCustomizationText : ""
           
-          return true
+          return !!localizedCardName || !!localizedCardTraits || !!localizedCardText || !!localizedCustomizationText
         }
       }
     }
   }
 
-  if (dbCardName.value) dbCardName.value = ""
-  if (dbCardTraits.value) dbCardTraits.value = ""
-  if (dbCardText.value) dbCardText.value = ""
-  if (dbCardCustomizationText.value) dbCardCustomizationText.value = ""
+  dbCardName.value = ""
+  dbCardTraits.value = ""
+  dbCardText.value = ""
+  dbCardCustomizationText.value = ""
   
   return false
 })
 
-const getCardName = (dbCard: ArkhamDBCard, needBack: boolean) => {
+const getCardName = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
   if (dbCard.name == dbCard.real_name) return null
   
   const cardName = ref<string>("")
@@ -443,7 +449,7 @@ const getCardName = (dbCard: ArkhamDBCard, needBack: boolean) => {
   return cardName.value
 }
 
-const getCardTraits = (dbCard: ArkhamDBCard, needBack: boolean) => {
+const getCardTraits = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
   if (dbCard.traits == dbCard.real_traits) return null
   
   if (needBack && dbCard.back_traits) return dbCard.back_traits || null
@@ -510,7 +516,7 @@ const replaceText = (text: string) => {
       <div v-for="entry in crossedOff" :key="entry" class="crossed-off" :class="{ [toCamelCase(entry)]: true }"></div>
     </div>
     <div class="card-data" v-if="dbCardData">
-      <p style="font-size: 1.0em;"><b>{{ dbCardName }}</b></p>
+      <p v-if="dbCardName" style="font-size: 1.0em;"><b>{{ dbCardName }}</b></p>
       <p v-if="dbCardTraits"><span style="font-style: italic;">{{ dbCardTraits }}</span></p>
       <p v-if="dbCardText"><br></p>
       <p v-if="dbCardText" v-html="dbCardText" style="font-size: 0.875em;"></p>

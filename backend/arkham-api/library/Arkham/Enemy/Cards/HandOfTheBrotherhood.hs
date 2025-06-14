@@ -1,12 +1,10 @@
 module Arkham.Enemy.Cards.HandOfTheBrotherhood (handOfTheBrotherhood) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait (Trait (Ancient))
 
 newtype HandOfTheBrotherhood = HandOfTheBrotherhood EnemyAttrs
@@ -15,9 +13,8 @@ newtype HandOfTheBrotherhood = HandOfTheBrotherhood EnemyAttrs
 
 handOfTheBrotherhood :: EnemyCard HandOfTheBrotherhood
 handOfTheBrotherhood =
-  enemyWith HandOfTheBrotherhood Cards.handOfTheBrotherhood (2, Static 2, 2) (0, 1)
-    $ spawnAtL
-    ?~ SpawnAt EmptyLocation
+  enemy HandOfTheBrotherhood Cards.handOfTheBrotherhood (2, Static 2, 2) (0, 1)
+    & setSpawnAt EmptyLocation
 
 instance HasModifiersFor HandOfTheBrotherhood where
   getModifiersFor (HandOfTheBrotherhood a) = do
@@ -33,14 +30,14 @@ instance HasModifiersFor HandOfTheBrotherhood where
 instance HasAbilities HandOfTheBrotherhood where
   getAbilities (HandOfTheBrotherhood a) =
     extend1 a
-      $ restrictedAbility a 1 (EnemyCriteria $ ThisEnemy ReadyEnemy)
+      $ restricted a 1 (EnemyCriteria $ ThisEnemy ReadyEnemy)
       $ forced
       $ DiscoveringLastClue #after Anyone
       $ LocationWithTrait Ancient
 
 instance RunMessage HandOfTheBrotherhood where
-  runMessage msg e@(HandOfTheBrotherhood attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ PlaceDoom (attrs.ability 1) (toTarget attrs) 1
+  runMessage msg e@(HandOfTheBrotherhood attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeDoom (attrs.ability 1) attrs 1
       pure e
-    _ -> HandOfTheBrotherhood <$> runMessage msg attrs
+    _ -> HandOfTheBrotherhood <$> liftRunMessage msg attrs

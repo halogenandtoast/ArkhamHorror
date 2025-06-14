@@ -14,21 +14,17 @@ newtype Xochimilco = Xochimilco LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 xochimilco :: LocationCard Xochimilco
-xochimilco =
-  locationWith Xochimilco Cards.xochimilco 4 (Static 0) (labelL .~ "heart")
+xochimilco = symbolLabel $ location Xochimilco Cards.xochimilco 4 (Static 0)
 
 instance HasModifiersFor Xochimilco where
-  getModifiersFor (Xochimilco a) = do
-    modifySelect a (investigatorAt (toId a)) [CannotGainResources]
+  getModifiersFor (Xochimilco a) = modifySelect a (investigatorAt (toId a)) [CannotGainResources]
 
 instance HasAbilities Xochimilco where
-  getAbilities (Xochimilco attrs) =
-    withRevealedAbilities attrs [restrictedAbility attrs 1 Here $ exploreAction $ ResourceCost 3]
+  getAbilities (Xochimilco a) = extendRevealed1 a $ restricted a 1 Here $ exploreAction $ ResourceCost 3
 
 instance RunMessage Xochimilco where
   runMessage msg l@(Xochimilco attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = toAbilitySource attrs 1
-      push $ Explore iid source $ CardWithPrintedLocationSymbol $ locationSymbol attrs
+      push $ Explore iid (attrs.ability 1) $ CardWithPrintedLocationSymbol $ locationSymbol attrs
       pure l
     _ -> Xochimilco <$> runMessage msg attrs

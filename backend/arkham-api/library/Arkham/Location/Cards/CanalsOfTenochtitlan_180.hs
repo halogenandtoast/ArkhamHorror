@@ -3,9 +3,8 @@ module Arkham.Location.Cards.CanalsOfTenochtitlan_180 (canalsOfTenochtitlan_180)
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelfWhen)
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype CanalsOfTenochtitlan_180 = CanalsOfTenochtitlan_180 LocationAttrs
   deriving anyclass IsLocation
@@ -13,20 +12,13 @@ newtype CanalsOfTenochtitlan_180 = CanalsOfTenochtitlan_180 LocationAttrs
 
 canalsOfTenochtitlan_180 :: LocationCard CanalsOfTenochtitlan_180
 canalsOfTenochtitlan_180 =
-  locationWith
-    CanalsOfTenochtitlan_180
-    Cards.canalsOfTenochtitlan_180
-    5
-    (PerPlayer 1)
-    (labelL .~ "diamond")
+  symbolLabel $ location CanalsOfTenochtitlan_180 Cards.canalsOfTenochtitlan_180 5 (PerPlayer 1)
 
 instance HasModifiersFor CanalsOfTenochtitlan_180 where
   getModifiersFor (CanalsOfTenochtitlan_180 a) = do
+    modifySelect a (enemyAt a) [EnemyEvade 2]
     exhaustedEnemy <- selectAny $ ExhaustedEnemy <> enemyAt a
-    (<>)
-      <$> modifySelect a (enemyAt a) [EnemyEvade 2]
-      <*> modifySelfWhen a exhaustedEnemy [ShroudModifier (-3)]
+    modifySelfWhen a exhaustedEnemy [ShroudModifier (-3)]
 
 instance RunMessage CanalsOfTenochtitlan_180 where
-  runMessage msg (CanalsOfTenochtitlan_180 attrs) =
-    CanalsOfTenochtitlan_180 <$> runMessage msg attrs
+  runMessage msg (CanalsOfTenochtitlan_180 attrs) = CanalsOfTenochtitlan_180 <$> runMessage msg attrs

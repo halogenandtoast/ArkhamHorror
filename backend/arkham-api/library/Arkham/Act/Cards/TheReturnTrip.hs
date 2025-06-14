@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.TheReturnTrip (TheReturnTrip (..), theReturnTrip) where
+module Arkham.Act.Cards.TheReturnTrip (theReturnTrip) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -16,8 +16,7 @@ theReturnTrip =
     $ Just (GroupClueCost (PerPlayer 2) $ LocationWithTitle "Templo Mayor")
 
 instance HasAbilities TheReturnTrip where
-  getAbilities (TheReturnTrip a) =
-    extend a [mkAbility a 1 $ Objective $ forced $ ifEnemyDefeated Enemies.padmaAmrita | onSide A a]
+  getAbilities = actAbilities1 \a -> mkAbility a 1 $ Objective $ forced $ ifEnemyDefeated Enemies.padmaAmrita
 
 instance RunMessage TheReturnTrip where
   runMessage msg a@(TheReturnTrip attrs) = runQueueT $ case msg of

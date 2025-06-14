@@ -2,7 +2,7 @@
 import type { CardContents } from '@/arkham/types/Card';
 import * as CardT from '@/arkham/types/Card';
 import gsap from 'gsap';
-import { computed, inject, Ref, ref, ComputedRef, reactive, watch } from 'vue';
+import { computed, inject, Ref, ref, ComputedRef, reactive, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { toCardContents } from '@/arkham/types/Card';
@@ -24,6 +24,7 @@ import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import * as Arkham from '@/arkham/types/Investigator';
 import { useI18n } from 'vue-i18n';
+import { IsMobile } from '@/arkham/isMobile';
 const { t } = useI18n();
 
 interface RefWrapper<T> {
@@ -260,6 +261,7 @@ const debug = useDebug()
 const events = computed(() => props.investigator.events.map((e) => props.game.events[e]).filter(e => e))
 const skills = computed(() => props.investigator.skills.map((e) => props.game.skills[e]).filter(e => e))
 const emptySlots = computed(() => props.investigator.slots.filter((s) => s.empty))
+const { isMobile } = IsMobile();
 
 const slotImg = (slot: Arkham.Slot) => {
   switch (slot.tag) {
@@ -438,6 +440,37 @@ function onDrop(event: DragEvent) {
     }
   }
 }
+
+const handCardHeight = Math.min(7 * window.innerWidth / 50 + 114, 340);
+const handCardExposedHeight_MIN = `${-0.85 * handCardHeight}`;
+const handCardExposedHeight_MAX = `${-0.35 * handCardHeight}`;
+const handAreaMarginBottom = ref(handCardExposedHeight_MIN);
+const handAreaPointerEvents = ref('none');
+
+onMounted(() => {
+  if (isMobile) {
+      document.addEventListener('click',toggleHandAreaMarginBottom)
+  }
+});
+
+onBeforeUnmount(() => {
+  if (isMobile) {
+      document.removeEventListener('click', toggleHandAreaMarginBottom)
+  }
+});
+
+function toggleHandAreaMarginBottom(event: Event) {
+  const target = event.target as HTMLElement
+  if (target.classList.contains('hand-area-IsMobile')) {
+    handAreaMarginBottom.value = handCardExposedHeight_MAX;
+    handAreaPointerEvents.value = 'auto'
+  }
+  else if(!target.classList.contains('in-hand')){
+    handAreaMarginBottom.value = handCardExposedHeight_MIN;
+    handAreaPointerEvents.value = 'none'
+  }
+}
+
 </script>
 
 <template>
@@ -678,7 +711,52 @@ function onDrop(event: DragEvent) {
         <div v-if="investigator.handSize" class="hand-size" :class="handSizeClasses" :current-length="totalHandSize">Hand Size: {{totalHandSize}}/{{investigator.handSize}}</div>
       </div>
     </div>
-
+    <div class="hand hand-area-IsMobile" :style="{ marginBottom: `${handAreaMarginBottom}px` }" @click="toggleHandAreaMarginBottom">
+      <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter"
+        @drop="onDropHand($event)"
+        @dragover.prevent="dragover($event)"
+        @dragenter.prevent
+        :style="{ pointerEvents: `${handAreaPointerEvents}` }"
+        >
+        <HandCard
+          v-for="card in playerHand"
+          :card="card"
+          :game="game"
+          :playerId="playerId"
+          :ownerId="investigator.id"
+          :key="toCardContents(card).id"
+          @choose="$emit('choose', $event)"
+          :draggable="debug.active"
+          @dragstart="startHandDrag($event, card)"
+        />
+        <template v-for="enemy in inHandEnemies" :key="enemy.id">
+          <Enemy
+            v-if="solo || (playerId == investigator.playerId)"
+            :enemy="enemy"
+            :game="game"
+            :data-index="enemy.cardId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+          <div class="card-container" v-else>
+            <img class="card" :src="encounterBack" />
+          </div>
+        </template>
+        <template v-for="treacheryId in inHandTreacheries" :key="treacheryId">
+          <Treachery
+            v-if="solo || (playerId == investigator.playerId)"
+            :treachery="game.treacheries[treacheryId]"
+            :game="game"
+            :data-index="treacheryId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+          <div class="card-container" v-else>
+            <img class="card" :src="encounterBack" />
+          </div>
+        </template>
+      </transition-group>
+    </div>
     <CardRow
       v-if="showCards.ref.length > 0"
       :game="game"
@@ -963,6 +1041,25 @@ function onDrop(event: DragEvent) {
   align-items: flex-start;
   flex: 1;
   max-width: 100%;
+  @media (max-width: 800px) and (orientation: portrait) {
+    display: none;
+  }
+}
+
+.hand-area-IsMobile {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-start;
+  flex: 1;
+  max-width: 100%;
+  :deep(.card){
+    width: calc(var(--card-width) * 4);
+    min-width: calc(var(--card-width) * 4);
+  }
+  @media (min-width: 801px) {
+    display: none;
+  }
 }
 
 </style>

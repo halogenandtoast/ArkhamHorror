@@ -995,7 +995,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           Nothing -> pure False
           Just search' ->
             andM
-              [ maybe False (`elem` search'.allFoundCards) <$> sourceToMaybeCard source
+              [ not <$> getInSetup
+              , maybe False (`elem` search'.allFoundCards) <$> sourceToMaybeCard source
               , matchWho iid who whoMatcher
               ]
       _ -> noMatch

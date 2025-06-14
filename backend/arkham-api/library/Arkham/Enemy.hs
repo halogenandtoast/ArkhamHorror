@@ -591,5 +591,6 @@ allEnemies =
     , --- Aura of Faith
       SomeEnemyCard serpentsOfYigAdvanced
     , -- The Midwinter Gala
+      SomeEnemyCard abhorrentMoonBeast
       SomeEnemyCard enragedGug
     ]

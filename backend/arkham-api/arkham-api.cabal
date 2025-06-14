@@ -1588,6 +1588,7 @@ library
       Arkham.EncounterSet
       Arkham.Enemy
       Arkham.Enemy.Cards
+      Arkham.Enemy.Cards.AbhorrentMoonBeast
       Arkham.Enemy.Cards.AccursedFollower
       Arkham.Enemy.Cards.Acolyte
       Arkham.Enemy.Cards.AcolyteOfUmordhoth

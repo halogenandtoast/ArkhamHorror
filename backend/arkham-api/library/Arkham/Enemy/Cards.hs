@@ -91,7 +91,8 @@ allEncounterEnemyCards =
   mapFromList
     $ concatMap
       toCardCodePairs
-      [ acolyte
+      [ abhorrentMoonBeast
+      , acolyte
       , acolyteOfUmordhoth
       , agentOfTheKing
       , alejandroVela
@@ -3274,6 +3275,13 @@ nyarlathotepTrueShape =
       { cdCardTraits = setFromList [AncientOne, Elite]
       , cdVictoryPoints = Just 0
       }
+
+abhorrentMoonBeast :: CardDef
+abhorrentMoonBeast =
+  (enemy "71048" "Abhorrent Moon-Beast" TheMidwinterGala 1)
+    { cdCardTraits = setFromList [Monster, Dreamlands, Servitor]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    }
 
 enragedGug :: CardDef
 enragedGug =

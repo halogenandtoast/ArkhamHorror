@@ -150,17 +150,114 @@ managersKeyAndTomeOfRituals :: FlavorText
 managersKeyAndTomeOfRituals = FlavorText (Just "If Manager\'s Key and Tome of Rituals are in play") [BasicEntry "TODO"]
 
 noResolution :: FlavorText
-noResolution = FlavorText Nothing [BasicEntry "TODO"]
+noResolution =
+  FlavorText
+    Nothing
+    [ BasicEntry
+        "You wake up, freezing cold, facedown in the snow outside the Lantern Club’s stately manor."
+    , BasicEntry
+        "The house is deserted, the cheery windows dark and foreboding, like the empty eye sockets of a grinning skull."
+    , BasicEntry
+        "You can’t remember how you escaped the mayhem, but you will never forget what happened at Kingsport’s first—and hopefully last—Midwinter Gala."
+    ]
 
 noResolutionResigned :: FlavorText
-noResolutionResigned = FlavorText Nothing [BasicEntry "TODO"]
+noResolutionResigned =
+  FlavorText
+    Nothing
+    [ BasicEntry
+        "You wake up, freezing cold, facedown in the snow outside the Lantern Club’s stately manor."
+    , BasicEntry
+        "The house is deserted, the cheery windows dark and foreboding, like the empty eye sockets of a grinning skull."
+    , BasicEntry
+        "You can’t remember how you escaped the mayhem, but you will never forget what happened at Kingsport’s first—and hopefully last—Midwinter Gala."
+    ]
 
 resolution1 :: FlavorText
-resolution1 = FlavorText (Just "Resolution 1") [BasicEntry "TODO"]
+resolution1 =
+  FlavorText
+    (Just "Resolution 1")
+    [ BasicEntry
+        "You look up from the Jewel to see your contact standing in front of the manor, silhouetted in the moonlight."
+    ]
 
 resolution2 :: FlavorText
-resolution2 = FlavorText (Just "Resolution 2") [BasicEntry "TODO"]
+resolution2 =
+  FlavorText
+    (Just "Resolution 2")
+    [ BasicEntry
+        "Agent Antonova turns and strides toward you, her left cheek spattered with viscous ichor."
+    , BasicEntry
+        "\"I did not like this party at first, but it became much more interesting once they locked the doors,\" she grins, then lays a hand on your shoulder."
+    , BasicEntry
+        "\"I have reported the strange effects of this ‘Jewel’ to my superiors. They want it brought to our offices for safekeeping, but I have several other obligations to attend to before I can deliver it.\""
+    , BasicEntry
+        "\"I suppose there is little harm in letting you hold onto it for now. Know that I will be back later to collect it.\""
+    , BasicEntry
+        "After seeing the chaos the Jewel brought to the Gala, you wonder if you are being used more as a ‘case study’ than a recipient of its power."
+    ]
 
 resolution3 :: FlavorText
-resolution3 = FlavorText (Just "Resolution 3") [BasicEntry "TODO"]
+resolution3 =
+  FlavorText
+    (Just "Resolution 3")
+    [ BasicEntry
+        "After calming down a very flustered Dean Caldwell, the academic grabs the Jewel from your hand and holds it up to the light."
+    , BasicEntry
+        "\"Truly remarkable. The legends hardly do it justice. Miraculous! Breathtaking!\""
+    , BasicEntry
+        "The astute gentleman eventually runs out of descriptors, then thanks you for your assistance."
+    , BasicEntry
+        "\"Given what happened here tonight, I would prefer we not house the Jewel on campus grounds. We only just rebuilt the student dormitories. But if you could bring it by my office next week, I would relish the chance to study it further.\""
+    ]
+
+resolution4 :: FlavorText
+resolution4 =
+  FlavorText
+    (Just "Resolution 4")
+    [ BasicEntry
+        "\"Not too shabby,\" says Johnny Valone, lit cigar in his mouth. \"You have light hands. Could always use another pair for a job or two.\""
+    , BasicEntry
+        "He winks as he blows smoke out the side of his mouth. \"I figured we could pawn the thing on the black market for a fair price, but after seeing what happened in there–\" his tough exterior softens. \"I wouldn’t wish that on anyone. What were those things anyway? Elephants? Sick gorillas?\""
+    , BasicEntry
+        "He takes one last puff of his cigar. \"I guess I’ll never know. All I knows is, there’s no way I’m hauling that rock back to Arkham. Consider the Jewel a party favor. And this is for savin’ my ass.\" He hands out a wad of bills to you and melts into the shadows with a Cheshire grin."
+    ]
+
+resolution5 :: FlavorText
+resolution5 =
+  FlavorText
+    (Just "Resolution 5")
+    [ BasicEntry
+        "\"I don’t care what it takes: I want that Jewel and I want it now!\" Carl Sanford seethes at his lackeys."
+    , BasicEntry
+        "As you listen to the patriarch excoriate his associates, you think back to the events of the evening. Although you had resolved to help the Lodge, is the world truly safer with the Jewel in their possession?"
+    , BasicEntry
+        "Rather than return it to Sanford, you pocket the Jewel and slip away into the evening. You are the only one who can temper its power. What you are doing truly is for the greater good. Hopefully Sanford will never find out."
+    ]
+
+resolution6 :: FlavorText
+resolution6 =
+  FlavorText
+    (Just "Resolution 6")
+    [ BasicEntry
+        "\"You’ve done a great thing this evening,\" Captain Bain claps you on the back. \"Given tales of the Jewel, this evening could have gone far worse. It is said that the Jewel brings the greatest dreams and worst nightmares of its bearer to life. Perhaps it is fitting, what happened to the Lantern Club…\""
+    , BasicEntry
+        "Bain looks up at the darkened windows and snow stained with blood, then presses the Jewel back in your hand. \"Something tells me, however, that with you as its bearer, the Jewel may do some good.\""
+    , BasicEntry
+        "You lose yourself looking into the cloudy, smoky heart of the gem. When you look up, the Captain has vanished."
+    ]
+
+resolution7 :: FlavorText
+resolution7 =
+  FlavorText
+    (Just "Resolution 7")
+    [ BasicEntry
+        "Your skin prickles as you sit in the back seat of your cab, and you have the feeling of being watched."
+    , BasicEntry
+        "You turn to look back at the manor’s facade to see the nightmarish face of the Bloodless Man staring down at you from the window."
+    , BasicEntry
+        "As the manor disappears from view, you think back to Kingsport, a city shrouded in mystery and folklore. The city beckons with its name alone, conjuring up images of misty sea cliffs, shadowy coves, and ancient, brooding mansions."
+    , BasicEntry
+        "For generations, stories of inexplicable phenomena, strange dreams, and haunting legends have plagued Kingsport. After tonight’s events, you finally understand why."
+    ]
 

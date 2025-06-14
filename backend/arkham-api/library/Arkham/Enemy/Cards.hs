@@ -179,6 +179,7 @@ allEncounterEnemyCards =
       , eliyahAshevakDogHandler
       , emergentMonstrosity
       , emergingDeepOne
+      , enragedGug
       , enthralledSecurityGuard
       , eztliGuardian
       , fanatic
@@ -3273,3 +3274,10 @@ nyarlathotepTrueShape =
       { cdCardTraits = setFromList [AncientOne, Elite]
       , cdVictoryPoints = Just 0
       }
+
+enragedGug :: CardDef
+enragedGug =
+  (enemy "71050" "Enraged Gug" TheMidwinterGala 1)
+    { cdCardTraits = setFromList [Monster, Dreamlands, Gug]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
+    }

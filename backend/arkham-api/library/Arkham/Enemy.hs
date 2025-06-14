@@ -590,4 +590,6 @@ allEnemies =
       SomeEnemyCard vengefulHound
     , --- Aura of Faith
       SomeEnemyCard serpentsOfYigAdvanced
+    , -- The Midwinter Gala
+      SomeEnemyCard enragedGug
     ]

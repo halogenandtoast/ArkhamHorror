@@ -229,3 +229,15 @@ caldwellPhilipsEnthralledByLegendsCard =
     , cdHealth = Just 2
     , cdSanity = Just 2
     }
+
+carlSanfordLustingForPowerCard :: CardDef
+carlSanfordLustingForPowerCard =
+  (storyAsset "71064b" ("Carl Sanford" <:> "Lusting for Power") 0 TheMidwinterGala)
+    { cdCardTraits = setFromList [Leader, Guest, SilverTwilight]
+    , cdSkills = [#willpower, #intellect, #combat]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdHealth = Just 3
+    , cdSanity = Just 3
+    }

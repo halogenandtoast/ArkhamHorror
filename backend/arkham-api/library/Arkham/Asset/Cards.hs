@@ -73,6 +73,7 @@ allPlayerAssetCards =
       , archibaldMacVeighBeleaguredLecturer5
       , archibaldHudsonCard
       , caldwellPhilipsEnthralledByLegendsCard
+      , carlSanfordLustingForPowerCard
       , archiveOfConduitsGatewayToAcheron4
       , archiveOfConduitsGatewayToAldebaran4
       , archiveOfConduitsGatewayToParadise4

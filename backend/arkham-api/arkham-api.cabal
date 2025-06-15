@@ -553,6 +553,7 @@ library
       Arkham.Asset.Assets.ArchibaldMacVeighBeleaguredLecturer5
       Arkham.Asset.Assets.ArchibaldHudson
       Arkham.Asset.Assets.CaldwellPhilipsEnthralledByLegends
+      Arkham.Asset.Assets.CarlSanfordLustingForPower
       Arkham.Asset.Assets.ArchiveOfConduitsGatewayToAcheron4
       Arkham.Asset.Assets.ArchiveOfConduitsGatewayToAldebaran4
       Arkham.Asset.Assets.ArchiveOfConduitsGatewayToParadise4
@@ -1671,6 +1672,7 @@ library
       Arkham.Enemy.Cards.DarkYoungHost
       Arkham.Enemy.Cards.DeclanPearce
       Arkham.Enemy.Cards.CaldwellPhilipsCompelledByDreams
+      Arkham.Enemy.Cards.CarlSanfordIntimidatingPresence
       Arkham.Enemy.Cards.DeepOneBull
       Arkham.Enemy.Cards.DeepOneHatchling
       Arkham.Enemy.Cards.DeepOneNursemaid

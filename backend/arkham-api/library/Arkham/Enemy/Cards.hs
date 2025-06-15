@@ -163,6 +163,7 @@ allEncounterEnemyCards =
       , darkYoungHost
       , declanPearce
       , caldwellPhilipsCompelledByDreams
+      , carlSanfordIntimidatingPresence
       , deepOneBull
       , deepOneHatchling
       , deepOneNursemaid
@@ -3343,6 +3344,17 @@ caldwellPhilipsCompelledByDreams =
         , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
         , cdDoubleSided = True
         , cdOtherSide = Just "71063b"
+        , cdVictoryPoints = Just 0
+        }
+
+carlSanfordIntimidatingPresence :: CardDef
+carlSanfordIntimidatingPresence =
+  unique
+    $ (enemy "71064" ("Carl Sanford" <:> "Intimidating Presence") TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
+        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+        , cdDoubleSided = True
+        , cdOtherSide = Just "71064b"
         , cdVictoryPoints = Just 0
         }
 

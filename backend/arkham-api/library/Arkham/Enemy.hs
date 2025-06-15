@@ -538,6 +538,9 @@ allEnemies =
     , -- Return to The Forgotten Age
       --- Return to The Doom of Eztli [rttfa]
       SomeEnemyCard harbingerOfValusiaTheSleeperReturns
+    , --- Return to Pillars of Judgement [rttfa]
+      SomeEnemyCard theWingedSerpentTheFuryOfYig
+    , SomeEnemyCard featheredSerpent
     , --- Cult of Pnakotus [rttfa]
       SomeEnemyCard brotherhoodAcolyte
     , SomeEnemyCard stolenMind

@@ -47,6 +47,7 @@ import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Enemy (spawnAt)
 import Arkham.Helpers.Investigator hiding (findCard, investigator)
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Message hiding (
   EnemyDamage,
   InvestigatorDamage,
@@ -1941,7 +1942,7 @@ runGameMessage msg g = case msg of
     card <- field SkillCard sid
     pure
       $ g
-      & (entitiesL . skillsL %~ deleteMap sid)
+      & (entitiesL . skillsL . ix sid %~ overAttrs (\x -> x {skillPlacement = OutOfPlay RemovedZone}))
       & (removedFromPlayL %~ (card :))
   RemoveFromGame (EventTarget eid) -> do
     card <- field EventCard eid
@@ -2657,21 +2658,21 @@ runGameMessage msg g = case msg of
       Just iid -> runMessage (SetBearer (toTarget enemy') iid) enemy'
     case enemyCreationMethod enemyCreation of
       Arkham.Enemy.Creation.SpawnEngagedWith iid -> do
-        lid <- getJustLocation iid
         let details =
               SpawnDetails
                 { spawnDetailsEnemy = enemyId
                 , spawnDetailsInvestigator = Just iid
-                , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
+                , spawnDetailsSpawnAt = Arkham.Spawn.SpawnEngagedWith (InvestigatorWithId iid)
                 , spawnDetailsOverridden = True
                 }
+        mlid <- getLocationOf iid
         pushAll
           $ enemyCreationBefore enemyCreation
           <> [ Will (EnemySpawn details)
              , When (EnemySpawn details)
              , EnemySpawn details
              ]
-          <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mTarget]
+          <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mTarget, lid <- maybeToList mlid]
           <> enemyCreationAfter enemyCreation
           <> [After (EnemySpawn details)]
       Arkham.Enemy.Creation.SpawnAtLocation lid -> do
@@ -2896,7 +2897,7 @@ runGameMessage msg g = case msg of
         pure $ g & (entitiesL . enemiesL . at enemyId ?~ enemy)
       other ->
         error $ "Currently not handling Revelations from type " <> show other
-  ResolvedCard iid card | Just card == gameResolvingCard g -> do
+  ResolvedCard iid card -> do
     modifiers' <- getModifiers (toCardId card)
     push $ After msg
     when
@@ -3098,17 +3099,20 @@ runGameMessage msg g = case msg of
     modifiers' <- getCombinedModifiers [TreacheryTarget treacheryId, CardIdTarget $ toCardId treachery]
     let ignoreRevelation = IgnoreRevelation `elem` modifiers'
     let revelation = Revelation iid (TreacherySource treacheryId)
+    needsResolve <- isNothing <$> findFromQueue (== ResolvedCard iid (toCard treachery))
 
     pushAll
       $ if ignoreRevelation
-        then [toDiscardBy iid GameSource (TreacheryTarget treacheryId), ResolvedCard iid (toCard treachery)]
+        then
+          toDiscardBy iid GameSource (TreacheryTarget treacheryId)
+            : [ResolvedCard iid (toCard treachery) | needsResolve]
         else
           [ When revelation
           , revelation
           , MoveWithSkillTest $ Run [After revelation, AfterRevelation iid treacheryId]
           , UnsetActiveCard
-          , ResolvedCard iid (toCard treachery)
           ]
+            <> [ResolvedCard iid (toCard treachery) | needsResolve]
     pure $ g & (if ignoreRevelation then activeCardL .~ Nothing else id)
   MoveWithSkillTest msg' -> do
     -- No skill test showed up so just run this

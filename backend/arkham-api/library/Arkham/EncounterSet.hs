@@ -200,7 +200,7 @@ data EncounterSet
   | ReturnToTheDoomOfEztli
   | ReturnToThreadsOfFate
   | ReturnToTheBoundaryBeyond
-  | ReturnToTheHeartOfTheElders
+  | ReturnToHeartOfTheElders
   | ReturnToPillarsOfJudgement
   | ReturnToKnYan
   | ReturnToTheCityOfArchives

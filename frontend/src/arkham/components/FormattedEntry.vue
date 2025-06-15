@@ -164,7 +164,7 @@ export default defineComponent({
   --color: #213C35;
   min-height: 6em;
   place-content: center;
-  border: 3px solid ;
+  border: 3px solid var(--color);
   border-radius: 55px;
   background-color: color-mix(in srgb, var(--color), transparent 90%);
   padding: 20px;

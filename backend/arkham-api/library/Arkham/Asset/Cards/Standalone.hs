@@ -253,3 +253,15 @@ valeriyaAntonovaWantsOutOfHereCard =
     , cdHealth = Just 2
     , cdSanity = Just 3
     }
+
+johnnyValoneReadyToMakeADealCard :: CardDef
+johnnyValoneReadyToMakeADealCard =
+  (storyAsset "71066b" ("Johnny Valone" <:> "Ready to Make a Deal") 0 TheMidwinterGala)
+    { cdCardTraits = setFromList [Leader, Guest, Syndicate]
+    , cdSkills = [#intellect, #combat, #agility]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdHealth = Just 3
+    , cdSanity = Just 2
+    }

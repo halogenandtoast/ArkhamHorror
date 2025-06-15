@@ -254,6 +254,7 @@ allEncounterEnemyCards =
       , jeromeDavids
       , jordanPerry
       , josefMeiger
+      , johnnyValoneHereToCollect
       , joyceLittleBookshopOwner
       , kamanThah
       , keeperOfSecrets
@@ -3356,6 +3357,17 @@ carlSanfordIntimidatingPresence =
         , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
         , cdDoubleSided = True
         , cdOtherSide = Just "71064b"
+        , cdVictoryPoints = Just 0
+        }
+
+johnnyValoneHereToCollect :: CardDef
+johnnyValoneHereToCollect =
+  unique
+    $ (enemy "71066" ("Johnny Valone" <:> "Here to Collect") TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
+        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+        , cdDoubleSided = True
+        , cdOtherSide = Just "71066b"
         , cdVictoryPoints = Just 0
         }
 

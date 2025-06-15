@@ -75,6 +75,7 @@ allPlayerAssetCards =
       , caldwellPhilipsEnthralledByLegendsCard
       , carlSanfordLustingForPowerCard
       , valeriyaAntonovaWantsOutOfHereCard
+      , johnnyValoneReadyToMakeADealCard
       , archiveOfConduitsGatewayToAcheron4
       , archiveOfConduitsGatewayToAldebaran4
       , archiveOfConduitsGatewayToParadise4
@@ -467,6 +468,7 @@ allPlayerAssetCards =
       , joeSargentRattletrapBusDriver
       , joeyTheRatVigil
       , joeyTheRatVigil3
+      , johnnyValoneReadyToMakeADealCard
       , katana
       , katarinaSojkamissaryFromUlthar
       , katjaEastbankKeeperOfEsotericLore2

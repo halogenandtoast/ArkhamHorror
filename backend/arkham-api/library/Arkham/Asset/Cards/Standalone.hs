@@ -245,7 +245,7 @@ carlSanfordLustingForPowerCard =
 valeriyaAntonovaWantsOutOfHereCard :: CardDef
 valeriyaAntonovaWantsOutOfHereCard =
   (storyAsset "71065b" ("Valeriya Antonova" <:> "Wants Out of Here") 0 TheMidwinterGala)
-    { cdCardTraits = setFromList [Leader, Guest, SilverTwilight]
+    { cdCardTraits = setFromList [Leader, Guest, Agency]
     , cdSkills = [#willpower, #intellect, #combat]
     , cdSlots = [#ally]
     , cdUnique = True

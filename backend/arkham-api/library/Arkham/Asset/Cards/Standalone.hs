@@ -206,3 +206,26 @@ ravenousUncontrolledHunger =
       { cdCardTraits = setFromList [Flaw]
       , cdOtherSide = Just "89002"
       }
+
+archibaldHudsonCard :: CardDef
+archibaldHudsonCard =
+  (storyAsset "71017" ("Archibald Hudson" <:> "Astute Agent") 2 TheMidwinterGala)
+    { cdCardTraits = setFromList [Ally, Guest, Agency]
+    , cdSkills = [#willpower, #intellect]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdHealth = Just 2
+    , cdSanity = Just 2
+    }
+
+caldwellPhilipsEnthralledByLegendsCard :: CardDef
+caldwellPhilipsEnthralledByLegendsCard =
+  (storyAsset "71063b" ("Caldwell Philips" <:> "Enthralled by Legends") 0 TheMidwinterGala)
+    { cdCardTraits = setFromList [Leader, Guest, Miskatonic]
+    , cdSkills = [#willpower, #intellect, #agility]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdHealth = Just 2
+    , cdSanity = Just 2
+    }

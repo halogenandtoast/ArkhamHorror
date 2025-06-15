@@ -879,6 +879,13 @@ allLocationCards =
       , zocalo
       , zulanThek
       , tmgLobby
+      , tmgLanternChamber
+      , tmgArtGallery
+      , tmgBallroom
+      , tmgBarroom
+      , tmgBedroom
+      , tmgLibrary
+      , tmgParlor
       ]
 
 withMeta :: ToJSON a => (Text, a) -> CardDef -> CardDef
@@ -9369,10 +9376,105 @@ emptySpace =
 
 tmgLobby :: CardDef
 tmgLobby =
-  location
+  locationWithUnrevealed_
     "71007"
     "Lobby"
     [Manor, GroundFloor]
-    Diamond
-    [Moon, Spade, Triangle, Square, Star]
+    "Lobby"
+    [Manor, GroundFloor]
+    TheMidwinterGala
+
+tmgLanternChamber :: CardDef
+tmgLanternChamber =
+  victory 1
+    $ locationWithUnrevealed_
+      "71008"
+      "Lantern Chamber"
+      [Manor, Private, Basement]
+      "Lantern Chamber"
+      [Manor, Private, Basement]
+      TheMidwinterGala
+
+tmgArtGallery :: CardDef
+tmgArtGallery =
+  locationWithUnrevealed
+    "71009"
+    "Ground-Floor Room"
+    [Manor, GroundFloor]
+    Moon
+    []
+    "Art Gallery"
+    [Manor, GroundFloor]
+    Triangle
+    [Diamond, Spade, Moon, Square]
+    TheMidwinterGala
+
+tmgBallroom :: CardDef
+tmgBallroom =
+  locationWithUnrevealed
+    "71010"
+    "Ground-Floor Room"
+    [Manor, GroundFloor]
+    Moon
+    []
+    "Ballroom"
+    [Manor, GroundFloor]
+    Square
+    [Diamond, Spade, Triangle, Moon]
+    TheMidwinterGala
+
+tmgBarroom :: CardDef
+tmgBarroom =
+  locationWithUnrevealed
+    "71011"
+    "Ground-Floor Room"
+    [Manor, GroundFloor]
+    Moon
+    []
+    "Barroom"
+    [Manor, GroundFloor]
+    Spade
+    [Diamond, Moon, Triangle, Square]
+    TheMidwinterGala
+
+tmgBedroom :: CardDef
+tmgBedroom =
+  locationWithUnrevealed
+    "71012"
+    "Second-Floor Room"
+    [Manor, Private, SecondFloor]
+    Heart
+    []
+    "Bedroom"
+    [Manor, Private, SecondFloor]
+    T
+    [Circle, Hourglass, Heart]
+    TheMidwinterGala
+
+tmgLibrary :: CardDef
+tmgLibrary =
+  locationWithUnrevealed
+    "71013"
+    "Second-Floor Room"
+    [Manor, Private, SecondFloor]
+    Heart
+    []
+    "Library"
+    [Manor, Private, SecondFloor]
+    Hourglass
+    [Circle, T, Heart]
+    TheMidwinterGala
+
+tmgParlor :: CardDef
+tmgParlor =
+  locationWithUnrevealed
+    "71014"
+    "Second-Floor Room"
+    [Manor, Private, SecondFloor]
+    Heart
+    []
+    "Parlor"
+    [Manor, Private, SecondFloor]
+    Circle
+    [T, Hourglass, Heart]
     TheMidwinterGala

@@ -142,6 +142,7 @@ data Trait
   | Madness
   | Mainland
   | Manifold
+  | Manor
   | Mask
   | Medic
   | Melee

@@ -91,7 +91,8 @@ allEncounterEnemyCards =
   mapFromList
     $ concatMap
       toCardCodePairs
-      [ acolyte
+      [ abhorrentMoonBeast
+      , acolyte
       , acolyteOfUmordhoth
       , agentOfTheKing
       , alejandroVela
@@ -160,6 +161,8 @@ allEncounterEnemyCards =
       , danforthBrilliantStudent
       , danielChesterfield
       , darkYoungHost
+      , declanPearce
+      , caldwellPhilipsCompelledByDreams
       , deepOneBull
       , deepOneHatchling
       , deepOneNursemaid
@@ -179,6 +182,7 @@ allEncounterEnemyCards =
       , eliyahAshevakDogHandler
       , emergentMonstrosity
       , emergingDeepOne
+      , enragedGug
       , enthralledSecurityGuard
       , eztliGuardian
       , fanatic
@@ -265,6 +269,7 @@ allEncounterEnemyCards =
       , lodgeEnforcer
       , lodgeJailor
       , lodgeNeophyte
+      , lanternClubMember
       , lostResearcher
       , lumberingGug
       , lupineThrall
@@ -337,8 +342,12 @@ allEncounterEnemyCards =
       , roaldEllsworthIntrepidExplorer
       , robertFriendlyDisgruntledDockworker
       , royalEmissary
+      , rookieCop
       , ruthTurner
       , salvatoreNeri
+      , savageShantak
+      , theBloodlessMan
+      , theBloodlessManUnleashed
       , savioCorvi
       , scholarFromYith
       , scientistOfYith
@@ -3273,3 +3282,77 @@ nyarlathotepTrueShape =
       { cdCardTraits = setFromList [AncientOne, Elite]
       , cdVictoryPoints = Just 0
       }
+
+abhorrentMoonBeast :: CardDef
+abhorrentMoonBeast =
+  (enemy "71048" "Abhorrent Moon-Beast" TheMidwinterGala 1)
+    { cdCardTraits = setFromList [Monster, Dreamlands, Servitor]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    }
+
+enragedGug :: CardDef
+enragedGug =
+  (enemy "71050" "Enraged Gug" TheMidwinterGala 1)
+    { cdCardTraits = setFromList [Monster, Dreamlands, Gug]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
+    }
+
+savageShantak :: CardDef
+savageShantak =
+  (enemy "71051" "Savage Shantak" TheMidwinterGala 1)
+    { cdCardTraits = setFromList [Monster, Dreamlands, Shantak]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+declanPearce :: CardDef
+declanPearce =
+  unique
+    $ (enemy "71052" "Declan Pearce" TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, LanternClub, Elite]
+        , cdKeywords = setFromList [Keyword.Hunter]
+        }
+
+lanternClubMember :: CardDef
+lanternClubMember =
+  (enemy "71053" "Lantern Club Member" TheMidwinterGala 1)
+    { cdCardTraits = setFromList [Humanoid, LanternClub]
+    }
+
+caldwellPhilipsCompelledByDreams :: CardDef
+caldwellPhilipsCompelledByDreams =
+  unique
+    $ (enemy "71063" ("Caldwell Philips" <:> "Compelled by Dreams") TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
+        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+        , cdDoubleSided = True
+        , cdOtherSide = Just "71063b"
+        , cdVictoryPoints = Just 0
+        }
+
+rookieCop :: CardDef
+rookieCop =
+  (enemy "71020" "Rookie Cop" TheMidwinterGala 1)
+    { cdCardTraits = setFromList [Humanoid, Police, Rival]
+    , cdKeywords = setFromList [Keyword.Surge, Keyword.Aloof, Keyword.Hunter]
+    }
+
+theBloodlessMan :: CardDef
+theBloodlessMan =
+  unique
+    $ (enemy "71045" "The Bloodless Man" TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, LanternClub, Elite]
+        , cdKeywords =
+            setFromList
+              [ Keyword.Aloof
+              , Keyword.Patrol (NearestLocationToYou $ LocationWithAsset $ AssetWithTrait Guest)
+              ]
+        }
+
+theBloodlessManUnleashed :: CardDef
+theBloodlessManUnleashed =
+  unique
+    $ (enemy "71045b" "The Bloodless Man" TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Monster, Abomination, Elite]
+        , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+        , cdVictoryPoints = Just 1
+        }

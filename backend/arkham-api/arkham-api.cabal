@@ -102,6 +102,7 @@ library
       Arkham.Act.Cards.FindingAWayInside
       Arkham.Act.Cards.FindingLadyEsprit
       Arkham.Act.Cards.FindingThePath
+      Arkham.Act.Cards.FindingTheJewel
       Arkham.Act.Cards.FindTheRelic
       Arkham.Act.Cards.Fold
       Arkham.Act.Cards.FollowingLeads
@@ -137,6 +138,7 @@ library
       Arkham.Act.Cards.LookingForAnswers
       Arkham.Act.Cards.LostInTheWoods
       Arkham.Act.Cards.MagicAndScience
+      Arkham.Act.Cards.MeetAndGreet
       Arkham.Act.Cards.MendTheShatter
       Arkham.Act.Cards.MissingPersons
       Arkham.Act.Cards.MistakesOfThePast
@@ -472,6 +474,9 @@ library
       Arkham.Agenda.Cards.TheWaterRises
       Arkham.Agenda.Cards.TheWitchLight
       Arkham.Agenda.Cards.TheyAreUponYou
+      Arkham.Agenda.Cards.MaskedRevelers
+      Arkham.Agenda.Cards.UnexpectedGuests
+      Arkham.Agenda.Cards.AKillerParty
       Arkham.Agenda.Cards.TheyreGettingOut
       Arkham.Agenda.Cards.ThreadsOfTime
       Arkham.Agenda.Cards.ThreeFates

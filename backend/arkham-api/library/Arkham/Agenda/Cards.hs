@@ -204,6 +204,9 @@ allAgendaCards =
       , theWaterRises
       , theWitchLight
       , theyAreUponYou
+      , maskedRevelers
+      , unexpectedGuests
+      , aKillerParty
       , theyreGettingOut
       , threadsOfTime
       , threeFates
@@ -823,3 +826,12 @@ theTrueCulpritV9 = agenda "84051" "The True Culprit (v. IX)" 3 MurderAtTheExcels
 
 theTrueCulpritV10 :: CardDef
 theTrueCulpritV10 = agenda "84052" "The True Culprit (v. X)" 3 MurderAtTheExcelsiorHotel
+
+maskedRevelers :: CardDef
+maskedRevelers = agenda "71002" "Masked Revelers" 1 TheMidwinterGala
+
+unexpectedGuests :: CardDef
+unexpectedGuests = agenda "71003" "Unexpected Guests" 2 TheMidwinterGala
+
+aKillerParty :: CardDef
+aKillerParty = agenda "71004" "A Killer Party" 3 TheMidwinterGala

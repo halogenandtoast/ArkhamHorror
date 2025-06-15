@@ -16,8 +16,8 @@ tmgArtGallery =
     Cards.tmgArtGallery
     3
     (PerPlayer 1)
-    NoSymbol
-    []
+    Triangle
+    [Diamond, Spade, Moon, Square]
     & revealedBy False
 
 instance HasAbilities TMGArtGallery where

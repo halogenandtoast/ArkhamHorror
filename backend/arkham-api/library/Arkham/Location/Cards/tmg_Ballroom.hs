@@ -17,8 +17,8 @@ tmgBallroom =
     Cards.tmgBallroom
     2
     (PerPlayer 1)
-    NoSymbol
-    []
+    Square
+    [Diamond, Spade, Triangle, Moon]
     & revealedBy False
 
 instance HasAbilities TMGBallroom where

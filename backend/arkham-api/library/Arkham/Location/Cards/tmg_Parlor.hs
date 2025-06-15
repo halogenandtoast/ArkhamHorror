@@ -17,8 +17,8 @@ tmgParlor =
     Cards.tmgParlor
     6
     (PerPlayer 3)
-    NoSymbol
-    []
+    Circle
+    [T, Hourglass, Heart]
     & revealedBy False
 
 instance HasModifiersFor TMGParlor where

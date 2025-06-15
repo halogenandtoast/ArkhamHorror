@@ -17,8 +17,8 @@ tmgBarroom =
     Cards.tmgBarroom
     3
     (PerPlayer 2)
-    NoSymbol
-    []
+    Spade
+    [Diamond, Moon, Triangle, Square]
     & revealedBy False
 
 instance HasAbilities TMGBarroom where

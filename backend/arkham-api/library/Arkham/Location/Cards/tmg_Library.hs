@@ -17,8 +17,8 @@ tmgLibrary =
     Cards.tmgLibrary
     4
     (PerPlayer 3)
-    NoSymbol
-    []
+    Hourglass
+    [Circle, T, Heart]
     & revealedBy False
 
 instance HasModifiersFor TMGLibrary where

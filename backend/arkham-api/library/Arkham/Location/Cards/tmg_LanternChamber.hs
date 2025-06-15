@@ -19,8 +19,8 @@ tmgLanternChamber =
         Cards.tmgLanternChamber
         5
         (PerPlayer 2)
-        NoSymbol
-        []
+        Star
+        [Diamond]
         & revealedBy False
 
 instance HasAbilities TMGLanternChamber where

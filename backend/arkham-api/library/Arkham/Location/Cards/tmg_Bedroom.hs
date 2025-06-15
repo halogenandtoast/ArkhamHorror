@@ -17,8 +17,8 @@ tmgBedroom =
     Cards.tmgBedroom
     3
     (PerPlayer 2)
-    NoSymbol
-    []
+    T
+    [Circle, Hourglass, Heart]
     & revealedBy False
 
 instance HasAbilities TMGBedroom where

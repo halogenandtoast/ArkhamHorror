@@ -9376,29 +9376,33 @@ emptySpace =
 
 tmgLobby :: CardDef
 tmgLobby =
-  location
+  locationWithUnrevealed_
     "71007"
     "Lobby"
     [Manor, GroundFloor]
-    Diamond
-    [Moon, Spade, Triangle, Square, Star]
+    "Lobby"
+    [Manor, GroundFloor]
     TheMidwinterGala
 
 tmgLanternChamber :: CardDef
 tmgLanternChamber =
   victory 1
-    $ location
-        "71008"
-        "Lantern Chamber"
-        [Manor, Private, Basement]
-        Star
-        [Diamond]
-        TheMidwinterGala
+    $ locationWithUnrevealed_
+      "71008"
+      "Lantern Chamber"
+      [Manor, Private, Basement]
+      "Lantern Chamber"
+      [Manor, Private, Basement]
+      TheMidwinterGala
 
 tmgArtGallery :: CardDef
 tmgArtGallery =
-  location
+  locationWithUnrevealed
     "71009"
+    "Ground-Floor Room"
+    [Manor, GroundFloor]
+    Moon
+    []
     "Art Gallery"
     [Manor, GroundFloor]
     Triangle
@@ -9407,8 +9411,12 @@ tmgArtGallery =
 
 tmgBallroom :: CardDef
 tmgBallroom =
-  location
+  locationWithUnrevealed
     "71010"
+    "Ground-Floor Room"
+    [Manor, GroundFloor]
+    Moon
+    []
     "Ballroom"
     [Manor, GroundFloor]
     Square
@@ -9417,8 +9425,12 @@ tmgBallroom =
 
 tmgBarroom :: CardDef
 tmgBarroom =
-  location
+  locationWithUnrevealed
     "71011"
+    "Ground-Floor Room"
+    [Manor, GroundFloor]
+    Moon
+    []
     "Barroom"
     [Manor, GroundFloor]
     Spade
@@ -9427,8 +9439,12 @@ tmgBarroom =
 
 tmgBedroom :: CardDef
 tmgBedroom =
-  location
+  locationWithUnrevealed
     "71012"
+    "Second-Floor Room"
+    [Manor, Private, SecondFloor]
+    Heart
+    []
     "Bedroom"
     [Manor, Private, SecondFloor]
     T
@@ -9437,8 +9453,12 @@ tmgBedroom =
 
 tmgLibrary :: CardDef
 tmgLibrary =
-  location
+  locationWithUnrevealed
     "71013"
+    "Second-Floor Room"
+    [Manor, Private, SecondFloor]
+    Heart
+    []
     "Library"
     [Manor, Private, SecondFloor]
     Hourglass
@@ -9447,8 +9467,12 @@ tmgLibrary =
 
 tmgParlor :: CardDef
 tmgParlor =
-  location
+  locationWithUnrevealed
     "71014"
+    "Second-Floor Room"
+    [Manor, Private, SecondFloor]
+    Heart
+    []
     "Parlor"
     [Manor, Private, SecondFloor]
     Circle

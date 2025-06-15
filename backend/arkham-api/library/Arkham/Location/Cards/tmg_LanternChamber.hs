@@ -14,14 +14,11 @@ newtype TMGLanternChamber = TMGLanternChamber LocationAttrs
 tmgLanternChamber :: LocationCard TMGLanternChamber
 tmgLanternChamber =
   victory 1
-    $ location
-        TMGLanternChamber
-        Cards.tmgLanternChamber
-        5
-        (PerPlayer 2)
-        Star
-        [Diamond]
+    $ locationWith TMGLanternChamber Cards.tmgLanternChamber 5 (PerPlayer 2)
+    \attrs ->
+      attrs
         & revealedBy False
+        & costToEnterUnrevealedL .~ HorrorCost (toSource attrs) YouTarget 1
 
 instance HasAbilities TMGLanternChamber where
   getAbilities (TMGLanternChamber attrs) =

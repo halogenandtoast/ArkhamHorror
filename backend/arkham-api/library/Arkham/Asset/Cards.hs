@@ -74,6 +74,7 @@ allPlayerAssetCards =
       , archibaldHudsonCard
       , caldwellPhilipsEnthralledByLegendsCard
       , carlSanfordLustingForPowerCard
+      , valeriyaAntonovaWantsOutOfHereCard
       , archiveOfConduitsGatewayToAcheron4
       , archiveOfConduitsGatewayToAldebaran4
       , archiveOfConduitsGatewayToParadise4

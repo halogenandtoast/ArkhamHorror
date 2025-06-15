@@ -241,3 +241,15 @@ carlSanfordLustingForPowerCard =
     , cdHealth = Just 3
     , cdSanity = Just 3
     }
+
+valeriyaAntonovaWantsOutOfHereCard :: CardDef
+valeriyaAntonovaWantsOutOfHereCard =
+  (storyAsset "71065b" ("Valeriya Antonova" <:> "Wants Out of Here") 0 TheMidwinterGala)
+    { cdCardTraits = setFromList [Leader, Guest, SilverTwilight]
+    , cdSkills = [#willpower, #intellect, #combat]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdHealth = Just 2
+    , cdSanity = Just 3
+    }

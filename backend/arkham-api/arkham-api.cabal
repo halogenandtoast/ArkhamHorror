@@ -554,6 +554,7 @@ library
       Arkham.Asset.Assets.ArchibaldHudson
       Arkham.Asset.Assets.CaldwellPhilipsEnthralledByLegends
       Arkham.Asset.Assets.CarlSanfordLustingForPower
+      Arkham.Asset.Assets.ValeriyaAntonovaWantsOutOfHere
       Arkham.Asset.Assets.ArchiveOfConduitsGatewayToAcheron4
       Arkham.Asset.Assets.ArchiveOfConduitsGatewayToAldebaran4
       Arkham.Asset.Assets.ArchiveOfConduitsGatewayToParadise4
@@ -1673,6 +1674,7 @@ library
       Arkham.Enemy.Cards.DeclanPearce
       Arkham.Enemy.Cards.CaldwellPhilipsCompelledByDreams
       Arkham.Enemy.Cards.CarlSanfordIntimidatingPresence
+      Arkham.Enemy.Cards.ValeriyaAntonovaDontMessWithHer
       Arkham.Enemy.Cards.DeepOneBull
       Arkham.Enemy.Cards.DeepOneHatchling
       Arkham.Enemy.Cards.DeepOneNursemaid

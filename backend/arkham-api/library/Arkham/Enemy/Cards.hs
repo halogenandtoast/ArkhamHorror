@@ -164,6 +164,7 @@ allEncounterEnemyCards =
       , declanPearce
       , caldwellPhilipsCompelledByDreams
       , carlSanfordIntimidatingPresence
+      , valeriyaAntonovaDontMessWithHer
       , deepOneBull
       , deepOneHatchling
       , deepOneNursemaid
@@ -3355,6 +3356,17 @@ carlSanfordIntimidatingPresence =
         , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
         , cdDoubleSided = True
         , cdOtherSide = Just "71064b"
+        , cdVictoryPoints = Just 0
+        }
+
+valeriyaAntonovaDontMessWithHer :: CardDef
+valeriyaAntonovaDontMessWithHer =
+  unique
+    $ (enemy "71065" ("Valeriya Antonova" <:> "Don't Mess With Her") TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
+        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+        , cdDoubleSided = True
+        , cdOtherSide = Just "71065b"
         , cdVictoryPoints = Just 0
         }
 

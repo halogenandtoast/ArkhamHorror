@@ -1,13 +1,11 @@
-module Arkham.Enemy.Cards.ApexStrangleweed (apexStrangleweed, ApexStrangleweed (..)) where
+module Arkham.Enemy.Cards.ApexStrangleweed (apexStrangleweed) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype ApexStrangleweed = ApexStrangleweed EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -21,10 +19,11 @@ instance HasAbilities ApexStrangleweed where
     extend a [mkAbility a 1 $ forced $ EnemyAttacks #after You AttackOfOpportunityAttack $ be a]
 
 instance RunMessage ApexStrangleweed where
-  runMessage msg e@(ApexStrangleweed attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg e@(ApexStrangleweed attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasPocketknife <- getHasSupply iid Pocketknife
-      unless hasPocketknife
-        $ pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
+      unless hasPocketknife do
+        setActions iid (attrs.ability 1) 0
+        endYourTurn iid
       pure e
-    _ -> ApexStrangleweed <$> runMessage msg attrs
+    _ -> ApexStrangleweed <$> liftRunMessage msg attrs

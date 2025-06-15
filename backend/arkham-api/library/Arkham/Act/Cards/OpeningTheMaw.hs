@@ -19,7 +19,11 @@ instance HasAbilities OpeningTheMaw where
     [ mkAbility a 1
         $ actionAbilityWithCost
         $ GroupClueCost (PerPlayer 1) (locationIs Locations.mouthOfKnYanTheCavernsMaw)
-    , restricted a 2 (TokensOnThis Pillar (atLeast 6)) $ forced AnyWindow
+    , restricted
+        a
+        2
+        (TokensOnLocation (locationIs Locations.mouthOfKnYanTheCavernsMaw) Pillar (atLeast 6))
+        $ forced AnyWindow
     ]
 
 instance RunMessage OpeningTheMaw where

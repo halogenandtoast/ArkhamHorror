@@ -223,6 +223,7 @@ data Criterion
   | PlayableCardExistsWithCostReduction CostReduction ExtendedCardMatcher
   | ResourcesOnThis ValueMatcher
   | ResourcesOnLocation Where ValueMatcher
+  | TokensOnLocation Where Token ValueMatcher
   | ReturnableCardInDiscard DiscardSignifier [Trait]
   | PlayableCardInDiscard DiscardSignifier CardMatcher
   | ScenarioCardHasResignAbility

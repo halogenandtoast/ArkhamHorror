@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.Wraith (wraith, Wraith (..)) where
+module Arkham.Enemy.Cards.Wraith (wraith) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -46,7 +46,7 @@ recreateWraith attrs placement = do
 instance RunMessage Wraith where
   runMessage msg e@(Wraith attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      cancelEnemyDefeat attrs
+      cancelEnemyDefeatWithWindows attrs
       recreateWraith attrs . AttachedToLocation =<< fieldJust EnemyLocation attrs.id
       pure e
     UseThisAbility _iid (isProxySource attrs -> True) 2 -> do

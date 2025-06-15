@@ -806,6 +806,10 @@ placeClues
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
 placeClues source target n = push $ PlaceClues (toSource source) (toTarget target) n
 
+placeCluesOn
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Int -> target -> m ()
+placeCluesOn source n target = placeClues source target n
+
 removeClues
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
 removeClues source target n = push $ RemoveClues (toSource source) (toTarget target) n

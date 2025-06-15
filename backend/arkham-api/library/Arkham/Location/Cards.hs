@@ -215,6 +215,7 @@ allLocationCards =
       , chapultepecPark
       , choeurGothique_292
       , choeurGothique_293
+      , chthonianDepths
       , churningWaters
       , circuitousTrail
       , cityOfElderThings
@@ -662,6 +663,7 @@ allLocationCards =
       , ruinsOfCarcosaTheCoffin
       , ruinsOfEztli
       , ruinsOfIb
+      , ruinsOfKnYan
       , ruinsOfNewYork
       , ruinousStreets
       , sacredWoods_184
@@ -735,6 +737,7 @@ allLocationCards =
       , submergedPassageway
       , submergedTemple
       , subnauticalSprawl
+      , subterraneanSwamp
       , suiteBalcony
       , sunkenArchives
       , sunkenGrottoFinalDepths
@@ -811,6 +814,7 @@ allLocationCards =
       , trainTracks
       , trapRoom
       , trappersCabin
+      , treacherousDescent
       , treacherousPath
       , trophyRoom
       , trophyRoomSpectral
@@ -8990,6 +8994,54 @@ returnToCoyoacan =
     Star
     [Diamond, Triangle, Circle, Heart]
     ReturnToTheBoundaryBeyond
+
+ruinsOfKnYan :: CardDef
+ruinsOfKnYan =
+  victory 1
+    $ singleSided
+    $ location
+      "53049"
+      "Ruins of K'n-Yan"
+      [Ancient, Cave, Ruins]
+      Triangle
+      [Equals, Circle, Square]
+      ReturnToKnYan
+
+subterraneanSwamp :: CardDef
+subterraneanSwamp =
+  victory 1
+    $ singleSided
+    $ location
+      "53050"
+      "Subterranean Swamp"
+      [Ancient, Cave]
+      Diamond
+      [Equals, Circle, Moon]
+      ReturnToKnYan
+
+chthonianDepths :: CardDef
+chthonianDepths =
+  victory 1
+    $ singleSided
+    $ location
+      "53051"
+      "Chthonian Depths"
+      [Ancient, Cave]
+      Square
+      [Heart, Triangle, Circle]
+      ReturnToKnYan
+
+treacherousDescent :: CardDef
+treacherousDescent =
+  victory 1
+    $ singleSided
+    $ location
+      "53052"
+      "Treacherous Descent"
+      [Ancient, Cave]
+      Moon
+      [Heart, Diamond, Circle]
+      ReturnToKnYan
 
 riversideTemple :: CardDef
 riversideTemple =

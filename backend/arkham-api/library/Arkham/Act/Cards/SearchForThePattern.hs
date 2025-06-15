@@ -1,13 +1,10 @@
 module Arkham.Act.Cards.SearchForThePattern (searchForThePattern) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype SearchForThePattern = SearchForThePattern ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -22,13 +19,11 @@ searchForThePattern =
     (Just $ GroupClueCost (PerPlayer 2) Anywhere)
 
 instance RunMessage SearchForThePattern where
-  runMessage msg a@(SearchForThePattern attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+  runMessage msg a@(SearchForThePattern attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       theWingedSerpent <- genEncounterCard Enemies.theWingedSerpent
-      leadInvestigator <- getLead
-      pushAll
-        [ InvestigatorDrewEncounterCard leadInvestigator theWingedSerpent
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-        ]
+      lead <- getLead
+      drawCard lead theWingedSerpent
+      advanceActDeck attrs
       pure a
-    _ -> SearchForThePattern <$> runMessage msg attrs
+    _ -> SearchForThePattern <$> liftRunMessage msg attrs

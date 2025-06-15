@@ -73,6 +73,13 @@
     "serpentsCall": {
       "poisoned": "Put a set-aside Poisoned weakness into play in your threat area",
       "drawEncounterCards": "Draw the top 2 cards of the encounter deck"
+    },
+    "explorationDeck": {
+      "placeOnTop": "Place one card on top of exploration deck",
+      "placeOnBottom": "Place one card on bottom of exploration deck"
+    },
+    "mouthOnKnYanTheCavernsMaw": {
+      "resign": "Let's make camp and solve this puzzle tomorrow"
     }
   },
   "prologue": {

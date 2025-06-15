@@ -12,5 +12,11 @@
       "tablet": "-3. If you are poisoned, this test automatically fails instead. If you are not poisoned and you fail, put a set-aside Poisoned weakness into play in your threat area.",
       "elderThing": "-4. If you fail, take 1 horror."
     }
+  },
+  "label": {
+    "pitfall": {
+      "jumpTheGap": "Test {agility} (3) to attempt to jump the gap. For each point you fail by, take 1 damage.",
+      "shuffle": "Shuffle Pitfall into the exploration deck. You cannot choose this option if Pitfall was drawn from the exploration deck."
+    }
   }
 }

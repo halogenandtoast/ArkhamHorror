@@ -28,6 +28,7 @@ data Token
   | Lock
   | LostSoul
   | Offering
+  | Pillar
   | Resource
   | Shell
   | Secret

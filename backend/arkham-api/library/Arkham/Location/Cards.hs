@@ -9391,8 +9391,8 @@ tmgLanternChamber =
         "71008"
         "Lantern Chamber"
         [Manor, Private, Basement]
-        NoSymbol
-        []
+        Star
+        [Diamond]
         TheMidwinterGala
 
 tmgArtGallery :: CardDef
@@ -9401,8 +9401,8 @@ tmgArtGallery =
     "71009"
     "Art Gallery"
     [Manor, GroundFloor]
-    NoSymbol
-    []
+    Triangle
+    [Diamond, Spade, Moon, Square]
     TheMidwinterGala
 
 tmgBallroom :: CardDef
@@ -9411,8 +9411,8 @@ tmgBallroom =
     "71010"
     "Ballroom"
     [Manor, GroundFloor]
-    NoSymbol
-    []
+    Square
+    [Diamond, Spade, Triangle, Moon]
     TheMidwinterGala
 
 tmgBarroom :: CardDef
@@ -9421,8 +9421,8 @@ tmgBarroom =
     "71011"
     "Barroom"
     [Manor, GroundFloor]
-    NoSymbol
-    []
+    Spade
+    [Diamond, Moon, Triangle, Square]
     TheMidwinterGala
 
 tmgBedroom :: CardDef
@@ -9431,8 +9431,8 @@ tmgBedroom =
     "71012"
     "Bedroom"
     [Manor, Private, SecondFloor]
-    NoSymbol
-    []
+    T
+    [Circle, Hourglass, Heart]
     TheMidwinterGala
 
 tmgLibrary :: CardDef
@@ -9441,8 +9441,8 @@ tmgLibrary =
     "71013"
     "Library"
     [Manor, Private, SecondFloor]
-    NoSymbol
-    []
+    Hourglass
+    [Circle, T, Heart]
     TheMidwinterGala
 
 tmgParlor :: CardDef
@@ -9451,6 +9451,6 @@ tmgParlor =
     "71014"
     "Parlor"
     [Manor, Private, SecondFloor]
-    NoSymbol
-    []
+    Circle
+    [T, Hourglass, Heart]
     TheMidwinterGala

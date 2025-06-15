@@ -22,7 +22,7 @@ instance HasAbilities MouthOfKnYanTheCavernsMaw where
     extendRevealed
       a
       [ withTooltip "Let's make camp and solve this puzzle tomorrow" (locationResignAction a)
-      , restricted a 2 (Here <> HasSupply Compass) actionAbility
+      , restricted a 2 (AnyCriterion [Here, IsReturnTo] <> HasSupply Compass) actionAbility
       ]
 
 instance RunMessage MouthOfKnYanTheCavernsMaw where

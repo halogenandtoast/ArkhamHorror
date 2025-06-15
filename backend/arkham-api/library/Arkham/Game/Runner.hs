@@ -1941,7 +1941,7 @@ runGameMessage msg g = case msg of
     card <- field SkillCard sid
     pure
       $ g
-      & (entitiesL . skillsL %~ deleteMap sid)
+      & (entitiesL . skillsL . ix sid %~ overAttrs (\x -> x {skillPlacement = OutOfPlay RemovedZone}))
       & (removedFromPlayL %~ (card :))
   RemoveFromGame (EventTarget eid) -> do
     card <- field EventCard eid

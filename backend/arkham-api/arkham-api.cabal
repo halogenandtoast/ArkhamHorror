@@ -48,6 +48,7 @@ library
       Arkham.Act.Acts
       Arkham.Act.Cards
       Arkham.Act.Cards.ACircleUnbroken
+      Arkham.Act.Cards.AFamiliarPattern
       Arkham.Act.Cards.AfterHours
       Arkham.Act.Cards.AlejandrosPlight
       Arkham.Act.Cards.AlejandrosPrison
@@ -1684,6 +1685,7 @@ library
       Arkham.Enemy.Cards.EztliGuardian
       Arkham.Enemy.Cards.Fanatic
       Arkham.Enemy.Cards.FangOfYig
+      Arkham.Enemy.Cards.FeatheredSerpent
       Arkham.Enemy.Cards.FleshEater
       Arkham.Enemy.Cards.FlyingPolyp
       Arkham.Enemy.Cards.ForgottenShoggoth
@@ -1911,6 +1913,7 @@ library
       Arkham.Enemy.Cards.TheThingThatFollows
       Arkham.Enemy.Cards.TheUnnamable
       Arkham.Enemy.Cards.TheWingedSerpent
+      Arkham.Enemy.Cards.TheWingedSerpentTheFuryOfYig
       Arkham.Enemy.Cards.Thrall
       Arkham.Enemy.Cards.TidalTerror
       Arkham.Enemy.Cards.TindalosAlpha
@@ -3516,6 +3519,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToDimCarcosa
       Arkham.Scenario.Scenarios.ReturnToEchoesOfThePast
       Arkham.Scenario.Scenarios.ReturnToExtracurricularActivities
+      Arkham.Scenario.Scenarios.ReturnToHeartOfTheElders
       Arkham.Scenario.Scenarios.ReturnToLostInTimeAndSpace
       Arkham.Scenario.Scenarios.ReturnToTheBoundaryBeyond
       Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow
@@ -3593,6 +3597,7 @@ library
       Arkham.Scenarios.FatalMirage.Helpers
       Arkham.Scenarios.ForTheGreaterGood.Helpers
       Arkham.Scenarios.ForTheGreaterGood.Story
+      Arkham.Scenarios.HeartOfTheElders.Helpers
       Arkham.Scenarios.HeartOfTheElders.Story
       Arkham.Scenarios.HorrorInHighGear.Helpers
       Arkham.Scenarios.IceAndDeath.Helpers

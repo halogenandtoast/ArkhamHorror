@@ -217,3 +217,15 @@ archibaldHudsonCard =
     , cdHealth = Just 2
     , cdSanity = Just 2
     }
+
+caldwellPhilipsEnthralledByLegendsCard :: CardDef
+caldwellPhilipsEnthralledByLegendsCard =
+  (storyAsset "71063b" ("Caldwell Philips" <:> "Enthralled by Legends") 0 TheMidwinterGala)
+    { cdCardTraits = setFromList [Leader, Guest, Miskatonic]
+    , cdSkills = [#willpower, #intellect, #agility]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdHealth = Just 2
+    , cdSanity = Just 2
+    }

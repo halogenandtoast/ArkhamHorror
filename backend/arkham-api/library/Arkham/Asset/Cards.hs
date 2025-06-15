@@ -72,6 +72,7 @@ allPlayerAssetCards =
       , archaicGlyphsProphecyForetold3
       , archibaldMacVeighBeleaguredLecturer5
       , archibaldHudsonCard
+      , caldwellPhilipsEnthralledByLegendsCard
       , archiveOfConduitsGatewayToAcheron4
       , archiveOfConduitsGatewayToAldebaran4
       , archiveOfConduitsGatewayToParadise4

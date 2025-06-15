@@ -595,6 +595,7 @@ allEnemies =
       SomeEnemyCard declanPearce
       SomeEnemyCard enragedGug
       SomeEnemyCard lanternClubMember
+      SomeEnemyCard caldwellPhilipsCompelledByDreams
       SomeEnemyCard savageShantak
       SomeEnemyCard rookieCop
       SomeEnemyCard theBloodlessMan

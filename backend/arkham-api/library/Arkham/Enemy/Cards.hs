@@ -162,6 +162,7 @@ allEncounterEnemyCards =
       , danielChesterfield
       , darkYoungHost
       , declanPearce
+      , caldwellPhilipsCompelledByDreams
       , deepOneBull
       , deepOneHatchling
       , deepOneNursemaid
@@ -3316,6 +3317,17 @@ lanternClubMember =
   (enemy "71053" "Lantern Club Member" TheMidwinterGala 1)
     { cdCardTraits = setFromList [Humanoid, LanternClub]
     }
+
+caldwellPhilipsCompelledByDreams :: CardDef
+caldwellPhilipsCompelledByDreams =
+  unique
+    $ (enemy "71063" ("Caldwell Philips" <:> "Compelled by Dreams") TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
+        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+        , cdDoubleSided = True
+        , cdOtherSide = Just "71063b"
+        , cdVictoryPoints = Just 0
+        }
 
 rookieCop :: CardDef
 rookieCop =

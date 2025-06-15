@@ -84,11 +84,20 @@ instance RunMessage TheMidwinterGala where
     Setup -> runScenarioSetup TheMidwinterGala attrs do
       gather Set.TheMidwinterGala
 
-      lobby <- place Locations.lobby
-      place_ Locations.lanternRoom
+      lobby <- place Locations.tmgLobby
+      place_ Locations.tmgLanternChamber
 
-      placeGroup "groundFloor" =<< shuffle [Locations.ballroom, Locations.kitchen, Locations.study]
-      setAside =<< shuffle [Locations.bedroom, Locations.masterBedroom, Locations.bathroom]
+      placeGroup "groundFloor" =<< shuffle
+        [ Locations.tmgArtGallery
+        , Locations.tmgBallroom
+        , Locations.tmgBarroom
+        ]
+
+      setAside =<< shuffle
+        [ Locations.tmgBedroom
+        , Locations.tmgLibrary
+        , Locations.tmgParlor
+        ]
 
       startAt lobby
       pure ()

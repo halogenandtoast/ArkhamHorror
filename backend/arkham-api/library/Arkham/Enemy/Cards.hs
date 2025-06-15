@@ -183,6 +183,7 @@ allEncounterEnemyCards =
       , eztliGuardian
       , fanatic
       , fangOfYig
+      , featheredSerpent
       , fleshEater
       , forgottenShoggoth
       , formlessSpawn
@@ -393,6 +394,7 @@ allEncounterEnemyCards =
       , theRougarou
       , theUnnamable
       , theWingedSerpent
+      , theWingedSerpentTheFuryOfYig
       , thrall
       , tidalTerror
       , tindalosAlpha
@@ -2968,6 +2970,21 @@ harbingerOfValusiaTheSleeperReturns =
       , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
       , cdVengeancePoints = Just 5
       }
+
+theWingedSerpentTheFuryOfYig :: CardDef
+theWingedSerpentTheFuryOfYig =
+  (enemy "53046b" ("The Winged Serpent" <:> "The Fury of Yig") PillarsOfJudgement 1)
+    { cdCardTraits = setFromList [Monster, Serpent, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    }
+
+featheredSerpent :: CardDef
+featheredSerpent =
+  (enemy "53047" "Feathered Serpent" ReturnToPillarsOfJudgement 2)
+    { cdCardTraits = setFromList [Creature, Serpent]
+    , cdVengeancePoints = Just 1
+    }
+
 
 brotherhoodAcolyte :: CardDef
 brotherhoodAcolyte =

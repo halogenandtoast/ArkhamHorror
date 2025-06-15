@@ -16,10 +16,9 @@ entryHallSpectral :: LocationCard EntryHallSpectral
 entryHallSpectral = location EntryHallSpectral Cards.entryHallSpectral 3 (Static 0)
 
 instance HasModifiersFor EntryHallSpectral where
-  getModifiersFor (EntryHallSpectral a) =
-    if a.revealed
-      then modifySelect a (EnemyWithTrait SilverTwilight) [CannotSpawnIn (be a)]
-      else modifySelf a [Blocked]
+  getModifiersFor (EntryHallSpectral a) = do
+    unless a.revealed $ modifySelf a [Blocked]
+    modifySelect a (EnemyWithTrait SilverTwilight) [CannotSpawnIn (be a)]
 
 instance HasAbilities EntryHallSpectral where
   getAbilities (EntryHallSpectral a) =

@@ -3,12 +3,12 @@ module Arkham.Treachery.Cards.NoTurningBack (noTurningBack) where
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype NoTurningBack = NoTurningBack TreacheryAttrs
   deriving anyclass IsTreachery
@@ -28,43 +28,41 @@ instance HasModifiersFor NoTurningBack where
 instance HasAbilities NoTurningBack where
   getAbilities (NoTurningBack a) =
     [ skillTestAbility
-        $ restrictedAbility
+        $ restricted
           a
           1
           ( OnLocation
-              $ LocationMatchAny
-                [ LocationWithTreachery (TreacheryWithId $ toId a)
-                , ConnectedTo (LocationWithTreachery (TreacheryWithId $ toId a))
+              $ oneOf
+                [ LocationWithTreachery (be a)
+                , ConnectedTo (LocationWithTreachery $ be a)
                 ]
           )
-        $ ActionAbility []
-        $ ActionCost 1
+          actionAbility
     ]
 
 instance RunMessage NoTurningBack where
-  runMessage msg t@(NoTurningBack attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      targets <-
+  runMessage msg t@(NoTurningBack attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      xs <-
         select
           $ LocationMatchAny
             [ locationWithInvestigator iid
             , ConnectedFrom (locationWithInvestigator iid)
             ]
           <> LocationWithoutTreachery (treacheryIs Cards.noTurningBack)
-      player <- getPlayer iid
-      unless (null targets) $ do
-        push $ chooseOrRunOne player [targetLabel x [attachTreachery attrs x] | x <- targets]
+      chooseOrRunOneM iid $ targets xs $ attachTreachery attrs
       pure t
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasPickaxe <- getHasSupply iid Pickaxe
-      player <- getPlayer iid
       sid <- getRandom
-      push
-        $ chooseOrRunOne player
-        $ Label "Test {combat} (3)" [beginSkillTest sid iid (attrs.ability 1) attrs #combat (Fixed 3)]
-        : [Label "Check your supplies" [toDiscardBy iid (attrs.ability 1) attrs] | hasPickaxe]
+      chooseOrRunOneM iid do
+        withI18n $ chooseTest #combat 3 $ beginSkillTest sid iid (attrs.ability 1) attrs #combat (Fixed 3)
+        when hasPickaxe
+          $ campaignI18n
+          $ labeled "checkYourSupplies"
+          $ toDiscardBy iid (attrs.ability 1) attrs
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ toDiscardBy iid (attrs.ability 1) attrs
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> NoTurningBack <$> runMessage msg attrs
+    _ -> NoTurningBack <$> liftRunMessage msg attrs

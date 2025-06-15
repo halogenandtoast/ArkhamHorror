@@ -53,6 +53,7 @@
     "supplyPointsToGain": "Gain supply points"
   },
   "label": {
+    "checkYourSupplies": "Check your supplies",
     "supplyPointsToGain": "Each investigator may convert up to 10 of their experience to supply points, at a rate of 1 supply point for every 2 experience converted.",
     "bestLaidPlans": {
       "shuffle": "Shuffle the top card of the encounter deck into the exploration deck"

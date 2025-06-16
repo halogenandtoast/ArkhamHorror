@@ -30,7 +30,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheMidwinterGala.FlavorText
 import Arkham.Scenarios.TheMidwinterGala.Helpers
 import Arkham.Story.Cards qualified as Stories
-import Data.Aeson (FromJSON, ToJSON)
+import Data.Aeson (FromJSON, ToJSON, Result(..), fromJSON)
 import Data.List (delete)
 import Arkham.Trait (Trait (Detective, Guest, Innocent, Madness, Police, Private))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -98,6 +98,8 @@ instance HasChaosTokenValue TheMidwinterGala where
 setupTheMidwinterGala :: (HasGame m, MonadRandom m, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupTheMidwinterGala attrs = do
   gather Set.TheMidwinterGala
+  setActDeck [Acts.meetAndGreet, Acts.findingTheJewel]
+  setAgendaDeck [Agendas.maskedRevelers, Agendas.unexpectedGuests, Agendas.aKillerParty]
 
   lobby <- place Locations.tmgLobby
   lantern <- place Locations.tmgLanternChamber
@@ -279,7 +281,40 @@ instance RunMessage TheMidwinterGala where
           Expert -> expertTokens
       setChaosTokens tokens
       pure s
-    ScenarioResolution _ -> do
-      -- TODO: handle resolutions
+    ScenarioResolution r -> scope "resolutions" do
+      resigned <- selectAny ResignedInvestigator
+      case r of
+        NoResolution ->
+          story $ if resigned then noResolutionResigned else noResolution
+        Resolution 1 -> story resolution1
+        _ -> pure ()
+
+      guests <- select $ AssetWithTrait Guest <> AssetControlledBy Anyone
+      when (notNull guests) do
+        lead <- getLead
+        chooseOrRunOne lead
+          [ targetLabel guest [ do
+              card <- field AssetCard guest
+              investigatorIds <- allInvestigators
+              chooseOrRunOne lead
+                [ InvestigatorLabel iid [push $ AddCardToDeckForCampaign iid card]
+                | iid <- investigatorIds
+                ]
+            ]
+          | guest <- guests
+          ]
+
+      metaValue <- scenarioField ScenarioMeta
+      let Success (Meta allyFaction _) = fromJSON metaValue
+      case allyFaction of
+        TheFoundation -> story resolution2
+        MiskatonicUniversity -> story resolution3
+        TheSyndicate -> story resolution4
+        SilverTwilightLodge -> story resolution5
+        LocalsOfKingsport -> story resolution6
+
+      story resolution7
+      allGainXp attrs
+      endOfScenario
       pure s
     _ -> TheMidwinterGala <$> liftRunMessage msg attrs

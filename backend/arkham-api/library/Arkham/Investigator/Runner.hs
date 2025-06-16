@@ -2824,7 +2824,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           $ chooseOne player
           $ [ targetLabel aid' $ map (toDiscardBy iid GameSource) assets <> [RefillSlots iid xs]
             | aid' <- filter (`notElem` xs) failedAssetIds
-            , let assets = assetsInSlotsOf aid'
+            , let assets = let ks = assetsInSlotsOf aid' in if null ks then [aid'] else ks
             ]
         pure a
   ChooseEndTurn iid | iid == investigatorId -> pure a

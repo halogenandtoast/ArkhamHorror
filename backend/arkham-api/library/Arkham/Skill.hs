@@ -2,11 +2,11 @@
 
 module Arkham.Skill where
 
-import Arkham.Prelude
-
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Id
+import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Skill.Runner
 import Arkham.Skill.Skills
 
@@ -24,7 +24,12 @@ createSkill a iid sId =
     _ -> mempty
 
 instance RunMessage Skill where
-  runMessage msg (Skill a) = Skill <$> runMessage msg a
+  runMessage msg (Skill a) = case msg of
+    SkillTestEnds {} ->
+      if isInPlayPlacement $ attr (.placement) a
+        then Skill <$> runMessage msg a
+        else pure $ Skill a
+    _ -> Skill <$> runMessage msg a
 
 lookupSkill :: CardCode -> InvestigatorId -> SkillId -> CardId -> Skill
 lookupSkill cardCode = case lookup cardCode allSkills of

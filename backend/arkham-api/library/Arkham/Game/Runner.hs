@@ -1083,27 +1083,31 @@ runGameMessage msg g = case msg of
         _ -> error "impossible"
     pure g
   CommitCard iid card -> do
-    push $ InvestigatorCommittedCard iid card
-    case card of
-      PlayerCard pc -> case toCardType pc of
-        SkillType -> do
-          skillId <- getRandom
-          let hasInDiscardEffects = cdCardInDiscardEffects (toCardDef card)
-          inDiscard <- selectAny $ inDiscardOf iid <> basic (CardWithId card.id)
+    let alreadyCommitted = any ((== card.id) . toCardId) (g ^. entitiesL . skillsL)
+    if alreadyCommitted
+      then pure g
+      else do
+        push $ InvestigatorCommittedCard iid card
+        case card of
+          PlayerCard pc -> case toCardType pc of
+            SkillType -> do
+              skillId <- getRandom
+              let hasInDiscardEffects = cdCardInDiscardEffects (toCardDef card)
+              inDiscard <- selectAny $ inDiscardOf iid <> basic (CardWithId card.id)
 
-          let setPlacement =
-                overAttrs
-                  ( \attrs ->
-                      attrs {skillPlacement = if hasInDiscardEffects && inDiscard then StillInDiscard iid else Unplaced}
-                  )
-          let skill = setPlacement $ createSkill pc iid skillId
-          push $ InvestigatorCommittedSkill iid skillId
-          for_ (skillAdditionalCost $ toAttrs skill) $ \cost -> do
-            let ability = abilityEffect skill [] cost
-            push $ PayForAbility ability []
-          pure $ g & entitiesL . skillsL %~ insertMap skillId skill
-        _ -> pure g
-      _ -> pure g
+              let setPlacement =
+                    overAttrs
+                      ( \attrs ->
+                          attrs {skillPlacement = if hasInDiscardEffects && inDiscard then StillInDiscard iid else Unplaced}
+                      )
+              let skill = setPlacement $ createSkill pc iid skillId
+              push $ InvestigatorCommittedSkill iid skillId
+              for_ (skillAdditionalCost $ toAttrs skill) $ \cost -> do
+                let ability = abilityEffect skill [] cost
+                push $ PayForAbility ability []
+              pure $ g & entitiesL . skillsL %~ insertMap skillId skill
+            _ -> pure g
+          _ -> pure g
   SkillTestResults resultsData -> pure $ g & skillTestResultsL ?~ resultsData
   Do (SkillTestEnds _ iid _) -> do
     let result = skillTestResult <$> g ^. skillTestL

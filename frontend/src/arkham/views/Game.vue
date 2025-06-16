@@ -2,7 +2,7 @@
 import { LottieAnimation } from "lottie-web-vue"
 import { useRouter } from 'vue-router'
 import processingJSON from "@/assets/processing.json"
-import { onMounted, reactive, ref, computed, provide, onUnmounted, watch } from 'vue'
+import { onMounted, reactive, ref, computed, provide, onUnmounted, watch, useTemplateRef } from 'vue'
 import GameDetails from '@/arkham/components/GameDetails.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import * as JsonDecoder from 'ts.data.json';
@@ -271,6 +271,8 @@ document.addEventListener('mousemove', (event) => {
   mouseY.value = event.clientY;
 });
 
+const undoScenarioDialog = useTemplateRef<HTMLDialogElement>('undoScenarioDialog')
+
 // Keyboard Shortcuts
 const handleKeyPress = (event: KeyboardEvent) => {
   if (filingBug.value) return
@@ -284,7 +286,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
   }
 
   if (event.key === 'U') {
-    undoScenario()
+    undoScenarioDialog.value?.showModal()
     return
   }
 
@@ -387,6 +389,7 @@ async function undo() {
 }
 
 async function undoScenario() {
+  undoScenarioDialog.value?.close()
   processing.value = true
   if (game.value) game.value.question = {}
   resultQueue.value = []
@@ -663,7 +666,7 @@ onUnmounted(() => {
               <button :class="{ active }" @click="undo"><BackwardIcon aria-hidden="true" /> {{ $t('gameBar.undo') }} <span class='shortcut'>u</span></button>
             </MenuItem>
             <MenuItem v-slot="{ active }">
-              <button :class="{ active }" @click="undoScenario"><BackwardIcon aria-hidden="true" /> {{ $t('gameBar.restartScenario') }} <span class='shortcut'>U</span></button>
+              <button :class="{ active }" @click="undoingScenario = true"><BackwardIcon aria-hidden="true" /> {{ $t('gameBar.restartScenario') }} <span class='shortcut'>U</span></button>
             </MenuItem>
           </template>
         </Menu>
@@ -773,6 +776,13 @@ onUnmounted(() => {
       </div>
     </template>
   </div>
+  <dialog id="undoScenarioDialog" ref="undoScenarioDialog">
+    <p>Are you sure you wish to undo to the beginning of the scenario?</p>
+    <div class="buttons">
+      <button @click="undoScenario()">Yes</button>
+      <button @click="undoScenarioDialog?.close()">No</button>
+    </div>
+  </dialog>
 </template>
 
 <style lang="scss" scoped>
@@ -1485,5 +1495,37 @@ button:hover .shortcut {
 .info {
   background-color: var(--seeker-extra-dark);
   padding: 10px;
+}
+
+dialog {
+  width: 400px;
+  max-width: 90vw;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: var(--background);
+  color: var(--title);
+  font-size: 1.2em;
+  margin: 0 auto;
+
+  position: absolute; 
+  top: 50%; 
+  transform: translateY(-50%);
+
+  &::backdrop {
+    backdrop-filter: blur(3px);
+    background-color: rgba(0,0,0,0.8);
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+
+    button {
+      padding: 5px 10px;
+      font-size: 1.2em;
+    }
+  }
 }
 </style>

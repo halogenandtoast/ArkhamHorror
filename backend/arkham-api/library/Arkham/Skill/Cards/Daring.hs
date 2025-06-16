@@ -21,8 +21,7 @@ daring = skill Daring Cards.daring
 instance RunMessage Daring where
   runMessage msg s@(Daring attrs) = runQueueT $ case msg of
     InvestigatorCommittedSkill _ sid | sid == attrs.id -> do
-      menemy <- ((.enemy) =<<) <$> getSkillTestTarget
-      case menemy of
+      getSkillTestTargetedEnemy >>= \case
         Just enemy -> do
           withSkillTest \stid -> skillTestModifiers stid attrs enemy [AddKeyword Retaliate, AddKeyword Alert]
         _ -> error "Target was invalid"

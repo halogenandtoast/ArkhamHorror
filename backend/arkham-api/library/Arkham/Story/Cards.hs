@@ -142,6 +142,8 @@ allStoryCards =
       , returnToSickeningReality_23
       , returnToSickeningReality_24
       , realityAcid
+      , tmgTheFoundationAllied
+      , tmgTheFoundationRival
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -494,3 +496,11 @@ realityAcid =
     { cdEncounterSet = Nothing
     , cdEncounterSetQuantity = Nothing
     }
+
+tmgTheFoundationAllied :: CardDef
+tmgTheFoundationAllied =
+  doubleSided "71015b" $ story "71015" "The Foundation [guardian]" TheMidwinterGala
+
+tmgTheFoundationRival :: CardDef
+tmgTheFoundationRival =
+  doubleSided "71015" $ story "71015b" "The Foundation [guardian]" TheMidwinterGala

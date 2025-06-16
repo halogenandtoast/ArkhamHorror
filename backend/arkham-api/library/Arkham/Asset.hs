@@ -1367,6 +1367,18 @@ allAssets =
       SomeAssetCard ruthWestmacottDarkRevelations
     , -- The Midwinter Gala
       SomeAssetCard archibaldHudsonCard
+      , SomeAssetCard drMyaBadryCard
+      , SomeAssetCard lucasTetlowCard
+      , SomeAssetCard elizabethConradCard
+      , SomeAssetCard mirandaKeeperCard
+      , SomeAssetCard arseneRenardCard
+      , SomeAssetCard novaMaloneCard
+      , SomeAssetCard prudenceDouglasCard
+      , SomeAssetCard sarahVanShawCard
+      , SomeAssetCard raymondLogginsCard
+      , SomeAssetCard deloresGadlingCard
+      , SomeAssetCard thomasOlneyCard
+      , SomeAssetCard claireWilsonCard
     , -- Misc
       SomeAssetCard courage
     ]

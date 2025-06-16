@@ -554,6 +554,18 @@ library
       Arkham.Asset.Assets.ArchibaldHudson
       Arkham.Asset.Assets.SpecialAgentCallahan
       Arkham.Asset.Assets.HoracioMartinez
+      Arkham.Asset.Assets.DrMyaBadry
+      Arkham.Asset.Assets.LucasTetlow
+      Arkham.Asset.Assets.ElizabethConrad
+      Arkham.Asset.Assets.MirandaKeeper
+      Arkham.Asset.Assets.ArseneRenard
+      Arkham.Asset.Assets.NovaMalone
+      Arkham.Asset.Assets.PrudenceDouglas
+      Arkham.Asset.Assets.SarahVanShaw
+      Arkham.Asset.Assets.RaymondLoggins
+      Arkham.Asset.Assets.DeloresGadling
+      Arkham.Asset.Assets.ThomasOlney
+      Arkham.Asset.Assets.ClaireWilson
       Arkham.Asset.Assets.CaldwellPhilipsEnthralledByLegends
       Arkham.Asset.Assets.CarlSanfordLustingForPower
       Arkham.Asset.Assets.ValeriyaAntonovaWantsOutOfHere
@@ -3944,6 +3956,8 @@ library
       Arkham.Story.Cards.ThePalaceOfRainbows
       Arkham.Story.Cards.ThePattern
       Arkham.Story.Cards.TheSentry
+      Arkham.Story.Cards.TMGTheFoundationAllied
+      Arkham.Story.Cards.TMGTheFoundationRival
       Arkham.Story.Cards.TheTrialOfKamanThah
       Arkham.Story.Cards.TheTrialOfNasht
       Arkham.Story.Cards.TheWayOut

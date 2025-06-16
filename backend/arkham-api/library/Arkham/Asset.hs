@@ -1370,6 +1370,12 @@ allAssets =
       , SomeAssetCard drMyaBadryCard
       , SomeAssetCard lucasTetlowCard
       , SomeAssetCard elizabethConradCard
+      , SomeAssetCard mirandaKeeperCard
+      , SomeAssetCard arseneRenardCard
+      , SomeAssetCard novaMaloneCard
+      , SomeAssetCard prudenceDouglasCard
+      , SomeAssetCard sarahVanShawCard
+      , SomeAssetCard raymondLogginsCard
     , -- Misc
       SomeAssetCard courage
     ]

@@ -5,6 +5,7 @@ export type Token
   | 'AlarmLevel'
   | 'Ammo'
   | 'Antiquity'
+  | 'Portent'
   | 'Bounty'
   | 'Charge'
   | 'Clue'
@@ -35,12 +36,14 @@ export type Token
   | 'Warning'
   | 'Whistle'
   | 'Wish'
+  | 'Truth'
 
 export const TokenType = {
   Aether: 'Aether',
   AlarmLevel: 'AlarmLevel',
   Ammo: 'Ammo',
   Antiquity: 'Antiquity',
+  Portent: 'Portent',
   Bounty: 'Bounty',
   Charge: 'Charge',
   Clue: 'Clue',
@@ -71,6 +74,7 @@ export const TokenType = {
   Warning: 'Warning',
   Whistle: 'Whistle',
   Wish: 'Wish',
+  Truth: 'Truth',
 } as const;
 
 export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>([
@@ -78,6 +82,7 @@ export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>
   JsonDecoder.literal('AlarmLevel'),
   JsonDecoder.literal('Ammo'),
   JsonDecoder.literal('Antiquity'),
+  JsonDecoder.literal('Portent'),
   JsonDecoder.literal('Bounty'),
   JsonDecoder.literal('Charge'),
   JsonDecoder.literal('Clue'),
@@ -108,6 +113,7 @@ export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>
   JsonDecoder.literal('Warning'),
   JsonDecoder.literal('Whistle'),
   JsonDecoder.literal('Wish'),
+  JsonDecoder.literal('Truth'),
 ], 'Token');
 
 export type Tokens = Partial<Record<Token, number>>;

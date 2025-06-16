@@ -307,6 +307,41 @@ novaMaloneCard =
     , cdSanity = Just 1
     }
 
+prudenceDouglasCard :: CardDef
+prudenceDouglasCard =
+  (storyAsset "71029" ("Prudence Douglas" <:> "Pragmatic Occultist") 2 TheMidwinterGala)
+    { cdCardTraits = setFromList [Ally, Guest, Sorcerer, SilverTwilight]
+    , cdSkills = [#willpower, #willpower, #agility, #agility]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdUses = uses Portent 3
+    , cdHealth = Just 2
+    , cdSanity = Just 2
+    }
+
+sarahVanShawCard :: CardDef
+sarahVanShawCard =
+  (storyAsset "71030" ("Sarah Van Shaw" <:> "Lodge Warden") 2 TheMidwinterGala)
+    { cdCardTraits = setFromList [Ally, Guest, SilverTwilight]
+    , cdSkills = [#combat, #combat, #agility, #agility]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdHealth = Just 3
+    , cdSanity = Just 1
+    }
+
+raymondLogginsCard :: CardDef
+raymondLogginsCard =
+  (storyAsset "71031" ("Raymond Loggins" <:> "Mysterious Benefactor") 3 TheMidwinterGala)
+    { cdCardTraits = setFromList [Ally, Guest, Sorcerer, SilverTwilight]
+    , cdSkills = [#willpower, #willpower, #intellect, #intellect]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdUses = uses Truth 4
+    , cdHealth = Just 1
+    , cdSanity = Just 2
+    }
+
 caldwellPhilipsEnthralledByLegendsCard :: CardDef
 caldwellPhilipsEnthralledByLegendsCard =
   (storyAsset "71063b" ("Caldwell Philips" <:> "Enthralled by Legends") 0 TheMidwinterGala)

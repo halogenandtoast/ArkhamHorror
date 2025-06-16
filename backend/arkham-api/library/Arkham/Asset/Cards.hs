@@ -80,6 +80,9 @@ allPlayerAssetCards =
       , mirandaKeeperCard
       , arseneRenardCard
       , novaMaloneCard
+      , prudenceDouglasCard
+      , sarahVanShawCard
+      , raymondLogginsCard
       , caldwellPhilipsEnthralledByLegendsCard
       , carlSanfordLustingForPowerCard
       , valeriyaAntonovaWantsOutOfHereCard

@@ -2766,6 +2766,7 @@ library
       Arkham.Location.Cards.ChapultepecPark
       Arkham.Location.Cards.ChoeurGothique_292
       Arkham.Location.Cards.ChoeurGothique_293
+      Arkham.Location.Cards.ChthonianDepths
       Arkham.Location.Cards.ChurningWaters
       Arkham.Location.Cards.CircuitousTrail
       Arkham.Location.Cards.CityOfElderThings
@@ -3215,6 +3216,7 @@ library
       Arkham.Location.Cards.RuinsOfCarcosaTheCoffin
       Arkham.Location.Cards.RuinsOfEztli
       Arkham.Location.Cards.RuinsOfIb
+      Arkham.Location.Cards.RuinsOfKnYan
       Arkham.Location.Cards.RuinsOfNewYork
       Arkham.Location.Cards.SacredWoods_184
       Arkham.Location.Cards.SacredWoods_185
@@ -3287,6 +3289,7 @@ library
       Arkham.Location.Cards.SubmergedPassageway
       Arkham.Location.Cards.SubmergedTemple
       Arkham.Location.Cards.SubnauticalSprawl
+      Arkham.Location.Cards.SubterraneanSwamp
       Arkham.Location.Cards.SuiteBalcony
       Arkham.Location.Cards.SunkenArchives
       Arkham.Location.Cards.SunkenGrottoFinalDepths
@@ -3363,6 +3366,7 @@ library
       Arkham.Location.Cards.TrainTracks
       Arkham.Location.Cards.TrappersCabin
       Arkham.Location.Cards.TrapRoom
+      Arkham.Location.Cards.TreacherousDescent
       Arkham.Location.Cards.TreacherousPath
       Arkham.Location.Cards.TrophyRoom
       Arkham.Location.Cards.TrophyRoomSpectral

@@ -342,6 +342,39 @@ raymondLogginsCard =
     , cdSanity = Just 2
     }
 
+deloresGadlingCard :: CardDef
+deloresGadlingCard =
+  (storyAsset "71041" ("Delores Gadling" <:> "Lantern Club Infiltrator") 2 TheMidwinterGala)
+    { cdCardTraits = setFromList [Ally, Guest, Kingsport]
+    , cdSkills = [#combat, #combat, #agility, #agility]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdHealth = Just 1
+    , cdSanity = Just 3
+    }
+
+thomasOlneyCard :: CardDef
+thomasOlneyCard =
+  (storyAsset "71042" ("Thomas Olney" <:> "Inquisitive Adventurer") 2 TheMidwinterGala)
+    { cdCardTraits = setFromList [Ally, Guest, Wayfarer]
+    , cdSkills = [#willpower, #willpower, #intellect, #intellect]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdHealth = Just 3
+    , cdSanity = Just 1
+    }
+
+claireWilsonCard :: CardDef
+claireWilsonCard =
+  (storyAsset "71043" ("Claire Wilson" <:> "Entirely Unimpressed") 2 TheMidwinterGala)
+    { cdCardTraits = setFromList [Ally, Guest, Kingsport]
+    , cdSkills = [#willpower, #willpower, #agility, #agility]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdHealth = Just 2
+    , cdSanity = Just 2
+    }
+
 caldwellPhilipsEnthralledByLegendsCard :: CardDef
 caldwellPhilipsEnthralledByLegendsCard =
   (storyAsset "71063b" ("Caldwell Philips" <:> "Enthralled by Legends") 0 TheMidwinterGala)

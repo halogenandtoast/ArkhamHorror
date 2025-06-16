@@ -83,6 +83,9 @@ allPlayerAssetCards =
       , prudenceDouglasCard
       , sarahVanShawCard
       , raymondLogginsCard
+      , deloresGadlingCard
+      , thomasOlneyCard
+      , claireWilsonCard
       , caldwellPhilipsEnthralledByLegendsCard
       , carlSanfordLustingForPowerCard
       , valeriyaAntonovaWantsOutOfHereCard

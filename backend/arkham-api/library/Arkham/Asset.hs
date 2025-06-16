@@ -1376,6 +1376,9 @@ allAssets =
       , SomeAssetCard prudenceDouglasCard
       , SomeAssetCard sarahVanShawCard
       , SomeAssetCard raymondLogginsCard
+      , SomeAssetCard deloresGadlingCard
+      , SomeAssetCard thomasOlneyCard
+      , SomeAssetCard claireWilsonCard
     , -- Misc
       SomeAssetCard courage
     ]

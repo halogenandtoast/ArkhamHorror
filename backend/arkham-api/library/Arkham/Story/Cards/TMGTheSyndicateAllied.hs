@@ -5,8 +5,6 @@ module Arkham.Story.Cards.TMGTheSyndicateAllied (
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted
@@ -21,11 +19,7 @@ tmgTheSyndicateAllied :: StoryCard TMGTheSyndicateAllied
 tmgTheSyndicateAllied = story TMGTheSyndicateAllied Cards.tmgTheSyndicateAllied
 
 instance HasModifiersFor TMGTheSyndicateAllied where
-  getModifiersFor (TMGTheSyndicateAllied attrs) = do
-    modifySelect
-      attrs
-      (enemyIs Enemies.declanPearce <> EnemyWithAsset (assetIs Assets.jewelOfSarnath))
-      [CannotBeDamaged, CannotBeDefeated]
+  getModifiersFor _ = pure
 
 instance HasAbilities TMGTheSyndicateAllied where
   getAbilities (TMGTheSyndicateAllied attrs) =

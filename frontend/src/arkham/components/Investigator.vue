@@ -173,7 +173,8 @@ onMounted(() => {
       showCardsUnderneath(new Event('click'))
     }
   })
-});
+})
+
 
 const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, "Cards Underneath", false)
 const showDevoured = (e: Event) => emit('showCards', e, devoured, "Devoured", false)

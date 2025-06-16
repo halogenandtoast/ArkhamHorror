@@ -1233,7 +1233,13 @@ chooseAmountLabeled
 chooseAmountLabeled iid title label choiceLabel minVal maxVal target = do
   player <- getPlayer iid
   Msg.pushM
-    $ Msg.chooseAmountsLabeled player title label (MaxAmountTarget maxVal) [(choiceLabel, (minVal, maxVal))] target
+    $ Msg.chooseAmountsLabeled
+      player
+      title
+      label
+      (MaxAmountTarget maxVal)
+      [(choiceLabel, (minVal, maxVal))]
+      target
 
 chooseAmount'
   :: (Targetable target, ReverseQueue m, HasI18n)
@@ -1525,6 +1531,14 @@ revelationModifiers
   -> m ()
 revelationModifiers (toSource -> source) (toTarget -> target) tid modifiers =
   Msg.pushM $ Msg.revelationModifiers source target tid modifiers
+
+modifyCurrentSkillTest
+  :: (ReverseQueue m, Sourceable source)
+  => source
+  -> ModifierType
+  -> m ()
+modifyCurrentSkillTest (toSource -> source) x =
+  Msg.withSkillTest \sid -> skillTestModifier sid source sid x
 
 skillTestModifier
   :: forall target source m

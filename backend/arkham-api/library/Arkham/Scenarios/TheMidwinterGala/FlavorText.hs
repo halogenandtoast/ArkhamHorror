@@ -60,25 +60,25 @@ intro1 =
 guestChoice :: FlavorText
 guestChoice =
   FlavorText
-    Nothing
+    (Just "The Choice")
     [ BasicEntry "Who is your mysterious contact? The investigators must choose which faction requested their assistance. \
       \ (Hint: The faction you choose will determine your objectives in this scenario.)"
     ]
 
 guestTheFoundation :: FlavorText
-guestTheFoundation = FlavorText Nothing [BasicEntry "A severe woman in a well-tailored suit leans against the wall with her arms crossed. She looks like she’d rather be in a shootout than at this elaborate party."]
+guestTheFoundation = FlavorText (Just "The Foundation") [BasicEntry "A severe woman in a well-tailored suit leans against the wall with her arms crossed. She looks like she’d rather be in a shootout than at this elaborate party."]
 
 guestMiskatonicUniversity :: FlavorText
-guestMiskatonicUniversity = FlavorText Nothing [BasicEntry "An astute professorial type strokes his goatee as he studies  a painting. You recognize him as Caldwell Phillips, the dean of Miskatonic University."]
+guestMiskatonicUniversity = FlavorText (Just "Miskatonic University") [BasicEntry "An astute professorial type strokes his goatee as he studies  a painting. You recognize him as Caldwell Phillips, the dean of Miskatonic University."]
 
 guestTheSyndicate :: FlavorText
-guestTheSyndicate = FlavorText Nothing [BasicEntry "A slick-looking man with dark hair taps ash from his cigar into a hapless guest’s champagne flute. His darting eyes suggest he’s casing the joint."]
+guestTheSyndicate = FlavorText (Just "The Syndicate") [BasicEntry "A slick-looking man with dark hair taps ash from his cigar into a hapless guest’s champagne flute. His darting eyes suggest he’s casing the joint."]
 
 guestTheSilverTwilightLodge :: FlavorText
-guestTheSilverTwilightLodge = FlavorText Nothing [BasicEntry "You catch the gleam of a signet ring in the corner of your eye. Turning, you see the prestigious leader of the Silver Twilight Lodge, Carl Sanford, conversing with a pair of masked guests."]
+guestTheSilverTwilightLodge = FlavorText (Just "The Silver Twilight Lodge") [BasicEntry "You catch the gleam of a signet ring in the corner of your eye. Turning, you see the prestigious leader of the Silver Twilight Lodge, Carl Sanford, conversing with a pair of masked guests."]
 
 guestLocalsOfKingsport :: FlavorText
-guestLocalsOfKingsport = FlavorText Nothing [BasicEntry "A tall, stout man with a long black beard and a weatherbeaten coat looks clearly out of place at this extravagant gala. You recognize him from The Rope and Anchor tavern in Kingsport."]
+guestLocalsOfKingsport = FlavorText (Just "Locals of Kingsport") [BasicEntry "A tall, stout man with a long black beard and a weatherbeaten coat looks clearly out of place at this extravagant gala. You recognize him from The Rope and Anchor tavern in Kingsport."]
 
 introTheFoundation :: FlavorText
 introTheFoundation =

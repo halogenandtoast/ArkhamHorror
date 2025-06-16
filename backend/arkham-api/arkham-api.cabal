@@ -3958,6 +3958,10 @@ library
       Arkham.Story.Cards.TheSentry
       Arkham.Story.Cards.TMGTheFoundationAllied
       Arkham.Story.Cards.TMGTheFoundationRival
+      Arkham.Story.Cards.TMGTheSyndicateAllied
+      Arkham.Story.Cards.TMGTheSyndicateRival
+      Arkham.Story.Cards.TMGMiskatonicUniversityAllied
+      Arkham.Story.Cards.TMGMiskatonicUniversityRival
       Arkham.Story.Cards.TheTrialOfKamanThah
       Arkham.Story.Cards.TheTrialOfNasht
       Arkham.Story.Cards.TheWayOut

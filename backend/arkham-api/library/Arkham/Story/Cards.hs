@@ -144,6 +144,10 @@ allStoryCards =
       , realityAcid
       , tmgTheFoundationAllied
       , tmgTheFoundationRival
+      , tmgTheSyndicateAllied
+      , tmgTheSyndicateRival
+      , tmgMiskatonicUniversityAllied
+      , tmgMiskatonicUniversityRival
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -504,3 +508,19 @@ tmgTheFoundationAllied =
 tmgTheFoundationRival :: CardDef
 tmgTheFoundationRival =
   doubleSided "71015" $ story "71015b" "The Foundation [guardian]" TheMidwinterGala
+
+tmgTheSyndicateAllied :: CardDef
+tmgTheSyndicateAllied =
+  doubleSided "71022b" $ story "71022" "The Syndicate [rogue]" TheMidwinterGala
+
+tmgTheSyndicateRival :: CardDef
+tmgTheSyndicateRival =
+  doubleSided "71022" $ story "71022b" "The Syndicate [rogue]" TheMidwinterGala
+
+tmgMiskatonicUniversityAllied :: CardDef
+tmgMiskatonicUniversityAllied =
+  doubleSided "71021b" $ story "71021" "Miskatonic University [seeker]" TheMidwinterGala
+
+tmgMiskatonicUniversityRival :: CardDef
+tmgMiskatonicUniversityRival =
+  doubleSided "71021" $ story "71021b" "Miskatonic University [seeker]" TheMidwinterGala

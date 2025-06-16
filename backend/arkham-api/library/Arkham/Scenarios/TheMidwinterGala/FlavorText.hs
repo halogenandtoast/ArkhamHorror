@@ -24,15 +24,6 @@ intro1 =
         "After what feels like ages, the man breaks eye contact with you to continue scanning the room. Suppressing a shiver, you search the gaggle of guests. Your gala invitation arrived in an unmarked parcel, along with a note promising generous compensation for your assistance in procuring the Jewel of Sarnath. At long last, you find your mysterious contact."
     ]
 
-intro2 :: FlavorText
-intro2 = FlavorText (Just "The Midwinter Gala") [BasicEntry "TODO"]
-
-intro3 :: FlavorText
-intro3 = FlavorText (Just "The Midwinter Gala") [BasicEntry "TODO"]
-
-intro4 :: FlavorText
-intro4 = FlavorText (Just "The Midwinter Gala") [BasicEntry "TODO"]
-
 guestChoice :: FlavorText
 guestChoice =
   FlavorText
@@ -95,59 +86,6 @@ introLocalsOfKingsport =
     [ BasicEntry
         "\"The name’s Bain. William Bain,\" the stalwart man shakes your hand with a firm grip. \"I’m glad you came to this fancy little party. Truth be told, I’m not really a local; I just happen to have a soft spot for this old port.\" The man deftly avoids your questions about his origins before pointing at the silent masked figure in the corner of the room. \"He is the reason I invited you here. They call him ‘The Bloodless Man.’ Whatever the Lantern Club has planned for this evening is certainly his design.\" The captain sighs. \"No good can come of that strange Jewel. Only ruin. At least, so long as the Lantern Club has it.\" After further discussion, you agree to help Bain recover the Jewel."
     ]
-
--- placeholder flavor texts for additional story elements
-
-theTruth1 :: FlavorText
-theTruth1 = FlavorText (Just "The Truth 1") [BasicEntry "TODO"]
-
-theTruth2 :: FlavorText
-theTruth2 = FlavorText (Just "The Truth 2") [BasicEntry "TODO"]
-
-theTruth3 :: FlavorText
-theTruth3 = FlavorText (Just "The Truth 3") [BasicEntry "TODO"]
-
-theTruth4 :: FlavorText
-theTruth4 = FlavorText (Just "The Truth 4") [BasicEntry "TODO"]
-
-theTruth5 :: FlavorText
-theTruth5 = FlavorText (Just "The Truth 5") [BasicEntry "TODO"]
-
-theTruth6 :: FlavorText
-theTruth6 = FlavorText (Just "The Truth 6") [BasicEntry "TODO"]
-
-theTruth7 :: FlavorText
-theTruth7 = FlavorText (Just "The Truth 7") [BasicEntry "TODO"]
-
-alienDeviceAndTimeWornLocket :: FlavorText
-alienDeviceAndTimeWornLocket = FlavorText (Just "If Alien Device and Time-Worn Locket are in play") [BasicEntry "TODO"]
-
-alienDeviceAndSinisterSolution :: FlavorText
-alienDeviceAndSinisterSolution = FlavorText (Just "If Alien Device and Sinister Solution are in play") [BasicEntry "TODO"]
-
-alienDeviceAndManagersKey :: FlavorText
-alienDeviceAndManagersKey = FlavorText (Just "If Alien Device and Manager\'s Key are in play") [BasicEntry "TODO"]
-
-alienDeviceAndTomeOfRituals :: FlavorText
-alienDeviceAndTomeOfRituals = FlavorText (Just "If Alien Device and Tome of Rituals are in play") [BasicEntry "TODO"]
-
-timeWornLocketAndSinisterSolution :: FlavorText
-timeWornLocketAndSinisterSolution = FlavorText (Just "If Time-Worn Locket and Sinister Solution are in play") [BasicEntry "TODO"]
-
-timeWornLocketAndManagersKey :: FlavorText
-timeWornLocketAndManagersKey = FlavorText (Just "If Time-Worn Locket and Manager\'s Key are in play") [BasicEntry "TODO"]
-
-timeWornLocketAndTomeOfRituals :: FlavorText
-timeWornLocketAndTomeOfRituals = FlavorText (Just "If Time-Worn Locket and Tome of Rituals are in play") [BasicEntry "TODO"]
-
-sinisterSolutionAndManagersKey :: FlavorText
-sinisterSolutionAndManagersKey = FlavorText (Just "If Sinister Solution and Manager\'s Key are in play") [BasicEntry "TODO"]
-
-sinisterSolutionAndTomeOfRituals :: FlavorText
-sinisterSolutionAndTomeOfRituals = FlavorText (Just "If Sinister Solution and Tome of Rituals are in play") [BasicEntry "TODO"]
-
-managersKeyAndTomeOfRituals :: FlavorText
-managersKeyAndTomeOfRituals = FlavorText (Just "If Manager\'s Key and Tome of Rituals are in play") [BasicEntry "TODO"]
 
 noResolution :: FlavorText
 noResolution =

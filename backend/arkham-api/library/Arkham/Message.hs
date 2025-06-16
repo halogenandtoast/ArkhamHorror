@@ -1107,6 +1107,7 @@ data Message
   | Explore InvestigatorId Source CardMatcher
   | BecomeYithian InvestigatorId
   | BecomeHomunculus InvestigatorId
+  | BecomeSpellbound AssetId
   | SetScenarioMeta Value
   | ScenarioSpecific Text Value
   | SetCampaignMeta Value

@@ -52,6 +52,7 @@ import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens (non)
 import Data.Aeson.KeyMap qualified as KeyMap
+import Data.Aeson.Lens (_Bool)
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
 
@@ -683,4 +684,16 @@ instance RunMessage AssetAttrs where
     InHand _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
       push $ Do msg'
       pure a
+    Flip _ _ target | a `isTarget` target -> do
+      let wasFlipped = a.flipped
+      let spellbound = fromMaybe False $ a ^? metaMapL . ix "spellbound" . _Bool
+      if wasFlipped
+        then do
+          when spellbound $ push $ Ready (toTarget a)
+          pure
+            $ a
+            & flippedL .~ False
+            & (metaMapL %~ KeyMap.delete "spellbound")
+        else do
+          pure $ a & flippedL .~ True
     _ -> pure a

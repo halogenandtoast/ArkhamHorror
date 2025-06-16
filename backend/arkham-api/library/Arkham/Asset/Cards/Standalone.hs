@@ -275,3 +275,24 @@ jewelOfSarnathCard =
     , cdRevelation = IsRevelation
     , cdCardType = EncounterAssetType
     }
+
+thePaleLanternHypnoticGlowCard :: CardDef
+thePaleLanternHypnoticGlowCard =
+  (storyAsset "71068" ("The Pale Lantern" <:> "Hypnotic Glow") 0 TheMidwinterGala)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdCost = Nothing
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "71068b"
+    }
+
+thePaleLanternBeguilingAuraCard :: CardDef
+thePaleLanternBeguilingAuraCard =
+  (storyAsset "71068b" ("The Pale Lantern" <:> "Beguiling Aura") 0 TheMidwinterGala)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdCost = Nothing
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "71068"
+    , cdVictoryPoints = Just 1
+    }

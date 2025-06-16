@@ -77,6 +77,8 @@ allPlayerAssetCards =
       , valeriyaAntonovaWantsOutOfHereCard
       , johnnyValoneReadyToMakeADealCard
       , jewelOfSarnathCard
+      , thePaleLanternHypnoticGlowCard
+      , thePaleLanternBeguilingAuraCard
       , archiveOfConduitsGatewayToAcheron4
       , archiveOfConduitsGatewayToAldebaran4
       , archiveOfConduitsGatewayToParadise4
@@ -471,6 +473,8 @@ allPlayerAssetCards =
       , joeyTheRatVigil3
       , johnnyValoneReadyToMakeADealCard
       , jewelOfSarnathCard
+      , thePaleLanternHypnoticGlowCard
+      , thePaleLanternBeguilingAuraCard
       , katana
       , katarinaSojkamissaryFromUlthar
       , katjaEastbankKeeperOfEsotericLore2

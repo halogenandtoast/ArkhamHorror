@@ -75,6 +75,7 @@
   { "name": "Curse of the Rougarou", "min": 81001, "max": 81036, "playerCards": 0, "code": "cotr", "cycle": 70 },
   { "name": "Carnevale of Horrors", "min": 82001, "max": 82037, "playerCards": 0, "code": "coh", "cycle": 70 },
   { "name": "The Labyrinths of Lunacy", "min": 70001, "max": 70061, "playerCards": 0, "code": "lol", "cycle": 70 },
+  { "name": "The Midwinter Gala", "min": 71001, "max": 71062, "playerCards": 0, "code": "tmg", "cycle": 70 },
   { "name": "Guardians of the Abyss", "min": 83001, "max": 83058, "playerCards": 0, "code": "guardians", "cycle": 70 },
   { "name": "Murder at the Excelsior Hotel", "min": 84001, "max": 84052, "playerCards": 0, "code": "hotel", "cycle": 70 },
   { "name": "The Blob That Ate Everything", "min": 85001, "max": 85053, "playerCards": 0, "code": "blob", "cycle": 70 },

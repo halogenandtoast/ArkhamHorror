@@ -148,6 +148,10 @@ allStoryCards =
       , tmgTheSyndicateRival
       , tmgMiskatonicUniversityAllied
       , tmgMiskatonicUniversityRival
+      , tmgSilverTwilightLodgeAllied
+      , tmgSilverTwilightLodgeRival
+      , tmgLocalsOfKingsportAllied
+      , tmgLocalsOfKingsportRival
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -524,3 +528,19 @@ tmgMiskatonicUniversityAllied =
 tmgMiskatonicUniversityRival :: CardDef
 tmgMiskatonicUniversityRival =
   doubleSided "71021" $ story "71021b" "Miskatonic University [seeker]" TheMidwinterGala
+
+tmgSilverTwilightLodgeAllied :: CardDef
+tmgSilverTwilightLodgeAllied =
+  doubleSided "71023b" $ story "71023" "Silver Twilight Lodge [mystic]" TheMidwinterGala
+
+tmgSilverTwilightLodgeRival :: CardDef
+tmgSilverTwilightLodgeRival =
+  doubleSided "71023" $ story "71023b" "Silver Twilight Lodge [mystic]" TheMidwinterGala
+
+tmgLocalsOfKingsportAllied :: CardDef
+tmgLocalsOfKingsportAllied =
+  doubleSided "71024b" $ story "71024" "Locals of Kingsport [survivor]" TheMidwinterGala
+
+tmgLocalsOfKingsportRival :: CardDef
+tmgLocalsOfKingsportRival =
+  doubleSided "71024" $ story "71024b" "Locals of Kingsport [survivor]" TheMidwinterGala

@@ -76,6 +76,7 @@ allPlayerAssetCards =
       , carlSanfordLustingForPowerCard
       , valeriyaAntonovaWantsOutOfHereCard
       , johnnyValoneReadyToMakeADealCard
+      , jewelOfSarnathCard
       , archiveOfConduitsGatewayToAcheron4
       , archiveOfConduitsGatewayToAldebaran4
       , archiveOfConduitsGatewayToParadise4
@@ -469,6 +470,7 @@ allPlayerAssetCards =
       , joeyTheRatVigil
       , joeyTheRatVigil3
       , johnnyValoneReadyToMakeADealCard
+      , jewelOfSarnathCard
       , katana
       , katarinaSojkamissaryFromUlthar
       , katjaEastbankKeeperOfEsotericLore2

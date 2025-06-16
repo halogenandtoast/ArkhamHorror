@@ -265,3 +265,13 @@ johnnyValoneReadyToMakeADealCard =
     , cdHealth = Just 3
     , cdSanity = Just 2
     }
+
+jewelOfSarnathCard :: CardDef
+jewelOfSarnathCard =
+  (storyAsset "71067b" ("Jewel of Sarnath" <:> "Turning Dreams Into Reality") 0 TheMidwinterGala)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdCost = Nothing
+    , cdUnique = True
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
+    }

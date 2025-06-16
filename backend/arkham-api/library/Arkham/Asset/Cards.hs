@@ -72,6 +72,8 @@ allPlayerAssetCards =
       , archaicGlyphsProphecyForetold3
       , archibaldMacVeighBeleaguredLecturer5
       , archibaldHudsonCard
+      , specialAgentCallahanCard
+      , horacioMartinezCard
       , caldwellPhilipsEnthralledByLegendsCard
       , carlSanfordLustingForPowerCard
       , valeriyaAntonovaWantsOutOfHereCard

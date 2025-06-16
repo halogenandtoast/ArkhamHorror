@@ -90,6 +90,19 @@ const hideCards = () => {
   viewingDiscard.value = false
 }
 
+function onDropDiscard(event: DragEvent) {
+  event.preventDefault()
+  if (event.dataTransfer) {
+    const data = event.dataTransfer.getData('text/plain')
+    if (data) {
+      const json = JSON.parse(data)
+      if (json.tag === "CardTarget") {
+        debug.send(props.game.id, {tag: 'DiscardCard', contents: [id.value, {'tag': 'GameSource' }, json.contents]})
+      }
+    }
+  }
+}
+
 const dragover = (e: DragEvent) => {
   e.preventDefault()
   if (e.dataTransfer) {
@@ -104,20 +117,6 @@ const doShowCards = (event: Event, cards: ComputedRef<ArkhamCard.Card[]>, title:
 }
 const showDiscards = (e: Event) => doShowCards(e, discards, t('investigator.discards'), true)
 const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
-
-
-function onDropDiscard(event: DragEvent) {
-  event.preventDefault()
-  if (event.dataTransfer) {
-    const data = event.dataTransfer.getData('text/plain')
-    if (data) {
-      const json = JSON.parse(data)
-      if (json.tag === "CardTarget") {
-        debug.send(props.game.id, {tag: 'DiscardCard', contents: [id.value, {'tag': 'GameSource' }, json.contents]})
-      }
-    }
-  }
-}
 
 </script>
 

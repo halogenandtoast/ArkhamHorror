@@ -17,6 +17,7 @@ import Asset from '@/arkham/components/Asset.vue';
 import Event from '@/arkham/components/Event.vue';
 import Skill from '@/arkham/components/Skill.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
+import CardRow from '@/arkham/components/CardRow.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
@@ -195,6 +196,11 @@ watch(choices, async (newChoices) => {
   }
 })
 
+const hideCards = () => {
+  showCards.ref = noCards
+  viewingDiscard.value = false
+}
+
 const committedCards = computed(() => props.game.skillTest?.committedCards || [])
 const playerHand = computed(() => props.investigator.hand.
   filter((card) =>
@@ -362,27 +368,19 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
   }
 }
 
-const touchStartX = ref(0)
-const touchEndX = ref(0)
-const emit = defineEmits(['swipe-right', 'swipe-left'])
-
-function onTouchStart(event: TouchEvent) {
-  touchStartX.value = event.changedTouches[0].screenX
-}
-function onTouchEnd(event: TouchEvent) {
-  touchEndX.value = event.changedTouches[0].screenX
-  handleSwipe()
-}
-function handleSwipe() {
-  const deltaX = touchEndX.value - touchStartX.value
-  if (Math.abs(deltaX) > 50) {
-    if (deltaX > 0) {
-      emit('swipe-right')
-    } else {
-      emit('swipe-left')
+function onDrop(event: DragEvent) {
+  event.preventDefault()
+  if (event.dataTransfer) {
+    const data = event.dataTransfer.getData('text/plain')
+    if (data) {
+      const json = JSON.parse(data)
+      if (json.tag === "CardTarget") {
+        debug.send(props.game.id, {tag: 'PutCardIntoPlayById', contents: [props.investigator.id, json.contents, null, { tag: 'NoPayment' }, []]})
+      }
     }
   }
 }
+
 const handCardHeight = Math.min(7 * window.innerWidth / 50 + 114, 340);
 const handCardExposedHeight_MIN = `${-0.85 * handCardHeight}`;
 const handCardExposedHeight_MAX = `${-0.35 * handCardHeight}`;
@@ -418,144 +416,115 @@ function toggleHandAreaMarginBottom(event: Event) {
 <template>
   <div class="player-cards">
     <transition name="grow">
-      <transition-group tag="section" class="in-play" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
+      <section
+        class="in-play"
+        @drop="onDrop($event)"
+        @dragover.prevent="dragover($event)"
+        @dragenter.prevent
+      >
+        <transition-group @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
+          <template v-if="tarotCards.length > 0">
+            <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana" :data-index="tarotCard.arcana">
+              <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="$emit('choose', tarotCardAbility(tarotCard))"/>
+            </div>
+          </template>
 
-        <template v-if="tarotCards.length > 0">
-          <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana" :data-index="tarotCard.arcana">
-            <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="$emit('choose', tarotCardAbility(tarotCard))"/>
+          <img
+            v-if="investigatorId === 'c89001'"
+            class="card"
+            @click="realityAcid = realityAcid === '89005' ? '89005b' : '89005'"
+            :src="imgsrc(`cards/${realityAcid}.avif`)"
+          />
+
+          <Treachery
+            v-for="treachery in currentTreacheries"
+            :key="treachery.id"
+            :treachery="treachery"
+            :game="game"
+            :data-index="treachery.cardId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+
+          <Skill
+            v-for="skill in skills"
+            :skill="skill"
+            :game="game"
+            :playerId="playerId"
+            :key="skill.id"
+            :data-index="skill.cardId"
+            @choose="$emit('choose', $event)"
+            @showCards="doShowCards"
+          />
+          <Event
+            v-for="event in events"
+            :event="event"
+            :game="game"
+            :playerId="playerId"
+            :key="event.id"
+            :data-index="event.cardId"
+            @choose="$emit('choose', $event)"
+            @showCards="doShowCards"
+          />
+          <Asset
+            v-for="asset in assets"
+            :asset="asset"
+            :game="game"
+            :playerId="playerId"
+            :key="asset.id"
+            :data-index="asset.cardId"
+            @choose="$emit('choose', $event)"
+            @showCards="doShowCards"
+          />
+
+          <Story
+            v-for="story in stories"
+            :key="story.id"
+            :story="story"
+            :game="game"
+            :data-index="story.cardId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+
+
+          <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot}${idx}`">
+            <img :src="slotImg(slot,idx)" />
           </div>
-        </template>
 
-        <img
-          v-if="investigatorId === 'c89001'"
-          class="card"
-          @click="realityAcid = realityAcid === '89005' ? '89005b' : '89005'"
-          :src="imgsrc(`cards/${realityAcid}.avif`)"
-        />
-        <Enemy
-          v-if="isMobile"
-          v-for="enemy in engagedEnemies"
-          :key="enemy.id"
-          :enemy="enemy"
-          :game="game"
-          :data-index="enemy.cardId"
-          :playerId="playerId"
-          @choose="$emit('choose', $event)"
-        />
-        <Treachery
-          v-if="isMobile"
-          v-for="treacheryId in investigator.treacheries"
-          :key="treacheryId"
-          :treachery="game.treacheries[treacheryId]"
-          :game="game"
-          :data-index="game.treacheries[treacheryId].cardId"
-          :playerId="playerId"
-          @choose="$emit('choose', $event)"
-        />
+          <Enemy
+            v-for="enemy in engagedEnemies"
+            :key="enemy.id"
+            :enemy="enemy"
+            :game="game"
+            :data-index="enemy.cardId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
 
-        <Location
-          v-if="isMobile"
-          v-for="(location, key) in locations"
-          class="location"
-          :key="key"
-          :game="game"
-          :playerId="playerId"
-          :location="location"
-          :data-index="location.cardId"
-          :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
-          @choose="$emit('choose', $event)"
-        />
-        <Treachery
-          v-for="treachery in currentTreacheries"
-          :key="treachery.id"
-          :treachery="treachery"
-          :game="game"
-          :data-index="treachery.cardId"
-          :playerId="playerId"
-          @choose="$emit('choose', $event)"
-        />
+          <Treachery
+            v-for="treacheryId in investigator.treacheries"
+            :key="treacheryId"
+            :treachery="game.treacheries[treacheryId]"
+            :game="game"
+            :data-index="game.treacheries[treacheryId].cardId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
 
-        <Skill
-          v-for="skill in skills"
-          :skill="skill"
-          :game="game"
-          :playerId="playerId"
-          :key="skill.id"
-          :data-index="skill.cardId"
-          @choose="$emit('choose', $event)"
-          @showCards="doShowCards"
-        />
-        <Event
-          v-for="event in events"
-          :event="event"
-          :game="game"
-          :playerId="playerId"
-          :key="event.id"
-          :data-index="event.cardId"
-          @choose="$emit('choose', $event)"
-          @showCards="doShowCards"
-        />
-        <Asset
-          v-for="asset in assets"
-          :asset="asset"
-          :game="game"
-          :playerId="playerId"
-          :key="asset.id"
-          :data-index="asset.cardId"
-          @choose="$emit('choose', $event)"
-          @showCards="doShowCards"
-        />
-
-        <Story
-          v-for="story in stories"
-          :key="story.id"
-          :story="story"
-          :game="game"
-          :data-index="story.cardId"
-          :playerId="playerId"
-          @choose="$emit('choose', $event)"
-        />
-
-
-        <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot}${idx}`">
-          <img :src="slotImg(slot,idx)" />
-        </div>
-
-        <Enemy
-          v-if="!isMobile"
-          v-for="enemy in engagedEnemies"
-          :key="enemy.id"
-          :enemy="enemy"
-          :game="game"
-          :data-index="enemy.cardId"
-          :playerId="playerId"
-          @choose="$emit('choose', $event)"
-        />
-
-        <Treachery
-          v-if="!isMobile"
-          v-for="treacheryId in investigator.treacheries"
-          :key="treacheryId"
-          :treachery="game.treacheries[treacheryId]"
-          :game="game"
-          :data-index="game.treacheries[treacheryId].cardId"
-          :playerId="playerId"
-          @choose="$emit('choose', $event)"
-        />
-
-        <Location
-          v-if="!isMobile"
-          v-for="(location, key) in locations"
-          class="location"
-          :key="key"
-          :game="game"
-          :playerId="playerId"
-          :location="location"
-          :data-index="location.cardId"
-          :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
-          @choose="$emit('choose', $event)"
-        />
-      </transition-group>
+          <Location
+            v-for="(location, key) in locations"
+            class="location"
+            :key="key"
+            :game="game"
+            :playerId="playerId"
+            :location="location"
+            :data-index="location.cardId"
+            :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
+            @choose="$emit('choose', $event)"
+          />
+        </transition-group>
+      </section>
     </transition>
 
     <ChoiceModal
@@ -565,7 +534,7 @@ function toggleHandAreaMarginBottom(event: Event) {
       @choose="$emit('choose', $event)"
     />
 
-     <div class="player"  @touchstart="onTouchStart" @touchend="onTouchEnd">
+     <div class="player">
       <div v-if="hunchDeck" class="top-of-deck hunch-deck">
         <HandCard
           v-if="topOfHunchDeck && topOfHunchDeckRevealed"
@@ -700,6 +669,16 @@ function toggleHandAreaMarginBottom(event: Event) {
 
         </transition-group>
     </div>
+    <CardRow
+      v-if="showCards.ref.length > 0"
+      :game="game"
+      :playerId="playerId"
+      :cards="showCards.ref"
+      :isDiscards="viewingDiscard"
+      :title="cardRowTitle"
+      @choose="$emit('choose', $event)"
+      @close="hideCards"
+    />
   </div>
 </template>
 

@@ -8,53 +8,53 @@ intro1 :: FlavorText
 intro1 =
   FlavorText
     (Just "The Midwinter Gala")
-	[ BasicEntry "A light snow falls as you step out of your taxi in front of the
-	 \ cracked and weathered facade of the old Kingsport manor. Several \
-	  \ other guests—some of the finest movers and shakers from Arkham \
-	  \ to New York—flitter past you to present their invitations to the \
-	  \ doorman. As you follow them in, you catch a scent of cedar and sweet \
-	  \ florals, with an undercurrent of something rank."	 
-	, BasicEntry "“The Lantern Club is thrilled to have you,” a grinning, sharp-eyed \
-	  \ attendant says as they hand you the same bone-white mask worn \
-	  \ throughout the soirée. Feeling out of place, you don your mask and \
-	  \ follow an elderly flapper into a drawing room with a crackling \
-	  \ fire. The room would be warm and inviting if not for an uncanny \
-	  \ strangeness in the dreamlike paintings and ghastly sculptures. \
-	  \ Looking at them makes your head swim."	 
-	, BasicEntry "“Please, please, if you’ll indulge me.” A stentorian voice bellows from \
-	  \ an adjoining room. You follow the voice back to the lavish foyer. At the \
-	  \ top of the stairway, a stately gentleman with a finely trimmed beard \
-	  \ and alabaster mask raises his champagne glass. \
-	  \ “I am Declan Pearce, nomarch of the Lantern Club. Follow me \
-	  \ please.” The guests follow him through a wide set of double doors \
-	  \ into the ballroom, in the center of which a gleaming gem is displayed \
-	  \ behind a thick pane of glass. The socialites gather around, marveling \
-	  \ at the swirling, iridescent colors that move like clouds within the hard \
-	  \ cut angles of the Jewel." 
-	, BasicEntry "“My honored guests. This is the Jewel of Sarnath,” Declan Pearce \
-	  \ says triumphantly. “A stone unlike any other, rumored to have been \
-	  \ cut in an ancient city on distant shores. Legends claim it can grant its \
-	  \ bearer’s wishes.” Scattered laughter follows Pearce’s remark, and the \
-	  \ chairman himself suppresses a chuckle. “Yes, yes, I know. Of course, \
-	  \ the real purpose of this evening is you. We invited only the best, the \
-	  \ most supreme of New England’s social strata, to appeal to your sense \
-	  \ of charity. The most distinguished—or generous—among you may \
-	  \ be permitted to hold the Jewel by the end of the evening. And who \
-	  \ knows? Perhaps dreams are real, and the Jewel of Sarnath can grant \
-	  \ wishes. But until then, enjoy our little party.”"	 
-	, BasicEntry "After another wave of friendly laughter, Pearce claps his hands and a \
-	  \ dozen attendants bearing mouth-watering appetizers descend upon \
-	  \ the room. Your eyes scan the ballroom, hoping for some sign of the \
-	  \ contact who led you here. A chill runs down your spine as you lock \
-	  \ eyes with a tall, masked figure standing at the back of the crowd. He \
-	  \ slowly cocks his head just a little too far to the right. You wonder if he \
-	  \ is smiling behind his bone-white mask."
-	, BasicEntry "After what feels like ages, the man breaks eye contact with you \
-	  \ to continue scanning the room. Suppressing a shiver, you search \
-	  \ the gaggle of guests. Your gala invitation arrived in an unmarked \
-	  \ parcel, along with a note promising generous compensation for your \
-	  \ assistance in procuring the Jewel of Sarnath. At long last, you find \
-	  \ your mysterious contact."
+	[ BasicEntry "A light snow falls as you step out of your taxi in front of the\
+	\ cracked and weathered facade of the old Kingsport manor. Several\
+	\ other guests—some of the finest movers and shakers from Arkham\
+	\ to New York—flitter past you to present their invitations to the\
+	\ doorman. As you follow them in, you catch a scent of cedar and sweet\
+	\ florals, with an undercurrent of something rank."	 
+	, BasicEntry "“The Lantern Club is thrilled to have you,” a grinning, sharp-eyed\
+	\ attendant says as they hand you the same bone-white mask worn\
+	\ throughout the soirée. Feeling out of place, you don your mask and\
+	\ follow an elderly flapper into a drawing room with a crackling\
+	\ fire. The room would be warm and inviting if not for an uncanny\
+	\ strangeness in the dreamlike paintings and ghastly sculptures.\
+	\ Looking at them makes your head swim."	 
+	, BasicEntry "“Please, please, if you’ll indulge me.” A stentorian voice bellows from\
+	\ an adjoining room. You follow the voice back to the lavish foyer. At the\
+	\ top of the stairway, a stately gentleman with a finely trimmed beard\
+	\ and alabaster mask raises his champagne glass.\
+	\ “I am Declan Pearce, nomarch of the Lantern Club. Follow me\
+	\ please.” The guests follow him through a wide set of double doors\
+	\ into the ballroom, in the center of which a gleaming gem is displayed\
+	\ behind a thick pane of glass. The socialites gather around, marveling\
+	\ at the swirling, iridescent colors that move like clouds within the hard\
+	\ cut angles of the Jewel." 
+	, BasicEntry "“My honored guests. This is the Jewel of Sarnath,” Declan Pearce\
+	\ says triumphantly. “A stone unlike any other, rumored to have been\
+	\ cut in an ancient city on distant shores. Legends claim it can grant its\
+	\ bearer’s wishes.” Scattered laughter follows Pearce’s remark, and the\
+	\ chairman himself suppresses a chuckle. “Yes, yes, I know. Of course,\
+	\ the real purpose of this evening is you. We invited only the best, the\
+	\ most supreme of New England’s social strata, to appeal to your sense\
+	\ of charity. The most distinguished—or generous—among you may\
+	\ be permitted to hold the Jewel by the end of the evening. And who\
+	\ knows? Perhaps dreams are real, and the Jewel of Sarnath can grant\
+	\ wishes. But until then, enjoy our little party.”"	 
+	, BasicEntry "After another wave of friendly laughter, Pearce claps his hands and a\
+	\ dozen attendants bearing mouth-watering appetizers descend upon\
+	\ the room. Your eyes scan the ballroom, hoping for some sign of the\
+	\ contact who led you here. A chill runs down your spine as you lock\
+	\ eyes with a tall, masked figure standing at the back of the crowd. He\
+	\ slowly cocks his head just a little too far to the right. You wonder if he\
+	\ is smiling behind his bone-white mask."
+	, BasicEntry "After what feels like ages, the man breaks eye contact with you\
+	\ to continue scanning the room. Suppressing a shiver, you search\
+	\ the gaggle of guests. Your gala invitation arrived in an unmarked\
+	\ parcel, along with a note promising generous compensation for your\
+	\ assistance in procuring the Jewel of Sarnath. At long last, you find\
+	\ your mysterious contact."
 	]
 
 guestChoice :: FlavorText

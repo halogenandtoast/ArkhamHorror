@@ -17,7 +17,6 @@ import Asset from '@/arkham/components/Asset.vue';
 import Event from '@/arkham/components/Event.vue';
 import Skill from '@/arkham/components/Skill.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
-import CardRow from '@/arkham/components/CardRow.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
@@ -94,19 +93,6 @@ const inHandEnemies = computed(() =>
 
 const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
 
-const topOfDiscard = computed(() => discards.value[0])
-
-  props.investigator.modifiers?.some((m) => m.type.tag === "OtherModifier" && m.type.contents === "TopCardOfDeckIsRevealed")
-)
-
-const topOfDeck = computed(() => {
-  const topCard = props.investigator.deck[0]
-  if  (topOfDeckRevealed.value && topCard) {
-    return imgsrc(`cards/${topCard.cardCode.replace(/^c/, '')}.avif`)
-  }
-  return imgsrc("player_back.jpg")
-})
-
 const hunchDeck = computed(() => {
   const match = props.investigator.decks.find(([k,]) => k === "HunchDeck")
   if (match) {
@@ -134,19 +120,7 @@ const topOfHunchDeck = computed(() => {
   return null
 })
 
-const playTopOfDeckAction = computed(() => {
-  if(props.playerId !== props.investigator.playerId) {
-    return -1
-  }
-  const topOfDeck = props.investigator.deck[0]
-  if (topOfDeck !== undefined && topOfDeck !== null && topOfDeckTreachery.value === null) {
-    return choices.value.findIndex((c) => c.tag === "TargetLabel" && c.target.contents === props.investigator.deck[0].id)
-  }
-  return -1
-})
-
 const viewingDiscard = ref(false)
-const viewDiscardLabel = computed(() => viewingDiscard.value ? t('close') : pluralize(t('scenario.discardCard'), discards.value.length))
 
 const id = computed(() => props.investigator.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
@@ -164,31 +138,11 @@ const tarotCardAbility = (card: TarotCard) => {
   })
 }
 
-const drawCardsAction = computed(() => {
-    return -1
-  }
-  return choices
-    .value
-    .findIndex((c) => {
-      if (c.tag === "ComponentLabel") {
-        return (c.component.tag == "InvestigatorDeckComponent")
-      }
-      return false
-    });
-})
-
 const noCards = computed<ArkhamCard.Card[]>(() => [])
 
 // eslint-disable-next-line
 const showCards = reactive<RefWrapper<any>>({ ref: noCards })
 const cardRowTitle = ref("")
-
-const topOfDeckTreachery = computed(() => {
-  const mTreacheryId = Object.values(props.game.treacheries).
-    filter((t) => t.placement.tag === "OnTopOfDeck" && t.placement.contents === id.value).
-    map((t) => t.id)[0]
-  return mTreacheryId ? props.game.treacheries[mTreacheryId] : null
-})
 
 const inHandTreacheries = computed(() => Object.values(props.game.treacheries).
   filter((t) => t.placement.tag === "HiddenInHand" && t.placement.contents === id.value))
@@ -241,11 +195,6 @@ watch(choices, async (newChoices) => {
   }
 })
 
-const hideCards = () => {
-  showCards.ref = noCards
-  viewingDiscard.value = false
-}
-
 const committedCards = computed(() => props.game.skillTest?.committedCards || [])
 const playerHand = computed(() => props.investigator.hand.
   filter((card) =>
@@ -261,10 +210,10 @@ const skills = computed(() => props.investigator.skills.map((e) => props.game.sk
 const emptySlots = computed(() => props.investigator.slots.filter((s) => s.empty))
 const { isMobile } = IsMobile();
 
-const slotImg = (slot: Arkham.Slot) => {
+const slotImg = (slot: Arkham.Slot, idx: number) => {
   switch (slot.tag) {
     case 'HandSlot':
-      return imgsrc('slots/hand.png')
+      return imgsrc(idx === 0 ? 'slots/left-hand.png' : 'slots/hand.png')
     case 'BodySlot':
       return imgsrc('slots/body.png')
     case 'AccessorySlot':
@@ -388,19 +337,6 @@ const dragover = (e: DragEvent) => {
   }
 }
 
-function onDropDiscard(event: DragEvent) {
-  event.preventDefault()
-  if (event.dataTransfer) {
-    const data = event.dataTransfer.getData('text/plain')
-    if (data) {
-      const json = JSON.parse(data)
-      if (json.tag === "CardTarget") {
-        debug.send(props.game.id, {tag: 'DiscardCard', contents: [id.value, {'tag': 'GameSource' }, json.contents]})
-      }
-    }
-  }
-}
-
 function onDropHand(event: DragEvent) {
   event.preventDefault()
   if (event.dataTransfer) {
@@ -426,15 +362,24 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
   }
 }
 
-function onDrop(event: DragEvent) {
-  event.preventDefault()
-  if (event.dataTransfer) {
-    const data = event.dataTransfer.getData('text/plain')
-    if (data) {
-      const json = JSON.parse(data)
-      if (json.tag === "CardTarget") {
-        debug.send(props.game.id, {tag: 'PutCardIntoPlayById', contents: [props.investigator.id, json.contents, null, { tag: 'NoPayment' }, []]})
-      }
+const touchStartX = ref(0)
+const touchEndX = ref(0)
+const emit = defineEmits(['swipe-right', 'swipe-left'])
+
+function onTouchStart(event: TouchEvent) {
+  touchStartX.value = event.changedTouches[0].screenX
+}
+function onTouchEnd(event: TouchEvent) {
+  touchEndX.value = event.changedTouches[0].screenX
+  handleSwipe()
+}
+function handleSwipe() {
+  const deltaX = touchEndX.value - touchStartX.value
+  if (Math.abs(deltaX) > 50) {
+    if (deltaX > 0) {
+      emit('swipe-right')
+    } else {
+      emit('swipe-left')
     }
   }
 }
@@ -471,20 +416,15 @@ function toggleHandAreaMarginBottom(event: Event) {
 </script>
 
 <template>
-  <div class="player-cards" >
+  <div class="player-cards">
     <transition name="grow">
-      <section
-        class="in-play"
-          @drop="onDrop($event)"
-          @dragover.prevent="dragover($event)"
-          @dragenter.prevent
-        >
-        <transition-group @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
-          <template v-if="tarotCards.length > 0">
-            <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana" :data-index="tarotCard.arcana">
-              <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="$emit('choose', tarotCardAbility(tarotCard))"/>
-            </div>
-          </template>
+      <transition-group tag="section" class="in-play" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
+
+        <template v-if="tarotCards.length > 0">
+          <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana" :data-index="tarotCard.arcana">
+            <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="$emit('choose', tarotCardAbility(tarotCard))"/>
+          </div>
+        </template>
 
         <img
           v-if="investigatorId === 'c89001'"
@@ -535,51 +475,51 @@ function toggleHandAreaMarginBottom(event: Event) {
           @choose="$emit('choose', $event)"
         />
 
-          <Skill
-            v-for="skill in skills"
-            :skill="skill"
-            :game="game"
-            :playerId="playerId"
-            :key="skill.id"
-            :data-index="skill.cardId"
-            @choose="$emit('choose', $event)"
-            @showCards="doShowCards"
-          />
-          <Event
-            v-for="event in events"
-            :event="event"
-            :game="game"
-            :playerId="playerId"
-            :key="event.id"
-            :data-index="event.cardId"
-            @choose="$emit('choose', $event)"
-            @showCards="doShowCards"
-          />
-          <Asset
-            v-for="asset in assets"
-            :asset="asset"
-            :game="game"
-            :playerId="playerId"
-            :key="asset.id"
-            :data-index="asset.cardId"
-            @choose="$emit('choose', $event)"
-            @showCards="doShowCards"
-          />
+        <Skill
+          v-for="skill in skills"
+          :skill="skill"
+          :game="game"
+          :playerId="playerId"
+          :key="skill.id"
+          :data-index="skill.cardId"
+          @choose="$emit('choose', $event)"
+          @showCards="doShowCards"
+        />
+        <Event
+          v-for="event in events"
+          :event="event"
+          :game="game"
+          :playerId="playerId"
+          :key="event.id"
+          :data-index="event.cardId"
+          @choose="$emit('choose', $event)"
+          @showCards="doShowCards"
+        />
+        <Asset
+          v-for="asset in assets"
+          :asset="asset"
+          :game="game"
+          :playerId="playerId"
+          :key="asset.id"
+          :data-index="asset.cardId"
+          @choose="$emit('choose', $event)"
+          @showCards="doShowCards"
+        />
 
-          <Story
-            v-for="story in stories"
-            :key="story.id"
-            :story="story"
-            :game="game"
-            :data-index="story.cardId"
-            :playerId="playerId"
-            @choose="$emit('choose', $event)"
-          />
+        <Story
+          v-for="story in stories"
+          :key="story.id"
+          :story="story"
+          :game="game"
+          :data-index="story.cardId"
+          :playerId="playerId"
+          @choose="$emit('choose', $event)"
+        />
 
 
-          <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot}${idx}`">
-            <img :src="slotImg(slot)" />
-          </div>
+        <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot}${idx}`">
+          <img :src="slotImg(slot,idx)" />
+        </div>
 
         <Enemy
           v-if="!isMobile"
@@ -603,19 +543,19 @@ function toggleHandAreaMarginBottom(event: Event) {
           @choose="$emit('choose', $event)"
         />
 
-          <Location
-            v-for="(location, key) in locations"
-            class="location"
-            :key="key"
-            :game="game"
-            :playerId="playerId"
-            :location="location"
-            :data-index="location.cardId"
-            :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
-            @choose="$emit('choose', $event)"
-          />
-        </transition-group>
-      </section>
+        <Location
+          v-if="!isMobile"
+          v-for="(location, key) in locations"
+          class="location"
+          :key="key"
+          :game="game"
+          :playerId="playerId"
+          :location="location"
+          :data-index="location.cardId"
+          :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
+          @choose="$emit('choose', $event)"
+        />
+      </transition-group>
     </transition>
 
     <ChoiceModal
@@ -712,61 +652,54 @@ function toggleHandAreaMarginBottom(event: Event) {
       </div>
     </div>
     <div v-if="isMobile" class="hand hand-area-IsMobile" :style="{ marginBottom: `${handAreaMarginBottom}px` }" @click="toggleHandAreaMarginBottom">
-      <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter"
-        @drop="onDropHand($event)"
-        @dragover.prevent="dragover($event)"
-        @dragenter.prevent
-        :style="{ pointerEvents: `${handAreaPointerEvents}` }"
-        >
-        <HandCard
-          v-for="card in playerHand"
-          :card="card"
-          :game="game"
-          :playerId="playerId"
-          :ownerId="investigator.id"
-          :key="toCardContents(card).id"
-          @choose="$emit('choose', $event)"
-          :draggable="debug.active"
-          @dragstart="startHandDrag($event, card)"
-        />
-        <template v-for="enemy in inHandEnemies" :key="enemy.id">
-          <Enemy
-            v-if="solo || (playerId == investigator.playerId)"
-            :enemy="enemy"
+        <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter"
+          @drop="onDropHand($event)"
+          @dragover.prevent="dragover($event)"
+          @dragenter.prevent
+          :style="{ pointerEvents: `${handAreaPointerEvents}` }"
+          >
+          <HandCard
+            v-for="card in playerHand"
+            :card="card"
             :game="game"
-            :data-index="enemy.cardId"
             :playerId="playerId"
+            :ownerId="investigator.id"
+            :key="toCardContents(card).id"
             @choose="$emit('choose', $event)"
+            :draggable="debug.active"
+            @dragstart="startHandDrag($event, card)"
           />
-          <div class="card-container" v-else>
-            <img class="card" :src="encounterBack" />
-          </div>
-        </template>
-        <template v-for="treacheryId in inHandTreacheries" :key="treacheryId">
-          <Treachery
-            v-if="solo || (playerId == investigator.playerId)"
-            :treachery="game.treacheries[treacheryId]"
-            :game="game"
-            :data-index="treacheryId"
-            :playerId="playerId"
-            @choose="$emit('choose', $event)"
-          />
-          <div class="card-container" v-else>
-            <img class="card" :src="encounterBack" />
-          </div>
-        </template>
-      </transition-group>
+
+          <template v-for="enemy in inHandEnemies" :key="enemy.id">
+            <Enemy
+              v-if="solo || (playerId == investigator.playerId)"
+              :enemy="enemy"
+              :game="game"
+              :data-index="enemy.cardId"
+              :playerId="playerId"
+              @choose="$emit('choose', $event)"
+            />
+            <div class="card-container" v-else>
+              <img class="card" :src="encounterBack" />
+            </div>
+          </template>
+
+          <template v-for="treacheryId in inHandTreacheries" :key="treacheryId">
+            <Treachery
+              v-if="solo || (playerId == investigator.playerId)"
+              :treachery="game.treacheries[treacheryId]"
+              :game="game"
+              :data-index="treacheryId"
+              :playerId="playerId"
+              @choose="$emit('choose', $event)"
+            />
+            <div class="card-container" v-else>
+              <img class="card" :src="encounterBack" />
+            </div>
+          </template>
+
+        </transition-group>
     </div>
-    <CardRow
-      v-if="showCards.ref.length > 0"
-      :game="game"
-      :playerId="playerId"
-      :cards="showCards.ref"
-      :isDiscards="viewingDiscard"
-      :title="cardRowTitle"
-      @choose="$emit('choose', $event)"
-      @close="hideCards"
-    />
   </div>
 </template>
 
@@ -778,12 +711,6 @@ function toggleHandAreaMarginBottom(event: Event) {
   align-items: flex-start;
   padding: 10px;
   background: var(--background-dark);
-}
-
-.deck--can-draw {
-  border: 2px solid var(--select);
-  border-radius: 10px;
-  cursor: pointer;
 }
 
 :deep(.location) {
@@ -806,45 +733,6 @@ function toggleHandAreaMarginBottom(event: Event) {
     margin-right: 10px;
     transform: rotate(90deg) translateX(-10px);
   }
-}
-
-
-.discard {
-  width: var(--card-width);
-  button {
-    white-space: nowrap;
-    text-wrap: pretty;
-  }
-
-  &:deep(.card) {
-    margin: 0;
-    box-shadow: none;
-  }
-
-  &:deep(.card-container) {
-    width: var(--card-width);
-    margin: 0;
-    position:relative;
-    display: inline-flex;
-    &::after {
-      pointer-events: none;
-      border-radius: 6px;
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #FFF;
-      opacity: .85;
-      mix-blend-mode: saturation;
-    }
-  }
-}
-
-.deck, .card {
-  border-radius: 6px;
-  max-width: var(--card-width);
 }
 
 .deck {
@@ -1007,10 +895,6 @@ function toggleHandAreaMarginBottom(event: Event) {
   width: calc((v-bind(totalHandSize) * var(--card-width)) + ((v-bind(totalHandSize) - 1) * 5px));
   max-width: 100%;
   min-width: fit-content;
-
-  @media (max-width: 600px) {
-    display: none;
-  }
 
   &-ok {
     background-color: var(--rogue-dark);

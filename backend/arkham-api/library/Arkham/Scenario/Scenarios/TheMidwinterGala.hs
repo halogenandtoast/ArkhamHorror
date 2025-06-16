@@ -20,6 +20,7 @@ import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
+import Arkham.Message.Lifted (allGainXpWithBonus')
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
@@ -30,10 +31,11 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheMidwinterGala.FlavorText
 import Arkham.Scenarios.TheMidwinterGala.Helpers
 import Arkham.Story.Cards qualified as Stories
-import Data.Aeson (FromJSON, ToJSON, Result(..), fromJSON)
+import Data.Aeson (FromJSON, ToJSON, Result(..), fromJSON, toJSON)
 import Data.List (delete)
 import Arkham.Trait (Trait (Detective, Guest, Innocent, Madness, Police, Private))
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Helpers.Xp (toBonus)
 
 data Faction
   = TheFoundation
@@ -209,6 +211,64 @@ setupTheMidwinterGala attrs = do
     <> [Enemies.declanPearce, Assets.jewelOfSarnathCard]
 
   setMeta $ Meta {ally = allyChoice, rival = rival}
+
+calculateScore :: HasGame m => ScenarioAttrs -> Meta -> m Int
+calculateScore attrs Meta {ally, rival} = do
+  manorNoClue <-
+    selectCount
+      $ LocationWithTrait Manor
+      <> RevealedLocation
+      <> LocationWithoutClues
+  guestControlled <- selectCount $ AssetWithTrait Guest <> AssetControlledBy Anyone
+  spellboundInPlay <-
+    selectAny $ AssetWithMetaKeyValue "spellbound" (toJSON True)
+  agendaId <- getCurrentAgenda
+  AgendaSequence step side <- field AgendaSequence agendaId
+  bloodless <- inVictoryDisplay $ cardIs Enemies.theBloodlessMan
+  bloodlessUnleashed <- inVictoryDisplay $ cardIs Enemies.theBloodlessManUnleashed
+  paleLantern <- inVictoryDisplay $ cardIs Assets.thePaleLanternBeguilingAuraCard
+  declan <- inVictoryDisplay $ cardIs Enemies.declanPearce
+  let
+    factionStoryR = \case
+      TheFoundation -> Stories.tmgTheFoundationRival
+      MiskatonicUniversity -> Stories.tmgMiskatonicUniversityRival
+      TheSyndicate -> Stories.tmgTheSyndicateRival
+      SilverTwilightLodge -> Stories.tmgSilverTwilightLodgeRival
+      LocalsOfKingsport -> Stories.tmgLocalsOfKingsportRival
+  rivalInVictory <- inVictoryDisplay $ cardIs (factionStoryR rival)
+  investigators <- allInvestigators
+  totalDamage <- sum <$> traverse (field InvestigatorDamage) investigators
+  totalHorror <- sum <$> traverse (field InvestigatorHorror) investigators
+  defeatedAny <- selectAny DefeatedInvestigator
+  playerCount <- getPlayerCount
+  let
+    damageBonus =
+      if not defeatedAny && totalDamage <= playerCount * 2
+        then 3
+        else 0
+    horrorBonus =
+      if not defeatedAny && totalHorror <= playerCount * 2
+        then 3
+        else 0
+    agendaBonus = if side == A && step <= 2 then 5 else 0
+    difficultyBonus = case attrs.difficulty of
+      Hard -> 3
+      Expert -> 6
+      _ -> 0
+    alliedScore = 0
+  pure
+    $ manorNoClue
+    + guestControlled
+    + (if not spellboundInPlay then 4 else 0)
+    + agendaBonus
+    + (if bloodless || bloodlessUnleashed then 4 else 0)
+    + (if paleLantern then 3 else 0)
+    + (if declan then 3 else 0)
+    + (if rivalInVictory then 4 else 0)
+    + damageBonus
+    + horrorBonus
+    + difficultyBonus
+    + alliedScore
 instance RunMessage TheMidwinterGala where
   runMessage msg s@(TheMidwinterGala attrs) = runQueueT $ case msg of
     PreScenarioSetup -> do
@@ -314,7 +374,20 @@ instance RunMessage TheMidwinterGala where
         LocalsOfKingsport -> story resolution6
 
       story resolution7
-      allGainXp attrs
+      metaValue <- scenarioField ScenarioMeta
+      let Success meta = fromJSON metaValue
+      score <- calculateScore attrs meta
+      let bonus
+            | score >= 50 = 5
+            | score >= 40 = 4
+            | score >= 30 = 3
+            | score >= 20 = 2
+            | score >= 10 = 1
+            | otherwise = 0
+      _xp <- allGainXpWithBonus' attrs (toBonus "bonus.score" bonus)
+      case r of
+        NoResolution | not resigned -> record TheInvestigatorsWereDefeatedAtTheMidwinterGala
+        _ -> record TheInvestigatorsSurvivedTheMidwinterGala
       endOfScenario
       pure s
     _ -> TheMidwinterGala <$> liftRunMessage msg attrs

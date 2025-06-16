@@ -35,7 +35,9 @@ instance HasAbilities TheBloodlessManUnleashed where
 instance RunMessage TheBloodlessManUnleashed where
   runMessage msg e@(TheBloodlessManUnleashed attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      removeCluesFromPlay <- selectOne $ assetControlledBy iid <> AssetWithTrait Guest
-      for_ removeCluesFromPlay \aid -> removeFromGame aid
+      mGuest <- selectOne $ assetControlledBy iid <> AssetWithTrait Guest
+      for_ mGuest \aid -> do
+        dont $ BecomeSpellbound aid
+        removeFromGame aid
       pure e
     _ -> TheBloodlessManUnleashed <$> liftRunMessage msg attrs

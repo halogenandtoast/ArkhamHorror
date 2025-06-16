@@ -211,11 +211,33 @@ archibaldHudsonCard :: CardDef
 archibaldHudsonCard =
   (storyAsset "71017" ("Archibald Hudson" <:> "Astute Agent") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Agency]
-    , cdSkills = [#willpower, #intellect]
+    , cdSkills = [#willpower, #willpower, #intellect, #intellect]
     , cdSlots = [#ally]
     , cdUnique = True
     , cdHealth = Just 2
     , cdSanity = Just 2
+    }
+
+specialAgentCallahanCard :: CardDef
+specialAgentCallahanCard =
+  (storyAsset "71018" ("Special Agent Callahan" <:> "Weapons Expert") 2 TheMidwinterGala)
+    { cdCardTraits = setFromList [Ally, Guest, Agency]
+    , cdSkills = [#combat, #combat, #intellect, #intellect]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdHealth = Just 3
+    , cdSanity = Just 1
+    }
+
+horacioMartinezCard :: CardDef
+horacioMartinezCard =
+  (storyAsset "71019" ("Horacio Martinez" <:> "Brash Bodyguard") 3 TheMidwinterGala)
+    { cdCardTraits = setFromList [Ally, Guest, Agency]
+    , cdSkills = [#combat, #combat, #agility, #agility]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdHealth = Just 4
+    , cdSanity = Just 1
     }
 
 caldwellPhilipsEnthralledByLegendsCard :: CardDef

@@ -828,6 +828,9 @@ function toggleHandAreaMarginBottom(event: Event) {
   flex-direction: row;
   flex-wrap: wrap;
   gap: 5px;
+  @media (max-width: 600px) {
+      width: 100%;
+  }
 }
 
 .hand-size {

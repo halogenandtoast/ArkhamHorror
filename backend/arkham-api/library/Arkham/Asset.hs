@@ -8,7 +8,7 @@ import Arkham.Card
 import Arkham.Card.PlayerCard (tabooMutated)
 import Arkham.Prelude
 
-createAsset :: IsCard a => a -> AssetId -> Asset
+createAsset :: (HasCallStack, IsCard a) => a -> AssetId -> Asset
 createAsset a aId =
   let this = lookupAsset (toCardCode a) aId (toCardOwner a) (toCardId a)
    in updateAttrs this \attrs ->
@@ -28,7 +28,7 @@ createAsset a aId =
     PlayerCard pc -> tabooMutated tabooList pc
     _ -> Nothing
 
-lookupAsset :: CardCode -> AssetId -> Maybe InvestigatorId -> CardId -> Asset
+lookupAsset :: HasCallStack => CardCode -> AssetId -> Maybe InvestigatorId -> CardId -> Asset
 lookupAsset cardCode = case lookup cardCode allAssets of
   Nothing -> error $ "Unknown asset: " <> show cardCode
   Just (SomeAssetCard a) -> \aid mId cId -> Asset $ cbCardBuilder a cId (aid, mId)

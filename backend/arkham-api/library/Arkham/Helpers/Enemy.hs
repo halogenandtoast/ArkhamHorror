@@ -125,10 +125,10 @@ getModifiedDamageAmount target damageAssignment = do
   applyModifierCaps (Modifier.MaxDamageTaken m) n = min m n
   applyModifierCaps _ n = n
 
-getModifiedKeywords :: (HasCallStack, HasGame m) => EnemyAttrs -> m (Set Keyword)
+getModifiedKeywords :: (HasCallStack, HasGame m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> m (Set Keyword)
 getModifiedKeywords e = do
-  mods <- getModifiers e
-  keywords <- field EnemyKeywords (enemyId e)
+  mods <- getModifiers (asId e)
+  keywords <- field EnemyKeywords (asId e)
   pure $ setFromList $ flip map (toList keywords) \case
     Swarming k ->
       let xs = [n | SwarmingValue n <- mods]

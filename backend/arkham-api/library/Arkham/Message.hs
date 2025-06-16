@@ -379,6 +379,17 @@ data GroupKey = HunterGroup
   deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
+data AutoStatus = Auto | Manual | NoAutoStatus
+  deriving stock (Show, Eq, Generic, Data)
+  deriving anyclass (ToJSON, FromJSON)
+
+instance Semigroup AutoStatus where
+  NoAutoStatus <> x = x
+  x <> NoAutoStatus = x
+  Auto <> _ = Auto
+  _ <> Auto = Auto
+  Manual <> Manual = Manual
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | SkillTestResultOption Text [Message]
@@ -1152,7 +1163,7 @@ data Message
   | DoneChoosingDecks
   | SetPartnerStatus CardCode PartnerStatus
   | HandleGroupTarget GroupKey Target [Message]
-  | HandleGroupTargets GroupKey (Map Target [Message])
+  | HandleGroupTargets AutoStatus GroupKey (Map Target [Message]) 
   | -- Commit
     Do Message
   | DoBatch BatchId Message
@@ -1167,6 +1178,11 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "HandleGroupTargets" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (a, b, c) -> pure $ HandleGroupTargets a b c
+          Left (b, c) -> pure $ HandleGroupTargets Manual b c
       "RefillSlots" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

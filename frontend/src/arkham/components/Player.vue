@@ -216,10 +216,10 @@ const skills = computed(() => props.investigator.skills.map((e) => props.game.sk
 const emptySlots = computed(() => props.investigator.slots.filter((s) => s.empty))
 const { isMobile } = IsMobile();
 
-const slotImg = (slot: Arkham.Slot, idx: number) => {
+const slotImg = (slot: Arkham.Slot) => {
   switch (slot.tag) {
     case 'HandSlot':
-      return imgsrc(idx === 0 ? 'slots/left-hand.png' : 'slots/hand.png')
+      return imgsrc('slots/hand.png')
     case 'BodySlot':
       return imgsrc('slots/body.png')
     case 'AccessorySlot':
@@ -489,7 +489,7 @@ function toggleHandAreaMarginBottom(event: Event) {
 
 
           <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot}${idx}`">
-            <img :src="slotImg(slot,idx)" />
+            <img :src="slotImg(slot)" />
           </div>
 
           <Enemy
@@ -534,7 +534,7 @@ function toggleHandAreaMarginBottom(event: Event) {
       @choose="$emit('choose', $event)"
     />
 
-     <div class="player">
+    <div class="player">
       <div v-if="hunchDeck" class="top-of-deck hunch-deck">
         <HandCard
           v-if="topOfHunchDeck && topOfHunchDeckRevealed"
@@ -621,53 +621,50 @@ function toggleHandAreaMarginBottom(event: Event) {
       </div>
     </div>
     <div v-if="isMobile" class="hand hand-area-IsMobile" :style="{ marginBottom: `${handAreaMarginBottom}px` }" @click="toggleHandAreaMarginBottom">
-        <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter"
-          @drop="onDropHand($event)"
-          @dragover.prevent="dragover($event)"
-          @dragenter.prevent
-          :style="{ pointerEvents: `${handAreaPointerEvents}` }"
-          >
-          <HandCard
-            v-for="card in playerHand"
-            :card="card"
+      <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter"
+        @drop="onDropHand($event)"
+        @dragover.prevent="dragover($event)"
+        @dragenter.prevent
+        :style="{ pointerEvents: `${handAreaPointerEvents}` }"
+        >
+        <HandCard
+          v-for="card in playerHand"
+          :card="card"
+          :game="game"
+          :playerId="playerId"
+          :ownerId="investigator.id"
+          :key="toCardContents(card).id"
+          @choose="$emit('choose', $event)"
+          :draggable="debug.active"
+          @dragstart="startHandDrag($event, card)"
+        />
+        <template v-for="enemy in inHandEnemies" :key="enemy.id">
+          <Enemy
+            v-if="solo || (playerId == investigator.playerId)"
+            :enemy="enemy"
             :game="game"
+            :data-index="enemy.cardId"
             :playerId="playerId"
-            :ownerId="investigator.id"
-            :key="toCardContents(card).id"
             @choose="$emit('choose', $event)"
-            :draggable="debug.active"
-            @dragstart="startHandDrag($event, card)"
           />
-
-          <template v-for="enemy in inHandEnemies" :key="enemy.id">
-            <Enemy
-              v-if="solo || (playerId == investigator.playerId)"
-              :enemy="enemy"
-              :game="game"
-              :data-index="enemy.cardId"
-              :playerId="playerId"
-              @choose="$emit('choose', $event)"
-            />
-            <div class="card-container" v-else>
-              <img class="card" :src="encounterBack" />
-            </div>
-          </template>
-
-          <template v-for="treacheryId in inHandTreacheries" :key="treacheryId">
-            <Treachery
-              v-if="solo || (playerId == investigator.playerId)"
-              :treachery="game.treacheries[treacheryId]"
-              :game="game"
-              :data-index="treacheryId"
-              :playerId="playerId"
-              @choose="$emit('choose', $event)"
-            />
-            <div class="card-container" v-else>
-              <img class="card" :src="encounterBack" />
-            </div>
-          </template>
-
-        </transition-group>
+          <div class="card-container" v-else>
+            <img class="card" :src="encounterBack" />
+          </div>
+        </template>
+        <template v-for="treacheryId in inHandTreacheries" :key="treacheryId">
+          <Treachery
+            v-if="solo || (playerId == investigator.playerId)"
+            :treachery="game.treacheries[treacheryId]"
+            :game="game"
+            :data-index="treacheryId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+          <div class="card-container" v-else>
+            <img class="card" :src="encounterBack" />
+          </div>
+        </template>
+      </transition-group>
     </div>
     <CardRow
       v-if="showCards.ref.length > 0"
@@ -722,34 +719,12 @@ function toggleHandAreaMarginBottom(event: Event) {
 .in-play {
   display: flex;
   flex-wrap: wrap;
-  overflow-x: auto;
   gap: 5px;
   background: #999;
   padding: 10px;
   background: var(--background-dark);
   border-bottom: 1px solid var(--background);
   border-top: 1px solid var(--background);
-  img {
-    pointer-events: none;
-    user-select: none;
-    -webkit-user-drag: none;
-  }
-  @media (max-width: 800px) and (orientation: portrait) {
-    flex-wrap: nowrap; 
-    scrollbar-width: thin;
-    :deep(div){
-      flex-shrink: 0;
-    }
-    :deep(div.slot) {
-      width: 10.71vw;
-      height: 14.994vw;
-    }
-    :deep(.card) {
-      width: 10.71vw ;
-      height: 14.994vw;
-      max-width: 10.71vw;
-    }
-  }
 }
 
 .hand {
@@ -834,11 +809,6 @@ function toggleHandAreaMarginBottom(event: Event) {
     width: calc(var(--card-width) / 2);
     filter: invert(75%);
   }
-  @media (max-width: 800px) and (orientation: portrait) {
-    img {
-      width: 7vw;
-    }
-  }
 }
 
 .tarot-card {
@@ -858,9 +828,6 @@ function toggleHandAreaMarginBottom(event: Event) {
   flex-direction: row;
   flex-wrap: wrap;
   gap: 5px;
-  @media (max-width: 600px) {
-      width: 100%;
-  }
 }
 
 .hand-size {
@@ -874,6 +841,10 @@ function toggleHandAreaMarginBottom(event: Event) {
   width: calc((v-bind(totalHandSize) * var(--card-width)) + ((v-bind(totalHandSize) - 1) * 5px));
   max-width: 100%;
   min-width: fit-content;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
 
   &-ok {
     background-color: var(--rogue-dark);

@@ -172,6 +172,12 @@ const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.ma
 
 <style scoped lang="scss">
 
+.deck--can-draw {
+  border: 2px solid var(--select);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
 .discard {
   width: var(--card-width);
   button {
@@ -221,11 +227,6 @@ const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.ma
   }
 }
 
-.card-container {
-  display: flex;
-  flex-direction: column;
-}
-
 .view-discard-button {
   width: 100%;
 }
@@ -238,10 +239,11 @@ const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.ma
   }
 }
 
-.deck--can-draw {
-  border: 2px solid var(--select);
-  border-radius: 10px;
-  cursor: pointer;
+.top-of-deck {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
 }
 
 .deck-size {
@@ -261,11 +263,9 @@ const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.ma
   transform: translateY(-28.0%);
 }
 
-.top-of-deck {
-  position: relative;
+.card-container {
   display: flex;
   flex-direction: column;
-  width: fit-content;
 }
 
 </style>

@@ -90,6 +90,7 @@ allPlayerAssetCards =
       , carlSanfordLustingForPowerCard
       , valeriyaAntonovaWantsOutOfHereCard
       , johnnyValoneReadyToMakeADealCard
+      , williamBainLookingForThoseLostCard
       , jewelOfSarnathCard
       , thePaleLanternHypnoticGlowCard
       , thePaleLanternBeguilingAuraCard
@@ -486,6 +487,7 @@ allPlayerAssetCards =
       , joeyTheRatVigil
       , joeyTheRatVigil3
       , johnnyValoneReadyToMakeADealCard
+      , williamBainLookingForThoseLostCard
       , jewelOfSarnathCard
       , thePaleLanternHypnoticGlowCard
       , thePaleLanternBeguilingAuraCard

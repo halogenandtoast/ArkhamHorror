@@ -426,6 +426,7 @@ allEncounterEnemyCards =
       , witnessOfChaos
       , wizardOfTheOrder
       , wizardOfYogSothoth
+      , williamBainDefiantToTheLast
       , wolfManDrew
       , wraith
       , writhingAppendage
@@ -3368,6 +3369,17 @@ johnnyValoneHereToCollect =
         , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
         , cdDoubleSided = True
         , cdOtherSide = Just "71066b"
+        , cdVictoryPoints = Just 0
+        }
+
+williamBainDefiantToTheLast :: CardDef
+williamBainDefiantToTheLast =
+  unique
+    $ (enemy "71069" ("William Bain" <:> "Defiant to the Last") TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
+        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+        , cdDoubleSided = True
+        , cdOtherSide = Just "71069b"
         , cdVictoryPoints = Just 0
         }
 

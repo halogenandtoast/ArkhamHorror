@@ -40,6 +40,7 @@ data Faction
   | MiskatonicUniversity
   | TheSyndicate
   | SilverTwilightLodge
+  | LocalsOfKingsport
   deriving stock (Show, Eq, Enum, Bounded, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -122,6 +123,7 @@ setupTheMidwinterGala attrs = do
       , Label "Miskatonic University" $ pure MiskatonicUniversity
       , Label "The Syndicate" $ pure TheSyndicate
       , Label "Silver Twilight Lodge" $ pure SilverTwilightLodge
+      , Label "Locals of Kingsport" $ pure LocalsOfKingsport
       ]
 
   let
@@ -130,17 +132,20 @@ setupTheMidwinterGala attrs = do
       MiskatonicUniversity -> Stories.tmgMiskatonicUniversityAllied
       TheSyndicate -> Stories.tmgTheSyndicateAllied
       SilverTwilightLodge -> Stories.tmgSilverTwilightLodgeAllied
+      LocalsOfKingsport -> Stories.tmgLocalsOfKingsportAllied
     factionStoryRival = \case
       TheFoundation -> Stories.tmgTheFoundationRival
       MiskatonicUniversity -> Stories.tmgMiskatonicUniversityRival
       TheSyndicate -> Stories.tmgTheSyndicateRival
       SilverTwilightLodge -> Stories.tmgSilverTwilightLodgeRival
+      LocalsOfKingsport -> Stories.tmgLocalsOfKingsportRival
 
     leaderAsset = \case
       TheFoundation -> Assets.valeriyaAntonovaWantsOutOfHereCard
       MiskatonicUniversity -> Assets.caldwellPhilipsEnthralledByLegendsCard
       TheSyndicate -> Assets.johnnyValoneReadyToMakeADealCard
       SilverTwilightLodge -> Assets.carlSanfordLustingForPowerCard
+      LocalsOfKingsport -> Assets.williamBainLookingForThoseLostCard
 
     factionGuests = \case
       TheFoundation ->
@@ -162,6 +167,11 @@ setupTheMidwinterGala attrs = do
         [ Assets.prudenceDouglasCard
         , Assets.sarahVanShawCard
         , Assets.raymondLogginsCard
+        ]
+      LocalsOfKingsport ->
+        [ Assets.deloresGadlingCard
+        , Assets.thomasOlneyCard
+        , Assets.claireWilsonCard
         ]
 
   setAside [factionStoryAllied allyChoice]

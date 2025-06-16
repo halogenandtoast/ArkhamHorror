@@ -453,3 +453,15 @@ thePaleLanternBeguilingAuraCard =
     , cdOtherSide = Just "71068"
     , cdVictoryPoints = Just 1
     }
+
+williamBainLookingForThoseLostCard :: CardDef
+williamBainLookingForThoseLostCard =
+  (storyAsset "71069b" ("William Bain" <:> "Looking for Those Lost") 0 TheMidwinterGala)
+    { cdCardTraits = setFromList [Leader, Guest, Kingsport]
+    , cdSkills = [#willpower, #combat, #agility]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdHealth = Just 4
+    , cdSanity = Just 4
+    }

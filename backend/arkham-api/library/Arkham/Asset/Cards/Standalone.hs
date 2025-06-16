@@ -229,3 +229,70 @@ caldwellPhilipsEnthralledByLegendsCard =
     , cdHealth = Just 2
     , cdSanity = Just 2
     }
+
+carlSanfordLustingForPowerCard :: CardDef
+carlSanfordLustingForPowerCard =
+  (storyAsset "71064b" ("Carl Sanford" <:> "Lusting for Power") 0 TheMidwinterGala)
+    { cdCardTraits = setFromList [Leader, Guest, SilverTwilight]
+    , cdSkills = [#willpower, #intellect, #combat]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdHealth = Just 3
+    , cdSanity = Just 3
+    }
+
+valeriyaAntonovaWantsOutOfHereCard :: CardDef
+valeriyaAntonovaWantsOutOfHereCard =
+  (storyAsset "71065b" ("Valeriya Antonova" <:> "Wants Out of Here") 0 TheMidwinterGala)
+    { cdCardTraits = setFromList [Leader, Guest, Agency]
+    , cdSkills = [#willpower, #intellect, #combat]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdHealth = Just 2
+    , cdSanity = Just 3
+    }
+
+johnnyValoneReadyToMakeADealCard :: CardDef
+johnnyValoneReadyToMakeADealCard =
+  (storyAsset "71066b" ("Johnny Valone" <:> "Ready to Make a Deal") 0 TheMidwinterGala)
+    { cdCardTraits = setFromList [Leader, Guest, Syndicate]
+    , cdSkills = [#intellect, #combat, #agility]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdCost = Nothing
+    , cdHealth = Just 3
+    , cdSanity = Just 2
+    }
+
+jewelOfSarnathCard :: CardDef
+jewelOfSarnathCard =
+  (storyAsset "71067b" ("Jewel of Sarnath" <:> "Turning Dreams Into Reality") 0 TheMidwinterGala)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdCost = Nothing
+    , cdUnique = True
+    , cdRevelation = IsRevelation
+    , cdCardType = EncounterAssetType
+    }
+
+thePaleLanternHypnoticGlowCard :: CardDef
+thePaleLanternHypnoticGlowCard =
+  (storyAsset "71068" ("The Pale Lantern" <:> "Hypnotic Glow") 0 TheMidwinterGala)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdCost = Nothing
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "71068b"
+    }
+
+thePaleLanternBeguilingAuraCard :: CardDef
+thePaleLanternBeguilingAuraCard =
+  (storyAsset "71068b" ("The Pale Lantern" <:> "Beguiling Aura") 0 TheMidwinterGala)
+    { cdCardTraits = setFromList [Item, Relic]
+    , cdCost = Nothing
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "71068"
+    , cdVictoryPoints = Just 1
+    }

@@ -95,7 +95,8 @@ import Arkham.Matcher hiding (
   RevealLocation,
   SkillCard,
   StoryCard,
- )
+)
+import Arkham.Trait (Trait (..))
 import Arkham.Message qualified as Msg
 import Arkham.Movement
 import Arkham.Name
@@ -3261,6 +3262,23 @@ runGameMessage msg g = case msg of
         removeCard theGreatWork.id
         push $ RemoveCardFromDeckForCampaign iid theGreatWork.id
         pure $ g & (entitiesL . investigatorsL %~ insertMap iid homunculus)
+  BecomeSpellbound aid -> do
+    traits <- field AssetTraits aid
+    if Trait.Leader `member` traits
+      then do
+        push $ RemoveFromGame (AssetTarget aid)
+        pure g
+      else do
+        mController <- field AssetController aid
+        lead <- getLead
+        let iid = fromMaybe lead mController
+        pushAll
+          [ LoseControlOfAsset aid
+          , HealAllDamageAndHorror (AssetTarget aid) GameSource
+          , SetGlobal (AssetTarget aid) "spellbound" (Bool True)
+          , Flip iid GameSource (AssetTarget aid)
+          ]
+        pure g
   _ -> pure g
 
 -- TODO: Clean this up, the found of stuff is a bit messy

@@ -73,6 +73,12 @@ allPlayerAssetCards =
       , archibaldMacVeighBeleaguredLecturer5
       , archibaldHudsonCard
       , caldwellPhilipsEnthralledByLegendsCard
+      , carlSanfordLustingForPowerCard
+      , valeriyaAntonovaWantsOutOfHereCard
+      , johnnyValoneReadyToMakeADealCard
+      , jewelOfSarnathCard
+      , thePaleLanternHypnoticGlowCard
+      , thePaleLanternBeguilingAuraCard
       , archiveOfConduitsGatewayToAcheron4
       , archiveOfConduitsGatewayToAldebaran4
       , archiveOfConduitsGatewayToParadise4
@@ -465,6 +471,10 @@ allPlayerAssetCards =
       , joeSargentRattletrapBusDriver
       , joeyTheRatVigil
       , joeyTheRatVigil3
+      , johnnyValoneReadyToMakeADealCard
+      , jewelOfSarnathCard
+      , thePaleLanternHypnoticGlowCard
+      , thePaleLanternBeguilingAuraCard
       , katana
       , katarinaSojkamissaryFromUlthar
       , katjaEastbankKeeperOfEsotericLore2

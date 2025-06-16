@@ -163,6 +163,8 @@ allEncounterEnemyCards =
       , darkYoungHost
       , declanPearce
       , caldwellPhilipsCompelledByDreams
+      , carlSanfordIntimidatingPresence
+      , valeriyaAntonovaDontMessWithHer
       , deepOneBull
       , deepOneHatchling
       , deepOneNursemaid
@@ -252,6 +254,7 @@ allEncounterEnemyCards =
       , jeromeDavids
       , jordanPerry
       , josefMeiger
+      , johnnyValoneHereToCollect
       , joyceLittleBookshopOwner
       , kamanThah
       , keeperOfSecrets
@@ -3343,6 +3346,39 @@ caldwellPhilipsCompelledByDreams =
         , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
         , cdDoubleSided = True
         , cdOtherSide = Just "71063b"
+        , cdVictoryPoints = Just 0
+        }
+
+carlSanfordIntimidatingPresence :: CardDef
+carlSanfordIntimidatingPresence =
+  unique
+    $ (enemy "71064" ("Carl Sanford" <:> "Intimidating Presence") TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
+        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+        , cdDoubleSided = True
+        , cdOtherSide = Just "71064b"
+        , cdVictoryPoints = Just 0
+        }
+
+johnnyValoneHereToCollect :: CardDef
+johnnyValoneHereToCollect =
+  unique
+    $ (enemy "71066" ("Johnny Valone" <:> "Here to Collect") TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
+        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+        , cdDoubleSided = True
+        , cdOtherSide = Just "71066b"
+        , cdVictoryPoints = Just 0
+        }
+
+valeriyaAntonovaDontMessWithHer :: CardDef
+valeriyaAntonovaDontMessWithHer =
+  unique
+    $ (enemy "71065" ("Valeriya Antonova" <:> "Don't Mess With Her") TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
+        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+        , cdDoubleSided = True
+        , cdOtherSide = Just "71065b"
         , cdVictoryPoints = Just 0
         }
 

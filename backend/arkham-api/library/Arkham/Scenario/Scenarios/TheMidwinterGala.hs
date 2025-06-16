@@ -53,13 +53,13 @@ newtype TheMidwinterGala = TheMidwinterGala ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 -- | Basic scenario definition
--- Map layout and scenario code will be added later
+-- Map layout will be added later
 
 theMidwinterGala :: Difficulty -> TheMidwinterGala
 theMidwinterGala difficulty =
   sideStory
     TheMidwinterGala
-    "00000" -- TODO scenario code
+    "71001"
     "The Midwinter Gala"
     difficulty
     [ "secondFloor1 secondFloor2 secondFloor3 ."

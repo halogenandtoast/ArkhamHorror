@@ -4,6 +4,7 @@ export type Token
   = 'Aether'
   | 'AlarmLevel'
   | 'Ammo'
+  | 'Antiquity'
   | 'Bounty'
   | 'Charge'
   | 'Clue'
@@ -39,6 +40,7 @@ export const TokenType = {
   Aether: 'Aether',
   AlarmLevel: 'AlarmLevel',
   Ammo: 'Ammo',
+  Antiquity: 'Antiquity',
   Bounty: 'Bounty',
   Charge: 'Charge',
   Clue: 'Clue',
@@ -75,6 +77,7 @@ export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>
   JsonDecoder.literal('Aether'),
   JsonDecoder.literal('AlarmLevel'),
   JsonDecoder.literal('Ammo'),
+  JsonDecoder.literal('Antiquity'),
   JsonDecoder.literal('Bounty'),
   JsonDecoder.literal('Charge'),
   JsonDecoder.literal('Clue'),

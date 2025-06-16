@@ -74,6 +74,12 @@ allPlayerAssetCards =
       , archibaldHudsonCard
       , specialAgentCallahanCard
       , horacioMartinezCard
+      , drMyaBadryCard
+      , lucasTetlowCard
+      , elizabethConradCard
+      , mirandaKeeperCard
+      , arseneRenardCard
+      , novaMaloneCard
       , caldwellPhilipsEnthralledByLegendsCard
       , carlSanfordLustingForPowerCard
       , valeriyaAntonovaWantsOutOfHereCard

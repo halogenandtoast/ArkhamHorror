@@ -1367,6 +1367,9 @@ allAssets =
       SomeAssetCard ruthWestmacottDarkRevelations
     , -- The Midwinter Gala
       SomeAssetCard archibaldHudsonCard
+      , SomeAssetCard drMyaBadryCard
+      , SomeAssetCard lucasTetlowCard
+      , SomeAssetCard elizabethConradCard
     , -- Misc
       SomeAssetCard courage
     ]

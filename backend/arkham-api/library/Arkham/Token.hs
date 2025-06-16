@@ -10,6 +10,7 @@ data Token
   = Aether
   | AlarmLevel
   | Ammo
+  | Antiquity
   | Bounty
   | Charge
   | Clue
@@ -77,6 +78,9 @@ instance IsLabel "clue" Token where
 
 instance IsLabel "doom" Token where
   fromLabel = Doom
+
+instance IsLabel "antiquity" Token where
+  fromLabel = Antiquity
 
 instance IsLabel "warning" Token where
   fromLabel = Warning

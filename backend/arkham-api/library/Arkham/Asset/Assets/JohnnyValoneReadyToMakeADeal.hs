@@ -1,15 +1,13 @@
-module Arkham.Asset.Assets.JohnnyValoneReadyToMakeADeal (
-  johnnyValoneReadyToMakeADeal,
-  JohnnyValoneReadyToMakeADeal(..),
-) where
+module Arkham.Asset.Assets.JohnnyValoneReadyToMakeADeal (johnnyValoneReadyToMakeADeal) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
 
 newtype JohnnyValoneReadyToMakeADeal = JohnnyValoneReadyToMakeADeal AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 johnnyValoneReadyToMakeADeal :: AssetCard JohnnyValoneReadyToMakeADeal
@@ -21,8 +19,8 @@ instance HasModifiersFor JohnnyValoneReadyToMakeADeal where
 
 instance HasAbilities JohnnyValoneReadyToMakeADeal where
   getAbilities (JohnnyValoneReadyToMakeADeal a) =
-    [ reaction a 1 ControlsThis (exhaust a) $
-        GainsResources #after You SourceIsCardEffect (atLeast 1)
+    [ reaction a 1 ControlsThis (exhaust a)
+        $ GainsResources #after You SourceIsCardEffect (atLeast 1)
     , mkAbility a 2 $ forced $ AssetLeavesPlay #when (be a)
     ]
 

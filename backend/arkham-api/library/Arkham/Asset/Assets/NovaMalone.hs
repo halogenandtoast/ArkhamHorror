@@ -1,15 +1,15 @@
-module Arkham.Asset.Assets.NovaMalone (
-  novaMalone,
-  NovaMalone(..),
-) where
+module Arkham.Asset.Assets.NovaMalone (novaMalone) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Modifier
+import Arkham.Projection
 
 newtype NovaMalone = NovaMalone AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 novaMalone :: AssetCard NovaMalone
@@ -18,7 +18,7 @@ novaMalone = allyWith NovaMalone Cards.novaMalone (3, 1) noSlots
 instance HasAbilities NovaMalone where
   getAbilities (NovaMalone a) =
     [ fightAbility a 1 (exhaust a) ControlsThis
-    , limitedAbility (PlayerLimit PerRound 1)
+    , playerLimit PerRound
         $ reaction a 2 ControlsThis Free (EnemyDefeated #after You ByAny AnyEnemy)
     ]
 

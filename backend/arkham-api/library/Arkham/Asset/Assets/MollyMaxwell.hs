@@ -8,7 +8,7 @@ import Arkham.Deck
 import Arkham.Helpers.Scenario (getKnownRemainingOriginalDeckCards)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Trait (toTraits)
+import Arkham.Trait (toTraits, displayTrait)
 
 newtype MollyMaxwell = MollyMaxwell AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -29,7 +29,7 @@ instance RunMessage MollyMaxwell where
         $ ( "Trait that won't match"
           , RevealUntilFirst iid (toSource attrs) (toDeck iid) (basic $ NotCard AnyCard)
           )
-        : [ ( tshow trait
+        : [ ( displayTrait trait
             , RevealUntilFirst iid (toSource attrs) (toDeck iid) (basic $ CardWithTrait trait <> #asset)
             )
           | trait <- toList (unions $ map toTraits cards)

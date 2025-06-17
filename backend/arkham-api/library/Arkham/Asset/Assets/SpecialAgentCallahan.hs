@@ -1,15 +1,15 @@
-module Arkham.Asset.Assets.SpecialAgentCallahan (
-  specialAgentCallahan,
-  SpecialAgentCallahan(..),
-) where
+module Arkham.Asset.Assets.SpecialAgentCallahan (specialAgentCallahan) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
+import Arkham.Trait (Trait (Ally, Weapon))
 
 newtype SpecialAgentCallahan = SpecialAgentCallahan AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 specialAgentCallahan :: AssetCard SpecialAgentCallahan
@@ -19,11 +19,12 @@ instance HasAbilities SpecialAgentCallahan where
   getAbilities (SpecialAgentCallahan a) =
     [ restricted a 1 ControlsThis fightAction_
     , controlled a 2 ControlsThis
-        $ ReactionAbility
-            ( ActivateAbility #after You
-                $ AssetAbility (hasAnyTrait [Ally, Weapon]) <> AbilityIsActionAbility
-            )
-            (exhaust a)
+        $ triggered
+          ( ActivateAbility #after You
+              $ AssetAbility (hasAnyTrait [Ally, Weapon])
+              <> AbilityIsActionAbility
+          )
+          (exhaust a)
     ]
 
 instance RunMessage SpecialAgentCallahan where

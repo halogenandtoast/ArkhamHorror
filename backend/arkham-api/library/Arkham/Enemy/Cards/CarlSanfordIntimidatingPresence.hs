@@ -1,7 +1,4 @@
-module Arkham.Enemy.Cards.CarlSanfordIntimidatingPresence (
-  carlSanfordIntimidatingPresence,
-  CarlSanfordIntimidatingPresence(..),
-) where
+module Arkham.Enemy.Cards.CarlSanfordIntimidatingPresence (carlSanfordIntimidatingPresence) where
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
@@ -22,5 +19,5 @@ instance HasModifiersFor CarlSanfordIntimidatingPresence where
     modifySelect a (InvestigatorAt $ locationWithEnemy a) [SkillModifier #willpower (-1)]
 
 instance RunMessage CarlSanfordIntimidatingPresence where
-  runMessage msg e@(CarlSanfordIntimidatingPresence attrs) =
-    CarlSanfordIntimidatingPresence <$> liftRunMessage msg attrs
+  runMessage msg (CarlSanfordIntimidatingPresence attrs) =
+    CarlSanfordIntimidatingPresence <$> runMessage msg attrs

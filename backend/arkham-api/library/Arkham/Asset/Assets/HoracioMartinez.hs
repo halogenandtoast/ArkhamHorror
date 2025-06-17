@@ -1,12 +1,10 @@
-module Arkham.Asset.Assets.HoracioMartinez (
-  horacioMartinez,
-  HoracioMartinez(..),
-) where
+module Arkham.Asset.Assets.HoracioMartinez (horacioMartinez) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers
+import Arkham.Asset.Import.Lifted hiding (EnemyAttacks)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Window (getAttackDetails)
 import Arkham.Matcher
 
 newtype HoracioMartinez = HoracioMartinez AssetAttrs
@@ -17,10 +15,11 @@ horacioMartinez :: AssetCard HoracioMartinez
 horacioMartinez = allyWith HoracioMartinez Cards.horacioMartinez (4, 1) noSlots
 
 instance HasModifiersFor HoracioMartinez where
-  getModifiersFor (HoracioMartinez a) = case a.controller of
-    Nothing -> pure mempty
-    Just controller ->
-      modifySelect a (not_ (InvestigatorWithId controller) <> at_ (locationWithAsset a)) [CanAssignDamageToAsset a.id]
+  getModifiersFor (HoracioMartinez a) = for_ a.controller \iid ->
+    modifySelect
+      a
+      (not_ (InvestigatorWithId iid) <> at_ (locationWithAsset a))
+      [CanAssignDamageToAsset a.id]
 
 instance HasAbilities HoracioMartinez where
   getAbilities (HoracioMartinez a) =
@@ -31,7 +30,7 @@ instance HasAbilities HoracioMartinez where
 instance RunMessage HoracioMartinez where
   runMessage msg a@(HoracioMartinez attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (getAttackDetails -> attack) _ -> do
-      exhaust (attack.enemy)
+      exhaustThis attack.enemy
       roundModifier (attrs.ability 1) attack.enemy CannotReady
       pure a
     _ -> HoracioMartinez <$> liftRunMessage msg attrs

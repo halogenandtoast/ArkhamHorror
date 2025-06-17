@@ -1,28 +1,27 @@
-module Arkham.Asset.Assets.ThePaleLanternBeguilingAura (
-  thePaleLanternBeguilingAura,
-  ThePaleLanternBeguilingAura(..),
-) where
+module Arkham.Asset.Assets.ThePaleLanternBeguilingAura (thePaleLanternBeguilingAura) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Message.Lifted
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Placement
+import Arkham.Modifier
+import Arkham.Projection
 
 newtype ThePaleLanternBeguilingAura = ThePaleLanternBeguilingAura AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 -- | Beguiling Aura side of The Pale Lantern (#71068b).
 thePaleLanternBeguilingAura :: AssetCard ThePaleLanternBeguilingAura
-thePaleLanternBeguilingAura =
-  storyAsset ThePaleLanternBeguilingAura Cards.thePaleLanternBeguilingAura
+thePaleLanternBeguilingAura = asset ThePaleLanternBeguilingAura Cards.thePaleLanternBeguilingAura
 
 instance HasAbilities ThePaleLanternBeguilingAura where
   getAbilities (ThePaleLanternBeguilingAura a) =
     [ mkAbility a 1 $ forced $ AssetLeavesPlay #when (be a)
-    , restrictedAbility a 2 Here actionAbility
-    , controlledAbility a 3 ControlsThis $ actionAbilityWithCost (exhaust a)
+    , restricted a 2 OnSameLocation actionAbility
+    , restricted a 3 ControlsThis $ actionAbilityWithCost (exhaust a)
     ]
 
 instance RunMessage ThePaleLanternBeguilingAura where
@@ -33,32 +32,23 @@ instance RunMessage ThePaleLanternBeguilingAura where
       place attrs.id $ AttachedToLocation lid
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      assets <- select $ AssetAt (locationWithInvestigator iid)
-      spellboundAssets <- filterM (\aid -> do
-        meta <- field AssetMetaMap aid
-        pure $ fromMaybe False $ meta ^? ix "spellbound" . _Bool)
-        assets
-      chooseOrRunOne iid
-        [ targetLabel aid [Flip iid (attrs.ability 2) (AssetTarget aid)]
-        | aid <- spellboundAssets
-        ]
+      spellbound <-
+        select $ AssetAt (locationWithInvestigator iid) <> AssetWithModifier (ScenarioModifier "spellbound")
+      chooseOrRunOneM iid $ targets spellbound $ flipOverBy iid (attrs.ability 2)
       pure a
     UseThisAbility iid (isSource attrs -> True) 3 -> do
       sid <- getRandom
-      chooseOne iid
-        [ Label "Use your {combat}" $ beginSkillTest sid iid (attrs.ability 3) iid #combat (Fixed 2)
-        , Label "Use your {agility}" $ beginSkillTest sid iid (attrs.ability 3) iid #agility (Fixed 2)
-        ]
+      chooseOneM iid do
+        for_ [#combat, #agility] \kind ->
+          skillLabeled kind $ beginSkillTest sid iid (attrs.ability 3) iid kind (Fixed 2)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 3 -> True) -> do
-      push $ PlaceDamage (attrs.ability 3) (toTarget attrs) 1
+      placeTokens (attrs.ability 3) attrs #damage 1
       afterDamage <- field AssetDamage attrs.id
       when (afterDamage >= 4) do
-        push $ AddToVictory (AssetTarget attrs.id)
-        allAssets <- selectList AnyAsset
-        spellboundAssets <- filterM (\aid -> do
-          meta <- field AssetMetaMap aid
-          pure $ fromMaybe False $ meta ^? ix "spellbound" . _Bool) allAssets
-        for_ spellboundAssets $ \aid -> flipOverBy iid (attrs.ability 3) aid
+        addToVictory attrs
+        spellbound <-
+          select $ AssetAt (locationWithInvestigator iid) <> AssetWithModifier (ScenarioModifier "spellbound")
+        for_ spellbound $ flipOverBy iid (attrs.ability 3)
       pure a
     _ -> ThePaleLanternBeguilingAura <$> liftRunMessage msg attrs

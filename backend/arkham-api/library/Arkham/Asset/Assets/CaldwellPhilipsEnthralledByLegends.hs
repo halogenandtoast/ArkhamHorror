@@ -1,16 +1,14 @@
-module Arkham.Asset.Assets.CaldwellPhilipsEnthralledByLegends (
-  caldwellPhilipsEnthralledByLegends,
-  CaldwellPhilipsEnthralledByLegends(..),
-) where
+module Arkham.Asset.Assets.CaldwellPhilipsEnthralledByLegends (caldwellPhilipsEnthralledByLegends) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCard)
+import Arkham.Asset.Import.Lifted hiding (DiscoverClues)
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Window (discoveredClues)
 import Arkham.Matcher
 
 newtype CaldwellPhilipsEnthralledByLegends = CaldwellPhilipsEnthralledByLegends AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 caldwellPhilipsEnthralledByLegends :: AssetCard CaldwellPhilipsEnthralledByLegends

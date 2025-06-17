@@ -153,3 +153,6 @@ calculate = go
     IfLocationExistsCalculation q c1 c2 -> do
       cond <- selectAny q
       calculate $ if cond then c1 else c2
+    IfEnemyExistsCalculation q c1 c2 -> do
+      cond <- selectAny q
+      calculate $ if cond then c1 else c2

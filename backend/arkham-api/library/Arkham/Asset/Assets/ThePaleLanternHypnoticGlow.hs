@@ -1,7 +1,4 @@
-module Arkham.Asset.Assets.ThePaleLanternHypnoticGlow (
-  thePaleLanternHypnoticGlow,
-  ThePaleLanternHypnoticGlow(..),
-) where
+module Arkham.Asset.Assets.ThePaleLanternHypnoticGlow (thePaleLanternHypnoticGlow) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -9,20 +6,21 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Enemy.Cards qualified as EnemyCards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Placement
+import Arkham.Projection
 
 newtype ThePaleLanternHypnoticGlow = ThePaleLanternHypnoticGlow AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 -- | Hypnotic Glow side of The Pale Lantern (#71068).
 thePaleLanternHypnoticGlow :: AssetCard ThePaleLanternHypnoticGlow
-thePaleLanternHypnoticGlow =
-  storyAsset ThePaleLanternHypnoticGlow Cards.thePaleLanternHypnoticGlow
+thePaleLanternHypnoticGlow = asset ThePaleLanternHypnoticGlow Cards.thePaleLanternHypnoticGlow
 
 instance HasAbilities ThePaleLanternHypnoticGlow where
   getAbilities (ThePaleLanternHypnoticGlow a) =
     [ mkAbility a 1 $ forced $ AssetLeavesPlay #when (be a)
-    , restrictedAbility a 2 (Here <> additionalCriteria) $ actionAbility
+    , restricted a 2 (Here <> additionalCriteria) actionAbility
     ]
    where
     additionalCriteria =
@@ -31,19 +29,18 @@ instance HasAbilities ThePaleLanternHypnoticGlow where
 
 instance RunMessage ThePaleLanternHypnoticGlow where
   runMessage msg a@(ThePaleLanternHypnoticGlow attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
       lid <- fieldJust AssetLocation attrs.id
       place attrs.id $ AttachedToLocation lid
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
-      chooseOne iid
-        [ Label "Use your {combat}" $ beginSkillTest sid iid (attrs.ability 2) iid #combat (Fixed 1)
-        , Label "Use your {agility}" $ beginSkillTest sid iid (attrs.ability 2) iid #agility (Fixed 1)
-        ]
+      chooseOneM iid do
+        for_ [#combat, #agility] \kind ->
+          skillLabeled kind $ beginSkillTest sid iid (attrs.ability 2) iid kind (Fixed 1)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
-      push $ TakeControlOfAsset iid attrs.id
+      takeControlOfAsset iid attrs
       flipOverBy iid (attrs.ability 2) attrs
       pure a
     _ -> ThePaleLanternHypnoticGlow <$> liftRunMessage msg attrs

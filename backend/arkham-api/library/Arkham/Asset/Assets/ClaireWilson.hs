@@ -1,16 +1,14 @@
-module Arkham.Asset.Assets.ClaireWilson (
-  claireWilson,
-  ClaireWilson(..),
-) where
+module Arkham.Asset.Assets.ClaireWilson (claireWilson) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
-import Arkham.Trait
+import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Modifier
 
 newtype ClaireWilson = ClaireWilson AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 claireWilson :: AssetCard ClaireWilson
@@ -18,8 +16,8 @@ claireWilson = allyWith ClaireWilson Cards.claireWilson (2, 2) noSlots
 
 instance HasAbilities ClaireWilson where
   getAbilities (ClaireWilson a) =
-    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest (YourSkillTest AnySkillTest))
-        $ ReactionAbility (CommittedCards #after You $ LengthIs $ AtLeast $ Static 1) (exhaust a)
+    [ controlled a 1 (DuringSkillTest $ YourSkillTest AnySkillTest)
+        $ triggered (CommittedCards #after You $ LengthIs $ atLeast 1) (exhaust a)
     ]
 
 instance RunMessage ClaireWilson where

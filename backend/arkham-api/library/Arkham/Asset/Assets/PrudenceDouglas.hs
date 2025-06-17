@@ -1,17 +1,18 @@
-module Arkham.Asset.Assets.PrudenceDouglas (
-  prudenceDouglas,
-  PrudenceDouglas(..),
-) where
+module Arkham.Asset.Assets.PrudenceDouglas (prudenceDouglas) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Window (cardDrawn)
-import Arkham.Matcher
+import Arkham.Card
+import Arkham.Deck qualified as Deck
+import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
+import Arkham.Token (Token (Portent))
+import Arkham.Trait (Trait (Elite), toTraits)
 
 newtype PrudenceDouglas = PrudenceDouglas AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 prudenceDouglas :: AssetCard PrudenceDouglas
@@ -30,7 +31,7 @@ instance RunMessage PrudenceDouglas where
         iid
         (attrs.ability 1)
         EncounterDeckTarget
-        [(fromTopOfDeck 4, PutBackInAnyOrder)]
+        [(FromTopOfDeck 4, PutBackInAnyOrder)]
         #any
         (defer attrs IsNotDraw)
       pure a

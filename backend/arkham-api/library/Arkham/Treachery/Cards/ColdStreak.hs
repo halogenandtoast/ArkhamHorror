@@ -1,6 +1,9 @@
 module Arkham.Treachery.Cards.ColdStreak (coldStreak) where
 
+import Arkham.I18n
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted.Choose
+import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -16,11 +19,10 @@ instance RunMessage ColdStreak where
     Revelation iid (isSource attrs -> True) -> do
       resources <- field InvestigatorResources iid
       let lost = min 4 resources
-          need = 4 - lost
+      let need = 4 - lost
       loseResources iid attrs lost
-      replicateM_ need $ chooseOne iid
-        [Label "Take 1 damage" [assignDamage iid attrs 1]
-        ,Label "Take 1 horror" [assignHorror iid attrs 1]
-        ]
+      repeated need $ chooseOneM iid $ withI18n do
+        countVar 1 $ labeled' "takeDamage" $ assignDamage iid attrs 1
+        countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
       pure t
     _ -> ColdStreak <$> liftRunMessage msg attrs

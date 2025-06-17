@@ -1,16 +1,14 @@
-module Arkham.Asset.Assets.RaymondLoggins (
-  raymondLoggins,
-  RaymondLoggins(..),
-) where
+module Arkham.Asset.Assets.RaymondLoggins (raymondLoggins) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher
+import Arkham.Token (Token (Truth))
 
 newtype RaymondLoggins = RaymondLoggins AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 raymondLoggins :: AssetCard RaymondLoggins

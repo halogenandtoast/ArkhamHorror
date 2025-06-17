@@ -925,11 +925,15 @@ drawAnotherChaosToken = push . DrawAnotherChaosToken
 assignEnemyDamage :: ReverseQueue m => DamageAssignment -> EnemyId -> m ()
 assignEnemyDamage assignment = push . Msg.assignEnemyDamage assignment
 
+eachLocation :: ReverseQueue m => (LocationId -> m ()) -> m ()
+eachLocation = selectEach Anywhere
+
 eachInvestigator :: ReverseQueue m => (InvestigatorId -> m ()) -> m ()
 eachInvestigator f = do
   inResolution <- getInResolution
   investigators <- if inResolution then allInvestigators else getInvestigators
   for_ investigators f
+
 
 forInvestigator :: ReverseQueue m => InvestigatorId -> Message -> m ()
 forInvestigator iid msg = push $ ForInvestigator iid msg
@@ -3077,6 +3081,11 @@ advanceCurrentAct :: (ReverseQueue m, Sourceable source) => source -> m ()
 advanceCurrentAct source = do
   actId <- getCurrentAct
   push $ AdvanceAct actId (toSource source) #other
+
+advanceCurrentActWithClues :: (ReverseQueue m, Sourceable source) => source -> m ()
+advanceCurrentActWithClues source = do
+  actId <- getCurrentAct
+  push $ AdvanceAct actId (toSource source) #clues
 
 updateLocation
   :: ( ReverseQueue m

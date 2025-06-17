@@ -1,12 +1,10 @@
-module Arkham.Asset.Assets.DrMyaBadry (
-  drMyaBadry,
-  DrMyaBadry(..),
-) where
+module Arkham.Asset.Assets.DrMyaBadry (drMyaBadry) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Matcher
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 
 newtype DrMyaBadry = DrMyaBadry AssetAttrs

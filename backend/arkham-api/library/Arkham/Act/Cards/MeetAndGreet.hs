@@ -1,17 +1,14 @@
-module Arkham.Act.Cards.MeetAndGreet (
-  meetAndGreet,
-  MeetAndGreet(..),
-) where
+module Arkham.Act.Cards.MeetAndGreet (meetAndGreet) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Helpers.Modifiers (modifySelect)
-import Arkham.Keyword
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
+import Arkham.SlotType
 import Arkham.Trait
 
 newtype MeetAndGreet = MeetAndGreet ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 meetAndGreet :: ActCard MeetAndGreet
@@ -22,6 +19,6 @@ instance HasModifiersFor MeetAndGreet where
     modifySelect a (AssetWithTrait Guest) [DoNotTakeUpSlot AllySlot]
 
 instance RunMessage MeetAndGreet where
-  runMessage msg a@(MeetAndGreet attrs) = runQueueT $ case msg of
+  runMessage msg (MeetAndGreet attrs) = runQueueT $ case msg of
     -- TODO implement parley abilities and advancement
     _ -> MeetAndGreet <$> liftRunMessage msg attrs

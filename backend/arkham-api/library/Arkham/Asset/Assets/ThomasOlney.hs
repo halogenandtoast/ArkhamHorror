@@ -1,57 +1,43 @@
-module Arkham.Asset.Assets.ThomasOlney (
-  thomasOlney,
-  ThomasOlney(..),
-) where
+module Arkham.Asset.Assets.ThomasOlney (thomasOlney) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Card
+import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Trait
-import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted (commitCard, discardTopOfDeckAndHandle)
-import Data.Text (unpack)
-import Text.Read (readMaybe)
 
-newtype Meta = Meta { chosenTrait :: Maybe Trait }
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-newtype ThomasOlney = ThomasOlney (With AssetAttrs Meta)
-  deriving anyclass IsAsset
+newtype ThomasOlney = ThomasOlney AssetAttrs
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thomasOlney :: AssetCard ThomasOlney
-thomasOlney = ally (ThomasOlney . (`with` Meta Nothing)) Cards.thomasOlney (3, 1)
+thomasOlney = ally ThomasOlney Cards.thomasOlney (3, 1)
 
 instance HasAbilities ThomasOlney where
-  getAbilities (ThomasOlney (With a _)) =
-    [ controlledAbility a 1 ControlsThis $ FastAbility (exhaust a)
-    , restrictedAbility a 2 (ControlsThis <> DuringSkillTest SkillTestAtYourLocation) $ FastAbility (exhaust a)
+  getAbilities (ThomasOlney a) =
+    [ restricted a 1 ControlsThis $ FastAbility (exhaust a)
+    , controlled a 2 (DuringSkillTest SkillTestAtYourLocation) $ FastAbility (exhaust a)
     ]
 
 instance RunMessage ThomasOlney where
-  runMessage msg a@(ThomasOlney (With attrs meta)) = runQueueT $ case msg of
+  runMessage msg a@(ThomasOlney attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseOneDropDown iid
-        [ (tshow trait, HandleTargetChoice iid (attrs.ability 1) (LabeledTarget (tshow trait) (toTarget attrs)))
-        | trait <- [minBound ..]
-        ]
+      chooseOneDropDown iid [(displayTrait trait, ForTrait trait msg) | trait <- [minBound ..]]
       pure a
-    HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (LabeledTarget t (isTarget attrs -> True)) -> do
-      case readMaybe (unpack t) of
-        Just trait -> do
-          push $ DiscardTopOfEncounterDeck iid 1 (attrs.ability 1) (Just $ toTarget attrs)
-          pure $ ThomasOlney $ With attrs (meta {chosenTrait = Just trait})
-        Nothing -> pure a
+    ForTrait trait (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      discardTopOfEncounterDeckAndHandle iid (attrs.ability 1) 1 attrs
+      pure $ ThomasOlney $ attrs & setMeta trait
     DiscardedTopOfEncounterDeck iid cards _ (isTarget attrs -> True) -> do
-      for_ meta.chosenTrait \trait -> do
-        when (any (`cardMatch` CardWithTrait trait) cards) $ gainResources iid (attrs.ability 1) 2
-      pure $ ThomasOlney $ With attrs (meta {chosenTrait = Nothing})
+      for_ (maybeResult attrs.meta) \trait -> do
+        when (any (`cardMatch` CardWithTrait trait) cards) do
+          gainResources iid (attrs.ability 1) 2
+      pure $ ThomasOlney $ attrs & setMeta Null
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       discardTopOfDeckAndHandle iid (attrs.ability 2) 1 attrs
       pure a
     DiscardedTopOfDeck iid (card : _) _ (isTarget attrs -> True) -> do
-      withSkillTest \_ -> commitCard iid (PlayerCard card)
+      whenM (getIsCommittable iid (toCard card)) $ commitCard iid card
       pure a
-    _ -> ThomasOlney . (`with` meta) <$> liftRunMessage msg attrs
+    _ -> ThomasOlney <$> liftRunMessage msg attrs

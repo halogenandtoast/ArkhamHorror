@@ -1,10 +1,11 @@
-module Arkham.Enemy.Cards.RookieCop (rookieCop, RookieCop(..)) where
+module Arkham.Enemy.Cards.RookieCop (rookieCop) where
 
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Trait
 
 newtype RookieCop = RookieCop EnemyAttrs
   deriving anyclass IsEnemy
@@ -19,16 +20,14 @@ instance HasModifiersFor RookieCop where
 
 instance HasAbilities RookieCop where
   getAbilities (RookieCop a) =
-    withBaseAbilities a [
-      mkAbility a 1
-        $ forced
-        $ EnemyAttacked #after (InvestigatorAt YourLocation) AnySource (NotEnemy $ be a)
-    ]
+    extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ EnemyAttacked #after (InvestigatorAt YourLocation) AnySource (NotEnemy $ be a)
 
 instance RunMessage RookieCop where
   runMessage msg e@(RookieCop attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      assignDamage iid (attrs.ability 1) 1 0
+      assignDamage iid (attrs.ability 1) 1
       pure e
     _ -> RookieCop <$> liftRunMessage msg attrs
-

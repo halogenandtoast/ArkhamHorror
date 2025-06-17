@@ -1,11 +1,12 @@
 module Arkham.Treachery.Cards.MindExtraction (mindExtraction) where
 
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
-import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Asset.Cards qualified as Assets
 
 newtype MindExtraction = MindExtraction TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -24,10 +25,10 @@ instance RunMessage MindExtraction where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       assignHorror iid attrs 2
       mEnemy <- selectOne $ enemyIs Enemies.theBloodlessMan
-      whenJust mEnemy $ \eid -> do
-        mAsset <- selectOne $ assetControlledBy Anyone <> assetIs Assets.thePaleLantern
-        for_ mAsset $ \aid -> do
-          flipOver aid
-          attachTo aid (EnemyTarget eid)
+      for_ mEnemy \eid -> do
+        mAsset <- selectOne $ AssetControlledBy Anyone <> assetIs Assets.thePaleLanternBeguilingAura
+        for_ mAsset \aid -> do
+          flipOverBy iid attrs aid
+          place aid (AttachedToEnemy eid)
       pure t
     _ -> MindExtraction <$> liftRunMessage msg attrs

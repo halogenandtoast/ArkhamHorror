@@ -1,9 +1,15 @@
-module Arkham.Enemy.Cards.TheBloodlessMan (theBloodlessMan, TheBloodlessMan(..)) where
+module Arkham.Enemy.Cards.TheBloodlessMan (theBloodlessMan) where
 
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted
+import Arkham.Enemy.Import.Lifted hiding (EnemyDamage, EnemyDefeated)
+import Arkham.Enemy.Types (Field (EnemyDamage))
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Location
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
+import Arkham.Projection
 import Arkham.Trait
 
 newtype TheBloodlessMan = TheBloodlessMan EnemyAttrs
@@ -11,21 +17,23 @@ newtype TheBloodlessMan = TheBloodlessMan EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theBloodlessMan :: EnemyCard TheBloodlessMan
-theBloodlessMan =
-  unique $ enemy TheBloodlessMan Cards.theBloodlessMan (4, Static 3, 2) (1, 1)
+theBloodlessMan = enemy TheBloodlessMan Cards.theBloodlessMan (4, Static 3, 2) (1, 1)
 
 instance HasModifiersFor TheBloodlessMan where
   getModifiersFor (TheBloodlessMan a) =
-    modifySelf a
+    modifySelf
+      a
       [ AddKeyword Keyword.Aloof
       , AddKeyword $ Keyword.Patrol (NearestLocationToYou $ LocationWithAsset $ AssetWithTrait Guest)
       ]
 
 instance HasAbilities TheBloodlessMan where
-  getAbilities (TheBloodlessMan a) = withBaseAbilities a [
-      mkAbility a 1 $ forced $ EnemyDefeated #when Anyone ByAny (be a)
-    , restrictedAbility a 2 (thisExists a ReadyEnemy) $ forced $ PhaseEnds #when #investigation
-    ]
+  getAbilities (TheBloodlessMan a) =
+    extend
+      a
+      [ mkAbility a 1 $ forced $ EnemyDefeated #when Anyone ByAny (be a)
+      , restricted a 2 (thisExists a ReadyEnemy) $ forced $ PhaseEnds #when #investigation
+      ]
 
 instance RunMessage TheBloodlessMan where
   runMessage msg e@(TheBloodlessMan attrs) = runQueueT $ case msg of
@@ -38,12 +46,8 @@ instance RunMessage TheBloodlessMan where
       flipOverBy iid (attrs.ability 1) attrs
       pure e
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      mLoc <- field EnemyLocation attrs.id
-      for_ mLoc \lid -> do
-        investigators <- select $ investigatorAt lid
-        guests <- select $ AssetWithTrait Guest <> assetAt lid
-        for_ investigators \i -> assignHorror i (attrs.ability 2) 1
-        for_ guests \aid -> assignHorror aid (attrs.ability 2) 1
+      withLocationOf attrs \lid -> do
+        selectEach (investigatorAt lid) \i -> assignHorror i (attrs.ability 2) 1
+        selectEach (AssetWithTrait Guest <> assetAt lid) \aid -> dealAssetHorror aid (attrs.ability 2) 1
       pure e
     _ -> TheBloodlessMan <$> liftRunMessage msg attrs
-

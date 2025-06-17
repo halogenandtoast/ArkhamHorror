@@ -1118,12 +1118,12 @@ data Message
   | Explore InvestigatorId Source CardMatcher
   | BecomeYithian InvestigatorId
   | BecomeHomunculus InvestigatorId
-  | BecomeSpellbound AssetId
   | SetScenarioMeta Value
   | ScenarioSpecific Text Value
   | SetCampaignMeta Value
   | DoStep Int Message
   | ForInvestigator InvestigatorId Message
+  | ForTrait Trait Message
   | ForTarget Target Message
   | ForTargets [Target] Message
   | ForPlayer PlayerId Message

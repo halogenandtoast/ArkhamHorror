@@ -142,16 +142,16 @@ allStoryCards =
       , returnToSickeningReality_23
       , returnToSickeningReality_24
       , realityAcid
-      , tmgTheFoundationAllied
-      , tmgTheFoundationRival
-      , tmgTheSyndicateAllied
-      , tmgTheSyndicateRival
-      , tmgMiskatonicUniversityAllied
-      , tmgMiskatonicUniversityRival
-      , tmgSilverTwilightLodgeAllied
-      , tmgSilverTwilightLodgeRival
-      , tmgLocalsOfKingsportAllied
-      , tmgLocalsOfKingsportRival
+      , theFoundationAllied
+      , theFoundationRival
+      , theSyndicateAllied
+      , theSyndicateRival
+      , miskatonicUniversityAllied
+      , miskatonicUniversityRival
+      , silverTwilightLodgeAllied
+      , silverTwilightLodgeRival
+      , localsOfKingsportAllied
+      , localsOfKingsportRival
       ]
 
 victory :: Int -> CardDef -> CardDef
@@ -505,42 +505,32 @@ realityAcid =
     , cdEncounterSetQuantity = Nothing
     }
 
-tmgTheFoundationAllied :: CardDef
-tmgTheFoundationAllied =
-  doubleSided "71015b" $ story "71015" "The Foundation [guardian]" TheMidwinterGala
+theFoundationAllied :: CardDef
+theFoundationAllied = doubleSided "71015b" $ story "71015" "The Foundation [guardian]" TheMidwinterGala
 
-tmgTheFoundationRival :: CardDef
-tmgTheFoundationRival =
-  doubleSided "71015" $ story "71015b" "The Foundation [guardian]" TheMidwinterGala
+theFoundationRival :: CardDef
+theFoundationRival = doubleSided "71015" $ story "71015b" "The Foundation [guardian]" TheMidwinterGala
 
-tmgTheSyndicateAllied :: CardDef
-tmgTheSyndicateAllied =
-  doubleSided "71022b" $ story "71022" "The Syndicate [rogue]" TheMidwinterGala
+theSyndicateAllied :: CardDef
+theSyndicateAllied = doubleSided "71022b" $ story "71022" "The Syndicate [rogue]" TheMidwinterGala
 
-tmgTheSyndicateRival :: CardDef
-tmgTheSyndicateRival =
-  doubleSided "71022" $ story "71022b" "The Syndicate [rogue]" TheMidwinterGala
+theSyndicateRival :: CardDef
+theSyndicateRival = doubleSided "71022" $ story "71022b" "The Syndicate [rogue]" TheMidwinterGala
 
-tmgMiskatonicUniversityAllied :: CardDef
-tmgMiskatonicUniversityAllied =
-  doubleSided "71021b" $ story "71021" "Miskatonic University [seeker]" TheMidwinterGala
+miskatonicUniversityAllied :: CardDef
+miskatonicUniversityAllied = doubleSided "71021b" $ story "71021" "Miskatonic University [seeker]" TheMidwinterGala
 
-tmgMiskatonicUniversityRival :: CardDef
-tmgMiskatonicUniversityRival =
-  doubleSided "71021" $ story "71021b" "Miskatonic University [seeker]" TheMidwinterGala
+miskatonicUniversityRival :: CardDef
+miskatonicUniversityRival = doubleSided "71021" $ story "71021b" "Miskatonic University [seeker]" TheMidwinterGala
 
-tmgSilverTwilightLodgeAllied :: CardDef
-tmgSilverTwilightLodgeAllied =
-  doubleSided "71023b" $ story "71023" "Silver Twilight Lodge [mystic]" TheMidwinterGala
+silverTwilightLodgeAllied :: CardDef
+silverTwilightLodgeAllied = doubleSided "71023b" $ story "71023" "Silver Twilight Lodge [mystic]" TheMidwinterGala
 
-tmgSilverTwilightLodgeRival :: CardDef
-tmgSilverTwilightLodgeRival =
-  doubleSided "71023" $ story "71023b" "Silver Twilight Lodge [mystic]" TheMidwinterGala
+silverTwilightLodgeRival :: CardDef
+silverTwilightLodgeRival = doubleSided "71023" $ story "71023b" "Silver Twilight Lodge [mystic]" TheMidwinterGala
 
-tmgLocalsOfKingsportAllied :: CardDef
-tmgLocalsOfKingsportAllied =
-  doubleSided "71024b" $ story "71024" "Locals of Kingsport [survivor]" TheMidwinterGala
+localsOfKingsportAllied :: CardDef
+localsOfKingsportAllied = doubleSided "71024b" $ story "71024" "Locals of Kingsport [survivor]" TheMidwinterGala
 
-tmgLocalsOfKingsportRival :: CardDef
-tmgLocalsOfKingsportRival =
-  doubleSided "71024" $ story "71024b" "Locals of Kingsport [survivor]" TheMidwinterGala
+localsOfKingsportRival :: CardDef
+localsOfKingsportRival = doubleSided "71024" $ story "71024b" "Locals of Kingsport [survivor]" TheMidwinterGala

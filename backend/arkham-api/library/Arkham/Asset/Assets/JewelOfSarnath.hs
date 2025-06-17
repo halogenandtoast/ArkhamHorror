@@ -1,59 +1,51 @@
-module Arkham.Asset.Assets.JewelOfSarnath (
-  jewelOfSarnath,
-  JewelOfSarnath(..),
-) where
+module Arkham.Asset.Assets.JewelOfSarnath (jewelOfSarnath) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Deck qualified as Deck
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
 newtype JewelOfSarnath = JewelOfSarnath AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jewelOfSarnath :: AssetCard JewelOfSarnath
-jewelOfSarnath = storyAsset JewelOfSarnath Cards.jewelOfSarnath
+jewelOfSarnath = asset JewelOfSarnath Cards.jewelOfSarnath
 
 instance HasAbilities JewelOfSarnath where
   getAbilities (JewelOfSarnath a) =
     [ mkAbility a 1 $ forced $ AssetLeavesPlay #when (be a)
-    , controlledAbility a 2 (exists $ enemyAtLocationWith You) $
-        FastAbility (exhaust a)
+    , controlled a 2 (exists $ EnemyAt YourLocation) $ FastAbility (exhaust a)
     ]
 
 instance RunMessage JewelOfSarnath where
   runMessage msg a@(JewelOfSarnath attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      pushAll
-        [ putCardIntoPlay iid attrs
-        , PlaceTokens (toSource attrs) (toTarget attrs) Damage 3
-        , PlaceDoom (toSource attrs) (toTarget attrs) 1
-        ]
+      putCardIntoPlay iid attrs
+      placeTokens attrs attrs #damage 3
+      placeDoom attrs attrs 1
       pure a
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ ShuffleIntoDeck Deck.EncounterDeck (toTarget attrs)
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      shuffleIntoDeck Deck.EncounterDeck attrs
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
-      chooseOne iid
-        [ Label "Use your {willpower}" $ beginSkillTest sid iid (attrs.ability 2) iid #willpower (Fixed 1)
-        , Label "Use your {agility}" $ beginSkillTest sid iid (attrs.ability 2) iid #agility (Fixed 1)
-        ]
+      chooseOneM iid do
+        for_ [#willpower, #agility] \kind -> do
+          skillLabeled kind $ beginSkillTest sid iid (attrs.ability 2) iid kind (Fixed 1)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       enemies <- select $ enemyAtLocationWith iid
-      let
-        damageOpts enemy =
-          [ Label "Move 1 damage" [MoveTokens (attrs.ability 2) (toTarget attrs) (toTarget enemy) Damage 1] | attrs.damage > 0 ]
-        doomOpts enemy =
-          [ Label "Move 1 doom" [MoveTokens (attrs.ability 2) (toTarget attrs) (toTarget enemy) Doom 1] | attrs.doom > 0 ]
-      player <- getPlayer iid
-      chooseOrRunOne player
-        [ targetLabel enemy (damageOpts enemy <> doomOpts enemy)
-        | enemy <- enemies
-        , notNull (damageOpts enemy <> doomOpts enemy)
-        ]
+      when (attrs.damage > 0 || attrs.doom > 0) do
+        chooseOrRunOneM iid do
+          targets enemies \enemy -> do
+            chooseOrRunOneM iid $ withI18n do
+              when (attrs.damage > 0) do
+                countVar 1 $ labeled' "moveDamage" $ moveTokens (attrs.ability 2) attrs enemy #damage 1
+              when (attrs.doom > 0) do
+                countVar 1 $ labeled' "moveDoom" $ moveTokens (attrs.ability 2) attrs enemy #doom 1
       pure a
     _ -> JewelOfSarnath <$> liftRunMessage msg attrs

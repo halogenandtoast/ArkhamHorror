@@ -1,17 +1,14 @@
-module Arkham.Act.Cards.FindingTheJewel (
-  findingTheJewel,
-  FindingTheJewel(..),
-) where
+module Arkham.Act.Cards.FindingTheJewel (findingTheJewel) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Helpers.Modifiers (modifySelect)
-import Arkham.Keyword
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
+import Arkham.SlotType
 import Arkham.Trait
 
 newtype FindingTheJewel = FindingTheJewel ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 findingTheJewel :: ActCard FindingTheJewel
@@ -22,6 +19,6 @@ instance HasModifiersFor FindingTheJewel where
     modifySelect a (AssetWithTrait Guest) [DoNotTakeUpSlot AllySlot]
 
 instance RunMessage FindingTheJewel where
-  runMessage msg a@(FindingTheJewel attrs) = runQueueT $ case msg of
+  runMessage msg (FindingTheJewel attrs) = runQueueT $ case msg of
     -- TODO implement parley abilities and advancement
     _ -> FindingTheJewel <$> liftRunMessage msg attrs

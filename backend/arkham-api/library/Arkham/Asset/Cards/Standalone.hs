@@ -207,224 +207,186 @@ ravenousUncontrolledHunger =
       , cdOtherSide = Just "89002"
       }
 
-archibaldHudsonCard :: CardDef
-archibaldHudsonCard =
+archibaldHudson :: CardDef
+archibaldHudson =
   (storyAsset "71017" ("Archibald Hudson" <:> "Astute Agent") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Agency]
     , cdSkills = [#willpower, #willpower, #intellect, #intellect]
     , cdSlots = [#ally]
     , cdUnique = True
-    , cdHealth = Just 2
-    , cdSanity = Just 2
     }
 
-specialAgentCallahanCard :: CardDef
-specialAgentCallahanCard =
+specialAgentCallahan :: CardDef
+specialAgentCallahan =
   (storyAsset "71018" ("Special Agent Callahan" <:> "Weapons Expert") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Agency]
     , cdSkills = [#combat, #combat, #intellect, #intellect]
     , cdSlots = [#ally]
     , cdUnique = True
-    , cdHealth = Just 3
-    , cdSanity = Just 1
     }
 
-horacioMartinezCard :: CardDef
-horacioMartinezCard =
+horacioMartinez :: CardDef
+horacioMartinez =
   (storyAsset "71019" ("Horacio Martinez" <:> "Brash Bodyguard") 3 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Agency]
     , cdSkills = [#combat, #combat, #agility, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
-    , cdHealth = Just 4
-    , cdSanity = Just 1
     }
 
-drMyaBadryCard :: CardDef
-drMyaBadryCard =
+drMyaBadry :: CardDef
+drMyaBadry =
   (storyAsset "71023" ("Dr. Mya Badry" <:> "Medical Examiner") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Miskatonic]
     , cdSkills = [#intellect, #intellect, #agility, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
-    , cdHealth = Just 2
-    , cdSanity = Just 2
     }
 
-lucasTetlowCard :: CardDef
-lucasTetlowCard =
+lucasTetlow :: CardDef
+lucasTetlow =
   (storyAsset "71024" ("Lucas Tetlow" <:> "Faculty Curator") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Miskatonic]
     , cdSkills = [#intellect, #intellect, #combat, #combat]
     , cdSlots = [#ally]
     , cdUnique = True
-    , cdHealth = Just 3
-    , cdSanity = Just 1
     }
 
-elizabethConradCard :: CardDef
-elizabethConradCard =
+elizabethConrad :: CardDef
+elizabethConrad =
   (storyAsset "71025" ("Elizabeth Conrad" <:> "Completely Zozzled") 3 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Miskatonic]
     , cdSkills = [#willpower, #willpower, #agility, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
-    , cdHealth = Just 1
-    , cdSanity = Just 3
     }
 
-mirandaKeeperCard :: CardDef
-mirandaKeeperCard =
+mirandaKeeper :: CardDef
+mirandaKeeper =
   (storyAsset "71026" ("Miranda Keeper" <:> "Antiquities \"Trader\"") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Syndicate]
     , cdSkills = [#intellect, #intellect, #combat, #combat]
     , cdSlots = [#ally]
     , cdUnique = True
     , cdUses = uses Supply 3
-    , cdHealth = Just 2
-    , cdSanity = Just 2
     }
 
-arseneRenardCard :: CardDef
-arseneRenardCard =
+arseneRenard :: CardDef
+arseneRenard =
   (storyAsset "71027" ("Ars\xE8ne Renard" <:> "Gentleman Thief") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Syndicate]
     , cdSkills = [#intellect, #intellect, #agility, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
-    , cdHealth = Just 1
-    , cdSanity = Just 3
     }
 
-novaMaloneCard :: CardDef
-novaMaloneCard =
+novaMalone :: CardDef
+novaMalone =
   (storyAsset "71028" ("Nova Malone" <:> "Commanding Gangster") 3 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Syndicate]
     , cdSkills = [#willpower, #willpower, #combat, #combat]
     , cdSlots = [#ally]
     , cdUnique = True
-    , cdHealth = Just 3
-    , cdSanity = Just 1
     }
 
-prudenceDouglasCard :: CardDef
-prudenceDouglasCard =
+prudenceDouglas :: CardDef
+prudenceDouglas =
   (storyAsset "71029" ("Prudence Douglas" <:> "Pragmatic Occultist") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Sorcerer, SilverTwilight]
     , cdSkills = [#willpower, #willpower, #agility, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
     , cdUses = uses Portent 3
-    , cdHealth = Just 2
-    , cdSanity = Just 2
     }
 
-sarahVanShawCard :: CardDef
-sarahVanShawCard =
+sarahVanShaw :: CardDef
+sarahVanShaw =
   (storyAsset "71030" ("Sarah Van Shaw" <:> "Lodge Warden") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, SilverTwilight]
     , cdSkills = [#combat, #combat, #agility, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
-    , cdHealth = Just 3
-    , cdSanity = Just 1
     }
 
-raymondLogginsCard :: CardDef
-raymondLogginsCard =
+raymondLoggins :: CardDef
+raymondLoggins =
   (storyAsset "71031" ("Raymond Loggins" <:> "Mysterious Benefactor") 3 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Sorcerer, SilverTwilight]
     , cdSkills = [#willpower, #willpower, #intellect, #intellect]
     , cdSlots = [#ally]
     , cdUnique = True
     , cdUses = uses Truth 4
-    , cdHealth = Just 1
-    , cdSanity = Just 2
     }
 
-deloresGadlingCard :: CardDef
-deloresGadlingCard =
+deloresGadling :: CardDef
+deloresGadling =
   (storyAsset "71041" ("Delores Gadling" <:> "Lantern Club Infiltrator") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Kingsport]
     , cdSkills = [#combat, #combat, #agility, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
-    , cdHealth = Just 1
-    , cdSanity = Just 3
     }
 
-thomasOlneyCard :: CardDef
-thomasOlneyCard =
+thomasOlney :: CardDef
+thomasOlney =
   (storyAsset "71042" ("Thomas Olney" <:> "Inquisitive Adventurer") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Wayfarer]
     , cdSkills = [#willpower, #willpower, #intellect, #intellect]
     , cdSlots = [#ally]
     , cdUnique = True
-    , cdHealth = Just 3
-    , cdSanity = Just 1
     }
 
-claireWilsonCard :: CardDef
-claireWilsonCard =
+claireWilson :: CardDef
+claireWilson =
   (storyAsset "71043" ("Claire Wilson" <:> "Entirely Unimpressed") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Kingsport]
     , cdSkills = [#willpower, #willpower, #agility, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
-    , cdHealth = Just 2
-    , cdSanity = Just 2
     }
 
-caldwellPhilipsEnthralledByLegendsCard :: CardDef
-caldwellPhilipsEnthralledByLegendsCard =
+caldwellPhilipsEnthralledByLegends :: CardDef
+caldwellPhilipsEnthralledByLegends =
   (storyAsset "71063b" ("Caldwell Philips" <:> "Enthralled by Legends") 0 TheMidwinterGala)
     { cdCardTraits = setFromList [Leader, Guest, Miskatonic]
     , cdSkills = [#willpower, #intellect, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
     , cdCost = Nothing
-    , cdHealth = Just 2
-    , cdSanity = Just 2
     }
 
-carlSanfordLustingForPowerCard :: CardDef
-carlSanfordLustingForPowerCard =
+carlSanfordLustingForPower :: CardDef
+carlSanfordLustingForPower =
   (storyAsset "71064b" ("Carl Sanford" <:> "Lusting for Power") 0 TheMidwinterGala)
     { cdCardTraits = setFromList [Leader, Guest, SilverTwilight]
     , cdSkills = [#willpower, #intellect, #combat]
     , cdSlots = [#ally]
     , cdUnique = True
     , cdCost = Nothing
-    , cdHealth = Just 3
-    , cdSanity = Just 3
     }
 
-valeriyaAntonovaWantsOutOfHereCard :: CardDef
-valeriyaAntonovaWantsOutOfHereCard =
+valeriyaAntonovaWantsOutOfHere :: CardDef
+valeriyaAntonovaWantsOutOfHere =
   (storyAsset "71065b" ("Valeriya Antonova" <:> "Wants Out of Here") 0 TheMidwinterGala)
     { cdCardTraits = setFromList [Leader, Guest, Agency]
     , cdSkills = [#willpower, #intellect, #combat]
     , cdSlots = [#ally]
     , cdUnique = True
     , cdCost = Nothing
-    , cdHealth = Just 2
-    , cdSanity = Just 3
     }
 
-johnnyValoneReadyToMakeADealCard :: CardDef
-johnnyValoneReadyToMakeADealCard =
+johnnyValoneReadyToMakeADeal :: CardDef
+johnnyValoneReadyToMakeADeal =
   (storyAsset "71066b" ("Johnny Valone" <:> "Ready to Make a Deal") 0 TheMidwinterGala)
     { cdCardTraits = setFromList [Leader, Guest, Syndicate]
     , cdSkills = [#intellect, #combat, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
     , cdCost = Nothing
-    , cdHealth = Just 3
-    , cdSanity = Just 2
     }
 
-jewelOfSarnathCard :: CardDef
-jewelOfSarnathCard =
+jewelOfSarnath :: CardDef
+jewelOfSarnath =
   (storyAsset "71067b" ("Jewel of Sarnath" <:> "Turning Dreams Into Reality") 0 TheMidwinterGala)
     { cdCardTraits = setFromList [Item, Relic]
     , cdCost = Nothing
@@ -433,8 +395,8 @@ jewelOfSarnathCard =
     , cdCardType = EncounterAssetType
     }
 
-thePaleLanternHypnoticGlowCard :: CardDef
-thePaleLanternHypnoticGlowCard =
+thePaleLanternHypnoticGlow :: CardDef
+thePaleLanternHypnoticGlow =
   (storyAsset "71068" ("The Pale Lantern" <:> "Hypnotic Glow") 0 TheMidwinterGala)
     { cdCardTraits = setFromList [Item, Relic]
     , cdCost = Nothing
@@ -443,8 +405,8 @@ thePaleLanternHypnoticGlowCard =
     , cdOtherSide = Just "71068b"
     }
 
-thePaleLanternBeguilingAuraCard :: CardDef
-thePaleLanternBeguilingAuraCard =
+thePaleLanternBeguilingAura :: CardDef
+thePaleLanternBeguilingAura =
   (storyAsset "71068b" ("The Pale Lantern" <:> "Beguiling Aura") 0 TheMidwinterGala)
     { cdCardTraits = setFromList [Item, Relic]
     , cdCost = Nothing
@@ -454,14 +416,12 @@ thePaleLanternBeguilingAuraCard =
     , cdVictoryPoints = Just 1
     }
 
-williamBainLookingForThoseLostCard :: CardDef
-williamBainLookingForThoseLostCard =
+williamBainLookingForThoseLost :: CardDef
+williamBainLookingForThoseLost =
   (storyAsset "71069b" ("William Bain" <:> "Looking for Those Lost") 0 TheMidwinterGala)
     { cdCardTraits = setFromList [Leader, Guest, Kingsport]
     , cdSkills = [#willpower, #combat, #agility]
     , cdSlots = [#ally]
     , cdUnique = True
     , cdCost = Nothing
-    , cdHealth = Just 4
-    , cdSanity = Just 4
     }

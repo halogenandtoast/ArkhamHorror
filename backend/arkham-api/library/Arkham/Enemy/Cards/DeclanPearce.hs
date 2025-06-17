@@ -1,11 +1,10 @@
-module Arkham.Enemy.Cards.DeclanPearce (
-  declanPearce,
-  DeclanPearce(..),
-) where
+module Arkham.Enemy.Cards.DeclanPearce (declanPearce) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.Matcher
 
 newtype DeclanPearce = DeclanPearce EnemyAttrs
@@ -31,7 +30,6 @@ instance HasAbilities DeclanPearce where
 instance RunMessage DeclanPearce where
   runMessage msg e@(DeclanPearce attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      enemies <- selectList AnyEnemy
-      for_ enemies \enemyId -> healDamage enemyId (attrs.ability 1) 1
+      selectEach AnyEnemy \x -> healDamage x (attrs.ability 1) 1
       pure e
     _ -> DeclanPearce <$> liftRunMessage msg attrs

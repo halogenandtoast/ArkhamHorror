@@ -1,15 +1,12 @@
-module Arkham.Asset.Assets.SarahVanShaw (
-  sarahVanShaw,
-  SarahVanShaw(..),
-) where
+module Arkham.Asset.Assets.SarahVanShaw (sarahVanShaw) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Matcher
+import Arkham.Modifier
 
 newtype SarahVanShaw = SarahVanShaw AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sarahVanShaw :: AssetCard SarahVanShaw

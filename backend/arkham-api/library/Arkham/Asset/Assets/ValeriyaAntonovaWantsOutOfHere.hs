@@ -1,16 +1,13 @@
-module Arkham.Asset.Assets.ValeriyaAntonovaWantsOutOfHere (
-  valeriyaAntonovaWantsOutOfHere,
-  ValeriyaAntonovaWantsOutOfHere(..),
-) where
+module Arkham.Asset.Assets.ValeriyaAntonovaWantsOutOfHere (valeriyaAntonovaWantsOutOfHere) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Import.Lifted hiding (AssetExhausted)
 import Arkham.Effect.Window
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted (readyThis)
+import Arkham.Trait (Trait (Guest))
 
 newtype ValeriyaAntonovaWantsOutOfHere = ValeriyaAntonovaWantsOutOfHere AssetAttrs
   deriving anyclass IsAsset
@@ -25,19 +22,29 @@ instance HasModifiersFor ValeriyaAntonovaWantsOutOfHere where
 
 instance HasAbilities ValeriyaAntonovaWantsOutOfHere where
   getAbilities (ValeriyaAntonovaWantsOutOfHere a) =
-    [ actionAbility a 1 ControlsThis (exhaust a)
+    [ restricted a 1 ControlsThis (actionAbilityWithCost $ exhaust a)
     , mkAbility a 2 $ forced $ AssetLeavesPlay #when (be a)
     ]
 
 instance RunMessage ValeriyaAntonovaWantsOutOfHere where
   runMessage msg a@(ValeriyaAntonovaWantsOutOfHere attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      assets <- select $ AssetWithTrait Guest <> AssetExhausted <> not_ (be attrs) <> at_ (locationWithInvestigator iid)
+      assets <-
+        select
+          $ AssetWithTrait Guest
+          <> AssetExhausted
+          <> not_ (be attrs)
+          <> at_ (locationWithInvestigator iid)
       chooseTargetM iid assets readyThis
       guestCount <- selectCount $ AssetWithTrait Guest <> at_ (locationWithInvestigator iid)
       when (guestCount > 0) do
         ems <- effectModifiers (attrs.ability 1) [AnySkillValue guestCount]
-        push $ CreateWindowModifierEffect (FirstEffectWindow [EffectNextSkillTestWindow iid, EffectRoundWindow]) ems (attrs.ability 1) (toTarget iid)
+        push
+          $ CreateWindowModifierEffect
+            (FirstEffectWindow [EffectNextSkillTestWindow iid, EffectRoundWindow])
+            ems
+            (attrs.ability 1)
+            (toTarget iid)
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       removeFromGame attrs

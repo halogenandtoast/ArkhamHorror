@@ -1,31 +1,27 @@
-module Arkham.Asset.Assets.DeloresGadling (
-  deloresGadling,
-  DeloresGadling(..),
-) where
+module Arkham.Asset.Assets.DeloresGadling (deloresGadling) where
 
-import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, maybeModified_)
+import Arkham.Helpers.SkillTest (isInvestigation, isParley)
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Trait
 
 newtype DeloresGadling = DeloresGadling AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deloresGadling :: AssetCard DeloresGadling
 deloresGadling = allyWith DeloresGadling Cards.deloresGadling (1, 3) noSlots
 
 instance HasModifiersFor DeloresGadling where
-  getModifiersFor (DeloresGadling a) = for_ a.controller \iid -> \case
-    InvestigatorTarget iid' | iid == iid' -> do
-      action <- getSkillTestAction
+  getModifiersFor (DeloresGadling a) = do
+    controllerGets a [MayIgnoreAttacksOfOpportunity]
+    for_ a.controller \iid -> maybeModified_ a iid do
+      liftGuardM $ (||) <$> isInvestigation <*> isParley
       n <- selectCount $ EnemyAt YourLocation <> EnemyWithTrait Humanoid
-      pure $ [SkillModifier #intellect n | n > 0 && action `elem` [Just #investigate, Just Parley]]
-        <> [MayIgnoreAttacksOfOpportunity]
-    _ -> pure mempty
+      guard (n > 0)
+      pure [SkillModifier #intellect n]
 
 instance RunMessage DeloresGadling where
-  runMessage msg a@(DeloresGadling attrs) = runQueueT $ case msg of
-    _ -> DeloresGadling <$> liftRunMessage msg attrs
+  runMessage msg (DeloresGadling attrs) = DeloresGadling <$> runMessage msg attrs

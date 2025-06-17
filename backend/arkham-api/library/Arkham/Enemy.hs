@@ -595,12 +595,12 @@ allEnemies =
       SomeEnemyCard serpentsOfYigAdvanced
     , -- The Midwinter Gala
       SomeEnemyCard abhorrentMoonBeast
-      SomeEnemyCard declanPearce
-      SomeEnemyCard enragedGug
-      SomeEnemyCard lanternClubMember
-      SomeEnemyCard caldwellPhilipsCompelledByDreams
-      SomeEnemyCard savageShantak
-      SomeEnemyCard rookieCop
-      SomeEnemyCard theBloodlessMan
-      SomeEnemyCard theBloodlessManUnleashed
+    , SomeEnemyCard declanPearce
+    , SomeEnemyCard enragedGug
+    , SomeEnemyCard lanternClubMember
+    , SomeEnemyCard caldwellPhilipsCompelledByDreams
+    , SomeEnemyCard savageShantak
+    , SomeEnemyCard rookieCop
+    , SomeEnemyCard theBloodlessMan
+    , SomeEnemyCard theBloodlessManUnleashed
     ]

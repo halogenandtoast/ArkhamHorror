@@ -76,6 +76,7 @@ data ExtendedCardMatcher
   | PassesCommitRestrictions ExtendedCardMatcher
   | CardWithSharedTraitToAttackingEnemy
   | CardIdentifiedByScenarioMetaKey Key
+  | ActiveCard
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated ExtendedCardMatcher

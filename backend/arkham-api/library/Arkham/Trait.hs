@@ -1,10 +1,12 @@
 module Arkham.Trait (
+  displayTrait,
   Trait (..),
   EnemyTrait (..),
   HasTraits (..),
 ) where
 
 import Arkham.Prelude
+import Data.Char (isLower, isUpper)
 
 newtype EnemyTrait = EnemyTrait {unEnemyTrait :: Trait}
 
@@ -134,8 +136,11 @@ data Trait
   | Jungle
   | Kadath
   | Key
+  | Kingsport
   | Lair
+  | LanternClub
   | Lead
+  | Leader
   | Leng
   | Lodge
   | Lunatic
@@ -150,6 +155,7 @@ data Trait
   | MiGo
   | Midtown
   | Mirage
+  | Misfortune
   | Miskatonic
   | Mnar
   | Monster
@@ -187,6 +193,7 @@ data Trait
   | Research
   | Resolute
   | Ritual
+  | Rival
   | River
   | Riverside
   | Road
@@ -203,6 +210,7 @@ data Trait
   | Serpent
   | Service
   | Servitor
+  | Shantak
   | Shattered
   | Ship
   | Shoggoth
@@ -265,3 +273,14 @@ data Trait
 
 class HasTraits a where
   toTraits :: a -> Set Trait
+
+displayTrait :: Trait -> Text
+displayTrait t = tshow $ splitCamelCase $ show t
+
+splitCamelCase :: String -> String
+splitCamelCase "" = ""
+splitCamelCase [x] = [x]
+splitCamelCase (x : y : rest) =
+  if isLower x && isUpper y
+    then [x, ' ', y] <> splitCamelCase rest
+    else [x] <> splitCamelCase (y : rest)

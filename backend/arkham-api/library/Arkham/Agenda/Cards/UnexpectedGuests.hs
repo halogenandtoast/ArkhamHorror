@@ -1,17 +1,14 @@
-module Arkham.Agenda.Cards.UnexpectedGuests (
-  unexpectedGuests,
-  UnexpectedGuests(..),
-) where
+module Arkham.Agenda.Cards.UnexpectedGuests (unexpectedGuests) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Modifiers (modifySelect)
-import Arkham.Keyword
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Trait
 
 newtype UnexpectedGuests = UnexpectedGuests AgendaAttrs
-  deriving anyclass IsAgenda
+  deriving anyclass (IsAgenda, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unexpectedGuests :: AgendaCard UnexpectedGuests
@@ -22,6 +19,6 @@ instance HasModifiersFor UnexpectedGuests where
     when (onSide A a) $ modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait LanternClub]
 
 instance RunMessage UnexpectedGuests where
-  runMessage msg a@(UnexpectedGuests attrs) = runQueueT $ case msg of
+  runMessage msg (UnexpectedGuests attrs) = runQueueT $ case msg of
     -- TODO handle spellbound forced ability and agenda advancement
     _ -> UnexpectedGuests <$> liftRunMessage msg attrs

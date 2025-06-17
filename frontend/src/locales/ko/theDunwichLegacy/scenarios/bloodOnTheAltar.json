@@ -1,63 +1,63 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1 for each location in play with no encounter card underneath it (max -4).",
-      "cultist": "-2. If you fail, add 1 clue from the token pool to your location.",
-      "tablet": "-2. If you are in the Hidden Chamber, reveal another token.",
-      "elderThing": "-3. If you fail, place 1 doom on the current agenda."
+      "skull": "-1 플레이 상태인 장소 중에서, 그 밑에 조우 카드가 없는 장소마다 -1(최대 -4).",
+      "cultist": "-2. 실패하면, 토큰 저장소에서 단서를 1개 가져와 당신이 위치한 장소에 올려놓습니다.",
+      "tablet": "-2. 당신이 ‘숨겨진 방’에 있으면, 다른 혼돈 토큰을 하나 더 공개합니다.",
+      "elderThing": "-3. 실패하면, 현재 주요사건에 파멸을 1개 올려놓습니다."
     },
     "hardExpert": {
-      "skull": "-1 for each location in play with no encounter card underneath it.",
-      "cultist": "-4. If you fail, add 1 clue from the token pool to your location.",
-      "tablet": "-3. Reveal another token.",
-      "elderThing": "-3. Place 1 doom on the current agenda."
+      "skull": "-1 플레이 상태인 장소 중에서, 그 밑에 조우 카드가 없는 장소마다 -1.",
+      "cultist": "-4. 실패하면, 토큰 저장소에서 단서를 1개 가져와 당신이 위치한 장소에 올려놓습니다.",
+      "tablet": "-3. 다른 혼돈 토큰을 하나 더 공개합니다.",
+      "elderThing": "-3. 현재 주요사건에 파멸을 1개 올려놓습니다."
     }
   },
   "xp": {
-    "bonus": "Gains insight into the hidden world of the Mythos."
+    "bonus": "신화 속 감춰진 세계에 대한 통찰력을 얻음."
   },
   "intro": {
-    "title": "Part IV: Blood on the Altar",
-    "body": "<p>When you finally reach Dunwich, you are greeted by Zebulon Whateley and Earl Sawyer, another man from the village who had met with Dr. Armitage during the incident several months ago. “Things ain’t lookin’ too good here,” Earl tells you. “Some folk up and went missin’ a few nights ago. ‘Dem whippoorwills won’ shut up. Dunno what yer doin’ here, but last time you Arkham folk came ‘round it was bad news. Very bad news.” His eyes blink rapidly, and he coughs and looks away.</p><p>“Look, why don’t you rest fer the night an’ look fer whatever it is yer looking fer t’morra,” Zebulon chimes in, putting a wrinkled hand on your shoulder. You begin to protest, but your aching muscles and weary mind won’t allow you to refuse. The elderly man offers to take you in for the night, and drives you to his home at the outskirts of Dunwich village. The town is disheveled and eerie, and you find yourself wishing you hadn’t come here at all. You fall asleep on the ride over and scarcely remember anything else from that night.</p><p>When you awaken, you find that Zebulon’s house is abandoned, and there is no sign of the elderly man, or of Mr. Sawyer. Fearing the worst, you head into the village of Dunwich to investigate, hoping to find answers.</p>"
+    "title": "시나리오 IV: 제단에 흘린 피",
+    "body": "<p>마침내 던위치에 도착하자 지블런 웨이틀리와 더불어 또 다른 주민인 얼 소여가 당신을 맞이합니다. 얼은 몇 달 전 사태가 벌어졌을 때 아미티지 박사를 만났었다고 합니다. “여기 요즘 뭐가 영 이상하거든요.” 얼이 당신에게 말을 꺼냅니다. “며칠 전 밤에 몇 사람이 또 사라졌어요. 젠장할 쏙독새는 도무지 닥치질 않고요. 여기 뭐 할라고 왔는가는 몰라도 당신네 아컴 사람들이 제일 마지막에 온 뒤로 뭐가 꼬였어. 엄청 꼬였다고요.” 그는 정신없이 눈을 깜박이고 기침을 하며 시선을 가만히 두질 못합니다.</p><p>“그러니 밤엔 좀 쉬고, 찾는 게 있다면 날 밝은 후에 더 찾는 게 어떻겠소.” 지블런이 맞장구를 치면서 주름진 손을 당신의 어깨에 올립니다. 괜찮다며 버티려 했지만, 삭신이 쑤신 데다 정신적으로도 고된 탓에 도저히 그 제안을 거절할 수가 없습니다. 지블런 노인은 자기 집에서 밤을 보내라고 하면서 던위치 마을 외곽에 있는 집으로 태워줍니다. 마을은 어수선하고 으스스해서 오지 말았어야 했나라는 생각이 부지불식간에 듭니다. 그의 집에 도착하고 나서 잠이 들 때까지 뭘 했는지는 도무지 기억이 나지 않습니다.</p><p>다음 날 잠에서 깨어났을 때, 지블런의 집은 텅텅 비어있고 지블런 노인이나 얼 소여의 흔적은 어디에도 보이지 않습니다. 당신은 최악의 상황을 우려하면서 무슨 일인지 살펴보고자 던위치 마을 중심부로 향합니다.</p>"
   },
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: Blood on the Altar, Dunwich, Whippoorwills, Nightgaunts, and Ancient Evils. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/blood-on-the-altar.png' /><img src='{setImgPath}/dunwich.png' /><img src='{setImgPath}/whippoorwills.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
-    "placeLocations": "Put Village Commons into play. Each investigator begins play in the Village Commons.",
-    "placeRandomLocations": "Remove one of the two copies of each other location from the game at random. Then, choose one of the six remaining locations at random, and remove it from the game as well. Put the remaining locations into play.",
-    "potentialSacrifices": "Check Campaign Log. Gather the cards for each character who “was kidnapped” according to your Campaign Log. Form a facedown pile of “potential sacrifices,” consisting of each of those cards, along with the Zebulon Whateley card and the Earl Sawyer card.",
-    "setAside": "Set the following cards aside, out of play: Silas Bishop, The Hidden Chamber, Key to the Chamber, and Powder of Ibn-Ghazi.",
-    "delayed": "Check Campaign Log. If *the investigators were delayed on their way to Dunwich*: Add 1 doom to agenda 1a.",
-    "seekingVengeance": "Check Campaign Log. If *the O’Bannion gang has a bone to pick with the investigators*: Seeking vengeance, the gang from the Clover Club has followed you to Dunwich. Gather all cards from the Naomi’s Crew encounter set and shuffle them into the encounter deck. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/naomis-crew.png' /></section>",
-    "placeUnderneath": "Take the previously set-aside The Hidden Chamber and Key to the Chamber cards, along with the top 3 cards of the encounter deck. Shuffle them and randomly deal 1 card facedown underneath each location in play except Village Commons."
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *제단에 흘린 피*, *던위치*, *쏙독새*, *나이트건트*, *고대의 악*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/blood-on-the-altar.png' /><img src='{setImgPath}/dunwich.png' /><img src='{setImgPath}/whippoorwills.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
+    "placeLocations": "‘마을 광장’을 플레이 영역에 둡니다. 모든 조사자는 ‘마을 광장’에서 시작합니다.",
+    "placeRandomLocations": "‘마을 광장’ 이외의 장소는 각 장소별로 사본이 2장씩 있습니다. 각 장소별 사본 2장 중 1장을 무작위로 선택하여 게임에서 제거합니다. 그런 다음, 앞서 제거하지 않은 장소 6장 중 1장을 무작위로 선택하여 추가로 게임에서 제거합니다. 남은 장소 5장을 플레이 영역에 둡니다(다음 쪽의 추천 장소 배치를 참조하여 놓습니다). 한 장소가 빠졌기 때문에 게임 준비 때 배치하는 장소는 ‘마을 광장’을 포함해 총 6곳입니다.",
+    "potentialSacrifices": "캠페인 기록지를 확인합니다. 캠페인 기록지에 “납치되었다”라고 적힌 모든 인물 카드를 모아서 뒷면으로 두어 “잠재적 희생양” 카드 더미를 구성합니다. ‘지블런 웨이틀리’ 카드와 ‘얼 소여’ 카드도 함께 “잠재적 희생양” 카드 더미에 둡니다.",
+    "setAside": "‘사일러스 비숍’, ‘숨겨진 방’, ‘방 열쇠’, ‘이븐 가지의 분말’을 비플레이 상태로 치워 둡니다.",
+    "delayed": "캠페인 기록지를 확인합니다. *조사자들이 던위치에 예정보다 늦게 도착했다*면: 주요사건 1a에 파멸 토큰 1개를 추가합니다.",
+    "seekingVengeance": "캠페인 기록지를 확인합니다. *오베니언 갱이 조사자들에게 앙심을 품었다*면: 클로버 클럽의 갱들이 복수를 하고자 당신을 쫓아 던위치로 왔습니다. *나오미 일당* 조우 세트에 해당하는 모든 카드를 조우 덱에 합쳐 섞습니다. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/naomis-crew.png' /></section>",
+    "placeUnderneath": "앞서 치워 둔 ‘숨겨진 방’과 ‘방 열쇠’ 카드를 조우 덱 맨 위 카드 3장과 함께 가져 옵니다. 이 카드 5장을 섞은 다음, 플레이 상태인 장소 중 ‘마을 광장’을 제외한 모든 장소 밑에 무작위로 1장씩 뒷면이 보이게 둡니다."
   },
   "hiddenChamber": {
-    "title": "The Hidden Chamber",
-    "body": "<p class='basic'>This scenario includes a single-sided location (The Hidden Chamber) which has been dealt facedown underneath a random location. The Hidden Chamber only has a revealed side, and has a _Revelation_ effect that puts it into play when drawn.</p><p class='basic'>When put into play, a single-sided location is put into play with its revealed side faceup, because it has no unrevealed side. Otherwise, it functions as a normal location in every other way.</p>"
+    "title": "숨겨진 방",
+    "body": "<p class='basic'>이번 시나리오에는 단면 장소 카드 1장(‘숨겨진 방’)이 포함되어 있으며, 이 카드는 게임 준비 과정에서 다른 무작위 장소의 아래에 뒷면으로 놓입니다. ‘숨겨진 방’에는 공개 면만 있으며, 그 카드를 뽑았을 때 플레이 영역에 두게 하는 _폭로_ 효과가 있습니다.</p><p class='basic'>단면 장소를 플레이 영역에 둘 때는 해당 카드에 미공개 면이 없으므로 공개 면이 보이도록 플레이 영역에 둡니다. 이 점을 제외한 다른 모든 경우에 있어서 일반적인 장소와 동일합니다.</p>"
   },
   "resolutions": {
     "noResolution": {
-      "title": "No Resolution",
-      "body": "<div class='resolution'><p>_If no resolution was reached (each investigator resigned or was defeated)_: The cries of the whippoorwills fade into the distance, and the town of Dunwich is filled with an eerie silence. All that can be heard is the dry whistle of the chill wind and the slow rustling of dead leaves. There is no sign of the missing townsfolk, nor will there be ever again.</p><ul><li>In your Campaign Log, record that *the ritual was completed*.</li><li>If there were any potential sacrifices remaining at the end of the game, place them underneath the agenda deck.</li><li>In your Campaign Log, under “Sacrificed to Yog‑Sothoth,” record the names of each unique card that is underneath the agenda deck. Each of those cards are removed from all players’ decks and can no longer be included in any players’ decks for the remainder of the campaign.</li><li>If an investigator with The Necronomicon (*Olaus Wormius Translation*) in his or her deck was defeated, in your Campaign Log, record that the Necronomicon was stolen. The Necronomicon (*Olaus Wormius Translation*) must be removed from that investigator’s deck.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 2 bonus experience as he or she gains insight into the hidden world of the Mythos.<ul><li>_Experience_: {xp}</li></ul></li><li>Proceed to _Scenario V: Undimensioned and Unseen._</li></ul></div>"
+      "title": "결말에 도달하지 못함",
+      "body": "<div class='resolution'><p>_아무 결말에도 도달하지 못했다면(모든 조사자가 후퇴하거나 쓰러졌다면)_: 쏙독새의 울음소리는 저 멀리 사라지고, 던위치 마을에는 스산한 정적이 맴돕니다. 들리는 거라고는 건조하고 쌀쌀한 바람이 불어오는 소리와 낙엽이 느릿하니 바스락거리는 소리뿐입니다. 실종된 주민의 흔적은 어디에도 없습니다. 우리는 이들을 다시는 되찾을 수 없을 겁니다.</p><ul><li>캠페인 기록지에 *의식이 완전히 거행되었다*라고 기록합니다.</li><li>게임이 끝날 때 ‘잠재적 희생양’이 남아 있었다면, 그들을 주요사건 덱 밑에 놓습니다.</li><li>캠페인 기록지의 “요그 소토스에게 바쳐진 제물” 아래에, 주요사건 덱 밑에 있는 모든 고유 카드의 명칭을 기록합니다. 이 카드들은 모든 플레이어의 덱에서 제거되며 남은 캠페인 동안 어느 플레이어의 덱에도 포함할 수 없습니다.</li><li>자기 덱에 ‘네크로노미콘(*올라우스 워미우스 번역본*)’이 있는 조사자가 쓰러졌다면, 캠페인 기록지에 *네크로노미콘을 도난당했다*라고 기록합니다. 해당 조사자의 덱에서 ‘네크로노미콘(*올라우스 워미우스 번역본*)’을 제거해야 합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다. 각 조사자는 신화 속 감춰진 세계에 대한 통찰력을 얻었기 때문에, 경험치를 추가로 2씩 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>_시나리오 V: “차원 너머의 보이지 않는 존재”_로 이어집니다.</li></ul></div>"
     },
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1_: As you land the finishing blow, the creature’s body explodes into hundreds of squirming ropelike appendages, wriggling across the ground and climbing up the walls. You’re so startled that you aren’t fast enough to prevent them from escaping the room. Even so, whatever that creature was, you’re glad it’s now dead.</p><ul><li>In your Campaign Log, record that *the investigators put Silas Bishop out of his misery*.</li><li>In your Campaign Log, under “Sacrificed to Yog‑Sothoth,” record the names of each unique card that is underneath the agenda deck. Each of those cards are removed from all players’ decks and can no longer be included in any players’ decks for the remainder of the campaign.</li><li>If an investigator with The Necronomicon (*Olaus Wormius Translation*) in his or her deck was defeated, in your Campaign Log, record that the Necronomicon was stolen. The Necronomicon (*Olaus Wormius Translation*) must be removed from that investigator’s deck.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 2 bonus experience as he or she gains insight into the hidden world of the Mythos.<ul><li>_Experience_: {xp}</li></ul></li><li>Proceed to _Interlude II: The Survivors_.</li></ul></div>"
+      "title": "결말 1",
+      "body": "<div class='resolution'><p>_결말 1_: 당신이 마지막 타격을 입히자 괴물의 몸뚱이가 폭발해, 밧줄처럼 굵은 수백 개의 부속지가 사방으로 흩어집니다. 흉측하게 생긴 그것들이 바닥에서 꿈틀거리거나 벽을 타고 오릅니다. 당신은 너무 놀란 바람에 그것들이 방에서 빠져나가는 걸 다 막아내진 못합니다. 어찌 되었든 간에, 눈앞에 있던 정체불명의 괴물이 죽었다는 사실에 안도감을 느낍니다.</p><ul><li>캠페인 기록지에 *조사자들이 사일러스 비숍의 비극적인 삶을 끝내주었다*라고 기록합니다.</li><li>캠페인 기록지의 “요그 소토스에게 바쳐진 제물” 아래에, 주요사건 덱 밑에 있는 모든 고유 카드의 명칭을 기록합니다. 이 카드들은 모든 플레이어의 덱에서 제거되며 남은 캠페인 동안 어느 플레이어의 덱에도 포함할 수 없습니다.</li><li>자기 덱에 ‘네크로노미콘(*올라우스 워미우스 번역본*)’이 있는 조사자가 쓰러졌다면, 캠페인 기록지에 *네크로노미콘을 도난당했다*라고 기록합니다. 해당 조사자의 덱에서 ‘네크로노미콘(*올라우스 워미우스 번역본*)’을 제거해야 합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다. 각 조사자는 신화 속 감춰진 세계에 대한 통찰력을 얻었기 때문에, 경험치를 추가로 2씩 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>_막간 II: 생존자들_로 이어집니다.</li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2_: With the creature that once was Silas lashing out at you from its chains, you have little time to react. Knowing that the Necronomicon might have a spell or incantation that could subdue Silas, you fend off the abomination long enough to find a passage that can help. With no time to spare, you recite the Latin incantation, and find that the words come effortlessly to your tongue, as though recalled from an earlier memory. The creature’s body begins to shrink and melt away as the incantation builds, its cries terrifying and haunting. In the end, all that is left is the disfigured corpse of a man—Silas Bishop. You find a silver pendant emblazoned with an odd constellation tucked into his shirt. You take it with you, hoping to find a use for it.</p><ul><li>In your Campaign Log, record that *the investigators restored Silas Bishop*.</li><li>In your Campaign Log, under “Sacrificed to Yog‑Sothoth,” record the names of each unique card that is underneath the agenda deck. Each of those cards are removed from all players’ decks and can no longer be included in any players’ decks for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 2 bonus experience as he or she gains insight into the hidden world of the Mythos.<ul><li>_Experience_: {xp}</li></ul></li><li>Proceed to _Interlude II: The Survivors._</li></ul></div>"
+      "title": "결말 2",
+      "body": "<div class='resolution'><p>_결말 2_: 한때 사일러스였던 괴물이 사슬을 끊고 달려들고 있었고, 당신에게는 제대로 대응할 만한 시간이 거의 없었습니다. 문득 네크로노미콘에는 사일러스를 제압할 수 있는 마법이나 주문이 있을 거라는 사실이 떠올라, 저 흉물의 공격을 막아내며 도움이 될 만한 구절을 찾아 책을 뒤집니다. 당신은 마침내 적절한 마법을 찾아내어 한 치의 망설임도 없이 라틴어 의식구를 읊기 시작합니다. 기묘하게도 그 언어는 마치 과거의 기억으로부터 떠올린 것인 양 자연스럽게 입에서 흘러나옵니다. 술법이 구축되자 괴물이 끔찍하고 무시무시한 비명을 지르기 시작했고, 괴물의 몸뚱이가 차츰 녹아내리며 줄어듭니다. 마침내 그곳에는 사일러스 비숍의 망가진 시신만 덩그러니 남습니다. 당신은 그의 셔츠 안쪽에서 기이한 별자리 모양으로 장식된 은제 펜던트를 찾았습니다. 유용하게 쓰일 길이 있길 바라며 일단 주머니에 챙겨 넣습니다.</p><ul><li>캠페인 기록지에 *조사자들이 사일러스 비숍을 본모습으로 회복시켰다*라고 기록합니다.</li><li>캠페인 기록지의 “요그 소토스에게 바쳐진 제물” 아래에, 주요사건 덱 밑에 있는 모든 고유 카드의 명칭을 기록합니다. 이 카드들은 모든 플레이어의 덱에서 제거되며 남은 캠페인 동안 어느 플레이어의 덱에도 포함할 수 없습니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다. 각 조사자는 신화 속 감춰진 세계에 대한 통찰력을 얻었기 때문에, 경험치를 추가로 2씩 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>_막간 II: 생존자들_로 이어집니다.</li></ul></div>"
     },
     "resolution3": {
-      "title": "Resolution 3",
-      "body": "<div class='resolution'><p>_Resolution 3_: With the creature that once was Silas lashing out at you from its chains, you have little time to react. Hoping there is something in the chamber you can use to your advantage, you fend off the abomination long enough to find a journal; many of its passages are written in Latin. It appears to be a handwritten excerpt from the Necronomicon, its purpose unknown. With no time to spare, you recite the incantation, stumbling over the words and feeling your throat tighten with each sentence. The creature’s body begins to shrink and melt away as the incantation continues, its cries terrifying and haunting. In the end, all that is left is a pile of wet and sticky ichor, and a rotten stench.</p><ul><li>In your Campaign Log, record that *the investigators banished Silas Bishop*.</li><li>In your Campaign Log, under “Sacrificed to Yog‑Sothoth,” record the names of each unique card that is underneath the agenda deck. Each of those cards are removed from all players’ decks and can no longer be included in any players’ decks for the remainder of the campaign.</li><li>If an investigator with The Necronomicon (*Olaus Wormius Translation*) in his or her deck was defeated, in your Campaign Log, record that the Necronomicon was stolen. The Necronomicon (*Olaus Wormius Translation*) must be removed from that investigator’s deck.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 2 bonus experience as he or she gains insight into the hidden world of the Mythos.<ul><li>_Experience_: {xp}</li></ul></li><li>Proceed to _Interlude II: The Survivors._</li></ul></div>"
+      "title": "결말 3",
+      "body": "<div class='resolution'><p>_결말 3_: 한때 사일러스였던 괴물이 사슬을 끊고 달려들고 있었고, 당신에게는 제대로 대응할 만한 시간이 거의 없었습니다. 저 흉물의 공격을 막아내며 방 안에서 쓸 만한 단서를 찾던 당신은 마침내 일지를 찾아냈습니다. 일지 안의 많은 구절은 라틴어로 쓰여 있으며, 그 목적은 불분명하지만 네크로노미콘의 일부 내용을 발췌하여 수기한 것으로 보입니다. 당신은 마침내 적절한 마법을 찾아내어 한 치의 망설임도 없이 라틴어 의식구를 읊기 시작했지만, 더듬더듬 한 문장씩 뱉을 때마다 목구멍이 조여오는 것만 같습니다. 의식이 진행되자 괴물이 끔찍하고 무시무시한 비명을 지르기 시작했고, 괴물의 몸뚱이가 차츰 녹아내리며 줄어듭니다. 마침내 그 곳에는 축축하고 끈적이는 고름덩이와 썩어가는 악취만 남습니다.</p><ul><li>캠페인 기록지에 *조사자들이 사일러스 비숍을 소멸시켰다*라고 기록합니다.</li><li>캠페인 기록지의 “요그 소토스에게 바쳐진 제물” 아래에, 주요사건 덱 밑에 있는 모든 고유 카드의 명칭을 기록합니다. 이 카드들은 모든 플레이어의 덱에서 제거되며 남은 캠페인 동안 어느 플레이어의 덱에도 포함할 수 없습니다.</li><li>자기 덱에 ‘네크로노미콘(*올라우스 워미우스 번역본*)’이 있는 조사자가 쓰러졌다면, 캠페인 기록지에 *네크로노미콘을 도난당했다*라고 기록합니다. 해당 조사자의 덱에서 ‘네크로노미콘(*올라우스 워미우스 번역본*)’을 제거해야 합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다. 각 조사자는 신화 속 감춰진 세계에 대한 통찰력을 얻었기 때문에, 경험치를 추가로 2씩 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>_막간 II: 생존자들_로 이어집니다.</li></ul></div>"
     },
     "xp": {
-      "bonus": "Gains insight into the hidden world of the Mythos"
+      "bonus": "신화 속 감춰진 세계에 대한 통찰력을 얻음."
     }
   },
   "tooltips": {
     "villageCommons": {
-      "resign": "\"This is suicide! We're better off hiding out the night.\""
+      "resign": "“이건 자살 행위야! 숨어서 밤을 넘기는 편이 좋겠어.”"
     }
   }
 }

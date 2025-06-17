@@ -500,7 +500,12 @@ const replaceText = (text: string) => {
     replaceAll('[bless]', '<span class="bless-icon"></span>').
     replaceAll('[curse]', '<span class="curse-icon"></span>').
     replaceAll('[frost]', '<span class="frost-icon"></span>').
-    replaceAll('[per_player]', '<span class="per-player"></span>')
+    replaceAll('[per_investigator]', '<span class="per-player"></span>').
+    replaceAll('[seal_a]', '<span class="seal-a-icon"></span>').
+    replaceAll('[seal_b]', '<span class="seal-b-icon"></span>').
+    replaceAll('[seal_c]', '<span class="seal-c-icon"></span>').
+    replaceAll('[seal_d]', '<span class="seal-d-icon"></span>').
+    replaceAll('[seal_e]', '<span class="seal-e-icon"></span>')
 }
 </script>
 

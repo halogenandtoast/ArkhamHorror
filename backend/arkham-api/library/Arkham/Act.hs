@@ -1,12 +1,12 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Act ( Act (..), lookupAct,) where
+module Arkham.Act (Act (..), lookupAct) where
 
-import Arkham.Prelude hiding (fold)
 import Arkham.Act.Acts
 import Arkham.Act.Types
 import Arkham.Card
 import Arkham.Id
+import Arkham.Prelude hiding (fold)
 import Control.Monad.Fail (fail)
 
 data MissingAct = MissingAct CardCode
@@ -351,4 +351,7 @@ allActs =
     , -- Murder at the Excelsior Hotel
       SomeActCard whatHappened
     , SomeActCard followingLeads
+    , -- The Midwinter Gala
+      SomeActCard meetAndGreet
+    , SomeActCard findingTheJewel
     ]

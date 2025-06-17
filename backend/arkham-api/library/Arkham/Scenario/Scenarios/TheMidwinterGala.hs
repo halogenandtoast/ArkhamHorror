@@ -2,10 +2,9 @@ module Arkham.Scenario.Scenarios.TheMidwinterGala (theMidwinterGala) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.Agenda.Sequence
-import Arkham.Agenda.Types (Field (AgendaSequence))
 import Arkham.Asset.Types (Field (AssetController, AssetTraits))
 import Arkham.EncounterSet qualified as Set
+import Arkham.Helpers.Agenda
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
@@ -50,8 +49,7 @@ theMidwinterGala difficulty =
 instance HasChaosTokenValue TheMidwinterGala where
   getChaosTokenValue iid tokenFace (TheMidwinterGala attrs) = case tokenFace of
     Skull -> do
-      agendaId <- selectJust AnyAgenda
-      step <- fieldMap AgendaSequence (unAgendaStep . agendaStep) agendaId
+      step <- getCurrentAgendaStep
       let n = if isEasyStandard attrs then step else step + 1
       pure $ ChaosTokenValue Skull (NegativeModifier n)
     Cultist -> do

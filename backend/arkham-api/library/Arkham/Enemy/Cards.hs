@@ -3043,6 +3043,124 @@ tommyMalloy =
       , cdKeywords = setFromList [Keyword.Hunter]
       }
 
+valeriyaAntonovaDontMessWithHer :: CardDef
+valeriyaAntonovaDontMessWithHer =
+  unique
+    $ (enemy "71016b" ("Valeriya Antonova" <:> "Don't Mess With Her") TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
+        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+        , cdDoubleSided = True
+        , cdOtherSide = Just "71065b"
+        , cdVictoryPoints = Just 0
+        }
+
+rookieCop :: CardDef
+rookieCop =
+  (enemy "71020" "Rookie Cop" TheMidwinterGala 1)
+    { cdCardTraits = setFromList [Humanoid, Police, Rival]
+    , cdKeywords = setFromList [Keyword.Surge, Keyword.Aloof, Keyword.Hunter]
+    }
+
+caldwellPhilipsCompelledByDreams :: CardDef
+caldwellPhilipsCompelledByDreams =
+  unique
+    $ (enemy "71022b" ("Caldwell Philips" <:> "Compelled by Dreams") TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
+        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+        , cdDoubleSided = True
+        , cdOtherSide = Just "71063b"
+        , cdVictoryPoints = Just 0
+        }
+
+johnnyValoneHereToCollect :: CardDef
+johnnyValoneHereToCollect =
+  unique
+    $ (enemy "71028b" ("Johnny Valone" <:> "Here to Collect") TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
+        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+        , cdDoubleSided = True
+        , cdOtherSide = Just "71066"
+        , cdVictoryPoints = Just 0
+        }
+
+carlSanfordIntimidatingPresence :: CardDef
+carlSanfordIntimidatingPresence =
+  unique
+    $ (enemy "71034b" ("Carl Sanford" <:> "Intimidating Presence") TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
+        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+        , cdDoubleSided = True
+        , cdOtherSide = Just "71064b"
+        , cdVictoryPoints = Just 0
+        }
+
+williamBainDefiantToTheLast :: CardDef
+williamBainDefiantToTheLast =
+  unique
+    $ (enemy "71040b" ("William Bain" <:> "Defiant to the Last") TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
+        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+        , cdDoubleSided = True
+        , cdOtherSide = Just "71069b"
+        , cdVictoryPoints = Just 0
+        }
+
+theBloodlessMan :: CardDef
+theBloodlessMan =
+  unique
+    $ (enemy "71045" "The Bloodless Man" TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, LanternClub, Elite]
+        , cdKeywords =
+            setFromList
+              [ Keyword.Aloof
+              , Keyword.Patrol (NearestLocationToYou $ LocationWithAsset $ AssetWithTrait Guest)
+              ]
+        }
+
+theBloodlessManUnleashed :: CardDef
+theBloodlessManUnleashed =
+  unique
+    $ (enemy "71045b" "The Bloodless Man" TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Monster, Abomination, Elite]
+        , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+        , cdVictoryPoints = Just 1
+        }
+
+enragedGug :: CardDef
+enragedGug =
+  (enemy "71047" "Enraged Gug" TheMidwinterGala 1)
+    { cdCardTraits = setFromList [Monster, Dreamlands, Gug]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
+    }
+
+abhorrentMoonBeast :: CardDef
+abhorrentMoonBeast =
+  (enemy "71048" "Abhorrent Moon-Beast" TheMidwinterGala 1)
+    { cdCardTraits = setFromList [Monster, Dreamlands, Servitor]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    }
+
+savageShantak :: CardDef
+savageShantak =
+  (enemy "71049" "Savage Shantak" TheMidwinterGala 1)
+    { cdCardTraits = setFromList [Monster, Dreamlands, Shantak]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+declanPearce :: CardDef
+declanPearce =
+  unique
+    $ (enemy "71051" "Declan Pearce" TheMidwinterGala 1)
+        { cdCardTraits = setFromList [Humanoid, LanternClub, Elite]
+        , cdKeywords = setFromList [Keyword.Hunter]
+        }
+
+lanternClubMember :: CardDef
+lanternClubMember =
+  (enemy "71053" "Lantern Club Member" TheMidwinterGala 1)
+    { cdCardTraits = setFromList [Humanoid, LanternClub]
+    }
+
 bogGator :: CardDef
 bogGator =
   (enemy "81022" "Bog Gator" TheBayou 2)
@@ -3303,121 +3421,3 @@ nyarlathotepTrueShape =
       { cdCardTraits = setFromList [AncientOne, Elite]
       , cdVictoryPoints = Just 0
       }
-
-abhorrentMoonBeast :: CardDef
-abhorrentMoonBeast =
-  (enemy "71048" "Abhorrent Moon-Beast" TheMidwinterGala 1)
-    { cdCardTraits = setFromList [Monster, Dreamlands, Servitor]
-    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
-    }
-
-enragedGug :: CardDef
-enragedGug =
-  (enemy "71050" "Enraged Gug" TheMidwinterGala 1)
-    { cdCardTraits = setFromList [Monster, Dreamlands, Gug]
-    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
-    }
-
-savageShantak :: CardDef
-savageShantak =
-  (enemy "71051" "Savage Shantak" TheMidwinterGala 1)
-    { cdCardTraits = setFromList [Monster, Dreamlands, Shantak]
-    , cdKeywords = setFromList [Keyword.Hunter]
-    }
-
-declanPearce :: CardDef
-declanPearce =
-  unique
-    $ (enemy "71052" "Declan Pearce" TheMidwinterGala 1)
-        { cdCardTraits = setFromList [Humanoid, LanternClub, Elite]
-        , cdKeywords = setFromList [Keyword.Hunter]
-        }
-
-lanternClubMember :: CardDef
-lanternClubMember =
-  (enemy "71053" "Lantern Club Member" TheMidwinterGala 1)
-    { cdCardTraits = setFromList [Humanoid, LanternClub]
-    }
-
-caldwellPhilipsCompelledByDreams :: CardDef
-caldwellPhilipsCompelledByDreams =
-  unique
-    $ (enemy "71063" ("Caldwell Philips" <:> "Compelled by Dreams") TheMidwinterGala 1)
-        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
-        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
-        , cdDoubleSided = True
-        , cdOtherSide = Just "71063b"
-        , cdVictoryPoints = Just 0
-        }
-
-carlSanfordIntimidatingPresence :: CardDef
-carlSanfordIntimidatingPresence =
-  unique
-    $ (enemy "71064" ("Carl Sanford" <:> "Intimidating Presence") TheMidwinterGala 1)
-        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
-        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
-        , cdDoubleSided = True
-        , cdOtherSide = Just "71064b"
-        , cdVictoryPoints = Just 0
-        }
-
-johnnyValoneHereToCollect :: CardDef
-johnnyValoneHereToCollect =
-  unique
-    $ (enemy "71066" ("Johnny Valone" <:> "Here to Collect") TheMidwinterGala 1)
-        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
-        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
-        , cdDoubleSided = True
-        , cdOtherSide = Just "71066b"
-        , cdVictoryPoints = Just 0
-        }
-
-williamBainDefiantToTheLast :: CardDef
-williamBainDefiantToTheLast =
-  unique
-    $ (enemy "71069" ("William Bain" <:> "Defiant to the Last") TheMidwinterGala 1)
-        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
-        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
-        , cdDoubleSided = True
-        , cdOtherSide = Just "71069b"
-        , cdVictoryPoints = Just 0
-        }
-
-valeriyaAntonovaDontMessWithHer :: CardDef
-valeriyaAntonovaDontMessWithHer =
-  unique
-    $ (enemy "71065" ("Valeriya Antonova" <:> "Don't Mess With Her") TheMidwinterGala 1)
-        { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
-        , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
-        , cdDoubleSided = True
-        , cdOtherSide = Just "71065b"
-        , cdVictoryPoints = Just 0
-        }
-
-rookieCop :: CardDef
-rookieCop =
-  (enemy "71020" "Rookie Cop" TheMidwinterGala 1)
-    { cdCardTraits = setFromList [Humanoid, Police, Rival]
-    , cdKeywords = setFromList [Keyword.Surge, Keyword.Aloof, Keyword.Hunter]
-    }
-
-theBloodlessMan :: CardDef
-theBloodlessMan =
-  unique
-    $ (enemy "71045" "The Bloodless Man" TheMidwinterGala 1)
-        { cdCardTraits = setFromList [Humanoid, LanternClub, Elite]
-        , cdKeywords =
-            setFromList
-              [ Keyword.Aloof
-              , Keyword.Patrol (NearestLocationToYou $ LocationWithAsset $ AssetWithTrait Guest)
-              ]
-        }
-
-theBloodlessManUnleashed :: CardDef
-theBloodlessManUnleashed =
-  unique
-    $ (enemy "71045b" "The Bloodless Man" TheMidwinterGala 1)
-        { cdCardTraits = setFromList [Monster, Abomination, Elite]
-        , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
-        , cdVictoryPoints = Just 1
-        }

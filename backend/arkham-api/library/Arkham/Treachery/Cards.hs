@@ -212,6 +212,7 @@ allEncounterTreacheryCards =
       , blackStarsRise
       , blasphemousVisions
       , bleedingWalls
+      , bleedingWallsTheMidwinterGala
       , blindsense
       , bloodOnYourHands
       , brokenRails
@@ -503,15 +504,15 @@ allEncounterTreacheryCards =
       , vastExpanse
       , vaultOfEarthlyDemise
       , violentCommands
-      , violentCommandsTMG
+      , violentCommandsTheMidwinterGala
       , viciousAmbush
-      , bleedingWallsTMG
+      , bleedingWallsTheMidwinterGala
       , entrap
-      , inexplicableColdTMG
+      , inexplicableColdTheMidwinterGala
       , mindExtraction
-      , noxiousFumesTMG
-      , pushedIntoTheBeyondTMG
-      , secretDoorTMG
+      , noxiousFumesTheMidwinterGala
+      , pushedIntoTheBeyondTheMidwinterGala
+      , secretDoorTheMidwinterGala
       , terrorGate
       , unlucky
       , wardOfPreservation
@@ -3522,8 +3523,8 @@ viciousAmbush =
     { cdCardTraits = singleton Scheme
     }
 
-bleedingWallsTMG :: CardDef
-bleedingWallsTMG =
+bleedingWallsTheMidwinterGala :: CardDef
+bleedingWallsTheMidwinterGala =
   (treachery "71054" "Bleeding Walls" TheMidwinterGala 2)
     { cdCardTraits = singleton Terror
     }
@@ -3534,8 +3535,8 @@ entrap =
     { cdCardTraits = singleton Hazard
     }
 
-inexplicableColdTMG :: CardDef
-inexplicableColdTMG =
+inexplicableColdTheMidwinterGala :: CardDef
+inexplicableColdTheMidwinterGala =
   (treachery "71056" "Inexplicable Cold" TheMidwinterGala 1)
     { cdCardTraits = singleton Hazard
     }
@@ -3546,20 +3547,20 @@ mindExtraction =
     { cdCardTraits = singleton Power
     }
 
-noxiousFumesTMG :: CardDef
-noxiousFumesTMG =
+noxiousFumesTheMidwinterGala :: CardDef
+noxiousFumesTheMidwinterGala =
   (treachery "71058" "Noxious Fumes" TheMidwinterGala 1)
     { cdCardTraits = singleton Hazard
     }
 
-pushedIntoTheBeyondTMG :: CardDef
-pushedIntoTheBeyondTMG =
+pushedIntoTheBeyondTheMidwinterGala :: CardDef
+pushedIntoTheBeyondTheMidwinterGala =
   (treachery "71059" "Pushed into the Beyond" TheMidwinterGala 1)
     { cdCardTraits = singleton Hex
     }
 
-secretDoorTMG :: CardDef
-secretDoorTMG =
+secretDoorTheMidwinterGala :: CardDef
+secretDoorTheMidwinterGala =
   (treachery "71060" "Secret Door" TheMidwinterGala 2)
     { cdCardTraits = singleton Obstacle
     }
@@ -3570,8 +3571,8 @@ terrorGate =
     { cdCardTraits = singleton Terror
     }
 
-violentCommandsTMG :: CardDef
-violentCommandsTMG =
+violentCommandsTheMidwinterGala :: CardDef
+violentCommandsTheMidwinterGala =
   (treachery "71062" "Violent Commands" TheMidwinterGala 2)
     { cdCardTraits = singleton Terror
     }

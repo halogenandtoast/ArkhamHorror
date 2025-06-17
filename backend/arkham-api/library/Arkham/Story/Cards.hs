@@ -511,26 +511,27 @@ theFoundationAllied = doubleSided "71015b" $ story "71015" "The Foundation [guar
 theFoundationRival :: CardDef
 theFoundationRival = doubleSided "71015" $ story "71015b" "The Foundation [guardian]" TheMidwinterGala
 
-theSyndicateAllied :: CardDef
-theSyndicateAllied = doubleSided "71022b" $ story "71022" "The Syndicate [rogue]" TheMidwinterGala
-
-theSyndicateRival :: CardDef
-theSyndicateRival = doubleSided "71022" $ story "71022b" "The Syndicate [rogue]" TheMidwinterGala
-
 miskatonicUniversityAllied :: CardDef
 miskatonicUniversityAllied = doubleSided "71021b" $ story "71021" "Miskatonic University [seeker]" TheMidwinterGala
 
 miskatonicUniversityRival :: CardDef
 miskatonicUniversityRival = doubleSided "71021" $ story "71021b" "Miskatonic University [seeker]" TheMidwinterGala
 
+
+theSyndicateAllied :: CardDef
+theSyndicateAllied = doubleSided "71027b" $ story "71027" "The Syndicate [rogue]" TheMidwinterGala
+
+theSyndicateRival :: CardDef
+theSyndicateRival = doubleSided "71027" $ story "71027b" "The Syndicate [rogue]" TheMidwinterGala
+
 silverTwilightLodgeAllied :: CardDef
-silverTwilightLodgeAllied = doubleSided "71023b" $ story "71023" "Silver Twilight Lodge [mystic]" TheMidwinterGala
+silverTwilightLodgeAllied = doubleSided "71033b" $ story "71033" "Silver Twilight Lodge [mystic]" TheMidwinterGala
 
 silverTwilightLodgeRival :: CardDef
-silverTwilightLodgeRival = doubleSided "71023" $ story "71023b" "Silver Twilight Lodge [mystic]" TheMidwinterGala
+silverTwilightLodgeRival = doubleSided "71033" $ story "71033b" "Silver Twilight Lodge [mystic]" TheMidwinterGala
 
 localsOfKingsportAllied :: CardDef
-localsOfKingsportAllied = doubleSided "71024b" $ story "71024" "Locals of Kingsport [survivor]" TheMidwinterGala
+localsOfKingsportAllied = doubleSided "71039b" $ story "71039" "Locals of Kingsport [survivor]" TheMidwinterGala
 
 localsOfKingsportRival :: CardDef
-localsOfKingsportRival = doubleSided "71024" $ story "71024b" "Locals of Kingsport [survivor]" TheMidwinterGala
+localsOfKingsportRival = doubleSided "71039" $ story "71039b" "Locals of Kingsport [survivor]" TheMidwinterGala

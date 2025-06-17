@@ -24,13 +24,14 @@ allAgendaCards =
     $ map
       (toCardCode &&& id)
       [ aCreatureOfTheBayou
+      , agentsOfTheOuterGods
       , aHarshWindBlows
+      , aKillerParty
+      , allIsOne
       , aSinisterRealm
       , aTearInReality
       , aTearInRealityV2
       , aTrailOfTwists
-      , agentsOfTheOuterGods
-      , allIsOne
       , awakening
       , barricadedStreets
       , beckoningForPower
@@ -40,12 +41,12 @@ allAgendaCards =
       , bidingItsTime
       , breakingThrough
       , breakingThroughV2
-      , callOfMadness
       , callingForthTheOldOnes
+      , callOfMadness
       , celestialAlignment
       , chaosAtTheCarnevale
-      , chaosInTheCloverClub
       , chaosIncarnate
+      , chaosInTheCloverClub
       , cityOfBlood
       , cityOfTheGreatRace
       , coldWelcome
@@ -82,9 +83,9 @@ allAgendaCards =
       , hotPursuit
       , humanityFading
       , icyDepths
+      , inEveryShadow
       , intoTheWhite
       , intruders
-      , inEveryShadow
       , itAwaits
       , journeyAcrossTheDreamlands
       , journeyThroughTheGates
@@ -101,6 +102,7 @@ allAgendaCards =
       , madnessDrowns
       , manifestationsOfEvil
       , markedForSacrifice
+      , maskedRevelers
       , outOfTime
       , overTheThreshold
       , pastPresentAndFuture
@@ -122,8 +124,8 @@ allAgendaCards =
       , secretsOfTheSeaV1
       , secretsOfTheSeaV2
       , settingSun
-      , silentStirring
       , shadowsDeepen
+      , silentStirring
       , snappedThreads
       , somethingStirs
       , specialInvestigation
@@ -204,9 +206,6 @@ allAgendaCards =
       , theWaterRises
       , theWitchLight
       , theyAreUponYou
-      , maskedRevelers
-      , unexpectedGuests
-      , aKillerParty
       , theyreGettingOut
       , threadsOfTime
       , threeFates
@@ -214,8 +213,9 @@ allAgendaCards =
       , timeIsRunningShort
       , torturousDescent
       , unchangingAsTheSea
-      , underTheSurface
       , undergroundMuscle
+      , underTheSurface
+      , unexpectedGuests
       , vengeance
       , vengeanceAwaits
       , whatLurksBelowV1

@@ -4039,6 +4039,7 @@ library
       Arkham.Treachery.Cards.BlackStarsRise
       Arkham.Treachery.Cards.BlasphemousVisions
       Arkham.Treachery.Cards.BleedingWalls
+      Arkham.Treachery.Cards.BleedingWallsTheMidwinterGala
       Arkham.Treachery.Cards.Blindsense
       Arkham.Treachery.Cards.Bloodlust
       Arkham.Treachery.Cards.BloodOnYourHands
@@ -4205,6 +4206,7 @@ library
       Arkham.Treachery.Cards.Indebted
       Arkham.Treachery.Cards.IndescribableApparition
       Arkham.Treachery.Cards.InexplicableCold
+      Arkham.Treachery.Cards.InexplicableColdTheMidwinterGala
       Arkham.Treachery.Cards.InfiniteDoorway
       Arkham.Treachery.Cards.InnsmouthLook
       Arkham.Treachery.Cards.InsatiableBloodlust
@@ -4262,6 +4264,7 @@ library
       Arkham.Treachery.Cards.NobodysHome
       Arkham.Treachery.Cards.NoTurningBack
       Arkham.Treachery.Cards.NoxiousFumes
+      Arkham.Treachery.Cards.NoxiousFumesTheMidwinterGala
       Arkham.Treachery.Cards.ObscuringFog
       Arkham.Treachery.Cards.Obsessive
       Arkham.Treachery.Cards.OfferOfPower
@@ -4301,6 +4304,7 @@ library
       Arkham.Treachery.Cards.PulledByTheStars
       Arkham.Treachery.Cards.Punishment
       Arkham.Treachery.Cards.PushedIntoTheBeyond
+      Arkham.Treachery.Cards.PushedIntoTheBeyondTheMidwinterGala
       Arkham.Treachery.Cards.RadicalTreatment
       Arkham.Treachery.Cards.RaiseTheStakes
       Arkham.Treachery.Cards.RationalThought
@@ -4328,6 +4332,7 @@ library
       Arkham.Treachery.Cards.SearchingForIzzie
       Arkham.Treachery.Cards.SearchingForIzzieAdvanced
       Arkham.Treachery.Cards.SecretDoor
+      Arkham.Treachery.Cards.SecretDoorTheMidwinterGala
       Arkham.Treachery.Cards.SecretGathering
       Arkham.Treachery.Cards.SecretsInTheAttic
       Arkham.Treachery.Cards.SecretsOfTheBeyond
@@ -4436,6 +4441,7 @@ library
       Arkham.Treachery.Cards.VaultOfEarthlyDemise
       Arkham.Treachery.Cards.ViciousAmbush
       Arkham.Treachery.Cards.ViolentCommands
+      Arkham.Treachery.Cards.ViolentCommandsTheMidwinterGala
       Arkham.Treachery.Cards.ViolentOutburst
       Arkham.Treachery.Cards.VisionsInYourMindDeath
       Arkham.Treachery.Cards.VisionsInYourMindFailure

@@ -49,4 +49,7 @@ instance RunMessage ArchibaldHudson where
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
       pure $ ArchibaldHudson $ attrs & flippedL .~ True & visibleL .~ False
+    Flip _ _ (isTarget attrs -> True) -> do
+      let flipped = not $ view flippedL attrs
+      pure $ ArchibaldHudson $ attrs & flippedL .~ flipped & visibleL .~ True
     _ -> ArchibaldHudson <$> liftRunMessage msg attrs

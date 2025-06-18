@@ -32,4 +32,7 @@ instance RunMessage SarahVanShaw where
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
       pure $ SarahVanShaw $ attrs & flippedL .~ True & visibleL .~ False
+    Flip _ _ (isTarget attrs -> True) -> do
+      let flipped = not $ view flippedL attrs
+      pure $ SarahVanShaw $ attrs & flippedL .~ flipped & visibleL .~ True
     _ -> SarahVanShaw <$> liftRunMessage msg attrs

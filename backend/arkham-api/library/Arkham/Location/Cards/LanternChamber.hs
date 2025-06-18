@@ -36,7 +36,7 @@ instance HasAbilities LanternChamber where
           ( Here
               <> thisExists a LocationWithoutClues
               <> oneOf
-                [ exists (AssetWithModifier $ ScenarioModifier "spellbound")
+                [ exists (IgnoreVisibility $ AssetWithModifier $ ScenarioModifier "spellbound")
                 , exists (EnemyWithModifier $ ScenarioModifier "spellbound")
                 ]
           )
@@ -69,7 +69,7 @@ instance RunMessage LanternChamber where
       beginSkillTest sid iid (attrs.ability 2) attrs #willpower (Fixed 4)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
-      assets <- select $ AssetWithModifier (ScenarioModifier "spellbound")
+      assets <- select $ IgnoreVisibility $ AssetWithModifier (ScenarioModifier "spellbound")
       enemies <- select $ EnemyWithModifier (ScenarioModifier "spellbound")
       chooseOneM iid do
         targets assets $ flipOverBy iid (attrs.ability 2)

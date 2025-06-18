@@ -36,4 +36,7 @@ instance RunMessage NovaMalone where
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
       pure $ NovaMalone $ attrs & flippedL .~ True & visibleL .~ False
+    Flip _ _ (isTarget attrs -> True) -> do
+      let flipped = not $ view flippedL attrs
+      pure $ NovaMalone $ attrs & flippedL .~ flipped & visibleL .~ True
     _ -> NovaMalone <$> liftRunMessage msg attrs

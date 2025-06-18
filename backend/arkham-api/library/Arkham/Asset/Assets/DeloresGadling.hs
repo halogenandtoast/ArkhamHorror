@@ -27,4 +27,7 @@ instance RunMessage DeloresGadling where
   runMessage msg (DeloresGadling attrs) = runQueueT $ case msg of
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
       pure $ DeloresGadling $ attrs & flippedL .~ True & visibleL .~ False
+    Flip _ _ (isTarget attrs -> True) -> do
+      let flipped = not $ view flippedL attrs
+      pure $ DeloresGadling $ attrs & flippedL .~ flipped & visibleL .~ True
     _ -> DeloresGadling <$> liftRunMessage msg attrs

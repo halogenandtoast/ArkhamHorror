@@ -30,4 +30,7 @@ instance RunMessage DrMyaBadry where
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
       pure $ DrMyaBadry $ attrs & flippedL .~ True & visibleL .~ False
+    Flip _ _ (isTarget attrs -> True) -> do
+      let flipped = not $ view flippedL attrs
+      pure $ DrMyaBadry $ attrs & flippedL .~ flipped & visibleL .~ True
     _ -> DrMyaBadry <$> liftRunMessage msg attrs

@@ -44,4 +44,7 @@ instance RunMessage PrudenceDouglas where
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
       pure $ PrudenceDouglas $ attrs & flippedL .~ True & visibleL .~ False
+    Flip _ _ (isTarget attrs -> True) -> do
+      let flipped = not $ view flippedL attrs
+      pure $ PrudenceDouglas $ attrs & flippedL .~ flipped & visibleL .~ True
     _ -> PrudenceDouglas <$> liftRunMessage msg attrs

@@ -52,4 +52,7 @@ instance RunMessage LucasTetlow where
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
       pure $ LucasTetlow $ attrs & flippedL .~ True & visibleL .~ False
+    Flip _ _ (isTarget attrs -> True) -> do
+      let flipped = not $ view flippedL attrs
+      pure $ LucasTetlow $ attrs & flippedL .~ flipped & visibleL .~ True
     _ -> LucasTetlow <$> liftRunMessage msg attrs

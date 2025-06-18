@@ -41,4 +41,7 @@ instance RunMessage MirandaKeeper where
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
       pure $ MirandaKeeper $ attrs & flippedL .~ True & visibleL .~ False
+    Flip _ _ (isTarget attrs -> True) -> do
+      let flipped = not $ view flippedL attrs
+      pure $ MirandaKeeper $ attrs & flippedL .~ flipped & visibleL .~ True
     _ -> MirandaKeeper <$> liftRunMessage msg attrs

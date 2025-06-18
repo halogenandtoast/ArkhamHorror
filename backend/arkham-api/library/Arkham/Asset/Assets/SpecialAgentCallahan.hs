@@ -41,4 +41,7 @@ instance RunMessage SpecialAgentCallahan where
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
       pure $ SpecialAgentCallahan $ attrs & flippedL .~ True & visibleL .~ False
+    Flip _ _ (isTarget attrs -> True) -> do
+      let flipped = not $ view flippedL attrs
+      pure $ SpecialAgentCallahan $ attrs & flippedL .~ flipped & visibleL .~ True
     _ -> SpecialAgentCallahan <$> liftRunMessage msg attrs

@@ -32,4 +32,7 @@ instance RunMessage RaymondLoggins where
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
       pure $ RaymondLoggins $ attrs & flippedL .~ True & visibleL .~ False
+    Flip _ _ (isTarget attrs -> True) -> do
+      let flipped = not $ view flippedL attrs
+      pure $ RaymondLoggins $ attrs & flippedL .~ flipped & visibleL .~ True
     _ -> RaymondLoggins <$> liftRunMessage msg attrs

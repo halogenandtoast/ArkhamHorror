@@ -22,7 +22,7 @@ newtype LocalsOfKingsportAllied = LocalsOfKingsportAllied StoryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 localsOfKingsportAllied :: StoryCard LocalsOfKingsportAllied
-localsOfKingsportAllied = story LocalsOfKingsportAllied Cards.localsOfKingsportAllied
+localsOfKingsportAllied = persistStory $ story LocalsOfKingsportAllied Cards.localsOfKingsportAllied
 
 instance HasAbilities LocalsOfKingsportAllied where
   getAbilities (LocalsOfKingsportAllied a) =

@@ -19,7 +19,7 @@ newtype TheFoundationAllied = TheFoundationAllied StoryAttrs
 This side represents working with The Foundation.
 -}
 theFoundationAllied :: StoryCard TheFoundationAllied
-theFoundationAllied = story TheFoundationAllied Cards.theFoundationAllied
+theFoundationAllied = persistStory $ story TheFoundationAllied Cards.theFoundationAllied
 
 instance HasAbilities TheFoundationAllied where
   getAbilities (TheFoundationAllied a) =

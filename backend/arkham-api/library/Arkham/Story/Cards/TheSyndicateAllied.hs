@@ -13,7 +13,7 @@ newtype TheSyndicateAllied = TheSyndicateAllied StoryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theSyndicateAllied :: StoryCard TheSyndicateAllied
-theSyndicateAllied = story TheSyndicateAllied Cards.theSyndicateAllied
+theSyndicateAllied = persistStory $ story TheSyndicateAllied Cards.theSyndicateAllied
 
 instance HasAbilities TheSyndicateAllied where
   getAbilities (TheSyndicateAllied a) =

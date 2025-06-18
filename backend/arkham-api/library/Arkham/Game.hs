@@ -4920,6 +4920,7 @@ instance Projection Story where
     case fld of
       StoryCard -> getCard storyCardId
       StoryPlacement -> pure storyPlacement
+      StoryClues -> pure $ Token.countTokens Token.Clue storyTokens
       StoryOtherSide -> pure storyOtherSide
       StoryCardsUnderneath -> pure storyCardsUnderneath
 

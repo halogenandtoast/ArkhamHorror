@@ -459,6 +459,8 @@ passesCriteria iid mcard source' requestor windows' = \case
       (`gameValueMatches` valueMatcher) =<< field AssetClues aid
     TreacherySource tid ->
       (`gameValueMatches` valueMatcher) =<< field TreacheryClues tid
+    StorySource sid ->
+      (`gameValueMatches` valueMatcher) =<< field StoryClues sid
     _ -> error "missing CluesOnThis check"
   Criteria.HorrorOnThis valueMatcher -> case source of
     AssetSource aid ->

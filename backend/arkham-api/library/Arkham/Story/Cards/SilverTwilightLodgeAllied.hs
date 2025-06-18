@@ -15,7 +15,7 @@ newtype SilverTwilightLodgeAllied = SilverTwilightLodgeAllied StoryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 silverTwilightLodgeAllied :: StoryCard SilverTwilightLodgeAllied
-silverTwilightLodgeAllied = story SilverTwilightLodgeAllied Cards.silverTwilightLodgeAllied
+silverTwilightLodgeAllied = persistStory $ story SilverTwilightLodgeAllied Cards.silverTwilightLodgeAllied
 
 instance HasAbilities SilverTwilightLodgeAllied where
   getAbilities (SilverTwilightLodgeAllied attrs) =

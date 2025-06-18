@@ -30,10 +30,12 @@ import Arkham.Story.Runner as X (
   story,
  )
 
+import Arkham.Card
 import Arkham.Classes.HasQueue (HasQueue, evalQueueT)
 import Arkham.Id
 import Arkham.Queue
 import Arkham.Story.Runner qualified as Msg
+import Arkham.Target
 import Control.Monad.Trans.Class
 
 afterStoryResolution
@@ -46,5 +48,17 @@ afterStoryResolution attrs body = do
 removeStory :: (AsId story, IdOf story ~ StoryId, ReverseQueue m) => story -> m ()
 removeStory x = push $ RemoveStory $ asId x
 
-resolveStory :: (AsId investigator, IdOf investigator ~ InvestigatorId, AsId story, IdOf story ~ StoryId, ReverseQueue m) => investigator -> story -> m ()
+resolveStory
+  :: ( AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     , AsId story
+     , IdOf story ~ StoryId
+     , ReverseQueue m
+     )
+  => investigator -> story -> m ()
 resolveStory (asId -> iid) (asId -> storyId) = push $ ResolveStory iid ResolveIt storyId
+
+persistStory
+  :: (Entity a, EntityAttrs a ~ StoryAttrs)
+  => CardBuilder (Maybe Target, StoryId) a -> CardBuilder (Maybe Target, StoryId) a
+persistStory = fmap (overAttrs (\a -> a {Msg.storyRemoveAfterResolution = False}))

@@ -20,7 +20,7 @@ newtype MiskatonicUniversityAllied = MiskatonicUniversityAllied StoryAttrs
 
 -- | 'Miskatonic University [seeker]' allied story card.
 miskatonicUniversityAllied :: StoryCard MiskatonicUniversityAllied
-miskatonicUniversityAllied = story MiskatonicUniversityAllied Cards.miskatonicUniversityAllied
+miskatonicUniversityAllied = persistStory $ story MiskatonicUniversityAllied Cards.miskatonicUniversityAllied
 
 instance HasModifiersFor MiskatonicUniversityAllied where
   getModifiersFor (MiskatonicUniversityAllied attrs) = do

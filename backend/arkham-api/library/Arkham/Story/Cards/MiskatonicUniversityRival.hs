@@ -17,7 +17,7 @@ newtype MiskatonicUniversityRival = MiskatonicUniversityRival StoryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miskatonicUniversityRival :: StoryCard MiskatonicUniversityRival
-miskatonicUniversityRival = story MiskatonicUniversityRival Cards.miskatonicUniversityRival
+miskatonicUniversityRival = persistStory $ story MiskatonicUniversityRival Cards.miskatonicUniversityRival
 
 instance HasAbilities MiskatonicUniversityRival where
   getAbilities (MiskatonicUniversityRival a) =

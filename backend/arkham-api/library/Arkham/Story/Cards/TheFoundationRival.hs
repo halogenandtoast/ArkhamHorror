@@ -19,7 +19,7 @@ newtype TheFoundationRival = TheFoundationRival StoryAttrs
 Represents conflict with The Foundation.
 -}
 theFoundationRival :: StoryCard TheFoundationRival
-theFoundationRival = story TheFoundationRival Cards.theFoundationRival
+theFoundationRival = persistStory $ story TheFoundationRival Cards.theFoundationRival
 
 instance HasAbilities TheFoundationRival where
   getAbilities (TheFoundationRival a) =

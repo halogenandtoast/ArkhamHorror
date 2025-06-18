@@ -37,5 +37,6 @@ instance RunMessage MaskedRevelers where
     AdvanceAgenda (isSide B attrs -> True) -> do
       shuffleSetAsideIntoEncounterDeck $ oneOf [CardWithTrait Monster, cardIs Treacheries.viciousAmbush]
       shuffleEncounterDiscardBackIn
+      advanceAgendaDeck attrs
       pure a
     _ -> MaskedRevelers <$> liftRunMessage msg attrs

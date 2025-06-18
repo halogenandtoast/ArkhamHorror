@@ -1,6 +1,7 @@
 module Arkham.Enemy.Cards.TheBloodlessMan (theBloodlessMan) where
 
 import Arkham.Ability
+import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDamage, EnemyDefeated)
 import Arkham.Enemy.Types (Field (EnemyDamage))
@@ -9,6 +10,7 @@ import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
+import Arkham.Message (ReplaceStrategy (Swap))
 import Arkham.Projection
 import Arkham.Trait
 
@@ -38,16 +40,21 @@ instance HasAbilities TheBloodlessMan where
 instance RunMessage TheBloodlessMan where
   runMessage msg e@(TheBloodlessMan attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      cancelEnemyDefeat attrs.id
       n <- perPlayer 3
       damage <- field EnemyDamage attrs.id
       let healAmt = max 0 (damage - n)
-      healDamage attrs.id (attrs.ability 1) healAmt
-      push $ Exhaust (toTarget attrs)
+      when (healAmt > 0) $ healDamage attrs.id (attrs.ability 1) healAmt
+      exhaustThis attrs
       flipOverBy iid (attrs.ability 1) attrs
       pure e
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       withLocationOf attrs \lid -> do
         selectEach (investigatorAt lid) \i -> assignHorror i (attrs.ability 2) 1
         selectEach (AssetWithTrait Guest <> assetAt lid) \aid -> dealAssetHorror aid (attrs.ability 2) 1
+      pure e
+    Flip _ _ (isTarget attrs -> True) -> do
+      unleashed <- genCard Cards.theBloodlessManUnleashed
+      push $ ReplaceEnemy attrs.id unleashed Swap
       pure e
     _ -> TheBloodlessMan <$> liftRunMessage msg attrs

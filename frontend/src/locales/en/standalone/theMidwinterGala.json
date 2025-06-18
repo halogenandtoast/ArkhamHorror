@@ -2,14 +2,14 @@
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the current agenda number.",
-      "cultist": "-X. X is the number of [[Guest]] assets at your location (to a maximum of 5).",
-      "tablet": "-2. (-4 instead if you are at a [[Private]] location).",
+      "cultist": "-X. X is the number of _Guest_ assets at your location (to a maximum of 5).",
+      "tablet": "-2. (-4 instead if you are at a _Private_ location).",
       "elderThing": "-3. If you fail or if The Bloodless Man is at your location, take 1 horror."
     },
     "hardExpert": {
       "skull": "-X. X is 1 plus the current agenda number.",
       "cultist": "-X. X is the number of story assets at your location.",
-      "tablet": "-3 (-5 instead if you are at a [[Private]] location).",
+      "tablet": "-3 (-5 instead if you are at a _Private_ location).",
       "elderThing": "-4. If you fail or if The Bloodless Man is at your location, take 1 horror."
     }
   },

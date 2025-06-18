@@ -8,7 +8,6 @@ newtype ArtGalleryTheMidwinterGala = ArtGalleryTheMidwinterGala LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- | 'Art GalleryTheMidwinterGala' from The Midwinter Gala (#71009).
 artGalleryTheMidwinterGala :: LocationCard ArtGalleryTheMidwinterGala
 artGalleryTheMidwinterGala = location ArtGalleryTheMidwinterGala Cards.artGalleryTheMidwinterGala 3 (PerPlayer 1)
 

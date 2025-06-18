@@ -5,12 +5,13 @@ import Arkham.Calculation
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Placement
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype LobbyTheMidwinterGala = LobbyTheMidwinterGala LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- | 'Lobby' from The Midwinter Gala (#71007).
 lobbyTheMidwinterGala :: LocationCard LobbyTheMidwinterGala
 lobbyTheMidwinterGala = location LobbyTheMidwinterGala Cards.lobbyTheMidwinterGala 2 (PerPlayer 1)
 
@@ -24,6 +25,9 @@ instance HasAbilities LobbyTheMidwinterGala where
 instance RunMessage LobbyTheMidwinterGala where
   runMessage msg l@(LobbyTheMidwinterGala attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      -- TODO
+      topOfGuestDeck <- take 1 <$> getGuestDeck
+      for_ topOfGuestDeck \card -> do
+        obtainCard card
+        createAssetAt_ card (AtLocation attrs.id)
       pure l
     _ -> LobbyTheMidwinterGala <$> liftRunMessage msg attrs

@@ -2470,6 +2470,8 @@ getAssetsMatching matcher = do
     DiscardableAsset -> pure $ filter canBeDiscarded as
     NonWeaknessAsset ->
       pure $ filter (isNothing . cdCardSubType . toCardDef) as
+    SingleSidedAsset ->
+      pure $ filter (not . cdDoubleSided . toCardDef) as
     EnemyAsset eid ->
       filterM (fieldP AssetPlacement (== AttachedToEnemy eid) . toId) as
     AssetAt locationMatcher -> do

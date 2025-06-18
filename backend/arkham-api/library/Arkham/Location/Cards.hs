@@ -9110,13 +9110,7 @@ lobbyTheMidwinterGala =
 lanternChamber :: CardDef
 lanternChamber =
   victory 1
-    $ location
-      "71008"
-      "Lantern Chamber"
-      [Manor, Private, Basement]
-      Star
-      [Diamond]
-      TheMidwinterGala
+    $ location "71008" "Lantern Chamber" [Manor, Private, Basement] Star [Diamond] TheMidwinterGala
 
 artGalleryTheMidwinterGala :: CardDef
 artGalleryTheMidwinterGala =

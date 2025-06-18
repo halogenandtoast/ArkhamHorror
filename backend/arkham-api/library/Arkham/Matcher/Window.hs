@@ -110,6 +110,7 @@ data WindowMatcher
   | AgendaEntersPlay Timing AgendaMatcher
   | AssetEntersPlay Timing AssetMatcher
   | AssetLeavesPlay Timing AssetMatcher
+  | AssetWouldLeavePlay Timing AssetMatcher
   | AssetDiscarded Timing AssetMatcher
   | AssetDealtDamage Timing SourceMatcher AssetMatcher
   | AssetDealtDamageOrHorror Timing SourceMatcher AssetMatcher
@@ -232,7 +233,6 @@ data WindowMatcher
   | TakeControlOfClues Timing Who SourceMatcher
   | TakeControlOfKey Timing Who KeyMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
-
 
 data ExploreMatcher = SuccessfulExplore LocationMatcher | FailedExplore CardMatcher | AnyExplore
   deriving stock (Show, Eq, Ord, Data)

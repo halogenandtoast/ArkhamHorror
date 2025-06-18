@@ -12,7 +12,6 @@ newtype BallroomTheMidwinterGala = BallroomTheMidwinterGala LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- | 'BallroomTheMidwinterGala' from The Midwinter Gala (#71010).
 ballroomTheMidwinterGala :: LocationCard BallroomTheMidwinterGala
 ballroomTheMidwinterGala = location BallroomTheMidwinterGala Cards.ballroomTheMidwinterGala 2 (PerPlayer 1)
 

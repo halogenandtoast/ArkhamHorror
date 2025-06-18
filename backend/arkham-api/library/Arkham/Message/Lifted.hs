@@ -2333,6 +2333,10 @@ healHorror
   :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
 healHorror target source n = push $ Msg.HealHorror (toTarget target) (toSource source) n
 
+healHorrorOn
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Int -> target -> m ()
+healHorrorOn source n target = healHorror target source n
+
 discoverAtYourLocation
   :: (ReverseQueue m, Sourceable source) => IsInvestigate -> InvestigatorId -> source -> Int -> m ()
 discoverAtYourLocation isInvestigate iid s n = do
@@ -2646,6 +2650,9 @@ takeControlOfAsset
   :: (ReverseQueue m, AsId asset, IdOf asset ~ AssetId) => InvestigatorId -> asset -> m ()
 takeControlOfAsset iid asset = push $ Msg.TakeControlOfAsset iid (asId asset)
 
+loseControlOfAsset :: (ReverseQueue m, AsId asset, IdOf asset ~ AssetId) => asset -> m ()
+loseControlOfAsset asset = push $ Msg.LoseControlOfAsset (asId asset)
+
 takeControlOfSetAsideAsset :: ReverseQueue m => InvestigatorId -> Card -> m ()
 takeControlOfSetAsideAsset iid card = push $ Msg.TakeControlOfSetAsideAsset iid card
 
@@ -2832,9 +2839,10 @@ createAssetAt_ c placement = do
   push =<< Msg.createAssetAt_ card placement
 
 createAssetAt
-  :: (ReverseQueue m, IsCard card) => card -> Placement -> m AssetId
+  :: (ReverseQueue m, FetchCard card) => card -> Placement -> m AssetId
 createAssetAt c placement = do
-  (assetId, msg) <- Msg.createAssetAt (toCard c) placement
+  card <- fetchCard c
+  (assetId, msg) <- Msg.createAssetAt card placement
   push msg
   pure assetId
 

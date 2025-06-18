@@ -1,14 +1,24 @@
 module Arkham.Location.Cards.LanternChamber (lanternChamber) where
 
 import Arkham.Ability
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Card
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers (Deck (..))
+import Arkham.Helpers.Scenario (getEncounterDeck)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
+import Arkham.Name (toTitle)
+import Data.Function (on)
+import Data.List.Extra (nubOrdBy)
 
 newtype LanternChamber = LanternChamber LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- | 'Lantern Chamber' from The Midwinter Gala (#71008).
 lanternChamber :: LocationCard LanternChamber
 lanternChamber =
   locationWith LanternChamber Cards.lanternChamber 5 (PerPlayer 2)
@@ -19,16 +29,50 @@ instance HasAbilities LanternChamber where
   getAbilities (LanternChamber a) =
     extendRevealed
       a
-      [ groupLimit PerTurn $ restricted a 1 Here $ FastAbility Free
-      , restricted a 2 Here actionAbility
+      [ playerLimit PerTurn $ restricted a 1 (Here <> DuringTurn You) $ FastAbility Free
+      , restricted
+          a
+          2
+          ( Here
+              <> thisExists a LocationWithoutClues
+              <> oneOf
+                [ exists (AssetWithModifier $ ScenarioModifier "spellbound")
+                , exists (EnemyWithModifier $ ScenarioModifier "spellbound")
+                ]
+          )
+          actionAbility
       ]
 
 instance RunMessage LanternChamber where
   runMessage msg l@(LanternChamber attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      -- TODO: Implement guessing ability
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      cards <-
+        nubOrdBy (compare `on` toTitle)
+          <$> findAllCards (`cardMatch` oneOf [cardIs Assets.jewelOfSarnath, #enemy, #treachery])
+      chooseOneM iid do
+        for_ cards \card ->
+          labeled card.title (forTarget_ card msg)
       pure l
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
-      -- TODO: Implement spellbound flipping ability
+    ForTarget (CardIdTarget cid) (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      card <- getCard cid
+      deck <- unDeck <$> getEncounterDeck
+      case deck of
+        (x : _) -> do
+          focusCards [x] (continue_ iid)
+          if x.title == card.title
+            then addToDiscard iid (only x)
+            else drawCard iid x
+        _ -> pure ()
+      pure l
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 2) attrs #willpower (Fixed 4)
+      pure l
+    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      assets <- select $ AssetWithModifier (ScenarioModifier "spellbound")
+      enemies <- select $ EnemyWithModifier (ScenarioModifier "spellbound")
+      chooseOneM iid do
+        targets assets $ flipOverBy iid (attrs.ability 2)
+        targets enemies $ flipOverBy iid (attrs.ability 2)
       pure l
     _ -> LanternChamber <$> liftRunMessage msg attrs

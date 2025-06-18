@@ -4,16 +4,21 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetController, AssetTraits))
-import Arkham.Card.CardDef
+import Arkham.Card
+import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Creation (createExhausted)
+import Arkham.Helpers
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
+import Arkham.Message (StoryMode (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Placement
@@ -21,8 +26,40 @@ import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted hiding (InvestigatorDamage)
 import Arkham.Story.Cards qualified as Stories
-import Arkham.Trait (Trait (Guest, Leader, Monster, Private))
+import Arkham.Trait (Trait (Guest, Leader, Monster, Private, SecondFloor))
 import Arkham.Treachery.Cards qualified as Treacheries
+
+{- FOURMOLU_DISABLE -}
+standardTokens, hardTokens, expertTokens :: [ChaosTokenFace]
+standardTokens =
+  [ PlusOne , Zero , Zero , MinusOne , MinusOne , MinusOne , MinusTwo , MinusTwo , MinusThree
+  , MinusFour , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
+  ]
+hardTokens =
+  [ Zero , Zero , MinusOne , MinusOne , MinusOne , MinusTwo , MinusThree , MinusFour , MinusSix
+  , Skull , Skull , Cultist , Tablet , ElderThing , ElderThing , AutoFail , ElderSign
+  ]
+expertTokens =
+  [ Zero , MinusOne , MinusOne , MinusTwo , MinusThree , MinusFour , MinusFive , MinusSix
+  , MinusEight , Skull , Skull , Cultist , Tablet , ElderThing , ElderThing , AutoFail , ElderSign
+  ]
+{- FOURMOLU_ENABLE -}
+
+factionStoryRival :: Faction -> CardDef
+factionStoryRival = \case
+  TheFoundation -> Stories.theFoundationRival
+  MiskatonicUniversity -> Stories.miskatonicUniversityRival
+  TheSyndicate -> Stories.theSyndicateRival
+  TheSilverTwilightLodge -> Stories.silverTwilightLodgeRival
+  LocalsOfKingsport -> Stories.localsOfKingsportRival
+
+factionStoryAllied :: Faction -> CardDef
+factionStoryAllied = \case
+  TheFoundation -> Stories.theFoundationAllied
+  MiskatonicUniversity -> Stories.miskatonicUniversityAllied
+  TheSyndicate -> Stories.theSyndicateAllied
+  TheSilverTwilightLodge -> Stories.silverTwilightLodgeAllied
+  LocalsOfKingsport -> Stories.localsOfKingsportAllied
 
 data Faction
   = TheFoundation
@@ -49,9 +86,6 @@ newtype TheMidwinterGala = TheMidwinterGala ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-{- | Basic scenario definition
-Map layout will be added later
--}
 theMidwinterGala :: Difficulty -> TheMidwinterGala
 theMidwinterGala difficulty =
   sideStory
@@ -73,136 +107,18 @@ instance HasChaosTokenValue TheMidwinterGala where
     Cultist -> do
       n <-
         if isEasyStandard attrs
-          then do
-            guests <- selectCount $ AssetWithTrait Guest <> assetAtLocationWith iid
-            pure $ min 5 guests
-          else
-            selectCount $ StoryAsset <> assetAtLocationWith iid
+          then min 5 <$> selectCount (AssetWithTrait Guest <> assetAtLocationWith iid)
+          else selectCount $ StoryAsset <> assetAtLocationWith iid
       pure $ ChaosTokenValue Cultist (NegativeModifier n)
     Tablet -> do
-      atPrivateLocation <-
-        selectAny $ locationWithInvestigator iid <> LocationWithTrait Private
-      let base = if isEasyStandard attrs then 2 else 3
-          privatePenalty = if isEasyStandard attrs then 4 else 5
-          n = if atPrivateLocation then privatePenalty else base
+      atPrivateLocation <- selectAny $ locationWithInvestigator iid <> LocationWithTrait Private
+      let n
+            | atPrivateLocation = if isEasyStandard attrs then 4 else 5
+            | otherwise = if isEasyStandard attrs then 2 else 3
       pure $ ChaosTokenValue Tablet (NegativeModifier n)
     ElderThing ->
       pure $ ChaosTokenValue ElderThing (NegativeModifier $ if isEasyStandard attrs then 3 else 4)
     otherFace -> getChaosTokenValue iid otherFace attrs
-
-setupTheMidwinterGala :: ReverseQueue m => ScenarioAttrs -> ScenarioBuilderT m ()
-setupTheMidwinterGala attrs = do
-  gather Set.TheMidwinterGala
-  setActDeck [Acts.meetAndGreet, Acts.findingTheJewel]
-  setAgendaDeck [Agendas.maskedRevelers, Agendas.unexpectedGuests, Agendas.aKillerParty]
-
-  lobby <- place Locations.lobbyTheMidwinterGala
-  lanternChamber <- place Locations.lanternChamber
-  groundFloors <-
-    placeGroupCapture "groundFloor"
-      =<< shuffle
-        [ Locations.artGalleryTheMidwinterGala
-        , Locations.ballroomTheMidwinterGala
-        , Locations.barroom
-        ]
-
-  setAside
-    =<< shuffle
-      [ Locations.bedroomTheMidwinterGala
-      , Locations.libraryTheMidwinterGala
-      , Locations.parlorTheMidwinterGala
-      ]
-
-  startAt lobby
-
-  let Meta {ally, rival} = toResult attrs.meta
-
-  let
-    factionStoryAllied = \case
-      TheFoundation -> Stories.theFoundationAllied
-      MiskatonicUniversity -> Stories.miskatonicUniversityAllied
-      TheSyndicate -> Stories.theSyndicateAllied
-      TheSilverTwilightLodge -> Stories.silverTwilightLodgeAllied
-      LocalsOfKingsport -> Stories.localsOfKingsportAllied
-
-    factionStoryRival = \case
-      TheFoundation -> Stories.theFoundationRival
-      MiskatonicUniversity -> Stories.miskatonicUniversityRival
-      TheSyndicate -> Stories.theSyndicateRival
-      TheSilverTwilightLodge -> Stories.silverTwilightLodgeRival
-      LocalsOfKingsport -> Stories.localsOfKingsportRival
-
-    factionRivalCard = \case
-      TheFoundation -> Enemies.rookieCop
-      MiskatonicUniversity -> Treacheries.confusion
-      TheSyndicate -> Treacheries.coldStreak
-      TheSilverTwilightLodge -> Treacheries.wardOfPreservation
-      LocalsOfKingsport -> Treacheries.unlucky
-
-    leaderAsset = \case
-      TheFoundation -> Assets.valeriyaAntonovaWantsOutOfHere
-      MiskatonicUniversity -> Assets.caldwellPhilipsEnthralledByLegends
-      TheSyndicate -> Assets.johnnyValoneReadyToMakeADeal
-      TheSilverTwilightLodge -> Assets.carlSanfordLustingForPower
-      LocalsOfKingsport -> Assets.williamBainLookingForThoseLost
-
-    factionGuests = \case
-      TheFoundation ->
-        [ Assets.archibaldHudson
-        , Assets.specialAgentCallahan
-        , Assets.horacioMartinez
-        ]
-      MiskatonicUniversity ->
-        [ Assets.drMyaBadry
-        , Assets.lucasTetlow
-        , Assets.elizabethConrad
-        ]
-      TheSyndicate ->
-        [ Assets.mirandaKeeper
-        , Assets.arseneRenard
-        , Assets.novaMalone
-        ]
-      TheSilverTwilightLodge ->
-        [ Assets.prudenceDouglas
-        , Assets.sarahVanShaw
-        , Assets.raymondLoggins
-        ]
-      LocalsOfKingsport ->
-        [ Assets.deloresGadling
-        , Assets.thomasOlney
-        , Assets.claireWilson
-        ]
-
-  setAside [factionStoryAllied ally]
-  removeEvery [factionRivalCard ally]
-
-  lead <- getLead
-  beginWithStoryAsset lead (leaderAsset ally)
-
-  shuffledGuests <- shuffle (factionGuests ally)
-  for_ (zip shuffledGuests groundFloors) (uncurry assetAt_)
-
-  setAside [factionStoryRival rival, leaderAsset rival, factionRivalCard rival]
-  removeEvery $ factionGuests rival
-
-  let otherFactions = filter (`notElem` [ally, rival]) [minBound ..]
-
-  for_ otherFactions \faction ->
-    removeEvery [factionStoryAllied faction, factionRivalCard faction, leaderAsset faction]
-
-  (inPlayGuests, guestDeck) <- splitAt 3 <$> shuffle (concatMap factionGuests otherFactions)
-  addExtraDeck GuestDeck =<< shuffle guestDeck
-  for_ (zip inPlayGuests groundFloors) (uncurry assetAt_)
-
-  theBloodlessMan <- enemyAt Enemies.theBloodlessMan lanternChamber
-  placeAsset_ Assets.thePaleLanternHypnoticGlow (AttachedToEnemy theBloodlessMan)
-  exhaustThis theBloodlessMan
-
-  monsters <- asDefs <$> amongGathered (CardWithTrait Monster)
-  setAside
-    $ monsters
-    <> replicate 2 Treacheries.viciousAmbush
-    <> [Enemies.declanPearce, Assets.jewelOfSarnath]
 
 -- calculateScore :: HasGame m => ScenarioAttrs -> Meta -> m Int
 -- calculateScore attrs Meta {ally, rival} = do
@@ -273,72 +189,110 @@ instance RunMessage TheMidwinterGala where
             scope "intro" $ flavor $ h "title" >> p (factionLabel faction)
             push $ SetScenarioMeta $ toJSON $ Meta {ally = faction, rival = rival}
       pure s
-    Setup -> runScenarioSetup TheMidwinterGala attrs $ setupTheMidwinterGala attrs
+    Setup -> runScenarioSetup TheMidwinterGala attrs do
+      gather Set.TheMidwinterGala
+      setActDeck [Acts.meetAndGreet, Acts.findingTheJewel]
+      setAgendaDeck [Agendas.maskedRevelers, Agendas.unexpectedGuests, Agendas.aKillerParty]
+
+      lobby <- place Locations.lobbyTheMidwinterGala
+      lanternChamber <- place Locations.lanternChamber
+      groundFloors <-
+        placeGroupCapture "groundFloor"
+          =<< shuffle
+            [ Locations.artGalleryTheMidwinterGala
+            , Locations.ballroomTheMidwinterGala
+            , Locations.barroom
+            ]
+
+      setAside
+        =<< shuffle
+          [ Locations.bedroomTheMidwinterGala
+          , Locations.libraryTheMidwinterGala
+          , Locations.parlorTheMidwinterGala
+          ]
+
+      startAt lobby
+
+      let Meta {ally, rival} = toResult attrs.meta
+
+      let
+        factionRivalCard = \case
+          TheFoundation -> Enemies.rookieCop
+          MiskatonicUniversity -> Treacheries.confusion
+          TheSyndicate -> Treacheries.coldStreak
+          TheSilverTwilightLodge -> Treacheries.wardOfPreservation
+          LocalsOfKingsport -> Treacheries.unlucky
+
+        leaderAsset = \case
+          TheFoundation -> Assets.valeriyaAntonovaWantsOutOfHere
+          MiskatonicUniversity -> Assets.caldwellPhilipsEnthralledByLegends
+          TheSyndicate -> Assets.johnnyValoneReadyToMakeADeal
+          TheSilverTwilightLodge -> Assets.carlSanfordLustingForPower
+          LocalsOfKingsport -> Assets.williamBainLookingForThoseLost
+
+        factionGuests = \case
+          TheFoundation -> [Assets.archibaldHudson, Assets.specialAgentCallahan, Assets.horacioMartinez]
+          MiskatonicUniversity -> [Assets.drMyaBadry, Assets.lucasTetlow, Assets.elizabethConrad]
+          TheSyndicate -> [Assets.mirandaKeeper, Assets.arseneRenard, Assets.novaMalone]
+          TheSilverTwilightLodge -> [Assets.prudenceDouglas, Assets.sarahVanShaw, Assets.raymondLoggins]
+          LocalsOfKingsport -> [Assets.deloresGadling, Assets.thomasOlney, Assets.claireWilson]
+
+      setAside [factionStoryAllied ally]
+      removeEvery [factionRivalCard ally]
+
+      lead <- getLead
+      beginWithStoryAsset lead (leaderAsset ally)
+
+      shuffledGuests <- shuffle (factionGuests ally)
+      for_ (zip shuffledGuests groundFloors) (uncurry assetAt_)
+
+      setAside [factionStoryRival rival, leaderAsset rival, factionRivalCard rival]
+      removeEvery $ factionGuests rival
+
+      let otherFactions = filter (`notElem` [ally, rival]) [minBound ..]
+
+      for_ otherFactions \faction ->
+        removeEvery [factionStoryAllied faction, factionRivalCard faction, leaderAsset faction]
+
+      (inPlayGuests, guestDeck) <- splitAt 3 <$> shuffle (concatMap factionGuests otherFactions)
+      addExtraDeck GuestDeck =<< shuffle guestDeck
+      for_ (zip inPlayGuests groundFloors) (uncurry assetAt_)
+
+      theBloodlessMan <- enemyAt Enemies.theBloodlessMan lanternChamber
+      placeAsset_ Assets.thePaleLanternHypnoticGlow (AttachedToEnemy theBloodlessMan)
+      exhaustThis theBloodlessMan
+
+      monsters <- asDefs <$> amongGathered (CardWithTrait Monster)
+      setAside
+        $ monsters
+        <> replicate 2 Treacheries.viciousAmbush
+        <> [Enemies.declanPearce, Assets.jewelOfSarnath]
     StandaloneSetup -> do
       let
-        standardTokens =
-          [ PlusOne
-          , Zero
-          , Zero
-          , MinusOne
-          , MinusOne
-          , MinusOne
-          , MinusTwo
-          , MinusTwo
-          , MinusThree
-          , MinusFour
-          , Skull
-          , Skull
-          , Cultist
-          , Tablet
-          , ElderThing
-          , AutoFail
-          , ElderSign
-          ]
-        hardTokens =
-          [ Zero
-          , Zero
-          , MinusOne
-          , MinusOne
-          , MinusOne
-          , MinusTwo
-          , MinusThree
-          , MinusFour
-          , MinusSix
-          , Skull
-          , Skull
-          , Cultist
-          , Tablet
-          , ElderThing
-          , ElderThing
-          , AutoFail
-          , ElderSign
-          ]
-        expertTokens =
-          [ Zero
-          , MinusOne
-          , MinusOne
-          , MinusTwo
-          , MinusThree
-          , MinusFour
-          , MinusFive
-          , MinusSix
-          , MinusEight
-          , Skull
-          , Skull
-          , Cultist
-          , Tablet
-          , ElderThing
-          , ElderThing
-          , AutoFail
-          , ElderSign
-          ]
         tokens = case attrs.difficulty of
           Easy -> standardTokens
           Standard -> standardTokens
           Hard -> hardTokens
           Expert -> expertTokens
       setChaosTokens tokens
+      pure s
+    ResolveChaosToken _ ElderThing iid -> do
+      ok <-
+        selectAny
+          $ mapOneOf enemyIs [Enemies.theBloodlessMan, Enemies.theBloodlessManUnleashed]
+          <> enemyAtLocationWith iid
+      when ok $ assignHorror iid ElderThing 1
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      when (token.face == ElderThing) do
+        -- N.B. We may need to track this if the bloodless man can move somehow
+        -- between resolving the token and failing the test, as this is an or
+        -- and should only happen once. Maybe use the Semaphore?
+        ok <-
+          selectNone
+            $ mapOneOf enemyIs [Enemies.theBloodlessMan, Enemies.theBloodlessManUnleashed]
+            <> enemyAtLocationWith iid
+        when ok $ assignHorror iid ElderThing 1
       pure s
     ScenarioResolution _r -> do
       -- resigned <- selectAny ResignedInvestigator
@@ -401,9 +355,68 @@ instance RunMessage TheMidwinterGala where
           mController <- field AssetController aid
           lead <- getLead
           let iid = fromMaybe lead mController
-          push $ LoseControlOfAsset aid
-          push $ HealAllDamageAndHorror (AssetTarget aid) GameSource
+          loseControlOfAsset aid
+          healAllDamageAndHorror GameSource aid
           gameModifier ScenarioSource aid (ScenarioModifier "spellbound")
           flipOver iid aid
+      pure s
+    ScenarioSpecific "placeRival" _ -> do
+      let Meta {rival} = toResult attrs.meta
+      lead <- getLead
+      rivalCard <- getSetAsideCard (factionStoryRival rival)
+      push $ ReadStoryWithPlacement lead rivalCard ResolveIt Nothing Global
+      pure s
+    ScenarioSpecific "readInterlude" _ -> scope "theFabledJewel" do
+      let Meta {ally} = toResult attrs.meta
+      flavor do
+        h "title"
+        p "body"
+        ul $ li (factionLabel ally)
+
+      lead <- getLead
+      alliedCard <- getSetAsideCard (factionStoryAllied ally)
+      push $ ReadStoryWithPlacement lead alliedCard ResolveIt Nothing Global
+      case ally of
+        TheFoundation -> do
+          lanternChamber <- selectJust $ locationIs Locations.lanternChamber
+          createSetAsideEnemyWith_ Enemies.declanPearce lanternChamber createExhausted
+          selectOne (mapOneOf enemyIs [Enemies.theBloodlessMan, Enemies.theBloodlessManUnleashed]) >>= \case
+            Just theBloodlessMan -> createAssetAt_ Assets.jewelOfSarnath (AttachedToEnemy theBloodlessMan)
+            Nothing -> createAssetAt_ Assets.jewelOfSarnath (AttachedToLocation lanternChamber)
+        MiskatonicUniversity -> do
+          rightmostSecondFloor <- selectJust $ LocationWithLabel "secondFloor3"
+          declan <- createSetAsideEnemy Enemies.declanPearce rightmostSecondFloor
+          createAssetAt_ Assets.jewelOfSarnath (AttachedToEnemy declan)
+        TheSyndicate -> do
+          top <- take 1 . unDeck <$> getEncounterDeck
+          for_ top obtainCard
+          jewel <- getSetAsideCard Assets.jewelOfSarnath
+          declan <- getSetAsideCard Enemies.declanPearce
+          cards <- shuffle $ jewel : declan : map toCard top
+          secondFloor <- select $ LocationWithTrait SecondFloor
+          zipWithM_ (\a b -> placeUnderneath a (only b)) secondFloor cards
+        TheSilverTwilightLodge -> do
+          shuffleEncounterDiscardBackIn
+          doStep 1 msg
+        LocalsOfKingsport -> do
+          lanternChamber <- selectJust $ locationIs Locations.lanternChamber
+          declan <- createSetAsideEnemyWith Enemies.declanPearce lanternChamber createExhausted
+          jewelOfSarnath <- createAssetAt Assets.jewelOfSarnath (AttachedToEnemy declan)
+          placeTokens ScenarioSource jewelOfSarnath #damage =<< perPlayer 1
+          placeTokens ScenarioSource jewelOfSarnath #doom 1
+      pure s
+    DoStep 1 (ScenarioSpecific "readInterlude" _) -> scope "theFabledJewel" do
+      top <- take 7 . unDeck <$> getEncounterDeck
+      for_ top obtainCard
+      jewel <- getSetAsideCard Assets.jewelOfSarnath
+      declan <- getSetAsideCard Enemies.declanPearce
+      cards <- shuffle $ jewel : declan : map toCard top
+      lead <- getLead
+      for_ cards $ putCardOnBottomOfDeck lead Deck.EncounterDeck
+      n <- selectCount UneliminatedInvestigator
+      if
+        | n == 2 -> discardTopOfEncounterDeck lead ScenarioSource 6
+        | n == 1 -> discardTopOfEncounterDeck lead ScenarioSource 12
+        | otherwise -> pure ()
       pure s
     _ -> TheMidwinterGala <$> liftRunMessage msg attrs

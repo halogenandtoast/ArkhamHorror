@@ -196,6 +196,7 @@ data ModifierType
   | CannotPerformSkillTest
   | CannotPlaceClues
   | CannotPlaceDoomOnThis
+  | CannotRemoveDoomOnThis
   | CannotPlay CardMatcher
   | CannotPutIntoPlay CardMatcher
   | CannotReady

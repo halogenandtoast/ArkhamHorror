@@ -625,7 +625,7 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.SkillExists matcher -> selectAny matcher
   Criteria.StoryExists matcher -> selectAny matcher
   Criteria.ActExists matcher -> selectAny matcher
-  Criteria.CardWithDoomExists -> do
+  Criteria.CardWithRemovableDoomExists -> do
     orM
       [ selectAny $ Matcher.AssetWithDoom (Matcher.atLeast 1)
       , selectAny $ Matcher.InvestigatorWithDoom (Matcher.atLeast 1)
@@ -633,7 +633,9 @@ passesCriteria iid mcard source' requestor windows' = \case
       , selectAny $ Matcher.EventWithDoom (Matcher.atLeast 1)
       , selectAny $ Matcher.LocationWithDoom (Matcher.atLeast 1)
       , selectAny $ Matcher.TreacheryWithDoom (Matcher.atLeast 1)
-      , selectAny $ Matcher.AgendaWithDoom (Matcher.atLeast 1)
+      , selectAny
+          $ Matcher.AgendaWithDoom (Matcher.atLeast 1)
+          <> Matcher.NotAgenda (Matcher.AgendaWithModifier CannotRemoveDoomOnThis)
       ]
   Criteria.ChaosTokenExists matcher -> selectAny matcher
   Criteria.AssetExists matcher -> do

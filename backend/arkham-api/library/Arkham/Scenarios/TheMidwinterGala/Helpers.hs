@@ -5,17 +5,19 @@ import Arkham.Classes.HasGame
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Message (Message (ScenarioSpecific))
 import Arkham.Message.Lifted
-import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Scenario.Deck
-import Arkham.Source
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = withI18n $ scope "theMidwinterGala" a
 
-spellbound :: ReverseQueue m => AssetId -> m ()
-spellbound a = gameModifier ScenarioSource a (ScenarioModifier "spellbound")
+becomeSpellbound :: (ReverseQueue m, AsId a, IdOf a ~ AssetId) => a -> m ()
+becomeSpellbound a = forTarget (asId a) (ScenarioSpecific "spellbound" Null)
+
+-- spellbound :: ReverseQueue m => AssetId -> m ()
+-- spellbound a = gameModifier ScenarioSource a (ScenarioModifier "spellbound")
 
 getGuestDeck :: HasGame m => m [Card]
 getGuestDeck = getScenarioDeck GuestDeck

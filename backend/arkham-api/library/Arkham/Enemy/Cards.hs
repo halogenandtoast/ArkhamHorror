@@ -3158,7 +3158,7 @@ declanPearce =
 
 lanternClubMember :: CardDef
 lanternClubMember =
-  (enemy "71053" "Lantern Club Member" TheMidwinterGala 1)
+  (enemy "71053" "Lantern Club Member" TheMidwinterGala 4)
     { cdCardTraits = setFromList [Humanoid, LanternClub]
     }
 

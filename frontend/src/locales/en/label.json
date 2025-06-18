@@ -42,11 +42,13 @@
   "placeAgendaDoom": "Place 1 doom on the current agenda. | Place {count} doom on the current agenda.",
   "placeAgendaDoomCanAdvance": "Place 1 doom on the current agenda. This effect can cause the current agenda to advance. | Place {count} doom on the current agenda. This effect can cause the current agenda to advance.",
   "placeCluesOnYourLocation": "Place 1 of your clues on your location | Place {count} of your clues on your location",
+  "placeDamageOn": "Place 1 damage on {name} | Place {count} damage on {name}",
   "placeDoomOn": "Place 1 doom on {name} | Place {count} doom on {name}",
   "play": "Play",
   "playIt": "Play it",
   "playNoCards": "Play no cards",
   "ready": "Ready {name}",
+  "removeTokensFrom": "Remove 1 {token} from {name} | Remove {count} {token} from {name}",
   "removeAgendaDoom": "Remove 1 doom from the current agenda | Remove {count} doom from the current agenda",
   "secretlyAddToHand": "Secretly add {name} to hand",
   "skills": "Skills",
@@ -65,5 +67,6 @@
   "takeHorror": "Take {count} horror",
   "takeHorrorForEachPointOfFailure": "Take 1 horror for each point you failed by | Take {count} horror for each point you failed by",
   "takeHorrorUpTo": "Take up to {count} horror",
-  "test": "Test {'{'}{skill}{'}'} ({count})"
+  "test": "Test {'{'}{skill}{'}'} ({count})",
+  "useSkill": "Use {'{'}{skill}{'}'}"
 }

@@ -1,8 +1,9 @@
-module Arkham.Event.Events.Hallow3 (hallow3, Hallow3 (..)) where
+module Arkham.Event.Events.Hallow3 (hallow3) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Strategy
 import Arkham.Taboo
 
@@ -30,7 +31,7 @@ instance RunMessage Hallow3 where
           , selectTargets $ EventWithDoom (atLeast 1)
           , selectTargets $ LocationWithDoom (atLeast 1)
           , selectTargets $ TreacheryWithDoom (atLeast 1)
-          , selectTargets $ AgendaWithDoom (atLeast 1)
+          , selectTargets $ AgendaWithDoom (atLeast 1) <> NotAgenda (AgendaWithModifier CannotRemoveDoomOnThis)
           ]
       chooseOrRunOne iid [targetLabel target [RemoveDoom (toSource attrs) target 1] | target <- ts]
 

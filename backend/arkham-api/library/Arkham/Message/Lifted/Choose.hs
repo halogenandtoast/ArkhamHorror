@@ -179,6 +179,9 @@ labeled' label action = unterminated do
 chooseTest :: (HasI18n, ReverseQueue m) => SkillType -> Int -> QueueT Message m () -> ChooseT m ()
 chooseTest skind n body = countVar n $ skillVar skind $ labeled' "test" body
 
+chooseUseSkill :: (HasI18n, ReverseQueue m) => SkillType -> QueueT Message m () -> ChooseT m ()
+chooseUseSkill skind body = skillVar skind $ labeled' "useSkill" body
+
 skip :: ReverseQueue m => Text -> ChooseT m ()
 skip = (`labeled` nothing)
 

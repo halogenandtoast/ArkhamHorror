@@ -1966,6 +1966,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.AssetLeavesPlay timing assetMatcher -> guardTiming timing $ \case
       Window.LeavePlay (AssetTarget aid) -> elem aid <$> select assetMatcher
       _ -> noMatch
+    Matcher.AssetWouldLeavePlay timing assetMatcher -> guardTiming timing $ \case
+      Window.LeavePlay (AssetTarget aid) -> elem aid <$> select assetMatcher
+      _ -> noMatch
     Matcher.AssetDiscarded timing assetMatcher -> guardTiming timing $ \case
       Window.LeavePlay (AssetTarget aid) -> elem aid <$> select assetMatcher
       _ -> noMatch

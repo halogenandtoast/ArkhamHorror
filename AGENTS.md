@@ -106,6 +106,75 @@ cards or scenarios, keep these patterns in mind:
   `Helpers.hs` under `Scenarios/<ScenarioName>`. Campaign-wide utilities are
   placed in `Campaigns/<CampaignName>/Helpers.hs`.
 
+## Step-by-step instructions for new cards
+
+The general conventions above apply to all card modules. The following notes
+give concrete steps for the most common types.
+
+### Location card
+
+1. Create `backend/arkham-api/library/Arkham/Location/Cards/<CardName>.hs` and
+   match the module declaration.
+2. Import `Arkham.Location.Cards` qualified as `Cards` and
+   `Arkham.Location.Import.Lifted`.
+3. Define `newtype <CardName> = <CardName> LocationAttrs` deriving the standard
+   classes (`IsLocation`, `HasModifiersFor`, `Show`, `Eq`, `ToJSON`,
+   `FromJSON`, `Entity`).
+4. Provide a builder such as:
+
+   ```haskell
+   <cardName> :: LocationCard <CardName>
+   <cardName> = location <CardName> Cards.<cardName> <shroud> <clues>
+   -- or use `locationWith` / `locationWithUnrevealed` as needed
+   ```
+
+5. Implement abilities with `HasAbilities` using `extendRevealed attrs [...]`.
+6. Handle messages in a `RunMessage` instance, delegating with
+   `liftRunMessage` for unhandled cases.
+7. Register the card in `Arkham/Location/Cards.hs` and add it to
+   `allLocationCards`.
+
+### Enemy card
+
+1. Create `backend/arkham-api/library/Arkham/Enemy/Cards/<CardName>.hs`.
+2. Import `Arkham.Enemy.Cards` as `Cards` and `Arkham.Enemy.Import.Lifted`.
+3. Define `newtype <CardName> = <CardName> EnemyAttrs` and build the card with
+   `enemy` or `enemyWith`.
+4. Provide abilities with `HasAbilities` (`extend attrs [...]`).
+5. Implement `RunMessage` in the usual pattern.
+6. Register the card in `Arkham/Enemy/Cards.hs` and add it to the appropriate
+   list (`allEncounterEnemyCards` or `allPlayerEnemyCards`).
+
+### Story Asset
+
+1. File `backend/arkham-api/library/Arkham/Asset/Assets/<CardName>.hs`.
+2. Import `Arkham.Asset.Cards` as `Cards` and `Arkham.Asset.Import.Lifted`.
+3. Define `newtype <CardName> = <CardName> AssetAttrs` and use builders like
+   `ally` or `asset`.
+4. Implement modifiers/abilities and a `RunMessage` instance if needed.
+5. Register in the relevant set file under `Asset/Cards`, add the constant to
+   `allEncounterAssetCards` (or the player list) and to `allAssets` in
+   `Arkham/Asset.hs`.
+
+### Agenda card
+
+1. File `backend/arkham-api/library/Arkham/Agenda/Cards/<CardName>.hs`.
+2. Import `Arkham.Agenda.Cards` as `Cards` and `Arkham.Agenda.Import.Lifted`.
+3. Define `newtype <CardName> = <CardName> AgendaAttrs` deriving the agenda
+   classes and build it with `agenda`.
+4. Implement `RunMessage`, handling advancement when on side B.
+5. Register the card in `Arkham/Agenda/Cards.hs` and add it to `allAgendas` in
+   `Arkham/Agenda.hs`.
+
+### Act card
+
+1. File `backend/arkham-api/library/Arkham/Act/Cards/<CardName>.hs`.
+2. Import `Arkham.Act.Cards` as `Cards` and `Arkham.Act.Import.Lifted`.
+3. Define `newtype <CardName> = <CardName> ActAttrs` and build it with `act`.
+4. Implement `RunMessage`, advancing when instructed.
+5. Register the card in `Arkham/Act/Cards.hs` and add it to `allActs` in
+   `Arkham/Act.hs`.
+
 ## Pull Request guidelines
 
 * Keep commits focused and descriptive.

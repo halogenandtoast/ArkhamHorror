@@ -21,6 +21,7 @@ import Arkham.Target as X
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Scenario
 import Arkham.Scenario.Types (Field (..))
+import Control.Lens (non)
 
 afterStoryResolution :: HasQueue Message m => StoryAttrs -> [Message] -> m ()
 afterStoryResolution (toId -> storyId) = traverse_ (pushAfter isResolution) . reverse
@@ -58,4 +59,6 @@ instance RunMessage StoryAttrs where
     InHand _ msg'@(UseAbility _ ab _) | isSource attrs ab.source || isProxySource attrs ab.source -> do
       push $ Do msg'
       pure attrs
+    PlaceTokens _source target tType n | isTarget attrs target -> do
+      pure $ attrs & tokensL . at tType . non 0 %~ (+ n)
     _ -> pure attrs

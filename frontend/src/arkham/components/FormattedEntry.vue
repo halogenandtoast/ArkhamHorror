@@ -57,7 +57,7 @@ function formatEntry(t: I18n, entry: FlavorTextEntry): any {
   switch (entry.tag) {
     case 'BasicEntry': return h('p', { innerHTML: formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text) })
     case 'HeaderEntry': return h('header', [h('h1', { innerHTML: formatContent(t(entry.key)) })])
-    case 'I18nEntry': return h('div', { innerHTML: formatContent(t(entry.key, {...entry.variables, setImgPath: `${baseUrl}/img/arkham/encounter-sets` })) })
+    case 'I18nEntry': return h('div', { style:"overflow:auto", innerHTML: formatContent(t(entry.key, {...entry.variables, setImgPath: `${baseUrl}/img/arkham/encounter-sets` })) })
     case 'ModifyEntry': return h('div', { class: entryStyles(entry) }, [formatEntry(t, entry.entry)])
     case 'CompositeEntry': return h('div', { class: "composite" }, entry.entries.map((e) => formatEntry(t, e)))
     case 'ColumnEntry': return h('div', { class: "columns" }, entry.entries.map((e) => formatEntry(t, e)))

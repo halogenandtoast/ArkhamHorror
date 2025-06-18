@@ -39,4 +39,6 @@ instance RunMessage SpecialAgentCallahan where
       chooseTargetM iid enemies $ \enemy -> do
         nonAttackEnemyDamage (Just iid) (attrs.ability 2) 1 enemy
       pure a
+    Flip _ ScenarioSource (isTarget attrs -> True) -> do
+      pure $ SpecialAgentCallahan $ attrs & flippedL .~ True & visibleL .~ False
     _ -> SpecialAgentCallahan <$> liftRunMessage msg attrs

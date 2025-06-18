@@ -3,8 +3,8 @@ module Arkham.Asset.Assets.ClaireWilson (claireWilson) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Matcher
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Matcher
 import Arkham.Modifier
 
 newtype ClaireWilson = ClaireWilson AssetAttrs
@@ -25,4 +25,6 @@ instance RunMessage ClaireWilson where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
       pure a
+    Flip _ ScenarioSource (isTarget attrs -> True) -> do
+      pure $ ClaireWilson $ attrs & flippedL .~ True & visibleL .~ False
     _ -> ClaireWilson <$> liftRunMessage msg attrs

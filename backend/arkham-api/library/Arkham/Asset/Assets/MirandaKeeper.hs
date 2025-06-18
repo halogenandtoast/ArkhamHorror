@@ -39,4 +39,6 @@ instance RunMessage MirandaKeeper where
       withLocationOf iid \lid -> removeTokens (attrs.ability 2) lid Token.Antiquity 1
       gainResources iid (attrs.ability 2) 2
       pure a
+    Flip _ ScenarioSource (isTarget attrs -> True) -> do
+      pure $ MirandaKeeper $ attrs & flippedL .~ True & visibleL .~ False
     _ -> MirandaKeeper <$> liftRunMessage msg attrs

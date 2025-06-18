@@ -30,4 +30,6 @@ instance RunMessage RaymondLoggins where
       cancelRevelation attrs card
       assignHorror iid attrs 1
       pure a
+    Flip _ ScenarioSource (isTarget attrs -> True) -> do
+      pure $ RaymondLoggins $ attrs & flippedL .~ True & visibleL .~ False
     _ -> RaymondLoggins <$> liftRunMessage msg attrs

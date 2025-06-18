@@ -1,5 +1,6 @@
 module Arkham.Agenda.Cards.AKillerParty (aKillerParty) where
 
+import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
@@ -9,7 +10,7 @@ import Arkham.Scenarios.TheMidwinterGala.Helpers (becomeSpellbound)
 import Arkham.Trait
 
 newtype AKillerParty = AKillerParty AgendaAttrs
-  deriving anyclass (IsAgenda, HasAbilities)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aKillerParty :: AgendaCard AKillerParty
@@ -20,9 +21,17 @@ instance HasModifiersFor AKillerParty where
     when (onSide A a) $ modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait LanternClub]
     modifySelf a [CannotRemoveDoomOnThis]
 
+instance HasAbilities AKillerParty where
+  getAbilities (AKillerParty a) =
+    [ mkAbility a 1
+        $ forced
+        $ AssetWouldLeavePlay #when (AssetWithTrait Guest <> SingleSidedAsset)
+    ]
+
 instance RunMessage AKillerParty where
   runMessage msg a@(AKillerParty attrs) = runQueueT $ case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (assetLeavingPlay -> aid) _ -> do
+    UseCardAbility _ (isSource attrs -> True) 1 ws@(assetLeavingPlay -> aid) _ -> do
+      cancelWindowBatch ws
       becomeSpellbound aid
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do

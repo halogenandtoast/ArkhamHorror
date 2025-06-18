@@ -24,4 +24,7 @@ instance HasModifiersFor DeloresGadling where
       pure [SkillModifier #intellect n]
 
 instance RunMessage DeloresGadling where
-  runMessage msg (DeloresGadling attrs) = DeloresGadling <$> runMessage msg attrs
+  runMessage msg (DeloresGadling attrs) = runQueueT $ case msg of
+    Flip _ ScenarioSource (isTarget attrs -> True) -> do
+      pure $ DeloresGadling $ attrs & flippedL .~ True & visibleL .~ False
+    _ -> DeloresGadling <$> liftRunMessage msg attrs

@@ -39,4 +39,6 @@ instance RunMessage ArseneRenard where
         countVar 1 $ labeled' "drawCards" $ drawCards iid (attrs.ability 2) 1
         countVar 2 $ labeled' "gainResources" $ gainResources iid (attrs.ability 2) 2
       pure a
+    Flip _ ScenarioSource (isTarget attrs -> True) -> do
+      pure $ ArseneRenard $ attrs & flippedL .~ True & visibleL .~ False
     _ -> ArseneRenard <$> liftRunMessage msg attrs

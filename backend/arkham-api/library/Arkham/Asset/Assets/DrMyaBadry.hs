@@ -28,4 +28,6 @@ instance RunMessage DrMyaBadry where
       skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #intellect cardsInHand)
       investigate sid iid (attrs.ability 1)
       pure a
+    Flip _ ScenarioSource (isTarget attrs -> True) -> do
+      pure $ DrMyaBadry $ attrs & flippedL .~ True & visibleL .~ False
     _ -> DrMyaBadry <$> liftRunMessage msg attrs

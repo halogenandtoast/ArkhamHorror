@@ -30,4 +30,6 @@ instance RunMessage SarahVanShaw where
       skillTestModifiers sid (attrs.ability 1) iid [AddSkillValue #willpower, DamageDealt n]
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
+    Flip _ ScenarioSource (isTarget attrs -> True) -> do
+      pure $ SarahVanShaw $ attrs & flippedL .~ True & visibleL .~ False
     _ -> SarahVanShaw <$> liftRunMessage msg attrs

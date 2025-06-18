@@ -6,6 +6,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Scenario.Deck
 import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype LobbyTheMidwinterGala = LobbyTheMidwinterGala LocationAttrs
@@ -19,7 +20,10 @@ instance HasAbilities LobbyTheMidwinterGala where
   getAbilities (LobbyTheMidwinterGala a) =
     extendRevealed1 a
       $ groupLimit PerRound
-      $ restricted a 1 (Here <> exists (mapOneOf AgendaWithStep [2, 3]))
+      $ restricted
+        a
+        1
+        (Here <> exists (mapOneOf AgendaWithStep [2, 3]) <> ScenarioDeckWithCard GuestDeck)
       $ FastAbility (CalculatedResourceCost $ GameValueCalculation $ PerPlayer 1)
 
 instance RunMessage LobbyTheMidwinterGala where

@@ -40,4 +40,6 @@ instance RunMessage ThomasOlney where
     DiscardedTopOfDeck iid (card : _) _ (isTarget attrs -> True) -> do
       whenM (getIsCommittable iid (toCard card)) $ commitCard iid card
       pure a
+    Flip _ ScenarioSource (isTarget attrs -> True) -> do
+      pure $ ThomasOlney $ attrs & flippedL .~ True & visibleL .~ False
     _ -> ThomasOlney <$> liftRunMessage msg attrs

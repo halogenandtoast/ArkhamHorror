@@ -30,4 +30,6 @@ instance RunMessage ElizabethConrad where
         chooseOneM iid' $ targets locations $ \lid ->
           moveTo (attrs.ability 1) iid' lid
       pure a
+    Flip _ ScenarioSource (isTarget attrs -> True) -> do
+      pure $ ElizabethConrad $ attrs & flippedL .~ True & visibleL .~ False
     _ -> ElizabethConrad <$> liftRunMessage msg attrs

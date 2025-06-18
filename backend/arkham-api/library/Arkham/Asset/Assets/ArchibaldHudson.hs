@@ -47,4 +47,6 @@ instance RunMessage ArchibaldHudson where
           chooseTargetM iid enemies \eid ->
             moveTokens (attrs.ability 2) aid eid #damage 1
       pure a
+    Flip _ ScenarioSource (isTarget attrs -> True) -> do
+      pure $ ArchibaldHudson $ attrs & flippedL .~ True & visibleL .~ False
     _ -> ArchibaldHudson <$> liftRunMessage msg attrs

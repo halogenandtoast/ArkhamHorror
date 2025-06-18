@@ -34,7 +34,8 @@ instance HasAbilities UnexpectedGuests where
 
 instance RunMessage UnexpectedGuests where
   runMessage msg a@(UnexpectedGuests attrs) = runQueueT $ case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (assetLeavingPlay -> aid) _ -> do
+    UseCardAbility _ (isSource attrs -> True) 1 ws@(assetLeavingPlay -> aid) _ -> do
+      cancelWindowBatch ws
       becomeSpellbound aid
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do

@@ -50,4 +50,6 @@ instance RunMessage LucasTetlow where
     SearchFound _ (isTarget attrs -> True) _ _ -> do
       for_ attrs.controller shuffleDeck
       pure a
+    Flip _ ScenarioSource (isTarget attrs -> True) -> do
+      pure $ LucasTetlow $ attrs & flippedL .~ True & visibleL .~ False
     _ -> LucasTetlow <$> liftRunMessage msg attrs

@@ -42,4 +42,6 @@ instance RunMessage PrudenceDouglas where
         chooseUpToNM iid 2 "Done discarding" do
           targets discardable $ \c -> push $ AddToEncounterDiscard c
       pure a
+    Flip _ ScenarioSource (isTarget attrs -> True) -> do
+      pure $ PrudenceDouglas $ attrs & flippedL .~ True & visibleL .~ False
     _ -> PrudenceDouglas <$> liftRunMessage msg attrs

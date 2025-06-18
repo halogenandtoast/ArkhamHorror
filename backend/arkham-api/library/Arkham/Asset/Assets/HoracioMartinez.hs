@@ -33,4 +33,6 @@ instance RunMessage HoracioMartinez where
       exhaustThis attack.enemy
       roundModifier (attrs.ability 1) attack.enemy CannotReady
       pure a
+    Flip _ ScenarioSource (isTarget attrs -> True) -> do
+      pure $ HoracioMartinez $ attrs & flippedL .~ True & visibleL .~ False
     _ -> HoracioMartinez <$> liftRunMessage msg attrs

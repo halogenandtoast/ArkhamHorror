@@ -2,26 +2,44 @@ module Arkham.Scenario.Scenarios.TheMidwinterGala (theMidwinterGala) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetController, AssetTraits))
+import Arkham.Card.CardDef
 import Arkham.EncounterSet qualified as Set
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Agenda
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher
+import Arkham.Matcher hiding (enemyAt)
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Projection
+import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted hiding (InvestigatorDamage)
-import Arkham.Trait (Trait (Guest, Leader, Private))
+import Arkham.Story.Cards qualified as Stories
+import Arkham.Trait (Trait (Guest, Leader, Monster, Private))
+import Arkham.Treachery.Cards qualified as Treacheries
 
 data Faction
   = TheFoundation
   | MiskatonicUniversity
   | TheSyndicate
-  | SilverTwilightLodge
+  | TheSilverTwilightLodge
   | LocalsOfKingsport
   deriving stock (Show, Eq, Enum, Bounded, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+factionLabel :: HasI18n => Faction -> Text
+factionLabel faction = unscoped $ standaloneI18n "theMidwinterGala" $ scope "faction" $ case faction of
+  TheFoundation -> "theFoundation"
+  MiskatonicUniversity -> "miskatonicUniversity"
+  TheSyndicate -> "theSyndicate"
+  TheSilverTwilightLodge -> "theSilverTwilightLodge"
+  LocalsOfKingsport -> "localsOfKingsport"
 
 data Meta = Meta {ally :: Faction, rival :: Faction}
   deriving stock (Show, Eq, Generic)
@@ -41,9 +59,9 @@ theMidwinterGala difficulty =
     "71001"
     "The Midwinter Gala"
     difficulty
-    [ "secondFloor1 secondFloor2 secondFloor3 ."
-    , "lobby       groundFloor1 groundFloor2 groundFloor3"
-    , "lanternRoom .           .           ."
+    [ "secondFloor1   secondFloor2 secondFloor3 ."
+    , "lobby          groundFloor1 groundFloor2 groundFloor3"
+    , "lanternChamber .           .           ."
     ]
 
 instance HasChaosTokenValue TheMidwinterGala where
@@ -73,15 +91,14 @@ instance HasChaosTokenValue TheMidwinterGala where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 setupTheMidwinterGala :: ReverseQueue m => ScenarioAttrs -> ScenarioBuilderT m ()
-setupTheMidwinterGala _attrs = do
+setupTheMidwinterGala attrs = do
   gather Set.TheMidwinterGala
   setActDeck [Acts.meetAndGreet, Acts.findingTheJewel]
   setAgendaDeck [Agendas.maskedRevelers, Agendas.unexpectedGuests, Agendas.aKillerParty]
 
   lobby <- place Locations.lobbyTheMidwinterGala
-  _lantern <- place Locations.lanternChamber
-
-  _groundFloors <-
+  lanternChamber <- place Locations.lanternChamber
+  groundFloors <-
     placeGroupCapture "groundFloor"
       =<< shuffle
         [ Locations.artGalleryTheMidwinterGala
@@ -98,98 +115,94 @@ setupTheMidwinterGala _attrs = do
 
   startAt lobby
 
--- lead <- getLead
--- allyChoice <-
---   chooseOne
---     lead
---     [ Label "The Foundation" $ pure TheFoundation
---     , Label "Miskatonic University" $ pure MiskatonicUniversity
---     , Label "The Syndicate" $ pure TheSyndicate
---     , Label "Silver Twilight Lodge" $ pure SilverTwilightLodge
---     , Label "Locals of Kingsport" $ pure LocalsOfKingsport
---     ]
+  let Meta {ally, rival} = toResult attrs.meta
 
--- let
---   factionStoryAllied = \case
---     TheFoundation -> Stories.theFoundationAllied
---     MiskatonicUniversity -> Stories.miskatonicUniversityAllied
---     TheSyndicate -> Stories.theSyndicateAllied
---     SilverTwilightLodge -> Stories.silverTwilightLodgeAllied
---     LocalsOfKingsport -> Stories.localsOfKingsportAllied
---   factionStoryRival = \case
---     TheFoundation -> Stories.theFoundationRival
---     MiskatonicUniversity -> Stories.miskatonicUniversityRival
---     TheSyndicate -> Stories.theSyndicateRival
---     SilverTwilightLodge -> Stories.silverTwilightLodgeRival
---     LocalsOfKingsport -> Stories.localsOfKingsportRival
+  let
+    factionStoryAllied = \case
+      TheFoundation -> Stories.theFoundationAllied
+      MiskatonicUniversity -> Stories.miskatonicUniversityAllied
+      TheSyndicate -> Stories.theSyndicateAllied
+      TheSilverTwilightLodge -> Stories.silverTwilightLodgeAllied
+      LocalsOfKingsport -> Stories.localsOfKingsportAllied
 
---   leaderAsset = \case
---     TheFoundation -> Assets.valeriyaAntonovaWantsOutOfHere
---     MiskatonicUniversity -> Assets.caldwellPhilipsEnthralledByLegends
---     TheSyndicate -> Assets.johnnyValoneReadyToMakeADeal
---     SilverTwilightLodge -> Assets.carlSanfordLustingForPower
---     LocalsOfKingsport -> Assets.williamBainLookingForThoseLost
+    factionStoryRival = \case
+      TheFoundation -> Stories.theFoundationRival
+      MiskatonicUniversity -> Stories.miskatonicUniversityRival
+      TheSyndicate -> Stories.theSyndicateRival
+      TheSilverTwilightLodge -> Stories.silverTwilightLodgeRival
+      LocalsOfKingsport -> Stories.localsOfKingsportRival
 
---   factionGuests = \case
---     TheFoundation ->
---       [ Assets.archibaldHudson
---       , Assets.specialAgentCallahan
---       , Assets.horacioMartinez
---       ]
---     MiskatonicUniversity ->
---       [ Assets.drMyaBadry
---       , Assets.lucasTetlow
---       , Assets.elizabethConrad
---       ]
---     TheSyndicate ->
---       [ Assets.mirandaKeeper
---       , Assets.arseneRenard
---       , Assets.novaMalone
---       ]
---     SilverTwilightLodge ->
---       [ Assets.prudenceDouglas
---       , Assets.sarahVanShaw
---       , Assets.raymondLoggins
---       ]
---     LocalsOfKingsport ->
---       [ Assets.deloresGadling
---       , Assets.thomasOlney
---       , Assets.claireWilson
---       ]
+    factionRivalCard = \case
+      TheFoundation -> Enemies.rookieCop
+      MiskatonicUniversity -> Treacheries.confusion
+      TheSyndicate -> Treacheries.coldStreak
+      TheSilverTwilightLodge -> Treacheries.wardOfPreservation
+      LocalsOfKingsport -> Treacheries.unlucky
 
--- setAside [factionStoryAllied allyChoice]
--- removeEvery [factionStoryRival allyChoice]
+    leaderAsset = \case
+      TheFoundation -> Assets.valeriyaAntonovaWantsOutOfHere
+      MiskatonicUniversity -> Assets.caldwellPhilipsEnthralledByLegends
+      TheSyndicate -> Assets.johnnyValoneReadyToMakeADeal
+      TheSilverTwilightLodge -> Assets.carlSanfordLustingForPower
+      LocalsOfKingsport -> Assets.williamBainLookingForThoseLost
 
--- beginWithStoryAsset lead (leaderAsset allyChoice)
+    factionGuests = \case
+      TheFoundation ->
+        [ Assets.archibaldHudson
+        , Assets.specialAgentCallahan
+        , Assets.horacioMartinez
+        ]
+      MiskatonicUniversity ->
+        [ Assets.drMyaBadry
+        , Assets.lucasTetlow
+        , Assets.elizabethConrad
+        ]
+      TheSyndicate ->
+        [ Assets.mirandaKeeper
+        , Assets.arseneRenard
+        , Assets.novaMalone
+        ]
+      TheSilverTwilightLodge ->
+        [ Assets.prudenceDouglas
+        , Assets.sarahVanShaw
+        , Assets.raymondLoggins
+        ]
+      LocalsOfKingsport ->
+        [ Assets.deloresGadling
+        , Assets.thomasOlney
+        , Assets.claireWilson
+        ]
 
--- shuffledGuests <- shuffle (factionGuests allyChoice)
--- for_ (zip shuffledGuests groundFloors) \(g, lid) -> assetAt_ g lid
+  setAside [factionStoryAllied ally]
+  removeEvery [factionRivalCard ally]
 
--- let remainingFactions = List.delete allyChoice [minBound .. maxBound]
--- rival <- sample remainingFactions
--- setAside [factionStoryRival rival, leaderAsset rival]
--- removeEvery (factionGuests rival)
+  lead <- getLead
+  beginWithStoryAsset lead (leaderAsset ally)
 
--- let otherFactions = List.delete rival remainingFactions
--- for_ otherFactions \f -> do
---   removeEvery [factionStoryAllied f, factionStoryRival f]
---   removeEvery (leaderAsset f : factionGuests f)
+  shuffledGuests <- shuffle (factionGuests ally)
+  for_ (zip shuffledGuests groundFloors) (uncurry assetAt_)
 
--- let guestCards = concatMap factionGuests otherFactions
--- addExtraDeck GuestDeck =<< shuffle guestCards
--- drawn <- take 3 <$> getGuestDeck
--- for_ (zip drawn groundFloors) \(c, lid) -> createAssetAt_ c (AtLocation lid)
+  setAside [factionStoryRival rival, leaderAsset rival, factionRivalCard rival]
+  removeEvery $ factionGuests rival
 
--- -- enemyId <- enemyAt Enemies.theBloodlessMan lantern
--- -- pale <- genCard Assets.thePaleLanternHypnoticGlow
--- -- createAssetAt_ pale (AttachedToEnemy enemyId)
--- -- push $ Exhaust (EnemyTarget enemyId)
+  let otherFactions = filter (`notElem` [ally, rival]) [minBound ..]
 
--- setAside
---   $ replicate 2 Treacheries.viciousAmbush
---   <> [Enemies.declanPearce, Assets.jewelOfSarnath]
+  for_ otherFactions \faction ->
+    removeEvery [factionStoryAllied faction, factionRivalCard faction, leaderAsset faction]
 
--- setMeta $ Meta {ally = allyChoice, rival = rival}
+  (inPlayGuests, guestDeck) <- splitAt 3 <$> shuffle (concatMap factionGuests otherFactions)
+  addExtraDeck GuestDeck =<< shuffle guestDeck
+  for_ (zip inPlayGuests groundFloors) (uncurry assetAt_)
+
+  theBloodlessMan <- enemyAt Enemies.theBloodlessMan lanternChamber
+  placeAsset_ Assets.thePaleLanternHypnoticGlow (AttachedToEnemy theBloodlessMan)
+  exhaustThis theBloodlessMan
+
+  monsters <- asDefs <$> amongGathered (CardWithTrait Monster)
+  setAside
+    $ monsters
+    <> replicate 2 Treacheries.viciousAmbush
+    <> [Enemies.declanPearce, Assets.jewelOfSarnath]
 
 -- calculateScore :: HasGame m => ScenarioAttrs -> Meta -> m Int
 -- calculateScore attrs Meta {ally, rival} = do
@@ -249,9 +262,16 @@ setupTheMidwinterGala _attrs = do
 --     + alliedScore
 
 instance RunMessage TheMidwinterGala where
-  runMessage msg s@(TheMidwinterGala attrs) = runQueueT $ case msg of
-    PreScenarioSetup -> do
-      -- story intro1
+  runMessage msg s@(TheMidwinterGala attrs) = runQueueT $ standaloneI18n "theMidwinterGala" $ case msg of
+    PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "flavor"
+      flavor $ h "title" >> p "body"
+      storyWithChooseOneM' (h "title" >> p "guestChoice") do
+        for_ (eachWithRest [minBound ..]) \(faction, rest) -> do
+          rival <- maybe (error "empty") sample $ nonEmpty rest
+          popScope $ labeled' (factionLabel faction) do
+            scope "intro" $ flavor $ h "title" >> p (factionLabel faction)
+            push $ SetScenarioMeta $ toJSON $ Meta {ally = faction, rival = rival}
       pure s
     Setup -> runScenarioSetup TheMidwinterGala attrs $ setupTheMidwinterGala attrs
     StandaloneSetup -> do

@@ -1366,19 +1366,29 @@ allAssets =
     , --- Dark Revelations
       SomeAssetCard ruthWestmacottDarkRevelations
     , -- The Midwinter Gala
-      SomeAssetCard archibaldHudson
+      SomeAssetCard valeriyaAntonovaWantsOutOfHere
+    , SomeAssetCard archibaldHudson
+    , SomeAssetCard specialAgentCallahan
+    , SomeAssetCard horacioMartinez
+    , SomeAssetCard caldwellPhilipsEnthralledByLegends
     , SomeAssetCard drMyaBadry
     , SomeAssetCard lucasTetlow
     , SomeAssetCard elizabethConrad
+    , SomeAssetCard johnnyValoneReadyToMakeADeal
     , SomeAssetCard mirandaKeeper
     , SomeAssetCard arseneRenard
     , SomeAssetCard novaMalone
+    , SomeAssetCard carlSanfordLustingForPower
     , SomeAssetCard prudenceDouglas
     , SomeAssetCard sarahVanShaw
     , SomeAssetCard raymondLoggins
+    , SomeAssetCard williamBainLookingForThoseLost
     , SomeAssetCard deloresGadling
     , SomeAssetCard thomasOlney
     , SomeAssetCard claireWilson
+    , SomeAssetCard thePaleLanternHypnoticGlow
+    , SomeAssetCard thePaleLanternBeguilingAura
+    , SomeAssetCard jewelOfSarnath
     , -- Misc
       SomeAssetCard courage
     ]

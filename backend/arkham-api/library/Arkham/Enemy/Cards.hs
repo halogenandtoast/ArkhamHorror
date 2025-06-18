@@ -3050,7 +3050,7 @@ valeriyaAntonovaDontMessWithHer =
         { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
         , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
         , cdDoubleSided = True
-        , cdOtherSide = Just "71065b"
+        , cdOtherSide = Just "71016"
         , cdVictoryPoints = Just 0
         }
 
@@ -3068,7 +3068,7 @@ caldwellPhilipsCompelledByDreams =
         { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
         , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
         , cdDoubleSided = True
-        , cdOtherSide = Just "71063b"
+        , cdOtherSide = Just "71022"
         , cdVictoryPoints = Just 0
         }
 
@@ -3079,7 +3079,7 @@ johnnyValoneHereToCollect =
         { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
         , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
         , cdDoubleSided = True
-        , cdOtherSide = Just "71066"
+        , cdOtherSide = Just "71028"
         , cdVictoryPoints = Just 0
         }
 
@@ -3090,7 +3090,7 @@ carlSanfordIntimidatingPresence =
         { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
         , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
         , cdDoubleSided = True
-        , cdOtherSide = Just "71064b"
+        , cdOtherSide = Just "71034"
         , cdVictoryPoints = Just 0
         }
 
@@ -3101,7 +3101,7 @@ williamBainDefiantToTheLast =
         { cdCardTraits = setFromList [Humanoid, Leader, Rival, Elite]
         , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
         , cdDoubleSided = True
-        , cdOtherSide = Just "71069b"
+        , cdOtherSide = Just "71040"
         , cdVictoryPoints = Just 0
         }
 
@@ -3113,7 +3113,7 @@ theBloodlessMan =
         , cdKeywords =
             setFromList
               [ Keyword.Aloof
-              , Keyword.Patrol (NearestLocationToYou $ LocationWithAsset $ AssetWithTrait Guest)
+              , Keyword.Patrol (LocationWithAsset $ AssetWithTrait Guest)
               ]
         }
 
@@ -3153,6 +3153,7 @@ declanPearce =
     $ (enemy "71051" "Declan Pearce" TheMidwinterGala 1)
         { cdCardTraits = setFromList [Humanoid, LanternClub, Elite]
         , cdKeywords = setFromList [Keyword.Hunter]
+        , cdVictoryPoints = Just 0
         }
 
 lanternClubMember :: CardDef

@@ -13,6 +13,7 @@ import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Layout
@@ -27,6 +28,9 @@ import Control.Monad.Writer
 import Data.List.NonEmpty qualified as NE
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
+
+standaloneI18n :: Scope -> (HasI18n => a) -> a
+standaloneI18n s a = withI18n $ scope "standalone" $ scope s a
 
 getIsReturnTo :: HasGame m => m Bool
 getIsReturnTo = selectJust TheScenario <&> \(ScenarioId c) -> T.take 1 (unCardCode c) == "5"

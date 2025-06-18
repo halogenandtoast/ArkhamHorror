@@ -467,8 +467,6 @@ allPlayerAssetCards =
       , jeromeDavids
       , jessicaHyde1
       , jewelOfAureolus3
-      , jewelOfSarnath
-      , jewelOfSarnath
       , jimsTrumpet
       , jimsTrumpetAdvanced
       , joeSargentRattletrapBusDriver
@@ -840,8 +838,6 @@ allPlayerAssetCards =
       , theNecronomiconOlausWormiusTranslation
       , theNecronomiconPetrusDeDaciaTranslation5
       , thePaleLanternBeguilingAura
-      , thePaleLanternBeguilingAura
-      , thePaleLanternHypnoticGlow
       , thePaleLanternHypnoticGlow
       , thePallidMask
       , theRedClockBrokenButReliable2
@@ -966,6 +962,7 @@ allEncounterAssetCards =
       , yhanthleiStatueDynamicRelic
       , dianneDevineHidingAnOathUnspoken
       , partyGuest
+      , jewelOfSarnath
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef

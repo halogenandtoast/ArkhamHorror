@@ -7,7 +7,6 @@ valeriyaAntonovaWantsOutOfHere =
   (storyAsset "71016" ("Valeriya Antonova" <:> "Wants Out of Here") 0 TheMidwinterGala)
     { cdCardTraits = setFromList [Leader, Guest, Agency]
     , cdSkills = [#willpower, #intellect, #combat]
-    , cdSlots = [#ally]
     , cdUnique = True
     , cdCost = Nothing
     }
@@ -25,7 +24,7 @@ specialAgentCallahan :: CardDef
 specialAgentCallahan =
   (storyAsset "71018" ("Special Agent Callahan" <:> "Weapons Expert") 2 TheMidwinterGala)
     { cdCardTraits = setFromList [Ally, Guest, Agency]
-    , cdSkills = [#combat, #combat, #intellect, #intellect]
+    , cdSkills = [#intellect, #intellect, #combat, #combat]
     , cdSlots = [#ally]
     , cdUnique = True
     }
@@ -44,7 +43,6 @@ caldwellPhilipsEnthralledByLegends =
   (storyAsset "71022" ("Caldwell Philips" <:> "Enthralled by Legends") 0 TheMidwinterGala)
     { cdCardTraits = setFromList [Leader, Guest, Miskatonic]
     , cdSkills = [#willpower, #intellect, #agility]
-    , cdSlots = [#ally]
     , cdUnique = True
     , cdCost = Nothing
     }
@@ -81,7 +79,6 @@ johnnyValoneReadyToMakeADeal =
   (storyAsset "71028" ("Johnny Valone" <:> "Ready to Make a Deal") 0 TheMidwinterGala)
     { cdCardTraits = setFromList [Leader, Guest, Syndicate]
     , cdSkills = [#intellect, #combat, #agility]
-    , cdSlots = [#ally]
     , cdUnique = True
     , cdCost = Nothing
     }
@@ -119,7 +116,6 @@ carlSanfordLustingForPower =
   (storyAsset "71034" ("Carl Sanford" <:> "Lusting for Power") 0 TheMidwinterGala)
     { cdCardTraits = setFromList [Leader, Guest, SilverTwilight]
     , cdSkills = [#willpower, #intellect, #combat]
-    , cdSlots = [#ally]
     , cdUnique = True
     , cdCost = Nothing
     }
@@ -158,7 +154,6 @@ williamBainLookingForThoseLost =
   (storyAsset "71040" ("William Bain" <:> "Looking for Those Lost") 0 TheMidwinterGala)
     { cdCardTraits = setFromList [Leader, Guest, Kingsport]
     , cdSkills = [#willpower, #combat, #agility]
-    , cdSlots = [#ally]
     , cdUnique = True
     , cdCost = Nothing
     }

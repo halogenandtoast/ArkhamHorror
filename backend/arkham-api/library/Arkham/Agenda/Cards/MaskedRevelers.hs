@@ -31,7 +31,8 @@ instance HasAbilities MaskedRevelers where
 
 instance RunMessage MaskedRevelers where
   runMessage msg a@(MaskedRevelers attrs) = runQueueT $ case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (assetLeavingPlay -> aid) _ -> do
+    UseCardAbility _ (isSource attrs -> True) 1 ws@(assetLeavingPlay -> aid) _ -> do
+      cancelWindowBatch ws
       becomeSpellbound aid
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do

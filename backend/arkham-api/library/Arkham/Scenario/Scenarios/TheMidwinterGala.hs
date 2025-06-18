@@ -13,6 +13,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.I18n
@@ -20,6 +21,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message (StoryMode (..))
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Placement qualified as Placement
 import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Projection
@@ -230,6 +232,13 @@ instance RunMessage TheMidwinterGala where
           TheSilverTwilightLodge -> Assets.carlSanfordLustingForPower
           LocalsOfKingsport -> Assets.williamBainLookingForThoseLost
 
+        leaderEnemy = \case
+          TheFoundation -> Enemies.valeriyaAntonovaDontMessWithHer
+          MiskatonicUniversity -> Enemies.caldwellPhilipsCompelledByDreams
+          TheSyndicate -> Enemies.johnnyValoneHereToCollect
+          TheSilverTwilightLodge -> Enemies.carlSanfordDeathlessFanatic
+          LocalsOfKingsport -> Enemies.williamBainDefiantToTheLast
+
         factionGuests = \case
           TheFoundation -> [Assets.archibaldHudson, Assets.specialAgentCallahan, Assets.horacioMartinez]
           MiskatonicUniversity -> [Assets.drMyaBadry, Assets.lucasTetlow, Assets.elizabethConrad]
@@ -246,7 +255,7 @@ instance RunMessage TheMidwinterGala where
       shuffledGuests <- shuffle (factionGuests ally)
       for_ (zip shuffledGuests groundFloors) (uncurry assetAt_)
 
-      setAside [factionStoryRival rival, leaderAsset rival, factionRivalCard rival]
+      setAside [factionStoryRival rival, leaderEnemy rival, factionRivalCard rival]
       removeEvery $ factionGuests rival
 
       let otherFactions = filter (`notElem` [ally, rival]) [minBound ..]
@@ -352,13 +361,18 @@ instance RunMessage TheMidwinterGala where
       if Leader `member` traits
         then removeFromGame aid
         else do
+          cancelAssetLeavePlay aid
           mController <- field AssetController aid
           lead <- getLead
           let iid = fromMaybe lead mController
           loseControlOfAsset aid
-          healAllDamageAndHorror GameSource aid
-          gameModifier ScenarioSource aid (ScenarioModifier "spellbound")
-          flipOver iid aid
+          getLocationOf iid >>= \case
+            Nothing -> toDiscard ScenarioSource aid
+            Just loc -> do
+              Placement.place aid (AtLocation loc)
+              healAllDamageAndHorror GameSource aid
+              gameModifier ScenarioSource aid (ScenarioModifier "spellbound")
+              flipOverBy iid ScenarioSource aid
       pure s
     ScenarioSpecific "placeRival" _ -> do
       let Meta {rival} = toResult attrs.meta

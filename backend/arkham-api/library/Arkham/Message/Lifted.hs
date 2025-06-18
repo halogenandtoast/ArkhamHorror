@@ -934,7 +934,6 @@ eachInvestigator f = do
   investigators <- if inResolution then allInvestigators else getInvestigators
   for_ investigators f
 
-
 forInvestigator :: ReverseQueue m => InvestigatorId -> Message -> m ()
 forInvestigator iid msg = push $ ForInvestigator iid msg
 
@@ -2472,6 +2471,30 @@ cancelAttack source details = when details.canBeCanceled do
 changeAttackDetails :: (ReverseQueue m, AsId a, IdOf a ~ EnemyId) => a -> EnemyAttackDetails -> m ()
 changeAttackDetails eid details = push $ ChangeEnemyAttackDetails (asId eid) details
 
+cancelAssetLeavePlay
+  :: (MonadTrans t, HasQueue Message m, AsId asset, IdOf asset ~ AssetId)
+  => asset
+  -> t m ()
+cancelAssetLeavePlay asset = lift do
+  let
+    aid = asId asset
+    isAssetLeavePlay = \case
+      Discard _ _ (AssetTarget aid') -> aid == aid'
+      Arkham.Message.Discarded (AssetTarget aid') _ _ -> aid == aid'
+      Do (Arkham.Message.Discarded (AssetTarget aid') _ _) -> aid == aid'
+      RemoveFromPlay (AssetSource aid') -> aid == aid'
+      RemovedFromPlay (AssetSource aid') -> aid == aid'
+      Arkham.Message.AssetDefeated _ aid' -> aid == aid'
+      Do (Arkham.Message.AssetDefeated _ aid') -> aid == aid'
+      After (Arkham.Message.AssetDefeated _ aid') -> aid == aid'
+      CheckWindows ws -> any isAssetLeavePlayWindow ws
+      Do (CheckWindows ws) -> any isAssetLeavePlayWindow ws
+      _ -> False
+    isAssetLeavePlayWindow w = case w.kind of
+      Window.LeavePlay (AssetTarget aid') -> aid' == aid
+      _ -> False
+  withQueue_ $ filter (not . isAssetLeavePlay)
+
 cancelEnemyDefeat
   :: (MonadTrans t, HasQueue Message m, AsId enemy, IdOf enemy ~ EnemyId)
   => enemy
@@ -3013,6 +3036,9 @@ withBatchedTimings w body = do
     checkWindows [atIf]
     body
     checkWindows [after]
+
+cancelWindowBatch :: ReverseQueue m => [Window] -> m ()
+cancelWindowBatch = cancelBatch . Window.getBatchId
 
 cancelBatch :: ReverseQueue m => BatchId -> m ()
 cancelBatch bId = push $ CancelBatch bId

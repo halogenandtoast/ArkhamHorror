@@ -21,7 +21,7 @@ newtype MeetAndGreet = MeetAndGreet ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 meetAndGreet :: ActCard MeetAndGreet
-meetAndGreet = act (1, A) MeetAndGreet Cards.meetAndGreet $ groupClueCost (PerPlayer 3)
+meetAndGreet = act (1, A) MeetAndGreet Cards.meetAndGreet Nothing
 
 instance HasModifiersFor MeetAndGreet where
   getModifiersFor (MeetAndGreet a) =

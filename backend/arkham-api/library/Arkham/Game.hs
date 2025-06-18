@@ -387,6 +387,7 @@ withLocationConnectionData inner@(With target _) = do
         ]
   lmAssets <-
     select
+      $ IgnoreVisibility
       $ oneOf
         [ AssetWithPlacement $ AtLocation (toId target)
         , AssetWithPlacement $ AttachedToLocation (toId target)
@@ -2353,7 +2354,11 @@ guardYourLocation body = do
 
 getAssetsMatching :: HasGame m => AssetMatcher -> m [Asset]
 getAssetsMatching matcher = do
-  assets <- toList . view (entitiesL . assetsL) <$> getGame
+  let
+    ignoreVisibility = case matcher of
+      IgnoreVisibility _ -> const True
+      _ -> attr assetVisible
+  assets <- filter ignoreVisibility . toList . view (entitiesL . assetsL) <$> getGame
   filterMatcher assets matcher
  where
   canBeDiscarded =
@@ -2364,6 +2369,7 @@ getAssetsMatching matcher = do
         ]
   filterMatcher [] = const (pure [])
   filterMatcher as = \case
+    IgnoreVisibility inner -> filterMatcher as inner
     VehicleWithInvestigator imatcher -> do
       filterM (\a -> selectAny $ imatcher <> InVehicleMatching (AssetWithId $ toId a)) as
     PermanentAsset -> pure $ filter (cdPermanent . toCardDef) as

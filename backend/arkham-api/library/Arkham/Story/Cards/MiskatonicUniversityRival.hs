@@ -34,7 +34,7 @@ instance RunMessage MiskatonicUniversityRival where
   runMessage msg s@(MiskatonicUniversityRival attrs) = runQueueT $ case msg of
     ResolveStory _ ResolveIt story' | story' == toId attrs -> do
       confusion <- getSetAsideCardsMatching $ cardIs Treacheries.confusion
-      for_ confusion \card -> push $ ShuffleCardsIntoDeck Deck.EncounterDeck [card]
+      shuffleCardsIntoDeck Deck.EncounterDeck confusion
       caldwell <- getSetAsideCardsMatching $ cardIs Enemies.caldwellPhilipsCompelledByDreams
       lead <- getLead
       for_ caldwell $ withLocationOf lead . createEnemyAt_

@@ -1466,4 +1466,6 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           afterMsg <- checkWindows [mkAfter (Window.AgendaWouldAdvance DoomThreshold x)]
           pushAll [whenMsg, afterMsg, ForTarget (toTarget x) AdvanceAgendaIfThresholdSatisfied]
     pure a
+  ReadStoryWithPlacement _ card _ _ _ -> do
+    pure $ a & setAsideCardsL %~ filter (/= card)
   _ -> pure a

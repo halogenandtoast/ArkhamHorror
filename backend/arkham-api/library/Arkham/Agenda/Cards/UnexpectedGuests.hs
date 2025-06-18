@@ -42,6 +42,7 @@ instance RunMessage UnexpectedGuests where
       selectOne (enemyIs Enemies.theBloodlessMan) >>= \case
         Just theBloodlessMan -> flipOver lead theBloodlessMan
         Nothing -> eachInvestigator (`forInvestigator` msg)
+      advanceAgendaDeck attrs
       pure a
     ForInvestigator iid (AdvanceAgenda (isSide B attrs -> True)) -> do
       healableInvestigators <-

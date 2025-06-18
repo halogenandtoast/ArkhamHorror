@@ -34,4 +34,6 @@ instance RunMessage NovaMalone where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       gainResources iid (attrs.ability 2) 1
       pure a
+    Flip _ ScenarioSource (isTarget attrs -> True) -> do
+      pure $ NovaMalone $ attrs & flippedL .~ True & visibleL .~ False
     _ -> NovaMalone <$> liftRunMessage msg attrs

@@ -2,6 +2,10 @@
 
 This repository contains a Haskell backend (`backend/`) and a Vue/TypeScript frontend (`frontend/`).
 
+## Agent Purpose
+
+This file is intended to help AI agents and human collaborators understand the structure and conventions of the ArkhamHorror project. It provides detailed steps and examples to assist with generating and integrating new cards and scenarios.
+
 ## Formatting
 
 * Haskell source must be formatted with **fourmolu** using the configuration at `backend/fourmolu.yaml`. Run `fourmolu -i <file>` before committing.

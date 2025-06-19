@@ -1,63 +1,63 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1 for each Brood of Yog-Sothoth in play.",
-      "cultist": "Reveal another token. If you fail this test, take 1 horror.",
-      "tablet": "0. You must either remove all clue tokens from a Brood of Yog-Sothoth in play, or this token's modifier is -4 instead.",
-      "elderThing": "-3. If this token is revealed during an attack or evasion attempt against a Brood of Yog-Sothoth, it immediately attacks you."
+      "skull": "플레이 상태인 ‘요그 소토스의 새끼’마다 -1.",
+      "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 실패하면, 공포를 1 받습니다.",
+      "tablet": "0. 플레이 상태인 ‘요그 소토스의 새끼’ 하나에 놓인 단서를 모두 제거하거나, 또는 이 토큰의 보정값을 0 대신 -4로 해야 합니다.",
+      "elderThing": "-3. 이 토큰이 ‘요그 소토스의 새끼’에 대해 공격 또는 회피를 시도하는 동안 공개되었다면, 해당 적은 즉시 당신을 공격합니다."
     },
     "hardExpert": {
-      "skull": "-2 for each Brood of Yog-Sothoth in play.",
-      "cultist": "Reveal another token. If you fail this test, take 1 horror and 1 damage.",
-      "tablet": "0. You must either remove all clue tokens from a Brood of Yog-Sothoth in play, or this test automatically fails.",
-      "elderThing": "-5. If this token is revealed during an attack or evasion attempt against a Brood of Yog-Sothoth, it immediately attacks you."
+      "skull": "플레이 상태인 ‘요그 소토스의 새끼’마다 -2.",
+      "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 실패하면, 공포 1과 피해 1을 받습니다.",
+      "tablet": "0. 플레이 상태인 ‘요그 소토스의 새끼’ 하나에 놓인 단서를 모두 제거하거나, 또는 이 테스트에 자동으로 실패해야 합니다.",
+      "elderThing": "-5. 이 토큰이 ‘요그 소토스의 새끼’에 대해 공격 또는 회피를 시도하는 동안 공개되었다면, 해당 적은 즉시 당신을 공격합니다."
     }
   },
   "intro": {
-    "title": "Scenario V: Undimensioned and Unseen",
-    "body": "<p>Your search of the village of Dunwich has uncovered a number of documents, journal entries, and esoteric theories. Reading through these materials leaves you exhausted and emotionally drained. Most of the content was written by a single source­ —a man named Seth Bishop. When you ask around town, you learn that Seth is a citizen of Dunwich. Along with several others, Seth had witnessed firsthand the devastation wrought by the events of “the Dunwich horror,” as Armitage had dubbed the incident. Curiously, since that time, very few people had seen Seth around town, and those who did claimed his eyes had been bloodshot and his face sweaty and pale.</p><p>You don’t doubt that somebody who has seen what Seth has seen would appear nervous or paranoid. But the more you read of his frantic and unhinged writings, the more you believe he is involved in recent events. His writings speak of having “gathered the remains” and of using arcane methods to “imbue the fathers’ essence” into other creatures, and eventually, into other people. The explanations and diagrams that follow are unfathomably complex and defy understanding.</p><p>Before you are able to find Seth and confront him, several men and women from the village approach you in a panic. “It’s back!” one of them wails. You recognize him as Curtis Whateley, of the undecayed branch. “Whatever it was that killed them Fryes, it’s back! Up and smashed the Bishops’ home like it were made o’ paper!” Curtis and the other townsfolk are clamoring amongst themselves, raising their voices in a panic.</p>",
+    "title": "시나리오 V: 차원 너머의 보이지 않는 존재",
+    "body": "<p>당신은 던위치 마을을 수색한 끝에 몇 건의 문서, 일지, 그리고 불가사의한 이론서를 발견했습니다. 이 자료를 검토하며 읽고 있자니 정신적으로 점차 지쳐가는 것만 같습니다. 이러한 글의 대부분은 바로 세스 비숍이라는 남자가 쓴 것입니다. 당신은 마을 여기저기를 탐문하고 다니다 그가 던위치의 주민이란 사실을 알아냈습니다. 몇몇 주민과 마찬가지로, 세스 역시 아미티지가 “던위치의 공포”라고 명명한 사건 현장에 있었다고 합니다. 흥미롭게도 그 사건 이후 마을 인근에서 세스를 본 사람들은 얼마 되지 않는데, 그 사람들은 하나같이 세스의 눈이 충혈되고 얼굴이 축축하니 창백했다고 증언하고 있습니다.</p><p>물론 그런 것을 목도하고 나면 그 누구라도 겁을 집어먹고 편집증적이 되는 것은 이해할 만합니다. 그러나 세스가 평정심을 잃고 미친 듯이 써 내려간 글을 읽어갈수록, 그가 최근의 사건과 연관되었으리라는 심증이 커집니다. 그의 글들에는 “유해를 모으는” 일이라든가, 불가해한 수단을 동원하여 다른 생물, 혹은 다른 사람에게까지 “아버지의 정수를 불어넣는” 등의 내용이 적혀 있습니다. 이에 따른 설명과 도표는 말도 안 되게 복잡하여 도저히 이해할 수가 없을 지경입니다.</p><p>당신이 세스를 찾아내서 대적하기 위해 움직이려는 찰나, 남녀 몇몇이 공포에 질려 달려옵니다. “놈… 놈이 돌아왔어요!” 누군가가 울부짖습니다. 그는 웨이틀리 가문에서도 타락하지 않은 쪽의 집안사람인 커티스입니다. “프라이 일가를 죽인 놈이 돌아왔습니다! 갑자기 나타나서는 비숍의 집을 무슨 종이 찢듯 박살을 내버렸어요!” 커티스와 다른 주민들은 아우성치며 떠들고, 그럴수록 공황은 들불처럼 번져나갑니다.</p>",
     "label": {
-      "calm": "You try to calm down the townsfolk in order to learn more. Proceed to _Part 1_.",
-      "warn": "You try to warn the townsfolk and convince them to evacuate. Skip to _Part 2_."
+      "calm": "좀 더 알아보기 위해 마을 주민들을 진정시켜 봅니다. _도입부 1_로 이어집니다.",
+      "warn": "주민들에게 경고를 하고 그들을 탈출시키도록 합니다. _도입부 2_로 건너뜁니다."
     },
-    "part1": "<p>_Part 1_: You aim to calm the townsfolk so they can explain to you what is going on. They inform you that there was a rumbling to the north, and when they went to investigate they found the Bishops’ farmhouse had been torn to shreds. A trail of heavy tracks led into nearby Cold Spring Glen. “You know what to do, right? You Arkham folk stopped that thing last time,” one of the townsfolk says. Curtis shakes his head and bites at his lip.</p><p>“We couldn’t even see that hellish thing until the old professor sprayed that there powder on it,” He says. “To this day, I wish I hadn’t seen it at all…” Something must be done to stop the monster’s rampage. But, if the documents you found are true, there may be more than one such creature on the loose….</p><ul><li>Record in your Campaign Log that *you calmed the townsfolk*. Continue to _Setup_.</li></ul>",
-    "part2": "<p>_Part 2_: You warn the townsfolk that they are in grave danger, and urge them to flee Dunwich while they can. Several of them immediately heed your advice, remembering the terrible monstrosity that had previously endangered the town. Curtis drops to his knees in despair, sweating feverishly. “It’s that _thing_ again, ain’t it? It’s come back fer us,” Curtis stutters. “I hope you’ve got some of that powder the old professor had last time. We couldn’t even see the damned thing until he sprayed it. To this day, I wish I hadn’t seen it at all…” Something must be done to stop the monster’s rampage. But, if the documents you found are true, there may be more than one such creature on the loose….</p><ul><li>Record in your Campaign Log that *you warned the townsfolk*. Continue to _Setup_.</li></ul>"
+    "part1": "<p>_도입부 1_: 당신은 마을 주민들을 진정시키고는 무슨 일이 일어난 건지 설명해 달라고 말합니다. 그들이 말하길, 북쪽에서 요란한 소리가 나기에 무슨 일인지 살펴보러 갔더니 비숍의 농가가 가루가 되고 있었다고 합니다. 또한, 육중한 무언가가 이동한 자취가 인근의 냉천 계곡으로 이어졌다고 합니다. “어떻게 하면 놈을 막을 수 있는지 알고 있죠? 당신들 아컴 사람들이 지난 번에 저놈을 막았잖아요.” 주민 한 명이 말합니다. 커티스는 고개를 저으며 입술을 깨뭅니다.</p><p>“지난번엔 노교수님이 무슨 가루를 뿌리기 전까지 저 끔찍한 놈은 보이지도 않았어요.” 커티스가 말합니다. “저놈이 다시는 나타나지 않길 그렇게 빌었는데…” 괴물의 난동을 저지하려면 어떻게든 해야만 합니다. 하지만, 당신이 찾아낸 문서의 내용이 사실이라면 저렇게 온 마을을 헤집고 다니는 괴물은 분명 하나가 아닐 겁니다…</p><ul><li>캠페인 기록지에 *마을 주민들을 진정시켰다*라고 기록합니다. _게임 준비_로 이어집니다.</li></ul>",
+    "part2": "<p>_도입부 2_: 당신은 마을 주민들에게 지금 치명적인 위험에 처했다고 경고하면서 도망칠 수 있을 때 던위치에서 달아나라고 말합니다. 몇몇 주민은 이전에 마을을 위험에 빠뜨렸던 끔찍한 괴물을 상기하면서 즉각 당신의 조언에 따릅니다. 커티스는 절망에 빠져 무릎을 꿇은 채로 열병에 걸린 것처럼 땀을 흘립니다. “그… 그놈이 돌아온 거, 마… 맞죠? 놈이 우리에게 도… 돌아온 거예요.” 커티스가 더듬었습니다. “지난번에 노교수님이 사용했던 가루를 당신이 가지고 있어야 할 텐데요. 그 가루를 뿌리기 전까지 저 끔찍한 놈은 보이지도 않았어요. 저놈이 다시는 나타나지 않길 그렇게 빌었는데…” 괴물의 난동을 저지하려면 어떻게든 해야만 합니다. 하지만, 당신이 찾아낸 문서의 내용이 사실이라면 저렇게 온 마을을 헤집고 다니는 괴물은 분명 하나가 아닐 겁니다…</p><ul><li>캠페인 기록지에 *마을 주민들에게 경고했다*라고 기록합니다. _게임 준비_로 이어집니다.</li></ul>"
   },
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: Undimensioned and Unseen, Whippoorwills, Beast-thralls, Dunwich, and Striking Fear. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/undimensioned-and-unseen.png' /><img src='{setImgPath}/whippoorwills.png' /><img src='{setImgPath}/beast-thralls.png' /><img src='{setImgPath}/dunwich.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
-    "placeLocations": "Put one of the two versions of the following locations into play at random: Dunwich Village, Cold Spring Glen, Blasted Heath, Ten-Acre Meadow, Devil’s Hop Yard, and Whateley Ruins. Remove the other versions of each of those locations from the game. Each investigator begins play in Dunwich Village.",
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *차원 너머의 보이지 않는 존재*, *쏙독새*, *야수 종복*, *던위치*, *엄습하는 공포*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/undimensioned-and-unseen.png' /><img src='{setImgPath}/whippoorwills.png' /><img src='{setImgPath}/beast-thralls.png' /><img src='{setImgPath}/dunwich.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "placeLocations": "무작위로 ‘던위치 마을’, ‘냉천 계곡’, ‘망가진 황무지’, ‘10에이커 초원’, ‘악마의 홉 밭’, ‘웨이틀리 농가 폐허’ 장소 각 2장 중 1장씩을 선택하여 플레이 영역에 둡니다. 선택하지 않은 각 장소 1장씩을 게임에서 제거합니다. 모든 조사자는 ‘던위치 마을’에서 시작합니다(다음 쪽의 추천 장소 배치를 참조하여 놓습니다).",
     "sacrificedToYogSothoth": {
-      "instructions": "Check the number of names recorded under “Sacrificed to Yog‑Sothoth” in your Campaign Log.",
-      "fourOrMore": "If there are 4 or more names listed, set 2 copies of Brood of Yog‑Sothoth aside, out of play. Then, remove the final 3 copies of Brood of Yog‑Sothoth from the game.",
-      "exactlyThree": "If there are exactly 3 names listed, put 1 copy of Brood of Yog‑Sothoth into play in Cold Spring Glen, and set 2 copies of Brood of Yog‑Sothoth aside, out of play. Then, remove the final 2 copies of Brood of Yog‑Sothoth from the game.",
-      "exactlyTwo": "If there are exactly 2 names listed, put 1 copy of Brood of Yog‑Sothoth into play in Cold Spring Glen, and set 3 copies of Brood of Yog‑Sothoth aside, out of play. Then, remove the final copy of Brood of Yog‑Sothoth from the game.",
-      "oneOrFewer": "If there are 1 or fewer names listed, put 1 copy of Brood of Yog‑Sothoth into play in Cold Spring Glen, put 1 copy of Brood of Yog‑Sothoth into play in Blasted Heath. Then, set the final 3 copies of Brood of Yog‑Sothoth aside, out of play."
+      "instructions": "캠페인 기록지에서 “요그 소토스에게 바쳐진 제물” 아래에 기록된 명칭의 개수를 확인합니다.",
+      "fourOrMore": "4명 이상의 명칭이 적혀 있다면, ‘요그 소토스의 새끼’ 사본 2장을 비플레이 상태로 치워 둡니다. 그런 다음 나머지 ‘요그 소토스의 새끼’ 사본 3장을 게임에서 제거합니다.",
+      "exactlyThree": "정확히 3명의 명칭이 적혀 있다면, ‘요그 소토스의 새끼’ 사본 1장을 플레이 영역 안 ‘냉천 계곡’에 두고, 사본 2장을 비플레이 상태로 치워 둡니다. 그런 다음 나머지 ‘요그 소토스의 새끼’ 사본 2장을 게임에서 제거합니다.",
+      "exactlyTwo": "정확히 2명의 명칭이 적혀 있다면, ‘요그 소토스의 새끼’ 사본 1장을 플레이 영역 안 ‘냉천 계곡’에 두고, 사본 3장을 비플레이 상태로 치워 둡니다. 그런 다음 나머지 ‘요그 소토스의 새끼’ 사본 1장을 게임에서 제거합니다.",
+      "oneOrFewer": "1명 이하의 명칭이 적혀 있다면, ‘요그 소토스의 새끼’ 사본 1장을 플레이 영역 안 ‘냉천 계곡’에 두고, 다른 사본 1장을 플레이 영역 안 ‘망가진 황무지’에 둡니다. 그런 다음, 나머지 ‘요그 소토스의 새끼’ 사본 3장을 비플레이 상태로 치워 둡니다."
     },
-    "setAside": "Set each copy of Esoteric Formula aside, out of play.",
-    "powderOfIbnGhazi": "An investigator with the Powder of Ibn-Ghazi in his or her deck may search his or her deck for it and put it into play.",
-    "randomBasicWeakness": "Each investigator searches the collection for a random basic _*Madness*_, _*Injury*_, or _*Pact*_ weakness and adds it to his or her deck for the remainder of the campaign."
+    "setAside": "모든 ‘비전 마법식’ 사본을 비플레이 상태로 치워 둡니다.",
+    "powderOfIbnGhazi": "자기 덱에 ‘이븐 가지의 분말’이 있는 조사자는 덱에서 그것을 찾아서 플레이 영역에 둬도 됩니다.",
+    "randomBasicWeakness": "모든 조사자는 보유 게임에서 무작위 _*정신이상*_, _*부상*_, 또는 _*계약*_ 기본 약점 하나를 무작위로 찾아서 캠페인이 끝날 때까지 자신의 덱에 추가합니다."
   },
   "choosingARandomLocation": {
-    "title": "Choosing a Random Location",
-    "body": "During this scenario, you will often be instructed to choose a random location. This should be done by shuffling together the 6 locations removed from the game during setup (the versions of each location in play not currently being used) and drawing 1 at random."
+    "title": "무작위 장소 선택",
+    "body": "이번 시나리오를 진행하는 동안, 이따금씩 무작위 장소를 선택하라는 지시를 받을 것입니다. 이럴 경우, 게임을 준비하는 동안 제거했던 장소 카드 6장(플레이 상태인 각 장소마다 사용하지 않는 카드 1장씩)을 다 같이 섞은 다음, 무작위로 1장을 뽑아 결정하십시오."
   },
   "resolutions": {
     "noResolution": {
-      "title": "No Resolution",
-      "body": "<div class='resolution'><p class='basic'>_If no resolution was reached (each investigator resigned or was defeated)_: Go to _Resolution 1_."
+      "title": "결말에 도달하지 못함",
+      "body": "<div class='resolution'><p class='basic'>_아무 결말에도 도달하지 못했다면(모든 조사자가 후퇴하거나 쓰러졌다면)_: _결말 1_을 읽습니다."
     },
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1_: You did all you could to stop the rampaging monsters, but there were more of them than you realized and you weren’t able to slay them all. Exhausted and terrified, you retreat to Zebulon’s home and hope to survive the night.</p><ul><li>In your Campaign Log, record that *X brood escaped into the wild*. X is the total number of Brood of Yog‑Sothoth still in play or set aside.</li><li>If an investigator’s deck contains the Powder of Ibn-Ghazi card, remove it from that investigator’s deck.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "결말 1",
+      "body": "<div class='resolution'><p>_결말 1_: 당신은 갖은 수단과 방법을 동원하여 저 날뛰는 괴물을 저지하려 했으나, 미처 발견하지도 못한 놈들도 많았던 터라 그들을 전부 죽일 수가 없습니다. 공포에 질린 당신은 기진맥진한 채로 지블런의 집으로 돌아와 하룻밤만이라도 무사히 넘기길 빕니다.</p><ul><li>캠페인 기록지에 *요그 소토스의 새끼 X마리가 험지로 탈출했다*라고 기록합니다. X는 아직 플레이 상태인 ‘요그 소토스의 새끼’ 개수와 치워져 있는 ‘요그 소토스의 새끼’ 개수의 합입니다.</li><li>자기 덱에 ‘이븐 가지의 분말’이 포함된 조사자는 자기 덱에서 그 카드를 제거합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2_: After slaying what seems to be the last of the rampaging monsters you retreat to Zebulon’s home, exhausted and rattled by your experience.</p><ul><li>In your Campaign Log, record that *no brood escaped into the wild*.</li><li>If an investigator’s deck contains the Powder of Ibn-Ghazi card, remove it from that investigator’s deck.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "결말 2",
+      "body": "<div class='resolution'><p>_결말 2_: 당신은 저 날뛰는 마지막 괴물을 처단하고서 지블런의 집으로 물러납니다. 완전히 녹초가 된 당신은 지금껏 겪은 일을 떠올리며 몸서리칩니다.</p><ul><li>캠페인 기록지에 *요그 소토스의 새끼가 한 마리도 험지로 달아나지 못했다*라고 기록합니다.</li><li>자기 덱에 ‘이븐 가지의 분말’이 포함된 조사자는 자기 덱에서 그 카드를 제거합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     }
   },
   "label": {
-    "chooseInvestigatorToPlaceClue": "Choose an investigator to place a clue",
-    "cluesToSpend": "Number of clues to spend",
-    "spawnSetAsideBrood": "Spawn a set aside Brood of Yog-Sothoth at a random location"
+    "chooseInvestigatorToPlaceClue": "단서를 놓을 조사자 선택",
+    "cluesToSpend": "소비할 단서 개수",
+    "spawnSetAsideBrood": "치워두었던 ‘요그 소토스의 새끼’ 하나를 무작위 장소에 출현"
   }
 }

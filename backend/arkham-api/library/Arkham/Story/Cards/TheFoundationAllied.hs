@@ -29,10 +29,9 @@ instance HasAbilities TheFoundationAllied where
     , restricted
         a
         2
-        ( Here
-            <> exists (assetIs Assets.jewelOfSarnath <> AssetAt YourLocation)
-            <> notExists (enemyIs Enemies.theBloodlessMan)
-            <> notExists (enemyIs Enemies.theBloodlessManUnleashed)
+        ( exists (assetIs Assets.jewelOfSarnath <> AssetAt YourLocation <> not_ (AssetControlledBy You))
+            <> notExists
+              (InPlayEnemy $ mapOneOf enemyIs [Enemies.theBloodlessMan, Enemies.theBloodlessManUnleashed])
         )
         actionAbility
     , restricted a 3 (exists $ assetIs Assets.jewelOfSarnath <> AssetControlledBy Anyone)

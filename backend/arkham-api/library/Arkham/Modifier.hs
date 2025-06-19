@@ -89,6 +89,7 @@ data ModifierType
   | Barricades [LocationId]
   | BaseSkill Int
   | BaseSkillOf {skillType :: SkillType, value :: Int}
+  | BaseSkillOfCalculated {skillType :: SkillType, calculation :: GameCalculation}
   | BaseStartingResources Int
   | BecomesFast WindowMatcher
   | Blank

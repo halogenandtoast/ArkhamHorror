@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.CaldwellPhilipsEnthralledByLegends (caldwellPhilipsEn
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (DiscoverClues)
+import Arkham.Capability
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.Window (discoveredClues)
 import Arkham.Matcher
@@ -20,7 +21,12 @@ instance HasModifiersFor CaldwellPhilipsEnthralledByLegends where
 
 instance HasAbilities CaldwellPhilipsEnthralledByLegends where
   getAbilities (CaldwellPhilipsEnthralledByLegends a) =
-    [ reaction a 1 ControlsThis (exhaust a) (DiscoverClues #after You Anywhere (atLeast 1))
+    [ reaction
+        a
+        1
+        (ControlsThis <> youExist can.draw.cards)
+        (exhaust a)
+        (DiscoverClues #after You Anywhere (atLeast 1))
     , mkAbility a 2 $ forced $ AssetLeavesPlay #when (be a)
     ]
 

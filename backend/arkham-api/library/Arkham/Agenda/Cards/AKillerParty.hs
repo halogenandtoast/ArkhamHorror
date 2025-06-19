@@ -18,7 +18,11 @@ aKillerParty = agenda (3, A) AKillerParty Cards.aKillerParty (Static 6)
 
 instance HasModifiersFor AKillerParty where
   getModifiersFor (AKillerParty a) = do
-    when (onSide A a) $ modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait LanternClub]
+    when (onSide A a)
+      $ modifySelect
+        a
+        Anyone
+        [CannotTriggerAbilityMatching $ AbilityOnEnemy (EnemyWithTrait LanternClub) <> #parley]
     modifySelf a [CannotRemoveDoomOnThis]
 
 instance HasAbilities AKillerParty where

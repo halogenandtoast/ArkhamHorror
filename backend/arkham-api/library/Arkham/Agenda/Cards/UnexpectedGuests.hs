@@ -22,7 +22,11 @@ unexpectedGuests = agenda (2, A) UnexpectedGuests Cards.unexpectedGuests (Static
 
 instance HasModifiersFor UnexpectedGuests where
   getModifiersFor (UnexpectedGuests a) = do
-    when (onSide A a) $ modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait LanternClub]
+    when (onSide A a)
+      $ modifySelect
+        a
+        Anyone
+        [CannotTriggerAbilityMatching $ AbilityOnEnemy (EnemyWithTrait LanternClub) <> #parley]
     modifySelf a [CannotRemoveDoomOnThis]
 
 instance HasAbilities UnexpectedGuests where

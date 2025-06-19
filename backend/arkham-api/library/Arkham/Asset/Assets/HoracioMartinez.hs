@@ -16,16 +16,11 @@ horacioMartinez = allyWith HoracioMartinez Cards.horacioMartinez (4, 1) noSlots
 
 instance HasModifiersFor HoracioMartinez where
   getModifiersFor (HoracioMartinez a) = for_ a.controller \iid ->
-    modifySelect
-      a
-      (not_ (InvestigatorWithId iid) <> at_ (locationWithAsset a))
-      [CanAssignDamageToAsset a.id]
+    modifySelect a (notInvestigator iid <> colocatedWith iid) [CanAssignDamageToAsset a.id]
 
 instance HasAbilities HoracioMartinez where
   getAbilities (HoracioMartinez a) =
-    [ reaction a 1 ControlsThis (exhaust a)
-        $ EnemyAttacks #after You AnyEnemyAttack NonEliteEnemy
-    ]
+    [reaction a 1 ControlsThis (exhaust a) $ EnemyAttacks #after You AnyEnemyAttack NonEliteEnemy]
 
 instance RunMessage HoracioMartinez where
   runMessage msg a@(HoracioMartinez attrs) = runQueueT $ case msg of

@@ -3,13 +3,12 @@ module Arkham.Location.Cards.BedroomTheMidwinterGala (bedroomTheMidwinterGala) w
 import Arkham.Ability
 import Arkham.Fight
 import Arkham.Helpers.Cost
-import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy)
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 import Arkham.Trait (Trait (SecondFloor))
 
 newtype BedroomTheMidwinterGala = BedroomTheMidwinterGala LocationAttrs
@@ -23,7 +22,7 @@ instance HasAbilities BedroomTheMidwinterGala where
   getAbilities (BedroomTheMidwinterGala a) =
     extendRevealed1 a
       $ playerLimit PerTurn
-      $ restricted a 1 (Here <> exists (EnemyAt $ LocationWithTrait SecondFloor)) actionAbility
+      $ restricted a 1 (Here <> exists (EnemyAt $ LocationWithTrait SecondFloor)) fightAction_
 
 instance RunMessage BedroomTheMidwinterGala where
   runMessage msg l@(BedroomTheMidwinterGala attrs) = runQueueT $ case msg of
@@ -46,7 +45,7 @@ instance RunMessage BedroomTheMidwinterGala where
         chooseOrRunOneM iid $ withI18n do
           countVar 1 $ labeled' "spendClues" do
             spendClues iid 1
-            withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DamageDealt 2)
+            getSkillTestTargetedEnemy >>= traverse_ (attackEnemyDamage (attrs.ability 1) 2)
           labeled' "skip" nothing
       pure l
     _ -> BedroomTheMidwinterGala <$> liftRunMessage msg attrs

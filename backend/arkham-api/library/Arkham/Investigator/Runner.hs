@@ -3248,6 +3248,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       then do
         mods <- getModifiers a
         let additional = sum [x | AdditionalResources x <- mods]
+        when (n + additional > 0) do
+          afterWindowMsg <- checkWindows [mkAfter (Window.GainsResources iid source (n + additional))]
+          push afterWindowMsg
         liftRunMessage (PlaceTokens source (toTarget a) #resource (n + additional)) a
       else pure a
   PlaceTokens source (isTarget a -> True) token n -> do

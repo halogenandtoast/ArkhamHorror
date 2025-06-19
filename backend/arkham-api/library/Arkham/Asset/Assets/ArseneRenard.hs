@@ -31,7 +31,7 @@ instance HasAbilities ArseneRenard where
 instance RunMessage ArseneRenard where
   runMessage msg a@(ArseneRenard attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      eachLocation \lid -> placeTokens (attrs.ability 1) lid Token.Antiquity 1
+      eachLocation $ placeTokensOn (attrs.ability 1) Token.Antiquity 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withLocationOf iid \lid -> removeTokens (attrs.ability 2) lid Token.Antiquity 1

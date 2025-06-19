@@ -9,6 +9,8 @@ valeriyaAntonovaWantsOutOfHere =
     , cdSkills = [#willpower, #intellect, #combat]
     , cdUnique = True
     , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "71016b"
     }
 
 archibaldHudson :: CardDef
@@ -45,6 +47,8 @@ caldwellPhilipsEnthralledByLegends =
     , cdSkills = [#willpower, #intellect, #agility]
     , cdUnique = True
     , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "71022b"
     }
 
 drMyaBadry :: CardDef
@@ -81,6 +85,8 @@ johnnyValoneReadyToMakeADeal =
     , cdSkills = [#intellect, #combat, #agility]
     , cdUnique = True
     , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "71028b"
     }
 
 mirandaKeeper :: CardDef
@@ -118,6 +124,8 @@ carlSanfordLustingForPower =
     , cdSkills = [#willpower, #intellect, #combat]
     , cdUnique = True
     , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "71034b"
     }
 
 prudenceDouglas :: CardDef
@@ -156,6 +164,8 @@ williamBainLookingForThoseLost =
     , cdSkills = [#willpower, #combat, #agility]
     , cdUnique = True
     , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "71040b"
     }
 
 deloresGadling :: CardDef

@@ -31,7 +31,11 @@ instance HasModifiersFor MiskatonicUniversityAllied where
 
 instance HasAbilities MiskatonicUniversityAllied where
   getAbilities (MiskatonicUniversityAllied attrs) =
-    [ restricted attrs 1 (exists $ enemyIs Enemies.declanPearce <> EnemyAt YourLocation) parleyAction_
+    [ restricted
+        attrs
+        1
+        (exists (enemyIs Enemies.declanPearce <> EnemyAt YourLocation) <> youExist InvestigatorWithAnyClues)
+        parleyAction_
     , restricted attrs 2 (exists $ assetIs Assets.jewelOfSarnath <> AssetControlledBy Anyone)
         $ Objective
         $ freeReaction (RoundEnds #when)

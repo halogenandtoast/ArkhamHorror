@@ -33,21 +33,21 @@ instance RunMessage LucasTetlow where
         (basic $ #asset <> withTrait Item)
         (defer attrs IsDraw)
       pure a
-    SearchFound iid (isTarget attrs -> True) _ (c : _) -> do
-      drawCardFrom iid c iid
-      let traits = toTraits c
-      when (Relic `member` traits) $ gainResources iid (attrs.ability 1) 2
-      when (Tome `member` traits) $ do
-        chooseOneM iid $ withI18n do
-          labeled' "playIt" $ playCardPayingCost iid c
-          labeled' "doNotPlay" nothing
-      when (Tool `member` traits) $ do
-        locations <- select $ ConnectedTo (locationWithInvestigator iid) <> LocationWithAnyClues
-        chooseTargetM iid locations \lid ->
-          discoverAt NotInvestigate iid (attrs.ability 1) lid 1
-      shuffleDeck iid
+    SearchFound iid (isTarget attrs -> True) _ cards -> do
+      chooseTargetM iid cards \card -> do
+        drawCardFrom iid card iid
+        let traits = toTraits card
+        when (Relic `member` traits) $ gainResources iid (attrs.ability 1) 2
+        when (Tome `member` traits) $ do
+          chooseOneM iid $ withI18n do
+            labeled' "playIt" $ playCardPayingCost iid card
+            labeled' "doNotPlay" nothing
+        when (Tool `member` traits) $ do
+          locations <- select $ ConnectedTo (locationWithInvestigator iid) <> LocationWithAnyClues
+          chooseTargetM iid locations \lid -> discoverAt NotInvestigate iid (attrs.ability 1) lid 1
       pure a
-    SearchFound _ (isTarget attrs -> True) _ _ -> do
+    SearchFound iid (isTarget attrs -> True) _ _ -> do
+      withI18n $ prompt_ iid "noCardsFound"
       for_ attrs.controller shuffleDeck
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do

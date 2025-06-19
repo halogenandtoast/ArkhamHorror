@@ -31,10 +31,11 @@ instance RunMessage ArchibaldHudson where
         (basic #enemy)
         (defer attrs IsDraw)
       pure a
-    SearchFound iid (isTarget attrs -> True) _ (ec : _) -> do
-      drawCard iid ec
-      forTarget ec msg
-      gainResources iid (attrs.ability 1) 3
+    SearchFound iid (isTarget attrs -> True) _ cards -> do
+      chooseTargetM iid cards \card -> do
+        drawCard iid card
+        forTarget card msg
+        gainResources iid (attrs.ability 1) 3
       pure a
     ForTarget (CardIdTarget cid) (SearchFound _iid (isTarget attrs -> True) _ _) -> do
       selectEach (EnemyWithCardId cid) exhaustThis
@@ -42,10 +43,8 @@ instance RunMessage ArchibaldHudson where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       assets <- select $ AssetAt (locationWithInvestigator iid) <> AssetWithDamage
       enemies <- select $ NonEliteEnemy <> enemyAtLocationWith iid
-      chooseOneM iid do
-        targets assets \aid ->
-          chooseTargetM iid enemies \eid ->
-            moveTokens (attrs.ability 2) aid eid #damage 1
+      chooseTargetM iid assets \aid ->
+        chooseTargetM iid enemies \eid -> moveTokens (attrs.ability 2) aid eid #damage 1
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
       pure $ ArchibaldHudson $ attrs & flippedL .~ True & visibleL .~ False

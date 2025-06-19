@@ -24,7 +24,7 @@ instance HasAbilities SilverTwilightLodgeRival where
     [ restricted
         attrs
         1
-        (exists $ enemyIs Enemies.carlSanfordIntimidatingPresence <> EnemyAt YourLocation)
+        (exists $ enemyIs Enemies.carlSanfordDeathlessFanatic <> EnemyAt YourLocation)
         parleyAction_
     , restricted attrs 2 (CluesOnThis $ AtLeast $ StaticWithPerPlayer 1 1)
         $ forced AnyWindow
@@ -35,12 +35,12 @@ instance RunMessage SilverTwilightLodgeRival where
     ResolveStory _ ResolveIt story' | story' == toId attrs -> do
       ward <- getSetAsideCardsMatching $ cardIs Treacheries.wardOfPreservation
       shuffleCardsIntoDeck Deck.EncounterDeck ward
-      carl <- getSetAsideCardsMatching $ cardIs Enemies.carlSanfordIntimidatingPresence
+      carl <- getSetAsideCardsMatching $ cardIs Enemies.carlSanfordDeathlessFanatic
       lead <- getLead
       for_ carl $ withLocationOf lead . createEnemyAt_
       pure s
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemy <- selectJust $ enemyIs Enemies.carlSanfordIntimidatingPresence <> enemyAtLocationWith iid
+      enemy <- selectJust $ enemyIs Enemies.carlSanfordDeathlessFanatic <> enemyAtLocationWith iid
       sid <- getRandom
       parley sid iid (attrs.ability 1) enemy #willpower (Fixed 3)
       pure s
@@ -48,7 +48,7 @@ instance RunMessage SilverTwilightLodgeRival where
       placeClues (attrs.ability 1) attrs 1
       pure s
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      carl <- selectJust $ enemyIs Enemies.carlSanfordIntimidatingPresence
+      carl <- selectJust $ enemyIs Enemies.carlSanfordDeathlessFanatic
       addToVictory attrs
       addToVictory carl
       push $ RemoveAllCopiesOfEncounterCardFromGame (cardIs Treacheries.wardOfPreservation)

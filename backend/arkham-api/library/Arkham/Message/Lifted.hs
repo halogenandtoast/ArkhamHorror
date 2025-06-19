@@ -862,6 +862,10 @@ placeTokens
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
 placeTokens source lid token n = push $ PlaceTokens (toSource source) (toTarget lid) token n
 
+placeTokensOn
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Token -> Int -> target -> m ()
+placeTokensOn source token n lid = placeTokens source lid token n
+
 addUses
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
 addUses = placeTokens

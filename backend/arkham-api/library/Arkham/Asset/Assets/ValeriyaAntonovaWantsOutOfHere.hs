@@ -3,8 +3,7 @@ module Arkham.Asset.Assets.ValeriyaAntonovaWantsOutOfHere (valeriyaAntonovaWants
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (AssetExhausted)
-import Arkham.Effect.Window
-import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Guest))
@@ -28,7 +27,7 @@ instance HasAbilities ValeriyaAntonovaWantsOutOfHere where
 
 instance RunMessage ValeriyaAntonovaWantsOutOfHere where
   runMessage msg a@(ValeriyaAntonovaWantsOutOfHere attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       assets <-
         select
           $ AssetWithTrait Guest
@@ -37,14 +36,7 @@ instance RunMessage ValeriyaAntonovaWantsOutOfHere where
           <> at_ (locationWithInvestigator iid)
       chooseTargetM iid assets readyThis
       guestCount <- selectCount $ AssetWithTrait Guest <> at_ (locationWithInvestigator iid)
-      when (guestCount > 0) do
-        ems <- effectModifiers (attrs.ability 1) [AnySkillValue guestCount]
-        push
-          $ CreateWindowModifierEffect
-            (FirstEffectWindow [EffectNextSkillTestWindow iid, EffectRoundWindow])
-            ems
-            (attrs.ability 1)
-            (toTarget iid)
+      when (guestCount > 0) $ nextSkillTestModifier iid (attrs.ability 1) iid (AnySkillValue guestCount)
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       removeFromGame attrs

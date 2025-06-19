@@ -2,9 +2,12 @@ module Arkham.Scenario.Scenarios.TheMidwinterGala (theMidwinterGala) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.Sequence
+import Arkham.Agenda.Types (Field (AgendaSequence))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetController, AssetTraits))
 import Arkham.Card
+import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -16,7 +19,9 @@ import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.Xp
 import Arkham.I18n
+import Arkham.Investigator.Types (Field (InvestigatorDamage, InvestigatorHorror))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message (StoryMode (..))
@@ -25,10 +30,11 @@ import Arkham.Message.Lifted.Placement qualified as Placement
 import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted hiding (InvestigatorDamage)
 import Arkham.Story.Cards qualified as Stories
-import Arkham.Trait (Trait (Guest, Leader, Monster, Private, SecondFloor))
+import Arkham.Trait (Trait (Guest, Leader, Manor, Monster, Private, SecondFloor))
 import Arkham.Treachery.Cards qualified as Treacheries
 
 {- FOURMOLU_DISABLE -}
@@ -122,62 +128,63 @@ instance HasChaosTokenValue TheMidwinterGala where
       pure $ ChaosTokenValue ElderThing (NegativeModifier $ if isEasyStandard attrs then 3 else 4)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
--- calculateScore :: HasGame m => ScenarioAttrs -> Meta -> m Int
--- calculateScore attrs Meta {ally, rival} = do
---   manorNoClue <-
---     selectCount
---       $ LocationWithTrait Manor
---       <> RevealedLocation
---       <> LocationWithoutClues
---   guestControlled <- selectCount $ AssetWithTrait Guest <> AssetControlledBy Anyone
---   spellboundInPlay <- selectAny $ AssetWithModifier (ScenarioModifier "spellbound")
---   agendaId <- getCurrentAgenda
---   Sequence step side <- field AgendaSequence agendaId
---   bloodless <- inVictoryDisplay $ cardIs Enemies.theBloodlessMan
---   bloodlessUnleashed <- inVictoryDisplay $ cardIs Enemies.theBloodlessManUnleashed
---   paleLantern <- inVictoryDisplay $ cardIs Assets.thePaleLanternBeguilingAura
---   declan <- inVictoryDisplay $ cardIs Enemies.declanPearce
---   let
---     factionStoryR = \case
---       TheFoundation -> Stories.theFoundationRival
---       MiskatonicUniversity -> Stories.miskatonicUniversityRival
---       TheSyndicate -> Stories.theSyndicateRival
---       SilverTwilightLodge -> Stories.silverTwilightLodgeRival
---       LocalsOfKingsport -> Stories.localsOfKingsportRival
---   rivalInVictory <- inVictoryDisplay $ cardIs (factionStoryR rival)
---   investigators <- allInvestigators
---   totalDamage <- sum <$> traverse (field InvestigatorDamage) investigators
---   totalHorror <- sum <$> traverse (field InvestigatorHorror) investigators
---   defeatedAny <- selectAny DefeatedInvestigator
---   playerCount <- getPlayerCount
---   let
---     damageBonus =
---       if not defeatedAny && totalDamage <= playerCount * 2
---         then 3
---         else 0
---     horrorBonus =
---       if not defeatedAny && totalHorror <= playerCount * 2
---         then 3
---         else 0
---     agendaBonus = if side == A && step <= 2 then 5 else 0
---     difficultyBonus = case attrs.difficulty of
---       Hard -> 3
---       Expert -> 6
---       _ -> 0
---     alliedScore = 0
---   pure
---     $ manorNoClue
---     + guestControlled
---     + (if not spellboundInPlay then 4 else 0)
---     + agendaBonus
---     + (if bloodless || bloodlessUnleashed then 4 else 0)
---     + (if paleLantern then 3 else 0)
---     + (if declan then 3 else 0)
---     + (if rivalInVictory then 4 else 0)
---     + damageBonus
---     + horrorBonus
---     + difficultyBonus
---     + alliedScore
+calculateScore :: HasGame m => ScenarioAttrs -> m Int
+calculateScore attrs = do
+  let Meta {rival} = toResult attrs.meta
+  manorNoClue <-
+    selectCount
+      $ LocationWithTrait Manor
+      <> RevealedLocation
+      <> LocationWithoutClues
+  guestControlled <- selectCount $ AssetWithTrait Guest <> AssetControlledBy Anyone
+  spellboundInPlay <- selectAny $ AssetWithModifier (ScenarioModifier "spellbound")
+  agendaId <- getCurrentAgenda
+  Sequence step side <- field AgendaSequence agendaId
+  bloodless <- inVictoryDisplay $ cardIs Enemies.theBloodlessMan
+  bloodlessUnleashed <- inVictoryDisplay $ cardIs Enemies.theBloodlessManUnleashed
+  paleLantern <- inVictoryDisplay $ cardIs Assets.thePaleLanternBeguilingAura
+  declan <- inVictoryDisplay $ cardIs Enemies.declanPearce
+  let
+    factionStoryR = \case
+      TheFoundation -> Stories.theFoundationRival
+      MiskatonicUniversity -> Stories.miskatonicUniversityRival
+      TheSyndicate -> Stories.theSyndicateRival
+      TheSilverTwilightLodge -> Stories.silverTwilightLodgeRival
+      LocalsOfKingsport -> Stories.localsOfKingsportRival
+  rivalInVictory <- inVictoryDisplay $ cardIs (factionStoryR rival)
+  investigators <- allInvestigators
+  totalDamage <- sum <$> traverse (field InvestigatorDamage) investigators
+  totalHorror <- sum <$> traverse (field InvestigatorHorror) investigators
+  defeatedAny <- selectAny DefeatedInvestigator
+  playerCount <- getPlayerCount
+  let
+    damageBonus =
+      if not defeatedAny && totalDamage <= playerCount * 2
+        then 3
+        else 0
+    horrorBonus =
+      if not defeatedAny && totalHorror <= playerCount * 2
+        then 3
+        else 0
+    agendaBonus = if side == A && step <= 2 then 5 else 0
+    difficultyBonus = case attrs.difficulty of
+      Hard -> 3
+      Expert -> 6
+      _ -> 0
+    alliedScore = 0
+  pure
+    $ manorNoClue
+    + guestControlled
+    + (if not spellboundInPlay then 4 else 0)
+    + agendaBonus
+    + (if bloodless || bloodlessUnleashed then 4 else 0)
+    + (if paleLantern then 3 else 0)
+    + (if declan then 3 else 0)
+    + (if rivalInVictory then 4 else 0)
+    + damageBonus
+    + horrorBonus
+    + difficultyBonus
+    + alliedScore
 
 instance RunMessage TheMidwinterGala where
   runMessage msg s@(TheMidwinterGala attrs) = runQueueT $ standaloneI18n "theMidwinterGala" $ case msg of
@@ -303,13 +310,22 @@ instance RunMessage TheMidwinterGala where
             <> enemyAtLocationWith iid
         when ok $ assignHorror iid ElderThing 1
       pure s
-    ScenarioResolution _r -> do
-      -- resigned <- selectAny ResignedInvestigator
-      -- case r of
-      --   NoResolution ->
-      --     story $ if resigned then noResolutionResigned else noResolution
-      --   Resolution 1 -> story resolution1
-      --   _ -> pure ()
+    ScenarioResolution r -> do
+      score <- calculateScore attrs
+      let
+        bonus
+          | score >= 50 = 5
+          | score >= 40 = 4
+          | score >= 30 = 3
+          | score >= 20 = 2
+          | score >= 10 = 1
+          | otherwise = 0
+      case r of
+        NoResolution -> do
+          -- resigned <- selectAny ResignedInvestigator
+          resolution "noResolution"
+        Resolution 1 -> resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs (toBonus "bonus.score" bonus)
+        _ -> pure ()
 
       -- guests <- select $ AssetWithTrait Guest <> AssetControlledBy Anyone
       -- when (notNull guests) do
@@ -354,7 +370,7 @@ instance RunMessage TheMidwinterGala where
       -- case r of
       --   NoResolution | not resigned -> record TheInvestigatorsWereDefeatedAtTheMidwinterGala
       --   _ -> record TheInvestigatorsSurvivedTheMidwinterGala
-      -- endOfScenario
+      endOfScenario
       pure s
     ForTarget (AssetTarget aid) (ScenarioSpecific "spellbound" _) -> do
       traits <- field AssetTraits aid
@@ -366,7 +382,7 @@ instance RunMessage TheMidwinterGala where
           lead <- getLead
           let iid = fromMaybe lead mController
           loseControlOfAsset aid
-          getLocationOf iid >>= \case
+          getLocationOf aid >>= \case
             Nothing -> toDiscard ScenarioSource aid
             Just loc -> do
               Placement.place aid (AtLocation loc)

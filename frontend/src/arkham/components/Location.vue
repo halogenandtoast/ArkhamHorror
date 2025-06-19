@@ -196,6 +196,7 @@ const hasPool = computed(() => {
     (damage.value && damage.value > 0) ||
     (resources.value && resources.value > 0) ||
     (leylines.value && leylines.value > 0) ||
+    (antiquities.value && antiquities.value > 0) ||
     (depth.value && depth.value > 0) ||
     (breaches.value && breaches.value > 0) ||
     (props.location.brazier && props.location.brazier === 'Lit') ||
@@ -232,6 +233,7 @@ const doom = computed(() => props.location.tokens[TokenType.Doom])
 const resources = computed(() => props.location.tokens[TokenType.Resource])
 const depth = computed(() => props.location.tokens[TokenType.Depth])
 const leylines = computed(() => props.location.tokens[TokenType.Leyline])
+const antiquities = computed(() => props.location.tokens[TokenType.Antiquity])
 const breaches = computed(() => {
   const {breaches} = props.location
   if (breaches) {
@@ -330,6 +332,7 @@ function onDrop(event: DragEvent) {
             <PoolItem v-if="damage && damage > 0" type="health" :amount="damage" />
             <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
             <PoolItem v-if="leylines && leylines > 0" type="resource" tooltip="Leyline" :amount="leylines" />
+            <PoolItem v-if="antiquities && antiquities > 0" type="resource" tooltip="Antiquity" :amount="antiquities" />
             <PoolItem v-if="depth && depth > 0" type="resource" :amount="depth" />
             <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
             <PoolItem v-if="location.brazier && location.brazier === 'Lit'" type="resource" :amount="1" />

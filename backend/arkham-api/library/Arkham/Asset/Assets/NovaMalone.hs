@@ -6,7 +6,6 @@ import Arkham.Asset.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Projection
 
 newtype NovaMalone = NovaMalone AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -25,10 +24,16 @@ instance HasAbilities NovaMalone where
 instance RunMessage NovaMalone where
   runMessage msg a@(NovaMalone attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      resources <- field InvestigatorResources iid
-      let base = min 7 resources
       sid <- getRandom
-      skillTestModifiers sid (attrs.ability 1) iid [BaseSkillOf #combat base, DamageDealt 1]
+      skillTestModifiers
+        sid
+        (attrs.ability 1)
+        iid
+        [ BaseSkillOfCalculated
+            #combat
+            (MaxCalculation (Fixed 7) (InvestigatorFieldCalculation iid InvestigatorResources))
+        , DamageDealt 1
+        ]
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

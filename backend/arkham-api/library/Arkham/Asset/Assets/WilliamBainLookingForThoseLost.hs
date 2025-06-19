@@ -32,7 +32,7 @@ instance HasModifiersFor WilliamBainLookingForThoseLost where
 
 instance HasAbilities WilliamBainLookingForThoseLost where
   getAbilities (WilliamBainLookingForThoseLost a) =
-    [ controlled a 1 (DuringSkillTest $ YourSkillTest AnySkillTest)
+    [ controlled a 1 (DuringSkillTest (YourSkillTest AnySkillTest) <> ScenarioDeckWithCard GuestDeck)
         $ triggered (CommittedCards #after You $ LengthIs $ atLeast 1) (exhaust a)
     , mkAbility a 2 $ forced $ AssetLeavesPlay #when (be a)
     ]

@@ -41,7 +41,7 @@ import Arkham.Evade qualified as Evade
 import Arkham.Event.Types qualified as Field
 import Arkham.Fight
 import Arkham.Fight qualified as Fight
-import {-# SOURCE #-} Arkham.GameEnv (findCard)
+import {-# SOURCE #-} Arkham.GameEnv (getCard, findCard)
 import Arkham.Helpers
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Act
@@ -548,6 +548,9 @@ instance FetchCard EventId where
 
 instance FetchCard TreacheryId where
   fetchCardMaybe = fieldMap Field.TreacheryCard Just
+
+instance FetchCard CardId where
+  fetchCardMaybe = fmap Just  . getCard
 
 instance FetchCard Field.TreacheryAttrs where
   fetchCardMaybe = fieldMap Field.TreacheryCard Just . asId
@@ -2050,12 +2053,12 @@ dealAdditionalHorror iid amount additionalMessages = lift $ Msg.dealAdditionalHo
 cancelRevelation :: (ReverseQueue m, Sourceable a, IsCard card) => a -> card -> m ()
 cancelRevelation a card = do
   cardResolutionModifier card a (CardIdTarget $ toCardId card) IgnoreRevelation
-  push $ CancelRevelation (toSource a)
+  push $ CancelRevelation (toCardId card) (toSource a)
 
 cancelCardEffects :: (ReverseQueue m, Sourceable a, IsCard card) => a -> card -> m ()
 cancelCardEffects a card = do
   cardResolutionModifier card a (CardIdTarget $ toCardId card) IgnoreRevelation
-  push $ CancelRevelation (toSource a)
+  push $ CancelRevelation (toCardId card) (toSource a)
   push $ CancelNext (toSource a) DrawEnemyMessage
   push $ CancelSurge (toSource a)
 
@@ -2418,7 +2421,7 @@ disengageFromAll :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => enemy 
 disengageFromAll enemy = push $ Msg.DisengageEnemyFromAll (asId enemy)
 
 cancelledOrIgnoredCardOrGameEffect :: (ReverseQueue m, Sourceable source) => source -> m ()
-cancelledOrIgnoredCardOrGameEffect source = checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource source)
+cancelledOrIgnoredCardOrGameEffect source = checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource source) Nothing
 
 cancelChaosToken
   :: (ReverseQueue (t m), HasQueue Message m, MonadTrans t, Sourceable source)
@@ -2430,6 +2433,7 @@ cancelChaosToken source iid token = do
   lift $ Msg.cancelChaosToken token
   push
     $ CancelEachNext
+      Nothing
       (toSource source)
       [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
   push $ ChaosTokenCanceled iid (toSource source) token

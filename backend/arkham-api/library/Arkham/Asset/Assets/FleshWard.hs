@@ -26,7 +26,7 @@ instance HasAbilities FleshWard where
 instance RunMessage FleshWard where
   runMessage msg a@(FleshWard attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
-      ignoreWindow <- checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect $ attrs.ability 1
+      ignoreWindow <- checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (attrs.ability 1) Nothing
       player <- getPlayer iid
       push
         $ chooseOrRunOne player

@@ -1,10 +1,12 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Asset.Assets.CarlSanfordLustingForPower (carlSanfordLustingForPower) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Card
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Window (cancelledCard)
 import Arkham.Matcher
 import Arkham.Slot
 
@@ -25,22 +27,21 @@ instance HasModifiersFor CarlSanfordLustingForPower where
 
 instance HasAbilities CarlSanfordLustingForPower where
   getAbilities (CarlSanfordLustingForPower a) =
-    [ reaction a 1 ControlsThis (exhaust a) $ CancelledOrIgnoredCardOrGameEffect AnySource
+    [ reaction a 1 ControlsThis (exhaust a)
+        $ CancelledOrIgnoredCardOrGameEffect AnySource (Just $ #treachery <> not_ WeaknessCard)
     , mkAbility a 2 $ forced $ AssetLeavesPlay #when (be a)
     ]
 
 instance RunMessage CarlSanfordLustingForPower where
   runMessage msg a@(CarlSanfordLustingForPower attrs) = runQueueT $ case msg of
-    CardIsEnteringPlay iid card | card.id == attrs.cardId -> do
+    TakeControlOfAsset iid (is attrs -> True) -> do
       push $ AddSlot iid #arcane (slot attrs)
       CarlSanfordLustingForPower <$> liftRunMessage msg attrs
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      selectEach ActiveCard \card -> do
-        when (cardMatch card (card_ $ #treachery <> WeaknessCard)) do
-          mTid <- selectOne $ TreacheryWithCardId card.id
-          for_ mTid \tid -> do
-            addToVictory tid
-            drawCards iid (attrs.ability 1) 1
+    UseCardAbility iid (isSource attrs -> True) 1 (cancelledCard -> cardId) _ -> do
+      card <- fetchCard cardId
+      obtainCard card
+      addToVictory cardId
+      drawCards iid (attrs.ability 1) 1
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       removeFromGame attrs

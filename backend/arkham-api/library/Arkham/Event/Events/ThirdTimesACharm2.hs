@@ -55,7 +55,7 @@ instance RunMessage ThirdTimesACharm2Effect where
         Just (EffectInt n) -> do
           cancelChaosToken token
           pushAll
-            [ CancelEachNext attrs.source [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
+            [ CancelEachNext Nothing attrs.source [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
             , ReturnChaosTokens [token]
             , UnfocusChaosTokens
             , DrawAnotherChaosToken iid

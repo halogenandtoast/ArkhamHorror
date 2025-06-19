@@ -4217,6 +4217,7 @@ instance Query ExtendedCardMatcher where
     go [] = const (pure []) -- if we have no cards remaining, just stop
     go cs = \case
       ActiveCard -> maybeToList . view activeCardL <$> getGame
+      ResolvingCard -> maybeToList . view resolvingCardL <$> getGame
       CardIdentifiedByScenarioMetaKey key -> do
         meta <- getScenarioMeta
         pure $ case meta of

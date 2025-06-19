@@ -39,6 +39,6 @@ instance RunMessage IdolOfXanatosWatcherBeyondTime where
             pushAll
               $ [CancelDamage iid (min n damage) | damage > 0]
               <> [CancelHorror iid (min n horror) | horror > 0]
-        checkAfter $ W.CancelledOrIgnoredCardOrGameEffect $ attrs.ability 1
+        checkAfter $ W.CancelledOrIgnoredCardOrGameEffect (attrs.ability 1) Nothing
       pure a
     _ -> IdolOfXanatosWatcherBeyondTime <$> liftRunMessage msg attrs

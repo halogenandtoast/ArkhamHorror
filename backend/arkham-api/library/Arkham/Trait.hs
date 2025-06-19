@@ -275,7 +275,7 @@ class HasTraits a where
   toTraits :: a -> Set Trait
 
 displayTrait :: Trait -> Text
-displayTrait t = tshow $ splitCamelCase $ show t
+displayTrait t = pack $ splitCamelCase $ show t
 
 splitCamelCase :: String -> String
 splitCamelCase "" = ""

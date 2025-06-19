@@ -44,8 +44,9 @@ instance RunMessage MiskatonicUniversityRival where
       sid <- getRandom
       parley sid iid (attrs.ability 1) enemy #intellect (Fixed 3)
       pure s
-    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
-      placeClues (attrs.ability 1) attrs 1
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      whenMatch iid InvestigatorWithAnyClues do
+        moveTokens (attrs.ability 1) iid attrs #clue 1
       pure s
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       addToVictory attrs

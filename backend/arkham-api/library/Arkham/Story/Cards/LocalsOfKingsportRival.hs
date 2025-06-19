@@ -47,8 +47,9 @@ instance RunMessage LocalsOfKingsportRival where
         for_ [minBound ..] \kind ->
           skillLabeled kind $ parley sid iid (attrs.ability 1) enemy kind (Fixed 4)
       pure s
-    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
-      placeClues (attrs.ability 1) attrs 1
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      whenMatch iid InvestigatorWithAnyClues do
+        moveTokens (attrs.ability 1) iid attrs #clue 1
       pure s
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
       bain <- selectJust $ enemyIs Enemies.williamBainDefiantToTheLast

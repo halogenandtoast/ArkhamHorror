@@ -598,9 +598,13 @@ allEnemies =
     , SomeEnemyCard declanPearce
     , SomeEnemyCard enragedGug
     , SomeEnemyCard lanternClubMember
-    , SomeEnemyCard caldwellPhilipsCompelledByDreams
-    , SomeEnemyCard savageShantak
+    , SomeEnemyCard valeriyaAntonovaDontMessWithHer
     , SomeEnemyCard rookieCop
+    , SomeEnemyCard caldwellPhilipsCompelledByDreams
+    , SomeEnemyCard johnnyValoneHereToCollect
+    , SomeEnemyCard carlSanfordIntimidatingPresence
+    , SomeEnemyCard williamBainDefiantToTheLast
+    , SomeEnemyCard savageShantak
     , SomeEnemyCard theBloodlessMan
     , SomeEnemyCard theBloodlessManUnleashed
     ]

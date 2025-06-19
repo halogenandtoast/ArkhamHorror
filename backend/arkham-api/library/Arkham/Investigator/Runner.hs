@@ -1774,7 +1774,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 ]
           let
             go = \case
-              DamageAssetsFirst -> do
+              DamageAssetsFirst amatcher -> do
+                healthDamageableAssets' <- select $ mapOneOf AssetWithId healthDamageableAssets <> amatcher
+                let
+                  targetCount =
+                    if null healthDamageableAssets'
+                      then 1 + length healthDamageableInvestigators
+                      else length healthDamageableAssets'
+                  applyAll = targetCount == 1
+                pure
+                  $ [damageInvestigator iid applyAll | null healthDamageableAssets']
+                  <> map (`damageInvestigator` applyAll) healthDamageableInvestigators
+                  <> map (`damageAsset` applyAll) healthDamageableAssets'
+              HorrorAssetsFirst _ -> do
                 let
                   targetCount =
                     if null healthDamageableAssets
@@ -1782,7 +1794,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                       else length healthDamageableAssets
                   applyAll = targetCount == 1
                 pure
-                  $ [damageInvestigator iid applyAll | null healthDamageableAssets]
+                  $ [damageInvestigator iid applyAll]
                   <> map (`damageInvestigator` applyAll) healthDamageableInvestigators
                   <> map (`damageAsset` applyAll) healthDamageableAssets
               DamageDirect -> pure [damageInvestigator iid True]
@@ -1861,7 +1873,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 ]
           let
             go = \case
-              DamageAssetsFirst -> do
+              DamageAssetsFirst _ -> do
                 let
                   targetCount =
                     if null sanityDamageableAssets
@@ -1869,8 +1881,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                       else length sanityDamageableAssets
                   applyAll = targetCount == 1
 
-                pure $ [damageInvestigator iid applyAll | null sanityDamageableAssets]
+                pure $ [damageInvestigator iid applyAll]
                   <> map (`damageAsset` applyAll) sanityDamageableAssets
+                  <> map (`damageInvestigator` applyAll) sanityDamageableInvestigators
+              HorrorAssetsFirst amatcher -> do
+                sanityDamageableAssets' <- select $ mapOneOf AssetWithId sanityDamageableAssets <> amatcher
+                let
+                  targetCount =
+                    if null sanityDamageableAssets'
+                      then 1 + length sanityDamageableInvestigators
+                      else length sanityDamageableAssets'
+                  applyAll = targetCount == 1
+
+                pure $ [damageInvestigator iid applyAll | null sanityDamageableAssets']
+                  <> map (`damageAsset` applyAll) sanityDamageableAssets'
                   <> map (`damageInvestigator` applyAll) sanityDamageableInvestigators
               DamageDirect -> pure [damageInvestigator iid True]
               DamageFromHastur -> go DamageAny

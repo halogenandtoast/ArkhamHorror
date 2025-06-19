@@ -118,7 +118,7 @@ getScenarioDeck :: HasGame m => ScenarioDeckKey -> m [Card]
 getScenarioDeck k =
   scenarioFieldMap ScenarioDecks (Map.findWithDefault [] k)
 
-getScenarioMeta :: (HasCallStack, HasGame m, FromJSON a) => m a
+getScenarioMeta :: forall a m. (HasCallStack, HasGame m, FromJSON a) => m a
 getScenarioMeta = scenarioFieldMap ScenarioMeta toResult
 
 getEncounterDiscard :: HasGame m => ScenarioEncounterDeckKey -> m [EncounterCard]

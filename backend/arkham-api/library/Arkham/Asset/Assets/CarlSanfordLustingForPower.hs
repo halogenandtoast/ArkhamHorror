@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Asset.Assets.CarlSanfordLustingForPower (carlSanfordLustingForPower) where
 
 import Arkham.Ability

@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.ThePaleLanternHypnoticGlow (thePaleLanternHypnoticGlo
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Enemy.Cards qualified as EnemyCards
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
@@ -20,12 +20,21 @@ thePaleLanternHypnoticGlow = asset ThePaleLanternHypnoticGlow Cards.thePaleLante
 instance HasAbilities ThePaleLanternHypnoticGlow where
   getAbilities (ThePaleLanternHypnoticGlow a) =
     [ mkAbility a 1 $ forced $ AssetLeavesPlay #when (be a)
-    , restricted a 2 (Here <> additionalCriteria) actionAbility
+    , restricted a 2 (OnSameLocation <> additionalCriteria) actionAbility
     ]
    where
     additionalCriteria =
-      exists (enemyIs EnemyCards.theBloodlessMan <> EnemyWithAnyDamage)
-        <> exists (VictoryDisplayCardMatch $ basic $ cardIs EnemyCards.theBloodlessMan)
+      oneOf
+        [ exists
+            ( mapOneOf enemyIs [Enemies.theBloodlessMan, Enemies.theBloodlessManUnleashed]
+                <> EnemyWithAnyDamage
+            )
+        , exists
+            ( VictoryDisplayCardMatch
+                $ basic
+                $ mapOneOf cardIs [Enemies.theBloodlessMan, Enemies.theBloodlessManUnleashed]
+            )
+        ]
 
 instance RunMessage ThePaleLanternHypnoticGlow where
   runMessage msg a@(ThePaleLanternHypnoticGlow attrs) = runQueueT $ case msg of
@@ -42,5 +51,8 @@ instance RunMessage ThePaleLanternHypnoticGlow where
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       takeControlOfAsset iid attrs
       flipOverBy iid (attrs.ability 2) attrs
+      pure a
+    Flip _ _ (isTarget attrs -> True) -> do
+      push $ ReplaceAsset attrs.id Cards.thePaleLanternBeguilingAura
       pure a
     _ -> ThePaleLanternHypnoticGlow <$> liftRunMessage msg attrs

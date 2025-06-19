@@ -51,4 +51,7 @@ instance RunMessage ThePaleLanternBeguilingAura where
           select $ AssetAt (locationWithInvestigator iid) <> AssetWithModifier (ScenarioModifier "spellbound")
         for_ spellbound $ flipOverBy iid (attrs.ability 3)
       pure a
+    Flip _ _ (isTarget attrs -> True) -> do
+      push $ ReplaceAsset attrs.id Cards.thePaleLanternHypnoticGlow
+      pure a
     _ -> ThePaleLanternBeguilingAura <$> liftRunMessage msg attrs

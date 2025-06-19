@@ -3680,7 +3680,9 @@ library
       Arkham.Scenarios.TheLairOfDagon.Helpers
       Arkham.Scenarios.TheLastKing.Helpers
       Arkham.Scenarios.TheMidnightMasks.Helpers
+      Arkham.Scenarios.TheMidwinterGala.Faction
       Arkham.Scenarios.TheMidwinterGala.Helpers
+      Arkham.Scenarios.TheMidwinterGala.Meta
       Arkham.Scenarios.TheMiskatonicMuseum.Helpers
       Arkham.Scenarios.ThePallidMask.Helpers
       Arkham.Scenarios.ThePitOfDespair.Helpers

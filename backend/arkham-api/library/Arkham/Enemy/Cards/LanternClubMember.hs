@@ -4,7 +4,9 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Cost
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype LanternClubMember = LanternClubMember EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -22,9 +24,9 @@ instance RunMessage LanternClubMember where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       resources <- getSpendableResources iid
       chooseOrRunOneM iid do
-        labeled "Evade" $ automaticallyEvadeEnemy iid attrs
+        withI18n $ labeled' "evade" $ automaticallyEvadeEnemy iid attrs
         when (resources >= 2) do
-          labeled "Spend 2 additional resources to discard" do
+          scenarioI18n $ labeled' "lanternClubMember.discard" do
             spendResources iid 2
             toDiscardBy iid (attrs.ability 1) attrs
       pure e

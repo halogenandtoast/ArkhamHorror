@@ -33,6 +33,8 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted hiding (InvestigatorDamage)
+import Arkham.Scenarios.TheMidwinterGala.Faction
+import Arkham.Scenarios.TheMidwinterGala.Meta
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Trait (Trait (Guest, Leader, Manor, Monster, Private, SecondFloor))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -52,43 +54,6 @@ expertTokens =
   , MinusEight , Skull , Skull , Cultist , Tablet , ElderThing , ElderThing , AutoFail , ElderSign
   ]
 {- FOURMOLU_ENABLE -}
-
-factionStoryRival :: Faction -> CardDef
-factionStoryRival = \case
-  TheFoundation -> Stories.theFoundationRival
-  MiskatonicUniversity -> Stories.miskatonicUniversityRival
-  TheSyndicate -> Stories.theSyndicateRival
-  TheSilverTwilightLodge -> Stories.silverTwilightLodgeRival
-  LocalsOfKingsport -> Stories.localsOfKingsportRival
-
-factionStoryAllied :: Faction -> CardDef
-factionStoryAllied = \case
-  TheFoundation -> Stories.theFoundationAllied
-  MiskatonicUniversity -> Stories.miskatonicUniversityAllied
-  TheSyndicate -> Stories.theSyndicateAllied
-  TheSilverTwilightLodge -> Stories.silverTwilightLodgeAllied
-  LocalsOfKingsport -> Stories.localsOfKingsportAllied
-
-data Faction
-  = TheFoundation
-  | MiskatonicUniversity
-  | TheSyndicate
-  | TheSilverTwilightLodge
-  | LocalsOfKingsport
-  deriving stock (Show, Eq, Enum, Bounded, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-factionLabel :: HasI18n => Faction -> Text
-factionLabel faction = unscoped $ standaloneI18n "theMidwinterGala" $ scope "faction" $ case faction of
-  TheFoundation -> "theFoundation"
-  MiskatonicUniversity -> "miskatonicUniversity"
-  TheSyndicate -> "theSyndicate"
-  TheSilverTwilightLodge -> "theSilverTwilightLodge"
-  LocalsOfKingsport -> "localsOfKingsport"
-
-data Meta = Meta {ally :: Faction, rival :: Faction}
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
 
 newtype TheMidwinterGala = TheMidwinterGala ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

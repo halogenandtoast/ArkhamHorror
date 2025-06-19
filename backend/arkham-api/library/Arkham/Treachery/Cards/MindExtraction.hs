@@ -24,7 +24,7 @@ instance RunMessage MindExtraction where
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       assignHorror iid attrs 2
-      mEnemy <- selectOne $ enemyIs Enemies.theBloodlessMan
+      mEnemy <- selectOne $ mapOneOf enemyIs [Enemies.theBloodlessMan, Enemies.theBloodlessManUnleashed]
       for_ mEnemy \eid -> do
         mAsset <- selectOne $ AssetControlledBy Anyone <> assetIs Assets.thePaleLanternBeguilingAura
         for_ mAsset \aid -> do

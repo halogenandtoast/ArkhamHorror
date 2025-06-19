@@ -6,6 +6,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 import Arkham.Trait (Trait (Guest))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -24,15 +25,14 @@ instance RunMessage Entrap where
       revelationSkillTest sid iid attrs #agility (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      selectOne (enemyIs Enemies.theBloodlessMan) >>= \case
+      selectOne (mapOneOf enemyIs [Enemies.theBloodlessMan, Enemies.theBloodlessManUnleashed]) >>= \case
         Nothing -> gainSurge attrs
         Just eid -> withLocationOf eid \eloc -> do
           withLocationOf iid \iloc -> do
             if eloc == iloc
               then do
                 guests <- select $ assetControlledBy iid <> AssetWithTrait Guest
-                chooseTargetM iid guests \aid -> do
-                  push $ ScenarioSpecific "spellbound" (toJSON aid)
+                chooseTargetM iid guests becomeSpellbound
               else do
                 ready eid
                 moveUntil eid iloc

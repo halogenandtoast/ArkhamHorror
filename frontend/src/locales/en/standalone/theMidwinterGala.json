@@ -18,7 +18,10 @@
     "miskatonicUniversity": "Miskatonic University",
     "theSyndicate": "The Syndicate",
     "theSilverTwilightLodge": "The Silver Twilight Lodge",
-    "localsOfKingsport": "Locals of Kingsport"
+    "localsOfKingsport": "Locals of Kingsport",
+    "lanternClubMember": {
+      "discard": "Spend 2 additional resources to discard it instead"
+    }
   },
   "intro": {
     "title": "The Midwinter Gala",

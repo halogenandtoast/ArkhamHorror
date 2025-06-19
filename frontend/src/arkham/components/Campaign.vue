@@ -190,5 +190,6 @@ const questionHash = computed(() => {
   padding: 0;
   margin: 0;
   margin-top: 10px;
+  overflow:auto;
 }
 </style>

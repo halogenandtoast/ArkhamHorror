@@ -1,82 +1,82 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the highest number of doom on an enemy in play.",
-      "cultist": "-2. If you fail, place 1 doom on the nearest enemy.",
-      "tablet": "-2. If you fail, discard a random card from your hand.",
-      "elderThing": "-2. If you fail and there is an enemy at your location, take 1 horror."
+      "skull": "-X. X는 플레이 상태인 적 중에서, 파멸이 가장 많이 놓인 적의 파멸 개수입니다.",
+      "cultist": "-2. 실패하면, 가장 가까운 적에게 파멸을 1개 올려놓습니다.",
+      "tablet": "-2. 실패하면, 당신의 손에서 무작위로 카드를 1장 버립니다.",
+      "elderThing": "-2. 실패했고 당신이 위치한 장소에 적이 있다면, 공포를 1 받습니다."
     },
     "hardExpert": {
-      "skull": "-X. X is the total number of doom on enemies in play.",
-      "cultist": "-4. Place 1 doom on the nearest enemy.",
-      "tablet": "-4. Discard a random card from your hand.",
-      "elderThing": "-4. If there is an enemy at your location, take 1 horror."
+      "skull": "-X. X는 플레이 상태인 모든 적에 놓인 파멸 개수의 총합입니다.",
+      "cultist": "-4. 가장 가까운 적에게 파멸을 1개 올려놓습니다.",
+      "tablet": "-4. 당신의 손에서 무작위로 카드를 1장 버립니다.",
+      "elderThing": "-4. 당신이 위치한 장소에 적이 있다면, 공포를 1 받습니다."
     }
   },
   "xp": {
-    "resolution4": "Gains insight into the machinations of The King in Yellow."
+    "resolution4": "<u>『황색의 왕』</u>의 이면에서 진행되고 있는 음모에 대한 통찰력을 얻음."
   },
   "intro": {
-    "title": "Scenario III: Echoes of the Past",
-    "body": "<p>Your head throbs with a dull ache as you drive through the rainy streets of Arkham toward your next destination. The threat of the Stranger looms in your mind, and you find yourself glancing often at your rear-view mirror, expecting to see the expressionless visage of his mask haunting you. Instead, you see nothing but the misty, starless night, and the deserted road behind you.</p><p>Your thoughts once again wander, as they have often in the past few hours, to <span class='basic'>The King in Yellow</span> and to the city of Carcosa and its inhabitants. What was the message hidden inside that awful play, the meaning within its madness? A lone detail worms its way to the forefront of your thoughts, one made apparent by the discussions you’d overheard at Ms. Dumaine’s estate—that tonight’s performance of <span class='basic'>The King in Yellow</span> was not the first Arkham had seen of the foul play. There had been at least one other performance, directed by the same man: Nigel Engram.</p><p>There is one place in Arkham where records are often kept of important events occuring within the city: the Historical Society’s manor house in Southside. If there are any records of the previous show of <span class='basic'>The King in Yellow</span>, the Historical Society may have held onto them. Perhaps there you will find answers to the questions that burn in your mind.</p>",
-    "proceedToSebastiensInformation": "<div class='right'>Proceed to _Sebastien’s Information_.</div>",
-    "otherwise": "<div class='right'>Otherwise, skip to _게임 준비_.</div>",
-    "sebastiensInformation": "<p>_Sebastien’s Information_: You recall what Sebastien told you during the dinner party. The King in Yellow had come to Arkham several decades ago, long before the Ward Theatre was built. According to him, it isn’t surprising that few people remember­ —in fact, part of their goal tonight was to bring The King in Yellow to a wider audience. The Historical Society may have kept records pertaining to this earlier production, especially if it was followed by events similar to what has occurred tonight. Perhaps you can find some newspaper clippings or other articles describing what happened in the past.</p><ul><li>After you put Entry Hall into play during setup, place 1 {'{'}perPlayer{'}'} clues on it.</li></ul><div class='right'>_게임 준비_로 이어집니다.</div>"
+    "title": "시나리오 III: 과거로부터의 메아리",
+    "body": "<p>비가 추적추적 내리는 아컴의 거리를 차로 내달려 다음 목적지로 향하는 내내 묵직한 두통이 머리를 짓누릅니다. 위협적인 이방인의 모습이 뇌리에 떠돌고 있는지라, 혹시라도 이방인의 무표정한 가면이 뒤쫓아 오는 건 아닐까 백미러를 수시로 들여다봅니다. 그러나 차 뒤로는 가면이 아니라, 안개가 자욱이 껴 별도 보이지 않는 밤하늘과 인적없는 거리만 보일 뿐입니다.</p><p>지난 몇 시간 동안 머릿속에서 맴돌았던 <span class='basic'>『황색의 왕』</span>과 카르코사 도시 그리고 그곳의 인물들에게로 생각이 다시금 기웁니다. 대체 그 끔찍한 공연에 어떤 의미가 숨겨져 있는 것이며, 그 광기 어린 이야기는 무슨 뜻을 담고 있는 걸까요? 꼬리에 꼬리를 무는 의문을 제쳐두고 단 하나의 생각이 앞으로 스멀스멀 기어나옵니다. 듀메인 씨의 저택에서 엿들은 대화에 따르면 오늘 밤 상연이 아컴에서의 <span class='basic'>『황색의 왕』</span> 첫 상연이 아니었다는 것입니다. 게다가 이전 상연에서도 나이젤 잉그램이 감독을 맡았다 합니다.</p><p>아컴에서 벌어진 주요 사건의 관련 기록이라면 남부에 위치한 아컴 사학회에 보관되어 있을테니, 이전 <span class='basic'>『황색의 왕』</span> 공연에 대한 기록이 남아 있다면 사학회에서 찾아볼 수 있을 겁니다. 어쩌면 머릿속에서 들끓는 의문에 대한 해답을 찾을 수 있을지도 모릅니다.</p>",
+    "proceedToSebastiensInformation": "<div class='right'>_세바스티앙이 준 정보_로 이어집니다.</div>",
+    "otherwise": "<div class='right'>그렇지 않으면 _게임 준비_로 건너뜁니다.</div>",
+    "sebastiensInformation": "<p>_세바스티앙이 준 정보_: 만찬회에서 세바스티앙으로부터 들은 이야기를 곱씹어봅니다. 『황색의 왕』은 몇십 년 전, 와드 극장이 세워지기 한참 전에 상연되었습니다. 너무나도 오래된 일이라 세바스티앙의 말마따나 그 사실을 기억하는 사람이 거의 없다는 것도 그렇게 이상할 일은 아닙니다. 사실상, 극단은 오늘 밤에 『황색의 왕』을 좀 더 많은 사람들에게 보여주는 것을 목표로 하기도 했으니 말입니다. 이전 공연에 대한 기록이 아컴 사학회에 남아 있을지도 모릅니다. 특히 오늘 밤과 비슷한 사건들이 없었는지 살펴봐야 합니다. 운이 좋다면 이전 사건에 대한 신문 기사 스크랩이나 문서를 발견할 수 있을지도 모릅니다.</p><ul><li>게임을 준비하는 동안 ‘사학회 현관’을 플레이 영역에 둔 후, 그곳에 단서를 1 {'{'}perPlayer{'}'}개 올려놓습니다.</li></ul><div class='right'>_게임 준비_로 이어집니다.</div>"
   },
   "setup": {
-    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *Echoes of the Past*, *Cult of the Yellow Sign*, *Delusions*, *The Midnight Masks*, *Locked Doors*, and *Dark Cult*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/echoes-of-the-past.png' /><img src='{setImgPath}/cult-of-the-yellow-sign.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/midnight-masks.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/dark-cult.png' /></section>When gathering *The Midnight Masks* encounter set, only gather the 5 treachery cards (2x False Lead and 3x Hunting Shadow). Do not gather the location, act, agenda, or scenario reference cards from that set.",
-    "chooseLocations": "Randomly choose one _*Ground Floor*_ Historical Society location, one _*Second Floor*_ Historical Society location, and one _*Third Floor*_ Historical Society location. Remove those locations from the game, without looking at their revealed sides.",
-    "placeLocations": "Put the following locations into play: Entry Hall, both copies of Quiet Halls, and the remaining 6 Historical Society locations. (see below for suggested location placement.) Each investigator begins play in the Entry Hall.",
-    "setAside": "Set the following cards aside, out of play: Hidden Library, Possessed Oathspeaker, Mr. Peabody, The Tattered Cloak, and Clasp of Black Onyx.",
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *과거로부터의 메아리*, *황색 표식 교단*, *망상*, *한밤의 가면*, *잠긴 문*, *어둠의 사교*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/echoes-of-the-past.png' /><img src='{setImgPath}/cult-of-the-yellow-sign.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/midnight-masks.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/dark-cult.png' /></section>*한밤의 가면* 조우 세트의 카드를 모을 때, 해당 조우 세트에서 오직 음모 카드 5장만(‘수사가 난항에 빠지다’ 사본 2장, ‘추적해오는 그림자’ 사본 3장) 모읍니다. *한밤의 가면* 조우 세트에 속한 그 외의 다른 카드(장소, 주요목적, 주요사건, 시나리오 참조 카드)는 모으지 않습니다.",
+    "chooseLocations": "무작위로 *1층* ‘아컴 사학회’ 장소 1장, *2층* ‘아컴 사학회’ 장소 1장, *3층* ‘아컴 사학회’ 장소 1장을 선택합니다. 이렇게 선택한 장소는 공개 면을 보지 않고 게임에서 제거합니다.",
+    "placeLocations": "‘사학회 현관’, ‘고요한 복도’ 사본 2장, 나머지 ‘아컴 사학회’ 장소 6장을 플레이 영역에 둡니다(추천 장소 배치를 참조하여 놓습니다). 모든 조사자는 ‘사학회 현관’에서 시작합니다.",
+    "setAside": "‘비밀 서재’, ‘맹세를 입에 담은 자’, ‘피버디 씨’, ‘누더기 망토’, ‘검은 오닉스 장식 고리’를 비플레이 상태로 치워 둡니다.",
     "changes": {
-      "instructions": "Based on the number of players in the game:",
-      "exactly1": "If there is exactly 1 player in the game, no changes are made.",
-      "exactly2": "If there are exactly 2 players in the game, search the gathered encounter sets for 1 copy of Seeker of Carcosa. Spawn it at a _*Third Floor*_ Historical Society location.",
-      "exactly3": "If there are exactly 3 players in the game, search the gathered encounter sets for 2 copies of Seeker of Carcosa. Spawn each at a different _*Third Floor*_ Historical Society location.",
-      "exactly4": "If there are exactly 4 players in the game, search the gathered encounter sets for 3 copies of Seeker of Carcosa. Spawn each at different _*Second Floor*_ or _*Third Floor*_ Historical Society locations."
+      "instructions": "플레이어 인원수에 따라 다음 사항을 적용합니다.",
+      "exactly1": "한 명이 게임을 한다면, 아무 변경 사항이 없습니다.",
+      "exactly2": "두 명이 게임을 한다면, 조우 세트에서 ‘카르코사의 구도자’ 사본 1장을 찾습니다. 찾은 ‘카르코사의 구도자’는 _*3층*_ ‘아컴 사학회’ 장소 한 곳에 출현합니다.",
+      "exactly3": "세 명이 게임을 한다면, 조우 세트에서 ‘카르코사의 구도자’ 사본 2장을 찾습니다. 찾은 ‘카르코사의 구도자’는 서로 다른 _*3층*_ ‘아컴 사학회’ 장소 두 곳에 하나씩 출현합니다.",
+      "exactly4": "네 명이 게임을 한다면, 조우 세트에서 ‘카르코사의 구도자’ 사본 3장을 찾습니다. 찾은 ‘카르코사의 구도자’는 서로 다른 _*2층*_ 또는 _*3층*_ ‘아컴 사학회’ 장소 세 곳에 하나씩 출현합니다."
     },
-    "fledTheDinnerParty": "Check Campaign Log. *If you fled the dinner party*: You arrive at the Historical Society with time to spare; each investigator can take 1 additional action during their first turn of this game."
+    "fledTheDinnerParty": "캠페인 기록지를 확인합니다. *당신이 만찬회에서 달아났다*면: 당신은 조금 여유롭게 사학회 건물에 도착합니다. 모든 조사자는 이번 게임에서 자신의 첫 번째 차례에 추가로 행동을 1번 더 수행할 수 있습니다."
   },
   "resolutions": {
     "xp": {
-      "bonus": "Gains insight into the machinations of The King in Yellow"
+      "bonus": "<u>『황색의 왕』</u>의 이면에서 진행되고 있는 음모에 대한 통찰력을 얻음"
     },
     "noResolution": {
       "title": "결말에 도달하지 못함",
-      "body": "<div class='resolution'>_아무 결말에도 도달하지 못했다면(모든 조사자가 후퇴하거나 쓰러졌다면)_: You barely escape the building with your body and mind intact, and flee to safety. Read _결말 4_.</div>"
+      "body": "<div class='resolution'>_아무 결말에도 도달하지 못했다면(모든 조사자가 후퇴하거나 쓰러졌다면)_: 당신은 간신히 몸과 정신을 부지하고서 사학회 건물에서 빠져나와 안전한 곳으로 도피합니다. _결말 4_를 읽습니다.</div>"
     },
     "resolution1": {
       "title": "결말 1",
-      "body": "<div class='resolution'><p>_결말 1_: There are no coincidences when it comes to The King in Yellow. There is no doubt in your mind that the object you’ve found is important. You decide to take it with you before continuing your investigation. The last record you find related to the original production of The King in Yellow is a psychiatric evaluation of one Daniel Chesterfield, a stagehand who lost his wits after the final show. It seems he was admitted to the asylum after the production ended. Perhaps he’s still there…</p><ul><li>캠페인 기록지에 *you took the onyx clasp*라고 기록합니다. Mark one _Conviction_ in your Campaign Log. For the remainder of the campaign, one investigator must include the Clasp of Black Onyx weakness in his or her deck. This card does not count toward that investigator’s deck size.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>If Sebastien Moreau (*Savage Hysteria*) is in the victory display, record his name in your Campaign Log, under “VIPs Slain.”</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}tablet{'}'} tokens to the chaos bag.</li></ul></div>"
+      "body": "<div class='resolution'><p>_결말 1_: 『황색의 왕』에 얽힌 일련의 사건은 결코 우연이 아닙니다. 기록물과 함께 보관되어 있던 장식 고리가 중요하다는 것에는 의심의 여지조차 없으니, 당신은 조사를 이어가기 전에 검은 오닉스 장식 고리를 챙기기로 합니다. 이전 『황색의 왕』공연과 관련해서 마지막으로 찾아낸 기록에 따르면, 대니얼 체스터필드라는 이가 정신감정평가를 받았다고 합니다. 대니얼은 극단 무대 담당자였으나 상연을 마친 이후로 미쳐버렸으며, 이로 인해 정신병원으로 이송된 것으로 보입니다. 아직 대니얼이 그 곳에 있을 가능성이 높습니다…</p><ul><li>캠페인 기록지에 *오닉스 장식 고리를 챙겼다**라고 기록합니다. 캠페인 기록지에 _믿음_ 하나를 표시합니다. 캠페인이 끝날 때까지, 조사자 중 한 명이 ‘검은 오닉스 장식 고리’ 약점을 자기 덱에 추가해야 합니다. 이 카드는 조사자의 덱 크기를 계산할 때 포함되지 않습니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>승점 더미에 ‘세바스티앙 모로(*흉폭하고 몹시 흥분해있다*)’가 있다면, 캠페인 기록지의 “살해당한 VIP”에 ‘세바스티앙 모로’를 기록합니다.</li><li>혼돈 주머니에 {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} 토큰을 모두 제거합니다. 그런 다음, 혼돈 주머니에 {'{'}tablet{'}'} 토큰을 2개 추가합니다.</li></ul></div>"
     },
     "resolution2": {
       "title": "결말 2",
-      "body": "<div class='resolution'><p>_결말 2_: This investigation would make anybody paranoid. Attributing some greater meaning to everything you find can be a dangerous proposition. You’re sure that this clasp is meaningless, perhaps even a prop from the original play. You leave it behind and continue your investigation. The last record you find related to the original production of The King in Yellow is a psychiatric evaluation of one Daniel Chesterfield, a stagehand who lost his wits after the final show. It seems he was admitted to the asylum after the production ended. Perhaps he’s still there...</p><ul><li>캠페인 기록지에 *you left the onyx clasp behind*라고 기록합니다. Mark one _Doubt_ in your Campaign Log.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>If Sebastien Moreau (*Savage Hysteria*) is in the victory display, record his name in your Campaign Log, under “VIPs Slain.”</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}tablet{'}'} tokens to the chaos bag.</li></ul></div>"
+      "body": "<div class='resolution'><p>_결말 2_: 누구라도 이런 걸 접하다 보면 편집증에 걸릴 판입니다. 발견한 것 하나하나마다 큰 의미를 부여하는 짓은 위험하며, 기존 공연에서 사용한 소품처럼 보이는 장식 고리에 어떤 의미가 있을 리 만무합니다. 이전 『황색의 왕』 공연과 관련해서 마지막으로 찾아낸 기록에 따르면, 대니얼 체스터필드라는 이가 정신감정평가를 받았다고 합니다. 대니얼은 극단 무대 담당자였으나 상연을 마친 이후로 미쳐버렸으며, 이로 인해 정신병원으로 이송된 것으로 보입니다. 아직 대니얼이 그곳에 있을 가능성이 높습니다…</p><ul><li>캠페인 기록지에 *오닉스 장식 고리를 두고 나왔다*라고 기록합니다. 캠페인 기록지에 _의심_ 하나를 표시합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>승점 더미에 ‘세바스티앙 모로(*흉폭하고 몹시 흥분해있다*)’가 있다면, 캠페인 기록지의 “살해당한 VIP”에 ‘세바스티앙 모로’를 기록합니다.</li><li>혼돈 주머니에 {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} 토큰을 모두 제거합니다. 그런 다음, 혼돈 주머니에 {'{'}tablet{'}'} 토큰을 2개 추가합니다.</li></ul></div>"
     },
     "resolution3": {
       "title": "결말 3",
-      "body": "<div class='resolution'><p>_결말 3_: The figure collapses to the ground, its warped, melting body writhing in agony. It wheezes and cries out, a yellow glow emanating from inside its mouth and behind its eyes. “Daniel,” the thing says in its cracking voice. “Seek Daniel... Daniel Chesterfield, the stagehand, he remembers!” Deep inside the man’s words, there is another voice behind it, whispering faintly in a melodic language. “Find him... He too has spoken the oath... The oath that doomed us all...!” With those final words, the skin melts off the man’s bones, and he rattles to the floor.</p><ul><li>캠페인 기록지에 *you destroyed the oathspeaker*라고 기록합니다. Any one investigator may choose to add The Tattered Cloak to his or her deck. This card does not count toward that investigator’s deck size.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>If Sebastien Moreau (Savage Hysteria) is in the victory display, record his name in your Campaign Log, under “VIPs Slain.”</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}tablet{'}'} tokens to the chaos bag.</li></ul></div>"
+      "body": "<div class='resolution'><p>_결말 3_: 그자가 바닥으로 쓰러지면서 끔찍한 고통에 몸부림치며 뒤틀리다가 마침내 녹아내리기 시작합니다. 헐떡거리면서 비명을 질러 대는 그의 입과 눈에서는 노란빛이 뿜어져 나옵니다. “대니얼!” 그가 갈라진 목소리로 말합니다. “대니얼을 찾아라… 대니얼 체스터필드, 무대 담당자, 그가 기억하고 있을 테니!” 남자의 목소리에 다른 누군가의 목소리가 겹쳐 들려옵니다. 그 목소리는 곡조와 같은 언어를 희미하게 속삭입니다. “대니얼을 찾아라… 그 역시 맹세를 입에 담았으니… 그 맹세가 우리 모두를 파멸로 몰아갔도다…!” 그 한 마디를 끝으로 남자는 피부가 녹아내리고, 마루 위에 덩그러니 남은 뼈만이 부르르 떨립니다.</p><ul><li>캠페인 기록지에 *맹세를 입에 담은 자를 쓰러뜨렸다*라고 기록합니다. 조사자 중 한 명이 ‘누더기 망토’를 자기 덱에 추가해도 됩니다. 이 카드는 조사자의 덱 크기를 계산할 때 포함되지 않습니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>승점 더미에 ‘세바스티앙 모로(*흉폭하고 몹시 흥분해있다*)’가 있다면, 캠페인 기록지의 “살해당한 VIP”에 ‘세바스티앙 모로’를 기록합니다.</li><li>혼돈 주머니에 {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} 토큰을 모두 제거합니다. 그런 다음, 혼돈 주머니에 {'{'}tablet{'}'} 토큰을 2개 추가합니다.</li></ul></div>"
     },
     "resolution4": {
       "title": "결말 4",
-      "body": "<div class='resolution'><p>_결말 4_: The night’s events have left you exhausted. You were unable to learn anything at the Historical Society’s manor that could drive your investigation forward. Whoever those intruders were, they must have been looking for the same information you were. Distraught, you find your way to the closest bed you can find—in Ma’s Boarding House, not too far from the Historical Society. Dawn breaks as you reach the boarding house, the front doorknob and ferns on the porch covered in dew. You are lucky enough to get a vacant room for the day, and soon you are fast asleep.</p><p>Suddenly, you are falling. Above and all around you, a blinding radiance flares like an inferno. Your head twinges with pain and your vision swims with brilliant colors. Your skin is singed by the flames. Below you, the abyss opens and swallows you whole. You then find yourself in a dank, windowless cell, filled with a putrid stench. A man is huddled in a corner of the room, shivering from the cold, or from the hopelessness of his situation, or perhaps both. “No mask,” he mutters over and over, “no mask, no mask...” You take a few tentative steps forward, but before you can reach him, the metal slot on his cell door slides open, and you hear an orderly call to him. “Daniel, it’s time,” he says. “Daniel, wake up. Wake up, Daniel.” Then, you awaken.</p><ul><li>캠페인 기록지에 *the followers of the sign have found the way forward*라고 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다. Each investigator earns 1 bonus experience as he or she gains insight into the machinations of The King in Yellow.<ul><li>_경험치_: {xp}</li></ul></li><li>If Sebastien Moreau (Savage Hysteria) is in the victory display, record his name in your Campaign Log, under “VIPs Slain.”</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 1 {'{'}cultist{'}'} token, 1 {'{'}tablet{'}'} token, and 1 {'{'}elderThing{'}'} token to the chaos bag.</li></ul></div>"
+      "body": "<div class='resolution'><p>_결말 4_: 오늘 밤의 일을 겪고 나서 당신은 완전히 녹초가 되어버렸습니다. 게다가 아컴 사학회에서도 조사에 도움이 될 법한 것은 찾지 못한 채 헛물만 켜고 말았습니다. 하지만 저 정체 모를 침입자들 역시 당신과 같은 정보를 찾고 있던 게 틀림없습니다. 심란해진 당신은 잠을 청할 만한 가장 가까운 곳을 찾아, 사학회에서 그리 멀리 떨어지지 않은 마 매시슨의 하숙집으로 향했습니다. 당신은 동이 터 오를 무렵 하숙집에 도착했습니다. 앞문 손잡이와 현관 앞에 자란 고사리 위에는 이슬이 맺혔습니다. 그날따라 운 좋게도 빈방이 많아, 당신은 빠르게 잠에 빠져듭니다.</p><p>불현듯, 당신은 추락하고 있습니다. 지옥처럼 타오르는 불길에서 빛이 뿜어져 나와 사방을 둘러쌉니다. 머리를 찌르는 통증이 이어지고, 눈앞에서는 온갖 색채가 번뜩입니다. 피부에 불이 붙어 지글거리는 소리가 들려옵니다. 아래를 보니 심연이 쩍하니 입을 벌리고 당신을 통째로 삼키려 합니다. 바로 다음 순간, 당신은 창 없는 컴컴한 감방 안에 있습니다. 뭔가가 썩는 악취가 가득한 방구석에서 남자가 몸을 웅크린 채로 떨고 있습니다. 추위 때문이거나, 가망 없는 자신의 처지 때문이거나, 혹은 둘 다인지도 모릅니다. 그가 계속해서 웅얼거립니다. “가면은 안 돼, 가면은 안 돼, 가면은 안 돼…” 당신은 조심조심 다가갑니다. 그러나 그에게 닿기도 전에 감방 쪽문이 스르륵 열립니다. 남간호사가 대니얼을 부르는 목소리가 들립니다. “대니얼 씨, 시간이 됐습니다.” 목소리가 이어집니다. “대니얼 씨, 일어나세요. 대니얼 씨. 일어나라, 대니얼.” 그리고, 당신은 잠에서 깨어납니다.</p><ul><li>캠페인 기록지에 *황색 표식의 추종자들이 나아갈 길을 찾았다*라고 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다. 각 조사자는 <u>『황색의 왕』</u>의 이면에서 진행되고 있는 음모에 대한 통찰력을 얻었기 때문에, 경험치를 추가로 1씩 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>승점 더미에 ‘세바스티앙 모로(*흉폭하고 몹시 흥분해있다*)’가 있다면, 캠페인 기록지의 “살해당한 VIP”에 ‘세바스티앙 모로’를 기록합니다.</li><li>혼돈 주머니에 {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} 토큰을 모두 제거합니다. 그런 다음, 혼돈 주머니에 {'{'}cultist{'}'} 토큰, {'{'}tablet{'}'} 토큰, {'{'}elderThing{'}'} 토큰을 1개씩 추가합니다.</li></ul></div>"
     }
   },
   "label": {
     "theOath": {
-      "r1": "This is an important discovery! We should take it. (-> R1)",
-      "r2": "It's just a silly trinket, and it would be wrong to steal from the Historical Society. Leave it behind (-> R2)"
+      "r1": "“이건 중요한 물건이 분명해. 우리가 챙겨 가자!” (-> 결1)",
+      "r2": "“사학회의 자산을 훔치는 건 잘못된 일이야. 이런 우스꽝스러운 장신구는 그냥 두고 가자.” (-> 결2)"
     },
     "ledAstray": {
-      "placeClues": "Place 1 of your clues on a Cultist enemy"
+      "placeClues": "_추종자_ 적 하나에게 당신이 가진 단서를 1개 올려 놓습니다."
     }
   },
   "tooltips": {
     "entryHall": {
-      "resign": "You flee, leaving the mysteries of the past to the mysterious cultists."
+      "resign": "과거에 얽힌 기괴한 수수께끼는 마찬가지로 기괴한 사교 집단이 채어 가든 말든 놔두고, 당신은 달아납니다."
     },
     "historicalSocietyReadingRoom": {
-      "investigate": "{'{'}action{'}'}: _Investigate_. If you succeed, instead of discovering clues, choose an enemy with doom on it. Take 1 of that enemy's doom, flip it to its clue side, and place it on your investigator. (Group limit once per round)."
+      "investigate": "{'{'}action{'}'}: _조사_. 성공하면, 단서를 발견하는 대신, 파멸이 놓인 적 하나를 선택합니다. 그 적에게 놓인 파멸을 1개 가져와 단서 면으로 뒤집고, 당신의 조사자에게 올려놓습니다(라운드당 1번 그룹 한정)."
     }
   }
 }

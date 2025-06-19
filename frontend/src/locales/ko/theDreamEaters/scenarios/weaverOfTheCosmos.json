@@ -20,7 +20,7 @@
   "resolutions": {
     "noResolution": {
       "title": "결말에 도달하지 못함",
-      "body": "_If no resolution was reached because each investigator was defeated:_ You awaken trapped inside something tight and sticky. Your arms are bound to your sides, and no matter how fiercely you struggle, you cannot seem to move except to wiggle your fingers hopelessly. Slowly, dread creeps its way through your mind as you realize the situation you are in. As you cannot move your head, you are forced to watch as the eight-legged creature emerges from the darkness. It makes no sound as it steps onto the web. Its many eyes reflect your terrified expression. Its mandibles drip with hunger. You only wish you could look away."
+      "body": "_모든 조사자가 쓰러져서 아무 결말에도 도달하지 못했다면:_ You awaken trapped inside something tight and sticky. Your arms are bound to your sides, and no matter how fiercely you struggle, you cannot seem to move except to wiggle your fingers hopelessly. Slowly, dread creeps its way through your mind as you realize the situation you are in. As you cannot move your head, you are forced to watch as the eight-legged creature emerges from the darkness. It makes no sound as it steps onto the web. Its many eyes reflect your terrified expression. Its mandibles drip with hunger. You only wish you could look away."
     },
     "resolution1": {
       "title": "결말 1",

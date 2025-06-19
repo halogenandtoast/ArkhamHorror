@@ -1,11 +1,11 @@
 {
   "intro1": {
     "title": "Scenario ???: Fatal Mirage",
-    "body": "<p class='basic valid'>If this is your first time playing Fatal Mirage this campaign, proceed to _Intro 1_. Otherwise, skip to _Intro 2_.</p><p>_Intro 1_: Upon entering the doorway, you find yourself in a web of icy tunnels, swathed in miasma and dripping with prismatic ichor. Your reflection peers back at you in myriad peculiar angles. Your voice echoes throughout this infinite hall of mirrors. You turn around to discover that your entryway has vanished behind you. Then, in the corner of your eye, you spot a familiar figure traversing the same mists—but, no, that can’t be possible. Can it?</p><p class='basic'>Find and read the passage below that corresponds to which character was killed in the plane crash. Then, _게임 준비_로 이어집니다.</p>"
+    "body": "<p class='basic valid'>If this is your first time playing Fatal Mirage this campaign, proceed to _도입부 1_. Otherwise, skip to _도입부 2_.</p><p>_도입부 1_: Upon entering the doorway, you find yourself in a web of icy tunnels, swathed in miasma and dripping with prismatic ichor. Your reflection peers back at you in myriad peculiar angles. Your voice echoes throughout this infinite hall of mirrors. You turn around to discover that your entryway has vanished behind you. Then, in the corner of your eye, you spot a familiar figure traversing the same mists—but, no, that can’t be possible. Can it?</p><p class='basic'>Find and read the passage below that corresponds to which character was killed in the plane crash. Then, _게임 준비_로 이어집니다.</p>"
   },
   "intro2": {
     "title": "Scenario ???: Fatal Mirage",
-    "body": "<p class='basic invalid'>If this is your first time playing Fatal Mirage this campaign, proceed to _Intro 1_. Otherwise, skip to _Intro 2_.</p><p>Once again, you find yourself in a web of icy tunnels, permeated by mist and miasma. The entryway vanishes behind you. Your reflection, shimmering with the slightest hint of incorporeality, stares back at you from many angles at once.</p><p class='normal'>_게임 준비_로 이어집니다.</p>"
+    "body": "<p class='basic invalid'>If this is your first time playing Fatal Mirage this campaign, proceed to _도입부 1_. Otherwise, skip to _도입부 2_.</p><p>Once again, you find yourself in a web of icy tunnels, permeated by mist and miasma. The entryway vanishes behind you. Your reflection, shimmering with the slightest hint of incorporeality, stares back at you from many angles at once.</p><p class='normal'>_게임 준비_로 이어집니다.</p>"
   },
   "resolutions": {
     "xp": {
@@ -23,7 +23,7 @@
     "proceedToCityOfTheElderThings": "If the last scenario you played before this one was To the Forbidden Peaks, proceed to _Scenario III: City of the Elder Things_.",
     "proceedToTheHeartOfMadness": "If the last scenario you played before this one was City of the Elder Things, proceed to _Scenario IV: The Heart of Madness_.",
     "title": "결말 (.+)",
-    "noResolution": "<p>_If no resolution was reached (each investigator was defeated)_: You stumble wearily to your feet. A dream? Your grip your temples, your mind aching. It feels as though a pneumatic drill has been taken to the inside of your skull. If this is what sleep is to be in this hellish place, you want no part of it.</p>",
+    "noResolution": "<p>_아무 결말에도 도달하지 못했다면(모든 조사자가 쓰러졌다면)_: You stumble wearily to your feet. A dream? Your grip your temples, your mind aching. It feels as though a pneumatic drill has been taken to the inside of your skull. If this is what sleep is to be in this hellish place, you want no part of it.</p>",
     "resolution1": "<p>_결말 1_: You tumble through the doorway and onto your sleeping mat, flailing within your tangle of warm blankets. No door shuts behind you. Did you only imagine all of that? Or was it all real?</p>"
   },
   "dyerWasKilledInThePlaneCrash": "<p>_If William Dyer was killed in the plane crash:_</p><p>Professor Dyer is dead. There is no way that can be him. And yet…</p><p>You see him pacing back and forth across one of the reflections, muttering to himself. “It must be stopped. They cannot do this.” He pauses, as if in conversation with another, who goes unheard. “I do not care. It must end at once!” Poor Dyer. He did try to warn you, you recall. And yet, here you are.</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",

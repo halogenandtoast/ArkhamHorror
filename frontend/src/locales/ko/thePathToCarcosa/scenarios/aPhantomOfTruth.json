@@ -1,108 +1,108 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the amount of doom in play (max 5).",
-      "cultist": "-2. If you fail, move each unengaged _Byakhee_ in play once toward the nearest investigator.",
-      "tablet": "-3. Cancel the effects and icons of each skill card committed to this test.",
-      "elderThing": "-2. If you fail, lose 1 resource for each point you failed by."
+      "skull": "-X. X는 플레이 상태인 파멸 개수입니다(최대 5).",
+      "cultist": "-2. 실패하면, 플레이 상태이면서 교전 중이 아닌 모든 _비야키_가 각자 자신과 가장 가까운 조사자를 향해 1칸 이동합니다.",
+      "tablet": "-3. 이번 능력 테스트에 소모된 모든 능력 카드의 효과와 아이콘을 취소합니다.",
+      "elderThing": "-2. 실패하면, 능력값이 난이도에 모자란 차이만큼 자원을 잃습니다."
     },
     "hardExpert": {
-      "skull": "-X. X is the amount of doom in play.",
-      "cultist": "-2. Move each unengaged _Byakhee_ in play once toward the nearest investigator.",
-      "tablet": "-4. Cancel the effects and icons of each skill card committed to this test.",
-      "elderThing": "-3. If you fail, lose 1 resource for each point you failed by."
+      "skull": "-X. X는 플레이 상태인 파멸 개수입니다.",
+      "cultist": "-2. 플레이 상태이면서 교전 중이 아닌 모든 _비야키_가 각자 자신과 가장 가까운 조사자를 향해 1칸 이동합니다.",
+      "tablet": "-4. 이번 능력 테스트에 소모된 모든 능력 카드의 효과와 아이콘을 취소합니다.",
+      "elderThing": "-3. 실패하면, 능력값이 난이도에 모자란 차이만큼 자원을 잃습니다."
     }
   },
   "label": {
     "dream10": {
-      "dream11": "“How could any of this be beautiful to you?”",
-      "dream12": "“What exactly am I looking at?”"
+      "dream11": "“이게 대체 어디가 아름답다는 거지?”",
+      "dream12": "“내가 지금 뭘 보고 있는 거지?”"
     },
     "theParisianConspiracy": {
-      "spawn": "Where to spawn the organist"
+      "spawn": "‘오르간 연주자’를 출현시킬 장소"
     },
     "grandGuignol": {
-      "shuffle": "Shuffle all non-weakness cards from your hand into your deck, then draw an equal number of cards"
+      "shuffle": "당신의 손에서 약점이 아닌 모든 카드를 당신의 덱에 합친 후 섞고서 그만큼 다시 카드를 뽑습니다."
     },
     "deadlyFate": {
-      "attack": "That enemy attacks you (from the discard pile)",
-      "drawEnemy": "Draw enemy"
+      "attack": "그 적이 버린 조우 카드 더미에서 당신을 공격합니다.",
+      "drawEnemy": "그 적을 뽑습니다."
     }
   },
   "intro": {
-    "title": "Scenario VI: A Phantom of Truth",
-    "readIntro1": "Check Campaign Log. *If the King claimed its victims*: Read _Intro 1_.",
-    "readIntro2": "Otherwise, skip to _Intro 2_.",
-    "intro1": "<p>_Intro 1_: Several months have passed since The King in Yellow came to the Ward Theatre. You and your companions have been investigating the strange incidents that followed in its wake. What you have found makes you question the wisdom of continuing your investigation, but the truth calls out to you, and you cannot help but answer. It seems you weren’t the first to piece together the strange happenings surrounding The King in Yellow. Another group of investigators had been researching these events as well. Just a matter of days after the performance in Arkham, they were admitted to the asylum, ranting about the King’s return and the “monsters” that had attacked them. Somehow this doesn’t surprise you. Their fate makes you all the more certain you are on the right trail... And all the more certain that you should stop while you still have the chance.</p><p>You’ve found the records those investigators kept before their incarceration, and picked up the trail where they left off. They had interviewed some of the cast and crew of The King in Yellow, and discovered several pieces of vital information. Their research also contains notes about their discoveries in Arkham’s Historical Society, and accounts from their time spent in the asylum, including interactions with a patient named “Daniel Chesterfield.” After a long night of compiling and comparing notes, you fall into a deep slumber. In your dreams, you are subjected to visions of Carcosa—its black stars, twin suns, shattered moons, and twisted spires.</p><p class='basic right'>Continue to _Dream 1_. Don’t get lost.</p>",
-    "intro2": "<p>_Intro 2_: It has been several weeks since the events in the asylum, and you are still no closer to the truth about The King in Yellow and Carcosa. You have scoured the city for signs of the others Daniel had mentioned—the ones who are “opening the path to Carcosa”—but found nothing. Either the trail has gone cold, or they’re no longer in Arkham. Perhaps Daniel truly was insane, and you are only following him deeper down the rabbit hole. Every night, you toss and turn as you are subjected to vivid dreams of Carcosa­ —its black stars, twin suns, shattered moons, and twisted spires.</p><p class='basic right'>Continue to _Dream 1_. Don’t get lost.</p>",
-    "dream1": "<p>_Dream 1_: You fall through the empty abyss of Hali. Creatures of unknown and impossible origin lurk just beyond the darkness of your sight. Hastur looms above you, magnificent and yet bound in his prison of madness, manipulating your torturous descent with a sole outstretched arm.</p><p class='basic right'>Each investigator has earned the Lost Soul weakness (*The Path to Carcosa #227*) (does not count toward deck size).</p><p class='basic right'>Shuffle one copy of this weakness into each investigator’s deck.</p><p class='basic right'>Continue to _Dream 2_.</p>",
+    "title": "시나리오 V: 진실의 망령",
+    "readIntro1": "캠페인 기록지를 확인합니다. *왕아 희생양을 거두었다*면: _도입부 1_을 읽습니다.",
+    "readIntro2": "그렇지 않으면, _도입부 2_로 건너뜁니다.",
+    "intro1": "<p>_도입부 1_: 와드 극장에서 『황색의 왕』이 공연된 지 몇 달이 지났습니다. 당신과 동료들은 공연 이후 일어난 기이한 사건을 추적하며 조사를 이어나가고 있습니다. 그동안 당신이 발견한 것들을 생각해 보면 조사를 이어가는 게 과연 현명한 건지 의구심도 들긴 했지만, 진실을 앞에 두고 놓아 버릴 수는 없는 노릇입니다. 『황색의 왕』을 둘러싸고 벌어지는 기이한 퍼즐의 조각을 맞추던 이가 당신만은 아니었습니다. 이 사건에 파고들었던 다른 조사자들도 있었으나, 그들은 아컴에서의 공연이 끝나고 며칠이 채 지나지 않아 정신병원에 입원했고 왕의 귀환이라느니 자신들을 공격한 “괴물”이라느니 하는 망상에 빠진 열변을 토했습니다. 그러나, 그들의 비극적 최후는 당신에게 놀라움보다는 확신을 주었습니다. 일단은 당신이 헛짚은 게 아니라는 것이고, 좀 더 분명한 점은 아직 기회가 있을 때 손을 떼야 한다는 겁니다.</p><p>당신은 그 조사자들이 정신병원에 갇히기 전까지 가지고 있었던 기록을 찾아냈고, 그들의 조사가 끊긴 시점부터 조사를 이어가기로 했습니다. 그들은 『황색의 왕』의 공연 관계자들과 만나 대화를 나누면서 제법 중요한 정보를 얻어내었습니다. 그들의 조사 내용 중에는 아컴 사학회에서 발견한 사실도 적혀 있었으며, 정신병원과 관련된 기록에는 “대니얼 체스터필드”라는 이름의 환자와 소통했던 내용도 있었습니다. 그 기록을 밤새도록 모으고 짜 맞추던 도중, 당신은 깊은 잠에 빠져듭니다. 꿈속에서는 카르코사의 풍광이 펼쳐집니다. 검은 별과 두 개의 태양, 부서진 달과 뒤틀린 첨탑이 보입니다.</p><p class='basic right'>_꿈 1_로 이어집니다. 길을 잃지 마십시오.</p>",
+    "intro2": "<p>_도입부 2_: 정신병원에서의 사건이 끝나고 몇 주가 흘렀는데도, 『황색의 왕』과 카르코사에 대한 진실에는 한발짝도 다가가지 못했습니다. 대니얼이 언급했던 “카르코사로 가는 길을 열려고 하는 이들”에 대한 흔적을 찾아 온 도시를 뛰어다녔지만 헛일이었습니다. 실마리를 잃은건지 그들이 아컴을 떠난 건지는 알 수 없습니다. 어쩌면 대니얼은 정말로 실성한 것이고, 당신은 그저 실성한 사람을 따라 토끼굴로 더 깊이 들어가 버린 건지도 모릅니다. 매일 밤, 당신은 카르코사의 풍광이 펼쳐지는 생생한 꿈 때문에 제대로 숙면을 취하지 못하고 몸을 뒤척입니다. 꿈속에서는 검은 별과 두 개의 태양, 부서진 달과 뒤틀린 첨탑이 보입니다.</p><p class='basic right'>_꿈 1_로 이어집니다. 길을 잃지 마십시오.</p>",
+    "dream1": "<p>_꿈 1_: 당신은 공허한 할리 호수의 심연으로 추락합니다. 당신의 시선이 닿지 않는 어둠 너머에 미지의 생물과 이 세상에 존재할 리 없는 것들이 도사리고 있습니다. 위대하지만 아직은 광기의 감옥에 갇혀 있는 하스터가 당신의 머리 위에서 모습을 드러냅니다. 그는 팔 하나를 쭉 뻗어 당신의 고통스러운 몰락을 조종하고 있습니다.</p><p class='basic right'>모든 조사자는 ‘잃어버린 영혼’ 약점(*카르코사로 가는 길 227*)을 1장씩 얻습니다(이 카드는 조사자의 덱 크기를 계산할 때 포함되지 않습니다).</p><p class='basic right'>각 조사자의 덱에 이 약점 사본 1장씩을 합친 후 섞습니다.</p><p class='basic right'>_꿈 2_로 이어집니다.</p>",
     "dream2": {
-      "body": "<p>_Dream 2_: Constance takes your hand and pulls you onto the polished dance floor. “Come now, don’t be shy. Tonight is a night for dancing! For celebration!”</p>",
-      "dream8": "<p class='basic right'>Check Campaign Log. *If the King claimed its victims*, continue to _Dream 8_.</p>",
-      "dream3": "<p class='basic right'>If the above is not true, *if you intruded on a secret meeting*, continue to _Dream 3_.</p>",
-      "dream4": "<p class='basic right'>*If you slayed the monsters at the dinner party*, continue to _Dream 4_.</p>",
-      "dream6": "<p class='basic right'>If none of the above are true, continue to _Dream 6_.</p>"
+      "body": "<p>_꿈 2_: 콘스탄스가 당신의 손을 잡고, 반질반질한 무도회장으로 끌어당깁니다. “이리 와요. 부끄러워 말고. 오늘 밤은 춤추는 밤이니까! 축하의 밤이니까!”</p>",
+      "dream8": "<p class='basic right'>캠페인 기록지를 확인합니다. *왕이 희생양을 거두었다*면, _꿈 8_로 이어집니다.</p>",
+      "dream3": "<p class='basic right'>위에 해당하지 않으며, *당신이 밀회에 침범했다*면, _꿈 3_으로 이어집니다.</p>",
+      "dream4": "<p class='basic right'>*당신이 만찬회의 괴물을 모조리 죽였다*면, _꿈 4_로 이어집니다.</p>",
+      "dream6": "<p class='basic right'>아무 것도 해당하지 않는다면, _꿈 6_으로 이어집니다.</p>"
     },
-    "dream3": "<p>_Dream 3_: “Ah, if it isn’t our esteemed guest,” the man with the mustache and the silver-handled cane says. He grabs a bottle of wine from the nearby countertop and pours you a glass. “I hear you have taken quite the interest in our little production,” he says with a smile. “Tell me: how are you enjoying Act 2, so far?”</p><p class='basic right'>Continue to _Dream 6_.</p>",
-    "dream4": "<p>_Dream 4_: Smoke and embers float upwards into the starless night sky. The screams of burning creatures fill you with a horrid sense of accomplishment. They almost sound human, you consider. But you know that isn’t true.</p><p class='basic right'>Each investigator suffers 1 mental trauma. Continue to _Dream 6_.</p>",
-    "dream5": "<p>_Dream 5_: You peer in the mirror, and your reflection gives you a curious glance. “Wait a second, this isn’t Dream 1,” you say.</p><p class='basic right'>Continue to _Dream 1_.</p>",
+    "dream3": "<p>_꿈 3_: “아, 이게 누구십니까? 기다리던 분께서 오셨군요.” 콧수염이 난 남자가 은제 손잡이가 달린 지팡이를 들고서 말합니다. 그는 조리대에서 와인 한 병을 가져와 당신의 잔에 따라줍니다. “우리의 소담한 공연에 관심이 아주 많으시다고 들었지요.” 그가 웃으면서 말합니다. “말해봐요. 어디, 지금까지 2막은 즐거우셨는지요?”</p><p class='basic right'>_꿈 6_으으로 이어집니다.</p>",
+    "dream4": "<p>_꿈 4_: 연기와 불씨가 별 하나 없는 밤하늘로 피어오릅니다. 괴물들이 불에 타며 내지르는 비명을 들으며 당신은 끔찍한 성취감에 빠져들었습니다. 저것들이 내지르는 비명이 마치 사람의 목소리처럼 들린다는 생각을 하지만… 당신은 알고 있습니다. 저들은 인간이 아님을.</p><p class='basic right'>각 조사자는 정신적 트라우마를 1씩 겪습니다. _꿈 6_으으로 이어집니다.</p>",
+    "dream5": "<p>_꿈 5_: 당신은 거울을 들여다봅니다. 거울에 비친 당신이 호기심 어린 눈으로 당신을 바라봅니다. 거울 너머의 당신이 말합니다. “잠깐, 이건 _꿈 1_이 아니야.”</p><p class='basic right'>_꿈 1_로 이어집니다.</p>",
     "dream6": {
-      "body": "<p>_Dream 6_: The lights of the theatre dim and a spotlight shines on the stage. “Welcome, ladies and gentleman!” the creature exclaims. Its many tentacles reach across the stage, up into the rafters, and throughout the aisles. It tears the curtains down, and tattered red cloth falls over its bulbous form.</p>",
-      "dream7": "<p class='basic right'>Check Campaign Log. If the police are suspicious of you, continue to _Dream 7_.</p>",
-      "dream8": "<p class='basic right'>Otherwise, continue to _Dream 8_.</p>"
+      "body": "<p>_꿈 6_: 공연장의 불빛이 어두워지고 스포트라이트가 무대 위를 비춥니다. “신사 숙녀 여러분, 환영합니다!” 괴물이 외칩니다. 괴물의 촉수 다발이 무대를 가로질러 서까래와 통로까지 쭉 뻗어나갑니다. 놈이 커튼을 찢어 내리자, 붉은 누더기 천이 펄럭이며 괴물의 둥그런 몸뚱이 위로 떨어져 내립니다.</p>",
+      "dream7": "<p class='basic right'>캠페인 기록지를 확인합니다. *경찰이 당신을 의심한다*면, _꿈 7_로 이어집니다.</p>",
+      "dream8": "<p class='basic right'>그렇지 않으면, _꿈 8_로 이어집니다.</p>"
     },
-    "dream7": "<p>_Dream 7_: You find yourself inside the Arkham Police Department, desperately trying to explain to the desk sergeant what happened in the Ward Theatre. He scoffs and refuses to believe you. “We know what you’re really up to,” he says, and claps a pair of handcuffs over your wrists. “You’re under arrest for larceny. Boys, take ‘em away.” Several other cops flank you and prevent any escape. Your protests go unheard as you are firmly escorted down a flight of concrete stairs and hurled into a cold jail cell. “Maybe some time in lockup will change your story,” the desk sergeant shouts. He slams the door behind him, leaving you with your spiraling thoughts. How did they find out? How could they possibly know?</p><p class='basic right'>Choose an investigator. The chosen investigator has earned the Paranoia weakness (*Core 97*) (does not count toward deck size).</p><p class='basic right'>Shuffle 1 copy of this weakness into that investigator’s deck, if able.</p><p class='basic right'>Continue to _Dream 8_.</p>",
+    "dream7": "<p>_꿈 7_: 어느 순간 당신은 아컴 경찰서 안에 있습니다. 당신은 와드 극장에서 일어난 사건을 안내 데스크의 경사에게 설명하려고 안간힘을 쓰는 중입니다. 그는 당신을 믿기는커녕 비웃습니다. “네가 진짜 무슨 일을 저질렀는지 다 알고 있다.” 경사가 당신의 손목에 수갑을 채우면서 말합니다. “널 절도죄로 체포한다. 이봐. 이자들을 끌고 가.” 다른 경찰들이 양옆으로 와서 당신이 달아나지 못하게 꽉 붙잡습니다. 당신은 반발했으나 그들은 들은 체도 하지 않고 콘크리트 계단 쪽으로 당신을 끌고 내려가 차가운 감방에 내던집니다. “거기 갇혀서 진짜 무슨 짓을 저질렀나 잘 생각해 보라고.” 안내 데스크의 경사가 외칩니다. 그는 문을 쾅 닫고 나갑니다. 그들이 어떻게 그걸 알아냈을까… 그게 가능하긴 한가… 이런 생각이 머릿속을 끝없이 맴돕니다.</p><p class='basic right'>조사자 한 명을 선택합니다. 그 조사자는 ‘편집증’ 약점(*기본판 97*)을 얻습니다(이 카드는 조사자의 덱 크기를 계산할 때 포함되지 않습니다).</p><p class='basic right'>가능하다면 이 약점 사본 1장을 그 조사자의 덱에 합쳐 섞습니다.</p><p class='basic right'>_꿈 8_로 이어집니다.</p>",
     "dream8": {
-      "body": "<p>_Dream 8_: You peer in the mirror, and the Stranger peers back at you. His gaze drills into your mind. The mirror shatters.</p>",
-      "dream9": "<p class='basic right'>Check Campaign Log. If there are 3 or fewer tally marks under “Chasing the Stranger,” continue to _Dream 9_.</p>",
-      "dream10": "<p class='basic right'>If there are 4 or more tally marks under “Chasing the Stranger,” continue to _Dream 10_."
+      "body": "<p>_꿈 8_: 당신은 거울을 엿봅니다. 하지만 거울에는 이방인의 모습이 비칩니다. 이방인의 시선이 당신의 정신 깊숙이 파고듭니다. 거울이 산산조각납니다.</p>",
+      "dream9": "<p class='basic right'>캠페인 기록지를 확인합니다. “이방인을 추적하다” 아래에 쳐진 빗금이 3개 이하라면, _꿈 9_로 이어집니다.</p>",
+      "dream10": "<p class='basic right'>“이방인을 추적하다” 아래에 쳐진 빗금이 4개 이상이라면, _꿈 10_로 이어집니다."
     },
-    "dream9": "<p>_Dream 9_: You chase the Stranger through dark, chilly passageways composed of hundreds of thousands of skeletal bodies. Skulls watch as you run, their mouths rattling a mocking taunt as you pass. The Stranger reaches a solid wall of bone, and is grabbed by bony hands and pulled into the wall. Their mocking laughs reach an awful crescendo.</p><p class='basic right'>Continue to _Dream 13_.</p>",
-    "dream10": "<p>_Dream 10_: You chase the Stranger up a steep staircase of broken stone, a torrent of rain crashing upon your back as you run. Lighting flashes in the distance. A vortex of swirling black clouds looms above you, threatening to swallow the world whole. The masked man dashes through a wide set of doors atop the stairs, and you follow close behind. The sound of crashing thunder is muffled as the doors close behind you. Looking up, you see a familiar depiction in stained glass. “Beautiful, is it not?” the Stranger says quietly.</p><ul><li>The investigators must decide (choose one):<ul><li>“How could any of this be beautiful to you?” Continue to _Dream 11_.</li><li>“What exactly am I looking at?” Continue to _Dream 12_.</li></ul></li></ul>",
-    "dream11": "<p>_Dream 11_: You avoid looking at the stained glass. If this vile man considers it to be beautiful, it is probably some trap meant to ensnare your mind. You clench your fist until your knuckles are white and step forward to confront the Stranger.</p><p class='basic right'>Mark one _Conviction_ in your Campaign Log. Continue to _Dream 13_.</p>",
-    "dream12": "<p>_Dream 12_: You peer up at the stained glass, curious. What is the shape of the shadow along the window? What is the meaning behind this strange design?</p><p class='basic right'>Mark one _Doubt_ in your Campaign Log. Continue to _Dream 13_.</p>",
-    "dream13": "<p>_Dream 13_: Daniel’s voice calls out to you. “They are opening the path to Carcosa.”</p><p class='basic right'>Continue to _Awakening_.</p>",
-    "awakening": "<p>_Awakening_: You awaken from your fitful dream, sweating and gagging. This cannot go on any longer. You have only one option if you are to continue your investigation. You must find Nigel Engram, director of The King in Yellow, and architect of this madness. Only he will have the answers you seek. You pack your bags and plan your trip to Paris, the City of Lights.</p>",
-    "proceedToJordansInformation": "Proceed to _Jordan’s Information_.",
-    "otherwise": "Otherwise, skip to _게임 준비_.",
-    "jordansInformation": "<p>_Jordan’s Information_: According to Mr. Jordan Perry, who had financed several performances of The King in Yellow across the world, Nigel Engram was an eccentric and impassioned man, almost to the point of mania. Rumor was, he hadn’t directed any other works since discovering The King in Yellow. Jordan had first met with Mr. Engram at a café in Montparnasse, “L’agneau Perdu.” You travel there first, hoping to find Mr. Engram...</p><ul><li>Each investigator begins the game with 3 additional resources. Instead of the normal starting location, each investigator begins play at Montparnasse.</li></ul><p class='basic right'>_게임 준비_로 이어집니다.</p>"
+    "dream9": "<p>_꿈 9_: 당신은 어둡고 차가운 통로를 지나며 이방인을 뒤쫓고 있습니다. 그곳은 수백 수천의 뼈로 만들어진 굴입니다. 해골은 당신이 내달리는 것을 보고 있다가, 그 앞을 지나칠 때 부르르 떨면서 조롱과 악담을 퍼붓습니다. 뼈를 쌓아 만든 벽에 이방인이 닿자, 뼈다귀 손 무더기가 이방인을 움켜쥐고 벽 안으로 끌어당깁니다. 해골이 조롱하듯 웃는 소리가 끔찍하게도 점점 커집니다.</p><p class='basic right'>_꿈 13_으로 이어집니다.</p>",
+    "dream10": "<p>_꿈 10_: 당신은 다 부서지고 가파른 돌층계를 올라 이방인을 추격합니다. 달려나가는 당신의 등으로 빗줄기가 퍼붓습니다. 저 멀리서 번개가 번쩍이고, 머리 위로는 시커먼 구름이 소용돌이처럼 휘몰아치며 온 세상을 모조리 집어삼킬 듯이 일렁입니다. 가면을 쓴 남자는 계단 꼭대기에 있는 일련의 널따란 문들을 지나치며 돌진했고 당신은 그를 바짝 뒤쫓습니다. 등 뒤로 문이 닫히고, 천둥이 바스라지는 소리가 먹먹하게 들립니다. 올려다본 스테인드글라스에 묘사된 모습이 눈에 익습니다. “아름답지 않나?” 이방인이 나지막이 말합니다.</p><ul><li>조사자들은 둘 중 하나를 결정해야 합니다:<ul><li>*“이게 대체 어디가 아름답다는 거지?”* _꿈 11_로 이어집니다.</li><li>*“내가 지금 뭘 보고 있는 거지?”* _꿈 12_로 이어집니다.</li></ul></li></ul>",
+    "dream11": "<p>_꿈 11_: 당신은 스테인드글라스에서 눈을 돌립니다. 이 사악한 자가 저걸 아름답다고 생각하는 걸 보니, 저건 분명 당신의 정신을 사로잡기 위한 덫일 겁니다. 당신은 손에 핏기가 사라질 만큼 주먹을 꽉 쥔 채로 이방인에게 맞서기 위해 앞으로 나아갑니다.</p><p class='basic right'>캠페인 기록지에 _믿음_ 하나를 표시합니다. _꿈 13_으로 이어집니다.</p>",
+    "dream12": "<p>_꿈 12_: 당신은 호기심에 스테인드글라스를 올려다봅니다. 창을 따라 난 그림자의 정체는 무엇일까요? 스테인드글라스의 특이한 모양에는 숨은 의미가 있는 걸까요?</p><p class='basic right'>캠페인 기록지에 _의심_ 하나를 표시합니다. _꿈 13_으로 이어집니다.</p>",
+    "dream13": "<p>_꿈 13_: 대니얼의 목소리가 당신을 부릅니다. “그들은 카르코사로 가는 길을 열려고 해.”</p><p class='basic right'>_깨어남_으로 이어집니다.</p>",
+    "awakening": "<p>_Awakening_: 당신은 땀에 흠뻑 젖어 캑캑거리면서 번잡한 꿈에서 깨어납니다. 더는 견딜 수가 없습니다. 조사를 계속하기 위해서 남은 선택지는 단 하나, 『황색의 왕』의 감독 나이젤 잉그램을 찾는 것입니다. 잉그램이 이 모든 광기를 설계했을 테니, 당신이 찾는 해답도 갖고 있을 터입니다. 당신은 짐가방을 챙겨 빛의 도시 파리로 향합니다.</p>",
+    "proceedToJordansInformation": "_조던이 준 정보_로 이어집니다.",
+    "otherwise": "그렇지 않으면, _게임 준비_로 건너뜁니다.",
+    "jordansInformation": "<p>_조던이 준 정보_: 세계 각지에서 몇 차례 상연된 『황색의 왕』에 자금을 댄 적이 있는 조던 페리 씨의 말에 따르면, 나이젤 잉그램은 괴짜인 것은 물론이고 극성이라고 해도 과언이 아닐 만큼 열정적인 인물입니다. 소문에 따르면 그는 『황색의 왕』을 발견한 이후로는 다른 작품은 전혀 손대지 않는다고 합니다. 조던은 몽파르나스에 있는 카페 “라뇨 페르뒤(길 잃은 어린 양)”에서 잉그램을 처음 만났습니다. 당신은 잉그램을 찾을 수 있길 바라며 제일 먼저 그곳으로 향하기로 합니다…</p><ul><li>모든 조사자는 추가로 자원을 3개씩 더 갖고서 게임을 시작합니다. 그리고, 모든 조사자는 일반적인 시작 장소 대신 ‘몽파르나스’에서 시작합니다.</li></ul><p class='basic right'>_게임 준비_로 이어집니다.</p>"
   },
   "setup": {
-    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *A Phantom of Truth*, *Evil Portents*, *Byakhee*, *The Stranger*, *Agents of Hastur*, and *The Midnight Masks*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/a-phantom-of-truth.png' /><img src='{setImgPath}/evil-portents.png' /><img src='{setImgPath}/byakhee.png' /><img src='{setImgPath}/the-stranger.png' /><img src='{setImgPath}/agents-of-hastur.png' /><img src='{setImgPath}/midnight-masks.png' /></section>When gathering *The Midnight Masks* encounter set, only gather the 5 treachery cards (2x False Lead and 3x Hunting Shadow). Do not gather the location, act, agenda, or scenario reference cards from that set.",
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *진실의 망령*, *악의 전조*, *비야키*, *이방인*, *하스터의 권속*, *한밤의 가면*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/a-phantom-of-truth.png' /><img src='{setImgPath}/evil-portents.png' /><img src='{setImgPath}/byakhee.png' /><img src='{setImgPath}/the-stranger.png' /><img src='{setImgPath}/agents-of-hastur.png' /><img src='{setImgPath}/midnight-masks.png' /></section>*한밤의 가면* 조우 세트의 카드를 모을 때, 해당 조우 세트에서 오직 음모 카드 5장만(‘수사가 난항에 빠지다’ 사본 2장, ‘추적해오는 그림자’ 사본 3장) 모읍니다. *한밤의 가면* 조우 세트에 속한 그 외의 다른 카드(장소, 주요목적, 주요사건, 시나리오 참조 카드)는 모으지 않습니다.",
     "doubt": {
-      "instructions": "캠페인 기록지를 확인합니다. you have more (or equal) _Doubt_ than _Conviction_:",
-      "remove": "Search the gathered encounter sets for both copies of Twin Suns and all 3 copies of Hunting Shadow, and remove them from the game.",
-      "act": "During this scenario, use Act 1—The Parisian Conspiracy (v. I). The other version of Act 1 is removed from the game."
+      "instructions": "캠페인 기록지를 확인합니다. _의심_이 _믿음_보다 많거나 같다면:",
+      "remove": "모아온 조우 세트에서 ‘두 개의 태양’ 사본 2장과 ‘추적해오는 그림자’ 사본 3장을 찾아와 게임에서 제거합니다.",
+      "act": "이번 시나리오 동안, 주요목적 1 – ‘파리에서의 음모(v.I)’를 사용합니다. 다른 주요목적 1 카드는 게임에서 제거합니다."
     },
     "conviction": {
-      "instructions": "If you have more _Conviction_ than _Doubt_:",
-      "remove": "Search the gathered encounter sets for both copies of Black Stars Rise and both copies of False Lead, and remove them from the game.",
-      "act": "During this scenario, use Act 1—The Parisian Conspiracy (v. II). The other version of Act 1 is removed from the game."
+      "instructions": "_믿음_이 _의심_보다 많다면:",
+      "remove": "모아온 조우 세트에서 ‘검은 별이 떠오르다’ 사본 2장과 ‘수사가 난항에 빠지다’ 사본 2장을 찾아와 게임에서 제거합니다.",
+      "act": "이번 시나리오 동안, 주요목적 1 – ‘파리에서의 음모(v.II)’를 사용합니다. 다른 주요목적 1 카드는 게임에서 제거합니다."
     },
-    "chooseLocations": "Choose one of the two Montmartre locations, one of the two Opéra Garnier locations, and one of the two Le Marais locations, at random. Put the chosen locations into play. Remove the other versions of those locations from the game.",
-    "placeLocations": "Put the remaining locations (Montparnasse, Gare d’Orsay, Grand Guignol, Canal Saint-Martin, Père Lachaise Cemetery, Notre-Dame, and Gardens of Luxembourg) into play. (See below for suggested placement.) Each investigator begins play at Gare d’Orsay.",
-    "setAside": "Set the double-sided The Organist enemy aside, out of play.",
-    "lostSoul": "If there are any remaining copies of the Lost Soul weakness, set them aside, out of play."
+    "chooseLocations": "‘몽마르트르’ 장소 2장 중 1장, ‘오페라 가르니에’ 장소 2장 중 1장, ‘르 마레’ 장소 2장 중 1장을 무작위로 선택하여 플레이 영역에 둡니다. 선택하지 않은 ‘몽마르트르’, ‘오페라 가르니에’, ‘르 마레’ 장소는 게임에서 제거합니다.",
+    "placeLocations": "나머지 장소(‘몽파르나스’, ‘오르세 역’, ‘그랑 기뇰’, ‘생 마르탱 운하’, ‘페르 라셰즈 공동묘지’, ‘노트르담’, ‘뤽상부르 공원’)를 모두 플레이 영역에 둡니다(추천 장소 배치를 참조하여 놓습니다). 모든 조사자는 ‘오르세 역’에서 시작합니다.",
+    "setAside": "‘오르간 연주자’ 양면 적 카드를 비플레이 상태로 치워 둡니다.",
+    "lostSoul": "‘잃어버린 영혼’ 약점 카드가 남아 있다면, 비플레이 상태로 치워 둡니다."
   },
   "resolutions": {
     "xp": {
-      "bonus": "Gained insight into the machinations of the Tattered King."
+      "bonus": "누더기 왕의 음모에 대한 통찰력을 얻음."
     },
     "noResolution": {
       "title": "결말에 도달하지 못함",
-      "body": "<div class='resolution'><p>_아무 결말에도 도달하지 못했다면(모든 조사자가 후퇴하거나 쓰러졌다면)_: You lose track of yourself within the city as you flee for your life. Your feet move of their own accord. The beating of sinewy wings and screeching of creatures above you spurs you onward. Soon you find yourself running down a narrow avenue, passing a set of heavy iron gates. You are in a dead end—a court with tall, old houses on either side. You turn back toward the entrance to find the shapes of many winged creatures barring your path. They are perched on the gates and on the balconies above, awaiting your doom. Walking with cold, sinister confidence, the man in black opens the iron gate and enters the court. His face gleams in the darkness. His eyes pierce your soul. For a moment, you recognize him for what he truly is. It is the last you remember of that night.</p><ul><li>Record in your Campaign Log that *you did not escape the gaze of the phantom*.</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}elderThing{'}'} tokens to the chaos bag.</li><li>If Jordan Perry (*An Imposing Presence*) is in the victory display, record his name in your Campaign Log, under “VIPs Slain.”</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
+      "body": "<div class='resolution'><p>_아무 결말에도 도달하지 못했다면(모든 조사자가 후퇴하거나 쓰러졌다면)_: 당신은 목숨을 부지하기 위해서 파리 도심을 가로질러 달아나다 길을 잃었습니다. 머리 위에서 들리는 괴물의 격한 날갯짓과 날카로운 비명 때문에 걸음은 한층 더 다급해 집니다. 얼마 지나지 않아, 좁은 골목을 내달려 육중한 철 대문 몇 개를 지나고 나니 마침내 좌우에 높고 오래된 대저택이 솟은 막다른 길에 이르렀습니다. 왔던 길로 돌아서니 날개 달린 괴물 몇 마리가 당신의 앞을 막아서서는 대문 위와 그 너머의 발코니에 앉아 당신의 최후를 기다리고 있습니다. 검은 옷을 입은 남자가 싸늘하고 사악하며 자신감에 찬 얼굴로 철 대문을 열고 안뜰로 들어옵니다. 어둠 속에서도 창백한 그 얼굴이 빛납니다. 그의 눈이 당신의 영혼을 꿰뚫습니다. 한순간, 당신은 그의 진정한 정체를 간파했습니다. 그것이 그날 밤 당신의 마지막 기억입니다.</p><ul><li>캠페인 기록지에 *망령의 응시에서 벗어나지 못했다*라고 기록합니다.</li><li>혼돈 주머니에 {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} 토큰을 모두 제거합니다. 그런 다음, 혼돈 주머니에 {'{'}elderThing{'}'} 토큰을 2개 추가합니다.</li><li>승점 더미에 ‘조던 페리(*어마어마한 거구*)’가 있다면, 캠페인 기록지의 “살해당한 VIP”에 ‘조던 페리’를 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     },
     "resolution1": {
       "title": "결말 1",
-      "body": "<div class='resolution'><p>_결말 1_: You can only assume this house belongs to Nigel Engram, the director of The King in Yellow. At last, you have finally found your quarry…and yet, it is little relief to your straining sanity. You feel like a dog being led by a leash, your fate decided by a cruel master who has long kept you in the dark. You push these gloomy thoughts to the back of your mind and knock on Mr. Engram’s door. There is no response but a flock of magpies that scatter from the rooftop at the sudden noise. You try the doorknob, hoping you won’t have to resort to more forceful measures. To your surprise, you find the door unlocked.</p><p>Inside, Nigel’s home is a mess of notes, old books, and strange diagrams. Covering the coffee table in his living room is an old, faded map, bearing many fold creases and tattered edges. It looks to be an incomplete map of the catacombs beneath Paris, or at least a section of it. The food in his pantry is old and rotten. There is no sign of anyone having lived here for years, and yet the ink upon the living room walls is wet and fresh. Over and over, across nearly every inch of the wallpaper, it reads:</p><p class='wolgast'>He is already here.</p><ul>Record in your Campaign Log that *you found Nigel’s home*.</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}cultist{'}'} tokens to the chaos bag.</li><li>If Jordan Perry (*An Imposing Presence*) is in the victory display, record his name in your Campaign Log, under “VIPs Slain.”</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
+      "body": "<div class='resolution'><p>_결말 1_: 이곳이 『황색의 왕』의 감독인 나이젤 잉그램의 집이 확실합니다. 마침내 사흘 밤에 걸친 추적이 결실을 거둔 겁니다… 그렇다고 해서 그리 쉽게 긴장감을 누그러뜨릴 순 없습니다. 당신은 목줄이 매여 끌려가는 개처럼, 당신을 어둠 속에 늘 가두어 두었던 잔혹한 주인이 당신의 운명마저 결정짓는 것처럼 느껴집니다. 당신은 이 우울한 생각을 꾹꾹 눌러 삼키고 잉그램 씨의 집 문을 두드립니다. 그러나 대답은 들려오지 않고, 그 대신 지붕 위에 앉은 까치 떼가 갑작스러운 소리에 놀라 사방으로 흩어집니다. 무력을 쓰는 일 없이 해결되길 바라며 손잡이를 돌려보지만, 놀랍게도 문은 잠겨있지 않습니다.</p><p>안으로 들어가 보니 나이젤의 집 안은 기록물과 낡은 책, 기이한 그림 등으로 엉망진창입니다. 거실의 커피 테이블 위에는 낡고 빛바랜 지도가 펼쳐져 있는데, 접힌 자국투성이에 모서리는 너덜너덜합니다. 아무래도 파리 지하에 있는 카타콤의 미완성 지도 내지는 어느 일부 구역의 지도인 듯합니다. 식료품 창고에서 음식 썩는 냄새가 진동하는 걸 보아, 여기에 누군가가 살았던 지는 이미 몇 년이나 지난 듯합니다. 하지만 거실 벽에 선명하게 새겨진 글씨는 최근에 잉크로 칠한 것처럼 축축합니다. 벽지 위에 아주 촘촘하게 똑같은 문장이 여러 번 반복되어 적혀 있습니다.</p><p class='wolgast'>“그가 이미 여기 있다.”</p><ul>캠페인 기록지에 *나이젤의 집을 찾았다*라고 기록합니다.</li><li>혼돈 주머니에 {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} 토큰을 모두 제거합니다. 그런 다음, 혼돈 주머니에 {'{'}cultist{'}'} 토큰을 2개 추가합니다.</li><li>승점 더미에 ‘조던 페리(*어마어마한 거구*)’가 있다면, 캠페인 기록지의 “살해당한 VIP”에 ‘조던 페리’를 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     },
     "resolution2": {
       "title": "결말 2",
-      "body": "<div class='resolution'><p>_결말 2_: You can only assume this house belongs to Nigel Engram, the director of The King in Yellow. At last, you have finally found your quarry…and yet, it is little relief to your straining sanity. You feel like a dog being led by a leash, your fate decided by a cruel master who has long kept you in the dark. You push these gloomy thoughts to the back of your mind and knock on Mr. Engram’s door. A flock of magpies scatters from the rooftop at the sudden noise. Then, to your surprise, the door opens.</p><p>Across the threshold of the doorway stands a tall man with a thick, brown mustache. A familiar silver-handled cane leans against the wall next to his coat hanger. “So it’s you,” he says. “Come in. I have expected you for some time now.” He turns away and walks toward his kitchen. You can hear a teapot whistling, as though he’d been preparing for your arrival.</p><p>You enter his home, unsure of what to do next. This gentle, unassuming man is not quite what you had expected. Nigel’s home is a mess of notes, old books, and strange diagrams. Covering the coffee table in his living room is an old, faded map, bearing many fold creases and tattered edges. It looks to be an incomplete map of the catacombs beneath Paris, or at least a section of it. Mr. Engram returns moments later with hot tea and a plate of cheese and crackers. “I assume you are here to find the path to Carcosa?” he asks, wearing an excited grin. You shake your head in response, but he doesn’t seem to notice. He paces back and forth around the room as he speaks rapidly. “He told me that you would be arriving soon. That I should… Prepare.” Nigel turns toward you as he reaches the wooden door across from you, his eyes flashing. “Don’t worry. All is ready. The way is paved.” He opens the door to his study and steps inside, leaving you behind to interpret his cryptic comments. You wait a few minutes for him to return, but when he does not, you begin to worry. Then you notice that mold has already begun to grow over the cheese he’d brought you. “Mr. Engram?” you call out, and you hesitantly knock on the door to his study. There is no response. When you enter the room, you find him hanging from the ceiling fan, his body rotting from weeks of decomposition.</p><ul><li>Record in your Campaign Log that *you found Nigel Engram*. Each investigator suffers 1 mental trauma from the shock of their discovery. Each investigator earns 2 additional experience as they gain insight into the machinations of the Tattered King.</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}tablet{'}'} tokens to the chaos bag.</li><li>If Jordan Perry (*An Imposing Presence*) is in the victory display, record his name in your Campaign Log, under “VIPs Slain.”</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
+      "body": "<div class='resolution'><p>_결말 2_: 이곳이 『황색의 왕』의 감독인 나이젤 잉그램의 집이 확실합니다. 마침내 사흘 밤에 걸친 추적이 결실을 거둔 겁니다… 그렇다고 해서 그리 쉽게 긴장감을 누그러뜨릴 순 없습니다. 당신은 목줄이 매여 끌려가는 개처럼, 당신을 어둠 속에 늘 가두어 두었던 잔혹한 주인이 당신의 운명마저 결정짓는 것처럼 느껴집니다. 당신은 이 우울한 생각을 꾹꾹 눌러 삼키고 나이젤의 집 문을 두드립니다. 그러자 지붕 위에 앉은 까치 떼가 갑작스러운 소리에 놀라 사방으로 흩어집니다. 그러더니 놀랍게도 문이 열립니다.</p><p>갈색 콧수염을 촘촘히 기른 키 큰 남자가 현관 문턱에서 맞이합니다. 옷걸이 옆 벽에는 낯익은 은제 손잡이 지팡이가 기대어 있습니다. “아, 당신이군요. 들어오세요. 지금쯤 올 거라 예상했습니다.” 그가 돌아서서 부엌으로 걸어갑니다. 찻주전자가 끓어오르는 소리로 보아하니 나이젤은 정말로 당신이 도착할 것을 미리 알고서 준비한 듯합니다.</p><p>찾아 헤매던 나이젤 잉그램의 점잖고도 겸손한 모습은 당신이 상상하던 것과 크게 달랐습니다. 당신은 뭘 어떡해야 할지 모르는 채 잉그램을 따 라 안으로 들어갔습니다. 집 안은 기록물과 낡은 책, 기이한 그림 등으로 엉망진창입니다. 거실의 커피 테이블 위에는 낡고 빛바랜 지도가 펼쳐져 있는데, 접힌 자국투성이에 모서리는 너덜너덜합니다. 아무래도 파리 지하에 있는 카타콤의 미완성 지도 내지는 어느 일부 구역의 지도인 듯합니다. 잉그램은 잠시 후 치즈와 과자를 담은 접시와 함께 따뜻한 차를 가지고 돌아옵니다. “카르코사로 가는 길을 찾아서 여기까지 온 거겠죠?” 그가 흥미로운 듯 웃으면서 묻습니다. 당신은 대답 대신 고개를 저었으나, 그는 당신의 대답에는 별 관심이 없는 듯 방을 왔다갔다하면서 다급히 말합니다. “그는 당신들이 곧 도착할 거라고 했습니다. 그러니까 절 보고… 준비하라고요.” 맞은편 문으로 걸어가 돌아서는 나이젤의 눈에 안광이 서립니다. “걱정 말아요. 다 준비해 두었으니까요. 길도 잘 닦아 놓았습니다.” 나이젤은 서재 문을 열고 들어갔고, 당신은 거실에 앉아 수수께끼 같은 나이젤의 마지막 말을 곰곰이 해석해 봅니다. 그가 돌아오길 몇 분간 기다렸지만 그는 돌아올 기미가 보이지 않았습니다. 걱정스러운 마음이 들 즈음 당신은 그가 가져온 치즈에 이미 곰팡이가 자라기 시작했음을 알아차렸습니다. “잉그램 씨?” 당신은 그를 부르면서 서재 문을 다급히 두드렸으나 대답이 없습니다. 방 안에 들어서자 천장 선풍기에 목을 매단 나이젤이 보입니다. 그의 시신은 이미 썩은 지 몇 주는 지난 상태입니다.</p><ul><li>캠페인 기록지에 *나이젤 잉그램을 찾았다*라고 기록합니다. 각 조사자는 정신적 트라우마를 1씩 겪습니다. 그들이 발견한 사실에 충격을 받았기 때문입니다. 각 조사자는 누더기 왕의 음모에 대한 통찰력을 얻었기 때문에, 경험치를 추가로 2씩 얻습니다.</li><li>혼돈 주머니에 {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} 토큰을 모두 제거합니다. 그런 다음, 혼돈 주머니에 {'{'}tablet{'}'} 토큰을 2개 추가합니다.</li><li>승점 더미에 ‘조던 페리(*어마어마한 거구*)’가 있다면, 캠페인 기록지의 “살해당한 VIP”에 ‘조던 페리’를 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     },
     "resolution3": {
       "title": "결말 3",
-      "body": "<div class='resolution'><p>_결말 3_: As the sun rises once more over the skyline of Paris, you lose sight of the mysterious figure. Frustrated at your failure, you return to your hotel to sleep and recover from the horrors of the past few nights. Your fitful dreams return— dreams of Carcosa, of the King in Tatters, and of the shadowy figure whom you had pursued through the streets of Paris. When you awaken, you are no longer in your hotel room. Æ Æ Record in your Campaign Log that you were unable to find Nigel.</p><ul><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}elderThing{'}'} tokens to the chaos bag.</li><li>If Jordan Perry (*An Imposing Presence*) is in the victory display, record his name in your Campaign Log, under “VIPs Slain.”</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
+      "body": "<div class='resolution'><p>_결말 3_: 파리의 지평선 위로 해는 다시금 떠올랐고, 그 불가사의한 인물은 사라져 버렸습니다. 실패로 인한 좌절감에 빠진 당신은 호텔로 돌아가 지난 며칠 밤 동안 겪은 무시무시한 일들을 조금이라도 잊기 위해 잠을 청했습니다. 그 혼란스러운 꿈은 또 다시 되풀이되었습니다. 카르코사, 누더기를 걸친 왕, 그리고 파리의 거리에서 당신이 뒤쫓았던 어두운 인영… 꿈에서 깨어나 보니, 당신이 있는 곳은 호텔 방이 아닙니다.</p><ul><li>캠페인 기록지에 *나이젤을 찾지 못했다*라고 기록합니다.</p><ul><li>혼돈 주머니에 {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} 토큰을 모두 제거합니다. 그런 다음, 혼돈 주머니에 {'{'}elderThing{'}'} 토큰을 2개 추가합니다.</li><li>승점 더미에 ‘조던 페리(*어마어마한 거구*)’가 있다면, 캠페인 기록지의 “살해당한 VIP”에 ‘조던 페리’를 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     }
   }
 }

@@ -1,7 +1,7 @@
 {
   "intro": {
     "title": "Scenario III: City of the Elder Things",
-    "body": "<p>_Intro_: Even with the knowledge afforded to you by Dyer’s report, you find yourself wholly unprepared for the terrible vastness of the blasphemous city at the heart of Antarctica, and its alien inscrutability. Massive towers, temples, bridges, and pyramids dot the broad landscape. In the ineluctable light of dawn, the nameless maze of cyclopean structures and angular blocks extends for miles in every direction, unmistakably real and yet impossible to believe. It is truly a wonder of the world.</p>"
+    "body": "<p>_도입부_: Even with the knowledge afforded to you by Dyer’s report, you find yourself wholly unprepared for the terrible vastness of the blasphemous city at the heart of Antarctica, and its alien inscrutability. Massive towers, temples, bridges, and pyramids dot the broad landscape. In the ineluctable light of dawn, the nameless maze of cyclopean structures and angular blocks extends for miles in every direction, unmistakably real and yet impossible to believe. It is truly a wonder of the world.</p>"
   },
   "sinha": {
     "alive": "<p>_If Dr. Mala Sinha is alive:_</p><p>“Remember, stay covered at all times. Where we are headed, the wind can flash freeze your skin almost instantly. And stay hydrated,” Dr. Sinha reminds you. “The air here is dryer than you think.” The remainder of the party nods in understanding. None of you have come this far just to catch hypothermia…but it’s almost as likely as death by anything else in this damnable place.<p class='basic'>The investigators suffer no ill effects.</p>",
@@ -50,7 +50,7 @@
   "resolutions": {
     "noResolution": {
       "title": "결말에 도달하지 못함",
-      "body": "<div class='resolution'><p>_If no resolution was reached (each investigator was defeated)_: Injured and weary, you hole up in the relative safety of one of the city’s towering structures. Your only hope is to take shelter within the alien city and hope your presence goes unnoticed by the denizens that still prowl its streets and ancient halls.</p><ul><li>Proceed to Resolution 2.</li></ul></div>"
+      "body": "<div class='resolution'><p>_아무 결말에도 도달하지 못했다면(모든 조사자가 쓰러졌다면)_: Injured and weary, you hole up in the relative safety of one of the city’s towering structures. Your only hope is to take shelter within the alien city and hope your presence goes unnoticed by the denizens that still prowl its streets and ancient halls.</p><ul><li>Proceed to Resolution 2.</li></ul></div>"
     },
     "resolution1": {
       "title": "결말 1",

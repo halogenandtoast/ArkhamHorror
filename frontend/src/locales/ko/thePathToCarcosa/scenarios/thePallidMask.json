@@ -1,65 +1,65 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the number of locations away from the starting location you are (max 5).",
-      "cultist": "-2. If this token is revealed during an attack, and this skill test is successful, this attack deals 1 less damage.",
-      "tablet": "-2. If there is a ready _Ghoul_ or _Geist_ enemy at your location, it attacks you (if there is more than one, choose one).",
-      "elderThing": "-3. If you fail, search the encounter deck and discard pile for a _Ghoul_ or _Geist_ enemy and draw it."
+      "skull": "-X. X는 당신이 위치한 장소와 시작 장소 사이의 거리입니다(몇 칸 떨어져 있는 지를 의미, X는 최대 5).",
+      "cultist": "-2. 공격 도중에 이 토큰을 공개했고 이번 능력 테스트에 성공했다면, 이번 공격은 피해를 1 적게 줍니다.",
+      "tablet": "-2. 당신이 위치한 장소에 준비 상태인 _구울_ 또는 _유령_ 적이 있다면, 그 적이 당신을 공격합니다(*그러한 적이 둘 이상 있다면, 그 중 하나를 선택하여 그 적만 공격합니다*).",
+      "elderThing": "-3. 실패하면, 조우 덱과 버린 조우 카드 더미에서 _구울_ 또는 _유령_ 적 하나를 뽑습니다."
     },
     "hardExpert": {
-      "skull": "-X. X is the number of locations away from the starting location you are.",
-      "cultist": "-3. If this token is revealed during an attack and this skill test is successful, this attack deals no damage.",
-      "tablet": "-3. If there is a _Ghoul_ or _Geist_ enemy at your location, it readies and attacks you (if there is more than one, choose one).",
-      "elderThing": "-4. If you fail, search the encounter deck and discard pile for a _Ghoul_ or _Geist_ enemy and draw it."
+      "skull": "-X. X는 당신이 위치한 장소와 시작 장소 사이의 거리입니다(몇 칸 떨어져 있는 지를 의미).",
+      "cultist": "-3. 공격 도중에 이 토큰을 공개했고 이번 능력 테스트에 성공했다면, 이번 공격은 피해를 주지 않습니다.",
+      "tablet": "-3. 당신이 위치한 장소에 _구울_ 또는 _유령_ 적이 있다면, 그 적이 당신을 공격합니다(*그러한 적이 둘 이상 있다면, 그 중 하나를 선택하여 그 적만 공격합니다*).",
+      "elderThing": "-4. 실패하면, 조우 덱과 버린 조우 카드 더미에서 _구울_ 또는 _유령_ 적 하나를 찾아서 뽑습니다."
     }
   },
   "label": {
-    "above": "Place Above",
-    "below": "Place Below",
-    "right": "Place to the Right",
-    "left": "Place to the Left"
+    "above": "위쪽에 배치",
+    "below": "아래쪽에 배치",
+    "right": "오른쪽에 배치",
+    "left": "왼쪽에 배치"
   },
   "intro": {
-    "title": "Scenario VI: The Pallid Mask",
-    "readIntro1": "Check Campaign Log. *If you did not escape the gaze of the phantom*, or *if you were unable to find Nigel*: Read _Intro 1_.",
-    "readIntro2": "*If you found Nigel’s abode*, or *if you found Nigel Engram*, skip to _Intro 2_.",
-    "intro1": "<p>_Intro 1_: You are stirred awake by dirty, stale air and dust in your throat. You are lying on a slab of cold stone inside a lightless underground passageway. How did you get here? And where is “here” exactly? A shiver courses up your body, and your hair stands on end. Rising to your feet, you take stock of your surroundings. Bones decorate the walls and ceiling around you, open-mouthed skulls peering back at you everywhere you look.</p><ul><li>Record in your Campaign Log that *you awoke inside the catacombs*.</li></ul>",
-    "intro2": "<p>_Intro 2_: The contents of Nigel Engram’s home answer none of your questions about The King in Yellow, but do hint at where you should head next. The old, tattered map you found on his coffee table depicts a section of the infamous Catacombs of Paris. One particular room on the map has been circled with pen, and next to it is written: “The key to opening the Path lies here!” You swallow your fear and head immediately for the entrance to the catacombs underneath Rue de la Tombe‑Issoire.</p><ul><li>Record in your Campaign Log that *you entered the catacombs on your own*.</li></ul>",
-    "proceedToHarukosInformation": "Proceed to _Haruko’s Information_.",
-    "otherwise": "Otherwise, skip to _게임 준비_.",
-    "harukosInformation": "<p>_Haruko’s Information_: Just past the archway closest to you, you see a familiar symbol etched into the skull of a sheep: rows of concentric semicircles, lined with exotic runes. Two wavy lines descend from the design, leading into the skull’s lower jawbone. You recognize it as the pattern Haruko had shown you. Wondering why it would appear here, you examine the skull in greater detail. As soon as you touch the underside of the skull’s jawbone, its mouth suddenly opens. Bones collapse to the ground as the wall slides to reveal a new path.</p><ul><li>Remember that “you opened a secret passageway.”</li></ul><p class='basic right'>_게임 준비_로 이어집니다.</p>"
+    "title": "시나리오 VI: 창백한 가면",
+    "readIntro1": "캠페인 기록지를 확인합니다. *망령의 응시에 벗어나지 못했다*면, (또는) *나이젤을 찾지 못했다*면: _도입부 1_을 읽습니다.",
+    "readIntro2": "*나이젤의 집을 찾았다*면, (또는) *나이젤 잉그렘을 찾았다*면, _도입부 2_로 건너뜁니다.",
+    "intro1": "<p>_도입부 1_: 목으로 파고드는 더럽고 퀴퀴한 공기를 느끼면서 정신을 차립니다. 당신이 누워 있는 곳은 빛 하나 없는 지하 복도의 차가운 돌바닥 위입니다. 어떻게 여기에 오게 된 걸까요? 그리고 “여기”는 도대체 어디일까요? 온몸에 한기가 돌고 털이 곤두섭니다. 당신은 자리에서 일어나 주변을 살펴봅니다. 벽과 천장은 뼈로 뒤덮여 있고, 어느 쪽으로 고개를 돌리든 입을 벌린 해골이 당신을 뚫어져라 바라보고 있습니다.</p><ul><li>캠페인 기록지에 *정신을 차려보니 카타콤 안이었다*라고 기록합니다.</li></ul>",
+    "intro2": "<p>_도입부 2_: 비록 나이젤 잉그램의 집에서 『황색의 왕』과 관련된 의문의 해답을 구하진 못했지만, 어디로 향해야 할지 힌트는 얻었습니다. 커피 테이블 위에서 발견한 낡고 해진 지도에는 파리의 악명 높은 카타콤의 한 구획이 그려져 있습니다. 또한 지도에 표시된 여러 방 중 한 곳에 동그라미가 쳐져 있고, 그 옆에는 “길을 여는 열쇠가 여기에 있다!”라는 글이 휘갈겨져 있습니다. 당신은 두려움을 씹어삼키고 뤼 드 라 통비수와르에 있는 입구로 향합니다.</p><ul><li>캠페인 기록지에 *제 발로 카타콤에 들어갔다*라고 기록합니다.</li></ul>",
+    "proceedToHarukosInformation": "_하루코가 준 정보_로 이어집니다.",
+    "otherwise": "그렇지 않으면 _게임 준비_로 건너뜁니다.",
+    "harukosInformation": "<p>_하루코가 준 정보_: 가장 가까운 아치길을 지나던 도중, 당신은 양의 두개골에 익숙한 문양이 각인된 것을 발견했습니다. 그 문양은 특이한 룬 문자를 반동심원 모양으로 일렬로 적은 것으로, 물결 모양의 선 두 개가 저 문양 그림에서 내려와 두개골의 아래턱뼈로 이어져 있습니다. 바로 하루코가 당신에게 보여준 문양입니다. 이게 왜 여기에 있는 건지 의아해하며 좀 더 상세히 두개골을 살펴봅니다. 당신이 두개골의 아래턱을 건드리는 순간 갑자기 두개골의 입이 벌어집니다. 그와 함께 뼈로 된 벽이 땅으로 무너져 내려 새로운 길이 드러납니다.</p><ul><li>“비밀 통로를 열었다”라고 기억합니다.</li></ul><p class='basic right'>_게임 준비_로 이어집니다.</p>"
   },
   "setup": {
-    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *The Pallid Mask*, *Ghouls*, *Hauntings*, and *으스스한 한기**. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/the-pallid-mask.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/hauntings.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
-    "setAside": "Find the Tomb of Shadows and the Blocked Passage (each one is the revealed side of a Catacombs location). Set them aside, out of play.",
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *창백한 가면*, *구울*, *심령현상*, *으스스한 한기*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/the-pallid-mask.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/hauntings.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
+    "setAside": "조우 세트에서 ‘그림자의 무덤’과 ‘막다른 통로’를 찾습니다(이 두 카드는 ‘카타콤’ 장소의 공개면입니다). 두 카드를 비플레이 상태로 치워 둡니다.",
     "start": {
-      "instructions": "Check Campaign Log.",
-      "awoke": "*If you awoke inside the catacombs*: Put a random Catacombs location (other than the set-aside Tomb of Shadows or Blocked Passage) into play, Catacombs side faceup. For the remainder of the scenario, that location is referred to as “the starting location.” Place a resource token on this location to mark it as the starting location. _Do not place investigators here yet_.",
-      "entered": "*If you entered the catacombs on your own*: Find The Gate to Hell (it is the revealed side of a Catacombs location). Put The Gate to Hell into play, Catacombs side faceup. For the remainder of the scenario, The Gate to Hell is referred to as “the starting location.” Place a resource token on The Gate to Hell to mark it as the starting location. _Do not place investigators here yet_."
+      "instructions": "캠페인 기록지를 확인합니다.",
+      "awoke": "*정신을 차려보니 카타콤 안이었다*면: (치워 두었던 ‘그림자의 무덤’과 ‘막다른 통로’를 제외하고) 무작위 ‘카타콤’ 장소 1장을 플레이 영역에 ‘카타콤’ 면으로 놓습니다. 시나리오가 끝날 때까지, 이 장소를 “시작 장소”라고 부릅니다. 자원을 1개 올려놓아서 이곳이 시작 장소임을 표시합니다. _아직은 조사자를 시작 장소에 놓지 않습니다_.",
+      "entered": "*제 발로 카타콤에 들어갔다*면: ‘지옥문’(‘카타콤’ 장소의 공개면입니다)을 플레이 영역에 ‘카타콤’ 면으로 놓습니다. 시나리오가 끝날 때까지, ‘지옥문’을 “시작 장소”라고 부릅니다. 자원을 1개 올려놓아서 이곳이 시작 장소임을 표시합니다. _아직은 조사자를 시작 장소에 놓지 않습니다_."
     },
     "catacombs": {
-      "instructions": "Set all of the other locations aside as a separate “Catacombs Deck.” To do this, perform the following:",
-      "bottom": "Shuffle the set-aside Tomb of Shadows, the set-aside Blocked Passage, and 3 other Catacombs locations together to form the bottom 5 cards of the Catacombs Deck, Catacombs side faceup.",
-      "top": "Then, place all of the other Catacombs locations on top, in a random order. All of the cards in the Catacombs Deck should be showing only the Catacombs side, so that the players do not know which is which."
+      "instructions": "남은 장소를 함께 섞어 별도의 “카타콤 덱”으로 구분하여 치워 둡니다. 다음 지시에 따라 카타콤 덱을 구성합니다.",
+      "bottom": "치워 두었던 ‘그림자의 무덤’과 ‘막다른 통로’ 그리고 다른 무작위 ‘카타콤’ 장소 3장을 ‘카타콤’ 면이 보이게 섞어 “카타콤 덱” 맨 밑 카드 5장을 구성합니다.",
+      "top": "그런 다음, 나머지 ‘카타콤’ 장소를 모두 그 위에 무작위 순서대로 올려놓습니다. 어느 ‘카타콤’ 카드가 ‘그림자의 무덤’/’막다른 통로’인지 알 수 없도록 “카타콤 덱”에 속한 카드는 모두 ‘카타콤’ 면이 보이도록 두어야 합니다."
     },
-    "startAt": "Each investigator begins play at the starting location. (*Remember to trigger the _*Forced*_ effect on that location when it is revealed*.)If “you opened a secret passageway,” choose a Catacombs location adjacent to the starting location and reveal it.",
-    "theManInThePallidMask": "The bearer of The Man in the Pallid Mask weakness searches his or her deck for it and sets it aside, out of play."
+    "startAt": "모든 조사자는 시작 장소에서 시작합니다*(장소가 공개될 때, 해당 장소의 *_강제_* 효과가 격발된다는 것을 잊지 마세요)*. “비밀 통로를 열었다”면, 시작 장소와 이웃한 ‘카타콤’ 장소 한 곳을 선택하고 그 장소를 공개합니다.",
+    "theManInThePallidMask": "‘창백한 가면을 쓴 남자’ 약점의 보유자는 자신의 덱에서 그 카드를 찾아서 비플레이 상태로 치워 둡니다."
   },
   "resolutions": {
     "noResolution": {
       "title": "결말에 도달하지 못함",
-      "body": "<div class='resolution'><p>_If no resolution was reached (each investigator was defeated)_: You are shaken awake by a police officer and lifted to your feet. You feel as though the weight of a train has slammed into your head. The pain is unbearable. The man shines a flashlight in your eyes and asks you several questions in French. Dazed as you are, you find it difficult to answer. He points toward the staircase nearby and pushes you away from the catacombs. You stumble onto the Rue de la Tombe‑Issoire and slowly make your way to a hotel where you can stay the night.</p><p>Several days of research later, the meaning of the strange diagrams you saw within the catacombs still escapes you. You feel as though you have been led on a wild goose chase. Just as you are about to give up, you see a faded yellow book on the table nearest to you. You are stunned to discover that it is the unabridged script of The King in Yellow. Drawn on the cover in black ink is the very same diagram whose meaning you have been struggling to interpret for several sleepless nights. Who had placed it here? How had it come to your hotel room? Regardless, you know what you must do. The play holds the secrets—it has all along—and yet like a fool you have avoided reading Act II out of superstition. Its words cannot harm you any more than the creatures and fanatics you have already encountered. Trembling, you open to the second part, and begin to read.</p><ul><li>캠페인 기록지에 *you know the site of the gate*라고 기록합니다.</li><li>Each investigator must choose whether or not to read Act II of The King in Yellow. At least one investigator must read Act II. In your Campaign Log, record the names of each investigator who chose to read Act II. Each investigator who read Act II searches the collection for a random basic _*Madness*_ or _*Pact*_ weakness, and adds it to his or her deck (does not count toward deck size). Each investigator who read Act II earns 2 additional experience as they gain insight into the machinations of the Tattered King.</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}elderThing{'}'} tokens to the chaos bag.</li><li>If Ishimaru Haruko (*Just Skin and Bones*) is in the victory display, record her name in your Campaign Log, under “VIPs Slain.”</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
+      "body": "<div class='resolution'><p>_아무 결말에도 도달하지 못했다면(모든 조사자가 쓰러졌다면)_: 당신은 경찰이 흔들어 깨우는 통에 겨우 정신을 차립니다. 열차가 달려와 머리를 치고 간 기분입니다. 견딜 수 없이 쓰라린 고통을 부여잡고 있는 당신에게, 경찰이 눈에다 손전등 불빛을 비추면서 불어로 몇 가지 질문을 던집니다. 아직 정신이 채 돌아오지 않아 대답을 제대로 하지 못하자, 그는 가까운 계단을 가리키며 당신을 카타콤 밖으로 내보내 줍니다. 당신은 비틀거리며 뤼 드 라 통비수와르로 나와 오늘 밤 묵을 호텔로 향합니다.</p><p>그 이후로 며칠간 조사를 해 보았지만, 카타콤에서 보았던 기이한 모식도의 의미는 여전히 모호하기만 합니다. 헛된 짓거리에 끌려다닌 것 같은 기분이 들어 막 포기하려는데, 바로 옆 탁자 위에 빛바랜 노란색 책이 놓여 있는 게 눈에 들어옵니다. 놀랍게도 『황색의 왕』 무삭제 대본입니다. 심지어 표지에 검은색 잉크로 그려진 표식은 지난 며칠간 잠 못 이루면서 해석해 보려 안간힘을 썼던 모식도와 완전히 똑같습니다. 누가 저걸 여기 놔둔 걸까요? 이게 어떻게 당신의 호텔 방까지 온 걸까요? 어찌 됐든 간에 해야 할 일이 명확해졌으니 다행입니다. 비밀은 저 연극 속에 있습니다. 줄곧 연극 속에 있었습니다. 하지만 당신은 여태까지 근거 없는 미신 따위에 휘둘려 바보같이 2막을 읽지 않고 피해 왔습니다. 당신이 지금껏 상대한 괴물이나 미치광이보다 저 책에 적힌 글들이 더 해로울 리가 있겠습니까. 결심을 굳힌 당신은 손을 떨면서 2막을 펼치고 읽기 시작합니다.</p><ul><li>캠페인 기록지에 *관문이 있는 곳을 알아냈다*라고 기록합니다.</li><li>각 조사자는 『황색의 왕』 제2막을 읽을지 말지 선택해야 합니다. 하지만, 적어도 한 명은 제2막을 읽어야 합니다. 캠페인 기록지에 제2막을 읽기로 한 조사자의 이름을 모두 기록합니다. 제2막을 읽은 모든 조사자는 보유 게임에서 무작위 _*정신이상*_ 또는 _*계약*_ 기본 약점 하나를 찾아서 자신의 덱에 추가합니다(이 카드는 조사자의 덱 크기를 계산할 때 포함되지 않습니다). 제2막을 읽은 각 조사자는 누더기 왕의 음모에 대한 통찰력을 얻었기 때문에, 경험치를 추가로 2씩 얻습니다.</li><li>혼돈 주머니에 {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} 토큰을 모두 제거합니다. 그런 다음, 혼돈 주머니에 {'{'}elderThing{'}'} 토큰을 2개 추가합니다.</li><li>승점 더미에 ‘이시마루 하루코(*살갗과 뼈만 남았다*)’가 있다면, 캠페인 기록지의 “살해당한 VIP”에 ‘이시마루 하루코’를 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     },
     "resolution1": {
       "title": "결말 1",
-      "body": "<div class='resolution'><p>_결말 1_: The burned skull holds the key to everything. You are sure of it. You have tried every method available to you in studying the diagram it bears, but the answer eludes you still. You have brought the skull to experts, occultists, and professors. You have even tried speaking with the skull on more than one occasion. Exasperated, you place the skull on your night table and try to get some sleep for the first time since escaping the catacombs. As you fall asleep, you cannot shake the sight of the diagram etched in the skull’s forehead.</p><p>You awaken with a spark of inspiration and rush to the Musée du Louvre, a famous Parisian museum housing tens of thousands of paintings, drawings, and archaeological finds. You spend days exploring the museum—every display, every collection, every single object of art that might hold a clue to the diagram’s meaning. Finally, you see it: a painting depicting a beautiful island town weathering a torrential storm. Waves crash against the stone of the outer wall, the tide threatening to swallow the island whole. Lightning flashes around the tower of the abbey above the village. A whirlwind of black clouds churns in the sky above. The diagram from the burned skull you hold in your hands is recreated perfectly in the stained glass of the abbey. The title of the piece is “The Path Is Open.”</p><ul><li>캠페인 기록지에 *you know the site of the gate*라고 기록합니다.</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}cultist{'}'} tokens to the chaos bag.</li><li>If Ishimaru Haruko (*Just Skin and Bones*) is in the victory display, record her name in your Campaign Log, under “VIPs Slain.”</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
+      "body": "<div class='resolution'><p>_결말 1_: 당신은 불에 탄 두개골이 모든 것의 열쇠를 쥐고 있으리라고 확신합니다. 당신은 가능한 모든 방법을 동원해 두개골에 있었던 모식도를 연구해 보았으나 아직 그 해답은 나오지 않았습니다. 두개골을 들고 전문가, 비술 연구자, 교수에게 찾아가기도 했고, 두개골에 말을 걸어보기까지 한 것도 한두 번이 아닙니다. 마침내 화가 난 당신은 침실 탁자 위에 두개골을 올려놓고 카타콤에서 나온 뒤 처음으로 잠을 청해 보려 했습니다. 잠이 드는 순간에도 두개골의 이마에 새겨진 모식도의 모양이 뇌리에서 떠나지 않습니다.</p><p>잠에서 깨어나자마자, 당신의 머릿속에 이루 말 못 할 영감이 솟구칩니다. 그 영감과 직감에 따라 수천수만 가지 그림과 고고학적 발견물로 유명한 파리 루브르 박물관으로 달려갑니다. 그리고는 모식도의 의미를 알아내는 데에 단서가 될 만한 것을 찾아 며칠에 걸쳐 박물관 안에 있는 진열품, 수집품, 예술작품 하나하나를 모조리 다 살핍니다. 그리고 마침내 당신은 폭풍이 휘몰아치는 아름다운 섬마을을 묘사한 그림을 찾았습니다. 물결이 돌제방에 부딪쳐 오고, 파도는 섬 전체를 집어삼킬 듯이 위협적으로 일렁입니다. 마을에 있는 수도원의 탑 주변에는 번개가 번뜩이고, 검은 구름으로 된 돌개바람이 머리 위 하늘을 휘젓고 있습니다. 그리고 수도원의 스테인드글라스에는 당신이 손에 쥔 불탄 두개골에 그려진 것과 완벽하게 동일한 모식도가 있습니다. 작품명은 “길이 열린다”입니다.</p><ul><li>캠페인 기록지에 *관문이 있는 곳을 알아냈다*라고 기록합니다.</li><li>혼돈 주머니에 {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} 토큰을 모두 제거합니다. 그런 다음, 혼돈 주머니에 {'{'}cultist{'}'} 토큰을 2개 추가합니다.</li><li>승점 더미에 ‘이시마루 하루코(*살갗과 뼈만 남았다*)’가 있다면, 캠페인 기록지의 “살해당한 VIP”에 ‘이시마루 하루코’를 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     },
     "resolution2": {
       "title": "결말 2",
-      "body": "<div class='resolution'><p>_결말 2_: You fall ceaselessly through the empty abyss. No air slows your descent or courses through your hair. It is a passageway devoid of reality. Finally, you pass through an invisible gateway and enter another realm. Looming above and below you are two skylines, one a warped reflection of the other. A vortex of swirling black clouds and crashing waves lies in between them. You study both sides—the familiar city and its strange mirror. Could this be the path to Carcosa? A passageway between realities, where realms converge? If so, all that is left is to find where this gate appears on Earth. You fall into the vortex below.</p><p>You are shaken awake by a police officer and lifted to your feet. You feel as though the weight of a train has slammed into your head. The pain is unbearable. The man shines a flashlight in your eyes and asks you several questions in French. Your eyes widen with realization and you wrest your arm free from the confused man’s grip. “I have to go at once!”</p><ul><li>캠페인 기록지에 *you know the site of the gate*라고 기록합니다. Add two tally marks under “Chasing the Stranger.”</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}tablet{'}'} tokens to the chaos bag.</li><li>If Ishimaru Haruko (*Just Skin and Bones*) is in the victory display, record her name in your Campaign Log, under “VIPs Slain.”</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></li></ul></div>"
+      "body": "<div class='resolution'><p>_결말 2_: 당신은 텅 빈 심연을 가로질러 끊임없이 추락합니다. 공기저항은 느껴지지 않고, 머리칼이 바람에 휘날리지도 않습니다. 이것은 현실의 법칙을 거부하는 통로입니다. 마침내, 당신은 보이지 않는 관문을 지나 또 다른 왕국으로 들어섭니다. 당신의 위와 아래로 두 개의 광경이 드리워 있으며, 한쪽 풍경이 다른 한쪽의 거울상처럼 보이지만 뭔가 왜곡되어 보입니다. 그 사이로 몰아치는 검은 구름의 소용돌이와 부서지는 파도가 보입니다. 당신은 저 익숙한 도시와 특이한 거울상을 모두 유심히 살펴봅니다. 이것이 카르코사로 가는 길일까요? 저곳이 세상 사이를 잇는 통로이자 두 왕국이 맞부딪히는 곳일까요? 그렇다면, 이제 이 문이 지구 어디에 열리는지 알아내는 것만 남았습니다. 당신은 발치의 소용돌이 속으로 떨어져 내립니다.</p><p>당신은 경찰이 흔들어 깨우는 통에 겨우 정신을 차립니다. 열차가 달려와 머리를 치고 간 기분입니다. 견딜 수 없이 쓰라린 고통을 부여잡고 있는 당신에게, 경찰이 눈에다 손전등 불빛을 비추면서 불어로 몇 가지 질문을 던집니다. 당신은 드디어 방금 본 광경이 어디인지 깨닫고서 눈을 크게 뜨며, 아무것도 모르는 경찰의 손에서 팔을 비틀어 뺍니다. “당장 가야 해!”</p><ul><li>캠페인 기록지에 *관문이 있는 곳을 알아냈다*라고 기록합니다. “이방인을 추적하다” 아래에 빗금을 2개 표시합니다.</li><li>혼돈 주머니에 {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} 토큰을 모두 제거합니다. 그런 다음, 혼돈 주머니에 {'{'}tablet{'}'} 토큰을 2개 추가합니다.</li><li>승점 더미에 ‘이시마루 하루코(*살갗과 뼈만 남았다*)’가 있다면, 캠페인 기록지의 “살해당한 VIP”에 ‘이시마루 하루코’를 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></li></ul></div>"
     },
     "xp": {
-      "bonus": "Gains insight into the machinations of the Tattered King."
+      "bonus": "누더기 왕의 음모에 대한 통찰력을 얻음."
     }
   }
 }

@@ -6,7 +6,7 @@
   "resolutions": {
     "noResolution": {
       "title": "결말에 도달하지 못함",
-      "body": "<p><b>If no resolution was reached (each investigator was defeated):</b> Your drive to Falcon Point is no joyride. Between the cultists on your tail and the creatures that dwell in the woods outside Innsmouth, your vehicle is harried at every turn. With no way to escape unharmed, you are forced to abandon your vehicle and sneak through the woods on foot. By the time you see the distant lighthouse beacon, dawn already bathes the sky in orange radiance. “Finally,” Agent Harper groans. With no time to rest, you continue the trek to the Falcon Point lighthouse, exhausted but resolute.</p>"
+      "body": "<p><b>아무 결말에도 도달하지 못했다면(모든 조사자가 쓰러졌다면):</b> Your drive to Falcon Point is no joyride. Between the cultists on your tail and the creatures that dwell in the woods outside Innsmouth, your vehicle is harried at every turn. With no way to escape unharmed, you are forced to abandon your vehicle and sneak through the woods on foot. By the time you see the distant lighthouse beacon, dawn already bathes the sky in orange radiance. “Finally,” Agent Harper groans. With no time to rest, you continue the trek to the Falcon Point lighthouse, exhausted but resolute.</p>"
     },
     "resolution1": {
       "title": "결말 1",

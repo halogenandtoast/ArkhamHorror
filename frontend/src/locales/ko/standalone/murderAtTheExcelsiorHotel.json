@@ -1,16 +1,16 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the number of _Guest_ enemies in play.",
-      "cultist": "-1. If there is an _Innocent_ enemy in the victory display, reveal another chaos token.",
-      "tablet": "-3. You may place one of your clues on your location to treat this as a -1 instead.",
-      "elderThing": "-3. If you fail and there is an _Innocent_ enemy in the victory display, take 1 horror."
+      "skull": "-X. X는 플레이 상태인 _손님_ 적의 수입니다.",
+      "cultist": "-1. 승점 더미에 _무고한_ 적이 있다면, 다른 혼돈 토큰을 하나 더 공개합니다.",
+      "tablet": "-3.  대신 -1로 간주하기 위해, 당신이 가진 단서 1개를 당신이 위치한 장소에 올려놓아도 됩니다.",
+      "elderThing": "-3. 이번 테스트에 실패했고 승점 더미에 _무고한_ 적이 있다면, 공포를 1 받습니다."
     },
     "hardExpert": {
-      "skull": "-X. X is the number of _Innocent_ enemies in play.",
-      "cultist": "-2. If there is an _Innocent_ enemy in the victory display, reveal another chaos token.",
-      "tablet": "-5. You may place one of your clues on your location to treat this as a -2 instead.",
-      "elderThing": "-3. If you fail, take 1 horror for each Innocent enemy in the victory display."
+      "skull": "-X. X는 플레이 상태인 _손님_ 적의 수입니다.",
+      "cultist": "-2. 승점 더미에 _무고한_ 적이 있다면, 다른 혼돈 토큰을 하나 더 공개합니다.",
+      "tablet": "-5.  대신 -2로 간주하기 위해, 당신이 가진 단서 1개를 당신이 위치한 장소에 올려놓아도 됩니다.",
+      "elderThing": "-3. 이번 테스트에 실패하면, 승점 더미에 있는 _무고한_ 적마다 공포를 1씩 받습니다."
     }
   }
 }

@@ -19,27 +19,27 @@
   },
   "resolutions": {
     "noResolution": {
-      "title": "No Resolution",
-      "body": "_If no resolution was reached because each investigator was defeated:_ You awaken trapped inside something tight and sticky. Your arms are bound to your sides, and no matter how fiercely you struggle, you cannot seem to move except to wiggle your fingers hopelessly. Slowly, dread creeps its way through your mind as you realize the situation you are in. As you cannot move your head, you are forced to watch as the eight-legged creature emerges from the darkness. It makes no sound as it steps onto the web. Its many eyes reflect your terrified expression. Its mandibles drip with hunger. You only wish you could look away."
+      "title": "결말에 도달하지 못함",
+      "body": "_모든 조사자가 쓰러져서 아무 결말에도 도달하지 못했다면:_ You awaken trapped inside something tight and sticky. Your arms are bound to your sides, and no matter how fiercely you struggle, you cannot seem to move except to wiggle your fingers hopelessly. Slowly, dread creeps its way through your mind as you realize the situation you are in. As you cannot move your head, you are forced to watch as the eight-legged creature emerges from the darkness. It makes no sound as it steps onto the web. Its many eyes reflect your terrified expression. Its mandibles drip with hunger. You only wish you could look away."
     },
     "resolution1": {
-      "title": "Resolution 1",
+      "title": "결말 1",
       "body": "You clutch a silken thread, the only thing keeping you from plummeting through the endless depths of the void."
     },
     "resolution2": {
-      "title": "Resolution 2",
+      "title": "결말 2",
       "body": "You scramble for hours in the dark, sticky, web-infested void between worlds. When you reach the end of the bridge of cosmic webs, you are met with a terrible sight. The void that once surrounded you fades into a dusky evening, and a familiar skyline of clustering gambrel roofs stands before you. To your dismay, the entirety of the town has been infested by the brood of Atlach-Nacha. Thick webbing extends from the gloomy streets to the tallest rooftops. Spiders and ghasts prowl through the city’s once-busy avenues, seeking human prey to devour—or worse, to imprison forever in cocoons of unbreakable web. You drop to your knees, overtaken by despair. How far does this corruption reach? Is it just Arkham, or…?"
     },
     "resolution3": {
-      "title": "Resolution 3",
+      "title": "결말 3",
       "body": "In the distance, you can see the tower that loomed behind the spider god as it spun its web, the entrance beckoning you closer. You recall the Tower of Koth in the Underworld and the way to the surface. Is this the root of that same tower? Does it penetrate through this world-between- worlds? If so, you might be able to escape. Instead of climbing back the way you came, you swing your web from side to side and make a leap through the void, landing at the base of the tower. Then you begin the long climb up—above the surface of the Sea of Pitch, under the ground below the City of Gugs, then farther upward still. Finally, after miles and miles of restless travel, you push aside the stone slab at the top of the tower, and you emerge in the Enchanted Wood. You seal the entrance behind you. Nothing from the hellish Underworld can follow you here. For the first time since entering the Dreamlands, you breathe a sigh of relief. Recalling the first chapter’s of Virgil Gray’s story, you follow a narrow path through the woods until you reach a staircase of solid stone that ascends into the clouds. It is time to return home."
     },
     "resolution4": {
-      "title": "Resolution 4",
+      "title": "결말 4",
       "body": "You have stopped the spider god from completing its web, but in the process, you have cut off your only means of escape as well. You are fated to wander this hellish world-between-worlds, searching in vain for any hope of escape. Your only solace is that you have prevented this cruel future from being that of every person on Earth. Perhaps if you still possessed the Silver Key, you might have had a way out. Try as you might, in this dismal, cavernous void below the bottomless Sea of Pitch, you cannot muster the will to forge your own."
     },
     "resolution5": {
-      "title": "Resolution 5",
+      "title": "결말 5",
       "body": "You have stopped the spider god from completing its web, but in the process, you have cut off the quickest way for you to return home. So, with your task complete, you begin the long climb toward reality. You are lucky that remnants of the web-bridge still remain intact, or you would have been stranded in this hellish world between worlds. It takes many hours for you to retrace your steps to the Underworld. You eventually emerge from the thick, tar-like Sea of Pitch, close to the shoreline. To your dismay, you realize that you are on the opposite shore of the sea from the dark vale from which you once embarked. With no way to cross the deadly sea, you’ll have to find another way out of this barren expanse. Days pass as you continue to explore the Underworld, reaching darker and more forbidden lands as you travel deeper and deeper below the crust of the Earth’s Dreamlands. Though you eventually find a stairway up, it is very different from the one leading to the Unnamable: a spiraling, otherworldly series of steps that reach dizzying heights and break all laws of reality. When you reach the top, your heart sinks. There is no sign of Arkham here. You are greeted instead by a strange, ruined city and its half-human denizens. The creatures inform you that you have reached the lost city of “Sarkomand.” It appears your return journey is far from over."
     }
   },

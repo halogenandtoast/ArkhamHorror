@@ -1,5 +1,6 @@
 import ita from '@/digests/ita.json'
 import es from '@/digests/es.json'
+import ko from '@/digests/ko.json'
 import zh from '@/digests/zh.json'
 
 import { useSiteSettingsStore } from '@/stores/site_settings'
@@ -41,6 +42,10 @@ export function imgsrc(src: string) {
       const exists = es.includes(path)
       return exists ? `${store.assetHost}/img/arkham/es/${src.replace(/^\//, '')}` : `${store.assetHost}/img/arkham/${src.replace(/^\//, '')}`
     }
+    case 'ko': {
+      const exists = ko.includes(path)
+      return exists ? `${store.assetHost}/img/arkham/ko/${src.replace(/^\//, '')}` : `${store.assetHost}/img/arkham/${src.replace(/^\//, '')}`
+    }
     case 'zh': {
       const exists = zh.includes(path)
       return exists ? `${store.assetHost}/img/arkham/zh/${src.replace(/^\//, '')}` : `${store.assetHost}/img/arkham/${src.replace(/^\//, '')}`
@@ -52,6 +57,9 @@ export function imgsrc(src: string) {
 export function pluralize(w: string, n: number) {
   const language = localStorage.getItem('language') || 'en'
   switch (language) {
+    case 'ko': {
+      return `${w} ${n}`
+    }
     case 'zh': {
       return `${n}${w}${n == 1 ? '' : ''}`
     }

@@ -144,6 +144,9 @@ body {
   min-height: 100vh;
   background: var(--background);
   font-size: min(16px, 2vw);
+  @media (max-width: 800px) and (orientation: portrait) {
+    font-size: initial;
+  }
 }
 
 button {
@@ -462,6 +465,7 @@ button {
   --button-2-highlight: #4d2b61;
 
   --card-width: min(calc(2.5vw + 20px), 60px);
+  --card-height: min(calc(3.545vw + 28.36px), 85.08px);
   --card-aspect: 0.705;
   --card-sideways-aspect: 1.41844;
   --card-tarot-aspect: 0.571429;
@@ -474,8 +478,11 @@ button {
   --select-dark-30: #b200b2;
 
   --bullet-red: #391714;
-
+  
   --pool-token-width: min(30px, 4vw);
+  @media (max-width: 800px) and (orientation: portrait) {
+    --pool-token-width: 30px;
+  }
 }
 
 h2.title {
@@ -504,6 +511,9 @@ h2.title {
   width: 70vw;
   margin: 0 auto;
   padding-bottom: 10px;
+  @media (max-width: 800px) and (orientation: portrait) {
+    width: fit-content;
+  }
 }
 
 .fade-leave-active,
@@ -535,6 +545,9 @@ footer {
   width: 100%;
   text-align: center;
   z-index: 100;
+  @media (max-width: 800px) and (orientation: portrait) {
+    display: none;
+  }
 }
 
 .column {

@@ -8,6 +8,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import type { Investigator } from '@/arkham/types/Investigator';
 import type { TarotCard } from '@/arkham/types/TarotCard';
 import { imgsrc } from '@/arkham/helpers';
+import { IsMobile } from '@/arkham/isMobile';
 
 export interface Props {
   game: Game
@@ -26,6 +27,7 @@ const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length >
 const investigators = computed(() => props.playerOrder.map(iid => props.players[iid]))
 const inactiveInvestigators = computed(() => Object.values(props.players).filter((p) => !props.playerOrder.includes(p.id)))
 const lead = computed(() => `url('${imgsrc(`lead-investigator.png`)}')`)
+const { isMobile } = IsMobile();
 
 function tabClass(investigator: Investigator) {
   const pid = investigator.playerId
@@ -81,7 +83,8 @@ watchEffect(() => selectedTab.value = props.playerId)
         @click='selectTab(investigator.playerId)'
         :class='tabClass(investigator)'
       >
-        <span>{{ investigator.name.title }}</span>
+        <span v-if="isMobile">{{ investigator.name.title.split(' ')[0] }}</span>
+        <span v-else>{{ investigator.name.title }}</span>
         <button
           v-if="solo"
           v-tooltip="instructions(investigator)"
@@ -153,6 +156,10 @@ ul.tabs__header {
   margin: 0;
   user-select: none;
   padding-left: 5px;
+  font-size: min(16px, 2vw);
+  @media (max-width: 800px) and (orientation: portrait) {
+    font-size: min(16px, 3vw);
+  }
 }
 
 ul.tabs__header > li {

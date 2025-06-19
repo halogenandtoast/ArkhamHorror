@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.RainyLondonStreets (rainyLondonStreets, RainyLondonStreets(..)) where
+module Arkham.Location.Cards.RainyLondonStreets (rainyLondonStreets) where
 
 import Arkham.Ability
 import Arkham.Helpers.Act (getCurrentActStep)

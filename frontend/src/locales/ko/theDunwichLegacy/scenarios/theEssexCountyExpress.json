@@ -1,46 +1,49 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the current Agenda #.",
-      "cultist": "-1. If you fail and it is your turn, lose all remaining actions and end your turn immediately.",
-      "tablet": "-2. Add 1 doom token to the nearest Cultist enemy.",
-      "elderThing": "-3. If you fail, choose and discard a card from your hand."
+      "skull": "-X. 현재 주요사건 번호가 X 값입니다.",
+      "cultist": "-1. 지금이 당신의 차례이고 테스트에 실패했다면, 남은 행동을 모두 잃고 즉시 당신의 차례를 끝냅니다.",
+      "tablet": "-2. 가장 가까운 _추종자_ 적에게 파멸을 1개 올려놓습니다.",
+      "elderThing": "-3. 실패하면, 당신의 손에서 카드를 1장 선택해서 버립니다."
     },
     "hardExpert": {
-      "skull": "-X. X is 1 more than the current Agenda #.",
-      "cultist": "Reveal another token. If you fail and it is your turn, lose all remaining actions and end your turn immediately.",
-      "tablet": "-4. Add 1 doom token to each Cultist enemy in play.",
-      "elderThing": "-3. If you fail, choose and discard a card from your hand for each point you failed by."
+      "skull": "-X. 현재 주요사건 번호에 1을 더한 값이 X 값입니다.",
+      "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 지금이 당신의 차례이고 테스트에 실패했다면, 남은 행동을 모두 잃고 즉시 당신의 차례를 끝냅니다.",
+      "tablet": "-4. 플레이 상태인 모든 _추종자_ 적에게 파멸을 1개씩 올려놓습니다.",
+      "elderThing": "-3. 실패하면, 당신의 능력값이 난이도에 모자란 차이만큼 손에서 카드를 선택해서 버립니다."
     }
   },
   "intro": {
-    "title": "Scenario III: The Essex County Express",
-    "body": "<p>Recent events in the Museum have forced you to re-evaluate Armitage’s tale about Dunwich. It cannot be a coincidence—Wilbur Whateley, the Necronomicon, the creature from Dunwich, and the people and creatures who attacked here in Arkham­ —everything must be connected. You’re certain now where you must head: the lonely and dismal town of Dunwich Village.</p><p>You consider telling the Massachusetts State Police what you know, but the negative consequences outweigh the potential gain. Given the nature of your story, they would likely write your stories off as an absurd hoax. Worse, they could lock you up. After all, you were present in an illegal speakeasy, and you also trespassed in the museum. Instead, you decide to head to Dunwich yourself, in order to investigate further.</p><p>You pack everything you think you might need and manage to get some rest for the night. In the morning, you head to the train station in Northside and purchase a last-minute express ticket. Dunwich is several hours by train northwest along the Miskatonic River Valley. There is no train station in Dunwich, but you manage to phone one of Armitage’s acquaintances in the small village: a man by the name of Zebulon Whateley who was present during the events several months ago.</p><p>Armitage’s notes indicate that the Whateley family is spread across many branches, some decadent and unscrupulous, others “undecayed” or otherwise untouched by nefarious and diabolic rites. According to Armitage, Zebulon’s branch of the family lay somewhere between the decayed and undecayed Whateleys, who knew of the traditions of his ancestors, but was not corrupted by them. He agrees to pick you up at the closest station and drive you into town.</p><p>As the train departs from Arkham, you feel the events of the previous night catching up to you, and exhaustion sets in. But before you can safely reach your destination, the train car suddenly rumbles and shakes, startling you out of your reverie. The train loudly skids to a violent halt, and you hear a rattling noise behind you…</p>"
+    "title": "시나리오 III: 에식스 카운티 특급열차",
+    "body": "<p>박물관에서의 일을 겪고 난 당신은 던위치에 얽힌 아미티지의 이야기를 재고하게 되었습니다. 이런 일련의 사건이 단지 우연일 리가 없습니다. 윌버 웨이틀리, 네크로노미콘, 던위치의 괴물, 그리고 이곳 아컴에서 사람들을 습격한 괴물과 인간들. 이 모든 것은 연결되어 있습니다. 이제 어디로 향해야 할지가 분명해졌습니다. 음울한 외딴 마을, 던위치로 가야 합니다.</p><p>처음엔 지금껏 조사한 바를 매사추세츠 주 경찰에게 알릴까 생각도 해 보았으나, 그리 좋은 결과를 얻진 못할 거라고 잠정적인 결론을 내렸습니다. 경찰은 당신의 이야기를 말도 안 되는 농담 짓거리 정도로 받아들일 게 뻔합니다. 사실 더 최악의 상황을 가정하자면, 당신이 그 자리에서 체포될지도 모를 일입니다. 어쨌든 당신은 불법 주점에 들어갔고, 박물관에 침입했으니 말입니다. 당신은 더 깊이 조사하기 위해 직접 던위치로 향합니다.</p><p>당신은 필요하다 싶은 것들을 죄다 짐가방에 쑤셔 넣고 하룻밤의 짧은 휴식을 취합니다. 날이 밝아온 후, 당신은 북부의 기차역으로 가서 출발 시각이 임박한 특급 열차표를 아슬아슬하게 구매했습니다. 던위치는 미스캐토닉 강 유역을 따라 북서쪽으로 몇 시간여 기차로 달려야 도착할 거리에 있습니다. 그러나 정작 던위치에는 기차역이 없기에, 그 작은 마을에 있는 아미티지의 지인 중 한 사람에게 전화해 두었습니다. 그의 이름은 지블런 웨이틀리로 몇 달 전의 사태에서 살아남은 이입니다.</p><p>아미티지의 기록에 따르면 웨이틀리 가의 혈통은 여러 갈래로 뻗어 있는데, 타락하고 파렴치한 자들이 있는 반면 그들과는 달리 타락하지 않고 사악한 의식에도 영향을 받지 않은 이들도 있다고 합니다. 지블런의 가계는 웨이틀리 가의 부패한 혈통과 부패하지 않은 혈통 사이에 있으며, 선조의 전통을 알고 있긴 하지만 그로 인해 타락하지는 않았다고 합니다. 당신은 던위치에서 가장 가까운 역에서 지블런과 만나 마을까지 픽업을 부탁하기로 했습니다.</p><p>열차가 아컴을 출발하자, 전날 밤 휘말렸던 사건들의 피로가 몰려와 몸이 축 늘어집니다. 그러나 목적지에 무사히 도착하기도 전에, 달리던 열차가 갑자기 요란한 소리를 내며 흔들리는 바람에 당신은 깜짝 놀라 몽상에서 깨어납니다. 열차가 미끄러지면서 거칠게 멈추어 섰고, 등 뒤에서 요란한 소리가 들려옵니다…</p>"
   },
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: *The Essex County Express*, *The Beyond*, *Striking Fear*, *Ancient Evils*, *Dark Cult*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-essex-county-express.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/dark-cult.png' /></section>",
-    "placeLocations": "Put one of the three Engine Car locations into play at random. Remove the other versions of Engine Car from the game. Then, put six of the eight Train Car locations into play at random, in a straight line to the left of the Engine Car. Remove the remaining two Train Car locations from the game.",
-    "revealTrainCar": "Reveal the leftmost Train Car. Each investigator begins play in that location. (If that location has a ‘forced’ effect that triggers upon entering that location, ignore it.)",
-    "setAside": "Set all 4 copies of Across Space and Time aside, out of play.",
-    "adjustChaosBag": "Based on your difficulty level, add the following chaos token(s) to the chaos bag, for the remainder of the campaign:<div class='columns'><ul><li>_Easy_: -2</li><li>_Standard_: -3</li></ul><ul><li>_Hard_: -4</li><li>_Expert_: -5</li></ul></div>"
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *에식스 카운티 특급열차*, *저 너머*, *엄습하는 공포*, *고대의 악*, *어둠의 사교*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/the-essex-county-express.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/dark-cult.png' /></section>",
+    "placeLocations": "무작위로 ‘기관차’ 장소 3장 중 1장을 선택하여 플레이 영역에 둡니다. 선택하지 않은 ‘기관차’는 게임에서 제거합니다. 그런 다음, 무작위로 ‘기차칸’ 장소 8장 중 6장을 선택하여 플레이 영역에 두되, ‘기관차’의 왼쪽에 일렬로 놓습니다. 선택하지 않은 ‘기차칸’ 장소 2장은 게임에서 제거합니다.",
+    "revealTrainCar": "가장 왼쪽에 있는 ‘기차칸’을 공개하고 모든 조사자는 그 장소에서 시작합니다(이 장소에 진입할 때 발동되는 ‘강제’ 효과가 있다면 해당 효과를 무시합니다).",
+    "setAside": "‘시간과 공간을 넘어서’ 사본 4장을 모두 비플레이 상태로 치워 둡니다.",
+    "adjustChaosBag": "난이도에 따라, 캠페인이 끝날 때까지 혼돈 주머니에 다음의 혼돈 토큰을 추가합니다.:<div class='columns'><ul><li>_쉬움_: -2</li><li>_보통_: -3</li></ul><ul><li>_어려움_: -4</li><li>_전문가_: -5</li></ul></div>"
   },
   "moving": {
-    "title": "Moving on the Train: “Left” and “Right”",
-    "body": "<p class='basic'>During this scenario, locations are lined up from left to right, with the Engine Car as the rightmost location. Whenever a card effect refers to “the location to the left,” or “the location to the right,” it refers to the location immediately to your location’s left or right.</p><p class='basic'>Any card effects that reference a direction (left or right) should be interpreted from the perspective of the diagram on the previous page.</p>"
+    "title": "열차에서 이동하기: “왼쪽”과 “오른쪽”",
+    "body": "<p class='basic'>이번 시나리오를 진행하는 동안, 가장 오른쪽에 ‘기관차’ 장소를 두고 왼쪽에서 오른쪽으로 일렬로 장소를 놓아둡니다.</p><p class='basic'>이번 시나리오에 속한 일부 카드 효과가 왼쪽 혹은 오른쪽 방향을 언급할 경우, 항상 아래 그림을 기준으로 판단합니다(‘기관차’ 방향이 오른쪽입니다).</p>"
   },
   "resolutions": {
-    "defeat": "<div class='resolution'><p class='basic'>_Before resolving any other resolution, if at least 1 investigator was defeated_: The defeated investigators read _Investigator Defeat_ first.</p><p>_Investigator Defeat_: Your experience beyond the gate is simultaneously terrifying and impossible to recall with clarity. A hypnotic spectacle of lights, otherworldly sensations, and altered geometry dances at the tattered edges of your mind. An unearthly voice from beyond rings in your ears, its significance an enigma. When you awaken, you find yourself in the woods, several miles from the Miskatonic River. Destroyed train cars surround you. They are crumpled as if from a severe impact; they are also decayed as if years of rust and squalor have claimed them. There is no sign of the other passengers.</p><ul><li>Each investigator who was defeated has acquired the Across Space and Time weakness and must add 1 copy of it to his or her deck. This card does not count toward that investigator’s deck size.</li><li>Each investigator who was defeated earns 1 bonus experience as his or her experience beyond the gate grants them insight into the cosmos.</li><li>If an investigator with The Necronomicon (*Olaus Wormius Translation*) in his or her deck was defeated, in your Campaign Log, record that the Necronomicon was stolen. The Necronomicon (*Olaus Wormius Translation*) must be removed from that investigator’s deck.</li><li>If an investigator with the Dr. Henry Armitage card, the Professor Warren Rice card, or the Dr. Francis Morgan card in his or her deck was defeated, in your Campaign Log, record that the character in question *was kidnapped*. The associated card must be removed from that investigator’s deck.</li><li>If no resolution was reached (each investigator was defeated): Go to _Resolution 2_.</li></ul></div>",
+    "defeat": "<div class='resolution'><p class='basic'>_이 캠페인 안내서에 적힌 다른 결말을 보기 전에, 쓰러진 조사자가 한 명이라도 있다면_: 그 조사자는 아래의 _쓰러진 조사자_를 먼저 읽습니다.</p><p>_쓰러진 조사자_: 차원문 너머에서 겪은 일 탓에 당신의 몸은 공포로 부들부들 떨립니다. 하지만 그곳에서 무슨 일이 있었는지 머릿속이 몽롱해 잘 떠오르지 않습니다. 사방에서 휘황찬란하게 번쩍이는 빛의 장관, 비현실적으로 오감을 자극하는 감각, 눈앞에서 춤추듯 뒤틀리는 기하학적인 이상 공간들이 엉망진창이 된 당신의 정신에서 넘실거립니다. 현실의 것이 아닌 목소리가 저 너머에서부터 들려와 귀에서 울리지만, 그 의미는 수수께끼처럼 알 수가 없습니다. 당신은 미스캐토닉 강으로부터 수 마일 떨어진 숲속에서 겨우 정신을 차립니다. 파괴된 기차칸이 주변에 나뒹굴고 있습니다. 이것들은 심각한 충격으로 인해 찌그러졌을 뿐만 아니라 수년은 방치된 듯 녹슬고 지저분합니다. 주위에 다른 승객의 흔적은 보이지 않습니다.</p><ul><li>모든 쓰러진 조사자는 ‘시간과 공간을 넘어서’ 약점 사본 1장을 자기 덱에 추가해야 합니다. 이 카드는 조사자의 덱 크기를 계산할 때 포함하지 않습니다.</li><li>모든 쓰러진 조사자는 차원문 너머에서의 경험으로 인해 우주에 대한 통찰력을 얻었기 때문에, 경험치를 추가로 1씩 얻습니다.</li><li>자기 덱에 ‘네크로노미콘(*올라우스 워미우스 번역본*)’이 있는 조사자가 쓰러졌다면, 캠페인 기록지에 *네크로노미콘을 도난당했다*라고 기록합니다. 해당 조사자의 덱에서 ‘네크로노미콘(*올라우스 워미우스 번역본*)’을 제거해야 합니다.</li><li>자기 덱에 ‘헨리 아미티지 박사’ 카드, ‘워렌 라이스 교수’ 카드, ‘프랜시스 모건 박사’ 카드가 있는 조사자가 쓰러졌다면, 캠페인 기록지에 위에 해당하는 *박사/교수가 납치되었다*고 기록합니다. 이렇게 납치된 인물 카드를 해당 조사자의 덱에서 제거해야 합니다.</li><li>아무 결말에도 도달하지 못했다면(모든 조사자가 쓰러졌다면): _결말 2_를 읽습니다.</li></ul></div>",
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1_: You breathe a sigh of relief as the gate behind the train collapses harmlessly upon itself. The few passengers who survived the ordeal seem unable to comprehend what just happened. One passenger mentions “a pipe bursting in the rear car,” and that quickly becomes the explanation for the innocent and ignorant, those who either cannot or choose not to delve further into the mystery. You, on the other hand, know better… although in hindsight, you wish you didn’t.</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></div>"
+      "title": "결말 1",
+      "body": "<div class='resolution'><p>_결말 1_: 열차 뒤편의 차원문이 마침내 저 스스로 붕괴하는 것을 보자 안도의 한숨이 터져나옵니다. 방금의 참사에서 살아남은 소수의 승객은 무슨 일이 일어난 건지 제대로 이해하지 못하고 있습니다. 한 승객이 “뒤쪽 차량에서 파이프가 폭발했다”라고 말하자, 무지하다시피 순진한 몇몇 승객들은 방금 벌어진 불가해한 일을 파고들 생각이 없는지 그 말에 수긍하고 맙니다. 물론, 당신은 진실을 알고 있습니다. 차라리 모르는 게 약이라는 생각도 들지만, 그러기엔 이미 늦었습니다…</p><ul><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2 (read Investigator Defeat first!)_: Rattled, you begin walking alongside the train tracks, making your way towards Dunwich.</p><ul><li>In your Campaign Log, record that *the investigators were delayed on their way to Dunwich*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "결말 2",
+      "body": "<div class='resolution'><p>_결말 2 (쓰러진 조사자를 먼저 읽으세요!)_: 당신은 황망해진 채로 던위치를 향해 열차 선로를 따라 걷기 시작합니다.</p><ul><li>캠페인 기록지에 *조사자들이 던위치에 예정보다 늦게 도착했다*라고 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
+    },
+    "xp": {
+      "defeat": "차원문 너머에서의 경험으로 인해 우주에 대한 통찰력을 얻음."
     }
   },
   "label": {
-    "dodge": "Test {'{'}agility{'}'} (3) to attempt to dodge the creature. If you fail, you leap too far and barely grip the side of the train, hanging on for dear life. Although you manage to pull yourself up, the experience is terrifying. You suffer 1 mental trauma.",
-    "endure": "Test {'{'}combat{'}'} (3) to attempt to endure the creature's extreme heat. If you fail, the creature flies through you and the heat burns you. You suffer 1 physical trauma."
+    "dodge": "괴물을 피하고자 {'{'}agility{'}'} (3) 테스트를 합니다. 실패하면, 너무 멀리 뛰어 피하는 바람에 열차 측면을 겨우 붙잡고 필사적으로 매달리게 됩니다. 간신히 몸을 끌어올리기는 했으나, 너무도 끔직한 순간이었습니다. 당신은 정신적 트라우마를 1 겪습니다.",
+    "endure": "괴물의 극심한 열기를 견뎌내고자 {'{'}combat{'}'} (3) 테스트를 합니다. 실패하면, 괴물이 당신을 지나쳐 날아가고 그 열기로 피부가 타들어갑니다. 당신은 육체적 트라우마를 1 겪습니다."
   }
 }

@@ -1,50 +1,50 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the highest number of doom on a _Cultist_ enemy in play.",
-      "cultist": "-2. Place 1 doom on the nearest _Cultist_ enemy.",
-      "tablet": "-3. If you fail, place 1 of your clues on your location."
+      "skull": "-X. 플레이 상태인 _추종자_ 적 중에서, 파멸을 가장 많이 가진 _추종자_ 적의 파멸 개수가 X 값입니다.",
+      "cultist": "-2. 가장 가까운 _추종자_ 적에게 파멸을 1개 올려놓습니다.",
+      "tablet": "-3. 실패하면, 당신이 가진 단서 1개를 당신이 위치한 장소에 올려 놓습니다."
     },
     "hardExpert": {
-      "skull": "-X. X is the total number of doom in play.",
-      "cultist": "-2. Place 1 doom on each _Cultist_ enemy in play. If there are no _Cultist_ enemies in play, reveal another token.",
-      "tablet": "-4. If you fail, place all your clues on your location."
+      "skull": "-X. 플레이 상태인 모든 파멸의 개수가 X 값입니다.",
+      "cultist": "-2. 플레이 상태인 모든 _추종자_ 적에게 파멸을 1개씩 올려놓습니다. 플레이 상태인 _추종자_ 적이 없다면, 다른 혼돈 토큰을 하나 더 공개합니다.",
+      "tablet": "-4. 실패하면, 당신이 가진 모든 단서를 당신이 위치한 장소에 올려 놓습니다."
     }
   },
   "intro": {
-    "title": "Part II: The Midnight Masks",
-    "body": "<p class='basic'>Check Campaign Log. *If Lita was forced to find others to help her cause*: Read _Intro 1_.</p><p class='basic'>Otherwise, skip to _Intro 2_.</p>"
+    "title": "시나리오 II: 한밤의 가면",
+    "body": "<p class='basic'>캠페인 기록지를 확인하세요. *리타는 어쩔 수 없이 다른 사람에게 도움을 요청했다*를 적용했다면 _도입부 1_을 읽습니다.</p><p class='basic'>다른 경우라면, _도입부 2_을 읽습니다.</p>"
   },
-  "intro1": "<p>_Intro 1_: The woman came to you in a panic, raving about monsters emerging from the ground in a home near Rivertown. “I managed to trap them,” she explains, “but there are others. Other pits. Other domains.” Only last week, you would have thought she was a lunatic. Recent events, however, have challenged your preconceptions of normality. You decide to hear her out. She introduces herself as Lita Chantler and lays out a tale that strains the limits of your belief. “The creatures I speak of ,” she claims, “are called ghouls—cruel beings who plague the crypts, caverns, and tunnels beneath the city of Arkham…”</p><p class='basic right'>Continue to _Intro 3_.</p>",
-  "intro2": "<p>_Intro 2_: In the wake of the disaster at your home, Lita Chantler, the red‑haired woman from your parlor, lays out a tale that—even in light of what you have just witnessed—strains the limits of your belief. “The creatures in your home,” she claims, “are called ghouls—cruel beings who plague the crypts, caverns, and tunnels beneath the city of Arkham…”</p><p class='basic right'>Continue to _Intro 3_.</p>",
-  "intro3": "<p>_Intro 3_: “These creatures feed on the corpses of humans, and they are served by a dark cult within Arkham whose members have inexplicably come to worship the ancient master of the ghouls. This cult has been killing innocent people and feeding them to the ghouls, satiating a monstrous hunger. A dark balance was maintained. Until now. Recently,” Lita continues, “one of their lairs, where the corpses were stored, was destroyed. Since then, the ghouls have been more active than usual. I have tracked their movements and tried my best to stop them from running amok throughout the city. But I think there is something worse going on. The cult has been planning something darker, and more ominous, than anything I have yet observed. Indications are that this plan shall come to fruition tonight, shortly after midnight. Beyond that, I cannot fathom what to expect.</p><p>“Many of the cultists,” Lita continues, “will seem like everyday people, despite their foul intentions. Whenever the cult meets, its members don masks shaped like the skulls of various animals to protect their identities from one another. These masks are our mark. Symbols of death and decay. We must unmask the cultists to expose and derail their plans. We have but a few hours. The more cultists we find before midnight, the better.”</p><p class='basic right'>Continue to _Setup_.</p>",
+  "intro1": "<p>_도입부 1_: 혼란에 빠진 여성 한 명이 당신에게 다가와, 아컴 강변에 있는 집 안에서 괴물들이 솟아나고 있다며 열번을 토합니다. “그 괴물들을 가둬보려고 했어.” 그녀가 말합니다. “하지만 거기가 끝이 아니었어. 또 다른 지역에, 굴이 몇 개나 더 있었어.” 지난 주만 하더라도 당신은 이 여자가 미쳤다고 생각했을 겁니다. 하지만 최근에 일어난 비상식적인 일들 때문에 어쩌면 당신의 ‘상식’의 범주가 조금 넓어졌을지도 모릅니다. 어쨌든 당신은 그녀의 말을 끝까지 들어보기로 했습니다. 여성은 리타 챈들러라며 자신을 소개한 뒤, 당신에게 도저히 믿기 힘든 이야기를 들려주었습니다. “그 괴물들은…” 그녀가 말했습니다. “구울이라고 해. 아컴시 지하의 터널, 동굴, 묘지를 더럽히는 끔찍한 존재들이지….”</p><p class='basic right'>_도입부 3_으로 이어짐</p>",
+  "intro2": "<p>_도입부 2_: 당신의 집에서 발생한 재난이 어느 정도 수습되자, 집 거실에 나타났던 붉은 머리 여성, 리타 챈들러는 이야기를 시작했습니다. 방금 전에 그 괴물들을 두 눈으로 직접 보았음에도, 리타 챈들러의 이야기는 도저히 믿기 힘들었습니다. “네 집에 나타난 그 괴물들은…” 그녀가 말했습니다. “구울이라고 해. 아컴시 지하의 터널, 동굴, 묘지를 더럽히는 끔찍한 존재들이지….”</p><p class='basic right'>_도입부 3_으로 이어짐</p>",
+  "intro3": "<p>_도입부 3_: “이 괴물들은 인간의 시체를 먹고 살아. 그리고 아컴시에 있는 어둠의 사교가 그 구울들을 기르고 있어. 믿기 힘들겠지만 그 사교 구성원들은 고대 구울의 주인을 광적으로 섬기고 있어. 이 사교는 무고한 사람들을 죽이고, 그 시체로 구울의 배고픔을 달래고 있지. 이런 식으로 어둠의 균형이 유지되어 온 거야. … 지금까지는 말이지.” 리타가 계속 말했습니다. “최근에, 그들이 시체를 보관하던 거처 중 한 곳이 파괴됐어. 그 후로 구울들이 더 활발하게 활동하기 시작했어. 난 구울들이 도시에서 날뛰는 걸 막으려고 구울들의 움직임을 계속 추적해왔어. 하지만 내 생각엔 뭔가 더 심각한 일이 벌어지고 있는 것 같아. 사교도들이 내가 지금껏 봐온 그 무엇보다도 더 어둡고 불길한 일을 계획하고 있어. 이 계획이 오늘 밤 자정 직후에 완성될 거라는 조짐이 보여. 하지만 그 계획이 대체 무엇인지, 거기까지는 나도 잘 모르겠어.”</p><p>“대부분의 추종자들은” 리타가 말을 이어갔습니다. “내면에 사악한 목적을 가지고 있다는 점만 제외하면 일반인들과 별로 차이가 없어. 사교 집회가 열릴 때마다 추종자들은 서로의 정체를 감추려고 다양한 동물의 해골 모양 가면을 쓰고 나타나. 이런 가면이 바로 그들의 표식이지. 죽음과 부패의 상징 말이야. 이 추종자들의 가면을 벗겨야만 그들의 계획을 밝혀내고 저지할 수 있어. 앞으로 남은 시간이 얼마 없어. 자정이 되기 전에 최대한 많은 추종자들을 찾아내야 해.”</p><p class='basic right'>_게임 준비_로 이어짐.</p>",
   "resolutions": {
     "noResolution": {
-      "title": "No Resolution",
-      "body": "<div class='resolution'><p class='basic'>_If no resolution was reached (each investigator resigned or was defeated):_ Read _Resolution 1_.</p></div>"
+      "title": "결말에 도달하지 못함",
+      "body": "<div class='resolution'><p class='basic'>_아무 결말에도 도달하지 못했다면 (모든 조사자가 후퇴하거나 쓰러졌다면):_ _결말 1_을 읽습니다.</p></div>"
     },
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1_: You’ve managed to obtain some useful information about the cult and its plans. You can only hope it’s enough.</p><ul><li>In your Campaign Log, under “Cultists We Interrogated,” record the names of each unique _Cultist_ enemy in the victory display.</li><li>In your Campaign Log, under “Cultists Who Got Away,” record the name of each unique enemy still remaining in the Cultist deck or in play. If it is Agenda 1, record “The Masked Hunter” here as well.</li><li>If the Ghoul Priest is in the victory display, cross out “*the Ghoul Priest is still alive*” in your Campaign Log.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "결말 1",
+      "body": "<div class='resolution'><p>_결말 1_: 당신은 가까스로 사교의 정체와 그들의 계획에 대한 일부 유익한 정보를 얻었습니다. 이 정도 정보로 충분하길 바랄 뿐입니다.</p><ul><li>캠페인 기록지의 “심문한 추종자” 아래에, 승점 더미에 있는 고유 _추종자_ 적의 명칭을 모두 적습니다.</li><li>캠페인 기록지의 “도망친 추종자” 아래에, 플레이 상태이거나 추종자 덱에 남아 있는 고유 적의 명칭을 모두 기록합니다. 주요사건 1을 넘지 못했다면, “가면 쓴 사냥꾼”도 적어 놓습니다.</li><li>‘구울 사제’가 승점 더미에 있으면, *‘구울 사제’가 여전히 살아있다*에 취소선을 긋습니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2_: Twelve bells ring out, signaling midnight. You’re out of time; the cult’s ritual will begin shortly. You’ve managed to obtain some useful information about the cult and its plans. You can only hope it’s enough.</p><ul><li>In your Campaign Log, under “Cultists We Interrogated,” record the names of each unique _Cultist_ enemy in the victory display.</li><li>In your Campaign Log, under “Cultists Who Got Away,” record the name of each unique enemy still remaining in the Cultist deck or in play.</li><li>In your Campaign Log, record that *it is past midnight.*</li><li>If the Ghoul Priest is in the victory display, cross out “*the Ghoul Priest is still alive*” in your Campaign Log.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "결말 2",
+      "body": "<div class='resolution'><p>_결말 2_: 12시 종이 울렸습니다. 자정이 되었다는 신호입니다. 더 이상 시간이 없습니다. 사교들이 곧 의식을 시작할 것입니다. 당신은 가까스로 사교의 정체와 그들의 계획에 대한 일부 유익한 정보를 얻었습니다. 이 정도 정보로 충분하길 바랄 뿐입니다.</p><ul><li>캠페인 기록지의 “심문한 추종자” 아래에, 승점 더미에 있는 고유 _추종자_ 적의 명칭을 모두 적습니다.</li><li>캠페인 기록지의 “도망친 추종자” 아래에, 플레이 상태이거나 추종자 덱에 남아 있는 고유 적의 명칭을 모두 기록합니다. 주요사건 1을 넘지 못했다면, “가면 쓴 사냥꾼”도 적어 놓습니다.</li><li>캠페인 기록지에 *자정이 지났다*라고 기록합니다.</li><li>‘구울 사제’가 승점 더미에 있으면, *‘구울 사제’가 여전히 살아있다*에 취소선을 긋습니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     }
   },
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: *The Midnight Masks*, *Chilling Cold*, *Nightgaunts*, *Dark Cult*, and *Locked Doors*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/midnight-masks.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
-    "cultistDeck": "<div class='columns simple'><p class='basic'>Set the *Cult of Umôrdhoth* encounter set aside as a separate “Cultist deck,” and shuffle it. This set is indicated by the following icon:</p><section class='encounter-sets'><img src='{setImgPath}/cult-of-umordhoth.png' /></section></div>",
-    "placeLocations": "Choose one of the two Downtown locations and one of the two Southside locations at random and put them into play. Remove the other versions of Downtown and Southside from the game. Then, put the Northside, Easttown, Rivertown, St. Mary’s Hospital, Graveyard, Miskatonic University, and Your House locations into play. (See next page for suggested placement.)",
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *한밤의 가면*, *으스스한 한기*, *나이트건트*, *어둠의 사교*, *잠긴 문*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/midnight-masks.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+    "cultistDeck": "<div class='columns simple'><p class='basic'>*우몰도스의 사교도* 조우 세트를 별도의 “추종자 덱”으로 구분하여 치워 둡니다. 그런 다음 섞습니다. 이 세트에는 다음 아이콘이 그려져 있습니다:</p><section class='encounter-sets'><img src='{setImgPath}/cult-of-umordhoth.png' /></section></div>",
+    "placeLocations": "무작위로 ‘아컴 번화가’ 2곳 중 한 곳과 ‘아컴 남부’ 2곳 중 한 곳을 선택합니다. 그런 다음, 선택한 장소를 플레이 영역에 둡니다. 선택하지 않은 ‘아컴 번화가’와 ‘아컴 남부’는 게임에서 제거합니다. 그런 다음, ‘아컴 북부’, ‘아컴 동부’, ‘아컴 강변’, ‘세인트 메리 병원’, ‘묘지’, ‘미스캐토닉 대학’, ‘당신의 집’ 장소 카드를 플레이 영역에 둡니다(추천 장소 배치를 참조하여 놓습니다).",
     "acolytes": {
-      "instructions": "Based on the number of players in the game:",
-      "onePlayer": "If there is exactly 1 player in the game, no changes are made.",
-      "twoPlayer": "If there are exactly 2 players in the game, search the gathered encounter sets for 1 copy of Acolyte and spawn it at Southside.",
-      "threePlayer": "If there are exactly 3 players in the game, search the gathered encounter sets for 2 copies of Acolyte. Spawn 1 at Southside and 1 at Downtown.",
-      "fourPlayer": "If there are exactly 4 players in the game, search the gathered encounter sets for 3 copies of Acolyte. Spawn 1 at Southside, 1 at Downtown, and 1 at the Graveyard."
+      "instructions": "플레이어 인원수에 따라 다음 사항을 적용합니다:",
+      "onePlayer": "한 명이 게임을 한다면, 아무 변경 사항이 없습니다.",
+      "twoPlayer": "두 명이 게임을 한다면, 조우 세트에서 ‘사교도 시종’ 사본 하나를 찾습니다. 찾은 ‘사교도 시종’은 ‘아컴 남부’에 출현합니다.",
+      "threePlayer": "세 명이 게임을 한다면, 조우 세트에서 ‘사교도 시종’ 사본 둘을 찾습니다. 찾은 ‘사교도 시종’은 ‘아컴 남부’와 ‘아컴 번화가’에 각각 하나씩 출현합니다.",
+      "fourPlayer": "네 명이 게임을 한다면, 조우 세트에서 ‘사교도 시종’ 사본 셋을 찾습니다. 찾은 ‘사교도 시종’은 ‘아컴 남부’와 ‘아컴 번화가’, ‘묘지’에 각각 하나씩 출현합니다."
     },
-    "burnedToTheGround": "Check Campaign Log. If *your house has burned to the ground*: Remove Your House from the game. Each investigator begins play at Rivertown.",
-    "houseStillStanding": "Check Campaign Log. If *your house is still standing*: Each investigator begins play at Your House.",
-    "ghoulPriest": "Check Campaign Log. If *the Ghoul Priest is still alive*: Shuffle it into the encounter deck."
+    "burnedToTheGround": "캠페인 기록지를 확인합니다. *당신의 집이 불타버렸다*면: ‘당신의 집’을 게임에서 제거합니다. 모든 조사자는 ‘아컴 강변’에서 시작합니다.",
+    "houseStillStanding": "캠페인 기록지를 확인합니다. *당신의 집이 여전히 남아 있다*면: 모든 조사자는 ‘당신의 집’에서 시작합니다.",
+    "ghoulPriest": "캠페인 기록지를 확인합니다. *‘구울 사제’가 여전히 살아 있다*면: ‘구울 사제’를 조우 덱에 넣고 섞습니다."
   }
 }

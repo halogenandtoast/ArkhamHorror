@@ -100,7 +100,7 @@ instance RunMessage Marksmanship1Effect where
       let sid = choose.skillTest 
       let iid = choose.investigator
       ignored <- selectAny $ EnemyWithId eid <> oneOf [EnemyWithKeyword Retaliate, EnemyWithKeyword Aloof]
-      ignoreWindow <- checkWindows [mkAfter $ Window.CancelledOrIgnoredCardOrGameEffect effectSource]
+      ignoreWindow <- checkWindows [mkAfter $ Window.CancelledOrIgnoredCardOrGameEffect effectSource Nothing]
       enabled <- skillTestModifiers sid attrs iid [IgnoreRetaliate, IgnoreAloof]
 
       pushAll $ enabled : [ignoreWindow | ignored]

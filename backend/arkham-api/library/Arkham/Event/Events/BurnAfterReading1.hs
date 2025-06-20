@@ -9,6 +9,7 @@ import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Modifier
 
 newtype BurnAfterReading1 = BurnAfterReading1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -32,7 +33,7 @@ instance RunMessage BurnAfterReading1 where
       pure e
     DoStep 2 (PlayThisEvent iid eid) | eid == toId attrs -> do
       for_ (getEventMeta attrs) \case
-        True -> selectWithNonNull AnyAgenda \agendas ->
+        True -> selectWithNonNull (NotAgenda $ AgendaWithModifier CannotRemoveDoomOnThis) \agendas ->
           chooseOrRunOne iid [targetLabel a [RemoveDoom (toSource attrs) (toTarget a) 1] | a <- agendas]
         False -> pure ()
       pure e

@@ -41,7 +41,7 @@ import Arkham.Evade qualified as Evade
 import Arkham.Event.Types qualified as Field
 import Arkham.Fight
 import Arkham.Fight qualified as Fight
-import {-# SOURCE #-} Arkham.GameEnv (findCard)
+import {-# SOURCE #-} Arkham.GameEnv (getCard, findCard)
 import Arkham.Helpers
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Act
@@ -549,6 +549,9 @@ instance FetchCard EventId where
 instance FetchCard TreacheryId where
   fetchCardMaybe = fieldMap Field.TreacheryCard Just
 
+instance FetchCard CardId where
+  fetchCardMaybe = fmap Just  . getCard
+
 instance FetchCard Field.TreacheryAttrs where
   fetchCardMaybe = fieldMap Field.TreacheryCard Just . asId
 
@@ -862,6 +865,10 @@ placeTokens
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
 placeTokens source lid token n = push $ PlaceTokens (toSource source) (toTarget lid) token n
 
+placeTokensOn
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Token -> Int -> target -> m ()
+placeTokensOn source token n lid = placeTokens source lid token n
+
 addUses
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
 addUses = placeTokens
@@ -924,6 +931,9 @@ drawAnotherChaosToken = push . DrawAnotherChaosToken
 
 assignEnemyDamage :: ReverseQueue m => DamageAssignment -> EnemyId -> m ()
 assignEnemyDamage assignment = push . Msg.assignEnemyDamage assignment
+
+eachLocation :: ReverseQueue m => (LocationId -> m ()) -> m ()
+eachLocation = selectEach Anywhere
 
 eachInvestigator :: ReverseQueue m => (InvestigatorId -> m ()) -> m ()
 eachInvestigator f = do
@@ -2043,12 +2053,12 @@ dealAdditionalHorror iid amount additionalMessages = lift $ Msg.dealAdditionalHo
 cancelRevelation :: (ReverseQueue m, Sourceable a, IsCard card) => a -> card -> m ()
 cancelRevelation a card = do
   cardResolutionModifier card a (CardIdTarget $ toCardId card) IgnoreRevelation
-  push $ CancelRevelation (toSource a)
+  push $ CancelRevelation (toCardId card) (toSource a)
 
 cancelCardEffects :: (ReverseQueue m, Sourceable a, IsCard card) => a -> card -> m ()
 cancelCardEffects a card = do
   cardResolutionModifier card a (CardIdTarget $ toCardId card) IgnoreRevelation
-  push $ CancelRevelation (toSource a)
+  push $ CancelRevelation (toCardId card) (toSource a)
   push $ CancelNext (toSource a) DrawEnemyMessage
   push $ CancelSurge (toSource a)
 
@@ -2329,6 +2339,10 @@ healHorror
   :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
 healHorror target source n = push $ Msg.HealHorror (toTarget target) (toSource source) n
 
+healHorrorOn
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Int -> target -> m ()
+healHorrorOn source n target = healHorror target source n
+
 discoverAtYourLocation
   :: (ReverseQueue m, Sourceable source) => IsInvestigate -> InvestigatorId -> source -> Int -> m ()
 discoverAtYourLocation isInvestigate iid s n = do
@@ -2407,7 +2421,7 @@ disengageFromAll :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => enemy 
 disengageFromAll enemy = push $ Msg.DisengageEnemyFromAll (asId enemy)
 
 cancelledOrIgnoredCardOrGameEffect :: (ReverseQueue m, Sourceable source) => source -> m ()
-cancelledOrIgnoredCardOrGameEffect source = checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource source)
+cancelledOrIgnoredCardOrGameEffect source = checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource source) Nothing
 
 cancelChaosToken
   :: (ReverseQueue (t m), HasQueue Message m, MonadTrans t, Sourceable source)
@@ -2419,6 +2433,7 @@ cancelChaosToken source iid token = do
   lift $ Msg.cancelChaosToken token
   push
     $ CancelEachNext
+      Nothing
       (toSource source)
       [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
   push $ ChaosTokenCanceled iid (toSource source) token
@@ -2463,6 +2478,30 @@ cancelAttack source details = when details.canBeCanceled do
 
 changeAttackDetails :: (ReverseQueue m, AsId a, IdOf a ~ EnemyId) => a -> EnemyAttackDetails -> m ()
 changeAttackDetails eid details = push $ ChangeEnemyAttackDetails (asId eid) details
+
+cancelAssetLeavePlay
+  :: (MonadTrans t, HasQueue Message m, AsId asset, IdOf asset ~ AssetId)
+  => asset
+  -> t m ()
+cancelAssetLeavePlay asset = lift do
+  let
+    aid = asId asset
+    isAssetLeavePlay = \case
+      Discard _ _ (AssetTarget aid') -> aid == aid'
+      Arkham.Message.Discarded (AssetTarget aid') _ _ -> aid == aid'
+      Do (Arkham.Message.Discarded (AssetTarget aid') _ _) -> aid == aid'
+      RemoveFromPlay (AssetSource aid') -> aid == aid'
+      RemovedFromPlay (AssetSource aid') -> aid == aid'
+      Arkham.Message.AssetDefeated _ aid' -> aid == aid'
+      Do (Arkham.Message.AssetDefeated _ aid') -> aid == aid'
+      After (Arkham.Message.AssetDefeated _ aid') -> aid == aid'
+      CheckWindows ws -> any isAssetLeavePlayWindow ws
+      Do (CheckWindows ws) -> any isAssetLeavePlayWindow ws
+      _ -> False
+    isAssetLeavePlayWindow w = case w.kind of
+      Window.LeavePlay (AssetTarget aid') -> aid' == aid
+      _ -> False
+  withQueue_ $ filter (not . isAssetLeavePlay)
 
 cancelEnemyDefeat
   :: (MonadTrans t, HasQueue Message m, AsId enemy, IdOf enemy ~ EnemyId)
@@ -2641,6 +2680,9 @@ updateMax def n ew = do
 takeControlOfAsset
   :: (ReverseQueue m, AsId asset, IdOf asset ~ AssetId) => InvestigatorId -> asset -> m ()
 takeControlOfAsset iid asset = push $ Msg.TakeControlOfAsset iid (asId asset)
+
+loseControlOfAsset :: (ReverseQueue m, AsId asset, IdOf asset ~ AssetId) => asset -> m ()
+loseControlOfAsset asset = push $ Msg.LoseControlOfAsset (asId asset)
 
 takeControlOfSetAsideAsset :: ReverseQueue m => InvestigatorId -> Card -> m ()
 takeControlOfSetAsideAsset iid card = push $ Msg.TakeControlOfSetAsideAsset iid card
@@ -2828,9 +2870,10 @@ createAssetAt_ c placement = do
   push =<< Msg.createAssetAt_ card placement
 
 createAssetAt
-  :: (ReverseQueue m, IsCard card) => card -> Placement -> m AssetId
+  :: (ReverseQueue m, FetchCard card) => card -> Placement -> m AssetId
 createAssetAt c placement = do
-  (assetId, msg) <- Msg.createAssetAt (toCard c) placement
+  card <- fetchCard c
+  (assetId, msg) <- Msg.createAssetAt card placement
   push msg
   pure assetId
 
@@ -3002,6 +3045,9 @@ withBatchedTimings w body = do
     body
     checkWindows [after]
 
+cancelWindowBatch :: ReverseQueue m => [Window] -> m ()
+cancelWindowBatch = cancelBatch . Window.getBatchId
+
 cancelBatch :: ReverseQueue m => BatchId -> m ()
 cancelBatch bId = push $ CancelBatch bId
 
@@ -3077,6 +3123,11 @@ advanceCurrentAct :: (ReverseQueue m, Sourceable source) => source -> m ()
 advanceCurrentAct source = do
   actId <- getCurrentAct
   push $ AdvanceAct actId (toSource source) #other
+
+advanceCurrentActWithClues :: (ReverseQueue m, Sourceable source) => source -> m ()
+advanceCurrentActWithClues source = do
+  actId <- getCurrentAct
+  push $ AdvanceAct actId (toSource source) #clues
 
 updateLocation
   :: ( ReverseQueue m

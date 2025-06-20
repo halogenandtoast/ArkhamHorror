@@ -4,6 +4,7 @@ import Arkham.Asset.Types (AssetAttrs, Field (..))
 import Arkham.Card.CardDef
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasQueue
 import Arkham.Classes.Query hiding (matches)
 import Arkham.Enemy.Types (EnemyAttrs, Field (..))
 import {-# SOURCE #-} Arkham.Helpers.Cost (getCanAffordCost)
@@ -15,6 +16,8 @@ import Arkham.Location.Types (Field (..))
 import Arkham.LocationSymbol
 import Arkham.Matcher hiding (LocationCard)
 import Arkham.Matcher qualified as Matcher
+import Arkham.Message (Message (AddDirectConnection))
+import Arkham.Message.Lifted.Queue
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
@@ -265,3 +268,9 @@ getCanLeaveCurrentLocation iid source = do
       mods <- getModifiers lid
       let extraCostsToLeave = mconcat [c | AdditionalCostToLeave c <- mods]
       getCanAffordCost iid source [#move] [] extraCostsToLeave
+
+connectBothWays
+  :: (ReverseQueue m, AsId l1, AsId l2, IdOf l1 ~ LocationId, IdOf l2 ~ LocationId) => l1 -> l2 -> m ()
+connectBothWays l1 l2 = do
+  push $ AddDirectConnection (asId l1) (asId l2)
+  push $ AddDirectConnection (asId l2) (asId l1)

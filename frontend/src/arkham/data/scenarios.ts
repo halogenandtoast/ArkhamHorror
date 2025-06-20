@@ -6,5 +6,6 @@ import theCircleUndone from '@/arkham/data/theCircleUndone.json'
 import theDreamEaters from '@/arkham/data/theDreamEaters.json'
 import theInnsmouthConspiracy from '@/arkham/data/theInnsmouthConspiracy.json'
 import edgeOfTheEarth from '@/arkham/data/edgeOfTheEarth.json'
+import sideStories from '@/arkham/data/side-stories.json'
 
-export default [...nightOfTheZealot, ...theDunwichLegacy, ...thePathToCarcosa, ...theForgottenAge, ...theCircleUndone, ...theDreamEaters, ...theInnsmouthConspiracy, ...edgeOfTheEarth]
+export default [...nightOfTheZealot, ...theDunwichLegacy, ...thePathToCarcosa, ...theForgottenAge, ...theCircleUndone, ...theDreamEaters, ...theInnsmouthConspiracy, ...edgeOfTheEarth, ...sideStories]

@@ -5,6 +5,7 @@ module TestImport.New (module TestImport.New, module X) where
 import Arkham.Helpers.Modifiers as X
 import TestImport.Lifted as X hiding (
   addToHand,
+  asDefs,
   drawCards,
   duringTurn,
   evadedBy,

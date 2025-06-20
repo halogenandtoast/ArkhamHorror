@@ -9,7 +9,7 @@ import Arkham.Action (Action)
 import Arkham.Agenda.AdvancementReason (AgendaAdvancementReason)
 import Arkham.Asset.Uses
 import Arkham.Attack.Types
-import Arkham.Card (Card)
+import Arkham.Card (Card, CardId)
 import Arkham.ChaosToken.Types (ChaosToken, ChaosTokenFace)
 import Arkham.Damage
 import Arkham.DamageEffect (DamageEffect)
@@ -318,7 +318,7 @@ data WindowType
   | EnemiesAttackStep
   | AddingToCurrentDepth
   | EntersThreatArea InvestigatorId Card
-  | CancelledOrIgnoredCardOrGameEffect Source -- Diana Stanley
+  | CancelledOrIgnoredCardOrGameEffect Source (Maybe CardId)-- Diana Stanley
   | ScenarioCountIncremented ScenarioCountKey
   | IncreasedAlarmLevel InvestigatorId
   | ScenarioEvent Text (Maybe InvestigatorId) Value

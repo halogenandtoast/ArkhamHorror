@@ -107,7 +107,7 @@ instance RunMessage TelescopicSight3Effect where
       ignored <- selectAny $ EnemyWithId eid <> oneOf [EnemyWithKeyword Retaliate, EnemyWithKeyword Aloof]
       skillTestModifiers sid attrs.source iid [IgnoreRetaliate, IgnoreAloof]
       when ignored do
-        checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect attrs.source
+        checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect attrs.source Nothing
       pure . TelescopicSight3Effect $ attrs & targetL .~ EnemyTarget eid
     SkillTestEnds _ _ _ -> disableReturn e
     _ -> TelescopicSight3Effect <$> liftRunMessage msg attrs

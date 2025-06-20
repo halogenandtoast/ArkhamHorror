@@ -645,7 +645,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         : splitWithWindows
           (PlacedUnderneath AgendaDeckTarget card)
           [Window.PlaceUnderneath AgendaDeckTarget card]
-    pure a
+    pure $ a & setAsideCardsL %~ filter (`notElem` cards)
   PlaceUnderneath ActDeckTarget cards -> do
     for_ cards $ \card ->
       pushAll
@@ -653,9 +653,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         : splitWithWindows
           (PlacedUnderneath ActDeckTarget card)
           [Window.PlaceUnderneath ActDeckTarget card]
-    pure a
+    pure $ a & setAsideCardsL %~ filter (`notElem` cards)
   PlaceUnderneath ScenarioTarget cards -> do
-    pure $ a & cardsUnderScenarioReferenceL <>~ cards
+    pure $ a & cardsUnderScenarioReferenceL <>~ cards & setAsideCardsL %~ filter (`notElem` cards)
+  PlaceUnderneath _ cards -> do
+    pure $ a & setAsideCardsL %~ filter (`notElem` cards)
   CardEnteredPlay _ card -> liftRunMessage (ObtainCard card.id) a
   ObtainCard cardId -> do
     let
@@ -1016,7 +1018,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         push (RequestedEncounterCard source (Just iid) (Just x))
         pure $ a & encounterDeckL .~ Deck xs & discardL %~ (reverse discards <>)
   DiscardUntilFirst iid source (Deck.EncounterDeckByKey k) matcher -> do
-    (discards, remainingDeck) <- breakM (`extendedCardMatch` matcher) (unDeck $ a ^. encounterDeckLensFromKey k)
+    (discards, remainingDeck) <-
+      breakM (`extendedCardMatch` matcher) (unDeck $ a ^. encounterDeckLensFromKey k)
     case remainingDeck of
       [] -> do
         let otherDiscardL = encounterDecksL . at k . non (Deck [], []) . _2
@@ -1027,7 +1030,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       (x : xs) -> do
         push $ RequestedEncounterCard source (Just iid) (Just x)
         -- pure $ a & encounterDeckL .~ Deck xs & discardL %~ (reverse discards <>)
-        pure $ a & encounterDecksL . at k . non (Deck [], []) %~ (\(_, zs) -> (Deck xs, x:zs))
+        pure $ a & encounterDecksL . at k . non (Deck [], []) %~ (\(_, zs) -> (Deck xs, x : zs))
   DiscardUntilN n iid source target Deck.EncounterDeck matcher -> do
     push $ DiscardUntilN n iid source target (Deck.EncounterDeckByKey RegularEncounterDeck) matcher
     pure a
@@ -1466,4 +1469,6 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           afterMsg <- checkWindows [mkAfter (Window.AgendaWouldAdvance DoomThreshold x)]
           pushAll [whenMsg, afterMsg, ForTarget (toTarget x) AdvanceAgendaIfThresholdSatisfied]
     pure a
+  ReadStoryWithPlacement _ card _ _ _ -> do
+    pure $ a & setAsideCardsL %~ filter (/= card)
   _ -> pure a

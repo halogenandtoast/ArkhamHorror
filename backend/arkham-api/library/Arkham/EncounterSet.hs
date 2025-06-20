@@ -193,9 +193,9 @@ data EncounterSet
   | ReturnToDimCarcosa
   | DelusoryEvils
   | DecayingReality
-  | HastursEnvoys 
+  | HastursEnvoys
   | MaddeningDelusions
-  | NeuroticFear 
+  | NeuroticFear
   | ReturnToTheUntamedWilds
   | ReturnToTheDoomOfEztli
   | ReturnToThreadsOfFate
@@ -223,6 +223,17 @@ data EncounterSet
   | SinsOfThePast
   | TheBlobThatAteEverythingELSE
   | TheMidwinterGala
+  | BeyondTheBeyond
+  | CongressOfTheKeys
+  | DancingMad
+  | DeadHeat
+  | DealingsInTheDark
+  | DogsOfWar
+  | OnThinIce
+  | RiddlesAndRain
+  | SanguineShadows
+  | ShadesOfSuffering
+  | WithoutATrace
   | Test
   deriving stock (Show, Eq, Ord, Bounded, Enum, Data)
 

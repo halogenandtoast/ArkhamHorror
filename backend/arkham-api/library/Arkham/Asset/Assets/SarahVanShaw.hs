@@ -4,9 +4,10 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Modifier
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 
 newtype SarahVanShaw = SarahVanShaw AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass (IsAsset)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sarahVanShaw :: AssetCard SarahVanShaw
@@ -16,6 +17,9 @@ resourcesPaid :: Payment -> Int
 resourcesPaid (ResourcePayment n) = n
 resourcesPaid (Payments ps) = sum $ map resourcesPaid ps
 resourcesPaid _ = 0
+
+instance HasModifiersFor SarahVanShaw where
+  getModifiersFor (SarahVanShaw a) = handleSpellbound a
 
 instance HasAbilities SarahVanShaw where
   getAbilities (SarahVanShaw a) =
@@ -31,8 +35,8 @@ instance RunMessage SarahVanShaw where
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
-      pure $ SarahVanShaw $ attrs & flippedL .~ True & visibleL .~ False
+      pure $ SarahVanShaw $ attrs & flippedL .~ True & visibleL .~ False & setMeta True
     Flip _ _ (isTarget attrs -> True) -> do
       let flipped = not $ view flippedL attrs
-      pure $ SarahVanShaw $ attrs & flippedL .~ flipped & visibleL .~ True
+      pure $ SarahVanShaw $ attrs & flippedL .~ flipped & visibleL .~ True & setMeta False
     _ -> SarahVanShaw <$> liftRunMessage msg attrs

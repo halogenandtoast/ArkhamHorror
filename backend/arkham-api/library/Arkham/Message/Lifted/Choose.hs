@@ -1,6 +1,7 @@
 module Arkham.Message.Lifted.Choose where
 
 import Arkham.Ability.Types
+import Arkham.Calculation
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
@@ -16,6 +17,7 @@ import Arkham.Query
 import Arkham.Question
 import Arkham.Queue
 import Arkham.SkillType
+import Arkham.Source
 import Arkham.Target
 import Arkham.Text (FlavorText, toI18n)
 import Arkham.Window (defaultWindows)
@@ -181,6 +183,18 @@ chooseTest skind n body = countVar n $ skillVar skind $ labeled' "test" body
 
 chooseUseSkill :: (HasI18n, ReverseQueue m) => SkillType -> QueueT Message m () -> ChooseT m ()
 chooseUseSkill skind body = skillVar skind $ labeled' "useSkill" body
+
+chooseBeginSkillTest
+  :: (Sourceable source, Targetable target, ReverseQueue m)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> target
+  -> [SkillType]
+  -> GameCalculation
+  -> m ()
+chooseBeginSkillTest sid iid source target kinds n = do
+  chooseOneM iid $ for_ kinds \kind -> skillLabeled kind $ beginSkillTest sid iid source target kind n
 
 skip :: ReverseQueue m => Text -> ChooseT m ()
 skip = (`labeled` nothing)

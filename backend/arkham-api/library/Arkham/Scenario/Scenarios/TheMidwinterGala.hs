@@ -5,13 +5,14 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Agenda.Sequence
 import Arkham.Agenda.Types (Field (AgendaSequence))
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Types (Field (AssetController, AssetTraits))
+import Arkham.Asset.Types qualified as Field
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation (createExhausted)
+import Arkham.Exception
 import Arkham.Helpers
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.FlavorText
@@ -27,17 +28,18 @@ import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message (StoryMode (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement qualified as Placement
-import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted hiding (InvestigatorDamage)
 import Arkham.Scenarios.TheMidwinterGala.Faction
+import Arkham.Scenarios.TheMidwinterGala.Helpers
 import Arkham.Scenarios.TheMidwinterGala.Meta
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Trait (Trait (Guest, Leader, Manor, Monster, Private, SecondFloor))
 import Arkham.Treachery.Cards qualified as Treacheries
+import Data.Map.Strict qualified as Map
 
 {- FOURMOLU_DISABLE -}
 standardTokens, hardTokens, expertTokens :: [ChaosTokenFace]
@@ -93,7 +95,7 @@ instance HasChaosTokenValue TheMidwinterGala where
       pure $ ChaosTokenValue ElderThing (NegativeModifier $ if isEasyStandard attrs then 3 else 4)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-calculateScore :: HasGame m => ScenarioAttrs -> m Int
+calculateScore :: HasGame m => ScenarioAttrs -> m (Map Tally Int)
 calculateScore attrs = do
   let Meta {rival} = toResult attrs.meta
   manorNoClue <-
@@ -102,7 +104,7 @@ calculateScore attrs = do
       <> RevealedLocation
       <> LocationWithoutClues
   guestControlled <- selectCount $ AssetWithTrait Guest <> AssetControlledBy Anyone
-  spellboundInPlay <- selectAny $ AssetWithModifier (ScenarioModifier "spellbound")
+  spellboundInPlay <- selectAny (SpellboundAsset AnyAsset)
   agendaId <- getCurrentAgenda
   Sequence step side <- field AgendaSequence agendaId
   bloodless <- inVictoryDisplay $ cardIs Enemies.theBloodlessMan
@@ -131,28 +133,26 @@ calculateScore attrs = do
       if not defeatedAny && totalHorror <= playerCount * 2
         then 3
         else 0
-    agendaBonus = if side == A && step <= 2 then 5 else 0
-    difficultyBonus = case attrs.difficulty of
-      Hard -> 3
-      Expert -> 6
-      _ -> 0
     alliedScore = 0
   pure
-    $ manorNoClue
-    + guestControlled
-    + (if not spellboundInPlay then 4 else 0)
-    + agendaBonus
-    + (if bloodless || bloodlessUnleashed then 4 else 0)
-    + (if paleLantern then 3 else 0)
-    + (if declan then 3 else 0)
-    + (if rivalInVictory then 4 else 0)
-    + damageBonus
-    + horrorBonus
-    + difficultyBonus
-    + alliedScore
+    $ mapFromList
+      [ (ManorsWithNoClues, manorNoClue)
+      , (GuestAssetsControlled, guestControlled)
+      , (NoSpellboundInPlay, if not spellboundInPlay then 4 else 0)
+      , (Agenda1AOr2A, if side == A && step <= 2 then 5 else 0)
+      , (BloodlessManInVictory, if bloodless || bloodlessUnleashed then 4 else 0)
+      , (PaleLanternInVictory, if paleLantern then 3 else 0)
+      , (DeclanPearceInVictory, if declan then 3 else 0)
+      , (RivalInVictory, if rivalInVictory then 3 else 0)
+      , (DamageBonus, damageBonus)
+      , (HorrorBonus, horrorBonus)
+      , (HardMode, if attrs.difficulty == Hard then 3 else 0)
+      , (ExpertMode, if attrs.difficulty == Expert then 6 else 0)
+      , (FactionBonus, alliedScore)
+      ]
 
 instance RunMessage TheMidwinterGala where
-  runMessage msg s@(TheMidwinterGala attrs) = runQueueT $ standaloneI18n "theMidwinterGala" $ case msg of
+  runMessage msg s@(TheMidwinterGala attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
       flavor $ h "title" >> p "flavor"
       flavor $ h "title" >> p "body"
@@ -161,7 +161,7 @@ instance RunMessage TheMidwinterGala where
           rival <- maybe (error "empty") sample $ nonEmpty rest
           popScope $ labeled' (factionLabel faction) do
             scope "intro" $ flavor $ h "title" >> p (factionLabel faction)
-            push $ SetScenarioMeta $ toJSON $ Meta {ally = faction, rival = rival}
+            push $ SetScenarioMeta $ toJSON $ Meta {ally = faction, rival = rival, score = mempty}
       pure s
     Setup -> runScenarioSetup TheMidwinterGala attrs do
       gather Set.TheMidwinterGala
@@ -277,75 +277,109 @@ instance RunMessage TheMidwinterGala where
             <> enemyAtLocationWith iid
         when ok $ assignHorror iid ElderThing 1
       pure s
-    ScenarioResolution r -> do
+    ScenarioResolution _r -> do
+      let Meta {ally, rival} = toResult attrs.meta
       score <- calculateScore attrs
-      let
-        bonus
-          | score >= 50 = 5
-          | score >= 40 = 4
-          | score >= 30 = 3
-          | score >= 20 = 2
-          | score >= 10 = 1
-          | otherwise = 0
+      push $ SetScenarioMeta $ toJSON $ Meta {ally, rival, score}
+      do_ msg
+      pure s
+    Do (ScenarioResolution r) -> scope "resolutions" do
       case r of
         NoResolution -> do
-          -- resigned <- selectAny ResignedInvestigator
-          resolution "noResolution"
-        Resolution 1 -> resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs (toBonus "bonus.score" bonus)
-        _ -> pure ()
+          resolution "noResolutions" >> do_ R7
+        Resolution 1 -> do
+          let Meta {ally} = toResult attrs.meta
+          storyBuild do
+            h "resolution1.title"
+            p "resolution1.body"
+            ul do
+              li "chooseGuest"
+              li "jewelOfSarnath"
+              for_ [minBound ..] \faction -> li.validate (ally == faction) (unpack $ factionLabel faction)
+          eachInvestigator (`forTarget` msg)
+          do_ $ case ally of
+            TheFoundation -> R2
+            MiskatonicUniversity -> R3
+            TheSyndicate -> R4
+            TheSilverTwilightLodge -> R5
+            LocalsOfKingsport -> R6
+        Resolution 2 -> do
+          resolution "resolution2"
+          do_ R7
+        Resolution 3 -> do
+          resolution "resolution3"
+          do_ R7
+        Resolution 4 -> do
+          resolution "resolution4"
+          do_ R7
+        Resolution 5 -> do
+          resolution "resolution5"
+          do_ R7
+        Resolution 6 -> do
+          resolution "resolution6"
+          do_ R7
+        Resolution 7 -> do
+          let Meta {score} = toResult attrs.meta
+          let talliedScore = sum $ Map.elems score
+          let
+            bonus
+              | talliedScore >= 50 = 5
+              | talliedScore >= 40 = 4
+              | talliedScore >= 30 = 3
+              | talliedScore >= 20 = 2
+              | talliedScore >= 10 = 1
+              | otherwise = 0
 
-      -- guests <- select $ AssetWithTrait Guest <> AssetControlledBy Anyone
-      -- when (notNull guests) do
-      --   lead <- getLead
-      --   chooseOrRunOne
-      --     lead
-      --     [ targetLabel
-      --         guest
-      --         [ do
-      --             card <- field AssetCard guest
-      --             investigatorIds <- allInvestigators
-      --             chooseOrRunOne
-      --               lead
-      --               [ InvestigatorLabel iid [push $ AddCardToDeckForCampaign iid card]
-      --               | iid <- investigatorIds
-      --               ]
-      --         ]
-      --     | guest <- guests
-      --     ]
+          withVars
+            [ "bonus1" .= String (if bonus == 1 then "valid" else "invalid")
+            , "bonus2" .= String (if bonus == 2 then "valid" else "invalid")
+            , "bonus3" .= String (if bonus == 3 then "valid" else "invalid")
+            , "bonus4" .= String (if bonus == 4 then "valid" else "invalid")
+            , "bonus5" .= String (if bonus == 5 then "valid" else "invalid")
+            , "score" .= toJSON talliedScore
+            ]
+            $ resolutionWithXp "resolution7"
+            $ allGainXpWithBonus' attrs (toBonus "bonus.score" bonus)
 
-      -- metaValue <- scenarioField ScenarioMeta
-      -- let Success (Meta allyFaction _) = fromJSON metaValue
-      -- case allyFaction of
-      --   TheFoundation -> story resolution2
-      --   MiskatonicUniversity -> story resolution3
-      --   TheSyndicate -> story resolution4
-      --   SilverTwilightLodge -> story resolution5
-      --   LocalsOfKingsport -> story resolution6
+          storyBuild $ scope "tasks" do
+            h "title"
+            p "body"
+            countVar (findWithDefault 0 ManorsWithNoClues score) $ p "manorsWithNoClues"
+            countVar (findWithDefault 0 GuestAssetsControlled score) $ p "guestAssetsControlled"
+            countVar (findWithDefault 0 NoSpellboundInPlay score) $ p "noSpellboundInPlay"
+            countVar (findWithDefault 0 Agenda1AOr2A score) $ p "agenda1AOr2A"
+            countVar (findWithDefault 0 BloodlessManInVictory score) $ p "bloodlessManInVictory"
+            countVar (findWithDefault 0 PaleLanternInVictory score) $ p "paleLanternInVictory"
+            countVar (findWithDefault 0 DeclanPearceInVictory score) $ p "declanPearceInVictory"
+            countVar (findWithDefault 0 RivalInVictory score) $ p "rivalInVictory"
+            countVar (findWithDefault 0 DamageBonus score) $ p "damageBonus"
+            countVar (findWithDefault 0 HorrorBonus score) $ p "horrorBonus"
+            countVar (findWithDefault 0 HardMode score) $ p "hardMode"
+            countVar (findWithDefault 0 ExpertMode score) $ p "expertMode"
+            countVar (findWithDefault 0 FactionBonus score) $ p "factionBonus"
+            countVar talliedScore $ p "total"
 
-      -- story resolution7
-      -- metaValue <- scenarioField ScenarioMeta
-      -- let Success meta = fromJSON metaValue
-      -- score <- calculateScore attrs meta
-      -- let bonus
-      --       | score >= 50 = 5
-      --       | score >= 40 = 4
-      --       | score >= 30 = 3
-      --       | score >= 20 = 2
-      --       | score >= 10 = 1
-      --       | otherwise = 0
-      -- _xp <- allGainXpWithBonus' attrs (toBonus "bonus.score" bonus)
-      -- case r of
-      --   NoResolution | not resigned -> record TheInvestigatorsWereDefeatedAtTheMidwinterGala
-      --   _ -> record TheInvestigatorsSurvivedTheMidwinterGala
-      endOfScenario
+          endOfScenario
+        _ -> throw $ UnknownResolution r
+      pure s
+    ForTarget (InvestigatorTarget iid) (ScenarioResolution (Resolution 1)) -> scope "resolutions" do
+      guests <- selectWithField Field.AssetCard $ AssetWithTrait Guest <> AssetControlledBy Anyone
+      when (notNull guests) do
+        chooseOneM iid do
+          questionLabeled' "chooseGuest"
+          unscoped $ labeled' "skip" nothing
+          for_ guests \(guest, card) -> do
+            targeting guest do
+              removeFromGame guest
+              addCampaignCardToDeck iid ShuffleIn card
       pure s
     ForTarget (AssetTarget aid) (ScenarioSpecific "spellbound" _) -> do
-      traits <- field AssetTraits aid
+      traits <- field Field.AssetTraits aid
       if Leader `member` traits
         then removeFromGame aid
         else do
           cancelAssetLeavePlay aid
-          mController <- field AssetController aid
+          mController <- field Field.AssetController aid
           lead <- getLead
           let iid = fromMaybe lead mController
           loseControlOfAsset aid
@@ -354,7 +388,6 @@ instance RunMessage TheMidwinterGala where
             Just loc -> do
               Placement.place aid (AtLocation loc)
               healAllDamageAndHorror GameSource aid
-              gameModifier ScenarioSource aid (ScenarioModifier "spellbound")
               flipOverBy iid ScenarioSource aid
       pure s
     ScenarioSpecific "placeRival" _ -> do

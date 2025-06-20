@@ -20,8 +20,7 @@ findingTheJewel :: ActCard FindingTheJewel
 findingTheJewel = act (2, A) FindingTheJewel Cards.findingTheJewel Nothing
 
 instance HasModifiersFor FindingTheJewel where
-  getModifiersFor (FindingTheJewel a) =
-    modifySelect a (AssetWithTrait Guest) [DoNotTakeUpSlot AllySlot]
+  getModifiersFor (FindingTheJewel a) = modifySelect a (AssetWithTrait Guest) [DoNotTakeUpSlot AllySlot]
 
 instance HasAbilities FindingTheJewel where
   getAbilities = actAbilities1 \a ->
@@ -29,13 +28,14 @@ instance HasAbilities FindingTheJewel where
       $ restricted
         a
         1
-        (exists $ AssetWithTrait Guest <> AssetAt YourLocation <> not_ (AssetControlledBy You))
+        (exists $ AssetWithTrait Guest <> at_ YourLocation <> not_ (AssetControlledBy You))
         parleyAction_
 
 instance RunMessage FindingTheJewel where
   runMessage msg a@(FindingTheJewel attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      assets <- select $ AssetWithTrait Guest <> AssetAt (locationWithInvestigator iid)
+      assets <-
+        select $ AssetWithTrait Guest <> at_ (locationWithInvestigator iid) <> not_ (assetControlledBy iid)
       chooseTargetM iid assets (handleTarget iid (attrs.ability 1))
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (AssetTarget aid) -> do
@@ -45,10 +45,7 @@ instance RunMessage FindingTheJewel where
           SkillIcon kind -> Just kind
           _ -> Nothing
       sid <- getRandom
-      chooseOneM iid do
-        for_ skillKinds \kind -> do
-          skillLabeled kind $ beginSkillTest sid iid (attrs.ability 1) aid kind (Fixed 3)
-
+      chooseBeginSkillTest sid iid (attrs.ability 1) aid skillKinds (Fixed 3)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       getSkillTestTarget >>= traverse_ \case

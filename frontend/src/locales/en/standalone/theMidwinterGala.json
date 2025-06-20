@@ -23,6 +23,12 @@
       "discard": "Spend 2 additional resources to discard it instead"
     }
   },
+  "tooltips": {
+    "thePaleLanternBeguilingAura": {
+      "flip": "Flip over a spellbound card at your location.",
+      "break": "Exhaust The Pale Lantern: Test {'{'}combat{'}'} or {'{'}agility{'}'} (2). If you succeed, place 1 damage on it. Then, if there is 4 damage on it, you break it; add it to the victory display (ignoring its _Forced_ effect) and flip over each spellbound card."
+    }
+  },
   "intro": {
     "title": "The Midwinter Gala",
     "flavor": "<p>“It was the Yuletide, that men call Christmas though they know in their hearts it is older than Bethlehem and Babylon, older than Memphis and mankind. It was the Yuletide, and I had come at last to the ancient sea town where my people had dwelt and kept festival in the elder time when festival was forbidden; where also they had commanded their sons to keep festival once every century, that the memory of primal secrets might not be forgotten.”</p><p class='right'>– H.P. Lovecraft, \"The Festival\"</p>",
@@ -55,27 +61,60 @@
     },
     "resolution2": {
       "title": "Resolution 2",
-      "body": "<p>Agent Antonova turns and strides toward you, her left cheek spattered with viscous ichor.</p><p>“I did not like this party at first, but it became much more interesting once they locked the doors,” she grins, then lays a hand on your shoulder.</p><p>“I have reported the strange effects of this ‘Jewel’ to my superiors. They want it brought to our offices for safekeeping, but I have several other obligations to attend to before I can deliver it.”</p><p>“I suppose there is little harm in letting you hold onto it for now. Know that I will be back later to collect it.”</p><p>After seeing the chaos the Jewel brought to the Gala, you wonder if you are being used more as a ‘case study’ than a recipient of its power.</p>"
+      "body": "<p>Agent Antonova turns and strides toward you, her left cheek spattered with viscous ichor.</p><p>“I did not like this party at first, but it became much more interesting once they locked the doors,” she grins, then lays a hand on your shoulder.</p><p>“I have reported the strange effects of this ‘Jewel’ to my superiors. They want it brought to our offices for safekeeping, but I have several other obligations to attend to before I can deliver it.”</p><p>“I suppose there is little harm in letting you hold onto it for now. Know that I will be back later to collect it.”</p><p>After seeing the chaos the Jewel brought to the Gala, you wonder if you are being used more as a ‘case study’ than a recipient of its power.</p><ul><li>Skip to _Resolution 7_</li></ul>"
     },
     "resolution3": {
       "title": "Resolution 3",
-      "body": "<p>After calming down a very flustered Dean Caldwell, the academic grabs the Jewel from your hand and holds it up to the light.</p><p>“Truly remarkable. The legends hardly do it justice. Miraculous! Breathtaking!”</p><p>The astute gentleman eventually runs out of descriptors, then thanks you for your assistance.</p><p>“Given what happened here tonight, I would prefer we not house the Jewel on campus grounds. We only just rebuilt the student dormitories. But if you could bring it by my office next week, I would relish the chance to study it further.”</p>"
+      "body": "<p>After calming down a very flustered Dean Caldwell, the academic grabs the Jewel from your hand and holds it up to the light.</p><p>“Truly remarkable. The legends hardly do it justice. Miraculous! Breathtaking!”</p><p>The astute gentleman eventually runs out of descriptors, then thanks you for your assistance.</p><p>“Given what happened here tonight, I would prefer we not house the Jewel on campus grounds. We only just rebuilt the student dormitories. But if you could bring it by my office next week, I would relish the chance to study it further.”</p><ul><li>Skip to _Resolution 7_</li></ul>"
     },
     "resolution4": {
       "title": "Resolution 4",
-      "body": "<p>\"Not too shabby,\" says Johnny Valone, lit cigar in his mouth. \"You have light hands. Could always use another pair for a job or two.\"</p><p>He winks as he blows smoke out the side of his mouth. \"I figured we could pawn the thing on the black market for a fair price, but after seeing what happened in there–\" his tough exterior softens. \"I wouldn’t wish that on anyone. What were those things anyway? Elephants? Sick gorillas?\"</p><p>He takes one last puff of his cigar. \"I guess I’ll never know. All I knows is, there’s no way I’m hauling that rock back to Arkham. Consider the Jewel a party favor. And this is for savin’ my ass.\" He hands out a wad of bills to you and melts into the shadows with a Cheshire grin.</p>"
+      "body": "<p>\"Not too shabby,\" says Johnny Valone, lit cigar in his mouth. \"You have light hands. Could always use another pair for a job or two.\"</p><p>He winks as he blows smoke out the side of his mouth. \"I figured we could pawn the thing on the black market for a fair price, but after seeing what happened in there–\" his tough exterior softens. \"I wouldn’t wish that on anyone. What were those things anyway? Elephants? Sick gorillas?\"</p><p>He takes one last puff of his cigar. \"I guess I’ll never know. All I knows is, there’s no way I’m hauling that rock back to Arkham. Consider the Jewel a party favor. And this is for savin’ my ass.\" He hands out a wad of bills to you and melts into the shadows with a Cheshire grin.</p><ul><li>Skip to _Resolution 7_</li></ul>"
     },
     "resolution5": {
       "title": "Resolution 5",
-      "body": "<p>\"I don’t care what it takes: I want that Jewel and I want it now!\" Carl Sanford seethes at his lackeys.</p><p>As you listen to the patriarch excoriate his associates, you think back to the events of the evening. Although you had resolved to help the Lodge, is the world truly safer with the Jewel in their possession?</p><p>Rather than return it to Sanford, you pocket the Jewel and slip away into the evening. You are the only one who can temper its power. What you are doing truly is for the greater good. Hopefully Sanford will never find out.</p>"
+      "body": "<p>\"I don’t care what it takes: I want that Jewel and I want it now!\" Carl Sanford seethes at his lackeys.</p><p>As you listen to the patriarch excoriate his associates, you think back to the events of the evening. Although you had resolved to help the Lodge, is the world truly safer with the Jewel in their possession?</p><p>Rather than return it to Sanford, you pocket the Jewel and slip away into the evening. You are the only one who can temper its power. What you are doing truly is for the greater good. Hopefully Sanford will never find out.</p><ul><li>Skip to _Resolution 7_</li></ul>"
     },
     "resolution6": {
       "title": "Resolution 6",
-      "body": "<p>\"You’ve done a great thing this evening,\" Captain Bain claps you on the back. \"Given tales of the Jewel, this evening could have gone far worse. It is said that the Jewel brings the greatest dreams and worst nightmares of its bearer to life. Perhaps it is fitting, what happened to the Lantern Club…\"</p><p>Bain looks up at the darkened windows and snow stained with blood, then presses the Jewel back in your hand. \"Something tells me, however, that with you as its bearer, the Jewel may do some good.\"</p><p>You lose yourself looking into the cloudy, smoky heart of the gem. When you look up, the Captain has vanished.</p>"
+      "body": "<p>\"You’ve done a great thing this evening,\" Captain Bain claps you on the back. \"Given tales of the Jewel, this evening could have gone far worse. It is said that the Jewel brings the greatest dreams and worst nightmares of its bearer to life. Perhaps it is fitting, what happened to the Lantern Club…\"</p><p>Bain looks up at the darkened windows and snow stained with blood, then presses the Jewel back in your hand. \"Something tells me, however, that with you as its bearer, the Jewel may do some good.\"</p><p>You lose yourself looking into the cloudy, smoky heart of the gem. When you look up, the Captain has vanished.</p><ul><li>Skip to _Resolution 7_</li></ul>"
     },
     "resolution7": {
       "title": "Resolution 7",
-      "body": "<p>Your skin prickles as you sit in the back seat of your cab, and you have the feeling of being watched.</p><p>You turn to look back at the manor’s facade to see the nightmarish face of the Bloodless Man staring down at you from the window.</p><p>As the manor disappears from view, you think back to Kingsport, a city shrouded in mystery and folklore. The city beckons with its name alone, conjuring up images of misty sea cliffs, shadowy coves, and ancient, brooding mansions.</p><p>For generations, stories of inexplicable phenomena, strange dreams, and haunting legends have plagued Kingsport. After tonight’s events, you finally understand why.</p>"
+      "body": "<p>Your skin prickles as you sit in the back seat of your cab, and you have the feeling of being watched.</p><p>You turn to look back at the manor’s facade to see the nightmarish face of the Bloodless Man staring down at you from the window.</p><p>As the manor disappears from view, you think back to Kingsport, a city shrouded in mystery and folklore. The city beckons with its name alone, conjuring up images of misty sea cliffs, shadowy coves, and ancient, brooding mansions.</p><p>For generations, stories of inexplicable phenomena, strange dreams, and haunting legends have plagued Kingsport. After tonight’s events, you finally understand why.</p><ul><li>Each investigator earns experience equal to the _Victory X_ value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Tally your score (*see page 24*) ({score}). If your score is…<ul><li class='{bonus1}'>…10-19, each investigator earns 1 bonus experience.</li><li class='{bonus2}'>…20-29, each investigator earns 2 bonus experience.</li><li class='{bonus3}'>…30-39, each investigator earns 3 bonus experience.</li><li class='{bonus4}'>…40-49, each investigator earns 4 bonus experience.</li><li class='{bonus5}'>…50 or more, each investigator earns 5 bonus experience.</li></ul></li></ul>"
+    },
+    "chooseGuest": "Each investigator may choose one single-sided _*Guest*_ asset under any investigator’s control to add to their deck (ignoring deckbuilding restrictions). It does not count toward that investigator’s deck size.",
+    "jewelOfSarnath": "If this scenario is a side-story, during the setup of each subsequent scenario in this campaign, you may shuffle the Jewel of Sarnath story asset into the encounter deck.",
+    "theFoundation": "If the investigators sided with _The Foundation ({'{'}guardian{'}'})_, proceed to _Resolution 2_.",
+    "miskatonicUniversity": "If the investigators sided with _Miskatonic University ({'{'}seeker{'}'})_, proceed to _Resolution 3_.",
+    "theSyndicate": "If the investigators sided with _The Syndicate ({'{'}rogue{'}'})_, proceed to _Resolution 4_.",
+    "theSilverTwilightLodge": "If the investigators sided with _The Silver Twilight Lodge ({'{'}mystic{'}'})_, proceed to _Resolution 5_.",
+    "localsOfKingsport": "If the investigators sided with the _Locals of Kingsport ({'{'}survivor{'}'})_, proceed to _Resolution 6_.",
+    "label": {
+      "chooseGuest": "Choose one single-sided Guest asset under any investigator’s control to add to their deck"
+    },
+    "xp": {
+      "bonus": {
+        "score": "Score"
+      }
+    },
+    "tasks": {
+      "title": "Tasks for End of Game Scoring",
+      "body": "<p>The following is a list of tasks used to tally your score.</p>",
+      "manorsWithNoClues": "<div class='task'>_1_ point for each revealed _*Manor*_ location with no clues.<span class='tally'>{count}</span></div>",
+      "guestAssetsControlled": "<div class='task'>_1_ point for each _Guest_ asset controlled by the investigators.<span class='tally'>{count}</span></div>",
+      "noSpellboundInPlay": "<div class='task'>_4_ points if no spellbound cards are in play.<span class='tally'>{count}</span></div>",
+      "agenda1AOr2A": "<div class='task'>_5_ points if agenda 1a or agenda 2a is in play.<span class='tally'>{count}</span></div>",
+      "bloodlessManInVictory": "<div class='task'>_4_ points if The Bloodless Man is in the victory display.<span class='tally'>{count}</span></div>",
+      "paleLanternInVictory": "<div class='task'>_3_ points if The Pale Lantern is in the victory display.<span class='tally'>{count}</span></div>",
+      "declanPearceInVictory": "<div class='task'>_3_ points if Declan Pearce is in the victory display.<span class='tally'>{count}</span></div>",
+      "rivalInVictory": "<div class='task'>_4_ points if a Rival story card is in the victory display.<span class='tally'>{count}</span></div>",
+      "damageBonus": "<div class='task'><span>_3_ points if no investigator has been defeated and there is 2 {'{'}perPlayer{'}'} or less damage on the investigators, as a group.</span><span class='tally'>{count}</span></div>",
+      "horrorBonus": "<div class='task'><span>_3_ points if no investigator has been defeated and there is 2 {'{'}perPlayer{'}'} or less horror on the investigators, as a group.</span><span class='tally'>{count}</span></div>",
+      "hardMode": "<div class='task'>_3_ points if you are playing on Hard difficulty mode.<span class='tally'>{count}</span></div>",
+      "expertMode": "<div class='task'>_6_ points if you are playing on Expert difficulty mode.<span class='tally'>{count}</span></div>",
+      "factionBonus": "<div class='task'>The end of game points on your faction’s story card.<span class='tally'>{count}</span></div>",
+      "total": "<div class='right task'>_Total:_ <span class='tally'>{count}</span></div>"
     }
   }
 }

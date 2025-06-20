@@ -946,4 +946,11 @@ allLocations =
     , SomeLocationCard bedroomTheMidwinterGala
     , SomeLocationCard libraryTheMidwinterGala
     , SomeLocationCard parlorTheMidwinterGala
+    , -- Riddles and Rain
+      SomeLocationCard rainyLondonStreets
+    , SomeLocationCard bigBen
+    , SomeLocationCard westminsterAbbey
+    , SomeLocationCard kensingtonGardens
+    , SomeLocationCard theTowerBridge
+    , SomeLocationCard traitorsGate
     ]

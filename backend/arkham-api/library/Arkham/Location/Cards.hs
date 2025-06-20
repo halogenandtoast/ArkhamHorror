@@ -163,6 +163,7 @@ allLocationCards =
       , bathroom
       , bedroom
       , bedroomTheMidwinterGala
+      , bigBen
       , billiardsRoom
       , billiardsRoomSpectral
       , bishopsBrook_202
@@ -472,6 +473,7 @@ allLocationCards =
       , joeMazurewiczsRoom
       , kadatheron
       , keziahsRoom
+      , kensingtonGardens
       , kitchen
       , knightsHall
       , laBellaLuna
@@ -801,6 +803,7 @@ allLocationCards =
       , theOnyxCastle
       , theSummit
       , theThroneRoom
+      , theTowerBridge
       , theWhiteShip
       , throneRoom
       , tidalPool
@@ -821,6 +824,7 @@ allLocationCards =
       , trailOfTheDead
       , trainTracks
       , trappersCabin
+      , traitorsGate
       , trapRoom
       , treacherousDescent
       , treacherousPath
@@ -870,6 +874,7 @@ allLocationCards =
       , waterfall
       , wavewornIsland
       , wellOfSouls
+      , westminsterAbbey
       , whateleyRuins_250
       , whateleyRuins_251
       , whiteBluff
@@ -9536,5 +9541,58 @@ rainyLondonStreets =
     [London]
     Equals
     [Circle, Square, Triangle, Squiggle]
+    RiddlesAndRain
+
+bigBen :: CardDef
+bigBen =
+  victory 1
+    $ location
+      "09511"
+      "Big Ben"
+      [London]
+      Triangle
+      [Equals, Circle]
+      RiddlesAndRain
+
+westminsterAbbey :: CardDef
+westminsterAbbey =
+  victory 1
+    $ location
+      "09512"
+      "Westminster Abbey"
+      [London]
+      Circle
+      [Equals, Triangle]
+      RiddlesAndRain
+
+kensingtonGardens :: CardDef
+kensingtonGardens =
+  victory 1
+    $ location
+      "09513"
+      "Kensington Gardens"
+      [London]
+      Square
+      [Equals]
+      RiddlesAndRain
+
+theTowerBridge :: CardDef
+theTowerBridge =
+  location
+    "09514"
+    "The Tower Bridge"
+    [London]
+    Squiggle
+    [Equals, Moon]
+    RiddlesAndRain
+
+traitorsGate :: CardDef
+traitorsGate =
+  location
+    "09515"
+    "Traitors' Gate"
+    [London]
+    T
+    [Squiggle, Moon]
     RiddlesAndRain
 

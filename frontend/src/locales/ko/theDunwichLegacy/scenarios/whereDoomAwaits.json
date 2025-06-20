@@ -1,67 +1,67 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1 (-3 instead if you are at an _Altered_ location).",
-      "cultist": "Reveal another token. Cancel the effects and icons of each skill card committed to this test.",
-      "tablet": "-2 (-4 instead if it is Agenda 2).",
-      "elderThing": "-X. Discard the top 2 cards of your deck. X is the total printed cost of those discarded cards."
+      "skull": "-1(당신이 _달라진_ 장소에 있으면, -1 대신 -3).",
+      "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 이번 테스트에 소모한 모든 능력 카드의 아이콘과 효과를 취소합니다.",
+      "tablet": "-2(현재 주요사건이 2라면, -2 대신 -4).",
+      "elderThing": "-X. 당신의 덱 맨 윗장부터 카드를 2장 버립니다. X는 이렇게 버린 카드에 인쇄된 비용의 총합니다."
     },
     "hardExpert": {
-      "skull": "-2 (-5 instead if you are at an _Altered_ location).",
-      "cultist": "Reveal another token. Cancel the effects and icons of each skill card committed to this test.",
-      "tablet": "-3. If it is Agenda 2, you automatically fail instead.",
-      "elderThing": "-X. Discard the top 3 cards of your deck. X is the total printed cost of those discarded cards."
+      "skull": "-2(당신이 _달라진_ 장소에 있으면, -2 대신 -5).",
+      "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 이번 테스트에 소모한 모든 능력 카드의 아이콘과 효과를 취소합니다.",
+      "tablet": "-3. 현재 주요사건이 2라면, 보정값 -3 대신 테스트에 자동으로 실패합니다.",
+      "elderThing": "-X. 당신의 덱 맨윗장부터 카드를 3장 버립니다. X는 이렇게 버린 카드에 인쇄된 비용의 총합니다."
     }
   },
   "tooltips": {
     "baseOfTheHill": {
-      "resign": "\"This is more than I signed up for!\"",
-      "investigate": "{'{'}action{'}'}: _Investigate_. If you succeed, instead of discovering clues, put a random set-aside Diverging Path into play. (Limit once per round.)"
+      "resign": "“이건 처음이랑 얘기가 다르잖아!”",
+      "investigate": "{'{'}action{'}'}: _조사_. 성공하면, 단서를 발견하는 대신 치워 두었던 무작위 ‘갈림길’ 1장을 플레이 영역에 둡니다(라운드당 1번 한정)."
     },
     "ascendingPath": {
-      "investigate": "{'{'}action{'}'}: _Investigate_. If you succeed, instead of discovering clues, put a random set-aside Altered Path into play. (Limit once per round.)"
+      "investigate": "{'{'}action{'}'}: _조사_. 성공하면, 단서를 발견하는 대신 치워 두었던 무작위 ‘달라진 길’ 1장을 플레이 영역에 둡니다(라운드당 1번 한정)."
     },
     "destroyedPath": {
-      "investigate": "{'{'}action{'}'}: _Investigate_. If you succeed, instead of discovering clues, remove 1 doom from Destroyed Path."
+      "investigate": "{'{'}action{'}'}: _조사_. 성공하면, 단서를 발견하는 대신 ‘파괴된 길’에서 파멸을 1개 제거합니다."
     }
   },
   "intro": {
-    "title": "Scenario VI: Where Doom Awaits",
-    "body": "<p>You awaken to the sound of screeching. Fearing the worst, you grab your equipment and head out into the streets of Dunwich. As soon as you step outside, you sense a foulness in the cold night air: an awful, pungent smell that can scarcely be described and a heaviness to the atmosphere that makes it difficult to breathe. The citizens of Dunwich have sealed their doors, and the town feels quiet and lonesome. In the distance, a faint glow emanates from a hilltop above the village. You know of this hill from both your interactions with Zebulon and Armitage’s records. It is called Sentinel Hill. The tales speak of satanic rites being performed there—rites in which great ritual-pyres light up the night sky while the ground rumbles furiously below.</p><p>Flocks of whippoorwills perch on the rooftops of the village around you, watching ominously as you climb inside Zebulon’s old and beat-up truck. As you drive towards Sentinel Hill, more screeching fills the sky with an awful pitch that is painful to your ears. Everything you have read about and experienced in Dunwich has led to this. If the foul ritual Seth seeks to perform has anything to do with what Armitage and his colleagues prevented several months back, it involves the favor of an ancient creature—Yog‑Sothoth. Failing to stop this ritual may spell doom...not only Dunwich, but for the entire world.</p>",
-    "proceedToPart1": "Check Campaign Log. If *Naomi has the investigators’ back*: Proceed to _Part 1_.",
-    "otherwise": "Otherwise: Skip to _Setup_.",
+    "title": "시나리오 VI: 파멸이 기다리는 곳",
+    "body": "<p>창밖에서 들려오는 쏙독새 울음 소리에 잠에서 깬 당신은, 최악의 상황이 닥쳤을 것을 우려하며 장비를 쥐고는 던위치 거리로 나갑니다. 밖으로 나가자마자 피부로 파고드는 차가운 밤공기에서 악의 존재가 느껴집니다. 형용할 수 없을 정도로 끔찍하게 코를 찌르는 냄새와 당신을 무겁게 짓누르는 공기 탓에 숨이 턱턱 막혀옵니다. 주민들이 집 문을 꽉 걸어닫은 던위치 마을은 고요하고 황량합니다. 멀리 마을 너머의 언덕 꼭대기에서 희미한 빛이 보입니다. 저 언덕이 바로, 지블런이 말했고 아미티지의 기록에도 적혀 있던 파수꾼 언덕입니다. 구전에 따르면 저곳에서 극악무도한 의식이 거행되어 왔다고 합니다. 그렇게 의식을 치를 때면 거대한 의식용 장작불이 밤하늘을 환히 밝히고 발아래 땅이 격렬하게 우르릉거렸다는 말도 있습니다.</p><p>쏙독새 떼가 당신을 둘러싼 마을 건물 지붕 위에 내려앉아서는, 당신이 지블런의 낡아빠진 트럭에 타는 모습을 불길하게 지켜봅니다. 파수꾼 언덕으로 차를 내달리자, 더욱 크고 기괴한 음정으로 울리는 쏙독새 소리에 귀가 아플 지경입니다. 그간 당신이 읽었던 내용과 던위치에서 겪은 일들 모두가 바로 이곳으로 당신을 인도하고 있습니다. 만약 세스가 벌이려는 사악한 의식이 몇 달 전 아미티지와 동료들이 막아내고자 했던 의식의 연장선상에 있다면… 세스는 분명 고대 괴물인 <b>요그 소토스</b>를 불러내려는 겁니다. 이 의식을 제때 막아내지 못한다면 던위치는… 아니 온 세계가 파멸을 맞이하게 될 것입니다.</p>",
+    "proceedToPart1": "캠페인 기록지를 확인합니다. *나오미가 조사자들의 뒤를 맡았다*면: _도입부 1_로 이어집니다.",
+    "otherwise": "그렇지 않으면, _게임 준비_로 건너뜁니다.",
     "part1": {
-      "body": "<p>_Part 1_: The path leading up Sentinel Hill is narrow and too torn up for Zebulon’s truck, so you park at the base of the hill and prepare to make the rest of the trip on foot. Just then, you notice that you are not alone. Several men and women emerge from the woods behind you, brandishing firearms and lining you up in their sights. You raise your hands and brace for the worst. “Wait,” one of them says, raising his hand to the others. “I recognize you from the Clover Club.” He grins toothily and lowers his weapon. “Naomi sends her regards.”</p><p>Curious, you ask what the gangsters are doing here. “Ms. O’Bannion had us investigate the attack on her fiancé’s club,” he explains. “Turns out there were some men in Arkham behind the whole thing. Some Bishop fellow and his lackeys. We tailed them all the way to this dump.” Before he can explain further, the all-too-familiar ratta-tat of a tommy gun echoes across the hill. “That’ll be Vinny. Come on, boys!” He beckons to the others to follow and runs up the hill. Shaking your head, you do the same. These mobsters don’t know what they’re getting into.</p><ul><li>The lead investigator gains a clue from the token bank (2 clues instead if there are 3 or 4 investigators in the game).</li></ul><p class='basic right'>Proceed to _Setup_.</p>"
+      "body": "<p>_도입부 1_: 파수꾼 언덕으로 향하는 길은 너무 좁고 엉망진창이어서 지블런의 낡은 트럭으로는 뚫고 갈 수가 없습니다. 당신은 언덕 아랫자락에 차를 세우고 꼭대기까지 등반할 준비를 했습니다. 바로 그때, 이곳에 온 게 당신만이 아니라는 걸 알게 되었습니다. 등 뒤의 숲에서 몇몇 남녀가 손에 총을 들고나와 당신을 바라봅니다. 양손을 머리 위로 들면서 만일의 사태에 대비하려는 찰나, 그들 중 한 명이 다른 이들에게 멈추라는 수신호를 보냅니다. “잠깐. 클로버 클럽에 있었던 분이로군요.” 그가 이빨을 드러내고 씨익 웃으며 무기를 내립니다. “나오미 씨께서 감사의 뜻을 표하라고 하셨습니다.”</p><p>무슨 일로 오베니언 조직이 던위치까지 온 건지 묻자 그가 대답합니다. “오베니언 양께서 피앙세의 클럽을 누가 공격한 건지 알아보라고 보내셨습니다. 이 모든 것의 배후에 아컴에서 온 몇몇 이들이 있더군요. 비숍 어쩌고 하는 친구와 그의 똘마니들 말입니다. 놈들을 추적하다 보니 이 시궁창에 도착한 셈이죠.” 그가 말을 덧붙이기도 전에, 너무나도 친숙한 토미건 발포음이 언덕 맞은편에서 메아리칩니다. “비니로군. 다들 따라와!” 그는 다른 이들에게 따라오라는 신호를 주고 언덕 위로 달려 올라갑니다. 당신은 고개를 저으면서 그의 뒤를 따릅니다. 이들은 지금 무엇과 마주하게 될지 전혀 모르고 있습니다.</p><ul><li>대표 조사자는 토큰 저장소에서 단서를 1개 획득합니다(3~4명이 게임을 한다면, 1개 대신 2개 획득합니다).</li></ul><p class='basic right'>_게임 준비_로 이어집니다.</p>"
     }
   },
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: Where Doom Awaits, Beast-thralls, Sorcery, Bishop’s Thralls, Striking Fear, Ancient Evils, Chilling Cold. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/where-doom-awaits.png' /><img src='{setImgPath}/beast-thralls.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/bishops-thralls.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
-    "placeLocations": "Put Base of the Hill, Ascending Path, and Sentinel Peak into play. Each investigator begins play at Base of the Hill.",
-    "divergingPaths": "Remove 1 copy of Diverging Path from the game, at random. Set the other 3 copies of Diverging Path aside, out of play.",
-    "alteredPaths": "Remove 1 copy of Altered Path from the game, at random. Set the other 3 copies of Altered Path aside, out of play.",
-    "setAside": "Set Seth Bishop aside, out of play.",
-    "adjustChaosBag": "Based on your difficulty level, add the following chaos token(s) to the chaos bag, for the remainder of the campaign:<div class='columns'><ul><li>_Easy_: -3</li><li>_Standard_: -5</li></ul><ul><li>_Hard_: -6</li><li>_Expert_: -7</li></ul></div>",
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *파멸이 기다리는 곳*, *야수 종복*, *마술*, *비숍의 종복*, *엄습하는 공포*, *고대의 악*, *으스스한 한기*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/where-doom-awaits.png' /><img src='{setImgPath}/beast-thralls.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/bishops-thralls.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
+    "placeLocations": "‘언덕 아랫자락’, ‘경사로’, ‘파수꾼 언덕 정상’을 플레이 영역에 둡니다. 모든 조사자는 ‘언덕 아랫자락’에서 시작합니다.",
+    "divergingPaths": "‘갈림길’ 사본 4장 중 1장을 무작위로 선택하여 게임에서 제거합니다. 나머지 ‘갈림길’ 사본 3장을 비플레이 상태로 치워 둡니다.",
+    "alteredPaths": "‘달라진 길’ 사본 4장 중 1장을 무작위로 선택하여 게임에서 제거합니다. 나머지 ‘달라진 길’ 사본 3장을 비플레이 상태로 치워 둡니다.",
+    "setAside": "‘세스 비숍’을 비플레이 상태로 치워 둡니다.",
+    "adjustChaosBag": "난이도에 따라, 캠페인이 끝날 때까지 혼돈 주머니에 다음의 혼돈 토큰을 추가합니다.<div class='columns'><ul><li>_쉬움_: -3</li><li>_보통_: -5</li></ul><ul><li>_어려움_: -6</li><li>_전문가_: -7</li></ul></div>",
     "act2": {
-      "instructions": "Depending on the following circumstances, a different version of Act 2 should be used in this scenario. Each other version of Act 2 is removed from the game.",
-      "v1": "Check Campaign Log. If *the investigators restored Silas Bishop*, use Act 2—Ascending the Hill (v. I)",
-      "v2": "If the above is not true, check Campaign Log. If *the investigators failed to recover the Necronomicon*, or if *the Necronomicon was stolen*, use Act 2—Ascending the Hill (v. II)",
-      "v3": "If neither of the above are true, use Act 2—Ascending the Hill (v. III)"
+      "instructions": "이번 시나리오에서는 다음 상황에 따라서 어떤 주요목적 2 카드를 사용할지 정합니다. 사용하지 않는 주요목적 2 카드는 모두 게임에서 제거합니다.",
+      "v1": "캠페인 기록지를 확인합니다. *조사자들이 사일러스 비숍을 본모습으로 회복시켰다*면, 주요목적 2 - ‘언덕을 오르다(v. I)’를 사용합니다.",
+      "v2": "위 내용에 해당하지 않는다면, 캠페인 기록지를 확인합니다. *조사자들이 네크로노미콘을 회수하지 못했다*면, 또는 *네크로노미콘을 도난당했다*면, 주요목적 2 - ‘언덕을 오르다(v.II)’를 사용합니다.",
+      "v3": "위 내용 중 어느 것에도 해당하지 않는다면, 주요목적 2 - ‘언덕을 오르다(v.III)’를 사용합니다."
     },
-    "addDoom": "Check Campaign Log. *For each Brood of Yog-Sothoth that escaped into the wild*, add 1 doom to agenda 1a.",
-    "hideousAbominations": "Check Campaign Log. If *the investigators put Silas Bishop out of his misery*, remnants of the creature’s body have mutated and grown at Sentinel Hill. Put 1 “Conglomeration of Spheres” enemy from the Hideous Abominations encounter set into play at Ascending Path. Shuffle the rest of that set into the encounter deck. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/hideous-abominations.png' /></section>"
+    "addDoom": "캠페인 기록지를 확인합니다. *험지로 탈출한 요그 소토스의 새끼* 1마리마다 주요사건 1a에 파멸 토큰을 1개씩 추가합니다.",
+    "hideousAbominations": "캠페인 기록지를 확인합니다. *조사자들이 사일러스 비숍의 비극적인 삶을 끝내주었다*면, 괴물의 사체가 뒤틀리고 자라나 파수꾼 언덕에 나타납니다. *끔찍한 흉물* 조우 세트에서 ‘구체 복합물 덩어리’ 적 하나를 가져와 플레이 영역 안 ‘경사로’에 둡니다. *끔찍한 흉물 조우* 세트에 있는 나머지 카드는 조우 덱과 합친 후 섞습니다. 이 세트에는 다음 아이콘이 그려져 있습니다.:<section class='encounter-sets'><img src='{setImgPath}/hideous-abominations.png' /></section>"
   },
   "resolutions": {
     "noResolution": {
-      "title": "No Resolution",
-      "body": "<div class='resolution'><p class='basic'>_If no resolution was reached (each investigator resigned or was defeated)_: Go to _Resolution 2_.</p></div>"
+      "title": "결말에 도달하지 못함",
+      "body": "<div class='resolution'><p class='basic'>_아무 결말에도 도달하지 못했다면(모든 조사자가 후퇴하거나 쓰러졌다면)_: _결말 2_를 읽습니다.</p></div>"
     },
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1_: The poorly bound tome appears to be the written records of Old Whateley, the man who taught Wilbur the ancient secrets of sorcery. You find a passage describing a place outside of time and space, where worlds converge and Yog-Sothoth dwells. Only by reaching this nexus at the edge of reality can you unmake the tear that has split open the world. Feeling as if you may be going to your doom, you muster a final ounce of courage and step into the gate.</p><ul><li>In your Campaign Log, record that *the investigators entered the gate*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "결말 1",
+      "body": "<div class='resolution'><p>_결말 1_: 이 엉성하게 장정된 책은 웨이틀리 노인이 저술한 것으로, 그는 윌버 웨이틀리에게 비밀스러운 고대의 마술을 알려준 장본인입니다. 당신은 책을 훑다가 시간과 공간 밖에 있는 공간, 수많은 세계가 모인 지점이자 요그 소토스가 기거하는 곳에 대한 글귀를 찾았습니다. 현실의 끝에 존재하는 이 연결지점에 도달해야만, 이 세계를 찢어 놓은 균열을 다시 닫을 수 있습니다. 당신은 스스로 죽음을 향해 나아가는 심정으로, 일말의 용기를 끌어모아 차원문에 발을 내딛습니다.</p><ul><li>캠페인 기록지에 *조사자들이 차원문으로 들어갔다*라고 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2_: The sorcerers from Dunwich, seeking arcane power from beyond this realm, have accomplished what Wilbur and Old Whateley could not. Through blood sacrifice and indescribable experiments, the dark power the sorcerers sought is now within their reach. However, they will never get the chance to truly wield this power. In beseeching Wilbur’s father for knowledge, they have drawn the creature forth from its extradimensional realm. Yog-Sothoth emerges from the open rift above Sentinel Hill, blotting out the sky and enveloping the world. Now it has come to Earth, and it rules where humanity once tread.</p><ul><li>In your Campaign Log, record that *Yog-Sothoth tore apart the barrier between worlds, and became one with all reality*.</li><li>Each investigator is driven _insane_.</li><li>The investigators lose the campaign.</li></ul></div>"
+      "title": "결말 2",
+      "body": "<div class='resolution'><p>_결말 2_: 이 세계의 경계 너머에 존재하는 신비로운 힘을 갈구했던 던위치의 주술사가 마침내 제 목적을 달성했습니다. 윌버와 웨이틀리 노인이 달성하지 못한 바를 이룬 것입니다. 주술사는 피의 희생과 형언할 수 없는 실험을 통해 마침내 암흑의 힘에 닿았습니다. 그러나, 그들은 이렇게 공들여 얻은 힘을 제대로 사용해 보지도 못하게 되었으니 기구하기 짝이 없는 운명이라 하겠습니다. 윌버의 아버지인 요그 소토스로부터 지식을 얻어내겠다는 갈망은, 차원을 넘어선 영역으로부터 괴물을 불러내고 말았습니다. 열린 균열을 통해서 요그 소토스가 파수꾼 언덕 위로 나타나 하늘을 덮고 온 세계를 휘감습니다. 이제 요그 소토스가 이 땅에 당도했으니, 인간의 발자취가 남은 모든 곳이 그의 지배하에 놓일 것입니다.</p><ul><li>캠페인 기록지에 *요그 소토스가 세계 사이의 장막을 찢고 나와 모든 현실과 하나가 되었다*라고 기록합니다.</li><li>모든 조사자는 _미칩니다_.</li><li>조사자는 패배했습니다.</li></ul></div>"
     }
   }
 }

@@ -232,6 +232,25 @@ give concrete steps for the most common types.
 5. Register the card in `Arkham/Act/Cards.hs` and add it to `allActs` in
    `Arkham/Act.hs`.
 
+## Additional implementation guidelines
+
+* Reuse existing helpers whenever possible. For encounter deck logic use
+  `getEncounterDeckKey` along with the `DiscardUntilFirst` message.
+* Use `scenarioI18n` when the scenario provides it to scope translation keys.
+  This helper scopes translation keys to the current scenario and should wrap
+  tooltip helpers like `withI18nTooltip`.
+  If the scenario does not supply it, fall back on `withI18n`.
+* When placing clues on a location using `placeClues`, pass the location
+  attributes directly (`attrs`) rather than `toTarget attrs`.
+* For horror healing prefer `getHealHorrorMessage` and check
+  `canHaveHorrorHealed`.
+* When effects may apply to other investigators use `affectsOthers`.
+* Only invoke `beginSkillTest` for tests that are not bold. Attach abilities
+  with `withBaseAbilities` or `withRevealedAbilities` as appropriate and avoid
+  using "You" outside of `CardDef` or `Ability` definitions.
+* `backend/.projections.json` includes templates for each card type showing the
+  minimal module structure.
+
 ## Pull Request guidelines
 
 * Keep commits focused and descriptive.

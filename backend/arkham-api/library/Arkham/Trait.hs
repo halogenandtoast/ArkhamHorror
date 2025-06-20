@@ -11,8 +11,10 @@ import Data.Char (isLower, isUpper)
 newtype EnemyTrait = EnemyTrait {unEnemyTrait :: Trait}
 
 data Trait
-  = Abomination
+  = Abandoned
+  | Abomination
   | Agency
+  | Alexandria
   | Ally
   | Altered
   | Ancient
@@ -26,6 +28,7 @@ data Trait
   | Avatar
   | Basement
   | Bayou
+  | Bazaar
   | Believer
   | Blessed
   | Blunder
@@ -34,6 +37,7 @@ data Trait
   | Boon
   | Bridge
   | Broken
+  | BuenosAires
   | Byakhee
   | Bystander
   | Campsite
@@ -113,6 +117,8 @@ data Trait
   | Gug
   | Hall
   | Hardship
+  | Haunted
+  | Havana
   | Hazard
   | Hex
   | Hideout
@@ -131,23 +137,28 @@ data Trait
   | Insight
   | Instrument
   | Island
+  | Istanbul
   | Item
   | Job
   | Jungle
   | Kadath
   | Key
   | Kingsport
+  | KualaLumpur
   | Lair
   | LanternClub
   | Lead
   | Leader
   | Leng
+  | LocusSite
   | Lodge
+  | London
   | Lunatic
   | Madness
   | Mainland
   | Manifold
   | Manor
+  | Marrakesh
   | Mask
   | Medic
   | Melee
@@ -193,6 +204,7 @@ data Trait
   | Research
   | Resolute
   | Ritual
+  | RitualSite
   | Rival
   | River
   | Riverside
@@ -244,6 +256,7 @@ data Trait
   | Tindalos
   | Tome
   | Tool
+  | Tower
   | Train
   | Trap
   | Trick

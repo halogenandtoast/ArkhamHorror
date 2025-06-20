@@ -1153,7 +1153,7 @@ runGameMessage msg g = case msg of
               , Just skillId
               )
           | LeaveCardWhereItIs `elem` mods ->
-              (Run [], Just skillId)
+              (Run [RemoveFromPlay (toSource skillId)], Just skillId)
           | otherwise -> case afterPlay of
               DiscardThis -> case toCard skill of
                 PlayerCard pc ->

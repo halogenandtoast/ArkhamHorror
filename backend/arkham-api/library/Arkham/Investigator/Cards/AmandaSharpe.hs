@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.AmandaSharpe (amandaSharpe, AmandaSharpe (..)) where
+module Arkham.Investigator.Cards.AmandaSharpe (amandaSharpe) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -25,8 +25,8 @@ amandaSharpe =
 
 instance HasAbilities AmandaSharpe where
   getAbilities (AmandaSharpe attrs) =
-    [ restrictedAbility attrs 1 Self $ forced $ PhaseBegins #when #investigation
-    , restrictedAbility attrs 2 Self $ forced $ InitiatedSkillTest #at You #any #any #any
+    [ restricted attrs 1 Self $ forced $ PhaseBegins #when #investigation
+    , restricted attrs 2 Self $ forced $ InitiatedSkillTest #at You #any #any #any
     ]
 
 instance HasChaosTokenValue AmandaSharpe where
@@ -40,7 +40,7 @@ instance RunMessage AmandaSharpe where
       attrs' <- liftRunMessage msg attrs
       pure . AmandaSharpe $ attrs' & setMeta @(Maybe CardId) Nothing
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      drawCardsIfCan attrs.id attrs 1
+      drawCards attrs.id attrs 1
       let mCard =
             preview _PlayerCard
               =<< (\cardId -> find ((== cardId) . toCardId) (investigatorCardsUnderneath attrs))

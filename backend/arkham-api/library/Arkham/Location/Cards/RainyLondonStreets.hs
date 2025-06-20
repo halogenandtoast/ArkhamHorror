@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Helpers (resignAction)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
@@ -18,7 +19,7 @@ instance HasAbilities RainyLondonStreets where
   getAbilities (RainyLondonStreets a) =
     extendRevealed a
       [ mkAbility a 1 $ forced $ DiscoveringLastClue #after Anyone (be a)
-      , locationResignAction a
+      , withI18nTooltip "We should wait for Inspector Flint..." $ resignAction a
       ]
 
 instance HasModifiersFor RainyLondonStreets where

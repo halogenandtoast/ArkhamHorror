@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.BleedingWalls (bleedingWalls) where
+module Arkham.Treachery.Cards.BleedingWalls (bleedingWalls, BleedingWalls (..)) where
 
 import Arkham.Calculation
 import Arkham.Location.Types (Field (..))

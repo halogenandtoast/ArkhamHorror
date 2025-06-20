@@ -1,8 +1,9 @@
-module Arkham.Event.Events.FickleFortune3 (fickleFortune3, FickleFortune3 (..)) where
+module Arkham.Event.Events.FickleFortune3 (fickleFortune3) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher
+import Arkham.Modifier
 
 newtype FickleFortune3 = FickleFortune3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -14,7 +15,8 @@ fickleFortune3 = event FickleFortune3 Cards.fickleFortune3
 instance RunMessage FickleFortune3 where
   runMessage msg e@(FickleFortune3 attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      hasDoom <- selectAny $ AgendaWithDoom (atLeast 1)
+      hasDoom <-
+        selectAny $ AgendaWithDoom (atLeast 1) <> NotAgenda (AgendaWithModifier CannotRemoveDoomOnThis)
       chooseOneM iid do
         labeled "Place 1 doom on the current agenda. Each investigator heals 3 damage and 3 horror."
           $ doStep 1 msg

@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.ClawsOfSteam (clawsOfSteam) where
 
+import Arkham.Matcher.Asset
 import Arkham.Modifier
 import Arkham.Source
 import Arkham.Strategy
@@ -21,6 +22,6 @@ instance RunMessage ClawsOfSteam where
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       roundModifier attrs iid CannotMove
-      push $ InvestigatorAssignDamage iid (toSource attrs) DamageAssetsFirst 2 0
+      push $ InvestigatorAssignDamage iid (toSource attrs) (DamageAssetsFirst AnyAsset) 2 0
       pure t
     _ -> ClawsOfSteam <$> liftRunMessage msg attrs

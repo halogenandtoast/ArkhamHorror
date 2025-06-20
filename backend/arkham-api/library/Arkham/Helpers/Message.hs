@@ -185,7 +185,7 @@ cancelHorror iid (toSource -> source) amount additionalMessages = do
                 []
           _ -> error "impossible"
 
-      ignoreWindow <- checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect source)]
+      ignoreWindow <- checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect source Nothing)]
       push ignoreWindow
       replaceMessage horrorMsg $ maybeToList mNewMsg <> additionalMessages
     Nothing -> throwIO $ InvalidState "No horror occured"

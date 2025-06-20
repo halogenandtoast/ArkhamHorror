@@ -18,6 +18,7 @@ data ScenarioDeckKey
   | CosmosDeck -- Before the Black Throne
   | TidalTunnelDeck -- The Pit of Dispair
   | LeadsDeck -- The Vanishing of Elina Harper, Murder at the Excelsior Hotel
+  | GuestDeck -- The Midwinter Gala
   | RoadDeck -- Horror in High Gear
   | TekeliliDeck -- Edge of the Earth
   deriving stock (Show, Ord, Eq, Data)
@@ -35,6 +36,7 @@ instance ToDisplay ScenarioDeckKey where
     CosmosDeck -> "Cosmos"
     TidalTunnelDeck -> "Tidal Tunnels"
     LeadsDeck -> "Leads"
+    GuestDeck -> "Guest"
     RoadDeck -> "Road"
     TekeliliDeck -> "Tekeli-li"
 

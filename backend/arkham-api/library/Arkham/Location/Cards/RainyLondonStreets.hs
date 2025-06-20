@@ -5,6 +5,7 @@ import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers (resignAction)
+import Arkham.Scenarios.RiddlesAndRain.Helpers (scenarioI18n)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
@@ -17,7 +18,8 @@ rainyLondonStreets = location RainyLondonStreets Cards.rainyLondonStreets 1 (Per
 
 instance HasAbilities RainyLondonStreets where
   getAbilities (RainyLondonStreets a) =
-    extendRevealed a
+    extendRevealed
+      a
       [ mkAbility a 1 $ forced $ DiscoveringLastClue #after Anyone (be a)
       , scenarioI18n $ withI18nTooltip "rainyLondonStreets.resign" $ resignAction a
       ]

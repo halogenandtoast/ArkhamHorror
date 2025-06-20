@@ -163,6 +163,7 @@ allLocationCards =
       , bathroom
       , bedroom
       , bedroomTheMidwinterGala
+      , bigBen
       , billiardsRoom
       , billiardsRoomSpectral
       , bishopsBrook_202
@@ -870,6 +871,7 @@ allLocationCards =
       , waterfall
       , wavewornIsland
       , wellOfSouls
+      , westminsterAbbey
       , whateleyRuins_250
       , whateleyRuins_251
       , whiteBluff
@@ -9537,4 +9539,26 @@ rainyLondonStreets =
     Equals
     [Circle, Square, Triangle, Squiggle]
     RiddlesAndRain
+
+bigBen :: CardDef
+bigBen =
+  victory 1
+    $ location
+      "09511"
+      "Big Ben"
+      [London]
+      Triangle
+      [Equals, Circle]
+      RiddlesAndRain
+
+westminsterAbbey :: CardDef
+westminsterAbbey =
+  victory 1
+    $ location
+      "09512"
+      "Westminster Abbey"
+      [London]
+      Circle
+      [Equals, Triangle]
+      RiddlesAndRain
 

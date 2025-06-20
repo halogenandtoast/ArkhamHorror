@@ -31,6 +31,6 @@ instance RunMessage RainyLondonStreets where
   runMessage msg l@(RainyLondonStreets attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       n <- getPlayerCount
-      placeClues (attrs.ability 1) (toTarget attrs) n
+      placeClues (attrs.ability 1) attrs n
       pure l
     _ -> RainyLondonStreets <$> liftRunMessage msg attrs

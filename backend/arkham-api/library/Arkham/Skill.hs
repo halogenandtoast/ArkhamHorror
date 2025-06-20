@@ -27,8 +27,8 @@ instance RunMessage Skill where
   runMessage msg (Skill a) = case msg of
     SkillTestEnds {} ->
       if isInPlayPlacement $ attr (.placement) a
-        then Skill <$> runMessage msg a
-        else pure $ Skill a
+        then pure $ Skill a
+        else Skill <$> runMessage msg a
     _ -> Skill <$> runMessage msg a
 
 lookupSkill :: CardCode -> InvestigatorId -> SkillId -> CardId -> Skill

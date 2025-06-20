@@ -222,7 +222,7 @@ callingInFavors =
   (event "03158" "Calling in Favors" 1 Neutral)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = singleton Favor
-    , cdCriteria = Just $ exists $ AssetControlledBy You
+    , cdCriteria = Just $ exists $ #ally <> AssetControlledBy You <> AssetCanLeavePlayByNormalMeans
     }
 
 illSeeYouInHell :: CardDef

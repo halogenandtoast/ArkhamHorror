@@ -20,7 +20,8 @@ callingInFavors = event CallingInFavors Cards.callingInFavors
 instance RunMessage CallingInFavors where
   runMessage msg e@(CallingInFavors attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      choices <- selectForToSnd (#ally <> assetControlledBy iid) \ally -> evalQueueT do
+      let matcher = #ally <> assetControlledBy iid <> AssetCanLeavePlayByNormalMeans
+      choices <- selectForToSnd matcher \ally -> evalQueueT do
         returnToHand iid ally
         cost <- fieldMap AssetCardDef (.printedCost) ally
         createCardEffect Cards.callingInFavors (effectInt cost) attrs iid

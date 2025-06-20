@@ -1013,7 +1013,12 @@ runGameMessage msg g = case msg of
     -- not want to do this
     pushAll $ concatMap (resolve . Msg.InvestigatorIsDefeated (toSource lid)) investigators
     pure g
-  Do (RemovedLocation lid) -> pure $ g & entitiesL . locationsL %~ deleteMap lid
+  Do (RemovedLocation lid) -> do
+    location <- getLocation lid
+    pure
+      $ g
+      & (entitiesL . locationsL %~ deleteMap lid)
+      & (actionRemovedEntitiesL . locationsL %~ Map.insert lid location)
   SpendClues 0 _ -> pure g
   SpendClues n iids -> do
     investigatorsWithClues <-

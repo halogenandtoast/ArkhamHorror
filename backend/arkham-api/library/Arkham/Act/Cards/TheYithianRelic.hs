@@ -45,7 +45,7 @@ instance RunMessage TheYithianRelic where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       selectOne (inDiscardOf iid <> basic "Relic of Ages") >>= \case
         Just relic -> focusCard relic $ chooseOneM iid $ targeting relic $ addToHand iid (only relic)
-        Nothing -> search iid attrs iid [fromDeck] (basic "Relic of Ages") (DrawFound iid 1)
+        Nothing -> search iid attrs iid [fromDeck] (basic "Relic of Ages") (AddFoundToHand iid 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       takeControlOfAsset iid =<< selectJust (AssetWithTitle "Relic of Ages")

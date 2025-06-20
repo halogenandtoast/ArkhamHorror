@@ -812,6 +812,7 @@ function toggleHandAreaMarginBottom(event: Event) {
 }
 
 .tarot-card {
+  width: var(--card-width);
   &.can-interact {
     border: 2px solid var(--select);
   }

@@ -27,6 +27,6 @@ instance RunMessage ViolaCase where
       pushAll $ replicate 2 (AddSlot iid #hand $ RestrictedSlot (toSource attrs) #firearm [])
       ViolaCase <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      search iid attrs iid [fromTopOfDeck 9] (basic $ #asset <> #firearm) (DrawFound iid 1)
+      search iid attrs iid [fromTopOfDeck 9] (basic $ #asset <> #firearm) (AddFoundToHand iid 1)
       pure a
     _ -> ViolaCase <$> liftRunMessage msg attrs

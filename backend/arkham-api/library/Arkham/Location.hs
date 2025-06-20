@@ -950,4 +950,7 @@ allLocations =
       SomeLocationCard rainyLondonStreets
     , SomeLocationCard bigBen
     , SomeLocationCard westminsterAbbey
+    , SomeLocationCard kensingtonGardens
+    , SomeLocationCard theTowerBridge
+    , SomeLocationCard traitorsGate
     ]

@@ -890,6 +890,7 @@ allLocationCards =
       , yuggoth
       , zocalo
       , zulanThek
+      , rainyLondonStreets
       ]
 
 withMeta :: ToJSON a => (Text, a) -> CardDef -> CardDef
@@ -9526,3 +9527,14 @@ betweenWorlds =
 emptySpace :: CardDef
 emptySpace =
   location "xempty" "EmptySpace" [] NoSymbol [] BeforeTheBlackThrone
+
+rainyLondonStreets :: CardDef
+rainyLondonStreets =
+  location
+    "09510"
+    "Rainy London Streets"
+    [London]
+    Equals
+    [Circle, Square, Triangle, Squiggle]
+    RiddlesAndRain
+

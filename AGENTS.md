@@ -16,6 +16,57 @@ This file is intended to help AI agents and human collaborators understand the s
 * After modifying backend code, run `stack test` inside the `backend` directory.
 * After modifying frontend code, run `npm run build` from `frontend` to ensure the project still compiles.
 
+## 🌐 Internationalization (`Arkham.I18n`)
+
+All translatable backend strings must use the `Arkham.I18n` module to generate internationalization (i18n) keys.
+
+This module defines a declarative DSL using **implicit parameters** to manage translation *scopes* and *variables*. It ensures consistency, composability, and readability for any content that needs localization.
+
+### 📌 Key Principles
+
+- Use `withI18n` to initialize the context.
+- Use `scope "something"` to define nested namespaces (`"game.card.Fight"`).
+- Use variable helpers like `nameVar`, `countVar`, and `skillVar` to attach dynamic data.
+- Generate keys with `ikey "SomeKey"`.
+
+### 🧠 Implicit Context
+
+| Parameter     | Type                  | Purpose                            |
+|---------------|-----------------------|-------------------------------------|
+| `?scope`      | `[Text]`              | Current scope stack                 |
+| `?scopeVars`  | `Map Text Value`      | Key/value variable pairs for use in interpolation/debugging |
+
+### 🛠️ Helper Functions
+
+| Function         | Role |
+|------------------|------|
+| `withI18n`       | Initializes blank context |
+| `scope` / `popScope` / `unscoped` | Manages nested namespace stack |
+| `withVar` / `withVars` | Injects variables |
+| `nameVar`, `countVar`, `skillVar`, `skillIconVar` | Common game-related variables |
+| `ikey`           | Generates the final translation key |
+
+### 🔍 Example
+
+```haskell
+withI18n $
+  scope "game" $
+  scope "card" $
+  nameVar investigator $
+  countVar 2 $
+  ikey "Fight"
+```
+
+🔑 Produces key:  
+```
+"game.card.Fight name=s:\"Roland\" count=i:2"
+```
+
+### ✅ Guidelines
+- Do **not** hardcode translation keys.
+- Always use `Arkham.I18n` helpers in card definitions, scenario logic, and rule responses.
+- This system is designed to support eventual integration with `.json`/`.po` translation files or frontend display.
+
 ## Adding new game content
 
 * Haskell modules for cards, scenarios, and other game items live under `backend/arkham-api/library/Arkham`. Templates for creating these modules are defined in `backend/.projections.json`.
@@ -73,6 +124,8 @@ This file is intended to help AI agents and human collaborators understand the s
     * `backend/arkham-api/library/Arkham/Campaigns/EdgeOfTheEarth/Helpers.hs`
   * **Flavor Text**:
     * `backend/arkham-api/library/Arkham/Campaigns/TheDreamEaters/FlavorText.hs`
+
+## Card module conventions
 
 ## Card module conventions
 

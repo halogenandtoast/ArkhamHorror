@@ -9595,4 +9595,3 @@ traitorsGate =
     T
     [Squiggle, Moon]
     RiddlesAndRain
-

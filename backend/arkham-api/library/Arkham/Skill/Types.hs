@@ -111,6 +111,9 @@ instance HasField "placement" SkillAttrs Placement where
 instance HasField "meta" SkillAttrs Value where
   getField = skillMeta
 
+instance HasField "sealed" SkillAttrs [ChaosToken] where
+  getField = skillSealedChaosTokens
+
 metaL :: Lens' SkillAttrs Value
 metaL = lens skillMeta $ \m x -> m {skillMeta = x}
 

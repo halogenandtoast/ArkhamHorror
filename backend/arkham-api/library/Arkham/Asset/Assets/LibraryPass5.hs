@@ -25,7 +25,12 @@ instance HasAbilities LibraryPass5 where
             <> exists (InHandOf NotForPlay You <> basic (#tome <> #asset))
         )
         $ FastAbility (exhaust x)
-    , restricted x 2 (ControlsThis <> exists (AssetAttachedToAsset (be x))) $ forced $ TurnEnds #when You
+    , controlled
+        x
+        2
+        (oneOf [youExist (InvestigatorWithResources $ atLeast 1), exists (AssetAttachedToAsset (be x))])
+        $ forced
+        $ TurnEnds #when You
     ]
 
 instance RunMessage LibraryPass5 where
@@ -33,16 +38,15 @@ instance RunMessage LibraryPass5 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       cards <- select $ inHandOf NotForPlay iid <> basic (#tome <> #asset)
       focusCards cards do
-        assetId <- getRandom
         chooseTargetM iid cards \card ->
-          push $ CreateAssetAt assetId card $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
+          createAssetAt_ card $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       resources <- getSpendableResources iid
-      select (AssetAttachedToAsset $ be attrs) >>= traverse_ \aid ->
-        chooseOrRunOneM iid do
-          when (resources > 0) do
-            labeled "Pay 1 Resources" (spendResources iid 1)
+      selectOne (AssetAttachedToAsset $ be attrs) >>= \case
+        Nothing -> spendResources iid 1
+        Just aid -> chooseOrRunOneM iid do
+          when (resources > 0) $ labeled "Pay 1 Resources" (spendResources iid 1)
           labeled "Put on bottom of deck" $ putOnBottomOfDeck iid iid aid
       pure a
     _ -> LibraryPass5 <$> liftRunMessage msg attrs

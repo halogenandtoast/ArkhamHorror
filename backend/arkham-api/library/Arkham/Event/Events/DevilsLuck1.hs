@@ -33,6 +33,6 @@ instance RunMessage DevilsLuck1 where
         push $ CancelHorror iid horrorAmount
 
       when (damageAmount + horrorAmount > 0) do
-        checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs
+        checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs) Nothing
       pure e
     _ -> DevilsLuck1 <$> liftRunMessage msg attrs

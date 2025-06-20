@@ -236,11 +236,11 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
       elem eid <$> select Matcher.EventReady
     _ -> error $ "Not handled" <> show target
   ExhaustAssetCost matcher ->
-    selectAny $ matcher <> Matcher.AssetReady
+    selectAny $ Matcher.replaceYouMatcher iid matcher <> Matcher.AssetReady
   ExhaustXAssetCost matcher ->
-    selectAny $ matcher <> Matcher.AssetReady
+    selectAny $ Matcher.replaceYouMatcher iid matcher <> Matcher.AssetReady
   DiscardAssetCost matcher ->
-    selectAny $ matcher <> Matcher.DiscardableAsset
+    selectAny $ Matcher.replaceYouMatcher iid matcher <> Matcher.DiscardableAsset
   UseCost assetMatcher uType n -> do
     assets <- select (Matcher.replaceYouMatcher iid assetMatcher)
     uses <- flip evalStateT assets $ do

@@ -444,7 +444,7 @@ const getCardName = (dbCard: ArkhamDBCard, needBack: boolean): string | null => 
   if (needBack && dbCard.back_name) cardName.value = dbCard.back_name
   else cardName.value = dbCard.name
   
-  if (dbCard.subname) cardName.value = `${cardName.value}: ${dbCard.subname}`
+  if (!needBack && dbCard.subname) cardName.value = `${cardName.value}: ${dbCard.subname}`
   if ((dbCard.xp || 0) > 0) cardName.value = `${cardName.value} (${dbCard.xp})`
   return cardName.value
 }
@@ -520,7 +520,7 @@ const replaceText = (text: string) => {
       />
       <div v-for="entry in crossedOff" :key="entry" class="crossed-off" :class="{ [toCamelCase(entry)]: true }"></div>
     </div>
-    <div class="card-data" v-if="dbCardData">
+    <div class="card-data" v-if="dbCardData && !sideways">
       <p v-if="dbCardName" style="font-size: 1.0em;"><b>{{ dbCardName }}</b></p>
       <p v-if="dbCardTraits"><span style="font-style: italic;">{{ dbCardTraits }}</span></p>
       <p v-if="dbCardText"><br></p>

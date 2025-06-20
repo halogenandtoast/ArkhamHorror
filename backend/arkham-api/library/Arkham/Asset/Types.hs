@@ -287,6 +287,7 @@ data AssetAttrs = AssetAttrs
   , assetTaboo :: Maybe TabooList
   , assetMutated :: Maybe Text -- for art display
   , assetDriver :: Maybe InvestigatorId
+  , assetVisible :: Bool
   }
   deriving stock (Show, Eq)
 
@@ -491,6 +492,7 @@ assetWith f cardDef g =
             , assetTaboo = Nothing
             , assetMutated = Nothing
             , assetDriver = Nothing
+            , assetVisible = True
             }
     }
 
@@ -659,4 +661,5 @@ instance FromJSON AssetAttrs where
     assetTaboo <- o .: "taboo"
     assetMutated <- o .: "mutated"
     assetDriver <- o .: "driver"
+    assetVisible <- o .:? "visible" .!= True
     pure AssetAttrs {..}

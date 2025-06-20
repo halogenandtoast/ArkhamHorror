@@ -275,6 +275,7 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c53049": return "theForgottenAge.theDepthsOfYoth"
     case "c53061": return "theForgottenAge.shatteredAeons"
     case "c53066": return "theForgottenAge.turnBackTime"
+    case "c71001": return "standalone.theMidwinterGala"
     case "c81001": return "standalone.curseOfTheRougarou"
     case "c82001": return "standalone.carnevaleOfHorrors"
     case "c84001": return "standalone.murderAtTheExcelsiorHotel"

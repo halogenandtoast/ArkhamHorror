@@ -1,34 +1,32 @@
 module Arkham.Asset.Assets.OccultLexicon where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Deck
+import Arkham.Asset.Import.Lifted
 import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers.Investigator (getCanShuffleDeck, searchBonded)
+import Arkham.Matcher
 
 newtype OccultLexicon = OccultLexicon AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 occultLexicon :: AssetCard OccultLexicon
 occultLexicon = asset OccultLexicon Cards.occultLexicon
 
+instance HasAbilities OccultLexicon where
+  getAbilities (OccultLexicon a) =
+    [restricted a 1 ControlsThis $ forced $ AssetEntersPlay #after (be a)]
+
 instance RunMessage OccultLexicon where
-  runMessage msg (OccultLexicon attrs) = case msg of
-    InvestigatorPlayAsset iid aid | aid == assetId attrs -> do
+  runMessage msg (OccultLexicon attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       bonded <- take 3 <$> searchBonded iid Events.bloodRite
-      case bonded of
-        [] -> pure ()
-        (handBloodRite : deckBloodRites) -> do
-          canShuffleDeck <- getCanShuffleDeck iid
-          pushAll
-            $ addToHand iid handBloodRite
-            : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckBloodRites | canShuffleDeck]
-      OccultLexicon <$> runMessage msg attrs
-    RemovedFromPlay source | isSource attrs source -> do
-      let iid = getOwner attrs
-      push (RemoveAllCopiesOfCardFromGame iid "05317")
-      OccultLexicon <$> runMessage msg attrs
-    _ -> OccultLexicon <$> runMessage msg attrs
+      for_ (nonEmpty bonded) \(handBloodRite :| deckBloodRites) -> do
+        addToHand iid (only handBloodRite)
+        whenM (getCanShuffleDeck iid) $ shuffleCardsIntoDeck iid deckBloodRites
+      OccultLexicon <$> liftRunMessage msg attrs
+    RemovedFromPlay (isSource attrs -> True) -> do
+      for_ attrs.owner \iid -> push (RemoveAllCopiesOfCardFromGame iid "05317")
+      OccultLexicon <$> liftRunMessage msg attrs
+    _ -> OccultLexicon <$> liftRunMessage msg attrs

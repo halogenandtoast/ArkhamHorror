@@ -80,6 +80,7 @@ allActCards =
       , findingAWayInside
       , findingLadyEsprit
       , findingThePath
+      , findingTheJewel
       , fold
       , followingLeads
       , friendsInHighPlacesHenryDeveau
@@ -114,6 +115,7 @@ allActCards =
       , lookingForAnswers
       , lostInTheWoods
       , magicAndScience
+      , meetAndGreet
       , mendTheShatter
       , missingPersons
       , mistakesOfThePast
@@ -971,3 +973,9 @@ whatHappened = act "84004" "What Happened...?" 1 MurderAtTheExcelsiorHotel
 
 followingLeads :: CardDef
 followingLeads = act "84005" "Following Leads" 2 MurderAtTheExcelsiorHotel
+
+meetAndGreet :: CardDef
+meetAndGreet = act "71005" "Meet and Greet" 1 TheMidwinterGala
+
+findingTheJewel :: CardDef
+findingTheJewel = act "71006" "Finding the Jewel" 2 TheMidwinterGala

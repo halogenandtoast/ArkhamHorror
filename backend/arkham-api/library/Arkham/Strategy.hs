@@ -4,6 +4,7 @@ module Arkham.Strategy where
 
 import Arkham.Card.CardDef
 import Arkham.Id
+import Arkham.Matcher.Asset
 import Arkham.Prelude
 import Arkham.Target
 import Arkham.Zone
@@ -13,7 +14,8 @@ import Data.Aeson.TH
 data DamageStrategy
   = DamageAny
   | DamageDirect
-  | DamageAssetsFirst
+  | DamageAssetsFirst AssetMatcher
+  | HorrorAssetsFirst AssetMatcher
   | DamageFirst CardDef
   | SingleTarget
   | DamageEvenly
@@ -92,7 +94,17 @@ fromDiscard :: (Zone, ZoneReturnStrategy)
 fromDiscard = (FromDiscard, PutBack)
 
 $(deriveJSON defaultOptions ''IsDraw)
-$(deriveJSON defaultOptions ''DamageStrategy)
+$(deriveToJSON defaultOptions ''DamageStrategy)
+
+instance FromJSON DamageStrategy where
+  parseJSON = withObject "DamageStrategy" \o -> do
+    tag <- o .: "tag"
+    case tag :: Text of
+      "DamageAssetsFirst" -> do
+        matcher <- o .:? "contents" .!= AnyAsset
+        pure $ DamageAssetsFirst matcher
+      _ -> $(mkParseJSON defaultOptions ''DamageStrategy) (Object o)
+
 $(deriveJSON defaultOptions ''ZoneReturnStrategy)
 $(deriveJSON defaultOptions ''FoundCardsStrategy)
 $(deriveToJSON defaultOptions ''AfterPlayStrategy)

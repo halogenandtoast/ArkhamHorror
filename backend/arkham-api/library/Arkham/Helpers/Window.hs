@@ -321,6 +321,11 @@ cardDrawn [] = error "missing play card window"
 cardDrawn ((windowType -> Window.DrawCard _ c _) : _) = c
 cardDrawn (_ : xs) = cardDrawn xs
 
+cancelledCard :: HasCallStack => [Window] -> CardId
+cancelledCard [] = error "missing play card window"
+cancelledCard ((windowType -> Window.CancelledOrIgnoredCardOrGameEffect _ (Just c)) : _) = c
+cancelledCard (_ : xs) = cancelledCard xs
+
 getPlayedEvent :: [Window] -> EventId
 getPlayedEvent = \case
   [] -> error "impossible"
@@ -871,10 +876,16 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , sourceMatches source' sourceMatcher
           ]
       _ -> noMatch
-    Matcher.CancelledOrIgnoredCardOrGameEffect sourceMatcher ->
+    Matcher.CancelledOrIgnoredCardOrGameEffect sourceMatcher mCardMatcher ->
       guardTiming Timing.After $ \case
-        Window.CancelledOrIgnoredCardOrGameEffect source' ->
-          sourceMatches source' sourceMatcher
+        Window.CancelledOrIgnoredCardOrGameEffect source' mCardId -> do
+          mCard <- case mCardId of
+            Nothing -> pure Nothing
+            Just cid -> Just <$> getCard cid
+          andM
+            [ sourceMatches source' sourceMatcher
+            , pure $ maybe True (\cmatcher -> maybe True (`cardMatch` cmatcher) mCard) mCardMatcher
+            ]
         _ -> noMatch
     Matcher.WouldBeShuffledIntoDeck deckMatcher cardMatcher -> case wType of
       Window.WouldBeShuffledIntoDeck deck card
@@ -1964,6 +1975,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       Window.EnterPlay (AssetTarget aid) -> elem aid <$> select assetMatcher
       _ -> noMatch
     Matcher.AssetLeavesPlay timing assetMatcher -> guardTiming timing $ \case
+      Window.LeavePlay (AssetTarget aid) -> elem aid <$> select assetMatcher
+      _ -> noMatch
+    Matcher.AssetWouldLeavePlay timing assetMatcher -> guardTiming timing $ \case
       Window.LeavePlay (AssetTarget aid) -> elem aid <$> select assetMatcher
       _ -> noMatch
     Matcher.AssetDiscarded timing assetMatcher -> guardTiming timing $ \case

@@ -1,10 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Skill.Runner (
-  module X,
-) where
-
-import Arkham.Prelude
+module Arkham.Skill.Runner (module X) where
 
 import Arkham.Helpers.Effect as X
 import Arkham.Helpers.Message as X hiding (
@@ -26,6 +22,7 @@ import Arkham.Classes.RunMessage
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Window (checkAfter, checkWindows)
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 import Data.IntMap.Strict qualified as IntMap

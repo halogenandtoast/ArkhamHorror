@@ -40,13 +40,11 @@ const scenarios = computed(() => scenarioJSON.filter((s) =>
     : true
 ))
 
-// const sideStories = computed(() => sideStoriesJSON.filter((s) =>
-//   s.beta
-//     ? currentUser.value && currentUser.value.beta
-//     : true
-// ))
-
-const sideStories = computed(() => sideStoriesJSON)
+const sideStories = computed(() => sideStoriesJSON.filter((s) =>
+  s.beta
+    ? currentUser.value && currentUser.value.beta
+    : true
+))
 
 const dev = import.meta.env.PROD ? false : true
 
@@ -212,10 +210,12 @@ async function start() {
 
           <template v-if="gameMode === 'SideStory'">
             <div class="scenarios">
-              <div v-for="scenario in sideStories" :key="scenario.id">
+              <div v-for="scenario in sideStories" :key="scenario.id" class="scenario" :class="{ beta: scenario.beta, alpha: scenario.alpha }">
                 <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="imgsrc(`boxes/${scenario.id}.jpg`)" @click="selectedScenario = scenario.id">
               </div>
             </div>
+
+            <div class="beta-warning" v-if="scenario && scenario.beta">{{$t('create.betaWarningScenario')}}</div>
           </template>
           <template v-else>
             <!-- <select v-model="selectedCampaign"> -->
@@ -559,7 +559,7 @@ header {
   opacity: 0;
 }
 
-.campaign {
+.campaign, .scenario {
   position: relative;
   overflow: hidden;
   &.beta:after{

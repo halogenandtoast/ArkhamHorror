@@ -253,10 +253,12 @@ async function start() {
               <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">{{$t('create.returnTo')}}</label>
             </div>
 
-            <div v-if="gameMode === 'Campaign' && campaign && campaign.settings" class="options">
+            <div v-if="gameMode === 'Campaign' && campaign" class="options">
               <input type="radio" v-model="fullCampaign" :value="'FullCampaign'" id="full"> <label for="full">{{$t('create.fullCampaign')}}</label>
               <input type="radio" v-model="fullCampaign" :value="'Standalone'" id="standalone"> <label for="standalone">{{$t('create.standalone')}}</label>
-              <input type="radio" v-model="fullCampaign" :value="'PartialCampaign'" id="partial"> <label for="partial">{{$t('create.partialCampaign')}}</label>
+              <template v-if="campaign.settings">
+                <input type="radio" v-model="fullCampaign" :value="'PartialCampaign'" id="partial"> <label for="partial">{{$t('create.partialCampaign')}}</label>
+              </template>
             </div>
 
             <template v-if="['Standalone', 'PartialCampaign'].includes(fullCampaign) && selectedCampaign">

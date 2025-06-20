@@ -41,7 +41,7 @@ import Arkham.Evade qualified as Evade
 import Arkham.Event.Types qualified as Field
 import Arkham.Fight
 import Arkham.Fight qualified as Fight
-import {-# SOURCE #-} Arkham.GameEnv (getCard, findCard)
+import {-# SOURCE #-} Arkham.GameEnv (findCard, getCard)
 import Arkham.Helpers
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Act
@@ -550,7 +550,7 @@ instance FetchCard TreacheryId where
   fetchCardMaybe = fieldMap Field.TreacheryCard Just
 
 instance FetchCard CardId where
-  fetchCardMaybe = fmap Just  . getCard
+  fetchCardMaybe = fmap Just . getCard
 
 instance FetchCard Field.TreacheryAttrs where
   fetchCardMaybe = fieldMap Field.TreacheryCard Just . asId
@@ -2392,7 +2392,14 @@ discoverAt
   -> m ()
 discoverAt isInvestigate iid s lid n = do
   canDiscover <- getCanDiscoverClues isInvestigate iid (asId lid)
-  Msg.pushWhen canDiscover $ Msg.DiscoverClues iid $ Msg.discover lid s n
+  additional <-
+    if isInvestigate == IsInvestigate
+      then do
+        mods <- Msg.getModifiers iid
+        pure $ sum [m | DiscoveredClues m <- mods]
+      else pure 0
+
+  Msg.pushWhen canDiscover $ Msg.DiscoverClues iid $ Msg.discover lid s (n + additional)
 
 doStep :: ReverseQueue m => Int -> Message -> m ()
 doStep n msg = push $ Msg.DoStep n msg

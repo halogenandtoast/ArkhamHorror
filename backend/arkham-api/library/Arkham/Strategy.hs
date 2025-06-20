@@ -37,6 +37,7 @@ data FoundCardsStrategy
   = PlayFound InvestigatorId Int
   | PlayFoundNoCost InvestigatorId Int
   | DrawFound InvestigatorId Int
+  | AddFoundToHand InvestigatorId Int
   | DrawAllFound InvestigatorId
   | DrawFoundUpTo InvestigatorId Int
   | DeferSearchedToTarget Target IsDraw
@@ -53,6 +54,7 @@ isSearchDraw :: FoundCardsStrategy -> Bool
 isSearchDraw = \case
   PlayFound {} -> False
   PlayFoundNoCost {} -> False
+  AddFoundToHand {} -> False
   DrawFound {} -> True
   DrawAllFound {} -> True
   DrawFoundUpTo {} -> True

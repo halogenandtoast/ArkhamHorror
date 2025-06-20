@@ -22,6 +22,6 @@ instance HasAbilities MiskatonicUniversity where
 instance RunMessage MiskatonicUniversity where
   runMessage msg l@(MiskatonicUniversity attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      search iid (attrs.ability 1) iid [fromTopOfDeck 6] (basic $ oneOf [#tome, #spell]) (DrawFound iid 1)
+      search iid (attrs.ability 1) iid [fromTopOfDeck 6] (basic $ oneOf [#tome, #spell]) (AddFoundToHand iid 1)
       pure l
     _ -> MiskatonicUniversity <$> liftRunMessage msg attrs

@@ -905,6 +905,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         DrawOrCommitFound {} -> error "CommitFound not implemented for EncounterDeck"
         AddToHandOrPlayFound {} -> error "AddToHandOrPlayFound not implemented for EncounterDeck"
         RemoveFoundFromGame _ _ -> error "Unhandled"
+        AddFoundToHand {} -> error "Unhandled"
         DrawFound who n -> do
           let
             choices =

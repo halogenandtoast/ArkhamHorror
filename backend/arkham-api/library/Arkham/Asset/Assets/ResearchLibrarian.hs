@@ -23,6 +23,6 @@ instance HasAbilities ResearchLibrarian where
 instance RunMessage ResearchLibrarian where
   runMessage msg a@(ResearchLibrarian attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      search iid (attrs.ability 1) iid [fromDeck] #tome (DrawFound iid 1)
+      search iid (attrs.ability 1) iid [fromDeck] #tome (AddFoundToHand iid 1)
       pure a
     _ -> ResearchLibrarian <$> liftRunMessage msg attrs

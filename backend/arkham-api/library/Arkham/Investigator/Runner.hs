@@ -4022,6 +4022,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 $ if null choices
                   then chooseOne player [Label "No cards found" []]
                   else chooseN player (min n (length choices)) choices
+            AddFoundToHand who n -> do
+              let
+                choices =
+                  [ targetLabel
+                      card
+                      [AddFocusedToHand iid (toTarget who) zone (toCardId card)]
+                  | (zone, cards) <- mapToList targetCards
+                  , card <- cards
+                  ]
+              push
+                $ if null choices
+                  then chooseOne player [Label "No cards found" []]
+                  else chooseN player (min n (length choices)) choices
             DrawFound who n -> do
               let
                 choices =

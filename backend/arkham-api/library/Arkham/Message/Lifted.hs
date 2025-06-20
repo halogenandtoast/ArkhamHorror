@@ -2942,6 +2942,11 @@ drawCard iid card = do
     PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc Nothing
     VengeanceCard vc -> Arkham.Message.Lifted.drawCard iid vc
 
+resolveRevelation :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
+resolveRevelation iid card = do
+  obtainCard card
+  push $ ResolveRevelation iid (toCard card)
+
 resign :: ReverseQueue m => InvestigatorId -> m ()
 resign iid = push $ Resign iid
 

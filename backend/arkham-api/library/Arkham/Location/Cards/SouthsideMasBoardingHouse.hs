@@ -19,6 +19,6 @@ instance HasAbilities SouthsideMasBoardingHouse where
 instance RunMessage SouthsideMasBoardingHouse where
   runMessage msg l@(SouthsideMasBoardingHouse attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      search iid (attrs.ability 1) iid [fromDeck] #ally $ DrawFound iid 1
+      search iid (attrs.ability 1) iid [fromDeck] #ally $ AddFoundToHand iid 1
       pure l
     _ -> SouthsideMasBoardingHouse <$> liftRunMessage msg attrs

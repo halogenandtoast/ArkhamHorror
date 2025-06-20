@@ -36,6 +36,6 @@ instance RunMessage AllIsOne where
       pure a
     RequestedEncounterCard source _ (Just card) | isSource attrs source -> do
       lead <- getLead
-      drawCard lead card
+      resolveRevelation lead card
       pure a
     _ -> AllIsOne <$> liftRunMessage msg attrs

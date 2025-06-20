@@ -15,6 +15,6 @@ preparedForTheWorst = event PreparedForTheWorst Cards.preparedForTheWorst
 instance RunMessage PreparedForTheWorst where
   runMessage msg e@(PreparedForTheWorst attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      search iid attrs iid [fromTopOfDeck 9] (basic $ #asset <> #weapon) (DrawFound iid 1)
+      search iid attrs iid [fromTopOfDeck 9] (basic $ #asset <> #weapon) (AddFoundToHand iid 1)
       pure e
     _ -> PreparedForTheWorst <$> liftRunMessage msg attrs

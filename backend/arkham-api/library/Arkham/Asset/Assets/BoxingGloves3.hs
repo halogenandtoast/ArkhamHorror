@@ -27,6 +27,6 @@ instance RunMessage BoxingGloves3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push
         $ search iid (attrs.ability 1) iid [fromTopOfDeck 9] (basic $ #event <> withTrait Spirit)
-        $ DrawFound iid 1
+        $ AddFoundToHand iid 1
       pure a
     _ -> BoxingGloves3 <$> runMessage msg attrs

@@ -158,6 +158,7 @@ import Arkham.Location.Locations (
   unvisitedIsleStandingStonesEffect,
  )
 import Arkham.Skill.Skills (
+  nimbleEffect,
   copycat3Effect,
   defiance2Effect,
   defianceEffect,
@@ -560,6 +561,7 @@ allEffects =
     , ("60232", SomeEffect miskatonicArchaeologyFunding4Effect)
     , ("60301", SomeEffect winifredHabbamockEffect)
     , ("60305", SomeEffect lockpicksEffect)
+    , ("60317", SomeEffect nimbleEffect)
     , ("60323", SomeEffect cheapShot2Effect)
     , ("60324", SomeEffect $ noop "60324")
     , ("60328", SomeEffect $ noop "60328")

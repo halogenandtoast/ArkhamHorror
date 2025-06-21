@@ -132,7 +132,7 @@ setupTheMidnightMasks _attrs = do
     else startAt =<< place Locations.yourHouse
 
   count' <- getPlayerCount
-  let acolytes = replicate (count' - 1) Enemies.acolyte
+  let acolytes = replicate (count' - 1) (if isReturnTo then Enemies.discipleOfTheDevourer else Enemies.acolyte)
   zipWithM_ enemyAt acolytes [southside, downtown, graveyard]
 
   when ghoulPriestStillAlive $ addToEncounterDeck (only Enemies.ghoulPriest)

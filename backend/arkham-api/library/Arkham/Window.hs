@@ -336,6 +336,11 @@ mconcat
         parseJSON = withObject "WindowType" \o -> do
           tag :: Text <- o .: "tag"
           case tag of
+            "CancelledOrIgnoredCardOrGameEffect" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left a -> pure $ CancelledOrIgnoredCardOrGameEffect a Nothing
+                Right (a, b) -> pure $ CancelledOrIgnoredCardOrGameEffect a b
             "Explored" -> do
               contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
               case contents of

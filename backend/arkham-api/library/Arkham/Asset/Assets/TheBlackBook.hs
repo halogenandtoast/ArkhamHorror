@@ -19,15 +19,9 @@ theBlackBook = asset TheBlackBook Cards.theBlackBook
 
 instance HasModifiersFor TheBlackBook where
   getModifiersFor (TheBlackBook a) = for_ a.controller \iid -> do
+    modified_ a iid [SkillModifier #willpower 1, SkillModifier #intellect 1]
     sanity <- field InvestigatorRemainingSanity iid
-    modifiedWhen_
-      a
-      a.ready
-      iid
-      [ SkillModifier #willpower 1
-      , SkillModifier #intellect 1
-      , CanReduceCostOf AnyCard sanity
-      ]
+    modifiedWhen_ a a.ready iid [CanReduceCostOf AnyCard sanity]
 
 instance HasAbilities TheBlackBook where
   getAbilities (TheBlackBook a) =

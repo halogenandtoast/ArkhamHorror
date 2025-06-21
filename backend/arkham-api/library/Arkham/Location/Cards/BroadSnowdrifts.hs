@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.BroadSnowdrifts (broadSnowdrifts, BroadSnowdrifts (..)) where
+module Arkham.Location.Cards.BroadSnowdrifts (broadSnowdrifts) where
 
 import Arkham.Ability
 import Arkham.Location.Cards qualified as Cards
@@ -14,14 +14,15 @@ broadSnowdrifts :: LocationCard BroadSnowdrifts
 broadSnowdrifts =
   symbolLabel
     $ locationWith BroadSnowdrifts Cards.broadSnowdrifts 1 (PerPlayer 2)
-    $ (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
+    $ costToEnterUnrevealedL
+    .~ GroupClueCost (PerPlayer 1) YourLocation
 
 instance HasAbilities BroadSnowdrifts where
   getAbilities (BroadSnowdrifts a) =
     extendRevealed1 a
       $ groupLimit PerGame
       $ restricted a 1 Here
-      $ ReactionAbility (SkillTestResult #when You (whileInvestigating a) #success) (AddFrostTokenCost 3)
+      $ ReactionAbility (SkillTestResult #when You (whileInvestigating a) #success) (AddFrostTokenCost 1)
 
 instance RunMessage BroadSnowdrifts where
   runMessage msg l@(BroadSnowdrifts attrs) = runQueueT $ case msg of

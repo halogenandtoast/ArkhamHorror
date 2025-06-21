@@ -8,6 +8,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Projection
 import Arkham.Scenarios.TheMidwinterGala.Helpers
+import Arkham.Helpers.Location (withLocationOf)
 
 newtype ThePaleLanternBeguilingAura = ThePaleLanternBeguilingAura AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

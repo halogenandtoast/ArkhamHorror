@@ -8,6 +8,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Projection
+import Arkham.Helpers.Location (withLocationOf)
 
 newtype ThePaleLanternHypnoticGlow = ThePaleLanternHypnoticGlow AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

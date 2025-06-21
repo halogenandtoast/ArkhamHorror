@@ -412,10 +412,7 @@ i.action {
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   position: relative;
-
-  @media (prefers-color-scheme: dark) {
-    color: #EEE;
-  }
+  color: #EEE;
 
   &:before {
     font-family: "Arkham";

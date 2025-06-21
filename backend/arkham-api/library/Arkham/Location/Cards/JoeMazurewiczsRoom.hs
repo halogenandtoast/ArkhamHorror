@@ -40,7 +40,7 @@ instance RunMessage JoeMazurewiczsRoom where
           iid
           [fromDeck]
           (basic $ oneOf [withTrait Blessed, withTrait Item])
-          (DrawFound iid 1)
+          (AddFoundToHand iid 1)
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       hasAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid

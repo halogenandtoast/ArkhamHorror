@@ -324,6 +324,16 @@ assetAt def lid = do
 assetAt_ :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m ()
 assetAt_ def lid = void $ assetAt def lid
 
+placeAsset_ :: ReverseQueue m => CardDef -> Placement -> ScenarioBuilderT m ()
+placeAsset_ def p = void $ placeAsset def p
+
+placeAsset :: ReverseQueue m => CardDef -> Placement -> ScenarioBuilderT m AssetId
+placeAsset def p = do
+  attrsL . encounterDeckL %= flip removeEachFromDeck [def]
+  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
+  card <- genCard def
+  createAssetAt card p
+
 excludeFromEncounterDeck
   :: (ReverseQueue m, MonoFoldable defs, Element defs ~ card, HasCardDef card)
   => defs

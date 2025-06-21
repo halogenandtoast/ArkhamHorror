@@ -1,77 +1,77 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1 (-3 instead if Hunting Horror is at your location.)",
-      "cultist": "-1. If you fail, search the encounter deck, discard pile, and the void for Hunting Horror and spawn it at your location, if able.",
-      "tablet": "-2. Return 1 of your clues to your current location.",
-      "elderThing": "-3. If you fail, discard an asset you control."
+      "skull": "-1(‘공포의 추격자’가 당신과 같은 장소에 있다면, -1 대신 -3).",
+      "cultist": "-1. 실패하면, 조우 덱과 버린 조우 더미 및 공허에서 ‘공포의 추격자’를 찾아서 당신이 위치한 장소에 출현시킵니다(가능하다면).",
+      "tablet": "-2. 당신이 가진 단서 1개를 당신이 위치한 장소에 올려놓습니다.",
+      "elderThing": "-3. 실패하면, 당신이 조종하는 자산 하나를 버립니다."
     },
     "hardExpert": {
-      "skull": "-2 (-4 instead if Hunting Horror is at your location.)",
-      "cultist": "-3. If you fail, search the encounter deck, discard pile, and the void for Hunting Horror and spawn it at your location, if able.",
-      "tablet": "-4. If Hunting Horror is at your location, it immediately attacks you.",
-      "elderThing": "-5. If you fail, discard an asset you control."
+      "skull": "-2(‘공포의 추격자’가 당신과 같은 장소에 있다면, -2 대신 -4)",
+      "cultist": "-3. 실패하면, 조우 덱과 버린 조우 더미 및 공허에서 ‘공포의 추격자’를 찾아서 당신이 위치한 장소에 출현시킵니다(가능하다면).",
+      "tablet": "-4. ‘공포의 추격자’가 당신과 같은 장소에 있다면, ‘공포의 추격자’가 즉시 당신을 공격합니다.",
+      "elderThing": "-5. 실패하면, 당신이 조종하는 자산 하나를 버립니다."
     }
   },
   "intro": {
-    "title": "Scenario II: The Miskatonic Museum",
-    "body": "<p>Several months ago, Armitage and his colleagues stopped a rampaging horror from tearing through Dunwich, a backwater town several hours north and west of Arkham. At first you imagine this beast as a rabid bear, or worse, but the professor’s description of the creature paints a different picture.</p><p>It all began when a man named Wilbur Whateley entered the Orne Library looking for Olaus Wormius’s Latin translation of a book called the Necronomicon. Wilbur already possessed a beaten-up English translation by Dr. John Dee, but it was insufficient for his purposes. Armitage turned the man away, fearing what use the strange man had for the book. Whateley returned in secret, hoping to steal the book , but was attacked by a hound guarding the university. Armitage, Rice, and Morgan later discovered Whateley’s body. A description of the foul corpse—semi-anthropomorphic and covered in fur, with a leathery hide and greenish-grey tentacles—causes you to question whether or not Whateley was truly human.</p>",
-    "proceedToPart1": "<div class='basic right'><p>Check Campaign Log. If *Dr. Henry Armitage was kidnapped*:</p><p>Proceed to _Part 1_</p></div>",
-    "proceedToPart2": "<div class='basic right'><p>If *the investigators rescued Dr. Henry Armitage*:</p><p>Skip to _Part 2_.</p></div>",
+    "title": "시나리오 II: 미스케토닉 박물관",
+    "body": "<p>몇 달 전, 아미티지와 그의 동료들은 아컴에서 북서쪽으로 몇 시간 정도 달려가야 도착하는 시골 마을 던위치에서 마을을 유린하던 난폭한 괴물을 막아냈습니다. 그 얘기를 듣고, 처음에 당신은 광폭한 곰 내지는 그보다 좀 더 사나운 야수 따위를 상상했습니다. 하지만 교수가 묘사하는 괴물은 그런 것과 아예 격이 달랐습니다.</p><p>모든 일은 윌버 웨이틀리라는 사람이 올라우스 워미우스가 번역한 네크로노미콘의 라틴어 판본을 찾아 오른 도서관을 방문한 것에서부터 시작되었습니다. 윌버는 이미 존 디 교수의 낡아 빠진 영문 번역본을 가지고 있었지만, 그것으로는 자기 목적을 채울 수가 없었던 모양입니다. 아미티지는 그 이상한 남자가 불순한 의도를 갖고 네크로노미콘을 빌리려 한다고 우려하여 열람하지 못하게 막았습니다. 웨이틀리는 밤을 틈타 오른 도서관에 침입하여 책을 훔치려 했으나, 대학을 지키는 경비견의 공격을 받았습니다. 아미티지, 라이스, 모건은 나중에야 웨이틀리의 시신을 발견했습니다. 웨이틀리의 시신은 반쯤만 인간의 형체를 닮은 털북숭이였고, 질긴 가죽에 녹회색 촉수가 달려있었다고 합니다. 그런 이야기를 접하고 나니 당신은 웨이틀리가 진짜 인간이었는지조차 의문스럽습니다.</p>",
+    "proceedToPart1": "<div class='basic right'><p>캠페인 기록지를 확인하세요. *헨리 아미티지 박사가 납치되었다*면:</p><p>_도입부 1_로 이어집니다.</p></div>",
+    "proceedToPart2": "<div class='basic right'><p>*조사자들이 헨리 아미티지 박사를 구출했다*면:</p><p>_도입부 2_로 건너뜁니다.</p></div>",
     "part1": {
-      "title": "Scenario II: The Miskatonic Museum",
-      "body": "<p>_Part 1_: The notes written by Dr. Armitage in the journal stress Whateley’s desire to get his hands on the Necronomicon for some terrible purpose. As you read on, it seems that Dr. Armitage brought the university’s copy of the tome to Harold Walsted­ —the curator of the Miskatonic Museum—for safekeeping in the museum’s Restricted Hall. Although you are worried about your mentor, you are equally worried that Armitage’s kidnappers might get their hands on this Necronomicon. You decide to head to the museum to prevent them from acquiring it.</p><p class='basic right'>Proceed to _Setup_.</p>"
+      "title": "시나리오 II: 미스케토닉 박물관",
+      "body": "<p>_도입부 1_: 아미티지 박사의 일지에는, 웨이틀리가 어떤 끔찍한 목적을 이루고자 네크로노미콘을 손에 넣으려 했다고 기록되어 있습니다. 계속 읽어보니, 아미티지 박사는 대학에 있던 네크로노미콘 올라우스 워미우스 번역본을 미스캐토닉 박물관 큐레이터인 해럴드 월스테드에게 맡겼고, 이후 그 책은 박물관의 제한 구역에 보관되었다고 합니다. 당신으로서는 스승의 안위도 걱정되기는 하지만, 아미티지 박사를 납치한 자들이 네크로노미콘까지 탐낼까 우려가 됩니다. 당신은 그들이 네크로노미콘을 손에 넣는 걸 막기 위해 박물관으로 향합니다.</p><p class='basic right'>_게임 준비_로 이어집니다.</p>"
     },
     "part2": {
-      "title": "Scenario II: The Miskatonic Museum",
-      "body": "<p>_Part 2_: “My colleagues and I were quick to put the ordeal behind us,” Armitage says with a sigh. “But it seems that things haven’t fully resolved themselves. I’ll tell you the rest later, but for now, it is imperative that we get our hands on that copy of the Necronomicon. If my instincts are correct, the assailants you’ve encountered will be searching for it. After all that transpired, I didn’t feel safe keeping it at the library, so I brought it to my good friend, Harold Walsted. He is the current curator of the Miskatonic Museum. I thought it would be safe in the museum’s Restricted Hall, but now I’m not so sure. You must retrieve it at all costs! I fear terribly what they could do with the rites contained in its pages…”</p><p class='basic right'>Proceed to _Setup_.</p>"
+      "title": "시나리오 II: 미스케토닉 박물관",
+      "body": "<p>_도입부 2_: “나와 동료 교수들은 그 끔찍한 사건을 되도록 빨리 잊으려 노력했었다네.” 아미티지가 한숨을 쉬며 말합니다. “하지만 일이 아직 완전히 매듭지어진 건 아닌가 보군. 자세한 건 나중에 이야기해 주겠지만, 일단 지금은 올라우스 워미우스가 번역한 라틴어판 네크로노미콘을 확보하는 게 최우선일세. 내 직감이 맞다면, 자네를 공격한 자들은 분명 그걸 찾고 있을 게야. 몇 달 전 벌어진 사태 이후로, 도서관에서는 그 책을 안전하게 보관하기가 어렵겠다 싶어서 내 친구인 해럴드 월스테드에게 가져갔다네. 그는 미스캐토닉 박물관의 현직 큐레이터일세. 그 당시엔 박물관의 제한 구역에 보관해 두는 게 더 안전할 거라 생각했지만, 지금 생각해 보니 그렇지 않을 수도 있겠네. 무슨 수를 써서라도 그걸 확보해야 하네! 그자들이 네크로노미콘에 나와 있는 의식을 거행하면 무슨 끔찍한 일이 벌어질지 생각만 해도 소름이 끼친다네…”</p><p class='basic right'>_게임 준비_로 이어집니다.</p>"
     }
   },
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: *The Miskatonic Museum*, *Bad Luck*, *Sorcery*, *The Beyond*, *Chilling Cold*, and *Locked Doors*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-miskatonic-museum.png' /><img src='{setImgPath}/bad-luck.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
-    "placeLocations": "Put one of the two Administration Office locations and one of the two Security Office locations into play at random. Remove the other versions of Administration Office and Security Office from the game. Then, put the Museum Entrance and Museum Halls locations into play. Each investigator begins play at the Museum Entrance.",
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *미스케토닉 박물관*, *불운*, *마술*, *저 너머*, *으스스한 한기*, *잠긴 문*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/the-miskatonic-museum.png' /><img src='{setImgPath}/bad-luck.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+    "placeLocations": "무작위로 ‘관리실’ 장소 2장 중 1장과 ‘경비실’ 장소 2장 중 1장을 선택하여 플레이 영역에 둡니다. 선택하지 않은 ‘관리실’과 ‘경비실’은 게임에서 제거합니다. 그런 다음, ‘박물관 입구’, ‘박물관 로비’ 장소를 플레이 영역에 둡니다. 모든 조사자는 ‘박물관 입구’에서 시작합니다.",
     "exhibitDeck": {
-      "instructions": "Set the 6 “Exhibit Hall” locations aside as a separate “Exhibit Deck.” To do this, perform the following:",
-      "bottom": "Shuffle the Exhibit Hall (*Restricted Hall*) and 2 other random Exhibit Hall locations together to form the bottom 3 cards of the Exhibit Deck, unrevealed side faceup.",
-      "top": "Then, place the other 3 Exhibit Hall locations on top, in a random order. All 6 cards of the Exhibit Hall deck should be showing only the unrevealed side, so that the players do not know which Exhibit Hall is the Exhibit Hall (*Restricted Hall*)."
+      "instructions": "‘전시장’ 장소 6장을 별도의 “전시장 덱”으로 구분하여 치워 둡니다. 다음 지시에 따라 전시장 덱을 구성합니다.",
+      "bottom": "전시장(*제한 구역*)’ 장소와 다른 무작위 ‘전시장’ 장소 2장을 미공개 면이 보이게 섞어 “전시장 덱” 맨 밑 카드 3장을 구성합니다.",
+      "top": "그런 다음, 나머지 ‘전시장’ 장소 3장을 그 위에 무작위 순서대로 올려놓습니다. 어느 ‘전시장’ 카드가 ‘전시장(*제한 구역*)’인지 알 수 없도록 “전시장 덱”에 속한 카드 6장은 모두 미공개 면이 보이도록 두어야 합니다."
     },
-    "setAside": "Set the following cards aside, out of play: Harold Walsted, Adam Lynch, The Necronomicon (*Olaus Wormius Translation*), and Shadow-spawned."
+    "setAside": "‘해럴드 월스테드’, ‘애덤 린치’, ‘네크로노미콘(*올라우스 워미우스 번역본*)’, ‘어둠의 피조물’ 카드를 비플레이 상태로 치워 둡니다."
   },
   "theVoid": {
-    "title": "“The Void”",
-    "body": "Some cards in this scenario reference an area called “the void.” The void is an out-of-play area next to the act and agenda deck which the Hunting Horror enemy can enter and leave via card effects. While the Hunting Horror is in the void, it is considered out of play and cannot be affected by player cards or investigator actions."
+    "title": "“공허”",
+    "body": "이번 시나리오에 속한 일부 카드에는 “공허”라는 영역이 적혀 있습니다. 공허는 주요목적 덱과 주요사건 덱 옆에 있는 비플레이 영역을 뜻하며, ‘공포의 추격자’ 적이 각종 카드 효과에 의해 이 영역으로 드나들 수 있습니다. 공허 영역에 있는 ‘공포의 추격자’는 비플레이 상태로 간주하며, 플레이어 카드나 조사자 행동의 영향을 받지 않습니다."
   },
   "resolutions": {
     "noResolution": {
-      "title": "No Resolution",
-      "body": "<div class='resolution'><p>_If no resolution was reached (each investigator resigned or was defeated):_ Whatever the creature in the museum was, you had neither the will nor the tools to destroy it. It seems you must give up any hope of recovering the Necronomicon. Even so, there are others depending on you. Gathering your courage, you prepare for your next task.</p><ul><li>In your Campaign Log, record that *the investigators failed to recover the Necronomicon*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "결말에 도달하지 못함",
+      "body": "<div class='resolution'><p>_아무 결말에도 도달하지 못했다면(모든 조사자가 후퇴하거나 쓰러졌다면):_ 박물관에 있는 괴물의 정체가 무엇이든 간에, 당신에게는 그 괴물을 물리칠 의지도 수단도 없습니다. 네크로노미콘을 되찾을 수 있을지도 모른다는 당신의 기대는 완전히 무너졌습니다. 그렇지만, 아직도 간절하게 당신의 도움을 필요로 하는 이들이 있습니다. 당신은 용기를 짜내어 앞일을 대비합니다.</p><ul><li>캠페인 기록지에 *조사자들이 네크로노미콘을 회수하지 못했다*라고 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     },
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1:_ As long as this translation of the Necronomicon exists, there will be sorcerers and other foul agents like Whateley seeking it. In the end, you know what must be done to protect humanity from the threats you’ve seen. You find a trash bin and fill it with books and documents, throwing the Necronomicon on top. It takes several matches to set the contents of the bin alight. The flames fill the room with heat and the creeping shadows retreat from its light. You watch the book burn for some time, its pages turning to ash. You can only hope you’ve made the right decision.</p><ul><li>In your Campaign Log, record that *the investigators destroyed the Necronomicon.*</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "결말 1",
+      "body": "<div class='resolution'><p>_결말 1:_ 이 네크로노미콘 번역본이 존재하는 한, 다른 주술사나 웨이틀리 같은 사악한 자들이 계속 꼬여들 겁니다. 당신이 목도한 위협으로부터 인류를 지켜내려면 이 책을 파괴해야 합니다. 당신은 쓰레기통을 찾아 책과 서류로 가득 채운 다음 그 위에 네크로노미콘을 던집니다. 그리고 성냥을 켜서 쓰레기통 위로 불을 붙입니다. 불길이 방 안을 열기로 가득 채우자, 오싹한 그림자도 불빛에서 점차 물러납니다. 당신은 불 붙은 책이 재로 변하는 광경을 가만히 바라봅니다. 이것이 제발 올바른 선택이었기를 바랄 뿐입니다.</p><ul><li>캠페인 기록지에 *조사자들이 네크로노미콘을 파괴했다*라고 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2:_ The Necronomicon is more than just a book; it is a tool. Within its pages is a wealth of information about the forces and creatures you have encountered. Knowing how useful it could be in your endeavors, how could you possibly bring yourself to destroy it? Besides, as long as you keep the book safely in your possession, you will still be foiling those who wish to use it for nefarious purposes.</p><ul><li>In your Campaign Log, record that *the investigators took custody of the Necronomicon*.</li><li>The investigators have earned The Necronomicon (*Olaus Wormius Translation*) card. Any one investigator may choose to add The Necronomicon (*Olaus Wormius Translation*) to his or her deck. This card does not count towards that investigator’s deck size.</li><li>You have given in to the temptation of power. Add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "결말 2",
+      "body": "<div class='resolution'><p>_결말 2:_ 네크로노미콘은 단순한 책이 아니라 도구입니다. 이 책에는 당신이 지금껏 맞닥뜨린 힘과 괴물에 대한 정보가 잔뜩 담겨 있습니다. 당신이 해야 할 일을 생각해 본다면, 앞으로 큰 도움이 될 이 책을 파괴하는 게 가당키나 하겠습니까? 게다가 당신이 책을 잘 보관하면, 이 책을 사악한 목적에 사용하려는 자들을 저지하는 셈입니다.</p><ul><li>캠페인 기록지에 *조사자들이 네크로노미콘을 보관했다*라고 기록합니다.</li><li>조사자들은 ‘네크로노미콘(*올라우스 워미우스 번역본*)’ 카드를 얻었습니다. 조사자 중 한 명이 ‘네크로노미콘(*올라우스 워미우스 번역본*)’을 자기 덱에 추가해도 됩니다. 이 카드는 조사자의 덱 크기를 계산할 때 포함되지 않습니다.</li><li>당신은 힘의 유혹에 빠져들었습니다. 캠페인이 끝날 때까지 혼돈 주머니에 {'{'}elderThing{'}'} 토큰을 1개 추가합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     }
   },
   "label": {
-    "takeControlOfHaroldWalsted": "Choose investigator to take control of Harold Walsted.",
-    "r1": "It's too dangerous to keep around. We have to destroy it. (-> R1)",
-    "r2": "It's too valuable to destroy. We have to keep it safe. (-> R2)",
+    "takeControlOfHaroldWalsted": "‘해럴드 월스테드’를 조종할 조사자를 선택하세요.",
+    "r1": "“이 책을 계속 보관하는 건 너무 위험해. 파괴해야 해.” (-> 결1)",
+    "r2": "“파괴하기엔 너무 귀한 물건이야. 우리가 안전하게 보관해야 해.” (-> 결2)",
     "securityOffice": {
-      "topOfDeck": "Look at the top card of the Exhibit Deck"
+      "topOfDeck": "“전시장 덱” 맨 위 카드를 봅니다."
     },
     "passageIntoTheVeil": {
-      "damage": "Take 1 direct damage and deal 1 damage to each of your Ally assets"
+      "damage": "직접적인 피해를 1 받고 당신의 모든 _조력자_ 자산에게 피해를 1씩 줍니다."
     }
   },
   "tooltips": {
     "museumEntrance": {
-      "resign": "\"Eh. How important can a book really be, anyway?\""
+      "resign": "“고작 책 하나가 뭐 얼마나 중요하겠어?”"
     },
     "museumHalls": {
-      "action": "{action}: Test {combat} (5) to attempt to break down the door to the museum. If you are successful, immediately advance to Act 1b"
+      "action": "{action}: 박물관 문을 부수기 위해 {combat} (5)을 테스트합니다. 성공하면, 즉시 주요목적 1b로 진행합니다."
     }
   }
 }

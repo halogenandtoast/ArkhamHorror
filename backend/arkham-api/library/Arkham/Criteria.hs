@@ -216,7 +216,7 @@ data Criterion
   | CanAffordCostIncrease Int
   | OnSameLocation
   | OwnCardWithDoom
-  | CardWithDoomExists
+  | CardWithRemovableDoomExists
   | ControlsThis -- really controls this
   | OwnsThis -- just the owner
   | PlayableCardExists CostStatus ExtendedCardMatcher

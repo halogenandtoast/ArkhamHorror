@@ -26,6 +26,10 @@ data EncounterCard = MkEncounterCard
   }
   deriving stock (Show, Eq, Ord, Data)
 
+instance HasField "title" EncounterCard Text where
+  getField = toTitle
+  {-# INLINE getField #-}
+
 instance HasField "name" EncounterCard Name where
   getField = toName
   {-# INLINE getField #-}

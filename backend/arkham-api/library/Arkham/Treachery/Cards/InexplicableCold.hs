@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.InexplicableCold (inexplicableCold) where
+module Arkham.Treachery.Cards.InexplicableCold (inexplicableCold, InexplicableCold(..)) where
 
 import Arkham.Card
 import Arkham.I18n

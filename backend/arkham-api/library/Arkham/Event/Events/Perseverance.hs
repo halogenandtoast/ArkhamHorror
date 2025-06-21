@@ -49,7 +49,7 @@ instance RunMessage Perseverance where
         damageAmount = getChoiceAmount "Damage" choices
         horrorAmount = getChoiceAmount "Horror" choices
       ignoreWindow <-
-        checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+        checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs) Nothing)]
       pushAll
         $ CancelAssignedDamage (toTarget iid) damageAmount horrorAmount
         : [ignoreWindow | damageAmount + horrorAmount > 0]

@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.NoxiousFumes (noxiousFumes) where
+module Arkham.Treachery.Cards.NoxiousFumes (noxiousFumes, NoxiousFumes (..)) where
 
 import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Matcher

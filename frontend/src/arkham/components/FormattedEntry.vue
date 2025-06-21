@@ -398,4 +398,21 @@ div:has(> img.remove) {
   justify-content: center;
   align-content: center;
 }
+
+.task, :deep(.task) {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 2em;
+  margin: 0;
+  align-items: center;
+  .tally {
+    padding: 5px 10px;
+    border: 2px solid black;
+    border-top-left-radius: 255px 15px;
+    border-top-right-radius: 15px 225px;
+    border-bottom-right-radius: 225px 15px;
+    border-bottom-left-radius:15px 255px;
+  }
+}
 </style>

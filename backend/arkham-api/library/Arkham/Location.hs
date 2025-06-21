@@ -937,4 +937,13 @@ allLocations =
     , SomeLocationCard room245
     , SomeLocationCard officeMurderAtTheExcelsiorHotel
     , SomeLocationCard basement
+    , -- The Midwinter Gala
+      SomeLocationCard lobbyTheMidwinterGala
+    , SomeLocationCard lanternChamber
+    , SomeLocationCard artGalleryTheMidwinterGala
+    , SomeLocationCard ballroomTheMidwinterGala
+    , SomeLocationCard barroom
+    , SomeLocationCard bedroomTheMidwinterGala
+    , SomeLocationCard libraryTheMidwinterGala
+    , SomeLocationCard parlorTheMidwinterGala
     ]

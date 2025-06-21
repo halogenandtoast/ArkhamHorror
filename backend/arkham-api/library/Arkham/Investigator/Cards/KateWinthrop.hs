@@ -66,7 +66,8 @@ instance RunMessage KateWinthrop where
             | asset <- assets
             ]
       pure i
-    MoveTokens s@(isAbilitySource attrs 1 -> True) (isSource attrs -> True) _target tType amount | amount > 0 -> do
+    MoveTokens s@(isAbilitySource attrs 1 -> True) (isSource attrs -> True) target tType amount | amount > 0 -> do
+      placeTokens s target tType amount
       -- must be from Kate so we need to prevent the default from running
       KateWinthrop <$> liftRunMessage (RemoveTokens s (toTarget attrs) tType amount) attrs
     _ -> KateWinthrop <$> liftRunMessage msg attrs

@@ -44,6 +44,7 @@ import Arkham.Asset.Runner as X (
   toMessage,
   tokensL,
   unsetMetaKey,
+  visibleL,
   whenNoUsesL,
  )
 

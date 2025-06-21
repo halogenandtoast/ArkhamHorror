@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.ViolentCommands (violentCommands) where
+module Arkham.Treachery.Cards.ViolentCommands (violentCommands, ViolentCommands (..)) where
 
 import Arkham.Ability
 import Arkham.Matcher

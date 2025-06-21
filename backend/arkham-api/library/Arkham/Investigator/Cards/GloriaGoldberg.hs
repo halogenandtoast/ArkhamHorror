@@ -39,9 +39,9 @@ instance HasChaosTokenValue GloriaGoldberg where
 
 instance RunMessage GloriaGoldberg where
   runMessage msg i@(GloriaGoldberg attrs) = runQueueT $ case msg of
-    LoadDeck iid deck | iid == attrs.id -> do
+    SetupInvestigator iid | iid == attrs.id -> do
       attrs' <- liftRunMessage msg attrs
-      let prophecies = filterCards (cardIs Treacheries.prophecyOfTheEnd) (unDeck deck)
+      let prophecies = filterCards (cardIs Treacheries.prophecyOfTheEnd) (unDeck attrs.deck)
       for_ prophecies \prophecy -> do
         let
           card =
@@ -59,11 +59,8 @@ instance RunMessage GloriaGoldberg where
       pure
         $ GloriaGoldberg
         $ attrs'
-        & deckL
-        %~ withDeck (filterCards (not_ $ cardIs Treacheries.prophecyOfTheEnd))
-    SetupInvestigator iid | iid == attrs.id -> do
-      attrs' <- liftRunMessage msg attrs
-      pure . GloriaGoldberg $ attrs' & setMeta (object ["gloria" .= False])
+        & (deckL %~ withDeck (filterCards (not_ $ cardIs Treacheries.prophecyOfTheEnd)))
+        & setMeta (object ["gloria" .= False])
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       searchModifier (attrs.ability 1) iid (LookAtDepth 1)
       pure . GloriaGoldberg $ attrs & setMeta (object ["gloria" .= True])

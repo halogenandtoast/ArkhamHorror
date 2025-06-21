@@ -593,4 +593,18 @@ allEnemies =
       SomeEnemyCard vengefulHound
     , --- Aura of Faith
       SomeEnemyCard serpentsOfYigAdvanced
+    , -- The Midwinter Gala
+      SomeEnemyCard abhorrentMoonBeast
+    , SomeEnemyCard declanPearce
+    , SomeEnemyCard enragedGug
+    , SomeEnemyCard lanternClubMember
+    , SomeEnemyCard valeriyaAntonovaDontMessWithHer
+    , SomeEnemyCard rookieCop
+    , SomeEnemyCard caldwellPhilipsCompelledByDreams
+    , SomeEnemyCard johnnyValoneHereToCollect
+    , SomeEnemyCard carlSanfordIntimidatingPresence
+    , SomeEnemyCard williamBainDefiantToTheLast
+    , SomeEnemyCard savageShantak
+    , SomeEnemyCard theBloodlessMan
+    , SomeEnemyCard theBloodlessManUnleashed
     ]

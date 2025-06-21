@@ -51,7 +51,7 @@ instance RunMessage NkosiMabatiEnigmaticWarlock3 where
         let source = toAbilitySource attrs 2
         cancelChaosToken source iid token
         pushAll
-          [ CancelEachNext source [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
+          [ CancelEachNext Nothing source [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
           , ReturnChaosTokens [token]
           , ForceChaosTokenDraw face
           , DrawAnotherChaosToken iid

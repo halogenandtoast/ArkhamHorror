@@ -21,6 +21,7 @@ instance HasAbilities ThePaleLanternHypnoticGlow where
   getAbilities (ThePaleLanternHypnoticGlow a) =
     [ mkAbility a 1 $ forced $ AssetLeavesPlay #when (be a)
     , restricted a 2 (OnSameLocation <> additionalCriteria) actionAbility
+    , mkAbility a 3 $ forced $ EnemyLeavesPlay #when $ EnemyWithAttachedAsset (be a)
     ]
    where
     additionalCriteria =
@@ -47,6 +48,11 @@ instance RunMessage ThePaleLanternHypnoticGlow where
       chooseOneM iid do
         for_ [#combat, #agility] \kind ->
           skillLabeled kind $ beginSkillTest sid iid (attrs.ability 2) iid kind (Fixed 1)
+      pure a
+    UseThisAbility _ (isSource attrs -> True) 3 -> do
+      case attrs.placement of
+        AttachedToEnemy enemyId -> withLocationOf enemyId \lid -> place attrs.id (AttachedToLocation lid)
+        _ -> pure ()
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       takeControlOfAsset iid attrs

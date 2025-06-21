@@ -26,6 +26,7 @@ instance HasAbilities ThePaleLanternBeguilingAura where
         $ restricted a 2 ControlsThis
         $ actionAbilityWithCost (exhaust a)
     , mkAbility a 3 $ forced $ AssetLeavesPlay #when (be a)
+    , mkAbility a 4 $ forced $ EnemyLeavesPlay #when $ EnemyWithAttachedAsset (be a)
     ]
 
 instance RunMessage ThePaleLanternBeguilingAura where
@@ -42,6 +43,11 @@ instance RunMessage ThePaleLanternBeguilingAura where
       lid <- fieldJust AssetLocation attrs.id
       flipOverBy iid (attrs.ability 1) attrs
       place attrs.id $ AttachedToLocation lid
+      pure a
+    UseThisAbility _ (isSource attrs -> True) 4 -> do
+      case attrs.placement of
+        AttachedToEnemy enemyId -> withLocationOf enemyId \lid -> place attrs.id (AttachedToLocation lid)
+        _ -> pure ()
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 3 -> True) -> do
       placeTokens (attrs.ability 3) attrs #damage 1

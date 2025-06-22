@@ -1,18 +1,18 @@
-module Arkham.Scenario.Scenarios.ReturnToHeartOfTheElders (returnToHeartOfTheElders) where
+module Arkham.Scenario.Scenarios.ReturnToHeartOfTheEldersPart2 (returnToHeartOfTheEldersPart2) where
 
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.HeartOfTheElders
 import Arkham.Scenarios.HeartOfTheElders.Helpers
 
-newtype ReturnToHeartOfTheElders = ReturnToHeartOfTheElders HeartOfTheElders
+newtype ReturnToHeartOfTheEldersPart2 = ReturnToHeartOfTheEldersPart2 HeartOfTheElders
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue)
 
-returnToHeartOfTheElders :: Difficulty -> ReturnToHeartOfTheElders
-returnToHeartOfTheElders difficulty =
+returnToHeartOfTheEldersPart2 :: Difficulty -> ReturnToHeartOfTheEldersPart2
+returnToHeartOfTheEldersPart2 difficulty =
   scenarioWith
-    (ReturnToHeartOfTheElders . HeartOfTheElders . (`with` HeartOfTheEldersMetadata One False))
-    "53045"
+    (ReturnToHeartOfTheEldersPart2 . HeartOfTheElders . (`with` HeartOfTheEldersMetadata Two False))
+    "53048"
     "Return to The Heart of the Elders"
     difficulty
     [ ".        .        circle    circle    .     ."
@@ -28,11 +28,11 @@ returnToHeartOfTheElders difficulty =
     ]
     (referenceL .~ "04205")
 
-instance RunMessage ReturnToHeartOfTheElders where
-  runMessage msg (ReturnToHeartOfTheElders heartOfTheElders'@(HeartOfTheElders (attrs `With` metadata))) = runQueueT $ scenarioI18n $ case msg of
+instance RunMessage ReturnToHeartOfTheEldersPart2 where
+  runMessage msg (ReturnToHeartOfTheEldersPart2 heartOfTheElders'@(HeartOfTheElders (attrs `With` metadata))) = runQueueT $ scenarioI18n $ case msg of
     Setup ->
       runScenarioSetup
-        (ReturnToHeartOfTheElders . HeartOfTheElders . (`with` metadata))
+        (ReturnToHeartOfTheEldersPart2 . HeartOfTheElders . (`with` metadata))
         attrs
         (setIsReturnTo >> setupHeartOfTheElders metadata attrs)
-    _ -> ReturnToHeartOfTheElders <$> liftRunMessage msg heartOfTheElders'
+    _ -> ReturnToHeartOfTheEldersPart2 <$> liftRunMessage msg heartOfTheElders'

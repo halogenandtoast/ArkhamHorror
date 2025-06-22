@@ -505,10 +505,10 @@ getModifiedShroudValueFor attrs = do
   pure
     $ foldr
       applyPostModifier
-      (foldr applyModifier (fromJustNote "Missing shroud" $ locationShroud attrs) modifiers')
+      (max 0 $ foldr applyModifier (fromJustNote "Missing shroud" $ locationShroud attrs) modifiers')
       modifiers'
  where
-  applyModifier (ShroudModifier m) n = max 0 (n + m)
+  applyModifier (ShroudModifier m) n = n + m
   applyModifier _ n = n
   applyPostModifier (SetShroud m) _ = m
   applyPostModifier _ n = n

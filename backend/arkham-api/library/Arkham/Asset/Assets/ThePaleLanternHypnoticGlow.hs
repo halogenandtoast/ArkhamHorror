@@ -19,8 +19,8 @@ thePaleLanternHypnoticGlow = asset ThePaleLanternHypnoticGlow Cards.thePaleLante
 
 instance HasAbilities ThePaleLanternHypnoticGlow where
   getAbilities (ThePaleLanternHypnoticGlow a) =
-    [ mkAbility a 1 $ forced $ AssetLeavesPlay #when (be a)
-    , restricted a 2 (OnSameLocation <> additionalCriteria) actionAbility
+    [ restricted a 1 (OnSameLocation <> additionalCriteria) actionAbility
+    , mkAbility a 2 $ forced $ AssetLeavesPlay #when (be a)
     ]
    where
     additionalCriteria =
@@ -38,19 +38,18 @@ instance HasAbilities ThePaleLanternHypnoticGlow where
 
 instance RunMessage ThePaleLanternHypnoticGlow where
   runMessage msg a@(ThePaleLanternHypnoticGlow attrs) = runQueueT $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
+      chooseBeginSkillTest sid iid (attrs.ability 1) iid [#combat, #agility] (Fixed 1)
+      pure a
+    UseCardAbility _iid (isSource attrs -> True) 2 ws _ -> do
+      don'tRemove attrs ws
       lid <- fieldJust AssetLocation attrs.id
       place attrs.id $ AttachedToLocation lid
       pure a
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
-      chooseOneM iid do
-        for_ [#combat, #agility] \kind ->
-          skillLabeled kind $ beginSkillTest sid iid (attrs.ability 2) iid kind (Fixed 1)
-      pure a
-    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       takeControlOfAsset iid attrs
-      flipOverBy iid (attrs.ability 2) attrs
+      flipOverBy iid (attrs.ability 1) attrs
       pure a
     Flip _ _ (isTarget attrs -> True) -> do
       push $ ReplaceAsset attrs.id Cards.thePaleLanternBeguilingAura

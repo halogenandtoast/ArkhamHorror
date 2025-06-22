@@ -1314,26 +1314,29 @@ instance RunMessage EnemyAttrs where
       let
         placeInVictory = isJust (victory <|> vengeance)
         victoryMsgs = [DefeatedAddToVictory $ toTarget a | placeInVictory]
-        defeatMsgs =
-          if placeInVictory
-            then resolve $ RemoveEnemy eid
-            else [Discard miid GameSource $ toTarget a]
+        defeatMsgs = [Discard miid GameSource $ toTarget a | not placeInVictory]
 
       pushAll
         $ victoryMsgs
         <> windows [Window.EntityDiscarded source (toTarget a)]
         <> defeatMsgs
         <> [afterMsg]
-      pure
-        $ a
-        & (if placeInVictory then placementL .~ OutOfPlay VictoryDisplayZone else id)
+      pure a
     After (Arkham.Message.EnemyDefeated eid _ source _) | eid == toId a -> do
       case a.placement of
         AsSwarm eid' _ -> push $ CheckDefeated source (toTarget eid')
         _ -> pure ()
       pure $ a & defeatedL .~ True
     DefeatedAddToVictory (isTarget a -> True) -> do
-      pure $ a & placementL .~ OutOfPlay VictoryDisplayZone & tokensL %~ mempty
+      pushAll
+        $ windows [Window.LeavePlay (toTarget a), Window.AddedToVictory (toCard a)]
+        <> [Do msg]
+      pure a
+    Do (DefeatedAddToVictory (isTarget a -> True)) -> do
+      mods <- getModifiers a
+      let zone = if StayInVictory `elem` mods then VictoryDisplayZone else RemovedZone
+      push $ RemoveEnemy a.id
+      pure $ a & placementL .~ OutOfPlay zone & tokensL %~ mempty
     EnemySpawnFromOutOfPlay _ _miid _lid eid | eid == a.id -> do
       pure $ a & (defeatedL .~ False) & (exhaustedL .~ False)
     AddToVictory (isTarget a -> True) -> do

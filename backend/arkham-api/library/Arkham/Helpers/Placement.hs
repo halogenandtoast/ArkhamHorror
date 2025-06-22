@@ -80,8 +80,10 @@ onSameLocation iid = \case
         l1 <- join <$> fieldMay InvestigatorLocation iid
         l2 <- join <$> fieldMay InvestigatorLocation iid'
         pure $ isJust l1 && l1 == l2
-  AttachedToEnemy eid ->
-    liftA2 (==) (field EnemyLocation eid) (field InvestigatorLocation iid)
+  AttachedToEnemy eid -> do
+    fieldMay EnemyLocation eid >>= \case
+      Nothing -> pure False
+      Just p -> (== p) <$> field InvestigatorLocation iid
   AttachedToTreachery tid ->
     liftA2 (==) (field TreacheryLocation tid) (field InvestigatorLocation iid)
   AttachedToAsset aid _ -> do

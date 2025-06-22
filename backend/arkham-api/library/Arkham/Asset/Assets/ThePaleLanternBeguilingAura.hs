@@ -38,7 +38,8 @@ instance RunMessage ThePaleLanternBeguilingAura where
       sid <- getRandom
       chooseBeginSkillTest sid iid (attrs.ability 3) iid [#combat, #agility] (Fixed 2)
       pure a
-    UseThisAbility iid (isSource attrs -> True) 3 -> do
+    UseCardAbility iid (isSource attrs -> True) 3 ws _ -> do
+      don'tRemove attrs ws
       lid <- fieldJust AssetLocation attrs.id
       flipOverBy iid (attrs.ability 1) attrs
       place attrs.id $ AttachedToLocation lid

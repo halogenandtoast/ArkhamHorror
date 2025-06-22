@@ -3057,6 +3057,13 @@ withBatchedTimings w body = do
     body
     checkWindows [after]
 
+don'tRemove
+  :: (Sourceable source, MonadTrans t, HasQueue Message m, ReverseQueue (t m))
+  => source -> [Window] -> t m ()
+don'tRemove source ws = do
+  cancelWindowBatch ws
+  don't $ RemovedFromPlay (toSource source)
+
 cancelWindowBatch :: ReverseQueue m => [Window] -> m ()
 cancelWindowBatch = cancelBatch . Window.getBatchId
 

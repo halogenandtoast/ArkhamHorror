@@ -1330,7 +1330,7 @@ instance RunMessage EnemyAttrs where
     DefeatedAddToVictory (isTarget a -> True) -> do
       pushAll
         $ windows [Window.LeavePlay (toTarget a), Window.AddedToVictory (toCard a)]
-        <> [Do msg]
+        <> [When msg, Do msg]
       pure a
     Do (DefeatedAddToVictory (isTarget a -> True)) -> do
       mods <- getModifiers a

@@ -3572,7 +3572,8 @@ library
       Arkham.Scenario.Scenarios.ReturnToDimCarcosa
       Arkham.Scenario.Scenarios.ReturnToEchoesOfThePast
       Arkham.Scenario.Scenarios.ReturnToExtracurricularActivities
-      Arkham.Scenario.Scenarios.ReturnToHeartOfTheElders
+      Arkham.Scenario.Scenarios.ReturnToHeartOfTheEldersPart1
+      Arkham.Scenario.Scenarios.ReturnToHeartOfTheEldersPart2
       Arkham.Scenario.Scenarios.ReturnToLostInTimeAndSpace
       Arkham.Scenario.Scenarios.ReturnToTheBoundaryBeyond
       Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow

@@ -186,8 +186,8 @@ setupHeartOfTheElders metadata attrs = case scenarioStep metadata of
 
         let act1 =
               if isReturnTo
-                then Acts.searchForThePattern
-                else Acts.aFamiliarPattern
+                then Acts.aFamiliarPattern
+                else Acts.searchForThePattern
 
         setActDeck $ [act1 | not (reachedAct2 metadata)] <> [Acts.openingTheMaw]
         setAgendaDeck [Agendas.theJunglesHeart, Agendas.settingSun]

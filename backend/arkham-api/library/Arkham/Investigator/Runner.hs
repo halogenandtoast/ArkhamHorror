@@ -4245,7 +4245,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pushM $ checkWindows $ mkAfter (Window.PassSkillTest mAction source iid n) : windows
     pure a
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
-    mTurnInvestigator <- maybeToList <$> selectOne TurnInvestigator
+    modifiers <- getModifiers iid
+    mTurnInvestigator <- if AsIfTurn iid `elem` modifiers
+      then pure [iid]
+      else maybeToList <$> selectOne TurnInvestigator
     let
       windows =
         map (mkWhen . Window.DuringTurn) mTurnInvestigator
@@ -4266,7 +4269,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           <> [chooseOne player (toUseAbilities normal) | notNull normal]
           <> [PlayerWindow iid additionalActions isAdditional]
       else do
-        modifiers <- getModifiers (InvestigatorTarget iid)
         canAffordTakeResources <- getCanAfford a [#resource]
         canAffordDrawCards <- getCanAfford a [#draw]
         additionalActions' <- getAdditionalActions a

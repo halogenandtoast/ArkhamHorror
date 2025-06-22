@@ -28,7 +28,9 @@ instance HasAbilities Sarnath where
               <> Remembered KnowWhatHappenedToIb
           )
           (FastAbility Free)
-      , mkAbility a 1 $ forced $ SkillTestResult #after You (WhileInvestigating $ be a) #success
+      , mkAbility a 1
+          $ forced
+          $ SkillTestResult #after You (WhileInvestigating $ be a) (SuccessResult $ atMost 1)
       ]
 
 instance RunMessage Sarnath where

@@ -2292,7 +2292,8 @@ gainActions (asId -> iid) (toSource -> source) n = push $ Msg.GainActions iid so
 takeActionAsIfTurn :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 takeActionAsIfTurn iid (toSource -> source) = do
   gainActions iid source 1
-  push $ PlayerWindow iid [] True
+  temporaryModifier iid source (AsIfTurn iid) do
+    push $ PlayerWindow iid [] True
 
 nonAttackEnemyDamage
   :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m, Sourceable a)

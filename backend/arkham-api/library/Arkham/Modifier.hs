@@ -84,6 +84,7 @@ data ModifierType
   | AsIfEngagedWith EnemyId
   | AsIfInHand Card
   | AsIfUnderControlOf InvestigatorId
+  | AsIfTurn InvestigatorId
   | AttackDealsEitherDamageOrHorror
   | AttacksCannotBeCancelled
   | Barricades [LocationId]

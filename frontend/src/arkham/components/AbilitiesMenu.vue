@@ -108,12 +108,29 @@ watch(showAbilities, (newValue) => {
 <style scoped>
 .abilities {
   position: absolute;
-  padding: min(10px, 1vw);
+  padding: min(3px, 1vw);
   background: rgba(0, 0, 0, 0.8);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 5px;
   z-index: 1000;
+  button {
+    height: calc(var(--pool-token-width) * 1.2);
+    @media (max-width: 800px) and (orientation: portrait) {
+      
+      &:before {
+        font-size: 2.0em !important;
+      }
+    }
+  }
+
+  :deep(span) {
+    @media (max-width: 800px) and (orientation: portrait) {
+      &:before {
+        font-size: 2.0em !important;
+      }
+    }
+  }
 }
 </style>

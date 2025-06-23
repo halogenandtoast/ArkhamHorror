@@ -2028,7 +2028,7 @@ atlachNacha =
       , cdKeywords = singleton Keyword.Massive
       , cdVictoryPoints = Just 1
       , cdDoubleSided = True
-      , cdAlternateCardCodes = ["06346b"]
+      , cdOtherSide = Just "06346b"
       }
 
 legsOfAtlachNacha_347 :: CardDef

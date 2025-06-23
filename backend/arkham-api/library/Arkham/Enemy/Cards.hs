@@ -1032,6 +1032,7 @@ theOrganistHopelessIDefiedHim =
       { cdCardTraits = setFromList [Humanoid, Avatar, Elite]
       , cdKeywords = singleton Keyword.Hunter
       , cdDoubleSided = True
+      , cdOtherSide = Just "03221b"
       }
 
 theOrganistDrapedInMystery :: CardDef
@@ -1041,6 +1042,7 @@ theOrganistDrapedInMystery =
       { cdCardTraits = setFromList [Humanoid, Avatar, Elite]
       , cdKeywords = singleton Keyword.Aloof
       , cdDoubleSided = True
+      , cdOtherSide = Just "03221a"
       }
 
 stealthyByakhee :: CardDef
@@ -1516,6 +1518,7 @@ nathanWickMasterOfInitiation =
       , cdKeywords = singleton Keyword.Retaliate
       , cdDoubleSided = True
       , cdVictoryPoints = Just 1
+      , cdOtherSide = Just "05217b"
       }
 
 nathanWickMasterOfIndoctrination :: CardDef
@@ -3115,6 +3118,8 @@ theBloodlessMan =
               [ Keyword.Aloof
               , Keyword.Patrol (LocationWithAsset $ AssetWithTrait Guest)
               ]
+        , cdDoubleSided = True
+        , cdOtherSide = Just "71045b"
         }
 
 theBloodlessManUnleashed :: CardDef

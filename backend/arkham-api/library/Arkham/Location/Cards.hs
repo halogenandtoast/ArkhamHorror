@@ -912,7 +912,12 @@ singleSided :: CardDef -> CardDef
 singleSided def = def {cdDoubleSided = False}
 
 veiled :: CardDef -> CardDef
-veiled def = def {cdDoubleSided = False, cdKeywords = Set.insert Keyword.Veiled $ cdKeywords def}
+veiled def =
+  def
+    { cdDoubleSided = False
+    , cdKeywords = Set.insert Keyword.Veiled $ cdKeywords def
+    , cdOtherSide = Just (flippedCardCode def.cardCode)
+    }
 
 storyOnBack :: CardDef -> CardDef
 storyOnBack def = def {cdDoubleSided = False}
@@ -3533,13 +3538,16 @@ sacredWoods_185 =
 mouthOfKnYanTheCavernsMaw :: CardDef
 mouthOfKnYanTheCavernsMaw =
   singleSided
-    $ location
-      "04206"
-      ("Mouth of K'n-yan" <:> "The Cavern's Maw")
-      [Cave]
-      Equals
-      [Squiggle, T, Hourglass]
-      HeartOfTheElders
+    $ ( location
+          "04206"
+          ("Mouth of K'n-yan" <:> "The Cavern's Maw")
+          [Cave]
+          Equals
+          [Squiggle, T, Hourglass]
+          HeartOfTheElders
+      )
+      { cdOtherSide = Just "04206b"
+      }
 
 mouthOfKnYanTheDepthsBeneath :: CardDef
 mouthOfKnYanTheDepthsBeneath =
@@ -5275,6 +5283,7 @@ dreamGateWondrousJourney =
     , cdLocationRevealedConnections = mempty
     , cdClassSymbols = singleton #neutral
     , cdLevel = Nothing
+    , cdOtherSide = Just "06015b"
     }
 
 dreamGatePointlessReality :: CardDef
@@ -5978,24 +5987,30 @@ cityOfGugs :: CardDef
 cityOfGugs =
   victory 1
     $ singleSided
-    $ location
-      "06255"
-      "City of Gugs"
-      []
-      T
-      [Heart, Squiggle, Moon]
-      PointOfNoReturn
+    $ ( location
+          "06255"
+          "City of Gugs"
+          []
+          T
+          [Heart, Squiggle, Moon]
+          PointOfNoReturn
+      )
+      { cdOtherSide = Just "06255b"
+      }
 
 towerOfKoth :: CardDef
 towerOfKoth =
   singleSided
-    $ location
-      "06256"
-      "Tower of Koth"
-      []
-      Squiggle
-      [T, Square]
-      PointOfNoReturn
+    $ ( location
+          "06256"
+          "Tower of Koth"
+          []
+          Squiggle
+          [T, Square]
+          PointOfNoReturn
+      )
+      { cdOtherSide = Just "06256b"
+      }
 
 plainOfTheGhouls :: CardDef
 plainOfTheGhouls =
@@ -6025,24 +6040,30 @@ seaOfBones :: CardDef
 seaOfBones =
   victory 1
     $ singleSided
-    $ location
-      "06259"
-      "Sea of Bones"
-      [Vale]
-      Circle
-      [Hourglass, Star, Equals]
-      PointOfNoReturn
+    $ ( location
+          "06259"
+          "Sea of Bones"
+          [Vale]
+          Circle
+          [Hourglass, Star, Equals]
+          PointOfNoReturn
+      )
+      { cdOtherSide = Just "06259b"
+      }
 
 peaksOfThok :: CardDef
 peaksOfThok =
   singleSided
-    $ location
-      "06260"
-      "Peaks of Thok"
-      [Vale, Central]
-      Star
-      [Equals, Circle]
-      PointOfNoReturn
+    $ ( location
+          "06260"
+          "Peaks of Thok"
+          [Vale, Central]
+          Star
+          [Equals, Circle]
+          PointOfNoReturn
+      )
+      { cdOtherSide = Just "06260b"
+      }
 
 valeOfPnath :: CardDef
 valeOfPnath =

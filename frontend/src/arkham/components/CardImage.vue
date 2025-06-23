@@ -11,7 +11,9 @@ const flipped = ref(false)
 const vertical = computed(() => {
   if(!flipped.value) return false
 
-  return ["c01121a", "c03241b", "c06169b", "c50026b", "c07164b", "c07165b", "c07199b", "c82002b", "c90033b", "c90066b"].includes(props.card.cardCode) 
+  return ["c01121a", "c03241", "c06169a", "c50026a", "c07164a", "c07165a", "c07199a", "c82002a", "c90033a", "c90066a",
+  "c03321a", "c04117", "c04118", "c04122", "c04125", "c04126", "c04128", "c04130", "c04133", "c04134", "c04137", "c04209", "c05055", "c05286a", "c05288a", "c10607a", "c53029a", "c53030a", "c53032a", "c53034a", "c53046a", "c82006a"
+  ].includes(props.card.cardCode) 
 })
 
 const image = computed(() => {
@@ -22,21 +24,26 @@ const image = computed(() => {
   return imgsrc(`cards/${props.card.art}.avif`)
 })
 const backImage = computed(() => {
-  const {cardType, otherSide} = props.card 
+  const {cardType, otherSide, doubleSided} = props.card 
   if (otherSide)
     return imgsrc(`cards/${otherSide.replace(/^c/, '')}.avif`)
 
   if (['ActType', 'AgendaType', 'ScenarioType', 'InvestigatorType'].includes(cardType))
     return imgsrc(`cards/${props.card.art.replace(/a$/, '')}b.avif`)
 
-  if ('LocationType' == cardType && props.card.doubleSided)
-    return imgsrc(`cards/${props.card.art}.avif`)
+  if ('LocationType' == cardType) {
+    if (props.card.doubleSided)
+      return imgsrc(`cards/${props.card.art}.avif`)
+    return imgsrc('encounter_back.jpg')
+  }
 
   if (['EnemyType', 'StoryType'].includes(cardType) && props.card.doubleSided)
     return imgsrc(`cards/${props.card.art}b.avif`)
 
+  if (doubleSided)
+    return imgsrc(`cards/${props.card.art.replace(/a$/, '')}b.avif`)
 
-  if (['EnemyType', 'StoryType', 'TreacheryType'].includes(cardType))
+  if (['EnemyType', 'StoryType', 'TreacheryType', 'EncounterAssetType', 'EncounterEventType'].includes(cardType))
     return imgsrc('encounter_back.jpg')
 
   return imgsrc('player_back.jpg')
@@ -48,11 +55,11 @@ const backImage = computed(() => {
 <template>
   <div class='card-container' :class="{vertical}">
     <div class='front' :class="{flipped}">
-      <img class="card card-front" :class="{flipped}" :src="image" />
+      <img loading="lazy" class="card card-front" :class="{flipped}" :src="image" />
       <button @click.prevent="flipped = !flipped"><ArrowPathIcon aria-hidden="true" /></button>
     </div>
     <div class="back" :class="{flipped}">
-      <img class="card card-back" :class="{flipped}" :src="backImage" />
+      <img loading="lazy" class="card card-back" :class="{flipped}" :src="backImage" />
       <button @click.prevent="flipped = !flipped"><ArrowPathIcon aria-hidden="true" /></button>
     </div>
   </div>

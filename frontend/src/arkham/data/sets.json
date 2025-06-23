@@ -15,7 +15,7 @@
   { "name": "The Unspeakable Oath", "min": 3147, "max": 3188, "playerCards": 12, "code": "tuo", "cycle": 3 },
   { "name": "A Phantom of Truth", "min": 3189, "max": 3227, "playerCards": 11, "code": "apot", "cycle": 3 },
   { "name": "The Pallid Mask", "min": 3228, "max": 3262, "playerCards": 12, "code": "tpm", "cycle": 3 },
-  { "name": "Black Stars Rise", "min": 3263, "max": 3303, "playerCards": 11, "code": "bsr", "cycle": 3 },
+  { "name": "Black Stars Rise", "min": 3263, "max": 3303, "encounterDuplicates": 2, "playerCards": 11, "code": "bsr", "cycle": 3 },
   { "name": "Dim Carcosa", "min": 3304, "max": 3342, "encounterDuplicates": 6, "playerCards": 12, "code": "dca", "cycle": 3 },
 
   { "name": "The Forgotten Age", "min": 4001, "max": 4102, "playerCards": 42, "code": "tfa", "cycle": 4 },

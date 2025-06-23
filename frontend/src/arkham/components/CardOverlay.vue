@@ -407,7 +407,9 @@ const dbCardData = computed(() : boolean => {
       
       if (imgsrc(`cards/${match[0]}`).search(language) < 0) {
         const dbCard = dbCards.value.find(
-          (c: ArkhamDBCard) => c.code == code || (`${c.code}b` == code)
+          (c: ArkhamDBCard) => c.code === code
+        ) || dbCards.value.find(
+          (c: ArkhamDBCard) => `${c.code}b` === code
         )
         
         if (dbCard) {
@@ -441,9 +443,10 @@ const getCardName = (dbCard: ArkhamDBCard, needBack: boolean): string | null => 
   if (dbCard.name == dbCard.real_name) return null
   
   const cardName = ref<string>("")
-  if (needBack && dbCard.back_name) cardName.value = dbCard.back_name
-  else cardName.value = dbCard.name
+  if (needBack && dbCard.back_name) cardName.value = dbCard.back_name || null
+  else cardName.value = dbCard.name || null
   
+  if (!cardName.value) return null
   if (!needBack && dbCard.subname) cardName.value = `${cardName.value}: ${dbCard.subname}`
   if ((dbCard.xp || 0) > 0) cardName.value = `${cardName.value} (${dbCard.xp})`
   return cardName.value
@@ -456,22 +459,22 @@ const getCardTraits = (dbCard: ArkhamDBCard, needBack: boolean): string | null =
   return dbCard.traits || null
 }
 
-const getCardText = (dbCard: ArkhamDBCard, needBack: boolean) => {
+const getCardText = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
   if (dbCard.text == dbCard.real_text) return null
   
   const targetText = ref<string>()
-  if (needBack && dbCard.back_text) targetText.value = dbCard.back_text
-  else targetText.value = dbCard.text || ""
+  if (needBack) targetText.value = dbCard.back_text || null
+  else targetText.value = dbCard.text || null
   
-  return replaceText(targetText.value)
+  return targetText.value ? replaceText(targetText.value) : null
 }
 
-const getCardCustomizationText = (dbCard: ArkhamDBCard) => {
+const getCardCustomizationText = (dbCard: ArkhamDBCard): string | null => {
   if (dbCard.text == dbCard.real_text) return null
   return replaceText(dbCard.customization_text || "")
 }
 
-const replaceText = (text: string) => {
+const replaceText = (text: string): string => {
   if (!text) return ""
   
   return text.
@@ -520,11 +523,11 @@ const replaceText = (text: string) => {
       />
       <div v-for="entry in crossedOff" :key="entry" class="crossed-off" :class="{ [toCamelCase(entry)]: true }"></div>
     </div>
-    <div class="card-data" v-if="dbCardData && !sideways">
+    <div class="card-data" v-if="dbCardData" :class="{ reversed, Reversed: upsideDown }">
       <p v-if="dbCardName" style="font-size: 1.0em;"><b>{{ dbCardName }}</b></p>
       <p v-if="dbCardTraits"><span style="font-style: italic;">{{ dbCardTraits }}</span></p>
       <p v-if="dbCardText"><br></p>
-      <p v-if="dbCardText" v-html="dbCardText" style="font-size: 0.875em;"></p>
+      <p v-if="dbCardText" v-html="dbCardText" style="font-size: 0.85em;"></p>
     </div>
     <span class="swarm" v-if="swarm"><BugAntIcon aria-hidden="true" /></span>
     <span class="fight" v-if="fight">{{ fight }}</span>
@@ -561,7 +564,8 @@ const replaceText = (text: string) => {
       </div>
     </div>
     <div class="card-data" v-if="dbCardCustomizationText">
-      <p v-if="dbCardCustomizationText" v-html="dbCardCustomizationText" style="font-size: 0.875em;"></p>
+      <p v-if="dbCardName"><b>{{ dbCardName }}</b></p>
+      <p v-if="dbCardCustomizationText" v-html="dbCardCustomizationText" style="font-size: 0.85em;"></p>
     </div>
   </div>
 </template>
@@ -639,6 +643,7 @@ const replaceText = (text: string) => {
   scrollbar-width: none; /* Firefox */
   scroll-behavior: smooth;
   background-color: rgba(185, 185, 185, 0.85);
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.75);
 }
 
 .card-data::-webkit-scrollbar {

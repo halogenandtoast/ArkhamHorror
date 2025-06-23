@@ -34,6 +34,7 @@
   "Yes": "예",
   "No": "아니오",
 
+
   "Parley": "협상",
   "Resign": "후퇴",
   "Investigate": "조사",
@@ -55,6 +56,7 @@
     "clues": "단서",
     "resources": "자원",
     "physical": "육체적",
-    "mental": "정신적"
+    "mental": "정신적",
+    "supplyPoints": "획득할 보급 점수"
   }
 }

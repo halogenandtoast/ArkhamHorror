@@ -14,7 +14,9 @@ exceptionCardCodes :: [Text]
 exceptionCardCodes = ["03047a", "03047b", "03047c", "03279a", "03279b"]
 
 flippedCardCode :: CardCode -> CardCode
-flippedCardCode (CardCode a) = CardCode (a <> "b")
+flippedCardCode (CardCode a) = case T.unsnoc a of
+  Just (base, 'b') -> CardCode base
+  _ -> CardCode (a <> "b")
 
 instance HasField "flipped" CardCode CardCode where
   getField = flippedCardCode

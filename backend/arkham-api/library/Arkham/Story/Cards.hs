@@ -7,11 +7,11 @@ import Arkham.EncounterSet
 import Arkham.Name
 import Arkham.Prelude
 
-doubleSided :: CardCode -> CardDef -> CardDef
-doubleSided cCode def =
+doubleSided :: CardDef -> CardDef
+doubleSided def =
   def
     { cdDoubleSided = True
-    , cdOtherSide = Just cCode
+    , cdOtherSide = Just $ flippedCardCode def.cardCode
     }
 
 story :: CardCode -> Name -> EncounterSet -> CardDef
@@ -19,7 +19,7 @@ story cardCode name encounterSet =
   (emptyCardDef cardCode name StoryType)
     { cdEncounterSet = Just encounterSet
     , cdEncounterSetQuantity = Just 1
-    , cdDoubleSided = True
+    , cdDoubleSided = False
     , cdLevel = Nothing
     }
 
@@ -158,218 +158,218 @@ victory :: Int -> CardDef -> CardDef
 victory n def = def {cdVictoryPoints = Just n}
 
 sickeningReality_65 :: CardDef
-sickeningReality_65 = story "03065" "Sickening Reality" TheLastKing
+sickeningReality_65 = doubleSided $ story "03065" "Sickening Reality" TheLastKing
 
 sickeningReality_66 :: CardDef
-sickeningReality_66 = story "03066" "Sickening Reality" TheLastKing
+sickeningReality_66 = doubleSided $ story "03066" "Sickening Reality" TheLastKing
 
 sickeningReality_67 :: CardDef
-sickeningReality_67 = story "03067" "Sickening Reality" TheLastKing
+sickeningReality_67 = doubleSided $ story "03067" "Sickening Reality" TheLastKing
 
 sickeningReality_68 :: CardDef
-sickeningReality_68 = story "03068" "Sickening Reality" TheLastKing
+sickeningReality_68 = doubleSided $ story "03068" "Sickening Reality" TheLastKing
 
 sickeningReality_69 :: CardDef
-sickeningReality_69 = story "03069" "Sickening Reality" TheLastKing
+sickeningReality_69 = doubleSided $ story "03069" "Sickening Reality" TheLastKing
 
 engramsOath :: CardDef
-engramsOath = story "03076b" "Engram's Oath" TheLastKing
+engramsOath = doubleSided $ story "03076b" "Engram's Oath" TheLastKing
 
 lagneauPerdu :: CardDef
-lagneauPerdu = story "03077b" "L'agneau Perdu" TheLastKing
+lagneauPerdu = doubleSided $ story "03077b" "L'agneau Perdu" TheLastKing
 
 thePattern :: CardDef
-thePattern = story "03078b" "The Pattern" TheLastKing
+thePattern = doubleSided $ story "03078b" "The Pattern" TheLastKing
 
 theFirstShow :: CardDef
-theFirstShow = story "03079b" "The First Show" TheLastKing
+theFirstShow = doubleSided $ story "03079b" "The First Show" TheLastKing
 
 aboveAndBelow :: CardDef
-aboveAndBelow = story "03080b" "Above and Below" TheLastKing
+aboveAndBelow = doubleSided $ story "03080b" "Above and Below" TheLastKing
 
 songsThatTheHyadesShallSing :: CardDef
 songsThatTheHyadesShallSing =
-  story "03325b" "Songs That the Hyades Shall Sing" DimCarcosa
+  doubleSided $ story "03325b" "Songs That the Hyades Shall Sing" DimCarcosa
 
 starsOfAldebaran :: CardDef
-starsOfAldebaran = story "03326b" "Stars of Aldebaran" DimCarcosa
+starsOfAldebaran = doubleSided $ story "03326b" "Stars of Aldebaran" DimCarcosa
 
 bleakDesolation :: CardDef
-bleakDesolation = story "03326d" "Bleak Desolation" DimCarcosa
+bleakDesolation = doubleSided $ story "03326d" "Bleak Desolation" DimCarcosa
 
 inhabitantOfCarcosa :: CardDef
-inhabitantOfCarcosa = story "03327b" "Inhabitant of Carcosa" DimCarcosa
+inhabitantOfCarcosa = doubleSided $ story "03327b" "Inhabitant of Carcosa" DimCarcosa
 
 aMomentsRest :: CardDef
-aMomentsRest = story "03327d" "A Moment's Rest" DimCarcosa
+aMomentsRest = doubleSided $ story "03327d" "A Moment's Rest" DimCarcosa
 
 theCoffin :: CardDef
-theCoffin = story "03327f" "The Coffin" DimCarcosa
+theCoffin = doubleSided $ story "03327f" "The Coffin" DimCarcosa
 
 mappingTheStreets :: CardDef
-mappingTheStreets = story "03328b" "Mapping the Streets" DimCarcosa
+mappingTheStreets = doubleSided $ story "03328b" "Mapping the Streets" DimCarcosa
 
 theKingsParade :: CardDef
-theKingsParade = story "03328d" "The King's Parade" DimCarcosa
+theKingsParade = doubleSided $ story "03328d" "The King's Parade" DimCarcosa
 
 theArchway :: CardDef
-theArchway = story "03328f" "The Archway" DimCarcosa
+theArchway = doubleSided $ story "03328f" "The Archway" DimCarcosa
 
 theHeightOfTheDepths :: CardDef
-theHeightOfTheDepths = story "03329b" "The Height of the Depths" DimCarcosa
+theHeightOfTheDepths = doubleSided $ story "03329b" "The Height of the Depths" DimCarcosa
 
 stepsOfThePalace :: CardDef
-stepsOfThePalace = story "03329d" "Steps of the Palace" DimCarcosa
+stepsOfThePalace = doubleSided $ story "03329d" "Steps of the Palace" DimCarcosa
 
 theFall :: CardDef
-theFall = story "03330b" "The Fall" DimCarcosa
+theFall = doubleSided $ story "03330b" "The Fall" DimCarcosa
 
 hastursEnd :: CardDef
-hastursEnd = story "03331b" "Hastur's End" DimCarcosa
+hastursEnd = doubleSided $ story "03331b" "Hastur's End" DimCarcosa
 
 yigsMercy :: CardDef
-yigsMercy = story "04325b" "Yig's Mercy" ShatteredAeons
+yigsMercy = doubleSided $ story "04325b" "Yig's Mercy" ShatteredAeons
 
 anotherWay :: CardDef
-anotherWay = story "04326b" "Another Way" ShatteredAeons
+anotherWay = doubleSided $ story "04326b" "Another Way" ShatteredAeons
 
 josefsPlan :: CardDef
-josefsPlan = story "05085b" "Josef's Plan" AtDeathsDoorstep
+josefsPlan = doubleSided $ story "05085b" "Josef's Plan" AtDeathsDoorstep
 
 unfinishedBusiness_B :: CardDef
-unfinishedBusiness_B = victory 1 $ story "05178b" "Unfinished Business" TheWagesOfSin
+unfinishedBusiness_B = victory 1 $ doubleSided $ story "05178b" "Unfinished Business" TheWagesOfSin
 
 unfinishedBusiness_D :: CardDef
-unfinishedBusiness_D = victory 1 $ story "05178d" "Unfinished Business" TheWagesOfSin
+unfinishedBusiness_D = victory 1 $ doubleSided $ story "05178d" "Unfinished Business" TheWagesOfSin
 
 unfinishedBusiness_F :: CardDef
-unfinishedBusiness_F = victory 1 $ story "05178f" "Unfinished Business" TheWagesOfSin
+unfinishedBusiness_F = victory 1 $ doubleSided $ story "05178f" "Unfinished Business" TheWagesOfSin
 
 unfinishedBusiness_H :: CardDef
-unfinishedBusiness_H = victory 1 $ story "05178h" "Unfinished Business" TheWagesOfSin
+unfinishedBusiness_H = victory 1 $ doubleSided $ story "05178h" "Unfinished Business" TheWagesOfSin
 
 unfinishedBusiness_J :: CardDef
-unfinishedBusiness_J = victory 1 $ story "05178j" "Unfinished Business" TheWagesOfSin
+unfinishedBusiness_J = victory 1 $ doubleSided $ story "05178j" "Unfinished Business" TheWagesOfSin
 
 unfinishedBusiness_L :: CardDef
-unfinishedBusiness_L = victory 1 $ story "05178l" "Unfinished Business" TheWagesOfSin
+unfinishedBusiness_L = victory 1 $ doubleSided $ story "05178l" "Unfinished Business" TheWagesOfSin
 
 gavriellasFate :: CardDef
-gavriellasFate = story "05262" "Gavriella's Fate" UnionAndDisillusion
+gavriellasFate = doubleSided $ story "05262" "Gavriella's Fate" UnionAndDisillusion
 
 jeromesFate :: CardDef
-jeromesFate = story "05263" "Jerome's Fate" UnionAndDisillusion
+jeromesFate = doubleSided $ story "05263" "Jerome's Fate" UnionAndDisillusion
 
 pennysFate :: CardDef
-pennysFate = story "05264" "Penny's Fate" UnionAndDisillusion
+pennysFate = doubleSided $ story "05264" "Penny's Fate" UnionAndDisillusion
 
 valentinosFate :: CardDef
-valentinosFate = story "05265" "Valentino's Fate" UnionAndDisillusion
+valentinosFate = doubleSided $ story "05265" "Valentino's Fate" UnionAndDisillusion
 
 theTrialOfKamanThah :: CardDef
-theTrialOfKamanThah = story "06057b" "The Trial of Kaman-Thah" BeyondTheGatesOfSleep
+theTrialOfKamanThah = doubleSided $ story "06057b" "The Trial of Kaman-Thah" BeyondTheGatesOfSleep
 
 theTrialOfNasht :: CardDef
-theTrialOfNasht = story "06058b" "The Trial of Nasht" BeyondTheGatesOfSleep
+theTrialOfNasht = doubleSided $ story "06058b" "The Trial of Nasht" BeyondTheGatesOfSleep
 
 theInfestationBegins :: CardDef
-theInfestationBegins = story "06078" "The Infestation Begins" WakingNightmare
+theInfestationBegins = doubleSided $ story "06078" "The Infestation Begins" WakingNightmare
 
 crypticSouls :: CardDef
-crypticSouls = story "06127b" "Cryptic Souls" TheSearchForKadath
+crypticSouls = doubleSided $ story "06127b" "Cryptic Souls" TheSearchForKadath
 
 dreamlikeHorrors :: CardDef
-dreamlikeHorrors = story "06128b" "Dreamlike Horrors" TheSearchForKadath
+dreamlikeHorrors = doubleSided $ story "06128b" "Dreamlike Horrors" TheSearchForKadath
 
 endlessSecrets :: CardDef
-endlessSecrets = story "06129b" "Endless Secrets" TheSearchForKadath
+endlessSecrets = doubleSided $ story "06129b" "Endless Secrets" TheSearchForKadath
 
 cylindersOfKadatheron :: CardDef
-cylindersOfKadatheron = story "06130b" "Cylinders of Kadatheron" TheSearchForKadath
+cylindersOfKadatheron = doubleSided $ story "06130b" "Cylinders of Kadatheron" TheSearchForKadath
 
 theDoomOfSarnath :: CardDef
-theDoomOfSarnath = story "06131b" "The Doom of Sarnath" TheSearchForKadath
+theDoomOfSarnath = doubleSided $ story "06131b" "The Doom of Sarnath" TheSearchForKadath
 
 ghostsOfTheDead :: CardDef
-ghostsOfTheDead = story "06132b" "Ghosts of the Dead" TheSearchForKadath
+ghostsOfTheDead = doubleSided $ story "06132b" "Ghosts of the Dead" TheSearchForKadath
 
 thePalaceOfRainbows :: CardDef
-thePalaceOfRainbows = story "06133b" "The Palace of Rainbows" TheSearchForKadath
+thePalaceOfRainbows = doubleSided $ story "06133b" "The Palace of Rainbows" TheSearchForKadath
 
 aShrineToTheGods :: CardDef
-aShrineToTheGods = story "06134b" "A Shrine to the Gods" TheSearchForKadath
+aShrineToTheGods = doubleSided $ story "06134b" "A Shrine to the Gods" TheSearchForKadath
 
 theCryptOfZulanThek :: CardDef
-theCryptOfZulanThek = story "06135b" "The Crypt of Zulan-Thek" TheSearchForKadath
+theCryptOfZulanThek = doubleSided $ story "06135b" "The Crypt of Zulan-Thek" TheSearchForKadath
 
 waresOfBaharna :: CardDef
-waresOfBaharna = story "06136b" "Wares of Baharna" TheSearchForKadath
+waresOfBaharna = doubleSided $ story "06136b" "Wares of Baharna" TheSearchForKadath
 
 theLikenessOfOld :: CardDef
-theLikenessOfOld = story "06137b" "The Likeness of Old" TheSearchForKadath
+theLikenessOfOld = doubleSided $ story "06137b" "The Likeness of Old" TheSearchForKadath
 
 whatRemainsOfTyrrhia :: CardDef
-whatRemainsOfTyrrhia = story "06138b" "What Remains of Tyrrhia" TheSearchForKadath
+whatRemainsOfTyrrhia = doubleSided $ story "06138b" "What Remains of Tyrrhia" TheSearchForKadath
 
 adviceOfTheKing :: CardDef
-adviceOfTheKing = story "06139b" "Advice of the King" TheSearchForKadath
+adviceOfTheKing = doubleSided $ story "06139b" "Advice of the King" TheSearchForKadath
 
 timelessBeauty :: CardDef
-timelessBeauty = story "06140b" "Timeless Beauty" TheSearchForKadath
+timelessBeauty = doubleSided $ story "06140b" "Timeless Beauty" TheSearchForKadath
 
 unattainableDesires :: CardDef
-unattainableDesires = story "06141b" "Unattainable Desires" TheSearchForKadath
+unattainableDesires = doubleSided $ story "06141b" "Unattainable Desires" TheSearchForKadath
 
 theCityInside :: CardDef
-theCityInside = story "06142b" "The City Inside" TheSearchForKadath
+theCityInside = doubleSided $ story "06142b" "The City Inside" TheSearchForKadath
 
 theBalefulStar :: CardDef
-theBalefulStar = story "06143b" "The Baleful Star" TheSearchForKadath
+theBalefulStar = doubleSided $ story "06143b" "The Baleful Star" TheSearchForKadath
 
 offTheGalley :: CardDef
-offTheGalley = story "06214b" "Off the Galley" DarkSideOfTheMoon
+offTheGalley = doubleSided $ story "06214b" "Off the Galley" DarkSideOfTheMoon
 
 ghastlyTunnels :: CardDef
-ghastlyTunnels = story "06254b" "Ghastly Tunnels" PointOfNoReturn
+ghastlyTunnels = doubleSided $ story "06254b" "Ghastly Tunnels" PointOfNoReturn
 
 theSentry :: CardDef
-theSentry = story "06255b" "The Sentry" PointOfNoReturn
+theSentry = doubleSided $ story "06255b" "The Sentry" PointOfNoReturn
 
 anotherPath :: CardDef
-anotherPath = story "06256b" "Another Path" PointOfNoReturn
+anotherPath = doubleSided $ story "06256b" "Another Path" PointOfNoReturn
 
 aStrangeGhoul :: CardDef
-aStrangeGhoul = story "06257b" "A Strange Ghoul" PointOfNoReturn
+aStrangeGhoul = doubleSided $ story "06257b" "A Strange Ghoul" PointOfNoReturn
 
 scoutingTheVale :: CardDef
-scoutingTheVale = story "06258b" "Scouting the Vale" PointOfNoReturn
+scoutingTheVale = doubleSided $ story "06258b" "Scouting the Vale" PointOfNoReturn
 
 somethingBelow :: CardDef
-somethingBelow = story "06259b" "Something Below" PointOfNoReturn
+somethingBelow = doubleSided $ story "06259b" "Something Below" PointOfNoReturn
 
 inhabitantsOfTheVale :: CardDef
-inhabitantsOfTheVale = story "06260b" "Inhabitants of the Vale" PointOfNoReturn
+inhabitantsOfTheVale = doubleSided $ story "06260b" "Inhabitants of the Vale" PointOfNoReturn
 
 theWayOut :: CardDef
-theWayOut = story "06261b" "The Way Out" PointOfNoReturn
+theWayOut = doubleSided $ story "06261b" "The Way Out" PointOfNoReturn
 
 spiderInfestedWaters :: CardDef
-spiderInfestedWaters = story "06262b" "Spider-Infested Waters" PointOfNoReturn
+spiderInfestedWaters = doubleSided $ story "06262b" "Spider-Infested Waters" PointOfNoReturn
 
 stillSurface :: CardDef
-stillSurface = story "06263b" "Still Surface" PointOfNoReturn
+stillSurface = doubleSided $ story "06263b" "Still Surface" PointOfNoReturn
 
 rollingPits :: CardDef
-rollingPits = story "06264b" "Rolling Pits" PointOfNoReturn
+rollingPits = doubleSided $ story "06264b" "Rolling Pits" PointOfNoReturn
 
 centerOfTheSea :: CardDef
-centerOfTheSea = story "06265b" "Center of the Sea" PointOfNoReturn
+centerOfTheSea = doubleSided $ story "06265b" "Center of the Sea" PointOfNoReturn
 
 findingAgentHarper :: CardDef
-findingAgentHarper = story "07062" "Finding Agent Harper" TheVanishingOfElinaHarper
+findingAgentHarper = doubleSided $ story "07062" "Finding Agent Harper" TheVanishingOfElinaHarper
 
 captured :: CardDef
-captured = story "07252" "Captured!" ALightInTheFog
+captured = doubleSided $ story "07252" "Captured!" ALightInTheFog
 
 deadEnd :: CardDef
 deadEnd = story "08527" "Dead End" LostInTheNight
@@ -396,142 +396,142 @@ madnessInside :: CardDef
 madnessInside = story "08534" "Madness Inside" LostInTheNight
 
 prisonOfMemories :: CardDef
-prisonOfMemories = doubleSided "08556" $ story "08556b" "Prison of Memories" FatalMirage
+prisonOfMemories = doubleSided $ story "08556b" "Prison of Memories" FatalMirage
 
 baseCamp :: CardDef
-baseCamp = doubleSided "08557" $ story "08557b" "Base Camp" FatalMirage
+baseCamp = doubleSided $ story "08557b" "Base Camp" FatalMirage
 
 deckOfTheTheodosia :: CardDef
-deckOfTheTheodosia = doubleSided "08558" $ story "08558b" "Deck of the Theodosia" FatalMirage
+deckOfTheTheodosia = doubleSided $ story "08558b" "Deck of the Theodosia" FatalMirage
 
 universityHalls :: CardDef
-universityHalls = doubleSided "08559" $ story "08559b" "University Halls" FatalMirage
+universityHalls = doubleSided $ story "08559b" "University Halls" FatalMirage
 
 hedgeMaze :: CardDef
-hedgeMaze = doubleSided "08560" $ story "08560b" "Hedge Maze" FatalMirage
+hedgeMaze = doubleSided $ story "08560b" "Hedge Maze" FatalMirage
 
 desertedStation :: CardDef
-desertedStation = doubleSided "08561" $ story "08561b" "Deserted Station" FatalMirage
+desertedStation = doubleSided $ story "08561b" "Deserted Station" FatalMirage
 
 coastalWaters :: CardDef
-coastalWaters = doubleSided "08562" $ story "08562b" "Coastal Waters" FatalMirage
+coastalWaters = doubleSided $ story "08562b" "Coastal Waters" FatalMirage
 
 elderChamber :: CardDef
-elderChamber = doubleSided "08563" $ story "08563b" "Elder Chamber" FatalMirage
+elderChamber = doubleSided $ story "08563b" "Elder Chamber" FatalMirage
 
 riverviewTheatre :: CardDef
-riverviewTheatre = doubleSided "08564" $ story "08564b" "Riverview Theatre" FatalMirage
+riverviewTheatre = doubleSided $ story "08564b" "Riverview Theatre" FatalMirage
 
 standingStones :: CardDef
-standingStones = doubleSided "08565" $ story "08565b" "Standing Stones" FatalMirage
+standingStones = doubleSided $ story "08565b" "Standing Stones" FatalMirage
 
 airfield :: CardDef
-airfield = victory 2 $ doubleSided "08566" $ story "08566b" "Airfield" FatalMirage
+airfield = victory 2 $ doubleSided $ story "08566b" "Airfield" FatalMirage
 
 alaskanWilds :: CardDef
-alaskanWilds = victory 2 $ doubleSided "08567" $ story "08567b" "Alaskan Wilds" FatalMirage
+alaskanWilds = victory 2 $ doubleSided $ story "08567b" "Alaskan Wilds" FatalMirage
 
 clutteredDormitory :: CardDef
-clutteredDormitory = victory 2 $ doubleSided "08568" $ story "08568b" "Cluttered Dormitory" FatalMirage
+clutteredDormitory = victory 2 $ doubleSided $ story "08568b" "Cluttered Dormitory" FatalMirage
 
 dyersClassroom :: CardDef
-dyersClassroom = victory 2 $ doubleSided "08569" $ story "08569b" "Dyer's Classroom" FatalMirage
+dyersClassroom = victory 2 $ doubleSided $ story "08569b" "Dyer's Classroom" FatalMirage
 
 infirmary :: CardDef
-infirmary = victory 2 $ doubleSided "08570" $ story "08570b" "Infirmary" FatalMirage
+infirmary = victory 2 $ doubleSided $ story "08570b" "Infirmary" FatalMirage
 
 drKenslersOffice :: CardDef
-drKenslersOffice = victory 2 $ doubleSided "08571" $ story "08571b" "Dr. Kensler's Office" FatalMirage
+drKenslersOffice = victory 2 $ doubleSided $ story "08571b" "Dr. Kensler's Office" FatalMirage
 
 moaiStatues :: CardDef
-moaiStatues = victory 2 $ doubleSided "08572" $ story "08572b" "Mo'ai Statues" FatalMirage
+moaiStatues = victory 2 $ doubleSided $ story "08572b" "Mo'ai Statues" FatalMirage
 
 ottomanFront :: CardDef
-ottomanFront = victory 2 $ doubleSided "08573" $ story "08573b" "Ottoman Front" FatalMirage
+ottomanFront = victory 2 $ doubleSided $ story "08573b" "Ottoman Front" FatalMirage
 
 theBlackStone :: CardDef
-theBlackStone = victory 2 $ doubleSided "08574" $ story "08574b" "The Black Stone" FatalMirage
+theBlackStone = victory 2 $ doubleSided $ story "08574b" "The Black Stone" FatalMirage
 
 memoryOfAHuntGoneAwry :: CardDef
 memoryOfAHuntGoneAwry =
-  victory 1 $ doubleSided "08575" $ story "08575b" "Memory of a Hunt Gone Awry" FatalMirage
+  victory 1 $ doubleSided $ story "08575b" "Memory of a Hunt Gone Awry" FatalMirage
 
 memoryOfALostPatient :: CardDef
-memoryOfALostPatient = victory 1 $ doubleSided "08576" $ story "08576b" "Memory of a Lost Patient" FatalMirage
+memoryOfALostPatient = victory 1 $ doubleSided $ story "08576b" "Memory of a Lost Patient" FatalMirage
 
 memoryOfAMissingFather :: CardDef
-memoryOfAMissingFather = victory 1 $ doubleSided "08577" $ story "08577b" "Memory of a Missing Father" FatalMirage
+memoryOfAMissingFather = victory 1 $ doubleSided $ story "08577b" "Memory of a Missing Father" FatalMirage
 
 memoryOfARavagedCountry :: CardDef
-memoryOfARavagedCountry = victory 1 $ doubleSided "08578" $ story "08578b" "Memory of a Ravaged Country" FatalMirage
+memoryOfARavagedCountry = victory 1 $ doubleSided $ story "08578b" "Memory of a Ravaged Country" FatalMirage
 
 memoryOfARegretfulVoyage :: CardDef
-memoryOfARegretfulVoyage = victory 1 $ doubleSided "08579" $ story "08579b" "Memory of a Regretful Voyage" FatalMirage
+memoryOfARegretfulVoyage = victory 1 $ doubleSided $ story "08579b" "Memory of a Regretful Voyage" FatalMirage
 
 memoryOfAnUnspeakableEvil :: CardDef
-memoryOfAnUnspeakableEvil = victory 1 $ doubleSided "08580" $ story "08580b" "Memory of an Unspeakable Evil" FatalMirage
+memoryOfAnUnspeakableEvil = victory 1 $ doubleSided $ story "08580b" "Memory of an Unspeakable Evil" FatalMirage
 
 memoryOfATerribleDiscovery :: CardDef
-memoryOfATerribleDiscovery = victory 1 $ doubleSided "08581" $ story "08581b" "Memory of a Terrible Discovery" FatalMirage
+memoryOfATerribleDiscovery = victory 1 $ doubleSided $ story "08581b" "Memory of a Terrible Discovery" FatalMirage
 
 memoryOfAnAlienTranslation :: CardDef
-memoryOfAnAlienTranslation = victory 1 $ doubleSided "08582" $ story "08582b" "Memory of an Alien Transformation" FatalMirage
+memoryOfAnAlienTranslation = victory 1 $ doubleSided $ story "08582b" "Memory of an Alien Transformation" FatalMirage
 
 memoryOfAnUnrequitedLove :: CardDef
-memoryOfAnUnrequitedLove = victory 1 $ doubleSided "08583" $ story "08583b" "Memory of an Unrequited Love" FatalMirage
+memoryOfAnUnrequitedLove = victory 1 $ doubleSided $ story "08583b" "Memory of an Unrequited Love" FatalMirage
 
 returnToSickeningReality_23 :: CardDef
-returnToSickeningReality_23 = story "52023" "Sickening Reality" ReturnToTheLastKing
+returnToSickeningReality_23 = doubleSided $ story "52023" "Sickening Reality" ReturnToTheLastKing
 
 returnToSickeningReality_24 :: CardDef
-returnToSickeningReality_24 = story "52024" "Sickening Reality" ReturnToTheLastKing
+returnToSickeningReality_24 = doubleSided $ story "52024" "Sickening Reality" ReturnToTheLastKing
 
 hastursLastStand :: CardDef
-hastursLastStand = story "52060b" "Hastur's Last Stand" ReturnToDimCarcosa
+hastursLastStand = doubleSided $ story "52060b" "Hastur's Last Stand" ReturnToDimCarcosa
 
 theWriter :: CardDef
-theWriter = story "52061b" "The Writer" ReturnToDimCarcosa
+theWriter = doubleSided $ story "52061b" "The Writer" ReturnToDimCarcosa
 
 theEntity :: CardDef
-theEntity = story "52062b" "The Entity" ReturnToDimCarcosa
+theEntity = doubleSided $ story "52062b" "The Entity" ReturnToDimCarcosa
 
 theDelusion :: CardDef
-theDelusion = story "52063b" "The Delision" ReturnToDimCarcosa
+theDelusion = doubleSided $ story "52063b" "The Delusion" ReturnToDimCarcosa
 
 realityAcid :: CardDef
 realityAcid =
-  (story "89005" "Reality Acid" TheBlobThatAteEverythingELSE)
-    { cdEncounterSet = Nothing
-    , cdEncounterSetQuantity = Nothing
-    }
+  doubleSided
+    $ (story "89005" "Reality Acid" TheBlobThatAteEverythingELSE)
+      { cdEncounterSet = Nothing
+      , cdEncounterSetQuantity = Nothing
+      }
 
 theFoundationAllied :: CardDef
-theFoundationAllied = doubleSided "71015b" $ story "71015" "The Foundation [guardian]" TheMidwinterGala
+theFoundationAllied = doubleSided $ story "71015" "The Foundation [guardian]" TheMidwinterGala
 
 theFoundationRival :: CardDef
-theFoundationRival = doubleSided "71015" $ story "71015b" "The Foundation [guardian]" TheMidwinterGala
+theFoundationRival = doubleSided $ story "71015b" "The Foundation [guardian]" TheMidwinterGala
 
 miskatonicUniversityAllied :: CardDef
-miskatonicUniversityAllied = doubleSided "71021b" $ story "71021" "Miskatonic University [seeker]" TheMidwinterGala
+miskatonicUniversityAllied = doubleSided $ story "71021" "Miskatonic University [seeker]" TheMidwinterGala
 
 miskatonicUniversityRival :: CardDef
-miskatonicUniversityRival = doubleSided "71021" $ story "71021b" "Miskatonic University [seeker]" TheMidwinterGala
-
+miskatonicUniversityRival = doubleSided $ story "71021b" "Miskatonic University [seeker]" TheMidwinterGala
 
 theSyndicateAllied :: CardDef
-theSyndicateAllied = doubleSided "71027b" $ story "71027" "The Syndicate [rogue]" TheMidwinterGala
+theSyndicateAllied = doubleSided $ story "71027" "The Syndicate [rogue]" TheMidwinterGala
 
 theSyndicateRival :: CardDef
-theSyndicateRival = doubleSided "71027" $ story "71027b" "The Syndicate [rogue]" TheMidwinterGala
+theSyndicateRival = doubleSided $ story "71027b" "The Syndicate [rogue]" TheMidwinterGala
 
 silverTwilightLodgeAllied :: CardDef
-silverTwilightLodgeAllied = doubleSided "71033b" $ story "71033" "Silver Twilight Lodge [mystic]" TheMidwinterGala
+silverTwilightLodgeAllied = doubleSided $ story "71033" "Silver Twilight Lodge [mystic]" TheMidwinterGala
 
 silverTwilightLodgeRival :: CardDef
-silverTwilightLodgeRival = doubleSided "71033" $ story "71033b" "Silver Twilight Lodge [mystic]" TheMidwinterGala
+silverTwilightLodgeRival = doubleSided $ story "71033b" "Silver Twilight Lodge [mystic]" TheMidwinterGala
 
 localsOfKingsportAllied :: CardDef
-localsOfKingsportAllied = doubleSided "71039b" $ story "71039" "Locals of Kingsport [survivor]" TheMidwinterGala
+localsOfKingsportAllied = doubleSided $ story "71039" "Locals of Kingsport [survivor]" TheMidwinterGala
 
 localsOfKingsportRival :: CardDef
-localsOfKingsportRival = doubleSided "71039" $ story "71039b" "Locals of Kingsport [survivor]" TheMidwinterGala
+localsOfKingsportRival = doubleSided $ story "71039b" "Locals of Kingsport [survivor]" TheMidwinterGala

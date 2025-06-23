@@ -654,6 +654,13 @@ createEnemyAt c lid = do
   push msg
   pure enemyId
 
+createEnemyAtEdit
+  :: (ReverseQueue m, IsCard card) => card -> LocationId -> (EnemyCreation Message -> EnemyCreation Message) -> m EnemyId
+createEnemyAtEdit c lid f = do
+  (enemyId, msg) <- Msg.createEnemyAtEdit (toCard c) lid Nothing f
+  push msg
+  pure enemyId
+
 createEnemyAtLocationMatching_
   :: (ReverseQueue m, FetchCard card) => card -> LocationMatcher -> m ()
 createEnemyAtLocationMatching_ c matcher = do

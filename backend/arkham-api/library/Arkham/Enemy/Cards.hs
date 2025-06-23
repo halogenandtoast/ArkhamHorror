@@ -1513,7 +1513,7 @@ malevolentSpirit =
 nathanWickMasterOfInitiation :: CardDef
 nathanWickMasterOfInitiation =
   unique
-    $ (enemy "05217a" ("Nathan Wick" <:> "Master of Initiation") TheWagesOfSin 1)
+    $ (enemy "05217a" ("Nathan Wick" <:> "Master of Initiation") ForTheGreaterGood 1)
       { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight, Elite]
       , cdKeywords = singleton Keyword.Retaliate
       , cdDoubleSided = True
@@ -1524,11 +1524,12 @@ nathanWickMasterOfInitiation =
 nathanWickMasterOfIndoctrination :: CardDef
 nathanWickMasterOfIndoctrination =
   unique
-    $ (enemy "05217b" ("Nathan Wick" <:> "Master of Indoctrination") TheWagesOfSin 1)
+    $ (enemy "05217b" ("Nathan Wick" <:> "Master of Indoctrination") ForTheGreaterGood 1)
       { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight, Elite]
       , cdKeywords = singleton Keyword.Alert
       , cdDoubleSided = True
       , cdVictoryPoints = Just 1
+      , cdOtherSide = Just "05217a"
       }
 
 lodgeJailor :: CardDef

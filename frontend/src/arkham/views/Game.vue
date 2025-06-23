@@ -775,14 +775,14 @@ onUnmounted(() => {
         </div>
       </div>
     </template>
+    <dialog id="undoScenarioDialog" ref="undoScenarioDialog">
+      <p>Are you sure you wish to undo to the beginning of the scenario?</p>
+      <div class="buttons">
+        <button @click="undoScenario()">Yes</button>
+        <button @click="undoScenarioDialog?.close()">No</button>
+      </div>
+    </dialog>
   </div>
-  <dialog id="undoScenarioDialog" ref="undoScenarioDialog">
-    <p>Are you sure you wish to undo to the beginning of the scenario?</p>
-    <div class="buttons">
-      <button @click="undoScenario()">Yes</button>
-      <button @click="undoScenarioDialog?.close()">No</button>
-    </div>
-  </dialog>
 </template>
 
 <style lang="scss" scoped>

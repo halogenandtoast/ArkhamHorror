@@ -65,7 +65,7 @@ const backImage = computed(() => {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .card-container {
   overflow: hidden;
   width: calc(100% - 20px);
@@ -87,6 +87,15 @@ const backImage = computed(() => {
     right: 5px;
     width: 2.4em;
     aspect-ratio: 1;
+    background: gray;
+    &:hover, &:focus {
+      background: var(--neutral);
+      color: var(--neutral-dark);
+    }
+    svg {
+      position: absolute;
+      inset: 15%;
+    }
   }
 
   &:hover button {

@@ -7,6 +7,8 @@ import { imgsrc } from '@/arkham/helpers'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Token from '@/arkham/components/Token.vue'
 import * as Arkham from '@/arkham/types/Story'
+import PoolItem from '@/arkham/components/PoolItem.vue';
+import { TokenType } from '@/arkham/types/Token';
 
 export interface Props {
   game: Game
@@ -77,6 +79,12 @@ const abilities = computed(() => {
       return acc;
     }, []);
 })
+
+const clues = computed(() => props.story.tokens[TokenType.Clue])
+
+const hasPool = computed(() => {
+  return (clues.value && clues.value > 0)
+})
 </script>
 
 <template>
@@ -89,6 +97,9 @@ const abilities = computed(() => {
           class="card story"
           @click="$emit('choose', cardAction)"
         />
+        <div class="pool" v-if="hasPool">
+          <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
+        </div>
       </div>
       <AbilityButton
         v-for="ability in abilities"

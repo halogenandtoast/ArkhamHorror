@@ -17,6 +17,7 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Story.Cards
 import Arkham.Target
+import Arkham.Token
 import Data.Aeson.TH
 import Data.Data
 import GHC.Records
@@ -41,6 +42,7 @@ type StoryCard a = CardBuilder (Maybe Target, StoryId) a
 
 data instance Field Story :: Type -> Type where
   StoryCard :: Field Story Card
+  StoryClues :: Field Story Int
   StoryPlacement :: Field Story Placement
   StoryOtherSide :: Field Story (Maybe Target)
   StoryCardsUnderneath :: Field Story [Card]
@@ -54,6 +56,7 @@ data StoryAttrs = StoryAttrs
   , storyMeta :: Value
   , storyRemoveAfterResolution :: Bool
   , storyCardsUnderneath :: [Card]
+  , storyTokens :: Map Token Int
   }
   deriving stock (Show, Eq)
 
@@ -100,6 +103,7 @@ storyWith f cardDef g =
             , storyMeta = Null
             , storyRemoveAfterResolution = True
             , storyCardsUnderneath = []
+            , storyTokens = mempty
             }
     }
 
@@ -210,4 +214,5 @@ instance FromJSON StoryAttrs where
     storyMeta <- o .: "meta"
     storyRemoveAfterResolution <- o .: "removeAfterResolution"
     storyCardsUnderneath <- o .:? "cardsUnderneath" .!= []
+    storyTokens <- o .:? "tokens" .!= mempty
     pure StoryAttrs {..}

@@ -45,7 +45,7 @@ instance HasAbilities EasyMark1Effect where
       [ displayAsCard
           $ withTooltip
             "{reaction}: After you play Easy Mark: Play another Easy Mark from your hand, at no cost."
-          $ restricted a 1 (exists $ InvestigatorWithId iid <> handWith Cards.easyMark1)
+          $ restricted a 1 (youExist $ InvestigatorWithId iid <> handWith Cards.easyMark1)
           $ freeReaction (Arkham.Matcher.PlayEvent #after (InvestigatorWithId iid) (EventWithId eid))
       ]
 

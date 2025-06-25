@@ -60,11 +60,11 @@ instance RunMessage TheCosmosBeckons where
             player
             [ targetLabel
                 (toCardId card)
-                [ UnfocusCards
-                , ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) (List.delete card cards)
+                [ ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) (List.delete card cards)
                 , placement
                 , RevealLocation (Just iid) lid
                 , RunCosmos iid lid [Move $ move (toAbilitySource attrs 1) iid lid]
+                , UnfocusCards
                 ]
             | (card, (lid, placement)) <- cardsWithMsgs
             ]

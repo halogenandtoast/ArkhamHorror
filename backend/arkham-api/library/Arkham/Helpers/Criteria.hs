@@ -448,6 +448,9 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.ResourcesOnLocation locationMatcher valueMatcher -> do
     total <- getSum <$> selectAgg Sum LocationResources locationMatcher
     gameValueMatches total valueMatcher
+  Criteria.TokensOnLocation locationMatcher token valueMatcher -> do
+    total <- getSum <$> selectAgg (Sum . Token.countTokens token) LocationTokens locationMatcher
+    gameValueMatches total valueMatcher
   Criteria.CluesOnThis valueMatcher -> case source of
     LocationSource lid ->
       (`gameValueMatches` valueMatcher) =<< field LocationClues lid
@@ -456,6 +459,8 @@ passesCriteria iid mcard source' requestor windows' = \case
       (`gameValueMatches` valueMatcher) =<< field AssetClues aid
     TreacherySource tid ->
       (`gameValueMatches` valueMatcher) =<< field TreacheryClues tid
+    StorySource sid ->
+      (`gameValueMatches` valueMatcher) =<< field StoryClues sid
     _ -> error "missing CluesOnThis check"
   Criteria.HorrorOnThis valueMatcher -> case source of
     AssetSource aid ->
@@ -622,7 +627,7 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.SkillExists matcher -> selectAny matcher
   Criteria.StoryExists matcher -> selectAny matcher
   Criteria.ActExists matcher -> selectAny matcher
-  Criteria.CardWithDoomExists -> do
+  Criteria.CardWithRemovableDoomExists -> do
     orM
       [ selectAny $ Matcher.AssetWithDoom (Matcher.atLeast 1)
       , selectAny $ Matcher.InvestigatorWithDoom (Matcher.atLeast 1)
@@ -630,7 +635,9 @@ passesCriteria iid mcard source' requestor windows' = \case
       , selectAny $ Matcher.EventWithDoom (Matcher.atLeast 1)
       , selectAny $ Matcher.LocationWithDoom (Matcher.atLeast 1)
       , selectAny $ Matcher.TreacheryWithDoom (Matcher.atLeast 1)
-      , selectAny $ Matcher.AgendaWithDoom (Matcher.atLeast 1)
+      , selectAny
+          $ Matcher.AgendaWithDoom (Matcher.atLeast 1)
+          <> Matcher.NotAgenda (Matcher.AgendaWithModifier CannotRemoveDoomOnThis)
       ]
   Criteria.ChaosTokenExists matcher -> selectAny matcher
   Criteria.AssetExists matcher -> do

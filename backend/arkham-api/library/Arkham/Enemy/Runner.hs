@@ -42,6 +42,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers hiding (ModifierType (..))
 import Arkham.Helpers.Placement
 import Arkham.Helpers.Query
@@ -252,27 +253,55 @@ instance RunMessage EnemyAttrs where
         VengeanceCard _ -> error "not valid"
       pure a
     EnemySpawn details | details.enemy == enemyId -> do
+      let miid = details.investigator
+      let eid = enemyId
+      keywords <- getModifiedKeywords a
+      mods <- getCombinedModifiers [toTarget eid, toTarget (toCardId a)]
+      let
+        isForcedEngagement = \case
+          ForceSpawn _ -> True
+          ForceSpawnLocation _ -> True
+          _ -> False
+
+      let forcedEngagement = any isForcedEngagement mods
+      let canSwarm = NoInitialSwarm `notElem` mods
+      let swarms = guard canSwarm *> mapMaybe (preview _Swarming) (toList keywords)
       case details.spawnAt of
+        SpawnEngagedWith imatcher -> do
+          iids <- select imatcher
+          case iids of
+            [] -> pure ()
+            [iid] -> withLocationOf iid \lid -> do
+              canEnter <- canEnterLocation enemyId lid
+              if canEnter
+                then do
+                  case swarms of
+                    [] -> pure ()
+                    [x] -> do
+                      n <- getGameValue x
+                      lead <- getLead
+                      push $ PlaceSwarmCards lead eid n
+                    _ -> error "more than one swarming value"
+
+                  pushAll $ EnemyEntered enemyId lid
+                    : [EnemyEngageInvestigator enemyId iid | not enemyDelayEngagement]
+                else push (toDiscard GameSource eid)
+            _ -> do
+              lead <- getLeadPlayer
+              push
+                $ chooseOne
+                  lead
+                  [ targetLabel
+                      iid
+                      [EnemySpawn details {spawnDetailsSpawnAt = SpawnEngagedWith (InvestigatorWithId iid)}]
+                  | iid <- iids
+                  ]
         SpawnAtLocation lid -> do
-          let miid = details.investigator
-          let eid = enemyId
           locations' <- select $ IncludeEmptySpace Anywhere
           canEnter <- eid <=~> IncludeOmnipotent (EnemyCanSpawnIn $ IncludeEmptySpace $ LocationWithId lid)
           if lid `notElem` locations' || not canEnter
             then push (toDiscard GameSource eid)
             else do
-              keywords <- getModifiedKeywords a
-              mods <- getCombinedModifiers [toTarget eid, toTarget (toCardId a)]
-              let canSwarm = NoInitialSwarm `notElem` mods
-              let swarms = guard canSwarm *> mapMaybe (preview _Swarming) (toList keywords)
-              let
-                isForcedEngagement = \case
-                  ForceSpawn _ -> True
-                  ForceSpawnLocation _ -> True
-                  _ -> False
-
-              let forcedEngagement = any isForcedEngagement mods
-
               case swarms of
                 [] -> pure ()
                 [x] -> do
@@ -281,9 +310,7 @@ instance RunMessage EnemyAttrs where
                   push $ PlaceSwarmCards lead eid n
                 _ -> error "more than one swarming value"
 
-              if (all (`notElem` keywords) [#aloof, #massive] && not enemyExhausted)
-                || forcedEngagement
-                || details.overridden
+              if (all (`notElem` keywords) [#aloof, #massive] && not enemyExhausted) || forcedEngagement
                 then do
                   prey <- getPreyMatcher a
                   let
@@ -512,7 +539,11 @@ instance RunMessage EnemyAttrs where
       --
       let isAttached = isJust a.placement.attachedTo
       unless isAttached do
-        wantsToMove <- selectNone $ InvestigatorAt (locationWithEnemy enemyId)
+        wantsToMove <-
+          (&&)
+            <$> selectNone (InvestigatorAt $ locationWithEnemy enemyId)
+            <*> selectNone
+              (EnemyAt (locationWithEnemy enemyId) <> EnemyWithModifier CountsAsInvestigatorForHunterEnemies)
         mods <- getModifiers enemyId
         when (wantsToMove && CannotMove `notElem` mods) $ do
           keywords <- getModifiedKeywords a
@@ -972,7 +1003,7 @@ instance RunMessage EnemyAttrs where
       cardsThatCanceled <- foldM applyModifiers [] modifiers
 
       ignoreWindows <- for cardsThatCanceled \card ->
-        checkWindows [mkAfter $ Window.CancelledOrIgnoredCardOrGameEffect $ CardIdSource card.id]
+        checkWindows [mkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (CardIdSource card.id) Nothing]
 
       let
         allowAttack =
@@ -1283,26 +1314,29 @@ instance RunMessage EnemyAttrs where
       let
         placeInVictory = isJust (victory <|> vengeance)
         victoryMsgs = [DefeatedAddToVictory $ toTarget a | placeInVictory]
-        defeatMsgs =
-          if placeInVictory
-            then resolve $ RemoveEnemy eid
-            else [Discard miid GameSource $ toTarget a]
+        defeatMsgs = [Discard miid GameSource $ toTarget a | not placeInVictory]
 
       pushAll
         $ victoryMsgs
         <> windows [Window.EntityDiscarded source (toTarget a)]
         <> defeatMsgs
         <> [afterMsg]
-      pure
-        $ a
-        & (if placeInVictory then placementL .~ OutOfPlay VictoryDisplayZone else id)
+      pure a
     After (Arkham.Message.EnemyDefeated eid _ source _) | eid == toId a -> do
       case a.placement of
         AsSwarm eid' _ -> push $ CheckDefeated source (toTarget eid')
         _ -> pure ()
       pure $ a & defeatedL .~ True
     DefeatedAddToVictory (isTarget a -> True) -> do
-      pure $ a & placementL .~ OutOfPlay VictoryDisplayZone & tokensL %~ mempty
+      pushAll
+        $ windows [Window.LeavePlay (toTarget a), Window.AddedToVictory (toCard a)]
+        <> [When msg, Do msg]
+      pure a
+    Do (DefeatedAddToVictory (isTarget a -> True)) -> do
+      mods <- getModifiers a
+      let zone = if StayInVictory `elem` mods then VictoryDisplayZone else RemovedZone
+      push $ RemoveEnemy a.id
+      pure $ a & placementL .~ OutOfPlay zone & tokensL %~ mempty
     EnemySpawnFromOutOfPlay _ _miid _lid eid | eid == a.id -> do
       pure $ a & (defeatedL .~ False) & (exhaustedL .~ False)
     AddToVictory (isTarget a -> True) -> do

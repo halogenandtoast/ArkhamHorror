@@ -538,6 +538,9 @@ allEnemies =
     , -- Return to The Forgotten Age
       --- Return to The Doom of Eztli [rttfa]
       SomeEnemyCard harbingerOfValusiaTheSleeperReturns
+    , --- Return to Pillars of Judgement [rttfa]
+      SomeEnemyCard theWingedSerpentTheFuryOfYig
+    , SomeEnemyCard featheredSerpent
     , --- Cult of Pnakotus [rttfa]
       SomeEnemyCard brotherhoodAcolyte
     , SomeEnemyCard stolenMind
@@ -590,4 +593,18 @@ allEnemies =
       SomeEnemyCard vengefulHound
     , --- Aura of Faith
       SomeEnemyCard serpentsOfYigAdvanced
+    , -- The Midwinter Gala
+      SomeEnemyCard abhorrentMoonBeast
+    , SomeEnemyCard declanPearce
+    , SomeEnemyCard enragedGug
+    , SomeEnemyCard lanternClubMember
+    , SomeEnemyCard valeriyaAntonovaDontMessWithHer
+    , SomeEnemyCard rookieCop
+    , SomeEnemyCard caldwellPhilipsCompelledByDreams
+    , SomeEnemyCard johnnyValoneHereToCollect
+    , SomeEnemyCard carlSanfordIntimidatingPresence
+    , SomeEnemyCard williamBainDefiantToTheLast
+    , SomeEnemyCard savageShantak
+    , SomeEnemyCard theBloodlessMan
+    , SomeEnemyCard theBloodlessManUnleashed
     ]

@@ -8,20 +8,19 @@ import { useDebug } from '@/arkham/debug'
 import { PaperClipIcon } from '@heroicons/vue/20/solid'
 import type { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
-import { TokenType } from '@/arkham/types/Token'
 import * as ArkhamGame from '@/arkham/types/Game';
 import * as Arkham from '@/arkham/types/Investigator'
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
 import type { Modifier } from '@/arkham/types/Modifier'
 import Token from '@/arkham/components/Token.vue';
-import PoolItem from '@/arkham/components/PoolItem.vue'
-import Key from '@/arkham/components/Key.vue';
-import Seal from '@/arkham/components/Seal.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { useMenu } from '@/composeable/menu';
 import { useI18n } from 'vue-i18n';
-import useEmitter from '@/composeable/useEmitter'
+import useEmitter from '@/composeable/useEmitter';
+import Resources from '@/arkham/components/Resources.vue';
+import Draw from '@/arkham/components/Draw.vue';
+import { IsMobile } from '@/arkham/isMobile';
 const { t } = useI18n();
 
 export interface Props {
@@ -43,6 +42,7 @@ const { addEntry, removeEntry } = useMenu()
 const settingsStore = useSettings()
 const { toggleShowBonded } = settingsStore
 const { showBonded } = storeToRefs(settingsStore)
+const { isMobile } = IsMobile();
 
 const doShowBonded = computed(() => {
   return showBonded.value && props.playerId == props.investigator.playerId
@@ -119,43 +119,6 @@ const abilities = computed(() => {
 
       return acc;
     }, []);
-})
-
-function canAdjustHealth(c: Message): boolean {
-  if (c.tag === MessageType.COMPONENT_LABEL && c.component.tag === "InvestigatorComponent" && c.component.tokenType === "DamageToken") {
-    return c.component.investigatorId === id.value
-  }
-  return false
-}
-
-function canAdjustSanity(c: Message): boolean {
-  if (c.tag === MessageType.COMPONENT_LABEL && c.component.tag === "InvestigatorComponent" && c.component.tokenType === "HorrorToken") {
-    return c.component.investigatorId === id.value
-  }
-  return false
-}
-
-const healthAction = computed(() => props.choices.findIndex(canAdjustHealth))
-const sanityAction = computed(() => props.choices.findIndex(canAdjustSanity))
-
-const takeResourceAction = computed(() => {
-  return props.choices
-    .findIndex((c) => {
-      if (c.tag === MessageType.COMPONENT_LABEL && c.component.tag === "InvestigatorComponent" && c.component.tokenType === "ResourceToken") {
-        return c.component.investigatorId === id.value
-      }
-      return false
-    });
-})
-
-const spendCluesAction = computed(() => {
-  return props.choices
-    .findIndex((c) => {
-      if (c.tag === MessageType.COMPONENT_LABEL && c.component.tag === "InvestigatorComponent"  && c.component.tokenType === "ClueToken") {
-        return c.component.investigatorId === id.value
-      }
-      return false
-    });
 })
 
 const endTurnAction = computed(() => {
@@ -276,22 +239,10 @@ function isActiveEffectAction(action: { tag?: "EffectAction"; contents: any }) {
   return choice !== -1
 }
 
-const keys = computed(() => props.investigator.keys)
-const seals = computed(() => props.investigator.seals)
-
 const willpower = computed(() => calculateSkill(props.investigator.willpower, "SkillWillpower", modifiers.value ?? []))
 const intellect = computed(() => calculateSkill(props.investigator.intellect, "SkillIntellect", modifiers.value ?? []))
 const combat = computed(() => calculateSkill(props.investigator.combat, "SkillCombat", modifiers.value ?? []))
 const agility = computed(() => calculateSkill(props.investigator.agility, "SkillAgility", modifiers.value ?? []))
-
-
-const doom = computed(() => props.investigator.tokens[TokenType.Doom])
-const clues = computed(() => props.investigator.tokens[TokenType.Clue] || 0)
-const resources = computed(() => props.investigator.tokens[TokenType.Resource] || 0)
-const horror = computed(() => (props.investigator.tokens[TokenType.Horror] || 0) + props.investigator.assignedSanityDamage)
-const damage = computed(() => (props.investigator.tokens[TokenType.Damage] || 0) + props.investigator.assignedHealthDamage)
-const alarmLevel = computed(() => props.investigator.tokens[TokenType.AlarmLevel] || 0)
-const leylines = computed(() => props.investigator.tokens[TokenType.Leyline] || 0)
 
 const dragging = ref(false)
 function startDrag(event: DragEvent) {
@@ -328,7 +279,16 @@ function onDrop(event: DragEvent) {
 </script>
 
 <template>
-  <div v-if="portrait">
+  <div v-if="portrait" class="portrait-container">
+    <span v-if="isMobile"><i class="action" v-for="n in investigator.remainingActions" :key="n"></i></span>
+    <span v-if="isMobile && investigator.additionalActions.length > 0">
+      <template v-for="action in investigator.additionalActions" :key="action">
+        <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigator.class.toLowerCase()}ActionButton`]">
+          <i class="action"></i>
+        </button>
+        <i v-else class="action" :class="`${investigator.class.toLowerCase()}Action`"></i>
+      </template>
+    </span>
     <img
       :src="portraitImage"
       class="portrait"
@@ -341,7 +301,7 @@ function onDrop(event: DragEvent) {
       @dragenter.prevent
     />
   </div>
-  <div v-else>
+  <div v-else class="player-container">
     <div class="player-area">
       <div class="player-card">
         <div class="stats">
@@ -363,151 +323,72 @@ function onDrop(event: DragEvent) {
           <Token v-for="(sealedToken, index) in investigator.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" class="sealed" />
         </div>
       </div>
-
-      <div class="player-buttons">
-        <span><i class="action" v-for="n in investigator.remainingActions" :key="n"></i></span>
-        <span v-if="investigator.additionalActions.length > 0">
-          <template v-for="action in investigator.additionalActions" :key="action">
+      <div>
+        <div class="player-buttons">
+          <span v-if="!isMobile" class="action-container"><i class="action" v-for="n in investigator.remainingActions" :key="n"></i></span>
+          <span v-if="investigator.additionalActions.length > 0">
+            <template v-for="action in investigator.additionalActions" :key="action">
             <button @click="useEffectAction(action)" v-if="action.tag === 'EffectAction'" v-tooltip="action.contents[0]" :class="[{ activeButton: isActiveEffectAction(action)}, `${investigator.class.toLowerCase()}ActionButton`]">
               <i class="action"></i>
             </button>
             <i v-else class="action" :class="`${investigator.class.toLowerCase()}Action`"></i>
+            </template>
+          </span>
+          <template v-if="debug.active">
+            <button
+              @click.exact="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})"
+              @click.shift="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 5]})"
+            >+</button>
           </template>
-        </span>
-        <template v-if="debug.active">
+          <AbilityButton
+            v-for="ability in abilities"
+            :key="ability.index"
+            :ability="ability.contents"
+            :game="game"
+            @click="$emit('choose', ability.index)"
+            />
           <button
-            @click.exact="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})"
-            @click.shift="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 5]})"
-          >+</button>
-        </template>
-        <AbilityButton
-          v-for="ability in abilities"
-          :key="ability.index"
-          :ability="ability.contents"
-          :game="game"
-          @click="$emit('choose', ability.index)"
-          />
-        <button
           :class="{ active: endTurnAction !== -1 && investigator.remainingActions === 0 }"
           :disabled="endTurnAction == -1"
           @click="$emit('choose', endTurnAction)"
-        >{{ $t('investigator.endTurn') }}</button>
+          >{{ isMobile ? 'End' : $t('investigator.endTurn') }}</button>
 
-        <button
-          v-if="devoured && devoured.length > 0"
-          @click="showDevoured"
-        >{{ $t('investigator.devouredCards', {count: devoured.length}) }}</button>
+          <button
+            v-if="devoured && devoured.length > 0"
+            @click="showDevoured"
+          >{{ $t('investigator.devouredCards', {count: devoured.length}) }}</button>
 
-        <button
-          :disabled="skipTriggersAction == -1"
-          @click="$emit('choose', skipTriggersAction)"
-          class="skip-triggers-button"
-        >{{ $t('investigator.skipTriggers') }}</button>
+          <button
+            :disabled="skipTriggersAction == -1"
+            @click="$emit('choose', skipTriggersAction)"
+            class="skip-triggers-button"
+          >{{ isMobile ? 'Skip' : $t('investigator.skipTriggers') }}</button>
 
-        <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
+          <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
+          <Draw
+            v-if="isMobile"
+            :game="game"
+            :playerId="playerId"
+            :investigator="investigator"
+            @choose="$emit('choose', $event)"
+          />
+        </div>
+        <Resources
+          v-if="isMobile"
+          :game="game"
+          :investigator="investigator"
+          :choices="choices"
+          @choose="$emit('choose', $event)"
+        />
       </div>
     </div>
-
-    <div class="resources">
-      <div class="keys" v-if="keys.length > 0">
-        <Key v-for="key in keys" :key="key" :name="key" />
-      </div>
-      <div class="seals" v-if="seals.length > 0">
-        <Seal v-for="seal in seals" :key="seal.sealKind" :seal="seal" />
-      </div>
-      <template v-if="debug.active">
-        <button
-          @click.exact="debug.send(game.id, {tag: 'LoseResources', contents: [id, {tag: 'GameSource'}, 1]})"
-          @click.shift="debug.send(game.id, {tag: 'LoseAllResources', contents: [id, {tag: 'GameSource'}]})"
-        >-</button>
-      </template>
-      <PoolItem
-        type="resource"
-        :amount="resources"
-        :class="{ 'resource--can-take': takeResourceAction !== -1 }"
-        @choose="$emit('choose', takeResourceAction)"
-      />
-      <template v-if="debug.active">
-        <button
-          class="plus-button"
-          @click.exact="debug.send(game.id, {tag: 'TakeResources', contents: [id, 1, {tag: 'GameSource' }, false]})"
-          @click.shift="debug.send(game.id, {tag: 'TakeResources', contents: [id, 5, {tag: 'GameSource' }, false]})"
-        >+</button>
-      </template>
-      <template v-if="debug.active">
-        <button
-          @click.exact="debug.send(game.id, {tag: 'GainClues', contents: [id, {tag: 'GameSource' }, -1]})"
-          @click.shift="debug.send(game.id, {tag: 'InvestigatorDiscardAllClues', contents: [{tag: 'GameSource' }, id]})"
-        >-</button>
-      </template>
-      <PoolItem
-        type="clue"
-        :amount="clues"
-        :class="{ 'resource--can-spend': spendCluesAction !== -1 }"
-        @choose="$emit('choose', spendCluesAction)"
-      />
-      <template v-if="debug.active">
-        <button
-          class="plus-button"
-          @click.exact="debug.send(game.id, {tag: 'GainClues', contents: [id, {tag: 'GameSource' }, 1]})"
-          @click.shift="debug.send(game.id, {tag: 'GainClues', contents: [id, {tag: 'GameSource' }, 5]})"
-        >+</button>
-      </template>
-      <template v-if="debug.active">
-        <button
-          @click.exact="debug.send(game.id, {tag: 'HealDamage', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})"
-          @click.shift="debug.send(game.id, {tag: 'HealDamage', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, investigator.tokens['Damage'] ?? 0]})"
-        >-</button>
-      </template>
-      <PoolItem
-        type="health"
-        :amount="damage"
-        :class="{ 'health--can-interact': healthAction !== -1 }"
-        @choose="$emit('choose', healthAction)"
-      />
-      <template v-if="debug.active">
-        <button
-          class="plus-button"
-          @click.exact="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 1, 0]})"
-          @click.shift="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 5, 0]})"
-        >+</button>
-      </template>
-      <template v-if="debug.active">
-        <button
-          @click.exact="debug.send(game.id, {tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})"
-          @click.shift="debug.send(game.id, {tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, investigator.tokens['Horror'] ?? 0]})"
-        >-</button>
-      </template>
-      <PoolItem
-        type="sanity"
-        :amount="horror"
-        :class="{ 'sanity--can-interact': sanityAction !== -1 }"
-        @choose="$emit('choose', sanityAction)"
-      />
-      <template v-if="debug.active">
-        <button
-          class="plus-button"
-          @click.exact="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 0, 1]})"
-          @click.shift="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 0, 5]})"
-        >+</button>
-      </template>
-
-      <PoolItem v-if="doom > 0" type="doom" :amount="doom" />
-
-      <PoolItem
-        v-if="alarmLevel > 0"
-        type="doom"
-        :amount="alarmLevel"
-        tooltip="Alarm Level"
-      />
-
-      <PoolItem
-        v-if="leylines > 0"
-        type="resource"
-        :amount="leylines"
-        tooltip="Leyline"
-      />
-    </div>
+    <Resources
+      v-if="!isMobile"
+      :game="game"
+      :investigator="investigator"
+      :choices="choices"
+      @choose="$emit('choose', $event)"
+    />
 
     <Draggable v-if="doShowBonded">
       <template #handle><header><h2>{{$t('gameBar.bonded')}}</h2></header></template>
@@ -531,23 +412,11 @@ i.action {
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   position: relative;
-
-  @media (prefers-color-scheme: dark) {
-    color: #EEE;
-  }
+  color: #EEE;
 
   &:before {
     font-family: "Arkham";
     content: "\0049";
-  }
-}
-
-.resources {
-  display: flex;
-  justify-content: space-between;
-  button {
-    height: min-content;
-    align-self: center;
   }
 }
 
@@ -641,6 +510,32 @@ i.action {
   display: flex;
   flex-direction: column;
   width: calc(var(--card-width) * var(--card-sideways-aspect));
+  @media (max-width: 800px) and (orientation: portrait) {
+    width: 48%;
+    display: flex;
+    flex-direction: row;
+    gap: 1px;
+    :deep(.card) {
+      height: calc(var(--card-width) * 3);
+    }
+  }
+}
+
+.portrait-container{
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  overflow: visible;
+  :deep(span) {
+    height: 0.87rem;
+    overflow: visible;
+    z-index: 10;
+  }
+  :deep(.action) {
+    font-size: 0.35rem;
+  }
 }
 
 .portrait {
@@ -659,6 +554,12 @@ i.action {
 .stats {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
+  @media (max-width: 800px) and (orientation: portrait) {
+    display: flex;
+    flex-direction: column;
+    width:6.8vw;
+  }
+
 }
 
 .willpower {
@@ -725,6 +626,12 @@ i.action {
   animation: become-ghost 1s linear, ghost 3s linear 1s infinite;
 }
 
+.player-container{
+  @media (max-width: 800px) and (orientation: portrait) {
+    width: 100%;
+  }
+}
+
 .player-area {
   display: flex;
 }
@@ -738,10 +645,20 @@ i.action {
   @media (prefers-color-scheme: light) {
     color: #efefef;
   }
-}
-
-.plus-button {
-  margin-right: 10px;
+  @media (max-width: 800px) and (orientation: portrait) {
+    margin-left: 0;
+    flex-direction: row;
+    gap: 8px;
+    height: calc(var(--pool-token-width)*1.2);
+    overflow: hidden;
+    :deep(button) {
+      width: calc(var(--pool-token-width) * 1.2);
+      font-size:small;
+    }
+    :deep(img) {
+      width: calc(var(--pool-token-width) * 1.2);
+    }
+  }
 }
 
 .skip-triggers-button {

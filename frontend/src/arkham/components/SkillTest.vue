@@ -450,10 +450,13 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
             <span class="text">Skill test automatically succeeds</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'RevealAnotherChaosToken'">
-            <span class="text">Reveal another chaos token</span>
+            <span class="text">Reveal another chaos token</span>SkillTest
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'CancelAnyChaosTokenAndDrawAnother'">
             <span class="text">Cancel matching chaos tokens and reveal another</span>
+          </template>
+          <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'RevealChaosTokensBeforeCommittingCards'">
+            <span class="text">Reveal chaos tokens before committing cards</span>
           </template>
         </div>
       </div>

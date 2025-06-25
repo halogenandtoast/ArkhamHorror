@@ -1,19 +1,12 @@
-module Arkham.Enemy.Cards.Heretic_G (
-  heretic_G,
-  Heretic_G (..),
-)
-where
+module Arkham.Enemy.Cards.Heretic_G (heretic_G) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Scenarios.TheWagesOfSin.Helpers
 import Arkham.Story.Cards qualified as Story
 
 newtype Heretic_G = Heretic_G EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 heretic_G :: EnemyCard Heretic_G

@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.PushedIntoTheBeyond (pushedIntoTheBeyond, pushedIntoTheBeyondEffect) where
+module Arkham.Treachery.Cards.PushedIntoTheBeyond (pushedIntoTheBeyond, pushedIntoTheBeyondEffect, PushedIntoTheBeyond (..)) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card

@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.FirstNationalGrocery (firstNationalGrocery, FirstNationalGrocery (..)) where
+module Arkham.Location.Cards.FirstNationalGrocery (firstNationalGrocery) where
 
 import Arkham.Ability
 import Arkham.Capability
@@ -16,11 +16,11 @@ firstNationalGrocery = location FirstNationalGrocery Cards.firstNationalGrocery 
 
 instance HasAbilities FirstNationalGrocery where
   getAbilities (FirstNationalGrocery a) =
-    extendRevealed1 a $ restricted a 1 (Here <> can.search.deck You) actionAbility
+    extendRevealed1 a $ playerLimit PerGame $ restricted a 1 (Here <> can.search.deck You) actionAbility
 
 instance RunMessage FirstNationalGrocery where
   runMessage msg l@(FirstNationalGrocery attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      search iid (attrs.ability 1) iid [fromTopOfDeck 6] (basic #item) (DrawFound iid 1)
+      search iid (attrs.ability 1) iid [fromTopOfDeck 6] (basic #item) (AddFoundToHand iid 1)
       pure l
     _ -> FirstNationalGrocery <$> liftRunMessage msg attrs

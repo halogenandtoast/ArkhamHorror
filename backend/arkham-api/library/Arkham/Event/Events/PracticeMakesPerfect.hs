@@ -39,4 +39,7 @@ instance RunMessage PracticeMakesPerfect where
             skillTestModifiers sid attrs card [IfSuccessfulModifier ReturnToHandAfterTest, MustBeCommitted]
             push $ SkillTestCommitCard iid card
       pure e
+    SearchFound iid (isTarget attrs -> True) _ cards | null cards -> do
+      continue_ iid
+      pure e
     _ -> PracticeMakesPerfect <$> liftRunMessage msg attrs

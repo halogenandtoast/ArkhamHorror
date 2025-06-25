@@ -33,6 +33,9 @@ instance RunMessage AnotherDimension where
       selectEach (InvestigatorAt $ be lid) \iid -> do
         withBatchedTimings (Window.Moves iid (attrs.ability 1) (Just lid) attrs.id) do
           moveTo_ (attrs.ability 1) iid $ uncancellableMove $ Move.move (attrs.ability 1) iid attrs.id
-      selectEach (UnengagedEnemy <> at_ (be lid)) \eid -> push $ EnemyMove eid attrs.id
+      doStep 1 msg
+      pure l
+    DoStep 1 (UseCardAbility _ (isSource attrs -> True) 1 (locationLeavingPlay -> lid) _) -> do
+      selectEach (EnemyAt (be lid)) \eid -> push $ EnemyMove eid attrs.id
       pure l
     _ -> AnotherDimension <$> liftRunMessage msg attrs

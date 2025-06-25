@@ -33,6 +33,8 @@ instance RunMessage MaskOfUmordhoth where
       pure t
     Do (Revelation iid (isSource attrs -> True)) -> do
       enemies <- select $ FarthestEnemyFrom iid $ EnemyWithTrait Cultist
-      chooseOrRunOneM iid $ targets enemies $ attachTreachery attrs
+      chooseOrRunOneM iid $ targets enemies \enemy -> do
+        attachTreachery attrs enemy
+        placeDoom attrs enemy 1
       pure t
     _ -> MaskOfUmordhoth <$> liftRunMessage msg attrs

@@ -102,6 +102,9 @@ instance OneOf WindowMatcher where
 instance OneOf InvestigatorMatcher where
   oneOf = AnyInvestigator
 
+instance OneOf AgendaMatcher where
+  oneOf = AgendaMatchAny
+
 instance OneOf LocationMatcher where
   oneOf = LocationMatchAny
 

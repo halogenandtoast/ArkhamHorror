@@ -4,9 +4,11 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Calculation
 import Arkham.Card
 import Arkham.ClassSymbol
+import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Distance
+import Arkham.Enemy.Types (Enemy)
 import {-# SOURCE #-} Arkham.GameEnv (getCard, getDistance)
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Card (getModifiedCardCost)
@@ -17,6 +19,7 @@ import Arkham.Helpers.Log
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Helpers.Slot
+import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
@@ -153,3 +156,15 @@ calculate = go
     IfLocationExistsCalculation q c1 c2 -> do
       cond <- selectAny q
       calculate $ if cond then c1 else c2
+    IfEnemyExistsCalculation q c1 c2 -> do
+      cond <- selectAny q
+      calculate $ if cond then c1 else c2
+
+class (Entity a, AsId a) => CalculateFields a where
+  toFieldCalculation :: IdOf a ~ ident => ident -> Field a Int -> GameCalculation
+
+instance CalculateFields Enemy where
+  toFieldCalculation = EnemyFieldCalculation
+
+sumFieldsOf :: (IdOf a ~ ident, CalculateFields a) => ident -> [Field a Int] -> GameCalculation
+sumFieldsOf eid flds = SumCalculation $ map (toFieldCalculation eid) flds

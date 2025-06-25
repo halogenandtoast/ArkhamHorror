@@ -14,6 +14,7 @@
 
     "skippingPrompt": "덱 향상하기를 건너뛰시겠습니까?",
     
+    "unspendableXp": "사용하지 않은 경험치",
     "xp": "총 경험치 {total}점",
     "victoryDisplay": "승점 더미"
 

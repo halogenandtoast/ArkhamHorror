@@ -684,7 +684,11 @@ section {
   display: flex;
   flex-direction: column;
   gap: 10px;
-
+  @media (max-width: 768px) {
+    max-width: 100%;
+    font-size: 1.2em;
+    text-justify: inter-character;
+  }
   &:has(.resolution) {
     background: #BAA898;
   }
@@ -1117,6 +1121,12 @@ h2 {
       border-image-repeat: no-repeat;
       border-image-width: 50px;
       content: "";
+    }
+    @media (max-width: 800px) and (orientation: portrait)  {
+      padding: 10px;
+      &::before {
+        border-image-width: 20px;
+      }
     }
   }
 }

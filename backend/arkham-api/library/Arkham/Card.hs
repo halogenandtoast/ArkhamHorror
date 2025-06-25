@@ -378,6 +378,9 @@ instance HasField "actions" Card [Action] where
 instance HasField "skills" Card [SkillIcon] where
   getField = cdSkills . toCardDef
 
+instance HasField "icons" Card [SkillIcon] where
+  getField = cdSkills . toCardDef
+
 instance HasField "cost" Card (Maybe CardCost) where
   getField = cdCost . toCardDef
 

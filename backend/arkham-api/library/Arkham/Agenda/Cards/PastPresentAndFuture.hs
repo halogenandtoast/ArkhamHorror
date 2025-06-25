@@ -6,7 +6,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Query (getLead)
-import Arkham.Helpers.Log (getRecordCount)
+import Arkham.Helpers.Log (getRecordSet)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 
@@ -31,11 +31,11 @@ instance RunMessage PastPresentAndFuture where
       lead <- getLead
       discardUntilFirst lead attrs Deck.EncounterDeck (basic #location)
 
-      sacrificedToYogSothoth <- getRecordCount SacrificedToYogSothoth
-      when (sacrificedToYogSothoth > 0) do
+      sacrificedToYogSothoth <- getRecordSet SacrificedToYogSothoth
+      unless (null sacrificedToYogSothoth) do
         eachInvestigator \iid -> do
           sid <- getRandom
-          beginSkillTest sid iid attrs iid #willpower (recordedCount SacrificedToYogSothoth)
+          beginSkillTest sid iid attrs iid #willpower (Fixed $ length sacrificedToYogSothoth)
       advanceAgendaDeck attrs
       pure a
     RequestedEncounterCard (isSource attrs -> True) _ (Just card) -> do

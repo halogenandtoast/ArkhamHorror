@@ -38,7 +38,7 @@ instance HasAbilities DianaStanley where
     [ playerLimit PerPhase
         $ restricted a 1 (Self <> fewerThan5CardBeneath)
         $ freeReaction
-        $ CancelledOrIgnoredCardOrGameEffect (SourceOwnedBy You <> NotSource #investigator)
+        $ CancelledOrIgnoredCardOrGameEffect (SourceOwnedBy You <> NotSource #investigator) Nothing
     ]
    where
     fewerThan5CardBeneath = if length a.cardsUnderneath < 5 then NoRestriction else Never
@@ -50,7 +50,7 @@ instance HasChaosTokenValue DianaStanley where
 
 getCancelSource :: [Window] -> Source
 getCancelSource [] = error "No window to cancel"
-getCancelSource ((windowType -> Window.CancelledOrIgnoredCardOrGameEffect source) : _) = source
+getCancelSource ((windowType -> Window.CancelledOrIgnoredCardOrGameEffect source _) : _) = source
 getCancelSource (_ : rest) = getCancelSource rest
 
 instance RunMessage DianaStanley where

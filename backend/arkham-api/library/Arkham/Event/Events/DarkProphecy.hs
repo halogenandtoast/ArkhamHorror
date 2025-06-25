@@ -25,7 +25,8 @@ instance RunMessage DarkProphecy where
     InvestigatorPlayEvent iid eid _ [Window Timing.When (Window.WouldRevealChaosToken drawSource _) _] _
       | eid == toId attrs -> do
           ignoreWindow <-
-            checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
+            checkWindows
+              [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs) Nothing)]
           pushAll
             [ ReplaceCurrentDraw drawSource iid
                 $ ChooseMatch

@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Event.Events.TheRavenQuill (theRavenQuill) where
 
 import Arkham.Ability
@@ -31,34 +33,33 @@ instance HasModifiersFor TheRavenQuill where
         abilities <- select (AbilityOnAsset $ AssetWithId aid)
         modifyEachMap a (map (AbilityTarget a.controller . abilityToRef) abilities) \case
           AbilityTarget _ ref -> case find ((== ref) . abilityToRef) abilities of
-            Just  ab -> guardCustomization a LivingQuill (ActionDoesNotCauseAttacksOfOpportunity <$> ab.actions)
+            Just ab -> guardCustomization a LivingQuill (ActionDoesNotCauseAttacksOfOpportunity <$> ab.actions)
             _ -> []
           _ -> error "invalid"
         maybeModified_ a a.controller do
           guard $ a `hasCustomization` MysticVane
           source <- MaybeT getSkillTestSource
-          guard $ isSource aid source
+          guard $ Just aid == source.asset
           guardM $ fmap (a.controller ==) (MaybeT getSkillTestInvestigator)
           pure [AnySkillValue 2]
       _ -> pure mempty
 
 instance HasAbilities TheRavenQuill where
   getAbilities (TheRavenQuill a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ freeReaction (oneOf [GameEnds #when, InvestigatorResigned #when You])
+    [ restricted a 1 ControlsThis $ freeReaction (oneOf [GameEnds #when, InvestigatorResigned #when You])
     ]
-      <> [ controlledAbility
+      <> [ controlled
              a
              2
              ( exists
                  $ AssetControlledBy You
-                 <> oneOf (AssetWithUses <$> [Charge, Secret])
+                 <> mapOneOf AssetWithUses [Charge, Secret]
                  <> not_ (assetWithAttachedEvent a.id)
              )
              $ FastAbility (exhaust a)
          | a `hasCustomization` EnergySap
          ]
-      <> [ controlledAbility
+      <> [ controlled
              a
              3
              (exists $ AssetControlledBy You <> #exhausted <> not_ (assetWithAttachedEvent a.id))

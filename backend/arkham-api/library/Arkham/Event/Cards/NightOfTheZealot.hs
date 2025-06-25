@@ -229,6 +229,8 @@ cunningDistraction =
     , cdCardTraits = setFromList [Tactic]
     , cdActions = [#evade]
     , cdAlternateCardCodes = ["01578"]
+    , cdOverrideActionPlayableIfCriteriaMet = True
+    , cdCriteria = Just $ exists $ EnemyCanBeEvadedBy ThisCard
     }
 
 lookWhatIFound :: CardDef

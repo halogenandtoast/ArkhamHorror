@@ -4,6 +4,7 @@ import { fetchCards } from '@/arkham/api';
 import { imgsrc, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
 import { useRouter, useRoute, LocationQueryValue } from 'vue-router';
 import * as Arkham from '@/arkham/types/CardDef';
+import CardImage from '@/arkham/components/CardImage.vue';
 
 import sets from '@/arkham/data/sets.json'
 import cycles from '@/arkham/data/cycles.json'
@@ -163,6 +164,8 @@ const setCountText = (set: CardSet) => {
 }
 
 const image = (card: Arkham.CardDef) => imgsrc(`cards/${card.art}.avif`)
+
+const backImage = (card: Arkham.CardDef) => imgsrc(`cards/${card.otherSide.replace(/^c/, '')}.avif`)
 
 const cards = computed(() => {
   if (!allCards.value) return []
@@ -428,7 +431,7 @@ const toggleIncludeEncounter = () => {
       </header>
       <div class="cards" v-if="view == View.Image">
         <a v-for="card in cards" :key="card.art" target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">
-          <img class="card" :src="image(card)" />
+          <CardImage :card="card" />
         </a>
       </div>
       <table class="box" v-if="view == View.List">
@@ -545,6 +548,7 @@ i {
 }
 
 header {
+  z-index: 1;
   position: sticky;
   position: -webkit-sticky;
   width: 100%;

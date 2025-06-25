@@ -9,4 +9,4 @@ import Arkham.Prelude
 
 instance FromJSON Asset
 
-createAsset :: IsCard a => a -> AssetId -> Asset
+createAsset :: (HasCallStack, IsCard a) => a -> AssetId -> Asset

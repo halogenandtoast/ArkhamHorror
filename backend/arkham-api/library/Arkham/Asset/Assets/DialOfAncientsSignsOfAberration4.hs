@@ -23,7 +23,7 @@ instance HasAbilities DialOfAncientsSignsOfAberration4 where
     [ restricted a 1 ControlsThis fightAction_
     , restricted a 2 ControlsThis evadeAction_
     , limitedAbility NoLimit
-        $ restricted a 3 ControlsThis
+        $ controlled a 3 (DuringSkillTest $ SkillTestOnAsset (be a))
         $ ConstantReaction
           "Spend 1 charge to cancel that token, return it to the bag, and reveal a new one"
           (RevealChaosToken #after Anyone $ CancelableChaosToken AnyChaosToken)

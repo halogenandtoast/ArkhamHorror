@@ -892,6 +892,11 @@ allLocations =
     , SomeLocationCard returnToZocalo
     , SomeLocationCard returnToXochimilco
     , SomeLocationCard returnToCoyoacan
+    , --- Return to K'n-Yan
+      SomeLocationCard ruinsOfKnYan
+    , SomeLocationCard subterraneanSwamp
+    , SomeLocationCard chthonianDepths
+    , SomeLocationCard treacherousDescent
     , --- Return to Rainforest
       SomeLocationCard riversideTemple
     , SomeLocationCard waterfall
@@ -932,4 +937,13 @@ allLocations =
     , SomeLocationCard room245
     , SomeLocationCard officeMurderAtTheExcelsiorHotel
     , SomeLocationCard basement
+    , -- The Midwinter Gala
+      SomeLocationCard lobbyTheMidwinterGala
+    , SomeLocationCard lanternChamber
+    , SomeLocationCard artGalleryTheMidwinterGala
+    , SomeLocationCard ballroomTheMidwinterGala
+    , SomeLocationCard barroom
+    , SomeLocationCard bedroomTheMidwinterGala
+    , SomeLocationCard libraryTheMidwinterGala
+    , SomeLocationCard parlorTheMidwinterGala
     ]

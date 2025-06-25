@@ -313,4 +313,8 @@ allAgendas =
     , SomeAgendaCard theTrueCulpritV8
     , SomeAgendaCard theTrueCulpritV9
     , SomeAgendaCard theTrueCulpritV10
+    , -- The Midwinter Gala
+      SomeAgendaCard maskedRevelers
+    , SomeAgendaCard unexpectedGuests
+    , SomeAgendaCard aKillerParty
     ]

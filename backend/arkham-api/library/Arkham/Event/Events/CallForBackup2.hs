@@ -24,8 +24,8 @@ control ks k =
     then selectAny (ControlledBy You <> basic (CardWithClass k))
     else pure False
 
-healableAsset :: Sourceable source => source -> DamageType -> LocationMatcher -> AssetMatcher
-healableAsset (toSource -> source) hType loc = HealableAsset source hType $ at_ loc <> AssetControlledBy (affectsOthers Anyone)
+healableAsset :: Sourceable source => source -> DamageType -> AssetMatcher
+healableAsset (toSource -> source) hType = HealableAsset source hType $ AssetControlledBy (affectsOthers Anyone)
 
 instance RunMessage CallForBackup2 where
   runMessage msg e@(CallForBackup2 attrs) = runQueueT $ case msg of
@@ -59,7 +59,7 @@ instance RunMessage CallForBackup2 where
           [ control chosen Mystic
           , orM
               [ selectAny (HealableInvestigator (toSource attrs) #horror $ colocatedWith iid)
-              , selectAny (healableAsset attrs #horror $ locationWithInvestigator iid)
+              , selectAny (healableAsset attrs #horror)
               ]
           ]
 
@@ -67,8 +67,8 @@ instance RunMessage CallForBackup2 where
         andM
           [ control chosen Survivor
           , orM
-              [ selectAny (HealableInvestigator (toSource attrs) #damage $ colocatedWith iid)
-              , selectAny (healableAsset attrs #damage $ locationWithInvestigator iid)
+              [ selectAny (HealableInvestigator (toSource attrs) #damage $ affectsOthers Anyone)
+              , selectAny (healableAsset attrs #damage)
               ]
           ]
 
@@ -111,16 +111,16 @@ instance RunMessage CallForBackup2 where
       let chosen = toResultDefault [] attrs.meta
       pure $ overAttrs (setMeta (Seeker : chosen)) e
     DoStep 4 (PlayThisEvent iid (is attrs -> True)) -> do
-      investigators <- select (HealableInvestigator (toSource attrs) #horror $ colocatedWith iid)
-      assets <- select (healableAsset attrs #horror $ locationWithInvestigator iid)
+      investigators <- select (HealableInvestigator (toSource attrs) #horror $ affectsOthers Anyone)
+      assets <- select (healableAsset attrs #horror)
       chooseOneM iid do
         for_ investigators \iid' -> horrorLabeled iid' $ healHorror iid' attrs 1
         for_ assets \aid -> assetHorrorLabeled aid $ healHorror aid attrs 1
       let chosen = toResultDefault [] attrs.meta
       pure $ overAttrs (setMeta (Mystic : chosen)) e
     DoStep 5 (PlayThisEvent iid (is attrs -> True)) -> do
-      investigators <- select (HealableInvestigator (toSource attrs) #damage $ colocatedWith iid)
-      assets <- select (healableAsset attrs #damage $ locationWithInvestigator iid)
+      investigators <- select (HealableInvestigator (toSource attrs) #damage $ affectsOthers Anyone)
+      assets <- select (healableAsset attrs #damage)
       chooseOneM iid do
         for_ investigators \iid' -> damageLabeled iid' $ healDamage iid' attrs 1
         for_ assets \aid -> assetDamageLabeled aid $ healDamage aid attrs 1

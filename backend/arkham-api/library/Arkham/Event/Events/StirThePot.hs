@@ -3,11 +3,12 @@ module Arkham.Event.Events.StirThePot (stirThePot) where
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Calculation
 import Arkham.Helpers.Location (getAccessibleLocations)
-import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.SkillTest.Lifted
+import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Movement
+import Arkham.Message.Lifted.Move
 
 newtype StirThePot = StirThePot EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -23,25 +24,24 @@ instance RunMessage StirThePot where
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
       sid <- getRandom
-      parley sid iid attrs eid #intellect
-        $ SumCalculation
-          [EnemyFieldCalculation eid EnemyHealthDamage, EnemyFieldCalculation eid EnemySanityDamage]
+      parley sid iid attrs eid #intellect $ sumFieldsOf eid [EnemyHealthDamage, EnemySanityDamage]
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
-      chooseOrRunOneAtATime
-        iid
-        [targetLabel enemy [Msg.nonAttackEnemyDamage (Just iid) attrs 2 enemy] | enemy <- enemies]
+      chooseOrRunOneAtATimeM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) attrs 2
       when (n >= 2) $ doStep 1 msg
       pure e
     DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do
       engaged <- select $ enemyEngagedWith iid
-      canDisengage <- iid <=~> InvestigatorCanDisengage
+      chooseOrRunOneM iid $ withI18n do
+        labeled' "doNotDisengage" nothing
+        unless (null engaged) do
+          whenMatch iid InvestigatorCanDisengage $ labeled' "disengageAll" $ for_ engaged (disengageEnemy iid)
+
       locations <- getAccessibleLocations iid attrs
-
-      pushAll [DisengageEnemy iid eid | canDisengage, eid <- engaged]
-
       when (notNull locations) do
-        chooseOne iid $ Label "Do not move" [] : targetLabels locations (only . Move . move attrs iid)
+        chooseOrRunOneM iid $ withI18n do
+          labeled' "doNotMove" nothing
+          targets locations (moveTo attrs iid)
       pure e
     _ -> StirThePot <$> liftRunMessage msg attrs

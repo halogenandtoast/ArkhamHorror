@@ -16,7 +16,11 @@ instance RunMessage TrialByFire3 where
   runMessage msg e@(TrialByFire3 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == attrs.id -> do
       chooseOneM iid do
-        for_ (eachWithRest allSkills) \(skill, rest) -> do
-          skillLabeled skill $ turnModifiers iid attrs iid $ BaseSkillOf skill 7 : map (`BaseSkillOf` 5) rest
+        labeled "Set the base value of each of your skills to 5" do
+          turnModifiers iid attrs iid $ map (`BaseSkillOf` 5) allSkills
+        labeled "Set the base value of one of your skills to 7" do
+          chooseOneM iid do
+            for_ allSkills \skill -> do
+              skillLabeled skill $ turnModifier iid attrs iid $ BaseSkillOf skill 7
       pure e
     _ -> TrialByFire3 <$> liftRunMessage msg attrs

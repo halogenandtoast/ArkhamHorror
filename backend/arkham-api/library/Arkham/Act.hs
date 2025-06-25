@@ -1,16 +1,12 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Act (
-  Act (..),
-  lookupAct,
-) where
-
-import Arkham.Prelude hiding (fold)
+module Arkham.Act (Act (..), lookupAct) where
 
 import Arkham.Act.Acts
 import Arkham.Act.Types
 import Arkham.Card
 import Arkham.Id
+import Arkham.Prelude hiding (fold)
 import Control.Monad.Fail (fail)
 
 data MissingAct = MissingAct CardCode
@@ -55,7 +51,7 @@ allActs =
       SomeActCard afterHours
     , SomeActCard ricesWhereabouts
     , SomeActCard campusSafety
-    , -- The House Always WIns
+    , -- The House Always Wins
       SomeActCard beginnersLuck
     , SomeActCard skinGame
     , SomeActCard allIn
@@ -343,6 +339,8 @@ allActs =
     , SomeActCard seekingTroubleLoadingDocks
     , SomeActCard discoverTheTruth
     , SomeActCard impossiblePursuit
+    , --- Return to Heart of the Elders
+      SomeActCard aFamiliarPattern
     , -- Curse of the Rougarou
       SomeActCard findingLadyEsprit
     , SomeActCard huntingTheRougarou
@@ -353,4 +351,7 @@ allActs =
     , -- Murder at the Excelsior Hotel
       SomeActCard whatHappened
     , SomeActCard followingLeads
+    , -- The Midwinter Gala
+      SomeActCard meetAndGreet
+    , SomeActCard findingTheJewel
     ]

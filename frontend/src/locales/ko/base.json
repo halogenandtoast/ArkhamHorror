@@ -1,5 +1,5 @@
 {
-  "about": "About",
+  "about": "정보",
   "activeGames": "활성화된 게임",
   "cancel": "취소",
   "cards": "카드",
@@ -34,6 +34,10 @@
   "Yes": "예",
   "No": "아니오",
 
+
+  "Parley": "협상",
+  "Resign": "후퇴",
+  "Investigate": "조사",
   "Evade": "회피",
   "Fight": "전투",
   "Engage": "교전",
@@ -52,6 +56,7 @@
     "clues": "단서",
     "resources": "자원",
     "physical": "육체적",
-    "mental": "정신적"
+    "mental": "정신적",
+    "supplyPoints": "획득할 보급 점수"
   }
 }

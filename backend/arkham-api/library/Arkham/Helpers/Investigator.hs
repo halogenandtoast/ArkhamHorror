@@ -127,11 +127,13 @@ baseSkillValueFor skill _maction iid = do
         SkillCombat -> InvestigatorBaseCombat
         SkillAgility -> InvestigatorBaseAgility
   baseValue <- field fld iid
-  pure $ foldr applyAfterModifier (foldr applyModifier baseValue modifiers) modifiers
+  inner <- foldrM applyModifier baseValue modifiers
+  pure $ foldr applyAfterModifier inner modifiers
  where
-  applyModifier (BaseSkillOf skillType m) _ | skillType == skill = m
-  applyModifier (BaseSkill m) _ = m
-  applyModifier _ n = n
+  applyModifier (BaseSkillOf skillType m) _ | skillType == skill = pure m
+  applyModifier (BaseSkillOfCalculated skillType calc) _ | skillType == skill = calculate calc
+  applyModifier (BaseSkill m) _ = pure m
+  applyModifier _ n = pure n
   applyAfterModifier (SetSkillValue skillType m) _ | skillType == skill = m
   applyAfterModifier _ n = n
 

@@ -24,13 +24,14 @@ allAgendaCards =
     $ map
       (toCardCode &&& id)
       [ aCreatureOfTheBayou
+      , agentsOfTheOuterGods
       , aHarshWindBlows
+      , aKillerParty
+      , allIsOne
       , aSinisterRealm
       , aTearInReality
       , aTearInRealityV2
       , aTrailOfTwists
-      , agentsOfTheOuterGods
-      , allIsOne
       , awakening
       , barricadedStreets
       , beckoningForPower
@@ -40,12 +41,12 @@ allAgendaCards =
       , bidingItsTime
       , breakingThrough
       , breakingThroughV2
-      , callOfMadness
       , callingForthTheOldOnes
+      , callOfMadness
       , celestialAlignment
       , chaosAtTheCarnevale
-      , chaosInTheCloverClub
       , chaosIncarnate
+      , chaosInTheCloverClub
       , cityOfBlood
       , cityOfTheGreatRace
       , coldWelcome
@@ -82,9 +83,9 @@ allAgendaCards =
       , hotPursuit
       , humanityFading
       , icyDepths
+      , inEveryShadow
       , intoTheWhite
       , intruders
-      , inEveryShadow
       , itAwaits
       , journeyAcrossTheDreamlands
       , journeyThroughTheGates
@@ -101,6 +102,7 @@ allAgendaCards =
       , madnessDrowns
       , manifestationsOfEvil
       , markedForSacrifice
+      , maskedRevelers
       , outOfTime
       , overTheThreshold
       , pastPresentAndFuture
@@ -122,8 +124,8 @@ allAgendaCards =
       , secretsOfTheSeaV1
       , secretsOfTheSeaV2
       , settingSun
-      , silentStirring
       , shadowsDeepen
+      , silentStirring
       , snappedThreads
       , somethingStirs
       , specialInvestigation
@@ -211,8 +213,9 @@ allAgendaCards =
       , timeIsRunningShort
       , torturousDescent
       , unchangingAsTheSea
-      , underTheSurface
       , undergroundMuscle
+      , underTheSurface
+      , unexpectedGuests
       , vengeance
       , vengeanceAwaits
       , whatLurksBelowV1
@@ -380,7 +383,7 @@ theTideRises :: CardDef
 theTideRises = agenda "03275" "The Tide Rises" 1 BlackStarsRise
 
 letTheStormRageTheFloodBelow :: CardDef
-letTheStormRageTheFloodBelow = agenda "03276a" "Let The Storm Rage" 2 BlackStarsRise
+letTheStormRageTheFloodBelow = (agenda "03276a" "Let The Storm Rage" 2 BlackStarsRise) {cdOtherSide = Just "03276ab"}
 
 letTheStormRageTheVortexAbove :: CardDef
 letTheStormRageTheVortexAbove = agenda "03276b" "Let The Storm Rage" 2 BlackStarsRise
@@ -392,7 +395,7 @@ theRitualBeginsBlackStarsRise :: CardDef
 theRitualBeginsBlackStarsRise = agenda "03278" "The Ritual Begins" 1 BlackStarsRise
 
 theEntityAboveTheFloodBelow :: CardDef
-theEntityAboveTheFloodBelow = agenda "03279a" "The Entity Above" 2 BlackStarsRise
+theEntityAboveTheFloodBelow = (agenda "03279a" "The Entity Above" 2 BlackStarsRise) {cdOtherSide = Just "03279ab"}
 
 theEntityAboveTheVortexAbove :: CardDef
 theEntityAboveTheVortexAbove = agenda "03279b" "The Entity Above" 2 BlackStarsRise
@@ -823,3 +826,12 @@ theTrueCulpritV9 = agenda "84051" "The True Culprit (v. IX)" 3 MurderAtTheExcels
 
 theTrueCulpritV10 :: CardDef
 theTrueCulpritV10 = agenda "84052" "The True Culprit (v. X)" 3 MurderAtTheExcelsiorHotel
+
+maskedRevelers :: CardDef
+maskedRevelers = agenda "71002" "Masked Revelers" 1 TheMidwinterGala
+
+unexpectedGuests :: CardDef
+unexpectedGuests = agenda "71003" "Unexpected Guests" 2 TheMidwinterGala
+
+aKillerParty :: CardDef
+aKillerParty = agenda "71004" "A Killer Party" 3 TheMidwinterGala

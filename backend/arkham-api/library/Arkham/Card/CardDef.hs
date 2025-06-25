@@ -217,6 +217,9 @@ instance HasField "keywords" CardDef (Set Keyword) where
 instance HasField "printedCost" CardDef Int where
   getField = maybe 0 toPrintedCost . cdCost
 
+instance HasField "icons" CardDef [SkillIcon] where
+  getField = cdSkills
+
 instance HasField "cost" CardDef (Maybe CardCost) where
   getField = cdCost
 
@@ -328,6 +331,9 @@ class GetCardDef m a where
 
 class HasCardDef a where
   toCardDef :: HasCallStack => a -> CardDef
+
+asDefs :: HasCardDef a => [a] -> [CardDef]
+asDefs = map toCardDef
 
 getEncounterSet :: HasCardDef a => a -> Maybe EncounterSet
 getEncounterSet = cdEncounterSet . toCardDef

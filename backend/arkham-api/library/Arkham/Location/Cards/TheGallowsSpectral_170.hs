@@ -1,8 +1,4 @@
-module Arkham.Location.Cards.TheGallowsSpectral_170 (
-  theGallowsSpectral_170,
-  TheGallowsSpectral_170 (..),
-)
-where
+module Arkham.Location.Cards.TheGallowsSpectral_170 (theGallowsSpectral_170) where
 
 import Arkham.Ability
 import Arkham.Card

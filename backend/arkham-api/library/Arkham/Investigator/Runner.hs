@@ -1774,7 +1774,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 ]
           let
             go = \case
-              DamageAssetsFirst -> do
+              DamageAssetsFirst amatcher -> do
+                healthDamageableAssets' <- select $ mapOneOf AssetWithId healthDamageableAssets <> amatcher
+                let
+                  targetCount =
+                    if null healthDamageableAssets'
+                      then 1 + length healthDamageableInvestigators
+                      else length healthDamageableAssets'
+                  applyAll = targetCount == 1
+                pure
+                  $ [damageInvestigator iid applyAll | null healthDamageableAssets']
+                  <> map (`damageInvestigator` applyAll) healthDamageableInvestigators
+                  <> map (`damageAsset` applyAll) healthDamageableAssets'
+              HorrorAssetsFirst _ -> do
                 let
                   targetCount =
                     if null healthDamageableAssets
@@ -1782,7 +1794,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                       else length healthDamageableAssets
                   applyAll = targetCount == 1
                 pure
-                  $ [damageInvestigator iid applyAll | null healthDamageableAssets]
+                  $ [damageInvestigator iid applyAll]
                   <> map (`damageInvestigator` applyAll) healthDamageableInvestigators
                   <> map (`damageAsset` applyAll) healthDamageableAssets
               DamageDirect -> pure [damageInvestigator iid True]
@@ -1861,7 +1873,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 ]
           let
             go = \case
-              DamageAssetsFirst -> do
+              DamageAssetsFirst _ -> do
                 let
                   targetCount =
                     if null sanityDamageableAssets
@@ -1869,8 +1881,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                       else length sanityDamageableAssets
                   applyAll = targetCount == 1
 
-                pure $ [damageInvestigator iid applyAll | null sanityDamageableAssets]
+                pure $ [damageInvestigator iid applyAll]
                   <> map (`damageAsset` applyAll) sanityDamageableAssets
+                  <> map (`damageInvestigator` applyAll) sanityDamageableInvestigators
+              HorrorAssetsFirst amatcher -> do
+                sanityDamageableAssets' <- select $ mapOneOf AssetWithId sanityDamageableAssets <> amatcher
+                let
+                  targetCount =
+                    if null sanityDamageableAssets'
+                      then 1 + length sanityDamageableInvestigators
+                      else length sanityDamageableAssets'
+                  applyAll = targetCount == 1
+
+                pure $ [damageInvestigator iid applyAll | null sanityDamageableAssets']
+                  <> map (`damageAsset` applyAll) sanityDamageableAssets'
                   <> map (`damageInvestigator` applyAll) sanityDamageableInvestigators
               DamageDirect -> pure [damageInvestigator iid True]
               DamageFromHastur -> go DamageAny
@@ -2824,7 +2848,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           $ chooseOne player
           $ [ targetLabel aid' $ map (toDiscardBy iid GameSource) assets <> [RefillSlots iid xs]
             | aid' <- filter (`notElem` xs) failedAssetIds
-            , let assets = assetsInSlotsOf aid'
+            , let assets = let ks = assetsInSlotsOf aid' in if null ks then [aid'] else ks
             ]
         pure a
   ChooseEndTurn iid | iid == investigatorId -> pure a
@@ -3248,6 +3272,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       then do
         mods <- getModifiers a
         let additional = sum [x | AdditionalResources x <- mods]
+        when (n + additional > 0) do
+          afterWindowMsg <- checkWindows [mkAfter (Window.GainsResources iid source (n + additional))]
+          push afterWindowMsg
         liftRunMessage (PlaceTokens source (toTarget a) #resource (n + additional)) a
       else pure a
   PlaceTokens source (isTarget a -> True) token n -> do
@@ -3341,16 +3368,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a'
   ChaosTokenCanceled iid source token | iid == investigatorId -> do
     whenWindow <- checkWindows [mkWhen (Window.CancelChaosToken iid token)]
-    whenWindow2 <- checkWindows [mkWhen (Window.CancelledOrIgnoredCardOrGameEffect source)]
+    whenWindow2 <- checkWindows [mkWhen (Window.CancelledOrIgnoredCardOrGameEffect source Nothing)]
     afterWindow <- checkWindows [mkAfter (Window.CancelChaosToken iid token)]
-    afterWindow2 <- checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect source)]
+    afterWindow2 <- checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect source Nothing)]
     pushAll [whenWindow, whenWindow2, afterWindow2, afterWindow]
     pure a
   ChaosTokenIgnored iid source token | iid == toId a -> do
     whenWindow <- checkWindows [mkWhen (Window.IgnoreChaosToken iid token)]
-    whenWindow2 <- checkWindows [mkWhen (Window.CancelledOrIgnoredCardOrGameEffect source)]
+    whenWindow2 <- checkWindows [mkWhen (Window.CancelledOrIgnoredCardOrGameEffect source Nothing)]
     afterWindow <- checkWindows [mkAfter (Window.IgnoreChaosToken iid token)]
-    afterWindow2 <- checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect source)]
+    afterWindow2 <- checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect source Nothing)]
     pushAll [whenWindow, whenWindow2, afterWindow2, afterWindow]
     pure a
   BeforeSkillTest skillTestId -> do
@@ -3995,6 +4022,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 $ if null choices
                   then chooseOne player [Label "No cards found" []]
                   else chooseN player (min n (length choices)) choices
+            AddFoundToHand who n -> do
+              let
+                choices =
+                  [ targetLabel
+                      card
+                      [AddFocusedToHand iid (toTarget who) zone (toCardId card)]
+                  | (zone, cards) <- mapToList targetCards
+                  , card <- cards
+                  ]
+              push
+                $ if null choices
+                  then chooseOne player [Label "No cards found" []]
+                  else chooseN player (min n (length choices)) choices
             DrawFound who n -> do
               let
                 choices =
@@ -4205,7 +4245,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pushM $ checkWindows $ mkAfter (Window.PassSkillTest mAction source iid n) : windows
     pure a
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
-    mTurnInvestigator <- maybeToList <$> selectOne TurnInvestigator
+    modifiers <- getModifiers iid
+    mTurnInvestigator <- if AsIfTurn iid `elem` modifiers
+      then pure [iid]
+      else maybeToList <$> selectOne TurnInvestigator
     let
       windows =
         map (mkWhen . Window.DuringTurn) mTurnInvestigator
@@ -4226,7 +4269,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           <> [chooseOne player (toUseAbilities normal) | notNull normal]
           <> [PlayerWindow iid additionalActions isAdditional]
       else do
-        modifiers <- getModifiers (InvestigatorTarget iid)
         canAffordTakeResources <- getCanAfford a [#resource]
         canAffordDrawCards <- getCanAfford a [#draw]
         additionalActions' <- getAdditionalActions a

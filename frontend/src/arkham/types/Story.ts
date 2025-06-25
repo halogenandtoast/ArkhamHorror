@@ -3,6 +3,7 @@ import { v2Optional } from '@/arkham/parser';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import { Target, targetDecoder } from '@/arkham/types/Target';
 import { ChaosToken, TokenFace, tokenFaceDecoder } from '@/arkham/types/ChaosToken';
+import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 
 export type InfestationToken = {
   infestationTokenId: string
@@ -38,6 +39,7 @@ export type Story = {
   otherSide: Target | null
   flipped: boolean
   meta?: StoryMeta
+  tokens: Tokens;
 }
 
 export const storyDecoder = JsonDecoder.object<Story>({
@@ -46,5 +48,6 @@ export const storyDecoder = JsonDecoder.object<Story>({
   placement: placementDecoder,
   otherSide: JsonDecoder.nullable(targetDecoder),
   flipped: JsonDecoder.boolean(),
-  meta: v2Optional(storyMetaDecoder)
+  meta: v2Optional(storyMetaDecoder),
+  tokens: tokensDecoder,
 }, 'Story');

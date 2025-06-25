@@ -136,6 +136,13 @@ h3 {
   font-size: 1.3em;
 }
 
+span {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  hyphens:auto;
+}
+
 .breakdown-header {
   display: flex;
   gap: 10px;
@@ -145,7 +152,6 @@ h3 {
     margin-left: auto;
     min-width: 1.5em;
     padding: 0 5px;
-    height: 1.5em;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -170,7 +176,6 @@ h3 {
     margin-left: auto;
     min-width: 1.5em;
     padding: 0 5px;
-    height: 1.5em;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -191,7 +196,6 @@ h3 {
   .amount {
     margin-left: auto;
     min-width: 1.5em;
-    padding: 0 5px;
     height: 1.5em;
     display: flex;
     justify-content: center;
@@ -215,6 +219,9 @@ h3 {
   section {
     flex: 1;
     height: fit-content;
+  }
+  @media (max-width: 800px) and (orientation: portrait) {
+      flex-direction: column;
   }
 }
 </style>

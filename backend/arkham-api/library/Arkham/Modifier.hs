@@ -84,11 +84,13 @@ data ModifierType
   | AsIfEngagedWith EnemyId
   | AsIfInHand Card
   | AsIfUnderControlOf InvestigatorId
+  | AsIfTurn InvestigatorId
   | AttackDealsEitherDamageOrHorror
   | AttacksCannotBeCancelled
   | Barricades [LocationId]
   | BaseSkill Int
   | BaseSkillOf {skillType :: SkillType, value :: Int}
+  | BaseSkillOfCalculated {skillType :: SkillType, calculation :: GameCalculation}
   | BaseStartingResources Int
   | BecomesFast WindowMatcher
   | Blank
@@ -196,6 +198,7 @@ data ModifierType
   | CannotPerformSkillTest
   | CannotPlaceClues
   | CannotPlaceDoomOnThis
+  | CannotRemoveDoomOnThis
   | CannotPlay CardMatcher
   | CannotPutIntoPlay CardMatcher
   | CannotReady

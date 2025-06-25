@@ -8,6 +8,7 @@ type SkillIcon = { contents: string, tag: "SkillIcon" } | { tag: "WildIcon" } | 
 
 export type CardDef = {
   cardCode: string;
+  doubleSided: boolean;
   classSymbols: string[];
   cardType: string;
   art: string;
@@ -16,6 +17,7 @@ export type CardDef = {
   cardTraits: string[];
   skills: SkillIcon[];
   cost: CardCost | null;
+  otherSide: string | null;
 }
 
 const cardCostDecoder = JsonDecoder.oneOf<CardCost>([
@@ -35,8 +37,10 @@ export const cardDefDecoder = JsonDecoder.object<CardDef>(
   {
     art: JsonDecoder.string(),
     level: JsonDecoder.nullable(JsonDecoder.number()),
+    otherSide: JsonDecoder.nullable(JsonDecoder.string()),
     cardType: JsonDecoder.string(),
     cardCode: JsonDecoder.string(),
+    doubleSided: JsonDecoder.boolean(),
     classSymbols: JsonDecoder.array<string>(JsonDecoder.string(), 'string[]'),
     cardTraits: JsonDecoder.array<string>(JsonDecoder.string(), 'string[]'),
     skills: JsonDecoder.array<SkillIcon>(skillIconDecoder, 'SkillIcon[]'),

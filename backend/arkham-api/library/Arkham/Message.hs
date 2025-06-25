@@ -275,10 +275,10 @@ pattern RemoveResources :: Source -> Target -> Int -> Message
 pattern RemoveResources source target n = RemoveTokens source target Token.Resource n
 
 pattern CancelNext :: Source -> MessageType -> Message
-pattern CancelNext source msgType = CancelEachNext source [msgType]
+pattern CancelNext source msgType = CancelEachNext Nothing source [msgType]
 
-pattern CancelRevelation :: Source -> Message
-pattern CancelRevelation source = CancelEachNext source [RevelationMessage]
+pattern CancelRevelation :: CardId -> Source -> Message
+pattern CancelRevelation cid source = CancelEachNext (Just cid) source [RevelationMessage]
 
 pattern PlayThisEvent :: InvestigatorId -> EventId -> Message
 pattern PlayThisEvent iid eid <- InvestigatorPlayEvent iid eid _ _ _
@@ -378,6 +378,17 @@ data ShuffleIn = ShuffleIn | DoNotShuffleIn
 data GroupKey = HunterGroup
   deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
+
+data AutoStatus = Auto | Manual | NoAutoStatus
+  deriving stock (Show, Eq, Generic, Data)
+  deriving anyclass (ToJSON, FromJSON)
+
+instance Semigroup AutoStatus where
+  NoAutoStatus <> x = x
+  x <> NoAutoStatus = x
+  Auto <> _ = Auto
+  _ <> Auto = Auto
+  Manual <> Manual = Manual
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
@@ -538,7 +549,7 @@ data Message
   | Blanked Message
   | HandleOption CampaignOption
   | CampaignStep CampaignStep
-  | CancelEachNext Source [MessageType]
+  | CancelEachNext (Maybe CardId) Source [MessageType]
   | CancelSkillEffects -- used by scenarios to cancel skill cards
   | CancelHorror InvestigatorId Int
   | CancelDamage InvestigatorId Int
@@ -1112,6 +1123,7 @@ data Message
   | SetCampaignMeta Value
   | DoStep Int Message
   | ForInvestigator InvestigatorId Message
+  | ForTrait Trait Message
   | ForTarget Target Message
   | ForTargets [Target] Message
   | ForPlayer PlayerId Message
@@ -1151,7 +1163,7 @@ data Message
   | DoneChoosingDecks
   | SetPartnerStatus CardCode PartnerStatus
   | HandleGroupTarget GroupKey Target [Message]
-  | HandleGroupTargets GroupKey (Map Target [Message])
+  | HandleGroupTargets AutoStatus GroupKey (Map Target [Message]) 
   | -- Commit
     Do Message
   | DoBatch BatchId Message
@@ -1166,6 +1178,16 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "CancelEachNext" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (a, b, c) -> pure $ CancelEachNext a b c
+          Left (b, c) -> pure $ CancelEachNext Nothing b c
+      "HandleGroupTargets" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (a, b, c) -> pure $ HandleGroupTargets a b c
+          Left (b, c) -> pure $ HandleGroupTargets Manual b c
       "RefillSlots" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

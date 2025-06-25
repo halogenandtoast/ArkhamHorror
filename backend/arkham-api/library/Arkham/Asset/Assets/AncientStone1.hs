@@ -6,7 +6,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
 import Arkham.Discover
-import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
@@ -38,11 +37,10 @@ instance RunMessage AncientStone1 where
     Successful (Action.Investigate, LocationTarget lid) iid _ target _ | attrs `is` target -> do
       amount <- min 2 <$> field LocationClues lid
       difficulty <- fromJustNote "missing" <$> getSkillTestDifficulty
-      shouldRecord <- not <$> getHasRecord YouHaveIdentifiedTheStone
       pushAll
         $ [ Msg.DiscoverClues iid $ viaInvestigate $ discover lid (toAbilitySource attrs 1) amount
           , toDiscardBy iid (toAbilitySource attrs 1) attrs
           ]
-        <> [RecordCount YouHaveIdentifiedTheStone difficulty | shouldRecord]
+        <> [RecordCount YouHaveIdentifiedTheStone difficulty]
       pure a
     _ -> AncientStone1 <$> runMessage msg attrs

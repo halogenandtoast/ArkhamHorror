@@ -9,6 +9,7 @@ import {
   ref,
   ComputedRef,
   reactive,
+  provide
 } from 'vue';
 import { type Game } from '@/arkham/types/Game';
 import { type Scenario } from '@/arkham/types/Scenario';
@@ -45,6 +46,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import { useDebug } from '@/arkham/debug'
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+const { isMobile } = IsMobile();
 const { t } = useI18n();
 
 // types
@@ -86,6 +88,8 @@ const previousRotation = ref(0)
 const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 
 const locationsZoom = ref(1);
+
+const { isMobile } = IsMobile();
 
 // callbacks
 onMounted(() => {
@@ -530,6 +534,13 @@ const victoryDisplay = computed(() => props.scenario.victoryDisplay)
 
 const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victoryDisplay'), true)
 
+const isMinimized_SkillTest = ref(false)
+provide('isMinimized_SkillTest', isMinimized_SkillTest)
+function minimize_SkillTest(isMinimized:boolean){
+  if (isMobile) {
+    isMinimized_SkillTest.value = isMinimized
+  }
+}
 </script>
 
 <template>
@@ -761,6 +772,7 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
             :skillTest="game.skillTest"
             :playerId="playerId"
             @choose="choose"
+            @minimize="minimize_SkillTest"
         >
         </SkillTest>
 

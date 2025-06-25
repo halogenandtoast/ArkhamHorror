@@ -3,6 +3,7 @@ import { ref, onMounted, nextTick } from 'vue'
 import { IsMobile } from '@/arkham/isMobile';
 
 const draggable = ref<HTMLElement | null>(null)
+const emit = defineEmits(['minimize'])
 const isMinimized = ref(false)
 const initialMouseX = ref(0)
 const initialMouseY = ref(0)
@@ -93,6 +94,7 @@ async function minimize() {
   if (!isMinimized.value) {
     // Minimizing
     isMinimized.value = true
+    emit('minimize', true)
 
     // Save the original position and size
     const rect = el.getBoundingClientRect()
@@ -124,6 +126,7 @@ async function minimize() {
   } else {
     // Restoring
     isMinimized.value = false
+    emit('minimize', false)
 
     // Restore original styles
     el.style.left = `${originalLeft.value}px`

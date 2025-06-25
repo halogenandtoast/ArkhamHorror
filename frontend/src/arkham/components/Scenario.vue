@@ -46,7 +46,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import { useDebug } from '@/arkham/debug'
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
-const { isMobile } = IsMobile();
+import { IsMobile } from '@/arkham/isMobile';
 const { t } = useI18n();
 
 // types

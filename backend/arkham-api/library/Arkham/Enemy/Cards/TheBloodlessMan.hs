@@ -18,7 +18,7 @@ newtype TheBloodlessMan = TheBloodlessMan EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theBloodlessMan :: EnemyCard TheBloodlessMan
-theBloodlessMan = enemy TheBloodlessMan Cards.theBloodlessMan (4, Static 3, 2) (1, 1)
+theBloodlessMan = enemy TheBloodlessMan Cards.theBloodlessMan (4, PerPlayer 3, 2) (1, 1)
 
 instance HasAbilities TheBloodlessMan where
   getAbilities (TheBloodlessMan a) =

@@ -3,6 +3,7 @@ module Arkham.Scenario.Scenarios.UndimensionedAndUnseen (undimensionedAndUnseen,
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Attack.Types
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheDunwichLegacy.Key
@@ -184,15 +185,12 @@ instance RunMessage UndimensionedAndUnseen where
       push $ CreateEffect builder
       pure s
     ResolveChaosToken _ ElderThing iid -> do
-      getSkillTestAction >>= \case
-        Just action | action `elem` [#evade, #fight] -> do
-          getSkillTestTarget >>= \case
-            Just (EnemyTarget eid) -> do
-              let allBroods = ["02255", "51042", "51043", "51044", "51045"]
-              enemyCardCode <- field EnemyCardCode eid
-              when (enemyCardCode `elem` allBroods) $ initiateEnemyAttack eid attrs iid
-            _ -> pure ()
-        _ -> pure ()
+      withSkillTestAction \action -> do
+        when (action `elem` [#evade, #fight]) do
+          withSkillTestTargetedEnemy \eid -> do
+            let allBroods = ["02255", "51042", "51043", "51044", "51045"]
+            enemyCardCode <- field EnemyCardCode eid
+            when (enemyCardCode `elem` allBroods) $ initiateEnemyAttackEdit eid attrs iid \a -> a {attackDespiteExhausted = True}
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of

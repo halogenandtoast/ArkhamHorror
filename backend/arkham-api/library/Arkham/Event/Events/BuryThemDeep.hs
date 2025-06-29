@@ -1,5 +1,6 @@
 module Arkham.Event.Events.BuryThemDeep (buryThemDeep) where
 
+import Arkham.Enemy.Import.Lifted (insteadOfDefeatWithWindows)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Window (defeatedEnemy)
@@ -13,8 +14,9 @@ buryThemDeep = event BuryThemDeep Cards.buryThemDeep
 
 instance RunMessage BuryThemDeep where
   runMessage msg e@(BuryThemDeep attrs) = runQueueT $ case msg of
-    InvestigatorPlayEvent _ (is attrs -> True) _ (defeatedEnemy -> enemyId) _ -> do
+    PlayThisEvent _ (is attrs -> True) -> do
       addToVictory attrs
-      insteadOfMatching (\case Discard _ _ t -> enemyId `is` t; _ -> False) (addToVictory enemyId)
+      let enemyId = defeatedEnemy attrs.windows
+      insteadOfDefeatWithWindows enemyId $ addToVictory enemyId
       pure e
     _ -> BuryThemDeep <$> liftRunMessage msg attrs

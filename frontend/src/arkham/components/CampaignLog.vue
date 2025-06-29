@@ -307,7 +307,7 @@ const bonusXp = computed(() => {
     </div>
 
     <div v-for="([step, entries], idx) in breakdowns" :key="idx" class="breakdowns">
-      <XpBreakdown :game="game" :step="step" :entries="entries" :playerId="playerId" />
+      <XpBreakdown :game="game" :step="step" :entries="entries" :playerId="playerId" :showAll="true" />
     </div>
   </div>
 </template>

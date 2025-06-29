@@ -16,6 +16,7 @@ const props = defineProps<{
   step: CampaignStep
   entries: XpEntry[]
   playerId?: string
+  showAll: bool
 }>()
 
 // need to drop the first letter of the scenario code
@@ -76,7 +77,7 @@ const totalVictoryDisplay = computed(() => {
 
 const perInvestigator = computed(() => {
   return Object.entries(props.game.investigators).map(([id,investigator]) => {
-    if (props.playerId && investigator.playerId !== props.playerId) {
+    if (!props.showAll && props.playerId && investigator.playerId !== props.playerId) {
       return [id, [], 0]
     }
     const gains = props.entries.filter((entry: XpEntry) => entry.tag === 'InvestigatorGainXp' && entry.investigator === id)

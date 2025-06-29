@@ -25,6 +25,7 @@
   "doNotPlay": "Do not play",
   "doNotSpendClues": "Do not spend a clue | Do not spend {count} clues",
   "doneDiscarding": "Done Discarding",
+  "done": "Done",
   "drawCards": "Draw 1 card | Draw {count} cards",
   "drawTheCard": "Draw the card",
   "drawTopCardOfEncounterDeck": "Draw the top card of the encounter deck | Draw the top {count} cards of the encounter deck",

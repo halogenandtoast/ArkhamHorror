@@ -1387,6 +1387,16 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
                   skillValueMatcher
               , skillTestMatches iid source st skillTestMatcher
               ]
+          _ | skillTypeMatcher == AnySkillType -> do
+            andM
+              [ matchWho iid (skillTestInvestigator st) whoMatcher
+              , skillTestValueMatches
+                  iid
+                  (skillTestAction st)
+                  (skillTestType st)
+                  skillValueMatcher
+              , skillTestMatches iid source st skillTestMatcher
+              ]
           _ -> noMatch
         _ -> noMatch
     Matcher.SkillTestEnded timing whoMatcher skillTestMatcher -> guardTiming timing $ \case

@@ -107,6 +107,8 @@ newtype BatchId = BatchId {unBatchId :: UUID}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
+type ToId a b = (AsId a, IdOf a ~ b)
+
 class AsId a where
   type IdOf a
   asId :: a -> IdOf a

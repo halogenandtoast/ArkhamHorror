@@ -55,6 +55,11 @@ instance HasField "isAttached" Placement Bool where
 instance HasField "isInPlay" Placement Bool where
   getField = isInPlayPlacement
 
+instance HasField "isInVictory" Placement Bool where
+  getField = \case
+    OutOfPlay VictoryDisplayZone -> True
+    _ -> False
+
 instance HasField "inThreatAreaOf" Placement (Maybe InvestigatorId) where
   getField = \case
     InThreatArea iid -> Just iid

@@ -1310,15 +1310,16 @@ instance RunMessage EnemyAttrs where
       victory <- getVictoryPoints eid
       vengeance <- getVengeancePoints eid
       afterMsg <- checkWindows [mkAfter $ Window.IfEnemyDefeated miid defeatedBy eid]
-
       let
         placeInVictory = isJust (victory <|> vengeance)
-        victoryMsgs = [DefeatedAddToVictory $ toTarget a | placeInVictory]
-        defeatMsgs = [Discard miid GameSource $ toTarget a | not placeInVictory]
+        victoryMsgs = guard (not a.placement.isInVictory) *> [DefeatedAddToVictory $ toTarget a | placeInVictory]
+        defeatMsgs =
+          guard (not a.placement.isInVictory)
+            *> [Discard miid GameSource $ toTarget a | not placeInVictory]
 
       pushAll
         $ victoryMsgs
-        <> windows [Window.EntityDiscarded source (toTarget a)]
+        <> (guard (not a.placement.isInVictory) *> windows [Window.EntityDiscarded source (toTarget a)])
         <> defeatMsgs
         <> [afterMsg]
       pure a

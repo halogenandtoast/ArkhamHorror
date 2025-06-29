@@ -1121,6 +1121,7 @@ wingedOne =
   (enemy "03336" "Winged One" DimCarcosa 1)
     { cdCardTraits = setFromList [Monster, Byakhee]
     , cdKeywords = singleton Keyword.Retaliate
+    , cdVictoryPoints = Just 1
     }
 
 serpentsOfYig :: CardDef

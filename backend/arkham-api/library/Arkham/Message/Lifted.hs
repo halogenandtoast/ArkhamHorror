@@ -2757,6 +2757,15 @@ initiateEnemyAttack enemy source target = do
   canAttack <- Msg.withoutModifier (asId enemy) CannotAttack
   when canAttack $ push $ InitiateEnemyAttack $ enemyAttack enemy source target
 
+initiateEnemyAttackEdit
+  :: (Targetable target, Sourceable source, IdOf enemy ~ EnemyId, AsId enemy, ReverseQueue m)
+  => enemy
+  -> source
+  -> target
+  -> (EnemyAttackDetails -> EnemyAttackDetails)
+  -> m ()
+initiateEnemyAttackEdit = initiateEnemyAttackWith
+
 initiateEnemyAttackWith
   :: (Targetable target, Sourceable source, IdOf enemy ~ EnemyId, AsId enemy, ReverseQueue m)
   => enemy

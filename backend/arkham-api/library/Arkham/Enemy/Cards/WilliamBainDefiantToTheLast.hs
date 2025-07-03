@@ -22,11 +22,6 @@ instance HasModifiersFor WilliamBainDefiantToTheLast where
     modifySelf a [CannotBeDamaged]
     modifySelect a (InvestigatorAt $ locationWithEnemy a) [CannotCommitCards AnyCard]
 
-instance HasAbilities WilliamBainDefiantToTheLast where
-  getAbilities (WilliamBainDefiantToTheLast a) =
-    [ mkAbility a 1 $ forced $ RoundEnds #when
-    ]
-
 instance RunMessage WilliamBainDefiantToTheLast where
   runMessage msg e@(WilliamBainDefiantToTheLast attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> pure e

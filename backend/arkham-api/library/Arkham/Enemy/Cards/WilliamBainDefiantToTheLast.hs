@@ -1,7 +1,4 @@
-module Arkham.Enemy.Cards.WilliamBainDefiantToTheLast (
-  williamBainDefiantToTheLast,
-  WilliamBainDefiantToTheLast(..),
-) where
+module Arkham.Enemy.Cards.WilliamBainDefiantToTheLast (williamBainDefiantToTheLast) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
@@ -11,7 +8,7 @@ import Arkham.Matcher
 
 newtype WilliamBainDefiantToTheLast = WilliamBainDefiantToTheLast EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 williamBainDefiantToTheLast :: EnemyCard WilliamBainDefiantToTheLast
 williamBainDefiantToTheLast =
@@ -21,11 +18,6 @@ instance HasModifiersFor WilliamBainDefiantToTheLast where
   getModifiersFor (WilliamBainDefiantToTheLast a) = do
     modifySelf a [CannotBeDamaged]
     modifySelect a (InvestigatorAt $ locationWithEnemy a) [CannotCommitCards AnyCard]
-
-instance HasAbilities WilliamBainDefiantToTheLast where
-  getAbilities (WilliamBainDefiantToTheLast a) =
-    [ mkAbility a 1 $ forced $ RoundEnds #when
-    ]
 
 instance RunMessage WilliamBainDefiantToTheLast where
   runMessage msg e@(WilliamBainDefiantToTheLast attrs) = runQueueT $ case msg of

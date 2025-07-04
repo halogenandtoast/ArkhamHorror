@@ -103,6 +103,7 @@ instance RunMessage JoeDiamond where
         _ -> pure ()
       pure i
     InitiatePlayCard iid card mTarget payment windows' asAction | attrs `is` iid && Just card.id == revealedHunchCard meta -> do
+      costModifier attrs iid (AsIfInHandForPlay card.id)
       costModifier iid iid (ReduceCostOf (CardWithId card.id) 2)
       push $ InitiatePlayCard iid card mTarget payment windows' asAction
       let hunchDeck' = filter (/= card) (hunchDeck attrs)

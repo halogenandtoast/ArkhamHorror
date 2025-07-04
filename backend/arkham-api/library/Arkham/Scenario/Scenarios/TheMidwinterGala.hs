@@ -208,7 +208,7 @@ instance RunMessage TheMidwinterGala where
           TheFoundation -> Enemies.valeriyaAntonovaDontMessWithHer
           MiskatonicUniversity -> Enemies.caldwellPhilipsCompelledByDreams
           TheSyndicate -> Enemies.johnnyValoneHereToCollect
-          TheSilverTwilightLodge -> Enemies.carlSanfordDeathlessFanatic
+          TheSilverTwilightLodge -> Enemies.carlSanfordIntimidatingPresence
           LocalsOfKingsport -> Enemies.williamBainDefiantToTheLast
 
         factionGuests = \case

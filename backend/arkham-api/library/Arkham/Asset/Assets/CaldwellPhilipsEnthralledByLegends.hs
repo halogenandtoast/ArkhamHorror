@@ -14,7 +14,7 @@ newtype CaldwellPhilipsEnthralledByLegends = CaldwellPhilipsEnthralledByLegends 
 
 caldwellPhilipsEnthralledByLegends :: AssetCard CaldwellPhilipsEnthralledByLegends
 caldwellPhilipsEnthralledByLegends =
-  allyWith CaldwellPhilipsEnthralledByLegends Cards.caldwellPhilipsEnthralledByLegends (2, 2) noSlots
+  allyWith CaldwellPhilipsEnthralledByLegends Cards.caldwellPhilipsEnthralledByLegends (2, 3) noSlots
 
 instance HasModifiersFor CaldwellPhilipsEnthralledByLegends where
   getModifiersFor (CaldwellPhilipsEnthralledByLegends a) = controllerGets a [SkillModifier #intellect 1]

@@ -20,6 +20,4 @@ instance HasModifiersFor WilliamBainDefiantToTheLast where
     modifySelect a (InvestigatorAt $ locationWithEnemy a) [CannotCommitCards AnyCard]
 
 instance RunMessage WilliamBainDefiantToTheLast where
-  runMessage msg e@(WilliamBainDefiantToTheLast attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> pure e
-    _ -> WilliamBainDefiantToTheLast <$> liftRunMessage msg attrs
+  runMessage msg e@(WilliamBainDefiantToTheLast attrs) = WilliamBainDefiantToTheLast <$> runMessage msg attrs

@@ -1,6 +1,5 @@
 module Arkham.Enemy.Cards.WilliamBainDefiantToTheLast (williamBainDefiantToTheLast) where
 
-import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
@@ -20,4 +19,4 @@ instance HasModifiersFor WilliamBainDefiantToTheLast where
     modifySelect a (InvestigatorAt $ locationWithEnemy a) [CannotCommitCards AnyCard]
 
 instance RunMessage WilliamBainDefiantToTheLast where
-  runMessage msg e@(WilliamBainDefiantToTheLast attrs) = WilliamBainDefiantToTheLast <$> runMessage msg attrs
+  runMessage msg (WilliamBainDefiantToTheLast attrs) = WilliamBainDefiantToTheLast <$> runMessage msg attrs

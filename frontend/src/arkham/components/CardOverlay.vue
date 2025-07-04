@@ -4,7 +4,9 @@ import { imgsrc, toCamelCase } from '@/arkham/helpers'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import Key from '@/arkham/components/Key.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
+import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 
+const store = useDbCardStore()
 const cardOverlay = ref<HTMLElement | null>(null)
 const hoveredElement = ref<HTMLElement | null>(null)
 let canDisablePress = false
@@ -358,44 +360,12 @@ const getImage = (el: HTMLElement): string | null => {
   return null
 }
 
-interface ArkhamDBCard {
-  code: string
-  name: string
-  xp?: number
-  subname?: string
-  traits?: string
-  text?: string
-  back_name?: string
-  back_traits?: string
-  back_text?: string
-  customization_text?: string
-  real_name: string
-  real_traits: string
-  real_text: string
-}
-
-const dbCards = ref<ArkhamDBCard[]>([])
-
-const updateDBCards = async () => {
-  const language = localStorage.getItem('language') || 'en'
-  
-  if (language !== 'en') {
-    fetch(`/cards_${language}.json`.replace(/^\//, '')).then(async (cardResponse) => {
-      dbCards.value = await cardResponse.json()
-    })
-  }
-}
-
-await updateDBCards()
-
 const dbCardName = ref<string>("")
 const dbCardTraits = ref<string>("")
 const dbCardText = ref<string>("")
 const dbCardCustomizationText = ref<string>("")
 
 const dbCardData = computed(() : boolean => {
-  if (!dbCards.value) return false
-  
   if (card.value) {
     const pattern = /(\d+b?)(_.*)?\.avif/
     const match = card.value.match(pattern)
@@ -406,11 +376,7 @@ const dbCardData = computed(() : boolean => {
       const language = localStorage.getItem('language') || 'en'
       
       if (imgsrc(`cards/${match[0]}`).search(language) < 0) {
-        const dbCard = dbCards.value.find(
-          (c: ArkhamDBCard) => c.code === code
-        ) || dbCards.value.find(
-          (c: ArkhamDBCard) => `${c.code}b` === code
-        )
+        const dbCard: ArkhamDBCard = store.getDbCard(code)
         
         if (dbCard) {
           const needBack = (dbCard.code !== code)

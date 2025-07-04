@@ -36,10 +36,9 @@ instance RunMessage SilverTwilightLodgeRival where
       ward <- getSetAsideCardsMatching $ cardIs Treacheries.wardOfPreservation
       shuffleCardsIntoDeck Deck.EncounterDeck ward
       carl <- getSetAsideCardsMatching $ cardIs Enemies.carlSanfordIntimidatingPresence
-      when (notNull carl) do
-        lead <- getLead
-        for_ carl $ withLocationOf lead . createEnemyAt_
       lead <- getLead
+      when (notNull carl) do
+        for_ carl $ withLocationOf lead . createEnemyAt_
       for_ carl $ withLocationOf lead . createEnemyAt_
       pure s
     UseThisAbility iid (isSource attrs -> True) 1 -> do

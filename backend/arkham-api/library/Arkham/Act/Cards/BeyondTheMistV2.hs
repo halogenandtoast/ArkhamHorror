@@ -2,15 +2,14 @@ module Arkham.Act.Cards.BeyondTheMistV2 (beyondTheMistV2) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Brazier
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Move
+import Arkham.Modifier
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype BeyondTheMistV2 = BeyondTheMistV2 ActAttrs
@@ -21,36 +20,32 @@ beyondTheMistV2 :: ActCard BeyondTheMistV2
 beyondTheMistV2 = act (3, A) BeyondTheMistV2 Cards.beyondTheMistV2 Nothing
 
 instance HasAbilities BeyondTheMistV2 where
-  getAbilities (BeyondTheMistV2 x)
-    | onSide A x =
-        [ restricted x 1 DuringCircleAction $ FastAbility $ ClueCost (Static 1)
-        , restricted
-            x
-            2
-            ( AllLocationsMatch
-                (LocationWithUnrevealedTitle "Unvisited Isle")
-                (RevealedLocation <> LocationWithBrazier Unlit)
-            )
-            $ Objective
-            $ ForcedAbility AnyWindow
-        ]
-  getAbilities _ = []
+  getAbilities = actAbilities \x ->
+    [ restricted x 1 DuringCircleAction $ FastAbility $ ClueCost (Static 1)
+    , restricted
+        x
+        2
+        ( AllLocationsMatch
+            (LocationWithUnrevealedTitle "Unvisited Isle")
+            (RevealedLocation <> LocationWithBrazier Unlit)
+        )
+        $ Objective
+        $ forced AnyWindow
+    ]
 
 instance RunMessage BeyondTheMistV2 where
-  runMessage msg a@(BeyondTheMistV2 attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      withSkillTest \sid ->
-        pushM $ skillTestModifier sid (toSource attrs) (SkillTestTarget sid) (Difficulty (-2))
+  runMessage msg a@(BeyondTheMistV2 attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) sid (Difficulty (-2))
       pure a
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ AdvanceAct (toId a) (toSource attrs) AdvancedWithOther
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       geistTrap <- getJustLocationByName "The Geist-Trap"
-      investigatorsAtUnvisitedIsles <- select $ InvestigatorAt (LocationWithTitle "Unvisited Isle")
-      pushAll
-        $ RevealLocation Nothing geistTrap
-        : [Move $ move attrs iid geistTrap | iid <- investigatorsAtUnvisitedIsles]
-          <> [RemoveAllChaosTokens Cultist, advanceActDeck attrs]
+      reveal geistTrap
+      selectEach (InvestigatorAt "Unvisited Isle") \iid -> moveTo attrs iid geistTrap
+      removeAllChaosTokens Cultist
+      advanceActDeck attrs
       pure a
-    _ -> BeyondTheMistV2 <$> runMessage msg attrs
+    _ -> BeyondTheMistV2 <$> liftRunMessage msg attrs

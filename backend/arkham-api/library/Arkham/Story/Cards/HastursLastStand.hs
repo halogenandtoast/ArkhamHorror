@@ -26,7 +26,7 @@ instance RunMessage HastursLastStand where
             placeSetAsideLocation_ Locations.recessesOfYourOwnMind
         | code == Enemies.hasturLordOfCarcosa.cardCode -> do
             theThroneRoom <- placeSetAsideLocation Locations.theThroneRoom
-            enemyMoveTo hastur theThroneRoom
+            enemyMoveTo attrs hastur theThroneRoom
         | otherwise -> placeSetAsideLocation_ Locations.stageOfTheWardTheatre
 
       pure s

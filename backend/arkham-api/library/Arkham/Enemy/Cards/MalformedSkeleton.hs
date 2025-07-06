@@ -42,8 +42,7 @@ instance RunMessage MalformedSkeleton where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       traverse_ cancelBatch =<< getCurrentBatchId
       lead <- getLead
-      chooseSelectM lead (NearestLocationToAny "Catacombs") (enemyMoveTo attrs)
+      chooseSelectM lead (NearestLocationToAny "Catacombs") (enemyMoveTo (attrs.ability 1) attrs)
       pure e
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
-      pure e
+    UseThisAbility _ (isSource attrs -> True) 2 -> pure e
     _ -> MalformedSkeleton <$> liftRunMessage msg attrs

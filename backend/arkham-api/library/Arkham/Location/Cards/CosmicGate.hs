@@ -1,17 +1,16 @@
 module Arkham.Location.Cards.CosmicGate (cosmicGate) where
 
+import Arkham.Ability
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Helpers.Cost (getSpendableClueCount)
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers (adjacentLocations)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
-import Arkham.Timing qualified as Timing
 import Arkham.Trait qualified as Trait
 
 newtype CosmicGate = CosmicGate LocationAttrs
@@ -19,83 +18,52 @@ newtype CosmicGate = CosmicGate LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cosmicGate :: LocationCard CosmicGate
-cosmicGate =
-  locationWith
-    CosmicGate
-    Cards.cosmicGate
-    1
-    (Static 1)
-    (connectsToL .~ adjacentLocations)
+cosmicGate = locationWith CosmicGate Cards.cosmicGate 1 (Static 1) connectsToAdjacent
 
 instance HasAbilities CosmicGate where
-  getAbilities (CosmicGate attrs) =
-    withRevealedAbilities
-      attrs
-      [ cosmos attrs 1
-      , forcedAbility attrs 2 $ Enters Timing.After You $ LocationWithId (toId attrs)
-      , restrictedAbility
-          attrs
+  getAbilities (CosmicGate a) =
+    extendRevealed
+      a
+      [ cosmos a 1
+      , forcedAbility a 2 $ Enters #after You (be a)
+      , restricted
+          a
           3
           ( Here
-              <> LocationExists (LocationWithTrait Trait.Void <> NotLocation (LocationWithId $ toId attrs))
-              <> InvestigatorExists (InvestigatorAt $ LocationWithId (toId attrs))
+              <> exists (LocationWithTrait Trait.Void <> not_ (be a))
+              <> exists (InvestigatorAt $ be a)
           )
-          $ ActionAbility []
-          $ ActionCost 1
-          <> ScenarioResourceCost 1
+          $ actionAbilityWithCost (ScenarioResourceCost 1)
       ]
 
--- withRevealedAbilities attrs []
-
 instance RunMessage CosmicGate where
-  runMessage msg l@(CosmicGate attrs) = case msg of
+  runMessage msg l@(CosmicGate attrs) = runQueueT $ case msg of
     RunCosmos iid lid msgs | lid == toId attrs -> do
       revealedLocations <- select RevealedLocation
       positions <- mapMaybeM findLocationInCosmos revealedLocations
-      allEmpty <-
-        concatMapM
-          (\pos -> getEmptyPositionsInDirections pos [GridUp, GridDown, GridLeft, GridRight])
-          positions
+      allEmpty <- concatForM positions \pos ->
+        getEmptyPositionsInDirections pos [GridUp, GridDown, GridLeft, GridRight]
 
       if null allEmpty
         then cosmosFail attrs
-        else do
-          player <- getPlayer iid
-          push
-            $ chooseOrRunOne
-              player
-              [ GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid) : msgs)
-              | pos'@(Pos x y) <- allEmpty
-              ]
-
+        else chooseOrRunOneM iid do
+          for_ allEmpty \pos'@(Pos x y) ->
+            gridLabeled (cosmicLabel pos') do
+              placeCosmos iid attrs (CosmosLocation (Pos x y) lid)
+              pushAll msgs
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       n <- getSpendableClueCount [iid]
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ [Label "Spend 1 Clue" [SpendClues 1 [iid]] | n >= 1]
-        <> [Label "Take 1 Horror" [assignHorror iid (toAbilitySource attrs 2) 1]]
-
+      chooseOrRunOneM iid do
+        when (n >= 1) $ labeled "Spend 1 Clue" $ spendClues iid 1
+        labeled "Take 1 Horror" $ assignHorror iid (attrs.ability 2) 1
       pure l
-    UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do
-      investigators <- select $ investigatorAt (toId attrs)
-      otherLocations <-
-        select $ LocationWithTrait Trait.Void <> NotLocation (LocationWithId $ toId attrs)
-      player <- getPlayer iid
-      push
-        $ chooseSome1
-          player
-          "Done moving investigators"
-          [ targetLabel
-              investigator
-              [ chooseOne
-                  player
-                  [ targetLabel other [Move $ move (toAbilitySource attrs 3) investigator other]
-                  | other <- otherLocations
-                  ]
-              ]
-          | investigator <- investigators
-          ]
+    UseThisAbility iid (isSource attrs -> True) 3 -> do
+      investigators <- select $ investigatorAt attrs
+      otherLocations <- select $ LocationWithTrait Trait.Void <> not_ (be attrs)
+      unless (null otherLocations) do
+        chooseSome1M iid "Done moving investigators" do
+          targets investigators \investigator -> do
+            chooseTargetM iid otherLocations $ moveTo (attrs.ability 3) investigator
       pure l
-    _ -> CosmicGate <$> runMessage msg attrs
+    _ -> CosmicGate <$> liftRunMessage msg attrs

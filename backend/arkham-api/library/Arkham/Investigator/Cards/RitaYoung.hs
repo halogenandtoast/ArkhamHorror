@@ -11,7 +11,7 @@ import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Movement
+import Arkham.Message.Lifted.Move
 
 newtype RitaYoung = RitaYoung InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -59,7 +59,7 @@ instance RunMessage RitaYoung where
             push $ EnemyDamage enemyId $ nonAttack (Just iid) (attrs.ability 1) 1
         when (notNull connectingLocations) do
           labeled "Move to a connecting location" do
-            chooseOne iid $ targetLabels connectingLocations $ only . Move . move attrs iid
+            chooseOneM iid $ targets connectingLocations $ moveTo attrs iid
       pure i
     _ -> RitaYoung <$> liftRunMessage msg attrs
 

@@ -2,9 +2,8 @@ module Arkham.Act.Cards.TheCosmosBeckons (theCosmosBeckons) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
@@ -15,8 +14,8 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types qualified as Field
 import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Message.Lifted.Choose
 import Arkham.Movement
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
@@ -46,31 +45,22 @@ getClueCount (Payments ps) = sum $ map getClueCount ps
 getClueCount _ = 0
 
 instance RunMessage TheCosmosBeckons where
-  runMessage msg a@(TheCosmosBeckons attrs) = case msg of
+  runMessage msg a@(TheCosmosBeckons attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (getClueCount -> x) -> do
       push $ DrawCards iid $ targetCardDraw attrs CosmosDeck x
       pure a
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       let cards = drewCards.cards
-      cardsWithMsgs <- traverse (traverseToSnd placeLocation) cards
-      player <- getPlayer iid
-      pushAll
-        [ FocusCards $ map flipCard cards
-        , chooseOrRunOne
-            player
-            [ targetLabel
-                (toCardId card)
-                [ ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) (List.delete card cards)
-                , placement
-                , RevealLocation (Just iid) lid
-                , RunCosmos iid lid [Move $ move (toAbilitySource attrs 1) iid lid]
-                , UnfocusCards
-                ]
-            | (card, (lid, placement)) <- cardsWithMsgs
-            ]
-        ]
+      focusCards (map flipCard cards) do
+        chooseOrRunOneM iid do
+          targets cards \card -> do
+            shuffleCardsIntoDeck CosmosDeck (List.delete card cards)
+            lid <- placeLocation card
+            revealBy iid lid
+            movemsg <- move (attrs.ability 1) iid lid
+            push $ RunCosmos iid lid [Move movemsg]
       pure a
-    AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       cosmicIngress <- getJustLocationByName "Cosmic Ingress"
       emptySpace <- select $ IncludeEmptySpace $ locationIs Locations.emptySpace
       emptySpaceCards <- getEmptySpaceCards
@@ -86,19 +76,17 @@ instance RunMessage TheCosmosBeckons where
       let cosmos' = initCosmos @Card @LocationId
           cardsWithOwners = List.groupOnKey toCardOwner emptySpaceCards
 
-      pushAll
-        $ RemoveLocation cosmicIngress
-        : map RemoveLocation (cosmosLocations <> emptySpace)
-          <> [ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) cosmosCards]
-          <> [ShuffleCardsIntoTopOfDeck Deck.EncounterDeck 5 enemyCards]
-          <> [ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards | (Just iid, cards) <- cardsWithOwners]
-          <> [ SetScenarioMeta (toJSON cosmos')
-             , NextAdvanceActStep (toId a) 1
-             , AllDrawEncounterCard
-             , advanceActDeck attrs
-             ]
+      for_ (cosmicIngress : cosmosLocations <> emptySpace) removeLocation
+      shuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) cosmosCards
+      shuffleCardsIntoTopOfDeck Deck.EncounterDeck 5 enemyCards
+      for_ cardsWithOwners \(mowner, cards) -> for_ mowner \iid -> do
+        shuffleCardsIntoDeck iid cards
+      push $ SetScenarioMeta (toJSON cosmos')
+      doStep 1 msg
+      allDrawEncounterCard
+      advanceActDeck attrs
       pure a
-    NextAdvanceActStep aid _ | aid == toId attrs -> do
+    DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       (cards, cosmosDeck) <- splitAt 2 <$> getScenarioDeck CosmosDeck
       courtOfTheGreatOldOnes <- getSetAsideCard Locations.courtOfTheGreatOldOnes
       hideousPalace <- getJustLocationByName "Hideous Palace"
@@ -108,11 +96,19 @@ instance RunMessage TheCosmosBeckons where
           [x, y, z] -> (x, y, z)
           _ -> error "impossible"
 
-      (firstCosmos, placeFirstCosmos) <- placeLocation firstCosmosCard
-      (secondCosmos, placeSecondCosmos) <- placeLocation secondCosmosCard
-      (thirdCosmos, placeThirdCosmos) <- placeLocation thirdCosmosCard
-
       (map toCard -> playerCards, _) <- fieldMap InvestigatorDeck (draw 7) lead
+
+      setScenarioDeck CosmosDeck cosmosDeck
+      push $ PlaceCosmos lead hideousPalace (CosmosLocation (Pos 0 0) hideousPalace)
+
+      firstCosmos <- placeLocation firstCosmosCard
+      push $ PlaceCosmos lead firstCosmos (CosmosLocation (Pos 1 2) firstCosmos)
+      secondCosmos <- placeLocation secondCosmosCard
+      push $ PlaceCosmos lead secondCosmos (CosmosLocation (Pos 1 (-2)) secondCosmos)
+      thirdCosmos <- placeLocation thirdCosmosCard
+      push $ PlaceCosmos lead thirdCosmos (CosmosLocation (Pos 2 0) thirdCosmos)
+
+      for_ playerCards obtainCard
 
       let
         emptySpaceLocations =
@@ -126,21 +122,8 @@ instance RunMessage TheCosmosBeckons where
           ]
         emptySpaces = zip emptySpaceLocations playerCards
 
-      placeEmptySpaces <- concatForM emptySpaces $ \(pos, card) -> do
-        (emptySpace', placeEmptySpace) <- placeLocationCard Locations.emptySpace
-        pure [placeEmptySpace, PlaceCosmos lead emptySpace' (EmptySpace pos card)]
-
-      pushAll
-        $ [ SetScenarioDeck CosmosDeck cosmosDeck
-          , PlaceCosmos lead hideousPalace (CosmosLocation (Pos 0 0) hideousPalace)
-          , placeFirstCosmos
-          , PlaceCosmos lead firstCosmos (CosmosLocation (Pos 1 2) firstCosmos)
-          , placeSecondCosmos
-          , PlaceCosmos lead secondCosmos (CosmosLocation (Pos 1 (-2)) secondCosmos)
-          , placeThirdCosmos
-          , PlaceCosmos lead thirdCosmos (CosmosLocation (Pos 2 0) thirdCosmos)
-          ]
-        <> map (ObtainCard . toCardId) playerCards
-        <> placeEmptySpaces
+      for_ emptySpaces \(pos, card) -> do
+        emptySpace' <- placeLocationCard Locations.emptySpace
+        push $ PlaceCosmos lead emptySpace' (EmptySpace pos card)
       pure a
-    _ -> TheCosmosBeckons <$> runMessage msg attrs
+    _ -> TheCosmosBeckons <$> liftRunMessage msg attrs

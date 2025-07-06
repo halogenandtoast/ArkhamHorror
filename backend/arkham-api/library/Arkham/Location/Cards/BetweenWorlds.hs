@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.BetweenWorlds (betweenWorlds, BetweenWorlds (..)) where
+module Arkham.Location.Cards.BetweenWorlds (betweenWorlds) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -28,7 +28,7 @@ instance RunMessage BetweenWorlds where
         then do
           let asTreachery = lookupEncounterCard Treacheries.betweenWorlds (toCardId attrs)
           nexus <- selectJust $ locationIs Cards.nexusOfNKai
-          selectEach (enemyAt attrs) (`enemyMoveTo` nexus)
+          selectEach (enemyAt attrs) \e -> enemyMoveTo (attrs.ability 1) e nexus
           removeLocation attrs
           push $ AddToEncounterDiscard asTreachery
         else for_ iids \iid -> assignDamageAndHorror iid (attrs.ability 1) 1 1

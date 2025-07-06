@@ -1,4 +1,4 @@
-module Arkham.Event.Events.IntelReport (intelReport, IntelReport (..)) where
+module Arkham.Event.Events.IntelReport (intelReport) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -20,17 +20,13 @@ instance HasAbilities IntelReport where
   getAbilities (IntelReport a) =
     [ withTooltip
         "{reaction} When you play Intel Report, increase its cost by 2: Change \"Discover 1 clue\" to \"Discover 2 clues.\""
-        $ restrictedAbility a 1 InYourHand
-        $ ReactionAbility
-          (PlayCard #when You (basic $ CardWithId $ toCardId a))
-          (IncreaseCostOfThis (toCardId a) 2)
+        $ restricted a 1 InYourHand
+        $ triggered (PlayCard #when You (basic $ CardWithId a.cardId)) (IncreaseCostOfThis a.cardId 2)
     , withTooltip
         "{reaction} When you play Intel Report, increase its cost by 2: Change \"at your location\" to \"at a location up to 2 connections away.\""
-        $ restrictedAbility a 2 InYourHand
-        $ ForcedWhen (LocationExists $ LocationWithoutClues <> YourLocation)
-        $ ReactionAbility
-          (PlayCard #when You (basic $ CardWithId $ toCardId a))
-          (IncreaseCostOfThis (toCardId a) 2)
+        $ restricted a 2 InYourHand
+        $ ForcedWhen (exists $ LocationWithoutClues <> YourLocation)
+        $ triggered (PlayCard #when You (basic $ CardWithId a.cardId)) (IncreaseCostOfThis a.cardId 2)
     ]
 
 instance RunMessage IntelReport where
@@ -63,8 +59,7 @@ instance RunMessage IntelReport where
               : [ LocationWithDistanceFrom n (locationWithInvestigator iid) LocationWithAnyClues
                 | n <- [1 .. 2]
                 ]
-          chooseOrRunOneM iid do
-            targets lids \lid -> discoverAt NotInvestigate iid attrs lid clueCount
+          chooseOrRunOneM iid $ targets lids $ discoverAt NotInvestigate iid attrs clueCount
         else discoverAtYourLocation NotInvestigate iid attrs clueCount
       pure e
     InHand _ (UseCardAbility _ (isSource attrs -> True) 1 _ _) -> do

@@ -2,15 +2,13 @@ module Arkham.Asset.Assets.ForbiddenTomeSecretsRevealed3 (forbiddenTomeSecretsRe
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Discover
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 
 newtype ForbiddenTomeSecretsRevealed3 = ForbiddenTomeSecretsRevealed3 AssetAttrs
   deriving anyclass IsAsset
@@ -36,15 +34,12 @@ instance HasAbilities ForbiddenTomeSecretsRevealed3 where
     ]
 
 instance RunMessage ForbiddenTomeSecretsRevealed3 where
-  runMessage msg a@(ForbiddenTomeSecretsRevealed3 attrs) = case msg of
+  runMessage msg a@(ForbiddenTomeSecretsRevealed3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       lids <- getAccessibleLocations iid attrs
-      player <- getPlayer iid
-      pushAll
-        [ chooseOrRunOne player
-            $ Label "Do not move" []
-            : [targetLabel lid [Move $ move (toSource attrs) iid lid] | lid <- lids]
-        , Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 1) 1
-        ]
+      chooseOrRunOneM iid do
+        labeled "Do not move" nothing
+        targets lids $ moveTo (attrs.ability 1) iid
+      discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
       pure a
-    _ -> ForbiddenTomeSecretsRevealed3 <$> runMessage msg attrs
+    _ -> ForbiddenTomeSecretsRevealed3 <$> liftRunMessage msg attrs

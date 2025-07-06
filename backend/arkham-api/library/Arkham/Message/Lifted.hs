@@ -54,6 +54,8 @@ import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.Enemy qualified as Msg
 import Arkham.Helpers.Investigator (
   canDiscoverCluesAtYourLocation,
+  canHaveDamageHealed,
+  canHaveHorrorHealed,
   getCanDiscoverClues,
  )
 import Arkham.Helpers.Location (withLocationOf)
@@ -655,7 +657,8 @@ createEnemyAt c lid = do
   pure enemyId
 
 createEnemyAtEdit
-  :: (ReverseQueue m, IsCard card) => card -> LocationId -> (EnemyCreation Message -> EnemyCreation Message) -> m EnemyId
+  :: (ReverseQueue m, IsCard card)
+  => card -> LocationId -> (EnemyCreation Message -> EnemyCreation Message) -> m EnemyId
 createEnemyAtEdit c lid f = do
   (enemyId, msg) <- Msg.createEnemyAtEdit (toCard c) lid Nothing f
   push msg
@@ -900,6 +903,16 @@ moveTokens
   -> Int
   -> m ()
 moveTokens source from destination token n = push $ Msg.MoveTokens (toSource source) (toSource from) (toTarget destination) token n
+
+moveTokensTo
+  :: (ReverseQueue m, Sourceable source, Sourceable from, Targetable destination)
+  => source
+  -> from
+  -> Token
+  -> Int
+  -> destination
+  -> m ()
+moveTokensTo source from token n destination = moveTokens source from destination token n
 
 sourceTokens :: (HasCallStack, ReverseQueue m, Sourceable source, Show source) => source -> m Tokens
 sourceTokens source = case toSource source of
@@ -2346,9 +2359,19 @@ healDamage
   :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
 healDamage target source n = push $ Msg.HealDamage (toTarget target) (toSource source) n
 
+healDamageIfCan
+  :: (ReverseQueue m, Sourceable source, Targetable target, AsId target, IdOf target ~ InvestigatorId)
+  => target -> source -> Int -> m ()
+healDamageIfCan target source n = whenM (canHaveDamageHealed source (asId target)) (healDamage target source n)
+
 healHorror
   :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
 healHorror target source n = push $ Msg.HealHorror (toTarget target) (toSource source) n
+
+healHorrorIfCan
+  :: (ReverseQueue m, Sourceable source, Targetable target, AsId target, IdOf target ~ InvestigatorId)
+  => target -> source -> Int -> m ()
+healHorrorIfCan target source n = whenM (canHaveHorrorHealed source (asId target)) (healHorror target source n)
 
 healHorrorOn
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Int -> target -> m ()
@@ -2398,10 +2421,10 @@ discoverAt
   => IsInvestigate
   -> InvestigatorId
   -> source
-  -> a
   -> Int
+  -> a
   -> m ()
-discoverAt isInvestigate iid s lid n = do
+discoverAt isInvestigate iid s n lid = do
   canDiscover <- getCanDiscoverClues isInvestigate iid (asId lid)
   additional <-
     if isInvestigate == IsInvestigate
@@ -3252,3 +3275,6 @@ createWeaknessInThreatArea
 createWeaknessInThreatArea card iid = do
   c <- fetchCard card
   push $ CreateWeaknessInThreatArea c (asId iid)
+
+allDrawEncounterCard :: (ReverseQueue m) => m ()
+allDrawEncounterCard = push Msg.AllDrawEncounterCard

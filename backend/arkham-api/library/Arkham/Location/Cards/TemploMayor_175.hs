@@ -35,6 +35,6 @@ instance RunMessage TemploMayor_175 where
       for_ mcard $ addToHand iid . only
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      discoverAt NotInvestigate iid (attrs.ability 2) attrs 2
+      discoverAt NotInvestigate iid (attrs.ability 2) 2 attrs
       pure l
     _ -> TemploMayor_175 <$> liftRunMessage msg attrs

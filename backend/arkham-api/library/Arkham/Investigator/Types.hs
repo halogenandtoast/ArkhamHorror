@@ -386,6 +386,9 @@ instance ToGameLoggerFormat InvestigatorAttrs where
       <> tshow (toId attrs)
       <> "}"
 
+instance Be InvestigatorAttrs InvestigatorMatcher where
+  be = InvestigatorWithId . toId
+
 instance Be InvestigatorId InvestigatorMatcher where
   be = InvestigatorWithId
 

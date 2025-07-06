@@ -10,7 +10,12 @@ import Arkham.Prelude
 import Arkham.Source
 import Arkham.Target
 import Data.Aeson.TH
+import Data.UUID (fromWords64)
 import GHC.Records
+
+newtype MoveId = MoveId UUID
+  deriving stock (Show, Eq, Ord, Data)
+  deriving newtype (ToJSON, FromJSON, Random)
 
 data Movement = Movement
   { moveSource :: Source
@@ -21,6 +26,7 @@ data Movement = Movement
   , movePayAdditionalCosts :: Bool
   , moveAfter :: [Message]
   , moveAdditionalEnterCosts :: Cost
+  , moveId :: MoveId
   }
   deriving stock (Show, Eq, Data)
 
@@ -48,7 +54,7 @@ instance HasField "after" Movement [Message] where
 instance HasField "additionalEnterCosts" Movement Cost where
   getField = moveAdditionalEnterCosts
 
-data MovementMeans = Direct | OneAtATime | Towards | Place
+data MovementMeans = Direct | OneAtATime | Towards | Place | TowardsN Int
   deriving stock (Show, Eq, Data)
 
 -- Forced movement should not require additional costs
@@ -62,58 +68,88 @@ data Destination = ToLocation LocationId | ToLocationMatching LocationMatcher
   deriving stock (Show, Eq, Data)
 
 move
-  :: (Targetable target, Sourceable source)
+  :: (MonadRandom m, Targetable target, Sourceable source)
   => source
   -> target
   -> LocationId
-  -> Movement
-move (toSource -> moveSource) (toTarget -> moveTarget) lid =
-  Movement
-    { moveSource
-    , moveTarget
-    , moveDestination = ToLocation lid
-    , moveMeans = Direct
-    , moveCancelable = True
-    , movePayAdditionalCosts = True
-    , moveAfter = []
-    , moveAdditionalEnterCosts = Free
-    }
+  -> m Movement
+move (toSource -> moveSource) (toTarget -> moveTarget) lid = do
+  moveId <- getRandom
+  pure
+    Movement
+      { moveSource
+      , moveTarget
+      , moveDestination = ToLocation lid
+      , moveMeans = Direct
+      , moveCancelable = True
+      , movePayAdditionalCosts = True
+      , moveAfter = []
+      , moveAdditionalEnterCosts = Free
+      , moveId
+      }
 
 moveToMatch
-  :: (Targetable target, Sourceable source)
+  :: (MonadRandom m, Targetable target, Sourceable source)
   => source
   -> target
   -> LocationMatcher
-  -> Movement
-moveToMatch (toSource -> moveSource) (toTarget -> moveTarget) matcher =
-  Movement
-    { moveSource
-    , moveTarget
-    , moveDestination = ToLocationMatching matcher
-    , moveMeans = Direct
-    , moveCancelable = True
-    , movePayAdditionalCosts = True
-    , moveAfter = []
-    , moveAdditionalEnterCosts = Free
-    }
+  -> m Movement
+moveToMatch (toSource -> moveSource) (toTarget -> moveTarget) matcher = do
+  moveId <- getRandom
+  pure
+    Movement
+      { moveSource
+      , moveTarget
+      , moveDestination = ToLocationMatching matcher
+      , moveMeans = Direct
+      , moveCancelable = True
+      , movePayAdditionalCosts = True
+      , moveAfter = []
+      , moveAdditionalEnterCosts = Free
+      , moveId
+      }
+
+moveTowards
+  :: (MonadRandom m, Targetable target, Sourceable source, AsId location, IdOf location ~ LocationId)
+  => source
+  -> target
+  -> location
+  -> m Movement
+moveTowards (toSource -> moveSource) (toTarget -> moveTarget) (asId -> locationId) = do
+  moveId <- getRandom
+  pure
+    Movement
+      { moveSource
+      , moveTarget
+      , moveDestination = ToLocation locationId
+      , moveMeans = Towards
+      , moveCancelable = True
+      , movePayAdditionalCosts = True
+      , moveAfter = []
+      , moveAdditionalEnterCosts = Free
+      , moveId
+      }
 
 moveTowardsMatching
-  :: (Targetable target, Sourceable source)
+  :: (MonadRandom m, Targetable target, Sourceable source)
   => source
   -> target
   -> LocationMatcher
-  -> Movement
-moveTowardsMatching (toSource -> moveSource) (toTarget -> moveTarget) matcher =
-  Movement
-    { moveSource
-    , moveTarget
-    , moveDestination = ToLocationMatching matcher
-    , moveMeans = Towards
-    , moveCancelable = True
-    , movePayAdditionalCosts = True
-    , moveAfter = []
-    , moveAdditionalEnterCosts = Free
-    }
+  -> m Movement
+moveTowardsMatching (toSource -> moveSource) (toTarget -> moveTarget) matcher = do
+  moveId <- getRandom
+  pure
+    Movement
+      { moveSource
+      , moveTarget
+      , moveDestination = ToLocationMatching matcher
+      , moveMeans = Towards
+      , moveCancelable = True
+      , movePayAdditionalCosts = True
+      , moveAfter = []
+      , moveAdditionalEnterCosts = Free
+      , moveId
+      }
 
 moveToLocationMatcher :: Movement -> LocationMatcher
 moveToLocationMatcher = destinationToLocationMatcher . moveDestination
@@ -137,5 +173,6 @@ instance FromJSON Movement where
     movePayAdditionalCosts <- o .: "movePayAdditionalCosts"
     moveAfter <- o .: "moveAfter"
     moveAdditionalEnterCosts <- o .:? "moveAdditionalEnterCosts" .!= Free
+    moveId <- o .:? "moveId" .!= MoveId (fromWords64 6128981282234515924 12039885860129472512)
 
     pure Movement {..}

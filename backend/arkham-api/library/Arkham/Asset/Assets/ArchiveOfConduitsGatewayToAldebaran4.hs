@@ -1,16 +1,12 @@
-module Arkham.Asset.Assets.ArchiveOfConduitsGatewayToAldebaran4 (
-  archiveOfConduitsGatewayToAldebaran4,
-  ArchiveOfConduitsGatewayToAldebaran4 (..),
-)
-where
+module Arkham.Asset.Assets.ArchiveOfConduitsGatewayToAldebaran4 (archiveOfConduitsGatewayToAldebaran4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Message qualified as Msg
-import Arkham.Movement
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Token qualified as Token
 
 newtype ArchiveOfConduitsGatewayToAldebaran4 = ArchiveOfConduitsGatewayToAldebaran4 AssetAttrs
@@ -22,10 +18,10 @@ archiveOfConduitsGatewayToAldebaran4 = asset ArchiveOfConduitsGatewayToAldebaran
 
 instance HasAbilities ArchiveOfConduitsGatewayToAldebaran4 where
   getAbilities (ArchiveOfConduitsGatewayToAldebaran4 attrs) =
-    [ controlledAbility attrs 1 (exists NonEliteEnemy <> exists (be attrs <> AssetWithUses Leyline))
+    [ controlled attrs 1 (exists NonEliteEnemy <> exists (be attrs <> AssetWithUses Leyline))
         $ FastAbility Free
     , doesNotProvokeAttacksOfOpportunity
-        $ controlledAbility
+        $ controlled
           attrs
           2
           (exists $ EnemyIsEngagedWith (affectsOthers Anyone) <> EnemyWithToken Token.Leyline)
@@ -36,43 +32,24 @@ instance RunMessage ArchiveOfConduitsGatewayToAldebaran4 where
   runMessage msg a@(ArchiveOfConduitsGatewayToAldebaran4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemies <- select NonEliteEnemy
-      chooseOne
-        iid
-        [ targetLabel enemy [MoveTokens (attrs.ability 1) (toSource attrs) (toTarget enemy) Leyline 1]
-        | enemy <- enemies
-        ]
+      chooseTargetM iid enemies $ moveTokensTo (attrs.ability 1) attrs Leyline 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      iids <-
-        select
-          $ affectsOthers
-          $ InvestigatorEngagedWith (EnemyWithToken Token.Leyline)
-      chooseOrRunOne
-        iid
-        [targetLabel iid' [HandleTargetChoice iid (attrs.ability 2) (toTarget iid')] | iid' <- iids]
+      iids <- select $ affectsOthers $ InvestigatorEngagedWith (EnemyWithToken Token.Leyline)
+      chooseOrRunOneM iid $ targets iids $ handleTarget iid (attrs.ability 2)
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 2 -> True) (InvestigatorTarget iid') -> do
       enemies <- select $ EnemyWithToken Token.Leyline
       connectedLocations <-
         select $ ConnectedFrom (locationWithInvestigator iid') <> CanEnterLocation (InvestigatorWithId iid')
-      player <- getPlayer iid
-      choices <- for enemies \enemy -> do
-        pure
-          $ targetLabel enemy
-          $ DisengageEnemy iid' enemy
-          : [ Msg.chooseOrRunOne
-              player
-              [ targetLabel location [Move $ move (attrs.ability 2) iid' location] | location <- connectedLocations
-              ]
-            | notNull connectedLocations
-            ]
-            <> [ Msg.chooseOne
-                  player
-                  [ Label "Do not remove Leyline" []
-                  , Label "Remove Leyline" [EnemyEvaded iid enemy]
-                  ]
-               ]
 
-      chooseOrRunOne iid choices
+      chooseOrRunOneM iid do
+        targets enemies \enemy -> do
+          disengageEnemy iid' enemy
+          chooseOrRunOneM iid $ targets connectedLocations $ moveTo (attrs.ability 2) iid'
+          chooseOneM iid do
+            labeled "Do not remove Leyline" nothing
+            labeled "Remove Leyline" $ automaticallyEvadeEnemy iid enemy
+
       pure a
     _ -> ArchiveOfConduitsGatewayToAldebaran4 <$> liftRunMessage msg attrs

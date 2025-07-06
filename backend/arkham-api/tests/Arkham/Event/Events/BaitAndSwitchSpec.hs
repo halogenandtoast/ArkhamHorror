@@ -5,7 +5,7 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Enemy.Types qualified as EnemyAttrs
 import Arkham.Event.Cards qualified as Events
 import Arkham.Projection
-import TestImport.Lifted
+import TestImport.New
 
 spec :: Spec
 spec = describe "Bait and Switch" $ do
@@ -18,9 +18,9 @@ spec = describe "Bait and Switch" $ do
       [ placedLocation location1
       , placedLocation location2
       , SetChaosTokens [Zero]
-      , spawnAt enemy location1
-      , moveTo investigator location1
       ]
+    spawnAt enemy location1
+    moveTo investigator location1
 
     putCardIntoPlay investigator Events.baitAndSwitch
     chooseOnlyOption "Evade enemy"

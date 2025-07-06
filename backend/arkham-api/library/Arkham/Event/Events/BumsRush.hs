@@ -3,8 +3,8 @@ module Arkham.Event.Events.BumsRush (bumsRush) where
 import Arkham.Action qualified as Action
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Message.Lifted.Move
 import Arkham.Matcher hiding (EnemyEvaded)
+import Arkham.Message.Lifted.Move
 import Arkham.Modifier
 
 newtype BumsRush = BumsRush EventAttrs
@@ -29,9 +29,8 @@ instance RunMessage BumsRush where
       pure e
     WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _) | isTarget attrs target -> do
       choices <- select $ ConnectedFrom (locationWithInvestigator iid) <> LocationCanBeEnteredBy enemyId
-      unless (null choices) do
-        chooseOneM iid do
-          labeled "Do not move enemy" nothing
-          targets choices $ enemyMoveTo enemyId
+      chooseOrRunOneM iid do
+        labeled "Do not move enemy" nothing
+        targets choices $ enemyMoveTo attrs enemyId
       pure e
     _ -> BumsRush <$> liftRunMessage msg attrs

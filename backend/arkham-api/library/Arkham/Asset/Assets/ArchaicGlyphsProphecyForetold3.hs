@@ -27,7 +27,7 @@ instance RunMessage ArchaicGlyphsProphecyForetold3 where
       investigateEdit_ sid iid (attrs.ability 1) (setTarget attrs)
       pure a
     Successful (Action.Investigate, LocationTarget lid) iid _ (isTarget attrs -> True) _ -> do
-      discoverAt IsInvestigate iid (attrs.ability 1) lid 1
+      discoverAt IsInvestigate iid (attrs.ability 1) 1 lid
 
       enemies <- select $ enemyEngagedWith iid
       unless (null enemies) do

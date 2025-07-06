@@ -11,7 +11,7 @@ import Arkham.Location.Types (revealCluesL)
 import Arkham.Matcher (assetIs)
 import Arkham.Projection
 import Arkham.Token
-import TestImport hiding (EnemyDamage)
+import TestImport.New hiding (EnemyDamage)
 
 spec :: Spec
 spec = describe "Oops!" $ do
@@ -24,15 +24,13 @@ spec = describe "Oops!" $ do
     enemy2 <- testEnemyWith (Enemy.healthL ?~ Fixed 3)
     location <- testLocationWith (revealCluesL .~ Static 0)
 
-    pushAndRunAll
-      [ SetChaosTokens [MinusOne]
-      , addToHand (toId investigator) oops
-      , spawnAt enemy location
-      , spawnAt enemy2 location
-      ]
+    setChaosTokens [MinusOne]
+    addToHand investigator oops
+    spawnAt enemy location
+    spawnAt enemy2 location
     putCardIntoPlay investigator Assets.rolands38Special
     rolands38Special <- selectJust $ assetIs Assets.rolands38Special
-    pushAndRun $ moveTo investigator location
+    moveTo investigator location
 
     [doFight] <- field AssetAbilities rolands38Special
     pushAndRun $ UseAbility (toId investigator) doFight []
@@ -58,15 +56,13 @@ spec = describe "Oops!" $ do
     enemy2 <- testEnemyWith (Enemy.healthL ?~ Fixed 3)
     location <- testLocationWith id
 
-    pushAndRunAll
-      [ SetChaosTokens [MinusOne]
-      , addToHand (toId investigator) oops
-      , spawnAt enemy location
-      , spawnAt enemy2 location
-      ]
+    setChaosTokens [MinusOne]
+    addToHand investigator oops
+    spawnAt enemy location
+    spawnAt enemy2 location
     putCardIntoPlay investigator Assets.fortyOneDerringer
     fortyOneDerringer <- selectJust $ assetIs Assets.fortyOneDerringer
-    pushAndRun $ moveTo investigator location
+    moveTo investigator location
 
     [doFight] <- field AssetAbilities fortyOneDerringer
     pushAndRun $ UseAbility (toId investigator) doFight []
@@ -92,16 +88,14 @@ spec = describe "Oops!" $ do
     enemy2 <- testEnemyWith (Enemy.healthL ?~ Fixed 3)
     location <- testLocationWith id
 
-    pushAndRunAll
-      [ SetChaosTokens [MinusOne]
-      , addToHand (toId investigator) oops
-      , spawnAt enemy location
-      , spawnAt enemy2 location
-      ]
+    setChaosTokens [MinusOne]
+    addToHand investigator oops
+    spawnAt enemy location
+    spawnAt enemy2 location
 
     putCardIntoPlay investigator Assets.shotgun4
     shotgun4 <- selectJust $ assetIs Assets.shotgun4
-    pushAndRun $ moveAllTo location
+    moveAllTo location
     [doFight] <- field AssetAbilities shotgun4
     pushAndRun $ UseAbility (toId investigator) doFight []
     chooseOptionMatching "fight enemy 1" \case

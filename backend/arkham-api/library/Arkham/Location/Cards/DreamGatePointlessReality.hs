@@ -1,17 +1,19 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Location.Cards.DreamGatePointlessReality (dreamGatePointlessReality) where
 
+import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Movement
-import Arkham.Prelude
-import Arkham.Projection
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 
 newtype DreamGatePointlessReality = DreamGatePointlessReality LocationAttrs
   deriving anyclass IsLocation
@@ -22,47 +24,35 @@ dreamGatePointlessReality = location DreamGatePointlessReality Cards.dreamGatePo
 
 instance HasModifiersFor DreamGatePointlessReality where
   getModifiersFor (DreamGatePointlessReality a) = do
-    self <- modifySelf a [CannotBeEnteredBy AnyEnemy]
-    investigators <-
-      modifySelect a (not_ $ investigatorIs Investigators.lukeRobinson) [CannotEnter (toId a)]
-    enemies <- modifySelect a AnyEnemy [CannotSpawnIn (be a)]
-    pure $ self <> investigators <> enemies
+    modifySelf a [CannotBeEnteredBy AnyEnemy]
+    modifySelect a (not_ $ investigatorIs Investigators.lukeRobinson) [CannotEnter (toId a)]
+    modifySelect a AnyEnemy [CannotSpawnIn (be a)]
 
 instance HasAbilities DreamGatePointlessReality where
-  getAbilities (DreamGatePointlessReality attrs) =
-    withRevealedAbilities
-      attrs
-      [ mkAbility attrs 1
+  getAbilities (DreamGatePointlessReality a) =
+    extendRevealed
+      a
+      [ mkAbility a 1
           $ freeReaction
-          $ SkillTestResult
-            #after
-            You
-            (WhileInvestigating $ LocationWithId $ toId attrs)
-            (SuccessResult AnyValue)
-      , restrictedAbility attrs 2 (exists $ You <> investigatorIs Investigators.lukeRobinson)
-          $ ForcedAbility
+          $ SkillTestResult #after You (WhileInvestigating $ be a) #success
+      , restricted a 2 (youExist $ investigatorIs Investigators.lukeRobinson)
+          $ forced
           $ PhaseEnds #when #investigation
       ]
 
 instance RunMessage DreamGatePointlessReality where
-  runMessage msg l@(DreamGatePointlessReality attrs) = case msg of
+  runMessage msg l@(DreamGatePointlessReality attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      wondrousJourney <- genCard Locations.dreamGateWondrousJourney
-      push $ ReplaceLocation (toId attrs) wondrousJourney Swap
+      swapLocation attrs =<< genCard Locations.dreamGateWondrousJourney
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ RemoveLocation (toId attrs)
-      here <- fieldMap InvestigatorLocation (== Just (toId attrs)) iid
-      when here do
+      whenAt iid attrs do
         revealedLocations <- getCanMoveToMatchingLocations iid (attrs.ability 1) RevealedLocation
-        when (notNull revealedLocations) $ do
-          player <- getPlayer iid
-          push
-            $ chooseOne
-              player
-              [ targetLabel lid [Move $ move (toSource attrs) iid lid, assignHorror iid (toAbilitySource attrs 2) 2]
-              | lid <- revealedLocations
-              ]
+        chooseTargetM iid revealedLocations \lid -> do
+          moveTo (toSource attrs) iid lid
+          assignHorror iid (toAbilitySource attrs 2) 2
+
+      removeLocation attrs
 
       pure l
-    _ -> DreamGatePointlessReality <$> runMessage msg attrs
+    _ -> DreamGatePointlessReality <$> liftRunMessage msg attrs

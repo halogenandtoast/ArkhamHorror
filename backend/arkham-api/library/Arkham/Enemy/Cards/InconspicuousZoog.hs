@@ -38,7 +38,7 @@ instance RunMessage InconspicuousZoog where
             select $ ConnectedFrom (locationWithEnemy host) <> LocationCanBeEnteredBy host
           unless (null connectingLocations) do
             exhaustThis host
-            chooseOrRunOneM iid $ targets connectingLocations $ enemyMoveTo host
+            chooseOrRunOneM iid $ targets connectingLocations $ enemyMoveTo (attrs.ability 1) host
         _ -> error "should not trigger"
       pure e
     _ -> InconspicuousZoog <$> liftRunMessage msg attrs

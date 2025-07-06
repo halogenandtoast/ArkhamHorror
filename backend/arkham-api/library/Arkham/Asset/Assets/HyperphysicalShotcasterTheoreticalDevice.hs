@@ -9,7 +9,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (afterMove)
 import Arkham.Card
 import Arkham.Customization
-import Arkham.Discover
 import Arkham.Evade qualified as Evade
 import Arkham.Fight qualified as Fight
 import {-# SOURCE #-} Arkham.GameEnv
@@ -21,7 +20,9 @@ import Arkham.Helpers.SkillTest (getSkillTestTarget)
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Investigate qualified as Investigate
 import Arkham.Matcher
-import Arkham.Movement
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
+import Arkham.Movement hiding (moveToMatch)
 import Arkham.SkillType
 import Arkham.Token
 import Arkham.Window (defaultWindows)
@@ -218,26 +219,29 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
           -- We can only choose to move nothing if we have a valid target
           -- If we have a valid target we can move any enemy to us, otherwise we have to move an evadeable enemy
           lid <- getJustLocation iid -- TODO: can we do this?
-          let
-            forceEngagement enemy = if notNull canEvade then id else afterMove [Msg.EnemyEngageInvestigator enemy iid]
+          chooseOneM iid do
+            when (notNull canEvade) $ labeled "Move nothing (before)" $ doStep 1 msg
+            targets canMoveEnemyToUs \enemy -> do
+              if notNull canEvade
+                then enemyMoveTo attrs enemy lid
+                else enemyMoveToEdit attrs enemy lid $ afterMove [Msg.EnemyEngageInvestigator enemy iid]
+              doStep 0 msg
 
-          chooseOne iid
-            $ [Label "Move nothing (before)" [DoStep 1 msg] | notNull canEvade]
-            <> [ targetLabel enemy [Move $ forceEngagement enemy (move attrs enemy lid), DoStep 0 msg]
-               | enemy <- canMoveEnemyToUs
-               ]
-            <> [ targetLabel e [Move $ moveToMatch attrs e (ConnectedFrom $ LocationWithId lid), DoStep 0 msg]
-               | e <- canMoveEnemyAway
-               ]
-            <> [ targetLabel i [Move $ moveToMatch attrs i (ConnectedFrom $ LocationWithId lid), DoStep 0 msg]
-               | i <- canMoveOtherInvestigatorsAway
-               ]
-            <> [ targetLabel i [Move $ move attrs i lid, DoStep 0 msg]
-               | i <- canMoveOtherInvestigatorsToYourLocation
-               ]
-            <> [ targetLabel l [Move $ move attrs iid l, DoStep 0 msg]
-               | l <- locationWeCanMoveToWithCurrentEvade <> locationWeCanMoveToWithEvadeableEnemies
-               ]
+            targets canMoveEnemyAway \e -> do
+              enemyMoveToMatch attrs e (ConnectedFrom $ LocationWithId lid)
+              doStep 0 msg
+
+            targets canMoveOtherInvestigatorsAway \i -> do
+              moveToMatch attrs i (ConnectedFrom $ LocationWithId lid)
+              doStep 0 msg
+
+            targets canMoveOtherInvestigatorsToYourLocation \i -> do
+              moveTo attrs i lid
+              doStep 0 msg
+
+            targets (locationWeCanMoveToWithCurrentEvade <> locationWeCanMoveToWithEvadeableEnemies) \l -> do
+              moveTo attrs iid l
+              doStep 0 msg
         Just Realitycollapser -> do
           chooseOne
             iid
@@ -246,13 +250,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
             ]
         Just Matterweaver -> do
           cards <- select $ PlayableCardWithNoCost NoAction $ inHandOf ForPlay iid <> #asset
-          chooseOne
-            iid
-            [ targetLabel
-                (toCardId card)
-                [HandleTargetChoice iid (attrs.ability 1) (CardIdTarget $ toCardId card)]
-            | card <- cards
-            ]
+          chooseTargetM iid cards $ handleTarget iid (attrs.ability 1) . toCardId
         _ -> error "Invalid manifest"
 
       pure a
@@ -260,11 +258,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
       card <- getCard cid
       let cost = printedCardCost card
       sid <- getRandom
-      chooseOne
-        iid
-        [ SkillLabel sType [Msg.beginSkillTest sid iid (attrs.ability 1) (toCardId card) sType (Fixed cost)]
-        | sType <- allSkills
-        ]
+      chooseBeginSkillTest sid iid (attrs.ability 1) (toCardId card) allSkills (Fixed cost)
       pure a
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n < 2 -> do
       sid <- getRandom
@@ -277,7 +271,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
       push $ DoStep 2 msg'
       pure a
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      canMoveEnemyToUs <-
+      canMoveEnemyToUs :: [EnemyId] <-
         select $ EnemyAt ConnectedLocation <> NonEliteEnemy <> EnemyCanEnter (locationWithInvestigator iid)
 
       canMoveEnemyAway <-
@@ -302,29 +296,17 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
           <> InvestigatorAt (ConnectedFrom $ locationWithInvestigator iid)
           <> InvestigatorCanMoveTo (toSource attrs) (locationWithInvestigator iid)
       lid <- getJustLocation iid -- TODO: can we do this?
-      chooseOne iid $ Label "Move nothing (after)" []
-        : [targetLabel enemy [Move $ move attrs enemy lid] | enemy <- canMoveEnemyToUs]
-          <> [ targetLabel e [Move $ moveToMatch attrs e (ConnectedFrom $ LocationWithId lid)]
-             | e <- canMoveEnemyAway
-             ]
-          <> [ targetLabel i [Move $ moveToMatch attrs i (ConnectedFrom $ LocationWithId lid)]
-             | i <- canMoveOtherInvestigatorsAway
-             ]
-          <> [ targetLabel i [Move $ move attrs i lid]
-             | i <- canMoveOtherInvestigatorsToYourLocation
-             ]
-          <> [ targetLabel l [Move $ move attrs iid l]
-             | l <- locationWeCanMoveTo
-             ]
+      chooseOneM iid do
+        labeled "Move nothing (after)" nothing
+        targets canMoveEnemyToUs \e -> enemyMoveTo attrs e lid
+        targets canMoveEnemyAway \e -> enemyMoveToMatch attrs e (ConnectedFrom $ LocationWithId lid)
+        targets canMoveOtherInvestigatorsAway \i -> moveToMatch attrs i (ConnectedFrom $ LocationWithId lid)
+        targets canMoveOtherInvestigatorsToYourLocation \i -> moveTo attrs i lid
+        targets locationWeCanMoveTo $ moveTo attrs iid
       pure a
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
       lids <- select $ RevealedLocation <> LocationWithAnyClues
-      when (notNull lids)
-        $ chooseOrRunOne
-          iid
-          [ targetLabel lid' [Msg.DiscoverClues iid $ viaInvestigate $ discover lid' attrs 1]
-          | lid' <- lids
-          ]
+      chooseOrRunOneM iid $ targets lids $ discoverAt IsInvestigate iid attrs 1
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       case manifest meta of

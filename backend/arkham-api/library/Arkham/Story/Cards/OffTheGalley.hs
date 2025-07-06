@@ -1,15 +1,15 @@
-module Arkham.Story.Cards.OffTheGalley (OffTheGalley (..), offTheGalley) where
+module Arkham.Story.Cards.OffTheGalley (offTheGalley) where
 
+import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message.Lifted hiding (story)
+import Arkham.Message.Lifted.Move
 import Arkham.Movement
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype OffTheGalley = OffTheGalley StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -29,13 +29,13 @@ instance RunMessage OffTheGalley where
       if clues == 0
         then do
           for_ investigators $ \iid ->
-            push $ Move $ (move attrs iid moonForest) {movePayAdditionalCosts = False, moveCancelable = False}
+            moveToEdit attrs iid moonForest \m -> m {movePayAdditionalCosts = False, moveCancelable = False}
         else do
           raiseAlarmLevel attrs =<< allInvestigators
           eachInvestigator $ \iid ->
-            push $ Move $ (move attrs iid moonForest) {movePayAdditionalCosts = False, moveCancelable = False}
-          for_ enemies $ \eid -> push $ Move $ move attrs eid moonForest
+            moveToEdit attrs iid moonForest \m -> m {movePayAdditionalCosts = False, moveCancelable = False}
+          for_ enemies $ \eid -> enemyMoveTo attrs eid moonForest
 
-      push $ RemoveFromGame (toTarget moonBeastGalley)
+      removeFromGame moonBeastGalley
       pure s
     _ -> OffTheGalley <$> liftRunMessage msg attrs

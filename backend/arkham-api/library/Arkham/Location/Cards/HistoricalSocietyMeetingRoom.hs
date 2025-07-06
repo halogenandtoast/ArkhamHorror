@@ -28,7 +28,7 @@ instance HasAbilities HistoricalSocietyMeetingRoom where
 instance RunMessage HistoricalSocietyMeetingRoom where
   runMessage msg l@(HistoricalSocietyMeetingRoom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 | attrs.revealed -> do
-      discoverAt NotInvestigate iid (attrs.ability 1) attrs 1
+      discoverAt NotInvestigate iid (attrs.ability 1) 1 attrs
       pure l
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       reveal attrs

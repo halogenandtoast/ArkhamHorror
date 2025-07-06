@@ -27,7 +27,6 @@ instance RunMessage ServantOfManyMouths where
   runMessage msg e@(ServantOfManyMouths attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       locationsWithClues <- select $ locationWithDiscoverableCluesBy iid
-      chooseTargetM iid locationsWithClues \lid ->
-        discoverAt NotInvestigate iid (attrs.ability 1) lid 1
+      chooseTargetM iid locationsWithClues $ discoverAt NotInvestigate iid (attrs.ability 1) 1
       pure e
     _ -> ServantOfManyMouths <$> liftRunMessage msg attrs

@@ -6,6 +6,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Location (getCanMoveToMatchingLocations)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Move
 import Arkham.Modifier
 import Arkham.Movement
 
@@ -35,7 +36,7 @@ instance HasAbilities OnTheLamAdvancedEffect where
   getAbilities (OnTheLamAdvancedEffect a) = case a.target of
     InvestigatorTarget iid ->
       [ displayAsAction
-          $ restrictedAbility a 1 (youExist $ InvestigatorWithId iid)
+          $ restricted a 1 (youExist $ InvestigatorWithId iid)
           $ ConstantReaction
             "Disengage from each engaged enemy and move up to 2 locations away (On the Lam)"
             (RoundEnds #when)
@@ -52,9 +53,7 @@ instance RunMessage OnTheLamAdvancedEffect where
       enemies <- select $ enemyEngagedWith iid
       traverse_ (push . DisengageEnemy iid) enemies
       chooseOrRunOneM iid do
-        for_ locations \location -> do
-          targeting location do
-            push $ Move $ (move attrs iid location) {moveMeans = Towards}
+        targets locations \location -> moveToEdit attrs iid location \m -> m {moveMeans = Towards}
       disableReturn e
     EndRound -> disableReturn e
     _ -> OnTheLamAdvancedEffect <$> liftRunMessage msg attrs

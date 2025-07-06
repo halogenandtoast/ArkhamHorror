@@ -1,14 +1,12 @@
-module Arkham.Location.Cards.HallsOfPnakotusNorthernCorridors (
-  hallsOfPnakotusNorthernCorridors,
-) where
+module Arkham.Location.Cards.HallsOfPnakotusNorthernCorridors (hallsOfPnakotusNorthernCorridors) where
 
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 
 newtype HallsOfPnakotusNorthernCorridors = HallsOfPnakotusNorthernCorridors LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -17,36 +15,17 @@ newtype HallsOfPnakotusNorthernCorridors = HallsOfPnakotusNorthernCorridors Loca
 hallsOfPnakotusNorthernCorridors
   :: LocationCard HallsOfPnakotusNorthernCorridors
 hallsOfPnakotusNorthernCorridors =
-  locationWith
-    HallsOfPnakotusNorthernCorridors
-    Cards.hallsOfPnakotusNorthernCorridors
-    3
-    (Static 1)
-    (labelL .~ "hallsOfPnakotusNorthernCorridors")
+  setLabel "hallsOfPnakotusNorthernCorridors"
+    $ location HallsOfPnakotusNorthernCorridors Cards.hallsOfPnakotusNorthernCorridors 3 (Static 1)
 
 instance HasAbilities HallsOfPnakotusNorthernCorridors where
-  getAbilities (HallsOfPnakotusNorthernCorridors attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility attrs 1 (Here <> DuringTurn You)
-          $ FastAbility
-          $ HandDiscardCost 1 #any
-      ]
+  getAbilities (HallsOfPnakotusNorthernCorridors a) =
+    extendRevealed1 a $ restricted a 1 (Here <> DuringTurn You) $ FastAbility $ HandDiscardCost 1 #any
 
 instance RunMessage HallsOfPnakotusNorthernCorridors where
-  runMessage msg l@(HallsOfPnakotusNorthernCorridors attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      otherHalls <-
-        select
-          $ LocationWithTitle "Halls of Pnakotus"
-          <> NotLocation
-            (LocationWithId $ toId attrs)
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel lid [Move $ move (toSource attrs) iid lid]
-          | lid <- otherHalls
-          ]
+  runMessage msg l@(HallsOfPnakotusNorthernCorridors attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      otherHalls <- select $ LocationWithTitle "Halls of Pnakotus" <> not_ (be attrs)
+      chooseTargetM iid otherHalls $ moveTo (attrs.ability 1) iid
       pure l
-    _ -> HallsOfPnakotusNorthernCorridors <$> runMessage msg attrs
+    _ -> HallsOfPnakotusNorthernCorridors <$> liftRunMessage msg attrs

@@ -8,7 +8,6 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Movement
-import Arkham.Movement qualified as Move
 import Arkham.Window qualified as Window
 
 newtype AnotherDimension = AnotherDimension LocationAttrs
@@ -32,10 +31,10 @@ instance RunMessage AnotherDimension where
     UseCardAbility _ (isSource attrs -> True) 1 (locationLeavingPlay -> lid) _ -> do
       selectEach (InvestigatorAt $ be lid) \iid -> do
         withBatchedTimings (Window.Moves iid (attrs.ability 1) (Just lid) attrs.id) do
-          moveTo_ (attrs.ability 1) iid $ uncancellableMove $ Move.move (attrs.ability 1) iid attrs.id
+          moveToEdit (attrs.ability 1) iid attrs uncancellableMove
       doStep 1 msg
       pure l
     DoStep 1 (UseCardAbility _ (isSource attrs -> True) 1 (locationLeavingPlay -> lid) _) -> do
-      selectEach (EnemyAt (be lid)) \eid -> push $ EnemyMove eid attrs.id
+      selectEach (EnemyAt (be lid)) \eid -> enemyMoveTo (attrs.ability 1) eid attrs.id
       pure l
     _ -> AnotherDimension <$> liftRunMessage msg attrs

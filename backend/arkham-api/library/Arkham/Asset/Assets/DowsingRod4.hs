@@ -8,8 +8,8 @@ import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigate
 import Arkham.Matcher hiding (DiscoveringLastClue)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Modifier
-import Arkham.Movement
 import Arkham.Window (Window (..), WindowType (..))
 
 newtype DowsingRod4 = DowsingRod4 AssetAttrs
@@ -57,7 +57,7 @@ instance RunMessage DowsingRod4 where
       accessibleLocationIds <- getAccessibleLocations iid attrs
       withSkillTest \sid ->
         skillTestModifier sid (attrs.ability 1) iid $ AnySkillValue 2
-      chooseOne iid $ targetLabels accessibleLocationIds (only . Move . move attrs iid)
+      chooseTargetM iid accessibleLocationIds (moveTo (attrs.ability 1) iid)
       pure a
     DoStep 3 (UseThisAbility _ (isSource attrs -> True) 1) -> do
       pure $ overAttrs (setMetaKey "option2" True) a

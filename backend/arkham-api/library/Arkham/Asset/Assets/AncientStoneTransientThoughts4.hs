@@ -1,15 +1,14 @@
-module Arkham.Asset.Assets.AncientStoneTransientThoughts4 (
-  ancientStoneTransientThoughts4,
-  AncientStoneTransientThoughts4 (..),
-) where
+module Arkham.Asset.Assets.AncientStoneTransientThoughts4 (ancientStoneTransientThoughts4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Capability
+import Arkham.Helpers.Location
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Movement
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 
 newtype AncientStoneTransientThoughts4 = AncientStoneTransientThoughts4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,17 +20,17 @@ ancientStoneTransientThoughts4 = asset AncientStoneTransientThoughts4 Cards.anci
 
 instance HasAbilities AncientStoneTransientThoughts4 where
   getAbilities (AncientStoneTransientThoughts4 a) =
-    [ controlledAbility a 1 (youExist can.move)
-        $ ReactionAbility (DrawsCards #when You AnyCards AnyValue) (DynamicUseCost (be a) Secret DrawnCardsValue)
+    [ controlled a 1 (youExist can.move)
+        $ triggered (DrawsCards #when You AnyCards AnyValue) (DynamicUseCost (be a) Secret DrawnCardsValue)
     ]
 
 instance RunMessage AncientStoneTransientThoughts4 where
   runMessage msg a@(AncientStoneTransientThoughts4 attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 ws p@(totalUsesPayment -> n) -> do
-      pushAll $ replicate n $ UseCardAbilityStep iid (toSource attrs) 1 ws p 1
+    UseCardAbility _iid (isSource attrs -> True) 1 _ (totalUsesPayment -> n) -> do
+      repeated n $ do_ msg
       pure a
-    UseCardAbilityStep iid (isSource attrs -> True) 1 _ _ 1 -> do
-      selectWhenNotNull (AccessibleFrom $ locationWithInvestigator iid) \targets ->
-        chooseOne iid $ targetLabels targets (only . Move . move (attrs.ability 1) iid)
+    Do (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      xs <- getAccessibleLocations iid (attrs.ability 1)
+      chooseTargetM iid xs $ moveTo (attrs.ability 1) iid
       pure a
     _ -> AncientStoneTransientThoughts4 <$> liftRunMessage msg attrs

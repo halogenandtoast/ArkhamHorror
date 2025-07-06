@@ -18,17 +18,45 @@ moveAllTo (toSource -> source) lid = push $ MoveAllTo source lid
 moveTo
   :: (ReverseQueue m, Sourceable source, AsId location, IdOf location ~ LocationId)
   => source -> InvestigatorId -> location -> m ()
-moveTo (toSource -> source) iid location = push $ Move $ move source iid (asId location)
+moveTo source iid location = moveToEdit source iid location id
 
-moveToMatch :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> LocationMatcher -> m ()
-moveToMatch (toSource -> source) iid = push . Move . Arkham.Movement.moveToMatch source iid
+moveToEdit
+  :: (ReverseQueue m, Sourceable source, AsId location, IdOf location ~ LocationId)
+  => source -> InvestigatorId -> location -> (Movement -> Movement) -> m ()
+moveToEdit (toSource -> source) iid location f = push . Move . f =<< move source iid (asId location)
+
+moveToMatch
+  :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> LocationMatcher -> m ()
+moveToMatch (toSource -> source) iid = push . Move <=< Arkham.Movement.moveToMatch source iid
 
 enemyMoveTo
-  :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId, AsId location, IdOf location ~ LocationId)
-  => enemy
+  :: (ReverseQueue m, Sourceable source, Targetable enemy, AsId location, IdOf location ~ LocationId)
+  => source
+  -> enemy
   -> location
   -> m ()
-enemyMoveTo enemy location = push $ EnemyMove (asId enemy) (asId location)
+enemyMoveTo source enemy location = push . Move =<< asMoveTo source enemy (asId location)
+
+enemyMoveToEdit
+  :: (ReverseQueue m, Sourceable source, Targetable enemy, AsId location, IdOf location ~ LocationId)
+  => source
+  -> enemy
+  -> location
+  -> (Movement -> Movement)
+  -> m ()
+enemyMoveToEdit source enemy location f = push . Move . f =<< asMoveTo source enemy (asId location)
+
+enemyMoveToMatch
+  :: ( ReverseQueue m
+     , Targetable enemy
+     , IsLocationMatcher matcher
+     , Sourceable source
+     )
+  => source
+  -> enemy
+  -> matcher
+  -> m ()
+enemyMoveToMatch source enemy = push . Move <=< Arkham.Movement.moveToMatch source enemy . toLocationMatcher
 
 moveUntil
   :: (ReverseQueue m, Targetable target, AsId location, IdOf location ~ LocationId)
@@ -45,13 +73,14 @@ moveToward
 moveToward target matcher = push $ MoveToward (toTarget target) (toLocationMatcher matcher)
 
 class AsMoveTo a where
-  asMoveTo :: (Sourceable source, Targetable target) => source -> target -> a -> Movement
+  asMoveTo
+    :: (MonadRandom m, Sourceable source, Targetable target) => source -> target -> a -> m Movement
 
 data MoveWrapper where
   CannotCancel :: AsMoveTo a => a -> MoveWrapper
 
 instance AsMoveTo Movement where
-  asMoveTo _ _ = id
+  asMoveTo _ _ = pure
 
 instance AsMoveTo LocationId where
   asMoveTo = move
@@ -64,7 +93,7 @@ instance AsMoveTo CardDef where
 
 instance AsMoveTo MoveWrapper where
   asMoveTo source iid = \case
-    CannotCancel inner -> uncancellableMove (asMoveTo source iid inner)
+    CannotCancel inner -> uncancellableMove <$> asMoveTo source iid inner
 
 -- No callbacks
 moveTo_
@@ -73,7 +102,7 @@ moveTo_
   -> target
   -> movement
   -> m ()
-moveTo_ (toSource -> source) target = push . MoveTo . asMoveTo source target
+moveTo_ (toSource -> source) target = push . MoveTo <=< asMoveTo source target
 
 moveTowardsMatching
   :: (Targetable target, Sourceable source, ReverseQueue m)
@@ -81,7 +110,7 @@ moveTowardsMatching
   -> target
   -> LocationMatcher
   -> m ()
-moveTowardsMatching source target matcher = push $ Move $ Msg.moveTowardsMatching source target matcher
+moveTowardsMatching source target matcher = push . Move =<< Msg.moveTowardsMatching source target matcher
 
 moveTowards
   :: (Targetable target, Sourceable source, ReverseQueue m, AsId location, IdOf location ~ LocationId)
@@ -89,4 +118,4 @@ moveTowards
   -> target
   -> location
   -> m ()
-moveTowards source target location = push $ Move $ Msg.moveTowardsMatching source target (LocationWithId $ asId location)
+moveTowards source target location = push . Move =<< Msg.moveTowardsMatching source target (LocationWithId $ asId location)

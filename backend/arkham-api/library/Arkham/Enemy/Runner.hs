@@ -452,6 +452,9 @@ instance RunMessage EnemyAttrs where
           Place -> push $ EnemyMove (toId a) destinationLocationId
           OneAtATime -> push $ MoveUntil destinationLocationId (toTarget a)
           Towards -> push $ MoveToward (toTarget a) (LocationWithId destinationLocationId)
+          TowardsN n ->
+            pushAll $ MoveToward (toTarget a) (LocationWithId destinationLocationId)
+              : [Move $ movement {moveMeans = TowardsN (n - 1)} | n > 1]
         ToLocationMatching matcher -> do
           lids <- select matcher
           player <- getLeadPlayer

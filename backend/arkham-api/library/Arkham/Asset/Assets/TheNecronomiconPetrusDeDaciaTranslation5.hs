@@ -45,7 +45,7 @@ instance RunMessage TheNecronomiconPetrusDeDaciaTranslation5 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 3 -> do
       lids <- select $ LocationWithDiscoverableCluesBy $ InvestigatorWithId iid
-      chooseTargetM iid lids \lid -> discoverAt NotInvestigate iid (attrs.ability 3) lid 1
+      chooseTargetM iid lids $ discoverAt NotInvestigate iid (attrs.ability 3) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 4 -> do
       eids <- select $ enemyEngagedWith iid <> EnemyCanBeDamagedBySource (toSource attrs)

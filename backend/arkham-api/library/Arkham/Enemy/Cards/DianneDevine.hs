@@ -30,6 +30,6 @@ instance RunMessage DianneDevine where
   runMessage msg e@(DianneDevine attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       locations <- select $ LocationWithAsset $ AssetWithFewestClues $ AssetWithTrait Bystander
-      leadChooseOneM $ targets locations $ enemyMoveTo attrs
+      leadChooseOneM $ targets locations $ enemyMoveTo (attrs.ability 1) attrs
       pure e
     _ -> DianneDevine <$> liftRunMessage msg attrs

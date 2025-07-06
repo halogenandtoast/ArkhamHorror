@@ -8,7 +8,6 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Movement
-import Arkham.Movement qualified as Move
 import Arkham.Window (getBatchId)
 import Arkham.Window qualified as Window
 
@@ -52,7 +51,7 @@ instance RunMessage RealmsBeyondAllInOne where
       cancelBatch bId
       -- should we get the location leaving play here
       withBatchedTimings (Window.Moves iid (attrs.ability 1) Nothing attrs.id) do
-        moveTo_ (attrs.ability 1) iid $ uncancellableMove $ Move.move (attrs.ability 1) iid attrs.id
+        moveToEdit (attrs.ability 1) iid attrs.id uncancellableMove
       pure l
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       cancelMovement attrs iid

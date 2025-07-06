@@ -10,7 +10,8 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.History
 import Arkham.Matcher
-import Arkham.Movement
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Taboo
 import Arkham.UI
 
@@ -24,33 +25,28 @@ prophesiaeProfanaAtlasOfTheUnknowable5 = asset ProphesiaeProfanaAtlasOfTheUnknow
 instance HasModifiersFor ProphesiaeProfanaAtlasOfTheUnknowable5 where
   getModifiersFor (ProphesiaeProfanaAtlasOfTheUnknowable5 attrs) = do
     let mlocus = maybeResult attrs.meta
-    controller <- case attrs.controller of
-      Nothing -> pure mempty
-      Just iid -> maybeModified_ attrs iid do
-        locus <- hoistMaybe mlocus
-        liftGuardM $ iid <!=~> InvestigatorAt (LocationWithId locus)
-        mTurnInvestigator <- lift $ selectOne TurnInvestigator
-        canTaboo <-
-          lift
-            $ maybe
-              (pure False)
-              (\iid' -> (== 0) <$> getHistoryField TurnHistory iid' HistoryAttacksOfOpportunity)
-              mTurnInvestigator
-        pure
-          $ [SkillModifier #intellect 1, SkillModifier #agility 1]
-          <> if tabooed TabooList20 attrs
-            then [IgnoreAttacksOfOpportunity | canTaboo]
-            else [MayIgnoreAttacksOfOpportunity]
-    locus <- case mlocus of
-      Nothing -> pure mempty
-      Just lid -> modified_ attrs lid [UIModifier Locus]
-    pure $ controller <> locus
+    for_ attrs.controller \iid -> maybeModified_ attrs iid do
+      locus <- hoistMaybe mlocus
+      liftGuardM $ iid <!=~> InvestigatorAt (LocationWithId locus)
+      mTurnInvestigator <- lift $ selectOne TurnInvestigator
+      canTaboo <-
+        lift
+          $ maybe
+            (pure False)
+            (\iid' -> (== 0) <$> getHistoryField TurnHistory iid' HistoryAttacksOfOpportunity)
+            mTurnInvestigator
+      pure
+        $ [SkillModifier #intellect 1, SkillModifier #agility 1]
+        <> if tabooed TabooList20 attrs
+          then [IgnoreAttacksOfOpportunity | canTaboo]
+          else [MayIgnoreAttacksOfOpportunity]
+    for_ mlocus \lid -> modified_ attrs lid [UIModifier Locus]
 
 instance HasAbilities ProphesiaeProfanaAtlasOfTheUnknowable5 where
   getAbilities (ProphesiaeProfanaAtlasOfTheUnknowable5 a) =
     let mlocus = maybeResult a.meta
-     in restrictedAbility a 1 ControlsThis (freeReaction $ AssetEntersPlay #after (be a))
-          : [ controlledAbility
+     in restricted a 1 ControlsThis (freeReaction $ AssetEntersPlay #after (be a))
+          : [ controlled
                 a
                 2
                 (exists $ affectsOthers $ InvestigatorCanMoveTo (a.ability 2) (LocationWithId locus))
@@ -62,11 +58,7 @@ instance RunMessage ProphesiaeProfanaAtlasOfTheUnknowable5 where
   runMessage msg a@(ProphesiaeProfanaAtlasOfTheUnknowable5 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       revealedLocations <- select RevealedLocation
-      chooseOrRunOne
-        iid
-        [ targetLabel location [HandleTargetChoice iid (attrs.ability 1) (toTarget location)]
-        | location <- revealedLocations
-        ]
+      chooseOrRunOneM iid $ targets revealedLocations $ handleTarget iid (attrs.ability 1)
       pure a
     HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (LocationTarget lid) -> do
       pure . ProphesiaeProfanaAtlasOfTheUnknowable5 $ attrs & setMeta (Just lid)
@@ -74,10 +66,7 @@ instance RunMessage ProphesiaeProfanaAtlasOfTheUnknowable5 where
       let locus = toResult attrs.meta
       investigators <-
         select $ affectsOthers $ InvestigatorCanMoveTo (attrs.ability 2) (LocationWithId locus)
-      chooseOrRunOne
-        iid
-        [ targetLabel investigator [Move $ move (attrs.ability 2) investigator locus]
-        | investigator <- investigators
-        ]
+      chooseOrRunOneM iid do
+        targets investigators \investigator -> moveTo (attrs.ability 2) investigator locus
       pure a
     _ -> ProphesiaeProfanaAtlasOfTheUnknowable5 <$> liftRunMessage msg attrs

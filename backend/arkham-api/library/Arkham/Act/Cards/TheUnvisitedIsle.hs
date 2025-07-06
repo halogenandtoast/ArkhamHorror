@@ -9,6 +9,7 @@ import Arkham.Location.Brazier
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message (StoryMode (..))
+import Arkham.Message.Lifted.Move
 import Arkham.Movement
 import Data.List (cycle)
 import Data.Map.Strict qualified as Map
@@ -23,7 +24,7 @@ theUnvisitedIsle = act (1, A) TheUnvisitedIsle Cards.theUnvisitedIsle (Just $ Gr
 instance RunMessage TheUnvisitedIsle where
   runMessage msg a@(TheUnvisitedIsle attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      eachInvestigator \iid -> push $ ForInvestigator iid msg
+      eachInvestigator (`forInvestigator` msg)
       investigators <- getInvestigators
 
       -- We need to resolve all dealt cards in player order so we build a map first
@@ -44,9 +45,9 @@ instance RunMessage TheUnvisitedIsle where
       sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
       for_ paired \unvisitedIsle -> do
         lid <- placeLabeledLocation "unvisitedIsle" unvisitedIsle
-        pushAll
-          $ PutLocationInFrontOf iid lid
-          : Move (uncancellableMove $ move attrs iid lid)
-          : [UpdateLocation lid (LocationBrazier ?=. Lit) | sidedWithTheCoven]
+        push $ PutLocationInFrontOf iid lid
+        moveToEdit attrs iid lid uncancellableMove
+        when sidedWithTheCoven do
+          push $ UpdateLocation lid (LocationBrazier ?=. Lit)
       pure a
     _ -> TheUnvisitedIsle <$> liftRunMessage msg attrs

@@ -1,12 +1,10 @@
-module Arkham.Event.Events.TheTruthBeckons (theTruthBeckons, TheTruthBeckons (..)) where
+module Arkham.Event.Events.TheTruthBeckons (theTruthBeckons) where
 
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Move
 
 newtype TheTruthBeckons = TheTruthBeckons EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -16,21 +14,17 @@ theTruthBeckons :: EventCard TheTruthBeckons
 theTruthBeckons = eventWith TheTruthBeckons Cards.theTruthBeckons (setMeta @Bool False)
 
 instance RunMessage TheTruthBeckons where
-  runMessage msg e@(TheTruthBeckons attrs) = case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
-      targets <-
+  runMessage msg e@(TheTruthBeckons attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      locations <-
         select $ CanMoveCloserToLocation (toSource attrs) (InvestigatorWithId iid) UnrevealedLocation
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [targetLabel target [HandleTargetChoice iid (toSource attrs) (toTarget target)] | target <- targets]
+      chooseTargetM iid locations $ handleTarget iid attrs
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do
-      pushAll [toMessage $ (move attrs iid lid) {moveMeans = Towards}, DoStep 1 msg]
+      moveTowards attrs iid lid
+      doStep 1 msg
       pure e
-    Msg.RevealLocation {} -> do
-      pure $ TheTruthBeckons $ setMeta @Bool True attrs
+    Msg.RevealLocation {} -> pure $ TheTruthBeckons $ setMeta @Bool True attrs
     DoStep 1 msg'@(HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid)) -> do
       let revealedLocation = toResult @Bool attrs.meta
       canStillMove <-
@@ -38,7 +32,7 @@ instance RunMessage TheTruthBeckons where
       notEngaged <- iid <!=~> InvestigatorEngagedWith AnyEnemy
 
       when (canStillMove && notEngaged && not revealedLocation) do
-        pushAll [toMessage $ (move attrs iid lid) {moveMeans = Towards}, DoStep 1 msg']
-
+        moveTowards attrs iid lid
+        doStep 1 msg'
       pure e
-    _ -> TheTruthBeckons <$> runMessage msg attrs
+    _ -> TheTruthBeckons <$> liftRunMessage msg attrs

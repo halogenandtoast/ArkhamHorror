@@ -40,6 +40,6 @@ instance RunMessage DevoteeOfTheKey where
             lead <- getLead
             case choices of
               [] -> error "should not happen"
-              xs -> chooseOrRunOneM lead $ targets xs (enemyMoveTo attrs)
+              xs -> chooseOrRunOneM lead $ targets xs (enemyMoveTo (attrs.ability 1) attrs)
       pure e
     _ -> DevoteeOfTheKey <$> liftRunMessage msg attrs

@@ -131,6 +131,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (obtainCard)
 import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Message.Lifted.Choose qualified as Choose
+import Arkham.Message.Lifted.Move (moveTo, moveToEdit)
 import Arkham.Modifier
 import Arkham.Modifier qualified as Modifier
 import Arkham.Movement
@@ -1280,7 +1281,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     from <- fromMaybe (LocationId nil) <$> field InvestigatorLocation iid
     afterWindowMsg <- Helpers.checkWindows [mkAfter $ Window.MoveAction iid from lid]
     canMove <- withoutModifier a CannotMove
-    pushAll $ (guard canMove *> resolve (Move $ move a iid lid)) <> [afterWindowMsg]
+    when canMove $ pushAll . resolve . Move =<< move a iid lid
+    push afterWindowMsg
     pure a
   Move movement | isTarget a (moveTarget movement) -> do
     scenarioEffect <- sourceMatches movement.source SourceIsScenarioCardEffect
@@ -1305,6 +1307,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           mFromLocation <- field InvestigatorLocation iid
 
           case moveMeans movement of
+            TowardsN n -> do
+              player <- getPlayer iid
+              let loc = fromJustNote "must have a starting location for OneAtATime" mFromLocation
+              matchingClosestLocationIds <- select $ ClosestPathLocation loc destinationLocationId
+              if destinationLocationId `elem` matchingClosestLocationIds
+                then
+                  push $ chooseOne player [targetLabel destinationLocationId [Move $ movement {moveMeans = Direct}]]
+                else do
+                  Choose.chooseTargetM iid matchingClosestLocationIds \lid -> do
+                    pushAll
+                      $ Move (movement {moveDestination = ToLocation lid, moveMeans = Direct})
+                      : [Move $ movement {moveMeans = TowardsN (n - 1)} | n > 1]
             Towards -> do
               player <- getPlayer iid
               let loc = fromJustNote "must have a starting location for OneAtATime" mFromLocation
@@ -2688,57 +2702,56 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       pushAll $ [ChooseLeadInvestigator | isLead] <> [Msg.InvestigatorDefeated source iid]
     pure $ a & defeatedL .~ True & endedTurnL .~ True & killedL .~ True
   MoveAllTo source lid | not (a ^. defeatedL || a ^. resignedL) -> do
-    push $ MoveTo $ (move source investigatorId lid) {moveMeans = Place}
+    moveToEdit source investigatorId lid \m -> m {moveMeans = Place}
     pure a
   MoveTo movement | isTarget a (moveTarget movement) -> do
+    push $ ResolveMovement investigatorId
+    pure $ a & movementL ?~ movement
+  ResolveMovement iid | iid == investigatorId -> do
     cancelled <- hasModifier a CannotMove
     unless cancelled $ push $ Do msg
     pure a
-  Do (MoveTo movement) | isTarget a (moveTarget movement) -> do
-    case moveDestination movement of
-      ToLocationMatching matcher -> do
-        lids <- select matcher
-        player <- getPlayer investigatorId
-        push
-          $ chooseOrRunOne
-            player
-            [targetLabel lid [MoveTo $ movement {moveDestination = ToLocation lid}] | lid <- lids]
-        pure a
-      ToLocation lid -> do
-        let iid = investigatorId
-
-        moveWith <-
-          if movement.means == Place
-            then pure []
-            else do
-              select (InvestigatorWithModifier (CanMoveWith $ InvestigatorWithId iid) <> colocatedWith iid)
-                >>= filterM (\iid' -> getCanMoveTo iid' (moveSource movement) lid)
-                >>= traverse (traverseToSnd getPlayer)
-
-        afterMoveButBeforeEnemyEngagement <-
-          Helpers.checkWindows [mkAfter (Window.MovedButBeforeEnemyEngagement iid lid)]
-
-        afterEntering <- checkAfter $ Window.Entering iid lid
-
-        pushAll
-          $ [ WhenWillEnterLocation iid lid
+  Do (ResolveMovement iid) | iid == investigatorId -> do
+    case investigatorMovement of
+      Nothing -> pure a
+      Just movement -> case moveDestination movement of
+        ToLocationMatching matcher -> do
+          lids <- select matcher
+          player <- getPlayer investigatorId
+          push
+            $ chooseOrRunOne
+              player
+              [targetLabel lid [MoveTo $ movement {moveDestination = ToLocation lid}] | lid <- lids]
+          pure a
+        ToLocation lid -> do
+          pushAll
+            [ WhenWillEnterLocation iid lid
             , Do (WhenWillEnterLocation iid lid)
             , After (WhenWillEnterLocation iid lid)
             , EnterLocation iid lid
             ]
-          <> [ chooseOne
-                 player
-                 [ Label "Move too" [Move $ move iid' iid' lid]
-                 , Label "Skip" []
-                 ]
-             | movement.means /= Place
-             , (iid', player) <- moveWith
-             ]
-          <> moveAfter movement
-          <> [afterEntering]
-          <> [afterMoveButBeforeEnemyEngagement | movement.means /= Place]
-          <> [CheckEnemyEngagement iid]
-        pure a
+
+          when (movement.means /= Place) do
+            moveWith <-
+              if movement.means == Place
+                then pure []
+                else do
+                  select (InvestigatorWithModifier (CanMoveWith $ InvestigatorWithId iid) <> colocatedWith iid)
+                    >>= filterM (\iid' -> getCanMoveTo iid' (moveSource movement) lid)
+
+            for_ moveWith \iid' ->
+              Choose.chooseOneM iid' do
+                Choose.labeled "Move too" $ moveTo iid' iid' lid
+                Choose.labeled "Skip" Choose.nothing
+
+          afterMoveButBeforeEnemyEngagement <-
+            Helpers.checkWindows [mkAfter (Window.MovedButBeforeEnemyEngagement iid lid)]
+          afterEntering <- checkAfter $ Window.Entering iid lid
+          pushAll $ moveAfter movement
+            <> [afterEntering]
+            <> [afterMoveButBeforeEnemyEngagement | movement.means /= Place]
+            <> [CheckEnemyEngagement iid]
+          pure a
   Do (WhenWillEnterLocation iid lid) | iid == investigatorId -> do
     pure $ a & placementL .~ AtLocation lid
   CheckEnemyEngagement iid | iid == investigatorId -> do
@@ -4246,9 +4259,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
     modifiers <- getModifiers iid
-    mTurnInvestigator <- if AsIfTurn iid `elem` modifiers
-      then pure [iid]
-      else maybeToList <$> selectOne TurnInvestigator
+    mTurnInvestigator <-
+      if AsIfTurn iid `elem` modifiers
+        then pure [iid]
+        else maybeToList <$> selectOne TurnInvestigator
     let
       windows =
         map (mkWhen . Window.DuringTurn) mTurnInvestigator

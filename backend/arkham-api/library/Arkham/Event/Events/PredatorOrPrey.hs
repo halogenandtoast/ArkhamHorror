@@ -1,4 +1,4 @@
-module Arkham.Event.Events.PredatorOrPrey (predatorOrPrey, PredatorOrPrey (..)) where
+module Arkham.Event.Events.PredatorOrPrey (predatorOrPrey) where
 
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
@@ -6,7 +6,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
-import Arkham.Movement (move)
 
 newtype PredatorOrPrey = PredatorOrPrey EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -38,15 +37,13 @@ instance RunMessage PredatorOrPrey where
 
       pure e
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) -> do
-      engagedEnemies <- select $ enemyEngagedWith iid
-      for_ engagedEnemies $ disengageEnemy iid
+      selectEach (enemyEngagedWith iid) (disengageEnemy iid)
       withLocationOf iid \loc -> do
         locations <-
           select
             $ CanMoveToLocation (InvestigatorWithId iid) (toSource attrs)
             $ AccessibleFrom (LocationWithId loc)
             <> LocationFartherFrom loc (NearestLocationTo iid $ LocationWithEnemy AnyEnemy)
-        when (notNull locations) do
-          chooseOne iid [targetLabel loc' [Move $ move attrs iid loc'] | loc' <- locations]
+        chooseTargetM iid locations $ moveTo attrs iid
       pure e
     _ -> PredatorOrPrey <$> liftRunMessage msg attrs

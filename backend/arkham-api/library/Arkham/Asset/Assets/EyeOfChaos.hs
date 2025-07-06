@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.EyeOfChaos (eyeOfChaos, eyeOfChaosEffect, EyeOfChaos (..)) where
+module Arkham.Asset.Assets.EyeOfChaos (eyeOfChaos, eyeOfChaosEffect) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)
@@ -59,9 +59,9 @@ instance RunMessage EyeOfChaosEffect where
                   chooseOrRunOneM iid do
                     when stillInPlay do
                       labeled "Place 1 Charge on Eye of Chaos" do
-                        push $ AddUses attrs.source assetId Charge 1
+                        addUses attrs.source assetId Charge 1
                     labeled "Discover 1 clues at a connecting location" do
-                      chooseTargetM iid lids \lid' -> discoverAt NotInvestigate iid attrs lid' 1
+                      chooseTargetM iid lids $ discoverAt NotInvestigate iid attrs 1
                 disable attrs
           case attrs.source of
             AbilitySource (AssetSource assetId) 1 -> handleIt assetId

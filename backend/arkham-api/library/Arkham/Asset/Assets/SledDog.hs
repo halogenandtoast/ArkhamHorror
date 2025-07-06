@@ -5,7 +5,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Location (getConnectedMoveLocations)
 import Arkham.Helpers.Modifiers hiding (skillTestModifiers)
-import Arkham.Movement
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 
 newtype SledDog = SledDog AssetAttrs
   deriving anyclass IsAsset
@@ -35,16 +36,14 @@ getExhaustedCount p = go p
 instance RunMessage SledDog where
   runMessage msg a@(SledDog attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 _ (getExhaustedCount -> x) -> do
-      push $ DoStep x msg
+      doStep x msg
       pure a
     DoStep n msg'@(UseCardAbility iid (isSource attrs -> True) 1 _ _) | n > 0 -> do
       locations <- getConnectedMoveLocations iid (attrs.ability 1)
-      unless (null locations) $ do
-        chooseOne
-          iid
-          [ targetLabel location [Move $ move (toSource attrs) iid location, DoStep (n - 1) msg']
-          | location <- locations
-          ]
+      unless (null locations) do
+        chooseTargetM iid locations \location -> do
+          moveTo attrs iid location
+          doStep (n - 1) msg'
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ (getExhaustedCount -> x) -> do
       sid <- getRandom

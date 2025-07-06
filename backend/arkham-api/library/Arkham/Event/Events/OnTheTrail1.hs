@@ -1,4 +1,4 @@
-module Arkham.Event.Events.OnTheTrail1 (onTheTrail1, OnTheTrail1 (..)) where
+module Arkham.Event.Events.OnTheTrail1 (onTheTrail1) where
 
 import Arkham.Capability
 import Arkham.Discover
@@ -7,7 +7,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Matcher hiding (DiscoverClues)
-import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted.Move
 import Arkham.Movement
 import Arkham.Projection
 
@@ -35,21 +35,13 @@ instance RunMessage OnTheTrail1 where
               (LocationWithId lid)
               (EmptyLocation <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid))
 
-        let doMove = (move attrs iid lid) {moveMeans = Towards}
-        player <- getPlayer iid
-        chooseOrRunOne
-          iid
-          $ [ Label "Move twice towards the enemy" [Move $ doMove {moveAfter = [Move doMove]}] | canMoveTowards
-            ]
-          <> [ Label
-              "Discover 1 clue at any empty location between you and the chosen enemy"
-              [ Msg.chooseOne
-                  player
-                  [ targetLabel location [DiscoverClues iid $ discover location attrs 1] | location <- canDiscoverClues
-                  ]
-              ]
-             | notNull canDiscoverClues
-             ]
+        chooseOrRunOneM iid do
+          when canMoveTowards do
+            labeled "Move twice towards the enemy" do
+              moveToEdit attrs iid lid \m -> m {moveMeans = TowardsN 2}
 
+          when (notNull canDiscoverClues) do
+            labeled "Discover 1 clue at any empty location between you and the chosen enemy" do
+              chooseTargetM iid canDiscoverClues $ discoverAt NotInvestigate iid attrs 1
       pure e
     _ -> OnTheTrail1 <$> liftRunMessage msg attrs

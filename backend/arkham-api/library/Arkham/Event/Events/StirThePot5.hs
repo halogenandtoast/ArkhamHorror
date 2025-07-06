@@ -4,10 +4,9 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Location (getAccessibleLocations)
-import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher
-import Arkham.Movement
+import Arkham.Message.Lifted.Move
 import Arkham.Projection
 
 newtype StirThePot5 = StirThePot5 EventAttrs
@@ -33,20 +32,18 @@ instance RunMessage StirThePot5 where
         Just (EnemyTarget eid) -> do
           x <- liftA2 (+) (field EnemyHealthDamage eid) (field EnemySanityDamage eid)
           enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
-          chooseOrRunOneAtATime
-            iid
-            [targetLabel enemy [Msg.nonAttackEnemyDamage (Just iid) attrs x enemy] | enemy <- enemies]
+          chooseOrRunOneAtATimeM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) attrs x
           doStep 1 msg
         _ -> error "invalid target"
       pure e
     DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do
       engaged <- select $ enemyEngagedWith iid
-      canDisengage <- iid <=~> InvestigatorCanDisengage
+      whenMatch iid InvestigatorCanDisengage $ for_ engaged $ disengageEnemy iid
+
       locations <- getAccessibleLocations iid attrs
-
-      pushAll [DisengageEnemy iid eid | canDisengage, eid <- engaged]
-
       when (notNull locations) do
-        chooseOne iid $ Label "Do Not Move" [] : targetLabels locations (only . Move . move attrs iid)
+        chooseOneM iid do
+          labeled "Do Not Move" nothing
+          targets locations (moveTo attrs iid)
       pure e
     _ -> StirThePot5 <$> liftRunMessage msg attrs

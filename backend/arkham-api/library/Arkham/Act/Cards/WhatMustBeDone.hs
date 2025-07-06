@@ -1,15 +1,15 @@
 module Arkham.Act.Cards.WhatMustBeDone (whatMustBeDone) where
 
 import Arkham.Ability
-import Arkham.Message.Lifted.Choose
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Campaigns.TheCircleUndone.Key
+import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.Draw.Types
 import Arkham.Helpers.Log (inRecordSet)
 import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Message.Lifted.Choose
 import Arkham.Movement
 import Arkham.Scenario.Deck
 import Data.List qualified as List
@@ -26,7 +26,7 @@ instance HasAbilities WhatMustBeDone where
     extend
       attrs
       [ mkAbility attrs 1 $ actionAbilityWithCost ClueCostX
-      , restrictedAbility
+      , restricted
           attrs
           2
           (exists $ LeadInvestigator <> at_ ("The Black Throne" <> LocationWithoutClues))
@@ -58,7 +58,8 @@ instance RunMessage WhatMustBeDone where
               shuffleCardsIntoDeck CosmosDeck (List.delete card cards)
               lid <- placeLocation card
               revealBy iid lid
-              push $ RunCosmos iid lid [Move $ move (attrs.ability 1) iid lid]
+              movemsg <- move (attrs.ability 1) iid lid
+              push $ RunCosmos iid lid [Move movemsg]
       pure a
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       youAcceptedYourFate <- getHasRecord YouHaveAcceptedYourFate

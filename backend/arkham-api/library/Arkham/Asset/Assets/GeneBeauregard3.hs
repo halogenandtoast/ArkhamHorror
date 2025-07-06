@@ -74,12 +74,11 @@ instance RunMessage GeneBeauregard3 where
       enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy
       connected <- select $ ConnectedTo (locationWithInvestigator iid)
       chooseOrRunOneM iid do
-        targets enemies \enemy ->
-          chooseOrRunOneM iid $ targets connected (enemyMoveTo enemy)
+        targets enemies $ chooseOrRunOneM iid . targets connected . enemyMoveTo attrs
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 4 -> do
       enemies <- select $ at_ (ConnectedTo (locationWithInvestigator iid)) <> NonEliteEnemy
       location <- getJustLocation iid
-      chooseOrRunOneM iid $ targets enemies (`enemyMoveTo` location)
+      chooseOrRunOneM iid $ targets enemies \e -> enemyMoveTo attrs e location
       pure a
     _ -> GeneBeauregard3 <$> liftRunMessage msg attrs

@@ -36,6 +36,6 @@ instance HasAbilities ParlorCar where
 instance RunMessage ParlorCar where
   runMessage msg l@(ParlorCar attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      discoverAt NotInvestigate iid (attrs.ability 1) attrs 1
+      discoverAt NotInvestigate iid (attrs.ability 1) 1 attrs
       pure l
     _ -> ParlorCar <$> liftRunMessage msg attrs

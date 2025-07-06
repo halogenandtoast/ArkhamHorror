@@ -26,7 +26,7 @@ instance RunMessage WukWukWuk where
             chooseOneM iid do
               withLocationOf iid \lid -> do
                 whenM (eid <=~> (notAt_ (LocationWithId lid) <> EnemyCanEnter (LocationWithId lid))) do
-                  labeled "Move it to your location" $ enemyMoveTo eid lid
+                  labeled "Move it to your location" $ enemyMoveTo attrs eid lid
               labeled "Place 1 doom on it" $ placeDoom attrs eid 1
       pure t
     _ -> WukWukWuk <$> liftRunMessage msg attrs

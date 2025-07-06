@@ -35,7 +35,7 @@ instance RunMessage StoneBridge where
           skillLabeled kind $ beginSkillTest sid iid (attrs.ability 1) iid kind (Fixed 4)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      discoverAt NotInvestigate iid (attrs.ability 1) attrs 1
+      discoverAt NotInvestigate iid (attrs.ability 1) 1 attrs
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       ls <- select $ CanMoveToLocation You (attrs.ability 2) ("Stone Bridge" <> not_ (be attrs))

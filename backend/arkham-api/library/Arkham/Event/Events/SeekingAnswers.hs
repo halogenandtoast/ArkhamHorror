@@ -22,6 +22,6 @@ instance RunMessage SeekingAnswers where
       pure e
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do
       locations <- select $ ConnectedLocation <> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
-      chooseTargetM iid locations \lid -> discoverAt IsInvestigate iid attrs lid 1
+      chooseTargetM iid locations $ discoverAt IsInvestigate iid attrs 1
       pure e
     _ -> SeekingAnswers <$> liftRunMessage msg attrs

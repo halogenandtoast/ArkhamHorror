@@ -4,7 +4,6 @@ import Arkham.Prelude
 
 import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Card
-import Arkham.Message.Lifted.Queue
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
@@ -20,6 +19,7 @@ import Arkham.Id
 import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Message.Lifted.Queue
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
@@ -73,7 +73,7 @@ getCanMoveLocationLeft lid = do
       Just (EmptySpace _ _) -> True
       Just (CosmosLocation _ _) -> False
 
-commitRitualSuicide :: (ReverseQueue m , Sourceable source) => source -> m ()
+commitRitualSuicide :: (ReverseQueue m, Sourceable source) => source -> m ()
 commitRitualSuicide (toSource -> source) = do
   cultists <- select $ EnemyWithTrait Cultist
   for_ cultists (push . toDiscard source)
@@ -108,3 +108,13 @@ bottommostRevealedLocationPositions = do
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "beforeTheBlackThrone" a
+
+placeCosmos
+  :: ( ReverseQueue m
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     , AsId location
+     , IdOf location ~ LocationId
+     )
+  => investigator -> location -> CosmosLocation Card LocationId -> m ()
+placeCosmos (asId -> iid) (asId -> lid) = push . PlaceCosmos iid lid

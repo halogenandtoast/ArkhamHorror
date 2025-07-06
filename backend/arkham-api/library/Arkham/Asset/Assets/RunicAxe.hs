@@ -15,7 +15,8 @@ import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (DiscoverClues, EnemyDefeated)
-import Arkham.Movement
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Trait (Trait (Relic))
 
@@ -165,7 +166,7 @@ instance RunMessage RunicAxe where
           mLoc <- getLocationOf iid
           isLocation <- coerce eid <=~> Anywhere
           if isLocation
-            then push $ Move $ move (attrs.ability 1) iid (coerce eid)
+            then moveTo (attrs.ability 1) iid (coerce @_ @LocationId eid)
             else
               getLocationOf eid >>= traverse_ \loc -> do
                 if Just loc /= mLoc
@@ -174,7 +175,7 @@ instance RunMessage RunicAxe where
                       accessibleLocations <- getAccessibleLocations iid (attrs.ability 1)
                       closestLocationIds <- select $ ClosestPathLocation loc' loc
                       let locations = filter (`elem` closestLocationIds) accessibleLocations
-                      chooseOne iid $ targetLabels locations (only . Move . move (attrs.ability 1) iid)
+                      chooseOneM iid $ targets locations (moveTo (attrs.ability 1) iid)
                   else do
                     engaged <- eid <=~> enemyEngagedWith iid
                     unless engaged $ enemyEngageInvestigator eid iid

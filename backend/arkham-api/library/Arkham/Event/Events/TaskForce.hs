@@ -1,13 +1,11 @@
-module Arkham.Event.Events.TaskForce (taskForce, TaskForce (..)) where
+module Arkham.Event.Events.TaskForce (taskForce) where
 
 import Arkham.Ability
-import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Import.Lifted hiding (discoverAtYourLocation)
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher hiding (DiscoverClues)
-import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted.Move
 import Arkham.Modifier
-import Arkham.Movement
 
 newtype Meta = Meta {usedOptions :: [Int]}
   deriving stock (Show, Eq, Generic)
@@ -29,11 +27,7 @@ instance RunMessage TaskForce where
       canUseAbility <-
         (1 `notElem` usedOptions meta &&)
           <$> selectAny
-            ( AssetWithPerformableAbilityBy
-                (affectsOthers $ colocatedWith iid)
-                AbilityIsActionAbility
-                [IgnoreActionCost]
-            )
+            (AssetWithPerformableAbilityBy (affectsOthers $ colocatedWith iid) #action [IgnoreActionCost])
       canMove <-
         (2 `notElem` usedOptions meta &&)
           <$> selectAny
@@ -49,15 +43,12 @@ instance RunMessage TaskForce where
             )
 
       when (canUseAbility || canMove || canDiscover) do
-        chooseOne iid
-          $ [ Label
-              "...resolve an {action} ability on an asset they control without paying its {action} cost."
-              [DoStep 1 msg']
-            | canUseAbility
-            ]
-          <> [Label "...move to a connecting location." [DoStep 2 msg'] | canMove]
-          <> [Label "...discover 1 clue at their location" [DoStep 3 msg'] | canDiscover]
-
+        chooseOneM iid do
+          when canUseAbility do
+            labeled "...resolve an {action} ability on an asset they control without paying its {action} cost."
+              $ doStep 1 msg'
+          when canMove $ labeled "...move to a connecting location." $ doStep 2 msg'
+          when canDiscover $ labeled "...discover 1 clue at their location" $ doStep 3 msg'
       pure e
     DoStep 1 msg'@(PlayThisEvent iid (is attrs -> True)) -> do
       investigators <- select $ colocatedWith iid
@@ -66,47 +57,35 @@ instance RunMessage TaskForce where
           map ((`applyAbilityModifiers` [IgnoreActionCost]) . doesNotProvokeAttacksOfOpportunity)
             <$> select
               ( PerformableAbilityBy (InvestigatorWithId iid') [IgnoreActionCost]
-                  <> AbilityIsActionAbility
+                  <> #action
                   <> AbilityOnAsset (assetControlledBy iid')
               )
-        player <- getPlayer iid'
-        pure $ if null abilities then Nothing else Just (player, iid', abilities)
-      chooseOrRunOne
-        iid
-        [ targetLabel iid' [Msg.chooseOrRunOne player [AbilityLabel iid' ab [] [] [] | ab <- abilities]]
-        | (player, iid', abilities) <- investigatorsWithAbilities
-        ]
+        pure $ if null abilities then Nothing else Just (iid', abilities)
+      chooseOrRunOneM iid do
+        for_ investigatorsWithAbilities \(iid', abilities) ->
+          targeting iid' $ chooseOrRunOneM iid' $ for_ abilities \ab -> abilityLabeled iid' ab nothing
       doStep 0 msg'
       pure . TaskForce $ attrs `with` Meta (1 : usedOptions meta)
     DoStep 2 msg'@(PlayThisEvent iid (is attrs -> True)) -> do
       investigators <- select $ colocatedWith iid
-      investigatorsWithLocations <- flip mapMaybeM investigators \iid' -> do
+      investigatorsWithLocations <- forMaybeM investigators \iid' -> do
         locations <-
           select
             $ CanMoveToLocation
               (InvestigatorWithId iid')
               (toSource attrs)
               (ConnectedFrom $ locationWithInvestigator iid')
-        player <- getPlayer iid'
-        pure $ if null locations then Nothing else Just (player, iid', locations)
-      chooseOrRunOne
-        iid
-        [ targetLabel
-          iid'
-          [Msg.chooseOrRunOne player [targetLabel lid [Move $ move attrs iid' lid] | lid <- locations]]
-        | (player, iid', locations) <- investigatorsWithLocations
-        ]
+        pure $ guard (notNull locations) $> (iid', locations)
+      chooseOrRunOneM iid do
+        for_ investigatorsWithLocations \(iid', locations) ->
+          targeting iid' $ chooseOrRunOneM iid' $ targets locations $ moveTo attrs iid'
       doStep 0 msg'
       pure . TaskForce $ attrs `with` Meta (2 : usedOptions meta)
     DoStep 3 msg'@(PlayThisEvent iid (is attrs -> True)) -> do
       investigators <-
         filterM (\iid' -> iid' <=~> InvestigatorAt (locationWithDiscoverableCluesBy iid'))
           =<< select (colocatedWith iid)
-      chooseOrRunOne
-        iid
-        [ targetLabel iid' [DiscoverClues iid' $ discoverAtYourLocation attrs 1]
-        | iid' <- investigators
-        ]
+      chooseOrRunOneM iid $ targets investigators \iid' -> discoverAtYourLocation NotInvestigate iid' attrs 1
       doStep 0 msg'
       pure . TaskForce $ attrs `with` Meta (3 : usedOptions meta)
     _ -> TaskForce . (`with` meta) <$> liftRunMessage msg attrs

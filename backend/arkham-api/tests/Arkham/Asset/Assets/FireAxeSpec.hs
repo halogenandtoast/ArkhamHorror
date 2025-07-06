@@ -7,7 +7,7 @@ import Arkham.Enemy.Types (EnemyAttrs (..), Field (..))
 import Arkham.Matcher (assetIs)
 import Arkham.Projection
 import Arkham.Token
-import TestImport hiding (EnemyDamage)
+import TestImport.New hiding (EnemyDamage)
 
 spec :: Spec
 spec = describe "Fire Axe" $ do
@@ -21,9 +21,9 @@ spec = describe "Fire Axe" $ do
       enemy <- testEnemyWith
         $ \attrs -> attrs {enemyHealth = Just (Fixed 3), enemyFight = Just (Fixed 3)}
       location <- testLocationWith id
-      pushAndRun $ SetChaosTokens [Zero]
-      pushAndRun $ spawnAt enemy location
-      pushAndRun $ moveTo investigator location
+      setChaosTokens [Zero]
+      spawnAt enemy location
+      moveTo investigator location
       [doFight, _] <- field AssetAbilities fireAxe
       pushAndRun $ UseAbility (toId investigator) doFight []
       chooseOnlyOption "Fight enemy"
@@ -41,9 +41,9 @@ spec = describe "Fire Axe" $ do
       enemy <- testEnemyWith
         $ \attrs -> attrs {enemyHealth = Just (Fixed 3), enemyFight = Just (Fixed 3)}
       location <- testLocationWith id
-      pushAndRun $ SetChaosTokens [Zero]
-      pushAndRun $ spawnAt enemy location
-      pushAndRun $ moveTo investigator location
+      setChaosTokens [Zero]
+      spawnAt enemy location
+      moveTo investigator location
       [doFight, _] <- field AssetAbilities fireAxe
       pushAndRun $ UseAbility (toId investigator) doFight []
       chooseOnlyOption "Fight enemy"
@@ -75,9 +75,9 @@ spec = describe "Fire Axe" $ do
         $ \attrs -> attrs {enemyHealth = Just (Fixed 3), enemyFight = Just (Fixed 3)}
       location <- testLocationWith id
 
-      pushAndRun $ SetChaosTokens [Zero]
-      pushAndRun $ spawnAt enemy location
-      pushAndRun $ moveTo investigator location
+      setChaosTokens [Zero]
+      spawnAt enemy location
+      moveTo investigator location
       [doFight, _] <- field AssetAbilities fireAxe
       pushAndRun $ UseAbility (toId investigator) doFight []
       chooseOnlyOption "Fight enemy"
@@ -106,9 +106,9 @@ spec = describe "Fire Axe" $ do
       enemy <- testEnemyWith
         $ \attrs -> attrs {enemyHealth = Just (Fixed 3), enemyFight = Just (Fixed 3)}
       location <- testLocationWith id
-      pushAndRun $ SetChaosTokens [Zero]
-      pushAndRun $ spawnAt enemy location
-      pushAndRun $ moveTo investigator location
+      setChaosTokens [Zero]
+      spawnAt enemy location
+      moveTo investigator location
       [doFight, _] <- field AssetAbilities fireAxe
       pushAndRun $ UseAbility (toId investigator) doFight []
       chooseOnlyOption "Fight enemy"

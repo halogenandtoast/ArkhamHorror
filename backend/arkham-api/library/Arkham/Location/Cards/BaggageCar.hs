@@ -27,6 +27,6 @@ instance HasAbilities BaggageCar where
 instance RunMessage BaggageCar where
   runMessage msg l@(BaggageCar attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      discoverAt NotInvestigate iid (attrs.ability 1) attrs 1
+      discoverAt NotInvestigate iid (attrs.ability 1) 1 attrs
       pure l
     _ -> BaggageCar <$> liftRunMessage msg attrs

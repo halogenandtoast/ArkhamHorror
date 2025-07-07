@@ -311,7 +311,7 @@ sourceMatches s = \case
         ChaosTokenEffectSource _ -> True
         _ -> False
      in
-      pure $ check (traceShowId s)
+      pure $ check s
   Matcher.SourceIsScenarioCardEffect ->
     let
       check = \case

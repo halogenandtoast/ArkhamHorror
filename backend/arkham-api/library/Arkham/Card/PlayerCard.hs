@@ -2,8 +2,7 @@
 
 module Arkham.Card.PlayerCard where
 
-import Arkham.Prelude
-
+import Arkham.Asset.Cards
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.Class
@@ -15,6 +14,7 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Name
 import Arkham.PlayerCard
+import Arkham.Prelude
 import Arkham.SkillType
 import {-# SOURCE #-} Arkham.Taboo
 import Arkham.Taboo.Types
@@ -73,8 +73,9 @@ instance HasField "skills" PlayerCard [SkillIcon] where
 instance HasCardDef PlayerCard where
   toCardDef c = case lookup (pcCardCode c) (allPlayerCards <> allSpecialEnemyCards) of
     Just def -> maybe def (`tabooListModify` def) (pcTabooList c)
-    Nothing ->
-      error $ "missing card def for player card " <> show (pcCardCode c)
+    Nothing -> case lookup (pcCardCode c) allEncounterAssetCards of
+      Just def -> def
+      Nothing -> error $ "missing card def for player card " <> show (pcCardCode c)
 
 instance Named PlayerCard where
   toName = toName . toCardDef

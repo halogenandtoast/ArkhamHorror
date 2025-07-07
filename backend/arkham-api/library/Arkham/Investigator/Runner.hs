@@ -2000,9 +2000,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         mMax :: Maybe Int <- foldr getMaybeMax Nothing <$> getModifiers lid'
         pure $ maybe n (min n) mMax
 
-    canDiscoverClues <- getCanDiscoverClues d.isInvestigate iid lid
+    canDiscoverClues <-
+      anyM (getCanDiscoverClues d.isInvestigate iid) (lid : Map.keys additionalDiscoveredAt)
     if canDiscoverClues
       then do
+        baseOk <- getCanDiscoverClues d.isInvestigate iid lid
         base <- total lid (d.count + additionalDiscovered)
         discoveredClues <- min base <$> field LocationClues lid
         checkWindowMsg <- checkWindows [mkWhen (Window.WouldDiscoverClues iid lid d.source discoveredClues)]
@@ -2012,7 +2014,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           discoveredClues' <- lift $ min <$> total lid' (getSum n) <*> field LocationClues lid'
           guard (discoveredClues' > 0)
           lift $ checkWindows [mkWhen (Window.WouldDiscoverClues iid lid' d.source discoveredClues')]
-        pushAll $ checkWindowMsg : otherWindows <> [DoStep 1 msg]
+        pushAll $ [checkWindowMsg | baseOk] <> otherWindows <> [DoStep 1 msg]
       else do
         tokens <- field LocationTokens lid
         putStrLn $ "Can't discover clues in " <> tshow lid <> ": " <> tshow tokens

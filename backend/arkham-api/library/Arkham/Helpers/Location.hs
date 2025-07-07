@@ -268,10 +268,10 @@ getAccessibleLocations iid source =
 getCanLeaveCurrentLocation :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m Bool
 getCanLeaveCurrentLocation iid source = do
   mLocation <- selectOne $ Matcher.locationWithInvestigator iid
-  case traceShowId mLocation of
+  case mLocation of
     Nothing -> pure False
     Just lid -> do
-      mods <- traceShowId <$> getModifiers lid
+      mods <- getModifiers lid
       let extraCostsToLeave = mconcat [c | AdditionalCostToLeave c <- mods]
       getCanAffordCost iid source [#move] [] extraCostsToLeave
 

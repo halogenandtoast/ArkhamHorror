@@ -490,10 +490,14 @@ gameOver :: ReverseQueue m => m ()
 gameOver = push GameOver
 
 kill :: (Sourceable source, ReverseQueue m) => source -> InvestigatorId -> m ()
-kill (toSource -> source) = push . InvestigatorKilled source
+kill (toSource -> source) iid = do
+  push $ InvestigatorKilled source iid
+  push CheckForRemainingInvestigators
 
 drivenInsane :: ReverseQueue m => InvestigatorId -> m ()
-drivenInsane = push . DrivenInsane
+drivenInsane iid = do
+  push $ DrivenInsane iid
+  push CheckForRemainingInvestigators
 
 killRemaining
   :: (Sourceable source, ReverseQueue m) => source -> m [InvestigatorId]
@@ -3119,8 +3123,11 @@ cancelEvent eId = matchingDon't \case
   _ -> False
 
 cancelMovement
-  :: (ReverseQueue m, Sourceable source, Targetable investigator) => source -> investigator -> m ()
-cancelMovement source investigator = movementModifier source investigator CannotMove
+  :: (ReverseQueue m, Sourceable source, Targetable investigator, AsId investigator, IdOf investigator ~ InvestigatorId) => source -> investigator -> m ()
+cancelMovement source investigator = do
+  field InvestigatorMovement (asId investigator) >>= \case
+    Nothing -> movementModifier source investigator CannotMove
+    Just movement -> movementModifier source investigator (CancelMovement movement.id)
 
 sendMessage :: (ReverseQueue m, Targetable target) => target -> Message -> m ()
 sendMessage target msg = push $ SendMessage (toTarget target) msg

@@ -1280,16 +1280,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   MoveAction iid lid _cost False | iid == investigatorId -> do
     from <- fromMaybe (LocationId nil) <$> field InvestigatorLocation iid
     afterWindowMsg <- Helpers.checkWindows [mkAfter $ Window.MoveAction iid from lid]
-    canMove <- withoutModifier a CannotMove
+    mods <- getModifiers iid
+    let canMove =
+          none
+            (`elem` mods)
+            (CannotMove : [CancelMovement movement.id | movement <- maybeToList investigatorMovement])
     when canMove $ pushAll . resolve . Move =<< move a iid lid
     push afterWindowMsg
     pure a
   Move movement | isTarget a (moveTarget movement) -> do
     scenarioEffect <- sourceMatches movement.source SourceIsScenarioCardEffect
     canMove <-
-      if scenarioEffect
-        then withoutModifier a CannotMove
-        else withoutModifiers a [CannotMove, CannotMoveExceptByScenarioCardEffects]
+      withoutModifiers a $ CannotMove
+        : CancelMovement movement.id
+        : [CannotMoveExceptByScenarioCardEffects | not scenarioEffect]
     when canMove do
       case moveDestination movement of
         ToLocationMatching matcher -> do
@@ -1458,9 +1462,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                    , runAfterEntering
                    ]
                 <> maybeToList mRunAfterLeaving
-    pure a
+    pure $ a & movementL ?~ movement
   WhenCanMove iid msgs | iid == investigatorId -> do
-    canMove <- withoutModifier a CannotMove
+    mods <- getModifiers iid
+    let canMove =
+          none
+            (`elem` mods)
+            (CannotMove : [CancelMovement movement.id | movement <- maybeToList investigatorMovement])
     when canMove $ pushAll msgs
     pure a
   Will (PassedSkillTest iid _ _ (InvestigatorTarget iid') _ n) | iid == iid' && iid == investigatorId -> do
@@ -2708,8 +2716,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     push $ ResolveMovement investigatorId
     pure $ a & movementL ?~ movement
   ResolveMovement iid | iid == investigatorId -> do
-    cancelled <- hasModifier a CannotMove
-    unless cancelled $ push $ Do msg
+    mods <- getModifiers iid
+    let canMove =
+          none
+            (`elem` mods)
+            (CannotMove : [CancelMovement movement.id | movement <- maybeToList investigatorMovement])
+    when canMove $ push $ Do msg
     pure a
   Do (ResolveMovement iid) | iid == investigatorId -> do
     case investigatorMovement of

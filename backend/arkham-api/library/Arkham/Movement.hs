@@ -13,10 +13,6 @@ import Data.Aeson.TH
 import Data.UUID (fromWords64)
 import GHC.Records
 
-newtype MoveId = MoveId UUID
-  deriving stock (Show, Eq, Ord, Data)
-  deriving newtype (ToJSON, FromJSON, Random)
-
 data Movement = Movement
   { moveSource :: Source
   , moveTarget :: Target
@@ -26,7 +22,7 @@ data Movement = Movement
   , movePayAdditionalCosts :: Bool
   , moveAfter :: [Message]
   , moveAdditionalEnterCosts :: Cost
-  , moveId :: MoveId
+  , moveId :: MovementId
   }
   deriving stock (Show, Eq, Data)
 
@@ -53,6 +49,9 @@ instance HasField "after" Movement [Message] where
 
 instance HasField "additionalEnterCosts" Movement Cost where
   getField = moveAdditionalEnterCosts
+
+instance HasField "id" Movement MovementId where
+  getField = moveId
 
 data MovementMeans = Direct | OneAtATime | Towards | Place | TowardsN Int
   deriving stock (Show, Eq, Data)
@@ -159,7 +158,15 @@ destinationToLocationMatcher = \case
   ToLocation lid -> LocationWithId lid
   ToLocationMatching matcher -> matcher
 
-$(deriveJSON defaultOptions ''MovementMeans)
+$(deriveToJSON defaultOptions ''MovementMeans)
+
+instance FromJSON MovementMeans where
+  parseJSON (String "Direct") = pure Direct
+  parseJSON (String "OneAtATime") = pure OneAtATime
+  parseJSON (String "Towards") = pure Towards
+  parseJSON (String "Place") = pure Place
+  parseJSON x = $(mkParseJSON defaultOptions ''MovementMeans) x
+
 $(deriveJSON defaultOptions ''Destination)
 $(deriveToJSON defaultOptions ''Movement)
 
@@ -173,6 +180,6 @@ instance FromJSON Movement where
     movePayAdditionalCosts <- o .: "movePayAdditionalCosts"
     moveAfter <- o .: "moveAfter"
     moveAdditionalEnterCosts <- o .:? "moveAdditionalEnterCosts" .!= Free
-    moveId <- o .:? "moveId" .!= MoveId (fromWords64 6128981282234515924 12039885860129472512)
+    moveId <- o .:? "moveId" .!= MovementId (fromWords64 6128981282234515924 12039885860129472512)
 
     pure Movement {..}

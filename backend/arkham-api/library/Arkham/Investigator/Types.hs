@@ -130,6 +130,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorClues :: Field Investigator Int
   InvestigatorCluesInPool :: Field Investigator Int
   InvestigatorTokens :: Field Investigator Tokens
+  InvestigatorMovement :: Field Investigator (Maybe Movement)
   InvestigatorHand :: Field Investigator [Card]
   InvestigatorHandSize :: Field Investigator Int
   InvestigatorCardsUnderneath :: Field Investigator [Card]
@@ -228,6 +229,7 @@ instance FromJSON (SomeField Investigator) where
     "InvestigatorDoom" -> pure $ SomeField InvestigatorDoom
     "InvestigatorClues" -> pure $ SomeField InvestigatorClues
     "InvestigatorTokens" -> pure $ SomeField InvestigatorTokens
+    "InvestigatorMovement" -> pure $ SomeField InvestigatorMovement
     "InvestigatorHand" -> pure $ SomeField InvestigatorHand
     "InvestigatorHandSize" -> pure $ SomeField InvestigatorHandSize
     "InvestigatorCardsUnderneath" -> pure $ SomeField InvestigatorCardsUnderneath

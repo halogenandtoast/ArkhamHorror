@@ -193,6 +193,7 @@ data ModifierType
   | CannotMakeAttacksOfOpportunity
   | CannotManipulateDeck
   | CannotMove
+  | CancelMovement MovementId
   | CannotMoveExceptByScenarioCardEffects
   | CannotMoveMoreThanOnceEachTurn
   | CannotMulligan

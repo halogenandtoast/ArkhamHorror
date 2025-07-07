@@ -1,3 +1,4 @@
+{- HLINT ignore "Use camelCase" -}
 module Arkham.Location.Cards.Intersection_a (intersection_a, Intersection_a (..)) where
 
 import Arkham.Ability
@@ -25,7 +26,7 @@ instance HasAbilities Intersection_a where
     extendRevealed
       a
       [ mkAbility a 1 $ SilentForcedAbility $ RevealLocation #after Anyone (be a)
-      , restrictedAbility a 2 Here $ FastAbility $ GroupClueCost (PerPlayer 1) (be a)
+      , restricted a 2 Here $ FastAbility $ GroupClueCost (PerPlayer 1) (be a)
       ]
 
 instance RunMessage Intersection_a where

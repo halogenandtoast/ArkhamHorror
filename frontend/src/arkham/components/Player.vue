@@ -879,7 +879,6 @@ function toggleHandAreaMarginBottom(event: Event) {
   }
 }
 
-
 .hand-area {
   display: flex;
   flex-direction: column;
@@ -902,4 +901,9 @@ function toggleHandAreaMarginBottom(event: Event) {
   }
 }
 
+.card {
+  width: var(--card-width);
+  min-width: var(--card-width);
+  border-radius: 2px;
+}
 </style>

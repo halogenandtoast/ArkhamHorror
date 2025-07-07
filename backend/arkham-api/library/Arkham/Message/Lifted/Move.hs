@@ -2,7 +2,10 @@ module Arkham.Message.Lifted.Move where
 
 import Arkham.Card.CardDef
 import Arkham.Classes.HasQueue (push)
+import Arkham.Classes.Query (whenMatch)
+import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Id
+import Arkham.Matcher.Enemy
 import Arkham.Matcher.Location
 import Arkham.Message hiding (story)
 import Arkham.Message.Lifted.Queue
@@ -16,12 +19,12 @@ moveAllTo :: (ReverseQueue m, Sourceable source) => source -> LocationId -> m ()
 moveAllTo (toSource -> source) lid = push $ MoveAllTo source lid
 
 moveTo
-  :: (ReverseQueue m, Sourceable source, AsId location, IdOf location ~ LocationId)
+  :: (ReverseQueue m, Sourceable source, ToId location LocationId)
   => source -> InvestigatorId -> location -> m ()
 moveTo source iid location = moveToEdit source iid location id
 
 moveToEdit
-  :: (ReverseQueue m, Sourceable source, AsId location, IdOf location ~ LocationId)
+  :: (ReverseQueue m, Sourceable source, ToId location LocationId)
   => source -> InvestigatorId -> location -> (Movement -> Movement) -> m ()
 moveToEdit (toSource -> source) iid location f = push . Move . f =<< move source iid (asId location)
 
@@ -30,7 +33,7 @@ moveToMatch
 moveToMatch (toSource -> source) iid = push . Move <=< Arkham.Movement.moveToMatch source iid
 
 enemyMoveTo
-  :: (ReverseQueue m, Sourceable source, Targetable enemy, AsId location, IdOf location ~ LocationId)
+  :: (ReverseQueue m, Sourceable source, Targetable enemy, ToId location LocationId)
   => source
   -> enemy
   -> location
@@ -38,13 +41,20 @@ enemyMoveTo
 enemyMoveTo source enemy location = push . Move =<< asMoveTo source enemy (asId location)
 
 enemyMoveToEdit
-  :: (ReverseQueue m, Sourceable source, Targetable enemy, AsId location, IdOf location ~ LocationId)
+  :: ( ReverseQueue m
+     , Sourceable source
+     , Targetable enemy
+     , ToId enemy EnemyId
+     , ToId location LocationId
+     )
   => source
   -> enemy
   -> location
   -> (Movement -> Movement)
   -> m ()
-enemyMoveToEdit source enemy location f = push . Move . f =<< asMoveTo source enemy (asId location)
+enemyMoveToEdit source enemy location f = do
+  whenMatch (asId enemy) EnemyCanMove do
+    push . Move . f =<< asMoveTo source enemy (asId location)
 
 enemyMoveToMatch
   :: ( ReverseQueue m
@@ -59,7 +69,7 @@ enemyMoveToMatch
 enemyMoveToMatch source enemy = push . Move <=< Arkham.Movement.moveToMatch source enemy . toLocationMatcher
 
 moveUntil
-  :: (ReverseQueue m, Targetable target, AsId location, IdOf location ~ LocationId)
+  :: (ReverseQueue m, Targetable target, ToId location LocationId)
   => target
   -> location
   -> m ()
@@ -113,7 +123,7 @@ moveTowardsMatching
 moveTowardsMatching source target matcher = push . Move =<< Msg.moveTowardsMatching source target matcher
 
 moveTowards
-  :: (Targetable target, Sourceable source, ReverseQueue m, AsId location, IdOf location ~ LocationId)
+  :: (Targetable target, Sourceable source, ReverseQueue m, ToId location LocationId)
   => source
   -> target
   -> location

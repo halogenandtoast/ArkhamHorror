@@ -1,4 +1,4 @@
-module Arkham.Event.Events.HonedInstinct (honedInstinct, HonedInstinct (..)) where
+module Arkham.Event.Events.HonedInstinct (honedInstinct) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -22,16 +22,14 @@ instance RunMessage HonedInstinct where
     PlayThisEvent iid (is attrs -> True) -> do
       when (attrs `hasCustomization` SharpenedTalent) do
         eventModifiers attrs iid [SkillModifier sType 2 | sType <- [minBound ..]]
-      pushAll [GainActions iid (toSource attrs) 1, PlayerWindow iid [] False, DoStep 1 msg]
+      takeActionAsIfTurn iid attrs
+      doStep 1 msg
       pure e
     DoStep 1 (PlayThisEvent iid (is attrs -> True)) -> do
       when (attrs `hasCustomization` ForceOfHabit) do
-        chooseOne
-          iid
-          [ Label
-              "Perform another action and remove this from game  (Force of Habit)"
-              [GainActions iid (toSource attrs) 1, PlayerWindow iid [] False, RemoveFromGame (toTarget attrs)]
-          , Label "Do not perform another action" []
-          ]
+        chooseOneM iid do
+          labeled "Perform another action and remove this from game  (Force of Habit)" do
+            takeActionAsIfTurn iid attrs
+          labeled "Do not perform another action" nothing
       pure e
     _ -> HonedInstinct <$> liftRunMessage msg attrs

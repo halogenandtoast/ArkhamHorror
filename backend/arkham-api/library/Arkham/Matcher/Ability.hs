@@ -45,6 +45,7 @@ data AbilityMatcher
   | PerformableAbilityBy InvestigatorMatcher [ModifierType]
   | TriggeredAbility
   | NotAbility AbilityMatcher
+  | AbilityWithinLimit InvestigatorId
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "parley" AbilityMatcher where

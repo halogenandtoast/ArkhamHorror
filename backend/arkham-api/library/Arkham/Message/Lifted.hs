@@ -2249,6 +2249,7 @@ afterSkillTest
      , HasQueue Message (t m)
      , AsId investigator
      , IdOf investigator ~ InvestigatorId
+     , HasCallStack
      )
   => investigator -> Text -> QueueT Message (t m) a -> t m ()
 afterSkillTest investigator lbl body = do
@@ -2256,7 +2257,8 @@ afterSkillTest investigator lbl body = do
   insertAfterMatching [AfterSkillTestOption (asId investigator) lbl msgs] (== EndSkillTestWindow)
 
 afterSkillTestQuiet
-  :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m)) => QueueT Message (t m) a -> t m ()
+  :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m), HasCallStack)
+  => QueueT Message (t m) a -> t m ()
 afterSkillTestQuiet body = do
   msgs <- evalQueueT body
   insertAfterMatching [AfterSkillTestQuiet msgs] (== EndSkillTestWindow)
@@ -3123,7 +3125,13 @@ cancelEvent eId = matchingDon't \case
   _ -> False
 
 cancelMovement
-  :: (ReverseQueue m, Sourceable source, Targetable investigator, AsId investigator, IdOf investigator ~ InvestigatorId) => source -> investigator -> m ()
+  :: ( ReverseQueue m
+     , Sourceable source
+     , Targetable investigator
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
+  => source -> investigator -> m ()
 cancelMovement source investigator = do
   field InvestigatorMovement (asId investigator) >>= \case
     Nothing -> movementModifier source investigator CannotMove
@@ -3283,5 +3291,5 @@ createWeaknessInThreatArea card iid = do
   c <- fetchCard card
   push $ CreateWeaknessInThreatArea c (asId iid)
 
-allDrawEncounterCard :: (ReverseQueue m) => m ()
+allDrawEncounterCard :: ReverseQueue m => m ()
 allDrawEncounterCard = push Msg.AllDrawEncounterCard

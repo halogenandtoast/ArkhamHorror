@@ -1,11 +1,11 @@
 module Arkham.Asset.Assets.QuickLearner4 (quickLearner4) where
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Prelude
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Matcher
 import Arkham.Projection
 import Control.Monad.Fail (fail)
 
@@ -21,6 +21,7 @@ instance HasModifiersFor QuickLearner4 where
     getSkillTest >>= traverse_ \st -> do
       maybeModified_ a (SkillTestTarget st.id) do
         guard $ controlledBy a st.investigator
+        guardMatches st.investigator TurnInvestigator
         inAction <- getGameInAction
         actionsTaken <- lift $ fieldMap InvestigatorActionsTaken length st.investigator
         case actionsTaken + if inAction then 1 else 0 of

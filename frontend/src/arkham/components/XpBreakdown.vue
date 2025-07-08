@@ -8,8 +8,10 @@ import { XpEntry } from '@/arkham/types/Xp'
 import { CampaignStep } from '@/arkham/types/CampaignStep'
 import { Game } from '@/arkham/types/Game'
 import { useI18n } from 'vue-i18n';
+import { useDbCardStore } from '@/stores/dbCards'
 
 const { t } = useI18n()
+const store = useDbCardStore()
 
 const props = defineProps<{
   game: Game
@@ -94,10 +96,14 @@ const scenarioTotal = computed(() => {
 })
 
 function format(s: string) {
-  const body = s.startsWith("$") ? handleI18n(s, t) : s
+  const body = s.startsWith("$") ? handleI18n(s, t) : getCardName(s)
   return replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>')
 }
 
+function getCardName(s: string) {
+  const language = localStorage.getItem('language') || 'en'
+  return language === 'en' ? s : store.getCardName(s)
+}
 </script>
 
 <template>
@@ -111,13 +117,13 @@ function format(s: string) {
         <header class="entry-header"><h3>{{ $t('upgrade.victoryDisplay') }}</h3><span class="amount" :class="{ 'amount--negative': totalVictoryDisplay < 0 }">{{ $t('upgrade.xp', {total: totalVictoryDisplay}) }}</span></header>
         <div class="column">
           <div v-for="(entry, idx) in allVictoryDisplay" :key="idx" class="box entry">
-            <span>{{entry.details.sourceName}}</span>
+            <span>{{getCardName(entry.details.sourceName)}}</span>
             <span class="amount">+{{entry.details.amount}}</span>
           </div>
         </div>
       </section>
       <section class="box column group" v-for="([name, entries, total]) in perInvestigator" :key="name">
-        <header class="entry-header"><h3>{{name}}</h3><span class="amount" :class="{ 'amount--negative': total < 0 }">{{ $t('upgrade.xp', {total: total}) }}</span></header>
+        <header class="entry-header"><h3>{{getCardName(name)}}</h3><span class="amount" :class="{ 'amount--negative': total < 0 }">{{ $t('upgrade.xp', {total: total}) }}</span></header>
         <div v-for="(entry, idx) in entries" :key="idx" class="box entry">
           <span v-html="format(entry.details.sourceName)"></span> 
           <span v-if="entry.tag !== 'InvestigatorLoseXp'" class="amount">+{{entry.details.amount}}</span>

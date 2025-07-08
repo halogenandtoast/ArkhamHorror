@@ -16,7 +16,8 @@ import * as VueI18n from 'vue-i18n'
 import messages from '@/locales/messages'
 import mitt from 'mitt';
 
-const currentLanguage = localStorage.getItem('language') ?? 'en'
+const naviLanguage = navigator.language || navigator.userLanguage || 'en'
+const currentLanguage = localStorage.getItem('language') ?? naviLanguage.split('-')[0]
 
 const i18n = VueI18n.createI18n({
   locale: currentLanguage, // set locale

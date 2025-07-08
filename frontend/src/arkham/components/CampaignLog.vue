@@ -13,6 +13,7 @@ import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue';
 import { toCapitalizedWords } from '@/arkham/helpers';
 import { useI18n } from 'vue-i18n';
 import { Seal } from '@/arkham/types/Seal';
+import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 
 export interface Props {
   game: Arkham.Game
@@ -21,6 +22,7 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
+const store = useDbCardStore()
 
 const { t } = useI18n()
 const mainLog = props.game.campaign?.log || props.game.scenario?.standaloneCampaignLog || { recorded: [], recordedSets: [], recordedCounts: [] }
@@ -163,6 +165,21 @@ const sealImage = (seal: Seal): string => {
 
 const cardCodeToTitle = (cardCode: string): string => {
   const card = findCard(cardCode)
+  const language = localStorage.getItem('language') || 'en'
+  
+  if (language !== 'en') {
+    const code = card ? card.art : cardCode.replace(/^c/, '')
+    const dbCard = store.getDbCard(code)
+    
+    if (dbCard) {
+      const subtitle = dbCard.subname
+      if (subtitle) {
+        return `${dbCard.name}: ${subtitle}`
+      }
+      
+      return dbCard.name
+    }
+  }
 
   if (card) {
     return fullName(card.name)
@@ -207,6 +224,10 @@ const bonusXp = computed(() => {
   return props.game.campaign.meta.bonusXp;
 })
 
+function getCardName(s: string) {
+  const language = localStorage.getItem('language') || 'en'
+  return language === 'en' ? s : store.getCardName(s)
+}
 </script>
 
 <template>

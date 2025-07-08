@@ -9,6 +9,7 @@ import type { Investigator } from '@/arkham/types/Investigator';
 import type { TarotCard } from '@/arkham/types/TarotCard';
 import { imgsrc } from '@/arkham/helpers';
 import { IsMobile } from '@/arkham/isMobile';
+import { useDbCardStore, getInvestigatorName } from '@/stores/dbCards'
 
 export interface Props {
   game: Game
@@ -28,6 +29,7 @@ const investigators = computed(() => props.playerOrder.map(iid => props.players[
 const inactiveInvestigators = computed(() => Object.values(props.players).filter((p) => !props.playerOrder.includes(p.id)))
 const lead = computed(() => `url('${imgsrc(`lead-investigator.png`)}')`)
 const { isMobile } = IsMobile();
+const store = useDbCardStore()
 
 function tabClass(investigator: Investigator) {
   const pid = investigator.playerId
@@ -71,6 +73,10 @@ function tarotCardsFor(i: string) {
   return props.tarotCards.filter(c => c.scope.tag === 'InvestigatorTarot' && c.scope.contents === i)
 }
 
+function getInvestigatorName(cardTitle: string): string {
+  const language = localStorage.getItem('language') || 'en'
+  return language === 'en'? cardTitle : store.getCardName(cardTitle, "investigator")
+}
 
 watchEffect(() => selectedTab.value = props.playerId)
 </script>
@@ -83,8 +89,8 @@ watchEffect(() => selectedTab.value = props.playerId)
         @click='selectTab(investigator.playerId)'
         :class='tabClass(investigator)'
       >
-        <span v-if="isMobile">{{ investigator.name.title.split(' ')[0] }}</span>
-        <span v-else>{{ investigator.name.title }}</span>
+        <span v-if="isMobile">{{ getInvestigatorName(investigator.name.title).split(' ')[0] }}</span>
+        <span v-else>{{ getInvestigatorName(investigator.name.title) }}</span>
         <button
           v-if="solo"
           v-tooltip="instructions(investigator)"

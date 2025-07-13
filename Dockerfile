@@ -1,4 +1,4 @@
-FROM node:lts as frontend
+FROM node:lts AS frontend
 
 # Frontend
 
@@ -12,10 +12,10 @@ WORKDIR /opt/arkham/src/frontend
 COPY ./frontend/package.json ./frontend/tsconfig.json ./frontend/vite.config.js ./frontend/.eslintrc.cjs ./frontend/package-lock.json /opt/arkham/src/frontend/
 RUN npm ci
 COPY ./frontend /opt/arkham/src/frontend
-ENV VITE_ASSET_HOST ${ASSET_HOST:-""}
+ENV VITE_ASSET_HOST=${ASSET_HOST:-""}
 RUN npm run build
 
-FROM ubuntu:22.04 as base
+FROM ubuntu:22.04 AS base
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL=C.UTF-8
@@ -74,7 +74,7 @@ RUN \
     ghcup -v install cabal --isolate /usr/local/bin --force ${CABAL} && \
     ghcup -v install stack --isolate /usr/local/bin --force ${STACK}
 
-FROM base as dependencies
+FROM base AS dependencies
 
 RUN mkdir -p \
   /opt/arkham/bin \
@@ -89,7 +89,7 @@ COPY ./backend/validate/package.yaml /opt/arkham/src/backend/validate/package.ya
 COPY ./backend/cards-discover/package.yaml /opt/arkham/src/backend/cards-discover/package.yaml
 RUN stack build --system-ghc --dependencies-only --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS'
 
-FROM dependencies as api
+FROM dependencies AS api
 
 RUN mkdir -p \
   /opt/arkham/src/backend \
@@ -110,7 +110,7 @@ RUN --mount=type=cache,id=stack-root-${CACHE_ID},target=/opt/arkham/src/backend/
   stack build --no-terminal --system-ghc --ghc-options '-rtsopts -with-rtsopts=-V0 -j4 +RTS -V0 -A128m -n2m -RTS' && \
   stack --no-terminal --local-bin-path /opt/arkham/bin install
 
-FROM ubuntu:22.04 as app
+FROM ubuntu:22.04 AS app
 
 # App
 
@@ -140,7 +140,7 @@ RUN useradd -ms /bin/bash yesod && \
   chown -R yesod:yesod /opt/arkham /var/log/nginx /var/lib/nginx /run && \
   chmod a+x /opt/arkham/src/backend/arkham-api/start.sh
 USER yesod
-ENV PATH "$PATH:/opt/stack/bin:/opt/arkham/bin"
+ENV PATH="$PATH:/opt/stack/bin:/opt/arkham/bin"
 
 EXPOSE 3000
 

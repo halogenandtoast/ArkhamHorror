@@ -14,7 +14,7 @@ const isSupportPage = computed(() => route.query.support !== undefined);
         <div class="box column">
           <p>It's quite expensive to run the infrastructure for this service. This project relies on contributions from the community in order to cover those costs. Please visit our Patreon if you are able to financially support this project.</p>
 
-          <p><a href="https://www.patreon.com/HalogenAndToast">Patreon</a></p>
+          <p><a href="https://patreon.com/HalogenAndToast?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink">Patreon</a></p>
 
           <p>Please note that no features are locked behind a paywall. This project is free to use for everyone and will remain so for as long as it continues to run.</p>
         </div>

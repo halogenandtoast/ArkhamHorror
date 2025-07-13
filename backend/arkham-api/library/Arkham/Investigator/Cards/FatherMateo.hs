@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.FatherMateo (fatherMateo, FatherMateo (..)) where
+module Arkham.Investigator.Cards.FatherMateo (fatherMateo) where
 
 import Arkham.Ability
 import Arkham.Capability
@@ -23,7 +23,7 @@ fatherMateo =
 instance HasAbilities FatherMateo where
   getAbilities (FatherMateo a) =
     [ playerLimit PerGame
-        $ restrictedAbility a 1 Self
+        $ restricted a 1 Self
         $ freeReaction (Matcher.RevealChaosToken #when (affectsOthers Anyone) #autofail)
     ]
 
@@ -34,20 +34,20 @@ instance HasChaosTokenValue FatherMateo where
 
 instance RunMessage FatherMateo where
   runMessage msg i@(FatherMateo attrs) = runQueueT $ case msg of
-    ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      afterSkillTest iid "Father Mateo" $ push $ Do msg
+    ElderSignEffect iid | attrs `is` iid -> do
+      afterSkillTest iid "Father Mateo" $ do_ msg
       passSkillTest
       pure i
-    Do (ResolveChaosToken _ ElderSign iid) | attrs `is` iid -> do
+    Do (ElderSignEffect iid) | attrs `is` iid -> do
       isTurn <- iid <=~> TurnInvestigator
       canDraw <- can.draw.cards iid
       canGainResources <- can.gain.resources iid
       chooseOrRunOneM iid do
-        when (canDraw || canGainResources) $ do
+        when (canDraw || canGainResources) do
           labeled "Draw 1 card and gain 1 resource" do
             drawCardsIfCan iid ElderSign 1
             gainResourcesIfCan iid ElderSign 1
-        when isTurn $ do
+        when isTurn do
           labeled "Take an additional action this turn" $ gainActions iid ElderSign 1
       pure i
     UseCardAbility _ (isSource attrs -> True) 1 (getRevealedChaosTokens -> [token]) _ -> do

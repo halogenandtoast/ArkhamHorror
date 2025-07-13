@@ -42,6 +42,13 @@ export const fetchGameReplay = (gameId: string, step: number): Promise<FetchRepl
       .then((gameData) => Promise.resolve({ game: gameData, totalSteps }));
   });
 
+interface Notification {
+  body: string;
+  created_at: Date;
+}
+
+export const fetchNotifications = (): Promise<Notification[]> => api.get('notifications')
+
 export const fetchGames = (): Promise<GameDetailsEntry[]> => api
   .get('arkham/games')
   .then((resp) => {

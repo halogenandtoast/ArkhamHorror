@@ -5,7 +5,6 @@ import { computed } from 'vue';
 const route = useRoute();
 const isSupportPage = computed(() => route.query.support !== undefined);
 
-
 </script>
 <template>
   <div class="page-container">

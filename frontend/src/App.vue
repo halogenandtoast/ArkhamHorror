@@ -430,6 +430,7 @@ button {
   --guardian-extra-dark: #0c5693;
   --seeker-dark: #db7c07;
   --seeker-extra-dark: #aa6005;
+  --seeker-text: #603603;
   --rogue-dark: #219428;
   --rogue-extra-dark: #186a1d;
   --mystic-dark: #7554ab;

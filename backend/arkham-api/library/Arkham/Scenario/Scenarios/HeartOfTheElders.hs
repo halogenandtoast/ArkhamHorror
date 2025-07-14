@@ -301,7 +301,8 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
       story noResolutionA
       pathsKnown <- getRecordCount PathsAreKnownToYou
       pillarTokens <-
-        getSum <$> selectAgg Sum LocationResources (locationIs Locations.mouthOfKnYanTheCavernsMaw)
+        getSum
+          <$> selectAgg (Sum . countTokens Pillar) LocationTokens (locationIs Locations.mouthOfKnYanTheCavernsMaw)
       actStep <- getCurrentActStep
       when (pillarTokens > pathsKnown) do
         recordCount PathsAreKnownToYou pillarTokens

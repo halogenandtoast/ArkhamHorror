@@ -234,6 +234,7 @@ instance RunMessage AtDeathsDoorstep where
           endOfScenarioThen $ UpgradeDeckStep TheSecretName
         3 -> do
           story resolution3
+          eachUnresigned (kill attrs)
           record TheInvestigatorsAreNeverSeenOrHeardFromAgain
           allGainXp attrs
           endOfScenarioThen $ UpgradeDeckStep TheSecretName

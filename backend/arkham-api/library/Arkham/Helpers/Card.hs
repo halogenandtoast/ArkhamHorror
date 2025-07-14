@@ -250,13 +250,16 @@ passesLimits iid c = allM go (cdLimits $ toCardDef c)
         pure $ m > n
       _ -> error $ "Not handling card type: " <> show (toCardType c)
     MaxPerGame m -> do
-      n <- getCardUses (toCardCode c)
+      n <- length <$> getCardUses (toCardCode c)
       pure $ m > n
     MaxPerTurn m -> do
-      n <- getCardUses (toCardCode c)
+      n <- length <$> getCardUses (toCardCode c)
       pure $ m > n
     MaxPerRound m -> do
-      n <- getCardUses (toCardCode c)
+      n <- length <$> getCardUses (toCardCode c)
+      pure $ m > n
+    LimitPerRound m -> do
+      n <- count (== iid) <$> getCardUses (toCardCode c)
       pure $ m > n
     MaxPerTraitPerRound t m -> do
       n <- count (elem t) . map toTraits <$> getAllCardUses

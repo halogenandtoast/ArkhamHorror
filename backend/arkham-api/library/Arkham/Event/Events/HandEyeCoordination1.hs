@@ -23,12 +23,10 @@ instance RunMessage HandEyeCoordination1 where
             then (<> AssetCardMatch (mapOneOf CardWithLevel [0 .. 3]))
             else id
       abilities <-
-        map ((`applyAbilityModifiers` [IgnoreActionCost]) . doesNotProvokeAttacksOfOpportunity)
-          <$> select
-            ( PerformableAbility [IgnoreActionCost]
-                <> AbilityIsActionAbility
-                <> AbilityOnAsset (tabooModify $ assetControlledBy iid <> oneOf [#tool, #weapon])
-            )
-      chooseOrRunOne iid [AbilityLabel iid ab [] [] [] | ab <- abilities]
+        selectMap ignoreActionCost
+          $ PerformableAbility [IgnoreActionCost]
+          <> #action
+          <> AbilityOnAsset (tabooModify $ assetControlledBy iid <> oneOf [#tool, #weapon])
+      chooseOrRunOneM iid $ for_ abilities \ab -> abilityLabeled iid ab nothing
       pure e
     _ -> HandEyeCoordination1 <$> liftRunMessage msg attrs

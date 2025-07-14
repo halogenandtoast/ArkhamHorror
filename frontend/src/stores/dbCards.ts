@@ -19,6 +19,7 @@ export interface ArkhamDBCard {
   real_name: string
   real_traits: string
   real_text: string
+  type_code: string
 }
 
 export interface DbCardsState {
@@ -34,9 +35,27 @@ export const useDbCardStore = defineStore("dbCards", {
   
   actions: {
     getDbCard(code: string): ArkhamDBCard | null {
+      if (this.dbCard.length < 1) {
+        const language = localStorage.getItem('language') || 'en'
+        if (language !== 'en') this.initDbCards()
+      }
+      
       return this.dbCards.find(c => c.code == code)
         || this.dbCards.find(c => `${c.code}b` == code)
         || null
+    },
+    
+    getCardName(cardTitle: string, typeCode: string = ""): string {
+      if (this.dbCard.length < 1) {
+        const language = localStorage.getItem('language') || 'en'
+        if (language !== 'en') this.initDbCards()
+      }
+      
+      const i = typeCode
+        ? this.dbCards.find(c =>  c.type_code === typeCode && c.real_name == cardTitle)
+        : this.dbCards.find(c =>  c.real_name == cardTitle)
+      
+      return i ? i.name : cardTitle
     },
     
     async fetchDbCards() {

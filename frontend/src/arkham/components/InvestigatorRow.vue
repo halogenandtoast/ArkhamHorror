@@ -4,6 +4,7 @@ import { ref, computed } from 'vue';
 import { Investigator } from '@/arkham/types/Investigator';
 import Card from '@/arkham/components/Card.vue'
 import {imgsrc} from '@/arkham/helpers'
+import { useDbCardStore } from '@/stores/dbCards'
 
 export interface Props {
   investigator: Investigator
@@ -11,6 +12,7 @@ export interface Props {
   bonusXp?: number | null;
 }
 
+const store = useDbCardStore()
 const props = withDefaults(defineProps<Props>(), {
   bonusXp: null
 })
@@ -19,6 +21,10 @@ const expanded = ref(false)
 
 const storyCards = computed(() => props.game.campaign.storyCards[props.investigator.id] || [])
 
+function getInvestigatorName(cardTitle: string): string {
+  const language = localStorage.getItem('language') || 'en'
+  return language === 'en'? cardTitle : store.getCardName(cardTitle, "investigator")
+}
 </script>
 
 <template>
@@ -27,7 +33,7 @@ const storyCards = computed(() => props.game.campaign.storyCards[props.investiga
       <div :class="`investigator-portrait-container ${investigator.class.toLowerCase()}`">
         <img :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
       </div>
-      <div class="name">{{investigator.name.title}}</div>
+      <div class="name">{{getInvestigatorName(investigator.name.title)}}</div>
       <section class="details">
         <svg v-tooltip="'Physical Trauma'" v-for="n in investigator.physicalTrauma" :key="n" class="icon icon-health"><use xlink:href="#icon-health"></use></svg>
         <svg v-tooltip="'Mental Trauma'" v-for="n in investigator.mentalTrauma" :key="n" class="icon icon-sanity"><use xlink:href="#icon-sanity"></use></svg>

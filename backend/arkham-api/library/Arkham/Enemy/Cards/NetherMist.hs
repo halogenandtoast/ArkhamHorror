@@ -1,14 +1,8 @@
-module Arkham.Enemy.Cards.NetherMist (
-  netherMist,
-  NetherMist (..),
-) where
+module Arkham.Enemy.Cards.NetherMist (netherMist) where
 
-import Arkham.Prelude
-
-import Arkham.Attack
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
 
 newtype NetherMist = NetherMist EnemyAttrs
@@ -17,22 +11,16 @@ newtype NetherMist = NetherMist EnemyAttrs
 
 instance HasAbilities NetherMist where
   getAbilities (NetherMist a) =
-    withBaseAbilities
-      a
-      [haunted "Nether Mist attacks you." (proxied (LocationWithEnemy $ EnemyWithId $ toId a) a) 1]
+    extend1 a $ haunted "Nether Mist attacks you." (proxied (LocationWithEnemy $ be a) a) 1
 
 netherMist :: EnemyCard NetherMist
 netherMist =
-  enemyWith
-    NetherMist
-    Cards.netherMist
-    (3, Static 4, 3)
-    (1, 1)
-    (preyL .~ Prey (InvestigatorAt $ LocationWithMostClues Anywhere))
+  enemy NetherMist Cards.netherMist (3, Static 4, 3) (1, 1)
+    & setPrey (at_ $ LocationWithMostClues $ LocationWithInvestigator Anyone)
 
 instance RunMessage NetherMist where
-  runMessage msg e@(NetherMist attrs) = case msg of
-    UseCardAbility iid (isProxySource attrs -> True) 1 _ _ -> do
-      push $ EnemyAttack $ enemyAttack (toId attrs) attrs iid
+  runMessage msg e@(NetherMist attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isProxySource attrs -> True) 1 -> do
+      initiateEnemyAttack (toId attrs) attrs iid
       pure e
-    _ -> NetherMist <$> runMessage msg attrs
+    _ -> NetherMist <$> liftRunMessage msg attrs

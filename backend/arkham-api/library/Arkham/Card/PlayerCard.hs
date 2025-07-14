@@ -115,6 +115,7 @@ tabooMutated' = \case
   Just TabooList21 -> tabooMutated21
   Just TabooList22 -> tabooMutated22
   Just TabooList23 -> tabooMutated23
+  Just TabooList24 -> tabooMutated24
   _ -> \_ -> Nothing
 
 tabooMutated15 :: CardCode -> Maybe Text
@@ -207,5 +208,17 @@ tabooMutated23 = \case
   -- "08113" -> Just "Mutated23"
   -- "09041" -> Just "Mutated23"
   pc -> tabooMutated22 pc
+
+-- TODO: images for these do not exist yet
+tabooMutated24 :: CardCode -> Maybe Text
+tabooMutated24 = \case
+  -- "05156" -> Just "Mutated24"
+  -- "09072" -> Just "Mutated24"
+  -- "09081" -> Just "Mutated24"
+  -- "10026" -> Just "Mutated24"
+  -- "10030" -> Just "Mutated24"
+  -- "11065" -> Just "Mutated24"
+  -- "60332" -> Just "Mutated24"
+  pc -> tabooMutated23 pc
 
 $(deriveJSON (aesonOptions $ Just "pc") ''PlayerCard)

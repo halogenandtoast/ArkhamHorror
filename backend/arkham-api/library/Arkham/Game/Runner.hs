@@ -1467,9 +1467,10 @@ runGameMessage msg g = case msg of
         g' <- runGameMessage (PutCardIntoPlay controller card mtarget payment windows') g
         let
           recordLimit g'' = \case
-            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
-            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
-            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
+            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
+            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
+            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
+            LimitPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
             _ -> g''
         pure $ foldl' recordLimit g' (cdLimits $ toCardDef card)
       else do
@@ -2306,6 +2307,7 @@ runGameMessage msg g = case msg of
       isPerRound = \case
         MaxPerRound _ -> True
         MaxPerTraitPerRound _ _ -> True
+        LimitPerRound _ -> True
         _ -> False
     let roundEndUses =
           map cdCardCode
@@ -2895,9 +2897,10 @@ runGameMessage msg g = case msg of
         push $ ObtainCard card.id
         let
           recordLimit g'' = \case
-            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
-            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
-            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
+            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
+            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
+            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
+            LimitPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
             _ -> g''
         pure
           $ foldl'

@@ -41,6 +41,7 @@ import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
+import Arkham.Taboo.Types
 import Arkham.Window
 import Control.Lens (over)
 import Data.Data.Lens (biplate)
@@ -210,6 +211,8 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
       [] -> pure False
       _ -> anyM (getCanAffordCost iid source (cdActions $ toCardDef c) windows') alternateResourceCosts
 
+    mTaboo <- field InvestigatorTaboo iid
+
     let
       auxiliaryCosts =
         case costStatus of
@@ -227,8 +230,11 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
       canAffordCost =
         if canAffordCost'
           then canAffordCost'
-          else modifiedCardCostWithChuckFergus + auxiliaryResourceCosts
-              <= availableResources + additionalResources
+          else
+            modifiedCardCostWithChuckFergus
+              + auxiliaryResourceCosts
+              <= availableResources
+              + additionalResources
       needsChuckFergus = not canAffordCost' && canAffordCost
       handleCriteriaReplacement _ (CanPlayWithOverride (Criteria.CriteriaOverride cOverride)) = Just cOverride
       handleCriteriaReplacement m _ = m
@@ -245,7 +251,7 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
             (listToMaybe [w | BecomesFast w <- cardModifiers <> modifiers])
       applyModifier (BecomesFast _) _ = True
       applyModifier (CanBecomeFast cardMatcher) _ = cardMatch c cardMatcher
-      applyModifier (ChuckFergus2Modifier cardMatcher _) _ = not needsChuckFergus && cardMatch c cardMatcher
+      applyModifier (ChuckFergus2Modifier cardMatcher _) _ = not needsChuckFergus && cardMatch c cardMatcher && (maybe True (< TabooList24) mTaboo || notFastWindow)
       applyModifier _ val = val
       source' = replaceThisCardSource source
 

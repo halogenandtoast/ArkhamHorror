@@ -35,7 +35,7 @@ export const useDbCardStore = defineStore("dbCards", {
   
   actions: {
     getDbCard(code: string): ArkhamDBCard | null {
-      if (this.dbCard.length < 1) {
+      if (this.dbCards.length < 1) {
         const language = localStorage.getItem('language') || 'en'
         if (language !== 'en') this.initDbCards()
       }
@@ -46,7 +46,7 @@ export const useDbCardStore = defineStore("dbCards", {
     },
     
     getCardName(cardTitle: string, typeCode: string = ""): string {
-      if (this.dbCard.length < 1) {
+      if (this.dbCards.length < 1) {
         const language = localStorage.getItem('language') || 'en'
         if (language !== 'en') this.initDbCards()
       }

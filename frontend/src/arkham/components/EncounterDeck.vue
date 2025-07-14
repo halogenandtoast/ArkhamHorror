@@ -95,7 +95,8 @@ function onDrop(event: DragEvent) {
     if (data) {
       const json = JSON.parse(data)
       if (json.tag === "EnemyTarget") {
-        debug.send(props.game.id, {tag: 'ShuffleIntoDeck', contents: [{tag: "EncounterDeck"}, json]})
+        let deck = isSpectral.value ? {tag: "EncounterDeckByKey", contents: "SpectralEncounterDeck"} : { tag: "EncounterDeck" }
+        debug.send(props.game.id, {tag: 'ShuffleIntoDeck', contents: [deck, json]})
       }
     }
   }

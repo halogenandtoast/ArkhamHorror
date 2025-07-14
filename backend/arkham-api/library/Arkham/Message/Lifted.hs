@@ -2319,7 +2319,7 @@ takeActionAsIfTurn :: (ReverseQueue m, Sourceable source) => InvestigatorId -> s
 takeActionAsIfTurn iid (toSource -> source) = do
   gainActions iid source 1
   temporaryModifier iid source (AsIfTurn iid) do
-    push $ PlayerWindow iid [] True
+    push $ PlayerWindow iid [] False
 
 nonAttackEnemyDamage
   :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m, Sourceable a)

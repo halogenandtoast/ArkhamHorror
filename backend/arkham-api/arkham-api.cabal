@@ -2550,6 +2550,7 @@ library
       Arkham.Helpers.Target
       Arkham.Helpers.Tarot
       Arkham.Helpers.Text
+      Arkham.Helpers.Tokens
       Arkham.Helpers.UI
       Arkham.Helpers.Use
       Arkham.Helpers.Vehicle

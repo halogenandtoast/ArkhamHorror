@@ -1976,10 +1976,10 @@ shuffleCardsIntoTopOfDeck deck n cards =
     1 -> guardPlayerDeckIsNotEmpty deck $ push $ Msg.shuffleCardsIntoTopOfDeck deck n cards
     _ -> push $ Msg.shuffleCardsIntoTopOfDeck deck n cards
 
-shuffleDeck :: (ReverseQueue m, IsDeck deck) => deck -> m ()
+shuffleDeck :: (ReverseQueue m, IsDeck deck, HasCallStack) => deck -> m ()
 shuffleDeck deck = guardPlayerDeckIsNotEmpty deck $ push $ ShuffleDeck (toDeck deck)
 
-guardPlayerDeckIsNotEmpty :: (ReverseQueue m, IsDeck deck) => deck -> m () -> m ()
+guardPlayerDeckIsNotEmpty :: (HasCallStack, ReverseQueue m, IsDeck deck) => deck -> m () -> m ()
 guardPlayerDeckIsNotEmpty deck body = case toDeck deck of
   Deck.InvestigatorDeck iid -> whenM (fieldMap InvestigatorDeck (not . null) iid) body
   Deck.InvestigatorDeckByKey iid deckKey -> do

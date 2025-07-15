@@ -44,7 +44,13 @@ getCompletedScenariosList = do
           _ -> Nothing
 
 getOwner :: HasGame m => CardDef -> m (Maybe InvestigatorId)
-getOwner cardDef = findKey (any ((== cardDef) . toCardDef)) <$> getCampaignStoryCards
+getOwner cardDef = do
+  iids <- select $ IncludeEliminated Anyone
+  cardMap <- getCampaignStoryCards
+  let inGame = Map.filterWithKey (\k _ -> k `elem` iids) cardMap
+  pure
+    $ findKey (any ((== cardDef) . toCardDef)) inGame
+    <|> findKey (any ((== cardDef) . toCardDef)) cardMap
 
 withOwner :: HasGame m => CardDef -> (InvestigatorId -> m ()) -> m ()
 withOwner cardDef f =
@@ -109,7 +115,7 @@ addCampaignCardToDeckChoiceWith leadPlayer investigators shouldShuffleIn card f 
   questionLabelWithCard ("Add " <> display card.name <> " to a deck") card.cardCode leadPlayer
     $ ChooseOne
     $ [ PortraitLabel investigator $ AddCampaignCardToDeck investigator shouldShuffleIn card
-        : f investigator
+          : f investigator
       | investigator <- investigators
       ]
     <> [Label ("Do not add " <> display card.name <> " to any deck") []]

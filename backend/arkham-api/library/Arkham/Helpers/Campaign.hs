@@ -48,9 +48,7 @@ getOwner cardDef = do
   iids <- select $ IncludeEliminated Anyone
   cardMap <- getCampaignStoryCards
   let inGame = Map.filterWithKey (\k _ -> k `elem` iids) cardMap
-  pure
-    $ findKey (any ((== cardDef) . toCardDef)) inGame
-    <|> findKey (any ((== cardDef) . toCardDef)) cardMap
+  pure $ findKey (any ((== cardDef) . toCardDef)) inGame
 
 withOwner :: HasGame m => CardDef -> (InvestigatorId -> m ()) -> m ()
 withOwner cardDef f =

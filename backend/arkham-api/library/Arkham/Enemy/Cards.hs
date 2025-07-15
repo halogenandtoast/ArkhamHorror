@@ -1121,7 +1121,6 @@ wingedOne =
   (enemy "03336" "Winged One" DimCarcosa 1)
     { cdCardTraits = setFromList [Monster, Byakhee]
     , cdKeywords = singleton Keyword.Retaliate
-    , cdVictoryPoints = Just 1
     }
 
 serpentsOfYig :: CardDef
@@ -2199,6 +2198,7 @@ wingedOneFogOverInnsmouth =
   (enemy "07094" "Winged One" FogOverInnsmouth 1)
     { cdCardTraits = setFromList [Creature, Monster]
     , cdKeywords = singleton Keyword.Hunter
+    , cdVictoryPoints = Just 1
     }
 
 innsmouthTroublemaker :: CardDef

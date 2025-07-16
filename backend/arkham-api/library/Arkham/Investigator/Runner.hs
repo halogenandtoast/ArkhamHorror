@@ -4180,6 +4180,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       assetClues <- selectSum AssetClues $ assetControlledBy iid <> AssetWithAnyClues
       let cluesToPlace = min n (investigatorClues a + assetClues)
       push $ MoveTokens source (toSource a) (LocationTarget lid) Clue cluesToPlace
+      pushM $ checkAfter $ Window.InvestigatorPlacedFromTheirPool iid source (toTarget lid) #clue cluesToPlace
     pure a
   InvestigatorPlaceAllCluesOnLocation iid source | iid == investigatorId -> do
     -- [AsIfAt] assuming as if is still in effect

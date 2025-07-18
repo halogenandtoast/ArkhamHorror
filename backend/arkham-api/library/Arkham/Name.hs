@@ -8,6 +8,7 @@ import Arkham.Prelude
 
 import Arkham.Classes.GameLogger
 import Arkham.Helpers
+import Arkham.Id
 import Arkham.Json
 import Data.Aeson.TH
 
@@ -80,3 +81,7 @@ instance FromJSON a => FromJSON (Labeled a) where
 
 labeled :: Named name => name -> a -> Labeled a
 labeled (toName -> name) = Labeled name
+
+instance ToGameLoggerFormat (With EnemyId Name) where
+  format (With eid name) = "{enemy:\"" <> toTitle name <> "\":\"" <> tshow eid <> "\"}"
+

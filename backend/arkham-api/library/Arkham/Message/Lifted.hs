@@ -1,5 +1,7 @@
 module Arkham.Message.Lifted (module X, module Arkham.Message.Lifted) where
 
+import Arkham.Helpers.FetchCard as X
+
 import Arkham.Ability
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Act.Types (ActAttrs (actDeckId))
@@ -38,10 +40,8 @@ import Arkham.Enemy.Helpers qualified as Msg
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Evade
 import Arkham.Evade qualified as Evade
-import Arkham.Event.Types qualified as Field
 import Arkham.Fight
 import Arkham.Fight qualified as Fight
-import {-# SOURCE #-} Arkham.GameEnv (findCard, getCard)
 import Arkham.Helpers
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Act
@@ -97,7 +97,6 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait (Trait)
-import Arkham.Treachery.Types qualified as Field
 import Arkham.Window (Window, WindowType, defaultWindows)
 import Arkham.Window qualified as Window
 import Arkham.Xp
@@ -105,7 +104,6 @@ import Control.Monad.State.Strict (MonadState, StateT, execStateT, get, put)
 import Control.Monad.Trans.Class
 import Data.Aeson.Key qualified as Aeson
 import Data.Map.Strict qualified as Map
-import Data.Monoid (First (..))
 
 setChaosTokens :: ReverseQueue m => [ChaosTokenFace] -> m ()
 setChaosTokens = push . SetChaosTokens
@@ -507,62 +505,6 @@ killRemaining (toSource -> source) = do
   for_ remaining $ kill source
   gameOverIf (null resigned)
   pure remaining
-
-newtype UniqueFetchCard = UniqueFetchCard CardDef
-  deriving newtype (Show, Eq, ToJSON, FromJSON)
-
-class FetchCard a where
-  fetchCardMaybe :: (HasCallStack, ReverseQueue m) => a -> m (Maybe Card)
-
-fetchCard :: (HasCallStack, ReverseQueue m, FetchCard a) => a -> m Card
-fetchCard a = fromJustNote "Card not found" <$> fetchCardMaybe a
-
-instance FetchCard UniqueFetchCard where
-  fetchCardMaybe (UniqueFetchCard def) = do
-    findCard ((== def.cardCode) . toCardCode) >>= \case
-      Nothing -> Just <$> genCard def
-      Just card -> pure $ Just $ if cardCodeExactEq def.cardCode card.cardCode then card else flipCard card
-
-instance FetchCard CardDef where
-  fetchCardMaybe def =
-    if def.unique
-      then fetchCardMaybe (UniqueFetchCard def)
-      else maybe (Just <$> genCard def) (pure . Just) =<< maybeGetSetAsideCard def
-
-newtype SetAsideCard = SetAsideCard CardDef
-
-instance FetchCard SetAsideCard where
-  fetchCardMaybe (SetAsideCard def) = maybeGetSetAsideCard def
-
-instance FetchCard a => FetchCard [a] where
-  fetchCardMaybe defs = getFirst . foldMap First <$> traverse fetchCardMaybe defs
-
-instance FetchCard ExtendedCardMatcher where
-  fetchCardMaybe = selectOne
-
-instance FetchCard Card where
-  fetchCardMaybe = pure . Just
-
-instance FetchCard EncounterCard where
-  fetchCardMaybe = pure . Just . toCard
-
-instance FetchCard PlayerCard where
-  fetchCardMaybe = pure . Just . toCard
-
-instance FetchCard AssetId where
-  fetchCardMaybe = fieldMap Field.AssetCard Just
-
-instance FetchCard EventId where
-  fetchCardMaybe = fieldMap Field.EventCard Just
-
-instance FetchCard TreacheryId where
-  fetchCardMaybe = fieldMap Field.TreacheryCard Just
-
-instance FetchCard CardId where
-  fetchCardMaybe = fmap Just . getCard
-
-instance FetchCard Field.TreacheryAttrs where
-  fetchCardMaybe = fieldMap Field.TreacheryCard Just . asId
 
 addCampaignCardToDeck
   :: (AsId investigator, IdOf investigator ~ InvestigatorId, ReverseQueue m, FetchCard card)

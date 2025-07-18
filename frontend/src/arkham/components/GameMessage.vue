@@ -2,6 +2,7 @@
 import { defineComponent, h } from 'vue';
 import { imgsrc } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
+import { handleI18n } from '@/arkham/i18n';
 
 function imageFor(tokenFace: string) {
   switch (tokenFace) {
@@ -54,7 +55,9 @@ export default defineComponent({
     msg: { type: String, required: true },
   },
   render() {
-    const splits = this.msg.split(/({[^}]+})/)
+    const msg = this.msg[0] === '$' ? handleI18n(this.msg, this.$t) : this.msg;
+    console.log("Rendering message:", msg);
+    const splits = msg.split(/({[^}]+})/)
     const els = splits.map(split => {
       if (/{card:"((?:[^"]|\\.)+)":"([^"]+)":"([^"]+)"}/.test(split)) {
         const found = split.match(/{card:"((?:[^"]|\\.)+)":"([^"]+)":"([^"]+)"}/)
@@ -72,8 +75,9 @@ export default defineComponent({
             return name ? h('span', { 'data-image-id': investigatorId, 'class': 'card--sideways' }, name.replace(/\\"/g, "\"")) : split
           }
         }
-      } else if (/{enemy:"((?:[^"]|\\.)+)":(.+)}/.test(split)) {
+      } else if (/{enemy:"((?:[^"]|\\.)+)":(.+):"([^"]+)"}/.test(split)) {
         const found = split.match(/{enemy:"((?:[^"]|\\.)+)":(.+):"([^"]+)"}/)
+        console.log(split, found)
         if (found) {
           const [, name, , cardCode ] = found
           if (cardCode) {

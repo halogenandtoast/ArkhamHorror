@@ -2520,6 +2520,7 @@ library
       Arkham.Helpers.EncounterSet
       Arkham.Helpers.Enemy
       Arkham.Helpers.Event
+      Arkham.Helpers.FetchCard
       Arkham.Helpers.FlavorText
       Arkham.Helpers.Game
       Arkham.Helpers.GameValue
@@ -2532,6 +2533,7 @@ library
       Arkham.Helpers.Message.Discard
       Arkham.Helpers.Message.Discard.Lifted
       Arkham.Helpers.Modifiers
+      Arkham.Helpers.Name
       Arkham.Helpers.Phase
       Arkham.Helpers.Placement
       Arkham.Helpers.Playable

@@ -432,18 +432,19 @@ instance RunMessage EnemyAttrs where
       case enemyPlacement of
         AsSwarm eid' _ -> push $ MoveUntil lid (EnemyTarget eid')
         _ -> do
-          enemyLocation <- field EnemyLocation enemyId
-          for_ enemyLocation \loc -> when (lid /= loc) do
-            lead <- getLeadPlayer
-            adjacentLocationIds <- select $ AccessibleFrom $ LocationWithId loc
-            closestLocationIds <- select $ ClosestPathLocation loc lid
-            if lid `elem` adjacentLocationIds
-              then push $ chooseOne lead [targetLabel lid [EnemyMove enemyId lid]]
-              else when (notNull closestLocationIds) do
-                pushAll
-                  [ chooseOne lead $ targetLabels closestLocationIds (only . EnemyMove enemyId)
-                  , MoveUntil lid target
-                  ]
+          whenMatch a.id EnemyCanMove do
+            enemyLocation <- field EnemyLocation enemyId
+            for_ enemyLocation \loc -> when (lid /= loc) do
+              lead <- getLeadPlayer
+              adjacentLocationIds <- select $ AccessibleFrom $ LocationWithId loc
+              closestLocationIds <- select $ ClosestPathLocation loc lid
+              if lid `elem` adjacentLocationIds
+                then push $ chooseOne lead [targetLabel lid [EnemyMove enemyId lid]]
+                else when (notNull closestLocationIds) do
+                  pushAll
+                    [ chooseOne lead $ targetLabels closestLocationIds (only . EnemyMove enemyId)
+                    , MoveUntil lid target
+                    ]
       pure a
     Move movement | isTarget a (moveTarget movement) -> do
       case moveDestination movement of

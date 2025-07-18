@@ -126,7 +126,6 @@ const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.ma
     @drop="onDropDiscard($event)"
     @dragover.prevent="dragover($event)"
     @dragenter.prevent
-    @click="showDiscards"
   >
     <Card v-if="topOfDiscard" :game="game" :card="topOfDiscard" :playerId="playerId" @choose="emit('choose', $event)" />
     <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>

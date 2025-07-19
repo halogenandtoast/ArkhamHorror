@@ -311,7 +311,10 @@ getPotentiallyModifiedCardCost _ (VengeanceCard _) _ _ =
   error "should not check vengeance card"
 
 getModifiedCardCost :: HasGame m => InvestigatorId -> Card -> m Int
-getModifiedCardCost iid c@(PlayerCard _) = do
+getModifiedCardCost iid c = max 0 <$> getUnboundedModifiedCardCost iid c
+
+getUnboundedModifiedCardCost :: HasGame m => InvestigatorId -> Card -> m Int
+getUnboundedModifiedCardCost iid c@(PlayerCard _) = do
   modifiers <- getModifiers iid
   cardModifiers <- getModifiers c.id
   startingCost <- getStartingCost
@@ -327,14 +330,14 @@ getModifiedCardCost iid c@(PlayerCard _) = do
   -- A card like The Painted World which has no cost, but can be "played", should not have it's cost modified
   applyModifier n _ | isNothing (cdCost pcDef) = pure n
   applyModifier n (ReduceCostOf cardMatcher m) = do
-    pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
+    pure $ if c `cardMatch` cardMatcher then n - m else n
   applyModifier n (IncreaseCostOf cardMatcher m) = do
     ok <- case cardMatcher of
       BasicCardMatch inner -> pure $ c `cardMatch` inner
       _ -> c <=~> cardMatcher
     pure $ if ok then n + m else n
   applyModifier n _ = pure n
-getModifiedCardCost iid c@(EncounterCard _) = do
+getUnboundedModifiedCardCost iid c@(EncounterCard _) = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   foldM
     applyModifier
@@ -342,12 +345,12 @@ getModifiedCardCost iid c@(EncounterCard _) = do
     modifiers
  where
   applyModifier n (ReduceCostOf cardMatcher m) = do
-    pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
+    pure $ if c `cardMatch` cardMatcher then n - m else n
   applyModifier n (IncreaseCostOf cardMatcher m) = do
     ok <- case cardMatcher of
       BasicCardMatch inner -> pure $ c `cardMatch` inner
       _ -> c <=~> cardMatcher
     pure $ if ok then n + m else n
   applyModifier n _ = pure n
-getModifiedCardCost _ (VengeanceCard _) =
+getUnboundedModifiedCardCost _ (VengeanceCard _) =
   error "should not happen for vengeance"

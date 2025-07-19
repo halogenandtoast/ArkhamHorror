@@ -40,8 +40,8 @@ export const useDbCardStore = defineStore("dbCards", {
         if (language !== 'en') this.initDbCards()
       }
       
-      return this.dbCards.find(c => c.code == code)
-        || this.dbCards.find(c => `${c.code}b` == code)
+      return this.dbCards.find((c: ArkhamDBCard) => c.code == code)
+        || this.dbCards.find((c: ArkhamDBCard) => `${c.code}b` == code)
         || null
     },
     
@@ -52,8 +52,8 @@ export const useDbCardStore = defineStore("dbCards", {
       }
       
       const i = typeCode
-        ? this.dbCards.find(c =>  c.type_code === typeCode && c.real_name == cardTitle)
-        : this.dbCards.find(c =>  c.real_name == cardTitle)
+        ? this.dbCards.find((c: ArkhamDBCard) =>  c.type_code === typeCode && c.real_name == cardTitle)
+        : this.dbCards.find((c: ArkhamDBCard) =>  c.real_name == cardTitle)
       
       return i ? i.name : cardTitle
     },

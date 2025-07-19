@@ -2902,27 +2902,31 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (actionsTakenL .~ mempty)
       & (actionsPerformedL .~ mempty)
   DiscardTopOfDeck iid n source mTarget | iid == investigatorId -> do
-    let (cs, deck') = draw n investigatorDeck
-        (cs', essenceOfTheDreams) = partition ((/= "06113") . toCardCode) cs
-    windowMsgs <-
-      if null deck'
-        then
-          pure
-            <$> checkWindows
-              ((`mkWindow` Window.DeckHasNoCards iid) <$> [#when, #after])
-        else pure []
-    pushAll
-      $ windowMsgs
-      <> [DeckHasNoCards investigatorId mTarget | null deck']
-      <> [ DiscardedTopOfDeck iid cs source target
-         | target <- maybeToList mTarget
-         ]
-    pure
-      $ a
-      & (deckL .~ deck')
-      & (discardL %~ (reverse cs' <>))
-      & (bondedCardsL <>~ map toCard essenceOfTheDreams)
-      & (foundCardsL . each %~ filter (`notElem` map toCard cs'))
+    ok <- can.manipulate.deck iid
+    if ok
+      then do
+        let (cs, deck') = draw n investigatorDeck
+            (cs', essenceOfTheDreams) = partition ((/= "06113") . toCardCode) cs
+        windowMsgs <-
+          if null deck'
+            then
+              pure
+                <$> checkWindows
+                  ((`mkWindow` Window.DeckHasNoCards iid) <$> [#when, #after])
+            else pure []
+        pushAll
+          $ windowMsgs
+          <> [DeckHasNoCards investigatorId mTarget | null deck']
+          <> [ DiscardedTopOfDeck iid cs source target
+             | target <- maybeToList mTarget
+             ]
+        pure
+          $ a
+          & (deckL .~ deck')
+          & (discardL %~ (reverse cs' <>))
+          & (bondedCardsL <>~ map toCard essenceOfTheDreams)
+          & (foundCardsL . each %~ filter (`notElem` map toCard cs'))
+      else pure a
   DiscardUntilFirst iid' source (Deck.InvestigatorDeck iid) matcher | iid == investigatorId -> do
     (discards, remainingDeck) <- breakM (`extendedCardMatch` matcher) (unDeck investigatorDeck)
     let (discards', essenceOfTheDreams) = partition ((/= "06113") . toCardCode) discards
@@ -4180,7 +4184,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       assetClues <- selectSum AssetClues $ assetControlledBy iid <> AssetWithAnyClues
       let cluesToPlace = min n (investigatorClues a + assetClues)
       push $ MoveTokens source (toSource a) (LocationTarget lid) Clue cluesToPlace
-      pushM $ checkAfter $ Window.InvestigatorPlacedFromTheirPool iid source (toTarget lid) #clue cluesToPlace
+      pushM
+        $ checkAfter
+        $ Window.InvestigatorPlacedFromTheirPool iid source (toTarget lid) #clue cluesToPlace
     pure a
   InvestigatorPlaceAllCluesOnLocation iid source | iid == investigatorId -> do
     -- [AsIfAt] assuming as if is still in effect

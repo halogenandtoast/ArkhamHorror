@@ -56,7 +56,6 @@ export default defineComponent({
   },
   render() {
     const msg = this.msg[0] === '$' ? handleI18n(this.msg, this.$t) : this.msg;
-    console.log("Rendering message:", msg);
     const splits = msg.split(/({[^}]+})/)
     const els = splits.map(split => {
       if (/{card:"((?:[^"]|\\.)+)":"([^"]+)":"([^"]+)"}/.test(split)) {

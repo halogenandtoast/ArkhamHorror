@@ -6,6 +6,7 @@ import {
   cardDecoder,
 } from '@/arkham/types/Card';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
+import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { Customization, customizationsDecoder } from '@/arkham/types/Customization';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
@@ -33,6 +34,7 @@ export type Asset = {
   spiritDeck?: Card[]
   modifiers?: Modifier[];
   mutated?: string;
+  placement: Placement
 }
 
 export const assetDecoder = JsonDecoder.object<Asset>({
@@ -58,4 +60,5 @@ export const assetDecoder = JsonDecoder.object<Asset>({
   spiritDeck: v2Optional(JsonDecoder.array<Card>(cardDecoder, 'Card[]')),
   modifiers: v2Optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
   mutated: v2Optional(JsonDecoder.string()),
+  placement: placementDecoder,
 }, 'Asset');

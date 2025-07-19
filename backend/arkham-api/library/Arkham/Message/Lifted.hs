@@ -3097,7 +3097,8 @@ discardTopOfDeck
   -> Int
   -> m ()
 discardTopOfDeck investigator source n =
-  push $ DiscardTopOfDeck (asId investigator) n (toSource source) Nothing
+  whenM (can.manipulate.deck (asId investigator)) do
+    push $ DiscardTopOfDeck (asId investigator) n (toSource source) Nothing
 
 discardTopOfEncounterDeck
   :: (AsId investigator, IdOf investigator ~ InvestigatorId, Sourceable source, ReverseQueue m)

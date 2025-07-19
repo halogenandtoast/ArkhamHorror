@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.PassageIntoTheVeil (passageIntoTheVeil) where
 
+import Arkham.Capability
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.I18n
 import Arkham.Matcher
@@ -27,7 +28,8 @@ instance RunMessage PassageIntoTheVeil where
     FailedThisSkillTest iid (isSource attrs -> True) -> scenarioI18n do
       assets <- select $ assetControlledBy iid <> #ally
       chooseOneM iid do
-        unscoped $ countVar 5 $ labeled' "discardTopOfYourDeck" $ discardTopOfDeck iid attrs 5
+        whenM (can.manipulate.deck iid) do
+          unscoped $ countVar 5 $ labeled' "discardTopOfYourDeck" $ discardTopOfDeck iid attrs 5
         labeled' "passageIntoTheVeil.damage" do
           directDamage iid attrs 1
           for_ assets \aid -> dealAssetDamage aid attrs 1

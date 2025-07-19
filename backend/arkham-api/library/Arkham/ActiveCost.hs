@@ -194,6 +194,7 @@ payCost msg c iid skipAdditionalCosts cost = do
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
+    LabeledCost _ inner -> payCost msg c iid skipAdditionalCosts inner
     ShuffleTopOfScenarioDeckIntoYourDeck n TekeliliDeck -> do
       runQueueT $ addTekelili iid . take n =<< getScenarioDeck TekeliliDeck
       pure c
@@ -805,7 +806,14 @@ payCost msg c iid skipAdditionalCosts cost = do
                             (SpendUses source (toTarget assetId) uType 1)
                       )
                       (zip rs2 resourcesFromAssets)
-      withPayment $ ResourcePayment x
+      extra <- case activeCostTarget c of
+        ForCard _ card -> do
+          ucost <- getUnboundedModifiedCardCost iid card
+          if ucost < 0
+            then pure (-ucost)
+            else pure 0
+        _ -> pure 0 
+      withPayment $ ResourcePayment $ x + extra
     AdditionalActionsCost -> do
       actionRemainingCount <- field InvestigatorRemainingActions iid
       let currentlyPaid = countAdditionalActionPayments c.payments

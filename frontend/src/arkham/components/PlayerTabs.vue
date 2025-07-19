@@ -5,11 +5,14 @@ import type { Game } from '@/arkham/types/Game';
 import Tab from '@/arkham/components/Tab.vue';
 import Player from '@/arkham/components/Player.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
+import { Message, AbilityLabel } from '@/arkham/types/Message';
 import type { Investigator } from '@/arkham/types/Investigator';
 import type { TarotCard } from '@/arkham/types/TarotCard';
+import type { Placement } from '@/arkham/types/Placement';
+import type { Source } from '@/arkham/types/Source';
 import { imgsrc } from '@/arkham/helpers';
 import { IsMobile } from '@/arkham/isMobile';
-import { useDbCardStore, getInvestigatorName } from '@/stores/dbCards'
+import { useDbCardStore } from '@/stores/dbCards'
 
 export interface Props {
   game: Game
@@ -78,7 +81,51 @@ function getInvestigatorName(cardTitle: string): string {
   return language === 'en'? cardTitle : store.getCardName(cardTitle, "investigator")
 }
 
-watchEffect(() => selectedTab.value = props.playerId)
+const isForcedAbility = (ability: Message): ability is AbilityLabel => {
+  return ability.tag === "AbilityLabel" && ability.ability.type.tag === "ForcedAbility"
+}
+
+const sourceToPlacement = (source: Source): Placement | null => {
+  switch (source.tag) {
+    case "EnemySource":
+      {
+        const { contents } = source
+        if (contents) return props.game.enemies[contents].placement
+      }
+    case "TreacherySource":
+      {
+        const { contents } = source
+        if (contents) return props.game.treacheries[contents].placement
+      }
+    default:
+  }
+
+  return null
+}
+
+watchEffect(() => {
+  // determines which tab will be active, it should be the player who is
+  // playing the game, but on occasion there will be a forced effect in another
+  // players tab and we'd like to direct the player there
+  const playersWithForced = ArkhamGame
+    .choices(props.game, props.playerId)
+    .reduce((acc, c) => {
+      if (isForcedAbility(c)) {
+        const { source } = c.ability
+        const placement = sourceToPlacement(source)
+        if (placement?.tag == 'InThreatArea') {
+          const investigator = props.game.investigators[placement.contents]
+          if (investigator) acc.push(investigator.playerId)
+        }
+      }
+      return acc
+    }, [] as string[])
+
+  const playerIds = [...new Set(playersWithForced)]
+  selectedTab.value = playerIds.length > 0 && !playerIds.includes(props.playerId)
+    ? playerIds[0]
+    : props.playerId
+})
 </script>
 
 <template>

@@ -633,7 +633,6 @@ instance RunMessage ChaosBag where
         getSkillTestId >>= \case
           Just sid -> hasModifier (SkillTestTarget sid) ReturnBlessedToChaosBag
           Nothing -> pure True
-
       returnAllCursed <-
         getSkillTestId >>= \case
           Just sid -> hasModifier (SkillTestTarget sid) ReturnCursedToChaosBag
@@ -648,7 +647,7 @@ instance RunMessage ChaosBag where
               if returnAllBlessed then pure True else hasModifier token ReturnBlessedToChaosBag
           | token.face == #curse -> do
               if returnAllCursed then pure True else hasModifier token ReturnCursedToChaosBag
-          | token.face == #frost -> pure False
+          | token.face == #frost -> pure True
           | otherwise -> pure True
 
       let removeWindow ts = checkWindows [mkWhen $ Window.TokensWouldBeRemovedFromChaosBag ts]

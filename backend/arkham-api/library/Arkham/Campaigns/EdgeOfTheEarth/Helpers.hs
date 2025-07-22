@@ -34,7 +34,7 @@ import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Setup
 import Arkham.Source
-import Arkham.Treachery.Types (Field (TreacheryCardId))
+import Arkham.Treachery.Types (Field (TreacheryCardId, TreacheryCard))
 import Arkham.Window (WindowType (ScenarioEvent))
 
 campaignI18n :: (HasI18n => a) -> a
@@ -99,6 +99,7 @@ resolveTekelili
 resolveTekelili iid tekelili = do
   cardId <- field TreacheryCardId (asId tekelili)
   mods <- getModifiers cardId
+  card <- field TreacheryCard (asId tekelili)
   if
     | PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods -> putOnBottomOfDeck iid iid (asId tekelili)
     | ShuffleIntoDeckInsteadOfDiscard `elem` mods -> shuffleIntoDeck iid (asId tekelili)
@@ -106,7 +107,10 @@ resolveTekelili iid tekelili = do
         investigators <- getInvestigators
         chooseTargetM iid investigators \iid' -> shuffleIntoDeck iid' (asId tekelili)
     | LeaveCardWhereItIs `elem` mods -> pure ()
-    | otherwise -> putOnBottomOfDeck iid TekeliliDeck (asId tekelili)
+    | otherwise -> do 
+        removeCardFromDeckForCampaign iid card
+        putOnBottomOfDeck iid TekeliliDeck (asId tekelili)
+
 
 drawTekelili :: (Sourceable source, ReverseQueue m) => InvestigatorId -> source -> Int -> m ()
 drawTekelili iid source n = push $ DrawCards iid $ newCardDraw source TekeliliDeck n

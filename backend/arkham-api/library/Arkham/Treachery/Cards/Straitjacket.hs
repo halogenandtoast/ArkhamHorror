@@ -26,9 +26,7 @@ instance RunMessage Straitjacket where
             <> mapOneOf AssetInSlot [#body, #hand]
         for_ returnableAssets (returnToHand iid)
         let asset = lookupPlayerCard Assets.straitjacket (toCardId attrs)
+        removeTreachery attrs
         takeControlOfSetAsideAsset iid (PlayerCard asset)
-      pure t
-    After (Revelation _ (isSource attrs -> True)) -> do
-      push $ Discarded (toTarget attrs) (toSource attrs) (toCard attrs) -- Using discarded to remove existence)
       pure t
     _ -> Straitjacket <$> liftRunMessage msg attrs

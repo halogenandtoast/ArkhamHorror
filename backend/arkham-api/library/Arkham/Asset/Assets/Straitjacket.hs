@@ -3,7 +3,6 @@ module Arkham.Asset.Assets.Straitjacket (straitjacket) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Card
 
 newtype Straitjacket = Straitjacket AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -25,11 +24,12 @@ straitjacket = assetWith Straitjacket Cards.straitjacket (canLeavePlayByNormalMe
 
 instance HasAbilities Straitjacket where
   getAbilities (Straitjacket a) =
-    [restricted a 1 OnSameLocation $ ActionAbility [] (ActionCost 2)]
+    [restricted a 1 OnSameLocation doubleActionAbility]
 
 instance RunMessage Straitjacket where
-  runMessage msg a@(Straitjacket attrs) = case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      push $ Discarded (toTarget attrs) (attrs.ability 1) (toCard attrs)
+  runMessage msg a@(Straitjacket attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      removeAsset attrs
+      discardCard iid (attrs.ability 1) attrs
       pure a
-    _ -> Straitjacket <$> runMessage msg attrs
+    _ -> Straitjacket <$> liftRunMessage msg attrs

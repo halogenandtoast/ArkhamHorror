@@ -3086,6 +3086,10 @@ setLocationLabel
   :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => location -> Text -> m ()
 setLocationLabel location lbl = push $ SetLocationLabel (asId location) lbl
 
+removeAsset
+  :: (ReverseQueue m, AsId asset, IdOf asset ~ AssetId) => asset -> m ()
+removeAsset asset = push $ RemoveAsset (asId asset)
+
 removeTreachery
   :: (ReverseQueue m, AsId treachery, IdOf treachery ~ TreacheryId) => treachery -> m ()
 removeTreachery treachery = push $ RemoveTreachery (asId treachery)

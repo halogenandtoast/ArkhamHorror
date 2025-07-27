@@ -42,7 +42,7 @@ instance RunMessage DrMalaSinhaDaringPhysicianResolute where
           <> at_ (locationWithInvestigator iid)
 
       chooseOneM iid do
-        targets investigators \x -> healHorror x (attrs.ability 1) 2
-        targets assets \x -> healHorror x (attrs.ability 1) 2
+        targets investigators \x -> healDamage x (attrs.ability 1) 2
+        targets assets \x -> healDamage x (attrs.ability 1) 2
       pure a
     _ -> DrMalaSinhaDaringPhysicianResolute <$> liftRunMessage msg attrs

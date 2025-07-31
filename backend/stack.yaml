@@ -1,10 +1,10 @@
 ---
-require-stack-version: ">= 3.5.1"
+require-stack-version: ">= 3.7.1"
 concurrent-tests: true
 system-ghc: true
 install-ghc: false
-resolver: nightly-2025-05-06
-compiler: ghc-9.10.2
+resolver: nightly-2025-07-31
+compiler: ghc-9.12.2
 notify-if-nix-on-path: false
 
 ghc-options:
@@ -57,3 +57,7 @@ extra-deps:
 - x509-1.7.7@sha256:90eef2d745a654146fc1c325e035eaddac531e4d2145d4bc1dcf4b8fad439d34,2276
 - x509-store-1.6.9@sha256:1f1abeab5bacf1407b920d0f34f4c35a5ad450ff0d8121cd3dc76460f81e711d,1716
 - x509-validation-1.6.12@sha256:4f4af20ec77f02c042ecd4726c195bb0e0b694b336de81e7bd4515b2917bd9bc,2169
+- cryptonite-0.30@sha256:12c85dea7be63e5ad90bcb487eb3846bf3c413347f94336fa1dede7b28f9936a,18301
+- persistent-postgresql-2.13.6.2@sha256:f455dcac3145d9f26f95ce2605074785641478bc226071f458995b2b8051a8a8,3809
+- yesod-test-1.6.19@sha256:faac869ab6fa86113cde99d28928e196373a04879c03204071956954ed7ba2a3,3003
+- postgresql-simple-0.7.0.0@sha256:6ada584a2e6c8f8d6cb695ceddfb0600bfe3f320ccb6cec99ca1a2f0a38d6ded,4772

@@ -283,8 +283,8 @@ cardInFastWindows iid source card windows' matcher =
 getPotentiallyModifiedCardCost
   :: HasGame m => InvestigatorId -> Card -> Bool -> Int -> m Int
 getPotentiallyModifiedCardCost iid c@(PlayerCard _) excludeChuckFergus startingCost = do
-  modifiers <- getModifiers (InvestigatorTarget iid)
-  cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
+  modifiers <- getModifiers iid
+  cardModifiers <- getModifiers $ toCardId c
   foldM applyModifier startingCost (modifiers <> cardModifiers)
  where
   applyModifier n (CanReduceCostOf cardMatcher m) = do
@@ -295,7 +295,7 @@ getPotentiallyModifiedCardCost iid c@(PlayerCard _) excludeChuckFergus startingC
     pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
   applyModifier n _ = pure n
 getPotentiallyModifiedCardCost iid c@(EncounterCard _) excludeChuckFergus _ = do
-  modifiers <- getModifiers (InvestigatorTarget iid)
+  modifiers <- getModifiers iid
   foldM
     applyModifier
     (error "we need so specify ecCost for this to work")

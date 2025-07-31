@@ -4326,6 +4326,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         canTakeResource <- (&&) <$> canDo iid #resource <*> can.gain.resources FromOtherSource iid
         canPlay <- canDo iid #play
         player <- getPlayer iid
+        let playableCards' = if canPlay then playableCards else filter isFastCard playableCards
 
         push
           $ AskPlayer
@@ -4342,8 +4343,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
              , none (`elem` modifiers) [CannotDrawCards, CannotManipulateDeck]
              ]
           <> [ targetLabel (toCardId c) [InitiatePlayCard iid c Nothing NoPayment windows usesAction]
-             | canPlay
-             , c <- playableCards
+             | c <- playableCards'
              ]
           <> [EndTurnButton iid [ChooseEndTurn iid]]
           <> map ((\f -> f windows [] []) . AbilityLabel iid) actions

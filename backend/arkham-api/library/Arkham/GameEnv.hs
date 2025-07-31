@@ -123,11 +123,11 @@ instance MonadRandom GameT where
     atomicModifyIORef' ref (swap . random)
   getRandomRs lohi = do
     ref <- view genL
-    gen <- atomicModifyIORef' ref split
+    gen <- atomicModifyIORef' ref splitGen
     pure $ randomRs lohi gen
   getRandoms = do
     ref <- view genL
-    gen <- atomicModifyIORef' ref split
+    gen <- atomicModifyIORef' ref splitGen
     pure $ randoms gen
 
 getSkillTest :: HasGame m => m (Maybe SkillTest)

@@ -115,9 +115,37 @@ packages:
       size: 631
   original:
     hackage: x509-validation-1.6.12@sha256:4f4af20ec77f02c042ecd4726c195bb0e0b694b336de81e7bd4515b2917bd9bc,2169
+- completed:
+    hackage: cryptonite-0.30@sha256:12c85dea7be63e5ad90bcb487eb3846bf3c413347f94336fa1dede7b28f9936a,18301
+    pantry-tree:
+      sha256: df1cbe4cc40d569cc75ffed40bc5deac43cb085653980b42b9b6a5d4b745a30a
+      size: 23323
+  original:
+    hackage: cryptonite-0.30@sha256:12c85dea7be63e5ad90bcb487eb3846bf3c413347f94336fa1dede7b28f9936a,18301
+- completed:
+    hackage: persistent-postgresql-2.13.6.2@sha256:f455dcac3145d9f26f95ce2605074785641478bc226071f458995b2b8051a8a8,3809
+    pantry-tree:
+      sha256: aeb880b03a4f8a789718a7cc69ad61eab416a82b036f85315e26ef663fcb9fac
+      size: 1140
+  original:
+    hackage: persistent-postgresql-2.13.6.2@sha256:f455dcac3145d9f26f95ce2605074785641478bc226071f458995b2b8051a8a8,3809
+- completed:
+    hackage: yesod-test-1.6.19@sha256:faac869ab6fa86113cde99d28928e196373a04879c03204071956954ed7ba2a3,3003
+    pantry-tree:
+      sha256: 3ff394578b2de20c7c67bae0a827e658dbea16a04b908804d4f0bb50bf4a5a1c
+      size: 630
+  original:
+    hackage: yesod-test-1.6.19@sha256:faac869ab6fa86113cde99d28928e196373a04879c03204071956954ed7ba2a3,3003
+- completed:
+    hackage: postgresql-simple-0.7.0.0@sha256:6ada584a2e6c8f8d6cb695ceddfb0600bfe3f320ccb6cec99ca1a2f0a38d6ded,4772
+    pantry-tree:
+      sha256: e997336b7a0eb037d9bca472cb8ca0c53491c62b5a76bef3fc65875adcd02273
+      size: 4255
+  original:
+    hackage: postgresql-simple-0.7.0.0@sha256:6ada584a2e6c8f8d6cb695ceddfb0600bfe3f320ccb6cec99ca1a2f0a38d6ded,4772
 snapshots:
 - completed:
-    sha256: edd939386754d61f20420f5abd03d2fba934910a5fae6c0da07376033ee717fd
-    size: 677729
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2025/5/6.yaml
-  original: nightly-2025-05-06
+    sha256: 3dec7f4c6dc2dc10047d2941a6bc9ee8fa6a84f6db932096cbd83a0ace83dfa1
+    size: 672916
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2025/7/31.yaml
+  original: nightly-2025-07-31

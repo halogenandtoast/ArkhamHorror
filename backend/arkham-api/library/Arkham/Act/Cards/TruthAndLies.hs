@@ -13,8 +13,8 @@ import Arkham.Helpers.Calculation
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Move
 import Arkham.Modifier (ModifierType (AddKeyword, GainVictory))
-import Arkham.Movement
 import Arkham.Placement
 import Arkham.Strategy
 
@@ -69,9 +69,8 @@ instance RunMessage TruthAndLies where
 
           gameModifier attrs trueShape (GainVictory victory)
           gameModifiers attrs trueShape (map AddKeyword $ toList keywords)
-          push $ Move $ move attrs trueShape theGreatHall
-        else
-          push R1
+          enemyMoveTo attrs trueShape theGreatHall
+        else push R1
       advanceActDeck attrs
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do

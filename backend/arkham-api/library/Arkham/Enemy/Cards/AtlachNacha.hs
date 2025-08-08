@@ -13,8 +13,8 @@ import Arkham.Matcher
 import Arkham.Matcher qualified as Match
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement
-import Arkham.Movement
 import Arkham.Projection
 
 newtype Meta = Meta {rotation :: Int}
@@ -69,7 +69,7 @@ instance RunMessage AtlachNacha where
           label <- field LocationLabel =<< selectJust (locationWithEnemy attrs.id)
           let newLabel = mkLabel $ rotateLocation n label
           newLocation <- selectJust (LocationWithLabel newLabel)
-          push $ Move $ move (toSource attrs) attrs newLocation
+          enemyMoveTo attrs attrs newLocation
           pure e
         else do
           let Meta m = toResult attrs.meta
@@ -78,7 +78,7 @@ instance RunMessage AtlachNacha where
             label <- field LocationLabel =<< selectJust (locationWithEnemy leg)
             let newLabel = mkLabel $ rotateLocation n label
             newLocation <- selectJust (LocationWithLabel newLabel)
-            push $ Move $ move (toSource attrs) leg newLocation
+            enemyMoveTo attrs leg newLocation
           pure $ AtlachNacha $ setMeta @Meta (Meta ((m + (45 * n)) `mod` 360)) attrs
     UseCardAbility _ (isSource attrs -> True) 1 (getLocation -> Just lid) _ -> do
       iids <- select $ investigatorAt lid

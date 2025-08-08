@@ -1,93 +1,93 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-2 (-4 instead if you have no sanity remaining).",
-      "cultist": "Reveal another token. If you fail, take 1 horror.",
-      "tablet": "-3. If you fail and Hastur is in play, place 1 clue on your location (from the token bank).",
-      "elderThing": "-3. If this token is revealed during an attack or evasion attempt against a _Monster_ or _Ancient One_ enemy, lose 1 action."
+      "skull": "-2 (당신의 남은 정신력이 없다면, -2 대신 -4).",
+      "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 실패하면, 공포를 1 받습니다.",
+      "tablet": "-3. 실패했고 ‘하스터’가 플레이 상태라면, 토큰 저장소에서 단서를 1개 가져와 당신이 위치한 장소에 올려놓습니다.",
+      "elderThing": "-3. _괴물_ 적 또는 _고대의 존재_ 적을 대상으로 한 공격 또는 회피 시도 중에 이 토큰을 공개했다면, 행동을 1번 잃습니다."
     },
     "hardExpert": {
-      "skull": "-X. X is the amount of horror on you.",
-      "cultist": "Reveal another token. If you fail, take 2 horror.",
-      "tablet": "-5. If you fail and Hastur is in play, place 1 clue on your location (from the token bank).",
-      "elderThing": "-5. If this token is revealed during an attack or evasion attempt against a _Monster_ or _Ancient One_ enemy, lose 1 action."
+      "skull": "-X. X는 당신이 가진 공포 개수입니다.",
+      "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 실패하면, 공포를 2 받습니다.",
+      "tablet": "-5. 실패했고 ‘하스터’가 플레이 상태라면, 토큰 저장소에서 단서를 1개 가져와 당신이 위치한 장소에 올려놓습니다.",
+      "elderThing": "-5. _괴물_ 적 또는 _고대의 존재_ 적을 대상으로 한 공격 또는 회피 시도 중에 이 토큰을 공개했다면, 행동을 1번 잃습니다."
     }
   },
   "label": {
-    "useV2": "Use Search For the Stranger (v. II)",
-    "useV3": "Use Search For the Stranger (v. III)",
+    "useV2": "주요목적 2 – ‘이방인을 찾아서(v.II)’를 사용합니다.",
+    "useV3": "주요목적 2 – ‘이방인을 찾아서(v.III)’를 사용합니다.",
     "theFall": {
-      "cannot": "You cannot bring yourself to do what must be done.",
-      "push": "Realizing what you must do, you step forward and push her."
+      "cannot": "도저히 뭘 해야 할지 모르겠습니다.",
+      "push": "해야 할 일을 깨닫고서 앞으로 걸어가 그녀를 밀칩니다."
     },
     "aMomentsRest": {
-      "chooseEnemy": "Choose an enemy in play. Exhaust that enemy and disengage it from all investigators"
+      "chooseEnemy": "플레이 상태인 적 하나를 선택합니다. 그 적을 소진시킵니다. 모든 조사자는 그 적과 교전이 풀립니다."
     }
   },
   "remembered": {
-    "knowTheSecret": "You know the secret."
+    "knowTheSecret": "조사자가 “비밀”을 알아냈다."
   },
   "intro": {
-    "title": "Scenario VIII: Dim Carcosa",
-    "readIntro1": "Check Campaign Log. *If you opened the path below*: Read _Intro 1_.",
-    "readIntro2": "*If you opened the path above*, skip to _Intro 2_.",
-    "intro1": "<p>_Intro 1_: You swim to the edge of the water and throw yourself upon the rocky shore, gasping for air. You lie there for some time, utterly exhausted. Every muscle in your body aches. Before you lies a desolate expanse of plain. In the distance, the alien spires of a warped city rise into the clouds. Behind you, the dark surface of the lake from which you’d emerged reflects the glare of two suns. When you peer back into the murky depths, you see no sign of the chapel where you’d made the leap, or of Mont Saint-Michel, or even of Earth. This is Carcosa—the realm of madness in the stars, where Hastur reigns supreme.</p><p class='basic right'>Skip to _Setup_.</p>",
-    "intro2": "<p>_Intro 2_: You land on a piece of black obsidian stone winding up a dark spire. You cough blood and feel a searing pain in your gut, as though you’d broken a rib. Before you lies a warped, alien city. Its twisting streets and aberrant architecture have no semblance of order or structure. In the distance, a murky lake reflects the glare of two suns. When you look up, the abbey of Mont Saint-Michel peeks just below the clouds, flipped upside-down. This is Carcosa—the realm of madness in the stars, where Hastur reigns supreme.</p><p class='basic right'>Proceed to _Setup_.</p>"
+    "title": "시나리오 VIII: 어스레한 카르코사",
+    "readIntro1": "캠페인 기록지를 확인합니다. *아래의 길을 열었다*면: _도입부 1_을 읽습니다.",
+    "readIntro2": "*위의 길을 열었다*면, _도입부 2_로 건너뜁니다.",
+    "intro1": "<p>_도입부 1_: 당신은 물가로 헤엄쳐 가서 바위투성이 물가에 몸을 끌어올립니다. 완전히 탈진한채로 가쁜 숨을 내쉬며 그곳에 얼마간 가만히 누워 있습니다. 그야말로 삭신이 쑤십니다. 당신의 앞에 펼쳐진 평야는 광활하고 황량하기만 합니다. 멀리로는 뒤틀린 도시의 외계 첨탑이구름을 뚫고 솟아올랐습니다. 뒤로는 당신이 헤엄쳐 나온 호수의 검은 수면에 두 개의 태양이 비칩니다. 저 시커먼 물속을 깊숙이 들여다보아도 당신이 뛰어들었던 예배당이나 몽 생 미셸, 심지어 지구조차 아무것도 보이지 않습니다. 이곳이 카르코사입니다. 별들 속 광기의 왕국, 하스터가 지배하는 곳.</p><p class='basic right'>_게임 준비_로 건너뜁니다.</p>",
+    "intro2": "<p>_도입부 2_: 당신은 솟아난 검은 첨탑을 이루는 검정 흑요석 석판 위에 떨어집니다. 갈빗대가부러진 듯 복부에서 타는 듯한 통증이 올라와 피를 토해냅니다. 당신 앞에는 뒤틀린 외계 도시가 펼쳐져 있습니다. 뒤엉킨 거리며 괴이한 건축물에서는 질서나 구성 따위를 찾아볼 수조차 없습니다. 저 멀리, 호수의 검은 수면에 두 개의 태양이 비칩니다. 고개를 들어보니 구름 사이로 몽 생 미셸 수도원 탑이 거꾸로 서 있습니다. 이곳이 카르코사입니다. 별들 속 광기의 왕국, 하스터가 지배하는 곳.</p><p class='basic right'>_게임 준비_로 이어집니다.</p>"
   },
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: *Dim Carcosa*, *Delusions*, *Cult of the Yellow Sign*, *Inhabitants of Carcosa*, *Agents of Hastur*, and *Striking Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/dim-carcosa.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/cult-of-the-yellow-sign.png' /><img src='{setImgPath}/inhabitants-of-carcosa.png' /><img src='{setImgPath}/agents-of-hastur.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *Dim Carcosa*, *망상*, *황색 표식 교단*, *카르코사의 거주자*, *하스터의 권속*, and *엄습하는 공포*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/dim-carcosa.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/cult-of-the-yellow-sign.png' /><img src='{setImgPath}/inhabitants-of-carcosa.png' /><img src='{setImgPath}/agents-of-hastur.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
     "act2": {
-      "instructions": "Check Campaign Log. Depending on the following circumstances, a different version of Act 2 should be used in this scenario. Each other version of Act 2 is removed from the game.",
-      "v1": "If you have 5 or less total _Doubt_ and _Conviction_, use Act 2—Search For the Stranger (v. I)",
-      "v2": "If you have 6 or more total Doubt and Conviction, and you have more _Doubt_ than _Conviction_, use Act 2—Search For the Stranger (v. II)",
-      "v3": "If you have 6 or more total Doubt and Conviction, and you have more _Conviction_ than _Doubt_, use Act 2—Search For the Stranger (v. III)",
-      "choose": "If you have 6 or more total _Doubt_ and _Conviction_, and you have exactly equal _Doubt_ and _Conviction_, you may choose to use either Act 2—Search For the Stranger (v. II) or Act 2—Search For the Stranger (v. III)"
+      "instructions": "캠페인 기록지를 확인합니다. 이번 시나리오에서는 다음 상황에 따라 어떤 _주요목적 2_ 카드를 사용할지 정합니다. 사용하지 않는 _주요목적 2_ 카드는 모두 게임에서 제거합니다.",
+      "v1": "_의심_과 _믿음_이 합쳐서 5 이하라면, 주요목적 2 – ‘이방인을 찾아서(v.I)’를 사용합니다.",
+      "v2": "_의심_과 _믿음_이 합쳐서 6 이상이고 _의심_이 _믿음_보다 많다면, 주요목적 2 – ‘이방인을 찾아서(v.II)’를 사용합니다.",
+      "v3": "_의심_과 _믿음_이 합쳐서 6 이상이고 _믿음_이 _의심_보다 많다면, 주요목적 2 – ‘이방인을 찾아서(v.III)’를 사용합니다.",
+      "choose": "_의심_과 _믿음_이 합쳐서 6 이상이고 _의심_과 _믿음_이 같다면, 주요목적 2 – ‘이방인을 찾아서(v.II)’와 주요목적 2 – ‘이방인을 찾아서(v.III)’ 중에서 원하는 것을 선택해서 사용합니다."
     },
-    "chooseLocations": "Randomly put 1 copy of Bleak Plains, 1 copy of Dim Streets, 1 copy of Ruins of Carcosa, and 1 copy of Depths of Demhe into play. (See next page for suggested location placement.) Set each other copy of Bleak Plains, Dim Streets, Ruins of Carcosa and Depths of Demhe aside, out of play.",
+    "chooseLocations": "무작위로 ‘황량한 평원’ 사본 1장, ‘어스레한 거리’ 사본 1장, ‘카르코사의 폐허’ 사본 1장, ‘뎀헤의 무저갱’ 사본 1장을 선택하여 플레이 영역에 둡니다(추천 장소 배치를 참조하여 놓습니다). 선택하지 않은 ‘황량한 평원’, ‘어스레한 거리’, ‘카르코사의 폐허’, ‘뎀헤의 무저갱’ 사본을 모두 비플레이 상태로 치워 둡니다.",
     "placeLocations": {
-      "instructions": "Put Shores of Hali, Dark Spires, and Palace of the King into play. (See next page for suggested location placement.)",
-      "startAtShoresOfHali": "Check Campaign Log. *If you opened the path below*, each investigator begins play at Shores of Hali.",
-      "startAtDarkSpires": "Check Campaign Log. *If you opened the path above*, each investigator begins play at Dark Spires."
+      "instructions": "‘할리 호숫가’, ‘검은 첨탑’, ‘왕궁’을 플레이 영역에 둡니다(추천 장소 배치를 참조하여 놓습니다).",
+      "startAtShoresOfHali": "캠페인 기록지를 확인합니다. *아래의 길을 열었다*면, 모든 조사자는 ‘할리 호숫가’에서 시작합니다.",
+      "startAtDarkSpires": "캠페인 기록지를 확인합니다. *위의 길을 열었다*면, 모든 조사자는 ‘검은 첨탑’에서 시작합니다."
     },
-    "theManInThePallidMask": "The bearer of The Man in the Pallid Mask weakness searches his or her deck for it and sets it aside, out of play.",
-    "setAside": "Set the following cards aside, out of play: Hastur (*The King in Yellow*), Hastur (*Lord of Carcosa*), Hastur (*The Tattered King*), and Beast of Aldebaran.",
+    "theManInThePallidMask": "‘창백한 가면을 쓴 남자’ 약점의 보유자는 자신의 덱에서 그 카드를 찾아서 비플레이 상태로 치워 둡니다.",
+    "setAside": "‘하스터<i>(황색의 왕)</i>’, ‘하스터(*카르코사의 지배자*)’, ‘하스터(*누더기 왕*)’, ‘알데바란의 야수’를 비플레이 상태로 치워 둡니다.",
     "chasingTheStranger": {
-      "instructions": "Check the number of tally marks under “Chasing the Stranger” in your Campaign Log.",
-      "twoOrFewer": "If there are 2 or fewer tally marks, add 3 doom to agenda 1a.",
-      "threeToFive": "If there are between 3-5 tally marks, add 2 doom to agenda 1a.",
-      "sixToEight": "If there are between 6-8 tally marks, add 1 doom to agenda 1a.",
-      "nineOrMore": "If there are 9 or more tally marks, no change is made."
+      "instructions": "캠페인 기록지의 “이방인을 추적하다” 아래에 있는 빗금 개수를 확인합니다.",
+      "twoOrFewer": "빗금이 2개 이하면, 주요사건 1a에 파멸을 3개 추가합니다.",
+      "threeToFive": "빗금이 3~5개면, 주요사건 1a에 파멸을 2개 추가합니다.",
+      "sixToEight": "빗금이 6~8개면, 주요사건 1a에 파멸을 1개 추가합니다.",
+      "nineOrMore": "빗금이 9개 이상이면, 아무 변경 사항이 없습니다."
     },
-    "takeHorror": "Each investigator takes direct horror equal to half his or her sanity, rounded down (*cannot be prevented*). This horror cannot cause you to become defeated (see “Sanity in the Realm of Carcosa,” below)."
+    "takeHorror": "모든 조사자는 자기 정신력의 절반(소숫점 버림)만큼 직접적인 공포를 받습니다(*이 공포는 방어할 수 없습니다*). 이렇게 공포를 받아서 가진 공포가 정신력 이상이 되더라도 쓰러지지 않습니다(다음의 “카르코사 왕국에서의 정신력”을 참조합니다)."
   },
   "resolutions": {
     "xp": {
-      "self": "Truimphed over his or her own self—the most dangerous of foes.",
-      "truth": "Learned the truth behind The King in Yellow."
+      "self": "가장 위험한 적인 자신과의 싸움에서 승리했다.",
+      "truth": "<u>『황색의 왕』</u>에 감춰진 진실을 알아냈다."
     },
     "noResolution": {
-      "title": "No Resolution",
-      "body": "<div class='resolution'><p>_If no resolution was reached (each investigator was defeated)_: Check Campaign Log.</p><ul><li>If you have more (or equal) _Conviction_ than _Doubt_, go to _Resolution 4_.</li><li>If you have more _Doubt_ than _Conviction_, go to _Resolution 5_.</li></ul></div>"
+      "title": "결말에 도달하지 못함",
+      "body": "<div class='resolution'><p>_아무 결말에도 도달하지 못했다면(모든 조사자가 쓰러졌다면)_: 캠페인 기록지를 확인합니다.</p><ul><li>_믿음_이 _의심_보다 많거나 같다면, _결말 4_를 읽습니다.</li><li>_의심_이 _믿음_보다 많다면, _결말 5_를 읽습니다.</li></ul></div>"
     },
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1_: You stand atop the balcony of the abbey tower in Mont Saint-Michel, wet wind coursing through your hair. The Pallid Mask lies in your hands, devoid of warmth. You can scarcely bring yourself to look at it. You remember everything now—how it all began, how it ended, and everything in between. There is only one thing left to do. You hurl the mask into the air with all of your strength and watch as it flies into the tempest-tossed waves below.</p><ul><li>In your Campaign Log, record that *the investigators prevented Hastur from escaping his prison*.</li><li>In your Campaign Log, record the names of each investigator who ended the game with at least 1 copy of the Possession treachery in his or her hand.</li><li>Each investigator suffers 2 physical trauma and 2 mental trauma, as he or she never fully recovers from his or her time spent in Carcosa, the realm of madness.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 5 bonus experience, as he or she has truimphed over his or her own self—the most dangerous of foes.<ul><li>_Experience_: {xp}</li></ul></li><li>The investigators win the campaign!</li></ul></div>"
+      "title": "결말 1",
+      "body": "<div class='resolution'><p>_결말 1_: 당신은 몽 생 미셸의 수도원 탑 발코니에 발을 내딛습니다. 젖은 바람이 당신의 머리칼을 타고 흐릅니다. 손에 놓인 창백한 가면은 싸늘히 식었습니다. 당신은 도저히 그 가면을 직시하기가 어렵습니다. 이제 모든 것이 기억납니다. 이 모든 것의 시작과, 이 모든 것의 끝과, 그 사이에 있었던 모든 과정이. 이제 남은 일은 하나뿐입니다. 당신은 온 힘을 다해 가면을 허공에 던지고는, 가면이 저 아래에서 성나게 밀어치는 파도 속으로 날아가는 것을 지켜봅니다.</p><ul><li>캠페인 기록지에 *조사자들은 하스터가 감옥에서 탈출하지 못하도록 막았다*라고 기록합니다.</li><li>게임이 끝났을 때 손에 ‘꼭두각시로 전락하다’ 음모 사본을 1장 이상 갖고 있던 조사자의 이름을 모두 캠페인 기록지에 기록합니다.</li><li>각 조사자는 육체적 트라우마를 2씩, 정신적 트라우마를 2씩 겪습니다. 광기의 왕국 카르코사에서 보낸 악몽 같은 시간에서 영영 헤어 나올 수 없기 때문입니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다. 가장 위험한 적인 자신과의 싸움에서 승리했기 때문에, 각 조사자는 경험치를 추가로 5씩 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>조사자가 캠페인에서 승리했습니다!</li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2_: A roar of applause startles you awake. The crowd of the theatre rises to their feet, cheering endlessly. Several patrons in the front row are throwing roses to the actors on stage, who are bowing with wide smiles across their faces. A searing headache crawls through your temples. How did you get back here? Were you in the theatre all along? What about the dinner party? The asylum? The catacombs?… Carcosa? Was it all just a terrible dream?</p><p>You exit the auditorium before the crowd rushes to do the same. Dizziness and exhaustion harries your senses. The weight of your lengthy investigation is crushing your mind. By the time you finally reach the lobby, you are clawing your way across the ground. Just then, a man in an elegant suit reaches down and grabs you by your arm, pulling you to your feet. You are about to thank him when you realize who he is. The sight of him causes you to stagger backward in horror momentarily. The actor who plays the role of the Stranger is still wearing his pale, featureless mask. He gives you a wordless bow, then turns and leaves through the Ward Theatre’s front entrance.</p><ul><li>In your Campaign Log, record that *the investigators prevented Hastur from escaping his prison*.</li><li>In your Campaign Log, record the names of each investigator who ended the game with at least 1 copy of the Possession treachery in his or her hand.</li><li>Each investigator suffers 2 mental trauma, as he or she never fully recovers from his or her time spent in Carcosa, the realm of madness.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 5 bonus experience, as he or she has learned the truth behind The King in Yellow.<ul><li>_Experience_: {xp}</li></ul></li><li>The investigators win the campaign!</li></ul></div>"
+      "title": "결말 2",
+      "body": "<div class='resolution'><p>_결말 2_: 당신은 박수갈채 소리에 놀라 깨어납니다. 극장의 관객들이 자리에서 일어나 끊임없는 갈채를 퍼붓습니다. 앞줄에 있던 관객 가운데 몇몇은 무대 위의 배우를 향해 장미꽃을 던지고, 배우들은 만면에 미소를 띤 채로 인사를 합니다. 머리가 타들어 가는 듯한 두통이 관자놀이를 찌릅니다. 어떻게 여기로 돌아온 걸까요? 지금껏 내내 극장에 있었던 걸까요? 만찬회는? 정신병원은? 카타콤은?… 카르코사는? 그게 전부 그냥 악몽에 불과했던 걸까요?</p><p>공연이 끝나 귀가하려는 관객들이 우르르 몰려나오기 전에, 당신은 한 발 먼저 객석에서 빠져나왔습니다. 탈진에 가까운 현기증이 일어 아직 몸을 제대로 가누기가 어렵습니다. 기나긴 조사의 압박감이 정신을 짓누릅니다. 마침내 로비에 도착했을 즈음에는 거의 땅바닥을 기다시피합니다. 바로 그때, 우아한 정장을 갖춰 입은 남자가 몸을 숙여 당신의 팔을 잡고 일으켜 세웁니다. 그에게 감사 인사를 전하려는 찰나 당신은 그를 알아봅니다. 그의 모습을 본 당신은 순간적으로 공포감에 휩싸여 비틀비틀 뒷걸음질을 칩니다. 이방인을 연기했던 배우는 창백하고 질감 없는 가면을 그대로 쓰고 있습니다. 그는 말없이 꾸벅 인사를 하고는, 돌아서서 와드 극장 정면 출입문으로 걸어나갑니다.</p><ul><li>캠페인 기록지에 *조사자들은 하스터가 감옥에서 탈출하지 못하도록 막았다*라고 기록합니다.</li><li>게임이 끝났을 때 손에 ‘꼭두각시로 전락하다’ 음모 사본을 1장 이상 갖고 있던 조사자의 이름을 모두 캠페인 기록지에 기록합니다.</li><li>각 조사자는 정신적 트라우마를 2씩 겪습니다. 광기의 왕국 카르코사에서 보낸 악몽 같은 시간에서 영영 헤어 나올 수 없기 때문입니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다. <u>『황색의 왕』</u>에 감춰진 진실을 알아냈기 때문에, 각 조사자는 경험치를 추가로 5씩 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>조사자가 캠페인에서 승리했습니다!</li></ul></div>"
     },
     "resolution3": {
-      "title": "Resolution 3",
-      "body": "<div class='resolution'><p>_Resolution 3_: When you awaken, you are sitting in the choeur gothique of Mont Saint-Michel’s abbey. No rain pelts the glass of the windows above, and you hear no thunder, nor the screeching of winged horrors overhead. Somehow, you have escaped. You creep to the door of the abbey and open it with trepidation. A dazzling light sears your eyes, and you lift your hand to block the glare of the sun. You stand overlooking beautiful Mont Saint-Michel. Seagulls fly over the abbey under a backdrop of cloudless sky. The waters around the abbey are calm and azure-blue.</p><p>“I’ve been looking all over for you!” You hear a voice exclaim behind you. You turn with a startle. For a moment you expect to see the Stranger and his Pallid Mask, but instead, the boat captain you’d hired to take you to Mont Saint-Michel stands at the edge of the steps, smiling at you. “Are you ready to head back?”</p><ul><li>In your Campaign Log, record that *the investigators prevented Hastur from escaping his prison*.</li><li>In your Campaign Log, record the names of each investigator who ended the game with at least 1 copy of the Possession treachery in his or her hand.</li><li>Each investigator suffers 2 physical trauma, as he or she never fully recovers from his or her time spent in Carcosa, the realm of madness.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 5 bonus experience, as he or she has learned the truth behind The King in Yellow.<ul><li>_Experience_: {xp}</li></ul></li><li>The investigators win the campaign!</li></ul></div>"
+      "title": "결말 3",
+      "body": "<div class='resolution'><p>_결말 3_: 정신을 차려보니 당신은 몽 생 미셸 수도원의 성가대석에 앉아 있습니다. 유리창을 때리는 빗소리도, 천둥소리도, 머리 위를 날아다니는 날개 달린 괴물의 비명도 모두 가셨습니다. 어째서인지는 모르겠지만 당신은 살아남았습니다. 당신은 부들부들 떨면서 수도원 문까지 기어가 문을 엽니다. 눈부신 빛이 당신의 눈을 태울 만큼 강렬하게 쏟아지는 바람에 손을 들어 태양빛을 가립니다. 당신은 똑바로 서서 아름다운 몽 생 미셸을 내려다봅니다. 구름 한 점 없는 하늘을 배경으로 갈매기들이 수도원 위를 가로질러 날아갑니다. 수도원 주변의 바다는 고요하고 하늘빛으로 푸르게 빛나고 있습니다.</p><p>“내내 찾았잖소!” 등 뒤에서 외치는 목소리에 깜짝 놀라 뒤돌아봅니다. 한 순간 당신은 이방인과 그의 창백한 가면을 맞닥뜨리게 되리라 생각했지만, 등 뒤에는 익숙한 남자가 서 있습니다. 몽 생 미셸로 들어오려고 고용했던 배의 선장입니다. 그는 계단 난간에 서서 당신을 보고 씨익 웃습니다. “이제 돌아가면 됩니까?”</p><ul><li>캠페인 기록지에 *조사자들은 하스터가 감옥에서 탈출하지 못하도록 막았다*라고 기록합니다.</li><li>게임이 끝났을 때 손에 ‘꼭두각시로 전락하다’ 음모 사본을 1장 이상 갖고 있던 조사자의 이름을 모두 캠페인 기록지에 기록합니다.</li><li>각 조사자는 육체적 트라우마를 2씩 겪습니다. 광기의 왕국 카르코사에서 보낸 악몽 같은 시간에서 영영 헤어 나올 수 없기 때문입니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다. <u>『황색의 왕』</u>에 감춰진 진실을 알아냈기 때문에, 각 조사자는 경험치를 추가로 5씩 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>조사자가 캠페인에서 승리했습니다!</li></ul></div>"
     },
     "resolution4": {
-      "title": "Resolution 4",
-      "body": "<div class='resolution'><p>_Resolution 4_: When you awaken, you are sitting in the choeur gothique of Mont Saint-Michel’s abbey. No rain pelts the glass of the windows above, and you hear no thunder, nor the screeching of winged horrors overhead. Somehow, you have escaped the island’s certain doom. You creep to the door of the abbey and open it with trepidation. A dazzling light sears your eyes, and you lift your hand to block the glare of two suns. You stand overlooking the Lake of Hali. Black stars hang in the heavens above. Beyond, over leagues of tossing cloud-waves, the towers of Carcosa rise behind the shattered moon.</p><ul><li>You’ve met with a terrible fate, haven’t you?</li><li>In your Campaign Log, record that *the realm of Carcosa merged with our own, and Hastur rules over them both*.</li><li>Each investigator is driven _insane_.</li><li>The investigators lose the campaign.</li></ul></div>"
+      "title": "결말 4",
+      "body": "<div class='resolution'><p>_결말 4_: 정신을 차려보니 당신은 몽 생 미셸 수도원의 성가대석에 앉아 있습니다. 유리창을 때리는 빗소리도, 천둥소리도, 머리 위를 날아다니는 날개 달린 괴물의 비명도 모두 가셨습니다. 어째서인지는 모르겠지만 당신은 이 섬에 닥친 파멸로부터 살아남았습니다. 당신은 부들부들 떨면서 수도원 문까지 기어가 문을 엽니다. 눈부신 빛이 당신의 눈을 태울 만큼 강렬하게 쏟아지는 바람에 손을 들어 두 개의 태양빛을 가립니다. 당신은 일어서면서 할리 호수를 내려다봅니다. 머리 위 하늘에는 검은 별이 떠 있습니다. 저 멀리 일렁이는 구름의 물결이 광대하게 펼쳐지고, 조각난 달의 뒤편으로 카르코사의 첨탑이 솟구쳐 오릅니다.</p><ul><li>당신은 끔찍한 최후를 맞고 말았습니다. 그렇지 않습니까?</li><li>캠페인 기록지에 *카르코사 왕국이 지구와 합쳐졌고, 하스터가 두 세계를 모두 다스린다*라고 기록합니다.</li><li>모든 조사자는 _미칩니다_.</li><li>조사자는 캠페인에서 패배했습니다.</li></ul></div>"
     },
     "resolution5": {
-      "title": "Resolution 5",
-      "body": "<div class='resolution'><p>_Resolution 5_: The outside world will never know how you tried to save them. They treat you with pity, with scorn and contempt, but you know the truth. They are resigned to their hideous fate, but still you try day after day to bring them your message. You must warn them of The King in Yellow, of Hastur and of Carcosa. “Another lost soul,” they say, but they cannot possibly fathom what you have gone through in your attempt to save them. You warn them that he is coming to claim them, but they never believe you. You write of Aldebaran and of the black stars on the wall of your cell, but the words become faded as the years go by. Your warning is never heeded.</p><ul><li>You didn’t really think you could escape, did you?</li><li>In your Campaign Log, record that *Hastur has you in his grasp*.</li><li>Each investigator is driven _insane_.</li><li>The investigators lose the campaign.</li></ul></div>"
+      "title": "결말 5",
+      "body": "<div class='resolution'><p>_결말 5_: 저 밖의 사람들은 당신이 세상을 구하기 위해 안간힘을 썼다는 사실을 결코 알지 못할 것입니다. 저들은 당신을 가엽게 여기거나 또는 조롱을 하고 무시하겠지만, 당신은 진실을 압니다. 저들은 자신들이 처한 끔찍한 운명에 복종했지만, 당신은 아직 저들에게 메시지를 전하려 매일매일 노력하고 있습니다. 저들에게 경고해 주어야 합니다. 『황색의 왕』에 대해, 하스터와 카르코사에 대해. “길 잃은 가여운 영혼이 또 늘었구만…” 저들은 그렇게 말할 테지만, 당신이 저들을 구하기 위해 어떤 시도를 해 왔는지는 알 리가 없습니다. 그가 이곳을 지배하러 온다고 경고를 해 줘도 저들은 믿지 않습니다. 병실 벽에다 알데바란과 검은 별에 대해 써 놓기도 했으나, 그 경고문도 해가 지날수록 차차 사라져갑니다. 그 누구도 당신의 경고에 귀 기울이지 않습니다.</p><ul><li>벗어날 길이 없다는 걸 이미 알고 계시지 않았습니까?</li><li>캠페인 기록지에 *하스터가 당신을 사로잡았다*라고 기록합니다.</li><li>모든 조사자는 _미칩니다_.</li><li>조사자는 캠페인에서 패배했습니다.</li></ul></div>"
     }
   }
 }

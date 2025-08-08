@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.TheMaskedHunterSpec (spec) where
 
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
-import TestImport.Lifted
+import TestImport.New
 
 spec :: Spec
 spec = describe "The Masked Hunter" $ do
@@ -11,7 +11,7 @@ spec = describe "The Masked Hunter" $ do
       theMaskedHunter <- testEnemyWithDef Enemies.theMaskedHunter id
       location <- testLocationWith id
       pushAndRun $ placedLocation location
-      pushAndRun $ moveTo investigator location
+      moveTo investigator location
       pushAndRun $ engageEnemy investigator theMaskedHunter
       getModifiers investigator `shouldContainM` [CannotDiscoverClues, CannotSpendClues]
 
@@ -22,7 +22,7 @@ spec = describe "The Masked Hunter" $ do
         theMaskedHunter <- testEnemyWithDef Enemies.theMaskedHunter id
         location <- testLocationWith id
         pushAndRun $ placedLocation location
-        pushAndRun $ moveTo investigator location
+        moveTo investigator location
         pushAndRun $ engageEnemy investigator theMaskedHunter
         pushAndRun $ exhaustEnemy theMaskedHunter
         pushAndRun $ disengageEnemy investigator theMaskedHunter

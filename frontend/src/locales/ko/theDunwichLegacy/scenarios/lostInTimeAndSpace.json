@@ -1,83 +1,83 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1 for each _Extradimensional_ location in play (max -5).",
-      "cultist": "Reveal another token. If you fail, after this skill test, discard cards from the top of the encounter deck until a location is discarded. Put that location into play and move there.",
-      "tablet": "-3. If Yog-Sothoth is in play, it attacks you after this skill test.",
-      "elderThing": "-X. X is the shroud value of your location. If you fail and your location is _Extradimensional_, discard it."
+      "skull": "플레이 상태인 _초차원_ 장소마다 -1(최대 -5).",
+      "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 실패하면, 이번 능력 테스트가 끝난 후, 장소 하나를 버릴 때까지 조우 덱 맨 윗장부터 카드를 한 장씩 버립니다. 이렇게 버려진 장소를 플레이 영역에 두고 그 장소로 이동합니다.",
+      "tablet": "-3. ‘요그 소토스’가 플레이 상태라면, 이번 능력 테스트가 끝난 후 ‘요그 소토스’가 당신을 공격합니다.",
+      "elderThing": "-X. 당신이 위치한 장소의 장막값이 X 값입니다. 당신이 위치한 장소가 _초차원_일 때 실패했다면, 그 장소를 버립니다."
     },
     "hardExpert": {
-      "skull": "-1 for each _Extradimensional_ location in play.",
-      "cultist": "Reveal another token. After this skill test, discard cards from the top of the encounter deck until a location is discarded. Put that location into play and move there.",
-      "tablet": "-5. If Yog-Sothoth is in play, it attacks you after this skill test.",
-      "elderThing": "-X. X is twice the shroud value of your location. If you fail and your location is _Extradimensional_, discard it."
+      "skull": "플레이 상태인 _초차원_ 장소마다 -1.",
+      "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 이번 능력 테스트가 끝난 후, 장소 하나를 버릴 때까지 조우 덱 맨 윗장부터 카드를 한 장씩 버립니다. 이렇게 버려진 장소를 플레이 영역에 두고 그 장소로 이동합니다.",
+      "tablet": "-5. ‘요그 소토스’가 플레이 상태라면, 이번 능력 테스트가 끝난 후 ‘요그 소토스’가 당신을 공격합니다.",
+      "elderThing": "-X. 당신이 위치한 장소의 장막값에 2를 곱한 수치가 X 값입니다. 당신이 위치한 장소가 _초차원_일 때 실패했다면, 그 장소를 버립니다."
     }
   },
   "intro": {
-    "title": "Scenario VII: Lost in Time and Space",
-    "body": "<p>Passing through the gate is unlike anything you’ve ever experienced. You feel your body twisting and distorting, churning through realities as the gate pulls you to its ultimate destination­ —a place beyond the scope of human imagination.</p><p>Suddenly, all is quiet and the chaos of the journey is replaced with a sense of solitude and dread. You are in an unfathomable place, vast beyond your ability to reason and utterly alien besides. The landscape is surreal and strange, the architecture impossible. You are so far from home that home has become a threadbare dream you can barely recall. Even should you find a way out of this awful place, you may never be the same again.</p>"
+    "title": "시나리오 VII: 시공간을 헤매다",
+    "body": "<p>차원문을 지나가는 건 지금까지 해본 그 어떤 경험과도 비견할 수 없습니다. 온몸이 뒤틀리며 왜곡되고 현실이 마구 뒤엉키는 기분입니다. 한참을 그렇게 빨려 들어가다가 마침내 당신은 인간이 상상할 수 있는 범주 너머에 있는 공간에 닿습니다.</p><p>갑자기 사방이 고요해지고, 이 혼란스러운 여정 끝에 고독과 공포가 뒤따릅니다. 이곳은 한낱 인간의 지성으로는 이해할 수 없는 곳입니다. 당신이 헤아릴 수도 없는 이 방대하고 기괴한 공간을 이성으로 받아들일 수 있을 리가 만무합니다. 초현실적이고 기이한 풍경 속에서 솟아난 건축물은 도저히 존재할 수 없는 형상으로 우뚝 서 있습니다. 당신의 고향 땅 지구는 기억을 한참 더듬어야 간신히 떠올릴 수 있는 초라한 꿈처럼 멀어지고 말았습니다. 설사 당신이 이 끔찍한 곳에서 빠져나간다 한들, 다시는 예전의 당신으로 돌아갈 수 없을 겁니다.</p>"
   },
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: *Lost in Time and Space*, *Sorcery*, *The Beyond*, *Hideous Abominations*, *Agents of Yog-Sothoth*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/lost-in-time-and-space.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/agents-of-yog.png' /></section>",
-    "placeLocations": "Put Another Dimension into play. Each investigator begins play in Another Dimension.",
-    "setAside": "Set the following cards aside, out of play: The Edge of the Universe, Tear Through Time, and Yog-Sothoth."
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *시공간을 헤매다*, *마술*, *저 너머*, *끔찍한 흉물*, *요그 소토스의 권속*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/lost-in-time-and-space.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/agents-of-yog.png' /></section>",
+    "placeLocations": "‘또 다른 차원’을 플레이 영역에 둡니다. 모든 조사자는 ‘또 다른 차원’에서 시작합니다.",
+    "setAside": "‘우주의 가장자리’, ‘시간을 가로질러 난 균열’, ‘요그 소토스’를 비플레이 상태로 치워 둡니다."
   },
   "locationsInTheEncounterDeck": {
-    "title": "Locations in the Encounter Deck",
-    "body": "<p class='basic'>This scenario includes several single-sided locations that are shuffled into the encounter deck along with the rest of the gathered encounter sets. These locations only have a revealed side, and have a _Revelation_ effect that puts them into play when drawn.</p><p class='basic'>When put into play, a single-sided location is put into play with its revealed side faceup, because it has no unrevealed side. Otherwise, it functions as a normal location in every other way.</p>"
+    "title": "조우 덱에 있는 장소",
+    "body": "<p class='basic'>이 시나리오에는 단면 장소 카드가 몇 장 포함되어 있으며, 이러한 단면 장소는 게임 준비 과정에서 다른 조우 세트와 합쳐 섞여 조우 덱을 구성합니다. 단면 장소에는 공개 면만 있으며, 그 카드를 뽑았을 때 플레이 영역에 두게 하는 <b>폭로</b> 효과가 있습니다.</p><p class='basic'>단면 장소를 플레이 영역에 둘 때는 해당 카드에 미공개 면이 없으므로 공개 면이 보이도록 플레이 영역에 둡니다. 이 점을 제외한 다른 모든 경우에 있어서 일반적인 장소와 동일합니다.</p>"
   },
   "resolutions": {
-    "defeated": "<div class='resolution'><p class='basic'>_Before resolving any other resolution, if at least 1 investigator was defeated_: The defeated investigators read _Investigator Defeat_ first.</p><p>_Investigator Defeat_: Where did you come from? Why are you here? Are you dreaming, or is this place real? Now that you think about it, haven’t you been here before? Or perhaps you’ve been here all along. Now you remember. This is your real home. The path you now walk is but one ledge, with many more below. You only have to fall and you will be where you belong. One more step…</p><ul><li>Each defeated investigator is _killed_.</li><li>If another resolution was reached, the other investigators read that resolution.</li><li>If no resolution was reached (each investigator was defeated) and the investigators were at Act 4 when the scenario ended, go to _Resolution 2_.</li><li>If no resolution was reached (each investigator was defeated) and the investigators were at Act 1, 2, or 3 when the scenario ended, go to _Resolution 4_.</li></ul></div>",
+    "defeated": "<div class='resolution'><p class='basic'>_이 캠페인 안내서에 적힌 다른 결말을 보기 전에, 쓰러진 조사자가 한 명이라도 있다면_: 그 조사자는 아래의 _쓰러진 조사자_를 먼저 읽습니다.</p><p>_쓰러진 조사자_: 당신은 어디에서 왔습니까? 당신은 왜 여기 있습니까? 이곳은 꿈 속입니까, 아니면 현실입니까? 지금 와서 돌이켜보건대, 혹시 이전에도 여기에 온 적이 없었습니까? 어쩌면 이곳이야말로 진짜 당신이 속한 세계인지도 모릅니다. 그렇습니다. 이제 기억납니다. 이곳이 진짜 당신의 집입니다. 지금 당신이 걷고 있는 길은 그저 벼랑 끄트머리일 뿐, 저 아래에는 더욱더 많은 것들이 있습니다. 이제 저 아래로 내려가면, 원래 당신이 있어야 할 곳으로 돌아가는 겁니다. 한 발짝만 더 떼면…</p><ul><li>모든 쓰러진 조사자는 _사망합니다_.</li><li>또 다른 결말에 도달했으면, 다른 조사자들은 그 결말을 읽습니다.</li><li>아무런 결말에 도달하지 못했고(모든 조사자가 쓰러졌고) 시나리오가 끝났을 때 조사자들이 주요목적 4에 있었다면, _결말 2_를 읽습니다.</li><li>아무런 결말에 도달하지 못했고(모든 조사자가 쓰러졌고) 시나리오가 끝났을 때 조사자들이 주요목적 1/2/3에 있었다면, _결말 4_를 읽습니다.</li></ul></div>",
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1_: Lying on your back in a patch of wet grass, you find yourself staring longingly at the night sky. Somehow, you are once again atop Sentinel Hill, unable to recall exactly how you got here. You are mesmerized by the night sky. Seconds become minutes, and minutes become hours. Eventually, you are found and lifted to your feet by a group of Dunwich citizens. “What happened? What are ya doin’ here?” they ask you, frightened but curious. You can’t seem to find the right words to describe the events that occurred beyond the gate…if they ever truly occurred. There doesn’t appear to be any trace of Seth Bishop, of the creatures you fought earlier, or of the phantasmal and otherworldly gate. But every time you sleep, you dream—and when you dream, it all comes rushing back.</p><ul><li>In your Campaign Log, record that *the investigators closed the tear in reality*.</li><li>Each investigator suffers 2 physical trauma and 2 mental trauma, as he or she never fully recovers from his or her time spent outside the realm of reality.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 5 bonus experience, as he or she saved the world from being torn apart.<ul><li>_Experience_: {xp}</li></ul></li><li>The investigators win the campaign!</li></ul></div>"
+      "title": "결말 1",
+      "body": "<div class='resolution'><p>_결말 1_: 당신은 젖은 잔디밭에 등을 대고 누워서 그리운 듯 밤하늘을 바라봅니다. 그러고 보니, 당신은 다시 파수꾼 언덕 위에 있습니다. 어떻게 돌아오게 되었는지 정확히 기억나지 않습니다. 밤하늘을 보고 있으려니 몽롱해집니다. 몇 초… 몇 분… 아니 몇 시간이… 지났을까… 마침내 던위치 주민들이 당신을 발견했습니다. 그들은 당신을 부축해서 일으켜 세웁니다. “무슨 일입니까? 당신은 여기서 뭘 하고 계셨던 거죠?” 그들의 목소리에서는 두려움 섞인 호기심이 느껴집니다. 저 차원문 너머에서 일어났던 일에 대해서 뭐라 설명할 수 있을까요. 정말로 그런 일이 일어났는지조차 확실치 않은데 말입니다… 세스 비숍이나 당신이 맞부닥쳐 싸웠던 괴물, 그리고 비현실적이고 이계적인 차원문의 흔적은 어디에서도 찾아볼 수 없습니다. 그러나 잠이 들 때마다 언제나 꿈이 찾아들고, 그 꿈을 꿀 때면 모든 기억이 밀물처럼 밀려 들어옵니다.</p><ul><li>캠페인 기록지에 *조사자들이 현실에 생긴 균열을 닫았다*라고 기록합니다.</li><li>각 조사자는 육체적 트라우마 2와 정신적 트라우마 2를 겪습니다. 현실의 경계 밖에서 받은 충격을 온전히 회복할 수 없기 때문입니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다. 세계가 찢겨나갈 위험을 막아내었기 때문에, 각 조사자는 경험치를 추가로 5만큼 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>조사자가 승리했습니다!</li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2_: Several of the villagers from Dunwich heard the ruckus on Sentinel Hill and went to investigate. What they found there answered none of their questions.</p><p>“What d’you think happened?” a frightened Curtis Whateley asks as they examine the hilltop. The other villagers shake their heads, unable to say. “Last thing I saw, the sky’d open’d up an’ there was a bright flash,” one of them says, looking up at the starry sky from the top of Sentinel Hill.</p><p>“Those Arkham fellas ain’t nowhere to be seen,” Curtis adds, looking down at the cracked stone altar. “Not even of a hint of ‘em. Mr. Bishop and his pals, now, that’s a diff’rent story.” The young man motions toward several corpses on the ground.</p><p>“Think we should get ahold of those coppers outta Aylesbury?”</p><p>“Why, so they can laugh at us again?” Curtis spits. “They ain’t never gonna believe us ‘bout all this anyway.” He glances at the stone altar, fidgeting nervously. “Better t’ forget about the whole thing. C’mon, let’s bury the dead and get outta here.”</p><ul><li>The investigators win the campaign…and are never seen or heard from again.</li></ul></div>"
+      "title": "결말 2",
+      "body": "<div class='resolution'><p>_결말 2_: 몇몇 던위치 주민이 파수꾼 언덕에서 소란이 벌어지는 것을 보고 올라왔습니다. 그러나 이곳에는 이들의 의문을 해소해줄 만한 건 아무것도 보이지 않습니다.</p><p>“무슨 일이 일어난 거지?” 커티스 웨이틀리가 언덕마루를 살펴보면서 겁에 질려 묻습니다. 다른 주민들은 말을 잇지 못하고 고개만 내젓습니다. “내가 마지막으로 본 건, 하늘이 갈라지더니 섬광이 번쩍이는 거였어.” 한 사람이 파수꾼 언덕 위에 서서 별이 총총한 하늘을 올려다보며 말합니다.</p><p>“아컴에서 온 친구들은 안 보이는구만.” 커티스가 금이 간 돌 제단을 내려다보며 말을 덧붙입니다. “이건 뭐, 흔적도 하나 없는데 말이지… 비숍 양반과 이 친구들은, 이야기가 좀 다르긴 하겠구만.” 젊은 남자가 바닥에 놓인 시체들을 향해 다가갑니다.</p><p>“에일즈베리 외부의 경찰에 연락하는 게 나으려나?”</p><p>“뭣하려고? 저번에 우릴 보고 비웃던 꼴을 또 당하고 싶어서?” 커티스가 쏘아붙입니다. “그놈들이 우리 말을 믿을 리가 없지.” 그는 날카롭게 곤두선 채로 초조하게 돌 제단을 바라봅니다. “다 잊어. 아무 일도 없었던 거야. 얼른 시체나 묻고 내려가자고.”</p><ul><li>조사자가 승리했습니다...만, 그 후로 당신의 소식을 듣거나 당신을 본 이는 아무도 없습니다.</li></ul></div>"
     },
     "resolution3": {
-      "title": "Resolution 3",
-      "body": "<div class='resolution'><p>_Resolution 3_: The creature erupts in a cosmic fury of sound, color, and distorted space, hurling you back and away from it. You watch in horror as one of its arms tears through the fabric of the world, and its amorphous shape funnels through the rift, pulling the threads of the world along with it. You try to cling to something, but you are inexorably sucked into the rift. You feel as if your body is stretching and your mind is being crushed. Then, everything goes black.</p><ul><li>In your Campaign Log, record that *Yog-Sothoth has fled to another dimension*.</li><li>Each investigator is _killed_.</li><li>The investigators win the campaign…and are never seen or heard from again.</li></ul></div>"
+      "title": "결말 3",
+      "body": "<div class='resolution'><p>_결말 3_: 괴물이 내지르는 어마어마한 분노가 온갖 색채와 소리를 품고서 뒤틀린 세계로부터 쏟아져 나와 당신을 마구잡이로 밀고 당겨댑니다. 괴물의 무정형 수족이 세계의 구조를 찢고는 그 틈을 통해 뻗어 나가 세상의 구조 그 자체를 끌어당기는 모습을 보고서 공포에 온몸이 얼어붙습니다. 무엇이든 붙잡고자 안간힘을 써봐도 당신은 끝끝내 균열로 빨려 들어가 버리고 말았습니다. 몸이 미친 듯이 늘어나고 정신이 조각조각으로 부서집니다. 그리고는, 그 무엇도 남지 않습니다.</p><ul><li>캠페인 기록지에 *요그 소토스가 다른 차원으로 달아났다*라고 기록합니다.</li><li>모든 조사자는 _사망합니다_.</li><li>조사자가 승리했습니다...만, 그 후로 당신의 소식을 듣거나 당신을 본 이는 아무도 없습니다.</li></ul></div>"
     },
     "resolution4": {
-      "title": "Resolution 4",
-      "body": "<div class='resolution'><p>_Resolution 4_: The sorcerers from Dunwich, seeking arcane power from beyond this realm, have accomplished what Wilbur and Old Whateley could not. Through blood sacrifice and indescribable experiments, the dark power the sorcerers sought is now within their reach. However, they will never get the chance to truly wield this power. In beseeching Wilbur’s father for knowledge, they have drawn the creature forth from its extradimensional realm. Yog-Sothoth emerges from the open rift above Sentinel Hill, blotting out the sky and enveloping the world. Now it has come to Earth, and it rules where humanity once tread.</p><ul><li>In your Campaign Log, record that *Yog-Sothoth tore apart the barriers between worlds, and became one with all reality*.</li><li>Each surviving investigator is driven _insane_.</li><li>The investigators lose the campaign.</li></ul></div>"
+      "title": "결말 4",
+      "body": "<div class='resolution'><p>_결말 4_: 이 세계의 경계 너머에 존재하는 신비로운 힘을 갈구했던 던위치의 주술사가 마침내 제 목적을 달성했습니다. 윌버와 웨이틀리 노인이 달성하지 못한 바를 이룬 것입니다. 주술사는 피의 희생과 형언할 수 없는 실험을 통해 마침내 암흑의 힘에 닿았습니다. 그러나, 그들은 이렇게 공들여 얻은 힘을 제대로 사용해 보지도 못하게 되었으니 기구하기 짝이 없는 운명이라 하겠습니다. 윌버의 아버지인 요그 소토스로부터 지식을 얻어내겠다는 갈망은, 차원을 넘어선 영역으로부터 괴물을 불러내고 말았습니다. 열린 균열을 통해서 요그 소토스가 파수꾼 언덕 위로 나타나 하늘을 덮고 온 세계를 휘감습니다. 이제 요그 소토스가 이 땅에 당도했으니, 인간의 발자취가 남은 모든 곳이 그의 지배하에 놓일 것입니다.</p><ul><li>캠페인 기록지에 *요그 소토스가 세계 사이의 장막을 찢고 나와 모든 현실과 하나가 되었다*라고 기록합니다.</li><li>모든 생존한 조사자는 _미칩니다_.</li><li>조사자는 패배했습니다.</li></ul></div>"
     },
     "xp": {
-      "bonus": "Saved the world from being torn apart"
+      "bonus": "세계가 찢겨나갈 위험을 막아냄"
     }
   },
   "tooltips": {
     "tearThroughTime": {
-      "resign": "You find a new path and hope that it leads back to safety."
+      "resign": "당신은 새로운 길을 찾았습니다. 이 길이 안전한 곳으로 이어지리라는 희망을 품어봅니다."
     }
   },
   "label": {
     "yogSothoth": "Discard the top {cards} cards and take {horror} horror",
     "tearThroughSpace": {
-      "placeDoom": "Place 1 doom on Tear through Space",
-      "discard": "Discard Tear through Space"
+      "placeDoom": "‘공간을 가로질러 난 균열’에 파멸을 1개 올려놓습니다.",
+      "discard": "‘공간을 가로질러 난 균열’을 버립니다."
     },
     "endlessBridge": {
-      "placeDoom": "Place 1 doom on Endless Bridge",
-      "discard": "Discard Endless Bridge"
+      "placeDoom": "‘끝없는 교각’에 파멸을 1개 올려놓습니다.",
+      "discard": "‘끝없는 교각’을 버립니다."
     },
     "sethBishop": {
-      "move": "Move to Another Dimension after this attack",
-      "damage": "Seth Bishop deals +2 damage for this attack"
+      "move": "이번 공격을 받은 후에 ‘또다른 차원’으로 이동합니다.",
+      "damage": "‘세스 비숍’의 이번 공격은 +2 피해를 줍니다."
     },
     "indecipherableStairs": {
-      "discard": "Discard Indecipherable Stairs"
+      "discard": "‘이해할 수 없는 층계’를 버립니다."
     },
     "toweringLuminosity": {
-      "doom": "Place 1 doom on Towering Luminosity",
-      "flipClue": "Flip 1 clue on Towering Luminosity to its doom side",
-      "discard": "Discard Towering Luminosity"
+      "doom": "‘치솟은 광휘’에 파멸을 1개 올려놓습니다.",
+      "flipClue": "‘치솟은 광휘’에 놓인 단서 1개를 파멸 면으로 뒤집습니다.",
+      "discard": "‘치솟은 광휘’를 버립니다."
     },
     "unstableVortex": {
-      "chooseTearThroughSpaces": "Choose tear through space to discard",
-      "shuffle": "Shuffle Unstable Vortex into the encounter deck"
+      "chooseTearThroughSpaces": "버릴 ‘공간을 가로질러 난 균열’ 사본 1장을 선택합니다.",
+      "shuffle": "‘불안정한 소용돌이’를 조우 덱에 섞어 넣습니다."
     }
   }
 }

@@ -1,78 +1,78 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the highest amount of doom on an agenda in play.",
-      "cultist": "Reveal another token. If this token is revealed during an attack or evasion attempt against an enemy with doom on it, this skill test automatically fails instead.",
-      "tablet": "Reveal another token. If you fail, place 1 doom on each agenda.",
-      "elderThing": "-2. If you fail, search the encounter deck and discard pile for a _Byakhee_ enemy and draw it."
+      "skull": "-X. X는 플레이 상태인 주요사건들 중에서, 파멸이 가장 많이 놓인 주요사건의 파멸 개수입니다.",
+      "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 파멸이 1개 이상 놓인 적을 상대로 한 공격 또는 회피 시도 중에 이 토큰을 공개했다면, 혼돈 토큰을 더 공개하지 않고, 그 대신 이번 능력 테스트에 자동으로 실패합니다.",
+      "tablet": "다른 혼돈 토큰을 하나 더 공개합니다. 실패하면, 모든 주요사건에 파멸을 1개씩 올려놓습니다.",
+      "elderThing": "-2. 실패하면, 조우 덱과 버린 조우 카드 더미에서 _비야키_ 적 하나를 찾아서 뽑습니다."
     },
     "hardExpert": {
-      "skull": "-X. X is the total amount of doom on agendas in play.",
-      "cultist": "Reveal another token. If there is an enemy with 1 or more doom on it at your location, this test automatically fails instead.",
-      "tablet": "Reveal another token. If you do not succeed by at least 1, place 1 doom on each agenda.",
-      "elderThing": "-3. If you fail, search the encounter deck and discard pile for a _Byakhee_ enemy and draw it."
+      "skull": "-X. X는 플레이 상태인 모든 주요사건에 놓인 파멸 개수의 총합입니다.",
+      "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 당신이 위치한 장소에 파멸이 1개 이상 놓인 적이 있다면, 혼돈 토큰을 더 공개하지 않고, 그 대신 이번 능력 테스트에 자동으로 실패합니다.",
+      "tablet": "다른 혼돈 토큰을 하나 더 공개합니다. 당신이 ‘난이도를 넘어선 차이 1 이상으로 성공’하지 못하면, 모든 주요사건에 파멸을 1개씩 올려놓습니다.",
+      "elderThing": "-3. 실패하면, 조우 덱과 버린 조우 카드 더미에서 _비야키_ 적 하나를 찾아서 뽑습니다."
     }
   },
   "label": {
     "brokenSteps": {
-      "omen": "Draw the topmost omen treachery in the encounter discard pile",
-      "cultist": "Draw the topmost cultist treachery in the encounter discard pile"
+      "omen": "버린 조우 카드 더미에서 가장 위에 있는 _*징조*_ 음모를 뽑습니다.",
+      "cultist": "버린 조우 카드 더미에서 가장 위에 있는 _*추종자*_ 적을 뽑아야 합니다."
     },
     "riftSeeker": {
-      "takeDamageAndHorror": "Take 1 additional damage and 1 additional horror",
-      "doom": "Place 1 doom on each agenda"
+      "takeDamageAndHorror": "추가로 피해 1과 공포 1을 받습니다.",
+      "doom": "플레이 상태인 모든 주요사건에 파멸을 1개씩 올려놓습니다."
     }
   },
   "tooltips": {
     "knightsHall": {
-      "investigate": "{'{'}action{'}'} If there are no clues on Knight's Hall: _Investigate_. Investigate using {agility} instead of {'{'}intellect{'}'}. If you succeed, instead of discovering clues, remember that you have \"found the tower key.\""
+      "investigate": "{'{'}action{'}'} ‘기사의 전당’에 단서가 하나도 없다면: _조사_. {'{'}intellect{'}'} 대신 {agility}을 사용해서 조사합니다. 성공하면, 단서를 발견하는 대신, “탑 열쇠를 찾았다”고 기억합니다."
     },
     "ashleighsInformation": {
-      "ability": "{'{'}fast{'}'} Remove 1 doom from an agenda in play. (Group limit once per game.)"
+      "ability": "{'{'}fast{'}'} 플레이 상태인 주요사건 하나에서 파멸을 1개 제거합니다(게임당 1번 그룹 한정)."
     }
   },
   "remembered": {
-    "foundTheTowerKey": "You found the tower key.",
-    "foundAGuide": "You found a guide."
+    "foundTheTowerKey": "탑 열쇠를 찾았다.",
+    "foundAGuide": "안내인을 찾았다"
   },
   "intro": {
-    "title": "Scenario VII: Black Stars Rise",
-    "body": "<p>The island commune of Mont Saint-Michel lies off the northwestern coast of France. It is beautiful, elegant, and enigmatic­ —a place out of a fairy tale. Only this tale is one of horrors and madness. During low tide, you would be able to reach the island on foot by crossing the tidal causeway that emerges from the sea. However, by the time you reach the coast, the tide is much higher than you’d anticipated. Dark clouds cover the sky, and a distant crash of thunder signals the start of the oncoming storm. You find a boat whose captain is willing to take you to the island, and prepare for the ritual to come.</p>",
-    "proceedToAshleighsInformation": "<div class='right'>Proceed to _Ashleigh’s Information_.</div>",
-    "otherwise": "<div class='right'>Otherwise, skip to _Setup_.</div>",
-    "ashleighsInformation": "<p>_Ashleigh’s Information_: You recall the night where this all began, and your thoughts drift to the mesmerizing song Ashleigh sang that night. Somehow you remember the lyrics perfectly after all this time, and its haunting melody is ingrained in your mind. “Above the city the storm clouds rage, and waves crash through the gilded cage… Below the earth the salt water seeps, the shadows fall as the red sun sleeps…” Studying the island that lies before you, illuminated by flashes of lighting and assaulted by tumultuous waves, you can’t help but wonder if Ashleigh was singing about this very moment.</p><ul><li>During this scenario, as a {'{'}fast{'}'} triggered ability, an investigator may remove 1 doom from an agenda in play. (Group limit once per game.)</li></ul><div class='basic right'>Proceed to _Setup_.</div>"
+    "title": "시나리오 VII: 검은 별이 떠오르다",
+    "body": "<p>몽 생 미셸은 프랑스 북서부 해안에 위치한 섬마을입니다. 아름답고 우아하며 수수께끼 같아 동화에서나 나올 법한 곳입니다. 물론 지금 상황은 동화적이기보단 공포와 광기에 물들어 있지만 말입니다. 조수로 인해 해수면이 낮아질 때는 둑길이 드러나기 때문에 걸어서도 섬으로 들어갈 수 있습니다. 그러나 당신이 해안에 도착할 무렵에는 수면이 예상보다 더 높이 상승해 있었습니다. 검은 구름이 하늘을 덮고, 다가오는 폭풍의 전조로 멀리서 천둥이 우르릉거립니다. 이런 날씨에도 당신을 섬으로 태워다 줄 생각이 있는 선장과 배를 수소문하면서 당신은 다가올 관문 의식에 대비합니다.</p>",
+    "proceedToAshleighsInformation": "<div class='right'>_애쉴레이가 준 정보_로 이어집니다.</div>",
+    "otherwise": "<div class='right'>그렇지 않으면 _게임 준비_로 건너뜁니다.</div>",
+    "ashleighsInformation": "<p>_애쉴레이가 준 정보_: 이 모든 일이 시작된 날 밤을 상기하면서, 당신은 그날 밤 애쉴레이가 불렀던 그 매혹적인 노랫가락을 떠올립니다. 어찌 된 일인지 몰라도 그 노랫말이 빠짐없이 기억납니다. 사람을 홀리는 음률이 뇌리에 박혀 있습니다. “도시 위로 폭풍 구름 몰아치네, 파도가 금빛 새장에 부딪치며… 대지 아래로 바닷물이 스며드네, 잠든 붉은 태양이 그림자 내리며…” 지금 눈앞에는 번개의 섬광이 번뜩이고 요란한 파도가 섬으로 밀려들고 있습니다. 애쉴레이가 바로 이 순간을 노래하고 있었다는 생각을 떨칠 수가 없습니다.</p><ul><li>이 시나리오 동안, {'{'}fast{'}'} 격발 기능으로서, 조사자 한 명이 플레이 상태인 주요사건 하나에서 파멸을 1개 제거해도 됩니다(게임당 1번 그룹 한정).</li></ul><div class='basic right'>_게임 준비_로 이어집니다.</div>"
   },
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: *Black Stars Rise*, *Evil Portents*, *Byakhee*, *Inhabitants of Carcosa*, *The Stranger*, *Dark Cult*, and *Ancient Evils*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/black-stars-rise.png' /><img src='{setImgPath}/evil-portents.png' /><img src='{setImgPath}/byakhee.png' /><img src='{setImgPath}/inhabitants-of-carcosa.png' /><img src='{setImgPath}/the-stranger.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/ancient-evils.png' /></section>Be aware that some cards from the *Black Stars Rise* encounter set have multiple versions, some with *The Flood Below* encounter set icon on their reverse side, and some with *The Vortex Above* encounter set icon on their reverse side. These encounter sets are indicated by the following icons:",
-    "adjustChaosBag": "Based on your difficulty level, add the following chaos token(s) to the chaos bag, for the remainder of the campaign:<div class='columns'><ul><li>_Easy_: -3</li><li>_Standard_: -5</li></ul><ul><li>_Hard_: -6</li><li>_Expert_: -7</li></ul></div>",
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *검은 별이 떠오르다*, *악의 전조*, *비야키*, *카르코사의 거주자*, *이방인*, *어둠의 사교*, *고대의 악*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/black-stars-rise.png' /><img src='{setImgPath}/evil-portents.png' /><img src='{setImgPath}/byakhee.png' /><img src='{setImgPath}/inhabitants-of-carcosa.png' /><img src='{setImgPath}/the-stranger.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/ancient-evils.png' /></section>*검은 별이 떠오르다* 조우 세트에 속한 몇몇 카드는 여러 버전이 있습니다. 몇몇 카드는 반대면에 아래에서 *차오르는 물결* 조우 세트 아이콘이, 몇몇 카드는 반대면에 *위에서 갈라진 소용돌이* 조우 세트 아이콘이 있습니다. 이러한 세트에는 다음 아이콘이 그려져 있습니다:",
+    "adjustChaosBag": "난이도에 따라, 캠페인이 끝날 때까지 혼돈 주머니에 다음의 혼돈 토큰을 추가합니다.<div class='columns'><ul><li>_쉬움_: -3</li><li>_보통_: -5</li></ul><ul><li>_어려움_: -6</li><li>_전문가_: -7</li></ul></div>",
     "version": {
-      "instructions": "Sort each copy of the following cards into two separate piles, based on the encounter set icon on their reverse side: Agenda 2a—Let The Storm Rage, Agenda 2c—The Entity Above, Chapel of St. Aubert, and Abbey Tower.",
-      "createPiles": "You should have two piles of exactly four cards. Each pile should have one copy of each of the above listed cards. The cards in the first pile should have *The Flood Below* encounter set icon on their reverse side, and the cards in the second pile should have *The Vortex Above* encounter set icon on their reverse side.",
-      "randomizePiles": "Flip each pile over so that only the Black Stars Rise encounter set icon is showing. Randomize the two piles so you cannot tell which is which.",
-      "choosePile": " Choose one pile at random to remove from the game and one pile at random to use throughout this scenario’s setup. _Do not look at the reverse sides of any of the cards in either pile_."
+      "instructions": "주요사건 2a — ‘폭풍이여 휘몰아쳐라’, 주요사건 2c — ‘머리 위의 존재’, ‘생 오베르 예배당’, ‘수도원 탑’의 각 사본을 반대면에 나와 있는 조우 세트 아이콘에 따라서 두 더미로 분류해 둡니다.",
+      "createPiles": "Y각 더미는 정확히 카드 4장씩(주요사건 2a — ‘폭풍이여 휘몰아쳐라’, 주요사건 2c — ‘머리 위의 존재’, ‘생 오베르 예배당’, ‘수도원 탑’)으로 구성됩니다. 첫 번째 더미에 있는 카드의 반대면에는 *아래에서 차오르는 물결* 조우 세트 아이콘이 그려져 있으며, 두 번째 더미에 있는 카드의 반대면에는 *위에서 갈라진 소용돌이* 조우 세트 아이콘이 그려져 있습니다.",
+      "randomizePiles": "*검은 별이 떠오르다* 조우 세트 아이콘이 보이게끔 각 더미를 뒤집습니다. 어느 더미가 어느 것인지 알 수 없도록 두 더미를 무작위로 놓아둡니다.",
+      "choosePile": "두 더미 중 무작위로 한 더미를 선택해서 게임에서 제거하고, 나머지 더미를 이번 시나리오의 게임 준비 과정에서 사용합니다. _두 더미에 있는 어떤 카드도 뒷면을 보지 않도록 유의하세요._"
     },
-    "agendaDecks": "This scenario does not have an act deck. Instead, it has two Æ agenda decks. One agenda deck is built using agendas 1a, 2a, and 3a. The other agenda deck is built using agendas 1c, 2c, and 3c (*remember to use the versions of agendas 2a and 2c that were randomly chosen earlier*).",
-    "setAside": "Set the following cards aside, out of play: Both act cards (Act 3a and Act 3c), Beast of Aldebaran, each copy of Tidal Terror, each copy of Rift Seeker, Cloister, Knight’s Hall, Abbey Tower, and Chapel of St. Aubert (*remember to use the versions of Abbey Tower and Chapel of St. Aubert that were randomly chosen earlier*).",
-    "chooseSetAsideLocations": "Choose one of the two Choeur Gothique locations, at random, and set it aside. Remove the other version of Choeur Gothique from the game.",
-    "chooseLocations": "Choose one of the two North Tower locations, one of the two Outer Wall locations, and one of the two Broken Steps locations, at random. Put the chosen locations into play. Remove the other versions of those locations from the game. Then, put the remaining locations (Porte de l’Avancée, Grand Rue, and Abbey Church) into play. (See next page for suggested placement.) Each investigator begins play at Porte de l’Avancée.",
-    "addWeakness": "Each investigator searches the collection for a random basic _*Madness*_, _*Pact*_, _*Cultist*_, or _*Detective*_ weakness, and adds it to his or her deck."
+    "agendaDecks": "이번 시나리오에는 주요목적 덱이 없습니다. 그 대신, 주요사건 덱이 두 개 있습니다. 주요사건 덱 하나는 주요사건 1a, 2a, 3a를 사용하여 구성하며, 다른 주요사건 덱은 주요사건 1c, 2c, 3c를 사용하여 구성합니다*(앞서 무작위로 선택한 주요사건 2a, 2c를 사용한다는 점을 명심하세요)*.",
+    "setAside": "두 주요목적 카드(주요목적 3a와 주요목적 3c), ‘알데바란의 야수’, 모든 ‘파도의 습격자’ 사본, 모든 ‘균열을 찾는 자’ 사본, ‘성직자 회랑’, ‘기사의 전당’, ‘수도원 탑’, ‘생 오베르 예배당’을 비플레이 상태로 치워 둡니다*(앞서 무작위로 선택한 ‘수도원 탑’ 및 ‘생 오베르 예배당’을 사용한다는 점을 명심하세요)*.",
+    "chooseSetAsideLocations": "무작위로 ‘고딕 양식의 성가대석’ 장소 2장 중 1장을 선택하여 비플레이 상태로 치워 둡니다. 선택하지 않은 ‘고딕 양식의 성가대석’은 게임에서 제거합니다.",
+    "chooseLocations": "무작위로 ‘북쪽 탑’ 장소 2장 중 1장, ‘외벽’ 장소 2장 중 1장, ‘부서진 층계’ 장소 2장 중 1장을 선택하여 플레이 영역에 둡니다. 선택하지 않은 ‘북쪽 탑’, ‘외벽’, ‘부서진 층계’는 게임에서 제거합니다. 그런 다음, 나머지 장소(‘포르트 드 라방세’, ‘그랑 뤼’, ‘수도원 성당’)를 모두 플레이 영역에 둡니다(추천 장소 배치를 참조하여 놓습니다). 모든 조사자는 ‘포르트 드 라방세’에서 시작합니다.",
+    "addWeakness": "모든 조사자는 보유 게임에서 무작위 _*정신이상*_ 또는 _*계약*_ 또는 _*추종자*_ 또는 _*탐정*_ 기본 약점을 1장 찾아서 자신의 덱에 추가합니다."
   },
   "resolutions": {
     "noResolution": {
-      "title": "No Resolution",
-      "body": "<div class='resolution'><p class='basic'>_If no resolution was reached (each investigator resigned or was defeated)_: Go to _Resolution 3_.</p></div>"
+      "title": "결말에 도달하지 못함",
+      "body": "<div class='resolution'><p class='basic'>_아무 결말에도 도달하지 못했다면(모든 조사자가 후퇴하거나 쓰러졌다면)_: _결말 3_을 읽습니다.</p></div>"
     },
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1_: You hold your breath as you swim through freezing water toward the spires below. As you get closer, you see ripples throughout the water, as though you are peering into a reflection upon the sea’s surface. You break through the surface and gasp as air fills your lungs.</p><ul><li>In your Campaign Log, record that *you opened the path below*.</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}cultist{'}'} tokens and 2 {'{'}tablet{'}'} tokens to the chaos bag.</li><li>If Ashleigh Clarke (*Songs Die Unheard*) is in the victory display, record her name in your Campaign Log, under “VIPs Slain.”</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "결말 1",
+      "body": "<div class='resolution'><p>_결말 1_: 당신은 숨을 참고 차가운 물을 가르며 수면 아래 뻗은 첨탑을 향해 헤엄쳐 갑니다. 첨탑에 가까워질 무렵 눈앞에 잔물결이 일기 시작합니다. 마치 바다 위에 비친 모습을 들여다보는 것만 같습니다. 잔물결 이는 수면을 뚫고 들어간 당신은 이내 폐를 가득 채우는 공기에 숨을 헐떡입니다.</p><ul><li>캠페인 기록지에 *아래의 길을 열었다*라고 기록합니다.</li><li>혼돈 주머니에 {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} 토큰을 모두 제거합니다. 그런 다음, 혼돈 주머니에 {'{'}cultist{'}'} 토큰과 {'{'}tablet{'}'} 토큰을 2개씩 추가합니다.</li><li>승점 더미에 ‘애쉴레이 클라크(*귓가에도 못 이를 노래*)’가 있다면, 캠페인 기록지의 “살해당한 VIP”에 ‘애쉴레이 클라크’를 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2_: You marvel at the cloud-waves encircling you and fly toward the spires above. The desolate and inscrutable city of Carcosa towers before you. You suddenly realize you are falling—not floating—and a pulling force takes hold of your body.</p><ul><li>In your Campaign Log, record that *you opened the path above*.</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}cultist{'}'} tokens and 2 {'{'}elderThing{'}'} tokens to the chaos bag.</li><li>If Ashleigh Clarke (*Songs Die Unheard*) is in the victory display, record her name in your Campaign Log, under “VIPs Slain.”</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "결말 2",
+      "body": "<div class='resolution'><p>_결말 2_: 당신은 경이롭게도 주변을 둘러싼 구름의 물결을 지나쳐 하늘 위에 거꾸로 선 첨탑을 향해 날아갑니다. 황량하고 불가해한 카르코사의 도시가 당신의 눈 앞에 솟아 있습니다. 그러던 중, 당신이 떠 있는 게 아니라 추락하고 있다는 것을 불현듯 깨닫습니다. 바로 그 순간, 당신은 정체 모를 힘에 의해 끌려가고 맙니다.</p><ul><li>캠페인 기록지에 *위의 길을 열었다*라고 기록합니다.</li><li>혼돈 주머니에 {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} 토큰을 모두 제거합니다. 그런 다음, 혼돈 주머니에 {'{'}cultist{'}'} 토큰과 {'{'}elderThing{'}'} 토큰을 2개씩 추가합니다.</li><li>승점 더미에 ‘애쉴레이 클라크(*귓가에도 못 이를 노래*)’가 있다면, 캠페인 기록지의 “살해당한 VIP”에 ‘애쉴레이 클라크’를 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     },
     "resolution3": {
-      "title": "Resolution 3",
-      "body": "<div class='resolution'><p>_Resolution 3_: When you awaken, you are sitting in the choeur gothique of Mont Saint-Michel’s abbey. No rain pelts the glass of the windows above, and you hear no thunder, nor the screeching of winged horrors overhead. Somehow, you had escaped the island’s certain doom. You creep to the door of the abbey and open it with trepidation. A dazzling light sears your eyes, and you lift your hand to block the glare of two suns. You stand overlooking the Lake of Hali. Black stars hang in the heavens above. Beyond, over leagues of tossing cloud- waves, the towers of Carcosa rise behind the shattered moon.</p><ul><li>You’ve met with a terrible fate, haven’t you?</li><li>In your Campaign Log, record that *the realm of Carcosa merged with our own, and Hastur rules over them both*.</li><li>Each investigator is driven _insane_.</li><li>The investigators lose the campaign.</li></ul></div>"
+      "title": "결말 3",
+      "body": "<div class='resolution'><p>_결말 3_: 정신을 차려보니 당신은 몽 생 미셸 수도원의 성가대석에 앉아 있습니다. 유리창을 때리는 빗소리도, 천둥소리도, 머리 위를 날아다니는 날개 달린 괴물의 비명도 모두 가셨습니다. 어째서인지는 모르겠지만 당신은 이 섬에 닥친 파멸로부터 살아남았습니다. 당신은 부들부들 떨면서 수도원 문까지 기어가 문을 엽니다. 눈부신 빛이 당신의 눈을 태울 만큼 강렬하게 쏟아지는 바람에 손을 들어 두 개의 태양빛을 가립니다. 당신은 일어서면서 할리 호수를 내려다봅니다. 머리 위 하늘에는 검은 별이 떠 있습니다. 저 멀리 일렁이는 구름의 물결이 광대하게 펼쳐지고, 조각난 달의 뒤편으로 카르코사의 첨탑이 솟구쳐 오릅니다.</p><ul><li>당신은 끔찍한 최후를 맞고 말았습니다. 그렇지 않습니까?</li><li>캠페인 기록지에 *카르코사 왕국이 지구와 합쳐졌고, 하스터가 두 세계를 모두 다스린다*라고 기록합니다.</li><li>모든 조사자는 _미칩니다_.</li><li>조사자는 캠페인에서 패배했습니다.</li></ul></div>"
     }
   }
 }

@@ -1,9 +1,9 @@
-module Arkham.Investigator.Cards.AminaZidane (aminaZidane, AminaZidane (..)) where
+module Arkham.Investigator.Cards.AminaZidane (aminaZidane) where
 
 import Arkham.Ability
 import Arkham.Helpers.Doom (getDoomOnTarget)
 import Arkham.Helpers.Message (handleTargetChoice)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Helpers.Ref (targetToSource)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Investigator.Cards qualified as Cards
@@ -21,11 +21,13 @@ aminaZidane =
     $ Stats {health = 5, sanity = 9, willpower = 3, intellect = 3, combat = 3, agility = 3}
 
 instance HasModifiersFor AminaZidane where
-  getModifiersFor (AminaZidane a) = modifySelf a [CanReduceCostOf #asset 3]
+  getModifiersFor (AminaZidane a) = do
+    ok <- selectAny $ AbilityIs (toSource a) 1 <> AbilityWithinLimit a.id
+    modifySelfWhen a ok [CanReduceCostOf #asset 3]
 
 instance HasAbilities AminaZidane where
   getAbilities (AminaZidane x) =
-    [ playerLimit PerRound $ restrictedAbility x 1 Self $ freeReaction $ PlayCard #when You $ basic #asset
+    [ playerLimit PerRound $ restricted x 1 Self $ freeReaction $ PlayCard #when You $ basic #asset
     ]
 
 instance HasChaosTokenValue AminaZidane where

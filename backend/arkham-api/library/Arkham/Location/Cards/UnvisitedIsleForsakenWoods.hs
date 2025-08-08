@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.UnvisitedIsleForsakenWoods ( unvisitedIsleForsakenWoods,) where
+module Arkham.Location.Cards.UnvisitedIsleForsakenWoods (unvisitedIsleForsakenWoods) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -48,12 +48,12 @@ instance RunMessage UnvisitedIsleForsakenWoods where
       circleTest sid iid (attrs.ability 1) attrs [#willpower, #combat] (Fixed 11)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      whippoorwills <- select $ NearestEnemyToFallback iid $ enemyIs Enemies.whippoorwill
+      whippoorwills <- select $ NearestEnemyToFallback iid $ enemyIs Enemies.whippoorwillUnionAndDisillusion
       chooseOrRunOneM iid do
         labeled
           "Search the encounter deck and discard pile for a Whippoorwill and spawn it at this location"
           do
-            findEncounterCard iid attrs $ cardIs Enemies.whippoorwill
+            findEncounterCard iid attrs $ cardIs Enemies.whippoorwillUnionAndDisillusion
         unless (null whippoorwills) do
           labeled "The nearest Whippoorwill attacks you" do
             chooseOrRunOneM iid do

@@ -1,15 +1,10 @@
-module Arkham.Event.Events.YouOweMeOne (
-  youOweMeOne,
-  YouOweMeOne (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.YouOweMeOne (youOweMeOne) where
 
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Investigator.Types (Field (InvestigatorHand))
 import Arkham.Matcher
 import Arkham.Projection
@@ -23,41 +18,22 @@ youOweMeOne :: EventCard YouOweMeOne
 youOweMeOne = event YouOweMeOne Cards.youOweMeOne
 
 instance RunMessage YouOweMeOne where
-  runMessage msg e@(YouOweMeOne attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+  runMessage msg e@(YouOweMeOne attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       others <- select $ NotInvestigator (InvestigatorWithId iid)
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [ targetLabel
-            other
-            [HandleTargetChoice iid (toSource attrs) (InvestigatorTarget other)]
-          | other <- others
-          ]
+      chooseOrRunOneM iid $ targets others $ handleTarget iid attrs
       pure e
-    HandleTargetChoice iid (isSource attrs -> True) (InvestigatorTarget iid') ->
-      do
-        cards <- field InvestigatorHand iid'
-        let relevantCards = filter (`cardMatch` (NonWeakness <> NonSignature)) cards
-        let drawing1 = drawCards iid attrs 1
-        let drawing2 = drawCards iid' attrs 1
-        player <- getPlayer iid
-        pushAll
-          [ FocusCards cards
-          , chooseOne player
-              $ Label "Do not play a card" []
-              : [ targetLabel
-                  (toCardId card)
-                  [ RemoveCardFromHand iid' (toCardId card)
-                  , AddToHand iid [card]
-                  , InitiatePlayCard iid card Nothing NoPayment (defaultWindows iid) False
-                  , drawing1
-                  , drawing2
-                  ]
-                | card <- relevantCards
-                ]
-          , UnfocusCards
-          ]
-        pure e
-    _ -> YouOweMeOne <$> runMessage msg attrs
+    HandleTargetChoice iid (isSource attrs -> True) (InvestigatorTarget iid') -> do
+      cards <- field InvestigatorHand iid'
+      relevantCards <-
+        filterM (getIsPlayable iid attrs (UnpaidCost NoAction) (defaultWindows iid))
+          $ filter (`cardMatch` (NonWeakness <> NonSignature)) cards
+      focusCards cards do
+        chooseOneM iid do
+          labeled "Do not play a card" nothing
+          targets relevantCards \card -> do
+            playCardPayingCost iid card
+            drawCards iid attrs 1
+            drawCards iid' attrs 1
+      pure e
+    _ -> YouOweMeOne <$> liftRunMessage msg attrs

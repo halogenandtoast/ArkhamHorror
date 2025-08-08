@@ -59,7 +59,7 @@ instance RunMessage CavernOfTheForgottenAge where
           chooseOneM lead do
             targets xs \l -> do
               for_ investigators \i -> moveTo attrs i l
-              for_ enemies (`enemyMoveTo` l)
+              for_ enemies \e -> enemyMoveTo attrs e l
           shuffleIntoDeck ExplorationDeck lid
       pure a
     _ -> CavernOfTheForgottenAge <$> liftRunMessage msg attrs

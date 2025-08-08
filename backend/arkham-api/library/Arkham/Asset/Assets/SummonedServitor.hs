@@ -9,11 +9,12 @@ import Arkham.Card
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Location (onSameLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen, modifySelfWhen)
-import Arkham.Investigate
+import Arkham.Helpers.SkillTest.Lifted (investigateLocation_)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Movement
-import Arkham.Placement
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
+import Arkham.Message.Lifted.Placement
 import Arkham.Projection
 
 newtype SummonedServitor = SummonedServitor AssetAttrs
@@ -26,38 +27,35 @@ summonedServitor = asset SummonedServitor Cards.summonedServitor
 instance HasModifiersFor SummonedServitor where
   getModifiersFor (SummonedServitor a) = do
     let indexes = [i | ChosenIndex i <- concatMap snd (toList a.customizations)]
-    self <-
-      modifySelfWhen
-        a
-        (a `hasCustomization` Dominance)
-        [DoNotTakeUpSlot $ if 0 `elem` indexes then #arcane else #ally]
-    other <-
-      modifySelectWhen
-        a
-        (a `hasCustomization` ArmoredCarapace)
-        (InvestigatorAt $ locationWithAsset a)
-        [CanAssignDamageToAsset a.id]
-    pure $ self <> other
+    modifySelfWhen
+      a
+      (a `hasCustomization` Dominance)
+      [DoNotTakeUpSlot $ if 0 `elem` indexes then #arcane else #ally]
+    modifySelectWhen
+      a
+      (a `hasCustomization` ArmoredCarapace)
+      (InvestigatorAt $ locationWithAsset a)
+      [CanAssignDamageToAsset a.id]
 
 instance HasAbilities SummonedServitor where
   getAbilities (SummonedServitor a) =
     guard (length used < if a `hasCustomization` DæmonicInfluence then 2 else 1)
-      *> [ controlledAbility
+      *> [ controlled
              a
              1
              (exists $ RevealedLocation <> ConnectedFrom (locationWithAsset a.id))
              $ ServitorAbility #move
          | #move `notElem` used
          ]
-      <> [ controlledAbility a 2 (exists $ EnemyAt $ locationWithAsset a.id) $ ServitorAbility #fight
+      <> [ controlled a 2 (exists $ EnemyAt $ locationWithAsset a.id) $ ServitorAbility #fight
          | a `hasCustomization` ClawsThatCatch
          , #fight `notElem` used
          ]
-      <> [ controlledAbility a 3 (exists $ EnemyAt $ locationWithAsset a.id) $ ServitorAbility #evade
+      <> [ controlled a 3 (exists $ EnemyAt $ locationWithAsset a.id) $ ServitorAbility #evade
          | a `hasCustomization` JawsThatSnatch
          , #evade `notElem` used
          ]
-      <> [ controlledAbility a 4 (exists $ InvestigatableLocation <> locationWithAsset a.id)
+      <> [ controlled a 4 (exists $ InvestigatableLocation <> locationWithAsset a.id)
              $ ServitorAbility #investigate
          | a `hasCustomization` EyesOfFlame
          , #investigate `notElem` used
@@ -86,23 +84,16 @@ instance RunMessage SummonedServitor where
             $ RevealedLocation
             <> AccessibleFrom (locationWithAsset attrs.id)
             <> CanEnterLocation (InvestigatorWithId iid)
-        chooseOne
-          iid
-          [ targetLabel lid $ PlaceAsset attrs.id (AtLocation lid)
-              : [ handleTargetChoice iid attrs lid
-                | attrs `hasCustomization` WingsOfNight && onSame && lid `elem` locationsCanEnter
-                ]
-          | lid <- locations
-          ]
+        chooseTargetM iid locations \lid -> do
+          place attrs (AtLocation lid)
+          when (attrs `hasCustomization` WingsOfNight && onSame && lid `elem` locationsCanEnter) do
+            handleTarget iid attrs lid
       pure . SummonedServitor $ overMeta (<>) [Action.Move] attrs
     HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do
-      chooseOne
-        iid
-        [ Label
-            "Move to location with Summoned Servitor (Wings of Night)"
-            [Move $ move (attrs.ability 1) iid lid]
-        , Label "Do not move" []
-        ]
+      chooseOneM iid do
+        labeled "Move to location with Summoned Servitor (Wings of Night)"
+          $ moveTo (attrs.ability 1) iid lid
+        labeled "Do not move" nothing
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
@@ -126,7 +117,7 @@ instance RunMessage SummonedServitor where
       lid <- selectJust $ locationWithAsset attrs.id
       sid <- getRandom
       skillTestModifiers sid (attrs.ability 4) iid [BaseSkillOf #intellect 4]
-      pushM $ mkInvestigateLocation sid iid (attrs.ability 4) lid
+      investigateLocation_ sid iid (attrs.ability 4) lid
       pure . SummonedServitor $ overMeta (<>) [Action.Investigate] attrs
     BeginTurn iid | attrs `controlledBy` iid -> do
       pure . SummonedServitor $ setMeta @[Action] [] attrs

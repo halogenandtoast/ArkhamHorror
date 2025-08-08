@@ -28,7 +28,8 @@ instance RunMessage UndergroundMuscle where
 
       laBellaLuna <- getJustLocationByName "La Bella Luna"
       selectEach (InvestigatorAt $ LocationWithId laBellaLuna) \iid -> moveTo attrs iid cloverClubLounge
-      selectEach (at_ (LocationWithId laBellaLuna) <> UnengagedEnemy) (`enemyMoveTo` cloverClubLounge)
+      selectEach (at_ (LocationWithId laBellaLuna) <> UnengagedEnemy) \e ->
+        enemyMoveTo attrs e cloverClubLounge
       removeLocation laBellaLuna
       advanceAgendaDeck attrs
       pure a

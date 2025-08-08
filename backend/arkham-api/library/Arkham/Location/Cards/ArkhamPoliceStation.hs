@@ -25,6 +25,6 @@ instance HasAbilities ArkhamPoliceStation where
 instance RunMessage ArkhamPoliceStation where
   runMessage msg l@(ArkhamPoliceStation attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      search iid (attrs.ability 1) iid [fromTopOfDeck 6] #weapon (DrawFound iid 1)
+      search iid (attrs.ability 1) iid [fromTopOfDeck 6] #weapon (AddFoundToHand iid 1)
       pure l
     _ -> ArkhamPoliceStation <$> liftRunMessage msg attrs

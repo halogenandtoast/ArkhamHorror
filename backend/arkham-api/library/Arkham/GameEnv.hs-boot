@@ -55,7 +55,7 @@ findCard :: HasGame m => (Card -> Bool) -> m (Maybe Card)
 getSettings :: HasGame m => m Settings
 getAllPlayers :: HasGame m => m [PlayerId]
 getActivePlayer :: HasGame m => m PlayerId
-getCardUses :: HasGame m => CardCode -> m Int
+getCardUses :: HasGame m => CardCode -> m [InvestigatorId]
 getAllCardUses :: HasGame m => m [CardDef]
 runWithEnv
   :: ( HasGameRef env

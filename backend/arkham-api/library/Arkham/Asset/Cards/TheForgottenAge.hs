@@ -420,6 +420,7 @@ theCustodian =
     { cdCardTraits = setFromList [Ally, Yithian]
     , cdUnique = True
     , cdCost = Nothing
+    , cdCardType = EncounterAssetType
     }
 
 handcuffs :: CardDef

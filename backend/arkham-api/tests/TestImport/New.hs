@@ -5,6 +5,7 @@ module TestImport.New (module TestImport.New, module X) where
 import Arkham.Helpers.Modifiers as X
 import TestImport.Lifted as X hiding (
   addToHand,
+  asDefs,
   drawCards,
   duringTurn,
   evadedBy,
@@ -151,7 +152,7 @@ instance CanMoveTo Location where
   moveTo i l = moveTo i (toId l)
 
 instance CanMoveTo LocationId where
-  moveTo i l = run $ Move $ move (toSource i) (toId i) l
+  moveTo i l = run . Move =<< move (toSource i) (toId i) l
 
 fightEnemy :: Investigator -> Enemy -> TestAppT SkillTestId
 fightEnemy i e = do

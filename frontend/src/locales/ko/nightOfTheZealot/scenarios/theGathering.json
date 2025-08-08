@@ -1,55 +1,56 @@
 {
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: *The Gathering*, *Rats*, *Ghouls*, *Striking Fear*, *Ancient Evils*, and *Chilling Cold*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-gathering.png' /><img src='{setImgPath}/rats.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
-    "placeLocations": "Put the Study location into play. Set each other location aside, out of play. Each investigator begins play in the Study.",
-    "setOutOfPlay": "Set the Ghoul Priest and Lita Chantler cards aside, out of play."
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *회합*, *쥐 떼*, *구울*, *엄습하는 공포*, *고대의 악*, *으스스한 한기*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/the-gathering.png' /><img src='{setImgPath}/rats.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
+    "placeLocations": "서재’ 장소 카드를 플레이 영역에 둡니다. 다른 장소 카드는 비플레이 상태로 치워 둡니다. 모든 조사자는 ‘서재’에서 시작합니다.",
+    "setOutOfPlay": "‘구울 사제’와 ‘리타 챈들러’ 카드를 비플레이 상태로 치워 둡니다."
   },
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the number of _Ghoul_ enemies at your location.",
-      "cultist": "-1. If you fail, take 1 horror.",
-      "tablet": "-2. If there is a _Ghoul_ enemy at your location, take 1 damage."
+      "skull": "-X. X 는 당신이 위치한 장소에 있는 _구울_ 적의 수입니다.",
+      "cultist": "-1. 실패하면, 공포를 1 받습니다.",
+      "tablet": "-2. 당신이 위치한 장소에 _구울_이 있다면, 당신은 피해를 1 받습니다."
     },
     "hardExpert": {
-      "skull": "-2. If you fail, after this skill test, search the encounter deck and discard pile for a _Ghoul_ enemy, and draw it. Shuffle the encounter deck.",
-      "cultist": "Reveal another token. If you fail, take 2 horror.",
-      "tablet": "-4. If there is a _Ghoul_ enemy at your location, take 1 damage and 1 horror."
+      "skull": "-2. 실패하면, 이번 능력 테스트를 한 후 조우 덱과 버린 조우 카드 더미에서 _구울_ 적을 하나 찾아 그 카드를 뽑습니다. 조우 덱을 섞습니다.",
+      "cultist": "다른 혼돈 토큰을 하나 더 공개합니다. 실패하면, 공포를 2 받습니다.",
+      "tablet": "-4. 당신이 위치한 장소에 _구울_ 적이 있다면, 당신은 피해 1과 공포 1을 받습니다."
     }
   },
   "intro": {
-    "title": "Part I: The Gathering",
-    "body": "<p>You and your partners have been investigating strange events taking place in your home city of Arkham, Massachusetts. Over the past few weeks, several townspeople have mysteriously gone missing. Recently, their corpses turned up in the woods, savaged and half - eaten. The police and newspapers have stated that wild animals are responsible, but you believe there is something else going on. You are gathered together at the lead investigator’s home to discuss these bizarre events.<p>"
+    "title": "시나리오 I: 회합",
+    "body": "<p>당신과 당신의 파트너는 당신의 고향인 메사추세츠 주, 아컴시에서 벌어진 기이한 사건을 조사하고 있습니다. 지난 몇 주간, 마을 사람들이 잇달아 실종되는 묘한 사건이 일어났습니다. 최근, 그들의 시체가 숲에서 발견되었는데, 몸뚱아리가 반쯤 뜯어먹힌 너덜너덜한 상태였습니다. 경찰과 신문은 굶주린 야생 동물이 벌인 짓이라고 설명했지만, 당신의 직감은 무언가가 더 있다고 말하고 있습니다. 당신은 동료들을 모아 대표 조사자의 집에서 이 이상한 사건에 대해 이야기하려 합니다.<p>"
   },
   "resolutions": {
     "noResolution": {
-      "title": "No Resolution",
-      "body": "<div class='resolution'><p>_If no resolution was reached (each investigator resigned or was defeated):_ You barely manage to escape your house with your lives. The woman from your parlor follows you out the front door, slamming it behind her. “You fools! See what you have done?” She pushes a chair in front of the door, lodging it beneath the doorknob. “We must get out of here. Come with me, and I will tell you what I know. We are the only ones who can stop the threat that lurks beneath from being unleashed throughout the city.” You’re in no state to argue. Nodding, you follow the woman as she runs from your front porch out into the rainy street, toward Rivertown.</p><ul><li>In your Campaign Log, record that *your house is still standing*.</li><li>In your Campaign Log, record that *the Ghoul Priest is still alive*.</li><li>The lead investigator earns the Lita Chantler card and may include it in his or her deck. This card does not count toward that investigator’s deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display (remember to add eligible locations to the victory display). Each investigator earns 2 bonus experience as he or she gains insight into the hidden world of the Mythos.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "결말에 도달하지 못함",
+      "body": "<div class='resolution'><p>_아무 결말에도 도달하지 못했다면 (모든 조사자가 후퇴하거나 쓰러졌다면):_ 당신은 가까스로 목숨을 부지한 채 집에서 탈출할 수 있었습니다. 거실에 있던 여자가 당신을 따라 현관문을 나와 문을 쾅하고 닫습니다. “이 멍청아! 네가 무슨 짓을 했는지 알아?” 그녀는 현관문 앞에 의자를 밀어다 놓고, 문 손잡이를 고정시킵니다. “여기서 빠져나가야 해. 날 따라와, 그럼 내가 아는 걸 말해 줄게. 이 도시 아래에 숨어서 꿈틀대는 급박한 위협을 막을 사람은 우리밖에 없어.” 당신은 아무 말 없이 그저 고개를 끄덕였고, 빗속을 뛰어가는 그녀를 따라 아컴 강변으로 향했습니다</p><ul><li>캠페인 기록지에 *당신의 집이 여전히 남아 있다*라고 기록합니다.</li><li>캠페인 기록지에 *‘구울 사제’가 여전히 살아 있다*라고 기록합니다.</li><li>대표 조사자는 ‘리타 챈들러’ 카드를 얻습니다. 이 카드를 자기 덱에 추가해도 됩니다. 이 카드는 조사자의 덱 크기를 계산할 때 포함되지 않습니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다 (조건을 만족할 경우 일부 장소를 승점 더미에 추가할 수 있다는 점을 기억하세요). 각 조사자는 신화 속 감춰진 세계에 대한 통찰력을 얻었기 때문에, 경험치를 추가로 2씩 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
     },
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1:_ You nod and allow the red-haired woman to set the walls and floor of your house ablaze. The fire spreads quickly, and you run out the front door to avoid being caught in the inferno. From the sidewalk, you watch as everything you own is consumed by the flames. “Come with me,” the woman says. “You must be told of the threat that lurks below. Alone, we are surely doomed…but together, we can stop it.”</p><ul><li>In your Campaign Log, record that *your house has burned to the ground*.</li><li>The lead investigator earns the Lita Chantler card and may include it in his or her deck. This card does not count toward that investigator’s deck size.</li><li>The lead investigator suffers 1 mental trauma from watching his or her home become a smoldering ruin.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display (remember to add eligible locations to the victory display). Each investigator earns 2 bonus experience as he or she gains insight into the hidden world of the Mythos.<ul><li>_Experience:_ {xp}</li></ul></li></ul></div>"
+      "title": "결말 1",
+      "body": "<div class='resolution'><p>_결말 1:_ 당신은 고개를 끄덕이며 빨간 머리 여자의 말에 동의했고, 그녀는 당신의 집 벽과 바닥에 불을 놓았습니다. 불은 삽시간에 퍼졌고, 당신은 정문으로 뛰쳐나가 이 거대한 화마를 피했습니다. 길가에 선 당신은 갖고 있던 모든 것이 재로 변하는 광경을 지켜봅니다. “날 따라와.” 그녀가 말했습니다. “이 도시 아래에 숨겨진 위협에 대해 말해 줄게. 따로 떨어지면 죽음을 면치 못할 거야. 하지만 함께라면… 그 위협을 막아낼 수 있을지도 몰라.”</p><ul><li>캠페인 기록지에 *당신의 집이 불타버렸다*라고 기록합니다.</li><li>대표 조사자는 ‘리타 챈들러’ 카드를 얻습니다. 이 카드를 자기 덱에 추가해도 됩니다. 이 카드는 조사자의 덱 크기를 계산할 때 포함되지 않습니다.</li><li>자신의 집이 불타 잿더미로 바뀌는 것을 본 대표 조사자는 정신적 트라우마 하나를 겪습니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다 (조건을 만족할 경우 일부 장소를 승점 더미에 추가할 수 있다는 점을 기억하세요). 각 조사자는 신화 속 감춰진 세계에 대한 통찰력을 얻었기 때문에, 경험치를 추가로 2씩 얻습니다.<ul><li>_경험치_:_ {xp}</li></ul></li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2:_ You refuse to follow the overzealous woman’s order and kick her out of your home for fear that she will set it ablaze without your permission. “Fools! You are making a grave mistake!” she warns. “You do not understand the threat that lurks below…the grave danger we are all in!” Still shaken by the night’s events, you decide to hear the woman out. Perhaps she can shed some light on these bizarre events…but she doesn’t seem to trust you very much.</p><ul><li>In your Campaign Log, record that *your house is still standing*.</li><li>The lead investigator earns 1 experience, as he or she refuses to let the night’s events destroy his or her life.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display (remember to add eligible locations to the victory display). Each investigator earns 2 bonus experience as he or she gains insight into the hidden world of the Mythos.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>" },
+      "title": "결말 2",
+      "body": "<div class='resolution'><p>_결말 2:_ 당신은 지나치게 열성적인 여성의 제안을 거절했습니다. 그리고 혹여 그녀가 당신의 집을 불을 놓을지도 모른다고 생각해, 당신의 집에서 내쫓습니다. “바보 자식! 넌 지금 엄청난 실수를 하고 있는 거야!” 그녀가 소리칩니다. “넌 지금 이 도시 아래에 숨겨진 위협에 대해 하나도 몰라… 우린 엄청난 위험에 빠진 거라고!” 오늘 밤 겪었던 사건의 충격에서 아직 헤어나지 못한 당신은 그녀의 말을 좀 더 들어보기로 결심했습니다. 아마 이 여성이 이 기괴한 상황에서 약간이나마 자신을 도와줄 수 있을지도 모릅니다… 하지만 그녀는 당신을 그다지 신뢰하는 분위기가 아닙니다.</p><ul><li>캠페인 기록지에 *당신의 집이 여전히 남아 있다*라고 기록합니다.</li><li>이날 밤의 사건을 겪고도 삶의 터전을 지켜냈기에, 대표 조사자는 경험치를 추가로 1만큼 얻습니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다(조건을 만족할 경우 일부 장소를 승점 더미에 추가할 수 있다는 점을 기억하세요). 각 조사자는 신화 속 감춰진 세계에 대한 통찰력을 얻었기 때문에, 경험치를 추가로 2씩 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li></ul></div>"
+    },
     "resolution3": {
-      "title": "Resolution 3",
-      "body": "<div class='resolution'><p>_Resolution 3:_ You run to the hallway to try to find a way to escape the house, but the burning-hot barrier still blocks your path. Trapped, the horde of feral creatures that have invaded your home close in, and you have nowhere to run.</p><ul><li>In your Campaign Log, record that *Lita was forced to find others to help her cause*.</li><li>In your Campaign Log, record that *your house is still standing*.</li><li>In your Campaign Log, record that *the Ghoul Priest is still alive*.</li><li>Each investigator who has not resigned is _killed_. If there are not enough investigators to continue the campaign, the campaign is over and the players lose. Otherwise, advance to the next scenario. (Each player whose investigator has been killed must choose a new investigator from the pool of available investigators. Refer to page 13 of the Rules Reference for the full rules on killed investigators.)</li><li>If the lead investigator was _killed_, choose an investigator to earn the Lita Chantler card. That investigator may include this card in his or her deck. It does not count toward that investigator’s deck size.</li></ul></div>"
+      "title": "결말 3",
+      "body": "<div class='resolution'><p>_결말 3:_ 당신은 복도를 내달리며 이 집에서 탈출할 길을 찾아봅니다. 하지만 열기가 가득한 장벽이 여전히 당신의 앞길을 가로막습니다. 어떤 길도 보이지 않는데, 섬뜩한 괴물들이 당신의 집으로 꾸역꾸역 밀려 들어옵니다. 도망칠 곳은 어디에도 없습니다.</p><ul><li>캠페인 기록지에 *리타는 어쩔 수 없이 다른 사람에게 도움을 요청했다*라고 기록합니다</li><li>캠페인 기록지에 *당신의 집이 여전히 남아 있다*라고 기록합니다.</li><li>캠페인 기록지에 *‘구울 사제’가 여전히 살아 있다*라고 기록합니다.</li><li>후퇴하지 않은 모든 조사자는 _사망합니다_. 캠페인을 계속 진행할 충분한 조사자가 남아 있지 않다면, 캠페인은 여기서 끝나고 모든 플레이어는 패배합니다. 그렇지 않다면, 다음 시나리오를 진행합니다. (자신의 조사자가 사망한 모든 플레이어는 사용 가능한 조사자 중 하나를 선택합니다. 참조 안내서의 9쪽에서 사망한 조사자에 대한 자세한 규칙을 참조하세요.)</li><li>대표 조사자가 _사망했다면_, 한 조사자를 선택해 그 조사자가 ‘리타 챈들러’ 카드를 얻습니다. 해당 조사자는 이 카드를 자기 덱에 추가해도 됩니다. 이 카드는 조사자의 덱 크기를 계산할 때 포함되지 않습니다.</li></ul></div>"
     },
     "xp": {
-      "resolution2": "Refused to let the night’s events destroy their life",
-      "bonus": "Gains insight into the hidden world of the Mythos"
+      "resolution2": "이날 밤의 사건을 겪고도 삶의 터전을 지켜냈음",
+      "bonus": "신화 속 감춰진 세계에 대한 통찰력을 얻음"
     }
   },
   "label": {
-    "r1": "It was never much of a home. Burn it down! (→ _R1_)",
-    "r2": "This \"hell-pit\" is my home! No way we are burning it! (→ _R2_)",
+    "r1": "그리 소중한 집도 아니야. 불태워버려! (→ _결1_)",
+    "r2": "그 “지옥 구덩이”가 대체 누구 집인데! 절대로 우리 집을 불태우지 않겠어! (→ _결2_)",
     "whatsGoingOn": {
-      "horror": "The lead investigator takes 2 horror",
-      "discard": "Each investigator discards 1 card at random from his or her hand"
+      "horror": "대표 조사자는 공포를 2 받습니다.",
+      "discard": "각 조사자는 자신의 손에서 무작위로 카드를 1장 버립니다."
     },
     "parlor": {
-      "resign": "\"This is too much for me!\" You run out the front door, fleeing in panic."
+      "resign": "“더 이상은 감당 못 해!” 당신은 혼란에 빠진 채, 문 밖으로 뛰쳐나갑니다."
     }
   }
 }

@@ -49,6 +49,8 @@ import Arkham.Target as X
 import Arkham.Text as X
 
 import Arkham.I18n
+import Arkham.Id
+import Arkham.Matcher.Investigator
 
 resolutionWithXp :: (HasI18n, ReverseQueue m) => Scope -> m Int -> m ()
 resolutionWithXp s f = do
@@ -57,3 +59,6 @@ resolutionWithXp s f = do
 
 resolution :: (HasI18n, ReverseQueue m) => Scope -> m ()
 resolution = story . i18nWithTitle
+
+eachUnresigned :: ReverseQueue m => (InvestigatorId -> m ()) -> m ()
+eachUnresigned = selectEach (IncludeEliminated $ not_ ResignedInvestigator)

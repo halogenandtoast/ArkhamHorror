@@ -26,6 +26,6 @@ instance RunMessage StarsOfHyades where
           chooseOneM iid do
             targeting (toCardId discardedEvent) do
               push $ RemoveFromGame (CardIdTarget $ toCardId discardedEvent)
-          when (deckSize < 5) $ shuffleIntoDeck iid attrs
+          when (deckSize >= 5) $ shuffleIntoDeck iid attrs
       pure t
     _ -> StarsOfHyades <$> liftRunMessage msg attrs

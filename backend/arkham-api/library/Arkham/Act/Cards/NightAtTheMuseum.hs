@@ -29,7 +29,7 @@ instance RunMessage NightAtTheMuseum where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       getInPlayHuntingHorror >>= \case
         Just eid -> do
-          enemyMoveTo eid =<< getRestrictedHall
+          enemyMoveTo attrs eid =<< getRestrictedHall
           readyThis eid
         Nothing -> do
           lead <- getLead

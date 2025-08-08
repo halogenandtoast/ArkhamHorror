@@ -39,6 +39,8 @@ getApiV1ArkhamCardsR = do
     safeBCodes =
       [ "03047b"
       , "03084b"
+      , "03276b"
+      , "03279b"
       , "07174b"
       , "07175b"
       , "07176b"

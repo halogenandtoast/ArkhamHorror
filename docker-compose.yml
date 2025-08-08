@@ -23,7 +23,7 @@ services:
     build:
       context: .
       args:
-        - GHC_VERSION=9.10.2
+        - GHC_VERSION=9.12.2
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/arkham-horror-backend
       - REDIS_CONN=redis://redis:6379

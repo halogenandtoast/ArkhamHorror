@@ -25,10 +25,12 @@ data AgendaMatcher
   | AgendaWithTreachery TreacheryMatcher
   | AgendaWithSequence AgendaSequence
   | AgendaWithSide AgendaSide
+  | AgendaWithStep Int
   | AgendaWithDeckId Int
   | AgendaWithModifier ModifierType
   | NotAgenda AgendaMatcher
   | AgendaMatches [AgendaMatcher]
+  | AgendaMatchAny [AgendaMatcher]
   | AgendaCanWheelOfFortuneX
   | FinalAgenda
   | AgendaWantsToAdvance

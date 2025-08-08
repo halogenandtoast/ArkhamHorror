@@ -185,6 +185,19 @@ selectSum
   -> m a
 selectSum fld matcher = selectAgg' Sum fld matcher
 
+selectSumWith
+  :: ( QueryElement matcher ~ EntityId attrs
+     , Num a
+     , Query matcher
+     , Projection attrs
+     , HasGame m
+     )
+  => (b -> a)
+  -> Field attrs b
+  -> matcher
+  -> m a
+selectSumWith f fld matcher = selectAgg' (Sum . f) fld matcher
+
 fieldMax
   :: ( QueryElement matcher ~ EntityId attrs
      , Num a

@@ -70,6 +70,7 @@ getCanAffordCost_
   -> Cost
   -> m Bool
 getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \case
+  LabeledCost _ inner -> getCanAffordCost_ iid source actions windows' canModify inner
   ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> (>= n) . length <$> getScenarioDeck deckKey
   RemoveEnemyDamageCost x matcher -> do
     n <- getGameValue x
@@ -210,8 +211,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     bondedCards <- field InvestigatorBondedCards iid
     pure $ count ((== cardCode) . toCardCode) bondedCards >= n
   DiscardHandCost {} -> pure True
-  DiscardTopOfDeckCost {} -> pure True
-  DiscardTopOfDeckWithTargetCost {} -> pure True
+  DiscardTopOfDeckCost {} -> can.manipulate.deck iid
+  DiscardTopOfDeckWithTargetCost {} -> can.manipulate.deck iid
   AdditionalActionsCost {} -> pure True
   AdditionalActionsCostThatReducesResourceCostBy n cost -> do
     spendableActions <- field InvestigatorRemainingActions iid
@@ -236,11 +237,11 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
       elem eid <$> select Matcher.EventReady
     _ -> error $ "Not handled" <> show target
   ExhaustAssetCost matcher ->
-    selectAny $ matcher <> Matcher.AssetReady
+    selectAny $ Matcher.replaceYouMatcher iid matcher <> Matcher.AssetReady
   ExhaustXAssetCost matcher ->
-    selectAny $ matcher <> Matcher.AssetReady
+    selectAny $ Matcher.replaceYouMatcher iid matcher <> Matcher.AssetReady
   DiscardAssetCost matcher ->
-    selectAny $ matcher <> Matcher.DiscardableAsset
+    selectAny $ Matcher.replaceYouMatcher iid matcher <> Matcher.DiscardableAsset
   UseCost assetMatcher uType n -> do
     assets <- select (Matcher.replaceYouMatcher iid assetMatcher)
     uses <- flip evalStateT assets $ do

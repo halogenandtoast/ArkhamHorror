@@ -57,7 +57,7 @@ function formatEntry(t: I18n, entry: FlavorTextEntry): any {
   switch (entry.tag) {
     case 'BasicEntry': return h('p', { innerHTML: formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text) })
     case 'HeaderEntry': return h('header', [h('h1', { innerHTML: formatContent(t(entry.key)) })])
-    case 'I18nEntry': return h('div', { innerHTML: formatContent(t(entry.key, {...entry.variables, setImgPath: `${baseUrl}/img/arkham/encounter-sets` })) })
+    case 'I18nEntry': return h('div', { style:"overflow:auto", innerHTML: formatContent(t(entry.key, {...entry.variables, setImgPath: `${baseUrl}/img/arkham/encounter-sets` })) })
     case 'ModifyEntry': return h('div', { class: entryStyles(entry) }, [formatEntry(t, entry.entry)])
     case 'CompositeEntry': return h('div', { class: "composite" }, entry.entries.map((e) => formatEntry(t, e)))
     case 'ColumnEntry': return h('div', { class: "columns" }, entry.entries.map((e) => formatEntry(t, e)))
@@ -397,5 +397,22 @@ div:has(> img.remove) {
 .center, :deep(.center) {
   justify-content: center;
   align-content: center;
+}
+
+.task, :deep(.task) {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 2em;
+  margin: 0;
+  align-items: center;
+  .tally {
+    padding: 5px 10px;
+    border: 2px solid black;
+    border-top-left-radius: 255px 15px;
+    border-top-right-radius: 15px 225px;
+    border-bottom-right-radius: 225px 15px;
+    border-bottom-left-radius:15px 255px;
+  }
 }
 </style>

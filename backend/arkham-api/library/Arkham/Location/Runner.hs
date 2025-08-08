@@ -320,6 +320,7 @@ instance RunMessage LocationAttrs where
     MoveTokens s source _ tType n | isSource a source -> runMessage (RemoveTokens s (toTarget a) tType n) a
     MoveTokens _s (InvestigatorSource _) target Clue _ | isTarget a target -> pure a
     MoveTokens s _ target tType n | isTarget a target -> runMessage (PlaceTokens s target tType n) a
+    ClearTokens (isTarget a -> True) -> pure $ a & tokensL .~ mempty
     RemoveTokens _ target tType n | isTarget a target -> do
       if tType == Clue
         then do
@@ -504,10 +505,10 @@ getModifiedShroudValueFor attrs = do
   pure
     $ foldr
       applyPostModifier
-      (foldr applyModifier (fromJustNote "Missing shroud" $ locationShroud attrs) modifiers')
+      (max 0 $ foldr applyModifier (fromJustNote "Missing shroud" $ locationShroud attrs) modifiers')
       modifiers'
  where
-  applyModifier (ShroudModifier m) n = max 0 (n + m)
+  applyModifier (ShroudModifier m) n = n + m
   applyModifier _ n = n
   applyPostModifier (SetShroud m) _ = m
   applyPostModifier _ n = n

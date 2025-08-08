@@ -1,18 +1,13 @@
-module Arkham.Location.Cards.SalemGaol1692 (
-  salemGaol1692,
-  SalemGaol1692 (..),
-) where
+module Arkham.Location.Cards.SalemGaol1692 (salemGaol1692) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Movement
-import Arkham.SkillType
+import Arkham.Message.Lifted.Move
 
 newtype SalemGaol1692 = SalemGaol1692 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -23,28 +18,24 @@ salemGaol1692 = location SalemGaol1692 Cards.salemGaol1692 3 (PerPlayer 1)
 
 instance HasAbilities SalemGaol1692 where
   getAbilities (SalemGaol1692 a) =
-    withRevealedAbilities
+    extendRevealed
       a
-      [ skillTestAbility
-          $ limitedAbility (PlayerLimit PerGame 1)
-          $ restrictedAbility a 1 Here
-          $ ActionAbility []
-          $ ActionCost 1
+      [ skillTestAbility $ playerLimit PerGame $ restricted a 1 Here actionAbility
       , haunted "Move to Keziah's Room." a 2
       ]
 
 instance RunMessage SalemGaol1692 where
-  runMessage msg l@(SalemGaol1692 attrs) = case msg of
+  runMessage msg l@(SalemGaol1692 attrs) = runQueueT $ case msg of
     Msg.RevealLocation _ lid | lid == toId attrs -> do
-      SalemGaol1692 <$> runMessage msg (attrs & labelL .~ "salemGaol1692")
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      SalemGaol1692 <$> liftRunMessage msg (attrs & labelL .~ "salemGaol1692")
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (attrs.ability 1) iid SkillIntellect (Fixed 3)
+      beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 3)
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ Move $ moveToMatch attrs iid (locationIs Locations.keziahsRoom)
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      moveToMatch attrs iid (locationIs Locations.keziahsRoom)
       pure l
-    PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
-      push $ Move $ moveToMatch attrs iid RevealedLocation
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      moveToMatch attrs iid RevealedLocation
       pure l
-    _ -> SalemGaol1692 <$> runMessage msg attrs
+    _ -> SalemGaol1692 <$> liftRunMessage msg attrs

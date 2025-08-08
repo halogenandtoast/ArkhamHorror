@@ -76,6 +76,8 @@ data ExtendedCardMatcher
   | PassesCommitRestrictions ExtendedCardMatcher
   | CardWithSharedTraitToAttackingEnemy
   | CardIdentifiedByScenarioMetaKey Key
+  | ActiveCard
+  | ResolvingCard
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated ExtendedCardMatcher
@@ -155,6 +157,9 @@ instance IsLabel "weakness" ExtendedCardMatcher where
 
 instance IsLabel "parley" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #parley
+
+instance IsLabel "investigate" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #investigate
 
 instance IsLabel "eligible" ExtendedCardMatcher where
   fromLabel = EligibleForCurrentSkillTest
@@ -319,6 +324,9 @@ instance IsLabel "parley" CardMatcher where
 
 instance IsLabel "weakness" CardMatcher where
   fromLabel = WeaknessCard
+
+instance IsLabel "investigate" CardMatcher where
+  fromLabel = CardWithAction #investigate
 
 isEnemyCard :: CardMatcher -> CardMatcher
 isEnemyCard = (#enemy <>)

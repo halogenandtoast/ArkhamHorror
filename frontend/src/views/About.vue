@@ -1,6 +1,24 @@
+<script setup lang="ts">
+import { useRoute } from 'vue-router';
+import { computed } from 'vue';
+
+const route = useRoute();
+const isSupportPage = computed(() => route.query.support !== undefined);
+
+</script>
 <template>
   <div class="page-container">
     <div class="page-content column">
+      <section class="column" :class="{ focus: isSupportPage }">
+        <h2 class="title">Support</h2>
+        <div class="box column">
+          <p>It's quite expensive to run the infrastructure for this service. This project relies on contributions from the community in order to cover those costs. Please visit our Patreon if you are able to financially support this project.</p>
+
+          <p><a href="https://patreon.com/HalogenAndToast?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink">Patreon</a></p>
+
+          <p>Please note that no features are locked behind a paywall. This project is free to use for everyone and will remain so for as long as it continues to run.</p>
+        </div>
+      </section>
       <section class="column">
         <h2 class="title">Copyright Disclaimer</h2>
         <div class="box column">
@@ -19,3 +37,14 @@
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.focus {
+  .box {
+    border: 1px solid var(--select);
+    a {
+      color: var(--select);
+    }
+  }
+}
+</style>

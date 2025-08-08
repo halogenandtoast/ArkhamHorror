@@ -274,7 +274,7 @@ hallow3 =
   (event "07301" "Hallow" 3 Guardian)
     { cdSkills = [#willpower, #wild]
     , cdCardTraits = setFromList [Spell, Blessed]
-    , cdCriteria = Just Criteria.CardWithDoomExists
+    , cdCriteria = Just Criteria.CardWithRemovableDoomExists
     , cdAdditionalCost = Just $ ReturnChaosTokensToPoolCost 10 (IncludeSealed #bless)
     , cdLevel = Just 3
     }

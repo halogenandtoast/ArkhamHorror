@@ -24,9 +24,9 @@ import Arkham.Helpers.Campaign
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario hiding (getIsReturnTo)
+import Arkham.Helpers.Tokens
 import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -186,23 +186,27 @@ setupHeartOfTheElders metadata attrs = case scenarioStep metadata of
 
         let act1 =
               if isReturnTo
-                then Acts.searchForThePattern
-                else Acts.aFamiliarPattern
+                then Acts.aFamiliarPattern
+                else Acts.searchForThePattern
 
         setActDeck $ [act1 | not (reachedAct2 metadata)] <> [Acts.openingTheMaw]
         setAgendaDeck [Agendas.theJunglesHeart, Agendas.settingSun]
 
         whenReturnTo do
+          setAside [Enemies.harbingerOfValusiaTheSleeperReturns]
           addAdditionalReferences ["53045b"]
           createAbilityEffect EffectGameWindow
             $ mkAbility (SourceableWithCardCode (CardCode "53045b") ScenarioSource) 1
             $ forced
             $ Explored #after Anyone Anywhere (SuccessfulExplore Anywhere)
   Two -> do
+    whenReturnTo do
+      gather Set.ReturnToHeartOfTheElders
+      gather Set.ReturnToKnYan
     gather Set.KnYan
     gather Set.HeartOfTheElders
     gather Set.AgentsOfYig
-    gather Set.YigsVenom
+    gather Set.YigsVenom `orWhenReturnTo` gather Set.VenomousHate
     gather Set.ForgottenRuins
     gather Set.DeadlyTraps
     gather Set.Poison
@@ -219,23 +223,45 @@ setupHeartOfTheElders metadata attrs = case scenarioStep metadata of
     setAsidePoisonedCount <- getSetAsidePoisonedCount
     setAside $ Locations.descentToYoth : replicate setAsidePoisonedCount Treacheries.poisoned
 
+    isReturnTo <- getIsReturnTo
+
+    let
+      treacheries =
+        guard (not isReturnTo)
+          *> [ Treacheries.pitfall
+             , Treacheries.noTurningBack
+             , Treacheries.deepDark
+             , Treacheries.finalMistake
+             ]
+
+    triangle <- Locations.darkHollow `orSampleIfReturnTo` [Locations.ruinsOfKnYan]
+    square <- Locations.hallOfIdolatry `orSampleIfReturnTo` [Locations.chthonianDepths]
+    diamond <- Locations.perilousGulch `orSampleIfReturnTo` [Locations.subterraneanSwamp]
+    moon <- Locations.crystalPillars `orSampleIfReturnTo` [Locations.treacherousDescent]
+
     addExtraDeck ExplorationDeck
       =<< shuffle
-        [ Locations.vastPassages
-        , Locations.hallOfIdolatry
-        , Locations.darkHollow
-        , Locations.perilousGulch
-        , Locations.crystalPillars
-        , Treacheries.pitfall
-        , Treacheries.noTurningBack
-        , Treacheries.deepDark
-        , Treacheries.finalMistake
-        ]
+        ( [ Locations.vastPassages
+          , square
+          , triangle
+          , diamond
+          , moon
+          ]
+            <> treacheries
+        )
 
     setActDeck [Acts.cavernOfTheForgottenAge, Acts.descentIntoDark]
     setAgendaDeck [Agendas.theLonelyCaverns, Agendas.eyesInTheDark]
 
     setLayout part2Locations
+
+    whenReturnTo do
+      setAside [Enemies.harbingerOfValusiaTheSleeperReturns]
+      addAdditionalReferences ["53045b"]
+      createAbilityEffect EffectGameWindow
+        $ mkAbility (SourceableWithCardCode (CardCode "53045b") ScenarioSource) 1
+        $ forced
+        $ Explored #after Anyone Anywhere (SuccessfulExplore Anywhere)
 
 runAMessage :: Message -> HeartOfTheElders -> QueueT Message GameT HeartOfTheElders
 runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
@@ -274,12 +300,11 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
     NoResolution -> do
       story noResolutionA
       pathsKnown <- getRecordCount PathsAreKnownToYou
-      pillarTokens <-
-        getSum <$> selectAgg Sum LocationResources (locationIs Locations.mouthOfKnYanTheCavernsMaw)
-      actStep <- getCurrentActStep
+      pillarTokens <- selectCountTokens Pillar (locationIs Locations.mouthOfKnYanTheCavernsMaw)
       when (pillarTokens > pathsKnown) do
         recordCount PathsAreKnownToYou pillarTokens
       push RestartScenario
+      actStep <- getCurrentActStep
       pure $ HeartOfTheElders (attrs `With` metadata {reachedAct2 = reachedAct2 metadata || actStep >= 2})
     Resolution 1 -> do
       story resolution1A

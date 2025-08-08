@@ -19,7 +19,7 @@ instance RunMessage Wormhole where
       discardUntilFirst iid attrs Deck.EncounterDeck (basic #location)
       pure t
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) -> do
-      drawCard iid card
+      resolveRevelation iid card
       moveToMatch attrs iid (LocationWithCardId card.id)
       pure t
     _ -> Wormhole <$> liftRunMessage msg attrs

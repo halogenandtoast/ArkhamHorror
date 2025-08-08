@@ -20,7 +20,7 @@ import Arkham.Helpers.Message
 import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
 import Arkham.Helpers.Query (getActiveInvestigatorId, getLeadPlayer)
 import Arkham.Helpers.Ref (sourceToMaybeCard, targetToMaybeCard)
-import Arkham.Helpers.Window (checkWhen, checkAfter, checkWindows, windows)
+import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, windows)
 import Arkham.Id
 import Arkham.Matcher hiding (IgnoreChaosToken, RevealChaosToken)
 import Arkham.Message qualified as Msg
@@ -521,8 +521,13 @@ instance RunMessage SkillTest where
     CardEnteredPlay _ card -> do
       pure $ s & committedCardsL %~ map (filter (/= card))
     SkillTestCommitCard iid card -> do
-      when (skillTestStep > CommitCardsFromHandToSkillTestStep) do
-        push $ CheckAdditionalCommitCosts iid [card]
+      mods <- getModifiers skillTestId
+      when
+        ( (skillTestStep > CommitCardsFromHandToSkillTestStep)
+            && (RevealChaosTokensBeforeCommittingCards `notElem` mods)
+        )
+        do
+          push $ CheckAdditionalCommitCosts iid [card]
       pure $ s & committedCardsL %~ insertWith (<>) iid [card]
     CommitCard iid card | card `notElem` findWithDefault [] iid skillTestCommittedCards -> do
       cmods <- getModifiers card

@@ -49,7 +49,7 @@ instance RunMessage StrangeGeometry where
             for_ investigators \iid -> do
               moveTo (attrs.ability 1) iid lid
               assignDamageAndHorror iid source 1 1
-            for_ enemies (`enemyMoveTo` lid)
+            for_ enemies \e -> enemyMoveTo (attrs.ability 1) e lid
       toDiscard attrs attrs
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do

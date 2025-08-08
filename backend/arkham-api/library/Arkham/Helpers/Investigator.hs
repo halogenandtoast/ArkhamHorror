@@ -15,6 +15,7 @@ import Arkham.Classes.Query
 import Arkham.Criteria qualified as Criteria
 import Arkham.Damage
 import Arkham.Discover (IsInvestigate (..))
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
 import {-# SOURCE #-} Arkham.Helpers.Calculation (calculate)
@@ -127,11 +128,13 @@ baseSkillValueFor skill _maction iid = do
         SkillCombat -> InvestigatorBaseCombat
         SkillAgility -> InvestigatorBaseAgility
   baseValue <- field fld iid
-  pure $ foldr applyAfterModifier (foldr applyModifier baseValue modifiers) modifiers
+  inner <- foldrM applyModifier baseValue modifiers
+  pure $ foldr applyAfterModifier inner modifiers
  where
-  applyModifier (BaseSkillOf skillType m) _ | skillType == skill = m
-  applyModifier (BaseSkill m) _ = m
-  applyModifier _ n = n
+  applyModifier (BaseSkillOf skillType m) _ | skillType == skill = pure m
+  applyModifier (BaseSkillOfCalculated skillType calc) _ | skillType == skill = calculate calc
+  applyModifier (BaseSkill m) _ = pure m
+  applyModifier _ n = pure n
   applyAfterModifier (SetSkillValue skillType m) _ | skillType == skill = m
   applyAfterModifier _ n = n
 
@@ -665,9 +668,10 @@ getAsIfInHandCards iid = do
     modifierPermitsPlayOfDeck (c, depth) = \case
       CanPlayTopOfDeck cardMatcher | depth == 0 -> cardMatch c cardMatcher
       _ -> False
-    cardsAddedViaModifiers = flip mapMaybe modifiers $ \case
-      AsIfInHand c -> Just c
-      _ -> Nothing
+  cardsAddedViaModifiers <- flip mapMaybeM modifiers $ \case
+    AsIfInHand c -> pure $ Just c
+    AsIfInHandForPlay c -> Just <$> getCard c
+    _ -> pure Nothing
   discard <- field InvestigatorDiscard iid
   deck <- fieldMap InvestigatorDeck unDeck iid
   pure

@@ -28,8 +28,8 @@ cancelEnemyDefeat eid = do
       _ -> False
   withQueue_ $ filter (not . isDiscardEnemy)
 
-cancelEnemyDefeatWithWindows :: HasQueue Message m => EnemyId -> m ()
-cancelEnemyDefeatWithWindows eid = do
+cancelEnemyDefeatWithWindows :: (AsId enemy, IdOf enemy ~ EnemyId, HasQueue Message m) => enemy -> m ()
+cancelEnemyDefeatWithWindows (asId -> eid) = do
   let
     isDiscardEnemy = \case
       Discard _ _ (EnemyTarget eid') -> eid == eid'

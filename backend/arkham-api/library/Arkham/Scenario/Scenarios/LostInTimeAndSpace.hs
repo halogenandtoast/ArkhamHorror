@@ -152,7 +152,7 @@ instance RunMessage LostInTimeAndSpace where
       drawAnotherChaosToken iid
       pure s
     RequestedEncounterCard (ChaosTokenEffectSource Cultist) (Just iid) (Just card) -> do
-      moveTo attrs iid =<< placeLocation (EncounterCard card)
+      moveTo Cultist iid =<< placeLocation (EncounterCard card)
       pure s
     ScenarioResolution r -> scope "resolutions" do
       readInvestigatorDefeat attrs

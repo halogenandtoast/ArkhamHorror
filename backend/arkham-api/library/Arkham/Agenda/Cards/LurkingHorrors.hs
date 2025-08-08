@@ -68,7 +68,13 @@ instance RunMessage LurkingHorrors where
       chooseTargetM iid ls $ lookAtRevealed iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      ls <- select $ CanMoveToLocation (InvestigatorWithId iid) (attrs.ability 2) Anywhere
+      ls <-
+        select
+          $ CanMoveToLocation (InvestigatorWithId iid) (attrs.ability 2)
+          $ oneOf
+            [ LocationInRowOf (locationWithInvestigator iid)
+            , LocationInColumnOf (locationWithInvestigator iid)
+            ]
       chooseTargetM iid ls $ moveTo (attrs.ability 1) iid
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> scenarioI18n $ scope "interlude" do

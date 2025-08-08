@@ -8,14 +8,17 @@ import { XpEntry } from '@/arkham/types/Xp'
 import { CampaignStep } from '@/arkham/types/CampaignStep'
 import { Game } from '@/arkham/types/Game'
 import { useI18n } from 'vue-i18n';
+import { useDbCardStore } from '@/stores/dbCards'
 
 const { t } = useI18n()
+const store = useDbCardStore()
 
 const props = defineProps<{
   game: Game
   step: CampaignStep
   entries: XpEntry[]
   playerId?: string
+  showAll: bool
 }>()
 
 // need to drop the first letter of the scenario code
@@ -76,7 +79,7 @@ const totalVictoryDisplay = computed(() => {
 
 const perInvestigator = computed(() => {
   return Object.entries(props.game.investigators).map(([id,investigator]) => {
-    if (props.playerId && investigator.playerId !== props.playerId) {
+    if (!props.showAll && props.playerId && investigator.playerId !== props.playerId) {
       return [id, [], 0]
     }
     const gains = props.entries.filter((entry: XpEntry) => entry.tag === 'InvestigatorGainXp' && entry.investigator === id)
@@ -93,10 +96,14 @@ const scenarioTotal = computed(() => {
 })
 
 function format(s: string) {
-  const body = s.startsWith("$") ? handleI18n(s, t) : s
+  const body = s.startsWith("$") ? handleI18n(s, t) : getCardName(s)
   return replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>')
 }
 
+function getCardName(s: string) {
+  const language = localStorage.getItem('language') || 'en'
+  return language === 'en' ? s : store.getCardName(s)
+}
 </script>
 
 <template>
@@ -110,13 +117,13 @@ function format(s: string) {
         <header class="entry-header"><h3>{{ $t('upgrade.victoryDisplay') }}</h3><span class="amount" :class="{ 'amount--negative': totalVictoryDisplay < 0 }">{{ $t('upgrade.xp', {total: totalVictoryDisplay}) }}</span></header>
         <div class="column">
           <div v-for="(entry, idx) in allVictoryDisplay" :key="idx" class="box entry">
-            <span>{{entry.details.sourceName}}</span>
+            <span>{{getCardName(entry.details.sourceName)}}</span>
             <span class="amount">+{{entry.details.amount}}</span>
           </div>
         </div>
       </section>
       <section class="box column group" v-for="([name, entries, total]) in perInvestigator" :key="name">
-        <header class="entry-header"><h3>{{name}}</h3><span class="amount" :class="{ 'amount--negative': total < 0 }">{{ $t('upgrade.xp', {total: total}) }}</span></header>
+        <header class="entry-header"><h3>{{getCardName(name)}}</h3><span class="amount" :class="{ 'amount--negative': total < 0 }">{{ $t('upgrade.xp', {total: total}) }}</span></header>
         <div v-for="(entry, idx) in entries" :key="idx" class="box entry">
           <span v-html="format(entry.details.sourceName)"></span> 
           <span v-if="entry.tag !== 'InvestigatorLoseXp'" class="amount">+{{entry.details.amount}}</span>
@@ -136,6 +143,13 @@ h3 {
   font-size: 1.3em;
 }
 
+span {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  hyphens:auto;
+}
+
 .breakdown-header {
   display: flex;
   gap: 10px;
@@ -145,7 +159,6 @@ h3 {
     margin-left: auto;
     min-width: 1.5em;
     padding: 0 5px;
-    height: 1.5em;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -170,7 +183,6 @@ h3 {
     margin-left: auto;
     min-width: 1.5em;
     padding: 0 5px;
-    height: 1.5em;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -191,7 +203,6 @@ h3 {
   .amount {
     margin-left: auto;
     min-width: 1.5em;
-    padding: 0 5px;
     height: 1.5em;
     display: flex;
     justify-content: center;
@@ -215,6 +226,9 @@ h3 {
   section {
     flex: 1;
     height: fit-content;
+  }
+  @media (max-width: 800px) and (orientation: portrait) {
+      flex-direction: column;
   }
 }
 </style>

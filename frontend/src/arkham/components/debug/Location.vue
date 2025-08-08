@@ -3,7 +3,7 @@
 import { useMenu } from '@/composeable/menu';
 import Draggable from '@/components/Draggable.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import type { Game } from '@/arkham/types/Game';
 import * as Arkham from '@/arkham/types/Location';
@@ -19,6 +19,12 @@ type Props = {
 const emit = defineEmits<{ close: [] }>()
 const props = defineProps<Props>()
 const { addEntry } = useMenu()
+const placeTokens = ref(false);
+const placeTokenType = ref<Token>("Clue");
+const tokenTypes = Object.values(TokenType);
+
+const isNumber = (value: unknown): value is number => typeof value === 'number';
+const anyTokens = computed(() => Object.values(props.location.tokens).some(t => isNumber(t) && t > 0))
 
 addEntry({
   id: `close-debug-${props.location.id}`,
@@ -75,12 +81,22 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
           </div>
         </div>
       </div>
-      <div class="buttons">
+      <div v-if="placeTokens" class="buttons">
+        <select v-model="placeTokenType">
+          <option v-for="token in tokenTypes" :key="token" :value="token">{{ token }}</option>
+        </select>
+        <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'GameSource' }, { tag: 'LocationTarget', contents: id}, placeTokenType, 1]})">Place</button>
+        <button @click="placeTokens = false">Back</button>
+      </div>
+      <div v-else class="buttons">
         <button v-if="location.cardCode == 'c03139'" @click="createModifier({tag: 'LocationTarget', contents: id}, {tag: 'AddTrait', contents: 'Passageway'})">Add Passageway</button>
         <button v-if="!location.revealed" @click="debug.send(game.id, {tag: 'RevealLocation', contents: [null, id]})">Reveal</button>
         <button v-if="clues && clues > 0" @click="debug.send(game.id, {tag: 'RemoveTokens', contents: [{ tag: 'TestSource', contents: []}, { tag: 'LocationTarget', contents: id }, 'Clue', clues]})">Remove Clues</button>
         <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'TestSource', contents: []}, { tag: 'LocationTarget', contents: id }, 'Clue', 1]})">Place Clue</button>
         <button v-if="location.revealed" @click="debug.send(game.id, {tag: 'Reset', contents: { 'tag': 'LocationTarget', contents: id }})">Reset</button>
+        <button @click="placeTokens = true">Place Tokens</button>
+        <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'ClearTokens', contents: { tag: 'LocationTarget', contents: id}})">Remove All Tokens</button>
+        <button @click="emit('close')">Close</button>
         <button @click="emit('close')">Close</button>
       </div>
     </div>

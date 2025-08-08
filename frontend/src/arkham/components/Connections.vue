@@ -207,23 +207,16 @@ watch(locations, () => drawHandler())
   width: 100%;
   height: 100%;
   z-index: -100000000;
+  overflow: visible !important;
 }
 
 #line{
   stroke-width:6px;
   /* stroke:#a6b5bb; */
-  stroke:rgba(0,0,0, 0.2);
-
-  @media (prefers-color-scheme: dark) {
-    stroke:rgba(255,255,255, 0.2);
-  }
+  stroke:rgba(255,255,255, 0.2);
 }
 
 .active {
-  stroke:rgba(0,0,0,0.5) !important;
-
-  @media (prefers-color-scheme: dark) {
-    stroke:rgba(255,255,255, 0.7) !important;
-  }
+  stroke:rgba(255,255,255, 0.7) !important;
 }
 </style>

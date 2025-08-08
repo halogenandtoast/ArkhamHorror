@@ -953,6 +953,6 @@
     }
   ]},
   { "id": "06", "name": "The Dream-Eaters" },
-  { "id": "07", "name": "The Innsmouth Conspiracy", "beta": true },
-  { "id": "08", "name": "Edge of the Earth", "beta": true }
+  { "id": "07", "name": "The Innsmouth Conspiracy" },
+  { "id": "08", "name": "Edge of the Earth" }
 ]

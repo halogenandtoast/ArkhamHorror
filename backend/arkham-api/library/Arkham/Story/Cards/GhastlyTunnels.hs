@@ -1,11 +1,11 @@
-module Arkham.Story.Cards.GhastlyTunnels (GhastlyTunnels (..), ghastlyTunnels) where
+module Arkham.Story.Cards.GhastlyTunnels (ghastlyTunnels) where
 
+import Arkham.Enemy.Creation (createExhausted)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message.Lifted hiding (story)
-import Arkham.Prelude
+import Arkham.Target
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner hiding (createEnemyAt, findEncounterCard)
+import Arkham.Story.Import.Lifted
 import Arkham.Trait (Trait (Ghast))
 
 newtype GhastlyTunnels = GhastlyTunnels StoryAttrs
@@ -17,12 +17,12 @@ ghastlyTunnels = story GhastlyTunnels Cards.ghastlyTunnels
 
 instance RunMessage GhastlyTunnels where
   runMessage msg s@(GhastlyTunnels attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveStory iid ResolveIt (is attrs -> True) -> do
       findEncounterCard @CardMatcher iid attrs $ #enemy <> withTrait Ghast
       pure s
-    FoundEncounterCard _iid target card | isTarget attrs target -> do
+    FoundEncounterCard _iid (isTarget attrs -> True) card -> do
       vaultsOfZin <- selectJust $ locationIs Locations.vaultsOfZin
-      ghast <- createEnemyAt card vaultsOfZin
+      ghast <- createEnemyAtEdit card vaultsOfZin createExhausted
       placeClues attrs ghast 1
       pure s
     _ -> GhastlyTunnels <$> liftRunMessage msg attrs

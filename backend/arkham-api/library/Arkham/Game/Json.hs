@@ -6,6 +6,7 @@ module Arkham.Game.Json where
 import Arkham.Game.Base
 import Arkham.Prelude
 import Data.Aeson.TH
+import Data.Map.Strict qualified as Map
 
 -- bring json instances into scope
 
@@ -65,7 +66,7 @@ instance FromJSON Game where
     gameActionDiff <- o .: "gameActionDiff"
     gameInAction <- o .: "gameInAction"
     gameCards <- o .: "gameCards"
-    gameCardUses <- o .: "gameCardUses"
+    gameCardUses <- o .: "gameCardUses" <|> (Map.map (`replicate` gameLeadInvestigatorId) <$> o .: "gameCardUses")
     gameActiveCost <- o .: "gameActiveCost"
     gameGitRevision <- o .: "gameGitRevision"
     gameAllowEmptySpaces <- o .: "gameAllowEmptySpaces"

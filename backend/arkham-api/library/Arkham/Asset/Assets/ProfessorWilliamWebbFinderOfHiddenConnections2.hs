@@ -57,6 +57,6 @@ instance RunMessage ProfessorWilliamWebbFinderOfHiddenConnections2 where
             $ AlternateSuccessfullInvestigation (toTarget attrs)
       locations <-
         select $ ConnectedFrom (locationWithInvestigator iid) <> locationWithDiscoverableCluesBy iid
-      chooseTargetM iid locations \lid -> discoverAt NotInvestigate iid (attrs.ability 1) lid 1
+      chooseTargetM iid locations $ discoverAt NotInvestigate iid (attrs.ability 1) 1
       pure a
     _ -> ProfessorWilliamWebbFinderOfHiddenConnections2 <$> liftRunMessage msg attrs

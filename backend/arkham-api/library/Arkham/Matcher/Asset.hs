@@ -114,6 +114,8 @@ data AssetMatcher
   | AssetWithPerformableAbility AbilityMatcher [ModifierType]
   | AssetWithPerformableAbilityBy InvestigatorMatcher AbilityMatcher [ModifierType]
   | VehicleWithInvestigator InvestigatorMatcher
+  | SingleSidedAsset
+  | IgnoreVisibility AssetMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 asset_ :: AssetMatcher -> AssetMatcher

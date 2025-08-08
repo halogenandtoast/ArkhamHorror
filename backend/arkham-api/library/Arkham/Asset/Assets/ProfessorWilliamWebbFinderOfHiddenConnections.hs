@@ -30,7 +30,7 @@ professorWilliamWebbFinderOfHiddenConnections =
 instance HasAbilities ProfessorWilliamWebbFinderOfHiddenConnections where
   getAbilities (ProfessorWilliamWebbFinderOfHiddenConnections a) =
     [ restricted a 1 ControlsThis
-        $ ReactionAbility (SuccessfulInvestigation #when You Anywhere) (exhaust a <> assetUseCost a Secret 1)
+        $ triggered (SuccessfulInvestigation #when You Anywhere) (exhaust a <> assetUseCost a Secret 1)
     ]
 
 instance RunMessage ProfessorWilliamWebbFinderOfHiddenConnections where
@@ -64,6 +64,6 @@ instance RunMessage ProfessorWilliamWebbFinderOfHiddenConnections where
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       locations <-
         select $ ConnectedFrom (locationWithInvestigator iid) <> locationWithDiscoverableCluesBy iid
-      chooseTargetM iid locations \lid -> discoverAt NotInvestigate iid (attrs.ability 1) lid 1
+      chooseTargetM iid locations $ discoverAt NotInvestigate iid (attrs.ability 1) 1
       pure a
     _ -> ProfessorWilliamWebbFinderOfHiddenConnections <$> liftRunMessage msg attrs

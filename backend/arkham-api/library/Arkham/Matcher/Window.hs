@@ -110,6 +110,7 @@ data WindowMatcher
   | AgendaEntersPlay Timing AgendaMatcher
   | AssetEntersPlay Timing AssetMatcher
   | AssetLeavesPlay Timing AssetMatcher
+  | AssetWouldLeavePlay Timing AssetMatcher
   | AssetDiscarded Timing AssetMatcher
   | AssetDealtDamage Timing SourceMatcher AssetMatcher
   | AssetDealtDamageOrHorror Timing SourceMatcher AssetMatcher
@@ -218,7 +219,7 @@ data WindowMatcher
   | PhaseStep Timing PhaseStepMatcher
   | SkillTestStep Timing SkillTestStep
   | AddingToCurrentDepth
-  | CancelledOrIgnoredCardOrGameEffect SourceMatcher
+  | CancelledOrIgnoredCardOrGameEffect SourceMatcher (Maybe CardMatcher)
   | LostResources Timing Who SourceMatcher
   | LostActions Timing Who SourceMatcher
   | WouldTriggerChaosTokenRevealEffectOnCard Who CardMatcher [ChaosTokenFace]
@@ -232,7 +233,6 @@ data WindowMatcher
   | TakeControlOfClues Timing Who SourceMatcher
   | TakeControlOfKey Timing Who KeyMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
-
 
 data ExploreMatcher = SuccessfulExplore LocationMatcher | FailedExplore CardMatcher | AnyExplore
   deriving stock (Show, Eq, Ord, Data)
@@ -278,6 +278,11 @@ instance FromJSON WindowMatcher where
   parseJSON = withObject "WindowMatcher" $ \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "CancelledOrIgnoredCardOrGameEffect" -> do
+        econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case econtents of
+          Left a -> pure $ CancelledOrIgnoredCardOrGameEffect a Nothing
+          Right (a, b) -> pure $ CancelledOrIgnoredCardOrGameEffect a b
       "DrawsCards" -> do
         econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case econtents of

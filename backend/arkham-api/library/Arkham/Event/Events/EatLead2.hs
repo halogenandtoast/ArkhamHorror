@@ -37,6 +37,6 @@ instance RunMessage EatLead2 where
         withSkillTest \sid -> do
           push $ SpendUses (toSource attrs) (AssetTarget aid) Ammo ammo
           skillTestModifier sid attrs iid (ChangeRevealStrategy $ RevealAndChoose ammo 1)
-          checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs
+          checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs) Nothing
       pure e
     _ -> EatLead2 . (`with` metadata) <$> liftRunMessage msg attrs

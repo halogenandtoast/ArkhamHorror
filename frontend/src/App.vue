@@ -28,6 +28,7 @@ import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useSiteSettingsStore } from '@/stores/site_settings'
 import { useDbCardStore } from '@/stores/dbCards'
+import { checkImageExists } from '@/arkham/helpers'
 import NavBar from '@/components/NavBar.vue'
 import 'floating-vue/dist/style.css'
 
@@ -40,6 +41,7 @@ onMounted(async () => {
   await settingsStore.init()
   avifSupported.value = await checkAvifSupport();
   await useDbCardStore().initDbCards()
+  await checkImageExists()
 })
 const avifSupported = ref(true);
 const checkAvifSupport = (): Promise<boolean> => {

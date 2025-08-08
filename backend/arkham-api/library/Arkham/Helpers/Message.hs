@@ -240,6 +240,11 @@ createEnemyAt c lid mTarget = do
   creation <- createEnemy c lid
   pure (enemyCreationEnemyId creation, CreateEnemy $ creation {enemyCreationTarget = mTarget})
 
+createEnemyAtEdit :: MonadRandom m => Card -> LocationId -> Maybe Target -> (EnemyCreation Message -> EnemyCreation Message) -> m (EnemyId, Message)
+createEnemyAtEdit c lid mTarget f = do
+  creation <- createEnemy c lid
+  pure (enemyCreationEnemyId creation, CreateEnemy $ f $ creation {enemyCreationTarget = mTarget})
+
 createEnemyAt_ :: MonadRandom m => Card -> LocationId -> Maybe Target -> m Message
 createEnemyAt_ c lid mTarget = snd <$> createEnemyAt c lid mTarget
 

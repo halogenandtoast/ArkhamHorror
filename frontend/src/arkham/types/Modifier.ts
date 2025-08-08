@@ -27,7 +27,7 @@ export function cardMatcherToWords(m: CardMatcher): string {
     case 'CardWithOddSkillIcons':
       return " cards with odd skill icons"
     default:
-      return "Unknown card matcher"
+      return " specified cards"
   }
 } 
 

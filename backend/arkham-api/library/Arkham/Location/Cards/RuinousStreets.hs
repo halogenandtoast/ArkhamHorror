@@ -29,6 +29,6 @@ instance RunMessage RuinousStreets where
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       ls <- select $ LocationWithDiscoverableCluesBy (InvestigatorWithId iid) <> ConnectedFrom (be attrs)
-      chooseTargetM iid ls \lid -> discoverAt NotInvestigate iid (attrs.ability 2) lid 1
+      chooseTargetM iid ls $ discoverAt NotInvestigate iid (attrs.ability 2) 1
       pure l
     _ -> RuinousStreets <$> liftRunMessage msg attrs

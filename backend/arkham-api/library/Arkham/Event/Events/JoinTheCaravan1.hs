@@ -1,12 +1,11 @@
-module Arkham.Event.Events.JoinTheCaravan1 (joinTheCaravan1, JoinTheCaravan1 (..)) where
+module Arkham.Event.Events.JoinTheCaravan1 (joinTheCaravan1) where
 
-import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Calculation
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Movement
+import Arkham.Message.Lifted.Move
 
 newtype JoinTheCaravan1 = JoinTheCaravan1 EventAttrs
   deriving anyclass (IsEvent, HasAbilities)
@@ -17,15 +16,20 @@ joinTheCaravan1 = event JoinTheCaravan1 Cards.joinTheCaravan1
 
 instance HasModifiersFor JoinTheCaravan1 where
   getModifiersFor (JoinTheCaravan1 a) = do
-    n <- calculate (DifferentClassAmong (HandWith $ HasCard $ CardWithId $ toCardId a) $ ControlledBy $ HandWith $ HasCard $ CardWithId $ toCardId a)
-    modified_ a (CardIdTarget $ toCardId a) [ReduceCostOf (CardWithId $ toCardId a) n]
+    n <-
+      calculate
+        ( DifferentClassAmong (HandWith $ HasCard $ CardWithId a.cardId)
+            $ ControlledBy
+            $ HandWith
+            $ HasCard
+            $ CardWithId a.cardId
+        )
+    modified_ a a.cardId [ReduceCostOf (CardWithId a.cardId) n]
 
 instance RunMessage JoinTheCaravan1 where
   runMessage msg e@(JoinTheCaravan1 attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
+    PlayThisEvent iid (is attrs -> True) -> do
       locations <- select $ CanMoveToLocation (InvestigatorWithId iid) (toSource attrs) RevealedLocation
-      chooseOrRunOne
-        iid
-        [targetLabel location [Move $ move (toSource attrs) iid location] | location <- locations]
+      chooseOrRunOneM iid $ targets locations $ moveTo (toSource attrs) iid
       pure e
     _ -> JoinTheCaravan1 <$> liftRunMessage msg attrs

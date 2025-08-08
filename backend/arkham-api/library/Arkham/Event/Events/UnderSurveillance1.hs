@@ -34,7 +34,7 @@ instance RunMessage UnderSurveillance1 where
         AttachedToLocation lid -> do
           toDiscardBy iid (attrs.ability 1) attrs
           automaticallyEvadeEnemy iid enemyId
-          discoverAt NotInvestigate iid (attrs.ability 1) lid 1
+          discoverAt NotInvestigate iid (attrs.ability 1) 1 lid
           nextPhaseModifier #upkeep (attrs.ability 1) enemyId DoesNotReadyDuringUpkeep
         _ -> error "impossible"
       pure e

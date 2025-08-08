@@ -16,12 +16,9 @@ newtype HiddenTunnelEntranceToTheDepths = HiddenTunnelEntranceToTheDepths Locati
 
 hiddenTunnelEntranceToTheDepths :: LocationCard HiddenTunnelEntranceToTheDepths
 hiddenTunnelEntranceToTheDepths =
-  locationWith
-    HiddenTunnelEntranceToTheDepths
-    Cards.hiddenTunnelEntranceToTheDepths
-    0
-    (PerPlayer 2)
-    ((shroudL .~ Nothing) . connectsToAdjacent)
+  locationWith HiddenTunnelEntranceToTheDepths Cards.hiddenTunnelEntranceToTheDepths 0 (PerPlayer 2)
+    $ (shroudL .~ Nothing)
+    . connectsToAdjacent
 
 instance HasModifiersFor HiddenTunnelEntranceToTheDepths where
   getModifiersFor (HiddenTunnelEntranceToTheDepths a) = do
@@ -44,18 +41,15 @@ instance RunMessage HiddenTunnelEntranceToTheDepths where
         Just (k :| _) -> do
           chooseOneM iid do
             labeled "Spend Skull Key" do
-              push $ PlaceKey ScenarioTarget k
+              placeKey ScenarioTarget k
               doStep 2 msg
             labeled "Do not Spend Skull Key" $ doStep 1 msg
         Nothing -> doStep 1 msg
       pure l
     DoStep n (UseThisAbility iid (isSource attrs -> True) 1) -> do
       sid <- getRandom
-      when (n == 2) do
-        skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 5)
-      chooseOneM iid do
-        for_ [minBound ..] \kind ->
-          skillLabeled kind $ beginSkillTest sid iid (attrs.ability 1) iid kind (Fixed 4)
+      when (n == 2) $ skillTestModifier sid (attrs.ability n) iid (AnySkillValue 5)
+      chooseBeginSkillTest sid iid (attrs.ability n) iid [minBound ..] (Fixed 4)
       pure l
     PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
       removeTokens (attrs.ability 1) attrs #clue 1

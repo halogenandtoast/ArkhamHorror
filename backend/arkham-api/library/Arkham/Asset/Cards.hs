@@ -823,7 +823,6 @@ allPlayerAssetCards =
       , theCodexOfAges
       , theCodexOfAgesAdvanced
       , theCouncilsCoffer2
-      , theCustodian
       , theDevilXv
       , theFool03
       , theGoldPocketWatch4
@@ -963,6 +962,7 @@ allEncounterAssetCards =
       , dianneDevineHidingAnOathUnspoken
       , partyGuest
       , jewelOfSarnath
+      , theCustodian
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef

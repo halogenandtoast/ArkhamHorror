@@ -45,20 +45,20 @@ function parseInput(input: string) {
 
             // Parse the parameter value based on its type
             if (paramType === 'i') {
-                const intValue = parseInt(paramValue, 10);
+                const intValue = parseInt(paramValue, 10)
                 if (isNaN(intValue)) {
-                    throw new Error(`Invalid integer value for parameter "${paramName}"`);
+                    throw new Error(`Invalid integer value for parameter "${paramName}"`)
                 }
-                params[paramName] = intValue;
+                params[paramName] = intValue
             } else if (paramType === 's') {
                 // Handle quoted strings
                 if ((paramValue.startsWith('"') && paramValue.endsWith('"')) ||
                     (paramValue.startsWith("'") && paramValue.endsWith("'"))) {
-                    paramValue = paramValue.substring(1, paramValue.length - 1);
+                    paramValue = paramValue.substring(1, paramValue.length - 1)
                 } else {
-                    throw new Error(`String parameter "${paramName}" must be enclosed in quotes`);
+                    throw new Error(`String parameter "${paramName}" must be enclosed in quotes in ${paramValue}\n\n${input}`)
                 }
-                params[paramName] = paramValue;
+                params[paramName] = paramValue
             } else {
                 throw new Error(`Unknown parameter type "${paramType}" for parameter "${paramName}"`);
             }
@@ -68,19 +68,27 @@ function parseInput(input: string) {
     return { key, params };
 }
 
+// Need to update this to handle escaped quotes
 function tokenizeParams(paramsString: string) {
     const tokens = [];
     let currentToken = '';
     let inQuotes = false;
     let quoteChar = '';
+    let escaped = false;
 
     for (let i = 0; i < paramsString.length; i++) {
         const c = paramsString[i];
 
         if (inQuotes) {
-            currentToken += c;
-            if (c === quoteChar) {
+            if (c !== '\\')
+              currentToken += c;
+            if (c === quoteChar && !escaped) {
                 inQuotes = false;
+            }
+            if (c === '\\' && !escaped) {
+                escaped = true; // Next character is escaped
+            } else {
+                escaped = false; // Reset escape state
             }
         } else {
             if (c === ' ') {

@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.BeyondTheWitchHouse (BeyondTheWitchHouse (..), beyondTheWitchHouse) where
+module Arkham.Act.Cards.BeyondTheWitchHouse (beyondTheWitchHouse) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
@@ -31,7 +31,7 @@ instance RunMessage BeyondTheWitchHouse where
       nahab <-
         selectOne (enemyIs Enemies.nahab) >>= \case
           Nothing -> findUniqueCard Enemies.nahab >>= (`createEnemyAt` site)
-          Just x -> x <$ enemyMoveTo x site
+          Just x -> x <$ enemyMoveTo attrs x site
 
       step <- getCurrentAgendaStep
       if step == 4
@@ -44,7 +44,7 @@ instance RunMessage BeyondTheWitchHouse where
 
       selectOne (enemyIs Enemies.brownJenkin) >>= \case
         Nothing -> findUniqueCard Enemies.brownJenkin >>= (`createEnemyAt_` site)
-        Just brownJenkin -> enemyMoveTo brownJenkin site
+        Just brownJenkin -> enemyMoveTo attrs brownJenkin site
 
       advanceActDeck attrs
       pure a

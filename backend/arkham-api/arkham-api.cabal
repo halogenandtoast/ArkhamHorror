@@ -2520,6 +2520,7 @@ library
       Arkham.Helpers.EncounterSet
       Arkham.Helpers.Enemy
       Arkham.Helpers.Event
+      Arkham.Helpers.FetchCard
       Arkham.Helpers.FlavorText
       Arkham.Helpers.Game
       Arkham.Helpers.GameValue
@@ -2532,6 +2533,7 @@ library
       Arkham.Helpers.Message.Discard
       Arkham.Helpers.Message.Discard.Lifted
       Arkham.Helpers.Modifiers
+      Arkham.Helpers.Name
       Arkham.Helpers.Phase
       Arkham.Helpers.Placement
       Arkham.Helpers.Playable
@@ -2550,6 +2552,7 @@ library
       Arkham.Helpers.Target
       Arkham.Helpers.Tarot
       Arkham.Helpers.Text
+      Arkham.Helpers.Tokens
       Arkham.Helpers.UI
       Arkham.Helpers.Use
       Arkham.Helpers.Vehicle
@@ -3572,7 +3575,8 @@ library
       Arkham.Scenario.Scenarios.ReturnToDimCarcosa
       Arkham.Scenario.Scenarios.ReturnToEchoesOfThePast
       Arkham.Scenario.Scenarios.ReturnToExtracurricularActivities
-      Arkham.Scenario.Scenarios.ReturnToHeartOfTheElders
+      Arkham.Scenario.Scenarios.ReturnToHeartOfTheEldersPart1
+      Arkham.Scenario.Scenarios.ReturnToHeartOfTheEldersPart2
       Arkham.Scenario.Scenarios.ReturnToLostInTimeAndSpace
       Arkham.Scenario.Scenarios.ReturnToTheBoundaryBeyond
       Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow
@@ -4501,6 +4505,7 @@ library
       Auth.JWT
       Base.Api.Handler.Authentication
       Base.Api.Handler.CurrentUser
+      Base.Api.Handler.Notifications
       Base.Api.Handler.PasswordReset
       Base.Api.Handler.Registration
       Base.Api.Handler.Settings
@@ -4514,6 +4519,7 @@ library
       Entity.Arkham.LogEntry
       Entity.Arkham.Player
       Entity.Arkham.Step
+      Entity.Notification
       Entity.PasswordReset
       Entity.User
       Foundation

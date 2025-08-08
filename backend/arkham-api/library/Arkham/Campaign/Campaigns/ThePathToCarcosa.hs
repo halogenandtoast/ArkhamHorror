@@ -11,6 +11,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Xp
 import Arkham.Matcher hiding (EnemyDefeated)
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 
@@ -43,7 +44,7 @@ thePathToCarcosa difficulty =
     (chaosBagContents difficulty)
 
 instance RunMessage ThePathToCarcosa where
-  runMessage msg c = runQueueT $ campaignI18n $ case msg of
+  runMessage msg c@(ThePathToCarcosa attrs) = runQueueT $ campaignI18n $ case msg of
     CampaignStep PrologueStep -> scope "prologue" do
       flavor do
         setTitle "yellowSign.title"
@@ -141,5 +142,15 @@ instance RunMessage ThePathToCarcosa where
       when (card `cardMatch` cardIs Enemies.theManInThePallidMask) do
         n <- getRecordCount ChasingTheStranger
         recordCount ChasingTheStranger (n + 1)
+      pure c
+    After (Msg.InvestigatorEliminated iid) -> do
+      void $ runMaybeT do
+        theManInThePallidMask <- MaybeT $ fetchCardMaybe Enemies.theManInThePallidMask
+        owner <-
+          hoistMaybe $ findKey (any ((== Enemies.theManInThePallidMask) . toCardDef)) attrs.storyCards
+        guard $ owner == iid
+        lift do
+          others <- select $ IncludeEliminated (not_ (InvestigatorWithId iid) <> AliveInvestigator)
+          addCampaignCardToDeckChoice others Msg.ShuffleIn theManInThePallidMask
       pure c
     _ -> lift $ defaultCampaignRunner msg c

@@ -40,7 +40,7 @@ instance RunMessage ThePaleLanternHypnoticGlow where
   runMessage msg a@(ThePaleLanternHypnoticGlow attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      chooseBeginSkillTest sid iid (attrs.ability 1) iid [#combat, #agility] (Fixed 1)
+      chooseBeginSkillTest sid iid (attrs.ability 1) iid [#combat, #agility] (Fixed 3)
       pure a
     UseCardAbility _iid (isSource attrs -> True) 2 ws _ -> do
       don'tRemove attrs ws

@@ -1,4 +1,4 @@
-module Arkham.Event.Events.LookWhatIFound2 where
+module Arkham.Event.Events.LookWhatIFound2 (lookWhatIFound2) where
 
 import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
@@ -19,6 +19,6 @@ instance RunMessage LookWhatIFound2 where
       pure e
     Do (PlayThisEvent iid (is attrs -> True)) -> do
       locations <- select $ orConnected iid <> LocationWithAnyClues
-      chooseTargetM iid locations \lid -> discoverAt NotInvestigate iid attrs lid 1
+      chooseTargetM iid locations $ discoverAt NotInvestigate iid attrs 1
       pure e
     _ -> LookWhatIFound2 <$> liftRunMessage msg attrs

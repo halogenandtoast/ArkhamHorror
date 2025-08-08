@@ -42,24 +42,26 @@ getLabelPosition label' = case unsnoc label' of
   Just (lbl, _) -> read @Int $ drop 4 $ unpack lbl
   Nothing -> error "impossible"
 
-road :: (ReverseQueue m, HasField "label" a Text, HasField "id" a LocationId) => Int -> a -> m ()
+road :: (ReverseQueue m, HasField "label" a Text) => Int -> a -> m ()
 road n attrs = do
   let x = getLabelPosition attrs.label
   let prefix = "road" <> tshow (x + 1)
   whenNone (LocationWithLabel $ Label $ prefix <> "a") do
+    layout <- getLayout
     roadCard <- take 1 <$> getRoadDeck
     longWays <- take (n - 1) <$> getSetAsideCardsMatching (cardIs Location.longWayAround)
     cards <- shuffleM $ roadCard <> longWays
 
+    let col = "road" <> tshow x
+    column <- select $ mapOneOf (LocationWithLabel . Label . (col <>) . T.singleton) ['a' .. 'c']
     for_ (zip cards "abc") $ \(lid, c) -> do
       location <- placeLocation lid
       push $ SetLocationLabel location (prefix <> singleton c)
-      push $ PlacedLocationDirection location RightOf attrs.id
-    layout <- getLayout
+      for_ column $ push . PlacedLocationDirection location RightOf
     let
       go =
         case length cards of
-          1 -> \y -> if y `elem` [3, 4] then (" " <> prefix <> "a") else " ."
+          1 -> \y -> if y `elem` [3, 4] then " " <> prefix <> "a" else " ."
           2 -> \case
             1 -> " ."
             2 -> " " <> prefix <> "a"
@@ -123,7 +125,7 @@ advanceRoad = do
       xs@(x : _) -> do
         shouldStop <-
           orM
-            [ pure $ maybe False (== getLabelPosition x) mStopAt
+            [ pure $ mStopAt == Just (getLabelPosition x)
             , selectAny $ AssetWithTrait Vehicle <> AssetAt (mapOneOf (LocationWithLabel . Label) xs)
             , selectAny $ EnemyAt (mapOneOf (LocationWithLabel . Label) xs)
             ]

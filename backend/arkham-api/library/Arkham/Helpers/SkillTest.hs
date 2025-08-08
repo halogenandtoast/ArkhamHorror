@@ -127,6 +127,11 @@ getsSkillTest f = fmap f <$> getSkillTest
 getSkillTestAction :: HasGame m => m (Maybe Action)
 getSkillTestAction = join <$> getsSkillTest skillTestAction
 
+withSkillTestAction :: HasGame m => (Action -> m ()) -> m ()
+withSkillTestAction f = getSkillTestAction >>= \case
+  Just s -> f s
+  Nothing -> pure ()
+
 getSkillTestSkillTypes :: HasGame m => m [SkillType]
 getSkillTestSkillTypes =
   getsSkillTest skillTestType <&> \case
@@ -330,6 +335,11 @@ getAttackedEnemy = getSkillTestTargetedEnemy
 
 getSkillTestTargetedEnemy :: HasGame m => m (Maybe EnemyId)
 getSkillTestTargetedEnemy = ((.enemy) =<<) <$> getSkillTestTarget
+
+withSkillTestTargetedEnemy :: HasGame m => (EnemyId -> m ()) -> m ()
+withSkillTestTargetedEnemy f = getSkillTestTargetedEnemy >>= \case
+  Just eid -> f eid
+  Nothing -> pure ()
 
 isInvestigating
   :: (HasGame m, AsId location, IdOf location ~ LocationId) => InvestigatorId -> location -> m Bool

@@ -56,20 +56,21 @@ hereticModifiers (toAttrs -> a) = do
       )
 
 hereticAbilities
-  :: ( EntityId (EntityAttrs a) ~ EnemyId
-     , HasAbilities (EntityAttrs a)
-     , Sourceable (EntityAttrs a)
-     , HasCardCode (EntityAttrs a)
+  :: ( attrs ~ EntityAttrs a
+     , HasAbilities attrs
+     , Sourceable attrs
+     , HasCardCode attrs
      , Entity a
-     , Entity (EntityAttrs a)
+     , AsId attrs
+     , Be (IdOf attrs) EnemyMatcher
      )
   => a
   -> [Ability]
 hereticAbilities (toAttrs -> a) =
   withBaseAbilities
     a
-    [ restrictedAbility a 1 OnSameLocation $ FastAbility' (ClueCost $ Static 1) [#parley]
-    , mkAbility a 2 $ forced $ EnemyDefeated #after Anyone ByAny $ EnemyWithId $ toId a
+    [ restricted a 1 OnSameLocation $ FastAbility' (ClueCost $ Static 1) [#parley]
+    , mkAbility a 2 $ forced $ EnemyDefeated #after Anyone ByAny (be (asId a))
     ]
 
 hereticRunner
@@ -97,6 +98,7 @@ hereticRunner storyCard msg heretic = case msg of
     pure heretic
   Flip iid _ (isTarget attrs -> True) -> do
     let card = lookupCard storyCard (toCardId attrs)
+    cancelEnemyDefeatWithWindows attrs
     pushAll
       [ RemoveEnemy (toId attrs)
       , ReplaceCard (toCardId attrs) card

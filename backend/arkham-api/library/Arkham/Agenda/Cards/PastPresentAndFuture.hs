@@ -5,8 +5,8 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Deck qualified as Deck
-import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Log (getRecordSet)
+import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 
@@ -19,7 +19,9 @@ pastPresentAndFuture = agenda (2, A) PastPresentAndFuture Cards.pastPresentAndFu
 
 instance HasAbilities PastPresentAndFuture where
   getAbilities (PastPresentAndFuture x) =
-    [mkAbility x 1 $ forced $ MovedBy #after You Matcher.EncounterCardSource]
+    [ mkAbility x 1 $ forced $ MovedBy #after You Matcher.EncounterCardSource
+    | onSide A x
+    ]
 
 instance RunMessage PastPresentAndFuture where
   runMessage msg a@(PastPresentAndFuture attrs) = runQueueT $ case msg of
@@ -40,7 +42,7 @@ instance RunMessage PastPresentAndFuture where
       pure a
     RequestedEncounterCard (isSource attrs -> True) _ (Just card) -> do
       lead <- getLead
-      drawCard lead card
+      resolveRevelation lead card
       pure a
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       assignDamage iid attrs n

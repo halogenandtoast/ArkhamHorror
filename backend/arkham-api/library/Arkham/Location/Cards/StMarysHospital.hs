@@ -17,7 +17,7 @@ instance HasAbilities StMarysHospital where
   getAbilities (StMarysHospital x) =
     extendRevealed1 x
       $ playerLimit PerGame
-      $ restricted x 1 (Here <> exists (HealableInvestigator (toSource x) #damage You)) doubleActionAbility
+      $ restricted x 1 (Here <> exists (HealableInvestigator (toSource x) #damage You)) actionAbility
 
 instance RunMessage StMarysHospital where
   runMessage msg l@(StMarysHospital attrs) = runQueueT $ case msg of

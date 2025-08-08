@@ -1,11 +1,14 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Helpers.Location where
 
 import Arkham.Asset.Types (AssetAttrs, Field (..))
-import Arkham.Card.CardDef
+import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query hiding (matches)
+import Arkham.Direction
 import Arkham.Enemy.Types (EnemyAttrs, Field (..))
 import {-# SOURCE #-} Arkham.Helpers.Cost (getCanAffordCost)
 import Arkham.Helpers.GameValue (gameValueMatches)
@@ -16,7 +19,7 @@ import Arkham.Location.Types (Field (..))
 import Arkham.LocationSymbol
 import Arkham.Matcher hiding (LocationCard)
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message (Message (AddDirectConnection))
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Queue
 import Arkham.Placement
 import Arkham.Prelude
@@ -57,8 +60,11 @@ getConnectedMatcher l = do
   applyModifier current _ = pure current
   self = LocationWithId l
 
-isAt :: (HasGame m, Entity a, EntityId a ~ LocationId) => InvestigatorId -> a -> m Bool
-isAt iid (toId -> lid) = fieldMap InvestigatorLocation (elem lid) iid
+isAt :: (HasGame m, AsId a, IdOf a ~ LocationId) => InvestigatorId -> a -> m Bool
+isAt iid (asId -> lid) = fieldMap InvestigatorLocation (elem lid) iid
+
+whenAt :: (HasGame m, AsId a, IdOf a ~ LocationId) => InvestigatorId -> a -> m () -> m ()
+whenAt iid lid = whenM (isAt iid lid)
 
 placementLocation :: (HasCallStack, HasGame m) => Placement -> m (Maybe LocationId)
 placementLocation = \case
@@ -272,5 +278,24 @@ getCanLeaveCurrentLocation iid source = do
 connectBothWays
   :: (ReverseQueue m, AsId l1, AsId l2, IdOf l1 ~ LocationId, IdOf l2 ~ LocationId) => l1 -> l2 -> m ()
 connectBothWays l1 l2 = do
-  push $ AddDirectConnection (asId l1) (asId l2)
-  push $ AddDirectConnection (asId l2) (asId l1)
+  push $ Msg.AddDirectConnection (asId l1) (asId l2)
+  push $ Msg.AddDirectConnection (asId l2) (asId l1)
+
+placedLocationDirection
+  :: (ReverseQueue m, AsId l1, AsId l2, IdOf l1 ~ LocationId, IdOf l2 ~ LocationId)
+  => l1 -> Direction -> l2 -> m ()
+placedLocationDirection l1 dir l2 = push $ Msg.PlacedLocationDirection (asId l1) dir (asId l2)
+
+unrevealLocation :: (ReverseQueue m, AsId l, IdOf l ~ LocationId) => l -> m ()
+unrevealLocation l = push $ Msg.UnrevealLocation (asId l)
+
+locationMoved :: (ReverseQueue m, AsId l, IdOf l ~ LocationId) => l -> m ()
+locationMoved l = push $ Msg.LocationMoved (asId l)
+
+swapLocation
+  :: (ReverseQueue m, AsId location, IdOf location ~ LocationId, IsCard card) => location -> card -> m ()
+swapLocation location card = push $ Msg.ReplaceLocation (asId location) (toCard card) Msg.Swap
+
+replaceLocation
+  :: (ReverseQueue m, AsId location, IdOf location ~ LocationId, IsCard card) => location -> card -> m ()
+replaceLocation location card = push $ Msg.ReplaceLocation (asId location) (toCard card) Msg.DefaultReplace

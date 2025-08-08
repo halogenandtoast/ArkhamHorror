@@ -43,7 +43,7 @@ instance RunMessage Backpack where
     InitiatePlayCard iid card _ _ windows _ | controlledBy attrs iid && card `elem` attrs.cardsUnderneath -> do
       let remaining = deleteFirstMatch (== card) attrs.cardsUnderneath
       when (null remaining) $ toDiscardBy iid attrs attrs
-      cardResolutionModifier card attrs iid (AsIfInHand card)
+      costModifier attrs iid (AsIfInHandForPlay card.id)
       push $ PlayCard iid card Nothing NoPayment windows True
       pure $ Backpack $ attrs & cardsUnderneathL .~ remaining
     ResolvedCard _ c | c.id == attrs.cardId -> do

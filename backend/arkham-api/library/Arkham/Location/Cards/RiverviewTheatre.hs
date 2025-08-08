@@ -38,6 +38,6 @@ instance RunMessage RiverviewTheatre where
   runMessage msg l@(RiverviewTheatre attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
       cardResolutionModifier card (attrs.ability 1) iid (ResolveEffectsAgainMatch $ CardWithId card.id)
-      discoverAt NotInvestigate iid (attrs.ability 1) attrs 1
+      discoverAt NotInvestigate iid (attrs.ability 1) 1 attrs
       pure l
     _ -> RiverviewTheatre <$> mirageRunner Stories.riverviewTheatre mirageCards 2 msg attrs

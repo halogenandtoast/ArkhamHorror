@@ -11,6 +11,7 @@ import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Taboo
 import Arkham.Trait (Trait (Tactic, Trick))
 
 newtype ChuckFergus5 = ChuckFergus5 AssetAttrs
@@ -26,7 +27,14 @@ cardMatcher = CardWithOneOf [CardWithTrait Tactic, CardWithTrait Trick] <> CardW
 instance HasModifiersFor ChuckFergus5 where
   getModifiersFor (ChuckFergus5 a) = case a.controller of
     Nothing -> pure mempty
-    Just iid -> modifiedWhen_ a a.ready iid [CanBecomeFast cardMatcher, CanReduceCostOf cardMatcher 2]
+    Just iid ->
+      if tabooed TabooList24 a
+        then do
+          modifiedWhen_ a a.ready iid [CanReduceCostOf cardMatcher 2]
+          whenMatch iid TurnInvestigator do
+            modifiedWhen_ a a.ready iid [CanBecomeFast cardMatcher]
+        else do
+          modifiedWhen_ a a.ready iid [CanBecomeFast cardMatcher, CanReduceCostOf cardMatcher 2]
 
 instance HasAbilities ChuckFergus5 where
   getAbilities (ChuckFergus5 a) =

@@ -9,7 +9,7 @@ import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Matcher (AbilityMatcher (..), assetIs)
 import Arkham.Projection
 import Arkham.Token
-import TestImport.Lifted hiding (EnemyDamage)
+import TestImport.New hiding (EnemyDamage)
 
 spec :: Spec
 spec = describe "Jenny's Twin .45s" $ do
@@ -20,7 +20,7 @@ spec = describe "Jenny's Twin .45s" $ do
         { investigatorTokens = setTokens Resource 5 mempty
         , investigatorHand = [PlayerCard jennysTwin45s]
         }
-    pushAndRun $ playCard investigator (PlayerCard jennysTwin45s)
+    playCard investigator (PlayerCard jennysTwin45s)
     activeCost <- getActiveCost
     pushAndRunAll
       $ replicate 5
@@ -30,7 +30,7 @@ spec = describe "Jenny's Twin .45s" $ do
 
   it "gives +2 combat and does +1 damage" . gameTest $ \investigator -> do
     jennysTwin45s <- genPlayerCard Cards.jennysTwin45s
-    updateInvestigator investigator $ \attrs ->
+    updateInvestigator investigator \attrs ->
       attrs
         { investigatorTokens = setTokens Resource 1 mempty
         , investigatorHand = [PlayerCard jennysTwin45s]
@@ -40,14 +40,12 @@ spec = describe "Jenny's Twin .45s" $ do
     location <- testLocationWith id
     pushAndRunAll [SetChaosTokens [Zero], playAssetCard jennysTwin45s investigator]
     activeCost <- getActiveCost
-    pushAndRunAll
-      [ PayCost (activeCostId activeCost) (toId investigator) False (ResourceCost 1)
-      , spawnAt enemy location
-      , moveTo investigator location
-      ]
+    run $ PayCost (activeCostId activeCost) (toId investigator) False (ResourceCost 1)
+    spawnAt enemy location
+    moveTo investigator location
     [ability] <-
       getAbilitiesMatching (PerformableAbility [] <> AbilityOnCardControlledBy investigator.id)
-    pushAndRun $ UseAbility (toId investigator) ability []
+    run $ UseAbility (toId investigator) ability []
 
     chooseOnlyOption "choose enemy"
     chooseOnlyOption "start skill test"

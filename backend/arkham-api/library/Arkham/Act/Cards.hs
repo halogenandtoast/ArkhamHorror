@@ -368,7 +368,7 @@ awakening :: CardDef
 awakening = act "03046" "Awakening" 1 CurtainCall
 
 theStrangerACityAflame :: CardDef
-theStrangerACityAflame = act "03047a" "The Stranger" 2 CurtainCall
+theStrangerACityAflame = (act "03047a" "The Stranger" 2 CurtainCall) { cdOtherSide = Just "03047ab" }
 
 theStrangerThePathIsMine :: CardDef
 theStrangerThePathIsMine = act "03047b" "The Stranger" 2 CurtainCall
@@ -445,15 +445,18 @@ inLostCarcosa = act "03320" "In Lost Carcosa" 1 DimCarcosa
 
 searchForTheStrangerV1 :: CardDef
 searchForTheStrangerV1 =
-  act "03321a" "Search For the Stranger (v.I)" 2 DimCarcosa
+  (act "03321a" "Search For the Stranger (v.I)" 2 DimCarcosa)
+    { cdOtherSide = Just "03321b" }
 
 searchForTheStrangerV2 :: CardDef
 searchForTheStrangerV2 =
-  act "03322a" "Search For the Stranger (v.II)" 2 DimCarcosa
+  (act "03322a" "Search For the Stranger (v.II)" 2 DimCarcosa)
+    { cdOtherSide = Just "03322ab" }
 
 searchForTheStrangerV3 :: CardDef
 searchForTheStrangerV3 =
-  act "03323a" "Search For the Stranger (v.III)" 2 DimCarcosa
+  (act "03323a" "Search For the Stranger (v.III)" 2 DimCarcosa)
+    { cdOtherSide = Just "03323ab" }
 
 theKingInTatters :: CardDef
 theKingInTatters = act "03324" "The King in Tatters" 3 DimCarcosa

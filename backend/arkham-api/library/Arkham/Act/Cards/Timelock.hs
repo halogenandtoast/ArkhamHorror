@@ -1,22 +1,15 @@
-module Arkham.Act.Cards.Timelock (
-  Timelock (..),
-  timelock,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.Timelock (timelock) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
-import Arkham.Helpers.Investigator
+import Arkham.Act.Import.Lifted
+import Arkham.Helpers.Location
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (LocationCard, PlaceUnderneath)
-import Arkham.Movement
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Projection
-import Arkham.Resolution
-import Arkham.SkillType
 import Arkham.Trait (Trait (Shattered))
 
 newtype Timelock = Timelock ActAttrs
@@ -27,61 +20,41 @@ timelock :: ActCard Timelock
 timelock = act (4, A) Timelock Cards.timelock Nothing
 
 instance HasAbilities Timelock where
-  getAbilities (Timelock a)
-    | onSide A a =
-        [ skillTestAbility
-            $ restrictedAbility
-              a
-              1
-              ( InvestigatorExists
-                  $ You
-                  <> InvestigatorAt
-                    (LocationWithoutClues <> LocationWithTrait Shattered)
-              )
-            $ ActionAbility []
-            $ ActionCost 1
-        , restrictedAbility
-            a
-            2
-            ( AssetExists
-                $ AssetWithTitle "Relic of Ages"
-                <> AssetWithCardsUnderneath
-                  (HasCard $ cardIs Locations.pnakotus)
-            )
-            $ Objective
-            $ ForcedAbility AnyWindow
-        ]
-  getAbilities _ = []
+  getAbilities = actAbilities \a ->
+    [ skillTestAbility
+        $ restricted
+          a
+          1
+          (youExist $ at_ (LocationWithoutClues <> LocationWithTrait Shattered))
+          actionAbility
+    , restricted
+        a
+        2
+        (exists $ "Relic of Ages" <> AssetWithCardsUnderneath (HasCard $ cardIs Locations.pnakotus))
+        $ Objective
+        $ forced AnyWindow
+    ]
 
 instance RunMessage Timelock where
-  runMessage msg a@(Timelock attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      player <- getPlayer iid
+  runMessage msg a@(Timelock attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push
-        $ chooseOne
-          player
-          [ SkillLabel skillType [beginSkillTest sid iid (attrs.ability 1) attrs skillType (Fixed 3)]
-          | skillType <- [SkillWillpower, SkillIntellect]
-          ]
+      chooseBeginSkillTest sid iid (attrs.ability 1) attrs [#willpower, #intellect] (Fixed 3)
       pure a
-    PassedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        lid <- getJustLocation iid
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      aPocketInTime <- selectJust $ locationIs Locations.aPocketInTime
+      selectEach (colocatedWith iid) \iid' -> moveTo attrs iid' aPocketInTime
+      withLocationOf iid \lid -> do
         card <- field LocationCard lid
-        iids <- select $ colocatedWith iid
-        enemyIds <- select $ UnengagedEnemy <> enemyAt lid
-        aPocketInTime <- selectJust $ locationIs Locations.aPocketInTime
         relic <- selectJust $ AssetWithTitle "Relic of Ages"
-        pushAll
-          $ [Move $ move (toSource attrs) iid' aPocketInTime | iid' <- iids]
-          <> [EnemyMove eid lid | eid <- enemyIds]
-          <> [RemoveLocation lid, PlaceUnderneath (AssetTarget relic) [card]]
-        pure a
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+        selectEach (UnengagedEnemy <> enemyAt lid) \eid -> enemyMoveTo attrs eid aPocketInTime
+        removeLocation lid
+        placeUnderneath relic [card]
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      push $ ScenarioResolution $ Resolution 3
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      advancedWithOther attrs
       pure a
-    _ -> Timelock <$> runMessage msg attrs
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      push R3
+      pure a
+    _ -> Timelock <$> liftRunMessage msg attrs

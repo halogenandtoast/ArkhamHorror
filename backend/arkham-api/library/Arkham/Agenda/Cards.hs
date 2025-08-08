@@ -383,7 +383,7 @@ theTideRises :: CardDef
 theTideRises = agenda "03275" "The Tide Rises" 1 BlackStarsRise
 
 letTheStormRageTheFloodBelow :: CardDef
-letTheStormRageTheFloodBelow = agenda "03276a" "Let The Storm Rage" 2 BlackStarsRise
+letTheStormRageTheFloodBelow = (agenda "03276a" "Let The Storm Rage" 2 BlackStarsRise) {cdOtherSide = Just "03276ab"}
 
 letTheStormRageTheVortexAbove :: CardDef
 letTheStormRageTheVortexAbove = agenda "03276b" "Let The Storm Rage" 2 BlackStarsRise
@@ -395,7 +395,7 @@ theRitualBeginsBlackStarsRise :: CardDef
 theRitualBeginsBlackStarsRise = agenda "03278" "The Ritual Begins" 1 BlackStarsRise
 
 theEntityAboveTheFloodBelow :: CardDef
-theEntityAboveTheFloodBelow = agenda "03279a" "The Entity Above" 2 BlackStarsRise
+theEntityAboveTheFloodBelow = (agenda "03279a" "The Entity Above" 2 BlackStarsRise) {cdOtherSide = Just "03279ab"}
 
 theEntityAboveTheVortexAbove :: CardDef
 theEntityAboveTheVortexAbove = agenda "03279b" "The Entity Above" 2 BlackStarsRise

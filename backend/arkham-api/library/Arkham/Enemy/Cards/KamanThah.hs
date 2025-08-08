@@ -1,12 +1,13 @@
 module Arkham.Enemy.Cards.KamanThah (kamanThah) where
 
+import Arkham.Ability
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Helpers.GameValue
+import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Story
 
 newtype KamanThah = KamanThah EnemyAttrs
@@ -18,35 +19,35 @@ kamanThah = enemy KamanThah Cards.kamanThah (2, Static 3, 2) (1, 0)
 
 instance HasAbilities KamanThah where
   getAbilities (KamanThah x) =
-    withBaseAbilities
+    extend
       x
       [ skillTestAbility $ mkAbility x 1 parleyAction_
-      , mkAbility x 2 $ forced $ EnemyDefeated #after You ByAny $ EnemyWithId $ toId x
+      , mkAbility x 2 $ forced $ EnemyDefeated #after You ByAny (be x)
       ]
 
 instance RunMessage KamanThah where
-  runMessage msg e@(KamanThah attrs) = case msg of
+  runMessage msg e@(KamanThah attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- perPlayer 1
-      player <- getPlayer iid
       sid <- getRandom
-      push
-        $ chooseOne
-          player
-          [ SkillLabel
-              sType
-              [parley sid iid (toAbilitySource attrs 1) iid sType (Fixed $ 2 + n)]
-          | sType <- [#willpower, #intellect]
-          ]
+      chooseOneM iid do
+        for_ [#willpower, #intellect] \kind ->
+          skillLabeled kind
+            $ parley sid iid (attrs.ability 1) iid kind (Fixed $ 2 + n)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ Flip iid (toAbilitySource attrs 1) (toTarget attrs)
+      flipOverBy iid (attrs.ability 1) attrs
+      pure e
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      investigators <- select (InvestigatorAt $ locationWithEnemy attrs)
+      chooseOneAtATimeM iid do
+        targets investigators $ initiateEnemyAttack attrs (attrs.ability 1)
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ Flip iid (toAbilitySource attrs 2) (toTarget attrs)
+      flipOverBy iid (attrs.ability 2) attrs
       pure e
     Flip iid _ (isTarget attrs -> True) -> do
       theTrialOfKamanThah <- genCard Story.theTrialOfKamanThah
       pushAll [RemoveEnemy (toId attrs), ReadStory iid theTrialOfKamanThah ResolveIt Nothing]
       pure e
-    _ -> KamanThah <$> runMessage msg attrs
+    _ -> KamanThah <$> liftRunMessage msg attrs

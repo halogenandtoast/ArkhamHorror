@@ -4,7 +4,9 @@ import { imgsrc, toCamelCase } from '@/arkham/helpers'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import Key from '@/arkham/components/Key.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
+import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 
+const store = useDbCardStore()
 const cardOverlay = ref<HTMLElement | null>(null)
 const hoveredElement = ref<HTMLElement | null>(null)
 let canDisablePress = false
@@ -358,44 +360,12 @@ const getImage = (el: HTMLElement): string | null => {
   return null
 }
 
-interface ArkhamDBCard {
-  code: string
-  name: string
-  xp?: number
-  subname?: string
-  traits?: string
-  text?: string
-  back_name?: string
-  back_traits?: string
-  back_text?: string
-  customization_text?: string
-  real_name: string
-  real_traits: string
-  real_text: string
-}
-
-const dbCards = ref<ArkhamDBCard[]>([])
-
-const updateDBCards = async () => {
-  const language = localStorage.getItem('language') || 'en'
-  
-  if (language !== 'en') {
-    fetch(`/cards_${language}.json`.replace(/^\//, '')).then(async (cardResponse) => {
-      dbCards.value = await cardResponse.json()
-    })
-  }
-}
-
-await updateDBCards()
-
 const dbCardName = ref<string>("")
 const dbCardTraits = ref<string>("")
 const dbCardText = ref<string>("")
 const dbCardCustomizationText = ref<string>("")
 
 const dbCardData = computed(() : boolean => {
-  if (!dbCards.value) return false
-  
   if (card.value) {
     const pattern = /(\d+b?)(_.*)?\.avif/
     const match = card.value.match(pattern)
@@ -406,9 +376,7 @@ const dbCardData = computed(() : boolean => {
       const language = localStorage.getItem('language') || 'en'
       
       if (imgsrc(`cards/${match[0]}`).search(language) < 0) {
-        const dbCard = dbCards.value.find(
-          (c: ArkhamDBCard) => c.code == code || (`${c.code}b` == code)
-        )
+        const dbCard: ArkhamDBCard = store.getDbCard(code)
         
         if (dbCard) {
           const needBack = (dbCard.code !== code)
@@ -441,9 +409,10 @@ const getCardName = (dbCard: ArkhamDBCard, needBack: boolean): string | null => 
   if (dbCard.name == dbCard.real_name) return null
   
   const cardName = ref<string>("")
-  if (needBack && dbCard.back_name) cardName.value = dbCard.back_name
-  else cardName.value = dbCard.name
+  if (needBack && dbCard.back_name) cardName.value = dbCard.back_name || null
+  else cardName.value = dbCard.name || null
   
+  if (!cardName.value) return null
   if (!needBack && dbCard.subname) cardName.value = `${cardName.value}: ${dbCard.subname}`
   if ((dbCard.xp || 0) > 0) cardName.value = `${cardName.value} (${dbCard.xp})`
   return cardName.value
@@ -456,22 +425,22 @@ const getCardTraits = (dbCard: ArkhamDBCard, needBack: boolean): string | null =
   return dbCard.traits || null
 }
 
-const getCardText = (dbCard: ArkhamDBCard, needBack: boolean) => {
+const getCardText = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
   if (dbCard.text == dbCard.real_text) return null
   
   const targetText = ref<string>()
-  if (needBack && dbCard.back_text) targetText.value = dbCard.back_text
-  else targetText.value = dbCard.text || ""
+  if (needBack) targetText.value = dbCard.back_text || null
+  else targetText.value = dbCard.text || null
   
-  return replaceText(targetText.value)
+  return targetText.value ? replaceText(targetText.value) : null
 }
 
-const getCardCustomizationText = (dbCard: ArkhamDBCard) => {
+const getCardCustomizationText = (dbCard: ArkhamDBCard): string | null => {
   if (dbCard.text == dbCard.real_text) return null
   return replaceText(dbCard.customization_text || "")
 }
 
-const replaceText = (text: string) => {
+const replaceText = (text: string): string => {
   if (!text) return ""
   
   return text.
@@ -520,11 +489,11 @@ const replaceText = (text: string) => {
       />
       <div v-for="entry in crossedOff" :key="entry" class="crossed-off" :class="{ [toCamelCase(entry)]: true }"></div>
     </div>
-    <div class="card-data" v-if="dbCardData && !sideways">
+    <div class="card-data" v-if="dbCardData" :class="{ reversed, Reversed: upsideDown }">
       <p v-if="dbCardName" style="font-size: 1.0em;"><b>{{ dbCardName }}</b></p>
       <p v-if="dbCardTraits"><span style="font-style: italic;">{{ dbCardTraits }}</span></p>
       <p v-if="dbCardText"><br></p>
-      <p v-if="dbCardText" v-html="dbCardText" style="font-size: 0.875em;"></p>
+      <p v-if="dbCardText" v-html="dbCardText" style="font-size: 0.85em;"></p>
     </div>
     <span class="swarm" v-if="swarm"><BugAntIcon aria-hidden="true" /></span>
     <span class="fight" v-if="fight">{{ fight }}</span>
@@ -561,7 +530,8 @@ const replaceText = (text: string) => {
       </div>
     </div>
     <div class="card-data" v-if="dbCardCustomizationText">
-      <p v-if="dbCardCustomizationText" v-html="dbCardCustomizationText" style="font-size: 0.875em;"></p>
+      <p v-if="dbCardName"><b>{{ dbCardName }}</b></p>
+      <p v-if="dbCardCustomizationText" v-html="dbCardCustomizationText" style="font-size: 0.85em;"></p>
     </div>
   </div>
 </template>
@@ -639,6 +609,7 @@ const replaceText = (text: string) => {
   scrollbar-width: none; /* Firefox */
   scroll-behavior: smooth;
   background-color: rgba(185, 185, 185, 0.85);
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.75);
 }
 
 .card-data::-webkit-scrollbar {
@@ -646,6 +617,7 @@ const replaceText = (text: string) => {
 }
 
 .card-overlay {
+  pointer-events: none;
   position: absolute;
   z-index: 1000;
   display: flex;
@@ -2239,7 +2211,7 @@ const replaceText = (text: string) => {
   position: absolute;
   top: 0;
   left: 2px;
-  pointer-events: auto;
+  pointer-events: none;
   animation: fadeIn 0.5s;
 }
 

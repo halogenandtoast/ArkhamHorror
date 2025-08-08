@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Source where
 
 import Arkham.Card
@@ -5,9 +6,9 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Field.Import
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref
-import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Matcher qualified as Matcher
 import Arkham.Prelude
@@ -73,8 +74,7 @@ getSourceController = \case
   InvestigatorSource iid -> pure $ Just iid
   _ -> pure Nothing
 
-sourceMatches
-  :: (HasCallStack, HasGame m) => Source -> Matcher.SourceMatcher -> m Bool
+sourceMatches :: (HasCallStack, HasGame m) => Source -> Matcher.SourceMatcher -> m Bool
 sourceMatches s = \case
   Matcher.SourceIsCancelable sm -> case s of
     CardCostSource _ -> pure False
@@ -307,6 +307,8 @@ sourceMatches s = \case
         EnemySource _ -> True
         LocationSource _ -> True
         TreacherySource _ -> True
+        ChaosTokenSource _ -> True
+        ChaosTokenEffectSource _ -> True
         _ -> False
      in
       pure $ check s

@@ -32,8 +32,8 @@ import Data.UUID (nil)
 playEvent :: Investigator -> Event -> Message
 playEvent i e = Run [InvestigatorPlayEvent (toId i) (toId e) Nothing [] FromHand, FinishedEvent (toId e)]
 
-moveTo :: Investigator -> Location -> Message
-moveTo i l = MoveTo $ move (toSource i) (toId i) (toId l)
+moveTo :: MonadRandom m => Investigator -> Location -> m Message
+moveTo i l = MoveTo <$> move (toSource i) (toId i) (toId l)
 
 moveFrom :: Investigator -> Location -> Message
 moveFrom i l = MoveFrom (toSource i) (toId i) (toId l)

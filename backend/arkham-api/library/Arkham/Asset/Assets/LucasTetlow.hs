@@ -44,7 +44,7 @@ instance RunMessage LucasTetlow where
             labeled' "doNotPlay" nothing
         when (Tool `member` traits) $ do
           locations <- select $ ConnectedTo (locationWithInvestigator iid) <> LocationWithAnyClues
-          chooseTargetM iid locations \lid -> discoverAt NotInvestigate iid (attrs.ability 1) lid 1
+          chooseTargetM iid locations $ discoverAt NotInvestigate iid (attrs.ability 1) 1
       pure a
     SearchFound iid (isTarget attrs -> True) _ _ -> do
       withI18n $ prompt_ iid "noCardsFound"

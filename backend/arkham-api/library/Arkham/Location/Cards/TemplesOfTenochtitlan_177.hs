@@ -38,6 +38,6 @@ instance RunMessage TemplesOfTenochtitlan_177 where
       chooseOrRunOneM lead $ targets enemies \enemy -> placeDoom (attrs.ability 1) enemy 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      discoverAt NotInvestigate iid (attrs.ability 2) attrs 2
+      discoverAt NotInvestigate iid (attrs.ability 2) 2 attrs
       pure l
     _ -> TemplesOfTenochtitlan_177 <$> liftRunMessage msg attrs

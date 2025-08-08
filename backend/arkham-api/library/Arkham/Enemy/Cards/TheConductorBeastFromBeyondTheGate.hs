@@ -43,7 +43,7 @@ instance RunMessage TheConductorBeastFromBeyondTheGate where
       pure $ TheConductorBeastFromBeyondTheGate $ attrs & tokensL .~ mempty
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       mLocation <- selectOne $ LocationInDirection RightOf (locationWithEnemy attrs)
-      for_ mLocation (enemyMoveTo attrs)
+      for_ mLocation (enemyMoveTo (attrs.ability 2) attrs)
       pure e
     UseThisAbility iid (isSource attrs -> True) 3 -> do
       push $ InvestigatorDrawEnemy iid attrs.id

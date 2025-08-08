@@ -18,9 +18,9 @@ instance RunMessage TheStarsAreRight where
       push $ RemoveEvent attrs.id
       chooseOrRunOneM iid do
         targets investigators \investigator -> do
-          drawCards investigator (toSource attrs) 1
-          gainResources investigator (toSource attrs) 1
+          drawCards investigator attrs 1
+          gainResources investigator attrs 1
           takeActionAsIfTurn investigator attrs
       pure e
-    InvestigatorPlayEvent _ eid _ _ _ | eid == toId attrs -> error "Unplayable"
+    PlayThisEvent _ (is attrs -> True) -> error "Unplayable"
     _ -> TheStarsAreRight <$> liftRunMessage msg attrs

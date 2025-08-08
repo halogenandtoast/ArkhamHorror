@@ -51,7 +51,7 @@ instance RunMessage LanternChamber where
           . nubOrdBy (compare `on` toTitle)
           <$> findAllCards (`cardMatch` oneOf [cardIs Assets.jewelOfSarnath, #enemy, #treachery])
       chooseOneDropDown iid [(card.title, ForTarget (toTarget card) msg) | card <- cards]
-      discoverAt NotInvestigate iid (attrs.ability 1) attrs 1
+      discoverAt NotInvestigate iid (attrs.ability 1) 1 attrs
       pure l
     ForTarget (CardIdTarget cid) (UseThisAbility iid (isSource attrs -> True) 1) -> do
       card <- getCard cid

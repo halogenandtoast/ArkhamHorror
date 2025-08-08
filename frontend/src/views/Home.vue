@@ -2,7 +2,7 @@
 import { ref, computed, Ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter, useRoute } from 'vue-router';
-import { debugGame, deleteGame, fetchGames } from '@/arkham/api';
+import { debugGame, deleteGame, fetchGames, fetchNotifications } from '@/arkham/api';
 import type { GameDetails } from '@/arkham/types/Game';
 import type { User } from '@/types';
 import GameRow from '@/arkham/components/GameRow.vue';
@@ -13,11 +13,16 @@ const router = useRouter()
 const store = useUserStore()
 const currentUser = computed<User | null>(() => store.getCurrentUser)
 const games: Ref<GameDetails[]> = ref([])
+const notifications: Ref<Notification[]> = ref([])
+
+const dismissedNotifications = localStorage.getItem('dismissedNotifications') ?? []
 
 const activeGames = computed(() => games.value.filter(g => g.gameState.tag !== 'IsOver'))
 const finishedGames = computed(() => games.value.filter(g => g.gameState.tag === 'IsOver'))
 
 fetchGames().then((result) => games.value = result.filter((g) => g.tag === 'game') as GameDetails[])
+
+fetchNotifications().then((result) => notifications.value = result.data.filter((n: number) => !dismissedNotifications.includes(n.id)))
 
 async function deleteGameEvent(game: GameDetails) {
   deleteGame(game.id).then(() => {
@@ -46,11 +51,21 @@ const toggleNewGame = () => {
     router.push({ path: "/" })
   }
 }
+
+const dismissNotification = (notification) => {
+  localStorage.setItem('dismissedNotifications', JSON.stringify([notification.id, ...dismissedNotifications]))
+  notifications.value = notifications.value.filter(n => n.id !== notification.id)
+}
 </script>
 
 <template>
   <div class="page-container">
     <div class="home page-content">
+      <div class="notification" v-for="notification in notifications" :key="notification.id">
+        <p v-html="notification.body"></p>
+        <a @click.prevent="dismissNotification(notification)" href="#">Dismiss</a>
+      </div>
+
       <div v-if="currentUser" class="new-game">
         <transition name="slide">
           <NewGame v-if="newGame">
@@ -213,5 +228,31 @@ header {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.notification {
+  --text: #816F3A;
+  --border: var(--text);
+  --background: #FFF8E6;
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 2px solid var(--border);
+  color: var(--text);
+  margin-block: 10px;
+  font-size: 1.2em;
+  border-radius: 5px;
+  background-color: var(--background);
+  gap: 5px;
+
+  > p {
+    flex: 1;
+  }
+
+  :deep(a) {
+    color: var(--seeker-dark);
+    text-decoration: underline;
+  }
 }
 </style>

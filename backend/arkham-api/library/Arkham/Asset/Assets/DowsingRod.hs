@@ -7,8 +7,8 @@ import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Investigate
 import Arkham.Matcher hiding (DiscoveringLastClue)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Modifier
-import Arkham.Movement
 import Arkham.Window (Window (..), WindowType (..))
 
 newtype DowsingRod = DowsingRod AssetAttrs
@@ -53,7 +53,7 @@ instance RunMessage DowsingRod where
       push $ Exhaust (toTarget attrs)
       placeDoom (attrs.ability 1) attrs 1
       accessibleLocationIds <- getAccessibleLocations iid attrs
-      chooseOne iid $ targetLabels accessibleLocationIds (only . Move . move attrs iid)
+      chooseTargetM iid accessibleLocationIds (moveTo (attrs.ability 1) iid)
       pure a
     DoStep 3 (UseThisAbility _ (isSource attrs -> True) 1) -> do
       pure $ overAttrs (setMetaKey "option2" True) a

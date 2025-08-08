@@ -5,7 +5,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Query (getLead, getSetAsideCardsMatching, getSetAsideCard)
+import Arkham.Helpers.Query (getLead, getSetAsideCard, getSetAsideCardsMatching)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -62,8 +62,8 @@ instance RunMessage ThatWhichHasNoName where
       connectLocations "titanicRamp3" "titanicRamp4"
       connectLocations "titanicRamp4" "hiddenTunnel"
       firstRamp <- selectJust $ LocationWithLabel "titanicRamp1"
-      eachInvestigator (\iid -> moveTo attrs iid firstRamp)
-      selectEach (enemyIs Enemies.theNamelessMadness) (`enemyMoveTo` firstRamp)
+      eachInvestigator \iid -> moveTo attrs iid firstRamp
+      selectEach (enemyIs Enemies.theNamelessMadness) \e -> enemyMoveTo attrs e firstRamp
       pure a
     UseCardAbility iid (isSource attrs -> True) 1 (getBatchId -> batchId) _ -> do
       push $ IgnoreBatch batchId

@@ -1378,6 +1378,7 @@ getScenariosMatching matcher = do
 
 abilityMatches :: HasGame m => Ability -> AbilityMatcher -> m Bool
 abilityMatches a@Ability {..} = \case
+  AbilityWithinLimit iid -> getCanAffordUseWith id CanNotIgnoreAbilityLimit iid a []
   PerformableAbility modifiers' -> do
     withDepthGuard 3 False $ do
       let ab = applyAbilityModifiers a modifiers'
@@ -1466,6 +1467,7 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
   go :: HasGame m => [Ability] -> AbilityMatcher -> m [Ability]
   go [] = const (pure [])
   go as = \case
+    AbilityWithinLimit iid -> filterM (\a -> getCanAffordUseWith id CanNotIgnoreAbilityLimit iid a []) as
     PerformableAbility modifiers' -> do
       flip filterM as \a -> withDepthGuard 3 False do
         let ab = applyAbilityModifiers a modifiers'
@@ -3919,6 +3921,7 @@ instance Projection Investigator where
     i <- getInvestigator iid
     let attrs@InvestigatorAttrs {..} = toAttrs i
     case f of
+      InvestigatorMovement -> pure investigatorMovement
       InvestigatorLog -> pure investigatorLog
       InvestigatorMeta -> pure investigatorMeta
       InvestigatorCardCode -> pure investigatorCardCode

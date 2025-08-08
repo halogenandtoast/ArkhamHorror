@@ -1032,6 +1032,7 @@ theOrganistHopelessIDefiedHim =
       { cdCardTraits = setFromList [Humanoid, Avatar, Elite]
       , cdKeywords = singleton Keyword.Hunter
       , cdDoubleSided = True
+      , cdOtherSide = Just "03221b"
       }
 
 theOrganistDrapedInMystery :: CardDef
@@ -1041,6 +1042,7 @@ theOrganistDrapedInMystery =
       { cdCardTraits = setFromList [Humanoid, Avatar, Elite]
       , cdKeywords = singleton Keyword.Aloof
       , cdDoubleSided = True
+      , cdOtherSide = Just "03221a"
       }
 
 stealthyByakhee :: CardDef
@@ -1511,21 +1513,23 @@ malevolentSpirit =
 nathanWickMasterOfInitiation :: CardDef
 nathanWickMasterOfInitiation =
   unique
-    $ (enemy "05217a" ("Nathan Wick" <:> "Master of Initiation") TheWagesOfSin 1)
+    $ (enemy "05217a" ("Nathan Wick" <:> "Master of Initiation") ForTheGreaterGood 1)
       { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight, Elite]
       , cdKeywords = singleton Keyword.Retaliate
       , cdDoubleSided = True
       , cdVictoryPoints = Just 1
+      , cdOtherSide = Just "05217b"
       }
 
 nathanWickMasterOfIndoctrination :: CardDef
 nathanWickMasterOfIndoctrination =
   unique
-    $ (enemy "05217b" ("Nathan Wick" <:> "Master of Indoctrination") TheWagesOfSin 1)
+    $ (enemy "05217b" ("Nathan Wick" <:> "Master of Indoctrination") ForTheGreaterGood 1)
       { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight, Elite]
       , cdKeywords = singleton Keyword.Alert
       , cdDoubleSided = True
       , cdVictoryPoints = Just 1
+      , cdOtherSide = Just "05217a"
       }
 
 lodgeJailor :: CardDef
@@ -2024,7 +2028,7 @@ atlachNacha =
       , cdKeywords = singleton Keyword.Massive
       , cdVictoryPoints = Just 1
       , cdDoubleSided = True
-      , cdAlternateCardCodes = ["06346b"]
+      , cdOtherSide = Just "06346b"
       }
 
 legsOfAtlachNacha_347 :: CardDef
@@ -2194,6 +2198,7 @@ wingedOneFogOverInnsmouth =
   (enemy "07094" "Winged One" FogOverInnsmouth 1)
     { cdCardTraits = setFromList [Creature, Monster]
     , cdKeywords = singleton Keyword.Hunter
+    , cdVictoryPoints = Just 1
     }
 
 innsmouthTroublemaker :: CardDef
@@ -3115,6 +3120,8 @@ theBloodlessMan =
               [ Keyword.Aloof
               , Keyword.Patrol (LocationWithAsset $ AssetWithTrait Guest)
               ]
+        , cdDoubleSided = True
+        , cdOtherSide = Just "71045b"
         }
 
 theBloodlessManUnleashed :: CardDef

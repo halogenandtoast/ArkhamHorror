@@ -1,14 +1,13 @@
-module Arkham.Event.Events.OnTheTrail3 (onTheTrail3, OnTheTrail3 (..)) where
+module Arkham.Event.Events.OnTheTrail3 (onTheTrail3) where
 
 import Arkham.Discover
-import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator (getCanDiscoverClues)
-import Arkham.Helpers.Message (handleTargetChoice)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher hiding (DiscoverClues)
+import Arkham.Message.Lifted.Move
 import Arkham.Movement
-import Arkham.Projection
 
 newtype OnTheTrail3 = OnTheTrail3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -21,14 +20,12 @@ instance RunMessage OnTheTrail3 where
   runMessage msg e@(OnTheTrail3 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       enemies <- select $ EnemyAt $ not_ $ locationWithInvestigator iid
-      chooseOne
-        iid
-        [targetLabel enemy [handleTargetChoice iid attrs enemy, DoStep 2 msg] | enemy <- enemies]
+      chooseTargetM iid enemies $ handleTarget iid attrs
+      doStep 2 msg
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
-      forField EnemyLocation eid \lid -> do
-        let doMove = (move attrs iid lid) {moveMeans = Towards}
-        push $ Move $ doMove {moveAfter = [Move doMove]}
+      withLocationOf eid \lid -> do
+        moveToEdit attrs iid lid \m -> m {moveMeans = TowardsN 2}
       pure e
     MoveTo movement | moveSource movement == toSource attrs -> do
       case moveDestination movement of
@@ -36,6 +33,6 @@ instance RunMessage OnTheTrail3 where
         _ -> pure e
     DoStep 2 (PlayThisEvent iid (is attrs -> True)) -> do
       for_ (toResultDefault [] attrs.meta) \lid -> do
-        pushWhenM (getCanDiscoverClues NotInvestigate iid lid) $ DiscoverClues iid $ discover lid attrs 1
+        whenM (getCanDiscoverClues NotInvestigate iid lid) $ discoverAt NotInvestigate iid attrs 1 lid
       pure e
     _ -> OnTheTrail3 <$> liftRunMessage msg attrs

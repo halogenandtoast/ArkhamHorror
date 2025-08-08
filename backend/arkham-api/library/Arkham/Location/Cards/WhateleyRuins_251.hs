@@ -35,6 +35,6 @@ instance RunMessage WhateleyRuins_251 where
       abominations <- getBroodOfYogSothoth
       chooseTargetM iid abominations \abomination -> do
         destinations <- getEnemyAccessibleLocations abomination
-        chooseTargetM iid destinations $ enemyMoveTo abomination
+        chooseTargetM iid destinations $ enemyMoveTo (attrs.ability 1) abomination
       pure l
     _ -> WhateleyRuins_251 <$> liftRunMessage msg attrs

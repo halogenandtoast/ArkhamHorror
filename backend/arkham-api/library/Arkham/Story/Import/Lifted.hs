@@ -24,9 +24,11 @@ import Arkham.Story.Runner as X (
   StoryMode (..),
   getAlreadyResolved,
   metaL,
+  placementL,
   push,
   pushAll,
   pushWhen,
+  removeAfterResolutionL,
   story,
  )
 

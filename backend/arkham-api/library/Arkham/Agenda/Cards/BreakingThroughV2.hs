@@ -33,8 +33,8 @@ instance RunMessage BreakingThroughV2 where
           (getLocationByName "The Edge of the Universe")
       yog <- selectJust $ enemyIs Enemies.yogSothoth
       selectOne (locationIs Locations.realmsBeyondAllInOne) >>= \case
-        Nothing -> enemyMoveTo yog yogMoveTo
-        Just loc -> temporaryModifier loc attrs Blank $ enemyMoveTo yog yogMoveTo
+        Nothing -> enemyMoveTo attrs yog yogMoveTo
+        Just loc -> temporaryModifier loc attrs Blank $ enemyMoveTo attrs yog yogMoveTo
       selectOne (locationIs Locations.realmsBeyondAllInOne) >>= traverse_ removeLocation
       advanceAgendaDeck attrs
       pure a

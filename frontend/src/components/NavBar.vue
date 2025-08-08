@@ -23,6 +23,7 @@ async function logout() {
       <router-link v-if="currentUser" to="/decks">{{$t('myDecks')}}</router-link>
       <router-link v-if="currentUser" to="/cards">{{$t('cards')}}</router-link>
       <router-link v-if="currentUser" to="/about">{{$t('about')}}</router-link>
+      <router-link to="/about?support">{{$t('support')}}</router-link>
     </span>
 
     <OnClickOutside @trigger="expanded = false">
@@ -127,5 +128,10 @@ input[type=checkbox]:checked ~ .user-links {
 label {
   display: flex;
   align-items: center;
+}
+
+#nav .main-links a.support {
+  color: white;
+  text-decoration: underline;
 }
 </style>

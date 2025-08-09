@@ -74,9 +74,9 @@ placementLocation = \case
   InPlayArea iid -> field InvestigatorLocation iid
   InThreatArea iid -> field InvestigatorLocation iid
   AttachedToInvestigator iid -> field InvestigatorLocation iid
-  AttachedToEnemy eid -> join <$> fieldMay EnemyLocation eid
-  AttachedToTreachery tid -> field TreacheryLocation tid
-  AttachedToAsset aid' _ -> field AssetLocation aid'
+  AttachedToEnemy eid -> fieldMayJoin EnemyLocation eid
+  AttachedToTreachery tid -> fieldMayJoin TreacheryLocation tid
+  AttachedToAsset aid' _ -> fieldMayJoin AssetLocation aid'
   InVehicle aid' -> field AssetLocation aid'
   AttachedToAct _ -> pure Nothing
   AttachedToAgenda _ -> pure Nothing

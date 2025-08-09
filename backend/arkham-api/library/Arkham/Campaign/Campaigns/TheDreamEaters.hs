@@ -13,7 +13,7 @@ import Arkham.Classes.HasGame
 import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
-import Arkham.Helpers.Log hiding (getHasRecord)
+import Arkham.Helpers.Log hiding (getHasRecord, whenHasRecord)
 import Arkham.Helpers.Log qualified as Lift
 import Arkham.Helpers.Query
 import Arkham.I18n
@@ -101,6 +101,9 @@ getHasRecord part key = do
         else case meta.otherCampaignAttrs of
           Just otherAttrs -> pure $ hasRecord key otherAttrs.log
           Nothing -> error "no other campaign attrs"
+
+whenHasRecord :: (IsCampaignLogKey k, HasGame m, HasCallStack) => CampaignPart -> k -> m () -> m ()
+whenHasRecord part key action = whenM (getHasRecord part key) action
 
 instance IsCampaign TheDreamEaters where
   nextStep a@(TheDreamEaters attrs) =
@@ -419,11 +422,11 @@ instance RunMessage TheDreamEaters where
           story youAreOnYourOwn
           record TheWebOfDreams YouAreOnYourOwn
 
-        whenHasRecord TheBlackCatSharedKnowledgeOfTheDreamlands do
+        whenHasRecord TheDreamQuest TheBlackCatSharedKnowledgeOfTheDreamlands do
           story theBlackCatSharedKnowledgeOfTheDreamlands
           recordInBoth TheBlackCatHasAHunch
 
-        whenHasRecord TheBlackCatDeliveredNewsOfYourPlight do
+        whenHasRecord TheDreamQuest TheBlackCatDeliveredNewsOfYourPlight do
           story theBlackCatDeliveredNewsOfYourPlight
           pushAll
             [ InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatIsAtYourSide)
@@ -431,7 +434,7 @@ instance RunMessage TheDreamEaters where
             , InTheWebOfDreams (AddChaosToken ElderThing)
             ]
 
-        whenHasRecord TheBlackCatWarnedTheOthers do
+        whenHasRecord TheDreamQuest TheBlackCatWarnedTheOthers do
           story theBlackCatWarnedTheOthers
           pushAll
             [ InTheWebOfDreams (Record $ toCampaignLogKey TheBlackCatIsAtYourSide)
@@ -439,7 +442,7 @@ instance RunMessage TheDreamEaters where
             , InTheDreamQuest (AddChaosToken Tablet)
             ]
 
-        whenHasRecord OkayFineHaveItYourWayThen do
+        whenHasRecord TheDreamQuest OkayFineHaveItYourWayThen do
           story okayFineHaveItYourWayThen
           recordInBoth YouAskedForIt
         push next

@@ -65,7 +65,6 @@ const otherLogTitle = logTitle ?
 
 const logTitles = logTitle && otherLogTitle ? [logTitle, otherLogTitle].sort() : null
 
-
 const campaignLog = ref(mainLog)
 
 const recorded = computed(() => campaignLog.value.recorded.filter((r) => {
@@ -261,8 +260,9 @@ function getCardName(s: string) {
       </div>
       <div class="log-categories">
         <div v-if="logTitles" class="options">
-          <template v-for="title in logTitles" :key="title">
+          <div v-for="title in logTitles" :key="title" class="log-title-option" :class="{ checked: title === logTitle }">
             <input
+              name="log"
               type="radio"
               v-model="campaignLog"
               :value="title === logTitle ? mainLog : otherLog"
@@ -270,7 +270,7 @@ function getCardName(s: string) {
               :id="`log${title}`"
             />
             <label :for="`log${title}`">{{title}}</label>
-          </template>
+          </div>
         </div>
         <div v-if="hasSupplies" class="supplies-container">
           <h2>Supplies</h2>
@@ -497,6 +497,28 @@ tr td:not(:first-child) {
 
 .hidden {
   display: none;
+}
+
+.log-categories {
+  .options {
+    gap: 10px;
+  }
+}
+
+.log-title-option {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.3);
+  padding: 10px;
+  flex: 1;
+  border-radius: 10px;
+  display: flex;
+  gap: 10px;
+  label {
+    flex: 1;
+  }
+  &.checked {
+    background-color: rgba(255, 255, 255, 0.6);
+  }
 }
 
 </style>

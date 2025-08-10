@@ -417,8 +417,7 @@ instance RunMessage TheDreamEaters where
 
         story theBlackCat3
 
-        isOnYourOwn <- getIsTheWebOfDreams
-        when isOnYourOwn do
+        whenM getIsTheWebOfDreams do
           story youAreOnYourOwn
           record TheWebOfDreams YouAreOnYourOwn
 

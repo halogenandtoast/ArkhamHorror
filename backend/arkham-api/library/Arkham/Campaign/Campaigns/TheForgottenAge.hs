@@ -28,6 +28,7 @@ import Arkham.Target
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Aeson (Result (..))
 import Data.Aeson.Types (parseMaybe)
+import Data.Map qualified as Map
 import Data.Monoid (Endo (..))
 
 newtype TheForgottenAge = TheForgottenAge CampaignAttrs
@@ -86,7 +87,7 @@ instance RunMessage TheForgottenAge where
         totalSupplyPoints <- initialSupplyPoints
         expeditionLeaders <- select $ mapOneOf investigatorIs [ursulaDowns, leoAnderson, montereyJack]
         supplyMap <- mapFromList . map (,totalSupplyPoints) <$> allInvestigators
-        let metadata' = Metadata supplyMap (yithians metadata) (expeditionLeader metadata)
+        let metadata' = Metadata supplyMap (yithians metadata) (expeditionLeader metadata) (bonusXp metadata)
         storyBuild do
           setTitle "title"
           p "body"
@@ -231,52 +232,98 @@ instance RunMessage TheForgottenAge where
         nextCampaignStep
         pure c
       CampaignStep ResupplyPoint -> do
-        investigators <- allInvestigators
+        eachInvestigator (`forInvestigator` msg)
         totalResupplyPoints <- initialResupplyPoints
-        poisonedInvestigators <- filterM getIsPoisoned investigators
-        poisonedInvestigatorsWith3Xp <- filterM (fieldP InvestigatorXp (>= 3)) poisonedInvestigators
+        resupplyMap <- mapFromList . map (,totalResupplyPoints) <$> getInvestigators
+        nextCampaignStep
+        pure
+          . TheForgottenAge
+          $ attrs
+            { campaignMeta =
+                toJSON $ Metadata resupplyMap (yithians metadata) (expeditionLeader metadata) (bonusXp metadata)
+            }
+      ForInvestigator iid (CampaignStep ResupplyPoint) -> do
+        let isReturnTo = attrs.id == "53"
+        when isReturnTo $ doStep 1 msg -- convert xp to supply points
+        doStep 2 msg -- remove poisoned
+        doStep 3 msg -- heal trauma
+        pickSupplies iid metadata resupplyPointSupplies msg
+        pure c
+      DoStep 0 (DoStep spend (ForInvestigator iid (CampaignStep ResupplyPoint))) -> do
+        pure
+          $ TheForgottenAge
+          $ attrs
+            { campaignMeta =
+                toJSON
+                  $ Metadata
+                    (supplyPoints metadata)
+                    (yithians metadata)
+                    (expeditionLeader metadata)
+                    ( Map.alter
+                        (maybe Nothing (\v -> let v' = max 0 (v - spend) in guard (v' > 0) $> v'))
+                        iid
+                        (bonusXp metadata)
+                    )
+            }
+      DoStep 1 (ForInvestigator iid (CampaignStep ResupplyPoint)) -> do
+        let extraXp = Map.findWithDefault 0 iid (bonusXp metadata)
+        xp <- field InvestigatorXp iid
+        when (xp + extraXp >= 2) do
+          chooseAmount' iid "supplyPointsToGain" "$supplyPoints" 0 (xp + extraXp `div` 2) CampaignTarget
+        pure c
+      ResolveAmounts iid (getChoiceAmount "$supplyPoints" -> n) CampaignTarget | n > 0 -> do
+        let total = n * 2
+        let extraXp = Map.findWithDefault 0 iid (bonusXp metadata)
+        let remaining = max 0 (total - extraXp)
+        doStep 0 (DoStep total (ForInvestigator iid (CampaignStep ResupplyPoint)))
+        when (remaining > 0) $ push $ SpendXP iid remaining
+        pure c
+      DoStep 2 msg'@(ForInvestigator iid (CampaignStep ResupplyPoint)) -> do
+        let extraXp = Map.findWithDefault 0 iid (bonusXp metadata)
+        isPoisoned <- getIsPoisoned iid
+        xp <- field InvestigatorXp iid
+        let hasXp = xp + extraXp >= 3
+        let toSpend = max 0 (3 - extraXp)
 
-        investigatorsWhoCanHealTrauma <-
-          catMaybes <$> for investigators \iid -> do
-            hasPhysicalTrauma <- fieldP InvestigatorPhysicalTrauma (> 0) iid
-            hasMentalTrauma <- fieldP InvestigatorMentalTrauma (> 0) iid
-            hasXp <- fieldP InvestigatorXp (>= 5) iid
-            if (hasPhysicalTrauma || hasMentalTrauma) && hasXp
-              then pure $ Just (iid, hasPhysicalTrauma, hasMentalTrauma)
-              else pure Nothing
-
-        let resupplyMap = mapFromList $ map (,totalResupplyPoints) investigators
-
-        for_ poisonedInvestigatorsWith3Xp \iid -> do
+        when (isPoisoned && hasXp) do
           chooseOneM iid do
             questionLabeled "Visit St. Mary's?"
             questionLabeledCard iid
             labeled "Spend 3 xp to visit St. Mary's Hospital and remove a poisoned weakness" do
-              push $ SpendXP iid 3
+              doStep 0 (DoStep 3 msg') -- spend extra first
+              push $ SpendXP iid toSpend
               removeCampaignCardFromDeck iid Treacheries.poisoned
             labeled "Do not remove poisoned weakness" nothing
+        pure c
+      DoStep 3 msg'@(ForInvestigator iid (CampaignStep ResupplyPoint)) -> do
+        let extraXp = Map.findWithDefault 0 iid (bonusXp metadata)
+        xp <- field InvestigatorXp iid
+        hasPhysicalTrauma <- fieldP InvestigatorPhysicalTrauma (> 0) iid
+        hasMentalTrauma <- fieldP InvestigatorMentalTrauma (> 0) iid
+        let hasXp = xp + extraXp >= 5
+        let canHealTrauma = (hasPhysicalTrauma || hasMentalTrauma) && hasXp
+        let toSpend = max 0 (5 - extraXp)
+        -- when is return to we can heal trauma any number of times
+        let isReturnTo = attrs.id == "53"
 
-        for_ investigatorsWhoCanHealTrauma \(iid, hasPhysical, hasMental) -> do
+        when canHealTrauma do
           chooseOneM iid do
             questionLabeled "Visit St. Mary's"
             questionLabeledCard iid
-            when hasPhysical do
+            when hasPhysicalTrauma do
               labeled "Spend 5 xp to visit St. Mary's Hospital and remove a physical trauma" do
-                push $ SpendXP iid 5
+                doStep 0 (DoStep 5 msg') -- spend extra first
+                when (toSpend > 0) $ push $ SpendXP iid toSpend
                 push $ HealTrauma iid 1 0
-            when hasMental do
+                when (isReturnTo && xp + extraXp - 5 >= 5) $ doStep 3 msg'
+            when hasMentalTrauma do
               labeled "Spend 5 xp to visit St. Mary's Hospital and remove a mental trauma" do
-                push $ SpendXP iid 5
+                doStep 0 (DoStep 5 msg') -- spend extra first
+                when (toSpend > 0) $ push $ SpendXP iid toSpend
                 push $ HealTrauma iid 0 1
+                when (isReturnTo && xp + extraXp - 5 >= 5) $ doStep 3 msg'
             labeled "Do not remove trauma" nothing
 
-        eachInvestigator (`forInvestigator` msg)
-        nextCampaignStep
-        pure
-          . TheForgottenAge
-          $ attrs {campaignMeta = toJSON $ Metadata resupplyMap (yithians metadata) (expeditionLeader metadata)}
-      ForInvestigator iid (CampaignStep ResupplyPoint) -> do
-        pickSupplies iid metadata resupplyPointSupplies msg
         pure c
       CampaignStep (InterludeStep 3 mkey) -> do
         investigators <- allInvestigators
@@ -416,7 +463,8 @@ instance RunMessage TheForgottenAge where
             pure
               . TheForgottenAge
               $ attrs
-                { campaignMeta = toJSON $ Metadata (supplyPoints metadata) yithians (expeditionLeader metadata)
+                { campaignMeta =
+                    toJSON $ Metadata (supplyPoints metadata) yithians (expeditionLeader metadata) (bonusXp metadata)
                 }
           else pure c
       CampaignStep (InterludeStepPart 4 mkey 2) -> do
@@ -587,7 +635,10 @@ instance RunMessage TheForgottenAge where
           supplyMap = adjustMap (max 0 . subtract cost) investigatorId (supplyPoints metadata)
         pure
           . TheForgottenAge
-          $ attrs {campaignMeta = toJSON $ Metadata supplyMap (yithians metadata) (expeditionLeader metadata)}
+          $ attrs
+            { campaignMeta =
+                toJSON $ Metadata supplyMap (yithians metadata) (expeditionLeader metadata) (bonusXp metadata)
+            }
       PreScenarioSetup -> do
         pushAll $ map BecomeYithian $ toList $ yithians metadata
         pure c

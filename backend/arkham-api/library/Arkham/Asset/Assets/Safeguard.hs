@@ -1,11 +1,10 @@
-module Arkham.Asset.Assets.Safeguard (safeguard, Safeguard (..)) where
+module Arkham.Asset.Assets.Safeguard (safeguard) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Move
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -18,8 +17,8 @@ safeguard = asset Safeguard Cards.safeguard
 
 instance HasAbilities Safeguard where
   getAbilities (Safeguard a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+    [ restricted a 1 ControlsThis
+        $ triggered
           ( Moves
               #after
               (affectsOthers NotYou)
@@ -36,9 +35,8 @@ getMovedToLocation ((windowType -> Window.Moves _ _ _ lid) : _) = lid
 getMovedToLocation (_ : xs) = getMovedToLocation xs
 
 instance RunMessage Safeguard where
-  runMessage msg a@(Safeguard attrs) = case msg of
-    UseCardAbility iid source 1 windows' _ | isSource attrs source -> do
-      let lid = getMovedToLocation windows'
-      push $ move source iid lid
+  runMessage msg a@(Safeguard attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
+      moveTo (attrs.ability 1) iid $ getMovedToLocation windows'
       pure a
-    _ -> Safeguard <$> runMessage msg attrs
+    _ -> Safeguard <$> liftRunMessage msg attrs

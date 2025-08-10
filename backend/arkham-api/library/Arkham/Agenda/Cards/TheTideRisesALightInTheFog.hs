@@ -1,7 +1,4 @@
-module Arkham.Agenda.Cards.TheTideRisesALightInTheFog (
-  TheTideRisesALightInTheFog (..),
-  theTideRisesALightInTheFog,
-) where
+module Arkham.Agenda.Cards.TheTideRisesALightInTheFog (theTideRisesALightInTheFog) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
@@ -11,7 +8,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement
-import Arkham.Movement
 import Arkham.Scenarios.ALightInTheFog.Helpers
 import Arkham.Trait (Trait (FalconPoint))
 import Arkham.Zone
@@ -37,7 +33,7 @@ instance RunMessage TheTideRisesALightInTheFog where
         moveTo_ attrs iid upperDepths
 
       selectEach (#unengaged <> EnemyAt (LocationWithTrait FalconPoint)) \eid -> do
-        push $ Move $ move attrs eid upperDepths
+        enemyMoveTo attrs eid upperDepths
 
       selectEach (LocationWithTrait FalconPoint) removeLocation
 

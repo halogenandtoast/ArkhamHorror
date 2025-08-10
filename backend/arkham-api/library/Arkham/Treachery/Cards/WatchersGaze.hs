@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.WatchersGaze (watchersGaze, WatchersGaze (..)) where
+module Arkham.Treachery.Cards.WatchersGaze (watchersGaze) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Matcher

@@ -30,6 +30,7 @@ import Arkham.Modifier qualified as Modifier
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Queue
 import Arkham.Source
 import Arkham.Spawn
 import Arkham.Target
@@ -125,10 +126,11 @@ getModifiedDamageAmount target damageAssignment = do
   applyModifierCaps (Modifier.MaxDamageTaken m) n = min m n
   applyModifierCaps _ n = n
 
-getModifiedKeywords :: (HasCallStack, HasGame m) => EnemyAttrs -> m (Set Keyword)
+getModifiedKeywords
+  :: (HasCallStack, HasGame m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> m (Set Keyword)
 getModifiedKeywords e = do
-  mods <- getModifiers e
-  keywords <- field EnemyKeywords (enemyId e)
+  mods <- getModifiers (asId e)
+  keywords <- field EnemyKeywords (asId e)
   pure $ setFromList $ flip map (toList keywords) \case
     Swarming k ->
       let xs = [n | SwarmingValue n <- mods]
@@ -310,3 +312,29 @@ getDamageableEnemies investigator source matcher = do
 disengageEnemyFromAll :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> m ()
 disengageEnemyFromAll e = push $ DisengageEnemyFromAll (asId e)
 
+insteadOfDiscarding
+  :: (HasQueue Message m, AsId enemy, IdOf enemy ~ EnemyId)
+  => enemy -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
+insteadOfDiscarding e body = do
+  msgs <- evalQueueT body
+  let
+    isEntityDiscarded w = case w.kind of
+      Window.EntityDiscarded _ target -> isTarget (asId e) target
+      _ -> False
+  lift $ replaceAllMessagesMatching
+    \case
+      CheckWindows ws -> any isEntityDiscarded ws
+      Do (CheckWindows ws) -> any isEntityDiscarded ws
+      Discard _ _ target -> isTarget (asId e) target
+      _ -> False
+    \case
+      CheckWindows ws ->
+        case filter (not . isEntityDiscarded) ws of
+          [] -> []
+          ws' -> [CheckWindows ws']
+      Do (CheckWindows ws) ->
+        case filter (not . isEntityDiscarded) ws of
+          [] -> []
+          ws' -> [Do (CheckWindows ws')]
+      Discard {} -> msgs
+      _ -> error "Invalid replacement"

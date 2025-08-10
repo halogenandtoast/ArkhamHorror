@@ -40,4 +40,5 @@ instance RunMessage WendyAdams where
         unfocusChaosTokens
 
       drawAnotherChaosToken
-    elderSignEffect $ whenAny (assetIs Assets.wendysAmulet) passSkillTest
+    elderSignEffect
+      $ whenAny (mapOneOf assetIs [Assets.wendysAmulet, Assets.wendysAmuletAdvanced]) passSkillTest

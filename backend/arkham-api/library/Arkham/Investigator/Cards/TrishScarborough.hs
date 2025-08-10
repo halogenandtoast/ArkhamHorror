@@ -48,7 +48,7 @@ instance RunMessage TrishScarborough where
       enemies <- select $ enemyAt lid <> EnemyCanBeEvadedBy source
       chooseOrRunOneM iid do
         when ok do
-          labeled "Discover 1 additional clue at that location" $ discoverAt NotInvestigate iid source lid 1
+          labeled "Discover 1 additional clue at that location" $ discoverAt NotInvestigate iid source 1 lid
         labeled "Automatically evade that enemy" do
           chooseTargetM iid enemies $ automaticallyEvadeEnemy iid
       pure i

@@ -25,6 +25,6 @@ instance HasAbilities TheHastingsEstate where
 instance RunMessage TheHastingsEstate where
   runMessage msg l@(TheHastingsEstate attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      discoverAt NotInvestigate iid (attrs.ability 1) attrs attrs.clues
+      discoverAt NotInvestigate iid (attrs.ability 1) attrs.clues attrs
       pure l
     _ -> TheHastingsEstate <$> liftRunMessage msg attrs

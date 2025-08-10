@@ -1,4 +1,4 @@
-module Arkham.Event.Events.BaitAndSwitch3 (baitAndSwitch3, BaitAndSwitch3) where
+module Arkham.Event.Events.BaitAndSwitch3 (baitAndSwitch3) where
 
 import Arkham.Action qualified as Action
 import Arkham.Classes.HasQueue (evalQueueT)
@@ -9,8 +9,8 @@ import Arkham.Event.Cards qualified as Cards (baitAndSwitch3)
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator
 import Arkham.Matcher hiding (EnemyEvaded)
+import Arkham.Message.Lifted.Move
 import Arkham.Modifier
-import Arkham.Movement
 import Arkham.Projection
 
 newtype Metadata = Metadata {choice :: Maybe Int}
@@ -40,13 +40,13 @@ instance RunMessage BaitAndSwitch3 where
       choice2Enemies <- select $ baitAndSwitch3Matcher iid attrs 2
       chooseOrRunOne iid
         $ [ Label
-            "Evade. If you succeed and the enemy is non-Elite, evade the enemy and move it to a connecting location."
-            [ResolveEventChoice iid eid 1 mTarget ws]
+              "Evade. If you succeed and the enemy is non-Elite, evade the enemy and move it to a connecting location."
+              [ResolveEventChoice iid eid 1 mTarget ws]
           | notNull choice1Enemies
           ]
         <> [ Label
-            "Evade. Use only on a non-Elite enemy at a connecting location. If you succeed, evade that enemy and switch locations with it."
-            [ResolveEventChoice iid eid 2 mTarget ws]
+               "Evade. Use only on a non-Elite enemy at a connecting location. If you succeed, evade that enemy and switch locations with it."
+               [ResolveEventChoice iid eid 2 mTarget ws]
            | notNull choice2Enemies
            ]
       pure e
@@ -62,7 +62,9 @@ instance RunMessage BaitAndSwitch3 where
         Just 2 -> do
           lid <- getJustLocation iid
           enemyLocation <- fieldJust EnemyLocation eid
-          pushAll [EnemyEvaded iid eid, EnemyMove eid lid, Move $ move attrs iid enemyLocation]
+          push $ EnemyEvaded iid eid
+          push $ EnemyMove eid lid
+          moveTo attrs iid enemyLocation
         _ -> error "Missing event choice"
       pure e
     WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _) | isTarget attrs target -> do

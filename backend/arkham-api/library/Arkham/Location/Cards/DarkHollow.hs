@@ -6,10 +6,8 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.GameValue
 import Arkham.Helpers.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype DarkHollow = DarkHollow LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,22 +17,15 @@ darkHollow :: LocationCard DarkHollow
 darkHollow = symbolLabel $ location DarkHollow Cards.darkHollow 3 (PerPlayer 1)
 
 instance HasAbilities DarkHollow where
-  getAbilities (DarkHollow attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1
-          $ ForcedAbility
-          $ PutLocationIntoPlay Timing.After Anyone
-          $ LocationWithId
-          $ toId attrs
-      ]
+  getAbilities (DarkHollow a) =
+    extendRevealed1 a $ mkAbility a 1 $ forced $ PutLocationIntoPlay #after Anyone (be a)
 
 instance RunMessage DarkHollow where
-  runMessage msg l@(DarkHollow attrs) = case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(DarkHollow attrs) = runQueueT $ case msg of
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
       anyHasMap <- getAnyHasSupply Map
       unless anyHasMap $ do
         n <- perPlayer 1
-        push $ PlaceClues (toSource attrs) (toTarget attrs) n
+        placeClues attrs attrs n
       pure l
-    _ -> DarkHollow <$> runMessage msg attrs
+    _ -> DarkHollow <$> liftRunMessage msg attrs

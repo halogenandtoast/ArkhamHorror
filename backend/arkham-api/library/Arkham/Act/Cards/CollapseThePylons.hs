@@ -76,6 +76,6 @@ instance RunMessage CollapseThePylons where
       connectLocations "titanicRamp4" "hiddenTunnel"
       firstRamp <- selectJust $ LocationWithLabel "titanicRamp1"
       eachInvestigator (\iid -> moveTo attrs iid firstRamp)
-      selectEach (enemyIs Enemies.theNamelessMadness) (`enemyMoveTo` firstRamp)
+      selectEach (enemyIs Enemies.theNamelessMadness) \e -> enemyMoveTo attrs e firstRamp
       pure a
     _ -> CollapseThePylons <$> liftRunMessage msg attrs

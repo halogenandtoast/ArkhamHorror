@@ -387,6 +387,7 @@ withLocationConnectionData inner@(With target _) = do
         ]
   lmAssets <-
     select
+      $ IgnoreVisibility
       $ oneOf
         [ AssetWithPlacement $ AtLocation (toId target)
         , AssetWithPlacement $ AttachedToLocation (toId target)
@@ -1193,6 +1194,7 @@ getAgendasMatching matcher = do
     AgendaWithTreachery treacheryMatcher -> \agenda -> do
       selectAny $ TreacheryIsAttachedTo (toTarget agenda.id) <> treacheryMatcher
     AgendaWithSequence s -> pure . (== s) . attr agendaSequence
+    AgendaWithStep s -> pure . (== AS.AgendaStep s) . AS.agendaStep . attr agendaSequence
     AgendaWithSide s ->
       pure . (== s) . AS.agendaSide . attr agendaSequence
     AgendaWithDeckId n -> pure . (== n) . attr agendaDeckId
@@ -1240,6 +1242,7 @@ getAgendasMatching matcher = do
       pure $ cdStage (toCardDef card) == Just maxStage
     NotAgenda matcher' -> fmap not . matcherFilter matcher'
     AgendaMatches ms -> \a -> allM (`matcherFilter` a) ms
+    AgendaMatchAny ms -> \a -> anyM (`matcherFilter` a) ms
 
 getActsMatching :: HasGame m => ActMatcher -> m [Act]
 getActsMatching matcher = do
@@ -1375,6 +1378,7 @@ getScenariosMatching matcher = do
 
 abilityMatches :: HasGame m => Ability -> AbilityMatcher -> m Bool
 abilityMatches a@Ability {..} = \case
+  AbilityWithinLimit iid -> getCanAffordUseWith id CanNotIgnoreAbilityLimit iid a []
   PerformableAbility modifiers' -> do
     withDepthGuard 3 False $ do
       let ab = applyAbilityModifiers a modifiers'
@@ -1463,6 +1467,7 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
   go :: HasGame m => [Ability] -> AbilityMatcher -> m [Ability]
   go [] = const (pure [])
   go as = \case
+    AbilityWithinLimit iid -> filterM (\a -> getCanAffordUseWith id CanNotIgnoreAbilityLimit iid a []) as
     PerformableAbility modifiers' -> do
       flip filterM as \a -> withDepthGuard 3 False do
         let ab = applyAbilityModifiers a modifiers'
@@ -2351,7 +2356,11 @@ guardYourLocation body = do
 
 getAssetsMatching :: HasGame m => AssetMatcher -> m [Asset]
 getAssetsMatching matcher = do
-  assets <- toList . view (entitiesL . assetsL) <$> getGame
+  let
+    ignoreVisibility = case matcher of
+      IgnoreVisibility _ -> const True
+      _ -> attr assetVisible
+  assets <- filter ignoreVisibility . toList . view (entitiesL . assetsL) <$> getGame
   filterMatcher assets matcher
  where
   canBeDiscarded =
@@ -2362,6 +2371,7 @@ getAssetsMatching matcher = do
         ]
   filterMatcher [] = const (pure [])
   filterMatcher as = \case
+    IgnoreVisibility inner -> filterMatcher as inner
     VehicleWithInvestigator imatcher -> do
       filterM (\a -> selectAny $ imatcher <> InVehicleMatching (AssetWithId $ toId a)) as
     PermanentAsset -> pure $ filter (cdPermanent . toCardDef) as
@@ -2468,6 +2478,8 @@ getAssetsMatching matcher = do
     DiscardableAsset -> pure $ filter canBeDiscarded as
     NonWeaknessAsset ->
       pure $ filter (isNothing . cdCardSubType . toCardDef) as
+    SingleSidedAsset ->
+      pure $ filter (not . cdDoubleSided . toCardDef) as
     EnemyAsset eid ->
       filterM (fieldP AssetPlacement (== AttachedToEnemy eid) . toId) as
     AssetAt locationMatcher -> do
@@ -3909,6 +3921,7 @@ instance Projection Investigator where
     i <- getInvestigator iid
     let attrs@InvestigatorAttrs {..} = toAttrs i
     case f of
+      InvestigatorMovement -> pure investigatorMovement
       InvestigatorLog -> pure investigatorLog
       InvestigatorMeta -> pure investigatorMeta
       InvestigatorCardCode -> pure investigatorCardCode
@@ -4206,6 +4219,8 @@ instance Query ExtendedCardMatcher where
     go :: HasGame m => [Card] -> ExtendedCardMatcher -> m [Card]
     go [] = const (pure []) -- if we have no cards remaining, just stop
     go cs = \case
+      ActiveCard -> maybeToList . view activeCardL <$> getGame
+      ResolvingCard -> maybeToList . view resolvingCardL <$> getGame
       CardIdentifiedByScenarioMetaKey key -> do
         meta <- getScenarioMeta
         pure $ case meta of
@@ -4915,6 +4930,7 @@ instance Projection Story where
     case fld of
       StoryCard -> getCard storyCardId
       StoryPlacement -> pure storyPlacement
+      StoryClues -> pure $ Token.countTokens Token.Clue storyTokens
       StoryOtherSide -> pure storyOtherSide
       StoryCardsUnderneath -> pure storyCardsUnderneath
 
@@ -5099,7 +5115,8 @@ runMessages mLogger = do
                   withQueue_ (map updateChooseDeck)
                   runMessages mLogger
                 else
-                  runWithEnv (toExternalGame (g & activePlayerIdL .~ pid & scenarioStepsL +~ 1) (singletonMap pid q)) >>= putGame
+                  runWithEnv (toExternalGame (g & activePlayerIdL .~ pid & scenarioStepsL +~ 1) (singletonMap pid q))
+                    >>= putGame
             AskMap askMap -> do
               -- Read might have only one player being prompted so we need to find the active player
               let current = g ^. activePlayerIdL
@@ -5109,7 +5126,8 @@ runMessages mLogger = do
                   whenBeingQuestioned (pid, _) = Just pid
               let activePids = mapMaybe whenBeingQuestioned $ mapToList askMap
               let activePid = fromMaybe current $ find (`elem` activePids) (current : keys askMap)
-              runWithEnv (toExternalGame (g & activePlayerIdL .~ activePid & scenarioStepsL +~ 1) askMap) >>= putGame
+              runWithEnv (toExternalGame (g & activePlayerIdL .~ activePid & scenarioStepsL +~ 1) askMap)
+                >>= putGame
             CheckWindows {} | not (gameRunWindows g) -> runMessages mLogger
             Do (CheckWindows {}) | not (gameRunWindows g) -> runMessages mLogger
             _ -> do

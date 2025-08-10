@@ -1,23 +1,32 @@
-module Arkham.Scenario.Scenarios.HeartOfTheElders (heartOfTheElders) where
+module Arkham.Scenario.Scenarios.HeartOfTheElders (
+  HeartOfTheEldersMetadata (..),
+  HeartOfTheEldersScenarioStep (..),
+  setupHeartOfTheElders,
+  heartOfTheElders,
+  HeartOfTheElders (..),
+) where
 
+import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Card
+import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.GameT (GameT)
+import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query
-import Arkham.Helpers.Scenario
+import Arkham.Helpers.Scenario hiding (getIsReturnTo)
+import Arkham.Helpers.Tokens
 import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -33,25 +42,25 @@ import Arkham.Trait (Trait (Cave))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window qualified as Window
 
-data ScenarioStep = One | Two
+data HeartOfTheEldersScenarioStep = One | Two
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data Metadata = Metadata
-  { scenarioStep :: ScenarioStep
+data HeartOfTheEldersMetadata = HeartOfTheEldersMetadata
+  { scenarioStep :: HeartOfTheEldersScenarioStep
   , reachedAct2 :: Bool
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-newtype HeartOfTheElders = HeartOfTheElders (ScenarioAttrs `With` Metadata)
+newtype HeartOfTheElders = HeartOfTheElders (ScenarioAttrs `With` HeartOfTheEldersMetadata)
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 heartOfTheElders :: Difficulty -> HeartOfTheElders
 heartOfTheElders difficulty =
   scenario
-    (HeartOfTheElders . (`with` Metadata One False))
+    (HeartOfTheElders . (`with` HeartOfTheEldersMetadata One False))
     "04205"
     "Heart of the Elders"
     difficulty
@@ -109,6 +118,151 @@ instance HasChaosTokenValue HeartOfTheElders where
       ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
       otherFace -> getChaosTokenValue iid otherFace attrs
 
+setupHeartOfTheElders
+  :: ReverseQueue m => HeartOfTheEldersMetadata -> ScenarioAttrs -> ScenarioBuilderT m ()
+setupHeartOfTheElders metadata attrs = case scenarioStep metadata of
+  One -> do
+    pathsKnown <- getRecordCount PathsAreKnownToYou
+
+    if pathsKnown == 6
+      then push R1
+      else do
+        whenReturnTo do
+          gather Set.ReturnToHeartOfTheElders
+          gather Set.ReturnToPillarsOfJudgement
+          gather Set.ReturnToRainforest
+        gather Set.PillarsOfJudgement
+        gather Set.HeartOfTheElders
+        gather Set.Rainforest
+        gather Set.Serpents
+        gather Set.Expedition `orWhenReturnTo` gather Set.DoomedExpedition
+        gather Set.Poison
+
+        mouthOfKnYanTheCavernsMaw <- place Locations.mouthOfKnYanTheCavernsMaw
+        startAt mouthOfKnYanTheCavernsMaw
+        placeTokens attrs mouthOfKnYanTheCavernsMaw Resource pathsKnown
+
+        (ruinsLocation, toRemove) <-
+          sampleWithRest $ Locations.overgrownRuins :| [Locations.templeOfTheFang, Locations.stoneAltar]
+
+        removeOneOfEach toRemove
+
+        mappedOutTheWayForward <- getHasRecord TheInvestigatorsMappedOutTheWayForward
+        when mappedOutTheWayForward $ place_ ruinsLocation
+
+        square <- Locations.pathOfThorns `orSampleIfReturnTo` [Locations.riversideTemple]
+        moon <- Locations.ropeBridge `orSampleIfReturnTo` [Locations.waterfall]
+        triangle <- Locations.serpentsHaven `orSampleIfReturnTo` [Locations.trailOfTheDead]
+        heart <- Locations.circuitousTrail `orSampleIfReturnTo` [Locations.cloudForest]
+
+        isReturnTo <- getIsReturnTo
+        let
+          treacheries =
+            guard (not isReturnTo)
+              *> [ Treacheries.pitfall
+                 , Treacheries.ants
+                 , Treacheries.lostInTheWilds
+                 , Treacheries.lowOnSupplies
+                 ]
+
+        addExtraDeck ExplorationDeck
+          =<< shuffle
+            ( [ruinsLocation | not mappedOutTheWayForward]
+                <> [ Locations.timeWrackedWoods
+                   , square
+                   , Locations.riverCanyon
+                   , moon
+                   , triangle
+                   , heart
+                   ]
+                <> treacheries
+            )
+
+        setAsidePoisonedCount <- getSetAsidePoisonedCount
+        setAside $ replicate setAsidePoisonedCount Treacheries.poisoned
+
+        when (reachedAct2 metadata) do
+          enemyAt_ Enemies.theWingedSerpent mouthOfKnYanTheCavernsMaw
+
+        let act1 =
+              if isReturnTo
+                then Acts.aFamiliarPattern
+                else Acts.searchForThePattern
+
+        setActDeck $ [act1 | not (reachedAct2 metadata)] <> [Acts.openingTheMaw]
+        setAgendaDeck [Agendas.theJunglesHeart, Agendas.settingSun]
+
+        whenReturnTo do
+          setAside [Enemies.harbingerOfValusiaTheSleeperReturns]
+          addAdditionalReferences ["53045b"]
+          createAbilityEffect EffectGameWindow
+            $ mkAbility (SourceableWithCardCode (CardCode "53045b") ScenarioSource) 1
+            $ forced
+            $ Explored #after Anyone Anywhere (SuccessfulExplore Anywhere)
+  Two -> do
+    whenReturnTo do
+      gather Set.ReturnToHeartOfTheElders
+      gather Set.ReturnToKnYan
+    gather Set.KnYan
+    gather Set.HeartOfTheElders
+    gather Set.AgentsOfYig
+    gather Set.YigsVenom `orWhenReturnTo` gather Set.VenomousHate
+    gather Set.ForgottenRuins
+    gather Set.DeadlyTraps
+    gather Set.Poison
+
+    theJungleWatches <- recordedCardCodes <$> getRecordSet TheJungleWatches
+    let theJungleWatchesCardDefs = mapMaybe lookupCardDef theJungleWatches
+
+    when (notNull theJungleWatchesCardDefs) do
+      placeInVictory theJungleWatchesCardDefs
+
+    removeEvery [Locations.mouthOfKnYanTheCavernsMaw]
+    startAt =<< place Locations.mouthOfKnYanTheDepthsBeneath
+
+    setAsidePoisonedCount <- getSetAsidePoisonedCount
+    setAside $ Locations.descentToYoth : replicate setAsidePoisonedCount Treacheries.poisoned
+
+    isReturnTo <- getIsReturnTo
+
+    let
+      treacheries =
+        guard (not isReturnTo)
+          *> [ Treacheries.pitfall
+             , Treacheries.noTurningBack
+             , Treacheries.deepDark
+             , Treacheries.finalMistake
+             ]
+
+    triangle <- Locations.darkHollow `orSampleIfReturnTo` [Locations.ruinsOfKnYan]
+    square <- Locations.hallOfIdolatry `orSampleIfReturnTo` [Locations.chthonianDepths]
+    diamond <- Locations.perilousGulch `orSampleIfReturnTo` [Locations.subterraneanSwamp]
+    moon <- Locations.crystalPillars `orSampleIfReturnTo` [Locations.treacherousDescent]
+
+    addExtraDeck ExplorationDeck
+      =<< shuffle
+        ( [ Locations.vastPassages
+          , square
+          , triangle
+          , diamond
+          , moon
+          ]
+            <> treacheries
+        )
+
+    setActDeck [Acts.cavernOfTheForgottenAge, Acts.descentIntoDark]
+    setAgendaDeck [Agendas.theLonelyCaverns, Agendas.eyesInTheDark]
+
+    setLayout part2Locations
+
+    whenReturnTo do
+      setAside [Enemies.harbingerOfValusiaTheSleeperReturns]
+      addAdditionalReferences ["53045b"]
+      createAbilityEffect EffectGameWindow
+        $ mkAbility (SourceableWithCardCode (CardCode "53045b") ScenarioSource) 1
+        $ forced
+        $ Explored #after Anyone Anywhere (SuccessfulExplore Anywhere)
+
 runAMessage :: Message -> HeartOfTheElders -> QueueT Message GameT HeartOfTheElders
 runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
   StandaloneSetup -> do
@@ -142,65 +296,15 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
           putCampaignCardIntoPlay iid Assets.expeditionJournal
       labeled "I wish we knew more about this..." nothing
     pure s
-  Setup -> runScenarioSetup (HeartOfTheElders . (`with` metadata)) attrs do
-    pathsKnown <- getRecordCount PathsAreKnownToYou
-
-    if pathsKnown == 6
-      then push R1
-      else do
-        gather Set.PillarsOfJudgement
-        gather Set.HeartOfTheElders
-        gather Set.Rainforest
-        gather Set.Serpents
-        gather Set.Expedition
-        gather Set.Poison
-
-        mouthOfKnYanTheCavernsMaw <- place Locations.mouthOfKnYanTheCavernsMaw
-        startAt mouthOfKnYanTheCavernsMaw
-        placeTokens attrs mouthOfKnYanTheCavernsMaw Resource pathsKnown
-
-        (ruinsLocation, toRemove) <-
-          sampleWithRest $ Locations.overgrownRuins :| [Locations.templeOfTheFang, Locations.stoneAltar]
-
-        removeOneOfEach toRemove
-
-        mappedOutTheWayForward <- getHasRecord TheInvestigatorsMappedOutTheWayForward
-        when mappedOutTheWayForward $ place_ ruinsLocation
-
-        addExtraDeck ExplorationDeck
-          =<< shuffle
-            ( [ruinsLocation | not mappedOutTheWayForward]
-                <> [ Locations.timeWrackedWoods
-                   , Locations.pathOfThorns
-                   , Locations.riverCanyon
-                   , Locations.ropeBridge
-                   , Locations.serpentsHaven
-                   , Locations.circuitousTrail
-                   , Treacheries.pitfall
-                   , Treacheries.ants
-                   , Treacheries.lostInTheWilds
-                   , Treacheries.lowOnSupplies
-                   ]
-            )
-
-        setAsidePoisonedCount <- getSetAsidePoisonedCount
-        setAside $ replicate setAsidePoisonedCount Treacheries.poisoned
-
-        when (reachedAct2 metadata) do
-          enemyAt_ Enemies.theWingedSerpent mouthOfKnYanTheCavernsMaw
-
-        setActDeck $ [Acts.searchForThePattern | not (reachedAct2 metadata)] <> [Acts.openingTheMaw]
-        setAgendaDeck [Agendas.theJunglesHeart, Agendas.settingSun]
   ScenarioResolution r -> case r of
     NoResolution -> do
       story noResolutionA
       pathsKnown <- getRecordCount PathsAreKnownToYou
-      pillarTokens <-
-        getSum <$> selectAgg Sum LocationResources (locationIs Locations.mouthOfKnYanTheCavernsMaw)
-      actStep <- getCurrentActStep
+      pillarTokens <- selectCountTokens Pillar (locationIs Locations.mouthOfKnYanTheCavernsMaw)
       when (pillarTokens > pathsKnown) do
         recordCount PathsAreKnownToYou pillarTokens
       push RestartScenario
+      actStep <- getCurrentActStep
       pure $ HeartOfTheElders (attrs `With` metadata {reachedAct2 = reachedAct2 metadata || actStep >= 2})
     Resolution 1 -> do
       story resolution1A
@@ -216,44 +320,6 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
 
 runBMessage :: Message -> HeartOfTheElders -> QueueT Message GameT HeartOfTheElders
 runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
-  Setup -> runScenarioSetup (HeartOfTheElders . (`with` metadata)) attrs do
-    gather Set.KnYan
-    gather Set.HeartOfTheElders
-    gather Set.AgentsOfYig
-    gather Set.YigsVenom
-    gather Set.ForgottenRuins
-    gather Set.DeadlyTraps
-    gather Set.Poison
-
-    theJungleWatches <- recordedCardCodes <$> getRecordSet TheJungleWatches
-    let theJungleWatchesCardDefs = mapMaybe (lookupCardDef) theJungleWatches
-
-    when (notNull theJungleWatchesCardDefs) do
-      placeInVictory theJungleWatchesCardDefs
-
-    removeEvery [Locations.mouthOfKnYanTheCavernsMaw]
-    startAt =<< place Locations.mouthOfKnYanTheDepthsBeneath
-
-    setAsidePoisonedCount <- getSetAsidePoisonedCount
-    setAside $ Locations.descentToYoth : replicate setAsidePoisonedCount Treacheries.poisoned
-
-    addExtraDeck ExplorationDeck
-      =<< shuffle
-        [ Locations.vastPassages
-        , Locations.hallOfIdolatry
-        , Locations.darkHollow
-        , Locations.perilousGulch
-        , Locations.crystalPillars
-        , Treacheries.pitfall
-        , Treacheries.noTurningBack
-        , Treacheries.deepDark
-        , Treacheries.finalMistake
-        ]
-
-    setActDeck [Acts.cavernOfTheForgottenAge, Acts.descentIntoDark]
-    setAgendaDeck [Agendas.theLonelyCaverns, Agendas.eyesInTheDark]
-
-    setLayout part2Locations
   ScenarioResolution r -> do
     case r of
       NoResolution -> do
@@ -286,6 +352,9 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
 
 instance RunMessage HeartOfTheElders where
   runMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = runQueueT $ case msg of
+    Setup ->
+      runScenarioSetup (HeartOfTheElders . (`with` metadata)) attrs
+        $ setupHeartOfTheElders metadata attrs
     Explore iid _ _ -> do
       checkWhen $ Window.AttemptExplore iid
       push $ Do msg
@@ -304,6 +373,11 @@ instance RunMessage HeartOfTheElders where
           push $ CreateWeaknessInThreatArea poison iid
         ElderThing -> assignHorror iid ElderThing 1
         _ -> pure ()
+      pure s
+    UseCardAbility _ ScenarioSource 1 _ _ -> do
+      getEncounterDeck >>= \case
+        Deck [] -> pure ()
+        Deck (x : _) -> shuffleCardsIntoDeck ExplorationDeck [x]
       pure s
     _ -> case scenarioStep metadata of
       One -> runAMessage msg s

@@ -21,6 +21,7 @@
     "theInvestigatorsRescuedAlejandro": "The investigators rescued Alejandro",
     "alejandroIsMissing": "Alejandro is missing",
     "theInvestigatorsForgedABondWithIchtaca": "The investigators forged a bond with Ichtaca",
+    "theInvestigatorsRecruitedTheHelpOfAnotherExpedition": "The investigators recruited the help of another expedition",
     "ichtacaIsInTheDark": "Ichtaca is in the dark",
     "pathsAreKnownToYou": "Paths are known to you",
     "ichtacaHasConfidenceInYou": "Ichtaca has confidence in you",
@@ -48,7 +49,12 @@
     "theInvestigatorsTurnedBackTime": "The investigators turned back time",
     "theInvestigatorsSealedTheRelicOfAgesForever": "The investigators sealed the Relic of Ages forever"
   },
+  "title": {
+    "supplyPointsToGain": "Gain supply points"
+  },
   "label": {
+    "checkYourSupplies": "Check your supplies",
+    "supplyPointsToGain": "Each investigator may convert up to 10 of their experience to supply points, at a rate of 1 supply point for every 2 experience converted.",
     "bestLaidPlans": {
       "shuffle": "Shuffle the top card of the encounter deck into the exploration deck"
     },
@@ -68,6 +74,13 @@
     "serpentsCall": {
       "poisoned": "Put a set-aside Poisoned weakness into play in your threat area",
       "drawEncounterCards": "Draw the top 2 cards of the encounter deck"
+    },
+    "explorationDeck": {
+      "placeOnTop": "Place one card on top of exploration deck",
+      "placeOnBottom": "Place one card on bottom of exploration deck"
+    },
+    "mouthOnKnYanTheCavernsMaw": {
+      "resign": "Let's make camp and solve this puzzle tomorrow"
     }
   },
   "prologue": {

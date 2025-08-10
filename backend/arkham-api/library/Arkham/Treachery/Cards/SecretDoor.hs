@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.SecretDoor (secretDoor) where
+module Arkham.Treachery.Cards.SecretDoor (secretDoor, SecretDoor(..)) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)

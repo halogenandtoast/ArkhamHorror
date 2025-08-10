@@ -15,10 +15,10 @@ returnToThreadsOfFate difficulty =
     "53028"
     "Return to Threads of Fate"
     difficulty
-    [ ".                .                trainTracks  trainTracks          townHall             townHall     arkhamPoliceStation arkhamPoliceStation .           ."
-    , "curiositieShoppe curiositieShoppe northside    northside            downtown             downtown     easttown            easttown            velmasDiner velmasDiner"
-    , ".                eztliExhibit     eztliExhibit miskatonicUniversity miskatonicUniversity rivertown    rivertown           blackCave           blackCave   ."
-    , ".                .                .            .                    .                    loadingDocks loadingDocks        .                   .           ."
+    [ ".                .                trainTracks  trainTracks          townHall             townHall     arkhamPoliceStation arkhamPoliceStation .                 ."
+    , "curiositieShoppe curiositieShoppe northside    northside            downtown             downtown     easttown            easttown            velmasDiner       velmasDiner"
+    , ".                eztliExhibit     eztliExhibit miskatonicUniversity miskatonicUniversity rivertown    rivertown           blackCave           blackCave         ."
+    , ".                .                .            .                    .                    loadingDocks loadingDocks        theHastingsEstate   theHastingsEstate ."
     ]
     (( decksLayoutL
         .~ [ ".       act1 act2"

@@ -45,8 +45,9 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization
-import Arkham.Helpers.Enemy (spawnAt)
+import Arkham.Helpers.Enemy (getModifiedKeywords, spawnAt)
 import Arkham.Helpers.Investigator hiding (findCard, investigator)
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Message hiding (
   EnemyDamage,
   InvestigatorDamage,
@@ -1012,7 +1013,12 @@ runGameMessage msg g = case msg of
     -- not want to do this
     pushAll $ concatMap (resolve . Msg.InvestigatorIsDefeated (toSource lid)) investigators
     pure g
-  Do (RemovedLocation lid) -> pure $ g & entitiesL . locationsL %~ deleteMap lid
+  Do (RemovedLocation lid) -> do
+    location <- getLocation lid
+    pure
+      $ g
+      & (entitiesL . locationsL %~ deleteMap lid)
+      & (actionRemovedEntitiesL . locationsL %~ Map.insert lid location)
   SpendClues 0 _ -> pure g
   SpendClues n iids -> do
     investigatorsWithClues <-
@@ -1082,27 +1088,31 @@ runGameMessage msg g = case msg of
         _ -> error "impossible"
     pure g
   CommitCard iid card -> do
-    push $ InvestigatorCommittedCard iid card
-    case card of
-      PlayerCard pc -> case toCardType pc of
-        SkillType -> do
-          skillId <- getRandom
-          let hasInDiscardEffects = cdCardInDiscardEffects (toCardDef card)
-          inDiscard <- selectAny $ inDiscardOf iid <> basic (CardWithId card.id)
+    let alreadyCommitted = any ((== card.id) . toCardId) (g ^. entitiesL . skillsL)
+    if alreadyCommitted
+      then pure g
+      else do
+        push $ InvestigatorCommittedCard iid card
+        case card of
+          PlayerCard pc -> case toCardType pc of
+            SkillType -> do
+              skillId <- getRandom
+              let hasInDiscardEffects = cdCardInDiscardEffects (toCardDef card)
+              inDiscard <- selectAny $ inDiscardOf iid <> basic (CardWithId card.id)
 
-          let setPlacement =
-                overAttrs
-                  ( \attrs ->
-                      attrs {skillPlacement = if hasInDiscardEffects && inDiscard then StillInDiscard iid else Unplaced}
-                  )
-          let skill = setPlacement $ createSkill pc iid skillId
-          push $ InvestigatorCommittedSkill iid skillId
-          for_ (skillAdditionalCost $ toAttrs skill) $ \cost -> do
-            let ability = abilityEffect skill [] cost
-            push $ PayForAbility ability []
-          pure $ g & entitiesL . skillsL %~ insertMap skillId skill
-        _ -> pure g
-      _ -> pure g
+              let setPlacement =
+                    overAttrs
+                      ( \attrs ->
+                          attrs {skillPlacement = if hasInDiscardEffects && inDiscard then StillInDiscard iid else Unplaced}
+                      )
+              let skill = setPlacement $ createSkill pc iid skillId
+              push $ InvestigatorCommittedSkill iid skillId
+              for_ (skillAdditionalCost $ toAttrs skill) $ \cost -> do
+                let ability = abilityEffect skill [] cost
+                push $ PayForAbility ability []
+              pure $ g & entitiesL . skillsL %~ insertMap skillId skill
+            _ -> pure g
+          _ -> pure g
   SkillTestResults resultsData -> pure $ g & skillTestResultsL ?~ resultsData
   Do (SkillTestEnds _ iid _) -> do
     let result = skillTestResult <$> g ^. skillTestL
@@ -1148,7 +1158,7 @@ runGameMessage msg g = case msg of
               , Just skillId
               )
           | LeaveCardWhereItIs `elem` mods ->
-              (Run [], Just skillId)
+              (Run [RemoveFromPlay (toSource skillId)], Just skillId)
           | otherwise -> case afterPlay of
               DiscardThis -> case toCard skill of
                 PlayerCard pc ->
@@ -1457,9 +1467,10 @@ runGameMessage msg g = case msg of
         g' <- runGameMessage (PutCardIntoPlay controller card mtarget payment windows') g
         let
           recordLimit g'' = \case
-            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
-            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
-            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
+            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
+            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
+            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
+            LimitPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
             _ -> g''
         pure $ foldl' recordLimit g' (cdLimits $ toCardDef card)
       else do
@@ -1605,10 +1616,10 @@ runGameMessage msg g = case msg of
   DoBatch _ (Run msgs) -> do
     pushAll msgs
     pure g
-  CancelEachNext source msgTypes -> do
+  CancelEachNext mCard source msgTypes -> do
     push
       =<< checkWindows
-        [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect source)]
+        [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect source mCard)]
     for_ msgTypes $ \msgType -> do
       mRemovedMsg <- withQueue $ \queue ->
         let
@@ -1739,25 +1750,54 @@ runGameMessage msg g = case msg of
     case mNextMessage of
       Just (HandleGroupTarget k' t' msgs') | k == k' -> do
         _ <- popMessage
-        push $ HandleGroupTargets k (mapFromList [(t, msgs), (t', msgs')])
-      Just (HandleGroupTargets k' m) | k == k' -> do
+        push $ HandleGroupTargets NoAutoStatus k (mapFromList [(t, msgs), (t', msgs')])
+      Just (HandleGroupTargets st k' m) | k == k' -> do
         _ <- popMessage
-        push $ HandleGroupTargets k' (insertMap t msgs m)
+        push $ HandleGroupTargets st k' (insertMap t msgs m)
       _ -> pushAll msgs
     pure g
-  HandleGroupTargets k targetMap -> do
+  HandleGroupTargets st k targetMap -> do
     mNextMessage <- peekMessage
     case mNextMessage of
       Just (HandleGroupTarget k' t' msgs') | k == k' -> do
         _ <- popMessage
-        push $ HandleGroupTargets k (insertMap t' msgs' targetMap)
-      Just (HandleGroupTargets k' m) | k == k' -> do
+        push $ HandleGroupTargets st k (insertMap t' msgs' targetMap)
+      Just (HandleGroupTargets st' k' m) | k == k' -> do
         _ <- popMessage
-        push $ HandleGroupTargets k' (m <> targetMap)
+        push $ HandleGroupTargets (st <> st') k' (m <> targetMap)
       _ -> do
-        let opts = map (uncurry TargetLabel) $ mapToList targetMap
-        lead <- getLeadPlayer
-        push $ Ask lead $ ChooseOneAtATimeWithAuto "Automatically handle all" opts
+        validTargetsForKey :: Map Target [Message] <- case k of
+          HunterGroup ->
+            mapFromList <$> forMaybeM (mapToList targetMap) \(target, msgs) -> do
+              case target of
+                EnemyTarget eid -> do
+                  kws <- getModifiedKeywords eid
+                  pure $ guard (Keyword.Hunter `elem` kws) $> (target, msgs)
+                _ -> pure Nothing
+        case st of
+          NoAutoStatus -> do
+            let
+              opts =
+                flip map (eachWithRest $ mapToList validTargetsForKey) \((target, msgs), rest) ->
+                  TargetLabel target (msgs <> [HandleGroupTargets Manual k $ mapFromList rest])
+
+            lead <- getLeadPlayer
+            push
+              $ Ask lead
+              $ ChooseOne (Label "Automatically handle all" [HandleGroupTargets Auto k targetMap] : opts)
+          Manual -> do
+            let
+              opts =
+                flip map (eachWithRest $ mapToList validTargetsForKey) \((target, msgs), rest) ->
+                  TargetLabel target (msgs <> [HandleGroupTargets Manual k $ mapFromList rest])
+
+            unless (null opts) do
+              lead <- getLeadPlayer
+              push $ Ask lead $ ChooseOne opts
+          Auto -> do
+            case mapToList validTargetsForKey of
+              [] -> pure ()
+              ((_, msgs) : xs) -> pushAll $ msgs <> [HandleGroupTargets st k (mapFromList xs)]
     pure g
   EnemyWillAttack details -> do
     modifiers' <- maybe (pure []) getModifiers details.singleTarget
@@ -1941,7 +1981,7 @@ runGameMessage msg g = case msg of
     card <- field SkillCard sid
     pure
       $ g
-      & (entitiesL . skillsL %~ deleteMap sid)
+      & (entitiesL . skillsL . ix sid %~ overAttrs (\x -> x {skillPlacement = OutOfPlay RemovedZone}))
       & (removedFromPlayL %~ (card :))
   RemoveFromGame (EventTarget eid) -> do
     card <- field EventCard eid
@@ -2046,19 +2086,6 @@ runGameMessage msg g = case msg of
       . enemiesL
       . ix eid
       %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay zone, enemyKeys = mempty})
-  DefeatedAddToVictory (EnemyTarget eid) -> do
-    mods <- getModifiers eid
-    card <- field EnemyCard eid
-    let zone = if StayInVictory `elem` mods then VictoryDisplayZone else RemovedZone
-    pushAll
-      $ windows [Window.LeavePlay (EnemyTarget eid), Window.AddedToVictory card]
-      <> [RemoveEnemy eid]
-    pure
-      $ g
-      & entitiesL
-      . enemiesL
-      . ix eid
-      %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay zone})
   AddToVictory (SkillTarget sid) -> do
     card <- field SkillCard sid
     pushAll $ windows [Window.AddedToVictory card]
@@ -2280,6 +2307,7 @@ runGameMessage msg g = case msg of
       isPerRound = \case
         MaxPerRound _ -> True
         MaxPerTraitPerRound _ _ -> True
+        LimitPerRound _ -> True
         _ -> False
     let roundEndUses =
           map cdCardCode
@@ -2657,21 +2685,21 @@ runGameMessage msg g = case msg of
       Just iid -> runMessage (SetBearer (toTarget enemy') iid) enemy'
     case enemyCreationMethod enemyCreation of
       Arkham.Enemy.Creation.SpawnEngagedWith iid -> do
-        lid <- getJustLocation iid
         let details =
               SpawnDetails
                 { spawnDetailsEnemy = enemyId
                 , spawnDetailsInvestigator = Just iid
-                , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
+                , spawnDetailsSpawnAt = Arkham.Spawn.SpawnEngagedWith (InvestigatorWithId iid)
                 , spawnDetailsOverridden = True
                 }
+        mlid <- getLocationOf iid
         pushAll
           $ enemyCreationBefore enemyCreation
           <> [ Will (EnemySpawn details)
              , When (EnemySpawn details)
              , EnemySpawn details
              ]
-          <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mTarget]
+          <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mTarget, lid <- maybeToList mlid]
           <> enemyCreationAfter enemyCreation
           <> [After (EnemySpawn details)]
       Arkham.Enemy.Creation.SpawnAtLocation lid -> do
@@ -2869,9 +2897,10 @@ runGameMessage msg g = case msg of
         push $ ObtainCard card.id
         let
           recordLimit g'' = \case
-            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
-            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
-            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
+            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
+            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
+            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
+            LimitPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
             _ -> g''
         pure
           $ foldl'
@@ -2896,7 +2925,7 @@ runGameMessage msg g = case msg of
         pure $ g & (entitiesL . enemiesL . at enemyId ?~ enemy)
       other ->
         error $ "Currently not handling Revelations from type " <> show other
-  ResolvedCard iid card | Just card == gameResolvingCard g -> do
+  ResolvedCard iid card -> do
     modifiers' <- getModifiers (toCardId card)
     push $ After msg
     when
@@ -3098,17 +3127,21 @@ runGameMessage msg g = case msg of
     modifiers' <- getCombinedModifiers [TreacheryTarget treacheryId, CardIdTarget $ toCardId treachery]
     let ignoreRevelation = IgnoreRevelation `elem` modifiers'
     let revelation = Revelation iid (TreacherySource treacheryId)
+    needsResolve <- isNothing <$> findFromQueue (== ResolvedCard iid (toCard treachery))
+    needsDiscard <- selectNone $ VictoryDisplayCardMatch (basic $ CardWithId $ toCardId treachery)
 
     pushAll
       $ if ignoreRevelation
-        then [toDiscardBy iid GameSource (TreacheryTarget treacheryId), ResolvedCard iid (toCard treachery)]
+        then
+          [toDiscardBy iid GameSource (TreacheryTarget treacheryId) | needsDiscard]
+            <> [ResolvedCard iid (toCard treachery) | needsResolve]
         else
           [ When revelation
           , revelation
           , MoveWithSkillTest $ Run [After revelation, AfterRevelation iid treacheryId]
           , UnsetActiveCard
-          , ResolvedCard iid (toCard treachery)
           ]
+            <> [ResolvedCard iid (toCard treachery) | needsResolve]
     pure $ g & (if ignoreRevelation then activeCardL .~ Nothing else id)
   MoveWithSkillTest msg' -> do
     -- No skill test showed up so just run this

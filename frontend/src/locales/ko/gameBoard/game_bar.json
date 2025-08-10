@@ -35,6 +35,7 @@
     "debugExport": "디버깅 내보내기",
 
     "undo": "되돌리기",
+    "restartScenario": "시나리오 재시작",
 
     "fileABug": "버그 파일",
     "fileBugPart1": "이렇게 하면 현재 게임 상태가 저장되고 GitHub 이슈가 채워집니다. 계속 진행하려면 GitHub 계정이 필요합니다.",

@@ -1,25 +1,25 @@
 {
-  "prologue": "<h1>The Ghouls Hunger...</h1><p>Friday, September 18, 1925. Arkham, Massachusetts. It is the end of a long and abnormally hot summer. The first hints of autumn beckon, but a heavy heat persists, relentless. A silent, unspoken anger grips the town. Tempers are short, and in the last week alone there have been numerous reports of townspeople coming to heated, violent blows with one another over simple misunderstandings.</p> <p>And now, a call from James Hankerson. He claims to have found a dismembered body in his barn.</p> <p>Blaming the weather would be too easy. There is something wrong with this town, and not a whole lot this old soothsayer can do to stop the slide. My auguries indicate a small group of investigators will soon take note of these strange happenings and set forth to make things right. I’ll be watching their progress…but I won’t be holding my breath.</p>",
+  "prologue": "<h1>구울이 굶주렸다...</h1><p>1925년 9월 18일 금요일, 메사추세츠 주, 아컴시. 길고 비정상적으로 뜨거운 여름이 끝날 무렵이었다. 가을이 어서 오기만을 손꼽아 기다렸지만, 뜨거운 열기는 여전했고 그칠 줄 몰랐다. 조용히, 말 못할 분노가 마을을 휘감고 있었다. 걸핏하면 화를 내는 사람이 부지기수였고, 지난 일주일간 마을 사람들이 단순한 오해로 서로 격렬하게 싸움을 벌였다는 이야기가 수도 없이 들려왔다.</p> <p>그리고 지금, 제임스 핸커슨에게 연락이 왔다. 그의 헛간에서 훼손된 시신이 발견되었다고 한다.</p> <p>뭐든지 날씨 탓으로 돌리기는 너무 쉬웠지만, 그러기엔 이 마을은 결정적으로 무언가 잘못되었다. 그저 앞날을 조금 미리 볼 수 있는 이 늙은 점쟁이가 할 수 있는 일은 아무것도 없었다. 내 점괘에 따르면, 몇몇 조사자들이 곧 이 기이한 상황을 알아차리고 모든 일을 정상으로 되돌려 놓을 것이다. 나는 그들의 행보를 지켜볼 것이다…. 하지만 사실 그리 큰 기대는 하지 않는다.</p>",
   "key": {
-    "ghoulPriestIsStillAlive": "Ghoul Priest is still alive",
-    "yourHouseIsStillStanding": "Your house is still standing",
-    "yourHouseHasBurnedToTheGround": "Your house has burned to the ground",
-    "litaWasForcedToFindOthersToHelpHerCause": "Lita was forced to find others to help her cause",
-    "cultistsWeInterrogated": "Cultists we interrogated",
-    "cultistsWhoGotAway": "Cultists who got away",
-    "itIsPastMidnight": "It is past midnight",
-    "arkhamSuccumbedToUmordhothsTerribleVengeance": "Arkham succumbed to Umordhoth's terrible vengeance",
-    "theRitualToSummonUmordhothWasBroken": "The ritual to summon Umordhoth was broken",
-    "theInvestigatorsRepelledUmordoth": "The investigators repelled Umordoth",
-    "theInvestigatorsSacrificedLitaChantlerToUmordhoth": "The investigators sacrificed Lita Chantler to Umordhoth"
+    "ghoulPriestIsStillAlive": "‘구울 사제’가 여전히 살아 있다",
+    "yourHouseIsStillStanding": "당신의 집이 여전히 남아 있다",
+    "yourHouseHasBurnedToTheGround": "당신의 집이 불타버렸다",
+    "litaWasForcedToFindOthersToHelpHerCause": "리타는 어쩔 수 없이 다른 사람에게 도움을 요청했다",
+    "cultistsWeInterrogated": "심문한 추종자",
+    "cultistsWhoGotAway": "도망친 추종자",
+    "itIsPastMidnight": "자정이 지났다",
+    "arkhamSuccumbedToUmordhothsTerribleVengeance": "우몰도스의 끔찍한 복수에 아컴이 무릎을 꿇다",
+    "theRitualToSummonUmordhothWasBroken": "우몰도스를 소환하는 의식을 분쇄하다",
+    "theInvestigatorsRepelledUmordoth": "조사자들이 우몰도스를 격퇴하다",
+    "theInvestigatorsSacrificedLitaChantlerToUmordhoth": "조사자가 리타 챈들러를 우몰도스에게 희생시켰다"
   },
   "label": {
     "offerOfPower": {
-      "drawAndPlaceDoom": "Draw 2 cards and place 2 doom on agenda"
+      "drawAndPlaceDoom": "카드 2장을 뽑고, 현재 주요사건에 파멸을 2개 올려놓습니다."
     },
     "discipleOfTheDevourer": {
-      "doom": "Place 1 doom on Disciple of the Devourer",
-      "clue": "Place one of your clues on it's location"
+      "doom": "‘포식자의 사도’에 파멸을 1개 놓습니다.",
+      "clue": "그 적이 위치한 장소에 당신이 가진 단서를 1개 올려놓습니다."
     }
   }
 }

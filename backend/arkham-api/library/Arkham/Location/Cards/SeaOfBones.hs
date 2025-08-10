@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.SeaOfBones (seaOfBones, SeaOfBones (..)) where
+module Arkham.Location.Cards.SeaOfBones (seaOfBones) where
 
 import Arkham.Ability
 import Arkham.Helpers.Story (readStory)
@@ -12,14 +12,13 @@ newtype SeaOfBones = SeaOfBones LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 seaOfBones :: LocationCard SeaOfBones
-seaOfBones = location SeaOfBones Cards.seaOfBones 2 (PerPlayer 1)
+seaOfBones = locationWith SeaOfBones Cards.seaOfBones 2 (PerPlayer 1) (canBeFlippedL .~ True)
 
 instance HasAbilities SeaOfBones where
-  getAbilities (SeaOfBones attrs) =
-    let restriction = if locationCanBeFlipped attrs then NoRestriction else Never
-     in extendRevealed
-          attrs
-          [restrictedAbility attrs 1 restriction $ forced $ DiscoverClues #after You (be attrs) AnyValue]
+  getAbilities (SeaOfBones a) =
+    extendRevealed1 a $ restricted a 1 restriction $ forced $ DiscoverClues #after You (be a) AnyValue
+   where
+    restriction = if locationCanBeFlipped a then NoRestriction else Never
 
 instance RunMessage SeaOfBones where
   runMessage msg l@(SeaOfBones attrs) = runQueueT $ case msg of

@@ -5,9 +5,14 @@ import type { Game } from '@/arkham/types/Game';
 import Tab from '@/arkham/components/Tab.vue';
 import Player from '@/arkham/components/Player.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
+import { Message, AbilityLabel } from '@/arkham/types/Message';
 import type { Investigator } from '@/arkham/types/Investigator';
 import type { TarotCard } from '@/arkham/types/TarotCard';
+import type { Placement } from '@/arkham/types/Placement';
+import type { Source } from '@/arkham/types/Source';
 import { imgsrc } from '@/arkham/helpers';
+import { IsMobile } from '@/arkham/isMobile';
+import { useDbCardStore } from '@/stores/dbCards'
 
 export interface Props {
   game: Game
@@ -26,6 +31,8 @@ const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length >
 const investigators = computed(() => props.playerOrder.map(iid => props.players[iid]))
 const inactiveInvestigators = computed(() => Object.values(props.players).filter((p) => !props.playerOrder.includes(p.id)))
 const lead = computed(() => `url('${imgsrc(`lead-investigator.png`)}')`)
+const { isMobile } = IsMobile();
+const store = useDbCardStore()
 
 function tabClass(investigator: Investigator) {
   const pid = investigator.playerId
@@ -69,8 +76,56 @@ function tarotCardsFor(i: string) {
   return props.tarotCards.filter(c => c.scope.tag === 'InvestigatorTarot' && c.scope.contents === i)
 }
 
+function getInvestigatorName(cardTitle: string): string {
+  const language = localStorage.getItem('language') || 'en'
+  return language === 'en'? cardTitle : store.getCardName(cardTitle, "investigator")
+}
 
-watchEffect(() => selectedTab.value = props.playerId)
+const isForcedAbility = (ability: Message): ability is AbilityLabel => {
+  return ability.tag === "AbilityLabel" && ability.ability.type.tag === "ForcedAbility"
+}
+
+const sourceToPlacement = (source: Source): Placement | null => {
+  switch (source.tag) {
+    case "EnemySource":
+      {
+        const { contents } = source
+        if (contents) return props.game.enemies[contents].placement
+      }
+    case "TreacherySource":
+      {
+        const { contents } = source
+        if (contents) return props.game.treacheries[contents].placement
+      }
+    default:
+  }
+
+  return null
+}
+
+watchEffect(() => {
+  // determines which tab will be active, it should be the player who is
+  // playing the game, but on occasion there will be a forced effect in another
+  // players tab and we'd like to direct the player there
+  const playersWithForced = ArkhamGame
+    .choices(props.game, props.playerId)
+    .reduce((acc, c) => {
+      if (isForcedAbility(c)) {
+        const { source } = c.ability
+        const placement = sourceToPlacement(source)
+        if (placement?.tag == 'InThreatArea') {
+          const investigator = props.game.investigators[placement.contents]
+          if (investigator) acc.push(investigator.playerId)
+        }
+      }
+      return acc
+    }, [] as string[])
+
+  const playerIds = [...new Set(playersWithForced)]
+  selectedTab.value = playerIds.length > 0 && !playerIds.includes(props.playerId)
+    ? playerIds[0]
+    : props.playerId
+})
 </script>
 
 <template>
@@ -81,7 +136,8 @@ watchEffect(() => selectedTab.value = props.playerId)
         @click='selectTab(investigator.playerId)'
         :class='tabClass(investigator)'
       >
-        <span>{{ investigator.name.title }}</span>
+        <span v-if="isMobile">{{ getInvestigatorName(investigator.name.title).split(' ')[0] }}</span>
+        <span v-else>{{ getInvestigatorName(investigator.name.title) }}</span>
         <button
           v-if="solo"
           v-tooltip="instructions(investigator)"
@@ -153,6 +209,10 @@ ul.tabs__header {
   margin: 0;
   user-select: none;
   padding-left: 5px;
+  font-size: min(16px, 2vw);
+  @media (max-width: 800px) and (orientation: portrait) {
+    font-size: min(16px, 3vw);
+  }
 }
 
 ul.tabs__header > li {

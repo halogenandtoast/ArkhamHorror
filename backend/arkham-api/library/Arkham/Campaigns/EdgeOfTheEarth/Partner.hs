@@ -108,7 +108,7 @@ getPartner :: (HasGame m, HasCardCode a) => a -> m Partner
 getPartner (toCardCode -> cardCode) = do
   partners <- view partnersL <$> getCampaignLog
   pure $ fromJustNote "Not a valid partner" do
-    partner <- lookup cardCode partners <|> lookup (toResolute cardCode) partners
+    partner <- lookup (toPartnerCode cardCode) partners <|> lookup (toResolute cardCode) partners
     pure
       $ Partner
         { partnerCardCode = if partner.status == Resolute then toResolute cardCode else cardCode

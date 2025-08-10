@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheBoundaryBeyond (theBoundaryBeyond) where
+module Arkham.Scenario.Scenarios.TheBoundaryBeyond (setupTheBoundaryBeyond, theBoundaryBeyond, TheBoundaryBeyond (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -13,9 +13,10 @@ import Arkham.Enemy.Types (Field (EnemyDamage))
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers hiding (setupModifier)
-import Arkham.Helpers.Scenario
+import Arkham.Helpers.Scenario hiding (getIsReturnTo)
 import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (LocationName))
@@ -30,7 +31,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
 import Arkham.Scenarios.TheBoundaryBeyond.Helpers
-import Arkham.Scenarios.TheBoundaryBeyond.Story
 import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -89,106 +89,147 @@ standaloneChaosTokens =
   , ElderSign
   ]
 
+setupTheBoundaryBeyond :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupTheBoundaryBeyond attrs = do
+  setup do
+    ul do
+      li "gatherSets"
+      li "placeLocations"
+      li "explorationDeck"
+      li "setAside"
+      li "setActAndAgenda3OutOfPlay"
+      li "poisoned"
+      unscoped $ li "shuffleRemainder"
+
+  whenReturnTo $ gather Set.ReturnToTheBoundaryBeyond
+  gather Set.TheBoundaryBeyond
+  gather Set.TemporalFlux `orWhenReturnTo` gather Set.TemporalHunters
+  gather Set.Poison
+
+  tokens <- getBagChaosTokens
+  let
+    cultistCount = count ((== Cultist) . chaosTokenFace) tokens
+    tabletCount = count ((== Tablet) . chaosTokenFace) tokens
+
+  when (cultistCount >= 2) do
+    gather Set.PnakoticBrotherhood
+    gather Set.DarkCult `orWhenReturnTo` gather Set.CultOfPnakotus
+
+  when (tabletCount >= 2) do
+    gather Set.YigsVenom `orWhenReturnTo` gather Set.VenomousHate
+    gather Set.GuardiansOfTime
+
+  when (cultistCount < 2 && tabletCount < 2) do
+    gather Set.PnakoticBrotherhood
+    gather Set.GuardiansOfTime
+
+  zocalo <- place =<< Locations.zocalo `orSampleIfReturnTo` [Locations.returnToZocalo]
+  coyoacan <- place =<< Locations.coyoacan `orSampleIfReturnTo` [Locations.returnToCoyoacan]
+  place_
+    =<< Locations.metropolitanCathedral
+    `orSampleIfReturnTo` [Locations.returnToMetropolitanCathedral]
+  place_ =<< Locations.templeRuins `orSampleIfReturnTo` [Locations.returnToTempleRuins]
+  place_ =<< Locations.xochimilco `orSampleIfReturnTo` [Locations.returnToXochimilco]
+  place_ =<< Locations.chapultepecPark `orSampleIfReturnTo` [Locations.returnToChapultepecPark]
+
+  isReturnTo <- getIsReturnTo
+  let treacheries =
+        guard (not isReturnTo)
+          *> [ Treacheries.windowToAnotherTime
+             , Treacheries.timelineDestabilization
+             , Treacheries.aTearInTime
+             , Treacheries.lostInTime
+             ]
+
+  addExtraDeck ExplorationDeck
+    =<< shuffle
+      ( [ Locations.temploMayor_174
+        , Locations.temploMayor_175
+        , Locations.templesOfTenochtitlan_176
+        , Locations.templesOfTenochtitlan_177
+        , Locations.chapultepecHill_178
+        , Locations.chapultepecHill_179
+        , Locations.canalsOfTenochtitlan_180
+        , Locations.canalsOfTenochtitlan_181
+        , Locations.lakeXochimilco_182
+        , Locations.lakeXochimilco_183
+        , Locations.sacredWoods_184
+        , Locations.sacredWoods_185
+        ]
+          <> treacheries
+      )
+
+  setAsidePoisonedCount <- getSetAsidePoisonedCount
+  setAside
+    $ [Enemies.padmaAmrita, Acts.theReturnTrip, Agendas.timeCollapsing]
+    <> replicate setAsidePoisonedCount Treacheries.poisoned
+
+  whenReturnTo $ setAside [Enemies.harbingerOfValusiaTheSleeperReturns]
+  eachInvestigator \iid -> chooseTargetM iid [zocalo, coyoacan] $ moveTo_ attrs iid
+  setAgendaDeck [Agendas.theBoundaryBroken, Agendas.theBarrierIsThin]
+  setActDeck [Acts.crossingTheThreshold, Acts.pastAndPresent]
+
 instance RunMessage TheBoundaryBeyond where
   runMessage msg s@(TheBoundaryBeyond attrs) = runQueueT $ scenarioI18n $ case msg of
-    PreScenarioSetup -> do
-      story introPart1
+    PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "part1"
 
       unlessStandalone do
         forgedABondWithIchtaca <- getHasRecord TheInvestigatorsForgedABondWithIchtaca
-        if forgedABondWithIchtaca
-          then story ichtacasQuest
-          else do
-            story silentJourney
-            eachInvestigator \iid -> setupModifier attrs iid (StartingHand (-2))
+        flavor do
+          h "title"
+          compose.green $ scope "ichtaca" do
+            p "instructions"
+            p.validate forgedABondWithIchtaca "ichtacasQuest"
+            p.validate (not forgedABondWithIchtaca) "silentJourney"
+
+        unless forgedABondWithIchtaca do
+          eachInvestigator \iid -> setupModifier attrs iid (StartingHand (-2))
 
         foundTheMissingRelic <- getHasRecord TheInvestigatorsFoundTheMissingRelic
-        if foundTheMissingRelic
-          then do
-            story arcaneThrumming
-            removeCampaignCard Assets.relicOfAgesADeviceOfSomeSort
-            withOwner Assets.relicOfAgesADeviceOfSomeSort \owner -> do
-              addCampaignCardToDeck owner ShuffleIn Assets.relicOfAgesForestallingTheFuture
-          else story growingConcern
+
+        flavor do
+          h "title"
+          compose.green $ scope "missingRelic" do
+            p "instructions"
+            p.validate foundTheMissingRelic "arcaneThrumming"
+            p.validate (not foundTheMissingRelic) "growingConcern"
+
+        when foundTheMissingRelic do
+          removeCampaignCard Assets.relicOfAgesADeviceOfSomeSort
+          withOwner Assets.relicOfAgesADeviceOfSomeSort \owner -> do
+            addCampaignCardToDeck owner ShuffleIn Assets.relicOfAgesForestallingTheFuture
 
         rescuedAlejandro <- getHasRecord TheInvestigatorsRescuedAlejandro
-        if rescuedAlejandro
-          then do
-            story alejandrosThoughts
-            eachInvestigator \iid -> setupModifier attrs iid (StartingResources 2)
-          else story anEmptySeat
+
+        flavor do
+          h "title"
+          compose.green $ scope "alejandro" do
+            p "instructions"
+            p.validate rescuedAlejandro "alejandrosThoughts"
+            p.validate (not rescuedAlejandro) "anEmptySeat"
+
+        when rescuedAlejandro do
+          eachInvestigator \iid -> setupModifier attrs iid (StartingResources 2)
 
         withGasoline <- headMay <$> getInvestigatorsWithSupply Gasoline
-        when (isNothing withGasoline) do
-          story outOfGas
-          eachInvestigator \iid -> setupModifier attrs iid CannotMulligan
-        pushAll [UseSupply iid Gasoline | iid <- maybeToList withGasoline]
 
-      story introPart2
+        flavor do
+          h "title"
+          compose.green $ scope "gas" do
+            p "instructions"
+            p.validate (isNothing withGasoline) "outOfGas"
+
+        when (isNothing withGasoline) do
+          eachInvestigator \iid -> setupModifier attrs iid CannotMulligan
+        for_ withGasoline \iid -> push $ UseSupply iid Gasoline
+
+      flavor $ h "title" >> p "part2"
       pure s
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens
       pure s
-    Setup -> runScenarioSetup TheBoundaryBeyond attrs do
-      gather Set.TheBoundaryBeyond
-      gather Set.TemporalFlux
-      gather Set.Poison
-
-      tokens <- getBagChaosTokens
-      let
-        cultistCount = count ((== Cultist) . chaosTokenFace) tokens
-        tabletCount = count ((== Tablet) . chaosTokenFace) tokens
-
-      when (cultistCount >= 2) do
-        gather Set.PnakoticBrotherhood
-        gather Set.DarkCult
-
-      when (tabletCount >= 2) do
-        gather Set.YigsVenom
-        gather Set.GuardiansOfTime
-
-      when (cultistCount < 2 && tabletCount < 2) do
-        gather Set.PnakoticBrotherhood
-        gather Set.GuardiansOfTime
-
-      zocalo <- place Locations.zocalo
-      coyoacan <- place Locations.coyoacan
-
-      placeAll
-        [ Locations.metropolitanCathedral
-        , Locations.templeRuins
-        , Locations.xochimilco
-        , Locations.chapultepecPark
-        ]
-
-      addExtraDeck ExplorationDeck
-        =<< shuffle
-          [ Locations.temploMayor_174
-          , Locations.temploMayor_175
-          , Locations.templesOfTenochtitlan_176
-          , Locations.templesOfTenochtitlan_177
-          , Locations.chapultepecHill_178
-          , Locations.chapultepecHill_179
-          , Locations.canalsOfTenochtitlan_180
-          , Locations.canalsOfTenochtitlan_181
-          , Locations.lakeXochimilco_182
-          , Locations.lakeXochimilco_183
-          , Locations.sacredWoods_184
-          , Locations.sacredWoods_185
-          , Treacheries.windowToAnotherTime
-          , Treacheries.timelineDestabilization
-          , Treacheries.aTearInTime
-          , Treacheries.lostInTime
-          ]
-
-      setAsidePoisonedCount <- getSetAsidePoisonedCount
-      setAside
-        $ [Enemies.padmaAmrita, Acts.theReturnTrip, Agendas.timeCollapsing]
-        <> replicate setAsidePoisonedCount Treacheries.poisoned
-
-      eachInvestigator \iid -> chooseTargetM iid [zocalo, coyoacan] $ moveTo_ attrs iid
-      setAgendaDeck [Agendas.theBoundaryBroken, Agendas.theBarrierIsThin]
-      setActDeck [Acts.crossingTheThreshold, Acts.pastAndPresent]
+    Setup -> runScenarioSetup TheBoundaryBeyond attrs $ setupTheBoundaryBeyond attrs
     Explore iid _ _ -> do
       checkWhen $ Window.AttemptExplore iid
       push $ Do msg
@@ -235,7 +276,7 @@ instance RunMessage TheBoundaryBeyond where
           chooseTargetM iid ls \target -> placeTokens ElderThing target Clue 1
         _ -> pure ()
       pure s
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scope "resolutions" do
       step <- getCurrentActStep
       locations <- selectTargets $ LocationWithTrait Trait.Tenochtitlan <> LocationWithoutClues
 
@@ -243,14 +284,14 @@ instance RunMessage TheBoundaryBeyond where
         addLocationsToVictory =
           and [step == 2, notNull locations, r `elem` [NoResolution, Resolution 2]]
 
-      story $ case r of
-        NoResolution -> noResolution
-        Resolution 1 -> resolution1
-        Resolution 2 -> resolution2
+      resolution $ case r of
+        NoResolution -> "noResolution"
+        Resolution 1 -> "resolution1"
+        Resolution 2 -> "resolution2"
         _ -> error "invalid resolution"
       when addLocationsToVictory do
         for_ locations addToVictory
-      push $ ScenarioResolutionStep 1 r
+      doStep 1 msg
 
       vengeance <- getTotalVengeanceInVictoryDisplay
       yigsFury <- getRecordCount YigsFury
@@ -267,7 +308,7 @@ instance RunMessage TheBoundaryBeyond where
           recordCount TheHarbingerIsStillAlive damage
       endOfScenario
       pure s
-    ScenarioResolutionStep 1 r -> do
+    DoStep 1 (ScenarioResolution r) -> scope "resolutions" do
       n <- selectCount $ VictoryDisplayCardMatch $ basic $ CardWithTrait Trait.Tenochtitlan
       recordCount PathsAreKnownToYou n
       recordWhen (n >= 3 && r == Resolution 1) IchtacaHasConfidenceInYou

@@ -47,6 +47,9 @@ data CampaignLogKey
   | TheInvestigatorsFledTheSceneOfTheCrime
   | TheExcelsiorIsQuietForNow
   | TheMurdersContinueUnsolved
+  | -- | The Midwinter Gala
+    TheInvestigatorsSurvivedTheMidwinterGala
+  | TheInvestigatorsWereDefeatedAtTheMidwinterGala
   | -- | Player Cards
     YouHaveIdentifiedTheSolution
   | YouHaveTranslatedTheGlyphs
@@ -95,6 +98,8 @@ parseStringKey = withText "CampaignLogKey" $ \case
   "TheInvestigatorsFledTheSceneOfTheCrime" -> pure TheInvestigatorsFledTheSceneOfTheCrime
   "TheExcelsiorClaimsAnotherVictim" -> pure TheExcelsiorClaimsAnotherVictim
   "TheMurdersContinueUnsolved" -> pure TheMurdersContinueUnsolved
+  "TheInvestigatorsSurvivedTheMidwinterGala" -> pure TheInvestigatorsSurvivedTheMidwinterGala
+  "TheInvestigatorsWereDefeatedAtTheMidwinterGala" -> pure TheInvestigatorsWereDefeatedAtTheMidwinterGala
   "YouHaveIdentifiedTheSolution" -> pure YouHaveIdentifiedTheSolution
   "YouHaveTranslatedTheGlyphs" -> pure YouHaveTranslatedTheGlyphs
   "YouHaveIdentifiedTheStone" -> pure YouHaveIdentifiedTheStone

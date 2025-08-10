@@ -1,66 +1,74 @@
 {
   "remembered": {
-    "hadADrink": "{name} had a drink",
-    "cheated": "{name} cheated"
+    "hadADrink": "{name} 조사자는 한 잔 마셨다",
+    "cheated": "{name} 조사자는 속임수를 썼다"
   },
   "tokens": {
     "easyStandard": {
-      "skull": "-2. You may spend 2 resources to treat this token as a 0, instead.",
-      "cultist": "-3. If you succeed, gain 3 resources.",
-      "tablet": "-2. If you fail, discard 3 resources."
+      "skull": "-2. 당신이 자원을 2개 소비하면, 이번 토큰의 보정치를 -2 대신 0으로 취급해도 됩니다.",
+      "cultist": "-3. 성공하면, 자원을 3개 획득합니다.",
+      "tablet": "-2. 실패하면, 자원을 3개 버립니다."
     },
     "hardExpert": {
-      "skull": "-3. You may spend 3 resources to treat this token as a 0, instead.",
-      "cultist": "-3. If you fail, discard 3 resources.",
-      "tablet": "-2. Discard 3 resources."
+      "skull": "-3. 당신이 자원을 3개 소비하면, 이번 토큰의 보정치를 -3 대신 0으로 취급해도 됩니다.",
+      "cultist": "-3. 실패하면, 자원을 3개 버립니다.",
+      "tablet": "-2. 자원을 3개 버립니다."
     }
   },
   "intro": {
-    "title": "Scenario I-B: The House Always Wins",
-    "body": "<p>Dr. Armitage suggested you track down his associate Dr. Francis Morgan. He’s not sure whether Dr. Morgan is in trouble, but he’s not particularly happy with his colleague’s present choice of company. He’s in the Clover Club, a notorious gambling joint somewhere downtown. Finding the club’s exact location isn’t easy—you have to grease a few palms just to learn which of the Downtown restaurants operates as the club’s front. That restaurant is La Bella Luna, a somewhat upscale Italian eatery by the theatre. You change into your Sunday best and make your way there.</p><p>In front of La Bella Luna stands a man in a pinstripe suit who sizes you up as you approach. “Enjoy yourselves,” he says with a snake-like grin as he holds open the restaurant’s front door.</p>"
+    "title": "시나리오 I-B: 도박장은 언제나 이긴다",
+    "body": "<p>아미티지 박사는 동료인 프랜시스 모건 박사를 찾아볼 것을 제안했습니다. 아미티지 박사는 모건 박사가 곤경에 처했는지 여부는 알지 못했지만, 동료 교수가 이런 상황에서 도박꾼과 어울려 노는 것만큼은 탐탁지 않아 했습니다. 모건 박사는 번화가 어딘가에 있는 악명 높은 도박장인 클로버 클럽에 있습니다. 클럽의 위치를 찾기 쉽지 않은 탓에, 식당으로 위장한 클럽 입구를 알아내기 위해 뇌물을 써야 했습니다. 마침내 알아낸 곳은 라 벨라 루나라는 식당으로, 극장 옆에 있는 고급 이탈리아 음식점이었습니다. 당신은 최대한 잘 차려 입고 그곳으로 향합니다.</p><p>라 벨라 루나 앞에 도착하자, 가는 세로줄무늬 정장을 입은 남자가 다가오는 당신을 눈으로 훑어봅니다. “좋은 시간 되십시오.” 그가 식당 앞문을 열어주면서 음흉해 보이는 미소를 흘립니다.</p>"
   },
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: *The House Always Wins*, *Bad Luck*, *Naomi’s Crew*, *Rats*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-house-always-wins.png' /><img src='{setImgPath}/bad-luck.png' /><img src='{setImgPath}/naomis-crew.png' /><img src='{setImgPath}/rats.png' /></section>",
-    "setAsideEncounterSets": "Set the *Hideous Abominations* and *Striking Fear* encounter sets aside, out of play. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
-    "placeLocations": "Put the Clover Club Lounge, Clover Club Bar, Clover Club Cardroom, and La Bella Luna locations into play. Each investigator begins play in La Bella Luna.",
-    "placeCloverClubPitBoss": "Put Clover Club Pit Boss into play in the Clover Club Lounge.",
-    "setAside": "Set the following cards aside, out of play: Darkened Hall, Peter Clover, Dr. Francis Morgan, and each copy of Back Hall Doorway.",
-    "note": "<p class='basic'>_Note_: At the start of this scenario, agenda 1a grants each _Criminal_ enemy the aloof keyword, which stops those enemies from automatically engaging you. At some point, those enemies may lose the aloof keyword. Remember that enemies who are no longer aloof will automatically engage investigators at their location, as per normal.</p>"
+    "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *도박장은 언제나 이긴다*, *불운*, *나오미 일당*, *쥐 떼*. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/the-house-always-wins.png' /><img src='{setImgPath}/bad-luck.png' /><img src='{setImgPath}/naomis-crew.png' /><img src='{setImgPath}/rats.png' /></section>",
+    "setAsideEncounterSets": "*끔찍한 흉물*과 *엄습하는 공포* 조우 세트를 비플레이 상태로 치워 둡니다. 이 세트에는 다음 아이콘이 그려져 있습니다:<section class='encounter-sets'><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "placeLocations": "‘클로버 클럽 라운지’, ‘클로버 클럽 바’, ‘클로버 클럽 카드게임방’, ‘라 벨라 루나’ 장소를 플레이 영역에 둡니다. 모든 조사자는 ‘라 벨라 루나’에서 시작합니다.",
+    "placeCloverClubPitBoss": "‘클로버 클럽 책임자’를 플레이 영역 안 ‘클로버 클럽 라운지’에 둡니다.",
+    "setAside": "‘어두운 복도’, ‘피터 클로버’, ‘프랜시스 모건 박사’, ‘복도 뒤편 출입구’(모든 사본)를 비플레이 상태로 치워 둡니다.",
+    "note": "<p class='basic'>_주의_: 이번 시나리오를 시작할 때, 주요사건 1a는 모든 _범죄자_ 적에게 ‘냉담한’ 키워드를 부여합니다. ‘냉담한’ 적은 당신과 자동으로 교전하지 않습니다. 특정 지점에서, 이런 적들이 ‘냉담한’ 키워드를 잃을 수 있습니다. ‘냉담한’ 키워드를 잃은 적은 일반적인 규칙에 따라 같은 장소에 있는 조사자와 자동으로 교전한다는 점을 꼭 기억해야 합니다.</p>"
   },
   "resolutions": {
     "xp": {
-      "resolution1": "Reflects on the night’s events.",
-      "resolution4": "Reflects on the night’s events."
+      "resolution1": "그날 밤 사건을 곱씹어 봄.",
+      "resolution4": "그날 밤 사건을 곱씹어 봄."
     },
     "noResolution": {
-      "title": "No Resolution",
-      "body": "<div class='resolution'><p class='basic'>_If no resolution was reached (each investigator resigned before Act 3 or was defeated)_: You barely made it out of the club alive. Go to _Resolution 1._</p></div>"
+      "title": "결말에 도달하지 못함",
+      "body": "<div class='resolution'><p class='basic'>_아무 결말에도 도달하지 못했다면 (각 조사자가 쓰러졌거나, 주요목적 3 이전에 후퇴했다면)_: 당신은 간신히 목숨을 건져 클럽에서 빠져나왔습니다. _결말 1_을 읽습니다.</p></div>"
     },
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1_: You flee to the end of the block and pause to recover. Before you can catch your breath, the ground shakes with a thunderous crash. People emerge from their homes and storefronts to see what the ruckus is, and a crowd forms on the street. You head to the front of the crowd and are horrified to see the building from which you fled just minutes earlier reduced to rubble. There is no sign of Dr. Morgan anywhere.</p><ul><li>In your Campaign Log, record that *the O’Bannion gang has a bone to pick with the investigators.*</li><li>In your Campaign Log, record that *Dr. Francis Morgan was kidnapped.*</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 1 experience as he or she reflects on the night’s events.<ul><li>_Experience_: {xp}</li></ul></li><li>If this is the first scenario of the campaign, proceed to Scenario I–A: Extracurricular Activity. Otherwise, proceed to Interlude I: Armitage’s Fate.</li></ul></div>"
+      "title": "결말 1",
+      "body": "<div class='resolution'><p>_결말 1_: 당신은 한 블록을 내달린 다음에야 멈춰 서서 몸을 추스릅니다. 숨을 가다듬기도 전에, 벼락이 떨어진 양 땅이 진동합니다. 집이나 가게에 있던 사람들이 무슨 소란인지 보려고 거리에 몰려듭니다. 사람들 틈에 섞여 클럽 건물로 다가간 당신은, 바로 몇 분 전까지만 해도 멀쩡히 있던 건물이 잔해만 남은 모습을 보고 공포에 질립니다. 모건 박사의 흔적은 어디에도 보이지 않습니다.</p><ul><li>캠페인 기록지에 *오베니언 갱이 조사자들에게 앙심을 품었다*라고 기록합니다.</li><li>캠페인 기록지에 *프랜시스 모건 박사가 납치되었다*라고 기록합니다.</li><li>한 플레이어라도 “속임수를 썼다”면, 캠페인이 끝날 때까지 혼돈 주머니에 {'{'}elderThing{'}'} 토큰을 1개 추가합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다. 각 조사자는 그날 밤 사건을 곱씹어 봄에 따라, 경험치를 추가로 1씩 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>이번 시나리오가 캠페인의 첫 번째 시나리오라면, 시나리오 I-A: “과외 활동”으로 진행합니다. 그렇지 않다면, 막간 I: “아미티지의 운명”으로 진행합니다.</li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2_: “What in the world…?” Dr. Morgan finally breaks out of his daze as you make your way to safety. You ask him what he remembers, and he sputters and shakes his head. “It’s all a haze,” he explains, visibly exhausted. “I was having the run of my life! Perhaps I had one too many shots. But, those creatures—I haven’t seen anything like that since…” He trails off, and you can tell that his mind is racing. His eyes widen with realization and his face pales. “I may not be in the best shape, but I’ll help with your investigation. Whatever it takes.”</p><ul><li>In your Campaign Log, record that *the O’Bannion gang has a bone to pick with the investigators*.</li><li>In your Campaign Log, record that *the investigators rescued Dr. Francis Morgan*. Any one investigator may choose to add Dr. Francis Morgan to his or her deck. This card does not count toward that investigator’s deck size.</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Proceed to Scenario I–A: Extracurricular Activity.</li></ul></div>"
+      "title": "결말 2",
+      "body": "<div class='resolution'><p>_결말 2_: “세상에 이게 무슨…?” 모건 박사는 당신의 호위 아래 안전하게 밖으로 나오고 나서야 정신을 차립니다. 뭔가 기억나는 게 없는지 물어보니, 그는 고개를 흔들면서 말을 더듬습니다. “으… 어지러워.” 그가 눈에 띄게 지친 모습으로 말합니다. “아주 죽는 줄 알았군! 술을 너무 많이 마셨던 것 같네. 그런데 그 괴물은 대체… 그런 건 그때 이후론 본 적이 없는데…” 그의 말소리가 줄어듭니다. 아무래도 생각에 빠진 것 같습니다. 이윽고 무언가 알아차린 듯 그의 눈동자가 커지면서 안색이 창백해집니다. “지금 내 상태가 썩 좋진 않지만, 당신의 조사를 돕겠네. 할 수 있는 건 뭐든 다 하지.”</p><ul><li>캠페인 기록지에 *오베니언 갱이 조사자들에게 앙심을 품었다*라고 기록합니다.</li><li>캠페인 기록지에 *조사자들이 프랜시스 모건 박사를 구출했다*라고 기록합니다. 조사자 중 한 명이 ‘프랜시스 모건 박사’를 자기 덱에 추가해도 됩니다. 이 카드는 조사자의 덱 크기를 계산할 때 포함되지 않습니다.</li><li>한 플레이어라도 “속임수를 썼다”면, 캠페인이 끝날 때까지 혼돈 주머니에 {'{'}elderThing{'}'} 토큰을 1개 추가합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>시나리오 I-A: “과외 활동”으로 진행합니다.</li></ul></div>"
     },
     "resolution3": {
-      "title": "Resolution 3",
-      "body": "<div class='resolution'><p>_Resolution 3_: Although you were unable to find Dr. Morgan in the club, the man you rescued is grateful for your help. He introduces himself as Peter Clover, the owner of the establishment you’d just left. Despite the situation, he maintains an air of quiet professionalism. As you make your way towards the street, a well-polished Chrysler B-70 rolls up to you, and a gorgeous woman with long brown hair and narrow eyes exits. She is flanked by dangerous-looking men who slip their hands under their suit jackets when they see you. “Peter,” she says with a sigh of relief, “Good, you’re okay. I heard there was trouble?” She turns and glares at you with deadly eyes. “Who are they?”</p><p>Mr. Clover dusts off his vest, unworried. “Naomi, my dear, these are friends of mine. They…” he clears his throat. “They escorted me off the premises,” he explains after a short pause. “They have earned our gratitude.” The woman crosses her arms and takes a moment to size you up before giving you a smirk.</p><p>“Very well then. I must thank you for taking care of Peter. Run along now; we’ll handle things from here.” She nods to the goons flanking her and they walk past you toward the club’s rear entrance, pulling firearms out from underneath their coats. You’re not sure what ‘handling things’ means, but you’re pretty sure you don’t want to be here when the gunfire starts. You thank Naomi and Peter, and head off.</p><ul><li>In your Campaign Log, record that *Naomi has the investigators’ backs*.</li><li>In your Campaign Log, record that *Dr. Francis Morgan was kidnapped*.</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Proceed to Interlude I: Armitage’s Fate.</li></ul></div>"
+      "title": "결말 3",
+      "body": "<div class='resolution'><p>_결말 3_: 클럽에서 모건 박사를 찾지는 못했지만, 그 대신 당신이 구해준 남자가 감사의 뜻을 표합니다. 그의 이름은 피터 클로버로, 방금 빠져나온 클럽의 소유주라고 자신을 소개합니다. 이런 상황 속에서도 그는 차분함을 잃지 않았습니다. 거리로 빠져나오는 순간, 광택이 나는 크라이슬러 B-70이 당신 앞에 섭니다. 그리고 긴 갈색 머리의 매력적인 여성이 눈을 가늘게 뜨고 차에서 내립니다. 그녀의 양옆에는 제법 위험해 보이는 사내들이 재킷 속에 손을 집어넣은 채 당신을 바라보고 있습니다. “피터.” 그녀가 안도의 한숨을 내쉽니다. “다행이야, 무사해서. 문제가 생겼다던데?” 그녀가 매서운 눈빛으로 당신을 노려보며 피터에게 묻습니다. “누구야, 이 사람들?”</p><p>클로버는 느긋하게 조끼를 털며 말합니다. “나오미, 내 사랑. 이들은 내 친구요. 이들은…” 그가 목을 가다듬습니다. “이들이 클럽에서 날 보호해 주었다오.” 그가 잠시 말을 멈췄다가 이어갑니다. “우리가 고마워해야 할 사람들이오.” 여인이 팔을 꼬고 잠시 당신을 눈으로 훑고는 거만한 미소를 짓습니다.</p><p>“좋아. 피터를 구해줘서 고맙다고 해야겠군. 그만 가보렴. 이제부터는 우리가 정리할 테니.” 그녀가 옆에 있는 조직원들에게 고개를 끄덕이자 그들은 코트 안쪽에서 총을 꺼내 들고서는 당신을 지나쳐 클럽 뒷문을 향해 걸어갑니다. “정리”의 의미가 확실치 않지만, 어쨌든 총소리가 나기 전에 이곳을 벗어나고 싶은 것만큼은 확실합니다. 당신은 나오미와 피터에게 감사를 표하고, 이곳을 떠납니다.</p><ul><li>캠페인 기록지에 *나오미가 조사자들의 뒤를 맡았다*라고 기록합니다.</li><li>캠페인 기록지에 *프랜시스 모건 박사가 납치되었다*라고 기록합니다.</li><li>한 플레이어라도 “속임수를 썼다”면, 캠페인이 끝날 때까지 혼돈 주머니에 {'{'}elderThing{'}'} 토큰을 1개 추가합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>막간 I: “아미티지의 운명”으로 진행합니다.</li></ul></div>"
     },
     "resolution4": {
-      "title": "Resolution 4",
-      "body": "<div class='resolution'>_Resolution 4_: You are pulled from the debris by several firefighters, one of whom exclaims, “We’ve got a live one!” A few of them patch you up, and the cops ask you what happened. You’re certain they wouldn’t believe your story about horrible monstrosities demolishing the building from within. Unsure of what to say, you give a vague statement about not remembering much. “We’re bringing you to St. Mary’s,” one of the nurses says, pointing to a nearby ambulance. Knowing now how dire the situation is, you slip away while she is distracted by something else in the rubble…</p><ul><li>In your Campaign Log, record that *the O’Bannion gang has a bone to pick with the investigators*.</li><Li>In your Campaign Log, record that *Dr. Francis Morgan was kidnapped*.</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator suffers 1 physical trauma.</li><li>In your Campaign Log, record that the investigators were unconscious for several hours.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 1 experience as he or she reflects on the night’s events.<ul><li>_Experience_: {xp}</li></ul></li><li>If this is the first scenario of the campaign, proceed to Scenario I–A: Extracurricular Activity. Otherwise, proceed to Interlude I: Armitage’s Fate.</li></ul></div>"
+      "title": "결말 4",
+      "body": "<div class='resolution'>_결말 4_: 소방수가 잔해 속에 파묻혀 있는 당신을 발견합니다. “여기 생존자야!” 몇몇 소방수가 응급조치를 해주고는, 이어서 경찰이 다가와 무슨 일이 있었는지 물어봅니다. 하지만, 끔찍한 괴물이 저 건물을 파괴했다고 말한들 그들이 믿을 리 없습니다. 뭐라 해야 할지 몰라, 기억이 나지 않는다는 애매한 말로 얼버무립니다. “세인트 메리 병원으로 호송하겠습니다.” 한 간호사가 구급차를 손으로 가리키며 말합니다. 이 무시무시한 일들이 벌이지고 있는 와중에, 병원에 누워 있을 수만은 없습니다. 당신은 간호사가 한눈을 판 사이 현장을 빠져나옵니다.</p><ul><li>캠페인 기록지에 *오베니언 갱이 조사자들에게 앙심을 품었다*라고 기록합니다.</li><Li>캠페인 기록지에 *프랜시스 모건 박사가 납치되었다*라고 기록합니다.</li><li>한 플레이어라도 “속임수를 썼다”면, 캠페인이 끝날 때까지 혼돈 주머니에 {'{'}elderThing{'}'} 토큰을 1개 추가합니다.</li><li>각 조사자는 육체적 트라우마를 1씩 겪습니다.</li><li>캠페인 기록지에 *조사자들이 몇 시간 동안 의식을 잃었다*라고 기록합니다.</li><li>각 조사자는 승점 더미에 있는 카드의 승점값만큼 경험치를 얻습니다. 각 조사자는 그날 밤 사건을 곱씹어 봄에 따라, 경험치를 추가로 1씩 얻습니다.<ul><li>_경험치_: {xp}</li></ul></li><li>이번 시나리오가 캠페인의 첫 번째 시나리오라면, 시나리오 I-A: “과외 활동”으로 진행합니다. 그렇지 않다면, 막간 I: “아미티지의 운명”으로 진행합니다.</li></ul></div>"
     }
   },
   "label": {
     "skull": {
-      "spend": "Spend 1 resource to treat this token as a 0, instead. | Spend {count} resources to treat this token as a 0, instead.",
-      "doNotSpend": "Do not spend resources"
+      "spend": "자원을 2개 소비하여 이번 토큰의 보정치를 0으로 취급합니다. | 자원을 {count}개 소비하여 이번 토큰의 보정치를 0으로 취급합니다.",
+      "doNotSpend": "자원을 소비하지 않음"
     },
-    "cheated": "Remember that you have \"cheated.\"",
+    "cheated": "“속임수를 썼다”라고 기억합니다",
     "raiseTheStakes": {
-      "place": "Put Raise the Stakes into play in your threat area"
+      "place": "‘판돈 올려!’를 플레이 영역 중 당신의 위협 영역에 둡니다."
+    }
+  },
+  "tooltips": {
+    "laBellaLuna": {
+      "resign": "일이 수포로 돌아갔다."
+    },
+    "backHallDoorway": {
+      "resign": "이리로 탈출할 수 있겠어!"
     }
   }
 }

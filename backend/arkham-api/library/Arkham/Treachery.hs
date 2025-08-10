@@ -653,16 +653,18 @@ allTreacheries =
     , SomeTreacheryCard painfulReflection
     , --- Yog Sothoth's Emissaries
       SomeTreacheryCard eldritchAccord
-    , -- Return to the Forgotten Age
+    , -- Return to the Forgotten Age [rttfa]
       SomeTreacheryCard offerYouCannotRefuse
     , SomeTreacheryCard finePrint
     , SomeTreacheryCard sellYourSoul
-    , --- Doom Expedition
+    , --- Cult of Pnakotus [rttfa]
+      SomeTreacheryCard fromAnotherTime
+    , --- Doom Expedition [rttfa]
       SomeTreacheryCard resentfulWilds
     , SomeTreacheryCard bestLaidPlans
-    , --- Temporal Hunters
+    , --- Temporal Hunters [rttfa]
       SomeTreacheryCard mergingTimelines
-    , --- Venoumous Hate
+    , --- Venoumous Hate [rttfa]
       SomeTreacheryCard wrathOfYig
     , -- Return to the Circle Undone
       SomeTreacheryCard damned
@@ -677,7 +679,8 @@ allTreacheries =
     , -- Stella Clark
       SomeTreacheryCard calledByTheMists
     , SomeTreacheryCard atychiphobia
-    , -- Curse of the Rougarou
+    , -- Side Stories
+      --- Curse of the Rougarou
       SomeTreacheryCard cursedSwamp
     , SomeTreacheryCard spectralMist
     , SomeTreacheryCard draggedUnder
@@ -686,7 +689,7 @@ allTreacheries =
     , SomeTreacheryCard onTheProwl
     , SomeTreacheryCard beastOfTheBayou
     , SomeTreacheryCard insatiableBloodlust
-    , -- Carnevale of Horror
+    , --- Carnevale of Horror
       SomeTreacheryCard massHysteria
     , SomeTreacheryCard lostInVenice
     , SomeTreacheryCard watchersGaze
@@ -694,7 +697,7 @@ allTreacheries =
     , SomeTreacheryCard mesmerize
     , SomeTreacheryCard abduction
     , SomeTreacheryCard acridMiasma
-    , -- Murder at the Excelsior Hotel
+    , --- Murder at the Excelsior Hotel
       SomeTreacheryCard whatHaveYouDone
     , SomeTreacheryCard noxiousFumes
     , SomeTreacheryCard drivenToMadness
@@ -708,8 +711,22 @@ allTreacheries =
     , SomeTreacheryCard morbidAwareness
     , --- Sins of the Past
       SomeTreacheryCard chillingPresence
-    , -- Side Stories
-      --- The Blob That Ate Everything ELSE!
+    , --- The Midwinter Gala
+      SomeTreacheryCard confusion
+    , SomeTreacheryCard coldStreak
+    , SomeTreacheryCard wardOfPreservation
+    , SomeTreacheryCard unlucky
+    , SomeTreacheryCard viciousAmbush
+    , SomeTreacheryCard bleedingWallsTheMidwinterGala
+    , SomeTreacheryCard entrap
+    , SomeTreacheryCard inexplicableColdTheMidwinterGala
+    , SomeTreacheryCard mindExtraction
+    , SomeTreacheryCard noxiousFumesTheMidwinterGala
+    , SomeTreacheryCard pushedIntoTheBeyondTheMidwinterGala
+    , SomeTreacheryCard secretDoorTheMidwinterGala
+    , SomeTreacheryCard terrorGate
+    , SomeTreacheryCard violentCommandsTheMidwinterGala
+    , --- The Blob That Ate Everything ELSE!
       SomeTreacheryCard realityAcid5U21
     , -- Parallel
       --- All or Nothing

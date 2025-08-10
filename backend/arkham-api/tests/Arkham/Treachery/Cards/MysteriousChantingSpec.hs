@@ -4,7 +4,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Matcher (defaultRemoveDoomMatchers)
 import Arkham.Treachery.Cards qualified as Cards
-import TestImport.Lifted
+import TestImport.New
 
 spec :: Spec
 spec = describe "Mysterious Chanting" $ do
@@ -16,12 +16,12 @@ spec = describe "Mysterious Chanting" $ do
       [ SetEncounterDeck (Deck [mysteriousChanting, mysteriousChanting])
       , placedLocation location1
       , placedLocation location2
-      , spawnAt cultist location1
       ]
+    spawnAt cultist location1
     chooseOnlyOption "use cultist ability"
+    moveTo investigator location1
     pushAndRunAll
-      [ moveTo investigator location1
-      , RemoveAllDoomFromPlay defaultRemoveDoomMatchers
+      [ RemoveAllDoomFromPlay defaultRemoveDoomMatchers
       , drawEncounterCard investigator.id GameSource
       ]
 

@@ -21,6 +21,6 @@ instance RunMessage AgainstAllOdds2 where
       n <- getBaseValueDifferenceForSkillTest iid st
       withSkillTest \sid ->
         skillTestModifier sid attrs iid (ChangeRevealStrategy $ RevealAndChoose n 1)
-      when (n > 1) $ checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs)
+      when (n > 1) $ checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs) Nothing
       pure e
     _ -> AgainstAllOdds2 <$> liftRunMessage msg attrs

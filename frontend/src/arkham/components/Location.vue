@@ -70,19 +70,34 @@ function isCardAction(c: Message): boolean {
 
 const cardAction = computed(() => choices.value.findIndex(isCardAction))
 const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
-
-async function clicked() {
-  if(cardAction.value !== -1) {
-    emits('choose', cardAction.value)
-  } else if (abilities.value.length > 0) {
-    showAbilities.value = !showAbilities.value
-    await nextTick()
-    if (showAbilities.value === true) {
-      abilitiesEl.value?.focus()
-    } else {
-      abilitiesEl.value?.blur()
+let clickTimeout: number | null = null;
+// clickCount is used to determine if the user clicked once or twice
+let clickCount = 0;
+async function clicked(e:MouseEvent) {
+  clickCount++;
+  if (clickTimeout) {
+    clearTimeout(clickTimeout);
+  }  
+  clickTimeout = setTimeout(async () => {
+    // Ensure this does not conflict with the double-click zoom-in functionality (toggleZoom in Scenario.vue)
+    if (clickCount === 1){
+      if(cardAction.value !== -1) {
+        emits('choose', cardAction.value)
+      } else if (abilities.value.length > 0) {
+        showAbilities.value = !showAbilities.value
+        await nextTick()
+        if (showAbilities.value === true) {
+          abilitiesEl.value?.focus()
+        } else {
+          abilitiesEl.value?.blur()
+        }
+      }
     }
-  }
+
+    // Reset click count and timeout
+    clickCount = 0;
+    clickTimeout = null;
+  }, 300);
 }
 
 async function chooseAbility(ability: number) {
@@ -180,7 +195,9 @@ const hasPool = computed(() => {
     (horror.value && horror.value > 0) ||
     (damage.value && damage.value > 0) ||
     (resources.value && resources.value > 0) ||
+    (pillars.value && pillars.value > 0) ||
     (leylines.value && leylines.value > 0) ||
+    (antiquities.value && antiquities.value > 0) ||
     (depth.value && depth.value > 0) ||
     (breaches.value && breaches.value > 0) ||
     (props.location.brazier && props.location.brazier === 'Lit') ||
@@ -215,8 +232,10 @@ const seals = computed(() => props.location.seals)
 const clues = computed(() => props.location.tokens[TokenType.Clue])
 const doom = computed(() => props.location.tokens[TokenType.Doom])
 const resources = computed(() => props.location.tokens[TokenType.Resource])
+const pillars = computed(() => props.location.tokens[TokenType.Pillar])
 const depth = computed(() => props.location.tokens[TokenType.Depth])
 const leylines = computed(() => props.location.tokens[TokenType.Leyline])
+const antiquities = computed(() => props.location.tokens[TokenType.Antiquity])
 const breaches = computed(() => {
   const {breaches} = props.location
   if (breaches) {
@@ -291,7 +310,7 @@ function onDrop(event: DragEvent) {
             <div class="wave" v-if="location.floodLevel" :class="{ [location.floodLevel]: true }"></div>
             <img
               :data-id="id"
-              class="card"
+              class="card card--locations"
               :src="image"
               :class="{ 'location--can-interact': canInteract }"
               draggable="false"
@@ -314,7 +333,9 @@ function onDrop(event: DragEvent) {
             <PoolItem v-if="horror && horror > 0" type="horror" :amount="horror" />
             <PoolItem v-if="damage && damage > 0" type="health" :amount="damage" />
             <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+            <PoolItem v-if="pillars && pillars > 0" type="resource" :amount="pillars" />
             <PoolItem v-if="leylines && leylines > 0" type="resource" tooltip="Leyline" :amount="leylines" />
+            <PoolItem v-if="antiquities && antiquities > 0" type="resource" tooltip="Antiquity" :amount="antiquities" />
             <PoolItem v-if="depth && depth > 0" type="resource" :amount="depth" />
             <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
             <PoolItem v-if="location.brazier && location.brazier === 'Lit'" type="resource" :amount="1" />
@@ -412,6 +433,10 @@ function onDrop(event: DragEvent) {
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
+.card.card--locations {
+  width: min(calc(10vw + 20px), 60px);
+}
+
 .location-column :deep(.enemy) {
   width: calc(var(--card-width) * 0.8);
 
@@ -449,7 +474,7 @@ function onDrop(event: DragEvent) {
   flex-direction: column;
   position: relative;
   grid-area: location;
-  width: var(--card-width);
+  width: min(calc(10vw + 20px), 60px);//var(--card-width);
 }
 
 .pool {
@@ -511,7 +536,18 @@ function onDrop(event: DragEvent) {
   &:deep(.card) {
     width: calc(var(--card-width) * 0.8) !important;
   }
-
+  &:deep(.pool) {
+    width: 200% !important;
+    height: fit-content;
+    top:1em;
+    font-size: .5em;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+  &:deep(.poolItem) {
+    width: calc(var(--card-width) * 0.4) !important;
+  }
   &:hover {
     animation-fill-mode:forwards;
     div:not(:last-child) {
@@ -538,10 +574,25 @@ function onDrop(event: DragEvent) {
   align-self: flex-start;
   align-items: flex-end;
   gap: 2px;
+  pointer-events: none;
   &.clues {
     top: 10%;
+    @media (max-width: 800px) and (orientation: portrait) {
+      top: 35% !important;
+    }
   }
-  pointer-events: none;
+  @media (max-width: 800px) and (orientation: portrait) {
+    &:deep(.poolItem) {
+      width: calc(var(--card-width) * 0.6) !important;
+    }
+    top: -20% !important;
+    left: 80%;
+    width: fit-content;
+    height: fit-content;
+    :deep(span) {
+      width: fit-content !important;
+    }
+  }
 }
 
 .card-frame {
@@ -688,6 +739,9 @@ function onDrop(event: DragEvent) {
     "investigators attachments assetsAndEnemies";
   grid-template-columns: 60px 1fr 60px;
   grid-column-gap: 10px;
+  @media (max-width: 800px) and (orientation: portrait) {
+    grid-column-gap: .5px;
+  }
 }
 
 .flood-level {

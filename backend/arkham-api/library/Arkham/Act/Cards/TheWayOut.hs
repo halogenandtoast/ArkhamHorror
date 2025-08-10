@@ -16,14 +16,12 @@ theWayOut :: ActCard TheWayOut
 theWayOut = act (3, A) TheWayOut Cards.theWayOut Nothing
 
 instance HasAbilities TheWayOut where
-  getAbilities (TheWayOut a)
-    | onSide A a =
-        [ restricted a 1 (exists $ locationIs Locations.theGateToHell) $ forced $ RoundEnds #when
-        , restricted a 2 (EachUndefeatedInvestigator $ at_ $ locationIs Locations.theGateToHell)
-            $ Objective
-            $ forced AnyWindow
-        ]
-  getAbilities _ = []
+  getAbilities = actAbilities \a ->
+    [ restricted a 1 (exists $ locationIs Locations.theGateToHell) $ forced $ RoundEnds #when
+    , restricted a 2 (EachUndefeatedInvestigator $ at_ $ locationIs Locations.theGateToHell)
+        $ Objective
+        $ forced AnyWindow
+    ]
 
 instance RunMessage TheWayOut where
   runMessage msg a@(TheWayOut attrs) = runQueueT $ case msg of
@@ -51,7 +49,7 @@ instance RunMessage TheWayOut where
                 moveTo attrs investigator connected
                 assignDamage investigator (attrs.ability 1) 2
               targets enemies \enemy -> do
-                enemyMoveTo enemy connected
+                enemyMoveTo attrs enemy connected
                 nonAttackEnemyDamage Nothing (attrs.ability 1) 2 enemy
       toDiscard (attrs.ability 1) lid
       pure a

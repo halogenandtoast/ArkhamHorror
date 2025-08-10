@@ -42,6 +42,7 @@ instance RunMessage TwilightBlade where
     InitiatePlayCard iid card _ _ ws _ | controlledBy attrs iid -> do
       underDiana <- field InvestigatorCardsUnderneath iid
       when (card `elem` underDiana) do
+        costModifier attrs iid (AsIfInHandForPlay card.id)
         cardResolutionModifier card attrs iid $ CannotTriggerAbilityMatching $ AbilityIs (toSource iid) 1
         playCardPayingCostWithWindows iid card ws
       pure a

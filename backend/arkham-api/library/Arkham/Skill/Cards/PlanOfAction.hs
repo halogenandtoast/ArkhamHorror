@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.PlanOfAction (planOfAction, PlanOfAction (..)) where
+module Arkham.Skill.Cards.PlanOfAction (planOfAction) where
 
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
@@ -23,6 +23,8 @@ instance HasModifiersFor PlanOfAction where
 instance RunMessage PlanOfAction where
   runMessage msg s@(PlanOfAction attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == toId attrs -> do
-      drawCardsIfCan iid attrs 1
+      n <- length <$> selectAgg id InvestigatorActionsTaken TurnInvestigator
+      when (n >= 0 && n < 2) do
+        drawCards iid attrs 1
       pure s
     _ -> PlanOfAction <$> liftRunMessage msg attrs

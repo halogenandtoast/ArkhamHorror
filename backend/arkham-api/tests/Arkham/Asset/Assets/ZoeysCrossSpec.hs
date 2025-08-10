@@ -6,7 +6,7 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Token
-import TestImport hiding (EnemyDamage)
+import TestImport.New hiding (EnemyDamage)
 
 spec :: Spec
 spec = do
@@ -17,12 +17,9 @@ spec = do
         enemy <- testEnemyWith (Enemy.healthL ?~ Fixed 2)
         location <- testLocationWith id
         putCardIntoPlay investigator Assets.zoeysCross
-        pushAndRun $ spawnAt enemy location
-        pushAndRun $ moveTo investigator location
-        chooseOptionMatching
-          "use ability"
-          ( \case
-              AbilityLabel {} -> True
-              _ -> False
-          )
+        spawnAt enemy location
+        moveTo investigator location
+        chooseOptionMatching "use ability" \case
+          AbilityLabel {} -> True
+          _ -> False
         fieldAssert EnemyDamage (== 1) enemy

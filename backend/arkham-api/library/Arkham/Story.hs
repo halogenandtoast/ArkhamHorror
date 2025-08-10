@@ -154,6 +154,17 @@ allStories =
     , SomeStoryCard theWriter
     , SomeStoryCard theEntity
     , SomeStoryCard theDelusion
+    , -- The Midwinter Gala
+      SomeStoryCard theFoundationAllied
+    , SomeStoryCard theFoundationRival
+    , SomeStoryCard miskatonicUniversityAllied
+    , SomeStoryCard miskatonicUniversityRival
+    , SomeStoryCard theSyndicateAllied
+    , SomeStoryCard theSyndicateRival
+    , SomeStoryCard silverTwilightLodgeAllied
+    , SomeStoryCard silverTwilightLodgeRival
+    , SomeStoryCard localsOfKingsportAllied
+    , SomeStoryCard localsOfKingsportRival
     , -- The Blob that ate Everything ELSE!
       SomeStoryCard realityAcid
     ]

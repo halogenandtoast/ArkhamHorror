@@ -40,13 +40,11 @@ const scenarios = computed(() => scenarioJSON.filter((s) =>
     : true
 ))
 
-// const sideStories = computed(() => sideStoriesJSON.filter((s) =>
-//   s.beta
-//     ? currentUser.value && currentUser.value.beta
-//     : true
-// ))
-
-const sideStories = computed(() => sideStoriesJSON)
+const sideStories = computed(() => sideStoriesJSON.filter((s) =>
+  s.beta
+    ? currentUser.value && currentUser.value.beta
+    : true
+))
 
 const dev = import.meta.env.PROD ? false : true
 
@@ -212,10 +210,12 @@ async function start() {
 
           <template v-if="gameMode === 'SideStory'">
             <div class="scenarios">
-              <div v-for="scenario in sideStories" :key="scenario.id">
+              <div v-for="scenario in sideStories" :key="scenario.id" class="scenario" :class="{ beta: scenario.beta, alpha: scenario.alpha }">
                 <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="imgsrc(`boxes/${scenario.id}.jpg`)" @click="selectedScenario = scenario.id">
               </div>
             </div>
+
+            <div class="beta-warning" v-if="scenario && scenario.beta">{{$t('create.betaWarningScenario')}}</div>
           </template>
           <template v-else>
             <!-- <select v-model="selectedCampaign"> -->
@@ -253,10 +253,12 @@ async function start() {
               <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">{{$t('create.returnTo')}}</label>
             </div>
 
-            <div v-if="gameMode === 'Campaign' && campaign && campaign.settings" class="options">
+            <div v-if="gameMode === 'Campaign' && campaign" class="options">
               <input type="radio" v-model="fullCampaign" :value="'FullCampaign'" id="full"> <label for="full">{{$t('create.fullCampaign')}}</label>
               <input type="radio" v-model="fullCampaign" :value="'Standalone'" id="standalone"> <label for="standalone">{{$t('create.standalone')}}</label>
-              <input type="radio" v-model="fullCampaign" :value="'PartialCampaign'" id="partial"> <label for="partial">{{$t('create.partialCampaign')}}</label>
+              <template v-if="campaign.settings">
+                <input type="radio" v-model="fullCampaign" :value="'PartialCampaign'" id="partial"> <label for="partial">{{$t('create.partialCampaign')}}</label>
+              </template>
             </div>
 
             <template v-if="['Standalone', 'PartialCampaign'].includes(fullCampaign) && selectedCampaign">
@@ -559,7 +561,7 @@ header {
   opacity: 0;
 }
 
-.campaign {
+.campaign, .scenario {
   position: relative;
   overflow: hidden;
   &.beta:after{

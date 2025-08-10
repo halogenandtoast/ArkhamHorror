@@ -27,6 +27,8 @@ import { ModalsContainer } from 'vue-final-modal'
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useSiteSettingsStore } from '@/stores/site_settings'
+import { useDbCardStore } from '@/stores/dbCards'
+import { checkImageExists } from '@/arkham/helpers'
 import NavBar from '@/components/NavBar.vue'
 import 'floating-vue/dist/style.css'
 
@@ -38,6 +40,8 @@ onMounted(async () => {
   await store.loadUserFromStorage()
   await settingsStore.init()
   avifSupported.value = await checkAvifSupport();
+  await useDbCardStore().initDbCards()
+  await checkImageExists()
 })
 const avifSupported = ref(true);
 const checkAvifSupport = (): Promise<boolean> => {
@@ -144,6 +148,9 @@ body {
   min-height: 100vh;
   background: var(--background);
   font-size: min(16px, 2vw);
+  @media (max-width: 800px) and (orientation: portrait) {
+    font-size: initial;
+  }
 }
 
 button {
@@ -425,6 +432,7 @@ button {
   --guardian-extra-dark: #0c5693;
   --seeker-dark: #db7c07;
   --seeker-extra-dark: #aa6005;
+  --seeker-text: #603603;
   --rogue-dark: #219428;
   --rogue-extra-dark: #186a1d;
   --mystic-dark: #7554ab;
@@ -462,6 +470,7 @@ button {
   --button-2-highlight: #4d2b61;
 
   --card-width: min(calc(2.5vw + 20px), 60px);
+  --card-height: min(calc(3.545vw + 28.36px), 85.08px);
   --card-aspect: 0.705;
   --card-sideways-aspect: 1.41844;
   --card-tarot-aspect: 0.571429;
@@ -474,8 +483,11 @@ button {
   --select-dark-30: #b200b2;
 
   --bullet-red: #391714;
-
+  
   --pool-token-width: min(30px, 4vw);
+  @media (max-width: 800px) and (orientation: portrait) {
+    --pool-token-width: 30px;
+  }
 }
 
 h2.title {
@@ -504,6 +516,9 @@ h2.title {
   width: 70vw;
   margin: 0 auto;
   padding-bottom: 10px;
+  @media (max-width: 800px) and (orientation: portrait) {
+    width: fit-content;
+  }
 }
 
 .fade-leave-active,
@@ -535,6 +550,9 @@ footer {
   width: 100%;
   text-align: center;
   z-index: 100;
+  @media (max-width: 800px) and (orientation: portrait) {
+    display: none;
+  }
 }
 
 .column {

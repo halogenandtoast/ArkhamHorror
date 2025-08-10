@@ -2,7 +2,8 @@ module Arkham.Treachery.Cards.OnWingsOfDarkness (onWingsOfDarkness) where
 
 import Arkham.Helpers.Location (getCanMoveToMatchingLocations)
 import Arkham.Matcher
-import Arkham.Movement
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -21,12 +22,11 @@ instance RunMessage OnWingsOfDarkness where
       revelationSkillTest sid iid attrs #agility (Fixed 4)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      centralLocations <- getCanMoveToMatchingLocations iid attrs $ LocationWithTrait Central
-      enemiesToDisengage <- select $ enemyEngagedWith iid <> EnemyWithoutTrait Nightgaunt
       assignDamageAndHorror iid attrs 1 1
-      pushAll $ map (DisengageEnemy iid) enemiesToDisengage
-      when (notNull centralLocations) do
-        chooseOne iid $ targetLabels centralLocations (only . Move . move attrs iid)
+      enemiesToDisengage <- select $ enemyEngagedWith iid <> EnemyWithoutTrait Nightgaunt
+      for_ enemiesToDisengage (disengageEnemy iid)
+      centralLocations <- getCanMoveToMatchingLocations iid attrs $ LocationWithTrait Central
+      chooseTargetM iid centralLocations (moveTo attrs iid)
       for_ enemiesToDisengage enemyCheckEngagement
       pure t
     _ -> OnWingsOfDarkness <$> liftRunMessage msg attrs

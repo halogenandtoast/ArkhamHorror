@@ -123,11 +123,11 @@ instance MonadRandom GameT where
     atomicModifyIORef' ref (swap . random)
   getRandomRs lohi = do
     ref <- view genL
-    gen <- atomicModifyIORef' ref split
+    gen <- atomicModifyIORef' ref splitGen
     pure $ randomRs lohi gen
   getRandoms = do
     ref <- view genL
-    gen <- atomicModifyIORef' ref split
+    gen <- atomicModifyIORef' ref splitGen
     pure $ randoms gen
 
 getSkillTest :: HasGame m => m (Maybe SkillTest)
@@ -244,13 +244,9 @@ getIgnoreCanModifiers = gameIgnoreCanModifiers <$> getGame
 getInSetup :: HasGame m => m Bool
 getInSetup = gameInSetup <$> getGame
 
-getCardUses :: HasGame m => CardCode -> m Int
-getCardUses cCode = findWithDefault 0 cCode . gameCardUses <$> getGame
+getCardUses :: HasGame m => CardCode -> m [InvestigatorId]
+getCardUses cCode = findWithDefault [] cCode . gameCardUses <$> getGame
 
 getAllCardUses :: HasGame m => m [CardDef]
 getAllCardUses =
-  mapMaybe lookupCardDef
-    . concatMap (\(k, v) -> replicate v k)
-    . Map.toList
-    . gameCardUses
-    <$> getGame
+  concatMap (mapMaybe lookupCardDef . (\ (k, v) -> replicate (length v) k)) . Map.toList . gameCardUses <$> getGame

@@ -13,7 +13,6 @@ import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Xp
-import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
@@ -153,7 +152,7 @@ instance RunMessage LostInTimeAndSpace where
       drawAnotherChaosToken iid
       pure s
     RequestedEncounterCard (ChaosTokenEffectSource Cultist) (Just iid) (Just card) -> do
-      moveTo attrs iid =<< placeLocation (EncounterCard card)
+      moveTo Cultist iid =<< placeLocation (EncounterCard card)
       pure s
     ScenarioResolution r -> scope "resolutions" do
       readInvestigatorDefeat attrs

@@ -8,6 +8,7 @@ import Arkham.Asset.Uses
 import {-# SOURCE #-} Arkham.Calculation
 import {-# SOURCE #-} Arkham.Card (Card, CardCode)
 import Arkham.Card.CardType
+import Arkham.Card.Id
 import {-# SOURCE #-} Arkham.Card.EncounterCard
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken.Types
@@ -83,12 +84,15 @@ data ModifierType
   | AsIfEnemyFight Int
   | AsIfEngagedWith EnemyId
   | AsIfInHand Card
+  | AsIfInHandForPlay CardId
   | AsIfUnderControlOf InvestigatorId
+  | AsIfTurn InvestigatorId
   | AttackDealsEitherDamageOrHorror
   | AttacksCannotBeCancelled
   | Barricades [LocationId]
   | BaseSkill Int
   | BaseSkillOf {skillType :: SkillType, value :: Int}
+  | BaseSkillOfCalculated {skillType :: SkillType, calculation :: GameCalculation}
   | BaseStartingResources Int
   | BecomesFast WindowMatcher
   | Blank
@@ -189,6 +193,7 @@ data ModifierType
   | CannotMakeAttacksOfOpportunity
   | CannotManipulateDeck
   | CannotMove
+  | CancelMovement MovementId
   | CannotMoveExceptByScenarioCardEffects
   | CannotMoveMoreThanOnceEachTurn
   | CannotMulligan
@@ -196,6 +201,7 @@ data ModifierType
   | CannotPerformSkillTest
   | CannotPlaceClues
   | CannotPlaceDoomOnThis
+  | CannotRemoveDoomOnThis
   | CannotPlay CardMatcher
   | CannotPutIntoPlay CardMatcher
   | CannotReady

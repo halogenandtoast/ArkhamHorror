@@ -1,13 +1,11 @@
 module Arkham.Enemy.Cards.PadmaAmrita (padmaAmrita) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Trait (Trait (Ancient))
 
@@ -27,12 +25,11 @@ instance HasAbilities PadmaAmrita where
     extend1 a $ mkAbility a 1 $ forced $ EnemyAttacks #after You AnyEnemyAttack (be a)
 
 instance RunMessage PadmaAmrita where
-  runMessage msg e@(PadmaAmrita attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg e@(PadmaAmrita attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasClues <- fieldP InvestigatorClues (> 0) iid
-      push
-        $ if hasClues
-          then FlipClues (InvestigatorTarget iid) 1
-          else InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 3
+      if hasClues
+        then flipCluesToDoom iid 1
+        else assignHorror iid (attrs.ability 1) 3
       pure e
-    _ -> PadmaAmrita <$> runMessage msg attrs
+    _ -> PadmaAmrita <$> liftRunMessage msg attrs

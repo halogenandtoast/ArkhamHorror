@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, getAdditionalSearchTargets)
-import Arkham.Matcher hiding (PlaceUnderneath)
+import Arkham.Matcher hiding (PlaceUnderneath, PlayCard)
 import Arkham.Strategy
 
 newtype Backpack = Backpack AssetAttrs
@@ -43,8 +43,8 @@ instance RunMessage Backpack where
     InitiatePlayCard iid card _ _ windows _ | controlledBy attrs iid && card `elem` attrs.cardsUnderneath -> do
       let remaining = deleteFirstMatch (== card) attrs.cardsUnderneath
       when (null remaining) $ toDiscardBy iid attrs attrs
-      cardResolutionModifier card attrs iid (AsIfInHand card)
-      playCardPayingCostWithWindows iid card windows
+      costModifier attrs iid (AsIfInHandForPlay card.id)
+      push $ PlayCard iid card Nothing NoPayment windows True
       pure $ Backpack $ attrs & cardsUnderneathL .~ remaining
     ResolvedCard _ c | c.id == attrs.cardId -> do
       when (null attrs.cardsUnderneath) $ toDiscard attrs attrs

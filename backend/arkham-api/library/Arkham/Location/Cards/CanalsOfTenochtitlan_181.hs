@@ -1,7 +1,4 @@
-module Arkham.Location.Cards.CanalsOfTenochtitlan_181 (
-  canalsOfTenochtitlan_181,
-  CanalsOfTenochtitlan_181 (..),
-) where
+module Arkham.Location.Cards.CanalsOfTenochtitlan_181 (canalsOfTenochtitlan_181) where
 
 import Arkham.Ability
 import Arkham.GameValue

@@ -226,6 +226,9 @@ instance RunMessage BeforeTheBlackThrone where
           initiateEnemyAttack azathoth Tablet iid
         _ -> pure ()
       pure s
+    ResolveChaosToken _ Cultist iid -> do
+      drawAnotherChaosToken iid
+      pure s
     ResolveChaosToken _ ElderThing _ -> do
       v <- getSkillTestModifiedSkillValue
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth

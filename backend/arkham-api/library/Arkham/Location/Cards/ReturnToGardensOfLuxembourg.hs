@@ -36,6 +36,6 @@ instance RunMessage ReturnToGardensOfLuxembourg where
         chooseOneAtATimeM iid do
           targets byakhee \x -> do
             readyThis x
-            enemyMoveTo x attrs
+            enemyMoveTo (attrs.ability 1) x attrs
       pure l
     _ -> ReturnToGardensOfLuxembourg <$> liftRunMessage msg attrs

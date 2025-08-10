@@ -5,16 +5,23 @@ import * as CardT from '@/arkham/types/Card';
 import Card from '@/arkham/components/Card.vue';
 import Draggable from '@/components/Draggable.vue';
 import { useDebug } from '@/arkham/debug';
+import { computed } from 'vue';
+import * as ArkhamGame from '@/arkham/types/Game';
 
 const debug = useDebug()
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   game: Game
   cards: CardContents[]
   playerId: string
   isDiscards?: boolean
   title: string
 }>(), { isDiscards: false })
+
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+function isCardInChoices(card: CardContents): boolean {
+  return choices.value.some(choice => card.contents?.id === choice.target?.contents)
+}
 
 const emit = defineEmits<{
   choose: [value: number]
@@ -41,7 +48,7 @@ function startDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
     </template>
     <div class="card-row-container">
       <div class="card-row-cards">
-        <div v-for="card in cards" :key="card.id" class="card-row-card" :class="{ discard: isDiscards }">
+        <div v-for="card in cards" :key="card.id" class="card-row-card" :class="{ discard: isDiscards && !isCardInChoices(card)}">
           <Card 
             :draggable="debug.active"
             @dragstart="startDrag($event, card)"

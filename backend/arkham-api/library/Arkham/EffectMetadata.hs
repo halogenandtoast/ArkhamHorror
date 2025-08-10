@@ -12,6 +12,7 @@ import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Target
+import GHC.Records
 
 data EffectMetadata a
   = EffectInt Int
@@ -34,3 +35,7 @@ effectInt = Just . EffectInt
 
 effectMetaTarget :: Targetable target => target -> Maybe (EffectMetadata a)
 effectMetaTarget = Just . EffectMetaTarget . toTarget
+
+instance HasField "int" (EffectMetadata a) (Maybe Int) where
+  getField (EffectInt n) = Just n
+  getField _ = Nothing

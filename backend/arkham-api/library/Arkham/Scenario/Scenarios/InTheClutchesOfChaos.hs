@@ -208,7 +208,7 @@ instance RunMessage InTheClutchesOfChaos where
               $ labeled "“You are under arrest.”"
               $ record TheInvestigatorsArrestedSanford
             when anySorcererSilverTwilightOrCultist
-              $ labeled "“Then teach me how to be stronger.”"
+              $ labeled "“You don't deserve to lead us.”"
               $ record TheInvestigatorsAssumedControlOfTheSilverTwilightLodge
           allGainXp attrs
           endOfScenario

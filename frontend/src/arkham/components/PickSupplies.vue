@@ -83,6 +83,9 @@ const portrait = (investigatorId: string) => {
   display: grid;
   grid-template-columns: repeat(4, minmax(calc(25% - 20px), 1fr));
   row-gap: 20px;
+  @media (max-width: 800px) and (orientation: portrait) {
+    grid-template-columns: repeat(3, minmax(calc(34% - 20px), 1fr));
+  }
 }
 
 button {
@@ -97,6 +100,10 @@ button {
   font: Arial, sans-serif;
   &:hover {
     background-color: #311b3e;
+  }
+  @media (max-width: 800px) and (orientation: portrait) {
+    font-size: smaller;
+    margin:0 5px;
   }
 }
 
@@ -245,6 +252,15 @@ ul li {
       color: var(--spooky-green-dark);
       padding-left: 10px;
       margin-left: 10px;
+    }
+  }
+  @media (max-width: 800px) and (orientation: portrait) {
+    flex-direction: column;
+    .portrait {
+      object-fit: contain;
+      max-width: 20vw;
+      min-width: 20vw;
+      margin: 0;
     }
   }
 }

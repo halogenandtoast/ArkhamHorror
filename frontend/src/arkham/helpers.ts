@@ -1,8 +1,59 @@
 import ita from '@/digests/ita.json'
 import es from '@/digests/es.json'
+import ko from '@/digests/ko.json'
 import zh from '@/digests/zh.json'
 
 import { useSiteSettingsStore } from '@/stores/site_settings'
+import { ref } from 'vue';
+
+interface ImageHelper {
+  root: string
+  digests: string[]
+  data: Map<string, ref<boolean>>
+  loaded: ref<boolean>
+}
+
+const defaultHelper: ImageHelper = { root: '', digests: [], data: new Map(), loaded: ref(true) }
+const imgHelper:Map<string, ImageHelper> = new Map<string, ImageHelper>([
+  ['it', { root: 'ita', digests: ita, data: new Map(), loaded: ref(false) }],
+  ['es', { root: 'es', digests: es, data: new Map(), loaded: ref(false) }],
+  ['ko', { root: 'ko', digests: ko, data: new Map(), loaded: ref(false) }],
+  ['zh', { root: 'zh', digests: zh, data: new Map(), loaded: ref(false) }]
+])
+
+export async function checkImageExists(language: string = localStorage.getItem('language') || 'en') {
+  if (language === 'en' || !imgHelper.has(language)) return
+  
+  const helper = imgHelper.get(language) || defaultHelper
+  if (!helper.root || helper.loaded.value) return
+  
+  const fetchTasks: Promise<void>[] = []
+  const store = useSiteSettingsStore()
+  const imgList = helper.digests
+  
+  imgList.forEach((originPath) => {
+    const path = originPath.replace(/^\//, '')
+    const ext = (path.split('.').pop() || '').toLowerCase()
+    
+    if (ext !== 'avif' && ext !== 'webp' && !ext.endsWith('png') && !ext.startsWith('jpg')) return
+    const i18nPath = `${store.assetHost}/img/arkham/${helper.root}/${path}`
+    
+    const task = fetch(i18nPath, { method: 'HEAD' }).then((res) => {
+      const contentType = res.headers.get('Content-Type') || ''
+      const isOkay = res.ok && contentType !== 'text/html' && (contentType === 'text/plain' || (ext ? contentType === `image/${ext}` : false))
+      helper.data.set(path, ref(isOkay))
+      
+    }).catch(() => {
+      helper.data.set(path, ref(false))
+    })
+    
+    fetchTasks.push(task)
+  })
+  
+  await Promise.all(fetchTasks).then(() => {
+    helper.loaded.value = true
+  })
+}
 
 export function toCapitalizedWords(name: string) {
   console.log(name)
@@ -32,26 +83,29 @@ export function imgsrc(src: string) {
   const store = useSiteSettingsStore()
   const language = localStorage.getItem('language') || 'en'
   const path = src.replace(/^\//, '')
-  switch (language) {
-    case 'it': {
-      const exists = ita.includes(path)
-      return exists ? `${store.assetHost}/img/arkham/ita/${src.replace(/^\//, '')}` : `${store.assetHost}/img/arkham/${src.replace(/^\//, '')}`
+  const fullPath = `${store.assetHost}/img/arkham/${path}`
+  
+  if (language !== 'en') {
+    const helper = imgHelper.get(language) || defaultHelper
+    const exists = helper.digests.includes(path)
+    
+    if (exists && helper.root && helper.loaded.value) {
+      const i18nFullPath = `${store.assetHost}/img/arkham/${helper.root}/${path}`
+      const canFetch = helper.data.get(path).value || false
+      
+      if (canFetch) return i18nFullPath
     }
-    case 'es': {
-      const exists = es.includes(path)
-      return exists ? `${store.assetHost}/img/arkham/es/${src.replace(/^\//, '')}` : `${store.assetHost}/img/arkham/${src.replace(/^\//, '')}`
-    }
-    case 'zh': {
-      const exists = zh.includes(path)
-      return exists ? `${store.assetHost}/img/arkham/zh/${src.replace(/^\//, '')}` : `${store.assetHost}/img/arkham/${src.replace(/^\//, '')}`
-    }
-    default: return `${store.assetHost}/img/arkham/${src.replace(/^\//, '')}`
   }
+  
+  return fullPath
 }
 
 export function pluralize(w: string, n: number) {
   const language = localStorage.getItem('language') || 'en'
   switch (language) {
+    case 'ko': {
+      return `${w} ${n}`
+    }
     case 'zh': {
       return `${n}${w}${n == 1 ? '' : ''}`
     }

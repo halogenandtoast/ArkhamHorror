@@ -24,12 +24,10 @@ instance HasAbilities TheSpectralWatcher where
 instance RunMessage TheSpectralWatcher where
   runMessage msg e@(TheSpectralWatcher attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      -- NOTE: This is supposed to be instead of discard, but the window is when they are defeated
-      -- So we really need to cancel the instead of defeat, BUT still trigger all the associated windows
-      insteadOfDefeatWithWindows attrs $ do
-        healAllDamage (attrs.ability 1) attrs
-        disengageEnemyFromAll attrs
-        exhaustThis attrs
-        doesNotReadyDuringUpkeep (attrs.ability 1) attrs
+      cancelEnemyDefeatWithWindows attrs
+      healAllDamage (attrs.ability 1) attrs
+      disengageEnemyFromAll attrs
+      exhaustThis attrs
+      doesNotReadyDuringUpkeep (attrs.ability 1) attrs
       pure e
     _ -> TheSpectralWatcher <$> liftRunMessage msg attrs

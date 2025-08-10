@@ -1,14 +1,12 @@
-module Arkham.Location.Cards.DescentToYoth (descentToYoth, DescentToYoth (..)) where
+module Arkham.Location.Cards.DescentToYoth (descentToYoth) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.GameValue
-import Arkham.Helpers.Query
-import Arkham.Helpers.Window
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 
@@ -30,41 +28,29 @@ descentToYoth =
       (Static 0)
 
 instance HasAbilities DescentToYoth where
-  getAbilities (DescentToYoth (attrs `With` _)) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1 $ forced $ PutLocationIntoPlay #after Anyone (be attrs)
-      , restrictedAbility
-          attrs
-          2
-          (exists $ LocationWithId (toId attrs) <> LocationWithAnyDoom)
+  getAbilities (DescentToYoth (a `With` _)) =
+    extendRevealed
+      a
+      [ mkAbility a 1 $ forced $ PutLocationIntoPlay #after Anyone (be a)
+      , restricted a 2 (thisExists a LocationWithAnyDoom)
           $ freeReaction
-          $ SkillTestResult #when You (WhileInvestigating $ be attrs) #success
+          $ SkillTestResult #when You (WhileInvestigating $ be a) #success
       ]
 
 instance RunMessage DescentToYoth where
-  runMessage msg l@(DescentToYoth (attrs `With` metadata)) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      investigators <- getInvestigatorPlayers
-      pushAll
-        [ chooseOne
-            player
-            [ Label
-                "Place 1 doom on Descent to Yoth"
-                [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1]
-            , Label
-                "Draw the top 2 cards of the encounter deck"
-                [drawEncounterCards iid attrs 2]
-            ]
-        | (iid, player) <- investigators
-        ]
+  runMessage msg l@(DescentToYoth (attrs `With` metadata)) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      eachInvestigator \iid -> do
+        chooseOneM iid do
+          labeled "Place 1 doom on Descent to Yoth" $ placeDoom (attrs.ability 1) attrs 1
+          labeled "Draw the top 2 cards of the encounter deck" $ drawEncounterCards iid attrs 2
       pure l
     UseCardAbility _iid (isSource attrs -> True) 2 _ _ ->
       pure $ DescentToYoth $ attrs `with` Metadata True
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ | flipDoom metadata -> do
       let lid = toId attrs
-      whenWindowMsg <- checkWindows [mkWhen (Window.SuccessfulInvestigation iid lid)]
-      afterWindowMsg <- checkWindows [mkAfter (Window.SuccessfulInvestigation iid lid)]
-      pushAll [whenWindowMsg, FlipDoom (toTarget attrs) 1, afterWindowMsg]
+      checkWindows [mkWhen (Window.SuccessfulInvestigation iid lid)]
+      push $ FlipDoom (toTarget attrs) 1
+      checkWindows [mkAfter (Window.SuccessfulInvestigation iid lid)]
       pure $ DescentToYoth $ attrs `with` Metadata False
-    _ -> DescentToYoth . (`with` metadata) <$> runMessage msg attrs
+    _ -> DescentToYoth . (`with` metadata) <$> liftRunMessage msg attrs

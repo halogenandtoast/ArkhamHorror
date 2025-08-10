@@ -42,7 +42,6 @@ instance RunMessage FavorOfTheSun1 where
       checkWhen $ Window.RevealChaosToken iid token
       withSkillTest \sid ->
         push $ RequestedChaosTokens (SkillTestSource sid) (Just iid) [token]
-      gainResources iid (attrs.ability 1) 1
 
       pure $ FavorOfTheSun1 $ attrs & sealedChaosTokensL %~ filter (/= token)
     _ -> FavorOfTheSun1 <$> liftRunMessage msg attrs

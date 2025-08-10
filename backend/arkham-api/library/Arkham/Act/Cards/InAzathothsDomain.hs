@@ -52,7 +52,8 @@ instance RunMessage InAzathothsDomain where
             shuffleCardsIntoDeck CosmosDeck $ List.delete card drewCards.cards
             lid <- placeLocation card
             revealBy iid lid
-            push $ RunCosmos iid lid [Move $ move (attrs.ability 1) iid lid]
+            movemsg <- move (attrs.ability 1) iid lid
+            push $ RunCosmos iid lid [Move movemsg]
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       hideousPalace <- getJustLocationByName "Hideous Palace"

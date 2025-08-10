@@ -13,7 +13,6 @@ import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
-import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log

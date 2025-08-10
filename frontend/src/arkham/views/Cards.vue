@@ -4,10 +4,12 @@ import { fetchCards } from '@/arkham/api';
 import { imgsrc, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
 import { useRouter, useRoute, LocationQueryValue } from 'vue-router';
 import * as Arkham from '@/arkham/types/CardDef';
+import CardImage from '@/arkham/components/CardImage.vue';
 
 import sets from '@/arkham/data/sets.json'
 import cycles from '@/arkham/data/cycles.json'
 import { shallowRef } from 'vue';
+import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 
 enum View {
   Image = "IMAGE",
@@ -32,6 +34,8 @@ const query = ref<string>(queryText)
 const view = ref(route.query.view? toView(route.query.view) : View.List)
 
 const includeEncounter = computed(() => route.query.includeEncounter === "true")
+const store = useDbCardStore()
+
 const fetchData = async () => {
   fetchCards(includeEncounter.value).then(async (response) => {
     allCards.value = response.sort((a, b) => {
@@ -81,6 +85,33 @@ watch(() => view.value, (newView) => {
   router.push({ name: 'Cards', query: { ...route.query, view: fromView(newView) }})
 })
 
+watch(() => allCards.value, () => {
+  const language = localStorage.getItem('language') || 'en'
+  if (language === 'en') return;
+  
+  for (const card of allCards.value) {
+    const match: ArkhamDBCard = store.getDbCard(card.art)
+    if (!match) continue
+    
+    // Name
+    card.name.title = match.name
+    if (match.subname) card.name.subtitle = match.subname
+    
+    // Class
+    if (match.faction_name && card.classSymbols.length > 0) card.classSymbols[0] = match.faction_name
+    if (match.faction2_name && card.classSymbols.length > 1) {
+      card.classSymbols[1] = match.faction2_name
+      if (match.faction3_name && card.classSymbols.length > 2) card.classSymbols[2] = match.faction3_name
+    }
+    
+    // Type
+    card.cardType = match.type_name
+    
+    // Traits
+    if (match.traits) card.cardTraits = match.traits.split('.').filter(item => item != "" && item != " ")
+  }
+})
+
 const cycleCount = (cycle: CardCycle) => {
   if (!allCards.value) return 0
   const cycleSets = sets.filter((s) => s.cycle == cycle.cycle)
@@ -120,6 +151,8 @@ const setCountText = (set: CardSet) => {
 }
 
 const image = (card: Arkham.CardDef) => imgsrc(`cards/${card.art}.avif`)
+
+const backImage = (card: Arkham.CardDef) => imgsrc(`cards/${card.otherSide.replace(/^c/, '')}.avif`)
 
 const cards = computed(() => {
   if (!allCards.value) return []
@@ -324,14 +357,21 @@ const cardSet = (card: Arkham.CardDef) => {
 
 const cardSetText = (card: Arkham.CardDef) => {
   const setNumber = parseInt(card.art.slice(2,))
-
-  const set = cardSet(card)
-
-  if (set !== null && set !== undefined) {
-    return `${set.name} ${setNumber % 500}`
+  const language = localStorage.getItem('language') || 'en'
+  var setName = ''
+  
+  if (language !== 'en') {
+    const match: ArkhamDBCard = store.getDbCard(card.art)
+    if (match) setName = match.pack_name
   }
-
-  return "Unknown"
+  
+  if (!setName) {
+    const set = cardSet(card)
+    if (set !== null && set !== undefined) setName = set.name
+  }
+  
+  if (setName) return `${setName} ${setNumber % 500}`
+  else return "Unknown"
 }
 
 const cycleSets = (cycle: CardCycle) => {
@@ -385,7 +425,7 @@ const toggleIncludeEncounter = () => {
       </header>
       <div class="cards" v-if="view == View.Image">
         <a v-for="card in cards" :key="card.art" target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">
-          <img class="card" :src="image(card)" />
+          <CardImage :card="card" />
         </a>
       </div>
       <table class="box" v-if="view == View.List">
@@ -502,6 +542,7 @@ i {
 }
 
 header {
+  z-index: 1;
   position: sticky;
   position: -webkit-sticky;
   width: 100%;

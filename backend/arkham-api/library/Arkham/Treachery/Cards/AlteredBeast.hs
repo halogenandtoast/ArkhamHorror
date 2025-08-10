@@ -17,10 +17,8 @@ alteredBeast = treachery AlteredBeast Cards.alteredBeast
 instance HasAbilities AlteredBeast where
   getAbilities (AlteredBeast x) = case x.attached.enemy of
     Just eid ->
-      [ mkAbility x 1
-          $ forced
-          $ oneOf
-            [EnemyEnters #when YourLocation $ EnemyWithId eid, Enters #when You (locationWithEnemy eid)]
+      [ mkAbility x 1 $ forced $ EnemyEnters #when YourLocation (EnemyWithId eid)
+      , mkAbility x 2 $ forced $ Enters #when You (locationWithEnemy eid)
       ]
     _ -> []
 
@@ -31,7 +29,12 @@ instance RunMessage AlteredBeast where
         [] -> gainSurge attrs
         xs -> chooseTargetM iid xs \x -> attachTreachery attrs x >> healAllDamage attrs x
       pure t
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      for_ attrs.attached.enemy \eid ->
+        selectEach (InvestigatorAt $ locationWithEnemy eid) \iid ->
+          assignHorror iid attrs 1
+      pure t
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       assignHorror iid attrs 1
       pure t
     _ -> AlteredBeast <$> liftRunMessage msg attrs

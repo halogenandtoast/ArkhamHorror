@@ -24,6 +24,7 @@ allActCards =
     $ map
       (toCardCode &&& id)
       [ aCircleUnbroken
+      , aFamiliarPattern
       , afterHours
       , alejandrosPlight
       , alejandrosPrison
@@ -79,6 +80,7 @@ allActCards =
       , findingAWayInside
       , findingLadyEsprit
       , findingThePath
+      , findingTheJewel
       , fold
       , followingLeads
       , friendsInHighPlacesHenryDeveau
@@ -113,6 +115,7 @@ allActCards =
       , lookingForAnswers
       , lostInTheWoods
       , magicAndScience
+      , meetAndGreet
       , mendTheShatter
       , missingPersons
       , mistakesOfThePast
@@ -365,7 +368,7 @@ awakening :: CardDef
 awakening = act "03046" "Awakening" 1 CurtainCall
 
 theStrangerACityAflame :: CardDef
-theStrangerACityAflame = act "03047a" "The Stranger" 2 CurtainCall
+theStrangerACityAflame = (act "03047a" "The Stranger" 2 CurtainCall) { cdOtherSide = Just "03047ab" }
 
 theStrangerThePathIsMine :: CardDef
 theStrangerThePathIsMine = act "03047b" "The Stranger" 2 CurtainCall
@@ -442,15 +445,18 @@ inLostCarcosa = act "03320" "In Lost Carcosa" 1 DimCarcosa
 
 searchForTheStrangerV1 :: CardDef
 searchForTheStrangerV1 =
-  act "03321a" "Search For the Stranger (v.I)" 2 DimCarcosa
+  (act "03321a" "Search For the Stranger (v.I)" 2 DimCarcosa)
+    { cdOtherSide = Just "03321b" }
 
 searchForTheStrangerV2 :: CardDef
 searchForTheStrangerV2 =
-  act "03322a" "Search For the Stranger (v.II)" 2 DimCarcosa
+  (act "03322a" "Search For the Stranger (v.II)" 2 DimCarcosa)
+    { cdOtherSide = Just "03322ab" }
 
 searchForTheStrangerV3 :: CardDef
 searchForTheStrangerV3 =
-  act "03323a" "Search For the Stranger (v.III)" 2 DimCarcosa
+  (act "03323a" "Search For the Stranger (v.III)" 2 DimCarcosa)
+    { cdOtherSide = Just "03323ab" }
 
 theKingInTatters :: CardDef
 theKingInTatters = act "03324" "The King in Tatters" 3 DimCarcosa
@@ -946,6 +952,9 @@ discoverTheTruth = act "53035" "Discover the Truth" 3 ReturnToThreadsOfFate
 impossiblePursuit :: CardDef
 impossiblePursuit = act "53036" "Impossible Pursuit" 3 ReturnToThreadsOfFate
 
+aFamiliarPattern :: CardDef
+aFamiliarPattern = act "53046" "A Familiar Pattern" 1 ReturnToPillarsOfJudgement
+
 findingLadyEsprit :: CardDef
 findingLadyEsprit = act "81005" "Finding Lady Esprit" 1 TheBayou
 
@@ -967,3 +976,9 @@ whatHappened = act "84004" "What Happened...?" 1 MurderAtTheExcelsiorHotel
 
 followingLeads :: CardDef
 followingLeads = act "84005" "Following Leads" 2 MurderAtTheExcelsiorHotel
+
+meetAndGreet :: CardDef
+meetAndGreet = act "71005" "Meet and Greet" 1 TheMidwinterGala
+
+findingTheJewel :: CardDef
+findingTheJewel = act "71006" "Finding the Jewel" 2 TheMidwinterGala

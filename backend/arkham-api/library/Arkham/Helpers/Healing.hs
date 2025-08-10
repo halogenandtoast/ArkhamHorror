@@ -31,6 +31,15 @@ chooseHealDamageOrHorror source iid = do
     whenM (canHaveHorrorHealed source iid) do
       horrorLabeled iid $ healHorror iid source 1
 
+chooseHealDamageOrHorrorOn
+  :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> InvestigatorId -> m ()
+chooseHealDamageOrHorrorOn source you iid = do
+  chooseOrRunOneM you do
+    whenM (canHaveDamageHealed source iid) do
+      damageLabeled iid $ healDamage iid source 1
+    whenM (canHaveHorrorHealed source iid) do
+      horrorLabeled iid $ healHorror iid source 1
+
 getDamageAmounts :: (MonadTrans t, HasQueue Message m) => InvestigatorId -> t m (Int, Int)
 getDamageAmounts iid = fromQueue \queue -> case dropUntilDamage queue of
   dmsg : _ -> case dmsg of

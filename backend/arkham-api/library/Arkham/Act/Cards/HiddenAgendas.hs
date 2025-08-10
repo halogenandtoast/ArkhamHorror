@@ -1,19 +1,16 @@
 module Arkham.Act.Cards.HiddenAgendas (hiddenAgendas) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Card
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Location (replaceLocation, withLocationOf)
 import Arkham.Helpers.Query
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Movement
-import Arkham.Prelude
-import Arkham.Projection
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Trait (Trait (Monster))
 
 newtype HiddenAgendas = HiddenAgendas ActAttrs
@@ -24,81 +21,57 @@ hiddenAgendas :: ActCard HiddenAgendas
 hiddenAgendas = act (1, A) HiddenAgendas Cards.hiddenAgendas Nothing
 
 instance RunMessage HiddenAgendas where
-  runMessage msg a@(HiddenAgendas attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+  runMessage msg a@(HiddenAgendas attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       entryHall <- selectJust $ locationIs Locations.entryHallAtDeathsDoorstep
-      victorianHalls <- selectJust $ locationIs Locations.victorianHalls
-      balcony <- selectJust $ locationIs Locations.balconyAtDeathsDoorstep
-      office <- selectJust $ locationIs Locations.office
-      billiardsRoom <- selectJust $ locationIs Locations.billiardsRoom
-      masterBedroom <- selectJust $ locationIs Locations.masterBedroom
-      trophyRoom <- selectJust $ locationIs Locations.trophyRoom
-
       enemyIds <- select $ enemyAt entryHall
       investigatorIds <- select $ investigatorAt entryHall
 
-      entryHallSpectral <- getSetAsideCard Locations.entryHallSpectral
-      victorianHallsSpectral <- getSetAsideCard Locations.victorianHallsSpectral
-      balconySpectral <- getSetAsideCard Locations.balconySpectral
-      officeSpectral <- getSetAsideCard Locations.officeSpectral
-      billiardsRoomSpectral <- getSetAsideCard Locations.billiardsRoomSpectral
-      masterBedroomSpectral <- getSetAsideCard Locations.masterBedroomSpectral
-      trophyRoomSpectral <- getSetAsideCard Locations.trophyRoomSpectral
+      victorianHalls <- selectJust $ locationIs Locations.victorianHalls
+      for_ investigatorIds \iid -> moveTo attrs iid victorianHalls
+      for_ enemyIds \eid -> enemyMoveTo attrs eid victorianHalls
+
+      replaceLocation entryHall =<< getSetAsideCard Locations.entryHallSpectral
+      replaceLocation victorianHalls =<< getSetAsideCard Locations.victorianHallsSpectral
+
+      balcony <- selectJust $ locationIs Locations.balconyAtDeathsDoorstep
+      replaceLocation balcony =<< getSetAsideCard Locations.balconySpectral
+
+      office <- selectJust $ locationIs Locations.office
+      replaceLocation office =<< getSetAsideCard Locations.officeSpectral
+
+      billiardsRoom <- selectJust $ locationIs Locations.billiardsRoom
+      replaceLocation billiardsRoom =<< getSetAsideCard Locations.billiardsRoomSpectral
+
+      masterBedroom <- selectJust $ locationIs Locations.masterBedroom
+      replaceLocation masterBedroom =<< getSetAsideCard Locations.masterBedroomSpectral
+
+      trophyRoom <- selectJust $ locationIs Locations.trophyRoom
+      replaceLocation trophyRoom =<< getSetAsideCard Locations.trophyRoomSpectral
+
+      doStep 0 msg
+      eachInvestigator (`forInvestigator` msg)
 
       theSpectralWatcher <- getSetAsideCard Enemies.theSpectralWatcher
+      spawnEnemyAt_ theSpectralWatcher entryHall
 
       theWatcherSet <-
         filter (/= theSpectralWatcher)
           <$> getSetAsideEncounterSet EncounterSet.TheWatcher
       realmOfDeathSet <- getSetAsideEncounterSet EncounterSet.RealmOfDeath
 
-      pushAll
-        $ map
-          (\iid -> Move $ move (toSource attrs) iid victorianHalls)
-          investigatorIds
-        <> map
-          (\eid -> Move $ move (toSource attrs) eid victorianHalls)
-          enemyIds
-        <> [ ReplaceLocation entryHall entryHallSpectral DefaultReplace
-           , ReplaceLocation victorianHalls victorianHallsSpectral DefaultReplace
-           , ReplaceLocation balcony balconySpectral DefaultReplace
-           , ReplaceLocation office officeSpectral DefaultReplace
-           , ReplaceLocation billiardsRoom billiardsRoomSpectral DefaultReplace
-           , ReplaceLocation masterBedroom masterBedroomSpectral DefaultReplace
-           , ReplaceLocation trophyRoom trophyRoomSpectral DefaultReplace
-           , NextAdvanceActStep (toId a) 0
-           , NextAdvanceActStep (toId a) 1
-           , SpawnEnemyAt theSpectralWatcher entryHall
-           , ShuffleCardsIntoDeck
-               Deck.EncounterDeck
-               (theWatcherSet <> realmOfDeathSet)
-           , ShuffleEncounterDiscardBackIn
-           , advanceActDeck attrs
-           ]
+      shuffleCardsIntoDeck Deck.EncounterDeck (theWatcherSet <> realmOfDeathSet)
+      shuffleEncounterDiscardBackIn
+      advanceActDeck attrs
 
       pure a
-    NextAdvanceActStep aid 0 | aid == toId a -> do
-      locations <- select $ LocationWithInvestigator Anyone
-      pushAll $ map (RevealLocation Nothing) locations
+    DoStep 0 (AdvanceAct (isSide B attrs -> True) _ _) -> do
+      selectEach (LocationWithInvestigator Anyone) reveal
       pure a
-    NextAdvanceActStep aid n | aid == toId a -> do
+    ForInvestigator iid (AdvanceAct (isSide B attrs -> True) _ _) -> do
       monsters <- getSetAsideCardsMatching $ CardWithTrait Monster
       unless (null monsters) $ do
-        iids <- getInvestigators
-        let iid = fromJustNote "error" $ iids !!? (n - 1)
-        mLocation <- field InvestigatorLocation iid
-        player <- getPlayer iid
-        for_ mLocation $ \lid -> do
-          pushAll
-            [ FocusCards monsters
-            , chooseOne
-                player
-                [ targetLabel (toCardId monster) [SpawnEnemyAt monster lid]
-                | monster <- monsters
-                ]
-            , UnfocusCards
-            , NextAdvanceActStep aid ((n `mod` length iids) + 1)
-            ]
-
+        withLocationOf iid \lid -> do
+          focusCards monsters $ chooseTargetM iid monsters (`spawnEnemyAt_` lid)
       pure a
-    _ -> HiddenAgendas <$> runMessage msg attrs
+    _ -> HiddenAgendas <$> liftRunMessage msg attrs

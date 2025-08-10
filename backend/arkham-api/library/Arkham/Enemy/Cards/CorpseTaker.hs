@@ -43,6 +43,6 @@ instance RunMessage CorpseTaker where
           else do
             lead <- getLead
             locations <- select $ ClosestPathLocation loc location
-            chooseOrRunOneM lead $ targets locations (enemyMoveTo attrs)
+            chooseOrRunOneM lead $ targets locations (enemyMoveTo (attrs.ability 2) attrs)
       pure e
     _ -> CorpseTaker <$> liftRunMessage msg attrs

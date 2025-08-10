@@ -74,10 +74,10 @@ instance HasAbilities PowerWord where
             else exists $ inner <> additionalEnemyCriteria
        in
         [ controlledAbility
-          a
-          1
-          (handleThriceSpoken $ EnemyWithId eid <> EnemyAt fromLocation <> CanParleyEnemy You)
-          parleyAction_
+            a
+            1
+            (handleThriceSpoken $ EnemyWithId eid <> EnemyAt fromLocation <> CanParleyEnemy You)
+            parleyAction_
         | notNull commands || tabooed TabooList21 a -- the taboo'd version will initiate a skill test
         ]
           <> [ restrictedAbility a 2 ControlsThis $ FastAbility Free
@@ -98,44 +98,44 @@ allCommands a =
       ]
       <> [ ( BetrayCommand
            , \eid ->
-              EnemyAt (locationWithEnemy eid)
-                <> EnemyCanBeDamagedBySource (a.ability 1)
-                <> EnemyWithMaybeFieldLessThanOrEqualToThis eid EnemyFight
+               EnemyAt (locationWithEnemy eid)
+                 <> EnemyCanBeDamagedBySource (a.ability 1)
+                 <> EnemyWithMaybeFieldLessThanOrEqualToThis eid EnemyFight
            )
          | a `hasCustomization` Betray
          ]
       <> [ ( MercyCommand
            , \eid ->
-              EnemyWhenInvestigator
-                $ oneOf
-                  [ HealableInvestigator (a.ability 1) #damage
-                      $ InvestigatorAt
-                      $ LocationWithEnemy
-                      $ EnemyWithId eid
-                      <> EnemyWithNonZeroField EnemyHealthDamage
-                  , HealableInvestigator (a.ability 1) #horror
-                      $ InvestigatorAt
-                      $ LocationWithEnemy
-                      $ EnemyWithId eid
-                      <> EnemyWithNonZeroField EnemySanityDamage
-                  ]
+               EnemyWhenInvestigator
+                 $ oneOf
+                   [ HealableInvestigator (a.ability 1) #damage
+                       $ InvestigatorAt
+                       $ LocationWithEnemy
+                       $ EnemyWithId eid
+                       <> EnemyWithNonZeroField EnemyHealthDamage
+                   , HealableInvestigator (a.ability 1) #horror
+                       $ InvestigatorAt
+                       $ LocationWithEnemy
+                       $ EnemyWithId eid
+                       <> EnemyWithNonZeroField EnemySanityDamage
+                   ]
            )
          | a `hasCustomization` Mercy && not (tabooed TabooList21 a)
          ]
       <> [ ( ConfessCommand
            , \eid ->
-              EnemyWhenLocation
-                $ locationWithEnemy eid
-                <> LocationWithShroudLessThanOrEqualToLessThanEnemyMaybeField eid EnemyHealth
-                <> LocationWithDiscoverableCluesBy You
+               EnemyWhenLocation
+                 $ locationWithEnemy eid
+                 <> LocationWithShroudLessThanOrEqualToLessThanEnemyMaybeField eid EnemyHealth
+                 <> LocationWithDiscoverableCluesBy You
            )
          | a `hasCustomization` Confess
          ]
       <> [ ( DistractCommand
            , \eid ->
-              EnemyAt (locationWithEnemy eid)
-                <> EnemyCanBeEvadedBy (a.ability 1)
-                <> EnemyWithMaybeFieldLessThanOrEqualToThis eid EnemyEvade
+               EnemyAt (locationWithEnemy eid)
+                 <> EnemyCanBeEvadedBy (a.ability 1)
+                 <> EnemyWithMaybeFieldLessThanOrEqualToThis eid EnemyEvade
            )
          | a `hasCustomization` Distract
          ]
@@ -212,7 +212,8 @@ instance RunMessage PowerWord where
           case attrs.placement of
             AttachedToEnemy eid -> do
               sid <- getRandom
-              parley sid iid (attrs.ability 1) eid #willpower (Fixed 3)
+              parley sid iid (attrs.ability 1) eid #willpower
+                $ Fixed (if tabooed TabooList24 attrs then 2 else 3)
             _ -> error "invalid call"
         else runAbility iid attrs True
       pure e
@@ -240,7 +241,8 @@ instance RunMessage PowerWord where
               when (notNull enemies) do
                 chooseOrRunOne
                   iid
-                  [targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) (attrs.ability 1) 1] | enemy <- enemies]
+                  [ targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) (attrs.ability 1) 1] | enemy <- enemies
+                  ]
             MercyCommand -> do
               let source = attrs.ability 1
               damage <- field EnemyHealthDamage eid

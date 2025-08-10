@@ -1,13 +1,10 @@
-module Arkham.Asset.Assets.PurifyingCorruption4 (
-  purifyingCorruption4,
-  PurifyingCorruption4 (..),
-)
-where
+module Arkham.Asset.Assets.PurifyingCorruption4 (purifyingCorruption4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed)
+import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher
 import Arkham.Message (MessageType (..))
 import Arkham.Token
@@ -39,9 +36,9 @@ instance HasAbilities PurifyingCorruption4 where
 
 instance RunMessage PurifyingCorruption4 where
   runMessage msg a@(PurifyingCorruption4 attrs) = runQueueT $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+    UseCardAbility _iid (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
       pushAll
-        [ CancelEachNext (toSource attrs) [RevelationMessage, DrawEnemyMessage]
+        [ CancelEachNext (Just card.id) (toSource attrs) [RevelationMessage, DrawEnemyMessage]
         , PlaceTokens (attrs.ability 1) (toTarget attrs) Corruption 1
         ]
       pure a
@@ -54,13 +51,13 @@ instance RunMessage PurifyingCorruption4 where
       canHealHorror <- canHaveHorrorHealed (attrs.ability 2) iid
       chooseOrRunOne iid
         $ [ Label "Heal 1 damage and 1 horror"
-            $ [HealDamage (toTarget iid) (attrs.ability 2) 1 | canHealDamage]
-            <> [HealHorror (toTarget iid) (attrs.ability 2) 1 | canHealHorror]
+              $ [HealDamage (toTarget iid) (attrs.ability 2) 1 | canHealDamage]
+              <> [HealHorror (toTarget iid) (attrs.ability 2) 1 | canHealHorror]
           | canHealDamage || canHealHorror
           ]
         <> [ Label
-            "Remove 1 corruption from this card"
-            [RemoveTokens (attrs.ability 2) (toTarget attrs) Corruption 1]
+               "Remove 1 corruption from this card"
+               [RemoveTokens (attrs.ability 2) (toTarget attrs) Corruption 1]
            | attrs.token Corruption > 0
            ]
       pure a

@@ -2,7 +2,7 @@
 import type { CardContents } from '@/arkham/types/Card';
 import * as CardT from '@/arkham/types/Card';
 import gsap from 'gsap';
-import { computed, inject, Ref, ref, ComputedRef, reactive, watch } from 'vue';
+import { computed, inject, Ref, ref, ComputedRef, reactive, watch, onMounted, onBeforeUnmount } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { toCardContents } from '@/arkham/types/Card';
@@ -17,13 +17,14 @@ import Asset from '@/arkham/components/Asset.vue';
 import Event from '@/arkham/components/Event.vue';
 import Skill from '@/arkham/components/Skill.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
-import Card from '@/arkham/components/Card.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import * as Arkham from '@/arkham/types/Investigator';
 import { useI18n } from 'vue-i18n';
+import Draw from '@/arkham/components/Draw.vue'
+import { IsMobile } from '@/arkham/isMobile';
 const { t } = useI18n();
 
 interface RefWrapper<T> {
@@ -93,20 +94,6 @@ const inHandEnemies = computed(() =>
 
 const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
 
-const topOfDiscard = computed(() => discards.value[0])
-
-const topOfDeckRevealed = computed(() =>
-  props.investigator.modifiers?.some((m) => m.type.tag === "OtherModifier" && m.type.contents === "TopCardOfDeckIsRevealed")
-)
-
-const topOfDeck = computed(() => {
-  const topCard = props.investigator.deck[0]
-  if  (topOfDeckRevealed.value && topCard) {
-    return imgsrc(`cards/${topCard.cardCode.replace(/^c/, '')}.avif`)
-  }
-  return imgsrc("player_back.jpg")
-})
-
 const hunchDeck = computed(() => {
   const match = props.investigator.decks.find(([k,]) => k === "HunchDeck")
   if (match) {
@@ -134,19 +121,7 @@ const topOfHunchDeck = computed(() => {
   return null
 })
 
-const playTopOfDeckAction = computed(() => {
-  if(props.playerId !== props.investigator.playerId) {
-    return -1
-  }
-  const topOfDeck = props.investigator.deck[0]
-  if (topOfDeck !== undefined && topOfDeck !== null && topOfDeckTreachery.value === null) {
-    return choices.value.findIndex((c) => c.tag === "TargetLabel" && c.target.contents === props.investigator.deck[0].id)
-  }
-  return -1
-})
-
 const viewingDiscard = ref(false)
-const viewDiscardLabel = computed(() => viewingDiscard.value ? t('close') : pluralize(t('scenario.discardCard'), discards.value.length))
 
 const id = computed(() => props.investigator.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
@@ -164,32 +139,11 @@ const tarotCardAbility = (card: TarotCard) => {
   })
 }
 
-const drawCardsAction = computed(() => {
-  if(props.playerId !== props.investigator.playerId) {
-    return -1
-  }
-  return choices
-    .value
-    .findIndex((c) => {
-      if (c.tag === "ComponentLabel") {
-        return (c.component.tag == "InvestigatorDeckComponent")
-      }
-      return false
-    });
-})
-
 const noCards = computed<ArkhamCard.Card[]>(() => [])
 
 // eslint-disable-next-line
 const showCards = reactive<RefWrapper<any>>({ ref: noCards })
 const cardRowTitle = ref("")
-
-const topOfDeckTreachery = computed(() => {
-  const mTreacheryId = Object.values(props.game.treacheries).
-    filter((t) => t.placement.tag === "OnTopOfDeck" && t.placement.contents === id.value).
-    map((t) => t.id)[0]
-  return mTreacheryId ? props.game.treacheries[mTreacheryId] : null
-})
 
 const inHandTreacheries = computed(() => Object.values(props.game.treacheries).
   filter((t) => t.placement.tag === "HiddenInHand" && t.placement.contents === id.value))
@@ -260,6 +214,7 @@ const debug = useDebug()
 const events = computed(() => props.investigator.events.map((e) => props.game.events[e]).filter(e => e))
 const skills = computed(() => props.investigator.skills.map((e) => props.game.skills[e]).filter(e => e))
 const emptySlots = computed(() => props.investigator.slots.filter((s) => s.empty))
+const { isMobile } = IsMobile();
 
 const slotImg = (slot: Arkham.Slot) => {
   switch (slot.tag) {
@@ -388,19 +343,6 @@ const dragover = (e: DragEvent) => {
   }
 }
 
-function onDropDiscard(event: DragEvent) {
-  event.preventDefault()
-  if (event.dataTransfer) {
-    const data = event.dataTransfer.getData('text/plain')
-    if (data) {
-      const json = JSON.parse(data)
-      if (json.tag === "CardTarget") {
-        debug.send(props.game.id, {tag: 'DiscardCard', contents: [id.value, {'tag': 'GameSource' }, json.contents]})
-      }
-    }
-  }
-}
-
 function onDropHand(event: DragEvent) {
   event.preventDefault()
   if (event.dataTransfer) {
@@ -438,17 +380,60 @@ function onDrop(event: DragEvent) {
     }
   }
 }
+
+const handCardHeight = Math.min(7 * window.innerWidth / 50 + 114, 340);
+const handCardExposedHeight_MIN = `${-0.85 * handCardHeight}`;
+const handCardExposedHeight_MAX = `${-0.35 * handCardHeight}`;
+const handAreaMarginBottom = ref(handCardExposedHeight_MIN);
+const handAreaPointerEvents = ref('none');
+
+onMounted(() => {
+  if (isMobile) {
+    document.addEventListener('click',toggleHandAreaMarginBottom)
+    const isMinimized_SkillTest = inject('isMinimized_SkillTest', ref(false))
+    watch([() => props.game.skillTest, isMinimized_SkillTest], ([newSkillTest,isMinimized]) => {
+      if (newSkillTest && !isMinimized) {
+        handAreaMarginBottom.value = handCardExposedHeight_MAX;
+        handAreaPointerEvents.value = 'auto';
+        document.removeEventListener('click', toggleHandAreaMarginBottom)
+      } else {
+        handAreaMarginBottom.value = handCardExposedHeight_MIN;
+        handAreaPointerEvents.value = 'none';
+        document.addEventListener('click',toggleHandAreaMarginBottom)
+      }
+    });  
+  }
+});
+
+onBeforeUnmount(() => {
+  if (isMobile) {
+      document.removeEventListener('click', toggleHandAreaMarginBottom)
+  }
+});
+
+function toggleHandAreaMarginBottom(event: Event) {
+  const target = event.target as HTMLElement
+  if (target.classList.contains('hand-area-IsMobile')) {
+    handAreaMarginBottom.value = handCardExposedHeight_MAX;
+    handAreaPointerEvents.value = 'auto'
+  }
+  else if(!target.classList.contains('in-hand')){
+    handAreaMarginBottom.value = handCardExposedHeight_MIN;
+    handAreaPointerEvents.value = 'none'
+  }
+}
+
 </script>
 
 <template>
-  <div class="player-cards" >
+  <div class="player-cards">
     <transition name="grow">
       <section
         class="in-play"
-          @drop="onDrop($event)"
-          @dragover.prevent="dragover($event)"
-          @dragenter.prevent
-        >
+        @drop="onDrop($event)"
+        @dragover.prevent="dragover($event)"
+        @dragenter.prevent
+      >
         <transition-group @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
           <template v-if="tarotCards.length > 0">
             <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana" :data-index="tarotCard.arcana">
@@ -589,46 +574,15 @@ function onDrop(event: DragEvent) {
           @choose="$emit('choose', $event)"
           @showCards="doShowCards"
         />
-
-        <div class="discard"
-          @drop="onDropDiscard($event)"
-          @dragover.prevent="dragover($event)"
-          @dragenter.prevent
-          >
-          <Card v-if="topOfDiscard" :game="game" :card="topOfDiscard" :playerId="playerId" @choose="$emit('choose', $event)" />
-          <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
-          <button v-if="debug.active && discards.length > 0" class="view-discard-button" @click="debug.send(game.id, {tag: 'ShuffleDiscardBackIn', contents: investigatorId})">Shuffle Back In</button>
-        </div>
-
-        <div class="deck-container">
-          <div class="top-of-deck">
-            <Treachery
-              v-if="topOfDeckTreachery"
-              :treachery="topOfDeckTreachery"
-              :game="game"
-              :data-index="topOfDeckTreachery.cardId"
-              :playerId="playerId"
-              class="deck"
-              @choose="$emit('choose', $event)"
-            />
-            <img
-              v-else
-              :class="{ 'deck--can-draw': drawCardsAction !== -1, 'card': topOfDeckRevealed }"
-              class="deck"
-              :src="topOfDeck"
-              width="150px"
-              @click="$emit('choose', drawCardsAction)"
-            />
-            <span class="deck-size">{{investigator.deckSize}}</span>
-            <button v-if="playTopOfDeckAction !== -1" @click="$emit('choose', playTopOfDeckAction)">Play</button>
-          </div>
-          <template v-if="debug.active">
-            <button @click="debug.send(game.id, {tag: 'Search', contents: ['Looking', investigatorId, {tag: 'GameSource', contents: []}, { tag: 'InvestigatorTarget', contents: investigatorId }, [[{tag: 'FromDeck', contents: []}, 'ShuffleBackIn']], {tag: 'BasicCardMatch', contents: {tag: 'AnyCard', contents: []}}, { tag: 'DrawFound', contents: [investigatorId, 1]}]})">Select Draw</button>
-            <button @click="debug.send(game.id, {tag: 'ShuffleDeck', contents: {tag: 'InvestigatorDeck', contents: investigatorId}})">Shuffle</button>
-          </template>
-        </div>
+        <Draw
+          v-if="!isMobile"
+          :game="game"
+          :playerId="playerId"
+          :investigator="investigator"
+          @choose="$emit('choose', $event)"
+        />
       </div>
-      <div class="hand hand-area">
+      <div v-if="!isMobile" class="hand hand-area">
         <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter"
           @drop="onDropHand($event)"
           @dragover.prevent="dragover($event)"
@@ -678,7 +632,52 @@ function onDrop(event: DragEvent) {
         <div v-if="investigator.handSize" class="hand-size" :class="handSizeClasses" :current-length="totalHandSize">Hand Size: {{totalHandSize}}/{{investigator.handSize}}</div>
       </div>
     </div>
-
+    <div v-if="isMobile" class="hand hand-area-IsMobile" :style="{ marginBottom: `${handAreaMarginBottom}px` }" @click="toggleHandAreaMarginBottom">
+      <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter"
+        @drop="onDropHand($event)"
+        @dragover.prevent="dragover($event)"
+        @dragenter.prevent
+        :style="{ pointerEvents: `${handAreaPointerEvents}` }"
+        >
+        <HandCard
+          v-for="card in playerHand"
+          :card="card"
+          :game="game"
+          :playerId="playerId"
+          :ownerId="investigator.id"
+          :key="toCardContents(card).id"
+          @choose="$emit('choose', $event)"
+          :draggable="debug.active"
+          @dragstart="startHandDrag($event, card)"
+        />
+        <template v-for="enemy in inHandEnemies" :key="enemy.id">
+          <Enemy
+            v-if="solo || (playerId == investigator.playerId)"
+            :enemy="enemy"
+            :game="game"
+            :data-index="enemy.cardId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+          <div class="card-container" v-else>
+            <img class="card" :src="encounterBack" />
+          </div>
+        </template>
+        <template v-for="treacheryId in inHandTreacheries" :key="treacheryId">
+          <Treachery
+            v-if="solo || (playerId == investigator.playerId)"
+            :treachery="game.treacheries[treacheryId]"
+            :game="game"
+            :data-index="treacheryId"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+          <div class="card-container" v-else>
+            <img class="card" :src="encounterBack" />
+          </div>
+        </template>
+      </transition-group>
+    </div>
     <CardRow
       v-if="showCards.ref.length > 0"
       :game="game"
@@ -700,12 +699,6 @@ function onDrop(event: DragEvent) {
   align-items: flex-start;
   padding: 10px;
   background: var(--background-dark);
-}
-
-.deck--can-draw {
-  border: 2px solid var(--select);
-  border-radius: 10px;
-  cursor: pointer;
 }
 
 :deep(.location) {
@@ -730,45 +723,6 @@ function onDrop(event: DragEvent) {
   }
 }
 
-
-.discard {
-  width: var(--card-width);
-  button {
-    white-space: nowrap;
-    text-wrap: pretty;
-  }
-
-  &:deep(.card) {
-    margin: 0;
-    box-shadow: none;
-  }
-
-  &:deep(.card-container) {
-    width: var(--card-width);
-    margin: 0;
-    position:relative;
-    display: inline-flex;
-    &::after {
-      pointer-events: none;
-      border-radius: 6px;
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #FFF;
-      opacity: .85;
-      mix-blend-mode: saturation;
-    }
-  }
-}
-
-.deck, .card {
-  border-radius: 6px;
-  max-width: var(--card-width);
-}
-
 .deck {
   width: auto;
   box-shadow: var(--card-shadow);
@@ -790,39 +744,6 @@ function onDrop(event: DragEvent) {
   display: flex;
   gap: 5px;
   overflow-x: auto;
-}
-
-.view-discard-button {
-  width: 100%;
-}
-
-.deck-container {
-  display: flex;
-  flex-direction: column;
-}
-
-.top-of-deck {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: fit-content;
-}
-
-.deck-size {
-  background: rgba(0, 0, 0, 0.6);
-  padding: 5px;
-  border-radius: 20px;
-  pointer-events: none;
-  position: absolute;
-  font-weight: bold;
-  color: var(--title);
-  inset: 0;
-  width: fit-content;
-  height: fit-content;
-  aspect-ratio: 1;
-  line-height: 1;
-  margin: auto;
-  transform: translateY(-28.0%);
 }
 
 .hand-move,
@@ -868,6 +789,10 @@ function onDrop(event: DragEvent) {
   display: flex;
   justify-self: self-start;
   align-self: start;
+  img {
+    width: var(--card-width);
+    border-radius: 2px;
+  }
 }
 
 .committed-skills {
@@ -903,6 +828,7 @@ function onDrop(event: DragEvent) {
 }
 
 .tarot-card {
+  width: var(--card-width);
   &.can-interact {
     border: 2px solid var(--select);
   }
@@ -919,11 +845,9 @@ function onDrop(event: DragEvent) {
   flex-direction: row;
   flex-wrap: wrap;
   gap: 5px;
-}
-
-.card-container {
-  display: flex;
-  flex-direction: column;
+  @media (max-width: 600px) {
+      width: 100%;
+  }
 }
 
 .hand-size {
@@ -955,7 +879,6 @@ function onDrop(event: DragEvent) {
   }
 }
 
-
 .hand-area {
   display: flex;
   flex-direction: column;
@@ -965,4 +888,22 @@ function onDrop(event: DragEvent) {
   max-width: 100%;
 }
 
+.hand-area-IsMobile {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-start;
+  flex: 1;
+  max-width: 100%;
+  :deep(.card){
+    width: calc(var(--card-width) * 4);
+    min-width: calc(var(--card-width) * 4);
+  }
+}
+
+.card {
+  width: var(--card-width);
+  min-width: var(--card-width);
+  border-radius: 2px;
+}
 </style>

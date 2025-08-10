@@ -17,7 +17,7 @@ export interface Props {
 
 const props = withDefaults(defineProps<Props>(), { noStory: false })
 const emit = defineEmits(['choose'])
-const { t } = useI18n()
+const { t, te } = useI18n()
 
 async function choose(idx: number) {
   emit('choose', idx)
@@ -62,6 +62,7 @@ const requiresModal = computed(() => {
   if (inSkillTest.value) {
     return false
   }
+
   return (props.game.focusedChaosTokens.length > 0 && !inSkillTest.value) || focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value || choicesRequireModal.value || ['QuestionLabel', 'DropDown'].includes(question.value?.tag)
 })
 
@@ -111,7 +112,12 @@ const title = computed(() => {
 
 
   if (amountsLabel.value) {
-    return amountsLabel.value
+    if(amountsLabel.value.startsWith("$")) {
+      let titleKey = amountsLabel.value.replace(".label.", ".title.")
+      return te(titleKey.slice(1)) ? titleKey : amountsLabel.value
+    } else {
+      return amountsLabel.value
+    }
   }
 
   if (!question.value) {

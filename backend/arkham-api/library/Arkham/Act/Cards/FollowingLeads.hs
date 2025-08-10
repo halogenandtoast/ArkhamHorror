@@ -14,7 +14,6 @@ import Arkham.Helpers.Query (getInvestigators, getJustLocationByName)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Placement
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.MurderAtTheExcelsiorHotel.FlavorText
@@ -215,7 +214,7 @@ instance RunMessage FollowingLeads where
       rest' <- shuffle rest
 
       for_ (zip cards (emptyCrimeScenes' <> rest')) $ \(card, lid) -> do
-        createAssetAt_ (toCard card) (AtLocation lid)
+        createEnemyAt_ (toCard card) lid
 
       pure a
     RequestedEncounterCard (isSource attrs -> True) _ (Just ec) -> do

@@ -4,7 +4,9 @@ import { imgsrc, toCamelCase } from '@/arkham/helpers'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import Key from '@/arkham/components/Key.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
+import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 
+const store = useDbCardStore()
 const cardOverlay = ref<HTMLElement | null>(null)
 const hoveredElement = ref<HTMLElement | null>(null)
 let canDisablePress = false
@@ -357,6 +359,123 @@ const getImage = (el: HTMLElement): string | null => {
 
   return null
 }
+
+const dbCardName = ref<string>("")
+const dbCardTraits = ref<string>("")
+const dbCardText = ref<string>("")
+const dbCardCustomizationText = ref<string>("")
+
+const dbCardData = computed(() : boolean => {
+  if (card.value) {
+    const pattern = /(\d+b?)(_.*)?\.avif/
+    const match = card.value.match(pattern)
+    if (!match) return false
+    const code = match[1]
+    
+    if (code) {
+      const language = localStorage.getItem('language') || 'en'
+      
+      if (imgsrc(`cards/${match[0]}`).search(language) < 0) {
+        const dbCard: ArkhamDBCard = store.getDbCard(code)
+        
+        if (dbCard) {
+          const needBack = (dbCard.code !== code)
+          
+          let localizedCardName = getCardName(dbCard, needBack)
+          let localizedCardTraits = getCardTraits(dbCard, needBack)
+          let localizedCardText = getCardText(dbCard, needBack)
+          let localizedCustomizationText = getCardCustomizationText(dbCard)
+
+          dbCardName.value = localizedCardName ? `${(match[2])?"[Taboo] ": ""}${localizedCardName}` : ""
+          dbCardTraits.value = localizedCardTraits ? localizedCardTraits : ""
+          dbCardText.value = localizedCardText ? localizedCardText : ""
+          dbCardCustomizationText.value = localizedCustomizationText ? localizedCustomizationText : ""
+          
+          return !!localizedCardName || !!localizedCardTraits || !!localizedCardText || !!localizedCustomizationText
+        }
+      }
+    }
+  }
+
+  dbCardName.value = ""
+  dbCardTraits.value = ""
+  dbCardText.value = ""
+  dbCardCustomizationText.value = ""
+  
+  return false
+})
+
+const getCardName = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
+  if (dbCard.name == dbCard.real_name) return null
+  
+  const cardName = ref<string>("")
+  if (needBack && dbCard.back_name) cardName.value = dbCard.back_name || null
+  else cardName.value = dbCard.name || null
+  
+  if (!cardName.value) return null
+  if (!needBack && dbCard.subname) cardName.value = `${cardName.value}: ${dbCard.subname}`
+  if ((dbCard.xp || 0) > 0) cardName.value = `${cardName.value} (${dbCard.xp})`
+  return cardName.value
+}
+
+const getCardTraits = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
+  if (dbCard.traits == dbCard.real_traits) return null
+  
+  if (needBack && dbCard.back_traits) return dbCard.back_traits || null
+  return dbCard.traits || null
+}
+
+const getCardText = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
+  if (dbCard.text == dbCard.real_text) return null
+  
+  const targetText = ref<string>()
+  if (needBack) targetText.value = dbCard.back_text || null
+  else targetText.value = dbCard.text || null
+  
+  return targetText.value ? replaceText(targetText.value) : null
+}
+
+const getCardCustomizationText = (dbCard: ArkhamDBCard): string | null => {
+  if (dbCard.text == dbCard.real_text) return null
+  return replaceText(dbCard.customization_text || "")
+}
+
+const replaceText = (text: string): string => {
+  if (!text) return ""
+  
+  return text.
+    replaceAll('[[', `<span style="font-style: italic; font-weight: bold">`).replaceAll(']]', '</span>').
+    replaceAll('<i>', `<span style="font-style: italic;">`).replaceAll('</i>', '</span>').
+    replaceAll('[action]', '<span class="action-icon"></span>').
+    replaceAll('[fast]', '<span class="fast-icon"></span>').
+    replaceAll('[free]', '<span class="free-icon"></span>').
+    replaceAll('[reaction]', '<span class="reaction-icon"></span>').
+    replaceAll('[willpower]', '<span class="willpower-icon"></span>').
+    replaceAll('[intellect]', '<span class="intellect-icon"></span>').
+    replaceAll('[combat]', '<span class="combat-icon"></span>').
+    replaceAll('[agility]', '<span class="agility-icon"></span>').
+    replaceAll('[wild]', '<span class="wild-icon"></span>').
+    replaceAll('[guardian]', '<span class="guardian-icon"></span>').
+    replaceAll('[seeker]', '<span class="seeker-icon"></span>').
+    replaceAll('[rogue]', '<span class="rogue-icon"></span>').
+    replaceAll('[mystic]', '<span class="mystic-icon"></span>').
+    replaceAll('[survivor]', '<span class="survivor-icon"></span>').
+    replaceAll('[elder_sign]', '<span class="elder-sign"></span>').
+    replaceAll('[auto_fail]', '<span class="auto-fail"></span>').
+    replaceAll('[skull]', '<span class="skull-icon"></span>').
+    replaceAll('[cultist]', '<span class="cultist-icon"></span>').
+    replaceAll('[tablet]', '<span class="tablet-icon"></span>').
+    replaceAll('[elder_thing]', '<span class="elder-thing-icon"></span>').
+    replaceAll('[bless]', '<span class="bless-icon"></span>').
+    replaceAll('[curse]', '<span class="curse-icon"></span>').
+    replaceAll('[frost]', '<span class="frost-icon"></span>').
+    replaceAll('[per_investigator]', '<span class="per-player"></span>').
+    replaceAll('[seal_a]', '<span class="seal-a-icon"></span>').
+    replaceAll('[seal_b]', '<span class="seal-b-icon"></span>').
+    replaceAll('[seal_c]', '<span class="seal-c-icon"></span>').
+    replaceAll('[seal_d]', '<span class="seal-d-icon"></span>').
+    replaceAll('[seal_e]', '<span class="seal-e-icon"></span>')
+}
 </script>
 
 <template>
@@ -369,6 +488,12 @@ const getImage = (el: HTMLElement): string | null => {
         :src="overlay"
       />
       <div v-for="entry in crossedOff" :key="entry" class="crossed-off" :class="{ [toCamelCase(entry)]: true }"></div>
+    </div>
+    <div class="card-data" v-if="dbCardData" :class="{ reversed, Reversed: upsideDown }">
+      <p v-if="dbCardName" style="font-size: 1.0em;"><b>{{ dbCardName }}</b></p>
+      <p v-if="dbCardTraits"><span style="font-style: italic;">{{ dbCardTraits }}</span></p>
+      <p v-if="dbCardText"><br></p>
+      <p v-if="dbCardText" v-html="dbCardText" style="font-size: 0.85em;"></p>
     </div>
     <span class="swarm" v-if="swarm"><BugAntIcon aria-hidden="true" /></span>
     <span class="fight" v-if="fight">{{ fight }}</span>
@@ -403,7 +528,10 @@ const getImage = (el: HTMLElement): string | null => {
       <div v-for="tick in customizationTicks" :key="tick" :class="`tick tick-${cardCode} ${tick}`">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg>
       </div>
-
+    </div>
+    <div class="card-data" v-if="dbCardCustomizationText">
+      <p v-if="dbCardName"><b>{{ dbCardName }}</b></p>
+      <p v-if="dbCardCustomizationText" v-html="dbCardCustomizationText" style="font-size: 0.85em;"></p>
     </div>
   </div>
 </template>
@@ -465,7 +593,31 @@ const getImage = (el: HTMLElement): string | null => {
   font-size: 0.8em;
 }
 
+.card-data {
+  position: relative;
+  width: 300px;
+  min-height: inherit;
+  overflow-y: visible;
+  margin-left: 2px;
+  padding: 5px;
+  border-radius: 15px;
+  font-family: Arial;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  aspect-ratio: var(--card-aspect);
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  scroll-behavior: smooth;
+  background-color: rgba(185, 185, 185, 0.85);
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.75);
+}
+
+.card-data::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera*/
+}
+
 .card-overlay {
+  pointer-events: none;
   position: absolute;
   z-index: 1000;
   display: flex;
@@ -2059,7 +2211,7 @@ const getImage = (el: HTMLElement): string | null => {
   position: absolute;
   top: 0;
   left: 2px;
-  pointer-events: auto;
+  pointer-events: none;
   animation: fadeIn 0.5s;
 }
 

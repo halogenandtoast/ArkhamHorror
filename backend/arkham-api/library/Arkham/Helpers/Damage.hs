@@ -20,7 +20,8 @@ damageTypeMatches strategy = \case
   isDirectStrategy = case strategy of
     DamageDirect -> True
     DamageAny -> False
-    DamageAssetsFirst -> False
+    DamageAssetsFirst {} -> False
+    HorrorAssetsFirst {} -> False
     DamageFirst _ -> False
     SingleTarget -> False
     DamageEvenly -> False

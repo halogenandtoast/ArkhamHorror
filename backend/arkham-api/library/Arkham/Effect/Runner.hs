@@ -68,14 +68,8 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     Discard _ _ (ActTarget _) | isEndOfWindow a EffectActWindow -> do
       a <$ push (DisableEffect effectId)
-    SkillTestEnded sid -> do
-      mInvestigator <- getSkillTestInvestigator
-      when
-        ( isEndOfWindow a (EffectSkillTestWindow sid)
-            || maybe False (isEndOfWindow a . EffectNextSkillTestWindow) mInvestigator
-        )
-        do
-          push (DisableEffect effectId)
+    SkillTestEnded sid | isEndOfWindow a (EffectSkillTestWindow sid) -> do
+      push $ DisableEffect effectId
       pure a
     CancelSkillEffects -> case effectSource of
       (SkillSource _) -> a <$ push (DisableEffect effectId)
@@ -105,7 +99,10 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     ResolvedAbility ab | #move `elem` ab.actions && isEndOfWindow a EffectMoveWindow -> do
       a <$ push (DisableEffect effectId)
-    NextSkillTest sid -> pure $ replaceNextSkillTest sid a
+    NextSkillTest sid -> do
+      getSkillTestInvestigator >>= \case
+        Just iid -> pure $ replaceNextSkillTest sid iid a
+        Nothing -> pure a
     RepeatSkillTest sid stId | isEndOfWindow a (EffectSkillTestWindow stId) -> do
       getSkillTest >>= \case
         Nothing -> pure a

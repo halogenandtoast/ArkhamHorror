@@ -9,6 +9,7 @@ import {
   ref,
   ComputedRef,
   reactive,
+  provide
 } from 'vue';
 import { type Game } from '@/arkham/types/Game';
 import { type Scenario } from '@/arkham/types/Scenario';
@@ -45,6 +46,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import { useDebug } from '@/arkham/debug'
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+import { IsMobile } from '@/arkham/isMobile';
 const { t } = useI18n();
 
 // types
@@ -86,6 +88,8 @@ const previousRotation = ref(0)
 const legsSet = ref(["legs1", "legs2", "legs3", "legs4"])
 
 const locationsZoom = ref(1);
+
+const { isMobile } = IsMobile();
 
 // callbacks
 onMounted(() => {
@@ -467,6 +471,43 @@ function beforeLeave(e: Element) {
   el.style.width = width
   el.style.height = height
 }
+
+function toggleZoom(e: MouseEvent) {
+  const el = (e.target as HTMLElement).closest('.location-cards') as HTMLElement;
+  const zoomValue = 4;
+  const isZoomedIn = el.style.zoom === String(zoomValue);
+
+  // Save scroll position before zoom change
+  const scrollLeftValue = el.scrollLeft;
+  const scrollTopValue = el.scrollTop;
+
+  // Toggle zoom
+  el.style.zoom = isZoomedIn ? "1" : String(zoomValue);
+
+  // Adjust padding and scroll position after zoom change
+  const containerRect = el.getBoundingClientRect();
+  const target = e.target as HTMLElement; 
+  let locationImg = null;
+  if (target && target.classList.contains('card--locations')){
+    locationImg = target;
+  } else {
+    const investigator = Object.values(props.game.investigators).find(i => i.playerId === props.playerId);
+    if (investigator) {
+      locationImg = document.querySelector(`img[data-id="${investigator.location}"]`);      
+    }
+  }
+  if (locationImg) {
+    const locationRect = locationImg.getBoundingClientRect();
+    const paddingValue = (containerRect.height - locationRect.height) / (2 * zoomValue) + "px"
+    el.style.paddingTop = isZoomedIn ? "" : paddingValue;
+    el.style.paddingBottom = isZoomedIn ? "" : paddingValue
+    const x = locationRect.left - containerRect.left + scrollLeftValue - (containerRect.width - locationRect.width) / 2;
+    const y = locationRect.top - containerRect.top + scrollTopValue
+    el.scrollLeft = isZoomedIn ? scrollLeftValue : x / zoomValue;
+    el.scrollTop = isZoomedIn ? scrollTopValue : y / zoomValue;
+  }
+}
+
 const doShowCards = (cards: ComputedRef<Card[]>, title: string, isDiscards: boolean) => {
   cardRowTitle.value = title
   showCards.ref = cards
@@ -493,6 +534,13 @@ const victoryDisplay = computed(() => props.scenario.victoryDisplay)
 
 const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victoryDisplay'), true)
 
+const isMinimized_SkillTest = ref(false)
+provide('isMinimized_SkillTest', isMinimized_SkillTest)
+function minimize_SkillTest(isMinimized:boolean){
+  if (isMobile) {
+    isMinimized_SkillTest.value = isMinimized
+  }
+}
 </script>
 
 <template>
@@ -571,7 +619,9 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
               <img
                 :src="topOfEncounterDiscard"
                 class="card"
+                @click="showDiscards"
               />
+              <span class="deck-size">{{discards.length}}</span>
             </div>
 
 
@@ -722,13 +772,14 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
             :skillTest="game.skillTest"
             :playerId="playerId"
             @choose="choose"
+            @minimize="minimize_SkillTest"
         >
         </SkillTest>
 
       </div>
 
 
-      <div class="location-cards-container">
+      <div class="location-cards-container" @dblclick.passive="toggleZoom">
         <Connections :game="game" :playerId="playerId" />
         <input v-model="locationsZoom" type="range" min="1" max="3" step="0.25" class="zoomer" />
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :style="locationStyles" @before-leave="beforeLeave">
@@ -852,6 +903,18 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
   aspect-ratio: var(--card-sideways-ratio);
 }
 
+.deck-size {
+  position: absolute;
+  font-weight: bold;
+  font-size: 1.2em;
+  color: rgba(255, 255, 255, 1);
+  left: 50%;
+  bottom: 55%;
+  transform: translateX(-50%) translateY(-50%);
+  pointer-events: none;
+  -webkit-text-stroke: 1px black;
+}
+
 .scenario-cards {
   display: flex;
   align-self: center;
@@ -862,6 +925,11 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
   width: 100%;
   gap: 10px;
   z-index: -2;
+  @media (max-width: 800px) and (orientation: portrait) {
+    padding-top: 10px;
+    padding-bottom: 0;
+    height: calc(var(--card-height) + 10px);
+  }
 }
 
 .clue {
@@ -953,13 +1021,15 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
 }
 
 .location-cards {
-  display: flex;
   width: 100%;
   height: 100%;
   margin: auto;
   overflow: auto;
   scrollbar-gutter: stable both-edges;
+  scroll-padding: 30%;
   place-content: safe center;
+  display: grid;
+  flex-shrink: 0;
 }
 
 .location-cards-container {
@@ -969,6 +1039,10 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
   padding-top: 32px;
   padding-bottom: 32px;
   position: relative;
+  @media (max-width: 800px) and (orientation: portrait) {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
 }
 
 .portrait {
@@ -1003,6 +1077,9 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
     display: flex;
     flex-direction: column;
     gap: 5px;
+    @media (max-width: 800px) and (orientation: portrait) {
+      display: none;
+    }
   }
 }
 
@@ -1073,6 +1150,10 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
   > div {
     flex: 1;
     text-align: center;
+  }
+
+  @media (max-width: 768px) and (orientation: portrait) {
+    display: none;
   }
 }
 
@@ -1181,6 +1262,9 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
 
 .scenario-decks {
   gap: 5px;
+  @media (max-width: 800px) and (orientation: portrait) {
+    display:flex !important;
+  }
 }
 
 .scenario-encounter-decks {
@@ -1365,6 +1449,10 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
   position: absolute;
   right: 10px;
   bottom: 10px;
+
+  @media (max-width: 768px) and (orientation: portrait) {
+    display: none;
+  }
 }
 
 @media screen and (max-width: 400px) {

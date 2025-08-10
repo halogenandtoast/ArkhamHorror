@@ -27,6 +27,6 @@ instance HasAbilities OsbornsGeneralStore_207 where
 instance RunMessage OsbornsGeneralStore_207 where
   runMessage msg l@(OsbornsGeneralStore_207 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      search iid (attrs.ability 1) iid [fromTopOfDeck 3] (basic $ #asset <> #item) (DrawFound iid 1)
+      search iid (attrs.ability 1) iid [fromTopOfDeck 3] (basic $ #asset <> #item) (AddFoundToHand iid 1)
       pure l
     _ -> OsbornsGeneralStore_207 <$> liftRunMessage msg attrs

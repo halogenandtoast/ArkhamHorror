@@ -1,15 +1,10 @@
 module Arkham.Event.Events.HeroicRescue2 (heroicRescue2) where
 
-import Arkham.Attack
-import Arkham.Classes
-import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Movement
-import Arkham.Prelude
-import Arkham.Projection
+import Arkham.Message.Lifted.Move
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -21,18 +16,19 @@ heroicRescue2 :: EventCard HeroicRescue2
 heroicRescue2 = event HeroicRescue2 Cards.heroicRescue2
 
 instance RunMessage HeroicRescue2 where
-  runMessage msg e@(HeroicRescue2 attrs) = case msg of
+  runMessage msg e@(HeroicRescue2 attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ [windowType -> Window.EnemyWouldAttack details'] _ | eid == toId attrs -> do
       let iid' = fromJustNote "wrong target" $ preview _InvestigatorTarget =<< details'.singleTarget
-      let enemy = attackEnemy details'
-      lid <- fieldJust InvestigatorLocation iid'
-      mlid <- field InvestigatorLocation iid
+      let enemy = details'.enemy
 
       canDealDamage <- withoutModifier iid CannotDealDamage
-      pushAll
-        $ [Move $ move attrs iid lid | Just lid /= mlid]
-        <> [EnemyEngageInvestigator enemy iid]
-        <> [ChangeEnemyAttackTarget enemy (toTarget iid)]
-        <> [AfterEnemyAttack enemy [EnemyDamage enemy $ nonAttack (Just iid) attrs 1] | canDealDamage]
+      withLocationOf iid' \lid' -> do
+        withLocationOf iid \lid -> do
+          when (lid /= lid') $ moveTo attrs iid lid'
+      enemyEngageInvestigator enemy iid
+      push $ ChangeEnemyAttackTarget enemy (toTarget iid)
+
+      when canDealDamage do
+        afterEnemyAttack enemy $ nonAttackEnemyDamage (Just iid) attrs 1 enemy
       pure e
-    _ -> HeroicRescue2 <$> runMessage msg attrs
+    _ -> HeroicRescue2 <$> liftRunMessage msg attrs

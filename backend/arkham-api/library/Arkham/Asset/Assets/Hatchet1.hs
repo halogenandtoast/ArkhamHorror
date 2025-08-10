@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Hatchet1 (hatchet1, Hatchet1 (..)) where
+module Arkham.Asset.Assets.Hatchet1 (hatchet1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -18,14 +18,13 @@ hatchet1 = asset Hatchet1 Cards.hatchet1
 
 instance HasAbilities Hatchet1 where
   getAbilities (Hatchet1 a) =
-    [restrictedAbility a 1 ControlsThis fightAction_]
+    [restricted a 1 ControlsThis fightAction_]
       <> case a.placement of
         AttachedToEnemy eid ->
           [ withTooltip "Take control of Hatchet"
-              $ restrictedAbility (proxied eid a) 2 OnSameLocation
+              $ restricted (proxied eid a) 2 OnSameLocation
               $ freeReaction
-              $ Matcher.EnemyDefeated #when Anyone ByAny
-              $ EnemyWithId eid
+              $ Matcher.EnemyDefeated #when Anyone ByAny (be eid)
           ]
         _ -> []
 

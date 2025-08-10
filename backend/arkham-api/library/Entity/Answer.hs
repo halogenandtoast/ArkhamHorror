@@ -292,6 +292,7 @@ handleAnswer Game {..} playerId = \case
         let
           combinePaymentAmounts n = \case
             PayCost acId iid skip (UseCost aMatcher uType m) -> [PayCost acId iid skip (UseCost aMatcher uType (n * m))]
+            PayCost acId iid skip (ResourceCost _) | n == 0 -> [PayCost acId iid skip (ResourceCost 0)]
             payMsg -> replicate n payMsg
         let handleCost (cId, n) = combinePaymentAmounts n $ Map.findWithDefault Noop cId costMap
         pure $ concatMap handleCost $ Map.toList (parAmounts response)

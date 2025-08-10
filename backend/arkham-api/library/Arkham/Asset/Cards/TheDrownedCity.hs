@@ -333,6 +333,8 @@ theGreatWorkDivideAndUnite =
       { cdCardTraits = setFromList [Pact, Science]
       , cdUnique = True
       , cdDeckRestrictions = [PerDeckLimit 1]
+      , cdDoubleSided = True
+      , cdOtherSide = Just "11068b"
       }
 
 katarinaSojkamissaryFromUlthar :: CardDef

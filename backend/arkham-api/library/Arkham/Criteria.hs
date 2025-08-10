@@ -216,13 +216,14 @@ data Criterion
   | CanAffordCostIncrease Int
   | OnSameLocation
   | OwnCardWithDoom
-  | CardWithDoomExists
+  | CardWithRemovableDoomExists
   | ControlsThis -- really controls this
   | OwnsThis -- just the owner
   | PlayableCardExists CostStatus ExtendedCardMatcher
   | PlayableCardExistsWithCostReduction CostReduction ExtendedCardMatcher
   | ResourcesOnThis ValueMatcher
   | ResourcesOnLocation Where ValueMatcher
+  | TokensOnLocation Where Token ValueMatcher
   | ReturnableCardInDiscard DiscardSignifier [Trait]
   | PlayableCardInDiscard DiscardSignifier CardMatcher
   | ScenarioCardHasResignAbility

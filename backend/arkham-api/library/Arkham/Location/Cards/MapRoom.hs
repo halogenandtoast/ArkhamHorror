@@ -33,6 +33,6 @@ instance RunMessage MapRoom where
       record TheTeamReadTheMap
       pure l
     ForTarget (LocationTarget lid) (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      discoverAt NotInvestigate iid (attrs.ability 1) lid 1
+      discoverAt NotInvestigate iid (attrs.ability 1) 1 lid
       pure l
     _ -> MapRoom <$> liftRunMessage msg attrs

@@ -5,6 +5,7 @@ import Arkham.Act.Sequence qualified as Act
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Key
+import Arkham.Campaigns.TheForgottenAge.Meta
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Types (Field (..))
@@ -16,7 +17,6 @@ import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
-import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted qualified as Msg
@@ -28,6 +28,7 @@ import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.IntMap.Strict qualified as IntMap
+import Data.Map.Strict qualified as Map
 
 newtype ThreadsOfFate = ThreadsOfFate ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -188,6 +189,8 @@ instance RunMessage ThreadsOfFate where
       gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
       storyWithContinue' (h "title" >> p "intro1")
       doStep (if gaveCustodyToHarlan then 3 else 2) PreScenarioSetup
+      isReturnTo <- Arkham.Helpers.Scenario.getIsReturnTo
+      when isReturnTo $ doStep 7 PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
       storyWithChooseOneM' (h "title" >> p "intro2") do
@@ -218,6 +221,9 @@ instance RunMessage ThreadsOfFate where
             removeAllChaosTokens Tablet
             addChaosToken ElderThing
         labeled' "listen" nothing
+      pure s
+    DoStep 7 PreScenarioSetup -> scope "intro" do
+      storyWithContinue' (h "title" >> p "intro7")
       pure s
     StandaloneSetup -> scope "standalone" do
       lead <- getLead
@@ -274,14 +280,16 @@ instance RunMessage ThreadsOfFate where
       -- well
 
       let counted x = if x then 1 else 0
-      actPairCountMap <-
+      actPairCountMap :: IntMap Int <-
         IntMap.fromList
           <$> sequence
             [ (1,) . counted <$> selectAny (ActWithSide Act.B)
             , (2,) . counted <$> selectAny (ActWithSide Act.D)
             , (3,) . counted <$> selectAny (ActWithSide Act.F)
+            , (4,) . counted <$> selectAny (ActWithSide Act.H)
             ]
       let
+        completedStack :: Int -> Bool
         completedStack n =
           (== 3)
             . (+ findWithDefault 0 n actPairCountMap)
@@ -292,6 +300,7 @@ instance RunMessage ThreadsOfFate where
         act3bCompleted = completedStack 1
         act3dCompleted = completedStack 2
         act3fCompleted = completedStack 3
+        act3hCompleted = completedStack 4
         act1sCompleted = length $ keys attrs.completedActStack
 
       iids <- allInvestigators
@@ -300,6 +309,7 @@ instance RunMessage ThreadsOfFate where
       record $ if act3bCompleted then TheInvestigatorsFoundTheMissingRelic else TheRelicIsMissing
       record $ if act3dCompleted then TheInvestigatorsRescuedAlejandro else AlejandroIsMissing
       record $ if act3fCompleted then TheInvestigatorsForgedABondWithIchtaca else IchtacaIsInTheDark
+      recordWhen act3hCompleted TheInvestigatorsRecruitedTheHelpOfAnotherExpedition
 
       unless act3bCompleted $ removeCampaignCard Assets.relicOfAgesADeviceOfSomeSort
       unless act3dCompleted $ removeCampaignCard Assets.alejandroVela
@@ -307,12 +317,25 @@ instance RunMessage ThreadsOfFate where
       forgingYourOwnPath <- getHasRecord YouAreForgingYourOwnWay
       alejandroOwned <- getIsAlreadyOwned Assets.alejandroVela
 
-      resolutionWithXp "resolution1"
-        $ allGainXpWithBonus' attrs
-        $ mconcat
-        $ toBonus "bonus" act1sCompleted
-        : [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath]
-          <> [toBonus "forgingYourOwnPath" 2 | act3fCompleted && forgingYourOwnPath]
+      isReturnTo <- Arkham.Helpers.Scenario.getIsReturnTo
+      if isReturnTo
+        then do
+          meta <- getCampaignMeta @Metadata
+          let completedCount =
+                (+ sum (IntMap.elems actPairCountMap)) . sum . map length $ toList attrs.completedActStack
+          push $ SetCampaignMeta $ toJSON $ meta {bonusXp = Map.fromList $ map (,completedCount) iids}
+          resolutionWithXp "resolution1"
+            $ allGainXpWithBonus' attrs
+            $ mconcat
+            $ [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath]
+            <> [toBonus "forgingYourOwnPath" 2 | act3fCompleted && forgingYourOwnPath]
+        else do
+          resolutionWithXp "resolution1"
+            $ allGainXpWithBonus' attrs
+            $ mconcat
+            $ toBonus "bonus" act1sCompleted
+            : [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath]
+              <> [toBonus "forgingYourOwnPath" 2 | act3fCompleted && forgingYourOwnPath]
 
       relicOwned <- getIsAlreadyOwned Assets.relicOfAgesADeviceOfSomeSort
       when (act3bCompleted && not relicOwned) do

@@ -8,6 +8,7 @@ import Arkham.Card
 import Arkham.ChaosToken.Types
 import Arkham.ClassSymbol
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.Game ()
@@ -19,6 +20,8 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Layout
 import Arkham.Location.Grid
 import Arkham.Matcher
+import Arkham.Message (Message (SetScenarioMeta))
+import Arkham.Message.Lifted.Queue
 import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario.Types
@@ -202,3 +205,6 @@ guardInScenario = liftGuardM inScenario
 
 inScenario :: HasGame m => m Bool
 inScenario = selectAny TheScenario
+
+setScenarioMeta :: (ReverseQueue m, ToJSON a) => a -> m ()
+setScenarioMeta = push . SetScenarioMeta . toJSON

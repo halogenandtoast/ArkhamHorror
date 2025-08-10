@@ -300,6 +300,9 @@ const sideways = computed<boolean>(() => {
   if (hoveredElement.value?.classList.contains('attached')) return false
   if (hoveredElement.value?.classList.contains('card--sideways')) return true
   if (hoveredElement.value?.classList.contains('sideways')) return true
+  // Default to sideways if the element is wider than it is tall (except for modifiers).
+  if (hoveredElement.value?.classList.contains('modifier')) return false // Ensure consistency with "SkillTest.vue" and verify potential cases in "Source.hs"
+  if (hoveredElement.value?.offsetWidth > hoveredElement.value.offsetHeight) return true
 
   return false
 })
@@ -617,7 +620,6 @@ const replaceText = (text: string): string => {
 }
 
 .card-overlay {
-  pointer-events: none;
   position: absolute;
   z-index: 1000;
   display: flex;
@@ -2211,7 +2213,7 @@ const replaceText = (text: string): string => {
   position: absolute;
   top: 0;
   left: 2px;
-  pointer-events: none;
+  pointer-events: auto;
   animation: fadeIn 0.5s;
 }
 

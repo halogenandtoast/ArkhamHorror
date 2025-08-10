@@ -1206,6 +1206,14 @@ h2 {
   }
 }
 
+.question-content {
+  :deep(.card) {
+    width: 10.71vw ;
+    height: 14.994vw;
+    max-width: 10.71vw;
+  }
+}
+
 .active {
   border: 1px solid var(--select);
 }

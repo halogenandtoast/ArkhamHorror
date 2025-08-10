@@ -1207,10 +1207,12 @@ h2 {
 }
 
 .question-content {
-  :deep(.card) {
-    width: 10.71vw ;
-    height: 14.994vw;
-    max-width: 10.71vw;
+  @media (max-width: 800px) and (orientation: portrait)  {
+    :deep(.card) {
+      width: 10.71vw ;
+      height: 14.994vw;
+      max-width: 10.71vw;
+    }
   }
 }
 

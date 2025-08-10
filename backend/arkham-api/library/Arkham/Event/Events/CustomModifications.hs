@@ -62,7 +62,7 @@ instance HasAbilities CustomModifications where
   getAbilities (CustomModifications a) =
     case a.attachedTo of
       Just (AssetTarget aid) ->
-        [ restrictedAbility
+        [ restricted
             a
             1
             ( DuringSkillTest
@@ -71,7 +71,7 @@ instance HasAbilities CustomModifications where
             )
             $ ReactionAbility (RevealChaosToken #when You (not_ #autofail)) (exhaust a)
         ]
-          <> [ restrictedAbility a 2 (ControlsThis <> can.draw.cards You)
+          <> [ restricted a 2 (ControlsThis <> can.draw.cards You)
                  $ CustomizationReaction
                    "Counterbalance"
                    ( AttachCard
@@ -83,7 +83,7 @@ instance HasAbilities CustomModifications where
                    Free
              | a `hasCustomization` Counterbalance
              ]
-          <> [ restrictedAbility a 3 ControlsThis
+          <> [ restricted a 3 ControlsThis
                  $ CustomizationReaction
                    "Extended Magazine"
                    ( oneOf

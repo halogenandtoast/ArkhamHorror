@@ -24,9 +24,9 @@ import Arkham.Helpers.Campaign
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario hiding (getIsReturnTo)
+import Arkham.Helpers.Tokens
 import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -300,12 +300,11 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
     NoResolution -> do
       story noResolutionA
       pathsKnown <- getRecordCount PathsAreKnownToYou
-      pillarTokens <-
-        getSum <$> selectAgg Sum LocationResources (locationIs Locations.mouthOfKnYanTheCavernsMaw)
-      actStep <- getCurrentActStep
+      pillarTokens <- selectCountTokens Pillar (locationIs Locations.mouthOfKnYanTheCavernsMaw)
       when (pillarTokens > pathsKnown) do
         recordCount PathsAreKnownToYou pillarTokens
       push RestartScenario
+      actStep <- getCurrentActStep
       pure $ HeartOfTheElders (attrs `With` metadata {reachedAct2 = reachedAct2 metadata || actStep >= 2})
     Resolution 1 -> do
       story resolution1A

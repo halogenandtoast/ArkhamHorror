@@ -31,6 +31,6 @@ instance HasAbilities ChapultepecHill_179 where
 instance RunMessage ChapultepecHill_179 where
   runMessage msg l@(ChapultepecHill_179 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      discoverAt NotInvestigate iid (attrs.ability 1) attrs 1
+      discoverAt NotInvestigate iid (attrs.ability 1) 1 attrs
       pure l
     _ -> ChapultepecHill_179 <$> liftRunMessage msg attrs

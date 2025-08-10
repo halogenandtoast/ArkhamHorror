@@ -451,6 +451,8 @@ window.sendDebug = function (msg: any) {
   debug.send(game.value.id, msg)
 }
 
+window.undo = undo
+
 // Callbacks
 async function choose(idx: number) {
   if (idx !== -1 && game.value && !props.spectate) {

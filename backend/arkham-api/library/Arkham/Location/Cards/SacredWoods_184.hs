@@ -38,6 +38,6 @@ instance RunMessage SacredWoods_184 where
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       n <- field LocationClues attrs.id
-      discoverAt NotInvestigate iid (attrs.ability 1) attrs n
+      discoverAt NotInvestigate iid (attrs.ability 1) n attrs
       pure l
     _ -> SacredWoods_184 <$> liftRunMessage msg attrs

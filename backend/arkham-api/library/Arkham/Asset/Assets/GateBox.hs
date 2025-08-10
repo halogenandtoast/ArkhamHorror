@@ -2,13 +2,12 @@ module Arkham.Asset.Assets.GateBox (gateBox) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Helpers.Window
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (PutLocationIntoPlay)
-import Arkham.Movement
-import Arkham.Prelude
-import Arkham.Window
+import Arkham.Message.Lifted.Move
+import Arkham.Window (WindowType (..))
 
 newtype GateBox = GateBox AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -28,13 +27,11 @@ instance HasAbilities GateBox where
     ]
 
 instance RunMessage GateBox where
-  runMessage msg a@(GateBox attrs) = case msg of
+  runMessage msg a@(GateBox attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- select $ enemyEngagedWith iid
-      (dreamGate, placement) <- placeLocationCard Locations.dreamGateWondrousJourney
-      afterPutIntoPlayWindow <- checkAfter $ PutLocationIntoPlay iid dreamGate
-      pushAll
-        $ map (DisengageEnemy iid) enemies
-        <> [placement, afterPutIntoPlayWindow, Move $ move (attrs.ability 1) iid dreamGate]
+      selectEach (enemyEngagedWith iid) (disengageEnemy iid)
+      dreamGate <- placeLocationCard Locations.dreamGateWondrousJourney
+      checkAfter $ PutLocationIntoPlay iid dreamGate
+      moveTo (attrs.ability 1) iid dreamGate
       pure a
-    _ -> GateBox <$> runMessage msg attrs
+    _ -> GateBox <$> liftRunMessage msg attrs

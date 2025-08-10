@@ -103,6 +103,7 @@ instance RunMessage BlackMarket2Effect where
           push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card']
       pure e
     InitiatePlayCard iid card mtarget payment windows' asAction | attrs.target == CardIdTarget card.id -> do
+      costModifier attrs iid (AsIfInHandForPlay card.id)
       if cdSkipPlayWindows (toCardDef card)
         then push $ Arkham.Message.PlayCard iid card mtarget payment windows' asAction
         else do

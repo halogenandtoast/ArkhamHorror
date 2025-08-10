@@ -39,7 +39,7 @@ instance HasAbilities HistoricalSocietyHistoricalLibrary_136 where
 instance RunMessage HistoricalSocietyHistoricalLibrary_136 where
   runMessage msg l@(HistoricalSocietyHistoricalLibrary_136 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 | attrs.revealed -> do
-      discoverAt NotInvestigate iid (attrs.ability 1) attrs 1
+      discoverAt NotInvestigate iid (attrs.ability 1) 1 attrs
       pure l
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       reveal attrs

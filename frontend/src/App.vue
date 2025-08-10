@@ -27,6 +27,8 @@ import { ModalsContainer } from 'vue-final-modal'
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useSiteSettingsStore } from '@/stores/site_settings'
+import { useDbCardStore } from '@/stores/dbCards'
+import { checkImageExists } from '@/arkham/helpers'
 import NavBar from '@/components/NavBar.vue'
 import 'floating-vue/dist/style.css'
 
@@ -38,6 +40,8 @@ onMounted(async () => {
   await store.loadUserFromStorage()
   await settingsStore.init()
   avifSupported.value = await checkAvifSupport();
+  await useDbCardStore().initDbCards()
+  await checkImageExists()
 })
 const avifSupported = ref(true);
 const checkAvifSupport = (): Promise<boolean> => {
@@ -428,6 +432,7 @@ button {
   --guardian-extra-dark: #0c5693;
   --seeker-dark: #db7c07;
   --seeker-extra-dark: #aa6005;
+  --seeker-text: #603603;
   --rogue-dark: #219428;
   --rogue-extra-dark: #186a1d;
   --mystic-dark: #7554ab;

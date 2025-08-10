@@ -1,19 +1,14 @@
-module Arkham.Treachery.Cards.BetweenWorlds (
-  betweenWorlds,
-  BetweenWorlds (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.BetweenWorlds (betweenWorlds) where
 
 import Arkham.Card
 import Arkham.Card.EncounterCard
-import Arkham.Classes
+import Arkham.Helpers.Location
 import Arkham.Label
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (Discarded)
-import Arkham.Movement
+import Arkham.Message.Lifted.Move
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype BetweenWorlds = BetweenWorlds TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -23,25 +18,19 @@ betweenWorlds :: TreacheryCard BetweenWorlds
 betweenWorlds = treachery BetweenWorlds Cards.betweenWorlds
 
 instance RunMessage BetweenWorlds where
-  runMessage msg t@(BetweenWorlds attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      let
-        asLocation =
-          lookupEncounterCard Locations.betweenWorlds (toCardId attrs)
+  runMessage msg t@(BetweenWorlds attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      let asLocation = lookupEncounterCard Locations.betweenWorlds (toCardId attrs)
       nexus <- selectJust $ locationIs Locations.nexusOfNKai
       useLabel2 <- selectAny $ LocationWithLabel $ mkLabel "betweenWorlds1"
-      locationId <- getRandom
-      pushAll
-        [ PlaceLocation locationId (EncounterCard asLocation)
-        , SetLocationLabel
-            locationId
-            (if useLabel2 then "betweenWorlds2" else "betweenWorlds1")
-        , AddDirectConnection locationId nexus
-        , AddDirectConnection nexus locationId
-        , Move $ move (toSource attrs) iid locationId
-        ]
+
+      locationId <- placeLocation (EncounterCard asLocation)
+      setLocationLabel locationId $ if useLabel2 then "betweenWorlds2" else "betweenWorlds1"
+      connectBothWays locationId nexus
+      moveTo attrs iid locationId
       pure t
-    After (Revelation _ source) | isSource attrs source -> do
-      push (Discarded (toTarget attrs) (toSource attrs) (toCard attrs)) -- Using discarded to remove existence)
+    After (Revelation _ (isSource attrs -> True)) -> do
+      -- Using discarded to remove existence)
+      push $ Discarded (toTarget attrs) (toSource attrs) (toCard attrs)
       pure t
-    _ -> BetweenWorlds <$> runMessage msg attrs
+    _ -> BetweenWorlds <$> liftRunMessage msg attrs

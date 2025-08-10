@@ -1100,6 +1100,7 @@ kenslersLog =
       { cdCardTraits = setFromList [Item, Tome]
       , cdSkills = [#intellect, #wild]
       , cdSlots = [#hand]
+      , cdUses = uses Secret 2
       }
 
 sinhasMedicalKit :: CardDef

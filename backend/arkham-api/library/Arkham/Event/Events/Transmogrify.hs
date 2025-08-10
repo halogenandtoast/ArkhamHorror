@@ -1,4 +1,4 @@
-module Arkham.Event.Events.Transmogrify (transmogrify, Transmogrify (..)) where
+module Arkham.Event.Events.Transmogrify (transmogrify) where
 
 import Arkham.Ability
 import Arkham.Enemy.Types (Field (..))
@@ -27,7 +27,7 @@ instance HasAbilities Transmogrify where
     AttachedToEnemy eid ->
       [ withTooltip "Discover 1 clue at its location (Transmogrify)"
           $ playerLimit PerRound
-          $ restrictedAbility
+          $ restricted
             (proxied eid x)
             1
             (exists $ locationWithEnemy eid <> LocationWithDiscoverableCluesBy You)
@@ -52,8 +52,7 @@ instance RunMessage Transmogrify where
     UseThisAbility iid (isProxySource attrs -> True) 1 -> do
       case attrs.placement of
         AttachedToEnemy eid -> do
-          whenJustM (field EnemyLocation eid) \lid -> do
-            discoverAt NotInvestigate iid (attrs.ability 1) lid 1
+          whenJustM (field EnemyLocation eid) $ discoverAt NotInvestigate iid (attrs.ability 1) 1
         _ -> error "Invalid placement"
       pure e
     _ -> Transmogrify <$> liftRunMessage msg attrs

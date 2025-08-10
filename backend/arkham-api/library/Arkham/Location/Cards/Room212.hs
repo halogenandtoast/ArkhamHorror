@@ -9,7 +9,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Movement
+import Arkham.Message.Lifted.Move
 import Arkham.Name
 import Arkham.Projection
 
@@ -80,6 +80,7 @@ instance RunMessage Room212 where
       beginSkillTest sid iid (toAbilitySource p 1) iid #agility (Fixed 4)
       pure l
     PassedThisSkillTest iid source@(AbilitySource (ProxySource _ (isSource attrs -> True)) 1) -> do
-      pushAll [Msg.RevealLocation Nothing (toId attrs), Move $ move source iid (toId attrs)]
+      reveal attrs.id
+      moveTo source iid attrs
       pure l
     _ -> Room212 <$> liftRunMessage msg attrs

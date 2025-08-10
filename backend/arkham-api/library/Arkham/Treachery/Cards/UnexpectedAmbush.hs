@@ -1,10 +1,10 @@
-module Arkham.Treachery.Cards.UnexpectedAmbush (unexpectedAmbush, UnexpectedAmbush (..)) where
+module Arkham.Treachery.Cards.UnexpectedAmbush (unexpectedAmbush) where
 
-import Arkham.Attack
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
+import Arkham.Movement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -19,25 +19,25 @@ instance RunMessage UnexpectedAmbush where
   runMessage msg t@(UnexpectedAmbush attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       enemies <- select AnyInPlayEnemy
-      sid <- getRandom
       if null enemies
-        then push $ Msg.assignDamageAndHorror iid attrs 1 1
-        else
-          chooseOne
-            iid
-            [SkillLabel s [Msg.revelationSkillTest sid iid attrs s (Fixed 4)] | s <- [#intellect, #agility]]
+        then assignDamageAndHorror iid attrs 1 1
+        else do
+          sid <- getRandom
+          chooseOneM iid do
+            for_ [#intellect, #agility] \kind -> do
+              skillLabeled kind $ revelationSkillTest sid iid attrs kind (Fixed 4)
       pure t
-    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
       nearestEnemies <- select $ NearestEnemyTo iid AnyEnemy
       withLocationOf iid \location -> do
-        chooseOrRunOne
-          iid
-          [ targetLabel enemy
-            $ [ MoveUntil location (toTarget enemy)
-              , EnemyEngageInvestigator enemy iid
-              ]
-            <> [InitiateEnemyAttack $ enemyAttack enemy attrs iid | n >= 3]
-          | enemy <- nearestEnemies
-          ]
+        chooseOrRunOneM iid do
+          targets nearestEnemies \enemy -> do
+            enemyMoveToEdit attrs enemy location \m -> m {moveMeans = OneAtATime}
+            forTarget enemy msg
+      pure t
+    ForTarget (EnemyTarget enemy) (FailedThisSkillTestBy iid (isSource attrs -> True) n) -> do
+      whenMatch enemy (EnemyAt $ locationWithInvestigator iid) do
+        enemyEngageInvestigator enemy iid
+        when (n >= 3) $ initiateEnemyAttack enemy attrs iid
       pure t
     _ -> UnexpectedAmbush <$> liftRunMessage msg attrs

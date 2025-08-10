@@ -64,55 +64,27 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (
   HasQueue,
   evalQueueT,
-  replaceAllMessagesMatching,
  )
 import Arkham.Matcher (LocationMatcher (EmptyLocation))
 import Arkham.Modifier
 import Arkham.Queue
-import Arkham.Window qualified as Window
 import Control.Monad.Trans
-
-insteadOfDiscarding
-  :: HasQueue Message m => EnemyAttrs -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
-insteadOfDiscarding attrs body = do
-  msgs <- evalQueueT body
-  let
-    isEntityDiscarded w = case w.kind of
-      Window.EntityDiscarded _ target -> isTarget attrs target
-      _ -> False
-  lift $ replaceAllMessagesMatching
-    \case
-      CheckWindows ws -> any isEntityDiscarded ws
-      Do (CheckWindows ws) -> any isEntityDiscarded ws
-      Discard _ _ target -> isTarget attrs target
-      _ -> False
-    \case
-      CheckWindows ws ->
-        case filter (not . isEntityDiscarded) ws of
-          [] -> []
-          ws' -> [CheckWindows ws']
-      Do (CheckWindows ws) ->
-        case filter (not . isEntityDiscarded) ws of
-          [] -> []
-          ws' -> [Do (CheckWindows ws')]
-      Discard {} -> msgs
-      _ -> error "Invalid replacement"
 
 doesNotReadyDuringUpkeep :: (ReverseQueue m, Sourceable source) => source -> EnemyAttrs -> m ()
 doesNotReadyDuringUpkeep source attrs = roundModifier source attrs DoesNotReadyDuringUpkeep
 
 insteadOfDefeat
-  :: HasQueue Message m => EnemyAttrs -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
-insteadOfDefeat attrs body = whenM (beingDefeated attrs) do
-  cancelEnemyDefeat attrs
+  :: (HasQueue Message m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
+insteadOfDefeat asEnemy body = whenM (beingDefeated asEnemy) do
+  cancelEnemyDefeat asEnemy
   pushAll =<< evalQueueT body
 
 -- See: The Spectral Watcher
 insteadOfDefeatWithWindows
-  :: (HasQueue Message m, HasGame m)
-  => EnemyAttrs -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
-insteadOfDefeatWithWindows attrs body = whenM (beingDefeated attrs) do
-  cancelEnemyDefeatWithWindows attrs
+  :: (HasQueue Message m, HasGame m, ToId enemy EnemyId)
+  => enemy -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
+insteadOfDefeatWithWindows e body = whenM (beingDefeated e) do
+  cancelEnemyDefeatWithWindows e
   pushAll =<< evalQueueT body
 
 insteadOfEvading
@@ -137,13 +109,13 @@ beingEvaded attrs = fromQueue $ any isEvadedMessage
     Do msg -> isEvadedMessage msg
     _ -> False
 
-beingDefeated :: (HasQueue Message m, MonadTrans t) => EnemyAttrs -> t m Bool
-beingDefeated attrs = fromQueue $ any isDefeatedMessage
+beingDefeated :: (HasQueue Message m, MonadTrans t, ToId enemy EnemyId) => enemy -> t m Bool
+beingDefeated (asId -> enemyId) = fromQueue $ any isDefeatedMessage
  where
   isDefeatedMessage = \case
-    EnemyDefeated eid _ _ _ -> eid == attrs.id
-    When (EnemyDefeated eid _ _ _) -> eid == attrs.id
-    After (EnemyDefeated eid _ _ _) -> eid == attrs.id
+    EnemyDefeated eid _ _ _ -> eid == enemyId
+    When (EnemyDefeated eid _ _ _) -> eid == enemyId
+    After (EnemyDefeated eid _ _ _) -> eid == enemyId
     Do msg -> isDefeatedMessage msg
     _ -> False
 

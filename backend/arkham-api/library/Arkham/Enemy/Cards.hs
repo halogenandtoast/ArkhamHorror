@@ -2198,6 +2198,7 @@ wingedOneFogOverInnsmouth =
   (enemy "07094" "Winged One" FogOverInnsmouth 1)
     { cdCardTraits = setFromList [Creature, Monster]
     , cdKeywords = singleton Keyword.Hunter
+    , cdVictoryPoints = Just 1
     }
 
 innsmouthTroublemaker :: CardDef

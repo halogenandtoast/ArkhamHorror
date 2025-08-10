@@ -73,10 +73,8 @@ setupTheGathering _attrs = do
   setActDeck
     [if isReturnTo then Acts.mysteriousGateway else Acts.trapped, Acts.theBarrier, Acts.whatHaveYouDone]
 
-  cellar <-
-    if isReturnTo then sample2 Locations.returnToCellar Locations.cellar else pure Locations.cellar
-  attic <-
-    if isReturnTo then sample2 Locations.returnToAttic Locations.attic else pure Locations.attic
+  cellar <- Locations.cellar `orSampleIfReturnTo`[Locations.returnToCellar]
+  attic <- Locations.attic `orSampleIfReturnTo` [Locations.returnToAttic]
 
   setAside [Enemies.ghoulPriest, Assets.litaChantler, attic, cellar, Locations.parlor]
   setAside

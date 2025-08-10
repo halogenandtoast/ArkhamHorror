@@ -49,6 +49,6 @@ instance HasAbilities TheBlackStone where
 instance RunMessage TheBlackStone where
   runMessage msg l@(TheBlackStone attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      discoverAt NotInvestigate iid (attrs.ability 1) attrs 2
+      discoverAt NotInvestigate iid (attrs.ability 1) 2 attrs
       pure l
     _ -> TheBlackStone <$> mirageRunner Stories.theBlackStone mirageCards 2 msg attrs

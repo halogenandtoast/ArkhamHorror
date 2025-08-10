@@ -150,14 +150,17 @@ storyWithChooseN :: PlayerId -> [PlayerId] -> Int -> FlavorText -> [UI Message] 
 storyWithChooseN lead pids n flavor choices =
   AskMap
     ( mapFromList
-        [(pid, Read flavor (BasicReadChoicesN n $ if pid == lead then choices else []) Nothing) | pid <- pids]
+        [ (pid, Read flavor (BasicReadChoicesN n $ if pid == lead then choices else []) Nothing) | pid <- pids
+        ]
     )
 
 storyWithChooseUpToN :: PlayerId -> [PlayerId] -> Int -> FlavorText -> [UI Message] -> Message
 storyWithChooseUpToN lead pids n flavor choices =
   AskMap
     ( mapFromList
-        [(pid, Read flavor (BasicReadChoicesUpToN n $ if pid == lead then choices else []) Nothing) | pid <- pids]
+        [ (pid, Read flavor (BasicReadChoicesUpToN n $ if pid == lead then choices else []) Nothing)
+        | pid <- pids
+        ]
     )
 
 data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
@@ -847,6 +850,7 @@ data Message
     MoveFrom Source InvestigatorId LocationId
   | -- | Actual movement, will add MovedBy, MovedBut, and after Entering windows
     MoveTo Movement
+  | ResolveMovement InvestigatorId
   | -- | Move target one location toward a matching location
     MoveToward Target LocationMatcher
   | -- | Move target one location at a time until arrive at location
@@ -1163,7 +1167,7 @@ data Message
   | DoneChoosingDecks
   | SetPartnerStatus CardCode PartnerStatus
   | HandleGroupTarget GroupKey Target [Message]
-  | HandleGroupTargets AutoStatus GroupKey (Map Target [Message]) 
+  | HandleGroupTargets AutoStatus GroupKey (Map Target [Message])
   | -- Commit
     Do Message
   | DoBatch BatchId Message

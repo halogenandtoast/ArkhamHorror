@@ -1,11 +1,11 @@
 module Arkham.Asset.Assets.StickToThePlan3 (stickToThePlan3) where
 
-import Arkham.I18n
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Helpers.Modifiers hiding (costModifier)
+import Arkham.Helpers.Modifiers hiding (cardResolutionModifier, costModifier)
+import Arkham.I18n
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
@@ -22,8 +22,8 @@ stickToThePlan3 = asset StickToThePlan3 Cards.stickToThePlan3
 
 instance HasModifiersFor StickToThePlan3 where
   getModifiersFor (StickToThePlan3 a) = do
-    controllerGets a (map AsIfInHand $ assetCardsUnderneath a)
-    modifyEach a (assetCardsUnderneath a) [AdditionalCost $ exhaust a]
+    controllerGets a (map AsIfInHand a.cardsUnderneath)
+    modifyEach a a.cardsUnderneath [AdditionalCost $ exhaust a]
 
 instance HasAbilities StickToThePlan3 where
   getAbilities (StickToThePlan3 attrs) =
@@ -51,7 +51,8 @@ instance RunMessage StickToThePlan3 where
       pure a
     InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` assetCardsUnderneath attrs -> do
       let remaining = deleteFirstMatch (== card) $ assetCardsUnderneath attrs
-      costModifier attrs (toCardId card) (AdditionalCost $ ExhaustCost $ toTarget attrs)
+      costModifier attrs card.id (AdditionalCost $ exhaust attrs)
+      costModifier attrs iid (AsIfInHandForPlay card.id)
       push msg
       pure $ StickToThePlan3 $ attrs & cardsUnderneathL .~ remaining
     _ -> StickToThePlan3 <$> liftRunMessage msg attrs

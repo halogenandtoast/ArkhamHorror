@@ -25,7 +25,6 @@ witchHauntedWoodsOvergrownBarn =
 instance HasAbilities WitchHauntedWoodsOvergrownBarn where
   getAbilities (WitchHauntedWoodsOvergrownBarn a) =
     extendRevealed1 a
-      $ groupLimit PerTestOrAbility
       $ mkAbility a 1
       $ freeReaction
       $ EnemyWouldSpawnAt AnyEnemy (not_ (be a) <> "Witch-Haunted Woods")

@@ -41,8 +41,9 @@ moveOrganistAwayFromNearestInvestigator = do
 
     let locations = if notNull emptyLids then emptyLids else lids
     chooseOrRunOneM lead do
+      -- TODO: i18n
       questionLabeled "Move the organist"
-      targets locations $ enemyMoveTo organist
+      targets locations $ enemyMoveTo GameSource organist
 
 disengageEachEnemyAndMoveToConnectingLocation
   :: (ReverseQueue m, Sourceable source) => source -> m ()

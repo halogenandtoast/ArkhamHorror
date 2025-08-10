@@ -29,6 +29,6 @@ instance RunMessage ArchaicGlyphsGuidingStones3 where
     Successful (Action.Investigate, LocationTarget lid) iid _ (isTarget attrs -> True) n -> do
       clueCount <- field LocationClues lid
       let additional = n `div` 2
-      discoverAt IsInvestigate iid (attrs.ability 1) lid $ min clueCount (1 + additional)
+      discoverAt IsInvestigate iid (attrs.ability 1) (min clueCount (1 + additional)) lid
       pure a
     _ -> ArchaicGlyphsGuidingStones3 <$> liftRunMessage msg attrs

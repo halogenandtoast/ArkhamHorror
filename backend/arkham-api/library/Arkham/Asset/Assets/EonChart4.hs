@@ -24,7 +24,7 @@ eonChart4 = asset EonChart4 Cards.eonChart4
 
 instance HasAbilities EonChart4 where
   getAbilities (EonChart4 attrs) =
-    [ controlledAbility
+    [ controlled
         attrs
         1
         ( oneOf
@@ -99,16 +99,15 @@ instance RunMessage EonChart4 where
                 []
                 []
                 [ HandleTargetChoice iid (toSource attrs) (AbilityTarget iid ab.ref)
-                , DoStep (n - 1) msg'
                 ]
             | ab <- abilities'
             ]
           <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- cards']
 
-      when (any (`elem` actions') [#move, #evade, #investigate]) do
+      when (any (`elem` actions') [#move, #evade, #investigate] && n < 3) do
         chooseOrRunOne iid
-          $ [Label "Move" [DoStep 3 msg] | #move `elem` actions']
-          <> [Label "Evade" [DoStep 4 msg] | #evade `elem` actions']
-          <> [Label "Investigate" [DoStep 5 msg] | #investigate `elem` actions']
+          $ [Label "Move" [DoStep 3 msg'] | #move `elem` actions']
+          <> [Label "Evade" [DoStep 4 msg'] | #evade `elem` actions']
+          <> [Label "Investigate" [DoStep 5 msg'] | #investigate `elem` actions']
       pure a
     _ -> EonChart4 <$> liftRunMessage msg attrs

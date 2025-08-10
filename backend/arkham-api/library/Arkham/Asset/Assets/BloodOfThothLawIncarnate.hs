@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Taboo
 import Arkham.Token
 
 newtype BloodOfThothLawIncarnate = BloodOfThothLawIncarnate AssetAttrs
@@ -17,8 +18,14 @@ bloodOfThothLawIncarnate = asset BloodOfThothLawIncarnate Cards.bloodOfThothLawI
 instance HasAbilities BloodOfThothLawIncarnate where
   getAbilities (BloodOfThothLawIncarnate a) =
     [ restricted a 1 ControlsThis
-        $ triggered (PlacedToken #after AnySource (TargetControlledBy You) Doom) (exhaust a)
-    , controlled a 2 criteria $ FastAbility (exhaust a <> AllUsesCost (be a) Offering)
+        $ triggered
+          (PlacedToken #after AnySource (TargetControlledBy You) Doom)
+          (if tabooed TabooList24 a then Free else exhaust a)
+    , if tabooed TabooList24 a
+        then
+          controlled a 2 (DuringPhase #investigation <> not_ DuringAction)
+            $ FastAbility (exhaust a <> assetUseCost a Offering 2)
+        else controlled a 2 criteria $ FastAbility (exhaust a <> AllUsesCost (be a) Offering)
     ]
    where
     criteria = if a.use Offering >= 3 then NoRestriction else Never

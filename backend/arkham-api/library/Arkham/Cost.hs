@@ -205,6 +205,7 @@ data Cost
   | DrawEncounterCardsCost Int
   | GloriaCost -- lol, not going to attempt to make this generic
   | ArchiveOfConduitsUnidentifiedCost -- this either
+  | LabeledCost Text Cost
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Cost
@@ -241,6 +242,7 @@ data DynamicUseCostValue = DrawnCardsValue | DynamicCalculation GameCalculation
 
 displayCostType :: Cost -> Text
 displayCostType = \case
+  LabeledCost lbl _ -> lbl
   ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> "Shuffle top " <> tshow n <> " cards of the " <> toDisplay deckKey <> " deck into your deck"
   RemoveEnemyDamageCost _n _k -> "Remove damage from enemy"
   SpendKeyCost k -> "Spend " <> keyName k <> " Key"

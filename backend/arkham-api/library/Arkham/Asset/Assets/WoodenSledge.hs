@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
-import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Modifiers hiding (costModifier)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
@@ -45,6 +45,7 @@ instance RunMessage WoodenSledge where
       pure a
     InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` attrs.cardsUnderneath -> do
       let remaining = deleteFirstMatch (== card) attrs.cardsUnderneath
+      costModifier attrs iid (AsIfInHandForPlay card.id)
       push msg
       pure $ WoodenSledge $ attrs & cardsUnderneathL .~ remaining
     _ -> WoodenSledge <$> liftRunMessage msg attrs

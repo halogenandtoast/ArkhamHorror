@@ -5,7 +5,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Movement
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 
 newtype HikingBoots1 = HikingBoots1 AssetAttrs
   deriving anyclass IsAsset
@@ -19,16 +20,15 @@ instance HasModifiersFor HikingBoots1 where
 
 instance HasAbilities HikingBoots1 where
   getAbilities (HikingBoots1 a) =
-    [ controlled
-        a
-        1
-        ( exists
-            $ CanMoveToLocation You (a.ability 1)
-            $ ConnectedLocation
-            <> oneOf [LocationWithAnyClues, UnrevealedLocation]
-        )
-        $ ReactionAbility (DiscoveringLastClue #after You YourLocation) (exhaust a)
+    [ controlled a 1 criteria
+        $ triggered (DiscoveringLastClue #after You YourLocation) (exhaust a)
     ]
+   where
+    criteria =
+      exists
+        $ CanMoveToLocation You (a.ability 1)
+        $ ConnectedLocation
+        <> oneOf [LocationWithAnyClues, UnrevealedLocation]
 
 instance RunMessage HikingBoots1 where
   runMessage msg a@(HikingBoots1 attrs) = runQueueT $ case msg of
@@ -38,8 +38,6 @@ instance RunMessage HikingBoots1 where
           $ CanMoveToLocation (InvestigatorWithId iid) (attrs.ability 1)
           $ ConnectedLocation
           <> oneOf [LocationWithAnyClues, UnrevealedLocation]
-      chooseOrRunOne
-        iid
-        [targetLabel location [Move $ move (attrs.ability 1) iid location] | location <- locations]
+      chooseOrRunOneM iid $ targets locations $ moveTo (attrs.ability 1) iid
       pure a
     _ -> HikingBoots1 <$> liftRunMessage msg attrs

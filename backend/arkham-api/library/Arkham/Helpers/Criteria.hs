@@ -680,7 +680,7 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.EventExists matcher -> do
     selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.EventWindowInvestigatorIs whoMatcher -> do
-    windows'' :: [[Window]] <- drop 1 <$> getWindowStack
+    windows'' <- getWindowStack
     case windows'' of
       ((windowType -> x) : _) : _ -> case x of
         Window.DrawCard iid' _ _ -> iid' <=~> Matcher.replaceYouMatcher iid whoMatcher

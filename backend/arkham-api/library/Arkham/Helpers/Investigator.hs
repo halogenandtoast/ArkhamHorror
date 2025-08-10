@@ -15,6 +15,7 @@ import Arkham.Classes.Query
 import Arkham.Criteria qualified as Criteria
 import Arkham.Damage
 import Arkham.Discover (IsInvestigate (..))
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
 import {-# SOURCE #-} Arkham.Helpers.Calculation (calculate)
@@ -667,9 +668,10 @@ getAsIfInHandCards iid = do
     modifierPermitsPlayOfDeck (c, depth) = \case
       CanPlayTopOfDeck cardMatcher | depth == 0 -> cardMatch c cardMatcher
       _ -> False
-    cardsAddedViaModifiers = flip mapMaybe modifiers $ \case
-      AsIfInHand c -> Just c
-      _ -> Nothing
+  cardsAddedViaModifiers <- flip mapMaybeM modifiers $ \case
+    AsIfInHand c -> pure $ Just c
+    AsIfInHandForPlay c -> Just <$> getCard c
+    _ -> pure Nothing
   discard <- field InvestigatorDiscard iid
   deck <- fieldMap InvestigatorDeck unDeck iid
   pure

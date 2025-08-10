@@ -13,6 +13,7 @@ import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue';
 import { toCapitalizedWords } from '@/arkham/helpers';
 import { useI18n } from 'vue-i18n';
 import { Seal } from '@/arkham/types/Seal';
+import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 
 export interface Props {
   game: Arkham.Game
@@ -21,6 +22,7 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
+const store = useDbCardStore()
 
 const { t } = useI18n()
 const mainLog = props.game.campaign?.log || props.game.scenario?.standaloneCampaignLog || { recorded: [], recordedSets: [], recordedCounts: [] }
@@ -62,7 +64,6 @@ const otherLogTitle = logTitle ?
   (logTitle === 'The Dream-Quest' ? 'The Web of Dreams' : 'The Dream-Quest') : null
 
 const logTitles = logTitle && otherLogTitle ? [logTitle, otherLogTitle].sort() : null
-
 
 const campaignLog = ref(mainLog)
 
@@ -163,6 +164,21 @@ const sealImage = (seal: Seal): string => {
 
 const cardCodeToTitle = (cardCode: string): string => {
   const card = findCard(cardCode)
+  const language = localStorage.getItem('language') || 'en'
+  
+  if (language !== 'en') {
+    const code = card ? card.art : cardCode.replace(/^c/, '')
+    const dbCard = store.getDbCard(code)
+    
+    if (dbCard) {
+      const subtitle = dbCard.subname
+      if (subtitle) {
+        return `${dbCard.name}: ${subtitle}`
+      }
+      
+      return dbCard.name
+    }
+  }
 
   if (card) {
     return fullName(card.name)
@@ -207,6 +223,10 @@ const bonusXp = computed(() => {
   return props.game.campaign.meta.bonusXp;
 })
 
+function getCardName(s: string) {
+  const language = localStorage.getItem('language') || 'en'
+  return language === 'en' ? s : store.getCardName(s)
+}
 </script>
 
 <template>
@@ -240,8 +260,9 @@ const bonusXp = computed(() => {
       </div>
       <div class="log-categories">
         <div v-if="logTitles" class="options">
-          <template v-for="title in logTitles" :key="title">
+          <div v-for="title in logTitles" :key="title" class="log-title-option" :class="{ checked: title === logTitle }">
             <input
+              name="log"
               type="radio"
               v-model="campaignLog"
               :value="title === logTitle ? mainLog : otherLog"
@@ -249,7 +270,7 @@ const bonusXp = computed(() => {
               :id="`log${title}`"
             />
             <label :for="`log${title}`">{{title}}</label>
-          </template>
+          </div>
         </div>
         <div v-if="hasSupplies" class="supplies-container">
           <h2>Supplies</h2>
@@ -307,7 +328,7 @@ const bonusXp = computed(() => {
     </div>
 
     <div v-for="([step, entries], idx) in breakdowns" :key="idx" class="breakdowns">
-      <XpBreakdown :game="game" :step="step" :entries="entries" :playerId="playerId" />
+      <XpBreakdown :game="game" :step="step" :entries="entries" :playerId="playerId" :showAll="true" />
     </div>
   </div>
 </template>
@@ -476,6 +497,28 @@ tr td:not(:first-child) {
 
 .hidden {
   display: none;
+}
+
+.log-categories {
+  .options {
+    gap: 10px;
+  }
+}
+
+.log-title-option {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.3);
+  padding: 10px;
+  flex: 1;
+  border-radius: 10px;
+  display: flex;
+  gap: 10px;
+  label {
+    flex: 1;
+  }
+  &.checked {
+    background-color: rgba(255, 255, 255, 0.6);
+  }
 }
 
 </style>

@@ -432,18 +432,19 @@ instance RunMessage EnemyAttrs where
       case enemyPlacement of
         AsSwarm eid' _ -> push $ MoveUntil lid (EnemyTarget eid')
         _ -> do
-          enemyLocation <- field EnemyLocation enemyId
-          for_ enemyLocation \loc -> when (lid /= loc) do
-            lead <- getLeadPlayer
-            adjacentLocationIds <- select $ AccessibleFrom $ LocationWithId loc
-            closestLocationIds <- select $ ClosestPathLocation loc lid
-            if lid `elem` adjacentLocationIds
-              then push $ chooseOne lead [targetLabel lid [EnemyMove enemyId lid]]
-              else when (notNull closestLocationIds) do
-                pushAll
-                  [ chooseOne lead $ targetLabels closestLocationIds (only . EnemyMove enemyId)
-                  , MoveUntil lid target
-                  ]
+          whenMatch a.id EnemyCanMove do
+            enemyLocation <- field EnemyLocation enemyId
+            for_ enemyLocation \loc -> when (lid /= loc) do
+              lead <- getLeadPlayer
+              adjacentLocationIds <- select $ AccessibleFrom $ LocationWithId loc
+              closestLocationIds <- select $ ClosestPathLocation loc lid
+              if lid `elem` adjacentLocationIds
+                then push $ chooseOne lead [targetLabel lid [EnemyMove enemyId lid]]
+                else when (notNull closestLocationIds) do
+                  pushAll
+                    [ chooseOne lead $ targetLabels closestLocationIds (only . EnemyMove enemyId)
+                    , MoveUntil lid target
+                    ]
       pure a
     Move movement | isTarget a (moveTarget movement) -> do
       case moveDestination movement of
@@ -452,6 +453,9 @@ instance RunMessage EnemyAttrs where
           Place -> push $ EnemyMove (toId a) destinationLocationId
           OneAtATime -> push $ MoveUntil destinationLocationId (toTarget a)
           Towards -> push $ MoveToward (toTarget a) (LocationWithId destinationLocationId)
+          TowardsN n ->
+            pushAll $ MoveToward (toTarget a) (LocationWithId destinationLocationId)
+              : [Move $ movement {moveMeans = TowardsN (n - 1)} | n > 1]
         ToLocationMatching matcher -> do
           lids <- select matcher
           player <- getLeadPlayer
@@ -1310,15 +1314,16 @@ instance RunMessage EnemyAttrs where
       victory <- getVictoryPoints eid
       vengeance <- getVengeancePoints eid
       afterMsg <- checkWindows [mkAfter $ Window.IfEnemyDefeated miid defeatedBy eid]
-
       let
         placeInVictory = isJust (victory <|> vengeance)
-        victoryMsgs = [DefeatedAddToVictory $ toTarget a | placeInVictory]
-        defeatMsgs = [Discard miid GameSource $ toTarget a | not placeInVictory]
+        victoryMsgs = guard (not a.placement.isInVictory) *> [DefeatedAddToVictory $ toTarget a | placeInVictory]
+        defeatMsgs =
+          guard (not a.placement.isInVictory)
+            *> [Discard miid GameSource $ toTarget a | not placeInVictory]
 
       pushAll
         $ victoryMsgs
-        <> windows [Window.EntityDiscarded source (toTarget a)]
+        <> (guard (not a.placement.isInVictory) *> windows [Window.EntityDiscarded source (toTarget a)])
         <> defeatMsgs
         <> [afterMsg]
       pure a

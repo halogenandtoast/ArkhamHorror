@@ -197,7 +197,7 @@ runEventMessage msg a@EventAttrs {..} = case msg of
             c <- field EventCard a.id
             push $ RemovedFromPlay (toSource a)
             push $ Devoured iid' c
-          _ -> pure ()
+          _ -> pushAll [after, afterAfter] -- Changed to allow Fast Cards to be played
     pure a
   After (Revelation _iid (isSource a -> True)) -> do
     result <- runMessage (FinishedEvent a.id) a

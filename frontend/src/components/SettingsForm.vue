@@ -1,19 +1,24 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import type { User } from '@/types';
+import { useDbCardStore } from '@/stores/dbCards'
+import { checkImageExists } from '@/arkham/helpers'
 
 const props = defineProps<{
   user: User
   updateBeta: (setting: boolean) => void
 }>()
 
+const store = useDbCardStore()
 const beta = ref(props.user.beta ? "On" : "Off")
 
 const betaUpdate = async () => props.updateBeta(beta.value == "On")
 
-const updateLanguage = (a: Event) => {
+const updateLanguage = async (a: Event) => {
   const target = a.target as HTMLInputElement;
   localStorage.setItem('language', target.value)
+  await store.initDbCards()
+  await checkImageExists()
 }
 </script>
 

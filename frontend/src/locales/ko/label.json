@@ -25,6 +25,7 @@
   "doNotPlay": "플레이할 수 없음",
   "doNotSpendClues": "단서를 소비할 수 없음 | 단서 {count}개를 소비할 수 없음",
   "doneDiscarding": "버리기 완료",
+  "done": "완료",
   "drawCards": "카드 1장 뽑기 | 카드 {count}장 뽑기",
   "drawTheCard": "카드를 뽑습니다.",
   "drawTopCardOfEncounterDeck": "조우 카드 최상단의 카드를 1장 뽑습니다. | 조우 카드 최상단의 카드를 {count}장 뽑습니다.",

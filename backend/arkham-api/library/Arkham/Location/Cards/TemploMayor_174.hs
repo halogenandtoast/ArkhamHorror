@@ -42,6 +42,6 @@ instance RunMessage TemploMayor_174 where
       spawnEnemyAt_ ec attrs
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      discoverAt NotInvestigate iid (attrs.ability 2) attrs 1
+      discoverAt NotInvestigate iid (attrs.ability 2) 1 attrs
       pure l
     _ -> TemploMayor_174 <$> liftRunMessage msg attrs

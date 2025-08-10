@@ -1,4 +1,4 @@
-module Arkham.Event.Events.WorkingAHunch2 where
+module Arkham.Event.Events.WorkingAHunch2 (workingAHunch2) where
 
 import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
@@ -16,7 +16,6 @@ instance RunMessage WorkingAHunch2 where
   runMessage msg e@(WorkingAHunch2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       locations <- select $ RevealedLocation <> locationWithDiscoverableCluesBy iid
-      chooseTargetM iid locations \lid ->
-        discoverAt NotInvestigate iid attrs lid 1
+      chooseTargetM iid locations $ discoverAt NotInvestigate iid attrs 1
       pure e
     _ -> WorkingAHunch2 <$> liftRunMessage msg attrs

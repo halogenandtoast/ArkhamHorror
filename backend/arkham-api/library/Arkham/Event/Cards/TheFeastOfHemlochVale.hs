@@ -89,7 +89,8 @@ holdUp =
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic, Trick]
     , cdActions = [#parley]
-    , cdCriteria = Just $ exists (EnemyAt YourLocation) <> exists (InHandOf NotForPlay You <> #item <> #asset)
+    , cdCriteria =
+        Just $ exists (EnemyAt YourLocation) <> exists (InHandOf NotForPlay You <> #item <> #asset)
     }
 
 taskForce :: CardDef
@@ -135,10 +136,19 @@ handEyeCoordination1 =
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria =
         Just
-          ( exists
-              $ AssetControlledBy You
-              <> oneOf [#tool, #weapon]
-              <> AssetWithPerformableAbility AbilityIsActionAbility [IgnoreActionCost]
+          ( Criteria.TabooCriteria
+              TabooList24
+              ( exists
+                  $ AssetControlledBy You
+                  <> oneOf [#tool, #weapon]
+                  <> AssetCardMatch (mapOneOf CardWithLevel [0 .. 3])
+                  <> AssetWithPerformableAbility AbilityIsActionAbility [IgnoreActionCost]
+              )
+              ( exists
+                  $ AssetControlledBy You
+                  <> oneOf [#tool, #weapon]
+                  <> AssetWithPerformableAbility AbilityIsActionAbility [IgnoreActionCost]
+              )
           )
     , cdLevel = Just 1
     }
@@ -298,7 +308,8 @@ falseSurrender =
     , cdCriteria =
         Just
           $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
-          <> exists (PlayableCardWithCostReduction NoAction 1 $ InHandOf ForPlay You <> basic (#asset <> #weapon))
+          <> exists
+            (PlayableCardWithCostReduction NoAction 1 $ InHandOf ForPlay You <> basic (#asset <> #weapon))
     }
 
 grift :: CardDef
@@ -501,7 +512,11 @@ etherealWeaving3 =
     , cdCardTraits = setFromList [Spirit, Double]
     , cdAdditionalCost = Just (ActionCost 1)
     , cdCriteria =
-        Just $ Criteria.PlayableCardExistsWithCostReduction (Reduce 1) $ InHandOf ForPlay You <> #spell <> #event
+        Just
+          $ Criteria.PlayableCardExistsWithCostReduction (Reduce 1)
+          $ InHandOf ForPlay You
+          <> #spell
+          <> #event
     , cdLevel = Just 3
     }
 

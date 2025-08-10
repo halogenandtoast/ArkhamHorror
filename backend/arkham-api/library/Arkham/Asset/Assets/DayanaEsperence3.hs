@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Card
-import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Modifiers hiding (costModifier)
 import Arkham.Matcher hiding (EventCard, PlaceUnderneath, PlayCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Window qualified as Window
@@ -43,6 +43,7 @@ instance RunMessage DayanaEsperence3 where
           addToDiscard (fromMaybe iid other.owner) (only other)
       pure a
     InitiatePlayCard iid card mTarget payment windows' asAction | card `elem` assetCardsUnderneath attrs -> do
+      costModifier attrs iid (AsIfInHandForPlay card.id)
       if cdSkipPlayWindows (toCardDef card)
         then push $ PlayCard iid card mTarget payment windows' asAction
         else do

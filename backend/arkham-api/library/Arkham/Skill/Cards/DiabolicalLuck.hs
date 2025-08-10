@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.DiabolicalLuck (diabolicalLuck, DiabolicalLuck (..)) where
+module Arkham.Skill.Cards.DiabolicalLuck (diabolicalLuck) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -18,23 +18,15 @@ diabolicalLuck = skill DiabolicalLuck Cards.diabolicalLuck
 instance HasAbilities DiabolicalLuck where
   getAbilities (DiabolicalLuck x) =
     [ displayAsAction
-        $ restrictedAbility x 1 InYourHand
-        $ ConstantReaction
-          "Commit Diabolical Luck from your hand"
-          (RevealChaosToken #when You #curse)
-          Free
+        $ restricted x 1 InYourHand
+        $ ConstantReaction "Commit Diabolical Luck from your hand" (RevealChaosToken #when You #curse) Free
     ]
 
 instance RunMessage DiabolicalLuck where
   runMessage msg s@(DiabolicalLuck attrs) = runQueueT $ case msg of
     InHand iid' (UseThisAbility iid (isSource attrs -> True) 1) | iid' == iid -> do
       withSkillTest \sid -> do
-        skillTestModifier
-          sid
-          (attrs.ability 1)
-          (CardIdTarget $ toCardId attrs)
-          (AddSkillIcons [#wild, #wild, #wild])
-
+        skillTestModifier sid (attrs.ability 1) attrs.cardId (AddSkillIcons [#wild, #wild, #wild])
         push $ CommitCard iid (toCard attrs)
       pure s
     _ -> DiabolicalLuck <$> liftRunMessage msg attrs

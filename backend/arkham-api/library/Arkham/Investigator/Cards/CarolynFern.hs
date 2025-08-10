@@ -42,7 +42,7 @@ getHealed (_ : xs) = getHealed xs
 
 instance HasChaosTokenValue CarolynFern where
   getChaosTokenValue iid ElderSign (CarolynFern attrs) | iid == attrs.id = do
-    pure $ ChaosTokenValue ElderSign NoModifier
+    pure $ ChaosTokenValue ElderSign (PositiveModifier 1)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage CarolynFern where

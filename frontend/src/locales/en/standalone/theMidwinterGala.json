@@ -13,6 +13,11 @@
       "elderThing": "-4. If you fail or if The Bloodless Man is at your location, take 1 horror."
     }
   },
+  "message": {
+    "viciousAmbush": {
+      "couldNotMove": "Enemy {enemy} chosen by Vicious At could not move"
+    }
+  },
   "label": {
     "theFoundation": "The Foundation",
     "miskatonicUniversity": "Miskatonic University",

@@ -81,6 +81,27 @@ const deckLabel = computed(() => {
   return null
 })
 
+const dragover = (e: DragEvent) => {
+  e.preventDefault()
+  if (e.dataTransfer) {
+    e.dataTransfer.dropEffect = 'move'
+  }
+}
+
+function onDrop(event: DragEvent) {
+  event.preventDefault()
+  if (event.dataTransfer) {
+    const data = event.dataTransfer.getData('text/plain')
+    if (data) {
+      const json = JSON.parse(data)
+      if (json.tag === "EnemyTarget") {
+        let deck = isSpectral.value ? {tag: "EncounterDeckByKey", contents: "SpectralEncounterDeck"} : { tag: "EncounterDeck" }
+        debug.send(props.game.id, {tag: 'ShuffleIntoDeck', contents: [deck, json]})
+      }
+    }
+  }
+}
+
 const debug = useDebug()
 </script>
 
@@ -92,6 +113,9 @@ const debug = useDebug()
         :src="deckImage"
         :class="{ 'can-interact': deckAction !== -1, 'revealed': revealTopCard, 'card': revealTopCard }"
         @click="$emit('choose', deckAction)"
+        @drop="onDrop($event)"
+        @dragover.prevent="dragover($event)"
+        @dragenter.prevent
       />
       <span class="deck-size">{{props.spectral === undefined ? game.encounterDeckSize : props.spectral}}</span>
       <span v-if="deckLabel" class="deck-label">{{deckLabel}}</span>

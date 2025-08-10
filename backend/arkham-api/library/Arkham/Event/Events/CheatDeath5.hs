@@ -3,11 +3,10 @@ module Arkham.Event.Events.CheatDeath5 (cheatDeath5) where
 import Arkham.Classes.HasQueue (replaceMessageMatching)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Matcher
-import Arkham.Movement
+import Arkham.Message.Lifted.Move
 import Arkham.Strategy
 
 newtype CheatDeath5 = CheatDeath5 EventAttrs
@@ -29,12 +28,12 @@ instance RunMessage CheatDeath5 where
       selectEach (enemyEngagedWith iid) (push . DisengageEnemy iid)
       selectEach (treacheryInThreatAreaOf iid) $ toDiscardBy iid attrs
 
-      pushWhenM (canHaveHorrorHealed attrs iid) $ HealHorror (toTarget iid) (toSource attrs) 2
-      pushWhenM (canHaveDamageHealed attrs iid) $ HealDamage (toTarget iid) (toSource attrs) 2
+      healHorrorIfCan iid attrs 2
+      healDamageIfCan iid attrs 2
 
       locations <- getCanMoveToMatchingLocations iid attrs LocationWithoutEnemies
       when (notNull locations) do
-        chooseOrRunOne iid $ targetLabels locations (only . Move . move (toSource attrs) iid)
+        chooseOrRunOneM iid $ targets locations (moveTo (toSource attrs) iid)
 
       whenM (iid <=~> TurnInvestigator) $ push $ ChooseEndTurn iid
       pure e

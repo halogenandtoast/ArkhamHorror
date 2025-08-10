@@ -92,6 +92,7 @@ import Base.Api.Handler.CurrentUser
 import Base.Api.Handler.PasswordReset
 import Base.Api.Handler.Registration
 import Base.Api.Handler.Settings
+import Base.Api.Handler.Notifications
 import Control.Concurrent (forkIO)
 import Handler.Health
 

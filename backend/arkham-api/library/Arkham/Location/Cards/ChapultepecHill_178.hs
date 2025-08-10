@@ -39,6 +39,6 @@ instance RunMessage ChapultepecHill_178 where
         randomDiscardN iid (toAbilitySource attrs 1) 2
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      discoverAt NotInvestigate iid (attrs.ability 2) attrs 2
+      discoverAt NotInvestigate iid (attrs.ability 2) 2 attrs
       pure l
     _ -> ChapultepecHill_178 <$> liftRunMessage msg attrs

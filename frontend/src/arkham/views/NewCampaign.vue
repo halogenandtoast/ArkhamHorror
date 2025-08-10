@@ -261,7 +261,7 @@ async function start() {
               </template>
             </div>
 
-            <template v-if="['Standalone', 'PartialCampaign'].includes(fullCampaign) && selectedCampaign">
+            <template v-if="['Standalone', 'PartialCampaign'].includes(fullCampaign) && selectedCampaign && gameMode === 'Campaign'">
               <div class="scenarios">
                 <div v-for="scenario in campaignScenarios" :key="scenario.id">
                   <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="imgsrc(`boxes/${scenario.id}.jpg`)" @click="selectedScenario = scenario.id">

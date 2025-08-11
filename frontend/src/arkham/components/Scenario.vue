@@ -755,7 +755,13 @@ function minimize_SkillTest(isMinimized:boolean){
             <div class="spent-keys" v-if="spentKeys.length > 0">
               <Key v-for="key in spentKeys" :key="key" :name="key" />
             </div>
-            <PoolItem class="signOfTheGods" v-if="signOfTheGods" type="resource" :amount="signOfTheGods" />
+            <PoolItem
+              v-if="signOfTheGods"
+              class="signOfTheGods"
+              type="resource"
+              tooltip="Sign of the Gods"
+              :amount="signOfTheGods"
+            />
           </div>
           <div class="pool" v-if="hasPool">
             <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
@@ -1241,6 +1247,7 @@ function minimize_SkillTest(isMinimized:boolean){
   }
 
   .signOfTheGods {
+    z-index: 10;
     position: absolute;
     bottom: 0;
     right: 0;

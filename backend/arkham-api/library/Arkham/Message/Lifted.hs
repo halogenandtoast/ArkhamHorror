@@ -2791,6 +2791,13 @@ discardCard investigator source =
     card@(EncounterCard _) -> addToEncounterDiscard (only card)
     VengeanceCard card -> discardCard investigator source card
 
+forAction :: (LiftMessage m body) => Action -> body -> m ()
+forAction action f =
+  evalQueueT (liftMessage f) >>= \case
+    [] -> pure ()
+    [msg] -> push $ ForAction action msg
+    msgs -> push $ ForAction action (Run msgs)
+
 forTarget :: (LiftMessage m body, Targetable target) => target -> body -> m ()
 forTarget target f =
   evalQueueT (liftMessage f) >>= \case

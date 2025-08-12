@@ -10,6 +10,7 @@ import Arkham.Classes.HasGame
 import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Taboo
@@ -24,90 +25,64 @@ eonChart4 = asset EonChart4 Cards.eonChart4
 
 instance HasAbilities EonChart4 where
   getAbilities (EonChart4 attrs) =
-    [ controlled
-        attrs
-        1
-        ( oneOf
-            [ exists
-                $ PerformableAbility [ActionCostModifier (-1)]
-                <> oneOf (map AbilityIsAction [#move, #investigate, #evade])
-            , PlayableCardExists
-                (UnpaidCost NoAction)
-                (basic $ oneOf $ map CardWithAction [#move, #investigate, #evade])
-            ]
-        )
-        $ FastAbility (exhaust attrs <> assetUseCost attrs Secret 1)
-    ]
+    [controlled attrs 1 matcher $ FastAbility (exhaust attrs <> assetUseCost attrs Secret 1)]
+   where
+    actions = [#move, #investigate, #evade]
+    matcher =
+      oneOf
+        [ exists $ PerformableAbility [ActionCostModifier (-1)] <> mapOneOf AbilityIsAction actions
+        , PlayableCardExists (UnpaidCost NoAction) $ basic (mapOneOf CardWithAction actions)
+        ]
 
 getAvailable :: HasGame m => InvestigatorId -> AssetAttrs -> [Action] -> m ([Card], [Ability])
 getAvailable iid attrs canDoActions = do
-  let windows' = defaultWindows iid
-  handCards <- field InvestigatorHand iid
-  let cards = filter (any (`elem` canDoActions) . cdActions . toCardDef) handCards
-  playableCards <- filterM (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) windows') cards
+  playableCards <- if tabooed TabooList20 attrs
+    then pure []
+    else do
+      cards <- filterCards (mapOneOf CardWithAction canDoActions) <$> field InvestigatorHand iid
+      filterM (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) (defaultWindows iid)) cards
 
-  abilities' <-
-    select (PerformableAbility [ActionCostModifier (-1)] <> oneOf (map AbilityIsAction canDoActions))
-  pure (playableCards, abilities')
+  let abilityF = if tabooed TabooList20 attrs then (<> BasicAbility) else id
+  abilities <- select (abilityF $ PerformableAbility [ActionCostModifier (-1)] <> oneOf (map AbilityIsAction canDoActions))
+  pure (playableCards, abilities)
 
 getAvailableActionTypes :: HasGame m => InvestigatorId -> AssetAttrs -> [Action] -> m [Action]
 getAvailableActionTypes iid attrs canDoActions = do
   (cards, abilities) <- getAvailable iid attrs canDoActions
-  let cActions = nub $ concatMap (cdActions . toCardDef) cards
+  let cActions = nub $ concatMap (.actions) cards
   let aActions = nub $ concatMap abilityActions abilities
   let allActions = nub $ cActions <> aActions
   pure $ filter (`elem` allActions) canDoActions
 
+handleAction :: ReverseQueue m => InvestigatorId -> AssetAttrs -> Action -> m ()
+handleAction iid attrs action = do
+  (cards, abilities) <- getAvailable iid attrs [action]
+  chooseOneM iid do
+    for_ abilities \ab -> do
+      abilityLabeled iid (decrease_ ab 1) $ handleTarget iid attrs (AbilityTarget iid ab.ref)
+    targets cards $ playCardPayingCost iid
+
+chooseAction :: ReverseQueue m => InvestigatorId -> AssetAttrs -> Message -> [Action] -> m ()
+chooseAction iid attrs msg canDoActions = do
+  actions' <- getAvailableActionTypes iid attrs canDoActions
+  chooseOrRunOneM iid do
+    when (#move `elem` actions') $ labeled "Move" $ forAction #move msg
+    when (#evade `elem` actions') $ labeled "Evade" $ forAction #evade msg
+    when (#investigate `elem` actions') $ labeled "Investigate" $ forAction #investigate msg
+
 instance RunMessage EonChart4 where
   runMessage msg a@(EonChart4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      actions <-
-        if tabooed TabooList20 attrs
-          then do
-            (_, abilities) <- getAvailable iid attrs [#move, #evade, #investigate]
-            pure $ nub (concatMap abilityActions abilities)
-          else getAvailableActionTypes iid attrs [#move, #evade, #investigate]
-      chooseOrRunOne iid
-        $ [Label "Move" [DoStep 0 msg] | #move `elem` actions]
-        <> [Label "Evade" [DoStep 1 msg] | #evade `elem` actions]
-        <> [Label "Investigate" [DoStep 2 msg] | #investigate `elem` actions]
+      chooseAction iid attrs msg [#move, #evade, #investigate]
       pure a
-    DoStep n msg'@(UseCardAbility iid (isSource attrs -> True) 1 windows' _) -> do
-      let
-        action =
-          case n `mod` 3 of
-            0 -> #move
-            1 -> #evade
-            2 -> #investigate
-            _ -> error "invalid action"
-        canDoActions = filter (/= action) [#move, #evade, #investigate]
-
-      (cards, abilities) <- getAvailable iid attrs [action]
-      actions <- if n < 3 then getAvailableActionTypes iid attrs canDoActions else pure []
-
-      let abilities' = if tabooed TabooList20 attrs then filter abilityBasic abilities else abilities
-      let cards' = if tabooed TabooList20 attrs then [] else cards
-      let actions' = if tabooed TabooList20 attrs then nub (concatMap abilityActions abilities') else actions
-
-      let decreaseCost = flip applyAbilityModifiers [ActionCostModifier (-1)]
-
-      unless (null abilities' && null cards') do
-        chooseOne iid
-          $ [ AbilityLabel
-                iid
-                (decreaseCost ab)
-                []
-                []
-                [ HandleTargetChoice iid (toSource attrs) (AbilityTarget iid ab.ref)
-                ]
-            | ab <- abilities'
-            ]
-          <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- cards']
-
-      when (any (`elem` actions') [#move, #evade, #investigate] && n < 3) do
-        chooseOrRunOne iid
-          $ [Label "Move" [DoStep 3 msg'] | #move `elem` actions']
-          <> [Label "Evade" [DoStep 4 msg'] | #evade `elem` actions']
-          <> [Label "Investigate" [DoStep 5 msg'] | #investigate `elem` actions']
+    ForAction action (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      handleAction iid attrs action
+      doStep 2 msg
+      pure a
+    DoStep 2 (ForAction action (UseThisAbility iid (isSource attrs -> True) 1)) -> do
+      chooseAction iid attrs msg $ filter (/= action) [#move, #evade, #investigate]
+      pure a
+    ForAction action (DoStep 2 (ForAction _ (UseThisAbility iid (isSource attrs -> True) 1))) -> do
+      handleAction iid attrs action
       pure a
     _ -> EonChart4 <$> liftRunMessage msg attrs

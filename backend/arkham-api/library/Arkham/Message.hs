@@ -1128,6 +1128,8 @@ data Message
   | DoStep Int Message
   | ForInvestigator InvestigatorId Message
   | ForTrait Trait Message
+  | ForAction Action Message
+  | ForActions [Action] Message
   | ForTarget Target Message
   | ForTargets [Target] Message
   | ForPlayer PlayerId Message

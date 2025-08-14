@@ -3,7 +3,8 @@ module Arkham.Asset.Assets.Backpack (backpack) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, getAdditionalSearchTargets)
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Search
 import Arkham.Matcher hiding (PlaceUnderneath, PlayCard)
 import Arkham.Strategy
 
@@ -26,22 +27,11 @@ instance RunMessage Backpack where
       let matcher = basic $ NonWeakness <> oneOf [#item, #supply]
       search iid (attrs.ability 1) iid [fromTopOfDeck 6] matcher (defer attrs IsNotDraw)
       pure a
-    SearchFound iid (isTarget attrs -> True) _ [] -> do
-      chooseOne iid [Label "No Cards Found" []]
-      pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
-      additionalTargets <- getAdditionalSearchTargets iid
-      chooseUpToN
-        iid
-        (3 + additionalTargets)
-        "Done choosing cards"
-        [targetLabel c [PlaceUnderneath (toTarget attrs) [c]] | c <- cards]
+      chooseFromSearch iid 3 cards \card -> placeUnderneath attrs [card]
       pure a
-    SearchNoneFound iid (isTarget attrs -> True) -> do
-      chooseOne iid [Label "No Cards Found" []]
-      pure a
-    InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` attrs.cardsUnderneath -> do
-      let remaining = deleteFirstMatch (== card) attrs.cardsUnderneath
+    InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `under` attrs -> do
+      let remaining = deleteFirst card attrs.cardsUnderneath
       when (null remaining) $ toDiscardBy iid attrs attrs
       costModifier attrs iid (AsIfInHandForPlay card.id)
       push msg

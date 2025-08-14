@@ -284,7 +284,7 @@ handleAnswer Game {..} playerId = \case
       pure
         $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
         : [AskMap question' | not (Map.null question')]
-    _ -> pure ()
+    _ -> error "Wrong question type"
   PaymentAmountsAnswer response ->
     case Map.lookup playerId gameQuestion of
       Just (ChoosePaymentAmounts _ _ info) -> do
@@ -296,7 +296,7 @@ handleAnswer Game {..} playerId = \case
             payMsg -> replicate n payMsg
         let handleCost (cId, n) = combinePaymentAmounts n $ Map.findWithDefault Noop cId costMap
         pure $ concatMap handleCost $ Map.toList (parAmounts response)
-      _ -> pure ()
+      _ -> error "Wrong question type"
   Raw message -> do
     let isPlayerWindowChoose = \case
           PlayerWindowChooseOne _ -> True
@@ -432,7 +432,7 @@ handleAnswer Game {..} playerId = \case
     DropDown qs -> case qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ DropDown qs]
       Just (_, msg) -> [msg]
-    _ -> pure ()
+    _ -> error "Wrong question type"
 
 extract :: Int -> [a] -> (Maybe a, [a])
 extract n xs = let a = xs !!? n in (a, [x | (i, x) <- zip [0 ..] xs, i /= n])

@@ -40,11 +40,11 @@ instance RunMessage Backpack where
     SearchNoneFound iid (isTarget attrs -> True) -> do
       chooseOne iid [Label "No Cards Found" []]
       pure a
-    InitiatePlayCard iid card _ _ windows _ | controlledBy attrs iid && card `elem` attrs.cardsUnderneath -> do
+    InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` attrs.cardsUnderneath -> do
       let remaining = deleteFirstMatch (== card) attrs.cardsUnderneath
       when (null remaining) $ toDiscardBy iid attrs attrs
       costModifier attrs iid (AsIfInHandForPlay card.id)
-      push $ PlayCard iid card Nothing NoPayment windows True
+      push msg
       pure $ Backpack $ attrs & cardsUnderneathL .~ remaining
     ResolvedCard _ c | c.id == attrs.cardId -> do
       when (null attrs.cardsUnderneath) $ toDiscard attrs attrs

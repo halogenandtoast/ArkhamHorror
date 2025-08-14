@@ -299,60 +299,62 @@ updateGame response gameId userId writeChannel = do
   let playerId = fromMaybe activePlayer (answerPlayer response)
 
   logRef <- newIORef []
-  answerMessages <- handleAnswer gameJson playerId response
-  let
-    messages =
-      [SetActivePlayer playerId | activePlayer /= playerId]
-        <> answerMessages
-        <> [SetActivePlayer activePlayer | activePlayer /= playerId]
-  gameRef <- newIORef gameJson
-  queueRef <- newQueue ((ClearUI : messages) <> currentQueue)
-  genRef <- newIORef $ mkStdGen gameSeed
+  handleAnswer gameJson playerId response >>= \case
+    Unhandled _ -> pure ()
+    Handled answerMessages -> do
+      let
+        messages =
+          [SetActivePlayer playerId | activePlayer /= playerId]
+            <> answerMessages
+            <> [SetActivePlayer activePlayer | activePlayer /= playerId]
+      gameRef <- newIORef gameJson
+      queueRef <- newQueue ((ClearUI : messages) <> currentQueue)
+      genRef <- newIORef $ mkStdGen gameSeed
 
-  runGameApp
-    (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
-    (runMessages Nothing)
+      runGameApp
+        (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
+        (runMessages Nothing)
 
-  ge <- readIORef gameRef
-  let diffDown = diff ge arkhamGameCurrentData
+      ge <- readIORef gameRef
+      let diffDown = diff ge arkhamGameCurrentData
 
-  oldLog <- runDB $ getGameLog gameId Nothing
-  updatedQueue <- readIORef $ queueToRef queueRef
-  updatedLog <- readIORef logRef
+      oldLog <- runDB $ getGameLog gameId Nothing
+      updatedQueue <- readIORef $ queueToRef queueRef
+      updatedLog <- readIORef logRef
 
-  now <- liftIO getCurrentTime
-  runDB $ do
-    void $ select do
-      game <- from $ table @ArkhamGame
-      where_ $ game.id ==. val gameId
-      locking forUpdate
-      pure ()
-    deleteWhere [ArkhamStepArkhamGameId P.==. gameId, ArkhamStepStep P.>. arkhamGameStep]
-    replace gameId
-      $ ArkhamGame
-        arkhamGameName
-        ge
-        (arkhamGameStep + 1)
-        arkhamGameMultiplayerVariant
-        arkhamGameCreatedAt
-        now
-    insertMany_ $ map (newLogEntry gameId arkhamGameStep now) updatedLog
-    void
-      $ upsertBy
-        (UniqueStep gameId (arkhamGameStep + 1))
-        ( ArkhamStep
-            gameId
-            (Choice diffDown updatedQueue)
+      now <- liftIO getCurrentTime
+      runDB $ do
+        void $ select do
+          game <- from $ table @ArkhamGame
+          where_ $ game.id ==. val gameId
+          locking forUpdate
+          pure ()
+        deleteWhere [ArkhamStepArkhamGameId P.==. gameId, ArkhamStepStep P.>. arkhamGameStep]
+        replace gameId
+          $ ArkhamGame
+            arkhamGameName
+            ge
             (arkhamGameStep + 1)
-            (ActionDiff $ view actionDiffL ge)
-        )
-        [ ArkhamStepChoice =. Choice diffDown updatedQueue
-        , ArkhamStepActionDiff =. ActionDiff (view actionDiffL ge)
-        ]
+            arkhamGameMultiplayerVariant
+            arkhamGameCreatedAt
+            now
+        insertMany_ $ map (newLogEntry gameId arkhamGameStep now) updatedLog
+        void
+          $ upsertBy
+            (UniqueStep gameId (arkhamGameStep + 1))
+            ( ArkhamStep
+                gameId
+                (Choice diffDown updatedQueue)
+                (arkhamGameStep + 1)
+                (ActionDiff $ view actionDiffL ge)
+            )
+            [ ArkhamStepChoice =. Choice diffDown updatedQueue
+            , ArkhamStepActionDiff =. ActionDiff (view actionDiffL ge)
+            ]
 
-  publishToRoom gameId
-    $ GameUpdate
-    $ PublicGame gameId arkhamGameName (gameLogToLogEntries $ oldLog <> GameLog updatedLog) ge
+      publishToRoom gameId
+        $ GameUpdate
+        $ PublicGame gameId arkhamGameName (gameLogToLogEntries $ oldLog <> GameLog updatedLog) ge
 
 newtype RawGameJsonPut = RawGameJsonPut
   { gameMessage :: Message

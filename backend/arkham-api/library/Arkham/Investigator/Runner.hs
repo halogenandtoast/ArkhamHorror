@@ -4117,10 +4117,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               push $ chooseN player n $ if null choices then [Label "No cards found" []] else choices
             DeferSearchedToTarget searchTarget _ -> do
               -- N.B. You must handle target duplication (see Mandy Thompson) yourself
-              push
-                $ if null targetCards
-                  then chooseOne player [Label "No cards found" [SearchNoneFound iid searchTarget]]
-                  else SearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
+              if null (concat $ toList targetCards)
+                then Lifted.promptI iid "noCardsFound" $ push $ SearchNoneFound iid searchTarget
+                else push $ SearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
             DrawAllFound who -> do
               let
                 choices =

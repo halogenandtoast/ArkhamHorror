@@ -67,8 +67,10 @@ import Arkham.Question as X
 import Arkham.Source as X
 import Arkham.Target as X
 
+import Arkham.Card (Card)
 import Arkham.Token
 import Control.Lens (non)
+import GHC.Records
 
 healAssetDamage :: Sourceable source => AssetAttrs -> source -> Int -> UI Message
 healAssetDamage attrs source n = AssetDamageLabel attrs.id [HealDamage (toTarget attrs) (toSource source) n]
@@ -81,3 +83,6 @@ replenish token n tokens = tokens & at token . non 0 %~ max n
 
 replenishN :: Token -> Int -> Int -> Tokens -> Tokens
 replenishN token tokenMax n tokens = tokens & at token . non 0 %~ min tokenMax . (+ n)
+
+under :: HasField "cardsUnderneath" a [Card] => Card -> a -> Bool
+under c a = c `elem` a.cardsUnderneath

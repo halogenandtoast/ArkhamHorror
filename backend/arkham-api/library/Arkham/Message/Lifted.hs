@@ -986,8 +986,16 @@ prompt iid lbl body = do
   msgs <- evalQueueT body
   Arkham.Message.Lifted.chooseOne iid [Label lbl msgs]
 
+promptI :: ReverseQueue m => InvestigatorId -> Text -> QueueT Message m () -> m ()
+promptI iid lbl body = do
+  msgs <- evalQueueT body
+  Arkham.Message.Lifted.chooseOne iid [Label (withI18n $ "$" <> ikey ("label." <> lbl)) msgs]
+
 prompt_ :: (HasI18n, ReverseQueue m) => InvestigatorId -> Text -> m ()
 prompt_ iid lbl = Arkham.Message.Lifted.chooseOne iid [Label ("$" <> ikey ("label." <> lbl)) []]
+
+promptI_ :: ReverseQueue m => InvestigatorId -> Text -> m ()
+promptI_ iid lbl = withI18n $ prompt_ iid lbl
 
 aspect
   :: (ReverseQueue m, IsAspect a b, IsMessage b, Sourceable source)
@@ -2791,7 +2799,7 @@ discardCard investigator source =
     card@(EncounterCard _) -> addToEncounterDiscard (only card)
     VengeanceCard card -> discardCard investigator source card
 
-forAction :: (LiftMessage m body) => Action -> body -> m ()
+forAction :: LiftMessage m body => Action -> body -> m ()
 forAction action f =
   evalQueueT (liftMessage f) >>= \case
     [] -> pure ()

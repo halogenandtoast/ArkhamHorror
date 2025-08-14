@@ -13,6 +13,7 @@ interface ImageHelper {
   loaded: ref<boolean>
 }
 
+const batchSize: number = 1000
 const defaultHelper: ImageHelper = { root: '', digests: [], data: new Map(), loaded: ref(true) }
 const imgHelper:Map<string, ImageHelper> = new Map<string, ImageHelper>([
   ['it', { root: 'ita', digests: ita, data: new Map(), loaded: ref(false) }],
@@ -27,32 +28,48 @@ export async function checkImageExists(language: string = localStorage.getItem('
   const helper = imgHelper.get(language) || defaultHelper
   if (!helper.root || helper.loaded.value) return
   
-  const fetchTasks: Promise<void>[] = []
   const store = useSiteSettingsStore()
   const imgList = helper.digests
+  const tasks: {path: string, ext: string}[] = []
   
   imgList.forEach((originPath) => {
     const path = originPath.replace(/^\//, '')
     const ext = (path.split('.').pop() || '').toLowerCase()
     
     if (ext !== 'avif' && ext !== 'webp' && !ext.endsWith('png') && !ext.startsWith('jpg')) return
-    const i18nPath = `${store.assetHost}/img/arkham/${helper.root}/${path}`
-    
-    const task = fetch(i18nPath, { method: 'HEAD' }).then((res) => {
-      const contentType = res.headers.get('Content-Type') || ''
-      const isOkay = res.ok && contentType !== 'text/html' && (contentType === 'text/plain' || (ext ? contentType === `image/${ext}` : false))
-      helper.data.set(path, ref(isOkay))
-      
-    }).catch(() => {
-      helper.data.set(path, ref(false))
-    })
-    
-    fetchTasks.push(task)
+    tasks.push({path, ext})
   })
   
-  await Promise.all(fetchTasks).then(() => {
-    helper.loaded.value = true
-  })
+  const runBatch = async () => {
+    const batch = tasks.splice(0, batchSize)
+    
+    await Promise.allSettled(
+      batch.map(({path, ext}) => {
+        const i18nPath = `${store.assetHost}/img/arkham/${helper.root}/${path}`
+        
+        return fetch(i18nPath, { method: 'HEAD' })
+        .then((res) => {
+          const contentType = res.headers.get('Content-Type') || ''
+          const isOkay = res.ok && contentType !== 'text/html' && (contentType === 'text/plain' || (ext ? contentType === `image/${ext}` : false))
+          helper.data.set(path, ref(isOkay))
+        })
+        .catch(() => {
+          helper.data.set(path, ref(false))
+        })
+      })
+    ).then((results) => {
+      results.forEach((result, index) => {
+        if (result.status === 'rejected')
+          tasks.push(batch[index])
+      })
+    })
+    .finally(async () => {
+      if (tasks.length > 0) await runBatch()
+      else helper.loaded.value = true
+    })
+  }
+  
+  await runBatch()
 }
 
 export function toCapitalizedWords(name: string) {

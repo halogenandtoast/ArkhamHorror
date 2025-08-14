@@ -505,68 +505,68 @@ getConnectedMatcher = Helpers.getConnectedMatcher . toId
 
 instance ToJSON gid => ToJSON (PublicGame gid) where
   toJSON (FailedToLoadGame e) = object ["tag" .= String "FailedToLoadGame", "error" .= toJSON e]
-  toJSON (PublicGame gid name glog g@Game {..}) =
-    object
-      [ "tag" .= String "PublicGame"
-      , "name" .= toJSON name
-      , "id" .= toJSON gid
-      , "log" .= toJSON glog
-      , "git" .= toJSON gameGitRevision
-      , "mode" .= toJSON gameMode
-      , "modifiers" .= toJSON (Map.filter notNull gameModifiers)
-      , "encounterDeckSize"
-          .= toJSON (maybe 0 (length . attr scenarioEncounterDeck) $ modeScenario gameMode)
-      , "locations"
-          .= toJSON
-            (runReader (traverse withLocationConnectionData =<< traverse withModifiers (gameLocations g)) g)
-      , "investigators"
-          .= toJSON
-            ( runReader
-                ( traverse withInvestigatorConnectionData
-                    =<< traverse (withModifiers . WithDeckSize) (gameInvestigators g)
-                )
-                g
-            )
-      , "otherInvestigators" .= toJSON otherInvestigators
-      , "enemies" .= toJSON (runReader (traverse withEnemyMetadata (gameEnemies g)) g)
-      , "assets" .= toJSON (runReader (traverse withAssetMetadata (gameAssets g)) g)
-      , "acts" .= toJSON (runReader (traverse withActMetadata (gameActs g)) g)
-      , "agendas" .= toJSON (runReader (traverse withAgendaMetadata (gameAgendas g)) g)
-      , "treacheries" .= toJSON (runReader (traverse withTreacheryMetadata (gameTreacheries g)) g)
-      , "events" .= toJSON (runReader (traverse withModifiers (gameEvents g)) g)
-      , "skills" .= toJSON (gameSkills g) -- no need for modifiers... yet
-      , "stories" .= toJSON (entitiesStories gameEntities)
-      , "playerCount" .= toJSON gamePlayerCount
-      , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
-      , "activePlayerId" .= toJSON gameActivePlayerId
-      , "turnPlayerInvestigatorId" .= toJSON gameTurnPlayerInvestigatorId
-      , "leadInvestigatorId" .= toJSON gameLeadInvestigatorId
-      , "playerOrder" .= toJSON gamePlayerOrder
-      , "phase" .= toJSON gamePhase
-      , "phaseStep" .= toJSON gamePhaseStep
-      , "skillTest"
-          .= toJSON (runReader (maybe (pure Nothing) (fmap Just . withSkillTestMetadata) gameSkillTest) g)
-      , "skillTestChaosTokens"
-          .= toJSON
-            ( runReader
-                ( maybe
-                    (pure [])
-                    (traverse withSkillTestModifiers . skillTestSetAsideChaosTokens)
-                    gameSkillTest
-                )
-                g
-            )
-      , "focusedCards" .= toJSON (fromMaybe [] $ headMay gameFocusedCards)
-      , "focusedTarotCards" .= toJSON gameFocusedTarotCards
-      , "foundCards" .= toJSON gameFoundCards
-      , "focusedChaosTokens" .= toJSON (runReader (traverse withModifiers gameFocusedChaosTokens) g)
-      , "activeCard" .= toJSON gameActiveCard
-      , "removedFromPlay" .= toJSON gameRemovedFromPlay
-      , "gameState" .= toJSON gameGameState
-      , "skillTestResults" .= toJSON gameSkillTestResults
-      , "question" .= toJSON gameQuestion
-      , "cards" .= toJSON gameCards
-      ]
+  toJSON (PublicGame gid name glog g@Game {..}) = flip runReader g do
+    locations <- traverse withLocationConnectionData =<< traverse withModifiers (gameLocations g)
+    investigators <-
+      traverse withInvestigatorConnectionData
+        =<< traverse (withModifiers . WithDeckSize) (gameInvestigators g)
+    enemies <- traverse withEnemyMetadata (gameEnemies g)
+    assets <- traverse withAssetMetadata (gameAssets g)
+    acts <- traverse withActMetadata (gameActs g)
+    agendas <- traverse withAgendaMetadata (gameAgendas g)
+    treacheries <- traverse withTreacheryMetadata (gameTreacheries g)
+    events <- traverse withModifiers (gameEvents g)
+    focusedChaosTokens <- traverse withModifiers gameFocusedChaosTokens
+    skillTest <- maybe (pure Nothing) (fmap Just . withSkillTestMetadata) gameSkillTest
+    skillTestChaosTokens <-
+      maybe (pure []) (traverse withSkillTestModifiers . skillTestSetAsideChaosTokens) gameSkillTest
+    doom <- getDoomCount
+    clues <- Arkham.Helpers.Cost.getSpendableClueCount (Map.keys $ gameInvestigators g)
+    pure
+      $ object
+        [ "tag" .= String "PublicGame"
+        , "name" .= toJSON name
+        , "id" .= toJSON gid
+        , "log" .= toJSON glog
+        , "git" .= toJSON gameGitRevision
+        , "mode" .= toJSON gameMode
+        , "modifiers" .= toJSON (Map.filter notNull gameModifiers)
+        , "encounterDeckSize"
+            .= toJSON (maybe 0 (length . attr scenarioEncounterDeck) $ modeScenario gameMode)
+        , "locations" .= toJSON locations
+        , "investigators" .= toJSON investigators
+        , "otherInvestigators" .= toJSON otherInvestigators
+        , "enemies" .= toJSON enemies
+        , "assets" .= toJSON assets
+        , "acts" .= toJSON acts
+        , "agendas" .= toJSON agendas
+        , "treacheries" .= toJSON treacheries
+        , "events" .= toJSON events
+        , "skills" .= toJSON (gameSkills g) -- no need for modifiers... yet
+        , "stories" .= toJSON (entitiesStories gameEntities)
+        , "playerCount" .= toJSON gamePlayerCount
+        , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
+        , "activePlayerId" .= toJSON gameActivePlayerId
+        , "turnPlayerInvestigatorId" .= toJSON gameTurnPlayerInvestigatorId
+        , "leadInvestigatorId" .= toJSON gameLeadInvestigatorId
+        , "playerOrder" .= toJSON gamePlayerOrder
+        , "phase" .= toJSON gamePhase
+        , "phaseStep" .= toJSON gamePhaseStep
+        , "skillTest" .= toJSON  skillTest
+        , "skillTestChaosTokens" .= toJSON skillTestChaosTokens
+        , "focusedCards" .= toJSON (fromMaybe [] $ headMay gameFocusedCards)
+        , "focusedTarotCards" .= toJSON gameFocusedTarotCards
+        , "foundCards" .= toJSON gameFoundCards
+        , "focusedChaosTokens" .= toJSON focusedChaosTokens
+        , "activeCard" .= toJSON gameActiveCard
+        , "removedFromPlay" .= toJSON gameRemovedFromPlay
+        , "gameState" .= toJSON gameGameState
+        , "skillTestResults" .= toJSON gameSkillTestResults
+        , "question" .= toJSON gameQuestion
+        , "cards" .= toJSON gameCards
+        , "totalDoom" .= toJSON doom
+        , "totalClues" .= toJSON clues
+        ]
    where
     emptyAdditionalData =
       object

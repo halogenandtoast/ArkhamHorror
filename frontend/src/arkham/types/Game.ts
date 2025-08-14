@@ -97,6 +97,8 @@ export type Game = {
   encounterDeckSize: number;
   cards: Record<string, Card>;
   modifiers: [Target, Modifier[]][];
+  totalDoom: number;
+  totalClues: number;
 }
 
 export function choices(game: Game, playerId: string): Message[] {
@@ -228,7 +230,9 @@ export const gameDecoder = JsonDecoder.object(
     removedFromPlay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
     encounterDeckSize: JsonDecoder.number(),
     cards: JsonDecoder.dictionary<Card>(cardDecoder, 'Dict<string, Card>'),
-    modifiers: JsonDecoder.array(JsonDecoder.tuple([targetDecoder, JsonDecoder.array(modifierDecoder, 'Modifier[]')], 'Target, Modifier[]'), 'Modifier[]')
+    modifiers: JsonDecoder.array(JsonDecoder.tuple([targetDecoder, JsonDecoder.array(modifierDecoder, 'Modifier[]')], 'Target, Modifier[]'), 'Modifier[]'),
+    totalDoom: JsonDecoder.number(),
+    totalClues: JsonDecoder.number()
   },
   'Game',
 ).map(({mode, ...game}) => ({ scenario: mode.That, campaign: mode.This, ...game }))

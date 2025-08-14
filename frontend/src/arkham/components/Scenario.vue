@@ -833,15 +833,21 @@ function minimize_SkillTest(isMinimized:boolean){
         </transition-group>
       </div>
 
-      <PlayerTabs
-        :game="game"
-        :playerId="playerId"
-        :players="players"
-        :playerOrder="playerOrder"
-        :activePlayerId="activePlayerId"
-        :tarotCards="props.scenario.tarotCards"
-        @choose="choose"
-      />
+      <div id="player-zone">
+        <PlayerTabs
+          :game="game"
+          :playerId="playerId"
+          :players="players"
+          :playerOrder="playerOrder"
+          :activePlayerId="activePlayerId"
+          :tarotCards="props.scenario.tarotCards"
+          @choose="choose"
+        />
+        <div id="totals">
+          <PoolItem type="doom" :amount="game.totalDoom" tooltip="Total Doom" />
+          <PoolItem type="clue" :amount="game.totalClues" tooltip="Total Spendable Clues" />
+        </div>
+      </div>
     </div>
     <div class="phases">
       <div class="phase" :class="{ 'active-phase': phase == 'MythosPhase' }">
@@ -1542,5 +1548,21 @@ function minimize_SkillTest(isMinimized:boolean){
     z-index: 1;
     margin-top: calc((var(--card-width) / (3 / 2)) * -1);
   }
+}
+
+#player-zone {
+  display: flex;
+  flex-direction: row;
+  .player-info {
+    flex: 1;
+  }
+}
+
+#totals {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 5px;
+  background: darkslategrey;
 }
 </style>

@@ -36,14 +36,17 @@ instance HasAbilities EonChart4 where
 
 getAvailable :: HasGame m => InvestigatorId -> AssetAttrs -> [Action] -> m ([Card], [Ability])
 getAvailable iid attrs canDoActions = do
-  playableCards <- if tabooed TabooList20 attrs
-    then pure []
-    else do
-      cards <- filterCards (mapOneOf CardWithAction canDoActions) <$> field InvestigatorHand iid
-      filterM (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) (defaultWindows iid)) cards
+  playableCards <-
+    if tabooed TabooList20 attrs
+      then pure []
+      else do
+        cards <- filterCards (mapOneOf CardWithAction canDoActions) <$> field InvestigatorHand iid
+        filterM (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) (defaultWindows iid)) cards
 
   let abilityF = if tabooed TabooList20 attrs then (<> BasicAbility) else id
-  abilities <- select (abilityF $ PerformableAbility [ActionCostModifier (-1)] <> oneOf (map AbilityIsAction canDoActions))
+  abilities <-
+    select
+      (abilityF $ PerformableAbility [ActionCostModifier (-1)] <> oneOf (map AbilityIsAction canDoActions))
   pure (playableCards, abilities)
 
 getAvailableActionTypes :: HasGame m => InvestigatorId -> AssetAttrs -> [Action] -> m [Action]

@@ -266,10 +266,12 @@ instance RunMessage DimCarcosa where
       doubt <- getDoubt
       case res of
         NoResolution -> do
-          flavor do
-            h "noResolution"
-            p.validate (conviction >= doubt) "goToResolution4"
-            p.validate (conviction < doubt) "goToResolution5"
+          resolutionFlavor $ scope "noResolution" do
+            setTitle "title"
+            p "body"
+            ul do
+              li.validate (conviction >= doubt) "goToResolution4"
+              li.validate (conviction < doubt) "goToResolution5"
           do_ $ if conviction >= doubt then R4 else R5
         _ -> do_ msg
       pure s

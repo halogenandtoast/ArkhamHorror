@@ -553,7 +553,7 @@ instance HasAbilities LocationAttrs where
   getAbilities l =
     [ basicAbility $ investigateAbility l 101 mempty (onLocation l)
     , basicAbility
-        $ restrictedAbility
+        $ restricted
           l
           102
           ( CanMoveTo (LocationWithId l.id)

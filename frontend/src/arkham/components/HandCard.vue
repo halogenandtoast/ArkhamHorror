@@ -7,6 +7,7 @@ import { MessageType} from '@/arkham/types/Message'
 import { imgsrc } from '@/arkham/helpers'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import * as ArkhamGame from '@/arkham/types/Game'
+import { IsMobile } from '@/arkham/isMobile';
 
 export interface Props {
   game: Game
@@ -17,6 +18,7 @@ export interface Props {
 
 const props = defineProps<Props>()
 
+const { isMobile } = IsMobile();
 const investigator = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId))
 const investigatorId = computed(() => investigator.value?.id)
 
@@ -220,6 +222,16 @@ function oilPaintEffect(canvas, radius, intensity) {
 
 <template>
   <div class="card-container" :data-index="id" v-if="solo || (investigatorId == ownerId) || revealed">
+    <AbilityButton
+      v-if="isMobile"
+      v-for="ability in abilities"
+      :key="ability.index"
+      :ability="ability.contents"
+      :data-image="image"
+      :game="game"
+      @click="$emit('choose', ability.index)"
+    />
+
     <img
       :class="classObject"
       class="card in-hand"
@@ -229,6 +241,7 @@ function oilPaintEffect(canvas, radius, intensity) {
     />
 
     <AbilityButton
+      v-if="!isMobile"
       v-for="ability in abilities"
       :key="ability.index"
       :ability="ability.contents"

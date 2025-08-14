@@ -2280,11 +2280,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     case fitsSlots of
       FitsSlots -> push (InvestigatorPlayedAsset iid aid)
       MissingSlots missingSlotTypes -> do
+        canHoldMap :: Map SlotType [SlotType] <- do
+          mods <- getModifiers a
+          let
+            canHold = \case
+              SlotCanBe slotType canBeSlotType -> insertWith (<>) slotType [canBeSlotType]
+              _ -> id
+          pure $ foldr canHold mempty mods
+        let additionalSlots = concatMap (\k -> findWithDefault [] k canHoldMap) missingSlotTypes
         assetsThatCanProvideSlots <-
           select
             $ assetControlledBy iid
             <> DiscardableAsset
-            <> AssetOneOf (map AssetInSlot missingSlotTypes)
+            <> AssetOneOf (map AssetInSlot (nub $ missingSlotTypes <> additionalSlots))
 
         -- N.B. This is explicitly for Empower Self and it's possible we don't want to do this without checking
         let assetsInSlotsOf aid' = nub $ concat $ filter (elem aid') $ map slotItems $ concat $ toList (a ^. slotsL)
@@ -2824,7 +2832,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           [] -> case findWithDefault [] slotType canHoldMap of
             [] -> (slotType :) <$> go rs slots
             [other] -> do
-              (availableSlots2, unused2) <- partitionM (canPutIntoSlot card) (lookupSlot slotType slots)
+              (availableSlots2, unused2) <- partitionM (canPutIntoSlot card) (lookupSlot other slots)
               case availableSlots2 of
                 [] -> (slotType :) <$> go rs slots
                 _ -> do

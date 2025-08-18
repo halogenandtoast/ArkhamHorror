@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
-import Arkham.Helpers.Modifiers (ModifierType (EnemyFight, HealthModifier), modified_)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelf)
 import Arkham.Helpers.GameValue (getPlayerCountValue)
 import Arkham.Matcher
 import Arkham.Prelude
@@ -23,12 +23,14 @@ instance HasAbilities VaultOfEarthlyDemise where
     [mkAbility attrs 1 $ forced $ EnemySpawns #when Anywhere $ enemyIs Cards.umordhoth]
 
 instance HasModifiersFor VaultOfEarthlyDemise where
-  getModifiersFor (VaultOfEarthlyDemise attrs) = case attrs.placement of
-    AttachedToEnemy eid -> do
-      let x = treacheryResources attrs
-      additionalHealth <- getPlayerCountValue (PerPlayer x)
-      modified_ attrs eid [HealthModifier additionalHealth, EnemyFight x]
-    _ -> pure mempty
+  getModifiersFor (VaultOfEarthlyDemise attrs) = do
+    modifySelf attrs [CannotLeavePlay]
+    case attrs.placement of
+      AttachedToEnemy eid -> do
+        let x = treacheryResources attrs
+        additionalHealth <- getPlayerCountValue (PerPlayer x)
+        modified_ attrs eid [HealthModifier additionalHealth, EnemyFight x]
+      _ -> pure mempty
 
 instance RunMessage VaultOfEarthlyDemise where
   runMessage msg t@(VaultOfEarthlyDemise attrs) = case msg of

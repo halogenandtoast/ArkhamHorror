@@ -18,7 +18,6 @@ import Arkham.Window qualified as Window
 placedInThreatArea :: HasGame m => Placement -> m (Maybe InvestigatorId)
 placedInThreatArea = \case
   AtLocation _ -> pure Nothing
-  ActuallyLocation _ -> pure Nothing
   AttachedToLocation _ -> pure Nothing
   InPlayArea _ -> pure Nothing
   InVehicle _ -> pure Nothing
@@ -61,7 +60,6 @@ onSameLocation :: (HasCallStack, HasGame m) => InvestigatorId -> Placement -> m 
 onSameLocation iid = \case
   AttachedToLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid
   AtLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid
-  ActuallyLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid
   InVehicle aid -> do
     field AssetLocation aid >>= \case
       Nothing -> pure False

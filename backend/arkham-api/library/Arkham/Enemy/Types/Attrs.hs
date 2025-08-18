@@ -83,6 +83,9 @@ instance HasField "meta" EnemyAttrs Value where
 instance HasField "placement" EnemyAttrs Placement where
   getField = enemyPlacement
 
+instance HasField "isInPlay" EnemyAttrs Bool where
+  getField = (.placement.isInPlay)
+
 instance HasField "ready" EnemyAttrs Bool where
   getField = not . enemyExhausted
 

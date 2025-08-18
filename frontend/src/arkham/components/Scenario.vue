@@ -371,6 +371,9 @@ watchEffect(() => {
 
   const isOutOfPlaySource = (source: Source) => {
     switch (source.tag) {
+      case "EnemySource": {
+       return outOfPlayEnemies.value.some((e) => e.id == source.contents)
+      }
       case "TreacherySource": {
        return outOfPlayEnemies.value.some((e) => {
           if (source.contents) return e.treacheries.includes(source.contents)

@@ -87,10 +87,8 @@ instance FromJSON (SomeField a) => FromJSON (Update a) where
     tag :: String <- o .: "tag"
     case tag of
       "update" -> do
-        someField <- o .: "field"
-        case someField of
-          SomeField (f :: Field a typ) ->
-            Update f <$> o .: "value"
+        SomeField f <- o .: "field"
+        Update f <$> o .: "value"
       "increment" -> do
         someField <- o .: "field"
         case someField of

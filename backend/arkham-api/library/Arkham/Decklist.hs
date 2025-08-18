@@ -19,6 +19,7 @@ import Data.Aeson.KeyMap qualified as KeyMap
 import Data.IntMap qualified as IntMap
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
+import GHC.Records
 import Text.Parsec (
   ParsecT,
   alphaNum,
@@ -46,6 +47,24 @@ data Decklist = Decklist
   }
   deriving stock Show
 
+instance HasField "investigator" Decklist InvestigatorId where
+  getField = decklistInvestigator
+
+instance HasField "cards" Decklist [PlayerCard] where
+  getField = decklistCards
+
+instance HasField "extra" Decklist [PlayerCard] where
+  getField = decklistExtraDeck
+
+instance HasField "taboo" Decklist (Maybe TabooList) where
+  getField = decklistTaboo
+
+instance HasField "url" Decklist (Maybe Text) where
+  getField = decklistUrl
+
+instance HasField "attachments" Decklist (Map CardCode [CardCode]) where
+  getField = decklistCardAttachments
+
 type Parser = ParsecT Text () Identity
 
 loadDecklist :: CardGen m => ArkhamDBDecklist -> m Decklist
@@ -60,7 +79,7 @@ loadDecklist decklist =
 decklistInvestigatorId :: ArkhamDBDecklist -> InvestigatorId
 decklistInvestigatorId decklist = fromMaybe (investigator_code decklist) do
   meta' <- meta decklist
-  ArkhamDBDecklistMeta{alternate_front} <- decode (encodeUtf8 $ fromStrict meta')
+  ArkhamDBDecklistMeta {alternate_front} <- decode (encodeUtf8 $ fromStrict meta')
   guard (alternate_front /= Just "") *> alternate_front
 
 loadDecklistCards

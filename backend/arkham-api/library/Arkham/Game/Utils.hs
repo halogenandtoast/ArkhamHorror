@@ -158,7 +158,6 @@ maybeEffect effectId = do
 getPlacementLocation :: HasGame m => Placement -> m (Maybe LocationId)
 getPlacementLocation = \case
   AtLocation location -> pure $ Just location
-  ActuallyLocation location -> pure $ Just location
   AttachedToLocation location -> pure $ Just location
   InPlayArea investigator -> field InvestigatorLocation investigator
   InThreatArea investigator -> field InvestigatorLocation investigator

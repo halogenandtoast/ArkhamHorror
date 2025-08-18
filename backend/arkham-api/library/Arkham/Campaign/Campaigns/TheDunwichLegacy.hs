@@ -3,6 +3,8 @@ module Arkham.Campaign.Campaigns.TheDunwichLegacy (theDunwichLegacy, TheDunwichL
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaign.Option
+import Arkham.Campaign.Types
+import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
 import Arkham.Campaigns.TheDunwichLegacy.Helpers
@@ -25,6 +27,11 @@ instance HasField "attrs" TheDunwichLegacy CampaignAttrs where
   getField (TheDunwichLegacy attrs) = attrs
 
 instance IsCampaign TheDunwichLegacy where
+  invalidCards =
+    recordedCardCodes
+      . findWithDefault [] (toCampaignLogKey SacrificedToYogSothoth)
+      . attr (campaignLogRecordedSets . campaignLog)
+
   nextStep a = case a.attrs.step of
     PrologueStep -> error $ "Unhandled campaign step: " <> show a
     ExtracurricularActivity ->

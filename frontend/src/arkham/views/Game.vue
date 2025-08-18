@@ -463,6 +463,8 @@ async function choose(idx: number) {
   }
 }
 
+window.debugChoose = choose
+
 async function chooseDeck(deckId: string): Promise<void> {
   if(game.value && !props.spectate) {
     oldQuestion.value = game.value.question

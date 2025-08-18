@@ -48,6 +48,8 @@ class
   IsCampaign a
   where
   nextStep :: a -> Maybe CampaignStep
+  invalidCards :: a -> [CardCode]
+  invalidCards _ = []
 
 data instance Field Campaign :: Type -> Type where
   CampaignCompletedSteps :: Field Campaign [CampaignStep]
@@ -56,6 +58,7 @@ data instance Field Campaign :: Type -> Type where
   CampaignDecks :: Field Campaign (Map InvestigatorId (Deck PlayerCard))
   CampaignMeta :: Field Campaign Value
   CampaignStore :: Field Campaign (Map Text Value)
+  CampaignInvalidCards :: Field Campaign [CardCode]
 
 data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId

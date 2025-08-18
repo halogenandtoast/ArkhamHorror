@@ -203,35 +203,32 @@ runGameMessage msg g = case msg of
   ReplaceInvestigator oldIid decklist -> do
     playerId <- getPlayer oldIid
     dl <- loadDecklist decklist
-    let iid' = decklistInvestigator dl
-    let deck = decklistCards dl
-    let sideDeck = decklistExtraDeck dl
+    let iid' = dl.investigator
+    let deck = dl.cards
+    let sideDeck = dl.extra
     let
       setCardAttachments (cCode, attachments) =
         flip Map.alter cCode \case
           Nothing -> Just $ defaultPerCardSettings {cardAttachments = attachments}
           Just current -> Just $ current {cardAttachments = attachments <> cardAttachments current}
     let investigator =
-          overAttrs
-            ( \ia ->
-                ia
-                  { investigatorTaboo = decklistTaboo dl
-                  , investigatorMutated = tabooMutated' (decklistTaboo dl) (coerce iid')
-                  , investigatorSettings =
-                      let settings = investigatorSettings ia
-                       in settings
-                            { perCardSettings =
-                                foldr setCardAttachments (perCardSettings settings) (mapToList $ decklistCardAttachments dl)
-                            }
-                  }
-            )
-            (lookupInvestigator iid' playerId)
+          updateAttrs (lookupInvestigator iid' playerId) \ia ->
+            ia
+              { investigatorTaboo = dl.taboo
+              , investigatorMutated = tabooMutated' dl.taboo (coerce iid')
+              , investigatorSettings =
+                  let settings = investigatorSettings ia
+                   in settings
+                        { perCardSettings =
+                            foldr setCardAttachments (perCardSettings settings) (mapToList dl.attachments)
+                        }
+              }
     let iid = toId investigator
     when (notNull sideDeck) $ push $ LoadSideDeck iid sideDeck
     push
       $ if iid /= oldIid
-        then InitDeck iid (decklistUrl dl) (Deck deck)
-        else UpgradeDeck iid (decklistUrl dl) (Deck deck)
+        then InitDeck iid dl.url (Deck deck)
+        else UpgradeDeck iid dl.url (Deck deck)
     let activeInvestigatorF =
           if gameActiveInvestigatorId g == oldIid then set activeInvestigatorIdL iid else id
         turnPlayerInvestigatorF =
@@ -253,32 +250,29 @@ runGameMessage msg g = case msg of
         replaceIds = InvestigatorId "00000" : toList mOldId
 
     dl <- loadDecklist decklist
-    let iid' = decklistInvestigator dl
-    let deck = decklistCards dl
-    let sideDeck = decklistExtraDeck dl
+    let iid' = dl.investigator
+    let deck = dl.cards
+    let sideDeck = dl.extra
     let
       setCardAttachments (cCode, attachments) =
         flip Map.alter cCode \case
           Nothing -> Just $ defaultPerCardSettings {cardAttachments = attachments}
           Just current -> Just $ current {cardAttachments = attachments <> cardAttachments current}
     let investigator =
-          overAttrs
-            ( \ia ->
-                ia
-                  { investigatorTaboo = decklistTaboo dl
-                  , investigatorMutated = tabooMutated' (decklistTaboo dl) (coerce iid')
-                  , investigatorSettings =
-                      let settings = investigatorSettings ia
-                       in settings
-                            { perCardSettings =
-                                foldr setCardAttachments (perCardSettings settings) (mapToList $ decklistCardAttachments dl)
-                            }
-                  }
-            )
-            (lookupInvestigator iid' playerId)
+          updateAttrs (lookupInvestigator iid' playerId) \ia ->
+            ia
+              { investigatorTaboo = dl.taboo
+              , investigatorMutated = tabooMutated' dl.taboo (coerce iid')
+              , investigatorSettings =
+                  let settings = ia.settings
+                   in settings
+                        { perCardSettings =
+                            foldr setCardAttachments (perCardSettings settings) (mapToList dl.attachments)
+                        }
+              }
     let iid = toId investigator
     when (notNull sideDeck) $ push $ LoadSideDeck iid sideDeck
-    push $ InitDeck iid (decklistUrl dl) (Deck deck)
+    push $ InitDeck iid dl.url (Deck deck)
     let activeInvestigatorF =
           if gameActiveInvestigatorId g `elem` replaceIds then set activeInvestigatorIdL iid else id
         turnPlayerInvestigatorF =
@@ -299,7 +293,7 @@ runGameMessage msg g = case msg of
     dl <- loadDecklist decklist
     investigator <- getInvestigator investigatorId
     let playerId = attr investigatorPlayerId investigator
-    let iid' = decklistInvestigator dl
+    let iid' = dl.investigator
     -- let sideDeck = decklistExtraDeck dl
     let
       setCardAttachments (cCode, attachments) =
@@ -310,13 +304,13 @@ runGameMessage msg g = case msg of
           overAttrs
             ( \ia ->
                 ia
-                  { investigatorTaboo = decklistTaboo dl
-                  , investigatorMutated = tabooMutated' (decklistTaboo dl) (coerce iid')
+                  { investigatorTaboo = dl.taboo
+                  , investigatorMutated = tabooMutated' dl.taboo (coerce iid')
                   , investigatorSettings =
                       let settings = investigatorSettings ia
                        in settings
                             { perCardSettings =
-                                foldr setCardAttachments (perCardSettings settings) (mapToList $ decklistCardAttachments dl)
+                                foldr setCardAttachments (perCardSettings settings) (mapToList dl.attachments)
                             }
                   }
             )
@@ -386,8 +380,7 @@ runGameMessage msg g = case msg of
     -- The gameActionDiff will be empty after this so we do not need the diffs to store any data
     pure $ foldl' unsafePatch g (gameActionDiff g)
   EndOfGame mNextCampaignStep -> do
-    window <- checkWindows [mkWhen Window.EndOfGame]
-    push window
+    pushM $ checkWindows [mkWhen Window.EndOfGame]
     pushEnd $ EndOfScenario mNextCampaignStep
     pure g
   EndOfScenario _ -> do
@@ -583,29 +576,6 @@ runGameMessage msg g = case msg of
       Just delay -> case delay of
         DelayAdditionalCosts -> pure True
         DelayAdditionalCostsWhen c -> passesCriteria iid Nothing ability.source ability.source [] c
-
-    -- leaveCosts <-
-    --   if isMovement && not doDelayAdditionalCosts
-    --     then do
-    --       mlocation <- getMaybeLocation iid
-    --       case mlocation of
-    --         Nothing -> pure []
-    --         Just lid -> do
-    --           mods' <- getModifiers lid
-    --           pure [c | AdditionalCostToLeave c <- mods']
-    --     else pure []
-
-    -- -- TODO: we might care about other sources here
-    -- enterCosts <-
-    --   if isMovement && not doDelayAdditionalCosts
-    --     then case abilitySource ability of
-    --       LocationSource lid -> do
-    --         mods' <- getModifiers lid
-    --         pcosts <- filterM ((lid <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
-    --         pure $ map snd pcosts <> [c | AdditionalCostToEnter c <- mods']
-    --       _ -> pure []
-    --     else pure []
-
     investigateCosts <-
       if isInvestigate && not doDelayAdditionalCosts
         then do
@@ -615,7 +585,6 @@ runGameMessage msg g = case msg of
               pure [c | AdditionalCostToInvestigate c <- mods']
             _ -> pure []
         else pure []
-
     resignCosts <-
       if isResign && not doDelayAdditionalCosts
         then do
@@ -731,14 +700,9 @@ runGameMessage msg g = case msg of
     let skillsF = maybe id deleteMap mSkillId
     pure
       $ g
-      & focusedCardsL
-      %~ map (filter (/= c))
-      & foundCardsL
-      . each
-      %~ filter (/= c)
-      & entitiesL
-      . skillsL
-      %~ skillsF
+      & (focusedCardsL %~ map (filter (/= c)))
+      & (foundCardsL . each %~ filter (/= c))
+      & (entitiesL . skillsL %~ skillsF)
   PutCardOnBottomOfDeck _ _ c -> do
     mSkillId <- selectOne $ SkillWithCardId (toCardId c)
     let skillsF = maybe id deleteMap mSkillId
@@ -750,11 +714,8 @@ runGameMessage msg g = case msg of
   ShuffleCardsIntoDeck _ cards ->
     pure
       $ g
-      & focusedCardsL
-      %~ map (filter (`notElem` cards))
-      & foundCardsL
-      . each
-      %~ filter (`notElem` cards)
+      & (focusedCardsL %~ map (filter (`notElem` cards)))
+      & (foundCardsL . each %~ filter (`notElem` cards))
   FocusChaosTokens tokens -> pure $ g & focusedChaosTokensL <>~ tokens
   Msg.RevealChaosToken SkillTestSource {} _ token -> pure $ g & focusedChaosTokensL %~ filter (/= token)
   UnfocusChaosTokens -> pure $ g & focusedChaosTokensL .~ mempty
@@ -881,7 +842,7 @@ runGameMessage msg g = case msg of
     let
       oldAttrs = toAttrs enemy
       enemy' =
-        flip overAttrs (lookupEnemy (toCardCode card) eid (toCardId card))
+        updateAttrs (lookupEnemy (toCardCode card) eid (toCardId card))
           $ \attrs -> case replaceStrategy of
             DefaultReplace -> attrs
             Swap ->
@@ -927,12 +888,8 @@ runGameMessage msg g = case msg of
     event' <- getEvent eid
     pure
       $ g
-      & entitiesL
-      . eventsL
-      %~ deleteMap eid
-      & actionRemovedEntitiesL
-      . eventsL
-      %~ insertEntity event'
+      & (entitiesL . eventsL %~ deleteMap eid)
+      & (actionRemovedEntitiesL . eventsL %~ insertEntity event')
   RemoveEnemy eid -> do
     popMessageMatching_ $ \case
       Arkham.Helpers.Message.EnemyDefeated eid' _ _ _ -> eid == eid'
@@ -1333,27 +1290,6 @@ runGameMessage msg g = case msg of
         else pushAll [RemoveFromPlay (toSource assetId), addToHand iid card]
       for_ underneath (push . addToDiscard iid)
     pure g
-  PlaceEnemy enemyId placement | not (isOutOfPlayZonePlacement placement) -> do
-    enemy <- getEnemy enemyId
-    when (isOutOfPlayPlacement $ attr enemyPlacement enemy) do
-      case placement of
-        AtLocation lid -> do
-          let
-            details =
-              SpawnDetails
-                { spawnDetailsEnemy = enemyId
-                , spawnDetailsInvestigator = Nothing
-                , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
-                , spawnDetailsOverridden = False
-                }
-          pushAll
-            [ Will (EnemySpawn details)
-            , When (EnemySpawn details)
-            , EnemySpawn details
-            , After (EnemySpawn details)
-            ]
-        _ -> pure ()
-    pure g
   PlaceInBonded _ (toCardId -> cardId) -> do
     assets <- select $ AssetWithCardId cardId
     events <- select $ EventWithCardId cardId
@@ -1467,10 +1403,10 @@ runGameMessage msg g = case msg of
         g' <- runGameMessage (PutCardIntoPlay controller card mtarget payment windows') g
         let
           recordLimit g'' = \case
-            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
-            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
-            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
-            LimitPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
+            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            LimitPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             _ -> g''
         pure $ foldl' recordLimit g' (cdLimits $ toCardDef card)
       else do
@@ -2605,20 +2541,9 @@ runGameMessage msg g = case msg of
             )
             (createAsset card assetId)
     pure $ g & entitiesL . assetsL . at assetId ?~ asset'
-  When (EnemySpawn details) -> do
-    for_ details.location \lid -> do
-      windowMsg <- checkWindows [mkWhen (Window.EnemySpawns details.enemy lid)]
-      push windowMsg
-    pure g
-  After (EnemySpawn details) -> do
-    for_ details.location \lid -> do
-      windowMsg <- checkWindows [mkWhen (Window.EnemySpawns details.enemy lid)]
-      push windowMsg
-    pure g
   -- TODO: CHECK SpawnEnemyAt and SpawnEnemyAtEngagedWith
   SpawnEnemyAt card lid -> do
     enemyId <- getRandom
-    let enemy = createEnemy card enemyId
     let
       details =
         SpawnDetails
@@ -2635,7 +2560,7 @@ runGameMessage msg g = case msg of
       , EnemySpawn details
       , After (EnemySpawn details)
       ]
-    pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
+    pure $ g & entitiesL . enemiesL . at enemyId ?~ createEnemy card enemyId
   SpawnEnemyAtEngagedWith card lid iid -> do
     enemyId <- getRandom
     let enemy = createEnemy card enemyId
@@ -2897,10 +2822,10 @@ runGameMessage msg g = case msg of
         push $ ObtainCard card.id
         let
           recordLimit g'' = \case
-            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
-            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
-            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
-            LimitPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
+            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            LimitPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             _ -> g''
         pure
           $ foldl'

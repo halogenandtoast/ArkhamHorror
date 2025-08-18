@@ -4731,6 +4731,8 @@ instance Projection Campaign where
       CampaignDecks -> pure campaignDecks
       CampaignMeta -> pure campaignMeta
       CampaignStore -> pure campaignStore
+      CampaignInvalidCards -> case c of
+        Campaign k -> pure $ invalidCards k
 
 instance Projection Effect where
   getAttrs eid = toAttrs <$> getEffect eid

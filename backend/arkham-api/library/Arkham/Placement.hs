@@ -24,7 +24,6 @@ data Placement
   | AttachedToLocation LocationId
   | InPlayArea InvestigatorId
   | InThreatArea InvestigatorId
-  | ActuallyLocation LocationId
   | StillInHand InvestigatorId
   | HiddenInHand InvestigatorId
   | OnTopOfDeck InvestigatorId
@@ -72,7 +71,6 @@ placementToAttached = \case
   AttachedToTreachery tid -> Just $ TreacheryTarget tid
   Near _ -> Nothing
   AtLocation _ -> Nothing
-  ActuallyLocation _ -> Nothing
   InPlayArea _ -> Nothing
   InVehicle _ -> Nothing
   InThreatArea _ -> Nothing
@@ -103,7 +101,6 @@ isOutOfPlayPlacement = not . isInPlayPlacement
 isInPlayPlacement :: Placement -> Bool
 isInPlayPlacement = \case
   AtLocation {} -> True
-  ActuallyLocation {} -> True
   AttachedToLocation {} -> True
   InPlayArea {} -> True
   InVehicle {} -> True

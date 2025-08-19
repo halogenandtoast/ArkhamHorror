@@ -554,6 +554,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       & (decksL . at deckKey ?~ deck')
   AddToEncounterDiscard ec -> do
     handler <- getEncounterDeckHandler (toCardId ec)
+    push $ ObtainCard (toCardId ec)
     pure
       $ a
       & (discardLens handler %~ (ec :))

@@ -30,10 +30,10 @@ gloriaGoldberg =
 
 instance HasAbilities GloriaGoldberg where
   getAbilities (GloriaGoldberg attrs) =
-    [restrictedAbility attrs 1 Self $ freeReaction $ LookedAtDeck #when You EncounterDeck]
+    [restricted attrs 1 Self $ freeReaction $ LookedAtDeck #when You EncounterDeck]
 
 instance HasChaosTokenValue GloriaGoldberg where
-  getChaosTokenValue iid ElderSign (GloriaGoldberg attrs) | iid == toId attrs = do
+  getChaosTokenValue iid ElderSign (GloriaGoldberg attrs) | attrs `is` iid = do
     pure $ ChaosTokenValue ElderSign (PositiveModifier 1)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
@@ -108,7 +108,6 @@ instance RunMessage GloriaGoldberg where
             sendShowUnder iid
             focusCards under do
               chooseTargetM iid (filterCards NonWeakness under) \undercard -> do
-                obtainCard undercard
                 addToEncounterDiscard (only undercard)
           obtainCard card
           placeUnderneath iid [card]
@@ -124,5 +123,14 @@ instance RunMessage GloriaGoldberg where
             sufferMentalTrauma iid 1
             Arkham.Message.Lifted.investigatorDefeated attrs iid
         _ -> pure ()
+      pure i
+    SendMessage (isTarget attrs -> True) (ForInvestigators investigators AllDrawEncounterCard) -> do
+      unless (null investigators) do
+        chooseOrRunOneM attrs.id do
+          questionLabeled "Choose investigator to draw encounter card"
+          for_ (eachWithRest investigators) \(x, xs) -> do
+            portraitLabeled x do
+              forInvestigator x AllDrawEncounterCard
+              sendMessage attrs $ ForInvestigators xs AllDrawEncounterCard
       pure i
     _ -> GloriaGoldberg <$> liftRunMessage msg attrs

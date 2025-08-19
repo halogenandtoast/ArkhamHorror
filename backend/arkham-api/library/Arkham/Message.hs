@@ -1127,6 +1127,7 @@ data Message
   | SetCampaignMeta Value
   | DoStep Int Message
   | ForInvestigator InvestigatorId Message
+  | ForInvestigators [InvestigatorId] Message
   | ForTrait Trait Message
   | ForAction Action Message
   | ForActions [Action] Message

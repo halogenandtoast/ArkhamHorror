@@ -39,15 +39,19 @@ newtype InTooDeep = InTooDeep ScenarioAttrs
 
 getBlockedFrom :: HasGame m => Meta -> LocationId -> m [LocationId]
 getBlockedFrom (Meta meta) lid = do
-  let
-    unblocked x y = Map.findWithDefault 0 (sortedPair y x) meta == 0
-    bfs visited [] = pure $ toList visited
-    bfs visited (current : queue)
-      | current `Set.member` visited = bfs visited queue
-      | otherwise = do
-          next <- filterBy [unblocked current, (`Set.notMember` visited)] <$> getConnectedLocations current
-          bfs (Set.insert current visited) (queue <> next)
-  select . not_ . beOneOf @_ @LocationMatcher  =<< bfs Set.empty [lid]
+  isDreamGate <- matches lid $ mapOneOf locationIs [Locations.dreamGatePointlessReality, Locations.dreamGateWondrousJourney]
+  if isDreamGate
+    then pure []
+    else do
+      let
+        unblocked x y = Map.findWithDefault 0 (sortedPair y x) meta == 0
+        bfs visited [] = pure $ toList visited
+        bfs visited (current : queue)
+          | current `Set.member` visited = bfs visited queue
+          | otherwise = do
+              next <- filterBy [unblocked current, (`Set.notMember` visited)] <$> getConnectedLocations current
+              bfs (Set.insert current visited) (queue <> next)
+      select . not_ . beOneOf @_ @LocationMatcher  =<< bfs Set.empty [lid]
 
 instance HasModifiersFor InTooDeep where
   getModifiersFor (InTooDeep a) = do

@@ -9,6 +9,7 @@ module Arkham.Placement (
   isHiddenPlacement,
   isInPlayArea,
   treacheryPlacementToPlacement,
+  _AtLocation
 ) where
 
 import Arkham.Card
@@ -163,4 +164,7 @@ $(deriveJSON defaultOptions ''TreacheryPlacement)
 instance FromJSON Placement where
   parseJSON o = genericParseJSON defaultOptions o <|> (treacheryPlacementToPlacement <$> parseJSON o)
 
-$(deriveToJSON defaultOptions ''Placement)
+mconcat
+  [ deriveToJSON defaultOptions ''Placement
+  , makePrisms ''Placement
+  ]

@@ -4526,17 +4526,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   Do (PlaceInvestigator iid placement) | iid == toId a -> do
     when (placement == Unplaced) do
       enemies <- select $ enemyEngagedWith iid
-      case investigatorLocation a of
-        Just lid -> pushAll [PlaceEnemy enemy (AtLocation lid) | enemy <- enemies]
-        Nothing -> pushAll [toDiscard GameSource (toTarget enemy) | enemy <- enemies]
+      pushAll $ case investigatorLocation a of
+        Just lid -> [PlaceEnemy enemy (AtLocation lid) | enemy <- enemies]
+        Nothing -> [toDiscard GameSource (toTarget enemy) | enemy <- enemies]
 
     pure $ a & placementL .~ placement
-  _ -> investigatorSettings `seq` pure a
+  _ -> pure a
 
 investigatorLocation :: InvestigatorAttrs -> Maybe LocationId
-investigatorLocation a = case a.placement of
-  AtLocation lid -> Just lid
-  _ -> Nothing
+investigatorLocation a = preview _AtLocation a.placement
 
 getFacingDefeat :: HasGame m => InvestigatorAttrs -> m Bool
 getFacingDefeat a@InvestigatorAttrs {..} = do

@@ -608,8 +608,8 @@ instance RunMessage AssetAttrs where
       pure a
     AddToDiscard _ c -> do
       pure $ a & cardsUnderneathL %~ filter (/= toCard c)
-    AddToEncounterDiscard c -> do
-      pure $ a & cardsUnderneathL %~ filter (/= toCard c)
+    ObtainCard c -> do
+      pure $ a & cardsUnderneathL %~ filter ((/= c) . toCardId)
     CommitCard _ card -> do
       pure $ a & cardsUnderneathL %~ filter (/= card)
     AddToHand _ cards -> do

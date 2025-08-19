@@ -765,7 +765,10 @@ runGameMessage msg g = case msg of
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   FoundCards cards -> pure $ g & foundCardsL .~ cards
-  ObtainCard cardId -> pure $ g & foundCardsL . each %~ deleteFirstMatch ((== cardId) . toCardId)
+  ObtainCard cardId -> pure $
+    g
+      & (foundCardsL . each %~ deleteFirstMatch ((== cardId) . toCardId))
+      . (focusedCardsL %~ map (filter ((/= cardId) . toCardId)))
   AddFocusedToTopOfDeck iid EncounterDeckTarget cardId ->
     if null (gameFoundCards g)
       then do
@@ -1246,16 +1249,11 @@ runGameMessage msg g = case msg of
         PlayerCard pc -> case pc.owner of
           Just iid -> pushAll [ObtainCard card.id, AddToDiscard iid pc]
           Nothing -> push $ ObtainCard card.id
-        EncounterCard ec -> pushAll [ObtainCard card.id, AddToEncounterDiscard ec]
+        EncounterCard ec -> push $ AddToEncounterDiscard ec
         VengeanceCard vc -> handleCard vc
 
     handleCard =<< getCard cardId
     pure g
-  AddToEncounterDiscard card -> do
-    pure
-      $ g
-      & (focusedCardsL %~ map (filter (/= EncounterCard card)))
-      . (foundCardsL . each %~ filter (/= EncounterCard card))
   Msg.PlaceUnderneath _ cards -> do
     pure
       $ g
@@ -2258,7 +2256,6 @@ runGameMessage msg g = case msg of
       %~ Map.filterWithKey (\k _ -> k `notElem` roundEndUses && k `notElem` tabooRoundEndUses)
   Begin MythosPhase {} -> do
     let playerOrder = g ^. playerOrderL
-    mGloria <- selectOne $ investigatorIs Investigators.gloriaGoldberg
     hasEncounterDeck <- scenarioField ScenarioHasEncounterDeck
     phaseBeginsWindow <-
       checkWindows
@@ -2277,9 +2274,7 @@ runGameMessage msg g = case msg of
     modifiers <- getModifiers (PhaseTarget MythosPhase)
     let phaseStep s msgs = Msg.PhaseStep (MythosPhaseStep s) msgs
     pushAllEnd
-      $ phaseStep
-        MythosPhaseBeginsStep
-        (phaseBeginsWindow : [ChoosePlayerOrder gloria playerOrder [] | gloria <- toList mGloria])
+      $ phaseStep MythosPhaseBeginsStep [phaseBeginsWindow]
       : [ phaseStep PlaceDoomOnAgendaStep [placeDoomOnAgenda]
         | SkipMythosPhaseStep PlaceDoomOnAgendaStep `notElem` modifiers
         ]
@@ -2302,9 +2297,13 @@ runGameMessage msg g = case msg of
     for_ (reverse investigators) \iid -> push $ ForInvestigator iid AllDrawCardAndResource
     pure g
   AllDrawEncounterCard -> do
-    investigators <- filterM (fmap not . isEliminated) =<< getInvestigatorsInOrder
     push $ SetActiveInvestigator $ g ^. activeInvestigatorIdL
-    for_ (reverse investigators) \iid -> push $ ForInvestigator iid AllDrawEncounterCard
+    mGloria <- selectOne $ investigatorIs Investigators.gloriaGoldberg
+    investigators <- filterM (fmap not . isEliminated) =<< getInvestigatorsInOrder
+    case mGloria of
+      Just gloria -> push $ SendMessage (toTarget gloria) (ForInvestigators investigators AllDrawEncounterCard)
+      Nothing -> do
+        for_ (reverse investigators) \iid -> push $ ForInvestigator iid AllDrawEncounterCard
     pure g
   ForInvestigator iid AllDrawEncounterCard -> do
     iid' <- fromMaybe iid <$> selectOne (InvestigatorWithModifier DrawsEachEncounterCard)

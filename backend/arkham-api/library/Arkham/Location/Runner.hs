@@ -253,8 +253,8 @@ instance RunMessage LocationAttrs where
       pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
     AddToDiscard _ pc -> do
       pure $ a & cardsUnderneathL %~ filter (/= PlayerCard pc)
-    AddToEncounterDiscard ec -> do
-      pure $ a & cardsUnderneathL %~ filter (/= EncounterCard ec)
+    ObtainCard c -> do
+      pure $ a & cardsUnderneathL %~ filter ((/= c) . toCardId)
     Will next@(EnemySpawn details) | details.location == Just locationId -> do
       let eid = details.enemy
       whenM (getShouldSpawnNonEliteAtConnectingInstead a) do

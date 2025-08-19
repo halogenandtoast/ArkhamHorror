@@ -300,8 +300,9 @@ const sideways = computed<boolean>(() => {
   if (hoveredElement.value?.classList.contains('attached')) return false
   if (hoveredElement.value?.classList.contains('card--sideways')) return true
   if (hoveredElement.value?.classList.contains('sideways')) return true
-  // Default to sideways if the element is wider than it is tall (except for modifiers).
+  // Default to sideways if the element is wider than it is tall (except for modifiers and sidebar span).
   if (hoveredElement.value?.classList.contains('modifier')) return false // Ensure consistency with "SkillTest.vue" and verify potential cases in "Source.hs"
+  if (hoveredElement.value?.tagName.toLowerCase() === 'span') return false;
   if (hoveredElement.value?.offsetWidth > hoveredElement.value.offsetHeight) return true
 
   return false
@@ -2213,8 +2214,11 @@ const replaceText = (text: string): string => {
   position: absolute;
   top: 0;
   left: 2px;
-  pointer-events: auto;
+  pointer-events: none;
   animation: fadeIn 0.5s;
+  @media (max-width: 800px) and (orientation: portrait) {
+    position: auto;
+  }
 }
 
 .crossed-off {

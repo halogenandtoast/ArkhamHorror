@@ -2280,11 +2280,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     case fitsSlots of
       FitsSlots -> push (InvestigatorPlayedAsset iid aid)
       MissingSlots missingSlotTypes -> do
+        canHoldMap :: Map SlotType [SlotType] <- do
+          mods <- getModifiers a
+          let
+            canHold = \case
+              SlotCanBe slotType canBeSlotType -> insertWith (<>) slotType [canBeSlotType]
+              _ -> id
+          pure $ foldr canHold mempty mods
+        let additionalSlots = concatMap (\k -> findWithDefault [] k canHoldMap) missingSlotTypes
         assetsThatCanProvideSlots <-
           select
             $ assetControlledBy iid
             <> DiscardableAsset
-            <> AssetOneOf (map AssetInSlot missingSlotTypes)
+            <> AssetOneOf (map AssetInSlot (nub $ missingSlotTypes <> additionalSlots))
 
         -- N.B. This is explicitly for Empower Self and it's possible we don't want to do this without checking
         let assetsInSlotsOf aid' = nub $ concat $ filter (elem aid') $ map slotItems $ concat $ toList (a ^. slotsL)
@@ -2742,6 +2750,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             [ WhenWillEnterLocation iid lid
             , Do (WhenWillEnterLocation iid lid)
             , After (WhenWillEnterLocation iid lid)
+            , After (MoveTo movement)
             , EnterLocation iid lid
             ]
 
@@ -2823,7 +2832,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           [] -> case findWithDefault [] slotType canHoldMap of
             [] -> (slotType :) <$> go rs slots
             [other] -> do
-              (availableSlots2, unused2) <- partitionM (canPutIntoSlot card) (lookupSlot slotType slots)
+              (availableSlots2, unused2) <- partitionM (canPutIntoSlot card) (lookupSlot other slots)
               case availableSlots2 of
                 [] -> (slotType :) <$> go rs slots
                 _ -> do
@@ -4116,10 +4125,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               push $ chooseN player n $ if null choices then [Label "No cards found" []] else choices
             DeferSearchedToTarget searchTarget _ -> do
               -- N.B. You must handle target duplication (see Mandy Thompson) yourself
-              push
-                $ if null targetCards
-                  then chooseOne player [Label "No cards found" [SearchNoneFound iid searchTarget]]
-                  else SearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
+              if null (concat $ toList targetCards)
+                then Lifted.promptI iid "noCardsFound" $ push $ SearchNoneFound iid searchTarget
+                else push $ SearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
             DrawAllFound who -> do
               let
                 choices =
@@ -4518,17 +4526,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   Do (PlaceInvestigator iid placement) | iid == toId a -> do
     when (placement == Unplaced) do
       enemies <- select $ enemyEngagedWith iid
-      case investigatorLocation a of
-        Just lid -> pushAll [PlaceEnemy enemy (AtLocation lid) | enemy <- enemies]
-        Nothing -> pushAll [toDiscard GameSource (toTarget enemy) | enemy <- enemies]
+      pushAll $ case investigatorLocation a of
+        Just lid -> [PlaceEnemy enemy (AtLocation lid) | enemy <- enemies]
+        Nothing -> [toDiscard GameSource (toTarget enemy) | enemy <- enemies]
 
     pure $ a & placementL .~ placement
-  _ -> investigatorSettings `seq` pure a
+  _ -> pure a
 
 investigatorLocation :: InvestigatorAttrs -> Maybe LocationId
-investigatorLocation a = case a.placement of
-  AtLocation lid -> Just lid
-  _ -> Nothing
+investigatorLocation a = preview _AtLocation a.placement
 
 getFacingDefeat :: HasGame m => InvestigatorAttrs -> m Bool
 getFacingDefeat a@InvestigatorAttrs {..} = do

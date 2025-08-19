@@ -21,6 +21,7 @@ import Arkham.Message hiding (chooseOrRunOne, story)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted hiding (
   assignDamageAndHorror,
@@ -31,6 +32,8 @@ import Arkham.Scenario.Import.Lifted hiding (
  )
 import Arkham.Scenarios.TheDevourerBelow.Helpers
 import Arkham.Trait hiding (Cultist, ElderThing)
+import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Zone
 
 newtype TheDevourerBelow = TheDevourerBelow ScenarioAttrs
   deriving stock Generic
@@ -90,7 +93,10 @@ setupTheDevourerBelow attrs = do
     $ EncounterSet.AgentsOfYogSothoth
     :| [EncounterSet.AgentsOfShubNiggurath, EncounterSet.AgentsOfCthulhu, EncounterSet.AgentsOfHastur]
 
-  setAside [Locations.ritualSite, Enemies.umordhoth]
+  setAside [Locations.ritualSite]
+  umordhoth <- placeEnemyCapture Enemies.umordhoth (OutOfPlay SetAsideZone)
+  whenReturnTo do
+    createTreacheryAt_ Treacheries.vaultOfEarthlyDemise (AttachedToEnemy umordhoth)
   when ghoulPriestIsStillAlive $ addToEncounterDeck (Only Enemies.ghoulPriest)
 
   setActDeck [Acts.investigatingTheTrail, Acts.intoTheDarkness, Acts.disruptingTheRitual]

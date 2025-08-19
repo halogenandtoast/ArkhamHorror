@@ -65,7 +65,4 @@ instance RunMessage DrElliHorowitz where
             | c <- validCardsAfterSeal
             ]
       pure a
-    SearchNoneFound iid (isTarget attrs -> True) -> do
-      chooseOne iid [Label "No Cards Found" []]
-      pure a
     _ -> DrElliHorowitz <$> liftRunMessage msg attrs

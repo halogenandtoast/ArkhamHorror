@@ -371,6 +371,9 @@ watchEffect(() => {
 
   const isOutOfPlaySource = (source: Source) => {
     switch (source.tag) {
+      case "EnemySource": {
+       return outOfPlayEnemies.value.some((e) => e.id == source.contents)
+      }
       case "TreacherySource": {
        return outOfPlayEnemies.value.some((e) => {
           if (source.contents) return e.treacheries.includes(source.contents)
@@ -755,7 +758,13 @@ function minimize_SkillTest(isMinimized:boolean){
             <div class="spent-keys" v-if="spentKeys.length > 0">
               <Key v-for="key in spentKeys" :key="key" :name="key" />
             </div>
-            <PoolItem class="signOfTheGods" v-if="signOfTheGods" type="resource" :amount="signOfTheGods" />
+            <PoolItem
+              v-if="signOfTheGods"
+              class="signOfTheGods"
+              type="resource"
+              tooltip="Sign of the Gods"
+              :amount="signOfTheGods"
+            />
           </div>
           <div class="pool" v-if="hasPool">
             <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
@@ -827,15 +836,21 @@ function minimize_SkillTest(isMinimized:boolean){
         </transition-group>
       </div>
 
-      <PlayerTabs
-        :game="game"
-        :playerId="playerId"
-        :players="players"
-        :playerOrder="playerOrder"
-        :activePlayerId="activePlayerId"
-        :tarotCards="props.scenario.tarotCards"
-        @choose="choose"
-      />
+      <div id="player-zone">
+        <PlayerTabs
+          :game="game"
+          :playerId="playerId"
+          :players="players"
+          :playerOrder="playerOrder"
+          :activePlayerId="activePlayerId"
+          :tarotCards="props.scenario.tarotCards"
+          @choose="choose"
+        />
+        <div id="totals">
+          <PoolItem type="doom" :amount="game.totalDoom" tooltip="Total Doom" />
+          <PoolItem type="clue" :amount="game.totalClues" tooltip="Total Spendable Clues" />
+        </div>
+      </div>
     </div>
     <div class="phases">
       <div class="phase" :class="{ 'active-phase': phase == 'MythosPhase' }">
@@ -1241,6 +1256,7 @@ function minimize_SkillTest(isMinimized:boolean){
   }
 
   .signOfTheGods {
+    z-index: 10;
     position: absolute;
     bottom: 0;
     right: 0;
@@ -1535,5 +1551,21 @@ function minimize_SkillTest(isMinimized:boolean){
     z-index: 1;
     margin-top: calc((var(--card-width) / (3 / 2)) * -1);
   }
+}
+
+#player-zone {
+  display: flex;
+  flex-direction: row;
+  .player-info {
+    flex: 1;
+  }
+}
+
+#totals {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 5px;
+  background: darkslategrey;
 }
 </style>

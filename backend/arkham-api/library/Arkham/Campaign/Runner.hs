@@ -229,7 +229,7 @@ defaultCampaignRunner msg a = case msg of
     for_ (mapToList $ campaignDecks $ toAttrs a) $ \(iid, Deck deck) -> do
       let storyCards = findWithDefault [] iid (campaignStoryCards $ toAttrs a)
       let storyCardCodes = map toCardCode storyCards
-      let (deck', removals) = partition (\card -> card.cardCode `notElem` storyCardCodes) deck
+      let (deck', removals) = partition (\card -> card.cardCode `notElem` storyCardCodes && card.cardCode `notElem` invalidCards a) deck
       for_ removals \c -> removeCard c.id
 
       push (LoadDeck iid . Deck $ deck' <> storyCards)

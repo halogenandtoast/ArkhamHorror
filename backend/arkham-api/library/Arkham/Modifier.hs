@@ -211,6 +211,7 @@ data ModifierType
   | CannotSpendClues
   | CannotSpendKeys
   | CannotTakeKeys
+  | CannotLeavePlay
   | CannotTakeAction ActionTarget
   | CannotTakeControlOfClues
   | CannotTriggerAbilityMatching AbilityMatcher

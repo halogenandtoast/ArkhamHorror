@@ -31,7 +31,7 @@ instance RunMessage DirectiveLeaveNoDoubt where
         & (metaMapL %~ KeyMap.delete "ignore_regulation" . KeyMap.delete "leave_no_doubt")
     Flip _ _ (isTarget attrs -> True) -> do
       pure . DirectiveLeaveNoDoubt $ attrs & flippedL .~ True
-    MoveTo movement | maybe False (`isTarget` movement.target) attrs.controller -> do
+    After (MoveTo movement) | maybe False (`isTarget` movement.target) attrs.controller -> do
       case movement.destination of
         ToLocation _ ->
           pure

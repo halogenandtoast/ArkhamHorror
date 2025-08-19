@@ -80,6 +80,7 @@ import Arkham.Movement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SkillType ()
+import Arkham.Spawn
 import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Trait
@@ -1615,10 +1616,25 @@ instance RunMessage EnemyAttrs where
       pure $ a & referenceCardsL %~ (cardCode :)
     PlaceEnemy eid placement | eid == enemyId -> do
       case placement of
-        AtLocation _ -> push $ EnemyCheckEngagement eid
-        _ -> pure ()
-      checkEntersThreatArea a placement
-      pure $ a & placementL .~ placement
+        AtLocation lid -> do
+          let
+            details =
+              SpawnDetails
+                { spawnDetailsEnemy = enemyId
+                , spawnDetailsInvestigator = Nothing
+                , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
+                , spawnDetailsOverridden = False
+                }
+          pushAll
+            [ Will (EnemySpawn details)
+            , When (EnemySpawn details)
+            , EnemySpawn details
+            , After (EnemySpawn details)
+            ]
+          pure a
+        _ -> do
+          checkEntersThreatArea a placement
+          pure $ a & placementL .~ placement
     Blanked msg' -> runMessage msg' a
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do
       sid <- getRandom

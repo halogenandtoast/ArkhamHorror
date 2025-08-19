@@ -2214,7 +2214,7 @@ const replaceText = (text: string): string => {
   position: absolute;
   top: 0;
   left: 2px;
-  pointer-events: none;
+  pointer-events: auto;
   animation: fadeIn 0.5s;
   @media (max-width: 800px) and (orientation: portrait) {
     position: auto;

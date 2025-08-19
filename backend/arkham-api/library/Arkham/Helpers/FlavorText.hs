@@ -5,7 +5,7 @@ import Arkham.FlavorText as X (li)
 import Arkham.FlavorText qualified as FT
 import Arkham.Helpers.Query (allPlayers)
 import Arkham.I18n
-import Arkham.I18n as X (countVar, scope, unscoped, withVar, withVars, HasI18n)
+import Arkham.I18n as X (HasI18n, countVar, scope, unscoped, withVar, withVars)
 import Arkham.Id
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (story)
@@ -19,6 +19,15 @@ setup :: (HasI18n, ReverseQueue m) => (HasI18n => FlavorTextBuilder ()) -> m ()
 setup body = scope "setup" $ flavor do
   unscoped $ setTitle "setup"
   body
+
+resolutionFlavor :: (HasI18n, ReverseQueue m) => (HasI18n => FlavorTextBuilder ()) -> m ()
+resolutionFlavor builder = story do
+  case buildFlavor builder of
+    FlavorText {..} ->
+      FlavorText
+        { flavorTitle
+        , flavorBody = [ModifyEntry [ResolutionEntry] $ CompositeEntry flavorBody]
+        }
 
 flavor :: (HasI18n, ReverseQueue m) => (HasI18n => FlavorTextBuilder ()) -> m ()
 flavor builder = story $ buildFlavor builder
@@ -77,6 +86,11 @@ instance HasField "right" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBu
   getField f t = for_ (buildFlavor (f t)).flavorBody \case
     ModifyEntry mods inner' -> addEntry $ ModifyEntry (RightAligned : mods) inner'
     inner' -> addEntry $ ModifyEntry [RightAligned] inner'
+
+instance HasField "basic" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBuilder ()) where
+  getField f t = for_ (buildFlavor (f t)).flavorBody \case
+    ModifyEntry mods inner' -> addEntry $ ModifyEntry (PlainText : mods) inner'
+    inner' -> addEntry $ ModifyEntry [PlainText] inner'
 
 instance HasField "blue" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBuilder ()) where
   getField f t = for_ (buildFlavor (f t)).flavorBody \case

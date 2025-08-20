@@ -1,7 +1,7 @@
 module Arkham.Skill.Cards.WhispersFromTheDeep (whispersFromTheDeep) where
 
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype WhispersFromTheDeep = WhispersFromTheDeep SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)

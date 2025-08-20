@@ -1,6 +1,5 @@
 module Arkham.Skill.Cards.WellFunded (wellFunded) where
 
-import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
 import Arkham.Matcher
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted

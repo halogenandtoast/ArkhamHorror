@@ -332,8 +332,11 @@ breakNM n p xs = go n ([], xs)
       else go m (z : ys, zs')
 
 (<$$>) :: (Functor f, Functor m) => (a -> b) -> m (f a) -> m (f b)
-(<$$>) = fmap . fmap
+(<$$>) = ffmap
 infixl 4 <$$>
+
+ffmap :: (Functor f, Functor m) => (a -> b) -> m (f a) -> m (f b)
+ffmap = fmap . fmap
 
 withIndex :: MonoFoldable l => l -> [(Int, Element l)]
 withIndex = zip [0 ..] . toList

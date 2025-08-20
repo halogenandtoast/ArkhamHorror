@@ -58,6 +58,7 @@ data instance Field Enemy :: Type -> Type where
   EnemyDefeated :: Field Enemy Bool
   EnemyEngagedInvestigators :: Field Enemy (Set InvestigatorId)
   EnemyDoom :: Field Enemy Int
+  EnemyExactDoom :: Field Enemy Int
   EnemyEvade :: Field Enemy (Maybe Int)
   EnemyFight :: Field Enemy (Maybe Int)
   EnemyTokens :: Field Enemy Tokens
@@ -111,6 +112,7 @@ instance FromJSON (SomeField Enemy) where
     "EnemyDefeated" -> pure $ SomeField Arkham.Enemy.Types.EnemyDefeated
     "EnemyEngagedInvestigators" -> pure $ SomeField EnemyEngagedInvestigators
     "EnemyDoom" -> pure $ SomeField EnemyDoom
+    "EnemyExactDoom" -> pure $ SomeField EnemyExactDoom
     "EnemyEvade" -> pure $ SomeField Arkham.Enemy.Types.EnemyEvade
     "EnemyFight" -> pure $ SomeField Arkham.Enemy.Types.EnemyFight
     "EnemyTokens" -> pure $ SomeField EnemyTokens
@@ -435,6 +437,7 @@ fieldLens = \case
   Arkham.Enemy.Types.EnemyDefeated -> defeatedL
   EnemyEngagedInvestigators -> virtual
   EnemyDoom -> tokensL . at Doom . non 0
+  EnemyExactDoom -> tokensL . at Doom . non 0
   EnemyTokens -> tokensL
   EnemyClues -> tokensL . at Clue . non 0
   EnemyDamage -> tokensL . at #damage . non 0

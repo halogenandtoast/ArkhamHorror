@@ -22,7 +22,6 @@ import Arkham.Query
 import Arkham.Source
 import Arkham.Target
 import Control.Lens (each, sumOf)
-import Control.Monad.Trans.Class
 import Control.Monad.Writer.Class
 import Data.Aeson
 import Data.Aeson.KeyMap qualified as KeyMap
@@ -34,7 +33,7 @@ withGrantedAction
   :: (HasGame m, Sourceable source)
   => InvestigatorId
   -> source
-  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> (forall t. HasGame t => t a)
   -> m a
 withGrantedAction iid source = withGrantedActions iid source 1
 
@@ -43,21 +42,21 @@ withGrantedActions
   => InvestigatorId
   -> source
   -> Int
-  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> (forall t. HasGame t => t a)
   -> m a
 withGrantedActions iid source n = withModifiersOf iid source [ActionCostModifier (-n)]
 
 ignoreActionCost
   :: HasGame m
   => InvestigatorId
-  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> (forall t. HasGame t => t a)
   -> m a
 ignoreActionCost iid = withModifiers iid (toModifiers GameSource [ActionsAreFree])
 
 ignoreCommitOneRestriction
   :: HasGame m
   => InvestigatorId
-  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> (forall t. HasGame t => t a)
   -> m a
 ignoreCommitOneRestriction iid = withModifiers iid (toModifiers GameSource [IgnoreCommitOneRestriction])
 
@@ -65,7 +64,7 @@ withModifiers
   :: (HasGame m, Targetable target)
   => target
   -> (m [Modifier])
-  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> (forall t. HasGame t => t a)
   -> m a
 withModifiers = withModifiers'
 
@@ -74,7 +73,7 @@ withModifiersOf
   => target
   -> source
   -> [ModifierType]
-  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> (forall t. HasGame t => t a)
   -> m a
 withModifiersOf t s mt = withModifiers t (toModifiers s mt)
 
@@ -442,7 +441,12 @@ skillTestModifiers sid (toSource -> source) (toTarget -> target) mods = do
   pure $ CreateWindowModifierEffect (#skillTest sid) ems source target
 
 nextSkillTestModifier
-  :: (Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId, Targetable target, HasGame m)
+  :: ( Sourceable source
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     , Targetable target
+     , HasGame m
+     )
   => investigator
   -> source
   -> target
@@ -452,7 +456,12 @@ nextSkillTestModifier investigator source target modifier =
   nextSkillTestModifiers investigator source target [modifier]
 
 nextSkillTestModifiers
-  :: (Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId, HasGame m, Targetable target)
+  :: ( Sourceable source
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     , HasGame m
+     , Targetable target
+     )
   => investigator
   -> source
   -> target

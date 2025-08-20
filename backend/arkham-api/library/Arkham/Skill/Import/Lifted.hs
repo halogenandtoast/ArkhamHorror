@@ -40,12 +40,23 @@ import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Target as X
 
+import Arkham.Helpers.Modifiers (ModifierType (Semaphore), modifySelfWhen, semaphore)
+import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Modifier (ModifierType (AddSkillIcons))
 import Arkham.SkillType (SkillIcon)
-import Arkham.Modifier (ModifierType(AddSkillIcons))
-import Arkham.Helpers.Modifiers (modifySelf, modifySelfWhen)
 
 addSkillIconsWhen :: HasModifiersM m => SkillAttrs -> Bool -> [SkillIcon] -> m ()
+addSkillIconsWhen _attrs _cond [] = pure ()
 addSkillIconsWhen attrs cond icons = modifySelfWhen attrs.cardId cond [AddSkillIcons icons]
 
 addSkillIcons :: HasModifiersM m => SkillAttrs -> [SkillIcon] -> m ()
-addSkillIcons attrs icons = modifySelf attrs.cardId [AddSkillIcons icons]
+addSkillIcons attrs = addSkillIconsWhen attrs True
+
+removeSkill :: (ToId a SkillId, ReverseQueue m) => a -> m ()
+removeSkill (asId -> skillId) = push $ RemoveSkill skillId
+
+onlyOnceDuringSkillTest :: ReverseQueue m => SkillAttrs -> (SkillTestId -> m ()) -> m ()
+onlyOnceDuringSkillTest attrs body = semaphore attrs do
+  withSkillTest \sid -> do
+    skillTestModifier sid attrs attrs Semaphore
+    body sid

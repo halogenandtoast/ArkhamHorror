@@ -1,7 +1,7 @@
-module Arkham.Skill.Cards.Gumption1 (gumption1, Gumption1 (..)) where
+module Arkham.Skill.Cards.Gumption1 (gumption1) where
 
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
-import Arkham.Helpers.SkillTest (getSkillTestId)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
 
@@ -14,9 +14,7 @@ gumption1 = skill Gumption1 Cards.gumption1
 
 instance HasModifiersFor Gumption1 where
   getModifiersFor (Gumption1 a) =
-    getSkillTestId >>= \case
-      Nothing -> pure mempty
-      Just sid -> modified_ a sid [Difficulty (-2)]
+    withSkillTest \sid -> modified_ a sid [Difficulty (-2)]
 
 instance RunMessage Gumption1 where
   runMessage msg (Gumption1 attrs) = runQueueT $ case msg of

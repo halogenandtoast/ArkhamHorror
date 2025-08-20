@@ -16,7 +16,7 @@ dreamsOfTheClay1 = skill DreamsOfTheClay1 Cards.dreamsOfTheClay1
 
 instance HasAbilities DreamsOfTheClay1 where
   getAbilities (DreamsOfTheClay1 x) =
-    [ restricted x 1 ControlsThis
+    [ controlled_ x 1
         $ triggered (DrawCard #when You (basic $ NonPeril <> IsEncounterCard) EncounterDeck) (removeCost x)
     ]
 

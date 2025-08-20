@@ -455,6 +455,10 @@ instance HasOriginalCardCode Card where
     PlayerCard pc -> toOriginalCardCode pc
     EncounterCard ec -> toOriginalCardCode ec
     VengeanceCard c -> toOriginalCardCode c
+  setOriginalCardCode cCode = \case
+    PlayerCard pc -> PlayerCard $ setOriginalCardCode cCode pc
+    EncounterCard ec -> EncounterCard $ setOriginalCardCode cCode ec
+    VengeanceCard c -> VengeanceCard $ setOriginalCardCode cCode c
 
 data CampaignStoryCard = CampaignStoryCard
   { campaignStoryCardInvestigatorId :: InvestigatorId

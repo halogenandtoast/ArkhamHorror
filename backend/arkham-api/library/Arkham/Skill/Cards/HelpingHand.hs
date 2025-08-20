@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.HelpingHand (helpingHand, HelpingHand (..)) where
+module Arkham.Skill.Cards.HelpingHand (helpingHand) where
 
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTest)
@@ -15,12 +15,9 @@ helpingHand = skill HelpingHand Cards.helpingHand
 
 instance HasModifiersFor HelpingHand where
   getModifiersFor (HelpingHand attrs) = do
-    getSkillTest >>= \case
-      Nothing -> pure mempty
-      Just st -> do
-        (<>)
-          <$> modifyEach attrs (concat $ toList $ st.committedCards) [DoubleSkillIcons]
-          <*> modifySelect attrs (NotSkill $ SkillWithId attrs.id) [DoubleSkillIcons]
+    whenJustM getSkillTest \st -> do
+      modifyEach attrs (concat $ toList st.committedCards) [DoubleSkillIcons]
+      modifySelect attrs (NotSkill $ SkillWithId attrs.id) [DoubleSkillIcons]
 
 instance RunMessage HelpingHand where
   runMessage msg (HelpingHand attrs) = runQueueT $ case msg of

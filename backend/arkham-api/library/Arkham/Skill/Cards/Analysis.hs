@@ -1,7 +1,7 @@
-module Arkham.Skill.Cards.Analysis (analysis, Analysis (..)) where
+module Arkham.Skill.Cards.Analysis (analysis) where
 
 import Arkham.Ability
-import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
+import Arkham.Helpers.SkillTest (withSkillTestInvestigator)
 import Arkham.Helpers.Window (getChaosToken)
 import Arkham.Matcher
 import Arkham.Skill.Cards qualified as Cards
@@ -17,8 +17,8 @@ analysis = skill Analysis Cards.analysis
 instance HasAbilities Analysis where
   getAbilities (Analysis x) =
     [ displayAsAction
-        $ limitedAbility NoLimit
-        $ restrictedAbility x 1 ControlsThis
+        $ noLimit
+        $ controlled_ x 1
         $ ConstantReaction
           "Place 1 of your clues on your location (Analysis)"
           (RevealChaosToken #after Anyone $ CancelableChaosToken AnyChaosToken)
@@ -28,13 +28,11 @@ instance HasAbilities Analysis where
 instance RunMessage Analysis where
   runMessage msg s@(Analysis attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
-      whenJustM getSkillTestInvestigator \iid' -> do
+      withSkillTestInvestigator \iid' -> do
         cancelChaosToken (attrs.ability 1) iid token
-        pushAll
-          [ ReturnChaosTokens [token]
-          , UnfocusChaosTokens
-          , DrawAnotherChaosToken iid'
-          , RerunSkillTest
-          ]
+        returnChaosTokens [token]
+        unfocusChaosTokens
+        drawAnotherChaosToken iid'
+        push RerunSkillTest
       pure s
     _ -> Analysis <$> liftRunMessage msg attrs

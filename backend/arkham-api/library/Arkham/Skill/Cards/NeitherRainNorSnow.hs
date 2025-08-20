@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.NeitherRainNorSnow (neitherRainNorSnow, NeitherRainNorSnow (..)) where
+module Arkham.Skill.Cards.NeitherRainNorSnow (neitherRainNorSnow) where
 
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted

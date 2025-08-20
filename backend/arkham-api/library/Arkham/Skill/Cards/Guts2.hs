@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.Guts2 ( guts2,) where
+module Arkham.Skill.Cards.Guts2 (guts2) where
 
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
@@ -15,6 +15,6 @@ instance RunMessage Guts2 where
   runMessage msg s@(Guts2 attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ n | sid == skillId attrs -> do
       let amount = if n >= 2 then 2 else 1
-      drawCards (skillOwner attrs) attrs amount
+      drawCards attrs.owner attrs amount
       pure s
     _ -> Guts2 <$> liftRunMessage msg attrs

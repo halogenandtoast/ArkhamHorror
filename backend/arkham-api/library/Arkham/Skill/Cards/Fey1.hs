@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.Fey1 (fey1, fey1Effect, Fey1 (..)) where
+module Arkham.Skill.Cards.Fey1 (fey1, fey1Effect) where
 
 import Arkham.Effect.Import
 import Arkham.Message.Lifted.Choose

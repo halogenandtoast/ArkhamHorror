@@ -86,11 +86,17 @@ getSkillTestResolvedChaosTokens = maybe [] skillTestResolvedChaosTokens <$> getS
 getSkillTestInvestigator :: HasGame m => m (Maybe InvestigatorId)
 getSkillTestInvestigator = fmap skillTestInvestigator <$> getSkillTest
 
+withSkillTestInvestigator :: HasGame m => (InvestigatorId -> m ()) -> m ()
+withSkillTestInvestigator = whenJustM getSkillTestInvestigator
+
 isSkillTestInvestigator :: HasGame m => InvestigatorId -> m Bool
 isSkillTestInvestigator iid = (== Just iid) <$> getSkillTestInvestigator
 
 getSkillTestSource :: HasGame m => m (Maybe Source)
 getSkillTestSource = getsSkillTest skillTestSource
+
+withSkillTestSource :: HasGame m => (Source ->  m ()) -> m ()
+withSkillTestSource = whenJustM (getsSkillTest skillTestSource)
 
 isBasicEvade :: HasGame m => m Bool
 isBasicEvade =
@@ -651,6 +657,9 @@ getSkillTestDifficultyDifferenceFromBaseValue iid skillTest = do
 
 withSkillTest :: HasGame m => (SkillTestId -> m ()) -> m ()
 withSkillTest = whenJustM getSkillTestId
+
+duringSkillTest :: HasGame m => m () -> m ()
+duringSkillTest body = whenJustM getSkillTestId \_ -> body
 
 getCanCancelSkillTestEffects :: HasGame m => m Bool
 getCanCancelSkillTestEffects = do

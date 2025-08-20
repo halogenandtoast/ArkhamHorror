@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.OnTheMend (onTheMend, OnTheMend (..)) where
+module Arkham.Skill.Cards.OnTheMend (onTheMend) where
 
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted hiding (Discarded)

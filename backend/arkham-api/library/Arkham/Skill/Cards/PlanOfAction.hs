@@ -1,6 +1,5 @@
 module Arkham.Skill.Cards.PlanOfAction (planOfAction) where
 
-import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Skill.Cards qualified as Cards
@@ -16,15 +15,14 @@ planOfAction = skill PlanOfAction Cards.planOfAction
 instance HasModifiersFor PlanOfAction where
   getModifiersFor (PlanOfAction attrs) = do
     n <- length <$> selectAgg id InvestigatorActionsTaken TurnInvestigator
-    modifySelf attrs.cardId
-      $ [AddSkillIcons [#willpower, #agility] | n == 0]
-      <> [AddSkillIcons [#combat, #intellect] | n >= 2]
+    addSkillIcons attrs
+      $ (guard (n == 0) *> [#willpower, #agility])
+      <> (guard (n >= 2) *> [#combat, #intellect])
 
 instance RunMessage PlanOfAction where
   runMessage msg s@(PlanOfAction attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == toId attrs -> do
       n <- length <$> selectAgg id InvestigatorActionsTaken TurnInvestigator
-      when (n >= 0 && n < 2) do
-        drawCards iid attrs 1
+      when (n >= 0 && n < 2) $ drawCards iid attrs 1
       pure s
     _ -> PlanOfAction <$> liftRunMessage msg attrs

@@ -59,6 +59,7 @@ instance Named EncounterCard where
 
 instance HasOriginalCardCode EncounterCard where
   toOriginalCardCode = ecOriginalCardCode
+  setOriginalCardCode (toCardCode -> cCode) ec = ec { ecOriginalCardCode = cCode }
 
 lookupEncounterCard :: CardDef -> CardId -> EncounterCard
 lookupEncounterCard cardDef cardId =

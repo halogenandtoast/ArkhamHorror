@@ -165,6 +165,10 @@ controlled
   :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
 controlled = controlledAbility
 
+controlled_
+  :: (HasCardCode a, Sourceable a) => a -> Int -> AbilityType -> Ability
+controlled_ entity idx = restricted entity idx ControlsThis
+
 storyControlled
   :: (HasCardCode a, Sourceable a, Be a AssetMatcher) => a -> Int -> Criterion -> AbilityType -> Ability
 storyControlled entity idx restriction =

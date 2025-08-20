@@ -562,8 +562,12 @@ defeatEnemy enemy investigator = Msg.defeatEnemy (asId enemy) (asId investigator
 createAsset :: (ReverseQueue m, IsCard card) => card -> m AssetId
 createAsset card = do
   assetId <- getId
-  push $ CreateAssetAt assetId (toCard card) Unplaced
+  createAssetWithId assetId card
   pure assetId
+
+createAssetWithId :: (ReverseQueue m, IsCard card) => AssetId -> card -> m ()
+createAssetWithId assetId card = do
+  push $ CreateAssetAt assetId (toCard card) Unplaced
 
 createEnemyEngagedWithPrey :: ReverseQueue m => Card -> m EnemyId
 createEnemyEngagedWithPrey c = do
@@ -2870,6 +2874,21 @@ discardUntilN
 discardUntilN n iid source target deck matcher = do
   push $ DiscardUntilN n iid (toSource source) (toTarget target) (toDeck deck) matcher
 
+revealUntilFirst
+  :: (ReverseQueue m, Sourceable source, IsDeck deck)
+  => InvestigatorId
+  -> source
+  -> deck
+  -> ExtendedCardMatcher
+  -> m ()
+revealUntilFirst iid source deck matcher = case toDeck deck of
+  Deck.EncounterDeck -> whenM (can.target.encounterDeck iid) do
+    key <- getEncounterDeckKey iid
+    push $ RevealUntilFirst iid (toSource source) (toDeck key) matcher
+  other@(Deck.EncounterDeckByKey _) -> whenM (can.target.encounterDeck iid) do
+    push $ RevealUntilFirst iid (toSource source) other matcher
+  other -> push $ RevealUntilFirst iid (toSource source) other matcher
+
 createTreacheryAt_
   :: (ReverseQueue m, FetchCard card) => card -> Placement -> m ()
 createTreacheryAt_ c placement = do
@@ -2889,6 +2908,12 @@ createAssetAt c placement = do
   (assetId, msg) <- Msg.createAssetAt card placement
   push msg
   pure assetId
+
+createAssetWithIdAt
+  :: (ReverseQueue m, FetchCard card) => AssetId -> card -> Placement -> m ()
+createAssetWithIdAt assetId c placement = do
+  card <- fetchCard c
+  push $ CreateAssetAt assetId card placement
 
 healAllDamage :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
 healAllDamage source target = push $ Msg.HealAllDamage (toTarget target) (toSource source)

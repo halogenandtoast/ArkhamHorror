@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.Purified (purified, Purified (..)) where
+module Arkham.Skill.Cards.Purified (purified) where
 
 import Arkham.Helpers.ChaosBag (getRemainingBlessTokens)
 import Arkham.Matcher
@@ -19,12 +19,12 @@ instance RunMessage Purified where
       bless <- getRemainingBlessTokens
 
       if
-        | bless == 0 && curse /= 0 -> replicateM_ (min curse n) $ push $ RemoveChaosToken #curse
-        | curse == 0 && bless /= 0 -> replicateM_ (min bless n) $ push $ AddChaosToken #bless
+        | bless == 0 && curse /= 0 -> repeated (min curse n) $ removeChaosToken #curse
+        | curse == 0 && bless /= 0 -> repeated (min bless n) $ addChaosToken #bless
         | bless == 0 && curse == 0 -> pure ()
         | bless + curse == n -> do
-            replicateM_ curse $ push $ RemoveChaosToken #curse
-            replicateM_ bless $ push $ AddChaosToken #bless
+            repeated curse $ removeChaosToken #curse
+            repeated bless $ addChaosToken #bless
         | otherwise ->
             chooseAmounts
               iid
@@ -37,7 +37,7 @@ instance RunMessage Purified where
       let
         bless = getChoiceAmount "Add Bless Tokens" choices
         curse = getChoiceAmount "Remove Curse Tokens" choices
-      replicateM_ curse $ push $ RemoveChaosToken #curse
-      replicateM_ bless $ push $ AddChaosToken #bless
+      repeated curse $ removeChaosToken #curse
+      repeated bless $ addChaosToken #bless
       pure s
     _ -> Purified <$> liftRunMessage msg attrs

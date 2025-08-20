@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.EsotericMethod1 (esotericMethod1, EsotericMethod1 (..)) where
+module Arkham.Skill.Cards.EsotericMethod1 (esotericMethod1) where
 
 import Arkham.Helpers.ChaosBag (getRemainingCurseTokens)
 import Arkham.Skill.Cards qualified as Cards

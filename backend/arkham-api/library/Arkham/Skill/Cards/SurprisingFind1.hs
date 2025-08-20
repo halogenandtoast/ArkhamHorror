@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.SurprisingFind1 (surprisingFind1, surprisingFind1Effect, SurprisingFind1 (..)) where
+module Arkham.Skill.Cards.SurprisingFind1 (surprisingFind1, surprisingFind1Effect) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -21,7 +21,7 @@ surprisingFind1 = skill SurprisingFind1 Cards.surprisingFind1
 instance HasAbilities SurprisingFind1 where
   getAbilities (SurprisingFind1 x) =
     [ playerLimit (PerSearch Research) $ mkAbility x 1 $ freeReaction (AmongSearchedCards You)
-    , controlledAbility
+    , controlled
         x
         2
         (exists $ SkillWithId (toId x) <> NotSkill (SkillWithPlacement Limbo) <> EligibleSkill)

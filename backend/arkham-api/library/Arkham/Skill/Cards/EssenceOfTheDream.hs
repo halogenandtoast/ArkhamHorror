@@ -1,14 +1,7 @@
-module Arkham.Skill.Cards.EssenceOfTheDream (
-  essenceOfTheDream,
-  EssenceOfTheDream (..),
-)
-where
+module Arkham.Skill.Cards.EssenceOfTheDream (essenceOfTheDream) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 -- N.B.: This card is hard coded in Investigator/Runner as the ability is
 -- global no matter where the card is. This makes it hard to make sure the

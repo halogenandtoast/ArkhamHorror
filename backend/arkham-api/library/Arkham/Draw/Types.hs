@@ -156,6 +156,9 @@ asDrawAction c = c {cardDrawAction = True}
 withCardDrawRule :: CardDrawRules -> CardDraw msg -> CardDraw msg
 withCardDrawRule r c = c {cardDrawRules = insertSet r (cardDrawRules c)}
 
+shuffleBackInEachWeakness :: CardDraw msg -> CardDraw msg
+shuffleBackInEachWeakness = withCardDrawRule ShuffleBackInEachWeakness
+
 $(deriveJSON defaultOptions ''CardDrawKind)
 $(deriveJSON defaultOptions ''CardDrawRules)
 $(deriveJSON defaultOptions ''CardDrawState)

@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.Providential2 (providential2, Providential2 (..)) where
+module Arkham.Skill.Cards.Providential2 (providential2) where
 
 import Arkham.Helpers.ChaosBag (getRemainingBlessTokens)
 import Arkham.Investigator.Types (Field (..))
@@ -20,6 +20,6 @@ instance RunMessage Providential2 where
       d <- field InvestigatorDamage attrs.owner
       h <- field InvestigatorHorror attrs.owner
       let x = min n (min d h)
-      replicateM_ x $ push $ AddChaosToken #bless
+      repeated x $ addChaosToken #bless
       pure s
     _ -> Providential2 <$> liftRunMessage msg attrs

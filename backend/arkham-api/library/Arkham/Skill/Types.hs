@@ -74,6 +74,10 @@ data SkillAttrs = SkillAttrs
   }
   deriving stock (Show, Eq)
 
+instance AsId SkillAttrs where
+  type IdOf SkillAttrs = SkillId
+  asId = skillId
+
 instance Is SkillAttrs SkillId where
   is = (==) . toId
   {-# INLINE is #-}
@@ -113,6 +117,9 @@ instance HasField "meta" SkillAttrs Value where
 
 instance HasField "sealed" SkillAttrs [ChaosToken] where
   getField = skillSealedChaosTokens
+
+instance HasField "additionalPayment" SkillAttrs (Maybe Payment) where
+  getField = skillAdditionalPayment
 
 metaL :: Lens' SkillAttrs Value
 metaL = lens skillMeta $ \m x -> m {skillMeta = x}

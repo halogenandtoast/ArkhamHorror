@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.Daredevil (daredevil, Daredevil (..)) where
+module Arkham.Skill.Cards.Daredevil (daredevil) where
 
 import Arkham.Card
 import Arkham.Deck

@@ -1,11 +1,11 @@
 module Arkham.Skill.Cards.SealOfTheElderSign5 (sealOfTheElderSign5) where
 
 import Arkham.ChaosToken
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
 import Arkham.Strategy
+import Arkham.Helpers.SkillTest (withSkillTestInvestigator)
 
 newtype SealOfTheElderSign5 = SealOfTheElderSign5 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
@@ -13,10 +13,10 @@ newtype SealOfTheElderSign5 = SealOfTheElderSign5 SkillAttrs
 
 instance HasModifiersFor SealOfTheElderSign5 where
   getModifiersFor (SealOfTheElderSign5 attrs) = do
-    getSkillTest >>= traverse_ \st -> do
+    withSkillTestInvestigator \iid -> do
       modified_
         attrs
-        st.investigator
+        iid
         [DoNotDrawChaosTokensForSkillChecks, TreatRevealedChaosTokenAs ElderSign]
 
 sealOfTheElderSign5 :: SkillCard SealOfTheElderSign5

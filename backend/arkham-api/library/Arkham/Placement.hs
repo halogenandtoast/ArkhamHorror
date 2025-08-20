@@ -9,7 +9,8 @@ module Arkham.Placement (
   isHiddenPlacement,
   isInPlayArea,
   treacheryPlacementToPlacement,
-  _AtLocation
+  _AtLocation,
+  _OutOfPlay
 ) where
 
 import Arkham.Card
@@ -91,11 +92,6 @@ placementToAttached = \case
   HiddenInHand _ -> Nothing
   OnTopOfDeck _ -> Nothing
 
-isOutOfPlayZonePlacement :: Placement -> Bool
-isOutOfPlayZonePlacement = \case
-  OutOfPlay _ -> True
-  _ -> False
-
 isOutOfPlayPlacement :: Placement -> Bool
 isOutOfPlayPlacement = not . isInPlayPlacement
 
@@ -168,3 +164,7 @@ mconcat
   [ deriveToJSON defaultOptions ''Placement
   , makePrisms ''Placement
   ]
+
+isOutOfPlayZonePlacement :: Placement -> Bool
+isOutOfPlayZonePlacement = isJust . preview _OutOfPlay
+

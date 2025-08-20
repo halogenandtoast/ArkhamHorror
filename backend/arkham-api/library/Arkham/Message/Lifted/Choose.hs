@@ -256,6 +256,9 @@ abilityLabeled iid ab action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [AbilityLabel iid ab (defaultWindows iid) [] msgs]
 
+abilityLabeled_ :: ReverseQueue m => InvestigatorId -> Ability -> ChooseT m ()
+abilityLabeled_ iid ab = abilityLabeled iid ab nothing
+
 abilityLabeledWithBefore
   :: ReverseQueue m => InvestigatorId -> Ability -> [Message] -> QueueT Message m () -> ChooseT m ()
 abilityLabeledWithBefore iid ab beforeMsgs action = unterminated do

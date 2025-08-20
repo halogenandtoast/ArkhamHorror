@@ -136,6 +136,7 @@ selectAgg
      , QueryElement a ~ EntityId attrs
      , Projection attrs
      , HasGame m
+     , HasCallStack
      )
   => (typ -> monoid)
   -> Field attrs typ

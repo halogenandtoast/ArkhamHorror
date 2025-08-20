@@ -1,13 +1,8 @@
 module Arkham.Skill.Cards.Prophesy (prophesy) where
 
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Helpers.Doom
-import Arkham.Helpers.Modifiers
-import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
-import Arkham.SkillType
+import Arkham.Skill.Import.Lifted
 
 newtype Prophesy = Prophesy SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
@@ -19,10 +14,7 @@ prophesy = skill Prophesy Cards.prophesy
 instance HasModifiersFor Prophesy where
   getModifiersFor (Prophesy attrs) = do
     doom <- getDoomCount
-    modified_
-      attrs
-      (toCardId attrs)
-      [AddSkillIcons $ if doom >= 6 then [WildIcon, WildIcon] else [WildIcon] | doom >= 3]
+    addSkillIconsWhen attrs (doom >= 3) (#wild : [#wild | doom >= 6])
 
 instance RunMessage Prophesy where
   runMessage msg (Prophesy attrs) = Prophesy <$> runMessage msg attrs

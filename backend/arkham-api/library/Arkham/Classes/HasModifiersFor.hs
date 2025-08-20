@@ -7,9 +7,10 @@ import Arkham.Target
 import Control.Monad.Writer.Class
 import Data.Map.Monoidal.Strict
 
+type HasModifiersM m = (HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+
 class HasModifiersFor a where
-  getModifiersFor
-    :: (HasCallStack, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m) => a -> m ()
+  getModifiersFor :: (HasCallStack, HasModifiersM m) => a -> m ()
   getModifiersFor _ = pure ()
 
 instance HasModifiersFor a => HasModifiersFor (With a b) where

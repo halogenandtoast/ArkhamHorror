@@ -37,3 +37,4 @@ timeIt label body = do
   let diff = diffUTCTime end start
   let r = traceShow (T.unpack $ label <> ": " <> tshow diff) result
   r `seq` pure r
+{-# NOINLINE timeIt #-}

@@ -1,3 +1,12 @@
+.PHONY: core.watch
+core.watch:
+	cd arkham-api && \
+	stack build --test --no-run-tests --pedantic --fast arkham-api \
+	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
+	  --interleaved-output \
+	  --file-watch \
+		$(EXTRA_STACK_FLAGS)
+
 .PHONY: api.watch
 api.watch:
 	cd arkham-api && \

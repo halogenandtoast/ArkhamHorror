@@ -206,7 +206,7 @@ instance RunMessage UndimensionedAndUnseen where
         _ -> pure ()
       pure s
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
-      for_ mcard \card -> addCampaignCardToDeck iid ShuffleIn [PlayerCard card]
+      for_ mcard (addCampaignCardToDeck iid ShuffleIn)
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of

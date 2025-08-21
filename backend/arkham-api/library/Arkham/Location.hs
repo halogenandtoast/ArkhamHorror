@@ -28,7 +28,7 @@ instance RunMessage Location where
     let a = toAttrs x
     pure
       $ overAttrs
-        (\y -> y {locationLabel = locationLabel a})
+        (\y -> y {locationLabel = locationLabel a, locationDirections = locationDirections a})
         (lookupLocation (toCardCode a) a.id (toCardId a))
   runMessage msg x@(Location l) = do
     modifiers' <- getModifiers (toTarget x)

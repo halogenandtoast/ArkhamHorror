@@ -406,6 +406,21 @@ const getCardCustomizationText = (dbCard: ArkhamDBCard): string | null => {
   return replaceText(dbCard.customization_text || '')
 }
 
+const tarot = computed<boolean>(() => !!hoveredElement.value?.classList.contains('tarot-card'))
+
+// numeric damage/horror parsed from data-* (so "0" doesn't render)
+const damage = computed<number | null>(() => {
+  const v = hoveredElement.value?.dataset?.damage
+  const n = v == null ? NaN : Number(v)
+  return Number.isFinite(n) ? n : null
+})
+
+const horror = computed<number | null>(() => {
+  const v = hoveredElement.value?.dataset?.horror
+  const n = v == null ? NaN : Number(v)
+  return Number.isFinite(n) ? n : null
+})
+
 </script>
 
 <template>

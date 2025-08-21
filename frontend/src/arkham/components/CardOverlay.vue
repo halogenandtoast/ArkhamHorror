@@ -1,494 +1,411 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, watchEffect, onMounted, onUnmounted } from 'vue'
 import { imgsrc, toCamelCase } from '@/arkham/helpers'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
-import Key from '@/arkham/components/Key.vue';
-import PoolItem from '@/arkham/components/PoolItem.vue';
+import Key from '@/arkham/components/Key.vue'
+import PoolItem from '@/arkham/components/PoolItem.vue'
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 
+/* --------------------------------- stores --------------------------------- */
+
 const store = useDbCardStore()
+
+/* ------------------------------- DOM & state ------------------------------- */
+
 const cardOverlay = ref<HTMLElement | null>(null)
 const hoveredElement = ref<HTMLElement | null>(null)
+
+const isMobile = ref(false)
+onMounted(() => {
+  const mq = window.matchMedia('(hover: none) and (pointer: coarse)')
+  const update = () => (isMobile.value = mq.matches)
+  update()
+  mq.addEventListener?.('change', update)
+  onUnmounted(() => mq.removeEventListener?.('change', update))
+})
+
+/* -------------------------- event handling (pointer) ----------------------- */
+
+const CARD_SELECTOR = '.card,[data-image-id],[data-target],[data-image]'
+let hoverTimer: number | null = null
+let pressTimer: number | null = null
 let canDisablePress = false
 
-const isMobile = window.matchMedia('(hover: none) and (pointer: coarse)').matches
+const clearTimer = (t: number | null) => {
+  if (t !== null) clearTimeout(t)
+  return null
+}
 
-const handleMouseover = (event: Event) => {
-  const target = event.target as HTMLElement
-  if (target.classList.contains('dragging')) {
-    hoveredElement.value = null
+const targetFromEvent = (e: Event): HTMLElement | null => {
+  const raw = e.target as HTMLElement | null
+  if (!raw) return null
+  const cardish = raw.closest(CARD_SELECTOR) as HTMLElement | null
+  return cardish ?? null
+}
+
+const queueHover = (el: HTMLElement) => {
+  hoverTimer = clearTimer(hoverTimer)
+  const delay = el.dataset.delay ? parseInt(el.dataset.delay, 10) : 0
+  hoverTimer = window.setTimeout(() => {
+    hoveredElement.value = el
+    canDisablePress = true
+  }, delay)
+}
+
+const handlePointerMove = (e: PointerEvent) => {
+  const el = targetFromEvent(e)
+  hoverTimer = clearTimer(hoverTimer)
+  if (!el || el.classList.contains('dragging')) {
+    if (!isMobile.value) hoveredElement.value = null
     return
   }
-  if (target && (target.classList.contains('card') || target.dataset.imageId || target.dataset.target || target.dataset.image)) {
-    if (target.dataset.delay) {
-      setTimeout(() => {
-        hoveredElement.value = target
-      }, parseInt(target.dataset.delay))
-    } else {
-      hoveredElement.value = target
-    }
-    canDisablePress = true
+  queueHover(el)
+}
+
+const onPointerDown = (e: PointerEvent) => {
+  // Long-press only for touch
+  if (e.pointerType === 'touch') {
+    const el = targetFromEvent(e)
+    if (!el) return
+    pressTimer = clearTimer(pressTimer)
+    pressTimer = window.setTimeout(() => queueHover(el), 200)
   }
-  else{
-    if (!isMobile){
+}
+
+const onPointerMove = (e: PointerEvent) => {
+  if (e.pointerType === 'touch') {
+    // special filters: moving while showing location cards cancels
+    if (hoveredElement.value?.classList.contains('card--locations')) {
       hoveredElement.value = null
     }
+    pressTimer = clearTimer(pressTimer)
+  } else {
+    handlePointerMove(e)
   }
 }
 
-
-let pressTimer : number | undefined = undefined
-const handlePress = (event: Event) => {
-  pressTimer = setTimeout(() => handleMouseover(event), 200)
-}
-const disablePress = () => {
+const onPointerUp = (_e: PointerEvent) => {
+  // If press revealed, first click/tap just arms disable
   if (canDisablePress) {
-    // disablePress is ready for next click, so reset the flag
     canDisablePress = false
-  }
-  else{
+  } else {
+    // Otherwise, hide and cancel timers
     hoveredElement.value = null
-    clearTimeout(pressTimer)
+    pressTimer = clearTimer(pressTimer)
   }
-}
-const filterPress = () => {
-  if (hoveredElement.value?.classList.contains('in-hand')) {
-      hoveredElement.value = null
-  }
-  clearTimeout(pressTimer)
-}
-
-const filterMove = () => {
-  if (hoveredElement.value?.classList.contains('card--locations')) {
-      hoveredElement.value = null
-  }
-  clearTimeout(pressTimer)
-}
-
-const handleContext = (e) => {
-  if (e.target.tagName.toLowerCase() === 'input') return
-  e.preventDefault()
 }
 
 onMounted(() => {
-  if (!isMobile) {
-    document.addEventListener('mouseover', handleMouseover)
-  } else {
-    document.addEventListener('contextmenu', handleContext)
-    document.addEventListener('touchstart', handlePress)
-    document.addEventListener('touchmove', filterMove)
-    document.addEventListener('touchend', filterPress)
-    document.addEventListener('mouseup', disablePress)
-  }
+  document.addEventListener('pointerdown', onPointerDown, { passive: true })
+  document.addEventListener('pointermove', onPointerMove, { passive: true })
+  document.addEventListener('pointerup', onPointerUp, { passive: true })
+  // only block context menu inside the overlay, not globally
+  cardOverlay.value?.addEventListener('contextmenu', (e) => {
+    const t = e.target as HTMLElement
+    if (t?.tagName.toLowerCase() !== 'input') e.preventDefault()
+  })
 })
-
 onUnmounted(() => {
-  if (!isMobile) {
-    document.removeEventListener('mouseover', handleMouseover)
-  } else {
-    document.removeEventListener('contextmenu', handleContext)
-    document.removeEventListener('touchstart', handlePress)
-    document.removeEventListener('touchmove', filterMove)
-    document.removeEventListener('touchend', filterPress)
-    document.removeEventListener('mouseup', disablePress)
-  }
+  document.removeEventListener('pointerdown', onPointerDown)
+  document.removeEventListener('pointermove', onPointerMove)
+  document.removeEventListener('pointerup', onPointerUp)
+  hoverTimer = clearTimer(hoverTimer)
+  pressTimer = clearTimer(pressTimer)
 })
 
-const card = computed(() => {
-  if (!hoveredElement.value) return null
-  if (hoveredElement.value.classList.contains('no-overlay')) return null
-  return getImage(hoveredElement.value)
-})
+/* --------------------------- image & positioning --------------------------- */
 
-const allCustomizations = ["09021", "09022", "09023", "09040", "09041", "09042", "09059", "09060", "09061", "09079", "09080", "09081", "09099", "09100", "09101", "09119"]
+const getImage = (el: HTMLElement, depth = 0): string | null => {
+  if (depth > 3) return null // avoid runaway recursion
+  if (el.dataset.imageId) return imgsrc(`cards/${el.dataset.imageId}.avif`)
 
-const cardCode = computed(() => {
-  if (card.value) {
-    const pattern = /cards\/(\d+)(_.*)?\.avif/
-    const match = card.value.match(pattern)
-    if (match) return match[1]
-  }
-  return null
-})
-
-const mutated = computed(() => {
-  if (card.value) {
-    const pattern = /cards\/\d+(_Mutated\d+)\.avif/
-    const match = card.value.match(pattern)
-    if (match) {
-      return match[1]
-    }
-  }
-  return ""
-})
-
-const customizationsCard = computed(() => {
-  if (cardCode.value) {
-    if (allCustomizations.includes(cardCode.value)) {
-      return imgsrc(`customizations/${cardCode.value}${mutated.value}.jpg`)
-    }
-  }
-  return null
-})
-
-const customizationTicks = computed(() => {
-  if (cardCode.value && customizations.value) {
-    const customizationObject: string[] = []
-
-    customizations.value.forEach((customization: [number, [number, string[]]]) => {
-        const firstValue = customization[0]
-        const secondValue = customization[1][0]
-        for (let i = 1; i <= secondValue; i++) {
-          const key = `customization-${cardCode.value}-${firstValue}-${i}`
-          customizationObject.push(key)
-        }
-    })
-
-    return customizationObject
-  }
-
-  return []
-})
-
-const customizationLabels = computed(() => {
-  if (cardCode.value && customizations.value) {
-    const customizationObject: [string, string][] = []
-
-    customizations.value.forEach((customization: [number, [number, string[]]]) => {
-      const firstValue = customization[0]
-      const thirdValue = customization[1][1]
-      for (let j = 0; j < thirdValue.length; j++) {
-        if (thirdValue[j].tag === "ChosenCard" || thirdValue[j].tag === "ChosenTrait") {
-          const key = `label-${cardCode.value}-${firstValue}-${j}`
-          customizationObject.push([key, thirdValue[j].contents])
-        }
-      }
-    })
-
-    return customizationObject
-  }
-
-  return []
-})
-
-const customizationSkills = computed(() => {
-  if (cardCode.value && customizations.value) {
-    const customizationObject: string[] = []
-
-    customizations.value.forEach((customization: [number, [number, string[]]]) => {
-      const thirdValue = customization[1][1]
-      for (let j = 0; j < thirdValue.length; j++) {
-        if (thirdValue[j].tag === "ChosenSkill") {
-          customizationObject.push(`skill-${cardCode.value}-${thirdValue[j].contents}`)
-        }
-      }
-    })
-
-    return customizationObject
-  }
-
-  return []
-})
-
-const customizationIndexes = computed(() => {
-  if (cardCode.value && customizations.value) {
-    const customizationObject: string[] = []
-
-    customizations.value.forEach((customization: [number, [number, string[]]]) => {
-      const firstValue = customization[0]
-      const thirdValue = customization[1][1]
-      for (let j = 0; j < thirdValue.length; j++) {
-        if (thirdValue[j].tag === "ChosenIndex") {
-          customizationObject.push(`index-${cardCode.value}-${firstValue}-${thirdValue[j].contents}`)
-        }
-      }
-    })
-
-    return customizationObject
-  }
-
-  return []
-})
-
-const customizations = computed(() => {
-  if (!hoveredElement.value) return null
-  const str = hoveredElement.value.dataset.customizations
-
-  if (!str) return null
-
-  let customizations
-  try { customizations = JSON.parse(str) } catch (e) { console.log(str); customizations = [] }
-  return customizations.length === 0 ? null : customizations
-})
-
-const crossedOff = computed(() => {
-  if (!hoveredElement.value) return null
-  const str = hoveredElement.value.dataset.crossedOff
-  if (!str) return null
-
-  let crossedOff
-  try { crossedOff = JSON.parse(str) } catch (e) { console.log(str); crossedOff = [] }
-  return crossedOff.length === 0 ? null : crossedOff
-})
-
-const fight = computed(() => {
-  if (!hoveredElement.value) return null
-  return hoveredElement.value.dataset.fight
-})
-
-const spentKeys = computed(() => {
-  if (!hoveredElement.value) return []
-  if (!hoveredElement.value.dataset) return []
-  if (!hoveredElement.value.dataset.spentKeys) return []
-  return JSON.parse(hoveredElement.value.dataset.spentKeys)
-})
-
-const health = computed(() => {
-  if (!hoveredElement.value) return null
-  return hoveredElement.value.dataset.health
-})
-
-const depth = computed(() => {
-  if (!hoveredElement.value) return null
-  const {depth} = hoveredElement.value.dataset
-  return depth ? parseInt(depth) : null
-})
-
-const damage = computed(() => {
-  if (!hoveredElement.value) return null
-  return hoveredElement.value.dataset.damage
-})
-
-const horror = computed(() => {
-  if (!hoveredElement.value) return null
-  return hoveredElement.value.dataset.horror
-})
-
-const victory = computed(() => {
-  if (!hoveredElement.value) return null
-  return hoveredElement.value.dataset.victory
-})
-
-const keywords = computed(() => {
-  if (!hoveredElement.value) return null
-  return hoveredElement.value.dataset.keywords
-})
-
-const evade = computed(() => {
-  if (!hoveredElement.value) return null
-  return hoveredElement.value.dataset.evade
-})
-
-const swarm = computed(() => {
-  if (!hoveredElement.value) return null
-  return hoveredElement.value.dataset.swarm
-})
-
-const upsideDown = computed(() => {
-  return hoveredElement.value?.classList.contains('Reversed') ?? false
-})
-
-const overlayPosition = computed(() => {
-  if (!hoveredElement.value) return { top: 0, left: 0 }
-  return getPosition(hoveredElement.value)
-})
-
-const reversed = computed(() => {
-  if (!hoveredElement.value) return null
-  return hoveredElement.value.dataset.victory
-})
-
-const overlay = computed(() => {
-  if (!hoveredElement.value) return null
-  return hoveredElement.value.dataset.overlay
-})
-
-const sideways = computed<boolean>(() => {
-  if (!hoveredElement.value) return false
-  if (hoveredElement.value?.classList.contains('exhausted')) return false
-  if (hoveredElement.value?.classList.contains('attached')) return false
-  if (hoveredElement.value?.classList.contains('card--sideways')) return true
-  if (hoveredElement.value?.classList.contains('sideways')) return true
-  // Default to sideways if the element is wider than it is tall (except for modifiers and sidebar span).
-  if (hoveredElement.value?.classList.contains('modifier')) return false // Ensure consistency with "SkillTest.vue" and verify potential cases in "Source.hs"
-  if (hoveredElement.value?.tagName.toLowerCase() === 'span') return false;
-  if (hoveredElement.value?.offsetWidth > hoveredElement.value.offsetHeight) return true
-
-  return false
-})
-
-const tarot = computed<boolean>(() => {
-  if (!hoveredElement.value) return false
-  return hoveredElement.value?.classList.contains('tarot-card')
-})
-
-const getPosition = (el: HTMLElement) => {
-  const rect = el.getBoundingClientRect()
-  const overlayWidth = 300 // Adjust this value if the overlay width changes
-
-  // Calculate the ratio based on the orientation of the card
-  const ratio = 0.705;
-
-  // Calculate the height of the overlay based on the ratio
-  const width = sideways.value ? (overlayWidth / ratio) : overlayWidth
-  const height = sideways.value ? overlayWidth : width / ratio
-
-  // Calculate the top position, ensuring it doesn't go off the screen
-  const top = rect.top + window.scrollY - 40
-  const bottom = top + height
-  const newTop = Math.max(0, bottom > window.innerHeight ? rect.bottom - height + window.scrollY - 40 : top)
-
-  // Calculate the left position, adjusting for rotated cards
-  const left = rect.left + window.scrollX + rect.width + 10
-
-  if (left + width >= window.innerWidth) {
-    return { top: newTop, left: rect.left - overlayWidth - 10 }
-  } else {
-    return { top: newTop, left: left }
-  }
-}
-
-const getImage = (el: HTMLElement): string | null => {
-  if (el.dataset.imageId) {
-    return imgsrc(`cards/${el.dataset.imageId}.avif`)
-  }
-
-  if (el instanceof HTMLImageElement && el.classList.contains('card') && !el.closest(".revelation")) {
-    return el.src
+  if (el instanceof HTMLImageElement && el.classList.contains('card') && !el.closest('.revelation')) {
+    return el.src || null
   }
 
   if (el instanceof HTMLDivElement && el.classList.contains('card')) {
-    return el.style.backgroundImage.slice(4, -1).replace(/"/g, "")
+    const bg = el.style.backgroundImage
+    if (!bg || bg === 'none') return null
+    // url("...") -> ...
+    return bg.slice(4, -1).replaceAll('"', '')
   }
 
   if (el.dataset.target) {
-    const target = document.querySelector(`[data-id="${el.dataset.target}"]`) as HTMLElement
-    return target ? getImage(target) : null
+    const target = document.querySelector<HTMLElement>(`[data-id="${el.dataset.target}"]`)
+    return target ? getImage(target, depth + 1) : null
   }
 
-  if (el.dataset.image) {
-    return el.dataset.image
-  }
-
+  if (el.dataset.image) return el.dataset.image
   return null
 }
 
-const dbCardName = ref<string>("")
-const dbCardTraits = ref<string>("")
-const dbCardText = ref<string>("")
-const dbCardCustomizationText = ref<string>("")
+const card = computed<string | null>(() => hoveredElement.value ? getImage(hoveredElement.value) : null)
 
-const dbCardData = computed(() : boolean => {
-  if (card.value) {
-    const pattern = /(\d+b?)(_.*)?\.avif/
-    const match = card.value.match(pattern)
-    if (!match) return false
-    const code = match[1]
-    
-    if (code) {
-      const language = localStorage.getItem('language') || 'en'
-      
-      if (imgsrc(`cards/${match[0]}`).search(language) < 0) {
-        const dbCard: ArkhamDBCard = store.getDbCard(code)
-        
-        if (dbCard) {
-          const needBack = (dbCard.code !== code)
-          
-          let localizedCardName = getCardName(dbCard, needBack)
-          let localizedCardTraits = getCardTraits(dbCard, needBack)
-          let localizedCardText = getCardText(dbCard, needBack)
-          let localizedCustomizationText = getCardCustomizationText(dbCard)
+const upsideDown = computed<boolean>(() => hoveredElement.value?.classList.contains('Reversed') ?? false)
+const reversed = computed<boolean>(() => hoveredElement.value?.classList.contains('reversed') ?? false)
 
-          dbCardName.value = localizedCardName ? `${(match[2])?"[Taboo] ": ""}${localizedCardName}` : ""
-          dbCardTraits.value = localizedCardTraits ? localizedCardTraits : ""
-          dbCardText.value = localizedCardText ? localizedCardText : ""
-          dbCardCustomizationText.value = localizedCustomizationText ? localizedCustomizationText : ""
-          
-          return !!localizedCardName || !!localizedCardTraits || !!localizedCardText || !!localizedCustomizationText
-        }
-      }
-    }
-  }
-
-  dbCardName.value = ""
-  dbCardTraits.value = ""
-  dbCardText.value = ""
-  dbCardCustomizationText.value = ""
-  
-  return false
+const sideways = computed<boolean>(() => {
+  const el = hoveredElement.value
+  if (!el) return false
+  if (el.classList.contains('exhausted')) return false
+  if (el.classList.contains('attached')) return false
+  if (el.classList.contains('card--sideways') || el.classList.contains('sideways')) return true
+  if (el.classList.contains('modifier')) return false
+  if (el.tagName.toLowerCase() === 'span') return false
+  // last resort: geometry (avoid frequent layout reads elsewhere)
+  return el.offsetWidth > el.offsetHeight
 })
 
+const overlayPosition = ref<{ top: number; left: number }>({ top: 0, left: 0 })
+let posRAF: number | null = null
+
+const getPosition = (el: HTMLElement): { top: number; left: number } => {
+  const rect = el.getBoundingClientRect()
+  const overlayWidth = 300
+  const ratio = 0.705
+  const width = sideways.value ? overlayWidth / ratio : overlayWidth
+  const height = sideways.value ? overlayWidth : width / ratio
+  const top = rect.top + window.scrollY - 40
+  const bottom = top + height
+  const newTop = Math.max(0, bottom > window.innerHeight ? rect.bottom - height + window.scrollY - 40 : top)
+  const left = rect.left + window.scrollX + rect.width + 10
+  return (left + width >= window.innerWidth)
+    ? { top: newTop, left: rect.left - overlayWidth - 10 }
+    : { top: newTop, left }
+}
+
+watch([hoveredElement, sideways], ([el]) => {
+  if (!el) { overlayPosition.value = { top: 0, left: 0 }; return }
+  if (posRAF !== null) cancelAnimationFrame(posRAF)
+  posRAF = requestAnimationFrame(() => { overlayPosition.value = getPosition(el as HTMLElement) })
+}, { flush: 'post' })
+
+/* ------------------------------- datasets API ------------------------------ */
+
+const ds = <T extends string = string>(key: T) =>
+  computed<string | null>(() => hoveredElement.value?.dataset?.[key as any] ?? null)
+
+const jsonDs = <T>(key: string): T => {
+  try { return JSON.parse(hoveredElement.value?.dataset?.[key] ?? '[]') as T }
+  catch { return [] as unknown as T }
+}
+
+const fight = ds('fight')
+const health = ds('health')
+const evade = ds('evade')
+const victory = ds('victory')
+const keywords = ds('keywords')
+const swarm = ds('swarm')
+
+const depth = computed<number | null>(() => {
+  const d = hoveredElement.value?.dataset?.depth
+  return d ? parseInt(d, 10) : null
+})
+
+const crossedOff = computed<string[] | null>(() => {
+  const arr = jsonDs<string[]>('crossedOff')
+  return arr.length ? arr : null
+})
+
+const spentKeys = computed<string[]>(() => jsonDs<string[]>('spentKeys'))
+
+const overlay = ds('overlay')
+
+/* ---------------------------- card code & variants ------------------------- */
+
+const allCustomizations = new Set([
+  '09021', '09022', '09023', '09040', '09041', '09042', '09059', '09060',
+  '09061', '09079', '09080', '09081', '09099', '09100', '09101', '09119'
+])
+
+const cardCode = computed<string | null>(() => {
+  if (!card.value) return null
+  const m = card.value.match(/cards\/(\d+)(_.*)?\.avif$/)
+  return m ? m[1] : null
+})
+
+const mutated = computed<string>(() => {
+  if (!card.value) return ''
+  const m = card.value.match(/cards\/\d+(_Mutated\d+)\.avif$/)
+  return m ? m[1] : ''
+})
+
+const customizationsCard = computed<string | null>(() => {
+  if (!cardCode.value) return null
+  if (!allCustomizations.has(cardCode.value)) return null
+  return imgsrc(`customizations/${cardCode.value}${mutated.value}.jpg`)
+})
+
+/* ------------------------------- customizations ---------------------------- */
+
+type ChoiceTag = 'ChosenCard' | 'ChosenTrait' | 'ChosenSkill' | 'ChosenIndex'
+type CustomizationEntry = [number, [number, Array<{ tag: ChoiceTag; contents: string }>]]
+
+const customizations = computed<CustomizationEntry[] | null>(() => {
+  const raw = hoveredElement.value?.dataset?.customizations
+  if (!raw) return null
+  try {
+    const parsed = JSON.parse(raw) as CustomizationEntry[]
+    return parsed?.length ? parsed : null
+  } catch {
+    console.log(raw)
+    return null
+  }
+})
+
+const customizationTicks = computed<string[]>(() => {
+  if (!cardCode.value || !customizations.value) return []
+  const out: string[] = []
+  for (const [first, [count]] of customizations.value) {
+    for (let i = 1; i <= count; i++) out.push(`customization-${cardCode.value}-${first}-${i}`)
+  }
+  return out
+})
+
+const customizationLabels = computed<[string, string][]>(() => {
+  if (!cardCode.value || !customizations.value) return []
+  const out: [string, string][] = []
+  for (const [first, [, arr]] of customizations.value) {
+    arr.forEach((a, j) => {
+      if (a.tag === 'ChosenCard' || a.tag === 'ChosenTrait') {
+        out.push([`label-${cardCode.value}-${first}-${j}`, a.contents])
+      }
+    })
+  }
+  return out
+})
+
+const customizationSkills = computed<string[]>(() => {
+  if (!cardCode.value || !customizations.value) return []
+  const out: string[] = []
+  for (const [, [, arr]] of customizations.value) {
+    arr.forEach(a => { if (a.tag === 'ChosenSkill') out.push(`skill-${cardCode.value}-${a.contents}`) })
+  }
+  return out
+})
+
+const customizationIndexes = computed<string[]>(() => {
+  if (!cardCode.value || !customizations.value) return []
+  const out: string[] = []
+  for (const [first, [, arr]] of customizations.value) {
+    arr.forEach(a => { if (a.tag === 'ChosenIndex') out.push(`index-${cardCode.value}-${first}-${a.contents}`) })
+  }
+  return out
+})
+
+/* --------------------------- DB card localization -------------------------- */
+
+const dbCardName = ref<string>('')
+const dbCardTraits = ref<string>('')
+const dbCardText = ref<string>('')
+const dbCardCustomizationText = ref<string>('')
+
+const dbCardData = computed<boolean>(() =>
+  !!(dbCardName.value || dbCardTraits.value || dbCardText.value || dbCardCustomizationText.value)
+)
+
+watchEffect(() => {
+  dbCardName.value = dbCardTraits.value = dbCardText.value = dbCardCustomizationText.value = ''
+
+  const src = card.value
+  if (!src) return
+  const m = src.match(/(\d+b?)(_.*)?\.avif$/)
+  if (!m) return
+  const code = m[1]
+  const tabooSuffix = m[2]
+  const language = localStorage.getItem('language') || 'en'
+
+  // If image already localized, skip DB text overlay
+  if (imgsrc(`cards/${m[0]}`).includes(language)) return
+
+  const dbCard = store.getDbCard(code)
+  if (!dbCard) return
+
+  const needBack = dbCard.code !== code
+
+  const name = getCardName(dbCard, needBack)
+  const traits = getCardTraits(dbCard, needBack)
+  const text = getCardText(dbCard, needBack)
+  const cust = getCardCustomizationText(dbCard)
+
+  dbCardName.value = name ? `${tabooSuffix ? '[Taboo] ' : ''}${name}` : ''
+  dbCardTraits.value = traits ?? ''
+  dbCardText.value = text ?? ''
+  dbCardCustomizationText.value = cust ?? ''
+})
+
+/* ----------------------------- text replacement ---------------------------- */
+
+const TOKEN_MAP: Record<string, string> = {
+  '\\[action\\]': '<span class="action-icon"></span>',
+  '\\[fast\\]': '<span class="fast-icon"></span>',
+  '\\[free\\]': '<span class="free-icon"></span>',
+  '\\[reaction\\]': '<span class="reaction-icon"></span>',
+  '\\[willpower\\]': '<span class="willpower-icon"></span>',
+  '\\[intellect\\]': '<span class="intellect-icon"></span>',
+  '\\[combat\\]': '<span class="combat-icon"></span>',
+  '\\[agility\\]': '<span class="agility-icon"></span>',
+  '\\[wild\\]': '<span class="wild-icon"></span>',
+  '\\[guardian\\]': '<span class="guardian-icon"></span>',
+  '\\[seeker\\]': '<span class="seeker-icon"></span>',
+  '\\[rogue\\]': '<span class="rogue-icon"></span>',
+  '\\[mystic\\]': '<span class="mystic-icon"></span>',
+  '\\[survivor\\]': '<span class="survivor-icon"></span>',
+  '\\[elder_sign\\]': '<span class="elder-sign"></span>',
+  '\\[auto_fail\\]': '<span class="auto-fail"></span>',
+  '\\[skull\\]': '<span class="skull-icon"></span>',
+  '\\[cultist\\]': '<span class="cultist-icon"></span>',
+  '\\[tablet\\]': '<span class="tablet-icon"></span>',
+  '\\[elder_thing\\]': '<span class="elder-thing-icon"></span>',
+  '\\[bless\\]': '<span class="bless-icon"></span>',
+  '\\[curse\\]': '<span class="curse-icon"></span>',
+  '\\[frost\\]': '<span class="frost-icon"></span>',
+  '\\[per_investigator\\]': '<span class="per-player"></span>',
+  '\\[seal_a\\]': '<span class="seal-a-icon"></span>',
+  '\\[seal_b\\]': '<span class="seal-b-icon"></span>',
+  '\\[seal_c\\]': '<span class="seal-c-icon"></span>',
+  '\\[seal_d\\]': '<span class="seal-d-icon"></span>',
+  '\\[seal_e\\]': '<span class="seal-e-icon"></span>',
+}
+const tokenRE = new RegExp(Object.keys(TOKEN_MAP).join('|'), 'g')
+
+const replaceText = (text: string): string => {
+  if (!text) return ''
+  return text
+    .replaceAll('[[', '<span style="font-style: italic; font-weight: bold">')
+    .replaceAll(']]', '</span>')
+    .replaceAll('<i>', '<span style="font-style: italic;">')
+    .replaceAll('</i>', '</span>')
+    .replace(tokenRE, (m) => TOKEN_MAP[m] ?? m)
+}
+
+/* ----------------------------- DB helpers (pure) --------------------------- */
+
 const getCardName = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
-  if (dbCard.name == dbCard.real_name) return null
-  
-  const cardName = ref<string>("")
-  if (needBack && dbCard.back_name) cardName.value = dbCard.back_name || null
-  else cardName.value = dbCard.name || null
-  
-  if (!cardName.value) return null
-  if (!needBack && dbCard.subname) cardName.value = `${cardName.value}: ${dbCard.subname}`
-  if ((dbCard.xp || 0) > 0) cardName.value = `${cardName.value} (${dbCard.xp})`
-  return cardName.value
+  if (dbCard.name === dbCard.real_name) return null
+  let name = needBack ? (dbCard.back_name || null) : (dbCard.name || null)
+  if (!name) return null
+  if (!needBack && dbCard.subname) name = `${name}: ${dbCard.subname}`
+  if ((dbCard.xp || 0) > 0) name = `${name} (${dbCard.xp})`
+  return name
 }
 
 const getCardTraits = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
-  if (dbCard.traits == dbCard.real_traits) return null
-  
-  if (needBack && dbCard.back_traits) return dbCard.back_traits || null
-  return dbCard.traits || null
+  if (dbCard.traits === dbCard.real_traits) return null
+  return needBack ? (dbCard.back_traits || null) : (dbCard.traits || null)
 }
 
 const getCardText = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
-  if (dbCard.text == dbCard.real_text) return null
-  
-  const targetText = ref<string>()
-  if (needBack) targetText.value = dbCard.back_text || null
-  else targetText.value = dbCard.text || null
-  
-  return targetText.value ? replaceText(targetText.value) : null
+  if (dbCard.text === dbCard.real_text) return null
+  const t = needBack ? (dbCard.back_text || null) : (dbCard.text || null)
+  return t ? replaceText(t) : null
 }
 
 const getCardCustomizationText = (dbCard: ArkhamDBCard): string | null => {
-  if (dbCard.text == dbCard.real_text) return null
-  return replaceText(dbCard.customization_text || "")
+  if (dbCard.text === dbCard.real_text) return null
+  return replaceText(dbCard.customization_text || '')
 }
 
-const replaceText = (text: string): string => {
-  if (!text) return ""
-  
-  return text.
-    replaceAll('[[', `<span style="font-style: italic; font-weight: bold">`).replaceAll(']]', '</span>').
-    replaceAll('<i>', `<span style="font-style: italic;">`).replaceAll('</i>', '</span>').
-    replaceAll('[action]', '<span class="action-icon"></span>').
-    replaceAll('[fast]', '<span class="fast-icon"></span>').
-    replaceAll('[free]', '<span class="free-icon"></span>').
-    replaceAll('[reaction]', '<span class="reaction-icon"></span>').
-    replaceAll('[willpower]', '<span class="willpower-icon"></span>').
-    replaceAll('[intellect]', '<span class="intellect-icon"></span>').
-    replaceAll('[combat]', '<span class="combat-icon"></span>').
-    replaceAll('[agility]', '<span class="agility-icon"></span>').
-    replaceAll('[wild]', '<span class="wild-icon"></span>').
-    replaceAll('[guardian]', '<span class="guardian-icon"></span>').
-    replaceAll('[seeker]', '<span class="seeker-icon"></span>').
-    replaceAll('[rogue]', '<span class="rogue-icon"></span>').
-    replaceAll('[mystic]', '<span class="mystic-icon"></span>').
-    replaceAll('[survivor]', '<span class="survivor-icon"></span>').
-    replaceAll('[elder_sign]', '<span class="elder-sign"></span>').
-    replaceAll('[auto_fail]', '<span class="auto-fail"></span>').
-    replaceAll('[skull]', '<span class="skull-icon"></span>').
-    replaceAll('[cultist]', '<span class="cultist-icon"></span>').
-    replaceAll('[tablet]', '<span class="tablet-icon"></span>').
-    replaceAll('[elder_thing]', '<span class="elder-thing-icon"></span>').
-    replaceAll('[bless]', '<span class="bless-icon"></span>').
-    replaceAll('[curse]', '<span class="curse-icon"></span>').
-    replaceAll('[frost]', '<span class="frost-icon"></span>').
-    replaceAll('[per_investigator]', '<span class="per-player"></span>').
-    replaceAll('[seal_a]', '<span class="seal-a-icon"></span>').
-    replaceAll('[seal_b]', '<span class="seal-b-icon"></span>').
-    replaceAll('[seal_c]', '<span class="seal-c-icon"></span>').
-    replaceAll('[seal_d]', '<span class="seal-d-icon"></span>').
-    replaceAll('[seal_e]', '<span class="seal-e-icon"></span>')
-}
 </script>
 
 <template>

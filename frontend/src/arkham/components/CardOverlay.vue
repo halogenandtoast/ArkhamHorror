@@ -10,77 +10,88 @@ const store = useDbCardStore()
 const cardOverlay = ref<HTMLElement | null>(null)
 const hoveredElement = ref<HTMLElement | null>(null)
 let canDisablePress = false
-onMounted(() => {
-  const handleMouseover = (event: Event) => {
-    const target = event.target as HTMLElement
-    if (target.classList.contains('dragging')) {
-      hoveredElement.value = null
-      return
-    }
-    if (target && (target.classList.contains('card') || target.dataset.imageId || target.dataset.target || target.dataset.image)) {
-      if (target.dataset.delay) {
-        setTimeout(() => {
-          hoveredElement.value = target
-        }, parseInt(target.dataset.delay))
-      } else {
+
+const isMobile = window.matchMedia('(hover: none) and (pointer: coarse)').matches
+
+const handleMouseover = (event: Event) => {
+  const target = event.target as HTMLElement
+  if (target.classList.contains('dragging')) {
+    hoveredElement.value = null
+    return
+  }
+  if (target && (target.classList.contains('card') || target.dataset.imageId || target.dataset.target || target.dataset.image)) {
+    if (target.dataset.delay) {
+      setTimeout(() => {
         hoveredElement.value = target
-      }
-      canDisablePress = true
+      }, parseInt(target.dataset.delay))
+    } else {
+      hoveredElement.value = target
     }
-    else{
-      if (!isMobile){
-        hoveredElement.value = null
-      }
-    }
+    canDisablePress = true
   }
-
-  const isMobile = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-  let pressTimer : number | undefined = undefined
-  const handlePress = (event: Event) => {
-    pressTimer = setTimeout(() => handleMouseover(event), 200)
-  }
-  const disablePress = () => {
-    if (canDisablePress) {
-      // disablePress is ready for next click, so reset the flag
-      canDisablePress = false
-    }
-    else{
+  else{
+    if (!isMobile){
       hoveredElement.value = null
-      clearTimeout(pressTimer)
     }
   }
-  const filterPress = () => {
-    if (hoveredElement.value?.classList.contains('in-hand')) {
-        hoveredElement.value = null
-    }
+}
+
+
+let pressTimer : number | undefined = undefined
+const handlePress = (event: Event) => {
+  pressTimer = setTimeout(() => handleMouseover(event), 200)
+}
+const disablePress = () => {
+  if (canDisablePress) {
+    // disablePress is ready for next click, so reset the flag
+    canDisablePress = false
+  }
+  else{
+    hoveredElement.value = null
     clearTimeout(pressTimer)
   }
-
-  const filterMove = () => {
-    if (hoveredElement.value?.classList.contains('card--locations')) {
-        hoveredElement.value = null
-    }
-    clearTimeout(pressTimer)
+}
+const filterPress = () => {
+  if (hoveredElement.value?.classList.contains('in-hand')) {
+      hoveredElement.value = null
   }
+  clearTimeout(pressTimer)
+}
 
+const filterMove = () => {
+  if (hoveredElement.value?.classList.contains('card--locations')) {
+      hoveredElement.value = null
+  }
+  clearTimeout(pressTimer)
+}
+
+const handleContext = (e) => {
+  if (e.target.tagName.toLowerCase() === 'input') return
+  e.preventDefault()
+}
+
+onMounted(() => {
   if (!isMobile) {
     document.addEventListener('mouseover', handleMouseover)
   } else {
-    document.addEventListener('contextmenu', (e) => {
-      if (e.target.tagName.toLowerCase() === 'input') return
-      e.preventDefault()
-    })
+    document.addEventListener('contextmenu', handleContext)
     document.addEventListener('touchstart', handlePress)
     document.addEventListener('touchmove', filterMove)
     document.addEventListener('touchend', filterPress)
     document.addEventListener('mouseup', disablePress)
   }
+})
 
-  onUnmounted(() => {
+onUnmounted(() => {
+  if (!isMobile) {
     document.removeEventListener('mouseover', handleMouseover)
+  } else {
+    document.removeEventListener('contextmenu', handleContext)
     document.removeEventListener('touchstart', handlePress)
-    document.removeEventListener('touchstart', disablePress)
-  })
+    document.removeEventListener('touchmove', filterMove)
+    document.removeEventListener('touchend', filterPress)
+    document.removeEventListener('mouseup', disablePress)
+  }
 })
 
 const card = computed(() => {
@@ -88,8 +99,6 @@ const card = computed(() => {
   if (hoveredElement.value.classList.contains('no-overlay')) return null
   return getImage(hoveredElement.value)
 })
-
-const isMobile = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
 const allCustomizations = ["09021", "09022", "09023", "09040", "09041", "09042", "09059", "09060", "09061", "09079", "09080", "09081", "09099", "09100", "09101", "09119"]
 

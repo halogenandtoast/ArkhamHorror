@@ -19,12 +19,13 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (ChosenRandomLocation, RevealLocation)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.SkillTest
-import Arkham.Trait hiding (Cultist, ElderThing)
+import Arkham.Trait hiding (Cultist, ElderThing, Expert)
 
 newtype UndimensionedAndUnseen = UndimensionedAndUnseen ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -181,8 +182,16 @@ instance RunMessage UndimensionedAndUnseen where
       drawAnotherChaosToken iid
       pure s
     ResolveChaosToken drawnToken Tablet iid -> do
-      builder <- makeEffectBuilder "02236" Nothing (ChaosTokenSource drawnToken) iid
-      push $ CreateEffect builder
+      broodOfYogSothoth <- getMatchingBroodOfYogSothoth EnemyWithAnyClues
+      chooseOrRunOneM iid do
+        if isHardExpert attrs
+          then do
+            labeled "Do not remove clues from Brood of Yog-Sothoth and fail skill test" failSkillTest
+          else do
+            labeled "Do not remove clues from Brood of Yog-Sothoth and treat as -4" do
+              withSkillTest \sid -> skillTestModifier sid Tablet drawnToken (ChangeChaosTokenModifier $ NegativeModifier 4)
+
+        targets broodOfYogSothoth (removeAllClues Tablet)
       pure s
     ResolveChaosToken _ ElderThing iid -> do
       withSkillTestAction \action -> do

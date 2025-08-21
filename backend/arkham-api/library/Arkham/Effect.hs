@@ -419,7 +419,7 @@ allEffects =
     , ("02190", SomeEffect defianceEffect)
     , ("02228", SomeEffect exposeWeakness1Effect)
     , ("02230", SomeEffect luckyDice2Effect)
-    , ("02236", SomeEffect undimensionedAndUnseenTabletToken)
+    , ("02236", SomeEffect $ noop "02236")
     , ("02246", SomeEffect $ noop "02246")
     , ("02270", SomeEffect $ noop "02270")
     , ("02323", SomeEffect yogSothothEffect)

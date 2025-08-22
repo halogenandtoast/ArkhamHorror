@@ -305,7 +305,7 @@ bloodOfThothLawIncarnate =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Item, Relic]
     , cdUnique = True
-    , cdSlots = [#arcane]
+    , cdSlots = [#accessory]
     }
 
 breathOfTheSleeper :: CardDef

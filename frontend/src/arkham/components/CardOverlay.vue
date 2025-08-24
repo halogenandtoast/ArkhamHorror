@@ -298,14 +298,15 @@ const customizationIndexes = computed<string[]>(() => {
 const dbCardName = ref<string>('')
 const dbCardTraits = ref<string>('')
 const dbCardText = ref<string>('')
+const dbCardFlavor = ref<string>('')
 const dbCardCustomizationText = ref<string>('')
 
 const dbCardData = computed<boolean>(() =>
-  !!(dbCardName.value || dbCardTraits.value || dbCardText.value || dbCardCustomizationText.value)
+  !!(dbCardName.value || dbCardTraits.value || dbCardText.value || dbCardCustomizationText.value || dbCardFlavor.value)
 )
 
 watchEffect(() => {
-  dbCardName.value = dbCardTraits.value = dbCardText.value = dbCardCustomizationText.value = ''
+  dbCardName.value = dbCardTraits.value = dbCardText.value = dbCardCustomizationText.value = dbCardFlavor.value = ''
 
   const src = card.value
   if (!src) return
@@ -326,48 +327,54 @@ watchEffect(() => {
   const name = getCardName(dbCard, needBack)
   const traits = getCardTraits(dbCard, needBack)
   const text = getCardText(dbCard, needBack)
+  const flavor = getCardFlavor(dbCard, needBack)
   const cust = getCardCustomizationText(dbCard)
 
   dbCardName.value = name ? `${tabooSuffix ? '[Taboo] ' : ''}${name}` : ''
   dbCardTraits.value = traits ?? ''
   dbCardText.value = text ?? ''
+  dbCardFlavor.value = flavor ?? ''
   dbCardCustomizationText.value = cust ?? ''
 })
 
 /* ----------------------------- text replacement ---------------------------- */
 
 const TOKEN_MAP: Record<string, string> = {
-  '\\[action\\]': '<span class="action-icon"></span>',
-  '\\[fast\\]': '<span class="fast-icon"></span>',
-  '\\[free\\]': '<span class="free-icon"></span>',
-  '\\[reaction\\]': '<span class="reaction-icon"></span>',
-  '\\[willpower\\]': '<span class="willpower-icon"></span>',
-  '\\[intellect\\]': '<span class="intellect-icon"></span>',
-  '\\[combat\\]': '<span class="combat-icon"></span>',
-  '\\[agility\\]': '<span class="agility-icon"></span>',
-  '\\[wild\\]': '<span class="wild-icon"></span>',
-  '\\[guardian\\]': '<span class="guardian-icon"></span>',
-  '\\[seeker\\]': '<span class="seeker-icon"></span>',
-  '\\[rogue\\]': '<span class="rogue-icon"></span>',
-  '\\[mystic\\]': '<span class="mystic-icon"></span>',
-  '\\[survivor\\]': '<span class="survivor-icon"></span>',
-  '\\[elder_sign\\]': '<span class="elder-sign"></span>',
-  '\\[auto_fail\\]': '<span class="auto-fail"></span>',
-  '\\[skull\\]': '<span class="skull-icon"></span>',
-  '\\[cultist\\]': '<span class="cultist-icon"></span>',
-  '\\[tablet\\]': '<span class="tablet-icon"></span>',
-  '\\[elder_thing\\]': '<span class="elder-thing-icon"></span>',
-  '\\[bless\\]': '<span class="bless-icon"></span>',
-  '\\[curse\\]': '<span class="curse-icon"></span>',
-  '\\[frost\\]': '<span class="frost-icon"></span>',
-  '\\[per_investigator\\]': '<span class="per-player"></span>',
-  '\\[seal_a\\]': '<span class="seal-a-icon"></span>',
-  '\\[seal_b\\]': '<span class="seal-b-icon"></span>',
-  '\\[seal_c\\]': '<span class="seal-c-icon"></span>',
-  '\\[seal_d\\]': '<span class="seal-d-icon"></span>',
-  '\\[seal_e\\]': '<span class="seal-e-icon"></span>',
+  '[action]': '<span class="action-icon"></span>',
+  '[fast]': '<span class="fast-icon"></span>',
+  '[free]': '<span class="free-icon"></span>',
+  '[reaction]': '<span class="reaction-icon"></span>',
+  '[willpower]': '<span class="willpower-icon"></span>',
+  '[intellect]': '<span class="intellect-icon"></span>',
+  '[combat]': '<span class="combat-icon"></span>',
+  '[agility]': '<span class="agility-icon"></span>',
+  '[wild]': '<span class="wild-icon"></span>',
+  '[guardian]': '<span class="guardian-icon"></span>',
+  '[seeker]': '<span class="seeker-icon"></span>',
+  '[rogue]': '<span class="rogue-icon"></span>',
+  '[mystic]': '<span class="mystic-icon"></span>',
+  '[survivor]': '<span class="survivor-icon"></span>',
+  '[elder_sign]': '<span class="elder-sign"></span>',
+  '[auto_fail]': '<span class="auto-fail"></span>',
+  '[skull]': '<span class="skull-icon"></span>',
+  '[cultist]': '<span class="cultist-icon"></span>',
+  '[tablet]': '<span class="tablet-icon"></span>',
+  '[elder_thing]': '<span class="elder-thing-icon"></span>',
+  '[bless]': '<span class="bless-icon"></span>',
+  '[curse]': '<span class="curse-icon"></span>',
+  '[frost]': '<span class="frost-icon"></span>',
+  '[per_investigator]': '<span class="per-player"></span>',
+  '[seal_a]': '<span class="seal-a-icon"></span>',
+  '[seal_b]': '<span class="seal-b-icon"></span>',
+  '[seal_c]': '<span class="seal-c-icon"></span>',
+  '[seal_d]': '<span class="seal-d-icon"></span>',
+  '[seal_e]': '<span class="seal-e-icon"></span>',
 }
-const tokenRE = new RegExp(Object.keys(TOKEN_MAP).join('|'), 'g')
+
+function escapeRegExp(string: string): string {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); 
+}
+const tokenRE = new RegExp(Object.keys(TOKEN_MAP).map(escapeRegExp).join('|'), 'g')
 
 const replaceText = (text: string): string => {
   if (!text) return ''
@@ -382,27 +389,30 @@ const replaceText = (text: string): string => {
 /* ----------------------------- DB helpers (pure) --------------------------- */
 
 const getCardName = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
-  if (dbCard.name === dbCard.real_name) return null
   let name = needBack ? (dbCard.back_name || null) : (dbCard.name || null)
   if (!name) return null
   if (!needBack && dbCard.subname) name = `${name}: ${dbCard.subname}`
   if ((dbCard.xp || 0) > 0) name = `${name} (${dbCard.xp})`
+  if ((dbCard.is_unique)) name = `*${name}`
   return name
 }
 
 const getCardTraits = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
-  if (dbCard.traits === dbCard.real_traits) return null
   return needBack ? (dbCard.back_traits || null) : (dbCard.traits || null)
 }
 
 const getCardText = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
-  if (dbCard.text === dbCard.real_text) return null
   const t = needBack ? (dbCard.back_text || null) : (dbCard.text || null)
   return t ? replaceText(t) : null
 }
 
+const getCardFlavor = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
+  const t = needBack ? (dbCard.back_flavor || null) : (dbCard.flavor || null)
+  return t ? replaceText(t) : null
+}
+
+
 const getCardCustomizationText = (dbCard: ArkhamDBCard): string | null => {
-  if (dbCard.text === dbCard.real_text) return null
   return replaceText(dbCard.customization_text || '')
 }
 
@@ -439,6 +449,8 @@ const horror = computed<number | null>(() => {
       <p v-if="dbCardTraits"><span style="font-style: italic;">{{ dbCardTraits }}</span></p>
       <p v-if="dbCardText"><br></p>
       <p v-if="dbCardText" v-html="dbCardText" style="font-size: 0.85em;"></p>
+      <p v-if="dbCardFlavor"><br></p>
+      <p v-if="dbCardFlavor" v-html="dbCardFlavor" style="font-size: 0.75em; font-style: italic;"></p>
     </div>
     <span class="swarm" v-if="swarm"><BugAntIcon aria-hidden="true" /></span>
     <span class="fight" v-if="fight">{{ fight }}</span>

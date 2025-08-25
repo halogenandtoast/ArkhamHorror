@@ -4498,6 +4498,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTestOrAbility)
         )
       & (usedAbilitiesL %~ map (\u -> u {usedThisWindow = False}))
+  AfterRevelation {} -> do
+    pure
+      $ a
+      & ( usedAbilitiesL
+            %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTestOrAbility)
+        )
+      & (usedAbilitiesL %~ map (\u -> u {usedThisWindow = False}))
   PerformEnemyAttack eid -> do
     withMaybeField Field.EnemyAttacking eid \details -> do
       when (any (isTarget a) details.targets) do

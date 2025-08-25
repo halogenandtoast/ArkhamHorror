@@ -17,7 +17,6 @@ import Entity.Arkham.Step
 import Import hiding (delete, on, update, (<.), (=.), (==.), (>=.))
 import Json
 import Network.HTTP.Types.Status qualified as Status
-import Safe (fromJustNote)
 
 jsonError :: Text -> Handler a
 jsonError msg = sendStatusJSON Status.status400 (object ["error" .= msg])
@@ -114,7 +113,7 @@ stepBack userId gameId current@ArkhamGame {..} = do
 
 putApiV1ArkhamGameUndoR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoR gameId = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  userId <- getRequestUserId
   game <- runDB $ get404 gameId
   ArkhamGame {..} <- stepBack userId gameId game
   writeChannel <- socketChannel <$> getRoom gameId
@@ -127,7 +126,7 @@ putApiV1ArkhamGameUndoR gameId = do
 
 putApiV1ArkhamGameUndoScenarioR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoScenarioR gameId = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  userId <- getRequestUserId
   game <- runDB $ get404 gameId
 
   let n = gameScenarioSteps (arkhamGameCurrentData game) - 1

@@ -157,7 +157,9 @@ runGameMessage msg g = case msg of
     pure g
   SetGameState s -> pure $ g & gameStateL .~ s
   ChoosingDecks -> pure $ g & entitiesL . investigatorsL .~ mempty & gameStateL .~ IsChooseDecks (g ^. playersL)
+  UpgradingDecks -> pure $ g & gameStateL .~ IsChooseDecks (g ^. playersL)
   DoneChoosingDecks -> pure $ g & gameStateL .~ IsActive
+  DoneUpgradingDecks -> pure $ g & gameStateL .~ IsActive
   IncreaseCustomization iid cardCode customization choices -> do
     cards <- select $ OwnedBy (InvestigatorWithId iid) <> basic (CardWithCardCode cardCode)
 
@@ -765,8 +767,9 @@ runGameMessage msg g = case msg of
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   FoundCards cards -> pure $ g & foundCardsL .~ cards
-  ObtainCard cardId -> pure $
-    g
+  ObtainCard cardId ->
+    pure
+      $ g
       & (foundCardsL . each %~ deleteFirstMatch ((== cardId) . toCardId))
       . (focusedCardsL %~ map (filter ((/= cardId) . toCardId)))
   AddFocusedToTopOfDeck iid EncounterDeckTarget cardId ->
@@ -1624,9 +1627,19 @@ runGameMessage msg g = case msg of
             askMap
       _ -> push $ AskMap askMap
     pure g
+  AskPlayer (Ask iid1 ChooseUpgradeDeck) -> do
+    peekMessage >>= \case
+      Just (AskPlayer (Ask iid2 ChooseUpgradeDeck)) -> do
+        _ <- popMessage
+        push
+          $ AskPlayer
+          $ AskMap
+          $ mapFromList
+            [(iid1, ChooseUpgradeDeck), (iid2, ChooseUpgradeDeck)]
+      _ -> push (Ask iid1 ChooseUpgradeDeck)
+    pure g
   AskPlayer (Ask iid1 (ChooseOne c1)) -> do
-    mNextMessage <- peekMessage
-    case mNextMessage of
+    peekMessage >>= \case
       Just (AskPlayer (Ask iid2 (ChooseOne c2))) -> do
         _ <- popMessage
         push
@@ -1637,8 +1650,7 @@ runGameMessage msg g = case msg of
       _ -> push (chooseOne iid1 c1)
     pure g
   AskPlayer (Ask iid1 (PlayerWindowChooseOne c1)) -> do
-    mNextMessage <- peekMessage
-    case mNextMessage of
+    peekMessage >>= \case
       Just (AskPlayer (Ask iid2 (PlayerWindowChooseOne c2))) -> do
         _ <- popMessage
         push
@@ -1649,8 +1661,20 @@ runGameMessage msg g = case msg of
       _ -> push (Ask iid1 $ PlayerWindowChooseOne c1)
     pure g
   AskPlayer (AskMap askMap) -> do
-    mNextMessage <- peekMessage
-    case mNextMessage of
+    peekMessage >>= \case
+      Just (AskPlayer (Ask iid2 ChooseUpgradeDeck)) -> do
+        _ <- popMessage
+        push
+          $ AskPlayer
+          $ AskMap
+          $ insertWith
+            ( \x y -> case (x, y) of
+                (ChooseUpgradeDeck, ChooseUpgradeDeck) -> ChooseUpgradeDeck
+                _ -> error "unhandled"
+            )
+            iid2
+            ChooseUpgradeDeck
+            askMap
       Just (AskPlayer (Ask iid2 (ChooseOne c2))) -> do
         _ <- popMessage
         push
@@ -1680,8 +1704,7 @@ runGameMessage msg g = case msg of
       _ -> push $ AskMap askMap
     pure g
   HandleGroupTarget k t msgs -> do
-    mNextMessage <- peekMessage
-    case mNextMessage of
+    peekMessage >>= \case
       Just (HandleGroupTarget k' t' msgs') | k == k' -> do
         _ <- popMessage
         push $ HandleGroupTargets NoAutoStatus k (mapFromList [(t, msgs), (t', msgs')])
@@ -1691,8 +1714,7 @@ runGameMessage msg g = case msg of
       _ -> pushAll msgs
     pure g
   HandleGroupTargets st k targetMap -> do
-    mNextMessage <- peekMessage
-    case mNextMessage of
+    peekMessage >>= \case
       Just (HandleGroupTarget k' t' msgs') | k == k' -> do
         _ <- popMessage
         push $ HandleGroupTargets st k (insertMap t' msgs' targetMap)
@@ -1735,9 +1757,8 @@ runGameMessage msg g = case msg of
     pure g
   EnemyWillAttack details -> do
     modifiers' <- maybe (pure []) getModifiers details.singleTarget
-    cannotBeAttacked <- flip anyM modifiers' $ \case
-      CannotBeAttackedBy matcher ->
-        elem (attackEnemy details) <$> select matcher
+    cannotBeAttacked <- flip anyM modifiers' \case
+      CannotBeAttackedBy matcher -> matches details.enemy matcher
       _ -> pure False
     unless cannotBeAttacked do
       mNextMessage <- peekMessage

@@ -54,7 +54,6 @@ import Import hiding (delete, exists, on, (==.))
 import Import qualified as P
 import Json
 import Network.WebSockets (ConnectionException)
-import Safe (fromJustNote)
 import UnliftIO.Exception hiding (Handler)
 import Yesod.WebSockets
 
@@ -99,24 +98,25 @@ data GetGameJson = GetGameJson
   deriving stock (Show, Generic)
   deriving anyclass ToJSON
 
-getApiV1ArkhamGameR :: HasCallStack => ArkhamGameId -> Handler GetGameJson
+getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameR gameId = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  userId <- getRequestUserId
   webSockets $ gameStream (Just userId) gameId
-  ge <- runDB $ get404 gameId
-  Entity playerId _ <- runDB $ getBy404 (UniquePlayer userId gameId)
-  let Game {..} = arkhamGameCurrentData ge
-  gameLog <- runDB $ getGameLog gameId Nothing
-  let
-    player =
-      case arkhamGameMultiplayerVariant ge of
-        WithFriends -> coerce playerId
-        Solo -> gameActivePlayerId
-  pure
-    $ GetGameJson
-      (Just player)
-      (arkhamGameMultiplayerVariant ge)
-      (PublicGame gameId (arkhamGameName ge) (gameLogToLogEntries gameLog) (arkhamGameCurrentData ge))
+  runDB do
+    ge <- get404 gameId
+    Entity playerId _ <- getBy404 (UniquePlayer userId gameId)
+    let Game {..} = arkhamGameCurrentData ge
+    gameLog <- getGameLog gameId Nothing
+    let
+      player =
+        case arkhamGameMultiplayerVariant ge of
+          WithFriends -> coerce playerId
+          Solo -> gameActivePlayerId
+    pure
+      $ GetGameJson
+        (Just player)
+        (arkhamGameMultiplayerVariant ge)
+        (PublicGame gameId (arkhamGameName ge) (gameLogToLogEntries gameLog) (arkhamGameCurrentData ge))
 
 getApiV1ArkhamGameSpectateR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameSpectateR gameId = do
@@ -176,8 +176,8 @@ instance ToJSON GameDetailsEntry where
 
 getApiV1ArkhamGamesR :: Handler [GameDetailsEntry]
 getApiV1ArkhamGamesR = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
-  games <- runDB $ select $ do
+  userId <- getRequestUserId
+  games <- runDB $ select do
     (players :& games) <-
       distinct
         $ from
@@ -191,7 +191,7 @@ getApiV1ArkhamGamesR = do
   let
     campaignOtherInvestigators j = case parse (withObject "" (.: "otherCampaignAttrs")) j of
       Error _ -> mempty
-      Success (attrs :: CampaignAttrs) -> map (\iid -> lookupInvestigator iid (PlayerId nil)) $ Map.keys attrs.decks
+      Success (attrs :: CampaignAttrs) -> map (`lookupInvestigator` (PlayerId nil)) $ Map.keys attrs.decks
 
   pure $ flip map games \(Entity gameId game) -> do
     case fromJSON @Game (arkhamGameRawCurrentData game) of
@@ -240,7 +240,7 @@ data CreateGamePost = CreateGamePost
 -- | New Game
 postApiV1ArkhamGamesR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesR = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  userId <- getRequestUserId
   CreateGamePost {..} <- requireCheckJsonBody
 
   newGameSeed <- liftIO getRandom
@@ -276,7 +276,7 @@ postApiV1ArkhamGamesR = do
 
 putApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameR gameId = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  userId <- getRequestUserId
   response <- requireCheckJsonBody
   writeChannel <- (.channel) <$> getRoom gameId
   updateGame response gameId userId writeChannel
@@ -389,18 +389,18 @@ handleMessageLog logRef writeChannel msg = liftIO $ do
 -- TODO: Make this a websocket message
 putApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameRawR gameId = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  userId <- getRequestUserId
   response <- requireCheckJsonBody @_ @RawGameJsonPut
   writeChannel <- (.channel) <$> getRoom gameId
   updateGame (Raw response.gameMessage) gameId userId writeChannel
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
-  runDB $ delete $ do
+  userId <- getRequestUserId
+  runDB $ delete do
     games <- from $ table @ArkhamGame
     where_ $ games.id ==. val gameId
-    where_ $ exists $ do
+    where_ $ exists do
       players <- from $ table @ArkhamPlayer
       where_ $ players.arkhamGameId ==. games.id
       where_ $ players.userId ==. val userId

@@ -1167,7 +1167,9 @@ data Message
   | AddDeckBuildingAdjustment InvestigatorId DeckBuildingAdjustment
   | IncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]
   | ChoosingDecks
+  | UpgradingDecks
   | DoneChoosingDecks
+  | DoneUpgradingDecks
   | SetPartnerStatus CardCode PartnerStatus
   | HandleGroupTarget GroupKey Target [Message]
   | HandleGroupTargets AutoStatus GroupKey (Map Target [Message])
@@ -1448,8 +1450,13 @@ chooseAmountsLabeled pid title label total choiceMap (toTarget -> target) = do
   amountChoices rs = map toAmountChoice (zip rs choiceMap)
   toAmountChoice (choiceId, (l, (m, n))) = AmountChoice choiceId l m n
 
-chooseUpgradeDeck :: PlayerId -> Message
-chooseUpgradeDeck pid = Ask pid ChooseUpgradeDeck
+chooseUpgradeDecks :: [PlayerId] -> Message
+chooseUpgradeDecks pids = Run
+  [ SetGameState (IsChooseDecks pids) 
+  , UpgradingDecks
+  , AskMap $ mapFromList $ map (,ChooseUpgradeDeck) pids
+  , DoneUpgradingDecks
+  ]
 
 chooseDecks :: [PlayerId] -> Message
 chooseDecks pids =

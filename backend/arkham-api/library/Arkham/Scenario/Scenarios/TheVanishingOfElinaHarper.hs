@@ -63,7 +63,7 @@ instance RunMessage TheVanishingOfElinaHarper where
       story $ i18nWithTitle "intro2"
       standalone <- getIsStandalone
       unless standalone do
-        eachInvestigator chooseUpgradeDeck
+        chooseUpgradeDecks
         push ReloadDecks
       pure s
     StandaloneSetup -> do

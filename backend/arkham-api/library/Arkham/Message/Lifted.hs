@@ -2948,10 +2948,8 @@ shuffleSetAsideIntoScenarioDeck key matcher = do
 setScenarioDeck :: ReverseQueue m => ScenarioDeckKey -> [Card] -> m ()
 setScenarioDeck key cards = push $ Msg.SetScenarioDeck key cards
 
-chooseUpgradeDeck :: ReverseQueue m => InvestigatorId -> m ()
-chooseUpgradeDeck iid = do
-  pid <- getPlayer iid
-  push $ Ask pid ChooseUpgradeDeck
+chooseUpgradeDecks :: ReverseQueue m => m ()
+chooseUpgradeDecks = push . Msg.chooseUpgradeDecks =<< allPlayers
 
 placeCluesOnLocation
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()

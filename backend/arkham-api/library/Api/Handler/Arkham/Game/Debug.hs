@@ -26,12 +26,12 @@ import UnliftIO.Exception (catch, try)
 
 getApiV1ArkhamGameExportR :: ArkhamGameId -> Handler ArkhamExport
 getApiV1ArkhamGameExportR gameId = do
-  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
+  _ <- getRequestUserId
   generateExport gameId
 
 getApiV1ArkhamGameFullExportR :: ArkhamGameId -> Handler ArkhamExport
 getApiV1ArkhamGameFullExportR gameId = do
-  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
+  _ <- getRequestUserId
   generateFullExport gameId
 
 postApiV1ArkhamGamesFixR :: Handler ()
@@ -63,7 +63,7 @@ getApiV1ArkhamGameReloadR gameId = do
 postApiV1ArkhamGamesImportR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesImportR = do
   -- Convert to multiplayer solitaire
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  userId <- getRequestUserId
   eExportData :: Either String ArkhamExport <-
     fmap eitherDecodeStrict'
       . fileSourceByteString

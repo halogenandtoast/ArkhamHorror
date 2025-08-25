@@ -1,7 +1,7 @@
-{-# LANGUAGE PackageImports #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PackageImports #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -9,33 +9,31 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE NoStrictData #-}
 {-# OPTIONS_GHC -Wno-missing-deriving-strategies #-}
-{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 
 module Foundation where
 
 import Import.NoFoundation
 
 import Control.Exception.Annotated qualified as UE
-import Control.Monad.Catch qualified as Catch
 import Control.Exception.Annotated.UnliftIO qualified as AnnotatedIO
-import Control.Monad.Catch
-  ( MonadThrow(..)
-  , MonadCatch(..)
-  , MonadMask(..)
-  , generalBracket
-  )
+import Control.Monad.Catch (
+  MonadCatch (..),
+  MonadMask (..),
+  MonadThrow (..),
+  generalBracket,
+ )
+import Control.Monad.Catch qualified as Catch
 import UnliftIO.Exception qualified as UnliftIO
 
-import "bugsnag-hs" Network.Bugsnag qualified as Bugsnag (Exception)
-import Network.Bugsnag.Exception (AsException(..))
-import Network.Bugsnag.Yesod (bugsnagYesodMiddleware)
-import Data.Bugsnag.Settings qualified as Bugsnag
-import "bugsnag" Network.Bugsnag qualified as Bugsnag
+import Arkham.Card.CardCode
 import Auth.JWT qualified as JWT
 import Control.Monad.Logger (LogSource)
 import Data.Aeson (Result (Success), fromJSON)
+import Data.Bugsnag.Settings qualified as Bugsnag
 import Data.ByteString.Lazy qualified as BSL
+import Data.Traversable (for)
 import Database.Persist.Sql (
   ConnectionPool,
   SqlBackend,
@@ -51,13 +49,14 @@ import Database.Redis (
   removeChannels,
  )
 import GHC.Records
+import Network.Bugsnag.Exception (AsException (..))
+import Network.Bugsnag.Yesod (bugsnagYesodMiddleware)
 import Network.HTTP.Client.Conduit (HasHttpManager (..), Manager)
+import Orphans ()
 import Yesod.Core.Types (Logger)
 import Yesod.Core.Unsafe qualified as Unsafe
-
-import Arkham.Card.CardCode
-
-import Orphans ()
+import "bugsnag" Network.Bugsnag qualified as Bugsnag
+import "bugsnag-hs" Network.Bugsnag qualified as Bugsnag (Exception)
 
 data Room = Room
   { socketChannel :: TChan BSL.ByteString
@@ -214,12 +213,13 @@ instance CanRunDB (HandlerFor App) where
 newtype ExceptionViaIO m a = ExceptionViaIO (m a)
   deriving newtype (Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
 
--- | A variant of 'throwWithCallStackIO' that uses 'MonadIO' instead of
--- 'MonadThrow'.
-throwWithCallStackIO ::
-  (MonadIO m, Exception e) =>
-  e ->
-  m a
+{- | A variant of 'throwWithCallStackIO' that uses 'MonadIO' instead of
+'MonadThrow'.
+-}
+throwWithCallStackIO
+  :: (MonadIO m, Exception e)
+  => e
+  -> m a
 throwWithCallStackIO = liftIO . withFrozenCallStack UE.throwWithCallStack
 
 instance MonadIO m => MonadThrow (ExceptionViaIO m) where
@@ -236,12 +236,12 @@ instance MonadUnliftIO m => MonadMask (ExceptionViaIO m) where
 deriving via ExceptionViaIO (HandlerFor app) instance MonadMask (HandlerFor app)
 deriving via ExceptionViaIO (HandlerFor app) instance MonadCatch (HandlerFor app)
 
-generalBracketIO ::
-  (MonadUnliftIO m) =>
-  m a ->
-  (a -> Catch.ExitCase b -> m c) ->
-  (a -> m b) ->
-  m (b, c)
+generalBracketIO
+  :: MonadUnliftIO m
+  => m a
+  -> (a -> Catch.ExitCase b -> m c)
+  -> (a -> m b)
+  -> m (b, c)
 generalBracketIO acquire release action = do
   UnliftIO.mask \restore -> do
     x <- acquire
@@ -301,10 +301,10 @@ tokenToUserId token = do
 getJwtSecret :: HandlerFor App Text
 getJwtSecret = getsYesod $ appJwtSecret . appSettings
 
-getRequestUserId :: Handler (Maybe UserId)
+getRequestUserId :: Handler UserId
 getRequestUserId = do
   mToken <- JWT.lookupToken
-  liftHandler $ maybe (pure Nothing) tokenToUserId mToken
+  maybe notAuthenticated pure . join =<< for mToken tokenToUserId
 
 getEntity404
   :: (PersistEntity record, PersistEntityBackend record ~ SqlBackend) => Key record -> DB (Entity record)

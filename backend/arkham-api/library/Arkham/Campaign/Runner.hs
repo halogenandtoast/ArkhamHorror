@@ -64,7 +64,9 @@ defaultCampaignRunner msg a = case msg of
     -- between two scenarios
     killed <- select KilledInvestigator
     insane <- select InsaneInvestigator
-    for_ (nub $ killed <> insane) (push . chooseUpgradeDeck <=< getPlayer)
+    case nub (killed <> insane) of
+      [] -> pure ()
+      xs -> push . chooseUpgradeDecks =<< traverse getPlayer xs
     pure a
   CampaignStep (ScenarioStep sid) -> do
     pushAll [ResetInvestigators, ResetGame, StartScenario sid]
@@ -73,7 +75,7 @@ defaultCampaignRunner msg a = case msg of
   CampaignStep (UpgradeDeckStep _) -> do
     investigators <- select InvestigatorCanAddCardsToDeck
     players <- traverse getPlayer investigators
-    pushAll $ ResetGame : map chooseUpgradeDeck players <> [FinishedUpgradingDecks]
+    pushAll $ ResetGame : chooseUpgradeDecks players : [FinishedUpgradingDecks]
     pure a
   SetChaosTokensForScenario -> a <$ push (SetChaosTokens $ campaignChaosBag $ toAttrs a)
   AddCampaignCardToDeck iid _ card -> do

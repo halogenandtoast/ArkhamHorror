@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Decklist (module Arkham.Decklist, module Arkham.Decklist.Type) where
 
 import Arkham.Prelude hiding (try)
@@ -81,6 +82,10 @@ decklistInvestigatorId decklist = fromMaybe (investigator_code decklist) do
   meta' <- meta decklist
   ArkhamDBDecklistMeta {alternate_front} <- decode (encodeUtf8 $ fromStrict meta')
   guard (alternate_front /= Just "") *> alternate_front
+
+instance HasField "investigator" ArkhamDBDecklist InvestigatorId where
+  getField = decklistInvestigatorId
+
 
 loadDecklistCards
   :: CardGen m => (ArkhamDBDecklist -> Map CardCode Int) -> ArkhamDBDecklist -> m [PlayerCard]

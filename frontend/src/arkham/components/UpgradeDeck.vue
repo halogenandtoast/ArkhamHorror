@@ -15,7 +15,11 @@ export interface Props {
   playerId: string
 }
 
-const question = computed(() => props.game.question[props.playerId])
+const question = computed(() => {
+  const val = props.game.question[props.playerId]
+  console.log(val)
+  return val
+})
 const questionLabel = computed(() => {
   if (question.value)
     return question.value.tag === 'QuestionLabel' ? question.value.label : null
@@ -307,7 +311,7 @@ const tabooList = function (investigator: Investigator) {
                 <template v-if="fetching">
                   <p>{{ $t('upgrade.fetching', {deckSource: deckSource}) }}</p>
                 </template>
-                <template v-else>
+                <template v-else-if="question">
                   <template v-if="investigatorId == originalInvestigatorId && deckSource">
                     <p>{{ $t('upgrade.directlyUpdateContent', {deckSource: deckSource}) }}</p>
                     <div class="buttons">
@@ -330,6 +334,9 @@ const tabooList = function (investigator: Investigator) {
                     <button class="skip" @click.prevent="skipping = true">{{ $t('upgrade.continueWithoutUpgrading') }}</button>
                   </div>
                 </template>
+                <div v-else>
+                  <p>Waiting on other players...</p>
+                </div>
               </div>
             </div>
           </template>

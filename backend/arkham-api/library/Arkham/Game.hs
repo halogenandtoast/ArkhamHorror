@@ -5105,7 +5105,7 @@ runMessages mLogger = do
               -- if we are choosing decks, we do not want to clobber other ChooseDeck
               moreChooseDecks <-
                 isJust <$> findFromQueue \case
-                  AskMap askMap | not (null askMap) -> ChooseDeck `elem` Map.elems askMap
+                  AskMap askMap | not (null askMap) -> any (`elem` Map.elems askMap) [ChooseDeck, ChooseUpgradeDeck]
                   _ -> False
               if isChooseDecks (gameGameState g) && moreChooseDecks
                 then do

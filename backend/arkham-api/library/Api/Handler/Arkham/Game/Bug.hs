@@ -7,12 +7,11 @@ import Crypto.Hash.SHA256 qualified as SHA256
 import Data.Aeson (encode)
 import Data.ByteString.Base16 qualified as B16
 import Import hiding ((==.))
-import Safe (fromJustNote)
 import UnliftIO.Exception (catch)
 
 postApiV1ArkhamGameBugR :: ArkhamGameId -> Handler Text
 postApiV1ArkhamGameBugR gameId = do
-  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
+  _ <- getRequestUserId
   export <- generateExport gameId
 
   let jsonBody = encode export

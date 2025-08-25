@@ -149,7 +149,7 @@ function runValidations() {
 
 async function createDeck() {
   errors.value = []
-  if (deckId.value && deckName.value && valid.value && deckUrl.value) {
+  if (deckId.value && deckName.value && valid.value) {
     newDeck(deckId.value, deckName.value, deckUrl.value, deckList.value).then((newDeck) => {
       deckId.value = null
       deckName.value = null

@@ -12,7 +12,6 @@ import Import hiding (delete, on, update, (=.), (==.))
 
 import Api.Arkham.Helpers
 import Arkham.Card.CardCode
-import Arkham.Card.CardDef
 import Arkham.Classes.HasQueue
 import Arkham.Decklist
 import Arkham.Game
@@ -27,20 +26,19 @@ import Control.Monad.Random (mkStdGen)
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.Time.Clock
-import Database.Esqueleto.Experimental hiding (isNothing)
+import Database.Esqueleto.Experimental hiding (isNothing, (<&>))
 import Entity.Arkham.Step
 import Json hiding (Success)
 import Network.HTTP.Conduit (simpleHttp)
 import Network.HTTP.Types
 import Network.HTTP.Types.Status qualified as Status
-import Safe (fromJustNote)
 
 getApiV1ArkhamDecksR :: Handler [Entity ArkhamDeck]
 getApiV1ArkhamDecksR = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
-  runDB $ select $ do
+  userId <- getRequestUserId
+  runDB $ select do
     decks <- from $ table @ArkhamDeck
-    where_ $ decks ^. ArkhamDeckUserId ==. val userId
+    where_ $ decks.userId ==. val userId
     pure decks
 
 data CreateDeckPost = CreateDeckPost
@@ -74,7 +72,7 @@ instance ToJSON DeckError where
   toJSON = genericToJSON $ defaultOptions {tagSingleConstructors = True}
 
 toDeckErrors :: ArkhamDBDecklist -> [DeckError]
-toDeckErrors decklist = flip mapMaybe cardCodes $ \cardCode ->
+toDeckErrors decklist = flip mapMaybe cardCodes \cardCode ->
   maybe
     (Just $ UnimplementedCard cardCode)
     (const Nothing)
@@ -84,7 +82,7 @@ toDeckErrors decklist = flip mapMaybe cardCodes $ \cardCode ->
 
 postApiV1ArkhamDecksR :: Handler (Entity ArkhamDeck)
 postApiV1ArkhamDecksR = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  userId <- getRequestUserId
   postData <- requireCheckJsonBody
   let deck = fromPostData userId postData
   case toDeckErrors (arkhamDeckList deck) of
@@ -93,7 +91,7 @@ postApiV1ArkhamDecksR = do
 
 postApiV1ArkhamDecksValidateR :: Handler ()
 postApiV1ArkhamDecksValidateR = do
-  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
+  _ <- getRequestUserId
   decklist <- requireCheckJsonBody
   case toDeckErrors decklist of
     [] -> sendStatusJSON status200 ()
@@ -101,38 +99,32 @@ postApiV1ArkhamDecksValidateR = do
 
 putApiV1ArkhamGameDecksR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameDecksR gameId = do
-  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
+  userId <- getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
   mLastStep <- runDB $ getBy (UniqueStep gameId arkhamGameStep)
   postData <- requireCheckJsonBody
-  let
-    Game {..} = arkhamGameCurrentData
-    investigatorId = udpInvestigatorId postData
-    currentQueue =
-      maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
+  Entity playerId _ <- runDB $ getBy404 (UniquePlayer userId gameId)
+  let Game {..} = arkhamGameCurrentData
+  let investigatorId = udpInvestigatorId postData
+  let currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
 
   gameRef <- newIORef arkhamGameCurrentData
   queueRef <- newQueue currentQueue
   genRef <- newIORef $ mkStdGen gameSeed
-  runGameApp (GameApp gameRef queueRef genRef $ pure . const ()) $ do
-    msg <- case udpDeckUrl postData of
-      Nothing -> pure $ Run []
-      Just deckUrl -> do
-        edecklist <- getDeckList deckUrl
-        case edecklist of
-          Left err -> error $ show err
-          Right decklist -> do
-            let iid = decklistInvestigatorId decklist
-            pure
-              $ if investigatorId /= iid
-                then case Map.lookup (toCardCode iid) allInvestigatorCards of
-                  Nothing -> ReplaceInvestigator investigatorId decklist
-                  Just def ->
-                    if toCardCode investigatorId `elem` (cdCardCode def : cdAlternateCardCodes def)
-                      then UpgradeDecklist investigatorId decklist
-                      else ReplaceInvestigator investigatorId decklist
-                else UpgradeDecklist investigatorId decklist
-    push msg
+  runGameApp (GameApp gameRef queueRef genRef $ pure . const ()) do
+    let question' = Map.delete (coerce playerId) gameQuestion
+    unless (Map.null question') (push $ AskMap question')
+    for_ (udpDeckUrl postData) \deckUrl -> do
+      getDeckList deckUrl >>= either (error . show) \decklist -> do
+        push
+          $ if investigatorId /= decklist.investigator
+            then case Map.lookup (toCardCode decklist.investigator) allInvestigatorCards of
+              Nothing -> ReplaceInvestigator investigatorId decklist
+              Just def ->
+                if toCardCode investigatorId `elem` def.cardCodes
+                  then UpgradeDecklist investigatorId decklist
+                  else ReplaceInvestigator investigatorId decklist
+            else UpgradeDecklist investigatorId decklist
     runMessages Nothing
   ge <- readIORef gameRef
 
@@ -144,7 +136,7 @@ putApiV1ArkhamGameDecksR gameId = do
       writeChannel
       (encode $ GameUpdate $ PublicGame gameId arkhamGameName mempty ge)
   now <- liftIO getCurrentTime
-  runDB $ do
+  runDB do
     replace gameId
       $ ArkhamGame
         arkhamGameName
@@ -175,21 +167,21 @@ getDeckList url = liftIO $ second (\d -> d {url = Just url}) . eitherDecode <$> 
 
 getApiV1ArkhamDeckR :: ArkhamDeckId -> Handler (Entity ArkhamDeck)
 getApiV1ArkhamDeckR deckId = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
-  mDeck <- runDB $ selectOne $ do
+  userId <- getRequestUserId
+  mDeck <- runDB $ selectOne do
     decks <- from $ table @ArkhamDeck
-    where_ $ decks ^. persistIdField ==. val deckId
-    where_ $ decks ^. ArkhamDeckUserId ==. val userId
+    where_ $ decks.id ==. val deckId
+    where_ $ decks.userId ==. val userId
     pure decks
   maybe notFound pure mDeck
 
 deleteApiV1ArkhamDeckR :: ArkhamDeckId -> Handler ()
 deleteApiV1ArkhamDeckR deckId = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
-  runDB $ delete $ do
+  userId <- getRequestUserId
+  runDB $ delete do
     decks <- from $ table @ArkhamDeck
-    where_ $ decks ^. persistIdField ==. val deckId
-    where_ $ decks ^. ArkhamDeckUserId ==. val userId
+    where_ $ decks.id ==. val deckId
+    where_ $ decks.userId ==. val userId
 
 newtype JSONError = JSONError {errorMsg :: Text}
   deriving stock (Show, Eq, Generic)
@@ -197,17 +189,17 @@ newtype JSONError = JSONError {errorMsg :: Text}
 
 postApiV1ArkhamSyncDeckR :: ArkhamDeckId -> Handler (Entity ArkhamDeck)
 postApiV1ArkhamSyncDeckR deckId = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  userId <- getRequestUserId
   deck <- runDB $ get404 deckId
-  unless (arkhamDeckUserId deck == userId)
-    $ sendStatusJSON
+  unless (arkhamDeckUserId deck == userId) do
+    sendStatusJSON
       Status.status400
       (JSONError "Deck does not belong to this user")
   edecklist <- maybe (pure $ Left "no deck url") getDeckList (arkhamDeckUrl deck)
   case edecklist of
     Right decklist -> do
-      runDB $ update $ \d -> do
+      runDB $ update \d -> do
         set d [ArkhamDeckList =. val decklist]
-        where_ $ d ^. ArkhamDeckId ==. val deckId
+        where_ $ d.id ==. val deckId
       pure $ Entity deckId $ deck {arkhamDeckList = decklist}
     Left _ -> sendStatusJSON Status.status400 (JSONError "Could not sync deck")

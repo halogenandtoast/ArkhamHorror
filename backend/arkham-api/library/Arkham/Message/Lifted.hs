@@ -844,6 +844,10 @@ removeTokens
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
 removeTokens source lid token n = push $ RemoveTokens (toSource source) (toTarget lid) token n
 
+removeTokensOn
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Token -> Int -> target -> m ()
+removeTokensOn source token n lid = push $ RemoveTokens (toSource source) (toTarget lid) token n
+
 moveTokens
   :: (ReverseQueue m, Sourceable source, Sourceable from, Targetable destination)
   => source

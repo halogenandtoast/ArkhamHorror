@@ -1,12 +1,12 @@
-module Arkham.Story.Cards.TheLikenessOfOld (TheLikenessOfOld (..), theLikenessOfOld) where
+module Arkham.Story.Cards.TheLikenessOfOld (theLikenessOfOld) where
 
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype TheLikenessOfOld = TheLikenessOfOld StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -16,11 +16,10 @@ theLikenessOfOld :: StoryCard TheLikenessOfOld
 theLikenessOfOld = story TheLikenessOfOld Cards.theLikenessOfOld
 
 instance RunMessage TheLikenessOfOld where
-  runMessage msg s@(TheLikenessOfOld attrs) = case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+  runMessage msg s@(TheLikenessOfOld attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
+      push $ ScenarioCountIncrementBy SignOfTheGods 1
       tenebrousNightgaunts <- getSetAsideCardsMatching $ cardIs Enemies.tenebrousNightgaunt
-      pushAll
-        $ ScenarioCountIncrementBy SignOfTheGods 1
-        : [ShuffleCardsIntoDeck Deck.EncounterDeck [card] | card <- take 1 tenebrousNightgaunts]
+      shuffleCardsIntoDeck Deck.EncounterDeck (take 1 tenebrousNightgaunts)
       pure s
-    _ -> TheLikenessOfOld <$> runMessage msg attrs
+    _ -> TheLikenessOfOld <$> liftRunMessage msg attrs

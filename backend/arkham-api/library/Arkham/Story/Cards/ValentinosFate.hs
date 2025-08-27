@@ -26,7 +26,7 @@ valentinosFate = story ValentinosFate Cards.valentinosFate
 
 instance RunMessage ValentinosFate where
   runMessage msg s@(ValentinosFate attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       disappearedIntoTheMist <-
         Investigators.valentinoRivas.cardCode `inRecordSet` DisappearedIntoTheMist
       claimedBySpecters <-

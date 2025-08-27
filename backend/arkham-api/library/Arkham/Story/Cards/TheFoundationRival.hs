@@ -26,7 +26,7 @@ instance HasAbilities TheFoundationRival where
     [ restricted
         a
         1
-        (exists $ enemyIs Enemies.valeriyaAntonovaDontMessWithHer <> EnemyAt YourLocation)
+        (exists $ enemyIs Enemies.valeriyaAntonovaDontMessWithHer <> at_ YourLocation)
         parleyAction_
     , restricted a 2 (CluesOnThis $ AtLeast $ StaticWithPerPlayer 1 1)
         $ forced AnyWindow
@@ -34,7 +34,7 @@ instance HasAbilities TheFoundationRival where
 
 instance RunMessage TheFoundationRival where
   runMessage msg s@(TheFoundationRival attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       rookie <- getSetAsideCardsMatching $ cardIs Enemies.rookieCop
       shuffleCardsIntoDeck Deck.EncounterDeck rookie
       valeriya <- getSetAsideCardsMatching $ cardIs Enemies.valeriyaAntonovaDontMessWithHer

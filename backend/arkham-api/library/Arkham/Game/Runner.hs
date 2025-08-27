@@ -2418,7 +2418,7 @@ runGameMessage msg g = case msg of
     assetId <- getRandom
     push $ CreateAssetAt assetId cardCode $ AtLocation lid
     pure g
-  ReadStory iid card storyMode mtarget -> do
+  StoryMessage (ReadStory iid card storyMode mtarget) -> do
     placement <- case mtarget of
       Just (EnemyTarget eid) -> field EnemyPlacement eid
       Just (AssetTarget aid) -> field AssetPlacement aid
@@ -2426,7 +2426,7 @@ runGameMessage msg g = case msg of
       Nothing -> pure Unplaced
     push $ ReadStoryWithPlacement iid card storyMode mtarget placement
     pure g
-  ReadStoryWithPlacement iid card storyMode mtarget placement -> do
+  StoryMessage (ReadStoryWithPlacement iid card storyMode mtarget placement) -> do
     let
       storyId = StoryId $ toCardCode card
       story' = overAttrs (Story.placementL .~ placement) (createStory card mtarget storyId)
@@ -2438,23 +2438,28 @@ runGameMessage msg g = case msg of
           [ FocusCards [card]
           , chooseOne
               player
-              [targetLabel (toCardId card) [ResolveStory iid storyMode storyId, ResolvedStory storyMode storyId]]
+              [ targetLabel
+                  (toCardId card)
+                  [StoryMessage (ResolveStory iid storyMode storyId), StoryMessage (ResolvedStory storyMode storyId)]
+              ]
           ]
       _ ->
         push
           $ chooseOne
             player
-            [ targetLabel (toTarget storyId) [ResolveStory iid storyMode storyId, ResolvedStory storyMode storyId]
+            [ targetLabel
+                (toTarget storyId)
+                [StoryMessage (ResolveStory iid storyMode storyId), StoryMessage (ResolvedStory storyMode storyId)]
             ]
     pure $ g & entitiesL . storiesL . at storyId ?~ story'
-  PlaceStory card placement -> do
+  StoryMessage (PlaceStory card placement) -> do
     let storyId = StoryId $ toCardCode card
     let story' = overAttrs (Story.placementL .~ placement) (createStory card Nothing storyId)
     pure $ g & entitiesL . storiesL . at storyId ?~ story'
-  ResolveStory _ _ sid -> do
+  StoryMessage (ResolveStory _ _ sid) -> do
     card <- field StoryCard sid
     pure $ g & focusedCardsL %~ map (filter (/= card))
-  RemoveStory storyId -> do
+  StoryMessage (RemoveStory storyId) -> do
     pure $ g & entitiesL . storiesL %~ deleteMap storyId
   CreateSkill skillId card investigatorId placement -> do
     let skill = createSkill card investigatorId skillId
@@ -2942,7 +2947,7 @@ runGameMessage msg g = case msg of
     let ignoreRevelation = IgnoreRevelation `elem` modifiers'
     case toCardType card of
       StoryType -> do
-        pushAll [afterDraw, ReadStory iid (toCard card) ResolveIt Nothing, UnsetActiveCard]
+        pushAll [afterDraw, StoryMessage (ReadStory iid (toCard card) ResolveIt Nothing), UnsetActiveCard]
         pure g'
       EnemyType -> do
         enemyId <- getRandom

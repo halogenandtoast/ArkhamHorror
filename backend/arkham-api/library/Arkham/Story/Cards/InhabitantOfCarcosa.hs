@@ -16,7 +16,7 @@ inhabitantOfCarcosa = story InhabitantOfCarcosa Cards.inhabitantOfCarcosa
 
 instance RunMessage InhabitantOfCarcosa where
   runMessage msg s@(InhabitantOfCarcosa attrs) = runQueueT $ case msg of
-    ResolveStory _ _ story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       ruinsOfCarcosa <- selectJust $ locationIs Locations.ruinsOfCarcosaInhabitantOfCarcosa
       setAsideRuinsOfCarcosa <- getSetAsideCardsMatching $ CardWithTitle "Ruins of Carcosa"
       otherRuinsOfCarcosa <- case nonEmpty setAsideRuinsOfCarcosa of

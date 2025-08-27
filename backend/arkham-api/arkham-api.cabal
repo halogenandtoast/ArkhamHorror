@@ -3513,7 +3513,9 @@ library
       Arkham.Message.Lifted.Placement
       Arkham.Message.Lifted.Queue
       Arkham.Message.Lifted.SkillTest
+      Arkham.Message.Lifted.Story
       Arkham.Message.Lifted.Upgrade
+      Arkham.Message.Story
       Arkham.Message.Type
       Arkham.Modifier
       Arkham.ModifierData

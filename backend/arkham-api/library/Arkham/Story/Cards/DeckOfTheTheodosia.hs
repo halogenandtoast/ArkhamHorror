@@ -15,7 +15,7 @@ deckOfTheTheodosia = story DeckOfTheTheodosia Cards.deckOfTheTheodosia
 
 instance RunMessage DeckOfTheTheodosia where
   runMessage msg s@(DeckOfTheTheodosia attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       mCoastalWaters <- getSetAsideCardMaybe Locations.coastalWaters
       mHedgeMaze <- getSetAsideCardMaybe Locations.hedgeMaze
       mStandingStones <- getSetAsideCardMaybe Locations.standingStones

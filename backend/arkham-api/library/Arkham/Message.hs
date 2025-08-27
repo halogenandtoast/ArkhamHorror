@@ -1,8 +1,9 @@
-{-# OPTIONS_GHC -O0 -fomit-interface-pragmas -fno-specialise #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -O0 -fomit-interface-pragmas -fno-specialise #-}
 
 module Arkham.Message (module Arkham.Message, module X) where
 
+import Arkham.Message.Story as X
 import Arkham.Message.Type as X
 import Arkham.Question as X
 import Arkham.Strategy as X
@@ -88,6 +89,7 @@ import Arkham.Xp
 import Control.Monad.Fail
 import Data.Aeson.Key qualified as Aeson
 import Data.Aeson.TH
+import Data.Aeson.Types
 import Data.UUID (nil)
 import GHC.OverloadedLabels
 
@@ -295,6 +297,10 @@ getChoiceAmount key choices =
 class IsMessage msg where
   toMessage :: msg -> Message
 
+instance IsMessage StoryMessage where
+  toMessage = StoryMessage
+  {-# INLINE toMessage #-}
+
 instance IsMessage Message where
   toMessage = id
   {-# INLINE toMessage #-}
@@ -328,10 +334,6 @@ instance IsMessage (EnemyCreation Message) where
   {-# INLINE toMessage #-}
 
 data ReplaceStrategy = DefaultReplace | Swap
-  deriving stock (Show, Eq, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
-
-data StoryMode = ResolveIt | DoNotResolveIt
   deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -396,33 +398,27 @@ instance Semigroup AutoStatus where
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
+  | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
+  | AbilityIsSkillTest AbilityRef
   | SkillTestResultOption Text [Message]
   | SkillTestResultOptions [UI Message]
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
-  | SetDriver AssetId InvestigatorId
   | SetGameState GameState
   | SetGlobal Target Aeson.Key Value
+  | MoveWithSkillTest Message
+  | MovedWithSkillTest SkillTestId Message
+  | NextSkillTest SkillTestId
+  | SetInvestigator PlayerId Investigator
+  | SetDriver AssetId InvestigatorId
   | IncreaseFloodLevel LocationId
   | DecreaseFloodLevel LocationId
   | SetFloodLevel LocationId FloodLevel
   | Devour InvestigatorId
   | Devoured InvestigatorId Card
-  | MoveWithSkillTest Message
-  | MovedWithSkillTest SkillTestId Message
-  | NextSkillTest SkillTestId
-  | AddSubscriber Target
-  | SetInvestigator PlayerId Investigator
-  | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
-  | AbilityIsSkillTest AbilityRef
-  | -- Story Card Messages
-    ReadStory InvestigatorId Card StoryMode (Maybe Target)
-  | ReadStoryWithPlacement InvestigatorId Card StoryMode (Maybe Target) Placement
-  | ResolveStory InvestigatorId StoryMode StoryId
-  | ResolvedStory StoryMode StoryId
-  | PlaceStory Card Placement
-  | -- | ResolveStoryStep InvestigatorId StoryId Int
-    RemoveStory StoryId
+  | -- Skill Test Specific
+    AddSubscriber Target
+  | StoryMessage StoryMessage
   | -- Handle discard costs
     DiscardedCost Target
   | -- Act Deck Messages
@@ -1325,7 +1321,11 @@ instance FromJSON Message where
         pure $ InvestigatorDrewPlayerCardFrom a b Nothing
       "ReportXp" -> do
         ReportXp <$> (o .: "contents" <|> (snd @ScenarioId <$> o .: "contents"))
-      _ -> $(mkParseJSON defaultOptions ''Message) (Object o)
+      _ -> (StoryMessage <$> o .: "contents") <|> defaultParseMessage (Object o)
+
+defaultParseMessage :: Value -> Parser Message
+defaultParseMessage = $(mkParseJSON defaultOptions ''Message)
+{-# NOINLINE defaultParseMessage #-}
 
 stepMessage :: Int -> Message -> Message
 stepMessage n = \case
@@ -1452,12 +1452,13 @@ chooseAmountsLabeled pid title label total choiceMap (toTarget -> target) = do
   toAmountChoice (choiceId, (l, (m, n))) = AmountChoice choiceId l m n
 
 chooseUpgradeDecks :: [PlayerId] -> Message
-chooseUpgradeDecks pids = Run
-  [ SetGameState (IsChooseDecks pids) 
-  , UpgradingDecks
-  , AskMap $ mapFromList $ map (,ChooseUpgradeDeck) pids
-  , DoneUpgradingDecks
-  ]
+chooseUpgradeDecks pids =
+  Run
+    [ SetGameState (IsChooseDecks pids)
+    , UpgradingDecks
+    , AskMap $ mapFromList $ map (,ChooseUpgradeDeck) pids
+    , DoneUpgradingDecks
+    ]
 
 chooseDecks :: [PlayerId] -> Message
 chooseDecks pids =

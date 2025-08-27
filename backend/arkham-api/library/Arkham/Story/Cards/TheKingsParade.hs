@@ -16,7 +16,7 @@ theKingsParade = story TheKingsParade Cards.theKingsParade
 
 instance RunMessage TheKingsParade where
   runMessage msg s@(TheKingsParade attrs) = runQueueT $ case msg of
-    ResolveStory iid _ story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       setAsideDimStreets <- getSetAsideCardsMatching $ CardWithTitle "Dim Streets"
       otherDimStreets <- case nonEmpty setAsideDimStreets of
         Nothing -> error "missing"

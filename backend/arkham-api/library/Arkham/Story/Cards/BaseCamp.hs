@@ -15,7 +15,7 @@ baseCamp = story BaseCamp Cards.baseCamp
 
 instance RunMessage BaseCamp where
   runMessage msg s@(BaseCamp attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       mCoastalWaters <- getSetAsideCardMaybe Locations.coastalWaters
       mDesertedStation <- getSetAsideCardMaybe Locations.desertedStation
       mRiverviewTheatre <- getSetAsideCardMaybe Locations.riverviewTheatre

@@ -18,7 +18,7 @@ centerOfTheSea = story CenterOfTheSea Cards.centerOfTheSea
 
 instance RunMessage CenterOfTheSea where
   runMessage msg s@(CenterOfTheSea attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       investigators <- getInvestigators
       clues <- selectSum InvestigatorClues UneliminatedInvestigator
       n <- perPlayer 3

@@ -17,7 +17,7 @@ ghastlyTunnels = story GhastlyTunnels Cards.ghastlyTunnels
 
 instance RunMessage GhastlyTunnels where
   runMessage msg s@(GhastlyTunnels attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt (is attrs -> True) -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       findEncounterCard @CardMatcher iid attrs $ #enemy <> withTrait Ghast
       pure s
     FoundEncounterCard _iid (isTarget attrs -> True) card -> do

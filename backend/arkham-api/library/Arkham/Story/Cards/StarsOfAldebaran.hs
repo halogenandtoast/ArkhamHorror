@@ -17,7 +17,7 @@ starsOfAldebaran = story StarsOfAldebaran Cards.starsOfAldebaran
 
 instance RunMessage StarsOfAldebaran where
   runMessage msg s@(StarsOfAldebaran attrs) = runQueueT $ case msg of
-    ResolveStory iid _ story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       selectEach (HealableInvestigator (toSource attrs) #horror Anyone) \iid' -> healHorror iid' attrs 3
       enemies <- select $ NotEnemy $ EnemyWithTitle "Hastur"
       chooseOrRunOneM iid $ targets enemies $ storyEnemyDamage iid 4

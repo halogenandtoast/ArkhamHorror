@@ -9,7 +9,6 @@ import Arkham.Matcher
 import Arkham.Source
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
-import Arkham.Target
 
 newtype InhabitantsOfTheVale = InhabitantsOfTheVale StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -20,7 +19,7 @@ inhabitantsOfTheVale = story InhabitantsOfTheVale Cards.inhabitantsOfTheVale
 
 instance RunMessage InhabitantsOfTheVale where
   runMessage msg s@(InhabitantsOfTheVale attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       valeOfPnath <- selectJust $ locationIs Locations.valeOfPnath
       findEncounterCard iid attrs (cardIs Enemies.huntingNightgaunt)
 
@@ -34,7 +33,7 @@ instance RunMessage InhabitantsOfTheVale where
       valeOfPnath <- selectJust $ locationIs Locations.valeOfPnath
       createEnemyWith_ (toCard ec) valeOfPnath createExhausted
       pure s
-    DoStep 1 (ResolveStory iid ResolveIt story') | story' == toId attrs -> do
+    DoStep 1 (ResolveThisStory iid (is attrs -> True)) -> do
       enemies <- select AnyInPlayEnemy
       chooseOne
         iid

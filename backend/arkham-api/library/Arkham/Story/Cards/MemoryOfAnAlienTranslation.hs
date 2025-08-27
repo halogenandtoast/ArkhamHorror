@@ -19,7 +19,7 @@ memoryOfAnAlienTranslation = story MemoryOfAnAlienTranslation Cards.memoryOfAnAl
 
 instance RunMessage MemoryOfAnAlienTranslation where
   runMessage msg s@(MemoryOfAnAlienTranslation attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       record EllsworthHasConfrontedHisDemons
       setPartnerStatus Assets.roaldEllsworthIntrepidExplorer Resolute
       selectForMaybeM (assetIs Assets.roaldEllsworthIntrepidExplorer) \ellsworth ->

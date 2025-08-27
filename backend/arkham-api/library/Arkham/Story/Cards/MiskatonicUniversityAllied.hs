@@ -12,7 +12,6 @@ import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
-import Arkham.Target
 
 newtype MiskatonicUniversityAllied = MiskatonicUniversityAllied StoryAttrs
   deriving anyclass IsStory

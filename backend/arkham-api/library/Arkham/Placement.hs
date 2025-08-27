@@ -2,6 +2,7 @@
 
 module Arkham.Placement (
   Placement (..),
+  IsPlacement (..),
   placementToAttached,
   isOutOfPlayPlacement,
   isOutOfPlayZonePlacement,
@@ -10,7 +11,7 @@ module Arkham.Placement (
   isInPlayArea,
   treacheryPlacementToPlacement,
   _AtLocation,
-  _OutOfPlay
+  _OutOfPlay,
 ) where
 
 import Arkham.Card
@@ -168,3 +169,17 @@ mconcat
 isOutOfPlayZonePlacement :: Placement -> Bool
 isOutOfPlayZonePlacement = isJust . preview _OutOfPlay
 
+class IsPlacement a where
+  toPlacement :: a -> Placement
+
+instance IsPlacement Placement where
+  toPlacement = id
+
+instance IsPlacement OutOfPlayZone where
+  toPlacement = OutOfPlay
+
+instance IsPlacement LocationId where
+  toPlacement = AtLocation
+
+instance IsPlacement AssetId where
+  toPlacement = (`AttachedToAsset` Nothing)

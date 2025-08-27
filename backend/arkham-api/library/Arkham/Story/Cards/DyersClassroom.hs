@@ -16,7 +16,7 @@ dyersClassroom = story DyersClassroom Cards.dyersClassroom
 
 instance RunMessage DyersClassroom where
   runMessage msg s@(DyersClassroom attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       handleMemory
         attrs
         Assets.professorWilliamDyerProfessorOfGeology

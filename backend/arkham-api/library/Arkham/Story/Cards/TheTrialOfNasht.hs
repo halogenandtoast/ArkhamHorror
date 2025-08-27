@@ -1,12 +1,7 @@
-module Arkham.Story.Cards.TheTrialOfNasht (
-  TheTrialOfNasht (..),
-  theTrialOfNasht,
-) where
-
-import Arkham.Prelude
+module Arkham.Story.Cards.TheTrialOfNasht (theTrialOfNasht) where
 
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype TheTrialOfNasht = TheTrialOfNasht StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -16,8 +11,8 @@ theTrialOfNasht :: StoryCard TheTrialOfNasht
 theTrialOfNasht = story TheTrialOfNasht Cards.theTrialOfNasht
 
 instance RunMessage TheTrialOfNasht where
-  runMessage msg s@(TheTrialOfNasht attrs) = case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
-      push $ AddToVictory (toTarget attrs)
+  runMessage msg s@(TheTrialOfNasht attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
+      addToVictory attrs
       pure s
-    _ -> TheTrialOfNasht <$> runMessage msg attrs
+    _ -> TheTrialOfNasht <$> liftRunMessage msg attrs

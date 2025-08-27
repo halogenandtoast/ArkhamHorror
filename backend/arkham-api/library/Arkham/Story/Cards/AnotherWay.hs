@@ -1,4 +1,4 @@
-module Arkham.Story.Cards.AnotherWay (AnotherWay (..), anotherWay) where
+module Arkham.Story.Cards.AnotherWay (anotherWay) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence
@@ -20,7 +20,7 @@ anotherWay = story AnotherWay Cards.anotherWay
 
 instance RunMessage AnotherWay where
   runMessage msg s@(AnotherWay attrs) = runQueueT $ case msg of
-    ResolveStory iid _ story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       alejandro <- selectJust $ enemyIs Enemies.alejandroVela
       chooseOneM iid do
         labeled "I could never turn my back on humanity" do

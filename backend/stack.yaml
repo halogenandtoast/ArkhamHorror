@@ -9,6 +9,7 @@ notify-if-nix-on-path: false
 
 ghc-options:
   "$locals":
+    -O0
     -fwrite-ide-info
     -hiedir=.hie
     -fhide-source-paths

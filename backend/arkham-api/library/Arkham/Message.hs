@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -O0 -fomit-interface-pragmas -fno-specialise #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Arkham.Message (module Arkham.Message, module X) where
@@ -1431,7 +1432,7 @@ chooseAmounts pid label total choiceMap (toTarget -> target) = do
   rs <- getRandoms
   pure $ Ask pid (ChooseAmounts label total (amountChoices rs) target)
  where
-  amountChoices rs = map toAmountChoice (zip rs choiceMap)
+  amountChoices rs = zipWith (curry toAmountChoice) rs choiceMap
   toAmountChoice (choiceId, (l, (m, n))) = AmountChoice choiceId l m n
 
 chooseAmountsLabeled
@@ -1447,7 +1448,7 @@ chooseAmountsLabeled pid title label total choiceMap (toTarget -> target) = do
   rs <- getRandoms
   pure $ Ask pid (QuestionLabel title Nothing $ ChooseAmounts label total (amountChoices rs) target)
  where
-  amountChoices rs = map toAmountChoice (zip rs choiceMap)
+  amountChoices rs = zipWith (curry toAmountChoice) rs choiceMap
   toAmountChoice (choiceId, (l, (m, n))) = AmountChoice choiceId l m n
 
 chooseUpgradeDecks :: [PlayerId] -> Message

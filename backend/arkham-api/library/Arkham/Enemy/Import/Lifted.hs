@@ -121,3 +121,6 @@ beingDefeated (asId -> enemyId) = fromQueue $ any isDefeatedMessage
 
 spawnAtEmptyLocation :: EnemyAttrs -> EnemyAttrs
 spawnAtEmptyLocation = spawnAtL ?~ SpawnAt EmptyLocation
+
+removeEnemy :: (ToId enemy EnemyId, ReverseQueue m) => enemy -> m ()
+removeEnemy = push . RemoveEnemy . asId

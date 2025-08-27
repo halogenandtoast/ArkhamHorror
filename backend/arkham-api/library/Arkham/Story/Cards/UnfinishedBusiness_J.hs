@@ -18,7 +18,6 @@ import Arkham.Message.Lifted.Placement
 import Arkham.Source
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
-import Arkham.Target
 import Arkham.Trait (Trait (Spectral))
 
 newtype UnfinishedBusiness_J = UnfinishedBusiness_J StoryAttrs
@@ -30,7 +29,7 @@ unfinishedBusiness_J = story UnfinishedBusiness_J Cards.unfinishedBusiness_J
 
 instance RunMessage UnfinishedBusiness_J where
   runMessage msg s@(UnfinishedBusiness_J attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       alreadyResolved <- getAlreadyResolved attrs
       mEnemy <- selectOne $ enemyIs Enemies.heretic_I
       if alreadyResolved
@@ -58,10 +57,10 @@ instance RunMessage UnfinishedBusiness_J where
               initiateEnemyAttack enemy attrs iid
 
       pure s
-    ResolveStory iid DoNotResolveIt story' | story' == toId attrs -> do
+    DoNotResolveThisStory iid (is attrs -> True) -> do
       chooseOneM iid $ abilityLabeled iid (mkAbility attrs 1 $ forced AnyWindow) nothing
       pure s
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       resolveStory iid attrs
       pure s
     _ -> UnfinishedBusiness_J <$> liftRunMessage msg attrs

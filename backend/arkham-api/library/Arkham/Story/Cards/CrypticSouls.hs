@@ -15,7 +15,7 @@ crypticSouls = story CrypticSouls Cards.crypticSouls
 
 instance RunMessage CrypticSouls where
   runMessage msg s@(CrypticSouls attrs) = runQueueT $ case msg of
-    ResolveStory iid _ story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       catsCollectedTheirTribute <- getHasRecord TheCatsCollectedTheirTributeFromTheZoogs
       when catsCollectedTheirTribute do
         setActions iid attrs 0

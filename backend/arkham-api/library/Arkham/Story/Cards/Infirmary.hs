@@ -16,7 +16,7 @@ infirmary = story Infirmary Cards.infirmary
 
 instance RunMessage Infirmary where
   runMessage msg s@(Infirmary attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       handleMemory
         attrs
         Assets.drMalaSinhaDaringPhysician

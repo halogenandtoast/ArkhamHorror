@@ -13,7 +13,6 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
-import Arkham.Target
 
 newtype UnfinishedBusiness_H = UnfinishedBusiness_H StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor)
@@ -39,7 +38,7 @@ instance HasAbilities UnfinishedBusiness_H where
 
 instance RunMessage UnfinishedBusiness_H where
   runMessage msg s@(UnfinishedBusiness_H attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       pure
         . UnfinishedBusiness_H
         $ attrs

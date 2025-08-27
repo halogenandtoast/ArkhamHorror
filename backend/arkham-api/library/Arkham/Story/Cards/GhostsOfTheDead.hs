@@ -1,9 +1,9 @@
-module Arkham.Story.Cards.GhostsOfTheDead (GhostsOfTheDead (..), ghostsOfTheDead) where
+module Arkham.Story.Cards.GhostsOfTheDead (ghostsOfTheDead) where
 
-import Arkham.Prelude
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype GhostsOfTheDead = GhostsOfTheDead StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -13,8 +13,8 @@ ghostsOfTheDead :: StoryCard GhostsOfTheDead
 ghostsOfTheDead = story GhostsOfTheDead Cards.ghostsOfTheDead
 
 instance RunMessage GhostsOfTheDead where
-  runMessage msg s@(GhostsOfTheDead attrs) = case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
-      push $ Remember KnowWhatHappenedToIb
+  runMessage msg s@(GhostsOfTheDead attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
+      remember KnowWhatHappenedToIb
       pure s
-    _ -> GhostsOfTheDead <$> runMessage msg attrs
+    _ -> GhostsOfTheDead <$> liftRunMessage msg attrs

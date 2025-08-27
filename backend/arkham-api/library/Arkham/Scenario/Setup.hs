@@ -21,7 +21,6 @@ import Arkham.Message
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move (moveAllTo)
-import Arkham.Message.Lifted.Placement (IsPlacement (..))
 import Arkham.Placement
 import Arkham.Prelude hiding ((.=))
 import Arkham.Scenario.Helpers (excludeBSides, excludeDoubleSided, hasBSide, isDoubleSided)
@@ -159,7 +158,7 @@ setAsideKey k = attrsL . setAsideKeysL %= (<> singleton k)
 placeStory :: ReverseQueue m => CardDef -> ScenarioBuilderT m ()
 placeStory def = do
   card <- genCard def
-  push $ PlaceStory card Global
+  push $ StoryMessage $ PlaceStory card Global
 
 setAside :: (ReverseQueue m, FindInEncounterDeck a) => [a] -> ScenarioBuilderT m ()
 setAside as = do
@@ -179,7 +178,7 @@ setAside as = do
 
           otherCardsAfter <- use otherCardsL
           when (otherCardsBefore == otherCardsAfter) do
-            error $ "Card not found in encounter deck or other cards: " <> (show $ cdOtherSide $ toCardDef card)
+            error $ "Card not found in encounter deck or other cards: " <> show (cdOtherSide $ toCardDef card)
         pure card
 
   attrsL . setAsideCardsL %= (<> cards)

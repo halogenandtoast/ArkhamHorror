@@ -410,6 +410,7 @@ const getCardText = (dbCard: ArkhamDBCard, needBack: boolean): string | null => 
 }
 
 const getCardFlavor = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
+  const language = localStorage.getItem('language') || 'en'
   if (language === 'en') return null
   const t = needBack ? (dbCard.back_flavor || null) : (dbCard.flavor || null)
   return t ? replaceText(t) : null

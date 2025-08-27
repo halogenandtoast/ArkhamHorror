@@ -745,9 +745,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     case rest of
       [] -> pure a
       (_ : xs) -> pure $ a & setAsideCardsL .~ (before <> xs)
-  ReadStory _ card _ _ -> do
+  StoryMessage (ReadStory _ card _ _) -> do
     pure $ a & cardsUnderScenarioReferenceL %~ filter (/= card)
-  ResolveStory _ ResolveIt storyId -> do
+  StoryMessage (ResolveStory _ ResolveIt storyId) -> do
     pure $ a & resolvedStoriesL %~ (storyId :)
   SetActDeckCards n cards -> do
     pure $ a & actStackL %~ insertMap n cards
@@ -1471,6 +1471,6 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           afterMsg <- checkWindows [mkAfter (Window.AgendaWouldAdvance DoomThreshold x)]
           pushAll [whenMsg, afterMsg, ForTarget (toTarget x) AdvanceAgendaIfThresholdSatisfied]
     pure a
-  ReadStoryWithPlacement _ card _ _ _ -> do
+  StoryMessage (ReadStoryWithPlacement _ card _ _ _) -> do
     pure $ a & setAsideCardsL %~ filter (/= card)
   _ -> pure a

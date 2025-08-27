@@ -15,7 +15,7 @@ coastalWaters = story CoastalWaters Cards.coastalWaters
 
 instance RunMessage CoastalWaters where
   runMessage msg s@(CoastalWaters attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       mAirfield <- getSetAsideCardMaybe Locations.airfield
       mOttomanFront <- getSetAsideCardMaybe Locations.ottomanFront
 

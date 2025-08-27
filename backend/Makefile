@@ -103,3 +103,13 @@ eventlog:
 	cd arkham-api && \
 		nix run -f https://github.com/mpickering/eventlog2html/archive/master.tar.gz eventlog2html arkham-api.eventlog && \
 		open arkham-api.eventlog.html
+
+.PHONY: api.metrics.full
+api.metrics.full:
+	cd arkham-api && \
+	stack clean --full && \
+	stack build -j1 --force-dirty --no-run-tests arkham-api \
+		--ghc-options "-Rghc-timing -ddump-timings -ddump-to-file +RTS -M3G -s -RTS" && \
+	sh scripts/timings.sh
+
+

@@ -20,7 +20,7 @@ aMomentsRest = story AMomentsRest Cards.aMomentsRest
 
 instance RunMessage AMomentsRest where
   runMessage msg s@(AMomentsRest attrs) = runQueueT $ case msg of
-    ResolveStory iid _ story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       enemies <- select $ EnemyOneOf [NotEnemy ExhaustedEnemy, EnemyIsEngagedWith Anyone]
       chooseOrRunOneM iid do
         scenarioI18n $ labeled' "aMomentsRest.chooseEnemy " do

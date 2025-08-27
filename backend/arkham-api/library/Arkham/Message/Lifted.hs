@@ -2422,7 +2422,7 @@ disengageEnemy
   => investigator -> enemy -> m ()
 disengageEnemy investigator enemy = push $ Msg.DisengageEnemy (asId investigator) (asId enemy)
 
-disengageFromAll :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> m ()
+disengageFromAll :: (ReverseQueue m, ToId enemy EnemyId) => enemy -> m ()
 disengageFromAll enemy = push $ Msg.DisengageEnemyFromAll (asId enemy)
 
 cancelledOrIgnoredCardOrGameEffect :: (ReverseQueue m, Sourceable source) => source -> m ()

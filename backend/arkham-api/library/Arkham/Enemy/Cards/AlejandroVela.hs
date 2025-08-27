@@ -8,6 +8,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest.Lifted (getSkillTest, parley)
+import Arkham.Message.Lifted.Story
 import Arkham.Story.Cards qualified as Story
 
 newtype AlejandroVela = AlejandroVela EnemyAttrs
@@ -32,11 +33,11 @@ instance RunMessage AlejandroVela where
       initiateEnemyAttack attrs (attrs.ability 1) iid
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ Flip iid (attrs.ability 1) (toTarget attrs)
+      flipOverBy iid (attrs.ability 1) attrs
       pure e
     Flip iid _ (isTarget attrs -> True) -> do
       anotherWay <- genCard Story.anotherWay
-      push $ ReadStory iid anotherWay ResolveIt (Just $ toTarget attrs)
+      resolveStoryWithTarget iid anotherWay attrs
       pure e
     _ -> AlejandroVela <$> liftRunMessage msg attrs
 

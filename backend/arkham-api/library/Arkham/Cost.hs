@@ -665,7 +665,7 @@ instance HasField "horror" Payment Int where
   getField = horrorPaid
 
 instance HasField "resources" (Maybe Payment) Int where
-  getField = fromMaybe 0 . fmap totalResourcePayment
+  getField = maybe 0 totalResourcePayment
 
 instance HasField "investigatorDamage" Payment Int where
   getField = totalInvestigatorDamagePayment

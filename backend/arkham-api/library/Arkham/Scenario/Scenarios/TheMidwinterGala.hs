@@ -25,9 +25,9 @@ import Arkham.I18n
 import Arkham.Investigator.Types (Field (InvestigatorDamage, InvestigatorHorror))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
-import Arkham.Message (StoryMode (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement qualified as Placement
+import Arkham.Message.Lifted.Story
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
@@ -394,7 +394,7 @@ instance RunMessage TheMidwinterGala where
       let Meta {rival} = toResult attrs.meta
       lead <- getLead
       rivalCard <- getSetAsideCard (factionStoryRival rival)
-      push $ ReadStoryWithPlacement lead rivalCard ResolveIt Nothing Global
+      resolveStoryWithPlacement lead rivalCard Global
       pure s
     ScenarioSpecific "readInterlude" _ -> scope "theFabledJewel" do
       let Meta {ally} = toResult attrs.meta
@@ -405,7 +405,7 @@ instance RunMessage TheMidwinterGala where
 
       lead <- getLead
       alliedCard <- getSetAsideCard (factionStoryAllied ally)
-      push $ ReadStoryWithPlacement lead alliedCard ResolveIt Nothing Global
+      resolveStoryWithPlacement lead alliedCard Global
       case ally of
         TheFoundation -> do
           lanternChamber <- selectJust $ locationIs Locations.lanternChamber

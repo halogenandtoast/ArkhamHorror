@@ -1,9 +1,8 @@
-module Arkham.Story.Cards.WhatRemainsOfTyrrhia ( WhatRemainsOfTyrrhia(..) , whatRemainsOfTyrrhia) where
+module Arkham.Story.Cards.WhatRemainsOfTyrrhia (whatRemainsOfTyrrhia) where
 
 import Arkham.ScenarioLogKey
-import Arkham.Prelude
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype WhatRemainsOfTyrrhia = WhatRemainsOfTyrrhia StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -13,8 +12,8 @@ whatRemainsOfTyrrhia :: StoryCard WhatRemainsOfTyrrhia
 whatRemainsOfTyrrhia = story WhatRemainsOfTyrrhia Cards.whatRemainsOfTyrrhia
 
 instance RunMessage WhatRemainsOfTyrrhia where
-  runMessage msg s@(WhatRemainsOfTyrrhia attrs) = case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+  runMessage msg s@(WhatRemainsOfTyrrhia attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
       push $ ScenarioCountIncrementBy SignOfTheGods 1
       pure s
-    _ -> WhatRemainsOfTyrrhia <$> runMessage msg attrs
+    _ -> WhatRemainsOfTyrrhia <$> liftRunMessage msg attrs

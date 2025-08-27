@@ -17,7 +17,7 @@ theBalefulStar = story TheBalefulStar Cards.theBalefulStar
 
 instance RunMessage TheBalefulStar where
   runMessage msg s@(TheBalefulStar attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       cityWhichAppearsOnNoMap <- getJustLocationByName "City-Which-Appears-On-No-Map"
       templeOfUnattainableDesires <- getJustLocationByName "Temple of Unattainable Desires"
       push $ ScenarioCountIncrementBy SignOfTheGods 2

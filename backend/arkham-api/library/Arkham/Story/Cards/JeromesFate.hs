@@ -26,7 +26,7 @@ jeromesFate = story JeromesFate Cards.jeromesFate
 
 instance RunMessage JeromesFate where
   runMessage msg s@(JeromesFate attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       disappearedIntoTheMist <- Investigators.jeromeDavids.cardCode `inRecordSet` DisappearedIntoTheMist
       claimedBySpecters <- Investigators.jeromeDavids.cardCode `inRecordSet` WasClaimedBySpecters
       onTrail <- getHasRecord TheInvestigatorsAreOnJerome'sTrail

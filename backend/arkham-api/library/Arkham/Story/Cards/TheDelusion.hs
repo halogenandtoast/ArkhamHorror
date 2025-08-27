@@ -15,7 +15,7 @@ theDelusion = story TheDelusion Cards.theDelusion
 
 instance RunMessage TheDelusion where
   runMessage msg s@(TheDelusion attrs) = runQueueT $ case msg of
-    ResolveStory _ _ (is attrs -> True) -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       remember KnowTheSecret
       selectEach (EnemyWithTitle "Hastur") (checkDefeated attrs)
       pure s

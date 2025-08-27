@@ -11,7 +11,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
-import Arkham.Target
 
 newtype TheSyndicateAllied = TheSyndicateAllied StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor)

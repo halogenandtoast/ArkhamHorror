@@ -2814,6 +2814,13 @@ forAction action f =
     [msg] -> push $ ForAction action msg
     msgs -> push $ ForAction action (Run msgs)
 
+forSkillType :: LiftMessage m body => SkillType -> body -> m ()
+forSkillType action f =
+  evalQueueT (liftMessage f) >>= \case
+    [] -> pure ()
+    [msg] -> push $ ForSkillType action msg
+    msgs -> push $ ForSkillType action (Run msgs)
+
 forTarget :: (LiftMessage m body, Targetable target) => target -> body -> m ()
 forTarget target f =
   evalQueueT (liftMessage f) >>= \case

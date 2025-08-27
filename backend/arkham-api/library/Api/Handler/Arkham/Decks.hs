@@ -99,11 +99,10 @@ postApiV1ArkhamDecksValidateR = do
 
 putApiV1ArkhamGameDecksR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameDecksR gameId = do
-  userId <- getRequestUserId
+  _ <- getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
   mLastStep <- runDB $ getBy (UniqueStep gameId arkhamGameStep)
   postData <- requireCheckJsonBody
-  Entity playerId _ <- runDB $ getBy404 (UniquePlayer userId gameId)
   let Game {..} = arkhamGameCurrentData
   let investigatorId = udpInvestigatorId postData
   let currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
@@ -112,6 +111,8 @@ putApiV1ArkhamGameDecksR gameId = do
   queueRef <- newQueue currentQueue
   genRef <- newIORef $ mkStdGen gameSeed
   runGameApp (GameApp gameRef queueRef genRef $ pure . const ()) do
+    playerId <- getPlayer investigatorId
+
     let question' = Map.delete (coerce playerId) gameQuestion
     unless (Map.null question') (push $ AskMap question')
     for_ (udpDeckUrl postData) \deckUrl -> do

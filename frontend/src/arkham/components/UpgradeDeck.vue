@@ -221,10 +221,13 @@ function pasteDeck(evt: ClipboardEvent) {
 async function upgrade() {
   if(error.value) return
   if (deckUrl.value && originalInvestigatorId.value) {
-    upgradeDeck(props.game.id, originalInvestigatorId.value, deckUrl.value).then(() => {
+   fetching.value = true
+   upgradeDeck(props.game.id, originalInvestigatorId.value, deckUrl.value).then(() => {
       if(!solo) {
         waiting.value = true
       }
+    }).finally(() => {
+      fetching.value = false;
     });
     deckUrl.value = null;
     deck.value = null;

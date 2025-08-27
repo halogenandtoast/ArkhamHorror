@@ -389,6 +389,7 @@ const replaceText = (text: string): string => {
 /* ----------------------------- DB helpers (pure) --------------------------- */
 
 const getCardName = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
+  if (dbCard.name === dbCard.real_name) return null
   let name = needBack ? (dbCard.back_name || null) : (dbCard.name || null)
   if (!name) return null
   if (!needBack && dbCard.subname) name = `${name}: ${dbCard.subname}`
@@ -398,21 +399,25 @@ const getCardName = (dbCard: ArkhamDBCard, needBack: boolean): string | null => 
 }
 
 const getCardTraits = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
+  if (dbCard.traits === dbCard.real_traits) return null
   return needBack ? (dbCard.back_traits || null) : (dbCard.traits || null)
 }
 
 const getCardText = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
+  if (dbCard.text === dbCard.real_text) return null
   const t = needBack ? (dbCard.back_text || null) : (dbCard.text || null)
   return t ? replaceText(t) : null
 }
 
 const getCardFlavor = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
+  if (language === 'en') return null
   const t = needBack ? (dbCard.back_flavor || null) : (dbCard.flavor || null)
   return t ? replaceText(t) : null
 }
 
 
 const getCardCustomizationText = (dbCard: ArkhamDBCard): string | null => {
+  if (dbCard.text === dbCard.real_text) return null
   return replaceText(dbCard.customization_text || '')
 }
 

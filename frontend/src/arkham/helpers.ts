@@ -98,7 +98,7 @@ export const baseUrl = import.meta.env.PROD ? "https://assets.arkhamhorror.app" 
 
 export function isLocalized(src: string) {
   const language = localStorage.getItem('language') || 'en'
-  if (language === 'en') return false
+  if (language === 'en') return true
 
   const helper = imgHelper.get(language) || defaultHelper
   const path = src.replace(/^\//, '')

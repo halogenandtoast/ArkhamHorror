@@ -109,7 +109,14 @@ api.metrics.full:
 	cd arkham-api && \
 	stack clean --full && \
 	stack build -j1 --force-dirty --no-run-tests arkham-api \
-		--ghc-options "-Rghc-timing -ddump-timings -ddump-to-file +RTS -M3G -s -RTS" && \
+		--ghc-options "-Rghc-timing -ddump-timings -ddump-to-file +RTS -M128G -s -RTS" && \
 	sh scripts/timings.sh
 
 
+.PHONY: api.metrics.frontend
+api.metrics.frontend:
+	cd arkham-api && \
+	stack clean --full && \
+	stack build -j1 --force-dirty --no-run-tests arkham-api \
+		--ghc-options "-O0 -Rghc-timing -ddump-timings -ddump-to-file +RTS -M128G -s -RTS" && \
+	sh scripts/timings.sh

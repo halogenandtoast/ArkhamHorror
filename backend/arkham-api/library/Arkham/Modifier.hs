@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -O0 -fomit-interface-pragmas -fno-specialise #-}
 
 module Arkham.Modifier where
 

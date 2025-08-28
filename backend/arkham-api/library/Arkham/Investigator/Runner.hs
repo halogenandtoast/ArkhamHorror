@@ -1,12 +1,7 @@
 {-# LANGUAGE TypeAbstractions #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Investigator.Runner (
-  module Arkham.Investigator.Runner,
-  module X,
-) where
-
-import Arkham.Prelude
+module Arkham.Investigator.Runner (module Arkham.Investigator.Runner, module X) where
 
 import Arkham.Ability as X hiding (PaidCost)
 import Arkham.ChaosToken as X
@@ -128,7 +123,7 @@ import Arkham.Matcher (
   pattern AssetWithAnyClues,
  )
 import Arkham.Message qualified as Msg
-import Arkham.Message.Lifted (obtainCard)
+import Arkham.Message.Lifted (obtainCard, takeControlOfAsset)
 import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Message.Lifted.Choose qualified as Choose
 import Arkham.Message.Lifted.Move (moveTo, moveToEdit)
@@ -137,6 +132,7 @@ import Arkham.Modifier qualified as Modifier
 import Arkham.Movement
 import Arkham.Phase
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Search hiding (drawnCardsL, foundCardsL)
@@ -152,7 +148,7 @@ import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
-import Control.Lens (each, non, over, _Just)
+import Control.Lens (each, non, over, sumOf, _Just)
 import Control.Monad.State.Strict (evalStateT, get, modify)
 import Data.Data.Lens (biplate)
 import Data.List qualified as List
@@ -393,15 +389,13 @@ runInvestigatorMessage :: Runner InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   SealedChaosToken token miid (isTarget a -> True) -> do
     when (a.id `elem` miid) do
-      whenWindow <- checkWindows [mkWhen (Window.ChaosTokenSealed a.id token)]
-      afterWindow <- checkWindows [mkAfter (Window.ChaosTokenSealed a.id token)]
-      pushAll [whenWindow, afterWindow]
+      Lifted.checkWhen (Window.ChaosTokenSealed a.id token)
+      Lifted.checkAfter (Window.ChaosTokenSealed a.id token)
     pure $ a & sealedChaosTokensL %~ (token :)
   SealedChaosToken token miid _ -> do
     when (a.id `elem` miid) do
-      whenWindow <- checkWindows [mkWhen (Window.ChaosTokenSealed a.id token)]
-      afterWindow <- checkWindows [mkAfter (Window.ChaosTokenSealed a.id token)]
-      pushAll [whenWindow, afterWindow]
+      Lifted.checkWhen (Window.ChaosTokenSealed a.id token)
+      Lifted.checkAfter (Window.ChaosTokenSealed a.id token)
     pure $ a & sealedChaosTokensL %~ filter (/= token)
   UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
   ReturnChaosTokensToPool tokens -> pure $ a & sealedChaosTokensL %~ filter (`notElem` tokens)
@@ -577,29 +571,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   InvestigatorMulligan iid | iid == investigatorId -> do
     unableToMulligan <- hasModifier a CannotMulligan
     hand <- field InvestigatorHand iid
-    player <- getPlayer iid
-    push
-      $ if null hand || unableToMulligan
-        then FinishedWithMulligan investigatorId
-        else
-          chooseOne player
-            $ Label "Done With Mulligan" [FinishedWithMulligan investigatorId]
-            : [ targetLabel
-                  (toCardId card)
-                  [DiscardCard iid GameSource (toCardId card), InvestigatorMulligan iid]
-              | card <- hand
-              , cdCanReplace (toCardDef card)
-              ]
+    if null hand || unableToMulligan
+      then push $ FinishedWithMulligan investigatorId
+      else Choose.chooseOneM iid do
+        Choose.labeled "Done With Mulligan" $ push $ FinishedWithMulligan investigatorId
+        for_ hand \card ->
+          when (cdCanReplace $ toCardDef card) do
+            Choose.targeting card do
+              push $ DiscardCard iid GameSource (toCardId card)
+              push $ InvestigatorMulligan iid
     pure a
   BeginTrade iid _source (AssetTarget aid) iids | iid == investigatorId -> do
-    player <- getPlayer iid
-    push $ chooseOne player [targetLabel iid' [TakeControlOfAsset iid' aid] | iid' <- iids]
+    Choose.chooseTargetM iid iids (`takeControlOfAsset` aid)
     pure a
   BeginTrade iid source (ResourceTarget _) iids | iid == investigatorId -> do
-    player <- getPlayer iid
-    push
-      $ chooseOne player
-      $ [targetLabel iid' [TakeResources iid' 1 source False, SpendResources iid 1] | iid' <- iids]
+    Choose.chooseTargetM iid iids \iid' -> do
+      Lifted.gainResources iid' source 1
+      Lifted.spendResources iid' 1
     pure a
   PlaceSwarmCards iid eid n | iid == investigatorId && n > 0 -> do
     let cards = map toCard . take n $ unDeck investigatorDeck
@@ -611,44 +599,27 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     push $ toMessage $ randomDiscardMatching investigatorId source matcher
     pure a
   FinishedWithMulligan iid | iid == investigatorId -> do
-    modifiers' <- getModifiers (toTarget a)
-    let
-      allowedMulligans =
-        foldl'
-          ( \total -> \case
-              Mulligans n -> max 0 (total + n)
-              _ -> total
-          )
-          1
-          modifiers'
-      startingHandAmount =
-        foldl'
-          ( \total -> \case
-              StartingHand n -> max 0 (total + n)
-              _ -> total
-          )
-          5
-          modifiers'
-      additionalStartingCards = concat $ mapMaybe (preview _AdditionalStartingCards) modifiers'
+    mods <- getModifiers a
+    let allowedMulligans = max 0 . (1 +) $ sumOf (traverse . _Mulligans) mods
+    let startingHandAmount = max 0 . (5 +) $ sumOf (traverse . _StartingHand) mods
+    let additionalStartingCards = concat $ mapMaybe (preview _AdditionalStartingCards) mods
     -- investigatorHand is dangerous, but we want to use it here because we're
     -- only affecting cards actually in hand [I think]
     (discard, hand, deck) <-
-      if any (`elem` modifiers') [CannotDrawCards, CannotManipulateDeck]
+      if any (`elem` mods) [CannotDrawCards, CannotManipulateDeck]
         then pure (investigatorDiscard, investigatorHand, unDeck investigatorDeck)
         else drawOpeningHand a (startingHandAmount - length investigatorHand)
-    window <- checkWindows [mkAfter (Window.DrawingStartingHand iid)]
     additionalHandCards <-
       (additionalStartingCards <>) <$> traverse genCard investigatorStartsWithInHand
 
+    Lifted.shuffleDiscardBackIn iid
+    Lifted.checkAfter (Window.DrawingStartingHand iid)
+
     -- need the virtual hand to get correct length
     hand' <- field InvestigatorHand iid
+    when ((a ^. mulligansTakenL + 1) < allowedMulligans && startingHandAmount - length hand' > 0) do
+      push $ InvestigatorMulligan iid
 
-    pushAll
-      $ [ShuffleDiscardBackIn iid, window]
-      <> [ InvestigatorMulligan iid
-         | (a ^. mulligansTakenL + 1) < allowedMulligans
-         , startingHandAmount - length hand' > 0
-         ]
     pure
       $ a
       & (discardL .~ discard)
@@ -678,18 +649,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       push $ chooseOrRunOneAtATime player [targetLabel (toCardId card) [msg'] | (card, msg') <- choices]
     pure a
   ShuffleDeck (Deck.InvestigatorDeck iid) | iid == investigatorId -> do
-    deck' <- shuffleM (unDeck investigatorDeck)
+    deck' <- shuffle (unDeck investigatorDeck)
     pure $ a & deckL .~ Deck deck' & foundCardsL . at Zone.FromDeck .~ mempty
   ShuffleDiscardBackIn iid | iid == investigatorId -> do
-    modifiers' <- getModifiers (toTarget a)
-    if null investigatorDiscard || CardsCannotLeaveYourDiscardPile `elem` modifiers'
+    mods <- getModifiers a
+    if null investigatorDiscard || CardsCannotLeaveYourDiscardPile `elem` mods
       then pure a
       else do
-        deck <- shuffleM (investigatorDiscard <> coerce investigatorDeck)
+        deck <- shuffle (investigatorDiscard <> coerce investigatorDeck)
         pure $ a & discardL .~ [] & deckL .~ Deck deck
   Resign iid | iid == investigatorId -> do
     pushAll $ resolve (Msg.InvestigatorResigned iid)
-    pushM $ checkWhen $ Window.InvestigatorResigned iid
+    Lifted.checkWhen $ Window.InvestigatorResigned iid
     pure $ a & endedTurnL .~ True
   Msg.InvestigatorDefeated source iid | iid == investigatorId -> do
     -- a card effect defeats an investigator directly

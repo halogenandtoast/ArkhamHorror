@@ -7,6 +7,7 @@ import Arkham.CampaignLogKey
 import Arkham.Classes
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -59,6 +60,20 @@ instance HasChaosTokenValue MurderAtTheExcelsiorHotel where
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 3
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+{- FOURMOLU_DISABLE -}
+chaosBag :: Difficulty -> [ChaosTokenFace]
+chaosBag difficulty =
+  if difficulty `elem` [Easy, Standard]
+    then
+      [ PlusOne , Zero , MinusOne , MinusOne , MinusTwo , MinusThree , MinusThree , MinusFour
+      , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
+      ]
+    else
+      [ Zero , MinusOne , MinusTwo , MinusThree , MinusFour , MinusFour , MinusFive , MinusSix
+      , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
+      ]
+{- FOURMOLU_ENABLE -}
+
 instance RunMessage MurderAtTheExcelsiorHotel where
   runMessage msg s@(MurderAtTheExcelsiorHotel attrs) = runQueueT $ case msg of
     PreScenarioSetup -> do
@@ -101,59 +116,21 @@ instance RunMessage MurderAtTheExcelsiorHotel where
           , Assets.timeWornLocket
           ]
     StandaloneSetup -> do
-      let
-        tokens =
-          if isEasyStandard attrs
-            then
-              [ PlusOne
-              , Zero
-              , MinusOne
-              , MinusOne
-              , MinusTwo
-              , MinusThree
-              , MinusThree
-              , MinusFour
-              , Skull
-              , Skull
-              , Cultist
-              , Tablet
-              , ElderThing
-              , AutoFail
-              , ElderSign
-              ]
-            else
-              [ Zero
-              , MinusOne
-              , MinusTwo
-              , MinusThree
-              , MinusFour
-              , MinusFour
-              , MinusFive
-              , MinusSix
-              , Skull
-              , Skull
-              , Cultist
-              , Tablet
-              , ElderThing
-              , AutoFail
-              , ElderSign
-              ]
-      setChaosTokens tokens
+      setChaosTokens $ chaosBag attrs.difficulty
       pure s
     ResolveChaosToken _ Cultist iid -> do
       innocentInVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ #enemy <> withTrait Innocent
       pushWhen innocentInVictory $ DrawAnotherChaosToken iid
       pure s
     ResolveChaosToken token Tablet iid -> do
-      clues <- field InvestigatorClues iid
-      mLocation <- field InvestigatorLocation iid
-      for_ mLocation \_ ->
+      withLocationOf iid \_ -> do
+        clues <- field InvestigatorClues iid
         when (clues > 0) do
           let n = if isEasyStandard attrs then 1 else 2
           withSkillTest \sid ->
             chooseOneM iid do
               labeled ("Place one of your clues on your location to treat this as a -" <> tshow n) do
-                push $ InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Tablet) 1
+                placeCluesOnLocation iid Tablet 1
                 skillTestModifier sid Tablet token (ChangeChaosTokenModifier (NegativeModifier n))
               labeled "Skip" nothing
       pure s
@@ -161,12 +138,10 @@ instance RunMessage MurderAtTheExcelsiorHotel where
       case token.face of
         ElderThing -> do
           n <- selectCount $ VictoryDisplayCardMatch $ basic $ #enemy <> withTrait Innocent
-          when (n > 0) do
-            assignHorror iid (ChaosTokenEffectSource Tablet) $ if isEasyStandard attrs then 1 else n
+          when (n > 0) $ assignHorror iid Tablet $ if isEasyStandard attrs then 1 else n
         _ -> pure ()
       pure s
     ScenarioResolution r -> do
-      lead <- getLead
       case r of
         NoResolution -> do
           anyResigned <- selectAny ResignedInvestigator
@@ -181,6 +156,7 @@ instance RunMessage MurderAtTheExcelsiorHotel where
               push R2
         Resolution 1 -> do
           investigators <- allInvestigators
+          lead <- getLead
 
           story resolution1
           record TheExcelsiorIsQuietForNow
@@ -193,21 +169,16 @@ instance RunMessage MurderAtTheExcelsiorHotel where
 
           policeInVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ #enemy <> withTrait Police
           when (not policeOnYourSide && policeInVictory) do
-            searchCollectionForRandom
-              lead
-              attrs
-              (mapOneOf CardWithTrait [Detective, Madness] <> BasicWeaknessCard)
+            searchCollectionForRandom lead attrs (hasAnyTrait [Detective, Madness] <> BasicWeaknessCard)
           allGainXp attrs
           endOfScenario
         Resolution 2 -> do
           if scenarioTimesPlayed attrs == 0
             then do
               story resolution2
-              chooseOne
-                lead
-                [ Label "Play again" [ScenarioResolutionStep 10 (Resolution 2)]
-                , Label "Leave things alone" [ScenarioResolutionStep 2 (Resolution 2)]
-                ]
+              leadChooseOneM do
+                labeled "Play again" $ push $ ScenarioResolutionStep 10 (Resolution 2)
+                labeled "Leave things alone" $ push $ ScenarioResolutionStep 2 (Resolution 2)
             else do
               story resolution2
               push $ ScenarioResolutionStep 2 (Resolution 2)
@@ -215,11 +186,9 @@ instance RunMessage MurderAtTheExcelsiorHotel where
           if scenarioTimesPlayed attrs == 0
             then do
               story resolution3
-              chooseOne
-                lead
-                [ Label "Play again" [ScenarioResolutionStep 10 (Resolution 3)]
-                , Label "Leave things alone" [ScenarioResolutionStep 2 (Resolution 3)]
-                ]
+              leadChooseOneM do
+                labeled "Play again" $ push $ ScenarioResolutionStep 10 (Resolution 3)
+                labeled "Leave things alone" $ push $ ScenarioResolutionStep 2 (Resolution 3)
             else do
               story resolution3
               push $ ScenarioResolutionStep 2 (Resolution 3)
@@ -239,10 +208,7 @@ instance RunMessage MurderAtTheExcelsiorHotel where
       lead <- getLead
       forceAddCampaignCardToDeckChoice [lead] DoNotShuffleIn Treacheries.whatHaveYouDone
       addCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.bloodstainedDagger
-      searchCollectionForRandom
-        lead
-        attrs
-        (mapOneOf CardWithTrait [Detective, Madness] <> BasicWeaknessCard)
+      searchCollectionForRandom lead attrs (hasAnyTrait [Detective, Madness] <> BasicWeaknessCard)
       endOfScenario
       pure s
     ScenarioResolutionStep 10 _ -> do

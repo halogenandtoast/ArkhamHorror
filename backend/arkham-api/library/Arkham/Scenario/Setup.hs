@@ -37,6 +37,8 @@ import Data.List (nubBy)
 import Data.List.NonEmpty qualified as NE
 import Data.Typeable
 
+type SampledAs a b = (SampleOneOf a, Sampled a ~ b)
+
 class SampleOneOf a where
   type Sampled a
   sampleOneOf :: MonadRandom m => a -> m (Sampled a)
@@ -264,16 +266,14 @@ placeAll defs = do
 placeAllCapture :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m [LocationId]
 placeAllCapture defs = traverse place defs
 
-placeOneOf
-  :: (SampleOneOf as, Sampled as ~ CardDef, ReverseQueue m) => as -> ScenarioBuilderT m LocationId
+placeOneOf :: (SampledAs as CardDef, ReverseQueue m) => as -> ScenarioBuilderT m LocationId
 placeOneOf as = do
   def <- sampleOneOf as
   attrsL . encounterDeckL %= flip removeEachFromDeck (sampledFrom as)
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck (sampledFrom as)
   placeLocationCard def
 
-placeOneOf_
-  :: (SampleOneOf as, Sampled as ~ CardDef, ReverseQueue m) => as -> ScenarioBuilderT m ()
+placeOneOf_ :: (SampledAs as CardDef, ReverseQueue m) => as -> ScenarioBuilderT m ()
 placeOneOf_ = void . placeOneOf
 
 placeGroup :: ReverseQueue m => Text -> [CardDef] -> ScenarioBuilderT m ()

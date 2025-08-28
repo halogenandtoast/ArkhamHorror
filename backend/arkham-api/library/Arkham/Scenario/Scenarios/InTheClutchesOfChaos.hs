@@ -40,7 +40,7 @@ inTheClutchesOfChaos difficulty =
 instance HasChaosTokenValue InTheClutchesOfChaos where
   getChaosTokenValue iid tokenFace (InTheClutchesOfChaos attrs) = case tokenFace of
     Skull -> do
-      doom <- getSum <$> selectAgg Sum LocationDoom (locationWithInvestigator iid)
+      doom <- selectSum LocationDoom (locationWithInvestigator iid)
       breaches <-
         sum . map (maybe 0 countBreaches) <$> selectFields LocationBreaches (locationWithInvestigator iid)
       pure $ toChaosTokenValue attrs Skull (doom + breaches) (doom + breaches + 1)
@@ -49,25 +49,13 @@ instance HasChaosTokenValue InTheClutchesOfChaos where
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+{- FOURMOLU_DISABLE -}
 standaloneChaosTokens :: [ChaosTokenFace]
 standaloneChaosTokens =
-  [ PlusOne
-  , Zero
-  , Zero
-  , MinusOne
-  , MinusOne
-  , MinusTwo
-  , MinusTwo
-  , MinusThree
-  , MinusFour
-  , Skull
-  , Skull
-  , Cultist
-  , Tablet
-  , ElderThing
-  , AutoFail
-  , ElderSign
+  [ PlusOne , Zero , Zero , MinusOne , MinusOne , MinusTwo , MinusTwo , MinusThree , MinusFour , Skull
+  , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
   ]
+{- FOURMOLU_ENABLE -}
 
 instance RunMessage InTheClutchesOfChaos where
   runMessage msg s@(InTheClutchesOfChaos attrs) = runQueueT $ case msg of
@@ -90,8 +78,7 @@ instance RunMessage InTheClutchesOfChaos where
       pure s
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens
-      lead <- getLead
-      chooseOneM lead do
+      leadChooseOneM do
         labeled "Anette Mason is possessed by evil." $ record AnetteMasonIsPossessedByEvil
         labeled "Carl Sanford possesses the secrets of the universe."
           $ record CarlSanfordPossessesTheSecretsOfTheUniverse
@@ -108,20 +95,18 @@ instance RunMessage InTheClutchesOfChaos where
         gather Set.CityOfSins
         gather Set.Witchcraft
 
-      carlSanfordPossessesTheSecretsOfTheUniverse <-
-        getHasRecord CarlSanfordPossessesTheSecretsOfTheUniverse
-      when carlSanfordPossessesTheSecretsOfTheUniverse do
+      whenHasRecord CarlSanfordPossessesTheSecretsOfTheUniverse do
         gather Set.SecretsOfTheUniverse
         gather Set.SilverTwilightLodge
         gather Set.StrikingFear
         gatherJust Set.TheMidnightMasks [Treacheries.huntingShadow, Treacheries.falseLead]
 
-      startAt =<< placeOneOf (Locations.southside_294 :| [Locations.southside_295])
-      placeOneOf_ $ Locations.frenchHill_290 :| [Locations.frenchHill_291]
-      placeOneOf_ $ Locations.rivertown_292 :| [Locations.rivertown_293]
-      placeOneOf_ $ Locations.uptown_296 :| [Locations.uptown_297]
-      placeOneOf_ $ Locations.southChurch_298 :| [Locations.southChurch_299]
-      placeOneOf_ $ Locations.merchantDistrict_300 :| [Locations.merchantDistrict_301]
+      startAt =<< placeOneOf (Locations.southside_294, Locations.southside_295)
+      placeOneOf_ (Locations.frenchHill_290, Locations.frenchHill_291)
+      placeOneOf_ (Locations.rivertown_292, Locations.rivertown_293)
+      placeOneOf_ (Locations.uptown_296, Locations.uptown_297)
+      placeOneOf_ (Locations.southChurch_298, Locations.southChurch_299)
+      placeOneOf_ (Locations.merchantDistrict_300, Locations.merchantDistrict_301)
 
       if anetteMasonIsPossessedByEvil
         then do
@@ -144,24 +129,25 @@ instance RunMessage InTheClutchesOfChaos where
     SetupStep (isTarget attrs -> True) 1 -> do
       playerCount <- getPlayerCount
       if playerCount == 4
-        then replicateM_ 3 $ do
+        then repeated 3 do
           lids <- sampleLocations 3
           pushAll [PlaceBreaches (toTarget lid) 1 | lid <- lids]
-        else replicateM_ playerCount $ do
+        else repeated playerCount do
           lids <- sampleLocations 2
           pushAll [PlaceBreaches (toTarget lid) 1 | lid <- lids]
       pure s
     ResolveChaosToken _ Cultist iid -> do
-      push $ DrawAnotherChaosToken iid
+      drawAnotherChaosToken iid
       mLocation <- selectOne $ locationWithInvestigator iid
-      for_ mLocation $ \location -> do
+      for_ mLocation \location -> do
         n <- getBreaches location
         pushWhen (n < 3) $ PlaceBreaches (toTarget location) 1
       pure s
     FailedSkillTest _iid _ _ (ChaosTokenTarget token) _ n -> do
-      act <- selectJust AnyAct
       case token.face of
-        Tablet -> push $ RemoveBreaches (toTarget act) n
+        Tablet -> do
+          act <- selectJust AnyAct
+          push $ RemoveBreaches (toTarget act) n
         ElderThing -> do
           lid <- sampleLocation
           push $ PlaceBreaches (toTarget lid) 1
@@ -186,13 +172,11 @@ instance RunMessage InTheClutchesOfChaos where
               $ record TheInvestigatorsContinuedAlone
             labeled "“We will need your help to fix this.” " $ record TheInvestigatorsAskedAnetteForAssistance
 
-            when anyDetectivePoliceOrAgency
-              $ labeled "“You are under arrest.”"
-              $ record TheInvestigatorsArrestedAnette
+            when anyDetectivePoliceOrAgency do
+              labeled "“You are under arrest.”" $ record TheInvestigatorsArrestedAnette
 
-            when anySorcererMiskatonicOrScholar
-              $ labeled "“Then teach me how to be stronger.”"
-              $ record AnetteTaughtYouTheSpellsOfOld
+            when anySorcererMiskatonicOrScholar do
+              labeled "“Then teach me how to be stronger.”" $ record AnetteTaughtYouTheSpellsOfOld
 
           allGainXp attrs
           endOfScenario
@@ -204,12 +188,11 @@ instance RunMessage InTheClutchesOfChaos where
             labeled "“You’ve done enough harm. We’ll handle this from here.”"
               $ record TheInvestigatorsContinuedAlone
             labeled "“We will need your help to fix this.” " $ record TheInvestigatorsAskedSanfordForAssistance
-            when anyDetectivePoliceOrAgency
-              $ labeled "“You are under arrest.”"
-              $ record TheInvestigatorsArrestedSanford
-            when anySorcererSilverTwilightOrCultist
-              $ labeled "“You don't deserve to lead us.”"
-              $ record TheInvestigatorsAssumedControlOfTheSilverTwilightLodge
+            when anyDetectivePoliceOrAgency do
+              labeled "“You are under arrest.”" $ record TheInvestigatorsArrestedSanford
+            when anySorcererSilverTwilightOrCultist do
+              labeled "“You don't deserve to lead us.”"
+                $ record TheInvestigatorsAssumedControlOfTheSilverTwilightLodge
           allGainXp attrs
           endOfScenario
         Resolution 3 -> do

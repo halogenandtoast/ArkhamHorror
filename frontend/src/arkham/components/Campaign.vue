@@ -55,7 +55,27 @@ const questionLabel = computed(() => {
   return question.tag === 'QuestionLabel' ? question.label : null
 })
 
-const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.step?.tag === 'UpgradeDeckStep')
+const upgradeDeck = computed(() => {
+  if (props.game.campaign && props.game.campaign.step?.tag === 'UpgradeDeckStep') return true
+
+  const question = Object.values(props.game.question)[0]
+
+  if (question === null || question == undefined) {
+    return false
+  }
+
+  const { tag } = question
+
+  if (tag === 'ChooseUpgradeDeck' || props.game.gameState.tag === 'IsChooseDecks') {
+    return true
+  }
+
+  if (tag === 'QuestionLabel') {
+    return question.question.tag === 'ChooseUpgradeDeck'
+  }
+
+  return false
+})
 
 const questionHash = computed(() => {
   let question = JSON.stringify(props.game.question[props.playerId])

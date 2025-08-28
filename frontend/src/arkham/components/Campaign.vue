@@ -66,7 +66,7 @@ const upgradeDeck = computed(() => {
 
   const { tag } = question
 
-  if (tag === 'ChooseUpgradeDeck' || props.game.gameState.tag === 'IsChooseDecks') {
+  if (tag === 'ChooseUpgradeDeck' && props.game.gameState.tag === 'IsChooseDecks') {
     return true
   }
 

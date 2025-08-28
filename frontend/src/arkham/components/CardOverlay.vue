@@ -389,6 +389,9 @@ const replaceText = (text: string): string => {
 /* ----------------------------- DB helpers (pure) --------------------------- */
 
 const getCardName = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
+  if (!card.value) return null
+  if (isLocalized(card.value)) return null
+
   if (dbCard.name === dbCard.real_name) return null
   let name = needBack ? (dbCard.back_name || null) : (dbCard.name || null)
   if (!name) return null
@@ -399,20 +402,24 @@ const getCardName = (dbCard: ArkhamDBCard, needBack: boolean): string | null => 
 }
 
 const getCardTraits = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
+  if (!card.value) return null
+  if (isLocalized(card.value)) return null
+
   return needBack ? (dbCard.back_traits || null) : (dbCard.traits || null)
 }
 
 const getCardText = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
   if (!card.value) return null
-  if (!isLocalized(card.value)) return null
+  if (isLocalized(card.value)) return null
   
   const t = needBack ? (dbCard.back_text || null) : (dbCard.text || null)
   return t ? replaceText(t) : null
 }
 
 const getCardFlavor = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
-  const language = localStorage.getItem('language') || 'en'
-  if (language === 'en') return null
+  if (!card.value) return null
+  if (isLocalized(card.value)) return null
+
   const t = needBack ? (dbCard.back_flavor || null) : (dbCard.flavor || null)
   return t ? replaceText(t) : null
 }

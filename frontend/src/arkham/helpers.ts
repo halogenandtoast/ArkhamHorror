@@ -98,16 +98,15 @@ export const baseUrl = import.meta.env.PROD ? "https://assets.arkhamhorror.app" 
 
 export function isLocalized(src: string) {
   const language = localStorage.getItem('language') || 'en'
+  if (language === 'en') return false
 
-  if (language !== 'en') {
-    const helper = imgHelper.get(language) || defaultHelper
-    const path = src.replace(/^\//, '')
-    const exists = helper.digests.includes(path)
+  const helper = imgHelper.get(language) || defaultHelper
+  const path = src.replace(/^\//, '')
+  const exists = helper.digests.includes(path)
 
-    if (exists && helper.root && helper.loaded.value) {
-      const canFetch = helper.data.get(path).value || false
-      if (canFetch) return true
-    }
+  if (exists && helper.root && helper.loaded.value) {
+    const canFetch = helper.data.get(path).value || false
+    if (canFetch) return true
   }
 
   return false

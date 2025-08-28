@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, computed, watch, watchEffect, onMounted, onUnmounted } from 'vue'
-import { imgsrc, toCamelCase } from '@/arkham/helpers'
+import { imgsrc, isLocalized, toCamelCase } from '@/arkham/helpers'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import Key from '@/arkham/components/Key.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
@@ -399,12 +399,13 @@ const getCardName = (dbCard: ArkhamDBCard, needBack: boolean): string | null => 
 }
 
 const getCardTraits = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
-  if (dbCard.traits === dbCard.real_traits) return null
   return needBack ? (dbCard.back_traits || null) : (dbCard.traits || null)
 }
 
 const getCardText = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {
-  if (dbCard.text === dbCard.real_text) return null
+  if (!card.value) return null
+  if (!isLocalized(card.value)) return null
+  
   const t = needBack ? (dbCard.back_text || null) : (dbCard.text || null)
   return t ? replaceText(t) : null
 }
@@ -418,7 +419,6 @@ const getCardFlavor = (dbCard: ArkhamDBCard, needBack: boolean): string | null =
 
 
 const getCardCustomizationText = (dbCard: ArkhamDBCard): string | null => {
-  if (dbCard.text === dbCard.real_text) return null
   return replaceText(dbCard.customization_text || '')
 }
 

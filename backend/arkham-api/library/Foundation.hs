@@ -288,12 +288,12 @@ unsafeHandler = Unsafe.fakeHandlerGetLogger appLogger
 userIdToToken :: UserId -> HandlerFor App Text
 userIdToToken userId = do
   jwtSecret <- getJwtSecret
-  pure $ JWT.jsonToToken jwtSecret $ toJSON userId
+  liftIO $ JWT.jsonToToken jwtSecret $ toJSON userId
 
 tokenToUserId :: Text -> Handler (Maybe UserId)
 tokenToUserId token = do
   jwtSecret <- getJwtSecret
-  let mUserId = fromJSON <$> JWT.tokenToJson jwtSecret token
+  mUserId <- liftIO $ fmap fromJSON <$> JWT.tokenToJson jwtSecret token
   case mUserId of
     Just (Success userId) -> pure $ Just userId
     _ -> pure Nothing

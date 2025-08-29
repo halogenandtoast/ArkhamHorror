@@ -15,10 +15,7 @@ export interface Props {
   playerId: string
 }
 
-const question = computed(() => {
-  const val = props.game.question[props.playerId]
-  return val
-})
+const question = computed(() => props.game.question[props.playerId])
 const questionLabel = computed(() => {
   if (question.value)
     return question.value.tag === 'QuestionLabel' ? question.value.label : null

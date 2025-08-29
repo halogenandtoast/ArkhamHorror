@@ -279,6 +279,8 @@ export function localizeArkhamDBBaseUrl() {
 
   const baseUrl = new URL('https://arkhamdb.com');
   if (language === "en") return baseUrl.origin;
+  if (!['de', 'es', 'fr', 'it', 'ko', 'pl', 'po', 'ru', 'uk', 'zh'].includes(language))
+    return baseUrl.origin;
 
   baseUrl.hostname = `${language}.${baseUrl.hostname}`;
   return baseUrl.origin;

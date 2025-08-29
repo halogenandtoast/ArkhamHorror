@@ -51,6 +51,7 @@ const tabooList = computed(() => {
       case 6: return "2.1 (Aug 30, 2023)"
       case 7: return "2.2 (Feb 20, 2024)"
       case 8: return "2.3 (Oct 24, 2024)"
+      case 9: return "2.4 (Jul 11, 2025)"
       default: return "Unknown Taboo List"
     }
   }

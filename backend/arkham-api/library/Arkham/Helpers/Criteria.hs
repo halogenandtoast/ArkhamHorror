@@ -200,32 +200,26 @@ passesCriteria iid mcard source' requestor windows' = \case
             <> Matcher.InPlayAreaOf (Matcher.InvestigatorWithId iid)
         _ -> error $ "Unhandled source: " <> show source' <> " " <> show mcard
   Criteria.HasTrueMagick -> do
-    case source' of
-      AssetSource trueMagick -> do
+    case source'.asset of
+      Just trueMagick -> do
         attrs <- getAttrs @Asset trueMagick
         hand <- fieldMap InvestigatorHand (filterCards (card_ $ #asset <> #spell)) iid
         let
           replaceAssetId = const attrs.id
           replaceAssetIds = over biplate replaceAssetId
         let handEntities =
-              map
-                ( \c ->
-                    overAttrs (\attrs' -> attrs {assetCardCode = assetCardCode attrs'})
-                      $ createAsset c
-                      $ unsafeFromCardId c.id
-                )
-                hand
+              flip map hand \c ->
+                overAttrs (\attrs' -> attrs {assetCardCode = assetCardCode attrs'})
+                  $ createAsset c
+                  $ unsafeFromCardId c.id
         getGame >>= runReaderT do
-          anyM
-            ( \a -> do
-                local (entitiesL %~ addEntity a) do
-                  modifiers <- getMonoidalMap <$> execWriterT (getModifiersFor a)
-                  local (modifiersL <>~ modifiers) do
-                    let handAbilities = map (overCost replaceAssetIds) (getAbilities a)
-                    anyM (getCanPerformAbility iid windows') handAbilities
-            )
-            handEntities
-      _ -> error "wrong source"
+          flip anyM handEntities \a -> do
+            local (entitiesL %~ addEntity a) do
+              modifiers <- getMonoidalMap <$> execWriterT (getModifiersFor a)
+              local (modifiersL <>~ modifiers) do
+                let handAbilities = map (overCost replaceAssetIds) (getAbilities a)
+                anyM (getCanPerformAbility iid windows') handAbilities
+      _ -> error $ "wrong source: " <> show source'
   Criteria.HasCalculation c valueMatcher -> do
     value <- calculate c
     gameValueMatches value valueMatcher

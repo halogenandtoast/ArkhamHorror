@@ -17,7 +17,6 @@ export interface Props {
 
 const question = computed(() => {
   const val = props.game.question[props.playerId]
-  console.log(val)
   return val
 })
 const questionLabel = computed(() => {

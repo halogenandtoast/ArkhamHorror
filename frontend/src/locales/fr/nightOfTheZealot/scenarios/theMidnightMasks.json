@@ -1,0 +1,50 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "–X. X est le plus grand nombre de fatalités sur un ennemi _Cultiste_ en jeu.",
+      "cultist": "-2. Placez 1 fatalité sur l'ennemi _Cultiste_ le plus proche.",
+      "tablet": "-3. En cas d'échec, placez 1 de vos indices sur votre lieu."
+    },
+    "hardExpert": {
+      "skull": "–X. X est le nombre total de fatalités en jeu.",
+      "cultist": "–2. Placez 1 fatalité sur chaque ennemi _Cultiste_ en jeu. S'il n'y a aucun ennemi _Cultiste_ en jeu, révélez un autre pion Chaos.",
+      "tablet": "–4. En cas d'échec, placez tous vos indices sur votre lieu."
+    }
+  },
+  "intro": {
+    "title": "Scénario II : Les Masques de Minuit",
+    "body": "<p class='basic'>Vérifiez votre Carnet de Campagne. *Si Lita a dû trouver d’autres personnes pour soutenir sa cause*: Lisez l’_Introduction 1_.</p><p class='basic'>Sinon, passez à l’_Introduction 2_.</p>"
+  },
+  "intro1": "<p>_Introduction 1_ : La femme est venue à vous en panique, délirant à propos de monstres qui émergeraient des entrailles de la terre dans une maison près du quartier de la Rivière. « J’ai réussi à les piéger, » explique-t-elle, « mais il y en a d’autres, d’autres gouffres, d’autres domaines ». La semaine précédente, vous l’auriez prise pour une folle. Toutefois, les événements récents ont chamboulé votre conception de la normalité. Vous décidez de l’écouter jusqu’au bout. Elle se présente comme étant Lita Chantler et vous raconte une histoire à dormir debout que vous peinez à croire. « Les créatures dont je parle, » déclare-t-elle, « sont appelées goules — des êtres cruels qui infestent les cryptes, les grottes et les tunnels sous la ville d’Arkham… »</p><p class='basic right'>Continuez à l’_Introduction 3_.</p>",
+  "intro2": "<p>_Introduction 2_ : Dans la foulée du désastre qui s’est déroulé chez vous, Lita Chantler, la femme rousse de votre salon, vous narre une histoire que — même à la lumière de ce que vous venez de vivre — vous avez du mal à accepter. « Les créatures dans votre demeure, » déclare-t-elle, « sont appelées goules — des êtres cruels qui infestent les cryptes, les grottes et les tunnels sous la ville d’Arkham… »</p><p class='basic right'>Continuez à l’_Introduction 3_.</p>",
+  "intro3": "<p>_Introduction 3_ : « Ces créatures se nourrissent de cadavres humains et sont ravitaillées par un sombre culte d’Arkham, dont les membres en sont venus à vénérer l’antique maître des goules. Ce culte a tué des gens innocents et les a donnés à manger aux goules afin de satisfaire leur appétit monstrueux. Un sombre équilibre était maintenu. Jusqu’à maintenant. »<p>« Récemment, » continue Lita, « un de leurs repaire, où les corps étaient conservés, a été détruit. Depuis, les goules ont été plus actives que d’habitude.</p><p>J’ai traqué leurs mouvements et fait de mon mieux pour les empêcher de se déchaîner à travers la ville. Mais je pense qu’il se prépare quelque chose de pire. Le culte a planifié un événement plus sombre et plus menaçant que tout ce que j’ai pu observer. D’après mes informations, ce plan devrait aboutir ce soir, peu après minuit. Après cela, je ne sais pas à quoi nous attendre. »</p><p>« Beaucoup de ces cultistes, » poursuit Lita, « ressemblent à des gens normaux en dépit de leurs intentions ignobles. Chaque fois que le culte se regroupe, ses membres portent des masques taillés en forme de crânes d’animaux afin de préserver leur identité. Ces masques sont leur marque, symboles de mort et de pourriture. Nous devons démasquer les cultistes afin de dévoiler et d’enrayer leurs plans. Nous n’avons que quelques heures. Plus nous trouverons de cultistes avant minuit, mieux ce sera. »</p><p class='basic right'>Continuez à la _Mise en place_.</p>",
+  "resolutions": {
+    "noResolution": {
+      "title": "Pas de conclusion",
+      "body": "<div class='resolution'><p class='basic'>_Si aucune conclusion n’est atteinte (tous les investigateurs ont abandonné ou été vaincus) : lisez la Conclusion 1_.</p></div>"
+    },
+    "resolution1": {
+      "title": "Conclusion 1",
+      "body": "<div class='resolution'><p>_Conclusion 1_ : Vous avez réussi à obtenir certaines informations utiles à propos du culte et de ses plans. Vous ne pouvez qu’espérer que ce sera suffisant.</p><ul><li>Dans votre Carnet de Campagne, sous la mention « Cultistes Interrogés », inscrivez le nom de chaque ennemi unique _Cultiste_ qui se trouve dans la pile de victoire.</li><li>Dans votre Carnet de Campagne, sous la mention « Cultistes Enfuis », inscrivez le nom de chaque ennemi unique restant dans le deck Cultiste ou en jeu. Si vous en êtes à l’Intrigue 1, inscrivez-y également « Le Chasseur Masqué ».</li><li>Si le Prêtre Goule est dans la pile de victoire, rayez la mention « *Le Prêtre Goule est toujours vivant* » dans votre Carnet de Campagne.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_: {xp}</li></ul></li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Conclusion 2",
+      "body": "<div class='resolution'><p>_Conclusion 2_ : Les douze coups de minuit sonnent. Le temps est écoulé, le rituel du culte va bientôt commencer. Vous avez réussi à obtenir quelques informations utiles à propos du culte et de ses plans. Vous ne pouvez qu’espérer que ce sera suffisant.</p><ul><li>Dans votre Carnet de Campagne, sous la mention « Cultistes Interrogés », inscrivez le nom de chaque ennemi unique _Cultiste_ qui se trouve dans la pile de victoire.</li><li>Dans votre Carnet de Campagne, sous la mention « Cultistes Enfuis », inscrivez le nom de chaque Ennemi unique restant dans le deck Cultiste ou en jeu.</li><li>Dans votre Carnet de Campagne, indiquez qu’*il est minuit passé*.</li><li>Si le Prêtre Goule est dans la pile de victoire, rayez la mention « *Le Prêtre Goule est toujours vivant* » dans votre Carnet de Campagne.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li></ul></div>"
+    }
+  },
+  "setup": {
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : *Les Masques de Minuit*, *Un Froid Mordant*, *Maigres Bêtes de la Nuit*, *Sombre Culte* et *Portes Closes*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/midnight-masks.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+    "cultistDeck": "<div class='columns simple'><p class='basic'>Mettez le set de rencontre *Culte d’Umôrdhoth* de côté en tant que « deck Cultiste » séparé et mélangez-le. Ce set est reconnaissable à l’icône suivante :</p><section class='encounter-sets'><img src='{setImgPath}/cult-of-umordhoth.png' /></section></div>",
+    "placeLocations": "Prenez au hasard l’un des deux lieux Centre-Ville et l’un des deux lieux Quartier Sud et mettez-les en jeu. Retirez les autres exemplaires du Centre-Ville et du Quartier Sud de la partie. Ensuite, mettez en jeu les cartes Quartier Nord, Quartier Est, Quartier de la Rivière, Hôpital St. Mary, Cimetière, Université Miskatonic et Votre Maison. (Consultez la page suivante pour une suggestion de disposition.)",
+    "acolytes": {
+      "instructions": "Selon le nombre de joueurs dans la partie :",
+      "onePlayer": "S’il y a exactement 1 joueur dans la partie : aucun changement n’est effectué.",
+      "twoPlayer": "S’il y a exactement 2 joueurs dans la partie : cherchez dans les sets de rencontre 1 exemplaire de la carte Acolyte et générez-le dans le Quartier Sud.",
+      "threePlayer": "S’il y a exactement 3 joueurs dans la partie : cherchez dans les sets de rencontre 2 exemplaires de la carte Acolyte. Générez-en 1 dans le Quartier Sud et 1 dans le Centre-Ville.",
+      "fourPlayer": "S’il y a exactement 4 joueurs dans la partie : cherchez dans les sets de rencontre 3 exemplaires de la carte Acolyte. Générez-en 1 dans le Quartier Sud, 1 dans le Centre-Ville et 1 dans le Cimetière."
+    },
+    "burnedToTheGround": "Vérifiez votre Carnet de Campagne. Si *votre maison a entièrement brûlé* : retirez le lieu Votre Maison de la partie. Chaque investigateur débute la partie dans le Quartier de la Rivière.",
+    "houseStillStanding": "Vérifiez votre Carnet de Campagne. Si *votre maison est toujours debout* : chaque investigateur débute la partie dans Votre Maison.",
+    "ghoulPriest": "Vérifiez votre Carnet de Campagne. Si *le Prêtre Goule est toujours vivant* : mélangez-le dans le deck Rencontre."
+  }
+}

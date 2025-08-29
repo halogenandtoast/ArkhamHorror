@@ -1,0 +1,55 @@
+{
+  "setup": {
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : *Le Rassemblement*, *Les Rats*, *Les Goules*, *Répandre la Peur*, *Antiques Fléaux* et *Un Froid Mordant*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/the-gathering.png' /><img src='{setImgPath}/rats.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
+    "placeLocations": "Mettez le lieu Étude en jeu. Mettez de côté tous les autres lieux, hors jeu. Tous les investigateurs débutent la partie dans l’Étude.",
+    "setOutOfPlay": "Mettez de côté les cartes Prêtre Goule et Lita Chantler, hors jeu."
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "–X. X est le nombre d'ennemis _Goule_ dans votre lieu.",
+      "cultist": "–1. En cas d'échec, subissez 1 horreur.",
+      "tablet": "–2. S'il y a un ennemi _Goule_ dans votre lieu, subissez 1 dégât."
+    },
+    "hardExpert": {
+      "skull": "–2. En cas d'échec, après ce test de compétence, cherchez un ennemi _Goule_ dans le deck Rencontre ou dans la pile de défausse Rencontre et piochez-le. Mélangez le deck Rencontre.",
+      "cultist": "Révélez un autre pion Chaos. En cas d'échec, subissez 2 horreurs.",
+      "tablet": "–4. S'il y a un ennemi _Goule_ dans votre lieu, subissez 1 dégât et 1 horreur."
+    }
+  },
+  "intro": {
+    "title": "Scénario I : Le Rassemblement",
+    "body": "<p>Vos associés et vous avez enquêté sur les étranges événements qui se sont déroulés dans votre ville natale d’Arkham, Massachusetts. Ces dernières semaines, plusieurs habitants de la ville ont mystérieusement disparu. Leurs corps ont récemment été retrouvés dans les bois, mutilés et à moitié dévorés. La police et les médias ont déclaré que des animaux sauvages étaient à l’origine de ces massacres, mais vous pensez qu’il se trame autre chose. Vous êtes tous rassemblés dans la demeure de l’investigateur principal afin de discuter de ces étranges événements.<p>"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "Pas de conclusion",
+      "body": "<div class='resolution'><p>_Si aucune conclusion n’est atteinte (tous les investigateurs ont abandonné ou été vaincus):_ Vous parvenez tout juste à vous échapper en vie de la maison. La femme du salon vous suit sur le perron, claquant violemment la porte derrière elle. « Pauvres fous ! Regardez ce que vous avez fait ! ». Elle pousse une chaise devant la porte, la coinçant sous la poignée. « Nous devons partir d’ici. Venez avec moi, et je vous dirai ce que je sais. Nous sommes les seuls à pouvoir empêcher la menace tapie dans les profondeurs de se répandre à travers la ville. » Vous n’êtes pas en état de protester. Acquiesçant d’un signe de tête, vous suivez la femme tandis qu’elle s’élance dans les rues pluvieuses en direction du Quartier de la Rivière.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *votre maison est toujours debout*.</li><li>Dans votre Carnet de Campagne, indiquez que *le Prêtre Goule est toujours vivant*.</li><li>L’investigateur principal reçoit la carte Lita Chantler et a le droit de l’inclure dans son deck. Cette carte ne compte pas dans la limite de taille du deck de cet investigateur.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire (n’oubliez pas d’ajouter les cartes Lieu éligibles à la pile de victoire en cours de partie). Chaque investigateur reçoit également 2 points d’expérience bonus car il a eu un bref aperçu du monde caché du Mythe.<ul><li>_Expérience_ : {xp}</li></ul></li></ul></div>"
+    },
+    "resolution1": {
+      "title": "Conclusion 1",
+      "body": "<div class='resolution'><p>_Conclusion 1 :_ Vous acquiescez et autorisez la femme aux cheveux roux à embraser les murs et le sol de votre maison. Le feu se répand rapidement et vous fuyez par la porte d’entrée pour éviter d’être pris au piège dans cet enfer. Depuis le trottoir, vous regardez toutes vos possessions être consumées par les flammes. « Venez avec moi, » dit la femme. « Vous devez être instruits de la menace tapie dans les profondeurs. Seuls, nous sommes sans doute condamnés… mais ensemble, nous pouvons l’arrêter. »</p><ul><li>Dans votre Carnet de Campagne, indiquez que *votre maison a entièrement brûlé*.</li><li>L’investigateur principal reçoit la carte Lita Chantler et a le droit de l’inclure dans son deck. Cette carte ne compte pas dans la limite de taille du deck de cet investigateur.</li><li>L’investigateur principal subit 1 traumatisme mental pour avoir regardé sa maison brûler jusqu’à devenir une ruine fumante.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire (n’oubliez pas d’ajouter les cartes Lieu éligibles à la pile de victoire en cours de partie). Chaque investigateur reçoit également 2 points d’expérience bonus car il a eu un bref aperçu du monde caché du Mythe.<ul><li>_Expérience:_ {xp}</li></ul></li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Conclusion 2",
+      "body": "<div class='resolution'><p>_Conclusion 2 :_ Vous refusez de suivre les ordres de la fanatique et la chassez hors de chez vous, de peur qu’elle n’incendie votre maison sans votre permission. « Pauvres fous ! Vous commettez une grave erreur ! » prévient-elle. « Vous ne comprenez pas la nature de la menace tapie dans les profondeurs… Nous sommes en grand danger ! » Toujours secoué par les événements de la nuit, vous décidez d’écouter ce que cette femme a à dire. Peut-être pourra-t-elle apporter certaines lumières sur cette étrange affaire… mais elle ne semble pas vous faire confiance.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *votre maison est toujours debout*.</li><li>L’investigateur principal reçoit 1 point d’expérience dans la mesure où il n’a pas laissé les événements de cette nuit détruire sa vie.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire (n’oubliez pas d’ajouter les cartes Lieu éligibles à la pile de victoire en cours de partie). Chaque investigateur reçoit également 2 points d’expérience bonus car il a eu un bref aperçu du monde caché du Mythe.<ul><li>_Expérience_: {xp}</li></ul></li></ul></div>" },
+    "resolution3": {
+      "title": "Conclusion 3",
+      "body": "<div class='resolution'><p>_Conclusion 3 :_ Vous courez jusqu’au vestibule pour tenter de trouver une issue, mais la barrière brûlante bloque toujours votre chemin. Vous êtes pris au piège tandis qu’une horde de créatures sauvages envahit votre demeure… et vous n’avez nulle part où fuir.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *Lita a dû trouver d’autres personnes pour soutenir sa cause*.</li><li>Dans votre Carnet de Campagne, indiquez que *votre maison est toujours debout*.</li><li>Dans votre Carnet de Campagne, indiquez que *le Prêtre Goule est toujours vivant*.</li><li>Chaque investigateur qui n’a pas abandonné est _tué_. S’il n’y a plus assez d’investigateurs pour poursuivre la campagne, la campagne est terminée et les joueurs ont perdu. Sinon, passez au scénario suivant. (Chaque joueur dont l’investigateur a été tué doit en choisir un nouveau dans la réserve des investigateurs disponibles. Voir la page 14 du Guide de Référence pour les règles détaillées sur les investigateurs tués.)</li><li>Si l’investigateur principal a été tué, choisissez un autre investigateur qui reçoit la carte Lita Chantler. Cet investigateur peut l’inclure dans son deck. Cette carte ne compte pas dans la limite de taille de son deck.</li></ul></div>"
+    },
+    "xp": {
+      "resolution2": "Vous n’avez pas laissé les événements de cette nuit détruire votre vie",
+      "bonus": "Bref aperçu du monde caché du Mythe"
+    }
+  },
+  "label": {
+    "r1": "Ce n'est qu'une maison, après tout. Brûlez-là ! (→ _C1_)",
+    "r2": "Ce « gouffre infernal » est ma maison ! Pas question que vous la brûliez ! (→ _C2_)",
+    "whatsGoingOn": {
+      "horror": "L'investigateur principal subit 2 horreurs",
+      "discard": "Chaque investigateur défausse une carte prise au hasard dans sa main"
+    },
+    "parlor": {
+      "resign": "« C'en est trop pour moi ! » Vous vous ruez vers la porte d'entrée et fuyez, totalement paniqué."
+    }
+  }
+}

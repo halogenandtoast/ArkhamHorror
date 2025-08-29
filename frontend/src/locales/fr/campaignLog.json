@@ -1,0 +1,33 @@
+{
+  "base": {
+    "key": {
+      "drivenInsaneInvestigators": "Investigateurs déments",
+      "killedInvestigators": "Investigateurs tués",
+      "theRougarouContinuesToHauntTheBayou": "le Rougarou continue de hanter le bayou",
+      "theRougarouIsDestroyed": "Le Rougarou a été abattu et la malédiction levée",
+      "theRougarouEscapedAndYouEmbracedTheCurse": "Le Rougarou s'est enfui et vous avez été maudit",
+      "manyWereSacrificedToCnidathquaDuringTheCarnivale": "De nombreuses personnes ont été sacrifiées à Cnidathqua lors du Carnaval",
+      "theSunBanishedCnidathquaIntoTheDepths": "Le soleil a banni Cnidathqua dans les profondeurs",
+      "cnidathquaRetreatedToNurseItsWounds": "Cnidathqua s'est retiré pour soigner ses blessures",
+      "theExcelsiorClaimsAnotherVictim": "L'Excelsior a fait une nouvelle victime",
+      "theInvestigatorsFledTheSceneOfTheCrime": "Les investigateurs ont fui la scène de crime",
+      "theExcelsiorIsQuietForNow": "L'Excelsior est calme, pour le moment",
+      "theMurdersContinueUnsolved": "Les meurtres continuent, irrésolus",
+      "theInvestigatorsSurvivedTheMidwinterGala": "Les investigateurs ont survécu au Gala au Cœur de l'Hiver",
+      "theInvestigatorsWereDefeatedAtTheMidwinterGala": "Les investigateurs ont été vaincus au Gala au Cœur de l'Hiver",
+      "youHaveIdentifiedTheSolution": "Vous avez identifié la solution",
+      "youHaveTranslatedTheGlyphs": "Vous avez traduit les glyphes",
+      "youHaveIdentifiedTheStone": "Vous avez identifié la pierre",
+      "doomApproaches": "Le destin approche",
+      "theHourIsNigh": "L'heure est sombre",
+      "youHaveTranslatedTheTome": "Vous avez traduit l'ouvrage",
+      "youHaveInterpretedTheDreams": "Vous avez interprété les rêves",
+      "youHaveTranslatedTheGrimoire": "Vous avez traduit le grimoire",
+      "youHaveIdentifiedTheGateway": "Vous avez identifié le portail",
+      "youHaveClassifiedANewSpecies": "Vous avez découvert une nouvelle espèce",
+      "teachings1": "Teachings",
+      "teachings2": "Teachings",
+      "teachings3": "Teachings"
+    }
+  }
+}

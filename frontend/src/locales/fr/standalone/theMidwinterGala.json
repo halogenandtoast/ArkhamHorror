@@ -1,0 +1,125 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the current agenda number.",
+      "cultist": "-X. X is the number of _Guest_ assets at your location (to a maximum of 5).",
+      "tablet": "-2. (-4 instead if you are at a _Private_ location).",
+      "elderThing": "-3. If you fail or if The Bloodless Man is at your location, take 1 horror."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 plus the current agenda number.",
+      "cultist": "-X. X is the number of story assets at your location.",
+      "tablet": "-3 (-5 instead if you are at a _Private_ location).",
+      "elderThing": "-4. If you fail or if The Bloodless Man is at your location, take 1 horror."
+    }
+  },
+  "message": {
+    "viciousAmbush": {
+      "couldNotMove": "Enemy {enemy} chosen by Vicious At could not move"
+    }
+  },
+  "label": {
+    "theFoundation": "The Foundation",
+    "miskatonicUniversity": "Miskatonic University",
+    "theSyndicate": "The Syndicate",
+    "theSilverTwilightLodge": "The Silver Twilight Lodge",
+    "localsOfKingsport": "Locals of Kingsport",
+    "lanternClubMember": {
+      "discard": "Spend 2 additional resources to discard it instead"
+    }
+  },
+  "tooltips": {
+    "thePaleLanternBeguilingAura": {
+      "flip": "Flip over a spellbound card at your location.",
+      "break": "Exhaust The Pale Lantern: Test {'{'}combat{'}'} or {'{'}agility{'}'} (2). If you succeed, place 1 damage on it. Then, if there is 4 damage on it, you break it; add it to the victory display (ignoring its _Forced_ effect) and flip over each spellbound card."
+    }
+  },
+  "intro": {
+    "title": "The Midwinter Gala",
+    "flavor": "<p>“It was the Yuletide, that men call Christmas though they know in their hearts it is older than Bethlehem and Babylon, older than Memphis and mankind. It was the Yuletide, and I had come at last to the ancient sea town where my people had dwelt and kept festival in the elder time when festival was forbidden; where also they had commanded their sons to keep festival once every century, that the memory of primal secrets might not be forgotten.”</p><p class='right'>– H.P. Lovecraft, \"The Festival\"</p>",
+    "body": "<p>A light snow falls as you step out of your taxi in front of the cracked and weathered facade of the old Kingsport manor. Several other guests—some of the finest movers and shakers from Arkham to New York—flitter past you to present their invitations to the doorman. As you follow them in, you catch a scent of cedar and sweet florals, with an undercurrent of something rank.</p><p>“The Lantern Club is thrilled to have you,” a grinning, sharp-eyed attendant says as they hand you the same bone-white mask worn throughout the soirée. Feeling out of place, you don your mask and follow an elderly flapper into a drawing room with a crackling fire. The room would be warm and inviting if not for an uncanny strangeness in the dreamlike paintings and ghastly sculptures. Looking at them makes your head swim.</p><P>“Please, please, if you’ll indulge me.” A stentorian voice bellows from an adjoining room. You follow the voice back to the lavish foyer. At the top of the stairway, a stately gentleman with a finely trimmed beard and alabaster mask raises his champagne glass. “I am Declan Pearce, nomarch of the Lantern Club. Follow me please.” The guests follow him through a wide set of double doors into the ballroom, in the center of which a gleaming gem is displayed behind a thick pane of glass. The socialites gather around, marveling at the swirling, iridescent colors that move like clouds within the hard cut angles of the Jewel.</p><p>“My honored guests. This is the Jewel of Sarnath,” Declan Pearce says triumphantly. “A stone unlike any other, rumored to have been cut in an ancient city on distant shores. Legends claim it can grant its bearer’s wishes.” Scattered laughter follows Pearce’s remark, and the chairman himself suppresses a chuckle. “Yes, yes, I know. Of course, the real purpose of this evening is you. We invited only the best, the most supreme of New England’s social strata, to appeal to your sense of charity. The most distinguished—or generous—among you may be permitted to hold the Jewel by the end of the evening. And who knows? Perhaps dreams are real, and the Jewel of Sarnath can grant wishes. But until then, enjoy our little party.”</p><p>After another wave of friendly laughter, Pearce claps his hands and a dozen attendants bearing mouth-watering appetizers descend upon the room. Your eyes scan the ballroom, hoping for some sign of the contact who led you here. A chill runs down your spine as you lock eyes with a tall, masked figure standing at the back of the crowd. He slowly cocks his head just a little too far to the right. You wonder if he is smiling behind his bone-white mask.</p><p>After what feels like ages, the man breaks eye contact with you to continue scanning the room. Suppressing a shiver, you search the gaggle of guests. Your gala invitation arrived in an unmarked parcel, along with a note promising generous compensation for your assistance in procuring the Jewel of Sarnath. At long last, you find your mysterious contact.",
+    "guestChoice": "<p class='basic'>Who is your mysterious contact? The investigators must choose which faction requested their assistance. (*Hint: The faction you choose will determine your objectives in this scenario.*)</p><p class='basic'>_The Guests:_</p><ul><li>A severe woman in a well-tailored suit leans against the wall with her arms crossed. She looks like she’d rather be in a shootout than at this elaborate party. If she is your contact, proceed to _The Foundation ({'{'}guardian{'}'})_.</li><li>An astute professorial type strokes his goatee as he studies  a painting. You recognize him as Caldwell Phillips, the dean of Miskatonic University. If he is your contact, skip to _Miskatonic University ({'{'}seeker{'}'})_.</li><li>A slick-looking man with dark hair taps ash from his cigar into a hapless guest’s champagne flute. His darting eyes suggest he’s casing the joint. If he is your contact, skip to _The Syndicate ({'{'}rogue{'}'})_.</li><li>You catch the gleam of a signet ring in the corner of your eye. Turning, you see the prestigious leader of the Silver Twilight Lodge, Carl Sanford, conversing with a pair of masked guests. If he is your contact, skip to _The Silver Twilight Lodge ({'{'}mystic{'}'})_.</li><li>A tall, stout man with a long black beard and a weatherbeaten coat looks clearly out of place at this extravagant gala. You recognize him from The Rope and Anchor tavern in Kingsport. If he is your contact, skip to _Locals of Kingsport ({'{'}survivor{'}'})_.</li></ul>",
+    "theFoundation": "<p>_The Foundation:_ \"Ah, you came,\" the woman says in a light Russian accent. \"I am agent Valeriya Antonova. I am here on behalf of the authorities.\" When you ask which authorities, she simply nods. \"Yes. The authorities.\" She explains that she and her \"authorities\" are investigating strange disappearances in the area and abroad, and they suspect the Lantern Club and Declan Pearce are to be blamed. The agent seems to loosen up as she knocks back a flute of champagne. \"We also believe this Jewel may be the source of some highly unusual paracausal phenomena. Be prepared for anything.\"</p><p class='basic right'>Skip to _Setup_</p>",
+    "miskatonicUniversity": "<p>_Miskatonic University_: You approach Dean Phillips and introduce yourself. The painting he was examining is eerily lifelike, depicting a humanoid creature covered in fur, with multiple arms, each with a clawed talon. \"Quite imaginative, these Lantern Club folks,\" he laughs. \"I see you received my missive. Thank you for coming. I must admit, the university is more than a little curious to study this ancient gem. The Jewel was rumored to have been housed in a Tibetan monastery until it vanished in the twelfth century. I simply couldn’t pass up the opportunity!\" he exclaims. \"Of course, if there were some way to examine the Jewel more thoroughly…\"</p><p class='basic right'>Skip to _Setup_</p>",
+    "theSyndicate": "<p>_The Syndicate:_ The man raises his glass in a mock toast as you approach. \"Johnny Valone. Glad you could make it to this mutually beneficial business arrangement.\" The man finishes his drink and casually hands the empty glass to a nearby socialite, who looks equal parts confused and offended. Valone is seemingly deaf to their protest as he leads you to a deserted study. \"Your reputation precedes you. Or rather, it doesn’t precede you. Nobody’ll suspect your involvement, which is why I’ve asked for your help in procuring this Jewel of Something-Or-Another. It’s a big score. I can promise you we’ll make it worth your while.\"</p><p class='basic right'>Skip to _Setup_</p>",
+    "theSilverTwilightLodge": "<p>_The Silver Twilight Lodge:_ Carl Sanford makes no introduction as you approach. \"Very good,\" he says matter-of-factly, then waves his masked guests away. \"As I am sure you are aware, rumors of the Jewel of Sarnath are quite prevalent amongst the occult circles of Arkham. Given the Jewel’s…colorful history, it would make quite the addition to the Lodge’s collection.\" The patriarch stares down his nose at you. \"Although I suspect that there is far more at play here than meets the eye. That is why I have asked you here. Acquire the Jewel for the Lodge, and you shall be rewarded with knowledge and riches beyond your wildest dreams.\" You ask him why the Lodge deserves the Jewel more than any other, and he smirks. \"We will keep it safe. Far safer than it would be in the hands of others. You cannot even begin to comprehend its power.\"</p><p class='basic right'>Skip to _Setup_</p>",
+    "localsOfKingsport": "<p>_Locals of Kingsport:_ \"The name’s Bain. William Bain,\" the stalwart man shakes your hand with a firm grip. \"I’m glad you came to this fancy little party. Truth be told, I’m not really a local; I just happen to have a soft spot for this old port.\" The man deftly avoids your questions about his origins before pointing at the silent masked figure in the corner of the room. \"He is the reason I invited you here. They call him ‘The Bloodless Man.’ Whatever the Lantern Club has planned for this evening is certainly his design.\" The captain sighs. \"No good can come of that strange Jewel. Only ruin. At least, so long as the Lantern Club has it.\" After further discussion, you agree to help Bain recover the Jewel.</p><p class='basic right'>Proceed to _Setup_</p>"
+  },
+  "theFabledJewel": {
+    "title": "The Fabled Jewel",
+    "body": "<p class='basic'>_Read the following only when directed during the scenario._</p><p>Your contact has further instructions for how to acquire the Jewel.</p><p class='basic'>Put the set-aside faction story card you allied with into play next to the act deck, Allied side faceup. If you allied with…</p>",
+    "theFoundation": "<p class='basic'>_The Foundation ({'{'}guardian{'}'})_, put the set-aside Declan Pearce enemy into play at the Lantern Chamber, exhausted. Attach the set-aside Jewel of Sarnath asset to The Bloodless Man (ignoring its _Revelation_ effect). If The Bloodless Man is not in play, attach the Jewel of Sarnath to the Lantern Chamber.</p>",
+    "miskatonicUniversity": "<p class='basic'>_Miskatonic University ({'{'}seeker{'}'})_, put the set-aside Declan Pearce enemy into play at the rightmost _*Second Floor*_ location and attach the set-aside Jewel of Sarnath asset to him (ignoring its _Revelation_ effect).",
+    "theSyndicate": "<p class='basic'>_The Syndicate ({'{'}rogue{'}'})_, shuffle the top card of the encounter deck, the set-aside Jewel of Sarnath asset, and the Declan Pearce enemy together, then randomly place 1 facedown beneath each _*Second Floor*_ location, as “mysteries.”",
+    "theSilverTwilightLodge": "<p class='basic'>_The Silver Twilight Lodge ({'{'}mystic{'}'})_, shuffle the encounter discard pile into the encounter deck. Take the top 7 cards of the encounter deck and shuffle the set-aside Jewel of Sarnath asset and Declan Pearce enemy into them, then place those 9 cards on the bottom of the encounter deck. If there are exactly 2 undefeated investigators, discard the top 6 cards of the encounter deck. If there is exactly 1 undefeated investigator, discard the top 12 cards of the encounter deck.",
+    "localsOfKingsport": "<p class='basic'>_Locals of Kingsport ({'{'}survivor{'}'})_, put the set-aside Declan Pearce enemy into play at the Lantern Chamber and attach the set-aside Jewel of Sarnath asset to him (ignoring its _Revelation_ effect). Place 1{'{'}perPlayer{'}'} damage and 1 doom on that asset. Reveal the top card of the Guest deck and put it into play at the Lobby.</p>"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>You wake up, freezing cold, facedown in the snow outside the Lantern Club’s stately manor.</p><p>The house is deserted, the cheery windows dark and foreboding, like the empty eye sockets of a grinning skull.</p><p>You can’t remember how you escaped the mayhem, but you will never forget what happened at Kingsport’s first—and hopefully last—Midwinter Gala.</p>"
+    },
+    "resigned": "<p>You wake up, freezing cold, facedown in the snow outside the Lantern Club’s stately manor.</p><p>The house is deserted, the cheery windows dark and foreboding, like the empty eye sockets of a grinning skull.</p><p>You can’t remember how you escaped the mayhem, but you will never forget what happened at Kingsport’s first—and hopefully last—Midwinter Gala.</p>",
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>You look up from the Jewel to see your contact standing in front of the manor, silhouetted in the moonlight.</p>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>Agent Antonova turns and strides toward you, her left cheek spattered with viscous ichor.</p><p>“I did not like this party at first, but it became much more interesting once they locked the doors,” she grins, then lays a hand on your shoulder.</p><p>“I have reported the strange effects of this ‘Jewel’ to my superiors. They want it brought to our offices for safekeeping, but I have several other obligations to attend to before I can deliver it.”</p><p>“I suppose there is little harm in letting you hold onto it for now. Know that I will be back later to collect it.”</p><p>After seeing the chaos the Jewel brought to the Gala, you wonder if you are being used more as a ‘case study’ than a recipient of its power.</p><ul><li>Skip to _Resolution 7_</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>After calming down a very flustered Dean Caldwell, the academic grabs the Jewel from your hand and holds it up to the light.</p><p>“Truly remarkable. The legends hardly do it justice. Miraculous! Breathtaking!”</p><p>The astute gentleman eventually runs out of descriptors, then thanks you for your assistance.</p><p>“Given what happened here tonight, I would prefer we not house the Jewel on campus grounds. We only just rebuilt the student dormitories. But if you could bring it by my office next week, I would relish the chance to study it further.”</p><ul><li>Skip to _Resolution 7_</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>\"Not too shabby,\" says Johnny Valone, lit cigar in his mouth. \"You have light hands. Could always use another pair for a job or two.\"</p><p>He winks as he blows smoke out the side of his mouth. \"I figured we could pawn the thing on the black market for a fair price, but after seeing what happened in there–\" his tough exterior softens. \"I wouldn’t wish that on anyone. What were those things anyway? Elephants? Sick gorillas?\"</p><p>He takes one last puff of his cigar. \"I guess I’ll never know. All I knows is, there’s no way I’m hauling that rock back to Arkham. Consider the Jewel a party favor. And this is for savin’ my ass.\" He hands out a wad of bills to you and melts into the shadows with a Cheshire grin.</p><ul><li>Skip to _Resolution 7_</li></ul>"
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "<p>\"I don’t care what it takes: I want that Jewel and I want it now!\" Carl Sanford seethes at his lackeys.</p><p>As you listen to the patriarch excoriate his associates, you think back to the events of the evening. Although you had resolved to help the Lodge, is the world truly safer with the Jewel in their possession?</p><p>Rather than return it to Sanford, you pocket the Jewel and slip away into the evening. You are the only one who can temper its power. What you are doing truly is for the greater good. Hopefully Sanford will never find out.</p><ul><li>Skip to _Resolution 7_</li></ul>"
+    },
+    "resolution6": {
+      "title": "Resolution 6",
+      "body": "<p>\"You’ve done a great thing this evening,\" Captain Bain claps you on the back. \"Given tales of the Jewel, this evening could have gone far worse. It is said that the Jewel brings the greatest dreams and worst nightmares of its bearer to life. Perhaps it is fitting, what happened to the Lantern Club…\"</p><p>Bain looks up at the darkened windows and snow stained with blood, then presses the Jewel back in your hand. \"Something tells me, however, that with you as its bearer, the Jewel may do some good.\"</p><p>You lose yourself looking into the cloudy, smoky heart of the gem. When you look up, the Captain has vanished.</p><ul><li>Skip to _Resolution 7_</li></ul>"
+    },
+    "resolution7": {
+      "title": "Resolution 7",
+      "body": "<p>Your skin prickles as you sit in the back seat of your cab, and you have the feeling of being watched.</p><p>You turn to look back at the manor’s facade to see the nightmarish face of the Bloodless Man staring down at you from the window.</p><p>As the manor disappears from view, you think back to Kingsport, a city shrouded in mystery and folklore. The city beckons with its name alone, conjuring up images of misty sea cliffs, shadowy coves, and ancient, brooding mansions.</p><p>For generations, stories of inexplicable phenomena, strange dreams, and haunting legends have plagued Kingsport. After tonight’s events, you finally understand why.</p><ul><li>Each investigator earns experience equal to the _Victory X_ value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Tally your score (*see page 24*) ({score}). If your score is…<ul><li class='{bonus1}'>…10-19, each investigator earns 1 bonus experience.</li><li class='{bonus2}'>…20-29, each investigator earns 2 bonus experience.</li><li class='{bonus3}'>…30-39, each investigator earns 3 bonus experience.</li><li class='{bonus4}'>…40-49, each investigator earns 4 bonus experience.</li><li class='{bonus5}'>…50 or more, each investigator earns 5 bonus experience.</li></ul></li></ul>"
+    },
+    "chooseGuest": "Each investigator may choose one single-sided _*Guest*_ asset under any investigator’s control to add to their deck (ignoring deckbuilding restrictions). It does not count toward that investigator’s deck size.",
+    "jewelOfSarnath": "If this scenario is a side-story, during the setup of each subsequent scenario in this campaign, you may shuffle the Jewel of Sarnath story asset into the encounter deck.",
+    "theFoundation": "If the investigators sided with _The Foundation ({'{'}guardian{'}'})_, proceed to _Resolution 2_.",
+    "miskatonicUniversity": "If the investigators sided with _Miskatonic University ({'{'}seeker{'}'})_, proceed to _Resolution 3_.",
+    "theSyndicate": "If the investigators sided with _The Syndicate ({'{'}rogue{'}'})_, proceed to _Resolution 4_.",
+    "theSilverTwilightLodge": "If the investigators sided with _The Silver Twilight Lodge ({'{'}mystic{'}'})_, proceed to _Resolution 5_.",
+    "localsOfKingsport": "If the investigators sided with the _Locals of Kingsport ({'{'}survivor{'}'})_, proceed to _Resolution 6_.",
+    "label": {
+      "chooseGuest": "Choose one single-sided Guest asset under any investigator’s control to add to their deck"
+    },
+    "xp": {
+      "bonus": {
+        "score": "Score"
+      }
+    },
+    "tasks": {
+      "title": "Tasks for End of Game Scoring",
+      "body": "<p>The following is a list of tasks used to tally your score.</p>",
+      "manorsWithNoClues": "<div class='task'>_1_ point for each revealed _*Manor*_ location with no clues.<span class='tally'>{count}</span></div>",
+      "guestAssetsControlled": "<div class='task'>_1_ point for each _Guest_ asset controlled by the investigators.<span class='tally'>{count}</span></div>",
+      "noSpellboundInPlay": "<div class='task'>_4_ points if no spellbound cards are in play.<span class='tally'>{count}</span></div>",
+      "agenda1AOr2A": "<div class='task'>_5_ points if agenda 1a or agenda 2a is in play.<span class='tally'>{count}</span></div>",
+      "bloodlessManInVictory": "<div class='task'>_4_ points if The Bloodless Man is in the victory display.<span class='tally'>{count}</span></div>",
+      "paleLanternInVictory": "<div class='task'>_3_ points if The Pale Lantern is in the victory display.<span class='tally'>{count}</span></div>",
+      "declanPearceInVictory": "<div class='task'>_3_ points if Declan Pearce is in the victory display.<span class='tally'>{count}</span></div>",
+      "rivalInVictory": "<div class='task'>_4_ points if a Rival story card is in the victory display.<span class='tally'>{count}</span></div>",
+      "damageBonus": "<div class='task'><span>_3_ points if no investigator has been defeated and there is 2 {'{'}perPlayer{'}'} or less damage on the investigators, as a group.</span><span class='tally'>{count}</span></div>",
+      "horrorBonus": "<div class='task'><span>_3_ points if no investigator has been defeated and there is 2 {'{'}perPlayer{'}'} or less horror on the investigators, as a group.</span><span class='tally'>{count}</span></div>",
+      "hardMode": "<div class='task'>_3_ points if you are playing on Hard difficulty mode.<span class='tally'>{count}</span></div>",
+      "expertMode": "<div class='task'>_6_ points if you are playing on Expert difficulty mode.<span class='tally'>{count}</span></div>",
+      "factionBonus": "<div class='task'>The end of game points on your faction’s story card.<span class='tally'>{count}</span></div>",
+      "total": "<div class='right task'>_Total:_ <span class='tally'>{count}</span></div>"
+    }
+  }
+}

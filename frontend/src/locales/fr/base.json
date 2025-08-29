@@ -1,0 +1,63 @@
+{
+  "about": "À propos",
+  "activeGames": "Parties en cours",
+  "cancel": "Annuler",
+  "cards": "Cartes",
+  "continue": "Continuer",
+  "debugGame": "Debug",
+  "doDeleteGame": "Êtes-vous certain de vouloir supprimer cette partie ?",
+  "email": "Email",
+  "finishedGames": "Parties terminées",
+  "forgotPassword": "Mot de passe oublié",
+  "home": "Accueil",
+  "invalidEmailOrPassword": "email ou mot de passe invalide",
+  "language": "Langue",
+  "logIn": "Identification",
+  "myDecks": "Mes Decks",
+  "support": "Patreon",
+  "newGame": "Nouvelle Partie",
+  "newPassword": "Nouveau mot de passe",
+  "password": "Mot de passe",
+  "passwordResetRequested": "Demande de réinitialisation de mot de passe",
+  "passwordUpdatedSuccessfully": "Mot de passe mis à jour",
+  "register": "S'enregistrer",
+  "resetPassword": "Réinitialisation mot de passe",
+  "settings": "Paramètres",
+  "updatePassword": "Mise à jour mot de passe",
+  "username": "Identifiant",
+  "usernameOrEmailAlreadyTaken": "Identifiant ou email non disponible",
+  "tooltips": {
+    "takeControlOfKey": "Prendre le contrôle de la clef {key}"
+  },
+  "shuffleRemainder": "Mélangez les cartes Rencontre restantes pour former le deck Rencontre.",
+  "readyToBegin": "Vous êtes maintenant prêt à démarrer.",
+
+  "Yes": "Oui",
+  "No": "Non",
+
+
+  "Parley": "Discuter",
+  "Resign": "Abandonner",
+  "Investigate": "Enquêter",
+  "Evade": "Échapper à",
+  "Fight": "Combattre",
+  "Engage": "Engager",
+  "Forced": "Forcé",
+  "Delayed": "Retardé",
+  "Objective": "Objectif",
+  "Haunted": "Hanté",
+
+  "Results": "Resultats",
+  "Story": "Histoire",
+  "ChooseOne": "Choisissez l'un",
+  "Choose": "Choisissez",
+  "setup": "Mise en place",
+  "addToken": "Ajoutez 1 pion Chaos {'{'}{token}{'}'} dans la réserve du Chaos pour le reste de la campagne.",
+  "choice": {
+    "clues": "Indices",
+    "resources": "Ressources",
+    "physical": "Physique",
+    "mental": "Mental",
+    "supplyPoints": "Supply Points to Gain"
+  }
+}

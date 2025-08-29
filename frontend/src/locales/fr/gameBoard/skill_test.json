@@ -1,0 +1,13 @@
+{
+    "fastPlayerWindow": "{'{fast}'} Fenêtre de joueur",
+
+    "determineSkillOfTestStep": "Déterminez la compétence du test. Un test de compétence de ce type débute.",
+    "commitCardsFromHandToSkillTestStep": "Atribuez des cartes de la main des joueurs au test de compétence.",
+    "revealChaosTokenStep": "Révélez un pion Chaos.",
+    "resolveChaosSymbolEffectsStep": "Appliquez les effets du symbole Chaos.",
+    "determineInvestigatorsModifiedSkillValueStep": "Déterminez la valeur de compétence modifiée de l’investigateur.",
+    "determineSuccessOrFailureOfSkillTestStep": "Déterminez la réussite/l’échec du test de compétence.",
+    "applySkillTestResultsStep": "Appliquez les résultats du test de compétence.",
+    "skillTestEndsStep": "Fin du test de compétence."
+
+}

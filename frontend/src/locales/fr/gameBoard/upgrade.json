@@ -1,0 +1,21 @@
+{
+    "title": "Améliorez le Deck ({xp} TOTAL xp)",
+    "fetching": "Récupération deck depuis {deckSource}...",
+    "newInvestigator": "Charger un nouvel investigateur",
+    "killed": "Votre investigateur est mort ou dément. Choisissez un autre investigateur",
+    "directlyUpdateContent": "Améliorez votre deck dans {deckSource} et synchronisez.",
+    "openDeck": "Ouvrir le Deck dans {deckSource}",
+    "pullUpdate": "Pull Upgraded Deck from {deckSource}",
+    "OR": "OU",
+    "deckUrlPlaceholder": "URL deck ArkhamDB ou arkham.build",
+    "Upgrade": "Améliorer",
+    "continueWithoutUpgrading": "Continuer sans changement",
+    "waitingOtherPlayer": "En attente des autres joueurs.",
+
+    "skippingPrompt": "Êtes-vous sûr de laisser votre deck inchangé ?",
+    
+    "unspendableXp": "XP non utilisable",
+    "xp": "{total} XP",
+    "victoryDisplay": "Pile Victoire"
+
+}

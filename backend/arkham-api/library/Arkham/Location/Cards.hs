@@ -920,7 +920,10 @@ veiled def =
     }
 
 storyOnBack :: CardDef -> CardDef
-storyOnBack def = def {cdDoubleSided = False}
+storyOnBack def = def {cdDoubleSided = False, cdOtherSide = Just (flippedCardCode def.cardCode)}
+
+storyOnBack' :: CardCode -> CardDef -> CardDef
+storyOnBack' back def = def {cdDoubleSided = False, cdOtherSide = Just back}
 
 quantity :: Int -> CardDef -> CardDef
 quantity n def = def {cdEncounterSetQuantity = Just n}
@@ -2996,11 +2999,11 @@ abbeyTowerSpiresForbidden =
 
 shoresOfHali :: CardDef
 shoresOfHali =
-  storyOnBack $ location "03325a" "Shores of Hali" [Otherworld] Circle [Square] DimCarcosa
+  storyOnBack' "03325b" $ location "03325a" "Shores of Hali" [Otherworld] Circle [Square] DimCarcosa
 
 bleakPlainsStarsOfAldebaran :: CardDef
 bleakPlainsStarsOfAldebaran =
-  storyOnBack
+  storyOnBack' "03326b"
     $ location
       "03326a"
       "Bleak Plains"
@@ -3011,7 +3014,7 @@ bleakPlainsStarsOfAldebaran =
 
 bleakPlainsBleakDesolation :: CardDef
 bleakPlainsBleakDesolation =
-  storyOnBack
+  storyOnBack' "03326d"
     $ location
       "03326c"
       "Bleak Plains"
@@ -3022,7 +3025,7 @@ bleakPlainsBleakDesolation =
 
 ruinsOfCarcosaInhabitantOfCarcosa :: CardDef
 ruinsOfCarcosaInhabitantOfCarcosa =
-  storyOnBack
+  storyOnBack' "03327b"
     $ location
       "03327a"
       "Ruins of Carcosa"
@@ -3033,7 +3036,7 @@ ruinsOfCarcosaInhabitantOfCarcosa =
 
 ruinsOfCarcosaAMomentsRest :: CardDef
 ruinsOfCarcosaAMomentsRest =
-  storyOnBack
+  storyOnBack' "03327d"
     $ location
       "03327c"
       "Ruins of Carcosa"
@@ -3044,7 +3047,7 @@ ruinsOfCarcosaAMomentsRest =
 
 ruinsOfCarcosaTheCoffin :: CardDef
 ruinsOfCarcosaTheCoffin =
-  storyOnBack
+  storyOnBack' "03327f"
     $ location
       "03327e"
       "Ruins of Carcosa"
@@ -3055,7 +3058,7 @@ ruinsOfCarcosaTheCoffin =
 
 dimStreetsMappingTheStreets :: CardDef
 dimStreetsMappingTheStreets =
-  storyOnBack
+  storyOnBack' "03328b"
     $ location
       "03328a"
       "Dim Streets"
@@ -3066,7 +3069,7 @@ dimStreetsMappingTheStreets =
 
 dimStreetsTheKingsParade :: CardDef
 dimStreetsTheKingsParade =
-  storyOnBack
+  storyOnBack' "03328d"
     $ location
       "03328c"
       "Dim Streets"
@@ -3077,7 +3080,7 @@ dimStreetsTheKingsParade =
 
 dimStreetsTheArchway :: CardDef
 dimStreetsTheArchway =
-  storyOnBack
+  storyOnBack' "03328f"
     $ location
       "03328e"
       "Dim Streets"
@@ -3088,7 +3091,7 @@ dimStreetsTheArchway =
 
 depthsOfDemheTheHeightOfTheDepths :: CardDef
 depthsOfDemheTheHeightOfTheDepths =
-  storyOnBack
+  storyOnBack' "03329b"
     $ location
       "03329a"
       "Depths of Demhe"
@@ -3099,7 +3102,7 @@ depthsOfDemheTheHeightOfTheDepths =
 
 depthsOfDemheStepsOfThePalace :: CardDef
 depthsOfDemheStepsOfThePalace =
-  storyOnBack
+  storyOnBack' "03329d"
     $ location
       "03329c"
       "Depths of Demhe"
@@ -3109,11 +3112,14 @@ depthsOfDemheStepsOfThePalace =
       DimCarcosa
 
 darkSpires :: CardDef
-darkSpires = storyOnBack $ location "03330" "Dark Spires" [Otherworld] Moon [Equals] DimCarcosa
+darkSpires =
+  storyOnBack' "03330b"
+    $ location "03330" "Dark Spires" [Otherworld] Moon [Equals] DimCarcosa
 
 palaceOfTheKing :: CardDef
 palaceOfTheKing =
-  storyOnBack $ location "03331" "Palace of the King" [Otherworld] Star [Triangle, Diamond] DimCarcosa
+  storyOnBack' "03331b"
+    $ location "03331" "Palace of the King" [Otherworld] Star [Triangle, Diamond] DimCarcosa
 
 expeditionCamp :: CardDef
 expeditionCamp =
@@ -3126,49 +3132,24 @@ ruinsOfEztli =
     $ location "04053" "Ruins of Eztli" [Ancient, Ruins] Hourglass [Triangle, Heart] TheUntamedWilds
 
 entryway :: CardDef
-entryway =
-  location
-    "04060"
-    "Entryway"
-    [Ancient, Ruins]
-    Circle
-    [Square, Star]
-    TheDoomOfEztli
+entryway = location "04060" "Entryway" [Ancient, Ruins] Circle [Square, Star] TheDoomOfEztli
 
 ancientHall :: CardDef
 ancientHall =
   singleSided
-    $ location
-      "04063"
-      "Ancient Hall"
-      [Ancient, Ruins]
-      Square
-      [Circle, Star, Diamond]
-      TheDoomOfEztli
+    $ location "04063" "Ancient Hall" [Ancient, Ruins] Square [Circle, Star, Diamond] TheDoomOfEztli
 
 grandChamber :: CardDef
 grandChamber =
   victory 1
     $ singleSided
-    $ location
-      "04064"
-      "Grand Chamber"
-      [Ancient, Ruins]
-      Star
-      [Circle, Square, Triangle]
-      TheDoomOfEztli
+    $ location "04064" "Grand Chamber" [Ancient, Ruins] Star [Circle, Square, Triangle] TheDoomOfEztli
 
 burialPit :: CardDef
 burialPit =
   victory 1
     $ singleSided
-    $ location
-      "04065"
-      "Burial Pit"
-      [Ancient, Ruins]
-      Triangle
-      [Star, Diamond, Squiggle]
-      TheDoomOfEztli
+    $ location "04065" "Burial Pit" [Ancient, Ruins] Triangle [Star, Diamond, Squiggle] TheDoomOfEztli
 
 undergroundRuins :: CardDef
 undergroundRuins =

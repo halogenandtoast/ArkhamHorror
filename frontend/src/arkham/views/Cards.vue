@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { watch, ref, computed } from 'vue';
 import { fetchCards } from '@/arkham/api';
-import { imgsrc, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
+import { localizeArkhamDBBaseUrl } from '@/arkham/helpers';
 import { useRouter, useRoute, LocationQueryValue } from 'vue-router';
 import * as Arkham from '@/arkham/types/CardDef';
 import CardImage from '@/arkham/components/CardImage.vue';
@@ -87,10 +87,11 @@ watch(() => view.value, (newView) => {
 
 watch(() => allCards.value, () => {
   const language = localStorage.getItem('language') || 'en'
-  if (language === 'en') return;
+  if (language === 'en') return
+  if (!allCards.value) return
   
   for (const card of allCards.value) {
-    const match: ArkhamDBCard = store.getDbCard(card.art)
+    const match: ArkhamDBCard | null = store.getDbCard(card.art)
     if (!match) continue
     
     // Name
@@ -149,10 +150,6 @@ const setCountText = (set: CardSet) => {
 
   return ` (${implementedCount}/${total})`
 }
-
-const image = (card: Arkham.CardDef) => imgsrc(`cards/${card.art}.avif`)
-
-const backImage = (card: Arkham.CardDef) => imgsrc(`cards/${card.otherSide.replace(/^c/, '')}.avif`)
 
 const cards = computed(() => {
   if (!allCards.value) return []
@@ -361,7 +358,7 @@ const cardSetText = (card: Arkham.CardDef) => {
   var setName = ''
   
   if (language !== 'en') {
-    const match: ArkhamDBCard = store.getDbCard(card.art)
+    const match: ArkhamDBCard | null = store.getDbCard(card.art)
     if (match) setName = match.pack_name
   }
   

@@ -76,7 +76,6 @@ export default defineComponent({
         }
       } else if (/{enemy:"((?:[^"]|\\.)+)":(.+):"([^"]+)"}/.test(split)) {
         const found = split.match(/{enemy:"((?:[^"]|\\.)+)":(.+):"([^"]+)"}/)
-        console.log(split, found)
         if (found) {
           const [, name, , cardCode ] = found
           if (cardCode) {

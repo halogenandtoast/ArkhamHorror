@@ -187,7 +187,6 @@ const cards = computed(() => {
 
     if (cardTypes.length > 0) {
       const sanitizedCardTypes = cardTypes.map((ct) => ct.toLowerCase().trim())
-      console.log(sanitizedCardTypes, cardType(c))
       if (!sanitizedCardTypes.includes(cardType(c).toLowerCase().trim())) return false
     }
 

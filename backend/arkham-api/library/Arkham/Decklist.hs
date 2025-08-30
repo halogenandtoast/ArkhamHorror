@@ -1,7 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
 module Arkham.Decklist (module Arkham.Decklist, module Arkham.Decklist.Type) where
-
-import Arkham.Prelude hiding (try)
 
 import Arkham.Card
 import Arkham.Card.PlayerCard
@@ -11,9 +8,8 @@ import Arkham.Id
 import Arkham.Investigator
 import Arkham.Name
 import Arkham.PlayerCard
-import Arkham.SkillType
+import Arkham.Prelude hiding (try, (<|>))
 import Arkham.Taboo.Types
-import Arkham.Trait
 import Data.Aeson
 import Data.Aeson.Key (fromText)
 import Data.Aeson.KeyMap qualified as KeyMap
@@ -21,21 +17,7 @@ import Data.IntMap qualified as IntMap
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import GHC.Records
-import Text.Parsec (
-  ParsecT,
-  alphaNum,
-  char,
-  digit,
-  many1,
-  optionMaybe,
-  parse,
-  sepBy,
-  sepBy1,
-  space,
-  string,
-  try,
-  unexpected,
- )
+import Text.Parsec
 import Text.Read (read)
 
 data Decklist = Decklist
@@ -77,63 +59,47 @@ loadDecklist decklist =
     <*> pure (url decklist)
     <*> pure (decklistAttachments decklist)
 
-decklistInvestigatorId :: ArkhamDBDecklist -> InvestigatorId
-decklistInvestigatorId decklist = fromMaybe (investigator_code decklist) do
-  meta' <- meta decklist
-  ArkhamDBDecklistMeta {alternate_front} <- decode (encodeUtf8 $ fromStrict meta')
-  guard (alternate_front /= Just "") *> alternate_front
-
-instance HasField "investigator" ArkhamDBDecklist InvestigatorId where
-  getField = decklistInvestigatorId
-
-
 loadDecklistCards
   :: CardGen m => (ArkhamDBDecklist -> Map CardCode Int) -> ArkhamDBDecklist -> m [PlayerCard]
-loadDecklistCards f decklist = do
-  results <- for (Map.toList $ f decklist) $ \(cardCode, count') ->
-    replicateM
-      count'
-      ( genPlayerCardWith (lookupPlayerCardDef cardCode)
-          $ applyCustomizations decklist
-          . setPlayerCardOwner (normalizeInvestigatorId $ decklistInvestigatorId decklist)
-          . Arkham.Card.PlayerCard.setTaboo (fromTabooId $ taboo_id decklist)
-      )
-  pure $ fold results
+loadDecklistCards f decklist =
+  fold <$> for (Map.toList $ f decklist) \(cardCode, count') ->
+    replicateM count' do
+      genPlayerCardWith (lookupPlayerCardDef cardCode)
+        $ applyCustomizations decklist
+        . setPlayerCardOwner (normalizeInvestigatorId $ decklistInvestigatorId decklist)
+        . Arkham.Card.PlayerCard.setTaboo (fromTabooId $ taboo_id decklist)
 
 loadExtraDeck :: CardGen m => ArkhamDBDecklist -> m [PlayerCard]
-loadExtraDeck decklist = case meta decklist of
-  Just meta' -> case decode (encodeUtf8 $ fromStrict meta') of
-    Just (Object o) ->
-      case KeyMap.lookup "extra_deck" o of
-        Just (String s) ->
-          let codes = T.splitOn "," s
-              convert =
-                applyCustomizations decklist
-                  . setPlayerCardOwner (normalizeInvestigatorId $ decklistInvestigatorId decklist)
-           in traverse ((`genPlayerCardWith` convert) . lookupPlayerCardDef . CardCode) codes
-        _ -> loadDecklistCards sideSlots decklist
-    _ -> loadDecklistCards sideSlots decklist
-  _ -> loadDecklistCards sideSlots decklist
+loadExtraDeck decklist = do
+  let
+    mResult = do
+      meta' <- meta decklist
+      Object o <- decode (encodeUtf8 $ fromStrict meta')
+      String s <- KeyMap.lookup "extra_deck" o
+      pure $ T.splitOn "," s
 
-data ArkhamDBDecklistMeta = ArkhamDBDecklistMeta
-  { alternate_front :: Maybe InvestigatorId
-  , attachments_11080 :: Maybe Text
-  }
-  deriving stock (Generic, Show)
-  deriving anyclass FromJSON
+  case mResult of
+    Nothing -> loadDecklistCards sideSlots decklist
+    Just codes -> do
+      let convert =
+            applyCustomizations decklist
+              . setPlayerCardOwner (normalizeInvestigatorId $ decklistInvestigatorId decklist)
+      traverse ((`genPlayerCardWith` convert) . lookupPlayerCardDef . CardCode) codes
 
 -- things we can choose: cards, traits, skills
 applyCustomizations :: ArkhamDBDecklist -> PlayerCard -> PlayerCard
-applyCustomizations deckList pCard = case meta deckList of
-  Just meta' -> case decode (encodeUtf8 $ fromStrict meta') of
-    Just (Object o) ->
-      case KeyMap.lookup (fromText $ "cus_" <> unCardCode (pcCardCode pCard)) o of
-        Just (fromJSON -> Success customizations) -> case parse parseCustomizations "" customizations of
-          Left _ -> pCard
-          Right cs -> pCard {pcCustomizations = cs}
-        _ -> pCard
-    _ -> pCard
-  _ -> pCard
+applyCustomizations deckList pCard = fromMaybe pCard do
+  meta' <- meta deckList
+  Object o <- decode (encodeUtf8 $ fromStrict meta')
+  s <- KeyMap.lookup (fromText $ "cus_" <> unCardCode (pcCardCode pCard)) o
+  case fromJSON s of
+    Success (customizations :: Text) -> do
+      cs <- parseMaybe parseCustomizations "" customizations
+      pure $ pCard {pcCustomizations = cs}
+    _ -> Nothing
+
+parseMaybe :: Parser a -> SourceName -> Text -> Maybe a
+parseMaybe p sName input = either (const Nothing) Just $ parse p sName input
 
 parseCustomizations :: Parser Customizations
 parseCustomizations = IntMap.fromList <$> sepBy parseEntry (char ',')
@@ -164,26 +130,21 @@ parseCustomizations = IntMap.fromList <$> sepBy parseEntry (char ',')
   parseSkillTypes = sepBy1 parseSkillType (char '^')
   parseSkillType =
     ChosenSkill
-      <$> ( (string "willpower" $> SkillWillpower)
-              <|> (string "intellect" $> SkillIntellect)
-              <|> (string "combat" $> SkillCombat)
-              <|> (string "agility" $> SkillAgility)
+      <$> ( (string "willpower" $> #willpower)
+              <|> (string "intellect" $> #intellect)
+              <|> (string "combat" $> #combat)
+              <|> (string "agility" $> #agility)
           )
   parseTraits = sepBy1 parseTrait (char '^')
   parseTrait = do
     t <- many1 (alphaNum <|> space)
-    case fromJSON @Trait (String . T.concat . T.words . T.toTitle $ pack t) of
+    case fromJSON (String . T.concat . T.words . T.toTitle $ pack t) of
       Success x -> pure $ ChosenTrait x
       _ -> unexpected ("invalid trait: " ++ t)
 
 decklistAttachments :: ArkhamDBDecklist -> Map CardCode [CardCode]
-decklistAttachments decklist = case meta decklist of
-  Nothing -> mempty
-  Just meta' -> case decode (encodeUtf8 $ fromStrict meta') of
-    Nothing -> mempty
-    Just ArkhamDBDecklistMeta {attachments_11080} ->
-      case attachments_11080 of
-        Nothing -> mempty
-        Just s ->
-          let codes = T.splitOn "," s
-           in Map.fromList [(CardCode "11080", map CardCode codes)]
+decklistAttachments decklist = fromMaybe mempty do
+  meta' <- meta decklist
+  ArkhamDBDecklistMeta {attachments_11080} <- decode (encodeUtf8 $ fromStrict meta')
+  codes <- T.splitOn "," <$> attachments_11080
+  pure $ Map.fromList [(CardCode "11080", map CardCode codes)]

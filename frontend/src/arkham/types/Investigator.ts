@@ -9,6 +9,7 @@ import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Seal, sealDecoder } from '@/arkham/types/Seal';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
+import { TabooList, tabooListDecoder } from '@/arkham/types/TabooList';
 import {
   Card,
   CardContents,
@@ -169,7 +170,7 @@ export type Investigator = {
   revealedHunchCard?: string | null;
   devoured?: Card[]
   mutated?: string;
-  taboo?: string;
+  taboo?: TabooList;
   deckUrl?: string;
   slots: Slot[];
   log: LogContents;
@@ -275,7 +276,7 @@ export const investigatorDecoder = JsonDecoder.object({
   modifiers: v2Optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
   form: formDecoder,
   mutated: v2Optional(JsonDecoder.string()),
-  taboo: v2Optional(JsonDecoder.string()),
+  taboo: v2Optional(tabooListDecoder),
   deckUrl: v2Optional(JsonDecoder.string()),
   slots: slotsDecoder,
   log: logContentsDecoder,

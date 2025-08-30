@@ -33,15 +33,10 @@ newtype EdgeOfTheEarth = EdgeOfTheEarth CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
 
 edgeOfTheEarth :: Difficulty -> EdgeOfTheEarth
-edgeOfTheEarth difficulty =
-  campaign
-    EdgeOfTheEarth
-    (CampaignId "08")
-    "Edge of the Earth"
-    difficulty
-    (chaosBagContents difficulty)
+edgeOfTheEarth = campaign EdgeOfTheEarth (CampaignId "08") "Edge of the Earth"
 
 instance IsCampaign EdgeOfTheEarth where
+  campaignTokens = chaosBagContents
   nextStep a = case campaignStep (toAttrs a) of
     PrologueStep -> Just IceAndDeathPart1
     IceAndDeathPart1 -> Just (UpgradeDeckStep $ CheckpointStep 1)

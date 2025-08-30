@@ -19,6 +19,7 @@ newtype ThePathToCarcosa = ThePathToCarcosa CampaignAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
 
 instance IsCampaign ThePathToCarcosa where
+  campaignTokens = chaosBagContents
   nextStep a = case campaignStep (toAttrs a) of
     PrologueStep -> Just CurtainCall
     CurtainCall -> Just (UpgradeDeckStep TheLastKing)
@@ -35,13 +36,7 @@ instance IsCampaign ThePathToCarcosa where
     _ -> Nothing
 
 thePathToCarcosa :: Difficulty -> ThePathToCarcosa
-thePathToCarcosa difficulty =
-  campaign
-    ThePathToCarcosa
-    (CampaignId "03")
-    "The Path to Carcosa"
-    difficulty
-    (chaosBagContents difficulty)
+thePathToCarcosa = campaign ThePathToCarcosa (CampaignId "03") "The Path to Carcosa"
 
 instance RunMessage ThePathToCarcosa where
   runMessage msg c@(ThePathToCarcosa attrs) = runQueueT $ campaignI18n $ case msg of

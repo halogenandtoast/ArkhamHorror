@@ -2910,6 +2910,8 @@ enemyMatcherFilter es matcher' = do
       pure $ case (x, y) of
         (Just x', Just y') -> y' <= x'
         _ -> False
+    EnemyWithMaybeFieldLessThanOrEqualTo n fld -> flip filterM es \enemy -> do
+      maybe False (<= n) <$> field fld enemy.id
     IncludeOmnipotent matcher -> enemyMatcherFilter es matcher
     IncludeOutOfPlayEnemy matcher -> enemyMatcherFilter es matcher
     InPlayEnemy matcher -> do

@@ -66,6 +66,7 @@ data EnemyMatcher
   | EnemyWithEqualFields (Field Enemy Int) (Field Enemy Int)
   | EnemyWithNonZeroField (Field Enemy Int)
   | EnemyWithMaybeFieldLessThanOrEqualToThis EnemyId (Field Enemy (Maybe Int))
+  | EnemyWithMaybeFieldLessThanOrEqualTo Int (Field Enemy (Maybe Int))
   | EnemyWithRemainingHealth ValueMatcher
   | EnemyWithDamage ValueMatcher
   | EnemyWithDoom ValueMatcher

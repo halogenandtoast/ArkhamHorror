@@ -20,7 +20,7 @@ function loadDeck() {
   model.value = null
 
   const arkhamDbRegex = /https:\/\/(?:[a-zA-Z0-9-]+\.)?arkhamdb\.com\/(deck(list)?)(\/view)?\/([^/]+)/
-  const arkhamBuildRegex = /https:\/\/arkham\.build\/((deck(list)?\/view)|share)\/([^/]+)/
+  const arkhamBuildRegex = /https:\/\/arkham\.build\/(deck(list)?|share)(\/view)?\/([^/]+)/
   
   let matches
   if ((matches = deck.value.match(arkhamDbRegex))) {
@@ -29,6 +29,7 @@ function loadDeck() {
       .then((response) => response.json(), () => model.value = null)
       .then((data) => model.value = {...data, url: deckUrl.value}, () => model.value = null)
   } else if ((matches = deck.value.match(arkhamBuildRegex))) {
+    console.log(matches)
     if (/^[0-9]+$/.test(matches[4])) {
       deckUrl.value = `${localizeArkhamDBBaseUrl()}/api/public/${matches[1]}/${matches[4]}`
       fetch(deckUrl.value)

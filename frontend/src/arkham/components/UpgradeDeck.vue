@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { displayTabooList } from '@/arkham/taboo';
 import { ref, computed, inject } from 'vue';
 import { upgradeDeck } from '@/arkham/api';
 import { imgsrc, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
@@ -249,22 +250,7 @@ const breakdowns = computed(() => {
 })
 
 const tabooList = function (investigator: Investigator) {
-  if (investigator.taboo) {
-    switch (investigator.taboo) {
-      case "TabooList15": return "1.5 (Apr 23, 2019)"
-      case "TabooList16": return "1.6 (Sep 27, 2019)"
-      case "TabooList18": return "1.8 (Oct 15, 2020)"
-      case "TabooList19": return "1.9 (Jun 28, 2021)"
-      case "TabooList20": return "2.0 (Aug 26, 2022)"
-      case "TabooList21": return "2.1 (Aug 30, 2023)"
-      case "TabooList22": return "2.2 (Feb 20, 2024)"
-      case "TabooList23": return "2.3 (Oct 24, 2024)"
-      case "TabooList24": return "2.4 (Jul 11, 2025)"
-      default: return "Unknown Taboo List"
-    }
-  }
-
-  return null
+  return investigator.taboo ? displayTabooList(investigator.taboo) : null
 }
 </script>
 

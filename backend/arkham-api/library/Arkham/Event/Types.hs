@@ -125,6 +125,12 @@ instance HasField "use" EventAttrs (UseType -> Int) where
 instance HasField "ready" EventAttrs Bool where
   getField = not . eventExhausted
 
+instance HasField "playedFrom" EventAttrs Zone where
+  getField = eventPlayedFrom
+
+instance HasField "playedFromDiscard" EventAttrs Bool where
+  getField = (== FromDiscard) . eventPlayedFrom
+
 instance HasField "taboo" EventAttrs (Maybe TabooList) where
   getField = eventTaboo
 

@@ -7,10 +7,6 @@ const deck = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
 const error = ref<string | null>(null)
 
-//const isArkhamDB = computed(() => {
-//  return deck.value && deck.value.match(/https:\/\/(?:[a-zA-Z0-9-]+\.)?arkhamdb\.com\/(deck(list)?)(\/view)?\/([^/]+)/)
-//})
-
 const isArkhamBuild = computed(() => {
   return deck.value && deck.value.match(/https:\/\/arkham\.build\/(?:deck\/view|share)\/([^/]+)/)
 })
@@ -29,7 +25,6 @@ function loadDeck() {
       .then((response) => response.json(), () => model.value = null)
       .then((data) => model.value = {...data, url: deckUrl.value}, () => model.value = null)
   } else if ((matches = deck.value.match(arkhamBuildRegex))) {
-    console.log(matches)
     if (/^[0-9]+$/.test(matches[4])) {
       deckUrl.value = `${localizeArkhamDBBaseUrl()}/api/public/${matches[1]}/${matches[4]}`
       fetch(deckUrl.value)
@@ -48,10 +43,7 @@ function loadDeck() {
           }
         }, () => model.value = null)
     }
-  } else {
-    return
   }
-
 }
 
 function pasteDeck(evt: ClipboardEvent) {

@@ -27,6 +27,7 @@ instance HasField "attrs" TheDunwichLegacy CampaignAttrs where
   getField (TheDunwichLegacy attrs) = attrs
 
 instance IsCampaign TheDunwichLegacy where
+  campaignTokens = chaosBagContents
   invalidCards =
     recordedCardCodes
       . findWithDefault [] (toCampaignLogKey SacrificedToYogSothoth)
@@ -57,13 +58,7 @@ instance IsCampaign TheDunwichLegacy where
     _ -> Nothing
 
 theDunwichLegacy :: Difficulty -> TheDunwichLegacy
-theDunwichLegacy difficulty =
-  campaign
-    TheDunwichLegacy
-    (CampaignId "02")
-    "The Dunwich Legacy"
-    difficulty
-    (chaosBagContents difficulty)
+theDunwichLegacy = campaign TheDunwichLegacy (CampaignId "02") "The Dunwich Legacy"
 
 instance RunMessage TheDunwichLegacy where
   runMessage msg c = runQueueT $ campaignI18n $ case msg of

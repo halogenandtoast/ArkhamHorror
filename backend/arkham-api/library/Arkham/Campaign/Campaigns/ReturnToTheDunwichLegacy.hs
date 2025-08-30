@@ -4,7 +4,6 @@ import Arkham.Campaign.Campaigns.TheDunwichLegacy
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
 import Arkham.Campaigns.TheDunwichLegacy.Helpers
-import Arkham.Campaigns.TheDunwichLegacy.Import
 import Arkham.Helpers.FlavorText
 import Arkham.Message.Lifted.Choose
 import Arkham.Resolution
@@ -13,6 +12,7 @@ newtype ReturnToTheDunwichLegacy = ReturnToTheDunwichLegacy TheDunwichLegacy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
 
 instance IsCampaign ReturnToTheDunwichLegacy where
+  campaignTokens = campaignTokens @TheDunwichLegacy
   nextStep a = case campaignStep (toAttrs a) of
     PrologueStep -> error $ "Unhandled campaign step: " <> show a
     ReturnToExtracurricularActivities ->
@@ -38,13 +38,11 @@ instance IsCampaign ReturnToTheDunwichLegacy where
     _ -> Nothing
 
 returnToTheDunwichLegacy :: Difficulty -> ReturnToTheDunwichLegacy
-returnToTheDunwichLegacy difficulty =
+returnToTheDunwichLegacy =
   campaign
     (ReturnToTheDunwichLegacy . TheDunwichLegacy)
     (CampaignId "51")
     "Return to the Dunwich Legacy"
-    difficulty
-    (chaosBagContents difficulty)
 
 instance RunMessage ReturnToTheDunwichLegacy where
   runMessage msg c@(ReturnToTheDunwichLegacy theDunwichLegacy') = runQueueT $ campaignI18n $ case msg of

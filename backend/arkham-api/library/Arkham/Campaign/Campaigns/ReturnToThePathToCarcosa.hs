@@ -4,12 +4,12 @@ import Arkham.Campaign.Campaigns.ThePathToCarcosa
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.ThePathToCarcosa.CampaignSteps
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
-import Arkham.Campaigns.ThePathToCarcosa.Import
 
 newtype ReturnToThePathToCarcosa = ReturnToThePathToCarcosa ThePathToCarcosa
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
 
 instance IsCampaign ReturnToThePathToCarcosa where
+  campaignTokens = campaignTokens @ThePathToCarcosa
   nextStep a = case campaignStep (toAttrs a) of
     PrologueStep -> Just ReturnToCurtainCall
     ReturnToCurtainCall -> Just (UpgradeDeckStep ReturnToTheLastKing)
@@ -26,13 +26,11 @@ instance IsCampaign ReturnToThePathToCarcosa where
     _ -> Nothing
 
 returnToThePathToCarcosa :: Difficulty -> ReturnToThePathToCarcosa
-returnToThePathToCarcosa difficulty =
+returnToThePathToCarcosa =
   campaign
     (ReturnToThePathToCarcosa . ThePathToCarcosa)
     (CampaignId "52")
     "Return to the Path to Carcosa"
-    difficulty
-    (chaosBagContents difficulty)
 
 instance RunMessage ReturnToThePathToCarcosa where
   runMessage msg c@(ReturnToThePathToCarcosa thePathToCarcosa') = runQueueT $ campaignI18n $ case msg of

@@ -30,8 +30,8 @@ newtype TheDreamEaters = TheDreamEaters CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
 
 theDreamEaters :: Difficulty -> TheDreamEaters
-theDreamEaters difficulty =
-  campaignWith TheDreamEaters (CampaignId "06") "The Dream-Eaters" difficulty []
+theDreamEaters =
+  campaignWith TheDreamEaters (CampaignId "06") "The Dream-Eaters"
     $ metaL
     .~ toJSON (Metadata FullMode Nothing Nothing mempty mempty)
 
@@ -106,6 +106,7 @@ whenHasRecord :: (IsCampaignLogKey k, HasGame m, HasCallStack) => CampaignPart -
 whenHasRecord part key action = whenM (getHasRecord part key) action
 
 instance IsCampaign TheDreamEaters where
+  campaignTokens = const [] -- determined by mode
   nextStep a@(TheDreamEaters attrs) =
     let meta = toResult (campaignMeta attrs)
      in case campaignStep (toAttrs a) of

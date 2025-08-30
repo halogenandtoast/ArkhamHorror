@@ -42,6 +42,7 @@ instance FromJSON TheForgottenAge where
       _ -> TheForgottenAge <$> parseJSON (Object o)
 
 instance IsCampaign TheForgottenAge where
+  campaignTokens = chaosBagContents
   nextStep a = case campaignStep (toAttrs a) of
     PrologueStep -> Just TheUntamedWilds
     TheUntamedWilds -> Just (InterludeStep 1 Nothing)
@@ -64,13 +65,7 @@ instance IsCampaign TheForgottenAge where
     _ -> Nothing
 
 theForgottenAge :: Difficulty -> TheForgottenAge
-theForgottenAge difficulty =
-  campaign
-    TheForgottenAge
-    (CampaignId "04")
-    "The Forgotten Age"
-    difficulty
-    (chaosBagContents difficulty)
+theForgottenAge = campaign TheForgottenAge (CampaignId "04") "The Forgotten Age"
 
 initialSupplyPoints :: HasGame m => m Int
 initialSupplyPoints = getPlayerCountValue (ByPlayerCount 10 7 5 4)

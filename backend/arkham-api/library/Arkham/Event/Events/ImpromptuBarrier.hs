@@ -27,7 +27,7 @@ instance RunMessage ImpromptuBarrier where
     Successful (Action.Evade, EnemyTarget enemyId) iid source (isTarget attrs -> True) n -> do
       push $ Successful (#evade, EnemyTarget enemyId) iid source (toTarget enemyId) n
       enemies <- select $ EnemyWithMaybeFieldLessThanOrEqualTo n Enemy.EnemyEvade <> not_ (be enemyId)
-      chooseOneM iid do
+      chooseOrRunOneM iid do
         questionLabeled "Evade another enemy"
         questionLabeledCard attrs
         labeled "Do not evade another enemy" nothing

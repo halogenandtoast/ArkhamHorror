@@ -426,6 +426,9 @@ instance Sourceable InvestigatorAttrs where
     iid == investigatorId
   isSource _ _ = False
 
+instance HasField "usedAdditionalActions" InvestigatorAttrs [AdditionalAction] where
+  getField = investigatorUsedAdditionalActions
+
 instance HasField "slots" InvestigatorAttrs (Map SlotType [Slot]) where
   getField = investigatorSlots
 

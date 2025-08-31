@@ -19,13 +19,11 @@ jimCulver =
     $ Stats {health = 7, sanity = 8, willpower = 4, intellect = 3, combat = 3, agility = 2}
 
 instance HasModifiersFor JimCulver where
-  getModifiersFor (JimCulver attrs) =
-    getSkillTestInvestigator >>= \case
-      Just iid | iid == attrs.id -> do
-        skulls <-
-          filterM (fmap (elem #skull) . getModifiedChaosTokenFace) =<< getSkillTestRevealedChaosTokens
-        modifyEach attrs skulls [ChangeChaosTokenModifier (PositiveModifier 0)]
-      _ -> pure mempty
+  getModifiersFor (JimCulver attrs) = void $ runMaybeT do
+    iid <- MaybeT getSkillTestInvestigator
+    guard $ iid == attrs.id
+    skulls <- filterM (fmap (elem #skull) . getModifiedChaosTokenFace) =<< getSkillTestRevealedChaosTokens
+    modifyEach attrs skulls [ChangeChaosTokenModifier (PositiveModifier 0)]
 
 instance HasChaosTokenValue JimCulver where
   getChaosTokenValue iid ElderSign (JimCulver attrs) | attrs `is` iid = do

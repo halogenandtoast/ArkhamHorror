@@ -393,7 +393,7 @@ const getCardName = (dbCard: ArkhamDBCard, needBack: boolean): string | null => 
   if (isLocalized(card.value)) return null
 
   if (dbCard.name === dbCard.real_name) return null
-  let name = needBack ? (dbCard.back_name || null) : (dbCard.name || null)
+  let name = (needBack ? (dbCard.double_sided ? (dbCard.back_name || dbCard.name) : dbCard.back_name) : dbCard.name) || null;
   if (!name) return null
   if (!needBack && dbCard.subname) name = `${name}: ${dbCard.subname}`
   if ((dbCard.xp || 0) > 0) name = `${name} (${dbCard.xp})`
@@ -405,7 +405,8 @@ const getCardTraits = (dbCard: ArkhamDBCard, needBack: boolean): string | null =
   if (!card.value) return null
   if (isLocalized(card.value)) return null
 
-  return needBack ? (dbCard.back_traits || null) : (dbCard.traits || null)
+  return (needBack ? (dbCard.double_sided ? (dbCard.back_traits || dbCard.traits) : dbCard.back_traits) : dbCard.traits) || null
+
 }
 
 const getCardText = (dbCard: ArkhamDBCard, needBack: boolean): string | null => {

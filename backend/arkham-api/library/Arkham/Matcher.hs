@@ -68,6 +68,15 @@ have = has
 instance Has InvestigatorMatcher Supply where
   has = InvestigatorWithSupply
 
+affectsColocatedMatch :: InvestigatorMatcher -> InvestigatorMatcher
+affectsColocatedMatch = affectsOthers . colocatedWithMatch
+{-# INLINE affectsColocatedMatch #-}
+
+affectsColocated
+  :: (AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> InvestigatorMatcher
+affectsColocated = affectsOthers . colocatedWith
+{-# INLINE affectsColocated #-}
+
 affectsOthers :: InvestigatorMatcher -> InvestigatorMatcher
 affectsOthers You = You
 affectsOthers NotYou =

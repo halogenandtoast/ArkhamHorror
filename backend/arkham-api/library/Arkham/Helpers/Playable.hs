@@ -58,6 +58,18 @@ getPlayableCards source investigator costStatus windows' = do
     filterM (getIsPlayable (asId investigator) source costStatus windows') (hand <> asIfInHandCards)
   pure $ playableHandCards <> playableDiscards <> otherPlayersPlayableCards
 
+getPlayableCardsMatch
+  :: ( HasCallStack
+     , IsCardMatcher cardMatcher
+     , HasGame m
+     , Sourceable source
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
+  => source -> investigator -> CostStatus -> [Window] -> cardMatcher -> m [Card]
+getPlayableCardsMatch source investigator costStatus windows' cardMatcher =
+  filterCards cardMatcher <$> getPlayableCards source investigator costStatus windows'
+
 getPlayableDiscards
   :: (HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
   => source -> investigator -> CostStatus -> [Window] -> m [Card]
@@ -251,7 +263,10 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
             (listToMaybe [w | BecomesFast w <- cardModifiers <> modifiers])
       applyModifier (BecomesFast _) _ = True
       applyModifier (CanBecomeFast cardMatcher) _ = cardMatch c cardMatcher
-      applyModifier (ChuckFergus2Modifier cardMatcher _) _ = not needsChuckFergus && cardMatch c cardMatcher && (maybe True (< TabooList24) mTaboo || notFastWindow)
+      applyModifier (ChuckFergus2Modifier cardMatcher _) _ =
+        not needsChuckFergus
+          && cardMatch c cardMatcher
+          && (maybe True (< TabooList24) mTaboo || notFastWindow)
       applyModifier _ val = val
       source' = replaceThisCardSource source
 

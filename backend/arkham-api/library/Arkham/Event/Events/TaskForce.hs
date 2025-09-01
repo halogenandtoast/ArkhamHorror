@@ -3,6 +3,7 @@ module Arkham.Event.Events.TaskForce (taskForce) where
 import Arkham.Ability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
@@ -33,7 +34,7 @@ instance RunMessage TaskForce where
           <$> selectAny
             ( affectsOthers
                 $ colocatedWith iid
-                <> InvestigatorCanMoveTo (toSource attrs) (ConnectedFrom $ locationWithInvestigator iid)
+                <> InvestigatorCanMoveTo (toSource attrs) (ConnectedFrom ForMovement $ locationWithInvestigator iid)
             )
       canDiscover <-
         (3 `notElem` usedOptions meta &&)
@@ -74,7 +75,7 @@ instance RunMessage TaskForce where
             $ CanMoveToLocation
               (InvestigatorWithId iid')
               (toSource attrs)
-              (ConnectedFrom $ locationWithInvestigator iid')
+              (ConnectedFrom ForMovement $ locationWithInvestigator iid')
         pure $ guard (notNull locations) $> (iid', locations)
       chooseOrRunOneM iid do
         for_ investigatorsWithLocations \(iid', locations) ->

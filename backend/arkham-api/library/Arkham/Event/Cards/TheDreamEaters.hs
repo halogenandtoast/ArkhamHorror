@@ -2,6 +2,7 @@ module Arkham.Event.Cards.TheDreamEaters where
 
 import Arkham.Criteria qualified as Criteria
 import Arkham.Event.Cards.Import
+import Arkham.ForMovement
 import Arkham.History.Types
 import Arkham.Keyword qualified as Keyword
 
@@ -213,7 +214,7 @@ heroicRescue2 =
             #when
             ( affectsOthers
                 $ NotYou
-                <> oneOf [at_ YourLocation, at_ (CanMoveToLocation You ThisCard ConnectedLocation)]
+                <> oneOf [at_ YourLocation, at_ (CanMoveToLocation You ThisCard (ConnectedLocation ForMovement))]
             )
             AnyEnemyAttack
             NonEliteEnemy

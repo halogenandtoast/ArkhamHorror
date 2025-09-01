@@ -10,6 +10,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query hiding (matches)
 import Arkham.Direction
 import Arkham.Enemy.Types (EnemyAttrs, Field (..))
+import Arkham.ForMovement
 import {-# SOURCE #-} Arkham.Helpers.Cost (getCanAffordCost)
 import Arkham.Helpers.GameValue (gameValueMatches)
 import Arkham.Helpers.Modifiers
@@ -37,14 +38,10 @@ toConnections :: HasGame m => LocationId -> m [LocationSymbol]
 toConnections lid =
   fieldMap LocationCard (cdLocationRevealedConnections . toCardDef) lid
 
-getConnectedMatcher :: HasGame m => LocationId -> m LocationMatcher
-getConnectedMatcher l = do
+getConnectedMatcher :: HasGame m => ForMovement -> LocationId -> m LocationMatcher
+getConnectedMatcher forMovement l = do
   isRevealed <- field LocationRevealed l
-  directionalMatchers <-
-    fieldMap
-      LocationConnectsTo
-      (map (`LocationInDirection` self) . setToList)
-      l
+  directionalMatchers <- fieldMap LocationConnectsTo (map (`LocationInDirection` self) . setToList) l
   base <-
     if isRevealed
       then field LocationRevealedConnectedMatchers l
@@ -55,6 +52,9 @@ getConnectedMatcher l = do
     <$> foldM applyModifier (base <> directionalMatchers) modifiers
  where
   applyModifier current (ConnectedToWhen whenMatcher matcher) = do
+    matches <- elem l <$> select whenMatcher
+    pure $ current <> [matcher | matches]
+  applyModifier current (ForMovementConnectedToWhen whenMatcher matcher) | forMovement == ForMovement = do
     matches <- elem l <$> select whenMatcher
     pure $ current <> [matcher | matches]
   applyModifier current _ = pure current
@@ -251,18 +251,14 @@ getCanMoveToMatchingLocations iid source matcher = do
 getConnectedMoveLocations
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
 getConnectedMoveLocations iid source =
-  getCanMoveToMatchingLocations
-    iid
-    source
-    (Matcher.ConnectedFrom $ Matcher.locationWithInvestigator iid)
+  getCanMoveToMatchingLocations iid source
+    $ Matcher.ConnectedFrom ForMovement (Matcher.locationWithInvestigator iid)
 
 getAccessibleLocations
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
 getAccessibleLocations iid source =
-  getCanMoveToMatchingLocations
-    iid
-    source
-    (Matcher.AccessibleFrom $ Matcher.locationWithInvestigator iid)
+  getCanMoveToMatchingLocations iid source
+    $ Matcher.AccessibleFrom ForMovement (Matcher.locationWithInvestigator iid)
 
 getCanLeaveCurrentLocation :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m Bool
 getCanLeaveCurrentLocation iid source = do

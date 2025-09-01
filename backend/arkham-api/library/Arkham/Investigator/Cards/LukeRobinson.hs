@@ -5,6 +5,7 @@ import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Cost
+import Arkham.ForMovement
 import Arkham.Helpers.Action (canDo, getActions)
 import Arkham.Helpers.Modifiers (
   ModifierType (..),
@@ -40,7 +41,7 @@ instance HasModifiersFor LukeRobinson where
   getModifiersFor (LukeRobinson (a `With` meta)) = do
     if active meta
       then do
-        connectingLocations <- select ConnectedLocation
+        connectingLocations <- select (ConnectedLocation NotForMovement)
         mods <- for connectingLocations $ \lid -> do
           enemies <- select $ enemyAt lid
           pure (AsIfAt lid : map AsIfEngagedWith enemies)
@@ -61,7 +62,7 @@ instance HasChaosTokenValue LukeRobinson where
 getLukePlayable :: HasGame m => InvestigatorAttrs -> [Window] -> m [(LocationId, [Card])]
 getLukePlayable attrs windows' = do
   let iid = toId attrs
-  connectingLocations <- select ConnectedLocation
+  connectingLocations <- select (ConnectedLocation NotForMovement)
   forToSnd connectingLocations $ \lid -> do
     enemies <- select $ enemyAt lid
     withModifiers iid (toModifiers attrs $ AsIfAt lid : map AsIfEngagedWith enemies) $ do

@@ -520,8 +520,9 @@ instance RunMessage AssetAttrs where
         : [UnsealChaosToken token | token <- assetSealedChaosTokens]
           <> [Discard Nothing GameSource (toTarget a') | a' <- attachedAssets]
           <> [Discard Nothing GameSource (toTarget a') | a' <- attachedEvents]
+          <> map (DiscardedCard . toCardId) a.cardsUnderneath
           <> [RemovedFromPlay source]
-      pure a
+      pure $ a & cardsUnderneathL .~ []
     PlaceInBonded _iid card -> do
       when (toCard a == card) do
         removeAllMessagesMatching \case

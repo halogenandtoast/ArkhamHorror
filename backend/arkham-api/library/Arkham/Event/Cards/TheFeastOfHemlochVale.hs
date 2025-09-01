@@ -3,6 +3,7 @@ module Arkham.Event.Cards.TheFeastOfHemlochVale where
 import Arkham.Asset.Uses qualified as Uses
 import Arkham.Criteria qualified as Criteria
 import Arkham.Event.Cards.Import
+import Arkham.ForMovement
 import Arkham.Keyword qualified as Keyword
 import Arkham.Modifier (ModifierType (..))
 
@@ -109,12 +110,12 @@ taskForce =
                     [IgnoreActionCost]
                 )
             , exists
-                ( affectsOthers
-                    $ InvestigatorAt YourLocation
-                    <> InvestigatorCanMoveTo ThisCard (ConnectedFrom YourLocation)
-                )
+                $ affectsOthers
+                $ InvestigatorAt YourLocation
+                <> InvestigatorCanMoveTo ThisCard (ConnectedFrom ForMovement YourLocation)
             , exists
-                (YourLocation <> LocationWithDiscoverableCluesBy (affectsOthers $ InvestigatorAt YourLocation))
+                $ YourLocation
+                <> LocationWithDiscoverableCluesBy (affectsOthers $ InvestigatorAt YourLocation)
             ]
     }
 
@@ -231,7 +232,7 @@ testingSprint =
         Just
           $ exists
           $ InvestigatableLocation
-          <> oneOf [YourLocation, ConnectedFrom YourLocation]
+          <> oneOf [YourLocation, ConnectedFrom NotForMovement YourLocation]
     }
 
 thoroughInquiry :: CardDef
@@ -356,7 +357,9 @@ snitch2 =
     , cdFastWindow = Just $ SkillTestResult #after You #parley #success
     , cdCriteria =
         Just
-          $ exists (LocationWithDiscoverableCluesBy You <> oneOf [YourLocation, ConnectedFrom YourLocation])
+          $ exists
+          $ LocationWithDiscoverableCluesBy You
+          <> oneOf [YourLocation, ConnectedFrom NotForMovement YourLocation]
     , cdTags = ["parley"]
     , cdLevel = Just 2
     }
@@ -548,7 +551,7 @@ elaborateDistraction =
     , cdCriteria =
         Just
           $ exists
-          $ EnemyAt (oneOf [YourLocation, ConnectedFrom YourLocation])
+          $ EnemyAt (oneOf [YourLocation, ConnectedFrom NotForMovement YourLocation])
           <> oneOf [NonEliteEnemy <> EnemyCanBeEvadedBy ThisCard, EnemyCanBeDamagedBySource ThisCard]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     }

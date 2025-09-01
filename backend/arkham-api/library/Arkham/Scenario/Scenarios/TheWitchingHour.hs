@@ -11,6 +11,7 @@ import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.ForMovement
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
@@ -193,7 +194,11 @@ instance RunMessage TheWitchingHour where
         Tablet -> afterSkillTestQuiet $ forTarget attrs msg
         ElderThing -> do
           enemies <-
-            select $ enemy_ $ withTrait Witch <> #exhausted <> at_ (orConnected $ locationWithInvestigator iid)
+            select
+              $ enemy_
+              $ withTrait Witch
+              <> #exhausted
+              <> at_ (orConnected NotForMovement $ locationWithInvestigator iid)
           if isEasyStandard attrs
             then chooseTargetM iid enemies \enemy -> do
               readyThis enemy

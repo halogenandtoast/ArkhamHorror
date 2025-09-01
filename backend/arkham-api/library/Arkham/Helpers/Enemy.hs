@@ -10,6 +10,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.DamageEffect
 import Arkham.Enemy.Types
+import Arkham.ForMovement
 import Arkham.GameValue
 import Arkham.Helpers.Damage (damageEffectMatches)
 import Arkham.Helpers.Investigator (getJustLocation)
@@ -176,7 +177,7 @@ getFightableEnemyIds iid (toSource -> source) = do
 getEnemyAccessibleLocations :: HasGame m => EnemyId -> m [LocationId]
 getEnemyAccessibleLocations eid = do
   location <- fieldMap EnemyLocation (fromJustNote "must be at a location") eid
-  matcher <- getConnectedMatcher location
+  matcher <- getConnectedMatcher NotForMovement location
   connectedLocationIds <- select matcher
   filterM (canEnterLocation eid) connectedLocationIds
 

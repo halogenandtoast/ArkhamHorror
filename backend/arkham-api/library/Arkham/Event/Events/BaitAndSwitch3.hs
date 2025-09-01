@@ -7,6 +7,7 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards (baitAndSwitch3)
 import Arkham.Event.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.Investigator
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Move
@@ -25,7 +26,12 @@ baitAndSwitch3 :: EventCard BaitAndSwitch3
 baitAndSwitch3 = event (BaitAndSwitch3 . (`with` Metadata Nothing)) Cards.baitAndSwitch3
 
 override :: CriteriaOverride
-override = CriteriaOverride $ EnemyCriteria $ ThisEnemy $ EnemyAt ConnectedLocation <> NonEliteEnemy
+override =
+  CriteriaOverride
+    $ EnemyCriteria
+    $ ThisEnemy
+    $ EnemyAt (ConnectedLocation NotForMovement)
+    <> NonEliteEnemy
 
 baitAndSwitch3Matcher :: InvestigatorId -> EventAttrs -> Int -> EnemyMatcher
 baitAndSwitch3Matcher iid attrs = \case
@@ -68,7 +74,10 @@ instance RunMessage BaitAndSwitch3 where
         _ -> error "Missing event choice"
       pure e
     WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _) | isTarget attrs target -> do
-      choices <- select $ ConnectedFrom (locationWithInvestigator iid) <> LocationCanBeEnteredBy enemyId
+      choices <-
+        select
+          $ ConnectedFrom NotForMovement (locationWithInvestigator iid)
+          <> LocationCanBeEnteredBy enemyId
       enemyMoveChoices <- evalQueueT $ chooseOne iid $ targetLabels choices $ only . EnemyMove enemyId
       insertAfterMatching enemyMoveChoices \case
         AfterEvadeEnemy {} -> True

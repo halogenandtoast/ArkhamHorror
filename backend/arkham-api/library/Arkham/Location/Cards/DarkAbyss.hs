@@ -2,6 +2,7 @@ module Arkham.Location.Cards.DarkAbyss (darkAbyss) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.ForMovement
 import Arkham.Helpers.Scenario
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
@@ -23,7 +24,7 @@ instance HasAbilities DarkAbyss where
     extendRevealed
       a
       [ restricted a 1 UnrevealedKeyIsSetAside $ forced $ RevealLocation #after Anyone (be a)
-      , restricted a 2 (exists $ orConnected a <> CanHaveFloodLevelIncreased)
+      , restricted a 2 (exists $ orConnected NotForMovement a <> CanHaveFloodLevelIncreased)
           $ forced
           $ DiscoveringLastClue #after Anyone (be a)
       ]
@@ -40,6 +41,6 @@ instance RunMessage DarkAbyss where
       pure l
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       setThisFloodLevel attrs FullyFlooded
-      selectEach (ConnectedTo (be attrs)) increaseThisFloodLevel
+      selectEach (connectedTo (be attrs)) increaseThisFloodLevel
       pure l
     _ -> DarkAbyss <$> liftRunMessage msg attrs

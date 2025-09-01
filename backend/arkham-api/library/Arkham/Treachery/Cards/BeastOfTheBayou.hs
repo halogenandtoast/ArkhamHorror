@@ -1,9 +1,9 @@
 module Arkham.Treachery.Cards.BeastOfTheBayou where
 
 import Arkham.Prelude
-
 import Arkham.Attack
 import Arkham.Classes
+import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Treachery.Cards qualified as Cards
@@ -24,7 +24,7 @@ instance RunMessage BeastOfTheBayou where
         Nothing -> pushAll [placeDoomOnAgenda]
         Just eid -> do
           locationId <- selectJust $ locationWithEnemy eid
-          connectedLocationIds <- select $ accessibleFrom locationId
+          connectedLocationIds <- select $ accessibleFrom NotForMovement locationId
           investigatorIds <-
             select
               $ InvestigatorAt

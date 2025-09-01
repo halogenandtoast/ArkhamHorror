@@ -42,7 +42,7 @@ instance RunMessage CyclopeanHammer5 where
                   whenM (enemy <=~> NonEliteEnemy) do
                     choices <-
                       select
-                        $ ConnectedFrom (locationWithInvestigator iid)
+                        $ connectedFrom (locationWithInvestigator iid)
                         <> LocationCanBeEnteredBy enemy
                     when (notNull choices) do
                       chooseOneM iid do

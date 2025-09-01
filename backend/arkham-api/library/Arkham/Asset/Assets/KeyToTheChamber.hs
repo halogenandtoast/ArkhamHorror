@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.KeyToTheChamber (keyToTheChamber) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Placement
 
@@ -16,7 +17,11 @@ keyToTheChamber = asset KeyToTheChamber Cards.keyToTheChamber
 instance HasAbilities KeyToTheChamber where
   getAbilities (KeyToTheChamber attrs) = case attrs.placement of
     InPlayArea _ ->
-      [ controlled attrs 1 (exists (ConnectedLocation <> "The Hidden Chamber")) (FastAbility Free)
+      [ controlled
+          attrs
+          1
+          (exists (ConnectedLocation NotForMovement <> "The Hidden Chamber"))
+          (FastAbility Free)
       ]
     _ -> []
 

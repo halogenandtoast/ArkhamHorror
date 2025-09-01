@@ -3,6 +3,7 @@ module Arkham.Act.Cards.TheWayOut (theWayOut) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -41,7 +42,7 @@ instance RunMessage TheWayOut where
       enemies <- select $ enemyAt lid
       when (notNull investigators || notNull enemies) do
         lead <- getLead
-        connectedLocations <- select $ accessibleFrom lid
+        connectedLocations <- select $ accessibleFrom NotForMovement lid
         chooseOrRunOneM lead do
           targets connectedLocations \connected -> do
             chooseOneAtATimeM lead do

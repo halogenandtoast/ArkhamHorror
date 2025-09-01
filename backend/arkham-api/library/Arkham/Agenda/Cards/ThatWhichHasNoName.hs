@@ -71,7 +71,7 @@ instance RunMessage ThatWhichHasNoName where
         select
           $ NearestLocationToAny
           $ not_ (LocationWithEnemy $ enemyIs Enemies.theNamelessMadness)
-          <> ConnectedTo (LocationWithEnemy $ enemyIs Enemies.theNamelessMadness)
+          <> connectedTo (LocationWithEnemy $ enemyIs Enemies.theNamelessMadness)
       chooseTargetM iid ls $ createSetAsideEnemy_ Enemies.theNamelessMadness
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do

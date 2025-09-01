@@ -36,7 +36,7 @@ instance RunMessage AlessandraZorzi where
       selectOneToHandle iid iid
         $ NonEliteEnemy
         <> EnemyAt
-          ( oneOf [locationWithInvestigator iid, RevealedLocation <> ConnectedTo (locationWithInvestigator iid)]
+          ( oneOf [locationWithInvestigator iid, RevealedLocation <> connectedTo (locationWithInvestigator iid)]
           )
       pure i
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do

@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.EllsworthsBoots (ellsworthsBoots) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -19,17 +20,17 @@ instance HasAbilities EllsworthsBoots where
     [ controlled
         a
         1
-        (any_ [AccessibleFrom YourLocation, RevealedLocation <> CanEnterLocation You])
+        (any_ [AccessibleFrom ForMovement YourLocation, RevealedLocation <> CanEnterLocation You])
         $ ReactionAbility (DiscoveringLastClue #after You YourLocation) (exhaust a)
     ]
 
 instance RunMessage EllsworthsBoots where
   runMessage msg a@(EllsworthsBoots attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      connecting <- select $ AccessibleFrom (locationWithInvestigator iid)
+      connecting <- select $ AccessibleFrom ForMovement (locationWithInvestigator iid)
       revealed <-
         select
-          $ not_ (AccessibleFrom $ locationWithInvestigator iid)
+          $ not_ (AccessibleFrom ForMovement $ locationWithInvestigator iid)
           <> RevealedLocation
           <> CanEnterLocation (InvestigatorWithId iid)
       chooseOneM iid do

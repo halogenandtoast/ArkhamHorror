@@ -44,6 +44,7 @@ import Arkham.Enemy (lookupEnemy)
 import Arkham.Enemy.Types (Enemy, EnemyAttrs (..), Field (..), enemyClues, enemyDamage, enemyDoom)
 import Arkham.Entities
 import Arkham.Event.Types
+import Arkham.ForMovement
 import Arkham.Game.Base as X
 import Arkham.Game.Diff
 import Arkham.Game.Json ()
@@ -375,7 +376,7 @@ withLocationConnectionData
   => With Location ModifierData
   -> m (With (With Location ModifierData) LocationMetadata)
 withLocationConnectionData inner@(With target _) = do
-  matcher <- getConnectedMatcher target
+  matcher <- getConnectedMatcher NotForMovement target
   lmConnectedLocations <- select matcher
   lmInvestigators <- select $ investigatorAt $ toId target
   lmEnemies <-
@@ -479,7 +480,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
             mmlocation <- maybeLocation locationId
             case mmlocation of
               Just location -> do
-                matcher <- getConnectedMatcher location
+                matcher <- getConnectedMatcher NotForMovement location
                 select (AccessibleLocation <> matcher)
               Nothing -> pure []
         pure $ inner `with` ConnectionData connectedLocationIds `with` additionalData
@@ -500,8 +501,8 @@ withSkillTestModifiers a = do
 data PublicGame gid = PublicGame gid Text [Text] Game | FailedToLoadGame Text
   deriving stock Show
 
-getConnectedMatcher :: HasGame m => Location -> m LocationMatcher
-getConnectedMatcher = Helpers.getConnectedMatcher . toId
+getConnectedMatcher :: HasGame m => ForMovement -> Location -> m LocationMatcher
+getConnectedMatcher forMovement = Helpers.getConnectedMatcher forMovement . toId
 
 instance ToJSON gid => ToJSON (PublicGame gid) where
   toJSON (FailedToLoadGame e) = object ["tag" .= String "FailedToLoadGame", "error" .= toJSON e]
@@ -1905,7 +1906,10 @@ getLocationsMatching lmatcher = do
                   , _psPaths = if doesMatch then Map.insertWith (<>) loc [path] _psPaths else _psPaths
                   }
               connections <-
-                lift $ select $ AccessibleFrom (LocationWithId loc) <> CanEnterLocation investigatorMatcher
+                lift
+                  $ select
+                  $ AccessibleFrom ForMovement (LocationWithId loc)
+                  <> CanEnterLocation investigatorMatcher
               for_ connections \conn -> do
                 unless (conn `elem` _psVisitedLocations) do
                   go1 (n - 1) conn (path |> loc)
@@ -1972,7 +1976,7 @@ getLocationsMatching lmatcher = do
                   , _psPaths = if doesMatch then Map.insertWith (<>) loc [path] _psPaths else _psPaths
                   }
               connections <-
-                lift $ select $ ConnectedFrom (LocationWithId loc)
+                lift $ select $ ConnectedFrom ForMovement (LocationWithId loc)
               for_ connections \conn -> do
                 unless (conn `elem` _psVisitedLocations) do
                   go1 conn (path |> loc)
@@ -2027,7 +2031,7 @@ getLocationsMatching lmatcher = do
                 { _psVisitedLocations = insertSet loc _psVisitedLocations
                 , _psPaths = if doesMatch then Map.insertWith (<>) loc [path] _psPaths else _psPaths
                 }
-            connections <- lift $ select $ ConnectedFrom (LocationWithId loc)
+            connections <- lift $ select $ ConnectedFrom NotForMovement (LocationWithId loc)
             for_ connections \conn -> unless (conn `elem` _psVisitedLocations) (go1 conn $ path |> loc)
         PathState {_psPaths} <- execStateT (go1 start mempty) (PathState (singleton start) mempty)
 
@@ -2100,10 +2104,10 @@ getLocationsMatching lmatcher = do
                 matchingLocationIds <- map toId <$> getLocationsMatching matcher
                 getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
           pure $ filter ((`elem` matches') . toId) ls
-    AccessibleLocation -> guardYourLocation $ \yourLocation -> do
-      go ls (AccessibleFrom $ LocationWithId yourLocation)
-    ConnectedLocation -> guardYourLocation $ \yourLocation -> do
-      go ls (ConnectedFrom $ LocationWithId yourLocation)
+    AccessibleLocation -> guardYourLocation \yourLocation -> do
+      go ls (AccessibleFrom NotForMovement $ LocationWithId yourLocation)
+    ConnectedLocation forMovement -> guardYourLocation $ \yourLocation -> do
+      go ls (ConnectedFrom forMovement $ LocationWithId yourLocation)
     YourLocation -> guardYourLocation $ fmap (\l -> [l | l `elem` ls]) . getLocation
     NotYourLocation -> guardYourLocation
       $ \yourLocation -> pure $ filter ((/= yourLocation) . toId) ls
@@ -2122,62 +2126,81 @@ getLocationsMatching lmatcher = do
       as <- traverse (go ls) ms
       pure $ nub $ concat as
     InvestigatableLocation -> do
-      flip filterM ls
-        $ \l ->
-          andM
-            [ fieldMap LocationShroud isJust l.id
-            , notElem CannotInvestigate <$> getModifiers (toTarget l)
-            ]
-    ConnectedTo matcher -> do
+      flip filterM ls \l ->
+        andM
+          [ fieldMap LocationShroud isJust l.id
+          , notElem CannotInvestigate <$> getModifiers (toTarget l)
+          ]
+    ConnectedTo forMovement matcher -> do
       -- locations with connections to locations that match
       -- so we filter each location by generating it's connections
       -- querying those locations and seeing if they match the matcher
       flip filterM ls $ \l -> do
-        matchAny <- getConnectedMatcher l
+        matchAny <- getConnectedMatcher forMovement l
         selectAny $ NotLocation (LocationWithId $ toId l) <> matcher <> matchAny
-    AccessibleTo matcher -> do
+    AccessibleTo forMovement matcher -> do
       flip filterM ls $ \l -> do
-        matchAny <- getConnectedMatcher l
+        matchAny <- getConnectedMatcher forMovement l
         mods <- getModifiers l.id
         let barricaded = concat [xs | Barricades xs <- mods]
         selectAny $ not_ (beOneOf $ toId l : barricaded) <> Unblocked <> matcher <> matchAny
-    UnbarricadedConnectedFrom matcher -> do
+    UnbarricadedConnectedFrom forMovement matcher -> do
       starts <- select matcher
       case starts of
         [start] -> do
           mods <- getModifiers start
           let barricades = concat [xs | Barricades xs <- mods]
-          let checks = [(isValid, connectedTo) | ConnectedToWhen isValid connectedTo <- mods]
-          others <- concatForM checks $ \(isValid, connectedTo) -> do
+          let
+            checks =
+              [(isValid, connectedTo') | ConnectedToWhen isValid connectedTo' <- mods]
+                <> [ (isValid, connectedTo')
+                   | forMovement == ForMovement
+                   , ForMovementConnectedToWhen isValid connectedTo' <- mods
+                   ]
+          others <- concatForM checks $ \(isValid, connectedTo') -> do
             valid <- start <=~> isValid
-            if valid then getLocationsMatching connectedTo else pure []
-          matcherSupreme <- AnyLocationMatcher <$> Helpers.getConnectedMatcher start
+            if valid then getLocationsMatching connectedTo' else pure []
+          matcherSupreme <- AnyLocationMatcher <$> Helpers.getConnectedMatcher forMovement start
           allOptions <- (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
           pure $ filter (and . sequence [(`elem` allOptions), (`notElem` barricades) . toId]) ls
         _ -> error "not designed to handle no or multiple starts"
-    ConnectedFrom matcher -> do
+    ConnectedFrom forMovement matcher -> do
       starts <- select matcher
       others <- concatForM starts \l -> do
         mods <- getModifiers l
-        let checks = [(isValid, connectedTo) | ConnectedToWhen isValid connectedTo <- mods]
-        concatForM checks \(isValid, connectedTo) -> do
+        let
+          checks =
+            [(isValid, connectedTo') | ConnectedToWhen isValid connectedTo' <- mods]
+              <> [ (isValid, connectedTo')
+                 | forMovement == ForMovement
+                 , ForMovementConnectedToWhen isValid connectedTo' <- mods
+                 ]
+        concatForM checks \(isValid, connectedTo') -> do
           valid <- l <=~> isValid
-          if valid then getLocationsMatching connectedTo else pure []
-      matcherSupreme <- foldMapM (fmap AnyLocationMatcher . Helpers.getConnectedMatcher) starts
+          if valid then getLocationsMatching connectedTo' else pure []
+      matcherSupreme <-
+        foldMapM (fmap AnyLocationMatcher . Helpers.getConnectedMatcher forMovement) starts
       allOptions <- (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
       pure $ filter ((`notElem` starts) . toId) $ filter (`elem` allOptions) ls
-    AccessibleFrom matcher -> do
+    AccessibleFrom forMovement matcher -> do
       starts <- select matcher
       others <- concatForM starts \l -> do
         mods <- getModifiers l
         let barricaded = concat [xs | Barricades xs <- mods]
-        let checks = [(isValid, connectedTo) | ConnectedToWhen isValid connectedTo <- mods]
-        concatForM checks $ \(isValid, connectedTo) -> do
+        let
+          checks =
+            [(isValid, connectedTo') | ConnectedToWhen isValid connectedTo' <- mods]
+              <> [ (isValid, connectedTo')
+                 | forMovement == ForMovement
+                 , ForMovementConnectedToWhen isValid connectedTo' <- mods
+                 ]
+        concatForM checks $ \(isValid, connectedTo') -> do
           valid <- l <=~> isValid
           if valid
-            then filter ((`notElem` barricaded) . toId) <$> getLocationsMatching (Unblocked <> connectedTo)
+            then filter ((`notElem` barricaded) . toId) <$> getLocationsMatching (Unblocked <> connectedTo')
             else pure []
-      matcherSupreme <- foldMapM (fmap AnyLocationMatcher . Helpers.getConnectedMatcher) starts
+      matcherSupreme <-
+        foldMapM (fmap AnyLocationMatcher . Helpers.getConnectedMatcher forMovement) starts
       allOptions <-
         (<> others) <$> getLocationsMatching (Unblocked <> getAnyLocationMatcher matcherSupreme)
       pure $ filter (`elem` allOptions) ls
@@ -2205,7 +2228,7 @@ getLocationsMatching lmatcher = do
       -- the destination
       let extraConnectionsMap = mempty
 
-      connectedLocationIds <- select $ ConnectedFrom $ LocationWithId start
+      connectedLocationIds <- select $ ConnectedFrom NotForMovement $ LocationWithId start
       matches' <-
         if start == destination || destination `elem` connectedLocationIds
           then pure $ singleton destination
@@ -2236,7 +2259,7 @@ getLocationsMatching lmatcher = do
       mods <- getModifiers start
       let barricades = concat [xs | Barricades xs <- mods]
       connectedLocationIds <-
-        filter (`notElem` barricades) <$> select (ConnectedFrom $ LocationWithId start)
+        filter (`notElem` barricades) <$> select (ConnectedFrom NotForMovement $ LocationWithId start)
       matches' <-
         if start == destination || destination `elem` connectedLocationIds
           then pure $ singleton destination
@@ -2932,7 +2955,7 @@ enemyMatcherFilter es matcher' = do
       if CannotMove `elem` modifiers
         then pure False
         else
-          selectAny $ LocationCanBeEnteredBy (toId enemy) <> ConnectedFrom (locationWithEnemy $ toId enemy)
+          selectAny $ LocationCanBeEnteredBy (toId enemy) <> connectedFrom (locationWithEnemy $ toId enemy)
     EnemyCanEnter locationMatcher -> do
       locations <- traverse (traverseToSnd getModifiers) =<< select locationMatcher
       flip filterM es \enemy -> do
@@ -3604,7 +3627,7 @@ instance Projection Location where
       LocationPrintedSymbol -> pure locationSymbol
       LocationVengeance -> pure $ cdVengeancePoints $ toCardDef attrs
       LocationVictory -> pure $ cdVictoryPoints $ toCardDef attrs
-      LocationConnectedLocations -> setFromList <$> select (ConnectedFrom $ LocationWithId lid)
+      LocationConnectedLocations -> setFromList <$> select (connectedFrom $ LocationWithId lid)
 
 instance Projection Asset where
   getAttrs aid = toAttrs <$> getAsset aid

@@ -91,7 +91,7 @@ instance RunMessage TheInfestationBegins where
             nub . concat <$> for infestedLocations \location ->
               select
                 $ not_ (oneOf [InfestedLocation, LocationWithHorror $ atLeast 1])
-                <> ConnectedFrom (LocationWithId location)
+                <> connectedFrom (LocationWithId location)
           leadChooseOneM $ targets adjacentLocations $ placeTokensOn attrs #damage 1
         _ -> error "Invalid infestation token"
 

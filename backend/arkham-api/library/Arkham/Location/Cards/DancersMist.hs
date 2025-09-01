@@ -2,6 +2,7 @@ module Arkham.Location.Cards.DancersMist (dancersMist) where
 
 import Arkham.Ability
 import Arkham.Direction
+import Arkham.ForMovement
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
@@ -77,7 +78,7 @@ instance RunMessage DancersMist where
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       startId <- fieldJust InvestigatorLocation iid
-      accessibleLocationIds <- select $ accessibleFrom startId
+      accessibleLocationIds <- select $ accessibleFrom ForMovement startId
       chooseTargetM iid accessibleLocationIds $ moveTo attrs iid
       pure l
     _ -> DancersMist <$> liftRunMessage msg attrs

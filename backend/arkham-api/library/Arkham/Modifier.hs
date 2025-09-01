@@ -228,6 +228,7 @@ data ModifierType
   | ChuckFergus2Modifier CardMatcher Int -- Used by Chuck Fergus (2), check for notes
   | CommitCost Cost
   | ConnectedToWhen LocationMatcher LocationMatcher
+  | ForMovementConnectedToWhen LocationMatcher LocationMatcher
   | ControlledAssetsCannotReady
   | CountAllDoomInPlay
   | CountsAsInvestigatorForHunterEnemies

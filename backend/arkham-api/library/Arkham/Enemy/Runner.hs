@@ -38,6 +38,7 @@ import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.DefeatedBy
 import Arkham.Fight
+import Arkham.ForMovement
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.GameValue
@@ -61,6 +62,7 @@ import Arkham.Matcher (
   MovesVia (..),
   PreyMatcher (..),
   be,
+  connectedFrom,
   enemyEngagedWith,
   investigatorAt,
   investigatorEngagedWith,
@@ -422,7 +424,7 @@ instance RunMessage EnemyAttrs where
             when (lid /= loc) $ do
               lead <- getLeadPlayer
               adjacentLocationIds <-
-                select $ AccessibleFrom $ LocationWithId loc
+                select $ AccessibleFrom NotForMovement $ LocationWithId loc
               closestLocationIds <- select $ ClosestPathLocation loc lid
               if lid `elem` adjacentLocationIds
                 then push $ chooseOne lead [targetLabel lid [EnemyMove enemyId lid]]
@@ -437,7 +439,7 @@ instance RunMessage EnemyAttrs where
             enemyLocation <- field EnemyLocation enemyId
             for_ enemyLocation \loc -> when (lid /= loc) do
               lead <- getLeadPlayer
-              adjacentLocationIds <- select $ AccessibleFrom $ LocationWithId loc
+              adjacentLocationIds <- select $ AccessibleFrom NotForMovement $ LocationWithId loc
               closestLocationIds <- select $ ClosestPathLocation loc lid
               if lid `elem` adjacentLocationIds
                 then push $ chooseOne lead [targetLabel lid [EnemyMove enemyId lid]]
@@ -781,14 +783,14 @@ instance RunMessage EnemyAttrs where
           push $ Exhaust (toTarget a)
 
           emptyConnectedLocations <-
-            select $ ConnectedFrom (locationWithEnemy eid) <> not_ (LocationWithInvestigator Anyone)
+            select $ connectedFrom (locationWithEnemy eid) <> not_ (LocationWithInvestigator Anyone)
           lead <- getLeadPlayer
           if notNull emptyConnectedLocations
             then do
               push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- emptyConnectedLocations]
             else do
               otherConnectedLocations <-
-                select $ ConnectedFrom (locationWithEnemy eid) <> LocationWithInvestigator Anyone
+                select $ connectedFrom (locationWithEnemy eid) <> LocationWithInvestigator Anyone
               when (notNull otherConnectedLocations) do
                 push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- otherConnectedLocations]
 

@@ -19,7 +19,7 @@ instance HasModifiersFor LongShot where
     modifySelf
       attrs.cardId
       [ CanCommitToSkillTestPerformedByAnInvestigatorAt
-          (ConnectedFrom $ locationWithInvestigator attrs.owner)
+          (connectedFrom $ locationWithInvestigator attrs.owner)
       ]
 
 instance RunMessage LongShot where

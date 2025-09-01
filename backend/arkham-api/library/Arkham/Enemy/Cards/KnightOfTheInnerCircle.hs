@@ -3,6 +3,7 @@ module Arkham.Enemy.Cards.KnightOfTheInnerCircle (knightOfTheInnerCircle) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -13,7 +14,7 @@ newtype KnightOfTheInnerCircle = KnightOfTheInnerCircle EnemyAttrs
 knightOfTheInnerCircle :: EnemyCard KnightOfTheInnerCircle
 knightOfTheInnerCircle =
   enemyWith KnightOfTheInnerCircle Cards.knightOfTheInnerCircle (4, Static 4, 2) (2, 0)
-    $ (spawnAtL ?~ SpawnAt ConnectedLocation)
+    $ (spawnAtL ?~ SpawnAt (ConnectedLocation NotForMovement))
     . (preyL .~ Prey MostKeys)
 
 instance HasAbilities KnightOfTheInnerCircle where

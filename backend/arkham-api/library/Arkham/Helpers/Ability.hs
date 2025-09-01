@@ -7,6 +7,7 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Customization
+import Arkham.ForMovement
 import Arkham.Game.Settings
 import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Helpers.Cost (getCanAffordCost)
@@ -158,7 +159,7 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
         selectAny
           $ Matcher.LocationWithModifier CanBeAttackedAsIfEnemy
           <> if canMoveToConnected
-            then Matcher.orConnected (Matcher.locationWithInvestigator iid)
+            then Matcher.orConnected ForMovement (Matcher.locationWithInvestigator iid)
             else Matcher.locationWithInvestigator iid
       pure $ enemies || locations
   Action.Evade -> case abilitySource of

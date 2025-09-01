@@ -26,7 +26,7 @@ instance RunMessage ServantOfBrassDaemonaicVassal where
   runMessage msg a@(ServantOfBrassDaemonaicVassal attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       selectOneToHandle iid (attrs.ability 1)
-        $ EnemyAt (oneOf [locationWithInvestigator iid, ConnectedFrom (locationWithInvestigator iid)])
+        $ EnemyAt (oneOf [locationWithInvestigator iid, connectedFrom (locationWithInvestigator iid)])
         <> EnemyCanBeDamagedBySource (attrs.ability 1)
       push $ Msg.DealAssetDamage attrs.id (attrs.ability 1) 1 0
       pure a

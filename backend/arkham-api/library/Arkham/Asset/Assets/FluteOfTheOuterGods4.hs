@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.FluteOfTheOuterGods4 (fluteOfTheOuterGods4, FluteOfTheOuterGods4 (..)) where
+module Arkham.Asset.Assets.FluteOfTheOuterGods4 (fluteOfTheOuterGods4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.DamageEffect
 import Arkham.Enemy.Types qualified as Enemy
+import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Projection
 
@@ -23,7 +24,7 @@ instance HasAbilities FluteOfTheOuterGods4 where
           x
           1
           ( oneOf
-              [ exists (EnemyAt YourLocation <> NonEliteEnemy <> EnemyCanEnter ConnectedLocation)
+              [ exists (EnemyAt YourLocation <> NonEliteEnemy <> EnemyCanEnter (ConnectedLocation NotForMovement))
               , DifferentEnemiesExist
                   (EnemyAt YourLocation <> NonEliteEnemy <> EnemyWithDamage (atLeast 1))
                   (EnemyAt YourLocation <> EnemyCanBeDamagedBySource (x.ability 1))
@@ -44,7 +45,10 @@ instance RunMessage FluteOfTheOuterGods4 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       moveableEnemies <-
-        select $ enemyAtLocationWith iid <> NonEliteEnemy <> EnemyCanEnter ConnectedLocation
+        select
+          $ enemyAtLocationWith iid
+          <> NonEliteEnemy
+          <> EnemyCanEnter (ConnectedLocation NotForMovement)
       damageableEnemies <-
         select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (attrs.ability 1)
       nonEliteEnemies <- case damageableEnemies of
@@ -67,7 +71,7 @@ instance RunMessage FluteOfTheOuterGods4 where
 
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget eid) -> do
-      locations <- select $ LocationCanBeEnteredBy eid <> ConnectedFrom (locationWithInvestigator iid)
+      locations <- select $ LocationCanBeEnteredBy eid <> connectedFrom (locationWithInvestigator iid)
       damage <- field Enemy.EnemyHealthDamage eid
       damageableEnemies <-
         select
@@ -77,7 +81,9 @@ instance RunMessage FluteOfTheOuterGods4 where
 
       chooseOne iid
         $ [targetLabel location [EnemyMove eid location] | location <- locations]
-        <> [ targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) eid damage] | damage > 0, enemy <- damageableEnemies
+        <> [ targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) eid damage]
+           | damage > 0
+           , enemy <- damageableEnemies
            ]
       pure a
     _ -> FluteOfTheOuterGods4 <$> liftRunMessage msg attrs

@@ -1,14 +1,12 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Location.Runner (
-  module Arkham.Location.Runner,
-  module X,
-) where
+module Arkham.Location.Runner (module Arkham.Location.Runner, module X) where
 
 import Arkham.Ability as X hiding (PaidCost)
 import Arkham.Calculation as X
 import Arkham.Card.CardDef as X
 import Arkham.Classes as X
+import Arkham.ForMovement
 import Arkham.GameValue as X
 import Arkham.Helpers.Ability as X
 import Arkham.Helpers.Effect as X
@@ -57,6 +55,7 @@ import Arkham.Matcher (
   InvestigatorMatcher (..),
   LocationMatcher (..),
   accessibleTo,
+  be,
   enemyAt,
   investigatorAt,
   noModifier,
@@ -261,7 +260,7 @@ instance RunMessage LocationAttrs where
         traits' <- field EnemyTraits eid
         unless (Elite `elem` traits') $ do
           activeInvestigatorId <- getActiveInvestigatorId
-          connectedLocationIds <- select $ AccessibleFrom $ LocationWithId a.id
+          connectedLocationIds <- select $ AccessibleFrom NotForMovement $ LocationWithId a.id
           availableLocationIds <-
             flip filterM connectedLocationIds $ \locationId' -> do
               modifiers' <- getModifiers (LocationTarget locationId')
@@ -439,7 +438,7 @@ instance RunMessage LocationAttrs where
       -- Æ Second, place 1 doom on that location.
       -- Æ Finally, place 1 breach on each connecting location. This can chain‐react and cause additional incursions to occur, so beware!
       -- Æ Once an incursion is resolved at a location, breaches from other incursions cannot be placed on that location for the remainder of that phase.
-      targets <- selectTargets $ ConnectedTo (LocationWithId lid) <> NotLocation LocationWithIncursion
+      targets <- selectTargets $ ConnectedTo NotForMovement (be lid) <> not_ LocationWithIncursion
       lead <- getLeadPlayer
       pushAll
         $ PlaceDoom (toSource a) (toTarget a) 1
@@ -557,7 +556,7 @@ instance HasAbilities LocationAttrs where
           l
           102
           ( CanMoveTo (LocationWithId l.id)
-              <> OnLocation (accessibleTo l)
+              <> OnLocation (accessibleTo ForMovement l)
               <> exists (You <> can.move <> noModifier (CannotEnter l.id))
           )
         $ ActionAbility [#move] moveCost

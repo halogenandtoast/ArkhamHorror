@@ -55,7 +55,7 @@ instance RunMessage PedalToTheMetal where
     HandleTargetChoice _ (isAbilitySource attrs 1 -> True) (AssetTarget aid) -> do
       getLocationOf aid >>= traverse_ \lid -> do
         driver <- fieldJust AssetDriver aid
-        roads <- select $ withTrait Road <> ConnectedTo (LocationWithId lid)
+        roads <- select $ withTrait Road <> connectedTo (LocationWithId lid)
         chooseTargetM driver roads $ place aid
       pure a
     _ -> PedalToTheMetal <$> liftRunMessage msg attrs

@@ -5,9 +5,10 @@ import Arkham.Attack
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Modifier
+import Arkham.ForMovement
 import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.SkillType
 
@@ -22,7 +23,7 @@ knightOfTheOuterVoid =
     Cards.knightOfTheOuterVoid
     (3, Static 3, 4)
     (1, 1)
-    (spawnAtL ?~ SpawnAt ConnectedLocation)
+    (spawnAtL ?~ SpawnAt (ConnectedLocation NotForMovement))
 
 instance HasAbilities KnightOfTheOuterVoid where
   getAbilities (KnightOfTheOuterVoid attrs) =

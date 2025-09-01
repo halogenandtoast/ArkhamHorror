@@ -1,8 +1,4 @@
-module Arkham.Location.Cards.FirstNationalGroceryInTooDeep (
-  firstNationalGroceryInTooDeep,
-  FirstNationalGroceryInTooDeep (..),
-)
-where
+module Arkham.Location.Cards.FirstNationalGroceryInTooDeep (firstNationalGroceryInTooDeep) where
 
 import Arkham.Ability
 import Arkham.Helpers.Investigator (getSkillValue)
@@ -33,7 +29,7 @@ instance HasAbilities FirstNationalGroceryInTooDeep where
   getAbilities (FirstNationalGroceryInTooDeep a) =
     extendRevealed
       a
-      [ mkAbility a 1 $ forced $ Moves #after You AnySource (ConnectedTo $ be a) (be a)
+      [ mkAbility a 1 $ forced $ Moves #after You AnySource (connectedTo $ be a) (be a)
       , skillTestAbility $ restricted a 2 Here parleyAction_
       ]
 

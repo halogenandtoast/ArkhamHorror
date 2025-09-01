@@ -7,6 +7,7 @@ import Arkham.Ability as X hiding (PaidCost)
 import Arkham.ChaosToken as X
 import Arkham.ClassSymbol as X
 import Arkham.Classes as X
+import Arkham.ForMovement
 import Arkham.Helpers.Investigator as X
 import Arkham.Helpers.Message as X hiding (
   InvestigatorDamage,
@@ -1044,7 +1045,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         $ select
         $ LocationWithModifier CanBeAttackedAsIfEnemy
         <> if canMoveToConnected
-          then orConnected (locationWithInvestigator investigatorId)
+          then orConnected ForMovement (locationWithInvestigator investigatorId)
           else locationWithInvestigator investigatorId
     player <- getPlayer investigatorId
     let choices = enemyIds <> map coerce locationIds

@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.FishingVessel (fishingVessel, FishingVessel (..)) where
+module Arkham.Asset.Assets.FishingVessel (fishingVessel) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -20,7 +20,7 @@ fishingVessel = asset FishingVessel Cards.fishingVessel
 instance HasAbilities FishingVessel where
   getAbilities (FishingVessel x) =
     [ vehicleEnterOrExitAbility x
-    , restrictedAbility x 1 InThisVehicle actionAbility
+    , restricted x 1 InThisVehicle actionAbility
     ]
 
 instance RunMessage FishingVessel where
@@ -29,7 +29,7 @@ instance RunMessage FishingVessel where
       enterOrExitVehicle iid a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       getLocationOf attrs.id >>= traverse_ \lid -> do
-        oceans <- select $ withTrait Ocean <> ConnectedTo (LocationWithId lid)
+        oceans <- select $ withTrait Ocean <> connectedTo (LocationWithId lid)
         chooseTargetM iid oceans $ place attrs
       pure a
     _ -> FishingVessel <$> liftRunMessage msg attrs

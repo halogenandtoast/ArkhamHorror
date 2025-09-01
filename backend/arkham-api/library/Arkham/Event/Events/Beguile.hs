@@ -27,7 +27,7 @@ instance HasAbilities Beguile where
           1
           ( exists (be eid <> CanParleyEnemy You)
               <> oneOf
-                [ exists (RevealedLocation <> LocationCanBeEnteredBy eid <> ConnectedFrom (locationWithEnemy eid))
+                [ exists (RevealedLocation <> LocationCanBeEnteredBy eid <> connectedFrom (locationWithEnemy eid))
                 , exists
                     ( PerformableAbility [ActionCostModifier (-1), IgnoreOnSameLocation]
                         <> BasicAbility
@@ -54,7 +54,7 @@ instance RunMessage Beguile where
       case attrs.placement.attachedTo of
         Just (EnemyTarget eid) -> do
           locations <-
-            selectAny $ RevealedLocation <> LocationCanBeEnteredBy eid <> ConnectedFrom (locationWithEnemy eid)
+            selectAny $ RevealedLocation <> LocationCanBeEnteredBy eid <> connectedFrom (locationWithEnemy eid)
           investigate' <-
             selectAny
               $ PerformableAbility [ActionCostModifier (-1), IgnoreOnSameLocation]
@@ -87,7 +87,7 @@ instance RunMessage Beguile where
         Just eid -> case fromMaybe (1 :: Int) (getEventMeta attrs) of
           1 -> do
             locations <-
-              select $ RevealedLocation <> LocationCanBeEnteredBy eid <> ConnectedFrom (locationWithEnemy eid)
+              select $ RevealedLocation <> LocationCanBeEnteredBy eid <> connectedFrom (locationWithEnemy eid)
             chooseOne iid [targetLabel location [EnemyMove eid location] | location <- locations]
           2 -> do
             field EnemyLocation eid >>= traverse_ \lid -> do
@@ -99,9 +99,9 @@ instance RunMessage Beguile where
                   pushAll
                     [ Msg.AbilityIsSkillTest $ AbilityRef (toSource attrs) 1
                     , UseAbility
-                      iid
-                      (overAbilityActions (const []) $ doesNotProvokeAttacksOfOpportunity $ decreaseAbilityActionCost x 1)
-                      (defaultWindows iid)
+                        iid
+                        (overAbilityActions (const []) $ doesNotProvokeAttacksOfOpportunity $ decreaseAbilityActionCost x 1)
+                        (defaultWindows iid)
                     ]
                 _ -> error "expected exactly 1 investigate action on location"
           3 -> do

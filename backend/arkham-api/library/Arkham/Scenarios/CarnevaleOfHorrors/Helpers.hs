@@ -1,12 +1,12 @@
 module Arkham.Scenarios.CarnevaleOfHorrors.Helpers where
 
-import Arkham.Prelude
-
 import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Enemy.Cards qualified as Cards
+import Arkham.ForMovement
 import Arkham.Id
 import Arkham.Matcher
+import Arkham.Prelude
 
 getCnidathqua :: HasGame m => m (Maybe EnemyId)
 getCnidathqua = selectOne $ enemyIs Cards.cnidathqua
@@ -21,9 +21,7 @@ getAcrossLocation lid = do
   range = [1 .. 4]
 
 getCounterClockwiseLocation :: HasGame m => LocationId -> m (Maybe LocationId)
-getCounterClockwiseLocation lid = do
-  counterClockwiseMap <- getCounterClockwiseMap
-  pure $ lookup lid counterClockwiseMap
+getCounterClockwiseLocation lid = lookup lid <$> getCounterClockwiseMap
 
 getCounterClockwiseLocations :: HasGame m => LocationId -> m [LocationId]
 getCounterClockwiseLocations end = do
@@ -50,19 +48,11 @@ getClockwiseMap = do
   lids <- select Anywhere
   mapFromList
     . concat
-    <$> traverse
-      ( \lid ->
-          map (lid,) <$> select (AccessibleFrom $ LocationWithId lid)
-      )
-      lids
+    <$> traverse (\lid -> map (lid,) <$> select (AccessibleFrom NotForMovement $ LocationWithId lid)) lids
 
 getCounterClockwiseMap :: HasGame m => m (Map LocationId LocationId)
 getCounterClockwiseMap = do
   lids <- select Anywhere
   mapFromList
     . concat
-    <$> traverse
-      ( \lid ->
-          map (,lid) <$> select (AccessibleFrom $ LocationWithId lid)
-      )
-      lids
+    <$> traverse (\lid -> map (,lid) <$> select (AccessibleFrom NotForMovement $ LocationWithId lid)) lids

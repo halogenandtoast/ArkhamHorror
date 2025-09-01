@@ -23,7 +23,7 @@ instance HasAbilities BestowResolve2 where
         1
         ( DuringSkillTest
             ( IfSkillTestMatcher PerilousSkillTest (SkillTestOfInvestigator You)
-                $ SkillTestOfInvestigator (affectsOthers $ at_ $ oneOf [YourLocation, ConnectedFrom YourLocation])
+                $ SkillTestOfInvestigator (affectsOthers $ at_ $ oneOf [YourLocation, connectedFrom YourLocation])
             )
             <> exists
               ( PassesCommitRestrictions

@@ -1,4 +1,4 @@
-module Arkham.Event.Events.PowerWord (powerWord, PowerWord (..)) where
+module Arkham.Event.Events.PowerWord (powerWord) where
 
 import Arkham.Ability
 import Arkham.Classes.HasGame
@@ -57,7 +57,7 @@ instance HasAbilities PowerWord where
         additionalEnemyCriteria = oneOf $ map (\(_, f) -> f eid) commands
         fromLocation =
           if a `hasCustomization` Bonded
-            then oneOf [YourLocation, ConnectedFrom YourLocation]
+            then oneOf [YourLocation, connectedFrom YourLocation]
             else YourLocation
         handleThriceSpoken inner =
           if a `hasCustomization` ThriceSpoken
@@ -73,16 +73,14 @@ instance HasAbilities PowerWord where
                 ]
             else exists $ inner <> additionalEnemyCriteria
        in
-        [ controlledAbility
+        [ controlled
             a
             1
             (handleThriceSpoken $ EnemyWithId eid <> EnemyAt fromLocation <> CanParleyEnemy You)
             parleyAction_
         | notNull commands || tabooed TabooList21 a -- the taboo'd version will initiate a skill test
         ]
-          <> [ restrictedAbility a 2 ControlsThis $ FastAbility Free
-             | a `hasCustomization` GreaterControl
-             ]
+          <> [restricted a 2 ControlsThis $ FastAbility Free | a `hasCustomization` GreaterControl]
     _ -> []
 
 availableCommands :: EventAttrs -> [(Command, EnemyId -> EnemyMatcher)]
@@ -91,9 +89,9 @@ availableCommands a = filter (\(x, _) -> getMetaKey (toKey x) a) (allCommands a)
 allCommands :: EventAttrs -> [(Command, EnemyId -> EnemyMatcher)]
 allCommands a =
   ( GoCommand
-  , \eid -> EnemyWhenLocation $ ConnectedTo (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
+  , \eid -> EnemyWhenLocation $ connectedTo (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
   )
-    : [ (CowerCommand, \_ -> ReadyEnemy)
+    : [ (CowerCommand, const ReadyEnemy)
       | not (tabooed TabooList21 a) || (tabooed TabooList21 a && a `hasCustomization` Mercy)
       ]
       <> [ ( BetrayCommand
@@ -229,7 +227,7 @@ instance RunMessage PowerWord where
           let command = toEnum step
           case command of
             GoCommand -> do
-              choices <- select $ ConnectedFrom (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
+              choices <- select $ connectedFrom (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
               when (notNull choices) $ chooseOrRunOne iid $ targetLabels choices (only . EnemyMove eid)
             CowerCommand -> pushWhenM (eid <=~> ReadyEnemy) $ Exhaust (toTarget eid)
             BetrayCommand -> do

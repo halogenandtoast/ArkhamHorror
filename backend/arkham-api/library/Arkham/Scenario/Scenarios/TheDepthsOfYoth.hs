@@ -280,7 +280,7 @@ instance RunMessage TheDepthsOfYoth where
           serpents <-
             select
               $ EnemyWithTrait Serpent
-              <> oneOf [enemyAtLocationWith iid, EnemyAt $ ConnectedFrom (locationWithInvestigator iid)]
+              <> oneOf [enemyAtLocationWith iid, EnemyAt $ connectedFrom (locationWithInvestigator iid)]
           for_ serpents \serpent -> do
             push $ HealDamage (toTarget serpent) (ChaosTokenEffectSource Cultist) 2
         Tablet -> withLocationOf iid \location -> placeTokens Tablet location #clue 2

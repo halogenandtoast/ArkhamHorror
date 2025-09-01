@@ -7,6 +7,7 @@ import Arkham.Asset.Uses
 import Arkham.Classes.HasGame
 import Arkham.DamageEffect qualified as Msg
 import Arkham.Discover
+import Arkham.ForMovement
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed)
 import Arkham.Helpers.Location (getAccessibleLocations, getLocationOf, withLocationOf)
@@ -62,7 +63,7 @@ override a iid distance =
   atDistance n =
     EnemyAt
       $ if n == 1
-        then AccessibleFrom (locationWithInvestigator iid)
+        then AccessibleFrom ForMovement (locationWithInvestigator iid)
         else LocationWithAccessiblePath (toSource a) n (InvestigatorWithId iid) Anywhere
 
 instance HasModifiersFor RunicAxe where

@@ -45,7 +45,7 @@ instance RunMessage TheInitiationV1 where
       advanceAgendaDeck attrs
       pure a
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just ec) -> do
-      createEnemyAtLocationMatching_ ec (ConnectedTo $ locationWithInvestigator iid)
+      createEnemyAtLocationMatching_ ec (connectedTo $ locationWithInvestigator iid)
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       struggleForAir attrs iid

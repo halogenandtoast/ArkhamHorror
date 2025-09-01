@@ -4,6 +4,7 @@ import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.ForMovement
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.UI
 import Arkham.Investigator.Types (Field (..))
@@ -22,7 +23,7 @@ instance RunMessage DynamiteBlast3 where
   runMessage msg e@(DynamiteBlast3 attrs@EventAttrs {..}) = case msg of
     PlayThisEvent iid eid | eid == eventId -> do
       currentLocationId <- fieldJust InvestigatorLocation iid
-      connectedLocationIds <- select $ AccessibleFrom $ LocationWithId currentLocationId
+      connectedLocationIds <- select $ AccessibleFrom NotForMovement $ LocationWithId currentLocationId
       canDealDamage <- withoutModifier iid CannotDealDamage
       choices <- forMaybeM (currentLocationId : connectedLocationIds) $ \lid -> do
         enemyIds <- if canDealDamage then select (enemyAt lid) else pure []

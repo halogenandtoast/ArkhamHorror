@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.DowsingRod4 (dowsingRod4) where
 import Arkham.Ability.Builder
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigate
@@ -23,7 +24,9 @@ instance HasAbilities DowsingRod4 where
   getAbilities (DowsingRod4 a) = abilities a $ withActionAbility 1 do
     mustControl
     addAction #investigate
-    mustExist $ InvestigatableLocation <> oneOf (YourLocation : [AccessibleFrom YourLocation | a.ready])
+    mustExist
+      $ InvestigatableLocation
+      <> oneOf (YourLocation : [AccessibleFrom ForMovement YourLocation | a.ready])
 
 instance RunMessage DowsingRod4 where
   runMessage msg a@(DowsingRod4 attrs) = runQueueT $ case msg of

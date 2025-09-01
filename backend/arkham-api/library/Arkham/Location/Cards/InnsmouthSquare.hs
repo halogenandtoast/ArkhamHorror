@@ -1,6 +1,7 @@
-module Arkham.Location.Cards.InnsmouthSquare (innsmouthSquare, InnsmouthSquare (..)) where
+module Arkham.Location.Cards.InnsmouthSquare (innsmouthSquare) where
 
 import Arkham.Ability
+import Arkham.ForMovement
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers (resignAction)
 import Arkham.Location.Import.Lifted
@@ -28,7 +29,7 @@ instance HasAbilities InnsmouthSquare where
 instance RunMessage InnsmouthSquare where
   runMessage msg l@(InnsmouthSquare attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      connected <- select $ ConnectedTo (be attrs) <> withTrait Innsmouth
+      connected <- select $ ConnectedTo ForMovement (be attrs) <> withTrait Innsmouth
       chooseTargetM iid connected $ moveTo (attrs.ability 2) iid
       pure l
     _ -> InnsmouthSquare <$> liftRunMessage msg attrs

@@ -1,6 +1,7 @@
 module Arkham.Enemy.Cards.HandOfTheBrotherhood (handOfTheBrotherhood) where
 
 import Arkham.Ability
+import Arkham.ForMovement
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
@@ -23,7 +24,7 @@ instance HasModifiersFor HandOfTheBrotherhood where
       a.ready
       Anyone
       [ CannotTriggerAbilityMatching
-          $ AbilityOnLocation (orConnected $ locationWithEnemy a)
+          $ AbilityOnLocation (orConnected NotForMovement $ locationWithEnemy a)
           <> AbilityOneOf [AbilityIsActionAbility, AbilityIsReactionAbility]
       ]
 

@@ -45,14 +45,14 @@ instance RunMessage CavernOfTheForgottenAge where
             $ SingleSidedLocation
             <> NotLocation (locationIs Locations.mouthOfKnYanTheDepthsBeneath)
         mouthOfKnYan <- selectJust $ locationIs Locations.mouthOfKnYanTheDepthsBeneath
-        isConnectedToMouthOfKnYan <- mouthOfKnYan <=~> ConnectedTo (LocationWithId lid)
+        isConnectedToMouthOfKnYan <- mouthOfKnYan <=~> connectedTo (LocationWithId lid)
         xs <-
           if isConnectedToMouthOfKnYan
             then pure [mouthOfKnYan]
             else
               select
                 $ NearestLocationToLocation mouthOfKnYan
-                $ ConnectedTo
+                $ connectedTo
                 $ LocationWithId lid
         selectEach Anywhere \l -> placeClues attrs l 1
         when singleSided do

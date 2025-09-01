@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.JimsTrumpet (jimsTrumpet) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
+import Arkham.ForMovement
 import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -19,7 +20,10 @@ instance HasAbilities JimsTrumpet where
     [ controlled
         x
         1
-        ( exists (HealableInvestigator (toSource x) #horror $ at_ (oneOf [YourLocation, ConnectedLocation]))
+        ( exists
+            ( HealableInvestigator (toSource x) #horror
+                $ at_ (oneOf [YourLocation, ConnectedLocation NotForMovement])
+            )
             <> DuringSkillTest AnySkillTest
         )
         $ triggered (RevealChaosToken #when Anyone #skull) (exhaust x)
@@ -33,7 +37,7 @@ instance RunMessage JimsTrumpet where
           investigators <-
             select
               $ HealableInvestigator (attrs.ability 1) #horror
-              $ oneOf [colocatedWith controller, InvestigatorAt (accessibleFrom loc)]
+              $ oneOf [colocatedWith controller, InvestigatorAt (accessibleFrom NotForMovement loc)]
 
           chooseTargetM iid investigators \x -> healHorror x (attrs.ability 1) 1
       pure a

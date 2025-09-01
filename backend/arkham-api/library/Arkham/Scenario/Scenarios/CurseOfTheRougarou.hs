@@ -10,6 +10,7 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.ForMovement
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -169,7 +170,7 @@ instance RunMessage CurseOfTheRougarou where
           for_ mrougarou \eid -> push $ EnemyWillAttack $ enemyAttack eid attrs iid
         else do
           lid <- getJustLocation iid
-          connectedLocationIds <- select $ AccessibleFrom $ LocationWithId lid
+          connectedLocationIds <- select $ AccessibleFrom NotForMovement $ LocationWithId lid
           mrougarou <-
             selectOne
               $ enemyIs Enemies.theRougarou

@@ -7,6 +7,7 @@ import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.ForMovement
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getLead)
 import Arkham.Location.Cards qualified as Locations
@@ -152,7 +153,7 @@ instance RunMessage ReturnToBloodOnTheAltar where
       when oBannionGangHasABoneToPick $ doStep 2 msg
     DoStep 2 Setup -> do
       lead <- getLead
-      locations <- select $ not_ $ orConnected $ location_ "Village Commons"
+      locations <- select $ not_ $ orConnected NotForMovement $ location_ "Village Commons"
       chooseOneM lead do
         questionLabeled "Choose where to place Hired Gun"
         targets locations $ createEnemyAt_ Enemies.hiredGun

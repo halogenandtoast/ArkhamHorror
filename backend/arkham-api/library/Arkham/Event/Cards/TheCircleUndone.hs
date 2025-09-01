@@ -4,6 +4,7 @@ import Arkham.Agenda.AdvancementReason
 import Arkham.Asset.Uses qualified as Uses
 import Arkham.Criteria qualified as Criteria
 import Arkham.Event.Cards.Import
+import Arkham.ForMovement
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier (ModifierType (..))
@@ -227,7 +228,7 @@ warningShot =
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic, Trick]
     , cdAdditionalCost = Just $ UseCost (AssetWithTrait Firearm <> AssetControlledBy You) Uses.Ammo 1
-    , cdCriteria = Just $ exists (EnemyAt YourLocation <> EnemyCanEnter ConnectedLocation)
+    , cdCriteria = Just $ exists (EnemyAt YourLocation <> EnemyCanEnter (ConnectedLocation NotForMovement))
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     }
 
@@ -361,7 +362,7 @@ baitAndSwitch3 =
             , CanEvadeEnemyWithOverride
                 $ Criteria.CriteriaOverride
                 $ Criteria.enemyExists
-                $ EnemyAt (ConnectedFrom YourLocation)
+                $ EnemyAt (ConnectedFrom NotForMovement YourLocation)
                 <> NonEliteEnemy
             ]
     , cdOverrideActionPlayableIfCriteriaMet = True
@@ -427,7 +428,7 @@ lure2 =
     { cdSkills = [#agility, #agility]
     , cdCardTraits = singleton Trick
     , cdLevel = Just 2
-    , cdCriteria = Just $ exists $ orConnected YourLocation <> LocationCanHaveAttachments
+    , cdCriteria = Just $ exists $ orConnected NotForMovement YourLocation <> LocationCanHaveAttachments
     }
 
 eucatastrophe3 :: CardDef

@@ -2,6 +2,7 @@ module Arkham.Event.Cards.NightOfTheZealot where
 
 import Arkham.Criteria qualified as Criteria
 import Arkham.Event.Cards.Import
+import Arkham.ForMovement
 
 onTheLam :: CardDef
 onTheLam =
@@ -122,14 +123,8 @@ elusive =
             [ exists EnemyEngagedWithYou
             , Criteria.TabooCriteria
                 TabooList19
-                ( Criteria.CanMoveTo
-                    $ AccessibleFrom YourLocation
-                    <> LocationWithoutEnemies
-                )
-                ( Criteria.CanMoveTo
-                    $ RevealedLocation
-                    <> LocationWithoutEnemies
-                )
+                (Criteria.CanMoveTo $ AccessibleFrom ForMovement YourLocation <> LocationWithoutEnemies)
+                (Criteria.CanMoveTo $ RevealedLocation <> LocationWithoutEnemies)
             ]
     , cdAlternateCardCodes = ["01550"]
     }

@@ -6,6 +6,7 @@ module Arkham.Scenarios.APhantomOfTruth.Helpers (
 import Arkham.Campaigns.ThePathToCarcosa.Helpers as X
 import Arkham.Classes
 import Arkham.Classes.HasGame
+import Arkham.ForMovement
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Query (getInvestigators, getLead)
 import Arkham.I18n
@@ -36,7 +37,7 @@ moveOrganistAwayFromNearestInvestigator = do
         Just lid ->
           select
             $ LocationFartherFromMatching lid start
-            $ ConnectedTo (locationWithEnemy organist)
+            $ connectedTo (locationWithEnemy organist)
     emptyLids <- filterM (<=~> LocationWithoutInvestigators) lids
 
     let locations = if notNull emptyLids then emptyLids else lids
@@ -52,7 +53,7 @@ disengageEachEnemyAndMoveToConnectingLocation source = do
   investigators <- getInvestigators
   chooseOneAtATimeM lead do
     targets investigators \iid -> do
-      locations <- select $ ConnectedFrom $ locationWithInvestigator iid
+      locations <- select $ ConnectedFrom ForMovement $ locationWithInvestigator iid
       enemies <- select $ enemyEngagedWith iid
       for_ enemies (disengageEnemy iid)
       chooseOneM iid do

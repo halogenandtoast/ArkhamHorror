@@ -515,6 +515,11 @@ getTotalDamageAmounts target =
     (windowType -> Window.DealtExcessDamage source _ (isTarget target -> True) d) -> MonoidalMap.singleton source (Sum d, Sum 0)
     _ -> mempty
 
+getTotalDamage :: [Window] -> Int
+getTotalDamage ((windowType -> Window.DealtDamage _ _ _ n) : rest) = n + getTotalDamage rest
+getTotalDamage (_ : rest) = getTotalDamage rest
+getTotalDamage [] = 0
+
 replaceWindow
   :: (HasCallStack, HasQueue Message m) => (Window -> Bool) -> (Window -> Window) -> m ()
 replaceWindow f wf = do

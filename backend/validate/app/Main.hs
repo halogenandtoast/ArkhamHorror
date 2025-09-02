@@ -60,6 +60,7 @@ data CardJson = CardJson
   , cost :: Maybe Int
   , exceptional :: Bool
   , is_unique :: Bool
+  , double_sided :: Bool
   , traits :: Maybe Text
   , skill_agility :: Maybe Int
   , skill_combat :: Maybe Int

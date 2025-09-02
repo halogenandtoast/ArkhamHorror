@@ -55,6 +55,7 @@ data SkillTestMatcher
   | PerilousSkillTest
   | IfSkillTestMatcher SkillTestMatcher SkillTestMatcher SkillTestMatcher
   | SkillTestBeforeRevealingChaosTokens
+  | SkillTestWithCommittedCards CardListMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
 
 instance IsLabel "willpower" SkillTestMatcher where

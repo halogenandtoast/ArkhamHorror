@@ -21,7 +21,7 @@ import Arkham.Name as X
 import Arkham.Source as X
 import Arkham.Stats as X
 import Arkham.Target as X
-import Arkham.Trait as X hiding (Cultist, ElderThing)
+import Arkham.Trait as X hiding (Cosmos, Cultist, ElderThing)
 import Data.Aeson (Result (..))
 import Data.Aeson.KeyMap qualified as KeyMap
 
@@ -4048,18 +4048,26 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   then chooseOne player [Label "No cards found" []]
                   else chooseN player (min n (length choices)) choices
             DrawFound who n -> do
+              canModify <- can.draw.cards iid
               let
                 choices =
                   [ targetLabel
                       card
                       [DrawFocusedToHand iid (toTarget who) zone (toCardId card)]
-                  | (zone, cards) <- mapToList targetCards
+                  | canModify
+                  , (zone, cards) <- mapToList targetCards
                   , card <- cards
                   ]
               push
                 $ if null choices
                   then chooseOne player [Label "No cards found" []]
                   else chooseN player (min n (length choices)) choices
+              let
+                shouldShuffle = case searchType of
+                  Looking -> False
+                  Revealing -> True
+                  Searching -> True
+              pushWhen shouldShuffle $ ShuffleDeck (Deck.InvestigatorDeck a.id)
             DrawFoundUpTo who n -> do
               let
                 choices =

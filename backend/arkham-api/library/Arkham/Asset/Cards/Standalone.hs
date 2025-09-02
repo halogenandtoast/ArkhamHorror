@@ -226,6 +226,55 @@ jewelOfSarnath =
     , cdCardType = EncounterAssetType
     }
 
+heliosTelescopeGateToTheCosmos :: CardDef
+heliosTelescopeGateToTheCosmos =
+  (storyAsset "72005" ("Helios Telescope" <:> "Gate to the Cosmos") 0 FilmFatale)
+    { cdCardTraits = setFromList [Item, Relic, Prop, Cursed]
+    , cdUnique = True
+    , cdUses = uses Shard 0
+    , cdVictoryPoints = Just 1
+    , cdCost = Nothing
+    , cdCardType = EncounterAssetType
+    }
+
+staffOfTheSerpentRelicOfThePast :: CardDef
+staffOfTheSerpentRelicOfThePast =
+  (storyAsset "72006" ("Staff of the Serpent" <:> "Relic of the Past") 0 FilmFatale)
+    { cdCardTraits = setFromList [Item, Relic, Prop, Cursed]
+    , cdUnique = True
+    , cdVictoryPoints = Just 1
+    , cdCost = Nothing
+    , cdCardType = EncounterAssetType
+    }
+
+accursedCapeShroudOfChaos :: CardDef
+accursedCapeShroudOfChaos =
+  (storyAsset "72007" ("Accursed Cape" <:> "Shroud of Chaos") 0 FilmFatale)
+    { cdCardTraits = setFromList [Item, Relic, Prop, Cursed]
+    , cdUnique = True
+    , cdVictoryPoints = Just 1
+    , cdCost = Nothing
+    , cdCardType = EncounterAssetType
+    }
+
+andrePatelMadeForTheSpotlight :: CardDef
+andrePatelMadeForTheSpotlight =
+  (storyAsset "72024" ("Andre Patel" <:> "Made for the Spotlight") 3 FilmFatale)
+    { cdCardTraits = setFromList [Ally, Performer]
+    , cdSkills = [#intellect, #agility, #wild]
+    , cdUnique = True
+    , cdSlots = [#ally]
+    }
+
+rocketShipRattlingWithEnergy :: CardDef
+rocketShipRattlingWithEnergy =
+  (storyAsset "72036" ("Rocket Ship" <:> "Rattling with Energy") 0 FilmFatale)
+    { cdCardTraits = setFromList [Vehicle, Cosmos]
+    , cdCost = Nothing
+    , cdDoubleSided = True
+    , cdOtherSide = Just "72036b"
+    }
+
 ladyEsprit :: CardDef
 ladyEsprit =
   (storyAsset "81019" ("Lady Esprit" <:> "Dangerous Bokor") 4 TheBayou)

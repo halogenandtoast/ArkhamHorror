@@ -864,8 +864,8 @@ runGameMessage msg g = case msg of
                 , enemyDiscardedBy = enemyDiscardedBy oldAttrs
                 }
 
-    pushWhen (replaceStrategy == DefaultReplace)
-      $ EnemyCheckEngagement eid
+    pushWhen (replaceStrategy == DefaultReplace) $ EnemyCheckEngagement eid
+    when (card.id == toCardId enemy) $ replaceCard card.id card
     -- todo: should we just run this in place?
     pure $ g & entitiesL . enemiesL . at eid ?~ enemy'
   Do (DiscardCard iid _ cid) -> do
@@ -1287,7 +1287,9 @@ runGameMessage msg g = case msg of
       card <- field AssetCard assetId
       underneath <- field AssetCardsUnderneath assetId
       if assetIsStory $ toAttrs asset
-        then push $ toDiscard GameSource $ toTarget assetId
+        then do
+          unless (cdDoubleSided (toCardDef asset)) do
+            push $ toDiscard GameSource $ toTarget assetId
         else pushAll [RemoveFromPlay (toSource assetId), addToHand iid card]
       for_ underneath (push . addToDiscard iid)
     pure g
@@ -1901,6 +1903,9 @@ runGameMessage msg g = case msg of
   Flipped (AssetSource aid) card | toCardType card /= AssetType -> do
     replaceCard card.id card
     runMessage (RemoveAsset aid) g
+  Flipped (EnemySource eid) card | toCardType card /= EnemyType -> do
+    replaceCard card.id card
+    runMessage (RemoveEnemy eid) g
   QuietlyRemoveFromGame target -> do
     case target of
       AssetTarget aid -> pure $ g & entitiesL . assetsL %~ deleteMap aid

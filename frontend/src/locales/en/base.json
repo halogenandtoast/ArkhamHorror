@@ -59,5 +59,6 @@
     "physical": "Physical",
     "mental": "Mental",
     "supplyPoints": "Supply Points to Gain"
-  }
+  },
+  "proceedToSetup": "Proceed to _Setup_"
 }

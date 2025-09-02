@@ -1,8 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Location.Projection (
-  module X,
-) where
+module Arkham.Location.Projection (module X) where
 
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.GameT

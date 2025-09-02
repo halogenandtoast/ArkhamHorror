@@ -50,6 +50,7 @@ allPlayerAssetCards =
       , ancientStoneKnowledgeOfTheElders4
       , ancientStoneMindsInHarmony4
       , ancientStoneTransientThoughts4
+      , andrePatelMadeForTheSpotlight
       , annaKaslow4
       , anotherDayAnotherDollar3
       , antikytheraPropheticTimepiece5
@@ -963,6 +964,10 @@ allEncounterAssetCards =
       , partyGuest
       , jewelOfSarnath
       , theCustodian
+      , heliosTelescopeGateToTheCosmos
+      , staffOfTheSerpentRelicOfThePast
+      , accursedCapeShroudOfChaos
+      , rocketShipRattlingWithEnergy
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef

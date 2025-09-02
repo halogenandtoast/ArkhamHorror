@@ -153,7 +153,7 @@ chooseUpToNM' iid n done choices = do
   let lbl = "$" <> ikey ("label." <> done)
   chooseUpToNM iid n lbl choices
 
-chooseUpToNMI' :: (ReverseQueue m) => InvestigatorId -> Int -> Text -> ChooseT m a -> m ()
+chooseUpToNMI' :: ReverseQueue m => InvestigatorId -> Int -> Text -> ChooseT m a -> m ()
 chooseUpToNMI' iid n done choices = do
   let lbl = withI18n $ "$" <> ikey ("label." <> done)
   chooseUpToNM iid n lbl choices
@@ -185,6 +185,14 @@ labeled' :: (HasI18n, ReverseQueue m) => Text -> QueueT Message m () -> ChooseT 
 labeled' label action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [Label ("$" <> ikey ("label." <> label)) msgs]
+
+labeledValidate' :: (HasI18n, ReverseQueue m) => Bool -> Text -> QueueT Message m () -> ChooseT m ()
+labeledValidate' valid label action = unterminated do
+  if valid
+    then do
+      msgs <- lift $ evalQueueT action
+      tell [Label ("$" <> ikey ("label." <> label)) msgs]
+    else tell [InvalidLabel ("$" <> ikey ("label." <> label))]
 
 chooseTest :: (HasI18n, ReverseQueue m) => SkillType -> Int -> QueueT Message m () -> ChooseT m ()
 chooseTest skind n body = countVar n $ skillVar skind $ labeled' "test" body

@@ -97,7 +97,6 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         <button @click="placeTokens = true">Place Tokens</button>
         <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'ClearTokens', contents: { tag: 'LocationTarget', contents: id}})">Remove All Tokens</button>
         <button @click="emit('close')">Close</button>
-        <button @click="emit('close')">Close</button>
       </div>
     </div>
   </Draggable>

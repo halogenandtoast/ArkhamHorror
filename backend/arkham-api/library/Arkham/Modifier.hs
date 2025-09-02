@@ -367,6 +367,7 @@ data ModifierType
   | RemoveSkillIcons [SkillIcon]
   | RemoveTrait Trait
   | ReplaceAllSkillIconsWithWild
+  | SkillIconsSubtract
   | ResolveEffectsAgain -- NOTE: If used for more than Tekelili, need to figure out what to do
   | ResolveEffectsAgainMatch CardMatcher -- NOTE: If used for more than Tekelili, need to figure out what to do
   | ResolvesFailedEffects

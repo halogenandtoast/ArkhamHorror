@@ -239,6 +239,9 @@ restrict = flip withCriteria
 haunted :: (HasCardCode a, Sourceable a) => Text -> a -> Int -> Ability
 haunted tooltip a n = withTooltip tooltip $ mkAbility a n Haunted
 
+hauntedI :: (HasI18n, HasCardCode a, Sourceable a) => Scope -> a -> Int -> Ability
+hauntedI tooltip a n = withI18nTooltip tooltip $ mkAbility a n Haunted
+
 cosmos :: (HasCardCode a, Sourceable a) => a -> Int -> Ability
 cosmos a n = mkAbility a n Cosmos
 

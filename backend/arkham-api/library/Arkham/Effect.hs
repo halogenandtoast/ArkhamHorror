@@ -38,6 +38,7 @@ import Arkham.Act.Acts (
 import Arkham.Agenda.Agendas (
   awakeningEffect,
   lostMemoriesEffect,
+  showbusinessAsUsualEffect,
   theLoversVIEffect,
   theRedDepthsEffect,
   theWaterRisesEffect,
@@ -158,13 +159,13 @@ import Arkham.Location.Locations (
   unvisitedIsleStandingStonesEffect,
  )
 import Arkham.Skill.Skills (
-  nimbleEffect,
   copycat3Effect,
   defiance2Effect,
   defianceEffect,
   fey1Effect,
   hatchetManEffect,
   momentum1Effect,
+  nimbleEffect,
   prescientEffect,
   surprisingFind1Effect,
   theEyeOfTruth5Effect,
@@ -580,6 +581,7 @@ allEffects =
     , ("60431", SomeEffect $ noop "60431")
     , ("60432", SomeEffect $ noop "60432")
     , ("60512", SomeEffect willToSurviveEffect)
+    , ("72002", SomeEffect showbusinessAsUsualEffect)
     , ("81007", SomeEffect cursedShoresEffect)
     , ("82026", SomeEffect gildedVoltoEffect)
     , ("82035", SomeEffect mesmerizeEffect)

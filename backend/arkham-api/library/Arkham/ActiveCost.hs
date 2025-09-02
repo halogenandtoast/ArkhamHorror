@@ -230,6 +230,21 @@ payCost msg c iid skipAdditionalCosts cost = do
       enemies <- select mtch
       push $ chooseOne player $ targetLabels enemies $ only . pay . ChosenEnemyCost
       pure c
+    ChooseEnemyCostAndMaybeFieldClueCost mtch fld -> do
+      spendable <- getSpendableClueCount [iid]
+      enemies <-
+        select mtch >>= mapMaybeM \enemy -> runMaybeT do
+          clueCount <- MaybeT $ field fld enemy
+          guard $ spendable >= clueCount
+          pure (enemy, clueCount)
+
+      push $ chooseOne player $ flip map enemies \(enemy, clues) ->
+        targetLabel
+          enemy
+          [ pay $ ChosenEnemyCost enemy
+          , pay $ ClueCost (Static clues)
+          ]
+      pure c
     ChosenEnemyCost eid -> withPayment $ ChosenEnemyPayment eid
     CostIfCustomization customization cost1 cost2 -> do
       case source of
@@ -812,7 +827,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           if ucost < 0
             then pure (-ucost)
             else pure 0
-        _ -> pure 0 
+        _ -> pure 0
       withPayment $ ResourcePayment $ x + extra
     AdditionalActionsCost -> do
       actionRemainingCount <- field InvestigatorRemainingActions iid
@@ -1046,6 +1061,20 @@ payCost msg c iid skipAdditionalCosts cost = do
               push
                 $ Ask lead
                 $ ChoosePaymentAmounts (displayCostType cost) (Just $ TotalAmountTarget totalClues) paymentOptions
+      pure c
+    -- push (SpendClues totalClues iids)
+    -- withPayment $ CluePayment totalClues
+    SameLocationGroupClueCost x locationMatcher -> do
+      totalClues <- getPlayerCountValue x
+      locations <-
+        select locationMatcher >>= filterM \lid -> do
+          total <- getSpendableClueCount =<< select (investigatorAt lid)
+          pure $ total >= totalClues
+      lead <- getLeadPlayer
+      push
+        $ chooseOrRunOne
+          lead
+          [targetLabel lid [pay (GroupClueCost x $ LocationWithId lid)] | lid <- locations]
       pure c
     -- push (SpendClues totalClues iids)
     -- withPayment $ CluePayment totalClues

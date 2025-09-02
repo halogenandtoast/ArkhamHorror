@@ -19,6 +19,8 @@ import Arkham.ChaosToken.Types (ChaosToken, ChaosTokenFace)
 import Arkham.Classes.Entity
 import {-# SOURCE #-} Arkham.Cost.FieldCost
 import Arkham.Customization
+import {-# SOURCE #-} Arkham.Enemy.Types (Enemy)
+import Arkham.Field
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Key
@@ -115,11 +117,13 @@ data Cost
   | GroupResourceCost GameValue LocationMatcher
   | GroupDiscardCost GameValue ExtendedCardMatcher LocationMatcher
   | GroupClueCost GameValue LocationMatcher
+  | SameLocationGroupClueCost GameValue LocationMatcher
   | GroupClueCostRange (Int, Int) LocationMatcher
   | PlaceClueOnLocationCost Int
   | ExhaustCost Target
   | ShuffleTopOfScenarioDeckIntoYourDeck Int ScenarioDeckKey
   | ChooseEnemyCost EnemyMatcher
+  | ChooseEnemyCostAndMaybeFieldClueCost EnemyMatcher (Field Enemy (Maybe Int))
   | ChosenEnemyCost EnemyId
   | ChooseExtendedCardCost ExtendedCardMatcher
   | ChosenCardCost CardId
@@ -253,6 +257,7 @@ displayCostType = \case
   GroupClueCostX -> "X {perPlayer} clues as a group"
   DiscoveredCluesCost -> "Spend discovered clues"
   ChooseEnemyCost _ -> "Choose an enemy"
+  ChooseEnemyCostAndMaybeFieldClueCost _ _ -> "Choose an enemy and spend X clues"
   ChooseExtendedCardCost _ -> "Choose a card that matches"
   ChosenEnemyCost _ -> "Choose an enemy"
   ChosenCardCost _ -> "Choose a card that matches"
@@ -331,6 +336,20 @@ displayCostType = \case
         <> tshow d
         <> " Clues for 1, 2, 3, or 4 players"
   ClueCostX -> "Spend X Clues"
+  SameLocationGroupClueCost gv _ -> case gv of
+    Static n -> pluralize n "Clue" <> " as a Group"
+    PerPlayer n -> pluralize n "Clue" <> " per Player as a Group"
+    StaticWithPerPlayer n m ->
+      tshow n <> " + " <> tshow m <> " Clues per Player"
+    ByPlayerCount a b c d ->
+      tshow a
+        <> ", "
+        <> tshow b
+        <> ", "
+        <> tshow c
+        <> ", or "
+        <> tshow d
+        <> " Clues for 1, 2, 3, or 4 players"
   GroupClueCost gv _ -> case gv of
     Static n -> pluralize n "Clue" <> " as a Group"
     PerPlayer n -> pluralize n "Clue" <> " per Player as a Group"
@@ -430,6 +449,7 @@ displayCostType = \case
     Growth -> tshow n <> " Growth"
     Horror -> error "Not a use"
     Inspiration -> tshow n <> " Inspiration"
+    Shard -> pluralize n "Shard"
     Key -> pluralize n "Key"
     Lead -> pluralize n "Lead"
     Leyline -> pluralize n "Leyline"
@@ -439,6 +459,7 @@ displayCostType = \case
     Pillar -> pluralize n "Pillars"
     Portent -> tshow n <> " Portents"
     Resource -> pluralize n "Resource from the asset"
+    Seal -> pluralize n "Seal"
     Secret -> pluralize n "Secret"
     Shell -> pluralize n "Shell"
     Supply -> if n == 1 then "1 Supply" else tshow n <> " Supplies"
@@ -467,6 +488,7 @@ displayCostType = \case
     Growth -> "X Growth"
     Horror -> error "Not a use"
     Inspiration -> "X Inspiration"
+    Shard -> "X Shards"
     Key -> "X Keys"
     Lead -> "X Leads"
     Leyline -> "X Leylines"
@@ -476,6 +498,7 @@ displayCostType = \case
     Pillar -> "X Pillars"
     Portent -> "X Portents"
     Resource -> "X Resources"
+    Seal -> "X Seals"
     Secret -> "X Secrets"
     Shell -> "X Shells"
     Supply -> "X Supplies"
@@ -504,6 +527,7 @@ displayCostType = \case
     Growth -> tshow n <> "-" <> tshow m <> " Growth"
     Horror -> error "Not a use"
     Inspiration -> tshow n <> "-" <> tshow m <> " Inspiration"
+    Shard -> tshow n <> "-" <> tshow m <> " Shards"
     Key -> tshow n <> "-" <> tshow m <> " Keys"
     Lead -> tshow n <> "-" <> tshow m <> " Leads"
     Leyline -> tshow n <> "-" <> tshow m <> " Leylines"
@@ -513,6 +537,7 @@ displayCostType = \case
     Pillar -> tshow n <> "-" <> tshow m <> " Pillars"
     Portent -> tshow n <> "-" <> tshow m <> " Portents"
     Resource -> tshow n <> "-" <> tshow m <> " Resources"
+    Seal -> tshow n <> "-" <> tshow m <> " Seals"
     Secret -> tshow n <> "-" <> tshow m <> " Secrets"
     Shell -> tshow n <> "-" <> tshow m <> " Shells"
     Supply -> tshow n <> "-" <> tshow m <> " Supplies"

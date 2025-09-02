@@ -766,10 +766,16 @@ getInvestigatorsMatching matcher = do
       lowestRemainingSanity <-
         getMin <$> selectAgg Min InvestigatorRemainingSanity UneliminatedInvestigator
       pure $ lowestRemainingSanity == remainingSanity
-    MostRemainingSanity -> flip filterM as $ \i -> do
-      remainingSanity <- field InvestigatorRemainingSanity (toId i)
+    MostRemainingSanity -> do
       mostRemainingSanity <- fieldMax InvestigatorRemainingSanity UneliminatedInvestigator
-      pure $ mostRemainingSanity == remainingSanity
+      flip filterM as $ \i -> do
+        remainingSanity <- field InvestigatorRemainingSanity (toId i)
+        pure $ mostRemainingSanity == remainingSanity
+    MostRemainingHealth -> do
+      mostRemainingHealth <- fieldMax InvestigatorRemainingHealth UneliminatedInvestigator
+      flip filterM as $ \i -> do
+        remainingHealth <- field InvestigatorRemainingHealth (toId i)
+        pure $ mostRemainingHealth == remainingHealth
     NearestToLocation locationMatcher -> do
       destinations <- select locationMatcher
       if null destinations
@@ -1255,6 +1261,7 @@ getActsMatching matcher = do
     AnyAct -> pure . const True
     ActWithId actId -> pure . (== actId) . toId
     ActWithSide side -> pure . (== side) . AC.actSide . attr actSequence
+    ActWithStep step -> pure . (== AC.ActStep step) . AC.actStep . attr actSequence
     ActWithDeckId n -> pure . (== n) . attr actDeckId
     ActWithTreachery treacheryMatcher -> \act ->
       selectAny $ TreacheryIsAttachedTo (toTarget act.id) <> treacheryMatcher
@@ -1277,6 +1284,7 @@ getRemainingActsMatching matcher = do
     ActOneOf xs -> \a -> anyM (`matcherFilter` a) xs
     AnyAct -> pure . const True
     ActWithId _ -> pure . const False
+    ActWithStep _ -> pure . const False
     ActWithTreachery _ -> pure . const False
     ActWithSide _ -> error "Can't check side, since not on def"
     ActWithDeckId _ -> error "Can't check side, since not on def"
@@ -1675,10 +1683,15 @@ getLocationsMatching lmatcher = do
         else do
           ls'' <- mapMaybeM (\l -> (l,) <$$> field LocationShroud l.id) ls'
           let lowestShroud = getMin $ foldMap (Min . snd) ls''
-          pure $ filter (maybe False (< lowestShroud) . attr locationShroud) ls
+          filterM (maybe (pure False) (\v -> (< lowestShroud) <$> getGameValue v) . attr locationShroud) ls
     LocationWithDiscoverableCluesBy whoMatcher -> do
       go ls LocationWithAnyClues >>= filterM \l -> do
         selectAny $ whoMatcher <> InvestigatorCanDiscoverCluesAt (LocationWithId l.id)
+    LocationNotAtClueLimit -> do
+      flip filterM ls \l -> do
+        clues <- field LocationClues (toId l)
+        clueLimit <- getGameValue =<< field LocationRevealClues (toId l)
+        pure $ clues < clueLimit
     SingleSidedLocation ->
       filterM (fieldP LocationCard (not . cdDoubleSided . toCardDef) . toId) ls
     FirstLocation [] -> pure []
@@ -1722,10 +1735,8 @@ getLocationsMatching lmatcher = do
         $ fieldMapM LocationCardsUnderneath (`cardListMatches` cardListMatcher)
         . toId
     LocationWithAsset assetMatcher -> do
-      assets <- select assetMatcher
-      flip filterM ls $ \l -> do
-        lmAssets <- select $ AssetAtLocation $ toId l
-        pure . notNull $ List.intersect assets lmAssets
+      locations <- catMaybes <$> selectFields AssetLocation assetMatcher
+      pure $ filter ((`elem` locations) . toId) ls
     LocationWithAttachedEvent eventMatcher -> do
       events <- select eventMatcher
       flip filterM ls $ \l -> do
@@ -1774,7 +1785,10 @@ getLocationsMatching lmatcher = do
         Nothing -> pure []
         Just v ->
           filterM
-            (field LocationShroud . toId >=> maybe (pure False) (`gameValueMatches` LessThanOrEqualTo (Static v)))
+            ( field LocationShroud
+                . toId
+                >=> maybe (pure False) (`gameValueMatches` LessThanOrEqualTo (Static v))
+            )
             ls
     LocationWithMostInvestigators locationMatcher -> do
       matches' <- go ls locationMatcher
@@ -2852,6 +2866,7 @@ enemyMatcherFilter es matcher' = do
   case matcher' of
     AttackingEnemy -> filterM (fieldMap EnemyAttacking isJust . toId) es
     EnemyWithToken tkn -> filterM (fieldMap EnemyTokens (Token.hasToken tkn) . toId) es
+    EnemyWithTokens n tkn -> filterM (fieldMap EnemyTokens ((>= n) . Token.countTokens tkn) . toId) es
     DefeatedEnemy matcher -> do
       iids <- allInvestigators
       history <-
@@ -3570,6 +3585,7 @@ instance Projection Location where
       LocationHorror -> pure $ locationHorror attrs
       LocationDamage -> pure $ locationDamage attrs
       LocationDoom -> pure $ locationDoom attrs
+      LocationPrintedShroud -> pure locationShroud
       LocationShroud ->
         if isRevealed l && isJust locationShroud
           then Just <$> getModifiedShroudValueFor attrs

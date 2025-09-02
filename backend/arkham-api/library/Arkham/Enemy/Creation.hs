@@ -1,11 +1,10 @@
 module Arkham.Enemy.Creation where
 
-import Arkham.Prelude
-
 import Arkham.Card
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Target
 import GHC.Records
 

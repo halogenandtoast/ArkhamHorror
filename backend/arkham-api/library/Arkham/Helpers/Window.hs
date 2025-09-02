@@ -209,9 +209,16 @@ engagedEnemy =
 
 windowSkillTestId :: HasCallStack => [Window] -> SkillTestId
 windowSkillTestId =
-  fromMaybe (error "missing enemy") . asum . map \case
+  fromMaybe (error "missing skill test id") . asum . map \case
     (windowType -> Window.AttemptToEvadeEnemy sid _ _) -> Just sid
+    (windowType -> Window.AttemptToFightEnemy sid _ _) -> Just sid
     (windowType -> Window.InitiatedSkillTest st) -> Just st.id
+    _ -> Nothing
+
+evadingEnemy :: HasCallStack => [Window] -> EnemyId
+evadingEnemy =
+  fromMaybe (error "missing enemy") . asum . map \case
+    (windowType -> Window.AttemptToEvadeEnemy _ _ eid) -> Just eid
     _ -> Nothing
 
 enteringEnemy :: HasCallStack => [Window] -> EnemyId
@@ -249,11 +256,13 @@ defeatedEnemy :: HasCallStack => [Window] -> EnemyId
 defeatedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
     (windowType -> Window.EnemyDefeated _ _ eid) -> Just eid
+    (windowType -> Window.EnemyWouldBeDefeated eid) -> Just eid
     _ -> Nothing
 
 attackedEnemy :: HasCallStack => [Window] -> EnemyId
 attackedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
+    (windowType -> Window.AttemptToFightEnemy _ _ eid) -> Just eid
     (windowType -> Window.EnemyAttacked _ _ eid) -> Just eid
     (windowType -> Window.SuccessfulAttackEnemy _ _ eid _) -> Just eid
     (windowType -> Window.FailAttackEnemy _ eid _) -> Just eid
@@ -269,6 +278,7 @@ evadedEnemy :: HasCallStack => [Window] -> EnemyId
 evadedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
     (windowType -> Window.EnemyEvaded _ eid) -> Just eid
+    (windowType -> Window.SuccessfulEvadeEnemy _ eid _) -> Just eid
     _ -> Nothing
 
 fromAsset :: HasCallStack => [Window] -> AssetId
@@ -1243,6 +1253,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , locationMatches iid source window' locationId locationMatcher
             ]
         _ -> noMatch
+    Matcher.UnrevealedRevealLocation timing whoMatcher locationMatcher ->
+      guardTiming timing $ \case
+        Window.UnrevealedRevealLocation who locationId ->
+          andM
+            [ matchWho iid who whoMatcher
+            , locationMatches iid source window' locationId locationMatcher
+            ]
+        _ -> noMatch
     Matcher.FlipLocation timing whoMatcher locationMatcher ->
       guardTiming timing $ \case
         Window.FlipLocation who locationId ->
@@ -1595,6 +1613,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             [ matchWho iid who whoMatcher
             , matches enemyId enemyMatcher
             , sourceMatches source' sourceMatcher
+            ]
+        _ -> noMatch
+    Matcher.AttemptToFight timing whoMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.AttemptToFightEnemy _ who enemyId ->
+          andM
+            [ matchWho iid who whoMatcher
+            , matches enemyId enemyMatcher
             ]
         _ -> noMatch
     Matcher.AttemptToEvade timing whoMatcher enemyMatcher ->

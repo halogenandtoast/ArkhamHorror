@@ -2,5 +2,6 @@
   { "id": "81001", "name": "Curse of the Rougarou", "standaloneDifficulties": ["Standard", "Hard"] },
   { "id": "82001", "name": "Carnevale of Horrors", "standaloneDifficulties": ["Standard", "Hard"] },
   { "id": "84001", "name": "Murder at the Excelsior Hotel", "standaloneDifficulties": ["Standard", "Hard"] },
-  { "id": "71001", "name": "The Midwinter Gala", "standaloneDifficulties": ["Standard", "Hard", "Expert"], "beta": true }
+  { "id": "71001", "name": "The Midwinter Gala", "standaloneDifficulties": ["Standard", "Hard", "Expert"], "beta": true },
+  { "id": "72001", "name": "Film Fatale", "standaloneDifficulties": ["Standard", "Hard"], "beta": true }
 ]

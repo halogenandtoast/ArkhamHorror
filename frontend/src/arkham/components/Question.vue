@@ -563,6 +563,9 @@ const cardPiles = computed(() => {
         </button>
         <button v-else @click="choose(index)" v-html="label(choice.label)"></button>
       </div>
+      <div v-else-if="choice.tag === MessageType.INVALID_LABEL" class="message-label">
+        <button v-html="label(choice.label)" disabled></button>
+      </div>
 
       <a
         v-if="choice.tag === MessageType.SKILL_LABEL"
@@ -748,10 +751,19 @@ button {
   border-radius: 0.6em;
   color: #EEE;
   font: Arial, sans-serif;
+
+  &[disabled] {
+    cursor: not-allowed;
+    background-color: #999 !important;
+  }
 }
 
 button:hover {
   background-color: #311b3e;
+
+  &[disabled] {
+    background-color: #999 !important;
+  }
 }
 
 .card {

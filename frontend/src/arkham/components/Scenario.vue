@@ -40,6 +40,7 @@ import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import SkillTest from '@/arkham/components/SkillTest.vue';
 import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
 import Story from '@/arkham/components/Story.vue';
+import Asset from '@/arkham/components/Asset.vue';
 import Location from '@/arkham/components/Location.vue';
 import TreacheryView from '@/arkham/components/Treachery.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -315,6 +316,9 @@ const globalEnemies = computed(() => Object.values(props.game.enemies).filter((e
 ))
 const globalStories = computed(() => Object.values(props.game.stories).filter((story) =>
   story.placement.tag === "OtherPlacement" && story.placement.contents === "Global"
+))
+const globalAssets = computed(() => Object.values(props.game.assets).filter((asset) => 
+  asset.placement.tag === "OtherPlacement" && asset.placement.contents === "Global"
 ))
 const enemiesAsLocations = computed(() => Object.values(props.game.enemies).filter((enemy) => enemy.asSelfLocation !== null))
 const cardsUnderScenarioReference = computed(() => props.scenario.cardsUnderScenarioReference)
@@ -732,6 +736,15 @@ function minimize_SkillTest(isMinimized:boolean){
           @choose="choose"
         />
 
+        <Asset
+          v-for="asset in globalAssets"
+          :key="asset.id"
+          :asset="asset"
+          :game="game"
+          :playerId="playerId"
+          @choose="choose"
+        />
+
         <div class="scenario-guide">
           <div class="scenario-guide-card">
             <div class="scenario-guide-card">
@@ -801,6 +814,7 @@ function minimize_SkillTest(isMinimized:boolean){
             :location="location"
             :style="{ 'grid-area': location.label, 'justify-self': 'center' }"
             @choose="choose"
+            @show="doShowCards"
           />
           <Enemy
             v-for="enemy in enemiesAsLocations"

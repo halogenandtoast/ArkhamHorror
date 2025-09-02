@@ -49,16 +49,17 @@ import Arkham.Target as X
 import Arkham.Text as X
 
 import Arkham.I18n
+import Arkham.Helpers.FlavorText
 import Arkham.Id
 import Arkham.Matcher.Investigator
 
 resolutionWithXp :: (HasI18n, ReverseQueue m) => Scope -> m Int -> m ()
 resolutionWithXp s f = do
   xp <- f
-  story $ withVars ["xp" .= xp] $ i18nWithTitle s
+  resolutionFlavor $ withVars ["xp" .= xp] $ setTitle (s <> ".title") >> p (s <> ".body")
 
 resolution :: (HasI18n, ReverseQueue m) => Scope -> m ()
-resolution = story . i18nWithTitle
+resolution s = resolutionFlavor $ setTitle (s <> ".title") >> p (s <> ".body")
 
 eachUnresigned :: ReverseQueue m => (InvestigatorId -> m ()) -> m ()
 eachUnresigned = selectEach (IncludeEliminated $ not_ ResignedInvestigator)

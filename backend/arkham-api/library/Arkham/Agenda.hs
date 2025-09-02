@@ -1,11 +1,8 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Agenda (
-  module Arkham.Agenda,
-) where
+module Arkham.Agenda ( module Arkham.Agenda,) where
 
 import Arkham.Prelude
-
 import Arkham.Agenda.Agendas
 import Arkham.Agenda.Runner
 import Arkham.Card
@@ -317,4 +314,7 @@ allAgendas =
       SomeAgendaCard maskedRevelers
     , SomeAgendaCard unexpectedGuests
     , SomeAgendaCard aKillerParty
+    , -- Film Fatale
+      SomeAgendaCard showbusinessAsUsual
+    , SomeAgendaCard collidingRealities
     ]

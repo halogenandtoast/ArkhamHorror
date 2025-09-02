@@ -63,6 +63,7 @@ const shouldRender = (mod: Modifier) => {
   if (type.tag === 'CannotCommitCards')
     return props.playerId == props.game.investigators[props.skillTest.investigator].playerId
   if (type.tag === 'OtherModifier' && type.contents === 'MayIgnoreLocationEffectsAndKeywords') return true
+  if (type.tag === 'OtherModifier' && type.contents === 'SkillIconsSubtract') return true
   return false
 }
 
@@ -463,6 +464,9 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'MayIgnoreLocationEffectsAndKeywords'">
             <span class="text">May Ignore Location Effects</span>
+          </template>
+          <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'SkillIconsSubtract'">
+            <span class="text">Skill Icons Subtract</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'SkillTestAutomaticallySucceeds'">
             <span class="text">Skill test automatically succeeds</span>

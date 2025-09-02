@@ -197,6 +197,7 @@ printedCardCost = maybe 0 toPrintedCost . cdCost . toCardDef
 cardMatch :: (IsCard a, IsCardMatcher cardMatcher, HasCallStack) => a -> cardMatcher -> Bool
 cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   AnyCard -> True
+  SingleSidedCard -> let def = toCardDef a in not (cdDoubleSided def) && isNothing (cdOtherSide def)
   CardTaggedWith tx -> tx `elem` cdTags (toCardDef a)
   CardWithAvailableCustomization -> case toCard a of
     PlayerCard pc ->

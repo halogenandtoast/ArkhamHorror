@@ -32,6 +32,8 @@ data Token
   | Offering
   | Pillar
   | Resource
+  | Seal
+  | Shard
   | Shell
   | Secret
   | Supply

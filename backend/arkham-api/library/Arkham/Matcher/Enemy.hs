@@ -50,6 +50,7 @@ data EnemyMatcher
   | EnemyWithId EnemyId
   | EnemyWithTrait Trait
   | EnemyWithToken Token
+  | EnemyWithTokens Int Token
   | EnemyAt LocationMatcher
   | EnemyAttachedToAsset AssetMatcher
   | EnemyAttachedTo TargetMatcher

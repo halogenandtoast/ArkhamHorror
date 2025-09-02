@@ -542,6 +542,16 @@ revealing
   -> Message
 revealing iid (toSource -> source) (toTarget -> target) zone = Search $ mkSearch Revealing iid source target [(zone, PutBack)] (basic AnyCard) ReturnCards
 
+revealingEdit
+  :: (Targetable target, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> target
+  -> Zone
+  -> (Search -> Search)
+  -> Message
+revealingEdit iid (toSource -> source) (toTarget -> target) zone f = Search $ f $ mkSearch Revealing iid source target [(zone, PutBack)] (basic AnyCard) ReturnCards
+
 takeResources :: Sourceable source => InvestigatorId -> source -> Int -> Message
 takeResources iid (toSource -> source) n = TakeResources iid n source False
 

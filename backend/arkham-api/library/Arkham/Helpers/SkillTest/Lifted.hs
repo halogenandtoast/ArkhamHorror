@@ -9,10 +9,16 @@ import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Id
 import Arkham.Investigate (mkInvestigateLocation)
 import Arkham.Investigate.Types qualified as I
-import Arkham.Message (Message (..))
+import Arkham.Message (Message (..), pattern BeginSkillTest)
 import Arkham.Message.Lifted
 import Arkham.Prelude
-import Arkham.SkillTest.Base (SkillTest (skillTestIsRevelation))
+import Arkham.SkillTest.Base (
+  SkillTest (skillTestIsRevelation),
+  SkillTestBaseValue (..),
+  SkillTestDifficulty (..),
+  buildSkillTest,
+ )
+import Arkham.SkillTest.Type (SkillTestType (..))
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -66,6 +72,58 @@ beginSkillTestEdit
   -> (SkillTest -> SkillTest)
   -> m ()
 beginSkillTestEdit sid iid source target sType n f = push $ Msg.beginSkillTestEdit sid iid source target sType n f
+
+beginSkillTestRawEdit
+  :: (Sourceable source, Targetable target, ReverseQueue m)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> target
+  -> SkillTestType
+  -> SkillTestBaseValue
+  -> GameCalculation
+  -> (SkillTest -> SkillTest)
+  -> m ()
+beginSkillTestRawEdit sid iid source target testType baseValue n f =
+  push
+    $ BeginSkillTest
+    $ f
+    $ buildSkillTest sid iid source target testType baseValue (SkillTestDifficulty n)
+
+combinationSkillTest
+  :: (Sourceable source, Targetable target, ReverseQueue m)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> target
+  -> [SkillType]
+  -> GameCalculation
+  -> m ()
+combinationSkillTest sid iid source target sTypes n =
+  combinationSkillTestEdit sid iid source target sTypes n id
+
+combinationSkillTestEdit
+  :: (Sourceable source, Targetable target, ReverseQueue m)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> target
+  -> [SkillType]
+  -> GameCalculation
+  -> (SkillTest -> SkillTest)
+  -> m ()
+combinationSkillTestEdit sid iid source target sTypes n f =
+  push
+    $ BeginSkillTest
+    $ f
+    $ buildSkillTest
+      sid
+      iid
+      source
+      target
+      (AndSkillTest sTypes)
+      (AndSkillBaseValue sTypes)
+      (SkillTestDifficulty n)
 
 parley
   :: (Sourceable source, Targetable target, ReverseQueue m)

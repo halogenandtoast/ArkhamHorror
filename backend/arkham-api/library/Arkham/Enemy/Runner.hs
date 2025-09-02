@@ -766,12 +766,14 @@ instance RunMessage EnemyAttrs where
 
       whenWindow <- checkWindows [mkWhen (Window.EnemyAttacked iid source enemyId)]
       afterWindow <- checkWindows [mkAfter (Window.EnemyAttacked iid source enemyId)]
+      attempt <- checkWindows [mkWhen (Window.AttemptToFightEnemy sid iid enemyId)]
       keywords <- getModifiedKeywords a
 
       pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive eid
 
       pushAll
         [ whenWindow
+        , attempt
         , fight sid iid source target skillType difficulty
         , afterWindow
         ]
@@ -1602,7 +1604,7 @@ instance RunMessage EnemyAttrs where
           case token of
             Clue -> pushAll $ windows [Window.PlacedClues source (toTarget a) n]
             Damage -> push $ CheckDefeated source (toTarget a)
-            _ -> pure ()
+            _ -> pushAll $ windows [Window.PlacedToken source (toTarget a) token n]
           pure $ a & tokensL %~ addTokens token n
     PlaceKey (isTarget a -> True) k -> do
       pure $ a & keysL %~ insertSet k

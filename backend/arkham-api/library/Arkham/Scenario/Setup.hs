@@ -218,6 +218,12 @@ amongGathered matcher = do
   y <- filterCards matcher <$> use otherCardsL
   pure $ x <> y
 
+fromGathered :: (HasCallStack, ReverseQueue m) => CardMatcher -> ScenarioBuilderT m [Card]
+fromGathered matcher = do
+  cards <- amongGathered matcher
+  removeCards cards
+  pure cards
+
 removeCards :: Monad m => [Card] -> ScenarioBuilderT m ()
 removeCards xs = do
   attrsL . encounterDeckL %= filter ((`notElem` xs) . toCard)

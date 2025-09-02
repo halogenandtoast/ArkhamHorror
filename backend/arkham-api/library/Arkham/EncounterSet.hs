@@ -223,6 +223,10 @@ data EncounterSet
   | SinsOfThePast
   | TheBlobThatAteEverythingELSE
   | TheMidwinterGala
+  | FilmFatale
+  | CosmicJourney
+  | ForgottenIsland
+  | AbominableContessa
   | Test
   deriving stock (Show, Eq, Ord, Bounded, Enum, Data)
 

@@ -457,6 +457,7 @@ passesCriteria iid mcard source' requestor windows' = \case
       else do
         let
           go = \case
+            AbilitySource inner _ -> go inner
             StorySource sid -> onSameLocation iid =<< field StoryPlacement sid
             AssetSource aid -> onSameLocation iid =<< field AssetPlacement aid
             EnemySource eid -> onSameLocation iid =<< field EnemyPlacement eid

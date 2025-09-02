@@ -37,7 +37,7 @@ import Arkham.Direction
 import Arkham.Discover
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
-import Arkham.Helpers.GameValue (getPlayerCountValue)
+import Arkham.Helpers.GameValue (getGameValue)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, frame, windows, wouldDoEach)
 import Arkham.Helpers.Window qualified as Helpers
@@ -106,7 +106,7 @@ getModifiedRevealClueCountWithMods mods attrs =
   if CannotPlaceClues `elem` mods
     then pure 0
     else do
-      base <- getPlayerCountValue (locationRevealClues attrs)
+      base <- getGameValue (locationRevealClues attrs)
       pure $ foldl' applyModifier base mods
  where
   applyModifier base ReduceStartingCluesByHalf = (base + 1) `div` 2
@@ -252,6 +252,8 @@ instance RunMessage LocationAttrs where
       pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
     AddToDiscard _ pc -> do
       pure $ a & cardsUnderneathL %~ filter (/= PlayerCard pc)
+    AddToVictory (CardIdTarget cid) -> do
+      pure $ a & cardsUnderneathL %~ filter ((/= cid) . toCardId)
     ObtainCard c -> do
       pure $ a & cardsUnderneathL %~ filter ((/= c) . toCardId)
     Will next@(EnemySpawn details) | details.location == Just locationId -> do
@@ -288,7 +290,7 @@ instance RunMessage LocationAttrs where
         push $ MoveTokens source (toSource a) target Clue (locationClues a)
       pure a
     PlaceCluesUpToClueValue lid source n | lid == locationId -> do
-      clueValue <- getPlayerCountValue locationRevealClues
+      clueValue <- getGameValue locationRevealClues
       let n' = min n (clueValue - locationClues a)
       a <$ push (PlaceClues source (toTarget a) n')
     RemoveAllClues _ target | isTarget a target -> do
@@ -336,7 +338,7 @@ instance RunMessage LocationAttrs where
           locationClueCount' <-
             if CannotPlaceClues `elem` modifiers'
               then pure 0
-              else getPlayerCountValue locationRevealClues
+              else getGameValue locationRevealClues
           let locationClueCount =
                 if ReduceStartingCluesByHalf `elem` modifiers'
                   then locationClueCount' `div` 2
@@ -350,6 +352,11 @@ instance RunMessage LocationAttrs where
           pure $ a & withoutCluesL .~ (locationClueCount + currentClues == 0)
         else pure a
     RevealLocation miid lid | lid == locationId && not locationRevealed -> do
+      revealer <- maybe getLead pure miid
+      whenWindowMsg <- checkWindows [mkWindow Timing.When (Window.UnrevealedRevealLocation revealer lid)]
+      pushAll [whenWindowMsg, Do msg]
+      pure a
+    Do (RevealLocation miid lid) | lid == locationId && not locationRevealed -> do
       mods <- getModifiers a
       let maxFloodLevel
             | CannotBeFlooded `elem` mods = Unflooded
@@ -357,14 +364,8 @@ instance RunMessage LocationAttrs where
             | otherwise = FullyFlooded
       locationClueCount <- getModifiedRevealClueCountWithMods mods a
       revealer <- maybe getLead pure miid
-      whenWindowMsg <-
-        checkWindows
-          [mkWindow Timing.When (Window.RevealLocation revealer lid)]
-
-      afterWindowMsg <-
-        checkWindows
-          [mkWindow Timing.After (Window.RevealLocation revealer lid)]
-
+      whenWindowMsg <- checkWindows [mkWindow Timing.When (Window.RevealLocation revealer lid)]
+      afterWindowMsg <- checkWindows [mkWindow Timing.After (Window.RevealLocation revealer lid)]
       let currentClues = countTokens Clue locationTokens
 
       pushAll
@@ -501,11 +502,8 @@ locationInvestigatorsWithClues attrs =
 getModifiedShroudValueFor :: (HasCallStack, HasGame m) => LocationAttrs -> m Int
 getModifiedShroudValueFor attrs = do
   modifiers' <- getModifiers (toTarget attrs)
-  pure
-    $ foldr
-      applyPostModifier
-      (max 0 $ foldr applyModifier (fromJustNote "Missing shroud" $ locationShroud attrs) modifiers')
-      modifiers'
+  base <- getGameValue (fromJustNote "Missing shroud" $ locationShroud attrs)
+  pure $ foldr applyPostModifier (max 0 $ foldr applyModifier base modifiers') modifiers'
  where
   applyModifier (ShroudModifier m) n = n + m
   applyModifier _ n = n

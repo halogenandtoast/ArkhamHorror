@@ -7,6 +7,7 @@ import { tarotCardDecoder, TarotCard } from '@/arkham/types/TarotCard';
 
 export enum MessageType {
   LABEL = 'Label',
+  INVALID_LABEL = 'InvalidLabel',
   TARGET_LABEL = 'TargetLabel',
   TOOLTIP_LABEL = 'TooltipLabel',
   SKILL_LABEL = 'SkillLabel',
@@ -48,6 +49,11 @@ export type Done = {
 
 export type Label = {
   tag: MessageType.LABEL
+  label: string
+}
+
+export type InvalidLabel = {
+  tag: MessageType.INVALID_LABEL
   label: string
 }
 
@@ -260,7 +266,7 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
     tag: JsonDecoder.literal(MessageType.SKILL_TEST_APPLY_RESULTS_BUTTON),
   }, 'SkillTestApplyResultsButton')
 
-export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | SkillLabelWithLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | EngageLabel | GridLabel | TarotLabel | Done | ChaosTokenGroupChoice | EffectActionButton | SkipTriggersButton | CardPile;
+export type Message = Label | InvalidLabel | TooltipLabel | TargetLabel | SkillLabel | SkillLabelWithLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | EngageLabel | GridLabel | TarotLabel | Done | ChaosTokenGroupChoice | EffectActionButton | SkipTriggersButton | CardPile;
 
 export const skipTriggersDecoder = JsonDecoder.object<SkipTriggersButton>(
   {
@@ -279,6 +285,12 @@ export const labelDecoder = JsonDecoder.object<Label>(
     tag: JsonDecoder.literal(MessageType.LABEL),
     label: JsonDecoder.string()
   }, 'Label')
+
+export const invalidLabelDecoder = JsonDecoder.object<InvalidLabel>(
+  {
+    tag: JsonDecoder.literal(MessageType.INVALID_LABEL),
+    label: JsonDecoder.string()
+  }, 'InvalidLabel')
 
 export const pileCardDecoder = JsonDecoder.object<PileCard>(
   {
@@ -359,6 +371,7 @@ export const effectActionButtonDecoder = JsonDecoder.object<EffectActionButton>(
 export const messageDecoder = JsonDecoder.oneOf<Message>(
   [
     labelDecoder,
+    invalidLabelDecoder,
     cardPileDecoder,
     tooltipLabelDecoder,
     skillLabelDecoder,
@@ -380,9 +393,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     chaosTokenGroupChoiceDecoder,
     effectActionButtonDecoder,
     skipTriggersDecoder,
-    JsonDecoder.succeed().flatMap((f) => {
-      return JsonDecoder.fail(f)
-    })
+    JsonDecoder.succeed().flatMap((f) => JsonDecoder.fail(f))
   ],
   'Message',
 );

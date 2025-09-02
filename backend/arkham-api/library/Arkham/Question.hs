@@ -62,6 +62,7 @@ pattern ResourceLabel iid msgs <- ComponentLabel (InvestigatorComponent iid Reso
 
 data UI msg
   = Label {label :: Text, messages :: [msg]}
+  | InvalidLabel { label :: Text }
   | TooltipLabel {label :: Text, tooltip :: Tooltip, messages :: [msg]}
   | CardLabel {cardCode :: CardCode, messages :: [msg]}
   | PortraitLabel {investigatorId :: InvestigatorId, messages :: [msg]}

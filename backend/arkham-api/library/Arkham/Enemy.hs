@@ -607,4 +607,25 @@ allEnemies =
     , SomeEnemyCard savageShantak
     , SomeEnemyCard theBloodlessMan
     , SomeEnemyCard theBloodlessManUnleashed
+    , -- Film Fatale
+      --- Film Fatale
+      SomeEnemyCard possessedExtra_19
+    , SomeEnemyCard possessedExtra_20
+    , SomeEnemyCard possessedExtra_21
+    , SomeEnemyCard erikaStrandPossessedProducer
+    , SomeEnemyCard ghostLight
+    , --- Cosmic Journey
+      SomeEnemyCard saturniteMonarchGraciousHost
+    , SomeEnemyCard saturniteMonarchInAnAlienLand
+    , SomeEnemyCard saturniteDrudgeMilitia
+    , SomeEnemyCard curiousMoonNosyNuisance
+    , --- Forgotten Island
+      SomeEnemyCard allosaurusIndomitablePredator
+    , SomeEnemyCard allosaurusRampagingPredator
+    , SomeEnemyCard dromaeosaurus
+    , --- Abominable Contessa
+      SomeEnemyCard theContessaNeedlesslySmug
+    , SomeEnemyCard theContessaEnraged
+    , SomeEnemyCard vampireThrall
+    , SomeEnemyCard werewolf
     ]

@@ -946,4 +946,30 @@ allLocations =
     , SomeLocationCard bedroomTheMidwinterGala
     , SomeLocationCard libraryTheMidwinterGala
     , SomeLocationCard parlorTheMidwinterGala
+    , -- Film Fatale
+      --- Film Fatale
+      SomeLocationCard centralLotQuietOnSet
+    , SomeLocationCard centralLotBlurred
+    , SomeLocationCard spaceSet
+    , SomeLocationCard jungleSet
+    , SomeLocationCard gothicSet
+    , --- Cosmic Journey
+      SomeLocationCard highRulersBastion
+    , SomeLocationCard teetawnPassage
+    , SomeLocationCard ritualSiteTeetawn
+    , SomeLocationCard tothisBarrens
+    , SomeLocationCard ritualSiteTothis
+    , SomeLocationCard lostAsteroid
+    , --- Forgotten Island
+      SomeLocationCard westernRidge
+    , SomeLocationCard tarPit
+    , SomeLocationCard easternRidge
+    , SomeLocationCard jungleRiver
+    , SomeLocationCard ruinsOfTheSerpentKing
+    , --- Abominable Contessa
+      SomeLocationCard castleHallwaysSeeminglyEndless
+    , SomeLocationCard catacombsStinksOfDeath
+    , SomeLocationCard clockTowerIncessantlyTicking
+    , SomeLocationCard moonlitGardenPoisonedBeauty
+    , SomeLocationCard throneOfBloodRedAsBloodBlackAsNight
     ]

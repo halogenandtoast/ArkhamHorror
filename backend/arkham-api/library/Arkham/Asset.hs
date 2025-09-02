@@ -1389,6 +1389,12 @@ allAssets =
     , SomeAssetCard thePaleLanternHypnoticGlow
     , SomeAssetCard thePaleLanternBeguilingAura
     , SomeAssetCard jewelOfSarnath
+    , -- Film Fatale
+      SomeAssetCard heliosTelescopeGateToTheCosmos
+    , SomeAssetCard staffOfTheSerpentRelicOfThePast
+    , SomeAssetCard accursedCapeShroudOfChaos
+    , SomeAssetCard andrePatelMadeForTheSpotlight
+    , SomeAssetCard rocketShipRattlingWithEnergy
     , -- Misc
       SomeAssetCard courage
     ]

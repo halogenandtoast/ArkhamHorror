@@ -132,6 +132,7 @@ const lostSouls = computed(() => props.enemy.tokens[TokenType.LostSoul])
 const bounties = computed(() => props.enemy.tokens[TokenType.Bounty])
 const evidence = computed(() => props.enemy.tokens[TokenType.Evidence])
 const warnings = computed(() => props.enemy.tokens[TokenType.Warning])
+const seals = computed(() => props.enemy.tokens[TokenType.Seal])
 
 const omnipotent = computed(() => {
   const {modifiers} = props.enemy
@@ -253,6 +254,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
             <PoolItem v-if="bounties && bounties > 0" type="resource" :amount="bounties" />
             <PoolItem v-if="evidence && evidence > 0" type="resource" tooltip="Evidence" :amount="evidence" />
             <PoolItem v-if="warnings && warnings > 0" type="resource" tooltip="Warning" :amount="warnings" />
+            <PoolItem v-if="seals && seals > 0" type="resource" tooltip="Seal" :amount="seals" />
             <PoolItem v-if="enemy.cardsUnderneath.length > 0" type="card" :amount="enemy.cardsUnderneath.length" />
             <Token
               v-for="(sealedToken, index) in enemy.sealedChaosTokens"

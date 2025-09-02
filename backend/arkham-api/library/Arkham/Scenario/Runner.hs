@@ -53,7 +53,7 @@ import Arkham.Label (mkLabel)
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message.Lifted (fetchCard)
+import Arkham.Message.Lifted (do_, fetchCard, obtainCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Name
 import Arkham.Phase
@@ -553,8 +553,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       & (setAsideCardsL %~ deleteFirstMatch (== card))
       & (decksL . at deckKey ?~ deck')
   AddToEncounterDiscard ec -> do
+    pushAll [ObtainCard (toCardId ec), Do msg]
+    pure a
+  Do (AddToEncounterDiscard ec) -> do
     handler <- getEncounterDeckHandler (toCardId ec)
-    push $ ObtainCard (toCardId ec)
     pure
       $ a
       & (discardLens handler %~ (ec :))
@@ -629,9 +631,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           else pure $ a & discardLens handler %~ (ec :)
       VengeanceCard _ -> error "vengeance card"
   CreateAssetAt _ card _ -> do
-    pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
+    pure $ a & setAsideCardsL %~ deleteFirstMatch (== card) & victoryDisplayL %~ filter (/= card)
   AttachStoryTreacheryTo _ card _ -> do
-    pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
+    pure $ a & setAsideCardsL %~ deleteFirstMatch (== card) & victoryDisplayL %~ filter (/= card)
+
   CreateEnemy (enemyCreationCard -> card) -> do
     pure
       $ a
@@ -687,7 +690,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ a & cardsNextToAgendaDeckL <>~ cards
   ShuffleCardsIntoDeck Deck.EncounterDeck cards -> do
     push $ ShuffleCardsIntoDeck (Deck.EncounterDeckByKey RegularEncounterDeck) cards
-    pure a
+    pure $ a & decksL . each %~ filter (`notElem` cards)
   ShuffleCardsIntoDeck (Deck.EncounterDeckByKey _) [] -> do
     pure a
   ShuffleCardsIntoDeck (Deck.EncounterDeckByKey deckKey) cards -> do
@@ -1416,6 +1419,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     enemyHealth <- fieldWithDefault printedHealth EnemyHealth eid
     pure $ a & defeatedEnemiesL %~ insertMap eid (DefeatedEnemyAttrs eattrs enemyHealth)
   SetAsideCards cards -> do
+    for_ cards obtainCard
+    do_ msg
+    pure a
+  Do (SetAsideCards cards) -> do
     pure $ a & setAsideCardsL <>~ cards
   SetLayout layout -> do
     pure $ a & locationLayoutL .~ layout

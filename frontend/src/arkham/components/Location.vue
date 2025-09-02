@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, watch, nextTick } from 'vue';
+import { ComputedRef, ref, computed, watch, nextTick } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
@@ -19,6 +19,7 @@ import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Location';
 import { TokenType } from '@/arkham/types/Token';
+import { Card } from '../types/Card';
 
 export interface Props {
   game: Game
@@ -40,7 +41,11 @@ const dragover = (e: DragEvent) => {
 }
 
 const props = defineProps<Props>()
-const emits = defineEmits(['choose'])
+const emits = defineEmits<{
+  choose: [value: number]
+  show: [cards: ComputedRef<Card[]>, title: string, isDiscards: boolean]
+}>()
+
 
 const image = computed(() => {
   const { cardCode, revealed } = props.location
@@ -188,6 +193,14 @@ const hasAttachments = computed(() => {
   return treacheries.value.length > 0 || props.location.events.length > 0 || attachedEnemies.value.length > 0
 })
 
+const encounterCardsUnderneath = computed(() => {
+  return props.location.cardsUnderneath.filter(c => c.tag === 'EncounterCard')
+})
+
+const playerCardsUnderneath = computed(() => {
+  return props.location.cardsUnderneath.filter(c => c.tag === 'PlayerCard')
+})
+
 const hasPool = computed(() => {
   return keys.value.length > 0 ||
     seals.value.length > 0 ||
@@ -198,8 +211,10 @@ const hasPool = computed(() => {
     (pillars.value && pillars.value > 0) ||
     (leylines.value && leylines.value > 0) ||
     (antiquities.value && antiquities.value > 0) ||
+    (sealTokens.value && sealTokens.value > 0) ||
     (depth.value && depth.value > 0) ||
     (breaches.value && breaches.value > 0) ||
+    (shards.value && shards.value > 0) ||
     (props.location.brazier && props.location.brazier === 'Lit') ||
     (props.location.cardsUnderneath.length > 0)
 })
@@ -229,12 +244,14 @@ const explosion = computed(() => {
 const keys = computed(() => props.location.keys)
 const seals = computed(() => props.location.seals)
 
+const sealTokens = computed(() => props.location.tokens[TokenType.Seal])
 const clues = computed(() => props.location.tokens[TokenType.Clue])
 const doom = computed(() => props.location.tokens[TokenType.Doom])
 const resources = computed(() => props.location.tokens[TokenType.Resource])
 const pillars = computed(() => props.location.tokens[TokenType.Pillar])
 const depth = computed(() => props.location.tokens[TokenType.Depth])
 const leylines = computed(() => props.location.tokens[TokenType.Leyline])
+const shards = computed(() => props.location.tokens[TokenType.Shard])
 const antiquities = computed(() => props.location.tokens[TokenType.Antiquity])
 const breaches = computed(() => {
   const {breaches} = props.location
@@ -281,6 +298,8 @@ function onDrop(event: DragEvent) {
     }
   }
 }
+
+const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Underneath", false)
 </script>
 
 <template>
@@ -335,11 +354,15 @@ function onDrop(event: DragEvent) {
             <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
             <PoolItem v-if="pillars && pillars > 0" type="resource" :amount="pillars" />
             <PoolItem v-if="leylines && leylines > 0" type="resource" tooltip="Leyline" :amount="leylines" />
+            <PoolItem v-if="shards && shards > 0" type="resource" tooltip="Shard" :amount="shards" />
             <PoolItem v-if="antiquities && antiquities > 0" type="resource" tooltip="Antiquity" :amount="antiquities" />
+            <PoolItem v-if="sealTokens && sealTokens > 0" type="resource" tooltip="Seal" :amount="sealTokens" />
+
             <PoolItem v-if="depth && depth > 0" type="resource" :amount="depth" />
             <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
             <PoolItem v-if="location.brazier && location.brazier === 'Lit'" type="resource" :amount="1" />
-            <PoolItem v-if="location.cardsUnderneath.length > 0" type="card" :amount="location.cardsUnderneath.length" />
+            <PoolItem v-if="encounterCardsUnderneath.length > 0" type="card" :amount="encounterCardsUnderneath.length" />
+            <PoolItem v-if="playerCardsUnderneath.length > 0" type="player_card" :amount="playerCardsUnderneath.length" />
           </div>
         </div>
 
@@ -352,6 +375,9 @@ function onDrop(event: DragEvent) {
           position="left"
           @choose="chooseAbility"
         />
+
+
+        <button v-if="playerCardsUnderneath.length > 0" @click="showCardsUnderneath">Under ({{ playerCardsUnderneath.length }})</button>
 
         <template v-if="debug.active">
           <button @click="debugging = true">Debug</button>

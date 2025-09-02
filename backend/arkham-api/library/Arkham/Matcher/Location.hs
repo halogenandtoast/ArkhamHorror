@@ -94,7 +94,7 @@ data LocationMatcher
   | LocationWithMostEnemies LocationMatcher EnemyMatcher
   | LocationWithEnemy EnemyMatcher
   | LocationCanBeEnteredBy EnemyId
-  | LocationWithAsset AssetMatcher
+  | LocationWithAsset AssetMatcher 
   | LocationWithAttachedEvent EventMatcher
   | LocationWithAttachedAsset AssetMatcher
   | LocationWithAttachment
@@ -126,6 +126,7 @@ data LocationMatcher
   | LocationWithoutModifier ModifierType
   | LocationWithModifier ModifierType
   | LocationWithDiscoverableCluesBy InvestigatorMatcher
+  | LocationNotAtClueLimit
   | LocationMatchAll [LocationMatcher]
   | LocationMatchAny [LocationMatcher]
   | FirstLocation [LocationMatcher]

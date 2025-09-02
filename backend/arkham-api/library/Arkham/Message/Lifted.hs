@@ -52,6 +52,7 @@ import Arkham.Helpers.Card (getCardEntityTarget)
 import Arkham.Helpers.ChaosToken qualified as Msg
 import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.Enemy qualified as Msg
+import Arkham.Helpers.GameValue (getGameValue)
 import Arkham.Helpers.Investigator (
   canDiscoverCluesAtYourLocation,
   canHaveDamageHealed,
@@ -91,6 +92,7 @@ import Arkham.Query
 import Arkham.Queue
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Scenario.Deck
+import Arkham.Search qualified as Search
 import Arkham.SkillType
 import Arkham.SkillType qualified as SkillType
 import Arkham.Source
@@ -117,8 +119,8 @@ setAgendaDeck = genCards >=> push . SetAgendaDeckCards 1
 setAgendaDeckN :: ReverseQueue m => Int -> [CardDef] -> m ()
 setAgendaDeckN n = genCards >=> push . SetAgendaDeckCards n
 
-setActDeck :: ReverseQueue m => [CardDef] -> m ()
-setActDeck = genCards >=> push . SetActDeckCards 1
+setActDeck :: (ReverseQueue m, FetchCard card) => [card] -> m ()
+setActDeck = traverse fetchCard >=> push . SetActDeckCards 1
 
 setActDeckN :: ReverseQueue m => Int -> [CardDef] -> m ()
 setActDeckN n = genCards >=> push . SetActDeckCards n
@@ -152,21 +154,18 @@ placeLocationCardInGrid pos def = do
   push placement
   pure lid
 
-placeLocationInGrid
-  :: ReverseQueue m => Pos -> Card -> m LocationId
+placeLocationInGrid :: ReverseQueue m => Pos -> Card -> m LocationId
 placeLocationInGrid pos card = do
   (lid, placement) <- Msg.placeLocationInGrid pos card
   push placement
   pure lid
 
-placeLocationInGrid_
-  :: ReverseQueue m => Pos -> Card -> m ()
+placeLocationInGrid_ :: ReverseQueue m => Pos -> Card -> m ()
 placeLocationInGrid_ pos card = void $ placeLocationInGrid pos card
 
-placeLocation
-  :: ReverseQueue m => Card -> m LocationId
+placeLocation :: (ReverseQueue m, FetchCard card) => card -> m LocationId
 placeLocation card = do
-  (lid, placement) <- Msg.placeLocation card
+  (lid, placement) <- Msg.placeLocation =<< fetchCard card
   push placement
   pure lid
 
@@ -600,9 +599,10 @@ createEnemyAt_ c location = do
   push =<< Msg.createEnemyAt_ card (asId location) Nothing
 
 createEnemyAt
-  :: (ReverseQueue m, IsCard card) => card -> LocationId -> m EnemyId
-createEnemyAt c lid = do
-  (enemyId, msg) <- Msg.createEnemyAt (toCard c) lid Nothing
+  :: (ReverseQueue m, FetchCard card, ToId location LocationId) => card -> location -> m EnemyId
+createEnemyAt c location = do
+  card <- fetchCard c
+  (enemyId, msg) <- Msg.createEnemyAt card (asId location) Nothing
   push msg
   pure enemyId
 
@@ -743,7 +743,9 @@ setAsideCards :: ReverseQueue m => [CardDef] -> m ()
 setAsideCards = genCards >=> push . Msg.SetAsideCards
 
 setCardAside :: ReverseQueue m => Card -> m ()
-setCardAside = push . Msg.SetAsideCards . (: [])
+setCardAside c = do
+  obtainCard c
+  push $ Msg.SetAsideCards [c]
 
 addChaosToken :: ReverseQueue m => ChaosTokenFace -> m ()
 addChaosToken = push . AddChaosToken
@@ -775,6 +777,13 @@ placeClues source target n = push $ PlaceClues (toSource source) (toTarget targe
 placeCluesOn
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Int -> target -> m ()
 placeCluesOn source n target = placeClues source target n
+
+placeCluesUpToClueValue
+  :: (ReverseQueue m, Sourceable source, ToId location LocationId) => source -> location -> m ()
+placeCluesUpToClueValue source location = do
+  n <- getGameValue =<< field LocationRevealClues (asId location)
+  current <- field LocationClues (asId location)
+  push $ PlaceCluesUpToClueValue (asId location) (toSource source) (max 0 (n - current))
 
 removeClues
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
@@ -1907,6 +1916,16 @@ revealing
   -> m ()
 revealing iid (toSource -> source) (toTarget -> target) zone = Msg.push $ Msg.revealing iid source target zone
 
+revealingEdit
+  :: (Targetable target, Sourceable source, ReverseQueue m)
+  => InvestigatorId
+  -> source
+  -> target
+  -> Zone
+  -> (Search.Search -> Search.Search)
+  -> m ()
+revealingEdit iid (toSource -> source) (toTarget -> target) zone f = Msg.push $ Msg.revealingEdit iid source target zone f
+
 shuffleIntoDeck :: (ReverseQueue m, IsDeck deck, Targetable target) => deck -> target -> m ()
 shuffleIntoDeck deck target = guardPlayerDeckIsNotEmpty deck do
   push $ Msg.shuffleIntoDeck deck target
@@ -2341,6 +2360,10 @@ healHorrorOn
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Int -> target -> m ()
 healHorrorOn source n target = healHorror target source n
 
+healDamageOn
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Int -> target -> m ()
+healDamageOn source n target = healDamage target source n
+
 discoverAtYourLocation
   :: (ReverseQueue m, Sourceable source) => IsInvestigate -> InvestigatorId -> source -> Int -> m ()
 discoverAtYourLocation isInvestigate iid s n = do
@@ -2682,12 +2705,14 @@ updateMax def n ew = do
         Just (Msg.EffectInt x) -> push $ UpdateEffectMeta eff (Msg.EffectInt $ x + n)
         _ -> error "Invalid meta"
 
-takeControlOfAsset
-  :: (ReverseQueue m, AsId asset, IdOf asset ~ AssetId) => InvestigatorId -> asset -> m ()
+takeControlOfAsset :: (ReverseQueue m, ToId asset AssetId) => InvestigatorId -> asset -> m ()
 takeControlOfAsset iid asset = push $ Msg.TakeControlOfAsset iid (asId asset)
 
-loseControlOfAsset :: (ReverseQueue m, AsId asset, IdOf asset ~ AssetId) => asset -> m ()
+loseControlOfAsset :: (ReverseQueue m, ToId asset AssetId) => asset -> m ()
 loseControlOfAsset asset = push $ Msg.LoseControlOfAsset (asId asset)
+
+assetDefeated :: (ReverseQueue m, ToId asset AssetId, Sourceable source) => source -> asset -> m ()
+assetDefeated source asset = push $ Msg.AssetDefeated (toSource source) (asId asset)
 
 takeControlOfSetAsideAsset :: ReverseQueue m => InvestigatorId -> Card -> m ()
 takeControlOfSetAsideAsset iid card = push $ Msg.TakeControlOfSetAsideAsset iid card
@@ -2939,7 +2964,10 @@ investigatorDefeated :: (ReverseQueue m, Sourceable source) => source -> Investi
 investigatorDefeated source iid = push $ Msg.InvestigatorDefeated (toSource source) iid
 
 shuffleSetAsideEncounterSetIntoEncounterDeck :: ReverseQueue m => EncounterSet -> m ()
-shuffleSetAsideEncounterSetIntoEncounterDeck = getSetAsideEncounterSet >=> shuffleCardsIntoDeck Deck.EncounterDeck
+shuffleSetAsideEncounterSetIntoEncounterDeck =
+  getSetAsideEncounterSet
+    >=> shuffleCardsIntoDeck Deck.EncounterDeck
+    . filter (and . sequence [not . cdDoubleSided, isNothing . cdOtherSide] . toCardDef)
 
 shuffleSetAsideIntoEncounterDeck :: (ReverseQueue m, IsCardMatcher matcher) => matcher -> m ()
 shuffleSetAsideIntoEncounterDeck matcher = do

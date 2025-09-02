@@ -94,6 +94,11 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
   CostToEnterUnrevealed c -> getCanAffordCost_ iid source actions windows' canModify c
   UnpayableCost -> pure False
   ChooseEnemyCost mtcr -> selectAny mtcr
+  ChooseEnemyCostAndMaybeFieldClueCost mtch fld -> do
+    clues <- getSpendableClueCount [iid]
+    select mtch >>= anyM \enemy -> do
+      clueCount <- field fld enemy
+      pure $ maybe False (clues >=) clueCount
   ChooseExtendedCardCost mtcr -> selectAny mtcr
   ChosenEnemyCost eid -> selectAny (Matcher.EnemyWithId eid)
   ChosenCardCost cid -> selectAny (Matcher.basic $ Matcher.CardWithId cid)
@@ -338,6 +343,11 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     iids <- select $ Matcher.InvestigatorAt locationMatcher
     totalSpendableClues <- getSpendableClueCount iids
     pure $ totalSpendableClues >= cost
+  SameLocationGroupClueCost n locationMatcher -> do
+    totalClues <- getPlayerCountValue n
+    select locationMatcher >>= anyM \lid -> do
+      total <- getSpendableClueCount =<< select (Matcher.investigatorAt lid)
+      pure $ total >= totalClues
   GroupResourceCost n locationMatcher -> do
     cost <- getPlayerCountValue n
     iids <- select $ Matcher.InvestigatorAt locationMatcher

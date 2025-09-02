@@ -50,6 +50,7 @@ allAgendaCards =
       , cityOfBlood
       , cityOfTheGreatRace
       , coldWelcome
+      , collidingRealities
       , crossroadsOfFate
       , deadOfNight
       , deathsApproach
@@ -125,6 +126,7 @@ allAgendaCards =
       , secretsOfTheSeaV2
       , settingSun
       , shadowsDeepen
+      , showbusinessAsUsual
       , silentStirring
       , snappedThreads
       , somethingStirs
@@ -835,3 +837,9 @@ unexpectedGuests = agenda "71003" "Unexpected Guests" 2 TheMidwinterGala
 
 aKillerParty :: CardDef
 aKillerParty = agenda "71004" "A Killer Party" 3 TheMidwinterGala
+
+showbusinessAsUsual :: CardDef
+showbusinessAsUsual = agenda "72002" "Showbusiness As Usual" 1 FilmFatale
+
+collidingRealities :: CardDef
+collidingRealities = agenda "72003" "Colliding Realities" 2 FilmFatale

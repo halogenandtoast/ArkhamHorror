@@ -4,6 +4,7 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Attack.Types
 import Arkham.Capability
 import Arkham.Card
+import Arkham.Enemy.Creation (EnemyCreation (..))
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
@@ -339,3 +340,12 @@ insteadOfDiscarding e body = do
           ws' -> [Do (CheckWindows ws')]
       Discard {} -> msgs
       _ -> error "Invalid replacement"
+
+createEngagedWith
+  :: ToId investigator InvestigatorId => investigator -> EnemyCreation Message -> EnemyCreation Message
+createEngagedWith investigator ec =
+  ec
+    { enemyCreationAfter =
+        enemyCreationAfter ec <> [EngageEnemy (asId investigator) (enemyCreationEnemyId ec) Nothing False]
+    }
+{-# INLINE createEngagedWith #-}

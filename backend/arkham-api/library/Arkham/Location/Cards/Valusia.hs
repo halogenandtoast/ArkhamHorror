@@ -46,5 +46,5 @@ instance RunMessage Valusia where
         <> [ HealHorror (InvestigatorTarget iid) source 2
            | canHealHorror
            ]
-      pure $ Valusia $ attrs & shroudL ?~ 0
+      pure $ Valusia $ attrs & shroudL ?~ Static 0
     _ -> Valusia <$> runMessage msg attrs

@@ -215,6 +215,7 @@ data CardMatcher
   | CardWithEvenNumberOfWordsInTitle
   | CardWithAvailableCustomization
   | CardTaggedWith Text
+  | SingleSidedCard
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not CardMatcher where

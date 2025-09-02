@@ -93,6 +93,7 @@ data instance Field Location :: Type -> Type where
   LocationRevealClues :: Field Location GameValue
   LocationRevealed :: Field Location Bool
   LocationRevealedConnectedMatchers :: Field Location [LocationMatcher]
+  LocationPrintedShroud :: Field Location (Maybe GameValue)
   LocationShroud :: Field Location (Maybe Int)
   LocationJustShroud :: Field Location Int
   LocationTokens :: Field Location Tokens
@@ -120,7 +121,8 @@ fieldLens = \case
   LocationDamage -> tokensL . at #damage . non 0
   LocationHorror -> tokensL . at Horror . non 0
   LocationDoom -> tokensL . at Doom . non 0
-  LocationShroud -> shroudL
+  LocationPrintedShroud -> shroudL
+  LocationShroud -> virtual
   LocationJustShroud -> virtual
   LocationConnectedMatchers -> connectedMatchersL
   LocationRevealedConnectedMatchers -> revealedConnectedMatchersL
@@ -201,6 +203,7 @@ instance FromJSON (SomeField Location) where
     "LocationRevealClues" -> pure $ SomeField LocationRevealClues
     "LocationRevealed" -> pure $ SomeField LocationRevealed
     "LocationRevealedConnectedMatchers" -> pure $ SomeField LocationRevealedConnectedMatchers
+    "LocationPrintedShroud" -> pure $ SomeField LocationPrintedShroud
     "LocationShroud" -> pure $ SomeField LocationShroud
     "LocationTokens" -> pure $ SomeField LocationTokens
     "LocationKeys" -> pure $ SomeField LocationKeys
@@ -291,7 +294,7 @@ locationWith f def shroud' revealClues g =
             , locationLabel = nameToLabel (cdName def)
             , locationRevealClues = revealClues
             , locationTokens = mempty
-            , locationShroud = Just shroud'
+            , locationShroud = Just (Static shroud')
             , locationRevealed = not (cdDoubleSided def)
             , locationSymbol = fromJustNote "missing location symbol" (cdLocationSymbol def)
             , locationRevealedSymbol =

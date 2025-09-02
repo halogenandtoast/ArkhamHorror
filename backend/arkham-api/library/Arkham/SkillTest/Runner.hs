@@ -75,7 +75,7 @@ calculateSkillTestResultsData s = do
   pure
     $ SkillTestResultsData
       currentSkillValue
-      (iconCount - subtractIconCount)
+      ((if SkillIconsSubtract `elem` modifiers' then negate . abs else id) iconCount - subtractIconCount)
       chaosTokenValues
       modifiedSkillTestDifficulty
       (resultValueModifiers <$ guard (resultValueModifiers /= 0))

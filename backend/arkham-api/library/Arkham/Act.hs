@@ -354,4 +354,16 @@ allActs =
     , -- The Midwinter Gala
       SomeActCard meetAndGreet
     , SomeActCard findingTheJewel
+    , -- Film Fatale
+      --- Film Fatale
+      SomeActCard andresRequest
+    , --- Cosmic Journey
+      SomeActCard aCosmicJourney
+    , SomeActCard fromWhenceTheyCame
+    , --- Forgotten Island
+      SomeActCard theForgottenIsland
+    , SomeActCard destroyTheSource
+    , --- Abominable Contessa
+      SomeActCard theAbominableContessa
+    , SomeActCard bloodbath
     ]

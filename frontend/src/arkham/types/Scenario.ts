@@ -70,6 +70,7 @@ export type Scenario = {
   xpBreakdown?: XpEntry[];
   meta: any;
   log: Remembered[];
+  storyCards: { [key: string]: CardContents[] };
 }
 
 export const scenarioDeckDecoder = JsonDecoder.object({
@@ -176,6 +177,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
         return acc
       }, {})
     }),
+  storyCards: JsonDecoder.record(JsonDecoder.array(cardContentsDecoder, 'CardDef[]'), 'CardDef[]')
 
 }, 'Scenario');
 
@@ -276,6 +278,7 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c53061": return "theForgottenAge.shatteredAeons"
     case "c53066": return "theForgottenAge.turnBackTime"
     case "c71001": return "standalone.theMidwinterGala"
+    case "c72001": return "standalone.filmFatale"
     case "c81001": return "standalone.curseOfTheRougarou"
     case "c82001": return "standalone.carnevaleOfHorrors"
     case "c84001": return "standalone.murderAtTheExcelsiorHotel"

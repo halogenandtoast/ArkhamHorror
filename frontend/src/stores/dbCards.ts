@@ -23,6 +23,7 @@ export interface ArkhamDBCard {
   real_text: string
   type_code: string
   is_unique: boolean
+  double_sided: boolean
 }
 
 export interface DbCardsState {

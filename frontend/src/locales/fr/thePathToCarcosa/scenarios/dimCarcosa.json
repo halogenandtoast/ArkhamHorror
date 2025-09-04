@@ -1,95 +1,95 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-2 (-4 instead if you have no sanity remaining).",
-      "cultist": "Reveal another token. If you fail, take 1 horror.",
-      "tablet": "-3. If you fail and Hastur is in play, place 1 clue on your location (from the token bank).",
-      "elderThing": "-3. If this token is revealed during an attack or evasion attempt against a _Monster_ or _Ancient One_ enemy, lose 1 action."
+      "skull": "–2 (–4 à la place s'il ne vous reste plus de santé mentale).",
+      "cultist": "Révélez un autre pion. En cas d'échec, subissez 1 horreur.",
+      "tablet": "–3. En cas d'échec, si Hastur est en jeu, placez 1 indice (pris dans la réserve de pions) sur votre lieu.",
+      "elderThing": "3. Si ce pion est révélé lors d'une attaque ou d'une tentative d'évasion contre un ennemi _Monstre_ ou _Grand Ancien_, perdez 1 action."
     },
     "hardExpert": {
-      "skull": "-X. X is the amount of horror on you.",
-      "cultist": "Reveal another token. If you fail, take 2 horror.",
-      "tablet": "-5. If you fail and Hastur is in play, place 1 clue on your location (from the token bank).",
-      "elderThing": "-5. If this token is revealed during an attack or evasion attempt against a _Monster_ or _Ancient One_ enemy, lose 1 action."
+      "skull": "–X. X est le nombre d'horreurs sur vous.",
+      "cultist": "Révélez un autre pion. En cas d'échec, subissez 2 horreurs.",
+      "tablet": "–5. En cas d'échec, si Hastur est en jeu, placez 1 indice (pris dans la réserve de pions) sur votre lieu.",
+      "elderThing": "–5. Si ce pion est révélé lors d'une attaque ou d'une tentative d'évasion contre un ennemi _Monstre_ ou _Grand Ancien_, perdez 1 action."
     }
   },
   "label": {
-    "useV2": "Use Search For the Stranger (v. II)",
-    "useV3": "Use Search For the Stranger (v. III)",
+    "useV2": "Utiliser l’Acte 2 – À la Recherche de l’Étranger (v. II)",
+    "useV3": "Utiliser l’Acte 2 – À la Recherche de l’Étranger (v. III)",
     "theFall": {
-      "cannot": "You cannot bring yourself to do what must be done.",
-      "push": "Realizing what you must do, you step forward and push her."
+      "cannot": "Vous ne parvenez pas à vous décider à faire ce qui doit être fait.",
+      "push": "Réalisant ce qui doit être fait, vous grimpez vers elle et vous la poussez."
     },
     "aMomentsRest": {
-      "chooseEnemy": "Choose an enemy in play. Exhaust that enemy and disengage it from all investigators"
+      "chooseEnemy": "Choisissez un ennemi en jeu. Inclinez-le et déengagez-le de tous les investigateurs."
     }
   },
   "remembered": {
-    "knowTheSecret": "You know the secret."
+    "knowTheSecret": "Vous connaissez le secret"
   },
   "intro": {
-    "title": "Scenario VIII: Dim Carcosa",
-    "readIntro1": "Check Campaign Log. *If you opened the path below*: Read _Intro 1_.",
-    "readIntro2": "*If you opened the path above*, skip to _Intro 2_.",
-    "intro1": "<p>_Intro 1_: You swim to the edge of the water and throw yourself upon the rocky shore, gasping for air. You lie there for some time, utterly exhausted. Every muscle in your body aches. Before you lies a desolate expanse of plain. In the distance, the alien spires of a warped city rise into the clouds. Behind you, the dark surface of the lake from which you’d emerged reflects the glare of two suns. When you peer back into the murky depths, you see no sign of the chapel where you’d made the leap, or of Mont Saint-Michel, or even of Earth. This is Carcosa—the realm of madness in the stars, where Hastur reigns supreme.</p><p class='basic right'>Skip to _Setup_.</p>",
-    "intro2": "<p>_Intro 2_: You land on a piece of black obsidian stone winding up a dark spire. You cough blood and feel a searing pain in your gut, as though you’d broken a rib. Before you lies a warped, alien city. Its twisting streets and aberrant architecture have no semblance of order or structure. In the distance, a murky lake reflects the glare of two suns. When you look up, the abbey of Mont Saint-Michel peeks just below the clouds, flipped upside-down. This is Carcosa—the realm of madness in the stars, where Hastur reigns supreme.</p><p class='basic right'>Proceed to _Setup_.</p>"
+    "title": "Scénario VIII : La Pâle Carcosa",
+    "readIntro1": "Vérifiez votre Carnet de Campagne. *Si vous avez ouvert la voie d’en bas* : lisez l’_Introduction 1_.",
+    "readIntro2": "*Si vous avez ouvert la voie d’en haut*, lisez l’_Introduction 2_",
+    "intro1": "<p>_Introduction 1_ : Vous nagez jusqu’au bord de l’eau et vous vous jetez sur le rivage rocheux, reprenant votre souffle. Vous restez ici un instant, totalement exténué. Chacun de vos muscles est endolori. Devant vous s’étend une vaste plaine. Au loin, les étranges tours de la cité difforme s’élèvent dans les nuages. Derrière vous, la surface sombre du lac dont vous avez émergé reflète l’image de deux soleils. En scrutant les abysses, vous n’apercevez aucun signe de la chapelle dont vous venez, du Mont Saint-Michel, ni même de la Terre. Vous êtes à Carcosa - le royaume de la folie dans les étoiles, où Hastur règne en maître.</p><p class='basic right'>Passez à la _Mise en Place_.</p>",
+    "intro2": "<p>_Introduction 2_ : Vous atterrissez sur un bloc d’obsidienne noire entourant une tour sombre. Vous crachez du sang et sentez une douleur fulgurante dans votre ventre, comme si vous vous étiez cassé une côte. Devant vous s’étend une ville étrange et difforme. Ses rues tortueuses et son architecture aberrante semblent n’avoir aucune cohérence. Au loin, un lac sombre reflète l’image de deux soleils. En regardant le ciel, l’abbaye du Mont Saint-Michel apparaît sous la couverture de nuages, sens dessus-dessous. Vous êtes à Carcosa - le royaume de la folie dans les étoiles, où Hastur règne en maître.</p><p class='basic right'>Passez à la _Mise en Place_.</p>"
   },
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: *Dim Carcosa*, *Delusions*, *Cult of the Yellow Sign*, *Inhabitants of Carcosa*, *Agents of Hastur*, and *Striking Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/dim-carcosa.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/cult-of-the-yellow-sign.png' /><img src='{setImgPath}/inhabitants-of-carcosa.png' /><img src='{setImgPath}/agents-of-hastur.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : *La Pâle Carcosa*, *Hallucinations*, *Culte du Signe Jaune*, *Les Habitants de Carcosa*, *Agents d’Hastur* et *Répandre la Peur*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/dim-carcosa.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/cult-of-the-yellow-sign.png' /><img src='{setImgPath}/inhabitants-of-carcosa.png' /><img src='{setImgPath}/agents-of-hastur.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
     "act2": {
-      "instructions": "Check Campaign Log. Depending on the following circumstances, a different version of Act 2 should be used in this scenario. Each other version of Act 2 is removed from the game.",
-      "v1": "If you have 5 or less total _Doubt_ and _Conviction_, use Act 2—Search For the Stranger (v. I)",
-      "v2": "If you have 6 or more total Doubt and Conviction, and you have more _Doubt_ than _Conviction_, use Act 2—Search For the Stranger (v. II)",
-      "v3": "If you have 6 or more total Doubt and Conviction, and you have more _Conviction_ than _Doubt_, use Act 2—Search For the Stranger (v. III)",
-      "choose": "If you have 6 or more total _Doubt_ and _Conviction_, and you have exactly equal _Doubt_ and _Conviction_, you may choose to use either Act 2—Search For the Stranger (v. II) or Act 2—Search For the Stranger (v. III)"
+      "instructions": "Vérifiez votre Carnet de Campagne. Selon les circonstances, une version différente de l’Acte 2 sera utilisée dans ce scénario. Retirez de la partie chaque autre version de l’Acte 2.",
+      "v1": "Si la somme de vos _Doutes_ et de vos _Certitudes_ est inférieure ou égale à 5, utilisez l’Acte 2 – À la Recherche de l’Étranger (v. I)",
+      "v2": " Si la somme de vos _Doutes_ et de vos _Certitudes_ est supérieure ou égale à 6 et que vous avez plus de _Doutes_ que de _Certitudes_, utilisez l’Acte 2 – À la Recherche de l’Étranger (v. II)",
+      "v3": "Si la somme de vos _Doutes_ et de vos _Certitudes_ est supérieure ou égale à 6 et que vous avez plus de Certitudes que de Doutes, utilisez l’Acte 2 – À la Recherche de l’Étranger (v. III)",
+      "choose": "Si la somme de vos _Doutes_ et de vos _Certitudes_ est supérieure ou égale à 6 et que vous avez autant de _Doutes_ que de _Certitudes_, vous avez le droit de choisir d’utiliser l’Acte 2 – À la Recherche de l’Étranger (v. II) ou l’Acte 2 – À la Recherche de l’Étranger (v. III)"
     },
-    "chooseLocations": "Randomly put 1 copy of Bleak Plains, 1 copy of Dim Streets, 1 copy of Ruins of Carcosa, and 1 copy of Depths of Demhe into play. (See next page for suggested location placement.) Set each other copy of Bleak Plains, Dim Streets, Ruins of Carcosa and Depths of Demhe aside, out of play.",
+    "chooseLocations": "Mettez en jeu 1 exemplaire pris au hasard de chacune des cartes suivantes : Plaines Désolées, Rues Mornes, Ruines de Carcosa et Profondeurs de Demhe. (Voir la page suivante pour une suggestion de placement.) Mettez de côté les autres exemplaires de Plaines Désolées, Rues Mornes, Ruines de Carcosa et Profondeurs de Demhe, hors jeu.",
     "placeLocations": {
-      "instructions": "Put Shores of Hali, Dark Spires, and Palace of the King into play. (See next page for suggested location placement.)",
-      "startAtShoresOfHali": "Check Campaign Log. *If you opened the path below*, each investigator begins play at Shores of Hali.",
-      "startAtDarkSpires": "Check Campaign Log. *If you opened the path above*, each investigator begins play at Dark Spires."
+      "instructions": "Mettez en jeu Rives du Lac de Hali, Sombres Clochers et Palais du Roi. (Voir la page suivante pour une suggestion de placement.)",
+      "startAtShoresOfHali": "Vérifiez votre Carnet de Campagne. Si *vous avez ouvert la voie d’en bas*, chaque investigateur commence la partie sur les Rives du Lac de Hali.",
+      "startAtDarkSpires": "Vérifiez votre Carnet de Campagne. Si *vous avez ouvert la voie d’en haut*, chaque investigateur commence la partie sur les Sombres Clochers."
     },
-    "theManInThePallidMask": "The bearer of The Man in the Pallid Mask weakness searches his or her deck for it and sets it aside, out of play.",
-    "setAside": "Set the following cards aside, out of play: Hastur (*The King in Yellow*), Hastur (*Lord of Carcosa*), Hastur (*The Tattered King*), and Beast of Aldebaran.",
+    "theManInThePallidMask": "Le détenteur de la faiblesse L’Homme au Masque Blême la cherche dans son deck et la met de côté, hors jeu.",
+    "setAside": "Mettez de côté les cartes suivantes, hors jeu : Hastur (*Le Roi en Jaune*), Hastur (*Seigneur de Carcosa*), Hastur (*Le Roi en Guenilles*) et Bête d’Aldébaran.",
     "chasingTheStranger": {
-      "instructions": "Check the number of tally marks under “Chasing the Stranger” in your Campaign Log.",
-      "twoOrFewer": "If there are 2 or fewer tally marks, add 3 doom to agenda 1a.",
-      "threeToFive": "If there are between 3-5 tally marks, add 2 doom to agenda 1a.",
-      "sixToEight": "If there are between 6-8 tally marks, add 1 doom to agenda 1a.",
-      "nineOrMore": "If there are 9 or more tally marks, no change is made."
+      "instructions": "Vérifiez le nombre de traits inscrits sous la mention « Poursuite de l’Étranger » dans votre Carnet de Campagne.",
+      "twoOrFewer": "S’il y a 2 traits ou moins, ajoutez 3 fatalités à l’intrigue 1a.",
+      "threeToFive": "S’il y a entre 3 et 5 traits, ajoutez 2 fatalités à l’intrigue 1a.",
+      "sixToEight": "S’il y a entre 6 et 8 traits, ajoutez 1 fatalité à l’intrigue 1a.",
+      "nineOrMore": "S’il y a 9 traits ou plus, n’effectuez aucun changement."
     },
-    "takeHorror": "Each investigator takes direct horror equal to half his or her sanity, rounded down (*cannot be prevented*). This horror cannot cause you to become defeated (see “Sanity in the Realm of Carcosa,” below)."
+    "takeHorror": "Chaque investigateur subit un montant d’horreurs directes égal à la moitié de sa santé mentale, arrondi au nombre inférieur (ne peut pas être annulé). Ces horreurs ne peuvent pas entraîner que les investigateurs soient vaincus (voir « Santé Mentale dans le Royaume de Carcosa » à la page suivante)."
   },
   "resolutions": {
     "xp": {
-      "self": "Truimphed over his or her own self—the most dangerous of foes.",
-      "truth": "Learned the truth behind The King in Yellow."
+      "self": "Pour avoir triomphé de lui-même, le plus dangereux des ennemis.",
+      "truth": "Pour avoir découvert la vérité derrière Le Roi en Jaune."
     },
     "noResolution": {
-      "title": "No Resolution",
-      "body": "_If no resolution was reached (each investigator was defeated)_: Check Campaign Log.",
+      "title": "Pas de conclusion",
+      "body": "_Si aucune conclusion n’est atteinte (tous les investigateurs ont été vaincus)_ : Check Campaign Log.",
       "goToResolution4": "If you have more (or equal) _Conviction_ than _Doubt_, go to _Resolution 4_.",
       "goToResolution5": "If you have more _Doubt_ than _Conviction_, go to _Resolution 5_."
     },
     "resolution1": {
       "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1_: You stand atop the balcony of the abbey tower in Mont Saint-Michel, wet wind coursing through your hair. The Pallid Mask lies in your hands, devoid of warmth. You can scarcely bring yourself to look at it. You remember everything now—how it all began, how it ended, and everything in between. There is only one thing left to do. You hurl the mask into the air with all of your strength and watch as it flies into the tempest-tossed waves below.</p><ul><li>In your Campaign Log, record that *the investigators prevented Hastur from escaping his prison*.</li><li>In your Campaign Log, record the names of each investigator who ended the game with at least 1 copy of the Possession treachery in his or her hand.</li><li>Each investigator suffers 2 physical trauma and 2 mental trauma, as he or she never fully recovers from his or her time spent in Carcosa, the realm of madness.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 5 bonus experience, as he or she has truimphed over his or her own self—the most dangerous of foes.<ul><li>_Experience_: {xp}</li></ul></li><li>The investigators win the campaign!</li></ul></div>"
+      "body": "<div class='resolution'><p>_Resolution 1_ : Vous vous tenez debout sur le balcon de la tour de l’abbaye du Mont Saint-Michel, où un vent humide agite vos cheveux. Le Masque Blême repose entre vos mains, dépourvu de la moindre chaleur. Vous ne parvenez pas à le regarder. Tout vous revient en mémoire – comment cela a commencé, comment l’histoire s’est terminée, et tout ce qui s’est passé entre temps. Il ne reste qu’une seule chose à faire. De toutes vos forces, vous jetez le masque au loin et le regardez sombrer dans les vagues tumultueuses en contrebas.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *les investigateurs ont empêché Hastur de s’échapper de sa prison*.</li><li>Dans votre Carnet de Campagne, indiquez le nom de chaque investigateur qui a terminé la partie avec au moins 1 exemplaire de la traîtrise Possession dans la main.</li><li>Chaque investigateur subit 2 traumatismes physiques et 2 traumatismes mentaux; nul ne se remet jamais du temps passé à Carcosa, royaume de la folie.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire. Chaque investigateur reçoit également 5 points d’expérience bonus pour avoir triomphé de lui-même, le plus dangereux des ennemis.<ul><li>_Expérience_ : {xp}</li></ul></li><li>Les investigateurs ont gagné la campagne !</li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2_: A roar of applause startles you awake. The crowd of the theatre rises to their feet, cheering endlessly. Several patrons in the front row are throwing roses to the actors on stage, who are bowing with wide smiles across their faces. A searing headache crawls through your temples. How did you get back here? Were you in the theatre all along? What about the dinner party? The asylum? The catacombs?… Carcosa? Was it all just a terrible dream?</p><p>You exit the auditorium before the crowd rushes to do the same. Dizziness and exhaustion harries your senses. The weight of your lengthy investigation is crushing your mind. By the time you finally reach the lobby, you are clawing your way across the ground. Just then, a man in an elegant suit reaches down and grabs you by your arm, pulling you to your feet. You are about to thank him when you realize who he is. The sight of him causes you to stagger backward in horror momentarily. The actor who plays the role of the Stranger is still wearing his pale, featureless mask. He gives you a wordless bow, then turns and leaves through the Ward Theatre’s front entrance.</p><ul><li>In your Campaign Log, record that *the investigators prevented Hastur from escaping his prison*.</li><li>In your Campaign Log, record the names of each investigator who ended the game with at least 1 copy of the Possession treachery in his or her hand.</li><li>Each investigator suffers 2 mental trauma, as he or she never fully recovers from his or her time spent in Carcosa, the realm of madness.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 5 bonus experience, as he or she has learned the truth behind The King in Yellow.<ul><li>_Experience_: {xp}</li></ul></li><li>The investigators win the campaign!</li></ul></div>"
+      "title": "Conclusion 2",
+      "body": "<div class='resolution'><p>_Conclusion 2_ : Un tonnerre d’applaudissements vous réveille. Le public se lève, redoublant d’enthousiasme. Plusieurs spectateurs du premier rang lancent des roses aux acteurs présents sur scène qui saluent le public, un large sourire aux lèvres. Un mal de crâne insidieux tambourine sous vos tempes. Comment êtes-vous revenu ici ? Êtes-vous resté dans le théâtre tout du long ? Qu’en est-il de la réception ? De l’asile ? Des catacombes ? De Carcosa ? Tout cela n’était-il qu’un terrible cauchemar ?</p><p>Vous quittez l’auditorium avant que la foule ne se rue vers la sortie. La fatigue et les vertiges atténuent vos sens. Le poids de votre longue enquête pèse sur votre esprit. Le temps d’atteindre le hall d’entrée, vous ne parvenez plus qu’à ramper sur le sol. À cet instant, un homme vêtu d’un élégant costume se baisse et vous saisit par les épaules, vous aidant à vous relever. Vous vous apprêtez à le remercier quand vous réalisez de qui il s’agit. Sa vue vous fait reculer dans un sursaut d’horreur. L’acteur incarnant l’Étranger porte toujours son masque pâle sans visage. Il vous adresse une révérence silencieuse, tourne les talons et quitte le Théâtre Ward par la porte d’entrée.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *les investigateurs ont empêché Hastur de s’échapper de sa prison*.</li><li>Dans votre Carnet de Campagne, indiquez le nom de chaque investigateur qui a terminé la partie avec au moins 1 exemplaire de la traîtrise Possession dans la main.</li><li>Chaque investigateur subit 2 traumatismes mentaux ; nul ne se remet jamais du temps passé à Carcosa, royaume de la folie.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire. Chaque investigateur reçoit également 5 points d’expérience bonus pour avoir découvert la vérité derrière Le Roi en Jaune.<ul><li>_Expérience_ : {xp}</li></ul></li><li>Les investigateurs ont gagné la campagne !</li></ul></div>"
     },
     "resolution3": {
-      "title": "Resolution 3",
-      "body": "<div class='resolution'><p>_Resolution 3_: When you awaken, you are sitting in the choeur gothique of Mont Saint-Michel’s abbey. No rain pelts the glass of the windows above, and you hear no thunder, nor the screeching of winged horrors overhead. Somehow, you have escaped. You creep to the door of the abbey and open it with trepidation. A dazzling light sears your eyes, and you lift your hand to block the glare of the sun. You stand overlooking beautiful Mont Saint-Michel. Seagulls fly over the abbey under a backdrop of cloudless sky. The waters around the abbey are calm and azure-blue.</p><p>“I’ve been looking all over for you!” You hear a voice exclaim behind you. You turn with a startle. For a moment you expect to see the Stranger and his Pallid Mask, but instead, the boat captain you’d hired to take you to Mont Saint-Michel stands at the edge of the steps, smiling at you. “Are you ready to head back?”</p><ul><li>In your Campaign Log, record that *the investigators prevented Hastur from escaping his prison*.</li><li>In your Campaign Log, record the names of each investigator who ended the game with at least 1 copy of the Possession treachery in his or her hand.</li><li>Each investigator suffers 2 physical trauma, as he or she never fully recovers from his or her time spent in Carcosa, the realm of madness.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 5 bonus experience, as he or she has learned the truth behind The King in Yellow.<ul><li>_Experience_: {xp}</li></ul></li><li>The investigators win the campaign!</li></ul></div>"
+      "title": "Conclusion 3",
+      "body": "<div class='resolution'><p>_Conclusion 3_ : Vous vous réveillez dans le chœur gothique de l’abbaye du Mont Saint-Michel. Le bruit de la pluie sur les vitraux a cessé et vous n’entendez plus ni le tonnerre, ni le bruissement des horreurs ailées. Vous vous êtes visiblement échappé. Vous rampez jusqu’à la porte de l’abbaye et l’ouvrez avec appréhension. Une lumière aveuglante vous éblouit et vous levez la main pour protéger vos yeux de l’éclat du soleil. Vous restez là un instant, à admirer la beauté saisissante du Mont Saint-Michel. Des mouettes survolent l’abbaye sous un ciel sans nuages. Les eaux entourant l’abbaye sont calmes et d’un bleu azur.</p><p>« Justement, je vous cherchais ! », s’exclame une voix dans votre dos. Vous faites volte-face dans un sursaut. Un court instant, vous craignez de croiser le regarde de l’Étranger et de son Masque Blême; mais au lieu de cela, le capitaine du bateau qui vous a amené sur le Mont Saint-Michel se tient au sommet de l’escalier, tout sourire. « Êtes-vous prêt à rentrer ? »</p><ul><li>Dans votre Carnet de Campagne, indiquez que *les investigateurs ont empêché Hastur de s’échapper de sa prison*.</li><li>Dans votre Carnet de Campagne, indiquez le nom de chaque investigateur qui a terminé la partie avec au moins 1 exemplaire de la traîtrise Possession dans la main.</li><li>Chaque investigateur subit 2 traumatismes physiques; nul ne se remet jamais du temps passé à Carcosa, royaume de la folie.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire. Chaque investigateur reçoit également 5 points d’expérience bonus pour avoir découvert la vérité derrière Le Roi en Jaune.<ul><li>_Expérience_ : {xp}</li></ul></li><li>Les investigateurs ont gagné la campagne !</li></ul></div>"
     },
     "resolution4": {
-      "title": "Resolution 4",
-      "body": "<div class='resolution'><p>_Resolution 4_: When you awaken, you are sitting in the choeur gothique of Mont Saint-Michel’s abbey. No rain pelts the glass of the windows above, and you hear no thunder, nor the screeching of winged horrors overhead. Somehow, you have escaped the island’s certain doom. You creep to the door of the abbey and open it with trepidation. A dazzling light sears your eyes, and you lift your hand to block the glare of two suns. You stand overlooking the Lake of Hali. Black stars hang in the heavens above. Beyond, over leagues of tossing cloud-waves, the towers of Carcosa rise behind the shattered moon.</p><ul><li>You’ve met with a terrible fate, haven’t you?</li><li>In your Campaign Log, record that *the realm of Carcosa merged with our own, and Hastur rules over them both*.</li><li>Each investigator is driven _insane_.</li><li>The investigators lose the campaign.</li></ul></div>"
+      "title": "Conclusion 4",
+      "body": "<div class='resolution'><p>_Conclusion 4_ : Vous vous réveillez dans le chœur gothique de l’abbaye du Mont Saint-Michel. Le bruit de la pluie sur les vitraux a cessé et vous n’entendez plus ni le tonnerre, ni le bruissement des horreurs ailées. Vous avez visiblement échappé au funeste destin de l’île. Vous rampez jusqu’à la porte de l’abbaye et l’ouvrez avec appréhension. Une lumière aveuglante vous éblouit et vous levez la main pour protéger vos yeux de l’éclat des deux soleils. Vous restez là un instant, à observer le lac de Hali et les Étoiles Noires suspendues à la voûte céleste au- dessus de vous. Au-delà, après des lieues d’un océan de nuages tourbillonnants, les hautes tours de Carcosa s’élèvent derrière la lune brisée.</p><ul><li>Vous avez rencontré un funeste destin, n’est-ce pas ?</li><li>Dans votre Carnet de Campagne, indiquez que *le royaume de Carcosa a fusionné avec notre monde, et Hastur règne sur les deux*.</li><li>Chaque investigateur devient _dément_.</li><li>Les investigateurs ont perdu la campagne.</li></ul></div>"
     },
     "resolution5": {
-      "title": "Resolution 5",
-      "body": "<div class='resolution'><p>_Resolution 5_: The outside world will never know how you tried to save them. They treat you with pity, with scorn and contempt, but you know the truth. They are resigned to their hideous fate, but still you try day after day to bring them your message. You must warn them of The King in Yellow, of Hastur and of Carcosa. “Another lost soul,” they say, but they cannot possibly fathom what you have gone through in your attempt to save them. You warn them that he is coming to claim them, but they never believe you. You write of Aldebaran and of the black stars on the wall of your cell, but the words become faded as the years go by. Your warning is never heeded.</p><ul><li>You didn’t really think you could escape, did you?</li><li>In your Campaign Log, record that *Hastur has you in his grasp*.</li><li>Each investigator is driven _insane_.</li><li>The investigators lose the campaign.</li></ul></div>"
+      "title": "Conclusion 5",
+      "body": "<div class='resolution'><p>_Conclusion 5_ : Le reste du monde ne saura jamais que vous avez tenté de le sauver. Les gens vous traitent avec miséricorde, mépris ou dédain, mais vous connaissez la vérité. Ils sont résignés à leur atroce destinée, mais vous tentez jour après jour de leur apporter votre message. Vous devez les mettre en garde contre Le Roi en Jaune, Hastur et Carcosa. « Une autre âme perdue », disent-ils, mais ils ne peuvent pas comprendre ce que vous avez traversé pour tenter de les sauver. Vous leur répétez qu’il vient pour les réclamer, mais ils ne vous croient pas. Vous écrivez sur les murs capitonnés de votre cellule des avertissements à propos d’Aldébaran et des étoiles noires, mais les mots s’effacent à mesure que passent les années. Personne n’écoutera jamais vos mises en garde.</p><ul><li>Vous ne pensiez tout de même pas pouvoir vous échapper, n’est-ce pas ?</li><li>Dans votre Carnet de Campagne, indiquez qu’*Hastur a mis la main sur vous*.</li><li>Chaque investigateur devient _dément_.</li><li>Les investigateurs ont perdu la campagne.</li></ul></div>"
     }
   }
 }

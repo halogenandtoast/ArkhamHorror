@@ -1,78 +1,78 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the highest amount of doom on an agenda in play.",
-      "cultist": "Reveal another token. If this token is revealed during an attack or evasion attempt against an enemy with doom on it, this skill test automatically fails instead.",
-      "tablet": "Reveal another token. If you fail, place 1 doom on each agenda.",
-      "elderThing": "-2. If you fail, search the encounter deck and discard pile for a _Byakhee_ enemy and draw it."
+      "skull": "–X. X est le plus grand nombre de fatalités sur une intrigue en jeu.",
+      "cultist": "Révélez un autre pion. Au lieu de révéler cet autre pion, ce test échoue automatiquement si le pion a été révélé lors d'une attaque ou tentative d'évasion contre un ennemi avec de la fatalité sur lui.",
+      "tablet": "Révélez un autre pion. En cas d'échec, placez 1 fatalité sur chaque intrigue.",
+      "elderThing": "–2. En cas d'échec, cherchez un ennemi _Byakhee_ dans le deck Rencontre ou dans la pile de défausse Rencontre et piochez-le."
     },
     "hardExpert": {
-      "skull": "-X. X is the total amount of doom on agendas in play.",
-      "cultist": "Reveal another token. If there is an enemy with 1 or more doom on it at your location, this test automatically fails instead.",
-      "tablet": "Reveal another token. If you do not succeed by at least 1, place 1 doom on each agenda.",
-      "elderThing": "-3. If you fail, search the encounter deck and discard pile for a _Byakhee_ enemy and draw it."
+      "skull": "–X. X est le nombre total de fatalités sur les intrigues en jeu.",
+      "cultist": "Révélez un autre pion. Au lieu de révéler cet autre pion, ce test échoue automatiquement s'il y a un ennemi avec de la fatalité sur lui dans votre lieu.",
+      "tablet": "Révélez un autre pion. Si vous ne réussissez pas avec une différence d'au moins 1, placez 1 fatalité sur chaque intrigue.",
+      "elderThing": "–3. En cas d'échec, cherchez un ennemi _Byakhee_ dans le deck Rencontre ou dans la pile de défausse Rencontre et piochez-le."
     }
   },
   "label": {
     "brokenSteps": {
-      "omen": "Draw the topmost omen treachery in the encounter discard pile",
-      "cultist": "Draw the topmost cultist treachery in the encounter discard pile"
+      "omen": "Piochez la traîtrise _Présage_ la plus proche du dessus de la pile de défausse Rencontre",
+      "cultist": "piochez l'ennemi _Cultiste_ le plus proche du dessus de la pile de défausse Rencontre"
     },
     "riftSeeker": {
-      "takeDamageAndHorror": "Take 1 additional damage and 1 additional horror",
-      "doom": "Place 1 doom on each agenda"
+      "takeDamageAndHorror": "Subissez 1 dégât et 1 horreur supplémentaires",
+      "doom": "Placez 1 fatalité sur chaque intrigue en jeu"
     }
   },
   "tooltips": {
     "knightsHall": {
-      "investigate": "{'{'}action{'}'} If there are no clues on Knight's Hall: _Investigate_. Investigate using {agility} instead of {'{'}intellect{'}'}. If you succeed, instead of discovering clues, remember that you have \"found the tower key.\""
+      "investigate": "{'{'}action{'}'} S'il n'y a aucun indice sur la Salle des Chevaliers : _Enquêter_. Enquêtez en utilisant {agility} au lieu de {'{'}intellect{'}'}. En cas de réussite, au lieu de découvrir des indices, souvenez-vous que vous avez « trouvé la clé de la tour »."
     },
     "ashleighsInformation": {
-      "ability": "{'{'}fast{'}'} Remove 1 doom from an agenda in play. (Group limit once per game.)"
+      "ability": "{'{'}fast{'}'} retirer 1 fatalité d’une intrigue en jeu (Limite collective d’une fois par partie.)"
     }
   },
   "remembered": {
-    "foundTheTowerKey": "You found the tower key.",
-    "foundAGuide": "You found a guide."
+    "foundTheTowerKey": "Vous avez trouvé la clé de la tour.",
+    "foundAGuide": "Vous avez trouvé un guide."
   },
   "intro": {
-    "title": "Scenario VII: Black Stars Rise",
-    "body": "<p>The island commune of Mont Saint-Michel lies off the northwestern coast of France. It is beautiful, elegant, and enigmatic­ —a place out of a fairy tale. Only this tale is one of horrors and madness. During low tide, you would be able to reach the island on foot by crossing the tidal causeway that emerges from the sea. However, by the time you reach the coast, the tide is much higher than you’d anticipated. Dark clouds cover the sky, and a distant crash of thunder signals the start of the oncoming storm. You find a boat whose captain is willing to take you to the island, and prepare for the ritual to come.</p>",
-    "proceedToAshleighsInformation": "<div class='right'>Proceed to _Ashleigh’s Information_.</div>",
-    "otherwise": "<div class='right'>Otherwise, skip to _Setup_.</div>",
-    "ashleighsInformation": "<p>_Ashleigh’s Information_: You recall the night where this all began, and your thoughts drift to the mesmerizing song Ashleigh sang that night. Somehow you remember the lyrics perfectly after all this time, and its haunting melody is ingrained in your mind. “Above the city the storm clouds rage, and waves crash through the gilded cage… Below the earth the salt water seeps, the shadows fall as the red sun sleeps…” Studying the island that lies before you, illuminated by flashes of lighting and assaulted by tumultuous waves, you can’t help but wonder if Ashleigh was singing about this very moment.</p><ul><li>During this scenario, as a {'{'}fast{'}'} triggered ability, an investigator may remove 1 doom from an agenda in play. (Group limit once per game.)</li></ul><div class='basic right'>Proceed to _Setup_.</div>"
+    "title": "Scénario VII : Sous les Étoiles Noires",
+    "body": "<p>La ville insulaire du Mont Saint-Michel se situe sur la côte au nord-ouest de la France. C’est un lieu magnifique, élégant et énigmatique, tout droit échappé d’un conte de fées - ou en l’occurrence, plutôt d’un conte d’horreur et de folie. À marée basse, une bande de terre qui émerge de la mer permet de rejoindre l’île à pied. Cependant, le temps que vous arriviez, la marée est plus haute que vous ne vous y attendiez. De sombres nuages recouvrent les cieux, et le bruit encore lointain du tonnerre présage de l’arrivée d’une tempête. Vous dénichez un capitaine qui accepte de vous emmener sur l’île et vous vous préparez au rituel qui va s’y dérouler.</p>",
+    "proceedToAshleighsInformation": "<div class='right'>Lisez _Les Informations d’Ashleigh_.</div>",
+    "otherwise": "<div class='right'>Sinon, passez à la _Mise en Place_.</div>",
+    "ashleighsInformation": "<p>_Les Informations d’Ashleigh_ : Vous vous remémorez la nuit où tout a commencé et vos pensées dérivent vers l’hypnotique mélodie qu’Ashleigh chanta cette nuit-là. Étrangement, vous vous souvenez parfaitement des paroles, même après tout ce temps, et sa mélodie entêtante hante votre esprit. « Au-dessus de la ville gronde un terrible orage, et les vagues se brisent sur l’or pur de la cage Au-dessous de la terre plongent les eaux salées; l’astre rouge décroît, laissant l’ombre régner » En regardant l’île qui se dresse devant vous, illuminée par les éclairs et assaillie par les vagues tumultueuses, vous ne pouvez vous empêcher de vous demander si la chanson d’Ashleigh ne concernait pas ce moment précis.</p><ul><li>Lors de ce scénario, un investigateur a le droit de retirer 1 fatalité d’une intrigue en jeu en tant que capacité déclenchée {'{'}fast{'}'}. (Limite collective d’une fois par partie.)</li></ul><div class='basic right'>Continuez à la _Mise en Place_.</div>"
   },
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: *Black Stars Rise*, *Evil Portents*, *Byakhee*, *Inhabitants of Carcosa*, *The Stranger*, *Dark Cult*, and *Ancient Evils*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/black-stars-rise.png' /><img src='{setImgPath}/evil-portents.png' /><img src='{setImgPath}/byakhee.png' /><img src='{setImgPath}/inhabitants-of-carcosa.png' /><img src='{setImgPath}/the-stranger.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/ancient-evils.png' /></section>Be aware that some cards from the *Black Stars Rise* encounter set have multiple versions, some with *The Flood Below* encounter set icon on their reverse side, and some with *The Vortex Above* encounter set icon on their reverse side. These encounter sets are indicated by the following icons:",
-    "adjustChaosBag": "Based on your difficulty level, add the following chaos token(s) to the chaos bag, for the remainder of the campaign:<div class='columns'><ul><li>_Easy_: -3</li><li>_Standard_: -5</li></ul><ul><li>_Hard_: -6</li><li>_Expert_: -7</li></ul></div>",
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : *Sous les Étoiles Noires*, *Présages Funestes*, *Les Byakhees*, *Les Habitants de Carcosa*, *L’Étranger*, *Sombre Culte* et *Antiques Fléaux*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/black-stars-rise.png' /><img src='{setImgPath}/evil-portents.png' /><img src='{setImgPath}/byakhee.png' /><img src='{setImgPath}/inhabitants-of-carcosa.png' /><img src='{setImgPath}/the-stranger.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/ancient-evils.png' /></section>Attention : certaines cartes du set de rencontre Sous les Étoiles Noires existent en plusieurs versions, certaines avec l’icône du set de rencontre Le Déluge En Dessous au verso, et d’autres avec l’icône du set de rencontre Le Tourbillon Au-Dessus au verso. Ces sets sont reconnaissables aux icônes suivantes :",
+    "adjustChaosBag": "Selon le niveau de difficulté, ajoutez le pion Chaos suivant à la réserve du Chaos pour le reste de la campagne :<div class='columns'><ul><li>_Facile_ : -3</li><li>_Standard_ : -5</li></ul><ul><li>_Difficile_ : -6</li><li>_Expert_ : -7</li></ul></div>",
     "version": {
-      "instructions": "Sort each copy of the following cards into two separate piles, based on the encounter set icon on their reverse side: Agenda 2a—Let The Storm Rage, Agenda 2c—The Entity Above, Chapel of St. Aubert, and Abbey Tower.",
-      "createPiles": "You should have two piles of exactly four cards. Each pile should have one copy of each of the above listed cards. The cards in the first pile should have *The Flood Below* encounter set icon on their reverse side, and the cards in the second pile should have *The Vortex Above* encounter set icon on their reverse side.",
-      "randomizePiles": "Flip each pile over so that only the Black Stars Rise encounter set icon is showing. Randomize the two piles so you cannot tell which is which.",
-      "choosePile": " Choose one pile at random to remove from the game and one pile at random to use throughout this scenario’s setup. _Do not look at the reverse sides of any of the cards in either pile_."
+      "instructions": "Triez chaque exemplaire des cartes suivantes en deux piles séparées en fonction du set de rencontre sur leur verso : Intrigue 2a Que Gronde l’Orage, Intrigue 2c Le Phénomène Au-Dessus, Chapelle Saint-Aubert et Tour de l’Abbaye.",
+      "createPiles": "Vous devez avoir deux piles d’exactement quatre cartes. Chaque pile doit comporter exactement un exemplaire de chacune des cartes indiquées ci-dessus. Les cartes de la première pile doivent arborer l’icône du set de rencontre *Le Déluge En Dessous* au verso. Les cartes de la deuxième pile doivent arborer l’icône du set de rencontre *Le Tourbillon Au-Dessus* au verso.",
+      "randomizePiles": "Retournez chaque pile afin que seule l’icône du set de rencontre *Sous les Étoiles Noires* soit visible. Disposez les deux piles au hasard de manière à ne pas pouvoir les distinguer.",
+      "choosePile": "Prenez l’une des deux piles au hasard et retirez-la de la partie. L’autre pile sera utilisée lors de la mise en place de ce scénario. _Ne regardez le verso d’aucune des cartes de ces deux piles_."
     },
-    "agendaDecks": "This scenario does not have an act deck. Instead, it has two Æ agenda decks. One agenda deck is built using agendas 1a, 2a, and 3a. The other agenda deck is built using agendas 1c, 2c, and 3c (*remember to use the versions of agendas 2a and 2c that were randomly chosen earlier*).",
-    "setAside": "Set the following cards aside, out of play: Both act cards (Act 3a and Act 3c), Beast of Aldebaran, each copy of Tidal Terror, each copy of Rift Seeker, Cloister, Knight’s Hall, Abbey Tower, and Chapel of St. Aubert (*remember to use the versions of Abbey Tower and Chapel of St. Aubert that were randomly chosen earlier*).",
-    "chooseSetAsideLocations": "Choose one of the two Choeur Gothique locations, at random, and set it aside. Remove the other version of Choeur Gothique from the game.",
-    "chooseLocations": "Choose one of the two North Tower locations, one of the two Outer Wall locations, and one of the two Broken Steps locations, at random. Put the chosen locations into play. Remove the other versions of those locations from the game. Then, put the remaining locations (Porte de l’Avancée, Grand Rue, and Abbey Church) into play. (See next page for suggested placement.) Each investigator begins play at Porte de l’Avancée.",
-    "addWeakness": "Each investigator searches the collection for a random basic _*Madness*_, _*Pact*_, _*Cultist*_, or _*Detective*_ weakness, and adds it to his or her deck."
+    "agendaDecks": "Ce scénario ne dispose pas de deck Acte. À la place, il possède deux decks Intrigue. Un deck Intrigue utilise les intrigues 1a, 2a et 3a. L’autre deck Intrigue utilise les intrigues 1c, 2c et 3c (*rappelez-vous bien d’utiliser les versions des intrigues 2a et 2c choisies aléatoirement plus tôt*).",
+    "setAside": "Mettez les cartes suivantes de côté, hors jeu : les deux cartes Acte (Acte 3a et Acte 3c), Bête d’Aldébaran, chaque exemplaire de Terreur des Marées, chaque exemplaire de Chercheur de Failles, Cloître, Salle des Chevaliers, Tour de l’Abbaye et Chapelle Saint-Aubert (*rappelez-vous bien d’utiliser les versions de la Tour de l’Abbaye et de la Chapelle Saint-Aubert choisies aléatoirement plus tôt*).",
+    "chooseSetAsideLocations": "Prenez au hasard l’un des deux lieux Chœur Gothique et mettez-le de côté. Retirez l’autre version du Chœur Gothique de la partie.",
+    "chooseLocations": "Prenez au hasard l’un des deux lieux Tour Nord, l’un des deux lieux Rempart Extérieur et l’un des deux lieux Marches Brisées. Mettez-les en jeu. Retirez de la partie les autres versions de ces lieux. Ensuite, Mettez en jeu les lieux restants (Porte de l’Avancée, Grand-Rue et Église Abbatiale). Voir la page suivante pour une suggestion de placement. Chaque investigateur commence la partie à la Porte de l’Avancée.",
+    "addWeakness": "Chaque investigateur cherche une faiblesse de base _*Folie*_, _*Pacte*_, _*Cultiste*_ ou _*Détective*_ au hasard dans la collection et l’ajoute à son deck."
   },
   "resolutions": {
     "noResolution": {
-      "title": "No Resolution",
-      "body": "<div class='resolution'><p class='basic'>_If no resolution was reached (each investigator resigned or was defeated)_: Go to _Resolution 3_.</p></div>"
+      "title": "Pas de conclusion",
+      "body": "<div class='resolution'><p class='basic'>_Si aucune conclusion n’est atteinte (tous les investigateurs ont été vaincus)_ : lisez la _Conclusion 3_.</p></div>"
     },
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1_: You hold your breath as you swim through freezing water toward the spires below. As you get closer, you see ripples throughout the water, as though you are peering into a reflection upon the sea’s surface. You break through the surface and gasp as air fills your lungs.</p><ul><li>In your Campaign Log, record that *you opened the path below*.</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}cultist{'}'} tokens and 2 {'{'}tablet{'}'} tokens to the chaos bag.</li><li>If Ashleigh Clarke (*Songs Die Unheard*) is in the victory display, record her name in your Campaign Log, under “VIPs Slain.”</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "Conclusion 1",
+      "body": "<div class='resolution'><p>_Conclusion 1_ : Vous retenez votre souffle et nagez dans l’eau glacée vers les tours au-dessous. En approchant, vous apercevez des ondulations dans l’eau semblables à des reflets à la surface de la mer. Vous traversez cette démarcation et poussez un cri de surprise en constatant que l’air emplit vos poumons.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *vous avez ouvert la voie d’en bas*.</li><li>Retirez tous les pions {'{'}cultist{'}'}, {'{'}tablet{'}'} et {'{'}elderThing{'}'} de la réserve du Chaos. Ensuite, ajoutez 2 pions {'{'}cultist{'}'} et 2 pions {'{'}tablet{'}'} dans la réserve du Chaos.</li><li>Si Ashleigh Clarke (*Les Chansons Meurent Sans Bruit*) est dans la pile de victoire, inscrivez son nom dans votre Carnet de Campagne sous la mention « Personnalités Tuées ».</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2_: You marvel at the cloud-waves encircling you and fly toward the spires above. The desolate and inscrutable city of Carcosa towers before you. You suddenly realize you are falling—not floating—and a pulling force takes hold of your body.</p><ul><li>In your Campaign Log, record that *you opened the path above*.</li><li>Remove all {'{'}cultist{'}'}, {'{'}tablet{'}'}, and {'{'}elderThing{'}'} tokens from the chaos bag. Then, add 2 {'{'}cultist{'}'} tokens and 2 {'{'}elderThing{'}'} tokens to the chaos bag.</li><li>If Ashleigh Clarke (*Songs Die Unheard*) is in the victory display, record her name in your Campaign Log, under “VIPs Slain.”</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "Conclusion 2",
+      "body": "<div class='resolution'><p>_Conclusion 2_ : Vous vous émerveillez des vagues de nuages qui vous entourent et vous volez vers les tours au-dessus. La cité désolée et impénétrable de Carcosa se dresse devant vous. Vous réalisez soudain que vous n’êtes pas en train de flotter mais de tomber, et la force d’attraction s’empare de votre corps.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *vous avez ouvert la voie d’en haut*.</li><li>Retirez tous les pions {'{'}cultist{'}'}, {'{'}tablet{'}'} et {'{'}elderThing{'}'} de la réserve du Chaos. Ensuite, ajoutez 2 pions {'{'}cultist{'}'} et 2 pions {'{'}elderThing{'}'} dans la réserve du Chaos.</li><li>Si Ashleigh Clarke (Les Chansons Meurent Sans Bruit) est dans la pile de victoire, inscrivez son nom dans votre Carnet de Campagne sous la mention « Personnalités Tuées ».</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li></ul></div>"
     },
     "resolution3": {
-      "title": "Resolution 3",
-      "body": "<div class='resolution'><p>_Resolution 3_: When you awaken, you are sitting in the choeur gothique of Mont Saint-Michel’s abbey. No rain pelts the glass of the windows above, and you hear no thunder, nor the screeching of winged horrors overhead. Somehow, you had escaped the island’s certain doom. You creep to the door of the abbey and open it with trepidation. A dazzling light sears your eyes, and you lift your hand to block the glare of two suns. You stand overlooking the Lake of Hali. Black stars hang in the heavens above. Beyond, over leagues of tossing cloud- waves, the towers of Carcosa rise behind the shattered moon.</p><ul><li>You’ve met with a terrible fate, haven’t you?</li><li>In your Campaign Log, record that *the realm of Carcosa merged with our own, and Hastur rules over them both*.</li><li>Each investigator is driven _insane_.</li><li>The investigators lose the campaign.</li></ul></div>"
+      "title": "Conclusion 3",
+      "body": "<div class='resolution'><p>_Conclusion 3_ : Vous vous réveillez dans le chœur gothique de l’abbaye du Mont Saint-Michel. Le bruit de la pluie sur les vitraux a cessé et vous n’entendez plus ni le tonnerre, ni le bruissement des horreurs ailées. Vous avez visiblement échappé au funeste destin de l’île. Vous rampez jusqu’à la porte de l’abbaye et l’ouvrez avec appréhension. Une lumière aveuglante vous éblouit et vous levez la main pour protéger vos yeux de l’éclat des deux soleils. Vous restez là un instant à observer le lac de Hali, les Étoiles Noires suspendues à la voûte céleste au-dessus de vous. Au-delà, après des lieues de vagues-nuages tourbillonnants, les hautes tours de Carcosa s’élèvent derrière la lune brisée.</p><ul><li>Vous avez rencontré un funeste destin, n’est-ce pas ?</li><li>Dans votre Carnet de Campagne, indiquez que *le royaume de Carcosa a fusionné avec notre monde, et Hastur règne sur les deux*.</li><li>Chaque investigateur devient _dément_.</li><li>Les investigateurs ont perdu la campagne.</li></ul></div>"
     }
   }
 }

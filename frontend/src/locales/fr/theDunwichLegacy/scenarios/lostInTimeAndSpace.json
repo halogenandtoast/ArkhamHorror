@@ -1,83 +1,83 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1 for each _Extradimensional_ location in play (max -5).",
-      "cultist": "Reveal another token. If you fail, after this skill test, discard cards from the top of the encounter deck until a location is discarded. Put that location into play and move there.",
-      "tablet": "-3. If Yog-Sothoth is in play, it attacks you after this skill test.",
-      "elderThing": "-X. X is the shroud value of your location. If you fail and your location is _Extradimensional_, discard it."
+      "skull": "–1 pour chaque lieu _Extradimensionnel_ en jeu (–5 max.).",
+      "cultist": "Révélez un autre pion Chaos. En cas d'échec, après ce test de compétence, défaussez des cartes du dessus du deck Rencontre jusqu'à ce qu'un lieu soit défaussé. Mettez-le en jeu et déplacez-vous-y.",
+      "tablet": "–3. Si Yog-Sothoth est en jeu, il vous attaque après ce test de compétence.",
+      "elderThing": "–X. X est la valeur occulte de votre lieu. En cas d'échec et si votre lieu est _Extradimensionnel_, défaussez-le."
     },
     "hardExpert": {
-      "skull": "-1 for each _Extradimensional_ location in play.",
-      "cultist": "Reveal another token. After this skill test, discard cards from the top of the encounter deck until a location is discarded. Put that location into play and move there.",
-      "tablet": "-5. If Yog-Sothoth is in play, it attacks you after this skill test.",
-      "elderThing": "-X. X is twice the shroud value of your location. If you fail and your location is _Extradimensional_, discard it."
+      "skull": "–1 pour chaque lieu _Extradimensionnel_ en jeu.",
+      "cultist": "Révélez un autre pion Chaos. Après ce test de compétence, défaussez des cartes du dessus du deck Rencontre jusqu'à ce qu'un lieu soit défaussé. Mettez-le en jeu et déplacez-vous-y.",
+      "tablet": "–5. Si Yog-Sothoth est en jeu, il vous attaque après ce test de compétence.",
+      "elderThing": "–X. X est le double de la valeur occulte de votre lieu. En cas d'échec et si votre lieu est _Extradimensionnel_, défaussez-le."
     }
   },
   "intro": {
-    "title": "Scenario VII: Lost in Time and Space",
-    "body": "<p>Passing through the gate is unlike anything you’ve ever experienced. You feel your body twisting and distorting, churning through realities as the gate pulls you to its ultimate destination­ —a place beyond the scope of human imagination.</p><p>Suddenly, all is quiet and the chaos of the journey is replaced with a sense of solitude and dread. You are in an unfathomable place, vast beyond your ability to reason and utterly alien besides. The landscape is surreal and strange, the architecture impossible. You are so far from home that home has become a threadbare dream you can barely recall. Even should you find a way out of this awful place, you may never be the same again.</p>"
+    "title": "Scénario VII : Perdu dans le Temps et l’Espace",
+    "body": "<p>La traversée du portail ne ressemble à rien que vous ayez connu. Vous sentez votre corps se tordre et se déformer, tournoyant à travers les réalités jusqu’à ce que le portail vous amène à son ultime destination – un lieu hors de portée de l’imagination des hommes.</p><p>Soudain, tout devient calme et un sentiment de solitude et d’effroi vient remplacer le chaos de la traversée. Vous vous trouvez en un lieu insondable, bien au-delà de vos capacités de raisonnement et clairement d’origine extraterrestre. Le paysage est irréel, étrange et son architecture est inconcevable. Vous êtes tellement loin de votre réalité que vous parvenez à peine à vous la remémorer, comme s’il s’agissait d’un rêve lointain. Quand bien même vous parveniez à revenir de cet endroit maudit, vous ne seriez plus jamais le même…</p>"
   },
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: *Lost in Time and Space*, *Sorcery*, *The Beyond*, *Hideous Abominations*, *Agents of Yog-Sothoth*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/lost-in-time-and-space.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/agents-of-yog.png' /></section>",
-    "placeLocations": "Put Another Dimension into play. Each investigator begins play in Another Dimension.",
-    "setAside": "Set the following cards aside, out of play: The Edge of the Universe, Tear Through Time, and Yog-Sothoth."
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : *Perdu dans le Temps et l'Espace*, *Sorcellerie*, *L'Au-delà*, *Hideuses Abominations* et *Agents de Yog-Sothoth*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/lost-in-time-and-space.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/agents-of-yog.png' /></section>",
+    "placeLocations": "Mettez en jeu Une Autre Dimension. Chaque investigateur commence la partie dans Une Autre Dimension.",
+    "setAside": "Mettez les cartes suivantes de côté, hors-jeu : Le Bord de l'Univers, Déchirure dans le Temps, Yog-Sothoth."
   },
   "locationsInTheEncounterDeck": {
-    "title": "Locations in the Encounter Deck",
-    "body": "<p class='basic'>This scenario includes several single-sided locations that are shuffled into the encounter deck along with the rest of the gathered encounter sets. These locations only have a revealed side, and have a _Revelation_ effect that puts them into play when drawn.</p><p class='basic'>When put into play, a single-sided location is put into play with its revealed side faceup, because it has no unrevealed side. Otherwise, it functions as a normal location in every other way.</p>"
+    "title": "Lieux dans le Deck Rencontre",
+    "body": "<p class='basic'>Ce scénario comporte plusieurs lieux mono-face qui sont mélangés dans le deck Rencontre avec le reste des sets de rencontre. Ces lieux ne disposent que d’une face révélée et possèdent un effet _Révélation_ qui les met en jeu quand ils sont piochés.</p><p class='basic'>Quand un lieu mono-face est mis en jeu, il est placé face révélée car il ne dispose pas de face non-révélée. À part cela, il respecte les règles normales de fonctionnement des lieux.</p>"
   },
   "resolutions": {
-    "defeated": "<div class='resolution'><p class='basic'>_Before resolving any other resolution, if at least 1 investigator was defeated_: The defeated investigators read _Investigator Defeat_ first.</p><p>_Investigator Defeat_: Where did you come from? Why are you here? Are you dreaming, or is this place real? Now that you think about it, haven’t you been here before? Or perhaps you’ve been here all along. Now you remember. This is your real home. The path you now walk is but one ledge, with many more below. You only have to fall and you will be where you belong. One more step…</p><ul><li>Each defeated investigator is _killed_.</li><li>If another resolution was reached, the other investigators read that resolution.</li><li>If no resolution was reached (each investigator was defeated) and the investigators were at Act 4 when the scenario ended, go to _Resolution 2_.</li><li>If no resolution was reached (each investigator was defeated) and the investigators were at Act 1, 2, or 3 when the scenario ended, go to _Resolution 4_.</li></ul></div>",
+    "defeated": "<div class='resolution'><p class='basic'>_Avant de résoudre toute autre conclusion, si au moins 1 investigateur a été vaincu_: les investigateurs vaincus lisent le paragraphe _Investigateur Vaincu_ d'abord.</p><p>_Investigateur Vaincu_ : D'où venez-vous ? Pourquoi êtes-vous là ? Rêvez-vous, ou cet endroit est-il réel ? Maintenant que vous y pensez, n'avez-vous pas déjà été ici ? Ou peut-être êtes-vous là depuis toujours. Oui, vous vous souvenez maintenant. Voilà votre véritable demeure. Le chemin que vous arpentez maintenant n’en est que le rebord, il y a bien plus en dessous. Il vous suffirait de tomber et vous serez enfin à votre véritable place. Plus qu'un pas et…</p><ul><li>Chaque investigateur vaincu est _tué_.</li><li>Si une autre conclusion a été atteinte, les autres investigateurs lisent cette conclusion.</li><li>Si aucune conclusion n'a été atteinte (tous les investigateurs ont été vaincus) et que les investigateurs étaient à l'Acte 4 à la fin du scénario, lisez la _Conclusion 2_.</li><li>Si aucune conclusion n'a été atteinte (tous les investigateurs ont été vaincus) et que les investigateurs étaient à l'Acte 1, 2 ou 3 à la fin du scénario, lisez la _Conclusion 4_.</li></ul></div>",
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1_: Lying on your back in a patch of wet grass, you find yourself staring longingly at the night sky. Somehow, you are once again atop Sentinel Hill, unable to recall exactly how you got here. You are mesmerized by the night sky. Seconds become minutes, and minutes become hours. Eventually, you are found and lifted to your feet by a group of Dunwich citizens. “What happened? What are ya doin’ here?” they ask you, frightened but curious. You can’t seem to find the right words to describe the events that occurred beyond the gate…if they ever truly occurred. There doesn’t appear to be any trace of Seth Bishop, of the creatures you fought earlier, or of the phantasmal and otherworldly gate. But every time you sleep, you dream—and when you dream, it all comes rushing back.</p><ul><li>In your Campaign Log, record that *the investigators closed the tear in reality*.</li><li>Each investigator suffers 2 physical trauma and 2 mental trauma, as he or she never fully recovers from his or her time spent outside the realm of reality.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 5 bonus experience, as he or she saved the world from being torn apart.<ul><li>_Experience_: {xp}</li></ul></li><li>The investigators win the campaign!</li></ul></div>"
+      "title": "Conclusion 1",
+      "body": "<div class='resolution'><p>_Conclusion 1_ : Étendu sur le dos dans un carré d'herbe humide, vous fixez longuement le ciel nocturne. Vous êtes à nouveau au sommet de la Colline de la Sentinelle, incapable de vous souvenir comment vous êtes arrivé là. Vous êtes comme hypnotisé par le ciel nocturne. Les secondes deviennent des minutes, les minutes deviennent des heures. Finalement, vous êtes remis sur pied par un groupe de villageois de Dunwich. « Que s’est-il passé ? Que faites-vous ici ? » vous demandent-ils, apeurés mais curieux. Vous ne parvenez pas à trouver de mots pour décrire les événements qui ont eu lieu au-delà du portail… s'ils ont vraiment eu lieu. Il semble n'y avoir aucune trace de Seth Bishop, des créatures que vous avez combattues et de cet étrange portail fantomatique. Mais chaque fois que vous dormez, vous rêvez — et quand vous rêvez, tout vous revient.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *les investigateurs ont fermé la faille dans la réalité*.</li><li>Chaque investigateur subit 2 traumatismes physiques et 2 traumatismes mentaux car il n’a jamais totalement récupéré du temps qu’il a passé hors des domaines de la réalité.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire. Chaque investigateur reçoit également 5 points d’expérience bonus pour avoir sauvé le monde de l’anéantissement.<ul><li>_Expérience_ : {xp}</li></ul></li><li>Les investigateurs ont gagné la campagne !</li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2_: Several of the villagers from Dunwich heard the ruckus on Sentinel Hill and went to investigate. What they found there answered none of their questions.</p><p>“What d’you think happened?” a frightened Curtis Whateley asks as they examine the hilltop. The other villagers shake their heads, unable to say. “Last thing I saw, the sky’d open’d up an’ there was a bright flash,” one of them says, looking up at the starry sky from the top of Sentinel Hill.</p><p>“Those Arkham fellas ain’t nowhere to be seen,” Curtis adds, looking down at the cracked stone altar. “Not even of a hint of ‘em. Mr. Bishop and his pals, now, that’s a diff’rent story.” The young man motions toward several corpses on the ground.</p><p>“Think we should get ahold of those coppers outta Aylesbury?”</p><p>“Why, so they can laugh at us again?” Curtis spits. “They ain’t never gonna believe us ‘bout all this anyway.” He glances at the stone altar, fidgeting nervously. “Better t’ forget about the whole thing. C’mon, let’s bury the dead and get outta here.”</p><ul><li>The investigators win the campaign…and are never seen or heard from again.</li></ul></div>"
+      "title": "Conclusion 2",
+      "body": "<div class='resolution'><p>_Conclusion 2_ : Plusieurs des villageois de Dunwich ont entendu le vacarme venant de la Colline de la Sentinelle et sont venus enquêter. Ce qu'ils ont trouvé n’a répondu à aucune de leurs questions.</p><p>« Vous pensez qu’il s'est passé quoi ? » s’enquiert un Curtis Whateley apeuré en examinant le sommet de la colline. Les autres villageois secouent la tête, en silence. « La dernière chose que j'ai vue était le ciel qui s’ouvrait et y'a eu un grand éclair brillant » dit finalement l'un d’eux en désignant le ciel étoilé au-dessus du sommet de la Colline de la Sentinelle.</p><p>« Ces types d'Arkham sont nulle part. » ajoute Curtis en examinant les pierres brisées de l'autel. « Pas la moind’ trace d'eux. M'sieur Bishop et ses gars, c’t’une autre histoire. » Le jeune homme désigne les cadavres répandus sur le sol.</p><p>« Tu crois qu'on devrait prév'nir la flicaille d’Aylesbury ? »</p><p>« Pourquoi, pour qu'ils se moquent encor' de nous ? » répond Curtis en crachant. « Y nous croiront jamais d'toute façon. » Il jette un coup d’œil à l'autel de pierre, en gigotant nerveusement. « Mieux vaut tout oublier. Allez v'nez, enterrons les morts et fichons le camp d'ici. »</p><ul><li>Les investigateurs ont gagné la campagne… mais on n’a plus jamais entendu parlé d'eux.</li></ul></div>"
     },
     "resolution3": {
-      "title": "Resolution 3",
-      "body": "<div class='resolution'><p>_Resolution 3_: The creature erupts in a cosmic fury of sound, color, and distorted space, hurling you back and away from it. You watch in horror as one of its arms tears through the fabric of the world, and its amorphous shape funnels through the rift, pulling the threads of the world along with it. You try to cling to something, but you are inexorably sucked into the rift. You feel as if your body is stretching and your mind is being crushed. Then, everything goes black.</p><ul><li>In your Campaign Log, record that *Yog-Sothoth has fled to another dimension*.</li><li>Each investigator is _killed_.</li><li>The investigators win the campaign…and are never seen or heard from again.</li></ul></div>"
+      "title": "Conclusion 3",
+      "body": "<div class='resolution'><p>_Conclusion 3_ : La créature s'agite dans un déchaînement cosmique de sons, de couleurs et d'espace distordu, vous repoussant loin d'elle. Vous observez avec horreur l'un de ses appendices déchirer le tissu même de la réalité et la masse informe s'engouffrer dans la faille, emportant avec elle la trame de ce monde. Vous tentez d'agripper quelque chose, mais vous êtes inexorablement aspiré par la faille. Vous sentez votre corps s'étirer et votre esprit être broyé. Puis, tout devient noir.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *Yog-Sothoth a fui vers une autre dimension*.</li><li>Chaque investigateur vaincu est _tué_.</li><li>Les investigateurs ont gagné la campagne… mais on n’a plus jamais entendu parlé d'eux.</li></ul></div>"
     },
     "resolution4": {
-      "title": "Resolution 4",
-      "body": "<div class='resolution'><p>_Resolution 4_: The sorcerers from Dunwich, seeking arcane power from beyond this realm, have accomplished what Wilbur and Old Whateley could not. Through blood sacrifice and indescribable experiments, the dark power the sorcerers sought is now within their reach. However, they will never get the chance to truly wield this power. In beseeching Wilbur’s father for knowledge, they have drawn the creature forth from its extradimensional realm. Yog-Sothoth emerges from the open rift above Sentinel Hill, blotting out the sky and enveloping the world. Now it has come to Earth, and it rules where humanity once tread.</p><ul><li>In your Campaign Log, record that *Yog-Sothoth tore apart the barriers between worlds, and became one with all reality*.</li><li>Each surviving investigator is driven _insane_.</li><li>The investigators lose the campaign.</li></ul></div>"
+      "title": "Conclusion 4",
+      "body": "<div class='resolution'><p>_Conclusion 4_ : En cherchant à obtenir des pouvoirs occultes venus d'au-delà du monde, les sorciers de Dunwich ont réussi là où Wilbur et le Vieux Whateley ont échoué. Par des sacrifices de sang et d'indescriptibles expériences, ils ont acquis les sombres pouvoirs qu'ils convoitaient. Ils n'auront cependant pas l'occasion d'utiliser ces pouvoirs. En suppliant le géniteur de Wilbur pour obtenir des connaissances impies, ils ont attiré la créature hors de son royaume extra-dimensionnel. Yog-Sothoth émerge de la faille située au-dessus de la Colline de la Sentinelle éclipsant le ciel et recouvrant le monde. Il règne désormais sur cette Terre que les humains foulaient autrefois.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *Yog-Sothoth a anéanti la barrière entre les mondes et ne fait plus qu’un avec la réalité*.</li><li>Chaque investigateur survivant devient _dément_.</li><li>Les investigateurs ont perdu la campagne.</li></ul></div>"
     },
     "xp": {
-      "bonus": "Saved the world from being torn apart"
+      "bonus": "Pour avoir sauvé le monde de l’anéantissement"
     }
   },
   "tooltips": {
     "tearThroughTime": {
-      "resign": "You find a new path and hope that it leads back to safety."
+      "resign": "Vous découvrez un nouveau chemin et espérez qu'il vous ramènera dans un endroit sûr."
     }
   },
   "label": {
-    "yogSothoth": "Discard the top {cards} cards and take {horror} horror",
+    "yogSothoth": "Défausser les {cards} cartes du dessus de votre deck et subissez {horror} horreurs",
     "tearThroughSpace": {
-      "placeDoom": "Place 1 doom on Tear through Space",
-      "discard": "Discard Tear through Space"
+      "placeDoom": "Placez 1 fatalité sur la Déchirure dans l'Espace",
+      "discard": "Défaussez la Déchirure dans l'Espace"
     },
     "endlessBridge": {
-      "placeDoom": "Place 1 doom on Endless Bridge",
-      "discard": "Discard Endless Bridge"
+      "placeDoom": "Placez 1 fatalité sur le Pont Sans Fin",
+      "discard": "Défaussez le Pont Sans Fin"
     },
     "sethBishop": {
-      "move": "Move to Another Dimension after this attack",
-      "damage": "Seth Bishop deals +2 damage for this attack"
+      "move": "Déplacez-vous sur Une Autre Dimension après cette attaque.",
+      "damage": "Seth Bishop inflige +2 dégâts pour cette attaque"
     },
     "indecipherableStairs": {
-      "discard": "Discard Indecipherable Stairs"
+      "discard": "Défaussez les Escaliers Indescriptibles"
     },
     "toweringLuminosity": {
-      "doom": "Place 1 doom on Towering Luminosity",
-      "flipClue": "Flip 1 clue on Towering Luminosity to its doom side",
-      "discard": "Discard Towering Luminosity"
+      "doom": "Placez 1 fatalité sur la Tour Lumineuse",
+      "flipClue": "Retournez 1 pion indice de la Tour Lumineuse sur sa face fatalité",
+      "discard": "Défaussez la Tour Lumineuse"
     },
     "unstableVortex": {
-      "chooseTearThroughSpaces": "Choose tear through space to discard",
-      "shuffle": "Shuffle Unstable Vortex into the encounter deck"
+      "chooseTearThroughSpaces": "Défaussez 1 exemplaire de Déchirure dans l'Espace",
+      "shuffle": "Mélangez le Vortex Instable dans le deck Rencontre"
     }
   }
 }

@@ -510,7 +510,7 @@ getValidationResults cards = runValidateT $ do
                   (cdName $ toCardDef attrs)
                   (max 0 <$> normalizeShroud ccode shroud)
                   (case locationShroud attrs of
-                     Static n -> Just n
+                     Just (Static n) -> Just n
                      _ -> Nothing
                   )
             )

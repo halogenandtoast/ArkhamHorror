@@ -503,13 +503,16 @@ getValidationResults cards = runValidateT $ do
         Nothing -> unless (ignoreCardCode ccode) (invariant $ unknownCard ccode)
         Just CardJson {..} -> do
           when
-            ((max 0 <$> shroud) /= locationShroud attrs)
+            ((Static . max 0 <$> shroud) /= locationShroud attrs)
             ( invariant
                 $ ShroudMismatch
                   code
                   (cdName $ toCardDef attrs)
                   (max 0 <$> normalizeShroud ccode shroud)
-                  (locationShroud attrs)
+                  (case locationShroud attrs of
+                     Static n -> Just n
+                     _ -> Nothing
+                  )
             )
           when
             (fromMaybe 0 clues /= fromGameValue (locationRevealClues attrs) 1)

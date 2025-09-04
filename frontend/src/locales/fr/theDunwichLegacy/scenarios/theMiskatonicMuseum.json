@@ -1,77 +1,77 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1 (-3 instead if Hunting Horror is at your location.)",
-      "cultist": "-1. If you fail, search the encounter deck, discard pile, and the void for Hunting Horror and spawn it at your location, if able.",
-      "tablet": "-2. Return 1 of your clues to your current location.",
-      "elderThing": "-3. If you fail, discard an asset you control."
+      "skull": "–1 (–3 à la place si l'Horreur Chasseresse est dans votre lieu.)",
+      "cultist": "–1. En cas d'échec, cherchez l'Horreur Chasseresse dans le deck Rencontre, dans la pile de défausse Rencontre ou dans le Néant et générez-la dans votre lieu, si possible.",
+      "tablet": "–2. Remettez 1 de vos indices sur votre lieu actuel.",
+      "elderThing": "–3. En cas d'échec, défaussez un soutien que vous contrôlez."
     },
     "hardExpert": {
-      "skull": "-2 (-4 instead if Hunting Horror is at your location.)",
-      "cultist": "-3. If you fail, search the encounter deck, discard pile, and the void for Hunting Horror and spawn it at your location, if able.",
-      "tablet": "-4. If Hunting Horror is at your location, it immediately attacks you.",
-      "elderThing": "-5. If you fail, discard an asset you control."
+      "skull": "–2 (–4 à la place si l'Horreur Chasseresse est dans votre lieu.)",
+      "cultist": "–3. En cas d'échec, cherchez l'Horreur Chasseresse dans le deck Rencontre, dans la pile de défausse Rencontre ou dans le Néant et générez-la dans votre lieu, si possible.",
+      "tablet": "–4. Si l'Horreur Chasseresse est dans votre lieu, elle effectue immédiatement une attaque contre vous.",
+      "elderThing": "–5. En cas d'échec, défaussez un soutien que vous contrôlez."
     }
   },
   "intro": {
-    "title": "Scenario II: The Miskatonic Museum",
-    "body": "<p>Several months ago, Armitage and his colleagues stopped a rampaging horror from tearing through Dunwich, a backwater town several hours north and west of Arkham. At first you imagine this beast as a rabid bear, or worse, but the professor’s description of the creature paints a different picture.</p><p>It all began when a man named Wilbur Whateley entered the Orne Library looking for Olaus Wormius’s Latin translation of a book called the Necronomicon. Wilbur already possessed a beaten-up English translation by Dr. John Dee, but it was insufficient for his purposes. Armitage turned the man away, fearing what use the strange man had for the book. Whateley returned in secret, hoping to steal the book , but was attacked by a hound guarding the university. Armitage, Rice, and Morgan later discovered Whateley’s body. A description of the foul corpse—semi-anthropomorphic and covered in fur, with a leathery hide and greenish-grey tentacles—causes you to question whether or not Whateley was truly human.</p>",
-    "proceedToPart1": "<div class='basic right'><p>Check Campaign Log. If *Dr. Henry Armitage was kidnapped*:</p><p>Proceed to _Part 1_</p></div>",
-    "proceedToPart2": "<div class='basic right'><p>If *the investigators rescued Dr. Henry Armitage*:</p><p>Skip to _Part 2_.</p></div>",
+    "title": "Scénario II : Le Musée Miskatonic",
+    "body": "<p>Il y a plusieurs mois, Armitage et ses collègues sont parvenus à arrêter une bête déchaînée sur le point de détruire Dunwich, un village reculé situé à quelques heures au nord-ouest d'Arkham. Dans un premier temps, vous avez pensé à un ours enragé, ou pire, mais la description de la créature donnée par le professeur est bien différente.</p><p>Tout commença quand un homme nommé Wilbur Whateley entra dans la Bibliothèque Orne à la recherche de la traduction en latin, réalisée par Olaus Wormius, d'un livre intitulé Necronomicon. Wilbur était déjà en possession d'un vieil exemplaire de la traduction du Dr John Dee, mais elle ne suffisait pas à ses desseins. Armitage le refoula, craignant l'usage que cet homme étrange pourrait faire de ce livre. Whateley revint en secret, espérant voler le livre, mais il fut attaqué par un chien de garde de l'université. Armitage, Rice et Morgan découvrirent plus tard le corps de Whateley. Une description de l'abject cadavre – semi-anthropomorphique et couvert de fourrure, avec une peau épaisse comme du cuir et des tentacules gris-vert – vous fait vous demander si Whateley était réellement humain.</p>",
+    "proceedToPart1": "<div class='basic right'><p>Vérifiez votre Carnet de Campagne. Si *le Dr Henry Armitage a été enlevé* :</p><p>lisez la _Partie 1_.</p></div>",
+    "proceedToPart2": "<div class='basic right'><p>Si *les investigateurs ont secouru le Dr Henry Armitage* :</p><p>lisez la _Partie 2_.</p></div>",
     "part1": {
-      "title": "Scenario II: The Miskatonic Museum",
-      "body": "<p>_Part 1_: The notes written by Dr. Armitage in the journal stress Whateley’s desire to get his hands on the Necronomicon for some terrible purpose. As you read on, it seems that Dr. Armitage brought the university’s copy of the tome to Harold Walsted­ —the curator of the Miskatonic Museum—for safekeeping in the museum’s Restricted Hall. Although you are worried about your mentor, you are equally worried that Armitage’s kidnappers might get their hands on this Necronomicon. You decide to head to the museum to prevent them from acquiring it.</p><p class='basic right'>Proceed to _Setup_.</p>"
+      "title": "Scénario II : Le Musée Miskatonic",
+      "body": "<p>_Partie 1_ :  Les notes écrites par le Dr Armitage dans le journal soulignent la volonté de Whateley de mettre la main sur le Necronomicon pour de sombres desseins. D'après ce qui est écrit, il semble que le Dr Armitage ait apporté l'exemplaire de l'ouvrage possédé par l'université à Harold Walsted – le conservateur du Musée Miskatonic – afin de le garder dans la Salle à Accès Restreint du Musée. Bien que vous soyez inquiet pour votre mentor, vous craignez également que les kidnappeurs d'Armitage puissent mettre la main sur ce Necronomicon. Vous décidez de vous rendre au musée pour les empêcher de le prendre.</p><p class='basic right'>Continuez à la _Mise en Place_.</p>"
     },
     "part2": {
-      "title": "Scenario II: The Miskatonic Museum",
-      "body": "<p>_Part 2_: “My colleagues and I were quick to put the ordeal behind us,” Armitage says with a sigh. “But it seems that things haven’t fully resolved themselves. I’ll tell you the rest later, but for now, it is imperative that we get our hands on that copy of the Necronomicon. If my instincts are correct, the assailants you’ve encountered will be searching for it. After all that transpired, I didn’t feel safe keeping it at the library, so I brought it to my good friend, Harold Walsted. He is the current curator of the Miskatonic Museum. I thought it would be safe in the museum’s Restricted Hall, but now I’m not so sure. You must retrieve it at all costs! I fear terribly what they could do with the rites contained in its pages…”</p><p class='basic right'>Proceed to _Setup_.</p>"
+      "title": "Scénario II : Le Musée Miskatonic",
+      "body": "<p>_Partie 2_ : « Mes collègues et moi furent prompts à laisser cette épreuve derrière nous, » soupire Armitage. « Mais il semble que les choses ne soient pas totalement revenues à la normale. Je vous raconterai la suite plus tard, pour le moment il est impératif de mettre la main sur cet exemplaire du Necronomicon. Mon instinct me dit que les assaillants que vous avez rencontrés sont à sa recherche. Après avoir compris cela, j'ai eu peur de le garder à la bibliothèque, je l'ai donc apporté à un bon ami, Harold Walsted. C'est l'actuel conservateur du Musée Miskatonic. Je pensais qu'il serait plus en sécurité dans la Salle à Accès Restreint du musée, mais maintenant je n'en suis plus si sûr. Vous devez à tout prix le récupérer ! J'ai terriblement peur de ce qu'ils pourraient faire avec les rites contenus dans ses pages… »</p><p class='basic right'>Continuez à la _Mise en Place_.</p>"
     }
   },
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: *The Miskatonic Museum*, *Bad Luck*, *Sorcery*, *The Beyond*, *Chilling Cold*, and *Locked Doors*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-miskatonic-museum.png' /><img src='{setImgPath}/bad-luck.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
-    "placeLocations": "Put one of the two Administration Office locations and one of the two Security Office locations into play at random. Remove the other versions of Administration Office and Security Office from the game. Then, put the Museum Entrance and Museum Halls locations into play. Each investigator begins play at the Museum Entrance.",
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : *Le Musée Miskatonic*, *Malchance*, *Sorcellerie*, *L'Au-delà*, *Un Froid Mordant* et *Portes Closes*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/the-miskatonic-museum.png' /><img src='{setImgPath}/bad-luck.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+    "placeLocations": "Prenez au hasard l'un des deux lieux Bureau de l'Administration et l'un des deux lieux Bureau de la Sécurité et mettez-les en jeu. Retirez de la partie les autres exemplaires du Bureau de l'Administration et du Bureau de la Sécurité. Ensuite, mettez en jeu les lieux Entrée du Musée et Hall du Musée. Chaque investigateur commence la partie dans l'Entrée du Musée.",
     "exhibitDeck": {
-      "instructions": "Set the 6 “Exhibit Hall” locations aside as a separate “Exhibit Deck.” To do this, perform the following:",
-      "bottom": "Shuffle the Exhibit Hall (*Restricted Hall*) and 2 other random Exhibit Hall locations together to form the bottom 3 cards of the Exhibit Deck, unrevealed side faceup.",
-      "top": "Then, place the other 3 Exhibit Hall locations on top, in a random order. All 6 cards of the Exhibit Hall deck should be showing only the unrevealed side, so that the players do not know which Exhibit Hall is the Exhibit Hall (*Restricted Hall*)."
+      "instructions": "Mettez de côté les 6 lieux « Salle d'Exposition » pour constituer un « deck Exposition », selon les règles suivantes :",
+      "bottom": " Mélangez ensemble la Salle d'Exposition (Salle à Accès Restreint) et 2 autres lieux Salle d'Exposition pris au hasard afin de constituer la base du deck Exposition, face non-révélée visible.",
+      "top": "Ensuite, placez les 3 autres lieux Salle d'Exposition au-dessus dans un ordre aléatoire. Les 6 cartes du deck Exposition ne doivent montrer que leur face non-révélée afin que les joueurs ne sachent pas quelle Salle d'Exposition est la Salle d'Exposition (*Salle à Accès Restreint*)."
     },
-    "setAside": "Set the following cards aside, out of play: Harold Walsted, Adam Lynch, The Necronomicon (*Olaus Wormius Translation*), and Shadow-spawned."
+    "setAside": "Mettez les cartes suivantes de côté, hors jeu : Harold Walsted, Adam Lynch, Le Necronomicon (*Traduction d'Olaus Wormius*) et Engendrée par l'Ombre."
   },
   "theVoid": {
-    "title": "“The Void”",
-    "body": "Some cards in this scenario reference an area called “the void.” The void is an out-of-play area next to the act and agenda deck which the Hunting Horror enemy can enter and leave via card effects. While the Hunting Horror is in the void, it is considered out of play and cannot be affected by player cards or investigator actions."
+    "title": "« Le Néant »",
+    "body": "Certaines cartes de ce scénario font référence à une zone appelée « le Néant ». Le Néant est une zone hors jeu, située près des decks Acte et Intrigue, dans laquelle l'ennemi Horreur Chasseresse peut entrer et sortir via des effets de carte. Tant que l'Horreur Chasseresse est dans le Néant, elle est considérée comme étant hors jeu et ne peut pas être affectée par des cartes Joueur ou des actions d'investigateur."
   },
   "resolutions": {
     "noResolution": {
-      "title": "No Resolution",
-      "body": "<div class='resolution'><p>_If no resolution was reached (each investigator resigned or was defeated):_ Whatever the creature in the museum was, you had neither the will nor the tools to destroy it. It seems you must give up any hope of recovering the Necronomicon. Even so, there are others depending on you. Gathering your courage, you prepare for your next task.</p><ul><li>In your Campaign Log, record that *the investigators failed to recover the Necronomicon*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "Pas de conclusion",
+      "body": "<div class='resolution'><p>_Si aucune conclusion n'est atteinte (tous les investigateurs ont abandonné ou été vaincus)_ : Quoi que fut la créature dans le musée, vous n'avez eu ni la volonté ni l'équipement nécessaire pour la détruire. Il semble que vous deviez abandonner tout espoir de retrouver le Necronomicon. Malgré tout, d'autres personnes comptent sur vous. Rassemblant votre courage, vous vous préparez pour votre prochaine tâche.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *les investigateurs n'ont pas réussi à retrouver le Necronomicon*.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li></ul></div>"
     },
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1:_ As long as this translation of the Necronomicon exists, there will be sorcerers and other foul agents like Whateley seeking it. In the end, you know what must be done to protect humanity from the threats you’ve seen. You find a trash bin and fill it with books and documents, throwing the Necronomicon on top. It takes several matches to set the contents of the bin alight. The flames fill the room with heat and the creeping shadows retreat from its light. You watch the book burn for some time, its pages turning to ash. You can only hope you’ve made the right decision.</p><ul><li>In your Campaign Log, record that *the investigators destroyed the Necronomicon.*</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "Conclusion 1",
+      "body": "<div class='resolution'><p>_Conclusion 1_ : Aussi longtemps que cette traduction du Necronomicon existera, il y aura des sorciers et autres personnes infâmes comme Whateley qui chercheront à s'en emparer. Au final, vous savez ce que vous avez à faire pour protéger l'humanité des menaces auxquelles vous avez été confrontés. Vous trouvez une poubelle, la remplissez de livres et de documents et jetez le Necronomicon par-dessus. Plusieurs allumettes vous sont nécessaires pour mettre le feu au contenu de la poubelle. Les flammes emplissent la pièce de chaleur et les ombres rampantes reculent face à la lumière. Vous regardez le livre brûler pendant quelques temps, ses pages se réduisant en cendres. Vous ne pouvez qu'espérer avoir pris la bonne décision.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *les investigateurs ont détruit le Necronomicon*.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2:_ The Necronomicon is more than just a book; it is a tool. Within its pages is a wealth of information about the forces and creatures you have encountered. Knowing how useful it could be in your endeavors, how could you possibly bring yourself to destroy it? Besides, as long as you keep the book safely in your possession, you will still be foiling those who wish to use it for nefarious purposes.</p><ul><li>In your Campaign Log, record that *the investigators took custody of the Necronomicon*.</li><li>The investigators have earned The Necronomicon (*Olaus Wormius Translation*) card. Any one investigator may choose to add The Necronomicon (*Olaus Wormius Translation*) to his or her deck. This card does not count towards that investigator’s deck size.</li><li>You have given in to the temptation of power. Add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
+      "title": "Conclusion 2",
+      "body": "<div class='resolution'><p>_Conclusion 2_ : Le Necronomicon est plus qu'un simple livre ; c'est un outil. Ses pages regorgent d'informations sur les forces et les créatures auxquelles vous avez été confronté. Sachant à quel point il pourrait vous être utile, comment pourriez-vous envisager de le détruite ? De plus, tant que vous gardez le livre en sécurité sur vous, vous pourrez contrecarrer les plans de ceux qui veulent l'utiliser pour des desseins néfastes.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *les investigateurs ont gardé le Necronomicon*.</li><li>Les investigateurs reçoivent la carte Le Necronomicon (*Traduction d'Olaus Wormius*). N'importe quel investigateur a le droit d'ajouter Le Necronomicon (*Traduction d'Olaus Wormius*) à son deck. Cette carte ne compte pas dans la Taille du Deck de l'investigateur.</li><li>Vous avez cédé à la tentation du pouvoir. Ajoutez 1 pion Chaos {'{'}elderThing{'}'} à la réserve du Chaos pour le reste de la campagne.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li></ul></div>"
     }
   },
   "label": {
-    "takeControlOfHaroldWalsted": "Choose investigator to take control of Harold Walsted.",
-    "r1": "It's too dangerous to keep around. We have to destroy it. (-> R1)",
-    "r2": "It's too valuable to destroy. We have to keep it safe. (-> R2)",
+    "takeControlOfHaroldWalsted": "Choisissez quel investigateur prend le contrôle de Harold Walsted.",
+    "r1": "Il est trop dangereux pour être conservé. Nous devons le détruire. (→ C1)",
+    "r2": "Il est trop précieux pour être détruit. Nous devons le conserver. (→ C2)",
     "securityOffice": {
-      "topOfDeck": "Look at the top card of the Exhibit Deck"
+      "topOfDeck": "Regardez la face révélée de la carte du dessus du deck Exposition."
     },
     "passageIntoTheVeil": {
-      "damage": "Take 1 direct damage and deal 1 damage to each of your Ally assets"
+      "damage": "Subir 1 dégât direct et infliger 1 dégât à chacun de vos soutiens Allié."
     }
   },
   "tooltips": {
     "museumEntrance": {
-      "resign": "\"Eh. How important can a book really be, anyway?\""
+      "resign": "« Hé. Quelle importance un simple livre peut-il avoir de toute façon ? »"
     },
     "museumHalls": {
-      "action": "{action}: Test {combat} (5) to attempt to break down the door to the museum. If you are successful, immediately advance to Act 1b"
+      "action": "{action}: Effectuez un test de {combat} (5) pour tenter d'enfoncer la porte du musée. En cas de réussite, avancez immédiatement à l'Acte 1b."
     }
   }
 }

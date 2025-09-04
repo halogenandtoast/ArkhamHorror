@@ -1,71 +1,71 @@
 {
   "remembered": {
-    "hadADrink": "{name} had a drink",
-    "cheated": "{name} cheated"
+    "hadADrink": "{name} a pris un verre",
+    "cheated": "{name} a triché"
   },
   "tokens": {
     "easyStandard": {
-      "skull": "-2. You may spend 2 resources to treat this token as a 0, instead.",
-      "cultist": "-3. If you succeed, gain 3 resources.",
-      "tablet": "-2. If you fail, discard 3 resources."
+      "skull": "–2. Vous avez le droit de dépenser 2 ressources pour traiter ce pion comme étant un « 0 » à la place.",
+      "cultist": "–3. En cas de réussite, gagnez 3 ressources.",
+      "tablet": "–2. En cas d'échec, défaussez 3 ressources."
     },
     "hardExpert": {
-      "skull": "-3. You may spend 3 resources to treat this token as a 0, instead.",
-      "cultist": "-3. If you fail, discard 3 resources.",
-      "tablet": "-2. Discard 3 resources."
+      "skull": "–3. Vous avez le droit de dépenser 3 ressources pour traiter ce pion comme étant un « 0 » à la place.",
+      "cultist": "–3. En cas d'échec, défaussez 3 ressources.",
+      "tablet": "–2. Défaussez 3 ressources."
     }
   },
   "intro": {
-    "title": "Scenario I-B: The House Always Wins",
-    "body": "<p>Dr. Armitage suggested you track down his associate Dr. Francis Morgan. He’s not sure whether Dr. Morgan is in trouble, but he’s not particularly happy with his colleague’s present choice of company. He’s in the Clover Club, a notorious gambling joint somewhere downtown. Finding the club’s exact location isn’t easy—you have to grease a few palms just to learn which of the Downtown restaurants operates as the club’s front. That restaurant is La Bella Luna, a somewhat upscale Italian eatery by the theatre. You change into your Sunday best and make your way there.</p><p>In front of La Bella Luna stands a man in a pinstripe suit who sizes you up as you approach. “Enjoy yourselves,” he says with a snake-like grin as he holds open the restaurant’s front door.</p>"
+    "title": "Scénario I–B : La Banque Gagne Toujours",
+    "body": "<p>Le Dr Armitage vous a suggéré de retrouver son associé, le Dr Francis Morgan. Il n'est pas sûr que le Dr Morgan soit en danger, mais il n'est pas enchanté de la compagnie choisie par son collègue. Celui-ci se trouve au Club du Trèfle, un fameux salon de jeu situé quelque part dans le centre. Découvrir l'emplacement exact du club n'est pas facile – vous devez graisser quelques pattes afin d'apprendre lequel des restaurants du centre-ville lui sert de couverture. Il s'agit de La Bella Luna, un restaurant italien huppé près du théâtre. Vous vous rendez sur place après avoir revêtu vos habits du dimanche.</p><p>Devant La Bella Luna se dresse un homme vêtu d'un costume à rayures qui vous jauge des pieds à la tête alors que vous approchez. « Amusez-vous bien » lance-t-il avec un rictus tout en vous ouvrant la porte du restaurant.</p>"
   },
   "setup": {
-    "gatherSets": "Gather all cards from the following encounter sets: *The House Always Wins*, *Bad Luck*, *Naomi’s Crew*, *Rats*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-house-always-wins.png' /><img src='{setImgPath}/bad-luck.png' /><img src='{setImgPath}/naomis-crew.png' /><img src='{setImgPath}/rats.png' /></section>",
-    "setAsideEncounterSets": "Set the *Hideous Abominations* and *Striking Fear* encounter sets aside, out of play. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
-    "placeLocations": "Put the Clover Club Lounge, Clover Club Bar, Clover Club Cardroom, and La Bella Luna locations into play. Each investigator begins play in La Bella Luna.",
-    "placeCloverClubPitBoss": "Put Clover Club Pit Boss into play in the Clover Club Lounge.",
-    "setAside": "Set the following cards aside, out of play: Darkened Hall, Peter Clover, Dr. Francis Morgan, and each copy of Back Hall Doorway.",
-    "note": "<p class='basic'>_Note_: At the start of this scenario, agenda 1a grants each _Criminal_ enemy the aloof keyword, which stops those enemies from automatically engaging you. At some point, those enemies may lose the aloof keyword. Remember that enemies who are no longer aloof will automatically engage investigators at their location, as per normal.</p>"
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : *La Banque Gagne Toujours*, *Malchance*, *La Bande de Naomi* et *Les Rats*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/the-house-always-wins.png' /><img src='{setImgPath}/bad-luck.png' /><img src='{setImgPath}/naomis-crew.png' /><img src='{setImgPath}/rats.png' /></section>",
+    "setAsideEncounterSets": "Mettez de côté les sets de rencontre *Hideuses Abominations* et *Répandre la Peur*, hors jeu. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "placeLocations": "Mettez en jeu les lieux Lounge du Club du Trèfle, Bar du Club du Trèfle, Salle de Jeu du Club du Trèfle et La Bella Luna. Chaque investigateur commence la partie dans La Bella Luna.",
+    "placeCloverClubPitBoss": "Mettez en jeu le Chef de Salle du Club du Trèfle dans le Lounge du Club du Trèfle.",
+    "setAside": "Mettez de côté les cartes suivantes, hors jeu : Couloir Obscur, Peter Clover, Dr Francis Morgan et chaque exemplaire de Porte de Derrière.",
+    "note": "<p class='basic'>_Note_: Au début de ce scénario, l'intrigue 1a donne à chaque ennemi _Criminel_ le mot-clé Distant, qui empêche ces ennemis de vous engager automatiquement. Passé un certain point, ces ennemis peuvent perdre le mot-clé Distant. Souvenez-vous que les ennemis qui ne sont plus Distants engageront alors automatiquement les investigateurs dans leur lieu, de la manière habituelle.</p>"
   },
   "resolutions": {
     "xp": {
-      "resolution1": "Reflects on the night’s events.",
-      "resolution4": "Reflects on the night’s events."
+      "resolution1": "Fait le point sur les événements de la nuit.",
+      "resolution4": "Fait le point sur les événements de la nuit."
     },
     "noResolution": {
-      "title": "No Resolution",
-      "body": "<div class='resolution'><p class='basic'>_If no resolution was reached (each investigator resigned before Act 3 or was defeated)_: You barely made it out of the club alive. Go to _Resolution 1._</p></div>"
+      "title": "Pas de conclusion",
+      "body": "<div class='resolution'><p class='basic'>_Si aucune conclusion n'est atteinte (tous les investigateurs ont abandonné avant l'acte 3 ou été vaincus)_ : vous parvenez tout juste à sortir du club en vie. Lisez la _Conclusion 1_.</p></div>"
     },
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1_: You flee to the end of the block and pause to recover. Before you can catch your breath, the ground shakes with a thunderous crash. People emerge from their homes and storefronts to see what the ruckus is, and a crowd forms on the street. You head to the front of the crowd and are horrified to see the building from which you fled just minutes earlier reduced to rubble. There is no sign of Dr. Morgan anywhere.</p><ul><li>In your Campaign Log, record that *the O’Bannion gang has a bone to pick with the investigators.*</li><li>In your Campaign Log, record that *Dr. Francis Morgan was kidnapped.*</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 1 experience as he or she reflects on the night’s events.<ul><li>_Experience_: {xp}</li></ul></li><li>If this is the first scenario of the campaign, proceed to Scenario I–A: Extracurricular Activity. Otherwise, proceed to Interlude I: Armitage’s Fate.</li></ul></div>"
+      "title": "Conclusion 1",
+      "body": "<div class='resolution'><p>_Conclusion 1_ : Vous détalez jusqu'au bout de la rue et faites une pause afin de récupérer. Avant que vous ayez pu reprendre votre souffle, le sol se met à trembler dans un vacarme infernal. Les gens sortent de leurs maisons et des boutiques pour voir ce qui cause tout ce grabuge, et une foule se forme dans la rue. Vous vous précipitez en tête de l'attroupement et constatez avec horreur que le bâtiment dont vous venez de fuir n'est plus qu'un amas de décombres. Il n'y a aucun signe du Dr Morgan nulle part.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *le gang O'Bannion a maille à partir avec les investigateurs*.</li><li>Dans votre Carnet de Campagne, indiquez que *le Dr Francis Morgan a été enlevé*.</li><li>Si l'un des joueurs a « triché », ajoutez 1 pion Chaos {'{'}elderThing{'}'} à la réserve du Chaos pour le reste de la campagne.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire. Chaque investigateur reçoit également 1 point d'expérience tandis qu'il fait le point sur les événements de la nuit.<ul><li>_Expérience_ : {xp}</li></ul></li><li>S'il s'agit du premier scénario de la campagne, passez au _Scénario I–A : Activité Extrascolaire_. Sinon passez à l'_Interlude I : Le Sort d'Armitage_.</li></ul></div>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<div class='resolution'><p>_Resolution 2_: “What in the world…?” Dr. Morgan finally breaks out of his daze as you make your way to safety. You ask him what he remembers, and he sputters and shakes his head. “It’s all a haze,” he explains, visibly exhausted. “I was having the run of my life! Perhaps I had one too many shots. But, those creatures—I haven’t seen anything like that since…” He trails off, and you can tell that his mind is racing. His eyes widen with realization and his face pales. “I may not be in the best shape, but I’ll help with your investigation. Whatever it takes.”</p><ul><li>In your Campaign Log, record that *the O’Bannion gang has a bone to pick with the investigators*.</li><li>In your Campaign Log, record that *the investigators rescued Dr. Francis Morgan*. Any one investigator may choose to add Dr. Francis Morgan to his or her deck. This card does not count toward that investigator’s deck size.</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Proceed to Scenario I–A: Extracurricular Activity.</li></ul></div>"
+      "title": "Conclusion 2",
+      "body": "<div class='resolution'><p>_Conclusion 2_ : « Que diable… ? » Le Dr Morgan sort finalement de sa torpeur tandis que vous l'emmenez en sécurité. Vous lui demandez ce dont il se souvient, et il se met à bafouiller tout en secouant la tête. « Tout est si brumeux. » explique-t-il, visiblement exténué. « La chance me souriait comme jamais ce soir ! J'ai peut-être bu un coup de trop. Mais, ces créatures – je n'avais rien vu de tel depuis… » Il s'interrompt et paraît réfléchir à vive allure. Ses yeux s'écarquillent et son visage pâlit à mesure qu'il réalise ce qui vient de se passer. « Je ne suis peut-être pas au meilleur de ma forme, mais je vais vous aider dans vos recherches. Quoi qu'il en coûte. »</p><ul><li>Dans votre Carnet de Campagne, indiquez que *le gang O'Bannion a maille à partir avec les investigateurs*.</li><li>Dans votre Carnet de Campagne, indiquez que *les investigateurs ont secouru le Dr Francis Morgan*. N'importe quel investigateur a le droit d'ajouter le Dr Francis Morgan à son deck. Cette carte ne compte pas dans la Taille du Deck de l'investigateur.</li><li>Si l'un des joueurs a « triché », ajoutez 1 pion Chaos {'{'}elderThing{'}'} à la réserve du Chaos pour le reste de la campagne.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li><li>Passez au _Scénario I–A : Activité Extrascolaire_.</li></ul></div>"
     },
     "resolution3": {
-      "title": "Resolution 3",
-      "body": "<div class='resolution'><p>_Resolution 3_: Although you were unable to find Dr. Morgan in the club, the man you rescued is grateful for your help. He introduces himself as Peter Clover, the owner of the establishment you’d just left. Despite the situation, he maintains an air of quiet professionalism. As you make your way towards the street, a well-polished Chrysler B-70 rolls up to you, and a gorgeous woman with long brown hair and narrow eyes exits. She is flanked by dangerous-looking men who slip their hands under their suit jackets when they see you. “Peter,” she says with a sigh of relief, “Good, you’re okay. I heard there was trouble?” She turns and glares at you with deadly eyes. “Who are they?”</p><p>Mr. Clover dusts off his vest, unworried. “Naomi, my dear, these are friends of mine. They…” he clears his throat. “They escorted me off the premises,” he explains after a short pause. “They have earned our gratitude.” The woman crosses her arms and takes a moment to size you up before giving you a smirk.</p><p>“Very well then. I must thank you for taking care of Peter. Run along now; we’ll handle things from here.” She nods to the goons flanking her and they walk past you toward the club’s rear entrance, pulling firearms out from underneath their coats. You’re not sure what ‘handling things’ means, but you’re pretty sure you don’t want to be here when the gunfire starts. You thank Naomi and Peter, and head off.</p><ul><li>In your Campaign Log, record that *Naomi has the investigators’ backs*.</li><li>In your Campaign Log, record that *Dr. Francis Morgan was kidnapped*.</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Proceed to Interlude I: Armitage’s Fate.</li></ul></div>"
+      "title": "Conclusion 3",
+      "body": "<div class='resolution'><p>_Conclusion 3_ : Bien que vous n'ayez pas été en mesure de trouver le Dr Morgan dans le club, l'homme que vous avez secouru vous remercie pour votre aide. Il se présente comme étant Peter Clover, le propriétaire de l'établissement que vous venez de quitter. Malgré la situation, il conserve une attitude calme et professionnelle. Alors que vous avancez dans la rue, une Chrysler B-70 s'arrête à votre hauteur. Une femme somptueuse aux longs cheveux bruns en sort, les yeux plissés. Elle est flanquée de deux hommes à l'air dangereux qui glissent la main sous leur veste en vous apercevant. « Peter, » dit-elle visiblement soulagée, « heureusement tu n'as rien. J'ai entendu dire qu'il y avait des problèmes ? » Elle se tourne vers vous et vous fixe avec un regard assassin. « Qui sont ces personnes ? »</p><p>M. Clover époussette sa veste, l'air insouciant. « Naomi, très chère, ce sont des amis. » Il s'éclaircit la voix. « Ils m'ont sorti de là. » explique-t-il après une courte pause. « Ils ont toute ma gratitude. » La femme croise les bras et prend un moment pour vous examiner de la tête aux pieds avant d'esquisser un rictus.</p><p>« Soit. Je dois vous remercier d'avoir pris soin de Peter. Partez, nous prenons les choses en main à partir de maintenant. ». Elle adresse un signe de tête aux deux gorilles qui se dirigent alors vers l'entrée du club en sortant une arme de sous leur veste. Vous n'êtes pas certain de ce qu'ils entendent par « prendre les choses en main », mais vous êtes presque sûr que ne voulez pas être là quand les coups de feu retentiront. Vous remerciez Naomi et Peter avant de vous éloigner.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *Naomi surveille les arrières des investigateurs*.</li><li>Dans votre Carnet de Campagne, indiquez que *le Dr Francis Morgan a été enlevé*.</li><li>Si l'un des joueurs a « triché », ajoutez 1 pion Chaos {'{'}elderThing{'}'} à la réserve du Chaos pour le reste de la campagne.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li><li>Passez à l'_Interlude I : Le Sort d'Armitage_.</li></ul></div>"
     },
     "resolution4": {
-      "title": "Resolution 4",
-      "body": "<div class='resolution'>_Resolution 4_: You are pulled from the debris by several firefighters, one of whom exclaims, “We’ve got a live one!” A few of them patch you up, and the cops ask you what happened. You’re certain they wouldn’t believe your story about horrible monstrosities demolishing the building from within. Unsure of what to say, you give a vague statement about not remembering much. “We’re bringing you to St. Mary’s,” one of the nurses says, pointing to a nearby ambulance. Knowing now how dire the situation is, you slip away while she is distracted by something else in the rubble…</p><ul><li>In your Campaign Log, record that *the O’Bannion gang has a bone to pick with the investigators*.</li><Li>In your Campaign Log, record that *Dr. Francis Morgan was kidnapped*.</li><li>If any player “cheated,” add 1 {'{'}elderThing{'}'} chaos token to the chaos bag for the remainder of the campaign.</li><li>Each investigator suffers 1 physical trauma.</li><li>In your Campaign Log, record that the investigators were unconscious for several hours.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 1 experience as he or she reflects on the night’s events.<ul><li>_Experience_: {xp}</li></ul></li><li>If this is the first scenario of the campaign, proceed to Scenario I–A: Extracurricular Activity. Otherwise, proceed to Interlude I: Armitage’s Fate.</li></ul></div>"
+      "title": "Conclusion 4",
+      "body": "<div class='resolution'>_Conclusion 4_ : Vous êtes extirpé des décombres par les pompiers, et l'un d'eux s'exclame « On en a un en vie ici ! » Plusieurs d'entre eux vous aident à vous remettre debout, et les policiers vous interrogent sur ce qui s'est passé. Vous avez la certitude qu'ils ne croiront pas votre histoire d'horribles monstres démolissant le bâtiment de l'intérieur. Ne sachant que dire, vous déclarez vaguement ne vous souvenir de presque rien. « Nous allons vous emmener à St. Mary » dit l'une des infirmières en pointant du doigt une ambulance toute proche. Sachant désormais à quel point la situation est grave, vous vous éclipsez pendant qu'elle s'occupe d'un autre rescapé…</p><ul><li>Dans votre Carnet de Campagne, indiquez que *le gang O'Bannion a maille à partir avec les investigateurs*.</li><Li>Dans votre Carnet de Campagne, indiquez que *le Dr Francis Morgan a été enlevé*.</li><li>Dans votre Carnet de Campagne, indiquez que *les investigateurs ont été inconscients pendant plusieurs heures*.</li><li>Si l'un des joueurs a « triché », ajoutez 1 pion Chaos {'{'}elderThing{'}'} à la réserve du Chaos pour le reste de la campagne.</li><li>Chaque investigateur subit 1 traumatisme physique.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire. Chaque investigateur reçoit également 1 point d'expérience tandis qu'il fait le point sur les événements de la nuit.<ul><li>_Expérience_ : {xp}</li></ul></li><li>S'il s'agit du premier scénario de la campagne, passez au _Scénario I–A : Activité Extrascolaire_. Sinon passez à l'_Interlude I : Le Sort d'Armitage_.</li></ul></div>"
     }
   },
   "label": {
     "skull": {
-      "spend": "Spend 1 resource to treat this token as a 0, instead. | Spend {count} resources to treat this token as a 0, instead.",
-      "doNotSpend": "Do not spend resources"
+      "spend": "Dépensez 1 ressource pour traiter ce pion comme étant un « 0 » à la place. | Dépensez {count} ressources pour traiter ce pion comme étant un « 0 » à la place.",
+      "doNotSpend": "Ne pas dépenser"
     },
-    "cheated": "Remember that you have \"cheated.\"",
+    "cheated": "Souvenez-vous que vous avez « triché »",
     "raiseTheStakes": {
-      "place": "Put Raise the Stakes into play in your threat area"
+      "place": "Mettre en jeu Augmenter la Mise dans votre zone de menace."
     }
   },
   "tooltips": {
     "laBellaLuna": {
-      "resign": "This was a bust"
+      "resign": "C'est un fiasco."
     }
   }
 }

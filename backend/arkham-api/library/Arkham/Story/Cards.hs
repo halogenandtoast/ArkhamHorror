@@ -6,6 +6,13 @@ import Arkham.Card.CardType
 import Arkham.EncounterSet
 import Arkham.Name
 import Arkham.Prelude
+import Arkham.Trait
+
+addTrait :: Trait -> CardDef -> CardDef
+addTrait trait def =
+  def
+    { cdCardTraits = insertSet trait (cdCardTraits def)
+    }
 
 doubleSided :: CardDef -> CardDef
 doubleSided def =
@@ -507,31 +514,31 @@ realityAcid =
       }
 
 theFoundationAllied :: CardDef
-theFoundationAllied = doubleSided $ story "71015" "The Foundation [guardian]" TheMidwinterGala
+theFoundationAllied = doubleSided $ addTrait Allied $ story "71015" "The Foundation [guardian]" TheMidwinterGala
 
 theFoundationRival :: CardDef
-theFoundationRival = doubleSided $ story "71015b" "The Foundation [guardian]" TheMidwinterGala
+theFoundationRival = doubleSided $ addTrait Rival $ story "71015b" "The Foundation [guardian]" TheMidwinterGala
 
 miskatonicUniversityAllied :: CardDef
-miskatonicUniversityAllied = doubleSided $ story "71021" "Miskatonic University [seeker]" TheMidwinterGala
+miskatonicUniversityAllied = doubleSided $ addTrait Allied $ story "71021" "Miskatonic University [seeker]" TheMidwinterGala
 
 miskatonicUniversityRival :: CardDef
-miskatonicUniversityRival = doubleSided $ story "71021b" "Miskatonic University [seeker]" TheMidwinterGala
+miskatonicUniversityRival = doubleSided $ addTrait Rival $ story "71021b" "Miskatonic University [seeker]" TheMidwinterGala
 
 theSyndicateAllied :: CardDef
-theSyndicateAllied = doubleSided $ story "71027" "The Syndicate [rogue]" TheMidwinterGala
+theSyndicateAllied = doubleSided $ addTrait Allied $ story "71027" "The Syndicate [rogue]" TheMidwinterGala
 
 theSyndicateRival :: CardDef
-theSyndicateRival = doubleSided $ story "71027b" "The Syndicate [rogue]" TheMidwinterGala
+theSyndicateRival = doubleSided $ addTrait Rival $ story "71027b" "The Syndicate [rogue]" TheMidwinterGala
 
 silverTwilightLodgeAllied :: CardDef
-silverTwilightLodgeAllied = doubleSided $ story "71033" "Silver Twilight Lodge [mystic]" TheMidwinterGala
+silverTwilightLodgeAllied = doubleSided $ addTrait Allied $ story "71033" "Silver Twilight Lodge [mystic]" TheMidwinterGala
 
 silverTwilightLodgeRival :: CardDef
-silverTwilightLodgeRival = doubleSided $ story "71033b" "Silver Twilight Lodge [mystic]" TheMidwinterGala
+silverTwilightLodgeRival = doubleSided $ addTrait Rival $ story "71033b" "Silver Twilight Lodge [mystic]" TheMidwinterGala
 
 localsOfKingsportAllied :: CardDef
-localsOfKingsportAllied = doubleSided $ story "71039" "Locals of Kingsport [survivor]" TheMidwinterGala
+localsOfKingsportAllied = doubleSided $ addTrait Allied $ story "71039" "Locals of Kingsport [survivor]" TheMidwinterGala
 
 localsOfKingsportRival :: CardDef
-localsOfKingsportRival = doubleSided $ story "71039b" "Locals of Kingsport [survivor]" TheMidwinterGala
+localsOfKingsportRival = doubleSided $ addTrait Rival $ story "71039b" "Locals of Kingsport [survivor]" TheMidwinterGala

@@ -13,6 +13,7 @@ newtype EnemyTrait = EnemyTrait {unEnemyTrait :: Trait}
 data Trait
   = Abomination
   | Agency
+  | Allied
   | Ally
   | Altered
   | Ancient

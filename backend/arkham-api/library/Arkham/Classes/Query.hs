@@ -104,7 +104,7 @@ selectJust
   -> m (QueryElement a)
 selectJust matcher = fromJustNote errorNote <$> selectOne matcher
  where
-  errorNote = "Could not find any matches for: " <> show matcher
+  errorNote = "Could not find any matches for: " <> show matcher <> "\n" <> prettyCallStack callStack
 
 selectJustField
   :: ( HasCallStack

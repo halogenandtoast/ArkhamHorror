@@ -620,8 +620,12 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.TargetExists matcher -> do
     selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.IsReturnTo -> do
-    campaign <- selectJust Matcher.TheCampaign
-    pure $ "5" `T.isPrefixOf` coerce campaign
+    mcampaign <- selectOne Matcher.TheCampaign
+    case mcampaign of
+      Nothing -> selectOne Matcher.TheScenario >>= \case
+        Nothing -> pure False
+        Just scenario -> pure $ "5" `T.isPrefixOf` coerce scenario
+      Just campaign -> pure $ "5" `T.isPrefixOf` coerce campaign
   Criteria.DifferentAssetsExist matcher1 matcher2 -> do
     m1 <- select (Matcher.replaceYouMatcher iid matcher1)
     m2 <- select (Matcher.replaceYouMatcher iid matcher2)

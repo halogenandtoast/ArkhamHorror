@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.HeliosTelescopeGateToTheCosmos (heliosTelescopeGateTo
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted hiding (InvestigatorDefeated)
+import Arkham.Asset.Import.Lifted hiding (InvestigatorEliminated)
 import Arkham.Asset.Uses
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -20,10 +20,13 @@ instance HasAbilities HeliosTelescopeGateToTheCosmos where
         $ actionAbilityWithCost (assetUseCost a Shard 1)
     , playerLimit PerRound
         $ fastAbility a 2 Free (ControlsThis <> exists (colocatedWithMatch You <> not_ You))
-    , restricted a 3 (exists $ not_ You)
-        $ SilentForcedAbility
-        $ InvestigatorDefeated #when ByAny (ControlsAsset $ be a)
     ]
+      <> [ groupLimit PerTestOrAbility
+             $ mkAbility a 3
+             $ SilentForcedAbility
+             $ InvestigatorEliminated #when (InvestigatorWithId controller)
+         | controller <- maybeToList a.controller
+         ]
 
 instance RunMessage HeliosTelescopeGateToTheCosmos where
   runMessage msg a@(HeliosTelescopeGateToTheCosmos attrs) = runQueueT $ case msg of
@@ -42,7 +45,7 @@ instance RunMessage HeliosTelescopeGateToTheCosmos where
       others <- select $ colocatedWith iid <> not_ (InvestigatorWithId iid)
       chooseOrRunOneM iid $ targets others (`takeControlOfAsset` attrs)
       pure a
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
+    UseThisAbility iid (isSource attrs -> True) 3 -> do
       for_ attrs.controller \controller -> do
         others <- select $ not_ (be controller) <> NearestToLocation (locationWithInvestigator controller)
         chooseOrRunOneM iid $ targets others (`takeControlOfAsset` attrs)

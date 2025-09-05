@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.StaffOfTheSerpentRelicOfThePast (staffOfTheSerpentRel
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted hiding (InvestigatorDefeated)
+import Arkham.Asset.Import.Lifted hiding (InvestigatorEliminated)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Message.Lifted.Choose
@@ -24,10 +24,13 @@ instance HasAbilities StaffOfTheSerpentRelicOfThePast where
     [ controlled a 1 (ActExists $ ActWithStep 3) fightAction_
     , playerLimit PerRound
         $ fastAbility a 2 Free (ControlsThis <> exists (colocatedWithMatch You <> not_ You))
-    , restricted a 3 (exists $ not_ You)
-        $ SilentForcedAbility
-        $ InvestigatorDefeated #when ByAny (ControlsAsset $ be a)
     ]
+      <> [ groupLimit PerTestOrAbility
+             $ mkAbility a 3
+             $ SilentForcedAbility
+             $ InvestigatorEliminated #when (InvestigatorWithId controller)
+         | controller <- maybeToList a.controller
+         ]
 
 instance RunMessage StaffOfTheSerpentRelicOfThePast where
   runMessage msg a@(StaffOfTheSerpentRelicOfThePast attrs) = runQueueT $ case msg of
@@ -40,7 +43,7 @@ instance RunMessage StaffOfTheSerpentRelicOfThePast where
       others <- select $ colocatedWith iid <> not_ (InvestigatorWithId iid)
       chooseOrRunOneM iid $ targets others (`takeControlOfAsset` attrs)
       pure a
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
+    UseThisAbility iid (isSource attrs -> True) 3 -> do
       for_ attrs.controller \controller -> do
         others <- select $ not_ (be controller) <> NearestToLocation (locationWithInvestigator controller)
         chooseOrRunOneM iid $ targets others (`takeControlOfAsset` attrs)

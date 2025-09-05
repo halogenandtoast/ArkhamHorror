@@ -532,15 +532,9 @@ async function update(state: Arkham.Game) { game.value = state }
 
 function switchInvestigator (newPlayerId: string) { playerId.value = newPlayerId }
 function debugExport () {
-  fetch(new Request(`${api.defaults.baseURL}/arkham/games/${props.gameId}/export`))
+  api.get(`arkham/games/${props.gameId}/export`, { responseType: 'blob' })
   .then(resp => {
-    if (!resp.ok) {
-      throw new Error(`HTTP error! status: ${resp.status}`);
-    }
-    return resp.blob()
-  })
-  .then(blob => {
-    const url = window.URL.createObjectURL(blob)
+    const url = window.URL.createObjectURL(resp.data)
     const a = document.createElement('a')
     a.style.display = 'none'
     a.href = url

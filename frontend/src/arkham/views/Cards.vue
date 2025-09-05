@@ -459,8 +459,6 @@ const toggleIncludeEncounter = () => {
   overflow-y: auto;
 }
 .card {
-  width: calc(100% - 20px);
-  max-width: 250px;
   margin: 10px;
   border-radius: 10px;
 }
@@ -468,11 +466,12 @@ const toggleIncludeEncounter = () => {
 .cards {
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(250px, auto));
+  grid-template-columns: repeat(auto-fit,minmax(250px, 1fr));
   padding: 10px;
 
-  a {
-    max-width: fit-content;
+  &:deep(.card-container) {
+    width: unset;
+    max-width: unset;
   }
 }
 

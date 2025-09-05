@@ -540,6 +540,7 @@ h2.title {
 
 .router-container {
   position: relative;
+  overflow: auto;
 }
 
 footer {

@@ -19,7 +19,7 @@ instance HasAbilities HighRulersBastion where
   getAbilities (HighRulersBastion a) =
     extendRevealed
       a
-      [ restricted a 1 (thisExists a LocationNotAtClueLimit) $ forced $ RoundEnds #when
+      [ restricted a 1 (thisExists a LocationWithoutClues) $ forced $ RoundEnds #when
       , limitedAbility (MaxPer Cards.highRulersBastion PerGame 1)
           $ fastAbility a 2 Free
           $ Here

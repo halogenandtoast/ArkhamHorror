@@ -87,7 +87,7 @@ COPY ./backend/stack.yaml /opt/arkham/src/backend/stack.yaml
 COPY ./backend/arkham-api/package.yaml /opt/arkham/src/backend/arkham-api/package.yaml
 COPY ./backend/validate/package.yaml /opt/arkham/src/backend/validate/package.yaml
 COPY ./backend/cards-discover/package.yaml /opt/arkham/src/backend/cards-discover/package.yaml
-RUN stack build --system-ghc --dependencies-only --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS'
+RUN stack build --system-ghc --dependencies-only --no-terminal --ghc-options '-fno-write-ide-info -j4 +RTS -A128m -n2m -RTS'
 
 FROM dependencies AS api
 
@@ -99,7 +99,7 @@ COPY ./backend /opt/arkham/src/backend
 
 WORKDIR /opt/arkham/src/backend/cards-discover
 RUN --mount=type=cache,id=stack-discover-${CACHE_ID},target=/opt/arkham/src/backend/cards-discover/.stack-work \
-    stack build --system-ghc --no-terminal --ghc-options '-j4 +RTS -A128m -n2m -RTS' cards-discover
+    stack build --system-ghc --no-terminal --ghc-options '-fno-write-ide-info -j4 +RTS -A128m -n2m -RTS' cards-discover
 
 WORKDIR /opt/arkham/src/backend/arkham-api
 RUN --mount=type=cache,id=stack-root-${CACHE_ID},target=/opt/arkham/src/backend/.stack-work \

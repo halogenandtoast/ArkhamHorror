@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { watch, onMounted, onBeforeUnmount, computed, ref } from 'vue';
-import { type Game } from '@/arkham/types/Game';
+import { onMounted, onBeforeUnmount, computed, ref } from 'vue'
+import type { Game } from '@/arkham/types/Game'
 
 export interface Props {
   game: Game
@@ -8,186 +8,142 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
-
-const locations = computed(() => Object.values(props.game.locations).
-  filter((a) => a.inFrontOf === null && a.label !== "cosmos"))
-
+const locations = computed(() =>
+  Object.values(props.game.locations).filter(a => a.inFrontOf === null && a.label !== 'cosmos')
+)
+const sortByDataId = (a: HTMLElement, b: HTMLElement) => {
+  const aId = a.dataset.id, bId = b.dataset.id
+  if (!aId || !bId) return 0
+  return aId < bId ? -1 : aId > bId ? 1 : 0
+}
 const toConnection = (div1: HTMLElement, div2: HTMLElement): string | undefined => {
-  const [leftDiv, rightDiv] = [div1, div2].sort((a, b) => {
-    const { id: div1Id } = a.dataset
-    const { id: div2Id } = b.dataset
-
-    if(!div1Id || !div2Id) {
-      return 0
-    }
-
-    if (div1Id < div2Id) {
-      return -1;
-    }
-    if (div1Id > div2Id) {
-      return 1;
-    }
-
-    // names must be equal
-    return 0;
-  })
-
+  const [leftDiv, rightDiv] = [div1, div2].sort(sortByDataId)
   const { id: leftDivId } = leftDiv.dataset
   const { id: rightDivId } = rightDiv.dataset
-
-  if (leftDivId && rightDivId) {
-    return leftDivId + ":" + rightDivId
-  }
+  return leftDivId && rightDivId ? `${leftDivId}:${rightDivId}` : undefined
 }
 
-const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
-  const [leftDiv, rightDiv] = [div1, div2].sort((a, b) => {
-    const { id: div1Id } = a.dataset
-    const { id: div2Id } = b.dataset
+let svgEl: SVGSVGElement | null = null
+let lineProto: SVGLineElement | null = null
 
-    if (!div1Id || !div2Id) return 0
-    if (div1Id < div2Id) return -1
-    if (div1Id > div2Id) return 1
+const EPS = 0.5
+const close = (a: number, b: number) => Math.abs(a - b) < EPS
+const linesByConn = new Map<string, SVGLineElement>()
 
-    // names must be equal
-    return 0;
-  })
+function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement) {
+  const [leftDiv, rightDiv] = [div1, div2].sort(sortByDataId)
+  const leftDivId = leftDiv.dataset.id
+  const rightDivId = rightDiv.dataset.id
+  if (!leftDivId || !rightDivId || !svgEl || !lineProto) return
 
-  const closeEnough = (a: string, b: number) => {
-    return diff(a, b) < 0.5
+  const connection = `${leftDivId}:${rightDivId}`
+  const svgRect = svgEl.getBoundingClientRect()
+  const lRect = leftDiv.getBoundingClientRect()
+  const rRect = rightDiv.getBoundingClientRect()
+
+  const x1 = (lRect.left - svgRect.left) + (lRect.width / 2)
+  const y1 = (lRect.top - svgRect.top) + (lRect.height / 2)
+  const x2 = (rRect.left - svgRect.left) + (rRect.width / 2)
+  const y2 = (rRect.top - svgRect.top) + (rRect.height / 2)
+
+  const investigator = Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
+  const activeLine =
+    !!investigator &&
+    (
+      (leftDivId === investigator.location && investigator.connectedLocations.includes(rightDivId)) ||
+      (rightDivId === investigator.location && investigator.connectedLocations.includes(leftDivId))
+    )
+
+  let line = linesByConn.get(connection)
+  if (!line) {
+    line = lineProto.cloneNode(true) as SVGLineElement
+    line.classList.remove('original')
+    line.classList.add('connection')
+    line.dataset.connection = connection
+    svgEl.appendChild(line)
+    linesByConn.set(connection, line)
   }
 
-  const diff = (a: string, b: number) => {
-    const x = parseFloat(a)
-    const y = b
+  const ex1 = Number(line.getAttribute('x1') ?? NaN)
+  const ey1 = Number(line.getAttribute('y1') ?? NaN)
+  const ex2 = Number(line.getAttribute('x2') ?? NaN)
+  const ey2 = Number(line.getAttribute('y2') ?? NaN)
+  if (!close(ex1, x1)) line.setAttribute('x1', String(x1))
+  if (!close(ey1, y1)) line.setAttribute('y1', String(y1))
+  if (!close(ex2, x2)) line.setAttribute('x2', String(x2))
+  if (!close(ey2, y2)) line.setAttribute('y2', String(y2))
 
-    return Math.abs(x - y)
-  }
-
-  const { id: leftDivId } = leftDiv.dataset
-  const { id: rightDivId } = rightDiv.dataset
-
-  if (!leftDivId || !rightDivId) return
-
-  const thisEl = document.getElementById("svg")
-  if(!thisEl) return
-  const line = document.querySelector<HTMLElement>(".line")
-  const parentNode = line?.parentNode
-
-  if (!line || !parentNode) return
-
-  const connection = leftDivId + ":" + rightDivId
-  const {left: bodyLeft, top: bodyTop} = thisEl.getBoundingClientRect()
-  const {left: leftDivLeft, top: leftDivTop, right: leftDivRight, bottom: leftDivBottom } = leftDiv.getBoundingClientRect();
-  const {left: rightDivLeft, top: rightDivTop, right: rightDivRight, bottom: rightDivBottom } = rightDiv.getBoundingClientRect();
-  const leftDivWidth = leftDivRight - leftDivLeft;
-  const rightDivWidth = rightDivRight - rightDivLeft;
-  const leftDivHeight = leftDivTop - leftDivBottom;
-  const rightDivHeight = rightDivTop - rightDivBottom;
-  const x1 = (leftDivLeft - bodyLeft) + (leftDivWidth/2)
-  const y1 = (leftDivTop - bodyTop) - (leftDivHeight/2)
-  const x2 = (rightDivLeft - bodyLeft) + (rightDivWidth/2)
-  const y2 = (rightDivTop - bodyTop) - (rightDivHeight/2)
-  const existingNode = document.querySelector(`[data-connection="${connection}"]`)
-
-
-  const isNodeClose = (node: Element) => {
-    const ex1 = node.getAttribute("x1") || "-1"
-    const ey1 = node.getAttribute("y1") || "-1"
-    const ex2 = node.getAttribute("x2") || "-1"
-    const ey2 = node.getAttribute("y2") || "-1"
-
-    return closeEnough(ex1, x1) && closeEnough(ey1, y1) && closeEnough(ex2, x2) && closeEnough(ey2, y2)
-  }
-
-  const close = existingNode ? isNodeClose(existingNode) : false
-  const investigator = Object.values(props.game.investigators).find(i => i.playerId == props.playerId)
-  if (!investigator) return
-  const { connectedLocations } = investigator
-  const atLeft = leftDivId == investigator.location && connectedLocations.includes(rightDivId)
-  const atRight = rightDivId == investigator.location && connectedLocations.includes(leftDivId)
-  const activeLine = atLeft || atRight
-
-  if (close) {
-    if (activeLine) {
-      existingNode?.classList.add("active")
-    }
-  } else {
-    if (existingNode && !close) {
-      const ex1 = existingNode.getAttribute("x1") || "-1"
-      const ey1 = existingNode.getAttribute("y1") || "-1"
-      const ex2 = existingNode.getAttribute("x2") || "-1"
-      const ey2 = existingNode.getAttribute("y2") || "-1"
-
-      if (closeEnough(ex1, x1) && closeEnough(ey1, y1) && closeEnough(ex2, x2) && closeEnough(ey2, y2)) {
-        return
-      }
-
-      parentNode.removeChild(existingNode);
-    }
-
-    const node = line.cloneNode(true) as HTMLElement
-    node.dataset.connection = connection
-    node.classList.remove("original")
-    node.classList.add("connection")
-
-    if (activeLine) node.classList.add("active")
-
-    parentNode.insertBefore(node, line.nextSibling)
-
-    node.setAttribute('x1',x1.toString())
-    node.setAttribute('y1',y1.toString())
-    node.setAttribute('x2',x2.toString())
-    node.setAttribute('y2',y2.toString())
-  }
+  if (activeLine) line.classList.add('active')
+  else line.classList.remove('active')
 }
 
 function handleConnections() {
-  let activeConnections = [] as string[]
-  for(const location of locations.value) {
-    const { id, connectedLocations } = location
-    const connections = typeof connectedLocations == "object"
-      ? Object.values(connectedLocations)
-      : connectedLocations
+  const svg = svgEl
+  if (!svg) return
 
-    connections.forEach((connection) => {
-      const start = document.querySelector(`[data-id="${id}"]`) as HTMLElement
-      const end = document.querySelector(`[data-id="${connection}"]`) as HTMLElement
-      if (!start || !end) return
+  const live = new Set<string>()
+
+  for (const location of locations.value) {
+    const { id, connectedLocations } = location
+    const connections = Array.isArray(connectedLocations)
+      ? connectedLocations
+      : Object.values(connectedLocations)
+
+    const start = document.querySelector<HTMLElement>(`[data-id="${id}"]`)
+    if (!start) continue
+
+    for (const dst of connections) {
+      const end = document.querySelector<HTMLElement>(`[data-id="${dst}"]`)
+      if (!end) continue
 
       const conn = toConnection(start, end)
-      if (!conn) return
-      if (location.modifiers.some((m) => m.type.tag == "DoNotDrawConnection" && conn == `${m.type.contents[0]}:${m.type.contents[1]}`)) return
+      if (!conn) continue
 
-      activeConnections.push(conn)
-      makeLine(start, end)
-    })
-  }
+      if (location.modifiers?.some(m =>
+        m.type?.tag === 'DoNotDrawConnection' &&
+        conn === `${m.type.contents?.[0]}:${m.type.contents?.[1]}`
+      )) continue
 
-  const rendered = document.querySelectorAll(".connection")
-
-  for(const node of rendered) {
-    const connection = (node as HTMLElement).dataset.connection
-    if (!connection) node.parentNode?.removeChild(node)
-
-    if (connection && !activeConnections.includes(connection)) {
-      node.parentNode?.removeChild(node)
+      live.add(conn)
+      makeOrUpdateLine(start, end)
     }
   }
 
+  for (const [conn, el] of linesByConn) {
+    if (!live.has(conn)) {
+      el.remove()
+      linesByConn.delete(conn)
+    }
+  }
 }
 
-const requestId = ref<number | undefined>(undefined)
-const drawHandler = () => {
-  requestId.value = undefined
-  handleConnections()
-  requestId.value = window.requestAnimationFrame(drawHandler);
+const requestId = ref<number | null>(null)
+let lastTime = 0
+const FRAME_MS = 1000 / 30 // 30fps
+
+function tick(ts: number) {
+  requestId.value = null
+  if (ts - lastTime >= FRAME_MS) {
+    lastTime = ts
+    handleConnections()
+  }
+  requestId.value = window.requestAnimationFrame(tick)
 }
 
-onBeforeUnmount(() => { if (requestId.value) window.cancelAnimationFrame(requestId.value) })
-onMounted(() => requestId.value = window.requestAnimationFrame(drawHandler))
+onMounted(() => {
+  svgEl = document.getElementById('svg') as SVGSVGElement | null
+  lineProto = document.getElementById('line') as SVGLineElement | null
+  requestId.value = window.requestAnimationFrame(tick)
+})
 
-watch(locations, () => drawHandler())
+onBeforeUnmount(() => {
+  if (requestId.value !== null) cancelAnimationFrame(requestId.value)
+  requestId.value = null
+  for (const [, el] of linesByConn) el.remove()
+  linesByConn.clear()
+  svgEl = null
+  lineProto = null
+})
 </script>
 
 <template>
@@ -197,7 +153,6 @@ watch(locations, () => drawHandler())
 </template>
 
 <style lang="scss" scoped>
-
 #svg {
   pointer-events: none;
   position: absolute;
@@ -210,13 +165,12 @@ watch(locations, () => drawHandler())
   overflow: visible !important;
 }
 
-#line{
-  stroke-width:6px;
-  /* stroke:#a6b5bb; */
-  stroke:rgba(255,255,255, 0.2);
+#line {
+  stroke-width: 6px;
+  stroke: rgba(255,255,255, 0.2);
 }
 
 .active {
-  stroke:rgba(255,255,255, 0.7) !important;
+  stroke: rgba(255,255,255, 0.7) !important;
 }
 </style>

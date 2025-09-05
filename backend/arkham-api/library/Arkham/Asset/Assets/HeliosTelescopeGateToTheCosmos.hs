@@ -18,7 +18,8 @@ instance HasAbilities HeliosTelescopeGateToTheCosmos where
   getAbilities (HeliosTelescopeGateToTheCosmos a) =
     [ controlled a 1 (exists $ at_ YourLocation <> ExhaustedEnemy <> NonEliteEnemy)
         $ actionAbilityWithCost (assetUseCost a Shard 1)
-    , playerLimit PerRound $ fastAbility a 2 Free (exists $ colocatedWithMatch You <> not_ You)
+    , playerLimit PerRound
+        $ fastAbility a 2 Free (ControlsThis <> exists (colocatedWithMatch You <> not_ You))
     , restricted a 3 (exists $ not_ You)
         $ SilentForcedAbility
         $ InvestigatorDefeated #when ByAny (ControlsAsset $ be a)

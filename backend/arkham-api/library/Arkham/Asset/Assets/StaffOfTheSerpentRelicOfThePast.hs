@@ -22,7 +22,8 @@ instance HasModifiersFor StaffOfTheSerpentRelicOfThePast where
 instance HasAbilities StaffOfTheSerpentRelicOfThePast where
   getAbilities (StaffOfTheSerpentRelicOfThePast a) =
     [ controlled a 1 (ActExists $ ActWithStep 3) fightAction_
-    , playerLimit PerRound $ fastAbility a 2 Free (exists $ colocatedWithMatch You <> not_ You)
+    , playerLimit PerRound
+        $ fastAbility a 2 Free (ControlsThis <> exists (colocatedWithMatch You <> not_ You))
     , restricted a 3 (exists $ not_ You)
         $ SilentForcedAbility
         $ InvestigatorDefeated #when ByAny (ControlsAsset $ be a)

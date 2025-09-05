@@ -41,6 +41,9 @@ instance RunMessage ParallelFates2 where
           labeled "Put back in any order" do
             chooseOneAtATimeM iid do
               targets (onlyPlayerCards cards) $ putCardOnTopOfDeck iid deck
-      drawCardsIfCan iid attrs 1
+
+      chooseOrRunOneM iid do
+        labeled "Do not draw" nothing
+        whenM (can.draw.cards iid) $ labeled "Draw 1 card" $ drawCards iid attrs 1
       pure e
     _ -> ParallelFates2 . (`with` meta) <$> liftRunMessage msg attrs

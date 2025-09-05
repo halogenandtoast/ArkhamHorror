@@ -6,6 +6,7 @@ import { TokenType, Token } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
 import type { Game } from '@/arkham/types/Game';
 import PoolItem from '@/arkham/components/PoolItem.vue';
+import Modifier from '@/arkham/components/Modifier.vue';
 import * as Arkham from '@/arkham/types/Enemy'
 
 const props = defineProps<{
@@ -16,6 +17,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{ close: [] }>()
 const placeTokens = ref(false);
+const setModifiers = ref(false);
 const placeTokenType = ref<Token>("Damage");
 const tokenTypes = Object.values(TokenType);
 
@@ -69,6 +71,24 @@ const hasPool = computed(() => {
   const { sanity, health, } = props.enemy;
   return cardCode.value == 'c07189' || sanity || health
 })
+
+const createModifier = (target: {tag: string, contents: string}, modifier: {tag: string, contents: any}) => 
+  debug.send(props.game.id,
+    { tag: 'CreateWindowModifierEffect'
+    , contents:
+      [ {tag: 'EffectGameWindow' }
+      , { tag: 'EffectModifiers'
+        , contents:
+          [ { source: {tag: 'GameSource'}
+            , type: modifier
+            , activeDuringSetup: false
+            , card: null}
+          ]
+        }
+      , {tag: 'GameSource'}
+      , target
+      ]
+    })
 </script>
 
 <template>
@@ -107,6 +127,11 @@ const hasPool = computed(() => {
         <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'GameSource' }, { tag: 'EnemyTarget', contents: id}, placeTokenType, 1]})">Place</button>
         <button @click="placeTokens = false">Back</button>
       </div>
+      <div v-else-if="setModifiers" class="buttons">
+        <button @click="createModifier({tag: 'EnemyTarget', contents: id}, {tag: 'DamageDealt', contents: 1})">Increase Damage Dealt</button>
+        <button @click="setModifiers = false">Back</button>
+        <Modifier :modifier="modifier" v-for="(modifier, idx) in enemy.modifiers" :key="idx" />
+      </div>
       <div v-else class="buttons">
         <button v-if="!enemy.exhausted" @click="debug.send(game.id, {tag: 'Exhaust', contents: {tag: 'EnemyTarget', contents: id}})">Exhaust</button>
         <button v-else @click="debug.send(game.id, {tag: 'Ready', contents: {tag: 'EnemyTarget', contents: id}})">Ready</button>
@@ -115,6 +140,7 @@ const hasPool = computed(() => {
         <button @click="debug.send(game.id, {tag: 'EnemyDamage', contents: [id, {damageAssignmentSource: {tag: 'InvestigatorSource', contents:investigatorId}, damageAssignmentAmount: 1, damageAssignmentDirect: true, damageAssignmentDelayed: false, damageAssignmentDamageEffect: 'NonAttackDamageEffect'}]})">Add Damage</button>
         <button @click="placeTokens = true">Place Tokens</button>
         <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'ClearTokens', contents: { tag: 'EnemyTarget', contents: id}})">Remove All Tokens</button>
+        <button @click="setModifiers = true">Modifiers</button>
         <button @click="emit('close')">Close</button>
       </div>
     </div>

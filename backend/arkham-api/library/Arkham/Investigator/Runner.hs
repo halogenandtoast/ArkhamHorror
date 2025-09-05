@@ -1538,13 +1538,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       )
       do
         push $ InvestigatorDirectDamage iid source 1 0
+
+    let totalDamage = length damageTargets
+    let totalHorror = length horrorTargets
+
     pushAll
       $ whenPlacedWindowMsg
       : [ CheckWindows
-            $ [ mkWhen (Window.DealtDamage source damageEffect target damage)
-              | target <- nub damageTargets
-              , let damage = count (== target) damageTargets
-              ]
+            $ [mkWhen (Window.TakeDamage source damageEffect (toTarget iid) totalDamage) | totalDamage > 0]
+            <> [mkWhen (Window.TakeHorror source (toTarget iid) totalHorror) | totalHorror > 0]
+            <> [ mkWhen (Window.DealtDamage source damageEffect target damage)
+               | target <- nub damageTargets
+               , let damage = count (== target) damageTargets
+               ]
             <> [ mkWhen (Window.DealtHorror source target horror)
                | target <- nub horrorTargets
                , let horror = count (== target) horrorTargets
@@ -1553,10 +1559,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         <> [whenAssignedWindowMsg | notNull horrorTargets]
         <> [CheckDefeated source (toTarget aid) | aid <- checkAssets]
         <> [ CheckWindows
-               $ [ mkAfter (Window.DealtDamage source damageEffect target damage)
-                 | target <- nub damageTargets
-                 , let damage = count (== target) damageTargets
-                 ]
+               $ [mkAfter (Window.TakeDamage source damageEffect (toTarget iid) totalDamage) | totalDamage > 0]
+               <> [mkAfter (Window.TakeHorror source (toTarget iid) totalHorror) | totalHorror > 0]
+               <> [ mkAfter (Window.DealtDamage source damageEffect target damage)
+                  | target <- nub damageTargets
+                  , let damage = count (== target) damageTargets
+                  ]
                <> [ mkAfter (Window.DealtHorror source target horror)
                   | target <- nub horrorTargets
                   , let horror = count (== target) horrorTargets
@@ -2728,11 +2736,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
 
           when (movement.means /= Place) do
             moveWith <-
-              if movement.means == Place
-                then pure []
-                else do
-                  select (InvestigatorWithModifier (CanMoveWith $ InvestigatorWithId iid) <> colocatedWith iid)
-                    >>= filterM (\iid' -> getCanMoveTo iid' (moveSource movement) lid)
+              select (InvestigatorWithModifier (CanMoveWith $ InvestigatorWithId iid) <> colocatedWith iid)
+                >>= filterM (\iid' -> getCanMoveTo iid' (moveSource movement) lid)
 
             for_ moveWith \iid' ->
               Choose.chooseOneM iid' do

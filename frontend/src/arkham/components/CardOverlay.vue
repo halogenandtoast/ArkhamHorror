@@ -427,6 +427,8 @@ const getCardFlavor = (dbCard: ArkhamDBCard, needBack: boolean): string | null =
 
 
 const getCardCustomizationText = (dbCard: ArkhamDBCard): string | null => {
+  if (!card.value) return null
+  if (isLocalized(card.value)) return null
   return replaceText(dbCard.customization_text || '')
 }
 

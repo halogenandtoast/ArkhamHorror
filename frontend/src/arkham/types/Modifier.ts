@@ -43,6 +43,7 @@ export type ModifierType
   | BaseSkill
   | BaseSkillOf
   | CannotEnter
+  | CannotDiscoverCluesAt
   | DamageDealt
   | DiscoveredClues
   | SkillTestResultValueModifier
@@ -63,6 +64,7 @@ export type ModifierType
   | DoubleDifficulty
   | DoubleSuccess
   | HandSizeCardCount
+  | HandSize
 
 export type BaseSkillOf = {
   tag: "BaseSkillOf"
@@ -78,6 +80,11 @@ export type Difficulty = {
 export type ScenarioModifier = {
   tag: "ScenarioModifier"
   contents: string
+}
+
+export type HandSize = {
+  tag: "HandSize"
+  contents: number
 }
 
 export type HandSizeCardCount = {
@@ -184,6 +191,11 @@ export type CannotCommitCards = {
   contents: any
 }
 
+export type CannotDiscoverCluesAt = {
+  tag: "CannotDiscoverCluesAt"
+  contents: string
+}
+
 export type CannotEnter = {
   tag: "CannotEnter"
   contents: string
@@ -233,6 +245,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.literal('HandSizeCardCount'),
       contents: JsonDecoder.number()
     }, 'HandSizeCardCount'),
+  JsonDecoder.object<HandSize>(
+    {
+      tag: JsonDecoder.literal('HandSize'),
+      contents: JsonDecoder.number()
+    }, 'HandSize'),
   JsonDecoder.object<DiscoveredClues>(
     {
       tag: JsonDecoder.literal('DiscoveredClues'),
@@ -283,6 +300,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.literal('CannotEnter'),
       contents: JsonDecoder.string()
     }, 'CannotEnter'),
+  JsonDecoder.object<CannotDiscoverCluesAt>(
+    {
+      tag: JsonDecoder.literal('CannotDiscoverCluesAt'),
+      contents: JsonDecoder.string()
+    }, 'CannotDiscoverCluesAt'),
   JsonDecoder.object<CannotCommitCards>(
     {
       tag: JsonDecoder.literal('CannotCommitCards'),

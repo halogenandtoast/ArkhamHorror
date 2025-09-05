@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia';
 import { onMounted, computed, ref, watch } from 'vue'
 import Draggable from '@/components/Draggable.vue';
 import CardView from '@/arkham/components/Card.vue';
+import Modifiers from '@/arkham/components/Modifiers.vue';
 import { useDebug } from '@/arkham/debug'
 import { PaperClipIcon } from '@heroicons/vue/20/solid'
 import type { Game } from '@/arkham/types/Game'
@@ -245,6 +246,7 @@ const combat = computed(() => calculateSkill(props.investigator.combat, "SkillCo
 const agility = computed(() => calculateSkill(props.investigator.agility, "SkillAgility", modifiers.value ?? []))
 
 const dragging = ref(false)
+const showModifiers = ref(false)
 function startDrag(event: DragEvent) {
   dragging.value = true
   if (event.dataTransfer) {
@@ -363,6 +365,13 @@ function onDrop(event: DragEvent) {
             @click="$emit('choose', skipTriggersAction)"
             class="skip-triggers-button"
           >{{ isMobile ? 'Skip' : $t('investigator.skipTriggers') }}</button>
+
+          <button
+            v-if="debug && debug.active && (investigator.modifiers ?? []).length > 0"
+            @click="showModifiers = true"
+            >Show Modifiers</button>
+
+          <Modifiers v-if="showModifiers" :game="game" :modifiers="investigator.modifiers" @close="showModifiers = false" />
 
           <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
           <Draw

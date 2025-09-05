@@ -814,20 +814,10 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             [ sourceMatches source' sourceMatcher
             , matchWho iid who whoMatcher
             ]
-        Window.DealtDamage source' _ (InvestigatorTarget who) _ ->
-          andM
-            [ sourceMatches source' sourceMatcher
-            , matchWho iid who whoMatcher
-            ]
         _ -> noMatch
     Matcher.InvestigatorTakeHorror timing whoMatcher sourceMatcher ->
       guardTiming timing $ \case
-        Window.TakeHorror source' (InvestigatorTarget who) ->
-          andM
-            [ matchWho iid who whoMatcher
-            , sourceMatches source' sourceMatcher
-            ]
-        Window.DealtHorror source' (InvestigatorTarget who) _ ->
+        Window.TakeHorror source' (InvestigatorTarget who) _ ->
           andM
             [ matchWho iid who whoMatcher
             , sourceMatches source' sourceMatcher

@@ -298,7 +298,7 @@ data WindowType
   | SuccessfulInvestigation InvestigatorId LocationId
   | SuccessfulParley InvestigatorId
   | TakeDamage Source DamageEffect Target Int
-  | TakeHorror Source Target
+  | TakeHorror Source Target Int
   | TookControlOfAsset InvestigatorId AssetId
   | TurnBegins InvestigatorId
   | TurnEnds InvestigatorId

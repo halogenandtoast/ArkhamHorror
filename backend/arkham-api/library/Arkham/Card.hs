@@ -415,6 +415,16 @@ flipCard (PlayerCard pc) = case cdOtherSide (toCardDef pc) of
   Nothing -> PlayerCard pc
 flipCard (VengeanceCard c) = VengeanceCard c
 
+showRevealed :: Card -> Card
+showRevealed card@(EncounterCard ec) =
+  case ecIsFlipped ec of
+    Just True -> flipCard card
+    _ -> card
+showRevealed (PlayerCard pc) = case cdOtherSide (toCardDef pc) of
+  Just otherSide -> PlayerCard $ pc {pcCardCode = otherSide}
+  Nothing -> PlayerCard pc
+showRevealed (VengeanceCard c) = VengeanceCard c
+
 _PlayerCard :: Traversal' Card PlayerCard
 _PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc
 _PlayerCard _ other = pure other

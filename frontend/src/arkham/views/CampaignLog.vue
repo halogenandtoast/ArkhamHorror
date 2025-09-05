@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import * as Arkham from '@/arkham/types/Game'
-import { ref, computed } from 'vue'
+import { shallowRef, computed } from 'vue'
 import { fetchGame } from '@/arkham/api'
 import { useCardStore } from '@/stores/cards'
 import CampaignLog from '@/arkham/components/CampaignLog.vue'
@@ -12,7 +12,7 @@ export interface Props {
 const props = defineProps<Props>()
 const store = useCardStore()
 store.fetchCards()
-const game = ref<Arkham.Game | null>(null)
+const game = shallowRef<Arkham.Game | null>(null)
 
 const cards = computed(() => store.cards)
 

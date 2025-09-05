@@ -1,39 +1,70 @@
 <script lang="ts" setup>
-import { LottieAnimation } from "lottie-web-vue"
-import { useRouter } from 'vue-router'
-import processingJSON from "@/assets/processing.json"
-import { onMounted, reactive, ref, computed, provide, onUnmounted, watch, useTemplateRef } from 'vue'
-import GameDetails from '@/arkham/components/GameDetails.vue';
-import * as ArkhamGame from '@/arkham/types/Game';
-import * as JsonDecoder from 'ts.data.json';
-import { EyeIcon, ArrowsRightLeftIcon, BugAntIcon, ExclamationTriangleIcon, BackwardIcon, DocumentTextIcon, BeakerIcon, BoltIcon, DocumentArrowDownIcon, AdjustmentsHorizontalIcon } from '@heroicons/vue/20/solid'
-import { useWebSocket, useClipboard } from '@vueuse/core'
-import { useUserStore } from '@/stores/user'
-import * as Arkham from '@/arkham/types/Game'
-import { imgsrc } from '@/arkham/helpers';
+// Vue core & ecosystem
+import { computed, onMounted, onUnmounted, provide, ref, shallowRef, useTemplateRef, watch } from 'vue'
+import { onBeforeRouteLeave, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+
+// VueUse utilities
+import { useClipboard, useWebSocket } from '@vueuse/core'
+
+// UI libraries
+import { MenuItem } from '@headlessui/vue'
+import {
+  AdjustmentsHorizontalIcon,
+  ArrowsRightLeftIcon,
+  BackwardIcon,
+  BeakerIcon,
+  BoltIcon,
+  BugAntIcon,
+  DocumentArrowDownIcon,
+  DocumentTextIcon,
+  EyeIcon,
+  ExclamationTriangleIcon,
+} from '@heroicons/vue/20/solid'
+import { LottieAnimation } from 'lottie-web-vue'
+
+// Third-party utils
+import * as JsonDecoder from 'ts.data.json'
+
+// Assets
+import processingJSON from '@/assets/processing.json'
+
+// API
+import api from '@/api'
 import { fetchGame, undoChoice, undoScenarioChoice } from '@/arkham/api'
 import * as Api from '@/arkham/api'
-import Draggable from '@/components/Draggable.vue'
-import GameLog from '@/arkham/components/GameLog.vue'
-import * as Message from '@/arkham/types/Message'
-import api from '@/api'
-import CardView from '@/arkham/components/Card.vue'
-import Menu from '@/components/Menu.vue'
+
+// Stores
+import { useCardStore } from '@/stores/cards'
+import { useUserStore } from '@/stores/user'
+
+// Composables & helpers
 import { useMenu } from '@/composeable/menu'
-import { MenuItem } from '@headlessui/vue'
-import CardOverlay from '@/arkham/components/CardOverlay.vue'
-import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
-import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
+import useEmitter from '@/composeable/useEmitter'
+import { useDebug } from '@/arkham/debug'
+import { imgsrc } from '@/arkham/helpers'
+
+// Types & decoders
+import * as Arkham from '@/arkham/types/Game'
+import * as ArkhamGame from '@/arkham/types/Game'
+import { Card, cardDecoder, toCardContents } from '@/arkham/types/Card'
+import * as Message from '@/arkham/types/Message'
+import { type Question } from '@/arkham/types/Question'
+import { TarotCard, tarotCardDecoder, tarotCardImage } from '@/arkham/types/TarotCard'
+
+// Components
 import Campaign from '@/arkham/components/Campaign.vue'
 import CampaignLog from '@/arkham/components/CampaignLog.vue'
 import CampaignSettings from '@/arkham/components/CampaignSettings.vue'
+import CardOverlay from '@/arkham/components/CardOverlay.vue'
+import CardView from '@/arkham/components/Card.vue'
+import GameDetails from '@/arkham/components/GameDetails.vue'
+import GameLog from '@/arkham/components/GameLog.vue'
+import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
 import Settings from '@/arkham/components/Settings.vue'
-import { Card, cardDecoder, toCardContents } from '@/arkham/types/Card'
-import { TarotCard, tarotCardDecoder, tarotCardImage } from '@/arkham/types/TarotCard'
-import { useCardStore } from '@/stores/cards'
-import { onBeforeRouteLeave } from 'vue-router'
-import { useDebug } from '@/arkham/debug'
-import useEmitter from '@/composeable/useEmitter'
+import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
+import Draggable from '@/components/Draggable.vue'
+import Menu from '@/components/Menu.vue'
 
 // Types
 interface GameCard {
@@ -73,13 +104,16 @@ const userStore = useUserStore()
 const { copy } = useClipboard({ source })
 const { addEntry, menuItems } = useMenu()
 const router = useRouter()
+const preloaded = new Set<string>()
+let mouseX = 0;
+let mouseY = 0;
 
 store.fetchCards()
 
 // Refs
 const game = ref<Arkham.Game | null>(null)
 const gameCard = ref<GameCard | null>(null)
-const gameLog = ref<readonly string[]>(Object.freeze([]))
+const gameLog = shallowRef<readonly string[]>(Object.freeze([]))
 const playerId = ref<string | null>(null)
 const ready = ref(false)
 const resultQueue = ref<any>([])
@@ -94,7 +128,6 @@ const uiLock = ref<boolean>(false)
 const showSettings = ref(false)
 const processing = ref(false)
 const oldQuestion = ref<Record<string, Question> | null>(null)
-import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
 addEntry({
@@ -105,9 +138,6 @@ addEntry({
   nested: 'view',
   action: () => showSettings.value = !showSettings.value
 })
-
-// Reactive
-const preloaded = reactive<string[]>([])
 
 // Computed
 const cards = computed(() => store.cards)
@@ -172,14 +202,49 @@ const onMessage = (_ws: WebSocket, event: MessageEvent) => {
   oldQuestion.value = null
 }
 
-const { send, close } = useWebSocket(websocketUrl.value, { autoReconnect: true, onError, onConnected, onMessage })
+let qHead = 0
+const qPush = (x:any)=>{ resultQueue.value.push(x) }
+const qPop = ()=> {
+  if (qHead >= resultQueue.value.length) { resultQueue.value = []; qHead = 0; return undefined }
+  return resultQueue.value[qHead++]
+}
+let decoding=false
+let pendingUpdate: string | null = null
+
+function scheduleApplyUpdate(payload:string){
+  if (decoding){ pendingUpdate = payload; return }
+  decoding = true
+  Arkham.gameDecoder.decodePromise(payload).then(async updatedGame=>{
+    await loadAllImages(updatedGame)
+    game.value = updatedGame
+    gameLog.value = Object.freeze([...updatedGame.log])
+    if (solo.value === true) {
+      if (Object.keys(game.value.question).length == 1) {
+        playerId.value = Object.keys(game.value.question)[0]
+      } else if (game.value.activePlayerId !== playerId.value) {
+        if (playerId.value && Object.keys(game.value.question).includes(playerId.value)) {
+          playerId.value = game.value.activePlayerId
+        } else {
+          playerId.value = Object.keys(game.value.question)[0]
+        }
+      } else if (playerId.value && !Object.keys(game.value.question).includes(playerId.value)) {
+          playerId.value = Object.keys(game.value.question)[0]
+      }
+    }
+  }).finally(()=>{
+    decoding=false
+    if (pendingUpdate){ const p = pendingUpdate; pendingUpdate = null; scheduleApplyUpdate(p) }
+  })
+}
+
+const { send, close } = useWebSocket(websocketUrl, { autoReconnect: true, onError, onConnected, onMessage })
 const handleResult = (result: ServerResult) => {
   processing.value = false
   switch(result.tag) {
     case "GameError":
       if (props.spectate) return
       error.value = result.contents
-      if(oldQuestion.value) {
+      if(game.value && oldQuestion.value) {
         game.value.question = oldQuestion.value
       }
       return
@@ -229,29 +294,10 @@ const handleResult = (result: ServerResult) => {
       return
     case "GameUpdate":
       if (uiLock.value) {
-        resultQueue.value.push(result)
-        game.value = {...game.value, question: {}} as Arkham.Game
+        qPush(result)
+        if (game.value) game.value.question = {}
       } else {
-        Arkham.gameDecoder.decodePromise(result.contents)
-          .then((updatedGame) => {
-            loadAllImages(updatedGame).then(() => {
-              game.value = updatedGame
-              gameLog.value = Object.freeze([...updatedGame.log])
-              if (solo.value === true) {
-                if (Object.keys(game.value.question).length == 1) {
-                  playerId.value = Object.keys(game.value.question)[0]
-                } else if (game.value.activePlayerId !== playerId.value) {
-                  if (playerId.value && Object.keys(game.value.question).includes(playerId.value)) {
-                    playerId.value = game.value.activePlayerId
-                  } else {
-                    playerId.value = Object.keys(game.value.question)[0]
-                  }
-                } else if (playerId.value && !Object.keys(game.value.question).includes(playerId.value)) {
-                    playerId.value = Object.keys(game.value.question)[0]
-                }
-              }
-            })
-          })
+        scheduleApplyUpdate(result.contents)
       }
       return
   }
@@ -259,19 +305,24 @@ const handleResult = (result: ServerResult) => {
 
 watch(uiLock, async () => {
   if (uiLock.value) return
-  const r = resultQueue.value.shift()
-  if (r) handleResult(r)
+  // drain result queue
+  for (;;) {
+    const r = qPop()
+    if (!r) break
+    handleResult(r)
+    if (uiLock.value) break
+  }
 })
 
-const mouseX = ref(0);
-const mouseY = ref(0);
-
-document.addEventListener('mousemove', (event) => {
-  mouseX.value = event.clientX;
-  mouseY.value = event.clientY;
-});
-
 const undoScenarioDialog = useTemplateRef<HTMLDialogElement>('undoScenarioDialog')
+
+const actionMap = computed<Map<string, () => void>>(() => {
+  const map = new Map<string, () => void>()
+  for( const item of menuItems.value) {
+    if (item.shortcut) map.set(item.shortcut, item.action)
+  }
+  return map
+})
 
 // Keyboard Shortcuts
 const handleKeyPress = (event: KeyboardEvent) => {
@@ -339,9 +390,9 @@ const handleKeyPress = (event: KeyboardEvent) => {
     return
   }
 
-  if (event.key === 'e') {
+  if (event.key === 'e' && debug.active) {
     if(!game.value || !playerId.value) return
-    const elementUnderMouse = document.elementFromPoint(mouseX.value, mouseY.value);
+    const elementUnderMouse = document.elementFromPoint(mouseX, mouseY);
     if (elementUnderMouse) {
       const dataId = elementUnderMouse.getAttribute('data-id')
       if (dataId && game.value.assets[dataId]) {
@@ -362,9 +413,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
     return
   }
 
-  menuItems.value.forEach((item) => {
-    if (item.shortcut === event.key) item.action()
-  })
+  actionMap.value.get(event.key)?.()
 }
 
 // Sidebar
@@ -424,34 +473,23 @@ const continueUI = () => {
   uiLock.value = false
 }
 
-// Image Preloading
-function loadAllImages(game: Arkham.Game): Promise<void[]> {
-  const images = Object.values(game.cards).map((card) => {
-    return new Promise<void>((resolve, reject) => {
-      const { cardCode, isFlipped } = toCardContents(card)
-      const suffix = isFlipped ? 'b' : ''
-      const actualCardCode = `${cardCode.replace(/^c/, '')}${suffix}`
-      const url = imgsrc(`cards/${actualCardCode}.avif`)
-      if (preloaded.includes(url)) return resolve()
-      const img = new Image()
-      img.src = url
-      img.onload = () => {
-        preloaded.push(url)
-        resolve()
-      }
-      img.onerror = () => reject(`Could not load card ${actualCardCode}`)
-      })
-  })
 
-  return Promise.all(images)
+async function loadAllImages(game:Arkham.Game):Promise<void>{
+  const pending: string[] = []
+  for (const card of Object.values(game.cards)) {
+    const {cardCode, isFlipped} = toCardContents(card)
+    const url = imgsrc(`cards/${cardCode.replace(/^c/,'')}${isFlipped?'b':''}.avif`)
+    if (!preloaded.has(url)) pending.push(url)
+  }
+  if (pending.length === 0) return
+
+  await Promise.all(pending.map(url => new Promise<void>((resolve, reject)=>{
+    const img = new Image()
+    img.onload = () => { preloaded.add(url); resolve() }
+    img.onerror = () => reject(`Could not load ${url}`)
+    img.src = url
+  })))
 }
-
-window.sendDebug = function (msg: any) {
-  if (!game.value) return
-  debug.send(game.value.id, msg)
-}
-
-window.undo = undo
 
 // Callbacks
 async function choose(idx: number) {
@@ -462,8 +500,6 @@ async function choose(idx: number) {
     send(JSON.stringify({tag: 'Answer', contents: { choice: idx , playerId: playerId.value } }))
   }
 }
-
-window.debugChoose = choose
 
 async function chooseDeck(deckId: string): Promise<void> {
   if(game.value && !props.spectate) {
@@ -527,12 +563,27 @@ provide('chooseAmounts', chooseAmounts)
 provide('switchInvestigator', switchInvestigator)
 provide('solo', solo)
 
+const onMove = (event: MouseEvent) => {
+  mouseX = event.clientX;
+  mouseY = event.clientY;
+}
 
 // callbacks
-onMounted(() => document.addEventListener('keydown', handleKeyPress))
+onMounted(() => {
+  (window as any).sendDebug = (msg: any) => { if (game.value) debug.send(game.value.id, msg) }
+  ; (window as any).undo = undo
+  ; (window as any).debugChoose = choose
+  document.addEventListener('mousemove', onMove, { passive: true })
+  document.addEventListener('keydown', handleKeyPress)
+})
+
 onBeforeRouteLeave(() => close())
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyPress)
+  document.removeEventListener('mousemove', onMove)
+  delete (window as any).sendDebug
+  delete (window as any).undo
+  delete (window as any).debugChoose
   close()
 })
 

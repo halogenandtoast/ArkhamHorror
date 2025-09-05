@@ -6,7 +6,7 @@ import { computed, inject, Ref, ref, ComputedRef, reactive, watch, onMounted, on
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { toCardContents } from '@/arkham/types/Card';
-import { imgsrc, pluralize } from '@/arkham/helpers';
+import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamCard from '@/arkham/types/Card';
 import * as ArkhamGame from '@/arkham/types/Game';
 import Enemy from '@/arkham/components/Enemy.vue';
@@ -39,34 +39,18 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
+const solo = inject<Ref<boolean>>('solo')
 
 const investigatorId = computed(() => props.investigator.id)
-
-const solo = inject<Ref<boolean>>('solo')
-const encounterBack = computed(() => {
-  return imgsrc("encounter_back.jpg")
-})
+const ENCOUNTER_BACK = imgsrc("encounter_back.jpg")
 
 const assets = computed(() => {
-  const xs = props.investigator.assets.map((a) => props.game.assets[a])
-  xs.sort((a, b) => {
-    if (a.cardCode < b.cardCode) {
-      return -1;
-    }
-    if (a.cardCode > b.cardCode) {
-      return 1;
-    }
-
-    if (a.cardId < b.cardId) {
-      return -1;
-    }
-    if (a.cardId > b.cardId) {
-      return 1;
-    }
-
-    return 0;
-  })
-  xs.sort((a, b) => b.permanent - a.permanent)
+  const xs = props.investigator.assets.map(a => props.game.assets[a])
+  xs.sort((a, b) =>
+    (b.permanent as any) - (a.permanent as any) ||
+    a.cardCode.localeCompare(b.cardCode) ||
+    a.cardId.localeCompare(b.cardId)
+  )
   return xs
 })
 
@@ -201,10 +185,10 @@ const hideCards = () => {
   viewingDiscard.value = false
 }
 
-const committedCards = computed(() => props.game.skillTest?.committedCards || [])
-const playerHand = computed(() => props.investigator.hand.
-  filter((card) =>
-    !committedCards.value.some((cc) => toCardContents(card).id == toCardContents(cc).id))
+const committedIdSet = computed(() => new Set((props.game.skillTest?.committedCards ?? []).map(c => toCardContents(c).id)))
+
+const playerHand = computed(() =>
+  props.investigator.hand.filter(card => !committedIdSet.value.has(toCardContents(card).id))
 )
 
 const locations = computed(() => Object.values(props.game.locations).
@@ -234,104 +218,64 @@ const slotImg = (slot: Arkham.Slot) => {
 }
 
 // global position information for animation
-const rectData = ref<Array<[string, DOMRect]>>([])
+const rectMap = new Map<string, DOMRect>()
 
-function isHtmlElement(el: Element): el is HTMLElement {
-  return el instanceof HTMLElement
-}
+function isHtmlElement(el: Element): el is HTMLElement { return el instanceof HTMLElement }
 
 function onBeforeEnter(el: Element) {
-  if (!isHtmlElement(el)) { return }
-  if(Object.values(el.classList).includes("committed-skills")) {
-    return
-  }
-
-  const index = el.dataset.index
-  if(!index) { return }
-
-  const data = rectData.value.find(([idx,]) => idx === index)
-  if (!data) { return }
-  el.style.opacity = "0"
-  el.style.width = "0"
+  if (!isHtmlElement(el)) return
+  if (el.classList.contains('committed-skills')) return
+  const idx = el.dataset.index
+  if (!idx || !rectMap.has(idx)) return
+  el.style.opacity = '0'
+  el.style.width = '0'
 }
 
 function onEnter(el: Element, done: () => void) {
-  if (!isHtmlElement(el)) { return }
+  if (!isHtmlElement(el)) return
+  if (el.classList.contains('committed-skills')) { el.removeAttribute('style'); done(); return }
 
-  if(Object.values(el.classList).includes("committed-skills")) {
-    el.removeAttribute("style")
-    done();
-  }
-  const index = el.dataset.index
+  const idx = el.dataset.index
   const finalRect = el.getBoundingClientRect()
-  if(!index) {
+
+  if (!idx) {
     const width = window.getComputedStyle(el).width
-    gsap.to(el, { opacity: 1, width, onComplete: () => {
-      el.removeAttribute("style")
-      done()
-    }})
+    gsap.to(el, { opacity: 1, width, onComplete: () => { el.removeAttribute('style'); done() } })
     return
   }
 
-  const data = rectData.value.find(([idx,]) => idx === index)
-  rectData.value = rectData.value.filter(([idx,]) => idx !== index)
-  if (!data) {
-    //gsap.to(el, { startAt: { height: 0, marginLeft: 40, marginTop: 56 }, ease: "power4.out", opacity: 1, width: 80, height: 113, marginLeft: 0, marginTop: 0, onComplete: () => {
-      el.removeAttribute("style")
-      done()
-    //} })
-    return
-  }
-  const [,rect] = data
+  const rect = rectMap.get(idx)
+  rectMap.delete(idx)
+  if (!rect) { el.removeAttribute('style'); done(); return }
+
   const startX = rect.left - finalRect.left
   const startY = rect.top - finalRect.top
+
   const c = el.cloneNode(true) as HTMLElement
-  c.style.position = "fixed"
-  c.style.width = rect.width + "px"
+  c.style.position = 'fixed'
+  c.style.width = rect.width + 'px'
   el.parentNode?.insertBefore(c, el)
+
   const cRect = c.getBoundingClientRect()
   const finalX = finalRect.left - cRect.left
-  const tl = gsap.timeline()
-  tl.
-    add("start").
-    to(el, {
-      startAt: { opacity: 0, width: 0 },
-      width: rect.width,
-      clearProps: "width",
-      duration: 0.3
-    }, "start").
-    to(c, {
-      startAt: { x: startX, y: startY, opacity: 1 },
-      y: 0,
-      x: finalX,
-      onComplete: () => {
-        c.remove()
-        el.style.opacity = "1"
-        done()
-      },
-      duration: 0.3
-    }, "start")
-}
-function onLeave(el: Element, done: () => void) {
-  if (!isHtmlElement(el)) { return }
-  if(Object.values(el.classList).includes("committed-skills")) {
-    done();
-    return
-  }
-  if(!el.dataset.index) {
-    console.error("No data-index on element", el)
-    done()
-    return
-  }
 
-  rectData.value = [...rectData.value, [el.dataset.index, el.getBoundingClientRect()]]
-  gsap.to(el, {
-    startAt: { opacity: 0 },
-    width: 0,
-    margin: 0,
-    onComplete: done,
-    duration: 0.3
-  })
+  gsap.timeline()
+    .add('start')
+    .to(el, { startAt: { opacity: 0, width: 0 }, width: rect.width, clearProps: 'width', duration: 0.3 }, 'start')
+    .to(c, {
+      startAt: { x: startX, y: startY, opacity: 1 },
+      x: finalX, y: 0, duration: 0.3,
+      onComplete: () => { c.remove(); el.style.opacity = '1'; done() }
+    }, 'start')
+}
+
+function onLeave(el: Element, done: () => void) {
+  if (!isHtmlElement(el)) return
+  if (el.classList.contains('committed-skills')) { done(); return }
+  const idx = el.dataset.index
+  if (!idx) { done(); return }
+  rectMap.set(idx, el.getBoundingClientRect())
+  gsap.to(el, { startAt: { opacity: 0 }, width: 0, margin: 0, duration: 0.3, onComplete: done })
 }
 
 const realityAcid = ref('89005')
@@ -610,7 +554,7 @@ function toggleHandAreaMarginBottom(event: Event) {
               @choose="$emit('choose', $event)"
             />
             <div class="card-container" v-else>
-              <img class="card" :src="encounterBack" />
+              <img class="card" :src="ENCOUNTER_BACK" />
             </div>
           </template>
 
@@ -619,12 +563,12 @@ function toggleHandAreaMarginBottom(event: Event) {
               v-if="solo || (playerId == investigator.playerId)"
               :treachery="treachery"
               :game="game"
-              :data-index="treachery.id"
+              :data-index="treachery.cardId"
               :playerId="playerId"
               @choose="$emit('choose', $event)"
             />
             <div class="card-container" v-else>
-              <img class="card" :src="encounterBack" />
+              <img class="card" :src="ENCOUNTER_BACK" />
             </div>
           </template>
 
@@ -660,7 +604,7 @@ function toggleHandAreaMarginBottom(event: Event) {
             @choose="$emit('choose', $event)"
           />
           <div class="card-container" v-else>
-            <img class="card" :src="encounterBack" />
+            <img class="card" :src="ENCOUNTER_BACK" />
           </div>
         </template>
         <template v-for="treachery in inHandTreacheries" :key="treachery.id">
@@ -668,13 +612,13 @@ function toggleHandAreaMarginBottom(event: Event) {
             v-if="solo || (playerId == investigator.playerId)"
             :treachery="treachery"
             :game="game"
-            :data-index="treachery.id"
+            :data-index="treachery.cardId"
             :playerId="playerId"
             :isInHand="true"
             @choose="$emit('choose', $event)"
           />
           <div class="card-container" v-else>
-            <img class="card" :src="encounterBack" />
+            <img class="card" :src="ENCOUNTER_BACK" />
           </div>
         </template>
       </transition-group>

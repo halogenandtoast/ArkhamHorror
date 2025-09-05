@@ -1,6 +1,6 @@
-import curseOfTheRougarou from '@/locales/en/standalone/curseOfTheRougarou.json'
-import carnevaleOfHorrors from '@/locales/en/standalone/carnevaleOfHorrors.json'
-import murderAtTheExcelsiorHotel from '@/locales/en/standalone/murderAtTheExcelsiorHotel.json'
-import theMidwinterGala from '@/locales/en/standalone/theMidwinterGala.json'
+import curseOfTheRougarou from '@/locales/fr/standalone/curseOfTheRougarou.json'
+import carnevaleOfHorrors from '@/locales/fr/standalone/carnevaleOfHorrors.json'
+import murderAtTheExcelsiorHotel from '@/locales/fr/standalone/murderAtTheExcelsiorHotel.json'
+import theMidwinterGala from '@/locales/fr/standalone/theMidwinterGala.json'
 
 export default {curseOfTheRougarou, carnevaleOfHorrors, murderAtTheExcelsiorHotel, theMidwinterGala}

@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Location.Cards.DreamGatePointlessReality (dreamGatePointlessReality) where
 
 import Arkham.Ability

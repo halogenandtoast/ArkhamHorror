@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Helpers.Location where
 
 import Arkham.Asset.Types (AssetAttrs, Field (..))

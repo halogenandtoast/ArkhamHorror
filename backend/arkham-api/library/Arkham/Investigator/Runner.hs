@@ -3823,15 +3823,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     player <- getPlayer iid
     for_ cardSources $ \(cardSource, returnStrategy) -> case returnStrategy of
       DiscardRest -> do
-        push
-          $ chooseOneAtATime player
-          $ map
-            ( \case
-                PlayerCard c -> targetLabel (toCardId c) [AddToDiscard iid c]
-                EncounterCard c -> targetLabel (toCardId c) [AddToEncounterDiscard c]
-                VengeanceCard _ -> error "not possible"
-            )
-            (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
+        let discards = findWithDefault [] Zone.FromDeck $ a ^. foundCardsL
+        unless (null discards) do
+          push
+            $ chooseOneAtATime player
+            $ map
+              ( \case
+                  PlayerCard c -> targetLabel (toCardId c) [AddToDiscard iid c]
+                  EncounterCard c -> targetLabel (toCardId c) [AddToEncounterDiscard c]
+                  VengeanceCard _ -> error "not possible"
+              )
+              discards
       PutBackInAnyOrder -> do
         when
           (foundKey cardSource /= Zone.FromDeck)

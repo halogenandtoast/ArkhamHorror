@@ -16,7 +16,12 @@ porteDeLAvancee = location PorteDeLAvancee Cards.porteDeLAvancee 3 (PerPlayer 1)
 
 instance HasAbilities PorteDeLAvancee where
   getAbilities (PorteDeLAvancee a) =
-    extendRevealed1 a $ restricted a 1 (Here <> AgendaExists AgendaWithAnyDoom) doubleActionAbility
+    extendRevealed1 a
+      $ restricted
+        a
+        1
+        (Here <> AgendaExists AgendaWithAnyDoom <> AgendaCount 2 AnyAgenda)
+        doubleActionAbility
 
 instance RunMessage PorteDeLAvancee where
   runMessage msg l@(PorteDeLAvancee attrs) = runQueueT $ case msg of

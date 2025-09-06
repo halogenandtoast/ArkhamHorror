@@ -163,6 +163,7 @@ button {
   -moz-osx-font-smoothing: grayscale;
   width: 100%;
   height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -539,6 +540,7 @@ h2.title {
 
 .router-container {
   position: relative;
+  overflow: auto;
 }
 
 footer {

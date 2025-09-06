@@ -28,7 +28,7 @@ instance HasAbilities AnnaKaslow4 where
 
 instance RunMessage AnnaKaslow4 where
   runMessage msg a@(AnnaKaslow4 attrs) = runQueueT $ case msg of
-    InHand _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 1) | iid == iid' -> do
       putCardIntoPlay iid attrs
       pure a
     CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do

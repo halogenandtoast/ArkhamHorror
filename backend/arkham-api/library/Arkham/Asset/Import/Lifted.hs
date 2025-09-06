@@ -69,7 +69,7 @@ import Arkham.Target as X
 
 import Arkham.Card (Card)
 import Arkham.Token
-import Control.Lens (non)
+import Control.Lens (non, set)
 import GHC.Records
 
 healAssetDamage :: Sourceable source => AssetAttrs -> source -> Int -> UI Message
@@ -86,3 +86,6 @@ replenishN token tokenMax n tokens = tokens & at token . non 0 %~ min tokenMax .
 
 under :: HasField "cardsUnderneath" a [Card] => Card -> a -> Bool
 under c a = c `elem` a.cardsUnderneath
+
+cannotLeavePlay :: AssetAttrs -> AssetAttrs
+cannotLeavePlay = set canLeavePlayByNormalMeansL False

@@ -135,6 +135,8 @@ getActionCost attrs as = do
  where
   applyModifier (ActionCostOf match m) n =
     if any (matchTarget attrs match) as then n + m else n
+  applyModifier (AdditionalActionCostOf match m) n =
+    if any (matchTarget attrs match) as then n + m else n
   applyModifier _ n = n
 
 matchTarget :: InvestigatorAttrs -> ActionTarget -> Action -> Bool

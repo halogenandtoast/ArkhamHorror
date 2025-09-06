@@ -32,7 +32,7 @@ instance HasAbilities DarrellsKodak where
               [LocationWithEnemy (EnemyWithToken Evidence), LocationWithTreachery (TreacheryWithToken Evidence)]
           )
           AnyValue
-    , restrictedAbility a 2 (ControlsThis <> exists (EnemyWithToken Evidence <> not_ (EnemyAt Anywhere)))
+    , controlled a 2 (oneOf [exists (EnemyWithToken Evidence <> not_ (EnemyAt Anywhere)), exists (TreacheryWithToken Evidence <> not_ (TreacheryAt Anywhere))])
         $ freeReaction
         $ DiscoverClues #after You Anywhere AnyValue
     ]

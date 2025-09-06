@@ -31,7 +31,7 @@ instance HasAbilities MoonPendant2 where
 
 instance RunMessage MoonPendant2 where
   runMessage msg a@(MoonPendant2 attrs) = case msg of
-    InHand _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 1) | iid == iid' -> do
       push $ putCardIntoPlay iid attrs
       pure a
     CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do

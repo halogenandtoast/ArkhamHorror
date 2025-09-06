@@ -29,7 +29,7 @@ instance RunMessage TheFool03 where
     UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
       costModifier (attrs.ability 1) iid (ReduceCostOf (CardWithId card.id) 1)
       pure a
-    InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 2) | iid == iid' -> do
       putCardIntoPlay iid attrs
       pure a
     _ -> TheFool03 <$> liftRunMessage msg attrs

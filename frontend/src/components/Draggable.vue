@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { IsMobile } from '@/arkham/isMobile';
 
 const draggable = ref<HTMLElement | null>(null)
@@ -9,7 +9,7 @@ const initialMouseX = ref(0)
 const initialMouseY = ref(0)
 const initialLeft = ref(0)
 const initialTop = ref(0)
-const { isMobile } = IsMobile();
+const { isMobile } = IsMobile()
 
 // Variables to store the modal's position and size before minimizing
 const originalLeft = ref(0)
@@ -17,77 +17,91 @@ const originalTop = ref(0)
 const originalWidth = ref(0)
 const originalHeight = ref(0)
 
-function drag(e: MouseEvent) {
-  if (
-    e.target instanceof HTMLElement &&
-    e.target.closest('header') &&
-    !isMinimized.value
-  ) {
-    e.preventDefault()
-    const el = draggable.value
-    if (!el) return
+// drag state
+let raf = 0
+let lastClientX = 0
+let lastClientY = 0
+let dragPointerId: number | null = null
 
-    const rect = el.getBoundingClientRect()
-    initialMouseX.value = e.clientX
-    initialMouseY.value = e.clientY
-    initialLeft.value = rect.left
-    initialTop.value = rect.top
-
-    // Remove any transforms
-    el.style.transform = 'none'
-
-    el.style.transition = 'none' // Disable transitions during drag
-    document.addEventListener('mousemove', elementDrag)
-    document.addEventListener('mouseup', stopDrag)
-  }
+function clamp(v: number, min: number, max: number) {
+  return Math.min(Math.max(v, min), max)
 }
 
-function elementDrag(e: MouseEvent) {
+function drag(e: PointerEvent) {
+  const target = e.target as HTMLElement | null
+  if (!target || target.closest('.minimize-btn')) return
+  if (!target.closest('header') || isMinimized.value) return
+
   const el = draggable.value
   if (!el) return
+
   e.preventDefault()
-  const deltaX = e.clientX - initialMouseX.value
-  const deltaY = e.clientY - initialMouseY.value
+  dragPointerId = e.pointerId
+  el.setPointerCapture(e.pointerId)
 
-  let newLeft = initialLeft.value + deltaX
-  let newTop = initialTop.value + deltaY
+  const rect = el.getBoundingClientRect()
+  initialMouseX.value = e.clientX
+  initialMouseY.value = e.clientY
+  initialLeft.value = rect.left
+  initialTop.value = rect.top
 
-  // Get window dimensions
-  const windowWidth = window.innerWidth
-  const windowHeight = window.innerHeight
+  el.style.transform = 'none'
+  el.style.transition = 'none'
+  document.body.style.userSelect = 'none'
 
-  // Get modal dimensions
-  const modalWidth = el.offsetWidth
-  const modalHeight = el.offsetHeight
+  el.addEventListener('pointermove', elementDrag, { passive: false })
+  el.addEventListener('pointerup', stopDrag, { once: true })
+}
 
-  // Ensure the modal stays within the window bounds
-  if (newLeft < 0) {
-    newLeft = 0
-  } else if (newLeft + modalWidth > windowWidth) {
-    newLeft = windowWidth - modalWidth
-  }
+function elementDrag(e: PointerEvent) {
+  const el = draggable.value
+  if (!el) return
 
-  if (newTop < 0) {
-    newTop = 0
-  } else if (newTop + modalHeight > windowHeight) {
-    newTop = windowHeight - modalHeight
-  }
+  e.preventDefault()
+  lastClientX = e.clientX
+  lastClientY = e.clientY
 
-  el.style.left = `${newLeft}px`
-  el.style.top = `${newTop}px`
+  if (raf) return
+  raf = requestAnimationFrame(() => {
+    raf = 0
+    const deltaX = lastClientX - initialMouseX.value
+    const deltaY = lastClientY - initialMouseY.value
+
+    const windowWidth = window.innerWidth
+    const windowHeight = window.innerHeight
+
+    const modalWidth = el.offsetWidth
+    const modalHeight = el.offsetHeight
+
+    const maxLeft = Math.max(0, windowWidth - modalWidth)
+    const maxTop  = Math.max(0, windowHeight - modalHeight)
+
+    const newLeft = clamp(initialLeft.value + deltaX, 0, maxLeft)
+    const newTop  = clamp(initialTop.value + deltaY, 0, maxTop)
+
+    el.style.left = `${newLeft}px`
+    el.style.top = `${newTop}px`
+  })
 }
 
 function stopDrag() {
   const el = draggable.value
   if (el) {
-    // Re-enable transitions after drag
     el.style.transition = ''
+    el.removeEventListener('pointermove', elementDrag as any)
+    if (dragPointerId !== null) {
+      try { el.releasePointerCapture(dragPointerId) } catch {}
+    }
   }
-  document.removeEventListener('mousemove', elementDrag)
-  document.removeEventListener('mouseup', stopDrag)
+  dragPointerId = null
+  if (raf) {
+    cancelAnimationFrame(raf)
+    raf = 0
+  }
+  document.body.style.userSelect = ''
 }
 
-async function minimize() {
+function minimize() {
   const el = draggable.value
   if (!el) return
 
@@ -96,7 +110,6 @@ async function minimize() {
     isMinimized.value = true
     emit('minimize', true)
 
-    // Save the original position and size
     const rect = el.getBoundingClientRect()
     originalLeft.value = rect.left
     originalTop.value = rect.top
@@ -109,41 +122,36 @@ async function minimize() {
     el.style.width = `${rect.width}px`
     el.style.height = `${rect.height}px`
 
-    // Force reflow to apply the current styles before transition
+    // kick off transition from current rect to bottom-right
     void el.offsetWidth
-
-    // Apply minimized styles
     el.classList.add('minimized')
-    el.style.width = 'fit-content'                    // Adjust as needed
-    el.style.height = 'fit-content'                    // Adjust as needed
-
-    await nextTick()
-
-    const minimizedRect = el.getBoundingClientRect()
-
-    el.style.left = `calc(100% - ${minimizedRect.width}px - 20px)` // Adjust as needed
-    el.style.top = `calc(100% - ${minimizedRect.height}px - 20px)`   // Adjust as needed
+    el.style.right = '20px'
+    el.style.bottom = '20px'
+    el.style.left = ''
+    el.style.top = ''
+    el.style.width = 'fit-content'
+    el.style.height = 'fit-content'
   } else {
     // Restoring
     isMinimized.value = false
     emit('minimize', false)
 
-    // Restore original styles
+    el.style.right = ''
+    el.style.bottom = ''
     el.style.left = `${originalLeft.value}px`
     el.style.top = `${originalTop.value}px`
     el.style.width = `${originalWidth.value}px`
     el.style.height = `${originalHeight.value}px`
 
-    // Remove minimized class after transition
     el.addEventListener('transitionend', function handler() {
-      const el = draggable.value
-      if (el) {
-        el.classList.remove('minimized')
-        el.style.position = 'absolute'
-        el.style.width = ''
-        el.style.height = ''
+      const node = draggable.value
+      if (node) {
+        node.classList.remove('minimized')
+        node.style.position = 'absolute'
+        node.style.width = ''
+        node.style.height = ''
       }
-      el?.removeEventListener('transitionend', handler)
+      node?.removeEventListener('transitionend', handler)
     })
   }
 }
@@ -157,13 +165,25 @@ onMounted(() => {
 
     const initialLeftPosition = (windowWidth - rect.width) / 2
     let initialTopPosition = (windowHeight - rect.height) / 2
-    if(isMobile.value){
+    if (isMobile.value) {
       initialTopPosition = 60
     }
     el.style.left = `${initialLeftPosition}px`
     el.style.top = `${initialTopPosition}px`
     el.style.position = 'absolute'
-    el.style.transform = 'none' // Remove initial transform
+    el.style.transform = 'none'
+  }
+})
+
+onBeforeUnmount(() => {
+  const el = draggable.value
+  if (el) {
+    el.removeEventListener('pointermove', elementDrag as any)
+  }
+  document.body.style.userSelect = ''
+  if (raf) {
+    cancelAnimationFrame(raf)
+    raf = 0
   }
 })
 </script>
@@ -171,15 +191,14 @@ onMounted(() => {
 <template>
   <Teleport to="#modal">
     <div class="draggable" ref="draggable">
-      <header @mousedown="drag" @click="isMinimized && minimize()">
+      <header @pointerdown="drag" @click="isMinimized && minimize()">
         <span class="header-title">
           <slot name="handle"></slot>
         </span>
         <button class="minimize-btn" @click.stop="minimize">
           <svg v-if="isMinimized" width="12" height="12" viewBox="0 0 24 24">
-            <!-- macOS-style Maximize Icon -->
             <path d="M12 9l-6 6h12l-6-6z" fill="currentColor" />
-          </svg>         <!-- Minimize SVG Icon -->
+          </svg>
           <svg v-else width="12" height="12" viewBox="0 0 24 24">
             <rect y="11" width="24" height="2" fill="currentColor" />
           </svg>
@@ -201,9 +220,9 @@ onMounted(() => {
   border: 1px solid rgba(255, 255, 255, 0.3);
   z-index: 10;
   overflow: hidden;
-  transition: all 0.3s ease; /* Animate all properties */
+  transition: left .25s ease, top .25s ease, right .25s ease, bottom .25s ease, width .25s ease, height .25s ease, transform .25s ease;
   backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px); /* Safari support */
+  -webkit-backdrop-filter: blur(5px);
   transition-behavior: allow-discrete;
   width: clamp(300px, 50vw, 80%);
   max-width: fit-content;
@@ -233,8 +252,8 @@ onMounted(() => {
     font-size: 1.2em;
     cursor: move;
     border-radius: 16px 16px 0 0;
-    backdrop-filter: blur(10px); /* Glassmorphism blur */
-    -webkit-backdrop-filter: blur(10px); /* Safari support */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 
     .header-title {
       flex: 1;
@@ -257,10 +276,9 @@ onMounted(() => {
       justify-content: center;
       cursor: pointer;
       pointer-events: auto;
-      background: #3C4F5A; /* Updated button background color */
-      /* ... */
+      background: #3C4F5A;
       &:hover {
-        background: #546E7A; /* Slightly lighter on hover */
+        background: #546E7A;
       }
 
       svg {

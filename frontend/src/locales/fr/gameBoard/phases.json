@@ -11,14 +11,14 @@
     "investigationPhase": "Investigation",
     "investigationPhaseBeginsStep": "Début de la phase d’Investigation.",
     "nextInvestigatorsTurnBeginsStep": "Début du tour de l’investigateur suivant.",
-    "investigatorTakesActionStep": "L’investigateur actif a le droit d’effectuer une action, si possible. Si une action a été effectuée, retournez à la fenêtre de joueur précédente. Si aucune action n’a été effectuée, passez au 2.2.2.",
-    "investigatorsTurnEndsStep": "Fin du tour de l’investigateur. Si un investigateur n’a pas encore efectué son tour lors de cete phase, retournez au 2.2. Si chaque investigateur a efectué son tour lors de cete phase, passez au 2.3.",
+    "investigatorTakesActionStep": "L’investigateur actif a le droit d’effectuer une action, si possible. Si une action a été effectuée,<p>retournez à la fenêtre de joueur précédente. Si aucune action n’a été effectuée, passez au 2.2.2.",
+    "investigatorsTurnEndsStep": "Fin du tour de l’investigateur. Si un investigateur n’a pas encore effectué son tour lors de cete phase,<p>retournez au 2.2. Si chaque investigateur a effectué son tour lors de cete phase, passez au 2.3.",
     "investigationPhaseEndsStep": "Fin de la phase d’Investigation.",
 
     "enemyPhase": "Phase des Ennemis",
     "enemyPhaseBeginsStep": "Début de la phase des Ennemis.",
     "hunterEnemiesMoveStep": "Les ennemis Chasseur se déplacent.",
-    "resolveAttacksStep": "L’investigateur suivant résout les attaques des ennemis engagés avec lui. Si un investigateur n’a pas encore résolu ses attaques ennemies lors de cete phase, retournez à la fenêtre de joueur précédente. Après que le dernier investigateur a résolu les attaques des ennemis engagés avec lui, passez à la fenêtre de joueur suivante.",
+    "resolveAttacksStep": "L’investigateur suivant résout les attaques des ennemis engagés avec lui. Si un investigateur n’a pas encore résolu ses attaques ennemies lors de cete phase,<p>retournez à la fenêtre de joueur précédente. Après que le dernier investigateur a résolu les attaques des ennemis engagés avec lui, passez à la fenêtre de joueur suivante.",
     "enemyPhaseEndsStep": "Fin de la phase des Ennemis.",
 
     "upkeepPhase": "Phase d’Entretien",

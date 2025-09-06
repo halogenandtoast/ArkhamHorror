@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.PrismaticPhenomenon (prismaticPhenomenon, PrismaticPhenomenon (..)) where
+module Arkham.Treachery.Cards.PrismaticPhenomenon (prismaticPhenomenon) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -17,17 +17,11 @@ prismaticPhenomenon = treachery PrismaticPhenomenon Cards.prismaticPhenomenon
 
 instance HasModifiersFor PrismaticPhenomenon where
   getModifiersFor (PrismaticPhenomenon attrs) =
-    inThreatAreaGets
-      attrs
-      [ AdditionalActionCostOf (FirstOneOfPerformed [#draw, #resource, #play]) 1
-      ]
+    inThreatAreaGets attrs [AdditionalActionCostOf (FirstOneOfPerformed [#draw, #resource, #play]) 1]
 
 instance HasAbilities PrismaticPhenomenon where
   getAbilities (PrismaticPhenomenon a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You)
-        $ forced
-        $ SkillTestResult #when You #investigating #success
-    ]
+    [restricted a 1 (InThreatAreaOf You) $ forced $ SkillTestResult #when You #investigating #success]
 
 instance RunMessage PrismaticPhenomenon where
   runMessage msg t@(PrismaticPhenomenon attrs) = runQueueT $ case msg of
@@ -35,9 +29,8 @@ instance RunMessage PrismaticPhenomenon where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      getSkillTestTarget >>= \case
-        Nothing -> error "invalid target"
-        Just target -> withSkillTest \sid ->
+      whenJustM getSkillTestTarget \target ->
+        withSkillTest \sid ->
           skillTestModifier sid (attrs.ability 1) target (AlternateSuccessfullInvestigation $ toTarget attrs)
       pure t
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do

@@ -667,6 +667,8 @@ passesCriteria iid mcard source' requestor windows' = \case
     total `gameValueMatches` valueMatcher
   Criteria.Criteria rs -> allM (passesCriteria iid mcard source' requestor windows') rs
   Criteria.AnyCriterion rs -> anyM (passesCriteria iid mcard source' requestor windows') rs
+  Criteria.AgendaCount n matcher -> do
+    (>= n) <$> selectCount (Matcher.replaceYouMatcher iid matcher)
   Criteria.LocationExists matcher -> selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.LocationCount n matcher -> do
     (>= n) <$> selectCount (Matcher.replaceYouMatcher iid matcher)

@@ -28,6 +28,6 @@ instance HasAbilities PeltShipment where
 
 instance RunMessage PeltShipment where
   runMessage msg a@(PeltShipment attrs) = runQueueT $ case msg of
-    InHand _ (UseThisAbility _iid (isSource attrs -> True) 1) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 1) | iid == iid' -> do
       pure a
     _ -> PeltShipment <$> liftRunMessage msg attrs

@@ -43,7 +43,7 @@ instance RunMessage ShortRest where
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       assetChooseHealDamageOrHorror attrs iid aid
       pure e
-    InHand _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 1) | iid == iid' -> do
       playCardPayingCost iid (toCard attrs)
       pure e
     _ -> ShortRest <$> liftRunMessage msg attrs

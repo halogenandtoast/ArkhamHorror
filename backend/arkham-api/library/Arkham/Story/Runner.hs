@@ -55,10 +55,10 @@ instance RunMessage StoryAttrs where
     InSearch msg'@(UseAbility _ ab _) | isSource attrs ab.source || isProxySource attrs ab.source -> do
       push $ Do msg'
       pure attrs
-    InDiscard _ msg'@(UseAbility _ ab _) | isSource attrs ab.source || isProxySource attrs ab.source -> do
+    InDiscard iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource attrs ab.source || isProxySource attrs ab.source) -> do
       push $ Do msg'
       pure attrs
-    InHand _ msg'@(UseAbility _ ab _) | isSource attrs ab.source || isProxySource attrs ab.source -> do
+    InHand iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource attrs ab.source || isProxySource attrs ab.source) -> do
       push $ Do msg'
       pure attrs
     PlaceTokens _source target tType n | isTarget attrs target -> do

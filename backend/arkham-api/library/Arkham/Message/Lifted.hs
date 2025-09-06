@@ -3287,6 +3287,9 @@ priority body = do
 flipCluesToDoom :: (ReverseQueue m, Targetable target) => target -> Int -> m ()
 flipCluesToDoom target n = push $ FlipClues (toTarget target) n
 
+flipDoomToClues :: (ReverseQueue m, Targetable target) => target -> Int -> m ()
+flipDoomToClues target n = push $ FlipDoom (toTarget target) n
+
 allRandomDiscard :: (ReverseQueue m, Sourceable source) => source -> CardMatcher -> m ()
 allRandomDiscard source matcher = push $ AllRandomDiscard (toSource source) matcher
 

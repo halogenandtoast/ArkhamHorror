@@ -32,7 +32,7 @@ instance RunMessage NineOfRods3 where
       push $ ShuffleCardsIntoDeck Deck.EncounterDeck [card]
       drawEncounterCard iid attrs
       pure a
-    InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 2) | iid == iid' -> do
       putCardIntoPlay iid attrs
       pure a
     _ -> NineOfRods3 <$> liftRunMessage msg attrs

@@ -22,7 +22,7 @@ instance HasAbilities DeathXIII1 where
 
 instance RunMessage DeathXIII1 where
   runMessage msg a@(DeathXIII1 attrs) = case msg of
-    InHand _ (UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
+    InHand iid (UseCardAbility iid' (isSource attrs -> True) 1 _ _) | iid == iid' -> do
       push $ putCardIntoPlay iid attrs
       pure a
     _ -> DeathXIII1 <$> runMessage msg attrs

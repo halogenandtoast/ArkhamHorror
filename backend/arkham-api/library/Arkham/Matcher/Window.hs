@@ -304,5 +304,5 @@ instance FromJSON WindowMatcher where
         econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case econtents of
           Left (a, b, c) -> pure $ WouldAddChaosTokensToChaosBag a Nothing b c
-          Right (a, b, c, d) -> pure $ EnemyAttackedSuccessfully a b c d
+          Right (a, b, c, d) -> pure $ WouldAddChaosTokensToChaosBag a b c d
       _ -> genericParseJSON defaultOptions (Object o)

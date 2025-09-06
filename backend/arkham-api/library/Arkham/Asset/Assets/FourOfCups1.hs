@@ -23,7 +23,7 @@ instance HasAbilities FourOfCups1 where
 
 instance RunMessage FourOfCups1 where
   runMessage msg a@(FourOfCups1 attrs) = case msg of
-    InHand _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 1) | iid == iid' -> do
       push $ putCardIntoPlay iid attrs
       pure a
     _ -> FourOfCups1 <$> runMessage msg attrs

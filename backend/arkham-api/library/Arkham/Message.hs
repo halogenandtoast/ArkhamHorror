@@ -1321,7 +1321,25 @@ instance FromJSON Message where
         pure $ InvestigatorDrewPlayerCardFrom a b Nothing
       "ReportXp" -> do
         ReportXp <$> (o .: "contents" <|> (snd @ScenarioId <$> o .: "contents"))
-      _ -> (StoryMessage <$> o .: "contents") <|> defaultParseMessage (Object o)
+      "ReadStoryWithPlacement" -> do
+        (a, b, c, d, e) <- o .: "contents"
+        pure $ StoryMessage $ ReadStoryWithPlacement a b c d e
+      "ReadStory" -> do
+        (a, b, c, d) <- o .: "contents"
+        pure $ StoryMessage $ ReadStory a b c d
+      "ResolveStory" -> do
+        (a, b, c) <- o .: "contents"
+        pure $ StoryMessage $ ResolveStory a b c
+      "ResolvedStory" -> do
+        (a, b) <- o .: "contents"
+        pure $ StoryMessage $ ResolvedStory a b
+      "PlaceStory" -> do
+        (a, b) <- o .: "contents"
+        pure $ StoryMessage $ PlaceStory a b
+      "RemoveStory" -> do
+        a <- o .: "contents"
+        pure $ StoryMessage $ RemoveStory a
+      _ -> defaultParseMessage (Object o)
 
 defaultParseMessage :: Value -> Parser Message
 defaultParseMessage = $(mkParseJSON defaultOptions ''Message)

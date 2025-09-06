@@ -16,7 +16,10 @@ shortRest = event ShortRest Cards.shortRest
 
 instance HasAbilities ShortRest where
   getAbilities (ShortRest a) =
-    [ restricted a 1 InYourHand
+    [ restricted
+        a
+        1
+        (InYourHand <> PlayableCardExists (UnpaidCost NoAction) (basic $ CardWithId a.cardId))
         $ freeReaction
           (Arkham.Matcher.PlayEventDiscarding #after (colocatedWithMatch You) (eventIs Cards.shortRest))
     ]

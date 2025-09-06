@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { onMounted, onBeforeUnmount, computed, ref } from 'vue'
-import type { Game } from '@/arkham/types/Game'
+import { onMounted, onBeforeUnmount, computed, ref, nextTick, watch } from 'vue'
+import type {Game} from '@/arkham/types/Game'
 
 export interface Props {
   game: Game
@@ -23,6 +23,8 @@ const toConnection = (div1: HTMLElement, div2: HTMLElement): string | undefined 
   return leftDivId && rightDivId ? `${leftDivId}:${rightDivId}` : undefined
 }
 
+const svgRef = ref<SVGSVGElement | null>(null)
+const protoRef = ref<SVGLineElement | null>(null)
 let svgEl: SVGSVGElement | null = null
 let lineProto: SVGLineElement | null = null
 
@@ -59,6 +61,8 @@ function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement) {
     line = lineProto.cloneNode(true) as SVGLineElement
     line.classList.remove('original')
     line.classList.add('connection')
+    // ensure no duplicate ids leak to the DOM
+    line.removeAttribute('id')
     line.dataset.connection = connection
     svgEl.appendChild(line)
     linesByConn.set(connection, line)
@@ -78,9 +82,7 @@ function makeOrUpdateLine(div1: HTMLElement, div2: HTMLElement) {
 }
 
 function handleConnections() {
-  const svg = svgEl
-  if (!svg) return
-
+  if(!svgEl) return
   const live = new Set<string>()
 
   for (const location of locations.value) {
@@ -130,16 +132,22 @@ function tick(ts: number) {
   requestId.value = window.requestAnimationFrame(tick)
 }
 
-onMounted(() => {
-  svgEl = document.getElementById('svg') as SVGSVGElement | null
-  lineProto = document.getElementById('line') as SVGLineElement | null
+onMounted(async () => {
+  await nextTick() // ensure template is in DOM
+  svgEl = svgRef.value
+  lineProto = protoRef.value
+  // first draw immediately so a cold refresh shows lines at once
+  handleConnections()
   requestId.value = window.requestAnimationFrame(tick)
 })
 
-onBeforeUnmount(() => {
-  if (requestId.value !== null) cancelAnimationFrame(requestId.value)
+// keep lines fresh if the set of locations changes
+watch(locations, ()=> { handleConnections() }, { flush: 'post' })
+
+onBeforeUnmount(()=> {
+  if(requestId.value !== null) cancelAnimationFrame(requestId.value)
   requestId.value = null
-  for (const [, el] of linesByConn) el.remove()
+  for (const [,el] of linesByConn) el.remove()
   linesByConn.clear()
   svgEl = null
   lineProto = null
@@ -147,13 +155,13 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <svg id="svg">
-    <line id="line" class="line original" stroke-dasharray="5, 5"/>
+  <svg ref="svgRef" class="connections-svg">
+    <line ref="protoRef" class="line original" stroke-dasharray="5, 5"/>
   </svg>
 </template>
 
 <style lang="scss" scoped>
-#svg {
+.connections-svg{
   pointer-events: none;
   position: absolute;
   isolation: isolate;
@@ -161,16 +169,15 @@ onBeforeUnmount(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -100000000;
+  z-index:-1;
   overflow: visible !important;
 }
 
-#line {
+.line{
   stroke-width: 6px;
-  stroke: rgba(255,255,255, 0.2);
+  stroke: rgba(255, 255, 255, 0.2);
 }
-
-.active {
-  stroke: rgba(255,255,255, 0.7) !important;
+.active{
+  stroke: rgba(255, 255, 255, 0.7) !important;
 }
 </style>

@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -505,6 +505,96 @@ getConnectedMatcher :: HasGame m => ForMovement -> Location -> m LocationMatcher
 getConnectedMatcher forMovement = Helpers.getConnectedMatcher forMovement . toId
 
 instance ToJSON gid => ToJSON (PublicGame gid) where
+  toEncoding (FailedToLoadGame e) = pairs ("tag" .= String "FailedToLoadGame" <> "error" .= toJSON e)
+  toEncoding (PublicGame gid name glog g@Game {..}) = flip runReader g do
+    locations <- traverse withLocationConnectionData =<< traverse withModifiers (gameLocations g)
+    investigators <-
+      traverse withInvestigatorConnectionData
+        =<< traverse (withModifiers . WithDeckSize) (gameInvestigators g)
+    enemies <- traverse withEnemyMetadata (gameEnemies g)
+    assets <- traverse withAssetMetadata (gameAssets g)
+    acts <- traverse withActMetadata (gameActs g)
+    agendas <- traverse withAgendaMetadata (gameAgendas g)
+    treacheries <- traverse withTreacheryMetadata (gameTreacheries g)
+    events <- traverse withModifiers (gameEvents g)
+    focusedChaosTokens <- traverse withModifiers gameFocusedChaosTokens
+    skillTest <- maybe (pure Nothing) (fmap Just . withSkillTestMetadata) gameSkillTest
+    skillTestChaosTokens <-
+      maybe (pure []) (traverse withSkillTestModifiers . skillTestSetAsideChaosTokens) gameSkillTest
+    doom <- getDoomCount
+    clues <- Arkham.Helpers.Cost.getSpendableClueCount (Map.keys $ gameInvestigators g)
+    pure
+      $ pairs
+      $ ("tag" .= String "PublicGame")
+      <> ("name" .= name)
+      <> ("id" .= gid)
+      <> ("log" .= glog)
+      <> ("git" .= gameGitRevision)
+      <> ("mode" .= gameMode)
+      <> ("modifiers" .= Map.filter notNull gameModifiers)
+      <> ("encounterDeckSize" .= maybe 0 (length . attr scenarioEncounterDeck) (modeScenario gameMode))
+      <> ("locations" .= locations)
+      <> ("investigators" .= investigators)
+      <> ("otherInvestigators" .= otherInvestigators)
+      <> ("enemies" .= enemies)
+      <> ("assets" .= assets)
+      <> ("acts" .= acts)
+      <> ("agendas" .= agendas)
+      <> ("treacheries" .= treacheries)
+      <> ("events" .= events)
+      <> ("skills" .= gameSkills g) -- no need for modifiers... yet
+      <> ("stories" .= entitiesStories gameEntities)
+      <> ("playerCount" .= gamePlayerCount)
+      <> ("activeInvestigatorId" .= gameActiveInvestigatorId)
+      <> ("activePlayerId" .= gameActivePlayerId)
+      <> ("turnPlayerInvestigatorId" .= gameTurnPlayerInvestigatorId)
+      <> ("leadInvestigatorId" .= gameLeadInvestigatorId)
+      <> ("playerOrder" .= gamePlayerOrder)
+      <> ("phase" .= gamePhase)
+      <> ("phaseStep" .= gamePhaseStep)
+      <> ("skillTest" .= skillTest)
+      <> ("skillTestChaosTokens" .= skillTestChaosTokens)
+      <> ("focusedCards" .= fromMaybe [] (headMay gameFocusedCards))
+      <> ("focusedTarotCards" .= gameFocusedTarotCards)
+      <> ("foundCards" .= gameFoundCards)
+      <> ("focusedChaosTokens" .= focusedChaosTokens)
+      <> ("activeCard" .= gameActiveCard)
+      <> ("removedFromPlay" .= gameRemovedFromPlay)
+      <> ("gameState" .= gameGameState)
+      <> ("skillTestResults" .= gameSkillTestResults)
+      <> ("question" .= gameQuestion)
+      <> ("cards" .= gameCards)
+      <> ("totalDoom" .= doom)
+      <> ("totalClues" .= clues)
+   where
+    emptyAdditionalData =
+      object
+        [ "additionalActions" .= emptyArray
+        , "engagedEnemies" .= emptyArray
+        , "assets" .= emptyArray
+        , "events" .= emptyArray
+        , "skills" .= emptyArray
+        , "treacheries" .= emptyArray
+        ]
+    otherInvestigators = case gameMode of
+      This c -> campaignOtherInvestigators (toJSON $ attr campaignMeta c)
+      That _ -> mempty
+      These c _ -> campaignOtherInvestigators (toJSON $ attr campaignMeta c)
+    campaignOtherInvestigators j = case parse (withObject "" (.: "otherCampaignAttrs")) j of
+      Error _ -> mempty
+      Success attrs ->
+        Map.fromList
+          . map
+            ( \iid ->
+                ( iid
+                , (`with` emptyAdditionalData)
+                    . (`with` ConnectionData [])
+                    . (`with` ModifierData [])
+                    . WithDeckSize
+                    $ lookupInvestigator iid (PlayerId nil)
+                )
+            )
+          $ Map.keys (campaignDecks attrs)
   toJSON (FailedToLoadGame e) = object ["tag" .= String "FailedToLoadGame", "error" .= toJSON e]
   toJSON (PublicGame gid name glog g@Game {..}) = flip runReader g do
     locations <- traverse withLocationConnectionData =<< traverse withModifiers (gameLocations g)
@@ -707,22 +797,24 @@ getInvestigatorsMatching matcher = do
     InvestigatorWithAnyFailedSkillTestsThisTurn -> flip filterM as \i -> do
       x <- getHistoryField TurnHistory (toId i) HistorySkillTestsPerformed
       pure $ any (isFailedResult . snd) x
-    InvestigatorCanBeAssignedDamageBy iid -> flip filterM as \i -> do
+    InvestigatorCanBeAssignedDamageBy iid -> do
       mods <- getModifiers iid
-      let
-        damageable = flip any mods $ \case
-          CanAssignDamageToInvestigator iid' -> toId i == iid'
-          _ -> False
-      isHealthDamageable <- fieldP InvestigatorRemainingHealth (> 0) (toId i)
-      pure $ damageable && isHealthDamageable
-    InvestigatorCanBeAssignedHorrorBy iid -> flip filterM as \i -> do
+      flip filterM as \i -> do
+        let
+          damageable = flip any mods $ \case
+            CanAssignDamageToInvestigator iid' -> toId i == iid'
+            _ -> False
+        isHealthDamageable <- fieldP InvestigatorRemainingHealth (> 0) (toId i)
+        pure $ damageable && isHealthDamageable
+    InvestigatorCanBeAssignedHorrorBy iid -> do
       mods <- getModifiers iid
-      let
-        damageable = flip any mods $ \case
-          CanAssignHorrorToInvestigator iid' -> toId i == iid'
-          _ -> False
-      isSanityDamageable <- fieldP InvestigatorRemainingSanity (> 0) (toId i)
-      pure $ damageable && isSanityDamageable
+      flip filterM as \i -> do
+        let
+          damageable = flip any mods $ \case
+            CanAssignHorrorToInvestigator iid' -> toId i == iid'
+            _ -> False
+        isSanityDamageable <- fieldP InvestigatorRemainingSanity (> 0) (toId i)
+        pure $ damageable && isSanityDamageable
     OwnsAsset matcher' -> flip filterM as $ selectAny . (<> matcher') . AssetOwnedBy . InvestigatorWithId . toId
     ControlsAsset matcher' -> flip filterM as $ selectAny . (<> matcher') . AssetControlledBy . InvestigatorWithId . toId
     InvestigatorHasCardWithDamage -> flip filterM as $ \i -> do
@@ -1540,7 +1632,7 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
     AbilityIs source idx -> pure $ filter (\a -> a.source == source && a.index == idx) as
     AbilityWindow windowMatcher -> pure $ filter ((== windowMatcher) . abilityWindow) as
     AbilityMatches xs -> foldM go as xs
-    AbilityOneOf xs -> nub . concat <$> traverse (go as) xs
+    AbilityOneOf xs -> nubOrdOn (.ref) . concat <$> traverse (go as) xs
     AbilityOnEncounterCard ->
       filterM (\a -> a.source `sourceMatches` M.EncounterCardSource)
         $ filter
@@ -3233,8 +3325,7 @@ enemyMatcherFilter es matcher' = do
             Nothing -> pure False
             Just v -> gameValueMatches v valueMatcher
       filterM (fieldMapM EnemyRemainingHealth hasRemainingHealth . toId) es
-    EnemyWithoutModifier modifier -> do
-      flip filterM es (`withoutModifier` modifier)
+    EnemyWithoutModifier modifier -> filterM (`withoutModifier` modifier) es
     EnemyWithModifier modifier -> do
       flip filterM es \enemy -> elem modifier <$> getModifiers (toTarget enemy)
     EnemyWithEvade -> filterM (fieldP EnemyEvade isJust . toId) es

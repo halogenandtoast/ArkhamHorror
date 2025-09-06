@@ -586,6 +586,10 @@ getWindowAsset ((windowType -> Window.ActivateAbility _ _ ability) : xs) = case 
   _ -> getWindowAsset xs
 getWindowAsset (_ : xs) = getWindowAsset xs
 
+enemyMatches :: HasGame m => EnemyId -> EnemyMatcher -> m Bool
+enemyMatches _eid Matcher.AnyEnemy = pure True
+enemyMatches eid matcher = orM [matches eid matcher, matches eid (Matcher.OutOfPlayEnemy RemovedZone matcher)]
+
 windowMatches
   :: (HasGame m, HasCallStack)
   => InvestigatorId
@@ -1627,11 +1631,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           -- we need to check defeated because things like Kymani's ability can discard them
           andM
             [ matchWho iid who whoMatcher
-            , orM
-                [ pure $ enemyMatcher == Matcher.AnyEnemy
-                , matches enemyId enemyMatcher
-                , matches enemyId (Matcher.OutOfPlayEnemy RemovedZone enemyMatcher)
-                ]
+            , enemyMatches enemyId enemyMatcher
             ]
         _ -> noMatch
     Matcher.EnemyEngaged timing whoMatcher enemyMatcher ->
@@ -1639,7 +1639,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.EnemyEngaged who enemyId ->
           andM
             [ matchWho iid who whoMatcher
-            , matches enemyId enemyMatcher
+            , enemyMatches enemyId enemyMatcher
             ]
         _ -> noMatch
     Matcher.MythosStep mythosStepMatcher -> guardTiming #when $ \case

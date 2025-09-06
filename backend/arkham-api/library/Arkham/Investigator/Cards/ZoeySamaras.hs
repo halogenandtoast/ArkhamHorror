@@ -19,10 +19,7 @@ zoeySamaras =
 
 instance HasAbilities ZoeySamaras where
   getAbilities (ZoeySamaras x) =
-    [ restrictedAbility x 1 (Self <> CanGainResources)
-        $ freeReaction
-        $ EnemyEngaged #after You AnyEnemy
-    ]
+    [selfAbility x 1 CanGainResources $ freeReaction $ EnemyEngaged #after You AnyEnemy]
 
 instance HasChaosTokenValue ZoeySamaras where
   getChaosTokenValue iid ElderSign (ZoeySamaras attrs) | attrs `is` iid = do
@@ -32,9 +29,9 @@ instance HasChaosTokenValue ZoeySamaras where
 instance RunMessage ZoeySamaras where
   runMessage msg i@(ZoeySamaras attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      gainResourcesIfCan iid (attrs.ability 1) 1
+      gainResources iid (attrs.ability 1) 1
       pure i
-    ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
+    ElderSignEffect (is attrs -> True) -> do
       withSkillTest \sid -> skillTestModifier sid attrs attrs (DamageDealt 1)
       pure i
     _ -> ZoeySamaras <$> liftRunMessage msg attrs

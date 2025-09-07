@@ -75,7 +75,7 @@ type Search = {
 }
 
 export const searchDecoder = JsonDecoder.object<Search>({
-  searchFoundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
+  searchFoundCards: JsonDecoder.record<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
 }, 'Search');
 
 export type InvestigatorDetails = {
@@ -115,7 +115,7 @@ export const cardSettingsDecoder = JsonDecoder.object<CardSettings>({
   globalSettings: JsonDecoder.object({
     ignoreUnrelatedSkillTestTriggers: JsonDecoder.boolean(),
   }, 'GlobalSettings'),
-  perCardSettings: JsonDecoder.dictionary(JsonDecoder.object({
+  perCardSettings: JsonDecoder.record(JsonDecoder.object({
     cardIgnoreUnrelatedSkillTestTriggers: JsonDecoder.boolean(),
   }, 'PerCardSettings'), 'Dict<string, PerCardSettings>'),
 }, 'CardSettings');

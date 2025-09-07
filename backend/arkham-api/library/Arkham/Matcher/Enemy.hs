@@ -91,6 +91,7 @@ data EnemyMatcher
   | AttackingEnemy
   | AttackedYouSinceTheEndOfYourLastTurn
   | CanFightEnemy Source
+  | CanFightEnemyWith SourceMatcher
   | CanEvadeEnemy Source -- This checks for an ability
   | EnemyCanBeEvadedBy Source -- This is not checking for an ability
   | EnemyCanBeDefeatedBy Source

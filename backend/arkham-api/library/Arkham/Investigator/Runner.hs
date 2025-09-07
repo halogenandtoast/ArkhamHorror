@@ -984,6 +984,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   --   if shouldDiscard
   --     then pure $ a & discardL %~ (card :) & handL %~ filter (/= PlayerCard card)
   --     else pure a
+  RemoveAsset aid -> do
+    pushWhen (providedSlot a aid) $ RefillSlots a.id []
+    pure $ a & (slotsL %~ removeFromSlots aid)
   Discarded (AssetTarget aid) _ (EncounterCard _) -> do
     pushWhen (providedSlot a aid) $ RefillSlots a.id []
     pure $ a & (slotsL %~ removeFromSlots aid)

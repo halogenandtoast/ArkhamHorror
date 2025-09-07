@@ -3363,8 +3363,7 @@ enemyMatcherFilter es matcher' = do
       sources <- select sourceMatcher
       nubOrdOn (.id) . concat <$> traverse (enemyMatcherFilter es . CanFightEnemy) sources
     CanFightEnemy source -> do
-      miid <- getSourceController source
-      iid <- maybe (view activeInvestigatorIdL <$> getGame) pure miid
+      iid <- fromMaybeM (view activeInvestigatorIdL <$> getGame) (getSourceController source)
       modifiers' <- getModifiers iid
       let cannotAttackEnemy e = CannotAttackEnemy e.id `elem` modifiers'
       let es' = filter (not . cannotAttackEnemy) es

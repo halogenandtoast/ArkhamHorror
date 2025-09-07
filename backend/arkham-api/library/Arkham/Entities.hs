@@ -30,6 +30,7 @@ import Arkham.Placement
 import Arkham.Scenario ()
 import Arkham.Skill (createSkill)
 import Arkham.Skill.Types (Skill)
+import Arkham.Source
 import Arkham.Story
 import Arkham.Target
 import Arkham.Treachery
@@ -128,12 +129,15 @@ instance HasAbilities Entities where
       <> concatMap getAbilities (toList entitiesStories)
 
 data SomeEntity where
-  SomeEntity :: (Entity a, HasModifiersFor a, Targetable a, Show a) => a -> SomeEntity
+  SomeEntity :: (Entity a, HasModifiersFor a, Targetable a, Sourceable a, Show a) => a -> SomeEntity
 
 deriving stock instance Show SomeEntity
 
 instance Targetable SomeEntity where
   toTarget (SomeEntity e) = toTarget e
+
+instance Sourceable SomeEntity where
+  toSource (SomeEntity e) = toSource e
 
 instance HasModifiersFor SomeEntity where
   getModifiersFor (SomeEntity e) = getModifiersFor e

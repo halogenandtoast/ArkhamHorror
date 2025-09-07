@@ -111,9 +111,7 @@ getCanAfford a@InvestigatorAttrs {..} as = do
   actionCost <- getActionCost a as
   additionalActions <- getAdditionalActions a
   additionalActionCount <-
-    countM
-      (\aa -> anyM (\ac -> additionalActionCovers (toSource a) [ac] aa) as)
-      additionalActions
+    countM (\aa -> anyM (\ac -> additionalActionCovers (toSource a) [ac] aa) as) additionalActions
   pure $ actionCost <= (investigatorRemainingActions + additionalActionCount)
 
 getAdditionalActions :: HasGame m => InvestigatorAttrs -> m [AdditionalAction]

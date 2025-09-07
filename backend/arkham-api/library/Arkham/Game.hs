@@ -3359,6 +3359,9 @@ enemyMatcherFilter es matcher' = do
         if enemy.placement.isAttached
           then pure False
           else Helpers.placementLocation enemy.placement <&> maybe False (`elem` locations)
+    CanFightEnemyWith sourceMatcher -> do
+      sources <- select sourceMatcher
+      nubOrdOn (.id) . concat <$> traverse (enemyMatcherFilter es . CanFightEnemy) sources
     CanFightEnemy source -> do
       iid <- view activeInvestigatorIdL <$> getGame
       modifiers' <- getModifiers iid
@@ -4179,6 +4182,10 @@ instance Projection Investigator where
 instance Query TargetMatcher where
   select matcher = do
     filterM (`targetMatches` matcher) . overEntities ((: []) . toTarget) . view entitiesL =<< getGame
+
+instance Query SourceMatcher where
+  select matcher = do
+    filterM (`sourceMatches` matcher) . overEntities ((: []) . toSource) . view entitiesL =<< getGame
 
 instance Query ChaosTokenMatcher where
   select matcher = do

@@ -192,47 +192,51 @@ export const gameDetailsEntryDecoder = JsonDecoder.oneOf<GameDetailsEntry>(
   'GameDetailsEntry'
 );
 
-export const gameDecoder = JsonDecoder.object(
+export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
   {
     id: JsonDecoder.string(),
     name: JsonDecoder.string(),
     log: JsonDecoder.array(JsonDecoder.string(), 'LogEntry[]'),
 
     activeInvestigatorId: JsonDecoder.string(),
-    acts: JsonDecoder.dictionary<Act>(actDecoder, 'Dict<UUID, Act>'),
-    agendas: JsonDecoder.dictionary<Agenda>(agendaDecoder, 'Dict<UUID, Agenda>'),
-    assets: JsonDecoder.dictionary<Asset>(assetDecoder, 'Dict<UUID, Asset>'),
-    events: JsonDecoder.dictionary<Event>(eventDecoder, 'Dict<UUID, Event>'),
-    enemies: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
-    stories: JsonDecoder.dictionary<Story>(storyDecoder, 'Dict<UUID, Story>'),
+    acts: JsonDecoder.record<Act>(actDecoder, 'Dict<UUID, Act>'),
+    agendas: JsonDecoder.record<Agenda>(agendaDecoder, 'Dict<UUID, Agenda>'),
+    assets: JsonDecoder.record<Asset>(assetDecoder, 'Dict<UUID, Asset>'),
+    events: JsonDecoder.record<Event>(eventDecoder, 'Dict<UUID, Event>'),
+    enemies: JsonDecoder.record<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
+    stories: JsonDecoder.record<Story>(storyDecoder, 'Dict<UUID, Story>'),
     gameState: gameStateDecoder,
-    investigators: JsonDecoder.dictionary<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
-    otherInvestigators: JsonDecoder.dictionary<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
+    investigators: JsonDecoder.record<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
+    otherInvestigators: JsonDecoder.record<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
     leadInvestigatorId: JsonDecoder.string(),
     activePlayerId: JsonDecoder.string(),
-    locations: JsonDecoder.dictionary<Location>(locationDecoder, 'Dict<UUID, Location>'),
+    locations: JsonDecoder.record<Location>(locationDecoder, 'Dict<UUID, Location>'),
     phase: phaseDecoder,
     phaseStep: JsonDecoder.nullable(phaseStepDecoder),
     playerOrder: JsonDecoder.array(JsonDecoder.string(), 'PlayerOrder[]'),
     playerCount: JsonDecoder.number(),
-    question: JsonDecoder.dictionary<Question>(questionDecoder, 'Dict<InvestigatorId, Question>'),
+    question: JsonDecoder.record<Question>(questionDecoder, 'Dict<InvestigatorId, Question>'),
     mode: modeDecoder,
-    skills: JsonDecoder.dictionary<Skill>(skillDecoder, 'Dict<UUID, Skill>'),
+    skills: JsonDecoder.record<Skill>(skillDecoder, 'Dict<UUID, Skill>'),
     skillTest: JsonDecoder.nullable(skillTestDecoder),
     skillTestResults: JsonDecoder.nullable(skillTestResultsDecoder),
-    treacheries: JsonDecoder.dictionary<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),
+    treacheries: JsonDecoder.record<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),
     focusedCards: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
     focusedTarotCards: JsonDecoder.array<TarotCard>(tarotCardDecoder, 'TarotCard[]'),
-    foundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
+    foundCards: JsonDecoder.record<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
     focusedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'Token[]'),
     skillTestChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'Token[]'),
     activeCard: JsonDecoder.nullable(cardDecoder),
     removedFromPlay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
     encounterDeckSize: JsonDecoder.number(),
-    cards: JsonDecoder.dictionary<Card>(cardDecoder, 'Dict<string, Card>'),
+    cards: JsonDecoder.record<Card>(cardDecoder, 'Dict<string, Card>'),
     modifiers: JsonDecoder.array(JsonDecoder.tuple([targetDecoder, JsonDecoder.array(modifierDecoder, 'Modifier[]')], 'Target, Modifier[]'), 'Modifier[]'),
     totalDoom: JsonDecoder.number(),
     totalClues: JsonDecoder.number()
   },
   'Game',
-).map(({mode, ...game}) => ({ scenario: mode.That, campaign: mode.This, ...game }))
+).map(({mode, ...game}) => ({
+  scenario: mode?.That ?? null,
+  campaign: mode?.This ?? null,
+  ...game
+}))

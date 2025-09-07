@@ -1,44 +1,24 @@
 <script lang="ts" setup>
-import { watch, ref } from 'vue'
+import { computed, watch, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import {imgsrc} from '@/arkham/helpers';
 import { fetchInvestigators, newDeck, validateDeck } from '@/arkham/api'
 import ArkhamDbDeck from '@/arkham/components/ArkhamDbDeck.vue';
+import { ArkhamDbDecklist } from '@/arkham/types/Deck';
+import { useCardStore } from '@/stores/cards'
 
-type Props = {
+const props = withDefaults(defineProps<{
   noPortrait?: boolean
   setPortrait?: (src: string) => void
-}
+}>(), { noPortrait: false })
 
-const props = withDefaults(defineProps<Props>(), {
-  noPortrait: false
-})
-
-const ready = ref(false)
 const emit = defineEmits(['newDeck'])
 
-await fetchInvestigators().then(async (response) => {
-  fetch("/cards.json").then(async (cardResponse) => {
-    cards.value = await cardResponse.json()
-    investigators.value = response
-    ready.value = true
-  })
-})
+const store = useCardStore()
+const investigators = ref<string[]>([])
+const { cards }  = storeToRefs(store)
 
-interface Meta {
-  alternate_front: string
-}
-
-interface ArkhamDbDecklist {
-  id: string
-  url: string | null
-  meta?: Meta
-  name: string
-  investigator_code: string
-  investigator_name: string
-  slots: {
-    [key: string]: number
-  }
-}
+investigators.value = await fetchInvestigators()
 
 interface UnimplementedCardError {
   tag: string
@@ -51,17 +31,21 @@ interface ArkhamDBCard {
   xp?: string
 }
 
-const cards = ref([])
-const errors = ref([])
+const errors = ref<string[]>([])
 const valid = ref(false)
 const investigatorError = ref<string | null>(null)
 const investigator = ref<string | null>(null)
-const investigators = ref<string[]>([])
 const deck = ref<string | null>(null)
 const deckId = ref<string | null>(null)
 const deckName = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
 const deckList = ref<ArkhamDbDecklist | null>(null)
+const maybeSetPortrait = (code: string | null | undefined) => {
+  if (!code || !props.setPortrait) return
+  props.setPortrait(imgsrc(`portraits/${normalizeCode(code)}.jpg`))
+}
+const resolvedInvestigatorCode = (d: ArkhamDbDecklist) =>
+  d.meta?.alternate_front ?? d.investigator_code
 
 function loadDeckFromFile(e: Event) {
   valid.value = false
@@ -102,70 +86,76 @@ function loadDeckFromFile(e: Event) {
 
 watch(deckList, loadDeck)
 
-function loadDeck() {
-  valid.value = false
-  if (!deckList.value) {
-    return
-  }
-
-  investigator.value = null
-  investigatorError.value = null
-  if (investigators.value.includes(deckList.value.investigator_code)) {
-    if(deckList.value.meta && deckList.value.meta.alternate_front) {
-      investigator.value = deckList.value.meta.alternate_front
-      if (props.setPortrait) {
-        props.setPortrait(imgsrc(`portraits/${deckList.value.meta.alternate_front.replace('c', '')}.jpg`))
-      }
-    } else {
-      investigator.value = deckList.value.investigator_code
-      if (props.setPortrait) {
-        props.setPortrait(imgsrc(`portraits/${deckList.value.investigator_code.replace('c', '')}.jpg`))
-      }
-    }
-  } else {
-    investigatorError.value = `${deckList.value.investigator_name} is not yet implemented, please use a different deck ${JSON.stringify(deckList.value)}`
-  }
-  deckId.value = String(deckList.value.id)
-  deckName.value = deckList.value.name
-  deckUrl.value = deckList.value.url
-
-  runValidations()
-}
-
-function runValidations() {
+async function loadDeck() {
   valid.value = false
   errors.value = []
-  validateDeck(deckList.value).then(() => valid.value = true).catch((error) => {
-    errors.value = error.response.data.map((error: UnimplementedCardError) => {
-      const match = cards.value.find((c: ArkhamDBCard) => c.code == error.contents.replace(/^c/, ''))
-      if (match) {
-        const { name, xp } = match
-        return xp ? `${name} (${xp})` : name
-      }
-      return `Unknown card: ${error.contents}`
+  investigator.value = null
+  investigatorError.value = null
+
+  const dl = deckList.value
+  if (!dl) return
+
+  const invCode = resolvedInvestigatorCode(dl)
+  const invImplemented = investigators.value.includes(dl.investigator_code)
+
+  if (invImplemented) {
+    investigator.value = invCode
+    maybeSetPortrait(invCode)
+  } else {
+    investigatorError.value =
+      `${dl.investigator_name} is not yet implemented, please use a different deck ${JSON.stringify(dl)}`
+  }
+
+  deckId.value = String(dl.id)
+  deckName.value = dl.name
+  deckUrl.value = dl.url
+
+  await runValidations()
+}
+
+const normalizeCode = (code: string) => code.replace(/^c/, '')
+const cardByCode = computed(() => {
+  const m = new Map<string, ArkhamDBCard>()
+  for (const c of cards.value) m.set(normalizeCode(c.code), c)
+  return m
+})
+
+async function runValidations() {
+  valid.value = false
+  errors.value = []
+  try {
+    await validateDeck(deckList.value)
+    valid.value = true
+  } catch (err: any) {
+    const payload: UnimplementedCardError[] = err?.response?.data ?? []
+    errors.value = payload.map((e) => {
+      const key = normalizeCode(e.contents)
+      const hit = cardByCode.value.get(key)
+      if (hit) return hit.xp ? `${hit.name} (${hit.xp})` : hit.name
+      return `Unknown card: ${e.contents}`
     })
-  })
+  }
 }
 
 async function createDeck() {
   errors.value = []
-  if (deckId.value && deckName.value && valid.value) {
-    newDeck(deckId.value, deckName.value, deckUrl.value, deckList.value).then((newDeck) => {
-      deckId.value = null
-      deckName.value = null
-      deckUrl.value = null
-      investigator.value = null
-      deck.value = null
-      emit('newDeck', newDeck)
-    }).catch((error) => {
-      errors.value = error.response.data.map((error: UnimplementedCardError) => {
-        const match = cards.value.find((c: ArkhamDBCard) => c.code == error.contents.replace(/^c/, ''))
-        if (match) {
-          const { name, xp } = match
-          return xp ? `${name} (${xp})` : name
-        }
-        return "Unknown card"
-      })
+  if (!(deckId.value && deckName.value && valid.value)) return
+
+  try {
+    const created = await newDeck(deckId.value, deckName.value, deckUrl.value, deckList.value)
+    deckId.value = null
+    deckName.value = null
+    deckUrl.value = null
+    investigator.value = null
+    deck.value = null
+    emit('newDeck', created)
+  } catch (err: any) {
+    const payload: UnimplementedCardError[] = err?.response?.data ?? []
+    errors.value = payload.map((e) => {
+      const key = normalizeCode(e.contents)
+      const hit = cardByCode.value.get(key)
+      if (hit) return hit.xp ? `${hit.name} (${hit.xp})` : hit.name
+      return 'Unknown card'
     })
   }
 }
@@ -177,7 +167,7 @@ async function createDeck() {
       <img v-if="investigator && !noPortrait" class="portrait" :src="imgsrc(`portraits/${investigator.replace('c', '')}.jpg`)" />
       <div class="fields">
         <ArkhamDbDeck v-model="deckList" />
-        <input type="file" @change="loadDeckFromFile" />
+        <input type="file" accept=".json,application/json" @change="loadDeckFromFile" />
         <input v-if="investigator" v-model="deckName" />
         <button :disabled="!valid" @click.prevent="createDeck">Create</button>
       </div>

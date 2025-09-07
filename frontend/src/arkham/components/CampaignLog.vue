@@ -79,7 +79,7 @@ const loadedCards = ref<CardDef[]>([]);
 
 // Function to load missing cards
 async function loadMissingCards() {
-  const nonCardKeys = ['theCircleUndone.key.mementosDiscovered', 'theInnsmouthConspiracy.key.memoriesRecovered', 'theInnsmouthConspiracy.key.possibleSuspects', 'theInnsmouthConspiracy.key.possibleHideouts', 'edgeOfTheEarth.key.suppliesRecovered', 'edgeOfTheEarth.key.sealsPlaced', 'edgeOfTheEarth.key.sealsRecovered'];
+  const nonCardKeys = ['theCircleUndone.key.mementosDiscovered', 'theInnsmouthConspiracy.key.memoriesRecovered', 'theInnsmouthConspiracy.key.possibleSuspects', 'theInnsmouthConspiracy.key.possibleHideouts', 'theInnsmouthConspiracy.key.outForBlood', 'edgeOfTheEarth.key.suppliesRecovered', 'edgeOfTheEarth.key.sealsPlaced', 'edgeOfTheEarth.key.sealsRecovered'];
   const missingCardCodes = new Set();
   for (const [key, setValue] of Object.entries(recordedSets.value)) {
     if (nonCardKeys.includes(key)) continue;

@@ -70,10 +70,10 @@ instance RunMessage GloriaGoldberg where
     ElderSignEffect iid | attrs `is` iid -> do
       lookAt iid ElderSign EncounterDeckTarget [(FromTopOfDeck 1, PutBack)] #any ReturnCards
       pure i
-    FoundCards cards -> do
+    PreSearchFound _ _ _ cards -> do
       when (lookupMetaKeyWithDefault "gloria" False attrs) do
-        let nonEliteCards = concatMap (filterCards (not_ (CardWithTrait Elite))) (toList cards)
-        let propheciesOfTheEnd = concatMap (filterCards (cardIs Treacheries.prophecyOfTheEnd)) (toList cards)
+        let nonEliteCards = filterCards (not_ (CardWithTrait Elite)) cards
+        let propheciesOfTheEnd = filterCards (cardIs Treacheries.prophecyOfTheEnd) cards
         let iid = attrs.id
         cardsUnderneathCount <- fieldMap InvestigatorCardsUnderneath length iid
         if notNull propheciesOfTheEnd
@@ -92,8 +92,12 @@ instance RunMessage GloriaGoldberg where
           else unless (null nonEliteCards) do
             chooseOneM iid $ for_ nonEliteCards \card -> do
               targeting card $ chooseOneM iid do
-                labeled "Discard it" (addToEncounterDiscard (only card))
-                labeled "Put it on top of the encounter deck" $ putCardOnTopOfDeck iid Deck.EncounterDeck card
+                labeled "Discard it" do
+                  obtainCard card
+                  addToEncounterDiscard (only card)
+                labeled "Put it on top of the encounter deck" do
+                  obtainCard card
+                  putCardOnTopOfDeck iid Deck.EncounterDeck card
                 when (cardsUnderneathCount < 3) do
                   labeled "Place it beneath Gloria Goldberg (max 3 cards beneath her)" do
                     obtainCard card

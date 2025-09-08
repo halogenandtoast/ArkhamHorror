@@ -68,6 +68,9 @@ instance HasField "foundCards" Search (Map Zone [Card]) where
 instance HasField "allFoundCards" Search [Card] where
   getField = concat . Map.elems . searchFoundCards
 
+instance HasField "investigator" Search InvestigatorId where
+  getField = searchInvestigator
+
 deriveToJSON defaultOptions ''Search
 
 (.!) :: FromJSON a => Vector Value -> Int -> Parser a

@@ -3814,7 +3814,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         (z, _) | z == zone -> (z, returnStrategy)
         other -> other
     case investigatorSearch of
-      Nothing -> error "Invalid call, no search for investigator"
+      Nothing -> pure a
       Just s -> pure $ a & searchL ?~ s {searchZones = map updateZone (searchZones s)}
   EndSearch iid _ (InvestigatorTarget iid') _ | iid == investigatorId -> do
     let cardSources = maybe [] searchZones investigatorSearch
@@ -3857,7 +3857,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         -- Try to obtain, then don't add back
         pushAll $ map (ObtainCard . toCardId) $ findWithDefault [] Zone.FromDeck (a ^. foundCardsL)
 
-    push (SearchEnded iid)
+    push (SearchEnded $ toTarget iid)
     pure
       $ a
       & usedAbilitiesL
@@ -3877,15 +3877,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               Just (PerSearch _) -> False
               _ -> True
         )
-  SearchEnded iid | iid == investigatorId -> do
+  SearchEnded (isTarget a -> True) -> do
     case investigatorSearch of
       Just search' -> do
         when (notNull $ search' ^. Search.drawnCardsL) do
-          pushM $ checkWindows [mkAfter $ Window.DrawCards iid $ search' ^. Search.drawnCardsL]
+          pushM
+            $ checkWindows
+              [mkAfter $ Window.DrawCards search'.investigator $ search' ^. Search.drawnCardsL]
       _ -> pure ()
 
     pure $ a & searchL .~ Nothing
-  CancelSearch iid | iid == investigatorId -> pure $ a & searchL .~ Nothing
+  CancelSearch (isTarget a -> True) -> pure $ a & searchL .~ Nothing
   Search (MkSearch searchType iid _ (InvestigatorTarget iid') _ _ _ _ _) | iid' == toId a -> do
     let deck = Deck.InvestigatorDeck iid'
     if searchType == Searching
@@ -3952,14 +3954,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         pushBatch batchId
           $ CheckWindows [Window #when (Window.AmongSearchedCards batchId iid) (Just batchId)]
 
-      pushBatch batchId $ ResolveSearch investigatorId
+      pushBatch batchId $ ResolveSearch (toTarget investigatorId)
       pushBatch batchId $ EndSearch investigatorId source target cardSources
 
       pure
         $ a
         & searchL
         ?~ MkSearch searchType iid source target cardSources cardMatcher foundStrategy foundCards []
-  ResolveSearch x | x == investigatorId -> do
+  ResolveSearch (isTarget a -> True) -> do
     case investigatorSearch of
       Just
         ( MkSearch
@@ -4115,9 +4117,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               push $ chooseN player n $ if null choices then [Label "No cards found" []] else choices
             DeferSearchedToTarget searchTarget _ -> do
               -- N.B. You must handle target duplication (see Mandy Thompson) yourself
-              if null (concat $ toList targetCards)
+              if all null (toList targetCards)
                 then Lifted.promptI iid "noCardsFound" $ push $ SearchNoneFound iid searchTarget
-                else push $ SearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
+                else pushAll
+                  [ PreSearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
+                  , SearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
+                  ]
             DrawAllFound who -> do
               let
                 choices =

@@ -49,7 +49,7 @@ const searchedCards = computed(() => {
 
   const playerZones = playerCards.filter(([, c]) => c.length > 0)
 
-  const encounterCards = Object.entries(props.game.foundCards)
+  const encounterCards = Object.entries(props.game.scenario?.foundCards ? props.game.scenario.foundCards : props.game.foundCards)
   const encounterZones = encounterCards.filter(([, c]) => c.length > 0)
 
   return [...playerZones, ...encounterZones]

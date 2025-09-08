@@ -670,8 +670,8 @@ data Message
   | BeginRoundWindow
   | EndRoundWindow
   | EndSearch InvestigatorId Source Target [(Zone, ZoneReturnStrategy)]
-  | SearchEnded InvestigatorId
-  | CancelSearch InvestigatorId
+  | SearchEnded Target
+  | CancelSearch Target
   | EndTurn InvestigatorId
   | EndUpkeep
   | EnemiesAttack
@@ -994,9 +994,10 @@ data Message
   | SearchCollectionForRandom InvestigatorId Source CardMatcher
   | FinishedSearch
   | Search Search
-  | ResolveSearch InvestigatorId
+  | ResolveSearch Target
+  | PreSearchFound InvestigatorId Target DeckSignifier [Card]
   | SearchFound InvestigatorId Target DeckSignifier [Card]
-  | FoundCards (Map Zone [Card])
+  | FoundCards (Map Zone [Card]) -- Deprecated
   | SearchNoneFound InvestigatorId Target
   | UpdateSearchReturnStrategy InvestigatorId Zone ZoneReturnStrategy
   | SetActions InvestigatorId Source Int
@@ -1339,6 +1340,21 @@ instance FromJSON Message where
       "RemoveStory" -> do
         a <- o .: "contents"
         pure $ StoryMessage $ RemoveStory a
+      "ResolveSearch" -> do
+        ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case ea of
+          Left a -> pure $ ResolveSearch (InvestigatorTarget a)
+          Right a -> pure $ ResolveSearch a
+      "SearchEnded" -> do
+        ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case ea of
+          Left a -> pure $ SearchEnded (InvestigatorTarget a)
+          Right a -> pure $ SearchEnded a
+      "CancelSearch" -> do
+        ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case ea of
+          Left a -> pure $ CancelSearch (InvestigatorTarget a)
+          Right a -> pure $ CancelSearch a
       _ -> defaultParseMessage (Object o)
 
 defaultParseMessage :: Value -> Parser Message

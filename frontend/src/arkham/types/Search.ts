@@ -1,7 +1,7 @@
 import * as JsonDecoder from 'ts.data.json';
 import { Card, cardDecoder, } from '@/arkham/types/Card';
 
-type Search = {
+export type Search = {
   searchFoundCards: Record<string, Card[]>;
 }
 

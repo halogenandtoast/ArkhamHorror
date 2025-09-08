@@ -1,5 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
-import { searchDecoder } from '@/arkham/types/Search';
+import { type Search, searchDecoder } from '@/arkham/types/Search';
 import { type Name, nameDecoder } from '@/arkham/types/Name';
 import { v2Optional } from '@/arkham/parser';
 import {
@@ -133,7 +133,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   cardsNextToAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'CardsNextToAgendaDeck'),
   setAsideKeys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
   keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
-  search: JsonDecoder.nullable(searchDecoder).map((search) => search?.searchFoundCards || {}),
+  search: v2Optional(searchDecoder).map((search: Search) => search?.searchFoundCards || {}),
   setAsideCards: JsonDecoder.array<Card>(cardDecoder, 'SetAsideCards'),
   chaosBag: chaosBagDecoder,
   discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'EncounterCardContents[]'),

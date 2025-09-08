@@ -20,8 +20,8 @@
     "releasedADangerousPatient": "釋放了一個危險的病人",
     "knowTheGuardsPatrols": "獲知了守衛的巡邏路線",
     "recalledTheWayOut": "想起了出去的路"
-  }
-    "intro": {
+  },
+  "intro": {
     "title": "冒險 IV: 邪穢誓約",
     "foundTheWayForward": "果「印記的追隨者獲得進展」，進入_引言1_。",
     "didNotFindTheWayForward": "否則: 進入_引言2_。",

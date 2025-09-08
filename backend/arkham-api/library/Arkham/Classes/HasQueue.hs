@@ -136,6 +136,9 @@ replaceAllMessagesMatching
 replaceAllMessagesMatching matcher replacer = withQueue_ \queue ->
   flip concatMap queue \msg -> if matcher msg then replacer msg else [msg]
 
+overMessages_ :: HasQueue msg m => (msg -> msg) -> m ()
+overMessages_ replacer = peekQueue >>= setQueue . map replacer
+
 overMessagesM :: HasQueue msg m => (msg -> m [msg]) -> m ()
 overMessagesM replacer = peekQueue >>= concatMapM replacer >>= setQueue
 

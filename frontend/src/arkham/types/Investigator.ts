@@ -10,6 +10,7 @@ import { Seal, sealDecoder } from '@/arkham/types/Seal';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import { TabooList, tabooListDecoder } from '@/arkham/types/TabooList';
+import { searchDecoder } from '@/arkham/types/Search';
 import {
   Card,
   CardContents,
@@ -69,14 +70,6 @@ export const additionalActionTypeDecoder = JsonDecoder.oneOf<AdditionalActionTyp
 
 export const additionalActionDecoder = JsonDecoder.object<AdditionalAction>(
   { kind: additionalActionTypeDecoder }, 'AdditionalAction')
-
-type Search = {
-  searchFoundCards: Record<string, Card[]>;
-}
-
-export const searchDecoder = JsonDecoder.object<Search>({
-  searchFoundCards: JsonDecoder.record<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
-}, 'Search');
 
 export type InvestigatorDetails = {
   id: string;

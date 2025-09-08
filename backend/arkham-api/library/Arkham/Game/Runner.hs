@@ -105,7 +105,7 @@ import Arkham.Placement qualified as Placement
 import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario
-import Arkham.Scenario.Types hiding (scenario)
+import Arkham.Scenario.Types hiding (scenario, foundCardsL)
 import Arkham.Skill
 import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
 import Arkham.Skill.Types qualified as Skill
@@ -766,33 +766,11 @@ runGameMessage msg g = case msg of
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  FoundCards cards -> pure $ g & foundCardsL .~ cards
-  ObtainCard cardId ->
+  ObtainCard cardId -> do
     pure
       $ g
       & (foundCardsL . each %~ deleteFirstMatch ((== cardId) . toCardId))
       . (focusedCardsL %~ map (filter ((/= cardId) . toCardId)))
-  AddFocusedToTopOfDeck iid EncounterDeckTarget cardId ->
-    if null (gameFoundCards g)
-      then do
-        let
-          card =
-            fromJustNote "missing card"
-              $ find ((== cardId) . toCardId) (fromMaybe [] . headMay $ g ^. focusedCardsL)
-          focusedCards = map (filter ((/= cardId) . toCardId)) (g ^. focusedCardsL)
-        push $ PutCardOnTopOfDeck iid Deck.EncounterDeck card
-        pure $ g & (focusedCardsL .~ focusedCards)
-      else do
-        let
-          card =
-            fromJustNote "missing card"
-              $ find
-                ((== cardId) . toCardId)
-                (concat . toList $ g ^. foundCardsL)
-          foundCards =
-            Map.map (filter ((/= cardId) . toCardId)) (g ^. foundCardsL)
-        push $ PutCardOnTopOfDeck iid Deck.EncounterDeck card
-        pure $ g & (foundCardsL .~ foundCards)
   GameOver -> do
     clearQueue
     pure $ g & gameStateL .~ IsOver

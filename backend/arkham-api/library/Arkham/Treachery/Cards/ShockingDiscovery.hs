@@ -37,7 +37,7 @@ instance RunMessage ShockingDiscovery where
       push $ RemoveCardFromSearch iid (toCardId card)
       addToDiscard iid (only card)
       cancelBatch batchId
-      push $ CancelSearch iid -- shuffles the deck
+      push $ CancelSearch (toTarget iid) -- shuffles the deck
       drawEncounterCards iid attrs 1
       pure t
     _ -> ShockingDiscovery <$> liftRunMessage msg attrs

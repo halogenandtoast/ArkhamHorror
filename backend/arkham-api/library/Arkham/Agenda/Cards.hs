@@ -384,11 +384,11 @@ empireOfTheUndead = agenda "03242" "Empire of the Undead" 2 ThePallidMask
 theTideRises :: CardDef
 theTideRises = agenda "03275" "The Tide Rises" 1 BlackStarsRise
 
-letTheStormRageTheFloodBelow :: CardDef
-letTheStormRageTheFloodBelow = (agenda "03276a" "Let The Storm Rage" 2 BlackStarsRise) {cdOtherSide = Just "03276ab"}
-
 letTheStormRageTheVortexAbove :: CardDef
-letTheStormRageTheVortexAbove = agenda "03276b" "Let The Storm Rage" 2 BlackStarsRise
+letTheStormRageTheVortexAbove = (agenda "03276a" "Let The Storm Rage" 2 BlackStarsRise) {cdOtherSide = Just "03276ab"}
+
+letTheStormRageTheFloodBelow :: CardDef
+letTheStormRageTheFloodBelow = agenda "03276b" "Let The Storm Rage" 2 BlackStarsRise
 
 theCityFloods :: CardDef
 theCityFloods = agenda "03277" "The City Floods" 3 BlackStarsRise

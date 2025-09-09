@@ -5254,9 +5254,30 @@ runMessages mLogger = do
                       other -> other
                   withQueue_ (map updateChooseDeck)
                   runMessages mLogger
-                else
-                  runWithEnv (toExternalGame (g & activePlayerIdL .~ pid & scenarioStepsL +~ 1) (singletonMap pid q))
-                    >>= putGame
+                else do
+                  let
+                    shouldCheckTarget = \case
+                      EnemyTarget _ -> True
+                      LocationTarget _ -> True
+                      AssetTarget _ -> True
+                      EventTarget _ -> True
+                      SkillTarget _ -> True
+                      ActTarget _ -> True
+                      AgendaTarget _ -> True
+                      EffectTarget _ -> True
+                      _ -> False
+                    validChoice = \case
+                      TargetLabel t _ | shouldCheckTarget t -> selectAny $ targetIs t
+                      _ -> pure True
+                    anyValidChoice = \case
+                      ChooseOne choices -> anyM validChoice choices
+                      _ -> pure True
+                  canAsk <- runReaderT (anyValidChoice q) g
+                  if canAsk
+                    then
+                      runWithEnv (toExternalGame (g & activePlayerIdL .~ pid & scenarioStepsL +~ 1) (singletonMap pid q))
+                        >>= putGame
+                    else runMessages mLogger
             AskMap askMap -> do
               -- Read might have only one player being prompted so we need to find the active player
               let current = g ^. activePlayerIdL

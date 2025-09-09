@@ -1004,14 +1004,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                 then chooseOne player [Label "No cards found" []]
                 else chooseN player (min n (length choices)) choices
           DrawFound who n -> do
-            canModify <- can.draw.cards iid
+            canModify <- can.draw.cards who
             let
               choices =
-                [ targetLabel
-                    card
-                    [DrawFocusedToHand iid (toTarget who) zone (toCardId card)]
+                [ targetLabel card [InvestigatorDrewEncounterCard who card]
                 | canModify
-                , (zone, cards) <- mapToList targetCards
+                , (_zone, onlyEncounterCards -> cards) <- mapToList targetCards
                 , card <- cards
                 ]
             push

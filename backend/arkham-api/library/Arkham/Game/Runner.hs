@@ -132,7 +132,6 @@ import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens (each, itraverseOf, itraversed, non, over, set)
-import Control.Monad.State.Strict (evalStateT, get, put)
 import Data.Aeson (Result (..))
 import Data.Data.Lens (biplate)
 import Data.IntMap.Strict qualified as IntMap
@@ -1175,52 +1174,6 @@ runGameMessage msg g = case msg of
     if inSearch
       then insertAfterMatching [msg', FinishedSearch] (== FinishedSearch)
       else pushAll [msg', FinishedSearch]
-    pure g
-  EndSearch iid _ EncounterDeckTarget cardSources -> do
-    let
-      foundKey = \case
-        Zone.FromTopOfDeck _ -> Zone.FromDeck
-        Zone.FromBottomOfDeck _ -> Zone.FromDeck
-        other -> other
-      foundCards = gameFoundCards g
-    player <- getPlayer iid
-
-    flip evalStateT True $ do
-      for_ cardSources $ \(cardSource, returnStrategy) -> case returnStrategy of
-        DiscardRest -> do
-          lift
-            $ push
-            $ chooseOneAtATime player
-            $ map
-              ( \case
-                  EncounterCard c ->
-                    TargetLabel
-                      (CardIdTarget $ toCardId c)
-                      [AddToEncounterDiscard c]
-                  _ -> error "not possible"
-              )
-              (findWithDefault [] Zone.FromDeck foundCards)
-        PutBackInAnyOrder -> do
-          when (foundKey cardSource /= Zone.FromDeck) $ error "Expects a deck: Game<PutBackInAnyOrder>"
-          lift
-            $ push
-            $ chooseOneAtATime player
-            $ map
-              (\c -> targetLabel c [AddFocusedToTopOfDeck iid EncounterDeckTarget c.id])
-              (findWithDefault [] Zone.FromDeck foundCards)
-        ShuffleBackIn -> lift $ pushAll [ClearFound $ foundKey cardSource, ShuffleDeck Deck.EncounterDeck]
-        PutBack -> do
-          needsContinue <- get
-          if needsContinue
-            then do
-              put False
-              lift $ push $ chooseOne player [Label "Continue" [ClearFound $ foundKey cardSource]] -- we don't remove anymore so nothing to do
-            else lift $ push (ClearFound $ foundKey cardSource) -- we don't remove anymore so nothing to do
-        RemoveRestFromGame -> do
-          -- Try to obtain, then don't add back
-          lift $ pushAll $ map (ObtainCard . toCardId) $ findWithDefault [] Zone.FromDeck foundCards
-        DoNothing -> pure ()
-
     pure g
   FinishedSearch -> do
     pure $ g & foundCardsL .~ mempty

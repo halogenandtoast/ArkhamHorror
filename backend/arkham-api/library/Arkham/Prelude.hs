@@ -497,6 +497,9 @@ runDefaultMaybeT def = fmap (fromMaybe def) . runMaybeT
 runValidT :: Functor f => MaybeT f () -> f Bool
 runValidT = fmap isJust . runMaybeT
 
+runMaybeT_ :: Functor f => MaybeT f () -> f ()
+runMaybeT_ = void . runMaybeT
+
 retryUntil :: Monad m => (a -> Bool) -> m a -> m a
 retryUntil p ma = do
   a <- ma

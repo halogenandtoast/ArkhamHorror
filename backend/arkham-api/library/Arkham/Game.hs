@@ -1039,7 +1039,7 @@ getInvestigatorsMatching matcher = do
       pure $ onSelf || foolishness || rationalThought
     InvestigatorWithRemainingSanity gameValueMatcher ->
       flip filterM as $ field InvestigatorRemainingSanity . toId >=> (`gameValueMatches` gameValueMatcher)
-    InvestigatorThatMovedDuringTurn -> flip filterM as $ \i -> do
+    InvestigatorThatMovedDuringTurn -> flip filterM as \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ historyMoved history
     InvestigatorWhenCriteria criteria -> flip filterM as $ \i -> passesCriteria (toId i) Nothing GameSource GameSource [] criteria

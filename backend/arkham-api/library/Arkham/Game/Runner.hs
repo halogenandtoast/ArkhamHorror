@@ -2054,7 +2054,7 @@ runGameMessage msg g = case msg of
   SetPlayerOrder -> do
     lead <- getLead
     players <- getInvestigators
-    push $ ChoosePlayerOrder iid (filter (/= iid) players) [lead]
+    push $ ChoosePlayerOrder lead (filter (/= lead) players) [lead]
     pure g
   ChoosePlayerOrder _ [x] [] -> do
     pure $ g & playerOrderL .~ [x]

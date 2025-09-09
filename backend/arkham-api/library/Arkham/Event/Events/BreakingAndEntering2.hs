@@ -1,4 +1,4 @@
-module Arkham.Event.Events.BreakingAndEntering2 (breakingAndEntering2, BreakingAndEntering2 (..)) where
+module Arkham.Event.Events.BreakingAndEntering2 (breakingAndEntering2) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -18,13 +18,14 @@ instance RunMessage BreakingAndEntering2 where
     PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
       skillTestModifier sid attrs iid (AddSkillValue #agility)
-      pushM $ mkInvestigate sid iid attrs
+      investigate_ sid iid attrs
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do
       when (n >= 1) do
         enemies <- select $ enemyAtLocationWith iid <> EnemyWithoutModifier CannotBeEvaded
-        when (notNull enemies) $ chooseOne iid $ targetLabels enemies (only . EnemyEvaded iid)
-      atEndOfTurn attrs iid do
-        addToHand iid (only attrs)
+        chooseTargetM iid enemies $ automaticallyEvadeEnemy iid
+      when (n >= 3) do
+        atEndOfTurn attrs iid do
+          addToHand iid (only attrs)
       pure e
     _ -> BreakingAndEntering2 <$> liftRunMessage msg attrs

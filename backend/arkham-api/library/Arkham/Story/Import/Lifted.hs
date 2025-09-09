@@ -35,7 +35,7 @@ import Arkham.Story.Runner as X (
 import Arkham.Target as X
 
 import Arkham.Card
-import Arkham.Classes.HasQueue (HasQueue, evalQueueT)
+import Arkham.Classes.HasQueue (HasQueue)
 import Arkham.Id
 import Arkham.Queue
 import Arkham.Story.Runner qualified as Msg
@@ -45,7 +45,7 @@ afterStoryResolution
   :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m))
   => StoryAttrs -> QueueT Message (t m) () -> t m ()
 afterStoryResolution attrs body = do
-  msgs <- evalQueueT body
+  msgs <- capture body
   lift $ Msg.afterStoryResolution attrs msgs
 
 removeStory :: (AsId story, IdOf story ~ StoryId, ReverseQueue m) => story -> m ()

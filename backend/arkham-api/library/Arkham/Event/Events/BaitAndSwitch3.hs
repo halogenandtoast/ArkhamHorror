@@ -1,7 +1,6 @@
 module Arkham.Event.Events.BaitAndSwitch3 (baitAndSwitch3) where
 
 import Arkham.Action qualified as Action
-import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.Criteria
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Evade
@@ -78,7 +77,7 @@ instance RunMessage BaitAndSwitch3 where
         select
           $ ConnectedFrom NotForMovement (locationWithInvestigator iid)
           <> LocationCanBeEnteredBy enemyId
-      enemyMoveChoices <- evalQueueT $ chooseOne iid $ targetLabels choices $ only . EnemyMove enemyId
+      enemyMoveChoices <- capture $ chooseOne iid $ targetLabels choices $ only . EnemyMove enemyId
       insertAfterMatching enemyMoveChoices \case
         AfterEvadeEnemy {} -> True
         _ -> False

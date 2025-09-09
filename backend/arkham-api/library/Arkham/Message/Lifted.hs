@@ -107,6 +107,9 @@ import Control.Monad.Trans.Class
 import Data.Aeson.Key qualified as Aeson
 import Data.Map.Strict qualified as Map
 
+capture :: MonadIO m => QueueT msg m a -> m [msg]
+capture = evalQueueT
+
 setChaosTokens :: ReverseQueue m => [ChaosTokenFace] -> m ()
 setChaosTokens = push . SetChaosTokens
 
@@ -683,7 +686,7 @@ createEnemyWithAfter_
   -> m ()
 createEnemyWithAfter_ card creation body = do
   builder <- Msg.createEnemy card creation
-  after <- evalQueueT $ body builder.enemy
+  after <- capture $ body builder.enemy
   push $ toMessage (builder {enemyCreationAfter = after})
 
 createEnemyWith_
@@ -705,7 +708,7 @@ createEnemyWithM_ card creation f = void $ createEnemyWithM card creation f
 setAfter
   :: ReverseQueue m => EnemyCreation Message -> QueueT Message m () -> m (EnemyCreation Message)
 setAfter builder after = do
-  msgs <- evalQueueT after
+  msgs <- capture after
   pure $ builder {enemyCreationAfter = msgs}
 
 createEnemyCard_
@@ -934,7 +937,7 @@ forEachInvestigator :: ReverseQueue m => QueueT Message m () -> m ()
 forEachInvestigator body = eachInvestigator (`forInvestigator'` body)
 
 forInvestigator' :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> m ()
-forInvestigator' iid = evalQueueT >=> traverse_ (forInvestigator iid)
+forInvestigator' iid = capture >=> traverse_ (forInvestigator iid)
 
 selectEach :: (Query a, HasGame m) => a -> (QueryElement a -> m ()) -> m ()
 selectEach matcher f = select matcher >>= traverse_ f
@@ -1000,12 +1003,12 @@ continue_ iid = continue iid (pure ())
 
 prompt :: ReverseQueue m => InvestigatorId -> Text -> QueueT Message m () -> m ()
 prompt iid lbl body = do
-  msgs <- evalQueueT body
+  msgs <- capture body
   Arkham.Message.Lifted.chooseOne iid [Label lbl msgs]
 
 promptI :: ReverseQueue m => InvestigatorId -> Text -> QueueT Message m () -> m ()
 promptI iid lbl body = do
-  msgs <- evalQueueT body
+  msgs <- capture body
   Arkham.Message.Lifted.chooseOne iid [Label (withI18n $ "$" <> ikey ("label." <> lbl)) msgs]
 
 prompt_ :: (HasI18n, ReverseQueue m) => InvestigatorId -> Text -> m ()
@@ -1881,7 +1884,7 @@ cancelTokenDraw = lift Msg.cancelTokenDraw
 
 skillTestResultOption :: ReverseQueue m => Text -> QueueT Message m () -> m ()
 skillTestResultOption label body = do
-  msgs <- evalQueueT body
+  msgs <- capture body
   push $ SkillTestResultOption label msgs
 
 -- Use @SearchFound@ with this
@@ -1985,7 +1988,7 @@ onRevealChaosTokenEffect
   -> QueueT Message m ()
   -> m ()
 onRevealChaosTokenEffect sid matchr source target f = do
-  msgs <- evalQueueT f
+  msgs <- capture f
   push $ Msg.onRevealChaosTokenEffect sid matchr source target msgs
 
 failOnReveal
@@ -2005,7 +2008,7 @@ onSucceedByEffect
   -> QueueT Message m ()
   -> m ()
 onSucceedByEffect sid matchr source target f = do
-  msgs <- evalQueueT f
+  msgs <- capture f
   push $ Msg.onSucceedByEffect sid matchr source target msgs
 
 onFailedByEffect
@@ -2017,7 +2020,7 @@ onFailedByEffect
   -> QueueT Message m ()
   -> m ()
 onFailedByEffect sid matchr source target f = do
-  msgs <- evalQueueT f
+  msgs <- capture f
   push $ Msg.onFailedByEffect sid matchr source target msgs
 
 onNextTurnEffect
@@ -2027,7 +2030,7 @@ onNextTurnEffect
   -> QueueT Message m ()
   -> m ()
 onNextTurnEffect source iid f = do
-  msgs <- evalQueueT f
+  msgs <- capture f
   push $ Msg.onNextTurnEffect source iid msgs
 
 eventModifier
@@ -2090,7 +2093,7 @@ insteadOf
   -> QueueT Message (t m) a
   -> t m ()
 insteadOf msg f = do
-  msgs <- evalQueueT f
+  msgs <- capture f
   lift $ replaceMessageMatching (== msg) (const msgs)
 
 insteadOfMatching
@@ -2099,7 +2102,7 @@ insteadOfMatching
   -> QueueT Message (t m) a
   -> t m ()
 insteadOfMatching pred f = do
-  msgs <- evalQueueT f
+  msgs <- capture f
   lift $ replaceMessageMatching pred (const msgs)
 
 insteadOfMatchingWith
@@ -2148,7 +2151,7 @@ abilityModifier ab source target modifier = Msg.pushM $ Msg.abilityModifier ab s
 batched :: ReverseQueue m => (BatchId -> QueueT Message m ()) -> m ()
 batched f = do
   batchId <- getId
-  msgs <- evalQueueT (f batchId)
+  msgs <- capture (f batchId)
   push $ Would batchId msgs
 
 payBatchCost :: ReverseQueue m => BatchId -> InvestigatorId -> Cost -> m ()
@@ -2193,7 +2196,7 @@ atEndOfTurn
   -> QueueT Message m ()
   -> m ()
 atEndOfTurn a iid body = do
-  msgs <- evalQueueT body
+  msgs <- capture body
   push $ CreateEndOfTurnEffect (toSource a) iid msgs
 
 -- Usage:
@@ -2205,19 +2208,19 @@ atEndOfRound
   -> QueueT Message m ()
   -> m ()
 atEndOfRound a body = do
-  msgs <- evalQueueT body
+  msgs <- capture body
   push $ CreateEndOfRoundEffect (toSource a) msgs
 
 afterEnemyAttack
   :: (AsId enemy, IdOf enemy ~ EnemyId, HasQueue Message (t m))
   => enemy -> QueueT Message (t m) a -> t m ()
 afterEnemyAttack enemy body = do
-  msgs <- evalQueueT body
+  msgs <- capture body
   push $ AfterEnemyAttack (asId enemy) msgs
 
 afterThisTestResolves :: ReverseQueue m => SkillTestId -> QueueT Message m () -> m ()
 afterThisTestResolves sid body = do
-  msgs <- evalQueueT body
+  msgs <- capture body
   push $ AfterThisTestResolves sid msgs
 
 afterSkillTest
@@ -2230,20 +2233,20 @@ afterSkillTest
      )
   => investigator -> Text -> QueueT Message (t m) a -> t m ()
 afterSkillTest investigator lbl body = do
-  msgs <- evalQueueT body
+  msgs <- capture body
   insertAfterMatching [AfterSkillTestOption (asId investigator) lbl msgs] (== EndSkillTestWindow)
 
 afterSkillTestQuiet
   :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m), HasCallStack)
   => QueueT Message (t m) a -> t m ()
 afterSkillTestQuiet body = do
-  msgs <- evalQueueT body
+  msgs <- capture body
   insertAfterMatching [AfterSkillTestQuiet msgs] (== EndSkillTestWindow)
 
 afterSearch
   :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m)) => QueueT Message (t m) a -> t m ()
 afterSearch body = do
-  msgs <- evalQueueT body
+  msgs <- capture body
   insertAfterMatching msgs \case
     FinishedSearch {} -> True
     _ -> False
@@ -2251,7 +2254,7 @@ afterSearch body = do
 afterEvade
   :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m)) => QueueT Message (t m) a -> t m ()
 afterEvade body = do
-  msgs <- evalQueueT body
+  msgs <- capture body
   insertAfterMatching msgs \case
     AfterEvadeEnemy {} -> True
     _ -> False
@@ -2261,7 +2264,7 @@ delayIfSkillTest
   => QueueT Message (t m) a
   -> t m ()
 delayIfSkillTest body = do
-  msgs <- evalQueueT body
+  msgs <- capture body
   delay <- Msg.inSkillTest
   if delay
     then insertAfterMatching msgs (== EndSkillTestWindow)
@@ -2385,7 +2388,7 @@ discoverAtYourLocationAndThen
 discoverAtYourLocationAndThen isInvestigate iid s n andThenMsgs = do
   withLocationOf iid \loc -> do
     whenM (getCanDiscoverClues isInvestigate iid loc) do
-      msgs <- evalQueueT andThenMsgs
+      msgs <- capture andThenMsgs
       push $ Msg.DiscoverClues iid $ (Msg.discoverAtYourLocation s n) {Msg.discoverThen = msgs}
 
 discoverAtMatchingLocation
@@ -2833,21 +2836,21 @@ discardCard investigator source =
 
 forAction :: LiftMessage m body => Action -> body -> m ()
 forAction action f =
-  evalQueueT (liftMessage f) >>= \case
+  capture (liftMessage f) >>= \case
     [] -> pure ()
     [msg] -> push $ ForAction action msg
     msgs -> push $ ForAction action (Run msgs)
 
 forSkillType :: LiftMessage m body => SkillType -> body -> m ()
 forSkillType action f =
-  evalQueueT (liftMessage f) >>= \case
+  capture (liftMessage f) >>= \case
     [] -> pure ()
     [msg] -> push $ ForSkillType action msg
     msgs -> push $ ForSkillType action (Run msgs)
 
 forTarget :: (LiftMessage m body, Targetable target) => target -> body -> m ()
 forTarget target f =
-  evalQueueT (liftMessage f) >>= \case
+  capture (liftMessage f) >>= \case
     [] -> pure ()
     [msg] -> push $ ForTarget (toTarget target) msg
     msgs -> push $ ForTarget (toTarget target) (Run msgs)
@@ -2866,7 +2869,7 @@ instance ReverseQueue m => LiftMessage m Message where
 
 forTargets :: (LiftMessage m body, Targetable target) => [target] -> body -> m ()
 forTargets targets f =
-  evalQueueT (liftMessage f) >>= \case
+  capture (liftMessage f) >>= \case
     [] -> pure ()
     [msg] -> push $ ForTargets (map toTarget targets) msg
     msgs -> push $ ForTargets (map toTarget targets) (Run msgs)
@@ -3044,7 +3047,7 @@ temporaryModifiers target source modTypes body = do
   effectId <- getRandom
   ems <- Msg.effectModifiers source modTypes
   builder <- Msg.makeEffectBuilder "wmode" (Just ems) source target
-  msgs <- evalQueueT body
+  msgs <- capture body
   pushAll $ CreateEffect builder {effectBuilderEffectId = Just effectId}
     : msgs <> [DisableEffect effectId]
 
@@ -3281,7 +3284,7 @@ addToEncounterDiscard = traverse_ (push . AddToEncounterDiscard) . mapMaybe (pre
 
 priority :: ReverseQueue m => QueueT Message m () -> m ()
 priority body = do
-  msgs <- evalQueueT body
+  msgs <- capture body
   push $ Priority $ Run msgs
 
 flipCluesToDoom :: (ReverseQueue m, Targetable target) => target -> Int -> m ()

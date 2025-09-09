@@ -250,3 +250,6 @@ getCardUses cCode = findWithDefault [] cCode . gameCardUses <$> getGame
 getAllCardUses :: HasGame m => m [CardDef]
 getAllCardUses =
   concatMap (mapMaybe lookupCardDef . (\ (k, v) -> replicate (length v) k)) . Map.toList . gameCardUses <$> getGame
+
+getTurnOrder :: HasGame m => m [InvestigatorId]
+getTurnOrder = gamePlayerOrder <$> getGame

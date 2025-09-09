@@ -533,8 +533,15 @@ instance RunMessage SkillTest where
       cmods <- getModifiers card
       let costToCommit = fold [cst | AdditionalCostToCommit iid' cst <- cmods, iid' == iid]
       batchId <- getRandom
+      push $ Do msg
       when (costToCommit /= mempty) do
         push $ PayAdditionalCost iid batchId costToCommit
+      push $ ObtainCard card.id
+      pure s
+    CommitCard iid card | card `elem` findWithDefault [] iid skillTestCommittedCards -> do
+      pushAll [ObtainCard card.id, Do msg]
+      pure s
+    Do (CommitCard iid card) | card `notElem` findWithDefault [] iid skillTestCommittedCards -> do
       pure $ s & committedCardsL %~ insertWith (<>) iid [card]
     SkillTestUncommitCard _ card ->
       pure $ s & committedCardsL %~ map (filter (/= card))

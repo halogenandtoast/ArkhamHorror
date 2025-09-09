@@ -65,3 +65,4 @@ runWithEnv
      )
   => GameT a
   -> m a
+getTurnOrder :: HasGame m => m [InvestigatorId]

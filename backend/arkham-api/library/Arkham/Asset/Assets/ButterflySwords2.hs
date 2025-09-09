@@ -3,7 +3,6 @@ module Arkham.Asset.Assets.ButterflySwords2 (butterflySwords2) where
 import Arkham.Ability hiding (DuringTurn)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.Helpers.Action (hasFightActions)
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
 import Arkham.Matcher
@@ -34,7 +33,7 @@ instance RunMessage ButterflySwords2 where
     ForInvestigator iid (AfterSkillTestEnds (isAbilitySource attrs 1 -> True) _ _) | not attrs.exhausted -> do
       canFight <- hasFightActions iid (attrs.ability 1) (DuringTurn You) (defaultWindows iid)
       sid <- getRandom
-      fight <- evalQueueT $ withCost iid (exhaust attrs) do
+      fight <- capture $ withCost iid (exhaust attrs) do
         skillTestModifiers sid attrs iid [AddSkillValue #agility, DamageDealt 1]
         chooseFightEnemy sid iid (attrs.ability 1)
       chooseOrRunOne iid $ Label "Do not fight again" [] : [Label "Fight again" fight | canFight]

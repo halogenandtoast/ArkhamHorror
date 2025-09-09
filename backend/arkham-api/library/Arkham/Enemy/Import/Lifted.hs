@@ -63,7 +63,6 @@ import Arkham.Target as X
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (
   HasQueue,
-  evalQueueT,
  )
 import Arkham.Matcher (LocationMatcher (EmptyLocation))
 import Arkham.Modifier
@@ -77,7 +76,7 @@ insteadOfDefeat
   :: (HasQueue Message m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
 insteadOfDefeat asEnemy body = whenM (beingDefeated asEnemy) do
   cancelEnemyDefeat asEnemy
-  pushAll =<< evalQueueT body
+  pushAll =<< capture body
 
 -- See: The Spectral Watcher
 insteadOfDefeatWithWindows
@@ -85,13 +84,13 @@ insteadOfDefeatWithWindows
   => enemy -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
 insteadOfDefeatWithWindows e body = whenM (beingDefeated e) do
   cancelEnemyDefeatWithWindows e
-  pushAll =<< evalQueueT body
+  pushAll =<< capture body
 
 insteadOfEvading
   :: HasQueue Message m => EnemyAttrs -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
 insteadOfEvading attrs body = whenM (beingEvaded attrs) do
   cancelEvadeEnemy attrs
-  pushAll =<< evalQueueT body
+  pushAll =<< capture body
 
 cancelEvadeEnemy :: (HasQueue Message m, MonadTrans t) => EnemyAttrs -> t m ()
 cancelEvadeEnemy attrs = matchingDon't isEvadedMessage

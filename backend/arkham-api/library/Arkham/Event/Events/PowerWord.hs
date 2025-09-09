@@ -2,7 +2,6 @@ module Arkham.Event.Events.PowerWord (powerWord) where
 
 import Arkham.Ability
 import Arkham.Classes.HasGame
-import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.DamageEffect
 import Arkham.Discover
 import Arkham.Enemy.Types (
@@ -181,7 +180,7 @@ runAbility iid attrs canTonguetwister = do
   let tonguetwister =
         guard (canTonguetwister && attrs `hasCustomization` Tonguetwister)
           $> Do (UseCardAbility iid (toSource attrs) 1 [] NoPayment)
-  choices <- forToSnd (Map.toList allMap) $ \(cmd, pairings) -> evalQueueT do
+  choices <- forToSnd (Map.toList allMap) $ \(cmd, pairings) -> capture do
     chooseOrRunOneAtATime
       iid
       [ targetLabel eid [DoStep (fromEnum cmd) (UseCardAbility iid (toSource pid) 1 [] NoPayment)]
@@ -249,7 +248,7 @@ instance RunMessage PowerWord where
                 if horror > 0 then select (HealableInvestigator source #horror $ colocatedWith iid) else pure []
               damageInvestigators <-
                 if damage > 0 then select (HealableInvestigator source #damage $ colocatedWith iid) else pure []
-              choices <- forToSnd (nub $ horrorInvestigators <> damageInvestigators) $ \investigator -> evalQueueT do
+              choices <- forToSnd (nub $ horrorInvestigators <> damageInvestigators) $ \investigator -> capture do
                 chooseOrRunOne iid
                   $ [ Label ("Heal " <> tshow damage <> " damage") [HealDamage (toTarget investigator) source damage]
                     | investigator `elem` damageInvestigators

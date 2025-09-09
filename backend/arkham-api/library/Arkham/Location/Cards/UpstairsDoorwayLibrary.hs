@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.UpstairsDoorwayLibrary (upstairsDoorwayLibrary, UpstairsDoorwayLibrary (..)) where
+module Arkham.Location.Cards.UpstairsDoorwayLibrary (upstairsDoorwayLibrary) where
 
 import Arkham.Ability
 import Arkham.GameValue

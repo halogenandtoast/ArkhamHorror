@@ -5,7 +5,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ForMovement
 import Arkham.Helpers.Location (getAccessibleLocations)
-import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigate
 import Arkham.Matcher hiding (DiscoveringLastClue)
 import Arkham.Message.Lifted.Choose
@@ -43,25 +42,27 @@ instance RunMessage DowsingRod4 where
           "If this investigation discovers the last clue at a location, ready Dowsing Rod and remove all doom from it."
           $ doStep 3 msg
       doStep 1 msg
-      pure $ overAttrs (unsetMetaKey "option2") a
+      pure $ overAttrs (unsetMetaKey "option2" . unsetMetaKey "option1") a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       sid <- getRandom
       investigate' <- mkInvestigate sid iid (attrs.ability 1)
+
+      when (getMetaKey "option1" attrs) do
+        skillTestModifier sid (attrs.ability 1) iid $ AnySkillValue 2
 
       chooseOneM iid do
         labeled "Use your {willpower}" $ push $ withSkillType #willpower investigate'
         labeled "get +1 {intellect}" do
           skillTestModifier sid (attrs.ability 1) iid $ SkillModifier #intellect 1
           push investigate'
-      pure a
+
+      pure $ overAttrs (unsetMetaKey "option1") a
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       push $ Exhaust (toTarget attrs)
       placeDoom (attrs.ability 1) attrs 1
       accessibleLocationIds <- getAccessibleLocations iid attrs
-      withSkillTest \sid ->
-        skillTestModifier sid (attrs.ability 1) iid $ AnySkillValue 2
       chooseTargetM iid accessibleLocationIds (moveTo (attrs.ability 1) iid)
-      pure a
+      pure $ overAttrs (setMetaKey "option1" True) a
     DoStep 3 (UseThisAbility _ (isSource attrs -> True) 1) -> do
       pure $ overAttrs (setMetaKey "option2" True) a
     Do (CheckWindows windows) | getMetaKey "option2" attrs -> do

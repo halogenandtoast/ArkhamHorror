@@ -579,6 +579,13 @@ getCommittedCard [] = error "missing card"
 getCommittedCard ((windowType -> Window.CommittedCard _ c) : _) = c
 getCommittedCard (_ : ws) = getCommittedCard ws
 
+getDefeatedAsset :: [Window] -> AssetId
+getDefeatedAsset = \case
+  ((windowType -> Window.AssetDefeated aid _) : _) -> aid
+  (_ : rest) -> getDefeatedAsset rest
+  _ -> error "impossible"
+
+
 getWindowAsset :: [Window] -> Maybe AssetId
 getWindowAsset [] = Nothing
 getWindowAsset ((windowType -> Window.ActivateAbility _ _ ability) : xs) = case abilitySource ability of

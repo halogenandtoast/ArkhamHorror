@@ -468,7 +468,7 @@ runGameMessage msg g = case msg of
       $ [HandleOption option | standalone, option <- maybe [] (toList . campaignLogOptions) mCampaignLog]
       <> [LoadTarotDeck, SetChaosTokensForScenario, PreScenarioSetup, HandleKilledOrInsaneInvestigators]
       <> [StandaloneSetup | standalone]
-      <> [ChooseLeadInvestigator]
+      <> [ChooseLeadInvestigator, SetPlayerOrder]
       <> [PerformTarotReading | gamePerformTarotReadings g]
       <> [SetupInvestigators, InvestigatorsMulligan, Setup, EndSetup]
     pure
@@ -492,6 +492,7 @@ runGameMessage msg g = case msg of
       $ ResetGame
       : [StandaloneSetup | standalone]
         <> [ ChooseLeadInvestigator
+           , SetPlayerOrder
            , SetupInvestigators
            , SetChaosTokensForScenario -- (chaosBagOf campaign')
            , InvestigatorsMulligan
@@ -721,8 +722,6 @@ runGameMessage msg g = case msg of
   Msg.RevealChaosToken SkillTestSource {} _ token -> pure $ g & focusedChaosTokensL %~ filter (/= token)
   UnfocusChaosTokens -> pure $ g & focusedChaosTokensL .~ mempty
   ChoosePlayer iid SetLeadInvestigator -> do
-    players <- getInvestigators
-    push $ ChoosePlayerOrder iid (filter (/= iid) players) [iid]
     pure $ g & leadInvestigatorIdL .~ iid & activeInvestigatorIdL .~ iid
   ChoosePlayer iid SetTurnPlayer -> do
     pushAll [BeginTurn iid, After (BeginTurn iid)]
@@ -2052,6 +2051,11 @@ runGameMessage msg g = case msg of
       & (activeAbilitiesL .~ mempty)
       & (actionRemovedEntitiesL .~ mempty)
       & (entitiesL %~ clearRemovedEntities)
+  SetPlayerOrder -> do
+    lead <- getLead
+    players <- getInvestigators
+    push $ ChoosePlayerOrder iid (filter (/= iid) players) [lead]
+    pure g
   ChoosePlayerOrder _ [x] [] -> do
     pure $ g & playerOrderL .~ [x]
   ChoosePlayerOrder _ [] (x : xs) -> do
@@ -2732,7 +2736,7 @@ runGameMessage msg g = case msg of
   ReplaceCard cardId card -> do
     replaceCard cardId card -- We must update the IORef
     pure $ g & cardsL %~ insertMap cardId card
-  After (InvestigatorEliminated iid) -> pure $ g & playerOrderL %~ filter (/= iid)
+  -- After (InvestigatorEliminated iid) -> pure $ g & playerOrderL %~ filter (/= iid)
   SetActivePlayer pid -> pure do
     -- We might not have setup the players like (like in the TCU) and so we can't switch
     case find (\i -> i.player == pid) (toList $ g ^. entitiesL . investigatorsL) of

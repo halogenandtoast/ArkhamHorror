@@ -217,6 +217,7 @@ instance RunMessage MurderAtTheExcelsiorHotel where
         $ [ResetGame]
         <> [StandaloneSetup | standalone]
         <> [ ChooseLeadInvestigator
+           , SetPlayerOrder
            , SetupInvestigators
            , InvestigatorsMulligan
            , Setup

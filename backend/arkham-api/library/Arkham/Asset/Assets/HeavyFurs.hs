@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.HeavyFurs (heavyFurs, HeavyFurs (..)) where
+module Arkham.Asset.Assets.HeavyFurs (heavyFurs) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -15,9 +15,9 @@ heavyFurs = assetWith HeavyFurs Cards.heavyFurs (healthL ?~ 2)
 
 instance HasAbilities HeavyFurs where
   getAbilities (HeavyFurs attrs) =
-    [ controlledAbility attrs 1 (DuringSkillTest $ YourSkillTest #any)
-        $ ReactionAbility
-          (RevealChaosToken #after You (not_ #autofail))
+    [ controlled attrs 1 (DuringSkillTest $ YourSkillTest #any)
+        $ triggered
+          (RevealChaosToken #after You (not_ #autofail <> IsSymbol))
           (DamageCost (attrs.ability 1) (toTarget attrs) 1)
     ]
 
@@ -25,10 +25,8 @@ instance RunMessage HeavyFurs where
   runMessage msg a@(HeavyFurs attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
       cancelChaosToken (attrs.ability 1) iid token
-      pushAll
-        [ ReturnChaosTokens [token]
-        , UnfocusChaosTokens
-        , DrawAnotherChaosToken iid
-        ]
+      returnChaosTokens [token]
+      unfocusChaosTokens
+      drawAnotherChaosToken iid
       pure a
     _ -> HeavyFurs <$> liftRunMessage msg attrs

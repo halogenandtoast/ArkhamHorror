@@ -4533,6 +4533,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         Nothing -> [toDiscard GameSource (toTarget enemy) | enemy <- enemies]
 
     pure $ a & placementL .~ placement
+  ResetMetadata (isTarget a -> True) -> pure $ a & metaL .~ object []
   _ -> pure a
 
 investigatorLocation :: InvestigatorAttrs -> Maybe LocationId

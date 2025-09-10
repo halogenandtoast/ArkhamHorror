@@ -3110,12 +3110,13 @@ resolveChaosTokens iid source tokens = do
 
 removeLocation :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m ()
 removeLocation (asId -> lid) = do
-  noClues <- lid <=~> LocationWithoutClues
-  if noClues
-    then
-      maybe (pushAll $ resolve (RemoveLocation lid)) (\_ -> addToVictory lid)
-        =<< field LocationVictory lid
-    else pushAll $ resolve (RemoveLocation lid)
+  whenM (matches lid $ not_ LocationBeingRemoved) do
+    noClues <- lid <=~> LocationWithoutClues
+    if noClues
+      then
+        maybe (pushAll $ resolve (RemoveLocation lid)) (\_ -> addToVictory lid)
+          =<< field LocationVictory lid
+      else pushAll $ resolve (RemoveLocation lid)
 
 chooseAndDiscardAsset :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 chooseAndDiscardAsset iid source = chooseAndDiscardAssetMatching iid source AnyAsset
@@ -3174,8 +3175,7 @@ cancelMovement
   :: ( ReverseQueue m
      , Sourceable source
      , Targetable investigator
-     , AsId investigator
-     , IdOf investigator ~ InvestigatorId
+     , ToId investigator InvestigatorId
      )
   => source -> investigator -> m ()
 cancelMovement source investigator = do
@@ -3186,20 +3186,17 @@ cancelMovement source investigator = do
 sendMessage :: (ReverseQueue m, Targetable target) => target -> Message -> m ()
 sendMessage target msg = push $ SendMessage (toTarget target) msg
 
-setLocationLabel
-  :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => location -> Text -> m ()
+setLocationLabel :: (ToId location LocationId, ReverseQueue m) => location -> Text -> m ()
 setLocationLabel location lbl = push $ SetLocationLabel (asId location) lbl
 
-removeAsset
-  :: (ReverseQueue m, AsId asset, IdOf asset ~ AssetId) => asset -> m ()
+removeAsset :: (ReverseQueue m, ToId asset AssetId) => asset -> m ()
 removeAsset asset = push $ RemoveAsset (asId asset)
 
-removeTreachery
-  :: (ReverseQueue m, AsId treachery, IdOf treachery ~ TreacheryId) => treachery -> m ()
+removeTreachery :: (ReverseQueue m, ToId treachery TreacheryId) => treachery -> m ()
 removeTreachery treachery = push $ RemoveTreachery (asId treachery)
 
 discardTopOfDeck
-  :: (AsId investigator, IdOf investigator ~ InvestigatorId, Sourceable source, ReverseQueue m)
+  :: (ToId investigator InvestigatorId, Sourceable source, ReverseQueue m)
   => investigator
   -> source
   -> Int
@@ -3209,7 +3206,7 @@ discardTopOfDeck investigator source n =
     push $ DiscardTopOfDeck (asId investigator) n (toSource source) Nothing
 
 discardTopOfEncounterDeck
-  :: (AsId investigator, IdOf investigator ~ InvestigatorId, Sourceable source, ReverseQueue m)
+  :: (ToId investigator InvestigatorId, Sourceable source, ReverseQueue m)
   => investigator
   -> source
   -> Int
@@ -3218,12 +3215,7 @@ discardTopOfEncounterDeck investigator source n =
   push $ DiscardTopOfEncounterDeck (asId investigator) n (toSource source) Nothing
 
 discardTopOfEncounterDeckAndHandle
-  :: ( AsId investigator
-     , IdOf investigator ~ InvestigatorId
-     , Sourceable source
-     , ReverseQueue m
-     , Targetable target
-     )
+  :: (ToId investigator InvestigatorId, Sourceable source, ReverseQueue m, Targetable target)
   => investigator
   -> source
   -> Int
@@ -3233,12 +3225,7 @@ discardTopOfEncounterDeckAndHandle investigator source n target =
   push $ DiscardTopOfEncounterDeck (asId investigator) n (toSource source) (Just $ toTarget target)
 
 discardTopOfDeckAndHandle
-  :: ( AsId investigator
-     , IdOf investigator ~ InvestigatorId
-     , Sourceable source
-     , Targetable target
-     , ReverseQueue m
-     )
+  :: (ToId investigator InvestigatorId, Sourceable source, Targetable target, ReverseQueue m)
   => investigator
   -> source
   -> Int
@@ -3258,13 +3245,7 @@ advanceCurrentActWithClues source = do
   push $ AdvanceAct actId (toSource source) #clues
 
 updateLocation
-  :: ( ReverseQueue m
-     , Eq a
-     , Show a
-     , Typeable a
-     , ToJSON a
-     , FromJSON a
-     )
+  :: (ReverseQueue m, Eq a, Show a, Typeable a, ToJSON a, FromJSON a)
   => LocationId
   -> Field Location a
   -> a
@@ -3275,7 +3256,7 @@ shuffleBackIntoEncounterDeck :: (ReverseQueue m, Targetable target) => target ->
 shuffleBackIntoEncounterDeck target = push $ ShuffleBackIntoEncounterDeck (toTarget target)
 
 setActions
-  :: (AsId investigator, IdOf investigator ~ InvestigatorId, Sourceable source, ReverseQueue m)
+  :: (ToId investigator InvestigatorId, Sourceable source, ReverseQueue m)
   => investigator
   -> source
   -> Int
@@ -3286,7 +3267,7 @@ commitCard :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 commitCard iid card = push $ SkillTestCommitCard iid (toCard card)
 
 updateHistory
-  :: (ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  :: (ReverseQueue m, ToId investigator InvestigatorId)
   => investigator
   -> HistoryItem
   -> m ()
@@ -3339,7 +3320,7 @@ changeSpawnAt enemyId locationId = lift $ replaceAllMessagesMatching ((== Just E
   other -> [other]
 
 createWeaknessInThreatArea
-  :: (FetchCard card, AsId investigator, IdOf investigator ~ InvestigatorId, ReverseQueue m)
+  :: (FetchCard card, ToId investigator InvestigatorId, ReverseQueue m)
   => card -> investigator -> m ()
 createWeaknessInThreatArea card iid = do
   c <- fetchCard card

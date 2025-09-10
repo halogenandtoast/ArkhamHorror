@@ -1269,7 +1269,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       withoutModifiers a $ CannotMove
         : CancelMovement movement.id
         : [CannotMoveExceptByScenarioCardEffects | not scenarioEffect]
-    when canMove do
+    when (canMove || not movement.cancelable) do
       case moveDestination movement of
         ToLocationMatching matcher -> do
           lids <- getCanMoveToMatchingLocations investigatorId (moveSource movement) matcher
@@ -1440,11 +1440,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure $ a & movementL ?~ movement
   WhenCanMove iid msgs | iid == investigatorId -> do
     mods <- getModifiers iid
-    let canMove =
-          none
-            (`elem` mods)
-            (CannotMove : [CancelMovement movement.id | movement <- maybeToList investigatorMovement])
-    when canMove $ pushAll msgs
+    let
+      cannotBeCanceled = maybe False (not . (.cancelable)) investigatorMovement
+      canMove =
+        none
+          (`elem` mods)
+          (CannotMove : [CancelMovement movement.id | movement <- maybeToList investigatorMovement])
+    when (canMove || cannotBeCanceled) $ pushAll msgs
     pure a
   Will (PassedSkillTest iid _ _ (InvestigatorTarget iid') _ n) | iid == iid' && iid == investigatorId -> do
     pushM $ checkWindows [mkWhen (Window.WouldPassSkillTest iid n)]
@@ -4120,10 +4122,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               -- N.B. You must handle target duplication (see Mandy Thompson) yourself
               if all null (toList targetCards)
                 then Lifted.promptI iid "noCardsFound" $ push $ SearchNoneFound iid searchTarget
-                else pushAll
-                  [ PreSearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
-                  , SearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
-                  ]
+                else
+                  pushAll
+                    [ PreSearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
+                    , SearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
+                    ]
             DrawAllFound who -> do
               let
                 choices =

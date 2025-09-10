@@ -1225,7 +1225,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     card <- field LocationCard lid
     case card of
       EncounterCard card' -> do
-        pushAll $ resolve (RemoveLocation lid)
+        Lifted.removeLocation lid
         encounterDeck <- withDeckM (shuffleM . (card' :)) scenarioEncounterDeck
         pure $ a & encounterDeckL .~ encounterDeck
       _ -> error "must be encounter card"

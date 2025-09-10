@@ -57,6 +57,7 @@ data LocationAttrs = LocationAttrs
   , locationMeta :: Value
   , locationGlobalMeta :: Map Aeson.Key Value
   , locationPosition :: Maybe Pos
+  , locationBeingRemoved :: Bool
   }
   deriving stock (Show, Eq)
 
@@ -178,5 +179,6 @@ instance FromJSON LocationAttrs where
     locationMeta <- o .: "meta"
     locationGlobalMeta <- o .:? "globalMeta" .!= mempty
     locationPosition <- o .:? "position"
+    locationBeingRemoved <- o .:? "beingRemoved" .!= False
 
     pure LocationAttrs {..}

@@ -59,6 +59,7 @@ data LocationMatcher
   | LocationWithAnySeal
   | LocationWithActiveSeal SealKind
   | LocationWithoutClues
+  | LocationBeingRemoved
   | LocationWithDoom ValueMatcher
   | LocationWithDamage ValueMatcher
   | LocationIs CardCode

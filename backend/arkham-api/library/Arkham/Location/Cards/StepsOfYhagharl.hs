@@ -3,9 +3,11 @@ module Arkham.Location.Cards.StepsOfYhagharl (stepsOfYhagharl) where
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Scenario
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards (stepsOfYhagharl)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Trait
 
@@ -31,7 +33,14 @@ instance RunMessage StepsOfYhagharl where
       beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 2)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      cancelMovement (attrs.ability 1) iid
-      shuffleBackIntoEncounterDeck attrs
+      field InvestigatorMovement iid >>= traverse_ \movement ->
+        when movement.cancelable do
+          let
+            isMovement = \case
+              Would _ msgs -> any isMovement msgs
+              WhenCanMove _ msgs -> any isMovement msgs
+              MoveTo m -> movement.id == m.id
+              _ -> False
+          insteadOfMatching isMovement $ shuffleBackIntoEncounterDeck attrs
       pure l
     _ -> StepsOfYhagharl <$> liftRunMessage msg attrs

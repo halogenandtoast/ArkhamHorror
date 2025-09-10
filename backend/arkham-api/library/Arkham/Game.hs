@@ -2391,6 +2391,7 @@ getLocationsMatching lmatcher = do
               $ sortOn snd candidates
       pure $ filter ((`member` matches') . toId) ls
     BlockedLocation -> flip filterM ls $ \l -> l `hasModifier` Blocked
+    LocationBeingRemoved -> pure $ filter (attr locationBeingRemoved) ls
     LocationWithoutClues -> pure $ filter (attr locationWithoutClues) ls
     LocationWithAnyActiveSeal -> pure $ filter (any (\s -> s.active) . toList . attr locationSeals) ls
     LocationWithAnySeal -> pure $ filter (notNull . attr locationSeals) ls

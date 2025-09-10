@@ -1112,6 +1112,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , sourceMatches source' sourceMatcher
           ]
       _ -> noMatch
+    Matcher.WouldBeMovedBy timing whoMatcher sourceMatcher -> guardTiming timing $ \case
+      Window.WouldMove who source' _ _ ->
+        andM
+          [ matchWho iid who whoMatcher
+          , sourceMatches source' sourceMatcher
+          ]
+      _ -> noMatch
     Matcher.MovedButBeforeEnemyEngagement timing whoMatcher whereMatcher ->
       guardTiming timing $ \case
         Window.MovedButBeforeEnemyEngagement who locationId ->
@@ -1936,6 +1943,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         _ -> noMatch
     Matcher.LastClueRemovedFromAsset timing assetMatcher -> guardTiming timing $ \case
       Window.LastClueRemovedFromAsset aid -> elem aid <$> select assetMatcher
+      _ -> noMatch
+    Matcher.LastClueRemovedFromLocation timing locationMatcher -> guardTiming timing $ \case
+      Window.LastClueRemovedFromLocation lid -> elem lid <$> select locationMatcher
       _ -> noMatch
     Matcher.DrawsCards timing whoMatcher cardListMatcher valueMatcher -> guardTiming timing $ \case
       Window.DrawCards who cards ->

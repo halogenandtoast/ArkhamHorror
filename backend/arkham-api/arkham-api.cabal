@@ -2563,6 +2563,7 @@ library
       Arkham.Helpers.Message.Discard
       Arkham.Helpers.Message.Discard.Lifted
       Arkham.Helpers.Modifiers
+      Arkham.Helpers.Movement
       Arkham.Helpers.Name
       Arkham.Helpers.Phase
       Arkham.Helpers.Placement

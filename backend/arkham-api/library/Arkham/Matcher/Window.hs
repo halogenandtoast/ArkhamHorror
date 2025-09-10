@@ -73,6 +73,7 @@ data WindowMatcher
   | DeckHasNoCards Timing Who
   | EncounterDeckRunsOutOfCards
   | MovedBy Timing Who SourceMatcher
+  | WouldBeMovedBy Timing Who SourceMatcher
   | MovedButBeforeEnemyEngagement Timing Who Where
   | WouldMoveFromHunter Timing EnemyMatcher
   | MovedFromHunter Timing EnemyMatcher
@@ -125,6 +126,7 @@ data WindowMatcher
   | LocationLeavesPlay Timing LocationMatcher
   | TookControlOfAsset Timing Who AssetMatcher
   | DiscoveringLastClue Timing Who Where
+  | LastClueRemovedFromLocation Timing LocationMatcher
   | DiscoverClues Timing Who Where ValueMatcher
   | WouldDiscoverClues Timing Who Where ValueMatcher
   | GainsClues Timing Who ValueMatcher

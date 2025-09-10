@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedLabels #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Enemy.Runner (module Arkham.Enemy.Runner, module X) where
 
@@ -83,7 +83,6 @@ import Arkham.Movement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SkillType ()
-import Arkham.Spawn
 import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Trait
@@ -558,24 +557,29 @@ instance RunMessage EnemyAttrs where
       --
       let isAttached = isJust a.placement.attachedTo
       unless isAttached do
-        wantsToMove <-
-          (&&)
-            <$> selectNone (InvestigatorAt $ locationWithEnemy enemyId)
-            <*> selectNone
-              (EnemyAt (locationWithEnemy enemyId) <> EnemyWithModifier CountsAsInvestigatorForHunterEnemies)
         mods <- getModifiers enemyId
-        when (wantsToMove && CannotMove `notElem` mods) $ do
-          keywords <- getModifiedKeywords a
-          -- We should never have a case where an enemy has both patrol and
-          -- hunter and should only have one patrol keyword
-          for_ keywords \case
-            Keyword.Patrol lMatcher -> push $ HandleGroupTarget HunterGroup (toTarget a) [PatrolMove (toId a) lMatcher]
-            _ -> pure ()
+        keywords <- getModifiedKeywords a
 
-          when (Keyword.Hunter `elem` keywords) do
-            (batchId, windowMessages) <- wouldWindows $ Window.WouldMoveFromHunter (toId a)
-            push
-              $ HandleGroupTarget HunterGroup (toTarget a) [Would batchId $ windowMessages <> [HunterMove (toId a)]]
+        -- We should never have a case where an enemy has both patrol and
+        -- hunter and should only have one patrol keyword
+        unless (CannotMove `elem` mods) do
+          for_ keywords \case
+            Keyword.Patrol lMatcher -> do
+              wantsToPatrol <-
+                traceShowId <$> matches enemyId (UnengagedEnemy <> not_ (EnemyAt $ traceShowId lMatcher))
+              pushWhen wantsToPatrol $ HandleGroupTarget HunterGroup (toTarget a) [PatrolMove (toId a) lMatcher]
+            Keyword.Hunter -> do
+              wantsToHunt <-
+                (&&)
+                  <$> selectNone (InvestigatorAt $ locationWithEnemy enemyId)
+                  <*> selectNone
+                    (EnemyAt (locationWithEnemy enemyId) <> EnemyWithModifier CountsAsInvestigatorForHunterEnemies)
+
+              when wantsToHunt do
+                (batchId, windowMessages) <- wouldWindows $ Window.WouldMoveFromHunter (toId a)
+                push
+                  $ HandleGroupTarget HunterGroup (toTarget a) [Would batchId $ windowMessages <> [HunterMove (toId a)]]
+            _ -> pure ()
       pure a
     SwapPlaces (aTarget, _) (_, newLocation) | a `is` aTarget -> do
       push $ EnemyCheckEngagement a.id
@@ -1641,7 +1645,7 @@ instance RunMessage EnemyAttrs where
               SpawnDetails
                 { spawnDetailsEnemy = enemyId
                 , spawnDetailsInvestigator = Nothing
-                , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
+                , spawnDetailsSpawnAt = X.SpawnAtLocation lid
                 , spawnDetailsOverridden = False
                 }
           pushAll

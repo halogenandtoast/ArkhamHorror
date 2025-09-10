@@ -4580,6 +4580,7 @@ library
       Base.Api.Handler.Settings
       Base.Util
       Config
+      Entity
       Entity.Answer
       Entity.Arkham.ArkhamDBDecklist
       Entity.Arkham.Deck

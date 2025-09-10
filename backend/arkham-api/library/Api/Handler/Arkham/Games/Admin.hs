@@ -100,7 +100,7 @@ getAdminUser :: Handler (Entity User)
 getAdminUser = do
   userId <- getRequestUserId
   user <- runDB $ get404 userId
-  unless (userAdmin user) $ permissionDenied "You must be an admin to access this endpoint"
+  unless user.admin $ permissionDenied "You must be an admin to access this endpoint"
   pure $ Entity userId user
 
 data AdminData = AdminData

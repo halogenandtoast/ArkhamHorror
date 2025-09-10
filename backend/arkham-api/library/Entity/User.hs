@@ -7,9 +7,9 @@ module Entity.User where
 
 import Database.Persist.TH
 import Relude
+import Entity
 
-mkPersist
-  sqlSettings
+mkEntity $(discoverEntities)
   [persistLowerCase|
 User json sql=users
     username Text

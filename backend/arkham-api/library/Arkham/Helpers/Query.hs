@@ -29,7 +29,9 @@ getLead = do
   pure $ fromJustNote "No lead found" (mLead <|> mOthers)
 
 inTurnOrder :: HasGame m => [InvestigatorId] -> m [InvestigatorId]
-inTurnOrder xs = filter (`elem` xs) <$> getTurnOrder
+inTurnOrder xs = getTurnOrder <&> \case
+  [] ->  xs -- not set yet
+  ito -> filter (`elem` xs) ito
 
 instance HasGame m => HasPlayer m where
   getPlayer = field InvestigatorPlayerId

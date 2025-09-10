@@ -3888,20 +3888,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
 
     pure $ a & searchL .~ Nothing
   CancelSearch (isTarget a -> True) -> pure $ a & searchL .~ Nothing
-  Search (MkSearch searchType iid _ (InvestigatorTarget iid') _ _ _ _ _) | iid' == toId a -> do
+  Search (MkSearch searchType iid _ (InvestigatorTarget iid') zones _ _ _ _) | iid' == toId a -> do
     let deck = Deck.InvestigatorDeck iid'
-    if searchType == Searching
+    if searchType == Searching && any (zoneIsFromDeck . fst) zones
       then wouldDo msg (Window.WouldSearchDeck iid deck) (Window.SearchedDeck iid deck)
       else do
         batchId <- getRandom
         push $ DoBatch batchId msg
 
     pure a
-  DoBatch _ (Search (MkSearch _ iid _ (InvestigatorTarget iid') _ _ foundStrategy _ _)) | iid' == toId a -> do
+  DoBatch _ (Search (MkSearch _ iid _ (InvestigatorTarget iid') zones _ foundStrategy _ _)) | iid' == toId a -> do
     let isDrawing = isSearchDraw foundStrategy
     let deck = Deck.InvestigatorDeck iid'
     wouldDrawCard <- checkWindows [mkWhen (Window.WouldDrawCard iid deck)]
-    pushAll $ [wouldDrawCard | isDrawing] <> [Do msg]
+    let isFromDeck = any (zoneIsFromDeck . fst) zones
+    pushAll $ [wouldDrawCard | isDrawing && isFromDeck] <> [Do msg]
     pure a
   Do
     ( DoBatch

@@ -72,28 +72,18 @@ stepBack userId gameId current@ArkhamGame {..} = do
             =<< getBy (UniqueStep gameId (arkhamGameStep - 1))
 
           now <- liftIO getCurrentTime
-          isDebug <- lookupGetParam "debug"
-
+          isDebug <- isJust <$> lookupGetParam "debug"
           seed <- liftIO getRandom
+
           let
             arkhamGame =
-              case isDebug of
-                Nothing ->
-                  ArkhamGame
-                    arkhamGameName
-                    (ge {gameSeed = seed})
-                    (arkhamGameStep - 1)
-                    arkhamGameMultiplayerVariant
-                    arkhamGameCreatedAt
-                    now
-                Just _ ->
-                  ArkhamGame
-                    arkhamGameName
-                    ge
-                    (arkhamGameStep - 1)
-                    arkhamGameMultiplayerVariant
-                    arkhamGameCreatedAt
-                    now
+              ArkhamGame
+                arkhamGameName
+                (if isDebug then ge else ge {gameSeed = seed})
+                (arkhamGameStep - 1)
+                arkhamGameMultiplayerVariant
+                arkhamGameCreatedAt
+                now
 
           replace gameId arkhamGame
           delete do

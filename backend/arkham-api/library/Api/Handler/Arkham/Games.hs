@@ -277,7 +277,7 @@ postApiV1ArkhamGamesR = do
 putApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameR gameId = do
   Entity userId user <- getRequestUser
-  unless (userAdmin user) do
+  unless user.admin do
     void $ runDB $ getBy404 (UniquePlayer userId gameId)
   response <- requireCheckJsonBody
   writeChannel <- (.channel) <$> getRoom gameId

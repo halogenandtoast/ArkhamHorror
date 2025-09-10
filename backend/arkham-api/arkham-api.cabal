@@ -30,6 +30,7 @@ library
       Api.Handler.Arkham.Game.Bug
       Api.Handler.Arkham.Game.Debug
       Api.Handler.Arkham.Games
+      Api.Handler.Arkham.Games.Admin
       Api.Handler.Arkham.Investigators
       Api.Handler.Arkham.Old
       Api.Handler.Arkham.PendingGames

@@ -45,6 +45,13 @@ export default [
     props: true,
   },
   {
+    path: '/admin/games/:gameId',
+    name: 'AdminGame',
+    component: Game,
+    meta: { requiresAuth: true, title: "Arkham Horror" },
+    props: (route: RouteLocationNormalized) => ({ ...route.params, spectate: true }),
+  },
+  {
     path: '/games/:gameId/spectate',
     name: 'Spectate',
     component: Game,

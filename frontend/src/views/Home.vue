@@ -7,11 +7,12 @@ import type { GameDetails } from '@/arkham/types/Game';
 import type { User } from '@/types';
 import GameRow from '@/arkham/components/GameRow.vue';
 import NewGame from '@/arkham/views/NewCampaign.vue';
+import { storeToRefs } from 'pinia';
 
 const route = useRoute()
 const router = useRouter()
 const store = useUserStore()
-const currentUser = computed<User | null>(() => store.getCurrentUser)
+const { currentUser } = storeToRefs(store)
 const games: Ref<GameDetails[]> = ref([])
 const notifications: Ref<Notification[]> = ref([])
 

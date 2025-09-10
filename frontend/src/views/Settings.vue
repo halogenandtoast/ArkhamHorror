@@ -1,12 +1,11 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
 import { useUserStore } from '@/stores/user';
 import type { User } from '@/types';
 import api from '@/api';
 import SettingsForm from '@/components/SettingsForm.vue';
 
 const store = useUserStore()
-const currentUser = computed<User | null>(() => store.getCurrentUser)
+const { currentUser } = storeToRefs(store)
 
 const updateBeta = async (beta: boolean) => {
   await api.put<User>('settings', { beta })

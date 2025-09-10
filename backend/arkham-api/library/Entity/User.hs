@@ -16,6 +16,7 @@ User json sql=users
     email Text
     passwordDigest Text
     beta Bool
+    admin Bool default=False
     UniqueUsername username
     UniqueEmail email
     deriving Show

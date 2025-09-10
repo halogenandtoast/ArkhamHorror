@@ -21,6 +21,7 @@ registrationToUser Registration {..} = do
           registrationEmail
           (TE.decodeUtf8 digest)
           False
+          False
 
 postApiV1RegistrationR :: Handler Token
 postApiV1RegistrationR = do

@@ -38,6 +38,18 @@ instance IsCampaign ThePathToCarcosa where
 thePathToCarcosa :: Difficulty -> ThePathToCarcosa
 thePathToCarcosa = campaign ThePathToCarcosa (CampaignId "03") "The Path to Carcosa"
 
+findNewBearerIfNeeded :: ReverseQueue m => CampaignAttrs -> InvestigatorId -> m ()
+findNewBearerIfNeeded attrs iid = void $ runMaybeT do
+  theManInThePallidMask <- MaybeT $ fetchCardMaybe Enemies.theManInThePallidMask
+  owner <-
+    hoistMaybe $ findKey (any ((== Enemies.theManInThePallidMask) . toCardDef)) attrs.storyCards
+  guard $ owner == iid
+  lift do
+    others <- select $ IncludeEliminated (not_ (InvestigatorWithId iid) <> AliveInvestigator)
+    unless (null others) do
+      removeCampaignCardFromDeck owner theManInThePallidMask
+      addCampaignCardToDeckChoice others Msg.ShuffleIn theManInThePallidMask
+
 instance RunMessage ThePathToCarcosa where
   runMessage msg c@(ThePathToCarcosa attrs) = runQueueT $ campaignI18n $ case msg of
     CampaignStep PrologueStep -> scope "prologue" do
@@ -138,14 +150,10 @@ instance RunMessage ThePathToCarcosa where
         n <- getRecordCount ChasingTheStranger
         recordCount ChasingTheStranger (n + 1)
       pure c
-    After (Msg.InvestigatorEliminated iid) -> do
-      void $ runMaybeT do
-        theManInThePallidMask <- MaybeT $ fetchCardMaybe Enemies.theManInThePallidMask
-        owner <-
-          hoistMaybe $ findKey (any ((== Enemies.theManInThePallidMask) . toCardDef)) attrs.storyCards
-        guard $ owner == iid
-        lift do
-          others <- select $ IncludeEliminated (not_ (InvestigatorWithId iid) <> AliveInvestigator)
-          addCampaignCardToDeckChoice others Msg.ShuffleIn theManInThePallidMask
+    After (Msg.DrivenInsane iid) -> do
+      findNewBearerIfNeeded attrs iid
+      pure c
+    After (Msg.InvestigatorKilled _ iid) -> do
+      findNewBearerIfNeeded attrs iid
       pure c
     _ -> lift $ defaultCampaignRunner msg c

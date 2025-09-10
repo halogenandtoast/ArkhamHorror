@@ -565,8 +565,7 @@ instance RunMessage EnemyAttrs where
         unless (CannotMove `elem` mods) do
           for_ keywords \case
             Keyword.Patrol lMatcher -> do
-              wantsToPatrol <-
-                traceShowId <$> matches enemyId (UnengagedEnemy <> not_ (EnemyAt $ traceShowId lMatcher))
+              wantsToPatrol <- matches enemyId (UnengagedEnemy <> not_ (EnemyAt lMatcher))
               pushWhen wantsToPatrol $ HandleGroupTarget HunterGroup (toTarget a) [PatrolMove (toId a) lMatcher]
             Keyword.Hunter -> do
               wantsToHunt <-

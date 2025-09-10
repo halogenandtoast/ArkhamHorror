@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.Montmartre209 (montmartre209) where
 
 import Arkham.Ability
+import Arkham.Card
 import Arkham.GameValue
 import Arkham.Helpers.Playable
 import Arkham.I18n
@@ -9,7 +10,6 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Window (mkWhen)
 import Arkham.Window qualified as Window
 
 newtype Montmartre209 = Montmartre209 LocationAttrs
@@ -26,12 +26,17 @@ instance HasAbilities Montmartre209 where
 instance RunMessage Montmartre209 where
   runMessage msg a@(Montmartre209 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      temporaryModifiers iid attrs [TopCardOfDeckIsRevealed, CanPlayTopOfDeck AnyCard] do
-        cards <-
-          filterM (getIsPlayable iid (attrs.ability 1) (UnpaidCost NoAction) [mkWhen (Window.DuringTurn iid)])
-            =<< select (TopOfDeckOf UneliminatedInvestigator)
-        chooseOneM iid do
-          withI18n $ labeled' "playNoCards" nothing
-          targets cards $ playCardPayingCost iid
+      cards <- select $ TopOfDeckOf UneliminatedInvestigator
+      iids <- select UneliminatedInvestigator
+      playable <-
+        filterPlayable iid (attrs.ability 1) (UnpaidCost NoAction) (Window.defaultWindows iid)
+          $ filterCards (card_ #asset) cards
+
+      temporaryModifiersMany attrs (map (,[TopCardOfDeckIsRevealed]) iids) do
+        focusCards cards do
+          chooseOneM iid do
+            withI18n $ labeled' "playNoCards" nothing
+            targets playable $ playCardPayingCost iid
+      eachInvestigator shuffleDeck
       pure a
     _ -> Montmartre209 <$> liftRunMessage msg attrs

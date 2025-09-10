@@ -2726,6 +2726,9 @@ class Attachable a where
 instance Attachable AssetAttrs where
   toAttach attrs target = AttachAsset (asId attrs) (toTarget target)
 
+instance Attachable EventId where
+  toAttach eid target = AttachEvent eid (toTarget target)
+
 attach :: (HasQueue Message m, Attachable a, Targetable target) => a -> target -> m ()
 attach a = push . toAttach a
 
@@ -3050,6 +3053,28 @@ temporaryModifiers target source modTypes body = do
   msgs <- capture body
   pushAll $ CreateEffect builder {effectBuilderEffectId = Just effectId}
     : msgs <> [DisableEffect effectId]
+
+temporaryModifiersMany
+  :: ( Targetable target
+     , Sourceable source
+     , HasQueue Message m
+     , MonadRandom m
+     , HasGame m
+     )
+  => source
+  -> [(target, [ModifierType])]
+  -> QueueT Message m ()
+  -> m ()
+temporaryModifiersMany src ts body = do
+  ids <- replicateM (length ts) getRandom
+  builders <- for ts \(t, mods) -> do
+    ems <- Msg.effectModifiers src mods
+    Msg.makeEffectBuilder "wmode" (Just ems) src t
+
+  let effects = [b {effectBuilderEffectId = Just eid} | (eid, b) <- zip ids builders]
+  msgs <- capture body
+
+  pushAll $ (CreateEffect <$> effects) <> msgs <> (DisableEffect <$> ids)
 
 discardAllClues
   :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)

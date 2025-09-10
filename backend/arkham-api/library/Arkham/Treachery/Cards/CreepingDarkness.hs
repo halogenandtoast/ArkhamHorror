@@ -3,15 +3,14 @@ module Arkham.Treachery.Cards.CreepingDarkness (creepingDarkness) where
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype CreepingDarkness = CreepingDarkness TreacheryAttrs
   deriving anyclass IsTreachery
@@ -26,30 +25,26 @@ instance HasModifiersFor CreepingDarkness where
     modifySelect a (enemyIs Enemies.formlessSpawn) [HealthModifier n]
 
 instance HasAbilities CreepingDarkness where
-  getAbilities (CreepingDarkness a) =
-    [skillTestAbility $ restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]
+  getAbilities (CreepingDarkness a) = [skillTestAbility $ restricted a 1 OnSameLocation doubleActionAbility]
 
 instance RunMessage CreepingDarkness where
-  runMessage msg t@(CreepingDarkness attrs) = case msg of
-    Revelation _ source | isSource attrs source -> do
-      nexus <- selectJust $ locationIs Locations.nexusOfNKai
-      pushAll
-        [ attachTreachery attrs nexus
-        , PlaceDoom (toSource attrs) (toTarget attrs) 1
-        ]
+  runMessage msg t@(CreepingDarkness attrs) = runQueueT $ case msg of
+    Revelation _ (isSource attrs -> True) -> do
+      attachTreachery attrs =<< selectJust (locationIs Locations.nexusOfNKai)
+      placeDoom attrs attrs 1
       pure t
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      hasTorches <- getHasSupply iid Torches
-      player <- getPlayer iid
-      sid <- getRandom
-      push
-        $ chooseOrRunOne player
-        $ Label
-          "Test {willpower} (3)"
-          [beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 3)]
-        : [Label "Check supplies" [toDiscardBy iid (attrs.ability 1) attrs] | hasTorches]
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseOrRunOneM iid do
+        labeled "Test {willpower} (3)" do
+          sid <- getRandom
+          beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 3)
+        whenM (getHasSupply iid Torches) do
+          labeled "Check supplies" $ toDiscardBy iid (attrs.ability 1) attrs
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ toDiscardBy iid (toAbilitySource attrs 1) attrs
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> CreepingDarkness <$> runMessage msg attrs
+    RemoveTreachery tid | tid == attrs.id -> do
+      selectEach (enemyIs Enemies.formlessSpawn) $ push . CheckDefeated (attrs.ability 1) . toTarget
+      pure t
+    _ -> CreepingDarkness <$> liftRunMessage msg attrs

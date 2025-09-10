@@ -3,6 +3,7 @@ module Arkham.Helpers.Ability where
 import Arkham.Ability
 import Arkham.Action (Action)
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
@@ -123,7 +124,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
     ConstantAbility -> pure False
 
 canDoAction :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
-canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
+canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \case
   Action.Fight -> case abilitySource of
     LocationSource _lid -> pure True
     EnemySource eid -> do
@@ -201,6 +202,11 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
     _ -> selectAny (Matcher.canParleyEnemy iid)
   Action.Investigate -> case abilitySource of
     LocationSource lid -> withoutModifier iid (CannotInvestigateLocation lid)
+    AssetSource _ | abilityCardCode == Assets.duke.cardCode && abilityIndex == 2 -> do
+      orM
+        [ notNull <$> select Matcher.InvestigatableLocation
+        , matches iid $ Matcher.InvestigatorCanMoveTo abilitySource Matcher.Anywhere
+        ]
     _ -> notNull <$> select Matcher.InvestigatableLocation
   -- The below actions may not be handled correctly yet
   Action.Activate -> pure True

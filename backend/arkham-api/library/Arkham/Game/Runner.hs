@@ -97,6 +97,7 @@ import Arkham.Matcher hiding (
   StoryCard,
  )
 import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted (removeLocation)
 import Arkham.Movement
 import Arkham.Name
 import Arkham.Phase
@@ -953,11 +954,13 @@ runGameMessage msg g = case msg of
     pushAll $ concatMap (resolve . Msg.InvestigatorIsDefeated (toSource lid)) investigators
     pure g
   Do (RemovedLocation lid) -> do
-    location <- getLocation lid
-    pure
-      $ g
-      & (entitiesL . locationsL %~ deleteMap lid)
-      & (actionRemovedEntitiesL . locationsL %~ Map.insert lid location)
+    maybeLocation lid >>= \case
+      Nothing -> pure g
+      Just location ->
+        pure
+          $ g
+          & (entitiesL . locationsL %~ deleteMap lid)
+          & (actionRemovedEntitiesL . locationsL %~ Map.insert lid location)
   SpendClues 0 _ -> pure g
   SpendClues n iids -> do
     investigatorsWithClues <-
@@ -1281,13 +1284,11 @@ runGameMessage msg g = case msg of
       pushAll $ resolve (RemoveEnemy enemyId) <> [ShuffleCardsIntoDeck deck [card]]
     pure g
   ShuffleIntoDeck deck (LocationTarget locationId) -> do
-    maybeLocation locationId >>= \case
-      Nothing -> pure g
-      Just _ -> do
-        -- The Thing That Follows
-        card <- field LocationCard locationId
-        push $ ShuffleCardsIntoDeck deck [card]
-        pure $ g & entitiesL . locationsL %~ deleteMap locationId
+    maybeLocation locationId >>= traverse_ \_ -> do
+      card <- field LocationCard locationId
+      push $ ShuffleCardsIntoDeck deck [card]
+      runQueueT $ removeLocation locationId
+    pure g
   PlayCard iid card _mtarget _payment windows' True -> do
     allModifiers <- mconcat <$> sequence [getModifiers card, getModifiers iid]
     let

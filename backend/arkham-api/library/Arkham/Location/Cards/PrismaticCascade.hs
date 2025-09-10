@@ -22,7 +22,7 @@ instance HasAbilities PrismaticCascade where
     extendRevealed1 attrs
       $ mkAbility attrs 1
       $ forced
-      $ DiscoveringLastClue #after Anyone (be attrs)
+      $ LastClueRemovedFromLocation #after (be attrs)
 
 instance RunMessage PrismaticCascade where
   runMessage msg l@(PrismaticCascade attrs) = runQueueT $ case msg of

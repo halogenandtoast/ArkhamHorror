@@ -221,6 +221,7 @@ data WindowType
   | InvestigatorEliminated InvestigatorId
   | InvestigatorResigned InvestigatorId
   | LastClueRemovedFromAsset AssetId
+  | LastClueRemovedFromLocation LocationId
   | LeavePlay Target
   | Leaving InvestigatorId LocationId
   | MoveAction InvestigatorId LocationId LocationId

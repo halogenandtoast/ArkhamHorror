@@ -323,6 +323,7 @@ locationWith f def shroud' revealClues g =
             , locationBreaches = Nothing
             , locationFloodLevel = Nothing
             , locationPosition = Nothing
+            , locationBeingRemoved = False
             }
     }
 

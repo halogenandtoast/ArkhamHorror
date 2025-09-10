@@ -206,6 +206,8 @@ instance RunMessage LocationAttrs where
       pure $ a & inFrontOfL ?~ iid
     PutLocationInCenter lid | lid == locationId -> do
       pure $ a & inFrontOfL .~ Nothing
+    When (RemoveLocation lid) | lid == locationId -> do
+      pure $ a & beingRemovedL .~ True
     Discard _ source target | isTarget a target -> do
       pushAll
         $ windows [Window.WouldBeDiscarded (toTarget a)]
@@ -326,6 +328,8 @@ instance RunMessage LocationAttrs where
       if tType == Clue
         then do
           let clueCount = max 0 $ subtract n $ locationClues a
+          when (clueCount == 0 && locationClues a > 0) do
+            pushM $ checkAfter $ Window.LastClueRemovedFromLocation a.id
           pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
         else pure $ a & tokensL %~ subtractTokens tType n
     PlacedLocation _ _ lid | lid == locationId -> do

@@ -8,7 +8,7 @@ import { OnClickOutside } from '@vueuse/components'
 const expanded = ref(false);
 const router = useRouter()
 const store = useUserStore()
-const currentUser = computed<User | null>(() => store.getCurrentUser)
+const currentUser = computed<User | null>(() => store.currentUser)
 
 async function logout() {
   await store.logout()
@@ -23,7 +23,8 @@ async function logout() {
       <router-link v-if="currentUser" to="/decks">{{$t('myDecks')}}</router-link>
       <router-link v-if="currentUser" to="/cards">{{$t('cards')}}</router-link>
       <router-link v-if="currentUser" to="/about">{{$t('about')}}</router-link>
-      <router-link to="/about?support">{{$t('support')}}</router-link>
+      <router-link v-if="currentUser" to="/about?support">{{$t('support')}}</router-link>
+      <router-link v-if="currentUser && currentUser.admin" to="/admin">{{$t('admin')}}</router-link>
     </span>
 
     <OnClickOutside @trigger="expanded = false">

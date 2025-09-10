@@ -87,6 +87,7 @@ import Api.Handler.Arkham.Old
 import Api.Handler.Arkham.PendingGames
 import Api.Handler.Arkham.Replay
 import Api.Handler.Arkham.Undo
+import Api.Handler.Arkham.Games.Admin
 import Base.Api.Handler.Authentication
 import Base.Api.Handler.CurrentUser
 import Base.Api.Handler.PasswordReset

@@ -14,7 +14,7 @@ import scenarioJSON from '@/arkham/data/scenarios'
 import sideStoriesJSON from '@/arkham/data/side-stories.json'
 
 const store = useUserStore()
-const currentUser = computed<User | null>(() => store.getCurrentUser)
+const currentUser = computed<User | null>(() => store.currentUser)
 const route = useRoute();
 const queryParams = route.query;
 

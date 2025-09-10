@@ -306,6 +306,11 @@ getRequestUserId = do
   mToken <- JWT.lookupToken
   maybe notAuthenticated pure . join =<< for mToken tokenToUserId
 
+getRequestUser :: Handler (Entity User)
+getRequestUser = do
+  userId <- getRequestUserId
+  runDB $ getEntity404 userId
+
 getEntity404
   :: (PersistEntity record, PersistEntityBackend record ~ SqlBackend) => Key record -> DB (Entity record)
 getEntity404 key = Entity key <$> get404 key

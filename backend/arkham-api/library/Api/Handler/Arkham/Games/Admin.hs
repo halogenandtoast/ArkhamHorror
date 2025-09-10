@@ -4,14 +4,12 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NoFieldSelectors #-}
 
-module Api.Handler.Arkham.Games (
-  getApiV1ArkhamGameR,
-  getApiV1ArkhamGameSpectateR,
-  getApiV1ArkhamGamesR,
-  postApiV1ArkhamGamesR,
-  putApiV1ArkhamGameR,
-  deleteApiV1ArkhamGameR,
-  putApiV1ArkhamGameRawR,
+module Api.Handler.Arkham.Games.Admin (
+  getApiV1AdminR,
+  getApiV1AdminGameR,
+  putApiV1AdminGameR,
+  getApiV1AdminGamesR,
+  putApiV1AdminGameRawR,
 ) where
 
 import Api.Arkham.Helpers
@@ -35,7 +33,6 @@ import Arkham.Queue
 import Conduit
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
-import Control.Monad.Random.Class (getRandom)
 import Data.Aeson.Types (parse)
 import Data.ByteString.Lazy qualified as BSL
 import Data.Coerce
@@ -49,8 +46,9 @@ import Database.Esqueleto.Experimental hiding (update, (=.))
 import Database.Redis (publish, runRedis)
 import Entity.Answer
 import Entity.Arkham.GameRaw
+import Entity.Arkham.Player
 import Entity.Arkham.Step
-import Import hiding (delete, exists, on, (==.))
+import Import hiding (delete, exists, on, (==.), (>=.))
 import Import qualified as P
 import Json
 import Network.WebSockets (ConnectionException)
@@ -98,28 +96,49 @@ data GetGameJson = GetGameJson
   deriving stock (Show, Generic)
   deriving anyclass ToJSON
 
-getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
-getApiV1ArkhamGameR gameId = do
+getAdminUser :: Handler (Entity User)
+getAdminUser = do
   userId <- getRequestUserId
-  webSockets $ gameStream (Just userId) gameId
-  runDB do
-    ge <- get404 gameId
-    Entity playerId _ <- getBy404 (UniquePlayer userId gameId)
-    let Game {..} = arkhamGameCurrentData ge
-    gameLog <- getGameLog gameId Nothing
-    let
-      player =
-        case arkhamGameMultiplayerVariant ge of
-          WithFriends -> coerce playerId
-          Solo -> gameActivePlayerId
-    pure
-      $ GetGameJson
-        (Just player)
-        (arkhamGameMultiplayerVariant ge)
-        (PublicGame gameId (arkhamGameName ge) (gameLogToLogEntries gameLog) (arkhamGameCurrentData ge))
+  user <- runDB $ get404 userId
+  unless (userAdmin user) $ permissionDenied "You must be an admin to access this endpoint"
+  pure $ Entity userId user
 
-getApiV1ArkhamGameSpectateR :: ArkhamGameId -> Handler GetGameJson
-getApiV1ArkhamGameSpectateR gameId = do
+data AdminData = AdminData
+  { currentUsers :: Int
+  , activeUsers :: Int
+  , activeGames :: [GameDetailsEntry]
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass ToJSON
+
+selectCount :: SqlQuery a -> DB Int
+selectCount inner = fmap (sum . map unValue . toList) . selectOne $ inner $> countRows
+
+getApiV1AdminR :: Handler AdminData
+getApiV1AdminR = do
+  _user <- getAdminUser
+  recent <- addUTCTime (negate (14 * nominalDay)) <$> liftIO getCurrentTime
+  runDB do
+    currentUsers <- selectCount $ from $ table @User
+    activeUsers <-
+      fmap (sum . map unValue . toList) . selectOne $ do
+        (users :& _players :& games) <-
+          from
+            $ table @User
+            `innerJoin` table @ArkhamPlayer
+              `on` (\(users :& players) -> users.id ==. players.userId)
+            `innerJoin` table @ArkhamGame
+              `on` (\(_ :& players :& games) -> players.arkhamGameId ==. games.id)
+        where_ (games.updatedAt >=. val recent)
+        pure (countDistinct users.id)
+
+    games <- recentGames 20
+
+    pure $ AdminData currentUsers activeUsers games
+
+getApiV1AdminGameR :: ArkhamGameId -> Handler GetGameJson
+getApiV1AdminGameR gameId = do
+  _user <- getAdminUser
   webSockets $ gameStream Nothing gameId
   ge <- runDB $ get404 gameId
   let Game {..} = arkhamGameCurrentData ge
@@ -174,24 +193,18 @@ instance ToJSON GameDetailsEntry where
     FailedGameDetails t -> object ["error" .= t]
     SuccessGameDetails gd -> toJSON gd
 
-getApiV1ArkhamGamesR :: Handler [GameDetailsEntry]
-getApiV1ArkhamGamesR = do
-  userId <- getRequestUserId
-  games <- runDB $ select do
-    (players :& games) <-
-      distinct
-        $ from
-        $ table @ArkhamPlayer
-        `innerJoin` table @ArkhamGameRaw
-          `on` (\(players :& games) -> players.arkhamGameId ==. toBaseId games.id)
-    where_ $ players.userId ==. val userId
+recentGames :: Int64 -> DB [GameDetailsEntry]
+recentGames n = do
+  games <- select do
+    games <- from $ table @ArkhamGameRaw
     orderBy [desc games.updatedAt]
+    limit n
     pure games
 
   let
     campaignOtherInvestigators j = case parse (withObject "" (.: "otherCampaignAttrs")) j of
       Error _ -> mempty
-      Success (attrs :: CampaignAttrs) -> map (`lookupInvestigator` (PlayerId nil)) $ Map.keys attrs.decks
+      Success (attrs :: CampaignAttrs) -> map (`lookupInvestigator` PlayerId nil) $ Map.keys attrs.decks
 
   pure $ flip map games \(Entity gameId game) -> do
     case fromJSON @Game (arkhamGameRawCurrentData game) of
@@ -224,61 +237,14 @@ getApiV1ArkhamGamesR = do
             }
       Error e -> FailedGameDetails ("Failed to load " <> tshow gameId <> ": " <> T.pack e)
 
-data CreateGamePost = CreateGamePost
-  { deckIds :: [Maybe ArkhamDeckId]
-  , playerCount :: Int
-  , campaignId :: Maybe CampaignId
-  , scenarioId :: Maybe ScenarioId
-  , difficulty :: Difficulty
-  , campaignName :: Text
-  , multiplayerVariant :: MultiplayerVariant
-  , includeTarotReadings :: Bool
-  }
-  deriving stock (Show, Generic)
-  deriving anyclass FromJSON
+getApiV1AdminGamesR :: Handler [GameDetailsEntry]
+getApiV1AdminGamesR = do
+  _user <- getAdminUser
+  runDB $ recentGames 20
 
--- | New Game
-postApiV1ArkhamGamesR :: Handler (PublicGame ArkhamGameId)
-postApiV1ArkhamGamesR = do
+putApiV1AdminGameR :: ArkhamGameId -> Handler ()
+putApiV1AdminGameR gameId = do
   userId <- getRequestUserId
-  CreateGamePost {..} <- requireCheckJsonBody
-
-  newGameSeed <- liftIO getRandom
-  genRef <- newIORef (mkStdGen newGameSeed)
-  queueRef <- newQueue []
-  now <- liftIO getCurrentTime
-
-  let
-    game = case campaignId of
-      Just cid -> newCampaign cid scenarioId newGameSeed playerCount difficulty includeTarotReadings
-      Nothing -> case scenarioId of
-        Just sid -> newScenario sid newGameSeed playerCount difficulty includeTarotReadings
-        Nothing -> error "missing either a campign id or a scenario id"
-  let ag = ArkhamGame campaignName game 0 multiplayerVariant now now
-  let repeatCount = if multiplayerVariant == WithFriends then 1 else playerCount
-  runDB $ do
-    gameId <- insert ag
-    pids <- replicateM repeatCount $ insert $ ArkhamPlayer userId gameId "00000"
-    gameRef <- liftIO $ newIORef game
-
-    runGameApp (GameApp gameRef queueRef genRef (pure . const ())) $ do
-      for_ pids $ \pid -> addPlayer (PlayerId $ coerce pid)
-      runMessages Nothing
-
-    updatedQueue <- liftIO $ readIORef (queueToRef queueRef)
-    updatedGame <- liftIO $ readIORef gameRef
-
-    let ag' = ag {arkhamGameCurrentData = updatedGame}
-
-    replace gameId ag'
-    insert_ $ ArkhamStep gameId (Choice mempty updatedQueue) 0 (ActionDiff [])
-    pure $ toPublicGame (Entity gameId ag') mempty
-
-putApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
-putApiV1ArkhamGameR gameId = do
-  Entity userId user <- getRequestUser
-  unless (userAdmin user) do
-    void $ runDB $ getBy404 (UniquePlayer userId gameId)
   response <- requireCheckJsonBody
   writeChannel <- (.channel) <$> getRoom gameId
   updateGame response gameId userId writeChannel
@@ -389,23 +355,12 @@ handleMessageLog logRef writeChannel msg = liftIO $ do
     ClientShowUnder {} -> Nothing
 
 -- TODO: Make this a websocket message
-putApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()
-putApiV1ArkhamGameRawR gameId = do
-  userId <- getRequestUserId
+putApiV1AdminGameRawR :: ArkhamGameId -> Handler ()
+putApiV1AdminGameRawR gameId = do
+  Entity userId _ <- getAdminUser
   response <- requireCheckJsonBody @_ @RawGameJsonPut
   writeChannel <- (.channel) <$> getRoom gameId
   updateGame (Raw response.gameMessage) gameId userId writeChannel
-
-deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
-deleteApiV1ArkhamGameR gameId = do
-  userId <- getRequestUserId
-  runDB $ delete do
-    games <- from $ table @ArkhamGame
-    where_ $ games.id ==. val gameId
-    where_ $ exists do
-      players <- from $ table @ArkhamPlayer
-      where_ $ players.arkhamGameId ==. games.id
-      where_ $ players.userId ==. val userId
 
 publishToRoom :: (MonadIO m, ToJSON a, HasApp m) => ArkhamGameId -> a -> m ()
 publishToRoom gameId a = do

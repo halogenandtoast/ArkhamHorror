@@ -105,7 +105,7 @@ import Arkham.Placement qualified as Placement
 import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario
-import Arkham.Scenario.Types hiding (scenario, foundCardsL)
+import Arkham.Scenario.Types hiding (foundCardsL, scenario)
 import Arkham.Skill
 import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
 import Arkham.Skill.Types qualified as Skill
@@ -1656,12 +1656,14 @@ runGameMessage msg g = case msg of
       _ -> do
         validTargetsForKey :: Map Target [Message] <- case k of
           HunterGroup ->
-            mapFromList <$> forMaybeM (mapToList targetMap) \(target, msgs) -> do
-              case target of
-                EnemyTarget eid -> do
-                  kws <- getModifiedKeywords eid
-                  pure $ guard (Keyword.Hunter `elem` kws) $> (target, msgs)
-                _ -> pure Nothing
+            mapFromList <$> forMaybeM (mapToList targetMap) \(target, msgs) -> runMaybeT do
+              eid <- hoistMaybe target.enemy
+              kws <- lift $ toList <$> getModifiedKeywords eid
+              liftGuardM $ flip anyM kws \case
+                Keyword.Patrol lm -> matches eid (#ready <> #unengaged <> not_ (EnemyAt lm))
+                Keyword.Hunter -> matches eid (#ready <> #unengaged <> not_ (EnemyAt $ LocationWithInvestigator Anyone))
+                _ -> pure False
+              pure (target, msgs)
         case st of
           NoAutoStatus -> do
             let

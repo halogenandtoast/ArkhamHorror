@@ -95,6 +95,17 @@ getPlayableDiscards source investigator costStatus windows' = do
      in card `elem` allMatches
   allowsPlayFromDiscard _ _ _ _ = False
 
+filterPlayable
+  :: (HasCallStack, HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
+  -> source
+  -> CostStatus
+  -> [Window]
+  -> [Card]
+  -> m [Card]
+filterPlayable investigator source costStatus windows' =
+  filterM (getIsPlayable investigator source costStatus windows')
+
 getIsPlayable
   :: (HasCallStack, HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
   => investigator

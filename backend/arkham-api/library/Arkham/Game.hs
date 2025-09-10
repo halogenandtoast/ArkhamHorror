@@ -3331,6 +3331,11 @@ enemyMatcherFilter es matcher' = do
     EnemyWithEvade -> filterM (fieldP EnemyEvade isJust . toId) es
     EnemyWithFight -> filterM (fieldP EnemyFight isJust . toId) es
     EnemyWithPlacement p -> filterM (fieldP EnemyPlacement (== p) . toId) es
+    EnemyHiddenInHand investigatorMatcher -> do
+      iids <- select investigatorMatcher
+      pure $ flip filter es \enemy -> case enemyPlacement (toAttrs enemy) of
+        Placement.HiddenInHand iid -> iid `elem` iids
+        _ -> False
     UnengagedEnemy -> filterM (selectNone . InvestigatorEngagedWith . EnemyWithId . toId) es
     UniqueEnemy -> pure $ filter (cdUnique . toCardDef) es
     IsIchtacasPrey -> flip filterM es \enemy -> do

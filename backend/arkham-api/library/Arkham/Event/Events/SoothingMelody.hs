@@ -36,28 +36,17 @@ instance RunMessage SoothingMelody where
       let location = locationWithInvestigator iid
       damageInvestigators <- select $ HealableInvestigator (toSource attrs) #damage $ at_ location
       horrorInvestigators <- select $ HealableInvestigator (toSource attrs) #horror $ at_ location
-      damageAssets <-
-        select
-          $ HealableAsset (toSource attrs) #damage
-          $ at_ location
-          <> #ally
-          <> AssetControlledBy (affectsOthers Anyone)
-      horrorAssets <-
-        select
-          $ HealableAsset (toSource attrs) #horror
-          $ at_ location
-          <> #ally
-          <> AssetControlledBy (affectsOthers Anyone)
+      let source = toSource attrs
+      let assetFor k =
+            select $ HealableAsset source k (at_ location <> #ally <> AssetControlledBy (affectsOthers Anyone))
+      damageAssets <- assetFor #damage
+      horrorAssets <- assetFor #horror
 
       chooseOneM iid do
-        for_ damageInvestigators \i -> do
-          damageLabeled i $ healDamageDelayed i attrs 1
-        for_ horrorInvestigators \i -> do
-          horrorLabeled i $ healHorrorDelayed i attrs 1
-        for_ damageAssets \asset -> do
-          assetDamageLabeled asset $ healDamageDelayed asset attrs 1
-        for_ horrorAssets \asset -> do
-          assetHorrorLabeled asset $ healHorrorDelayed asset attrs 1
+        for_ damageInvestigators \i -> damageLabeled i $ healDamageDelayed i attrs 1
+        for_ horrorInvestigators \i -> horrorLabeled i $ healHorrorDelayed i attrs 1
+        for_ damageAssets \asset -> assetDamageLabeled asset $ healDamageDelayed asset attrs 1
+        for_ horrorAssets \asset -> assetHorrorLabeled asset $ healHorrorDelayed asset attrs 1
 
       when (n < limit) $ doStep (n + 1) msg'
       pure e

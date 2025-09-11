@@ -1,11 +1,9 @@
-module Arkham.Event.Events.DeepKnowledge (deepKnowledge, DeepKnowledge (..)) where
+module Arkham.Event.Events.DeepKnowledge (deepKnowledge) where
 
 import Arkham.Capability
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype DeepKnowledge = DeepKnowledge EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -15,15 +13,12 @@ deepKnowledge :: EventCard DeepKnowledge
 deepKnowledge = event DeepKnowledge Cards.deepKnowledge
 
 instance RunMessage DeepKnowledge where
-  runMessage msg e@(DeepKnowledge attrs) = case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
+  runMessage msg e@(DeepKnowledge attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       iids <- select $ affectsOthers $ colocatedWith iid <> can.draw.cards
-      player <- getPlayer iid
-      choices <- for iids $ \iid' -> do
-        let drawing = drawCards iid' attrs 1
-        pure $ targetLabel iid' [drawing]
-      pushAll
-        $ replicate 3
-        $ chooseOrRunOne player choices
+      chooseInvestigatorAmounts iid "Number of cards to draw" 3 iids attrs
       pure e
-    _ -> DeepKnowledge <$> runMessage msg attrs
+    ResolveAmounts _ choices (isTarget attrs -> True) -> do
+      withInvestigatorAmounts choices \iid n -> drawCards iid (attrs.ability 1) n
+      pure e
+    _ -> DeepKnowledge <$> liftRunMessage msg attrs

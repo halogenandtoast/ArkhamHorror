@@ -288,6 +288,7 @@ data AssetAttrs = AssetAttrs
   , assetMutated :: Maybe Text -- for art display
   , assetDriver :: Maybe InvestigatorId
   , assetVisible :: Bool
+  , assetResolved :: Bool
   }
   deriving stock (Show, Eq)
 
@@ -493,6 +494,7 @@ assetWith f cardDef g =
             , assetMutated = Nothing
             , assetDriver = Nothing
             , assetVisible = True
+            , assetResolved = False
             }
     }
 
@@ -662,4 +664,5 @@ instance FromJSON AssetAttrs where
     assetMutated <- o .: "mutated"
     assetDriver <- o .: "driver"
     assetVisible <- o .:? "visible" .!= True
+    assetResolved <- o .:? "visible" .!= True
     pure AssetAttrs {..}

@@ -22,8 +22,8 @@ import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.DefeatedBy
 import Arkham.Event.Types (Field (EventUses))
-import Arkham.Helpers.Card (getVictoryPoints)
 import Arkham.Helpers.Calculation (calculate)
+import Arkham.Helpers.Card (getVictoryPoints)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Placement
@@ -331,6 +331,7 @@ instance RunMessage AssetAttrs where
             _ -> error "Invalid match"
 
       pure $ a & assignedSanityDamageL +~ n
+    ResolvedCard _ (sameCard a -> True) -> pure $ a & resolvedL .~ True
     ApplyHealing source -> do
       let health = findWithDefault 0 source assetAssignedHealthHeal
       let sanity = findWithDefault 0 source assetAssignedSanityHeal

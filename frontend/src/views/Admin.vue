@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import api from '@/api'
 import GameRow from '@/arkham/components/GameRow.vue'
+import GameFinder from '@/components/admin/GameFinder.vue'
 import type { GameDetails } from '@/arkham/types/Game'
 
 interface AdminData {
@@ -85,6 +86,8 @@ const toggleSidebar = () => (sidebarOpen.value = !sidebarOpen.value)
           <div class="kpi-value">{{ finishedGames.length }}</div>
         </div>
       </section>
+
+      <GameFinder />
 
       <!-- Active Games -->
       <section class="block">

@@ -1511,12 +1511,16 @@ instance RunMessage EnemyAttrs where
               if canSpawn && unchanged
                 then do
                   windows' <- checkWindows [mkWhen $ Window.EnemyWouldSpawnAt eid lid]
+                  canBeEngaged <- matches iid (InvestigatorCanBeEngagedBy eid)
                   pushAll $ windows'
                     : resolve
                       ( EnemySpawn
                           $ SpawnDetails
                             { spawnDetailsInvestigator = Just iid
-                            , spawnDetailsSpawnAt = SpawnAtLocation lid
+                            , spawnDetailsSpawnAt =
+                                if canBeEngaged
+                                  then SpawnEngagedWith (InvestigatorWithId iid)
+                                  else SpawnAtLocation lid
                             , spawnDetailsEnemy = eid
                             , spawnDetailsOverridden = False
                             }

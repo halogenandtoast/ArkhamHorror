@@ -20,7 +20,14 @@ const tokenChoices = computed(() => {
     case 'ChooseMatch': return props.choice.steps
     case 'ChooseMatchChoice': return props.choice.steps
     case 'Choose': return props.choice.steps
-    default: return [props.choice]
+    case 'Deciding': {
+      const { step } = props.choice
+      if ("steps" in step) return step.steps
+      return props.choice.step
+    }
+    default: {
+      return [props.choice]
+    }
   }
 })
 

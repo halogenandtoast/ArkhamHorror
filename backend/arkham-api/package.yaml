@@ -61,6 +61,7 @@ library:
     - amazonka
     - amazonka-s3
     - annotated-exception
+    - async
     - base16-bytestring
     - bugsnag
     - bugsnag-hs

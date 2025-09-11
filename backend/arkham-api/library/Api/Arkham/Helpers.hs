@@ -21,7 +21,6 @@ import Arkham.Random
 import Control.Lens hiding (from)
 import Control.Monad.Random (MonadRandom (..), StdGen, mkStdGen)
 import Data.Aeson qualified as Aeson
-import Data.ByteString.Lazy qualified as BSL
 import Data.Map.Strict qualified as Map
 import Data.Time.Clock
 import Database.Esqueleto.Experimental
@@ -51,7 +50,7 @@ getGameLog gameId mStep = fmap (GameLog . fmap unValue) $ select $ do
   for_ mStep $ \step ->
     where_ $ entries.step >=. val step
   orderBy [asc entries.createdAt]
-  pure $ entries.body
+  pure entries.body
 
 getGameLogEntries :: MonadIO m => ArkhamGameId -> SqlPersistT m [ArkhamLogEntry]
 getGameLogEntries gameId = fmap (fmap entityVal)
@@ -152,26 +151,26 @@ gameChannel :: ArkhamGameId -> RedisChannel
 gameChannel gameId = "arkham-" <> encodeUtf8 (tshow gameId)
 
 getRoom :: (MonadIO m, HasApp m) => ArkhamGameId -> m Room
-getRoom gameId = do
+getRoom gid = do
   roomsRef <- getsApp appGameRooms
-  rooms <- readIORef roomsRef
-  case Map.lookup gameId rooms of
-    Just room -> pure room
-    Nothing -> do
+  mb <- liftIO $ atomicModifyIORef' roomsRef \m ->
+    case Map.lookup gid m of
+      Just r -> (m, Right r)
+      Nothing -> (m, Left ())
+  case mb of
+    Right r -> pure r
+    Left () -> do
       chan <- atomically newBroadcastTChan
-      let room =
+      let r =
             Room
               { socketChannel = chan
               , socketClients = 0
-              , messageBrokerChannel = gameChannel gameId
+              , messageBrokerChannel = gameChannel gid
               }
-      atomicModifyIORef' roomsRef
-        $ \rooms' -> (Map.insert gameId room rooms', ())
-
-      let handleIt msg = atomically $ writeTChan chan (BSL.fromStrict msg)
-
-      addChannel (gameChannel gameId) handleIt
-      pure room
+      liftIO $ atomicModifyIORef' roomsRef \m ->
+        case Map.lookup gid m of
+          Just r' -> (m, r')
+          Nothing -> (Map.insert gid r m, r)
 
 displayCardType :: CardType -> Text
 displayCardType = \case

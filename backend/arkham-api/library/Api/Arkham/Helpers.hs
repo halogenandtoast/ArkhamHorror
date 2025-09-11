@@ -27,9 +27,13 @@ import Data.Time.Clock
 import Database.Esqueleto.Experimental
 import Database.Redis (RedisChannel)
 import Entity.Arkham.LogEntry
+import GHC.Records
 
 newtype GameLog = GameLog {gameLogToLogEntries :: [Text]}
   deriving newtype (Monoid, Semigroup)
+
+instance HasField "entries" GameLog [Text] where
+  getField = gameLogToLogEntries
 
 newLogEntry :: ArkhamGameId -> Int -> UTCTime -> Text -> ArkhamLogEntry
 newLogEntry gameId step now body =

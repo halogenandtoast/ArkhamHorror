@@ -20,6 +20,7 @@
     "@vueuse/components": "^13.9.0",
     "@vueuse/core": "^13.9.0",
     "axios": "^1.11.0",
+    "chart.js": "^4.5.0",
     "floating-vue": "^5.2.2",
     "gsap": "^3.13.0",
     "lodash": "^4.17.21",

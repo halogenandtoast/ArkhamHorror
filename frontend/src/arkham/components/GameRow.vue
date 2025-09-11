@@ -8,7 +8,7 @@ import { imgsrc } from '@/arkham/helpers';
 
 const props = withDefaults(defineProps<{
   game: GameDetails
-  deleteGame: () => void
+  deleteGame?: () => void
   admin?: boolean
 }>(), {
   admin: false
@@ -70,7 +70,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
         <div class="extra-details">
           <div class="game-difficulty">{{difficulty}}</div>
 
-          <div class="game-delete">
+          <div v-if="deleteGame" class="game-delete">
               <transition name="slide">
                 <a v-show="!deleting" href="#delete" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
               </transition>

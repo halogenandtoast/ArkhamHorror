@@ -37,7 +37,6 @@ selectCount inner = fmap (sum . map unValue . toList) . selectOne $ inner $> cou
 
 getApiV1AdminR :: Handler AdminData
 getApiV1AdminR = do
-  _user <- getAdminUser
   recent <- addUTCTime (negate (14 * nominalDay)) <$> liftIO getCurrentTime
   runDB do
     currentUsers <- selectCount $ from $ table @User
@@ -57,7 +56,6 @@ getApiV1AdminR = do
 
 getApiV1AdminGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1AdminGameR gameId = do
-  _user <- getAdminUser
   webSockets $ gameStream Nothing gameId
   g <- runDB $ get404 gameId
   let Game {..} = g.currentData
@@ -67,7 +65,6 @@ getApiV1AdminGameR gameId = do
 
 getApiV1AdminFindGameR :: ArkhamPlayerId -> Handler GameDetailsEntry
 getApiV1AdminFindGameR playerId = do
-  _user <- getAdminUser
   runDB do
     player <- get404 playerId
     g <- getEntity404 $ coerce player.arkhamGameId
@@ -83,9 +80,7 @@ recentGames n = do
   pure $ map toGameDetailsEntry games
 
 getApiV1AdminGamesR :: Handler [GameDetailsEntry]
-getApiV1AdminGamesR = do
-  _user <- getAdminUser
-  runDB $ recentGames 20
+getApiV1AdminGamesR = runDB $ recentGames 20
 
 putApiV1AdminGameR :: ArkhamGameId -> Handler ()
 putApiV1AdminGameR gameId = do

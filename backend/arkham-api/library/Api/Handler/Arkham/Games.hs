@@ -93,7 +93,6 @@ postApiV1ArkhamGamesR :: Handler (PublicGame ArkhamGameId)
 postApiV1ArkhamGamesR = do
   userId <- getRequestUserId
   CreateGamePost {..} <- requireCheckJsonBody
-
   newGameSeed <- liftIO getRandom
   genRef <- newIORef (mkStdGen newGameSeed)
   queueRef <- newQueue []
@@ -105,8 +104,9 @@ postApiV1ArkhamGamesR = do
       Nothing -> case scenarioId of
         Just sid -> newScenario sid newGameSeed playerCount difficulty includeTarotReadings
         Nothing -> error "missing either a campign id or a scenario id"
-  let ag = ArkhamGame campaignName game 0 multiplayerVariant now now
-  let repeatCount = if multiplayerVariant == WithFriends then 1 else playerCount
+    ag = ArkhamGame campaignName game 0 multiplayerVariant now now
+    repeatCount = if multiplayerVariant == WithFriends then 1 else playerCount
+
   runDB do
     gameId <- insert ag
     pids <- replicateM repeatCount $ insert $ ArkhamPlayer userId gameId "00000"

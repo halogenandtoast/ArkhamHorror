@@ -169,7 +169,31 @@ instance Yesod App where
   -- Routes not requiring authentication.
   isAuthorized HealthR _ = pure Authorized
   isAuthorized ErrorR _ = pure Authorized
-  isAuthorized (ApiP _) _ = pure Authorized
+  isAuthorized (ApiP api) _ = case api of
+    ApiV1P v1 -> case v1 of
+      AdminP _ -> do
+        _ <- getAdminUser
+        pure Authorized
+      ApiV1ArkhamP arkham -> case arkham of
+        ApiV1ArkhamGamesP games -> case games of
+          ApiV1ArkhamGamesImportR -> pure Authorized
+          ApiV1ArkhamGamesFixR -> do
+            _ <- getAdminUser
+            pure Authorized
+          ApiV1ArkhamGamesReloadR -> do
+            _ <- getAdminUser
+            pure Authorized
+          ApiV1ArkhamGameP _ game -> case game of
+            ApiV1ArkhamGameFullExportR -> do
+              _ <- getAdminUser
+              pure Authorized
+            ApiV1ArkhamGameReloadR -> do
+              _ <- getAdminUser
+              pure Authorized
+            _ -> pure Authorized
+          _ -> pure Authorized
+        _ -> pure Authorized
+      _ -> pure Authorized
 
   -- What messages should be logged. The following includes all messages when
   -- in development, and warnings and errors in production.
@@ -305,6 +329,13 @@ getRequestUserId :: Handler UserId
 getRequestUserId = do
   mToken <- JWT.lookupToken
   maybe notAuthenticated pure . join =<< for mToken tokenToUserId
+
+getAdminUser :: Handler (Entity User)
+getAdminUser = do
+  userId <- getRequestUserId
+  user <- runDB $ get404 userId
+  unless user.admin $ permissionDenied "You must be an admin to access this endpoint"
+  pure $ Entity userId user
 
 getRequestUser :: Handler (Entity User)
 getRequestUser = do

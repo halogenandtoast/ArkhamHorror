@@ -6,6 +6,7 @@
 module Api.Handler.Arkham.Games.Admin (
   getApiV1AdminR,
   getApiV1AdminGameR,
+  getApiV1AdminFindGameR,
   putApiV1AdminGameR,
   getApiV1AdminGamesR,
   putApiV1AdminGameRawR,
@@ -70,6 +71,14 @@ getApiV1AdminGameR gameId = do
   gameLog <- runDB $ getGameLog gameId Nothing
   let player = gameActivePlayerId
   pure $ GetGameJson (Just player) g.variant (PublicGame gameId g.name gameLog.entries g.currentData)
+
+getApiV1AdminFindGameR :: ArkhamPlayerId -> Handler GameDetailsEntry
+getApiV1AdminFindGameR playerId = do
+  _user <- getAdminUser
+  runDB do
+    player <- get404 playerId
+    g <- getEntity404 $ coerce player.arkhamGameId
+    pure $ toGameDetailsEntry g
 
 recentGames :: Int64 -> DB [GameDetailsEntry]
 recentGames n = do

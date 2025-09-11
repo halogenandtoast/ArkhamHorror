@@ -44,6 +44,11 @@ interface Notification {
 
 export const fetchNotifications = (): Promise<Notification[]> => api.get('notifications')
 
+export const findGame = async (playerId: string): Promise<GameDetailsEntry> => {
+  const { data } = await api.get(`admin/games/find/${playerId}`)
+  return gameDetailsEntryDecoder.decodePromise(data)
+}
+
 export const fetchGames = async (): Promise<GameDetailsEntry[]> => {
   const { data } = await api.get('arkham/games')
   const failed = data.filter((g: { error?: string }) => g.error !== undefined)

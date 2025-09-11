@@ -44,6 +44,7 @@
       / ApiV1AdminR GET
       /games ApiV1AdminGamesP:
         / ApiV1AdminGamesR GET
+        !/find/#ArkhamPlayerId ApiV1AdminFindGameR GET
         /#ArkhamGameId ApiV1AdminGameP:
           / ApiV1AdminGameR GET PUT
           /raw ApiV1AdminGameRawR PUT

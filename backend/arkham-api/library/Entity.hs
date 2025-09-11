@@ -82,43 +82,31 @@ entityDefsWithTH entityDefs decls = traverse entityDefWithTH entityDefs
           let fieldName = unpack $ unFieldNameHS $ unboundFieldNameHS fieldDef
           let fullFieldName = lowerFirst entityName <> upperFirst fieldName
           lookupWithError "Could not find record field declaration for field" fullFieldName thFieldMap
-    pure
-      UnboundFieldDefWithTH
-        { ufdwTemplateHaskellInfo
-        , ufdwFieldDef = fieldDef
-        }
+    pure UnboundFieldDefWithTH {ufdwTemplateHaskellInfo, ufdwFieldDef = fieldDef}
   lookupWithError :: String -> String -> Map String a -> Q (Maybe a)
   lookupWithError msg key map_ = do
     let result = Map.lookup key map_
     when (isNothing result) (reportError $ "entityDefsWithTH: " <> msg <> ": " <> key)
     pure result
   thFieldMap :: Map String (Name, Type)
-  thFieldMap =
-    mconcat do
-      DataD _ _ _ _ [RecC _ varBangTypes] _ <- decls
-      (fieldName, _strictness, fieldTYpe) <- varBangTypes
-      pure $ Map.singleton (showName fieldName) (fieldName, fieldTYpe)
+  thFieldMap = mconcat do
+    DataD _ _ _ _ [RecC _ varBangTypes] _ <- decls
+    (fieldName, _strictness, fieldTYpe) <- varBangTypes
+    pure $ Map.singleton (showName fieldName) (fieldName, fieldTYpe)
 
-toHasFieldInstanceArgs
-  :: [UnboundEntityDefWithTH]
-  -> [HasFieldInstanceArgs]
-toHasFieldInstanceArgs =
-  concatMap go
+toHasFieldInstanceArgs :: [UnboundEntityDefWithTH] -> [HasFieldInstanceArgs]
+toHasFieldInstanceArgs = concatMap go
  where
   go :: UnboundEntityDefWithTH -> [HasFieldInstanceArgs]
-  go UnboundEntityDefWithTH {..} =
-    mapMaybe
-      ( \UnboundFieldDefWithTH {..} -> do
-          (fieldName, fieldType) <- ufdwTemplateHaskellInfo
-          pure
-            HasFieldInstanceArgs
-              { modelName = uedwTemplateHaskellName
-              , fieldName
-              , fieldType
-              , abbreviatedFieldName = unpack $ unFieldNameHS $ unboundFieldNameHS ufdwFieldDef
-              }
-      )
-      uedwFieldDefs
+  go UnboundEntityDefWithTH {..} = flip mapMaybe uedwFieldDefs \UnboundFieldDefWithTH {..} -> do
+    (fieldName, fieldType) <- ufdwTemplateHaskellInfo
+    pure
+      HasFieldInstanceArgs
+        { modelName = uedwTemplateHaskellName
+        , fieldName
+        , fieldType
+        , abbreviatedFieldName = unpack $ unFieldNameHS $ unboundFieldNameHS ufdwFieldDef
+        }
 
 fieldDefToHasFieldInstances :: HasFieldInstanceArgs -> Q [Dec]
 fieldDefToHasFieldInstances HasFieldInstanceArgs {modelName, fieldName, fieldType, abbreviatedFieldName} = do
@@ -129,7 +117,7 @@ fieldDefToHasFieldInstances HasFieldInstanceArgs {modelName, fieldName, fieldTyp
       entityFieldConstr = conE (mkName $ upperFirst $ showName fieldName)
 
       transformedAbbrFieldName :: String
-      transformedAbbrFieldName = abbreviatedFieldName ++ ['_' | isReservedKeywordsDoesnotSupportDotField abbreviatedFieldName]
+      transformedAbbrFieldName = abbreviatedFieldName ++ ['_' | isReservedKeywordsDoesNotSupportDotField abbreviatedFieldName]
 
       accessorSymbol, entityType, resultType :: Q Type
       accessorSymbol = litT $ strTyLit transformedAbbrFieldName
@@ -137,7 +125,7 @@ fieldDefToHasFieldInstances HasFieldInstanceArgs {modelName, fieldName, fieldTyp
       resultType = pure fieldType
 
   symbolToFieldInstances <-
-    if isReservedKeywordsDoesnotSupportDotField abbreviatedFieldName
+    if isReservedKeywordsDoesNotSupportDotField abbreviatedFieldName
       then
         [d|
           instance SymbolToField $accessorSymbol $entityType $resultType where
@@ -146,44 +134,25 @@ fieldDefToHasFieldInstances HasFieldInstanceArgs {modelName, fieldName, fieldTyp
       else pure []
   hasFieldInstances <-
     [d|
-      -- non-entity instance
       instance HasField $accessorSymbol $entityType $resultType where
         getField record = $accessorFieldExpression record
 
-      -- Entity wrapped instance
       instance HasField $accessorSymbol (Entity $entityType) $resultType where
         getField (Entity _ record) = $accessorFieldExpression record
       |]
   pure (symbolToFieldInstances <> hasFieldInstances)
 
-isReservedKeywordsDoesnotSupportDotField :: String -> Bool
-isReservedKeywordsDoesnotSupportDotField str = str `elem` reservedKeywords
+isReservedKeywordsDoesNotSupportDotField :: String -> Bool
+isReservedKeywordsDoesNotSupportDotField str = str `elem` reservedKeywords
 
+{- FOURMOLU_DISABLE -}
 reservedKeywords :: [String]
 reservedKeywords =
-  [ "case"
-  , "class"
-  , "data"
-  , "default"
-  , "deriving"
-  , "do"
-  , "else"
-  , "foreign"
-  , "if"
-  , "import"
-  , "in"
-  , "infix"
-  , "infixl"
-  , "infixr"
-  , "instance"
-  , "let"
-  , "module"
-  , "newtype"
-  , "of"
-  , "then"
-  , "type"
-  , "where"
+  [ "case" , "class" , "data" , "default" , "deriving" , "do" , "else" , "foreign" , "if"
+  , "import" , "in" , "infix" , "infixl" , "infixr" , "instance" , "let" , "module" , "newtype"
+  , "of" , "then" , "type" , "where"
   ]
+{- FOURMOLU_ENABLE -}
 
 decToIdHasFieldInstance :: Dec -> Q [Dec]
 decToIdHasFieldInstance = \case

@@ -16,7 +16,6 @@ const router = createRouter({
 
 router.beforeEach(async (to, _from, next) => {
   const store = useUserStore()
-
   await store.loadUserFromStorage()
 
   if (to.matched.some((record) => record.meta && record.meta.requiresAuth)) {

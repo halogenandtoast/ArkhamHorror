@@ -34,7 +34,6 @@ import 'floating-vue/dist/style.css'
 const settingsStore = useSiteSettingsStore()
 
 onMounted(async () => {
-  // order here is important, user must be loaded first
   await settingsStore.init()
   avifSupported.value = await checkAvifSupport();
   await useDbCardStore().initDbCards()

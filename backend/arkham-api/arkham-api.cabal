@@ -4642,6 +4642,7 @@ library
     , amazonka
     , amazonka-s3
     , annotated-exception
+    , async
     , base
     , base16-bytestring
     , bcrypt

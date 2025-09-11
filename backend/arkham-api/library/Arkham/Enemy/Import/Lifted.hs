@@ -31,6 +31,7 @@ import Arkham.Enemy.Runner as X (
   pushM,
   setExhausted,
   setMeta,
+  getEnemyMetaDefault,
   setPrey,
   setSpawnAt,
   spawnAtL,

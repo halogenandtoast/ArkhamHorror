@@ -33,6 +33,7 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
 import Control.Lens (non, over, set)
+import Data.Aeson.Types
 import Data.Data
 import GHC.Records
 
@@ -481,3 +482,11 @@ updateEnemy updates attrs = foldr go attrs updates
 
 setMeta :: ToJSON a => a -> EnemyAttrs -> EnemyAttrs
 setMeta a = metaL .~ toJSON a
+
+getEnemyMetaDefault :: FromJSON a => a -> EnemyAttrs -> a
+getEnemyMetaDefault def = fromMaybe def . getEnemyMeta
+
+getEnemyMeta :: FromJSON a => EnemyAttrs -> Maybe a
+getEnemyMeta attrs = case fromJSON attrs.meta of
+  Error _ -> Nothing
+  Success v' -> Just v'

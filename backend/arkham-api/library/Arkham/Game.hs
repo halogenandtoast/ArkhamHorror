@@ -5319,6 +5319,7 @@ runMessages mLogger = do
               -- manually adjust enemies if they could not enter the new location
 
               asIfLocations <- runWithEnv getAsIfLocationMap
+              aloofEnemies <- runWithEnv (select AloofEnemy)
 
               let
                 shouldPreloadModifiers = \case
@@ -5352,6 +5353,7 @@ runMessages mLogger = do
                       runMessage msg
                         >=> preloadModifiers
                         >=> handleAsIfChanges asIfLocations
+                        >=> handleAloofChanges aloofEnemies
                         >=> handleTraitRestrictedModifiers
                         >=> handleBlanked
                     else runMessage msg
@@ -5368,6 +5370,11 @@ getAsIfLocationMap = do
     let mods = Map.findWithDefault [] (toTarget iid) (gameModifiers g)
         mAsIf = listToMaybe [loc | (modifierType -> AsIfAt loc) <- mods]
     pure $ (iid,) <$> mAsIf
+
+handleAloofChanges :: [EnemyId] -> Game -> GameT Game
+handleAloofChanges aloof g = do
+  noLongerAloof <- select $ mapOneOf EnemyWithId aloof <> not_ AloofEnemy
+  foldM (\g' eid -> runMessage (EnemyCheckEngagement eid) g') g noLongerAloof
 
 handleAsIfChanges :: Map InvestigatorId LocationId -> Game -> GameT Game
 handleAsIfChanges asIfMap g = go (Map.toList asIfMap) g

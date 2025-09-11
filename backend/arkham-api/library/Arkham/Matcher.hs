@@ -347,6 +347,10 @@ orConnected :: Be matcher LocationMatcher => ForMovement -> matcher -> LocationM
 orConnected forMovement x = let m = be x in oneOf [m, ConnectedTo forMovement m]
 {-# INLINE orConnected #-}
 
+orConnected_ :: Be matcher LocationMatcher => matcher -> LocationMatcher
+orConnected_ = orConnected NotForMovement
+{-# INLINE orConnected_ #-}
+
 whileInvestigating :: (AsId a, IdOf a ~ LocationId) => a -> SkillTestMatcher
 whileInvestigating = WhileInvestigating . LocationWithId . asId
 {-# INLINE whileInvestigating #-}

@@ -24,13 +24,6 @@ import Entity.Arkham.Player
 import Import hiding (delete, exists, on, (==.), (>=.))
 import Yesod.WebSockets
 
-getAdminUser :: Handler (Entity User)
-getAdminUser = do
-  userId <- getRequestUserId
-  user <- runDB $ get404 userId
-  unless user.admin $ permissionDenied "You must be an admin to access this endpoint"
-  pure $ Entity userId user
-
 data AdminData = AdminData
   { currentUsers :: Int
   , activeUsers :: Int

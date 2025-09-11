@@ -30,9 +30,7 @@ getApiV1ArkhamGameExportR gameId = do
   generateExport gameId
 
 getApiV1ArkhamGameFullExportR :: ArkhamGameId -> Handler ArkhamExport
-getApiV1ArkhamGameFullExportR gameId = do
-  _ <- getAdminUser
-  generateFullExport gameId
+getApiV1ArkhamGameFullExportR gameId = generateFullExport gameId
 
 postApiV1ArkhamGamesFixR :: Handler ()
 postApiV1ArkhamGamesFixR = do

@@ -132,7 +132,9 @@ export type Investigator = {
   agility: number;
   tokens: Tokens;
   assignedHealthDamage: number;
+  assignedHealthHeal: number;
   assignedSanityDamage: number;
+  assignedSanityHeal: number;
   location: string;
   placement: Placement;
   remainingActions: number;
@@ -233,7 +235,9 @@ export const investigatorDecoder = JsonDecoder.object({
   agility: JsonDecoder.number(),
   tokens: tokensDecoder,
   assignedHealthDamage: JsonDecoder.number(),
+  assignedHealthHeal: JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.succeed(), JsonDecoder.number()], '[any, number]'), '[any, number][]').map((arr) => arr.reduce((acc, [_source, heal]) => acc + heal, 0)),
   assignedSanityDamage: JsonDecoder.number(),
+  assignedSanityHeal: JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.succeed(), JsonDecoder.number()], '[any, number]'), '[any, number][]').map((arr) => arr.reduce((acc, [_source, heal]) => acc + heal, 0)),
   placement: placementDecoder,
   remainingActions: JsonDecoder.number(),
   endedTurn: JsonDecoder.boolean(),

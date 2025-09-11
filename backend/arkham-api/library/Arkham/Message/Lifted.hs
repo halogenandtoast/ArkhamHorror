@@ -2345,6 +2345,14 @@ healDamage
   :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
 healDamage target source n = push $ Msg.HealDamage (toTarget target) (toSource source) n
 
+healDamageDelayed
+  :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
+healDamageDelayed target source n = push $ Msg.HealDamageDelayed (toTarget target) (toSource source) n
+
+healDamageDelayedOn
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Int -> target -> m ()
+healDamageDelayedOn source n target = healDamageDelayed target source n
+
 healDamageIfCan
   :: (ReverseQueue m, Sourceable source, Targetable target, AsId target, IdOf target ~ InvestigatorId)
   => target -> source -> Int -> m ()
@@ -2353,6 +2361,14 @@ healDamageIfCan target source n = whenM (canHaveDamageHealed source (asId target
 healHorror
   :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
 healHorror target source n = push $ Msg.HealHorror (toTarget target) (toSource source) n
+
+healHorrorDelayed
+  :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
+healHorrorDelayed target source n = push $ Msg.HealHorrorDelayed (toTarget target) (toSource source) n
+
+healHorrorDelayedOn
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Int -> target -> m ()
+healHorrorDelayedOn source n target = healHorrorDelayed target source n
 
 healHorrorIfCan
   :: (ReverseQueue m, Sourceable source, Targetable target, AsId target, IdOf target ~ InvestigatorId)

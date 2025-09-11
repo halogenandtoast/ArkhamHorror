@@ -733,7 +733,7 @@ instance RunMessage EdgeOfTheEarth where
                 (campaignStore attrs)
       when (notNull choices) do
         lead <- getLead
-        remainingPartners <- map (.cardCode) <$> getRemainingPartners
+        remainingPartners <- map toPartnerCode <$> getRemainingPartners
         let choiceMade choice = push $ SetGlobal CampaignTarget "interlude3" (toJSON $ filter (/= choice) choices)
         chooseOneM lead do
           questionLabeled $ "You can still check " <> tshow n <> " team members"

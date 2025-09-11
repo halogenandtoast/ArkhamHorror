@@ -4130,7 +4130,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             DrawAllFound who -> do
               let
                 choices =
-                  [ targetLabel (toCardId card) [AddFocusedToHand iid (toTarget who) zone (toCardId card)]
+                  [ targetLabel (toCardId card) [DrawFocusedToHand iid (toTarget who) zone (toCardId card)]
                   | (zone, cards) <- mapToList targetCards
                   , card <- cards
                   ]

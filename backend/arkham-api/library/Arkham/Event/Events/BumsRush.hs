@@ -28,9 +28,11 @@ instance RunMessage BumsRush where
       unless isElite $ afterSkillTest iid "Bum Rush" $ push $ WillMoveEnemy eid msg
       pure e
     WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _) | isTarget attrs target -> do
-      choices <- select $ connectedFrom (locationWithInvestigator iid) <> LocationCanBeEnteredBy enemyId
-      chooseOrRunOneM iid do
-        labeled "Do not move enemy" nothing
-        targets choices $ enemyMoveTo attrs enemyId
+      -- because this is delayed, the enemy might have been defeated and we should not move it
+      whenM (matches enemyId (InPlayEnemy AnyEnemy)) do
+        choices <- select $ connectedFrom (locationWithInvestigator iid) <> LocationCanBeEnteredBy enemyId
+        chooseOrRunOneM iid do
+          labeled "Do not move enemy" nothing
+          targets choices $ enemyMoveTo attrs enemyId
       pure e
     _ -> BumsRush <$> liftRunMessage msg attrs

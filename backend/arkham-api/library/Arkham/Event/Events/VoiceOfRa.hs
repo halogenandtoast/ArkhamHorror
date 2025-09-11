@@ -25,6 +25,6 @@ instance RunMessage VoiceOfRa where
             if tabooed TabooList20 attrs
               then isSymbolChaosToken
               else (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-      gainResourcesIfCan iid attrs (1 + (2 * count valid tokens))
+      gainResources iid attrs (1 + (2 * count valid tokens))
       pure e
     _ -> VoiceOfRa <$> liftRunMessage msg attrs

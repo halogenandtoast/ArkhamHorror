@@ -50,11 +50,12 @@ export const useUserStore = defineStore("user", () => {
     }
   }
 
-  function loadUserFromStorage() {
+  async function loadUserFromStorage() {
+    if (currentUser.value) return
     const tokenFromStorage = localStorage.getItem('arkham-token');
     if (tokenFromStorage !== null && tokenFromStorage !== undefined) {
       token.value = tokenFromStorage
-      setCurrentUser()
+      await setCurrentUser()
     }
   }
 
@@ -62,8 +63,6 @@ export const useUserStore = defineStore("user", () => {
     currentUser.value = null
     token.value = null
   }
-
-  loadUserFromStorage()
 
   return { token, currentUser, isAdmin, loadUserFromStorage, authenticate, register }
 })

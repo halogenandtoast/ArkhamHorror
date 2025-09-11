@@ -14,8 +14,10 @@ const router = createRouter({
 })
 
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const store = useUserStore()
+
+  await store.loadUserFromStorage()
 
   if (to.matched.some((record) => record.meta && record.meta.requiresAuth)) {
     if (localStorage.getItem('arkham-token') === null) {

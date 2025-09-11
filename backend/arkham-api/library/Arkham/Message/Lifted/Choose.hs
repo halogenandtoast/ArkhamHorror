@@ -186,6 +186,11 @@ labeled' label action = unterminated do
   msgs <- lift $ capture action
   tell [Label ("$" <> ikey ("label." <> label)) msgs]
 
+labeledI :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
+labeledI label action = unterminated do
+  msgs <- lift $ capture action
+  tell [Label (withI18n $ "$" <> ikey ("label." <> label)) msgs]
+
 labeledValidate' :: (HasI18n, ReverseQueue m) => Bool -> Text -> QueueT Message m () -> ChooseT m ()
 labeledValidate' valid label action = unterminated do
   if valid

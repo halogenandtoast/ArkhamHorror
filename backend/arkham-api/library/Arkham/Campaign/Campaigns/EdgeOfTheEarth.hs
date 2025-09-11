@@ -1057,6 +1057,7 @@ instance RunMessage EdgeOfTheEarth where
         do
           story $ i18n "ashevak"
 
+      push GameOver
       pure c
     SetPartnerStatus cCode status -> do
       pure $ EdgeOfTheEarth $ attrs & logL . partnersL . ix cCode . statusL .~ status

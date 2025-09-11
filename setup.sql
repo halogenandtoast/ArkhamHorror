@@ -437,21 +437,21 @@ CREATE UNIQUE INDEX steps_game_step_idx ON public.arkham_steps USING btree (arkh
 -- Name: arkham_steps enforce_chronological_order_per_game; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER enforce_chronological_order_per_game AFTER DELETE ON public.arkham_steps REFERENCING OLD TABLE AS oldtab FOR EACH STATEMENT EXECUTE FUNCTION public.enforce_chronological_order_per_game();
+-- CREATE TRIGGER enforce_chronological_order_per_game AFTER DELETE ON public.arkham_steps REFERENCING OLD TABLE AS oldtab FOR EACH STATEMENT EXECUTE FUNCTION public.enforce_chronological_order_per_game();
 
 
 --
 -- Name: arkham_steps enforce_step_order_per_game; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER enforce_step_order_per_game BEFORE INSERT ON public.arkham_steps FOR EACH ROW EXECUTE FUNCTION public.enforce_step_order_per_game();
+-- CREATE TRIGGER enforce_step_order_per_game BEFORE INSERT ON public.arkham_steps FOR EACH ROW EXECUTE FUNCTION public.enforce_step_order_per_game();
 
 
 --
 -- Name: arkham_steps prevent_invalid_step_deletion; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER prevent_invalid_step_deletion BEFORE DELETE ON public.arkham_steps FOR EACH ROW EXECUTE FUNCTION public.check_step_before_delete();
+-- CREATE TRIGGER prevent_invalid_step_deletion BEFORE DELETE ON public.arkham_steps FOR EACH ROW EXECUTE FUNCTION public.check_step_before_delete();
 
 
 --

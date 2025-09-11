@@ -123,7 +123,6 @@ const allResolved = computed(() => {
 
 <style lang="scss" scoped>
 .token-choices {
-  width: min(100px, 30vw);
   margin: 10px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 20px;
@@ -134,6 +133,13 @@ const allResolved = computed(() => {
   @media (max-width: 800px) and (orientation: portrait) {
     margin: 0;
     margin-top: -8px;
+  }
+}
+
+.token-choice {
+  width: min(100px, 30vw);
+  &:has(.token-choice) {
+    width: auto;
   }
 }
 

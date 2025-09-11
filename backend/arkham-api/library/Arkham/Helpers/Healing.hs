@@ -63,4 +63,3 @@ getAssetDamageAmounts aid = fromQueue \queue -> case dropUntilDamage queue of
 
 healableAsset :: Sourceable source => source -> AssetMatcher -> AssetMatcher
 healableAsset source inner = oneOf [HealableAsset (toSource source) kind inner | kind <- [#damage, #horror]]
-

@@ -84,6 +84,7 @@ import Arkham.Message hiding (story)
 import Arkham.Message as X (AndThen (..), getChoiceAmount)
 import Arkham.Message.Lifted.Queue as X
 import Arkham.Modifier
+import Arkham.Name
 import Arkham.Phase (Phase)
 import Arkham.Placement
 import Arkham.Prelude hiding (pred)
@@ -1288,6 +1289,29 @@ chooseAmountLabeled' iid title label choiceLabel minVal maxVal target = do
       (MaxAmountTarget maxVal)
       [(choiceLabel, (minVal, maxVal))]
       target
+
+chooseInvestigatorAmounts
+  :: (ReverseQueue m, Targetable target)
+  => InvestigatorId -> Text -> Int -> [InvestigatorId] -> target -> m ()
+chooseInvestigatorAmounts iid label maxAmount iids target = do
+  xs <- traverse (field InvestigatorName) iids
+  Arkham.Message.Lifted.chooseAmounts
+    iid
+    label
+    (TotalAmountTarget maxAmount)
+    (map (\x -> (toTitle x, (0, maxAmount))) xs)
+    target
+
+withInvestigatorAmounts
+  :: ReverseQueue m => [(NamedUUID, Int)] -> (InvestigatorId -> Int -> m ()) -> m ()
+withInvestigatorAmounts choices f = do
+  named <- selectWithField InvestigatorName UneliminatedInvestigator
+  let
+    iidsWithAmounts =
+      flip mapMaybe named \(iid', name) ->
+        let amount = getChoiceAmount (toTitle name) choices
+         in guard (amount > 0) $> (iid', amount)
+  for_ iidsWithAmounts (uncurry f)
 
 chooseN :: ReverseQueue m => InvestigatorId -> Int -> [UI Message] -> m ()
 chooseN iid n msgs = do

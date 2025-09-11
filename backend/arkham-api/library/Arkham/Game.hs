@@ -2699,7 +2699,7 @@ getAssetsMatching matcher = do
         CannotBeDamagedBySourcesExcept sourceMatcher -> sourceMatches source sourceMatcher
         _ -> pure True
     AssetWithoutSealedTokens -> do
-      pure $ filter (null . attr assetSealedChaosTokens) as
+      pure $ filter (\a -> null (attr assetSealedChaosTokens a) && attr assetResolved a) as
     AssetWithSealedChaosTokens n chaosTokenMatcher -> do
       filterM
         ( fmap (>= n)

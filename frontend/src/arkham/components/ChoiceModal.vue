@@ -55,9 +55,7 @@ const paymentAmountsLabel = computed(() => {
 
 const choicesRequireModal = computed(() => choices.value.some(choiceRequiresModal))
 
-const tokenChoices = computed(() => {
-  return props.game.scenario?.chaosBag.choice
-})
+const tokenChoices = computed(() => props.game.scenario?.chaosBag.choice)
 
 const requiresModal = computed(() => {
   if (props.noStory && question.value?.tag === QuestionType.READ) {
@@ -67,7 +65,7 @@ const requiresModal = computed(() => {
     return false
   }
 
-  return ((props.game.focusedChaosTokens.length > 0 || !tokenChoices !== null) && !inSkillTest.value) || focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value || choicesRequireModal.value || ['QuestionLabel', 'DropDown'].includes(question.value?.tag)
+  return ((props.game.focusedChaosTokens.length > 0 || tokenChoices.value !== null) && !inSkillTest.value) || focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value || choicesRequireModal.value || ['QuestionLabel', 'DropDown'].includes(question.value?.tag)
 })
 
 const question = computed(() => props.game.question[props.playerId])

@@ -1,8 +1,5 @@
 {- HLINT ignore "Use camelCase" -}
-module Arkham.Story.Cards.UnfinishedBusiness_J (
-  unfinishedBusiness_J,
-  unfinishedBusiness_JEffect,
-) where
+module Arkham.Story.Cards.UnfinishedBusiness_J (unfinishedBusiness_J, unfinishedBusiness_JEffect) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -86,6 +83,5 @@ instance HasModifiersFor UnfinishedBusiness_JEffect where
         ]
 
 instance RunMessage UnfinishedBusiness_JEffect where
-  runMessage msg e@(UnfinishedBusiness_JEffect attrs) = runQueueT $ case msg of
-    EndUpkeep -> disableReturn e
+  runMessage msg (UnfinishedBusiness_JEffect attrs) = runQueueT $ case msg of
     _ -> UnfinishedBusiness_JEffect <$> liftRunMessage msg attrs

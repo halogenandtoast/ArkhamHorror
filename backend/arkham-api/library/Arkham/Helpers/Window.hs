@@ -431,6 +431,12 @@ getRevealedLocation = \case
   ((windowType -> Window.RevealLocation _ lid) : _) -> lid
   (_ : rest) -> getRevealedLocation rest
 
+getTreacheryResolver :: HasCallStack => [Window] -> InvestigatorId
+getTreacheryResolver = \case
+  [] -> error "No treachery resolved"
+  ((windowType -> Window.ResolvesTreachery iid _) : _) -> iid
+  (_ : rest) -> getTreacheryResolver rest
+
 getChaosToken :: HasCallStack => [Window] -> ChaosToken
 getChaosToken = \case
   [] -> error "No chaos token drawn"

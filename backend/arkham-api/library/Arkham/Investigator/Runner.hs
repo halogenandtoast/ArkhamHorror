@@ -2725,10 +2725,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         ToLocationMatching matcher -> do
           lids <- select matcher
           player <- getPlayer investigatorId
-          push
-            $ chooseOrRunOne
-              player
-              [targetLabel lid [MoveTo $ movement {moveDestination = ToLocation lid}] | lid <- lids]
+          unless (null lids) do
+            push
+              $ chooseOrRunOne
+                player
+                [targetLabel lid [MoveTo $ movement {moveDestination = ToLocation lid}] | lid <- lids]
           pure a
         ToLocation lid -> do
           pushAll

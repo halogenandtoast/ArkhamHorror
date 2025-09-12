@@ -33,7 +33,7 @@ instance RunMessage HangingOnTheEdge where
 
       for_ mloc \loc -> do
         row <- maybe 0 (.row) <$> field LocationPosition loc
-        moveTo_ attrs iid $ LocationInRow (row - 1)
+        when (row > 0) $ moveTo_ attrs iid $ LocationInRow (row - 1)
 
       pure t
     _ -> HangingOnTheEdge <$> liftRunMessage msg attrs

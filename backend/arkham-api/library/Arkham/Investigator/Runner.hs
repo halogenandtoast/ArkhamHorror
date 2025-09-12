@@ -68,7 +68,7 @@ import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
 import Arkham.Helpers.Game (withAlteredGame)
-import Arkham.Helpers.Location (getCanMoveTo, getCanMoveToMatchingLocations)
+import Arkham.Helpers.Location (getCanMoveTo, getCanMoveToMatchingLocations, withLocationOf)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Playable (getIsPlayable, getIsPlayableWithResources, getPlayableCards)
 import Arkham.Helpers.Ref (sourceToCard)
@@ -4188,6 +4188,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   SpendXP iid amount | iid == investigatorId -> do
     pure $ a & xpL %~ max 0 . subtract amount
   InvestigatorPlaceCluesOnLocation iid source n | iid == investigatorId -> do
+    withLocationOf iid \lid -> do
+      batchId <- getRandom
+      would <- Helpers.checkWindow $ (mkWhen $ Window.WouldPlaceClueOnLocation iid lid source n) { windowBatchId = Just batchId }
+      pushBatched batchId [would, Do msg]
+    pure a
+  Do (InvestigatorPlaceCluesOnLocation iid source n) | iid == investigatorId -> do
     field InvestigatorLocation iid >>= traverse_ \lid -> do
       assetClues <- selectSum AssetClues $ assetControlledBy iid <> AssetWithAnyClues
       let cluesToPlace = min n (investigatorClues a + assetClues)

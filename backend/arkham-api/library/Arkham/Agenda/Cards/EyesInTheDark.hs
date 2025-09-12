@@ -3,6 +3,7 @@ module Arkham.Agenda.Cards.EyesInTheDark (eyesInTheDark) where
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
+import Arkham.Campaigns.TheForgottenAge.Helpers (exploreAction_)
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Matcher hiding (InvestigatorDefeated)
@@ -16,7 +17,7 @@ eyesInTheDark = agenda (2, A) EyesInTheDark Cards.eyesInTheDark (StaticWithPerPl
 
 instance HasAbilities EyesInTheDark where
   getAbilities (EyesInTheDark a) =
-    [restricted a 1 (exists $ YourLocation <> LocationWithoutClues) actionAbility]
+    [restricted a 1 (exists $ YourLocation <> LocationWithoutClues) exploreAction_]
 
 instance RunMessage EyesInTheDark where
   runMessage msg a@(EyesInTheDark attrs) = runQueueT $ case msg of

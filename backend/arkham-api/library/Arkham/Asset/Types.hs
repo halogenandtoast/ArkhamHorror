@@ -87,6 +87,10 @@ instance IsCard Asset where
   {-# INLINE toCardOwner #-}
   toCustomizations (Asset a) = toCustomizations (toAttrs a)
   {-# INLINE toCustomizations #-}
+  toTabooList (Asset a) = toTabooList (toAttrs a)
+  {-# INLINE toTabooList #-}
+  toMutated (Asset a) = toMutated (toAttrs a)
+  {-# INLINE toMutated #-}
 
 instance Eq Asset where
   Asset (a :: a) == Asset (b :: b) = case eqT @a @b of

@@ -87,7 +87,14 @@ instance IsCard Card where
 --
 defaultToCard :: (HasCallStack, IsCard a) => a -> Card
 defaultToCard a = case lookupCard (cdCardCode $ toCardDef a) (toCardId a) of
-  PlayerCard pc -> PlayerCard $ pc {pcOwner = toCardOwner a, pcCustomizations = toCustomizations a}
+  PlayerCard pc ->
+    PlayerCard
+      $ pc
+        { pcOwner = toCardOwner a
+        , pcCustomizations = toCustomizations a
+        , pcTabooList = toTabooList a
+        , pcMutated = toMutated a
+        }
   ec -> ec
 
 class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
@@ -96,6 +103,10 @@ class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toCardOwner :: a -> Maybe InvestigatorId
   toCustomizations :: a -> Customizations
   toCustomizations _ = mempty
+  toTabooList :: a -> Maybe TabooList
+  toTabooList _ = Nothing
+  toMutated :: a -> Maybe Text
+  toMutated _ = Nothing
 
 toCards :: (IsCard a, Functor f) => f a -> f Card
 toCards = fmap toCard

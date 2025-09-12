@@ -187,6 +187,8 @@ instance IsCard EventAttrs where
   toCardId = eventCardId
   toCardOwner = Just . eventOwner
   toCustomizations = eventCustomizations
+  toTabooList = eventTaboo
+  toMutated = eventMutated
 
 eventWith
   :: (EventAttrs -> a)

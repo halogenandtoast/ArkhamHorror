@@ -12,6 +12,7 @@ import Arkham.ForMovement
 import {-# SOURCE #-} Arkham.Helpers.Cost (getCanAffordCost)
 import Arkham.Helpers.GameValue (gameValueMatches)
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Source
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
@@ -215,7 +216,9 @@ getCanMoveToLocations
 getCanMoveToLocations iid source = do
   canMove <-
     iid <=~> (Matcher.InvestigatorCanMove <> not_ (Matcher.InVehicleMatching Matcher.AnyAsset))
-  if canMove
+  onlyScenarioEffects <- hasModifier iid CannotMoveExceptByScenarioCardEffects
+  isScenarioEffect <- sourceMatches (toSource source) SourceIsScenarioCardEffect
+  if canMove && (not onlyScenarioEffects || isScenarioEffect)
     then do
       selectOne (Matcher.locationWithInvestigator iid) >>= \case
         Nothing -> pure []

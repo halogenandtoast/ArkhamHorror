@@ -74,6 +74,7 @@ import Arkham.Matcher (
   replaceYouMatcher,
   pattern InvestigatorCanDisengage,
   pattern MassiveEnemy,
+  pattern AloofEnemy,
  )
 import Arkham.Message
 import Arkham.Message qualified as Msg
@@ -1512,13 +1513,14 @@ instance RunMessage EnemyAttrs where
                 then do
                   windows' <- checkWindows [mkWhen $ Window.EnemyWouldSpawnAt eid lid]
                   canBeEngaged <- matches iid (InvestigatorCanBeEngagedBy eid)
+                  isAloof <- matches eid AloofEnemy
                   pushAll $ windows'
                     : resolve
                       ( EnemySpawn
                           $ SpawnDetails
                             { spawnDetailsInvestigator = Just iid
                             , spawnDetailsSpawnAt =
-                                if canBeEngaged
+                                if canBeEngaged && not isAloof
                                   then SpawnEngagedWith (InvestigatorWithId iid)
                                   else SpawnAtLocation lid
                             , spawnDetailsEnemy = eid

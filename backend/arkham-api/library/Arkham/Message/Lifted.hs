@@ -2429,7 +2429,12 @@ discoverAtYourLocationAndThen isInvestigate iid s n andThenMsgs = do
   withLocationOf iid \loc -> do
     whenM (getCanDiscoverClues isInvestigate iid loc) do
       msgs <- capture andThenMsgs
-      push $ Msg.DiscoverClues iid $ (Msg.discoverAtYourLocation s n) {Msg.discoverThen = msgs}
+      push
+        $ Msg.DiscoverClues iid
+        $ (Msg.discoverAtYourLocation s n)
+          { Msg.discoverThen = msgs
+          , Msg.discoverAction = if isInvestigate == IsInvestigate then Just #investigate else Nothing
+          }
 
 discoverAtMatchingLocation
   :: (ReverseQueue m, Sourceable source)
@@ -2444,7 +2449,15 @@ discoverAtMatchingLocation isInvestigate iid s mtchr n = do
   when (notNull locations) do
     Arkham.Message.Lifted.chooseOrRunOne
       iid
-      [targetLabel location [Msg.DiscoverClues iid $ Msg.discover location s n] | location <- locations]
+      [ targetLabel
+          location
+          [ Msg.DiscoverClues iid
+              $ (Msg.discover location s n)
+                { Msg.discoverAction = guard (isInvestigate == IsInvestigate) $> #investigate
+                }
+          ]
+      | location <- locations
+      ]
 
 discoverAt
   :: (ReverseQueue m, Sourceable source, AsId a, IdOf a ~ LocationId)
@@ -2463,7 +2476,11 @@ discoverAt isInvestigate iid s n lid = do
         pure $ sum [m | DiscoveredClues m <- mods]
       else pure 0
 
-  Msg.pushWhen canDiscover $ Msg.DiscoverClues iid $ Msg.discover lid s (n + additional)
+  Msg.pushWhen canDiscover
+    $ Msg.DiscoverClues iid
+    $ (Msg.discover lid s (n + additional))
+      { Msg.discoverAction = guard (isInvestigate == IsInvestigate) $> #investigate
+      }
 
 doStep :: ReverseQueue m => Int -> Message -> m ()
 doStep n msg = push $ Msg.DoStep n msg

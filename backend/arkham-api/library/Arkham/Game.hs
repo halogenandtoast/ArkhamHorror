@@ -2071,61 +2071,65 @@ getLocationsMatching lmatcher = do
       -- also have no specific distance to check
 
       investigator <- selectJust investigatorMatcher
-      mstart <- field InvestigatorLocation investigator
-      case mstart of
-        Just start -> do
-          let
-            go1 :: LocationId -> Seq LocationId -> StateT PathState (ReaderT Game m) ()
-            go1 loc path = do
-              doesMatch <- lift $ loc <=~> destinationMatcher
-              ps@PathState {..} <- get
-              put
-                $ ps
-                  { _psVisitedLocations = insertSet loc _psVisitedLocations
-                  , _psPaths = if doesMatch then Map.insertWith (<>) loc [path] _psPaths else _psPaths
-                  }
-              connections <-
-                lift $ select $ ConnectedFrom ForMovement (LocationWithId loc)
-              for_ connections \conn -> do
-                unless (conn `elem` _psVisitedLocations) do
-                  go1 conn (path |> loc)
-          PathState {_psPaths} <-
-            execStateT (go1 start mempty) (PathState (singleton start) mempty)
+      onlyScenarioEffects <- hasModifier investigator CannotMoveExceptByScenarioCardEffects
+      isScenarioEffect <- sourceMatches source SourceIsScenarioCardEffect
+      if onlyScenarioEffects && not isScenarioEffect
+        then pure []
+        else
+          field InvestigatorLocation investigator >>= \case
+            Just start -> do
+              let
+                go1 :: LocationId -> Seq LocationId -> StateT PathState (ReaderT Game m) ()
+                go1 loc path = do
+                  doesMatch <- lift $ loc <=~> destinationMatcher
+                  ps@PathState {..} <- get
+                  put
+                    $ ps
+                      { _psVisitedLocations = insertSet loc _psVisitedLocations
+                      , _psPaths = if doesMatch then Map.insertWith (<>) loc [path] _psPaths else _psPaths
+                      }
+                  connections <-
+                    lift $ select $ ConnectedFrom ForMovement (LocationWithId loc)
+                  for_ connections \conn -> do
+                    unless (conn `elem` _psVisitedLocations) do
+                      go1 conn (path |> loc)
+              PathState {_psPaths} <-
+                execStateT (go1 start mempty) (PathState (singleton start) mempty)
 
-          imods <- getModifiers investigator
-          let
-            getEnterCost loc = do
-              mods <- getModifiers loc
-              pcosts <- filterM ((loc <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
-              pure $ concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods]
-            getLeaveCost loc = do
-              mods <- getModifiers loc
-              pure $ mconcat [c | AdditionalCostToLeave c <- mods]
+              imods <- getModifiers investigator
+              let
+                getEnterCost loc = do
+                  mods <- getModifiers loc
+                  pcosts <- filterM ((loc <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
+                  pure $ concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods]
+                getLeaveCost loc = do
+                  mods <- getModifiers loc
+                  pure $ mconcat [c | AdditionalCostToLeave c <- mods]
 
-          valids <- forMaybeM (mapToList _psPaths) \(loc, paths) -> do
-            valid <- flip anyM paths \case
-              Empty -> pure False
-              (_ :<| Empty) -> do
-                -- single step
-                canEnter <- getCanMoveTo investigator source loc
-                if canEnter
-                  then do
-                    leaveCost <- getLeaveCost start
-                    enterCost <- getEnterCost loc
-                    getCanAffordCost investigator source [] [] (leaveCost <> enterCost)
-                  else pure False
-              (_ :<| (step :<| _)) -> do
-                canEnter <- getCanMoveTo investigator source step
-                if canEnter
-                  then do
-                    leaveCost <- getLeaveCost start
-                    enterCost <- getEnterCost step
-                    getCanAffordCost investigator source [] [] (leaveCost <> enterCost)
-                  else pure False
-            pure $ guard valid $> loc
+              valids <- forMaybeM (mapToList _psPaths) \(loc, paths) -> do
+                valid <- flip anyM paths \case
+                  Empty -> pure False
+                  (_ :<| Empty) -> do
+                    -- single step
+                    canEnter <- getCanMoveTo investigator source loc
+                    if canEnter
+                      then do
+                        leaveCost <- getLeaveCost start
+                        enterCost <- getEnterCost loc
+                        getCanAffordCost investigator source [] [] (leaveCost <> enterCost)
+                      else pure False
+                  (_ :<| (step :<| _)) -> do
+                    canEnter <- getCanMoveTo investigator source step
+                    if canEnter
+                      then do
+                        leaveCost <- getLeaveCost start
+                        enterCost <- getEnterCost step
+                        getCanAffordCost investigator source [] [] (leaveCost <> enterCost)
+                      else pure False
+                pure $ guard valid $> loc
 
-          pure $ filter ((`elem` valids) . toId) ls
-        Nothing -> pure []
+              pure $ filter ((`elem` valids) . toId) ls
+            Nothing -> pure []
     LocationBetween startMatcher endMatcher destinationMatcher -> do
       starts <- select startMatcher
       destinations <- select destinationMatcher

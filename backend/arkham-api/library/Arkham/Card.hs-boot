@@ -9,6 +9,7 @@ import Arkham.Card.Id
 import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.Customization
 import Arkham.Id
+import Arkham.Taboo.Types
 import Arkham.Trait
 import GHC.Records
 
@@ -38,6 +39,10 @@ class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toCardOwner :: a -> Maybe InvestigatorId
   toCustomizations :: a -> Customizations
   toCustomizations _ = mempty
+  toTabooList :: a -> Maybe TabooList
+  toTabooList _ = Nothing
+  toMutated :: a -> Maybe Text
+  toMutated _ = Nothing
 
 instance IsCard Card
 instance IsCard PlayerCard

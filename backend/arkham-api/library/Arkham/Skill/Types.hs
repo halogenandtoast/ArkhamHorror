@@ -71,6 +71,7 @@ data SkillAttrs = SkillAttrs
   , skillMeta :: Value
   , skillCustomizations :: Customizations
   , skillTaboo :: Maybe TabooList
+  , skillMutated :: Maybe Text
   }
   deriving stock (Show, Eq)
 
@@ -152,6 +153,8 @@ instance IsCard SkillAttrs where
   toCardId = skillCardId
   toCardOwner = Just . skillOwner
   toCustomizations = skillCustomizations
+  toTabooList = skillTaboo
+  toMutated = skillMutated
 
 instance Entity SkillAttrs where
   type EntityId SkillAttrs = SkillId
@@ -204,6 +207,7 @@ skill f cardDef =
             , skillMeta = Null
             , skillCustomizations = mempty
             , skillTaboo = Nothing
+            , skillMutated = Nothing
             }
     }
 
@@ -263,6 +267,8 @@ instance IsCard Skill where
   toCardId = toCardId . toAttrs
   toCardOwner = toCardOwner . toAttrs
   toCustomizations = toCustomizations . toAttrs
+  toTabooList = toTabooList . toAttrs
+  toMutated = toMutated . toAttrs
 
 data SomeSkillCard = forall a. IsSkill a => SomeSkillCard (SkillCard a)
 
@@ -281,4 +287,21 @@ controlledBy SkillAttrs {..} iid = case skillPlacement of
   AttachedToAsset _ (Just (InPlayArea iid')) -> iid == iid'
   _ -> False
 
-$(deriveJSON (aesonOptions $ Just "skill") ''SkillAttrs)
+$(deriveToJSON (aesonOptions $ Just "skill") ''SkillAttrs)
+
+instance FromJSON SkillAttrs where
+  parseJSON = withObject "SkillAttrs" \o -> do
+    skillId <- o .: "id"
+    skillCardId <- o .: "cardId"
+    skillCardCode <- o .: "cardCode"
+    skillOwner <- o .: "owner"
+    skillAdditionalCost <- o .:? "additionalCost"
+    skillAdditionalPayment <- o .:? "additionalPayment"
+    skillAfterPlay <- o .: "afterPlay"
+    skillPlacement <- o .: "placement"
+    skillSealedChaosTokens <- o .:? "sealed" .!= []
+    skillMeta <- o .:? "meta" .!= Null
+    skillCustomizations <- o .:? "customizations" .!= mempty
+    skillTaboo <- o .:? "taboo"
+    skillMutated <- o .:? "mutated"
+    pure SkillAttrs {..}

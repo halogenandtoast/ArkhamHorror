@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Location.Cards.DancersMist (dancersMist) where
 
 import Arkham.Ability
@@ -21,21 +23,15 @@ newtype DancersMist = DancersMist LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dancersMist :: LocationCard DancersMist
-dancersMist =
-  locationWith
-    DancersMist
-    Cards.dancersMist
-    3
-    (Static 2)
-    (connectsToL .~ adjacentLocations)
+dancersMist = locationWith DancersMist Cards.dancersMist 3 (Static 2) (connectsToL .~ adjacentLocations)
 
 instance HasAbilities DancersMist where
-  getAbilities (DancersMist attrs) =
+  getAbilities (DancersMist a) =
     extendRevealed
-      attrs
-      [ cosmos attrs 1
-      , restricted attrs 2 (exists AccessibleLocation)
-          $ triggered (Moves #after You AnySource Anywhere (be attrs)) (ScenarioResourceCost 1)
+      a
+      [ cosmos a 1
+      , restricted a 2 (exists AccessibleLocation)
+          $ triggered (Moves #after You AnySource Anywhere (be a)) (ScenarioResourceCost 1)
       ]
 
 instance RunMessage DancersMist where
@@ -47,11 +43,11 @@ instance RunMessage DancersMist where
           rightChoice <- getEmptyPositionsInDirections pos [GridRight]
           directionsWithLocations <- filterM (fmap isJust . getLocationInDirection pos) [GridUp ..]
           let
-            positionPairs = flip map directionsWithLocations $ \dir ->
+            positionPairs = flip map directionsWithLocations \dir ->
               ( updatePosition pos dir
               , List.delete (oppositeDirection dir) [GridUp ..]
               )
-          emptyPositions <- concatMapM (uncurry getEmptyPositionsInDirections) positionPairs
+          emptyPositions <- traceShowId <$> concatMapM (uncurry getEmptyPositionsInDirections) (traceShowId positionPairs)
 
           if null emptyPositions && null rightChoice
             then cosmosFail attrs

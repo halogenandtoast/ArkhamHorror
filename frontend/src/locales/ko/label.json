@@ -61,6 +61,7 @@
   "skip": "건너뛰기",
   "spendClues": "단서 1개를 소비합니다. | 단서 {count}개를 소비합니다.",
   "spendResources": "자원 1개를 소비합니다. | 자원 {count}개를 소비합니다.",
+  "startAsSlot": "@:{slot} 슬롯으로 시작",
   "sufferPhysicalTrauma": "육체적 트라우마 받기 | 육체적 트라우마 {count} 받기",
   "sufferMentalTrauma": "정신적 트라우마 받기 | 정신적 트라우마 {count} 받기",
   "takeControlOfKey": "열쇠 조종하기",

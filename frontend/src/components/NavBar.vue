@@ -19,12 +19,12 @@ async function logout() {
 <template>
   <div id="nav">
     <span class="main-links">
-      <router-link to="/" class="home-link">{{$t('home')}}</router-link>{{' '}}
-      <router-link v-if="currentUser" to="/decks">{{$t('myDecks')}}</router-link>
-      <router-link v-if="currentUser" to="/cards">{{$t('cards')}}</router-link>
-      <router-link v-if="currentUser" to="/about">{{$t('about')}}</router-link>
-      <router-link v-if="currentUser" to="/about?support">{{$t('support')}}</router-link>
-      <router-link v-if="currentUser && currentUser.admin" to="/admin">{{$t('admin')}}</router-link>
+      <router-link to="/" class="home-link">{{$t('nav.home')}}</router-link>{{' '}}
+      <router-link v-if="currentUser" to="/decks">{{$t('nav.myDecks')}}</router-link>
+      <router-link v-if="currentUser" to="/cards">{{$t('nav.cards')}}</router-link>
+      <router-link v-if="currentUser" to="/about">{{$t('nav.about')}}</router-link>
+      <router-link v-if="currentUser" to="/about?support">{{$t('nav.support')}}</router-link>
+      <router-link v-if="currentUser && currentUser.admin" to="/admin">{{$t('nav.admin')}}</router-link>
     </span>
 
     <OnClickOutside @trigger="expanded = false">

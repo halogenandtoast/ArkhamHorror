@@ -937,7 +937,10 @@ getInvestigatorsMatching matcher = do
     DefeatedInvestigator -> flip filterM as $ pure . attr investigatorDefeated
     InvestigatorWithToken tkn -> flip filterM as $ \i -> fieldMap InvestigatorTokens (Token.hasToken tkn) (toId i)
     InvestigatorCanMoveTo source locationMatcher -> flip filterM as $ \i -> do
+      onlyScenarioEffects <- hasModifier i.id CannotMoveExceptByScenarioCardEffects
+      isScenarioEffect <- sourceMatches source SourceIsScenarioCardEffect
       case source of
+        _ | onlyScenarioEffects && not isScenarioEffect -> pure False
         CardCostSource cardId -> do
           -- we need to remove the card from hand
           g <- getGame

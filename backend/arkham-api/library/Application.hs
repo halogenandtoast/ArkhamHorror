@@ -60,7 +60,6 @@ import Network.Wai.Handler.Warp (
   setHost,
   setOnException,
   setPort,
-  setTimeout,
  )
 import Network.Wai.Middleware.AddHeaders (addHeaders)
 import Network.Wai.Middleware.Gzip (gzip)

@@ -182,7 +182,7 @@ async function start() {
         deckIds.value,
         playerCount.value,
         campaignId,
-        fullCampaign.value ? null : selectedScenario.value,
+        fullCampaign.value !== 'PartialCampaign' ? null : selectedScenario.value,
         selectedDifficulty.value,
         currentCampaignName.value,
         multiplayerVariant.value,

@@ -217,7 +217,8 @@ knuckleduster =
 
 moxie1 :: CardDef
 moxie1 =
-  (asset "03111" "Moxie" 1 Rogue)
+fast
+  $ (asset "03111" "Moxie" 1 Rogue)
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Talent, Composure]
     , cdLimits = [LimitPerTrait Composure 1]

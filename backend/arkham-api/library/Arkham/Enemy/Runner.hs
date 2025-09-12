@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedLabels #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Enemy.Runner (module Arkham.Enemy.Runner, module X) where
 
@@ -279,7 +279,7 @@ instance RunMessage EnemyAttrs where
           _ -> False
 
       let forcedEngagement = any isForcedEngagement mods
-      let canSwarm = NoInitialSwarm `notElem` mods
+      let canSwarm = traceShowId $ NoInitialSwarm `notElem` mods
       let swarms = guard canSwarm *> mapMaybe (preview _Swarming) (toList keywords)
       case details.spawnAt of
         SpawnEngagedWith imatcher -> do

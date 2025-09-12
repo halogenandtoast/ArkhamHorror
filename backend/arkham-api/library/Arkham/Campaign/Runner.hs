@@ -328,11 +328,6 @@ defaultCampaignRunner msg a = case msg of
       $ updateAttrs a
       $ decksL
       %~ adjustMap (withDeck (pc {pcOwner = Just iid} :)) iid
-  AddCardToDeckForCampaign iid pc -> do
-    pure
-      $ updateAttrs a
-      $ decksL
-      %~ adjustMap (withDeck (pc {pcOwner = Just iid} :)) iid
   RemoveCardFromDeckForCampaign iid cardId ->
     pure
       $ updateAttrs a

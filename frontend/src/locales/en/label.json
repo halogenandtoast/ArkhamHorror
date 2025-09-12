@@ -67,6 +67,7 @@
   "skip": "Skip",
   "spendClues": "Spend a clue | Spend {count} clues",
   "spendResources": "Spend a resource | Spend {count} resources",
+  "startAsSlot": "Start as @:{slot} slot",
   "sufferPhysicalTrauma": "Suffer physical trauma | Suffer {count} physical trauma",
   "sufferMentalTrauma": "Suffer mental trauma | Suffer {count} mental trauma",
   "takeControlOfKey": "Take control of key",

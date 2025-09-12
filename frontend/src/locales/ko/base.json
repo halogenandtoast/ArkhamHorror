@@ -58,5 +58,13 @@
     "physical": "육체적",
     "mental": "정신적",
     "supplyPoints": "획득할 보급 점수"
+  },
+  "slot": {
+    "ally": "Ally",
+    "body": "Body",
+    "tarot": "Tarot",
+    "hand": "손",
+    "accessory": "악세서리",
+    "arcane": "마법"
   }
 }

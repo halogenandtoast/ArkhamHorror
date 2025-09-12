@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Divination4 (divination4, Divination4 (..)) where
+module Arkham.Asset.Assets.Divination4 (divination4) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -18,7 +18,7 @@ divination4 :: AssetCard Divination4
 divination4 = asset Divination4 Cards.divination4
 
 instance HasAbilities Divination4 where
-  getAbilities (Divination4 x) = [restrictedAbility x 1 ControlsThis investigateAction_]
+  getAbilities (Divination4 x) = [restricted x 1 ControlsThis investigateAction_]
 
 instance RunMessage Divination4 where
   runMessage msg a@(Divination4 attrs) = runQueueT $ case msg of

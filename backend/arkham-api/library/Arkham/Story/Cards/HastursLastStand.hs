@@ -27,6 +27,7 @@ instance RunMessage HastursLastStand where
         | code == Enemies.hasturLordOfCarcosa.cardCode -> do
             theThroneRoom <- placeSetAsideLocation Locations.theThroneRoom
             enemyMoveTo attrs hastur theThroneRoom
+            readyThis hastur
         | otherwise -> placeSetAsideLocation_ Locations.stageOfTheWardTheatre
 
       pure s

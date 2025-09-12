@@ -30,7 +30,7 @@ instance RunMessage EscapeTheCage where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       entryHall <- selectJust $ LocationWithTitle "Entry Hall"
       enemiesToMove <-
-        select $ InPlayEnemy $ #ready <> withTrait SilverTwilight <> not_ (enemyAt entryHall)
+        select $ InPlayEnemy $ #ready <> withTrait SilverTwilight <> not_ (enemyAt entryHall) <> AloofEnemy
       select (enemyAt entryHall <> EnemyWithTrait SilverTwilight)
         >>= traverse convertToCard
         >>= placeUnderneath entryHall

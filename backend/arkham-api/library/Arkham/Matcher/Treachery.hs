@@ -74,4 +74,7 @@ instance Semigroup TreacheryMatcher where
 instance Monoid TreacheryMatcher where
   mempty = AnyTreachery
 
+instance IsString TreacheryMatcher where
+  fromString = TreacheryWithTitle . fromString
+
 $(deriveJSON defaultOptions ''TreacheryMatcher)

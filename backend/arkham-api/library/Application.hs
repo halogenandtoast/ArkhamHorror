@@ -217,7 +217,6 @@ warpSettings :: App -> Settings
 warpSettings foundation =
   setPort (appPort $ appSettings foundation)
     $ setHost (appHost $ appSettings foundation)
-    $ setTimeout 300
     $ setOnException
       ( \_req e ->
           when (defaultShouldDisplayException e)

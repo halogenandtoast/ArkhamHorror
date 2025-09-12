@@ -60,6 +60,7 @@ import Network.Wai.Handler.Warp (
   setHost,
   setOnException,
   setPort,
+  setTimeout,
  )
 import Network.Wai.Middleware.AddHeaders (addHeaders)
 import Network.Wai.Middleware.Gzip (gzip)
@@ -82,18 +83,18 @@ import Api.Handler.Arkham.Decks
 import Api.Handler.Arkham.Game.Bug
 import Api.Handler.Arkham.Game.Debug
 import Api.Handler.Arkham.Games
+import Api.Handler.Arkham.Games.Admin
 import Api.Handler.Arkham.Investigators
 import Api.Handler.Arkham.Old
 import Api.Handler.Arkham.PendingGames
 import Api.Handler.Arkham.Replay
 import Api.Handler.Arkham.Undo
-import Api.Handler.Arkham.Games.Admin
 import Base.Api.Handler.Authentication
 import Base.Api.Handler.CurrentUser
+import Base.Api.Handler.Notifications
 import Base.Api.Handler.PasswordReset
 import Base.Api.Handler.Registration
 import Base.Api.Handler.Settings
-import Base.Api.Handler.Notifications
 import Control.Concurrent (forkIO)
 import Handler.Health
 
@@ -216,6 +217,7 @@ warpSettings :: App -> Settings
 warpSettings foundation =
   setPort (appPort $ appSettings foundation)
     $ setHost (appHost $ appSettings foundation)
+    $ setTimeout 300
     $ setOnException
       ( \_req e ->
           when (defaultShouldDisplayException e)

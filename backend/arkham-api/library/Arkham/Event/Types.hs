@@ -170,6 +170,9 @@ instance HasField "ability" EventAttrs (Int -> Source) where
 instance HasField "doom" EventAttrs Int where
   getField = countTokens Doom . eventTokens
 
+instance HasField "target" EventAttrs (Maybe Target) where
+  getField = eventTarget
+
 instance HasField "cardId" EventAttrs CardId where
   getField = toCardId
   {-# INLINE getField #-}

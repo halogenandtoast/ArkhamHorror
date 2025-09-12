@@ -167,7 +167,6 @@ import Arkham.Skill.Skills (
   momentum1Effect,
   nimbleEffect,
   prescientEffect,
-  surprisingFind1Effect,
   theEyeOfTruth5Effect,
  )
 import Arkham.Story.Stories (
@@ -498,7 +497,7 @@ allEffects =
     , ("06162", SomeEffect gregoryGryEffect)
     , ("06195", SomeEffect thirtyFiveWinchesterEffect)
     , ("06201", SomeEffect spectralRazorEffect)
-    , ("06278", SomeEffect surprisingFind1Effect)
+    , ("06278", SomeEffect $ noop "06278")
     , ("06279", SomeEffect $ noop "06279")
     , ("06319", SomeEffect restlessJourneyFallacyEffect)
     , ("06320", SomeEffect restlessJourneyHardshipEffect)

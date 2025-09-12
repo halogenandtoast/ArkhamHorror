@@ -26,7 +26,7 @@ instance HasAbilities PendantOfTheQueen where
         a
         1
         ( oneOf
-            [ youExist InvestigatorCanMove <> exists (RevealedLocation <> Unblocked <> NotYourLocation)
+            [ youExist (InvestigatorCanMoveTo (a.ability 1) RevealedLocation)
             , exists
                 $ RevealedLocation
                 <> oneOf

@@ -257,6 +257,12 @@ instance RunMessage SkillTest where
           , Do (SkillTestEnds skillTestId skillTestInvestigator skillTestSource)
           ]
       pure s
+    RemovedFromPlay (SkillSource sid) -> do
+      card <- field Field.SkillCard sid
+      pure
+        $ s
+        & (committedCardsL . each %~ filter ((/= card.id) . toCardId))
+        & (subscribersL %~ filter (not . isTarget sid))
     RemoveFromGame target | target == skillTestTarget -> do
       when (skillTestStep < RevealChaosTokenStep) do
         pushAll
@@ -599,7 +605,10 @@ instance RunMessage SkillTest where
       pure s
     ReturnToHand _ (SkillTarget sid) -> do
       card <- field Field.SkillCard sid
-      pure $ s & committedCardsL . each %~ filter ((/= card.id) . toCardId)
+      pure
+        $ s
+        & (committedCardsL . each %~ filter ((/= card.id) . toCardId))
+        & (subscribersL %~ filter (not . isTarget sid))
     ReturnToHand _ (CardIdTarget cardId) -> do
       pure $ s & committedCardsL . each %~ filter ((/= cardId) . toCardId)
     SkillTestResults {} -> do

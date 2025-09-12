@@ -1,10 +1,24 @@
 <script lang="ts" setup>
-import { ref, computed, watch, watchEffect, onMounted, onUnmounted } from 'vue'
+import { reactive, ref, computed, watch, watchEffect, onMounted, onUnmounted } from 'vue'
 import { imgsrc, isLocalized, toCamelCase } from '@/arkham/helpers'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import Key from '@/arkham/components/Key.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
+
+const imgARCache = reactive(new Map<string, number>())
+
+const loadAR = (url: string) => {
+  if (!url || imgARCache.has(url)) return
+  const i = new Image()
+  i.decoding = 'async'
+  i.onload = () => {
+    // width / height > 1 => landscape (treat as sideways)
+    imgARCache.set(url, i.naturalWidth / i.naturalHeight)
+  }
+  i.src = url
+}
+
 
 /* --------------------------------- stores --------------------------------- */
 
@@ -147,13 +161,30 @@ const reversed = computed<boolean>(() => hoveredElement.value?.classList.contain
 const sideways = computed<boolean>(() => {
   const el = hoveredElement.value
   if (!el) return false
+
+  // explicit dataset wins
+  if (el.dataset.sideways === 'true') return true
+  if (el.dataset.sideways === 'false') return false
+
+  // known class rules
   if (el.classList.contains('exhausted')) return false
   if (el.classList.contains('attached')) return false
   if (el.classList.contains('card--sideways') || el.classList.contains('sideways')) return true
   if (el.classList.contains('modifier')) return false
   if (el.tagName.toLowerCase() === 'span') return false
-  // last resort: geometry (avoid frequent layout reads elsewhere)
-  return el.offsetWidth > el.offsetHeight
+
+  // if we’re showing an image via dataset, use its natural aspect
+  const url =
+    el.dataset.image
+      ?? (el.dataset.imageId ? imgsrc(`cards/${el.dataset.imageId}.avif`) : null)
+
+  if (url) {
+    const ar = imgARCache.get(url)
+    if (ar != null) return ar > 1 // landscape => sideways
+  }
+
+  // fallback: geometry only for actual card-ish nodes
+  return el.matches('.card, [data-image-id], [data-target]') && el.offsetWidth > el.offsetHeight
 })
 
 const overlayPosition = ref<{ top: number; left: number }>({ top: 0, left: 0 })
@@ -446,6 +477,8 @@ const horror = computed<number | null>(() => {
   const n = v == null ? NaN : Number(v)
   return Number.isFinite(n) ? n : null
 })
+
+watch(card, (src) => { if (src) loadAR(src) })
 
 </script>
 

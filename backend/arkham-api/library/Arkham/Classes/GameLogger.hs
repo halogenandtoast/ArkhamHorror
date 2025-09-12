@@ -2,11 +2,23 @@ module Arkham.Classes.GameLogger where
 
 import Arkham.Id
 import Arkham.Prelude
+import Control.Monad.State.Strict
+import Control.Monad.Writer.Strict
 
 class MonadIO m => HasGameLogger m where
   getLogger :: m (ClientMessage -> IO ())
 
 instance HasGameLogger m => HasGameLogger (ReaderT e m) where
+  getLogger = do
+    logger <- lift getLogger
+    pure $ \msg -> liftIO $ logger msg
+
+instance HasGameLogger m => HasGameLogger (StateT s m) where
+  getLogger = do
+    logger <- lift getLogger
+    pure $ \msg -> liftIO $ logger msg
+
+instance (Monoid w, HasGameLogger m) => HasGameLogger (WriterT w m) where
   getLogger = do
     logger <- lift getLogger
     pure $ \msg -> liftIO $ logger msg

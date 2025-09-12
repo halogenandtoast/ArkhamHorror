@@ -3342,8 +3342,10 @@ unfocusChaosTokens = push UnfocusChaosTokens
 returnChaosTokens :: ReverseQueue m => [ChaosToken] -> m ()
 returnChaosTokens = push . ReturnChaosTokens
 
-revealCard :: (IsCard card, ReverseQueue m) => card -> m ()
-revealCard card = push $ RevealCard (toCardId card)
+revealCard :: (IsCard card, ReverseQueue m, HasGameLogger m) => card -> m ()
+revealCard card = do
+  sendReveal (toJSON $ toCard card)
+  push $ RevealCard (toCardId card)
 
 addToEncounterDiscard :: (ReverseQueue m, IsCard a, Element xs ~ a, MonoFoldable xs) => xs -> m ()
 addToEncounterDiscard = traverse_ (push . AddToEncounterDiscard) . mapMaybe (preview _EncounterCard . toCard) . otoList

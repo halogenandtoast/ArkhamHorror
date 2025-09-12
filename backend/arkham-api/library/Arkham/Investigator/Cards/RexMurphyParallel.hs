@@ -1,8 +1,4 @@
-module Arkham.Investigator.Cards.RexMurphyParallel (
-  rexMurphyParallel,
-  RexMurphyParallel (..),
-)
-where
+module Arkham.Investigator.Cards.RexMurphyParallel (rexMurphyParallel) where
 
 import Arkham.Ability
 import Arkham.Calculation
@@ -28,7 +24,7 @@ rexMurphyParallel =
 
 instance HasAbilities RexMurphyParallel where
   getAbilities (RexMurphyParallel a) =
-    [ restrictedAbility a 1 Self
+    [ restricted a 1 Self
         $ ForcedWhen isForced
         $ freeReaction
         $ oneOf

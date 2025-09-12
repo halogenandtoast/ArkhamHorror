@@ -133,11 +133,10 @@ instance ToJSON GameDetailsEntry where
 
 updateGame :: Answer -> ArkhamGameId -> UserId -> TChan BSL.ByteString -> Handler ()
 updateGame response gameId userId writeChannel = do
-  (Entity _ _, ArkhamGame {..}) <-
-    runDB
-      $ (,)
-      <$> getBy404 (UniquePlayer userId gameId)
-      <*> get404 gameId
+  ArkhamGame {..} <- runDB do
+    user <- get404 userId
+    unless user.admin $ void $ getBy404 (UniquePlayer userId gameId)
+    get404 gameId
   mLastStep <- runDB $ getBy $ UniqueStep gameId arkhamGameStep
   let
     gameJson@Game {..} = arkhamGameCurrentData

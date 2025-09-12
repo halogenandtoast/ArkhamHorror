@@ -166,13 +166,17 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     ActionAbilityWithSkill actions' _ _ -> handleActions $ Action.Activate : actions'
     ActionAbility actions' _ -> handleActions $ Action.Activate : actions'
  where
-  checkAttackOfOpportunity actions =
-    not provokeAttacksOfOpportunity && all (`notElem` nonAttackOfOpportunityActions) actions
+  checkAttackOfOpportunity mods actions =
+    not provokeAttacksOfOpportunity
+      && ( all (`notElem` nonAttackOfOpportunityActions) actions
+             || any (\action -> ActionDoesNotCauseAttacksOfOpportunity action `elem` mods) actions
+         )
   handleActions actions = do
+    mods <- getModifiers iid
     beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid action | action <- actions]
     pushAll
       $ [BeginAction, beforeWindowMsg, PayCosts activeCostId]
-      <> [CheckAttackOfOpportunity iid False | checkAttackOfOpportunity actions]
+      <> [CheckAttackOfOpportunity iid False | checkAttackOfOpportunity mods actions]
 
 nonAttackOfOpportunityActions :: [Action]
 nonAttackOfOpportunityActions = [#fight, #evade, #resign, #parley]

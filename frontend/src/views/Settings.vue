@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/stores/user';
+import { storeToRefs } from 'pinia';
 import type { User } from '@/types';
 import api from '@/api';
 import SettingsForm from '@/components/SettingsForm.vue';

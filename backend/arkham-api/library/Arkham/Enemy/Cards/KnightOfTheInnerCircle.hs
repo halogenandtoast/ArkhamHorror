@@ -37,12 +37,12 @@ instance RunMessage KnightOfTheInnerCircle where
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 4)
       pure e
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
       iids <- select $ InvestigatorAt $ locationWithEnemy attrs.id
       leadChooseOneAtATimeM do
         targets iids \iid -> do
           sid <- getRandom
-          beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 4)
+          beginSkillTest sid iid (attrs.ability 2) iid #agility (Fixed 4)
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       enemyEngageInvestigator attrs iid

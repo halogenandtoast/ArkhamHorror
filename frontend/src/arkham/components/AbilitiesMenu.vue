@@ -103,12 +103,36 @@ watch(showAbilities, (newValue) => {
 <style scoped>
 .abilities {
   position: absolute;
-  padding: min(10px, 1vw);
+  padding: min(3px, 1vw);
   background: rgba(0, 0, 0, 0.8);
-  border-radius: 10px;
+  border-radius: calc(10px - min(3px, 1vw));
   display: flex;
   flex-direction: column;
   gap: 5px;
   z-index: 1000;
+  button {
+    padding-block: min(3px, 1vw);
+    padding-inline: min(6px, 2vw);
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    max-width: 0.1vw;
+    min-height: fit-content;
+    @media (max-width: 800px) and (orientation: portrait) {
+      
+      &:before {
+        font-size: 2.0em !important;
+      }
+    }
+  }
+
+  :deep(span) {
+    @media (max-width: 800px) and (orientation: portrait) {
+      &:before {
+        font-size: 2.0em !important;
+      }
+    }
+  }
 }
 </style>

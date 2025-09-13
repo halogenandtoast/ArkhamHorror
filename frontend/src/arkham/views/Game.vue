@@ -564,7 +564,7 @@ const onMove = (event: MouseEvent) => {
 
 // callbacks
 onMounted(() => {
-  (window as any).sendDebug = (msg: any) => { if (game.value) debug.send(game.value.id, msg) }
+  (window as any).sendDebug = async (msg: any) => { if (game.value) await debug.send(game.value.id, msg) }
   ; (window as any).undo = undo
   ; (window as any).debugChoose = choose
   document.addEventListener('mousemove', onMove, { passive: true })

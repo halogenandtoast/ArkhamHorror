@@ -1241,6 +1241,7 @@ function minimize_SkillTest(isMinimized:boolean){
   display: flex;
   flex-direction: column;
   position: relative;
+  isolation: isolate;
 
   .depth {
     position: absolute;
@@ -1251,6 +1252,14 @@ function minimize_SkillTest(isMinimized:boolean){
   }
 
   .signOfTheGods {
+    z-index: 10;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    pointer-events: none;
+  }
+
+  .pool {
     z-index: 10;
     position: absolute;
     bottom: 0;
@@ -1306,7 +1315,7 @@ function minimize_SkillTest(isMinimized:boolean){
   pointer-events: none;
 
   * {
-    transform: scale(0.6);
+    transform: scale(0.9);
   }
 }
 

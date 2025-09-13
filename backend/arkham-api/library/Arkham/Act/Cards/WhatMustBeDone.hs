@@ -50,16 +50,15 @@ instance RunMessage WhatMustBeDone where
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       let cards = drewCards.cards
 
-      focusCards (map flipCard drewCards.cards) do
+      focusCards (map showRevealed drewCards.cards) do
         chooseOrRunOneM iid do
-          for_ drewCards.cards \card -> do
-            targeting card do
-              unfocusCards
-              shuffleCardsIntoDeck CosmosDeck (List.delete card cards)
-              lid <- placeLocation card
-              revealBy iid lid
-              movemsg <- move (attrs.ability 1) iid lid
-              push $ RunCosmos iid lid [Move movemsg]
+          targets drewCards.cards \card -> do
+            unfocusCards
+            shuffleCardsIntoDeck CosmosDeck (List.delete card cards)
+            lid <- placeLocation card
+            revealBy iid lid
+            movemsg <- move (attrs.ability 1) iid lid
+            push $ RunCosmos iid lid [Move movemsg]
       pure a
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       youAcceptedYourFate <- getHasRecord YouHaveAcceptedYourFate

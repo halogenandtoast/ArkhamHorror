@@ -957,7 +957,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                     ]
                 | (zone, cards) <- mapToList targetCards
                 , card <- cards
-                , let addFoundToHand = AddFocusedToHand iid (toTarget who) zone (toCardId card)
+                , let addFoundToHand = AddFocusedToHand iid EncounterDeckTarget zone (toCardId card)
                 ]
             push
               $ if null choices
@@ -983,7 +983,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                     ]
                 | (zone, cards) <- mapToList targetCards
                 , card <- cards
-                , let addFoundToHand = AddFocusedToHand iid (toTarget who) zone (toCardId card)
+                , let addFoundToHand = AddFocusedToHand iid EncounterDeckTarget zone (toCardId card)
                 ]
             push
               $ if null choices
@@ -995,7 +995,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
               choices =
                 [ targetLabel
                     card
-                    [AddFocusedToHand iid (toTarget who) zone (toCardId card)]
+                    [AddFocusedToHand who EncounterDeckTarget zone (toCardId card)]
                 | (zone, cards) <- mapToList targetCards
                 , card <- cards
                 ]
@@ -1069,7 +1069,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           DrawAllFound who -> do
             let
               choices =
-                [ targetLabel (toCardId card) [AddFocusedToHand iid (toTarget who) zone (toCardId card)]
+                [ targetLabel (toCardId card) [AddFocusedToHand who EncounterDeckTarget zone (toCardId card)]
                 | (zone, cards) <- mapToList targetCards
                 , card <- cards
                 ]
@@ -1173,6 +1173,15 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           >>= toEncounterCard
       foundCards = Map.map (filter ((/= cardId) . toCardId)) $ a ^. foundCardsL
     push $ PutCardOnTopOfDeck iid Deck.EncounterDeck (toCard card)
+    pure $ a & foundCardsL .~ foundCards
+  AddFocusedToHand iid EncounterDeckTarget _cardSource cardId -> do
+    let
+      card =
+        fromJustNote "missing card"
+          $ find ((== cardId) . toCardId) (concat $ toList $ a ^. foundCardsL)
+          >>= toEncounterCard
+      foundCards = Map.map (filter ((/= cardId) . toCardId)) $ a ^. foundCardsL
+    push $ addToHand iid card
     pure $ a & foundCardsL .~ foundCards
   Discarded (AssetTarget _) _ card@(EncounterCard ec) -> do
     handler <- getEncounterDeckHandler $ toCardId card

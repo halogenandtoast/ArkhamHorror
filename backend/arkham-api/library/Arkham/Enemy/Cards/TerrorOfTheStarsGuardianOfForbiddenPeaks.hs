@@ -48,7 +48,8 @@ instance RunMessage TerrorOfTheStarsGuardianOfForbiddenPeaks where
         row <- maybe 0 (.row) <$> field LocationPosition loc
         lead <- getLead
         investigators <- select $ investigatorAt loc
-        chooseOrRunOneAtATimeM lead do
-          targets investigators \iid -> moveTo_ (attrs.ability 1) iid (LocationInRow row)
+        when (row > 0) do
+          chooseOrRunOneAtATimeM lead do
+            targets investigators \iid -> moveTo_ (attrs.ability 1) iid (LocationInRow $ row - 1)
       pure e
     _ -> TerrorOfTheStarsGuardianOfForbiddenPeaks <$> liftRunMessage msg attrs

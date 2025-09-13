@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.TheNightHowls (TheNightHowls (..), theNightHowls) where
+module Arkham.Agenda.Cards.TheNightHowls (theNightHowls) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -18,7 +18,7 @@ theNightHowls = agenda (2, A) TheNightHowls Cards.theNightHowls (Static 12)
 
 instance HasAbilities TheNightHowls where
   getAbilities (TheNightHowls a) =
-    [ restrictedAbility a 1 (exists $ EnemyWithTrait Witch <> at_ (locationIs Locations.witchesCircle))
+    [ restricted a 1 (exists $ EnemyWithTrait Witch <> at_ (locationIs Locations.witchesCircle))
         $ forced
         $ RoundEnds #at
     ]
@@ -42,7 +42,7 @@ instance RunMessage TheNightHowls where
       pure a
     RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
       case mcard of
-        Just card -> push $ AddCardToDeckForCampaign iid card
+        Just card -> addCampaignCardToDeck iid DoNotShuffleIn card
         Nothing -> sufferMentalTrauma iid 1
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do

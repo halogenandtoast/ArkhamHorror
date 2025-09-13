@@ -56,7 +56,14 @@ const searchedCards = computed(() => {
 })
 
 const focusedCards = computed(() => {
-  const {focusedCards} = props.game
+  const {focusedCards, foundCards} = props.game
+
+  if (focusedCards.length == 0) {
+    if (Object.values(foundCards).some((v) => v.length > 0)) {
+      return Object.values(foundCards).flat()
+    }
+  }
+
   const searchedCardIds = searchedCards.value.map(([, cards]) => {
     return cards.map((card) => toCardContents(card).id)
   }).flat()
@@ -64,6 +71,7 @@ const focusedCards = computed(() => {
   if (focusedCards.every((c) => searchedCardIds.includes(toCardContents(c).id))) {
     return []
   }
+
 
   return focusedCards
 })

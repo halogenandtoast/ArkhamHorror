@@ -20,19 +20,21 @@ instance RunMessage BumsRush where
       sid <- getRandom
       skillTestModifier sid attrs iid (AddSkillValue #combat)
       chooseEvadeEnemyEdit sid iid attrs (setTarget attrs)
+      doStep 2 msg
       pure e
+    ChosenEvadeEnemy _sid (isSource attrs -> True) eid -> do
+      pure $ overAttrs (targetL ?~ toTarget eid) e
     Successful (Action.Evade, EnemyTarget eid) iid _ (isTarget attrs -> True) n -> do
       push $ EnemyEvaded iid eid
       when (n >= 2) $ nonAttackEnemyDamage (Just iid) attrs 1 eid
-      isElite <- eid <=~> EliteEnemy
-      unless isElite $ afterSkillTest iid "Bum Rush" $ push $ WillMoveEnemy eid msg
       pure e
-    WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _) | isTarget attrs target -> do
-      -- because this is delayed, the enemy might have been defeated and we should not move it
-      whenM (matches enemyId (InPlayEnemy AnyEnemy)) do
-        choices <- select $ connectedFrom (locationWithInvestigator iid) <> LocationCanBeEnteredBy enemyId
-        chooseOrRunOneM iid do
-          labeled "Do not move enemy" nothing
-          targets choices $ enemyMoveTo attrs enemyId
+    DoStep 2 (PlayThisEvent iid (is attrs -> True)) -> do
+      for_ attrs.target.enemy \enemyId -> do
+        -- because this is delayed, the enemy might have been defeated and we should not move it
+        whenM (matches enemyId (InPlayEnemy AnyEnemy)) do
+          choices <- select $ connectedFrom (locationWithInvestigator iid) <> LocationCanBeEnteredBy enemyId
+          chooseOrRunOneM iid do
+            labeled "Do not move enemy" nothing
+            targets choices $ enemyMoveTo attrs enemyId
       pure e
     _ -> BumsRush <$> liftRunMessage msg attrs

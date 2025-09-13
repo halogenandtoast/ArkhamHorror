@@ -51,7 +51,7 @@ instance RunMessage TheCosmosBeckons where
       pure a
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       let cards = drewCards.cards
-      focusCards (map flipCard cards) do
+      focusCards (map showRevealed cards) do
         chooseOrRunOneM iid do
           targets cards \card -> do
             shuffleCardsIntoDeck CosmosDeck (List.delete card cards)

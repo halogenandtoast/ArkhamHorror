@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Effect.Import
 import Arkham.Effect.Types (targetL)
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Import.Lifted hiding (choose)
+import Arkham.Event.Import.Lifted hiding (choose, targetL)
 import Arkham.ForMovement
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifyEachMaybe)
 import Arkham.Helpers.Window ()

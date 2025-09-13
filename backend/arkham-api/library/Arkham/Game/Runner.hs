@@ -2816,6 +2816,11 @@ runGameMessage msg g = case msg of
             ]
           <> resolve (Revelation iid (EnemySource enemyId))
         pure $ g & (entitiesL . enemiesL . at enemyId ?~ enemy)
+      TreacheryType -> do
+        case card of
+          EncounterCard ec -> runMessage (Do (InvestigatorDrewEncounterCardFrom iid ec Nothing)) g
+          PlayerCard _ -> error "Currently not handling Revelations from type TreacheryType when PlayerCard"
+          VengeanceCard _ -> error "Currently not handling Revelations from type TreacheryType when VengeanceCard"
       other ->
         error $ "Currently not handling Revelations from type " <> show other
   ResolvedCard iid card -> do

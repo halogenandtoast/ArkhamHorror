@@ -42,6 +42,14 @@ const focusedCards = computed(() => {
     return []
   }
 
+  const { focusedCards, foundCards } = props.game
+
+  if (focusedCards.length === 0) {
+    if (Object.values(props.game.foundCards).some((v) => v.length > 0)) {
+      return Object.values(props.game.foundCards).flat()
+    }
+  }
+
   return props.game.focusedCards
 })
 

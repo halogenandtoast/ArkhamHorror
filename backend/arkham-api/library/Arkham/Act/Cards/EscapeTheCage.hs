@@ -16,9 +16,12 @@ newtype EscapeTheCage = EscapeTheCage ActAttrs
 escapeTheCage :: ActCard EscapeTheCage
 escapeTheCage = act (3, A) EscapeTheCage Cards.escapeTheCage Nothing
 
+enemyMatcher :: EnemyMatcher
+enemyMatcher = InPlayEnemy $ #ready <> withTrait SilverTwilight <> not_ (EnemyAt "Entry Hall") <> AloofEnemy
+
 instance HasAbilities EscapeTheCage where
   getAbilities = actAbilities \x ->
-    [ mkAbility x 1 $ forced $ RoundEnds #when
+    [ restricted x 1 (exists enemyMatcher) $ forced $ RoundEnds #when
     , restricted x 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
     ]
 
@@ -29,11 +32,11 @@ instance RunMessage EscapeTheCage where
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       entryHall <- selectJust $ LocationWithTitle "Entry Hall"
-      enemiesToMove <-
-        select $ InPlayEnemy $ #ready <> withTrait SilverTwilight <> not_ (enemyAt entryHall)
       select (enemyAt entryHall <> EnemyWithTrait SilverTwilight)
         >>= traverse convertToCard
         >>= placeUnderneath entryHall
+
+      enemiesToMove <- select enemyMatcher
       leadChooseOneAtATimeM $ targets enemiesToMove \enemy -> moveTowards attrs enemy entryHall
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do

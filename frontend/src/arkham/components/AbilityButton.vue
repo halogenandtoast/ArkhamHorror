@@ -165,7 +165,7 @@ const abilityLabel = computed(() => {
     const { actions, cost } = ability.value.type
     const total = totalActionCost(cost)
     if (actions.length === 1) {
-      return `${total > 0 ? replaceIcons("{action}".repeat(total)) : ""}${t(actions[0])}`
+      return `${total > 0 ? `<span>${replaceIcons("{action}".repeat(total))}</span>` : ""}<span>${t(actions[0])}</span>`
     }
 
     return replaceIcons("{action}".repeat(totalActionCost(cost)))

@@ -278,6 +278,6 @@ instance RunMessage ThePallidMask where
       endOfScenario
       pure s
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
-      for_ mcard $ push . AddCardToDeckForCampaign iid
+      for_ mcard $ addCampaignCardToDeck iid DoNotShuffleIn
       pure s
     _ -> ThePallidMask <$> liftRunMessage msg attrs

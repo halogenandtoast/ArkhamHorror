@@ -458,7 +458,6 @@ data Message
   | SetFlippable LocationId Bool
   | AddCampaignCardToDeck InvestigatorId ShuffleIn Card
   | RemoveCardFromDeckForCampaign InvestigatorId CardId
-  | AddCardToDeckForCampaign InvestigatorId PlayerCard
   | -- Adding Cards to Hand
     AddFocusedToHand InvestigatorId Target Zone CardId
   | AddToHand InvestigatorId [Card]

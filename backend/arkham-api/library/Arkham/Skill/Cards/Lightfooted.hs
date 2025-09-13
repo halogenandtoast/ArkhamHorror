@@ -22,8 +22,9 @@ instance RunMessage Lightfooted where
         otherEnemies <-
           select $ enemyAtLocationWith attrs.owner <> EnemyCanBeEvadedBy (toSource attrs) <> not_ (be eid)
         guard $ notNull otherEnemies
-        lift $ chooseOneM attrs.owner do
-          labeled "Do not evade another enemy" nothing
-          targets otherEnemies $ automaticallyEvadeEnemy attrs.owner
+        lift $ skillTestResultOption "Lightfooted" do
+          chooseOneM attrs.owner do
+            labeled "Do not evade another enemy" nothing
+            targets otherEnemies $ automaticallyEvadeEnemy attrs.owner
       pure s
     _ -> Lightfooted <$> liftRunMessage msg attrs

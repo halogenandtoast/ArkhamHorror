@@ -13,6 +13,7 @@ trueUnderstanding = skill TrueUnderstanding Cards.trueUnderstanding
 instance RunMessage TrueUnderstanding where
   runMessage msg s@(TrueUnderstanding attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
-      discoverAtYourLocation NotInvestigate iid attrs 1
+      skillTestResultOption "True Understanding" do
+        discoverAtYourLocation NotInvestigate iid attrs 1
       pure s
     _ -> TrueUnderstanding <$> liftRunMessage msg attrs

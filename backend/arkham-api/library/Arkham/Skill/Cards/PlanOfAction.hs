@@ -23,6 +23,7 @@ instance RunMessage PlanOfAction where
   runMessage msg s@(PlanOfAction attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == toId attrs -> do
       n <- length <$> selectAgg id InvestigatorActionsTaken TurnInvestigator
-      when (n >= 0 && n < 2) $ drawCards iid attrs 1
+      when (n >= 0 && n < 2) do 
+        skillTestResultOption "Plan of Action" $ drawCards iid attrs 1
       pure s
     _ -> PlanOfAction <$> liftRunMessage msg attrs

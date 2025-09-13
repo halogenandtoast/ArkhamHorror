@@ -22,9 +22,10 @@ instance RunMessage SurvivalInstinct where
       canDisengage <- iid <=~> InvestigatorCanDisengage
 
       when (notNull enemies && canDisengage) do
-        chooseOneM iid do
-          labeled "Disengage from each other enemy" $ for_ enemies (disengageEnemy iid)
-          labeled "Skip" nothing
+        skillTestResultOption "Survival Instinct" do
+          chooseOneM iid do
+            labeled "Disengage from each other enemy" $ for_ enemies (disengageEnemy iid)
+            labeled "Skip" nothing
 
       locations <- getConnectedMoveLocations iid (toSource attrs)
       chooseOrRunOneM iid do

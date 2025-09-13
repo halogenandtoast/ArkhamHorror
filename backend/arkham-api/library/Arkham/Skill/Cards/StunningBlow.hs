@@ -16,6 +16,7 @@ stunningBlow = skill StunningBlow Cards.stunningBlow
 instance RunMessage StunningBlow where
   runMessage msg s@(StunningBlow attrs) = runQueueT $ case msg of
     PassedSkillTest iid (Just Fight) _ (SkillTarget sid) _ _ | sid == toId attrs -> do
-      withSkillTestEnemyTarget (automaticallyEvadeEnemy iid)
+      skillTestResultOption "Stunning Blow" do
+        withSkillTestEnemyTarget (automaticallyEvadeEnemy iid)
       pure s
     _ -> StunningBlow <$> liftRunMessage msg attrs

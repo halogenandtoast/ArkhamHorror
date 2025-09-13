@@ -17,7 +17,7 @@ enraptured2 = skill Enraptured2 Cards.enraptured2
 instance RunMessage Enraptured2 where
   runMessage msg s@(Enraptured2 attrs) = runQueueT $ case msg of
     PassedSkillTest _ (Just Action.Investigate) _ (isTarget attrs -> True) _ _ -> do
-      doStep 3 msg
+      skillTestResultOption "Enraptured (2)" $ doStep 3 msg
       pure s
     DoStep n msg'@(PassedSkillTest _ (Just Action.Investigate) _ (isTarget attrs -> True) _ _) -> do
       when (n > 0) do

@@ -19,7 +19,8 @@ instance HasModifiersFor Leadership2 where
 instance RunMessage Leadership2 where
   runMessage msg s@(Leadership2 attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
-      gainResources attrs.owner attrs 2
-      when (iid /= attrs.owner) $ gainResources iid attrs 2
+      skillTestResultOption "Leadership (2)" do
+        gainResources attrs.owner attrs 2
+        when (iid /= attrs.owner) $ gainResources iid attrs 2
       pure s
     _ -> Leadership2 <$> liftRunMessage msg attrs

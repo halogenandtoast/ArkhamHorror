@@ -54,7 +54,6 @@ import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.Enemy qualified as Msg
 import Arkham.Helpers.GameValue (getGameValue)
 import Arkham.Helpers.Investigator (
-  canDiscoverCluesAtYourLocation,
   canHaveDamageHealed,
   canHaveHorrorHealed,
   getCanDiscoverClues,
@@ -2410,12 +2409,11 @@ healDamageOn source n target = healDamage target source n
 discoverAtYourLocation
   :: (ReverseQueue m, Sourceable source) => IsInvestigate -> InvestigatorId -> source -> Int -> m ()
 discoverAtYourLocation isInvestigate iid s n = do
-  whenM (canDiscoverCluesAtYourLocation isInvestigate iid) do
-    push
-      $ Msg.DiscoverClues iid
-      $ (Msg.discoverAtYourLocation s n)
-        { Msg.discoverAction = if isInvestigate == IsInvestigate then Just #investigate else Nothing
-        }
+  push
+    $ Msg.DiscoverClues iid
+    $ (Msg.discoverAtYourLocation s n)
+      { Msg.discoverAction = if isInvestigate == IsInvestigate then Just #investigate else Nothing
+      }
 
 discoverAtYourLocationAndThen
   :: (ReverseQueue m, Sourceable source)

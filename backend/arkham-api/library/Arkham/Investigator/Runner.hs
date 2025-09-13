@@ -1967,43 +1967,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a
   FlipClues target n | isTarget a target -> do
     pure $ a & tokensL %~ flipClues n
-  DiscoverClues iid d | iid == investigatorId -> do
-    mods <- getModifiers iid
+  DiscoverClues iid d | iid == investigatorId && d.location == DiscoverYourLocation  -> do
     lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
-
-    let additionalDiscoveredAt =
-          Map.fromListWith (<>) [(olid, Sum x) | DiscoveredCluesAt olid x <- mods, olid /= lid]
-    let additionalDiscovered = getSum $ fold [Sum x | d.isInvestigate == IsInvestigate, DiscoveredClues x <- mods]
-
-    let
-      total lid' n = do
-        let
-          getMaybeMax :: ModifierType -> Maybe Int -> Maybe Int
-          getMaybeMax (MaxCluesDiscovered x) Nothing = Just x
-          getMaybeMax (MaxCluesDiscovered x) (Just x') = Just $ min x x'
-          getMaybeMax _ x = x
-        mMax :: Maybe Int <- foldr getMaybeMax Nothing <$> getModifiers lid'
-        pure $ maybe n (min n) mMax
-
-    canDiscoverClues <-
-      anyM (getCanDiscoverClues d.isInvestigate iid) (lid : Map.keys additionalDiscoveredAt)
-    if canDiscoverClues
-      then do
-        baseOk <- getCanDiscoverClues d.isInvestigate iid lid
-        base <- total lid (d.count + additionalDiscovered)
-        discoveredClues <- min base <$> field LocationClues lid
-        checkWindowMsg <- checkWindows [mkWhen (Window.WouldDiscoverClues iid lid d.source discoveredClues)]
-
-        otherWindows <- forMaybeM (mapToList additionalDiscoveredAt) \(lid', n) -> runMaybeT do
-          liftGuardM $ getCanDiscoverClues d.isInvestigate iid lid'
-          discoveredClues' <- lift $ min <$> total lid' (getSum n) <*> field LocationClues lid'
-          guard (discoveredClues' > 0)
-          lift $ checkWindows [mkWhen (Window.WouldDiscoverClues iid lid' d.source discoveredClues')]
-        pushAll $ [checkWindowMsg | baseOk] <> otherWindows <> [DoStep 1 msg]
-      else do
-        tokens <- field LocationTokens lid
-        putStrLn $ "Can't discover clues in " <> tshow lid <> ": " <> tshow tokens
-
+    push $ DiscoverClues iid (d {discoverLocation = DiscoverAtLocation lid})
     pure a
   DoStep 1 (DiscoverClues iid d) | iid == investigatorId -> do
     mods <- getModifiers iid

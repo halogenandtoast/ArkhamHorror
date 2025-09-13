@@ -15,8 +15,8 @@
   },
   "remembered": {
     "foundTheTowerKey": "你找到了塔樓的鑰匙。"
-  }
-    "label": {
+  },
+  "label": {
     "brokenSteps": {
       "omen": "抽取遭遇棄牌堆頂的1張_徵兆_詭計卡。",
       "cultist": "抽取遭遇棄牌堆頂的1張_異教徒_敵人卡。"

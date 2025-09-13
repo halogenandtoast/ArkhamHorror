@@ -21,6 +21,7 @@ export type Campaign = {
   meta: any;
   xpBreakdown: XpBreakdown;
   storyCards: { [key: string]: CardContents[] };
+  decks: { [key: string]: CardContents[]  };
 }
 
 export const campaignDetailsDecoder = JsonDecoder.object<CampaignDetails>({
@@ -37,5 +38,6 @@ export const campaignDecoder = JsonDecoder.object<Campaign>({
   step: JsonDecoder.nullable(campaignStepDecoder),
   meta: JsonDecoder.succeed(),
   xpBreakdown: xpBreakdownDecoder,
-  storyCards: JsonDecoder.record(JsonDecoder.array(cardContentsDecoder, 'CardDef[]'), 'CardDef[]')
+  storyCards: JsonDecoder.record(JsonDecoder.array(cardContentsDecoder, 'CardDef[]'), 'CardDef[]'),
+  decks: JsonDecoder.record(JsonDecoder.array(cardContentsDecoder, 'CardDef[]'), 'CardDef[]'),
 }, 'Campaign');

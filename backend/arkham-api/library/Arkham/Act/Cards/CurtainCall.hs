@@ -24,7 +24,7 @@ instance HasAbilities CurtainCall where
         1
         (Here <> not_ (exists $ InPlayEnemy $ enemyIs Enemies.theManInThePallidMask))
         $ ActionAbility [Action.Resign] (ActionCost 1)
-    , restricted attrs 2 (exists $ LocationWithoutHorror <> ConnectedTo LocationWithAnyHorror)
+    , restricted attrs 2 (exists $ LocationWithoutHorror <> connectedTo LocationWithAnyHorror)
         $ forced
         $ RoundEnds #when
     ]
@@ -38,7 +38,7 @@ instance RunMessage CurtainCall where
       resign iid
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      selectEach (LocationWithoutHorror <> ConnectedTo LocationWithAnyHorror) \location ->
+      selectEach (LocationWithoutHorror <> connectedTo LocationWithAnyHorror) \location ->
         placeTokens (attrs.ability 2) location #horror 1
       pure a
     UseThisAbility _ (isSource attrs -> True) 3 -> do

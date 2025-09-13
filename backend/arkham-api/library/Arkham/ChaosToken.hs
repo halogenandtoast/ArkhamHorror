@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.ChaosToken (module Arkham.ChaosToken, module Arkham.ChaosToken.Types) where
@@ -8,6 +7,8 @@ import Arkham.ChaosToken.Types
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Calculation
 import Arkham.Prelude
+import Data.Function (on)
+import GHC.Records
 
 pattern PositiveModifier :: Int -> ChaosTokenModifier
 pattern PositiveModifier n <- CalculatedModifier (Fixed n)
@@ -43,6 +44,12 @@ chaosTokenModifierToInt = \case
   AutoSuccessModifier -> pure Nothing
   AutoFailModifier -> pure Nothing
   NoModifier -> pure $ Just 0
+
+uniqueTokenFaces :: [ChaosToken] -> [ChaosToken]
+uniqueTokenFaces = mapMaybe headMay . groupBy ((==) `on` (.face)) . sortOn (.face)
+
+instance HasField "uniqueByFace" [ChaosToken] [ChaosToken] where
+  getField = uniqueTokenFaces
 
 -- TODO: this is a huge bandaid and might not work later
 instance Semigroup ChaosTokenModifier where

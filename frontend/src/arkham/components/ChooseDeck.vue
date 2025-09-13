@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { displayTabooId, displayTabooList } from '@/arkham/taboo';
 import { computed, ref, inject } from 'vue'
 import type { Game } from '@/arkham/types/Game';
 import { fetchDecks } from '@/arkham/api'
@@ -102,21 +103,7 @@ async function choose() {
 type Player = { tag: "EmptyPlayer", id: string } | { tag: "Chosen", contents: Investigator, id: string }
 
 const tabooList = function (investigator: Investigator) {
-  if (investigator.taboo) {
-    switch (investigator.taboo) {
-      case "TabooList15": return "1.5 (Apr 23, 2019)"
-      case "TabooList16": return "1.6 (Sep 27, 2019)"
-      case "TabooList18": return "1.8 (Oct 15, 2020)"
-      case "TabooList19": return "1.9 (Jun 28, 2021)"
-      case "TabooList20": return "2.0 (Aug 26, 2022)"
-      case "TabooList21": return "2.1 (Aug 30, 2023)"
-      case "TabooList22": return "2.2 (Feb 20, 2024)"
-      case "TabooList23": return "2.3 (Oct 24, 2024)"
-      default: return "Unknown Taboo List"
-    }
-  }
-
-  return null
+  return investigator.taboo ? displayTabooList(investigator.taboo) : null
 }
 
 const players = computed<Player[]>(() => {
@@ -171,25 +158,9 @@ const chosenDeckTabooList = computed(() => {
   }
 
   const deck = decks.value.find((d) => d.id === deckId.value)
-  if (!deck) {
-    return null
-  }
+  if (!deck) return null
 
-  if (deck.list.taboo_id) {
-    switch (deck.list.taboo_id) {
-      case 1: return "1.5 (Apr 23, 2019)"
-      case 2: return "1.6 (Sep 27, 2019)"
-      case 3: return "1.8 (Oct 15, 2020)"
-      case 4: return "1.9 (Jun 28, 2021)"
-      case 5: return "2.0 (Aug 26, 2022)"
-      case 6: return "2.1 (Aug 30, 2023)"
-      case 7: return "2.2 (Feb 20, 2024)"
-      case 8: return "2.3 (Oct 24, 2024)"
-      default: return "Unknown Taboo List"
-    }
-  }
-
-  return null
+  return deck.list.taboo_id ? displayTabooId(deck.list.taboo_id) : null
 })
 
 </script>

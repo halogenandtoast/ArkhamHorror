@@ -1,13 +1,10 @@
-module Arkham.Skill.Cards.Daredevil2 (daredevil2, Daredevil2 (..)) where
+module Arkham.Skill.Cards.Daredevil2 (daredevil2) where
 
 import Arkham.Card
-import Arkham.Classes
-import Arkham.Deck
 import Arkham.Matcher
-import Arkham.Message
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype Daredevil2 = Daredevil2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -17,35 +14,17 @@ daredevil2 :: SkillCard Daredevil2
 daredevil2 = skill Daredevil2 Cards.daredevil2
 
 instance RunMessage Daredevil2 where
-  runMessage msg s@(Daredevil2 attrs) = case msg of
+  runMessage msg s@(Daredevil2 attrs) = runQueueT $ case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
-      push
-        $ RevealUntilFirst iid (toSource attrs) (InvestigatorDeck iid)
+      revealUntilFirst iid attrs iid
         $ CommittableCard (InvestigatorWithId iid) (basic $ #rogue <> #skill)
-      Daredevil2 <$> runMessage msg attrs
+      Daredevil2 <$> liftRunMessage msg attrs
     RevealedCards iid (isSource attrs -> True) _ mcard (map toCard -> rest) -> do
-      player <- getPlayer iid
-      pushAll $ case mcard of
-        Nothing ->
-          [ FocusCards rest
-          , chooseOne
-              player
-              [ Label
-                  "No cards found"
-                  [UnfocusCards, ShuffleCardsIntoDeck (InvestigatorDeck iid) rest]
-              ]
-          ]
-        Just (toCard -> c) ->
-          [ FocusCards (rest <> [c])
-          , chooseOne
-              player
-              [ targetLabel
-                  (toCardId c)
-                  [ UnfocusCards
-                  , CommitCard iid c
-                  , ShuffleCardsIntoDeck (InvestigatorDeck iid) rest
-                  ]
-              ]
-          ]
+      focusCards (rest <> maybeToList mcard) do
+        case mcard of
+          Nothing -> promptI_ iid "noCardsFound"
+          Just (toCard -> c) -> chooseOneM iid do
+            targeting (toCardId c) $ commitCard iid c
+      shuffleCardsIntoDeck iid rest
       pure s
-    _ -> Daredevil2 <$> runMessage msg attrs
+    _ -> Daredevil2 <$> liftRunMessage msg attrs

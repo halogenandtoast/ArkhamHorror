@@ -3,14 +3,14 @@ module Arkham.Location.Cards.WitchHauntedWoodsTheLonelyTree (witchHauntedWoodsTh
 import Arkham.Ability
 import Arkham.Capability
 import Arkham.Discard
-import Arkham.Draw.Types
 import Arkham.GameValue
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
 newtype WitchHauntedWoodsTheLonelyTree = WitchHauntedWoodsTheLonelyTree LocationAttrs
@@ -29,66 +29,42 @@ instance HasModifiersFor WitchHauntedWoodsTheLonelyTree where
 
 instance HasAbilities WitchHauntedWoodsTheLonelyTree where
   getAbilities (WitchHauntedWoodsTheLonelyTree a) =
-    withBaseAbilities
-      a
-      [ playerLimit PerRound
-          $ restrictedAbility
-            a
-            1
-            ( Here
-                <> exists
-                  ( oneOf [You, at_ (NotLocation YourLocation <> "Witch-Haunted Woods")]
-                      <> InvestigatorWithDiscardableCard
-                  )
-            )
-          $ FastAbility Free
-      ]
+    extendRevealed1 a
+      $ playerLimit PerRound
+      $ restricted
+        a
+        1
+        ( Here
+            <> exists
+              ( oneOf [You, at_ (NotLocation YourLocation <> "Witch-Haunted Woods")]
+                  <> InvestigatorWithDiscardableCard
+              )
+        )
+      $ FastAbility Free
 
 instance RunMessage WitchHauntedWoodsTheLonelyTree where
-  runMessage msg l@(WitchHauntedWoodsTheLonelyTree attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(WitchHauntedWoodsTheLonelyTree attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let otherMatcher = InvestigatorAt ("Witch-Haunted Woods" <> not_ (locationWithInvestigator iid))
+
+      forDraw <- select @InvestigatorMatcher $ can.draw.cards FromOtherSource otherMatcher
+      forDiscard <- select $ InvestigatorWithDiscardableCard <> otherMatcher
       handLength <- fieldMap InvestigatorHand length iid
       canDraw <- can.draw.cards FromOtherSource iid
 
-      iidsForDraw <-
-        select @InvestigatorMatcher
-          $ can.draw.cards FromOtherSource
-          $ InvestigatorAt ("Witch-Haunted Woods" <> not_ (locationWithInvestigator iid))
+      chooseOrRunOneM iid do
+        when (handLength > 0) do
+          labeled
+            "You choose and discard 1 card from your hand, then an investigator at a different Witch-Haunted Woods draws 1 card"
+            do
+              inner <- capture $ chooseTargetM iid forDraw \other -> drawCards other attrs 1
+              chooseAndDiscardCardEdit iid attrs \d -> d {discardThen = guard (notNull inner) $> Run inner}
 
-      iidsForDiscard <-
-        select
-          $ InvestigatorWithDiscardableCard
-          <> at_ ("Witch-Haunted Woods" <> not_ (locationWithInvestigator iid))
-
-      chooseOtherDraw <- for iidsForDraw $ \other -> do
-        let drawing = newCardDraw attrs other 1
-        pure $ targetLabel other [DrawCards other drawing]
-
-      let drawing = newCardDraw attrs iid 1
-      player <- getPlayer iid
-
-      push
-        $ chooseOrRunOne player
-        $ [ Label
-              "You choose and discard 1 card from your hand, then an investigator at a different Witch-Haunted Woods draws 1 card"
-              [ toMessage
-                  $ (chooseAndDiscardCard iid attrs)
-                    { discardThen = guard (notNull chooseOtherDraw) $> chooseOrRunOne player chooseOtherDraw
-                    }
-              ]
-          | handLength > 0
-          ]
-        <> [ Label
-               "vice versa"
-               [ chooseOrRunOne
-                   player
-                   [ targetLabel
-                       other
-                       [toMessage $ (chooseAndDiscardCard other attrs) {discardThen = Just $ DrawCards iid drawing}]
-                   | other <- iidsForDiscard
-                   ]
-               ]
-           | notNull iidsForDiscard && canDraw
-           ]
+        when (notNull forDiscard && canDraw) do
+          labeled "vice versa" do
+            chooseOrRunOneM iid do
+              inner <- capture $ drawCards iid attrs 1
+              targets forDiscard \other ->
+                chooseAndDiscardCardEdit other attrs \d -> d {discardThen = Just $ Run inner}
       pure l
-    _ -> WitchHauntedWoodsTheLonelyTree <$> runMessage msg attrs
+    _ -> WitchHauntedWoodsTheLonelyTree <$> liftRunMessage msg attrs

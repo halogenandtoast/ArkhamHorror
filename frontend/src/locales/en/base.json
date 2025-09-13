@@ -1,20 +1,23 @@
 {
-  "about": "About",
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "admin": "Admin",
+    "cards": "Cards",
+    "myDecks": "My Decks",
+    "support": "Patreon"
+  },
   "activeGames": "Active Games",
   "cancel": "Cancel",
-  "cards": "Cards",
   "continue": "Continue",
   "debugGame": "Debug Game",
   "doDeleteGame": "Are you sure you want to delete this game?",
   "email": "Email",
   "finishedGames": "Finished Games",
   "forgotPassword": "Forgot Password",
-  "home": "Home",
   "invalidEmailOrPassword": "Invalid email or password",
   "language": "Language",
   "logIn": "Log in",
-  "myDecks": "My Decks",
-  "support": "Patreon",
   "newGame": "New Game",
   "newPassword": "New Password",
   "password": "Password",
@@ -59,5 +62,14 @@
     "physical": "Physical",
     "mental": "Mental",
     "supplyPoints": "Supply Points to Gain"
+  },
+  "proceedToSetup": "Proceed to _Setup_",
+  "slot": {
+    "accessory": "Accessory",
+    "ally": "Ally",
+    "arcane": "Arcane",
+    "body": "Body",
+    "hand": "Hand",
+    "tarot": "Tarot"
   }
 }

@@ -15,6 +15,7 @@ import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Types (Field (..))
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Card.PlayerCard (setPlayerCardOwner)
 import Arkham.Card.Settings
@@ -27,6 +28,9 @@ import Arkham.Classes.HasChaosTokenValue
 import Arkham.Classes.Query hiding (matches)
 import Arkham.Classes.RunMessage
 import Arkham.Collection
+import Arkham.Cost (Payment (NoPayment))
+import Arkham.Cost qualified as Cost
+import Arkham.Cost.Status
 import Arkham.Deck qualified as Deck
 import Arkham.DefeatedBy
 import Arkham.Direction
@@ -43,8 +47,10 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Playable
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest (getIsCommittable)
 import Arkham.Helpers.Window
 import Arkham.History
 import Arkham.Id
@@ -53,7 +59,8 @@ import Arkham.Label (mkLabel)
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message.Lifted (fetchCard)
+import Arkham.Message.Lifted (do_, fetchCard, obtainCard, quietCancelCardDraw)
+import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Name
 import Arkham.Phase
@@ -61,7 +68,8 @@ import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Search
+import Arkham.Search hiding (drawnCardsL, foundCardsL)
+import Arkham.Search qualified as Search
 import Arkham.Skill.Types qualified as Field
 import Arkham.Story.Types (Field (..))
 import Arkham.Tarot
@@ -553,6 +561,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       & (setAsideCardsL %~ deleteFirstMatch (== card))
       & (decksL . at deckKey ?~ deck')
   AddToEncounterDiscard ec -> do
+    quietCancelCardDraw (EncounterCard ec)
+    pushAll [ObtainCard (toCardId ec), Do msg]
+    pure a
+  Do (AddToEncounterDiscard ec) -> do
     handler <- getEncounterDeckHandler (toCardId ec)
     pure
       $ a
@@ -628,9 +640,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           else pure $ a & discardLens handler %~ (ec :)
       VengeanceCard _ -> error "vengeance card"
   CreateAssetAt _ card _ -> do
-    pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
+    pure $ a & setAsideCardsL %~ deleteFirstMatch (== card) & victoryDisplayL %~ filter (/= card)
   AttachStoryTreacheryTo _ card _ -> do
-    pure $ a & setAsideCardsL %~ deleteFirstMatch (== card)
+    pure $ a & setAsideCardsL %~ deleteFirstMatch (== card) & victoryDisplayL %~ filter (/= card)
   CreateEnemy (enemyCreationCard -> card) -> do
     pure
       $ a
@@ -675,6 +687,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       & (cardsNextToActDeckL %~ deleteCard)
       & (cardsNextToAgendaDeckL %~ deleteCard)
       & (decksL . each %~ deleteCard)
+      & (foundCardsL . each %~ deleteCard)
       & (encounterDecksL . each %~ bimap (withDeck deleteCard) deleteCard)
   PlacedUnderneath ActDeckTarget card -> do
     pure $ a & cardsUnderActDeckL %~ (card :)
@@ -686,7 +699,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ a & cardsNextToAgendaDeckL <>~ cards
   ShuffleCardsIntoDeck Deck.EncounterDeck cards -> do
     push $ ShuffleCardsIntoDeck (Deck.EncounterDeckByKey RegularEncounterDeck) cards
-    pure a
+    pure $ a & decksL . each %~ filter (`notElem` cards)
   ShuffleCardsIntoDeck (Deck.EncounterDeckByKey _) [] -> do
     pure a
   ShuffleCardsIntoDeck (Deck.EncounterDeckByKey deckKey) cards -> do
@@ -744,9 +757,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     case rest of
       [] -> pure a
       (_ : xs) -> pure $ a & setAsideCardsL .~ (before <> xs)
-  ReadStory _ card _ _ -> do
+  StoryMessage (ReadStory _ card _ _) -> do
     pure $ a & cardsUnderScenarioReferenceL %~ filter (/= card)
-  ResolveStory _ ResolveIt storyId -> do
+  StoryMessage (ResolveStory _ ResolveIt storyId) -> do
     pure $ a & resolvedStoriesL %~ (storyId :)
   SetActDeckCards n cards -> do
     pure $ a & actStackL %~ insertMap n cards
@@ -852,23 +865,28 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         batchId <- getRandom
         push $ DoBatch batchId msg
     pure a
-  DoBatch
-    batchId
-    (Search (MkSearch sType iid source EncounterDeckTarget cardSources cardMatcher foundStrategy _ _)) -> do
+  DoBatch _ (Search (MkSearch _ iid _ EncounterDeckTarget _ _ foundStrategy _ _)) -> do
+    let isDrawing = isSearchDraw foundStrategy
+    wouldDrawCard <- checkWindows [mkWhen (Window.WouldDrawCard iid Deck.EncounterDeck)]
+    pushAll $ [wouldDrawCard | isDrawing] <> [Do msg]
+    pure a
+  Do
+    ( DoBatch
+        batchId
+        ( Search
+            (MkSearch searchType iid source EncounterDeckTarget cardSources cardMatcher foundStrategy _ _)
+          )
+      ) -> do
       mods <- getModifiers iid
       let
         additionalDepth =
-          sum [x | sType == Searching, SearchDepth x <- mods]
-            + sum [x | sType == Looking, LookAtDepth x <- mods]
+          sum [x | searchType == Searching, SearchDepth x <- mods]
+            + sum [x | searchType == Looking, LookAtDepth x <- mods]
         foundCards :: Map Zone [Card] =
           foldl'
             ( \hmap (cardSource, _) -> case cardSource of
                 Zone.FromDeck ->
-                  insertWith
-                    (<>)
-                    Zone.FromDeck
-                    (map EncounterCard $ unDeck scenarioEncounterDeck)
-                    hmap
+                  insertWith (<>) Zone.FromDeck (map EncounterCard $ unDeck scenarioEncounterDeck) hmap
                 Zone.FromTopOfDeck n ->
                   insertWith
                     (<>)
@@ -882,74 +900,289 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                     (map EncounterCard . take (n + additionalDepth) . reverse $ unDeck scenarioEncounterDeck)
                     hmap
                 Zone.FromDiscard ->
-                  insertWith
-                    (<>)
-                    Zone.FromDiscard
-                    (map EncounterCard scenarioDiscard)
-                    hmap
+                  insertWith (<>) Zone.FromDiscard (map EncounterCard scenarioDiscard) hmap
                 other -> error $ mconcat ["Zone ", show other, " not yet handled"]
             )
             mempty
             cardSources
-      targetCards <- filterM (`extendedCardMatch` cardMatcher) $ concat $ toList foundCards
-      player <- getPlayer iid
 
-      pushBatch batchId (FoundCards foundCards)
+      when (searchType == Searching) $ do
+        pushBatch batchId
+          $ CheckWindows [Window.Window #when (Window.AmongSearchedCards batchId iid) (Just batchId)]
 
-      let
-        applyMod (AdditionalTargets n) = over biplate (+ n)
-        applyMod _ = id
-        foundStrategy' = foldr applyMod foundStrategy mods
-
-      case foundStrategy' of
-        DrawOrCommitFound {} -> error "CommitFound not implemented for EncounterDeck"
-        AddToHandOrPlayFound {} -> error "AddToHandOrPlayFound not implemented for EncounterDeck"
-        RemoveFoundFromGame _ _ -> error "Unhandled"
-        AddFoundToHand {} -> error "Unhandled"
-        DrawFound who n -> do
-          let
-            choices =
-              [ targetLabel (toCardId card) [InvestigatorDrewEncounterCard who card]
-              | EncounterCard card <- targetCards
-              ]
-          pushBatch batchId
-            $ if null choices
-              then chooseOne player [Label "No cards found" []]
-              else chooseN player (min n (length choices)) choices
-        DrawFoundUpTo who n -> do
-          let
-            choices =
-              [ targetLabel (toCardId card) [InvestigatorDrewEncounterCard who card]
-              | EncounterCard card <- targetCards
-              ]
-          pushBatch batchId
-            $ if null choices
-              then chooseOne player [Label "No cards found" []]
-              else chooseUpToN player n "Do not draw more cards" choices
-        DeferSearchedToTarget searchTarget _ -> do
-          pushBatch batchId
-            $ if null targetCards
-              then
-                chooseOne
-                  player
-                  [Label "No cards found" [SearchNoneFound iid searchTarget]]
-              else SearchFound iid searchTarget Deck.EncounterDeck targetCards
-        DrawAllFound who -> do
-          let
-            choices =
-              [ targetLabel (toCardId card) [InvestigatorDrewEncounterCard who card]
-              | EncounterCard card <- targetCards
-              ]
-          pushBatch batchId
-            $ if null choices
-              then chooseOne player [Label "No cards found" []]
-              else chooseOneAtATime player choices
-        PlayFound {} -> error "PlayFound is not a valid EncounterDeck strategy"
-        PlayFoundNoCost {} -> error "PlayFound is not a valid EncounterDeck strategy"
-        ReturnCards -> pure ()
-
+      pushBatch batchId $ ResolveSearch (toTarget a)
       pushBatch batchId $ EndSearch iid source EncounterDeckTarget cardSources
-      pure a
+
+      pure
+        $ a
+        & searchL
+        ?~ MkSearch
+          searchType
+          iid
+          source
+          EncounterDeckTarget
+          cardSources
+          cardMatcher
+          foundStrategy
+          foundCards
+          []
+  ResolveSearch (isTarget a -> True) -> do
+    case scenarioSearch of
+      Just (MkSearch searchType iid source EncounterDeckTarget _ cardMatcher foundStrategy foundCards _) -> do
+        mods <- getModifiers iid
+        let
+          applyMod (AdditionalTargets n) = over biplate (+ n)
+          applyMod _ = id
+          foundStrategy' = foldr applyMod foundStrategy mods
+        targetCards <- traverse (filterM (`extendedCardMatch` cardMatcher)) foundCards
+
+        player <- getPlayer iid
+        case foundStrategy' of
+          AddToHandOrPlayFound who n -> do
+            let windows' = [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
+            playableCards <- concatForM (mapToList targetCards) $ \(_, cards) ->
+              filterM (getIsPlayable who source (UnpaidCost NoAction) windows') cards
+            let
+              choices =
+                [ targetLabel
+                    card
+                    [ if card `elem` playableCards
+                        then
+                          chooseOne
+                            player
+                            [ Label "Add to hand" [addFoundToHand]
+                            , Label "Play Card" [addFoundToHand, PayCardCost iid card windows']
+                            ]
+                        else addFoundToHand
+                    ]
+                | (zone, cards) <- mapToList targetCards
+                , card <- cards
+                , let addFoundToHand = AddFocusedToHand iid EncounterDeckTarget zone (toCardId card)
+                ]
+            push
+              $ if null choices
+                then chooseOne player [Label "No cards found" []]
+                else chooseN player (min n (length choices)) choices
+          DrawOrCommitFound who n -> do
+            -- [TODO] We need this to determine what state the skill test
+            -- is in, if we are committing cards we need to use
+            -- SkillTestCommitCard instead of CommitCard
+            committable <- filterM (getIsCommittable who) $ concatMap snd $ mapToList targetCards
+            let
+              choices =
+                [ targetLabel
+                    card
+                    [ if card `elem` committable
+                        then
+                          chooseOne
+                            player
+                            [ Label "Draw it" [addFoundToHand]
+                            , Label "Commit to skill test" [CommitCard who card]
+                            ]
+                        else addFoundToHand
+                    ]
+                | (zone, cards) <- mapToList targetCards
+                , card <- cards
+                , let addFoundToHand = AddFocusedToHand iid EncounterDeckTarget zone (toCardId card)
+                ]
+            push
+              $ if null choices
+                then chooseOne player [Label "No cards found" []]
+                else chooseN player (min n (length choices)) choices
+          RemoveFoundFromGame _ _n -> error "not implemented yet"
+          AddFoundToHand who n -> do
+            let
+              choices =
+                [ targetLabel
+                    card
+                    [AddFocusedToHand who EncounterDeckTarget zone (toCardId card)]
+                | (zone, cards) <- mapToList targetCards
+                , card <- cards
+                ]
+            push
+              $ if null choices
+                then chooseOne player [Label "No cards found" []]
+                else chooseN player (min n (length choices)) choices
+          DrawFound who n -> do
+            canModify <- can.draw.cards who
+            let
+              choices =
+                [ targetLabel card [InvestigatorDrewEncounterCard who card]
+                | canModify
+                , (_zone, onlyEncounterCards -> cards) <- mapToList targetCards
+                , card <- cards
+                ]
+            push
+              $ if null choices
+                then chooseOne player [Label "No cards found" []]
+                else chooseN player (min n (length choices)) choices
+            let
+              shouldShuffle = case searchType of
+                Looking -> False
+                Revealing -> True
+                Searching -> True
+            pushWhen shouldShuffle $ ShuffleDeck Deck.EncounterDeck
+          DrawFoundUpTo who n -> do
+            let
+              choices =
+                [ targetLabel (toCardId card) [DrawFocusedToHand iid (toTarget who) zone (toCardId card)]
+                | (zone, cards) <- mapToList targetCards
+                , card <- cards
+                ]
+            push
+              $ if null choices
+                then chooseOne player [Label "No cards found" []]
+                else chooseUpToN player n "Do not draw more cards" choices
+          PlayFound who n -> do
+            let windows' = [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
+            playableCards <- for (mapToList targetCards) $ \(zone, cards) -> do
+              cards' <- filterM (getIsPlayable who source (UnpaidCost NoAction) windows') cards
+              pure (zone, cards')
+            let
+              choices =
+                [ targetLabel (toCardId card) [PayCardCost iid card windows']
+                | (_, cards) <- playableCards
+                , card <- cards
+                ]
+            push $ chooseN player n $ if null choices then [Label "No cards found" []] else choices
+          PlayFoundNoCost who n -> do
+            let windows' = [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
+            playableCards <- for (mapToList targetCards) $ \(zone, cards) -> do
+              cards' <- filterM (getIsPlayable who source Cost.PaidCost windows') cards
+              pure (zone, cards')
+            let
+              choices =
+                [ targetLabel (toCardId card) [PutCardIntoPlay iid card Nothing NoPayment windows']
+                | (_, cards) <- playableCards
+                , card <- cards
+                ]
+            push $ chooseN player n $ if null choices then [Label "No cards found" []] else choices
+          DeferSearchedToTarget searchTarget _ -> do
+            -- N.B. You must handle target duplication (see Mandy Thompson) yourself
+            if all null (toList targetCards)
+              then Lifted.promptI iid "noCardsFound" $ push $ SearchNoneFound iid searchTarget
+              else
+                pushAll
+                  [ PreSearchFound iid searchTarget Deck.EncounterDeck (concat $ toList targetCards)
+                  , After (PreSearchFound iid searchTarget Deck.EncounterDeck (concat $ toList targetCards))
+                  ]
+          DrawAllFound who -> do
+            let
+              choices =
+                [ targetLabel (toCardId card) [AddFocusedToHand who EncounterDeckTarget zone (toCardId card)]
+                | (zone, cards) <- mapToList targetCards
+                , card <- cards
+                ]
+
+            let
+              shouldShuffle = case searchType of
+                Looking -> False
+                Revealing -> True
+                Searching -> True
+
+            pushAll
+              $ if null choices
+                then
+                  [ chooseOne player [Label "No cards found" [ShuffleDeck Deck.EncounterDeck | shouldShuffle]]
+                  ]
+                else
+                  let cards = concat $ toList targetCards
+                      (before, _, after) = frame $ Window.DrawCards iid cards
+                   in [before, chooseOneAtATime player choices]
+                        <> [ ShuffleDeck Deck.EncounterDeck | shouldShuffle && length targetCards == length foundCards
+                           ]
+                        <> [after]
+          ReturnCards -> pure ()
+      _ -> pure ()
+    pure a
+  After (PreSearchFound iid searchTarget Deck.EncounterDeck _) -> do
+    case scenarioSearch of
+      Just (MkSearch _ _ _ EncounterDeckTarget _ cardMatcher _ foundCards _) -> do
+        targetCards <- traverse (filterM (`extendedCardMatch` cardMatcher)) foundCards
+        push $ SearchFound iid searchTarget Deck.EncounterDeck (concat $ toList targetCards)
+      _ -> error "Unexpected"
+    pure a
+  EndSearch iid _ EncounterDeckTarget _ -> do
+    let cardSources = maybe [] searchZones scenarioSearch
+    let
+      foundKey = \case
+        Zone.FromTopOfDeck _ -> Zone.FromDeck
+        Zone.FromBottomOfDeck _ -> Zone.FromDeck
+        other -> other
+    player <- getPlayer iid
+    for_ cardSources $ \(cardSource, returnStrategy) -> case returnStrategy of
+      DiscardRest -> do
+        let discards = findWithDefault [] Zone.FromDeck $ a ^. foundCardsL
+        unless (null discards) do
+          push
+            $ chooseOneAtATime player
+            $ map
+              ( \case
+                  PlayerCard c -> targetLabel (toCardId c) [AddToDiscard iid c]
+                  EncounterCard c -> targetLabel (toCardId c) [AddToEncounterDiscard c]
+                  VengeanceCard _ -> error "not possible"
+              )
+              discards
+      PutBackInAnyOrder -> do
+        when
+          (foundKey cardSource /= Zone.FromDeck)
+          (error "Expects a deck: Investigator<PutBackInAnyOrder>")
+        push
+          $ chooseOneAtATime player
+          $ mapTargetLabelWith
+            toCardId
+            (\c -> [AddFocusedToTopOfDeck iid EncounterDeckTarget (toCardId c)])
+            (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
+      ShuffleBackIn -> do
+        when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck: Investigator<ShuffleBackIn>")
+        for_ scenarioSearch \MkSearch {searchType} ->
+          pushWhen (searchType == Searching) $ ShuffleDeck Deck.EncounterDeck
+      PutBack -> pure () -- Nothing moves while searching
+      DoNothing -> pure () -- Nothing moves while searching
+      RemoveRestFromGame -> do
+        -- Try to obtain, then don't add back
+        pushAll $ map (ObtainCard . toCardId) $ findWithDefault [] Zone.FromDeck (a ^. foundCardsL)
+
+    push $ SearchEnded (toTarget a)
+    pure a
+  SearchEnded (isTarget a -> True) -> do
+    case scenarioSearch of
+      Just search' -> do
+        when (notNull $ search' ^. Search.drawnCardsL) do
+          pushM
+            $ checkWindows [mkAfter $ Window.DrawCards search'.investigator $ search' ^. Search.drawnCardsL]
+      _ -> pure ()
+
+    pure $ a & searchL .~ Nothing
+  CancelSearch (isTarget a -> True) -> pure $ a & searchL .~ Nothing
+  UpdateSearchReturnStrategy _iid zone returnStrategy -> do
+    let
+      updateZone = \case
+        (z@(Zone.FromTopOfDeck _), _) | zone == Zone.FromDeck -> (z, returnStrategy)
+        (z@(Zone.FromBottomOfDeck _), _) | zone == Zone.FromDeck -> (z, returnStrategy)
+        (z, _) | z == zone -> (z, returnStrategy)
+        other -> other
+    case scenarioSearch of
+      Nothing -> pure a
+      Just s -> pure $ a & searchL ?~ s {searchZones = map updateZone (searchZones s)}
+  AddFocusedToTopOfDeck iid EncounterDeckTarget cardId -> do
+    let
+      card =
+        fromJustNote "missing card"
+          $ find ((== cardId) . toCardId) (concat $ toList $ a ^. foundCardsL)
+          >>= toEncounterCard
+      foundCards = Map.map (filter ((/= cardId) . toCardId)) $ a ^. foundCardsL
+    push $ PutCardOnTopOfDeck iid Deck.EncounterDeck (toCard card)
+    pure $ a & foundCardsL .~ foundCards
+  AddFocusedToHand iid EncounterDeckTarget _cardSource cardId -> do
+    let
+      card =
+        fromJustNote "missing card"
+          $ find ((== cardId) . toCardId) (concat $ toList $ a ^. foundCardsL)
+          >>= toEncounterCard
+      foundCards = Map.map (filter ((/= cardId) . toCardId)) $ a ^. foundCardsL
+    push $ addToHand iid card
+    pure $ a & foundCardsL .~ foundCards
   Discarded (AssetTarget _) _ card@(EncounterCard ec) -> do
     handler <- getEncounterDeckHandler $ toCardId card
     -- TODO: determine why this was only specified for Asset
@@ -1001,7 +1234,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     card <- field LocationCard lid
     case card of
       EncounterCard card' -> do
-        pushAll $ resolve (RemoveLocation lid)
+        Lifted.removeLocation lid
         encounterDeck <- withDeckM (shuffleM . (card' :)) scenarioEncounterDeck
         pure $ a & encounterDeckL .~ encounterDeck
       _ -> error "must be encounter card"
@@ -1010,14 +1243,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure a
   DiscardUntilFirst iid source (Deck.EncounterDeckByKey RegularEncounterDeck) matcher -> do
     (discards, remainingDeck) <- breakM (`extendedCardMatch` matcher) (unDeck scenarioEncounterDeck)
-    case remainingDeck of
-      [] -> do
-        push (RequestedEncounterCard source (Just iid) Nothing)
-        encounterDeck <- shuffleM (discards <> scenarioDiscard)
-        pure $ a & encounterDeckL .~ Deck encounterDeck & discardL .~ mempty
-      (x : xs) -> do
-        push (RequestedEncounterCard source (Just iid) (Just x))
-        pure $ a & encounterDeckL .~ Deck xs & discardL %~ (reverse discards <>)
+    let len = length discards + if null remainingDeck then 0 else 1
+    push $ DiscardTopOfEncounterDeckWithDiscardedCards iid len source Nothing []
+    case take 1 remainingDeck of
+      [] -> push (RequestedEncounterCard source (Just iid) Nothing)
+      x : _ -> push (RequestedEncounterCard source (Just iid) (Just x))
+    pure a
   DiscardUntilFirst iid source (Deck.EncounterDeckByKey k) matcher -> do
     (discards, remainingDeck) <-
       breakM (`extendedCardMatch` matcher) (unDeck $ a ^. encounterDeckLensFromKey k)
@@ -1415,6 +1646,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     enemyHealth <- fieldWithDefault printedHealth EnemyHealth eid
     pure $ a & defeatedEnemiesL %~ insertMap eid (DefeatedEnemyAttrs eattrs enemyHealth)
   SetAsideCards cards -> do
+    for_ cards obtainCard
+    do_ msg
+    pure a
+  Do (SetAsideCards cards) -> do
     pure $ a & setAsideCardsL <>~ cards
   SetLayout layout -> do
     pure $ a & locationLayoutL .~ layout
@@ -1470,6 +1705,6 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           afterMsg <- checkWindows [mkAfter (Window.AgendaWouldAdvance DoomThreshold x)]
           pushAll [whenMsg, afterMsg, ForTarget (toTarget x) AdvanceAgendaIfThresholdSatisfied]
     pure a
-  ReadStoryWithPlacement _ card _ _ _ -> do
+  StoryMessage (ReadStoryWithPlacement _ card _ _ _) -> do
     pure $ a & setAsideCardsL %~ filter (/= card)
   _ -> pure a

@@ -30,10 +30,10 @@ gloriaGoldberg =
 
 instance HasAbilities GloriaGoldberg where
   getAbilities (GloriaGoldberg attrs) =
-    [restrictedAbility attrs 1 Self $ freeReaction $ LookedAtDeck #when You EncounterDeck]
+    [restricted attrs 1 Self $ freeReaction $ LookedAtDeck #when You EncounterDeck]
 
 instance HasChaosTokenValue GloriaGoldberg where
-  getChaosTokenValue iid ElderSign (GloriaGoldberg attrs) | iid == toId attrs = do
+  getChaosTokenValue iid ElderSign (GloriaGoldberg attrs) | attrs `is` iid = do
     pure $ ChaosTokenValue ElderSign (PositiveModifier 1)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
@@ -70,10 +70,10 @@ instance RunMessage GloriaGoldberg where
     ElderSignEffect iid | attrs `is` iid -> do
       lookAt iid ElderSign EncounterDeckTarget [(FromTopOfDeck 1, PutBack)] #any ReturnCards
       pure i
-    FoundCards cards -> do
+    PreSearchFound _ _ _ cards -> do
       when (lookupMetaKeyWithDefault "gloria" False attrs) do
-        let nonEliteCards = concatMap (filterCards (not_ (CardWithTrait Elite))) (toList cards)
-        let propheciesOfTheEnd = concatMap (filterCards (cardIs Treacheries.prophecyOfTheEnd)) (toList cards)
+        let nonEliteCards = filterCards (not_ (CardWithTrait Elite)) cards
+        let propheciesOfTheEnd = filterCards (cardIs Treacheries.prophecyOfTheEnd) cards
         let iid = attrs.id
         cardsUnderneathCount <- fieldMap InvestigatorCardsUnderneath length iid
         if notNull propheciesOfTheEnd
@@ -92,8 +92,12 @@ instance RunMessage GloriaGoldberg where
           else unless (null nonEliteCards) do
             chooseOneM iid $ for_ nonEliteCards \card -> do
               targeting card $ chooseOneM iid do
-                labeled "Discard it" (addToEncounterDiscard (only card))
-                labeled "Put it on top of the encounter deck" $ putCardOnTopOfDeck iid Deck.EncounterDeck card
+                labeled "Discard it" do
+                  obtainCard card
+                  addToEncounterDiscard (only card)
+                labeled "Put it on top of the encounter deck" do
+                  obtainCard card
+                  putCardOnTopOfDeck iid Deck.EncounterDeck card
                 when (cardsUnderneathCount < 3) do
                   labeled "Place it beneath Gloria Goldberg (max 3 cards beneath her)" do
                     obtainCard card
@@ -108,7 +112,6 @@ instance RunMessage GloriaGoldberg where
             sendShowUnder iid
             focusCards under do
               chooseTargetM iid (filterCards NonWeakness under) \undercard -> do
-                obtainCard undercard
                 addToEncounterDiscard (only undercard)
           obtainCard card
           placeUnderneath iid [card]
@@ -124,5 +127,14 @@ instance RunMessage GloriaGoldberg where
             sufferMentalTrauma iid 1
             Arkham.Message.Lifted.investigatorDefeated attrs iid
         _ -> pure ()
+      pure i
+    SendMessage (isTarget attrs -> True) (ForInvestigators investigators AllDrawEncounterCard) -> do
+      unless (null investigators) do
+        chooseOrRunOneM attrs.id do
+          questionLabeled "Choose investigator to draw encounter card"
+          for_ (eachWithRest investigators) \(x, xs) -> do
+            portraitLabeled x do
+              forInvestigator x AllDrawEncounterCard
+              sendMessage attrs $ ForInvestigators xs AllDrawEncounterCard
       pure i
     _ -> GloriaGoldberg <$> liftRunMessage msg attrs

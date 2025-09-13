@@ -1,8 +1,9 @@
-module Arkham.Enemy.Cards.InnsmouthTroublemaker (innsmouthTroublemaker, InnsmouthTroublemaker (..)) where
+module Arkham.Enemy.Cards.InnsmouthTroublemaker (innsmouthTroublemaker) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Matcher
 
 newtype InnsmouthTroublemaker = InnsmouthTroublemaker EnemyAttrs
@@ -18,7 +19,7 @@ innsmouthTroublemaker =
 instance HasAbilities InnsmouthTroublemaker where
   getAbilities (InnsmouthTroublemaker a) =
     extend1 a
-      $ restrictedAbility a 1 (youExist $ at_ $ orConnected $ locationWithEnemy a.id)
+      $ restricted a 1 (youExist $ at_ $ orConnected NotForMovement $ locationWithEnemy a.id)
       $ parleyAction
       $ PlaceClueOnLocationCost 1
 

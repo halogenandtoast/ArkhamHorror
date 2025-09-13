@@ -39,13 +39,11 @@ instance RunMessage GlacialGrotto where
         investigators <- select (investigatorAt attrs)
         n <- getSpendableClueCount investigators
         x <- perPlayer 1
-
         when (n >= x) do
           chooseOneM iid do
             labeled "Spend 1 {perPlayer} clues as a group to take control of the seal" do
-              spendCluesAsAGroup investigators n
+              spendCluesAsAGroup investigators x
               placeSeal iid k
             labeled "Do not spend clues" nothing
-
       pure l
     _ -> GlacialGrotto <$> liftRunMessage msg attrs

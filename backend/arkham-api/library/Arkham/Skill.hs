@@ -3,6 +3,7 @@
 module Arkham.Skill where
 
 import Arkham.Card
+import Arkham.Card.PlayerCard (tabooMutated)
 import Arkham.Classes
 import Arkham.Id
 import Arkham.Placement
@@ -13,7 +14,16 @@ import Arkham.Skill.Skills
 createSkill :: IsCard a => a -> InvestigatorId -> SkillId -> Skill
 createSkill a iid sId =
   let this = lookupSkill (toCardCode a) iid sId (toCardId a)
-   in overAttrs (\attrs -> attrs {skillCustomizations = customizations, skillOwner = owner}) this
+   in overAttrs
+        ( \attrs ->
+            attrs
+              { skillCustomizations = customizations
+              , skillOwner = owner
+              , skillTaboo = tabooList
+              , skillMutated = mutated
+              }
+        )
+        this
  where
   card = toCard a
   owner = case card of
@@ -22,6 +32,12 @@ createSkill a iid sId =
   customizations = case card of
     PlayerCard pc -> pcCustomizations pc
     _ -> mempty
+  tabooList = case toCard a of
+    PlayerCard pc -> pcTabooList pc
+    _ -> Nothing
+  mutated = case toCard a of
+    PlayerCard pc -> tabooMutated tabooList pc
+    _ -> Nothing
 
 instance RunMessage Skill where
   runMessage msg (Skill a) = case msg of

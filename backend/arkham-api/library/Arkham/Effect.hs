@@ -38,6 +38,7 @@ import Arkham.Act.Acts (
 import Arkham.Agenda.Agendas (
   awakeningEffect,
   lostMemoriesEffect,
+  showbusinessAsUsualEffect,
   theLoversVIEffect,
   theRedDepthsEffect,
   theWaterRisesEffect,
@@ -158,15 +159,14 @@ import Arkham.Location.Locations (
   unvisitedIsleStandingStonesEffect,
  )
 import Arkham.Skill.Skills (
-  nimbleEffect,
   copycat3Effect,
   defiance2Effect,
   defianceEffect,
   fey1Effect,
   hatchetManEffect,
   momentum1Effect,
+  nimbleEffect,
   prescientEffect,
-  surprisingFind1Effect,
   theEyeOfTruth5Effect,
  )
 import Arkham.Story.Stories (
@@ -419,7 +419,7 @@ allEffects =
     , ("02190", SomeEffect defianceEffect)
     , ("02228", SomeEffect exposeWeakness1Effect)
     , ("02230", SomeEffect luckyDice2Effect)
-    , ("02236", SomeEffect undimensionedAndUnseenTabletToken)
+    , ("02236", SomeEffect $ noop "02236")
     , ("02246", SomeEffect $ noop "02246")
     , ("02270", SomeEffect $ noop "02270")
     , ("02323", SomeEffect yogSothothEffect)
@@ -497,7 +497,7 @@ allEffects =
     , ("06162", SomeEffect gregoryGryEffect)
     , ("06195", SomeEffect thirtyFiveWinchesterEffect)
     , ("06201", SomeEffect spectralRazorEffect)
-    , ("06278", SomeEffect surprisingFind1Effect)
+    , ("06278", SomeEffect $ noop "06278")
     , ("06279", SomeEffect $ noop "06279")
     , ("06319", SomeEffect restlessJourneyFallacyEffect)
     , ("06320", SomeEffect restlessJourneyHardshipEffect)
@@ -580,6 +580,7 @@ allEffects =
     , ("60431", SomeEffect $ noop "60431")
     , ("60432", SomeEffect $ noop "60432")
     , ("60512", SomeEffect willToSurviveEffect)
+    , ("72002", SomeEffect showbusinessAsUsualEffect)
     , ("81007", SomeEffect cursedShoresEffect)
     , ("82026", SomeEffect gildedVoltoEffect)
     , ("82035", SomeEffect mesmerizeEffect)

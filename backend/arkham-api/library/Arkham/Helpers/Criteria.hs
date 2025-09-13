@@ -43,7 +43,7 @@ import Arkham.Helpers.History (historyMatches)
 import Arkham.Helpers.Investigator (getAsIfInHandCards)
 import Arkham.Helpers.Location (getCanMoveToMatchingLocations, locationMatches)
 import Arkham.Helpers.Log (getHasRecord, getRecordCount, scenarioCount)
-import Arkham.Helpers.Modifiers (getModifiers, hasModifier, modified, withModifiers)
+import Arkham.Helpers.Modifiers (getModifiers, hasModifier, withModifiersOf)
 import Arkham.Helpers.Phase (matchPhase)
 import Arkham.Helpers.Placement (onSameLocation)
 import {-# SOURCE #-} Arkham.Helpers.Playable (getIsPlayable, getIsPlayableWithResources)
@@ -98,18 +98,15 @@ passesCriteria
   -> m Bool
 passesCriteria iid mcard source' requestor windows' = \case
   Criteria.CanEnterThisVehicle -> do
-    mods <- getModifiers iid
-    let invalidMatcher =
-          let matchers = [matcher | CannotEnterVehicle matcher <- mods]
-           in if null matchers then Nothing else Just (Matcher.oneOf matchers)
-    case source of
-      AssetSource aid -> do
+    case source.asset of
+      Just aid -> do
+        mods <- getModifiers iid
+        let matchers = [matcher | CannotEnterVehicle matcher <- mods]
+        let invalidMatcher = guard (notNull matchers) $> Matcher.oneOf matchers
         let
-          go = do
+          go =
             field InvestigatorPlacement iid >>= \case
-              AtLocation lid -> do
-                mlid' <- field AssetLocation aid
-                pure $ Just lid == mlid'
+              AtLocation lid -> fieldMap AssetLocation (== Just lid) aid
               _ -> pure False
         case invalidMatcher of
           Nothing -> go
@@ -118,8 +115,8 @@ passesCriteria iid mcard source' requestor windows' = \case
             if invalid then pure False else go
       _ -> error $ "Unhandled vehicle source: " <> show source
   Criteria.CanLeaveThisVehicle -> do
-    case source of
-      AssetSource aid -> do
+    case source.asset of
+      Just aid -> do
         field InvestigatorPlacement iid >>= \case
           InVehicle aid' | aid == aid' -> pure True
           _ -> pure False
@@ -128,8 +125,8 @@ passesCriteria iid mcard source' requestor windows' = \case
     p <- getPartner cCode
     pure $ p.status == status
   Criteria.NotInEliminatedBearersThreatArea -> do
-    case source of
-      EnemySource eid -> do
+    case source.enemy of
+      Just eid -> do
         field EnemyBearer eid >>= \case
           Just iid' ->
             field EnemyPlacement eid >>= \case
@@ -144,7 +141,7 @@ passesCriteria iid mcard source' requestor windows' = \case
           InVehicle aid' | aid == aid' -> pure True
           _ -> pure False
       _ -> error $ "Unhandled vehicle source: " <> show source
-  Criteria.KeyIsSetAside key -> (elem key) <$> scenarioField ScenarioSetAsideKeys
+  Criteria.KeyIsSetAside key -> elem key <$> scenarioField ScenarioSetAsideKeys
   Criteria.UnrevealedKeyIsSetAside -> do
     let
       unrevealedKey = \case
@@ -200,32 +197,25 @@ passesCriteria iid mcard source' requestor windows' = \case
             <> Matcher.InPlayAreaOf (Matcher.InvestigatorWithId iid)
         _ -> error $ "Unhandled source: " <> show source' <> " " <> show mcard
   Criteria.HasTrueMagick -> do
-    case source' of
-      AssetSource trueMagick -> do
+    case source'.asset of
+      Just trueMagick -> do
         attrs <- getAttrs @Asset trueMagick
         hand <- fieldMap InvestigatorHand (filterCards (card_ $ #asset <> #spell)) iid
-        let
-          replaceAssetId = const attrs.id
-          replaceAssetIds = over biplate replaceAssetId
+        let replaceAssetId = const attrs.id
+        let replaceAssetIds = over biplate replaceAssetId
         let handEntities =
-              map
-                ( \c ->
-                    overAttrs (\attrs' -> attrs {assetCardCode = assetCardCode attrs'})
-                      $ createAsset c
-                      $ unsafeFromCardId c.id
-                )
-                hand
+              flip map hand \c ->
+                overAttrs (\attrs' -> attrs {assetCardCode = assetCardCode attrs'})
+                  $ createAsset c
+                  $ unsafeFromCardId c.id
         getGame >>= runReaderT do
-          anyM
-            ( \a -> do
-                local (entitiesL %~ addEntity a) do
-                  modifiers <- getMonoidalMap <$> execWriterT (getModifiersFor a)
-                  local (modifiersL <>~ modifiers) do
-                    let handAbilities = map (overCost replaceAssetIds) (getAbilities a)
-                    anyM (getCanPerformAbility iid windows') handAbilities
-            )
-            handEntities
-      _ -> error "wrong source"
+          flip anyM handEntities \a -> do
+            local (entitiesL %~ addEntity a) do
+              modifiers <- getMonoidalMap <$> execWriterT (getModifiersFor a)
+              local (modifiersL <>~ modifiers) do
+                let handAbilities = map (overCost replaceAssetIds) (getAbilities a)
+                anyM (getCanPerformAbility iid windows') handAbilities
+      _ -> error $ "wrong source: " <> show source'
   Criteria.HasCalculation c valueMatcher -> do
     value <- calculate c
     gameValueMatches value valueMatcher
@@ -395,14 +385,11 @@ passesCriteria iid mcard source' requestor windows' = \case
         IndexedSource _ s -> go s
         ProxySource s _ -> go s
         AssetSource aid ->
-          elem aid
-            <$> select (Matcher.AssetControlledBy $ Matcher.InvestigatorWithId iid)
+          elem aid <$> select (Matcher.AssetControlledBy $ Matcher.InvestigatorWithId iid)
         EventSource eid ->
-          elem eid
-            <$> select (Matcher.EventControlledBy $ Matcher.InvestigatorWithId iid)
+          elem eid <$> select (Matcher.EventControlledBy $ Matcher.InvestigatorWithId iid)
         SkillSource sid ->
-          elem sid
-            <$> select (Matcher.SkillControlledBy $ Matcher.InvestigatorWithId iid)
+          elem sid <$> select (Matcher.SkillControlledBy $ Matcher.InvestigatorWithId iid)
         _ -> pure False
      in
       go source
@@ -413,23 +400,18 @@ passesCriteria iid mcard source' requestor windows' = \case
         IndexedSource _ s -> go s
         ProxySource s _ -> go s
         AssetSource aid ->
-          elem aid
-            <$> select (Matcher.AssetOwnedBy $ Matcher.InvestigatorWithId iid)
+          elem aid <$> select (Matcher.AssetOwnedBy $ Matcher.InvestigatorWithId iid)
         EventSource eid ->
-          elem eid
-            <$> select (Matcher.EventOwnedBy $ Matcher.InvestigatorWithId iid)
+          elem eid <$> select (Matcher.EventOwnedBy $ Matcher.InvestigatorWithId iid)
         SkillSource sid ->
-          elem sid
-            <$> select (Matcher.SkillOwnedBy $ Matcher.InvestigatorWithId iid)
+          elem sid <$> select (Matcher.SkillOwnedBy $ Matcher.InvestigatorWithId iid)
         EnemySource eid ->
-          elem eid
-            <$> select (Matcher.EnemyOwnedBy $ Matcher.InvestigatorWithId iid)
+          elem eid <$> select (Matcher.EnemyOwnedBy $ Matcher.InvestigatorWithId iid)
         _ -> pure False
      in
       go source
   Criteria.DuringSkillTest skillTestMatcher -> do
-    mSkillTest <- getSkillTest
-    case mSkillTest of
+    getSkillTest >>= \case
       Nothing -> pure False
       Just skillTest -> skillTestMatches iid source skillTest skillTestMatcher
   Criteria.TokensOnThis tokenKind valueMatcher -> case source of
@@ -438,12 +420,9 @@ passesCriteria iid mcard source' requestor windows' = \case
     _ -> error "missing TokensOnThis check"
   Criteria.ChargesOnThis valueMatcher -> passesCriteria iid mcard source' requestor windows' $ Criteria.TokensOnThis #charge valueMatcher
   Criteria.ResourcesOnThis valueMatcher -> case source of
-    TreacherySource tid ->
-      (`gameValueMatches` valueMatcher) =<< field TreacheryResources tid
-    AssetSource aid ->
-      (`gameValueMatches` valueMatcher) =<< field AssetResources aid
-    LocationSource aid ->
-      (`gameValueMatches` valueMatcher) =<< field LocationResources aid
+    TreacherySource tid -> (`gameValueMatches` valueMatcher) =<< field TreacheryResources tid
+    AssetSource aid -> (`gameValueMatches` valueMatcher) =<< field AssetResources aid
+    LocationSource aid -> (`gameValueMatches` valueMatcher) =<< field LocationResources aid
     _ -> error $ "missing ResourcesOnThis check: " <> show source
   Criteria.ResourcesOnLocation locationMatcher valueMatcher -> do
     total <- getSum <$> selectAgg Sum LocationResources locationMatcher
@@ -452,23 +431,17 @@ passesCriteria iid mcard source' requestor windows' = \case
     total <- getSum <$> selectAgg (Sum . Token.countTokens token) LocationTokens locationMatcher
     gameValueMatches total valueMatcher
   Criteria.CluesOnThis valueMatcher -> case source of
-    LocationSource lid ->
-      (`gameValueMatches` valueMatcher) =<< field LocationClues lid
+    LocationSource lid -> (`gameValueMatches` valueMatcher) =<< field LocationClues lid
     ActSource aid -> (`gameValueMatches` valueMatcher) =<< field ActClues aid
-    AssetSource aid ->
-      (`gameValueMatches` valueMatcher) =<< field AssetClues aid
-    TreacherySource tid ->
-      (`gameValueMatches` valueMatcher) =<< field TreacheryClues tid
-    StorySource sid ->
-      (`gameValueMatches` valueMatcher) =<< field StoryClues sid
+    AssetSource aid -> (`gameValueMatches` valueMatcher) =<< field AssetClues aid
+    TreacherySource tid -> (`gameValueMatches` valueMatcher) =<< field TreacheryClues tid
+    StorySource sid -> (`gameValueMatches` valueMatcher) =<< field StoryClues sid
     _ -> error "missing CluesOnThis check"
   Criteria.HorrorOnThis valueMatcher -> case source of
-    AssetSource aid ->
-      (`gameValueMatches` valueMatcher) =<< field AssetHorror aid
+    AssetSource aid -> (`gameValueMatches` valueMatcher) =<< field AssetHorror aid
     _ -> error $ "missing HorrorOnThis check for " <> show source
   Criteria.DamageOnThis valueMatcher -> case source of
-    AssetSource aid ->
-      (`gameValueMatches` valueMatcher) =<< field AssetDamage aid
+    AssetSource aid -> (`gameValueMatches` valueMatcher) =<< field AssetDamage aid
     _ -> error $ "missing DamageOnThis check for " <> show source
   Criteria.ScenarioDeckWithCard key -> notNull <$> getScenarioDeck key
   Criteria.Uncontrolled -> case source of
@@ -484,6 +457,7 @@ passesCriteria iid mcard source' requestor windows' = \case
       else do
         let
           go = \case
+            AbilitySource inner _ -> go inner
             StorySource sid -> onSameLocation iid =<< field StoryPlacement sid
             AssetSource aid -> onSameLocation iid =<< field AssetPlacement aid
             EnemySource eid -> onSameLocation iid =<< field EnemyPlacement eid
@@ -501,8 +475,7 @@ passesCriteria iid mcard source' requestor windows' = \case
       Just (card, _) -> selectAny (Matcher.replaceYouMatcher iid $ Matcher.replaceThisCard (toCardId card) cardMatcher)
       _ -> selectAny cardMatcher
   Criteria.CommitedCardsMatch cardListMatcher -> do
-    mSkillTest <- getSkillTest
-    case mSkillTest of
+    getSkillTest >>= \case
       Nothing -> pure False
       Just st -> cardListMatches (concat $ toList (skillTestCommittedCards st)) cardListMatcher
   Criteria.PlayableCardExistsWithCostReduction reduction cardMatcher -> do
@@ -513,8 +486,7 @@ passesCriteria iid mcard source' requestor windows' = \case
     let
       updatedWindows = case mTurnInvestigator of
         Nothing -> windows'
-        Just tIid ->
-          nub $ mkWhen (Window.DuringTurn tIid) : windows'
+        Just tIid -> nub $ mkWhen (Window.DuringTurn tIid) : windows'
     availableResources <- getSpendableResources iid
     results <- select cardMatcher
     -- GameSource is important because it allows us to skip the action cost
@@ -532,8 +504,7 @@ passesCriteria iid mcard source' requestor windows' = \case
     let
       updatedWindows = case mTurnInvestigator of
         Nothing -> windows'
-        Just tIid ->
-          nub $ mkWhen (Window.DuringTurn tIid) : windows'
+        Just tIid -> nub $ mkWhen (Window.DuringTurn tIid) : windows'
     results <- select cardMatcher
     anyM (getIsPlayable iid source' costStatus updatedWindows) results
   Criteria.PlayableCardInDiscard discardSignifier cardMatcher -> do
@@ -541,10 +512,7 @@ passesCriteria iid mcard source' requestor windows' = \case
       investigatorMatcher = case discardSignifier of
         Criteria.DiscardOf matcher -> matcher
         Criteria.AnyPlayerDiscard -> Matcher.Anyone
-      windows'' =
-        [ mkWhen (Window.DuringTurn iid)
-        , mkWhen Window.FastPlayerWindow
-        ]
+      windows'' = [mkWhen (Window.DuringTurn iid), mkWhen Window.FastPlayerWindow]
     investigatorIds <-
       filterM
         ( fmap (notElem CardsCannotLeaveYourDiscardPile)
@@ -563,8 +531,7 @@ passesCriteria iid mcard source' requestor windows' = \case
     if ignored
       then pure True
       else do
-        mlid <- field InvestigatorLocation iid
-        case mlid of
+        field InvestigatorLocation iid >>= \case
           Nothing -> pure False
           Just lid ->
             anyM
@@ -580,21 +547,15 @@ passesCriteria iid mcard source' requestor windows' = \case
     let
       filteredDiscards = case traits of
         [] -> discards
-        traitsToMatch ->
-          filter (any (`elem` traitsToMatch) . toTraits) discards
+        traitsToMatch -> filter (any (`elem` traitsToMatch) . toTraits) discards
     pure $ notNull filteredDiscards
   Criteria.CanAffordCostIncrease n -> do
     let
       go :: HasGame n => Maybe (Card, CostStatus) -> n Bool
       go = \case
         Just (card, AuxiliaryCost aux inner) -> do
-          withModifiers
-            card
-            ( modified
-                GameSource
-                [IncreaseCostOf (Matcher.basic $ Matcher.CardWithId card.id) $ totalResourceCost aux]
-            )
-            $ go (Just (card, inner))
+          let increase = IncreaseCostOf (Matcher.basic $ Matcher.CardWithId card.id) $ totalResourceCost aux
+          withModifiersOf card GameSource [increase] $ go (Just (card, inner))
         Just (card, UnpaidCost _) -> do
           cost <- getModifiedCardCost iid card
           resources <- getSpendableResources iid
@@ -659,8 +620,12 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.TargetExists matcher -> do
     selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.IsReturnTo -> do
-    campaign <- selectJust Matcher.TheCampaign
-    pure $ "5" `T.isPrefixOf` coerce campaign
+    mcampaign <- selectOne Matcher.TheCampaign
+    case mcampaign of
+      Nothing -> selectOne Matcher.TheScenario >>= \case
+        Nothing -> pure False
+        Just scenario -> pure $ "5" `T.isPrefixOf` coerce scenario
+      Just campaign -> pure $ "5" `T.isPrefixOf` coerce campaign
   Criteria.DifferentAssetsExist matcher1 matcher2 -> do
     m1 <- select (Matcher.replaceYouMatcher iid matcher1)
     m2 <- select (Matcher.replaceYouMatcher iid matcher2)
@@ -698,15 +663,12 @@ passesCriteria iid mcard source' requestor windows' = \case
     -- The You matcher by the Id of the investigator asking
     selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.InvestigatorsHaveSpendableClues valueMatcher -> do
-    total <-
-      getSum
-        <$> selectAgg
-          Sum
-          InvestigatorClues
-          (Matcher.InvestigatorWithoutModifier CannotSpendClues)
+    total <- selectSum InvestigatorClues (Matcher.InvestigatorWithoutModifier CannotSpendClues)
     total `gameValueMatches` valueMatcher
   Criteria.Criteria rs -> allM (passesCriteria iid mcard source' requestor windows') rs
   Criteria.AnyCriterion rs -> anyM (passesCriteria iid mcard source' requestor windows') rs
+  Criteria.AgendaCount n matcher -> do
+    (>= n) <$> selectCount (Matcher.replaceYouMatcher iid matcher)
   Criteria.LocationExists matcher -> selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.LocationCount n matcher -> do
     (>= n) <$> selectCount (Matcher.replaceYouMatcher iid matcher)
@@ -730,17 +692,13 @@ passesCriteria iid mcard source' requestor windows' = \case
     vCards <- filter (`cardMatch` cardMatcher) <$> getVictoryDisplay
     gameValueMatches (length vCards) valueMatcher
   Criteria.OwnCardWithDoom -> do
-    anyAssetsHaveDoom <-
-      selectAny
-        (Matcher.AssetControlledBy Matcher.You <> Matcher.AssetWithAnyDoom)
+    anyAssetsHaveDoom <- selectAny (Matcher.AssetControlledBy Matcher.You <> Matcher.AssetWithAnyDoom)
     investigatorHasDoom <- fieldP InvestigatorDoom (> 0) iid
     pure $ investigatorHasDoom || anyAssetsHaveDoom
   Criteria.ScenarioCardHasResignAbility -> do
     actions' <- getAllAbilities
-    pure $ flip
-      any
-      actions'
-      \ability -> case abilityType ability of
+    pure $ flip any actions' \ability ->
+      case abilityType ability of
         ActionAbility [Action.Resign] _ -> True
         _ -> False
   Criteria.Remembered logKey -> do

@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.WellDressed (wellDressed, WellDressed (..)) where
+module Arkham.Skill.Cards.WellDressed (wellDressed) where
 
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (isParley)

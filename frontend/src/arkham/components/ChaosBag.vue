@@ -5,7 +5,7 @@ import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { SkillTest } from '@/arkham/types/SkillTest';
-import { MessageType, StartSkillTestButton } from '@/arkham/types/Message';
+import { MessageType } from '@/arkham/types/Message';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
 import Token from '@/arkham/components/Token.vue';
 import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';

@@ -1,58 +1,37 @@
-module Arkham.Event.Events.ImpromptuBarrier (impromptuBarrier, ImpromptuBarrier (..)) where
+module Arkham.Event.Events.ImpromptuBarrier (impromptuBarrier) where
 
 import Arkham.Action qualified as Action
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types qualified as Enemy (Field (..))
-import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Prelude
-import Arkham.Zone
+import Arkham.Modifier (ModifierType (..))
 
-newtype Metadata = Metadata {fromDiscard :: Bool}
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-newtype ImpromptuBarrier = ImpromptuBarrier (EventAttrs `With` Metadata)
+newtype ImpromptuBarrier = ImpromptuBarrier EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 impromptuBarrier :: EventCard ImpromptuBarrier
-impromptuBarrier = event (ImpromptuBarrier . (`with` Metadata False)) Cards.impromptuBarrier
+impromptuBarrier = event ImpromptuBarrier Cards.impromptuBarrier
 
 instance RunMessage ImpromptuBarrier where
-  runMessage msg e@(ImpromptuBarrier (attrs `With` meta)) = case msg of
-    InvestigatorPlayEvent iid eid _ _ zone | eid == toId attrs -> do
+  runMessage msg e@(ImpromptuBarrier attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
-      chooseEvade <- toMessage . setTarget attrs <$> mkChooseEvade sid iid attrs
-      pushAll
-        $ chooseEvade
-        : [ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs) | zone == FromDiscard]
-      pure . ImpromptuBarrier $ attrs `with` Metadata (zone == FromDiscard)
+      chooseEvadeEnemyEdit sid iid attrs (setTarget attrs)
+      when attrs.playedFromDiscard $ shuffleIntoDeck iid attrs
+      pure e
     ChosenEvadeEnemy sid (isSource attrs -> True) eid -> do
-      pushM $ skillTestModifier sid attrs eid (EnemyEvade (-1))
+      skillTestModifier sid attrs eid (EnemyEvade (-1))
       pure e
     Successful (Action.Evade, EnemyTarget enemyId) iid source (isTarget attrs -> True) n -> do
-      enemies <-
-        map fst
-          . filter (maybe False (<= n) . snd)
-          <$> selectWithField Enemy.EnemyEvade (at_ (locationWithEnemy enemyId) <> not_ (EnemyWithId enemyId))
-      player <- getPlayer iid
-      sid <- getRandom
-      chooseEvade <-
-        toMessage . setTarget attrs <$> mkChooseEvadeMatch sid iid attrs (oneOf $ map EnemyWithId enemies)
-      pushAll
-        $ Successful (Action.Evade, EnemyTarget enemyId) iid source (toTarget enemyId) n
-        : [ chooseOne
-            player
-            [ Label "Do not evade another enemy" []
-            , Label "Evade Another Enemy" [chooseEvade]
-            ]
-          | notNull enemies
-          ]
+      push $ Successful (#evade, EnemyTarget enemyId) iid source (toTarget enemyId) n
+      enemies <- select $ EnemyWithMaybeFieldLessThanOrEqualTo n Enemy.EnemyEvade <> not_ (be enemyId)
+      chooseOrRunOneM iid do
+        questionLabeled "Evade another enemy"
+        questionLabeledCard attrs
+        labeled "Do not evade another enemy" nothing
+        targets enemies (automaticallyEvadeEnemy iid)
 
       pure e
-    _ -> ImpromptuBarrier . (`with` meta) <$> runMessage msg attrs
+    _ -> ImpromptuBarrier <$> liftRunMessage msg attrs

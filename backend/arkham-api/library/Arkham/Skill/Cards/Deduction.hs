@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.Deduction where
+module Arkham.Skill.Cards.Deduction (deduction) where
 
 import Arkham.Action qualified as Action
 import Arkham.Helpers.SkillTest (withSkillTest)

@@ -158,7 +158,7 @@ setupThePallidMask attrs = do
 
   theManInThePallidMask <- getCampaignStoryCard Enemies.theManInThePallidMask
   push $ RemoveFromBearersDeckOrDiscard theManInThePallidMask
-  setAside [Enemies.theManInThePallidMask]
+  setAside [toCard theManInThePallidMask]
 
   let (bottom3, rest) = splitAt 3 $ if isReturnTo then drop 4 remainingCatacombs else remainingCatacombs
   bottom <- shuffleM ([Locations.tombOfShadows, Locations.blockedPassage] <> bottom3)
@@ -278,6 +278,6 @@ instance RunMessage ThePallidMask where
       endOfScenario
       pure s
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
-      for_ mcard $ push . AddCardToDeckForCampaign iid
+      for_ mcard $ addCampaignCardToDeck iid DoNotShuffleIn
       pure s
     _ -> ThePallidMask <$> liftRunMessage msg attrs

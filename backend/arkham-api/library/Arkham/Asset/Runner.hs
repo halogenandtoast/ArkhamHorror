@@ -23,6 +23,7 @@ import Arkham.DamageEffect
 import Arkham.DefeatedBy
 import Arkham.Event.Types (Field (EventUses))
 import Arkham.Helpers.Calculation (calculate)
+import Arkham.Helpers.Card (getVictoryPoints)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Placement
@@ -39,7 +40,7 @@ import Arkham.Helpers.Window (
  )
 import Arkham.Investigator.Types (Field (InvestigatorRemainingHealth, InvestigatorRemainingSanity))
 import Arkham.Matcher (
-  AssetMatcher (AnyAsset, AssetAttachedToAsset, AssetWithId),
+  AssetMatcher (AnyAsset, AssetAttachedToAsset, AssetCanBeDamagedBySource, AssetWithId),
   EventMatcher (EventAttachedToAsset),
  )
 import Arkham.Message qualified as Msg
@@ -84,102 +85,109 @@ instance RunMessage AssetAttrs where
     SetDriver aid iid | aid == assetId -> do
       pure $ a & driverL ?~ iid
     Msg.DealAssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do
-      case a.controller of
-        Nothing -> runMessage (Msg.AssignAssetDamageWithCheck aid source damage horror doCheck) a
-        Just iid -> do
-          mods <- getModifiers aid
+      canDamage <- matches a.id (AssetCanBeDamagedBySource source)
+      if canDamage
+        then case a.controller of
+          Nothing -> runMessage (Msg.AssignAssetDamageWithCheck aid source damage horror doCheck) a
+          Just iid -> do
+            mods <- getModifiers aid
 
-          damageHank <-
-            filterM
-              (fieldP InvestigatorRemainingHealth (> 0))
-              [x | damage > 0, CanAssignDamageToInvestigator x <- mods]
-          horrorHank <-
-            filterM
-              (fieldP InvestigatorRemainingSanity (> 0))
-              [x | horror > 0, CanAssignDamageToInvestigator x <- mods]
+            damageHank <-
+              filterM
+                (fieldP InvestigatorRemainingHealth (> 0))
+                [x | damage > 0, CanAssignDamageToInvestigator x <- mods]
+            horrorHank <-
+              filterM
+                (fieldP InvestigatorRemainingSanity (> 0))
+                [x | horror > 0, CanAssignDamageToInvestigator x <- mods]
 
-          if null damageHank && null horrorHank
-            then runMessage (Msg.AssignAssetDamageWithCheck aid source damage horror doCheck) a
-            else do
-              -- since we need to assign we'll disable doCheck on subsequent calls, so we need to queue the check now
-              pushAll [checkDefeated source aid | doCheck]
-              let
-                assignRestOfHealthDamage =
-                  Msg.DealAssetDamageWithCheck aid source (damage - 1) horror False
-                assignRestOfSanityDamage =
-                  Msg.DealAssetDamageWithCheck aid source damage (horror - 1) False
-                damageAsset =
-                  AssetDamageLabel
-                    aid
-                    [ Msg.AssignAssetDamageWithCheck aid source 1 0 False
-                    , assignRestOfHealthDamage
-                    ]
-                damageInvestigator iid' =
-                  DamageLabel
-                    iid'
-                    [ Msg.InvestigatorDamage iid' source 1 0
-                    , assignRestOfHealthDamage
-                    ]
-                horrorAsset =
-                  AssetHorrorLabel
-                    aid
-                    [ Msg.AssignAssetDamageWithCheck aid source 1 0 False
-                    , assignRestOfSanityDamage
-                    ]
-                horrorInvestigator iid' =
-                  HorrorLabel
-                    iid'
-                    [ Msg.InvestigatorDamage iid' source 1 0
-                    , assignRestOfSanityDamage
-                    ]
-              player <- getPlayer iid
-              push
-                $ chooseOne player
-                $ [damageAsset | damage > 0]
-                <> [horrorAsset | horror > 0]
-                <> [damageInvestigator iid' | damage > 0, iid' <- damageHank]
-                <> [horrorInvestigator iid' | horror > 0, iid' <- damageHank]
-              pure a
+            if null damageHank && null horrorHank
+              then runMessage (Msg.AssignAssetDamageWithCheck aid source damage horror doCheck) a
+              else do
+                -- since we need to assign we'll disable doCheck on subsequent calls, so we need to queue the check now
+                pushAll [checkDefeated source aid | doCheck]
+                let
+                  assignRestOfHealthDamage =
+                    Msg.DealAssetDamageWithCheck aid source (damage - 1) horror False
+                  assignRestOfSanityDamage =
+                    Msg.DealAssetDamageWithCheck aid source damage (horror - 1) False
+                  damageAsset =
+                    AssetDamageLabel
+                      aid
+                      [ Msg.AssignAssetDamageWithCheck aid source 1 0 False
+                      , assignRestOfHealthDamage
+                      ]
+                  damageInvestigator iid' =
+                    DamageLabel
+                      iid'
+                      [ Msg.InvestigatorDamage iid' source 1 0
+                      , assignRestOfHealthDamage
+                      ]
+                  horrorAsset =
+                    AssetHorrorLabel
+                      aid
+                      [ Msg.AssignAssetDamageWithCheck aid source 1 0 False
+                      , assignRestOfSanityDamage
+                      ]
+                  horrorInvestigator iid' =
+                    HorrorLabel
+                      iid'
+                      [ Msg.InvestigatorDamage iid' source 1 0
+                      , assignRestOfSanityDamage
+                      ]
+                player <- getPlayer iid
+                push
+                  $ chooseOne player
+                  $ [damageAsset | damage > 0]
+                  <> [horrorAsset | horror > 0]
+                  <> [damageInvestigator iid' | damage > 0, iid' <- damageHank]
+                  <> [horrorInvestigator iid' | horror > 0, iid' <- damageHank]
+                pure a
+        else pure a
     Msg.DealAssetDirectDamage aid source damage horror | aid == assetId -> do
-      mods <- getModifiers a
-      let n = sum [x | DamageTaken x <- mods]
-      let
-        damageEffect = case source of
-          EnemyAttackSource _ -> AttackDamageEffect
-          _ -> NonAttackDamageEffect
-      pushAll
-        $ [PlaceDamage source (toTarget a) (damage + n) | damage > 0]
-        <> [PlaceHorror source (toTarget a) horror | horror > 0]
-        <> [ CheckWindows
-               $ [ mkWhen (Window.DealtDamage source damageEffect (toTarget a) damage)
-                 | damage > 0
-                 ]
-               <> [ mkWhen (Window.DealtHorror source (toTarget a) horror)
-                  | horror > 0
-                  ]
-           , checkDefeated source aid
-           , CheckWindows
-               $ [ mkAfter (Window.DealtDamage source damageEffect (toTarget a) damage)
-                 | damage > 0
-                 ]
-               <> [ mkAfter (Window.DealtHorror source (toTarget a) horror)
-                  | horror > 0
-                  ]
-           ]
+      canDamage <- matches a.id (AssetCanBeDamagedBySource source)
+      when canDamage do
+        mods <- getModifiers a
+        let n = sum [x | DamageTaken x <- mods]
+        let
+          damageEffect = case source of
+            EnemyAttackSource _ -> AttackDamageEffect
+            _ -> NonAttackDamageEffect
+        pushAll
+          $ [PlaceDamage source (toTarget a) (damage + n) | damage > 0]
+          <> [PlaceHorror source (toTarget a) horror | horror > 0]
+          <> [ CheckWindows
+                 $ [ mkWhen (Window.DealtDamage source damageEffect (toTarget a) damage)
+                   | damage > 0
+                   ]
+                 <> [ mkWhen (Window.DealtHorror source (toTarget a) horror)
+                    | horror > 0
+                    ]
+             , checkDefeated source aid
+             , CheckWindows
+                 $ [ mkAfter (Window.DealtDamage source damageEffect (toTarget a) damage)
+                   | damage > 0
+                   ]
+                 <> [ mkAfter (Window.DealtHorror source (toTarget a) horror)
+                    | horror > 0
+                    ]
+             ]
       pure a
     Msg.AssignAssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do
-      mods <- getModifiers a
-      let n = sum [x | DamageTaken x <- mods]
-          extraHealth = sum [x | HealthModifier x <- mods]
-          extraSanity = sum [x | SanityModifier x <- mods]
-      let damage' = maybe 0 (min (damage + n) . subtract (assetDamage a) . (+ extraHealth)) assetHealth
-      let horror' = maybe 0 (min horror . subtract (assetHorror a) . (+ extraSanity)) assetSanity
-      if doCheck
-        then push $ Msg.DealAssetDirectDamage aid source damage' horror'
-        else
-          pushAll
-            $ [PlaceDamage source (toTarget a) damage' | damage' > 0]
-            <> [PlaceHorror source (toTarget a) horror' | horror' > 0]
+      canDamage <- matches a.id (AssetCanBeDamagedBySource source)
+      when canDamage do
+        mods <- getModifiers a
+        let n = sum [x | DamageTaken x <- mods]
+            extraHealth = sum [x | HealthModifier x <- mods]
+            extraSanity = sum [x | SanityModifier x <- mods]
+        let damage' = maybe 0 (min (damage + n) . subtract (assetDamage a) . (+ extraHealth)) assetHealth
+        let horror' = maybe 0 (min horror . subtract (assetHorror a) . (+ extraSanity)) assetSanity
+        if doCheck
+          then push $ Msg.DealAssetDirectDamage aid source damage' horror'
+          else
+            pushAll
+              $ [PlaceDamage source (toTarget a) damage' | damage' > 0]
+              <> [PlaceHorror source (toTarget a) horror' | horror' > 0]
       pure a
     IncreaseCustomization iid cardCode customization choices | toCardCode a == cardCode && a `ownedBy` iid -> do
       case customizationIndex a customization of
@@ -306,7 +314,8 @@ instance RunMessage AssetAttrs where
       push $ Priority $ toDiscard GameSource a
       pure a
     AssetDefeated source aid | aid == assetId -> do
-      push $ toDiscard source a
+      mVictory <- getVictoryPoints (toCard a)
+      push $ maybe (toDiscard source a) (\_ -> AddToVictory (toTarget a)) mVictory
       pure a
     ReassignHorror source (isTarget a -> True) n -> do
       alreadyChecked <- assertQueue \case
@@ -322,6 +331,7 @@ instance RunMessage AssetAttrs where
             _ -> error "Invalid match"
 
       pure $ a & assignedSanityDamageL +~ n
+    ResolvedCard _ (sameCard a -> True) -> pure $ a & resolvedL .~ True
     ApplyHealing source -> do
       let health = findWithDefault 0 source assetAssignedHealthHeal
       let sanity = findWithDefault 0 source assetAssignedSanityHeal
@@ -520,8 +530,9 @@ instance RunMessage AssetAttrs where
         : [UnsealChaosToken token | token <- assetSealedChaosTokens]
           <> [Discard Nothing GameSource (toTarget a') | a' <- attachedAssets]
           <> [Discard Nothing GameSource (toTarget a') | a' <- attachedEvents]
+          <> map (DiscardedCard . toCardId) a.cardsUnderneath
           <> [RemovedFromPlay source]
-      pure a
+      pure $ a & cardsUnderneathL .~ []
     PlaceInBonded _iid card -> do
       when (toCard a == card) do
         removeAllMessagesMatching \case
@@ -608,8 +619,8 @@ instance RunMessage AssetAttrs where
       pure a
     AddToDiscard _ c -> do
       pure $ a & cardsUnderneathL %~ filter (/= toCard c)
-    AddToEncounterDiscard c -> do
-      pure $ a & cardsUnderneathL %~ filter (/= toCard c)
+    ObtainCard c -> do
+      pure $ a & cardsUnderneathL %~ filter ((/= c) . toCardId)
     CommitCard _ card -> do
       pure $ a & cardsUnderneathL %~ filter (/= card)
     AddToHand _ cards -> do
@@ -681,10 +692,10 @@ instance RunMessage AssetAttrs where
     InSearch msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
       push $ Do msg'
       pure a
-    InDiscard _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+    InDiscard iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
       push $ Do msg'
       pure a
-    InHand _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+    InHand iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
       push $ Do msg'
       pure a
     Flip _ _ target | a `isTarget` target -> do
@@ -695,7 +706,8 @@ instance RunMessage AssetAttrs where
           when spellbound $ push $ Ready (toTarget a)
           pure
             $ a
-            & flippedL .~ False
+            & flippedL
+            .~ False
             & (metaMapL %~ KeyMap.delete "spellbound")
         else do
           pure $ a & flippedL .~ True

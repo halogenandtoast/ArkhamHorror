@@ -11,14 +11,13 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Exception
-import Arkham.Investigator.Types (Field(..))
 import Arkham.Helpers.Agenda
-import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy, isFightWith, isEvadeWith)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
+import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy, isEvadeWith, isFightWith)
 import Arkham.I18n
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
-import Arkham.Trait (Trait(DeepOne))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
@@ -32,6 +31,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.DevilReef.Helpers
+import Arkham.Trait (Trait (DeepOne))
 
 newtype DevilReef = DevilReef ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -50,6 +50,15 @@ instance HasChaosTokenValue DevilReef where
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 5
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+{- FOURMOLU_DISABLE -}
+standaloneTokens :: [ChaosTokenFace]
+standaloneTokens =
+  [ #"+1", #"0", #"0", #"-1", #"-1", #"-1", #"-2", #"-2", #"-3", #"-4"
+  , Skull, Skull, Cultist, Cultist, Tablet, Tablet, ElderThing, ElderThing
+  , AutoFail, ElderSign
+  ]
+{- FOURMOLU_ENABLE -}
+
 instance RunMessage DevilReef where
   runMessage msg s@(DevilReef attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
@@ -63,7 +72,7 @@ instance RunMessage DevilReef where
         thomasDawson <- genCard Assets.thomasDawsonSoldierInANewWar
         chooseOneM lead do
           questionLabeled "Choose an investigator to shuffle Thomas Dawson into"
-          targets investigators \iid -> shuffleCardsIntoDeck iid (only thomasDawson)
+          targets investigators (`shuffleCardsIntoDeck` only thomasDawson)
 
       pure s
     DoStep 2 PreScenarioSetup -> do
@@ -73,13 +82,7 @@ instance RunMessage DevilReef where
       story $ i18nWithTitle "intro3"
       pure s
     StandaloneSetup -> do
-      {- FOURMOLU_DISABLE -}
-      setChaosTokens
-        [ #"+1", #"0", #"0", #"-1", #"-1", #"-1", #"-2", #"-2", #"-3", #"-4"
-        , Skull, Skull, Cultist, Cultist, Tablet, Tablet, ElderThing, ElderThing
-        , AutoFail, ElderSign
-        ]
-      {- FOURMOLU_ENABLE -}
+      setChaosTokens standaloneTokens
       pure s
     Setup -> runScenarioSetup DevilReef attrs do
       gather Set.DevilReef
@@ -90,12 +93,11 @@ instance RunMessage DevilReef where
       gather Set.RisingTide
 
       whenHasRecord TheMissionWasSuccessful do
-        lead <- getLead
         investigators <- allInvestigators
         thomasDawson <- genCard Assets.thomasDawsonSoldierInANewWar
-        chooseOneM lead do
+        leadChooseOneM do
           questionLabeled "Choose an investigator to add Thomas Dawson into their hand"
-          targets investigators \iid -> addToHand iid (only thomasDawson)
+          targets investigators (`addToHand` only thomasDawson)
 
       aBattle <- hasMemory ABattleWithAHorrifyingDevil
 
@@ -110,7 +112,7 @@ instance RunMessage DevilReef where
       churningWaters <- placeInGrid (Pos 0 0) Locations.churningWaters
       push $ SetFloodLevel churningWaters FullyFlooded
       fishingVessel <- assetAt Assets.fishingVessel churningWaters
-      eachInvestigator $ \iid -> push $ PlaceInvestigator iid (InVehicle fishingVessel)
+      eachInvestigator \iid -> push $ PlaceInvestigator iid (InVehicle fishingVessel)
       reveal churningWaters
 
       setAside [Assets.wavewornIdol, Assets.awakenedMantle, Assets.headdressOfYhaNthlei]
@@ -160,7 +162,7 @@ instance RunMessage DevilReef where
     ResolveChaosToken _ Cultist iid -> do
       when (isHardExpert attrs) do
         whenM (orM [isEvadeWith (withTrait DeepOne), isFightWith (withTrait DeepOne)]) do
-          getSkillTestTargetedEnemy >>= traverse_ \eid -> do
+          whenJustM getSkillTestTargetedEnemy \eid -> do
             engagedWithYou <- eid <=~> enemyEngagedWith iid
             if engagedWithYou
               then pushAll [DisengageEnemy iid eid, EnemyEngageInvestigator eid iid]
@@ -168,7 +170,7 @@ instance RunMessage DevilReef where
       pure s
     ResolveChaosToken _ Tablet iid -> do
       when (isHardExpert attrs) do
-        whenM (iid <!=~> InVehicleMatching AnyAsset) $ assignDamage iid Tablet 1
+        whenMatch iid (InVehicleMatching AnyAsset) $ assignDamage iid Tablet 1
       pure s
     ResolveChaosToken _ ElderThing iid -> do
       when (isHardExpert attrs) do
@@ -184,7 +186,7 @@ instance RunMessage DevilReef where
               if engagedWithYou
                 then pushAll [DisengageEnemy iid eid, EnemyEngageInvestigator eid iid]
                 else push $ EnemyEngageInvestigator eid iid
-          Tablet -> whenM (iid <!=~> InVehicleMatching AnyAsset) $ assignDamage iid Tablet 1
+          Tablet -> whenMatch iid (InVehicleMatching AnyAsset) $ assignDamage iid Tablet 1
           ElderThing -> whenM (selectAny $ locationWithInvestigator iid <> LocationWithAnyKeys) do
             assignHorror iid ElderThing 1
           _ -> pure ()

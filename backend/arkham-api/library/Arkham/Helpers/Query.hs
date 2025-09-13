@@ -29,7 +29,9 @@ getLead = do
   pure $ fromJustNote "No lead found" (mLead <|> mOthers)
 
 inTurnOrder :: HasGame m => [InvestigatorId] -> m [InvestigatorId]
-inTurnOrder xs = filter (`elem` xs) <$> allInvestigators
+inTurnOrder xs = getTurnOrder <&> \case
+  [] ->  xs -- not set yet
+  ito -> filter (`elem` xs) ito
 
 instance HasGame m => HasPlayer m where
   getPlayer = field InvestigatorPlayerId
@@ -48,10 +50,10 @@ allInvestigatorPlayers :: HasGame m => m [(InvestigatorId, PlayerId)]
 allInvestigatorPlayers = selectWithField InvestigatorPlayerId Anyone
 
 getInvestigators :: HasGame m => m [InvestigatorId]
-getInvestigators = select UneliminatedInvestigator
+getInvestigators = inTurnOrder =<< select UneliminatedInvestigator
 
 allInvestigators :: HasGame m => m [InvestigatorId]
-allInvestigators = select Anyone
+allInvestigators = inTurnOrder =<< select Anyone
 
 allPlayers :: HasGame m => m [PlayerId]
 allPlayers = getAllPlayers

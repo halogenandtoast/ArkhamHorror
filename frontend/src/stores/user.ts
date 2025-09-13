@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 import api from '@/api';
 import {
   Credentials,
@@ -12,61 +13,56 @@ export interface UserState {
   token: string | null
 }
 
-export const useUserStore = defineStore("user", {
-  state: () => ({
-    currentUser: null,
-    token: null,
-  } as UserState),
+export const useUserStore = defineStore("user", () => {
+  const currentUser = ref<User | null>(null)
+  const token = ref<string | null>(null)
+  const isAdmin = ref(false)
 
-  getters: {
-    getCurrentUser(state) {
-      return state.currentUser
-    }
-  },
+  async function authenticate(credentials: Credentials) {
+    const authentication = await api.post<Authentication>('authenticate', credentials)
+    token.value = authentication.data.token
+    setCurrentUser()
+  }
 
-  actions: {
-    async authenticate(credentials: Credentials) {
-      const authentication = await api.post<Authentication>('authenticate', credentials)
-      this.token = authentication.data.token
-      this.setCurrentUser()
-    },
+  async function register(registration: Registration) {
+    const authentication = await api.post<Authentication>('register', registration)
+    token.value = authentication.data.token
+    setCurrentUser()
+  }
 
-    async register(registration: Registration) {
-      const authentication = await api.post<Authentication>('register', registration)
-      this.token = authentication.data.token
-      this.setCurrentUser()
-    },
+  function logout() {
+    localStorage.removeItem('arkham-token')
+    delete api.defaults.headers.common.Authorization
+    signOut()
+  }
 
-    async logout() {
-      localStorage.removeItem('arkham-token')
-      delete api.defaults.headers.common.Authorization
-      this.signOut()
-    },
-
-    async setCurrentUser() {
-      if (this.token) {
-        localStorage.setItem('arkham-token', this.token);
-        api.defaults.headers.common.Authorization = `Token ${this.token}`;
-        try {
-          const whoami = await api.get<User>('whoami')
-          this.currentUser = whoami.data
-        } catch (err) {
-          this.logout()
-        }
+  async function setCurrentUser() {
+    if (token.value) {
+      localStorage.setItem('arkham-token', token.value);
+      api.defaults.headers.common.Authorization = `Token ${token.value}`;
+      try {
+        const whoami = await api.get<User>('whoami')
+        currentUser.value = whoami.data
+        isAdmin.value = whoami.data.admin
+      } catch (_err) {
+        logout()
       }
-    },
-
-    async loadUserFromStorage() {
-      const token = localStorage.getItem('arkham-token');
-      if (token !== null && token !== undefined) {
-        this.token = token
-        this.setCurrentUser()
-      }
-    },
-
-    async signOut() {
-      this.currentUser = null
-      this.token = null
     }
   }
+
+  async function loadUserFromStorage() {
+    if (currentUser.value) return
+    const tokenFromStorage = localStorage.getItem('arkham-token');
+    if (tokenFromStorage !== null && tokenFromStorage !== undefined) {
+      token.value = tokenFromStorage
+      await setCurrentUser()
+    }
+  }
+
+  function signOut() {
+    currentUser.value = null
+    token.value = null
+  }
+
+  return { token, currentUser, isAdmin, loadUserFromStorage, authenticate, register }
 })

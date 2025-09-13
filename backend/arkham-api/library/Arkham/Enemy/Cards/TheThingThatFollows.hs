@@ -13,11 +13,7 @@ newtype TheThingThatFollows = TheThingThatFollows EnemyAttrs
 
 theThingThatFollows :: EnemyCard TheThingThatFollows
 theThingThatFollows =
-  enemyWith
-    TheThingThatFollows
-    Cards.theThingThatFollows
-    (3, Static 2, 3)
-    (1, 1)
+  enemyWith TheThingThatFollows Cards.theThingThatFollows (3, Static 2, 3) (1, 1)
     $ (spawnAtL ?~ SpawnAt (FarthestLocationFromYou Anywhere))
     . (\a -> a & preyL .~ BearerOf (toId a))
 
@@ -27,14 +23,15 @@ instance HasAbilities TheThingThatFollows where
 
 instance RunMessage TheThingThatFollows where
   runMessage msg e@(TheThingThatFollows attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      eliminated <- selectNone $ InvestigatorWithId iid
-      if eliminated
-        then removeFromGame attrs
-        else do
-          nonEmptyDeck <- fieldMap InvestigatorDeck (not . null) iid
-          when nonEmptyDeck do
-            cancelEnemyDefeat attrs.id
-            shuffleIntoDeck iid attrs
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      for_ (enemyBearer attrs) \iid -> do
+        eliminated <- selectNone $ InvestigatorWithId iid
+        if eliminated
+          then removeFromGame attrs
+          else do
+            nonEmptyDeck <- fieldMap InvestigatorDeck (not . null) iid
+            when nonEmptyDeck do
+              cancelEnemyDefeat attrs.id
+              shuffleIntoDeck iid attrs
       pure e
     _ -> TheThingThatFollows <$> liftRunMessage msg attrs

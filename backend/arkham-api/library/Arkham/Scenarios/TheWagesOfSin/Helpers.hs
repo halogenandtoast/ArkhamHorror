@@ -84,12 +84,13 @@ hereticRunner storyCard msg heretic = case msg of
     let card = lookupCard storyCard (toCardId attrs)
     pushAll
       [ ReplaceCard (toCardId attrs) card
-      , ReadStoryWithPlacement
-          iid
-          card
-          DoNotResolveIt
-          (Just $ toTarget $ toAttrs heretic)
-          (enemyPlacement attrs)
+      , StoryMessage
+          $ ReadStoryWithPlacement
+            iid
+            card
+            DoNotResolveIt
+            (Just $ toTarget $ toAttrs heretic)
+            (enemyPlacement attrs)
       , ReplaceCard (toCardId attrs) card
       ]
     pure heretic
@@ -102,7 +103,7 @@ hereticRunner storyCard msg heretic = case msg of
     pushAll
       [ RemoveEnemy (toId attrs)
       , ReplaceCard (toCardId attrs) card
-      , ReadStoryWithPlacement iid card ResolveIt Nothing (enemyPlacement attrs)
+      , StoryMessage $ ReadStoryWithPlacement iid card ResolveIt Nothing (enemyPlacement attrs)
       ]
     pure heretic
   _ -> overAttrsM (runMessage msg) heretic

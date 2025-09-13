@@ -4,12 +4,14 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Attack.Types
 import Arkham.Capability
 import Arkham.Card
+import Arkham.Enemy.Creation (EnemyCreation (..))
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.DamageEffect
 import Arkham.Enemy.Types
+import Arkham.ForMovement
 import Arkham.GameValue
 import Arkham.Helpers.Damage (damageEffectMatches)
 import Arkham.Helpers.Investigator (getJustLocation)
@@ -176,7 +178,7 @@ getFightableEnemyIds iid (toSource -> source) = do
 getEnemyAccessibleLocations :: HasGame m => EnemyId -> m [LocationId]
 getEnemyAccessibleLocations eid = do
   location <- fieldMap EnemyLocation (fromJustNote "must be at a location") eid
-  matcher <- getConnectedMatcher location
+  matcher <- getConnectedMatcher NotForMovement location
   connectedLocationIds <- select matcher
   filterM (canEnterLocation eid) connectedLocationIds
 
@@ -338,3 +340,12 @@ insteadOfDiscarding e body = do
           ws' -> [Do (CheckWindows ws')]
       Discard {} -> msgs
       _ -> error "Invalid replacement"
+
+createEngagedWith
+  :: ToId investigator InvestigatorId => investigator -> EnemyCreation Message -> EnemyCreation Message
+createEngagedWith investigator ec =
+  ec
+    { enemyCreationAfter =
+        enemyCreationAfter ec <> [EngageEnemy (asId investigator) (enemyCreationEnemyId ec) Nothing False]
+    }
+{-# INLINE createEngagedWith #-}

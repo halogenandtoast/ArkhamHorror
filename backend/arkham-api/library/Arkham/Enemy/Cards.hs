@@ -96,6 +96,8 @@ allEncounterEnemyCards =
       , acolyteOfUmordhoth
       , agentOfTheKing
       , alejandroVela
+      , allosaurusIndomitablePredator
+      , allosaurusRampagingPredator
       , almaHill
       , ancientZoog
       , anetteMason
@@ -153,6 +155,7 @@ allEncounterEnemyCards =
       , crazedShoggoth
       , creatureOutOfDemhe
       , cultistOfTheEnclave
+      , curiousMoonNosyNuisance
       , dagonAwakenedAndEnraged
       , dagonAwakenedAndEnragedIntoTheMaelstrom
       , dagonDeepInSlumber
@@ -178,6 +181,7 @@ allEncounterEnemyCards =
       , donLagorio
       , drAmyKenslerProfessorOfBiology
       , drMalaSinhaDaringPhysician
+      , dromaeosaurus
       , eaterOfTheDepths
       , elderThingScavenger
       , elisabettaMagro
@@ -186,6 +190,7 @@ allEncounterEnemyCards =
       , emergingDeepOne
       , enragedGug
       , enthralledSecurityGuard
+      , erikaStrandPossessedProducer
       , eztliGuardian
       , fanatic
       , fangOfYig
@@ -196,6 +201,7 @@ allEncounterEnemyCards =
       , frenziedExplorer
       , furtiveZoog
       , gavriellaMizrah
+      , ghostLight
       , ghoulFromTheDepths
       , ghoulMinion
       , ghoulPriest
@@ -327,6 +333,9 @@ allEncounterEnemyCards =
       , pitchSpider
       , poleman
       , poltergeist
+      , possessedExtra_19
+      , possessedExtra_20
+      , possessedExtra_21
       , possessedOathspeaker
       , preyingByakhee
       , priestOfAThousandMasks
@@ -349,9 +358,10 @@ allEncounterEnemyCards =
       , rookieCop
       , ruthTurner
       , salvatoreNeri
+      , saturniteDrudgeMilitia
+      , saturniteMonarchGraciousHost
+      , saturniteMonarchInAnAlienLand
       , savageShantak
-      , theBloodlessMan
-      , theBloodlessManUnleashed
       , savioCorvi
       , scholarFromYith
       , scientistOfYith
@@ -392,6 +402,10 @@ allEncounterEnemyCards =
       , terrorOfTheStarsBringerOfIceAndDeath
       , terrorOfTheStarsGuardianOfForbiddenPeaks
       , theAmalgam
+      , theBloodlessMan
+      , theBloodlessManUnleashed
+      , theContessaEnraged
+      , theContessaNeedlesslySmug
       , theCrawlingMist
       , theConductorBeastFromBeyondTheGate
       , theExperiment
@@ -413,12 +427,14 @@ allEncounterEnemyCards =
       , umordhoth
       , unsealedPhantasm
       , valentinoRivas
+      , vampireThrall
       , vassalOfTheLurker
       , vengefulSerpent
       , vengefulSpecter
       , vengefulWitch
       , victoriaDevereux
       , webSpinner
+      , werewolf
       , whippoorwill
       , whippoorwillUnionAndDisillusion
       , wingedOne
@@ -3167,6 +3183,140 @@ lanternClubMember :: CardDef
 lanternClubMember =
   (enemy "71053" "Lantern Club Member" TheMidwinterGala 4)
     { cdCardTraits = setFromList [Humanoid, LanternClub]
+    }
+
+possessedExtra_19 :: CardDef
+possessedExtra_19 =
+  (enemy "72019" "Possessed Extra" FilmFatale 1)
+    { cdCardTraits = setFromList [Humanoid, Possessed]
+    }
+
+possessedExtra_20 :: CardDef
+possessedExtra_20 =
+  (enemy "72020" "Possessed Extra" FilmFatale 1)
+    { cdCardTraits = setFromList [Humanoid, Possessed]
+    }
+
+possessedExtra_21 :: CardDef
+possessedExtra_21 =
+  (enemy "72021" "Possessed Extra" FilmFatale 1)
+    { cdCardTraits = setFromList [Humanoid, Possessed]
+    }
+
+erikaStrandPossessedProducer :: CardDef
+erikaStrandPossessedProducer =
+  unique
+    $ (enemy "72022" ("Erika Strand" <:> "Possessed Producer") FilmFatale 1)
+        { cdCardTraits = setFromList [Humanoid, Possessed, Elite]
+        , cdVictoryPoints = Just 1
+        }
+
+ghostLight :: CardDef
+ghostLight =
+  (enemy "72023" "Ghost Light" FilmFatale 2)
+    { cdCardTraits = setFromList [Monster, Geist]
+    , cdKeywords = singleton Keyword.Hunter
+    }
+
+saturniteMonarchGraciousHost :: CardDef
+saturniteMonarchGraciousHost =
+  unique
+    $ (enemy "72032" ("Saturnite Monarch" <:> "Gracious Host") CosmicJourney 1)
+        { cdCardTraits = setFromList [Saturnite, Elite]
+        , cdKeywords = singleton Keyword.Aloof
+        , cdVictoryPoints = Just 1
+        , cdDoubleSided = True
+        , cdOtherSide = Just "72032b"
+        }
+
+saturniteMonarchInAnAlienLand :: CardDef
+saturniteMonarchInAnAlienLand =
+  unique
+    $ (enemy "72032b" ("Saturnite Monarch" <:> "In an Alien Land") CosmicJourney 1)
+        { cdCardTraits = setFromList [Monster, Saturnite, Elite]
+        , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Massive]
+        , cdVictoryPoints = Just 1
+        , cdDoubleSided = True
+        , cdOtherSide = Just "72032"
+        }
+
+saturniteDrudgeMilitia :: CardDef
+saturniteDrudgeMilitia =
+  (enemy "72033" "Saturnite Drudge Militia" CosmicJourney 2)
+    { cdCardTraits = setFromList [Monster, Saturnite]
+    , cdKeywords = setFromList [Keyword.Elusive, Keyword.Retaliate]
+    }
+
+curiousMoonNosyNuisance :: CardDef
+curiousMoonNosyNuisance =
+  unique
+    $ (enemy "72036b" ("Curious Moon" <:> "Nosy Nuisance") CosmicJourney 1)
+        { cdCardTraits = setFromList [Satellite, Cosmos, Elite]
+        , cdKeywords = singleton Keyword.Massive
+        , cdDoubleSided = True
+        , cdOtherSide = Just "72036"
+        }
+
+allosaurusIndomitablePredator :: CardDef
+allosaurusIndomitablePredator =
+    (enemy "72044" ("Allosaurus" <:> "Indomitable Predator") ForgottenIsland 1)
+        { cdCardTraits = setFromList [Creature, Dinosaur, Elite]
+        , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
+        , cdVictoryPoints = Just 1
+        , cdDoubleSided = True
+        , cdOtherSide = Just "72044b"
+        }
+
+allosaurusRampagingPredator :: CardDef
+allosaurusRampagingPredator =
+    (enemy "72044b" ("Allosaurus" <:> "Rampaging Predator") ForgottenIsland 1)
+        { cdCardTraits = setFromList [Creature, Dinosaur, Elite]
+        , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
+        , cdVictoryPoints = Just 1
+        , cdDoubleSided = True
+        , cdOtherSide = Just "72044"
+        }
+
+dromaeosaurus :: CardDef
+dromaeosaurus =
+  (enemy "72045" "Dromaeosaurus" ForgottenIsland 3)
+    { cdCardTraits = setFromList [Creature, Dinosaur]
+    , cdKeywords = setFromList [Keyword.Elusive, Keyword.Hunter]
+    }
+
+theContessaNeedlesslySmug :: CardDef
+theContessaNeedlesslySmug =
+    (enemy "72055" ("The Contessa" <:> "Needlessly Smug") AbominableContessa 1)
+        { cdCardTraits = setFromList [Humanoid, Monster, Elite]
+        , cdKeywords = singleton Keyword.Elusive
+        , cdVictoryPoints = Just 1
+        , cdDoubleSided = True
+        , cdOtherSide = Just "72055b"
+        }
+
+theContessaEnraged :: CardDef
+theContessaEnraged =
+    (enemy "72055b" ("The Contessa" <:> "Enraged") AbominableContessa 1)
+        { cdCardTraits = setFromList [Humanoid, Monster, Elite]
+        , cdKeywords = singleton Keyword.Elusive
+        , cdVictoryPoints = Just 1
+        , cdDoubleSided = True
+        , cdOtherSide = Just "72055"
+        }
+
+vampireThrall :: CardDef
+vampireThrall =
+  (enemy "72056" "Vampire Thrall" AbominableContessa 2)
+    { cdCardTraits = setFromList [Humanoid, Monster]
+    , cdKeywords = setFromList [Keyword.Elusive, Keyword.Hunter]
+    }
+
+werewolf :: CardDef
+werewolf =
+  (enemy "72057" "Werewolf" AbominableContessa 1)
+    { cdCardTraits = setFromList [Humanoid, Monster, Creature]
+    , cdKeywords = setFromList [Keyword.Elusive, Keyword.Hunter, Keyword.Retaliate]
+    , cdVictoryPoints = Just 0
     }
 
 bogGator :: CardDef

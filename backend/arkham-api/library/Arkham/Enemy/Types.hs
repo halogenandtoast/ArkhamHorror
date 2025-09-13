@@ -33,6 +33,7 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Trait
 import Control.Lens (non, over, set)
+import Data.Aeson.Types
 import Data.Data
 import GHC.Records
 
@@ -58,6 +59,7 @@ data instance Field Enemy :: Type -> Type where
   EnemyDefeated :: Field Enemy Bool
   EnemyEngagedInvestigators :: Field Enemy (Set InvestigatorId)
   EnemyDoom :: Field Enemy Int
+  EnemyExactDoom :: Field Enemy Int
   EnemyEvade :: Field Enemy (Maybe Int)
   EnemyFight :: Field Enemy (Maybe Int)
   EnemyTokens :: Field Enemy Tokens
@@ -111,6 +113,7 @@ instance FromJSON (SomeField Enemy) where
     "EnemyDefeated" -> pure $ SomeField Arkham.Enemy.Types.EnemyDefeated
     "EnemyEngagedInvestigators" -> pure $ SomeField EnemyEngagedInvestigators
     "EnemyDoom" -> pure $ SomeField EnemyDoom
+    "EnemyExactDoom" -> pure $ SomeField EnemyExactDoom
     "EnemyEvade" -> pure $ SomeField Arkham.Enemy.Types.EnemyEvade
     "EnemyFight" -> pure $ SomeField Arkham.Enemy.Types.EnemyFight
     "EnemyTokens" -> pure $ SomeField EnemyTokens
@@ -435,6 +438,7 @@ fieldLens = \case
   Arkham.Enemy.Types.EnemyDefeated -> defeatedL
   EnemyEngagedInvestigators -> virtual
   EnemyDoom -> tokensL . at Doom . non 0
+  EnemyExactDoom -> tokensL . at Doom . non 0
   EnemyTokens -> tokensL
   EnemyClues -> tokensL . at Clue . non 0
   EnemyDamage -> tokensL . at #damage . non 0
@@ -478,3 +482,11 @@ updateEnemy updates attrs = foldr go attrs updates
 
 setMeta :: ToJSON a => a -> EnemyAttrs -> EnemyAttrs
 setMeta a = metaL .~ toJSON a
+
+getEnemyMetaDefault :: FromJSON a => a -> EnemyAttrs -> a
+getEnemyMetaDefault def = fromMaybe def . getEnemyMeta
+
+getEnemyMeta :: FromJSON a => EnemyAttrs -> Maybe a
+getEnemyMeta attrs = case fromJSON attrs.meta of
+  Error _ -> Nothing
+  Success v' -> Just v'

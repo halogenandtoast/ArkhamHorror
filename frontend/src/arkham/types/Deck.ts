@@ -2,6 +2,23 @@ import * as JsonDecoder from 'ts.data.json';
 import { investigatorClass } from '@/arkham/helpers';
 import { v2Optional } from '@/arkham/parser';
 
+interface Meta {
+  alternate_front: string
+}
+
+export interface ArkhamDbDecklist {
+  id: string
+  url: string | null
+  meta?: Meta
+  name: string
+  investigator_code: string
+  investigator_name: string
+  slots: {
+    [key: string]: number
+  }
+}
+
+
 export function deckInvestigator(deck: Deck) {
   if (deck.list.meta) {
     try {
@@ -9,7 +26,7 @@ export function deckInvestigator(deck: Deck) {
       if (result && result.alternate_front) {
         return result.alternate_front
       }
-    } catch (e) { console.log("No parse") }
+    } catch (_e) { console.log("No parse") }
   }
   return deck.list.investigator_code.replace('c', '')
 }
@@ -40,7 +57,7 @@ export type Deck = {
 export const deckListDecoder = JsonDecoder.object<DeckList>(
   {
     investigator_code: JsonDecoder.string(),
-    slots: JsonDecoder.dictionary<number>(JsonDecoder.number(), 'Dict<cardcode, number'),
+    slots: JsonDecoder.record<number>(JsonDecoder.number(), 'Dict<cardcode, number'),
     meta: v2Optional(JsonDecoder.string()),
     taboo_id: v2Optional(JsonDecoder.number()),
   },

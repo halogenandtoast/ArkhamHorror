@@ -18,7 +18,7 @@ diabolicalLuck = skill DiabolicalLuck Cards.diabolicalLuck
 instance HasAbilities DiabolicalLuck where
   getAbilities (DiabolicalLuck x) =
     [ displayAsAction
-        $ restricted x 1 InYourHand
+        $ restricted x 1 (InYourHand <> DuringYourSkillTest)
         $ ConstantReaction "Commit Diabolical Luck from your hand" (RevealChaosToken #when You #curse) Free
     ]
 

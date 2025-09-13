@@ -60,6 +60,7 @@ data CardJson = CardJson
   , cost :: Maybe Int
   , exceptional :: Bool
   , is_unique :: Bool
+  , double_sided :: Bool
   , traits :: Maybe Text
   , skill_agility :: Maybe Int
   , skill_combat :: Maybe Int
@@ -231,7 +232,7 @@ getTraits CardJson {code} | code == "01000" = mempty
 getTraits CardJson {..} = case traits of
   Nothing -> mempty
   Just "" -> mempty -- Cards with removed traits like Patient Confinement: Daniel's Cell can show up this way
-  Just s -> setFromList $ map toTrait (T.splitOn ". " $ cleanText s)
+  Just s -> setFromList $ map toTrait $ filter isValid $ (T.splitOn ". " $ cleanText s)
  where
   toTrait x =
     (\s -> handleEither s $ readEither s)
@@ -249,6 +250,10 @@ getTraits CardJson {..} = case traits of
   normalizeTrait "Possessed" = "Lunatic"
   normalizeTrait x = x
   cleanText = T.dropWhileEnd (\c -> c == '.' || c == ' ')
+  isValid = \case
+    "Return" -> False -- adb adds the trait Return for some reason
+    "???" -> False -- from 52061 (Recesses of Your Own Mind), but no reason to actually parse it
+    _ -> True
 
 toGameVal :: Bool -> Int -> GameValue
 toGameVal True n = PerPlayer n
@@ -502,13 +507,16 @@ getValidationResults cards = runValidateT $ do
         Nothing -> unless (ignoreCardCode ccode) (invariant $ unknownCard ccode)
         Just CardJson {..} -> do
           when
-            ((max 0 <$> shroud) /= locationShroud attrs)
+            ((Static . max 0 <$> shroud) /= locationShroud attrs)
             ( invariant
                 $ ShroudMismatch
                   code
                   (cdName $ toCardDef attrs)
                   (max 0 <$> normalizeShroud ccode shroud)
-                  (locationShroud attrs)
+                  (case locationShroud attrs of
+                     Just (Static n) -> Just n
+                     _ -> Nothing
+                  )
             )
           when
             (fromMaybe 0 clues /= fromGameValue (locationRevealClues attrs) 1)

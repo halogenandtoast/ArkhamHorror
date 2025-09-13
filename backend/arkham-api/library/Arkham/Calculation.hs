@@ -83,6 +83,7 @@ data GameCalculation
   | AmountYouOweToBiancaDieKatz InvestigatorMatcher
   | IfLocationExistsCalculation LocationMatcher GameCalculation GameCalculation
   | IfEnemyExistsCalculation EnemyMatcher GameCalculation GameCalculation
+  | IfInvestigatorExistsCalculation InvestigatorId InvestigatorMatcher GameCalculation GameCalculation
   deriving stock (Show, Ord, Eq, Data, Generic)
   deriving FromJSON via MaybeFixed
 

@@ -1,4 +1,4 @@
-module Arkham.Event.Events.Snitch2 (snitch2, Snitch2 (..)) where
+module Arkham.Event.Events.Snitch2 (snitch2) where
 
 import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
@@ -21,7 +21,7 @@ instance RunMessage Snitch2 where
       locations <-
         select
           $ locationWithDiscoverableCluesBy iid
-          <> oneOf [locationWithInvestigator iid, ConnectedFrom (locationWithInvestigator iid)]
+          <> oneOf [locationWithInvestigator iid, connectedFrom (locationWithInvestigator iid)]
       when (notNull locations) do
         chooseOrRunOne
           iid

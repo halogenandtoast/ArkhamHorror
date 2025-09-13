@@ -82,6 +82,7 @@ instance Named PlayerCard where
 
 instance HasOriginalCardCode PlayerCard where
   toOriginalCardCode = pcOriginalCardCode
+  setOriginalCardCode (toCardCode -> cCode) c = c { pcOriginalCardCode = cCode }
 
 lookupPlayerCard :: CardDef -> CardId -> PlayerCard
 lookupPlayerCard cardDef cardId =

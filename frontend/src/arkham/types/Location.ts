@@ -46,6 +46,13 @@ export type Location = {
   seals: Seal[];
 }
 
+type GameValue = { tag: "Static", contents: number } | { tag: "PerPlayer", contents: number }
+
+export const gameValueDecoder = JsonDecoder.oneOf<GameValue>([
+  JsonDecoder.object({ tag: JsonDecoder.literal("Static"), contents: JsonDecoder.number() }, 'Static'),
+  JsonDecoder.object({ tag: JsonDecoder.literal("PerPlayer"), contents: JsonDecoder.number() }, 'PerPlayer')
+], 'GameValue')
+
 export const locationDecoder = JsonDecoder.object<Location>(
   {
     cardCode: JsonDecoder.string(),
@@ -53,7 +60,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     id: JsonDecoder.string(),
     cardId: JsonDecoder.string(),
     tokens: tokensDecoder,
-    shroud: JsonDecoder.nullable(JsonDecoder.number()),
+    shroud: JsonDecoder.nullable(gameValueDecoder.map(v => v.contents)),
     revealed: JsonDecoder.boolean(),
     investigators: JsonDecoder.array<string>(JsonDecoder.string(), 'InvestigatorId[]'),
     enemies: JsonDecoder.array<string>(JsonDecoder.string(), 'EnemyId[]'),

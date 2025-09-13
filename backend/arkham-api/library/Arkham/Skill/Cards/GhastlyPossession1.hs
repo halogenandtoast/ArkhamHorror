@@ -1,7 +1,7 @@
-module Arkham.Skill.Cards.GhastlyPossession1 (ghastlyPossession1, GhastlyPossession1 (..)) where
+module Arkham.Skill.Cards.GhastlyPossession1 (ghastlyPossession1) where
 
 import Arkham.Asset.Types (Field (..))
-import Arkham.Helpers.SkillTest (getSkillTestSource, withSkillTest)
+import Arkham.Helpers.SkillTest (withSkillTestSource, withSkillTest)
 import Arkham.Helpers.Use
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -21,7 +21,7 @@ ghastlyPossession1 = skill GhastlyPossession1 Cards.ghastlyPossession1
 instance RunMessage GhastlyPossession1 where
   runMessage msg s@(GhastlyPossession1 attrs) = runQueueT $ case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
-      getSkillTestSource >>= traverse_ \source -> do
+      withSkillTestSource \source -> do
         for_ source.asset \aid -> do
           hasDoom <- fieldMap AssetDoom (> 0) aid
           mAddAmount <- runMaybeT do
@@ -51,7 +51,7 @@ instance RunMessage GhastlyPossession1 where
             Success x -> x
             _ -> False
       when active do
-        getSkillTestSource >>= traverse_ \source -> do
+        withSkillTestSource \source -> do
           for_ source.asset \aid -> do
             hasDoom <- fieldMap AssetDoom (> 0) aid
             mAddAmount <- runMaybeT do

@@ -67,7 +67,9 @@
     },
     "noResolution": {
       "title": "No Resolution",
-      "body": "<div class='resolution'><p>_If no resolution was reached (each investigator was defeated)_: Check Campaign Log.</p><ul><li>If you have more (or equal) _Conviction_ than _Doubt_, go to _Resolution 4_.</li><li>If you have more _Doubt_ than _Conviction_, go to _Resolution 5_.</li></ul></div>"
+      "body": "_If no resolution was reached (each investigator was defeated)_: Check Campaign Log.",
+      "goToResolution4": "If you have more (or equal) _Conviction_ than _Doubt_, go to _Resolution 4_.",
+      "goToResolution5": "If you have more _Doubt_ than _Conviction_, go to _Resolution 5_."
     },
     "resolution1": {
       "title": "Resolution 1",

@@ -159,6 +159,9 @@ calculate = go
     IfEnemyExistsCalculation q c1 c2 -> do
       cond <- selectAny q
       calculate $ if cond then c1 else c2
+    IfInvestigatorExistsCalculation iid q c1 c2 -> do
+      cond <- matches iid q
+      calculate $ if cond then c1 else c2
 
 class (Entity a, AsId a) => CalculateFields a where
   toFieldCalculation :: IdOf a ~ ident => ident -> Field a Int -> GameCalculation

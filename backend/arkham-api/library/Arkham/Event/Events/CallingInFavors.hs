@@ -1,7 +1,6 @@
 module Arkham.Event.Events.CallingInFavors (callingInFavors, callingInFavorsEffect) where
 
 import Arkham.Asset.Types (Field (..))
-import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -21,7 +20,7 @@ instance RunMessage CallingInFavors where
   runMessage msg e@(CallingInFavors attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       let matcher = #ally <> assetControlledBy iid <> AssetCanLeavePlayByNormalMeans
-      choices <- selectForToSnd matcher \ally -> evalQueueT do
+      choices <- selectForToSnd matcher \ally -> capture do
         returnToHand iid ally
         cost <- fieldMap AssetCardDef (.printedCost) ally
         createCardEffect Cards.callingInFavors (effectInt cost) attrs iid

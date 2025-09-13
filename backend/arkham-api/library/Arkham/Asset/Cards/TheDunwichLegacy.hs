@@ -147,13 +147,11 @@ kukri =
 
 drHenryArmitage :: CardDef
 drHenryArmitage =
-  (asset "02040" ("Dr. Henry Armitage" <:> "The Head Librarian") 2 Neutral)
+  (storyAsset "02040" ("Dr. Henry Armitage" <:> "The Head Librarian") 2 ArmitagesFate)
     { cdSkills = [#wild, #wild]
     , cdCardTraits = setFromList [Ally, Miskatonic]
     , cdUnique = True
     , cdSlots = [#ally]
-    , cdEncounterSet = Just ArmitagesFate
-    , cdEncounterSetQuantity = Just 1
     }
 
 alchemicalConcoction :: CardDef

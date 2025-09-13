@@ -1,14 +1,12 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Location.Runner (
-  module Arkham.Location.Runner,
-  module X,
-) where
+module Arkham.Location.Runner (module Arkham.Location.Runner, module X) where
 
 import Arkham.Ability as X hiding (PaidCost)
 import Arkham.Calculation as X
 import Arkham.Card.CardDef as X
 import Arkham.Classes as X
+import Arkham.ForMovement
 import Arkham.GameValue as X
 import Arkham.Helpers.Ability as X
 import Arkham.Helpers.Effect as X
@@ -39,7 +37,7 @@ import Arkham.Direction
 import Arkham.Discover
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
-import Arkham.Helpers.GameValue (getPlayerCountValue)
+import Arkham.Helpers.GameValue (getGameValue)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, frame, windows, wouldDoEach)
 import Arkham.Helpers.Window qualified as Helpers
@@ -57,6 +55,7 @@ import Arkham.Matcher (
   InvestigatorMatcher (..),
   LocationMatcher (..),
   accessibleTo,
+  be,
   enemyAt,
   investigatorAt,
   noModifier,
@@ -107,7 +106,7 @@ getModifiedRevealClueCountWithMods mods attrs =
   if CannotPlaceClues `elem` mods
     then pure 0
     else do
-      base <- getPlayerCountValue (locationRevealClues attrs)
+      base <- getGameValue (locationRevealClues attrs)
       pure $ foldl' applyModifier base mods
  where
   applyModifier base ReduceStartingCluesByHalf = (base + 1) `div` 2
@@ -121,10 +120,10 @@ instance RunMessage LocationAttrs where
     InSearch msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
       push $ Do msg'
       pure a
-    InDiscard _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+    InDiscard iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
       push $ Do msg'
       pure a
-    InHand _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+    InHand iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
       push $ Do msg'
       pure a
     SetGlobal target key v | isTarget a target -> pure $ a & globalMetaL %~ insertMap key v
@@ -207,6 +206,8 @@ instance RunMessage LocationAttrs where
       pure $ a & inFrontOfL ?~ iid
     PutLocationInCenter lid | lid == locationId -> do
       pure $ a & inFrontOfL .~ Nothing
+    When (RemoveLocation lid) | lid == locationId -> do
+      pure $ a & beingRemovedL .~ True
     Discard _ source target | isTarget a target -> do
       pushAll
         $ windows [Window.WouldBeDiscarded (toTarget a)]
@@ -253,15 +254,17 @@ instance RunMessage LocationAttrs where
       pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
     AddToDiscard _ pc -> do
       pure $ a & cardsUnderneathL %~ filter (/= PlayerCard pc)
-    AddToEncounterDiscard ec -> do
-      pure $ a & cardsUnderneathL %~ filter (/= EncounterCard ec)
+    AddToVictory (CardIdTarget cid) -> do
+      pure $ a & cardsUnderneathL %~ filter ((/= cid) . toCardId)
+    ObtainCard c -> do
+      pure $ a & cardsUnderneathL %~ filter ((/= c) . toCardId)
     Will next@(EnemySpawn details) | details.location == Just locationId -> do
       let eid = details.enemy
       whenM (getShouldSpawnNonEliteAtConnectingInstead a) do
         traits' <- field EnemyTraits eid
         unless (Elite `elem` traits') $ do
           activeInvestigatorId <- getActiveInvestigatorId
-          connectedLocationIds <- select $ AccessibleFrom $ LocationWithId a.id
+          connectedLocationIds <- select $ AccessibleFrom NotForMovement $ LocationWithId a.id
           availableLocationIds <-
             flip filterM connectedLocationIds $ \locationId' -> do
               modifiers' <- getModifiers (LocationTarget locationId')
@@ -289,7 +292,7 @@ instance RunMessage LocationAttrs where
         push $ MoveTokens source (toSource a) target Clue (locationClues a)
       pure a
     PlaceCluesUpToClueValue lid source n | lid == locationId -> do
-      clueValue <- getPlayerCountValue locationRevealClues
+      clueValue <- getGameValue locationRevealClues
       let n' = min n (clueValue - locationClues a)
       a <$ push (PlaceClues source (toTarget a) n')
     RemoveAllClues _ target | isTarget a target -> do
@@ -325,6 +328,8 @@ instance RunMessage LocationAttrs where
       if tType == Clue
         then do
           let clueCount = max 0 $ subtract n $ locationClues a
+          when (clueCount == 0 && locationClues a > 0) do
+            pushM $ checkAfter $ Window.LastClueRemovedFromLocation a.id
           pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
         else pure $ a & tokensL %~ subtractTokens tType n
     PlacedLocation _ _ lid | lid == locationId -> do
@@ -337,7 +342,7 @@ instance RunMessage LocationAttrs where
           locationClueCount' <-
             if CannotPlaceClues `elem` modifiers'
               then pure 0
-              else getPlayerCountValue locationRevealClues
+              else getGameValue locationRevealClues
           let locationClueCount =
                 if ReduceStartingCluesByHalf `elem` modifiers'
                   then locationClueCount' `div` 2
@@ -351,6 +356,11 @@ instance RunMessage LocationAttrs where
           pure $ a & withoutCluesL .~ (locationClueCount + currentClues == 0)
         else pure a
     RevealLocation miid lid | lid == locationId && not locationRevealed -> do
+      revealer <- maybe getLead pure miid
+      whenWindowMsg <- checkWindows [mkWindow Timing.When (Window.UnrevealedRevealLocation revealer lid)]
+      pushAll [whenWindowMsg, Do msg]
+      pure a
+    Do (RevealLocation miid lid) | lid == locationId && not locationRevealed -> do
       mods <- getModifiers a
       let maxFloodLevel
             | CannotBeFlooded `elem` mods = Unflooded
@@ -358,14 +368,8 @@ instance RunMessage LocationAttrs where
             | otherwise = FullyFlooded
       locationClueCount <- getModifiedRevealClueCountWithMods mods a
       revealer <- maybe getLead pure miid
-      whenWindowMsg <-
-        checkWindows
-          [mkWindow Timing.When (Window.RevealLocation revealer lid)]
-
-      afterWindowMsg <-
-        checkWindows
-          [mkWindow Timing.After (Window.RevealLocation revealer lid)]
-
+      whenWindowMsg <- checkWindows [mkWindow Timing.When (Window.RevealLocation revealer lid)]
+      afterWindowMsg <- checkWindows [mkWindow Timing.After (Window.RevealLocation revealer lid)]
       let currentClues = countTokens Clue locationTokens
 
       pushAll
@@ -439,7 +443,7 @@ instance RunMessage LocationAttrs where
       -- Æ Second, place 1 doom on that location.
       -- Æ Finally, place 1 breach on each connecting location. This can chain‐react and cause additional incursions to occur, so beware!
       -- Æ Once an incursion is resolved at a location, breaches from other incursions cannot be placed on that location for the remainder of that phase.
-      targets <- selectTargets $ ConnectedTo (LocationWithId lid) <> NotLocation LocationWithIncursion
+      targets <- selectTargets $ ConnectedTo NotForMovement (be lid) <> not_ LocationWithIncursion
       lead <- getLeadPlayer
       pushAll
         $ PlaceDoom (toSource a) (toTarget a) 1
@@ -502,11 +506,8 @@ locationInvestigatorsWithClues attrs =
 getModifiedShroudValueFor :: (HasCallStack, HasGame m) => LocationAttrs -> m Int
 getModifiedShroudValueFor attrs = do
   modifiers' <- getModifiers (toTarget attrs)
-  pure
-    $ foldr
-      applyPostModifier
-      (max 0 $ foldr applyModifier (fromJustNote "Missing shroud" $ locationShroud attrs) modifiers')
-      modifiers'
+  base <- getGameValue (fromJustNote "Missing shroud" $ locationShroud attrs)
+  pure $ foldr applyPostModifier (max 0 $ foldr applyModifier base modifiers') modifiers'
  where
   applyModifier (ShroudModifier m) n = n + m
   applyModifier _ n = n
@@ -553,11 +554,11 @@ instance HasAbilities LocationAttrs where
   getAbilities l =
     [ basicAbility $ investigateAbility l 101 mempty (onLocation l)
     , basicAbility
-        $ restrictedAbility
+        $ restricted
           l
           102
           ( CanMoveTo (LocationWithId l.id)
-              <> OnLocation (accessibleTo l)
+              <> OnLocation (accessibleTo ForMovement l)
               <> exists (You <> can.move <> noModifier (CannotEnter l.id))
           )
         $ ActionAbility [#move] moveCost

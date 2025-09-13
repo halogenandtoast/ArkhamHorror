@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.PulledByTheStars (pulledByTheStars, PulledByTheStars (..)) where
+module Arkham.Treachery.Cards.PulledByTheStars (pulledByTheStars) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
@@ -18,24 +18,19 @@ pulledByTheStars = treachery PulledByTheStars Cards.pulledByTheStars
 
 instance HasAbilities PulledByTheStars where
   getAbilities (PulledByTheStars a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You)
+    [ restricted a 1 (InThreatAreaOf You)
         $ forced
         $ TurnEnds #when (You <> not_ InvestigatorThatMovedDuringTurn)
-    , skillTestAbility $ restrictedAbility a 2 OnSameLocation actionAbility
+    , skillTestAbility $ restricted a 2 OnSameLocation actionAbility
     ]
 
 instance HasModifiersFor PulledByTheStars where
-  getModifiersFor (PulledByTheStars attrs) = do
-    getSkillTest >>= \case
-      Nothing -> pure mempty
-      Just st -> do
-        mSource <- getSkillTestSource
-        mInvestigator <- getSkillTestInvestigator
-        case (mSource, mInvestigator) of
-          (Just source, Just iid) | isAbilitySource attrs 2 source -> do
-            exhaustedWitch <- selectAny $ ExhaustedEnemy <> EnemyWithTrait Witch <> enemyAtLocationWith iid
-            modified_ attrs (SkillTestTarget st.id) [SkillTestAutomaticallySucceeds | exhaustedWitch]
-          _ -> pure mempty
+  getModifiersFor (PulledByTheStars attrs) = whenJustM getSkillTest \st -> runMaybeT_ do
+    source <- MaybeT getSkillTestSource
+    iid <- MaybeT getSkillTestInvestigator
+    guard $ isAbilitySource attrs 2 source
+    liftGuardM $ selectAny $ ExhaustedEnemy <> EnemyWithTrait Witch <> enemyAtLocationWith iid
+    modified_ attrs st [SkillTestAutomaticallySucceeds]
 
 instance RunMessage PulledByTheStars where
   runMessage msg t@(PulledByTheStars attrs) = runQueueT $ case msg of
@@ -43,11 +38,11 @@ instance RunMessage PulledByTheStars where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      assignHorror iid (toAbilitySource attrs 1) 2
+      assignHorror iid (attrs.ability 1) 2
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
-      beginSkillTest sid iid (toAbilitySource attrs 2) iid #willpower (Fixed 3)
+      beginSkillTest sid iid (attrs.ability 2) iid #willpower (Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       toDiscardBy iid attrs attrs

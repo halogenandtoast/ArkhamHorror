@@ -87,6 +87,8 @@ data ScenarioLogKey
   | TidiedUpTheRoom
   | ThePoliceDon'tBelieveYou
   | ThePoliceAreOnYourSide
+  | -- | Film Fatale
+    TheInvestigatorsMadeTheirCallTime
   | -- Investigator Cards
     YouOweBiancaResources (Labeled InvestigatorId) Int
   deriving stock (Eq, Show, Ord, Data)

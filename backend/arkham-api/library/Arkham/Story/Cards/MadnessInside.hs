@@ -1,4 +1,4 @@
-module Arkham.Story.Cards.MadnessInside (MadnessInside (..), madnessInside) where
+module Arkham.Story.Cards.MadnessInside (madnessInside) where
 
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Matcher
@@ -7,7 +7,6 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
-import Arkham.Target
 import Arkham.Trait (Trait (Possessed))
 import Arkham.Window qualified as Window
 
@@ -20,7 +19,7 @@ madnessInside = story MadnessInside Cards.madnessInside
 
 instance RunMessage MadnessInside where
   runMessage msg s@(MadnessInside attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       possessed <- select $ EnemyWithTrait Possessed <> NonEliteEnemy
       chooseTargetM iid possessed $ handleTarget iid attrs
       addToVictory attrs

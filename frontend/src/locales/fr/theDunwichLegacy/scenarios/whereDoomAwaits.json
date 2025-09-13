@@ -1,0 +1,67 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "–1 (–3 à la place si vous êtes dans un lieu Altéré).",
+      "cultist": "Révélez un autre pion Chaos. Annulez les effets et les icônes de chaque carte Compétence attribuée à ce test.",
+      "tablet": "–2 (–4 à la place si vous êtes à l'Intrigue 2).",
+      "elderThing": "–X. Défaussez les 2 cartes du dessus de votre deck. X est la somme des coûts imprimés de ces cartes défaussées."
+    },
+    "hardExpert": {
+      "skull": "–2 (–5 à la place si vous êtes dans un lieu Altéré).",
+      "cultist": "Révélez un autre pion Chaos. Annulez les effets et les icônes de chaque carte Compétence attribuée à ce test.",
+      "tablet": "–3. Si vous êtes à l'Intrigue 2, vous échouez automatiquement à la place.",
+      "elderThing": "–X. Défaussez les 3 cartes du dessus de votre deck. X est la somme des coûts imprimés de ces cartes défaussées."
+    }
+  },
+  "tooltips": {
+    "baseOfTheHill": {
+      "resign": "« Je n'ai pas signé pour ça ! »",
+      "investigate": "{'{'}action{'}'}: _Enquêter_. En cas de réussite, au lieu de découvrir des indices, prenez au hasard un Chemin Divergent mis de côté et mettez-le en jeu. (Limite d'une fois par round.)"
+    },
+    "ascendingPath": {
+      "investigate": "{'{'}action{'}'}: _Enquêter_. En cas de réussite, au lieu de découvrir des indices, prenez au hasard un Chemin Altéré mis de côté et mettez-le en jeu. (Limite d'une fois par round.)"
+    },
+    "destroyedPath": {
+      "investigate": "{'{'}action{'}'}: _Enquêter_. En cas de réussite, au lieu de découvrir des indices, retirez 1 fatalité du Chemin Détruit."
+    }
+  },
+  "intro": {
+    "title": "Scénario VI : Là où le Destin Attend",
+    "body": "<p>Un hurlement vous réveille en sursaut. Craignant le pire, vous rassemblez votre équipement et vous dirigez vers les rues de Dunwich. À peine avez-vous mis le pied dehors qu’une odeur pestilentielle agresse vos sens : un atroce remugle âcre qui peut à peine être décrit par des mots. L’atmosphère est lourde et vous avez du mal à respirer. Les habitants de Dunwich ont barricadé leurs portes et la ville semble tranquille et déserte. Au loin, une faible lueur émane du sommet d’une colline surplombant le village. Vous connaissez cette colline grâce à vos discussions avec Zebulon et aux notes d’Armitage. Il s’agit de la Colline de la Sentinelle. Les notes parlent de rites sataniques pratiqués là-haut – des rites lors desquels de grands bûchers funéraires illuminent le ciel nocturne tandis que le sol gronde furieusement en dessous.</p><p>Des nuées d’engoulevents sont perchées sur les toits des maisons alentour. Ils semblent vous épier alors que vous grimpez dans la vieille camionnette déglinguée de Zebulon. À mesure que vous approchez de la Colline de la Sentinelle, d’autres hurlements emplissent les cieux, si aigus qu’ils vous font mal aux oreilles. Toutes vos lectures et aventures à Dunwich vous ont conduit ici. Si l’infâme rituel que Seth cherche à accomplir a quelque chose à voir avec ce qu’Armitage et ses collègues ont empêché il y a plusieurs mois, alors celui-ci implique les faveurs d’une ancienne créature – Yog-Sothoth. Si le rituel n’est pas arrêté à temps, il pourrait sceller le sort de Dunwich… voire du monde entier.</p>",
+    "proceedToPart1": "Vérifiez votre Carnet de Campagne :  Si *Naomi surveille les arrières des investigateurs* : Lisez la _Partie 1_.",
+    "otherwise": "Sinon : Continuez à la _Mise en Place_.",
+    "part1": {
+      "body": "<p>_Partie 1_ : Le chemin menant à la Colline de la Sentinelle est trop étroit et sinueux pour la camionnette de Zebulon, vous la garez donc au pied de la colline et vous préparez à faire le reste de l’ascension à pied. Soudain, vous vous rendez compte que vous n’êtes pas seul. Plusieurs hommes et femmes émergent des bois derrière-vous. Ils brandissent des armes à feu et vous mettent en joug. Vous levez les mains en l’air et vous attendez au pire. « Attendez, » s’écrie l’un d’entre eux en faisant signe aux autres de la main. « Je vous reconnais, vous étiez au Club du Trèfle. » Il esquisse un large sourire et baisse son arme. « Naomi vous transmet ses salutations. »</p><p>Curieux, vous demandez aux gangsters ce qu’ils font ici. « Mme O’Bannion nous a envoyé enquêter sur l’attaque qui s’est déroulée dans le casino de son fiancé. » explique-t-il. « Il s’est avéré qu’il y avait des hommes derrière tout ça, un type nommé Bishop et ses larbins. On les a suivis jusqu’à ce trou à rats. » Avant qu’il ne puisse aller plus loin, le tacatac si familier d’une mitraillette résonne dans les collines. « Ça doit être Vinny. Venez les gars ! » Il fait signe aux autres de le suivre et se précipite vers le sommet de la colline. Vous le suivez en secouant la tête. Ces malfrats ne savent pas dans quoi ils s’engagent.</p><ul><li>L'investigateur principal gagne 1 indice de la réserve de pions (2 indices à la place s'il y a 3 ou 4 investigateurs dans la partie).</li></ul><p class='basic right'>Continuez à la _Mise en Place_.</p>"
+    }
+  },
+  "setup": {
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : *Là où le Destin Attend*, *Thralls Bestiaux*, *Sorcellerie*, *Les Thralls de Bishop*, *Répandre la Peur*, *Antiques Fléaux* et *Un Froid Mordant*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/where-doom-awaits.png' /><img src='{setImgPath}/beast-thralls.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/bishops-thralls.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
+    "placeLocations": "Mettez en jeu le Pied de la Colline, le Chemin Ascendant et le Pic de la Sentinelle. Chaque investigateur commence la partie au Pied de la Colline.",
+    "divergingPaths": "Retirez de la partie 1 exemplaire de Chemin Divergent pris au hasard. Mettez de côté, hors jeu, les 3 autres exemplaires de Chemin Divergent.",
+    "alteredPaths": "Retirez de la partie 1 exemplaire de Chemin Altéré pris au hasard. Mettez de côté, hors jeu, les 3 autres exemplaires de Chemin Altéré.",
+    "setAside": "Mettez de côté Seth Bishop, hors jeu.",
+    "adjustChaosBag": "Selon votre niveau de difficulté, ajoutez le pion Chaos suivant à la réserve du Chaos pour le reste de la campagne :<div class='columns'><ul><li>_Facile_ : -3</li><li>_Standard_ : -5</li></ul><ul><li>_Difficile_ : -6</li><li>_Expert_ : -7</li></ul></div>",
+    "act2": {
+      "instructions": "Dans ce scénario, une version différente de l'Acte 2 sera utilisée en fonction de votre progression. Chaque autre exemplaire de l'Acte 2 est retiré de la partie. Vérifiez votre Carnet de Campagne :",
+      "v1": "Si *les investigateurs ont rendu sa forme à Silas Bishop*, utilisez l'Acte 2 – Gravir la Colline (v. I)",
+      "v2": "Dans le cas contraire, si *les investigateurs n'ont pas réussi à retrouver le Necronomicon*, ou si *le Necronomicon a été volé*, utilisez l'Acte 2 – Gravir la Colline (v. II)",
+      "v3": "Si aucun des points précédents n'est indiqué, utilisez l'Acte 2 – Gravir la Colline (v. III)"
+    },
+    "addDoom": "Vérifiez votre Carnet de Campagne. Pour chaque Rejeton de Yog-Sothoth qui s'est évanoui dans la nature, placez 1 fatalité sur l'Intrigue 1a.",
+    "hideousAbominations": "Vérifiez votre Carnet de Campagne. Si les investigateurs ont abrégé les souffrances de Silas Bishop, les restes de son cadavre ont muté et grandi jusqu'à la Colline de la Sentinelle. Mettez en jeu 1 ennemi « Agglomérat de Sphères » (du set de rencontre Hideuses Abominations) dans le Chemin Ascendant. Mélangez dans le deck Rencontre les cartes restantes de ce set. Ce set est reconnaissable à l'icône suivante :<section class='encounter-sets'><img src='{setImgPath}/hideous-abominations.png' /></section>"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<div class='resolution'><p class='basic'>_Si aucune conclusion n'est atteinte (tous les investigateurs ont abandonné ou été vaincus)_ : lisez la _Conclusion 2_.</p></div>"
+    },
+    "resolution1": {
+      "title": "Conclusion 1",
+      "body": "<div class='resolution'><p>_Conclusion 1_ : Le grimoire en mauvais état s’avère avoir été écrit par le Vieux Whateley, l’homme qui a enseigné à Wilbur les antiques arcanes de la sorcellerie. Vous trouvez un passage décrivant un lieu hors du temps et de l’espace, là où les mondes convergent et où demeure Yog-Sothoth. Le seul moyen de refermer le trou qui a fendu le monde est d’atteindre ce nexus aux frontières de la réalité. Avec le sentiment que vous courez à votre perte, vous puisez dans le courage qui vous reste et franchissez le portail.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *les investigateurs ont franchi le portail*.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Conclusion 2",
+      "body": "<div class='resolution'><p>_Conclusion 2_ : En cherchant à obtenir des pouvoirs occultes venus d'au-delà du monde, les sorciers de Dunwich ont réussi là où Wilbur et le Vieux Whateley ont échoué. Par des sacrifices de sang et d'indescriptibles expériences, ils ont acquis les sombres pouvoirs qu'ils convoitaient. Ils n'auront cependant pas l'occasion de les utiliser. En suppliant le géniteur de Wilbur pour obtenir des connaissances impies, ils ont attiré la créature hors de son royaume extra-dimensionnel. Yog-Sothoth émerge de la faille située au-dessus de la Colline de la Sentinelle éclipsant le ciel et recouvrant le monde. Il règne désormais sur cette Terre que les humains foulaient autrefois.</p><ul><li>Dans votre Carnet de Campagne, indiquez que Yog-Sothoth a brisé la barrière entre les mondes et ne fait plus qu'un avec la réalité</li><li>Chaque investigateur devient _dément_.</li><li>Les investigateurs ont perdu la campagne.</li></ul></div>"
+    }
+  }
+}

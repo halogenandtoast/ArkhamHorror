@@ -1,14 +1,8 @@
-module Arkham.Asset.Assets.TheChthonianStone (
-  theChthonianStone,
-  TheChthonianStone (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.TheChthonianStone (theChthonianStone) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.ChaosToken
+import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Matcher
 import Arkham.Window qualified as Window
 
@@ -21,18 +15,14 @@ theChthonianStone = asset TheChthonianStone Cards.theChthonianStone
 
 instance HasAbilities TheChthonianStone where
   getAbilities (TheChthonianStone a) =
-    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
-        $ ForcedAbility
-        $ RevealChaosToken #when You
-        $ ChaosTokenFaceIs AutoFail
-    ]
+    [controlled a 1 (DuringSkillTest AnySkillTest) $ forced $ RevealChaosToken #after You #autofail]
 
 instance RunMessage TheChthonianStone where
-  runMessage msg a@(TheChthonianStone attrs) = case msg of
+  runMessage msg a@(TheChthonianStone attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> tokens) _ -> do
       push
         $ If
           (Window.RevealChaosTokenAssetAbilityEffect iid tokens (toId attrs))
           [ReturnToHand iid (toTarget attrs)]
       pure a
-    _ -> TheChthonianStone <$> runMessage msg attrs
+    _ -> TheChthonianStone <$> liftRunMessage msg attrs

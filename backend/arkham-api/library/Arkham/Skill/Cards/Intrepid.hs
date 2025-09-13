@@ -1,14 +1,12 @@
-module Arkham.Skill.Cards.Intrepid (intrepid, Intrepid (..)) where
+module Arkham.Skill.Cards.Intrepid (intrepid) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Id
 import Arkham.Message
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype Intrepid = Intrepid SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -18,15 +16,11 @@ intrepid :: SkillCard Intrepid
 intrepid = skill Intrepid Cards.intrepid
 
 instance RunMessage Intrepid where
-  runMessage msg s@(Intrepid attrs) = case msg of
+  runMessage msg s@(Intrepid attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
-      intrepidAssetProxy <- genPlayerCard Assets.intrepid
-      let
-        intrepidAsset = PlayerCard $ intrepidAssetProxy {pcOriginalCardCode = toCardCode attrs}
-        assetId = AssetId $ unSkillId $ toId attrs
-      pushAll
-        [ RemoveSkill $ toId attrs
-        , CreateAssetAt assetId intrepidAsset (InPlayArea iid)
-        ]
+      intrepidAsset <- genPlayerCardWith Assets.intrepid (setOriginalCardCode attrs)
+      let assetId = AssetId $ unSkillId $ toId attrs
+      removeSkill attrs
+      createAssetWithIdAt assetId intrepidAsset (InPlayArea iid)
       pure s
-    _ -> Intrepid <$> runMessage msg attrs
+    _ -> Intrepid <$> liftRunMessage msg attrs

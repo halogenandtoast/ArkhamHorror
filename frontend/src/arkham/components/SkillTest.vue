@@ -63,6 +63,7 @@ const shouldRender = (mod: Modifier) => {
   if (type.tag === 'CannotCommitCards')
     return props.playerId == props.game.investigators[props.skillTest.investigator].playerId
   if (type.tag === 'OtherModifier' && type.contents === 'MayIgnoreLocationEffectsAndKeywords') return true
+  if (type.tag === 'OtherModifier' && type.contents === 'SkillIconsSubtract') return true
   return false
 }
 
@@ -283,7 +284,7 @@ const tokenEffects = computed(() => {
 
 
   return ["Skull", "Cultist", "Tablet", "ElderThing"].filter((face) => faces.includes(face)).map((face) => 
-    `<img src='${chaosTokenImage(face)}' width=23 /><span>`
+    `<img src='${chaosTokenImage(face)}' /><span>`
           + formatContent(t(`${scenarioToI18n(scenario)}.tokens.${difficulty}.${lowerFirst(face)}`)) + `</span>`
           )
 })
@@ -386,6 +387,24 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         :playerId="playerId"
         @choose="choose"
       />
+      <div v-if="tokenEffects.length > 0" class="token-effects">
+        <div class="token-effect" v-for="effect in tokenEffects" :key="effect" v-html="effect"></div>
+      </div>
+      <div v-if="debug.active && skillTest.result.tag == 'Unrun' && !['SkillTestFastWindow1', 'SkillTestFastWindow2'].includes(skillTest.step)">
+        <button @click="debug.send(game.id, {tag: 'PassSkillTest'})">Pass Skill Test</button>
+        <button @click="debug.send(game.id, {tag: 'FailSkillTest'})">Fail Skill Test</button>
+      </div>
+      <div v-if="committedCards.length > 0" class="committed-skills" key="committed-skills">
+        <h2>Committed Skills</h2>
+        <div class="skills-container">
+          <CommittedSkills
+            :game="game"
+            :cards="committedCards"
+            :playerId="playerId"
+            @choose="$emit('choose', $event)"
+          />
+        </div>
+      </div>
       <div v-if="modifiers.length > 0" class="modifiers">
         <div v-for="(modifier, idx) in modifiers" :key="idx" class="modifier" :class="{ 'sideways': modifier.source.tag === 'InvestigatorSource' }" :data-image-id="modifierSource(modifier)">
           <template v-if="modifier.type.tag === 'CannotCommitCards'">
@@ -446,39 +465,20 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'MayIgnoreLocationEffectsAndKeywords'">
             <span class="text">May Ignore Location Effects</span>
           </template>
+          <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'SkillIconsSubtract'">
+            <span class="text">Skill Icons Subtract</span>
+          </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'SkillTestAutomaticallySucceeds'">
             <span class="text">Skill test automatically succeeds</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'RevealAnotherChaosToken'">
-            <span class="text">Reveal another chaos token</span>SkillTest
+            <span class="text">Reveal another chaos token</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'CancelAnyChaosTokenAndDrawAnother'">
             <span class="text">Cancel matching chaos tokens and reveal another</span>
           </template>
-          <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'RevealChaosTokensBeforeCommittingCards'">
-            <span class="text">Reveal chaos tokens before committing cards</span>
-          </template>
         </div>
       </div>
-      <div v-if="tokenEffects.length > 0" class="token-effects">
-        <div class="token-effect" v-for="effect in tokenEffects" :key="effect" v-html="effect"></div>
-      </div>
-      <div v-if="debug.active && skillTest.result.tag == 'Unrun' && !['SkillTestFastWindow1', 'SkillTestFastWindow2'].includes(skillTest.step)">
-        <button @click="debug.send(game.id, {tag: 'PassSkillTest'})">Pass Skill Test</button>
-        <button @click="debug.send(game.id, {tag: 'FailSkillTest'})">Fail Skill Test</button>
-      </div>
-      <div v-if="committedCards.length > 0" class="committed-skills" key="committed-skills">
-        <div class="skills-container">
-          <CommittedSkills
-            :game="game"
-            :cards="committedCards"
-            :playerId="playerId"
-            @choose="$emit('choose', $event)"
-          />
-        </div>
-        <h2>Committed Skills</h2>
-      </div>
-
       <AbilityButton
         v-for="ability in abilities"
         :key="ability.index"
@@ -626,7 +626,17 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
 }
 
 .skills-container {
-  padding: 10px;
+  padding: 6px 10px;
+  @media (max-width: 800px) and (orientation: portrait) {
+    .card-row-cards {
+      height: auto;
+    }
+    :deep(.card) {
+      width: 10.71vw ;
+      height: 14.994vw;
+      max-width: 10.71vw;
+    }
+  }
 }
 
 .skill-test-results {
@@ -819,6 +829,9 @@ i.iconSkillAgility {
   .step {
     flex: 1;
     text-align: center;
+    @media (max-width: 800px) and (orientation: portrait) {
+      font-size:0.9em;
+    }
   }
 
   .step:nth-child(odd) {
@@ -908,6 +921,7 @@ i.iconSkillAgility {
 }
 
 .modifier {
+  flex-shrink: 0;
   align-items: center;
   background: #000;
   border-radius: 100px;
@@ -915,7 +929,6 @@ i.iconSkillAgility {
   color: var(--title);
   display: flex;
   gap: 4px;
-  margin-bottom: 10px;
   padding: 2px 10px;
   text-align: center;
   user-select: none;
@@ -942,8 +955,9 @@ i.iconSkillAgility {
 .modifiers {
   align-self: flex-start;
   display: flex;
-  background: rgba(0, 0, 0, 0.5);
-  padding-inline: 10px;
+  flex-wrap: wrap;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 6px 10px;
   gap: 5px;
   font-size: 1em;
 }
@@ -957,9 +971,14 @@ i.iconSkillAgility {
   display: flex;
   gap: 10px;
   padding: 10px;
-  align-items: center;
+  align-items: start;
   color: var(--title);
-  justify-content: center;
+  justify-content: start;
+  text-align: left;
+  :deep(img) {
+    width: 25px;
+    flex-shrink: 0;
+  }
 }
 
 .test-source {

@@ -1,0 +1,32 @@
+{
+    "playerWindow": "Fenêtre de joueur",
+
+    "mythosPhase": "Phase du Mythe",
+    "mythosPhaseBeginsStep": "Début du round. Début de la phase du Mythe.",
+    "placeDoomOnAgendaStep": "Placez 1 fatalité sur l’intrigue en cours.",
+    "checkDoomThresholdStep": "Vérifiez le seuil de fatalité.",
+    "eachInvestigatorDrawsEncounterCardStep": "Chaque investigateur pioche 1 carte Rencontre.",
+    "mythosPhaseEndsStep": "Fin de la phase du Mythe.",
+
+    "investigationPhase": "Investigation",
+    "investigationPhaseBeginsStep": "Début de la phase d’Investigation.",
+    "nextInvestigatorsTurnBeginsStep": "Début du tour de l’investigateur suivant.",
+    "investigatorTakesActionStep": "L’investigateur actif a le droit d’effectuer une action, si possible. Si une action a été effectuée,<p>retournez à la fenêtre de joueur précédente. Si aucune action n’a été effectuée, passez au 2.2.2.",
+    "investigatorsTurnEndsStep": "Fin du tour de l’investigateur. Si un investigateur n’a pas encore effectué son tour lors de cete phase,<p>retournez au 2.2. Si chaque investigateur a effectué son tour lors de cete phase, passez au 2.3.",
+    "investigationPhaseEndsStep": "Fin de la phase d’Investigation.",
+
+    "enemyPhase": "Phase des Ennemis",
+    "enemyPhaseBeginsStep": "Début de la phase des Ennemis.",
+    "hunterEnemiesMoveStep": "Les ennemis Chasseur se déplacent.",
+    "resolveAttacksStep": "L’investigateur suivant résout les attaques des ennemis engagés avec lui. Si un investigateur n’a pas encore résolu ses attaques ennemies lors de cete phase,<p>retournez à la fenêtre de joueur précédente. Après que le dernier investigateur a résolu les attaques des ennemis engagés avec lui, passez à la fenêtre de joueur suivante.",
+    "enemyPhaseEndsStep": "Fin de la phase des Ennemis.",
+
+    "upkeepPhase": "Phase d’Entretien",
+    "upkeepPhaseBeginsStep": "Début de la phase d’Entretien.",
+    "resetActionsStep": "Réinitialisez les actions.",
+    "readyExhaustedStep": "Redressez chaque carte inclinée.",
+    "drawCardAndGainResourceStep": "Chaque investigateur pioche 1 carte et gagne 1 ressource.",
+    "checkHandSizeStep": "Chaque investigateur vérife la limite de sa main.",
+    "upkeepPhaseEndsStep": "Fin de la phase d’Entretien. Fin du round."
+  }
+  

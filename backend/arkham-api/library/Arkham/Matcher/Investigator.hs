@@ -95,6 +95,7 @@ data InvestigatorMatcher
   | MostDamage
   | LowestRemainingHealth
   | LowestRemainingSanity
+  | MostRemainingHealth
   | MostRemainingSanity
   | NearestToEnemy EnemyMatcher
   | NearestToLocation LocationMatcher

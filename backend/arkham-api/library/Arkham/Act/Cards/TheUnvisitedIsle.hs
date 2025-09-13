@@ -8,8 +8,8 @@ import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Location.Brazier
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message (StoryMode (..))
 import Arkham.Message.Lifted.Move
+import Arkham.Message.Lifted.Story
 import Arkham.Movement
 import Data.List (cycle)
 import Data.Map.Strict qualified as Map
@@ -36,7 +36,7 @@ instance RunMessage TheUnvisitedIsle where
       -- then for each player in player order we get the corresponding story cards and resolve them
       for_ investigators \investigator -> do
         let stories = Map.findWithDefault [] investigator storyMap
-        pushAll $ map (\s -> ReadStory investigator s ResolveIt Nothing) stories
+        for_ stories (resolveStory investigator)
 
       advanceActDeck attrs
       pure a

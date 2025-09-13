@@ -170,18 +170,16 @@ instance RunMessage AtDeathsDoorstep where
       when (notNull locations) do
         lead <- getLead
         for_ (doSplit evidenceLeftBehind) \n -> chooseOrRunNM lead n do
-          targets locations \l -> removeTokens attrs l Clue 1
+          targets locations (removeTokensOn attrs Clue 1)
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
-      case chaosTokenFace token of
+      case token.face of
         Tablet | isEasyStandard attrs -> do
-          mAction <- getSkillTestAction
-          for_ mAction $ \action ->
+          whenJustM getSkillTestAction \action ->
             when (action `elem` [#fight, #evade]) $ runHauntedAbilities iid
         _ -> pure ()
       pure s
     ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
-      mAction <- getSkillTestAction
-      for_ mAction \action ->
+      whenJustM getSkillTestAction \action ->
         when (action `elem` [#fight, #evade]) $ runHauntedAbilities iid
       pure s
     ResolveChaosToken _ ElderThing iid -> do

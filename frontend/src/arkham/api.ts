@@ -1,10 +1,10 @@
 import api from '@/api';
 import { Game, GameDetailsEntry, gameDecoder, gameDetailsEntryDecoder } from '@/arkham/types/Game';
-import { Deck, deckDecoder } from '@/arkham/types/Deck';
+import { ArkhamDbDecklist, Deck, deckDecoder } from '@/arkham/types/Deck';
 import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
 import { Difficulty } from '@/arkham/types/Difficulty';
 import { StandaloneSetting } from '@/arkham/types/StandaloneSetting';
-import { CampaignLogSettings } from '@/arkham/types/CampaignSettings'
+import { CampaignLogSettings, CampaignOption, Key } from '@/arkham/types/CampaignSettings'
 import * as JsonDecoder from 'ts.data.json';
 
 interface FetchData {
@@ -18,29 +18,24 @@ interface FetchReplay {
   game: Game
 }
 
-export const fetchJoinGame = (gameId: string): Promise<Game> => api
-  .get(`arkham/games/${gameId}/join`)
-  .then((resp) => {
-    return gameDecoder.decodePromise(resp.data)
-  });
+export const fetchJoinGame = async (gameId: string): Promise<Game> => {
+  const { data } = await api.get(`arkham/games/${gameId}/join`)
+  return gameDecoder.decodePromise(data);
+}
 
-export const fetchGame = (gameId: string, spectate = false): Promise<FetchData> => api
-  .get(`arkham/games/${gameId}${spectate ? '/spectate' : ''}`)
-  .then((resp) => {
-    const { playerId, game, multiplayerMode } = resp.data;
-    return gameDecoder
-      .decodePromise(game)
-      .then((gameData) => Promise.resolve({ playerId, game: gameData, multiplayerMode }));
-  });
+export const fetchGame = async (gameId: string, spectate = false): Promise<FetchData> => {
+  const { data } = await api.get(`arkham/games/${gameId}${spectate ? '/spectate' : ''}`)
+  const { playerId, game, multiplayerMode } = data
+  const gameData = await gameDecoder.decodePromise(game)
+  return { playerId, game: gameData, multiplayerMode }
+}
 
-export const fetchGameReplay = (gameId: string, step: number): Promise<FetchReplay> => api
-  .get(`arkham/games/${gameId}/replay/${step}`)
-  .then((resp) => {
-    const { totalSteps, game } = resp.data;
-    return gameDecoder
-      .decodePromise(game)
-      .then((gameData) => Promise.resolve({ game: gameData, totalSteps }));
-  });
+export const fetchGameReplay = async (gameId: string, step: number): Promise<FetchReplay> => {
+  const { data } = await api.get(`arkham/games/${gameId}/replay/${step}`)
+  const { totalSteps, game } = data
+  const gameData = await gameDecoder.decodePromise(game)
+  return { game: gameData, totalSteps }
+}
 
 interface Notification {
   body: string;
@@ -49,107 +44,103 @@ interface Notification {
 
 export const fetchNotifications = (): Promise<Notification[]> => api.get('notifications')
 
-export const fetchGames = (): Promise<GameDetailsEntry[]> => api
-  .get('arkham/games')
-  .then((resp) => {
-      const failed = resp.data.filter((g: any) => g.error !== undefined)
-      if (failed.length > 0) {
-        console.log(failed)
-      }
+export const findGame = async (playerId: string): Promise<GameDetailsEntry> => {
+  const { data } = await api.get(`admin/games/find/${playerId}`)
+  return gameDetailsEntryDecoder.decodePromise(data)
+}
 
-      return JsonDecoder.array(gameDetailsEntryDecoder, 'GameEntryDetails[]').decodePromise(resp.data.filter((g: any) => g.error === undefined))
-  });
+export const fetchGames = async (): Promise<GameDetailsEntry[]> => {
+  const { data } = await api.get('arkham/games')
+  const failed = data.filter((g: { error?: string }) => g.error !== undefined)
+  if (failed.length > 0) console.log(failed)
+  const passed = data.filter((g: { error?: string }) => g.error === undefined)
+  return JsonDecoder.array(gameDetailsEntryDecoder, 'GameEntryDetails[]').decodePromise(passed)
+}
 
-export const fetchDecks = (): Promise<Deck[]> => api
-  .get('arkham/decks')
-  .then((resp) => JsonDecoder.array(deckDecoder, 'ArkhamDeck[]').decodePromise(resp.data));
+export const fetchDecks = async (): Promise<Deck[]> => {
+  const { data } = await api.get('arkham/decks')
+  return JsonDecoder.array(deckDecoder, 'ArkhamDeck[]').decodePromise(data);
+}
 
-export const fetchDeck = (deckId: string): Promise<Deck> => api
-  .get(`arkham/decks/${deckId}`)
-  .then((resp) => deckDecoder.decodePromise(resp.data));
+export const fetchDeck = async (deckId: string): Promise<Deck> => {
+ const { data } = await api.get(`arkham/decks/${deckId}`)
+ return deckDecoder.decodePromise(data)
+}
 
-export const fetchCards = (includeEncounter = false): Promise<CardDef[]> => {
+export const fetchCards = async (includeEncounter = false): Promise<CardDef[]> => {
   const query = includeEncounter ? "?includeEncounter" : ""
-  return api
-  .get(`arkham/cards${query}`)
-  .then((resp) => JsonDecoder.array(cardDefDecoder, 'ArkhamCardDef[]').decodePromise(resp.data));
+  const { data } = await api.get(`arkham/cards${query}`)
+  return JsonDecoder.array(cardDefDecoder, 'ArkhamCardDef[]').decodePromise(data)
 }
 
-export const fetchCard = (cardCode: string): Promise<CardDef> => {
-  return api
-  .get(`arkham/card/${cardCode}`)
-  .then((resp) => cardDefDecoder.decodePromise(resp.data));
+export const fetchCard = async (cardCode: string): Promise<CardDef> => {
+  const { data } = await api.get(`arkham/card/${cardCode}`)
+  return cardDefDecoder.decodePromise(data)
 }
 
-export const fetchInvestigators = (): Promise<string[]> => api
-  .get('arkham/investigators')
-  .then((resp) => JsonDecoder.array(JsonDecoder.string(), 'string[]').decodePromise(resp.data));
+export const fetchInvestigators = async (): Promise<string[]> => {
+  const { data } = await api.get('arkham/investigators')
+  return JsonDecoder.array(JsonDecoder.string(), 'string[]').decodePromise(data)
+}
 
-export const newDeck = (
+export const newDeck = async (
   deckId: string,
   deckName: string,
-  deckUrl: string,
-  deckList: any,
-): Promise<Deck> => api
-  .post('arkham/decks', {
-    deckId,
-    deckName,
-    deckUrl,
-    deckList,
-  })
-  .then((resp) => deckDecoder.decodePromise(resp.data))
+  deckUrl: string | null,
+  deckList: ArkhamDbDecklist | null,
+): Promise<Deck> => {
+  const { data } = await api .post('arkham/decks', { deckId, deckName, deckUrl, deckList })
+  return deckDecoder.decodePromise(data)
+}
 
-export const validateDeck = (
-  deckList: any
-): Promise<void> => api
-  .post('arkham/decks/validate', deckList)
+export const validateDeck = ( deckList: ArkhamDbDecklist): Promise<void> =>
+  api.post('arkham/decks/validate', deckList)
 
-export const deleteDeck = (deckId: string): Promise<void> => api
-  .delete(`arkham/decks/${deckId}`);
+export const deleteDeck = (deckId: string): Promise<void> =>
+  api.delete(`arkham/decks/${deckId}`);
 
-export const syncDeck = (deckId: string): Promise<Deck> => api
-  .post(`arkham/decks/${deckId}/sync`)
-  .then((resp) => deckDecoder.decodePromise(resp.data));
+export const syncDeck = async (deckId: string): Promise<Deck> => {
+  const { data } = await api.post(`arkham/decks/${deckId}/sync`)
+  return deckDecoder.decodePromise(data)
+}
 
-export const fileBug = (gameId: string): Promise<void> => api
-  .post(`arkham/games/${gameId}/file-bug`)
+export const fileBug = (gameId: string): Promise<void> =>
+  api.post(`arkham/games/${gameId}/file-bug`)
 
-export const updateGame = (gameId: string, choice: number, investigatorId: string | null): Promise<void> => api
-  .put(`arkham/games/${gameId}`,  {tag: 'Answer', contents: { choice, investigatorId }})
+export const updateGame = (gameId: string, choice: number, investigatorId: string | null): Promise<void> =>
+  api.put(`arkham/games/${gameId}`,  {tag: 'Answer', contents: { choice, investigatorId }})
 
-export const updateGamePaymentAmounts = (gameId: string, amounts: Record<string, number>): Promise<void> => api
-  .put(`arkham/games/${gameId}`, {tag: 'PaymentAmountsAnswer', contents: { amounts } })
+export const updateGamePaymentAmounts = (gameId: string, amounts: Record<string, number>): Promise<void> =>
+  api.put(`arkham/games/${gameId}`, {tag: 'PaymentAmountsAnswer', contents: { amounts } })
 
-export const updateGameAmounts = (gameId: string, amounts: Record<string, number>): Promise<void> => api
-  .put(`arkham/games/${gameId}`, {tag: 'AmountsAnswer', contents: { amounts } })
+export const updateGameAmounts = (gameId: string, amounts: Record<string, number>): Promise<void> =>
+  api.put(`arkham/games/${gameId}`, {tag: 'AmountsAnswer', contents: { amounts } })
 
-export const upgradeDeck = (gameId: string, investigatorId: string, deckUrl?: string): Promise<void> => api
-  .put(`arkham/games/${gameId}/decks`, { deckUrl, investigatorId });
+export const upgradeDeck = (gameId: string, investigatorId: string, deckUrl?: string): Promise<void> =>
+  api.put(`arkham/games/${gameId}/decks`, { deckUrl, investigatorId });
 
-export const updateStandaloneSettings = (gameId: string, settings: StandaloneSetting[]): Promise<void> => api
-  .put(`arkham/games/${gameId}`, {tag: 'StandaloneSettingsAnswer', contents: settings })
+export const updateStandaloneSettings = (gameId: string, settings: StandaloneSetting[]): Promise<void> =>
+  api.put(`arkham/games/${gameId}`, {tag: 'StandaloneSettingsAnswer', contents: settings })
 
-export const updateCampaignSettings = (gameId: string, campaignLog: CampaignLogSettings): Promise<void> => api
-  .put(`arkham/games/${gameId}`, {
+export const updateCampaignSettings = (gameId: string, campaignLog: CampaignLogSettings): Promise<void> =>
+  api.put(`arkham/games/${gameId}`, {
     tag: 'CampaignSettingsAnswer',
     contents: {
       counts: Object.entries(campaignLog.counts),
       sets: Object.entries(campaignLog.sets),
-      options: campaignLog.options.flatMap((o) => o.ckey ? [o.ckey] : []),
-      keys: campaignLog.keys.map((o) => o.key)
+      options: campaignLog.options.flatMap((o: CampaignOption) => o.ckey ? [o.ckey] : []),
+      keys: campaignLog.keys.map((o: Key) => o.key)
     }
   })
 
 
-export const deleteGame = (gameId: string): Promise<void> => api
-  .delete(`arkham/games/${gameId}`);
+export const deleteGame = (gameId: string): Promise<void> =>
+  api.delete(`arkham/games/${gameId}`)
 
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-/* eslint-disable  @typescript-eslint/explicit-module-boundary-types */
-export const updateGameRaw = (gameId: string, gameMessage: any): Promise<void> => api
-  .put(`arkham/games/${gameId}/raw`, { gameMessage });
+export const updateGameRaw = (gameId: string, gameMessage: any): Promise<void> =>
+  api.put(`arkham/games/${gameId}/raw`, { gameMessage })
 
-export const newGame = (
+export const newGame = async (
   deckIds: (string | null)[],
   playerCount: number,
   campaignId: string | null,
@@ -158,8 +149,8 @@ export const newGame = (
   campaignName: string,
   multiplayerVariant: string,
   includeTarotReadings: boolean,
-): Promise<Game> => api
-  .post('arkham/games', {
+): Promise<Game> => {
+  const { data } = await api.post('arkham/games', {
     deckIds,
     playerCount,
     campaignId,
@@ -169,11 +160,13 @@ export const newGame = (
     multiplayerVariant,
     includeTarotReadings,
   })
-  .then((resp) => gameDecoder.decodePromise(resp.data));
+  return gameDecoder.decodePromise(data)
+}
 
-export const joinGame = (gameId: string): Promise<Game> => api
-  .put(`arkham/games/${gameId}/join`)
-  .then((resp) => gameDecoder.decodePromise(resp.data));
+export const joinGame = async (gameId: string): Promise<Game> => {
+  const { data } = await api.put(`arkham/games/${gameId}/join`)
+  return gameDecoder.decodePromise(data)
+}
 
 export const undoChoice = (gameId: string, debug: boolean): Promise<void> => {
   if (debug) {
@@ -183,9 +176,10 @@ export const undoChoice = (gameId: string, debug: boolean): Promise<void> => {
   }
 }
 
-export const undoScenarioChoice = (gameId: string): Promise<void> => api
-  .put(`arkham/games/${gameId}/undo/scenario`)
+export const undoScenarioChoice = (gameId: string): Promise<void> =>
+  api.put(`arkham/games/${gameId}/undo/scenario`)
 
-export const debugGame = (formData: FormData): Promise<Game> => api
-  .post("arkham/games/import", formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-  .then((resp) => gameDecoder.decodePromise(resp.data))
+export const debugGame = async (formData: FormData): Promise<Game> => {
+  const { data } = await api.post("arkham/games/import", formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+  return gameDecoder.decodePromise(data)
+}

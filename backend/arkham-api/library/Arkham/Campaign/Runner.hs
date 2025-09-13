@@ -64,7 +64,9 @@ defaultCampaignRunner msg a = case msg of
     -- between two scenarios
     killed <- select KilledInvestigator
     insane <- select InsaneInvestigator
-    for_ (nub $ killed <> insane) (push . chooseUpgradeDeck <=< getPlayer)
+    case nub (killed <> insane) of
+      [] -> pure ()
+      xs -> push . chooseUpgradeDecks =<< traverse getPlayer xs
     pure a
   CampaignStep (ScenarioStep sid) -> do
     pushAll [ResetInvestigators, ResetGame, StartScenario sid]
@@ -73,7 +75,7 @@ defaultCampaignRunner msg a = case msg of
   CampaignStep (UpgradeDeckStep _) -> do
     investigators <- select InvestigatorCanAddCardsToDeck
     players <- traverse getPlayer investigators
-    pushAll $ ResetGame : map chooseUpgradeDeck players <> [FinishedUpgradingDecks]
+    pushAll $ ResetGame : chooseUpgradeDecks players : [FinishedUpgradingDecks]
     pure a
   SetChaosTokensForScenario -> a <$ push (SetChaosTokens $ campaignChaosBag $ toAttrs a)
   AddCampaignCardToDeck iid _ card -> do
@@ -229,7 +231,7 @@ defaultCampaignRunner msg a = case msg of
     for_ (mapToList $ campaignDecks $ toAttrs a) $ \(iid, Deck deck) -> do
       let storyCards = findWithDefault [] iid (campaignStoryCards $ toAttrs a)
       let storyCardCodes = map toCardCode storyCards
-      let (deck', removals) = partition (\card -> card.cardCode `notElem` storyCardCodes) deck
+      let (deck', removals) = partition (\card -> card.cardCode `notElem` storyCardCodes && card.cardCode `notElem` invalidCards a) deck
       for_ removals \c -> removeCard c.id
 
       push (LoadDeck iid . Deck $ deck' <> storyCards)
@@ -322,11 +324,6 @@ defaultCampaignRunner msg a = case msg of
         KilledInvestigators
         (singleton $ recorded $ unInvestigatorId iid)
   CreateWeaknessInThreatArea (PlayerCard pc) iid -> do
-    pure
-      $ updateAttrs a
-      $ decksL
-      %~ adjustMap (withDeck (pc {pcOwner = Just iid} :)) iid
-  AddCardToDeckForCampaign iid pc -> do
     pure
       $ updateAttrs a
       $ decksL

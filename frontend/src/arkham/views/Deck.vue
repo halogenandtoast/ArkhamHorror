@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { watch, ref, computed, onMounted } from 'vue';
+import { watch, shallowRef, ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { fetchDeck, deleteDeck, fetchCards, syncDeck } from '@/arkham/api';
 import { imgsrc, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
@@ -19,10 +19,10 @@ export interface Props {
 const props = defineProps<Props>()
 const router = useRouter()
 const toast = useToast()
-const allCards = ref<Arkham.CardDef[]>([])
+const allCards = shallowRef<Arkham.CardDef[]>([])
 const ready = ref(false)
 const deleting = ref(false)
-const deck = ref<Deck | null>(null)
+const deck = shallowRef<Deck | null>(null)
 const deckRef = ref(null)
 const store = useDbCardStore()
 
@@ -45,16 +45,11 @@ const enum View {
 
 fetchCards(true).then((response) => {
   allCards.value = response.sort((a, b) => {
-    if (a.art < b.art) {
-      return -1
-    }
-
-    if (a.art > b.art) {
-      return 1
-    }
-
+    if (a.art < b.art) return -1
+    if (a.art > b.art) return 1
     return 0
   })
+
   fetchDeck(props.deckId).then((deckData) => {
     deck.value = deckData
     ready.value = true
@@ -74,32 +69,34 @@ const cards = computed(() => {
       return Array(value).fill({ cardCode: key, classSymbols: [], cardType: "Treachery", art: "01000", level: 0, name: { title: "Random Basic Weakness", subtitle: null }, cardTraits: [], skills: [], cost: null })
     }
     
-    const result = ref<Arkham.CardDef>(allCards.value.find((c) => `c${c.art}` === key))
+    const result: Arkham.CardDef | undefined = allCards.value.find((c) => `c${c.art}` === key)
     const language = localStorage.getItem('language') || 'en'
-    if (language === 'en') return Array(value).fill(result.value)
+    if (language === 'en') return Array(value).fill(result)
     
-    const match: ArkhamDBCard = store.getDbCard(result.value.art)
-    if (!match) return Array(value).fill(result.value)
+    if (!result) return
+    const match: ArkhamDBCard | null = store.getDbCard(result.art)
+    if (!match) return Array(value).fill(result)
     
     // Name
-    result.value.name.title = match.name
-    if (match.subname) result.value.name.subtitle = match.subname
+    
+    result.name.title = match.name
+    if (match.subname) result.name.subtitle = match.subname
     
     // Class
-    if (match.faction_name && result.value.classSymbols.length > 0) result.value.classSymbols[0] = match.faction_name
-    if (match.faction2_name && result.value.classSymbols.length > 1) {
-      result.value.classSymbols[1] = match.faction2_name
-      if (match.faction3_name && result.value.classSymbols.length > 2) result.value.classSymbols[2] = match.faction3_name
+    if (match.faction_name && result.classSymbols.length > 0) result.classSymbols[0] = match.faction_name
+    if (match.faction2_name && result.classSymbols.length > 1) {
+      result.classSymbols[1] = match.faction2_name
+      if (match.faction3_name && result.classSymbols.length > 2) result.classSymbols[2] = match.faction3_name
     }
     
     // Type
-    result.value.cardType = match.type_name
+    result.cardType = match.type_name
     
     // Traits
-    if (match.traits) result.value.cardTraits = match.traits.split('.').filter(item => item != "" && item != " ")
+    if (match.traits) result.cardTraits = match.traits.split('.').filter(item => item != "" && item != " ")
     
     // Done...
-    return Array(value).fill(result.value)
+    return Array(value).fill(result)
   })
 })
 
@@ -110,17 +107,9 @@ const cardName = (card: Arkham.CardDef) => {
 }
 
 const cardCost = (card: Arkham.CardDef) => {
-  if (card.cost?.tag === "StaticCost") {
-    return card.cost.contents
-  }
-
-  if (card.cost?.tag === "DynamicCost") {
-    return -2
-  }
-
-  if (card.cost?.tag === "DiscardAmountCost") {
-    return -2
-  }
+  if (card.cost?.tag === "StaticCost") return card.cost.contents
+  if (card.cost?.tag === "DynamicCost") return -2
+  if (card.cost?.tag === "DiscardAmountCost") return -2
 
   return null
 }
@@ -177,7 +166,7 @@ const cardSetText = (card: Arkham.CardDef) => {
   var setName = ''
   
   if (language !== 'en') {
-    const match: ArkhamDBCard = store.getDbCard(card.art)
+    const match: ArkhamDBCard | null = store.getDbCard(card.art)
     if (match) setName = match.pack_name
   }
   

@@ -1,12 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Arkham.Scenario.Types (
-  module Arkham.Scenario.Types,
-  module X,
-  Field (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Types (module Arkham.Scenario.Types, module X, Field (..)) where
 
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
@@ -25,16 +19,20 @@ import Arkham.Key
 import Arkham.Layout
 import Arkham.Location.Grid
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck as X
 import Arkham.ScenarioLogKey
+import Arkham.Search
+import Arkham.Search qualified as Search
 import Arkham.Source
 import Arkham.Target
 import Arkham.Tarot
 import Arkham.Token
 import Arkham.Xp
+import Arkham.Zone
+import Control.Lens (_Just)
 import Data.Aeson.TH
-import Data.Typeable
 import Data.Data
 import GHC.Records
 
@@ -136,6 +134,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioDefeatedEnemies :: Map EnemyId DefeatedEnemyAttrs
   , scenarioIsSideStory :: Bool
   , scenarioInShuffle :: Bool
+  , scenarioSearch :: Maybe Search
   , -- for standalone
     scenarioStoryCards :: Map InvestigatorId [PlayerCard]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
@@ -294,6 +293,7 @@ scenario f cardCode name difficulty layout =
       , scenarioIsSideStory = False
       , scenarioInShuffle = False
       , scenarioXpBreakdown = Nothing
+      , scenarioSearch = Nothing
       }
 
 instance Entity ScenarioAttrs where
@@ -354,6 +354,10 @@ scenarioActs s = case mapToList $ scenarioActStack (toAttrs s) of
   _ -> error "Not able to handle multiple act stacks yet"
 
 makeLensesWith suffixedFields ''ScenarioAttrs
+
+foundCardsL :: Traversal' ScenarioAttrs (Map Zone [Card])
+foundCardsL = searchL . _Just . Search.foundCardsL
+
 $(deriveToJSON (aesonOptions $ Just "scenario") ''ScenarioAttrs)
 
 instance FromJSON ScenarioAttrs where
@@ -405,5 +409,6 @@ instance FromJSON ScenarioAttrs where
     scenarioInShuffle <- o .:? "inShuffle" .!= False
     scenarioStoryCards <- o .: "storyCards"
     scenarioPlayerDecks <- o .: "playerDecks"
-    scenarioXpBreakdown <- o .:? "xpBreakdown" .!= Nothing
+    scenarioXpBreakdown <- o .:? "xpBreakdown"
+    scenarioSearch <- o .:? "search"
     pure ScenarioAttrs {..}

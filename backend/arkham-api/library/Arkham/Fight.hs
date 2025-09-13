@@ -21,7 +21,7 @@ mkChooseFightPure :: Sourceable source => SkillTestId -> InvestigatorId -> sourc
 mkChooseFightPure sid iid source =
     ChooseFight
       { chooseFightInvestigator = iid
-      , chooseFightEnemyMatcher = AnyInPlayEnemy
+      , chooseFightEnemyMatcher = oneOf [AnyInPlayEnemy, EnemyHiddenInHand (InvestigatorWithId iid)]
       , chooseFightSource = toSource source
       , chooseFightTarget = Nothing
       , chooseFightSkillType = #combat

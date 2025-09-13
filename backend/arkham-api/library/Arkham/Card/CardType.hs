@@ -39,8 +39,7 @@ encounterCardTypes =
   ]
 
 playerCardTypes :: [CardType]
-playerCardTypes =
-  [AssetType, EventType, SkillType, PlayerTreacheryType, PlayerEnemyType]
+playerCardTypes = [AssetType, EventType, SkillType, PlayerTreacheryType, PlayerEnemyType]
 
 $(deriveJSON defaultOptions ''CardSubType)
 $(deriveJSON defaultOptions ''CardType)

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, watch, nextTick } from 'vue';
+import { onBeforeUnmount, ComputedRef, ref, computed, watch, nextTick } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
@@ -19,6 +19,7 @@ import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Location';
 import { TokenType } from '@/arkham/types/Token';
+import { Card } from '../types/Card';
 
 export interface Props {
   game: Game
@@ -40,7 +41,12 @@ const dragover = (e: DragEvent) => {
 }
 
 const props = defineProps<Props>()
-const emits = defineEmits(['choose'])
+const emits = defineEmits<{
+  choose: [value: number]
+  show: [cards: ComputedRef<Card[]>, title: string, isDiscards: boolean]
+}>()
+
+const choose = (n: number) => emits('choose', n)
 
 const image = computed(() => {
   const { cardCode, revealed } = props.location
@@ -70,10 +76,19 @@ function isCardAction(c: Message): boolean {
 
 const cardAction = computed(() => choices.value.findIndex(isCardAction))
 const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
-let clickTimeout: number | null = null;
+let clickTimeout: number | null = null
 // clickCount is used to determine if the user clicked once or twice
-let clickCount = 0;
-async function clicked(e:MouseEvent) {
+let clickCount = 0
+
+onBeforeUnmount(() => {
+  if (clickTimeout) {
+    clearTimeout(clickTimeout)
+    clickTimeout = null
+  }
+  clickCount = 0
+})
+
+async function clicked(e: MouseEvent) {
   clickCount++;
   if (clickTimeout) {
     clearTimeout(clickTimeout);
@@ -82,7 +97,7 @@ async function clicked(e:MouseEvent) {
     // Ensure this does not conflict with the double-click zoom-in functionality (toggleZoom in Scenario.vue)
     if (clickCount === 1){
       if(cardAction.value !== -1) {
-        emits('choose', cardAction.value)
+        choose(cardAction.value)
       } else if (abilities.value.length > 0) {
         showAbilities.value = !showAbilities.value
         await nextTick()
@@ -103,7 +118,7 @@ async function clicked(e:MouseEvent) {
 async function chooseAbility(ability: number) {
   showAbilities.value = false
   abilitiesEl.value?.blur()
-  emits('choose', ability)
+  choose(ability)
 }
 
 function isAbility(v: Message): v is AbilityLabel {
@@ -188,6 +203,14 @@ const hasAttachments = computed(() => {
   return treacheries.value.length > 0 || props.location.events.length > 0 || attachedEnemies.value.length > 0
 })
 
+const encounterCardsUnderneath = computed(() => {
+  return props.location.cardsUnderneath.filter(c => c.tag === 'EncounterCard')
+})
+
+const playerCardsUnderneath = computed(() => {
+  return props.location.cardsUnderneath.filter(c => c.tag === 'PlayerCard')
+})
+
 const hasPool = computed(() => {
   return keys.value.length > 0 ||
     seals.value.length > 0 ||
@@ -198,25 +221,24 @@ const hasPool = computed(() => {
     (pillars.value && pillars.value > 0) ||
     (leylines.value && leylines.value > 0) ||
     (antiquities.value && antiquities.value > 0) ||
+    (sealTokens.value && sealTokens.value > 0) ||
     (depth.value && depth.value > 0) ||
     (breaches.value && breaches.value > 0) ||
+    (shards.value && shards.value > 0) ||
     (props.location.brazier && props.location.brazier === 'Lit') ||
     (props.location.cardsUnderneath.length > 0)
 })
 
 const blocked = computed(() => {
-  const investigator = Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
-  const { modifiers } = investigator ?? { modifiers: [] }
-  const allModifiers = [...modifiers || [], ...props.location.modifiers]
+  const inv = Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
+  const invMods = inv?.modifiers ?? []
+  const locMods = props.location.modifiers
 
-  if (allModifiers) {
-    return allModifiers.some(modifier =>
-      (modifier.type.tag === "CannotEnter" && modifier.type.contents === props.location.id) ||
-        (modifier.type.tag === "OtherModifier" && modifier.type.contents === "Blocked")
-    )
-  }
+  const isBlocked = (m:any) =>
+    (m.type.tag === 'CannotEnter' && m.type.contents === props.location.id) ||
+    (m.type.tag === 'OtherModifier' && m.type.contents === 'Blocked')
 
-  return false
+  return invMods.some(isBlocked) || locMods.some(isBlocked)
 })
 
 const modifiers = computed(() => props.location.modifiers)
@@ -229,12 +251,14 @@ const explosion = computed(() => {
 const keys = computed(() => props.location.keys)
 const seals = computed(() => props.location.seals)
 
+const sealTokens = computed(() => props.location.tokens[TokenType.Seal])
 const clues = computed(() => props.location.tokens[TokenType.Clue])
 const doom = computed(() => props.location.tokens[TokenType.Doom])
 const resources = computed(() => props.location.tokens[TokenType.Resource])
 const pillars = computed(() => props.location.tokens[TokenType.Pillar])
 const depth = computed(() => props.location.tokens[TokenType.Depth])
 const leylines = computed(() => props.location.tokens[TokenType.Leyline])
+const shards = computed(() => props.location.tokens[TokenType.Shard])
 const antiquities = computed(() => props.location.tokens[TokenType.Antiquity])
 const breaches = computed(() => {
   const {breaches} = props.location
@@ -281,6 +305,8 @@ function onDrop(event: DragEvent) {
     }
   }
 }
+
+const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Underneath", false)
 </script>
 
 <template>
@@ -297,7 +323,7 @@ function onDrop(event: DragEvent) {
             :playerId="playerId"
             :portrait="true"
             :investigator="investigator"
-            @choose="$emit('choose', $event)"
+            @choose="choose"
             />
         </div>
       </div>
@@ -314,8 +340,8 @@ function onDrop(event: DragEvent) {
               :src="image"
               :class="{ 'location--can-interact': canInteract }"
               draggable="false"
-              @drop="onDrop($event)"
-              @dragover.prevent="dragover($event)"
+              @drop="onDrop"
+              @dragover.prevent="dragover"
               @dragenter.prevent
               @click="clicked"
             />
@@ -335,11 +361,15 @@ function onDrop(event: DragEvent) {
             <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
             <PoolItem v-if="pillars && pillars > 0" type="resource" :amount="pillars" />
             <PoolItem v-if="leylines && leylines > 0" type="resource" tooltip="Leyline" :amount="leylines" />
+            <PoolItem v-if="shards && shards > 0" type="resource" tooltip="Shard" :amount="shards" />
             <PoolItem v-if="antiquities && antiquities > 0" type="resource" tooltip="Antiquity" :amount="antiquities" />
+            <PoolItem v-if="sealTokens && sealTokens > 0" type="resource" tooltip="Seal" :amount="sealTokens" />
+
             <PoolItem v-if="depth && depth > 0" type="resource" :amount="depth" />
             <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
             <PoolItem v-if="location.brazier && location.brazier === 'Lit'" type="resource" :amount="1" />
-            <PoolItem v-if="location.cardsUnderneath.length > 0" type="card" :amount="location.cardsUnderneath.length" />
+            <PoolItem v-if="encounterCardsUnderneath.length > 0" type="card" :amount="encounterCardsUnderneath.length" />
+            <PoolItem v-if="playerCardsUnderneath.length > 0" type="player_card" :amount="playerCardsUnderneath.length" />
           </div>
         </div>
 
@@ -353,6 +383,9 @@ function onDrop(event: DragEvent) {
           @choose="chooseAbility"
         />
 
+
+        <button v-if="playerCardsUnderneath.length > 0" @click="showCardsUnderneath">Under ({{ playerCardsUnderneath.length }})</button>
+
         <template v-if="debug.active">
           <button @click="debugging = true">Debug</button>
         </template>
@@ -365,7 +398,7 @@ function onDrop(event: DragEvent) {
           :game="game"
           :attached="true"
           :playerId="playerId"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
         />
         <Event
           v-for="eventId in location.events"
@@ -373,7 +406,7 @@ function onDrop(event: DragEvent) {
           :game="game"
           :playerId="playerId"
           :key="eventId"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
           :attached="true"
         />
         <Enemy
@@ -382,7 +415,7 @@ function onDrop(event: DragEvent) {
           :game="game"
           :playerId="playerId"
           :key="enemyId"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
           :attached="true"
         />
       </div>
@@ -394,7 +427,7 @@ function onDrop(event: DragEvent) {
           :playerId="playerId"
           :key="assetId"
           :atLocation="true"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
         />
         <Enemy
           v-for="enemyId in enemies"
@@ -403,7 +436,7 @@ function onDrop(event: DragEvent) {
           :game="game"
           :playerId="playerId"
           :atLocation="true"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
         />
         <Story
           v-for="storyId in stories"
@@ -412,7 +445,7 @@ function onDrop(event: DragEvent) {
           :game="game"
           :playerId="playerId"
           :atLocation="true"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
         />
       </div>
     </div>

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { useStorage } from '@vueuse/core'
 import { computed, ref, watchEffect, inject } from 'vue';
 import type { Ref } from 'vue';
 import type { Game } from '@/arkham/types/Game';
@@ -24,7 +25,11 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
-const selectedTab = ref(props.playerId)
+
+const storageKey = computed(() => `selected-tab:${props.game.id}`)
+const selectedTab = useStorage<string>(storageKey, props.playerId)
+const userPicked = ref(false)
+
 const solo = inject<Ref<boolean>>('solo')
 const switchInvestigator = inject<((i: string) => void)>('switchInvestigator')
 const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length > 0
@@ -36,6 +41,7 @@ const store = useDbCardStore()
 
 function tabClass(investigator: Investigator) {
   const pid = investigator.playerId
+  console.log(investigator.id, props.activePlayerId)
   return [
     {
       'tab--selected': pid === selectedTab.value,
@@ -63,10 +69,12 @@ function instructions(investigator: Investigator) {
 
 function selectTab(i: string) {
   selectedTab.value = i
+  userPicked.value = true
 }
 
 function selectTabExtended(i: string) {
   selectedTab.value = i
+  userPicked.value = true
   if (solo?.value && props.playerId !== i && switchInvestigator) {
     switchInvestigator(i)
   }
@@ -122,6 +130,16 @@ watchEffect(() => {
     }, [] as string[])
 
   const playerIds = [...new Set(playersWithForced)]
+
+  if (playerIds.length == 0) {
+    const investigator = Object.values(props.players).find(i => i.playerId === props.playerId)
+    if (investigator && investigator.id == props.activePlayerId) {
+      selectedTab.value = props.playerId
+      return
+    }
+    if (userPicked.value) return
+  }
+
   selectedTab.value = playerIds.length > 0 && !playerIds.includes(props.playerId)
     ? playerIds[0]
     : props.playerId
@@ -275,11 +293,11 @@ ul.tabs__header > li.tab--selected {
 }
 
 .tab--lead-player {
-  &:before {
+  &:after {
     position: absolute;
     content: "";
     inset: 0;
-    top: -15px;
+    top: -5px;
     margin-inline: auto;
     transform: translateY(-100%);
     width: 25px;

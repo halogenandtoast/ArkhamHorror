@@ -15,7 +15,7 @@ universityHalls = story UniversityHalls Cards.universityHalls
 
 instance RunMessage UniversityHalls where
   runMessage msg s@(UniversityHalls attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       mElderChamber <- getSetAsideCardMaybe Locations.elderChamber
       mRiverviewTheatre <- getSetAsideCardMaybe Locations.riverviewTheatre
       mStandingStones <- getSetAsideCardMaybe Locations.standingStones

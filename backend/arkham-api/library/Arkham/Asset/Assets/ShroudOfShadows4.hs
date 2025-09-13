@@ -48,7 +48,7 @@ instance RunMessage ShroudOfShadows4 where
       pushAll $ EnemyEvaded iid eid : [WillMoveEnemy eid msg | nonElite]
       pure a
     WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _) | isTarget attrs target -> do
-      choices <- select $ ConnectedFrom (locationWithInvestigator iid) <> LocationCanBeEnteredBy enemyId
+      choices <- select $ connectedFrom (locationWithInvestigator iid) <> LocationCanBeEnteredBy enemyId
       afterEvade $ chooseTargetM iid choices $ push . EnemyMove enemyId
       pure a
     _ -> ShroudOfShadows4 <$> liftRunMessage msg attrs

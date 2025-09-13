@@ -136,6 +136,7 @@ instance HasField "needsAction" CardPlay Bool where
 
 data WindowType
   = AttemptToEvadeEnemy SkillTestId InvestigatorId EnemyId
+  | AttemptToFightEnemy SkillTestId InvestigatorId EnemyId
   | ResolvingRevelation InvestigatorId TreacheryId
   | VehicleLeaves AssetId LocationId
   | VehicleEnters AssetId LocationId
@@ -220,6 +221,7 @@ data WindowType
   | InvestigatorEliminated InvestigatorId
   | InvestigatorResigned InvestigatorId
   | LastClueRemovedFromAsset AssetId
+  | LastClueRemovedFromLocation LocationId
   | LeavePlay Target
   | Leaving InvestigatorId LocationId
   | MoveAction InvestigatorId LocationId LocationId
@@ -273,6 +275,7 @@ data WindowType
   | PutLocationIntoPlay InvestigatorId LocationId
   | LocationEntersPlay LocationId
   | RevealLocation InvestigatorId LocationId
+  | UnrevealedRevealLocation InvestigatorId LocationId
   | FlipLocation InvestigatorId LocationId
   | RevealChaosToken InvestigatorId ChaosToken
   | RevealChaosTokensDuringSkillTest InvestigatorId SkillTest [ChaosToken]
@@ -296,7 +299,7 @@ data WindowType
   | SuccessfulInvestigation InvestigatorId LocationId
   | SuccessfulParley InvestigatorId
   | TakeDamage Source DamageEffect Target Int
-  | TakeHorror Source Target
+  | TakeHorror Source Target Int
   | TookControlOfAsset InvestigatorId AssetId
   | TurnBegins InvestigatorId
   | TurnEnds InvestigatorId

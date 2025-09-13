@@ -74,10 +74,10 @@ instance RunMessage Decoy where
             chooseOrRunNM iid 2 performEvade
         else chooseOrRunOneM iid performEvade
       pure e
-    InHand _ (UseThisAbility _ (isSource attrs -> True) 1) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 1) | iid == iid' -> do
       eventModifier attrs (toCardId attrs) $ MetaModifier $ object ["enemyCount" .= (2 :: Int)]
       pure e
-    InHand _ (UseThisAbility _ (isSource attrs -> True) 2) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 2) | iid == iid' -> do
       eventModifier attrs (toCardId attrs) $ MetaModifier $ object ["upToTwoAway" .= True]
       pure e
     _ -> Decoy <$> liftRunMessage msg attrs

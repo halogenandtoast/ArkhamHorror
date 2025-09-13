@@ -2,6 +2,7 @@ module Arkham.Event.Cards.Starter where
 
 import Arkham.Criteria qualified as Criteria
 import Arkham.Event.Cards.Import
+import Arkham.ForMovement
 
 cleanThemOut :: CardDef
 cleanThemOut =
@@ -35,7 +36,7 @@ getOverHere =
           $ NonEliteEnemy
           <> oneOf
             [ EnemyAt YourLocation <> oneOf [CanEngageEnemy ThisCard, CanFightEnemy ThisCard]
-            , EnemyAt $ ConnectedFrom YourLocation
+            , EnemyAt $ ConnectedFrom NotForMovement YourLocation
             ]
     , cdOverrideActionPlayableIfCriteriaMet = True
     }
@@ -119,7 +120,7 @@ getOverHere2 =
           $ NonEliteEnemy
           <> oneOf
             [ EnemyAt YourLocation <> oneOf [CanEngageEnemy ThisCard, CanFightEnemy ThisCard]
-            , EnemyAt $ ConnectedFrom YourLocation
+            , EnemyAt $ ConnectedFrom NotForMovement YourLocation
             , EnemyAt $ LocationWithDistanceFrom 2 YourLocation Anywhere
             ]
     , cdOverrideActionPlayableIfCriteriaMet = True
@@ -434,10 +435,10 @@ lookWhatIFound2 =
     , cdCriteria =
         Just
           $ Criteria.Criteria
-            [ exists $ LocationMatchAny [YourLocation, ConnectedLocation] <> LocationWithAnyClues
+            [ exists $ LocationMatchAny [YourLocation, ConnectedLocation NotForMovement] <> LocationWithAnyClues
             , exists
                 $ You
-                <> InvestigatorCanDiscoverCluesAt (LocationMatchAny [YourLocation, ConnectedLocation])
+                <> InvestigatorCanDiscoverCluesAt (LocationMatchAny [YourLocation, ConnectedLocation NotForMovement])
             ]
     , cdFastWindow =
         Just $ SkillTestResult #after You (WhileInvestigating Anywhere) $ FailureResult $ lessThan 4

@@ -45,7 +45,7 @@ instance RunMessage InAzathothsDomain where
       drawCardsEdit iid (attrs.ability 1) x (setDrawDeck CosmosDeck . setTarget attrs)
       pure a
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
-      focusCards (map flipCard drewCards.cards) do
+      focusCards (map showRevealed drewCards.cards) do
         chooseOrRunOneM iid do
           targets drewCards.cards \card -> do
             unfocusCards

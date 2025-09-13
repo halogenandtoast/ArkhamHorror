@@ -726,6 +726,19 @@ allTreacheries =
     , SomeTreacheryCard secretDoorTheMidwinterGala
     , SomeTreacheryCard terrorGate
     , SomeTreacheryCard violentCommandsTheMidwinterGala
+    , --- Film Fatale
+      SomeTreacheryCard flipTheScript
+    , SomeTreacheryCard foundFootage
+    , SomeTreacheryCard action
+    , SomeTreacheryCard breakALeg
+    , SomeTreacheryCard bleedingReality
+    , SomeTreacheryCard lastLooks
+    , SomeTreacheryCard creatureFeature
+    , SomeTreacheryCard celestialShower
+    , SomeTreacheryCard primordialTerror
+    , SomeTreacheryCard unexpectedTransformation
+    , SomeTreacheryCard hellfire
+    , SomeTreacheryCard vampiresKiss
     , --- The Blob That Ate Everything ELSE!
       SomeTreacheryCard realityAcid5U21
     , -- Parallel

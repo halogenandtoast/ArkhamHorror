@@ -11,6 +11,8 @@ export interface ArkhamDBCard {
   back_traits?: string
   back_text?: string
   customization_text?: string
+  flavor? :string
+  back_flavor?: string
   faction_name: string
   faction2_name?: string
   faction3_name?: string
@@ -20,6 +22,8 @@ export interface ArkhamDBCard {
   real_traits: string
   real_text: string
   type_code: string
+  is_unique: boolean
+  double_sided: boolean
 }
 
 export interface DbCardsState {

@@ -3,7 +3,7 @@ module Arkham.Scenario.Scenarios.DimCarcosa (setupDimCarcosa, dimCarcosa, DimCar
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Campaigns.ThePathToCarcosa.Import
-import Arkham.Card (genCards)
+import Arkham.Card (genCards, toCard)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Card
@@ -186,17 +186,18 @@ setupDimCarcosa attrs = do
   theManInThePallidMask <- getCampaignStoryCard Enemies.theManInThePallidMask
   push $ RemoveFromBearersDeckOrDiscard theManInThePallidMask
 
+  setAside [toCard theManInThePallidMask]
+
   setAside
-    $ Enemies.theManInThePallidMask
-    : [ Enemies.hasturTheKingInYellow
+    $ [ Enemies.hasturTheKingInYellow
       , Enemies.hasturLordOfCarcosa
       , Enemies.hasturTheTatteredKing
       , Enemies.beastOfAldebaran
       ]
-      <> setAsideBleakPlains
-      <> setAsideRuinsOfCarcosa
-      <> setAsideDimStreets
-      <> setAsideDepthsOfDemhe
+    <> setAsideBleakPlains
+    <> setAsideRuinsOfCarcosa
+    <> setAsideDimStreets
+    <> setAsideDepthsOfDemhe
 
   whenReturnTo do
     setAside [Locations.recessesOfYourOwnMind, Locations.theThroneRoom, Locations.stageOfTheWardTheatre]
@@ -266,10 +267,12 @@ instance RunMessage DimCarcosa where
       doubt <- getDoubt
       case res of
         NoResolution -> do
-          flavor do
-            h "noResolution"
-            p.validate (conviction >= doubt) "goToResolution4"
-            p.validate (conviction < doubt) "goToResolution5"
+          resolutionFlavor $ scope "noResolution" do
+            setTitle "title"
+            p "body"
+            ul do
+              li.validate (conviction >= doubt) "goToResolution4"
+              li.validate (conviction < doubt) "goToResolution5"
           do_ $ if conviction >= doubt then R4 else R5
         _ -> do_ msg
       pure s

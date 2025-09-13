@@ -61,6 +61,7 @@ instance RunMessage CarsonSinclair where
           labeled "Do not resolve your Elder Sign ability" nothing
       pure i
     EndRound -> CarsonSinclair <$> liftRunMessage msg (attrs & deleteMetaKey "used")
+    Blanked EndRound -> CarsonSinclair <$> liftRunMessage msg (attrs & deleteMetaKey "used")
     _ -> CarsonSinclair <$> liftRunMessage msg attrs
 
 newtype CarsonSinclairEffect = CarsonSinclairEffect EffectAttrs

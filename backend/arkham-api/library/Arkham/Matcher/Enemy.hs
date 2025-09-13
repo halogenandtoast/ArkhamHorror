@@ -50,6 +50,7 @@ data EnemyMatcher
   | EnemyWithId EnemyId
   | EnemyWithTrait Trait
   | EnemyWithToken Token
+  | EnemyWithTokens Int Token
   | EnemyAt LocationMatcher
   | EnemyAttachedToAsset AssetMatcher
   | EnemyAttachedTo TargetMatcher
@@ -66,6 +67,7 @@ data EnemyMatcher
   | EnemyWithEqualFields (Field Enemy Int) (Field Enemy Int)
   | EnemyWithNonZeroField (Field Enemy Int)
   | EnemyWithMaybeFieldLessThanOrEqualToThis EnemyId (Field Enemy (Maybe Int))
+  | EnemyWithMaybeFieldLessThanOrEqualTo Int (Field Enemy (Maybe Int))
   | EnemyWithRemainingHealth ValueMatcher
   | EnemyWithDamage ValueMatcher
   | EnemyWithDoom ValueMatcher
@@ -89,6 +91,7 @@ data EnemyMatcher
   | AttackingEnemy
   | AttackedYouSinceTheEndOfYourLastTurn
   | CanFightEnemy Source
+  | CanFightEnemyWith SourceMatcher
   | CanEvadeEnemy Source -- This checks for an ability
   | EnemyCanBeEvadedBy Source -- This is not checking for an ability
   | EnemyCanBeDefeatedBy Source
@@ -140,6 +143,7 @@ data EnemyMatcher
   | EnemyIfReturnTo EnemyMatcher EnemyMatcher
   | EnemyWithAnyCardsUnderneath
   | SignatureEnemy
+  | EnemyHiddenInHand InvestigatorMatcher
   | -- | Must be replaced
     ThatEnemy
   deriving stock (Show, Eq, Ord, Data)

@@ -1,4 +1,4 @@
-module Arkham.Event.Events.SoothingMelody (soothingMelody, SoothingMelody (..)) where
+module Arkham.Event.Events.SoothingMelody (soothingMelody) where
 
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
@@ -17,11 +17,12 @@ soothingMelody = event SoothingMelody Cards.soothingMelody
 
 instance RunMessage SoothingMelody where
   runMessage msg e@(SoothingMelody attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
-      push $ ResolveEventChoice iid eid 1 Nothing []
-      drawCardsIfCan iid attrs 1
+    PlayThisEvent iid (is attrs -> True) -> do
+      doStep 1 msg
+      push $ ApplyHealing (toSource attrs)
+      drawCards iid attrs 1
       pure e
-    ResolveEventChoice iid eid n _ _ | eid == toId attrs -> do
+    DoStep n msg'@(PlayThisEvent iid (is attrs -> True)) -> do
       modifiers' <- liftA2 (<>) (getModifiers (toCardId attrs)) (getModifiers attrs)
       let
         updateLimit :: Int -> ModifierType -> Int
@@ -35,50 +36,18 @@ instance RunMessage SoothingMelody where
       let location = locationWithInvestigator iid
       damageInvestigators <- select $ HealableInvestigator (toSource attrs) #damage $ at_ location
       horrorInvestigators <- select $ HealableInvestigator (toSource attrs) #horror $ at_ location
-      damageAssets <-
-        selectTargets
-          $ HealableAsset (toSource attrs) #damage
-          $ at_ location
-          <> #ally
-          <> AssetControlledBy (affectsOthers Anyone)
-      horrorAssets <-
-        selectTargets
-          $ HealableAsset (toSource attrs) #horror
-          $ at_ location
-          <> #ally
-          <> AssetControlledBy (affectsOthers Anyone)
+      let source = toSource attrs
+      let assetFor k =
+            select $ HealableAsset source k (at_ location <> #ally <> AssetControlledBy (affectsOthers Anyone))
+      damageAssets <- assetFor #damage
+      horrorAssets <- assetFor #horror
 
-      let
-        componentLabel component target = case target of
-          InvestigatorTarget iid' -> ComponentLabel (InvestigatorComponent iid' component)
-          AssetTarget aid -> ComponentLabel (AssetComponent aid component)
-          _ -> error "unhandled target"
-        investigatorDamageChoices =
-          [ componentLabel DamageToken (toTarget i)
-            $ HealDamage (toTarget i) (toSource attrs) 1
-            : [ResolveEventChoice iid eid (n + 1) Nothing [] | n < limit]
-          | i <- damageInvestigators
-          ]
-        damageAssetChoices =
-          [ componentLabel DamageToken asset
-            $ HealDamage asset (toSource attrs) 1
-            : [ResolveEventChoice iid eid (n + 1) Nothing [] | n < limit]
-          | asset <- damageAssets
-          ]
-        horrorAssetChoices =
-          [ componentLabel HorrorToken asset
-            $ HealHorror asset (toSource attrs) 1
-            : [ResolveEventChoice iid eid (n + 1) Nothing [] | n < limit]
-          | asset <- horrorAssets
-          ]
+      chooseOneM iid do
+        for_ damageInvestigators \i -> damageLabeled i $ healDamageDelayed i attrs 1
+        for_ horrorInvestigators \i -> horrorLabeled i $ healHorrorDelayed i attrs 1
+        for_ damageAssets \asset -> assetDamageLabeled asset $ healDamageDelayed asset attrs 1
+        for_ horrorAssets \asset -> assetHorrorLabeled asset $ healHorrorDelayed asset attrs 1
 
-      investigatorHorrorChoices <- for horrorInvestigators $ \i -> do
-        pure $ componentLabel HorrorToken (toTarget i) $ HealHorror (toTarget i) (toSource attrs) 1
-          : [ResolveEventChoice iid eid (n + 1) Nothing [] | n < limit]
-
-      let choices =
-            investigatorDamageChoices <> investigatorHorrorChoices <> damageAssetChoices <> horrorAssetChoices
-
-      unless (null choices) $ chooseOne iid choices
+      when (n < limit) $ doStep (n + 1) msg'
       pure e
     _ -> SoothingMelody <$> liftRunMessage msg attrs

@@ -51,7 +51,7 @@ instance RunMessage InnsmouthSquareInTooDeep where
       chooseTargetM iid choices $ handleTarget iid (attrs.ability 2)
       pure l
     HandleTargetChoice iid (isAbilitySource attrs 2 -> True) (LocationTarget lid) -> do
-      others <- select $ ConnectedTo (be attrs) <> not_ (LocationWithId lid)
+      others <- select $ connectedTo (be attrs) <> not_ (LocationWithId lid)
       chooseTargetM iid others \choice -> do
         push $ ScenarioCountDecrementBy (Barriers attrs.id lid) 1
         push $ ScenarioCountIncrementBy (Barriers attrs.id choice) 1

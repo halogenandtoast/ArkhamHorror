@@ -32,7 +32,7 @@ data LocationAttrs = LocationAttrs
   , locationLabel :: Text
   , locationRevealClues :: GameValue
   , locationTokens :: Tokens
-  , locationShroud :: Maybe Int
+  , locationShroud :: Maybe GameValue
   , locationRevealed :: Bool
   , locationSymbol :: LocationSymbol
   , locationRevealedSymbol :: LocationSymbol
@@ -57,6 +57,7 @@ data LocationAttrs = LocationAttrs
   , locationMeta :: Value
   , locationGlobalMeta :: Map Aeson.Key Value
   , locationPosition :: Maybe Pos
+  , locationBeingRemoved :: Bool
   }
   deriving stock (Show, Eq)
 
@@ -81,6 +82,9 @@ locationDamage = countTokens Damage . locationTokens
 
 locationResources :: LocationAttrs -> Int
 locationResources = countTokens Resource . locationTokens
+
+instance HasField "underneath" LocationAttrs [Card] where
+  getField = locationCardsUnderneath
 
 instance HasField "cardId" LocationAttrs CardId where
   getField = locationCardId
@@ -153,7 +157,7 @@ instance FromJSON LocationAttrs where
     locationLabel <- o .: "label"
     locationRevealClues <- o .: "revealClues"
     locationTokens <- o .: "tokens"
-    locationShroud <- o .:? "shroud"
+    locationShroud <- o .:? "shroud" <|> (Static <$$> o .:? "shroud")
     locationRevealed <- o .: "revealed"
     locationSymbol <- o .: "symbol"
     locationRevealedSymbol <- o .: "revealedSymbol"
@@ -175,5 +179,6 @@ instance FromJSON LocationAttrs where
     locationMeta <- o .: "meta"
     locationGlobalMeta <- o .:? "globalMeta" .!= mempty
     locationPosition <- o .:? "position"
+    locationBeingRemoved <- o .:? "beingRemoved" .!= False
 
     pure LocationAttrs {..}

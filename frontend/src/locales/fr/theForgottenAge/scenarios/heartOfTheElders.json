@@ -1,0 +1,22 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "–1 (–3 à la place si vous êtes dans un lieu _Grotte_).",
+      "cultist": "–2. En cas d'échec, placez 1 fatalité sur votre lieu.",
+      "tablet": "–2. Si vous êtes empoisonné, échouez automatiquement à ce test à la place.",
+      "elderThing": "–3. En cas d'échec, subissez 1 horreur."
+    },
+    "hardExpert": {
+      "skull": "–2 (–4 à la place si vous êtes dans un lieu _Grotte_).",
+      "cultist": "–3. En cas d'échec, placez 1 fatalité sur votre lieu.",
+      "tablet": "–3. Si vous êtes empoisonné, échouez automatiquement à ce test à la place. Si vous n'êtes pas empoisonné et que vous échouez, mettez en jeu dans votre zone de menace une faiblesse Empoisonné mise de côté.",
+      "elderThing": "–4. En cas d'échec, subissez 1 horreur."
+    }
+  },
+  "label": {
+    "pitfall": {
+      "jumpTheGap": "Effectuer un test de {agility} (3) pour tenter de sauter au-dessus du trou. En cas d'échec, subissez 1 dégât pour chaque point manquant.",
+      "shuffle": "Mélanger la Chausse-Trappe dans le deck Exploration. Vous ne pouvez pas choisir cette option si la Chausse-Trappe a été piochée dans le deck Exploration."
+    }
+  }
+}

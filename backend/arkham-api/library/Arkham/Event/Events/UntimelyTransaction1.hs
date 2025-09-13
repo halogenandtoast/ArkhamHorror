@@ -1,7 +1,6 @@
 module Arkham.Event.Events.UntimelyTransaction1 (untimelyTransaction1) where
 
 import Arkham.Card
-import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.Cost.Status
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -40,7 +39,7 @@ instance RunMessage UntimelyTransaction1 where
           cardResolutionModifier (toCard attrs) attrs otherInvestigator (AsIfInHand card)
         player <- getPlayer iid
         otherPlayers <- forToSnd canAfford getPlayer
-        played <- evalQueueT do
+        played <- capture do
           drawCardsIfCan iid attrs 1
           gainResourcesIfCan iid attrs (printedCardCost card)
         focusCard card do

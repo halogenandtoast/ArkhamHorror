@@ -61,6 +61,7 @@ library:
     - amazonka
     - amazonka-s3
     - annotated-exception
+    - async
     - base16-bytestring
     - bugsnag
     - bugsnag-hs
@@ -88,11 +89,12 @@ library:
     - http-client-tls
     - http-conduit
     - http-types
-    - jwt
+    - jose
     - lens
     - lens-aeson
     - mailtrap
     - monad-logger
+    - monad-time
     - monoidal-containers
     - mtl >= 2.3.1
     - parsec

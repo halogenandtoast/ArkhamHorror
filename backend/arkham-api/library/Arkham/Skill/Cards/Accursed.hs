@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.Accursed (accursed, Accursed (..)) where
+module Arkham.Skill.Cards.Accursed (accursed) where
 
 import Arkham.ChaosToken
 import Arkham.Helpers.ChaosBag (getRemainingCurseTokens)

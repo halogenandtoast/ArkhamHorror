@@ -19,27 +19,25 @@
     </Suspense>
     <ModalsContainer />
   </template>
-  <footer><a href="https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/" rel="noreferrer" target="_blank" tabindex="-1">Arkham Horror: The Card Game™</a> and all related content © <a href="https://www.fantasyflightgames.com" rel="noreferrer" target="_blank" tabindex="-1">Fantasy Flight Games (FFG)</a>. This site is not produced, endorsed by or affiliated with FFG. <router-link to="/about">{{$t('about')}}.</router-link></footer>
+  <footer><a href="https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/" rel="noreferrer" target="_blank" tabindex="-1">Arkham Horror: The Card Game™</a> and all related content © <a href="https://www.fantasyflightgames.com" rel="noreferrer" target="_blank" tabindex="-1">Fantasy Flight Games (FFG)</a>. This site is not produced, endorsed by or affiliated with FFG. <router-link to="/about">{{$t('nav.about')}}.</router-link></footer>
 </template>
 
 <script lang="ts" setup>
 import { ModalsContainer } from 'vue-final-modal'
 import { ref, onMounted } from 'vue'
-import { useUserStore } from '@/stores/user'
 import { useSiteSettingsStore } from '@/stores/site_settings'
 import { useDbCardStore } from '@/stores/dbCards'
+import { checkImageExists } from '@/arkham/helpers'
 import NavBar from '@/components/NavBar.vue'
 import 'floating-vue/dist/style.css'
 
-const store = useUserStore()
 const settingsStore = useSiteSettingsStore()
 
 onMounted(async () => {
-  // order here is important, user must be loaded first
-  await store.loadUserFromStorage()
   await settingsStore.init()
   avifSupported.value = await checkAvifSupport();
   await useDbCardStore().initDbCards()
+  await checkImageExists()
 })
 const avifSupported = ref(true);
 const checkAvifSupport = (): Promise<boolean> => {
@@ -161,6 +159,7 @@ button {
   -moz-osx-font-smoothing: grayscale;
   width: 100%;
   height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -537,6 +536,7 @@ h2.title {
 
 .router-container {
   position: relative;
+  overflow: auto;
 }
 
 footer {

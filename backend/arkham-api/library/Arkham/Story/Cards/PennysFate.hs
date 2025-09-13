@@ -26,7 +26,7 @@ pennysFate = story PennysFate Cards.pennysFate
 
 instance RunMessage PennysFate where
   runMessage msg s@(PennysFate attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       disappearedIntoTheMist <- toCardCode Investigators.pennyWhite `inRecordSet` DisappearedIntoTheMist
       claimedBySpecters <- toCardCode Investigators.pennyWhite `inRecordSet` WasClaimedBySpecters
       onTrail <- getHasRecord TheInvestigatorsAreOnPenny'sTrail

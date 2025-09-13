@@ -15,7 +15,7 @@ elderChamber = story ElderChamber Cards.elderChamber
 
 instance RunMessage ElderChamber where
   runMessage msg s@(ElderChamber attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       mClutteredDormitory <- getSetAsideCardMaybe Locations.clutteredDormitory
 
       chooseOneM iid do

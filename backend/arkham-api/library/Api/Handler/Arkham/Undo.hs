@@ -17,7 +17,6 @@ import Entity.Arkham.Step
 import Import hiding (delete, on, update, (<.), (=.), (==.), (>=.))
 import Json
 import Network.HTTP.Types.Status qualified as Status
-import Safe (fromJustNote)
 
 jsonError :: Text -> Handler a
 jsonError msg = sendStatusJSON Status.status400 (object ["error" .= msg])
@@ -73,28 +72,18 @@ stepBack userId gameId current@ArkhamGame {..} = do
             =<< getBy (UniqueStep gameId (arkhamGameStep - 1))
 
           now <- liftIO getCurrentTime
-          isDebug <- lookupGetParam "debug"
-
+          isDebug <- isJust <$> lookupGetParam "debug"
           seed <- liftIO getRandom
+
           let
             arkhamGame =
-              case isDebug of
-                Nothing ->
-                  ArkhamGame
-                    arkhamGameName
-                    (ge {gameSeed = seed})
-                    (arkhamGameStep - 1)
-                    arkhamGameMultiplayerVariant
-                    arkhamGameCreatedAt
-                    now
-                Just _ ->
-                  ArkhamGame
-                    arkhamGameName
-                    ge
-                    (arkhamGameStep - 1)
-                    arkhamGameMultiplayerVariant
-                    arkhamGameCreatedAt
-                    now
+              ArkhamGame
+                arkhamGameName
+                (if isDebug then ge else ge {gameSeed = seed})
+                (arkhamGameStep - 1)
+                arkhamGameMultiplayerVariant
+                arkhamGameCreatedAt
+                now
 
           replace gameId arkhamGame
           delete do
@@ -114,7 +103,7 @@ stepBack userId gameId current@ArkhamGame {..} = do
 
 putApiV1ArkhamGameUndoR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoR gameId = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  userId <- getRequestUserId
   game <- runDB $ get404 gameId
   ArkhamGame {..} <- stepBack userId gameId game
   writeChannel <- socketChannel <$> getRoom gameId
@@ -127,7 +116,7 @@ putApiV1ArkhamGameUndoR gameId = do
 
 putApiV1ArkhamGameUndoScenarioR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoScenarioR gameId = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  userId <- getRequestUserId
   game <- runDB $ get404 gameId
 
   let n = gameScenarioSteps (arkhamGameCurrentData game) - 1

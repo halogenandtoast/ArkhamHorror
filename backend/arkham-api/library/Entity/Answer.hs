@@ -253,27 +253,35 @@ playerInvestigator Entities {..} pid = case find ((== pid) . attr investigatorPl
   Just investigator -> toId investigator
   Nothing -> error $ "No investigator for player " <> tshow pid
 
-handleAnswer :: (CanRunDB m, MonadHandler m) => Game -> PlayerId -> Answer -> m [Message]
+data Reply = Handled [Message] | Unhandled Text
+
+handled :: Applicative m => [Message] -> m Reply
+handled = pure . Handled
+
+unhandled :: Applicative m => Text -> m Reply
+unhandled = pure . Unhandled
+
+handleAnswer :: (CanRunDB m, MonadHandler m) => Game -> PlayerId -> Answer -> m Reply
 handleAnswer Game {..} playerId = \case
   DeckAnswer deckId _ -> do
     deck <- runDB $ get404 deckId
     let investigatorId = investigator_code $ arkhamDeckList deck
     runDB $ update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]
     let question' = Map.delete playerId gameQuestion
-    pure $ LoadDecklist playerId (arkhamDeckList deck) : [AskMap question' | not (Map.null question')]
+    handled $ LoadDecklist playerId (arkhamDeckList deck) : [AskMap question' | not (Map.null question')]
   StandaloneSettingsAnswer settings' -> do
     let standaloneCampaignLog = makeStandaloneCampaignLog settings'
-    pure [SetCampaignLog standaloneCampaignLog]
+    handled [SetCampaignLog standaloneCampaignLog]
   CampaignSettingsAnswer settings' -> do
     let campaignLog' = makeCampaignLog settings'
-    pure [SetCampaignLog campaignLog']
+    handled [SetCampaignLog campaignLog']
   AmountsAnswer response -> case Map.lookup playerId gameQuestion of
     Just (ChooseAmounts _ _ choices target) -> do
       let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
       let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
       let question' = Map.delete playerId gameQuestion
       let amounts = map (first toNamedUUID) $ Map.toList $ arAmounts response
-      pure
+      handled
         $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
         : [AskMap question' | not (Map.null question')]
     Just (QuestionLabel _ _ (ChooseAmounts _ _ choices target)) -> do
@@ -281,10 +289,10 @@ handleAnswer Game {..} playerId = \case
       let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
       let question' = Map.delete playerId gameQuestion
       let amounts = map (first toNamedUUID) $ Map.toList $ arAmounts response
-      pure
+      handled
         $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
         : [AskMap question' | not (Map.null question')]
-    _ -> error "Wrong question type"
+    _ -> unhandled "Wrong question type"
   PaymentAmountsAnswer response ->
     case Map.lookup playerId gameQuestion of
       Just (ChoosePaymentAmounts _ _ info) -> do
@@ -295,21 +303,22 @@ handleAnswer Game {..} playerId = \case
             PayCost acId iid skip (ResourceCost _) | n == 0 -> [PayCost acId iid skip (ResourceCost 0)]
             payMsg -> replicate n payMsg
         let handleCost (cId, n) = combinePaymentAmounts n $ Map.findWithDefault Noop cId costMap
-        pure $ concatMap handleCost $ Map.toList (parAmounts response)
-      _ -> error "Wrong question type"
+        handled $ concatMap handleCost $ Map.toList (parAmounts response)
+      _ -> unhandled "Wrong question type"
   Raw message -> do
     let isPlayerWindowChoose = \case
           PlayerWindowChooseOne _ -> True
           _ -> False
     if not (Map.null gameQuestion) && not (any isPlayerWindowChoose $ toList gameQuestion)
       then case message of
-        PassSkillTest -> pure [message]
-        FailSkillTest -> pure [message]
-        ForceChaosTokenDraw _ -> pure [message]
-        _ -> pure [message, AskMap gameQuestion]
-      else pure [message]
+        PassSkillTest -> handled [message]
+        FailSkillTest -> handled [message]
+        ForceChaosTokenDraw _ -> handled [message]
+        _ -> handled [message, AskMap gameQuestion]
+      else handled [message]
   Answer response -> do
-    pure $ maybe [] (\q -> go id q response) $ Map.lookup playerId gameQuestion
+    maybe (unhandled "Player not being asked") (\q -> handled $ go id q response)
+      $ Map.lookup playerId gameQuestion
  where
   go
     :: (Question Message -> Question Message)

@@ -19,7 +19,7 @@ hatchetMan = skill HatchetMan Cards.hatchetMan
 instance RunMessage HatchetMan where
   runMessage msg s@(HatchetMan attrs) = runQueueT $ case msg of
     PassedSkillTest _ (Just Action.Evade) _ (isTarget attrs -> True) _ _ -> do
-      getSkillTestTargetedEnemy >>= traverse_ (createCardEffect Cards.hatchetMan Nothing attrs)
+      withSkillTestTargetedEnemy (createCardEffect Cards.hatchetMan Nothing attrs)
       pure s
     _ -> HatchetMan <$> liftRunMessage msg attrs
 

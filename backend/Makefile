@@ -1,3 +1,12 @@
+.PHONY: core.watch
+core.watch:
+	cd arkham-api && \
+	stack build --test --no-run-tests --pedantic --fast arkham-api \
+	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
+	  --interleaved-output \
+	  --file-watch \
+		$(EXTRA_STACK_FLAGS)
+
 .PHONY: api.watch
 api.watch:
 	cd arkham-api && \
@@ -94,3 +103,20 @@ eventlog:
 	cd arkham-api && \
 		nix run -f https://github.com/mpickering/eventlog2html/archive/master.tar.gz eventlog2html arkham-api.eventlog && \
 		open arkham-api.eventlog.html
+
+.PHONY: api.metrics.full
+api.metrics.full:
+	cd arkham-api && \
+	stack clean --full && \
+	stack build -j1 --force-dirty --no-run-tests arkham-api \
+		--ghc-options "-Rghc-timing -ddump-timings -ddump-to-file +RTS -M128G -s -RTS" && \
+	sh scripts/timings.sh
+
+
+.PHONY: api.metrics.frontend
+api.metrics.frontend:
+	cd arkham-api && \
+	stack clean --full && \
+	stack build -j1 --force-dirty --no-run-tests arkham-api \
+		--ghc-options "-O0 -Rghc-timing -ddump-timings -ddump-to-file +RTS -M128G -s -RTS" && \
+	sh scripts/timings.sh

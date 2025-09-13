@@ -6,6 +6,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Effect.Import
+import Arkham.ForMovement
 import Arkham.Helpers.SkillTest (getSkillTestId)
 import Arkham.Investigate
 import Arkham.Matcher hiding (RevealChaosToken)
@@ -57,7 +58,7 @@ instance RunMessage EyeOfChaos4Effect where
           let
             handleIt assetId = do
               when (token.face == #curse) do
-                lids <- select $ ConnectedLocation <> locationWithDiscoverableCluesBy iid
+                lids <- select $ ConnectedLocation ForMovement <> locationWithDiscoverableCluesBy iid
                 stillInPlay <- selectAny $ AssetWithId assetId
 
                 when (stillInPlay || notNull lids) do

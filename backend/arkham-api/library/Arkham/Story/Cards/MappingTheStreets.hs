@@ -14,7 +14,7 @@ mappingTheStreets = story MappingTheStreets Cards.mappingTheStreets
 
 instance RunMessage MappingTheStreets where
   runMessage msg s@(MappingTheStreets attrs) = runQueueT $ case msg of
-    ResolveStory iid _ story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- perPlayer 1
       sid <- getRandom

@@ -19,12 +19,12 @@ dreamsOfTheDeepTheDeepGate =
   skill DreamsOfTheDeepTheDeepGate Cards.dreamsOfTheDeepTheDeepGate
 
 instance HasAbilities DreamsOfTheDeepTheDeepGate where
-  getAbilities (DreamsOfTheDeepTheDeepGate attrs) = [restrictedAbility attrs 1 InYourHand $ forced $ TurnEnds #when You]
+  getAbilities (DreamsOfTheDeepTheDeepGate attrs) = [restricted attrs 1 InYourHand $ forced $ TurnEnds #when You]
 
 instance RunMessage DreamsOfTheDeepTheDeepGate where
   runMessage msg s@(DreamsOfTheDeepTheDeepGate attrs) = runQueueT $ case msg of
     InHand iid' (UseThisAbility iid (isSource attrs -> True) 1) | iid' == iid -> do
-      push $ RevealCard attrs.cardId
+      revealCard attrs
       assignDamage iid attrs.cardId 2
       pure s
     _ -> DreamsOfTheDeepTheDeepGate <$> liftRunMessage msg attrs

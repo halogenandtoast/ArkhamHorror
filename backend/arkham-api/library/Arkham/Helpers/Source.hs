@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Source where
 
 import Arkham.Card
@@ -88,9 +87,9 @@ sourceMatches s = \case
   Matcher.SourceIsEnemyAttack em -> case s of
     EnemyAttackSource eid -> elem eid <$> select em
     _ -> pure False
-  Matcher.SourceIsTreacheryEffect tm -> case s of
-    TreacherySource tid -> elem tid <$> select tm
-    _ -> pure False
+  Matcher.SourceIsTreacheryEffect tm -> case s.treachery of
+    Just tid -> elem tid <$> select tm
+    Nothing -> pure False
   Matcher.SourceIsEnemy em -> case s.enemy of
     Nothing -> pure False
     Just eid -> eid <=~> em

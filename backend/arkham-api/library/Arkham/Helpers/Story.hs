@@ -2,19 +2,17 @@ module Arkham.Helpers.Story where
 
 import Arkham.Asset.Types (AssetAttrs)
 import Arkham.Card
-import Arkham.Classes.HasQueue
 import Arkham.Enemy.Types (EnemyAttrs)
+import Arkham.Helpers.Message
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Location.Types (LocationAttrs)
-import Arkham.Message
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Window qualified as Window
 
 class Flippable a where
-  flipThis
-    :: (ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> a -> m ()
+  flipThis :: (ReverseQueue m, ToId investigator InvestigatorId) => investigator -> a -> m ()
 
 instance Flippable LocationAttrs where
   flipThis investigator attrs = flipThis investigator attrs.id
@@ -37,7 +35,7 @@ instance Flippable AssetAttrs where
   flipThis _ _ = pure ()
 
 readStory
-  :: (ReverseQueue m, Flippable a, AsId investigator, IdOf investigator ~ InvestigatorId)
+  :: (ReverseQueue m, Flippable a, ToId investigator InvestigatorId)
   => investigator
   -> a
   -> CardDef

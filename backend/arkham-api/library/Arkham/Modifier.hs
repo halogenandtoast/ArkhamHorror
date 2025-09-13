@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -O0 -fomit-interface-pragmas -fno-specialise #-}
 
 module Arkham.Modifier where
 
@@ -211,6 +212,7 @@ data ModifierType
   | CannotSpendClues
   | CannotSpendKeys
   | CannotTakeKeys
+  | CannotLeavePlay
   | CannotTakeAction ActionTarget
   | CannotTakeControlOfClues
   | CannotTriggerAbilityMatching AbilityMatcher
@@ -226,6 +228,7 @@ data ModifierType
   | ChuckFergus2Modifier CardMatcher Int -- Used by Chuck Fergus (2), check for notes
   | CommitCost Cost
   | ConnectedToWhen LocationMatcher LocationMatcher
+  | ForMovementConnectedToWhen LocationMatcher LocationMatcher
   | ControlledAssetsCannotReady
   | CountAllDoomInPlay
   | CountsAsInvestigatorForHunterEnemies
@@ -364,6 +367,7 @@ data ModifierType
   | RemoveSkillIcons [SkillIcon]
   | RemoveTrait Trait
   | ReplaceAllSkillIconsWithWild
+  | SkillIconsSubtract
   | ResolveEffectsAgain -- NOTE: If used for more than Tekelili, need to figure out what to do
   | ResolveEffectsAgainMatch CardMatcher -- NOTE: If used for more than Tekelili, need to figure out what to do
   | ResolvesFailedEffects
@@ -447,6 +451,15 @@ instance IsLabel "willpower" (Int -> ModifierType) where
 
 instance IsLabel "damage" (Int -> ModifierType) where
   fromLabel = DamageDealt
+
+instance IsLabel "noAction" ModifierType where
+  fromLabel = ActionCostModifier (-1)
+
+instance IsLabel "retaliate" ModifierType where
+  fromLabel = AddKeyword Retaliate
+
+instance IsLabel "alert" ModifierType where
+  fromLabel = AddKeyword Alert
 
 data Modifier = Modifier
   { modifierSource :: Source

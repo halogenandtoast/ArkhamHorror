@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.TakeHeart (takeHeart, TakeHeart (..)) where
+module Arkham.Skill.Cards.TakeHeart (takeHeart) where
 
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
@@ -14,7 +14,7 @@ takeHeart = skill TakeHeart Cards.takeHeart
 instance RunMessage TakeHeart where
   runMessage msg s@(TakeHeart attrs) = runQueueT $ case msg of
     FailedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == toId attrs -> do
-      drawCardsIfCan iid attrs 2
-      gainResourcesIfCan iid attrs 2
+      drawCards iid attrs 2
+      gainResources iid attrs 2
       pure s
     _ -> TakeHeart <$> liftRunMessage msg attrs

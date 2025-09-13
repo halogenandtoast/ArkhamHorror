@@ -1,0 +1,8 @@
+{
+    "discards": "Défausse",
+    "endTurn": "Fin du tour",
+    "skipTriggers": "Ignorer déclencheurs",
+    "devouredCards": "Dévoré ({count})",
+    "underneathCards": "En dessous ({count})"
+
+}

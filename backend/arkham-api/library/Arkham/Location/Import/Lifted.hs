@@ -13,6 +13,7 @@ import Arkham.Location.Runner as X (
   LocationCard,
   Message (..),
   canBeFlippedL,
+  cardsUnderneathL,
   connectedMatchersL,
   connectsToL,
   costToEnterUnrevealedL,

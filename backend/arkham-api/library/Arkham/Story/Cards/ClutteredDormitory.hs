@@ -16,7 +16,7 @@ clutteredDormitory = story ClutteredDormitory Cards.clutteredDormitory
 
 instance RunMessage ClutteredDormitory where
   runMessage msg s@(ClutteredDormitory attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       handleMemory
         attrs
         Assets.danforthBrilliantStudent

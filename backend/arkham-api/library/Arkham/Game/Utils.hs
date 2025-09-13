@@ -19,6 +19,7 @@ import Arkham.Game.Base
 import Arkham.Helpers.Action (getActionCost)
 import Arkham.Helpers.Calculation
 import Arkham.Helpers.Card
+import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator (promoInvestigators)
@@ -158,7 +159,6 @@ maybeEffect effectId = do
 getPlacementLocation :: HasGame m => Placement -> m (Maybe LocationId)
 getPlacementLocation = \case
   AtLocation location -> pure $ Just location
-  ActuallyLocation location -> pure $ Just location
   AttachedToLocation location -> pure $ Just location
   InPlayArea investigator -> field InvestigatorLocation investigator
   InThreatArea investigator -> field InvestigatorLocation investigator
@@ -281,6 +281,7 @@ createActiveCostForCard iid card isPlayAction windows' = do
           actions = case cdActions (toCardDef card) of
             [] -> [Action.Play | isPlayAction == IsPlayAction]
             as -> as
+          isInvestigate = #investigate `elem` actions
           sealingToCost = \case
             Sealing matcher -> Just $ Cost.SealCost matcher
             SealUpTo n matcher -> Just $ Cost.UpTo (Fixed n) $ Cost.SealCost matcher
@@ -303,6 +304,16 @@ createActiveCostForCard iid card isPlayAction windows' = do
                         (Cost.ResourceCost 1)
                   else Cost.Free
               else Cost.ResourceCost resources
+
+        investigateCosts <-
+          if isInvestigate
+            then do
+              getMaybeLocation iid >>= \case
+                Just lid -> do
+                  mods' <- getModifiers lid
+                  pure [c | AdditionalCostToInvestigate c <- mods']
+                _ -> pure []
+            else pure []
 
         additionalActionCosts <-
           sum <$> flip mapMaybeM allModifiers \case
@@ -333,6 +344,7 @@ createActiveCostForCard iid card isPlayAction windows' = do
           <> (maybe [] pure . cdAdditionalCost $ toCardDef card)
           <> [actionCost]
           <> additionalCosts
+          <> investigateCosts
           <> sealChaosTokenCosts
   pure
     ActiveCost
@@ -362,7 +374,8 @@ getLocation lid = fromMaybe missingLocation <$> maybeLocation lid
 maybeLocation :: HasGame m => LocationId -> m (Maybe Location)
 maybeLocation lid = do
   g <- getGame
-  pure $ preview (entitiesL . locationsL . ix lid) g
+  pure
+    $ preview (entitiesL . locationsL . ix lid) g
     <|> getRemovedEntity locationsL lid g
 
 modeScenario :: GameMode -> Maybe Scenario

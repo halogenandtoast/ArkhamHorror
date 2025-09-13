@@ -10,6 +10,7 @@ import {-# SOURCE #-} Arkham.Criteria
 import Arkham.Direction
 import {-# SOURCE #-} Arkham.Enemy.Types (Enemy)
 import Arkham.Field
+import Arkham.ForMovement
 import Arkham.Id
 import Arkham.Key
 import Arkham.Label
@@ -58,6 +59,7 @@ data LocationMatcher
   | LocationWithAnySeal
   | LocationWithActiveSeal SealKind
   | LocationWithoutClues
+  | LocationBeingRemoved
   | LocationWithDoom ValueMatcher
   | LocationWithDamage ValueMatcher
   | LocationIs CardCode
@@ -68,12 +70,12 @@ data LocationMatcher
   | EmptyLocation
   | SameLocation
   | LocationWithToken Token
-  | ConnectedFrom LocationMatcher
-  | UnbarricadedConnectedFrom LocationMatcher
-  | ConnectedTo LocationMatcher
+  | ConnectedFrom ForMovement LocationMatcher
+  | ConnectedTo ForMovement LocationMatcher
+  | UnbarricadedConnectedFrom ForMovement LocationMatcher
   | ConnectedToSetAsideLocation
-  | AccessibleFrom LocationMatcher
-  | AccessibleTo LocationMatcher
+  | AccessibleFrom ForMovement LocationMatcher
+  | AccessibleTo ForMovement LocationMatcher
   | LocationWithVictory
   | LocationWithDistanceFrom Int LocationMatcher LocationMatcher
   | -- | distance, start, end
@@ -93,7 +95,7 @@ data LocationMatcher
   | LocationWithMostEnemies LocationMatcher EnemyMatcher
   | LocationWithEnemy EnemyMatcher
   | LocationCanBeEnteredBy EnemyId
-  | LocationWithAsset AssetMatcher
+  | LocationWithAsset AssetMatcher 
   | LocationWithAttachedEvent EventMatcher
   | LocationWithAttachedAsset AssetMatcher
   | LocationWithAttachment
@@ -125,6 +127,7 @@ data LocationMatcher
   | LocationWithoutModifier ModifierType
   | LocationWithModifier ModifierType
   | LocationWithDiscoverableCluesBy InvestigatorMatcher
+  | LocationNotAtClueLimit
   | LocationMatchAll [LocationMatcher]
   | LocationMatchAny [LocationMatcher]
   | FirstLocation [LocationMatcher]
@@ -241,12 +244,45 @@ locationIs :: HasCardCode a => a -> LocationMatcher
 locationIs = LocationIs . toCardCode
 {-# INLINE locationIs #-}
 
+connectedFrom :: LocationMatcher -> LocationMatcher
+connectedFrom = ConnectedFrom NotForMovement
+{-# INLINE connectedFrom #-}
+
+connectedTo :: LocationMatcher -> LocationMatcher
+connectedTo = ConnectedTo NotForMovement
+{-# INLINE connectedTo #-}
+
 $(deriveToJSON defaultOptions ''LocationMatcher)
 
 instance FromJSON LocationMatcher where
   parseJSON = withObject "LocationMatcher" \o -> do
     tag :: Text <- o .: "tag"
     case tag of
+      "ConnectedFrom" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left matcher -> pure $ ConnectedFrom ForMovement matcher
+          Right (forMovement, matcher) -> pure $ ConnectedFrom forMovement matcher
+      "ConnectedTo" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left matcher -> pure $ ConnectedTo ForMovement matcher
+          Right (forMovement, matcher) -> pure $ ConnectedTo forMovement matcher
+      "AccessibleFrom" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left matcher -> pure $ AccessibleFrom ForMovement matcher
+          Right (forMovement, matcher) -> pure $ AccessibleFrom forMovement matcher
+      "AccessibleTo" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left matcher -> pure $ AccessibleTo ForMovement matcher
+          Right (forMovement, matcher) -> pure $ AccessibleTo forMovement matcher
+      "UnbarricadedConnectedFrom" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left matcher -> pure $ UnbarricadedConnectedFrom ForMovement matcher
+          Right (forMovement, matcher) -> pure $ UnbarricadedConnectedFrom forMovement matcher
       "LocationWithDistanceFrom" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

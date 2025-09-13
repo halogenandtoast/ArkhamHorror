@@ -204,6 +204,7 @@ data Criterion
   | InvestigatorIsAlone
   | InvestigatorsHaveSpendableClues ValueMatcher
   | LocationExists LocationMatcher
+  | AgendaCount Int AgendaMatcher
   | AssetCount Int AssetMatcher
   | EnemyCount Int EnemyMatcher
   | EventCount ValueMatcher EventMatcher

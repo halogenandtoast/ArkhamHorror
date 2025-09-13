@@ -194,7 +194,7 @@ withModifiers'
   :: (Targetable target, HasGame m)
   => target
   -> m [Modifier]
-  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> (forall t. (HasGame t) => t a)
   -> m a
 withModifiers' (toTarget -> target) mods body = do
   game <- getGame
@@ -207,7 +207,7 @@ withModifiers' (toTarget -> target) mods body = do
 withActiveInvestigator
   :: HasGame m
   => InvestigatorId
-  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> (forall t. (HasGame t) => t a)
   -> m a
 withActiveInvestigator iid body = do
   game <- getGame
@@ -216,7 +216,7 @@ withActiveInvestigator iid body = do
 withActiveInvestigatorAdjust
   :: HasGame m
   => InvestigatorId
-  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> (forall t. (HasGame t) => t a)
   -> m a
 withActiveInvestigatorAdjust iid body = do
   game <- getGame
@@ -250,3 +250,6 @@ getCardUses cCode = findWithDefault [] cCode . gameCardUses <$> getGame
 getAllCardUses :: HasGame m => m [CardDef]
 getAllCardUses =
   concatMap (mapMaybe lookupCardDef . (\ (k, v) -> replicate (length v) k)) . Map.toList . gameCardUses <$> getGame
+
+getTurnOrder :: HasGame m => m [InvestigatorId]
+getTurnOrder = gamePlayerOrder <$> getGame

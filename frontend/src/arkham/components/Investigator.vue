@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { useSettings } from '@/stores/settings';
 import { storeToRefs } from 'pinia';
-import { onMounted, computed, ref, watch } from 'vue'
+import { onUnmounted, onMounted, computed, ref, watch } from 'vue'
 import Draggable from '@/components/Draggable.vue';
 import CardView from '@/arkham/components/Card.vue';
+import Modifiers from '@/arkham/components/Modifiers.vue';
 import { useDebug } from '@/arkham/debug'
 import { PaperClipIcon } from '@heroicons/vue/20/solid'
 import type { Game } from '@/arkham/types/Game'
@@ -12,7 +13,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import * as Arkham from '@/arkham/types/Investigator'
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
-import type { Modifier } from '@/arkham/types/Modifier'
+import { toCardContents } from '@/arkham/types/Card'
 import Token from '@/arkham/components/Token.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { useMenu } from '@/composeable/menu';
@@ -161,7 +162,6 @@ const portraitImage = computed(() => {
   return imgsrc(`portraits/${props.investigator.cardCode.replace('c', '')}.jpg`)
 })
 
-
 const emitter = useEmitter()
 const cardsUnderneath = computed(() => props.investigator.cardsUnderneath)
 const cardsUnderneathLabel = computed(() => t('investigator.underneathCards', {count: cardsUnderneath.value.length}))
@@ -173,6 +173,11 @@ onMounted(() => {
       showCardsUnderneath(new Event('click'))
     }
   })
+})
+
+onUnmounted(() => {
+  if (!props.portrait) removeEntry(`viewBonded-${props.investigator.playerId}`)
+  emitter.off('showUnder')
 })
 
 
@@ -189,44 +194,6 @@ const ethereal = computed(() => {
   return modifiers.value?.some((m) => m.type.tag === "UIModifier" && m.type.contents === "Ethereal") ?? false
 })
 
-function calculateSkill(base: number, skillType: string, modifiers: Modifier[]) {
-  let modified = base
-
-  modifiers.forEach((modifier) => {
-    if (modifier.type.tag === "BaseSkillOf" && modifier.type.skillType === skillType) {
-      modified = modifier.type.value
-    }
-
-    if (modifier.type.tag === "BaseSkill" && props.game.skillTest && props.game.skillTest.skills.includes(skillType)) {
-      modified = modifier.type.contents
-    }
-  })
-
-  modifiers.forEach((modifier) => {
-    if (modifier.type.tag === "SkillModifier" && modifier.type.skillType === skillType) {
-      modified = modified + modifier.type.value
-    }
-
-    if (modifier.type.tag === "AnySkillValue") {
-      if (props.game.skillTest && props.game.skillTest.skills.includes(skillType)) {
-        modified = modified + modifier.type.contents
-      }
-    }
-
-    if (modifier.type.tag === "ActionSkillModifier" && modifier.type.skillType === skillType && props.game.skillTest && props.game.skillTest.action === modifier.type.action) {
-      modified = modified + modifier.type.value
-    }
-  })
-
-  modifiers.forEach((modifier) => {
-    if (modifier.type.tag === "SetSkillValue" && modifier.type.skillType === skillType) {
-      modified = modifier.type.value
-    }
-  })
-
-  return modified
-}
-
 function useEffectAction(action: { contents: string[] }) {
   const choice = choices.value.findIndex((c) => c.tag === 'EffectActionButton' && c.effectId == action.contents[1])
   if (choice !== -1) {
@@ -239,12 +206,67 @@ function isActiveEffectAction(action: { tag?: "EffectAction"; contents: any }) {
   return choice !== -1
 }
 
-const willpower = computed(() => calculateSkill(props.investigator.willpower, "SkillWillpower", modifiers.value ?? []))
-const intellect = computed(() => calculateSkill(props.investigator.intellect, "SkillIntellect", modifiers.value ?? []))
-const combat = computed(() => calculateSkill(props.investigator.combat, "SkillCombat", modifiers.value ?? []))
-const agility = computed(() => calculateSkill(props.investigator.agility, "SkillAgility", modifiers.value ?? []))
+const skills = computed(() => {
+  const st = props.game.skillTest
+  const activeSkills = st ? new Set(st.skills) : null
+  const action = st?.action
+
+  const base = {
+    SkillWillpower: props.investigator.willpower,
+    SkillIntellect: props.investigator.intellect,
+    SkillCombat: props.investigator.combat,
+    SkillAgility: props.investigator.agility,
+  }
+
+  const baseOverride: Record<string, number|undefined> = {}
+  const plus: Record<string, number> = {
+    SkillWillpower: 0, SkillIntellect: 0, SkillCombat: 0, SkillAgility: 0
+  }
+  const finalSet: Record<string, number|undefined> = {}
+
+  for (const m of (props.investigator.modifiers ?? [])) {
+    const t = m.type
+    switch (t.tag) {
+      case 'BaseSkillOf':
+        baseOverride[t.skillType] = t.value
+        break
+      case 'BaseSkill':
+        if (activeSkills)
+          for (const k of activeSkills) baseOverride[k] = t.contents
+        break
+      case 'SkillModifier':
+        plus[t.skillType] += t.value
+        break
+      case 'AnySkillValue':
+        if (activeSkills) for (const k of activeSkills) plus[k] += t.contents
+        break
+      case 'ActionSkillModifier':
+        if (t.action === action) plus[t.skillType] += t.value
+        break
+      case 'SetSkillValue':
+        finalSet[t.skillType] = t.value
+        break
+    }
+  }
+
+  const calc = (k:'SkillWillpower'|'SkillIntellect'|'SkillCombat'|'SkillAgility') =>
+    (finalSet[k] ?? ((baseOverride[k] ?? base[k]) + plus[k]))
+
+  return {
+    willpower: calc('SkillWillpower'),
+    intellect: calc('SkillIntellect'),
+    combat: calc('SkillCombat'),
+    agility: calc('SkillAgility'),
+  }
+})
+
+const willpower = computed(() => skills.value.willpower)
+const intellect = computed(() => skills.value.intellect)
+const combat = computed(() => skills.value.combat)
+const agility = computed(() => skills.value.agility)
 
 const dragging = ref(false)
+const showModifiers = ref(false)
 function startDrag(event: DragEvent) {
   dragging.value = true
   if (event.dataTransfer) {
@@ -252,6 +274,8 @@ function startDrag(event: DragEvent) {
     event.dataTransfer.setData('text/plain', JSON.stringify({ "tag": "InvestigatorTarget", "contents": id.value }))
   }
 }
+
+function endDrag() { dragging.value = false }
 
 const dragover = (e: DragEvent) => {
   e.preventDefault()
@@ -296,6 +320,7 @@ function onDrop(event: DragEvent) {
       :draggable="debug.active"
       @click="$emit('choose', investigatorAction)"
       @dragstart="startDrag($event)"
+      @dragstop="endDrag"
       @drop="onDrop($event)"
       @dragover.prevent="dragover($event)"
       @dragenter.prevent
@@ -320,7 +345,7 @@ function onDrop(event: DragEvent) {
             @dragover.prevent="dragover($event)"
             @dragenter.prevent
           />
-          <Token v-for="(sealedToken, index) in investigator.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" class="sealed" />
+          <Token v-for="sealedToken in investigator.sealedChaosTokens" :key="sealedToken.id" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" class="sealed" />
         </div>
       </div>
       <div>
@@ -364,6 +389,13 @@ function onDrop(event: DragEvent) {
             class="skip-triggers-button"
           >{{ isMobile ? 'Skip' : $t('investigator.skipTriggers') }}</button>
 
+          <button
+            v-if="debug && debug.active && (investigator.modifiers ?? []).length > 0"
+            @click="showModifiers = true"
+            >Show Modifiers</button>
+
+          <Modifiers v-if="investigator.modifiers && showModifiers" :game="game" :modifiers="investigator.modifiers" @close="showModifiers = false" />
+
           <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
           <Draw
             v-if="isMobile"
@@ -393,7 +425,7 @@ function onDrop(event: DragEvent) {
     <Draggable v-if="doShowBonded">
       <template #handle><header><h2>{{$t('gameBar.bonded')}}</h2></header></template>
       <div class="card-row-cards">
-        <div v-for="card in investigator.bondedCards" :key="card.id" class="card-row-card">
+        <div v-for="card in investigator.bondedCards" :key="toCardContents(card).id" class="card-row-card">
           <CardView :game="game" :card="card" :playerId="playerId" />
         </div>
       </div>

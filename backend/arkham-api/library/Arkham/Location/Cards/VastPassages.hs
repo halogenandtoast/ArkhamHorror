@@ -18,7 +18,7 @@ vastPassages = symbolLabel $ location VastPassages Cards.vastPassages 2 (PerPlay
 instance HasModifiersFor VastPassages where
   getModifiersFor (VastPassages a) = do
     ok <- selectNone $ InvestigatorWithSupply Binoculars <> investigatorAt a
-    modifySelectWhen a ok Anyone [AdditionalActionCostOf (IsAction Action.Explore) 1]
+    modifySelectWhen a ok (investigatorAt a) [AdditionalActionCostOf (IsAction Action.Explore) 1]
 
 instance RunMessage VastPassages where
   runMessage msg (VastPassages attrs) = VastPassages <$> runMessage msg attrs

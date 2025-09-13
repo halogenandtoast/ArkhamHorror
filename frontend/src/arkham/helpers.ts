@@ -1,13 +1,79 @@
 import ita from '@/digests/ita.json'
 import es from '@/digests/es.json'
+import fr from '@/digests/fr.json'
 import ko from '@/digests/ko.json'
 import zh from '@/digests/zh.json'
 
 import { useSiteSettingsStore } from '@/stores/site_settings'
+import { ref, type Ref } from 'vue';
+
+interface ImageHelper {
+  root: string
+  digests: Set<string>
+  data: Map<string, Ref<boolean>>
+  loaded: Ref<boolean>
+}
+
+const batchSize: number = 1000
+const defaultHelper: ImageHelper = { root: '', digests: new Set(), data: new Map(), loaded: ref(true) }
+const imgHelper:Map<string, ImageHelper> = new Map<string, ImageHelper>([
+  ['it', { root: 'ita', digests: new Set(ita), data: new Map(), loaded: ref(false) }],
+  ['fr', { root: 'fr', digests: new Set(fr), data: new Map(), loaded: ref(false) }],
+  ['es', { root: 'es', digests: new Set(es), data: new Map(), loaded: ref(false) }],
+  ['ko', { root: 'ko', digests: new Set(ko), data: new Map(), loaded: ref(false) }],
+  ['zh', { root: 'zh', digests: new Set(zh), data: new Map(), loaded: ref(false) }]
+])
+
+export async function checkImageExists(language: string = localStorage.getItem('language') || 'en') {
+  if (language === 'en' || !imgHelper.has(language)) return
+  
+  const helper = imgHelper.get(language) || defaultHelper
+  if (!helper.root || helper.loaded.value) return
+  
+  const store = useSiteSettingsStore()
+  const imgList = helper.digests
+  const tasks: {path: string, ext: string}[] = []
+  
+  imgList.forEach((originPath) => {
+    const path = originPath.replace(/^\//, '')
+    const ext = (path.split('.').pop() || '').toLowerCase()
+    
+    if (ext !== 'avif' && ext !== 'webp' && !ext.endsWith('png') && !ext.startsWith('jpg')) return
+    tasks.push({path, ext})
+  })
+  
+  const runBatch = async () => {
+    const batch = tasks.splice(0, batchSize)
+    
+    await Promise.allSettled(
+      batch.map(async ({path, ext}) => {
+        const i18nPath = `${store.assetHost}/img/arkham/${helper.root}/${path}`
+        
+        try {
+          const res = await fetch(i18nPath, { method: 'HEAD' })
+          const contentType = res.headers.get('Content-Type') || ''
+          const isOkay = res.ok && contentType !== 'text/html' && (contentType === 'text/plain' || (ext ? contentType === `image/${ext}` : false))
+          helper.data.set(path, ref(isOkay))
+        } catch {
+          helper.data.set(path, ref(false))
+        }
+      })
+    ).then((results) => {
+      results.forEach((result, index) => {
+        if (result.status === 'rejected')
+          tasks.push(batch[index])
+      })
+    })
+    .finally(async () => {
+      if (tasks.length > 0) await runBatch()
+      else helper.loaded.value = true
+    })
+  }
+  
+  await runBatch()
+}
 
 export function toCapitalizedWords(name: string) {
-  console.log(name)
-  // const words = name.match(/[A-Z]+[a-z']+/g) || [];
   const words = name.match(/[A-Z]?[a-z']+|[A-Z]/g) || [];
   return capitalize(words.map(lowercase).join(" "));
 }
@@ -29,29 +95,42 @@ export function lowercase(word: string) {
 
 export const baseUrl = import.meta.env.PROD ? "https://assets.arkhamhorror.app" : ''
 
+export function isLocalized(src: string) {
+  const language = localStorage.getItem('language') || 'en'
+  // Always return true for English since all base images are English
+  if (language === 'en') return true
+
+  const helper = imgHelper.get(language) || defaultHelper
+  const path = src.replace(/^\//, '')
+  const exists = helper.digests.has(path)
+
+  if (exists && helper.root && helper.loaded.value) {
+    const canFetch = helper.data.get(path).value || false
+    if (canFetch) return true
+  }
+
+  return false
+}
+
 export function imgsrc(src: string) {
   const store = useSiteSettingsStore()
   const language = localStorage.getItem('language') || 'en'
   const path = src.replace(/^\//, '')
-  switch (language) {
-    case 'it': {
-      const exists = ita.includes(path)
-      return exists ? `${store.assetHost}/img/arkham/ita/${src.replace(/^\//, '')}` : `${store.assetHost}/img/arkham/${src.replace(/^\//, '')}`
+  const fullPath = `${store.assetHost}/img/arkham/${path}`
+  
+  if (isLocalized(src)) {
+    const helper = imgHelper.get(language) || defaultHelper
+    const exists = helper.digests.has(path)
+    
+    if (exists && helper.root && helper.loaded.value) {
+      const i18nFullPath = `${store.assetHost}/img/arkham/${helper.root}/${path}`
+      const canFetch = helper.data.get(path).value || false
+      
+      if (canFetch) return i18nFullPath
     }
-    case 'es': {
-      const exists = es.includes(path)
-      return exists ? `${store.assetHost}/img/arkham/es/${src.replace(/^\//, '')}` : `${store.assetHost}/img/arkham/${src.replace(/^\//, '')}`
-    }
-    case 'ko': {
-      const exists = ko.includes(path)
-      return exists ? `${store.assetHost}/img/arkham/ko/${src.replace(/^\//, '')}` : `${store.assetHost}/img/arkham/${src.replace(/^\//, '')}`
-    }
-    case 'zh': {
-      const exists = zh.includes(path)
-      return exists ? `${store.assetHost}/img/arkham/zh/${src.replace(/^\//, '')}` : `${store.assetHost}/img/arkham/${src.replace(/^\//, '')}`
-    }
-    default: return `${store.assetHost}/img/arkham/${src.replace(/^\//, '')}`
   }
+  
+  return fullPath
 }
 
 export function pluralize(w: string, n: number) {
@@ -104,100 +183,54 @@ export function replaceIcons(body: string) {
     replace(/{perPlayer}/g, '<span class="per-player"></span>')
 }
 
-export function investigatorClass(code: string) {
-  switch (code) {
-    case "01001": return { guardian : true }
-    case "01002": return { seeker : true }
-    case "01003": return { rogue : true }
-    case "01004": return { mystic : true }
-    case "01005": return { survivor : true }
-    case "01501": return { guardian : true }
-    case "01502": return { seeker : true }
-    case "01503": return { rogue : true }
-    case "01504": return { mystic : true }
-    case "01505": return { survivor : true }
-    case "02001": return { guardian : true }
-    case "02002": return { seeker : true }
-    case "02003": return { rogue : true }
-    case "02004": return { mystic : true }
-    case "02005": return { survivor : true }
-    case "03001": return { guardian : true }
-    case "03002": return { seeker : true }
-    case "03003": return { rogue : true }
-    case "03004": return { mystic : true }
-    case "03005": return { survivor : true }
-    case "03006": return { neutral : true }
-    case "04001": return { guardian : true }
-    case "04002": return { seeker : true }
-    case "04003": return { rogue : true }
-    case "04004": return { mystic : true }
-    case "04005": return { survivor : true }
-    case "05001": return { guardian : true }
-    case "05002": return { seeker : true }
-    case "05003": return { rogue : true }
-    case "05004": return { mystic : true }
-    case "05005": return { survivor : true }
-    case "05006": return { mystic : true }
-    case "06001": return { guardian : true }
-    case "06002": return { seeker : true }
-    case "06003": return { rogue : true }
-    case "06004": return { mystic : true }
-    case "06005": return { survivor : true }
-    case "07001": return { guardian : true }
-    case "07002": return { seeker : true }
-    case "07003": return { rogue : true }
-    case "07004": return { mystic : true }
-    case "07005": return { survivor : true }
-    case "08001": return { guardian : true }
-    case "08004": return { seeker : true }
-    case "08007": return { rogue : true }
-    case "08010": return { mystic : true }
-    case "08016": return { survivor : true }
-    case "09001": return { guardian : true }
-    case "09004": return { seeker : true }
-    case "09008": return { rogue : true }
-    case "09011": return { mystic : true }
-    case "09015": return { survivor : true }
-    case "09018": return { neutral : true }
-    case "10001": return { guardian : true }
-    case "10004": return { seeker : true }
-    case "10009": return { rogue : true }
-    case "10012": return { mystic : true }
-    case "10015": return { survivor : true }
-    case "11001": return { guardian : true }
-    case "11004": return { seeker : true }
-    case "11007": return { seeker : true }
-    case "11008": return { mystic : true }
-    case "11011": return { rogue : true }
-    case "11014": return { mystic : true }
-    case "11017": return { survivor : true }
-    case "60101": return { guardian : true }
-    case "60201": return { seeker : true }
-    case "60301": return { rogue : true }
-    case "60401": return { mystic : true }
-    case "60501": return { survivor : true }
-    case "89001": return { neutral : true }
-    case "90001": return { seeker : true }
-    case "90008": return { rogue : true }
-    case "90017": return { mystic : true }
-    case "90024": return { guardian : true }
-    case "90037": return { survivor : true }
-    case "90046": return { survivor : true }
-    case "90049": return { mystic : true }
-    case "90059": return { guardian : true }
-    case "90062": return { rogue : true }
-    case "90078": return { seeker : true }
-    case "90084": return { rogue : true }
-    case "98001": return { rogue : true }
-    case "98004": return { guardian : true }
-    case "98007": return { seeker : true }
-    case "98010": return { guardian : true }
-    case "98013": return { survivor : true }
-    case "98016": return { mystic : true }
-    case "98019": return { mystic : true }
-    case "99001": return { mystic : true }
-    default: return {}
+type InvestigatorClass =
+  | "guardian"
+  | "seeker"
+  | "rogue"
+  | "mystic"
+  | "survivor"
+  | "neutral"
+
+type CssClassFlags = Partial<Record<InvestigatorClass, true>>
+
+const CLASS_TO_CODES: Record<InvestigatorClass, Set<string>> = {
+  guardian: new Set([
+    "01001", "01501", "02001", "03001", "04001", "05001", "06001", "07001",
+    "08001", "09001", "10001", "11001", "60101", "90024", "90059", "98004",
+    "98010",
+  ]),
+  seeker: new Set([
+    "01002", "01502", "02002", "03002", "04002", "05002", "06002", "07002",
+    "08004", "09004", "10004", "11004", "11007", "60201", "90001", "90078",
+    "98007",
+  ]),
+  rogue: new Set([
+    "01003", "01503", "02003", "03003", "04003", "05003", "06003", "07003",
+    "08007", "09008", "10009", "11011", "60301", "90008", "90062", "90084",
+    "98001",
+  ]),
+  mystic: new Set([
+    "01004", "01504", "02004", "03004", "04004", "05004", "05006", "06004",
+    "07004", "08010", "09011", "10012", "11008", "11014", "60401", "90017",
+    "90049", "98016", "98019", "99001",
+  ]),
+  survivor: new Set([
+    "01005", "01505", "02005", "03005", "04005", "05005", "06005", "07005",
+    "08016", "09015", "10015", "11017", "60501", "90037", "90046", "98013",
+  ]),
+  neutral: new Set([
+    "03006", "04244", "05046", "05047", "05048", "05049", "09018", "89001",
+  ]),
+}
+
+export function investigatorClass(code: string): CssClassFlags {
+  const flags: CssClassFlags = {}
+  for (const cls of Object.keys(CLASS_TO_CODES) as InvestigatorClass[]) {
+    if (CLASS_TO_CODES[cls].has(code)) {
+      flags[cls] = true
+    }
   }
+  return flags
 }
 
 export function waitForImagesToLoad(callback: () => void) {
@@ -246,6 +279,8 @@ export function localizeArkhamDBBaseUrl() {
 
   const baseUrl = new URL('https://arkhamdb.com');
   if (language === "en") return baseUrl.origin;
+  if (!['de', 'es', 'fr', 'it', 'ko', 'pl', 'po', 'ru', 'uk', 'zh'].includes(language))
+    return baseUrl.origin;
 
   baseUrl.hostname = `${language}.${baseUrl.hostname}`;
   return baseUrl.origin;

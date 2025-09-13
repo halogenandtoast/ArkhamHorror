@@ -111,9 +111,7 @@ getCanAfford a@InvestigatorAttrs {..} as = do
   actionCost <- getActionCost a as
   additionalActions <- getAdditionalActions a
   additionalActionCount <-
-    countM
-      (\aa -> anyM (\ac -> additionalActionCovers (toSource a) [ac] aa) as)
-      additionalActions
+    countM (\aa -> anyM (\ac -> additionalActionCovers (toSource a) [ac] aa) as) additionalActions
   pure $ actionCost <= (investigatorRemainingActions + additionalActionCount)
 
 getAdditionalActions :: HasGame m => InvestigatorAttrs -> m [AdditionalAction]
@@ -134,6 +132,8 @@ getActionCost attrs as = do
   pure $ foldr applyModifier 1 modifiers
  where
   applyModifier (ActionCostOf match m) n =
+    if any (matchTarget attrs match) as then n + m else n
+  applyModifier (AdditionalActionCostOf match m) n =
     if any (matchTarget attrs match) as then n + m else n
   applyModifier _ n = n
 

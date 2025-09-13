@@ -2,6 +2,7 @@ module Arkham.Event.Events.DynamiteBlast2 (dynamiteBlast2) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (NonAttackDamageEffect)
@@ -18,7 +19,7 @@ instance RunMessage DynamiteBlast2 where
   runMessage msg e@(DynamiteBlast2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       withLocationOf iid \current -> do
-        connectedLocationIds <- select $ accessibleFrom current
+        connectedLocationIds <- select $ accessibleFrom NotForMovement current
         canDealDamage <- withoutModifier iid CannotDealDamage
         chooseOneM iid do
           for_ (current : connectedLocationIds) \lid -> do

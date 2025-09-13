@@ -7,8 +7,6 @@ module Arkham.Matcher (
   module Arkham.Matcher.Types,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -16,11 +14,13 @@ import Arkham.Card.CardType
 import Arkham.Card.Id
 import Arkham.Criteria
 import Arkham.Direction
+import Arkham.ForMovement
 import Arkham.Id
 import Arkham.Matcher.Base
 import Arkham.Matcher.Patterns
 import Arkham.Matcher.Types
 import Arkham.Modifier
+import Arkham.Prelude
 import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Trait (Trait)
@@ -67,6 +67,15 @@ have = has
 
 instance Has InvestigatorMatcher Supply where
   has = InvestigatorWithSupply
+
+affectsColocatedMatch :: InvestigatorMatcher -> InvestigatorMatcher
+affectsColocatedMatch = affectsOthers . colocatedWithMatch
+{-# INLINE affectsColocatedMatch #-}
+
+affectsColocated
+  :: (AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> InvestigatorMatcher
+affectsColocated = affectsOthers . colocatedWith
+{-# INLINE affectsColocated #-}
 
 affectsOthers :: InvestigatorMatcher -> InvestigatorMatcher
 affectsOthers You = You
@@ -311,8 +320,7 @@ locationWithLowerPrintedShroudThan = LocationWithLowerPrintedShroudThan . Locati
 {-# INLINE locationWithLowerPrintedShroudThan #-}
 
 locationWithDiscoverableCluesBy :: InvestigatorId -> LocationMatcher
-locationWithDiscoverableCluesBy =
-  LocationWithDiscoverableCluesBy . InvestigatorWithId
+locationWithDiscoverableCluesBy = LocationWithDiscoverableCluesBy . InvestigatorWithId
 {-# INLINE locationWithDiscoverableCluesBy #-}
 
 locationWithTreachery :: (AsId a, IdOf a ~ TreacheryId) => a -> LocationMatcher
@@ -323,21 +331,25 @@ locationWithoutTreachery :: HasCardCode a => a -> LocationMatcher
 locationWithoutTreachery = LocationWithoutTreachery . treacheryIs
 {-# INLINE locationWithoutTreachery #-}
 
-accessibleFrom :: (AsId a, IdOf a ~ LocationId) => a -> LocationMatcher
-accessibleFrom = AccessibleFrom . LocationWithId . asId
+accessibleFrom :: (AsId a, IdOf a ~ LocationId) => ForMovement -> a -> LocationMatcher
+accessibleFrom forMovement = AccessibleFrom forMovement . LocationWithId . asId
 {-# INLINE accessibleFrom #-}
 
-accessibleTo :: (AsId a, IdOf a ~ LocationId) => a -> LocationMatcher
-accessibleTo = AccessibleTo . LocationWithId . asId
+accessibleTo :: (AsId a, IdOf a ~ LocationId) => ForMovement -> a -> LocationMatcher
+accessibleTo forMovement = AccessibleTo forMovement . LocationWithId . asId
 {-# INLINE accessibleTo #-}
 
 locationNotOneOf :: IsLocationMatcher a => [a] -> LocationMatcher
 locationNotOneOf = LocationNotOneOf . map toLocationMatcher
 {-# INLINE locationNotOneOf #-}
 
-orConnected :: Be matcher LocationMatcher => matcher -> LocationMatcher
-orConnected x = let m = be x in oneOf [m, ConnectedTo m]
+orConnected :: Be matcher LocationMatcher => ForMovement -> matcher -> LocationMatcher
+orConnected forMovement x = let m = be x in oneOf [m, ConnectedTo forMovement m]
 {-# INLINE orConnected #-}
+
+orConnected_ :: Be matcher LocationMatcher => matcher -> LocationMatcher
+orConnected_ = orConnected NotForMovement
+{-# INLINE orConnected_ #-}
 
 whileInvestigating :: (AsId a, IdOf a ~ LocationId) => a -> SkillTestMatcher
 whileInvestigating = WhileInvestigating . LocationWithId . asId

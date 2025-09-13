@@ -18,7 +18,7 @@ hastursLastStand = story HastursLastStand Cards.hastursLastStand
 
 instance RunMessage HastursLastStand where
   runMessage msg s@(HastursLastStand attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       hastur <- selectJust (EnemyWithTitle "Hastur")
       code <- field EnemyCardCode hastur
       if
@@ -27,6 +27,7 @@ instance RunMessage HastursLastStand where
         | code == Enemies.hasturLordOfCarcosa.cardCode -> do
             theThroneRoom <- placeSetAsideLocation Locations.theThroneRoom
             enemyMoveTo attrs hastur theThroneRoom
+            readyThis hastur
         | otherwise -> placeSetAsideLocation_ Locations.stageOfTheWardTheatre
 
       pure s

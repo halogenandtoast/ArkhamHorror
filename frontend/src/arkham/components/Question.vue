@@ -49,14 +49,21 @@ const searchedCards = computed(() => {
 
   const playerZones = playerCards.filter(([, c]) => c.length > 0)
 
-  const encounterCards = Object.entries(props.game.foundCards)
+  const encounterCards = Object.entries(props.game.scenario?.foundCards ? props.game.scenario.foundCards : props.game.foundCards)
   const encounterZones = encounterCards.filter(([, c]) => c.length > 0)
 
   return [...playerZones, ...encounterZones]
 })
 
 const focusedCards = computed(() => {
-  const {focusedCards} = props.game
+  const {focusedCards, foundCards} = props.game
+
+  if (focusedCards.length == 0) {
+    if (Object.values(foundCards).some((v) => v.length > 0)) {
+      return Object.values(foundCards).flat()
+    }
+  }
+
   const searchedCardIds = searchedCards.value.map(([, cards]) => {
     return cards.map((card) => toCardContents(card).id)
   }).flat()
@@ -64,6 +71,7 @@ const focusedCards = computed(() => {
   if (focusedCards.every((c) => searchedCardIds.includes(toCardContents(c).id))) {
     return []
   }
+
 
   return focusedCards
 })
@@ -563,6 +571,9 @@ const cardPiles = computed(() => {
         </button>
         <button v-else @click="choose(index)" v-html="label(choice.label)"></button>
       </div>
+      <div v-else-if="choice.tag === MessageType.INVALID_LABEL" class="message-label">
+        <button v-html="label(choice.label)" disabled></button>
+      </div>
 
       <a
         v-if="choice.tag === MessageType.SKILL_LABEL"
@@ -748,10 +759,19 @@ button {
   border-radius: 0.6em;
   color: #EEE;
   font: Arial, sans-serif;
+
+  &[disabled] {
+    cursor: not-allowed;
+    background-color: #999 !important;
+  }
 }
 
 button:hover {
   background-color: #311b3e;
+
+  &[disabled] {
+    background-color: #999 !important;
+  }
 }
 
 .card {
@@ -1203,6 +1223,16 @@ h2 {
   }
   button {
     width: 100%;
+  }
+}
+
+.question-content {
+  @media (max-width: 800px) and (orientation: portrait)  {
+    :deep(.card) {
+      width: 10.71vw ;
+      height: 14.994vw;
+      max-width: 10.71vw;
+    }
   }
 }
 

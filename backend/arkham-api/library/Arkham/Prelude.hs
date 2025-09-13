@@ -332,8 +332,11 @@ breakNM n p xs = go n ([], xs)
       else go m (z : ys, zs')
 
 (<$$>) :: (Functor f, Functor m) => (a -> b) -> m (f a) -> m (f b)
-(<$$>) = fmap . fmap
+(<$$>) = ffmap
 infixl 4 <$$>
+
+ffmap :: (Functor f, Functor m) => (a -> b) -> m (f a) -> m (f b)
+ffmap = fmap . fmap
 
 withIndex :: MonoFoldable l => l -> [(Int, Element l)]
 withIndex = zip [0 ..] . toList
@@ -493,6 +496,9 @@ runDefaultMaybeT def = fmap (fromMaybe def) . runMaybeT
 
 runValidT :: Functor f => MaybeT f () -> f Bool
 runValidT = fmap isJust . runMaybeT
+
+runMaybeT_ :: Functor f => MaybeT f () -> f ()
+runMaybeT_ = void . runMaybeT
 
 retryUntil :: Monad m => (a -> Bool) -> m a -> m a
 retryUntil p ma = do

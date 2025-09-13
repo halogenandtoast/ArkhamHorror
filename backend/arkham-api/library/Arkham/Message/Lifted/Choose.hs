@@ -145,9 +145,17 @@ chooseUpToNM iid n done choices = do
   (_, choices') <- runChooseT choices
   unless (null choices') $ chooseUpToN iid n done choices'
 
+chooseUpToNM_ :: ReverseQueue m => InvestigatorId -> Int -> ChooseT m a -> m ()
+chooseUpToNM_ iid n choices = chooseUpToNMI' iid n "done" choices
+
 chooseUpToNM' :: (HasI18n, ReverseQueue m) => InvestigatorId -> Int -> Text -> ChooseT m a -> m ()
 chooseUpToNM' iid n done choices = do
   let lbl = "$" <> ikey ("label." <> done)
+  chooseUpToNM iid n lbl choices
+
+chooseUpToNMI' :: ReverseQueue m => InvestigatorId -> Int -> Text -> ChooseT m a -> m ()
+chooseUpToNMI' iid n done choices = do
+  let lbl = withI18n $ "$" <> ikey ("label." <> done)
   chooseUpToNM iid n lbl choices
 
 chooseOneAtATimeM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
@@ -170,13 +178,26 @@ unterminated action = do
 
 labeled :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
 labeled label action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [Label label msgs]
 
 labeled' :: (HasI18n, ReverseQueue m) => Text -> QueueT Message m () -> ChooseT m ()
 labeled' label action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [Label ("$" <> ikey ("label." <> label)) msgs]
+
+labeledI :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
+labeledI label action = unterminated do
+  msgs <- lift $ capture action
+  tell [Label (withI18n $ "$" <> ikey ("label." <> label)) msgs]
+
+labeledValidate' :: (HasI18n, ReverseQueue m) => Bool -> Text -> QueueT Message m () -> ChooseT m ()
+labeledValidate' valid label action = unterminated do
+  if valid
+    then do
+      msgs <- lift $ capture action
+      tell [Label ("$" <> ikey ("label." <> label)) msgs]
+    else tell [InvalidLabel ("$" <> ikey ("label." <> label))]
 
 chooseTest :: (HasI18n, ReverseQueue m) => SkillType -> Int -> QueueT Message m () -> ChooseT m ()
 chooseTest skind n body = countVar n $ skillVar skind $ labeled' "test" body
@@ -201,12 +222,12 @@ skip = (`labeled` nothing)
 
 gridLabeled :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
 gridLabeled label action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [GridLabel label msgs]
 
 portraitLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 portraitLabeled iid action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [PortraitLabel iid msgs]
 
 portraits
@@ -215,85 +236,88 @@ portraits iids action = unterminated $ for_ iids \iid -> portraitLabeled iid (ac
 
 labeledI18n :: (HasI18n, ReverseQueue m) => Text -> QueueT Message m () -> ChooseT m ()
 labeledI18n label action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [Label ("$" <> scope "label" (ikey label)) msgs]
 
 damageLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 damageLabeled iid action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [DamageLabel iid msgs]
 
 resourceLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 resourceLabeled iid action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [ResourceLabel iid msgs]
 
 clueLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 clueLabeled iid action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [ClueLabel iid msgs]
 
 cardLabeled :: (ReverseQueue m, HasCardCode a) => a -> QueueT Message m () -> ChooseT m ()
 cardLabeled a action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [CardLabel (toCardCode a) msgs]
 
 deckLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 deckLabeled iid action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [ComponentLabel (InvestigatorDeckComponent iid) msgs]
 
 abilityLabeled :: ReverseQueue m => InvestigatorId -> Ability -> QueueT Message m () -> ChooseT m ()
 abilityLabeled iid ab action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [AbilityLabel iid ab (defaultWindows iid) [] msgs]
+
+abilityLabeled_ :: ReverseQueue m => InvestigatorId -> Ability -> ChooseT m ()
+abilityLabeled_ iid ab = abilityLabeled iid ab nothing
 
 abilityLabeledWithBefore
   :: ReverseQueue m => InvestigatorId -> Ability -> [Message] -> QueueT Message m () -> ChooseT m ()
 abilityLabeledWithBefore iid ab beforeMsgs action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [AbilityLabel iid ab [] beforeMsgs msgs]
 
 horrorLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 horrorLabeled iid action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [HorrorLabel iid msgs]
 
 assetDamageLabeled :: ReverseQueue m => AssetId -> QueueT Message m () -> ChooseT m ()
 assetDamageLabeled aid action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [AssetDamageLabel aid msgs]
 
 assetHorrorLabeled :: ReverseQueue m => AssetId -> QueueT Message m () -> ChooseT m ()
 assetHorrorLabeled aid action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [AssetHorrorLabel aid msgs]
 
 skillLabeled :: ReverseQueue m => SkillType -> QueueT Message m () -> ChooseT m ()
 skillLabeled skillType action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [SkillLabel skillType msgs]
 
 targeting :: (ReverseQueue m, Targetable target) => target -> QueueT Message m () -> ChooseT m ()
 targeting target action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [targetLabel target msgs]
 
 evading
   :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> QueueT Message m () -> ChooseT m ()
 evading enemy action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [evadeLabel enemy msgs]
 
 fighting
   :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> QueueT Message m () -> ChooseT m ()
 fighting enemy action = unterminated do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   tell [fightLabel enemy msgs]
 
 batching :: ReverseQueue m => BatchId -> QueueT Message m () -> QueueT Message m ()
 batching batchId action = do
-  msgs <- lift $ evalQueueT action
+  msgs <- lift $ capture action
   push $ Would batchId msgs
 
 targets

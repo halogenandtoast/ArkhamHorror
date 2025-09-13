@@ -2,12 +2,10 @@ module Arkham.Act.Cards.TheDoomThatCameBefore (theDoomThatCameBefore) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
-import Arkham.Helpers.Query
+import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheSearchForKadath.Helpers
@@ -22,42 +20,44 @@ theDoomThatCameBefore = act (2, A) TheDoomThatCameBefore Cards.theDoomThatCameBe
 
 instance HasAbilities TheDoomThatCameBefore where
   getAbilities (TheDoomThatCameBefore x) =
-    [ restrictedAbility x 1 (EachUndefeatedInvestigator $ InvestigatorAt $ LocationWithTrait Port)
+    [ restricted x 1 (EachUndefeatedInvestigator $ at_ $ LocationWithTrait Port)
         $ Objective
-        $ ReactionAbility (RoundEnds #when) Free
-    , restrictedAbility x 2 (HasScenarioCount SignOfTheGods $ atLeast 10)
+        $ freeReaction (RoundEnds #when)
+    , restricted x 2 (HasScenarioCount SignOfTheGods $ atLeast 10)
         $ Objective
-        $ ForcedAbility AnyWindow
+        $ forced AnyWindow
     ]
 
-toOption :: Region -> UI Message
+toOption :: ReverseQueue m => Region -> ChooseT m ()
 toOption = \case
   Oriab ->
-    Label
-      "Visit the isle of Oriab to the south. Resolve Oriab Setup in the Campaign Guide."
-      [SetScenarioMeta $ toJSON Oriab]
+    labeled "Visit the isle of Oriab to the south. Resolve Oriab Setup in the Campaign Guide."
+      $ setScenarioMeta Oriab
   Mnar -> error "Not possible"
   ForbiddenLands ->
-    Label
+    labeled
       "Visit the Forbidden Lands to the north. Resolve Forbidden Lands Setup in the Campaign Guide."
-      [SetScenarioMeta $ toJSON ForbiddenLands]
+      $ setScenarioMeta ForbiddenLands
   TimelessRealm ->
-    Label
+    labeled
       "Visit the kingdom of the Timeless Realm to the east. Resolve Timeless Realm Setup in the Campaign Guide."
-      [SetScenarioMeta $ toJSON TimelessRealm]
+      $ setScenarioMeta TimelessRealm
 
 instance RunMessage TheDoomThatCameBefore where
-  runMessage msg a@(TheDoomThatCameBefore attrs) = case msg of
+  runMessage msg a@(TheDoomThatCameBefore attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      lead <- getLeadPlayer
+      advanceVia #other attrs attrs
+      pure a
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      lead <- getLead
       n <- scenarioFieldMap ScenarioMeta toResult
       let availableRegions = filter (`notElem` regions n) [Oriab, ForbiddenLands, TimelessRealm]
       if null availableRegions
         then push R1
-        else push $ chooseOrRunOne lead $ map toOption availableRegions
-      push $ ShuffleEncounterDiscardBackIn
+        else chooseOrRunOneM lead $ traverse toOption availableRegions
+      shuffleEncounterDiscardBackIn
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       push R1
       pure a
-    _ -> TheDoomThatCameBefore <$> runMessage msg attrs
+    _ -> TheDoomThatCameBefore <$> liftRunMessage msg attrs

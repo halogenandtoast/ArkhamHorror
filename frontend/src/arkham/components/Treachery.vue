@@ -17,6 +17,7 @@ export interface Props {
   playerId: string
   attached?: boolean
   overlayDelay?: number
+  isInHand?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), { attached: false })
@@ -82,6 +83,15 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
 </script>
 <template>
   <div class="treachery" :class="{ attached, exhausted: isExhausted }">
+    <AbilityButton
+      v-if="isInHand"
+      v-for="ability in abilities"
+      :key="ability.index"
+      :ability="ability.contents"
+      :data-image="image"
+      :game="game"
+      @click="$emit('choose', ability.index)"
+    />
     <img
       :src="image"
       class="card"
@@ -90,13 +100,14 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
       :data-delay="overlayDelay"
     />
     <AbilityButton
+      v-if="!isInHand"
       v-for="ability in abilities"
       :key="ability.index"
       :ability="ability.contents"
       :data-image="image"
       :game="game"
       @click="$emit('choose', ability.index)"
-      />
+    />
     <div class="pool">
       <PoolItem
         v-if="horror && horror > 0"

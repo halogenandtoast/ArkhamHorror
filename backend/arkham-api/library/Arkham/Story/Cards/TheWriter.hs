@@ -15,7 +15,7 @@ theWriter = story TheWriter Cards.theWriter
 
 instance RunMessage TheWriter where
   runMessage msg s@(TheWriter attrs) = runQueueT $ case msg of
-    ResolveStory _ _ (is attrs -> True) -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       remember KnowTheSecret
       selectEach (EnemyWithTitle "Hastur") (checkDefeated attrs)
       pure s

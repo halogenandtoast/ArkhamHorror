@@ -5,7 +5,6 @@ import Arkham.Matcher
 import Arkham.Source
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
-import Arkham.Target
 
 newtype StillSurface = StillSurface StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -16,7 +15,7 @@ stillSurface = story StillSurface Cards.stillSurface
 
 instance RunMessage StillSurface where
   runMessage msg s@(StillSurface attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       -- Look at the other side of another copy of Sea of Pitch.
       seas <-
         select

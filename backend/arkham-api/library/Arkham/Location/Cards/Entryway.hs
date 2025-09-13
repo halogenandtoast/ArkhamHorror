@@ -31,13 +31,13 @@ instance HasAbilities Entryway where
 instance RunMessage Entryway where
   runMessage msg l@(Entryway attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      explorationDeck <- getExplorationDeck
-      let (viewing, rest) = splitAt 2 explorationDeck
+      (viewing, rest) <- splitAt 2 <$> getExplorationDeck
       let (treacheries, other) = partition (`cardMatch` CardWithType TreacheryType) viewing
       focusCards viewing do
         setScenarioDeck ExplorationDeck $ other <> rest
         chooseOneAtATimeM iid do
           targets (onlyEncounterCards treacheries) (addToEncounterDiscard . only)
+        when (null treacheries) $ continue_ iid
       for_ other $ putCardOnBottomOfDeck iid ExplorationDeck
       shuffleDeck ExplorationDeck
       pure l

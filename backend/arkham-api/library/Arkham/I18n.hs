@@ -47,6 +47,9 @@ numberVar var val a = withVar var (Number $ fromIntegral val) a
 nameVar :: (Named b, HasI18n) => b -> (HasI18n => a) -> a
 nameVar val a = withVar "name" (String $ toTitle val) a
 
+keyVar :: HasI18n => Text -> Text -> (HasI18n => a) -> a
+keyVar k val a = withVar k (String val) a
+
 skillVar :: HasI18n => SkillType -> (HasI18n => a) -> a
 skillVar v a = case v of
   SkillWillpower -> withVar "skill" (String "willpower") a

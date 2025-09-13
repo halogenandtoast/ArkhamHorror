@@ -1,0 +1,25 @@
+{
+  "prologue": "<h1>L’Appétit des Goules...</h1><p>Vendredi 18 septembre 1925, Arkham, Massachusetts. Un été long et caniculaire touche à sa fin. On observe les premiers signes de l’automne mais une lourde chaleur demeure, implacable. Une sourde agitation semble s’emparer de la ville. Le tempérament des gens devient explosif. Depuis la dernière semaine, les rapports concernant des habitants qui en sont venus aux mains pour un simple quiproquo se sont multipliés.</p> <p>Et maintenant, un appel de James Hankerson. Il prétend avoir trouvé un corps démembré dans sa grange.</p> <p>Accuser la météo serait trop facile. Quelque chose ne tourne pas rond dans cette ville, et il n’y a rien que le vieux devin que je suis puisse faire pour empêcher la chute. Mes augures indiquent qu’un petit groupe d’investigateurs va bientôt s’occuper de ces étranges événements et tenter de remettre les choses en ordre. Je vais suivre attentivement leurs progrès... mais je ne retiendrai pas mon souffle.</p>",
+  "key": {
+    "ghoulPriestIsStillAlive": "le Prêtre Goule est toujours vivant",
+    "yourHouseIsStillStanding": "Votre maison est toujours debout",
+    "yourHouseHasBurnedToTheGround": "votre maison a entièrement brûlé",
+    "litaWasForcedToFindOthersToHelpHerCause": "Lita a dû trouver d’autres personnes pour soutenir sa cause",
+    "cultistsWeInterrogated": "Cultistes Interrogés",
+    "cultistsWhoGotAway": "Cultistes Enfuis",
+    "itIsPastMidnight": "Il est minuit passé",
+    "arkhamSuccumbedToUmordhothsTerribleVengeance": "Arkham a succombé à la terrible vengeance d’Umôrdhoth",
+    "theRitualToSummonUmordhothWasBroken": "Le rituel pour invoquer Umôrdhoth a été rompu",
+    "theInvestigatorsRepelledUmordoth": "Les investigateurs ont repoussé Umôrdhoth",
+    "theInvestigatorsSacrificedLitaChantlerToUmordhoth": "les investigateurs ont sacrifié Lita Chantler à Umôrdhoth"
+  },
+  "label": {
+    "offerOfPower": {
+      "drawAndPlaceDoom": "Piochez 2 cartes et ajoutez 2 fatalités sur l'intrigue"
+    },
+    "discipleOfTheDevourer": {
+      "doom": "Placez une fatalité sur le Disciple du Dévoreur",
+      "clue": "Placez un de vos indices sur son lieu"
+    }
+  }
+}

@@ -13,7 +13,7 @@ import Arkham.Classes.HasGame
 import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
-import Arkham.Helpers.Log hiding (getHasRecord)
+import Arkham.Helpers.Log hiding (getHasRecord, whenHasRecord)
 import Arkham.Helpers.Log qualified as Lift
 import Arkham.Helpers.Query
 import Arkham.I18n
@@ -30,8 +30,8 @@ newtype TheDreamEaters = TheDreamEaters CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
 
 theDreamEaters :: Difficulty -> TheDreamEaters
-theDreamEaters difficulty =
-  campaignWith TheDreamEaters (CampaignId "06") "The Dream-Eaters" difficulty []
+theDreamEaters =
+  campaignWith TheDreamEaters (CampaignId "06") "The Dream-Eaters"
     $ metaL
     .~ toJSON (Metadata FullMode Nothing Nothing mempty mempty)
 
@@ -102,7 +102,11 @@ getHasRecord part key = do
           Just otherAttrs -> pure $ hasRecord key otherAttrs.log
           Nothing -> error "no other campaign attrs"
 
+whenHasRecord :: (IsCampaignLogKey k, HasGame m, HasCallStack) => CampaignPart -> k -> m () -> m ()
+whenHasRecord part key action = whenM (getHasRecord part key) action
+
 instance IsCampaign TheDreamEaters where
+  campaignTokens = const [] -- determined by mode
   nextStep a@(TheDreamEaters attrs) =
     let meta = toResult (campaignMeta attrs)
      in case campaignStep (toAttrs a) of
@@ -414,16 +418,15 @@ instance RunMessage TheDreamEaters where
 
         story theBlackCat3
 
-        isOnYourOwn <- getIsTheWebOfDreams
-        when isOnYourOwn do
+        whenM getIsTheWebOfDreams do
           story youAreOnYourOwn
           record TheWebOfDreams YouAreOnYourOwn
 
-        whenHasRecord TheBlackCatSharedKnowledgeOfTheDreamlands do
+        whenHasRecord TheDreamQuest TheBlackCatSharedKnowledgeOfTheDreamlands do
           story theBlackCatSharedKnowledgeOfTheDreamlands
           recordInBoth TheBlackCatHasAHunch
 
-        whenHasRecord TheBlackCatDeliveredNewsOfYourPlight do
+        whenHasRecord TheDreamQuest TheBlackCatDeliveredNewsOfYourPlight do
           story theBlackCatDeliveredNewsOfYourPlight
           pushAll
             [ InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatIsAtYourSide)
@@ -431,7 +434,7 @@ instance RunMessage TheDreamEaters where
             , InTheWebOfDreams (AddChaosToken ElderThing)
             ]
 
-        whenHasRecord TheBlackCatWarnedTheOthers do
+        whenHasRecord TheDreamQuest TheBlackCatWarnedTheOthers do
           story theBlackCatWarnedTheOthers
           pushAll
             [ InTheWebOfDreams (Record $ toCampaignLogKey TheBlackCatIsAtYourSide)
@@ -439,7 +442,7 @@ instance RunMessage TheDreamEaters where
             , InTheDreamQuest (AddChaosToken Tablet)
             ]
 
-        whenHasRecord OkayFineHaveItYourWayThen do
+        whenHasRecord TheDreamQuest OkayFineHaveItYourWayThen do
           story okayFineHaveItYourWayThen
           recordInBoth YouAskedForIt
         push next

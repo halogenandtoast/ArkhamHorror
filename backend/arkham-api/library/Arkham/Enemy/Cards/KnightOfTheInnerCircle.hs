@@ -3,6 +3,7 @@ module Arkham.Enemy.Cards.KnightOfTheInnerCircle (knightOfTheInnerCircle) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -13,7 +14,7 @@ newtype KnightOfTheInnerCircle = KnightOfTheInnerCircle EnemyAttrs
 knightOfTheInnerCircle :: EnemyCard KnightOfTheInnerCircle
 knightOfTheInnerCircle =
   enemyWith KnightOfTheInnerCircle Cards.knightOfTheInnerCircle (4, Static 4, 2) (2, 0)
-    $ (spawnAtL ?~ SpawnAt ConnectedLocation)
+    $ (spawnAtL ?~ SpawnAt (ConnectedLocation NotForMovement))
     . (preyL .~ Prey MostKeys)
 
 instance HasAbilities KnightOfTheInnerCircle where
@@ -36,12 +37,12 @@ instance RunMessage KnightOfTheInnerCircle where
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 4)
       pure e
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
       iids <- select $ InvestigatorAt $ locationWithEnemy attrs.id
       leadChooseOneAtATimeM do
         targets iids \iid -> do
           sid <- getRandom
-          beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 4)
+          beginSkillTest sid iid (attrs.ability 2) iid #agility (Fixed 4)
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       enemyEngageInvestigator attrs iid

@@ -59,7 +59,7 @@ runCreateEnemyT a creation body = do
 
 afterCreate :: MonadIO m => QueueT Message m () -> CreateEnemyT m ()
 afterCreate body = do
-  msgs <- lift $ evalQueueT body
+  msgs <- lift $ capture body
   modify' \creation -> creation {enemyCreationAfter = msgs}
 
 createExhausted :: Monad m => CreateEnemyT m ()

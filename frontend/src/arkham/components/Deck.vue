@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
+import { displayTabooId } from '@/arkham/taboo';
 import {imgsrc, localizeArkhamDBBaseUrl, investigatorClass} from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/Deck'
 
@@ -17,7 +18,10 @@ const deckUrlToPage = (url: string): string => {
   // OR
   // converts https://arkhamdb.com/api/public/deck/25027
   // to https://arkhamdb.com/deck/view/25027
-  return url.replace("https://arkhamdb.com", localizeArkhamDBBaseUrl()).replace("/api/public/decklist", "/decklist/view").replace("/api/public/deck", "/deck/view")
+  return url
+    .replace("https://arkhamdb.com", localizeArkhamDBBaseUrl())
+    .replace("/api/public/decklist", "/decklist/view")
+    .replace("/api/public/deck", "/deck/view")
 }
 
 const deckInvestigator = computed(() => {
@@ -41,21 +45,7 @@ const deckClass = computed(() => {
 })
 
 const tabooList = computed(() => {
-  if (props.deck.list.taboo_id) {
-    switch (props.deck.list.taboo_id) {
-      case 1: return "1.5 (Apr 23, 2019)"
-      case 2: return "1.6 (Sep 27, 2019)"
-      case 3: return "1.8 (Oct 15, 2020)"
-      case 4: return "1.9 (Jun 28, 2021)"
-      case 5: return "2.0 (Aug 26, 2022)"
-      case 6: return "2.1 (Aug 30, 2023)"
-      case 7: return "2.2 (Feb 20, 2024)"
-      case 8: return "2.3 (Oct 24, 2024)"
-      default: return "Unknown Taboo List"
-    }
-  }
-
-  return null
+  return props.deck.list.taboo_id ? displayTabooId(props.deck.list.taboo_id) : null
 })
 </script>
 

@@ -288,6 +288,7 @@ instance RunMessage TheDoomOfEztli where
             $ ResetGame
             : [StandaloneSetup | standalone]
               <> [ ChooseLeadInvestigator
+                 , SetPlayerOrder
                  , SetupInvestigators
                  , SetChaosTokensForScenario -- (chaosBagOf campaign')
                  , InvestigatorsMulligan

@@ -104,7 +104,7 @@ selectJust
   -> m (QueryElement a)
 selectJust matcher = fromJustNote errorNote <$> selectOne matcher
  where
-  errorNote = "Could not find any matches for: " <> show matcher
+  errorNote = "Could not find any matches for: " <> show matcher <> "\n" <> prettyCallStack callStack
 
 selectJustField
   :: ( HasCallStack
@@ -136,6 +136,7 @@ selectAgg
      , QueryElement a ~ EntityId attrs
      , Projection attrs
      , HasGame m
+     , HasCallStack
      )
   => (typ -> monoid)
   -> Field attrs typ

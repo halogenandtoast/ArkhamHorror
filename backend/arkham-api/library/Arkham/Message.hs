@@ -1,7 +1,9 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -O0 -fomit-interface-pragmas -fno-specialise #-}
 
 module Arkham.Message (module Arkham.Message, module X) where
 
+import Arkham.Message.Story as X
 import Arkham.Message.Type as X
 import Arkham.Question as X
 import Arkham.Strategy as X
@@ -87,6 +89,7 @@ import Arkham.Xp
 import Control.Monad.Fail
 import Data.Aeson.Key qualified as Aeson
 import Data.Aeson.TH
+import Data.Aeson.Types
 import Data.UUID (nil)
 import GHC.OverloadedLabels
 
@@ -294,6 +297,10 @@ getChoiceAmount key choices =
 class IsMessage msg where
   toMessage :: msg -> Message
 
+instance IsMessage StoryMessage where
+  toMessage = StoryMessage
+  {-# INLINE toMessage #-}
+
 instance IsMessage Message where
   toMessage = id
   {-# INLINE toMessage #-}
@@ -327,10 +334,6 @@ instance IsMessage (EnemyCreation Message) where
   {-# INLINE toMessage #-}
 
 data ReplaceStrategy = DefaultReplace | Swap
-  deriving stock (Show, Eq, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
-
-data StoryMode = ResolveIt | DoNotResolveIt
   deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -395,33 +398,27 @@ instance Semigroup AutoStatus where
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
+  | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
+  | AbilityIsSkillTest AbilityRef
   | SkillTestResultOption Text [Message]
   | SkillTestResultOptions [UI Message]
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
-  | SetDriver AssetId InvestigatorId
   | SetGameState GameState
   | SetGlobal Target Aeson.Key Value
+  | MoveWithSkillTest Message
+  | MovedWithSkillTest SkillTestId Message
+  | NextSkillTest SkillTestId
+  | SetInvestigator PlayerId Investigator
+  | SetDriver AssetId InvestigatorId
   | IncreaseFloodLevel LocationId
   | DecreaseFloodLevel LocationId
   | SetFloodLevel LocationId FloodLevel
   | Devour InvestigatorId
   | Devoured InvestigatorId Card
-  | MoveWithSkillTest Message
-  | MovedWithSkillTest SkillTestId Message
-  | NextSkillTest SkillTestId
-  | AddSubscriber Target
-  | SetInvestigator PlayerId Investigator
-  | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
-  | AbilityIsSkillTest AbilityRef
-  | -- Story Card Messages
-    ReadStory InvestigatorId Card StoryMode (Maybe Target)
-  | ReadStoryWithPlacement InvestigatorId Card StoryMode (Maybe Target) Placement
-  | ResolveStory InvestigatorId StoryMode StoryId
-  | ResolvedStory StoryMode StoryId
-  | PlaceStory Card Placement
-  | -- | ResolveStoryStep InvestigatorId StoryId Int
-    RemoveStory StoryId
+  | -- Skill Test Specific
+    AddSubscriber Target
+  | StoryMessage StoryMessage
   | -- Handle discard costs
     DiscardedCost Target
   | -- Act Deck Messages
@@ -461,7 +458,6 @@ data Message
   | SetFlippable LocationId Bool
   | AddCampaignCardToDeck InvestigatorId ShuffleIn Card
   | RemoveCardFromDeckForCampaign InvestigatorId CardId
-  | AddCardToDeckForCampaign InvestigatorId PlayerCard
   | -- Adding Cards to Hand
     AddFocusedToHand InvestigatorId Target Zone CardId
   | AddToHand InvestigatorId [Card]
@@ -580,6 +576,7 @@ data Message
   | PreScenarioSetup
   | StandaloneSetup
   | ChoosePlayer InvestigatorId ChoosePlayerChoice
+  | SetPlayerOrder
   | ChoosePlayerOrder InvestigatorId [InvestigatorId] [InvestigatorId]
   | ChooseRandomLocation Target [LocationId]
   | ChosenRandomLocation Target LocationId
@@ -673,8 +670,8 @@ data Message
   | BeginRoundWindow
   | EndRoundWindow
   | EndSearch InvestigatorId Source Target [(Zone, ZoneReturnStrategy)]
-  | SearchEnded InvestigatorId
-  | CancelSearch InvestigatorId
+  | SearchEnded Target
+  | CancelSearch Target
   | EndTurn InvestigatorId
   | EndUpkeep
   | EnemiesAttack
@@ -997,9 +994,10 @@ data Message
   | SearchCollectionForRandom InvestigatorId Source CardMatcher
   | FinishedSearch
   | Search Search
-  | ResolveSearch InvestigatorId
+  | ResolveSearch Target
+  | PreSearchFound InvestigatorId Target DeckSignifier [Card]
   | SearchFound InvestigatorId Target DeckSignifier [Card]
-  | FoundCards (Map Zone [Card])
+  | FoundCards (Map Zone [Card]) -- Deprecated
   | SearchNoneFound InvestigatorId Target
   | UpdateSearchReturnStrategy InvestigatorId Zone ZoneReturnStrategy
   | SetActions InvestigatorId Source Int
@@ -1127,7 +1125,10 @@ data Message
   | SetCampaignMeta Value
   | DoStep Int Message
   | ForInvestigator InvestigatorId Message
+  | ForInvestigators [InvestigatorId] Message
   | ForTrait Trait Message
+  | ForAction Action Message
+  | ForActions [Action] Message
   | ForTarget Target Message
   | ForTargets [Target] Message
   | ForPlayer PlayerId Message
@@ -1164,7 +1165,9 @@ data Message
   | AddDeckBuildingAdjustment InvestigatorId DeckBuildingAdjustment
   | IncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]
   | ChoosingDecks
+  | UpgradingDecks
   | DoneChoosingDecks
+  | DoneUpgradingDecks
   | SetPartnerStatus CardCode PartnerStatus
   | HandleGroupTarget GroupKey Target [Message]
   | HandleGroupTargets AutoStatus GroupKey (Map Target [Message])
@@ -1319,7 +1322,44 @@ instance FromJSON Message where
         pure $ InvestigatorDrewPlayerCardFrom a b Nothing
       "ReportXp" -> do
         ReportXp <$> (o .: "contents" <|> (snd @ScenarioId <$> o .: "contents"))
-      _ -> $(mkParseJSON defaultOptions ''Message) (Object o)
+      "ReadStoryWithPlacement" -> do
+        (a, b, c, d, e) <- o .: "contents"
+        pure $ StoryMessage $ ReadStoryWithPlacement a b c d e
+      "ReadStory" -> do
+        (a, b, c, d) <- o .: "contents"
+        pure $ StoryMessage $ ReadStory a b c d
+      "ResolveStory" -> do
+        (a, b, c) <- o .: "contents"
+        pure $ StoryMessage $ ResolveStory a b c
+      "ResolvedStory" -> do
+        (a, b) <- o .: "contents"
+        pure $ StoryMessage $ ResolvedStory a b
+      "PlaceStory" -> do
+        (a, b) <- o .: "contents"
+        pure $ StoryMessage $ PlaceStory a b
+      "RemoveStory" -> do
+        a <- o .: "contents"
+        pure $ StoryMessage $ RemoveStory a
+      "ResolveSearch" -> do
+        ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case ea of
+          Left a -> pure $ ResolveSearch (InvestigatorTarget a)
+          Right a -> pure $ ResolveSearch a
+      "SearchEnded" -> do
+        ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case ea of
+          Left a -> pure $ SearchEnded (InvestigatorTarget a)
+          Right a -> pure $ SearchEnded a
+      "CancelSearch" -> do
+        ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case ea of
+          Left a -> pure $ CancelSearch (InvestigatorTarget a)
+          Right a -> pure $ CancelSearch a
+      _ -> defaultParseMessage (Object o)
+
+defaultParseMessage :: Value -> Parser Message
+defaultParseMessage = $(mkParseJSON defaultOptions ''Message)
+{-# NOINLINE defaultParseMessage #-}
 
 stepMessage :: Int -> Message -> Message
 stepMessage n = \case
@@ -1330,6 +1370,7 @@ stepMessage n = \case
 uiToRun :: UI Message -> Message
 uiToRun = \case
   Label _ msgs -> Run msgs
+  InvalidLabel {} -> error "InvalidLabel in uiToRun"
   TooltipLabel _ _ msgs -> Run msgs
   CardLabel _ msgs -> Run msgs
   PortraitLabel _ msgs -> Run msgs
@@ -1426,7 +1467,7 @@ chooseAmounts pid label total choiceMap (toTarget -> target) = do
   rs <- getRandoms
   pure $ Ask pid (ChooseAmounts label total (amountChoices rs) target)
  where
-  amountChoices rs = map toAmountChoice (zip rs choiceMap)
+  amountChoices rs = zipWith (curry toAmountChoice) rs choiceMap
   toAmountChoice (choiceId, (l, (m, n))) = AmountChoice choiceId l m n
 
 chooseAmountsLabeled
@@ -1442,11 +1483,17 @@ chooseAmountsLabeled pid title label total choiceMap (toTarget -> target) = do
   rs <- getRandoms
   pure $ Ask pid (QuestionLabel title Nothing $ ChooseAmounts label total (amountChoices rs) target)
  where
-  amountChoices rs = map toAmountChoice (zip rs choiceMap)
+  amountChoices rs = zipWith (curry toAmountChoice) rs choiceMap
   toAmountChoice (choiceId, (l, (m, n))) = AmountChoice choiceId l m n
 
-chooseUpgradeDeck :: PlayerId -> Message
-chooseUpgradeDeck pid = Ask pid ChooseUpgradeDeck
+chooseUpgradeDecks :: [PlayerId] -> Message
+chooseUpgradeDecks pids =
+  Run
+    [ SetGameState (IsChooseDecks pids)
+    , UpgradingDecks
+    , AskMap $ mapFromList $ map (,ChooseUpgradeDeck) pids
+    , DoneUpgradingDecks
+    ]
 
 chooseDecks :: [PlayerId] -> Message
 chooseDecks pids =

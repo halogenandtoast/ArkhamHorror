@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.AbbessAllegriaDiBiase (abbessAllegriaDiBiase) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -21,7 +22,7 @@ instance HasAbilities AbbessAllegriaDiBiase where
     [ fastAbility a 1 (exhaust a)
         $ oneOf
           [ OnSameLocation <> exists AccessibleLocation
-          , exists $ YourLocation <> ConnectedTo (locationWithAsset a)
+          , exists $ YourLocation <> ConnectedTo ForMovement (locationWithAsset a)
           ]
     ]
 
@@ -32,7 +33,7 @@ instance RunMessage AbbessAllegriaDiBiase where
       abbessLocation <- fieldJust AssetLocation attrs
       if location == abbessLocation
         then do
-          connectedLocations <- select $ accessibleFrom location
+          connectedLocations <- select $ accessibleFrom ForMovement location
           chooseOrRunOneM iid $ targets connectedLocations (moveTo attrs iid)
         else moveTo attrs iid abbessLocation
       pure a

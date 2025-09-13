@@ -317,6 +317,9 @@ ul, :deep(ul) {
   li::marker {
     color: var(--bullet-red);
   }
+  ul {
+    margin-top: 10px;
+  }
 }
 
 .checkpoint, :deep(.checkpoint), .interlude, :deep(.interlude) {

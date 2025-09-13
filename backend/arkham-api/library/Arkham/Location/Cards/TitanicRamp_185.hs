@@ -2,6 +2,7 @@ module Arkham.Location.Cards.TitanicRamp_185 (titanicRamp_185) where
 
 import Arkham.Ability
 import Arkham.Capability
+import Arkham.ForMovement
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -21,9 +22,11 @@ instance HasModifiersFor TitanicRamp_185 where
 
 instance HasAbilities TitanicRamp_185 where
   getAbilities (TitanicRamp_185 a) =
-    extend1
-      a
-      $ restricted a 1 (exists $ InvestigatorAt (orConnected YourLocation) <> can.spend.clues)
+    extend1 a
+      $ restricted
+        a
+        1
+        (exists $ InvestigatorAt (orConnected NotForMovement YourLocation) <> can.spend.clues)
       $ SilentForcedAbility
       $ InitiatedSkillTest
         #after
@@ -39,7 +42,10 @@ instance RunMessage TitanicRamp_185 where
         labeled
           "Have any investigator at your location or a connecting location may spend 1 clue to have you automatically succeed at this test."
           do
-            withCost iid (GroupClueCost (Static 1) (orConnected $ locationWithInvestigator iid)) passSkillTest
+            withCost
+              iid
+              (GroupClueCost (Static 1) (orConnected NotForMovement $ locationWithInvestigator iid))
+              passSkillTest
         labeled "Do not spend clues" nothing
       pure l
     FailedThisSkillTest iid (isSource attrs -> True) -> do

@@ -3,6 +3,7 @@ module Arkham.Event.Events.LookWhatIFound2 (lookWhatIFound2) where
 import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Matcher
 
 newtype LookWhatIFound2 = LookWhatIFound2 EventAttrs
@@ -18,7 +19,7 @@ instance RunMessage LookWhatIFound2 where
       twice $ do_ msg
       pure e
     Do (PlayThisEvent iid (is attrs -> True)) -> do
-      locations <- select $ orConnected iid <> LocationWithAnyClues
+      locations <- select $ orConnected NotForMovement iid <> LocationWithAnyClues
       chooseTargetM iid locations $ discoverAt NotInvestigate iid attrs 1
       pure e
     _ -> LookWhatIFound2 <$> liftRunMessage msg attrs

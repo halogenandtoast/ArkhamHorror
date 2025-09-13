@@ -33,15 +33,10 @@ newtype EdgeOfTheEarth = EdgeOfTheEarth CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
 
 edgeOfTheEarth :: Difficulty -> EdgeOfTheEarth
-edgeOfTheEarth difficulty =
-  campaign
-    EdgeOfTheEarth
-    (CampaignId "08")
-    "Edge of the Earth"
-    difficulty
-    (chaosBagContents difficulty)
+edgeOfTheEarth = campaign EdgeOfTheEarth (CampaignId "08") "Edge of the Earth"
 
 instance IsCampaign EdgeOfTheEarth where
+  campaignTokens = chaosBagContents
   nextStep a = case campaignStep (toAttrs a) of
     PrologueStep -> Just IceAndDeathPart1
     IceAndDeathPart1 -> Just (UpgradeDeckStep $ CheckpointStep 1)
@@ -188,7 +183,7 @@ instance RunMessage EdgeOfTheEarth where
                 (campaignStore attrs)
       when (notNull choices) do
         lead <- getLead
-        remainingPartners <- map (.cardCode) <$> getRemainingPartners
+        remainingPartners <- map toPartnerCode <$> getRemainingPartners
         let choiceMade choice = push $ SetGlobal CampaignTarget "interlude1" (toJSON $ filter (/= choice) choices)
         chooseOneM lead do
           questionLabeled $ "You can still check " <> tshow n <> " team members"
@@ -431,7 +426,7 @@ instance RunMessage EdgeOfTheEarth where
                 (campaignStore attrs)
       when (notNull choices) do
         lead <- getLead
-        remainingPartners <- map (.cardCode) <$> getRemainingPartners
+        remainingPartners <- map toPartnerCode <$> getRemainingPartners
         let choiceMade choice = push $ SetGlobal CampaignTarget "interlude2" (toJSON $ filter (/= choice) choices)
         chooseOneM lead do
           questionLabeled $ "You can still check " <> tshow n <> " team members"
@@ -738,7 +733,7 @@ instance RunMessage EdgeOfTheEarth where
                 (campaignStore attrs)
       when (notNull choices) do
         lead <- getLead
-        remainingPartners <- map (.cardCode) <$> getRemainingPartners
+        remainingPartners <- map toPartnerCode <$> getRemainingPartners
         let choiceMade choice = push $ SetGlobal CampaignTarget "interlude3" (toJSON $ filter (/= choice) choices)
         chooseOneM lead do
           questionLabeled $ "You can still check " <> tshow n <> " team members"
@@ -1062,6 +1057,7 @@ instance RunMessage EdgeOfTheEarth where
         do
           story $ i18n "ashevak"
 
+      push GameOver
       pure c
     SetPartnerStatus cCode status -> do
       pure $ EdgeOfTheEarth $ attrs & logL . partnersL . ix cCode . statusL .~ status

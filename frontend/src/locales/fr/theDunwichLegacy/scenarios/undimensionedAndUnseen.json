@@ -1,0 +1,63 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "–1 pour chaque Rejeton de Yog-Sothoth en jeu.",
+      "cultist": "Révélez un autre pion Chaos. En cas d'échec, subissez 1 horreur.",
+      "tablet": "0. Vous devez soit retirer tous les pions Indice sur un Rejeton de Yog-Sothoth en jeu, soit ce modificateur est de –4 à la place de 0.",
+      "elderThing": "–3. Si ce pion est révélé pendant une attaque ou une tentative d'évasion contre un Rejeton de Yog-Sothoth, il effectue immédiatement une attaque contre vous."
+    },
+    "hardExpert": {
+      "skull": "–2 pour chaque Rejeton de Yog-Sothoth en jeu.",
+      "cultist": "Révélez un autre pion Chaos. En cas d'échec, subissez 1 horreur et 1 dégât.",
+      "tablet": "0. Soit vous devez retirer tous les pions Indice sur un Rejeton de Yog-Sothoth en jeu, soit ce test échoue automatiquement.",
+      "elderThing": "–5. Si ce pion est révélé pendant une attaque ou une tentative d'évasion contre un Rejeton de Yog-Sothoth, il effectue immédiatement une attaque contre vous."
+    }
+  },
+  "intro": {
+    "title": "Scénario V : Aux Frontières du Visible",
+    "body": "<p>Vos recherches dans le village de Dunwich ont permis de mettre à jour un certain nombre de documents, de journaux et de théories ésotériques. Lire tout cela vous laisse exténué et mentalement épuisé. La plupart ont été écrits par un seul homme – Seth Bishop. En vous renseignant dans le village, vous apprenez que Seth est un habitant de Dunwich. Seth faisait partie des personnes qui ont été les témoins directs de la dévastation apportée par les événements de « L’Abomination de Dunwich » comme l’a surnommé Armitage. Bizarrement, peu de gens ont aperçu Seth au village depuis lors et ceux qui l’ont vu prétendent qu’il avait les yeux injectés de sang et le visage pâle et en sueur.</p><p>Vous ne doutez pas que quelqu’un ayant vu ce dont Seth a été témoin puisse paraître nerveux ou paranoïaque, mais plus vous lisez ses écrits déments et frénétiques, plus votre certitude qu’il est impliqué dans les derniers événements s’affermit. Ses écrits parlent de « rassembler les restes » et d’utiliser des procédés mystiques pour « imprégner l’essence des pères » dans d’autres créatures, voire dans d’autres personnes. Les explications et diagrammes qui les accompagnent sont d’une incroyable complexité et défient l’entendement.</p><p>Avant que vous ne soyez parvenu à trouver et arrêter Seth, plusieurs hommes et femmes du village viennent vers vous paniqués. « Il est de retour ! » gémit l’un des hommes que vous reconnaissez comme étant Curtis Whateley, de la branche saine. « La chose qui a tué les Frye est revenue ! Elle a détruit la maison des Bishop comme si c’était une brindille ! » Curtis et les autres villageois se mettent à parler tous en même temps et la panique commence à percer dans leurs voix.</p>",
+    "label": {
+      "calm": "Vous tentez de calmer les villageois afin d’en apprendre plus. Lisez la _Partie 1_.",
+      "warn": "Vous essayez de convaincre les villageois d’évacuer le village. Lisez la _Partie 2_."
+    },
+    "part1": "<p>_Partie 1_: Vous tentez de calmer les villageois afin qu’ils puissent expliquer ce qu’il se passe. Ils disent avoir entendu un grondement au nord. Quand ils sont allés voir de quoi il retournait, ils ont trouvé la ferme des Bishop réduite en miettes. Une profonde traînée menait jusqu’au vallon de la Source. « Vous savez quoi faire, non ? Vous, les types d’Arkham, vous avez arrêté cette chose la dernière fois » scande l’un des villageois. Curtis secoue la tête en se mordillant la lèvre.</p><p>« On ne pouvait même pas voir cette satanée chose avant que le professeur ne jette cette poudre sur lui. » dit-il. « Aujourd’hui, je préférerai même ne jamais l’avoir vue… » Il faut faire quelque chose pour arrêter ce carnage, mais si les documents que vous avez trouvés disent vrai, il pourrait y avoir plusieurs de ces créatures…</p><ul><li>Indiquez dans votre Carnet de Campagne que *vous avez calmé les villageois*. Continuez à la _Mise en Place_.</li></ul>",
+    "part2": "<p>_Partie 2_: Vous prévenez les villageois qu’ils sont en grand danger et les pressez de fuir Dunwich dès qu’ils le peuvent. Plusieurs d’entre eux suivent immédiatement votre avertissement, se souvenant de la terrible monstruosité qui a précédemment menacé leur village. Curtis tombe à genou, fébrile et en sueur. Il semble anéanti. « C’est encore cette chose, n’est-ce pas ? Elle est revenue pour nous » bégaye Curtis. « J’espère que vous avez de cette poudre que le professeur avait la dernière fois, vous ne pourrez même pas voir cette satanée chose sans ça. Aujourd’hui, je préférerai même ne jamais l’avoir vue… » Il faut faire quelque chose pour arrêter ce carnage, mais si les documents que vous avez trouvés disent vrai, il pourrait y avoir plusieurs de ces créatures…</p><ul><li>Indiquez dans votre Carnet de Campagne que *vous avez averti les villageois*. Continuez à la _Mise en Place_.</li></ul>"
+  },
+  "setup": {
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : *Aux Frontières du Visible*, *Les Engoulevents*, *Thralls Bestiaux*, *Dunwich* et *Répandre la Peur*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/undimensioned-and-unseen.png' /><img src='{setImgPath}/whippoorwills.png' /><img src='{setImgPath}/beast-thralls.png' /><img src='{setImgPath}/dunwich.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "placeLocations": "Prenez au hasard l’une des deux versions des lieux suivants, et mettez-la en jeu : Village de Dunwich, Vallon de la Source, Lande Dévastée, Pré des Dix-Arpents, Bal du Diable et Ruines des Whateley. Retirez de la partie les autres exemplaires de ces lieux. Chaque investigateur commence la partie dans le Village de Dunwich.",
+    "sacrificedToYogSothoth": {
+      "instructions": "Vérifiez le nombre de noms inscrits sous la mention « Sacrifiés à Yog-Sothoth » dans votre Carnet de Campagne.",
+      "fourOrMore": "S'il y a au moins 4 noms inscrits, mettez de côté 2 exemplaires du Rejeton de Yog-Sothoth, hors jeu. Ensuite, retirez de la partie les 3 autres exemplaires du Rejeton de Yog-Sothoth.",
+      "exactlyThree": "S'il y a exactement 3 noms inscrits, mettez en jeu 1 exemplaire du Rejeton de Yog-Sothoth dans le Vallon de la Source, et mettez de côté 2 exemplaires du Rejeton de Yog-Sothoth, hors jeu. Ensuite, retirez de la partie les 2 autres exemplaires du Rejeton de Yog-Sothoth.",
+      "exactlyTwo": "S'il y a exactement 2 noms inscrits, mettez en jeu 1 exemplaire du Rejeton de Yog-Sothoth dans le Vallon de la Source, et mettez de côté 3 exemplaires du Rejeton de Yog-Sothoth, hors jeu. Ensuite, retirez de la partie le dernier exemplaire du Rejeton de Yog-Sothoth.",
+      "oneOrFewer": "S’il y a 0 ou 1 nom inscrit, mettez en jeu 1 exemplaire du Rejeton de Yog-Sothoth dans le Vallon de la Source, et 1 exemplaire du Rejeton de Yog-Sothoth dans la Lande Dévastée. Ensuite, mettez de côté les 3 autres exemplaires du Rejeton de Yog-Sothoth, hors jeu."
+    },
+    "setAside": "Mettez de côté, hors jeu, chaque exemplaire de la Formule Ésotérique.",
+    "powderOfIbnGhazi": "Un investigateur ayant la Poudre d'Ibn-Ghazi dans son deck a le droit d'aller la chercher dans son deck et de la mettre en jeu.",
+    "randomBasicWeakness": "Chaque investigateur sélectionne dans la collection une faiblesse de base au hasard _*Folie*_, _*Blessure*_ ou _*Pacte*_ et l’ajoute à son deck pour le reste de la campagne."
+  },
+  "choosingARandomLocation": {
+    "title": "Choisir un Lieu au Hasard",
+    "body": "Durant ce scénario, il vous sera régulièrement demandé de choisir un lieu au hasard. Pour cela, mélangez ensemble les 6 lieux retirés de la partie lors de la mise en place (les autres versions inutilisées des lieux actuellement en jeu) et piochez-en 1 au hasard."
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "Pas de conclusion",
+      "body": "<div class='resolution'><p class='basic'>_Si aucune conclusion n'est atteinte (tous les investigateurs ont abandonné ou été vaincus)_ : lisez la _Conclusion 1_."
+    },
+    "resolution1": {
+      "title": "Conclusion 1",
+      "body": "<div class='resolution'><p>_Conclusion 1_ : Vous avez fait tout ce que vous avez pu pour arrêter les monstres en furie, mais ils étaient plus nombreux que ce que vous imaginiez et n’êtes pas parvenu à tous les tuer. Épuisé et terrifié, vous vous repliez vers la maison de Zebulon en espérant survivre à la nuit…</p><ul><li>Dans votre Carnet de Campagne, indiquez que *X Rejetons se sont évanouis dans la nature*. X étant le nombre de Rejetons de Yog-Sothoth encore en jeu ou mis de côté.</li><li>Si le deck d'un investigateur contient la Poudre d'Ibn-Ghazi, retirez-la du deck de cet investigateur.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Conclusion 2",
+      "body": "<div class='resolution'><p>_Conclusion 2_ : Après avoir vaincu ce qui semble être le dernier des monstres en furie, vous vous repliez vers la maison de Zebulon, épuisé et ébranlé par les expériences de cette nuit.</p><ul><li>Dans votre Carnet de Campagne, indiquez qu'aucun Rejeton ne s'est évanoui dans la nature.</li><li>Si le deck d'un investigateur contient la Poudre d'Ibn-Ghazi, retirez-la du deck de cet investigateur.</li><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li></ul></div>"
+    }
+  },
+  "label": {
+    "chooseInvestigatorToPlaceClue": "Choisir l'investigateur qui place un indice",
+    "cluesToSpend": "Nombre d'incides à dépenser",
+    "spawnSetAsideBrood": "Générez 1 Rejeton de Yog-Sothoth mis de côté dans un lieu choisi au hasard"
+  }
+}

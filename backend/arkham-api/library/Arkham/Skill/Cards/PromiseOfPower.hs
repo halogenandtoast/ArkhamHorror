@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.PromiseOfPower (promiseOfPower, PromiseOfPower (..)) where
+module Arkham.Skill.Cards.PromiseOfPower (promiseOfPower) where
 
 import Arkham.Helpers.ChaosBag
 import Arkham.Skill.Cards qualified as Cards
@@ -9,8 +9,7 @@ newtype PromiseOfPower = PromiseOfPower SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 promiseOfPower :: SkillCard PromiseOfPower
-promiseOfPower =
-  skill PromiseOfPower Cards.promiseOfPower
+promiseOfPower = skill PromiseOfPower Cards.promiseOfPower
 
 instance RunMessage PromiseOfPower where
   runMessage msg (PromiseOfPower attrs) = runQueueT $ case msg of

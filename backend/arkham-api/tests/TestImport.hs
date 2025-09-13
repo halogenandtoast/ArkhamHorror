@@ -436,7 +436,7 @@ instance UpdateField "revealed" Location Bool where
   updateField revealed' = pure . overAttrs (\attrs -> attrs {locationRevealed = revealed'})
 
 instance UpdateField "shroud" Location Int where
-  updateField shroud = pure . overAttrs (\attrs -> attrs {locationShroud = Just shroud})
+  updateField shroud = pure . overAttrs (\attrs -> attrs {locationShroud = Just (Static shroud)})
 
 instance UpdateField "damage" Investigator Int where
   updateField damage = pure . overAttrs (Arkham.Investigator.Types.tokensL %~ setTokens #damage damage)

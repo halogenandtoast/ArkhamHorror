@@ -50,6 +50,7 @@ allAgendaCards =
       , cityOfBlood
       , cityOfTheGreatRace
       , coldWelcome
+      , collidingRealities
       , crossroadsOfFate
       , deadOfNight
       , deathsApproach
@@ -125,6 +126,7 @@ allAgendaCards =
       , secretsOfTheSeaV2
       , settingSun
       , shadowsDeepen
+      , showbusinessAsUsual
       , silentStirring
       , snappedThreads
       , somethingStirs
@@ -382,11 +384,11 @@ empireOfTheUndead = agenda "03242" "Empire of the Undead" 2 ThePallidMask
 theTideRises :: CardDef
 theTideRises = agenda "03275" "The Tide Rises" 1 BlackStarsRise
 
-letTheStormRageTheFloodBelow :: CardDef
-letTheStormRageTheFloodBelow = (agenda "03276a" "Let The Storm Rage" 2 BlackStarsRise) {cdOtherSide = Just "03276ab"}
-
 letTheStormRageTheVortexAbove :: CardDef
-letTheStormRageTheVortexAbove = agenda "03276b" "Let The Storm Rage" 2 BlackStarsRise
+letTheStormRageTheVortexAbove = (agenda "03276a" "Let The Storm Rage" 2 BlackStarsRise) {cdOtherSide = Just "03276ab"}
+
+letTheStormRageTheFloodBelow :: CardDef
+letTheStormRageTheFloodBelow = agenda "03276b" "Let The Storm Rage" 2 BlackStarsRise
 
 theCityFloods :: CardDef
 theCityFloods = agenda "03277" "The City Floods" 3 BlackStarsRise
@@ -835,3 +837,9 @@ unexpectedGuests = agenda "71003" "Unexpected Guests" 2 TheMidwinterGala
 
 aKillerParty :: CardDef
 aKillerParty = agenda "71004" "A Killer Party" 3 TheMidwinterGala
+
+showbusinessAsUsual :: CardDef
+showbusinessAsUsual = agenda "72002" "Showbusiness As Usual" 1 FilmFatale
+
+collidingRealities :: CardDef
+collidingRealities = agenda "72003" "Colliding Realities" 2 FilmFatale

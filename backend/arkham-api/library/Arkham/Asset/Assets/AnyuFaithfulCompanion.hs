@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Window
+import Arkham.ForMovement
 import Arkham.Helpers.Modifiers (ModifierType (..), effectModifiers)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -21,7 +22,7 @@ instance HasAbilities AnyuFaithfulCompanion where
 
 anyuChoices :: ReverseQueue m => AssetAttrs -> InvestigatorId -> ChooseT m ()
 anyuChoices attrs iid = do
-  locations <- select $ AccessibleFrom (locationWithInvestigator iid)
+  locations <- select $ AccessibleFrom ForMovement (locationWithInvestigator iid)
   unless (null locations) do
     labeled "Move to a connecting location" do
       chooseTargetM iid locations $ moveTo (attrs.ability 1) iid

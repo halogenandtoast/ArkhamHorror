@@ -21,7 +21,7 @@ instance RunMessage DaemonicPiping where
       selectOne (enemyIs Enemies.piperOfAzathoth) >>= \case
         Just piper -> do
           selectEach
-            (InvestigatorAt $ oneOf [locationWithEnemy piper, ConnectedTo (locationWithEnemy piper)])
+            (InvestigatorAt $ oneOf [locationWithEnemy piper, connectedTo (locationWithEnemy piper)])
             \investigator -> assignHorror investigator attrs 1
         Nothing -> placeTreachery attrs NextToAgenda
       pure t

@@ -140,7 +140,7 @@ setupHeartOfTheElders metadata attrs = case scenarioStep metadata of
 
         mouthOfKnYanTheCavernsMaw <- place Locations.mouthOfKnYanTheCavernsMaw
         startAt mouthOfKnYanTheCavernsMaw
-        placeTokens attrs mouthOfKnYanTheCavernsMaw Resource pathsKnown
+        placeTokens attrs mouthOfKnYanTheCavernsMaw Pillar pathsKnown
 
         (ruinsLocation, toRemove) <-
           sampleWithRest $ Locations.overgrownRuins :| [Locations.templeOfTheFang, Locations.stoneAltar]

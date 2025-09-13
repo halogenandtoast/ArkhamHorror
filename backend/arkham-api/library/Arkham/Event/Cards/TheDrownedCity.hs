@@ -3,6 +3,7 @@ module Arkham.Event.Cards.TheDrownedCity where
 import Arkham.Capability
 import Arkham.Criteria qualified as Criteria
 import Arkham.Event.Cards.Import
+import Arkham.ForMovement
 import Arkham.Keyword qualified as Keyword
 
 psychicSensitivity :: CardDef
@@ -112,7 +113,7 @@ youveHadWorse =
           $ DealtDamageOrHorror
             #when
             (SourceIsCancelable AnySource)
-            (affectsOthers $ at_ (orConnected YourLocation) <> can.spend.resources)
+            (affectsOthers $ at_ (orConnected NotForMovement YourLocation) <> can.spend.resources)
     }
 
 bumsRush :: CardDef
@@ -158,7 +159,10 @@ youveHadWorse4 =
           $ DealtDamageOrHorror
             #when
             (SourceIsCancelable AnySource)
-            (affectsOthers $ at_ (orConnected YourLocation) <> InvestigatorWithResources (atLeast 1))
+            ( affectsOthers
+                $ at_ (orConnected NotForMovement YourLocation)
+                <> InvestigatorWithResources (atLeast 1)
+            )
     , cdLevel = Just 4
     }
 
@@ -184,7 +188,12 @@ spiritualEcho2 =
   (event "11075" "Spiritual Echo" 1 Mystic)
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Ritual]
-    , cdCriteria = Just $ exists $ YourLocation <> not_ (LocationWithAttachedEvent $ EventIs "11075") <> LocationCanHaveAttachments
+    , cdCriteria =
+        Just
+          $ exists
+          $ YourLocation
+          <> not_ (LocationWithAttachedEvent $ EventIs "11075")
+          <> LocationCanHaveAttachments
     , cdLevel = Just 2
     }
 

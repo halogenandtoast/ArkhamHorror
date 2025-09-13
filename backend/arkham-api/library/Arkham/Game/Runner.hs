@@ -97,6 +97,7 @@ import Arkham.Matcher hiding (
   StoryCard,
  )
 import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted (removeLocation)
 import Arkham.Movement
 import Arkham.Name
 import Arkham.Phase
@@ -105,7 +106,7 @@ import Arkham.Placement qualified as Placement
 import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario
-import Arkham.Scenario.Types hiding (scenario)
+import Arkham.Scenario.Types hiding (foundCardsL, scenario)
 import Arkham.Skill
 import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
 import Arkham.Skill.Types qualified as Skill
@@ -132,7 +133,6 @@ import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens (each, itraverseOf, itraversed, non, over, set)
-import Control.Monad.State.Strict (evalStateT, get, put)
 import Data.Aeson (Result (..))
 import Data.Data.Lens (biplate)
 import Data.IntMap.Strict qualified as IntMap
@@ -157,7 +157,9 @@ runGameMessage msg g = case msg of
     pure g
   SetGameState s -> pure $ g & gameStateL .~ s
   ChoosingDecks -> pure $ g & entitiesL . investigatorsL .~ mempty & gameStateL .~ IsChooseDecks (g ^. playersL)
+  UpgradingDecks -> pure $ g & gameStateL .~ IsChooseDecks (g ^. playersL)
   DoneChoosingDecks -> pure $ g & gameStateL .~ IsActive
+  DoneUpgradingDecks -> pure $ g & gameStateL .~ IsActive
   IncreaseCustomization iid cardCode customization choices -> do
     cards <- select $ OwnedBy (InvestigatorWithId iid) <> basic (CardWithCardCode cardCode)
 
@@ -203,35 +205,32 @@ runGameMessage msg g = case msg of
   ReplaceInvestigator oldIid decklist -> do
     playerId <- getPlayer oldIid
     dl <- loadDecklist decklist
-    let iid' = decklistInvestigator dl
-    let deck = decklistCards dl
-    let sideDeck = decklistExtraDeck dl
+    let iid' = dl.investigator
+    let deck = dl.cards
+    let sideDeck = dl.extra
     let
       setCardAttachments (cCode, attachments) =
         flip Map.alter cCode \case
           Nothing -> Just $ defaultPerCardSettings {cardAttachments = attachments}
           Just current -> Just $ current {cardAttachments = attachments <> cardAttachments current}
     let investigator =
-          overAttrs
-            ( \ia ->
-                ia
-                  { investigatorTaboo = decklistTaboo dl
-                  , investigatorMutated = tabooMutated' (decklistTaboo dl) (coerce iid')
-                  , investigatorSettings =
-                      let settings = investigatorSettings ia
-                       in settings
-                            { perCardSettings =
-                                foldr setCardAttachments (perCardSettings settings) (mapToList $ decklistCardAttachments dl)
-                            }
-                  }
-            )
-            (lookupInvestigator iid' playerId)
+          updateAttrs (lookupInvestigator iid' playerId) \ia ->
+            ia
+              { investigatorTaboo = dl.taboo
+              , investigatorMutated = tabooMutated' dl.taboo (coerce iid')
+              , investigatorSettings =
+                  let settings = investigatorSettings ia
+                   in settings
+                        { perCardSettings =
+                            foldr setCardAttachments (perCardSettings settings) (mapToList dl.attachments)
+                        }
+              }
     let iid = toId investigator
     when (notNull sideDeck) $ push $ LoadSideDeck iid sideDeck
     push
       $ if iid /= oldIid
-        then InitDeck iid (decklistUrl dl) (Deck deck)
-        else UpgradeDeck iid (decklistUrl dl) (Deck deck)
+        then InitDeck iid dl.url (Deck deck)
+        else UpgradeDeck iid dl.url (Deck deck)
     let activeInvestigatorF =
           if gameActiveInvestigatorId g == oldIid then set activeInvestigatorIdL iid else id
         turnPlayerInvestigatorF =
@@ -253,32 +252,29 @@ runGameMessage msg g = case msg of
         replaceIds = InvestigatorId "00000" : toList mOldId
 
     dl <- loadDecklist decklist
-    let iid' = decklistInvestigator dl
-    let deck = decklistCards dl
-    let sideDeck = decklistExtraDeck dl
+    let iid' = dl.investigator
+    let deck = dl.cards
+    let sideDeck = dl.extra
     let
       setCardAttachments (cCode, attachments) =
         flip Map.alter cCode \case
           Nothing -> Just $ defaultPerCardSettings {cardAttachments = attachments}
           Just current -> Just $ current {cardAttachments = attachments <> cardAttachments current}
     let investigator =
-          overAttrs
-            ( \ia ->
-                ia
-                  { investigatorTaboo = decklistTaboo dl
-                  , investigatorMutated = tabooMutated' (decklistTaboo dl) (coerce iid')
-                  , investigatorSettings =
-                      let settings = investigatorSettings ia
-                       in settings
-                            { perCardSettings =
-                                foldr setCardAttachments (perCardSettings settings) (mapToList $ decklistCardAttachments dl)
-                            }
-                  }
-            )
-            (lookupInvestigator iid' playerId)
+          updateAttrs (lookupInvestigator iid' playerId) \ia ->
+            ia
+              { investigatorTaboo = dl.taboo
+              , investigatorMutated = tabooMutated' dl.taboo (coerce iid')
+              , investigatorSettings =
+                  let settings = ia.settings
+                   in settings
+                        { perCardSettings =
+                            foldr setCardAttachments (perCardSettings settings) (mapToList dl.attachments)
+                        }
+              }
     let iid = toId investigator
     when (notNull sideDeck) $ push $ LoadSideDeck iid sideDeck
-    push $ InitDeck iid (decklistUrl dl) (Deck deck)
+    push $ InitDeck iid dl.url (Deck deck)
     let activeInvestigatorF =
           if gameActiveInvestigatorId g `elem` replaceIds then set activeInvestigatorIdL iid else id
         turnPlayerInvestigatorF =
@@ -299,7 +295,7 @@ runGameMessage msg g = case msg of
     dl <- loadDecklist decklist
     investigator <- getInvestigator investigatorId
     let playerId = attr investigatorPlayerId investigator
-    let iid' = decklistInvestigator dl
+    let iid' = dl.investigator
     -- let sideDeck = decklistExtraDeck dl
     let
       setCardAttachments (cCode, attachments) =
@@ -310,13 +306,13 @@ runGameMessage msg g = case msg of
           overAttrs
             ( \ia ->
                 ia
-                  { investigatorTaboo = decklistTaboo dl
-                  , investigatorMutated = tabooMutated' (decklistTaboo dl) (coerce iid')
+                  { investigatorTaboo = dl.taboo
+                  , investigatorMutated = tabooMutated' dl.taboo (coerce iid')
                   , investigatorSettings =
                       let settings = investigatorSettings ia
                        in settings
                             { perCardSettings =
-                                foldr setCardAttachments (perCardSettings settings) (mapToList $ decklistCardAttachments dl)
+                                foldr setCardAttachments (perCardSettings settings) (mapToList dl.attachments)
                             }
                   }
             )
@@ -386,8 +382,7 @@ runGameMessage msg g = case msg of
     -- The gameActionDiff will be empty after this so we do not need the diffs to store any data
     pure $ foldl' unsafePatch g (gameActionDiff g)
   EndOfGame mNextCampaignStep -> do
-    window <- checkWindows [mkWhen Window.EndOfGame]
-    push window
+    pushM $ checkWindows [mkWhen Window.EndOfGame]
     pushEnd $ EndOfScenario mNextCampaignStep
     pure g
   EndOfScenario _ -> do
@@ -474,7 +469,7 @@ runGameMessage msg g = case msg of
       $ [HandleOption option | standalone, option <- maybe [] (toList . campaignLogOptions) mCampaignLog]
       <> [LoadTarotDeck, SetChaosTokensForScenario, PreScenarioSetup, HandleKilledOrInsaneInvestigators]
       <> [StandaloneSetup | standalone]
-      <> [ChooseLeadInvestigator]
+      <> [ChooseLeadInvestigator, SetPlayerOrder]
       <> [PerformTarotReading | gamePerformTarotReadings g]
       <> [SetupInvestigators, InvestigatorsMulligan, Setup, EndSetup]
     pure
@@ -498,6 +493,7 @@ runGameMessage msg g = case msg of
       $ ResetGame
       : [StandaloneSetup | standalone]
         <> [ ChooseLeadInvestigator
+           , SetPlayerOrder
            , SetupInvestigators
            , SetChaosTokensForScenario -- (chaosBagOf campaign')
            , InvestigatorsMulligan
@@ -583,29 +579,6 @@ runGameMessage msg g = case msg of
       Just delay -> case delay of
         DelayAdditionalCosts -> pure True
         DelayAdditionalCostsWhen c -> passesCriteria iid Nothing ability.source ability.source [] c
-
-    -- leaveCosts <-
-    --   if isMovement && not doDelayAdditionalCosts
-    --     then do
-    --       mlocation <- getMaybeLocation iid
-    --       case mlocation of
-    --         Nothing -> pure []
-    --         Just lid -> do
-    --           mods' <- getModifiers lid
-    --           pure [c | AdditionalCostToLeave c <- mods']
-    --     else pure []
-
-    -- -- TODO: we might care about other sources here
-    -- enterCosts <-
-    --   if isMovement && not doDelayAdditionalCosts
-    --     then case abilitySource ability of
-    --       LocationSource lid -> do
-    --         mods' <- getModifiers lid
-    --         pcosts <- filterM ((lid <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
-    --         pure $ map snd pcosts <> [c | AdditionalCostToEnter c <- mods']
-    --       _ -> pure []
-    --     else pure []
-
     investigateCosts <-
       if isInvestigate && not doDelayAdditionalCosts
         then do
@@ -615,7 +588,6 @@ runGameMessage msg g = case msg of
               pure [c | AdditionalCostToInvestigate c <- mods']
             _ -> pure []
         else pure []
-
     resignCosts <-
       if isResign && not doDelayAdditionalCosts
         then do
@@ -731,14 +703,9 @@ runGameMessage msg g = case msg of
     let skillsF = maybe id deleteMap mSkillId
     pure
       $ g
-      & focusedCardsL
-      %~ map (filter (/= c))
-      & foundCardsL
-      . each
-      %~ filter (/= c)
-      & entitiesL
-      . skillsL
-      %~ skillsF
+      & (focusedCardsL %~ map (filter (/= c)))
+      & (foundCardsL . each %~ filter (/= c))
+      & (entitiesL . skillsL %~ skillsF)
   PutCardOnBottomOfDeck _ _ c -> do
     mSkillId <- selectOne $ SkillWithCardId (toCardId c)
     let skillsF = maybe id deleteMap mSkillId
@@ -750,22 +717,17 @@ runGameMessage msg g = case msg of
   ShuffleCardsIntoDeck _ cards ->
     pure
       $ g
-      & focusedCardsL
-      %~ map (filter (`notElem` cards))
-      & foundCardsL
-      . each
-      %~ filter (`notElem` cards)
+      & (focusedCardsL %~ map (filter (`notElem` cards)))
+      & (foundCardsL . each %~ filter (`notElem` cards))
   FocusChaosTokens tokens -> pure $ g & focusedChaosTokensL <>~ tokens
   Msg.RevealChaosToken SkillTestSource {} _ token -> pure $ g & focusedChaosTokensL %~ filter (/= token)
   UnfocusChaosTokens -> pure $ g & focusedChaosTokensL .~ mempty
   ChoosePlayer iid SetLeadInvestigator -> do
-    players <- getInvestigators
-    push $ ChoosePlayerOrder iid (filter (/= iid) players) [iid]
     pure $ g & leadInvestigatorIdL .~ iid & activeInvestigatorIdL .~ iid
   ChoosePlayer iid SetTurnPlayer -> do
     pushAll [BeginTurn iid, After (BeginTurn iid)]
     pure $ g & activeInvestigatorIdL .~ iid & turnPlayerInvestigatorIdL ?~ iid
-  Do (MoveTo (moveTarget -> InvestigatorTarget iid)) -> do
+  After (MoveTo (moveTarget -> InvestigatorTarget iid)) -> do
     let
       historyItem = HistoryItem HistoryMoved True
       turn = isJust $ view turnPlayerInvestigatorIdL g
@@ -803,29 +765,11 @@ runGameMessage msg g = case msg of
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
-  FoundCards cards -> pure $ g & foundCardsL .~ cards
-  ObtainCard cardId -> pure $ g & foundCardsL . each %~ deleteFirstMatch ((== cardId) . toCardId)
-  AddFocusedToTopOfDeck iid EncounterDeckTarget cardId ->
-    if null (gameFoundCards g)
-      then do
-        let
-          card =
-            fromJustNote "missing card"
-              $ find ((== cardId) . toCardId) (fromMaybe [] . headMay $ g ^. focusedCardsL)
-          focusedCards = map (filter ((/= cardId) . toCardId)) (g ^. focusedCardsL)
-        push $ PutCardOnTopOfDeck iid Deck.EncounterDeck card
-        pure $ g & (focusedCardsL .~ focusedCards)
-      else do
-        let
-          card =
-            fromJustNote "missing card"
-              $ find
-                ((== cardId) . toCardId)
-                (concat . toList $ g ^. foundCardsL)
-          foundCards =
-            Map.map (filter ((/= cardId) . toCardId)) (g ^. foundCardsL)
-        push $ PutCardOnTopOfDeck iid Deck.EncounterDeck card
-        pure $ g & (foundCardsL .~ foundCards)
+  ObtainCard cardId -> do
+    pure
+      $ g
+      & (foundCardsL . each %~ deleteFirstMatch ((== cardId) . toCardId))
+      . (focusedCardsL %~ map (filter ((/= cardId) . toCardId)))
   GameOver -> do
     clearQueue
     pure $ g & gameStateL .~ IsOver
@@ -881,7 +825,7 @@ runGameMessage msg g = case msg of
     let
       oldAttrs = toAttrs enemy
       enemy' =
-        flip overAttrs (lookupEnemy (toCardCode card) eid (toCardId card))
+        updateAttrs (lookupEnemy (toCardCode card) eid (toCardId card))
           $ \attrs -> case replaceStrategy of
             DefaultReplace -> attrs
             Swap ->
@@ -897,8 +841,8 @@ runGameMessage msg g = case msg of
                 , enemyDiscardedBy = enemyDiscardedBy oldAttrs
                 }
 
-    pushWhen (replaceStrategy == DefaultReplace)
-      $ EnemyCheckEngagement eid
+    pushWhen (replaceStrategy == DefaultReplace) $ EnemyCheckEngagement eid
+    when (card.id == toCardId enemy) $ replaceCard card.id card
     -- todo: should we just run this in place?
     pure $ g & entitiesL . enemiesL . at eid ?~ enemy'
   Do (DiscardCard iid _ cid) -> do
@@ -927,12 +871,8 @@ runGameMessage msg g = case msg of
     event' <- getEvent eid
     pure
       $ g
-      & entitiesL
-      . eventsL
-      %~ deleteMap eid
-      & actionRemovedEntitiesL
-      . eventsL
-      %~ insertEntity event'
+      & (entitiesL . eventsL %~ deleteMap eid)
+      & (actionRemovedEntitiesL . eventsL %~ insertEntity event')
   RemoveEnemy eid -> do
     popMessageMatching_ $ \case
       Arkham.Helpers.Message.EnemyDefeated eid' _ _ _ -> eid == eid'
@@ -1014,11 +954,13 @@ runGameMessage msg g = case msg of
     pushAll $ concatMap (resolve . Msg.InvestigatorIsDefeated (toSource lid)) investigators
     pure g
   Do (RemovedLocation lid) -> do
-    location <- getLocation lid
-    pure
-      $ g
-      & (entitiesL . locationsL %~ deleteMap lid)
-      & (actionRemovedEntitiesL . locationsL %~ Map.insert lid location)
+    maybeLocation lid >>= \case
+      Nothing -> pure g
+      Just location ->
+        pure
+          $ g
+          & (entitiesL . locationsL %~ deleteMap lid)
+          & (actionRemovedEntitiesL . locationsL %~ Map.insert lid location)
   SpendClues 0 _ -> pure g
   SpendClues n iids -> do
     investigatorsWithClues <-
@@ -1235,52 +1177,6 @@ runGameMessage msg g = case msg of
       then insertAfterMatching [msg', FinishedSearch] (== FinishedSearch)
       else pushAll [msg', FinishedSearch]
     pure g
-  EndSearch iid _ EncounterDeckTarget cardSources -> do
-    let
-      foundKey = \case
-        Zone.FromTopOfDeck _ -> Zone.FromDeck
-        Zone.FromBottomOfDeck _ -> Zone.FromDeck
-        other -> other
-      foundCards = gameFoundCards g
-    player <- getPlayer iid
-
-    flip evalStateT True $ do
-      for_ cardSources $ \(cardSource, returnStrategy) -> case returnStrategy of
-        DiscardRest -> do
-          lift
-            $ push
-            $ chooseOneAtATime player
-            $ map
-              ( \case
-                  EncounterCard c ->
-                    TargetLabel
-                      (CardIdTarget $ toCardId c)
-                      [AddToEncounterDiscard c]
-                  _ -> error "not possible"
-              )
-              (findWithDefault [] Zone.FromDeck foundCards)
-        PutBackInAnyOrder -> do
-          when (foundKey cardSource /= Zone.FromDeck) $ error "Expects a deck: Game<PutBackInAnyOrder>"
-          lift
-            $ push
-            $ chooseOneAtATime player
-            $ map
-              (\c -> targetLabel c [AddFocusedToTopOfDeck iid EncounterDeckTarget c.id])
-              (findWithDefault [] Zone.FromDeck foundCards)
-        ShuffleBackIn -> lift $ pushAll [ClearFound $ foundKey cardSource, ShuffleDeck Deck.EncounterDeck]
-        PutBack -> do
-          needsContinue <- get
-          if needsContinue
-            then do
-              put False
-              lift $ push $ chooseOne player [Label "Continue" [ClearFound $ foundKey cardSource]] -- we don't remove anymore so nothing to do
-            else lift $ push (ClearFound $ foundKey cardSource) -- we don't remove anymore so nothing to do
-        RemoveRestFromGame -> do
-          -- Try to obtain, then don't add back
-          lift $ pushAll $ map (ObtainCard . toCardId) $ findWithDefault [] Zone.FromDeck foundCards
-        DoNothing -> pure ()
-
-    pure g
   FinishedSearch -> do
     pure $ g & foundCardsL .~ mempty
   DiscardedCard cardId -> do
@@ -1289,16 +1185,11 @@ runGameMessage msg g = case msg of
         PlayerCard pc -> case pc.owner of
           Just iid -> pushAll [ObtainCard card.id, AddToDiscard iid pc]
           Nothing -> push $ ObtainCard card.id
-        EncounterCard ec -> pushAll [ObtainCard card.id, AddToEncounterDiscard ec]
+        EncounterCard ec -> push $ AddToEncounterDiscard ec
         VengeanceCard vc -> handleCard vc
 
     handleCard =<< getCard cardId
     pure g
-  AddToEncounterDiscard card -> do
-    pure
-      $ g
-      & (focusedCardsL %~ map (filter (/= EncounterCard card)))
-      . (foundCardsL . each %~ filter (/= EncounterCard card))
   Msg.PlaceUnderneath _ cards -> do
     pure
       $ g
@@ -1329,30 +1220,11 @@ runGameMessage msg g = case msg of
       card <- field AssetCard assetId
       underneath <- field AssetCardsUnderneath assetId
       if assetIsStory $ toAttrs asset
-        then push $ toDiscard GameSource $ toTarget assetId
+        then do
+          unless (cdDoubleSided (toCardDef asset)) do
+            push $ toDiscard GameSource $ toTarget assetId
         else pushAll [RemoveFromPlay (toSource assetId), addToHand iid card]
       for_ underneath (push . addToDiscard iid)
-    pure g
-  PlaceEnemy enemyId placement | not (isOutOfPlayZonePlacement placement) -> do
-    enemy <- getEnemy enemyId
-    when (isOutOfPlayPlacement $ attr enemyPlacement enemy) do
-      case placement of
-        AtLocation lid -> do
-          let
-            details =
-              SpawnDetails
-                { spawnDetailsEnemy = enemyId
-                , spawnDetailsInvestigator = Nothing
-                , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
-                , spawnDetailsOverridden = False
-                }
-          pushAll
-            [ Will (EnemySpawn details)
-            , When (EnemySpawn details)
-            , EnemySpawn details
-            , After (EnemySpawn details)
-            ]
-        _ -> pure ()
     pure g
   PlaceInBonded _ (toCardId -> cardId) -> do
     assets <- select $ AssetWithCardId cardId
@@ -1412,13 +1284,11 @@ runGameMessage msg g = case msg of
       pushAll $ resolve (RemoveEnemy enemyId) <> [ShuffleCardsIntoDeck deck [card]]
     pure g
   ShuffleIntoDeck deck (LocationTarget locationId) -> do
-    maybeLocation locationId >>= \case
-      Nothing -> pure g
-      Just _ -> do
-        -- The Thing That Follows
-        card <- field LocationCard locationId
-        push $ ShuffleCardsIntoDeck deck [card]
-        pure $ g & entitiesL . locationsL %~ deleteMap locationId
+    maybeLocation locationId >>= traverse_ \_ -> do
+      card <- field LocationCard locationId
+      push $ ShuffleCardsIntoDeck deck [card]
+      runQueueT $ removeLocation locationId
+    pure g
   PlayCard iid card _mtarget _payment windows' True -> do
     allModifiers <- mconcat <$> sequence [getModifiers card, getModifiers iid]
     let
@@ -1467,10 +1337,10 @@ runGameMessage msg g = case msg of
         g' <- runGameMessage (PutCardIntoPlay controller card mtarget payment windows') g
         let
           recordLimit g'' = \case
-            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
-            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
-            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
-            LimitPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
+            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            LimitPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             _ -> g''
         pure $ foldl' recordLimit g' (cdLimits $ toCardDef card)
       else do
@@ -1578,7 +1448,7 @@ runGameMessage msg g = case msg of
     send $ format investigator <> " drew " <> format card
     sendEnemy (toTitle investigator <> " drew Enemy") (toJSON card)
     enemyId <- getRandom
-    let enemy = overAttrs (\e -> e {enemyBearer = Just iid}) (createEnemy card enemyId)
+    let enemy = overAttrs (\e -> e {enemyBearer = card.owner}) (createEnemy card enemyId)
     pushAll
       [ RemoveCardFromHand iid (toCardId card)
       , InvestigatorDrawEnemy iid enemyId
@@ -1690,9 +1560,19 @@ runGameMessage msg g = case msg of
             askMap
       _ -> push $ AskMap askMap
     pure g
+  AskPlayer (Ask iid1 ChooseUpgradeDeck) -> do
+    peekMessage >>= \case
+      Just (AskPlayer (Ask iid2 ChooseUpgradeDeck)) -> do
+        _ <- popMessage
+        push
+          $ AskPlayer
+          $ AskMap
+          $ mapFromList
+            [(iid1, ChooseUpgradeDeck), (iid2, ChooseUpgradeDeck)]
+      _ -> push (Ask iid1 ChooseUpgradeDeck)
+    pure g
   AskPlayer (Ask iid1 (ChooseOne c1)) -> do
-    mNextMessage <- peekMessage
-    case mNextMessage of
+    peekMessage >>= \case
       Just (AskPlayer (Ask iid2 (ChooseOne c2))) -> do
         _ <- popMessage
         push
@@ -1703,8 +1583,7 @@ runGameMessage msg g = case msg of
       _ -> push (chooseOne iid1 c1)
     pure g
   AskPlayer (Ask iid1 (PlayerWindowChooseOne c1)) -> do
-    mNextMessage <- peekMessage
-    case mNextMessage of
+    peekMessage >>= \case
       Just (AskPlayer (Ask iid2 (PlayerWindowChooseOne c2))) -> do
         _ <- popMessage
         push
@@ -1715,8 +1594,20 @@ runGameMessage msg g = case msg of
       _ -> push (Ask iid1 $ PlayerWindowChooseOne c1)
     pure g
   AskPlayer (AskMap askMap) -> do
-    mNextMessage <- peekMessage
-    case mNextMessage of
+    peekMessage >>= \case
+      Just (AskPlayer (Ask iid2 ChooseUpgradeDeck)) -> do
+        _ <- popMessage
+        push
+          $ AskPlayer
+          $ AskMap
+          $ insertWith
+            ( \x y -> case (x, y) of
+                (ChooseUpgradeDeck, ChooseUpgradeDeck) -> ChooseUpgradeDeck
+                _ -> error "unhandled"
+            )
+            iid2
+            ChooseUpgradeDeck
+            askMap
       Just (AskPlayer (Ask iid2 (ChooseOne c2))) -> do
         _ <- popMessage
         push
@@ -1746,8 +1637,7 @@ runGameMessage msg g = case msg of
       _ -> push $ AskMap askMap
     pure g
   HandleGroupTarget k t msgs -> do
-    mNextMessage <- peekMessage
-    case mNextMessage of
+    peekMessage >>= \case
       Just (HandleGroupTarget k' t' msgs') | k == k' -> do
         _ <- popMessage
         push $ HandleGroupTargets NoAutoStatus k (mapFromList [(t, msgs), (t', msgs')])
@@ -1757,8 +1647,7 @@ runGameMessage msg g = case msg of
       _ -> pushAll msgs
     pure g
   HandleGroupTargets st k targetMap -> do
-    mNextMessage <- peekMessage
-    case mNextMessage of
+    peekMessage >>= \case
       Just (HandleGroupTarget k' t' msgs') | k == k' -> do
         _ <- popMessage
         push $ HandleGroupTargets st k (insertMap t' msgs' targetMap)
@@ -1768,12 +1657,14 @@ runGameMessage msg g = case msg of
       _ -> do
         validTargetsForKey :: Map Target [Message] <- case k of
           HunterGroup ->
-            mapFromList <$> forMaybeM (mapToList targetMap) \(target, msgs) -> do
-              case target of
-                EnemyTarget eid -> do
-                  kws <- getModifiedKeywords eid
-                  pure $ guard (Keyword.Hunter `elem` kws) $> (target, msgs)
-                _ -> pure Nothing
+            mapFromList <$> forMaybeM (mapToList targetMap) \(target, msgs) -> runMaybeT do
+              eid <- hoistMaybe target.enemy
+              kws <- lift $ toList <$> getModifiedKeywords eid
+              liftGuardM $ flip anyM kws \case
+                Keyword.Patrol lm -> matches eid (#ready <> #unengaged <> not_ (EnemyAt lm))
+                Keyword.Hunter -> matches eid (#ready <> #unengaged <> not_ (EnemyAt $ LocationWithInvestigator Anyone))
+                _ -> pure False
+              pure (target, msgs)
         case st of
           NoAutoStatus -> do
             let
@@ -1801,9 +1692,8 @@ runGameMessage msg g = case msg of
     pure g
   EnemyWillAttack details -> do
     modifiers' <- maybe (pure []) getModifiers details.singleTarget
-    cannotBeAttacked <- flip anyM modifiers' $ \case
-      CannotBeAttackedBy matcher ->
-        elem (attackEnemy details) <$> select matcher
+    cannotBeAttacked <- flip anyM modifiers' \case
+      CannotBeAttackedBy matcher -> matches details.enemy matcher
       _ -> pure False
     unless cannotBeAttacked do
       mNextMessage <- peekMessage
@@ -1946,6 +1836,9 @@ runGameMessage msg g = case msg of
   Flipped (AssetSource aid) card | toCardType card /= AssetType -> do
     replaceCard card.id card
     runMessage (RemoveAsset aid) g
+  Flipped (EnemySource eid) card | toCardType card /= EnemyType -> do
+    replaceCard card.id card
+    runMessage (RemoveEnemy eid) g
   QuietlyRemoveFromGame target -> do
     case target of
       AssetTarget aid -> pure $ g & entitiesL . assetsL %~ deleteMap aid
@@ -2161,6 +2054,11 @@ runGameMessage msg g = case msg of
       & (activeAbilitiesL .~ mempty)
       & (actionRemovedEntitiesL .~ mempty)
       & (entitiesL %~ clearRemovedEntities)
+  SetPlayerOrder -> do
+    lead <- getLead
+    players <- getInvestigators
+    push $ ChoosePlayerOrder lead (filter (/= lead) players) [lead]
+    pure g
   ChoosePlayerOrder _ [x] [] -> do
     pure $ g & playerOrderL .~ [x]
   ChoosePlayerOrder _ [] (x : xs) -> do
@@ -2322,7 +2220,6 @@ runGameMessage msg g = case msg of
       %~ Map.filterWithKey (\k _ -> k `notElem` roundEndUses && k `notElem` tabooRoundEndUses)
   Begin MythosPhase {} -> do
     let playerOrder = g ^. playerOrderL
-    mGloria <- selectOne $ investigatorIs Investigators.gloriaGoldberg
     hasEncounterDeck <- scenarioField ScenarioHasEncounterDeck
     phaseBeginsWindow <-
       checkWindows
@@ -2341,9 +2238,7 @@ runGameMessage msg g = case msg of
     modifiers <- getModifiers (PhaseTarget MythosPhase)
     let phaseStep s msgs = Msg.PhaseStep (MythosPhaseStep s) msgs
     pushAllEnd
-      $ phaseStep
-        MythosPhaseBeginsStep
-        (phaseBeginsWindow : [ChoosePlayerOrder gloria playerOrder [] | gloria <- toList mGloria])
+      $ phaseStep MythosPhaseBeginsStep [phaseBeginsWindow]
       : [ phaseStep PlaceDoomOnAgendaStep [placeDoomOnAgenda]
         | SkipMythosPhaseStep PlaceDoomOnAgendaStep `notElem` modifiers
         ]
@@ -2366,9 +2261,13 @@ runGameMessage msg g = case msg of
     for_ (reverse investigators) \iid -> push $ ForInvestigator iid AllDrawCardAndResource
     pure g
   AllDrawEncounterCard -> do
-    investigators <- filterM (fmap not . isEliminated) =<< getInvestigatorsInOrder
     push $ SetActiveInvestigator $ g ^. activeInvestigatorIdL
-    for_ (reverse investigators) \iid -> push $ ForInvestigator iid AllDrawEncounterCard
+    mGloria <- selectOne $ investigatorIs Investigators.gloriaGoldberg
+    investigators <- filterM (fmap not . isEliminated) =<< getInvestigatorsInOrder
+    case mGloria of
+      Just gloria -> push $ SendMessage (toTarget gloria) (ForInvestigators investigators AllDrawEncounterCard)
+      Nothing -> do
+        for_ (reverse investigators) \iid -> push $ ForInvestigator iid AllDrawEncounterCard
     pure g
   ForInvestigator iid AllDrawEncounterCard -> do
     iid' <- fromMaybe iid <$> selectOne (InvestigatorWithModifier DrawsEachEncounterCard)
@@ -2462,7 +2361,7 @@ runGameMessage msg g = case msg of
     assetId <- getRandom
     push $ CreateAssetAt assetId cardCode $ AtLocation lid
     pure g
-  ReadStory iid card storyMode mtarget -> do
+  StoryMessage (ReadStory iid card storyMode mtarget) -> do
     placement <- case mtarget of
       Just (EnemyTarget eid) -> field EnemyPlacement eid
       Just (AssetTarget aid) -> field AssetPlacement aid
@@ -2470,7 +2369,7 @@ runGameMessage msg g = case msg of
       Nothing -> pure Unplaced
     push $ ReadStoryWithPlacement iid card storyMode mtarget placement
     pure g
-  ReadStoryWithPlacement iid card storyMode mtarget placement -> do
+  StoryMessage (ReadStoryWithPlacement iid card storyMode mtarget placement) -> do
     let
       storyId = StoryId $ toCardCode card
       story' = overAttrs (Story.placementL .~ placement) (createStory card mtarget storyId)
@@ -2482,23 +2381,28 @@ runGameMessage msg g = case msg of
           [ FocusCards [card]
           , chooseOne
               player
-              [targetLabel (toCardId card) [ResolveStory iid storyMode storyId, ResolvedStory storyMode storyId]]
+              [ targetLabel
+                  (toCardId card)
+                  [StoryMessage (ResolveStory iid storyMode storyId), StoryMessage (ResolvedStory storyMode storyId)]
+              ]
           ]
       _ ->
         push
           $ chooseOne
             player
-            [ targetLabel (toTarget storyId) [ResolveStory iid storyMode storyId, ResolvedStory storyMode storyId]
+            [ targetLabel
+                (toTarget storyId)
+                [StoryMessage (ResolveStory iid storyMode storyId), StoryMessage (ResolvedStory storyMode storyId)]
             ]
     pure $ g & entitiesL . storiesL . at storyId ?~ story'
-  PlaceStory card placement -> do
+  StoryMessage (PlaceStory card placement) -> do
     let storyId = StoryId $ toCardCode card
     let story' = overAttrs (Story.placementL .~ placement) (createStory card Nothing storyId)
     pure $ g & entitiesL . storiesL . at storyId ?~ story'
-  ResolveStory _ _ sid -> do
+  StoryMessage (ResolveStory _ _ sid) -> do
     card <- field StoryCard sid
     pure $ g & focusedCardsL %~ map (filter (/= card))
-  RemoveStory storyId -> do
+  StoryMessage (RemoveStory storyId) -> do
     pure $ g & entitiesL . storiesL %~ deleteMap storyId
   CreateSkill skillId card investigatorId placement -> do
     let skill = createSkill card investigatorId skillId
@@ -2605,20 +2509,9 @@ runGameMessage msg g = case msg of
             )
             (createAsset card assetId)
     pure $ g & entitiesL . assetsL . at assetId ?~ asset'
-  When (EnemySpawn details) -> do
-    for_ details.location \lid -> do
-      windowMsg <- checkWindows [mkWhen (Window.EnemySpawns details.enemy lid)]
-      push windowMsg
-    pure g
-  After (EnemySpawn details) -> do
-    for_ details.location \lid -> do
-      windowMsg <- checkWindows [mkWhen (Window.EnemySpawns details.enemy lid)]
-      push windowMsg
-    pure g
   -- TODO: CHECK SpawnEnemyAt and SpawnEnemyAtEngagedWith
   SpawnEnemyAt card lid -> do
     enemyId <- getRandom
-    let enemy = createEnemy card enemyId
     let
       details =
         SpawnDetails
@@ -2635,7 +2528,7 @@ runGameMessage msg g = case msg of
       , EnemySpawn details
       , After (EnemySpawn details)
       ]
-    pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
+    pure $ g & entitiesL . enemiesL . at enemyId ?~ createEnemy card enemyId
   SpawnEnemyAtEngagedWith card lid iid -> do
     enemyId <- getRandom
     let enemy = createEnemy card enemyId
@@ -2846,7 +2739,7 @@ runGameMessage msg g = case msg of
   ReplaceCard cardId card -> do
     replaceCard cardId card -- We must update the IORef
     pure $ g & cardsL %~ insertMap cardId card
-  After (InvestigatorEliminated iid) -> pure $ g & playerOrderL %~ filter (/= iid)
+  -- After (InvestigatorEliminated iid) -> pure $ g & playerOrderL %~ filter (/= iid)
   SetActivePlayer pid -> pure do
     -- We might not have setup the players like (like in the TCU) and so we can't switch
     case find (\i -> i.player == pid) (toList $ g ^. entitiesL . investigatorsL) of
@@ -2897,10 +2790,10 @@ runGameMessage msg g = case msg of
         push $ ObtainCard card.id
         let
           recordLimit g'' = \case
-            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
-            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
-            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
-            LimitPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid:)
+            MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            MaxPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
+            LimitPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             _ -> g''
         pure
           $ foldl'
@@ -2923,6 +2816,11 @@ runGameMessage msg g = case msg of
             ]
           <> resolve (Revelation iid (EnemySource enemyId))
         pure $ g & (entitiesL . enemiesL . at enemyId ?~ enemy)
+      TreacheryType -> do
+        case card of
+          EncounterCard ec -> runMessage (Do (InvestigatorDrewEncounterCardFrom iid ec Nothing)) g
+          PlayerCard _ -> error "Currently not handling Revelations from type TreacheryType when PlayerCard"
+          VengeanceCard _ -> error "Currently not handling Revelations from type TreacheryType when VengeanceCard"
       other ->
         error $ "Currently not handling Revelations from type " <> show other
   ResolvedCard iid card -> do
@@ -2997,7 +2895,7 @@ runGameMessage msg g = case msg of
     let ignoreRevelation = IgnoreRevelation `elem` modifiers'
     case toCardType card of
       StoryType -> do
-        pushAll [afterDraw, ReadStory iid (toCard card) ResolveIt Nothing, UnsetActiveCard]
+        pushAll [afterDraw, StoryMessage (ReadStory iid (toCard card) ResolveIt Nothing), UnsetActiveCard]
         pure g'
       EnemyType -> do
         enemyId <- getRandom

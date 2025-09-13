@@ -8,7 +8,6 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
-import Arkham.Target
 
 newtype SilverTwilightLodgeAllied = SilverTwilightLodgeAllied StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor)

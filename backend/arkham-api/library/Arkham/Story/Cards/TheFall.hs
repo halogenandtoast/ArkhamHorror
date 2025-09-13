@@ -17,7 +17,7 @@ theFall = story TheFall Cards.theFall
 
 instance RunMessage TheFall where
   runMessage msg s@(TheFall attrs) = runQueueT $ case msg of
-    ResolveStory iid _ story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- perPlayer 2
       lid <- selectJust $ locationIs Locations.darkSpires

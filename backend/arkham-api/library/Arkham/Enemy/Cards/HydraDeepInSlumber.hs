@@ -1,8 +1,4 @@
-module Arkham.Enemy.Cards.HydraDeepInSlumber (
-  hydraDeepInSlumber,
-  HydraDeepInSlumber (..),
-)
-where
+module Arkham.Enemy.Cards.HydraDeepInSlumber (hydraDeepInSlumber) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -19,11 +15,7 @@ newtype HydraDeepInSlumber = HydraDeepInSlumber EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hydraDeepInSlumber :: EnemyCard HydraDeepInSlumber
-hydraDeepInSlumber = enemyWith
-  HydraDeepInSlumber
-  Cards.hydraDeepInSlumber
-  (0, Static 1, 0)
-  (0, 0)
+hydraDeepInSlumber = enemyWith HydraDeepInSlumber Cards.hydraDeepInSlumber (0, Static 1, 0) (0, 0)
   $ \a -> a {enemyFight = Nothing, enemyHealth = Nothing, enemyEvade = Nothing}
 
 instance HasModifiersFor HydraDeepInSlumber where
@@ -39,7 +31,7 @@ instance HasAbilities HydraDeepInSlumber where
         )
         $ forced
         $ RoundEnds #when
-    , skillTestAbility $ restricted a 1 OnSameLocation actionAbility
+    , skillTestAbility $ restricted a 2 OnSameLocation actionAbility
     ]
 
 instance RunMessage HydraDeepInSlumber where

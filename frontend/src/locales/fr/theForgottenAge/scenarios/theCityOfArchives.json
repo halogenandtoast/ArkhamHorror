@@ -1,0 +1,28 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "–1 (–3 à la place si vous avez au moins 5 cartes en main).",
+      "cultist": "–2. En cas d'échec, placez 1 de vos indices sur votre lieu.",
+      "tablet": "–3. En cas d'échec, défaussez 1 carte prise au hasard dans votre main.",
+      "elderThing": "@:theForgottenAge.theCityOfArchives.tokens.easyStandard.cultist"
+    },
+    "hardExpert": {
+      "skull": "–2 (Si vous avez au moins 5 cartes en main, vous échouez automatiquement à la place).",
+      "cultist": "–2. Placez 1 de vos indices sur votre lieu.",
+      "tablet": "–3. En cas d'échec, défaussez 1 carte prise au hasard dans votre main pour chaque point manquant.",
+      "elderThing": "@:theForgottenAge.theCityOfArchives.tokens.hardExpert.cultist"
+    }
+  },
+  "xp": {
+    "perfected": "Pour avoir entraperçu les secrets de la Terre",
+    "successful": "Pour avoir entraperçu les secrets de la Terre",
+    "backfired": "Pour avoir entraperçu les secrets de la Terre"
+  },
+  "remembered": {
+    "foundTheProcess": "Vous avez trouvé la marche à suivre.",
+    "dissectedAnOrgan": "Vous avez disséqué un organe.",
+    "interviewedASubject": "Vous avez interrogé un sujet.",
+    "realizedWhatYearItIs": "Vous avez découvert la date.",
+    "activatedTheDevice": "Vous avez activé le mécanisme."
+  }
+}

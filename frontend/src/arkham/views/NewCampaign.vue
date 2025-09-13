@@ -14,7 +14,7 @@ import scenarioJSON from '@/arkham/data/scenarios'
 import sideStoriesJSON from '@/arkham/data/side-stories.json'
 
 const store = useUserStore()
-const currentUser = computed<User | null>(() => store.getCurrentUser)
+const currentUser = computed<User | null>(() => store.currentUser)
 const route = useRoute();
 const queryParams = route.query;
 
@@ -182,7 +182,7 @@ async function start() {
         deckIds.value,
         playerCount.value,
         campaignId,
-        fullCampaign.value ? null : selectedScenario.value,
+        fullCampaign.value !== 'PartialCampaign' ? null : selectedScenario.value,
         selectedDifficulty.value,
         currentCampaignName.value,
         multiplayerVariant.value,
@@ -261,7 +261,7 @@ async function start() {
               </template>
             </div>
 
-            <template v-if="['Standalone', 'PartialCampaign'].includes(fullCampaign) && selectedCampaign">
+            <template v-if="['Standalone', 'PartialCampaign'].includes(fullCampaign) && selectedCampaign && gameMode === 'Campaign'">
               <div class="scenarios">
                 <div v-for="scenario in campaignScenarios" :key="scenario.id">
                   <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="imgsrc(`boxes/${scenario.id}.jpg`)" @click="selectedScenario = scenario.id">

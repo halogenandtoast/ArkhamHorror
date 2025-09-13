@@ -29,6 +29,7 @@ newtype TheCircleUndone = TheCircleUndone CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
 
 instance IsCampaign TheCircleUndone where
+  campaignTokens = chaosBagContents
   nextStep a = case campaignStep (toAttrs a) of
     PrologueStep -> Just DisappearanceAtTheTwilightEstate
     DisappearanceAtTheTwilightEstate -> Just TheWitchingHour
@@ -48,13 +49,8 @@ instance IsCampaign TheCircleUndone where
     _ -> Nothing
 
 theCircleUndone :: Difficulty -> TheCircleUndone
-theCircleUndone difficulty =
-  campaignWith
-    TheCircleUndone
-    (CampaignId "05")
-    "The Circle Undone"
-    difficulty
-    (chaosBagContents difficulty)
+theCircleUndone =
+  campaignWith TheCircleUndone (CampaignId "05") "The Circle Undone"
     $ logL
     .~ mkCampaignLog
       { campaignLogRecordedSets =

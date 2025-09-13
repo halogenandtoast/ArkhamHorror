@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const expanded = ref(false)
 
-const storyCards = computed(() => props.game.campaign.storyCards[props.investigator.id] || [])
+const storyCards = computed(() => props.game.campaign?.storyCards[props.investigator.id] || props.game.scenario?.storyCards[props.investigator.id] || [])
 
 function getInvestigatorName(cardTitle: string): string {
   const language = localStorage.getItem('language') || 'en'

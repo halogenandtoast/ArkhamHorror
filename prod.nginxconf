@@ -9,6 +9,7 @@ http {
   server {
     listen 3000;
     server_name .arkhamhorror.app;
+    client_max_body_size 5M;
 
     location / {
       root /opt/arkham/src/frontend/dist;

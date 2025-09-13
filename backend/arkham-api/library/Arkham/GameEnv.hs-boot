@@ -22,15 +22,14 @@ import Arkham.Random
 import Arkham.SkillTest.Base
 import Arkham.Target
 import Arkham.Window
-import Control.Monad.Random
 
 withActiveInvestigator
-  :: HasGame m => InvestigatorId -> (forall t. (MonadTrans t, HasGame (t m)) => t m a) -> m a
+  :: HasGame m => InvestigatorId -> (forall t. (HasGame t) => t a) -> m a
 withModifiers'
   :: (Targetable target, HasGame m)
   => target
   -> m [Modifier]
-  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> (forall t. (HasGame t) => t a)
   -> m a
 getAllModifiers :: HasGame m => m (Map Target [Modifier])
 getActiveAbilities :: HasGame m => m [Ability]
@@ -66,3 +65,4 @@ runWithEnv
      )
   => GameT a
   -> m a
+getTurnOrder :: HasGame m => m [InvestigatorId]

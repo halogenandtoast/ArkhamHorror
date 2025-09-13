@@ -1,4 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
+import { type Search, searchDecoder } from '@/arkham/types/Search';
 import { type Name, nameDecoder } from '@/arkham/types/Name';
 import { v2Optional } from '@/arkham/parser';
 import {
@@ -53,6 +54,7 @@ export type Scenario = {
   cardsUnderAgendaDeck: Card[];
   cardsUnderActDeck: Card[];
   cardsNextToActDeck: Card[];
+  foundCards: Record<string, Card[]>;
   cardsNextToAgendaDeck: Card[];
   setAsideCards: Card[];
   setAsideKeys: ArkhamKey[];
@@ -70,6 +72,7 @@ export type Scenario = {
   xpBreakdown?: XpEntry[];
   meta: any;
   log: Remembered[];
+  storyCards: { [key: string]: CardContents[] };
 }
 
 export const scenarioDeckDecoder = JsonDecoder.object({
@@ -130,6 +133,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   cardsNextToAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'CardsNextToAgendaDeck'),
   setAsideKeys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
   keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
+  search: v2Optional(searchDecoder).map((search: Search) => search?.searchFoundCards || {}),
   setAsideCards: JsonDecoder.array<Card>(cardDecoder, 'SetAsideCards'),
   chaosBag: chaosBagDecoder,
   discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'EncounterCardContents[]'),
@@ -176,8 +180,9 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
         return acc
       }, {})
     }),
+  storyCards: JsonDecoder.record(JsonDecoder.array(cardContentsDecoder, 'CardDef[]'), 'CardDef[]')
 
-}, 'Scenario');
+}, 'Scenario').map(({search, ...rest}) => ({...rest, foundCards: search}));
 
 export function scenarioToKeyI18n(scenario: Scenario): string {
   const full = scenarioToI18n(scenario);
@@ -276,6 +281,7 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c53061": return "theForgottenAge.shatteredAeons"
     case "c53066": return "theForgottenAge.turnBackTime"
     case "c71001": return "standalone.theMidwinterGala"
+    case "c72001": return "standalone.filmFatale"
     case "c81001": return "standalone.curseOfTheRougarou"
     case "c82001": return "standalone.carnevaleOfHorrors"
     case "c84001": return "standalone.murderAtTheExcelsiorHotel"

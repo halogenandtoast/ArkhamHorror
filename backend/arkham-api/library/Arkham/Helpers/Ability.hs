@@ -3,10 +3,12 @@ module Arkham.Helpers.Ability where
 import Arkham.Ability
 import Arkham.Action (Action)
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Customization
+import Arkham.ForMovement
 import Arkham.Game.Settings
 import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Helpers.Cost (getCanAffordCost)
@@ -62,8 +64,8 @@ getCanPerformAbility !iid !ws !ability = do
     [ getCanAffordCost iid (toSource ability) actions ws (mconcat $ cost : additionalCosts)
     , meetsActionRestrictions iid ws ability
     , anyM (\window -> windowMatches iid (toSource ability) window abWindow) ws
-    , withActiveInvestigator iid
-        $ passesCriteria iid Nothing (toSource ability) ability.requestor ws criteria
+    , withActiveInvestigator iid do
+        passesCriteria iid Nothing (toSource ability) ability.requestor ws criteria
     , not <$> preventedByInvestigatorModifiers iid ability
     ]
 
@@ -122,7 +124,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
     ConstantAbility -> pure False
 
 canDoAction :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
-canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
+canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \case
   Action.Fight -> case abilitySource of
     LocationSource _lid -> pure True
     EnemySource eid -> do
@@ -158,7 +160,7 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
         selectAny
           $ Matcher.LocationWithModifier CanBeAttackedAsIfEnemy
           <> if canMoveToConnected
-            then Matcher.orConnected (Matcher.locationWithInvestigator iid)
+            then Matcher.orConnected ForMovement (Matcher.locationWithInvestigator iid)
             else Matcher.locationWithInvestigator iid
       pure $ enemies || locations
   Action.Evade -> case abilitySource of
@@ -200,6 +202,11 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
     _ -> selectAny (Matcher.canParleyEnemy iid)
   Action.Investigate -> case abilitySource of
     LocationSource lid -> withoutModifier iid (CannotInvestigateLocation lid)
+    AssetSource _ | abilityCardCode == Assets.duke.cardCode && abilityIndex == 2 -> do
+      orM
+        [ notNull <$> select Matcher.InvestigatableLocation
+        , matches iid $ Matcher.InvestigatorCanMoveTo abilitySource Matcher.Anywhere
+        ]
     _ -> notNull <$> select Matcher.InvestigatableLocation
   -- The below actions may not be handled correctly yet
   Action.Activate -> pure True

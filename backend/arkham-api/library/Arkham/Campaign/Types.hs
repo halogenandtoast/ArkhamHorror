@@ -48,6 +48,9 @@ class
   IsCampaign a
   where
   nextStep :: a -> Maybe CampaignStep
+  invalidCards :: a -> [CardCode]
+  invalidCards _ = []
+  campaignTokens :: Difficulty -> [ChaosTokenFace]
 
 data instance Field Campaign :: Type -> Type where
   CampaignCompletedSteps :: Field Campaign [CampaignStep]
@@ -56,6 +59,7 @@ data instance Field Campaign :: Type -> Type where
   CampaignDecks :: Field Campaign (Map InvestigatorId (Deck PlayerCard))
   CampaignMeta :: Field Campaign Value
   CampaignStore :: Field Campaign (Map Text Value)
+  CampaignInvalidCards :: Field Campaign [CardCode]
 
 data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId
@@ -199,23 +203,23 @@ addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck = do
       pure $ toCardDef card /= randomWeakness
 
 campaignWith
-  :: (CampaignAttrs -> a)
+  :: forall a. IsCampaign a
+  => (CampaignAttrs -> a)
   -> CampaignId
   -> Text
-  -> Difficulty
-  -> [ChaosTokenFace]
   -> (CampaignAttrs -> CampaignAttrs)
+  -> Difficulty
   -> a
-campaignWith f campaignId' name difficulty chaosBagContents g = campaign (f . g) campaignId' name difficulty chaosBagContents
+campaignWith f campaignId' name g difficulty = campaign (f . g) campaignId' name difficulty
 
 campaign
-  :: (CampaignAttrs -> a)
+  :: forall a. IsCampaign a
+  => (CampaignAttrs -> a)
   -> CampaignId
   -> Text
   -> Difficulty
-  -> [ChaosTokenFace]
   -> a
-campaign f campaignId' name difficulty chaosBagContents =
+campaign f campaignId' name difficulty =
   f
     $ CampaignAttrs
       { campaignId = campaignId'
@@ -223,7 +227,7 @@ campaign f campaignId' name difficulty chaosBagContents =
       , campaignDecks = mempty
       , campaignStoryCards = mempty
       , campaignDifficulty = difficulty
-      , campaignChaosBag = chaosBagContents
+      , campaignChaosBag = campaignTokens @a difficulty
       , campaignLog = mkCampaignLog
       , campaignStep = PrologueStep
       , campaignCompletedSteps = []

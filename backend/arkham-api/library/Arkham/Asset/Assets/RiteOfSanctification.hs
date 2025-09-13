@@ -22,17 +22,17 @@ instance HasModifiersFor RiteOfSanctification where
     modifySelectWhen a a.ready (InvestigatorAt $ locationWithAsset a) [CanReduceCostOf AnyCard 2]
 
 instance HasAbilities RiteOfSanctification where
-  getAbilities (RiteOfSanctification attrs) =
-    let active = toResult @Bool attrs.meta
+  getAbilities (RiteOfSanctification a) =
+    let active = toResult @Bool a.meta
      in restricted
-          attrs
+          a
           1
           ControlsThis
-          ( ReactionAbility
+          ( triggered
               (PlayCard #when (at_ YourLocation) #any)
-              (exhaust attrs <> ReleaseChaosTokensCost 1 #any)
+              (exhaust a <> ReleaseChaosTokensCost 1 #any)
           )
-          : [restricted attrs 2 (exists $ be attrs <> AssetWithoutSealedTokens) Anytime | active]
+          : [restricted a 2 (exists $ be a <> AssetWithoutSealedTokens) Anytime | active]
 
 getDetails :: [Window] -> (InvestigatorId, Card)
 getDetails [] = error "Wrong window"

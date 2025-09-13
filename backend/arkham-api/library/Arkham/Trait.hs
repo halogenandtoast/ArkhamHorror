@@ -13,6 +13,7 @@ newtype EnemyTrait = EnemyTrait {unEnemyTrait :: Trait}
 data Trait
   = Abomination
   | Agency
+  | Allied
   | Ally
   | Altered
   | Ancient
@@ -38,6 +39,7 @@ data Trait
   | Bystander
   | Campsite
   | Carnevale
+  | Castle
   | Cave
   | Central
   | Charm
@@ -54,6 +56,7 @@ data Trait
   | Connection
   | Conspirator
   | Construct
+  | Cosmos
   | Coterie
   | Courage
   | Covenant
@@ -71,6 +74,7 @@ data Trait
   | Developed
   | Dhole
   | Dilemma
+  | Dinosaur
   | Double
   | Dreamer
   | Dreamlands
@@ -186,6 +190,7 @@ data Trait
   | Practiced
   | PresentDay
   | Private
+  | Prop
   | Rail
   | Ranged
   | Relic
@@ -193,6 +198,7 @@ data Trait
   | Research
   | Resolute
   | Ritual
+  | RitualSite
   | Rival
   | River
   | Riverside
@@ -201,6 +207,8 @@ data Trait
   | Ruins
   | Salem
   | Sanctum
+  | Satellite
+  | Saturnite
   | Scheme
   | Scholar
   | Science
@@ -210,6 +218,7 @@ data Trait
   | Serpent
   | Service
   | Servitor
+  | Set
   | Shantak
   | Shattered
   | Ship

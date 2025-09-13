@@ -18,7 +18,7 @@ instance HasAbilities RuinousStreets where
     extendRevealed
       a
       [ restricted a 1 (DuringSkillTest $ SkillTestAt (be a)) $ forced $ RevealChaosToken #after You #frost
-      , restricted a 2 (exists $ LocationWithDiscoverableCluesBy You <> ConnectedFrom (be a))
+      , restricted a 2 (exists $ LocationWithDiscoverableCluesBy You <> connectedFrom (be a))
           $ freeReaction (DiscoveringLastClue #after You (be a))
       ]
 
@@ -28,7 +28,7 @@ instance RunMessage RuinousStreets where
       assignDamage iid (attrs.ability 1) 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      ls <- select $ LocationWithDiscoverableCluesBy (InvestigatorWithId iid) <> ConnectedFrom (be attrs)
+      ls <- select $ LocationWithDiscoverableCluesBy (InvestigatorWithId iid) <> connectedFrom (be attrs)
       chooseTargetM iid ls $ discoverAt NotInvestigate iid (attrs.ability 2) 1
       pure l
     _ -> RuinousStreets <$> liftRunMessage msg attrs

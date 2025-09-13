@@ -75,7 +75,7 @@ calculateSkillTestResultsData s = do
   pure
     $ SkillTestResultsData
       currentSkillValue
-      (iconCount - subtractIconCount)
+      ((if SkillIconsSubtract `elem` modifiers' then negate . abs else id) iconCount - subtractIconCount)
       chaosTokenValues
       modifiedSkillTestDifficulty
       (resultValueModifiers <$ guard (resultValueModifiers /= 0))
@@ -257,6 +257,12 @@ instance RunMessage SkillTest where
           , Do (SkillTestEnds skillTestId skillTestInvestigator skillTestSource)
           ]
       pure s
+    RemovedFromPlay (SkillSource sid) -> do
+      card <- field Field.SkillCard sid
+      pure
+        $ s
+        & (committedCardsL . each %~ filter ((/= card.id) . toCardId))
+        & (subscribersL %~ filter (not . isTarget sid))
     RemoveFromGame target | target == skillTestTarget -> do
       when (skillTestStep < RevealChaosTokenStep) do
         pushAll
@@ -533,8 +539,15 @@ instance RunMessage SkillTest where
       cmods <- getModifiers card
       let costToCommit = fold [cst | AdditionalCostToCommit iid' cst <- cmods, iid' == iid]
       batchId <- getRandom
+      push $ Do msg
       when (costToCommit /= mempty) do
         push $ PayAdditionalCost iid batchId costToCommit
+      push $ ObtainCard card.id
+      pure s
+    CommitCard iid card | card `elem` findWithDefault [] iid skillTestCommittedCards -> do
+      pushAll [ObtainCard card.id, Do msg]
+      pure s
+    Do (CommitCard iid card) | card `notElem` findWithDefault [] iid skillTestCommittedCards -> do
       pure $ s & committedCardsL %~ insertWith (<>) iid [card]
     SkillTestUncommitCard _ card ->
       pure $ s & committedCardsL %~ map (filter (/= card))
@@ -592,7 +605,10 @@ instance RunMessage SkillTest where
       pure s
     ReturnToHand _ (SkillTarget sid) -> do
       card <- field Field.SkillCard sid
-      pure $ s & committedCardsL . each %~ filter ((/= card.id) . toCardId)
+      pure
+        $ s
+        & (committedCardsL . each %~ filter ((/= card.id) . toCardId))
+        & (subscribersL %~ filter (not . isTarget sid))
     ReturnToHand _ (CardIdTarget cardId) -> do
       pure $ s & committedCardsL . each %~ filter ((/= cardId) . toCardId)
     SkillTestResults {} -> do

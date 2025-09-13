@@ -529,6 +529,10 @@ function minimize_SkillTest(isMinimized:boolean){
     isMinimized_SkillTest.value = isMinimized
   }
 }
+
+const blessTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t) => t.face === 'BlessToken'
+).length)
+const curseTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t) => t.face === 'CurseToken').length)
 </script>
 
 <template>
@@ -844,6 +848,8 @@ function minimize_SkillTest(isMinimized:boolean){
         <div id="totals">
           <PoolItem type="doom" :amount="game.totalDoom" tooltip="Total Doom" />
           <PoolItem type="clue" :amount="game.totalClues" tooltip="Total Spendable Clues" />
+          <PoolItem v-if="blessTokens > 0" type="ct_bless" :amount="blessTokens" />
+          <PoolItem v-if="curseTokens > 0" type="ct_curse" :amount="curseTokens" />
         </div>
       </div>
     </div>

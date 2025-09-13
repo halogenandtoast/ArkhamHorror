@@ -41,7 +41,6 @@ const store = useDbCardStore()
 
 function tabClass(investigator: Investigator) {
   const pid = investigator.playerId
-  console.log(investigator.id, props.activePlayerId)
   return [
     {
       'tab--selected': pid === selectedTab.value,

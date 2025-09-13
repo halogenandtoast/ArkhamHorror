@@ -5,7 +5,7 @@ import Prompt from '@/components/Prompt.vue'
 import { fetchDecks, deleteDeck, syncDeck } from '@/arkham/api'
 import { capitalize } from '@/arkham/helpers'
 import NewDeck from '@/arkham/components/NewDeck.vue';
-import Deck from '@/arkham/components/Deck.vue';
+import Deck from '@/arkham/components/DeckRow.vue';
 import { useToast } from "vue-toastification";
 
 const allDecks = ref<Arkham.Deck[]>([])

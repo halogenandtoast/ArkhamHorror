@@ -5,7 +5,6 @@ import { localizeArkhamDBBaseUrl } from '@/arkham/helpers';
 import { useRouter, useRoute, LocationQueryValue } from 'vue-router';
 import * as Arkham from '@/arkham/types/CardDef';
 import CardImage from '@/arkham/components/CardImage.vue';
-
 import sets from '@/arkham/data/sets.json'
 import cycles from '@/arkham/data/cycles.json'
 import { shallowRef } from 'vue';

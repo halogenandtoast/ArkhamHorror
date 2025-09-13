@@ -18,6 +18,7 @@ watchThis3 =
 instance RunMessage WatchThis3 where
   runMessage msg s@(WatchThis3 attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ n | n >= 1 -> do
-      gainResources iid attrs $ 2 * (skillAdditionalPayment attrs).resources
+      skillTestResultOption "Watch This (3)" do
+        gainResources iid attrs $ 2 * (skillAdditionalPayment attrs).resources
       pure s
     _ -> WatchThis3 <$> liftRunMessage msg attrs

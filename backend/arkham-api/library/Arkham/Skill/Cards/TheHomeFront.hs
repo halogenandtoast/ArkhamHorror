@@ -22,7 +22,8 @@ instance RunMessage TheHomeFront where
         damageCount <- field InvestigatorDamage attrs.owner
         canDamage <- sourceCanDamageEnemy eid (toSource attrs)
         when (canDamage && damageCount > 0) do
-          push $ HealDamageDirectly (InvestigatorTarget attrs.owner) (toSource attrs) 1
-          nonAttackEnemyDamage (Just attrs.owner) attrs 1 eid
+          skillTestResultOption "The Home Front" do
+            push $ HealDamageDirectly (InvestigatorTarget attrs.owner) (toSource attrs) 1
+            nonAttackEnemyDamage (Just attrs.owner) attrs 1 eid
       pure s
     _ -> TheHomeFront <$> liftRunMessage msg attrs

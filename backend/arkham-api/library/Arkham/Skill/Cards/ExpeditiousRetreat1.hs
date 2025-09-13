@@ -32,8 +32,9 @@ instance RunMessage ExpeditiousRetreat1 where
         enemies <-
           select $ enemyAtLocationWith iid <> not_ (EnemyWithId eid) <> EnemyCanBeEvadedBy (toSource iid)
         unless (null enemies) do
-          lift $ chooseOneM iid $ withI18n do
-            labeled' "skip" nothing
-            targets enemies $ automaticallyEvadeEnemy iid
+          lift $ skillTestResultOption "Expeditious Retreat (1)" do
+            chooseOneM iid $ withI18n do
+              labeled' "skip" nothing
+              targets enemies $ automaticallyEvadeEnemy iid
       pure s
     _ -> ExpeditiousRetreat1 <$> liftRunMessage msg attrs

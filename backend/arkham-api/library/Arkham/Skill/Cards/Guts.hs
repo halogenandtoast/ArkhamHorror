@@ -13,6 +13,7 @@ guts = skill Guts Cards.guts
 instance RunMessage Guts where
   runMessage msg s@(Guts attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      drawCards attrs.owner attrs 1
+      skillTestResultOption "Guts" do
+        drawCards attrs.owner attrs 1
       pure s
     _ -> Guts <$> liftRunMessage msg attrs

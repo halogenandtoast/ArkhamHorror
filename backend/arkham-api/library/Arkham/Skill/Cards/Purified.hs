@@ -19,13 +19,15 @@ instance RunMessage Purified where
       bless <- getRemainingBlessTokens
 
       if
-        | bless == 0 && curse /= 0 -> repeated (min curse n) $ removeChaosToken #curse
-        | curse == 0 && bless /= 0 -> repeated (min bless n) $ addChaosToken #bless
+        | bless == 0 && curse /= 0 -> skillTestResultOption "Purified" do
+            repeated (min curse n) $ removeChaosToken #curse
+        | curse == 0 && bless /= 0 -> skillTestResultOption "Purified" do
+            repeated (min bless n) $ addChaosToken #bless
         | bless == 0 && curse == 0 -> pure ()
-        | bless + curse == n -> do
+        | bless + curse == n -> skillTestResultOption "Purified" do
             repeated curse $ removeChaosToken #curse
             repeated bless $ addChaosToken #bless
-        | otherwise ->
+        | otherwise -> skillTestResultOption "Purified" do
             chooseAmounts
               iid
               "Add Bless Tokens or Remove Curse Tokens"

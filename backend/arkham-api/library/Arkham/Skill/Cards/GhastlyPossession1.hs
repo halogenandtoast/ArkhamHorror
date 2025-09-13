@@ -63,12 +63,13 @@ instance RunMessage GhastlyPossession1 where
               pure $ (uType, min (n - current) half)
 
             when (hasDoom || isJust mAddAmount) do
-              chooseOneM iid do
-                when hasDoom do
-                  labeled "Remove 1 doom from that asset" do
-                    removeDoom attrs (toTarget aid) 1
-                for_ mAddAmount \(uType, n) ->
-                  labeled "Replenish half of its uses (rounded down)" do
-                    placeTokens attrs (toTarget aid) uType n
+              skillTestResultOption "Ghastly Possession (1)" do
+                chooseOneM iid do
+                  when hasDoom do
+                    labeled "Remove 1 doom from that asset" do
+                      removeDoom attrs (toTarget aid) 1
+                  for_ mAddAmount \(uType, n) ->
+                    labeled "Replenish half of its uses (rounded down)" do
+                      placeTokens attrs (toTarget aid) uType n
       pure s
     _ -> GhastlyPossession1 <$> liftRunMessage msg attrs

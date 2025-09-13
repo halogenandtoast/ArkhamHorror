@@ -27,7 +27,7 @@ instance RunMessage TheEyeOfTruth5 where
   runMessage msg s@(TheEyeOfTruth5 attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
       source <- fromJustNote "must be a skill test" <$> getSkillTestSource
-      for_ source.treachery \tid -> do
+      for_ source.treachery \tid -> skillTestResultOption "The Eye of Truth (5)" do
         addToVictory tid
         addToVictory attrs
         card <- field TreacheryCard tid

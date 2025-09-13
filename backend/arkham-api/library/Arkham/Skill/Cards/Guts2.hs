@@ -15,6 +15,7 @@ instance RunMessage Guts2 where
   runMessage msg s@(Guts2 attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (SkillTarget sid) _ n | sid == skillId attrs -> do
       let amount = if n >= 2 then 2 else 1
-      drawCards attrs.owner attrs amount
+      skillTestResultOption "Guts (2)" do
+        drawCards attrs.owner attrs amount
       pure s
     _ -> Guts2 <$> liftRunMessage msg attrs

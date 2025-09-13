@@ -19,9 +19,10 @@ memoriesOfAnotherLife5 = skill MemoriesOfAnotherLife5 Cards.memoriesOfAnotherLif
 instance RunMessage MemoriesOfAnotherLife5 where
   runMessage msg s@(MemoriesOfAnotherLife5 attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      chooseOneM attrs.owner do
-        labeled "Remove Memories of Another Life from the game" (doStep 1 msg)
-        labeled "Do not remove Memories of Another Lift" nothing
+      skillTestResultOption "Memories of Another Life (5)" do
+        chooseOneM attrs.owner do
+          labeled "Remove Memories of Another Life from the game" (doStep 1 msg)
+          labeled "Do not remove Memories of Another Lift" nothing
       pure s
     DoStep 1 (PassedSkillTest _ _ _ (isTarget attrs -> True) _ _) -> do
       let iid = attrs.owner

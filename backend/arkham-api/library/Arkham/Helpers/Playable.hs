@@ -55,7 +55,7 @@ getPlayableCards source investigator costStatus windows' = do
   playableDiscards <- getPlayableDiscards source (asId investigator) costStatus windows'
   hand <- field InvestigatorHand (asId investigator)
   playableHandCards <-
-    filterM (getIsPlayable (asId investigator) source costStatus windows') (hand <> asIfInHandCards)
+    filterPlayable investigator source costStatus windows' (hand <> asIfInHandCards)
   pure $ playableHandCards <> playableDiscards <> otherPlayersPlayableCards
 
 getPlayableCardsMatch

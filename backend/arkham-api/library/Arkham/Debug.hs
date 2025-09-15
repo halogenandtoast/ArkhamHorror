@@ -38,3 +38,13 @@ timeIt label body = do
   let r = traceShow (T.unpack $ label <> ": " <> tshow diff) result
   r `seq` pure r
 {-# NOINLINE timeIt #-}
+
+timeItSlow :: Monad m => Text -> m a -> m a
+timeItSlow label body = do
+  let start = unsafePerformIO getCurrentTime
+  result <- start `seq` body
+  let end = unsafePerformIO getCurrentTime
+  let diff = diffUTCTime end start
+  let r = if diff > 0.1 then traceShow (T.unpack $ label <> ": " <> tshow diff) result else result
+  r `seq` pure r
+{-# NOINLINE timeItSlow #-}

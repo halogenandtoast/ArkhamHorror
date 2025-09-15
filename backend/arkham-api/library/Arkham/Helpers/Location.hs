@@ -29,6 +29,8 @@ import Arkham.Target
 import Arkham.Treachery.Types (Field (..), TreacheryAttrs)
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
+import Control.Monad.State.Strict
+import Data.Map.Strict qualified as Map
 
 getConnectedLocations :: HasGame m => LocationId -> m [LocationId]
 getConnectedLocations = fieldMap LocationConnectedLocations toList
@@ -212,7 +214,8 @@ getCanMoveTo :: (Sourceable source, HasGame m) => InvestigatorId -> source -> Lo
 getCanMoveTo iid source lid = notNull <$> getCanMoveToLocations_ iid source [lid]
 
 getCanMoveToLocations_
-  :: (Sourceable source, HasGame m) => InvestigatorId -> source -> [LocationId] -> m [LocationId]
+  :: (Sourceable source, HasGame m)
+  => InvestigatorId -> source -> [LocationId] -> m [LocationId]
 getCanMoveToLocations_ iid source ls = do
   canMove <-
     iid <=~> (Matcher.InvestigatorCanMove <> not_ (Matcher.InVehicleMatching Matcher.AnyAsset))
@@ -225,15 +228,36 @@ getCanMoveToLocations_ iid source ls = do
         Just lid -> do
           imods <- getModifiers iid
           mods <- getModifiers lid
+
           let extraCostsToLeave = mconcat [c | AdditionalCostToLeave c <- mods]
-          flip filterM ls \l -> do
-            mods' <- getModifiers l
-            pcosts <- filterM ((l <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
-            revealed' <- field LocationRevealed l
-            baseEnter <- mwhen (not revealed') <$> field LocationCostToEnterUnrevealed l -- Added for cards like Nimble
-            let extraCostsToEnter = baseEnter <> concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods']
-            getCanAffordCost iid source [#move] [] (extraCostsToLeave <> extraCostsToEnter)
-    else pure []
+
+              totalCostFor l = do
+                mods' <- getModifiers l
+                pcosts <-
+                  filterM
+                    ((l <=~>) . fst)
+                    [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
+                revealed' <- field LocationRevealed l
+                baseEnter <- mwhen (not revealed') <$> field LocationCostToEnterUnrevealed l
+                let extraCostsToEnter =
+                      baseEnter
+                        <> concatMap snd pcosts
+                        <> mconcat [c | AdditionalCostToEnter c <- mods']
+                pure (extraCostsToLeave <> extraCostsToEnter)
+
+              check l = do
+                tc <- lift (totalCostFor l)
+                cache <- get
+                case Map.lookup tc cache of
+                  Just ok -> pure ok
+                  Nothing -> do
+                    ok <- lift (getCanAffordCost iid source [#move] [] tc)
+                    modify (Map.insert tc ok)
+                    pure ok
+
+          evalStateT (filterM check ls) mempty
+    else
+      pure []
 
 getCanMoveToLocations
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]

@@ -938,7 +938,10 @@ getInvestigatorsMatching matcher = do
       you <- getInvestigator . view activeInvestigatorIdL =<< getGame
       pure $ filter (/= you) as
     Anyone -> pure as
-    TurnInvestigator -> flip filterM as $ \i -> (== Just i) <$> getTurnInvestigator
+    TurnInvestigator -> do
+      getTurnInvestigator >>= \case
+        Nothing -> pure []
+        Just i -> pure $ filter ((== i.id) . toId) as
     ActiveInvestigator -> do
       activeId <- gameActiveInvestigatorId <$> getGame
       pure $ filter ((== activeId) . toId) as

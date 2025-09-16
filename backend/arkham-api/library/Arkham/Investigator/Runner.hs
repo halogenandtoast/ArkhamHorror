@@ -7,6 +7,7 @@ import Arkham.Ability as X hiding (PaidCost)
 import Arkham.ChaosToken as X
 import Arkham.ClassSymbol as X
 import Arkham.Classes as X
+import Arkham.ForMovement
 import Arkham.Helpers.Investigator as X
 import Arkham.Helpers.Message as X hiding (
   InvestigatorDamage,
@@ -21,6 +22,8 @@ import Arkham.Source as X
 import Arkham.Stats as X
 import Arkham.Target as X
 import Arkham.Trait as X hiding (Cosmos, Cultist, ElderThing)
+import Data.Aeson (Result (..))
+import Data.Aeson.KeyMap qualified as KeyMap
 
 import Arkham.Action (Action)
 import Arkham.Action qualified as Action
@@ -48,7 +51,6 @@ import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Event.Types (Field (..))
 import Arkham.Fight.Types
-import Arkham.ForMovement
 import {-# SOURCE #-} Arkham.Game (asIfTurn, withoutCanModifiers)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
@@ -149,8 +151,6 @@ import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens (each, non, over, sumOf, _Just)
 import Control.Monad.State.Strict (evalStateT, get, modify)
-import Data.Aeson (Result (..))
-import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Data.Lens (biplate)
 import Data.List qualified as List
 import Data.Map.Strict qualified as Map
@@ -1967,7 +1967,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a
   FlipClues target n | isTarget a target -> do
     pure $ a & tokensL %~ flipClues n
-  DiscoverClues iid d | iid == investigatorId && d.location == DiscoverYourLocation -> do
+  DiscoverClues iid d | iid == investigatorId && d.location == DiscoverYourLocation  -> do
     lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
     push $ DiscoverClues iid (d {discoverLocation = DiscoverAtLocation lid})
     pure a
@@ -4156,9 +4156,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   InvestigatorPlaceCluesOnLocation iid source n | iid == investigatorId -> do
     withLocationOf iid \lid -> do
       batchId <- getRandom
-      would <-
-        Helpers.checkWindow
-          $ (mkWhen $ Window.WouldPlaceClueOnLocation iid lid source n) {windowBatchId = Just batchId}
+      would <- Helpers.checkWindow $ (mkWhen $ Window.WouldPlaceClueOnLocation iid lid source n) { windowBatchId = Just batchId }
       pushBatched batchId [would, Do msg]
     pure a
   Do (InvestigatorPlaceCluesOnLocation iid source n) | iid == investigatorId -> do

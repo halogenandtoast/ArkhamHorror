@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Location.Cards.DancersMist (dancersMist) where
 
 import Arkham.Ability
@@ -45,7 +47,7 @@ instance RunMessage DancersMist where
               ( updatePosition pos dir
               , List.delete (oppositeDirection dir) [GridUp ..]
               )
-          emptyPositions <- concatMapM (uncurry getEmptyPositionsInDirections) positionPairs
+          emptyPositions <- traceShowId <$> concatMapM (uncurry getEmptyPositionsInDirections) (traceShowId positionPairs)
 
           if null emptyPositions && null rightChoice
             then cosmosFail attrs

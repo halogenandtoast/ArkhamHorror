@@ -506,3 +506,4 @@ ALTER TABLE ONLY public.password_resets
 -- PostgreSQL database dump complete
 --
 
+create table public.notifications (id serial primary key, body text, created_at timestamp);

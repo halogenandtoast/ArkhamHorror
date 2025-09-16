@@ -21,8 +21,12 @@ data GameEnv = GameEnv
   }
 
 newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
-  deriving newtype
-    (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
+  deriving newtype (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
+
+clearCache :: GameT ()
+clearCache = do
+  ref <- asks gameCacheRef
+  liftIO $ atomicWriteIORef ref DMap.empty
 
 instance HasGame GameT where
   getGame = asks gameEnvGame >>= readIORef
@@ -32,7 +36,7 @@ instance HasGame GameT where
     case DMap.lookup k dm of
       Just v -> pure $ runIdentity v
       Nothing -> do
-        v <- build
+        !v <- build
         liftIO $ atomicModifyIORef' ref $ \dm' -> (DMap.insert k (Identity v) dm', ())
         pure v
 

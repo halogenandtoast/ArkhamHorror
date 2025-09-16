@@ -234,7 +234,7 @@ instance ToGameLoggerFormat CampaignLogKey where
     go' (x : xs) | isUpper x = ' ' : toLower x : go' xs
     go' (x : xs) = x : go' xs
 
-class (ToJSON a, FromJSON a, Eq a, Show a, Typeable a) => Recordable a where
+class (ToJSON a, FromJSON a, Ord a, Eq a, Show a, Typeable a) => Recordable a where
   recordableType :: RecordableType a
 
 instance Recordable CardCode where
@@ -269,6 +269,7 @@ data SomeRecordableType where
 
 deriving stock instance Show (RecordableType a)
 deriving stock instance Eq (RecordableType a)
+deriving stock instance Ord (RecordableType a)
 
 deriving stock instance Show SomeRecordableType
 
@@ -297,6 +298,11 @@ instance Eq SomeRecorded where
   (SomeRecorded _ (a :: a)) == (SomeRecorded _ (b :: b)) = case eqT @a @b of
     Just Refl -> a == b
     Nothing -> False
+
+instance Ord SomeRecorded where
+  compare (SomeRecorded _ (a :: a)) (SomeRecorded _ (b :: b)) = case eqT @a @b of
+    Just Refl -> compare a b
+    Nothing -> compare (show $ typeOf a) (show $ typeOf b)
 
 instance ToJSON SomeRecorded where
   toJSON (SomeRecorded rType rVal) = object ["recordType" .= rType, "recordVal" .= rVal]

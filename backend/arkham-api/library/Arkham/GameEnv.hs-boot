@@ -24,12 +24,12 @@ import Arkham.Target
 import Arkham.Window
 
 withActiveInvestigator
-  :: HasGame m => InvestigatorId -> (forall t. (HasGame t) => t a) -> m a
+  :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
 withModifiers'
   :: (Targetable target, HasGame m)
   => target
   -> m [Modifier]
-  -> (forall t. (HasGame t) => t a)
+  -> ReaderT Game m a
   -> m a
 getAllModifiers :: HasGame m => m (Map Target [Modifier])
 getActiveAbilities :: HasGame m => m [Ability]

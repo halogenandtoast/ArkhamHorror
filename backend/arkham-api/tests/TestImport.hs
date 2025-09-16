@@ -190,6 +190,7 @@ instance HasGame TestAppT where
   getGame = do
     env <- get
     atomicModifyIORef (game env) (\x -> (x, x))
+  getCache = GameCache \_ build -> build
 
 instance CardGen TestAppT where
   genEncounterCard a = do

@@ -44,6 +44,7 @@ newtype ChooseT m a = ChooseT {unChooseT :: StateT ChooseState (WriterT [UI Mess
 
 instance HasGame m => HasGame (ChooseT m) where
   getGame = lift getGame
+  getCache = GameCache \_ build -> build
 
 instance MonadTrans ChooseT where
   lift = ChooseT . lift . lift

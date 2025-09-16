@@ -4,4 +4,4 @@ import Arkham.Prelude
 
 newtype GridTemplateRow = GridTemplateRow {unGridTemplateRow :: Text}
   deriving stock Data
-  deriving newtype (Show, IsString, ToJSON, FromJSON, Eq)
+  deriving newtype (Show, IsString, ToJSON, FromJSON, Ord, Eq)

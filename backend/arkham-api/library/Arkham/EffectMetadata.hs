@@ -26,7 +26,7 @@ data EffectMetadata a
   | EffectAbility Ability
   | EffectCost ActiveCostId
   | EffectText Text
-  deriving stock (Eq, Show, Generic, Data)
+  deriving stock (Ord, Eq, Show, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 effectAbility :: Ability -> Maybe (EffectMetadata a)

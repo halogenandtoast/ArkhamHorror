@@ -17,7 +17,7 @@ data UsedAbility = UsedAbility
   , usedAbilityTraits :: Set Trait
   , usedThisWindow :: Bool
   }
-  deriving stock (Eq, Show, Generic, Data)
+  deriving stock (Ord, Eq, Show, Generic, Data)
   deriving anyclass ToJSON
 
 instance HasField "limitType" UsedAbility (Maybe AbilityLimitType) where

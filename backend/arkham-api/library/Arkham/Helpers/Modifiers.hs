@@ -7,7 +7,7 @@ import Arkham.Classes.Query
 import Arkham.Cost
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
-import {-# SOURCE #-} Arkham.Game ()
+import {-# SOURCE #-} Arkham.Game (Game)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Ref
 import Arkham.Id
@@ -33,7 +33,7 @@ withGrantedAction
   :: (HasGame m, Sourceable source)
   => InvestigatorId
   -> source
-  -> (forall t. HasGame t => t a)
+  -> ReaderT Game m a
   -> m a
 withGrantedAction iid source = withGrantedActions iid source 1
 
@@ -42,29 +42,29 @@ withGrantedActions
   => InvestigatorId
   -> source
   -> Int
-  -> (forall t. HasGame t => t a)
+  -> ReaderT Game m a
   -> m a
 withGrantedActions iid source n = withModifiersOf iid source [ActionCostModifier (-n)]
 
 ignoreActionCost
   :: HasGame m
   => InvestigatorId
-  -> (forall t. HasGame t => t a)
+  -> ReaderT Game m a
   -> m a
 ignoreActionCost iid = withModifiers iid (toModifiers GameSource [ActionsAreFree])
 
 ignoreCommitOneRestriction
   :: HasGame m
   => InvestigatorId
-  -> (forall t. HasGame t => t a)
+  -> ReaderT Game m a
   -> m a
 ignoreCommitOneRestriction iid = withModifiers iid (toModifiers GameSource [IgnoreCommitOneRestriction])
 
 withModifiers
   :: (HasGame m, Targetable target)
   => target
-  -> (m [Modifier])
-  -> (forall t. HasGame t => t a)
+  -> m [Modifier]
+  -> ReaderT Game m a
   -> m a
 withModifiers = withModifiers'
 
@@ -73,7 +73,7 @@ withModifiersOf
   => target
   -> source
   -> [ModifierType]
-  -> (forall t. HasGame t => t a)
+  -> ReaderT Game m a
   -> m a
 withModifiersOf t s mt = withModifiers t (toModifiers s mt)
 

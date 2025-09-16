@@ -18,7 +18,7 @@ data CampaignLogPartner = CampaignLogPartner
   , campaignLogPartnerHorror :: Int
   , campaignLogPartnerStatus :: PartnerStatus
   }
-  deriving stock (Show, Generic, Eq, Data)
+  deriving stock (Show, Generic, Ord, Eq, Data)
 
 instance HasField "status" CampaignLogPartner PartnerStatus where
   getField = campaignLogPartnerStatus
@@ -38,7 +38,7 @@ data CampaignLog = CampaignLog
   , campaignLogOptions :: Set CampaignOption
   , campaignLogPartners :: Map CardCode CampaignLogPartner
   }
-  deriving stock (Show, Generic, Eq, Data)
+  deriving stock (Show, Generic, Ord, Eq, Data)
 
 instance HasField "options" CampaignLog (Set CampaignOption) where
   getField = campaignLogOptions

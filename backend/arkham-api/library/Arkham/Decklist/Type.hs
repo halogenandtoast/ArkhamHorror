@@ -16,7 +16,7 @@ data ArkhamDBDecklist = ArkhamDBDecklist
   , taboo_id :: Maybe Int
   , url :: Maybe Text
   }
-  deriving stock (Generic, Show, Eq, Data)
+  deriving stock (Generic, Show, Ord, Eq, Data)
   deriving anyclass ToJSON
 
 data ArkhamDBDecklistMeta = ArkhamDBDecklistMeta

@@ -45,6 +45,7 @@ newtype ScriptState = ScriptState {scriptStateInHand :: Bool}
 
 instance HasGame m => HasGame (ReaderT ScriptState m) where
   getGame = lift getGame
+  getCache = GameCache \_ build -> build
 
 initScriptState :: ScriptState
 initScriptState = ScriptState False

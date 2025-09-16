@@ -211,12 +211,16 @@ locationMatches investigatorId source window locationId matcher' = do
     _ -> locationId <=~> matcher
 
 getCanMoveTo :: (Sourceable source, HasGame m) => InvestigatorId -> source -> LocationId -> m Bool
-getCanMoveTo iid source lid = notNull <$> getCanMoveToLocations_ iid source [lid]
+getCanMoveTo iid source lid =
+  cached (CanMoveToLocationKey iid (toSource source) lid)
+    $ notNull
+    <$> getCanMoveToLocations_ iid source [lid]
 
+-- TODO: CACHE
 getCanMoveToLocations_
   :: (Sourceable source, HasGame m)
   => InvestigatorId -> source -> [LocationId] -> m [LocationId]
-getCanMoveToLocations_ iid source ls = do
+getCanMoveToLocations_ iid source ls = cached (CanMoveToLocationsKey_ iid (toSource source) ls) do
   canMove <-
     iid <=~> (Matcher.InvestigatorCanMove <> not_ (Matcher.InVehicleMatching Matcher.AnyAsset))
   onlyScenarioEffects <- hasModifier iid CannotMoveExceptByScenarioCardEffects
@@ -259,12 +263,14 @@ getCanMoveToLocations_ iid source ls = do
     else
       pure []
 
+-- TODO: CACHE
 getCanMoveToLocations
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
-getCanMoveToLocations iid source = do
+getCanMoveToLocations iid source = cached (CanMoveToLocationsKey iid $ toSource source) do
   ls <- select $ Matcher.canEnterLocation iid
   getCanMoveToLocations_ iid source ls
 
+-- TODO: CACHE
 getCanMoveToMatchingLocations
   :: (HasGame m, Sourceable source)
   => InvestigatorId
@@ -273,19 +279,22 @@ getCanMoveToMatchingLocations
   -> m [LocationId]
 getCanMoveToMatchingLocations iid source = select >=> getCanMoveToLocations_ iid source
 
+-- TODO: CACHE
 getConnectedMoveLocations
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
 getConnectedMoveLocations iid source = do
   ls <- select $ Matcher.ConnectedFrom ForMovement (Matcher.locationWithInvestigator iid)
   getCanMoveToLocations_ iid source ls
 
+-- TODO: CACHE
 getAccessibleLocations
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
 getAccessibleLocations iid source =
   getCanMoveToMatchingLocations iid source
     $ Matcher.AccessibleFrom ForMovement (Matcher.locationWithInvestigator iid)
 
-getCanLeaveCurrentLocation :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m Bool
+getCanLeaveCurrentLocation
+  :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m Bool
 getCanLeaveCurrentLocation iid source = do
   mLocation <- selectOne $ Matcher.locationWithInvestigator iid
   case mLocation of

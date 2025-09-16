@@ -15,12 +15,12 @@ nTimes 1 f = f
 nTimes n f = f . nTimes (n - 1) f
 
 data Pos = Pos Int Int
-  deriving stock (Eq, Show, Generic, Data)
+  deriving stock (Ord, Eq, Show, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 -- Todo hardcode a and b, store location id for empty space
 data CosmosLocation a b = EmptySpace Pos a | CosmosLocation Pos b
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 cosmosLocationToPosition :: CosmosLocation a b -> Pos

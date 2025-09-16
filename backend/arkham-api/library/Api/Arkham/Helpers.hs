@@ -92,6 +92,7 @@ instance HasDebugLevel GameAppT where
 
 instance HasGame GameAppT where
   getGame = readIORef =<< asks appGame
+  getCache = GameCache \_ build -> build
 
 instance CardGen GameAppT where
   genEncounterCard a = do

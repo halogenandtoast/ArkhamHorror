@@ -21,7 +21,7 @@ data ChooseEvade = ChooseEvade
   , chooseEvadeOverride :: Bool
   , chooseEvadeSkillTest :: SkillTestId
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 instance HasField "investigator" ChooseEvade InvestigatorId where
   getField = chooseEvadeInvestigator

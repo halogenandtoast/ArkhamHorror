@@ -10,7 +10,7 @@ import Arkham.Target
 import Data.Aeson.TH
 
 data StoryMode = ResolveIt | DoNotResolveIt
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data StoryMessage
@@ -20,6 +20,6 @@ data StoryMessage
   | ResolvedStory StoryMode StoryId
   | PlaceStory Card Placement
   | RemoveStory StoryId
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 $(deriveJSON defaultOptions ''StoryMessage)

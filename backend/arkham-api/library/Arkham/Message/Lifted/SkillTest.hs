@@ -44,6 +44,7 @@ instance HasQueue msg m => HasQueue msg (SkillTestT m) where
 
 instance HasGame m => HasGame (SkillTestT m) where
   getGame = lift getGame
+  getCache = GameCache \_ build -> build
 
 instance CardGen m => CardGen (SkillTestT m) where
   genEncounterCard = lift . genEncounterCard

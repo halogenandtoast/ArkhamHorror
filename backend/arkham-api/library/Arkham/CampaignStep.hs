@@ -16,7 +16,7 @@ data CampaignStep
   | InvestigatorCampaignStep InvestigatorId CampaignStep
   | ResupplyPoint
   | CheckpointStep Int
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data InterludeKey
@@ -37,5 +37,5 @@ data InterludeKey
   | HasWhiteAndBlackKeys
   | HasPurpleWhiteAndBlackKeys
   | HasNoKeys
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

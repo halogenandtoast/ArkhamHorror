@@ -19,6 +19,7 @@ data SomeField a where
        , Typeable a
        , Show typ
        , Eq typ
+       , Ord typ
        , Data a
        , Data (Field a typ)
        , Show (Field a typ)
@@ -40,7 +41,7 @@ instance ToJSON (SomeField a) where
 
 data Update a where
   Update
-    :: (Show typ, Eq typ, Typeable typ, FromJSON typ, ToJSON typ, Show (Field a typ), ToJSON (Field a typ))
+    :: (Ord typ, Show typ, Eq typ, Typeable typ, FromJSON typ, ToJSON typ, Show (Field a typ), ToJSON (Field a typ))
     => Field a typ
     -> typ
     -> Update a
@@ -77,6 +78,19 @@ instance Eq (Update a) where
     f1 == f2 && v1 == v2
   DecrementBy {} == _ = False
 
+instance Ord (Update a) where
+  compare (Update (f1 :: Field a typ1) v1) (Update (f2 :: Field a typ2) v2) = case eqT @typ1 @typ2 of
+    Just Refl -> compare (show f1, v1) (show f2, v2)
+    Nothing -> compare (show f1) (show f2)
+  compare Update {} _ = LT
+  compare _ Update {} = GT
+  compare (IncrementBy (f1 :: Field a Int) v1) (IncrementBy (f2 :: Field a Int) v2) =
+    compare (show f1, v1) (show f2, v2)
+  compare IncrementBy {} _ = LT
+  compare _ IncrementBy {} = GT
+  compare (DecrementBy (f1 :: Field a Int) v1) (DecrementBy (f2 :: Field a Int) v2) =
+    compare (show f1, v1) (show f2, v2)
+
 instance ToJSON (Update a) where
   toJSON (Update f v) = object ["tag" .= String "update", "field" .= f, "value" .= v]
   toJSON (IncrementBy f v) = object ["tag" .= String "increment", "field" .= f, "value" .= v]
@@ -105,7 +119,7 @@ instance FromJSON (SomeField a) => FromJSON (Update a) where
 
 (?=.)
   :: ( Show typ
-     , Eq typ
+     , Ord typ
      , Typeable typ
      , FromJSON typ
      , ToJSON typ
@@ -119,7 +133,7 @@ instance FromJSON (SomeField a) => FromJSON (Update a) where
 
 (=.)
   :: ( Show typ
-     , Eq typ
+     , Ord typ
      , Typeable typ
      , FromJSON typ
      , ToJSON typ

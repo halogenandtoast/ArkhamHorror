@@ -211,80 +211,54 @@ locationMatches investigatorId source window locationId matcher' = do
     _ -> locationId <=~> matcher
 
 getCanMoveTo :: (Sourceable source, HasGame m) => InvestigatorId -> source -> LocationId -> m Bool
-getCanMoveTo iid source lid =
-  cached (CanMoveToLocationKey iid (toSource source) lid)
-    $ notNull
-    <$> getCanMoveToLocations_ iid source [lid]
+getCanMoveTo iid source lid = 
+  cached (CanMoveToLocationKey iid (toSource source) lid) do
+    elem lid <$> getCanMoveToLocations iid source
 
--- TODO: CACHE
-getCanMoveToLocations_
-  :: (Sourceable source, HasGame m)
-  => InvestigatorId -> source -> [LocationId] -> m [LocationId]
-getCanMoveToLocations_ iid source ls = cached (CanMoveToLocationsKey_ iid (toSource source) ls) do
+getCanMoveToLocations
+  :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
+getCanMoveToLocations iid source = cached (CanMoveToLocationsKey iid (toSource source)) do
   canMove <-
     iid <=~> (Matcher.InvestigatorCanMove <> not_ (Matcher.InVehicleMatching Matcher.AnyAsset))
   onlyScenarioEffects <- hasModifier iid CannotMoveExceptByScenarioCardEffects
   isScenarioEffect <- sourceMatches (toSource source) SourceIsScenarioCardEffect
   if canMove && (not onlyScenarioEffects || isScenarioEffect)
     then do
-      getLocationOf iid >>= \case
+      selectOne (Matcher.locationWithInvestigator iid) >>= \case
         Nothing -> pure []
         Just lid -> do
           imods <- getModifiers iid
           mods <- getModifiers lid
-
+          ls <-
+            select
+              $ Matcher.canEnterLocation iid
+              <> Matcher.NotLocation (Matcher.LocationWithId lid)
           let extraCostsToLeave = mconcat [c | AdditionalCostToLeave c <- mods]
+          flip filterM ls $ \l -> do
+            mods' <- getModifiers l
+            pcosts <- filterM ((l <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
+            revealed' <- field LocationRevealed l
+            baseEnter <- mwhen (not revealed') <$> field LocationCostToEnterUnrevealed l -- Added for cards like Nimble
+            let extraCostsToEnter = baseEnter <> concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods']
+            getCanAffordCost iid source [#move] [] (extraCostsToLeave <> extraCostsToEnter)
+    else pure []
 
-              totalCostFor l = do
-                mods' <- getModifiers l
-                pcosts <-
-                  filterM
-                    ((l <=~>) . fst)
-                    [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
-                revealed' <- field LocationRevealed l
-                baseEnter <- mwhen (not revealed') <$> field LocationCostToEnterUnrevealed l
-                let extraCostsToEnter =
-                      baseEnter
-                        <> concatMap snd pcosts
-                        <> mconcat [c | AdditionalCostToEnter c <- mods']
-                pure (extraCostsToLeave <> extraCostsToEnter)
-
-              check l = do
-                tc <- lift (totalCostFor l)
-                cache <- get
-                case Map.lookup tc cache of
-                  Just ok -> pure ok
-                  Nothing -> do
-                    ok <- lift (getCanAffordCost iid source [#move] [] tc)
-                    modify (Map.insert tc ok)
-                    pure ok
-
-          evalStateT (filterM check ls) mempty
-    else
-      pure []
-
--- TODO: CACHE
-getCanMoveToLocations
-  :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
-getCanMoveToLocations iid source = cached (CanMoveToLocationsKey iid $ toSource source) do
-  ls <- select $ Matcher.canEnterLocation iid
-  getCanMoveToLocations_ iid source ls
-
--- TODO: CACHE
 getCanMoveToMatchingLocations
   :: (HasGame m, Sourceable source)
   => InvestigatorId
   -> source
   -> Matcher.LocationMatcher
   -> m [LocationId]
-getCanMoveToMatchingLocations iid source = select >=> getCanMoveToLocations_ iid source
+getCanMoveToMatchingLocations iid source matcher = do
+  ls <- getCanMoveToLocations iid source
+  filter (`elem` ls) <$> select matcher
 
 -- TODO: CACHE
 getConnectedMoveLocations
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
-getConnectedMoveLocations iid source = do
-  ls <- select $ Matcher.ConnectedFrom ForMovement (Matcher.locationWithInvestigator iid)
-  getCanMoveToLocations_ iid source ls
+getConnectedMoveLocations iid source =
+  getCanMoveToMatchingLocations iid source
+    $ Matcher.ConnectedFrom ForMovement (Matcher.locationWithInvestigator iid)
 
 -- TODO: CACHE
 getAccessibleLocations

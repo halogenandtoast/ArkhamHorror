@@ -164,6 +164,7 @@ import Arkham.Placement
 import Arkham.Placement qualified as Placement
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Query
 import Arkham.Queue
 import Arkham.Random
 import Arkham.Scenario
@@ -1177,7 +1178,7 @@ getInvestigatorsMatching matcher = do
       mSkillTest <- getSkillTest
       case mSkillTest of
         Nothing -> pure []
-        Just st ->  do
+        Just st -> do
           skillIcons <- getSkillTestMatchingSkillIcons
           flip filterM as $ \i -> do
             let cards = findWithDefault [] (toId i) $ skillTestCommittedCards st
@@ -1199,14 +1200,20 @@ getInvestigatorsMatching matcher = do
       let healGuard = if canHealAtFull then id else (<> healGuardMatcher)
       case damageType of
         DamageType -> do
-          results <- select $ healGuard $ if CannotAffectOtherPlayersWithPlayerEffectsExceptDamage `elem` mods
-            then matcher' <> You
-            else matcher'
+          results <-
+            select
+              $ healGuard
+              $ if CannotAffectOtherPlayersWithPlayerEffectsExceptDamage `elem` mods
+                then matcher' <> You
+                else matcher'
           pure $ filter ((`elem` results) . toId) as
         HorrorType -> do
-          results <- select $ healGuard $ if CannotHealHorror `elem` mods
-            then matcher' <> You
-            else matcher'
+          results <-
+            select
+              $ healGuard
+              $ if CannotHealHorror `elem` mods
+                then matcher' <> You
+                else matcher'
           pure $ filter ((`elem` results) . toId) as
     InvestigatorWithMostCardsInPlayArea -> flip filterM as $ \i ->
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
@@ -1360,8 +1367,9 @@ getAgendasMatching matcher = do
       let
         cardDef = toCardDef card
         encounterSet = cdEncounterSet cardDef
-        agendas = filter ((== encounterSet) . cdEncounterSet . toCardDef)
-                    $ toList Agenda.allAgendaCards
+        agendas =
+          filter ((== encounterSet) . cdEncounterSet . toCardDef)
+            $ toList Agenda.allAgendaCards
         stages = mapMaybe (fmap Max0 . cdStage . toCardDef) agendas
         maxStage = getMax0 $ fold stages
       pure $ cdStage cardDef == Just maxStage
@@ -1801,9 +1809,12 @@ getLocationsMatching lmatcher = do
         else do
           ls'' <- mapMaybeM (\l -> (l,) <$$> field LocationShroud (toId l)) ls'
           let lowestShroud = getMin $ foldMap (Min . snd) ls''
-          filterM (\l -> case attr locationShroud l of
-            Nothing -> pure False
-            Just v -> (< lowestShroud) <$> getGameValue v) ls
+          filterM
+            ( \l -> case attr locationShroud l of
+                Nothing -> pure False
+                Just v -> (< lowestShroud) <$> getGameValue v
+            )
+            ls
     LocationWithDiscoverableCluesBy whoMatcher -> do
       go ls LocationWithAnyClues >>= filterM \l -> do
         selectAny $ whoMatcher <> InvestigatorCanDiscoverCluesAt (LocationWithId l.id)
@@ -4218,15 +4229,18 @@ instance Projection Investigator where
       InvestigatorSupplies -> pure investigatorSupplies
 
 instance Query TargetMatcher where
-  select matcher = do
+  toSomeQuery = TargetQuery
+  select_ matcher = do
     filterM (`targetMatches` matcher) . overEntities ((: []) . toTarget) . view entitiesL =<< getGame
 
 instance Query SourceMatcher where
-  select matcher = do
+  toSomeQuery = SourceQuery
+  select_ matcher = do
     filterM (`sourceMatches` matcher) . overEntities ((: []) . toSource) . view entitiesL =<< getGame
 
 instance Query ChaosTokenMatcher where
-  select matcher = do
+  toSomeQuery = ChaosTokenQuery
+  select_ matcher = do
     case matcher of
       RevealedChaosTokens inner ->
         getSkillTest >>= \case
@@ -4354,22 +4368,28 @@ instance Query ChaosTokenMatcher where
           Just st -> st.revealedChaosTokensCount == 1 && t `elem` st.revealedChaosTokens
 
 instance Query AssetMatcher where
-  select = fmap (map toId) . getAssetsMatching
+  toSomeQuery = AssetQuery
+  select_ = fmap (map toId) . getAssetsMatching
 
 instance Query EventMatcher where
-  select = fmap (map toId) . getEventsMatching
+  toSomeQuery = EventQuery
+  select_ = fmap (map toId) . getEventsMatching
 
 instance Query LocationMatcher where
-  select = fmap (map toId) . getLocationsMatching
+  toSomeQuery = LocationQuery
+  select_ = fmap (map toId) . getLocationsMatching
 
 instance Query EnemyMatcher where
-  select = fmap (map toId) . getEnemiesMatching
+  toSomeQuery = EnemyQuery
+  select_ = fmap (map toId) . getEnemiesMatching
 
 instance Query InvestigatorMatcher where
-  select = fmap (map toId) . getInvestigatorsMatching
+  toSomeQuery = InvestigatorQuery
+  select_ = fmap (map toId) . getInvestigatorsMatching
 
 instance Query PreyMatcher where
-  select = \case
+  toSomeQuery = PreyQuery
+  select_ = \case
     Prey matcher -> select matcher
     OnlyPrey matcher -> select matcher
     BearerOf enemyId -> do
@@ -4388,7 +4408,8 @@ showBS :: (HasCallStack, Monad m) => m ()
 showBS = Debug.Trace.trace (prettyCallStack callStack) () `seq` pure ()
 
 instance Query ExtendedCardMatcher where
-  select matcher = do
+  toSomeQuery = ExtendedCardQuery
+  select_ matcher = do
     game <- getGame
     go (Map.elems $ gameCards game) matcher
    where
@@ -4847,38 +4868,49 @@ distanceAggregates hmap = unionsWith (<>) (map convert $ mapToList hmap)
   convert = uncurry singletonMap . second pure . swap
 
 instance Query AgendaMatcher where
-  select = fmap (map toId) . getAgendasMatching
+  toSomeQuery = AgendaQuery
+  select_ = fmap (map toId) . getAgendasMatching
 
 instance Query ActMatcher where
-  select = fmap (map toId) . getActsMatching
+  toSomeQuery = ActQuery
+  select_ = fmap (map toId) . getActsMatching
 
 instance Query RemainingActMatcher where
-  select = fmap (map toCardCode) . getRemainingActsMatching
+  toSomeQuery = RemainingActQuery
+  select_ = fmap (map toCardCode) . getRemainingActsMatching
 
 instance Query AbilityMatcher where
-  select = getAbilitiesMatching
+  toSomeQuery = AbilityQuery
+  select_ = getAbilitiesMatching
 
 instance Query SkillMatcher where
-  select = fmap (map toId) . getSkillsMatching
+  toSomeQuery = SkillQuery
+  select_ = fmap (map toId) . getSkillsMatching
 
 instance Query StoryMatcher where
-  select = fmap (map toId) . getStoriesMatching
+  toSomeQuery = StoryQuery
+  select_ = fmap (map toId) . getStoriesMatching
 
 instance Query TreacheryMatcher where
-  select = fmap (map toId) . getTreacheriesMatching
+  toSomeQuery = TreacheryQuery
+  select_ = fmap (map toId) . getTreacheriesMatching
 
 -- wait what?
 instance Query CardMatcher where
-  select _ = pure mempty
+  toSomeQuery = CardQuery
+  select_ _ = pure mempty
 
 instance Query CampaignMatcher where
-  select = fmap (map toId) . getCampaignsMatching
+  toSomeQuery = CampaignQuery
+  select_ = fmap (map toId) . getCampaignsMatching
 
 instance Query EffectMatcher where
-  select = fmap (map toId) . getEffectsMatching
+  toSomeQuery = EffectQuery
+  select_ = fmap (map toId) . getEffectsMatching
 
 instance Query ScenarioMatcher where
-  select = fmap (map toId) . getScenariosMatching
+  toSomeQuery = ScenarioQuery
+  select_ = fmap (map toId) . getScenariosMatching
 
 instance Projection Agenda where
   getAttrs aid = toAttrs <$> getAgenda aid

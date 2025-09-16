@@ -48,4 +48,65 @@
         "theInvestigatorsTurnedBackTime" : "调查员使时间倒流",
         "theInvestigatorsSealedTheRelicOfAgesForever" : "调查员永远封印了古代遗物"
     }
+  "title": {
+    "supplyPointsToGain": "獲得補給點數"
+  },
+  "label": {
+    "checkYourSupplies": "檢查補給品",
+    "supplyPointsToGain": "Each investigator may convert up to 10 of their experience to supply points, at a rate of 1 supply point for every 2 experience converted.",
+    "bestLaidPlans": {
+      "shuffle": "Shuffle the top card of the encounter deck into the exploration deck"
+    },
+    "snakeBite": {
+      "damageAlly": "對你控制的一名_*盟友*_支援造成5點傷害",
+      "damageSelf": "受到1點直接傷害。如果你未中毒，將放在一邊的中毒弱點卡放置到你的威脅區域"
+    },
+    "lowOnSupplies": {
+      "resources": "每位調查員失去2資源",
+      "damage": "每位調查員受到1點傷害",
+      "discardAsset": "每位調查員選擇並丟棄自己控制的1張支援卡"
+    },
+    "ancestralFear": {
+      "placeDoom": "在你所在地點放置1個毀滅標記，並丟棄先祖恐懼(而不是將它加入勝利牌區)",
+      "addToVictory": "將先祖恐懼放入勝利牌區"
+    },
+    "serpentsCall": {
+      "poisoned": "將放在一邊的中毒弱點卡放置到你的威脅區域",
+      "drawEncounterCards": "抽取遭遇排堆頂上的2張卡牌"
+    },
+    "explorationDeck": {
+      "placeOnTop": "Place one card on top of exploration deck",
+      "placeOnBottom": "Place one card on bottom of exploration deck"
+    },
+    "mouthOnKnYanTheCavernsMaw": {
+      "resign": "Let's make camp and solve this puzzle tomorrow"
+    }
+  },
+  "prologue": {
+    "earthIsNotOurs": {
+      "title": "地球並不屬於我們",
+      "body": "<p>「原始神話與現今的幻象，均反映出人類在這顆星球漫長而充滿未知的道路中，可能只是高度進化且佔據統治地位的族群之一而已————或許還是最渺小的。」</p>"
+    },
+    "title": "序章",
+    "body": "<p class='anke'>1925年6月2日，星期二</p><p>看來今年夏天我們沒工夫休息了。</p><p>今天我去見個老朋友，米斯卡塔尼克大學的歷史理論家哈倫、恩斯通。他說有份差事要给我，但老實講，我不知道那會是什麼。</p><p>哈倫向我介紹他的同事、亞歷山車·維拉，一位來自南部邊境另一邊的卓越歷史學家。維拉先生畢業於墨西哥城一所知名學府，他窮盡畢生心血在尋找阿茲提克王國遺跡。據稱他已經找到證據，能證明一個前所未聞的阿茲提克城邦————埃茲特里的存在。他古怪而空前的發現得不到任何一所大學的認同，還遭到了同行的唾棄。</p><p>亞歷山卓來到阿卡姆籌措資金，要前往墨西哥南部叢林探險。他相信埃茲特里城邦的遺跡就在那，等著他去發現。他對該城邦起源的描述，有悖於當代對中美洲歷史的理解。儘管如此，或者說，憑我對哈倫這位老友的瞭解，他就是因為這一點，才沉醉於亞歷山車的發現。米大同意出資贊助這次探險(但金額不多)，哈倫希望我同行。</p><p>在我看來，我們想找的東西很可能根本不存在。但只要埃茲特里人有那麼點存在的可能，就具有深遠的歷史意義。我們為此事爭論了好一會，但最後我還是接受了亞歷山卓的邀請。準備工作緊密進行著，我們將在月底前出發。如果運氣好，我們會讓這本日誌寫滿各種有趣的發現，不然就只能被哈倫拿去墊桌腳了。</p>",
+    "expeditionLeader": "如果參與劇本的調查員包含厄休拉·唐斯、里奥·安德森或蒙特雷·傑克中的任何人，選擇其中1位擔任冒險I~II的調查員隊長。",
+    "label": {
+      "expeditionLeader": "選擇一位調查員隊長"
+    },
+    "pickSupplies": "遭學界唾棄的亞歷山卓的探險資金很有限。所有調查員都必須選擇本次探險要攜帶的補給品，並於冒險日誌中每位調查員的「補給品」下方，記錄該員選擇的補給品(<em>注意:乾糧和藥品可以重複選擇。若重複選擇。則須註明份數。並花費對應的補給點數。</em>)<ul><li><p>調查員可花費補給點數來購買任意數量的補給品，點數依參與劇本的調查員人數變動，如下所示:</p><p><strong>1位調查員:</strong> 每位10點</p><p><strong>2位調查員:</strong> 每位7點</p><p><strong>3位調查員:</strong> 每位5點</p><p><strong>4位調查員</strong> 每位4點</p></li><li>下列為補給品一覽、所需補給點數，與它們在這個劇本中的用途。請做出明智的選擇:</li></ul>"
+
+  },
+  "interlude1": {
+    "blanket": "<p class='basic'>依序閱讀以下段落，再進入〈冒險 II: _埃茲特里的覆滅_〉</p>",
+    "restfulSleep": "<p>_安穩入睡_: 幸運的是，我每晚都能入睡。但不幸的是，在身體得到休息的同時，精神卻受到夢魔折磨。我夢到昏暗紅光之中，有個洞穴張開血盆大口……上百條毒蛇的鳞片在洞壁上閃爍微光……我還寧願沒睡著。</p><p class='basic right'>你並未受到負面效果。</p>",
+    "tossingAndTurning": "<p>_輾轉反側_: 在叢林度過的每個夜晚，我幾乎沒睡著過。營地每晚都會被古怪的霧氣壟罩，使這片區域陷入異常嚴寒。我的睡袋多少可以抵擋，但我們對這種氣候異變一點準備也沒有。每次一躺下，蒼蠅蚊子就在我耳朵裡嗡嗡作響。即使睡著了，也很快就因為昆蟲或蜥蜴爬過我的臉而嚇醒。恐怕這趟旅程中，我是沒得睡了…</p><p class='basic right'>你承受1點肉體或精神創傷(自行選擇)。</p>",
+    "lookout": "調查員隊長必須選擇1位調查員站夜哨。然後該調查員查看自己的補給品中是否有雙筒望遠鏡。有則閱讀_樹林中的身影_，沒有則閱讀_黑暗中的眼睛_。",
+    "shapesInTheTrees": "<p>_樹林中的身影_: 大多夜晚都是無驚無險，但今晚，營地南側的空地邊緣傳來枝葉錯動聲，把我嚇了一跳。儘管身處黑夜，我還是能用望遠鏡看到樹林中移動的身影。那些身影看起來像人類，但……為什麼?為何要從遠處監視我們，他們有何目的?</p><p class='basic right'>對埃茲特里人有進一步了解，使你獲得2點額外經驗值。</p>",
+    "eyesInTheDark": "<p>_黑暗中的眼睛_: 每一晚都有人在監視我。這不是錯覺，我看見營地周圍的漆黑中有許多窺探的眼睛。他們知道我們曾經踏入聖地。那些黃色的眼睛緊盯著我，我心生警惕，拔出武器來準備保衛營地。就在目光相接之時，一股黑暗掐住了我的心。</p><p class='basic right'>你承受1點精神創傷。</p>",
+    "provisions": "查看補給品。整個團隊劃掉數量等於調查員人數的糧食。每不夠1個，選擇1位調查員閱讀_糧食不足_。",
+    "lowOnRations": "<p>_糧食不足_: 原以為預備的食物和飲水足夠所有人享用，那卻抵擋不了這趟旅程無情的消磨。當太陽升起，到了進食的時間，我發現食物和飲水都已耗盡。</p><p class='basic right'>你下一場冒險的起始資源-3。</p>",
+    "medicine": "查看補給品。有藥品的調查員可以將其劃掉，來移除任一調查員牌組中的中毒弱點卡。仍有中毒弱點卡的調查員閱讀毒性擴散。",
+    "doNotUseMedicine": "不要使用藥品",
+    "thePoisonSpreads": "<p>_毒性擴散_: 隨時間分秒流逝，毒性在我體內持續擴散。到了第二晚，汗水浸濕我的皮膚，呼吸變得十分困難。每天早上第一件事，就是把昨天的晚餐幾乎吐光。</p><p class='basic right'>你承受1點肉體創傷。</p>"
+    }
   }

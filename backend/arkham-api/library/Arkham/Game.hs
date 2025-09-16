@@ -716,8 +716,19 @@ getCampaignsMatching matcher = do
   go = \case
     TheCampaign -> pure . const True
 
-getInvestigatorsMatching :: (HasCallStack, HasGame m) => InvestigatorMatcher -> m [Investigator]
-getInvestigatorsMatching matcher = do
+data MatcherFunc m a r = MatcherFunc
+  { runMatches :: (a -> Bool) -> [a] -> r
+  , runMatchesM :: (a -> m Bool) -> [a] -> m r
+  , noMatch :: r
+  , asMatch :: [a] -> r
+  , negateMatches :: r -> [a] -> r
+  , combineMatches :: [r] -> r
+  , combineAny :: [r] -> r
+  }
+
+getInvestigatorsMatching
+  :: forall m r. (HasCallStack, HasGame m) => MatcherFunc m Investigator r -> InvestigatorMatcher -> m r
+getInvestigatorsMatching MatcherFunc {..} matcher = do
   investigators <- toList . view (entitiesL . investigatorsL) <$> getGame
   investigators' <-
     if includeEliminated matcher
@@ -732,7 +743,6 @@ getInvestigatorsMatching matcher = do
                 ]
           )
           investigators
-  results <- go investigators' matcher
   -- We now need to handle the odd iteraction for Rational Thought, which we will treat like an investigator
   case matcher of
     ThatInvestigator -> error "ThatInvestigator must be resolved in criteria"
@@ -744,16 +754,16 @@ getInvestigatorsMatching matcher = do
       active <- getActiveInvestigatorId
       mods <- getModifiers active
       if CannotHealHorror `elem` mods
-        then pure []
+        then pure noMatch
         else
           -- This logic may be too specific to rational thought, we basically
           -- only let the player heal themselves if this modifier is on them,
           -- but we may need to let them heal other things
-          pure
-            if any isCannotHealHorrorOnOtherCardsModifiers mods
-              then filter ((== active) . toId) results
-              else results
-    _ -> pure results
+          go investigators'
+            $ if any isCannotHealHorrorOnOtherCardsModifiers mods
+              then InvestigatorWithId active <> matcher
+              else matcher
+    _ -> go investigators' matcher
  where
   includeEliminated Anyone = True
   includeEliminated InvestigatorCanAddCardsToDeck = True
@@ -769,9 +779,10 @@ getInvestigatorsMatching matcher = do
   includeEliminated InsaneInvestigator = True
   includeEliminated InvestigatorCanGainXp = True
   includeEliminated _ = False
-  go [] = const (pure [])
+  go :: [Investigator] -> InvestigatorMatcher -> m r
+  go [] = const (pure noMatch)
   go as = \case
-    InvestigatorCanBeEngagedBy eid -> flip filterM as \i -> do
+    InvestigatorCanBeEngagedBy eid -> flip runMatchesM as \i -> do
       mods <- getModifiers (toId i)
       if CannotBeEngaged `elem` mods
         then pure False
@@ -781,26 +792,26 @@ getInvestigatorsMatching matcher = do
             $ EnemyWithoutModifier CannotBeEngaged
             <> EnemyWithoutModifier (CannotEngage (toId i))
             <> enemyMatcher
-    InvestigatorCanGainXp -> flip filterM as $ \i -> do
+    InvestigatorCanGainXp -> flip runMatchesM as $ \i -> do
       cardCodes <- map toCardCode . toList <$> getOriginalDeck (toId i)
       ok <- withoutModifier (toId i) CannotGainXP
       pure $ ok && Assets.ascetic.cardCode `notElem` cardCodes
-    KilledInvestigator -> pure $ filter (attr investigatorKilled) as
-    InsaneInvestigator -> pure $ filter (attr investigatorDrivenInsane) as
+    KilledInvestigator -> pure $ runMatches (attr investigatorKilled) as
+    InsaneInvestigator -> pure $ runMatches (attr investigatorDrivenInsane) as
     InvestigatorWithSealedChaosToken chaosTokenMatcher -> do
-      filterM
+      runMatchesM
         ( fmap (> 0)
             . countM (`matches` IncludeSealed chaosTokenMatcher)
             . attr investigatorSealedChaosTokens
         )
         as
     ThatInvestigator -> error "ThatInvestigator must be resolved in criteria"
-    InvestigatorWithAnyFailedSkillTestsThisTurn -> flip filterM as \i -> do
+    InvestigatorWithAnyFailedSkillTestsThisTurn -> flip runMatchesM as \i -> do
       x <- getHistoryField TurnHistory (toId i) HistorySkillTestsPerformed
       pure $ any (isFailedResult . snd) x
     InvestigatorCanBeAssignedDamageBy iid -> do
       mods <- getModifiers iid
-      flip filterM as \i -> do
+      flip runMatchesM as \i -> do
         let
           damageable = flip any mods $ \case
             CanAssignDamageToInvestigator iid' -> toId i == iid'
@@ -809,203 +820,212 @@ getInvestigatorsMatching matcher = do
         pure $ damageable && isHealthDamageable
     InvestigatorCanBeAssignedHorrorBy iid -> do
       mods <- getModifiers iid
-      flip filterM as \i -> do
+      flip runMatchesM as \i -> do
         let
           damageable = flip any mods $ \case
             CanAssignHorrorToInvestigator iid' -> toId i == iid'
             _ -> False
         isSanityDamageable <- fieldP InvestigatorRemainingSanity (> 0) (toId i)
         pure $ damageable && isSanityDamageable
-    OwnsAsset matcher' -> flip filterM as $ selectAny . (<> matcher') . AssetOwnedBy . InvestigatorWithId . toId
-    ControlsAsset matcher' -> flip filterM as $ selectAny . (<> matcher') . AssetControlledBy . InvestigatorWithId . toId
-    InvestigatorHasCardWithDamage -> flip filterM as $ \i -> do
+    OwnsAsset matcher' -> flip runMatchesM as $ selectAny . (<> matcher') . AssetOwnedBy . InvestigatorWithId . toId
+    ControlsAsset matcher' -> flip runMatchesM as $ selectAny . (<> matcher') . AssetControlledBy . InvestigatorWithId . toId
+    InvestigatorHasCardWithDamage -> flip runMatchesM as $ \i -> do
       orM
         [ selectAny (AssetControlledBy (InvestigatorWithId $ toId i) <> AssetWithDamage)
         , pure $ (toAttrs i).healthDamage > (0 :: Int)
         ]
-    InvestigatorHasCardWithHorror -> flip filterM as $ \i -> do
+    InvestigatorHasCardWithHorror -> flip runMatchesM as $ \i -> do
       orM
         [ selectAny (AssetControlledBy (InvestigatorWithId $ toId i) <> AssetWithHorror)
         , pure $ (toAttrs i).sanityDamage > (0 :: Int)
         ]
     IncludeEliminated m -> go as m
-    NoOne -> pure []
-    DeckIsEmpty -> flip filterM as $ fieldP InvestigatorDeck null . toId
-    InvestigatorCanDiscoverCluesAtOneOf matcher' -> flip filterM as $ \i -> do
-      let
-        getInvalid acc (CannotDiscoverCluesAt x) = AnyLocationMatcher x <> acc
-        getInvalid acc (CannotDiscoverCluesExceptAsResultOfInvestigation x) = AnyLocationMatcher x <> acc
-        getInvalid acc _ = acc
-      modifiers' <- getModifiers (toTarget i)
-      invalidLocations <- select $ getAnyLocationMatcher $ foldl' getInvalid mempty modifiers'
+    NoOne -> pure noMatch
+    DeckIsEmpty -> flip runMatchesM as $ fieldP InvestigatorDeck null . toId
+    InvestigatorCanDiscoverCluesAtOneOf matcher' -> do
       locations <- guardYourLocation $ \_ -> select matcher'
-      pure $ any (`notElem` invalidLocations) locations
-    InvestigatorWithSupply s -> flip filterM as $ fieldP InvestigatorSupplies (elem s) . toId
-    AliveInvestigator -> flip filterM as $ \i -> do
+      flip runMatchesM as $ \i -> do
+        let
+          getInvalid acc (CannotDiscoverCluesAt x) = AnyLocationMatcher x <> acc
+          getInvalid acc (CannotDiscoverCluesExceptAsResultOfInvestigation x) = AnyLocationMatcher x <> acc
+          getInvalid acc _ = acc
+        modifiers' <- getModifiers (toTarget i)
+        invalidLocations <- select $ getAnyLocationMatcher $ foldl' getInvalid mempty modifiers'
+        pure $ any (`notElem` invalidLocations) locations
+    InvestigatorWithSupply s -> flip runMatchesM as $ fieldP InvestigatorSupplies (elem s) . toId
+    AliveInvestigator -> flip runMatchesM as $ \i -> do
       let attrs = toAttrs i
       pure $ not $ investigatorKilled attrs || investigatorDrivenInsane attrs
-    FewestCardsInHand -> flip filterM as $ \i ->
+    FewestCardsInHand -> flip runMatchesM as $ \i ->
       isLowestAmongst (toId i) UneliminatedInvestigator (fieldMap InvestigatorHand length)
-    MostDamage -> flip filterM as $ \i -> isHighestAmongst (toId i) UneliminatedInvestigator (field InvestigatorDamage)
-    MostCardsInHand -> flip filterM as $ \i ->
+    MostDamage -> flip runMatchesM as $ \i -> isHighestAmongst (toId i) UneliminatedInvestigator (field InvestigatorDamage)
+    MostCardsInHand -> flip runMatchesM as $ \i ->
       isHighestAmongst (toId i) UneliminatedInvestigator (fieldMap InvestigatorHand length)
-    LowestRemainingHealth -> flip filterM as $ \i -> do
-      h <- field InvestigatorRemainingHealth (toId i)
+    LowestRemainingHealth -> do
       lowestRemainingHealth <-
         getMin <$> selectAgg Min InvestigatorRemainingHealth UneliminatedInvestigator
-      pure $ lowestRemainingHealth == h
-    LowestRemainingSanity -> flip filterM as $ \i -> do
-      remainingSanity <- field InvestigatorRemainingSanity (toId i)
+      flip runMatchesM as $ \i -> do
+        h <- field InvestigatorRemainingHealth (toId i)
+        pure $ lowestRemainingHealth == h
+    LowestRemainingSanity -> do
       lowestRemainingSanity <-
         getMin <$> selectAgg Min InvestigatorRemainingSanity UneliminatedInvestigator
-      pure $ lowestRemainingSanity == remainingSanity
+      flip runMatchesM as $ \i -> do
+        remainingSanity <- field InvestigatorRemainingSanity (toId i)
+        pure $ lowestRemainingSanity == remainingSanity
     MostRemainingSanity -> do
       mostRemainingSanity <- fieldMax InvestigatorRemainingSanity UneliminatedInvestigator
-      flip filterM as $ \i -> do
+      flip runMatchesM as $ \i -> do
         remainingSanity <- field InvestigatorRemainingSanity (toId i)
         pure $ mostRemainingSanity == remainingSanity
     MostRemainingHealth -> do
       mostRemainingHealth <- fieldMax InvestigatorRemainingHealth UneliminatedInvestigator
-      flip filterM as $ \i -> do
+      flip runMatchesM as $ \i -> do
         remainingHealth <- field InvestigatorRemainingHealth (toId i)
         pure $ mostRemainingHealth == remainingHealth
     NearestToLocation locationMatcher -> do
       destinations <- select locationMatcher
       if null destinations
-        then pure as
+        then pure $ asMatch as
         else
-          mins <$> forMaybeM as \i -> runMaybeT do
+          asMatch . mins <$> forMaybeM as \i -> runMaybeT do
             loc <- MaybeT $ getMaybeLocation i
             minDistance <- MaybeT $ minimumMay <$> mapMaybeM (getDistance loc) destinations
             pure (i, unDistance minDistance)
     NearestToEnemy enemyMatcher -> do
       destinations <- select $ LocationWithEnemy enemyMatcher
       if null destinations
-        then pure as
+        then pure $ asMatch as
         else
-          mins <$> forMaybeM as \i -> runMaybeT do
+          asMatch . mins <$> forMaybeM as \i -> runMaybeT do
             loc <- MaybeT $ getMaybeLocation i
             minDistance <- MaybeT $ minimumMay <$> mapMaybeM (getDistance loc) destinations
             pure (i, unDistance minDistance)
-    HasMostMatchingAsset assetMatcher -> flip filterM as $ \i -> do
-      selfCount <- length <$> select (assetMatcher <> AssetControlledBy (InvestigatorWithId $ toId i))
+    HasMostMatchingAsset assetMatcher -> do
       allCounts <-
         traverse
           (\iid' -> length <$> select (assetMatcher <> AssetControlledBy (InvestigatorWithId iid')))
           =<< getInvestigators
-      pure $ selfCount == maximum (ncons selfCount allCounts)
-    HasMatchingAsset assetMatcher -> flip filterM as $ \i ->
+      flip runMatchesM as $ \i -> do
+        selfCount <- length <$> select (assetMatcher <> AssetControlledBy (InvestigatorWithId $ toId i))
+        pure $ selfCount == maximum (ncons selfCount allCounts)
+    HasMatchingAsset assetMatcher -> flip runMatchesM as $ \i ->
       selectAny $ assetMatcher <> assetControlledBy (toId i)
-    HasMatchingTreachery treacheryMatcher -> flip filterM as $ \i ->
+    HasMatchingTreachery treacheryMatcher -> flip runMatchesM as $ \i ->
       selectAny (treacheryMatcher <> TreacheryInThreatAreaOf (InvestigatorWithId $ toId i))
-    InvestigatorWithTreacheryInHand treacheryMatcher -> flip filterM as $ \i ->
+    InvestigatorWithTreacheryInHand treacheryMatcher -> flip runMatchesM as $ \i ->
       selectAny (treacheryMatcher <> TreacheryInHandOf (InvestigatorWithId $ toId i))
-    HasMatchingEvent eventMatcher -> flip filterM as $ \i ->
+    HasMatchingEvent eventMatcher -> flip runMatchesM as $ \i ->
       selectAny (eventMatcher <> EventControlledBy (InvestigatorWithId $ toId i))
-    HasMatchingSkill skillMatcher -> flip filterM as $ \i ->
+    HasMatchingSkill skillMatcher -> flip runMatchesM as $ \i ->
       selectAny (skillMatcher <> SkillControlledBy (InvestigatorWithId $ toId i))
-    MostToken tkn -> flip filterM as $ \i -> do
+    MostToken tkn -> flip runMatchesM as $ \i -> do
       mostCount <- fieldMaxBy InvestigatorTokens (Token.countTokens tkn) UneliminatedInvestigator
       pure $ mostCount == Token.countTokens tkn (attr investigatorTokens i)
-    HasTokens tkn valueMatcher -> flip filterM as $ \i -> do
+    HasTokens tkn valueMatcher -> flip runMatchesM as $ \i -> do
       let n = Token.countTokens tkn (attr investigatorTokens i)
       gameValueMatches n valueMatcher
-    MostKeys -> flip filterM as $ \i -> do
+    MostKeys -> flip runMatchesM as $ \i -> do
       mostKeyCount <- getMax0 <$> selectAgg (Max0 . Set.size) InvestigatorKeys UneliminatedInvestigator
       pure $ mostKeyCount == Set.size (investigatorKeys $ toAttrs i)
-    InvestigatorWithHiddenCard -> flip filterM as $ \i -> do
+    InvestigatorWithHiddenCard -> flip runMatchesM as $ \i -> do
       andM
         [ selectAny $ EnemyInHandOf (InvestigatorWithId $ toId i)
         , selectAny $ TreacheryInHandOf (InvestigatorWithId $ toId i)
         ]
-    You -> flip filterM as $ \i -> do
-      you <- getInvestigator . view activeInvestigatorIdL =<< getGame
-      pure $ you == i
-    NotYou -> flip filterM as $ \i -> do
-      you <- getInvestigator . view activeInvestigatorIdL =<< getGame
-      pure $ you /= i
-    Anyone -> pure as
-    TurnInvestigator -> flip filterM as $ \i -> (== Just i) <$> getTurnInvestigator
-    ActiveInvestigator -> flip filterM as
-      $ \i -> (== toId i) . gameActiveInvestigatorId <$> getGame
-    YetToTakeTurn -> flip filterM as $ \i ->
-      andM
-        [ (/= i) <$> getActiveInvestigator
-        , pure $ not $ investigatorEndedTurn $ toAttrs i
-        ]
-    LeadInvestigator -> flip filterM as $ \i -> (== toId i) . gameLeadInvestigatorId <$> getGame
-    InvestigatorWithTitle title -> flip filterM as $ pure . (`hasTitle` title)
-    DefeatedInvestigator -> flip filterM as $ pure . attr investigatorDefeated
-    InvestigatorWithToken tkn -> flip filterM as $ \i -> fieldMap InvestigatorTokens (Token.hasToken tkn) (toId i)
-    InvestigatorCanMoveTo source locationMatcher -> flip filterM as $ \i -> do
-      onlyScenarioEffects <- hasModifier i.id CannotMoveExceptByScenarioCardEffects
+    You -> do
+      you <- view activeInvestigatorIdL <$> getGame
+      pure $ runMatches ((== you) . toId) as
+    NotYou -> do
+      you <- view activeInvestigatorIdL <$> getGame
+      pure $ runMatches ((/= you) . toId) as
+    Anyone -> pure $ asMatch as
+    TurnInvestigator -> do
+      getTurnInvestigator <&> \case
+        Nothing -> noMatch
+        Just (toId -> iid) -> runMatches ((== iid) . toId) as
+    ActiveInvestigator -> do
+      activeId <- view activeInvestigatorIdL <$> getGame
+      pure $ runMatches ((== activeId) . toId) as
+    YetToTakeTurn -> do
+      activeId <- view activeInvestigatorIdL <$> getGame
+      pure $ runMatches (\i -> toId i /= activeId && not (investigatorEndedTurn $ toAttrs i)) as
+    LeadInvestigator -> do
+      leadId <- gameLeadInvestigatorId <$> getGame
+      pure $ runMatches ((== leadId) . toId) as
+    InvestigatorWithTitle title -> flip runMatchesM as $ pure . (`hasTitle` title)
+    DefeatedInvestigator -> flip runMatchesM as $ pure . attr investigatorDefeated
+    InvestigatorWithToken tkn -> flip runMatchesM as $ \i -> fieldMap InvestigatorTokens (Token.hasToken tkn) (toId i)
+    InvestigatorCanMoveTo source locationMatcher -> do
       isScenarioEffect <- sourceMatches source SourceIsScenarioCardEffect
-      case source of
-        _ | onlyScenarioEffects && not isScenarioEffect -> pure False
-        CardCostSource cardId -> do
-          -- we need to remove the card from hand
-          g <- getGame
-          flip
-            runReaderT
-            ( g
+      g <- getGame
+      let g' = case source of
+            CardCostSource cardId ->
+              g
                 & entitiesL
                 . investigatorsL
-                . ix (toId i)
+                . each
                 %~ overAttrs (Investigator.handL %~ filter ((/= cardId) . toCardId))
-            )
-            $ do
-              notNull <$> getCanMoveToMatchingLocations (toId i) source locationMatcher
-        _ -> notNull <$> getCanMoveToMatchingLocations (toId i) source locationMatcher
-    InvestigatorAt (LocationWithInvestigator (InvestigatorWithId iid)) -> flip filterM as $ \i -> do
-      if toId i == iid
-        then pure True
-        else do
-          mlid <- field InvestigatorLocation iid
-          mlid2 <- field InvestigatorLocation (toId i)
-          pure $ mlid == mlid2 && isJust mlid
-    InvestigatorAt locationMatcher -> flip filterM as $ \i -> do
-      mlid <- field InvestigatorLocation (toId i)
-      case mlid of
-        Nothing -> pure False
-        Just lid ->
-          if lid == LocationId nil
+            _ -> g
+
+      locations <- select locationMatcher
+
+      flip runMatchesM as \i -> do
+        flip runReaderT g' do
+          onlyScenarioEffects <- hasModifier i.id CannotMoveExceptByScenarioCardEffects
+          if onlyScenarioEffects && not isScenarioEffect
             then pure False
-            else elem lid <$> select locationMatcher
-    InvestigatorWithId iid -> flip filterM as $ pure . (== iid) . toId
-    InvestigatorIs cardCode -> pure $ flip filter as \a ->
+            else notNull <$> getCanMoveToLocations_ (toId i) source locations
+    InvestigatorAt (LocationWithInvestigator (InvestigatorWithId iid)) -> do
+      mlid <- field InvestigatorLocation iid
+      flip runMatchesM as \i -> do
+        if toId i == iid
+          then pure True
+          else do
+            mlid2 <- field InvestigatorLocation (toId i)
+            pure $ mlid == mlid2 && isJust mlid
+    InvestigatorAt locationMatcher -> do
+      locations <- select locationMatcher
+      if null locations
+        then pure noMatch
+        else flip runMatchesM as $ \i -> do
+          mlid <- field InvestigatorLocation (toId i)
+          pure $ maybe False (`elem` locations) mlid
+    InvestigatorWithId iid -> pure $ flip runMatches as $ (== iid) . toId
+    InvestigatorIs cardCode -> pure $ flip runMatches as \a ->
       toCardCode a == cardCode || case a.form of
         TransfiguredForm c -> c == cardCode
         _ -> False
-    InvestigatorWithLowestSkill skillType inner -> flip filterM as $ \i ->
+    InvestigatorWithLowestSkill skillType inner -> flip runMatchesM as $ \i ->
       isLowestAmongst (toId i) inner (getSkillValue skillType)
-    InvestigatorWithHighestSkill skillType inner -> flip filterM as $ \i ->
+    InvestigatorWithHighestSkill skillType inner -> flip runMatchesM as $ \i ->
       isHighestAmongst (toId i) inner (getSkillValue skillType)
-    InvestigatorWithCluesInPool gameValueMatcher -> flip filterM as $ \i -> do
+    InvestigatorWithCluesInPool gameValueMatcher -> flip runMatchesM as $ \i -> do
       clues <- field InvestigatorCluesInPool (toId i)
       gameValueMatches clues gameValueMatcher
-    InvestigatorWithClues gameValueMatcher -> flip filterM as $ \i -> do
+    InvestigatorWithClues gameValueMatcher -> flip runMatchesM as $ \i -> do
       clues <- field InvestigatorClues (toId i)
       gameValueMatches clues gameValueMatcher
     InvestigatorWithResources gameValueMatcher ->
-      flip filterM as $ (`gameValueMatches` gameValueMatcher) . attr investigatorResources
+      flip runMatchesM as $ (`gameValueMatches` gameValueMatcher) . attr investigatorResources
     InvestigatorWithSpendableResources gameValueMatcher ->
-      flip filterM as $ (`gameValueMatches` gameValueMatcher) <=< getSpendableResources . toId
+      flip runMatchesM as $ (`gameValueMatches` gameValueMatcher) <=< getSpendableResources . toId
     InvestigatorWithActionsRemaining gameValueMatcher ->
-      flip filterM as
+      flip runMatchesM as
         $ field InvestigatorRemainingActions
         . toId
         >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorWithActionsPerformed gameValueMatcher ->
-      flip filterM as
+      flip runMatchesM as
         $ fieldMap InvestigatorActionsPerformed length
         . toId
         >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorWithDoom gameValueMatcher ->
-      flip filterM as $ (`gameValueMatches` gameValueMatcher) . attr investigatorDoom
-    InvestigatorWithDamage gameValueMatcher -> flip filterM as $ \i -> do
+      flip runMatchesM as $ (`gameValueMatches` gameValueMatcher) . attr investigatorDoom
+    InvestigatorWithDamage gameValueMatcher -> flip runMatchesM as $ \i -> do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfDamage
       gameValueMatches (attr investigatorHealthDamage i + t) gameValueMatcher
-    InvestigatorWithHealableHorror source -> flip filterM as $ \i -> do
+    InvestigatorWithHealableHorror source -> flip runMatchesM as $ \i -> do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfHorror
       mods <- getModifiers i.id
 
@@ -1023,7 +1043,7 @@ getInvestigatorsMatching matcher = do
           <> AssetWithHorror
       foolishness <- maybe (pure False) (fieldMap AssetHorror (> 0)) mFoolishness
       pure $ onSelf || foolishness
-    InvestigatorWithHorror gameValueMatcher -> flip filterM as $ \i -> do
+    InvestigatorWithHorror gameValueMatcher -> flip runMatchesM as $ \i -> do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfHorror
       onSelf <- (attr investigatorSanityDamage i + t) `gameValueMatches` gameValueMatcher
       mFoolishness <-
@@ -1042,42 +1062,45 @@ getInvestigatorsMatching matcher = do
           mRationalThought
       pure $ onSelf || foolishness || rationalThought
     InvestigatorWithRemainingSanity gameValueMatcher ->
-      flip filterM as $ field InvestigatorRemainingSanity . toId >=> (`gameValueMatches` gameValueMatcher)
-    InvestigatorThatMovedDuringTurn -> flip filterM as \i -> do
+      flip runMatchesM as
+        $ field InvestigatorRemainingSanity
+        . toId
+        >=> (`gameValueMatches` gameValueMatcher)
+    InvestigatorThatMovedDuringTurn -> flip runMatchesM as \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ historyMoved history
-    InvestigatorWhenCriteria criteria -> flip filterM as $ \i -> passesCriteria (toId i) Nothing GameSource GameSource [] criteria
+    InvestigatorWhenCriteria criteria -> flip runMatchesM as $ \i -> passesCriteria (toId i) Nothing GameSource GameSource [] criteria
     NotInvestigator x -> do
       as' <- go as x
-      pure $ filter (`notElem` as') as
+      pure $ negateMatches as' as
     InvestigatorIfLocation lMatcher i1 i2 -> do
       ok <- selectAny lMatcher
-      if ok then go as i1 else go as i2
-    InvestigatorWithPlacement p -> pure $ filter ((== p) . (.placement)) as
-    InVehicleMatching am -> flip filterM as \a -> case a.placement of
+      go as $ if ok then i1 else i2
+    InvestigatorWithPlacement p -> pure $ runMatches ((== p) . (.placement)) as
+    InVehicleMatching am -> flip runMatchesM as \a -> case a.placement of
       InVehicle aid -> aid <=~> am
       _ -> pure False
-    IsDriverOf am -> flip filterM as \a -> do
+    IsDriverOf am -> flip runMatchesM as \a -> do
       anyM (fieldMap AssetDriver (== Just a.id)) =<< select am
-    SuccessfullyEvadedThisRound -> flip filterM as $ \i -> do
+    SuccessfullyEvadedThisRound -> flip runMatchesM as $ \i -> do
       (> 0) <$> getHistoryField RoundHistory (toId i) HistorySuccessfulEvasions
-    SuccessfullyAttackedThisRound -> flip filterM as $ \i -> do
+    SuccessfullyAttackedThisRound -> flip runMatchesM as $ \i -> do
       (> 0) <$> getHistoryField RoundHistory (toId i) HistorySuccessfulAttacks
-    SuccessfullyInvestigatedThisRound -> flip filterM as $ \i -> do
+    SuccessfullyInvestigatedThisRound -> flip runMatchesM as $ \i -> do
       (> 0) <$> getHistoryField RoundHistory (toId i) HistorySuccessfulInvestigations
     TakenActionThisRound actionMatcher -> do
-      flip filterM as \a -> do
+      flip runMatchesM as \a -> do
         let iid = toId a
         taken <- nub . concat <$> field InvestigatorActionsTaken iid
         anyM (\action -> actionMatches iid action actionMatcher) taken
     TakenActionThisTurn actionMatcher -> do
       -- TODO: this is the same as round for now, but it probably isn't entirely correct
-      flip filterM as \a -> do
+      flip runMatchesM as \a -> do
         let iid = toId a
         taken <- nub . concat <$> field InvestigatorActionsTaken iid
         anyM (\action -> actionMatches iid action actionMatcher) taken
     CanTakeUntakenAction -> do
-      flip filterM as \a -> do
+      flip runMatchesM as \a -> do
         let iid = toId a
         taken <- nub . concat <$> field InvestigatorActionsTaken iid
         let allowed = filter (`notElem` taken) [minBound ..]
@@ -1096,31 +1119,38 @@ getInvestigatorsMatching matcher = do
             else pure []
 
         pure $ notNull actions || notNull playableCards || resourceOk || drawOk
-    InvestigatorMatches xs -> foldM go as xs
+    InvestigatorMatches xs -> combineMatches <$> traverse (go as) xs
     AnyInvestigator xs -> do
       as' <- traverse (go as) xs
-      pure $ nub $ concat as'
-    HandWith cardListMatcher -> flip filterM as $ (`cardListMatches` cardListMatcher) <=< field InvestigatorHand . toId
+      pure $ combineAny as'
+    HandWith cardListMatcher -> flip runMatchesM as $ (`cardListMatches` cardListMatcher) <=< field InvestigatorHand . toId
     DiscardWith cardListMatcher ->
-      flip filterM as $ (`cardListMatches` cardListMatcher) . map PlayerCard . attr investigatorDiscard
+      flip runMatchesM as
+        $ (`cardListMatches` cardListMatcher)
+        . map PlayerCard
+        . attr investigatorDiscard
     DeckWith cardListMatcher ->
-      flip filterM as
+      flip runMatchesM as
         $ (`cardListMatches` cardListMatcher)
         . map PlayerCard
         . unDeck
         . attr investigatorDeck
-    InvestigatorWithTrait t -> flip filterM as $ fieldMap InvestigatorTraits (member t) . toId
-    InvestigatorWithClass t -> flip filterM as $ fieldMap InvestigatorClass (== t) . toId
-    InvestigatorWithoutModifier modifierType -> flip filterM as $ \i -> do
+    InvestigatorWithTrait t -> flip runMatchesM as $ fieldMap InvestigatorTraits (member t) . toId
+    InvestigatorWithClass t -> flip runMatchesM as $ fieldMap InvestigatorClass (== t) . toId
+    InvestigatorWithoutModifier modifierType -> flip runMatchesM as $ \i -> do
       modifiers' <- getModifiers (toTarget i)
       pure $ modifierType `notElem` modifiers'
-    InvestigatorWithModifier modifierType -> flip filterM as $ \i -> do
+    InvestigatorWithModifier modifierType -> flip runMatchesM as $ \i -> do
       modifiers' <- getModifiers (toTarget i)
       pure $ modifierType `elem` modifiers'
     UneliminatedInvestigator ->
-      flip filterM as $ pure . not . or . sequence [attr investigatorDefeated, attr investigatorResigned]
-    ResignedInvestigator -> flip filterM as $ pure . attr investigatorResigned
-    InvestigatorEngagedWith enemyMatcher -> flip filterM as $ \i -> do
+      flip runMatchesM as
+        $ pure
+        . not
+        . or
+        . sequence [attr investigatorDefeated, attr investigatorResigned]
+    ResignedInvestigator -> flip runMatchesM as $ pure . attr investigatorResigned
+    InvestigatorEngagedWith enemyMatcher -> flip runMatchesM as $ \i -> do
       mods <- getModifiers i
       let
         asIfEngagedWith = flip mapMaybe mods $ \case
@@ -1128,24 +1158,24 @@ getInvestigatorsMatching matcher = do
           _ -> Nothing
 
       selectAny $ enemyMatcher <> oneOf (enemyEngagedWith (toId i) : map EnemyWithId asIfEngagedWith)
-    TopCardOfDeckIs cardMatcher -> flip filterM as $ \i ->
+    TopCardOfDeckIs cardMatcher -> flip runMatchesM as $ \i ->
       pure $ case unDeck . investigatorDeck $ toAttrs i of
         [] -> False
         x : _ -> cardMatch (PlayerCard x) cardMatcher
-    UnengagedInvestigator -> flip filterM as $ selectNone . enemyEngagedWith . toId
-    NoDamageDealtThisTurn -> flip filterM as $ \i -> do
+    UnengagedInvestigator -> flip runMatchesM as $ selectNone . enemyEngagedWith . toId
+    NoDamageDealtThisTurn -> flip runMatchesM as $ \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ null (historyDealtDamageTo history)
-    NoSuccessfulExploreThisTurn -> flip filterM as $ \i -> do
+    NoSuccessfulExploreThisTurn -> flip runMatchesM as $ \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ not (historySuccessfulExplore history)
-    InvestigatorWithCommittableCard -> flip filterM as $ \i -> do
+    InvestigatorWithCommittableCard -> flip runMatchesM as $ \i -> do
       selectAny $ CommittableCard (InvestigatorWithId $ toId i) (basic AnyCard)
-    InvestigatorWithUnhealedHorror -> flip filterM as $ fieldMap InvestigatorUnhealedHorrorThisRound (> 0) . toId
-    InvestigatorWithFilledSlot sType -> flip filterM as $ \i -> do
+    InvestigatorWithUnhealedHorror -> flip runMatchesM as $ fieldMap InvestigatorUnhealedHorrorThisRound (> 0) . toId
+    InvestigatorWithFilledSlot sType -> flip runMatchesM as $ \i -> do
       slots <- fieldMap InvestigatorSlots (findWithDefault [] sType) (toId i)
       pure $ count (not . isEmptySlot) slots > 0
-    InvestigatorWithMetaKey k -> flip filterM as $ \i -> do
+    InvestigatorWithMetaKey k -> flip runMatchesM as $ \i -> do
       hasEffectKey <- hasModifier (toId i) (MetaModifier (String k))
       if hasEffectKey
         then pure True
@@ -1156,7 +1186,7 @@ getInvestigatorsMatching matcher = do
                 Just (Bool b) -> pure b
                 _ -> pure False
             _ -> pure False
-    ContributedMatchingIcons valueMatcher -> flip filterM as $ \i -> do
+    ContributedMatchingIcons valueMatcher -> flip runMatchesM as $ \i -> do
       mSkillTest <- getSkillTest
       case mSkillTest of
         Nothing -> pure False
@@ -1165,7 +1195,7 @@ getInvestigatorsMatching matcher = do
           let cards = findWithDefault [] (toId i) $ skillTestCommittedCards st
           skillTestCount <- count (`elem` skillIcons) <$> concatMapM iconsForCard cards
           gameValueMatches skillTestCount valueMatcher
-    HealableInvestigator source damageType matcher' -> flip filterM as $ \i -> do
+    HealableInvestigator source damageType matcher' -> flip runMatchesM as $ \i -> do
       mods <- getActiveInvestigatorModifiers
       let canHealAtFullSources = [sourceMatcher | CanHealAtFull sourceMatcher dType <- mods, dType == damageType]
       canHealAtFull <-
@@ -1187,62 +1217,62 @@ getInvestigatorsMatching matcher = do
           if CannotHealHorror `elem` mods
             then elem (toId i) <$> select (healGuard $ matcher' <> You)
             else elem (toId i) <$> select (healGuard matcher')
-    InvestigatorWithMostCardsInPlayArea -> flip filterM as $ \i ->
+    InvestigatorWithMostCardsInPlayArea -> flip runMatchesM as $ \i ->
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
-    InvestigatorWithPhysicalTrauma -> pure $ filter ((> 0) . attr investigatorPhysicalTrauma) as
-    InvestigatorWithMentalTrauma -> pure $ filter ((> 0) . attr investigatorMentalTrauma) as
-    InvestigatorCanAddCardsToDeck -> pure $ filter (or . sequence [(/= "11068b") . toId, attr investigatorKilled]) as
-    InvestigatorCanRemoveCardsFromDeck -> pure $ filter (or . sequence [(/= "11068b") . toId, attr investigatorKilled]) as
-    DiscoveredCluesThis historyProjection -> flip filterM as $ \i -> do
+    InvestigatorWithPhysicalTrauma -> pure $ runMatches ((> 0) . attr investigatorPhysicalTrauma) as
+    InvestigatorWithMentalTrauma -> pure $ runMatches ((> 0) . attr investigatorMentalTrauma) as
+    InvestigatorCanAddCardsToDeck -> pure $ runMatches (or . sequence [(/= "11068b") . toId, attr investigatorKilled]) as
+    InvestigatorCanRemoveCardsFromDeck -> pure $ runMatches (or . sequence [(/= "11068b") . toId, attr investigatorKilled]) as
+    DiscoveredCluesThis historyProjection -> flip runMatchesM as $ \i -> do
       (> 0) . sum . toList <$> getHistoryField historyProjection (toId i) HistoryCluesDiscovered
-    InvestigatorWithKey key -> flip filterM as $ \i ->
+    InvestigatorWithKey key -> flip runMatchesM as $ \i ->
       pure $ key `elem` investigatorKeys (toAttrs i)
-    InvestigatorWithSeal kind -> flip filterM as $ \i ->
+    InvestigatorWithSeal kind -> flip runMatchesM as $ \i ->
       pure $ kind `elem` map (.kind) (toList $ attr investigatorSeals i)
-    InvestigatorWithAnySeal -> flip filterM as $ \i ->
+    InvestigatorWithAnySeal -> flip runMatchesM as $ \i ->
       pure $ notNull $ investigatorSeals (toAttrs i)
-    InvestigatorWithAnyActiveSeal -> pure $ flip filter as $ \i ->
+    InvestigatorWithAnyActiveSeal -> pure $ flip runMatches as $ \i ->
       any (.active) (toList $ attr investigatorSeals i)
-    InvestigatorWithActiveSeal kind -> flip filterM as $ \i ->
+    InvestigatorWithActiveSeal kind -> flip runMatchesM as $ \i ->
       case find ((== kind) . (.kind)) (toList $ attr investigatorSeals i) of
         Nothing -> pure False
         Just s -> pure s.active
-    InvestigatorWithDormantSeal kind -> flip filterM as $ \i ->
+    InvestigatorWithDormantSeal kind -> flip runMatchesM as $ \i ->
       case find ((== kind) . (.kind)) (toList $ attr investigatorSeals i) of
         Nothing -> pure False
         Just s -> pure $ not s.active
-    InvestigatorWithTokenKey face -> flip filterM as $ \i ->
+    InvestigatorWithTokenKey face -> flip runMatchesM as $ \i ->
       pure $ flip any (investigatorKeys (toAttrs i)) \case
         TokenKey k -> k.face == face
         _ -> False
-    InvestigatorWithAnyKey -> flip filterM as $ \i ->
+    InvestigatorWithAnyKey -> flip runMatchesM as $ \i ->
       pure $ notNull $ investigatorKeys (toAttrs i)
-    DistanceFromRoundStart valueMatcher -> flip filterM as $ \i -> do
+    DistanceFromRoundStart valueMatcher -> flip runMatchesM as $ \i -> do
       fromMaybe False <$> runMaybeT do
         startLocation <- hoistMaybe $ attr investigatorBeganRoundAt i
         current <- MaybeT $ getMaybeLocation i.id
         Distance distance <- MaybeT $ getDistance startLocation current
         lift $ gameValueMatches distance valueMatcher
-    CanBeHuntedBy eid -> flip filterM as $ \i -> do
+    CanBeHuntedBy eid -> flip runMatchesM as $ \i -> do
       mods <- getModifiers i
       flip noneM mods $ \case
         CannotBeHuntedBy matcher' -> eid <=~> matcher'
         _ -> pure False
-    InvestigatorWithRecord r -> flip filterM as $ \i -> do
+    InvestigatorWithRecord r -> flip runMatchesM as $ \i -> do
       ilog <- field InvestigatorLog (toId i)
       pure
         $ or
           [ r `member` ilog.recorded
           , r `member` ilog.recordedCounts
           ]
-    InvestigatorWithBondedCard cardMatcher -> flip filterM as $ \i -> do
+    InvestigatorWithBondedCard cardMatcher -> flip runMatchesM as $ \i -> do
       bondedCards <- field InvestigatorBondedCards (toId i)
       pure $ any (`cardMatch` cardMatcher) bondedCards
-    InvestigatorIfThen m1 m2 m3 -> flip filterM as $ \i -> do
+    InvestigatorIfThen m1 m2 m3 -> flip runMatchesM as $ \i -> do
       you <- view activeInvestigatorIdL <$> getGame
       youMatch <- you <=~> m1
       toId i <=~> (if youMatch then m2 else m3)
-    InvestigatorCanTarget t -> flip filterM as $ \_i -> do
+    InvestigatorCanTarget t -> flip runMatchesM as $ \_i -> do
       case t of
         EncounterDeckTarget -> scenarioField ScenarioHasEncounterDeck
         _ -> pure True
@@ -4350,7 +4380,14 @@ instance Query EnemyMatcher where
 
 instance Query InvestigatorMatcher where
   toSomeQuery = InvestigatorQuery
-  select_ = fmap (map toId) . getInvestigatorsMatching
+  selectExists = getInvestigatorsMatching (MatcherFunc any anyM False (const True) (\r _ -> not r) and or)
+  select_ = 
+    let
+      intersections [] = []
+      intersections xs = List.foldr1 List.intersect xs
+    in fmap (map toId)
+      . getInvestigatorsMatching
+        (MatcherFunc filter filterM [] id (\r -> filter (`notElem` r)) intersections concat)
 
 instance Query PreyMatcher where
   toSomeQuery = PreyQuery

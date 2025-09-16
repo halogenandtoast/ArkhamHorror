@@ -29,8 +29,6 @@ import Arkham.Target
 import Arkham.Treachery.Types (Field (..), TreacheryAttrs)
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
-import Control.Monad.State.Strict
-import Data.Map.Strict qualified as Map
 
 getConnectedLocations :: HasGame m => LocationId -> m [LocationId]
 getConnectedLocations = fieldMap LocationConnectedLocations toList
@@ -215,26 +213,26 @@ getCanMoveTo iid source lid =
   cached (CanMoveToLocationKey iid (toSource source) lid) do
     elem lid <$> getCanMoveToLocations iid source
 
-getCanMoveToLocations
-  :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
+getCanMoveToLocations :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
 getCanMoveToLocations iid source = cached (CanMoveToLocationsKey iid (toSource source)) do
-  canMove <-
-    iid <=~> (Matcher.InvestigatorCanMove <> not_ (Matcher.InVehicleMatching Matcher.AnyAsset))
+  ls <- select $ Matcher.canEnterLocation iid <> Matcher.NotLocation (Matcher.LocationWithInvestigator $ InvestigatorWithId iid)
+  getCanMoveToLocations_ iid source ls
+
+getCanMoveToLocations_
+  :: (Sourceable source, HasGame m) => InvestigatorId -> source -> [LocationId] -> m [LocationId]
+getCanMoveToLocations_ iid source ls = cached (CanMoveToLocationsKey_ iid (toSource source) ls) do
+  canMove <- iid <=~> (Matcher.InvestigatorCanMove <> not_ (Matcher.InVehicleMatching Matcher.AnyAsset))
   onlyScenarioEffects <- hasModifier iid CannotMoveExceptByScenarioCardEffects
   isScenarioEffect <- sourceMatches (toSource source) SourceIsScenarioCardEffect
   if canMove && (not onlyScenarioEffects || isScenarioEffect)
     then do
-      selectOne (Matcher.locationWithInvestigator iid) >>= \case
+      getLocationOf iid >>= \case
         Nothing -> pure []
         Just lid -> do
           imods <- getModifiers iid
           mods <- getModifiers lid
-          ls <-
-            select
-              $ Matcher.canEnterLocation iid
-              <> Matcher.NotLocation (Matcher.LocationWithId lid)
           let extraCostsToLeave = mconcat [c | AdditionalCostToLeave c <- mods]
-          flip filterM ls $ \l -> do
+          flip filterM (filter (/= lid) ls) $ \l -> do
             mods' <- getModifiers l
             pcosts <- filterM ((l <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
             revealed' <- field LocationRevealed l

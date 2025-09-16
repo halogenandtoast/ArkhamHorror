@@ -56,6 +56,7 @@ data CacheKey v where
   CanMoveToLocationsKey_ :: InvestigatorId -> Source -> [LocationId] -> CacheKey [LocationId]
   CanMoveToLocationsKey :: InvestigatorId -> Source -> CacheKey [LocationId]
   SelectKey :: Typeable a => SomeQuery a -> CacheKey [a]
+  ExistKey :: Typeable a => SomeQuery a -> CacheKey Bool
 
 deriving stock instance Show (CacheKey v)
 
@@ -90,6 +91,9 @@ instance GEq CacheKey where
   geq (SelectKey (q1 :: SomeQuery a)) (SelectKey (q2 :: SomeQuery b))
     | Just Refl <- eqT @a @b, q1 == q2 = Just Refl -- requires Eq (SomeQuery a)
     | otherwise = Nothing
+  geq (ExistKey (q1 :: SomeQuery a)) (ExistKey (q2 :: SomeQuery b))
+    | Just Refl <- eqT @a @b, q1 == q2 = Just Refl -- requires Eq (SomeQuery a)
+    | otherwise = Nothing
   geq _ _ = Nothing
 
 -- Total ordering on keys (used by DMap’s balanced tree)
@@ -119,6 +123,13 @@ instance GCompare CacheKey where
         EQ -> GEQ
         GT -> GGT
     (SelectKey {}, _) -> GGT
+    (ExistKey (q1 :: SomeQuery a), ExistKey (q2 :: SomeQuery b)) | Just Refl <- eqT @a @b ->
+      case compare q1 q2 of -- requires Ord (SomeQuery a)
+        LT -> GLT
+        EQ -> GEQ
+        GT -> GGT
+    (ExistKey {}, SelectKey {}) -> GLT
+    (ExistKey {}, _) -> GGT
    where
     -- Helper: lift ordinary Ord tuple comparison to GCompare’s 3-way
     compareTuple :: Ord t => t -> t -> GOrdering a a

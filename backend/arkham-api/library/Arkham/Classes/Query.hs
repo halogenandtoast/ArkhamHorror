@@ -367,12 +367,8 @@ isMatch a m = elem a <$> select m
 class (Ord (QueryElement a), Eq (QueryElement a), Typeable (QueryElement a)) => Query a where
   toSomeQuery :: a -> SomeQuery (QueryElement a)
   select_ :: (HasCallStack, HasGame m) => a -> m [QueryElement a]
-
-  -- Fast existence check; default falls back to select (but we’ll override for InvestigatorMatcher)
   selectExists :: (HasCallStack, HasGame m) => a -> m Bool
-  selectExists q = notNull <$> select_ q
-
-  -- Cached select; any non-investigator matcher calls should go through this
+  selectExists q = cached (ExistKey $ toSomeQuery q) $ notNull <$> select_ q
   select :: (HasCallStack, HasGame m) => a -> m [QueryElement a]
   select q = cached (SelectKey $ toSomeQuery q) (select_ q)
 

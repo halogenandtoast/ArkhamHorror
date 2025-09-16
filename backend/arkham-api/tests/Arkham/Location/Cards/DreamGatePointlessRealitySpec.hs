@@ -7,8 +7,8 @@ import TestImport.New
 
 spec :: Spec
 spec = describe "Dream Gate (Pointless Reality)" do
-  fit "Enemies and investigators other than Luke Robinson cannot enter Dream-Gate."
-    . gameTestWith lukeRobinson . debug
+  it "Enemies and investigators other than Luke Robinson cannot enter Dream-Gate."
+    . gameTestWith lukeRobinson
     $ \self -> do
       (location1, location2) <- testConnectedLocations id id
       (dreamGate, placement) <- placeLocationCard Locations.dreamGatePointlessReality

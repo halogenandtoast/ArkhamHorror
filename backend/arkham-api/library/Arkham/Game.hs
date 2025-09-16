@@ -716,18 +716,20 @@ getCampaignsMatching matcher = do
   go = \case
     TheCampaign -> pure . const True
 
-data MatcherFunc m a r = MatcherFunc
+data MatcherFunc m q a r = MatcherFunc
   { runMatches :: (a -> Bool) -> [a] -> r
   , runMatchesM :: (a -> m Bool) -> [a] -> m r
   , noMatch :: r
   , asMatch :: [a] -> r
-  , negateMatches :: r -> [a] -> r
+  , negateMatches :: q -> [a] -> ([a] -> q -> m r) -> m r
   , combineMatches :: [r] -> r
   , combineAny :: [r] -> r
   }
 
 getInvestigatorsMatching
-  :: forall m r. (HasCallStack, HasGame m) => MatcherFunc m Investigator r -> InvestigatorMatcher -> m r
+  :: forall m r
+   . (HasCallStack, HasGame m)
+  => MatcherFunc m InvestigatorMatcher Investigator r -> InvestigatorMatcher -> m r
 getInvestigatorsMatching MatcherFunc {..} matcher = do
   investigators <- toList . view (entitiesL . investigatorsL) <$> getGame
   investigators' <-
@@ -1070,9 +1072,7 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       history <- getHistory TurnHistory (toId i)
       pure $ historyMoved history
     InvestigatorWhenCriteria criteria -> flip runMatchesM as $ \i -> passesCriteria (toId i) Nothing GameSource GameSource [] criteria
-    NotInvestigator x -> do
-      as' <- go as x
-      pure $ negateMatches as' as
+    NotInvestigator x -> negateMatches x as go
     InvestigatorIfLocation lMatcher i1 i2 -> do
       ok <- selectAny lMatcher
       go as $ if ok then i1 else i2
@@ -4380,14 +4380,26 @@ instance Query EnemyMatcher where
 
 instance Query InvestigatorMatcher where
   toSomeQuery = InvestigatorQuery
-  selectExists = getInvestigatorsMatching (MatcherFunc any anyM False (const True) (\r _ -> not r) and or)
-  select_ = 
+  selectExists q = cached (ExistKey $ toSomeQuery q) do
+    getInvestigatorsMatching
+      (MatcherFunc any anyM False (const True) (\q' as go -> anyM (\a -> not <$> go [a] q') as) and or)
+      q
+  select_ =
     let
       intersections [] = []
       intersections xs = List.foldr1 List.intersect xs
-    in fmap (map toId)
-      . getInvestigatorsMatching
-        (MatcherFunc filter filterM [] id (\r -> filter (`notElem` r)) intersections concat)
+     in
+      fmap (map toId)
+        . getInvestigatorsMatching
+          ( MatcherFunc
+              filter
+              filterM
+              []
+              id
+              (\q as go -> go as q <&> \as' -> filter (`notElem` as') as)
+              intersections
+              concat
+          )
 
 instance Query PreyMatcher where
   toSomeQuery = PreyQuery

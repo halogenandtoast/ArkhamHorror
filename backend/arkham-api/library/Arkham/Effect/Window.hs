@@ -41,7 +41,7 @@ data EffectWindow
   | EffectUI
   | EffectMoveWindow
   | EffectRevelationWindow TreacheryId
-  deriving stock (Eq, Show, Data)
+  deriving stock (Ord, Eq, Show, Data)
 
 instance IsLabel "endOfCurrentPhase" EffectWindow where
   fromLabel = EffectPhaseWindow

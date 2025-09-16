@@ -3295,7 +3295,7 @@ preloadEntities g = do
 -- effects (See Moonstone) it won't be loaded in the environment until 1 step
 -- too late.
 instance RunMessage Game where
-  runMessage msg g = do
+  runMessage msg g =
     ( (modeL . here) (runMessage msg) g
         >>= (modeL . there) (runMessage msg)
         >>= entitiesL (runMessage msg)

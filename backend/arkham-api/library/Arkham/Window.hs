@@ -42,7 +42,7 @@ data Window = Window
   , windowType :: WindowType
   , windowBatchId :: Maybe BatchId
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Eq, Ord, Data)
 
 replaceWindowType :: WindowType -> Window -> Window
 replaceWindowType wType window = window {windowType = wType}
@@ -126,7 +126,7 @@ data CardPlay = CardPlay
   { cardPlayedCard :: Card
   , cardPlayedNeedsAction :: Bool
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 instance HasField "card" CardPlay Card where
   getField = cardPlayedCard
@@ -327,7 +327,7 @@ data WindowType
   | ScenarioEvent Text (Maybe InvestigatorId) Value
   | -- used to avoid checking a window
     DoNotCheckWindow
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Eq, Ord, Data)
 
 mconcat
   [ deriveJSON defaultOptions ''IsDirect

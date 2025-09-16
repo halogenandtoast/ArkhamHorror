@@ -11,5 +11,5 @@ data Memento
   | WornCrucifix
   | WispOfSpectralMist
   | CornHuskDoll
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Ord, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

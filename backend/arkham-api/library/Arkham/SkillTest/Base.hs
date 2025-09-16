@@ -24,7 +24,7 @@ data SkillTestBaseValue
   | AndSkillBaseValue [SkillType]
   | HalfResourcesOf InvestigatorId
   | FixedBaseValue Int
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 newtype SkillTestDifficulty = SkillTestDifficulty GameCalculation
   deriving newtype (Show, Ord, Eq, Generic, FromJSON, ToJSON)
@@ -56,7 +56,7 @@ data SkillTest = SkillTest
   , skillTestStep :: SkillTestStep
   , skillTestRevealedChaosTokensCount :: Int
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 instance HasField "id" SkillTest SkillTestId where
   getField = skillTestId
@@ -112,7 +112,7 @@ data SkillTestResultsData = SkillTestResultsData
   , skillTestResultsResultModifiers :: Maybe Int
   , skillTestResultsSuccess :: Bool
   }
-  deriving stock (Eq, Show, Data)
+  deriving stock (Ord, Eq, Show, Data)
 
 initSkillTest
   :: (Sourceable source, Targetable target)

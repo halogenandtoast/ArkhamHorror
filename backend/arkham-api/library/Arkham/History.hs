@@ -21,7 +21,7 @@ data DefeatedEnemyAttrs = DefeatedEnemyAttrs
   { defeatedEnemyAttrs :: EnemyAttrs
   , defeatedEnemyHealth :: Int
   }
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (FromJSON, ToJSON)
 
 instance Entity DefeatedEnemyAttrs where
@@ -49,7 +49,7 @@ data History = History
   , historySuccessfulInvestigations :: Int
   , historyEnemiesAttackedBy :: [EnemyId]
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 data HistoryField k where
   HistoryTreacheriesDrawn :: HistoryField [CardCode]
@@ -71,6 +71,7 @@ data HistoryField k where
 
 deriving stock instance Show (HistoryField k)
 deriving stock instance Eq (HistoryField k)
+deriving stock instance Ord (HistoryField k)
 
 viewHistoryField :: HistoryField k -> History -> k
 viewHistoryField = \case
@@ -96,7 +97,7 @@ instance ToJSON (HistoryField k) where
 
 data SomeHistoryField where
   SomeHistoryField
-    :: (Typeable k, Show k, Eq k, ToJSON k, FromJSON k) => HistoryField k -> SomeHistoryField
+    :: (Typeable k, Show k, Ord k, Eq k, ToJSON k, FromJSON k) => HistoryField k -> SomeHistoryField
 
 instance FromJSON SomeHistoryField where
   parseJSON = withText "SomeHistoryField" $ \t -> case t of
@@ -119,7 +120,7 @@ instance FromJSON SomeHistoryField where
     _ -> fail $ "Invalid HistoryField: " <> T.unpack t
 
 data HistoryItem where
-  HistoryItem :: (Show k, Eq k, ToJSON k, Typeable k) => HistoryField k -> k -> HistoryItem
+  HistoryItem :: (Show k, Ord k, Eq k, ToJSON k, Typeable k) => HistoryField k -> k -> HistoryItem
 
 deriving stock instance Show HistoryItem
 
@@ -132,6 +133,14 @@ instance Eq HistoryItem where
   (HistoryItem (fld1 :: HistoryField k1) k1) == (HistoryItem (fld2 :: HistoryField k2) k2) = case eqT @k1 @k2 of
     Just Refl -> fld1 == fld2 && k1 == k2
     Nothing -> False
+
+instance Ord HistoryItem where
+  compare (HistoryItem (fld1 :: HistoryField k1) k1) (HistoryItem (fld2 :: HistoryField k2) k2) =
+    case compare (show fld1) (show fld2) of
+      EQ -> case eqT @k1 @k2 of
+        Just Refl -> compare k1 k2
+        Nothing -> error $ "Cannot compare HistoryItems with different types: " <> show fld1 <> " and " <> show fld2
+      other -> other
 
 instance ToJSON HistoryItem where
   toJSON (HistoryItem fld k) = object ["field" .= fld, "value" .= k]

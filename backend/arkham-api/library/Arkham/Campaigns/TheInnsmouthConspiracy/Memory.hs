@@ -17,5 +17,5 @@ data Memory
   | AConversationWithMrMoore
   | TheLifecycleOfADeepOne
   | AStingingBetrayal
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Ord, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

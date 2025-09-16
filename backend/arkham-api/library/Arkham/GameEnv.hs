@@ -2,8 +2,6 @@
 
 module Arkham.GameEnv where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.ActiveCost.Base
 import {-# SOURCE #-} Arkham.Card (
@@ -32,11 +30,13 @@ import Arkham.Id
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Phase
+import Arkham.Prelude
 import Arkham.Random
 import Arkham.SkillTest.Base
 import Arkham.Target
 import Arkham.Window
 import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
+import Data.Dependent.Map qualified as DMap
 import Data.Map.Strict qualified as Map
 
 -- Some ORPHANS we may want to move
@@ -96,10 +96,12 @@ toGameEnv
      )
   => m GameEnv
 toGameEnv = do
-  game <- view gameRefL
-  gen <- view genL
-  queueRef <- messageQueue
-  GameEnv game queueRef gen <$> getLogger
+  gameEnvGame <- view gameRefL
+  gameRandomGen <- view genL
+  gameEnvQueue <- messageQueue
+  gameCacheRef <- newIORef DMap.empty
+  gameLogger <- getLogger
+  pure $ GameEnv {..}
 
 runWithEnv
   :: ( HasGameRef env
@@ -194,7 +196,7 @@ withModifiers'
   :: (Targetable target, HasGame m)
   => target
   -> m [Modifier]
-  -> (forall t. (HasGame t) => t a)
+  -> ReaderT Game m a
   -> m a
 withModifiers' (toTarget -> target) mods body = do
   game <- getGame
@@ -204,20 +206,12 @@ withModifiers' (toTarget -> target) mods body = do
     modifiers' = insertWith (<>) target mods' modifiers
   runReaderT body $ game & modifiersL .~ modifiers'
 
-withActiveInvestigator
-  :: HasGame m
-  => InvestigatorId
-  -> (forall t. (HasGame t) => t a)
-  -> m a
+withActiveInvestigator :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
 withActiveInvestigator iid body = do
   game <- getGame
   runReaderT body $ game & activeInvestigatorIdL .~ iid
 
-withActiveInvestigatorAdjust
-  :: HasGame m
-  => InvestigatorId
-  -> (forall t. (HasGame t) => t a)
-  -> m a
+withActiveInvestigatorAdjust :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
 withActiveInvestigatorAdjust iid body = do
   game <- getGame
   game' <-
@@ -249,7 +243,10 @@ getCardUses cCode = findWithDefault [] cCode . gameCardUses <$> getGame
 
 getAllCardUses :: HasGame m => m [CardDef]
 getAllCardUses =
-  concatMap (mapMaybe lookupCardDef . (\ (k, v) -> replicate (length v) k)) . Map.toList . gameCardUses <$> getGame
+  concatMap (mapMaybe lookupCardDef . (\(k, v) -> replicate (length v) k))
+    . Map.toList
+    . gameCardUses
+    <$> getGame
 
 getTurnOrder :: HasGame m => m [InvestigatorId]
 getTurnOrder = gamePlayerOrder <$> getGame

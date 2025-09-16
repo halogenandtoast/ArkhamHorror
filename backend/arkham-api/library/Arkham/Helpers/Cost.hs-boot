@@ -4,8 +4,8 @@ import Arkham.Action (Action)
 import Arkham.Classes.HasGame
 import Arkham.Cost
 import Arkham.Id
-import Arkham.Source
 import Arkham.Prelude
+import Arkham.Source
 import Arkham.Window (Window)
 
 getCanAffordCost

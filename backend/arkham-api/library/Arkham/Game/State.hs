@@ -7,7 +7,7 @@ import Arkham.Prelude
 import Data.Aeson.TH
 
 data GameState = IsPending [PlayerId] | IsChooseDecks [PlayerId] | IsActive | IsOver
-  deriving stock (Eq, Show, Data)
+  deriving stock (Ord, Eq, Show, Data)
 
 isChooseDecks :: GameState -> Bool
 isChooseDecks = \case

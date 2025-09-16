@@ -15,7 +15,7 @@ data EnemyCreationMethod
   | SpawnAtLocationMatching LocationMatcher
   | SpawnEngagedWithPrey
   | SpawnViaSpawnInstruction
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 class IsEnemyCreationMethod a where
@@ -52,7 +52,7 @@ data EnemyCreation msg = MkEnemyCreation
   , enemyCreationAfter :: [msg]
   , enemyCreationInvestigator :: Maybe InvestigatorId
   }
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass ToJSON
 
 instance FromJSON msg => FromJSON (EnemyCreation msg) where

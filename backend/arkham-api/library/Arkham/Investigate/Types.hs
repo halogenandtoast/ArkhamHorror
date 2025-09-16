@@ -2,9 +2,8 @@
 
 module Arkham.Investigate.Types where
 
-import Arkham.Prelude
-
 import Arkham.Id
+import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -20,7 +19,7 @@ data Investigate = MkInvestigate
   , investigateIsAction :: Bool
   , investigateSkillTest :: SkillTestId
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 $(deriveJSON defaultOptions ''Investigate)
 

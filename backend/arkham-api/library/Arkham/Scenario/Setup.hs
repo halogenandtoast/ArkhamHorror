@@ -96,6 +96,7 @@ instance HasQueue Message m => HasQueue Message (ScenarioBuilderT m) where
 
 instance HasGame m => HasGame (ScenarioBuilderT m) where
   getGame = lift getGame
+  getCache = GameCache \_ build -> build
 
 instance ReverseQueue m => ReverseQueue (ScenarioBuilderT m) where
   filterInbox = lift . filterInbox

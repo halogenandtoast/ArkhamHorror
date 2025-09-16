@@ -3303,7 +3303,7 @@ advanceCurrentActWithClues source = do
   push $ AdvanceAct actId (toSource source) #clues
 
 updateLocation
-  :: (ReverseQueue m, Eq a, Show a, Typeable a, ToJSON a, FromJSON a)
+  :: (ReverseQueue m, Ord a, Show a, Typeable a, ToJSON a, FromJSON a)
   => LocationId
   -> Field Location a
   -> a

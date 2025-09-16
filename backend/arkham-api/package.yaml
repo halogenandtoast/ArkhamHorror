@@ -71,10 +71,14 @@ library:
     - case-insensitive
     - classy-prelude
     - conduit
+    - constraints-extras
     - containers
     - cryptohash-sha256
     - crypton-x509-store
     - data-default-class
+    - dependent-map
+    - dependent-sum
+    - dependent-sum-template
     - directory
     - email-validate
     - errors
@@ -108,6 +112,7 @@ library:
     - relude
     - safe
     - semialign
+    - some
     - stm
     - string-conversions
     - template-haskell

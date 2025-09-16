@@ -17,5 +17,5 @@ data MessageType
   | AssetDamageMessage
   | DrawEncounterCardMessage
   | ExploreMessage
-  deriving stock (Eq, Show, Generic, Data)
+  deriving stock (Ord, Eq, Show, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

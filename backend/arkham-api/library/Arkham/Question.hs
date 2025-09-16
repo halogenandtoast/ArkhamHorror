@@ -90,13 +90,13 @@ data UI msg
   | Done {label :: Text}
   | SkipTriggersButton {investigatorId :: InvestigatorId}
   | CardPile {pile :: [PileCard], messages :: [msg]}
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 data PileCard = PileCard
   { cardId :: CardId
   , cardOwner :: Maybe InvestigatorId
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 data PaymentAmountChoice msg = PaymentAmountChoice
   { choiceId :: UUID
@@ -106,7 +106,7 @@ data PaymentAmountChoice msg = PaymentAmountChoice
   , title :: Text
   , message :: msg
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 data AmountChoice = AmountChoice
   { choiceId :: UUID
@@ -114,10 +114,10 @@ data AmountChoice = AmountChoice
   , minBound :: Int
   , maxBound :: Int
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 data AmountTarget = MinAmountTarget Int | MaxAmountTarget Int | TotalAmountTarget Int | AmountOneOf [Int]
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 data Question msg
   = ChooseOne {choices :: [UI msg]}
@@ -154,17 +154,17 @@ data Question msg
   | DropDown {options :: [(Text, msg)]}
   | PickScenarioSettings
   | PickCampaignSettings
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 data ReadChoices msg
   = BasicReadChoices [UI msg]
   | BasicReadChoicesN Int [UI msg]
   | BasicReadChoicesUpToN Int [UI msg]
   | LeadInvestigatorMustDecide [UI msg]
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 data ChoosePlayerChoice = SetLeadInvestigator | SetTurnPlayer
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 evadeLabel
   :: (AsId enemy, IdOf enemy ~ EnemyId,  msg ~ Element (t msg), MonoFoldable (t msg))

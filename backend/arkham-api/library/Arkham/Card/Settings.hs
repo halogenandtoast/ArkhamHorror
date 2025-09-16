@@ -16,7 +16,7 @@ import Data.Map.Strict qualified as Map
 data SetGlobalSetting
   = SetIgnoreUnrelatedSkillTestTriggers Bool
   | FutureProofGlobalSetting
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
 
 instance ToJSON SetGlobalSetting
 instance FromJSON SetGlobalSetting
@@ -25,7 +25,7 @@ data CardSettings = CardSettings
   { globalSettings :: GlobalSettings
   , perCardSettings :: Map CardCode PerCardSettings
   }
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 instance Semigroup CardSettings where
@@ -35,7 +35,7 @@ instance Semigroup CardSettings where
 data GlobalSettings = GlobalSettings
   { ignoreUnrelatedSkillTestTriggers :: Bool
   }
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 instance Semigroup GlobalSettings where
@@ -47,7 +47,7 @@ data PerCardSettings = PerCardSettings
   , cardIgnoreDuringSkillTests :: Bool
   , cardAttachments :: [CardCode]
   }
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass ToJSON
 
 instance Semigroup PerCardSettings where

@@ -139,16 +139,6 @@ const choose = (idx: number) => emit('choose', idx)
   height: auto;
 }
 
-.token-debug {
-  display: inline;
-  img {
-    cursor: pointer;
-    border: 3px solid #ff00ff;
-    border-radius: 25px;
-    width: 50px;
-  }
-}
-
 .chaos-bag-contents {
   display: flex;
   align-items: center;
@@ -222,4 +212,19 @@ const choose = (idx: number) => emit('choose', idx)
   flex-direction: column;
   gap: 10px;
 }
+
+.token-debug {
+  display: inline;
+  img {
+    cursor: pointer;
+    border: 1px solid #ff00ff;
+    border-radius: 30px;
+    width: 30px;
+    &.token-big {
+      width: 50px;
+      border-radius: 50px;
+    }
+  }
+}
+
 </style>

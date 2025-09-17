@@ -530,6 +530,8 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
   color: rgba(0, 0, 0, 0.8);
   pointer-events: none;
   z-index: 1;
+  min-height: min-content;
+  scale: 0.8;
 }
 
 .card-container {

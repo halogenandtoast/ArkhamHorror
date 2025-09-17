@@ -186,11 +186,21 @@ onBeforeUnmount(() => {
     raf = 0
   }
 })
+
+function moveUp() {
+  const modals = document.querySelectorAll('.draggable')
+  modals.forEach(modal => modal.style.zIndex = 99)
+
+  const el = draggable.value
+  if (el) {
+    el.style.zIndex = '100'
+  }
+}
 </script>
 
 <template>
   <Teleport to="#modal">
-    <div class="draggable" ref="draggable">
+    <div @click="moveUp" class="draggable" ref="draggable">
       <header @pointerdown="drag" @click="isMinimized && minimize()">
         <span class="header-title">
           <slot name="handle"></slot>

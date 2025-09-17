@@ -463,7 +463,6 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
   width: calc(var(--card-width) + 4px);
   min-width: calc(var(--card-width) + 4px);
   border-radius: 3px;
-  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
 .card.card--locations {
@@ -642,6 +641,7 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
     overflow: hidden;
     position: relative;
     line-height: 0;
+    box-shadow: var(--card-shadow);
   }
 }
 

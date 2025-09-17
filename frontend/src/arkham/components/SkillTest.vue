@@ -560,6 +560,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
     padding: 2px 4px;
     box-sizing: border-box;
     border-radius: 2px;
+    min-width: 1.5em;
   }
 }
 
@@ -600,6 +601,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
     padding: 2px 4px;
     box-sizing: border-box;
     border-radius: 2px;
+    min-width: 1.5em;
   }
 }
 

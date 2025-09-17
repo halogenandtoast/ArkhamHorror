@@ -533,6 +533,7 @@ function minimize_SkillTest(isMinimized:boolean){
 const blessTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t) => t.face === 'BlessToken'
 ).length)
 const curseTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t) => t.face === 'CurseToken').length)
+const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t) => t.face === 'FrostToken').length)
 </script>
 
 <template>
@@ -942,6 +943,7 @@ const curseTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
           <PoolItem type="clue" :amount="game.totalClues" tooltip="Total Spendable Clues" />
           <PoolItem v-if="blessTokens > 0" type="ct_bless" :amount="blessTokens" />
           <PoolItem v-if="curseTokens > 0" type="ct_curse" :amount="curseTokens" />
+          <PoolItem v-if="frostTokens > 0" type="ct_frost" :amount="frostTokens" />
         </div>
       </div>
     </div>

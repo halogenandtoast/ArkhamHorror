@@ -293,7 +293,6 @@ onBeforeUnmount(() => {
     border-radius: 0 0 16px 16px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
     margin: 10px;
     &:has(button.close) {
       margin: 0;
@@ -302,6 +301,9 @@ onBeforeUnmount(() => {
       margin: 0px;
     }
     &:has(.amount-modal) {
+      margin: 0px;
+    }
+    &:has(.chaos-bag) {
       margin: 0px;
     }
   }

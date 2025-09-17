@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/stores/user'
-import { useRoute, useRouter } from 'vue-router'
-import { ref, reactive } from 'vue'
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
+import { ref, reactive, onUnmounted } from 'vue'
 import { Credentials } from '../types'
 import { useI18n } from 'vue-i18n'
 
@@ -17,6 +17,7 @@ const signInError = ref<string|null>(null)
 
 const health = ref<boolean>(true)
 
+const timeoutId = ref<ReturnType<typeof setTimeout> | null>(null)
 const checkHealth = async () => {
   try {
     const response = await fetch("/health")
@@ -25,7 +26,7 @@ const checkHealth = async () => {
     health.value = false
   }
 
-  setTimeout(checkHealth, 5000)
+  timeoutId.value = setTimeout(checkHealth, 5000)
 }
 
 await checkHealth()
@@ -44,6 +45,14 @@ async function authenticate() {
     signInError.value = t("invalidEmailOrPassword")
   }
 }
+
+onUnmounted(() => {
+  if (timeoutId.value) clearTimeout(timeoutId.value)
+})
+
+onBeforeRouteLeave(() => {
+  if (timeoutId.value) clearTimeout(timeoutId.value)
+})
 </script>
 
 <template>

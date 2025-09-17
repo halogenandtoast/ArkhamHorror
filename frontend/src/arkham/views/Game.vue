@@ -458,7 +458,7 @@ async function fileBug() {
   filingBug.value = false
   Api.fileBug(props.gameId).then((response) => {
     const title = encodeURIComponent(bugTitle.value)
-    const body = encodeURIComponent(`${bugDescription.value}\n\nfile: ${response.data}`)
+    const body = encodeURIComponent(`${bugDescription.value}\n\ngame: ${window.location.href}\nfile: ${response.data}`)
     window.open(`https://github.com/halogenandtoast/ArkhamHorror/issues/new?labels=bug&title=${title}&body=${body}&assignee=halogenandtoast&projects=halogenandtoast/2`, '_blank')
     submittingBug.value = false
   }).catch(() => {
@@ -644,7 +644,7 @@ onUnmounted(() => {
     </Draggable>
     <Draggable v-if="filingBug">
       <template #handle>
-        <header clas="file-a-bug-header">
+        <header>
           <h2>{{ $t('gameBar.fileABug') }}</h2>
         </header>
       </template>

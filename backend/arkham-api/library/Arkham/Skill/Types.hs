@@ -299,7 +299,7 @@ instance FromJSON SkillAttrs where
     skillAdditionalPayment <- o .:? "additionalPayment"
     skillAfterPlay <- o .: "afterPlay"
     skillPlacement <- o .: "placement"
-    skillSealedChaosTokens <- o .:? "sealed" .!= []
+    skillSealedChaosTokens <- o .:? "sealedChaosTokens" .!= []
     skillMeta <- o .:? "meta" .!= Null
     skillCustomizations <- o .:? "customizations" .!= mempty
     skillTaboo <- o .:? "taboo"

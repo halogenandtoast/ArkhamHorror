@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, useId } from 'vue'
 import { IsMobile } from '@/arkham/isMobile';
 
+const id = useId()
 const draggable = ref<HTMLElement | null>(null)
 const emit = defineEmits(['minimize'])
 const isMinimized = ref(false)
@@ -102,58 +103,67 @@ function stopDrag() {
 }
 
 function minimize() {
-  const el = draggable.value
-  if (!el) return
+  const doMinimize = () => {
+    const el = draggable.value
+    if (!el) return
 
-  if (!isMinimized.value) {
-    // Minimizing
-    isMinimized.value = true
-    emit('minimize', true)
+    if (!isMinimized.value) {
+      // Minimizing
+      isMinimized.value = true
+      emit('minimize', true)
 
-    const rect = el.getBoundingClientRect()
-    originalLeft.value = rect.left
-    originalTop.value = rect.top
-    originalWidth.value = rect.width
-    originalHeight.value = rect.height
+      const rect = el.getBoundingClientRect()
+      originalLeft.value = rect.left
+      originalTop.value = rect.top
+      originalWidth.value = rect.width
+      originalHeight.value = rect.height
 
-    el.style.position = 'fixed'
-    el.style.left = `${rect.left}px`
-    el.style.top = `${rect.top}px`
-    el.style.width = `${rect.width}px`
-    el.style.height = `${rect.height}px`
+      el.style.position = 'fixed'
+      el.style.left = `${rect.left}px`
+      el.style.top = `${rect.top}px`
+      el.style.width = `${rect.width}px`
+      el.style.height = `${rect.height}px`
 
-    // kick off transition from current rect to bottom-right
-    void el.offsetWidth
-    el.classList.add('minimized')
-    el.style.right = '20px'
-    el.style.bottom = '20px'
-    el.style.left = ''
-    el.style.top = ''
-    el.style.width = 'fit-content'
-    el.style.height = 'fit-content'
-  } else {
-    // Restoring
-    isMinimized.value = false
-    emit('minimize', false)
+      // kick off transition from current rect to bottom-right
+      void el.offsetWidth
+      el.classList.add('minimized')
+      el.style.right = '20px'
+      el.style.bottom = '20px'
+      el.style.left = ''
+      el.style.top = ''
+      el.style.width = 'fit-content'
+      el.style.height = 'fit-content'
+    } else {
+      // Restoring
+      isMinimized.value = false
+      emit('minimize', false)
 
-    el.style.right = ''
-    el.style.bottom = ''
-    el.style.left = `${originalLeft.value}px`
-    el.style.top = `${originalTop.value}px`
-    el.style.width = `${originalWidth.value}px`
-    el.style.height = `${originalHeight.value}px`
+      el.style.right = ''
+      el.style.bottom = ''
+      el.style.left = `${originalLeft.value}px`
+      el.style.top = `${originalTop.value}px`
+      el.style.width = `${originalWidth.value}px`
+      el.style.height = `${originalHeight.value}px`
 
-    el.addEventListener('transitionend', function handler() {
-      const node = draggable.value
-      if (node) {
-        node.classList.remove('minimized')
-        node.style.position = 'absolute'
-        node.style.width = ''
-        node.style.height = ''
-      }
-      node?.removeEventListener('transitionend', handler)
-    })
+      el.addEventListener('transitionend', function handler() {
+        const node = draggable.value
+        if (node) {
+          node.classList.remove('minimized')
+          node.style.position = 'absolute'
+          node.style.width = ''
+          node.style.height = ''
+        }
+        node?.removeEventListener('transitionend', handler)
+      })
+    }
   }
+
+  if (!document.startViewTransition) {
+    doMinimize()
+    return
+  }
+
+  document.startViewTransition(() => doMinimize())
 }
 
 onMounted(() => {
@@ -200,8 +210,8 @@ function moveUp() {
 
 <template>
   <Teleport to="#modal">
-    <div @pointerdown="moveUp" class="draggable" ref="draggable">
-      <header @pointerdown="drag" @click="isMinimized && minimize()">
+  <div @pointerdown="moveUp" class="draggable" ref="draggable" :id="id" :class="{ 'view-transition-name': id }">
+    <header @pointerdown="drag" @click.stop="isMinimized && minimize()">
         <span class="header-title">
           <slot name="handle"></slot>
         </span>

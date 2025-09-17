@@ -17,7 +17,7 @@ instance RunMessage BleedingReality where
     Revelation iid (isSource attrs -> True) -> do
       n <- getCurrentActStep
       sid <- getRandom
-      revelationSkillTest sid iid attrs #intellect (Fixed n)
+      revelationSkillTest sid iid attrs #intellect (Fixed $ 1 + n)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) (min 3 -> n) -> do
       randomDiscardN iid attrs n

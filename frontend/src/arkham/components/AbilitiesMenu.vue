@@ -117,7 +117,8 @@ watch(showAbilities, (newValue) => {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    max-width: 0.1vw;
+    width: max(100%, 0.1vw);
+    justify-content: center;
     min-height: fit-content;
     @media (max-width: 800px) and (orientation: portrait) {
       

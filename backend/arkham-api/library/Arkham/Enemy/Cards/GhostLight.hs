@@ -22,7 +22,11 @@ instance HasModifiersFor GhostLight where
       ]
 
 instance HasAbilities GhostLight where
-  getAbilities (GhostLight a) = extend1 a $ mkAbility a 1 $ freeReaction $ EnemyEvaded #after You (be a)
+  getAbilities (GhostLight a) =
+    extend1 a
+      $ restricted a 1 (thisExists a $ EnemyCanBeDamagedBySource (a.ability 1))
+      $ freeReaction
+      $ EnemyEvaded #after You (be a)
 
 instance RunMessage GhostLight where
   runMessage msg e@(GhostLight attrs) = runQueueT $ case msg of

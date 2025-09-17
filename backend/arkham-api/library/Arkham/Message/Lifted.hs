@@ -1328,7 +1328,7 @@ addToHand
   -> cards
   -> m ()
 addToHand iid (toList -> cards) = do
-  for_ cards obtainCard
+  for_ cards (obtainCard . toCard)
   push $ AddToHand iid (map toCard cards)
 
 drawToHand
@@ -1337,7 +1337,7 @@ drawToHand
   -> cards
   -> m ()
 drawToHand iid (toList -> cards) = do
-  for_ cards obtainCard
+  for_ cards (obtainCard . toCard)
   push $ DrawToHand iid (map toCard cards)
 
 addToDiscard
@@ -1346,7 +1346,7 @@ addToDiscard
   -> cards
   -> m ()
 addToDiscard iid (toList -> cards) = do
-  for_ cards obtainCard
+  for_ cards (obtainCard . toCard)
   for_ cards $ push . Msg.addToDiscard iid
 
 addToHandQuiet
@@ -1355,7 +1355,7 @@ addToHandQuiet
   -> cards
   -> m ()
 addToHandQuiet iid (toList -> cards) = do
-  for_ cards obtainCard
+  for_ cards (obtainCard . toCard)
   push $ AddToHandQuiet iid (map toCard cards)
 
 returnToHand :: (Targetable a, ReverseQueue m) => InvestigatorId -> a -> m ()
@@ -2643,16 +2643,17 @@ cancelEndTurn iid = lift $ Msg.removeAllMessagesMatching \case
     Window.TurnEnds _ -> True
     _ -> False
 
-obtainCard :: (IsCard a, ReverseQueue m) => a -> m ()
-obtainCard card = do
-  filterInbox \case
-    Arkham.Message.Discarded _ _ discarded -> discarded.id == toCardId card
-    _ -> False
-  push $ ObtainCard $ toCardId card
+obtainCard :: (FetchCard a, ReverseQueue m) => a -> m ()
+obtainCard a =
+  fetchCardMaybe a >>= traverse_ \card -> do
+    filterInbox \case
+      Arkham.Message.Discarded _ _ discarded -> discarded.id == toCardId card
+      _ -> False
+    push $ ObtainCard $ toCardId card
 
 removeCardFromGame :: (ReverseQueue m, IsCard card) => card -> m ()
 removeCardFromGame card = do
-  obtainCard card
+  obtainCard $ toCard card
   push $ RemovedFromGame (toCard card)
 
 playCardPayingCost :: ReverseQueue m => InvestigatorId -> Card -> m ()
@@ -3056,7 +3057,7 @@ placeCluesOnLocation iid source n = push $ InvestigatorPlaceCluesOnLocation iid 
 
 drawCardFrom :: (IsDeck deck, IsCard card, ReverseQueue m) => InvestigatorId -> card -> deck -> m ()
 drawCardFrom iid (toCard -> card) deck = do
-  obtainCard card
+  obtainCard $ toCard card
   case card of
     EncounterCard ec -> push $ InvestigatorDrewEncounterCardFrom iid ec (Just $ toDeck deck)
     PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc (Just $ toDeck deck)
@@ -3064,7 +3065,7 @@ drawCardFrom iid (toCard -> card) deck = do
 
 drawCard :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 drawCard iid card = do
-  obtainCard card
+  obtainCard $ toCard card
   case toCard card of
     EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
     PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc Nothing
@@ -3072,7 +3073,7 @@ drawCard iid card = do
 
 resolveRevelation :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 resolveRevelation iid card = do
-  obtainCard card
+  obtainCard $ toCard card
   push $ ResolveRevelation iid (toCard card)
 
 resign :: ReverseQueue m => InvestigatorId -> m ()

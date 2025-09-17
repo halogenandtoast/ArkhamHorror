@@ -179,6 +179,10 @@ setPrey
   => InvestigatorMatcher -> CardBuilder EnemyId a -> CardBuilder EnemyId a
 setPrey prey = fmap (overAttrs (\a -> a {enemyPrey = Prey prey}))
 
+setPreyIsBearer
+  :: (Entity a, EntityAttrs a ~ EnemyAttrs) => CardBuilder EnemyId a -> CardBuilder EnemyId a
+setPreyIsBearer = fmap (overAttrs preyIsBearer)
+
 setSpawnAt
   :: (Entity a, EntityAttrs a ~ EnemyAttrs)
   => LocationMatcher -> CardBuilder EnemyId a -> CardBuilder EnemyId a

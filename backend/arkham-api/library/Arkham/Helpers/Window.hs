@@ -268,6 +268,15 @@ attackedEnemy =
     (windowType -> Window.FailAttackEnemy _ eid _) -> Just eid
     _ -> Nothing
 
+attackingInvestigator :: HasCallStack => [Window] -> InvestigatorId
+attackingInvestigator =
+  fromMaybe (error "missing enemy") . asum . map \case
+    (windowType -> Window.AttemptToFightEnemy _ iid _) -> Just iid
+    (windowType -> Window.EnemyAttacked iid _ _) -> Just iid
+    (windowType -> Window.SuccessfulAttackEnemy iid _ _ _) -> Just iid
+    (windowType -> Window.FailAttackEnemy iid _ _) -> Just iid
+    _ -> Nothing
+
 attackSource :: HasCallStack => [Window] -> Source
 attackSource =
   fromMaybe (error "missing enemy") . asum . map \case

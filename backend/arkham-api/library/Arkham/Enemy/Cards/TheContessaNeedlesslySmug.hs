@@ -13,6 +13,7 @@ import Arkham.Message (ReplaceStrategy (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
+import Arkham.Placement
 
 newtype TheContessaNeedlesslySmug = TheContessaNeedlesslySmug EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -42,9 +43,10 @@ instance RunMessage TheContessaNeedlesslySmug where
       enemyMoveTo (attrs.ability 2) attrs throne
       pure e
     HandleElusive eid | eid == attrs.id -> do
-      lead <- getLead
-      whenMatch eid (not_ (EnemyAt $ locationIs Locations.throneOfBloodRedAsBloodBlackAsNight)) do
-        chooseOneM lead $ abilityLabeled_ lead (mkAbility attrs 2 $ forced AnyWindow)
+      when (isInPlayPlacement attrs.placement) do
+        whenMatch eid (not_ (EnemyAt $ locationIs Locations.throneOfBloodRedAsBloodBlackAsNight)) do
+          lead <- getLead
+          chooseOneM lead $ abilityLabeled_ lead (mkAbility attrs 2 $ forced AnyWindow)
       pure e
     EnemyDamaged eid damageAssignment | eid == attrs.id -> do
       mcloak <- selectOne $ assetIs Assets.accursedCapeShroudOfChaos <> AssetAttachedTo (targetIs attrs)

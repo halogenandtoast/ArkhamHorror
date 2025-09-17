@@ -1,7 +1,6 @@
 module Arkham.Game.Utils where
 
 import Arkham.Act.Types (Act)
-import Arkham.Action qualified as Action
 import Arkham.ActiveCost
 import Arkham.Agenda.Types (Agenda)
 import Arkham.Asset.Types (Asset, Field (..))
@@ -278,10 +277,7 @@ createActiveCostForCard iid card isPlayAction windows' = do
         resources <- getModifiedCardCost iid card
         investigator' <- getInvestigator iid
         let
-          actions = case cdActions (toCardDef card) of
-            [] -> [Action.Play | isPlayAction == IsPlayAction]
-            as -> as
-          isInvestigate = #investigate `elem` actions
+          isInvestigate = #investigate `elem` card.actions
           sealingToCost = \case
             Sealing matcher -> Just $ Cost.SealCost matcher
             SealUpTo n matcher -> Just $ Cost.UpTo (Fixed n) $ Cost.SealCost matcher
@@ -321,14 +317,15 @@ createActiveCostForCard iid card isPlayAction windows' = do
             AdditionalActionCostOf match n -> do
               performedActions <- field InvestigatorActionsPerformed iid
               takenActions <- field InvestigatorActionsTaken iid
-              let cardActions = if isPlayAction == IsPlayAction then #play : card.actions else card.actions
+              let cardActions = if isPlayAction == IsPlayAction then nub (#play : card.actions) else card.actions
               pure $ guard (any (matchTarget takenActions performedActions match) cardActions) $> n
             _ -> pure Nothing
 
         actionCost <-
           if isPlayAction == NotPlayAction
             then pure $ if additionalActionCosts > 0 then Cost.ActionCost additionalActionCosts else Cost.Free
-            else Cost.ActionCost . (+ additionalActionCosts) <$> getActionCost (toAttrs investigator') actions
+            else
+              Cost.ActionCost . (+ additionalActionCosts) <$> getActionCost (toAttrs investigator') card.actions
 
         additionalCosts <- flip mapMaybeM allModifiers $ \case
           AdditionalCost (Cost.ActionCost _) -> pure Nothing

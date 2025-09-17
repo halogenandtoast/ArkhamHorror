@@ -24,7 +24,7 @@ instance HasAbilities GuardianElderThing where
 
 instance RunMessage GuardianElderThing where
   runMessage msg e@(GuardianElderThing attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (dealtDamage -> n) _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 (getTotalDamage -> n) _ -> do
       discardTopOfDeckAndHandle iid (attrs.ability 1) n attrs
       pure e
     DiscardedTopOfDeck iid cards (isAbilitySource attrs 1 -> True) (isTarget attrs -> True) -> do

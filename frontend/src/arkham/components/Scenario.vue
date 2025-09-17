@@ -562,9 +562,101 @@ const curseTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
         <template #handle><header><h2>{{$t('gameBar.chaosBag')}}</h2></header></template>
         <ChaosBag :game="game" :skillTest="null" :chaosBag="scenario.chaosBag" :playerId="playerId" @choose="choose" />
         <div v-if="debug.active" class="buttons buttons-row">
-          <button class="button blessed" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'BlessToken'})">{{$t('gameBar.add')}} <span class="bless-icon"></span></button>
-          <button class="button cursed" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'CurseToken'})">{{$t('gameBar.add')}} <span class="curse-icon"></span></button>
-          <button class="button frost" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'FrostToken'})">{{$t('gameBar.add')}} <span class="frost-icon"></span></button>
+          <div class="tri-button blessed">
+            <button class="button blessed" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'BlessToken'})">-</button>
+            <span class="bless-icon"></span>
+            <button class="button blessed" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'BlessToken'})">+</button>
+          </div>
+          <div class="tri-button cursed">
+            <button class="button cursed" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'CurseToken'})">-</button>
+            <span class="curse-icon"></span>
+            <button class="button cursed" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'CurseToken'})">+</button>
+          </div>
+          <div class="tri-button frost">
+            <button class="button frost" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'FrostToken'})">-</button>
+            <span class="curse-icon"></span>
+            <button class="button frost" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'FrostToken'})">+</button>
+          </div>
+          <div class="tri-button">
+            <button class="button" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'PlusOne'})">-</button>
+            <span>+1</span>
+            <button class="button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'PlusOne'})">+</button>
+          </div>
+          <div class="tri-button">
+            <button class="button" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'Zero'})">-</button>
+            <span>0</span>
+            <button class="button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'Zero'})">+</button>
+          </div>
+          <div class="tri-button">
+            <button class="button" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'MinusOne'})">-</button>
+            <span>-1</span>
+            <button class="button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'MinusOne'})">+</button>
+          </div>
+          <div class="tri-button">
+            <button class="button" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'MinusTwo'})">-</button>
+            <span>-2</span>
+            <button class="button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'MinusTwo'})">+</button>
+          </div>
+          <div class="tri-button">
+            <button class="button" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'MinusThree'})">-</button>
+            <span>-3</span>
+            <button class="button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'MinusThree'})">+</button>
+          </div>
+          <div class="tri-button">
+            <button class="button" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'MinusFour'})">-</button>
+            <span>-4</span>
+            <button class="button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'MinusFour'})">+</button>
+          </div>
+          <div class="tri-button">
+            <button class="button" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'MinusFive'})">-</button>
+            <span>-5</span>
+            <button class="button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'MinusFive'})">+</button>
+          </div>
+          <div class="tri-button">
+            <button class="button" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'MinusSix'})">-</button>
+            <span>-6</span>
+            <button class="button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'MinusSix'})">+</button>
+          </div>
+          <div class="tri-button">
+            <button class="button" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'MinusSeven'})">-</button>
+            <span>-7</span>
+            <button class="button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'MinusSeven'})">+</button>
+          </div>
+          <div class="tri-button">
+            <button class="button" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'MinusEight'})">-</button>
+            <span>-8</span>
+            <button class="button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'MinusEight'})">+</button>
+          </div>
+          <div class="tri-button">
+            <button class="button" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'Skull'})">-</button>
+            <span class="skull-icon"></span>
+            <button class="button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'Skull'})">+</button>
+          </div>
+          <div class="tri-button">
+            <button class="button" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'Cultist'})">-</button>
+            <span class="cultist-icon"></span>
+            <button class="button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'Cultist'})">+</button>
+          </div>
+          <div class="tri-button">
+            <button class="button" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'Tablet'})">-</button>
+            <span class="tablet-icon"></span>
+            <button class="button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'Tablet'})">+</button>
+          </div>
+          <div class="tri-button">
+            <button class="button" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'ElderThing'})">-</button>
+            <span class="elder-thing-icon"></span>
+            <button class="button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'ElderThing'})">+</button>
+          </div>
+          <div class="tri-button elder-sign-button">
+            <button class="button elder-sign-button" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'ElderSign'})">-</button>
+            <span class="elder-sign"></span>
+            <button class="button elder-sign-button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'ElderSign'})">+</button>
+          </div>
+          <div class="tri-button auto-fail-button">
+            <button class="button auto-fail-button" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'AutoFail'})">-</button>
+            <span class="auto-fail"></span>
+            <button class="button auto-fail-button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'AutoFail'})">+</button>
+          </div>
         </div>
         <button class="button" @click="showChaosBag = false">{{$t('close')}}</button>
       </Draggable>
@@ -1395,6 +1487,8 @@ const curseTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
 .buttons-row {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
 
   .blessed {
     background-color: var(--blessed);
@@ -1404,10 +1498,21 @@ const curseTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
     background-color: var(--cursed);
   }
 
+  .auto-fail-button {
+    background-color: var(--auto-fail);
+  }
+
+  .elder-sign-button {
+    background-color: var(--elder-sign);
+  }
+
   .frost {
     background-color: var(--frost);
   }
 
+  button {
+    margin: 0;
+  }
 }
 
 .button {
@@ -1577,5 +1682,64 @@ const curseTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
   gap: 5px;
   padding: 5px;
   background: darkslategrey;
+}
+
+.tri-button {
+  background-color: #555;
+  color: white;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+  .bless-icon, .curse-icon {
+    color: white;
+    min-width: fit-content;
+  }
+  span {
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    padding: 0 5px;
+    border-left: 1px solid rgba(0, 0, 0, 0.2);
+    border-right: 1px solid rgba(0, 0, 0, 0.2);
+    justify-content: center;
+    display: flex;
+    align-items: center;
+  }
+
+  .skull-icon {
+    color: var(--skull);
+    text-shadow: 0px 0px 2px rgba(255, 255, 255, 0.5);
+  }
+
+  .tablet-icon {
+    color: var(--tablet);
+    text-shadow: 0px 0px 2px rgba(255, 255, 255, 0.5);
+  }
+
+  .cultist-icon {
+    color: var(--cultist);
+    text-shadow: 0px 0px 2px rgba(255, 255, 255, 0.5);
+  }
+
+  .elder-thing-icon {
+    color: var(--elder-thing);
+    text-shadow: 0px 0px 2px rgba(255, 255, 255, 0.5);
+  }
+
+  button {
+    width: 1em;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  button:hover {
+    background: rgba(0, 0, 0, 0.2);
+  }
 }
 </style>

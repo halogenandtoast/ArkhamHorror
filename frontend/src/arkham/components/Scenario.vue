@@ -574,7 +574,7 @@ const curseTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
           </div>
           <div class="tri-button frost">
             <button class="button frost" @click="debug.send(game.id, {tag: 'RemoveChaosToken', contents: 'FrostToken'})">-</button>
-            <span class="curse-icon"></span>
+            <span class="frost-icon"></span>
             <button class="button frost" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'FrostToken'})">+</button>
           </div>
           <div class="tri-button">

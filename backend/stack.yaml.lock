@@ -89,7 +89,7 @@ packages:
     hackage: yesod-test-1.6.19@sha256:faac869ab6fa86113cde99d28928e196373a04879c03204071956954ed7ba2a3,3003
 snapshots:
 - completed:
-    sha256: bcc25f4800237faa4ce9907749ec0ef9f84016357e29ad6be75f4b9efa64b9e0
-    size: 690291
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2025/8/29.yaml
-  original: nightly-2025-08-29
+    sha256: cd7c0bda539e01dd990b90e13f3c82169c16e65052557cf49fdd93590c5a7931
+    size: 692684
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2025/9/16.yaml
+  original: nightly-2025-09-16

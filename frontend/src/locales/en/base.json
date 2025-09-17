@@ -1,4 +1,6 @@
 {
+  "serviceUnavailable": "Service Unavailable",
+  "pleaseTryAgainLater": "Please try again later.",
   "nav": {
     "home": "Home",
     "about": "About",

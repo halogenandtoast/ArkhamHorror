@@ -447,6 +447,12 @@ button {
   --blessed: #6a5720;
   --cursed: #270F31;
   --frost: #39394C;
+  --auto-fail: #4A1216;
+  --elder-sign: #4A6973;
+  --skull: #26110E;
+  --cultist: #172615;
+  --tablet: #1E2A3A;
+  --elder-thing: #2D1F25;
 
   --delete: #c13131;
   --background: #2e3440;

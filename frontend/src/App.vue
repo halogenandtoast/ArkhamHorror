@@ -482,7 +482,7 @@ button {
   --card-sideways-aspect: 1.41844;
   --card-tarot-aspect: 0.571429;
 
-  --card-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+  --card-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 
   --select: #ff00ff;
   --select-dark: #d400d4;

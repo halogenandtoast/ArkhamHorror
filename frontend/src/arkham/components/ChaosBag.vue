@@ -163,6 +163,7 @@ const choose = (idx: number) => emit('choose', idx)
 
 .token-preview {
   display: flex;
+  gap: 5px;
   flex-wrap: wrap;
   flex-direction: row;
   justify-content: center;
@@ -200,9 +201,17 @@ const choose = (idx: number) => emit('choose', idx)
   img {
     width: 30px;
     height: auto;
+    transition: transform 0.2s;
+    &:hover {
+      transform: scale(1.2);
+    }
     &.token-big {
       width: 50px;
+      border-radius: 50px;
     }
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 30px;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.5);
   }
 }
 

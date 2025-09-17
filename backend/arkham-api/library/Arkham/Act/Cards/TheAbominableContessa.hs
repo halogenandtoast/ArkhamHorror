@@ -65,7 +65,9 @@ instance RunMessage TheAbominableContessa where
 
       contessa <-
         selectOne (enemyIs Enemies.theContessaNeedlesslySmug) >>= \case
-          Nothing -> createEnemyAt Enemies.theContessaEnraged centralLot
+          Nothing -> do
+            obtainCard $ UniqueFetchCard Enemies.theContessaNeedlesslySmug
+            createEnemyAt Enemies.theContessaEnraged centralLot
           Just contessa -> do
             place contessa centralLot
             flipOverBy lead attrs contessa

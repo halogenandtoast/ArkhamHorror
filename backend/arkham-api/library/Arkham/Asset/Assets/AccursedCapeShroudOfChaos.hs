@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.AccursedCapeShroudOfChaos (accursedCapeShroudOfChaos)
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted hiding (AssetDefeated)
+import Arkham.Asset.Import.Lifted hiding (AssetDefeated, EnemyDefeated)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
@@ -20,7 +20,12 @@ instance HasModifiersFor AccursedCapeShroudOfChaos where
     modifySelf a [HealthModifier n]
 
 instance HasAbilities AccursedCapeShroudOfChaos where
-  getAbilities (AccursedCapeShroudOfChaos a) = [mkAbility a 1 $ forced $ AssetDefeated #when ByAny (be a)]
+  getAbilities (AccursedCapeShroudOfChaos a) =
+    [ mkAbility a 1
+        $ forced
+        $ oneOf
+          [AssetDefeated #when ByAny (be a), EnemyDefeated #when Anyone ByAny (EnemyWithAttachedAsset (be a))]
+    ]
 
 instance RunMessage AccursedCapeShroudOfChaos where
   runMessage msg a@(AccursedCapeShroudOfChaos attrs) = runQueueT $ case msg of

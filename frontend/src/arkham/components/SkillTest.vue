@@ -527,7 +527,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
 .skill-test-contents {
   padding: 10px;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   justify-items: center;
   gap: 5px;

@@ -1,6 +1,7 @@
-module Arkham.Enemy.Cards.BiancaDieKatz (biancaDieKatz, BiancaDieKatz (..)) where
+module Arkham.Enemy.Cards.BiancaDieKatz (biancaDieKatz) where
 
 import Arkham.Ability
+import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
@@ -15,8 +16,8 @@ newtype BiancaDieKatz = BiancaDieKatz (EnemyAttrs `With` Meta)
 
 biancaDieKatz :: EnemyCard BiancaDieKatz
 biancaDieKatz =
-  enemyWith (BiancaDieKatz . (`with` Meta False)) Cards.biancaDieKatz (3, Static 3, 3) (2, 0)
-    $ \a -> a & preyL .~ BearerOf (toId a)
+  enemy (BiancaDieKatz . (`with` Meta False)) Cards.biancaDieKatz (3, Static 3, 3) (2, 0)
+    & setPreyIsBearer
 
 instance HasAbilities BiancaDieKatz where
   getAbilities (BiancaDieKatz (With attrs meta)) =
@@ -35,7 +36,7 @@ instance RunMessage BiancaDieKatz where
       addToVictory attrs
       pure . BiancaDieKatz $ attrs `with` Meta True
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      obtainCard attrs
+      obtainCard $ toCard attrs
       shuffleIntoDeck iid attrs
       pure e
     _ -> BiancaDieKatz . (`with` meta) <$> liftRunMessage msg attrs

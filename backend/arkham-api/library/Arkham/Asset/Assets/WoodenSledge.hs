@@ -30,13 +30,16 @@ instance HasAbilities WoodenSledge where
 instance RunMessage WoodenSledge where
   runMessage msg a@(WoodenSledge attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      search
-        iid
-        (attrs.ability 1)
-        iid
-        [fromTopOfDeck 6]
-        (basic $ NonWeakness <> hasAnyTrait [Item, Supply])
-        (defer attrs IsNotDraw)
+      investigators <- select $ affectsColocated iid
+      chooseOrRunOneM iid do
+        targets investigators \iid' ->
+          search
+            iid'
+            (attrs.ability 1)
+            iid'
+            [fromTopOfDeck 6]
+            (basic $ NonWeakness <> hasAnyTrait [Item, Supply])
+            (defer attrs IsNotDraw)
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       focusCards cards do

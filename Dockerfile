@@ -135,8 +135,6 @@ COPY ./backend/arkham-api/config /opt/arkham/src/backend/arkham-api/config
 COPY ./prod.nginxconf /opt/arkham/src/backend/prod.nginxconf
 COPY ./start.sh /opt/arkham/src/backend/arkham-api/start.sh
 COPY ./backend/arkham-api/digital-ocean.crt /opt/arkham/src/backend/arkham-api/digital-ocean.crt
-COPY ./check.sh  /opt/arkham/bin/check.sh
-COPY ./crontasks /etc/cron.d/arkham
 
 RUN useradd -ms /bin/bash yesod && \
   chown -R yesod:yesod /opt/arkham /var/log/nginx /var/lib/nginx /run && \

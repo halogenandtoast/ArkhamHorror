@@ -462,6 +462,9 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
           <template v-if="modifier.type.tag === 'DoubleDifficulty'">
             <span class="text">Double Difficulty</span>
           </template>
+          <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'CancelAnyChaosToken'">
+            <span class="text">Cancel Matching Chaos Tokens</span>
+          </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'MayIgnoreLocationEffectsAndKeywords'">
             <span class="text">May Ignore Location Effects</span>
           </template>

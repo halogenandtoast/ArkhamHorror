@@ -64,5 +64,5 @@ export const useUserStore = defineStore("user", () => {
     token.value = null
   }
 
-  return { token, currentUser, isAdmin, loadUserFromStorage, authenticate, register }
+  return { token, currentUser, isAdmin, loadUserFromStorage, authenticate, register, logout }
 })

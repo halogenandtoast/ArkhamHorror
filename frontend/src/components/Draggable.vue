@@ -4,7 +4,6 @@ import { IsMobile } from '@/arkham/isMobile';
 
 const id = useId()
 const draggable = ref<HTMLElement | null>(null)
-const emit = defineEmits(['minimize'])
 const isMinimized = ref(false)
 const initialMouseX = ref(0)
 const initialMouseY = ref(0)
@@ -107,10 +106,9 @@ function minimize() {
     const el = draggable.value
     if (!el) return
 
+    //void el.offsetWidth
     if (!isMinimized.value) {
       // Minimizing
-      isMinimized.value = true
-      emit('minimize', true)
 
       const rect = el.getBoundingClientRect()
       originalLeft.value = rect.left
@@ -125,7 +123,6 @@ function minimize() {
       el.style.height = `${rect.height}px`
 
       // kick off transition from current rect to bottom-right
-      void el.offsetWidth
       el.classList.add('minimized')
       el.style.right = '20px'
       el.style.bottom = '20px'
@@ -133,28 +130,23 @@ function minimize() {
       el.style.top = ''
       el.style.width = 'fit-content'
       el.style.height = 'fit-content'
-    } else {
-      // Restoring
-      isMinimized.value = false
-      emit('minimize', false)
 
+      isMinimized.value = true
+    } else {
       el.style.right = ''
       el.style.bottom = ''
-      el.style.left = `${originalLeft.value}px`
-      el.style.top = `${originalTop.value}px`
+      el.classList.remove('minimized')
+      el.style.position = 'absolute'
       el.style.width = `${originalWidth.value}px`
       el.style.height = `${originalHeight.value}px`
+      el.style.left = `${originalLeft.value}px`
+      el.style.top = `${originalTop.value}px`
 
-      el.addEventListener('transitionend', function handler() {
-        const node = draggable.value
-        if (node) {
-          node.classList.remove('minimized')
-          node.style.position = 'absolute'
-          node.style.width = ''
-          node.style.height = ''
-        }
-        node?.removeEventListener('transitionend', handler)
-      })
+      el.style.width = ''
+      el.style.height = ''
+
+      // Restoring
+      isMinimized.value = false
     }
   }
 
@@ -210,7 +202,7 @@ function moveUp() {
 
 <template>
   <Teleport to="#modal">
-  <div @pointerdown="moveUp" class="draggable" ref="draggable" :id="id" :class="{ 'view-transition-name': id }">
+  <div @pointerdown="moveUp" class="draggable" ref="draggable" :id="id" :style="{ 'view-transition-name': id }">
     <header @pointerdown="drag" @click.stop="isMinimized && minimize()">
         <span class="header-title">
           <slot name="handle"></slot>
@@ -240,10 +232,8 @@ function moveUp() {
   border: 1px solid rgba(255, 255, 255, 0.3);
   z-index: 10;
   overflow: hidden;
-  transition: left .25s ease, top .25s ease, right .25s ease, bottom .25s ease, width .25s ease, height .25s ease, transform .25s ease;
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
-  transition-behavior: allow-discrete;
   width: clamp(300px, 50vw, 80%);
   max-width: fit-content;
   max-height: 80%;
@@ -326,6 +316,10 @@ function moveUp() {
     &:has(.chaos-bag) {
       margin: 0px;
     }
+    &:has(.bug-form) {
+      margin: 0px;
+    }
   }
 }
+
 </style>

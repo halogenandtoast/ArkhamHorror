@@ -720,6 +720,7 @@ runGameMessage msg g = case msg of
       & (focusedCardsL %~ map (filter (`notElem` cards)))
       & (foundCardsL . each %~ filter (`notElem` cards))
   FocusChaosTokens tokens -> pure $ g & focusedChaosTokensL <>~ tokens
+  SealChaosToken token -> pure $ g & focusedChaosTokensL %~ filter (/= token)
   Msg.RevealChaosToken SkillTestSource {} _ token -> pure $ g & focusedChaosTokensL %~ filter (/= token)
   UnfocusChaosTokens -> pure $ g & focusedChaosTokensL .~ mempty
   ChoosePlayer iid SetLeadInvestigator -> do

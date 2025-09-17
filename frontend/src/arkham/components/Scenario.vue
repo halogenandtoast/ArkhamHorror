@@ -658,7 +658,7 @@ const curseTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
             <button class="button auto-fail-button" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'AutoFail'})">+</button>
           </div>
         </div>
-        <button class="button" @click="showChaosBag = false">{{$t('close')}}</button>
+        <button class="button close-button" @click="showChaosBag = false">{{$t('close')}}</button>
       </Draggable>
       <CardRow
         v-if="showCards.ref.length > 0"
@@ -1485,6 +1485,7 @@ const curseTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
 }
 
 .buttons-row {
+  padding: 10px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -1740,6 +1741,13 @@ const curseTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
 
   button:hover {
     background: rgba(0, 0, 0, 0.2);
+  }
+}
+
+.close-button{
+  background: var(--button);
+  &:hover {
+    background: var(--button-highlight);
   }
 }
 </style>

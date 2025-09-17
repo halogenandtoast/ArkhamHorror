@@ -467,6 +467,9 @@ button {
   --spooky-green: #879C5A;
   --spooky-green-dark: #3A5144;
 
+  --button: #555;
+  --button-highlight: #444;
+
   --button-1: #6E8640;
   --button-1-highlight: #5a6e34;
 

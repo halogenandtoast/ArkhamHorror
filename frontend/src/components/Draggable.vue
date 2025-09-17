@@ -200,7 +200,7 @@ function moveUp() {
 
 <template>
   <Teleport to="#modal">
-    <div @click="moveUp" class="draggable" ref="draggable">
+    <div @pointerdown="moveUp" class="draggable" ref="draggable">
       <header @pointerdown="drag" @click="isMinimized && minimize()">
         <span class="header-title">
           <slot name="handle"></slot>

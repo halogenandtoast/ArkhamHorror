@@ -21,6 +21,7 @@ import Arkham.GameT (GameT)
 import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario hiding (getIsReturnTo)
@@ -37,6 +38,7 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
 import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
 import Arkham.Scenarios.HeartOfTheElders.Story
+import Arkham.Scenarios.HeartOfTheElders.Helpers
 import Arkham.Token
 import Arkham.Trait (Trait (Cave))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -120,13 +122,28 @@ instance HasChaosTokenValue HeartOfTheElders where
 
 setupHeartOfTheElders
   :: ReverseQueue m => HeartOfTheEldersMetadata -> ScenarioAttrs -> ScenarioBuilderT m ()
-setupHeartOfTheElders metadata attrs = case scenarioStep metadata of
-  One -> do
+setupHeartOfTheElders metadata attrs = scenarioI18n $ case scenarioStep metadata of
+  One -> scope "part1" do
     pathsKnown <- getRecordCount PathsAreKnownToYou
 
     if pathsKnown == 6
-      then push R1
+      then do
+        setup $ ul $ li.valid "pathsKnownToYou"
+        push R1
       else do
+        setup do
+          ul do
+            li.invalid "pathsKnownToYou"
+            li "gatherSets"
+            li.nested "placeLocations" do
+              li "insightIntoHowToEnterKnYan"
+            li "playedBefore"
+            li "explorationDeck"
+            li.nested "chooseLocations" do
+              li "mappedOutTheWayForward"
+            li "poisoned"
+            unscoped $ li "shuffleRemainder"
+
         whenReturnTo do
           gather Set.ReturnToHeartOfTheElders
           gather Set.ReturnToPillarsOfJudgement

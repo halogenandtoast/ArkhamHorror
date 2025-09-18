@@ -18,5 +18,18 @@
       "jumpTheGap": "Test {agility} (3) to attempt to jump the gap. For each point you fail by, take 1 damage.",
       "shuffle": "Shuffle Pitfall into the exploration deck. You cannot choose this option if Pitfall was drawn from the exploration deck."
     }
+  },
+  "part1": {
+    "setup": {
+      "pathsKnownToYou": "Check Campaign Log. *If 6 paths are known to you*, skip this scenario and proceed immediately to _Resolution 1_.",
+      "gatherSets": "Gather all cards from the following encounter sets: *Pillars of Judgment*, *Heart of the Elders*, *Rainforest*, *Serpents*, *Expedition*, and *Poison*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/pillars-of-judgement.png' /><img src='{setImgPath}/heart-of-the-elders.png' /><img src='{setImgPath}/rainforest.png' /><img src='{setImgPath}/serpents.png' /><img src='{setImgPath}/expedition.png' /><img src='{setImgPath}/poison.png' /></section>",
+      "placeLocations": "Put the Mouth of K’n-yan into play, (*The Cavern’s Maw*) side faceup. Each investigator begins play at the Mouth of K’n-yan (*The Cavern’s Maw*).",
+      "insightIntoHowToEnterKnYan": "Check Campaign Log. Your journey beyond the boundary of time has granted you insight into how to enter K’n-yan. *For each path that is known to you*, place 1 resource on the Mouth of K’n-yan, as a pillar token.",
+      "playedBefore": "If you have played this scenario before during this campaign and have reached act 2 before, flip act 1a over and place it in the Mouth of K’n-yan.",
+      "explorationDeck": "Create the exploration deck. This is done by taking the 6 single-sided _Jungle_ locations and shuffling them together, along with 1 copy each of the following encounter cards: Pitfall, Ants!, Lost in the Wilds, and Low on Supplies.",
+      "chooseLocations": "Randomly choose one of the following 3 _Ruins_ locations: Overgrown Ruins, Temple of the Fang, and Stone Altar. Shuffle the randomly chosen location into the exploration deck. Remove the other 2 from the game.",
+      "mappedOutTheWayForward": "Check Campaign Log. *If the investigators mapped out the way forward*, instead of shuffling the randomly chosen location into the exploration deck, put it into play.",
+      "poisoned": "Set aside each Poisoned weakness that is not already in an investigator’s deck."
+    }
   }
 }

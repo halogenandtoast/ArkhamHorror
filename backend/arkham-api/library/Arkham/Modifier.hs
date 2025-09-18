@@ -432,6 +432,7 @@ data UIModifier
   = Ethereal -- from Ethereal Form
   | Explosion -- from Dyanamite Blast
   | Locus -- from Prophesiae Profana
+  | ImportantToScenario Text -- from Threads of Fate
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "combat" (Int -> ModifierType) where

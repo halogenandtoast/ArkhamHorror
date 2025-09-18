@@ -103,7 +103,7 @@ generateXpReport bonus = do
     <> fromModifiers
  where
   modifierToXpDetail iid (XPModifier lbl m) | m > 0 = Just (InvestigatorGainXp iid $ XpDetail XpFromCardEffect lbl m)
-  modifierToXpDetail iid (XPModifier lbl m) | m < 0 = Just (InvestigatorLoseXp iid $ XpDetail XpFromCardEffect lbl m)
+  modifierToXpDetail iid (XPModifier lbl m) | m < 0 = Just (InvestigatorLoseXp iid $ XpDetail XpFromCardEffect lbl (abs m))
   modifierToXpDetail _ _ = Nothing
   toVictory :: ConvertToCard c => [c] -> m [XpDetail]
   toVictory = mapMaybeM toEntry

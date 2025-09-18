@@ -2,12 +2,11 @@
 
 module Arkham.ScenarioLogKey where
 
-import Arkham.Prelude hiding (toLower)
-
 import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Id
 import Arkham.Name
+import Arkham.Prelude hiding (toLower)
 import Control.Monad.Fail
 import Data.Aeson.TH
 import Data.Char (isUpper, toLower)
@@ -51,7 +50,7 @@ data ScenarioLogKey
   | IchtacaLeftWithoutYou
   | IchtacasPrey (Labeled EnemyId `With` Envelope "cardCode" CardCode)
   | -- | Threads of Fate
-    IchtacasDestination (Labeled LocationId)
+    IchtacasDestination (Labeled LocationId `With` Envelope "cardCode" CardCode)
   | -- | The City of Archives
     FoundTheProcess
   | DissectedAnOrgan
@@ -112,7 +111,14 @@ instance ToGameLoggerFormat ScenarioLogKey where
         <> " resources"
     IchtacasPrey (Labeled name eid `With` Envelope cardCode) ->
       "{enemy:\"" <> display name <> "\":" <> tshow eid <> ":" <> tshow cardCode <> "} is Ichtaca's Prey"
-    IchtacasDestination (Labeled name lid) -> "{location:\"" <> display name <> "\":" <> tshow lid <> "} is Ichtaca's Destination"
+    IchtacasDestination (Labeled name lid `With` Envelope cardCode) ->
+      "{location:\""
+        <> display name
+        <> "\":"
+        <> tshow lid
+        <> ":"
+        <> tshow cardCode
+        <> "} is Ichtaca's Destination"
     HadADrink (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} had a drink"
     Cheated (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} cheated"
     MeddledWithThePast (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} meddled with the past"
@@ -127,7 +133,19 @@ instance ToGameLoggerFormat ScenarioLogKey where
     go' (x : xs) | isUpper x = ' ' : toLower x : go' xs
     go' (x : xs) = x : go' xs
 
-$(deriveJSON defaultOptions ''ScenarioLogKey)
+$(deriveToJSON defaultOptions ''ScenarioLogKey)
+
+instance FromJSON ScenarioLogKey where
+  parseJSON = withObject "ScenarioLogKey" \o -> do
+    tag :: Text <- o .: "tag"
+    case tag of
+      "IchtacasDestination" -> do
+        econtents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+        pure $ case econtents of
+          Right contents -> IchtacasDestination contents
+          Left contents -> IchtacasDestination $ contents `With` Envelope @"cardCode" "01130"
+      _ -> $(mkParseJSON defaultOptions ''ScenarioLogKey) (Object o)
+
 $(deriveToJSON defaultOptions ''ScenarioCountKey)
 
 instance FromJSON ScenarioCountKey where

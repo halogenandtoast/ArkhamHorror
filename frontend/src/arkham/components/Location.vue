@@ -62,6 +62,10 @@ const locus = computed(() => {
   return modifiers.value?.some((m) => m.type.tag === "UIModifier" && m.type.contents === "Locus") ?? false
 })
 
+const important = computed(() => {
+  return modifiers.value?.some((m) => m.type.tag === "UIModifier" && m.type.contents.tag === "ImportantToScenario") ?? false
+})
+
 function isCardAction(c: Message): boolean {
   if (c.tag === "TargetLabel") return c.target.contents === id.value
   if (c.tag === "GridLabel") return c.gridLabel === props.location.label
@@ -331,6 +335,9 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
         <div class="card-frame" :class="{ explosion }" ref="frame">
           <Locus v-if="locus" class="locus" />
           <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
+          <span class="important" v-if="important">
+            <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
+          </span>
 
           <div class="card-frame-inner">
             <div class="wave" v-if="location.floodLevel" :class="{ [location.floodLevel]: true }"></div>
@@ -531,6 +538,23 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
   z-index: 1;
   min-height: min-content;
   scale: 0.8;
+}
+
+.important {
+  position: absolute;
+  bottom: 10%;
+  border-radius: 1000px;
+  font-size: 2.6em;
+  color: rgba(0, 0, 0, 0.9);
+  background-color: white;
+  pointer-events: none;
+  z-index: 1;
+  max-width: 40%;
+  max-height: min-content;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card-container {

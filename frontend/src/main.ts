@@ -11,7 +11,7 @@ import router from './router'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faExpeditedssl } from "@fortawesome/free-brands-svg-icons";
-import { faSearch, faList, faImage, faAngleDown, faUndo, faTrash, faEye, faCopy, faExternalLink, faRefresh } from '@fortawesome/free-solid-svg-icons'
+import { faCircleExclamation, faLocationDot, faSearch, faList, faImage, faAngleDown, faUndo, faTrash, faEye, faCopy, faExternalLink, faRefresh } from '@fortawesome/free-solid-svg-icons'
 import * as VueI18n from 'vue-i18n'
 import messages from '@/locales/messages'
 import mitt from 'mitt';
@@ -29,7 +29,7 @@ const i18n = VueI18n.createI18n({
   messages
 })
 
-library.add(faSearch, faList, faImage, faAngleDown, faExpeditedssl, faUndo, faTrash, faEye, faCopy, faExternalLink, faRefresh)
+library.add(faLocationDot, faCircleExclamation, faSearch, faList, faImage, faAngleDown, faExpeditedssl, faUndo, faTrash, faEye, faCopy, faExternalLink, faRefresh)
 
 const pinia = createPinia()
 const vfm = createVfm()

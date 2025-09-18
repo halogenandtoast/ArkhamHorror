@@ -629,9 +629,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (mulligansTakenL +~ 1)
   ForInvestigator iid BeginGame | iid == investigatorId -> do
     -- if we have any cards with revelations on them, we need to trigger them
-    let revelationCards = filter (hasRevelation . toCardDef) investigatorHand
     let
-      choices = mapMaybe cardChoice revelationCards
+      choices = mapMaybe cardChoice investigatorHand
       cardChoice = \case
         card@(PlayerCard card') -> do
           if hasRevelation card'

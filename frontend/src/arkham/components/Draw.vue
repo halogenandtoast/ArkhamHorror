@@ -121,6 +121,10 @@ const dragover = (e: DragEvent) => {
   }
 }
 
+const canSelectDraw = computed(() => {
+  return Object.entries(props.investigator.foundCards).length == 0
+})
+
 const doShowCards = (event: Event, cards: ComputedRef<ArkhamCard.Card[]>, title: string, isDiscards: boolean) => {
   cardRowTitle.value = title
   showCards.ref = cards
@@ -175,7 +179,7 @@ const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.ma
       <button v-if="playTopOfDeckAction !== -1" @click="emit('choose', playTopOfDeckAction)">Play</button>
     </div>
     <template v-if="debug.active">
-      <button @click="debug.send(game.id, {tag: 'Search', contents: ['Looking', investigatorId, {tag: 'GameSource', contents: []}, { tag: 'InvestigatorTarget', contents: investigatorId }, [[{tag: 'FromDeck', contents: []}, 'ShuffleBackIn']], {tag: 'BasicCardMatch', contents: {tag: 'AnyCard', contents: []}}, { tag: 'DrawFound', contents: [investigatorId, 1]}]})">Select Draw</button>
+      <button v-if="canSelectDraw" @click="debug.send(game.id, {tag: 'Search', contents: ['Looking', investigatorId, {tag: 'GameSource', contents: []}, { tag: 'InvestigatorTarget', contents: investigatorId }, [[{tag: 'FromDeck', contents: []}, 'ShuffleBackIn']], {tag: 'BasicCardMatch', contents: {tag: 'AnyCard', contents: []}}, { tag: 'DrawFound', contents: [investigatorId, 1]}]})">Select Draw</button>
       <button @click="debug.send(game.id, {tag: 'ShuffleDeck', contents: {tag: 'InvestigatorDeck', contents: investigatorId}})">Shuffle</button>
     </template>
   </div>

@@ -595,7 +595,7 @@ onUnmounted(() => {
   <div id="game" v-else-if="ready && game && playerId">
     <dialog v-if="error" class="error-dialog">
       <h2>{{$t('error')}}</h2>
-      <p>{{error}}</p>
+      <p class="error-message">{{error}}</p>
       <p>{{$t('errorContent')}}</p>
       <div class="buttons">
         <button @click="bugDescription = error ?? ''; error = null; filingBug = true"><ExclamationTriangleIcon aria-hidden="true" /> {{$t('fileBug')}}</button>
@@ -1449,18 +1449,20 @@ button:hover .shortcut {
   backdrop-filter: blur(3px);
   background-color: rgba(0,0,0,0.8);
   position: absolute;
+  padding: 0;
+  padding-block: 10px;
   width: 50%;
   display: flex;
   z-index: 100;
   display: flex;
   flex-direction: column;
-  padding: 10px;
   border: 0;
   border-radius: 10px;
   top: 50%;
 
   p {
     padding: 10px;
+    margin: 0;
   }
 
   h2 {
@@ -1490,6 +1492,12 @@ button:hover .shortcut {
   align-items: center;
   justify-self: center;
   align-self: center;
+
+  .error-message {
+    max-height: 50vh;
+    overflow: auto;
+    padding-inline: 20px;
+  }
 }
 .loader {
   z-index: 1000;

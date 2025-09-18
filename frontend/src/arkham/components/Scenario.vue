@@ -1674,6 +1674,7 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
 #player-zone {
   display: flex;
   flex-direction: row;
+  background: var(--background-dark);
   .player-info {
     flex: 1;
   }
@@ -1685,6 +1686,9 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
   gap: 5px;
   padding: 5px;
   background: darkslategrey;
+  margin-top: 10px;
+  border-top-left-radius: 10px;
+  box-shadow: -1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .tri-button {

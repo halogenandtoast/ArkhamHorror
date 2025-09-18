@@ -1975,7 +1975,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a
   FlipClues target n | isTarget a target -> do
     pure $ a & tokensL %~ flipClues n
-  DiscoverClues iid d | iid == investigatorId && d.location == DiscoverYourLocation  -> do
+  DiscoverClues iid d | iid == investigatorId && d.location == DiscoverYourLocation -> do
     lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
     push $ DiscoverClues iid (d {discoverLocation = DiscoverAtLocation lid})
     pure a
@@ -3966,27 +3966,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               let windows' = [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
               playableCards <- concatForM (mapToList targetCards) $ \(_, cards) ->
                 filterM (getIsPlayable who source (UnpaidCost NoAction) windows') cards
-              let
-                choices =
-                  [ targetLabel
-                      card
-                      [ if card `elem` playableCards
-                          then
-                            chooseOne
-                              player
-                              [ Label "Add to hand" [addFoundToHand]
-                              , Label "Play Card" [addFoundToHand, PayCardCost iid card windows']
-                              ]
-                          else addFoundToHand
-                      ]
-                  | (zone, cards) <- mapToList targetCards
-                  , card <- cards
-                  , let addFoundToHand = AddFocusedToHand iid (toTarget who) zone (toCardId card)
-                  ]
-              push
-                $ if null choices
-                  then chooseOne player [Label "No cards found" []]
-                  else chooseN player (min n (length choices)) choices
+              let choices = [card | (_, cards) <- mapToList targetCards, card <- cards]
+              if null choices
+                then Lifted.prompt iid "No cards found" Choose.nothing
+                else Choose.chooseNM iid (min n (length choices)) do
+                  Choose.targets choices \card -> do
+                    Choose.chooseOrRunOneM iid do
+                      when (card `elem` playableCards) do
+                        Choose.labeled "Add to hand" $ Lifted.addToHand iid (only card)
+                      Choose.labeled "Play Card" $ Lifted.playCardPayingCost iid card
             DrawOrCommitFound who n -> do
               -- [TODO] We need this to determine what state the skill test
               -- is in, if we are committing cards we need to use
@@ -4164,7 +4152,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   InvestigatorPlaceCluesOnLocation iid source n | iid == investigatorId -> do
     withLocationOf iid \lid -> do
       batchId <- getRandom
-      would <- Helpers.checkWindow $ (mkWhen $ Window.WouldPlaceClueOnLocation iid lid source n) { windowBatchId = Just batchId }
+      would <-
+        Helpers.checkWindow
+          $ (mkWhen $ Window.WouldPlaceClueOnLocation iid lid source n) {windowBatchId = Just batchId}
       pushBatched batchId [would, Do msg]
     pure a
   Do (InvestigatorPlaceCluesOnLocation iid source n) | iid == investigatorId -> do

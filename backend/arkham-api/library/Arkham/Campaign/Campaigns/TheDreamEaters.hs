@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Campaign.Campaigns.TheDreamEaters (TheDreamEaters (..), theDreamEaters) where
 
 import Arkham.Asset.Cards qualified as Assets
@@ -301,16 +299,16 @@ instance RunMessage TheDreamEaters where
             }
       CampaignStep s@(ScenarioStep _) -> do
         c' <- case s of
-          _ | traceShowId s `elem` traceShowId theDreamQuestSteps -> do
-            if traceShowId (currentCampaignMode meta) == Just TheWebOfDreams
+          _ | s `elem` theDreamQuestSteps -> do
+            if currentCampaignMode meta == Just TheWebOfDreams
               then do
-                investigators <- traceShowId <$> allInvestigators
+                investigators <- allInvestigators
                 currentPlayers <- for investigators \i -> do
                   player <- getPlayer i
                   iattrs <- getAttrs @Investigator i
                   pure (player, iattrs)
 
-                if traceShowId (s == BeyondTheGatesOfSleep && WakingNightmare `elem` campaignCompletedSteps attrs)
+                if s == BeyondTheGatesOfSleep && WakingNightmare `elem` campaignCompletedSteps attrs
                   then do
                     players <- allPlayers
                     pushAll
@@ -318,7 +316,7 @@ instance RunMessage TheDreamEaters where
                       : map (\pid -> Msg.questionLabel "Choose Deck For Part A" pid ChooseDeck) players
                         <> [DoneChoosingDecks]
                   else do
-                    for_ (mapToList $ traceShowId $ otherCampaignPlayers meta) \(pid, iattrs) -> do
+                    for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
                       let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
                       push $ Priority $ SetInvestigator pid i
                 let newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)

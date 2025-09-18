@@ -223,7 +223,7 @@ createActiveCostForAdditionalCardCosts iid card = do
 getEnemy :: (HasCallStack, HasGame m) => EnemyId -> m Enemy
 getEnemy eid = fromJustNote missingEnemy <$> maybeEnemy eid
  where
-  missingEnemy = "Unknown enemy: " <> show eid
+  missingEnemy = "Unknown enemy: " <> show eid <> "\n\n" <> prettyCallStack callStack
 
 maybeEnemy :: HasGame m => EnemyId -> m (Maybe Enemy)
 maybeEnemy eid = do

@@ -4,12 +4,12 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Attack.Types
 import Arkham.Capability
 import Arkham.Card
-import Arkham.Enemy.Creation (EnemyCreation (..))
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.DamageEffect
+import Arkham.Enemy.Creation (EnemyCreation (..))
 import Arkham.Enemy.Types
 import Arkham.ForMovement
 import Arkham.GameValue
@@ -200,13 +200,13 @@ defeatEnemy enemyId investigatorId (toSource -> source) = do
 enemyEngagedInvestigators :: HasGame m => EnemyId -> m [InvestigatorId]
 enemyEngagedInvestigators eid = do
   asIfEngaged <- select $ InvestigatorWithModifier (AsIfEngagedWith eid)
-  placement <- field EnemyPlacement eid
-  others <- case placement of
-    InThreatArea iid -> pure [iid]
-    AtLocation lid -> do
+  mPlacement <- fieldMay EnemyPlacement eid
+  others <- case mPlacement of
+    Just (InThreatArea iid) -> pure [iid]
+    Just (AtLocation lid) -> do
       isEngagedMassive <- eid <=~> (MassiveEnemy <> ReadyEnemy)
       if isEngagedMassive then select (investigatorAt lid) else pure []
-    AsSwarm eid' _ -> enemyEngagedInvestigators eid'
+    Just (AsSwarm eid' _) -> enemyEngagedInvestigators eid'
     _ -> pure []
   pure . nub $ asIfEngaged <> others
 

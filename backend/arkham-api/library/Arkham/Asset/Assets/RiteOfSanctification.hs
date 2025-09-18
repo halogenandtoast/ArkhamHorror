@@ -24,14 +24,10 @@ instance HasModifiersFor RiteOfSanctification where
 instance HasAbilities RiteOfSanctification where
   getAbilities (RiteOfSanctification a) =
     let active = toResult @Bool a.meta
-     in restricted
+     in controlled_
           a
           1
-          ControlsThis
-          ( triggered
-              (PlayCard #when (at_ YourLocation) #any)
-              (exhaust a <> ReleaseChaosTokensCost 1 #any)
-          )
+          (triggered (PlayCard #when (at_ YourLocation) #any) (exhaust a <> ReleaseChaosTokensCost 1 #any))
           : [restricted a 2 (exists $ be a <> AssetWithoutSealedTokens) Anytime | active]
 
 getDetails :: [Window] -> (InvestigatorId, Card)

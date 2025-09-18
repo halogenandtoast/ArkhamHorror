@@ -142,6 +142,11 @@ const omnipotent = computed(() => {
   )
 })
 
+const important = computed(() => {
+  const {modifiers} = props.enemy
+  return modifiers.some((m) => m.type.tag === "UIModifier" && m.type.contents.tag === "ImportantToScenario") ?? false
+})
+
 const health = computed(() => {
   return props.enemy.health?.tag == "Fixed" ? props.enemy.health.contents : null
 })
@@ -214,6 +219,9 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
       <template v-else>
         <div class="card-frame" ref="frame">
           <div class="card-wrapper" :class="{ exhausted: isExhausted }">
+            <span class="important" v-if="important">
+              <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
+            </span>
             <img v-if="isTrueForm" :src="image"
               class="card enemy"
               :class="{ dragging, 'enemy--can-interact': canInteract, attached}"
@@ -474,5 +482,25 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
   object-fit: cover;
   object-position: left bottom;
   height: calc(var(--card-width)*0.6);
+}
+
+.important {
+  position: absolute;
+  bottom: 10%;
+  border-radius: 1000px;
+  font-size: 2.6em;
+  color: var(--important);
+  filter: drop-shadow(0px 0px 1px #000) drop-shadow(0px 0px 2px #000);
+  pointer-events: none;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  max-width: 40%;
+  max-height: min-content;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 6;
 }
 </style>

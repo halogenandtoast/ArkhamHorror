@@ -416,6 +416,8 @@ button {
   --combat-light: #F1D3D0;
   --agility-light: #8CEEBD;
 
+  --important: rgba(212, 165, 10, 0.9);
+
   --wild: #8a7d5a;
   --guardian: #5cb4fd;
   --mystic: #ba81f2;

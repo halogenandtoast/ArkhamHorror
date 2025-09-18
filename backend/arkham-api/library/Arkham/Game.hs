@@ -722,7 +722,7 @@ data MatcherFunc m q a r = MatcherFunc
   , noMatch :: r
   , asMatch :: [a] -> r
   , negateMatches :: q -> [a] -> ([a] -> q -> m r) -> m r
-  , combineMatches :: [r] -> r
+  , combineMatches :: ([a] -> q -> m r) -> [a] -> [q] -> m r
   , combineAny :: [r] -> r
   }
 
@@ -1119,7 +1119,7 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
             else pure []
 
         pure $ notNull actions || notNull playableCards || resourceOk || drawOk
-    InvestigatorMatches xs -> combineMatches <$> traverse (go as) xs
+    InvestigatorMatches xs -> combineMatches go as xs
     AnyInvestigator xs -> do
       as' <- traverse (go as) xs
       pure $ combineAny as'
@@ -4382,24 +4382,33 @@ instance Query InvestigatorMatcher where
   toSomeQuery = InvestigatorQuery
   selectExists q = cached (ExistKey $ toSomeQuery q) do
     getInvestigatorsMatching
-      (MatcherFunc any anyM False (const True) (\q' as go -> anyM (\a -> not <$> go [a] q') as) and or)
+      ( MatcherFunc
+          any
+          anyM
+          False
+          (const True)
+          (\q' as go -> anyM (\a -> not <$> go [a] q') as)
+          (\go as qs -> orM [andM [go [a] q' | q' <- qs] | a <- as])
+          or
+      )
       q
   select_ =
-    let
-      intersections [] = []
-      intersections xs = List.foldr1 List.intersect xs
-     in
-      fmap (map toId)
-        . getInvestigatorsMatching
-          ( MatcherFunc
-              filter
-              filterM
-              []
-              id
-              (\q as go -> go as q <&> \as' -> filter (`notElem` as') as)
-              intersections
-              concat
-          )
+    fmap (map toId)
+      . getInvestigatorsMatching
+        ( MatcherFunc
+            filter
+            filterM
+            []
+            id
+            (\q as go -> go as q <&> \as' -> filter (`notElem` as') as)
+            ( \go as qs -> do
+                results <- traverse (go as) qs
+                pure $ case results of
+                  [] -> []
+                  (r : rs) -> foldl' List.intersect r rs
+            )
+            concat
+        )
 
 instance Query PreyMatcher where
   toSomeQuery = PreyQuery

@@ -542,10 +542,12 @@ instance RunMessage SkillTest where
       push $ Do msg
       when (costToCommit /= mempty) do
         push $ PayAdditionalCost iid batchId costToCommit
-      push $ ObtainCard card.id
+      unless (LeaveCardWhereItIs `elem` cmods) do
+        push $ ObtainCard card.id
       pure s
     CommitCard iid card | card `elem` findWithDefault [] iid skillTestCommittedCards -> do
-      pushAll [ObtainCard card.id, Do msg]
+      cmods <- getModifiers card
+      pushAll $ [ObtainCard card.id | LeaveCardWhereItIs `notElem` cmods] <> [Do msg]
       pure s
     Do (CommitCard iid card) | card `notElem` findWithDefault [] iid skillTestCommittedCards -> do
       pure $ s & committedCardsL %~ insertWith (<>) iid [card]

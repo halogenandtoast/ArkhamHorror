@@ -261,7 +261,6 @@ getActionsWith iid ws f = do
             then Nothing
             else Just $ applyAbilityModifiers ability modifiers'
 
-
   actions''' <-
     filterM
       ( \action -> do

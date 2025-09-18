@@ -44,6 +44,10 @@ randomDiscard
   :: (Sourceable source, ReverseQueue m) => InvestigatorId -> source -> m ()
 randomDiscard iid source = push . toMessage $ Msg.randomDiscard iid source
 
+randomDiscardEdit
+  :: (Sourceable source, ReverseQueue m) => InvestigatorId -> source -> (HandDiscard Message -> HandDiscard Message) -> m ()
+randomDiscardEdit iid source f = push . toMessage . f $ Msg.randomDiscard iid source
+
 randomDiscardN
   :: (Sourceable source, ReverseQueue m) => InvestigatorId -> source -> Int -> m ()
 randomDiscardN iid source n = push . toMessage $ Msg.randomDiscardN iid source n

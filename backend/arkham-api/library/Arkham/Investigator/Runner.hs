@@ -844,15 +844,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         DiscardChoose -> do
           let n = min handDiscard.amount (length cs)
           case handDiscard.filter of
-            CardWithId _ ->
-              pushAll
-                [DiscardCard investigatorId handDiscard.source c.id | c <- filterCards handDiscard.filter cs]
-            _ ->
+            CardWithId _ -> do
+              let cs' = filterCards handDiscard.filter cs
+              pushAll [DiscardCard investigatorId handDiscard.source c.id | c <- cs']
+              for_ handDiscard.target \target ->
+                push $ DiscardedCards investigatorId handDiscard.source target cs'
+            _ -> do
+              let cs' = filterCards handDiscard.filter cs
               pushWhen (n > 0)
                 $ chooseN player n
                 $ [ targetLabel c [DiscardCard investigatorId handDiscard.source c.id]
-                  | c <- filterCards handDiscard.filter cs
+                  | c <- cs
                   ]
+              for_ handDiscard.target \target ->
+                push $ DiscardedCards investigatorId handDiscard.source target cs'
         DiscardAll -> do
           let cards = filterCards handDiscard.filter cs
 
@@ -862,12 +867,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               $ [ targetLabel c [DiscardCard investigatorId handDiscard.source c.id]
                 | c <- cards
                 ]
+            for_ handDiscard.target \target ->
+              push $ DiscardedCards investigatorId handDiscard.source target cards
         DiscardRandom -> do
           -- only cards actually in hand
           let filtered = filterCards handDiscard.filter investigatorHand
-          for_ (nonEmpty filtered) $ \targets -> do
+          for_ (nonEmpty filtered) \targets -> do
             cards <- sampleN handDiscard.amount targets
             pushAll $ map (DiscardCard investigatorId handDiscard.source . toCardId) cards
+            for_ handDiscard.target \target ->
+              push $ DiscardedCards investigatorId handDiscard.source target cards
     push $ DoneDiscarding investigatorId
     pure $ a & discardingL ?~ handDiscard
   Discard _ source (CardIdTarget cardId) | isJust (find ((== cardId) . toCardId) investigatorHand) -> do

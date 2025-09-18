@@ -60,6 +60,7 @@ import Arkham.Helpers.Investigator (
  )
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
+import Arkham.Helpers.Message.Discard qualified as HandDiscard
 import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Helpers.Query
@@ -2889,7 +2890,11 @@ discardCard
   -> m ()
 discardCard investigator source =
   toCard <&> \case
-    card@(PlayerCard _) -> push $ DiscardCard (asId investigator) (toSource source) (toCardId card)
+    card@(PlayerCard _) -> do
+      inHand <- matches card (InHandOf NotForPlay (InvestigatorWithId $ asId investigator))
+      if inHand
+        then push $ toMessage $ HandDiscard.discardCard (asId investigator) source card
+        else push $ DiscardCard (asId investigator) (toSource source) (toCardId card)
     card@(EncounterCard _) -> addToEncounterDiscard (only card)
     VengeanceCard card -> discardCard investigator source card
 

@@ -1799,7 +1799,7 @@ getLocationsMatching lmatcher = do
       allKeys <- toList <$> scenarioField ScenarioRemembered
       let
         destinations = flip mapMaybe allKeys $ \case
-          IchtacasDestination (Labeled _ lid) -> Just lid
+          IchtacasDestination (Labeled _ lid `With` _) -> Just lid
           _ -> Nothing
       pure $ filter ((`elem` destinations) . toId) ls
     LocationWithLowerPrintedShroudThan higherShroudMatcher -> do

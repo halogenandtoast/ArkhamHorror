@@ -82,6 +82,24 @@ export default defineComponent({
             return name ? h('span', { 'data-image-id': cardCode }, name.replace(/\\"/g, "\"")) : split
           }
         }
+      } else if (/{location:"((?:[^"]|\\.)+)":(.+):"([^"]+)"}/.test(split)) {
+        const found = split.match(/{location:"((?:[^"]|\\.)+)":(.+):"([^"]+)"}/)
+        if (found) {
+          const [, name, locationId, cardCode ] = found
+          const location = this.game.locations[locationId]
+
+          if (location) {
+            const suffix = location.revealed ? '' : 'b'
+            const actualCardCode = `${location.cardCode.replace('c', '')}${suffix}`
+            return name ? h('span', { 'data-image-id': actualCardCode }, name.replace(/\\"/g, "\"")) : split
+          }
+
+          if (cardCode) {
+            return name ? h('span', { 'data-image-id': cardCode }, name.replace(/\\"/g, "\"")) : split
+          }
+
+          return name ? h('span', { 'data-image-id': cardCode }, name.replace(/\\"/g, "\"")) : split
+        }
       } else if (/{location:"((?:[^"]|\\.)+)":(.+)}/.test(split)) {
         const found = split.match(/{location:"((?:[^"]|\\.)+)":(.+)}/)
         if (found) {

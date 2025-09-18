@@ -12,10 +12,12 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Log
+import Arkham.Modifier
 import Arkham.Name
 import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
+import Arkham.Source
 
 getActDecksInPlayCount :: HasGame m => m Int
 getActDecksInPlayCount = do
@@ -38,11 +40,24 @@ getIchtacasPrey = do
 
 isIchtacasDestination :: HasGame m => LocationId -> m Bool
 isIchtacasDestination lid = scenarioFieldMap ScenarioRemembered $ any $ \case
-  IchtacasDestination (Labeled _ lid') -> lid == lid'
+  IchtacasDestination (Labeled _ lid' `With` _) -> lid == lid'
   _ -> False
 
-rememberIchtacasPrey :: (ReverseQueue m, IsCard card) => EnemyId -> card -> m ()
-rememberIchtacasPrey eid (toCard -> card) = remember $ IchtacasPrey $ Labeled (toName card) eid `With` Envelope @"cardCode" card.cardCode
+rememberIchtacasPrey :: (ReverseQueue m, HasCardDef card) => EnemyId -> card -> m ()
+rememberIchtacasPrey eid (toCardDef -> card) = do
+  scenarioI18n $ gameModifier
+    ScenarioSource
+    eid
+    (UIModifier $ ImportantToScenario $ ikey "labels.ichtacasPrey")
+  remember $ IchtacasPrey $ Labeled (toName card) eid `With` Envelope @"cardCode" card.cardCode
+
+rememberIchtacasDestination :: (ReverseQueue m, HasCardDef card) => LocationId -> card -> m ()
+rememberIchtacasDestination lid (toCardDef -> card) = do
+  scenarioI18n $ gameModifier
+    ScenarioSource
+    lid
+    (UIModifier $ ImportantToScenario $ ikey "labels.ichtacasDestination")
+  remember $ IchtacasDestination $ Labeled (toName card) lid `With` Envelope @"cardCode" card.cardCode
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "threadsOfFate" a

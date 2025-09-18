@@ -9,9 +9,7 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message.Lifted.Log
-import Arkham.Name
-import Arkham.ScenarioLogKey
+import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype StrangeRelicsMariasInformation = StrangeRelicsMariasInformation ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -35,8 +33,8 @@ instance RunMessage StrangeRelicsMariasInformation where
     AdvanceAct (isSide F attrs -> True) _ _ -> do
       downtown <- selectJust $ locationIs Locations.downtownFirstBankOfArkham
       rivertown <- selectJust $ locationIs Locations.rivertown
-      remember $ IchtacasDestination $ Labeled (toName Locations.downtownFirstBankOfArkham) downtown
-      remember $ IchtacasDestination $ Labeled (toName Locations.rivertown) rivertown
+      rememberIchtacasDestination downtown Locations.downtownFirstBankOfArkham
+      rememberIchtacasDestination rivertown Locations.rivertown
       eachInvestigator \iid -> discardTopOfEncounterDeckAndHandle iid attrs 1 attrs
       advanceToAct attrs Acts.strangeOccurences E
       pure a

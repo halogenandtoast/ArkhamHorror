@@ -206,9 +206,11 @@ export type OtherModifier = {
   contents: string
 }
 
+type UIModifierType = 'Locus' | 'Ethereal' | 'Explosion' | { tag: 'ImportantToScenario', contents: string }
+
 export type UIModifier = {
   tag: "UIModifier"
-  contents: string
+  contents: UIModifierType
 }
 
 
@@ -357,7 +359,12 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
   JsonDecoder.object<UIModifier>(
     {
       tag: JsonDecoder.literal('UIModifier'),
-      contents: JsonDecoder.string(),
+      contents: JsonDecoder.oneOf<UIModifierType>([
+        JsonDecoder.literal('Locus'),
+        JsonDecoder.literal('Ethereal'),
+        JsonDecoder.literal('Explosion'),
+        JsonDecoder.object({ tag: JsonDecoder.literal('ImportantToScenario'), contents: JsonDecoder.string() }, 'ImportantToScenario')
+      ], 'UIModifierType')
     }, 'UIModifier'),
   JsonDecoder.object({
     tag: JsonDecoder.string()

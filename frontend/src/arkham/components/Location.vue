@@ -545,8 +545,7 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
   bottom: 10%;
   border-radius: 1000px;
   font-size: 2.6em;
-  color: rgba(0, 0, 0, 0.9);
-  background-color: white;
+  color: var(--important);
   pointer-events: none;
   z-index: 1;
   max-width: 40%;
@@ -555,6 +554,7 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
   display: flex;
   align-items: center;
   justify-content: center;
+  filter: drop-shadow(0px 0px 1px #000) drop-shadow(0px 0px 2px #000);
 }
 
 .card-container {

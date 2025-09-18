@@ -1,4 +1,4 @@
-module Arkham.Event.Events.RadiantSmite1 (radiantSmite1, RadiantSmite1 (..)) where
+module Arkham.Event.Events.RadiantSmite1 (radiantSmite1) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -21,7 +21,7 @@ instance HasModifiersFor RadiantSmite1 where
 
 instance RunMessage RadiantSmite1 where
   runMessage msg e@(RadiantSmite1 attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
+    PlayThisEvent iid (is attrs -> True) -> do
       n <- min 3 <$> selectCount (ChaosTokenFaceIs #bless)
       when (n > 0) do
         chooseAmounts
@@ -43,5 +43,6 @@ instance RunMessage RadiantSmite1 where
         pushAll [SealChaosToken blessedToken, SealedChaosToken blessedToken (Just iid) (toTarget attrs)]
       pure e
     Msg.EnemyDefeated _ _ (isSource attrs -> True) _ -> do
-      pure $ RadiantSmite1 $ attrs & sealedChaosTokensL %~ filter ((/= #bless) . (.face))
+      for_ attrs.sealed unsealChaosToken
+      pure e
     _ -> RadiantSmite1 <$> liftRunMessage msg attrs

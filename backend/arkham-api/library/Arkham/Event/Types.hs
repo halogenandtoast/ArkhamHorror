@@ -177,6 +177,9 @@ instance HasField "cardId" EventAttrs CardId where
   getField = toCardId
   {-# INLINE getField #-}
 
+instance HasField "sealed" EventAttrs [ChaosToken] where
+  getField = eventSealedChaosTokens
+
 instance HasCardCode EventAttrs where
   toCardCode = eventCardCode
 

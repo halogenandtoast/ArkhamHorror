@@ -14,17 +14,18 @@ purified = skill Purified Cards.purified
 
 instance RunMessage Purified where
   runMessage msg s@(Purified attrs) = runQueueT $ case msg of
-    PassedSkillTest iid _ _ (isTarget attrs -> True) _ (min 5 -> n) | n > 0 -> do
+    PassedSkillTest _ _ _ (isTarget attrs -> True) _ (min 5 -> n) | n > 0 -> do
+      skillTestResultOption "Purified" $ doStep n msg
+      pure s
+    DoStep n (PassedSkillTest iid _ _ (isTarget attrs -> True) _ _) -> do
       curse <- selectCount $ ChaosTokenFaceIs #curse
       bless <- getRemainingBlessTokens
 
       if
-        | bless == 0 && curse /= 0 -> skillTestResultOption "Purified" do
-            repeated (min curse n) $ removeChaosToken #curse
-        | curse == 0 && bless /= 0 -> skillTestResultOption "Purified" do
-            repeated (min bless n) $ addChaosToken #bless
         | bless == 0 && curse == 0 -> pure ()
-        | bless + curse == n -> skillTestResultOption "Purified" do
+        | bless == 0 && curse /= 0 -> repeated (min curse n) $ removeChaosToken #curse
+        | curse == 0 && bless /= 0 -> repeated (min bless n) $ addChaosToken #bless
+        | bless + curse == n -> do
             repeated curse $ removeChaosToken #curse
             repeated bless $ addChaosToken #bless
         | otherwise -> skillTestResultOption "Purified" do
@@ -39,6 +40,7 @@ instance RunMessage Purified where
       let
         bless = getChoiceAmount "Add Bless Tokens" choices
         curse = getChoiceAmount "Remove Curse Tokens" choices
+
       repeated curse $ removeChaosToken #curse
       repeated bless $ addChaosToken #bless
       pure s

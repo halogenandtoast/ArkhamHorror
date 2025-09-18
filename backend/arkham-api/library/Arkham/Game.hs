@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -2808,7 +2808,7 @@ getAssetsMatching matcher = do
         $ fieldMapM AssetCardsUnderneath (`cardListMatches` cardListMatcher)
         . toId
     HealableAsset _source damageType matcher' -> case damageType of
-      DamageType -> filterMatcher as (matcher' <> AssetWithDamage <> AssetWithoutModifier CannotHaveDamageHealed)
+      DamageType -> traceShowId <$> filterMatcher as (matcher' <> AssetWithDamage <> AssetWithoutModifier CannotHaveDamageHealed)
       HorrorType -> do
         let
           isCannotHealHorrorOnOtherCardsModifiers = \case

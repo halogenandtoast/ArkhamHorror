@@ -72,7 +72,7 @@ instance HasField "invalid" (Text -> UlItems) (String -> UlItems) where
   getField f t = specialize f (T.pack t) \case
     ListItemEntry entry nested -> case entry of
       ModifyEntry modifiers inner -> ListItemEntry (ModifyEntry (InvalidEntry : modifiers) inner) nested
-      _ -> ListItemEntry (ModifyEntry [ValidEntry] entry) nested
+      _ -> ListItemEntry (ModifyEntry [InvalidEntry] entry) nested
 
 instance HasField "validate" (Text -> UlItems) (Bool -> String -> UlItems) where
   getField f cond t =

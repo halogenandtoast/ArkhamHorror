@@ -69,7 +69,7 @@ const queueHover = (el: HTMLElement) => {
 const handlePointerMove = (e: PointerEvent) => {
   const el = targetFromEvent(e)
   hoverTimer = clearTimer(hoverTimer)
-  if (!el || el.classList.contains('dragging')) {
+  if (!el || el.classList.contains('dragging') || el.classList.contains('no-overlay')) {
     if (!isMobile.value) hoveredElement.value = null
     return
   }

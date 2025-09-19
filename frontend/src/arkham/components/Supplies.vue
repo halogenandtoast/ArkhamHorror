@@ -13,7 +13,7 @@ const supplies = computed(() =>
   props.player.supplies.reduce((acc, supply) => acc.set(supply, (acc.get(supply) || 0) + 1), new Map<string, number>())
 )
 
-const supplyLabel = (supply: string) => t(`theForgottenAge.supplies.${supply.charAt(0).toLowerCase() + supply.slice(1)}.name`)
+const supplyLabel = (supply: string, count: number) => t(`theForgottenAge.supplies.${supply.charAt(0).toLowerCase() + supply.slice(1)}.count`, { count })
 </script>
 
 <template>
@@ -21,7 +21,7 @@ const supplyLabel = (supply: string) => t(`theForgottenAge.supplies.${supply.cha
     <slot name="heading" />
     <ul>
       <li v-for="[supply, count] in supplies.entries()" :key="supply">
-        {{supplyLabel(supply)}} ({{count}})
+        {{supplyLabel(supply, count)}}
       </li>
     </ul>
   </div>

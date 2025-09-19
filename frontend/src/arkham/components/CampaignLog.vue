@@ -273,7 +273,7 @@ function getCardName(s: string) {
           </div>
         </div>
         <div v-if="hasSupplies" class="supplies-container">
-          <h2>Supplies</h2>
+          <h2>{{t('theForgottenAge.supplies.title')}}</h2>
           <div class="supplies-content">
             <Supplies v-for="i in game.investigators" :key="i.id" :player="i">
               <template #heading>

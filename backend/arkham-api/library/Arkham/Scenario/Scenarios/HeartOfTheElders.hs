@@ -37,9 +37,11 @@ import Arkham.Queue (QueueT)
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
-import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
+import Arkham.Scenario.Types (
+  Field (ScenarioVictoryDisplay),
+  ScenarioAttrs (scenarioAdditionalReferences),
+ )
 import Arkham.Scenarios.HeartOfTheElders.Helpers
-import Arkham.Scenarios.HeartOfTheElders.Story
 import Arkham.Token
 import Arkham.Trait (Trait (Cave))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -132,16 +134,17 @@ setupHeartOfTheElders metadata attrs = scenarioI18n $ case scenarioStep metadata
         setup $ ul $ li.valid "pathsKnownToYou"
         push R1
       else do
+        mappedOutTheWayForward <- getHasRecord TheInvestigatorsMappedOutTheWayForward
         setup do
           ul do
             li.invalid "pathsKnownToYou"
             li "gatherSets"
             li.nested "placeLocations" do
               li "insightIntoHowToEnterKnYan"
-            li "playedBefore"
+            li.validate (reachedAct2 metadata) "playedBefore"
             li "explorationDeck"
             li.nested "chooseLocations" do
-              li "mappedOutTheWayForward"
+              li.validate mappedOutTheWayForward "mappedOutTheWayForward"
             li "poisoned"
             unscoped $ li "shuffleRemainder"
 
@@ -165,7 +168,6 @@ setupHeartOfTheElders metadata attrs = scenarioI18n $ case scenarioStep metadata
 
         removeOneOfEach toRemove
 
-        mappedOutTheWayForward <- getHasRecord TheInvestigatorsMappedOutTheWayForward
         when mappedOutTheWayForward $ place_ ruinsLocation
 
         square <- Locations.pathOfThorns `orSampleIfReturnTo` [Locations.riversideTemple]
@@ -293,26 +295,29 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
       for_ [0 .. 5] \n -> do
         labeled (tshow n) $ recordCount PathsAreKnownToYou n
     pure s
-  PreScenarioSetup -> do
-    story intro1
+  PreScenarioSetup -> scope "intro" do
+    storyWithChooseOneM' (h "title" >> p "intro1") do
+      getOwner Assets.ichtacaTheForgottenGuardian >>= \case
+        Nothing -> invalidLabeled' "ichtaca"
+        Just iid ->
+          labeled "ichtaca" do
+            flavor $ h "title" >> p "intro2"
+            putCampaignCardIntoPlay iid Assets.ichtacaTheForgottenGuardian
 
-    lead <- getLead
-    chooseOneM lead do
-      withOwner Assets.ichtacaTheForgottenGuardian \iid -> do
-        labeled "Let’s consult with Ichtaca." do
-          story intro2
-          putCampaignCardIntoPlay iid Assets.ichtacaTheForgottenGuardian
+      getOwner Assets.alejandroVela >>= \case
+        Nothing -> invalidLabeled' "alejandro"
+        Just iid ->
+          labeled "alejandro" do
+            flavor $ h "title" >> p "intro3"
+            putCampaignCardIntoPlay iid Assets.alejandroVela
 
-      withOwner Assets.alejandroVela \iid -> do
-        labeled "Let’s consult with Alejandro." do
-          story intro3
-          putCampaignCardIntoPlay iid Assets.alejandroVela
-
-      withOwner Assets.expeditionJournal \iid -> do
-        labeled "Let’s consult the expedition journal." do
-          story intro4
-          putCampaignCardIntoPlay iid Assets.expeditionJournal
-      labeled "I wish we knew more about this..." nothing
+      getOwner Assets.expeditionJournal >>= \case
+        Nothing -> invalidLabeled' "expeditionJournal"
+        Just iid ->
+          labeled' "expeditionJournal" do
+            flavor $ h "title" >> p "intro4"
+            putCampaignCardIntoPlay iid Assets.expeditionJournal
+      labeled' "else" nothing
     pure s
   ScenarioResolution r -> scope "resolutions" do
     case r of
@@ -337,7 +342,12 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
           recordCount PathsAreKnownToYou pillarTokens
         push RestartScenario
         actStep <- getCurrentActStep
-        pure $ HeartOfTheElders (attrs `With` metadata {reachedAct2 = reachedAct2 metadata || actStep >= 2})
+        -- We need to clear out the additional references because they will stack up over time
+        pure
+          $ HeartOfTheElders
+            ( attrs {scenarioAdditionalReferences = []}
+                `With` metadata {reachedAct2 = reachedAct2 metadata || actStep >= 2}
+            )
       Resolution 1 -> do
         resolutionWithXp "resolution1" (allGainXp' attrs)
         vengeanceCards <-
@@ -351,18 +361,17 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
   _ -> HeartOfTheElders . (`with` metadata) <$> liftRunMessage msg attrs
 
 runBMessage :: Message -> HeartOfTheElders -> QueueT Message GameT HeartOfTheElders
-runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
-  ScenarioResolution r -> do
+runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ scope "part2" $ case msg of
+  ScenarioResolution r -> scope "resolutions" do
     case r of
       NoResolution -> do
-        story noResolutionB
+        resolution "noResolution"
         rescuedAlejandro <- getHasRecord TheInvestigatorsRescuedAlejandro
         push $ if rescuedAlejandro then R1 else R2
       Resolution n -> do
-        story $ case n of
-          1 -> resolution1B
-          2 -> resolution2B
-          _ -> error "invalid resolution"
+        let resolutionBody = if n == 1 then "resolution1" else "resolution2"
+
+        resolutionWithXp resolutionBody (allGainXp' attrs)
 
         vengeance <- getTotalVengeanceInVictoryDisplay
         yigsFury <- getRecordCount YigsFury
@@ -377,7 +386,6 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
                 Just eid -> field EnemyDamage eid
                 Nothing -> getRecordCount TheHarbingerIsStillAlive
             recordCount TheHarbingerIsStillAlive damage
-        allGainXp attrs
         endOfScenario
     pure s
   _ -> HeartOfTheElders . (`with` metadata) <$> liftRunMessage msg attrs

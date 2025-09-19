@@ -171,6 +171,12 @@ export default defineComponent({
   position: relative;
   z-index: 0;
 
+  &:has(.composite > :nth-child(2)) {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
   &.nested {
     border: 0;
     &::after {

@@ -110,82 +110,136 @@
     "doNotUseMedicine": "Do not use medicine",
     "thePoisonSpreads": "<p>_The Poison Spreads_: As the days went by, the poison continued to spread through my body. By the second night, my skin was drenched in sweat. I started having difficutly breathing, and I began every morning by retching up most of the previous night’s dinner.</p><p class='basic right'>You suffer 1 physical trauma.</p>"
   },
+  "interlude3": {
+    "title": "Interlude III: The Jungle Beckons",
+    "body": "<p>Once more, you venture south, leaving the safety of civilization behind. There is no time to waste. The path to the Nexus lies on familiar ground, not far from the previous expedition’s trail. Using the leather-bound journal as your guide, you retrace the expedition’s journey. Soon, you are deep within the jungle, surrounded on all sides by hazards—some natural, others bizarre...</p>",
+    "gas": "<p>Check your supplies. Any one investigator must cross off one gasoline from his or her supplies. If no gasoline was crossed off, read _Out of Gas_.</p>",
+    "outOfGas": "<p>_Out of Gas_: Unfortunately, a dozen or so miles north of the edge of the rainforest, your car ran out of gas. Since you are pressed for time, you decided to walk the rest of the way instead of returning to refuel. Traveling by foot set you back several hours, but soon enough you reached the jungle once more.</p><p class='basic right'>When drawing opening hands during the next scenario, investigators cannot take a mulligan.</p>",
+    "map": "Check your supplies. If any investigator has a map, he or she reads _A Path Discovered_.",
+    "aPathDiscovered": "<p>_A Path Discovered_: Thanks to your map, which has been marked from the previous expedition, you are able to clear a path through the rainforest without getting lost, and you reach your destination on your own terms.</p><p class='basic right'>In your Campaign Log, record that *the investigators mapped out the way forward*.</p>",
+    "provisions": "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read _Low on Rations_.",
+    "lowOnRations": "<p>_Low on Rations_: Traversing the jungle to find the path to the Nexus took longer than you anticipated, and in your haste you have not been able to hunt or forage for more food. Hunger clouds your mind and drills a painful hole in your stomach.</p><p class='basic right'>You begin the next scenario with 3 fewer resources.</p>",
+    "medicine": "Check your supplies. Each investigator with medicine may cross it off from his or her supplies to choose and remove a Poisoned weakness from any investigator’s deck. Each investigator who still has a Poisoned weakness in his or her deck reads _The Poison Spreads_.",
+    "doNotUseMedicine": "Do not use medicine",
+    "thePoisonSpreads": "<p>_The Poison Spreads_: The poison continues to work its way through your body, wreacking havoc on your internal organs. A terrible fever burns through you, growing stronger with each passing day. You can hardly keep down your food. Your body feels as though it has been drained of all of its strength.</p><p class='basic right'>You suffer 1 physical trauma.</p>",
+    "canteen": "<p>As you trudge through the lush jungle and pass a series of familiar overgrown temple ruins, your keen eye spots a pattern along the stone wall of the structure. Upon closer examination, you find that vines and caked dirt has hidden an elaborate carving of hieroglyphs.</p><p class='basic right'>Check your supplies. If any investigator has a canteen, he or she reads _Patterns in the Stone_. Otherwise, read _Secrets in the Stone_.</p>",
+    "patternsInTheStone": "<p>_Patterns in the Stone_: You take out your canteen and splash water on the stone walls, washing off the dirt and making the stiff vines easier to manipulate. The pattern of glyphs is clearly visible now, and although its meaning is still a mystery, the repetition of six glyphs in particular hints at a specific instruction…</p><p class='basic right'>Each investigator who has a canteen begins the next scenario with 1 clue (*from the token bank*).</p>",
+    "secretsInTheStone": "<p>_Secrets in the Stone_: Try as you might, you are unable to clear off the dirt and vines with only your bare hands. You have no choice but to leave this mystery behind.</p><p class='basic right'>You suffer no ill effects.</p>",
+    "ichtaca": "Check the chaos bag and the Campaign Log. If all of the following are true, the lead investigator reads Faith Restored.",
+    "cultistCount": "There are 2 or more {'{'}cultist{'}'} tokens in the chaos bag.",
+    "forgedBond": "*The investigators forged a bond with Ichtaca.*",
+    "hasConfidence": "*Ichtaca has confidence in you.*",
+    "faithRestored": "<p>_Faith Restored_: On the eve of your second night within the jungle, you and your companions sit in front of a dim campfire, keeping warm and trying to remain relaxed despite the task ahead of you. Ichtaca approaches the campfire and sits across from you. Her eyes are cast to the ground, and her shoulders sag with a burdensome weight. “I feel that I must apologize to you,” she admits, peering into the flickering fire. “You have proven yourselves to be both wise and formidable, and I have done nothing but command you and endanger you at every turn.” There is a long, peaceful pause between you. “Perhaps there is hope for humanity after all,” she says under her breath as she meets your gaze. Does she speak for you? Or for herself, as well?</p><p>Ichtaca rises to her feet after some time. “I trust you to take the first watch. Be on the lookout for serpents. They are surely on the lookout for us.” Your camp is quiet for the remainder of the night, but for the soothing crackling of the campfire and the choir of chirping insects whose singing fills the night air.</p><p class='basic right'>In your Campaign Log, record that *Ichtaca’s faith is restored*. Add 1 {'{'}cultist{'}'} token to the chaos bag for the remainder of the campaign.</p>"
+  },
   "supplies": {
+    "title": "Supplies",
+    "choose": "Pick Supplies ({pointsRemaining} points remaining)",
+    "chosen": "Chosen Supplies",
     "provisions": {
       "name": "Provisions",
       "cost": "1 supply point each",
-      "description": "Food and water for one person. A must-have for any journey."
+      "description": "Food and water for one person. A must-have for any journey.",
+      "tooltip": "(@:theForgottenAge.supplies.provisions.cost) @:theForgottenAge.supplies.provisions.description",
+      "count": "@:theForgottenAge.supplies.provisions.name | @:theForgottenAge.supplies.provisions.name ({count})"
     },
     "medicine": {
       "name": "Medicine",
       "cost": "2 supply points each",
-      "description": "To stave off disease, infection, or venom."
+      "description": "To stave off disease, infection, or venom.",
+      "tooltip": "(@:theForgottenAge.supplies.medicine.cost) @:theForgottenAge.supplies.medicine.description",
+      "count": "@:theForgottenAge.supplies.medicine.name | @:theForgottenAge.supplies.medicine.name ({count})"
     },
     "rope": {
       "name": "Rope",
       "cost": "3 supply points",
-      "description": "Several long coils of strong rope. Vital for climbing and spelunking."
+      "description": "Several long coils of strong rope. Vital for climbing and spelunking.",
+      "tooltip": "(@:theForgottenAge.supplies.rope.cost) @:theForgottenAge.supplies.rope.description",
+      "count": "@:theForgottenAge.supplies.rope.name | @:theForgottenAge.supplies.rope.name ({count})"
     },
     "blanket": {
       "name": "Blanket",
       "cost": "2 supply points",
-      "description": "For warmth at night."
+      "description": "For warmth at night.",
+      "tooltip": "(@:theForgottenAge.supplies.blanket.cost) @:theForgottenAge.supplies.blanket.description",
+      "count": "@:theForgottenAge.supplies.blanket.name | @:theForgottenAge.supplies.blanket.name ({count})"
     },
     "canteen": {
       "name": "Canteen",
       "cost": "2 supply points",
-      "description": "Can be refilled at streams and rivers."
+      "description": "Can be refilled at streams and rivers.",
+      "tooltip": "(@:theForgottenAge.supplies.canteen.cost) @:theForgottenAge.supplies.canteen.description",
+      "count": "@:theForgottenAge.supplies.canteen.name | @:theForgottenAge.supplies.canteen.name ({count})"
     },
     "torches": {
       "name": "Torches",
       "cost": "3 supply points",
-      "description": "Can light up dark areas, or set sconces alight."
+      "description": "Can light up dark areas, or set sconces alight.",
+      "tooltip": "(@:theForgottenAge.supplies.torches.cost) @:theForgottenAge.supplies.torches.description",
+      "count": "@:theForgottenAge.supplies.torches.name | @:theForgottenAge.supplies.torches.name ({count})"
     },
     "compass": {
       "name": "Compass",
       "cost": "2 supply points",
-      "description": "Can guide you when you are hopelessly lost."
+      "description": "Can guide you when you are hopelessly lost.",
+      "tooltip": "(@:theForgottenAge.supplies.compass.cost) @:theForgottenAge.supplies.compass.description",
+      "count": "@:theForgottenAge.supplies.compass.name | @:theForgottenAge.supplies.compass.name ({count})"
     },
     "map": {
       "name": "Map",
       "cost": "3 supply points",
-      "description": "Unmarked for now, but with time, you may be able to map out your surroundings."
+      "description": "Unmarked for now, but with time, you may be able to map out your surroundings.",
+      "tooltip": "(@:theForgottenAge.supplies.map.cost) @:theForgottenAge.supplies.map.description",
+      "count": "@:theForgottenAge.supplies.map.name | @:theForgottenAge.supplies.map.name ({count})"
     },
     "binoculars": {
       "name": "Binoculars",
       "cost": "2 supply points",
-      "description": "To help you see faraway places."
+      "description": "To help you see faraway places.",
+      "tooltip": "(@:theForgottenAge.supplies.binoculars.cost) @:theForgottenAge.supplies.binoculars.description",
+      "count": "@:theForgottenAge.supplies.binoculars.name | @:theForgottenAge.supplies.binoculars.name ({count})"
     },
     "chalk": {
       "name": "Chalk",
       "cost": "2 supply point",
-      "description": "For writing on rough stone surfaces."
+      "description": "For writing on rough stone surfaces.",
+      "tooltip": "(@:theForgottenAge.supplies.chalk.cost) @:theForgottenAge.supplies.chalk.description",
+      "count": "@:theForgottenAge.supplies.chalk.name | @:theForgottenAge.supplies.chalk.name ({count})"
     },
     "pendant": {
       "name": "Pendant",
       "cost": "1 supply point",
-      "description": "Useless, but fond memories bring comfort to travelers far from home."
+      "description": "Useless, but fond memories bring comfort to travelers far from home.",
+      "tooltip": "(@:theForgottenAge.supplies.pendant.cost) @:theForgottenAge.supplies.pendant.description",
+      "count": "@:theForgottenAge.supplies.pendant.name | @:theForgottenAge.supplies.pendant.name ({count})"
     },
     "gasoline": {
       "name": "Gasoline",
       "cost": "1 supply point each",
-      "description": "Enough for a long journey by car."
+      "description": "Enough for a long journey by car.",
+      "tooltip": "(@:theForgottenAge.supplies.gasoline.cost) @:theForgottenAge.supplies.gasoline.description",
+      "count": "@:theForgottenAge.supplies.gasoline.name | @:theForgottenAge.supplies.gasoline.name ({count})"
     },
     "pocketknife": {
       "name": "Pocketknife",
       "cost": "2 supply points",
-      "description": "Too small to be used as a reliable weapon, but easily concealed."
+      "description": "Too small to be used as a reliable weapon, but easily concealed.",
+      "tooltip": "(@:theForgottenAge.supplies.pocketknife.cost) @:theForgottenAge.supplies.pocketknife.description",
+      "count": "@:theForgottenAge.supplies.pocketknife.name | @:theForgottenAge.supplies.pocketknife.name ({count})"
     },
     "pickaxe": {
       "name": "Pickaxe",
       "cost": "2 supply points",
-      "description": "For breaking apart rocky surfaces."
+      "description": "For breaking apart rocky surfaces.",
+      "tooltip": "(@:theForgottenAge.supplies.pickaxe.cost) @:theForgottenAge.supplies.pickaxe.description",
+      "count": "@:theForgottenAge.supplies.pickaxe.name | @:theForgottenAge.supplies.pickaxe.name ({count})"
     },
     "keyOfEztli": {
-      "name": "Key of Eztli"
+      "name": "Key of Eztli",
+      "count": "@:theForgottenAge.supplies.keyOfEztli.name | @:theForgottenAge.supplies.keyOfEztli.name ({count})"
     },
     "mysteriousScepter": {
-      "name": "Mysterious Scepter"
+      "name": "Mysterious Scepter",
+      "count": "@:theForgottenAge.supplies.mysteriousScepter.name | @:theForgottenAge.supplies.mysteriousScepter.name ({count})"
     }
   }
 }

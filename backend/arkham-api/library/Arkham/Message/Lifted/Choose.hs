@@ -200,6 +200,9 @@ labeledValidate' valid label action = unterminated do
       tell [Label ("$" <> ikey ("label." <> label)) msgs]
     else tell [InvalidLabel ("$" <> ikey ("label." <> label))]
 
+invalidLabeled' :: (HasI18n, ReverseQueue m) => Text -> ChooseT m ()
+invalidLabeled' label = unterminated $ tell [InvalidLabel ("$" <> ikey ("label." <> label))]
+
 chooseTest :: (HasI18n, ReverseQueue m) => SkillType -> Int -> QueueT Message m () -> ChooseT m ()
 chooseTest skind n body = countVar n $ skillVar skind $ labeled' "test" body
 
@@ -259,6 +262,9 @@ cardLabeled :: (ReverseQueue m, HasCardCode a) => a -> QueueT Message m () -> Ch
 cardLabeled a action = unterminated do
   msgs <- lift $ capture action
   tell [CardLabel (toCardCode a) msgs]
+
+cardsLabeled :: (ReverseQueue m, HasCardCode a) => [a] -> (a -> QueueT Message m ()) -> ChooseT m ()
+cardsLabeled as action = traverse_ (\a -> cardLabeled a (action a)) as
 
 deckLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 deckLabeled iid action = unterminated do

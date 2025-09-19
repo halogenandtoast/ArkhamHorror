@@ -24,7 +24,7 @@ instance HasAbilities AncientHallRearrangedByTime where
       a
       [ restricted a 1 (Here <> thisExists a LocationWithAnyDoom) actionAbility
       , groupLimit PerRound
-          $ restricted a 2 (Here <> HasSupply Compass <> thisExists a LocationWithAnyDoom) actionAbility
+          $ restricted a 2 (Here <> HasSupply Compass <> thisExists a LocationWithAnyDoom) FastAbility
       ]
 
 instance RunMessage AncientHallRearrangedByTime where
@@ -32,9 +32,9 @@ instance RunMessage AncientHallRearrangedByTime where
     PlacedLocation _ _ lid | lid == attrs.id -> do
       AncientHallRearrangedByTime <$> liftRunMessage msg (attrs & tokensL %~ addTokens #doom 2)
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      when (attrs.clues > 0) $ flipCluesToDoom attrs 1
+      when (attrs.clues > 0) $ flipDoomToClues attrs 1
       pure l
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      when (attrs.clues > 0) $ flipCluesToDoom attrs 1
+      when (attrs.clues > 0) $ flipDoomToClues attrs 1
       pure l
     _ -> AncientHallRearrangedByTime <$> liftRunMessage msg attrs

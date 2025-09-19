@@ -266,52 +266,26 @@ pickSupplies iid metadata supplies cont = do
 
 supplyLabel :: Supply -> [Message] -> UI Message
 supplyLabel s = case s of
-  Provisions ->
-    go
-      "Provisions"
-      "(1 supply point each): Food and water for one person. A must-have for any journey."
-  Medicine ->
-    go
-      "Medicine"
-      "(2 supply points each): To stave off disease, infection, or venom."
-  Gasoline ->
-    go "Gasoline" "(1 supply points each): Enough for a long journey by car."
-  Rope ->
-    go
-      "Rope"
-      "(3 supply points): Several long coils of strong rope.  Vital for climbing and spelunking."
-  Blanket -> go "Blanket" "(2 supply points): For warmth at night."
-  Canteen ->
-    go "Canteen" "(2 supply points): Can be refilled at streams and rivers."
-  Torches ->
-    go
-      "Torches"
-      "(3 supply points): Can light up dark areas, or set sconces alight."
-  Compass ->
-    go
-      "Compass"
-      "(2 supply points): Can guide you when you are hopelessly lost."
-  Map ->
-    go
-      "Map"
-      "(3 supply points): Unmarked for now, but with time, you may be able to map out your surroundings."
-  Binoculars ->
-    go "Binoculars" "(2 supply points): To help you see faraway places."
-  Chalk -> go "Chalk" "(2 supply points): For writing on rough stone surfaces."
-  Pendant ->
-    go
-      "Pendant"
-      "(1 supply point): Useless, but fond memories bring comfort to travelers far from home."
-  Pocketknife ->
-    go
-      "Pocketknife"
-      "(2 supply point): Too small to be used as a reliable weapon, but easily concealed."
-  Pickaxe ->
-    go "Pickaxe" "(2 supply point): For breaking apart rocky surfaces."
-  KeyOfEztli -> go "Key of Eztli" "can not purchase"
-  MysteriousScepter -> go "Mysterious Scepter" "can not purchase"
+  Provisions -> go "provisions"
+  Medicine -> go "medicine"
+  Gasoline -> go "gasoline"
+  Rope -> go "rope"
+  Blanket -> go "blanket"
+  Canteen -> go "canteen"
+  Torches -> go "torches"
+  Compass -> go "compass"
+  Map -> go "map"
+  Binoculars -> go "binoculars"
+  Chalk -> go "chalk"
+  Pendant -> go "pendant"
+  Pocketknife -> go "pocketknife"
+  Pickaxe -> go "pickaxe"
+  KeyOfEztli -> go "keyOfEztli"
+  MysteriousScepter -> go "mysteriousScepter"
  where
-  go label tooltip = TooltipLabel label (Tooltip tooltip)
+  go label = campaignI18n $
+    let toKey suffix = "$" <> ikey ("supplies." <> label <> "." <> suffix)
+    in TooltipLabel (toKey "name") (Tooltip (toKey "tooltip"))
 
 useSupply :: ReverseQueue m => InvestigatorId -> Supply -> m ()
 useSupply iid s = push $ UseSupply iid s

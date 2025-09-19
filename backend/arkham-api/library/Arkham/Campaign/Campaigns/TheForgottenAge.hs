@@ -91,7 +91,7 @@ instance RunMessage TheForgottenAge where
           lead <- getLead
           chooseOneM lead do
             questionLabeled' "expeditionLeader"
-            for_ expeditionLeaders \target -> cardLabeled target do
+            cardsLabeled expeditionLeaders \target -> do
               push $ SetCampaignMeta $ toJSON (metadata' {expeditionLeader = Just target})
         eachInvestigator (`forInvestigator` msg)
         nextCampaignStep
@@ -141,10 +141,9 @@ instance RunMessage TheForgottenAge where
 
         let lowOnRationsCount = length investigators - length provisions
         storyWithChooseNM' lowOnRationsCount (p.green "provisions") do
-          for_ investigators \iid -> do
-            cardLabeled iid do
-              storyOnlyBuild [iid] $ p.green "lowOnRations"
-              handleTarget iid CampaignSource iid
+          cardsLabeled investigators \iid -> do
+            storyOnlyBuild [iid] $ p.green "lowOnRations"
+            handleTarget iid CampaignSource iid
 
         storyWithChooseOneM' (p.green "lookout") do
           for_ investigatorsWithBinocularsPairs \(iid, hasBinoculars) -> do
@@ -152,21 +151,19 @@ instance RunMessage TheForgottenAge where
               if hasBinoculars
                 then do
                   storyOnlyBuild [iid] $ p.green "shapesInTheTrees"
-                  interludeXp iid (WithBonus "Gain further insight into the motivations of the Eztli." 2)
+                  -- "Gain further insight into the motivations of the Eztli."
+                  interludeXp iid (toBonus "insight" 2)
                 else do
                   storyOnlyBuild [iid] $ p.green "eyesInTheDark"
                   sufferMentalTrauma iid 1
 
         when (notNull withMedicine && notNull withPoisoned) do
-          storyWithChooseUpToNM'
-            (min (length withMedicine) (length withPoisoned))
-            "doNotUseMedicine"
-            (p.green "medicine")
-            do
-              for_ (zip withPoisoned withMedicine) \(poisoned, doctor) -> do
-                cardLabeled (unInvestigatorId poisoned) do
-                  removeCampaignCardFromDeck poisoned Treacheries.poisoned
-                  useSupply doctor Medicine
+          let medicineCount = min (length withMedicine) (length withPoisoned)
+          storyWithChooseUpToNM' medicineCount "doNotUseMedicine" (p.green "medicine") do
+            for_ (zip withPoisoned withMedicine) \(poisoned, doctor) -> do
+              cardLabeled (unInvestigatorId poisoned) do
+                removeCampaignCardFromDeck poisoned Treacheries.poisoned
+                useSupply doctor Medicine
 
         push $ CampaignStep (InterludeStepPart 1 mkey 2)
         nextCampaignStep
@@ -320,40 +317,45 @@ instance RunMessage TheForgottenAge where
             labeled "Do not remove trauma" nothing
 
         pure c
-      CampaignStep (InterludeStep 3 mkey) -> do
+      CampaignStep (InterludeStep 3 mkey) -> scope "interlude3" do
         investigators <- allInvestigators
-        lead <- getLead
+        flavor $ setTitle "title" >> p "body"
 
-        story theJungleBeckons
-
+        -- Out of Gas
+        flavor $ p.green "gas"
         gasUpdate <-
           getInvestigatorsWithSupply Gasoline >>= \case
             [] -> do
-              story outOfGas
+              flavor $ p.green "outOfGas"
               cannotMulligan <- toModifiers CampaignSource [CannotMulligan]
               pure $ ala Endo foldMap [modifiersL %~ insertWith (<>) iid cannotMulligan | iid <- investigators]
             x : _ -> do
               useSupply x Gasoline
               pure id
 
+        -- A Path Discovered
+        flavor $ p.green "map"
         getInvestigatorsWithSupply Map >>= \case
           [] -> pure ()
           xs -> do
-            storyOnly xs aPathDiscovered
+            storyOnlyBuild xs $ p.green "aPathDiscovered"
             record TheInvestigatorsMappedOutTheWayForward
 
+        -- Low on Rations
         provisions <- concatForM investigators \iid -> do
           map (iid,) <$> fieldMap InvestigatorSupplies (filter (== Provisions)) iid
         for_ (take (length investigators) provisions) (uncurry useSupply)
 
-        chooseNM lead (length investigators - length provisions) do
-          questionLabeled
-            "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read Low on Rations"
-          for_ investigators \iid -> do
-            cardLabeled (unInvestigatorId iid) do
-              storyOnly [iid] lowOnRationsInterlude3
-              handleTarget iid CampaignSource (InvestigatorTarget iid)
+        let lowOnRationsCount = length investigators - length provisions
+        if lowOnRationsCount > 0
+          then storyWithChooseNM' lowOnRationsCount (p.green "provisions") do
+            for_ investigators \iid -> do
+              cardLabeled (unInvestigatorId iid) do
+                storyOnlyBuild [iid] $ p.green "lowOnRations"
+                handleTarget iid CampaignSource iid
+          else flavor $ p.green "provisions"
 
+        -- The Poison Spreads
         let
           withPoisoned =
             flip mapMaybe (mapToList attrs.decks) \(iid, Deck cards) -> do
@@ -362,47 +364,58 @@ instance RunMessage TheForgottenAge where
         withMedicine <- flip concatMapM investigators \iid -> do
           n <- getSupplyCount iid Medicine
           pure $ replicate n iid
-        when (notNull withMedicine && notNull withPoisoned) do
-          chooseUpToNM lead (min (length withMedicine) (length withPoisoned)) "Do not use medicine" do
-            questionLabeled "Choose an investigator to remove Poisoned by using a medicine"
-            for_ (zip withPoisoned withMedicine) \(poisoned, doctor) -> do
-              cardLabeled (unInvestigatorId poisoned) do
-                removeCampaignCardFromDeck poisoned Treacheries.poisoned
-                useSupply doctor Medicine
+        if notNull withMedicine && notNull withPoisoned
+          then do
+            let medicineCount = min (length withMedicine) (length withPoisoned)
+            storyWithChooseUpToNM' medicineCount "doNotUseMedicine" (p.green "medicine") do
+              for_ (zip withPoisoned withMedicine) \(poisoned, doctor) -> do
+                cardLabeled (unInvestigatorId poisoned) do
+                  removeCampaignCardFromDeck poisoned Treacheries.poisoned
+                  useSupply doctor Medicine
+          else flavor $ p.green "medicine"
 
         push $ CampaignStep (InterludeStepPart 3 mkey 2)
 
+        -- ? in the Stone
         canteenUpdate <-
           getInvestigatorsWithSupply Canteen >>= \case
             [] -> do
-              story secretsInTheStone
+              flavor $ compose.green do
+                p.invalid "canteen"
+                p "secretsInTheStone"
               pure id
             xs -> do
-              story patternsInTheStone
-              startingClues <- toModifiers CampaignSource [StartingClues 1]
+              flavor $ p.green.valid "canteen"
+              storyOnlyBuild xs $ p.green "patternsInTheStone"
+              startingClues <- toModifiersWith CampaignSource setActiveDuringSetup [StartingClues 1]
               pure $ ala Endo foldMap [modifiersL %~ insertWith (<>) iid startingClues | iid <- xs]
 
-        isFaithRestored <-
-          andM
-            [ getHasRecord TheInvestigatorsForgedABondWithIchtaca
-            , getHasRecord IchtacaHasConfidenceInYou
-            , pure $ count (== Cultist) attrs.chaosBag >= 2
-            ]
+        -- Faith Restored
+        forgedBond <- getHasRecord TheInvestigatorsForgedABondWithIchtaca
+        hasConfidence <- getHasRecord IchtacaHasConfidenceInYou
+        let cultistCount = count (== Cultist) attrs.chaosBag >= 2
+        let isFaithRestored = and [forgedBond, hasConfidence, cultistCount]
+
+        flavor $ compose.green do
+          p "ichtaca"
+          ul do
+            li.validate cultistCount "cultistCount"
+            li.validate forgedBond "forgedBond"
+            li.validate hasConfidence "hasConfidence"
+          when isFaithRestored $ p "faithRestored"
+
         when isFaithRestored do
           record IchtacasFaithIsRestored
           addChaosToken Cultist
         nextCampaignStep
         pure . TheForgottenAge $ attrs & gasUpdate & canteenUpdate
-      CampaignStep (InterludeStepPart 3 _ 2) -> do
+      CampaignStep (InterludeStepPart 3 _ 2) -> scope "interlude3" do
         let
           withPoisoned =
-            flip mapMaybe (mapToList attrs.decks)
-              $ \(iid, Deck cards) ->
-                if any (`cardMatch` CardWithTitle "Poisoned") cards
-                  then Just iid
-                  else Nothing
+            flip mapMaybe (mapToList attrs.decks) \(iid, Deck cards) ->
+              guard (any (`cardMatch` CardWithTitle "Poisoned") cards) $> iid
 
-        storyOnly withPoisoned thePoisonSpreadsInterlude3
+        storyOnlyBuild withPoisoned $ p.green "thePoisonSpreads"
         for_ withPoisoned (`sufferPhysicalTrauma` 1)
         pure c
       CampaignStep (InterludeStep 4 mkey) -> do

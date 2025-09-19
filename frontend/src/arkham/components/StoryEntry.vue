@@ -290,6 +290,9 @@ a.button {
 
   img {
     transition: box-shadow 0.1s ease-in-out, transform 0.1s ease-in-out;
+    border-radius: 4%;
+    flex: 1;
+    max-width: min(500px, 30vw);
   }
 
   img:hover {

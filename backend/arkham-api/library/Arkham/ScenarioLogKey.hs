@@ -80,6 +80,9 @@ data ScenarioLogKey
     TheTeamStudiedTheHistoryOfTheElderThings
   | TheTeamDiscernedTheOriginOfTheShoggoths
   | TheTeamDiscoveredAHiddenPower
+  | -- | Return to the City of Archives
+    ReadAboutEarth
+  | SawAFamiliarSpecimen
   | -- | Murder at the Excelsior Hotel
     CleanedUpTheBlood
   | HidTheBody

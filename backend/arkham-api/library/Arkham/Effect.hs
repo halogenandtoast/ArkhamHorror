@@ -37,7 +37,6 @@ import Arkham.Act.Acts (
  )
 import Arkham.Agenda.Agendas (
   awakeningEffect,
-  lostMemoriesEffect,
   showbusinessAsUsualEffect,
   theLoversVIEffect,
   theRedDepthsEffect,
@@ -453,7 +452,7 @@ allEffects =
     , ("04156", SomeEffect highRoller2Effect)
     , ("04195", SomeEffect exposeWeakness3Effect)
     , ("04198", SomeEffect defiance2Effect)
-    , ("04239", SomeEffect lostMemoriesEffect)
+    , ("04239", SomeEffect $ noop "04239")
     , ("04271", SomeEffect mistsOfRlyeh4Effect)
     , ("04283", SomeEffect theRedDepthsEffect)
     , ("04306", SomeEffect vantagePointEffect)

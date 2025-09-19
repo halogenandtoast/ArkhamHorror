@@ -773,7 +773,11 @@ runGameMessage msg g = case msg of
       . (focusedCardsL %~ map (filter ((/= cardId) . toCardId)))
   GameOver -> do
     clearQueue
-    pure $ g & gameStateL .~ IsOver
+    let newMode = case g ^. modeL of
+          This c -> This c
+          That c -> That c
+          These c1 _ -> This c1
+    pure $ g & gameStateL .~ IsOver & modeL .~ newMode
   PlaceLocation lid card ->
     if isNothing $ g ^. entitiesL . locationsL . at lid
       then do
@@ -3313,7 +3317,7 @@ instance RunMessage Game where
         >>= (skillTestL . traverse) (runMessage msg)
         >>= (activeCostL . traverse) (runMessage msg)
         >>= runGameMessage msg
-      )
+    )
       <&> handleActionDiff g
 
 runPreGameMessage :: Runner Game

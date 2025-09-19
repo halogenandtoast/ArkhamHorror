@@ -341,6 +341,8 @@ allActs =
     , SomeActCard impossiblePursuit
     , --- Return to Heart of the Elders
       SomeActCard aFamiliarPattern
+    , --- Return to the City of Archives
+      SomeActCard unrestrictedAccess
     , -- Curse of the Rougarou
       SomeActCard findingLadyEsprit
     , SomeActCard huntingTheRougarou

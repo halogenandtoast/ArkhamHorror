@@ -540,6 +540,8 @@ allEnemies =
     , --- Return to Pillars of Judgement [rttfa]
       SomeEnemyCard theWingedSerpentTheFuryOfYig
     , SomeEnemyCard featheredSerpent
+    , --- Return to the City of Archives [rttfa]
+      SomeEnemyCard captiveSubjects
     , --- Cult of Pnakotus [rttfa]
       SomeEnemyCard brotherhoodAcolyte
     , SomeEnemyCard stolenMind

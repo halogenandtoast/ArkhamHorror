@@ -1,19 +1,14 @@
-module Arkham.Agenda.Cards.LostMemories (lostMemories, lostMemoriesEffect) where
+module Arkham.Agenda.Cards.LostMemories (lostMemories) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
-import Arkham.Classes
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
-import Arkham.GameValue
-import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
-import Arkham.Placement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Placement
 
 newtype LostMemories = LostMemories AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
@@ -27,47 +22,18 @@ instance HasModifiersFor LostMemories where
     modifySelect attrs Anyone [HandSize (-2)]
 
 instance RunMessage LostMemories where
-  runMessage msg a@(LostMemories attrs) = case msg of
+  runMessage msg a@(LostMemories attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      hasPendant <- getInvestigatorsWithSupply Pendant
-      shouldMoveCustodian <- selectAny $ assetIs Assets.theCustodian <> UncontrolledAsset
+      shuffleEncounterDiscardBackIn
 
-      custodianMessages <-
-        if shouldMoveCustodian
-          then do
-            lead <- getLeadPlayer
-            custodian <- selectJust $ assetIs Assets.theCustodian
-            locationWithMostClues <- select $ LocationWithMostClues Anywhere
-            pure
-              [ chooseOrRunOne
-                  lead
-                  [ targetLabel lid [PlaceAsset custodian $ AtLocation lid]
-                  | lid <- locationWithMostClues
-                  ]
-              ]
-          else pure []
-      let drawing = map (\iid -> drawCards iid attrs 2) hasPendant
-      enabled <- createCardEffect Cards.lostMemories Nothing (toSource attrs) ScenarioTarget
-      pushAll
-        $ ShuffleEncounterDiscardBackIn
-        : custodianMessages
-          <> drawing
-          <> [ enabled
-             , advanceAgendaDeck attrs
-             ]
+      whenAny (assetIs Assets.theCustodian <> UncontrolledAsset) do
+        custodian <- selectJust $ assetIs Assets.theCustodian
+        locationWithMostClues <- select $ LocationWithMostClues Anywhere
+        leadChooseOrRunOneM $ targets locationWithMostClues $ place custodian . AtLocation
+
+      getInvestigatorsWithSupply Pendant >>= traverse_ \iid -> do
+        gameModifier attrs iid IgnoreHandSizeReduction
+        drawCards iid attrs 2
+      advanceAgendaDeck attrs
       pure a
-    _ -> LostMemories <$> runMessage msg attrs
-
-newtype LostMemoriesEffect = LostMemoriesEffect EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-
-lostMemoriesEffect :: EffectArgs -> LostMemoriesEffect
-lostMemoriesEffect = cardEffect LostMemoriesEffect Cards.lostMemories
-
-instance HasModifiersFor LostMemoriesEffect where
-  getModifiersFor (LostMemoriesEffect a) =
-    modifySelect a (InvestigatorWithSupply Pendant) [IgnoreHandSizeReduction]
-
-instance RunMessage LostMemoriesEffect where
-  runMessage msg (LostMemoriesEffect attrs) = LostMemoriesEffect <$> runMessage msg attrs
+    _ -> LostMemories <$> liftRunMessage msg attrs

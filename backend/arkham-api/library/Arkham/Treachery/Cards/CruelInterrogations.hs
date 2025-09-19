@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.CruelInterrogations (cruelInterrogations, CruelInterrogations (..)) where
+module Arkham.Treachery.Cards.CruelInterrogations (cruelInterrogations) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -20,7 +20,7 @@ instance HasModifiersFor CruelInterrogations where
     inThreatAreaGets a [CannotTakeAction $ IsAction Action.Draw]
 
 instance HasAbilities CruelInterrogations where
-  getAbilities (CruelInterrogations a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]
+  getAbilities (CruelInterrogations a) = [skillTestAbility $ restricted a 1 OnSameLocation actionAbility]
 
 instance RunMessage CruelInterrogations where
   runMessage msg t@(CruelInterrogations attrs) = runQueueT $ case msg of

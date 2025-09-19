@@ -132,6 +132,7 @@ allEncounterEnemyCards =
       , brotherhoodAcolyte
       , brotherhoodCultist
       , brownJenkin
+      , captiveSubjects
       , carlSanfordDeathlessFanatic
       , carnevaleSentinel
       , catacombsDocent
@@ -3017,6 +3018,13 @@ featheredSerpent =
   (enemy "53047" "Feathered Serpent" ReturnToPillarsOfJudgement 2)
     { cdCardTraits = setFromList [Creature, Serpent]
     , cdVengeancePoints = Just 1
+    }
+
+captiveSubjects :: CardDef
+captiveSubjects =
+  (enemy "53058" "Captive Subjects" ReturnToTheCityOfArchives 2)
+    { cdCardTraits = singleton Monster
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Retaliate]
     }
 
 

@@ -4,9 +4,6 @@
 
 module Api.Handler.Arkham.Games.Shared where
 
-import Arkham.Investigator (lookupInvestigator)
-import Data.UUID (nil)
-import Data.Aeson.Types (parse)
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Campaign.Types (CampaignAttrs)
@@ -20,6 +17,7 @@ import Arkham.Game.Diff
 import Arkham.Game.State
 import Arkham.GameEnv
 import Arkham.Id
+import Arkham.Investigator (lookupInvestigator)
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Message
 import Arkham.Name
@@ -27,14 +25,16 @@ import Arkham.Queue
 import Conduit
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
+import Data.Aeson.Types (parse)
 import Data.ByteString.Lazy qualified as BSL
 import Data.Map.Strict qualified as Map
 import Data.String.Conversions.Monomorphic (toStrictByteString)
 import Data.Text qualified as T
 import Data.These
 import Data.Time.Clock
+import Data.UUID (nil)
 import Database.Esqueleto.Experimental hiding (update, (=.))
-import Database.Redis (publish, runRedis)
+import Database.Redis (msgMessage, pubSub, publish, runRedis, subscribe)
 import Entity.Answer
 import Entity.Arkham.GameRaw
 import Entity.Arkham.Player
@@ -43,19 +43,38 @@ import Import hiding (delete, exists, on, (==.), (>=.))
 import Import qualified as P
 import Json
 import Network.WebSockets (ConnectionException)
+import UnliftIO.Async (async, cancel)
 import UnliftIO.Exception hiding (Handler)
 import Yesod.WebSockets
 
 gameStream :: Maybe UserId -> ArkhamGameId -> WebSocketsT Handler ()
 gameStream mUserId gameId = catchingConnectionException do
-  writeChannel <- lift $ (.channel) <$> getRoom gameId
+  writeChannel :: TChan BSL.ByteString <- lift $ (.channel) <$> getRoom gameId
+  broker <- lift $ getsYesod appMessageBroker
   roomsRef <- getsYesod appGameRooms
   atomicModifyIORef' roomsRef \rooms -> do
     (Map.adjust (\room -> room {socketClients = room.clients + 1}) gameId rooms, ())
   bracket (atomically $ dupTChan writeChannel) closeConnection \readChannel -> do
-    race_
-      (forever $ atomically (readTChan readChannel) >>= sendTextData)
-      (runConduit $ sourceWS .| mapM_C (handleData writeChannel))
+    mtid <- case broker of
+      RedisBroker redisConn _ -> do
+        tid <- liftIO
+          $ async
+          $ runRedis redisConn
+          $ pubSub (subscribe [gameChannel gameId])
+          $ \msg -> do
+            atomically $ writeTChan readChannel (BSL.fromStrict $ msgMessage msg)
+            pure mempty
+        pure $ Just tid
+      WebSocketBroker -> pure Nothing
+
+    let stopSub = maybe (pure ()) (liftIO . cancel) mtid
+
+    finally
+      ( race_
+          (forever $ atomically (readTChan readChannel) >>= sendTextData)
+          (runConduit $ sourceWS .| mapM_C (handleData writeChannel))
+      )
+      stopSub
  where
   handleData writeChannel dataPacket = lift do
     for_ mUserId \userId ->

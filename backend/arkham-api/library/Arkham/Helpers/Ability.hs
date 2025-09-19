@@ -449,12 +449,10 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
           )
           ws
       GroupLimit _ n -> do
-        usedAbilities' <-
-          fmap (map usedAbility)
-            . filterDepthSpecificAbilities
+        usedAbilities' <- filterDepthSpecificAbilities
             =<< concatMapM (field InvestigatorUsedAbilities)
             =<< allInvestigators
-        let total = count (== ability) usedAbilities'
+        let total = sum $ map usedTimes $ filter ((== ability) . usedAbility) usedAbilities'
         pure $ total < n
 
 isForcedAbility :: HasGame m => InvestigatorId -> Ability -> m Bool

@@ -11,12 +11,12 @@ newtype ChthonianDepths = ChthonianDepths LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chthonianDepths :: LocationCard ChthonianDepths
-chthonianDepths = location ChthonianDepths Cards.chthonianDepths 3 (PerPlayer 1)
+chthonianDepths = symbolLabel $ location ChthonianDepths Cards.chthonianDepths 3 (PerPlayer 1)
 
 instance HasAbilities ChthonianDepths where
   getAbilities (ChthonianDepths a) =
     extendRevealed1 a
-      $ restricted a 2 (notExists $ InvestigatorWithSupply Torches <> at_ (be a))
+      $ restricted a 1 (notExists $ InvestigatorWithSupply Torches <> at_ (be a))
       $ forced
       $ DiscoveringLastClue #after Anyone (be a)
 

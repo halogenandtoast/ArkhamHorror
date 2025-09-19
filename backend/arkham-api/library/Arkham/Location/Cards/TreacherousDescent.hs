@@ -12,7 +12,7 @@ newtype TreacherousDescent = TreacherousDescent LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 treacherousDescent :: LocationCard TreacherousDescent
-treacherousDescent = location TreacherousDescent Cards.treacherousDescent 6 (PerPlayer 1)
+treacherousDescent = symbolLabel $ location TreacherousDescent Cards.treacherousDescent 6 (PerPlayer 1)
 
 instance HasAbilities TreacherousDescent where
   getAbilities (TreacherousDescent a) =

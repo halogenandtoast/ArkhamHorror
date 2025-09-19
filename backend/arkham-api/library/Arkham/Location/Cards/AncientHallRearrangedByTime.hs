@@ -24,7 +24,8 @@ instance HasAbilities AncientHallRearrangedByTime where
       a
       [ restricted a 1 (Here <> thisExists a LocationWithAnyDoom) actionAbility
       , groupLimit PerRound
-          $ restricted a 2 (Here <> HasSupply Compass <> thisExists a LocationWithAnyDoom) FastAbility
+          $ restricted a 2 (Here <> HasSupply Compass <> thisExists a LocationWithAnyDoom)
+          $ FastAbility Free
       ]
 
 instance RunMessage AncientHallRearrangedByTime where

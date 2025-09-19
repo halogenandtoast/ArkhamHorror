@@ -257,6 +257,7 @@ allActCards =
       , uncoveringTheConspiracy
       , underAttack
       , unexpectedRescue
+      , unrestrictedAccess
       , warmWelcome
       , whatHappened
       , whatHaveYouDone
@@ -961,6 +962,9 @@ impossiblePursuit = act "53036" "Impossible Pursuit" 3 ReturnToThreadsOfFate
 
 aFamiliarPattern :: CardDef
 aFamiliarPattern = act "53046" "A Familiar Pattern" 1 ReturnToPillarsOfJudgement
+
+unrestrictedAccess :: CardDef
+unrestrictedAccess = act "53054" "Unrestricted Access" 2 ReturnToTheCityOfArchives
 
 findingLadyEsprit :: CardDef
 findingLadyEsprit = act "81005" "Finding Lady Esprit" 1 TheBayou

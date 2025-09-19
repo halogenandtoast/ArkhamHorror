@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.YithianPresence (yithianPresence, YithianPresence (..)) where
+module Arkham.Treachery.Cards.YithianPresence (yithianPresence) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
@@ -21,9 +21,8 @@ instance HasModifiersFor YithianPresence where
       yithianPresent <- selectAny $ EnemyWithTrait Yithian <> enemyAtLocationWith iid
       mlid <- selectOne $ locationWithInvestigator iid
       modifiedWhen_ a yithianPresent iid
-        $ ( CannotTriggerAbilityMatching AbilityOnEncounterCard
-              : [CannotInvestigateLocation lid | lid <- maybeToList mlid]
-          )
+        $ CannotTriggerAbilityMatching AbilityOnEncounterCard
+        : [CannotInvestigateLocation lid | lid <- maybeToList mlid]
     _ -> pure mempty
 
 instance HasAbilities YithianPresence where

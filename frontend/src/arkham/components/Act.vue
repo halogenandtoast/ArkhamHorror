@@ -169,12 +169,12 @@ const breaches = computed(() => {
       @choose="chooseAbility"
       />
     <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="showCardsUnderAct">{{viewUnderLabel}}</button>
-    <img
-      v-for="(card, idx) in cardsNextTo"
-      class="card card--sideways"
-      :key="idx"
-      :src="imageForCard(card)"
-    />
+    <div class="card-container" v-for="(card, idx) in cardsNextTo" :key="idx">
+      <img
+        class="card card--sideways"
+        :src="imageForCard(card)"
+      />
+    </div>
     <Treachery
       v-for="treacheryId in act.treacheries"
       :key="treacheryId"

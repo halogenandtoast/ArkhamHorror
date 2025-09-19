@@ -1,12 +1,10 @@
 module Arkham.Enemy.Cards.KeeperOfTheGreatLibrary (keeperOfTheGreatLibrary) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword qualified as Keyword
-import Arkham.Prelude
 import Arkham.ScenarioLogKey
 
 newtype KeeperOfTheGreatLibrary = KeeperOfTheGreatLibrary EnemyAttrs
@@ -15,9 +13,8 @@ newtype KeeperOfTheGreatLibrary = KeeperOfTheGreatLibrary EnemyAttrs
 
 keeperOfTheGreatLibrary :: EnemyCard KeeperOfTheGreatLibrary
 keeperOfTheGreatLibrary =
-  enemyWith KeeperOfTheGreatLibrary Cards.keeperOfTheGreatLibrary (3, Static 4, 3) (1, 1)
-    $ spawnAtL
-    ?~ "Great Library"
+  enemy KeeperOfTheGreatLibrary Cards.keeperOfTheGreatLibrary (3, Static 4, 3) (1, 1)
+    & setSpawnAt "Great Library"
 
 instance HasModifiersFor KeeperOfTheGreatLibrary where
   getModifiersFor (KeeperOfTheGreatLibrary a) = do

@@ -113,6 +113,7 @@ allLocationCards =
       , administrationOffice_131
       , airfield
       , alaskanWilds
+      , alienConservatory
       , alchemyLabs
       , altarToDagon
       , ancientHall
@@ -265,6 +266,7 @@ allLocationCards =
       , cyclopeanRuins_176a
       , cyclopeanRuins_176b
       , cyclopeanSpires
+      , cyclopeanVaults
       , cylindricalTower
       , dancersMist
       , darkAbyss
@@ -418,6 +420,7 @@ allLocationCards =
       , hallOfTheSunlessSea
       , hallsOfPnakotusEasternCorridors
       , hallsOfPnakotusNorthernCorridors
+      , hallsOfPnakotusSouthernCorridors
       , hallsOfPnakotusWesternCorridors
       , hallway
       , hangmansBrook
@@ -9073,6 +9076,36 @@ treacherousDescent =
       Moon
       [Heart, Diamond, Circle]
       ReturnToKnYan
+
+hallsOfPnakotusSouthernCorridors :: CardDef
+hallsOfPnakotusSouthernCorridors =
+  location
+    "53055"
+    ("Halls of Pnakotus" <:> "Southern Corridors")
+    [Ancient, Pnakotus]
+    Plus
+    [Square, Diamond, Heart, Hourglass]
+    ReturnToTheCityOfArchives
+
+cyclopeanVaults :: CardDef
+cyclopeanVaults = victory 1 $
+  location
+    "53056"
+    "Cyclopean Vaults"
+    [Ancient, Pnakotus]
+    Hourglass
+    [Plus, Heart]
+    ReturnToTheCityOfArchives
+
+alienConservatory :: CardDef
+alienConservatory =
+  location
+    "53057"
+    "Alien Conservatory"
+    [Ancient, Pnakotus]
+    Heart
+    [Plus, Hourglass]
+    ReturnToTheCityOfArchives
 
 riversideTemple :: CardDef
 riversideTemple =

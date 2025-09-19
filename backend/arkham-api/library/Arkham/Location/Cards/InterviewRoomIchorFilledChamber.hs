@@ -1,14 +1,10 @@
-module Arkham.Location.Cards.InterviewRoomIchorFilledChamber (
-  interviewRoomIchorFilledChamber,
-) where
+module Arkham.Location.Cards.InterviewRoomIchorFilledChamber (interviewRoomIchorFilledChamber) where
 
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype InterviewRoomIchorFilledChamber = InterviewRoomIchorFilledChamber LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -24,23 +20,15 @@ interviewRoomIchorFilledChamber =
 
 instance HasAbilities InterviewRoomIchorFilledChamber where
   getAbilities (InterviewRoomIchorFilledChamber a) =
-    withBaseAbilities
-      a
-      [ skillTestAbility
-          $ mkAbility a 1
-          $ ForcedAbility
-          $ Enters Timing.After You
-          $ LocationWithId
-          $ toId a
-      ]
+    extendRevealed1 a $ skillTestAbility $ mkAbility a 1 $ forced $ Enters #after You (be a)
 
 instance RunMessage InterviewRoomIchorFilledChamber where
-  runMessage msg l@(InterviewRoomIchorFilledChamber attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(InterviewRoomIchorFilledChamber attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure l
-    FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ n -> do
-      push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 n
+    FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
+      assignHorror iid (attrs.ability 1) n
       pure l
-    _ -> InterviewRoomIchorFilledChamber <$> runMessage msg attrs
+    _ -> InterviewRoomIchorFilledChamber <$> liftRunMessage msg attrs

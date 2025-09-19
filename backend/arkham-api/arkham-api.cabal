@@ -283,6 +283,7 @@ library
       Arkham.Act.Cards.UncoveringTheConspiracy
       Arkham.Act.Cards.UnderAttack
       Arkham.Act.Cards.UnexpectedRescue
+      Arkham.Act.Cards.UnrestrictedAccess
       Arkham.Act.Cards.WarmWelcome
       Arkham.Act.Cards.WhatHappened
       Arkham.Act.Cards.WhatHaveYouDone
@@ -1677,6 +1678,7 @@ library
       Arkham.Enemy.Cards.BrotherhoodCultist
       Arkham.Enemy.Cards.BrownJenkin
       Arkham.Enemy.Cards.CaldwellPhilipsCompelledByDreams
+      Arkham.Enemy.Cards.CaptiveSubjects
       Arkham.Enemy.Cards.CarlSanfordDeathlessFanatic
       Arkham.Enemy.Cards.CarlSanfordIntimidatingPresence
       Arkham.Enemy.Cards.CarnevaleSentinel
@@ -2715,6 +2717,7 @@ library
       Arkham.Location.Cards.Airfield
       Arkham.Location.Cards.AlaskanWilds
       Arkham.Location.Cards.AlchemyLabs
+      Arkham.Location.Cards.AlienConservatory
       Arkham.Location.Cards.AltarToDagon
       Arkham.Location.Cards.AncientHall
       Arkham.Location.Cards.AncientHallRearrangedByTime
@@ -2868,6 +2871,7 @@ library
       Arkham.Location.Cards.CyclopeanRuins_176a
       Arkham.Location.Cards.CyclopeanRuins_176b
       Arkham.Location.Cards.CyclopeanSpires
+      Arkham.Location.Cards.CyclopeanVaults
       Arkham.Location.Cards.CylindricalTower
       Arkham.Location.Cards.DancersMist
       Arkham.Location.Cards.DarkAbyss
@@ -3022,6 +3026,7 @@ library
       Arkham.Location.Cards.HallOfTheSunlessSea
       Arkham.Location.Cards.HallsOfPnakotusEasternCorridors
       Arkham.Location.Cards.HallsOfPnakotusNorthernCorridors
+      Arkham.Location.Cards.HallsOfPnakotusSouthernCorridors
       Arkham.Location.Cards.HallsOfPnakotusWesternCorridors
       Arkham.Location.Cards.Hallway
       Arkham.Location.Cards.HangmansBrook
@@ -3636,6 +3641,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToHeartOfTheEldersPart2
       Arkham.Scenario.Scenarios.ReturnToLostInTimeAndSpace
       Arkham.Scenario.Scenarios.ReturnToTheBoundaryBeyond
+      Arkham.Scenario.Scenarios.ReturnToTheCityOfArchives
       Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow
       Arkham.Scenario.Scenarios.ReturnToTheDoomOfEztli
       Arkham.Scenario.Scenarios.ReturnToTheEssexCountyExpress

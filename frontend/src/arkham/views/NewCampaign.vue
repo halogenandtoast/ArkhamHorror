@@ -96,6 +96,7 @@ const campaignScenarios = computed(() => selectedCampaign.value
 const selectCampaign = (campaignId: string) => {
   selectedCampaign.value = campaignId,
   selectedScenario.value = null
+  returnTo.value = false
 }
 
 watch(
@@ -108,9 +109,9 @@ fetchDecks().then((result) => {
   ready.value = true;
 })
 
-const selectedCampaignReturnToId = computed(() => {
+const selectedCampaignReturnTo = computed(() => {
   const campaign = campaigns.value.find((c) => c.id === selectedCampaign.value);
-  return campaign?.returnToId
+  return campaign?.returnTo
 })
 
 const disabled = computed(() => {
@@ -177,7 +178,7 @@ async function start() {
   } else {
     const mcampaign = campaigns.value.find((campaign) => campaign.id === selectedCampaign.value);
     if (mcampaign && currentCampaignName.value) {
-      const campaignId = returnTo.value && mcampaign.returnToId ? mcampaign.returnToId : mcampaign.id
+      const campaignId = returnTo.value && mcampaign.returnTo && mcampaign.returnTo.id ? mcampaign.returnTo.id : mcampaign.id
       newGame(
         deckIds.value,
         playerCount.value,
@@ -221,13 +222,15 @@ async function start() {
             <!-- <select v-model="selectedCampaign"> -->
               <div class="campaigns">
                 <template v-for="c in campaigns" :key="c.id">
-                  <div class="campaign" :class="{ beta: c.beta, alpha: c.alpha }">
+                  <div class="campaign" :class="{ beta: c.beta, alpha: returnTo && c.returnTo && c.returnTo.alpha ? c.returnTo.alpha : c.alpha }">
+                    {{selectedCampaignReturnTo}}
                     <input type="image" class="campaign-box" :class="{ 'selected-campaign': selectedCampaign == c.id }" :src="imgsrc(`boxes/${c.id}.jpg`)" @click.prevent="selectCampaign(c.id)">
                   </div>
                 </template>
               </div>
 
               <div class="alpha-warning" v-if="campaign && campaign.alpha">{{$t('create.alphaWarning')}}</div>
+              <div class="alpha-warning" v-if="returnTo && campaign.returnTo && campaign.returnTo.alpha">{{$t('create.alphaWarning')}}</div>
               <div class="beta-warning" v-if="campaign && campaign.beta">{{$t('create.betaWarning')}}</div>
             <!-- </select> -->
           </template>
@@ -248,7 +251,7 @@ async function start() {
             </transition>
 
 
-            <div v-if="(gameMode === 'Campaign' || fullCampaign === 'Standalone') && selectedCampaign && selectedCampaignReturnToId" class="options">
+            <div v-if="(gameMode === 'Campaign' || fullCampaign === 'Standalone') && selectedCampaign && selectedCampaignReturnTo" class="options">
               <input type="radio" v-model="returnTo" :value="false" id="normal"> <label for="normal">{{$t('create.normal')}}</label>
               <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">{{$t('create.returnTo')}}</label>
             </div>

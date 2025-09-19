@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ComputedRef } from 'vue';
+import { useDebug } from '@/arkham/debug';
 import type { Card } from '@/arkham/types/Card';
 import { imgsrc } from '@/arkham/helpers';
 
@@ -7,7 +8,14 @@ export interface Props {
   deck: [string, Card[]]
 }
 
+const cards = computed(() => props.deck[1])
+const debug = useDebug()
 const props = defineProps<Props>()
+const emits = defineEmits<{
+  show: [cards: ComputedRef<Card[]>, title: string, isDiscards: boolean]
+}>()
+
+const showCards = () => emits('show', cards, props.deck[0], false)
 
 const deckImage = computed(() => {
   switch(props.deck[0]) {
@@ -55,6 +63,7 @@ const deckLabel = computed(() => {
     <span v-if="deckLabel" class="deck-label">{{deckLabel}}</span>
     <span class="deck-size">{{deck[1].length}}</span>
   </div>
+  <button v-if="debug.active" @click="showCards">Show Cards</button>
 </template>
 
 <style scoped lang="scss">

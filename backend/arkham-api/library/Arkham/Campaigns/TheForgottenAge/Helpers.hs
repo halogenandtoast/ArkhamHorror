@@ -42,6 +42,9 @@ import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Result (..), mkAfter)
 import Arkham.Window qualified as Window
 
+pickSupply :: ReverseQueue m => InvestigatorId -> Supply -> m ()
+pickSupply iid s = push $ PickSupply iid s
+
 getHasSupply :: HasGame m => InvestigatorId -> Supply -> m Bool
 getHasSupply iid s = (> 0) <$> getSupplyCount iid s
 
@@ -282,6 +285,7 @@ supplyLabel s = case s of
   Pickaxe -> go "pickaxe"
   KeyOfEztli -> go "keyOfEztli"
   MysteriousScepter -> go "mysteriousScepter"
+  StickyGoop -> go "stickyGoop"
  where
   go label = campaignI18n $
     let toKey suffix = "$" <> ikey ("supplies." <> label <> "." <> suffix)

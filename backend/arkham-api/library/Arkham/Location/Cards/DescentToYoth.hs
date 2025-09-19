@@ -8,6 +8,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.HeartOfTheElders.Helpers
 
 newtype Metadata = Metadata {flipDoom :: Bool}
   deriving stock (Show, Eq, Generic)
@@ -35,9 +36,9 @@ instance RunMessage DescentToYoth where
   runMessage msg l@(DescentToYoth (attrs `With` metadata)) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       eachInvestigator \iid -> do
-        chooseOneM iid do
-          labeled "Place 1 doom on Descent to Yoth" $ placeDoom (attrs.ability 1) attrs 1
-          labeled "Draw the top 2 cards of the encounter deck" $ drawEncounterCards iid attrs 2
+        chooseOneM iid $ scenarioI18n do
+          labeled' "descentToYoth.placeDoom" $ placeDoom (attrs.ability 1) attrs 1
+          labeled' "descentToYoth.draw" $ drawEncounterCards iid attrs 2
       pure l
     UseCardAbility _iid (isSource attrs -> True) 2 _ _ ->
       pure $ DescentToYoth $ attrs `with` Metadata True

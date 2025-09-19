@@ -79,9 +79,13 @@
       "placeOnTop": "Place one card on top of exploration deck",
       "placeOnBottom": "Place one card on bottom of exploration deck"
     },
-    "mouthOnKnYanTheCavernsMaw": {
+    "mouthOfKnYanTheCavernsMaw": {
       "resign": "Let's make camp and solve this puzzle tomorrow"
     }
+  },
+  "standalone": {
+    "paths": "The investigators may choose how many paths are known to you (choose a number between 0 and 5). The more paths are known to you, the quicker and easier the scenario will be."
+
   },
   "prologue": {
     "earthIsNotOurs": {
@@ -130,6 +134,16 @@
     "forgedBond": "*The investigators forged a bond with Ichtaca.*",
     "hasConfidence": "*Ichtaca has confidence in you.*",
     "faithRestored": "<p>_Faith Restored_: On the eve of your second night within the jungle, you and your companions sit in front of a dim campfire, keeping warm and trying to remain relaxed despite the task ahead of you. Ichtaca approaches the campfire and sits across from you. Her eyes are cast to the ground, and her shoulders sag with a burdensome weight. “I feel that I must apologize to you,” she admits, peering into the flickering fire. “You have proven yourselves to be both wise and formidable, and I have done nothing but command you and endanger you at every turn.” There is a long, peaceful pause between you. “Perhaps there is hope for humanity after all,” she says under her breath as she meets your gaze. Does she speak for you? Or for herself, as well?</p><p>Ichtaca rises to her feet after some time. “I trust you to take the first watch. Be on the lookout for serpents. They are surely on the lookout for us.” Your camp is quiet for the remainder of the night, but for the soothing crackling of the campfire and the choir of chirping insects whose singing fills the night air.</p><p class='basic right'>In your Campaign Log, record that *Ichtaca’s faith is restored*. Add 1 {'{'}cultist{'}'} token to the chaos bag for the remainder of the campaign.</p>"
+  },
+  "resupplyPoint": {
+    "label": {
+      "visitStMarys": "Visit St. Mary’s?",
+      "doNotRemovePoisoned": "Do not remove Poisoned weaknes",
+      "doNotRemoveTrauma": "Do not remove trauma",
+      "removePhysicalTrauma": "Spend 5 xp to visit St. Mary's Hospital and remove a physical trauma",
+      "removeMentalTrauma": "Spend 5 xp to visit St. Mary's Hospital and remove a mental trauma",
+      "removePoisoned": "Spend 3 xp to visit St. Mary's Hospital and remove a Poisoned weakness"
+    }
   },
   "supplies": {
     "title": "Supplies",
@@ -240,6 +254,10 @@
     "mysteriousScepter": {
       "name": "Mysterious Scepter",
       "count": "@:theForgottenAge.supplies.mysteriousScepter.name | @:theForgottenAge.supplies.mysteriousScepter.name ({count})"
+    },
+    "stickyGoop": {
+      "name": "Sticky Goop",
+      "count": "@:theForgottenAge.supplies.stickyGoop.name | @:theForgottenAge.supplies.stickyGoop.name ({count})"
     }
   }
 }

@@ -873,7 +873,6 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
             :skillTest="game.skillTest"
             :playerId="playerId"
             @choose="choose"
-            @minimize="minimize_SkillTest"
         >
         </SkillTest>
 

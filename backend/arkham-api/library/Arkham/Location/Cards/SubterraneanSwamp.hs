@@ -12,7 +12,7 @@ newtype SubterraneanSwamp = SubterraneanSwamp LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 subterraneanSwamp :: LocationCard SubterraneanSwamp
-subterraneanSwamp = location SubterraneanSwamp Cards.subterraneanSwamp 2 (PerPlayer 2)
+subterraneanSwamp = symbolLabel $ location SubterraneanSwamp Cards.subterraneanSwamp 2 (PerPlayer 2)
 
 instance HasAbilities SubterraneanSwamp where
   getAbilities (SubterraneanSwamp a) =

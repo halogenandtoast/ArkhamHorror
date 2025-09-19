@@ -11,7 +11,7 @@ newtype RuinsOfKnYan = RuinsOfKnYan LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ruinsOfKnYan :: LocationCard RuinsOfKnYan
-ruinsOfKnYan = location RuinsOfKnYan Cards.ruinsOfKnYan 4 (PerPlayer 2)
+ruinsOfKnYan = symbolLabel $ location RuinsOfKnYan Cards.ruinsOfKnYan 4 (PerPlayer 2)
 
 instance HasAbilities RuinsOfKnYan where
   getAbilities (RuinsOfKnYan a) =

@@ -25,6 +25,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario hiding (getIsReturnTo)
+import Arkham.Helpers.Scenario qualified as Scenario
 import Arkham.Helpers.Tokens
 import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
@@ -37,8 +38,8 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
 import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
-import Arkham.Scenarios.HeartOfTheElders.Story
 import Arkham.Scenarios.HeartOfTheElders.Helpers
+import Arkham.Scenarios.HeartOfTheElders.Story
 import Arkham.Token
 import Arkham.Trait (Trait (Cave))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -281,7 +282,7 @@ setupHeartOfTheElders metadata attrs = scenarioI18n $ case scenarioStep metadata
         $ Explored #after Anyone Anywhere (SuccessfulExplore Anywhere)
 
 runAMessage :: Message -> HeartOfTheElders -> QueueT Message GameT HeartOfTheElders
-runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
+runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ scope "part1" $ case msg of
   StandaloneSetup -> do
     lead <- getLead
     setChaosTokens standaloneChaosTokens
@@ -313,26 +314,40 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
           putCampaignCardIntoPlay iid Assets.expeditionJournal
       labeled "I wish we knew more about this..." nothing
     pure s
-  ScenarioResolution r -> case r of
-    NoResolution -> do
-      story noResolutionA
-      pathsKnown <- getRecordCount PathsAreKnownToYou
-      pillarTokens <- selectCountTokens Pillar (locationIs Locations.mouthOfKnYanTheCavernsMaw)
-      when (pillarTokens > pathsKnown) do
-        recordCount PathsAreKnownToYou pillarTokens
-      push RestartScenario
-      actStep <- getCurrentActStep
-      pure $ HeartOfTheElders (attrs `With` metadata {reachedAct2 = reachedAct2 metadata || actStep >= 2})
-    Resolution 1 -> do
-      story resolution1A
-      vengeanceCards <-
-        filter (isJust . cdVengeancePoints . toCardDef)
-          <$> scenarioField ScenarioVictoryDisplay
-      recordSetInsert TheJungleWatches (map toCardCode vengeanceCards)
-      allGainXp attrs
-      push RestartScenario
-      pure $ HeartOfTheElders (attrs `With` metadata {scenarioStep = Two})
-    _ -> pure s
+  ScenarioResolution r -> scope "resolutions" do
+    case r of
+      NoResolution -> do
+        isReturnTo <- Scenario.getIsReturnTo
+        if isReturnTo
+          then resolutionWithChooseOne "noResolution" $ scope "noResolution" do
+            labeled' "replay" $ do_ msg
+            labeled' "resolution2" $ push R2
+          else resolution "noResolution"
+      Resolution 2 -> do
+        resolution "resolution2"
+        do_ R1
+      _ -> do_ msg
+    pure s
+  Do (ScenarioResolution r) -> scope "resolutions" do
+    case r of
+      NoResolution -> do
+        pathsKnown <- getRecordCount PathsAreKnownToYou
+        pillarTokens <- selectCountTokens Pillar (locationIs Locations.mouthOfKnYanTheCavernsMaw)
+        when (pillarTokens > pathsKnown) do
+          recordCount PathsAreKnownToYou pillarTokens
+        push RestartScenario
+        actStep <- getCurrentActStep
+        pure $ HeartOfTheElders (attrs `With` metadata {reachedAct2 = reachedAct2 metadata || actStep >= 2})
+      Resolution 1 -> do
+        resolutionWithXp "resolution1" (allGainXp' attrs)
+        vengeanceCards <-
+          filter (isJust . cdVengeancePoints . toCardDef)
+            <$> scenarioField ScenarioVictoryDisplay
+        recordSetInsert TheJungleWatches (map toCardCode vengeanceCards)
+        allGainXp attrs
+        push RestartScenario
+        pure $ HeartOfTheElders (attrs `With` metadata {scenarioStep = Two})
+      _ -> pure s
   _ -> HeartOfTheElders . (`with` metadata) <$> liftRunMessage msg attrs
 
 runBMessage :: Message -> HeartOfTheElders -> QueueT Message GameT HeartOfTheElders

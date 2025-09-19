@@ -19,7 +19,7 @@ import Arkham.Queue
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
-import Arkham.Text (FlavorText, toI18n)
+import Arkham.Text (FlavorText (..), FlavorTextEntry (..), FlavorTextModifier (..), toI18n)
 import Arkham.Window (defaultWindows)
 import Control.Monad.State.Strict
 import Control.Monad.Writer.Strict
@@ -417,3 +417,13 @@ chooseSome1M' iid txt choices = do
     case label of
       Nothing -> chooseSome1 iid (toI18n txt) choices'
       Just l -> questionLabel l iid $ ChooseSome1 (toI18n txt) choices'
+
+resolutionFlavorWithChooseOne
+  :: (HasI18n, ReverseQueue m) => (HasI18n => FlavorTextBuilder ()) -> ChooseT m () -> m ()
+resolutionFlavorWithChooseOne builder f = flip storyWithChooseOneM f do
+  case buildFlavor builder of
+    FlavorText {..} ->
+      FlavorText
+        { flavorTitle
+        , flavorBody = [ModifyEntry [ResolutionEntry] $ CompositeEntry flavorBody]
+        }

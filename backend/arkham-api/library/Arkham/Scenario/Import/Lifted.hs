@@ -52,6 +52,7 @@ import Arkham.I18n
 import Arkham.Helpers.FlavorText
 import Arkham.Id
 import Arkham.Matcher.Investigator
+import Arkham.Message.Lifted.Choose
 
 resolutionWithXp :: (HasI18n, ReverseQueue m) => Scope -> m Int -> m ()
 resolutionWithXp s f = do
@@ -60,6 +61,9 @@ resolutionWithXp s f = do
 
 resolution :: (HasI18n, ReverseQueue m) => Scope -> m ()
 resolution s = resolutionFlavor $ setTitle (s <> ".title") >> p (s <> ".body")
+
+resolutionWithChooseOne :: (HasI18n, ReverseQueue m) => Scope -> ChooseT m () -> m ()
+resolutionWithChooseOne s = resolutionFlavorWithChooseOne (setTitle (s <> ".title") >> p (s <> ".body"))
 
 eachUnresigned :: ReverseQueue m => (InvestigatorId -> m ()) -> m ()
 eachUnresigned = selectEach (IncludeEliminated $ not_ ResignedInvestigator)

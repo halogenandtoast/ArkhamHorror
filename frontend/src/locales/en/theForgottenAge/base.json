@@ -109,5 +109,83 @@
     "medicine": "Check your supplies. Each investigator with medicine may cross it off from their supplies to choose and remove a Poisoned weakness from any investigator’s deck. Each investigator who still has a Poisoned weakness in his or her deck reads _The Poison Spreads_.",
     "doNotUseMedicine": "Do not use medicine",
     "thePoisonSpreads": "<p>_The Poison Spreads_: As the days went by, the poison continued to spread through my body. By the second night, my skin was drenched in sweat. I started having difficutly breathing, and I began every morning by retching up most of the previous night’s dinner.</p><p class='basic right'>You suffer 1 physical trauma.</p>"
+  },
+  "supplies": {
+    "provisions": {
+      "name": "Provisions",
+      "cost": "1 supply point each",
+      "description": "Food and water for one person. A must-have for any journey."
+    },
+    "medicine": {
+      "name": "Medicine",
+      "cost": "2 supply points each",
+      "description": "To stave off disease, infection, or venom."
+    },
+    "rope": {
+      "name": "Rope",
+      "cost": "3 supply points",
+      "description": "Several long coils of strong rope. Vital for climbing and spelunking."
+    },
+    "blanket": {
+      "name": "Blanket",
+      "cost": "2 supply points",
+      "description": "For warmth at night."
+    },
+    "canteen": {
+      "name": "Canteen",
+      "cost": "2 supply points",
+      "description": "Can be refilled at streams and rivers."
+    },
+    "torches": {
+      "name": "Torches",
+      "cost": "3 supply points",
+      "description": "Can light up dark areas, or set sconces alight."
+    },
+    "compass": {
+      "name": "Compass",
+      "cost": "2 supply points",
+      "description": "Can guide you when you are hopelessly lost."
+    },
+    "map": {
+      "name": "Map",
+      "cost": "3 supply points",
+      "description": "Unmarked for now, but with time, you may be able to map out your surroundings."
+    },
+    "binoculars": {
+      "name": "Binoculars",
+      "cost": "2 supply points",
+      "description": "To help you see faraway places."
+    },
+    "chalk": {
+      "name": "Chalk",
+      "cost": "2 supply point",
+      "description": "For writing on rough stone surfaces."
+    },
+    "pendant": {
+      "name": "Pendant",
+      "cost": "1 supply point",
+      "description": "Useless, but fond memories bring comfort to travelers far from home."
+    },
+    "gasoline": {
+      "name": "Gasoline",
+      "cost": "1 supply point each",
+      "description": "Enough for a long journey by car."
+    },
+    "pocketknife": {
+      "name": "Pocketknife",
+      "cost": "2 supply points",
+      "description": "Too small to be used as a reliable weapon, but easily concealed."
+    },
+    "pickaxe": {
+      "name": "Pickaxe",
+      "cost": "2 supply points",
+      "description": "For breaking apart rocky surfaces."
+    },
+    "keyOfEztli": {
+      "name": "Key of Eztli"
+    },
+    "mysteriousScepter": {
+      "name": "Mysterious Scepter"
+    }
   }
 }

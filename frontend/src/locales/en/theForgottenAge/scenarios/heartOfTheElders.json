@@ -17,6 +17,10 @@
     "pitfall": {
       "jumpTheGap": "Test {agility} (3) to attempt to jump the gap. For each point you fail by, take 1 damage.",
       "shuffle": "Shuffle Pitfall into the exploration deck. You cannot choose this option if Pitfall was drawn from the exploration deck."
+    },
+    "descentToYoth": {
+      "placeDoom": "Place 1 doom on Descent to Yoth",
+      "draw": "Draw the top 2 cards of the encounter deck"
     }
   },
   "tooltips": {
@@ -69,6 +73,16 @@
         "title": "Resolution 2",
         "body": "<p>_Resolution 2_: You haven’t yet completed the puzzle of the six pillars that serve as the entrance to K’n-yan, but you don’t wish to tarry any further in this hostile jungle. You decide to enter the cavern anyway, hoping that whatever “wards” the pillars represent are nothing but ancient superstition…</p><ul><li>You have trespassed in a hostile land. Place pillar tokens on the Mouth of K’n-yan until there are exactly 6 pillar tokens. Then, for every pillar token added in this way, record two tally marks under “Yig’s Fury” in your Campaign Log.</li><li>As you pass by the pillars, intense pain wrenches its way through your body, and you are afflicted with a terrible curse. Each investigator who is poisoned takes 1 mental trauma. Each investigator who is not poisoned adds a set‑aside Poisoned weakness to their deck.</li><li>Proceed to _Resolution 1_.</li></ul>"
       }
+    }
+  },
+  "part2": {
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: *K’n-yan*, *Heart of the Elders*, *Agents of Yig*, *Yig’s Venom*, *Forgotten Ruins*, *Deadly Traps*, and *Poison*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/kn-yan.png' /><img src='{setImgPath}/heart-of-the-elders.png' /><img src='{setImgPath}/agents-of-yig.png' /><img src='{setImgPath}/yigs-venom.png' /><img src='{setImgPath}/forgotten-ruins.png' /><img src='{setImgPath}/deadly-traps.png' /><img src='{setImgPath}/poison.png' /></section>",
+      "placeLocations": "Put the Mouth of K’n-yan into play, (*The Depths Beneath*) side faceup. Each investigator begins play at the Mouth of K’n-yan (*The Depths Beneath*).",
+      "theJungleWatches": "Search the collection for each card listed in parentheses next to *“the jungle watches”* in your Campaign Log. Add those cards to the victory display.",
+      "setAside": "Set the Descent to Yoth location aside, out of play.",
+      "explorationDeck": "Create the exploration deck. This is done by taking the 5 remaining single-sided locations from the *K’n-yan* encounter set and shuffling them together, along with 1 copy each of the following encounter cards: Pitfall, No Turning Back, Deep Dark, and Final Mistake.",
+      "poison": "Set aside each Poisoned weakness that is not already in an investigator’s deck."
     }
   }
 }

@@ -219,7 +219,17 @@ setupHeartOfTheElders metadata attrs = scenarioI18n $ case scenarioStep metadata
             $ mkAbility (SourceableWithCardCode (CardCode "53045b") ScenarioSource) 1
             $ forced
             $ Explored #after Anyone Anywhere (SuccessfulExplore Anywhere)
-  Two -> do
+  Two -> scope "part2" do
+    setup do
+      ul do
+        li "gatherSets"
+        li "placeLocations"
+        li "theJungleWatches"
+        li "setAside"
+        li "explorationDeck"
+        li "poisoned"
+        unscoped $ li "shuffleRemainder"
+
     whenReturnTo do
       gather Set.ReturnToHeartOfTheElders
       gather Set.ReturnToKnYan
@@ -285,13 +295,12 @@ setupHeartOfTheElders metadata attrs = scenarioI18n $ case scenarioStep metadata
 
 runAMessage :: Message -> HeartOfTheElders -> QueueT Message GameT HeartOfTheElders
 runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ scope "part1" $ case msg of
-  StandaloneSetup -> do
+  StandaloneSetup -> scope "standalone" do
     lead <- getLead
     setChaosTokens standaloneChaosTokens
 
     chooseOneM lead do
-      questionLabeled
-        "The investigators may choose how many paths are known to you (choose a number between 0 and 5). The more paths are known to you, the quicker and easier the scenario will be."
+      questionLabeled' "paths"
       for_ [0 .. 5] \n -> do
         labeled (tshow n) $ recordCount PathsAreKnownToYou n
     pure s
@@ -356,7 +365,8 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
         recordSetInsert TheJungleWatches (map toCardCode vengeanceCards)
         allGainXp attrs
         push RestartScenario
-        pure $ HeartOfTheElders (attrs `With` metadata {scenarioStep = Two})
+        pure
+          $ HeartOfTheElders (attrs {scenarioAdditionalReferences = []} `With` metadata {scenarioStep = Two})
       _ -> pure s
   _ -> HeartOfTheElders . (`with` metadata) <$> liftRunMessage msg attrs
 

@@ -303,7 +303,7 @@ instance RunMessage TheForgottenAge where
             questionLabeled "Visit St. Mary's"
             questionLabeledCard iid
             when hasPhysicalTrauma do
-              labeled "Spend 5 xp to visit St. Mary's Hospital and remove a physical trauma" do
+              labeled' "removePhysicalTrauma" do
                 doStep 0 (DoStep 5 msg') -- spend extra first
                 when (toSpend > 0) $ push $ SpendXP iid toSpend
                 push $ HealTrauma iid 1 0

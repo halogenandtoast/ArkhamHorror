@@ -3,9 +3,7 @@ module Arkham.Agenda.Cards.EyesInTheDark (eyesInTheDark) where
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Campaigns.TheForgottenAge.Helpers (exploreAction_)
-import Arkham.Helpers.Investigator
-import Arkham.Helpers.Location
+import Arkham.Campaigns.TheForgottenAge.Helpers (runExplore, exploreAction_)
 import Arkham.Matcher hiding (InvestigatorDefeated)
 
 newtype EyesInTheDark = EyesInTheDark AgendaAttrs
@@ -21,13 +19,8 @@ instance HasAbilities EyesInTheDark where
 
 instance RunMessage EyesInTheDark where
   runMessage msg a@(EyesInTheDark attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      locationSymbols <- toConnections =<< getJustLocation iid
-      push
-        $ Explore
-          iid
-          (toSource attrs)
-          (CardWithOneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      runExplore iid (toSource attrs)
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       eachInvestigator \iid -> do

@@ -75,6 +75,7 @@ type Supply
   | 'Pocketknife'
   | 'Pickaxe'
   | 'MysteriousScepter'
+  | 'StickyGoop'
 
 export const supplyDecoder = JsonDecoder.oneOf<Supply>([
   JsonDecoder.literal('Provisions'),
@@ -91,7 +92,8 @@ export const supplyDecoder = JsonDecoder.oneOf<Supply>([
   JsonDecoder.literal('Gasoline'),
   JsonDecoder.literal('Pocketknife'),
   JsonDecoder.literal('Pickaxe'),
-  JsonDecoder.literal('MysteriousScepter')
+  JsonDecoder.literal('MysteriousScepter'),
+  JsonDecoder.literal('StickyGoop')
 ], 'Supply')
 
 export type PickSupplies = {

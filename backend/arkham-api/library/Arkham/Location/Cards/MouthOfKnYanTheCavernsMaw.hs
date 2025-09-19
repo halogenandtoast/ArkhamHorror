@@ -8,7 +8,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.TheBoundaryBeyond.Helpers
+import Arkham.Scenarios.HeartOfTheElders.Helpers
 
 newtype MouthOfKnYanTheCavernsMaw = MouthOfKnYanTheCavernsMaw LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,7 +22,7 @@ instance HasAbilities MouthOfKnYanTheCavernsMaw where
   getAbilities (MouthOfKnYanTheCavernsMaw a) =
     extendRevealed
       a
-      [ scenarioI18n $ withI18nTooltip "mouthOnKnYanTheCavernsMaw.resign" (locationResignAction a)
+      [ scenarioI18n $ withI18nTooltip "mouthOfKnYanTheCavernsMaw.resign" (locationResignAction a)
       , restricted a 2 (AnyCriterion [Here, IsReturnTo] <> HasSupply Compass) actionAbility
       ]
 

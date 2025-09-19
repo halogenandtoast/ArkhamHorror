@@ -246,6 +246,13 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             }
     }
 
+pattern EvadeCriteria :: Criterion
+pattern EvadeCriteria =
+  Criteria
+    [ OnSameLocation
+      , EnemyCriteria (ThisEnemy (EnemyMatchAll [EnemyIsEngagedWith You, EnemyWithEvade]))
+      ]
+
 instance HasAbilities EnemyAttrs where
   getAbilities e =
     [ basicAbility
@@ -262,10 +269,7 @@ instance HasAbilities EnemyAttrs where
           )
         $ ActionAbility [#fight] (ActionCost 1)
     , basicAbility
-        $ restrictedAbility
-          e
-          AbilityEvade
-          (OnSameLocation <> EnemyCriteria (ThisEnemy $ EnemyIsEngagedWith You <> EnemyWithEvade))
+        $ restrictedAbility e AbilityEvade EvadeCriteria
         $ ActionAbility [#evade] (ActionCost 1)
     , basicAbility
         $ restrictedAbility

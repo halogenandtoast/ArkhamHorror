@@ -19,6 +19,14 @@
       "shuffle": "Shuffle Pitfall into the exploration deck. You cannot choose this option if Pitfall was drawn from the exploration deck."
     }
   },
+  "tooltips": {
+    "mouthOfKnYanTheCavernsMaw": {
+      "resign": "\"Let's make camp and solve this puzzle tomorrow.\""
+    },
+    "featheredSerpent": {
+      "evade": "Check your supplies. If you have a mysterious scepter, you automatically evade the serpent and command it to deal its damage to another enemy at its location."
+    }
+  },
   "part1": {
     "setup": {
       "pathsKnownToYou": "Check Campaign Log. *If 6 paths are known to you*, skip this scenario and proceed immediately to _Resolution 1_.",
@@ -30,6 +38,24 @@
       "chooseLocations": "Randomly choose one of the following 3 _Ruins_ locations: Overgrown Ruins, Temple of the Fang, and Stone Altar. Shuffle the randomly chosen location into the exploration deck. Remove the other 2 from the game.",
       "mappedOutTheWayForward": "Check Campaign Log. *If the investigators mapped out the way forward*, instead of shuffling the randomly chosen location into the exploration deck, put it into play.",
       "poisoned": "Set aside each Poisoned weakness that is not already in an investigator’s deck."
+    },
+    "resolutions": {
+      "noResolution": {
+        "label": {
+          "replay": "Replay _Scenario V-A: Heart of the Elders, Part 1_",
+          "resolution2": "Proceed to _Resolution 2_"
+        },
+        "title": "No Resolution",
+        "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: The hazards of the jungle are too dangerous for you to continue exploring. If you remain any longer, these odd pillars will mark your grave. You decide to flee for now, returning to a familiar clearing several miles away where you can recuperate. You know that you must eventually return to the pillars and figure out the pattern that will open the way forward…but for now, at least you are safe.</p><ul><li>If there are more pillar tokens on the Mouth of K’n-yan than there were when the scenario began, in your Campaign Log, cross out how many *paths are known to you*. Then, record that *X paths are known to you*. X is the number of pillar tokens on the Mouth of K’n-yan.</li><li>The investigators must replay _Scenario V-A: Heart of the Elders, Part 1_. Reset the game to this scenario’s _Setup_. Do not record anything else in your Campaign Log except for any trauma suffered from your previous game. No experience points are earned from your previous game. Any player whose investigator was killed or driven insane must choose a new investigator to play, as normal.</li></ul>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1_: Swallowing your fear, you enter the cavern…</p><ul><li>In your Campaign Log, record that *the jungle watches*. Next to this, in parentheses, record the names of each card with Vengeance X in the victory display. Do not record any tally marks under “Yig’s Fury.”</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>Investigators may not spend experience or alter their decks in between Scenarios V-A and V-B. Proceed immediately to _Scenario V-B: Heart of the Elders, Part 2._</li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2_: You haven’t yet completed the puzzle of the six pillars that serve as the entrance to K’n-yan, but you don’t wish to tarry any further in this hostile jungle. You decide to enter the cavern anyway, hoping that whatever “wards” the pillars represent are nothing but ancient superstition…</p><ul><li>You have trespassed in a hostile land. Place pillar tokens on the Mouth of K’n-yan until there are exactly 6 pillar tokens. Then, for every pillar token added in this way, record two tally marks under “Yig’s Fury” in your Campaign Log.</li><li>As you pass by the pillars, intense pain wrenches its way through your body, and you are afflicted with a terrible curse. Each investigator who is poisoned takes 1 mental trauma. Each investigator who is not poisoned adds a set‑aside Poisoned weakness to their deck.</li><li>Proceed to _Resolution 1_.</li></ul>"
+      }
     }
   }
 }

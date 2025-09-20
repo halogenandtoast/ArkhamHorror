@@ -9,7 +9,6 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Message.Discard.Lifted
-import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (Field (..))
@@ -23,7 +22,6 @@ import Arkham.Scenario.Import.Lifted hiding (getIsReturnTo)
 import Arkham.Scenario.Types (setAsideCardsL)
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheCityOfArchives.Helpers
-import Arkham.Scenarios.TheCityOfArchives.Story
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -84,6 +82,7 @@ standaloneChaosTokens =
 
 setupTheCityOfArchives :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupTheCityOfArchives _attrs = do
+  cooperated <- getHasRecord TheInvestigatorsCooperatedWithTheYithians
   setup do
     ul do
       li "gatherSets"
@@ -91,14 +90,16 @@ setupTheCityOfArchives _attrs = do
       li "beforeDrawingOpeningHandsAlejandro"
       li "bodyOfAYithian"
       li.nested "checkCampaignLog" do
-        li "cooperated1"
-        li "resisted1"
+        li.validate cooperated "cooperated1"
+        li.validate (not cooperated) "resisted1"
       li.nested "checkCampaignLog" do
-        li "cooperated2"
-        li "resisted2"
+        li.validate cooperated "cooperated2"
+        li.validate (not cooperated) "resisted2"
       li "placeLocations"
       li "setAside"
       unscoped $ li "shuffleRemainder"
+
+  scope "bodyOfAYithian" $ flavor $ h "title" >> p "body"
 
   whenReturnTo $ gather Set.ReturnToTheCityOfArchives
   gather Set.TheCityOfArchives
@@ -115,8 +116,7 @@ setupTheCityOfArchives _attrs = do
     ]
   setAgendaDeck [Agendas.cityOfTheGreatRace, Agendas.lostMemories, Agendas.humanityFading]
 
-  cooperatedWithTheYithians <- getHasRecord TheInvestigatorsCooperatedWithTheYithians
-  if cooperatedWithTheYithians
+  if cooperated
     then do
       interviewRoom <- placeLabeled "interviewRoom1" Locations.interviewRoomArrivalChamber
       startAt interviewRoom
@@ -128,7 +128,7 @@ setupTheCityOfArchives _attrs = do
   otherRooms <-
     shuffleM
       [ Locations.interviewRoomIchorFilledChamber
-      , if cooperatedWithTheYithians
+      , if cooperated
           then Locations.interviewRoomRestrainingChamber
           else Locations.interviewRoomArrivalChamber
       ]
@@ -174,17 +174,15 @@ instance RunMessage TheCityOfArchives where
            ]
         <> map (RemoveFromGame . AssetTarget) uniqueItemAssets
       pure . TheCityOfArchives $ attrs & setAsideUpdate
-    PreScenarioSetup -> do
+    PreScenarioSetup -> scope "intro" do
       eachInvestigator $ push . BecomeYithian
 
-      story intro1
-      lead <- getLead
-      chooseOneM lead do
-        labeled "Cooperate and tell the creatures everything you know." do
-          story intro2
+      storyWithChooseOneM' (h "title" >> p "intro1") do
+        labeled' "cooperate" do
+          flavor $ h "title" >> p "intro2"
           record TheInvestigatorsCooperatedWithTheYithians
-        labeled "Refuse and resist captivity." do
-          story intro3
+        labeled' "resist" do
+          flavor $ h "title" >> p "intro3"
           record TheInvestigatorsResistedCaptivity
       pure s
     Setup -> runScenarioSetup TheCityOfArchives attrs $ setupTheCityOfArchives attrs

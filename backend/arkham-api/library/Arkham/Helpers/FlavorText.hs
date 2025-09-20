@@ -1,5 +1,6 @@
 module Arkham.Helpers.FlavorText (module Arkham.Helpers.FlavorText, module X) where
 
+import Arkham.Card.CardCode
 import Arkham.Classes.HasQueue (push)
 import Arkham.FlavorText as X (li)
 import Arkham.FlavorText qualified as FT
@@ -52,6 +53,9 @@ p = addEntry . FT.p
 
 ul :: FT.UlItems -> FlavorTextBuilder ()
 ul = addEntry . FT.ul
+
+img :: HasCardCode a => a -> FlavorTextBuilder ()
+img = addEntry . FT.img . toCardCode
 
 compose :: FlavorTextBuilder () -> FlavorTextBuilder ()
 compose builder = case buildFlavor builder of

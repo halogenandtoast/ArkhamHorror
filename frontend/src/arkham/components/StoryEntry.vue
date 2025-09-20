@@ -60,7 +60,9 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
   <div class="intro-text">
     <div class="entry">
       <h1 v-if="question.flavorText.title">{{maybeFormat(question.flavorText.title)}}</h1>
-      <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="() => {}" />
+      <section v-if="focusedChaosTokens.length > 0" class="focused-tokens">
+        <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="() => {}" />
+      </section>
       <div class="entry-body">
         <img :src="imgsrc(`cards/${cardCode.replace('c', '')}.avif`)" v-for="cardCode in readCards" class="card no-overlay" />
         <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
@@ -280,6 +282,15 @@ a.button {
   :deep(p.anke) {
     font-family: "Anke";
   }
+
+  :deep(div:has(> img)) {
+    width: 25%;
+    min-width: min(300px, 25vw);
+    flex: 0;
+    img {
+      border-radius: 4%;
+    }
+  }
 }
 
 .pick-cards {
@@ -304,6 +315,17 @@ a.button {
 .pick {
   cursor: pointer;
   flex-basis: 20%;
+}
+
+.focused-tokens {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.9);
+  padding: 10px;
+  border-radius: 10px;
 }
 
 </style>

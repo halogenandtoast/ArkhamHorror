@@ -22,7 +22,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier (setActiveDuringSetup)
 import Arkham.Projection
-import Arkham.Question (Question (Read), ReadChoices (..))
 import Arkham.Source
 import Arkham.Target
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -419,50 +418,55 @@ instance RunMessage TheForgottenAge where
         for_ withPoisoned (`sufferPhysicalTrauma` 1)
         pure c
       CampaignStep (InterludeStep 4 mkey) -> do
-        push $ CampaignStep (InterludeStepPart 4 mkey 1)
-        push $ CampaignStep (InterludeStepPart 4 mkey 2)
-        push $ CampaignStep (InterludeStepPart 4 mkey 3)
-        push $ CampaignStep (InterludeStepPart 4 mkey 4)
-        push $ CampaignStep (InterludeStepPart 4 mkey 5)
-        push $ CampaignStep (InterludeStepPart 4 mkey 6)
+        interludeStepPart 4 mkey 1
+        interludeStepPart 4 mkey 2
+        interludeStepPart 4 mkey 3
+        interludeStepPart 4 mkey 4
+        interludeStepPart 4 mkey 5
+        interludeStepPart 4 mkey 6
         nextCampaignStep
         pure c
-      CampaignStep (InterludeStepPart 4 _ 1) -> do
+      CampaignStep (InterludeStepPart 4 _ 1) -> scope "interlude4" do
+        flavor do
+          setTitle "title"
+          scope "checkProcess" $ compose.green do
+            p "body"
+            ul do
+              li "noIllEffects"
+              li "outOfBodyExperience"
+              li "bodyOfAYithian"
+
         backfired <- getHasRecord TheProcessBackfired
         backfiredSpectacularly <- getHasRecord TheProcessBackfiredSpectacularly
-        -- no chaos bag technically so we sample from campaign
+
         if backfired || backfiredSpectacularly
           then do
             iids <- allInvestigators
+            -- no chaos bag technically so we sample from campaign
             let chaosBag = fromJustNote "missing tokens" $ nonEmpty attrs.chaosBag
-            results <- for iids $ \iid -> do
+            results <- for iids \iid -> do
               tokens <- sampleN (if backfired then 1 else 2) chaosBag
               asChaosTokens <- traverse (\face -> createChaosToken face <&> revealedByL ?~ iid) tokens
               let
-                outOfBody =
-                  any
-                    ( \t ->
-                        t
-                          `elem` [Cultist, Tablet, ElderThing, AutoFail, Skull]
-                          || (t /= PlusOne && isNumberChaosToken t)
-                    )
-                    tokens
+                outOfBody = flip any tokens \t ->
+                  (t `elem` [Cultist, Tablet, ElderThing, AutoFail, Skull])
+                    || (t /= PlusOne && isNumberChaosToken t)
                 stuckAsYithian = any (`elem` [Cultist, Tablet, ElderThing, AutoFail]) tokens
               pure (iid, outOfBody, stuckAsYithian, asChaosTokens)
 
             for_ results \(iid, outOfBody, stuckAsYithian, tokens) -> do
               let
                 qLabel
-                  | stuckAsYithian =
-                      "You must use the Body of a Yithian investigator card as your investigator card for the remainder of the campaign. You also gain the Out of Body Experience weakness."
-                  | outOfBody = "You gain the Out of Body Experience weakness"
-                  | otherwise = "You suffer no ill-effects"
+                  | stuckAsYithian = "checkProcess.bodyOfAYithian"
+                  | outOfBody = "checkProcess.outOfBodyExperience"
+                  | otherwise = "checkProcess.noIllEffects"
               focusChaosTokens tokens \unfocus -> do
-                player <- getPlayer iid
-                push $ Ask player $ Read (ft qLabel) (BasicReadChoices [Label "Continue" []]) Nothing
+                storyOnlyBuild [iid] do
+                  setTitle "title"
+                  img iid
+                  compose.green $ ul $ li.valid qLabel
                 push unfocus
-              when outOfBody do
-                addCampaignCardToDeck iid DoNotShuffleIn Treacheries.outOfBodyExperience
+              when outOfBody $ addCampaignCardToDeck iid DoNotShuffleIn Treacheries.outOfBodyExperience
 
             let
               yithians =
@@ -475,37 +479,46 @@ instance RunMessage TheForgottenAge where
                     toJSON $ Metadata (supplyPoints metadata) yithians (expeditionLeader metadata) (bonusXp metadata)
                 }
           else pure c
-      CampaignStep (InterludeStepPart 4 mkey 2) -> do
+      CampaignStep (InterludeStepPart 4 mkey 2) -> scope "interlude4" do
         rescuedAlejandro <- getHasRecord TheInvestigatorsRescuedAlejandro
-        let
-          allMet =
-            and
-              [ count (== Tablet) attrs.chaosBag == 2
-              , rescuedAlejandro
-              , mkey == Just TheCustodianWasUnderControl
-              ]
+        let matchTokenCount = count (== Tablet) attrs.chaosBag == 2
+        let theCustodianWasUnderControl = mkey == Just TheCustodianWasUnderControl
+        let allMet = matchTokenCount && rescuedAlejandro && theCustodianWasUnderControl
+
+        flavor do
+          setTitle "title"
+          scope "checkAMindRecovered" $ compose.green do
+            p "body"
+            ul do
+              li.validate matchTokenCount "tabletCount"
+              li.validate rescuedAlejandro "rescuedAlejandro"
+              li.validate theCustodianWasUnderControl "theCustodianWasUnderControl"
+
         if allMet
           then do
-            story aMindRecovered
+            flavor $ setTitle "title" >> p.green "aMindRecovered"
             record AlejandroRemembersEverything
             addChaosToken Tablet
           else do
-            story foreverLost
+            flavor $ setTitle "title" >> p.green "foreverLost"
             record AlejandroIsSetAgainstYou
             removeCampaignCard Assets.alejandroVela
         pure c
-      CampaignStep (InterludeStepPart 4 _ 3) -> do
+      CampaignStep (InterludeStepPart 4 _ 3) -> scope "interlude4" do
+        flavor $ setTitle "title" >> p.green "chalk"
+
         hasChalk <- getAnyHasSupply Chalk
-        iids <- allInvestigators
-        story $ if hasChalk then theWayIsOpen else theWayIsShut
+        flavor $ setTitle "title" >> p.green (if hasChalk then "theWayIsOpen" else "theWayIsShut")
+
         mods <- toModifiers CampaignSource [CannotMulligan]
+        iids <- allInvestigators
         let
           update =
             if hasChalk
               then id
               else ala Endo foldMap $ [modifiersL %~ insertWith (<>) iid mods | iid <- iids]
         pure . TheForgottenAge $ attrs & update
-      CampaignStep (InterludeStepPart 4 _ 4) -> do
+      CampaignStep (InterludeStepPart 4 _ 4) -> scope "interlude4" do
         investigators <- allInvestigators
         provisions <- concatForM investigators \iid -> do
           map (iid,) <$> fieldMap InvestigatorSupplies (filter (== Provisions)) iid
@@ -514,55 +527,54 @@ instance RunMessage TheForgottenAge where
           useProvisions = take (length investigators) provisions
         for_ useProvisions (uncurry useSupply)
 
-        lead <- getLead
-        chooseNM lead lowOnRationsCount do
-          questionLabeled
-            "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read Low on Rations"
-          for_ investigators \iid -> do
-            cardLabeled iid do
-              storyOnly [iid] lowOnRationsInterlude4
-              handleTarget iid CampaignSource iid
+        storyWithChooseNM' lowOnRationsCount (setTitle "title" >> p.green "provisions") do
+          cardsLabeled investigators \iid -> do
+            storyOnlyBuild [iid] $ setTitle "title" >> p.green "lowOnRations"
+            handleTarget iid CampaignSource iid
         pure c
-      CampaignStep (InterludeStepPart 4 mkey 5) -> do
+      CampaignStep (InterludeStepPart 4 mkey 5) -> scope "interlude4" do
         investigators <- allInvestigators
-        lead <- getLead
         withMedicine <- flip concatMapM investigators $ \iid -> do
           n <- getSupplyCount iid Medicine
           pure $ replicate n iid
         let
           withPoisoned =
-            flip mapMaybe (mapToList attrs.decks)
-              $ \(iid, Deck cards) ->
-                guard (any (`cardMatch` CardWithTitle "Poisoned") cards) $> iid
+            flip mapMaybe (mapToList attrs.decks) \(iid, Deck cards) ->
+              guard (any (`cardMatch` CardWithTitle "Poisoned") cards) $> iid
+
         when (notNull withMedicine && notNull withPoisoned) do
-          chooseUpToNM lead (min (length withMedicine) (length withPoisoned)) "Do not use medicine" do
-            questionLabeled "Choose an investigator to remove Poisoned by using a medicine"
+          let medicineCount = min (length withMedicine) (length withPoisoned)
+          storyWithChooseUpToNM' medicineCount "doNotUseMedicine" (setTitle "title" >> p.green "medicine") do
             for_ (zip withPoisoned withMedicine) \(poisoned, doctor) -> do
-              cardLabeled poisoned do
+              cardLabeled (unInvestigatorId poisoned) do
                 removeCampaignCardFromDeck poisoned Treacheries.poisoned
                 useSupply doctor Medicine
-        push $ CampaignStep (InterludeStepPart 4 mkey 51)
+
+        interludeStepPart 4 mkey 51
         pure c
-      CampaignStep (InterludeStepPart 4 _ 51) -> do
+      CampaignStep (InterludeStepPart 4 _ 51) -> scope "interlude4" do
         let
           withPoisoned =
             flip mapMaybe (mapToList attrs.decks)
               $ \(iid, Deck cards) -> guard (any (`cardMatch` CardWithTitle "Poisoned") cards) $> iid
-        storyOnly withPoisoned thePoisonSpreadsInterlude4
-        for_ withPoisoned (`sufferPhysicalTrauma` 1)
+        unless (null withPoisoned) do
+          storyOnlyBuild withPoisoned (setTitle "title" >> p.green "thePoisonSpreads")
+          for_ withPoisoned (`sufferPhysicalTrauma` 1)
         pure c
-      CampaignStep (InterludeStepPart 4 _ 6) -> do
-        withBlanket <- getInvestigatorsWithSupply Blanket
-        withoutBlanket <- getInvestigatorsWithoutSupply Blanket
-        storyOnly withBlanket restfulSleepInterlude4
+      CampaignStep (InterludeStepPart 4 _ 6) -> scope "interlude4" do
+        flavor $ setTitle "title" >> p.green "blanket"
 
+        withBlanket <- getInvestigatorsWithSupply Blanket
+        storyOnlyBuild withBlanket $ setTitle "title" >> p.green "restfulSleep"
+
+        withoutBlanket <- getInvestigatorsWithoutSupply Blanket
         for_ withoutBlanket \iid -> do
-          storyOnly [iid] tossingAndTurningInterlude4
-          chooseOneM iid do
-            questionLabeled "Choose trauma"
+          storyOnlyBuild [iid] $ setTitle "title" >> p.green "tossingAndTurning"
+          chooseOneM iid $ unscoped do
+            questionLabeled' "chooseTrauma"
             questionLabeledCard iid
-            labeled "Suffer physical trauma" $ sufferPhysicalTrauma iid 1
-            labeled "Suffer mental trauma" $ sufferMentalTrauma iid 1
+            countVar 1 $ labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
+            countVar 1 $ labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
         pure c
       CampaignStep (InterludeStep 5 mkey) -> do
         whenHasRecord TheInvestigatorsFellIntoTheDepths $ story theDarkness1

@@ -101,6 +101,7 @@ export type PickSupplies = {
   pointsRemaining: number
   chosenSupplies: Supply[]
   choices: Message[]
+  resupply: boolean
 }
 
 export type DropDown = {
@@ -304,6 +305,7 @@ export const pickSuppliesDecoder = JsonDecoder.object<PickSupplies>(
     pointsRemaining: JsonDecoder.number(),
     chosenSupplies: JsonDecoder.array<Supply>(supplyDecoder, 'Supply[]'),
     choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
+    resupply: JsonDecoder.boolean()
   },
   'PickSupplies',
 );

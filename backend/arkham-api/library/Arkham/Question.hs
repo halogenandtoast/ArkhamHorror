@@ -150,7 +150,7 @@ data Question msg
   | ChooseDeck
   | QuestionLabel {label :: Text, card :: Maybe CardCode, question :: Question msg}
   | Read {flavorText :: FlavorText, readChoices :: ReadChoices msg, readCards :: Maybe [CardCode]}
-  | PickSupplies {pointsRemaining :: Int, chosenSupplies :: [Supply], choices :: [UI msg]}
+  | PickSupplies {pointsRemaining :: Int, chosenSupplies :: [Supply], choices :: [UI msg], resupply :: Bool}
   | DropDown {options :: [(Text, msg)]}
   | PickScenarioSettings
   | PickCampaignSettings
@@ -240,5 +240,18 @@ concat
         parseJSON other = fail $ "Unexpected json type: " <> show other
       |]
   , deriveJSON defaultOptions ''UI
-  , deriveJSON defaultOptions ''Question
+  , deriveToJSON defaultOptions ''Question
+  , [d|
+      instance FromJSON msg => FromJSON (Question msg) where
+        parseJSON = withObject "Question" \o -> do
+          tag :: Text <- o .: "tag"
+          case tag of
+            "PickSupplies" -> do
+              pointsRemaining <- o .: "pointsRemaining"
+              chosenSupplies <- o .: "chosenSupplies"
+              choices <- o .: "choices"
+              resupply <- o .:? "resupply" .!= False
+              pure $ PickSupplies {..}
+            _ -> $(mkParseJSON defaultOptions ''Question) (Object o)
+      |]
   ]

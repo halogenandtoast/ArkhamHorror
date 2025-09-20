@@ -567,6 +567,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("cards" .= gameCards)
       <> ("totalDoom" .= doom)
       <> ("totalClues" .= clues)
+      <> ("scenarioSteps" .= gameScenarioSteps)
    where
     emptyAdditionalData =
       object
@@ -658,6 +659,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "cards" .= toJSON gameCards
         , "totalDoom" .= toJSON doom
         , "totalClues" .= toJSON clues
+        , "scenarioSteps" .= toJSON gameScenarioSteps
         ]
    where
     emptyAdditionalData =

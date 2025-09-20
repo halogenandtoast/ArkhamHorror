@@ -435,8 +435,8 @@ handleAnswer Game {..} playerId = \case
           [Done _] -> [uiToRun m']
           rest -> [uiToRun m', Ask playerId $ f $ ChooseSome $ Done doneMsg : rest]
         (Nothing, msgs'') -> [Ask playerId $ f $ ChooseSome $ Done doneMsg : msgs'']
-    PickSupplies remaining chosen qs -> case qs !!? qrChoice response of
-      Nothing -> [Ask playerId $ f $ PickSupplies remaining chosen qs]
+    PickSupplies remaining chosen qs rs -> case qs !!? qrChoice response of
+      Nothing -> [Ask playerId $ f $ PickSupplies remaining chosen qs rs]
       Just msg -> [uiToRun msg]
     DropDown qs -> case qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ DropDown qs]

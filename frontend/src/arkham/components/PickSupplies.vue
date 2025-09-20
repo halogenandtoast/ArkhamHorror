@@ -4,6 +4,7 @@ import { PickSupplies  } from '@/arkham/types/Question';
 import { MessageType } from '@/arkham/types/Message';
 import { imgsrc } from '@/arkham/helpers';
 import { useI18n } from 'vue-i18n';
+import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 
 const props = defineProps<{
   game: Game,
@@ -13,6 +14,8 @@ const props = defineProps<{
 const emit = defineEmits(['choose'])
 const choose = (idx: number) => emit('choose', idx)
 const { t } = useI18n()
+
+const context = computed(() => props.question.resupply ? 'resupplyPoint' : 'prologue')
 
 const investigatorId = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)?.id)
 const pointsRemaining = computed(() => props.question.pointsRemaining)
@@ -44,7 +47,7 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1)
       <div class="pick-supplies-portrait">
         <img :src="portrait(investigatorId)" alt="Investigator Portrait" class="portrait" />
       </div>
-      <div class="pick-supplies-contents"><ul><li v-html="t('theForgottenAge.prologue.pickSupplies')"></li></ul></div>
+      <FormattedEntry class="pick-supplies-contents" :entry="{ tag: 'I18nEntry', key: `theForgottenAge.${context}.pickSupplies`}" />
     </div>
     <div class="pick-supplies">
       <h2>{{t('theForgottenAge.supplies.choose', { pointsRemaining })}}</h2>
@@ -118,6 +121,7 @@ button {
     margin: 0;
     padding: 0;
   }
+
 }
 
 .pick-supplies {
@@ -192,10 +196,22 @@ ul li {
 
 .pick-supplies-contents {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  padding: 10px;
   background: #DCD6D0;
   border-radius: 10px;
   box-shadow: inset 0 0 170px rgba(0, 0, 0, 0.5), 1px 1px 3px rgba(0, 0, 0, 0.6);
+
+  :deep(p) {
+    font-size: 1.2em !important;
+  }
+
+  :deep(em) {
+    font-style: italic;
+  }
 }
 
 .pick-supplies-portrait {

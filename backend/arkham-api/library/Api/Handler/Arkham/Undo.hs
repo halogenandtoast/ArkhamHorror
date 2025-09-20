@@ -14,7 +14,7 @@ import Data.Time.Clock
 import Database.Esqueleto.Experimental
 import Entity.Arkham.LogEntry
 import Entity.Arkham.Step
-import Import hiding (delete, on, update, (<.), (=.), (==.), (>=.))
+import Import hiding (delete, on, update, (<.), (=.), (==.), (>=.), (!=.))
 import Json
 import Network.HTTP.Types.Status qualified as Status
 
@@ -121,6 +121,8 @@ putApiV1ArkhamGameUndoScenarioR gameId = do
 
   let n = gameScenarioSteps (arkhamGameCurrentData game) - 1
 
+  when (n <= 0) $ jsonError "No scenario steps to undo"
+
   ArkhamGame {..} <- stepBackN n userId gameId game
 
   x <- liftIO getRandom
@@ -161,6 +163,7 @@ stepBackN n userId gameId ArkhamGame {..} = runDB do
     where_ $ steps.arkhamGameId ==. val gameId
     orderBy [desc steps.step]
     limit (fromIntegral n)
+    where_ $ steps.step !=. val 0
     pure steps
 
   void $ select do
@@ -169,7 +172,7 @@ stepBackN n userId gameId ArkhamGame {..} = runDB do
     locking forUpdate
 
   update \g -> do
-    set g [ArkhamGameStep =. val (arkhamGameStep - n)]
+    set g [ArkhamGameStep =. val (min 0 $ arkhamGameStep - n)]
     where_ $ g.id ==. val gameId
 
   delete do
@@ -179,7 +182,7 @@ stepBackN n userId gameId ArkhamGame {..} = runDB do
   delete do
     entries <- from $ table @ArkhamLogEntry
     where_ $ entries.arkhamGameId ==. val gameId
-    where_ $ entries.step >=. val (arkhamGameStep - n)
+    where_ $ entries.step >=. val (min 0 $ arkhamGameStep - n)
 
   now <- liftIO getCurrentTime
 

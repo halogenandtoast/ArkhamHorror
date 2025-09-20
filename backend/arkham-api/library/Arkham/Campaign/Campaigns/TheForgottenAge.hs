@@ -266,7 +266,7 @@ instance RunMessage TheForgottenAge where
         doStep 0 (DoStep total (ForInvestigator iid (CampaignStep ResupplyPoint)))
         when (remaining > 0) $ push $ SpendXP iid remaining
         pure c
-      DoStep 2 msg'@(ForInvestigator iid (CampaignStep ResupplyPoint)) -> do
+      DoStep 2 msg'@(ForInvestigator iid (CampaignStep ResupplyPoint)) -> scope "resupplyPoint" do
         let extraXp = Map.findWithDefault 0 iid (bonusXp metadata)
         isPoisoned <- getIsPoisoned iid
         xp <- field InvestigatorXp iid
@@ -275,13 +275,13 @@ instance RunMessage TheForgottenAge where
 
         when (isPoisoned && hasXp) do
           chooseOneM iid do
-            questionLabeled "Visit St. Mary's?"
+            questionLabeled' "visitStMarys"
             questionLabeledCard iid
-            labeled "Spend 3 xp to visit St. Mary's Hospital and remove a poisoned weakness" do
+            labeled' "removePoisoned" do
               doStep 0 (DoStep 3 msg') -- spend extra first
               push $ SpendXP iid toSpend
               removeCampaignCardFromDeck iid Treacheries.poisoned
-            labeled "Do not remove poisoned weakness" nothing
+            labeled' "doNotRemovePoisoned" nothing
         pure c
       DoStep 3 msg'@(ForInvestigator iid (CampaignStep ResupplyPoint)) -> do
         let extraXp = Map.findWithDefault 0 iid (bonusXp metadata)
@@ -296,7 +296,7 @@ instance RunMessage TheForgottenAge where
 
         when canHealTrauma do
           chooseOneM iid do
-            questionLabeled "Visit St. Mary's"
+            questionLabeled' "visitStMary"
             questionLabeledCard iid
             when hasPhysicalTrauma do
               labeled' "removePhysicalTrauma" do
@@ -305,12 +305,12 @@ instance RunMessage TheForgottenAge where
                 push $ HealTrauma iid 1 0
                 when (isReturnTo && xp + extraXp - 5 >= 5) $ doStep 3 msg'
             when hasMentalTrauma do
-              labeled "Spend 5 xp to visit St. Mary's Hospital and remove a mental trauma" do
+              labeled' "removeMentalTrauma" do
                 doStep 0 (DoStep 5 msg') -- spend extra first
                 when (toSpend > 0) $ push $ SpendXP iid toSpend
                 push $ HealTrauma iid 0 1
                 when (isReturnTo && xp + extraXp - 5 >= 5) $ doStep 3 msg'
-            labeled "Do not remove trauma" nothing
+            labeled "doNotRemoveTrauma" nothing
 
         pure c
       CampaignStep (InterludeStep 3 mkey) -> scope "interlude3" do
@@ -577,18 +577,26 @@ instance RunMessage TheForgottenAge where
             countVar 1 $ labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
             countVar 1 $ labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
         pure c
-      CampaignStep (InterludeStep 5 mkey) -> do
-        whenHasRecord TheInvestigatorsFellIntoTheDepths $ story theDarkness1
+      CampaignStep (InterludeStep 5 mkey) -> scope "interlude5" do
+        fellIntoTheDepths <- getHasRecord TheInvestigatorsFellIntoTheDepths
+        flavor do
+          setTitle "title"
+          ul do
+            li.validate fellIntoTheDepths "fellIntoTheDepths"
+            li.validate (not fellIntoTheDepths) "theNexusIsNear"
 
-        story theDarkness2
-        push $ CampaignStep (InterludeStepPart 5 mkey 1)
-        push $ CampaignStep (InterludeStepPart 5 mkey 2)
-        push $ CampaignStep (InterludeStepPart 5 mkey 3)
-        push $ CampaignStep (InterludeStepPart 5 mkey 4)
+        when fellIntoTheDepths $ flavor $ setTitle "title" >> p "theDarkness1"
+
+        flavor $ setTitle "title" >> p "theDarkness2"
+        interludeStepPart 5 mkey 1
+        interludeStepPart 5 mkey 2
+        interludeStepPart 5 mkey 3
+        interludeStepPart 5 mkey 4
         nextCampaignStep
 
         pure c
-      CampaignStep (InterludeStepPart 5 _ 1) -> do
+      CampaignStep (InterludeStepPart 5 _ 1) -> scope "interlude5" do
+        flavor $ setTitle "title" >> p.green "theMissingRelic"
         foundTheMissingRelic <- getHasRecord TheInvestigatorsFoundTheMissingRelic
         recoveredTheRelicOfAges <- getHasRecord TheInvestigatorsRecoveredTheRelicOfAges
         forgingYourOwnPath <- getHasRecord YouAreForgingYourOwnWay
@@ -606,34 +614,33 @@ instance RunMessage TheForgottenAge where
         relic <- genCard Assets.relicOfAgesRepossessThePast
 
         if foundTheMissingRelic
-          then story arcaneThrumming
+          then flavor $ setTitle "title" >> p.green "arcaneThrumming"
           else do
-            story growingConcern
+            flavor $ setTitle "title" >> p.green "growingConcern"
             addChaosToken newChaosToken
 
         when readFinalDawning do
-          story finalDawning
+          flavor $ setTitle "title" >> p.green "finalDawning"
           removeCampaignCard Assets.relicOfAgesADeviceOfSomeSort
           removeCampaignCard Assets.relicOfAgesForestallingTheFuture
           for_ mRelicOfAgesOwner \owner -> addCampaignCardToDeck owner DoNotShuffleIn relic
         pure c
-      CampaignStep (InterludeStepPart 5 _ 2) -> do
+      CampaignStep (InterludeStepPart 5 _ 2) -> scope "interlude5" do
         hasTorches <- getAnyHasSupply Torches
-        story $ if hasTorches then torchlight else theAbyss
+        flavor $ setTitle "title" >> p.green "torches"
+        flavor $ setTitle "title" >> p.green (if hasTorches then "torchlight" else "theAbyss")
         record $ if hasTorches then TheBraziersAreLit else TheBraziersRemainUnlit
         pure c
-      CampaignStep (InterludeStepPart 5 _ 3) -> do
+      CampaignStep (InterludeStepPart 5 _ 3) -> scope "interlude5" do
+        flavor $ setTitle "title" >> p.green "map"
         theBraziersAreLit <- getHasRecord TheBraziersAreLit
         hasMap <- select $ InvestigatorWithSupply Map
         when (theBraziersAreLit && notNull hasMap) $ do
-          story readingSigns
-          for_
-            hasMap
-            ( `interludeXp`
-                WithBonus "Gains insight into the caverns that dwell beneath the surface of the Earth." 2
-            )
+          flavor $ setTitle "title" >> p.green "readingSigns"
+          for_ hasMap (`interludeXp` toBonus "bonus" 2)
         pure c
-      CampaignStep (InterludeStepPart 5 _ 4) -> do
+      CampaignStep (InterludeStepPart 5 _ 4) -> scope "interlude5" do
+        flavor $ setTitle "title" >> p.green "senseOfTime"
         eachInvestigator \iid -> do
           supplies <- field InvestigatorSupplies iid
           for_ supplies $ \case
@@ -641,8 +648,9 @@ instance RunMessage TheForgottenAge where
             Provisions -> useSupply iid Provisions
             _ -> pure ()
         pure c
-      CampaignStep EpilogueStep -> do
+      CampaignStep EpilogueStep -> scope "epilogue" do
         -- We can only get here if we've turned back time, but may want to check
+        flavor $ setTitle "title" >> p "body"
         setNextCampaignStep TurnBackTime
         pure c
       HandleTargetChoice _ CampaignSource (InvestigatorTarget iid) -> do

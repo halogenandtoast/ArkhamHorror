@@ -318,11 +318,11 @@ instance RunMessage TheForgottenAge where
         flavor $ setTitle "title" >> p "body"
 
         -- Out of Gas
-        flavor $ p.green "gas"
+        flavor $ setTitle "title" >> p.green "gas"
         gasUpdate <-
           getInvestigatorsWithSupply Gasoline >>= \case
             [] -> do
-              flavor $ p.green "outOfGas"
+              flavor $ setTitle "title" >> p.green "outOfGas"
               cannotMulligan <- toModifiers CampaignSource [CannotMulligan]
               pure $ ala Endo foldMap [modifiersL %~ insertWith (<>) iid cannotMulligan | iid <- investigators]
             x : _ -> do
@@ -330,11 +330,11 @@ instance RunMessage TheForgottenAge where
               pure id
 
         -- A Path Discovered
-        flavor $ p.green "map"
+        flavor $ setTitle "title" >> p.green "map"
         getInvestigatorsWithSupply Map >>= \case
           [] -> pure ()
           xs -> do
-            storyOnlyBuild xs $ p.green "aPathDiscovered"
+            storyOnlyBuild xs $ setTitle "title" >> p.green "aPathDiscovered"
             record TheInvestigatorsMappedOutTheWayForward
 
         -- Low on Rations
@@ -344,12 +344,12 @@ instance RunMessage TheForgottenAge where
 
         let lowOnRationsCount = length investigators - length provisions
         if lowOnRationsCount > 0
-          then storyWithChooseNM' lowOnRationsCount (p.green "provisions") do
+          then storyWithChooseNM' lowOnRationsCount (setTitle "title" >> p.green "provisions") do
             for_ investigators \iid -> do
               cardLabeled (unInvestigatorId iid) do
-                storyOnlyBuild [iid] $ p.green "lowOnRations"
+                storyOnlyBuild [iid] $ setTitle "title" >> p.green "lowOnRations"
                 handleTarget iid CampaignSource iid
-          else flavor $ p.green "provisions"
+          else flavor $ setTitle "title" >> p.green "provisions"
 
         -- The Poison Spreads
         let
@@ -363,26 +363,28 @@ instance RunMessage TheForgottenAge where
         if notNull withMedicine && notNull withPoisoned
           then do
             let medicineCount = min (length withMedicine) (length withPoisoned)
-            storyWithChooseUpToNM' medicineCount "doNotUseMedicine" (p.green "medicine") do
+            storyWithChooseUpToNM' medicineCount "doNotUseMedicine" (setTitle "title" >> p.green "medicine") do
               for_ (zip withPoisoned withMedicine) \(poisoned, doctor) -> do
                 cardLabeled (unInvestigatorId poisoned) do
                   removeCampaignCardFromDeck poisoned Treacheries.poisoned
                   useSupply doctor Medicine
-          else flavor $ p.green "medicine"
+          else flavor $ setTitle "title" >> p.green "medicine"
 
-        push $ CampaignStep (InterludeStepPart 3 mkey 2)
+        interludeStepPart 3 mkey 2
 
         -- ? in the Stone
         canteenUpdate <-
           getInvestigatorsWithSupply Canteen >>= \case
             [] -> do
-              flavor $ compose.green do
-                p.invalid "canteen"
-                p "secretsInTheStone"
+              flavor do
+                setTitle "title"
+                compose.green do
+                  p.invalid "canteen"
+                  p "secretsInTheStone"
               pure id
             xs -> do
-              flavor $ p.green.valid "canteen"
-              storyOnlyBuild xs $ p.green "patternsInTheStone"
+              flavor $ setTitle "title" >> p.green.valid "canteen"
+              storyOnlyBuild xs $ setTitle "title" >> p.green "patternsInTheStone"
               startingClues <- toModifiersWith CampaignSource setActiveDuringSetup [StartingClues 1]
               pure $ ala Endo foldMap [modifiersL %~ insertWith (<>) iid startingClues | iid <- xs]
 
@@ -392,13 +394,15 @@ instance RunMessage TheForgottenAge where
         let cultistCount = count (== Cultist) attrs.chaosBag >= 2
         let isFaithRestored = and [forgedBond, hasConfidence, cultistCount]
 
-        flavor $ compose.green do
-          p "ichtaca"
-          ul do
-            li.validate cultistCount "cultistCount"
-            li.validate forgedBond "forgedBond"
-            li.validate hasConfidence "hasConfidence"
-          when isFaithRestored $ p "faithRestored"
+        flavor do
+          setTitle "title"
+          compose.green do
+            p "ichtaca"
+            ul do
+              li.validate cultistCount "cultistCount"
+              li.validate forgedBond "forgedBond"
+              li.validate hasConfidence "hasConfidence"
+            when isFaithRestored $ p "faithRestored"
 
         when isFaithRestored do
           record IchtacasFaithIsRestored
@@ -411,7 +415,7 @@ instance RunMessage TheForgottenAge where
             flip mapMaybe (mapToList attrs.decks) \(iid, Deck cards) ->
               guard (any (`cardMatch` CardWithTitle "Poisoned") cards) $> iid
 
-        storyOnlyBuild withPoisoned $ p.green "thePoisonSpreads"
+        storyOnlyBuild withPoisoned $ setTitle "title" >> p.green "thePoisonSpreads"
         for_ withPoisoned (`sufferPhysicalTrauma` 1)
         pure c
       CampaignStep (InterludeStep 4 mkey) -> do

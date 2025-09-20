@@ -15,5 +15,59 @@
   },
   "xp": {
     "depth": "Depth Level"
+  },
+  "intro": {
+    "title": "Scenario VII: The Depths of Yoth",
+    "intro1": {
+      "body": "<p>_Intro 1_: Several hours after you wake, your laborious descent pays dividends. The red glow emanating from the bottom of the steps grows brighter with each step. The stone floor finally levels off, and the choking tunnel walls open to reveal a labyrinthine network of immense, far-reaching caverns. Littered throughout the caverns are the ruins of a vast city, the likes of which you have never seen. The elaborate stone architecture has been worn away by ages of abandonment, but you sense that there is a history here that runs deeper than you can even fathom. When you turn around to question Ichtaca, you notice a faint yellow glow in her eyes, her pupils narrowed and contracted. “Yoth…the last refuge of Valusia…” she quietly intones.</p><p>Just then, a terrifying roar echoes throughout the cavern. The walls and floor shake with tremendous force, and the red glow that permeates the area brightens. A flood of hisses emerges from the tunnels all around you. Ichtaca walks to the edge of a nearby precipice and looks out over the vast depths. “He is here. I feel his presence. The Father of the Serpents… Yig.”</p>",
+      "forgingYourOwnPath": "Check Campaign Log. If you are forging your own path, proceed to _Intro 2_.",
+      "faithIsRestored": "If Ichtaca’s faith is restored, skip to _Intro 3_.",
+      "otherwise": "Otherwise, skip to _Intro 4_."
+    },
+    "intro2": "<p>_Intro 2_: You realize now that Ichtaca has her own agenda. Alejandro, as well—both have been using you for their own ends, keeping you from the truth. You raise a weapon and demand answers from her, catching her by surprise. “Yig demands the relic be brought to the Nexus,” she responds anxiously. Her eyes glow brightly, and her skin starts to scale over. Your eyes narrow, and you move to corner her against the edge of the precipice, so she cannot escape. “The relic cannot be trusted to the hands of Brotherhood: this much is true…For it is Valusia that shall be restored to glory. Yig has called, and I must answer.” Before you can react, she throws herself off the edge and into the depths below.</p><p class='basic right'>In your Campaign Log, record that *Ichtaca is set against you.*</p><p class='basic right'>Add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</p><p class='basic right'>Skip to _Setup_.</p>",
+    "intro3": "<p>_Intro 3_: You approach Ichtaca and rest a hand on her shoulder. Your companion takes a deep breath and turns to face you. Her eyes are cast downward in shame, and they have returned to their normal color. “I…I’m sorry. I have brought you to your ruin. He called out to me, long ago, told me of my heritage, of my people. I did his bidding willingly.” She clenches her fists, her gaze meeting yours. “But now I realize I was wrong. Humanity deserves its time on Earth. You may have inherited it from far more powerful forces, but it is humanity’s time, not theirs.” You don’t completely understand what she is saying, but you understand the implication. Whatever Ichtaca truly is, she is on your side. A calm silence lingers between you, an unspoken bond that joins you as one. “We must get to the Nexus and prevent the serpents from recovering the relic,” she explains after a few moments, breaking the silence. You nod in agreement.</p><p>Skip to _Setup_.</p>",
+    "intro4": {
+      "body": "<p>_Intro 4_: You hesitate, unsure what to do next. What are Ichtaca’s true motives? Why has she led you here? Before you have the chance to react, she draws her bow and aims an arrow at your heart. “Thank you for aiding me this far,” Ichtaca says curtly, “but the time has come for us to part ways. Yig has called, and I must answer.” Her yellow eyes narrow and shine brightly.</p><p class='basic right'>In your Campaign Log, record that *Ichtaca is set against you*. If Ichtaca is part of an investigator’s deck, remove her from that investigator’s deck for the remainder of the campaign.</p>",
+      "theRelicIsMissing": "Check Campaign Log. *If the relic is missing*, proceed to _Intro 5_.",
+      "foundTheMissingRelic": "*If the investigators found the missing relic*, skip to _Intro 6_."
+    },
+    "intro5": "<p>_Intro 5_: “You must leave this place at once. This is not humanity’s battle. It is ours. We cannot let you or the Brotherhood foil our plans. Not now, not when we are so close.” Her hand wavers for a moment, and her eyes flicker again. You can tell that something is tearing at her, weighing on her mind. Finally, she speaks again. “Go now. Before I change my mind. And if you wish to live, do not follow. I will not give you a second chance.” Ichtaca swiftly departs, eyes trained on you until she leaves your sight. Despite her warning, you feel that you have no choice but to follow. If you don’t, who will protect humanity?</p><p class='basic right'>Skip to _Setup_.</p>",
+    "intro6": "<p>_Intro 6_: “Now drop your weapons.” The betrayal stings your chest, and you are gripped with anger and despair. Thoughts of escape flash across your mind, but you have seen her skill with a bow—with her steady aim, you would be dead before you took two steps. You have no choice but to comply. Your weapons clatter to the ground, one at a time. “Good. Now the relic: hand it to me.” Grimacing, you take a few steps forward and offer the relic to Ichtaca.</p><p class='basic right'>Check your supplies. If any investigator has a pocketknife, that investigator reads _Intro 7_. Otherwise, skip to _Intro 8_.</p>",
+    "intro7": "<p>_Intro 7_: As Ichtaca reaches out to grab the relic, you pull out your concealed pocketknife and quickly attack, catching her by surprise. The blade cuts deeply across her forearm. Blood sprays across your chest, and she staggers with pain, gripping her arm. Her heel clips a rock near the edge of the precipice, and she tumbles over the side of the ledge, her scream growing distant as she falls. You barely have time to recover from the shock of what just happened, as another colossal roar fills the cavern, and the ground shakes. You gather your belongings and continue your descent.</p><p class='basic right'>Skip to _Setup_.</p>",
+    "intro8": "<p>_Intro 8_: Ichtaca grabs the relic. You can see the skin on the back of her hand growing hard and scaly. You take a few steps back, knuckles white with anger. “Go now. Before I change my mind,” she says. “And if you wish to live, do not follow. I will not give you a second chance.” Ichtaca swiftly departs, eyes trained on you until she leaves your sight. Despite her warning, you feel that you have no choice but to follow. If you don’t, who will protect humanity?</p><p class='basic right'>In your Campaign Log, cross off the investigators found the missing relic and record the relic is missing. If Relic of Ages is part of an investigator’s deck, remove it from that investigator’s deck for the remainder of the campaign.</p><p class='basic right'>Proceed to _Setup_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *The Depths of Yoth*, *Agents of Yig*, *Yig’s Venom*, *Expedition*, *Forgotten Ruins*, and *Poison*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-depths-of-yoth.png' /><img src='{setImgPath}/agents-of-yig.png' /><img src='{setImgPath}/yigs-venom.png' /><img src='{setImgPath}/expedition.png' /><img src='{setImgPath}/forgotten-ruins.png' /><img src='{setImgPath}/poison.png' /></section>",
+    "yigsFury": {
+      "description": "Check the number of tally marks under “Yig’s Fury” in your Campaign Log.",
+      "tally0": "If there are 0 tally marks, search the gathered encounter cards for Yig and each copy of Pit Warden. Remove those cards from the game.",
+      "tally1to5": "If there are 1–5 tally marks, no changes are made.",
+      "tally6to10": "If there are 6–10 tally marks, remove agenda 1a from the game. The game begins at agenda 2a.",
+      "tally11to14": "If there are 11–14 tally marks, remove agendas 1a and 2a from the game. The game begins at agenda 3a.",
+      "tally15to17": "If there are 15–17 tally marks, remove agendas 1a, 2a, and 3a from the game. The game begins at agenda 4a.",
+      "tally18to20": "If there are 18–20 tally marks, remove agendas 1a, 2a, 3a, and 4a from the game. The game begins at agenda 5a.",
+      "tally21OrMore": "If there are 21 or more tally marks, remove agendas 1a, 2a, 3a, 4a, and 5a from the game. The game begins at agenda 6a."
+    },
+    "placeLocations": "Set each of the 10 single-sided locations aside, out of play. Draw one of those locations at random other than Steps of Yoth, and put it into play. Each investigator begins play at the randomly chosen location.",
+    "theHarbinger": {
+      "description": "Check Campaign Log. If the Harbinger is still alive, search the collection for the Harbinger of Valusia and set it aside. Place damage on it equal to the amount of damage recorded in parentheses in your Campaign Log.",
+      "agenda5or6": "If it is agenda 5a or 6a, move that the set-aside Harbinger of Valusia enemy to the pursuit area. (See “Pursuit,” below.)"
+    },
+    "yig": {
+      "description": "Set the Yig enemy aside, out of play.",
+      "agenda6": "If it is agenda 6a, move that the set-aside Yig enemy to the pursuit area."
+    },
+    "explorationDeck": "Create the exploration deck. This is done by taking the set-aside Steps of Yoth and 4 of the remaining single-sided locations and shuffling them together.",
+    "currentDepth": "Place 1 resource token on the scenario reference card, under “Current Depth.” For the remainder of the scenario, the number of resources under “Current Depth” indicates the current depth level. (See “Depth Level,” below.)",
+    "setOutOfPlay": "Set the Relic of Ages (*Repossess the Past*) aside, out of play.",
+    "poisoned": "Set aside each Poisoned weakness that is not already in an investigator’s deck."
+  },
+  "depthLevel": {
+    "title": "Depth Level",
+    "body": "<p class='basic'>Throughout this scenario, the number of resources under “Current Depth” on the scenario reference card indicates the current depth level. As the investigators journey deeper into Yoth by completing act 1, resources are added to the current depth level, and play continues until the investigators reach a certain depth level, or are defeated. Deeper levels of Yoth are deadlier, but the deeper the level the investigators are able to reach, the better the resolution of this scenario will be.</p><p class='basic'>The current depth level has no game effect on its own; however, some encounter card effects may change or become stronger depending on the current depth level.</p>"
+  },
+  "pursuit": {
+    "title": "Pursuit",
+    "body": "<p class='basic'>Some cards in this scenario reference an area called the “pursuit area.” The pursuit area is an out-of-play area next to the act and agenda deck which enemies can enter and leave via card effects. Generally speaking, enemies in play will move to the pursuit area whenever the investigators reach the next depth level. _Although the pursuit area is out of play, whenever an enemy moves to the pursuit area, it keeps all tokens and attachments_.</p><p class='basic'>Enemies in the pursuit area are considered to be “in pursuit.” Enemies that are in pursuit are considered to be out of play, and cannot be affected by player cards or investigator actions. However, enemies that are in pursuit can re‑enter play by a variety of card abilities.</p>"
   }
 }

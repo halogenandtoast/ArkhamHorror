@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheDepthsOfYoth (theDepthsOfYoth) where
+module Arkham.Scenario.Scenarios.TheDepthsOfYoth (setupTheDepthsOfYoth, theDepthsOfYoth, TheDepthsOfYoth(..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -13,6 +13,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
@@ -81,42 +82,143 @@ standaloneChaosTokens =
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog = mkCampaignLog {campaignLogRecorded = setFromList [toCampaignLogKey TheRelicIsMissing]}
 
+setupTheDepthsOfYoth :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupTheDepthsOfYoth _attrs = do
+  setup $ ul do
+    li "gatherSets"
+    scope "yigsFury" $ li.nested "description" do
+      li "tally0"
+      li "tally1to5"
+      li "tally6to10"
+      li "tally11to14"
+      li "tally15to17"
+      li "tally18to20"
+      li "tally21OrMore"
+    li "placeLocations"
+    scope "theHarbinger" $ li.nested "description" do
+      li "agenda5or6"
+    scope "yig" $ li.nested "description" do
+      li "agenda6"
+    li "explorationDeck"
+    li "currentDepth"
+    li "setOutOfPlay"
+    li "poisoned"
+    unscoped $ li "shuffleRemainder"
+
+  scope "depthLevel" $ flavor $ h "title" >> p "body"
+  scope "pursuit" $ flavor $ h "title" >> p "body"
+
+  gather Set.TheDepthsOfYoth
+  gather Set.AgentsOfYig
+  gather Set.YigsVenom
+  gather Set.Expedition
+  gather Set.ForgottenRuins
+  gather Set.Poison
+
+  yigsFury <- getRecordCount YigsFury
+  when (yigsFury == 0) $ removeEvery [Enemies.pitWarden, Enemies.yig]
+
+  locations <-
+    shuffleM
+      [ Locations.cityOfTheSerpents
+      , Locations.hallOfHeresy
+      , Locations.crumblingPrecipice
+      , Locations.cavernsOfYoth
+      , Locations.forkedPath
+      , Locations.bridgeOverNKai
+      , Locations.brokenPassage
+      , Locations.abandonedSite
+      , Locations.brightCanyon
+      ]
+
+  let
+    (start, rest) = case locations of
+      (x : xs) -> (x, xs)
+      _ -> error "impossible"
+    (inExplore, setAsideLocations) = splitAt 4 rest
+
+  addExtraDeck ExplorationDeck =<< shuffle (Locations.stepsOfYoth : inExplore)
+
+  startLocation <- place start
+  startAt startLocation
+  setMeta (toMeta startLocation)
+  setCount CurrentDepth 1
+
+  let
+    startsOnAgenda5 = yigsFury >= 18
+    startsOnAgenda6 = yigsFury >= 21
+
+  when startsOnAgenda5 $ placeEnemy Enemies.harbingerOfValusia (OutOfPlay PursuitZone)
+  when startsOnAgenda6 $ placeEnemy Enemies.yig (OutOfPlay PursuitZone)
+
+  setAsidePoisonedCount <- getSetAsidePoisonedCount
+  theHarbingerIsStillAlive <- getHasRecord TheHarbingerIsStillAlive
+
+  setAside
+    $ Assets.relicOfAgesRepossessThePast
+    : [ Enemies.harbingerOfValusia
+      | theHarbingerIsStillAlive && not startsOnAgenda5
+      ]
+      <> [Enemies.yig | not startsOnAgenda6 && yigsFury > 0]
+      <> replicate setAsidePoisonedCount Treacheries.poisoned
+      <> setAsideLocations
+
+  setActDeck [Acts.journeyToTheNexus]
+  setAgendaDeck
+    $ [Agendas.theDescentBegins | yigsFury < 6] -- 1
+    <> [Agendas.horrificDescent | yigsFury < 11] -- 2
+    <> [Agendas.endlessCaverns | yigsFury < 15] -- 3
+    <> [Agendas.cityOfBlood | yigsFury < 18] -- 4
+    <> [Agendas.furyThatShakesTheEarth | yigsFury < 21] -- 5
+    <> [Agendas.theRedDepths, Agendas.vengeance] -- 6,7
+
 instance RunMessage TheDepthsOfYoth where
   runMessage msg s@(TheDepthsOfYoth attrs) = runQueueT $ scenarioI18n $ case msg of
-    PreScenarioSetup -> do
-      story intro1
+    PreScenarioSetup -> scope "intro" do
       forgingYourOwnPath <- getHasRecord YouAreForgingYourOwnWay
       ichtacasFaithIsRestored <- getHasRecord IchtacasFaithIsRestored
+      flavor do
+        h "title"
+        scope "intro1" do
+          p "body"
+          p.basic.right.validate forgingYourOwnPath "forgingYourOwnPath"
+          p.basic.right.validate (not forgingYourOwnPath && ichtacasFaithIsRestored) "faithIsRestored"
+          p.basic.right.validate (not forgingYourOwnPath && not ichtacasFaithIsRestored) "otherwise"
       doStep (if forgingYourOwnPath then 2 else if ichtacasFaithIsRestored then 3 else 4) PreScenarioSetup
       pure s
-    DoStep 2 PreScenarioSetup -> do
-      story intro2
+    DoStep 2 PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "intro2"
       record IchtacaIsSetAgainstYou
       unlessStandalone $ addChaosToken ElderThing
       pure s
-    DoStep 3 PreScenarioSetup -> do
-      story intro3
+    DoStep 3 PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "intro3"
       pure s
-    DoStep 4 PreScenarioSetup -> do
-      story intro4
+    DoStep 4 PreScenarioSetup -> scope "intro" do
+      theRelicIsMissing <- getHasRecord TheRelicIsMissing
+      flavor do
+        h "title"
+        scope "intro4" do
+          p "body"
+          p.basic.right.validate theRelicIsMissing "theRelicIsMissing"
+          p.basic.right.validate (not theRelicIsMissing) "foundTheMissingRelic"
       record IchtacaIsSetAgainstYou
       removeCampaignCard Assets.ichtacaTheForgottenGuardian
-      theRelicIsMissing <- getHasRecord TheRelicIsMissing
       doStep (if theRelicIsMissing then 5 else 6) PreScenarioSetup
       pure s
-    DoStep 5 PreScenarioSetup -> do
-      story intro5
+    DoStep 5 PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "intro5"
       pure s
-    DoStep 6 PreScenarioSetup -> do
-      story intro6
+    DoStep 6 PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "intro6"
       hasPocketknife <- getAnyHasSupply Pocketknife
       doStep (if hasPocketknife then 7 else 8) PreScenarioSetup
       pure s
-    DoStep 7 PreScenarioSetup -> do
-      story intro7
+    DoStep 7 PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "intro7"
       pure s
-    DoStep 8 PreScenarioSetup -> do
-      story intro8
+    DoStep 8 PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "intro8"
       crossOut TheInvestigatorsFoundTheMissingRelic
       record TheRelicIsMissing
       removeCampaignCard Assets.relicOfAgesADeviceOfSomeSort
@@ -136,70 +238,7 @@ instance RunMessage TheDepthsOfYoth where
           [AmountChoice choiceId "Fury" 0 9000]
           (toTarget attrs)
       pure . TheDepthsOfYoth $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
-    Setup -> runScenarioSetup TheDepthsOfYoth attrs do
-      gather Set.TheDepthsOfYoth
-      gather Set.AgentsOfYig
-      gather Set.YigsVenom
-      gather Set.Expedition
-      gather Set.ForgottenRuins
-      gather Set.Poison
-
-      yigsFury <- getRecordCount YigsFury
-      when (yigsFury == 0) $ removeEvery [Enemies.pitWarden, Enemies.yig]
-
-      locations <-
-        shuffleM
-          [ Locations.cityOfTheSerpents
-          , Locations.hallOfHeresy
-          , Locations.crumblingPrecipice
-          , Locations.cavernsOfYoth
-          , Locations.forkedPath
-          , Locations.bridgeOverNKai
-          , Locations.brokenPassage
-          , Locations.abandonedSite
-          , Locations.brightCanyon
-          ]
-
-      let
-        (start, rest) = case locations of
-          (x : xs) -> (x, xs)
-          _ -> error "impossible"
-        (inExplore, setAsideLocations) = splitAt 4 rest
-
-      addExtraDeck ExplorationDeck =<< shuffle (Locations.stepsOfYoth : inExplore)
-
-      startLocation <- place start
-      startAt startLocation
-      setMeta (toMeta startLocation)
-      setCount CurrentDepth 1
-
-      let
-        startsOnAgenda5 = yigsFury >= 18
-        startsOnAgenda6 = yigsFury >= 21
-
-      when startsOnAgenda5 $ placeEnemy Enemies.harbingerOfValusia (OutOfPlay PursuitZone)
-      when startsOnAgenda6 $ placeEnemy Enemies.yig (OutOfPlay PursuitZone)
-
-      setAsidePoisonedCount <- getSetAsidePoisonedCount
-      theHarbingerIsStillAlive <- getHasRecord TheHarbingerIsStillAlive
-
-      setAside
-        $ Assets.relicOfAgesRepossessThePast
-        : [ Enemies.harbingerOfValusia
-          | theHarbingerIsStillAlive && not startsOnAgenda5
-          ]
-          <> [Enemies.yig | not startsOnAgenda6 && yigsFury > 0]
-          <> replicate setAsidePoisonedCount Treacheries.poisoned
-          <> setAsideLocations
-
-      setActDeck [Acts.journeyToTheNexus]
-      setAgendaDeck
-        $ [Agendas.theDescentBegins | yigsFury < 6] -- 1
-        <> [Agendas.horrificDescent | yigsFury < 11] -- 2
-        <> [Agendas.endlessCaverns | yigsFury < 15] -- 3
-        <> [Agendas.cityOfBlood | yigsFury < 18] -- 4
-        <> [Agendas.furyThatShakesTheEarth | yigsFury < 21] -- 5
-        <> [Agendas.theRedDepths, Agendas.vengeance] -- 6,7
+    Setup -> runScenarioSetup TheDepthsOfYoth attrs $ setupTheDepthsOfYoth attrs
     ResolveAmounts _ (getChoiceAmount "Fury" -> n) ScenarioTarget -> do
       recordCount YigsFury n
       pure s

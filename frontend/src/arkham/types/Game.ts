@@ -99,6 +99,7 @@ export type Game = {
   modifiers: [Target, Modifier[]][];
   totalDoom: number;
   totalClues: number;
+  scenarioSteps: number;
 }
 
 export function choices(game: Game, playerId: string): Message[] {
@@ -232,7 +233,8 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     cards: JsonDecoder.record<Card>(cardDecoder, 'Dict<string, Card>'),
     modifiers: JsonDecoder.array(JsonDecoder.tuple([targetDecoder, JsonDecoder.array(modifierDecoder, 'Modifier[]')], 'Target, Modifier[]'), 'Modifier[]'),
     totalDoom: JsonDecoder.number(),
-    totalClues: JsonDecoder.number()
+    totalClues: JsonDecoder.number(),
+    scenarioSteps: JsonDecoder.number()
   },
   'Game',
 ).map(({mode, ...game}) => ({

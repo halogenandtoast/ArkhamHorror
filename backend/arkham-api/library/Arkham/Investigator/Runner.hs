@@ -458,6 +458,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   AddDeckBuildingAdjustment iid adjustment | iid == investigatorId -> do
     pure $ a & deckBuildingAdjustmentsL %~ (adjustment :)
   SetupInvestigator iid | iid == investigatorId -> do
+    shuffled <- shuffle (unDeck investigatorDeck)
     (startsWithMsgs, deck') <-
       foldM
         ( \(msgs, currentDeck) cardDef -> do
@@ -488,7 +489,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   )
               _ -> pure (msgs, currentDeck)
         )
-        ([], investigatorDeck)
+        ([], Deck shuffled)
         investigatorStartsWith
     let (permanentCards, deck'') = partition (cdPermanent . toCardDef) (unDeck deck')
     let deck''' =
@@ -3317,9 +3318,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   ForTarget (isTarget a -> True) (DoStep 2 (ForInvestigator _ AllDrawCardAndResource)) | not (a ^. defeatedL || a ^. resignedL) -> do
     lift $ takeUpkeepResources a
   LoadDeck iid deck | iid == investigatorId -> do
-    shuffled <- shuffleM $ flip map (unDeck deck) $ \card ->
-      card {pcOwner = Just iid}
-    pure $ a & deckL .~ Deck shuffled
+    let deck' = flip map (unDeck deck) \card -> card {pcOwner = Just iid}
+    pure $ a & deckL .~ Deck deck'
   LoadSideDeck iid deck | iid == investigatorId -> do
     pure $ a & sideDeckL ?~ deck
   InvestigatorCommittedCard iid card | iid == investigatorId -> do

@@ -96,7 +96,7 @@ instance RunMessage TheForgottenAge where
         nextCampaignStep
         pure . TheForgottenAge $ attrs {campaignMeta = toJSON metadata'}
       ForInvestigator investigatorId (CampaignStep PrologueStep) -> do
-        pickSupplies investigatorId metadata prologueSupplies msg
+        pickSupplies investigatorId False metadata prologueSupplies msg
         pure c
       CampaignStep (InterludeStep 1 mkey) -> scope "interlude1" do
         investigators <- allInvestigators
@@ -117,6 +117,7 @@ instance RunMessage TheForgottenAge where
           pure (iid, binoculars)
 
         storyOnlyBuild withBlanket do
+          setTitle "title"
           compose.green do
             p "blanket"
             p.valid "restfulSleep"
@@ -124,6 +125,7 @@ instance RunMessage TheForgottenAge where
 
         for_ withoutBlanket \iid -> do
           storyOnlyBuild [iid] do
+            setTitle "title"
             compose.green do
               p "blanket"
               p.invalid "restfulSleep"
@@ -139,32 +141,31 @@ instance RunMessage TheForgottenAge where
         for_ useProvisions (uncurry useSupply)
 
         let lowOnRationsCount = length investigators - length provisions
-        storyWithChooseNM' lowOnRationsCount (p.green "provisions") do
+        storyWithChooseNM' lowOnRationsCount (setTitle "title" >> p.green "provisions") do
           cardsLabeled investigators \iid -> do
-            storyOnlyBuild [iid] $ p.green "lowOnRations"
+            storyOnlyBuild [iid] $ setTitle "title" >> p.green "lowOnRations"
             handleTarget iid CampaignSource iid
 
-        storyWithChooseOneM' (p.green "lookout") do
+        storyWithChooseOneM' (setTitle "title" >> p.green "lookout") do
           for_ investigatorsWithBinocularsPairs \(iid, hasBinoculars) -> do
             cardLabeled (unInvestigatorId iid) do
               if hasBinoculars
                 then do
-                  storyOnlyBuild [iid] $ p.green "shapesInTheTrees"
-                  -- "Gain further insight into the motivations of the Eztli."
+                  storyOnlyBuild [iid] $ setTitle "title" >> p.green "shapesInTheTrees"
                   interludeXp iid (toBonus "insight" 2)
                 else do
-                  storyOnlyBuild [iid] $ p.green "eyesInTheDark"
+                  storyOnlyBuild [iid] $ setTitle "title" >> p.green "eyesInTheDark"
                   sufferMentalTrauma iid 1
 
         when (notNull withMedicine && notNull withPoisoned) do
           let medicineCount = min (length withMedicine) (length withPoisoned)
-          storyWithChooseUpToNM' medicineCount "doNotUseMedicine" (p.green "medicine") do
+          storyWithChooseUpToNM' medicineCount "doNotUseMedicine" (setTitle "title" >> p.green "medicine") do
             for_ (zip withPoisoned withMedicine) \(poisoned, doctor) -> do
               cardLabeled (unInvestigatorId poisoned) do
                 removeCampaignCardFromDeck poisoned Treacheries.poisoned
                 useSupply doctor Medicine
 
-        push $ CampaignStep (InterludeStepPart 1 mkey 2)
+        interludeStepPart 1 mkey 2
         nextCampaignStep
         pure c
       CampaignStep (InterludeStepPart 1 _ 2) -> scope "interlude1" do
@@ -174,29 +175,25 @@ instance RunMessage TheForgottenAge where
               $ \(iid, Deck cards) -> guard (any (`cardMatch` CardWithTitle "Poisoned") cards) $> iid
 
         unless (null withPoisoned) do
-          storyOnlyBuild withPoisoned (p.green "thePoisonSpreads")
+          storyOnlyBuild withPoisoned (setTitle "title" >> p.green "thePoisonSpreads")
           for_ withPoisoned (`sufferPhysicalTrauma` 1)
         pure c
-      CampaignStep (InterludeStep 2 mkey) -> do
+      CampaignStep (InterludeStep 2 mkey) -> scope "interlude2" do
         recoveredTheRelicOfAges <- getHasRecord TheInvestigatorsRecoveredTheRelicOfAges
+        flavor do
+          setTitle "title"
+          p.validate recoveredTheRelicOfAges "pickExpeditionsEnd1"
+          p.validate (not recoveredTheRelicOfAges) "pickExpeditionsEnd2"
         let expeditionsEndStep = if recoveredTheRelicOfAges then 1 else 5
-        push $ CampaignStep (InterludeStepPart 2 mkey expeditionsEndStep)
+        interludeStepPart 2 mkey expeditionsEndStep
         pure c
-      CampaignStep (InterludeStepPart 2 mkey 1) -> do
-        story expeditionsEnd1
-        lead <- getLead
-        chooseOneM lead do
-          labeled
-            "It belongs in a museum. Alejandro and the museum staff will be able to study it and learn more about its purpose. - Proceed to Expedition’s End 2."
-            $ push
-            $ CampaignStep (InterludeStepPart 2 mkey 2)
-          labeled
-            "It is too dangerous to be on display. We should keep it hidden and safe until we know more about it. - Skip to Expedition's End 3."
-            $ push
-            $ CampaignStep (InterludeStepPart 2 mkey 3)
+      CampaignStep (InterludeStepPart 2 mkey 1) -> scope "interlude2" do
+        storyWithChooseOneM' (setTitle "title" >> p "expeditionsEnd1") do
+          labeled' "pickExpeditionsEnd2" $ interludeStepPart 2 mkey 2
+          labeled' "pickExpeditionsEnd3" $ interludeStepPart 2 mkey 3
         pure c
-      CampaignStep (InterludeStepPart 2 mkey 2) -> do
-        story expeditionsEnd2
+      CampaignStep (InterludeStepPart 2 mkey 2) -> scope "interlude2" do
+        flavor $ setTitle "title" >> p "expeditionsEnd2"
         record TheInvestigatorsGaveCustodyOfTheRelicToAlejandro
         record TheInvestigatorsHaveEarnedAlejandrosTrust
 
@@ -206,20 +203,20 @@ instance RunMessage TheForgottenAge where
           investigators <- allInvestigators
           addCampaignCardToDeckChoice investigators DoNotShuffleIn =<< fetchCard Assets.alejandroVela
         addChaosToken Tablet
-        push $ CampaignStep (InterludeStepPart 2 mkey 4)
+        interludeStepPart 2 mkey 4
         pure c
-      CampaignStep (InterludeStepPart 2 mkey 3) -> do
-        story expeditionsEnd3
+      CampaignStep (InterludeStepPart 2 mkey 3) -> scope "interlude2" do
+        flavor $ setTitle "title" >> p "expeditionsEnd3"
         record TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
         record AlejandroIsContinuingHisResearchOnHisOwn
-        push $ CampaignStep (InterludeStepPart 2 mkey 4)
+        interludeStepPart 2 mkey 4
         pure c
-      CampaignStep (InterludeStepPart 2 _ 4) -> do
-        story expeditionsEnd4
+      CampaignStep (InterludeStepPart 2 _ 4) -> scope "interlude2" do
+        flavor $ setTitle "title" >> p "expeditionsEnd4"
         nextCampaignStep
         pure c
-      CampaignStep (InterludeStepPart 2 _ 5) -> do
-        story expeditionsEnd5
+      CampaignStep (InterludeStepPart 2 _ 5) -> scope "interlude2" do
+        flavor $ setTitle "title" >> p "expeditionsEnd5"
         nextCampaignStep
         pure c
       CampaignStep ResupplyPoint -> do
@@ -238,7 +235,7 @@ instance RunMessage TheForgottenAge where
         when isReturnTo $ doStep 1 msg -- convert xp to supply points
         doStep 2 msg -- remove poisoned
         doStep 3 msg -- heal trauma
-        pickSupplies iid metadata resupplyPointSupplies msg
+        pickSupplies iid True metadata resupplyPointSupplies msg
         pure c
       DoStep 0 (DoStep spend (ForInvestigator iid (CampaignStep ResupplyPoint))) -> do
         pure

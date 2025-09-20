@@ -324,6 +324,11 @@ const actionMap = computed<Map<string, () => void>>(() => {
   return map
 })
 
+const canUndoScenario = computed(() => {
+  if(!game.value) return false
+  return game.value.scenarioSteps > 1
+})
+
 // Keyboard Shortcuts
 const handleKeyPress = (event: KeyboardEvent) => {
   if (filingBug.value) return
@@ -337,6 +342,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
   }
 
   if (event.key === 'U') {
+    if(!canUndoScenario.value) return
     undoScenarioDialog.value?.showModal()
     return
   }
@@ -717,8 +723,8 @@ onUnmounted(() => {
             <MenuItem v-slot="{ active }">
               <button :class="{ active }" @click="undo"><BackwardIcon aria-hidden="true" /> {{ $t('gameBar.undo') }} <span class='shortcut'>u</span></button>
             </MenuItem>
-            <MenuItem v-slot="{ active }">
-              <button :class="{ active }" @click="undoingScenario = true"><BackwardIcon aria-hidden="true" /> {{ $t('gameBar.restartScenario') }} <span class='shortcut'>U</span></button>
+            <MenuItem v-if="canUndoScenario" v-slot="{ active }">
+              <button :class="{ active }" @click="undoScenarioDialog && undoScenarioDialog.showModal()"><BackwardIcon aria-hidden="true" /> {{ $t('gameBar.restartScenario') }} <span class='shortcut'>U</span></button>
             </MenuItem>
           </template>
         </Menu>

@@ -87,10 +87,38 @@ setupThreadsOfFate _attrs = do
       li "actDecks"
       unscoped $ li "shuffleRemainder"
 
-  scope "threeActsThreeThreads" $ flavor do
-    setTitle "title"
-    h "title"
-    p "body"
+  gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
+  listenedToIchtacasTale <- remembered YouListenedToIchtacasTale
+
+  scope "threeActsThreeThreads" do
+    flavor do
+      setTitle "title"
+      h "title"
+      p "body"
+
+    flavor $ scope "adjustAB" do
+      ul do
+        li.nested "body" do
+          li.validate (not gaveCustodyToHarlan) "option1"
+          li.validate gaveCustodyToHarlan "option2"
+
+    act2Deck1 <- do
+      atTheStation <- sample2 Acts.atTheStationInShadowedTalons Acts.atTheStationTrainTracks
+      genCards [Acts.missingPersons, atTheStation, Acts.alejandrosPrison, Acts.alejandrosPlight]
+    act2Deck2 <- do
+      friendsInHighPlaces <-
+        sample2 Acts.friendsInHighPlacesHenrysInformation Acts.friendsInHighPlacesHenryDeveau
+      genCards
+        [Acts.searchForAlejandro, friendsInHighPlaces, Acts.alejandrosPrison, Acts.alejandrosPlight]
+    scope "adjustCD" $ storyWithChooseOneM' (ul $ li.nested "body" $ li "option1" >> li "option2") do
+      labeled' "goToThePolice" $ push $ SetActDeckCards 2 act2Deck1
+      labeled' "lookOnYourOwn" $ push $ SetActDeckCards 2 act2Deck2
+
+    flavor $ scope "adjustEF" do
+      ul do
+        li.nested "body" do
+          li.validate listenedToIchtacasTale "option1"
+          li.validate (not listenedToIchtacasTale) "option2"
 
   whenReturnTo $ gather Set.ReturnToThreadsOfFate
   gather Set.ThreadsOfFate
@@ -110,7 +138,6 @@ setupThreadsOfFate _attrs = do
     , Locations.curiositieShoppe
     ]
 
-  gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
   setActDeckN 1 =<< do
     if gaveCustodyToHarlan
       then do
@@ -142,20 +169,6 @@ setupThreadsOfFate _attrs = do
     , Agendas.hiddenEntanglements
     ]
 
-  lead <- getLead
-  act2Deck1 <- do
-    atTheStation <- sample2 Acts.atTheStationInShadowedTalons Acts.atTheStationTrainTracks
-    genCards [Acts.missingPersons, atTheStation, Acts.alejandrosPrison, Acts.alejandrosPlight]
-  act2Deck2 <- do
-    friendsInHighPlaces <-
-      sample2 Acts.friendsInHighPlacesHenrysInformation Acts.friendsInHighPlacesHenryDeveau
-    genCards
-      [Acts.searchForAlejandro, friendsInHighPlaces, Acts.alejandrosPrison, Acts.alejandrosPlight]
-  chooseOneM lead $ scope "setup" do
-    labeled' "goToThePolice" $ push $ SetActDeckCards 2 act2Deck1
-    labeled' "lookOnYourOwn" $ push $ SetActDeckCards 2 act2Deck2
-
-  listenedToIchtacasTale <- remembered YouListenedToIchtacasTale
   setActDeckN 3
     =<< if listenedToIchtacasTale
       then do
@@ -187,7 +200,12 @@ instance RunMessage ThreadsOfFate where
       traverse_ obtainCard =<< findCard (`cardMatch` cardIs Assets.relicOfAgesADeviceOfSomeSort)
       traverse_ obtainCard =<< findCard (`cardMatch` cardIs Assets.alejandroVela)
       gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
-      storyWithContinue' (h "title" >> p "intro1")
+      storyWithContinue' do
+        h "title"
+        p "intro1"
+        p.basic.right.validate (not gaveCustodyToHarlan) "proceedToIntro2"
+        p.basic.right.validate gaveCustodyToHarlan "skipToIntro3"
+
       doStep (if gaveCustodyToHarlan then 3 else 2) PreScenarioSetup
       isReturnTo <- Arkham.Helpers.Scenario.getIsReturnTo
       when isReturnTo $ doStep 7 PreScenarioSetup
@@ -199,7 +217,7 @@ instance RunMessage ThreadsOfFate where
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
       storyWithChooseOneM' (h "title" >> p "intro3") do
-        labeled' "skipToIntro4" $ doStep 4 PreScenarioSetup
+        labeled' "proceedToIntro4" $ doStep 4 PreScenarioSetup
         labeled' "skipToIntro5" $ doStep 5 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do

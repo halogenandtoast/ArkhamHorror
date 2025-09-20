@@ -22,7 +22,12 @@ import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Location.Types
 import Arkham.Matcher
-import Arkham.Message (Message (..), ReplaceStrategy (..), pattern CancelNext, pattern BeginSkillTest)
+import Arkham.Message (
+  Message (..),
+  ReplaceStrategy (..),
+  pattern BeginSkillTest,
+  pattern CancelNext,
+ )
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -251,21 +256,18 @@ cancelExplore source = push $ CancelNext (toSource source) ExploreMessage
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "theForgottenAge" a
 
-pickSupplies :: ReverseQueue m => InvestigatorId -> Metadata -> [Supply] -> Message -> m ()
-pickSupplies iid metadata supplies cont = do
-  let remaining = findWithDefault 0 iid (supplyPoints metadata)
-  when (remaining > 0) do
+pickSupplies :: ReverseQueue m => InvestigatorId -> Bool -> Metadata -> [Supply] -> Message -> m ()
+pickSupplies iid resupply metadata supplies cont = do
+  let pointsRemaining = findWithDefault 0 iid (supplyPoints metadata)
+  when (pointsRemaining > 0) do
     player <- getPlayer iid
-    investigatorSupplies <- field InvestigatorSupplies iid
+    chosenSupplies <- field InvestigatorSupplies iid
     let
-      availableSupply s = s `notElem` investigatorSupplies || s `elem` [Provisions, Medicine, Gasoline]
-      affordableSupplies = filter ((<= remaining) . supplyCost) supplies
+      availableSupply s = s `notElem` chosenSupplies || s `elem` [Provisions, Medicine, Gasoline]
+      affordableSupplies = filter ((<= pointsRemaining) . supplyCost) supplies
       availableSupplies = filter availableSupply affordableSupplies
-    push
-      $ Ask player
-      $ PickSupplies remaining investigatorSupplies
-      $ Label "Done" []
-      : map (\s -> supplyLabel s [PickSupply iid s, cont]) availableSupplies
+      choices = Label "$done" [] : map (\s -> supplyLabel s [PickSupply iid s, cont]) availableSupplies
+    push $ Ask player $ PickSupplies {..}
 
 supplyLabel :: Supply -> [Message] -> UI Message
 supplyLabel s = case s of
@@ -287,9 +289,10 @@ supplyLabel s = case s of
   MysteriousScepter -> go "mysteriousScepter"
   StickyGoop -> go "stickyGoop"
  where
-  go label = campaignI18n $
-    let toKey suffix = "$" <> ikey ("supplies." <> label <> "." <> suffix)
-    in TooltipLabel (toKey "name") (Tooltip (toKey "tooltip"))
+  go label =
+    campaignI18n
+      $ let toKey suffix = "$" <> ikey ("supplies." <> label <> "." <> suffix)
+         in TooltipLabel (toKey "name") (Tooltip (toKey "tooltip"))
 
 useSupply :: ReverseQueue m => InvestigatorId -> Supply -> m ()
 useSupply iid s = push $ UseSupply iid s

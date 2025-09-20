@@ -3736,7 +3736,6 @@ library
       Arkham.Scenarios.TheBoundaryBeyond.Helpers
       Arkham.Scenarios.TheCityOfArchives.Helpers
       Arkham.Scenarios.TheDepthsOfYoth.Helpers
-      Arkham.Scenarios.TheDepthsOfYoth.Story
       Arkham.Scenarios.TheDevourerBelow.Helpers
       Arkham.Scenarios.TheDoomOfEztli.Helpers
       Arkham.Scenarios.TheDoomOfEztli.Story
@@ -4361,6 +4360,7 @@ library
       Arkham.Treachery.Cards.Panic
       Arkham.Treachery.Cards.Paranoia
       Arkham.Treachery.Cards.PassageIntoTheVeil
+      Arkham.Treachery.Cards.PerilsOfYoth
       Arkham.Treachery.Cards.Phantasmagoria
       Arkham.Treachery.Cards.Pitfall
       Arkham.Treachery.Cards.Poisoned

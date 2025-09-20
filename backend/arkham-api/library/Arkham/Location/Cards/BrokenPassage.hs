@@ -4,37 +4,26 @@ import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype BrokenPassage = BrokenPassage LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brokenPassage :: LocationCard BrokenPassage
-brokenPassage =
-  symbolLabel $ location BrokenPassage Cards.brokenPassage 3 (Static 0)
+brokenPassage = symbolLabel $ location BrokenPassage Cards.brokenPassage 3 (Static 0)
 
 instance HasAbilities BrokenPassage where
-  getAbilities (BrokenPassage attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility
-          attrs
-          1
-          ( Here
-              <> InvestigatorExists
-                (You <> NotInvestigator (InvestigatorWithSupply Pickaxe))
-          )
-          $ ForcedAbility
-          $ AttemptExplore Timing.When You
-      ]
+  getAbilities (BrokenPassage a) =
+    extendRevealed1 a
+      $ restricted a 1 (Here <> youExist (not_ $ InvestigatorWithSupply Pickaxe))
+      $ forced
+      $ AttemptExplore #when You
 
 instance RunMessage BrokenPassage where
-  runMessage msg l@(BrokenPassage attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
+  runMessage msg l@(BrokenPassage attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeDoom (attrs.ability 1) attrs 1
       pure l
-    _ -> BrokenPassage <$> runMessage msg attrs
+    _ -> BrokenPassage <$> liftRunMessage msg attrs

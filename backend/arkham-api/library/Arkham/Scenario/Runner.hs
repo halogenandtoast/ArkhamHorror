@@ -494,9 +494,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         <> show key
         <> ", could not find deck in scenario"
   SetScenarioDeck key [] -> pure $ a & (decksL %~ deleteMap key)
-  SetScenarioDeck key cards -> pure $ a & (decksL . at key ?~ cards)
+  SetScenarioDeck key cards -> pure $ a & (decksL . at key ?~ cards) & (setAsideCardsL %~ filter (`notElem` cards))
   AddCardToScenarioDeck key card -> case lookup key scenarioDecks of
-    Just cards -> pure $ a & (decksL . at key ?~ card : cards)
+    Just cards -> pure $ a & (decksL . at key ?~ card : cards) & (setAsideCardsL %~ filter (/= card))
     _ ->
       error
         $ "Invalid scenario deck key "

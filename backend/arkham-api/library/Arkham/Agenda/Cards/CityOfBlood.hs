@@ -1,14 +1,9 @@
 module Arkham.Agenda.Cards.CityOfBlood (cityOfBlood) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Card
-import Arkham.Classes
+import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.GameValue
-import Arkham.Helpers.Query
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Zone
 
@@ -20,19 +15,14 @@ cityOfBlood :: AgendaCard CityOfBlood
 cityOfBlood = agenda (4, A) CityOfBlood Cards.cityOfBlood (Static 4)
 
 instance RunMessage CityOfBlood where
-  runMessage msg a@(CityOfBlood attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      mHarbinger <- maybeGetSetAsideEncounterCard Enemies.harbingerOfValusia
-      harbingerMsgs <- for (maybeToList mHarbinger) $ \harbinger ->
-        createEnemyWithPlacement_ (EncounterCard harbinger) (OutOfPlay PursuitZone)
-      pushAll
-        $ harbingerMsgs
-        <> [ NextAdvanceAgendaStep (toId attrs) 1
-           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-           ]
+  runMessage msg a@(CityOfBlood attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      fetchCardMaybe [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+        >>= traverse_ \harbinger -> createEnemy_ harbinger (OutOfPlay PursuitZone)
+      doStep 1 msg
+      advanceAgendaDeck attrs
       pure a
-    NextAdvanceAgendaStep aid 1 | aid == toId attrs -> do
-      enemyMsgs <- getPlacePursuitEnemyMessages
-      pushAll enemyMsgs
+    DoStep 1 (AdvanceAgenda (isSide B attrs -> True)) -> do
+      placePursuitEnemies
       pure a
-    _ -> CityOfBlood <$> runMessage msg attrs
+    _ -> CityOfBlood <$> liftRunMessage msg attrs

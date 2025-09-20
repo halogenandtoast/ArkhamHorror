@@ -7,6 +7,7 @@ import Arkham.Agenda.Runner as X (
   IsAgenda,
   agenda,
   agendaWith,
+  doomThresholdL,
   is,
   isSide,
   onSide,

@@ -831,6 +831,10 @@ removeDoom
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
 removeDoom source target n = push $ RemoveDoom (toSource source) (toTarget target) n
 
+removeDoomFrom
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Int -> target -> m ()
+removeDoomFrom source n target = removeDoom source target n
+
 removeAllDoom :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
 removeAllDoom source target = push $ RemoveAllDoom (toSource source) (toTarget target)
 

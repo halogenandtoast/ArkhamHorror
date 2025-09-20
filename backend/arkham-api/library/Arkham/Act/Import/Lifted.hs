@@ -20,6 +20,7 @@ import Arkham.Act.Runner as X (
   onSide,
   push,
   pushAll,
+  sequenceL,
   targetLabel,
   pattern FailedThisSkillTest,
   pattern FailedThisSkillTestBy,

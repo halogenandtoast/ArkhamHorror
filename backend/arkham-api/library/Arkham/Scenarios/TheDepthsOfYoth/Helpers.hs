@@ -1,48 +1,49 @@
 module Arkham.Scenarios.TheDepthsOfYoth.Helpers where
 
-import Arkham.Prelude
-
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Enemy.Types
 import Arkham.Helpers.Log
-import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
-import Arkham.Helpers.Window
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message
-import Arkham.Placement
+import Arkham.Message (Message (ScenarioCountIncrementBy))
+import Arkham.Message.Lifted
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
-import Arkham.Timing qualified as Timing
-import Arkham.Window (mkWindow)
+import Arkham.Source
 import Arkham.Window qualified as Window
 import Arkham.Zone
 import Data.Aeson (Result (..))
 
-newtype DepthsOfYothMeta = DepthsOfYothMeta
+data DepthsOfYothMeta = DepthsOfYothMeta
   { depthLocation :: LocationId
+  , currentExploreSource :: Maybe Source
   }
   deriving stock Generic
   deriving anyclass (FromJSON, ToJSON)
 
-incrementDepth :: HasGame m => m [Message]
+incrementDepth :: ReverseQueue m => m ()
 incrementDepth = do
-  addingToCurrentDepth <-
-    checkWindows
-      [mkWindow Timing.When Window.AddingToCurrentDepth]
-  pure [addingToCurrentDepth, ScenarioCountIncrementBy CurrentDepth 1]
+  checkWhen Window.AddingToCurrentDepth
+  push $ ScenarioCountIncrementBy CurrentDepth 1
 
 getCurrentDepth :: HasGame m => m Int
 getCurrentDepth = scenarioCount CurrentDepth
 
 getDepthStart :: HasGame m => m LocationId
 getDepthStart = depthLocation <$> getMeta
+
+getCurrentExploreSource :: HasGame m => m (Maybe Source)
+getCurrentExploreSource = currentExploreSource <$> getMeta
 
 getMeta :: HasGame m => m DepthsOfYothMeta
 getMeta = do
@@ -51,8 +52,8 @@ getMeta = do
     Error _ -> error "invalid meta for depths of yoth"
     Success a -> pure a
 
-toMeta :: LocationId -> Value
-toMeta lid = toJSON $ DepthsOfYothMeta lid
+toMeta :: LocationId -> Maybe Source -> Value
+toMeta lid msource = toJSON $ DepthsOfYothMeta lid msource
 
 getInPursuitEnemyWithHighestEvade
   :: HasGame m => m (Set EnemyId)
@@ -67,26 +68,18 @@ getInPursuitEnemyWithHighestEvade = do
     <$> filterM
       ( fieldMap @(OutOfPlayEntity 'PursuitZone Enemy)
           (OutOfPlayEnemyField PursuitZone EnemyEvade)
-          ((== Just evadeValue))
+          (== Just evadeValue)
       )
       (toList inPursuit)
 
 getInPursuitEnemies :: HasGame m => m [EnemyId]
 getInPursuitEnemies = select $ OutOfPlayEnemy PursuitZone AnyEnemy
 
-getPlacePursuitEnemyMessages :: HasGame m => m [Message]
-getPlacePursuitEnemyMessages = do
+placePursuitEnemies :: ReverseQueue m => m ()
+placePursuitEnemies = do
   choices <- toList <$> getInPursuitEnemyWithHighestEvade
-  lead <- getLeadPlayer
   depthStart <- getDepthStart
-  pure $ do
-    guard $ notNull choices
-    pure
-      $ chooseOrRunOne
-        lead
-        [ targetLabel choice [PlaceEnemy choice $ AtLocation depthStart]
-        | choice <- choices
-        ]
+  leadChooseOrRunOneM $ targets choices \choice -> place choice $ AtLocation depthStart
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "theDepthsOfYoth" a

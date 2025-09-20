@@ -1,5 +1,6 @@
-module Arkham.Scenario.Scenarios.TheDepthsOfYoth (setupTheDepthsOfYoth, theDepthsOfYoth, TheDepthsOfYoth(..)) where
+module Arkham.Scenario.Scenarios.TheDepthsOfYoth (setupTheDepthsOfYoth, theDepthsOfYoth, TheDepthsOfYoth (..)) where
 
+import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -8,12 +9,15 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
+import Arkham.Deck qualified as Deck
+import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Helpers
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query
-import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
@@ -24,14 +28,12 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Import.Lifted hiding (EnemyDamage, questionLabel)
+import Arkham.Scenario.Import.Lifted hiding (EnemyDamage, getIsReturnTo, questionLabel)
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
-import Arkham.Scenarios.TheDepthsOfYoth.Story
 import Arkham.Trait (Trait (Injury, Serpent))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window qualified as Window
-import Arkham.Zone
 
 newtype TheDepthsOfYoth = TheDepthsOfYoth ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -84,21 +86,29 @@ standaloneCampaignLog = mkCampaignLog {campaignLogRecorded = setFromList [toCamp
 
 setupTheDepthsOfYoth :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupTheDepthsOfYoth _attrs = do
+  isReturnTo <- getIsReturnTo
+  yigsFury <- getRecordCount YigsFury
+
+  let
+    startsOnAgenda5 = yigsFury >= 18
+    startsOnAgenda6 = yigsFury >= 21
+    harbinger = if isReturnTo then Enemies.harbingerOfValusiaTheSleeperReturns else Enemies.harbingerOfValusia
+
   setup $ ul do
     li "gatherSets"
     scope "yigsFury" $ li.nested "description" do
-      li "tally0"
-      li "tally1to5"
-      li "tally6to10"
-      li "tally11to14"
-      li "tally15to17"
-      li "tally18to20"
-      li "tally21OrMore"
+      li.validate (yigsFury == 0) "tally0"
+      li.validate (yigsFury >= 1 && yigsFury <= 5) "tally1to5"
+      li.validate (yigsFury >= 6 && yigsFury <= 10) "tally6to10"
+      li.validate (yigsFury >= 11 && yigsFury <= 14) "tally11to14"
+      li.validate (yigsFury >= 15 && yigsFury <= 17) "tally15to17"
+      li.validate (yigsFury >= 18 && yigsFury <= 20) "tally18to20"
+      li.validate (yigsFury >= 21) "tally21OrMore"
     li "placeLocations"
     scope "theHarbinger" $ li.nested "description" do
-      li "agenda5or6"
+      li.validate (startsOnAgenda5 || startsOnAgenda6) "agenda5or6"
     scope "yig" $ li.nested "description" do
-      li "agenda6"
+      li.validate startsOnAgenda6 "agenda6"
     li "explorationDeck"
     li "currentDepth"
     li "setOutOfPlay"
@@ -108,14 +118,14 @@ setupTheDepthsOfYoth _attrs = do
   scope "depthLevel" $ flavor $ h "title" >> p "body"
   scope "pursuit" $ flavor $ h "title" >> p "body"
 
+  whenReturnTo $ gather Set.ReturnToTheDepthsOfYoth
   gather Set.TheDepthsOfYoth
   gather Set.AgentsOfYig
-  gather Set.YigsVenom
-  gather Set.Expedition
+  gather Set.YigsVenom `orWhenReturnTo` gather Set.VenomousHate
+  gather Set.Expedition `orWhenReturnTo` gather Set.DoomedExpedition
   gather Set.ForgottenRuins
   gather Set.Poison
 
-  yigsFury <- getRecordCount YigsFury
   when (yigsFury == 0) $ removeEvery [Enemies.pitWarden, Enemies.yig]
 
   locations <-
@@ -137,18 +147,16 @@ setupTheDepthsOfYoth _attrs = do
       _ -> error "impossible"
     (inExplore, setAsideLocations) = splitAt 4 rest
 
-  addExtraDeck ExplorationDeck =<< shuffle (Locations.stepsOfYoth : inExplore)
+  explorationDeck <-
+    fromGathered $ mapOneOf cardIs $ [Treacheries.perilsOfYoth, Locations.stepsOfYoth] <> inExplore
+  addExtraDeck ExplorationDeck =<< shuffle explorationDeck
 
   startLocation <- place start
   startAt startLocation
-  setMeta (toMeta startLocation)
+  setMeta (toMeta startLocation Nothing)
   setCount CurrentDepth 1
 
-  let
-    startsOnAgenda5 = yigsFury >= 18
-    startsOnAgenda6 = yigsFury >= 21
-
-  when startsOnAgenda5 $ placeEnemy Enemies.harbingerOfValusia (OutOfPlay PursuitZone)
+  when startsOnAgenda5 $ placeEnemy harbinger (OutOfPlay PursuitZone)
   when startsOnAgenda6 $ placeEnemy Enemies.yig (OutOfPlay PursuitZone)
 
   setAsidePoisonedCount <- getSetAsidePoisonedCount
@@ -156,9 +164,7 @@ setupTheDepthsOfYoth _attrs = do
 
   setAside
     $ Assets.relicOfAgesRepossessThePast
-    : [ Enemies.harbingerOfValusia
-      | theHarbingerIsStillAlive && not startsOnAgenda5
-      ]
+    : [harbinger | theHarbingerIsStillAlive && not startsOnAgenda5]
       <> [Enemies.yig | not startsOnAgenda6 && yigsFury > 0]
       <> replicate setAsidePoisonedCount Treacheries.poisoned
       <> setAsideLocations
@@ -171,6 +177,13 @@ setupTheDepthsOfYoth _attrs = do
     <> [Agendas.cityOfBlood | yigsFury < 18] -- 4
     <> [Agendas.furyThatShakesTheEarth | yigsFury < 21] -- 5
     <> [Agendas.theRedDepths, Agendas.vengeance] -- 6,7
+  whenReturnTo do
+    removeEvery [Enemies.harbingerOfValusia]
+    addAdditionalReferences ["53059b"]
+    createAbilityEffect EffectGameWindow
+      $ mkAbility (SourceableWithCardCode (CardCode "53059b") ScenarioSource) 1
+      $ forced
+      $ ScenarioEvent #after Nothing "newExplorationDeck"
 
 instance RunMessage TheDepthsOfYoth where
   runMessage msg s@(TheDepthsOfYoth attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -255,14 +268,18 @@ instance RunMessage TheDepthsOfYoth where
     Do (Explore iid source locationMatcher) -> do
       explore iid source locationMatcher PlaceExplored 1
       pure s
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scope "resolutions" do
       case r of
-        NoResolution -> push R1
+        NoResolution -> do
+          resolution "noResolution"
+          push R1
         Resolution n | n == 1 || n == 2 -> do
-          story $ if n == 1 then resolution1 else resolution2
+          depth <- getCurrentDepth
+          resolutionWithXp (if n == 1 then "resolution1" else "resolution2")
+            $ allGainXpWithBonus' attrs (toBonus "depth" depth)
+
           record $ if n == 1 then TheInvestigatorsFellIntoTheDepths else TheNexusIsNear
 
-          depth <- getCurrentDepth
           unless (n > 1) do
             case depth of
               1 -> do
@@ -291,7 +308,6 @@ instance RunMessage TheDepthsOfYoth where
           yigsFury <- getRecordCount YigsFury
           recordCount YigsFury (yigsFury + vengeance)
 
-          allGainXpWithBonus attrs $ toBonus "depth" depth
           endOfScenario
         _ -> error "Unknown Resolution"
       pure s
@@ -324,5 +340,17 @@ instance RunMessage TheDepthsOfYoth where
             push $ HealDamage (toTarget serpent) (ChaosTokenEffectSource Cultist) 2
         Tablet -> withLocationOf iid \location -> placeTokens Tablet location #clue 2
         _ -> pure ()
+      pure s
+    UseCardAbility _ ScenarioSource 1 _ _ -> do
+      outOfPlayPerilsOfYoth <- getSetAsideCardsMatching $ cardIs Treacheries.perilsOfYoth
+      inDiscardPerilsOfYoth <-
+        map toCard
+          . filterCards (cardIs Treacheries.perilsOfYoth)
+          <$> getEncounterDiscard RegularEncounterDeck
+      inDeckPerilsOfYoth <-
+        map toCard . filterCards (cardIs Treacheries.perilsOfYoth) . unDeck <$> getEncounterDeck
+      let perilsOfYoth = outOfPlayPerilsOfYoth <> inDiscardPerilsOfYoth <> inDeckPerilsOfYoth
+      unless (null perilsOfYoth) $ shuffleCardsIntoDeck ExplorationDeck perilsOfYoth
+      unless (null inDeckPerilsOfYoth) $ shuffleDeck Deck.EncounterDeck
       pure s
     _ -> TheDepthsOfYoth <$> liftRunMessage msg attrs

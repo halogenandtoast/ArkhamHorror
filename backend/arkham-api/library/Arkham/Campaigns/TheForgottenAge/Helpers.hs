@@ -214,7 +214,9 @@ explore iid source cardMatcher exploreRule matchCount = do
               , cardDrewRules = mempty
               , cardDrewTarget = Nothing
               }
-          checkAfter $ Window.Explored iid mlid (Failure x)
+          -- Perils of Yoth will handle this case
+          unless (toCardDef x == Treacheries.perilsOfYoth) do
+            checkAfter $ Window.Explored iid mlid (Failure x)
     xs -> do
       deck' <- if null notMatched then pure rest else shuffle $ rest <> notMatched
       focusCards drawn do

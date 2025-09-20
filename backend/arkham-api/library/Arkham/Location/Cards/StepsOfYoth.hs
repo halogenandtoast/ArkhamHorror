@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.StepsOfYoth (stepsOfYoth, StepsOfYoth (..)) where
+module Arkham.Location.Cards.StepsOfYoth (stepsOfYoth) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Supply
@@ -20,7 +20,7 @@ instance HasAbilities StepsOfYoth where
   getAbilities (StepsOfYoth attrs) =
     extendRevealed1 attrs
       $ groupLimit PerGame
-      $ restrictedAbility
+      $ restricted
         attrs
         1
         ( Here
@@ -28,12 +28,12 @@ instance HasAbilities StepsOfYoth where
               (InvestigatorsFieldCalculation (investigatorAt attrs) InvestigatorClues)
               (AtLeast $ PerPlayer 5)
         )
-      $ ReactionAbility AddingToCurrentDepth
+      $ triggered AddingToCurrentDepth
       $ SupplyCost (be attrs) Rope
 
 instance RunMessage StepsOfYoth where
   runMessage msg l@(StepsOfYoth attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      pushAll =<< incrementDepth
+      incrementDepth
       pure l
     _ -> StepsOfYoth <$> liftRunMessage msg attrs

@@ -9,12 +9,20 @@ newtype ReturnToTheDepthsOfYoth = ReturnToTheDepthsOfYoth TheDepthsOfYoth
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue)
 
 returnToTheDepthsOfYoth :: Difficulty -> ReturnToTheDepthsOfYoth
-returnToTheDepthsOfYoth difficulty = scenario
-  (ReturnToTheDepthsOfYoth . TheDepthsOfYoth)
-  "53059"
-  "Return to The Depths of Yoth"
-  difficulty
-  []
+returnToTheDepthsOfYoth difficulty =
+  scenarioWith
+    (ReturnToTheDepthsOfYoth . TheDepthsOfYoth)
+    "53059"
+    "Return to The Depths of Yoth"
+    difficulty
+    [ ".        diamond . .         droplet  ."
+    , "equals   .       . .         .        heart"
+    , ".        .       . hourglass .        ."
+    , ".        .       t .         .        ."
+    , "triangle .       . .         .        circle"
+    , ".        square  . .         squiggle ."
+    ]
+    (referenceL .~ "04277")
 
 instance RunMessage ReturnToTheDepthsOfYoth where
   runMessage msg (ReturnToTheDepthsOfYoth theDepthsOfYoth'@(TheDepthsOfYoth attrs)) = runQueueT $ scenarioI18n $ case msg of

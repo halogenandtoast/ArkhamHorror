@@ -2,13 +2,11 @@ module Arkham.Agenda.Cards.Vengeance (vengeance) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner hiding (InvestigatorDefeated)
-import Arkham.Classes
-import Arkham.GameValue
+import Arkham.Agenda.Import.Lifted hiding (InvestigatorDefeated)
 import Arkham.Helpers.Doom
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Data.List (cycle)
 
 newtype Vengeance = Vengeance AgendaAttrs
@@ -21,30 +19,25 @@ vengeance = agendaWith (7, A) Vengeance Cards.vengeance (Static 0) (doomThreshol
 instance HasAbilities Vengeance where
   getAbilities (Vengeance a) =
     [ mkAbility a 1 $ forced $ MythosStep AfterCheckDoomThreshold
-    , restrictedAbility a 2 (notExists UneliminatedInvestigator)
+    , restricted a 2 (notExists UneliminatedInvestigator)
         $ forced
         $ InvestigatorDefeated #when ByAny Anyone
     ]
 
 instance RunMessage Vengeance where
-  runMessage msg a@(Vengeance attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+  runMessage msg a@(Vengeance attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
       push R1
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       doom <- getDoomCount
-      investigators <- getInvestigatorPlayers
-      pushAll
-        $ zipWith
-          ($)
-          ( replicate doom \(investigator, player) ->
-              chooseOne
-                player
-                [TargetLabel EncounterDeckTarget [drawEncounterCards investigator attrs 1]]
-          )
-          (cycle investigators)
+      investigators <- getInvestigators
+
+      for_ (take doom (cycle investigators)) \iid -> do
+        chooseOneM iid $ targeting EncounterDeckTarget $ drawEncounterCards iid attrs 1
+
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ AdvanceAgenda (toId attrs)
+      advanceAgenda attrs
       pure a
-    _ -> Vengeance <$> runMessage msg attrs
+    _ -> Vengeance <$> liftRunMessage msg attrs

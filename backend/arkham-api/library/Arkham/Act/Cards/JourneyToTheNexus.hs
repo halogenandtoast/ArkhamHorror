@@ -2,20 +2,21 @@ module Arkham.Act.Cards.JourneyToTheNexus (journeyToTheNexus) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
+import Arkham.Act.Sequence
 import Arkham.Campaigns.TheForgottenAge.Helpers
-import Arkham.Classes
-import Arkham.Helpers.Investigator
-import Arkham.Helpers.Location
+import Arkham.Card
+import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (InvestigatorDefeated, LocationCard)
-import Arkham.Placement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Move
+import Arkham.Message.Lifted.Placement
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
+import Arkham.Window qualified as Window
 
 newtype JourneyToTheNexus = JourneyToTheNexus ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -23,10 +24,10 @@ newtype JourneyToTheNexus = JourneyToTheNexus ActAttrs
 
 instance HasAbilities JourneyToTheNexus where
   getAbilities (JourneyToTheNexus a) =
-    [ restrictedAbility a 1 (exists $ YourLocation <> LocationWithoutClues) exploreAction_
+    [ restricted a 1 (exists $ YourLocation <> LocationWithoutClues) exploreAction_
     , mkAbility a 2
         $ Objective
-        $ ReactionAbility (RoundEnds #when)
+        $ triggered (RoundEnds #when)
         $ GroupClueCost (PerPlayer 3) "Steps of Yoth"
     ]
 
@@ -34,59 +35,66 @@ journeyToTheNexus :: ActCard JourneyToTheNexus
 journeyToTheNexus = act (1, A) JourneyToTheNexus Cards.journeyToTheNexus Nothing
 
 instance RunMessage JourneyToTheNexus where
-  runMessage msg a@(JourneyToTheNexus attrs) = case msg of
+  runMessage msg a@(JourneyToTheNexus attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      locationSymbols <- toConnections =<< getJustLocation iid
-      let source = toAbilitySource attrs 1
-      push $ Explore iid source (oneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+      runExplore iid (attrs.ability 1)
       pure a
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ advanceVia #clues a iid
+    UseThisAbility _iid (isSource attrs -> True) 2 -> do
+      advancedWithClues attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      pushAll [NextAdvanceActStep (toId attrs) 1, NextAdvanceActStep (toId attrs) 2]
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      incrementDepth
+      doStep 2 msg
       pure a
-    NextAdvanceActStep aid 1 | aid == toId attrs -> do
-      msgs <- incrementDepth
-      pushAll msgs
-      pure a
-    NextAdvanceActStep aid 2 | aid == toId attrs -> do
+    DoStep 2 msg'@(AdvanceAct (isSide B attrs -> True) _ _) -> do
       depth <- getCurrentDepth
       isStandalone <- getIsStandalone
       if depth >= 5 && not isStandalone
         then push R2
         else do
-          allDefeated <- select $ NotInvestigator $ InvestigatorAt $ locationIs Locations.stepsOfYoth
-          enemies <- select AnyInPlayEnemy
-          explorationDeck <- getExplorationDeck
-          stepsOfYoth <- selectJust $ locationIs Locations.stepsOfYoth
-          stepsOfYothCard <- field LocationCard stepsOfYoth
-          otherLocations <- select $ NotLocation $ LocationWithId stepsOfYoth
-          locationCards <- traverse (field LocationCard) otherLocations
-          let notStepsOfYoth = locationCards <> explorationDeck
-          (newStart, rest) <- do
-            shuffled <- shuffleM notStepsOfYoth
-            case shuffled of
-              [] -> error "no locations"
-              (x : xs) -> pure (x, xs)
-          newExplorationDeck <- shuffleM (stepsOfYothCard : rest)
-          (newStartId, placeNewStart) <- placeLocation newStart
-          pushAll
-            $ map (InvestigatorDefeated (toSource attrs)) allDefeated
-            <> map (InvestigatorDiscardAllClues (toSource attrs)) allDefeated
-            <> map (\e -> PlaceEnemy e (OutOfPlay PursuitZone)) enemies
-            <> map
-              (RemoveAllDoom (toSource attrs) . LocationTarget)
-              (stepsOfYoth : otherLocations)
-            <> map RemoveLocation otherLocations
-            <> [ placeNewStart
-               , MoveAllTo (toSource attrs) newStartId
-               , RemoveLocation stepsOfYoth
-               , SetScenarioDeck ExplorationDeck newExplorationDeck
-               , SetScenarioMeta $ toMeta newStartId
-               , RevertAct $ toId attrs
-               ]
+          selectEach
+            (investigator_ $ not_ $ at_ $ locationIs Locations.stepsOfYoth)
+            (investigatorDefeated attrs)
+          investigators <- select $ investigator_ $ at_ $ locationIs Locations.stepsOfYoth
+          for_ investigators \iid -> do
+            discardAllClues attrs iid
+            place iid Unplaced
+
+          selectEach AnyInPlayEnemy \e -> place e (OutOfPlay PursuitZone)
+
+          inPlayLocations <- select Anywhere
+          locationCards <- for inPlayLocations \lid -> do
+            removeAllDoom attrs lid
+            removeLocation lid
+            field LocationCard lid
+          (explorationLocations, explorationOther) <-
+            partition (`cardMatch` card_ #location) <$> getExplorationDeck
+
+          for_ (explorationLocations <> locationCards) setCardAside
+          addToEncounterDiscard explorationOther
+          setScenarioDeck ExplorationDeck []
+
+          doStep 3 msg'
       pure a
-    RevertAct aid | aid == toId attrs && onSide B attrs -> do
+    DoStep 3 (AdvanceAct (isSide B attrs -> True) _ _) -> do
+      setAsideLocations <-
+        shuffle =<< getSetAsideCardsMatching (#location <> NotCard (cardIs Locations.stepsOfYoth))
+      let
+        newStart :| rest = case nonEmpty setAsideLocations of
+          Nothing -> error "no locations"
+          Just xs -> xs
+
+      newStartId <- placeLocation newStart
+      moveAllTo attrs newStartId
+
+      stepsOfYoth <- fetchCard Locations.stepsOfYoth
+      setScenarioDeck ExplorationDeck =<< shuffle (stepsOfYoth : take 4 rest)
+
+      msource <- getCurrentExploreSource
+      setScenarioMeta $ toMeta newStartId msource
+      checkAfter $ Window.ScenarioEvent "newExplorationDeck" Nothing Null
+      push $ RevertAct $ toId attrs
+      pure a
+    RevertAct (isSide B attrs -> True) -> do
       pure $ JourneyToTheNexus $ attrs & (sequenceL .~ Sequence 1 A)
-    _ -> JourneyToTheNexus <$> runMessage msg attrs
+    _ -> JourneyToTheNexus <$> liftRunMessage msg attrs

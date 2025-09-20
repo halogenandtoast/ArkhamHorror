@@ -1,16 +1,11 @@
-module Arkham.Enemy.Cards.PitWarden (
-  pitWarden,
-  PitWarden (..),
-) where
+module Arkham.Enemy.Cards.PitWarden (pitWarden) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Zone
 
 newtype PitWarden = PitWarden EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

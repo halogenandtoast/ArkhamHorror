@@ -48,8 +48,8 @@
   },
   "setup": {
     "gatherSets": "Gather all cards from the following encounter sets: *The City of Archives*, *Agents of Yog-Sothoth*, *Locked Doors*, *Chilling Cold*, and *Striking Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/city-of-archives.png' /><img src='{setImgPath}/agents-of-yog.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
-    "beforeDrawingOpeningHandsItems": "Before drawing opening hands, each investigator searches his or her deck and play area for all unique _Item_ assets. Set each of those assets aside, out of play. They do not exist in this time period.",
-    "beforeDrawingOpeningHandsAlejandro": "Before drawing opening hands, if a player has Alejandro Vela in his or her deck, search that investigator’s deck for Alejandro Vela and set him aside, out of play.",
+    "beforeDrawingOpeningHandsItems": "Before drawing opening hands, each investigator searches their deck and play area for all unique _Item_ assets. Set each of those assets aside, out of play. They do not exist in this time period.",
+    "beforeDrawingOpeningHandsAlejandro": "Before drawing opening hands, if a player has Alejandro Vela in their deck, search that investigator’s deck for Alejandro Vela and set him aside, out of play.",
     "bodyOfAYithian": "Replace each player’s investigator card with a Body of a Yithian investigator card.",
     "checkCampaignLog": "Check Campaign Log.",
     "cooperated1": "*If the investigators cooperated with the Yithians*, put the Interview Room (*Arrival Chamber*) into play (it is one of the three Interview Room locations). Each investigator begins play in the Interview Room (*Arrival Chamber*). Randomize the other two Interview Room locations and put them into play, as well.",
@@ -61,7 +61,7 @@
   },
   "bodyOfAYithian": {
     "title": "Body of a Yithian",
-    "body": "<p class='basic'>During the setup for this scenario, each investigator is instructed to replace his or her investigator card with one of the Body of a Yithian investigator cards provided in this Mythos Pack.</p><ul><li>Each investigator’s deck remains the same, but for the duration of this scenario, he or she must use a Body of a Yithian investigator card, and therefore cannot use any of his or her investigator’s abilities.<ul><li>Each investigator should still use their investigator mini-card so they can tell who is who.</li></ul></li><li>Any trauma that would normally be placed on your investigator is transferred to your Body of a Yithian investigator card.</li><li>Any cards that were attached to or placed underneath your investigator card are attached to or placed underneath your Body of a Yithian card.</li><li>For the duration of the scenario, your Body of a Yithian card has the same card title as your former investigator card. *For example: If you were playing as Wendy Adams, treat the Body of a Yithian card as if its title were “Wendy Adams” for the duration of this scenario.*</li><li>The Body of a Yithian card bears the encounter set icon for *The City of Archives*, and therefore cannot be used in any scenario other than *The City of Archives* unless otherwise noted.</li></ul>"
+    "body": "<p class='basic'>During the setup for this scenario, each investigator is instructed to replace their investigator card with one of the Body of a Yithian investigator cards provided in this Mythos Pack.</p><ul><li>Each investigator’s deck remains the same, but for the duration of this scenario, they must use a Body of a Yithian investigator card, and therefore cannot use any of their investigator’s abilities.<ul><li>Each investigator should still use their investigator mini-card so they can tell who is who.</li></ul></li><li>Any trauma that would normally be placed on your investigator is transferred to your Body of a Yithian investigator card.</li><li>Any cards that were attached to or placed underneath your investigator card are attached to or placed underneath your Body of a Yithian card.</li><li>For the duration of the scenario, your Body of a Yithian card has the same card title as your former investigator card. *For example: If you were playing as Wendy Adams, treat the Body of a Yithian card as if its title were “Wendy Adams” for the duration of this scenario.*</li><li>The Body of a Yithian card bears the encounter set icon for *The City of Archives*, and therefore cannot be used in any scenario other than *The City of Archives* unless otherwise noted.</li></ul>"
   },
   "resolutions": {
     "xp": {
@@ -75,9 +75,9 @@
       "title": "Resolution 1",
       "body": "<p>_Resolution 1:_ You awaken on the cold stone surface of the cavern floor, your mind dizzy from its journey through time and space.</p>",
       "tasks": "Check the number of tasks on act 2b that were completed during this scenario.",
-      "tasks6": "If all 6 tasks were completed, record in your Campaign Log that *the process was perfected*. Each investigator earns 4 bonus experience as he or she gains insight into the secrets of the Earth.",
-      "tasks5": "If 5 tasks were completed, record in your Campaign Log that *the process was successful*. Each investigator earns 2 bonus experience as he or she gains insight into the secrets of the Earth.",
-      "tasks4": "If 4 tasks were completed, record in your Campaign Log that *the process backfired*. Each investigator earns 1 bonus experience as he or she gains insight into the secrets of the Earth.",
+      "tasks6": "If all 6 tasks were completed, record in your Campaign Log that *the process was perfected*. Each investigator earns 4 bonus experience as they gain insight into the secrets of the Earth.",
+      "tasks5": "If 5 tasks were completed, record in your Campaign Log that *the process was successful*. Each investigator earns 2 bonus experience as they gain insight into the secrets of the Earth.",
+      "tasks4": "If 4 tasks were completed, record in your Campaign Log that *the process backfired*. Each investigator earns 1 bonus experience as they gain insight into the secrets of the Earth.",
       "tasks3": "If 3 tasks were completed, record in your Campaign Log that *the process backfired spectacularly*.",
       "xp": "Each investigator earns experience equal to the Victory X value of each card in the victory display."
     }

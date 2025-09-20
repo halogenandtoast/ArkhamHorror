@@ -55,7 +55,7 @@
     "setAside": "Set the following cards aside, out of play: Both act cards (Act 3a and Act 3c), Beast of Aldebaran, each copy of Tidal Terror, each copy of Rift Seeker, Cloister, Knight’s Hall, Abbey Tower, and Chapel of St. Aubert (*remember to use the versions of Abbey Tower and Chapel of St. Aubert that were randomly chosen earlier*).",
     "chooseSetAsideLocations": "Choose one of the two Choeur Gothique locations, at random, and set it aside. Remove the other version of Choeur Gothique from the game.",
     "chooseLocations": "Choose one of the two North Tower locations, one of the two Outer Wall locations, and one of the two Broken Steps locations, at random. Put the chosen locations into play. Remove the other versions of those locations from the game. Then, put the remaining locations (Porte de l’Avancée, Grand Rue, and Abbey Church) into play. (See next page for suggested placement.) Each investigator begins play at Porte de l’Avancée.",
-    "addWeakness": "Each investigator searches the collection for a random basic _*Madness*_, _*Pact*_, _*Cultist*_, or _*Detective*_ weakness, and adds it to his or her deck."
+    "addWeakness": "Each investigator searches the collection for a random basic _*Madness*_, _*Pact*_, _*Cultist*_, or _*Detective*_ weakness, and adds it to their deck."
   },
   "resolutions": {
     "noResolution": {

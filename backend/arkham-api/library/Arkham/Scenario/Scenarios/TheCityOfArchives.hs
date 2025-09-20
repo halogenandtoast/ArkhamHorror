@@ -224,9 +224,9 @@ instance RunMessage TheCityOfArchives where
           let
             totalTasks = rememberedTasks + if resignedWithTheCustodian then 1 else 0
             (logEntry, bonusXp) = case totalTasks of
-              n | n >= 6 -> (TheProcessWasPerfected, toBonus "perfected" 4)
-              n | n == 5 -> (TheProcessWasSuccessful, toBonus "successful" 2)
-              n | n == 4 -> (TheProcessBackfired, toBonus "backfired" 1)
+              n | n >= 6 -> (TheProcessWasPerfected, toBonus "bonus" 4)
+              n | n == 5 -> (TheProcessWasSuccessful, toBonus "bonus" 2)
+              n | n == 4 -> (TheProcessBackfired, toBonus "bonus" 1)
               n | n == 3 -> (TheProcessBackfiredSpectacularly, NoBonus)
               _ -> error "Invalid number of tasks"
           xp <- allGainXpWithBonus' attrs bonusXp

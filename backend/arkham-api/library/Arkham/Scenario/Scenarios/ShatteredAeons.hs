@@ -1,5 +1,6 @@
 module Arkham.Scenario.Scenarios.ShatteredAeons (setupShatteredAeons, shatteredAeons, ShatteredAeons (..)) where
 
+import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
@@ -9,6 +10,7 @@ import Arkham.CampaignStep
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Card
+import Arkham.Effect.Window
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers
@@ -92,7 +94,6 @@ standaloneCampaignLog =
 
 setupShatteredAeons :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupShatteredAeons _attrs = do
-
   tokens <- getBagChaosTokens
   let tokenCount face = count ((== face) . (.face)) tokens
   let tokenResult = compare (tokenCount Cultist) (tokenCount Tablet)
@@ -177,7 +178,12 @@ setupShatteredAeons _attrs = do
   let cardsToAddToVictory = map PlayerCard $ take (yigsFury `div` 10) leadDeck
   pushAll $ map (RemovePlayerCardFromGame False) cardsToAddToVictory
   placeInVictory $ map VengeanceCard cardsToAddToVictory
-  whenReturnTo $ addAdditionalReferences ["53061b"]
+  whenReturnTo do
+    addAdditionalReferences ["53061b"]
+    createAbilityEffect EffectGameWindow
+      $ mkAbility (SourceableWithCardCode (CardCode "53061b") ScenarioSource) 1
+      $ forced
+      $ Explored #after Anyone Anywhere (SuccessfulExplore Anywhere)
 
 instance RunMessage ShatteredAeons where
   runMessage msg s@(ShatteredAeons attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -326,4 +332,9 @@ instance RunMessage ShatteredAeons where
           endOfScenarioThen EpilogueStep
           pure $ ShatteredAeons attrs'
         _ -> error "invalid resolution"
+    UseCardAbility _ ScenarioSource 1 _ _ -> do
+      getEncounterDeck >>= \case
+        Deck [] -> pure ()
+        Deck (x : _) -> shuffleCardsIntoDeck ExplorationDeck [x]
+      pure s
     _ -> ShatteredAeons <$> liftRunMessage msg attrs

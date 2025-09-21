@@ -2,9 +2,9 @@
 
 module Arkham.Location.Base where
 
-import Arkham.Prelude
-
+import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Card
+import Arkham.ChaosToken.Types
 import Arkham.Cost
 import Arkham.Direction
 import Arkham.GameValue
@@ -12,12 +12,12 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Key
 import Arkham.Location.Brazier
-import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Location.BreachStatus
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
 import Arkham.LocationSymbol
 import Arkham.Matcher (IsLocationMatcher (..), LocationMatcher (..))
+import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Token
 import Data.Aeson.Key qualified as Aeson
@@ -47,6 +47,7 @@ data LocationAttrs = LocationAttrs
   , locationInFrontOf :: Maybe InvestigatorId
   , locationKeys :: Set ArkhamKey
   , locationSeals :: Set Seal
+  , locationSealedChaosTokens :: [ChaosToken]
   , locationFloodLevel :: Maybe FloodLevel
   , locationBrazier :: Maybe Brazier
   , locationBreaches :: Maybe BreachStatus
@@ -172,6 +173,7 @@ instance FromJSON LocationAttrs where
     locationInFrontOf <- o .:? "inFrontOf"
     locationKeys <- o .: "keys"
     locationSeals <- o .:? "seals" .!= mempty
+    locationSealedChaosTokens <- o .:? "sealedChaosTokens" .!= mempty
     locationFloodLevel <- o .:? "floodLevel"
     locationBrazier <- o .:? "brazier"
     locationBreaches <- o .:? "breaches"

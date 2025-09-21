@@ -131,6 +131,12 @@ instance RunMessage LocationAttrs where
     UpdateLocation lid upd | lid == locationId -> do
       -- TODO: we may want life cycles around this, generally this might just be a bad idea
       pure $ updateLocation [upd] a
+    SealedChaosToken token _ (isTarget a -> True) -> do
+      pure $ a & sealedChaosTokensL %~ (token :)
+    SealedChaosToken token _ _ -> do
+      pure $ a & sealedChaosTokensL %~ filter (/= token)
+    UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
+    RemoveAllChaosTokens face -> pure $ a & sealedChaosTokensL %~ filter ((/= face) . (.face))
     FlipClues target n | isTarget a target -> do
       let clueCount = max 0 $ subtract n $ locationClues a
       pure $ a & tokensL %~ flipClues n & withoutCluesL .~ (clueCount == 0)
@@ -206,7 +212,8 @@ instance RunMessage LocationAttrs where
           baseOk <- getCanDiscoverClues d.isInvestigate iid lid
           base <- total lid (d.count + additionalDiscovered)
           discoveredClues <- min base <$> field LocationClues lid
-          checkWindowMsg <- checkWindows [Window.mkWhen (Window.WouldDiscoverClues iid lid d.source discoveredClues)]
+          checkWindowMsg <-
+            checkWindows [Window.mkWhen (Window.WouldDiscoverClues iid lid d.source discoveredClues)]
 
           otherWindows <- forMaybeM (mapToList additionalDiscoveredAt) \(lid', n) -> runMaybeT do
             liftGuardM $ getCanDiscoverClues d.isInvestigate iid lid'

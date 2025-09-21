@@ -67,7 +67,7 @@ targetTraits = \case
   InvestigatorDiscardTarget _ -> pure mempty
   SetAsideLocationsTarget _ -> pure mempty
   EncounterDeckTarget -> pure mempty
-  ScenarioDeckTarget -> pure mempty
+  ScenarioDeckTarget _ -> pure mempty
   SearchedCardTarget _ -> pure mempty
   SkillTestInitiatorTarget _ -> pure mempty
   PhaseTarget _ -> pure mempty

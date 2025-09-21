@@ -2793,6 +2793,7 @@ library
       Arkham.Location.Cards.BrokenPassage
       Arkham.Location.Cards.BrokenSteps_289
       Arkham.Location.Cards.BrokenSteps_290
+      Arkham.Location.Cards.BuenosAires
       Arkham.Location.Cards.BurialGround
       Arkham.Location.Cards.BurialPit
       Arkham.Location.Cards.BurnedRuins_204
@@ -3012,6 +3013,7 @@ library
       Arkham.Location.Cards.GrandGuignol
       Arkham.Location.Cards.GrandRue
       Arkham.Location.Cards.Graveyard
+      Arkham.Location.Cards.GreatHallOfCeleano
       Arkham.Location.Cards.GreatLibrary
       Arkham.Location.Cards.GreenRoom
       Arkham.Location.Cards.GuestHall
@@ -3457,6 +3459,7 @@ library
       Arkham.Location.Cards.TwilightAbyss
       Arkham.Location.Cards.TwistedUnderbrush
       Arkham.Location.Cards.Ulthar
+      Arkham.Location.Cards.UltimaThule
       Arkham.Location.Cards.UndercityAltar
       Arkham.Location.Cards.UndergroundRiver
       Arkham.Location.Cards.UndergroundRuins
@@ -3639,6 +3642,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToHeartOfTheEldersPart1
       Arkham.Scenario.Scenarios.ReturnToHeartOfTheEldersPart2
       Arkham.Scenario.Scenarios.ReturnToLostInTimeAndSpace
+      Arkham.Scenario.Scenarios.ReturnToShatteredAeons
       Arkham.Scenario.Scenarios.ReturnToTheBoundaryBeyond
       Arkham.Scenario.Scenarios.ReturnToTheCityOfArchives
       Arkham.Scenario.Scenarios.ReturnToTheDepthsOfYoth
@@ -3731,7 +3735,6 @@ library
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.FlavorText
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
       Arkham.Scenarios.ShatteredAeons.Helpers
-      Arkham.Scenarios.ShatteredAeons.Story
       Arkham.Scenarios.TheBoundaryBeyond.Helpers
       Arkham.Scenarios.TheCityOfArchives.Helpers
       Arkham.Scenarios.TheDepthsOfYoth.Helpers
@@ -4513,6 +4516,7 @@ library
       Arkham.Treachery.Cards.UnexpectedAmbush
       Arkham.Treachery.Cards.UnexpectedTransformation
       Arkham.Treachery.Cards.UnhallowedCountry
+      Arkham.Treachery.Cards.UnknowablePast
       Arkham.Treachery.Cards.Unlucky
       Arkham.Treachery.Cards.UnspeakableOathBloodthirst
       Arkham.Treachery.Cards.UnspeakableOathCowardice

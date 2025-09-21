@@ -523,6 +523,7 @@ allEncounterTreacheryCards =
       , unexpectedAmbush
       , unexpectedTransformation
       , unhallowedCountry
+      , unknowablePast
       , unlucky
       , vampiresKiss
       , vastExpanse
@@ -3173,6 +3174,13 @@ perilsOfYoth =
   peril
     (treachery "53060" "Perils of Yoth" ReturnToTheDepthsOfYoth 2)
       { cdCardTraits = setFromList [Hazard]
+      }
+
+unknowablePast :: CardDef
+unknowablePast =
+  peril
+    (treachery "53065" "Unknowable Past" ReturnToShatteredAeons 2)
+      { cdCardTraits = setFromList [Hex]
       }
 
 fromAnotherTime :: CardDef

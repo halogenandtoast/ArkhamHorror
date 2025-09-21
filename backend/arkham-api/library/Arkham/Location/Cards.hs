@@ -189,6 +189,7 @@ allLocationCards =
       , brokenPassage
       , brokenSteps_289
       , brokenSteps_290
+      , buenosAires
       , burialGround
       , burialPit
       , burnedRuins_204
@@ -407,6 +408,7 @@ allLocationCards =
       , grandGuignol
       , grandRue
       , graveyard
+      , greatHallOfCeleano
       , greatLibrary
       , greenRoom
       , guestHall
@@ -852,6 +854,7 @@ allLocationCards =
       , twilightAbyss
       , twistedUnderbrush
       , ulthar
+      , ultimaThule
       , undercityAltar
       , undergroundRiver
       , undergroundRuins
@@ -9088,14 +9091,15 @@ hallsOfPnakotusSouthernCorridors =
     ReturnToTheCityOfArchives
 
 cyclopeanVaults :: CardDef
-cyclopeanVaults = victory 1 $
-  location
-    "53056"
-    "Cyclopean Vaults"
-    [Ancient, Pnakotus]
-    Hourglass
-    [Plus, Heart]
-    ReturnToTheCityOfArchives
+cyclopeanVaults =
+  victory 1
+    $ location
+      "53056"
+      "Cyclopean Vaults"
+      [Ancient, Pnakotus]
+      Hourglass
+      [Plus, Heart]
+      ReturnToTheCityOfArchives
 
 alienConservatory :: CardDef
 alienConservatory =
@@ -9106,6 +9110,21 @@ alienConservatory =
     Heart
     [Plus, Hourglass]
     ReturnToTheCityOfArchives
+
+greatHallOfCeleano :: CardDef
+greatHallOfCeleano =
+  singleSided
+    $ location "53062" "Great Hall of Celeano" [Otherworld] Droplet [Diamond] ReturnToShatteredAeons
+
+buenosAires :: CardDef
+buenosAires =
+  singleSided
+    $ location "53063" "Buenos Aires" [Shattered] Equals [Star] ReturnToShatteredAeons
+
+ultimaThule :: CardDef
+ultimaThule =
+  singleSided
+    $ location "53064" "Ultima Thule" [Shattered] Equals [Star] ReturnToShatteredAeons
 
 riversideTemple :: CardDef
 riversideTemple =

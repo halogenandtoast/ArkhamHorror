@@ -1,100 +1,331 @@
 {
   "key": {
-    "theInvestigatorsWereForcedToWaitForAdditionalSupplies": "The investigators were forced to wait for additional supplies",
-    "ichtacaObservedYourProgressWithKeenInterest": "Ichtaca observed your progress with keen interest",
-    "alejandroFollowedTheInvestigatorsIntoTheRuins": "Alejandro followed the investigators into the ruins",
-    "ichtacaIsWaryOfTheInvestigators": "Ichtaca is wary of the investigators",
-    "theInvestigatorsHaveEarnedIchtacasTrust": "The investigators have earned Ichtaca's trust",
-    "alejandroChoseToRemainAtCamp": "Alejandro chose to remain at camp",
-    "theInvestigatorsClearedAPathToTheEztliRuins": "The investigators cleared a path to the Eztli Ruins",
-    "yigsFury": "Yig's Fury",
-    "theInvestigatorsRecoveredTheRelicOfAges": "The investigators recovered the Relic of Ages",
-    "alejandroRecoveredTheRelicOfAges": "Alejandro recovered the Relic of Ages",
-    "theHarbingerIsStillAlive": "The Harbinger is still alive",
-    "theInvestigatorsGaveCustodyOfTheRelicToAlejandro": "The investigators gave custody of the relic to Alejandro",
-    "theInvestigatorsHaveEarnedAlejandrosTrust": "The investigators have earned Alejandro's trust",
-    "theInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone": "The investigators gave custody of the relic to Harlan Earnstone",
-    "alejandroIsContinuingHisResearchOnHisOwn": "Alejandro is continuing his research on his own",
-    "youAreForgingYourOwnWay": "You are forging your own way",
-    "theInvestigatorsFoundTheMissingRelic": "The investigators found the missing relic",
-    "theRelicIsMissing": "The relic is missing",
-    "theInvestigatorsRescuedAlejandro": "The investigators rescued Alejandro",
-    "alejandroIsMissing": "Alejandro is missing",
-    "theInvestigatorsForgedABondWithIchtaca": "The investigators forged a bond with Ichtaca",
-    "ichtacaIsInTheDark": "Ichtaca is in the dark",
-    "pathsAreKnownToYou": "Paths are known to you",
-    "ichtacaHasConfidenceInYou": "Ichtaca has confidence in you",
-    "theInvestigatorsMappedOutTheWayForward": "The investigators mapped out the way forward",
-    "ichtacasFaithIsRestored": "Ichtaca's faith is restored",
-    "theJungleWatches": "The jungle watches",
-    "theInvestigatorsCooperatedWithTheYithians": "The investigators cooperated with the Yithians",
-    "theInvestigatorsResistedCaptivity": "The investigators resisted captivity",
-    "theInvestigatorsHadTheirMemoriesExpunged": "The investigators had their memories expunged",
-    "theProcessWasPerfected": "The process was perfected",
-    "theProcessWasSuccessful": "The process was successful",
-    "theProcessBackfired": "The process backfired",
-    "theProcessBackfiredSpectacularly": "The process backfired spectacularly",
-    "alejandroRemembersEverything": "Alejandro remembers everything",
-    "alejandroIsSetAgainstYou": "Alejandro is set against you",
-    "ichtacaIsSetAgainstYou": "Ichtaca is set against you",
-    "theInvestigatorsFellIntoTheDepths": "The investigators fell into the depths",
-    "theNexusIsNear": "The nexus is near",
-    "theBraziersAreLit": "The braziers are lit",
-    "theBraziersRemainUnlit": "The braziers remain unlit",
-    "theInvestigatorsMendedTheTearInTheFabricOfTime": "The investigators mended the tear in the fabric of time",
-    "theInvestigatorsSavedTheCivilizationOfTheSerpents": "The investigators saved the civilization of the Serpents",
-    "theInvestigatorsSavedTheCivilizationOfTheYithians": "The investigators saved the civilization of the Yithians",
-    "theFabricOfTimeIsUnwoven": "The fabric of time is unwoven",
-    "theInvestigatorsTurnedBackTime": "The investigators turned back time",
-    "theInvestigatorsSealedTheRelicOfAgesForever": "The investigators sealed the Relic of Ages forever"
+    "theInvestigatorsWereForcedToWaitForAdditionalSupplies": "조사자들이 하릴없이 추가 탐험 물자가 도착하기만을 기다렸다",
+    "ichtacaObservedYourProgressWithKeenInterest": "이츠타카가 조사자들의 행보를 눈여겨봤다",
+    "alejandroFollowedTheInvestigatorsIntoTheRuins": "알레한드로가 조사자들을 따라 유적으로 들어갔다",
+    "ichtacaIsWaryOfTheInvestigators": "이츠타카가 조사자들을 경계한다",
+    "theInvestigatorsHaveEarnedIchtacasTrust": "조사자들이 이츠타카의 신뢰를 얻었다",
+    "alejandroChoseToRemainAtCamp": "알레한드로가 야영지에 남기로 했다",
+    "theInvestigatorsClearedAPathToTheEztliRuins": "조사자들이 에스틀리 유적으로 향하는 길을 냈다",
+    "yigsFury": "이그의 분노",
+    "theInvestigatorsRecoveredTheRelicOfAges": "조사자들이 시대의 유물을 손에 넣었다",
+    "alejandroRecoveredTheRelicOfAges": "알레한드로가 시대의 유물을 손에 넣었다",
+    "theHarbingerIsStillAlive": "발루시아의 선봉장이 살아 있다",
+    "theInvestigatorsGaveCustodyOfTheRelicToAlejandro": "조사자들이 알레한드로에게 유물 관리를 맡겼다",
+    "theInvestigatorsHaveEarnedAlejandrosTrust": "조사자들이 알레한드로의 신뢰를 얻었다",
+    "theInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone": "조사자들이 할런 언스톤에게 유물 관리를 맡겼다",
+    "alejandroIsContinuingHisResearchOnHisOwn": "알레한드로가 독자적으로 연구를 이어나간다",
+    "youAreForgingYourOwnWay": "조사자들이 자신만의 방법을 찾아 나섰다",
+    "theInvestigatorsFoundTheMissingRelic": "조사자들이 잃어버린 유물을 찾아냈다",
+    "theRelicIsMissing": "유물을 잃어버렸다",
+    "theInvestigatorsRescuedAlejandro": "조사자들이 알레한드로를 구출했다",
+    "alejandroIsMissing": "알레한드로가 실종되었다",
+    "theInvestigatorsForgedABondWithIchtaca": "조사자들이 이츠타카와 유대감을 쌓았다",
+    "theInvestigatorsRecruitedTheHelpOfAnotherExpedition": "조사자들이 다른 탐사대로부터 도움을 받았다",
+    "ichtacaIsInTheDark": "이츠타카의 행적을 쫓지 못했다",
+    "pathsAreKnownToYou": "길을 알아냈다",
+    "ichtacaHasConfidenceInYou": "이츠타카가 조사자들을 믿는다",
+    "theInvestigatorsMappedOutTheWayForward": "조사자들이 앞으로 갈 길을 면밀히 검토했다",
+    "ichtacasFaithIsRestored": "이츠타카의 신뢰가 회복되었다",
+    "theJungleWatches": "밀림이 지켜본다",
+    "theInvestigatorsCooperatedWithTheYithians": "조사자들이 이스인에게 협조했다",
+    "theInvestigatorsResistedCaptivity": "조사자들이 나포에 저항했다",
+    "theInvestigatorsHadTheirMemoriesExpunged": "조사자들의 기억이 지워졌다",
+    "theProcessWasPerfected": "의식 전이 과정이 완벽했다",
+    "theProcessWasSuccessful": "의식 전이 과정이 성공했다",
+    "theProcessBackfired": "의식 전이 과정이 역효과를 낳았다",
+    "theProcessBackfiredSpectacularly": "의식 전이 과정이 어마어마한 역효과를 낳았다",
+    "alejandroRemembersEverything": "알레한드로가 기억을 되찾았다",
+    "alejandroIsSetAgainstYou": "알레한드로와 척이 졌다",
+    "ichtacaIsSetAgainstYou": "이츠타카와 척이 졌다",
+    "theInvestigatorsFellIntoTheDepths": "조사자들이 깊은 구렁텅이로 추락했다",
+    "theNexusIsNear": "느카이의 연결점이 가까이 있다",
+    "theBraziersAreLit": "화로에 불을 밝혔다",
+    "theBraziersRemainUnlit": "화로에 불을 밝히지 못했다",
+    "theInvestigatorsMendedTheTearInTheFabricOfTime": "조사자들이 시간 연속체에 난 균열을 봉합했다",
+    "theInvestigatorsSavedTheCivilizationOfTheSerpents": "조사자들이 뱀의 문명을 구원했다",
+    "theInvestigatorsSavedTheCivilizationOfTheYithians": "조사자들이 이스인의 문명을 구원했다",
+    "theFabricOfTimeIsUnwoven": "시간의 연속체가 한 가닥 한 가닥까지 해체되었다",
+    "theInvestigatorsTurnedBackTime": "조사자들이 시간을 되돌렸다",
+    "theInvestigatorsSealedTheRelicOfAgesForever": "조사자들이 시대의 유물을 영원히 봉인했다"
+  },
+  "title": {
+    "supplyPointsToGain": "물자 점수 획득"
   },
   "label": {
+    "checkYourSupplies": "탐험 물자를 확인합니다.",
+    "supplyPointsToGain": "각 조사자는 자신의 경험치를 최대 10까지 물자 점수로 변환할 수 있습니다(경험치 2당 물자 점수 1로 변환합니다).",
     "bestLaidPlans": {
-      "shuffle": "Shuffle the top card of the encounter deck into the exploration deck"
+      "shuffle": "조우 덱 맨 위 카드 1장을 탐사 덱에 섞어넣습니다."
     },
     "snakeBite": {
-      "damageAlly": "Deal 5 damage to an _*Ally*_ asset you control",
-      "damageSelf": "Take 1 direct damage. If you are not poisoned, put a set-aside Poisoned weakness into play in your threat area."
+      "damageAlly": "당신이 조종하는 _*조력자*_ 자산 하나에 피해를 5 줍니다.",
+      "damageSelf": "직접적인 피해를 1 받습니다. 당신이 중독되어 있지 않다면, 치워 두었던 ‘중독’ 약점 하나를 가져와 플레이 영역 중 당신의 위협 영역에 둡니다."
     },
     "lowOnSupplies": {
-      "resources": "Each investigator loses 2 resources.",
-      "damage": "Each investigator takes 1 damage.",
-      "discardAsset": "Each investigator chooses and discards an asset he or she controls."
+      "resources": "모든 조사자는 자원을 2개씩 잃습니다.",
+      "damage": "모든 조사자는 피해를 1씩 받습니다.",
+      "discardAsset": "모든 조사자는 각자가 조종하는 자산을 하나씩 선택해서 버립니다."
     },
     "ancestralFear": {
-      "placeDoom": "Place 1 doom on your location and discard Ancestral Fear (instead of placing it in the victory display).",
-      "addToVictory": "Place Ancestral Fear in the victory display."
+      "placeDoom": "당신이 위치한 장소에 파멸을 1개 올려놓고 ‘원시적 공포’를 *(승점 더미에 놓지 않고 그 대신)* 버립니다.",
+      "addToVictory": "‘원시적 공포’를 승점 더미에 놓습니다."
     },
     "serpentsCall": {
-      "poisoned": "Put a set-aside Poisoned weakness into play in your threat area",
-      "drawEncounterCards": "Draw the top 2 cards of the encounter deck"
+      "poisoned": "치워 두었던 ‘중독’ 약점 하나를 가져와 플레이 영역 중 당신의 위협 영역에 두어야 합니다.",
+      "drawEncounterCards": "조우 덱 맨 윗장부터 카드를 2장 뽑아야 합니다."
+    },
+    "explorationDeck": {
+      "placeOnTop": "카드 1장을 탐사 덱 맨 위에 놓습니다.",
+      "placeOnBottom": "카드 1장을 탐사 덱 맨 밑에 둡니다."
+    },
+    "mouthOnKnYanTheCavernsMaw": {
+      "resign": "“오늘은 그만 야영지를 세우고 나머지 수수께끼는 내일 해결하자.”"
     }
+  },
+  "standalone": {
+    "paths": "*몇 가지 길을 알아냈는지* 조사자들이 결정할 수 있습니다(0~5가지). 알아낸 길이 많을수록 이 시나리오를 더 빠르고 쉽게 즐길 수 있습니다."
+
   },
   "prologue": {
     "earthIsNotOurs": {
-      "title": "Earth Is Not Ours",
-      "body": "<p>“Primal myth and modern delusion joined in their assumption that mankind is only one—perhaps the least—of the highly evolved and dominant races of this planet’s long and largely unknown career.”</p><p class='right'>– H. P. Lovecraft, “The Shadow out of Time”</p>"
+      "title": "지구는 인류의 전유물이 아니다",
+      "body": "<p>“원시적인 신화와 근대적인 망상이 합쳐진 결과, 인류는 자신이 이 지구상에서 가장 오래전부터 진화하여 왕성히 활약해온 유일한 우세 종이라고 가정하기에 이르렀다.”</p><p class='right'>– H. P. 러브크래프트, “시간의 그림자”</p>"
     },
     "title": "서막",
-    "body": "<p class='anke'>Tuesday, June 2nd, 1925</p><p>There will be no rest for us this summer, it seems.</p><p>Today I met with Harlan Earnstone, a historical theorist at Miskatonic University and an old friend of mine. He’d said he had a job offer for me, but frankly, I didn’t know what to expect.</p><p>Harlan introduced me to an associate of his: Alejandro Vela, a distinguished historian from across the southern border. Mr. Vela is a graduate of a prestigious university in Mexico City, and has spent many years researching the Aztec Empire. He claims that he has found evidence regarding the existence of an unheard-of Aztec city-state called Eztli. His strange and unprecedented findings were not accepted by the university, and he’s become a pariah among his peers.</p><p>Alejandro came to Arkham to seek funding for an expedition into the rainforests of southern Mexico, where he believes that the ruins of the Eztli altepetl lie undiscovered. His description of this city‑state’s origins defies modern understanding of Mesoamerican history. Despite this— or, knowing my old friend, because of this­ —Harlan is enthralled by Alejandro’s discoveries. Miskatonic University has agreed to fund the expedition (albeit meagerly), and Harlan wants me to go along.</p><p>The way I see it, there’s a good chance we’re looking for something that doesn’t even exist. But if there’s even a slight chance these Eztli people existed, the historical significance would be profound. We debated the issue for some time, but in the end, we accepted Alejandro’s offer. Preparations are underway, and we should be setting off by the end of the month. With any luck, we’ll have this journal filled with all manner of interesting discoveries. If not, perhaps it’ll be a nice wedge to place beneath Harlan’s lopsided desk.</p>",
-    "expeditionLeader": "If Ursula Downs, Leo Anderson, or Monterey Jack was chosen as an investigator for this campaign: Choose one of those investigators to be the expedition leader. That investigator begins Scenarios I and II as the lead investigator.",
+    "body": "<p class='anke'>1925년 6월 2일, 화요일</p><p>아무래도 올여름엔 쉴 생각을 접어두는 편이 좋겠다.</p><p>오늘 미스캐토닉 대학의 역사학자이자 오랜 지인인 할런 언스톤을 만나고 왔다. 제안할 만한 일거리가 있다며 부른 건데, 솔직히 말하자면 나는 그게 어떤 일인지 제대로 알지도 못했다.</p><p>할런은 미국 국경 이남에서 저명한 사학자이자 자신의 동료라며 알레한드로 벨라란 사람을 소개해 주었다. 알레한드로는 멕시코시티의 명문대를 졸업한 이후 수년간 아즈텍 제국에 관해 연구해 왔다고 한다. 그는 세간에 알려지지 않은 에스틀리라는 아즈텍의 도시국가가 존재했다는 증거를 발견했노라고 주장했다. 다만 이 전례 없고 기묘한 발견을 대학 측에서 수용해 줄 리 없었고, 그 이후로 알레한드로는 학계에서 따돌림을 당했다는 모양이다.</p><p>알레한드로는 멕시코 남부 우림지역에 아직 발견되지 않은 에스틀리 알테페틀의 유적이 있다고 믿었으며, 이를 탐사하기 위해 자금줄을 찾아서 아컴으로 온 것이었다. 이 도시 국가의 기원에 대한 알레한드로의 이론은 근대 메소아메리카의 역사 통론에 반하는 내용이었다. 그런데도 할런은 알레한드로의 발견에 매혹되었다. 뭐, 할런이라면 오히려 그 점 때문에 매혹된 것이라고 봐야겠지만. 미스캐토닉 대학 측에서는 비록 빈약하게나마 알레한드로의 탐사에 자금을 대기로 했고, 할런은 내가 동행해 주길 바랐다.</p><p>솔직히 말하자면, 존재하지도 않는 무언가를 찾아 헤맨다는 느낌을 지울 수가 없다. 하지만 만에 하나 에스틀리인이 존재했었다는 실낱같은 가능성이라도 발견한다면, 역사에 어마어마한 족적을 남길 수 있을 것이다. 우리는 제법 시간을 들여가며 이 문제에 대해 논의했고, 마침내 알레한드로의 의견을 수용하기로 했다. 이달 말에는 출발해야 했기에 서둘러 준비에 착수하기로 했다. 잘만 된다면 탐사 일지에다 온갖 흥미로운 발견물에 관해 한가득 기록할 수 있겠지. 잘 안 된다 한들, 할런의 삐딱한 책상 아래에 끼워 넣는 받침으로 써버리면 될 일이다.</p>",
+    "expeditionLeader": "이번 캠페인에서 사용할 조사자로 ‘우르술라 다운즈’/‘레오 앤더슨’/‘몬터레이 잭’을 선택했다면: 그중 한 명이 탐사대 대장이 됩니다. 탐사대 대장은 시나리오 I과 시나리오 II에서 대표 조사자를 맡습니다.",
     "label": {
-      "expeditionLeader": "Choose an Expedition Leader"
+      "expeditionLeader": "탐사대 대장 선택"
     },
-    "pickSupplies": "As an outcast from academia, funding for Alejandro’s expedition is limited. Each investigator must choose supplies to bring for the expedition. In the Campaign Log, under each investigator’s “Supplies” section, record the supplies that investigator chose to bring. (<em>Note: Provisions and Medicine can be taken more than once by recording their name multiple times and spending the appropriate number of supply points each time.</em>)<ul><li><p>Each investigator may spend supply points to purchase one or more of the supplies listed below. The number of supply points available to each investigator is based on the number of investigators in the campaign:</p><p><strong>1 investigator:</strong> 10 supply points</p><p><strong>2 investigators:</strong> 7 supply points each</p><p><strong>3 investigators:</strong> 5 supply points each</p><p><strong>4 investigators:</strong> 4 supply points each</p></li><li>The description of each supply below gives some insight into how it might be used during the campaign. Choose wisely.</li></ul>"
+    "pickSupplies": "알레한드로는 주류 고고학계에서 이단아 취급을 받는지라, 탐사 재정을 확보하는 데에 한계가 있었습니다. 모든 조사자는 제한된 물자 점수만으로 이번 탐사에 가져갈 탐험 물자를 선택해야 합니다. 캠페인 기록지의 조사자별 “탐험 물자” 항목에 해당 조사자가 가져갈 탐험 물자를 기록합니다. (<em>알아두기: 물자 점수만 소비할 수 있다면 비상식량, 약품은 각자 2개 이상 가져갈 수도 있습니다.</em>)<ul><li><p>각 조사자는 자신에게 주어진 물자 점수를 소비하여 아래 목록에 있는 탐험 물자를 구매해도 됩니다. 캠페인에 참여하는 조사자 수에 따라서 각 조사자는 다음과 같이 물자 점수를 받습니다.</p><p><strong>조사자 1명:</strong> 물자 점수 10</p><p><strong>조사자 2명:</strong> 각자 물자 점수 7씩</p><p><strong>조사자 3:</strong> 각자 물자 점수 5씩</p><p><strong>조사자 4명:</strong> 각자 물자 점수 4씩</p></li><li>이번 캠페인 동안 각각의 탐험 물자가 어떻게 쓰이는지 간략하게 설명하겠습니다. 신중하게 선택하세요.</li></ul>"
 
   },
   "interlude1": {
-    "blanket": "<p class='basic'>Check your supplies. Each investigator with a blanket reads _Restful Sleep_. The rest read _Tossing and Turning_.</p>",
-    "restfulSleep": "<p>_Restful Sleep_: Mercifully, I was able to sleep through each night. However, while my body rested, my mind was plagued by nightmares. A cavern like a gaping maw, bathed in dim red light…the walls slithering with the glimmering scales of a hundred vipers…it might have been better had I not slept at all.</p><p class='basic right'>You suffer no ill effects.</p>",
-    "tossingAndTurning": "<p>_Tossing and Turning_: Those nights in the jungle, I barely slept. A strange fog rolled through the camp each night, plunging the area in an intense and peculiar cold. My bedroll offered some protection against the elements, but we hadn’t been prepared for this unnatural weather. Flies and mosquitoes buzzed in my ears every time I began to drift off. Even when I finally slept, I would soon be startled awake by the crawling of an insect or lizard across my face. I wager I’ll get very little sleep on this journey…</p><p class='basic right'>You suffer 1 physical or mental trauma (your choice).</p>",
-    "lookout": "The lead investigator must choose one investigator to be the group’s lookout. Then, that investigator checks his or her supplies. If he or she has binoculars, he or she reads _Shapes in the Trees_. Otherwise, he or she reads _Eyes in the Dark_.",
-    "shapesInTheTrees": "<p>_Shapes in the Trees_: Most of the nights passed without incident, but on this night, I was startled by the rustling of tree branches along the southern border of our camp’s clearing. Despite the darkness, I was able to use my binoculars to see shapes moving in the trees. The shapes appeared human, but…why? Why do they only watch us from afar? What is their purpose?</p><p class='basic right'>You earn 2 additional experience as you gain further insight into the motivations of the Eztli.</p>",
-    "eyesInTheDark": "<p>_Eyes in the Dark_: Each night, I was watched. I didn’t just feel watched: I saw the eyes peering out from the inky darkness that surrounded our camp. They knew we were there. The yellow eyes watched me, alert, my weapons drawn, ready to defend the camp if the need arose. Our eyes met, and a darkness seized my heart.</p><p class='basic right'>You suffer 1 mental trauma.</p>",
-    "provisions": "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read _Low on Rations_",
-    "lowOnRations": "<p>_Low on Rations_: We thought we’d brought enough food and water for everybody, but the journey had taken its toll on our supplies. When the sun rose and it came time to eat, we discovered we were already running out of provisions.</p><p class='basic right'>You begin the next scenario with 3 fewer resources.</p>",
-    "medicine": "Check your supplies. Each investigator with medicine may cross it off from their supplies to choose and remove a Poisoned weakness from any investigator’s deck. Each investigator who still has a Poisoned weakness in his or her deck reads _The Poison Spreads_.",
-    "doNotUseMedicine": "Do not use medicine",
-    "thePoisonSpreads": "<p>_The Poison Spreads_: As the days went by, the poison continued to spread through my body. By the second night, my skin was drenched in sweat. I started having difficutly breathing, and I began every morning by retching up most of the previous night’s dinner.</p><p class='basic right'>You suffer 1 physical trauma.</p>"
+    "title": "막간 I: 쉴 수 없는 밤",
+    "blanket": "<p class='basic'>탐험 물자를 확인합니다. 담요를 가진 조사자들은 _평온한 수면_을 읽습니다. 담요가 없는 조사자들은 _뒤척이는 밤_을 읽습니다.</p>",
+    "restfulSleep": "<p>_평온한 수면_: 다행히도 매일 밤 잠자리 자체는 불편하진 않았다. 그러나 몸이 불편하지 않은 것과는 별개로 머릿속은 악몽으로 엉망이 되어 버렸다. 짐승 아가리처럼 쩍 벌어진 동굴 입구, 그곳은 어두침침한 붉은빛에 흠뻑 잠겨 있었다… 그리고 비늘 돋친 수백 마리 독사가 벽을 타고 기어다니는 광경까지… 차라리 잠들지 않는 편이 나을 지경이었다.</p><p class='basic right'>당신은 부정적인 효과를 받지 않습니다.</p>",
+    "tossingAndTurning": "<p>_뒤척이는 밤_: 밀림으로 들어온 이래로 잠을 거의 자지 못했다. 매일 밤 야영지에 깔린 기묘한 안개는 극심한 추위를 흩뿌렸다. 침낭이 냉기를 막아 주긴 했지만, 이런 비정상적인 날씨에까지 대비가 될 수준은 아니었다. 잠에 빠져 들라치면 파리나 모기가 귓가에서 윙윙거렸고, 설사 잠이 들었다 해도 벌레나 도마뱀이 얼굴을 기어가는 듯한 느낌에 이내 깨고 말았다. 이번 탐사 내내 한숨이라도 잘 수 있을는지…</p><p class='basic right'>당신은 정신적 트라우마 1 또는 육체적 트라우마 1을 겪습니다_*(둘 중 하나를 당신이 선택합니다)*_.</p>",
+    "lookout": "대표 조사자는 망꾼으로 삼을 조사자 한 명을 선택해야 합니다. 그런 다음, 망꾼이 된 조사자는 자신의 탐험 물자를 확인합니다. 망꾼이 쌍안경을 갖고 있습니까? 그 조사자는 _숲속의 형체_를 읽습니다. 망꾼이 쌍안경을 갖고 있지 않으면, 그 조사자는 _어둠 속의 눈동자_를 읽습니다..",
+    "shapesInTheTrees": "<p>_숲속의 형체_: 이곳으로 오고 나서 밤 동안엔 별일은 없었다. 그런데 오늘 밤, 우리 야영지 공터의 남쪽 가장자리를 따라 늘어선 나뭇가지에서 바스락 거리는 소리가 나기에 나는 깜짝 놀랐다. 한 치 앞도 보이지 않을 만큼 짙은 어둠 속인데도 쌍안경 너머로 나무 사이를 움직이는 형체가 보였다. 분명 사람인 것 같긴 한데… 저들은 왜 저 멀리에서 우리를 감시하고 있는 걸까? 대체 목적이 뭘까?</p><p class='basic right'>당신은 에스틀리인의 동기에 대해 더 잘 알게 되었으므로, 경험치를 추가로 2 얻습니다.</p>",
+    "eyesInTheDark": "<p>_어둠 속의 눈동자_: 밤마다 누군가가 날 지켜보는 게 느껴진다. 아니, 지켜본다는 말 정도로는 부족하다. 저 눈빛들은 야영지를 휘감고 칠흙 같은 어둠을 꿰뚫은 채 나를 관찰하고 있다. 저들은 우리가 여기 있음을 알고 있다. 우리를 감시하는 저 노란 눈들을 보며 바짝 긴장한 나는 무기를 빼들었고, 만일의 경우에는 야영지를 지키기 위해 맞서 싸울 각오를 했다. 놈들과 내 시선이 서로 교차하는 순간, 어둠이 내 심장을 움켜쥐었다.</p><p class='basic right'>당신은 정신적 트라우마 1을 겪습니다.</p>",
+    "provisions": "탐험 물자를 확인합니다. 조사자들이 보유한 전체 탐험 물자에서, 조사자 수만큼 비상식량에 취소선을 그어야 합니다. 취소선을 긋지 못한 수만큼 조사자를 선택합니다. 선택된 조사자는 _식량 부족_을 읽습니다.",
+    "lowOnRations": "<p>_식량 부족_: 식량과 식수는 넉넉하게 챙겼기에 부족할 리 없다 생각했는데, 고된 탐사가 이어지는 가운데 물량 조절에 차질이 있었던 모양이다. 우리는 아침 식사 시간이 되어서야 비상식량이 모두 동났음을 깨달았다.</p><p class='basic right'>다음 시나리오에서 당신은 자원을 3개 적게 갖고 시작합니다.</p>",
+    "medicine": "탐험 물자를 확인합니다. 약품을 가진 각 조사자는 자신의 탐험 물자에 있는 약품에 취소선을 그어도 됩니다. 이렇게 취소선을 그은 약품 1개마다, 아무 조사자 한 명의 덱에서 ‘중독’ 약점 하나를 제거합니다. 그러고 난 후에도 자신의 덱에 ‘중독’ 약점이 남아있는 모든 조사자는 _독이 퍼지다_를 읽습니다.",
+    "doNotUseMedicine": "약품을 사용하지 않음",
+    "thePoisonSpreads": "<p>_독이 퍼지다_: 하루하루가 지날수록 온몸으로 독이 점점 더 퍼져나갔다. 둘째 밤에는 온몸이 땀범벅이 되었다. 점차 숨을 쉬기가 힘겨워졌고, 매일 아침이면 전날 저녁 식사를 죄다 토하며 잠에서 깨어났다.</p><p class='basic right'>당신은 육체적 트라우마 1을 겪습니다.</p>"
+  },
+  "interlude2": {
+    "label": {
+      "pickExpeditionsEnd2": "유물을 박물관으로 보내는 것이 좋겠어.",
+      "pickExpeditionsEnd3": "유물을 전시하는 건 너무 위험해."
+    },
+    "title": "막간 II: 탐사의 끝",
+    "pickExpeditionsEnd1": "캠페인 기록지를 확인합니다. *조사자들이 시대의 유물을 손에 넣었다*면: _탐사의 끝 1_을 읽습니다.",
+    "pickExpeditionsEnd2": "*알레한드로가 시대의 유물을 손에 넣었다*면: _탐사의 끝 5_로 건너뜁니다.",
+    "expeditionsEnd1": "<p>_탐사의 끝 1:_<p><p class='anke'>1925년 7월 17일, 금요일</p><p>마침내 아컴으로 되돌아왔다. “성공적”인 탐사를 마무리하면서. 알레한드로는 자기가 발견한 것을 대학에 보고할 기대에 부풀어 있었다. 우리가 그 밀림에서 어떤 지옥을 겪었는지 알면서도 알레한드로가 눈을 반짝이며 탐사 결과를 긍정적으로 받아들이는 것이 나는 납득이 가지 않는다. 알레한드로는 유적에서 발견한 기이한 유물에 온 정신이 팔려 있었다. 우리는 저 유물의 기원에 대해 알아낸 것이 거의 없다. 그 점이 무척 불안하다. 저 장치는 내내 웅웅댔고… 아, 이렇게 말하면 될지 모르겠지만, 뭐라 묘사하기 힘든 이계적인 에너지를 규칙적으로 뿜어댔다. 유물을 가지고 아컴으로 돌아오는 내내 우리는 밤마다 끔찍한 악몽에 시달려야 했다. 다른 세계의 문명이 눈앞에 펼쳐지는 꿈이었다.</p><p>알레한드로는 유물을 미스캐토닉 박물관으로 가져가, 우리가 발견한 다른 에스틀리 유물들과 함께 전시해 놓고 싶어했다. 나는 머릿속이 복잡해졌다. 박물관이라면 유물을 제대로 관리할 것이고, 역사가들이 유물을 연구하다보면 그 물건의 궁극적인 용도를 밝혀낼 수 있을지도 모른다. 그럼에도 불구하고, 유물을 공공에 공개하는 것이 너무 위험하지 않은가 하는 두려움이 가시질 않았다. 결국, 우린 저 빌어먹을 물건이 뭔지 눈곱만치도 모르지 않는가. 알레한드로라면 질색을 하겠지만, 저 유물을 안전한 곳에 간수하면서 할런과 내가 따로 연구하는 게 더 나을지도 모른다. 오늘 밤 결정을 내려야 한다. 내일이면 생각이 바뀌었다고 말할 틈도 없을 테니까.</p><ul><li>대표 조사자는 다음 중 하나를 선택해야 합니다:<ul><li><p>유물을 박물관으로 보내는 것이 좋겠어. 그러면 알레한드로와 박물관 직원들이 유물을 연구하고 유물이 만들어진 목적에 대해 알아낼 수 있을지도 몰라.</p><p class='basic'>_탐사의 끝 2_로 이어집니다.</p></li><li><p>유물을 전시하는 건 너무 위험해. 유물에 대해 자세히 알아내기 전까진 차라리 안전한 곳에 숨겨두는 편이 좋겠어.</p><p class='basic'>_탐사의 끝 3_으로 건너뜁니다.</p></li></ul></li></ul>",
+    "expeditionsEnd2": "<p>_탐사의 끝 2:_</p><p class='anke'>1925년 7월 19일, 일요일</p><p>유물 관리는 알레한드로에게 맡기기로 했다. 이번 탐사 자체가 그의 연구에 기반한 것이었으니, 누군가 유물을 연구해서 그 안에 담긴 비밀을 밝혀낼 자격이 있다면, 그게 바로 알레한드로가 아니면 누구겠는가.</p><p>유물은 미스캐토닉 박물관 신규 전시회를 빛낼 주역이 될 것이다. 알레한드로는 우리가 발견한 것들에 대해 벌써 엄청난 기록을 써내려가고 있었지만, 아직은 시작에 불과했다. 이번 탐사에는 불가사의한 점이 산더미이다. 에스틀리인들이 어떻게 이렇게 오랫동안 발견되지 않고 있었을까? 그들이 밀림을 지키고 있는 이유는 무엇이며, 무엇으로부터 밀림을 지키고 있었을까? 우리가 들어갔던 사원 유적을 진정으로 만든 자들은 누구일까? 분명 알레한드로라면, 언젠가 이 질문에 대한 해답을 낱낱이 밝혀내리라 믿는다.</p><p>이제 내 할 일은 다 끝났다. 그렇지만 다 내려놓고 편히 쉴 수가 없다. 밀림에서 겪은 것이 뇌리에서 가시질 않는다. 어둠 속에 숨은 뱀 인간들, 해골만 남은 시신에 박힌 흑요석 화살, 동굴처럼 깊은 지하에서 날카롭게 울려퍼지던 뒤틀린 목소리… 길을 따라 멍하니 걷다 보면 나도 모르게 발길이 박물관으로 향하곤 했다. 유물을 다시 한번 보고 싶다는 마음이 끓어오르고, 뭔가 중요한 걸 잊고 있는 것 같은 느낌에 뒷골이 당겼다. 이런 감정을 진정시킬 길은…</p><p>(일지 내용이 여기서 끊겨 있습니다.)</p><ul><li>캠페인 기록지에 *조사자들이 알레한드로에게 유물 관리를 맡겼다*라고 기록합니다.</li><li>캠페인 기록지에 *조사자들이 알레한드로의 신뢰를 얻었다*라고 기록합니다. 아직 ‘알레한드로 벨라’가 아무 조사자의 덱에도 추가되어 있지 않다면, 조사자 중 한 명이 ‘알레한드로 벨라’를 자기 덱에 추가해도 됩니다. 이 카드는 조사자의 덱 크기를 계산할 때 포함되지 않습니다.</li><li>캠페인이 끝날 때까지 혼돈 주머니에 {'{'}tablet{'}'} 토큰을 1개 추가합니다.</li><li>_탐사의 끝 4_로 건너뜁니다.</li></ul>",
+    "expeditionsEnd3": "<p>_탐사의 끝 3:_</p><p class='anke'>1925년 7월 19일, 일요일</p><p>일단은 유물을 숨겨 두기로 했다. 알레한드로가 반길 리 없는 결정이지만, 그 구체의 쓰임새를 알아내기 전까지는 안전한 곳에 두는 게 좋겠다. 아니 어쩌면 유물로 인해 다른 이들이 위해를 입을 수도 있으니 그 편이 최선이겠다. 할런도 이 의견에 동의하여 선뜻 유물 관리를 맡기로 했으며, 자기 개인 집무실에 보관하겠다고 했다. 우리는 그곳에서 유물을 비공개로 연구할 예정이다.</p><p>알레한드로는 한동안 아컴에 머무르기로 했다. 그는 탐사에 대한 기록을 남기는 한편, 미스캐토닉 박물관에서 보다 덜 위험한 발견물을 전시 진열하는 일을 돕기로 했다. 아무튼 나는 다른 불가사의에 대한 해답을 찾았으면 싶다. 에스틀리인들이 어떻게 이렇게 오랫동안 발견되지 않고 있었을까? 그들이 밀림을 지키고 있는 이유는 무엇이며, 무엇으로부터 밀림을 지키고 있었을까? 우리가 들어갔던 사원 유적을 진정으로 만든 자들은 누구일까?</p><p>밀림에서 겪은 것이 뇌리에서 가시질 않는다. 어둠 속에 숨은 뱀 인간들, 해골만 남은 시신에 박힌 흑요석 화살, 동굴처럼 깊은 지하에서 날카롭게 울려퍼지던 뒤틀린 목소리… 할런의 집무실에서 나올 때면 그대로 되돌아가 유물을 다시 한번 보고 싶다는 마음이 끓어오르고, 뭔가 중요한 걸 잊고 있는 것 같은 느낌에 뒷골이 당겼다. 이런 감정을 진정시킬 길은…</p><p>(일지 내용이 여기서 끊겨 있습니다.)</p><ul><li>캠페인 기록지에 *조사자들이 할런 언스톤에게 유물 관리를 맡겼다*라고 기록합니다.</li><li>캠페인 기록지에 *알레한드로가 독자적으로 연구를 이어나간다*라고 기록합니다. 지금 자신의 덱에 ‘알레한드로 벨라’가 있는 조사자는 ‘알레한드로 벨라’를 자신의 덱에서 제거합니다.</li><li>_탐사의 끝 4_로 이어집니다.</li></ul>",
+    "expeditionsEnd4": "<p>_탐사의 끝 4:_</p><p>문을 거칠게 두드리는 소리에 당신은 소스라치게 놀라며 펜을 떨어뜨립니다. 새벽 2시 30분이 되어가는 이 늦은 시간에 당신의 집 문을 두드릴 사람이 누가 있겠습니까? 머릿 속으로 밀림이 다시 펼쳐지고, 뱀 괴물들이 당신의 집까지 찾아와 당신을 공격하는 상상에 빠져듭니다. 몸을 떨면서 무기를 찾아든 당신은 언제라도 공격할 만반의 준비를 갖추고는 현관문으로 다가가, 숨을 한 번 깊이 들이쉬고는 문을 열었습니다.</p><p>문 너머에는 낯익은 여성이 서 있습니다. 갈색 피부에 긴 갈색 머리칼을 한 그녀가 날카로운 노란 눈동자로 당신을 뚫어져라 쳐다봅니다. 복장이 바뀌긴 했지만, 당신은 우림에서 마주했던 여전사인 이츠타카를 단번에 알아보았습니다. 긴 코트를 걸치고 볼맨 모자를 쓴 그녀는 한눈에 봐도 신발이 불편해 보입니다. 노여움에 일그러진 이츠타카의 입을 본 당신이 무기를 들어 방어 태세를 취하려는데, 그녀가 한숨을 푹 내쉬면서 천천히 집안으로 걸어 들어옵니다. 이츠타카의 등 뒤로 현관문이 쿵 닫힙니다. “네가 무슨 짓을 했든 간에, 다 원상태로 돌려놓아라.” 그녀가 목소리를 묵직하게 깔았습니다. “아니면 우리 모두의 존재가 낱낱이 사라져 버릴 테니까.”</p><p class='basic right'>이야기는 _시나리오 III: “운명의 실 가닥”_으로 이어집니다.</p>",
+    "expeditionsEnd5": "<p>_탐사의 끝 5_: 할런 언스톤은 주름진 이마에 맺힌 땀방울을 손수건으로 훔치며 당신의 집 거실을 좌우로 서성입니다. “다 내 잘못이야. 그 끔찍한 탐사에 보내는 게 아니었는데.” 당신과 언스톤 씨는 이전까지 그저 몇 번 만나본 적 있는 게 다였으나, 지금 당신에게 있어서 그는 미스캐토닉 대학에 있는 중요한 연줄입니다. 최근 미스캐토닉 대학의 탐사대에서 극소수의 생존자들만이 기묘하고 원시적인 유물 몇 점만 챙겨서 귀환하자, 언스톤 씨는 당신에게 조언을 청하러 온 것이었습니다.</p><p>“나도 안다네, 안다고. 많은 것들을 잃었지만 어쨌든 탐사를 성공하긴 했다는 점에 위안을 얻는 게 맞겠지. 알레한드로의 말이 맞았단 말일세. 에스틀리인들은 실존했었어. 하지만… 이번에 발견한 것들을 보면 우려가 된단 말일세.” 할런이 가방에서 작은 가죽 일지를 꺼내서 건넵니다. “탐사대 대장은 이 일지에다 탐사대가 발견한 많은 정보를 기록했지만, 그 역시 끔찍한 죽음을 맞았다네. 살아 돌아온 탐사대원 중 한 명이 밀림에서 달아나기 전에 야영지에서 이걸 챙겨왔지. 이 일지를 읽어 보면 내 말이 무슨 뜻인지 알게 될 걸세. 대원들이 겪은 일들이며 맞닥뜨린 괴물들…” 떨리는 손으로 안경을 고쳐 쓰는 할런의 몸까지 사시나무처럼 덜덜 떨립니다. “알레한드로만 걱정되는 게 아니야. 우리 모두가 처한 상황이 걱정인 거지. 일지를 읽어 보게. 그리고 가능하다면, 내 친구 알레한드로에게서 눈을 떼지 말아 주게나.” 당신이 돕겠다고 말을 해도 언스톤 씨의 걱정은 누그러들지 않았습니다. “자네에게 도움을 청한 게 옳은 일인지조차 모르겠네. 자네마저 내가 죽음으로 몰고가는 건 아닌지…”</p><p>당신은 밤 동안 탐사 일지를 살폈습니다. 기이한 뱀 괴물과 아즈텍 전사들에 대한 생각이 머릿속을 둥둥 떠다녔습니다. 할런이 당신의 집을 떠나고 한참 뒤, 문을 거칠게 두드리는 소리에 당신은 소스라치게 놀랐습니다. 새벽 2시 30분이 되어가는 이 늦은 시간에 당신의 집 문을 두드릴 사람이 누가 있겠습니까? 당신은 조심스럽게 현관문을 열었습니다. 문 너머에는 여성이 서 있습니다. 갈색 피부에 긴 갈색 머리칼을 한 그녀가 날카로운 노란 눈동자로 당신을 뚫어져라 쳐다봅니다. 긴 코트를 걸치고 볼맨 모자를 쓴 그녀는 한눈에 봐도 신발이 불편해 보입니다. 노여움에 일그러진 그녀의 얼굴을 보자 순간 머릿 속으로 번뜩 깨달음이 스치고, 당신은 그녀가 누구인지 단박에 알아차립니다. 에스틀리 전사인 이츠타카에 대해 일지에 묘사된 내용을 몇 번이고 반복해서 읽었기 때문입니다. 그녀가 한숨을 푹 내쉬면서 천천히 집안으로 걸어 들어옵니다. 이츠타카의 등 뒤로 현관문이 쿵 닫힙니다. “그들이 무슨 짓을 했든 간에, 다 원상태로 돌려놓아라.” 그녀가 목소리를 묵직하게 깔았습니다. “아니면 우리 모두의 존재가 낱낱이 사라져 버릴 테니까.”</p><p class='basic right'>이야기는 _시나리오 III: “운명의 실 가닥”_으로 이어집니다.</p>"
+  },
+  "interlude3": {
+    "title": "막간 III: 손짓하는 밀림",
+    "body": "<p>또 다시 안전한 문명사회를 뒤로하고 남쪽으로 향합니다. 허비할 시간이 없습니다. 느카이의 연결점으로 가는 길은 이전 탐사지에서 그리 멀지 않습니다. 당신은 가죽 장정 일지를 길잡이 삼아 탐사대가 갔던 길을 뒤따라갑니다. 얼마 지나지 않아 사방이 온갖 위협으로 가득찬 밀림 깊숙한 곳으로 들어섰습니다. 어떤 위협은 자연적인 것이지만, 한편으로 도저히 현실에 존재하리라 믿기 힘든 기묘한 위협도 닥쳐옵니다…</p>",
+    "gas": "<p>탐험 물자를 확인합니다. 아무 조사자 한 명이 자기 탐험 물자에서, 휘발유 하나에 취소선을 그어야 합니다. 어떤 조사자도 휘발유에 취소선을 긋지 못했다면, _기름 부족_을 읽습니다.</p>",
+    "outOfGas": "<p>_기름 부족_: 불행하게도, 우림 북쪽 가장자리에 이르기까지 십여 킬로미터쯤 남았을 무렵 연료가 다 떨어지고 말았습니다. 시간에 쫓기고 있는지라, 재급유를 위해 되돌아가기보다 남은 길을 걸어서 가기로 결정했습니다. 걷다 보니 몇 시간이 더 흘렀지만, 결국엔 또다시 밀림의 처마에 도착했습니다.</p><p class='basic right'>다음 시나리오에서 시작 카드를 뽑을 때, 조사자들은 멀리건을 할 수 없습니다.</p>",
+    "map": "탐험 물자를 확인합니다. 지도를 가진 조사자가 있다면, _길을 찾아냈다_를 읽습니다.",
+    "aPathDiscovered": "<p>_길을 찾아냈다_: 이전 탐사 기록이 표시된 지도 덕분에 길을 잃지 않고 우림을 지나갈 수 있었습니다. 다행히 예상한 시간에 목적지에 도착했습니다.</p><p class='basic right'>캠페인 기록지에 *조사자들이 앞으로 갈 길을 면밀히 검토했다*라고 기록합니다.</p>",
+    "provisions": "탐험 물자를 확인합니다. 조사자들이 보유한 전체 탐험 물자에서, 조사자 수만큼 비상식량에 취소선을 그어야 합니다. 취소선을 긋지 못한 수만큼 조사자를 선택합니다. 선택된 조사자는 _식량 부족_을 읽습니다.",
+    "lowOnRations": "<p>_식량 부족_: 연결점으로 가는 길을 찾아 밀림을 가로지르는 데에 예상보다 시간이 더 걸린 데다, 발걸음을 재촉한 탓에 식량 조달을 위한 사냥이나 채집도 하지 않았습니다. 배에 구멍이라도 뚫린 듯 고통스러운 허기가 엄습해와 정신이 흐트러집니다.</p><p class='basic right'>다음 시나리오에서 당신은 자원을 3개 적게 갖고 시작합니다.</p>",
+    "medicine": "탐험 물자를 확인합니다. 약품을 가진 각 조사자는 자신의 탐험 물자에 있는 약품에 취소선을 그어도 됩니다. 이렇게 취소선을 그은 약품 1개마다, 아무 조사자 한 명의 덱에서 ‘중독’ 약점 하나를 제거합니다. 그러고 난 후에도 자신의 덱에 ‘중독’ 약점이 남아있는 모든 조사자는 _독이 퍼지다_를 읽습니다.",
+    "doNotUseMedicine": "약품을 사용하지 않음",
+    "thePoisonSpreads": "<p>_독이 퍼지다_: 독이 계속해서 당신의 몸속으로 파고 들어가며 장기에 심각한 손상을 끼칩니다. 끔찍한 고열이 당신의 몸을 태울 듯 하루하루 점점 더 강하게 달아오릅니다. 음식을 먹는 것도 힘겹고, 온몸에서 힘이 모조리 빠져나가는 것만 같습니다.</p><p class='basic right'>당신은 육체적 트라우마 1을 겪습니다.</p>",
+    "canteen": "<p>우거진 밀림을 터덜터덜 걸으며 수풀이 무성한 낯익은 사원을 연이어 지나가던 도중, 당신의 예리한 눈이 주변 사원의 돌벽을 따라 새겨진 특이한 문양을 발견했습니다. 가까이서 살펴보니, 얽힌 덩굴과 더불어 들러붙은 흙덩이 아래로 정교한 상형문자가 각인되어 있습니다.</p><p class='basic right'>탐험 물자를 확인합니다. 수통을 가진 조사자가 있다면, 그 조사자는 _돌에 새겨진 문양_을 읽습니다. 수통을 가진 조사자가 한 명도 없다면, _돌에 남은 비밀_을 읽습니다.</p>",
+    "patternsInTheStone": "<p>_돌에 새겨진 문양_: 당신은 수통을 꺼내서 돌벽에 물을 끼얹고는 흙을 닦아내고 뻣뻣한 덩굴을 적십니다. 조금은 부드러워진 덩굴을 걷어내자 돌에 새겨진 상형문자가 선명하게 드러납니다. 상형 문자의 의미는 아직도 모호하기만 합니다만, 특정한 상형문자 여섯 개가 반복되어 적힌 걸로 미루어 볼 때, 어쩌면 일종의 지침이 아닐까 하는 생각이 듭니다…</p><p class='basic right'>다음 시나리오에서 수통을 가진 모든 조사자는 단서를 1개씩 갖고 시작합니다*(토큰 저장소에서 가져옵니다)*.</p>",
+    "secretsInTheStone": "<p>_돌에 남은 비밀_: 아무리 안간힘을 써 봐도 맨손으로 말라붙은 흙과 덩굴을 떼어내기는 무리입니다. 어쩔 수 없이 돌에 새겨진 불가사의는 뒤로하고서 사원을 떠납니다.</p><p class='basic right'>당신은 부정적인 효과를 받지 않습니다.</p>",
+    "ichtaca": "혼돈 주머니와 캠페인 기록지를 확인합니다. 아래의 항목이 모두 참일 경우, 대표 조사자는 _신뢰 회복_을 읽습니다.",
+    "cultistCount": "혼돈 주머니에 {'{'}cultist{'}'} 토큰이 2개 이상 있다.",
+    "forgedBond": "*조사자들이 이츠타카와 유대감을 쌓았다*",
+    "hasConfidence": "*이츠타카가 조사자들을 믿는다*",
+    "faithRestored": "<p>_신뢰 회복_: 다시 밀림으로 들어온 이튿날 저녁, 당신과 동료들은 흐릿한 모닥불 앞에 둘러앉았습니다. 열기를 쬐면서 눈앞에 놓인 과업의 부담을 잠시나마 내려놓고서 휴식을 취하려던 참에, 이츠타카가 불가로 다가와 맞은편에 앉습니다. 시선을 땅으로 떨군 이츠타카의 어깨는 육중한 부담감을 짊어진 듯이 축 처져 있습니다. “아무래도 사과를 해야 할 것 같다.” 이츠타카가 깜박이는 불꽃을 흘끗 쳐다보며 말합니다. “넌 현명하고 또한 강인한 모습을 보여주었다. 하지만 난 아무것도 하지 않은 채 명령만 내리고 매 순간 널 위험에 몰아넣기만 했지.” 불가에선 길고 평화로운 침묵이 이어집니다. “아마도 인류에게 희망이 있는 게 아니겠나.” 이츠타카가 당신의 눈을 바라보면서 숨죽여 말합니다. 당신에게 위안삼아 하는 말인지, 아니면 자기 자신에게도 위안을 주려고 하는 말인지는 분명치 않습니다.</p><p>잠시 후 이츠타카가 자리에서 일어섭니다. “그럼 널 믿고 첫 불침번을 맡기겠다. 뱀들을 경계하는 편이 좋을 거다. 놈들도 분명 우릴 찾고 있을 테니까.” 그날 밤, 야영지는 고요하기만 하고, 모닥불이 타닥거리는 소리와 벌레들이 우는 소리만이 밤공기를 채웁니다.</p><p class='basic right'>캠페인 기록지에 *이츠타카의 신뢰가 회복되었다*라고 기록합니다. 캠페인이 끝날 때까지 혼돈 주머니에 {'{'}cultist{'}'} 토큰을 1개 추가합니다.</p>"
+  },
+  "interlude4": {
+    "title": "막간 IV: 포로가 되었던 자들",
+    "checkProcess": {
+        "body": "캠페인 기록지를 확인합니다. *의식 전이 과정이 역효과를 낳았다*면, 각 조사자는 혼돈 주머니에서 무작위로 혼돈 토큰을 1개 공개합니다. 그리고 아래의 목록을 확인하여 당신의 실수가 어떤 부작용을 낳았는지 확인하세요. *의식 전이 과정이 어마어마한 역효과를 낳았다*면, 각 조사자는 혼돈 주머니에서 무작위 혼돈 토큰을 1개 대신 2개 공개합니다. 그리고 아래 목록에서 뽑은 토큰 2개에 해당하는 항목을 확인하여, 보다 아래쪽에 있는 항목을 선택합니다(선택하지 않은 다른 항목 하나는 무시합니다).",
+        "noIllEffects": "{'{'}elderSign{'}'} 또는 +1 토큰을 공개한 모든 조사자는 부정적인 효과를 받지 않습니다.",
+        "outOfBodyExperience": "+1 이외의 다른 숫자, 또는 {'{'}skull{'}'} 토큰을 공개한 모든 조사자는 ‘육신을 벗어난 경험’ 약점을 획득합니다. 획득한 약점은 자신의 덱에 추가해야 합니다.",
+        "bodyOfAYithian": "{'{'}cultist{'}'}, {'{'}tablet{'}'}, {'{'}elderThing{'}'}, {'{'}autoFail{'}'} 토큰을 공개한 모든 조사자는 캠페인이 끝날 때까지 자신의 조사자 카드 대신 ‘이스인의 육신’ 카드를 사용해야 합니다. 또한 ‘육신을 벗어난 경험’ 약점을 획득합니다. 획득한 약점은 자신의 덱에 추가해야 합니다."
+    },
+    "checkAMindRecovered": {
+      "body": "혼돈 주머니와 캠페인 기록지를 확인합니다. 아래의 항목이 모두 참일 경우, 대표 조사자는 _정신을 되찾다_를 읽습니다. 아래의 항목 중 하나라도 참이 아닐 경우, 대표 조사자는 _영원히 잃다_를 읽습니다.",
+      "tabletCount": "혼돈 주머니에 {'{'}tablet{'}'} 토큰이 2개 이상 있다.",
+      "rescuedAlejandro": "*조사자들이 알레한드로를 구출했다*",
+      "theCustodianWasUnderControl": "지난 시나리오가 끝날 때, ‘서고 관리자’를 조종하는 조사자가 있었다."
+    },
+    "aMindRecovered": "<p>_정신을 되찾다_: 당신은 주변을 둘러봅니다. 일행을 습격했던 외계 생물은 어디에도 보이지 않고, 알레한드로는 땅바닥에 누워서 정신을 차려가고 있습니다. 놀랍게도 알레한드로 역시 당신만큼이나 혼란스러워 보입니다. 처음에는 이전 탐사대나 에스틀리 유물에 대해서 아무것도 떠올리지 못하는 것처럼 보이더니, 드디어 기억해낸 듯 갑자기 눈동자에 불꽃이 튑니다. 알레한드로가 당신의 어깨를 꽉 붙잡고는 몇 년 만에 처음 본 것처럼 당신을 바라봅니다. “이제 다 기억나요! 그 외계 생물과 전 가끔씩 정신을 공유하곤 했어요. 놈은 에스틀리의 유물을 찾고자 했는데, 그 목적까지는 모르겠어요.” 갑자기 기억이 돌아오는 통에 어지러운지, 알레한드로는 등 뒤의 돌벽에 기대어 쓰러집니다. “당신은 항상 절 믿어줬죠. 놈이 저를 조종할 때조차 말이에요. 그 참담한 구렁텅이에서 절 구해주고 인간성마저 되찾게 도와주었군요. 이걸 다 어떻게 갚아야 할지.” 알레한드로가 갑작스럽고도 강렬한 결의에 차서 당신의 손을 잡고 격하게 흔듭니다. “우리 함께 이 모든 걸 바로잡도록 합시다. 그러고 나서 우리가 본 것을 세상에 알리는 거예요!”</p><p class='basic right'>캠페인 기록지에 *알레한드로가 기억을 되찾았다*라고 기록합니다. 캠페인이 끝날 때까지 혼돈 주머니에 {'{'}tablet{'}'} 토큰을 1개 추가합니다.</p>",
+    "foreverLost": "<p>_영원히 잃다_: 당신은 주변을 둘러봅니다. 일행을 습격했던 외계 생물과 알레한드로는 어디에도 보이지 않습니다. 알레한드로가 얼마나 오랫동안 그들과 한패였는지, 또 왜 그랬는지 의문스럽습니다. 아마도 영영 알 수 없을 겁니다. 하지만, 언젠가 다시 알레한드로를 마주할 거란 예감이 듭니다.</p><p class='basic right'>캠페인 기록지에 *알레한드로와 척이 졌다*라고 기록합니다. 누군가의 덱에 ‘알레한드로 벨라’가 있다면, 그 조사자는 캠페인이 끝날 때까지 ‘알레한드로 벨라’를 자신의 덱에서 제거합니다.</p>",
+    "chalk": "<p>석조 입구 맞은편의 좁은 계단은 영원히 이어질 것처럼 길기만 합니다. 침침한 붉은빛은 동굴 아래쪽 깊숙한 곳으로부터 뿜어져 나오고 있지만, 아무리 계단을 내려가 본들 불빛은 조금도 밝아지지 않습니다. 발걸음을 뗄 때마다 불빛이 물러나는 것처럼 느껴지는 게, 마치 당신의 끈기를 조롱하는 것만 같습니다. 잠시 후, 당신의 발걸음은 작은 바위 턱에 조성된 석조 관문 앞에서 막혀버렸습니다. 관문에는 친숙한 문양이 그려져 있지만 긴 세월이 흘러 풍화되어 옅어져 버렸고, 이상하게 변색된 점액질이 스며 나오고 있습니다.</p><p class='basic right'>탐험 물자를 확인합니다. 분필을 가진 조사자가 있다면, 그 조사자는 _길이 열렸다_를 읽습니다. 그렇지 않으면, 대표 조사자는 _길이 닫혔다_를 읽습니다.</p>",
+    "theWayIsOpen": "<p>_길이 열렸다_: 순간 예전 기억이 번개처럼 뇌리를 스칩니다. 당신은 탐사 일지를 뒤적인 끝에, 돌문에 새겨진 문양이 에스틀리 유적의 것과 유사하다는 점을 확인했습니다. 일지의 그림을 참조하여 돌문에 있는 문자를 분필로 복원하자, 돌문에 난 홈에서 환한 빛이 터져 나옵니다. 돌문이 스스로 들렸고, 일행은 앞으로 나아갈 수 있게 되었습니다.</p><p class='basic right'>당신은 부정적인 효과를 받지 않습니다.</p>",
+    "theWayIsShut": "<p>_길이 닫혔다_: 나아갈 방법을 도무지 찾을 수가 없습니다. 여러 가지 대책을 논의해 본 결과, 힘으로 여는 것만이 해답이라는 결론에 도달했습니다. 돌을 들어올리는 데 온 힘을 다하는 건 물론이고, 한 사람이 지나갈 때마다 계속 돌문을 받치고 있어야 했습니다. 쉬운 일이 아니었습니다. 온몸이 부서질 것만 같습니다.</p><p class='basic right'>다음 시나리오에서 시작 카드를 뽑을 때, 조사자들은 멀리건을 할 수 없습니다.</p>",
+    "provisions": "탐험 물자를 확인합니다. 조사자들이 보유한 전체 탐험 물자에서, 조사자 수만큼 비상식량에 취소선을 그어야 합니다. 취소선을 긋지 못한 수만큼 조사자를 선택합니다. 선택된 조사자는 _식량 부족_을 읽습니다.",
+    "lowOnRations": "<p>_식량 부족_: 몇 시간이 지났을 무렵, 도무지 나아갈 수 없을 만큼 진이 빠졌습니다. 한 걸음 뗄 때마다 온몸에 지독한 고통이 엄습합니다. 이 황폐한 동굴에서 먹을 것이라고는 가끔씩 솟아 있는 정체불명의 버섯뿐입니다. 마음속에서는 이걸 먹어 보고 싶은 유혹이 엄청나게 일었지만, 이중에서 식용 버섯과 독버섯을 제대로 구분할 수 있을지 확신이 서질 않습니다…</p>",
+    "medicine": "탐험 물자를 확인합니다. 약품을 가진 각 조사자는 자신의 탐험 물자에 있는 약품에 취소선을 그어도 됩니다. 이렇게 취소선을 그은 약품 1개마다, 아무 조사자 한 명의 덱에서 ‘중독’ 약점 하나를 제거합니다. 그러고 난 후에도 자신의 덱에 ‘중독’ 약점이 남아있는 모든 조사자는 _독이 퍼지다_를 읽습니다.",
+    "doNotUseMedicine": "약품을 사용하지 않음",
+    "thePoisonSpreads": "<p>_독이 퍼지다_: 독이 온몸으로 퍼져갑니다. 피부는 창백해지고 오한과 발열이 올라 온몸이 땀으로 흥건합니다. 한 발 떼는 것조차 고역이고, 기진맥진한 상태에서도 밤에 잠들지 못합니다. 독이 당신의 목숨을 앗아가기까지 얼마 남지 않은 듯합니다.</p><p class='basic right'>당신은 육체적 트라우마 1을 겪습니다.</p>",
+    "blanket": "<p>수백 개의 계단을 지나 또다시 수백 개의 계단을 내려간 후, 당신은 잠시 멈춰서 쉬기로 합니다. 하늘이 보이지 않으니 도무지 시간을 가늠할 수가 없습니다. 체내 시계도 고장나버렸고, 그저 시계를 확인해 지금이 밤이라는 것을 알 수 있을 뿐입니다. 평평한 바위 턱이 보이지 않기에, 일행들은 각자 떨어져 좁은 계단 한 칸씩에 자리를 잡고 잠을 청합니다.</p><p class='basic right'>탐험 물자를 확인합니다. 담요를 가진 조사자들은 _평온한 수면_을 읽습니다. 담요가 없는 조사자들은 _뒤척이는 밤_을 읽습니다.</p>",
+    "restfulSleep": "<p>_평온한 수면_: 침대가 간절하긴 하지만, 그래도 동굴에 퍼져 있는 싸늘한 냉기를 막을 수 있는 담요라도 있는 게 다행입니다. “아침”이 왔을 무렵에도 몸은 잠을 더 원했으나, 가능한 한 빨리 느카이의 연결점을 향해 나아가야 한다는 것을 알기에 몸을 일으킵니다…</p><p class='basic right'>당신은 부정적인 효과를 받지 않습니다.</p>",
+    "tossingAndTurning": "<p>_뒤척이는 밤_: 잠조차 쉽게 찾아오지 않습니다. 그 무엇으로 막아봐도 지하 동굴의 쓰라린 냉기가 파고들기 일쑤여서, 몇 시간 동안 누워서 오들오들 떨다가 마침내 진이 빠지고 말았습니다. 한 시간 정도 간격을 두고 잠에서 깨길 거듭했고, 몸을 움직일 때마다 계단에서 굴러떨어질 뻔합니다. “아침”이 왔을 무렵, 당신은 오히려 전날 밤보다 더 극심한 피로감을 느낍니다.</p><p class='basic right'>당신은 정신적 트라우마 1 또는 육체적 트라우마 1을 겪습니다(둘 중 하나를 당신이 선택합니다).</p>"
+  },
+  "interlude5": {
+    "xp": {
+      "bonus": "지구 표면 아래의 넓은 동굴계에 대해 통찰력을 얻음."
+    },
+    "title": "막간 V: 어둠",
+    "fellIntoTheDepths": "캠페인 기록지를 확인합니다. *조사자들이 깊은 구렁텅이로 추락했다*면, _어둠 1_로 이어집니다.",
+    "theNexusIsNear": "*느카이의 연결점이 가까이 있다*면, _어둠 2_로 건너뜁니다.",
+    "theDarkness1": "<p>_어둠 1_: 당신은 동굴의 차고 단단한 돌바닥에서 움찔하며 정신을 차립니다. 온몸이 멍투성이에 엉망진창이지만, 어쨌든 목숨은 건졌습니다. 일어설 정도로 기운을 회복하는 데에만 몇 분이 걸렸습니다. 이 말도 안 되게 거대한 동굴 안에서 완전히 길을 잃고야 말았고, 주변은 칠흑같이 검은 어둠뿐입니다. 지금까지 악착같이 살아남았는데, 고작해야 이딴 곳에서 세상 누구도 모르는 개죽음을 맞이해야 한단 말인가요?</p><p class='basic right'>_어둠 2_로 이어집니다.</p>",
+    "theDarkness2": "<p>_어둠 2_: 음울한 핏빛 동굴과 분노에 찬 요스의 도시에 사는 주민들은 그 아래에 있는 이 끔찍이도 깊은 곳을 밝힐 초 하나 두지 않았습니다. 당신은 이츠타카가 “느카이”라고 말한 지하 왕국 가장 깊은 동굴에 도달했습니다. 어떠한 빛도 꿰뚫을 수 없는 이 사방을 에워싼 칠흑같은 어둠에 대해 당신은 아무런 준비도 되어 있지 않습니다. 당신은 어둠 속을 손으로 더듬어 울퉁불퉁한 동굴 벽을 찾아냈고, 앞으로 나아가는 길을 찾기만을 간절히 바라며 벽을 짚고서 무작정 나아가기 시작합니다. 머릿속으로 암울한 생각이 떠오릅니다. 당신이 과업을 완수한다 하더라도, 지상으로 돌아갈 길은 결코 찾을 수 없으리란 생각 말입니다. 이 동굴의 완전한 어둠은 지금껏 겪어 보지 못한 공포로 당신을 짓누릅니다. 어둠 속에서는 벽을 더듬는 당신의 손조차도 보이지 않았고, 지금 여기가 좁은 통로인지 광대한 공동인지조차 알 길이 없습니다. 어쩌면 수 킬로미터 이상 뻗어 있는 광활한 공터일 수도 있지만, 느닷없이 바닥 없는 구멍 투성이의 수직 동굴로 바뀔지도 모를 일입니다. 하지만 발걸음을 디디기 전에는 결코 알 수 없습니다. 어둠 속에서 천천히, 조심스레 신경을 곤두세우고 어기적거린 지 몇 시간이 흘렀습니다. 지금 당신이 떼는 한 걸음 한 걸음이, 인생의 마지막 걸음이 될 수도 있습니다…</p><p class='basic right'>다음 항목을 순서대로 읽습니다.</p>",
+    "theMissingRelic": "캠페인 기록지를 확인합니다. *조사자들이 잃어버린 유물을 찾아냈다*면, 대표 조사자는 _웅웅거리는 비전음_을 읽습니다. *유물을 잃어버렸다* 항목이 있다면, 그 대신 대표 조사자는 _커져가는 불안감_을 읽습니다.",
+    "arcaneThrumming": "<p>_웅웅거리는 비전음_: 추락의 충격으로 인해 에스틀리 유물이 깨지진 않았을까 걱정이되어, 짐 속에 쑤셔 박아 둔 유물을 꺼내서 살펴봅니다. 신기하게도 장치는 완전히 멀쩡해 보입니다. 유물은 강렬한 빛을 발하면서 그 어느 때보다도 크게 윙윙거립니다.</p><p class='basic right'>캠페인 기록지를 확인합니다. *조사자들이 시대의 유물을 손에 넣었다* 항목과 *조사자들이 자신만의 방법을 찾아 나섰다* 항목이 모두 있다면, <b>최후의 서막</b>을 읽습니다. 둘 중 하나라도 참이 아닌 경우, 당신은 부정적인 효과를 받지 않습니다.</p>",
+    "growingConcern": "<p>_커져가는 불안감_: 바닥에서 일어나는 순간 땅이 우르릉거리는 소리를 내며 흔들립니다. 발아래 깊숙한 곳에서 뭔가가 움직이고 있습니다. 뭔가가 이리저리 움직이며 변화하고 있습니다.</p><p class='basic right'>난이도에 따라, 캠페인이 끝날 때까지 혼돈 주머니에 다음의 혼돈 토큰을 추가합니다.</p><div class='columns'><div>쉬움: –3</div><div>보통: –4</div><div>어려움: –5</div><div>전문가: –7</div></div>",
+    "finalDawning": "<p>_최후의 서막_: 당신을 교란하려는 알레한드로와 이츠타카로부터 벗어난 당신은 마침내 유물을 자세히 살펴볼 수 있게 되었습니다. 당신의 “안내자”를 자칭하던 두 사람은 당신에게 거짓말만 일삼았습니다. 그들은 유물의 본질을 숨기고서, 당신을 조종해 이곳으로 유물을 가져오도록 만들었습니다. 이스의 위대한 종족과 함께한 경험 이후, 당신은 그 이유를 어느 정도 가늠할 수 있게 되었습니다. 이 장치는 인류가 도달하지 못한 어마어마한 기술의 집약체입니다. 어쩌면 이스인이 이 장치를 만들었을지도 모릅니다. 그러고 보니, 유물의 몇몇 구성요소에서 프나코투스에서 본 것과 유사한 기술이 엿보입니다. 어쩌다 유물이 에스틀리인의 손에 떨어지게 되었는지 그 경위는 알 수 없지만, 어쨌든 그들은 각종 괴물들로부터 유물을 지켜왔습니다. 인류를 먹잇감으로 삼으려던 괴물, 유물을 이용해 시간을 되돌리려던 괴물로부터 유물을 지켜온 것입니다. 그리고 이제 유물은 당신의 손으로 흘러왔습니다. 그러니 지금 벌어지려는 일을 막을 사람은 당신뿐입니다.</p><p class='basic right'>‘시대의 유물’을 자신의 덱에 가진 조사자는 그 카드를 이 신화팩에 포함된 ‘시대의 유물(*과거를 되찾다*)’와 맞바꿉니다.</p>",
+    "torches": "<P>몇 시간에 걸친 굼뜬 전진 끝에, 우연히 대리석 같은 입방체로 가득 찬 화로를 발견했습니다.</p><p class='basic right'>탐험 물자를 확인합니다. 횃불을 가진 조사자가 있다면, 그 조사자는 _불을 밝히다_를 읽습니다. 그렇지 않으면, _심연_을 읽습니다.</p>",
+    "torchlight": "<p>_불을 밝히다_: 횃불에서 나온 빛 정도는 지하 왕국의 압도적인 어둠에 빨려 들어가겠지만, 지푸라기라도 잡는 심정으로 화로에 불을 붙여보기로 합니다. 그 기묘한 입방체에 잠시 횃불을 가져다 대자, 놀랍게도 화로에서 은청빛 화염이 폭발하듯 치솟습니다. 횃불을 놓치는 정도로 그쳤으니 망정이지, 하마터면 당신의 손까지 녹아 뼈만 남을 뻔했습니다. 환한 불꽃은 주변 몇 미터 정도까지만 겨우 닿았으나, 저 멀리서 순차적으로 다른 화로가 빛을 발하기 시작합니다. 마치 당신의 앞길을 인도하는 것처럼 보입니다. …어쩌면, 그렇게 믿고 싶은 건지도 모릅니다.</p><p class='basic right'>캠페인 기록지에 *화로에 불을 밝혔다*라고 기록합니다.</p>",
+    "theAbyss": "<p>_심연_: 화로에 있는 기이한 입방체 물질에 불을 붙이려 아무리 시도해 봐도, 어떠한 불도 받아들이지 않는 듯합니다. 당신의 희망은 주변의 빛과 함께 사그라지고 말았습니다. 비참한 심정으로 눈앞의 어둠을 견딜 각오를 합니다.</p><p class='basic right'>캠페인 기록지에 *화로에 불을 밝히지 못했다*라고 기록합니다.</p>",
+    "map": "캠페인 기록지를 확인합니다. *화로에 불을 밝혔다* 항목이 있다면, 탐험 물자를 확인합니다. 지도를 가진 조사자가 있다면, _되짚어 보다_를 읽습니다.",
+    "readingSigns": "<p>_되짚어 보다_: 동굴을 가로지르다 뭔가에 이목이 끌립니다. 바로 동굴 벽을 따라 흘러내리는 차갑고 부드러운 물줄기입니다. 호기심에 찬 당신은 이전 탐사대의 지도를 펼치고는 불붙은 화롯가에 앉아서 걸어온 길을 머릿속으로 되짚어 봅니다. 당신의 계산이 맞다면, 짐작보다 훨씬 더 남쪽으로 내려왔습니다. 어쩌면 이 동굴이 해안선까지 쭉 이어져 있지 않을까요? 이 동굴에 끝이 있기나 한 걸까요?</p><p class='basic right'>지도를 가진 모든 조사자는 지구 표면 아래의 넓은 동굴계에 대해 통찰력을 얻었으므로, 경험치를 추가로 2씩 얻습니다.</p>",
+    "senseOfTime": "<p>차갑고도 무시무시한 느카이의 심연에서 얼마나 오랜 시간이 흘렀는지조차 모르겠습니다.</p><p class='basic right'>조사자들의 탐험 물자에 남은 모든 비상식량과 약품에 취소선을 긋습니다.</p>"
+  },
+  "epilogue": {
+    "title": "후일담",
+    "body": "<p>_캠페인 기록지를 확인합니다._</p><p>_*조사자들이 시간을 되돌렸다*라고 적힌 경우에만 아래의 후일담을 읽습니다._</p><p>이 모든 일을 아예 일어나지조차 않게 하는 방법은 단 하나뿐. 당신이 유적에 도착해서 모든 사건이 벌어지기 전까지 에스틀리 유적은 잠들어 있었고, 유물은 이 궁벽한 감옥 안에서 안전하게 보관되어 있었습니다. 알레한드로가 시대의 유물을 찾겠다는 욕망만 갖지 않았다면, 유물은 수 세기 동안 발견되지 않을 수 있었을지도 모릅니다. 지금껏 유물에 대해 알아낸 지식을 이용해 시간을 되돌리면 모든 일을 바로잡을 수 있습니다. 유물을 영원히 봉인하고 과거의 당신이 결코 유물을 발견할 수 없게 막아야 합니다… 그로 인해 당신이 목숨을 잃게 되더라도.</p><ul><li>_비밀 시나리오 IX: 시간을 거슬러_로 이어집니다.</li></ul>"
+  },
+  "resupplyPoint": {
+    "label": {
+      "visitStMarys": "세인트 메리 병원을 들러봅니까?",
+      "doNotRemovePoisoned": "‘중독’ 약점을 제거하지 않음",
+      "doNotRemoveTrauma": "트라우마를 제거하지 않음",
+      "removePhysicalTrauma": "세인트 메리 병원을 들리고, 경험치 5를 소비하여 자신의 육체적 트라우마 1 제거",
+      "removeMentalTrauma": "세인트 메리 병원을 들리고, 경험치 5를 소비하여 자신의 정신적 트라우마 1 제거",
+      "removePoisoned": "세인트 메리 병원을 들리고, 경험치 3을 소비하여 자신의 덱에서 ‘중독’ 약점을 제거"
+    },
+    "pickSupplies": "<p class='basic'>이제 시대의 유물에 감춰진 불가사의를 파헤치기 위해 다시 밀림으로 들어가야 합니다. 모든 조사자는 기존에 갖고 있던 탐험 물자에 더불어, 이번에 추가로 확보할 탐험 물자를 선택할 수 있습니다. 캠페인 기록지의 조사자별 “탐험 물자” 항목에 해당 조사자가 가져갈 탐험 물자를 기록합니다. (<em>알아두기: 물자 점수만 소비할 수 있다면 비상식량, 약품, 휘발유는 각자 2개 이상 가져갈 수도 있습니다.</em>)</p><ul><li><p class='basic'>몸 상태가 좋지 않다면 아컴을 떠나기 전에 세인트 메리 병원을 들러보는 것도 좋겠습니다.</p><ul><li><p class='basic'>자신의 덱에 ‘중독’ 약점을 가진 조사자는 경험치 3을 소비하여 자신의 덱에서 ‘중독’ 약점을 제거해도 됩니다.</p></li><li><p class='basic'>각 조사자는 경험치 5를 소비하여 자신의 육체적 트라우마 1 또는 정신적 트라우마 1을 제거해도 됩니다.</p></li></ul></li><li><p class='basic'>각 조사자는 자신에게 주어진 물자 점수를 소비하여 아래 목록에 있는 탐험 물자를 구매해도 됩니다. 캠페인에 참여하는 조사자 수에 따라서 각 조사자는 다음과 같이 물자 점수를 받습니다.</p><p class='basic'><strong>조사자 1명</strong>: 물자 점수 8</p><p class='basic'><strong>조사자 2명</strong>: 각자 물자 점수 5씩 each</p><p class='basic'><strong>조사자 3명</strong>: 각자 물자 점수 4씩 each</p><p class='basic'><strong>조사자 4명</strong>: 각자 물자 점수 3씩 each</p></li></ul>"
+  },
+  "supplies": {
+    "title": "탐험 물자",
+    "choose": "탐험 물자 선택 ({pointsRemaining}점 남음)",
+    "chosen": "선택한 탐험 물자",
+    "provisions": {
+      "name": "비상식량",
+      "cost": "개당 물자 점수 1씩",
+      "description": "1인분의 음식과 물입니다. 어딜 가더라도 식량이야말로 필수품입니다.",
+      "tooltip": "(@:theForgottenAge.supplies.provisions.cost) @:theForgottenAge.supplies.provisions.description",
+      "count": "@:theForgottenAge.supplies.provisions.name | @:theForgottenAge.supplies.provisions.name ({count})"
+    },
+    "medicine": {
+      "name": "약품",
+      "cost": "개당 물자 점수 2씩",
+      "description": "질병, 감염, 맹독 등을 치료하기 위한 응급 약품입니다.",
+      "tooltip": "(@:theForgottenAge.supplies.medicine.cost) @:theForgottenAge.supplies.medicine.description",
+      "count": "@:theForgottenAge.supplies.medicine.name | @:theForgottenAge.supplies.medicine.name ({count})"
+    },
+    "rope": {
+      "name": "밧줄",
+      "cost": "물자 점수 3",
+      "description": "여러 바퀴를 둘러 만 튼튼한 밧줄 꾸러미입니다. 등산과 동굴 탐험에서는 필수입니다.",
+      "tooltip": "(@:theForgottenAge.supplies.rope.cost) @:theForgottenAge.supplies.rope.description",
+      "count": "@:theForgottenAge.supplies.rope.name | @:theForgottenAge.supplies.rope.name ({count})"
+    },
+    "blanket": {
+      "name": "담요",
+      "cost": "물자 점수 2",
+      "description": "야간에 온기를 유지할 수 있습니다.",
+      "tooltip": "(@:theForgottenAge.supplies.blanket.cost) @:theForgottenAge.supplies.blanket.description",
+      "count": "@:theForgottenAge.supplies.blanket.name | @:theForgottenAge.supplies.blanket.name ({count})"
+    },
+    "canteen": {
+      "name": "수통",
+      "cost": "물자 점수 2",
+      "description": "시냇물 또는 강물을 담을 수 있습니다.",
+      "tooltip": "(@:theForgottenAge.supplies.canteen.cost) @:theForgottenAge.supplies.canteen.description",
+      "count": "@:theForgottenAge.supplies.canteen.name | @:theForgottenAge.supplies.canteen.name ({count})"
+    },
+    "torches": {
+      "name": "횃불",
+      "cost": "물자 점수 3",
+      "description": "어두운 곳을 밝힐 수도 있고 초에 불을 붙일 수도 있습니다.",
+      "tooltip": "(@:theForgottenAge.supplies.torches.cost) @:theForgottenAge.supplies.torches.description",
+      "count": "@:theForgottenAge.supplies.torches.name | @:theForgottenAge.supplies.torches.name ({count})"
+    },
+    "compass": {
+      "name": "나침반",
+      "cost": "물자 점수 2",
+      "description": "길을 완전히 잃었을 때 방향을 알려줍니다.",
+      "tooltip": "(@:theForgottenAge.supplies.compass.cost) @:theForgottenAge.supplies.compass.description",
+      "count": "@:theForgottenAge.supplies.compass.name | @:theForgottenAge.supplies.compass.name ({count})"
+    },
+    "map": {
+      "name": "지도",
+      "cost": "물자 점수 3",
+      "description": "당장은 아무 표시도 없는 지도입니다. 하지만 탐사를 이어감에 따라 주변 지형을 지도상에 표시할 수 있습니다.",
+      "tooltip": "(@:theForgottenAge.supplies.map.cost) @:theForgottenAge.supplies.map.description",
+      "count": "@:theForgottenAge.supplies.map.name | @:theForgottenAge.supplies.map.name ({count})"
+    },
+    "binoculars": {
+      "name": "쌍안경",
+      "cost": "물자 점수 2",
+      "description": "먼 곳을 살펴보는 데에 유용합니다.",
+      "tooltip": "(@:theForgottenAge.supplies.binoculars.cost) @:theForgottenAge.supplies.binoculars.description",
+      "count": "@:theForgottenAge.supplies.binoculars.name | @:theForgottenAge.supplies.binoculars.name ({count})"
+    },
+    "chalk": {
+      "name": "분필",
+      "cost": "물자 점수 2",
+      "description": "거친 돌 표면 등에 기록할 수 있습니다.",
+      "tooltip": "(@:theForgottenAge.supplies.chalk.cost) @:theForgottenAge.supplies.chalk.description",
+      "count": "@:theForgottenAge.supplies.chalk.name | @:theForgottenAge.supplies.chalk.name ({count})"
+    },
+    "pendant": {
+      "name": "팬던트",
+      "cost": "물자 점수 1",
+      "description": "실용성은 없습니다. 하지만 집에서 멀리 떠나 온 여행자라면 행복한 기억을 떠올리며 마음을 달랠 수 있습니다.",
+      "tooltip": "(@:theForgottenAge.supplies.pendant.cost) @:theForgottenAge.supplies.pendant.description",
+      "count": "@:theForgottenAge.supplies.pendant.name | @:theForgottenAge.supplies.pendant.name ({count})"
+    },
+    "gasoline": {
+      "name": "휘발유",
+      "cost": "개당 물자 점수 1씩",
+      "description": "차를 타고 장거리 이동을 하려면 필요합니다.",
+      "tooltip": "(@:theForgottenAge.supplies.gasoline.cost) @:theForgottenAge.supplies.gasoline.description",
+      "count": "@:theForgottenAge.supplies.gasoline.name | @:theForgottenAge.supplies.gasoline.name ({count})"
+    },
+    "pocketknife": {
+      "name": "주머니칼",
+      "cost": "물자 점수 2",
+      "description": "든든한 무기라기엔 너무나도 작은 칼이지만, 쉽게 숨길 수 있습니다.",
+      "tooltip": "(@:theForgottenAge.supplies.pocketknife.cost) @:theForgottenAge.supplies.pocketknife.description",
+      "count": "@:theForgottenAge.supplies.pocketknife.name | @:theForgottenAge.supplies.pocketknife.name ({count})"
+    },
+    "pickaxe": {
+      "name": "곡괭이",
+      "cost": "물자 점수 2",
+      "description": "단단한 것을 깨부술 수 있습니다.",
+      "tooltip": "(@:theForgottenAge.supplies.pickaxe.cost) @:theForgottenAge.supplies.pickaxe.description",
+      "count": "@:theForgottenAge.supplies.pickaxe.name | @:theForgottenAge.supplies.pickaxe.name ({count})"
+    },
+    "keyOfEztli": {
+      "name": "에스틀리의 열쇠",
+      "count": "@:theForgottenAge.supplies.keyOfEztli.name | @:theForgottenAge.supplies.keyOfEztli.name ({count})"
+    },
+    "mysteriousScepter": {
+      "name": "불가사의한 왕홀",
+      "count": "@:theForgottenAge.supplies.mysteriousScepter.name | @:theForgottenAge.supplies.mysteriousScepter.name ({count})"
+    },
+    "stickyGoop": {
+      "name": "끈적끈적한 물질",
+      "count": "@:theForgottenAge.supplies.stickyGoop.name | @:theForgottenAge.supplies.stickyGoop.name ({count})"
+    }
   }
 }

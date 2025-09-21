@@ -1,19 +1,25 @@
 {
-  "about": "정보",
+  "serviceUnavailable": "서비스 사용불가",
+  "pleaseTryAgainLater": "나중에 다시 시도하세요.",
+  "nav": {
+    "home": "메인 화면",
+    "about": "정보",
+    "admin": "관리",
+    "cards": "카드",
+    "myDecks": "내 덱",
+    "support": "후원"
+  },
   "activeGames": "활성화된 게임",
   "cancel": "취소",
-  "cards": "카드",
   "continue": "계속",
   "debugGame": "게임 디버깅",
   "doDeleteGame": "이 게임을 정말 삭제하길 원하십니까?",
   "email": "이메일",
   "finishedGames": "종료된 게임",
   "forgotPassword": "암호를 잊었습니다",
-  "home": "메인 화면",
   "invalidEmailOrPassword": "유효하지 않은 이메일 또는 암호입니다.",
   "language": "언어",
   "logIn": "로그인",
-  "myDecks": "내 덱",
   "newGame": "새로운 게임",
   "newPassword": "새로운 암호",
   "password": "암호",
@@ -59,12 +65,13 @@
     "mental": "정신적",
     "supplyPoints": "획득할 보급 점수"
   },
+  "proceedToSetup": "_게임 준비_로 이어집니다.",
   "slot": {
-    "ally": "Ally",
-    "body": "Body",
-    "tarot": "Tarot",
-    "hand": "손",
     "accessory": "악세서리",
-    "arcane": "마법"
+    "ally": "조력자",
+    "arcane": "마법",
+    "body": "신체",
+    "hand": "손",
+    "tarot": "타로"
   }
 }

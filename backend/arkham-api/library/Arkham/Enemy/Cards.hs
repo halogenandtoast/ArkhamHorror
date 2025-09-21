@@ -1344,6 +1344,8 @@ ichtacaScionOfYig =
       { cdCardTraits = setFromList [Humanoid, Monster, Serpent, Elite]
       , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
       , cdVictoryPoints = Just 2
+      , cdDoubleSided = True
+      , cdOtherSide = Just "04325b"
       }
 
 alejandroVela :: CardDef
@@ -1353,6 +1355,8 @@ alejandroVela =
       { cdCardTraits = setFromList [Humanoid, Cultist, Elite]
       , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
       , cdVictoryPoints = Just 2
+      , cdDoubleSided = True
+      , cdOtherSide = Just "04326b"
       }
 
 formlessSpawn :: CardDef

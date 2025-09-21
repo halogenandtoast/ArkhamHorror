@@ -8,7 +8,7 @@ import Arkham.Helpers.Log
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Source
+import Arkham.Scenarios.ShatteredAeons.Helpers
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 import Arkham.Trait qualified as Trait
@@ -25,17 +25,17 @@ instance RunMessage YigsMercy where
     ResolveThisStory iid (is attrs -> True) -> do
       ichtaca <- selectJust $ enemyIs Enemies.ichtacaScionOfYig
       yigsFury <- getRecordCount YigsFury
-      chooseOneM iid do
+      chooseOneM iid $ scenarioI18n do
         if yigsFury >= 16
-          then labeled "Ichtaca refuses your plea" nothing
+          then labeled' "yigsMercy.refuses" nothing
           else do
-            labeled "I could never turn my back on humanity" do
+            labeled' "yigsMercury.reject" do
               exhaustThis ichtaca
               disengageFromAll ichtaca
               gameModifier attrs iid $ CannotParleyWith $ enemyIs Enemies.ichtacaScionOfYig
-            labeled "I accept" do
-              push $ RemoveEnemy ichtaca
-              push $ AdvanceToAct 1 Acts.timelock A (toSource attrs)
+            labeled' "yigsMercury.accept" do
+              removeEnemy ichtaca
+              advanceToAct' attrs 1 Acts.timelock A
               gameModifiers
                 attrs
                 iid

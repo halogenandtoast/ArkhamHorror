@@ -15,5 +15,17 @@
   },
   "xp": {
     "resolution1": "Mended the shattered timeline and saved the Earth from catastrophe."
+  },
+  "label": {
+    "yigsMercy": {
+      "refused": "Ichtaca refuses your plea",
+      "reject": "I could never turn my back on humanity",
+      "accept": "I accept"
+    },
+    "anotherWay": {
+      "reject": "I could never turn my back on humanity",
+      "accept": "I accept"
+    },
+    "checkSupplies": "Check supplies"
   }
 }

@@ -6,9 +6,11 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.ShatteredAeons.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -35,11 +37,11 @@ instance RunMessage CreepingDarkness where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOrRunOneM iid do
-        labeled "Test {willpower} (3)" do
+        withI18n $ skillVar #willpower $ countVar 3 $ labeled' "test" do
           sid <- getRandom
           beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 3)
         whenM (getHasSupply iid Torches) do
-          labeled "Check supplies" $ toDiscardBy iid (attrs.ability 1) attrs
+          scenarioI18n $ labeled' "checkSupplies" $ toDiscardBy iid (attrs.ability 1) attrs
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs

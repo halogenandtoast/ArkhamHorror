@@ -1,14 +1,13 @@
 module Arkham.Enemy.Cards.AlejandroVela (alejandroVela, alejandroVelaEffect) where
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Effect.Import
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest.Lifted (getSkillTest, parley)
-import Arkham.Message.Lifted.Story
+import Arkham.Helpers.Story
 import Arkham.Story.Cards qualified as Story
 
 newtype AlejandroVela = AlejandroVela EnemyAttrs
@@ -33,11 +32,7 @@ instance RunMessage AlejandroVela where
       initiateEnemyAttack attrs (attrs.ability 1) iid
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      flipOverBy iid (attrs.ability 1) attrs
-      pure e
-    Flip iid _ (isTarget attrs -> True) -> do
-      anotherWay <- genCard Story.anotherWay
-      resolveStoryWithTarget iid anotherWay attrs
+      readStory iid attrs Story.anotherWay
       pure e
     _ -> AlejandroVela <$> liftRunMessage msg attrs
 
@@ -53,7 +48,7 @@ instance HasModifiersFor AlejandroVelaEffect where
     st <- MaybeT getSkillTest
     guard $ isTarget st.id a.target
     let tokens = filter ((== Tablet) . (.face)) st.revealedChaosTokens
-    lift $ modifyEach a (map ChaosTokenTarget tokens) [ChangeChaosTokenModifier AutoSuccessModifier]
+    modifyEach a (map ChaosTokenTarget tokens) [ChangeChaosTokenModifier AutoSuccessModifier]
 
 instance RunMessage AlejandroVelaEffect where
   runMessage msg e@(AlejandroVelaEffect attrs) = runQueueT $ case msg of

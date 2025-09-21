@@ -7,12 +7,10 @@ import Arkham.Helpers
 import Arkham.Helpers.Query
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype RuinsOfNewYork = RuinsOfNewYork LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -23,28 +21,16 @@ ruinsOfNewYork = location RuinsOfNewYork Cards.ruinsOfNewYork 1 (Static 3)
 
 instance HasAbilities RuinsOfNewYork where
   getAbilities (RuinsOfNewYork a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ PutLocationIntoPlay Timing.After Anyone
-          $ LocationWithId
-          $ toId a
-      ]
+    extendRevealed1 a $ mkAbility a 1 $ forced $ PutLocationIntoPlay #after Anyone (be a)
 
 instance RunMessage RuinsOfNewYork where
-  runMessage msg l@(RuinsOfNewYork attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      lead <- getLead
+  runMessage msg l@(RuinsOfNewYork attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       playerCount <- getPlayerCount
-      deck <- fieldMap InvestigatorDeck unDeck lead
-      let
-        (cards, _) = splitAt (if playerCount >= 3 then 2 else 1) deck
-        polyps = map (\card -> PlayerCard $ card {pcCardCode = "xpolyp"}) cards
-      placements <- for polyps $ \polyp -> do
-        createEnemyWithPlacement_ polyp (AtLocation $ toId attrs)
-      pushAll
-        $ map (RemovePlayerCardFromGame False . PlayerCard) cards
-        <> placements
+      deck <- fieldMap InvestigatorDeck unDeck =<< getLead
+      let (cards, _) = splitAt (if playerCount >= 3 then 2 else 1) deck
+      let polyps = map (\card -> PlayerCard $ card {pcCardCode = "xpolyp"}) cards
+      pushAll $ map (RemovePlayerCardFromGame False . PlayerCard) cards
+      for_ polyps (`createEnemy_` AtLocation attrs.id)
       pure l
-    _ -> RuinsOfNewYork <$> runMessage msg attrs
+    _ -> RuinsOfNewYork <$> liftRunMessage msg attrs

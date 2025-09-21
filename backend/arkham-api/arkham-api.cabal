@@ -3658,6 +3658,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToTheUnspeakableOath
       Arkham.Scenario.Scenarios.ReturnToTheUntamedWilds
       Arkham.Scenario.Scenarios.ReturnToThreadsOfFate
+      Arkham.Scenario.Scenarios.ReturnToTurnBackTime
       Arkham.Scenario.Scenarios.ReturnToUndimensionedAndUnseen
       Arkham.Scenario.Scenarios.ReturnToWhereDoomAwaits
       Arkham.Scenario.Scenarios.ShatteredAeons
@@ -3768,7 +3769,7 @@ library
       Arkham.Scenarios.TheWitchingHour.Story
       Arkham.Scenarios.ThreadsOfFate.Helpers
       Arkham.Scenarios.ToTheForbiddenPeaks.Helpers
-      Arkham.Scenarios.TurnBackTime.Story
+      Arkham.Scenarios.TurnBackTime.Helpers
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers
       Arkham.Scenarios.UnionAndDisillusion.Helpers
       Arkham.Scenarios.UnionAndDisillusion.Story

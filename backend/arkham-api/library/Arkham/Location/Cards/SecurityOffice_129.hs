@@ -6,6 +6,7 @@ import Arkham.Location.Cards qualified as Cards (securityOffice_129)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenario.Deck
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 
 newtype SecurityOffice_129 = SecurityOffice_129 LocationAttrs
@@ -24,7 +25,7 @@ instance RunMessage SecurityOffice_129 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       unrevealedExhibitHalls <- select $ UnrevealedLocation <> "ExhibitHall"
       chooseOrRunOneM iid do
-        labeled' "securityOffice.topOfDeck" $ push $ LookAtTopOfDeck iid ScenarioDeckTarget 1
+        labeled' "securityOffice.topOfDeck" $ push $ LookAtTopOfDeck iid (ScenarioDeckTarget ExhibitDeck) 1
         targets unrevealedExhibitHalls $ push . LookAtRevealed iid (toSource attrs) . toTarget
       pure l
     _ -> SecurityOffice_129 <$> liftRunMessage msg attrs

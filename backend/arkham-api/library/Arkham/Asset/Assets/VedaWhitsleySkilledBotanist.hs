@@ -9,6 +9,7 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Strategy
 
@@ -36,7 +37,7 @@ instance RunMessage VedaWhitsleySkilledBotanist where
             $ lookAt
               iid
               (attrs.ability 1)
-              ScenarioDeckTarget
+              (ScenarioDeckTarget ExplorationDeck)
               [(FromTopOfDeck 1, PutBack)]
               (basic AnyCard)
               (defer attrs IsNotDraw)

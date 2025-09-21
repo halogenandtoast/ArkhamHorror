@@ -1,5 +1,6 @@
 import * as JsonDecoder from 'ts.data.json';
 import { Card, cardDecoder } from '@/arkham/types/Card';
+import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { BreachStatus, breachStatusDecoder } from '@/arkham/types/Breach';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
@@ -44,6 +45,7 @@ export type Location = {
   floodLevel: FloodLevel | null;
   keys: ArkhamKey[];
   seals: Seal[];
+  sealedChaosTokens: ChaosToken[];
 }
 
 type GameValue = { tag: "Static", contents: number } | { tag: "PerPlayer", contents: number }
@@ -76,6 +78,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     floodLevel: JsonDecoder.nullable(floodLevelDecoder),
     keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
     seals: JsonDecoder.array<Seal>(sealDecoder, 'Seal[]'),
+    sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
   },
   'Location',
 );

@@ -695,6 +695,9 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
           v-for="[,scenarioDeck] in scenarioDecks"
           :key="scenarioDeck[0]"
           :deck="scenarioDeck"
+          :game="game"
+          :playerId="playerId"
+          @choose="choose"
           @show="doShowCards"
         />
         <VictoryDisplay :game="game" :victoryDisplay="victoryDisplay" @show="showVictoryDisplay" @choose="choose" :playerId="playerId" />

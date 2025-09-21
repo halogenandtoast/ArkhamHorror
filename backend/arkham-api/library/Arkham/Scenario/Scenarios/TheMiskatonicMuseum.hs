@@ -91,7 +91,7 @@ instance RunMessage TheMiskatonicMuseum where
     StandaloneSetup -> do
       push (SetChaosTokens standaloneChaosTokens)
       pure s
-    LookAtTopOfDeck iid ScenarioDeckTarget n -> do
+    LookAtTopOfDeck iid (ScenarioDeckTarget ExhibitDeck) n -> do
       case fromJustNote "must be set" (lookup ExhibitDeck attrs.decks) of
         cards -> focusCards (map flipCard $ take n cards) $ continue_ iid
       pure s
@@ -141,7 +141,8 @@ instance RunMessage TheMiskatonicMuseum where
       (bottom, top) <-
         fmap (splitAt 2)
           . shuffle
-          =<< traverse fetchCard
+          =<< traverse
+            fetchCard
             [ Locations.exhibitHallAthabaskanExhibit
             , Locations.exhibitHallMedusaExhibit
             , Locations.exhibitHallNatureExhibit

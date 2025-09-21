@@ -3,7 +3,6 @@
 module Arkham.Scenario.Deck where
 
 import Arkham.Prelude
-
 import Data.Aeson.TH
 
 data ScenarioDeckKey

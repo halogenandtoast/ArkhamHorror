@@ -15,6 +15,7 @@ import Asset from '@/arkham/components/Asset.vue';
 import Event from '@/arkham/components/Event.vue';
 import Story from '@/arkham/components/Story.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
+import Token from '@/arkham/components/Token.vue'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Location';
@@ -230,7 +231,8 @@ const hasPool = computed(() => {
     (breaches.value && breaches.value > 0) ||
     (shards.value && shards.value > 0) ||
     (props.location.brazier && props.location.brazier === 'Lit') ||
-    (props.location.cardsUnderneath.length > 0)
+    (props.location.cardsUnderneath.length > 0) ||
+    (props.location.sealedChaosTokens.length > 0)
 })
 
 const blocked = computed(() => {
@@ -377,6 +379,16 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
             <PoolItem v-if="location.brazier && location.brazier === 'Lit'" type="resource" :amount="1" />
             <PoolItem v-if="encounterCardsUnderneath.length > 0" type="card" :amount="encounterCardsUnderneath.length" />
             <PoolItem v-if="playerCardsUnderneath.length > 0" type="player_card" :amount="playerCardsUnderneath.length" />
+
+            <Token
+              v-for="(sealedToken, index) in location.sealedChaosTokens"
+              :key="index"
+              :token="sealedToken"
+              :playerId="playerId"
+              :game="game"
+              @choose="choose"
+              class="sealed"
+            />
           </div>
         </div>
 
@@ -524,6 +536,15 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
   pointer-events: none;
   & :deep(.poolItem) {
     pointer-events: none;
+  }
+
+  :deep(img) {
+    width: 30px;
+    height: auto;
+  }
+
+  :deep(.token-container) {
+    width: 20px;
   }
 }
 
@@ -853,5 +874,9 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
 @keyframes wave {
   from { transform: rotate(0deg)}
   to { transform: rotate(360deg)}
+}
+
+:deep(.token) {
+  width: 30px;
 }
 </style>

@@ -239,14 +239,18 @@ p.anke, :deep(p.anke) {
 }
 
 .invalid, :deep(.invalid) {
+  align-items: center;
+  color: #666;
+  width: 100%;
+  > div {
+    width: 100%;
+  }
   &:not(li) {
     display: inline-flex;
     &:has(.right) {
       justify-content: flex-end;
     }
   }
-  align-items: center;
-  color: #666;
   &::before {
     content: '';
     display: inline-block;
@@ -272,13 +276,17 @@ h3, :deep(h3) {
 }
 
 .valid, :deep(.valid) {
+  width: 100%;
+  > div {
+    width: 100%;
+  }
+  align-items: center;
   &:not(li) {
     display: inline-flex;
     &:has(.right) {
       justify-content: flex-end;
     }
   }
-  align-items: center;
   &::before {
     content: '';
     display: inline-block;
@@ -369,9 +377,9 @@ ul, :deep(ul) {
 
 :deep(.encounter-sets) {
   display: flex;
-  gap: 5px;
+  gap: 10%;
   margin-block: 10px;
-  justify-content: space-around;
+  justify-content: center;
   img {
     align-self: center;
     width: 40px;
@@ -422,6 +430,69 @@ div:has(> img.remove) {
     border-top-right-radius: 15px 225px;
     border-bottom-right-radius: 225px 15px;
     border-bottom-left-radius:15px 255px;
+  }
+}
+
+/* each image behaves like a card */
+:deep(.fan) {
+  counter-reset: cards;
+  --n: 2;
+  /* tweak these to taste */
+  --card-w: 120px;        /* card width  */
+  --spread: 14deg;        /* total rotation step between neighbors */
+  --shift: 56px;         /* horizontal overlap (negative = overlap) */
+  --lift: 0px;            /* base vertical lift */
+  --hover-lift: -18px;    /* how high a hovered card rises */
+
+  position: relative;
+  height: calc(var(--card-w) * 1.4);   /* room for the arc */
+  display: block;
+  > img{
+    counter-increment: cards;
+    position: absolute;
+    bottom: 0; left: 50%;
+    width: var(--card-w);
+    aspect-ratio: 63 / 88;               /* poker-ish ratio; remove if you prefer */
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 10px 22px rgba(0,0,0,.25);
+    transform-origin: 50% 90%;           /* pivot near bottom-center */
+    transition: transform .18s ease, box-shadow .18s ease;
+    will-change: transform;
+    /* place, rotate, and overlap based on index (set below) */
+    transform:
+      translateX(calc(-50% + (var(--i) - (var(--n) - 1)/2) * var(--shift)))
+      rotate(calc((var(--i) - (var(--n) - 1)/2) * var(--spread)))
+      translateY(var(--lift));
+    z-index: calc(var(--i) + 1);
+  }
+
+  /* lift the hovered card and bring it to the top */
+  > img:hover{
+    transform:
+      translateX(calc(-50% + (var(--i) - (var(--n) - 1)/2) * var(--shift)))
+      rotate(calc((var(--i) - (var(--n) - 1)/2) * var(--spread)))
+      translateY(var(--hover-lift));
+    box-shadow: 0 16px 30px rgba(0,0,0,.35);
+    z-index: 999;
+  }
+
+  /* ---- small utility: assign index (--i) with :nth-child rules ---- */
+  /* also writes --n = number of cards seen so far; update the last rule if you show more */
+  /* add more nth-child lines if you might have more cards */
+  > :nth-child(1){ --i: 0 }
+  > :nth-child(2){ --i: 1 }
+  > :nth-child(3){ --i: 2 }
+  > :nth-child(4){ --i: 3 }
+  > :nth-child(5){ --i: 4 }
+}
+
+/* optional: tighten the spread on narrow screens */
+@media (max-width: 600px){
+  :deep(.fan) {
+    --card-w: 140px;
+    --spread: 11deg;
+    --shift: -44px;
   }
 }
 </style>

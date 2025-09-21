@@ -256,7 +256,9 @@ instance RunMessage TheDepthsOfYoth where
       recordCount YigsFury n
       pure s
     CreatedEnemyAt harbingerId _ (isTarget attrs -> True) -> do
-      isHarbinger <- harbingerId <=~> enemyIs Enemies.harbingerOfValusia
+      isHarbinger <-
+        harbingerId
+          <=~> mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
       when isHarbinger do
         startingDamage <- getRecordCount TheHarbingerIsStillAlive
         when (startingDamage > 0) $ placeTokens attrs harbingerId #damage startingDamage
@@ -294,12 +296,17 @@ instance RunMessage TheDepthsOfYoth where
                 push $ ScenarioResolutionStep 1 (Resolution 1)
               _ -> pure ()
 
-          inVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Enemies.harbingerOfValusia
+          inVictory <-
+            selectAny
+              $ VictoryDisplayCardMatch
+              $ basic
+              $ mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
           if inVictory
             then crossOut TheHarbingerIsStillAlive
             else do
               damage <-
-                selectOne (enemyIs Enemies.harbingerOfValusia) >>= \case
+                selectOne
+                  (mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]) >>= \case
                   Just eid -> field EnemyDamage eid
                   Nothing -> getRecordCount TheHarbingerIsStillAlive
               recordCount TheHarbingerIsStillAlive damage

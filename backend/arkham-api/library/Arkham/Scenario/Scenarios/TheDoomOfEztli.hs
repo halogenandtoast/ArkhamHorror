@@ -248,8 +248,13 @@ instance RunMessage TheDoomOfEztli where
     Do (ScenarioResolution n) -> scope "resolutions" do
       vengeance <- getTotalVengeanceInVictoryDisplay
       yigsFury <- getRecordCount YigsFury
-      inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
-      setAsideHarbinger <- selectOne $ OutOfPlayEnemy SetAsideZone $ enemyIs Enemies.harbingerOfValusia
+      inPlayHarbinger <-
+        selectOne
+          $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+      setAsideHarbinger <-
+        selectOne
+          $ OutOfPlayEnemy SetAsideZone
+          $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
       let
         harbingerMessages = case inPlayHarbinger of
           Just harbinger -> recordCount TheHarbingerIsStillAlive =<< field EnemyDamage harbinger

@@ -297,11 +297,11 @@ instance RunMessage TheBoundaryBeyond where
       yigsFury <- getRecordCount YigsFury
       recordCount YigsFury (yigsFury + vengeance)
 
-      inVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Enemies.harbingerOfValusia
+      inVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
       if inVictory
         then crossOut TheHarbingerIsStillAlive
         else do
-          inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
+          inPlayHarbinger <- selectOne $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
           damage <- case inPlayHarbinger of
             Just eid -> field EnemyDamage eid
             Nothing -> getRecordCount TheHarbingerIsStillAlive

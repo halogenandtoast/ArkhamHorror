@@ -31,46 +31,17 @@ export async function checkImageExists(language: string = localStorage.getItem('
   if (!helper.root || helper.loaded.value) return
   
   const store = useSiteSettingsStore()
-  const imgList = helper.digests
-  const tasks: {path: string, ext: string}[] = []
   
-  imgList.forEach((originPath) => {
+  helper.digests.forEach((originPath) => {
     const path = originPath.replace(/^\//, '')
     const ext = (path.split('.').pop() || '').toLowerCase()
     
     if (ext !== 'avif' && ext !== 'webp' && !ext.endsWith('png') && !ext.startsWith('jpg')) return
-    tasks.push({path, ext})
+
+    helper.data.set(path, ref(true))
   })
-  
-  const runBatch = async () => {
-    const batch = tasks.splice(0, batchSize)
-    
-    await Promise.allSettled(
-      batch.map(async ({path, ext}) => {
-        const i18nPath = `${store.assetHost}/img/arkham/${helper.root}/${path}`
-        
-        try {
-          const res = await fetch(i18nPath, { method: 'HEAD' })
-          const contentType = res.headers.get('Content-Type') || ''
-          const isOkay = res.ok && contentType !== 'text/html' && (contentType === 'text/plain' || (ext ? contentType === `image/${ext}` : false))
-          helper.data.set(path, ref(isOkay))
-        } catch {
-          helper.data.set(path, ref(false))
-        }
-      })
-    ).then((results) => {
-      results.forEach((result, index) => {
-        if (result.status === 'rejected')
-          tasks.push(batch[index])
-      })
-    })
-    .finally(async () => {
-      if (tasks.length > 0) await runBatch()
-      else helper.loaded.value = true
-    })
-  }
-  
-  await runBatch()
+ 
+  helper.loaded.value = true
 }
 
 export function toCapitalizedWords(name: string) {
@@ -105,7 +76,7 @@ export function isLocalized(src: string) {
   const exists = helper.digests.has(path)
 
   if (exists && helper.root && helper.loaded.value) {
-    const canFetch = helper.data.get(path).value || false
+    const canFetch = helper.data.get(path)?.value || false
     if (canFetch) return true
   }
 
@@ -124,7 +95,7 @@ export function imgsrc(src: string) {
     
     if (exists && helper.root && helper.loaded.value) {
       const i18nFullPath = `${store.assetHost}/img/arkham/${helper.root}/${path}`
-      const canFetch = helper.data.get(path).value || false
+      const canFetch = helper.data.get(path)?.value || false
       
       if (canFetch) return i18nFullPath
     }

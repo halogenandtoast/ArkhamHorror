@@ -13,14 +13,17 @@ export interface Props {
   deck: [string, Card[]]
 }
 
+
 const cards = computed(() => props.deck[1])
 const debug = useDebug()
 const props = defineProps<Props>()
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const emits = defineEmits<{
   show: [cards: ComputedRef<Card[]>, title: string, isDiscards: boolean]
+  choose: [value: number]
 }>()
 
+const choose = (idx: number) => emits('choose', idx)
 const deckAction = computed(() => {
   return choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && c.target.tag === "ScenarioDeckTarget")
 })
@@ -70,7 +73,7 @@ const deckLabel = computed(() => {
       :src="deckImage"
       class="card"
       :class="{ 'can-interact': deckAction !== -1 }"
-      @click="$emit('choose', deckAction)"
+      @click="choose(deckAction)"
     />
     <span v-if="deckLabel" class="deck-label">{{deckLabel}}</span>
     <span class="deck-size">{{deck[1].length}}</span>

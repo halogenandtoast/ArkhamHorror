@@ -13,7 +13,7 @@ returnToShatteredAeons difficulty =
   scenarioWith
     (ReturnToShatteredAeons . ShatteredAeons)
     "53061"
-    "Return to The City of Archives"
+    "Return to Shattered Aeons"
     difficulty
     [ "shoresOfRlyeh   betweenWorlds1 atlantis    ruinsOfNewYork      ."
     , "shoresOfRlyeh   betweenWorlds1 atlantis    ruinsOfNewYork      valusia"

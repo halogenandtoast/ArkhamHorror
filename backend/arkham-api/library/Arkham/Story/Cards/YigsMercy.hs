@@ -35,7 +35,7 @@ instance RunMessage YigsMercy where
               gameModifier attrs iid $ CannotParleyWith $ enemyIs Enemies.ichtacaScionOfYig
             labeled' "yigsMercury.accept" do
               removeEnemy ichtaca
-              advanceToAct' attrs 1 Acts.timelock A
+              advanceToAct' attrs 1 Acts.paradiseLost A
               gameModifiers
                 attrs
                 iid

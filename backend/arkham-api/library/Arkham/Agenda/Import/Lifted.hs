@@ -46,6 +46,7 @@ import Arkham.Question as X
 import Arkham.Source as X
 import Arkham.Target as X
 
+import Arkham.Card.CardDef
 import Arkham.Resolution
 
 advanceAgenda :: ReverseQueue m => AgendaAttrs -> m ()
@@ -53,3 +54,6 @@ advanceAgenda attrs = push $ AdvanceAgenda attrs.id
 
 noResolution :: ReverseQueue m => m ()
 noResolution = push $ ScenarioResolution NoResolution
+
+advanceToAgenda :: ReverseQueue m => AgendaAttrs -> CardDef -> AgendaSide -> m ()
+advanceToAgenda attrs newAgenda side = push $ AdvanceToAgenda attrs.deck newAgenda side (toSource attrs)

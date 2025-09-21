@@ -1362,12 +1362,6 @@ defaultParseMessage :: Value -> Parser Message
 defaultParseMessage = $(mkParseJSON defaultOptions ''Message)
 {-# NOINLINE defaultParseMessage #-}
 
-stepMessage :: Int -> Message -> Message
-stepMessage n = \case
-  UseCardAbility iid source idx ws payment ->
-    UseCardAbilityStep iid source idx ws payment n
-  other -> other
-
 uiToRun :: UI Message -> Message
 uiToRun = \case
   Label _ msgs -> Run msgs

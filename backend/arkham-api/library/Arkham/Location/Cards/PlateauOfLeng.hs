@@ -1,13 +1,10 @@
 module Arkham.Location.Cards.PlateauOfLeng (plateauOfLeng) where
 
 import Arkham.Ability
-import Arkham.ChaosToken
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner hiding (RevealChaosToken)
+import Arkham.Location.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype PlateauOfLeng = PlateauOfLeng LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -17,18 +14,15 @@ plateauOfLeng :: LocationCard PlateauOfLeng
 plateauOfLeng = location PlateauOfLeng Cards.plateauOfLeng 3 (Static 1)
 
 instance HasAbilities PlateauOfLeng where
-  getAbilities (PlateauOfLeng attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility attrs 1 (Here <> DuringSkillTest AnySkillTest)
-          $ ForcedAbility
-          $ RevealChaosToken Timing.AtIf You
-          $ ChaosTokenFaceIs ElderThing
-      ]
+  getAbilities (PlateauOfLeng a) =
+    extendRevealed1 a
+      $ restricted a 1 (Here <> DuringAnySkillTest)
+      $ forced
+      $ RevealChaosToken #at You #elderthing
 
 instance RunMessage PlateauOfLeng where
-  runMessage msg l@(PlateauOfLeng attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+  runMessage msg l@(PlateauOfLeng attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignHorror iid (attrs.ability 1) 1
       pure l
-    _ -> PlateauOfLeng <$> runMessage msg attrs
+    _ -> PlateauOfLeng <$> liftRunMessage msg attrs

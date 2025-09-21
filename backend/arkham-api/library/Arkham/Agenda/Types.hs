@@ -147,6 +147,9 @@ instance HasField "id" AgendaAttrs AgendaId where
 instance HasField "doom" AgendaAttrs Int where
   getField = agendaDoom
 
+instance HasField "deck" AgendaAttrs Int where
+  getField = agendaDeckId
+
 instance HasField "ability" AgendaAttrs (Int -> Source) where
   getField this = toAbilitySource this
 

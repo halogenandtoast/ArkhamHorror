@@ -1,12 +1,10 @@
 module Arkham.Location.Cards.Yuggoth (yuggoth) where
 
 import Arkham.Ability
-import Arkham.Draw.Types
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype Yuggoth = Yuggoth LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -17,14 +15,13 @@ yuggoth = location Yuggoth Cards.yuggoth 2 (Static 3)
 
 instance HasAbilities Yuggoth where
   getAbilities (Yuggoth a) =
-    withBaseAbilities
-      a
-      [restricted a 1 (Here <> oneOf [CluesOnThis (atLeast 1), CanDrawCards]) actionAbility]
+    extendRevealed1 a
+      $ restricted a 1 (Here <> oneOf [CluesOnThis (atLeast 1), CanDrawCards]) actionAbility
 
 instance RunMessage Yuggoth where
-  runMessage msg l@(Yuggoth attrs) = case msg of
+  runMessage msg l@(Yuggoth attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let drawCard = newCardDraw attrs iid 1
-      pushAll [FlipClues (toTarget attrs) 1, DrawCards iid drawCard]
+      flipCluesToDoom attrs 1
+      drawCards iid (attrs.ability 1) 1
       pure l
-    _ -> Yuggoth <$> runMessage msg attrs
+    _ -> Yuggoth <$> liftRunMessage msg attrs

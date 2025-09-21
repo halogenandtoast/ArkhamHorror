@@ -3398,3 +3398,6 @@ createWeaknessInThreatArea card iid = do
 
 allDrawEncounterCard :: ReverseQueue m => m ()
 allDrawEncounterCard = push Msg.AllDrawEncounterCard
+
+removeEnemy :: (ToId enemy EnemyId, ReverseQueue m) => enemy -> m ()
+removeEnemy = push . RemoveEnemy . asId

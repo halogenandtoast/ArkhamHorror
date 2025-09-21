@@ -9,6 +9,7 @@ import Arkham.Id
 import Arkham.Location.Types (LocationAttrs)
 import Arkham.Message.Lifted
 import Arkham.Prelude
+import Arkham.Target
 import Arkham.Window qualified as Window
 
 class Flippable a where
@@ -35,7 +36,7 @@ instance Flippable AssetAttrs where
   flipThis _ _ = pure ()
 
 readStory
-  :: (ReverseQueue m, Flippable a, ToId investigator InvestigatorId)
+  :: (ReverseQueue m, Flippable a, Targetable a, ToId investigator InvestigatorId)
   => investigator
   -> a
   -> CardDef
@@ -43,4 +44,4 @@ readStory
 readStory investigator a storyDef = do
   flipThis (asId investigator) a
   storyCard <- genCard storyDef
-  push $ ReadStory (asId investigator) storyCard ResolveIt Nothing
+  push $ ReadStory (asId investigator) storyCard ResolveIt (Just $ toTarget a)

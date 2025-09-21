@@ -387,12 +387,17 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
         yigsFury <- getRecordCount YigsFury
         recordCount YigsFury (yigsFury + vengeance)
 
-        inVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Enemies.harbingerOfValusia
+        inVictory <-
+          selectAny
+            $ VictoryDisplayCardMatch
+            $ basic
+            $ mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
         if inVictory
           then crossOut TheHarbingerIsStillAlive
           else do
             damage <-
-              selectOne (enemyIs Enemies.harbingerOfValusia) >>= \case
+              selectOne
+                (mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]) >>= \case
                 Just eid -> field EnemyDamage eid
                 Nothing -> getRecordCount TheHarbingerIsStillAlive
             recordCount TheHarbingerIsStillAlive damage

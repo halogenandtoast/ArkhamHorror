@@ -5,9 +5,14 @@ const path = require('path');
 
 // Take 'lang' as an argument
 const lang = process.argv[2];
+const skipLang = ["ko"]
 
 if (!lang) {
   console.error('Please provide a language code (e.g., "ita") as an argument.');
+  process.exit(1);
+}
+if (skipLang.includes(lang)) {
+  console.error(`This language(${lang}) only manages card images manually on the local environment's server. “arkhamhorror.app” does not provide localized images for these cards.`);
   process.exit(1);
 }
 

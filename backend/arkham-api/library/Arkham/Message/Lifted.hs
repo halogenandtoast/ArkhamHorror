@@ -3181,7 +3181,7 @@ resolveChaosTokens iid source tokens = do
 
 removeLocation :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m ()
 removeLocation (asId -> lid) = do
-  whenM (matches lid $ not_ LocationBeingRemoved) do
+  whenM (matches lid $ IncludeEmptySpace $ not_ LocationBeingRemoved) do
     noClues <- lid <=~> LocationWithoutClues
     if noClues
       then

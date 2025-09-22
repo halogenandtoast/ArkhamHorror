@@ -19,7 +19,7 @@ breakingThroughV2 = agenda (3, A) BreakingThroughV2 Cards.breakingThroughV2 (Sta
 
 instance HasAbilities BreakingThroughV2 where
   getAbilities (BreakingThroughV2 x) =
-    [mkAbility x 1 $ forced $ MovedBy #after You EncounterCardSource]
+    [mkAbility x 1 $ forced $ MovedBy #after You EncounterCardSource | isSide A x]
 
 instance RunMessage BreakingThroughV2 where
   runMessage msg a@(BreakingThroughV2 attrs) = runQueueT $ case msg of

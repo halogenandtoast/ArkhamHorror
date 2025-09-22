@@ -38,10 +38,12 @@ instance HasModifiersFor RealmsBeyondAllInOne where
 instance HasAbilities RealmsBeyondAllInOne where
   getAbilities (RealmsBeyondAllInOne a) =
     extendRevealed1 a
-      $ mkAbility a 1
+      $ restricted a 1 criteria
       $ forced
       $ WouldBeMovedBy #when You
       $ SourceIsLocation (locationIs Cards.anotherDimension)
+      where
+        criteria = if locationBeingRemoved a then Never else NoRestriction
 
 instance RunMessage RealmsBeyondAllInOne where
   runMessage msg l@(RealmsBeyondAllInOne attrs) = runQueueT $ case msg of

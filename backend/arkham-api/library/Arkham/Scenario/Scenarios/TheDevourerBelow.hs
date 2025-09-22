@@ -146,7 +146,7 @@ instance RunMessage TheDevourerBelow where
         $ assignDamageAndHorror iid (ChaosTokenEffectSource Tablet) 1 horror
       pure s
     ResolveChaosToken _ ElderThing iid -> do
-      pushWhenM (selectAny $ EnemyWithTrait AncientOne) $ DrawAnotherChaosToken iid
+      pushWhenM (selectAny $ InPlayEnemy $ EnemyWithTrait AncientOne) $ DrawAnotherChaosToken iid
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Skull)) _ _ | isHardExpert attrs -> do
       findAndDrawEncounterCard iid $ CardWithType EnemyType <> CardWithTrait Monster

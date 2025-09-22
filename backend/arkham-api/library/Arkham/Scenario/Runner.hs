@@ -1071,8 +1071,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                 then Lifted.promptI iid "noCardsFound" $ push $ SearchNoneFound iid searchTarget
                 else
                   pushAll
-                    [ PreSearchFound iid searchTarget deck (concat $ toList targetCards)
-                    , After (PreSearchFound iid searchTarget deck (concat $ toList targetCards))
+                    [ PreSearchFound iid (Just searchTarget) deck (concat $ toList targetCards)
+                    , After (PreSearchFound iid (Just searchTarget) deck (concat $ toList targetCards))
                     ]
             DrawAllFound who -> do
               let
@@ -1097,21 +1097,28 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                      in [before, chooseOneAtATime player choices]
                           <> [ShuffleDeck deck | shouldShuffle && length targetCards == length foundCards]
                           <> [after]
-            ReturnCards -> pure ()
+            ReturnCards -> do
+              unless (all null (toList targetCards)) do
+                pushAll
+                  [ PreSearchFound iid Nothing deck (concat $ toList targetCards)
+                  , After (PreSearchFound iid Nothing deck (concat $ toList targetCards))
+                  ]
       _ -> pure ()
     pure a
-  After (PreSearchFound iid searchTarget Deck.EncounterDeck _) -> do
+  After (PreSearchFound iid mSearchTarget Deck.EncounterDeck _) -> do
     case scenarioSearch of
       Just (MkSearch _ _ _ EncounterDeckTarget _ cardMatcher _ foundCards _) -> do
-        targetCards <- traverse (filterM (`extendedCardMatch` cardMatcher)) foundCards
-        push $ SearchFound iid searchTarget Deck.EncounterDeck (concat $ toList targetCards)
+        for_ mSearchTarget \searchTarget -> do
+          targetCards <- traverse (filterM (`extendedCardMatch` cardMatcher)) foundCards
+          push $ SearchFound iid searchTarget Deck.EncounterDeck (concat $ toList targetCards)
       _ -> error "Unexpected"
     pure a
-  After (PreSearchFound iid searchTarget (Deck.ScenarioDeckByKey dkey) _) -> do
+  After (PreSearchFound iid mSearchTarget (Deck.ScenarioDeckByKey dkey) _) -> do
     case scenarioSearch of
       Just (MkSearch _ _ _ (ScenarioDeckTarget dkey') _ cardMatcher _ foundCards _) | dkey == dkey' -> do
-        targetCards <- traverse (filterM (`extendedCardMatch` cardMatcher)) foundCards
-        push $ SearchFound iid searchTarget (Deck.ScenarioDeckByKey dkey) (concat $ toList targetCards)
+        for_ mSearchTarget \searchTarget -> do
+          targetCards <- traverse (filterM (`extendedCardMatch` cardMatcher)) foundCards
+          push $ SearchFound iid searchTarget (Deck.ScenarioDeckByKey dkey) (concat $ toList targetCards)
       _ -> error "Unexpected"
     pure a
   EndSearch iid _ t@(toScenarioHandleDeck -> Just (deck, _)) _ -> do

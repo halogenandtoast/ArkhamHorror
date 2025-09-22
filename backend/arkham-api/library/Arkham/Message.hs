@@ -996,7 +996,7 @@ data Message
   | FinishedSearch
   | Search Search
   | ResolveSearch Target
-  | PreSearchFound InvestigatorId Target DeckSignifier [Card]
+  | PreSearchFound InvestigatorId (Maybe Target) DeckSignifier [Card]
   | SearchFound InvestigatorId Target DeckSignifier [Card]
   | FoundCards (Map Zone [Card]) -- Deprecated
   | SearchNoneFound InvestigatorId Target
@@ -1186,6 +1186,11 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "PreSearchFound" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (a, b, c, d) -> pure $ PreSearchFound a b c d
+          Left (a, b, c, d) -> pure $ PreSearchFound a (Just b) c d
       "CancelEachNext" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

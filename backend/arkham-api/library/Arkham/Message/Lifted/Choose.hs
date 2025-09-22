@@ -11,6 +11,7 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Message (Message (Would), uiToRun)
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Query
@@ -66,6 +67,16 @@ leadChooseOrRunOneM :: ReverseQueue m => ChooseT m a -> m ()
 leadChooseOrRunOneM choices = do
   lead <- getLead
   chooseOrRunOneM lead choices
+
+playerChooseOneM :: ReverseQueue m => PlayerId -> ChooseT m a -> m ()
+playerChooseOneM pid choices = do
+  ((_, ChooseState {label, labelCardCode}), choices') <- runChooseT choices
+  unless (null choices') do
+    case label of
+      Nothing -> push $ Msg.chooseOne pid choices'
+      Just l -> case labelCardCode of
+        Nothing -> push $ Msg.Ask pid (QuestionLabel l Nothing $ ChooseOne choices')
+        Just cCode -> push $ Msg.Ask pid (QuestionLabel l (Just cCode) $ ChooseOne choices')
 
 chooseOneM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOneM iid choices = do

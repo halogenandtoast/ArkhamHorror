@@ -49,8 +49,6 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     Setup -> runScenarioSetup DisappearanceAtTheTwilightEstate attrs do
-      () <- error "NO"
-
       -- At Death's Doorstep is only locations so we will manually gather
       gather Set.DisappearanceAtTheTwilightEstate
       gather Set.InexorableFate

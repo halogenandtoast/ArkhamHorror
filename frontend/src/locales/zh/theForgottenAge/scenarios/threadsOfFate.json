@@ -22,8 +22,8 @@
     "ichtacaLeftWithoutYou": "伊塔卡獨自離開。",
     "ichtacasDestination": "伊塔卡的目的地: {name}.",
     "ichtacasPrey": "伊塔卡的獵物: {name}."
-  }
-    "label": {
+  },
+  "label": {
     "vedaWhitsley": {
       "exploration": "Look at the top card of the exploration deck",
       "encounter": "Look at the top card of the encounter deck",

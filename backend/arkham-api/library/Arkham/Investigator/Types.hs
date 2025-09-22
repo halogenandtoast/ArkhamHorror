@@ -538,7 +538,11 @@ instance ToJSON Investigator where
   toJSON (Investigator a) = toJSON a
 
 instance HasModifiersFor Investigator where
-  getModifiersFor (Investigator a) = getModifiersFor a
+  getModifiersFor (Investigator a) = do
+    case investigatorForm (toAttrs a) of
+      TransfiguredForm inner -> withInvestigatorCardCode inner \(SomeInvestigator @a) ->
+        getModifiersFor (investigatorFromAttrs @a (toAttrs a))
+      _ -> getModifiersFor a
 
 instance HasChaosTokenValue Investigator where
   getChaosTokenValue iid chaosTokenFace (Investigator a) = getChaosTokenValue iid chaosTokenFace a

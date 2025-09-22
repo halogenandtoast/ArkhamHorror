@@ -92,9 +92,7 @@ instance RunMessage GloriaGoldberg where
           else unless (null nonEliteCards) do
             chooseOneM iid $ for_ nonEliteCards \card -> do
               targeting card $ chooseOneM iid do
-                labeled "Discard it" do
-                  obtainCard card
-                  addToEncounterDiscard (only card)
+                labeled "Discard it" $ Arkham.Message.Lifted.discardCard iid (attrs.ability 1) card
                 labeled "Put it on top of the encounter deck" do
                   obtainCard card
                   putCardOnTopOfDeck iid Deck.EncounterDeck card

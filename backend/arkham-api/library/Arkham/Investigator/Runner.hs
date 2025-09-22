@@ -4087,7 +4087,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 then Lifted.promptI iid "noCardsFound" $ push $ SearchNoneFound iid searchTarget
                 else
                   pushAll
-                    [ PreSearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
+                    [ PreSearchFound iid (Just searchTarget) (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
+                    , After (PreSearchFound iid Nothing (Deck.InvestigatorDeck a.id) (concat $ toList targetCards))
                     , SearchFound iid searchTarget (Deck.InvestigatorDeck iid') (concat $ toList targetCards)
                     ]
             DrawAllFound who -> do
@@ -4116,7 +4117,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                           <> [ ShuffleDeck (Deck.InvestigatorDeck a.id) | shouldShuffle && length targetCards == length foundCards
                              ]
                           <> [after]
-            ReturnCards -> pure ()
+            ReturnCards -> do
+              unless (all null (toList targetCards)) do
+                pushAll
+                  [ PreSearchFound iid Nothing (Deck.InvestigatorDeck a.id) (concat $ toList targetCards)
+                  , After (PreSearchFound iid Nothing (Deck.InvestigatorDeck a.id) (concat $ toList targetCards))
+                  ]
       _ -> pure ()
     pure a
   RemoveFromDiscard iid cardId | iid == investigatorId -> do

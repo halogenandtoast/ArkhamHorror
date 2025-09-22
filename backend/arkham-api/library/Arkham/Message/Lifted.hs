@@ -2899,7 +2899,10 @@ discardCard investigator source =
       if inHand
         then push $ toMessage $ HandDiscard.discardCard (asId investigator) source card
         else push $ DiscardCard (asId investigator) (toSource source) (toCardId card)
-    card@(EncounterCard _) -> addToEncounterDiscard (only card)
+    card@(EncounterCard _) -> do
+      addToEncounterDiscard (only card)
+      checkWhen $ Window.Discarded (Just $ asId investigator) (toSource source) card
+      checkAfter $ Window.Discarded (Just $ asId investigator) (toSource source) card
     VengeanceCard card -> discardCard investigator source card
 
 forAction :: LiftMessage m body => Action -> body -> m ()

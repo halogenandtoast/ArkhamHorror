@@ -12,16 +12,15 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Decklist
 import Arkham.Helpers.Campaign (getOwner)
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp (XpBonus (WithBonus))
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
 import Arkham.Message (chooseDecks)
-import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Name (toTitle)
-import Arkham.Question (Question (..))
 import Arkham.Trait (Trait (SilverTwilight))
 
 newtype TheCircleUndone = TheCircleUndone CampaignAttrs
@@ -74,6 +73,7 @@ disappearanceAtTheTwilightEstateSteps =
 instance RunMessage TheCircleUndone where
   runMessage msg c@(TheCircleUndone attrs) = runQueueT $ campaignI18n $ case msg of
     StartCampaign | attrs.step `elem` (PrologueStep : disappearanceAtTheTwilightEstateSteps) -> do
+      scope "start" $ flavor $ setTitle "title" >> p "body"
       campaignStep_
         $ if attrs.step `elem` disappearanceAtTheTwilightEstateSteps then PrologueStep else attrs.step
       pure c
@@ -81,55 +81,50 @@ instance RunMessage TheCircleUndone where
       players <- allPlayers
       push $ chooseDecks players
       lift $ defaultCampaignRunner msg c
-    CampaignStep PrologueStep -> do
-      story prologue
+    CampaignStep PrologueStep -> scope "prologue" do
+      flavor $ setTitle "title" >> p "body"
+      -- investigators have not been chosen yet so we have to send to players
       allPlayers >>= traverse_ (push . (`ForPlayer` msg))
-      story intro
+      flavor $ setTitle "title" >> p "intro"
       prologueStepPart 2
       nextCampaignStep
       pure c
-    ForPlayer player (CampaignStep PrologueStep) -> do
+    ForPlayer player (CampaignStep PrologueStep) -> scope "prologue" do
       taken <- select Anyone
       let
         availablePrologueInvestigators =
           filter
             ((`notElem` taken) . InvestigatorId . cdCardCode)
             allPrologueInvestigators
-      push
-        $ Msg.questionLabel
-          "Choose one of the following neutral investigators to control for the duration of this prologue"
-          player
-        $ ChooseOne
-          [ CardLabel
-              (cdCardCode card)
-              [ LoadDecklist player
-                  $ ArkhamDBDecklist
-                    mempty
-                    mempty
-                    (InvestigatorId $ cdCardCode card)
-                    (toTitle card)
-                    Nothing
-                    Nothing
-                    Nothing -- TODO: should we figure out the taboo list here??
-              ]
-          | card <- availablePrologueInvestigators
-          ]
+      playerChooseOneM player do
+        questionLabeled' "chooseInvestigator"
+        cardsLabeled availablePrologueInvestigators \card -> do
+          push
+            $ LoadDecklist player
+            $ ArkhamDBDecklist
+              mempty
+              mempty
+              (InvestigatorId $ cdCardCode card)
+              (toTitle card)
+              Nothing
+              Nothing
+              Nothing -- TODO: should we figure out the taboo list here??
       pure c
-    CampaignStep (PrologueStepPart 2) -> do
+    CampaignStep (PrologueStepPart 2) -> scope "prologue" do
       taken <- selectMap unInvestigatorId Anyone
       let
         prologueInvestigatorsNotTaken =
           map cdCardCode allPrologueInvestigators
             \\ toList taken
         readingFor = \case
-          "05046" -> gavriellaIntro
-          "05047" -> jeromeIntro
-          "05048" -> valentinoIntro
-          "05049" -> pennyIntro
+          "05046" -> "gavriellaIntro"
+          "05047" -> "jeromeIntro"
+          "05048" -> "valentinoIntro"
+          "05049" -> "pennyIntro"
           _ -> error "Invalid prologue investigator"
         readings = map readingFor taken
       crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
-      traverse_ story readings
+      traverse_ (\r -> flavor $ setTitle "title" >> p r) readings
       pure c
     CampaignStep (InterludeStep 2 mInterludeKey) -> do
       anySilverTwilight <- selectAny $ InvestigatorWithTrait SilverTwilight

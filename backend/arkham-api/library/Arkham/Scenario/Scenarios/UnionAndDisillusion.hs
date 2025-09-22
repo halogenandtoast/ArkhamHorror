@@ -4,10 +4,11 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Attack.Types
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
-import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Campaigns.TheCircleUndone.Helpers
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -201,7 +202,8 @@ instance RunMessage UnionAndDisillusion where
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Tablet)) _ _ -> do
       enemies <- select $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Spectral
-      chooseTargetM iid enemies \enemy -> initiateEnemyAttack enemy Tablet iid
+      chooseTargetM iid enemies \enemy ->
+        initiateEnemyAttackEdit enemy Tablet iid \atk -> atk {attackDespiteExhausted = True}
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderThing)) _ _ -> do
       mAction <- getSkillTestAction

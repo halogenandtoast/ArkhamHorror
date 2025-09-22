@@ -2370,6 +2370,7 @@ runGameMessage msg g = case msg of
       Just (EnemyTarget eid) -> field EnemyPlacement eid
       Just (AssetTarget aid) -> field AssetPlacement aid
       Just (LocationTarget lid) -> pure (AtLocation lid)
+      Just (CardIdTarget _) -> pure Unplaced
       Just _ -> error $ "no known placement for non-enemy target: " <> show mtarget
       Nothing -> pure Unplaced
     push $ ReadStoryWithPlacement iid card storyMode mtarget placement

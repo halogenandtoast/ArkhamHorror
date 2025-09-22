@@ -7,17 +7,23 @@ import Arkham.Campaigns.TheCircleUndone.ChaosBag
 import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
+import Arkham.Decklist
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Query (allPlayers)
 import Arkham.Helpers.SkillTest
+import Arkham.Id
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
+import Arkham.Name (toTitle)
 import Arkham.Placement
 import Arkham.Scenario.Import.Lifted
-import Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Story
+import Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype DisappearanceAtTheTwilightEstate = DisappearanceAtTheTwilightEstate ScenarioAttrs
@@ -44,7 +50,51 @@ instance HasChaosTokenValue DisappearanceAtTheTwilightEstate where
       otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage DisappearanceAtTheTwilightEstate where
-  runMessage msg s@(DisappearanceAtTheTwilightEstate attrs) = runQueueT $ case msg of
+  runMessage msg s@(DisappearanceAtTheTwilightEstate attrs) = runQueueT $ scenarioI18n $ case msg of
+    PreScenarioSetup -> scope "intro" do
+      flavor $ setTitle "title" >> p "body"
+      -- investigators have not been chosen yet so we have to send to players
+      allPlayers >>= traverse_ (push . (`ForPlayer` msg))
+      flavor $ setTitle "title" >> p "intro"
+      doStep 2 msg
+      pure s
+    ForPlayer player PreScenarioSetup -> scope "intro" do
+      taken <- select Anyone
+      let
+        availablePrologueInvestigators =
+          filter
+            ((`notElem` taken) . InvestigatorId . cdCardCode)
+            allPrologueInvestigators
+      playerChooseOneM player do
+        questionLabeled' "chooseInvestigator"
+        cardsLabeled availablePrologueInvestigators \card -> do
+          push
+            $ LoadDecklist player
+            $ ArkhamDBDecklist
+              mempty
+              mempty
+              (InvestigatorId $ cdCardCode card)
+              (toTitle card)
+              Nothing
+              Nothing
+              Nothing -- TODO: should we figure out the taboo list here??
+      pure s
+    DoStep 2 PreScenarioSetup -> scope "intro" do
+      taken <- selectMap unInvestigatorId Anyone
+      let
+        prologueInvestigatorsNotTaken =
+          map cdCardCode allPrologueInvestigators
+            \\ toList taken
+        readingFor = \case
+          "05046" -> "gavriellaIntro"
+          "05047" -> "jeromeIntro"
+          "05048" -> "valentinoIntro"
+          "05049" -> "pennyIntro"
+          _ -> error "Invalid prologue investigator"
+        readings = map readingFor taken
+      crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
+      traverse_ (\r -> flavor $ setTitle "title" >> p r) readings
+      pure s
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
@@ -117,8 +167,8 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
             when (action `elem` [#fight, #evade]) $ runHauntedAbilities iid
         _ -> pure ()
       pure s
-    ScenarioResolution _ -> do
-      story noResolution
+    ScenarioResolution _ -> scope "resolutions" do
+      resolution "noResolution"
       recordCount PiecesOfEvidenceWereLeftBehind =<< selectSum ActClues AnyAct
       endOfScenario
       pure s

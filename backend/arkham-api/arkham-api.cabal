@@ -3718,6 +3718,7 @@ library
       Arkham.Scenarios.DarkSideOfTheMoon.Helpers
       Arkham.Scenarios.DevilReef.Helpers
       Arkham.Scenarios.DimCarcosa.Helpers
+      Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Helpers
       Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Story
       Arkham.Scenarios.EchoesOfThePast.Helpers
       Arkham.Scenarios.ExtracurricularActivity.Helpers

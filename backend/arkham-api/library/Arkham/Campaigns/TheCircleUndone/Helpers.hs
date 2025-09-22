@@ -1,6 +1,8 @@
 module Arkham.Campaigns.TheCircleUndone.Helpers where
 
 import Arkham.Ability
+import Arkham.Card.CardDef
+import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
@@ -31,3 +33,12 @@ runLocationHauntedAbilities iid lid = do
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "theCircleUndone" a
+
+allPrologueInvestigators :: [CardDef]
+allPrologueInvestigators =
+  [ Investigators.gavriellaMizrah
+  , Investigators.jeromeDavids
+  , Investigators.pennyWhite
+  , Investigators.valentinoRivas
+  ]
+

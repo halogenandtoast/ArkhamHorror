@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Helpers.Modifiers (module Arkham.Helpers.Modifiers, module X) where
 
 import Arkham.Ability.Types
@@ -640,8 +642,9 @@ phaseModifiers
 phaseModifiers source target modifiers = createWindowModifierEffect EffectPhaseWindow source target modifiers
 
 cardDrawModifier
-  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
-cardDrawModifier source target modifier = createWindowModifierEffect EffectCardDrawWindow source target [modifier]
+  :: (Sourceable source, Targetable target, HasGame m)
+  => CardDrawId -> source -> target -> ModifierType -> m Message
+cardDrawModifier cid source target modifier = createWindowModifierEffect (EffectCardDrawWindow cid) source target [modifier]
 
 cardResolutionModifier
   :: (Sourceable source, Targetable target, IsCard card, HasGame m)

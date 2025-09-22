@@ -91,6 +91,7 @@ import Data.Aeson.Key qualified as Aeson
 import Data.Aeson.TH
 import Data.Aeson.Types
 import Data.UUID (nil)
+import Data.UUID qualified as UUID
 import GHC.OverloadedLabels
 
 messageType :: Message -> Maybe MessageType
@@ -483,7 +484,7 @@ data Message
   | DrawStartingHand InvestigatorId
   | DrawCards InvestigatorId (CardDraw Message)
   | DoDrawCards InvestigatorId
-  | DrawEnded InvestigatorId
+  | DrawEnded CardDrawId InvestigatorId
   | Instead Message Message
   | ReplaceCurrentCardDraw InvestigatorId (CardDraw Message)
   | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
@@ -1186,6 +1187,11 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "DrawEnded" -> do
+        contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+        case contents of
+          Right (a, b) -> pure $ DrawEnded a b
+          Left a -> pure $ DrawEnded (CardDrawId UUID.nil) a
       "PreSearchFound" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

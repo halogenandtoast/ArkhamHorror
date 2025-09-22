@@ -71,7 +71,7 @@
       "resign": "\"Eh. How important can a book really be, anyway?\""
     },
     "museumHalls": {
-      "action": "{action}: Test {combat} (5) to attempt to break down the door to the museum. If you are successful, immediately advance to Act 1b"
+      "action": "{'{'}action{'}'}: Test {'{'}combat{'}'} (5) to attempt to break down the door to the museum. If you are successful, immediately advance to Act 1b"
     }
   }
 }

@@ -1578,12 +1578,6 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
               , matches (attackEnemy details) enemyMatcher
               , enemyAttackMatches iid details enemyAttackMatcher
               ]
-          MassiveAttackTargets (mapMaybe (preview _InvestigatorTarget) -> iids) ->
-            andM
-              [ anyM (\who -> matchWho iid who whoMatcher) iids
-              , matches (attackEnemy details) enemyMatcher
-              , enemyAttackMatches iid details enemyAttackMatcher
-              ]
           _ -> noMatch
         _ -> noMatch
     Matcher.EnemyAttacks timing whoMatcher enemyAttackMatcher enemyMatcher ->
@@ -1595,12 +1589,6 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
               , matches (attackEnemy details) enemyMatcher
               , enemyAttackMatches iid details enemyAttackMatcher
               ]
-          MassiveAttackTargets (mapMaybe (preview _InvestigatorTarget) -> iids) ->
-            andM
-              [ anyM (\who -> matchWho iid who whoMatcher) iids
-              , matches (attackEnemy details) enemyMatcher
-              , enemyAttackMatches iid details enemyAttackMatcher
-              ]
           _ -> noMatch
         _ -> noMatch
     Matcher.EnemyAttacksEvenIfCancelled timing whoMatcher enemyAttackMatcher enemyMatcher ->
@@ -1609,12 +1597,6 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           SingleAttackTarget (InvestigatorTarget who) ->
             andM
               [ matchWho iid who whoMatcher
-              , matches (attackEnemy details) enemyMatcher
-              , enemyAttackMatches iid details enemyAttackMatcher
-              ]
-          MassiveAttackTargets (mapMaybe (preview _InvestigatorTarget) -> iids) ->
-            andM
-              [ anyM (\who -> matchWho iid who whoMatcher) iids
               , matches (attackEnemy details) enemyMatcher
               , enemyAttackMatches iid details enemyAttackMatcher
               ]

@@ -1102,6 +1102,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                 pushAll
                   [ PreSearchFound iid Nothing deck (concat $ toList targetCards)
                   , After (PreSearchFound iid Nothing deck (concat $ toList targetCards))
+                  , chooseOne player [Label "Done" []]
                   ]
       _ -> pure ()
     pure a

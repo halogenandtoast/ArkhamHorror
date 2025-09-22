@@ -393,7 +393,7 @@
   },
   { "id": "03", "name": "The Path to Carcosa", "returnTo": { "id": "52" } },
   { "id": "04", "name": "The Forgotten Age", "returnTo": { "id": "53", "beta": true } },
-  { "id": "05", "name": "The Circle Undone", "settings": [
+  { "id": "05", "name": "The Circle Undone", "returnTo": { "id": "54", "alpha": true }, "settings": [
     {
       "key": "Disappearance at the Twilight Estate",
       "scenarioId": "05043",

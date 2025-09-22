@@ -72,9 +72,9 @@ import Arkham.Matcher (
   oneOf,
   preyWith,
   replaceYouMatcher,
+  pattern AloofEnemy,
   pattern InvestigatorCanDisengage,
   pattern MassiveEnemy,
-  pattern AloofEnemy,
  )
 import Arkham.Message
 import Arkham.Message qualified as Msg
@@ -1338,11 +1338,11 @@ instance RunMessage EnemyAttrs where
       vengeance <- getVengeancePoints eid
       afterMsg <- checkWindows [mkAfter $ Window.IfEnemyDefeated miid defeatedBy eid]
       let
-        placeInVictory = isJust (victory <|> vengeance)
-        victoryMsgs = guard (not a.placement.isInVictory) *> [DefeatedAddToVictory $ toTarget a | placeInVictory]
+        placeInVictory = isJust (victory <|> vengeance) && not a.placement.isSwarm
+        victoryMsgs =
+          guard (not a.placement.isInVictory) *> [DefeatedAddToVictory $ toTarget a | placeInVictory]
         defeatMsgs =
-          guard (not a.placement.isInVictory)
-            *> [Discard miid GameSource $ toTarget a | not placeInVictory]
+          guard (not a.placement.isInVictory) *> [Discard miid GameSource $ toTarget a | not placeInVictory]
 
       pushAll
         $ victoryMsgs
@@ -1368,6 +1368,7 @@ instance RunMessage EnemyAttrs where
     EnemySpawnFromOutOfPlay _ _miid _lid eid | eid == a.id -> do
       pure $ a & (defeatedL .~ False) & (exhaustedL .~ False)
     AddToVictory (isTarget a -> True) -> do
+      selectEach (SwarmOf a.id) (push . RemoveEnemy)
       pure $ a & placementL .~ OutOfPlay VictoryDisplayZone
     Discard miid source target | a `isTarget` target -> do
       whenLeavePlay <- checkWindows [mkWhen $ Window.LeavePlay (toTarget a)]
@@ -1382,9 +1383,12 @@ instance RunMessage EnemyAttrs where
         <> [ whenLeavePlay
            , RemovedFromPlay $ toSource a
            , afterLeavePlay
-           , Discarded (toTarget a) source card
-           , Do (Discarded (toTarget a) source card)
            ]
+        <> ( guard (not a.placement.isSwarm)
+               *> [ Discarded (toTarget a) source card
+                  , Do (Discarded (toTarget a) source card)
+                  ]
+           )
       pure $ a & keysL .~ mempty & discardedByL .~ miid
     PutOnTopOfDeck iid deck target | a `isTarget` target -> do
       pushAll

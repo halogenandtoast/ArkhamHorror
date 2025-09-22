@@ -15,7 +15,8 @@ newtype AncientHall = AncientHall LocationAttrs
 
 ancientHall :: LocationCard AncientHall
 ancientHall =
-  location AncientHall Cards.ancientHall 3 (PerPlayer 2)
+  symbolLabel
+    $ location AncientHall Cards.ancientHall 3 (PerPlayer 2)
     & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasAbilities AncientHall where

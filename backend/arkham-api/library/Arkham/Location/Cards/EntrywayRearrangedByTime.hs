@@ -18,8 +18,8 @@ newtype EntrywayRearrangedByTime = EntrywayRearrangedByTime LocationAttrs
 
 entrywayRearrangedByTime :: LocationCard EntrywayRearrangedByTime
 entrywayRearrangedByTime =
-  location EntrywayRearrangedByTime Cards.entrywayRearrangedByTime 2 (PerPlayer 1)
-    & setLabel "entryway"
+  symbolLabel
+    $ location EntrywayRearrangedByTime Cards.entrywayRearrangedByTime 2 (PerPlayer 1)
     & setConnectsTo (singleton LeftOf)
 
 instance HasAbilities EntrywayRearrangedByTime where

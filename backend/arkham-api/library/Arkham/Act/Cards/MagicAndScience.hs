@@ -50,7 +50,7 @@ instance RunMessage MagicAndScience where
         maybe
           (Left <$> fetchCard (SetAsideCardMatch $ cardIs Assets.relicOfAgesADeviceOfSomeSort))
           (pure . Right)
-          =<< selectOne (assetIs Assets.relicOfAgesADeviceOfSomeSort)
+          =<< selectOne (asset_ "Relic of Ages")
       investigators <- select $ investigatorAt chamberOfTime
       entryway <- selectJust $ location_ "Entryway"
       chooseOrRunOneM lead do

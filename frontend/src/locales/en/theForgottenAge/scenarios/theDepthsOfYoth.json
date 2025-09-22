@@ -70,6 +70,9 @@
     "title": "Pursuit",
     "body": "<p class='basic'>Some cards in this scenario reference an area called the “pursuit area.” The pursuit area is an out-of-play area next to the act and agenda deck which enemies can enter and leave via card effects. Generally speaking, enemies in play will move to the pursuit area whenever the investigators reach the next depth level. _Although the pursuit area is out of play, whenever an enemy moves to the pursuit area, it keeps all tokens and attachments_.</p><p class='basic'>Enemies in the pursuit area are considered to be “in pursuit.” Enemies that are in pursuit are considered to be out of play, and cannot be affected by player cards or investigator actions. However, enemies that are in pursuit can re‑enter play by a variety of card abilities.</p>"
   },
+  "remembered": {
+    "collectedAStrangeLiquid": "Collected a Strange Liquid"
+  },
   "label": {
     "perilsOfYoth": {
       "fail": "Set Perils of Yoth aside, out of play. (*This exploration fails.*)",
@@ -77,11 +80,19 @@
     },
     "endlessCaverns": {
       "scout": "Choose the group's scout"
+    },
+    "horrificDescent": {
+      "description": "Check your supplies. If an investigator has a canteen, that investigator must decide:",
+      "collect": "*This could be useful*. Remember that you have \"collected a strange liquid.\"",
+      "doNotCollect": "*I'm not going anywhere near that*. You suffer no ill effects."
     }
   },
   "resolutions": {
     "xp": {
       "depth": "Depth Level"
+    },
+    "label": {
+      "stickyGoop": "Check your supplies. If any investigator has sticky goop and an investigator “collected a strange liquid,” the liquid from the fountain disolves the viscous substance, revealing a solid object beneath the ooze. Record “Key of Eztli” in any one investigator’s supplies."
     },
     "noResolution": {
       "title": "No Resolution",

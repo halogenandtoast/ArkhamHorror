@@ -3240,10 +3240,10 @@ cancelEvent eId = matchingDon't \case
   _ -> False
 
 cancelMovement
-  :: ( ReverseQueue m
-     , Sourceable source
+  :: ( Sourceable source
      , Targetable investigator
      , ToId investigator InvestigatorId
+     , ReverseQueue m
      )
   => source -> investigator -> m ()
 cancelMovement source investigator = do

@@ -41,11 +41,11 @@ turnBackTime difficulty =
     "04344"
     "Turn Back Time"
     difficulty
-    [ ".        ancientHall  undergroundRuins .             .             .    ."
-    , "entryway ancientHall  undergroundRuins secretPassage chamberOfTime .    ."
-    , "entryway grandChamber burialPit        secretPassage chamberOfTime .    ."
-    , ".        grandChamber burialPit        .             .             .    ."
-    , "pos1     pos2         pos3             pos4          pos5          pos6 pos7"
+    [ ".      square diamond  .        .         .    ."
+    , "circle square diamond  squiggle hourglass .    ."
+    , "circle star   triangle squiggle hourglass .    ."
+    , ".      star   triangle .        .         .    ."
+    , "pos1   pos2   pos3     pos4     pos5      pos6 pos7"
     ]
 
 instance HasChaosTokenValue TurnBackTime where
@@ -92,7 +92,8 @@ setupTurnBackTime _attrs = do
   isReturnTo <- getIsReturnTo
   startAt =<< place (if isReturnTo then Locations.entrywayRearrangedByTime else Locations.entryway)
 
-  --- Beforoe setup, replace the original Chamber of Time locations with the new versions from this encounter set.
+  -- Before setup, replace the original Chamber of Time locations with the new
+  -- versions from this encounter set.
   addExtraDeck ExplorationDeck
     =<< shuffle
       ( [ if isReturnTo then Locations.ancientHallRearrangedByTime else Locations.ancientHall
@@ -185,7 +186,7 @@ instance RunMessage TurnBackTime where
           for_ mlid $ \lid -> placeDoom ElderThing lid 1
         _ -> pure ()
       pure s
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
           resolution "noResolution"

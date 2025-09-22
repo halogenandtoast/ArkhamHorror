@@ -18,7 +18,8 @@ newtype SnakePit = SnakePit LocationAttrs
 
 snakePit :: LocationCard SnakePit
 snakePit =
-  location SnakePit Cards.snakePit 1 (PerPlayer 1)
+  symbolLabel
+    $ location SnakePit Cards.snakePit 1 (PerPlayer 1)
     & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasAbilities SnakePit where
@@ -35,8 +36,11 @@ instance RunMessage SnakePit where
 
       when hasBinoculars do
         chooseOneM iid $ scenarioI18n do
-          labeled' "snakePit.doNotMove" $ cancelMovement (attrs.ability 1) iid
+          labeled' "snakePit.doNotMove" $ doStep 1 msg
           labeled' "snakePit.move" nothing
 
+      pure l
+    DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      cancelMovement (attrs.ability 1) iid
       pure l
     _ -> SnakePit <$> liftRunMessage msg attrs

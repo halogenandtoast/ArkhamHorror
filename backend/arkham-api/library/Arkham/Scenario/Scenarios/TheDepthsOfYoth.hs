@@ -23,6 +23,7 @@ import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (questionLabel)
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Projection
@@ -306,14 +307,23 @@ instance RunMessage TheDepthsOfYoth where
             else do
               damage <-
                 selectOne
-                  (mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]) >>= \case
-                  Just eid -> field EnemyDamage eid
-                  Nothing -> getRecordCount TheHarbingerIsStillAlive
+                  (mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns])
+                  >>= \case
+                    Just eid -> field EnemyDamage eid
+                    Nothing -> getRecordCount TheHarbingerIsStillAlive
               recordCount TheHarbingerIsStillAlive damage
 
           vengeance <- getTotalVengeanceInVictoryDisplay
           yigsFury <- getRecordCount YigsFury
           recordCount YigsFury (yigsFury + vengeance)
+
+          collectedAStrangeLiquid <- remembered CollectedAStrangeLiquid
+          hasStickyGoop <- getAnyHasSupply StickyGoop
+          when (collectedAStrangeLiquid && hasStickyGoop) $ do
+            investigators <- getInvestigators
+            leadChooseOneM do
+              questionLabeled' "stickyGoop"
+              portraits investigators (`pickSupply` KeyOfEztli)
 
           endOfScenario
         _ -> error "Unknown Resolution"

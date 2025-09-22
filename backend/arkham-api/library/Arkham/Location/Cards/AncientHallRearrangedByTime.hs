@@ -14,8 +14,8 @@ newtype AncientHallRearrangedByTime = AncientHallRearrangedByTime LocationAttrs
 
 ancientHallRearrangedByTime :: LocationCard AncientHallRearrangedByTime
 ancientHallRearrangedByTime =
-  location AncientHallRearrangedByTime Cards.ancientHallRearrangedByTime 3 (PerPlayer 1)
-    & setLabel "ancientHall"
+  symbolLabel
+    $ location AncientHallRearrangedByTime Cards.ancientHallRearrangedByTime 3 (PerPlayer 1)
     & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasAbilities AncientHallRearrangedByTime where

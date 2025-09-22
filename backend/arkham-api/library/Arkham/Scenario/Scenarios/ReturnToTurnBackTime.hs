@@ -15,11 +15,13 @@ returnToTurnBackTime difficulty =
     "53066"
     "Return to Shattered Aeons"
     difficulty
-    [ ".        ancientHall  undergroundRuins .             .             .    ."
-    , "entryway ancientHall  undergroundRuins secretPassage chamberOfTime .    ."
-    , "entryway grandChamber burialPit        secretPassage chamberOfTime .    ."
-    , ".        grandChamber burialPit        .             .             .    ."
-    , "pos1     pos2         pos3             pos4          pos5          pos6 pos7"
+    [ ".      square  heart t        .         .    .    .    ."
+    , ".      square  heart t        .         .    .    .    ."
+    , "circle diamond .     .        hourglass .    .    .    ."
+    , "circle diamond .     .        hourglass .    .    .    ."
+    , ".      star    plus  triangle .         .    .    .    ."
+    , ".      star    plus  triangle .         .    .    .    ."
+    , "pos1   pos2    pos3  pos4     pos5      pos6 pos7 pos8 pos9"
     ]
     (referenceL .~ "04344")
 

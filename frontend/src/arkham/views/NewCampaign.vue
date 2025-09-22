@@ -232,6 +232,7 @@ async function start() {
               <div class="alpha-warning" v-if="campaign && campaign.alpha">{{$t('create.alphaWarning')}}</div>
               <div class="alpha-warning" v-if="returnTo && campaign.returnTo && campaign.returnTo.alpha">{{$t('create.alphaWarning')}}</div>
               <div class="beta-warning" v-if="campaign && campaign.beta">{{$t('create.betaWarning')}}</div>
+              <div class="beta-warning" v-if="returnTo && campaign.returnTo && campaign.returnTo.beta">{{$t('create.betaWarning')}}</div>
             <!-- </select> -->
           </template>
 

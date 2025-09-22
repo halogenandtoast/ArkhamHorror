@@ -2,8 +2,6 @@
 
 module Arkham.Game.Runner where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Act
 import Arkham.Act.Types (Field (..))
@@ -104,6 +102,7 @@ import Arkham.Phase
 import Arkham.Placement
 import Arkham.Placement qualified as Placement
 import Arkham.PlayerCard
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario
 import Arkham.Scenario.Types hiding (foundCardsL, scenario)

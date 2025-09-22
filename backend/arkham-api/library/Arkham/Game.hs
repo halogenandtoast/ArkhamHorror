@@ -5496,11 +5496,11 @@ handleAsIfChanges asIfMap g = go (Map.toList asIfMap) g
       Just newLoc | newLoc == loc -> pure g' -- nothing changed
       Just newLoc -> do
         -- we moved to a new as if location
-        enemies <- select $ enemyEngagedWith iid
+        enemies <- select $ enemyEngagedWith iid <> not_ (DefeatedEnemy AnyEnemy)
         foldM (handleEnemy (Just newLoc)) g' enemies >>= go rest
       Nothing -> do
         -- we stopped being at an asif location
-        enemies <- select $ enemyEngagedWith iid
+        enemies <- select $ enemyEngagedWith iid <> not_ (DefeatedEnemy AnyEnemy)
         inv <- getInvestigator iid
         mLocation <- Helpers.placementLocation inv.placement
         foldM (handleEnemy mLocation) g' enemies >>= go rest

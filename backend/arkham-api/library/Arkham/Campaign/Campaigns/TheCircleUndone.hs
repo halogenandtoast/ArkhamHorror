@@ -1,4 +1,4 @@
-module Arkham.Campaign.Campaigns.TheCircleUndone (theCircleUndone) where
+module Arkham.Campaign.Campaigns.TheCircleUndone (theCircleUndone, TheCircleUndone (..)) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
@@ -11,7 +11,6 @@ import Arkham.Campaigns.TheCircleUndone.Memento.Helpers
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Decklist
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign (getOwner)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp (XpBonus (WithBonus))
@@ -66,14 +65,17 @@ allPrologueInvestigators =
   , Investigators.valentinoRivas
   ]
 
+disappearanceAtTheTwilightEstateSteps :: [CampaignStep]
+disappearanceAtTheTwilightEstateSteps =
+  [ DisappearanceAtTheTwilightEstate
+  , ReturnToDisappearanceAtTheTwilightEstate
+  ]
+
 instance RunMessage TheCircleUndone where
-  runMessage msg c@(TheCircleUndone attrs) = runQueueT $ case msg of
-    StartCampaign | attrs.step `elem` [PrologueStep, DisappearanceAtTheTwilightEstate] -> do
-      -- skip picking decks
-      lead <- getActivePlayer
-      unless (attrs.step `elem` [PrologueStep, DisappearanceAtTheTwilightEstate]) do
-        push $ Ask lead PickCampaignSettings
-      campaignStep_ $ if attrs.step == DisappearanceAtTheTwilightEstate then PrologueStep else attrs.step
+  runMessage msg c@(TheCircleUndone attrs) = runQueueT $ campaignI18n $ case msg of
+    StartCampaign | attrs.step `elem` (PrologueStep : disappearanceAtTheTwilightEstateSteps) -> do
+      campaignStep_
+        $ if attrs.step `elem` disappearanceAtTheTwilightEstateSteps then PrologueStep else attrs.step
       pure c
     CampaignStep TheWitchingHour -> do
       players <- allPlayers

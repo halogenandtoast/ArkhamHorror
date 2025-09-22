@@ -1482,6 +1482,7 @@ library
       Arkham.Campaign.Campaigns.EdgeOfTheEarth
       Arkham.Campaign.Campaigns.NightOfTheZealot
       Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot
+      Arkham.Campaign.Campaigns.ReturnToTheCircleUndone
       Arkham.Campaign.Campaigns.ReturnToTheDunwichLegacy
       Arkham.Campaign.Campaigns.ReturnToTheForgottenAge
       Arkham.Campaign.Campaigns.ReturnToThePathToCarcosa

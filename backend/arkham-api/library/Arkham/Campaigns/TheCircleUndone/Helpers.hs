@@ -31,4 +31,3 @@ runLocationHauntedAbilities iid lid = do
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "theCircleUndone" a
-

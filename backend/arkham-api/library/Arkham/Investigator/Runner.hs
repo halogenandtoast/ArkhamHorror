@@ -2732,7 +2732,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             <> [afterEntering]
             <> [afterMoveButBeforeEnemyEngagement | movement.means /= Place]
             <> [CheckEnemyEngagement iid]
-          pure a
+          pure $ a & movementL .~ Nothing
   Do (WhenWillEnterLocation iid lid) | iid == investigatorId -> do
     pure $ a & placementL .~ AtLocation lid
   CheckEnemyEngagement iid | iid == investigatorId -> do

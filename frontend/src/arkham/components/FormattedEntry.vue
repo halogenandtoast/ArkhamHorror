@@ -380,6 +380,7 @@ ul, :deep(ul) {
   gap: 10%;
   margin-block: 10px;
   justify-content: center;
+  flex-wrap: wrap;
   img {
     align-self: center;
     width: 40px;

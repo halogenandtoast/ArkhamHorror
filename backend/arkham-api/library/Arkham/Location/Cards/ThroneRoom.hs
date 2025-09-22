@@ -15,7 +15,8 @@ newtype ThroneRoom = ThroneRoom LocationAttrs
 
 throneRoom :: LocationCard ThroneRoom
 throneRoom =
-  location ThroneRoom Cards.throneRoom 5 (PerPlayer 1)
+  symbolLabel
+    $ location ThroneRoom Cards.throneRoom 5 (PerPlayer 1)
     & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasModifiersFor ThroneRoom where

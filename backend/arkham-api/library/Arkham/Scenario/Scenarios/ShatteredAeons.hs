@@ -288,7 +288,7 @@ instance RunMessage ShatteredAeons where
     Do (Explore iid source locationMatcher) -> do
       explore iid source locationMatcher PlaceExplored 1
       pure s
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
           resolution "noResolution"

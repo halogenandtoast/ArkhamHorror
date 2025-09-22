@@ -257,12 +257,17 @@ instance RunMessage LocationAttrs where
       pure $ a & inFrontOfL .~ Nothing
     When (RemoveLocation lid) | lid == locationId -> do
       pure $ a & beingRemovedL .~ True
+    RemoveLocation lid | lid == locationId -> do
+      liftRunMessage (RemovedFromPlay $ toSource a) a
     Discard _ source target | isTarget a target -> do
       pushAll
         $ windows [Window.WouldBeDiscarded (toTarget a)]
         <> [Discarded (toTarget a) source (toCard a)]
         <> [RemovedFromPlay $ toSource a]
         <> resolve (RemoveLocation $ toId a)
+      pure a
+    RemovedFromPlay (isSource a -> True) -> do
+      pushAll [UnsealChaosToken token | token <- locationSealedChaosTokens]
       pure a
     SetConnections lid connections | lid == locationId -> do
       pure

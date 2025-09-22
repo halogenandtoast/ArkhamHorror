@@ -24,7 +24,8 @@ getActDecksInPlayCount = do
   hasDeckA <- selectAny $ ActOneOf [ActWithSide Act.A, ActWithSide Act.B]
   hasDeckC <- selectAny $ ActOneOf [ActWithSide Act.C, ActWithSide Act.D]
   hasDeckE <- selectAny $ ActOneOf [ActWithSide Act.E, ActWithSide Act.F]
-  pure $ count id [hasDeckA, hasDeckC, hasDeckE]
+  hasDeckG <- selectAny $ ActOneOf [ActWithSide Act.G, ActWithSide Act.H]
+  pure $ count id [hasDeckA, hasDeckC, hasDeckE, hasDeckG]
 
 isIchtacasPrey :: HasGame m => EnemyId -> m Bool
 isIchtacasPrey eid = scenarioFieldMap ScenarioRemembered $ any $ \case

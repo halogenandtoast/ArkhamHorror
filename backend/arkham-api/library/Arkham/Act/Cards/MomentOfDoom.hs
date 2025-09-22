@@ -24,7 +24,7 @@ instance HasAbilities MomentOfDoom where
           1
           ControlsThis
           actionAbility
-    , mkAbility a 2 $ Objective $ forced $ EnemyDefeated #after Anyone ByAny $ enemyIs Enemies.yig
+    , mkAbility a 2 $ Objective $ forced $ ifEnemyDefeated Enemies.yig
     ]
 
 instance RunMessage MomentOfDoom where

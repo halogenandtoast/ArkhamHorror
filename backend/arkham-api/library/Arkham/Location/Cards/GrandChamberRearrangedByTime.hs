@@ -15,8 +15,8 @@ newtype GrandChamberRearrangedByTime = GrandChamberRearrangedByTime LocationAttr
 
 grandChamberRearrangedByTime :: LocationCard GrandChamberRearrangedByTime
 grandChamberRearrangedByTime =
-  location GrandChamberRearrangedByTime Cards.grandChamberRearrangedByTime 2 (PerPlayer 1)
-    & setLabel "grandChamber"
+  symbolLabel
+    $ location GrandChamberRearrangedByTime Cards.grandChamberRearrangedByTime 2 (PerPlayer 1)
     & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasAbilities GrandChamberRearrangedByTime where

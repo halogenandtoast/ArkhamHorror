@@ -15,7 +15,8 @@ newtype BurialPit = BurialPit LocationAttrs
 
 burialPit :: LocationCard BurialPit
 burialPit =
-  location BurialPit Cards.burialPit 3 (PerPlayer 1)
+  symbolLabel
+    $ location BurialPit Cards.burialPit 3 (PerPlayer 1)
     & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasAbilities BurialPit where

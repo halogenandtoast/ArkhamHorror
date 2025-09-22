@@ -13,7 +13,8 @@ newtype GrandChamber = GrandChamber LocationAttrs
 
 grandChamber :: LocationCard GrandChamber
 grandChamber =
-  location GrandChamber Cards.grandChamber 2 (PerPlayer 1)
+  symbolLabel
+    $ location GrandChamber Cards.grandChamber 2 (PerPlayer 1)
     & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasAbilities GrandChamber where

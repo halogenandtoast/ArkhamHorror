@@ -8,7 +8,6 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.I18n
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -33,8 +32,8 @@ instance RunMessage TheChamberOfStillRemains where
       runExplore iid (attrs.ability 1)
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      chamberOfTime <- selectJust $ locationIs Locations.chamberOfTime
-      relicOfAges <- selectJust $ assetIs Assets.relicOfAgesRepossessThePast
+      chamberOfTime <- selectJust $ location_ "Chamber of Time"
+      relicOfAges <- selectJust $ asset_ "Relic of Ages"
       investigators <- select $ investigatorAt chamberOfTime
 
       leadChooseOneM $ withI18n do

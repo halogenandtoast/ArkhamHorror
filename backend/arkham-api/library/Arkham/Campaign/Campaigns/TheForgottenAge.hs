@@ -283,7 +283,7 @@ instance RunMessage TheForgottenAge where
               removeCampaignCardFromDeck iid Treacheries.poisoned
             labeled' "doNotRemovePoisoned" nothing
         pure c
-      DoStep 3 msg'@(ForInvestigator iid (CampaignStep ResupplyPoint)) -> do
+      DoStep 3 msg'@(ForInvestigator iid (CampaignStep ResupplyPoint)) -> scope "resupplyPoint" do
         let extraXp = Map.findWithDefault 0 iid (bonusXp metadata)
         xp <- field InvestigatorXp iid
         hasPhysicalTrauma <- fieldP InvestigatorPhysicalTrauma (> 0) iid
@@ -296,7 +296,7 @@ instance RunMessage TheForgottenAge where
 
         when canHealTrauma do
           chooseOneM iid do
-            questionLabeled' "visitStMary"
+            questionLabeled' "visitStMarys"
             questionLabeledCard iid
             when hasPhysicalTrauma do
               labeled' "removePhysicalTrauma" do
@@ -310,7 +310,7 @@ instance RunMessage TheForgottenAge where
                 when (toSpend > 0) $ push $ SpendXP iid toSpend
                 push $ HealTrauma iid 0 1
                 when (isReturnTo && xp + extraXp - 5 >= 5) $ doStep 3 msg'
-            labeled "doNotRemoveTrauma" nothing
+            labeled' "doNotRemoveTrauma" nothing
 
         pure c
       CampaignStep (InterludeStep 3 mkey) -> scope "interlude3" do
@@ -651,7 +651,8 @@ instance RunMessage TheForgottenAge where
       CampaignStep EpilogueStep -> scope "epilogue" do
         -- We can only get here if we've turned back time, but may want to check
         flavor $ setTitle "title" >> p "body"
-        setNextCampaignStep TurnBackTime
+        let isReturnTo = attrs.id == "53"
+        setNextCampaignStep $ if isReturnTo then ReturnToTurnBackTime else TurnBackTime
         pure c
       HandleTargetChoice _ CampaignSource (InvestigatorTarget iid) -> do
         mods <- map setActiveDuringSetup <$> toModifiers CampaignSource [StartingResources (-3)]

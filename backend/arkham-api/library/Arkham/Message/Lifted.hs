@@ -2156,8 +2156,8 @@ matchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m 
 matchingDon't f = lift $ popMessageMatching_ f
 
 cardDrawModifier
-  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
-cardDrawModifier source target modifier = Msg.pushM $ Msg.cardDrawModifier source target modifier
+  :: (ReverseQueue m, Sourceable source, Targetable target) => CardDrawId -> source -> target -> ModifierType -> m ()
+cardDrawModifier cid source target modifier = Msg.pushM $ Msg.cardDrawModifier cid source target modifier
 
 enemyAttackModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()

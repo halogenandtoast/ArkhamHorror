@@ -2954,14 +2954,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   Instead (DoDrawCards iid) msg' | iid == toId a -> do
     mMsg <-
       maybeToList <$> popMessageMatching \case
-        DrawEnded iid' -> iid == iid'
+        DrawEnded _ iid' -> iid == iid'
         _ -> False
     pushAll $ mMsg <> [msg']
     pure $ a & drawingL .~ Nothing
   DrawCards iid cardDraw | iid == toId a -> do
+    cid <- getRandom
     phase <- getPhase
-    wouldDrawCard <- checkWindows [mkWhen (Window.WouldDrawCard iid cardDraw.deck)]
-    drawEncounterCardWindow <- checkWindows [mkWhen $ Window.WouldDrawEncounterCard a.id phase]
+    wouldDrawCard <- checkWindows [mkWhen (Window.WouldDrawCard iid cid cardDraw.deck)]
+    drawEncounterCardWindow <- checkWindows [mkWhen $ Window.WouldDrawEncounterCard a.id cid phase]
     if cardDrawAction cardDraw
       then do
         beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #draw)]
@@ -2973,14 +2974,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
              , CheckAttackOfOpportunity iid False
              , wouldDrawCard
              , DoDrawCards iid
-             , DrawEnded iid
+             , DrawEnded cid iid
              , afterWindowMsg
              , FinishAction
              , TakenActions iid [#draw]
              ]
       else
         pushAll $ wouldDrawCard
-          : [drawEncounterCardWindow | cardDraw.isEncounterDraw] <> [DoDrawCards iid, DrawEnded iid]
+          : [drawEncounterCardWindow | cardDraw.isEncounterDraw] <> [DoDrawCards iid, DrawEnded cid iid]
     pure $ a & drawingL ?~ cardDraw
   MoveTopOfDeckToBottom _ (Deck.InvestigatorDeck iid) n | iid == investigatorId -> do
     let (cards, deck) = draw n investigatorDeck
@@ -3877,9 +3878,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   DoBatch _ (Search (MkSearch _ iid _ (InvestigatorTarget iid') zones _ foundStrategy _ _)) | iid' == toId a -> do
     let isDrawing = isSearchDraw foundStrategy
     let deck = Deck.InvestigatorDeck iid'
-    wouldDrawCard <- checkWindows [mkWhen (Window.WouldDrawCard iid deck)]
+    cid <- getRandom
+    wouldDrawCard <- checkWindows [mkWhen (Window.WouldDrawCard iid cid deck)]
     let isFromDeck = any (zoneIsFromDeck . fst) zones
-    pushAll $ [wouldDrawCard | isDrawing && isFromDeck] <> [Do msg]
+    pushAll $ [wouldDrawCard | isDrawing && isFromDeck] <> [Do msg, DrawEnded cid iid]
     pure a
   Do
     ( DoBatch

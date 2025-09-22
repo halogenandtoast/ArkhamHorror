@@ -1028,7 +1028,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         _ -> noMatch
     Matcher.WouldDrawEncounterCard timing whoMatcher phaseMatcher ->
       guardTiming timing $ \case
-        Window.WouldDrawEncounterCard who p ->
+        Window.WouldDrawEncounterCard who _ p ->
           andM [matchWho iid who whoMatcher, matchPhase p phaseMatcher]
         _ -> noMatch
     Matcher.AmongSearchedCards whoMatcher -> case wType of
@@ -1984,7 +1984,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         _ -> noMatch
     Matcher.WouldDrawCard timing whoMatcher deckMatcher ->
       guardTiming timing $ \case
-        Window.WouldDrawCard who deck ->
+        Window.WouldDrawCard who _ deck ->
           andM
             [ matchWho iid who whoMatcher
             , deckMatch iid deck $ Matcher.replaceThatInvestigator who deckMatcher

@@ -865,8 +865,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure a
   DoBatch _ (Search (MkSearch _ iid _ (toScenarioHandleDeck -> Just (deck, _)) _ _ foundStrategy _ _)) -> do
     let isDrawing = isSearchDraw foundStrategy
-    wouldDrawCard <- checkWindows [mkWhen (Window.WouldDrawCard iid deck)]
-    pushAll $ [wouldDrawCard | isDrawing] <> [Do msg]
+    cid <- getRandom
+    wouldDrawCard <- checkWindows [mkWhen (Window.WouldDrawCard iid cid deck)]
+    pushAll $ [wouldDrawCard | isDrawing] <> [Do msg, DrawEnded cid iid]
     pure a
   Do
     ( DoBatch

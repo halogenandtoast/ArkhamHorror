@@ -14,13 +14,91 @@
     }
   },
   "xp": {
-    "bonus": "得知兄弟会的阴谋。"
+    "bonus": "得知兄弟會的陰謀。"
   },
   "remembered": {
-    "youListenedToIchtacasTale": "你倾听了伊塔卡的叙述。",
+    "youListenedToIchtacasTale": "你傾聽了伊塔卡的敘述。",
     "youFoughtWithIchtaca": "You fought with Ichtaca.",
-    "ichtacaLeftWithoutYou": "伊塔卡独自离开。",
+    "ichtacaLeftWithoutYou": "伊塔卡獨自離開。",
     "ichtacasDestination": "伊塔卡的目的地: {name}.",
-    "ichtacasPrey": "伊塔卡的猎物: {name}."
+    "ichtacasPrey": "伊塔卡的獵物: {name}."
+  }
+    "label": {
+    "vedaWhitsley": {
+      "exploration": "Look at the top card of the exploration deck",
+      "encounter": "Look at the top card of the encounter deck",
+      "damage": "Deal 1 damage to Veda Whitsley to discard it",
+      "horror": "Deal 1 horror to Veda Whitsley to discard it",
+      "putBack": "Put it back"
+    }
+  },
+  "intro": {
+    "title": "冒險III: _命運之線_",
+    "beWary": "「本來就該提防他們。」",
+    "listed": "「或許還是應該聽聽他們的意見......」",
+    "label": {
+      "beWary": "「本來就該提防他們。」",
+      "listen": "「或許還是應該聽聽他們的意見......」",
+      "skipToIntro4": "「妳先解釋清楚，不然哪都別想去。跳到_引言4_。",
+      "proceedToIntro4": "「妳先解釋清楚，不然哪都別想去。跳到_引言4_。",
+      "skipToIntro5": "「隨妳高興。」跳到_引言5_。"
+    },
+    "intro1": "<p>_引言1_: 伊塔卡在你的客廳裡休息過夜。你整晚輾轉反側，思緒在擔憂和懷疑之間游移不定。她所說的話匪夷所思，但你仍然認為自己必須相信她。打從見到埃茲特里遺物的第一眼開始，你就知道它具有某種更深層的意義。第二天早上，你走出自己的臥室，見到那位不速之客就坐在你的餐桌旁，雙手緊緊盤在胸前。你走到哪裡，她銳利的目光就跟到哪裡，好比鳥兒在監視獵物。伊塔卡廢話不多說，焦躁地直奔主題:「那件遺物在哪?你把它拿去哪裡了?」你解釋說遺物現在很安全，由正派的人士保管。她失望地搖搖頭，手握得指節發白:「告訴你，它一點也不安全。」</p>",
+    "proceedToIntro2": "查看冒險日誌: 如果「遺物交給亞歷山卓」或「亞歷山卓尋獲古代遺物」: 進入_引言2_。",
+    "skipToIntro3": "如果「遺物交給哈倫」: 跳到_引言3_。",
+    "intro2": "<p>_Intro 2_: 你暫且擱置心中困惑，聯絡你在米斯卡塔尼克大學博物館的聯絡人。儘管天還早，霍洛維茲博士也應該已經到了她的辦公室，為即將到來的漫漫長日作準備。不久，接線員接通了你的電話。霍洛維茲博士的問候異常簡短且聲音焦躁不耐。當你問起那件遺物，她挖苦道:「連你也來問這件事!沃思提幾乎要把我辦公室的門給拆了，還有兩個記者從一早就在纏著我!」</p><p>你問她遇到了什麼麻煩，而她長嘆一口氣，解釋道:「遺物不見了，沒有一個警衛知道怎麼去的。前一分鐘它還待在展櫃裡，下一分鐘就不見了。再告訴你，維拉也不見了，哪都找不到他的蹤影。」這時她突然對別人喊:「等一下!我在接電話!」她對你簡短致歉，隨後便掛了電話。</p><p>果然，亞歷山卓沒接電話，且其他同事從昨天開始就沒人見過他。伊塔卡站起來收拾東西，對你說:「現在可以相信我了嗎?我們不能再這樣浪費時間。去找遺物，然後今晚回這裡跟我碰面，不要跟著我。」</p><ul><li>調查員必須選擇一項:<ul><li>「妳先解釋清楚，不然哪都別想去。」跳到_引言4_。</li><li>「隨你高興。」跳到_引言5_。</li></ul></li></ul>",
+    "intro3": "<p>_Intro 3_: 你暫且擱置心中困惑，致電給哈倫的大學辦公室。這時太陽還沒從地平線升起，但你知道他是個早起的人。過了一會，接線員接通了電話，哈倫的聲音發顫而粗啞。當你問起遺物時，他的吼聲打斷了你。「停!有人在偷聽!!他們知道我把它藏在這裡，亞歷山卓已經被他們抓走了。」你試著讓他鎮定，好問清楚狀況，但他立刻中斷了對話。「我得走了，他們來了!——」電話就此斷線。</p><p>果然，亞歷山卓沒接電話，且其他同事從昨天開始就沒人見過他。伊塔卡站起來收拾東西，對你說:「現在可以相信我了嗎?我們不能再這樣浪費時間。去找遺物，然後今晚回這裡跟我碰面，不要跟著我。」</p><ul><li>調查員必須選擇一項:<ul><li>「妳先解釋清楚，不然哪都別想去。」跳到_引言4_。</li><li>「隨你高興。」跳到_引言5_。</li></ul></li></ul>",
+    "intro4": "<p>_Intro 4_: 伊塔卡牙關緊咬，停下動作。你本以為她會拒絕，不回答就直接離開，結果她態度緩和了下來。伊塔卡說，她的同胞千百年來都在保護遺物不落入心懷鬼胎的入侵者手中。她言詞閃躲，費解又荒誕，拒絕解釋她的同胞來自哪裡，他們又是如何存續至今而不被發現。問到遺物時她只說它能控制時間流，而且絕不能篡改。</p><p>她視線冷酷無比，堅定不移。「必須將它放回正確的地方，懂嗎?它不能落入壞人手裡。如果你幫我找回來，我也會幫助你。只要你答應我，你不會利用它。」</p><ul><li>請記住「你傾聽了伊塔卡的解釋」。</li><li>在混亂袋裡加入一個{'{'}cultist{'}'}標記，持續至劇本結束</li><li>進入_冒險設置_。</li></ul>",
+    "intro5": "<p>_Intro 5_: 伊塔卡以驚人速度給她裝飾華麗的弓上弦，離開時重重關上了大門。</p><ul><li>請記住「伊塔卡獨自離開」。</li><li>查看冒險日誌。如果「遺物交給哈倫」，進入_引言6_。否則，進入_冒險設置_。</li></ul>",
+    "intro6": "<p>_Intro 6_: 伊塔卡離開後，你仔細思考她說的話，回想這一切究竟是如何發展至此。你在埃兹特里遺物的事情上不相信亞歷山卓，伊塔卡臨走時你也對她漠不關心。你的疑心病是不是太重了......?</p><ul><li>調查員必須選擇一項:<ul><li>*「本來就該提防他們。」* 從混亂袋中移除所有的{'{'}cultist{'}'}和{'{'}tablet{'}'}標記，加入1個{'{'}elderThing{'}'}標記。在冒險日誌記錄:你決定自尋前路。在後續冒險中，所有調查員不得將亞歷山卓維拉或伊塔卡加入牌組。每當遊戲提供這種選擇，改為所有玩家獲得2點經驗。進入_冒險設置_。</li><li>*「或許還是應該聽聽他們的意見.......」*進入冒險設置。</li></ul></li></ul>",
+    "intro7": "<p>_Intro 7_: As if you didn’t already have several other pressing concerns, this morning’s article in the Arkham Advertiser piques your interest: “Chaos in French Hill!” The article goes on to describe several strange happenings sighted around the estate of one Marshall Hastings in French Hill, an old and storied neighborhood of Arkham. According to the article’s source—who goes unnamed—the mansion has become a tangled mess of overgrowth and serpents. The article reports that a recent expedition returned with several strange artifacts in tow, meant to be displayed in the Hastings manor. You wonder if this has anything to do with your expedition to find the Eztli. Even if these events are unrelated, your investigation might connect you with others who can assist you in turn.</p>"
+  },
+  "standalone": {
+    "gaveCustoryToAlejandro": "遺物交給亞歷山卓。",
+    "gaveCustodyToHarlan": "遺物交給哈倫。"
+  },
+  "setup": {
+    "label": {
+      "chooseActDeck4": "- This encounter set contains a fourth \"g/h\" act deck. Adjust the contents of the \"g/h\" act deck as follows. The investigators must decide (choose one):",
+      "findSource": "Find the source named in the *Advertiser*'s story",
+      "findRoot": "Find the root of the problem"
+    },
+    "gatherSets": "收齊下列遭遇組所有卡牌: *命運之線*、*納克特兄弟會*、*黑暗異教徒*、*上鎖的門*、*夜魔*、*午夜假面*。這些遭遇組的圖示為:<section class='encounter-sets'><img src='{setImgPath}/threads-of-fate.png' /><img src='{setImgPath}/pnakotic-brotherhood.png' /><img src='{setImgPath}/midnight-masks.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/dark-cult.png' /></section>找出午夜假面遭遇組時，只從該遭遇組拿取2張錯誤指示和3張追獵鬼影，以及下列地點:北區、商業區(阿卡姆第一銀行)、東城區、米斯卡塔尼克大學、河岸城。不要拿取場景、密謀和冒險參考卡。",
+    "beforeDrawingOpeningHands": "抽取起始手牌前，從收藏和玩家牌組中找出亞歷山卓·維拉和古代遺物劇情支援，置於場外備用。",
+    "placeLocations": "將下列地點放置入場:北區、商業區、東城區、米斯卡塔尼克大學、河岸城、維爾瑪小餐館、珍品店。每位調查員從河岸城開始遊戲。",
+    "setAside": "將市政廳地點、伊塔卡(失落的守衛者)劇情支援、探險日誌劇情支援置於場外備用。",
+    "actDecks": "按照_三個場景_，_三種命運_調整每個場景牌堆內的卡牌。"
+  },
+  "threeActsThreeThreads": {
+    "title": "三個場景，三種命運",
+    "body": "<p class='basic'>本次冒險包含三個不同場景牌堆——「a/b」牌堆、「c/d」牌堆，「e/f」牌堆。如常按照編號順序，分別建構上述三個場景牌堆。在本次冒險中，這三個場景牌堆均在場上，玩家可以選擇要追查哪個場景、忽略哪個場景。三種場景卡上的文本，均視為持續生效。你可能來不及完成全部三個任務，所以得明智選擇需要追查的線索!</p><p class='basic'>根據下列情況，對每個場景牌堆作相應改動:</p>",
+    "adjustAB": {
+      "body": "按以下順序，調整「a/b」牌堆內的卡牌:",
+      "option1": "查看冒險日誌。如果「亞歷山卓尋獲古代遺物」，或「遺物交給亞歷山卓」，從「a/b」牌堆中移除下列場景牌: 哈倫遇險!、2張哈倫的詛咒、隨機1張來到展廳。",
+      "option2": "如果「遺物交給哈倫」，改為從「a/b」牌堆中移除下列場景牌: 遺物不見了!、2張來到展廳、隨機1張哈倫的詛咒。"
+    },
+    "adjustCD": {
+      "label": {
+        "goToThePolice": "到警局詢問亞歷山卓失蹤的消息",
+        "lookOnYourOwn": "自行尋找亞歷山卓"
+      },
+      "body": "調查員必須選擇以下一項，並依此調整「c/d」牌堆:",
+      "option1": "如果你想到警局詢問亞歷山卓失蹤的消息，從「c/d」牌堆移除以下場景牌: 尋找亞歷山卓，2張上頭有人，隨機1張來到警局。",
+      "option2": "如果你想自行尋找亞歷山卓，改為從「c/d」牌堆移除以下場景牌: 失蹤人口，2張來到警局，隨機1張上頭有人。"
+    },
+    "adjustEF": {
+      "body": "按以下順序，調整「e/f」牌堆内的卡牌:",
+      "option1": "如果「你傾聽了伊塔卡的解釋」，從「e/f」牌堆中移除下列場景牌:女獵手的苦旅、2張漆黑的洞穴、隨機1張古怪遺物。",
+      "option2": "如果「伊塔卡獨自離開」，從「e/f」牌堆中移除下列場景牌:守護者追根究底、2張古怪遺物、隨機1張漆黑的洞穴。"
+    }
+  },
+  "resolutions": {
+    "xp": {
+      "forgingYourOwnPath": "你決定自尋前路"
+    },
+    "resolution1": {
+      "title": "結局1",
+      "body": "<p>_結局1_: 你回到了自己的住所，開始回顧現況。經過你對阿卡姆的徹底調查，你發現這裡有個陰謀正在醜釀。你所知，這群人自稱「兄弟會」，對於埃兹特里遺物和亞歷山卓先前的探險，他們掌握的資訊比你還要多。</p><p>他們的詭計不為人知，神出鬼沒，你至今仍不知道他們有何動機。然而，有人帶來一條至關緊要的消息。「他們在找一個叫做『恩凱聯結點』的地方。」伊塔卡如此斷言，並在你面前桌上攤開一張中美洲地圖，上面標記了先前的探險路線。「我聽說過這個地方，但具體位置我就不知道了。」你再次感覺到，這位神祕的嚮導還掌握著很多資訊沒告訴你。</p><p>沒有其他線索可查的你別無選擇，必須再次啟程，回到那片祕境去尋找答案.....但這次，還有人能回來嗎?</p><ul><li>查看本場冒險完成了哪些場景。<ul><li>如果場景3b已完成，在冒險日誌記錄:找回了遺失的遺物。如果古代遺物不在調查員的牌組中，必須有1位調查員將其加入牌組，此卡牌牌不計入牌組張數限制。在後續冒險中，古代遺物持有者若因任何理由退出劇本，則重新選擇1位調查員將其加入牌組。</li><li>如果「a/b」牌堆仍在場上，在冒險日誌記錄: *遺物遺失*。如果古代遺物在調查員的牌組中，將它移出該牌組，直到劇本結束。</li><li>如果場景3d已完成，在冒險日誌記錄: *解救了亞歷山卓*。如果亞歷山卓·維拉不在調查員的牌組中，任一調查員可將其加入牌組，此卡牌不計入牌組張數限制。</li><li>如果「c/d」牌堆仍在場上，在冒險日誌記錄: *亞歷山卓失蹤*。如果亞歷山卓·維拉在調查員的牌組中，將他移出該牌組，直到劇本結束。</li><li>如果場景3f已完成，在冒險日誌記錄: *和伊塔卡建立了緊密聯繫*。任一調查員可將伊塔卡(失落的守衛者)加入牌組，此卡牌不計入牌組張數限制。</li><li>如果「e/f」牌堆仍在場上，在冒險日誌記錄: *伊塔卡隱瞞祕密*。不要將伊塔卡(失落的守衛者)加入任何調查員的牌組。</li></ul></li><li>調查員隊長獲得探險日誌劇情支援，並可將其加入自己的牌組，此卡牌不計入牌組張數限制。</li><li>每位調查員獲得等同於勝利牌區中勝利點數總值的經驗。由於得知兄弟會的陰謀，本場冒險期間每完成1張場景1，調查員額外獲得1點經驗。</li><li>進入_補給所需_。</li></ul>"
+    }
   }
 }

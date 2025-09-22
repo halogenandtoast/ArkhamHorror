@@ -15,7 +15,7 @@ import Arkham.Target
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window qualified as Window
 
-placedInThreatArea :: HasGame m => Placement -> m (Maybe InvestigatorId)
+placedInThreatArea :: (HasCallStack, HasGame m) => Placement -> m (Maybe InvestigatorId)
 placedInThreatArea = \case
   AtLocation _ -> pure Nothing
   AttachedToLocation _ -> pure Nothing

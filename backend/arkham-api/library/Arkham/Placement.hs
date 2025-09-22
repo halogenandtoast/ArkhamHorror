@@ -62,6 +62,11 @@ instance HasField "isInVictory" Placement Bool where
     OutOfPlay VictoryDisplayZone -> True
     _ -> False
 
+instance HasField "isSwarm" Placement Bool where
+  getField = \case
+    AsSwarm {} -> True
+    _ -> False
+
 instance HasField "inThreatAreaOf" Placement (Maybe InvestigatorId) where
   getField = \case
     InThreatArea iid -> Just iid

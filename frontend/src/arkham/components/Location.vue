@@ -59,6 +59,11 @@ const image = computed(() => {
 const id = computed(() => props.location.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
+const locationStory = computed(() => {
+  const { stories } = props.game
+  return Object.values(stories).find((s) => s.otherSide?.contents === props.location.id)
+})
+
 const locus = computed(() => {
   return modifiers.value?.some((m) => m.type.tag === "UIModifier" && m.type.contents === "Locus") ?? false
 })
@@ -192,7 +197,7 @@ const stories = computed(() => {
       if (Object.values(enemies).find((e) => s.otherSide?.contents === e.id)) {
         return false
       }
-      return s.placement.tag === 'AtLocation' && s.placement.contents === props.location.id
+      return s.placement.tag === 'AtLocation' && s.placement.contents === props.location.id && s.otherSide?.contents !== props.location.id
     })
     .map((s) => s.id)
 })
@@ -342,18 +347,21 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
           </span>
 
           <div class="card-frame-inner">
-            <div class="wave" v-if="location.floodLevel" :class="{ [location.floodLevel]: true }"></div>
-            <img
-              :data-id="id"
-              class="card card--locations"
-              :src="image"
-              :class="{ 'location--can-interact': canInteract }"
-              draggable="false"
-              @drop="onDrop"
-              @dragover.prevent="dragover"
-              @dragenter.prevent
-              @click="clicked"
-            />
+            <Story v-if="locationStory" :story="locationStory" :game="game" :playerId="playerId" @choose="choose"/>
+            <template v-else>
+              <div class="wave" v-if="location.floodLevel" :class="{ [location.floodLevel]: true }"></div>
+              <img
+                :data-id="id"
+                class="card card--locations"
+                :src="image"
+                :class="{ 'location--can-interact': canInteract }"
+                draggable="false"
+                @drop="onDrop"
+                @dragover.prevent="dragover"
+                @dragenter.prevent
+                @click="clicked"
+              />
+            </template>
           </div>
 
           <div class="clues pool" v-if="(clues ?? 0) > 0 || floodLevel">
@@ -687,6 +695,12 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
     position: relative;
     line-height: 0;
     box-shadow: var(--card-shadow);
+    &:deep(.card) {
+      width: calc(var(--card-width) + 4px);
+      min-width: calc(var(--card-width) + 4px);
+      border-radius: 3px;
+      border-width: 1px;
+    }
   }
 }
 

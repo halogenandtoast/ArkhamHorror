@@ -222,7 +222,7 @@ async function start() {
             <!-- <select v-model="selectedCampaign"> -->
               <div class="campaigns">
                 <template v-for="c in campaigns" :key="c.id">
-                  <div class="campaign" :class="{ beta: c.beta, alpha: returnTo && c.returnTo && c.returnTo.alpha ? c.returnTo.alpha : c.alpha }">
+                  <div class="campaign" :class="{ beta: returnTo && c.returnTo && c.returnTo.beta ? c.returnTo.beta : c.beta, alpha: returnTo && c.returnTo && c.returnTo.alpha ? c.returnTo.alpha : c.alpha }">
                     {{selectedCampaignReturnTo}}
                     <input type="image" class="campaign-box" :class="{ 'selected-campaign': selectedCampaign == c.id }" :src="imgsrc(`boxes/${c.id}.jpg`)" @click.prevent="selectCampaign(c.id)">
                   </div>
@@ -526,7 +526,7 @@ header {
 .scenarios {
   display: grid;
   line-height: 0;
-  grid-template-columns: repeat(4, auto);
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   margin-bottom: 10px;
 

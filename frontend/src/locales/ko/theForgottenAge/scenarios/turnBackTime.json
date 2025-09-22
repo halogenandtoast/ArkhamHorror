@@ -18,7 +18,7 @@
   },
   "setup": {
     "gatherSets": "다음 조우 세트의 모든 카드를 모읍니다: *시간을 거슬러*, *에스틀리의 몰락*, *이그의 권속*, *이그의 맹독*, *불안정한 시간선*, *치명적인 함정*, *잊힌 유적*, *독*, *으스스한 한기*. 이 세트에는 다음 아이콘이 그려져 있습니다.<section class='encounter-sets'><img src='{setImgPath}/turn-back-time.png' /><img src='{setImgPath}/the-doom-of-eztli.png' /><img src='{setImgPath}/agents-of-yig.png' /><img src='{setImgPath}/yigs-venom.png' /><img src='{setImgPath}/temporal-flux.png' /><img src='{setImgPath}/deadly-traps.png' /><img src='{setImgPath}/forgotten-ruins.png' /><img src='{setImgPath}/poison.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
-    "replaceAgenda": "주요목적 덱을 준비할 때, *에스틀리의 몰락* 조우 세트에 포함된 주요목적 카드들 대신, *시간을 거슬러* 조우 세트에 포함된 주요목적 카드 3장을 사용합니다. *시간을 거슬러* 조우 세트에는 다음 아이콘이 그려져 있습니다.<section class='encounter-sets'><img src='{setImgPath}/turn-back-time.png' /></section>",
+    "actDeck": "주요목적 덱을 준비할 때, *에스틀리의 몰락* 조우 세트에 포함된 주요목적 카드들 대신, *시간을 거슬러* 조우 세트에 포함된 주요목적 카드 3장을 사용합니다. *시간을 거슬러* 조우 세트에는 다음 아이콘이 그려져 있습니다.<section class='encounter-sets'><img src='{setImgPath}/turn-back-time.png' /></section>",
     "relicOfAgesRepossessThePast": "‘시대의 유물(*과거를 되찾다*)’을 소유자의 덱에서 제거하여 비플레이 상태로 치워 둡니다.",
     "relicOfAgesADeviceOfSomeSort": "‘시대의 유물(*…일종의 장치 같은 걸까?*)’을 게임에서 제거합니다.",
     "explorationDeck": "다음과 같이 탐사 덱을 만듭니다. 단면 _*고대*_ 장소 5장과 다음 음모 카드 사본을 1장씩 함께 섞어 한 더미로 만듭니다: ‘불길한 징조’, ‘깊은 어둠’, ‘치명적인 실수’, ‘생매장’, ‘으스스한 한기’.",

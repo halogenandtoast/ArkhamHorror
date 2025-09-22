@@ -37,18 +37,25 @@ instance RunMessage Haste2 where
       a' <- getAttrs @Investigator iid
       actions <- withGrantedAction iid attrs do
         filter (\x -> any (abilityIs x) as) <$> getActions iid (defaultWindows iid)
+      canPlay <- canDo iid #play
+      let cardF = if #play `elem` as then id else (<> mapOneOf CardWithAction as)
       playableCards <-
-        filterCards (not_ FastCard) <$> getPlayableCards (attrs.ability 1) iid (UnpaidCost NoAction) (defaultWindows iid)
+        if canPlay
+          then
+            filterCards (cardF (not_ FastCard))
+              <$> getPlayableCards (attrs.ability 1) iid (UnpaidCost NoAction) (defaultWindows iid)
+          else
+            pure []
+
       (resourceOk, drawOk) <- withModifiersOf iid attrs [ActionCostOf IsAnyAction (-1)] do
         (,)
           <$> andM [pure $ #resource `elem` as, canDo iid #resource, getCanAfford a' [#resource]]
           <*> andM [pure $ #draw `elem` as, canDo iid #draw, getCanAfford a' [#draw]]
-      playOk <- andM [pure $ #play `elem` as, canDo iid #play]
 
       chooseOneM iid do
         for_ actions \ab -> abilityLabeled iid (decrease_ ab 1) nothing
         when resourceOk $ resourceLabeled iid $ gainResources iid a' 1
         when drawOk $ deckLabeled iid $ drawCards iid a' 1
-        when playOk $ targets playableCards $ playCardPayingCost iid
+        targets playableCards $ playCardPayingCost iid
       pure a
     _ -> Haste2 <$> liftRunMessage msg attrs

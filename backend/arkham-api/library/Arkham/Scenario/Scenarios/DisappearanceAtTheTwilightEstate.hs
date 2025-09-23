@@ -92,9 +92,13 @@ setupDisappearanceAtTheTwilightEstate attrs = do
 
   enemyAt_ Enemies.theSpectralWatcher entryHall
 
+  isReturnTo <- getIsReturnTo
+
   selectForMaybeM (investigatorIs Investigators.gavriellaMizrah) \gavriella -> do
     moveTo_ attrs gavriella victorianHalls
-    removeOneOf Treacheries.fateOfAllFools
+    if isReturnTo
+      then removeOneOf Treacheries.fateOfAllFoolsUnspeakableFate
+      else removeOneOf Treacheries.fateOfAllFools
 
   selectForMaybeM (investigatorIs Investigators.jeromeDavids) \jerome -> do
     moveTo_ attrs jerome office

@@ -108,6 +108,7 @@ import Arkham.Matcher (
   ExtendedCardMatcher (..),
   InvestigatorMatcher (..),
   LocationMatcher (..),
+  ScenarioMatcher (..),
   SourceMatcher (..),
   TreacheryMatcher (..),
   assetControlledBy,
@@ -476,7 +477,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   , Deck (before <> rest)
                   )
               _ | investigatorId `elem` ["05046", "05047", "05048", "05049"] -> do
-                card <- setOwner investigatorId =<< genCard cardDef
+                cardDef' <-
+                  if investigatorId == "05046" && cardDef.cardCode == "05108"
+                    then
+                      selectOne TheScenario <&> \case
+                        Just "54016" -> Treacheries.fateOfAllFoolsUnspeakableFate
+                        _ -> cardDef
+                    else pure cardDef
+                card <- setOwner investigatorId =<< genCard cardDef'
                 pure
                   ( PutCardIntoPlay
                       investigatorId

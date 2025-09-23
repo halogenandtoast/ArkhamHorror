@@ -8,13 +8,17 @@ import Arkham.Card
 import Arkham.Deck
 import Arkham.Id
 import Arkham.Matcher.Card (CardMatcher)
+import Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.Source
 import Arkham.Target
 import Data.Aeson.TH
 import GHC.Records
 
-data CardDrawRules = ShuffleBackInEachWeakness | AfterDrawDiscard Int
+data CardDrawRules
+  = ShuffleBackInEachWeakness
+  | AfterDrawDiscard Int
+  | WithDrawnCardModifiers Source [ModifierType]
   deriving stock (Show, Eq, Ord, Data)
 
 data CardDrawState
@@ -87,6 +91,9 @@ instance HasField "cards" CardDrew [Card] where
 
 instance HasField "deck" CardDrew DeckSignifier where
   getField = cardDrewDeck
+
+instance HasField "rules" CardDrew (Set CardDrawRules) where
+  getField = cardDrewRules
 
 drewCard :: Card -> CardDraw msg -> CardDraw msg
 drewCard c draw = draw {cardDrawState = updatedState}

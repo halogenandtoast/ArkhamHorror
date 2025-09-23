@@ -193,9 +193,9 @@ data EncounterSet
   | ReturnToDimCarcosa
   | DelusoryEvils
   | DecayingReality
-  | HastursEnvoys 
+  | HastursEnvoys
   | MaddeningDelusions
-  | NeuroticFear 
+  | NeuroticFear
   | ReturnToTheUntamedWilds
   | ReturnToTheDoomOfEztli
   | ReturnToThreadsOfFate
@@ -212,6 +212,22 @@ data EncounterSet
   | DoomedExpedition
   | TemporalHunters
   | VenomousHate
+  | ReturnToDisappearanceAtTheTwilightEstate
+  | ReturnToTheWitchingHour
+  | ReturnToAtDeathsDoorstep
+  | ReturnToTheSecretName
+  | ReturnToTheWagesOfSin
+  | ReturnToForTheGreaterGood
+  | ReturnToUnionAndDisillusion
+  | ReturnToInTheClutchesOfChaos
+  | ReturnToBeforeTheBlackThrone
+  | Hexcraft
+  | BloodthirstySpirits
+  | UnspeakableFate
+  | UnstableRealm
+  | CityOfTheDamned
+  | ChillingMists
+  | ImpendingEvils
   | TheBayou
   | CurseOfTheRougarou
   | CarnevaleOfHorrors

@@ -910,6 +910,9 @@ allLocations =
     , SomeLocationCard waterfall
     , SomeLocationCard trailOfTheDead
     , SomeLocationCard cloudForest
+    , -- Return to The Circle Undone
+      --- Return to At Death's Doorstep
+      SomeLocationCard wineCellarSpectral
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

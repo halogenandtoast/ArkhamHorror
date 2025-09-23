@@ -1,15 +1,16 @@
 module Arkham.Location.Cards.AbandonedChapelSpectral (abandonedChapelSpectral) where
 
+import Arkham.Ability
 import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message (ReplaceStrategy (Swap))
 import Arkham.Phase
-import Arkham.Prelude
 import Arkham.SkillType
 
 newtype AbandonedChapelSpectral = AbandonedChapelSpectral LocationAttrs
@@ -31,12 +32,15 @@ instance HasModifiersFor AbandonedChapelSpectral where
 
 instance HasAbilities AbandonedChapelSpectral where
   getAbilities (AbandonedChapelSpectral a) =
-    withRevealedAbilities a [haunted "Until the end of the round, you get -1 to each skill." a 1]
+    extendRevealed1 a $ haunted "Until the end of the round, you get -1 to each skill." a 1
 
 instance RunMessage AbandonedChapelSpectral where
-  runMessage msg l@(AbandonedChapelSpectral attrs) = case msg of
+  runMessage msg l@(AbandonedChapelSpectral attrs) = runQueueT $ case msg of
     Flip _ _ (isTarget attrs -> True) -> do
       regular <- genCard Locations.abandonedChapel
       push $ ReplaceLocation (toId attrs) regular Swap
       pure l
-    _ -> AbandonedChapelSpectral <$> runMessage msg attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      roundModifiers (attrs.ability 1) iid [SkillModifier sType (-1) | sType <- allSkills]
+      pure l
+    _ -> AbandonedChapelSpectral <$> liftRunMessage msg attrs

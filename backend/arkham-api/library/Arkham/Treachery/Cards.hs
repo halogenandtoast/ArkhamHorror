@@ -218,6 +218,7 @@ allEncounterTreacheryCards =
       , bleedingWallsTheMidwinterGala
       , blindsense
       , bloodOnYourHands
+      , bloodthirstySpirits
       , breakALeg
       , brokenRails
       , bumpyRide
@@ -3220,6 +3221,12 @@ damned =
   (basicWeakness "54014" "Damned")
     { cdCardTraits = setFromList [Curse, Omen]
     , cdPermanent = True
+    }
+
+bloodthirstySpirits :: CardDef
+bloodthirstySpirits =
+  (treachery "54075" "Bloodthirsty Spiris" BloodthirstySpirits 2)
+    { cdCardTraits = setFromList [Terror, Spectral]
     }
 
 selfDestructive :: CardDef

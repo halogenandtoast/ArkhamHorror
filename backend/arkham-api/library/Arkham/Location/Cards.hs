@@ -900,6 +900,7 @@ allLocationCards =
       , whateleyRuins_250
       , whateleyRuins_251
       , whiteBluff
+      , wineCellarSpectral
       , windsweptPath
       , witchesCircle
       , witchHauntedWoodsAbandonedMine
@@ -9171,6 +9172,16 @@ cloudForest =
       Heart
       [Hourglass, Diamond, Moon, T]
       ReturnToRainforest
+
+wineCellarSpectral :: CardDef
+wineCellarSpectral =
+  location
+    "54028"
+    "Wine Cellar"
+    [Spectral]
+    Hourglass
+    [T]
+    ReturnToAtDeathsDoorstep
 
 lobbyTheMidwinterGala :: CardDef
 lobbyTheMidwinterGala =

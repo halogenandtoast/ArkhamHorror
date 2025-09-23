@@ -10,5 +10,16 @@
       "tablet": "-3. If this is an attack or evasion attempt, resolve each haunted ability on your location.",
       "elderThing": "-4. If there is a _Spectral_ enemy at your location, take 1 damage and 1 horror."
     }
+  },
+  "label": {
+    "wineCellarSpectral": {
+      "removeDoom": "Remove 1 doom from a Silver Twilight enemy in play",
+      "placeDoom": "Place 1 doom on a Silver Twilight enemy in play"
+    }
+  },
+  "tooltips": {
+    "wineCellarSpectral": {
+      "haunted": "_Haunted_ - You must either place 1 doom on a _Silver Twilight_ enemy in play, or take 1 direct horror."
+    }
   }
 }

@@ -672,6 +672,8 @@ allTreacheries =
       SomeTreacheryCard wrathOfYig
     , -- Return to the Circle Undone
       SomeTreacheryCard damned
+    , --- Bloodthirsy Spirits [rttcu]
+      SomeTreacheryCard bloodthirstySpirits
     , -- Nathaniel Cho
       SomeTreacheryCard selfDestructive
     , -- Harvey Walters

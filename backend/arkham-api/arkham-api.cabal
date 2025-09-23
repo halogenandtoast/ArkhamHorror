@@ -1921,6 +1921,7 @@ library
       Arkham.Enemy.Cards.SavioCorvi
       Arkham.Enemy.Cards.ScholarFromYith
       Arkham.Enemy.Cards.ScientistOfYith
+      Arkham.Enemy.Cards.ScreechingBanshee
       Arkham.Enemy.Cards.ScreechingByakhee
       Arkham.Enemy.Cards.SebastienMoreau
       Arkham.Enemy.Cards.SeekerOfCarcosa
@@ -3507,6 +3508,7 @@ library
       Arkham.Location.Cards.WhateleyRuins_251
       Arkham.Location.Cards.WhiteBluff
       Arkham.Location.Cards.WindsweptPath
+      Arkham.Location.Cards.WineCellarSpectral
       Arkham.Location.Cards.WitchesCircle
       Arkham.Location.Cards.WitchHauntedWoodsAbandonedMine
       Arkham.Location.Cards.WitchHauntedWoodsCairnStones
@@ -3638,6 +3640,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToBloodOnTheAltar
       Arkham.Scenario.Scenarios.ReturnToCurtainCall
       Arkham.Scenario.Scenarios.ReturnToDimCarcosa
+      Arkham.Scenario.Scenarios.ReturnToDisappearanceAtTheTwilightEstate
       Arkham.Scenario.Scenarios.ReturnToEchoesOfThePast
       Arkham.Scenario.Scenarios.ReturnToExtracurricularActivities
       Arkham.Scenario.Scenarios.ReturnToHeartOfTheEldersPart1
@@ -3702,6 +3705,7 @@ library
       Arkham.Scenarios.ALightInTheFog.Helpers
       Arkham.Scenarios.ALightInTheFog.Helpers.Location
       Arkham.Scenarios.APhantomOfTruth.Helpers
+      Arkham.Scenarios.AtDeathsDoorstep.Helpers
       Arkham.Scenarios.AtDeathsDoorstep.Story
       Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
       Arkham.Scenarios.BeforeTheBlackThrone.Helpers
@@ -4117,6 +4121,7 @@ library
       Arkham.Treachery.Cards.Blindsense
       Arkham.Treachery.Cards.Bloodlust
       Arkham.Treachery.Cards.BloodOnYourHands
+      Arkham.Treachery.Cards.BloodthirstySpirits
       Arkham.Treachery.Cards.BoughtInBlood
       Arkham.Treachery.Cards.BreakALeg
       Arkham.Treachery.Cards.BrokenRails

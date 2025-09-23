@@ -366,6 +366,7 @@ allEncounterEnemyCards =
       , savioCorvi
       , scholarFromYith
       , scientistOfYith
+      , screechingBanshee
       , screechingByakhee
       , sebastienMoreau
       , seekerOfCarcosa
@@ -3066,6 +3067,13 @@ serpentGuardian =
   (enemy "53079" "Serpent Guardian" VenomousHate 1)
     { cdCardTraits = setFromList [Construct, Serpent]
     , cdKeywords = setFromList [Keyword.Aloof]
+    }
+
+screechingBanshee :: CardDef
+screechingBanshee =
+  (enemy "54074" "Screeching Banshee" BloodthirstySpirits 2)
+    { cdCardTraits = setFromList [Monster, Geist, Spectral]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 tommyMalloy :: CardDef

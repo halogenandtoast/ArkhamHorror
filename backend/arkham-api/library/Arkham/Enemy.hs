@@ -550,6 +550,9 @@ allEnemies =
     , --- Venomous Hate [rttfa]
       SomeEnemyCard vengefulSerpent
     , SomeEnemyCard serpentGuardian
+    , -- Return to The Circle Undone
+      --- Bloodthirsty Spirits [rttcu]
+      SomeEnemyCard screechingBanshee
     , -- Nathanial Cho
       SomeEnemyCard tommyMalloy
     , -- Curse of the Rougarou

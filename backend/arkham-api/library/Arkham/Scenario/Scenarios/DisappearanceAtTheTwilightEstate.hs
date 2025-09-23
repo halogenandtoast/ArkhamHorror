@@ -1,4 +1,8 @@
-module Arkham.Scenario.Scenarios.DisappearanceAtTheTwilightEstate (disappearanceAtTheTwilightEstate) where
+module Arkham.Scenario.Scenarios.DisappearanceAtTheTwilightEstate (
+  setupDisappearanceAtTheTwilightEstate,
+  disappearanceAtTheTwilightEstate,
+  DisappearanceAtTheTwilightEstate (..),
+) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Types (Field (..))
@@ -49,6 +53,69 @@ instance HasChaosTokenValue DisappearanceAtTheTwilightEstate where
       Skull -> pure $ toChaosTokenValue attrs Skull 3 5
       otherFace -> getChaosTokenValue iid otherFace attrs
 
+setupDisappearanceAtTheTwilightEstate
+  :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupDisappearanceAtTheTwilightEstate attrs = do
+  -- At Death's Doorstep is only locations so we will manually gather
+  setup do
+    ul do
+      li "gatherSets"
+      li "placeLocations"
+      li "theSpectralWatcher"
+      li "investigatorSetup"
+      unscoped $ li "shuffleRemainder"
+    p "theSpectralRealm"
+
+  scope "noWayOut" $ flavor $ h "title" >> p "body"
+
+  whenReturnTo $ gather Set.ReturnToDisappearanceAtTheTwilightEstate
+  gather Set.DisappearanceAtTheTwilightEstate
+  gather Set.InexorableFate `orWhenReturnTo` gather Set.UnspeakableFate
+  gather Set.RealmOfDeath `orWhenReturnTo` gather Set.UnstableRealm
+  gather Set.SpectralPredators
+  gather Set.TrappedSpirits `orWhenReturnTo` gather Set.BloodthirstySpirits
+  gather Set.TheWatcher
+  gather Set.ChillingCold `orWhenReturnTo` gather Set.ChillingMists
+
+  setActDeck [Acts.theDisappearance]
+  setAgendaDeck [Agendas.judgementXX]
+
+  office <- place Locations.officeSpectral
+  billiardsRoom <- place Locations.billiardsRoomSpectral
+  victorianHalls <- place Locations.victorianHallsSpectral
+  balcony <- place Locations.balconySpectral
+  entryHall <- place Locations.entryHallSpectral
+
+  placeAll [Locations.trophyRoomSpectral, Locations.masterBedroomSpectral]
+
+  whenReturnTo $ place_ Locations.wineCellarSpectral
+
+  enemyAt_ Enemies.theSpectralWatcher entryHall
+
+  selectForMaybeM (investigatorIs Investigators.gavriellaMizrah) \gavriella -> do
+    moveTo_ attrs gavriella victorianHalls
+    removeOneOf Treacheries.fateOfAllFools
+
+  selectForMaybeM (investigatorIs Investigators.jeromeDavids) \jerome -> do
+    moveTo_ attrs jerome office
+    tid1 <- getRandom
+    obscuringFog <- genCard Treacheries.obscuringFog
+    push $ AttachStoryTreacheryTo tid1 obscuringFog (toTarget office)
+    enemyAt_ Enemies.netherMist office
+
+  selectForMaybeM (investigatorIs Investigators.valentinoRivas) \valentino -> do
+    moveTo_ attrs valentino billiardsRoom
+    placeEnemy Enemies.shadowHound (InThreatArea valentino)
+    removeOneOf Treacheries.terrorInTheNight
+
+  selectForMaybeM (investigatorIs Investigators.pennyWhite) \penny -> do
+    moveTo_ attrs penny balcony
+    placeEnemy Enemies.wraith (InThreatArea penny)
+    removeOneOf Treacheries.whispersInTheDark
+
+  push $ SetupStep (toTarget attrs) 2
+  whenReturnTo $ addAdditionalReferences ["54016b"]
+
 instance RunMessage DisappearanceAtTheTwilightEstate where
   runMessage msg s@(DisappearanceAtTheTwilightEstate attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
@@ -98,62 +165,9 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
-    Setup -> runScenarioSetup DisappearanceAtTheTwilightEstate attrs do
-      -- At Death's Doorstep is only locations so we will manually gather
-      setup do
-        ul do
-          li "gatherSets"
-          li "placeLocations"
-          li "theSpectralWatcher"
-          li "investigatorSetup"
-          unscoped $ li "shuffleRemainder"
-        p "theSpectralRealm"
-
-      scope "noWayOut" $ flavor $ h "title" >> p "body"
-
-      gather Set.DisappearanceAtTheTwilightEstate
-      gather Set.InexorableFate
-      gather Set.RealmOfDeath
-      gather Set.SpectralPredators
-      gather Set.TrappedSpirits
-      gather Set.TheWatcher
-      gather Set.ChillingCold
-
-      setActDeck [Acts.theDisappearance]
-      setAgendaDeck [Agendas.judgementXX]
-
-      office <- place Locations.officeSpectral
-      billiardsRoom <- place Locations.billiardsRoomSpectral
-      victorianHalls <- place Locations.victorianHallsSpectral
-      balcony <- place Locations.balconySpectral
-      entryHall <- place Locations.entryHallSpectral
-
-      placeAll [Locations.trophyRoomSpectral, Locations.masterBedroomSpectral]
-
-      enemyAt_ Enemies.theSpectralWatcher entryHall
-
-      selectForMaybeM (investigatorIs Investigators.gavriellaMizrah) \gavriella -> do
-        moveTo_ attrs gavriella victorianHalls
-        removeOneOf Treacheries.fateOfAllFools
-
-      selectForMaybeM (investigatorIs Investigators.jeromeDavids) \jerome -> do
-        moveTo_ attrs jerome office
-        tid1 <- getRandom
-        obscuringFog <- genCard Treacheries.obscuringFog
-        push $ AttachStoryTreacheryTo tid1 obscuringFog (toTarget office)
-        enemyAt_ Enemies.netherMist office
-
-      selectForMaybeM (investigatorIs Investigators.valentinoRivas) \valentino -> do
-        moveTo_ attrs valentino billiardsRoom
-        placeEnemy Enemies.shadowHound (InThreatArea valentino)
-        removeOneOf Treacheries.terrorInTheNight
-
-      selectForMaybeM (investigatorIs Investigators.pennyWhite) \penny -> do
-        moveTo_ attrs penny balcony
-        placeEnemy Enemies.wraith (InThreatArea penny)
-        removeOneOf Treacheries.whispersInTheDark
-
-      push $ SetupStep (toTarget attrs) 2
+    Setup ->
+      runScenarioSetup DisappearanceAtTheTwilightEstate attrs
+        $ setupDisappearanceAtTheTwilightEstate attrs
     SetupStep (isTarget attrs -> True) 2 -> do
       agendaId <- selectJust AnyAgenda
 

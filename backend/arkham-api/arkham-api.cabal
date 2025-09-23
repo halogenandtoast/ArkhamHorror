@@ -4245,6 +4245,7 @@ library
       Arkham.Treachery.Cards.Frenzied
       Arkham.Treachery.Cards.FromAnotherTime
       Arkham.Treachery.Cards.FromTheDepths
+      Arkham.Treachery.Cards.FromTheOtherSide
       Arkham.Treachery.Cards.Frostbitten
       Arkham.Treachery.Cards.FrozenInFear
       Arkham.Treachery.Cards.FrozenInFearAPhantomOfTruth
@@ -4527,6 +4528,7 @@ library
       Arkham.Treachery.Cards.UnspeakableOathBloodthirst
       Arkham.Treachery.Cards.UnspeakableOathCowardice
       Arkham.Treachery.Cards.UnspeakableOathCuriosity
+      Arkham.Treachery.Cards.UnstableEnergies
       Arkham.Treachery.Cards.VampiresKiss
       Arkham.Treachery.Cards.VastExpanse
       Arkham.Treachery.Cards.VaultOfEarthlyDemise

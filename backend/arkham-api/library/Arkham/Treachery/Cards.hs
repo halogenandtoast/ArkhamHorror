@@ -307,6 +307,7 @@ allEncounterTreacheryCards =
       , fragileThoughts
       , fromAnotherTime
       , fromTheDepths
+      , fromTheOtherSide
       , frostbitten
       , frozenInFear
       , frozenInFearAPhantomOfTruth
@@ -526,6 +527,7 @@ allEncounterTreacheryCards =
       , unhallowedCountry
       , unknowablePast
       , unlucky
+      , unstableEnergies
       , vampiresKiss
       , vastExpanse
       , vaultOfEarthlyDemise
@@ -3221,6 +3223,18 @@ damned =
   (basicWeakness "54014" "Damned")
     { cdCardTraits = setFromList [Curse, Omen]
     , cdPermanent = True
+    }
+
+unstableEnergies :: CardDef
+unstableEnergies =
+  (treachery "54068" "Unstable Energies" UnstableRealm 2)
+    { cdCardTraits = setFromList [Hazard, Spectral]
+    }
+
+fromTheOtherSide :: CardDef
+fromTheOtherSide =
+  (treachery "54069" "From the Other Side" UnstableRealm 2)
+    { cdCardTraits = setFromList [Terror, Spectral]
     }
 
 bloodthirstySpirits :: CardDef

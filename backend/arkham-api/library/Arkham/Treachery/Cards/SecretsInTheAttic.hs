@@ -1,13 +1,11 @@
 module Arkham.Treachery.Cards.SecretsInTheAttic (secretsInTheAttic) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
-import Arkham.Message
-import Arkham.Prelude
+import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype SecretsInTheAttic = SecretsInTheAttic TreacheryAttrs
   deriving anyclass IsTreachery
@@ -25,25 +23,19 @@ instance HasModifiersFor SecretsInTheAttic where
 
 instance HasAbilities SecretsInTheAttic where
   getAbilities (SecretsInTheAttic a) =
-    [ limitedAbility (MaxPer Cards.secretsInTheAttic PerRound 1)
-        $ mkAbility a 1
-        $ forced
-        $ RoundEnds #when
-    ]
+    [limited (MaxPer Cards.secretsInTheAttic PerRound 1) $ mkAbility a 1 $ forced $ RoundEnds #when]
 
 instance RunMessage SecretsInTheAttic where
-  runMessage msg t@(SecretsInTheAttic attrs) = case msg of
+  runMessage msg t@(SecretsInTheAttic attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push $ revelationSkillTest sid iid attrs #willpower (Fixed 3)
+      revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      pushAll
-        [ assignHorror iid attrs 1
-        , PlaceTreachery (toId attrs) NextToAgenda
-        ]
+      assignHorror iid attrs 1
+      placeTreachery attrs NextToAgenda
       pure t
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ toDiscard (attrs.ability 1) attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> SecretsInTheAttic <$> runMessage msg attrs
+    _ -> SecretsInTheAttic <$> liftRunMessage msg attrs

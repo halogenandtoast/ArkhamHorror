@@ -296,6 +296,7 @@ allEncounterTreacheryCards =
       , eyesInTheWalls
       , falseLead
       , fateOfAllFools
+      , fateOfAllFoolsUnspeakableFate
       , figureInTheShadows
       , finalMistake
       , fineDining
@@ -521,6 +522,7 @@ allEncounterTreacheryCards =
       , ultimateChaos
       , umordhothsHunger
       , umordhothsWrath
+      , unavoidableDemise
       , undertow
       , unexpectedAmbush
       , unexpectedTransformation
@@ -3223,6 +3225,18 @@ damned =
   (basicWeakness "54014" "Damned")
     { cdCardTraits = setFromList [Curse, Omen]
     , cdPermanent = True
+    }
+
+unavoidableDemise :: CardDef
+unavoidableDemise =
+  (treachery "54066" "Unavoidable Demise" UnspeakableFate 3)
+    { cdCardTraits = setFromList [Hazard, Spectral]
+    }
+
+fateOfAllFoolsUnspeakableFate :: CardDef
+fateOfAllFoolsUnspeakableFate =
+  (treachery "54067" "Fate of All Fools" UnspeakableFate 3)
+    { cdCardTraits = setFromList [Omen, Spectral]
     }
 
 unstableEnergies :: CardDef

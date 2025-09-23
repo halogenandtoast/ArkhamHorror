@@ -1810,6 +1810,9 @@ loseAllResources iid source = loseResources iid source =<< field InvestigatorRes
 drawEncounterCard :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 drawEncounterCard i source = drawEncounterCards i source 1
 
+drawEncounterCardEdit :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> (CardDraw Message -> CardDraw Message) -> m ()
+drawEncounterCardEdit i source = drawEncounterCardsEdit i source 1
+
 drawEncounterCards :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 drawEncounterCards i source n = whenM (can.target.encounterDeck i) $ push $ Msg.drawEncounterCards i source n
 
@@ -1821,7 +1824,7 @@ drawEncounterCardsEdit
   -> (CardDraw Message -> CardDraw Message)
   -> m ()
 drawEncounterCardsEdit iid source n f = when (n > 0) do
-  push $ Msg.drawEncounterCardsWith iid source n f
+  push $ Msg.drawEncounterCardsEdit iid source n f
 
 drawCards
   :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)

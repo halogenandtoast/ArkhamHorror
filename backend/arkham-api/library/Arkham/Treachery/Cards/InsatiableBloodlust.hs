@@ -1,14 +1,12 @@
 module Arkham.Treachery.Cards.InsatiableBloodlust (insatiableBloodlust) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype InsatiableBloodlust = InsatiableBloodlust TreacheryAttrs
   deriving anyclass IsTreachery
@@ -30,13 +28,12 @@ instance HasAbilities InsatiableBloodlust where
     ]
 
 instance RunMessage InsatiableBloodlust where
-  runMessage msg t@(InsatiableBloodlust attrs@TreacheryAttrs {..}) =
-    case msg of
-      Revelation _iid (isSource attrs -> True) -> do
-        rougarou <- selectJust $ enemyIs Cards.theRougarou
-        push $ attachTreachery treacheryId rougarou
-        pure t
-      UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-        push $ toDiscard (toAbilitySource attrs 1) attrs
-        pure t
-      _ -> InsatiableBloodlust <$> runMessage msg attrs
+  runMessage msg t@(InsatiableBloodlust attrs) = runQueueT $ case msg of
+    Revelation _iid (isSource attrs -> True) -> do
+      rougarou <- selectJust $ enemyIs Cards.theRougarou
+      attachTreachery attrs rougarou
+      pure t
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      toDiscard (attrs.ability 1) attrs
+      pure t
+    _ -> InsatiableBloodlust <$> liftRunMessage msg attrs

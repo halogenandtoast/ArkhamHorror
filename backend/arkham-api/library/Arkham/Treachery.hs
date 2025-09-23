@@ -672,6 +672,9 @@ allTreacheries =
       SomeTreacheryCard wrathOfYig
     , -- Return to the Circle Undone
       SomeTreacheryCard damned
+    , --- Unspeakable Fate [rttcu]
+      SomeTreacheryCard unavoidableDemise
+    , SomeTreacheryCard fateOfAllFoolsUnspeakableFate
     , --- Unstable Realm [rttcu]
       SomeTreacheryCard unstableEnergies
     , SomeTreacheryCard fromTheOtherSide

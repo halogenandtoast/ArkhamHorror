@@ -4230,6 +4230,7 @@ library
       Arkham.Treachery.Cards.FalseAwakeningPointOfNoReturn
       Arkham.Treachery.Cards.FalseLead
       Arkham.Treachery.Cards.FateOfAllFools
+      Arkham.Treachery.Cards.FateOfAllFoolsUnspeakableFate
       Arkham.Treachery.Cards.FigureInTheShadows
       Arkham.Treachery.Cards.FinalMistake
       Arkham.Treachery.Cards.FinalRhapsody
@@ -4519,6 +4520,7 @@ library
       Arkham.Treachery.Cards.UltimateChaos
       Arkham.Treachery.Cards.UmordhothsHunger
       Arkham.Treachery.Cards.UmordhothsWrath
+      Arkham.Treachery.Cards.UnavoidableDemise
       Arkham.Treachery.Cards.Undertow
       Arkham.Treachery.Cards.UnexpectedAmbush
       Arkham.Treachery.Cards.UnexpectedTransformation

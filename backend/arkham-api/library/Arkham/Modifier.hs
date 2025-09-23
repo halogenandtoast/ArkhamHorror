@@ -314,6 +314,7 @@ data ModifierType
   | IgnorePlayableModifierContexts
   | IgnoreRetaliate
   | IgnoreRevelation
+  | RevelationModifier Source ModifierType
   | IgnoreText
   | IgnoreTextOnLocation LocationMatcher
   | InVictoryDisplayForCountingVengeance

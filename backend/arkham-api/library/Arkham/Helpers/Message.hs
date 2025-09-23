@@ -51,8 +51,15 @@ drawCardsWith i source n f = DrawCards i $ f $ newCardDraw source i n
 drawEncounterCard :: Sourceable source => InvestigatorId -> source -> Message
 drawEncounterCard i source = drawEncounterCards i source 1
 
+drawEncounterCardEdit :: Sourceable source => InvestigatorId -> source -> (CardDraw Message -> CardDraw Message) -> Message
+drawEncounterCardEdit i source = drawEncounterCardsEdit i source 1
+
 drawEncounterCards :: Sourceable source => InvestigatorId -> source -> Int -> Message
 drawEncounterCards i source n = DrawCards i $ newCardDraw source Deck.EncounterDeck n
+
+drawEncounterCardsEdit :: Sourceable source => InvestigatorId -> source -> Int -> (CardDraw Message -> CardDraw Message) -> Message
+drawEncounterCardsEdit = drawEncounterCardsWith
+
 
 drawCardsIfCan
   :: (MonadRandom m, Sourceable source, HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId)

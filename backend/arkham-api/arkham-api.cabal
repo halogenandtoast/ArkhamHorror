@@ -4337,6 +4337,7 @@ library
       Arkham.Treachery.Cards.Mesmerize
       Arkham.Treachery.Cards.MiasmaticTorment
       Arkham.Treachery.Cards.MindExtraction
+      Arkham.Treachery.Cards.MistsFromBeyond
       Arkham.Treachery.Cards.MorbidAwareness
       Arkham.Treachery.Cards.MorbidCuriosity
       Arkham.Treachery.Cards.MyriadForms
@@ -4464,6 +4465,7 @@ library
       Arkham.Treachery.Cards.Straitjacket
       Arkham.Treachery.Cards.StrangeSigns
       Arkham.Treachery.Cards.Stupor
+      Arkham.Treachery.Cards.SupernaturalTempest
       Arkham.Treachery.Cards.Syzygy
       Arkham.Treachery.Cards.TakenCaptive
       Arkham.Treachery.Cards.TasteOfLifeblood

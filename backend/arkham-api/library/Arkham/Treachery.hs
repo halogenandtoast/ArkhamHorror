@@ -678,6 +678,9 @@ allTreacheries =
     , --- Unstable Realm [rttcu]
       SomeTreacheryCard unstableEnergies
     , SomeTreacheryCard fromTheOtherSide
+    , --- Chilling Mists [rttcu]
+      SomeTreacheryCard supernaturalTempest
+    , SomeTreacheryCard mistsFromBeyond
     , --- Bloodthirsy Spirits [rttcu]
       SomeTreacheryCard bloodthirstySpirits
     , -- Nathaniel Cho

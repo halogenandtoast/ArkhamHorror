@@ -385,6 +385,7 @@ allEncounterTreacheryCards =
       , mesmerize
       , miasmaticTorment
       , mindExtraction
+      , mistsFromBeyond
       , morbidAwareness
       , myriadForms
       , mysteriesOfTheLodge
@@ -482,6 +483,7 @@ allEncounterTreacheryCards =
       , stowaway
       , straitjacket
       , strangeSigns
+      , supernaturalTempest
       , syzygy
       , takenCaptive
       , tasteOfLifeblood
@@ -3249,6 +3251,18 @@ fromTheOtherSide :: CardDef
 fromTheOtherSide =
   (treachery "54069" "From the Other Side" UnstableRealm 2)
     { cdCardTraits = setFromList [Terror, Spectral]
+    }
+
+supernaturalTempest :: CardDef
+supernaturalTempest =
+  (treachery "54072" "Supernatural Tempest" ChillingMists 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+mistsFromBeyond :: CardDef
+mistsFromBeyond =
+  (treachery "54073" "Mists from Beyond" ChillingMists 2)
+    { cdCardTraits = setFromList [Hazard]
     }
 
 bloodthirstySpirits :: CardDef

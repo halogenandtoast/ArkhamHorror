@@ -672,6 +672,9 @@ allTreacheries =
       SomeTreacheryCard wrathOfYig
     , -- Return to the Circle Undone
       SomeTreacheryCard damned
+    , --- Unstable Realm [rttcu]
+      SomeTreacheryCard unstableEnergies
+    , SomeTreacheryCard fromTheOtherSide
     , --- Bloodthirsy Spirits [rttcu]
       SomeTreacheryCard bloodthirstySpirits
     , -- Nathaniel Cho

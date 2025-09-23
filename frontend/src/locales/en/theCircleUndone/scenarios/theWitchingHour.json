@@ -13,5 +13,14 @@
   },
   "xp": {
     "bonus": "Gains insight into Arkham’s mysterious past."
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *The Witching Hour*, *Anette’s Coven*, *City of Sins*, *Witchcraft*, *Ancient Evils*, *Striking Fear*, and *The Devourer Below*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-witching-hour.png' /><img src='{setImgPath}/anettes-coven.png' /><img src='{setImgPath}/city-of-sins.png' /><img src='{setImgPath}/witchcraft.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/the-devourer-below.png' /></section>When gathering *The Devourer Below* encounter set, only gather the 6 Arkham Woods locations. Do not gather any of the other cards from that encounter set.",
+    "gatherAgentSets": "Gather all cards from the *Agents of Azathoth* and *Agents of Shub-Niggurath* encounter sets. Set these encounter sets aside, out of play. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/agents-of-azathoth.png' /><img src='{setImgPath}/agents-of-shub.png' /></section>",
+    "placeLocations": "Put 5 Witch-Haunted Woods locations into play as follows:",
+    "placeWitchHauntedWoods": "In player order, each investigator puts 1 random Witch- Haunted Woods location into play in front of themselves, until there are exactly 5 Witch-Haunted Woods locations in play (see “Lost and Separated,” below). *For example: In a 1-player game, there should be 5 Witch-Haunted Woods in front of that investigator. In a 2-player game, there should be 3 Witch-Haunted Woods in front of the lead investigator and 2 Witch-Haunted Woods in front of the other investigator. In a 3-player game, there should be 2 Witch-Haunted Woods in front of the lead investigator, 2 Witch-Haunted Woods in front of the next investigator, and 1 Witch-Haunted Woods in front of the final investigator. In a 4-player game, there should be 2 Witch-Haunted Woods in front of the lead investigator, and 1 Witch-Haunted Woods in front of each other investigator.*",
+    "removeRemainingWitchHauntedWoods": "Remove each other Witch-Haunted Woods from the game.",
+    "startAtWitchHauntedWoods": "Each investigator begins play at one of the locations in front of themselves, chosen at random.",
+    "setAside": "Set the following cards aside, out of play: each of the Arkham Woods locations and Anette Mason."
   }
 }

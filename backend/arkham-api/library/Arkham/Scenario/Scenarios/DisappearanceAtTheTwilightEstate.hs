@@ -16,7 +16,9 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (allPlayers)
+import Arkham.Helpers.Scenario qualified as Scenario
 import Arkham.Helpers.SkillTest
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
@@ -27,8 +29,11 @@ import Arkham.Message.Lifted.Move
 import Arkham.Name (toTitle)
 import Arkham.Placement
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (ScenarioAttrs (scenarioTarotDeck), startedL)
 import Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Helpers
+import Arkham.Tarot
 import Arkham.Treachery.Cards qualified as Treacheries
+import Data.List.NonEmpty qualified as NE
 
 newtype DisappearanceAtTheTwilightEstate = DisappearanceAtTheTwilightEstate ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -96,9 +101,8 @@ setupDisappearanceAtTheTwilightEstate attrs = do
 
   selectForMaybeM (investigatorIs Investigators.gavriellaMizrah) \gavriella -> do
     moveTo_ attrs gavriella victorianHalls
-    if isReturnTo
-      then removeOneOf Treacheries.fateOfAllFoolsUnspeakableFate
-      else removeOneOf Treacheries.fateOfAllFools
+    removeOneOf
+      $ if isReturnTo then Treacheries.fateOfAllFoolsUnspeakableFate else Treacheries.fateOfAllFools
 
   selectForMaybeM (investigatorIs Investigators.jeromeDavids) \jerome -> do
     moveTo_ attrs jerome office
@@ -122,11 +126,122 @@ setupDisappearanceAtTheTwilightEstate attrs = do
 
 instance RunMessage DisappearanceAtTheTwilightEstate where
   runMessage msg s@(DisappearanceAtTheTwilightEstate attrs) = runQueueT $ scenarioI18n $ case msg of
+    LoadScenario _ -> scope "intro" do
+      isReturnTo <- Scenario.getIsReturnTo
+      if isReturnTo
+        then do
+          allPlayers >>= \case
+            [] -> error "no players"
+            (player : _) -> do
+              playerStoryWithChooseOneM' player (setTitle "title" >> p "returnToChoice") do
+                labeled' "returnToSkip" $ doStep 3 msg
+                labeled' "playNormally" $ doStep 1 msg
+        else doStep 1 msg
+      pure s
+    DoStep 1 (LoadScenario opts) -> do
+      result <- liftRunMessage (LoadScenario opts) attrs
+      pure $ DisappearanceAtTheTwilightEstate $ result & startedL .~ False
+    DoStep 3 (LoadScenario _) -> scope "intro" do
+      when (null $ scenarioTarotDeck attrs) $ push LoadTarotDeck
+      allPlayers >>= traverse_ (push . (`ForPlayer` msg))
+      endOfScenario
+      pure s
+    ForPlayer player (DoStep 3 (LoadScenario opts)) -> scope "intro" do
+      taken <- select Anyone
+      let
+        availablePrologueInvestigators =
+          filter
+            ((`notElem` taken) . InvestigatorId . cdCardCode)
+            allPrologueInvestigators
+      playerStoryWithChooseOneM' player (setTitle "title" >> p "chooseInvestigator") do
+        cardsLabeled availablePrologueInvestigators \card -> do
+          -- we load the decklist just to remove the option
+          let iid = InvestigatorId (cdCardCode card)
+          push
+            $ LoadDecklist player
+            $ ArkhamDBDecklist mempty mempty iid (toTitle card) Nothing Nothing Nothing
+          push $ DrawAndChooseTarot iid Upright 1
+          forInvestigator iid (DoStep 3 (LoadScenario opts))
+      pure s
+    ForInvestigator iid (DoStep 3 (LoadScenario _)) -> scope "intro" do
+      arcana <- sample (NE.fromList $ scenarioTarotDeck attrs)
+      let card = fromJustNote "Failed" $ find ((== unInvestigatorId iid) . toCardCode) allPrologueInvestigators
+      player <- getPlayer iid
+
+      nameVar card $ playerStoryWithChooseOneM'
+        player
+        (setTitle "title" >> tarot arcana >> img card >> p (tshow arcana))
+        do
+          unscoped $ labeled' "continue" nothing
+
+      case arcana of
+        TheFool0 -> do
+          recordSetInsert DisappearedIntoTheMist [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 2
+        TheMagicianI -> recordSetInsert DisappearedIntoTheMist [unInvestigatorId iid]
+        TheHighPriestessII -> recordSetInsert DisappearedIntoTheMist [unInvestigatorId iid]
+        TheEmpressIII -> do
+          recordSetInsert WasClaimedBySpecters [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 3
+        TheEmperorIV -> do
+          recordSetInsert WasClaimedBySpecters [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 3
+        TheHierophantV -> do
+          recordSetInsert WasClaimedBySpecters [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 3
+        TheLoversVI -> do
+          recordSetInsert WasClaimedBySpecters [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 3
+        TheChariotVII -> do
+          recordSetInsert WasClaimedBySpecters [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 5
+        StrengthVIII -> do
+          recordSetInsert WasClaimedBySpecters [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 5
+        TheHermitIX -> do
+          recordSetInsert WasClaimedBySpecters [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 5
+        WheelOfFortuneX -> do
+          recordSetInsert WasPulledIntoTheSpectralRealm [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 2
+        JusticeXI -> do
+          recordSetInsert WasPulledIntoTheSpectralRealm [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 2
+        TheHangedManXII -> do
+          recordSetInsert WasPulledIntoTheSpectralRealm [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 2
+        DeathXIII -> do
+          recordSetInsert WasPulledIntoTheSpectralRealm [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 4
+        TemperanceXIV -> do
+          recordSetInsert WasPulledIntoTheSpectralRealm [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 4
+        TheDevilXV -> do
+          recordSetInsert WasPulledIntoTheSpectralRealm [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 4
+        TheTowerXVI -> do
+          recordSetInsert WasPulledIntoTheSpectralRealm [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 4
+        TheStarXVII -> do
+          recordSetInsert WasPulledIntoTheSpectralRealm [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 6
+        TheMoonXVIII -> do
+          recordSetInsert WasPulledIntoTheSpectralRealm [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 6
+        TheSunXIX -> do
+          recordSetInsert WasTakenByTheWatcher [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 3
+        JudgementXX -> do
+          recordSetInsert WasTakenByTheWatcher [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 3
+        TheWorldXXI -> do
+          recordSetInsert WasTakenByTheWatcher [unInvestigatorId iid]
+          incrementRecordCount PiecesOfEvidenceWereLeftBehind 5
+      pure $ DisappearanceAtTheTwilightEstate $ attrs & tarotDeckL %~ filter (/= arcana)
     PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "body"
       -- investigators have not been chosen yet so we have to send to players
       allPlayers >>= traverse_ (push . (`ForPlayer` msg))
-      flavor $ setTitle "title" >> p "intro"
       doStep 2 msg
       pure s
     ForPlayer player PreScenarioSetup -> scope "intro" do
@@ -136,8 +251,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           filter
             ((`notElem` taken) . InvestigatorId . cdCardCode)
             allPrologueInvestigators
-      playerChooseOneM player do
-        questionLabeled' "chooseInvestigator"
+      playerStoryWithChooseOneM' player (setTitle "title" >> p "chooseInvestigator") do
         cardsLabeled availablePrologueInvestigators \card -> do
           push
             $ LoadDecklist player
@@ -151,6 +265,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
               Nothing -- TODO: should we figure out the taboo list here??
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
+      flavor $ setTitle "title" >> p "intro"
       taken <- selectMap unInvestigatorId Anyone
       let
         prologueInvestigatorsNotTaken =
@@ -165,7 +280,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
         readings = map readingFor taken
       crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
       traverse_ (\r -> flavor $ setTitle "title" >> p r) readings
-      pure s
+      pure $ DisappearanceAtTheTwilightEstate $ attrs & startedL .~ True
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s

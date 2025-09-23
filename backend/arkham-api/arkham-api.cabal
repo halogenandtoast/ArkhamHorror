@@ -3601,6 +3601,7 @@ library
       Arkham.Scenario.Deck
       Arkham.Scenario.Helpers
       Arkham.Scenario.Import.Lifted
+      Arkham.Scenario.Options
       Arkham.Scenario.Runner
       Arkham.Scenario.Scenarios
       Arkham.Scenario.Scenarios.ALightInTheFog
@@ -3661,6 +3662,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToThePallidMask
       Arkham.Scenario.Scenarios.ReturnToTheUnspeakableOath
       Arkham.Scenario.Scenarios.ReturnToTheUntamedWilds
+      Arkham.Scenario.Scenarios.ReturnToTheWitchingHour
       Arkham.Scenario.Scenarios.ReturnToThreadsOfFate
       Arkham.Scenario.Scenarios.ReturnToTurnBackTime
       Arkham.Scenario.Scenarios.ReturnToUndimensionedAndUnseen

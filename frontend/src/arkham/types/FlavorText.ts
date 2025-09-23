@@ -1,4 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
+import { tarotCardArcanaDecoder, TarotCardArcana } from '@/arkham/types/TarotCard';
 
 export type FlavorTextModifier = 'BlueEntry' | 'GreenEntry' | 'NestedEntry' | 'RightAligned' | 'PlainText' | 'InvalidEntry' | 'ValidEntry' | 'EntrySplit' | 'ResolutionEntry' | 'CheckpointEntry' | 'InterludeEntry'
 
@@ -20,6 +21,7 @@ export type FlavorTextEntry
   | { tag: 'ColumnEntry', entries: FlavorTextEntry[] }
   | { tag: 'ListEntry', list: ListItemEntry[] }
   | { tag: 'CardEntry', cardCode: string, imageModifiers: ImageModifier[] }
+  | { tag: 'TarotEntry', tarot: TarotCardArcana }
   | { tag: 'EntrySplit' }
 
 export type FlavorText = {
@@ -64,6 +66,7 @@ export const flavorTextEntryDecoder: JsonDecoder.Decoder<FlavorTextEntry> = Json
   JsonDecoder.object({ tag: JsonDecoder.literal('ColumnEntry'), entries: JsonDecoder.lazy(() => JsonDecoder.array(flavorTextEntryDecoder, 'FlavorTextEntry[]')) }, 'CompositeEntry'),
   JsonDecoder.object({ tag: JsonDecoder.literal('ListEntry'), list: JsonDecoder.array(listItemEntryDecoder, 'ListItemEntry[]') }, 'ListEntry'),
   JsonDecoder.object({ tag: JsonDecoder.literal('CardEntry'), cardCode: JsonDecoder.string(), imageModifiers: JsonDecoder.array(imageModifierDecoder, 'ImageModifiers[]') }, 'CardEntry'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('TarotEntry'), tarot: tarotCardArcanaDecoder}, 'TarotEntry'),
   JsonDecoder.object({ tag: JsonDecoder.literal('EntrySplit')}, 'EntrySplit'),
 ], 'FlavorTextEntry');
 

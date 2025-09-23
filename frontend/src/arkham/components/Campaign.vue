@@ -93,7 +93,7 @@ const questionHash = computed(() => {
   </div>
   <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">
     <Scenario
-      v-if="game.scenario && Object.entries(game.investigators).length > 0"
+      v-if="game.scenario && game.scenario.started && Object.entries(game.investigators).length > 0"
       :game="game"
       :scenario="game.scenario"
       :playerId="playerId"

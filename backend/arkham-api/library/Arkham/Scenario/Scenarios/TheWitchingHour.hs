@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheWitchingHour (theWitchingHour) where
+module Arkham.Scenario.Scenarios.TheWitchingHour (setupTheWitchingHour, theWitchingHour, TheWitchingHour (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence (ActStep (..), actStep)
@@ -12,6 +12,7 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.ForMovement
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
@@ -57,6 +58,71 @@ instance HasChaosTokenValue TheWitchingHour where
     ElderThing -> pure $ toChaosTokenValue attrs Skull 3 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+setupTheWitchingHour
+  :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupTheWitchingHour attrs = do
+  setup $ ul do
+    li "gatherSets"
+    li "gatherAgentSets"
+    li.nested "placeLocations" do
+      li "placeWitchHauntedWoods"
+      li "removeRemainingWitchHauntedWoods"
+      li "startAtWitchHauntedWoods"
+    li "setAside"
+    unscoped $ li "shuffleRemainder"
+  -- The Devourer Below is only locations
+  gather Set.TheWitchingHour
+  gather Set.AnettesCoven
+  gather Set.CityOfSins
+  gather Set.Witchcraft
+  gather Set.AncientEvils
+  gather Set.StrikingFear
+
+  gatherAndSetAside Set.AgentsOfShubNiggurath
+  gatherAndSetAside Set.AgentsOfAzathoth
+
+  witchHauntedWoods <-
+    sampleN 5
+      $ Locations.witchHauntedWoodsAbandonedMine
+      :| [ Locations.witchHauntedWoodsCairnStones
+         , Locations.witchHauntedWoodsTheLonelyTree
+         , Locations.witchHauntedWoodsChildsTreeHouse
+         , Locations.witchHauntedWoodsTaintedWell
+         , Locations.witchHauntedWoodsHermitsHouse
+         , Locations.witchHauntedWoodsOvergrownBarn
+         ]
+
+  setAside
+    [ Enemies.anetteMason
+    , Locations.arkhamWoodsUnhallowedGround
+    , Locations.arkhamWoodsTwistingPaths
+    , Locations.arkhamWoodsOldHouse
+    , Locations.arkhamWoodsCliffside
+    , Locations.arkhamWoodsTangledThicket
+    , Locations.arkhamWoodsQuietGlade
+    ]
+
+  iids <- getInvestigators
+  let
+    woodsWithInvestigators = zip (cycleN 5 iids) witchHauntedWoods
+    locationMap =
+      foldMap
+        (\(investigator, location) -> MonoidalMap.singleton investigator (location :| []))
+        woodsWithInvestigators
+  startingLocations <-
+    Map.fromList <$> traverse (\(k, v) -> (k,) <$> sample v) (MonoidalMap.toList locationMap)
+
+  for_ woodsWithInvestigators \(investigator, location) -> do
+    lid <- place location
+    push $ PutLocationInFrontOf investigator lid
+    runMaybeT do
+      startingLocation <- hoistMaybe $ lookup investigator startingLocations
+      guard $ location == startingLocation
+      lift $ moveTo_ attrs investigator lid
+
+  setAgendaDeck [Agendas.temperanceXIV, Agendas.theNightHowls]
+  setActDeck [Acts.lostInTheWoods, Acts.witchHauntings, Acts.pathsIntoTwilight, Acts.aCircleUnbroken]
+
 instance RunMessage TheWitchingHour where
   runMessage msg s@(TheWitchingHour attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
@@ -95,63 +161,7 @@ instance RunMessage TheWitchingHour where
     DoStep 4 PreScenarioSetup -> do
       story intro4
       pure s
-    Setup -> runScenarioSetup TheWitchingHour attrs do
-      -- The Devourer Below is only locations
-      gather Set.TheWitchingHour
-      gather Set.AnettesCoven
-      gather Set.CityOfSins
-      gather Set.Witchcraft
-      gather Set.AncientEvils
-      gather Set.StrikingFear
-
-      gatherAndSetAside Set.AgentsOfShubNiggurath
-      gatherAndSetAside Set.AgentsOfAzathoth
-
-      witchHauntedWoods <-
-        sampleN 5
-          $ Locations.witchHauntedWoodsAbandonedMine
-          :| [ Locations.witchHauntedWoodsCairnStones
-             , Locations.witchHauntedWoodsTheLonelyTree
-             , Locations.witchHauntedWoodsChildsTreeHouse
-             , Locations.witchHauntedWoodsTaintedWell
-             , Locations.witchHauntedWoodsHermitsHouse
-             , Locations.witchHauntedWoodsOvergrownBarn
-             ]
-
-      setAside
-        [ Enemies.anetteMason
-        , Locations.arkhamWoodsUnhallowedGround
-        , Locations.arkhamWoodsTwistingPaths
-        , Locations.arkhamWoodsOldHouse
-        , Locations.arkhamWoodsCliffside
-        , Locations.arkhamWoodsTangledThicket
-        , Locations.arkhamWoodsQuietGlade
-        ]
-
-      iids <- getInvestigators
-      let
-        woodsWithInvestigators = zip (cycleN 5 iids) witchHauntedWoods
-        locationMap =
-          foldMap
-            (\(investigator, location) -> MonoidalMap.singleton investigator (location :| []))
-            woodsWithInvestigators
-      startingLocations <-
-        Map.fromList
-          <$> traverse
-            (\(k, v) -> (k,) <$> sample v)
-            (MonoidalMap.toList locationMap)
-
-      for_ woodsWithInvestigators $ \(investigator, location) -> do
-        lid <- place location
-        push $ PutLocationInFrontOf investigator lid
-        runMaybeT do
-          startingLocation <- hoistMaybe $ lookup investigator startingLocations
-          guard $ location == startingLocation
-          lift $ moveTo_ attrs investigator lid
-
-      setAgendaDeck [Agendas.temperanceXIV, Agendas.theNightHowls]
-      setActDeck
-        [Acts.lostInTheWoods, Acts.witchHauntings, Acts.pathsIntoTwilight, Acts.aCircleUnbroken]
+    Setup -> runScenarioSetup TheWitchingHour attrs $ setupTheWitchingHour attrs
     ScenarioResolution r -> do
       step <- actStep <$> selectJustField ActSequence AnyAct
       case r of

@@ -1,9 +1,10 @@
 <script lang="ts">
-import { defineComponent, h } from 'vue';
-import { type FlavorTextEntry, type FlavorTextModifier, type ImageModifier, type ListItemEntry } from '@/arkham/types/FlavorText';
-import { baseUrl, formatContent } from '@/arkham/helpers';
-import { I18n, useI18n } from 'vue-i18n';
-import { imgsrc } from '@/arkham/helpers';
+import { defineComponent, h } from 'vue'
+import { type FlavorTextEntry, type FlavorTextModifier, type ImageModifier, type ListItemEntry } from '@/arkham/types/FlavorText'
+import { baseUrl, formatContent } from '@/arkham/helpers'
+import { I18n, useI18n } from 'vue-i18n'
+import { imgsrc } from '@/arkham/helpers'
+import { tarotArcanaImage } from '@/arkham/types/TarotCard'
 
 function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
   switch (entry.tag) {
@@ -15,6 +16,7 @@ function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
     case 'ListEntry': return {}
     case 'EntrySplit': return {}
     case 'HeaderEntry': return {}
+    case 'TarotEntry': return [{"card": true}, {"no-overlay": true}]
     case 'CardEntry': {
       const mods = entry.imageModifiers.map((m) => { return { [imageModifierToStyle(m)]: true }})
       return [{"card": true}, {"no-overlay": true}, ...mods]
@@ -63,6 +65,7 @@ function formatEntry(t: I18n, entry: FlavorTextEntry): any {
     case 'ColumnEntry': return h('div', { class: "columns" }, entry.entries.map((e) => formatEntry(t, e)))
     case 'ListEntry': return h('ul', entry.list.map((e) => formatListEntry(t, e)))
     case 'CardEntry': return h('div', [h('img', { class: entryStyles(entry), src: imgsrc(`cards/${entry.cardCode.replace(/^c/, "")}.avif`)})])
+    case 'TarotEntry': return h('div', [h('img', { class: entryStyles(entry), src: imgsrc(`tarot/${tarotArcanaImage(entry.tarot)}`)})])
     case 'EntrySplit': return h('hr')
     default: return h('div', "Unknown entry type")
   }

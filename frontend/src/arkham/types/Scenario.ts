@@ -67,6 +67,7 @@ export type Scenario = {
   counts: Record<string, number>; // eslint-disable-line
   encounterDecks: Record<string, [CardContents[], CardContents[]]>;
   hasEncounterDeck: boolean;
+  started: boolean;
   encounterDeck: CardContents[];
   tarotCards: TarotCard[];
   xpBreakdown?: XpEntry[];
@@ -143,6 +144,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   standaloneCampaignLog: logContentsDecoder,
   tokens: tokensDecoder,
   hasEncounterDeck: JsonDecoder.boolean(),
+  started: JsonDecoder.boolean(),
   // tarotCards: JsonDecoder.array<TarotCard>(tarotCardDecoder, 'TarotCard[]'),
   tarotCards: JsonDecoder.
     array(
@@ -280,6 +282,7 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c53059": return "theForgottenAge.theDepthsOfYoth"
     case "c53061": return "theForgottenAge.shatteredAeons"
     case "c53066": return "theForgottenAge.turnBackTime"
+    case "c54016": return "theCircleUndone.disappearanceAtTheTwilightEstate"
     case "c71001": return "standalone.theMidwinterGala"
     case "c72001": return "standalone.filmFatale"
     case "c81001": return "standalone.curseOfTheRougarou"

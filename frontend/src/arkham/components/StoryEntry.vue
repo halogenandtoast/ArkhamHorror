@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
-import type { Read, FlavorTextEntry } from '@/arkham/types/Question';
+import type { Read } from '@/arkham/types/Question';
 import Token from '@/arkham/components/Token.vue';
 import { useI18n } from 'vue-i18n';
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue';

@@ -100,6 +100,17 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
       pure s
     Setup -> runScenarioSetup DisappearanceAtTheTwilightEstate attrs do
       -- At Death's Doorstep is only locations so we will manually gather
+      setup do
+        ul do
+          li "gatherSets"
+          li "placeLocations"
+          li "theSpectralWatcher"
+          li "investigatorSetup"
+          unscoped $ li "shuffleRemainder"
+        p "theSpectralRealm"
+
+      scope "noWayOut" $ flavor $ h "title" >> p "body"
+
       gather Set.DisappearanceAtTheTwilightEstate
       gather Set.InexorableFate
       gather Set.RealmOfDeath

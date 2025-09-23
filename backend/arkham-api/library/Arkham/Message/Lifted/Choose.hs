@@ -416,6 +416,11 @@ storyWithChooseOneM' builder choices = do
   (_, choices') <- runChooseT choices
   storyWithChooseOne (buildFlavor builder) choices'
 
+playerStoryWithChooseOneM' :: ReverseQueue m => PlayerId -> FlavorTextBuilder () -> ChooseT m a -> m ()
+playerStoryWithChooseOneM' pid builder choices = do
+  (_, choices') <- runChooseT choices
+  playerStoryWithChooseOne pid (buildFlavor builder) choices'
+
 storyWithChooseNM' :: ReverseQueue m => Int -> FlavorTextBuilder () -> ChooseT m a -> m ()
 storyWithChooseNM' n builder choices = when (n > 0) do
   (_, choices') <- runChooseT choices

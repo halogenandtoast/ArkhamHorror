@@ -72,6 +72,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
+import Arkham.Scenario.Options
 import Arkham.Search
 import {-# SOURCE #-} Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
@@ -1048,6 +1049,7 @@ data Message
   | SpentAllUses Target
   | StartCampaign
   | StartScenario ScenarioId
+  | LoadScenario ScenarioOptions
   | RestartScenario
   | StartSkillTest InvestigatorId
   | SkippedWindow InvestigatorId

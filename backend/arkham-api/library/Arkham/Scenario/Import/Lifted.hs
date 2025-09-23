@@ -42,6 +42,7 @@ import Arkham.Scenario.Runner as X (
   scenarioWith,
   sideStory,
   standaloneCampaignLogL,
+  tarotDeckL,
  )
 import Arkham.Scenario.Setup as X
 import Arkham.Source as X

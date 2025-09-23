@@ -68,6 +68,7 @@ import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
+import Arkham.Scenario.Options
 import Arkham.Search hiding (drawnCardsL, foundCardsL)
 import Arkham.Search qualified as Search
 import Arkham.Skill.Types qualified as Field
@@ -1577,6 +1578,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           ]
     pushAll [RemoveAllDoom (toSource a) target | target <- xs]
     pure a
+  LoadScenario opts -> do
+    pushAll
+      $ [LoadTarotDeck, SetChaosTokensForScenario, PreScenarioSetup, HandleKilledOrInsaneInvestigators]
+      <> [StandaloneSetup | scenarioOptionsStandalone opts]
+      <> [ChooseLeadInvestigator, SetPlayerOrder]
+      <> [PerformTarotReading | scenarioOptionsPerformTarotReading opts]
+      <> [SetupInvestigators, InvestigatorsMulligan, Setup, EndSetup]
+    pure $ a & startedL .~ True
   SetupInvestigators -> do
     iids <- allInvestigators
     pushAll $ map SetupInvestigator iids <> [DrawStartingHands]

@@ -126,7 +126,8 @@ instance RunMessage TreacheryAttrs where
     When (Revelation iid (isSource a -> True)) -> do
       mods <- getModifiers (toCardId a)
       for_ mods \case
-        RevelationModifier source inner -> eachInvestigator \iid' -> revelationModifier source iid' a.id inner
+        RevelationModifier source inner ->
+          eachInvestigator \iid' -> revelationModifier source iid' a.id inner
         _ -> pure ()
       checkWhen $ Window.ResolvingRevelation iid a.id
       pure a

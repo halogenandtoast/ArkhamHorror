@@ -105,6 +105,7 @@ import Arkham.PlayerCard
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario
+import Arkham.Scenario.Options
 import Arkham.Scenario.Types hiding (foundCardsL, scenario)
 import Arkham.Skill
 import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
@@ -466,11 +467,7 @@ runGameMessage msg g = case msg of
 
     pushAll
       $ [HandleOption option | standalone, option <- maybe [] (toList . campaignLogOptions) mCampaignLog]
-      <> [LoadTarotDeck, SetChaosTokensForScenario, PreScenarioSetup, HandleKilledOrInsaneInvestigators]
-      <> [StandaloneSetup | standalone]
-      <> [ChooseLeadInvestigator, SetPlayerOrder]
-      <> [PerformTarotReading | gamePerformTarotReadings g]
-      <> [SetupInvestigators, InvestigatorsMulligan, Setup, EndSetup]
+      <> [LoadScenario (ScenarioOptions standalone (gamePerformTarotReadings g))]
     pure
       $ g
       & (modeL %~ setScenario (setPlayerDecks $ setCampaignLog $ lookupScenario sid difficulty))

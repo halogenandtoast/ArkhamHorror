@@ -135,6 +135,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioIsSideStory :: Bool
   , scenarioInShuffle :: Bool
   , scenarioSearch :: Maybe Search
+  , scenarioStarted :: Bool
   , -- for standalone
     scenarioStoryCards :: Map InvestigatorId [PlayerCard]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
@@ -294,6 +295,7 @@ scenario f cardCode name difficulty layout =
       , scenarioInShuffle = False
       , scenarioXpBreakdown = Nothing
       , scenarioSearch = Nothing
+      , scenarioStarted = False
       }
 
 instance Entity ScenarioAttrs where
@@ -411,4 +413,5 @@ instance FromJSON ScenarioAttrs where
     scenarioPlayerDecks <- o .: "playerDecks"
     scenarioXpBreakdown <- o .:? "xpBreakdown"
     scenarioSearch <- o .:? "search"
+    scenarioStarted <- o .:? "started" .!= True
     pure ScenarioAttrs {..}

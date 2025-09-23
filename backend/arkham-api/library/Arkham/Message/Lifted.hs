@@ -302,6 +302,11 @@ storyWithChooseOne flavor choices = do
   lead <- getLeadPlayer
   push $ Msg.storyWithChooseOne lead players flavor choices
 
+playerStoryWithChooseOne :: ReverseQueue m => PlayerId -> FlavorText -> [UI Message] -> m ()
+playerStoryWithChooseOne pid flavor choices = do
+  players <- allPlayers
+  push $ Msg.storyWithChooseOne pid players flavor choices
+
 storyWithChooseN :: ReverseQueue m => Int -> FlavorText -> [UI Message] -> m ()
 storyWithChooseN n flavor choices = do
   players <- allPlayers

@@ -12,6 +12,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (story)
 import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
+import Arkham.Tarot
 import Arkham.Text
 import Control.Monad.State.Strict
 import GHC.Records
@@ -56,6 +57,9 @@ ul = addEntry . FT.ul
 
 img :: HasCardCode a => a -> FlavorTextBuilder ()
 img = addEntry . FT.img . toCardCode
+
+tarot :: TarotCardArcana -> FlavorTextBuilder ()
+tarot = addEntry . TarotEntry
 
 compose :: FlavorTextBuilder () -> FlavorTextBuilder ()
 compose builder = case buildFlavor builder of

@@ -74,6 +74,9 @@ export default defineComponent({
     const { entry } = this
     const {t } = useI18n()
     return formatEntry(t, entry)
+  },
+  data() {
+    return { green_fleur: `url(${imgsrc('green_fleur.png')})` }
   }
 })
 </script>
@@ -232,6 +235,38 @@ p.anke, :deep(p.anke) {
   font-family: auto !important;
 }
 
+div, :deep(div) {
+  &:has(.note-green) {
+    margin-block: 20px;
+    margin-inline: 50px;
+    box-shadow: unset;
+    overflow: hidden;
+    padding: 50px;
+    position: relative;
+    &::after {
+      position: absolute;
+      inset: 0px;
+      box-sizing: border-box;
+      content: "";
+      filter: blur(0.25em);
+      margin: 20px;
+      background-color: #E1E4DF;
+      mix-blend-mode: multiply;
+    }
+    &::before {
+      z-index: 2;
+      pointer-events: none;
+      position: absolute;
+      inset: 10px;
+      border-image-source: v-bind(green_fleur);
+      border-image-slice: 49.9%;
+      border-image-repeat: no-repeat;
+      border-image-width: 50px;
+      content: "";
+    }
+  }
+}
+
 :deep(.checkpoint), :deep(.interlude) {
   ul {
     margin-inline: 20px;
@@ -348,6 +383,19 @@ ul, :deep(ul) {
     border-bottom: 1px solid #2F3863;
     &::after {
       border-bottom: 1px solid #2F3863;
+    }
+  }
+}
+
+.note-green, :deep(.note-green) {
+  h1 {
+    text-align: center;
+    width: fit-content;
+    justify-self: center;
+    font-size: 1.8em;
+    border-bottom: 1px solid var(--green-title);
+    &::after {
+      border-bottom: 1px solid var(--green-title);
     }
   }
 }

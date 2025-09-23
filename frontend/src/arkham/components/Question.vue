@@ -22,6 +22,7 @@ export interface Props {
   isSkillTest?: boolean
 }
 
+const grunge = `url(${imgsrc('grunge.png')})`
 const checkpoint_fleur = `url(${imgsrc('checkpoint_fleur.png')})`
 const resolution_fleur = `url(${imgsrc('resolution_fleur.png')})`
 const props = withDefaults(defineProps<Props>(), { isSkillTest: false })
@@ -695,6 +696,8 @@ section {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  background-image: v-bind(grunge);
+  background-size: cover;
   @media (max-width: 768px) {
     max-width: 100%;
     font-size: 1.2em;
@@ -1102,9 +1105,8 @@ h2 {
 }
 
 .intro-text {
-  > * {
-    z-index: 2;
-  }
+  padding-inline: 20px;
+  padding-block: 30px;
   &:has(.resolution) {
     background-color: #BAA597;
     box-shadow: unset;

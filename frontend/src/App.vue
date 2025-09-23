@@ -465,6 +465,7 @@ button {
   --box-border: #434c5e;
 
   --title: #cecece;
+  --green-title: #38615F;
   --text: white;
   --spooky-green: #879C5A;
   --spooky-green-dark: #3A5144;

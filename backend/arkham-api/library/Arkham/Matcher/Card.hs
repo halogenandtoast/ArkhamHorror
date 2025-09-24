@@ -27,6 +27,8 @@ import Arkham.SlotType
 import Arkham.Trait (Trait (..))
 import Arkham.Trait qualified as Trait
 import Control.Lens.Plated (Plated)
+import Control.Monad.Fail (fail)
+import Data.Aeson (Result (..))
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 
@@ -68,8 +70,8 @@ data ExtendedCardMatcher
   | PlayableCardWithCriteria ActionStatus CriteriaOverride ExtendedCardMatcher
   | CommittableCard InvestigatorMatcher ExtendedCardMatcher
   | CardWithPerformableAbility AbilityMatcher [ModifierType]
-  | CanCancelRevelationEffect ExtendedCardMatcher
-  | CanCancelAllEffects ExtendedCardMatcher
+  | CanCancelRevelationEffect InvestigatorMatcher ExtendedCardMatcher
+  | CanCancelAllEffects InvestigatorMatcher ExtendedCardMatcher
   | CardWithoutModifier ModifierType
   | CardIsCommittedBy InvestigatorMatcher
   | ChosenViaCustomization ExtendedCardMatcher
@@ -115,6 +117,9 @@ instance IsLabel "skill" ExtendedCardMatcher where
 
 instance IsLabel "spell" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #spell
+
+instance IsLabel "hex" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #hex
 
 instance IsLabel "item" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #item
@@ -320,6 +325,9 @@ instance IsLabel "asset" CardMatcher where
 instance IsLabel "ally" CardMatcher where
   fromLabel = CardWithTrait Ally
 
+instance IsLabel "hex" CardMatcher where
+  fromLabel = CardWithTrait Hex
+
 instance IsLabel "parley" CardMatcher where
   fromLabel = CardWithAction #parley
 
@@ -402,9 +410,25 @@ instance FromJSON ExtendedCardMatcher where
       "CardMatches" -> BasicCardMatch . CardMatches <$> o .: "contents"
       "InHandOf" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        pure $ case contents of
+          Left iid -> InHandOf ForPlay iid
+          Right (forPlay, iid) -> InHandOf forPlay iid
+      "CanCancelRevelationEffect" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of
-          Left iid -> pure $ InHandOf ForPlay iid
-          Right (forPlay, iid) -> pure $ InHandOf forPlay iid
+          Left matcher -> do
+            case fromJSON (object ["tag" .= ("Anyone" :: Text)]) of
+              Success imatcher -> pure $ CanCancelRevelationEffect imatcher matcher
+              Error err -> fail err
+          Right (imatcher, matcher) -> pure $ CanCancelRevelationEffect imatcher matcher
+      "CanCancelAllEffects" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left matcher -> do
+            case fromJSON (object ["tag" .= ("Anyone" :: Text)]) of
+              Success imatcher -> pure $ CanCancelAllEffects imatcher matcher
+              Error err -> fail err
+          Right (imatcher, matcher) -> pure $ CanCancelAllEffects imatcher matcher
       _ -> $(mkParseJSON defaultOptions ''ExtendedCardMatcher) (Object o)
 
 -- ** Card Helpers **

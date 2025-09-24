@@ -27,7 +27,7 @@ instance HasAbilities SacredOathOathOfOrder5 where
         ( DrawCard
             #when
             You
-            (CanCancelRevelationEffect $ basic $ NonWeaknessTreachery <> hasAnyTrait [Curse, Hex])
+            (CanCancelRevelationEffect You $ basic $ NonWeaknessTreachery <> hasAnyTrait [Curse, Hex])
             AnyDeck
         )
         ControlsThis

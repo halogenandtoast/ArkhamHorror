@@ -21,7 +21,7 @@ instance HasAbilities JeromeDavids where
   getAbilities (JeromeDavids a) =
     [ restricted a 1 ControlsThis
         $ triggered
-          (DrawCard #when You (CanCancelRevelationEffect $ basic #treachery) EncounterDeck)
+          (DrawCard #when You (CanCancelRevelationEffect You $ basic #treachery) EncounterDeck)
           (exhaust a <> SkillIconCost 2 (singleton #intellect))
     ]
 

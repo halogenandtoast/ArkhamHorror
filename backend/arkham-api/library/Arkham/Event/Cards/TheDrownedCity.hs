@@ -17,7 +17,7 @@ psychicSensitivity =
             $ DrawCard
               #when
               (at_ Anywhere)
-              ( CanCancelAllEffects
+              ( CanCancelAllEffects You
                   $ basic IsEncounterCard
                   <> CardSharesTitleWith
                     (CardIsBeneathInvestigator $ InvestigatorWithTitle "Gloria Goldberg")

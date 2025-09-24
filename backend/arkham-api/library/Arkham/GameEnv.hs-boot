@@ -34,6 +34,7 @@ withModifiers'
 getAllModifiers :: HasGame m => m (Map Target [Modifier])
 getActiveAbilities :: HasGame m => m [Ability]
 getPhase :: HasGame m => m Phase
+getEnemyPhaseStep :: HasGame m => m (Maybe EnemyPhaseStep)
 getCurrentBatchId :: HasGame m => m (Maybe BatchId)
 getWindowDepth :: HasGame m => m Int
 getDepthLock :: HasGame m => m Int

@@ -168,6 +168,11 @@ getDistance l1 l2 = do
 getPhase :: HasGame m => m Phase
 getPhase = gamePhase <$> getGame
 
+getEnemyPhaseStep :: HasGame m => m (Maybe EnemyPhaseStep)
+getEnemyPhaseStep = getGame <&> \g -> case gamePhaseStep g of
+  Just (EnemyPhaseStep s) -> Just s
+  _ -> Nothing
+
 getWindowDepth :: HasGame m => m Int
 getWindowDepth = gameWindowDepth <$> getGame
 

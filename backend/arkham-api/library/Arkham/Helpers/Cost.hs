@@ -415,6 +415,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       HorrorCostX {} -> pure True -- TODO: Make better
       DamageCost {} -> pure True -- TODO: Make better
       DirectDamageCost {} -> pure True -- TODO: Make better
+      DirectHorrorCost {} -> pure True -- TODO: Make better
+      DirectDamageAndHorrorCost {} -> pure True -- TODO: Make better
       InvestigatorDamageCost {} -> pure True -- TODO: Make better
       DoomCost _ (AgendaMatcherTarget agendaMatcher) _ -> selectAny agendaMatcher
       DoomCost {} -> pure True -- TODO: Make better

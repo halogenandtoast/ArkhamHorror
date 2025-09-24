@@ -109,8 +109,28 @@ setupTheWitchingHour attrs = do
       , Locations.arkhamWoodsTangledThicket
       ]
     <> [Locations.arkhamWoodsQuietGlade | not isReturnTo]
+    <> ( guard isReturnTo
+           *> [ Locations.arkhamWoodsHiddenPath
+              , Locations.arkhamWoodsPlaceOfPower
+              , Locations.arkhamWoodsBootleggingOperation
+              ]
+       )
 
-  whenReturnTo $ removeOneOf Locations.arkhamWoodsQuietGlade
+  whenReturnTo do
+    returnToArkhamWoods <-
+      genCards
+        [ Locations.arkhamWoodsGreatWillow
+        , Locations.arkhamWoodsLakeside
+        , Locations.arkhamWoodsCorpseRiddenClearing
+        , Locations.arkhamWoodsWoodenBridge
+        ]
+
+    leadChooseOneM do
+      questionLabeled' "gatherTheDevourerBelow"
+      questionLabeledCard (CardCode "54017b")
+      unscoped $ labeled' "yes" $ push $ SetAsideCards returnToArkhamWoods
+      unscoped $ labeled' "no" nothing
+    removeOneOf Locations.arkhamWoodsQuietGlade
 
   iids <- getInvestigators
   let

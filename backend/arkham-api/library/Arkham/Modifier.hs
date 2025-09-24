@@ -88,6 +88,7 @@ data ModifierType
   | AsIfInHandForPlay CardId
   | AsIfUnderControlOf InvestigatorId
   | AsIfTurn InvestigatorId
+  | EnemyAttacksOverride InvestigatorMatcher
   | AttackDealsEitherDamageOrHorror
   | AttacksCannotBeCancelled
   | Barricades [LocationId]
@@ -261,6 +262,9 @@ data ModifierType
   | DoubleSuccess
   | DuringEnemyPhaseMustMoveToward Target
   | EffectsCannotBeCanceled
+  | CannotCancelCardOrGameEffects
+  | CannotIgnoreCardOrGameEffects
+  | DrawGainsPeril
   | EnemyEngageActionCriteria CriteriaOverride
   | EnemyEvade Int
   | SwapFightAndEvade

@@ -84,5 +84,7 @@
   "takeHorrorForEachPointOfFailure": "Take 1 horror for each point you failed by | Take {count} horror for each point you failed by",
   "takeHorrorUpTo": "Take up to {count} horror",
   "test": "Test {'{'}{skill}{'}'} ({count})",
-  "useSkill": "Use {'{'}{skill}{'}'}"
+  "useSkill": "Use {'{'}{skill}{'}'}",
+  "yes": "Yes",
+  "no": "No"
 }

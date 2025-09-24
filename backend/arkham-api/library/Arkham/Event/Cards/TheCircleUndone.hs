@@ -39,12 +39,12 @@ darkInsight =
               [ DrawCard
                   #when
                   (affectsOthers $ colocatedWithMatch You)
-                  (CanCancelRevelationEffect $ basic $ NonPeril <> oneOf [IsEncounterCard, WeaknessCard])
+                  (CanCancelRevelationEffect You $ basic $ NonPeril <> oneOf [IsEncounterCard, WeaknessCard])
                   AnyDeck
               , DrawCard
                   #when
                   You
-                  (CanCancelRevelationEffect $ basic $ oneOf [IsEncounterCard, WeaknessCard])
+                  (CanCancelRevelationEffect You $ basic $ oneOf [IsEncounterCard, WeaknessCard])
                   AnyDeck
               ]
       }

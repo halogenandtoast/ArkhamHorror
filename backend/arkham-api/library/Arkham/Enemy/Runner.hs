@@ -106,6 +106,7 @@ filterOutEnemyMessages eid ask'@(Ask pid q) = case q of
   Read {} -> Just ask'
   DropDown {} -> Just ask'
   PickSupplies {} -> Just ask'
+  PickDestiny {} -> Just ask'
   ChooseOne msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
     x -> Just (Ask pid $ ChooseOne x)

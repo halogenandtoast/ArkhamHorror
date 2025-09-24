@@ -206,7 +206,7 @@ data Criterion
   | LocationExists LocationMatcher
   | AgendaCount Int AgendaMatcher
   | AssetCount Int AssetMatcher
-  | EnemyCount Int EnemyMatcher
+  | EnemyCount ValueMatcher EnemyMatcher
   | EventCount ValueMatcher EventMatcher
   | LocationCount Int LocationMatcher
   | ExtendedCardCount Int ExtendedCardMatcher
@@ -478,4 +478,15 @@ $(deriveJSON defaultOptions ''CostReduction)
 $(deriveJSON defaultOptions ''DiscardSignifier)
 $(deriveJSON defaultOptions ''UnderZone)
 $(deriveJSON defaultOptions ''EnemyCriterion)
-$(deriveJSON defaultOptions ''Criterion)
+$(deriveToJSON defaultOptions ''Criterion)
+
+instance FromJSON Criterion where
+  parseJSON = withObject "Criterion" $ \o -> do
+    tag <- o .: "tag"
+    case (tag :: Text) of
+      "EnemyCount" -> do
+        contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+        pure $ case contents of
+          Right (vm, em) -> EnemyCount vm em
+          Left (n, em) -> EnemyCount (GreaterThanOrEqualTo (Static n)) em
+      _ -> $(mkParseJSON defaultOptions ''Criterion) (Object o)

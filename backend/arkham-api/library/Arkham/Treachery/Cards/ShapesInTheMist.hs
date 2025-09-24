@@ -1,14 +1,8 @@
-module Arkham.Treachery.Cards.ShapesInTheMist (
-  shapesInTheMist,
-  ShapesInTheMist (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.ShapesInTheMist (shapesInTheMist) where
 
 import Arkham.Campaigns.TheCircleUndone.Helpers
-import Arkham.Classes
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype ShapesInTheMist = ShapesInTheMist TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -18,8 +12,8 @@ shapesInTheMist :: TreacheryCard ShapesInTheMist
 shapesInTheMist = treachery ShapesInTheMist Cards.shapesInTheMist
 
 instance RunMessage ShapesInTheMist where
-  runMessage msg t@(ShapesInTheMist attrs) = case msg of
+  runMessage msg t@(ShapesInTheMist attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       runHauntedAbilities iid
       pure t
-    _ -> ShapesInTheMist <$> runMessage msg attrs
+    _ -> ShapesInTheMist <$> liftRunMessage msg attrs

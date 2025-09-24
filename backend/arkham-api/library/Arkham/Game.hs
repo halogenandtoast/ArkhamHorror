@@ -4964,6 +4964,7 @@ instance Projection Campaign where
       CampaignDecks -> pure campaignDecks
       CampaignMeta -> pure campaignMeta
       CampaignStore -> pure campaignStore
+      CampaignDestiny -> pure campaignDestiny
       CampaignInvalidCards -> case c of
         Campaign k -> pure $ invalidCards k
 

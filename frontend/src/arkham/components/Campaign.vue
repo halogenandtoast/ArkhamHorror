@@ -77,6 +77,22 @@ const upgradeDeck = computed(() => {
   return false
 })
 
+const pickDestiny = computed(() => {
+  const question = Object.values(props.game.question)[0]
+
+  if (question === null || question == undefined) {
+    return false
+  }
+
+  const { tag } = question
+
+  if (tag === 'PickDestiny') {
+    return true
+  }
+
+  return false
+})
+
 const questionHash = computed(() => {
   let question = JSON.stringify(props.game.question[props.playerId])
   return btoa(encodeURIComponent(question))
@@ -92,8 +108,11 @@ const questionHash = computed(() => {
     <ChooseDeck :game="game" :key="playerId" :playerId="playerId" @choose="choose" />
   </div>
   <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">
+    <template v-if="pickDestiny">
+      <StoryQuestion :game="game" :key="questionHash" :playerId="playerId" @choose="choose" />
+    </template>
     <Scenario
-      v-if="game.scenario && game.scenario.started && Object.entries(game.investigators).length > 0"
+      v-else-if="game.scenario && game.scenario.started && Object.entries(game.investigators).length > 0"
       :game="game"
       :scenario="game.scenario"
       :playerId="playerId"

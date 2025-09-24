@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.EvilPast (evilPast, EvilPast (..)) where
+module Arkham.Treachery.Cards.EvilPast (evilPast) where
 
 import Arkham.Ability
 import Arkham.Matcher

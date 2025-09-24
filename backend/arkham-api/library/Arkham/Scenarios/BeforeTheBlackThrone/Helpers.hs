@@ -1,8 +1,6 @@
 module Arkham.Scenarios.BeforeTheBlackThrone.Helpers where
 
-import Arkham.Prelude
-
-import Arkham.Campaigns.TheCircleUndone.Helpers
+import Arkham.Campaigns.TheCircleUndone.I18n
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
@@ -20,6 +18,7 @@ import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message.Lifted.Queue
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))

@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.DaemonicPiping (daemonicPiping, DaemonicPiping (..)) where
+module Arkham.Treachery.Cards.DaemonicPiping (daemonicPiping) where
 
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies

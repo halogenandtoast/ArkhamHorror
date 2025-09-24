@@ -75,5 +75,43 @@
     "body": "Body",
     "hand": "Hand",
     "tarot": "Tarot"
+  },
+  "destiny": {
+    "theWitchingHour": "The Witching Hour",
+    "atDeathsDoorStep": "At Death's Door Step",
+    "theSecretName": "The Secret Name",
+    "theWagesOfSin": "The Wages of Sin",
+    "forTheGreaterGood": "For the Greater Good",
+    "unionAndDisillusion": "Union and Disillusion",
+    "inTheClutchesOfChaos": "In the Clutches of Chaos",
+    "beforeTheBlackThrone": "Before the Black Throne"
+  },
+  "pickDestiny": {
+    "title": "Pick Destiny",
+    "instructions": "Reverse half of the cards (rounded up)."
+  },
+  "tarot": {
+    "TheFool0": "The Fool • 0",
+    "TheMagicianI": "The Magician • I",
+    "TheHighPriestessII": "The High Priestess • II",
+    "TheEmpressIII": "The Empress • III",
+    "TheEmperorIV": "The Emperor • IV",
+    "TheHierophantV": "The Hierophant • V",
+    "TheLoversVI": "The Lovers • VI",
+    "TheChariotVII": "The Chariot • VII",
+    "StrengthVIII": "Strength • VIII",
+    "TheHermitIX": "The Hermit • IX",
+    "WheelOfFortuneX": "Wheel of Fortune • X",
+    "JusticeXI": "Justice • XI",
+    "TheHangedManXII": "The Hanged Man • XII",
+    "DeathXIII": "Death • XIII",
+    "TemperanceXIV": "Temperance • XIV",
+    "TheDevilXV": "The Devil • XV",
+    "TheTowerXVI": "The Tower • XVI",
+    "TheStarXVII": "The Star • XVII",
+    "TheMoonXVIII": "The Moon • XVIII",
+    "TheSunXIX": "The Sun • XIX",
+    "JudgementXX": "Judgement • XX",
+    "TheWorldXXI": "The World • XXI"
   }
 }

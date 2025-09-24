@@ -174,6 +174,7 @@ library
       Arkham.Act.Cards.ReefOfMysteries
       Arkham.Act.Cards.Repossession
       Arkham.Act.Cards.RestrictedAccess
+      Arkham.Act.Cards.ReturnToACircleUnbroken
       Arkham.Act.Cards.RicesWhereabouts
       Arkham.Act.Cards.Row
       Arkham.Act.Cards.Run
@@ -1513,6 +1514,7 @@ library
       Arkham.Campaigns.TheCircleUndone.ChaosBag
       Arkham.Campaigns.TheCircleUndone.FlavorText
       Arkham.Campaigns.TheCircleUndone.Helpers
+      Arkham.Campaigns.TheCircleUndone.I18n
       Arkham.Campaigns.TheCircleUndone.Import
       Arkham.Campaigns.TheCircleUndone.Key
       Arkham.Campaigns.TheCircleUndone.Memento
@@ -2726,11 +2728,14 @@ library
       Arkham.Location.Cards.AnotherDimension
       Arkham.Location.Cards.APocketInTime
       Arkham.Location.Cards.ArkhamPoliceStation
+      Arkham.Location.Cards.ArkhamWoodsBootleggingOperation
       Arkham.Location.Cards.ArkhamWoodsCliffside
       Arkham.Location.Cards.ArkhamWoodsCorpseRiddenClearing
       Arkham.Location.Cards.ArkhamWoodsGreatWillow
+      Arkham.Location.Cards.ArkhamWoodsHiddenPath
       Arkham.Location.Cards.ArkhamWoodsLakeside
       Arkham.Location.Cards.ArkhamWoodsOldHouse
+      Arkham.Location.Cards.ArkhamWoodsPlaceOfPower
       Arkham.Location.Cards.ArkhamWoodsQuietGlade
       Arkham.Location.Cards.ArkhamWoodsTangledThicket
       Arkham.Location.Cards.ArkhamWoodsTwistingPaths
@@ -3517,6 +3522,8 @@ library
       Arkham.Location.Cards.WitchHauntedWoodsOvergrownBarn
       Arkham.Location.Cards.WitchHauntedWoodsTaintedWell
       Arkham.Location.Cards.WitchHauntedWoodsTheLonelyTree
+      Arkham.Location.Cards.WitchHauntedWoodsUnmarkedGraveyard
+      Arkham.Location.Cards.WitchHauntedWoodsWitchTree
       Arkham.Location.Cards.WitchHouseRuins
       Arkham.Location.Cards.Xochimilco
       Arkham.Location.Cards.Yard
@@ -3772,7 +3779,6 @@ library
       Arkham.Scenarios.TheWagesOfSin.Helpers
       Arkham.Scenarios.TheWagesOfSin.Story
       Arkham.Scenarios.TheWitchingHour.Helpers
-      Arkham.Scenarios.TheWitchingHour.Story
       Arkham.Scenarios.ThreadsOfFate.Helpers
       Arkham.Scenarios.ToTheForbiddenPeaks.Helpers
       Arkham.Scenarios.TurnBackTime.Helpers

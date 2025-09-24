@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.TheDisappearance (theDisappearance,) where
+module Arkham.Act.Cards.TheDisappearance (theDisappearance) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards

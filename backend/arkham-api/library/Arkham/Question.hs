@@ -11,6 +11,7 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.ChaosBagStepState
 import Arkham.Id
+import Arkham.I18n
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -151,9 +152,16 @@ data Question msg
   | QuestionLabel {label :: Text, card :: Maybe CardCode, question :: Question msg}
   | Read {flavorText :: FlavorText, readChoices :: ReadChoices msg, readCards :: Maybe [CardCode]}
   | PickSupplies {pointsRemaining :: Int, chosenSupplies :: [Supply], choices :: [UI msg], resupply :: Bool}
+  | PickDestiny {drawings :: [DestinyDrawing]}
   | DropDown {options :: [(Text, msg)]}
   | PickScenarioSettings
   | PickCampaignSettings
+  deriving stock (Show, Ord, Eq, Data)
+
+data DestinyDrawing = DestinyDrawing
+  { scenario :: Scope
+  , tarot :: TarotCard
+  }
   deriving stock (Show, Ord, Eq, Data)
 
 data ReadChoices msg
@@ -207,6 +215,7 @@ mapTargetLabelWith g f = map (uncurry targetLabel . (g &&& f))
 concat
   [ deriveJSON defaultOptions ''GameTokenType
   , deriveJSON defaultOptions ''Component
+  , deriveJSON defaultOptions ''DestinyDrawing
   , deriveToJSON defaultOptions ''PaymentAmountChoice
   , [d|
       instance FromJSON msg => FromJSON (PaymentAmountChoice msg) where

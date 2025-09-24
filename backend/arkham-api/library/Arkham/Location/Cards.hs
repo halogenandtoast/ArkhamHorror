@@ -121,11 +121,14 @@ allLocationCards =
       , ancientPlanetarium
       , anotherDimension
       , arkhamPoliceStation
+      , arkhamWoodsBootleggingOperation
       , arkhamWoodsCliffside
       , arkhamWoodsCorpseRiddenClearing
       , arkhamWoodsGreatWillow
+      , arkhamWoodsHiddenPath
       , arkhamWoodsLakeside
       , arkhamWoodsOldHouse
+      , arkhamWoodsPlaceOfPower
       , arkhamWoodsQuietGlade
       , arkhamWoodsTangledThicket
       , arkhamWoodsTwistingPaths
@@ -910,6 +913,8 @@ allLocationCards =
       , witchHauntedWoodsOvergrownBarn
       , witchHauntedWoodsTaintedWell
       , witchHauntedWoodsTheLonelyTree
+      , witchHauntedWoodsUnmarkedGraveyard
+      , witchHauntedWoodsWitchTree
       , witchHouseRuins
       , xochimilco
       , yard
@@ -9172,6 +9177,78 @@ cloudForest =
       Heart
       [Hourglass, Diamond, Moon, T]
       ReturnToRainforest
+
+witchHauntedWoodsWitchTree :: CardDef
+witchHauntedWoodsWitchTree =
+  victory 1
+    $ locationWithUnrevealed
+      "54019"
+      "Witch-Haunted Woods"
+      [Woods]
+      Squiggle
+      [Squiggle, Plus]
+      ("Witch-Haunted Woods" <:> "Witch Tree")
+      [Woods]
+      Squiggle
+      [Squiggle, Plus]
+      ReturnToTheWitchingHour
+
+witchHauntedWoodsUnmarkedGraveyard :: CardDef
+witchHauntedWoodsUnmarkedGraveyard =
+  victory 1
+    $ locationWithUnrevealed
+      "54020"
+      "Witch-Haunted Woods"
+      [Woods]
+      Squiggle
+      [Squiggle, Plus]
+      ("Witch-Haunted Woods" <:> "Unmarked Graveyard")
+      [Woods]
+      Squiggle
+      [Squiggle, Plus]
+      ReturnToTheWitchingHour
+
+arkhamWoodsHiddenPath :: CardDef
+arkhamWoodsHiddenPath =
+  locationWithUnrevealed
+    "54021"
+    "Arkham Woods"
+    [Woods]
+    Square
+    [Squiggle]
+    ("Arkham Woods" <:> "Hidden Path")
+    [Woods]
+    Spade
+    [Squiggle, Trefoil]
+    ReturnToTheWitchingHour
+
+arkhamWoodsPlaceOfPower :: CardDef
+arkhamWoodsPlaceOfPower =
+  locationWithUnrevealed
+    "54022"
+    "Arkham Woods"
+    [Woods]
+    Square
+    [Squiggle]
+    ("Arkham Woods" <:> "Place of Power")
+    [Woods]
+    Trefoil
+    [Squiggle, Spade]
+    ReturnToTheWitchingHour
+
+arkhamWoodsBootleggingOperation :: CardDef
+arkhamWoodsBootleggingOperation =
+  locationWithUnrevealed
+    "54023"
+    "Arkham Woods"
+    [Woods]
+    Square
+    [Squiggle]
+    ("Arkham Woods" <:> "Bootlegging Operation")
+    [Woods]
+    Trefoil
+    [Squiggle, Equals, Hourglass]
+    ReturnToTheWitchingHour
 
 wineCellarSpectral :: CardDef
 wineCellarSpectral =

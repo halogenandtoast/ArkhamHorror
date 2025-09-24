@@ -53,6 +53,7 @@ import Arkham.Fight.Types
 import Arkham.Game.State
 import Arkham.Helpers
 import Arkham.History
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigate.Types
 import {-# SOURCE #-} Arkham.Investigator
@@ -70,9 +71,9 @@ import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Resolution
 import Arkham.Scenario.Deck
+import Arkham.Scenario.Options
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
-import Arkham.Scenario.Options
 import Arkham.Search
 import {-# SOURCE #-} Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
@@ -1006,6 +1007,7 @@ data Message
   | SetActions InvestigatorId Source Int
   | SetEncounterDeck (Deck EncounterCard)
   | SetLayout [GridTemplateRow]
+  | SetDecksLayout [GridTemplateRow]
   | SetLocationLabel LocationId Text
   | SetRole InvestigatorId ClassSymbol
   | ForceChaosTokenDraw ChaosTokenFace
@@ -1154,6 +1156,10 @@ data Message
   | FocusTarotCards [TarotCard]
   | UnfocusTarotCards
   | RotateTarot TarotCard
+  | SetDestiny (Map Scope TarotCard)
+  | CheckDestiny
+  | RunDestiny
+  | ResolveDestiny TarotCard
   | Incursion LocationId
   | SetInvestigatorForm InvestigatorId InvestigatorForm
   | PlaceReferenceCard Target CardCode

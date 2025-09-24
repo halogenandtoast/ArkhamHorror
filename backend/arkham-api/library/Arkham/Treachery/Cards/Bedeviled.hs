@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.Bedeviled (bedeviled, Bedeviled (..)) where
+module Arkham.Treachery.Cards.Bedeviled (bedeviled) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers

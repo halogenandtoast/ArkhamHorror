@@ -3,6 +3,7 @@ module Arkham.Message.Lifted (module X, module Arkham.Message.Lifted) where
 import Arkham.Helpers.FetchCard as X
 
 import Arkham.Ability
+import Arkham.Layout
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Act.Types (ActAttrs (actDeckId))
 import Arkham.Action (Action)
@@ -128,6 +129,9 @@ setActDeck = traverse fetchCard >=> push . SetActDeckCards 1
 
 setActDeckN :: ReverseQueue m => Int -> [CardDef] -> m ()
 setActDeckN n = genCards >=> push . SetActDeckCards n
+
+setDecksLayout :: ReverseQueue m => [GridTemplateRow] -> m ()
+setDecksLayout = push . SetDecksLayout
 
 placeSetAsideLocation :: ReverseQueue m => CardDef -> m LocationId
 placeSetAsideLocation card = do
@@ -399,6 +403,11 @@ endOfScenario = push $ EndOfGame Nothing
 
 endOfScenarioThen :: ReverseQueue m => CampaignStep -> m ()
 endOfScenarioThen = push . EndOfGame . Just
+
+dealAssetDirectDamage
+  :: (ReverseQueue m, Sourceable source, AsId asset, IdOf asset ~ AssetId)
+  => asset -> source -> Int -> m ()
+dealAssetDirectDamage asset source damage = dealAssetDirectDamageAndHorror asset source damage 0
 
 dealAssetDirectDamageAndHorror
   :: (ReverseQueue m, Sourceable source, AsId asset, IdOf asset ~ AssetId)

@@ -911,7 +911,13 @@ allLocations =
     , SomeLocationCard trailOfTheDead
     , SomeLocationCard cloudForest
     , -- Return to The Circle Undone
-      --- Return to At Death's Doorstep
+      --- Return to The Witching Hour
+      SomeLocationCard witchHauntedWoodsWitchTree
+    , SomeLocationCard witchHauntedWoodsUnmarkedGraveyard
+    , SomeLocationCard arkhamWoodsHiddenPath
+    , SomeLocationCard arkhamWoodsPlaceOfPower
+    , SomeLocationCard arkhamWoodsBootleggingOperation
+    , --- Return to At Death's Doorstep
       SomeLocationCard wineCellarSpectral
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores

@@ -13,6 +13,7 @@ import Arkham.Classes.RunMessage.Internal
 import Arkham.Difficulty
 import Arkham.Helpers
 import Arkham.History
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Json
 import Arkham.Key
@@ -34,6 +35,7 @@ import Arkham.Zone
 import Control.Lens (_Just)
 import Data.Aeson.TH
 import Data.Data
+import Data.Text qualified as T
 import GHC.Records
 
 class
@@ -136,6 +138,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioInShuffle :: Bool
   , scenarioSearch :: Maybe Search
   , scenarioStarted :: Bool
+  , scenarioScope :: Scope
   , -- for standalone
     scenarioStoryCards :: Map InvestigatorId [PlayerCard]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
@@ -296,6 +299,9 @@ scenario f cardCode name difficulty layout =
       , scenarioXpBreakdown = Nothing
       , scenarioSearch = Nothing
       , scenarioStarted = False
+      , scenarioScope = toScope $ case T.stripPrefix "Return to " (toTitle name) of
+          Just suffix -> suffix
+          Nothing -> toTitle name
       }
 
 instance Entity ScenarioAttrs where
@@ -414,4 +420,5 @@ instance FromJSON ScenarioAttrs where
     scenarioXpBreakdown <- o .:? "xpBreakdown"
     scenarioSearch <- o .:? "search"
     scenarioStarted <- o .:? "started" .!= True
+    scenarioScope <- o .:? "scope" .!= "missing"
     pure ScenarioAttrs {..}

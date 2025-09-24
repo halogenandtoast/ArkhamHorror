@@ -482,6 +482,7 @@ button {
   --card-width: min(calc(2.5vw + 20px), 60px);
   --card-height: min(calc(3.545vw + 28.36px), 85.08px);
   --card-aspect: 0.705;
+  --tarot-aspec: 0.571429;
   --card-sideways-aspect: 1.41844;
   --card-tarot-aspect: 0.571429;
 

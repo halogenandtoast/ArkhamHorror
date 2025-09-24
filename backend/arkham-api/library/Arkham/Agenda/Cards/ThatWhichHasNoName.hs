@@ -30,7 +30,7 @@ instance HasAbilities ThatWhichHasNoName where
     , restricted
         a
         2
-        ( EnemyCount 15 (enemyIs Enemies.theNamelessMadness)
+        ( EnemyCount (atLeast 15) (enemyIs Enemies.theNamelessMadness)
             <> not_ (LocationCount 5 (LocationWithModifier $ ScenarioModifier "collapsed"))
         )
         $ forced

@@ -363,6 +363,26 @@ const tarotLabels = computed(() =>
       return choice.tag === "TarotLabel" ? [{choice, index}] : []
     }))
 
+const focusedTarotCards = computed(() => props.game.focusedTarotCards)
+
+interface TarotChoice {
+  card: ArkhamGame.TarotCard
+  index?: number
+}
+
+const tarotChoices = computed<TarotChoice[]>(() => {
+  const labels = tarotLabels.value
+  if (labels.length == 0) return []
+  if (focusedTarotCards.value.length == 0) return labels.map(({choice, index}) => ({ card: choice.tarotCard, index}))
+
+  return focusedTarotCards.value.map((card) => {
+    const choice = labels.find(({choice}) => choice.tarotCard.arcana === card.arcana)
+    return choice ? { card, index: choice.index } : { card }
+  })
+})
+
+
+
 const cardLabels = computed(() =>
   choices.value.
     flatMap((choice, index) => {
@@ -401,10 +421,11 @@ const cardPiles = computed(() => {
     </template>
   </div>
 
-  <div v-if="tarotLabels.length > 0">
-    <template v-for="{choice, index} in tarotLabels" :key="index">
-      <a href='#' @click.prevent="choose(index)">
-        <img class="card" :src="imgsrc(`tarot/${tarotCardImage(choice.tarotCard)}`)"/>
+  <div v-if="tarotChoices.length > 0" class="tarotLabels">
+    <template v-for="{card, index} in tarotChoices" :key="index">
+      <img v-if="index === undefined" class="card" :src="imgsrc(`tarot/${tarotCardImage(card)}`)" :class="{ [card.facing]: true}" />
+      <a v-else href='#' @click.prevent="choose(index)">
+        <img class="card" :src="imgsrc(`tarot/${tarotCardImage(card)}`)" :class="{ [card.facing]: true}" />
       </a>
     </template>
   </div>
@@ -1087,6 +1108,31 @@ h2 {
   img {
     border: 1px solid var(--select);
     border-radius: 5px;
+  }
+
+  .card {
+    max-width: 200px;
+  }
+}
+
+.tarotLabels {
+  margin: 10px;
+  img {
+    border-radius: 5px;
+
+    &.Reversed {
+      transform: rotateZ(180deg);
+      &:before {
+        transform-origin: center;
+        animation-fill-mode: forwards;
+        animation: shadow-rotate 0.5s linear;
+        transform: translate(0, -12px);
+      }
+    }
+  }
+
+  a > img {
+    border: 1px solid var(--select);
   }
 
   .card {

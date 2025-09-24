@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.RealmOfTorment (realmOfTorment, RealmOfTorment (..)) where
+module Arkham.Treachery.Cards.RealmOfTorment (realmOfTorment) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheCircleUndone.Helpers
@@ -15,8 +15,8 @@ realmOfTorment = treachery RealmOfTorment Cards.realmOfTorment
 
 instance HasAbilities RealmOfTorment where
   getAbilities (RealmOfTorment a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $ forced $ TurnBegins #when You
-    , skillTestAbility $ restrictedAbility a 2 (InThreatAreaOf You) $ forced $ TurnEnds #when You
+    [ restricted a 1 (InThreatAreaOf You) $ forced $ TurnBegins #when You
+    , skillTestAbility $ restricted a 2 (InThreatAreaOf You) $ forced $ TurnEnds #when You
     ]
 
 instance RunMessage RealmOfTorment where

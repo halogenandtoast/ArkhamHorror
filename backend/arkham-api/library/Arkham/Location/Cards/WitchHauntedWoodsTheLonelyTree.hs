@@ -12,6 +12,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Scenarios.TheWitchingHour.Helpers
 
 newtype WitchHauntedWoodsTheLonelyTree = WitchHauntedWoodsTheLonelyTree LocationAttrs
   deriving anyclass IsLocation
@@ -52,16 +53,15 @@ instance RunMessage WitchHauntedWoodsTheLonelyTree where
       handLength <- fieldMap InvestigatorHand length iid
       canDraw <- can.draw.cards FromOtherSource iid
 
-      chooseOrRunOneM iid do
+      chooseOrRunOneM iid $ scenarioI18n do
         when (handLength > 0) do
-          labeled
-            "You choose and discard 1 card from your hand, then an investigator at a different Witch-Haunted Woods draws 1 card"
-            do
+          labeled' "witchHauntedWoodsTheLonelyTree.youDiscardTheyDraw"
+            $ do
               inner <- capture $ chooseTargetM iid forDraw \other -> drawCards other attrs 1
               chooseAndDiscardCardEdit iid attrs \d -> d {discardThen = guard (notNull inner) $> Run inner}
 
         when (notNull forDiscard && canDraw) do
-          labeled "vice versa" do
+          labeled' "witchHauntedWoodsTheLonelyTree.viceVersa" do
             chooseOrRunOneM iid do
               inner <- capture $ drawCards iid attrs 1
               targets forDiscard \other ->

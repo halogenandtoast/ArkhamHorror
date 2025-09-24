@@ -20,6 +20,7 @@ import Arkham.Queue
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tarot
 import Arkham.Text (FlavorText (..), FlavorTextEntry (..), FlavorTextModifier (..), toI18n)
 import Arkham.Window (defaultWindows)
 import Control.Monad.State.Strict
@@ -274,6 +275,11 @@ cardLabeled a action = unterminated do
   msgs <- lift $ capture action
   tell [CardLabel (toCardCode a) msgs]
 
+tarotLabeled :: ReverseQueue m => TarotCard -> QueueT Message m () -> ChooseT m ()
+tarotLabeled tarotCard action = unterminated do
+  msgs <- lift $ capture action
+  tell [TarotLabel tarotCard msgs]
+
 cardsLabeled :: (ReverseQueue m, HasCardCode a) => [a] -> (a -> QueueT Message m ()) -> ChooseT m ()
 cardsLabeled as action = traverse_ (\a -> cardLabeled a (action a)) as
 
@@ -416,7 +422,8 @@ storyWithChooseOneM' builder choices = do
   (_, choices') <- runChooseT choices
   storyWithChooseOne (buildFlavor builder) choices'
 
-playerStoryWithChooseOneM' :: ReverseQueue m => PlayerId -> FlavorTextBuilder () -> ChooseT m a -> m ()
+playerStoryWithChooseOneM'
+  :: ReverseQueue m => PlayerId -> FlavorTextBuilder () -> ChooseT m a -> m ()
 playerStoryWithChooseOneM' pid builder choices = do
   (_, choices') <- runChooseT choices
   playerStoryWithChooseOne pid (buildFlavor builder) choices'

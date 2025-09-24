@@ -49,6 +49,9 @@
     "intro4": "<p>_Intro 4_: Silence hangs in the air as you peer into The Tower card. The world around you dissolves into emptiness as your eyes fixate on the onyx tower. Rolling thunder echoes in the distance. “Do you understand now?” Anna asks. There is no other sign of the soothsayer: only her strained voice. A bolt of lightning streaks across the sky. “Do you see your fate before you, as I do?”</p><p>Another resounding crack of thunder, and you are suddenly awake. Icy rain pelts your body, soaking you through to the bone. You are lying in the mud beside a wooded trail, and there is no other soul in sight…"
   },
   "resolutions": {
+    "xp": {
+      "bonus": "Gains insight into Arkham’s mysterious past."
+    },
     "noResolution": {
       "title": "No Resolution",
       "body": "<p>_If no resolution was reached because each investigator was defeated, and it was act 1, 2, or 3 when the scenario ended_: Go to _Resolution 3_.</p><p>_If no resolution was reached because each investigator was defeated, and it was act 4 when the scenario ended_: Go to _Resolution 4_.</p>"

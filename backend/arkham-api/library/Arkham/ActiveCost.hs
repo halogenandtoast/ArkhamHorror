@@ -624,6 +624,20 @@ payCost msg c iid skipAdditionalCosts cost = do
           push $ InvestigatorDirectDamage iid' source x 0
           withPayment $ DirectDamagePayment x
         _ -> error "exactly one investigator expected for direct damage"
+    DirectHorrorCost _ investigatorMatcher x -> do
+      investigators <- select investigatorMatcher
+      case investigators of
+        [iid'] -> do
+          push $ InvestigatorDirectDamage iid' source 0 x
+          withPayment $ DirectHorrorPayment x
+        _ -> error "exactly one investigator expected for direct damage"
+    DirectDamageAndHorrorCost _ investigatorMatcher x y -> do
+      investigators <- select investigatorMatcher
+      case investigators of
+        [iid'] -> do
+          push $ InvestigatorDirectDamage iid' source x y
+          withPayment $ DirectDamagePayment x <> DirectHorrorPayment y
+        _ -> error "exactly one investigator expected for direct damage"
     InvestigatorDamageCost source' investigatorMatcher damageStrategy x -> do
       investigators <- select investigatorMatcher
       push

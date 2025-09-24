@@ -419,9 +419,9 @@ aTestOfWill2 =
             [ DrawCard
                 #when
                 (affectsOthers $ InvestigatorAt YourLocation)
-                (CanCancelRevelationEffect $ basic $ NonPeril <> NonWeaknessTreachery)
+                (CanCancelRevelationEffect You $ basic $ NonPeril <> NonWeaknessTreachery)
                 EncounterDeck
-            , DrawCard #when You (CanCancelRevelationEffect $ basic NonWeaknessTreachery) EncounterDeck
+            , DrawCard #when You (CanCancelRevelationEffect You $ basic NonWeaknessTreachery) EncounterDeck
             ]
     , cdLevel = Just 2
     }

@@ -750,7 +750,8 @@ instance RunMessage EnemyAttrs where
     EnemiesAttack | not enemyExhausted && not enemyDefeated -> do
       mods <- getModifiers (EnemyTarget enemyId)
       unless (CannotAttack `elem` mods) do
-        iids <- select enemyAttacks
+        let mOverride = getFirst $ mconcat [First (Just override) | EnemyAttacksOverride override <- mods]
+        iids <- select $ fromMaybe enemyAttacks mOverride
         case iids of
           [] -> pure ()
           [x] ->

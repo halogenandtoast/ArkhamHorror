@@ -3134,7 +3134,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       checkWindows [mkWhen $ Window.DrawCard iid (toCard card) deck]
     if hasForesight
       then do
-        canCancel <- PlayerCard card <=~> CanCancelRevelationEffect #any
+        canCancel <- PlayerCard card <=~> CanCancelRevelationEffect (InvestigatorWithId iid) #any
         availableResources <- getSpendableResources iid
         player <- getPlayer iid
         playable <-

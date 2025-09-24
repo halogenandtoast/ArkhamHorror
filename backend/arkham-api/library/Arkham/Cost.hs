@@ -85,6 +85,7 @@ data Payment
   | HorrorPayment Int
   | DamagePayment Int
   | DirectDamagePayment Int
+  | DirectHorrorPayment Int
   | InvestigatorDamagePayment Int
   | SkillIconPayment [SkillIcon]
   | Payments [Payment]
@@ -140,6 +141,8 @@ data Cost
   | GroupSpendKeyCost ArkhamKey LocationMatcher
   | DamageCost Source Target Int
   | DirectDamageCost Source InvestigatorMatcher Int
+  | DirectHorrorCost Source InvestigatorMatcher Int
+  | DirectDamageAndHorrorCost Source InvestigatorMatcher Int Int
   | InvestigatorDamageCost Source InvestigatorMatcher DamageStrategy Int
   | DiscardTopOfDeckCost Int
   | DiscardTopOfDeckWithTargetCost Target Int
@@ -405,6 +408,8 @@ displayCostType = \case
   OrCost cs -> T.intercalate " or " $ map displayCostType cs
   DamageCost _ _ n -> tshow n <> " Damage"
   DirectDamageCost _ _ n -> tshow n <> " Direct Damage"
+  DirectHorrorCost _ _ n -> tshow n <> " Direct Damage"
+  DirectDamageAndHorrorCost _ _ m n -> tshow m <> " Direct Damage and " <> tshow n <> " Direct Horror"
   InvestigatorDamageCost _ _ _ n -> tshow n <> " Damage"
   DiscardCost zone _ -> "Discard from " <> zoneLabel zone
   DiscardCardCost _ -> "Discard Card"

@@ -4479,18 +4479,26 @@ instance Query ExtendedCardMatcher where
         pure $ filter (`elem` cards) cs
       NotThisCard -> error "must be replaced"
       IsThisCard -> error "must be replaced"
-      CanCancelRevelationEffect matcher' -> do
-        go cs matcher' >>= filterM \c -> do
-          modifiers <- getModifiers c.id
-          let cannotBeCanceled = cdRevelation (toCardDef c) == CannotBeCanceledRevelation
-          pure $ EffectsCannotBeCanceled `notElem` modifiers && not cannotBeCanceled
+      CanCancelRevelationEffect imatcher matcher' -> do
+        miid <- selectOne imatcher
+        imods <- maybe (pure []) getModifiers miid
+        if CannotCancelCardOrGameEffects `elem` imods
+          then pure []
+          else go cs matcher' >>= filterM \c -> do
+            modifiers <- getModifiers c.id
+            let cannotBeCanceled = cdRevelation (toCardDef c) == CannotBeCanceledRevelation
+            pure $ EffectsCannotBeCanceled `notElem` modifiers && not cannotBeCanceled
       CardIsCommittedBy investigatorMatcher -> do
         committed <- selectAgg id InvestigatorCommittedCards investigatorMatcher
         pure $ filter (`elem` committed) cs
-      CanCancelAllEffects matcher' -> do
-        go cs matcher' >>= filterM \c -> do
-          modifiers <- getModifiers c.id
-          pure $ EffectsCannotBeCanceled `notElem` modifiers
+      CanCancelAllEffects imatcher matcher' -> do
+        miid <- selectOne imatcher
+        imods <- maybe (pure []) getModifiers miid
+        if CannotCancelCardOrGameEffects `elem` imods
+          then pure []
+          else go cs matcher' >>= filterM \c -> do
+            modifiers <- getModifiers c.id
+            pure $ EffectsCannotBeCanceled `notElem` modifiers
       CardWithoutModifier modifier -> do
         flip filterM cs \c -> do
           modifiers <- getModifiers (toCardId c)

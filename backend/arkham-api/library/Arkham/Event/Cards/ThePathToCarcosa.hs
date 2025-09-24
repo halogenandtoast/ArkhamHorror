@@ -158,7 +158,7 @@ forewarned1 =
     , cdLevel = Just 1
     , cdCriteria = Just $ exists (You <> oneOf [InvestigatorWithAnyClues, canParallelRexClues])
     , cdFastWindow =
-        Just $ DrawCard #when You (CanCancelRevelationEffect $ basic NonWeaknessTreachery) EncounterDeck
+        Just $ DrawCard #when You (CanCancelRevelationEffect You $ basic NonWeaknessTreachery) EncounterDeck
     }
 
 sneakAttack2 :: CardDef
@@ -197,12 +197,12 @@ aTestOfWill1 =
             [ DrawCard
                 #when
                 (InvestigatorAt YourLocation)
-                (CanCancelRevelationEffect $ basic $ NonPeril <> NonWeaknessTreachery)
+                (CanCancelRevelationEffect You $ basic $ NonPeril <> NonWeaknessTreachery)
                 EncounterDeck
             , DrawCard
                 #when
                 You
-                (CanCancelRevelationEffect $ basic NonWeaknessTreachery)
+                (CanCancelRevelationEffect You $ basic NonWeaknessTreachery)
                 EncounterDeck
             ]
     , cdLevel = Just 1
@@ -387,12 +387,12 @@ wardOfProtection2 =
             [ DrawCard
                 #when
                 (affectsOthers $ InvestigatorAt Anywhere)
-                (CanCancelRevelationEffect $ basic $ NonPeril <> NonWeaknessTreachery)
+                (CanCancelRevelationEffect You $ basic $ NonPeril <> NonWeaknessTreachery)
                 EncounterDeck
             , DrawCard
                 #when
                 You
-                (CanCancelRevelationEffect $ basic NonWeaknessTreachery)
+                (CanCancelRevelationEffect You $ basic NonWeaknessTreachery)
                 EncounterDeck
             ]
     , cdLevel = Just 2

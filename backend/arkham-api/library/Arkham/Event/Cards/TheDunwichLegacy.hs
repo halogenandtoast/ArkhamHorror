@@ -340,7 +340,7 @@ wardOfProtection5 =
           $ DrawCard
             #when
             You
-            (CanCancelAllEffects $ BasicCardMatch IsEncounterCard)
+            (CanCancelAllEffects You $ BasicCardMatch IsEncounterCard)
             EncounterDeck
     , cdLevel = Just 5
     }

@@ -23,7 +23,8 @@
     "witchHauntedWoodsTheLonelyTree": {
       "youDiscardTheyDraw": "You choose and discard 1 card from your hand, then an investigator at a different Witch-Haunted Woods draws 1 card",
       "viceVersa": "Vice versa"
-    }
+    },
+    "gatherTheDevourerBelow": "Gather Arkham Woods from Return to The Devourer Below?"
   },
   "setup": {
     "gatherSets": "Gather all cards from the following encounter sets: *The Witching Hour*, *Anette’s Coven*, *City of Sins*, *Witchcraft*, *Ancient Evils*, *Striking Fear*, and *The Devourer Below*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-witching-hour.png' /><img src='{setImgPath}/anettes-coven.png' /><img src='{setImgPath}/city-of-sins.png' /><img src='{setImgPath}/witchcraft.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/the-devourer-below.png' /></section>When gathering *The Devourer Below* encounter set, only gather the 6 Arkham Woods locations. Do not gather any of the other cards from that encounter set.",

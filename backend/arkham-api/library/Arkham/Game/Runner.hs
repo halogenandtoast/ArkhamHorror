@@ -1717,7 +1717,7 @@ runGameMessage msg g = case msg of
               push
                 $ EnemyAttacks [EnemyAttack details, EnemyAttack details2]
             else push $ EnemyAttacks [EnemyAttack details]
-        _ -> push (EnemyAttack details)
+        _ -> push $ EnemyAttacks [EnemyAttack details]
     pure g
   EnemyAttacks as -> do
     mNextMessage <- peekMessage
@@ -2843,14 +2843,16 @@ runGameMessage msg g = case msg of
     pure $ g & resolvingCardL .~ Nothing & activeCardL %~ unsetActiveCard
   InvestigatorDrewEncounterCard iid card -> do
     runMessage (InvestigatorDrewEncounterCardFrom iid card Nothing) g
-  InvestigatorDrewEncounterCardFrom iid card _ -> do
+  InvestigatorDrewEncounterCardFrom iid card _ -> runQueueT do
     investigator <- getInvestigator iid
     if investigator.eliminated
       then do
         push $ AddToEncounterDiscard card
         pure g
       else do
-        hasForesight <- hasModifier iid (Foresight $ toTitle card)
+        mods <- getModifiers iid
+        let hasForesight =  Foresight (toTitle card) `elem` mods
+        when (DrawGainsPeril `elem` mods) $ pushM $ cardResolutionModifier card GameSource card (AddKeyword Keyword.Peril)
         whenDraw <- checkWindows [mkWhen (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
         let uiRevelation = getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
         case toCardType card of
@@ -2862,7 +2864,7 @@ runGameMessage msg g = case msg of
           _ -> pure ()
         if hasForesight
           then do
-            canCancel <- EncounterCard card <=~> CanCancelRevelationEffect #any
+            canCancel <- EncounterCard card <=~> CanCancelRevelationEffect (InvestigatorWithId iid) #any
             if canCancel
               then do
                 player <- getPlayer iid

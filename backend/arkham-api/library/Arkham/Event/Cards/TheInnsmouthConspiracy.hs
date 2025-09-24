@@ -75,7 +75,7 @@ wardOfRadiance =
           $ DrawCard
             #when
             (affectsOthers $ InvestigatorAt YourLocation)
-            (CanCancelRevelationEffect $ basic NonWeaknessTreachery)
+            (CanCancelRevelationEffect You $ basic NonWeaknessTreachery)
             EncounterDeck
     }
 

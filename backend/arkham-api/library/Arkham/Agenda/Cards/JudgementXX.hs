@@ -7,6 +7,7 @@ import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.DefeatedBy
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Doom (getDoomCount)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (InvestigatorCardCode))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -41,9 +42,9 @@ instance RunMessage JudgementXX where
       n <- getDoomCount
       let damage = if n >= 5 then 2 else 1
       eachInvestigator \iid -> do
-        chooseOneM iid do
-          labeled "Take damage" $ assignDamage iid attrs damage
-          labeled "Take horror" $ assignHorror iid attrs damage
+        chooseOneM iid $ withI18n do
+          countVar damage $ labeled' "takeDamage" $ assignDamage iid attrs damage
+          countVar damage $ labeled' "takeHorror" $ assignHorror iid attrs damage
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (toDefeatedInfo -> source) _ -> do
       push $ AdvanceAgenda attrs.id

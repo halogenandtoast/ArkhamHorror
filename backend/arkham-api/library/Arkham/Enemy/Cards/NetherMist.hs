@@ -3,6 +3,7 @@ module Arkham.Enemy.Cards.NetherMist (netherMist) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.I18n
 import Arkham.Matcher
 
 newtype NetherMist = NetherMist EnemyAttrs
@@ -11,7 +12,7 @@ newtype NetherMist = NetherMist EnemyAttrs
 
 instance HasAbilities NetherMist where
   getAbilities (NetherMist a) =
-    extend1 a $ haunted "Nether Mist attacks you." (proxied (LocationWithEnemy $ be a) a) 1
+    extend1 a $ withI18n $ nameVar a $ hauntedI "attacksYou" (proxied (LocationWithEnemy $ be a) a) 1
 
 netherMist :: EnemyCard NetherMist
 netherMist =

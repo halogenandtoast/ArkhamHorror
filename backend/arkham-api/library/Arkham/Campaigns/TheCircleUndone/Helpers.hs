@@ -1,38 +1,31 @@
-module Arkham.Campaigns.TheCircleUndone.Helpers where
+module Arkham.Campaigns.TheCircleUndone.Helpers (module Arkham.Campaigns.TheCircleUndone.Helpers, module Arkham.Campaigns.TheCircleUndone.I18n) where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheCircleUndone.I18n
 import Arkham.Card.CardDef
-import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers.Log ()
-import Arkham.Helpers.Message
-import Arkham.I18n
 import Arkham.Id
+import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
 
 getHauntedAbilities :: HasGame m => InvestigatorId -> m [Ability]
 getHauntedAbilities iid = select $ HauntedAbility <> AbilityOnLocation (locationWithInvestigator iid)
 
-runHauntedAbilities :: (HasGame m, HasQueue Message m) => InvestigatorId -> m ()
+runHauntedAbilities :: ReverseQueue m => InvestigatorId -> m ()
 runHauntedAbilities iid = do
   hauntedAbilities <- getHauntedAbilities iid
-  player <- getPlayer iid
-  pushWhen (notNull hauntedAbilities)
-    $ chooseOneAtATime player [AbilityLabel iid ab [] [] [] | ab <- hauntedAbilities]
+  chooseOneAtATimeM iid $ for_ hauntedAbilities \ab -> abilityLabeled iid ab nothing
 
-runLocationHauntedAbilities
-  :: (HasGame m, HasQueue Message m) => InvestigatorId -> LocationId -> m ()
+runLocationHauntedAbilities :: ReverseQueue m => InvestigatorId -> LocationId -> m ()
 runLocationHauntedAbilities iid lid = do
   hauntedAbilities <- select $ HauntedAbility <> AbilityOnLocation (LocationWithId lid)
-  player <- getPlayer iid
-  pushWhen (notNull hauntedAbilities)
-    $ chooseOneAtATime player [AbilityLabel iid ab [] [] [] | ab <- hauntedAbilities]
-
-campaignI18n :: (HasI18n => a) -> a
-campaignI18n a = withI18n $ scope "theCircleUndone" a
+  chooseOneAtATimeM iid $ for_ hauntedAbilities \ab -> abilityLabeled iid ab nothing
 
 allPrologueInvestigators :: [CardDef]
 allPrologueInvestigators =
@@ -41,4 +34,3 @@ allPrologueInvestigators =
   , Investigators.pennyWhite
   , Investigators.valentinoRivas
   ]
-

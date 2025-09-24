@@ -3,6 +3,7 @@ import { Game, GameDetailsEntry, gameDecoder, gameDetailsEntryDecoder } from '@/
 import { ArkhamDbDecklist, Deck, deckDecoder } from '@/arkham/types/Deck';
 import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
 import { Difficulty } from '@/arkham/types/Difficulty';
+import { DestinyDrawing } from '@/arkham/types/Question';
 import { StandaloneSetting } from '@/arkham/types/StandaloneSetting';
 import { CampaignLogSettings, CampaignOption, Key } from '@/arkham/types/CampaignSettings'
 import * as JsonDecoder from 'ts.data.json';
@@ -132,6 +133,9 @@ export const updateCampaignSettings = (gameId: string, campaignLog: CampaignLogS
       keys: campaignLog.keys.map((o: Key) => o.key)
     }
   })
+
+export const setDestiny = (gameId: string, drawings: DestinyDrawing[]): Promise<void> =>
+  api.put(`arkham/games/${gameId}`, { tag: 'PickDestinyAnswer', contents: drawings })
 
 
 export const deleteGame = (gameId: string): Promise<void> =>

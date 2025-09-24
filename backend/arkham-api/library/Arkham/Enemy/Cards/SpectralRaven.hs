@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.SpectralRaven (spectralRaven, SpectralRaven (..)) where
+module Arkham.Enemy.Cards.SpectralRaven (spectralRaven) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheCircleUndone.Helpers
@@ -34,6 +34,6 @@ instance RunMessage SpectralRaven where
             nextPhaseModifiers InvestigationPhase attrs attrs [Mod.EnemyFight 2, Mod.EnemyEvade 2]
       pure e
     HandleTargetChoice iid (isSource attrs -> True) _ -> do
-      lift $ runHauntedAbilities iid
+      runHauntedAbilities iid
       pure e
     _ -> SpectralRaven <$> liftRunMessage msg attrs

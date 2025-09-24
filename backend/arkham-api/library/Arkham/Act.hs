@@ -343,6 +343,9 @@ allActs =
       SomeActCard aFamiliarPattern
     , --- Return to the City of Archives
       SomeActCard unrestrictedAccess
+    , -- Return to The Circle Undone
+      --- Return to The Witching Hour
+      SomeActCard returnToACircleUnbroken
     , -- Curse of the Rougarou
       SomeActCard findingLadyEsprit
     , SomeActCard huntingTheRougarou

@@ -2,12 +2,10 @@ module Arkham.Act.Cards.WitchHauntings (witchHauntings) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
 
 newtype WitchHauntings = WitchHauntings ActAttrs
@@ -25,7 +23,7 @@ instance HasAbilities WitchHauntings where
 
 instance HasModifiersFor WitchHauntings where
   getModifiersFor (WitchHauntings a) = do
-    locations <- modifySelectMaybe a (LocationIsInFrontOf Anyone) \lid -> do
+    modifySelectMaybe a (LocationIsInFrontOf Anyone) \lid -> do
       iid <- MaybeT $ field LocationInFrontOf lid
       pure
         [ ConnectedToWhen (LocationWithId lid)
@@ -33,18 +31,16 @@ instance HasModifiersFor WitchHauntings where
             <> LocationIsInFrontOf (InvestigatorWithId iid)
         ]
 
-    investigators <- modifySelectMaybe a Anyone \iid -> do
+    modifySelectMaybe a Anyone \iid -> do
       lids <- lift $ select $ LocationIsInFrontOf (not_ $ InvestigatorWithId iid)
       pure $ map CannotEnter lids
 
-    pure $ locations <> investigators
-
 instance RunMessage WitchHauntings where
-  runMessage msg a@(WitchHauntings attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ AdvanceAct (toId a) (toSource attrs) AdvancedWithClues
+  runMessage msg a@(WitchHauntings attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithClues attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      push $ AdvanceActDeck (actDeckId attrs) (toSource attrs)
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      advanceActDeck attrs
       pure a
-    _ -> WitchHauntings <$> runMessage msg attrs
+    _ -> WitchHauntings <$> liftRunMessage msg attrs

@@ -69,6 +69,11 @@ instance RunMessage TheCircleUndone where
       players <- allPlayers
       push $ chooseDecks players
       lift $ defaultCampaignRunner msg c
+
+    CampaignStep ReturnToTheWitchingHour -> do
+      players <- allPlayers
+      push $ chooseDecks players
+      lift $ defaultCampaignRunner msg c
     CampaignStep PrologueStep -> scope "prologue" do
       flavor $ setTitle "title" >> p "body"
       nextCampaignStep

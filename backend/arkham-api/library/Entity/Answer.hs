@@ -35,6 +35,7 @@ data Answer
   | StandaloneSettingsAnswer [StandaloneSetting]
   | CampaignSettingsAnswer CampaignSettings
   | DeckAnswer {deckId :: ArkhamDeckId, playerId :: PlayerId}
+  | PickDestinyAnswer [DestinyDrawing]
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
 
@@ -247,6 +248,7 @@ answerPlayer = \case
   StandaloneSettingsAnswer _ -> Nothing
   CampaignSettingsAnswer _ -> Nothing
   DeckAnswer _ pid -> Just pid
+  PickDestinyAnswer _ -> Nothing
 
 playerInvestigator :: Entities -> PlayerId -> InvestigatorId
 playerInvestigator Entities {..} pid = case find ((== pid) . attr investigatorPlayerId) (toList entitiesInvestigators) of
@@ -275,6 +277,8 @@ handleAnswer Game {..} playerId = \case
   CampaignSettingsAnswer settings' -> do
     let campaignLog' = makeCampaignLog settings'
     handled [SetCampaignLog campaignLog']
+  PickDestinyAnswer choices -> do
+    handled [SetDestiny $ Map.fromList $ map (\(DestinyDrawing scope card) -> (scope, card)) choices]
   AmountsAnswer response -> case Map.lookup playerId gameQuestion of
     Just (ChooseAmounts _ _ choices target) -> do
       let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices

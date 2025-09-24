@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 data Memento
   = MesmerizingFlute
+  | StrangeIncantation
   | RitualComponents
   | ScrapOfTornShadow
   | Gilman'sJournal

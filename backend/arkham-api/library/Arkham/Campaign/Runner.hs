@@ -1,11 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Campaign.Runner (
-  module X,
-  defaultCampaignRunner,
-) where
-
-import Arkham.Prelude
+module Arkham.Campaign.Runner (module X, defaultCampaignRunner) where
 
 import Arkham.Campaign.Types as X
 import Arkham.Helpers.Message as X
@@ -30,8 +25,11 @@ import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Tarot
 import Arkham.Xp
 import Data.Aeson.Key qualified as Aeson
 import Data.Map.Strict qualified as Map
@@ -231,7 +229,10 @@ defaultCampaignRunner msg a = case msg of
     for_ (mapToList $ campaignDecks $ toAttrs a) $ \(iid, Deck deck) -> do
       let storyCards = findWithDefault [] iid (campaignStoryCards $ toAttrs a)
       let storyCardCodes = map toCardCode storyCards
-      let (deck', removals) = partition (\card -> card.cardCode `notElem` storyCardCodes && card.cardCode `notElem` invalidCards a) deck
+      let (deck', removals) =
+            partition
+              (\card -> card.cardCode `notElem` storyCardCodes && card.cardCode `notElem` invalidCards a)
+              deck
       for_ removals \c -> removeCard c.id
 
       push (LoadDeck iid . Deck $ deck' <> storyCards)
@@ -368,5 +369,29 @@ defaultCampaignRunner msg a = case msg of
         _ -> attrs & xpBreakdownL %~ ((normalizedCampaignStep (campaignStep attrs), report) :)
   UseAbility _ ab _ | ab.source == CampaignSource -> do
     push $ Do msg
+    pure a
+  RotateTarot (toTarotArcana -> arcana) -> do
+    let
+      rotate = \case
+        TarotCard Upright arcana' | arcana' == arcana -> TarotCard Reversed arcana'
+        TarotCard Reversed arcana' | arcana' == arcana -> TarotCard Upright arcana'
+        c -> c
+    pure $ updateAttrs a \attrs -> attrs & destinyL %~ fmap rotate
+  SetDestiny destiny -> do
+    pure $ updateAttrs a $ destinyL .~ destiny
+  RunDestiny -> runQueueT do
+    let destiny = campaignDestiny (toAttrs a)
+    let cards = Map.elems destiny
+    let n = (length cards + 1) `div` 2
+    push $ DoStep n msg
+    pure a
+  DoStep n RunDestiny | n > 0 -> runQueueT do
+    let destiny = campaignDestiny (toAttrs a)
+    let cards = Map.elems destiny
+    push $ FocusTarotCards cards
+    lead <- getLead
+    let cards' = filter ((== Upright) . (.facing)) cards
+    chooseOneM lead $ for_ cards' \card -> tarotLabeled card $ push $ RotateTarot card
+    push $ DoStep (n - 1) RunDestiny
     pure a
   _ -> pure a

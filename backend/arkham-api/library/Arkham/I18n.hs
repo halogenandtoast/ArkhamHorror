@@ -10,6 +10,8 @@ import Data.Aeson.Key qualified as K
 import Data.Aeson.Types (Pair)
 import Data.Map.Strict qualified as Map
 import Data.Text (intercalate)
+import Data.Text qualified as T
+import Data.Char qualified as Char
 
 type Scope = Text
 type HasI18n = (?scope :: [Scope], ?scopeVars :: Map Text Value)
@@ -72,3 +74,15 @@ withVar k v a = let ?scopeVars = ?scopeVars <> singletonMap k v in a
 
 withVars :: HasI18n => [Pair] -> (HasI18n => a) -> a
 withVars kv a = let ?scopeVars = ?scopeVars <> Map.fromList (map (first K.toText) kv) in a
+
+toScope :: Text -> Scope
+toScope t = case T.words t of
+  [] -> ""
+  (x : xs) -> lowerFirst x <> mconcat (map capitalizeFirst xs)
+ where
+  lowerFirst txt = case T.uncons txt of
+    Just (c, r) -> T.cons (Char.toLower c) r
+    Nothing -> txt
+  capitalizeFirst txt = case T.uncons txt of
+    Just (c, r) -> T.cons (Char.toUpper c) r
+    Nothing -> txt

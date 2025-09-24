@@ -16,11 +16,7 @@ newtype WitchHauntedWoodsOvergrownBarn = WitchHauntedWoodsOvergrownBarn Location
 
 witchHauntedWoodsOvergrownBarn :: LocationCard WitchHauntedWoodsOvergrownBarn
 witchHauntedWoodsOvergrownBarn =
-  location
-    WitchHauntedWoodsOvergrownBarn
-    Cards.witchHauntedWoodsOvergrownBarn
-    3
-    (PerPlayer 1)
+  location WitchHauntedWoodsOvergrownBarn Cards.witchHauntedWoodsOvergrownBarn 3 (PerPlayer 1)
 
 instance HasAbilities WitchHauntedWoodsOvergrownBarn where
   getAbilities (WitchHauntedWoodsOvergrownBarn a) =

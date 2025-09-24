@@ -148,6 +148,7 @@ allActCards =
       , reefOfMysteries
       , repossession
       , restrictedAccess
+      , returnToACircleUnbroken
       , ricesWhereabouts
       , row
       , run
@@ -965,6 +966,9 @@ aFamiliarPattern = act "53046" "A Familiar Pattern" 1 ReturnToPillarsOfJudgement
 
 unrestrictedAccess :: CardDef
 unrestrictedAccess = act "53054" "Unrestricted Access" 2 ReturnToTheCityOfArchives
+
+returnToACircleUnbroken :: CardDef
+returnToACircleUnbroken = act "54018" "A Circle Unbroken" 4 ReturnToTheWitchingHour
 
 findingLadyEsprit :: CardDef
 findingLadyEsprit = act "81005" "Finding Lady Esprit" 1 TheBayou

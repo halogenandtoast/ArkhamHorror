@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.AnetteMason (anetteMason, AnetteMason (..)) where
+module Arkham.Enemy.Cards.AnetteMason (anetteMason) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -17,20 +17,19 @@ anetteMason :: EnemyCard AnetteMason
 anetteMason = enemy AnetteMason Cards.anetteMason (4, PerPlayer 4, 4) (1, 1)
 
 instance HasAbilities AnetteMason where
-  getAbilities (AnetteMason a) = withBaseAbilities a [mkAbility a 1 $ ForcedAbility $ PhaseBegins #after #enemy]
+  getAbilities (AnetteMason a) = extend1 a $ mkAbility a 1 $ forced $ PhaseBegins #after #enemy
 
 instance RunMessage AnetteMason where
   runMessage msg e@(AnetteMason attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ DiscardTopOfEncounterDeck iid 3 (toSource attrs) (Just $ toTarget attrs)
+      discardTopOfEncounterDeckAndHandle iid attrs 3 attrs
       pure e
     DiscardedTopOfEncounterDeck _ cards _ (isTarget attrs -> True) -> do
       let witches = filterCards (CardWithTrait Witch) $ map toCard cards
       if null witches
-        then push $ Ready (toTarget attrs)
-        else do
-          mLocation <- field EnemyLocation (toId attrs)
-          for_ mLocation \location -> do
-            for_ witches \card -> createEnemyAt_ card location
+        then readyThis attrs
+        else
+          field EnemyLocation (toId attrs) >>= traverse_ \location -> do
+            for_ witches (`createEnemyAt_` location)
       pure e
     _ -> AnetteMason <$> liftRunMessage msg attrs

@@ -131,6 +131,8 @@ export function choices(game: Game, playerId: string): Message[] {
         return q.readChoices.contents;
       case 'PickSupplies':
         return q.choices;
+      case 'PickDestiny':
+        return [];
       default:
         return [];
     }

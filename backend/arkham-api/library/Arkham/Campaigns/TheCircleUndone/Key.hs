@@ -14,6 +14,7 @@ data TheCircleUndoneKey
   | YouHaveRejectedYourFate
   | TheWitches'SpellWasBroken
   | TheWitches'SpellWasCast
+  | ErynnWantsToMeet
   | MementosDiscovered
   | TheInvestigatorsAreOnGavriella'sTrail
   | TheInvestigatorsAreOnJerome'sTrail

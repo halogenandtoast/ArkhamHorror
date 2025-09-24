@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.FateOfAllFools (fateOfAllFools) where
 
+import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
@@ -19,13 +20,10 @@ instance RunMessage FateOfAllFools where
         [] -> placeInThreatArea attrs iid
         iids -> do
           fates <- select $ TreacheryWithTitle "Fate of All Fools" <> TreacheryInThreatAreaOf Anyone
-          chooseOneM iid do
-            labeled
-              "An investigator with another copy of Fate of All Fools in his or her threat area takes 2 direct damage."
-              do
-                chooseTargetM iid iids \iid' -> directDamage iid' attrs 2
-            labeled "Place 1 doom on another copy of Fate of All Fools."
-              $ chooseTargetM iid fates
-              $ placeDoomOn attrs 1
+          chooseOneM iid $ campaignI18n do
+            labeled' "fateOfAllFools.otherInvestigator" do
+              chooseTargetM iid iids \iid' -> directDamage iid' attrs 2
+            labeled' "fateOfAllFools.otherCopy" do
+              chooseTargetM iid fates $ placeDoomOn attrs 1
       pure t
     _ -> FateOfAllFools <$> liftRunMessage msg attrs

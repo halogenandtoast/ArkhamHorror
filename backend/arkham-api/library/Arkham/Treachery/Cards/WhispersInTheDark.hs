@@ -1,6 +1,7 @@
-module Arkham.Treachery.Cards.WhispersInTheDark (whispersInTheDark, WhispersInTheDark (..)) where
+module Arkham.Treachery.Cards.WhispersInTheDark (whispersInTheDark) where
 
 import Arkham.Ability
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Source
 import Arkham.Treachery.Cards qualified as Cards
@@ -15,7 +16,7 @@ whispersInTheDark = treachery WhispersInTheDark Cards.whispersInTheDark
 
 instance HasAbilities WhispersInTheDark where
   getAbilities (WhispersInTheDark a) =
-    [ haunted "Take 1 horror" (proxied Anywhere a) 1
+    [ withI18n $ countVar 1 $ hauntedI "takeHorror" (proxied Anywhere a) 1
     , mkAbility a 2 $ ForcedAbility $ RoundEnds #when
     ]
 

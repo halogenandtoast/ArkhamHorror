@@ -13,6 +13,7 @@ import Arkham.Agenda.AdvancementReason
 import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Types (Field (..))
+import Arkham.Campaign.Types (Field (..))
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Capability
@@ -1584,8 +1585,20 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       <> [StandaloneSetup | scenarioOptionsStandalone opts]
       <> [ChooseLeadInvestigator, SetPlayerOrder]
       <> [PerformTarotReading | scenarioOptionsPerformTarotReading opts]
-      <> [SetupInvestigators, InvestigatorsMulligan, Setup, EndSetup]
+      <> [SetupInvestigators, InvestigatorsMulligan, CheckDestiny, Setup, EndSetup]
     pure $ a & startedL .~ True
+  CheckDestiny ->
+    fromMaybe a <$> runMaybeT do
+      c <- MaybeT $ selectOne Matcher.TheCampaign
+      destiny <- lift $ field CampaignDestiny c
+      card <- hoistMaybe $ Map.lookup scenarioScope destiny
+      lift do
+        sendTarot $ toJSON [card]
+        pure
+          $ a
+          & (tarotCardsL . at GlobalTarot . non [] .~ [card])
+          & tarotDeckL
+          %~ delete (toTarotArcana card)
   SetupInvestigators -> do
     iids <- allInvestigators
     pushAll $ map SetupInvestigator iids <> [DrawStartingHands]
@@ -1743,4 +1756,6 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure a
   StoryMessage (ReadStoryWithPlacement _ card _ _ _) -> do
     pure $ a & setAsideCardsL %~ filter (/= card)
+  SetDecksLayout layout -> do
+    pure $ a & decksLayoutL .~ layout
   _ -> pure a

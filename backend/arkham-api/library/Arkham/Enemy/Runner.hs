@@ -375,8 +375,8 @@ instance RunMessage EnemyAttrs where
         _ -> do
           swarm <- select $ SwarmOf eid
           when (isOutOfPlayPlacement a.placement) do
-            pushM $ checkAfter $ Window.EnemySpawns eid lid
             pushM $ checkWhen $ Window.EnemySpawns eid lid
+            pushM $ checkAfter $ Window.EnemySpawns eid lid
 
           pushAll
             . (<> [After msg])
@@ -1490,7 +1490,7 @@ instance RunMessage EnemyAttrs where
             , attackDespiteExhausted = False
             }
       pure a
-    InvestigatorDrawEnemy iid eid | eid == enemyId -> runQueueT do
+    InvestigatorDrawEnemy iid eid | eid == enemyId -> do
       push $ UpdateHistory iid (HistoryItem HistoryEnemiesDrawn [toCardCode a])
       mods <- (<>) <$> getModifiers enemyId <*> getModifiers (CardIdTarget $ toCardId a)
       let

@@ -783,6 +783,10 @@ removeAllChaosTokens = push . RemoveAllChaosTokens
 removeCampaignCard :: (HasCardDef a, ReverseQueue m) => a -> m ()
 removeCampaignCard (toCardDef -> def) = do
   mOwner <- getOwner def
+  when def.unique do
+    case def.kind of
+      AssetType -> selectOne (assetIs def) >>= traverse_ removeFromGame
+      _ -> pure ()
   for_ mOwner (`removeCampaignCardFromDeck` def)
 
 removeCampaignCardFromDeck

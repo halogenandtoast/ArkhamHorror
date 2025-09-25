@@ -1725,6 +1725,7 @@ library
       Arkham.Enemy.Cards.DianneDevineKnowsWhatYoureUpTo
       Arkham.Enemy.Cards.DimensionalShambler
       Arkham.Enemy.Cards.DiscipleOfTheDevourer
+      Arkham.Enemy.Cards.DmitriKonstantinovTakingTheLongView
       Arkham.Enemy.Cards.DonLagorio
       Arkham.Enemy.Cards.DrAmyKenslerProfessorOfBiology
       Arkham.Enemy.Cards.DrMalaSinhaDaringPhysician
@@ -1928,6 +1929,7 @@ library
       Arkham.Enemy.Cards.SebastienMoreau
       Arkham.Enemy.Cards.SeekerOfCarcosa
       Arkham.Enemy.Cards.SeepingNightmare
+      Arkham.Enemy.Cards.SenatorNathanielRhodesAdeptPolitician
       Arkham.Enemy.Cards.SerpentFromYoth
       Arkham.Enemy.Cards.SerpentGuardian
       Arkham.Enemy.Cards.SerpentOfTenochtitlan
@@ -3513,6 +3515,7 @@ library
       Arkham.Location.Cards.WhateleyRuins_251
       Arkham.Location.Cards.WhiteBluff
       Arkham.Location.Cards.WindsweptPath
+      Arkham.Location.Cards.WineCellar
       Arkham.Location.Cards.WineCellarSpectral
       Arkham.Location.Cards.WitchesCircle
       Arkham.Location.Cards.WitchHauntedWoodsAbandonedMine
@@ -3716,7 +3719,6 @@ library
       Arkham.Scenarios.ALightInTheFog.Helpers.Location
       Arkham.Scenarios.APhantomOfTruth.Helpers
       Arkham.Scenarios.AtDeathsDoorstep.Helpers
-      Arkham.Scenarios.AtDeathsDoorstep.Story
       Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
       Arkham.Scenarios.BeforeTheBlackThrone.Helpers
       Arkham.Scenarios.BeforeTheBlackThrone.Story

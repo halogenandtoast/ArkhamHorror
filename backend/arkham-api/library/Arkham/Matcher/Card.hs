@@ -89,6 +89,7 @@ instance Semigroup ExtendedCardMatcher where
     ExtendedCardMatches $ xs <> ys
   ExtendedCardMatches xs <> x = ExtendedCardMatches (x : xs)
   x <> ExtendedCardMatches xs = ExtendedCardMatches (x : xs)
+  BasicCardMatch a <> BasicCardMatch b = BasicCardMatch (a <> b)
   x <> y = ExtendedCardMatches [x, y]
 
 instance IsLabel "any" ExtendedCardMatcher where
@@ -156,6 +157,12 @@ instance IsLabel "story" ExtendedCardMatcher where
 
 instance IsLabel "enemy" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #enemy
+
+instance IsLabel "monster" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #monster
+
+instance IsLabel "silverTwilight" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #silverTwilight
 
 instance IsLabel "treachery" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #treachery
@@ -321,6 +328,12 @@ instance IsLabel "skill" CardMatcher where
 
 instance IsLabel "enemy" CardMatcher where
   fromLabel = CardWithType EnemyType
+
+instance IsLabel "monster" CardMatcher where
+  fromLabel = CardWithTrait Monster
+
+instance IsLabel "silverTwilight" CardMatcher where
+  fromLabel = CardWithTrait SilverTwilight
 
 instance IsLabel "asset" CardMatcher where
   fromLabel = CardWithOneOf [CardWithType AssetType, CardWithType EncounterAssetType]

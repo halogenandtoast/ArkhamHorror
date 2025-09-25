@@ -903,6 +903,7 @@ allLocationCards =
       , whateleyRuins_250
       , whateleyRuins_251
       , whiteBluff
+      , wineCellar
       , wineCellarSpectral
       , windsweptPath
       , witchesCircle
@@ -9249,6 +9250,16 @@ arkhamWoodsBootleggingOperation =
     Trefoil
     [Squiggle, Equals, Hourglass]
     ReturnToTheWitchingHour
+
+wineCellar :: CardDef
+wineCellar =
+  location
+    "54027"
+    "Wine Cellar"
+    []
+    Hourglass
+    [T]
+    ReturnToAtDeathsDoorstep
 
 wineCellarSpectral :: CardDef
 wineCellarSpectral =

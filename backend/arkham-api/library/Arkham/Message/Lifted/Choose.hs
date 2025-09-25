@@ -72,17 +72,25 @@ leadChooseOrRunOneM choices = do
 playerChooseOneM :: ReverseQueue m => PlayerId -> ChooseT m a -> m ()
 playerChooseOneM pid choices = do
   ((_, ChooseState {label, labelCardCode}), choices') <- runChooseT choices
-  unless (null choices') do
+  unless (shouldSkipQuestion choices') do
     case label of
       Nothing -> push $ Msg.chooseOne pid choices'
       Just l -> case labelCardCode of
         Nothing -> push $ Msg.Ask pid (QuestionLabel l Nothing $ ChooseOne choices')
         Just cCode -> push $ Msg.Ask pid (QuestionLabel l (Just cCode) $ ChooseOne choices')
 
+isInvalidChoice :: UI Message -> Bool
+isInvalidChoice (InvalidLabel {}) = True
+isInvalidChoice _ = False
+
+shouldSkipQuestion :: [UI Message] -> Bool
+shouldSkipQuestion [] = True
+shouldSkipQuestion choices = all isInvalidChoice choices
+
 chooseOneM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOneM iid choices = do
   ((_, ChooseState {label, labelCardCode}), choices') <- runChooseT choices
-  unless (null choices') do
+  unless (shouldSkipQuestion choices') do
     case label of
       Nothing -> chooseOne iid choices'
       Just l -> case labelCardCode of
@@ -92,7 +100,7 @@ chooseOneM iid choices = do
 chooseSomeM :: ReverseQueue m => InvestigatorId -> Text -> ChooseT m a -> m ()
 chooseSomeM iid txt choices = do
   ((_, ChooseState {label}), choices') <- runChooseT choices
-  unless (null choices') do
+  unless (shouldSkipQuestion choices') do
     case label of
       Nothing -> chooseSome iid txt choices'
       Just l -> questionLabel l iid $ ChooseSome (Done txt : choices')
@@ -101,7 +109,7 @@ chooseSomeM' :: (HasI18n, ReverseQueue m) => InvestigatorId -> Text -> ChooseT m
 chooseSomeM' iid txt choices = do
   ((_, ChooseState {label}), choices') <- runChooseT choices
   let lbl = "$" <> ikey ("label." <> txt)
-  unless (null choices') do
+  unless (shouldSkipQuestion choices') do
     case label of
       Nothing -> chooseSome iid lbl choices'
       Just l -> questionLabel l iid $ ChooseSome (Done lbl : choices')
@@ -109,7 +117,7 @@ chooseSomeM' iid txt choices = do
 chooseSome1M :: ReverseQueue m => InvestigatorId -> Text -> ChooseT m a -> m ()
 chooseSome1M iid txt choices = do
   ((_, ChooseState {label}), choices') <- runChooseT choices
-  unless (null choices') do
+  unless (shouldSkipQuestion choices') do
     case label of
       Nothing -> chooseSome1 iid txt choices'
       Just l -> questionLabel l iid $ ChooseSome1 txt choices'
@@ -117,12 +125,12 @@ chooseSome1M iid txt choices = do
 chooseOneFromEachM :: ReverseQueue m => InvestigatorId -> [ChooseT m a] -> m ()
 chooseOneFromEachM iid choices = do
   choices' <- traverse runChooseT choices
-  unless (null choices') $ chooseOneFromEach iid $ map snd choices'
+  unless (shouldSkipQuestion $ concatMap snd choices') $ chooseOneFromEach iid $ map snd choices'
 
 chooseOrRunOneM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOrRunOneM iid choices = do
   ((_, ChooseState {label}), choices') <- runChooseT choices
-  unless (null choices') do
+  unless (shouldSkipQuestion choices') do
     case label of
       Nothing -> chooseOrRunOne iid choices'
       Just l -> case choices' of
@@ -132,12 +140,12 @@ chooseOrRunOneM iid choices = do
 chooseOrRunNM :: ReverseQueue m => InvestigatorId -> Int -> ChooseT m a -> m ()
 chooseOrRunNM iid n choices = do
   (_, choices') <- runChooseT choices
-  unless (null choices') $ chooseOrRunN iid n choices'
+  unless (shouldSkipQuestion choices') $ chooseOrRunN iid n choices'
 
 chooseOrRunOneAtATimeM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOrRunOneAtATimeM iid choices = do
   ((_, ChooseState {label}), choices') <- runChooseT choices
-  unless (null choices') do
+  unless (shouldSkipQuestion choices') do
     case label of
       Nothing -> chooseOrRunOneAtATime iid choices'
       Just l -> case choices' of
@@ -148,7 +156,7 @@ chooseNM :: ReverseQueue m => InvestigatorId -> Int -> ChooseT m a -> m ()
 chooseNM iid n choices = do
   when (n > 0) do
     ((_, ChooseState {label}), choices') <- runChooseT choices
-    unless (null choices') do
+    unless (shouldSkipQuestion choices') do
       case label of
         Nothing -> chooseN iid n choices'
         Just l -> questionLabel l iid $ ChooseN n choices'
@@ -156,7 +164,7 @@ chooseNM iid n choices = do
 chooseUpToNM :: ReverseQueue m => InvestigatorId -> Int -> Text -> ChooseT m a -> m ()
 chooseUpToNM iid n done choices = do
   (_, choices') <- runChooseT choices
-  unless (null choices') $ chooseUpToN iid n done choices'
+  unless (shouldSkipQuestion choices') $ chooseUpToN iid n done choices'
 
 chooseUpToNM_ :: ReverseQueue m => InvestigatorId -> Int -> ChooseT m a -> m ()
 chooseUpToNM_ iid n choices = chooseUpToNMI' iid n "done" choices
@@ -174,7 +182,7 @@ chooseUpToNMI' iid n done choices = do
 chooseOneAtATimeM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOneAtATimeM iid choices = do
   (_, choices') <- runChooseT choices
-  unless (null choices') $ chooseOneAtATime iid choices'
+  unless (shouldSkipQuestion choices') $ chooseOneAtATime iid choices'
 
 forcedWhen :: Monad m => Bool -> ChooseT m () -> ChooseT m ()
 forcedWhen b action =
@@ -387,7 +395,7 @@ chooseFromM
 chooseFromM iid matcher action = do
   ((_, ChooseState {label, labelCardCode}), choices') <-
     runChooseT $ traverse_ (\t -> targeting t (action t)) =<< select matcher
-  unless (null choices') do
+  unless (shouldSkipQuestion choices') do
     case label of
       Nothing -> chooseOne iid choices'
       Just l -> case labelCardCode of
@@ -442,7 +450,7 @@ storyWithChooseUpToNM' n scp builder choices = do
 chooseSome1M' :: (HasI18n, ReverseQueue m) => InvestigatorId -> Text -> ChooseT m a -> m ()
 chooseSome1M' iid txt choices = do
   ((_, ChooseState {label}), choices') <- runChooseT choices
-  unless (null choices') do
+  unless (shouldSkipQuestion choices') do
     case label of
       Nothing -> chooseSome1 iid (toI18n txt) choices'
       Just l -> questionLabel l iid $ ChooseSome1 (toI18n txt) choices'

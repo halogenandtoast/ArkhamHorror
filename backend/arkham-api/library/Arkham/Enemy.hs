@@ -551,7 +551,10 @@ allEnemies =
       SomeEnemyCard vengefulSerpent
     , SomeEnemyCard serpentGuardian
     , -- Return to The Circle Undone
-      --- Bloodthirsty Spirits [rttcu]
+      --- Return to At Death's Doorstep [rttcu]
+      SomeEnemyCard senatorNathanielRhodesAdeptPolitician
+    , SomeEnemyCard dmitriKonstantinovTakingTheLongView
+    , --- Bloodthirsty Spirits [rttcu]
       SomeEnemyCard screechingBanshee
     , -- Nathanial Cho
       SomeEnemyCard tommyMalloy

@@ -138,6 +138,7 @@ export default defineComponent({
 }
 
 .blue, :deep(.blue), p.blue, :deep(p.blue) {
+  --embed-color: #00264D;
   border: 3px solid #3a4a69;
   border-radius: 55px;
   background-color: color-mix(in srgb, #3a4a69, transparent 90%);
@@ -229,6 +230,10 @@ export default defineComponent({
 
 :deep(b) { font-family: none; }
 :deep(i) { font-style: italic; }
+
+:deep([data-image-id]) {
+  color: var(--embed-color, black);
+}
 
 p, :deep(p) {
   font-family: "ArkhamFlavor";

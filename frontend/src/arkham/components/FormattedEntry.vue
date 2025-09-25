@@ -10,16 +10,16 @@ function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
   switch (entry.tag) {
     case 'BasicEntry': return {}
     case 'I18nEntry': return {}
-    case 'ModifyEntry': return entry.modifiers.map((m) => { return { [modifierToStyle(m)]: true }})
+    case 'ModifyEntry': return entry.modifiers.reduce((acc, m) => { return { [modifierToStyle(m)]: true, ...acc }}, {})
     case 'CompositeEntry': return {}
     case 'ColumnEntry': return {}
     case 'ListEntry': return {}
     case 'EntrySplit': return {}
     case 'HeaderEntry': return {}
-    case 'TarotEntry': return [{"card": true}, {"no-overlay": true}]
+    case 'TarotEntry': return {"card": true, "no-overlay": true}
     case 'CardEntry': {
-      const mods = entry.imageModifiers.map((m) => { return { [imageModifierToStyle(m)]: true }})
-      return [{"card": true}, {"no-overlay": true}, ...mods]
+      const mods = entry.imageModifiers.reduce((acc, m) => { return { [imageModifierToStyle(m)]: true, ...acc }}, {})
+      return {"card": true, "no-overlay": true, ...mods}
     }
 
     default: return {}

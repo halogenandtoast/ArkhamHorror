@@ -97,9 +97,24 @@ standaloneCampaignLog =
 
 setupAtDeathsDoorstep :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupAtDeathsDoorstep attrs = do
-  setup $ ul do
-    li "gatherSets"
-    unscoped $ li "shuffleRemainder"
+  setup do
+    ul do
+      li "gatherSets"
+      li "setSetsAside"
+      li "setLocationsAside"
+      li.nested "setJosefAside" do
+        li "josefNote"
+      li "placeLocations"
+      li.nested "checkCampaignLog" do
+        li "gavriellaNotCrossedOff"
+        li "jeromeNotCrossedOff"
+        li "valentinoNotCrossedOff"
+        li "pennyNotCrossedOff"
+        li "piecesOfEvidence"
+      unscoped $ li "shuffleRemainder"
+    p "theMortalRealm"
+
+  whenReturnTo $ gather Set.ReturnToAtDeathsDoorstep
   gather Set.AtDeathsDoorstep
   gather Set.SilverTwilightLodge
   gather Set.SpectralPredators
@@ -169,11 +184,11 @@ setupAtDeathsDoorstep attrs = do
 
 instance RunMessage AtDeathsDoorstep where
   runMessage msg s@(AtDeathsDoorstep attrs) = runQueueT $ scenarioI18n $ case msg of
-    PreScenarioSetup -> do
-      story introPart1
-      story introPart2
-      story introPart3
-      story introPart4
+    PreScenarioSetup -> scope "intro" do
+      flavor $ setTitle "title" >> p "introPart1"
+      flavor $ setTitle "title" >> p "introPart2"
+      flavor $ setTitle "title" >> p "introPart3"
+      flavor $ setTitle "title" >> p "introPart4"
       pure s
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens

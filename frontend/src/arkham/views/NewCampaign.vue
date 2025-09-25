@@ -111,6 +111,9 @@ fetchDecks().then((result) => {
 
 const selectedCampaignReturnTo = computed(() => {
   const campaign = campaigns.value.find((c) => c.id === selectedCampaign.value);
+  if (campaign?.returnTo?.alpha && !alpha.value) {
+    return null
+  }
   return campaign?.returnTo
 })
 

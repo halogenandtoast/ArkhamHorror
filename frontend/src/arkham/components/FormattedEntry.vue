@@ -241,6 +241,13 @@ p.anke, :deep(p.anke) {
   margin: 10px;
 }
 
+p.billenia, :deep(p.billenia) {
+  font-family: "Billenia";
+  font-weight: 500;
+  font-size: 1.4em;
+  margin: 10px;
+}
+
 :deep(strong), :deep(b), b, strong {
   font-weight: bolder !important;
   font-style: normal !important;
@@ -249,6 +256,7 @@ p.anke, :deep(p.anke) {
 
 div, :deep(div) {
   &:has(.note-green) {
+    min-height: fit-content;
     margin-block: 20px;
     margin-inline: 50px;
     box-shadow: unset;
@@ -475,6 +483,7 @@ div:has(> img.remove) {
 .center, :deep(.center) {
   justify-content: center;
   align-content: center;
+  text-align: center;
 }
 
 .task, :deep(.task) {

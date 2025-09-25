@@ -2,19 +2,16 @@ module Arkham.Agenda.Cards.OverTheThreshold (overTheThreshold) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner hiding (PhaseStep)
+import Arkham.Agenda.Import.Lifted hiding (PhaseStep)
 import Arkham.Card
-import Arkham.Classes
-import Arkham.DamageEffect
 import Arkham.Enemy.Types (Field (EnemyHealthDamage))
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.GameValue
 import Arkham.Helpers.Act
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Prelude
-import Arkham.Trait (Trait (Humanoid, SilverTwilight, Spectral))
+import Arkham.Message.Lifted.Choose
+import Arkham.Trait (Trait (SilverTwilight, Spectral))
 
 newtype OverTheThreshold = OverTheThreshold AgendaAttrs
   deriving anyclass IsAgenda
@@ -22,54 +19,39 @@ newtype OverTheThreshold = OverTheThreshold AgendaAttrs
 
 instance HasModifiersFor OverTheThreshold where
   getModifiersFor (OverTheThreshold a) = do
-    enemies <- modifySelect a (EnemyWithTrait SilverTwilight) [CountsAsInvestigatorForHunterEnemies]
+    modifySelect a (EnemyWithTrait SilverTwilight) [CountsAsInvestigatorForHunterEnemies]
     silverTwilight <- findAllCards (`cardMatch` CardWithTrait SilverTwilight)
-    cards <- modifyEach a silverTwilight [GainVictory 0]
-    pure $ enemies <> cards
+    modifyEach a silverTwilight [GainVictory 0]
 
 overTheThreshold :: AgendaCard OverTheThreshold
 overTheThreshold = agenda (2, A) OverTheThreshold Cards.overTheThreshold (Static 11)
 
 instance HasAbilities OverTheThreshold where
   getAbilities (OverTheThreshold a) =
-    [ restrictedAbility
-        a
-        1
-        ( enemyExists
-            $ ReadyEnemy
-            <> EnemyWithTrait Spectral
-            <> EnemyAt (LocationWithEnemy $ EnemyWithTrait Humanoid)
-        )
-        $ ForcedAbility
+    [ restricted a 1 (exists $ ReadyEnemy <> EnemyWithTrait Spectral <> at_ (LocationWithEnemy #humanoid))
+        $ forced
         $ PhaseStep #after HuntersMoveStep
     ]
 
 instance RunMessage OverTheThreshold where
-  runMessage msg a@(OverTheThreshold attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+  runMessage msg a@(OverTheThreshold attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
       step <- getCurrentActStep
-      iids <- getInvestigators
       if step == 2
         then push R3
-        else
-          pushAll $ concatMap (\iid -> [SufferTrauma iid 1 0, InvestigatorDefeated (toSource attrs) iid]) iids
+        else eachInvestigator \iid -> do
+          sufferPhysicalTrauma iid 1
+          investigatorDefeated attrs iid
       pure a
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       spectralEnemies <- selectWithField EnemyHealthDamage $ EnemyWithTrait Spectral <> ReadyEnemy
       enemyPairs <-
-        catMaybes <$> for
-          spectralEnemies
-          \(enemy, damage) -> do
-            humanoids <- select $ EnemyWithTrait Humanoid <> EnemyAt (locationWithEnemy enemy)
-            pure $ guard (notNull humanoids) $> (enemy, damage, humanoids)
-      lead <- getLeadPlayer
-      pushWhen (notNull enemyPairs)
-        $ chooseOrRunOneAtATime lead
-        $ [ targetLabel enemy
-              $ [ EnemyDamage humanoid $ nonAttack Nothing (EnemySource enemy) damage
-                | humanoid <- humanoids
-                ]
-          | (enemy, damage, humanoids) <- enemyPairs
-          ]
+        catMaybes <$> for spectralEnemies \(enemy, damage) -> do
+          humanoids <- select $ #humanoid <> EnemyAt (locationWithEnemy enemy)
+          pure $ guard (notNull humanoids) $> (enemy, damage, humanoids)
+      lead <- getLead
+      chooseOrRunOneAtATimeM lead do
+        for_ enemyPairs \(enemy, damage, humanoids) -> do
+          targeting enemy $ for_ humanoids $ nonAttackEnemyDamage Nothing enemy damage
       pure a
-    _ -> OverTheThreshold <$> runMessage msg attrs
+    _ -> OverTheThreshold <$> liftRunMessage msg attrs

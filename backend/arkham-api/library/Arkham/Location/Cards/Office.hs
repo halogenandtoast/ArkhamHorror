@@ -6,10 +6,9 @@ import Arkham.GameValue
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner hiding (RevealChaosToken)
+import Arkham.Location.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
+import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (SilverTwilight))
 
 newtype Office = Office LocationAttrs
@@ -20,45 +19,29 @@ office :: LocationCard Office
 office = location Office Cards.office 4 (PerPlayer 1)
 
 instance HasModifiersFor Office where
-  getModifiersFor (Office a) = modifySelect a (enemyAt (toId a)) [RemoveKeyword Keyword.Aloof]
+  getModifiersFor (Office a) = modifySelect a (enemyAt a) [RemoveKeyword Keyword.Aloof]
 
 instance HasAbilities Office where
   getAbilities (Office a) =
-    withBaseAbilities
-      a
-      [ restrictedAbility
-          a
-          1
-          ( DuringSkillTest (WhileInvestigating $ LocationWithId $ toId a)
-              <> EnemyCriteria
-                ( EnemyExists
-                    $ EnemyWithTrait SilverTwilight
-                    <> EnemyWithoutModifier CannotPlaceDoomOnThis
-                )
-          )
-          $ ForcedAbility
-          $ RevealChaosToken Timing.After You
-          $ ChaosTokenMatchesAny
-          $ map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail]
-      ]
+    extendRevealed1 a
+      $ restricted
+        a
+        1
+        ( DuringSkillTest (WhileInvestigating (be a))
+            <> exists (EnemyWithTrait SilverTwilight <> EnemyWithoutModifier CannotPlaceDoomOnThis)
+        )
+      $ forced
+      $ RevealChaosToken #after You
+      $ mapOneOf ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail]
 
 instance RunMessage Office where
-  runMessage msg l@(Office attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(Office attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemies <-
         select
           $ NearestEnemyToLocationFallback
-            (toId attrs)
-            ( EnemyWithTrait SilverTwilight
-                <> EnemyWithoutModifier CannotPlaceDoomOnThis
-            )
-      unless (null enemies) $ do
-        player <- getPlayer iid
-        push
-          $ chooseOrRunOne
-            player
-            [ targetLabel enemy [PlaceDoom (toAbilitySource attrs 1) (toTarget enemy) 1]
-            | enemy <- enemies
-            ]
+            attrs.id
+            (EnemyWithTrait SilverTwilight <> EnemyWithoutModifier CannotPlaceDoomOnThis)
+      chooseOrRunOneM iid $ targets enemies $ placeDoomOn (attrs.ability 1) 1
       pure l
-    _ -> Office <$> runMessage msg attrs
+    _ -> Office <$> liftRunMessage msg attrs

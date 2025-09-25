@@ -3,34 +3,28 @@ module Arkham.Location.Cards.BalconySpectral (balconySpectral) where
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.AtDeathsDoorstep.Helpers
 
 newtype BalconySpectral = BalconySpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 balconySpectral :: LocationCard BalconySpectral
-balconySpectral =
-  location BalconySpectral Cards.balconySpectral 1 (PerPlayer 1)
+balconySpectral = location BalconySpectral Cards.balconySpectral 1 (PerPlayer 1)
 
 instance HasAbilities BalconySpectral where
-  getAbilities (BalconySpectral attrs) =
-    withBaseAbilities
-      attrs
-      [haunted "Each of your cards with health takes 1 direct damage." attrs 1]
+  getAbilities (BalconySpectral a) =
+    extendRevealed1 a $ scenarioI18n $ hauntedI "balconySpectral.haunted" a 1
 
 instance RunMessage BalconySpectral where
-  runMessage msg l@(BalconySpectral attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(BalconySpectral attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       assets <- select $ assetControlledBy iid <> AssetWithHealth
-      player <- getPlayer iid
-      push
-        $ chooseOneAtATime player
-        $ targetLabel iid [InvestigatorDirectDamage iid (toSource attrs) 1 0]
-        : [ targetLabel asset [DealAssetDirectDamage asset (toSource attrs) 1 0]
-          | asset <- assets
-          ]
+      chooseOneAtATimeM iid do
+        targeting iid $ directDamage iid (attrs.ability 1) 1
+        targets assets \asset -> dealAssetDirectDamage asset (attrs.ability 1) 1
       pure l
-    _ -> BalconySpectral <$> runMessage msg attrs
+    _ -> BalconySpectral <$> liftRunMessage msg attrs

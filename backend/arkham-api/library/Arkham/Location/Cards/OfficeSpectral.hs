@@ -5,6 +5,7 @@ import Arkham.GameValue
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Scenarios.AtDeathsDoorstep.Helpers
 
 newtype OfficeSpectral = OfficeSpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -14,8 +15,8 @@ officeSpectral :: LocationCard OfficeSpectral
 officeSpectral = location OfficeSpectral Cards.officeSpectral 4 (PerPlayer 2)
 
 instance HasAbilities OfficeSpectral where
-  getAbilities (OfficeSpectral attrs) =
-    extendRevealed1 attrs $ haunted "Choose and discard a card from your hand." attrs 1
+  getAbilities (OfficeSpectral a) =
+    extendRevealed1 a $ scenarioI18n $ hauntedI "officeSpectral.haunted" a 1
 
 instance RunMessage OfficeSpectral where
   runMessage msg l@(OfficeSpectral attrs) = runQueueT $ case msg of

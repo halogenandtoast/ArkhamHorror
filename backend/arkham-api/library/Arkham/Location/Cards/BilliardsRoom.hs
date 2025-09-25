@@ -3,8 +3,7 @@ module Arkham.Location.Cards.BilliardsRoom (billiardsRoom) where
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
-import Arkham.Prelude
+import Arkham.Location.Import.Lifted
 
 newtype BilliardsRoom = BilliardsRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -15,17 +14,15 @@ billiardsRoom = location BilliardsRoom Cards.billiardsRoom 3 (Static 0)
 
 instance HasAbilities BilliardsRoom where
   getAbilities (BilliardsRoom a) =
-    withBaseAbilities
-      a
-      [playerLimit PerRound $ skillTestAbility $ restrictedAbility a 1 Here actionAbility]
+    extendRevealed1 a $ playerLimit PerRound $ skillTestAbility $ restricted a 1 Here actionAbility
 
 instance RunMessage BilliardsRoom where
-  runMessage msg l@(BilliardsRoom attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(BilliardsRoom attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (attrs.ability 1) attrs #agility (Fixed 3)
+      beginSkillTest sid iid (attrs.ability 1) attrs #agility (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ GainClues iid (toAbilitySource attrs 1) 1
+      gainClues iid (attrs.ability 1) 1
       pure l
-    _ -> BilliardsRoom <$> runMessage msg attrs
+    _ -> BilliardsRoom <$> liftRunMessage msg attrs

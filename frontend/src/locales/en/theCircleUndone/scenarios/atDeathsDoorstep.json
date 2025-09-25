@@ -15,11 +15,35 @@
     "wineCellarSpectral": {
       "removeDoom": "Remove 1 doom from a Silver Twilight enemy in play",
       "placeDoom": "Place 1 doom on a Silver Twilight enemy in play"
+    },
+    "trophyRoom": {
+      "spendClues": "Spend 2 resources to gain 1 clue (from the token pool)."
     }
   },
   "tooltips": {
     "wineCellarSpectral": {
       "haunted": "_Haunted_ - You must either place 1 doom on a _Silver Twilight_ enemy in play, or take 1 direct horror."
+    },
+    "entryHall": {
+      "resign": "\"I guess there is nothing to those disappearances after all.\""
+    },
+    "entryHallSpectral": {
+      "resign": "You tear through the front doors of the manor, escaping the spectral realm and leaving the remainder of the survivors to their fate."
+    },
+    "trophyRoomSpectral": {
+      "haunted": "Lose 2 resources. For each resource you cannot lose from this effect, take 1 horror."
+    },
+    "billiardsRoomSpectral": {
+      "haunted": "You must either discard an asset you control or take 1 damage."
+    },
+    "masterBedroomSpectral": {
+      "haunted": "Place 1 of your clues on Master Bedroom."
+    },
+    "balconySpectral": {
+      "haunted": "Each of your cards with health takes 1 direct damage."
+    },
+    "officeSpectral": {
+      "haunted": "Choose and discard a card from your hand."
     }
   }
 }

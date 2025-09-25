@@ -121,6 +121,9 @@ instance IsLabel "spell" ExtendedCardMatcher where
 instance IsLabel "hex" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #hex
 
+instance IsLabel "curse" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #curse
+
 instance IsLabel "item" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #item
 
@@ -327,6 +330,9 @@ instance IsLabel "ally" CardMatcher where
 
 instance IsLabel "hex" CardMatcher where
   fromLabel = CardWithTrait Hex
+
+instance IsLabel "curse" CardMatcher where
+  fromLabel = CardWithTrait Curse
 
 instance IsLabel "parley" CardMatcher where
   fromLabel = CardWithAction #parley

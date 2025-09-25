@@ -672,9 +672,18 @@ allTreacheries =
       SomeTreacheryCard wrathOfYig
     , -- Return to the Circle Undone
       SomeTreacheryCard damned
+    , --- Hexcraft [rttcu]
+      SomeTreacheryCard trespasser
+    , SomeTreacheryCard despoiled
+    , SomeTreacheryCard maligned
+    , --- Impending Evils [rttcu]
+      SomeTreacheryCard impendingEvils
     , --- Unspeakable Fate [rttcu]
       SomeTreacheryCard unavoidableDemise
     , SomeTreacheryCard fateOfAllFoolsUnspeakableFate
+    , --- City of the Damned [rttcu]
+      SomeTreacheryCard viceAndVillainy
+    , SomeTreacheryCard unhallowedLand
     , --- Unstable Realm [rttcu]
       SomeTreacheryCard unstableEnergies
     , SomeTreacheryCard fromTheOtherSide

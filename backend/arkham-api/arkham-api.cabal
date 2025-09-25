@@ -4198,6 +4198,7 @@ library
       Arkham.Treachery.Cards.DeepOneInvasion
       Arkham.Treachery.Cards.DelusoryEvils
       Arkham.Treachery.Cards.DescentIntoMadness
+      Arkham.Treachery.Cards.Despoiled
       Arkham.Treachery.Cards.DetachedFromReality
       Arkham.Treachery.Cards.DholeTunnel
       Arkham.Treachery.Cards.DiabolicVoices
@@ -4296,6 +4297,7 @@ library
       Arkham.Treachery.Cards.IdleHands
       Arkham.Treachery.Cards.IllDoItMyself
       Arkham.Treachery.Cards.IllOmen
+      Arkham.Treachery.Cards.ImpendingEvils
       Arkham.Treachery.Cards.ImperceptableCreature
       Arkham.Treachery.Cards.IncriminatingEvidence
       Arkham.Treachery.Cards.Indebted
@@ -4332,6 +4334,7 @@ library
       Arkham.Treachery.Cards.MacabreMemento
       Arkham.Treachery.Cards.MaddeningDelusions
       Arkham.Treachery.Cards.Malfunction
+      Arkham.Treachery.Cards.Maligned
       Arkham.Treachery.Cards.MarkedByTheSign
       Arkham.Treachery.Cards.MarkedForDeath
       Arkham.Treachery.Cards.MarkOfTheOrder
@@ -4524,6 +4527,7 @@ library
       Arkham.Treachery.Cards.ToweringBeasts
       Arkham.Treachery.Cards.TrappedSpirits
       Arkham.Treachery.Cards.TreacherousDepths
+      Arkham.Treachery.Cards.Trespasser
       Arkham.Treachery.Cards.TwinSuns
       Arkham.Treachery.Cards.TwistedToHisWill
       Arkham.Treachery.Cards.TwistOfFate
@@ -4535,6 +4539,7 @@ library
       Arkham.Treachery.Cards.UnexpectedAmbush
       Arkham.Treachery.Cards.UnexpectedTransformation
       Arkham.Treachery.Cards.UnhallowedCountry
+      Arkham.Treachery.Cards.UnhallowedLand
       Arkham.Treachery.Cards.UnknowablePast
       Arkham.Treachery.Cards.Unlucky
       Arkham.Treachery.Cards.UnspeakableOathBloodthirst
@@ -4544,6 +4549,7 @@ library
       Arkham.Treachery.Cards.VampiresKiss
       Arkham.Treachery.Cards.VastExpanse
       Arkham.Treachery.Cards.VaultOfEarthlyDemise
+      Arkham.Treachery.Cards.ViceAndVillainy
       Arkham.Treachery.Cards.ViciousAmbush
       Arkham.Treachery.Cards.ViolentCommands
       Arkham.Treachery.Cards.ViolentCommandsTheMidwinterGala

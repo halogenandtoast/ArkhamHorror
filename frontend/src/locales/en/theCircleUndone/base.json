@@ -71,6 +71,9 @@
     "fateOfAllFools": {
       "otherInvestigator": "An investigator with another copy of Fate of All Fools in his or her threat area takes 2 direct damage.",
       "otherCopy": "Place 1 doom on another copy of Fate of All Fools."
+    },
+    "impendingEvils": {
+      "place": "Put Impending Evils into play next to the agenda deck and it gains surge."
     }
   },
   "prologue": {

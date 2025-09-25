@@ -2632,6 +2632,14 @@ getAssetsMatching matcher = do
           Just (AssetTarget aid) -> Just aid
           _ -> Nothing
       pure $ filter ((`elem` aids) . toId) as
+    AssetWithAttachedTreachery treacheryMatcher -> do
+      treacheries <- select treacheryMatcher
+      aids <- flip mapMaybeM treacheries \tid -> do
+        placement <- field TreacheryPlacement tid
+        pure $ case placementToAttached placement of
+          Just (AssetTarget aid) -> Just aid
+          _ -> Nothing
+      pure $ filter ((`elem` aids) . toId) as
     AssetAtLocation lid -> flip filterM as $ \a ->
       (== Just lid) <$> field AssetLocation a.id
     AssetOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms

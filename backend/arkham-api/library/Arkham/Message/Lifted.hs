@@ -3,7 +3,6 @@ module Arkham.Message.Lifted (module X, module Arkham.Message.Lifted) where
 import Arkham.Helpers.FetchCard as X
 
 import Arkham.Ability
-import Arkham.Layout
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Act.Types (ActAttrs (actDeckId))
 import Arkham.Action (Action)
@@ -47,6 +46,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Act
 import Arkham.Helpers.Action (getActionsWith)
+import Arkham.Helpers.Agenda
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Campaign qualified as Msg
 import Arkham.Helpers.Card (getCardEntityTarget)
@@ -78,6 +78,7 @@ import Arkham.Investigate
 import Arkham.Investigate qualified as Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
+import Arkham.Layout
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..), Location)
 import Arkham.Matcher
@@ -408,6 +409,11 @@ dealAssetDirectDamage
   :: (ReverseQueue m, Sourceable source, AsId asset, IdOf asset ~ AssetId)
   => asset -> source -> Int -> m ()
 dealAssetDirectDamage asset source damage = dealAssetDirectDamageAndHorror asset source damage 0
+
+dealAssetDirectHorror
+  :: (ReverseQueue m, Sourceable source, AsId asset, IdOf asset ~ AssetId)
+  => asset -> source -> Int -> m ()
+dealAssetDirectHorror asset source horror = dealAssetDirectDamageAndHorror asset source 0 horror
 
 dealAssetDirectDamageAndHorror
   :: (ReverseQueue m, Sourceable source, AsId asset, IdOf asset ~ AssetId)
@@ -1824,7 +1830,9 @@ loseAllResources iid source = loseResources iid source =<< field InvestigatorRes
 drawEncounterCard :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 drawEncounterCard i source = drawEncounterCards i source 1
 
-drawEncounterCardEdit :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> (CardDraw Message -> CardDraw Message) -> m ()
+drawEncounterCardEdit
+  :: (ReverseQueue m, Sourceable source)
+  => InvestigatorId -> source -> (CardDraw Message -> CardDraw Message) -> m ()
 drawEncounterCardEdit i source = drawEncounterCardsEdit i source 1
 
 drawEncounterCards :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
@@ -2173,7 +2181,8 @@ matchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m 
 matchingDon't f = lift $ popMessageMatching_ f
 
 cardDrawModifier
-  :: (ReverseQueue m, Sourceable source, Targetable target) => CardDrawId -> source -> target -> ModifierType -> m ()
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => CardDrawId -> source -> target -> ModifierType -> m ()
 cardDrawModifier cid source target modifier = Msg.pushM $ Msg.cardDrawModifier cid source target modifier
 
 enemyAttackModifier
@@ -2366,6 +2375,10 @@ storyEnemyDamage source damage enemy = push $ Msg.EnemyDamage enemy (storyDamage
 
 exile :: (ReverseQueue m, Targetable target) => target -> m ()
 exile (toTarget -> target) = push $ Msg.Exile target
+
+skillTestAutomaticallySucceeds
+  :: (ReverseQueue m, Sourceable source) => source -> SkillTestId -> m ()
+skillTestAutomaticallySucceeds source sid = skillTestModifier sid source sid SkillTestAutomaticallySucceeds
 
 failSkillTest :: ReverseQueue m => m ()
 failSkillTest = push Msg.FailSkillTest
@@ -3321,6 +3334,11 @@ discardTopOfDeckAndHandle
   -> m ()
 discardTopOfDeckAndHandle investigator source n target =
   push $ DiscardTopOfDeck (asId investigator) n (toSource source) (Just $ toTarget target)
+
+advanceCurrentAgenda :: ReverseQueue m => source -> m ()
+advanceCurrentAgenda _source = do
+  agendaId <- getCurrentAgenda
+  push $ AdvanceAgendaBy agendaId AgendaAdvancedWithOther
 
 advanceCurrentAct :: (ReverseQueue m, Sourceable source) => source -> m ()
 advanceCurrentAct source = do

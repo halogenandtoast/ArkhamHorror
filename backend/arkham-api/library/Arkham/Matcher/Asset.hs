@@ -18,6 +18,7 @@ import Arkham.Matcher.Event
 import {-# SOURCE #-} Arkham.Matcher.Investigator
 import Arkham.Matcher.Location
 import Arkham.Matcher.Target
+import Arkham.Matcher.Treachery
 import Arkham.Matcher.Value
 import {-# SOURCE #-} Arkham.Modifier
 import {-# SOURCE #-} Arkham.Placement
@@ -51,6 +52,7 @@ data AssetMatcher
   | AssetWithKeyword Keyword
   | AssetAttachedToAsset AssetMatcher
   | AssetWithAttachedEvent EventMatcher
+  | AssetWithAttachedTreachery TreacheryMatcher
   | AssetAttachedTo TargetMatcher
   | AssetControlledBy InvestigatorMatcher
   | AssetInPlayAreaOf InvestigatorMatcher

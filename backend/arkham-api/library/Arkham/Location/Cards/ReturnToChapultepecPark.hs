@@ -19,7 +19,7 @@ instance HasAbilities ReturnToChapultepecPark where
       a
       [ restrictedAbility a 1 Here
           $ forced
-          $ SkillTestResult #after You (SkillTestWithSkillType #willpower) #failure
+          $ SkillTestResult #after You (SkillTestWithSkillType #agility) #failure
       , skillTestAbility $ restricted a 2 Here exploreAction_
       ]
 

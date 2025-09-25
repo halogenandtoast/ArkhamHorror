@@ -1,13 +1,11 @@
 module Arkham.Location.Cards.VictorianHalls (victorianHalls) where
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait (Trait (SilverTwilight))
 
 newtype VictorianHalls = VictorianHalls LocationAttrs
@@ -19,24 +17,16 @@ victorianHalls = location VictorianHalls Cards.victorianHalls 4 (Static 0)
 
 instance HasAbilities VictorianHalls where
   getAbilities (VictorianHalls a) =
-    withBaseAbilities
-      a
-      [ limitedAbility (GroupLimit PerGame 1)
-          $ restrictedAbility a 1 Here
-          $ ActionAbility []
-          $ ActionCost 1
-      ]
+    extendRevealed1 a $ groupLimit PerGame $ restricted a 1 Here actionAbility
 
 instance RunMessage VictorianHalls where
-  runMessage msg l@(VictorianHalls attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push
-        $ DiscardUntilFirst iid (toSource attrs) Deck.EncounterDeck
-        $ BasicCardMatch
-        $ CardWithTrait SilverTwilight
-        <> CardWithType EnemyType
+  runMessage msg l@(VictorianHalls attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      discardUntilFirst iid (attrs.ability 1) Deck.EncounterDeck
+        $ basic (CardWithTrait SilverTwilight <> #enemy)
       pure l
-    RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just ec) -> do
-      pushAll [SpawnEnemyAt (EncounterCard ec) (toId attrs), GainClues iid (toAbilitySource attrs 1) 2]
+    RequestedEncounterCard (isAbilitySource attrs 1 -> True) (Just iid) (Just ec) -> do
+      spawnEnemyAt_ ec attrs
+      gainClues iid (attrs.ability 1) 2
       pure l
-    _ -> VictorianHalls <$> runMessage msg attrs
+    _ -> VictorianHalls <$> liftRunMessage msg attrs

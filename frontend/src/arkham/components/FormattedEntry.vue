@@ -164,6 +164,15 @@ export default defineComponent({
   > p:first-child {
     margin-left: 35px;
   }
+
+  h1 {
+    color: #3a4a69;
+    text-align: center;
+    border-bottom: 0;
+    &::after {
+      border-bottom: 0;
+    }
+  }
 }
 
 .green, :deep(.green), p.green, :deep(p.green) {

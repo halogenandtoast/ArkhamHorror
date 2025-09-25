@@ -2,13 +2,11 @@ module Arkham.Location.Cards.MasterBedroom (masterBedroom) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (SilverTwilight))
 
 newtype MasterBedroom = MasterBedroom LocationAttrs
@@ -20,35 +18,24 @@ masterBedroom = location MasterBedroom Cards.masterBedroom 3 (PerPlayer 1)
 
 instance HasAbilities MasterBedroom where
   getAbilities (MasterBedroom a) =
-    withBaseAbilities
-      a
-      [ restrictedAbility
-          a
-          1
-          ( exists (investigatorAt $ toId a)
-              <> exists (EnemyWithTrait SilverTwilight <> EnemyWithoutModifier CannotPlaceDoomOnThis)
-          )
-          $ ForcedAbility
-          $ RoundEnds Timing.When
-      ]
+    extendRevealed1 a
+      $ restricted
+        a
+        1
+        ( exists (investigatorAt $ toId a)
+            <> exists (EnemyWithTrait SilverTwilight <> EnemyWithoutModifier CannotPlaceDoomOnThis)
+        )
+      $ forced
+      $ RoundEnds #when
 
 instance RunMessage MasterBedroom where
-  runMessage msg l@(MasterBedroom attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(MasterBedroom attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       enemies <-
         select
           $ NearestEnemyToLocationFallback
-            (toId attrs)
-            ( EnemyWithTrait SilverTwilight
-                <> EnemyWithoutModifier CannotPlaceDoomOnThis
-            )
-      unless (null enemies) $ do
-        lead <- getLeadPlayer
-        push
-          $ chooseOrRunOne
-            lead
-            [ targetLabel enemy [PlaceDoom (toAbilitySource attrs 1) (toTarget enemy) 1]
-            | enemy <- enemies
-            ]
+            attrs.id
+            (EnemyWithTrait SilverTwilight <> EnemyWithoutModifier CannotPlaceDoomOnThis)
+      leadChooseOrRunOneM $ targets enemies $ placeDoomOn (attrs.ability 1) 1
       pure l
-    _ -> MasterBedroom <$> runMessage msg attrs
+    _ -> MasterBedroom <$> liftRunMessage msg attrs

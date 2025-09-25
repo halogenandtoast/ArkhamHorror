@@ -2,39 +2,31 @@ module Arkham.Location.Cards.BilliardsRoomSpectral (billiardsRoomSpectral) where
 
 import Arkham.Ability
 import Arkham.GameValue
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.AtDeathsDoorstep.Helpers
 
 newtype BilliardsRoomSpectral = BilliardsRoomSpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 billiardsRoomSpectral :: LocationCard BilliardsRoomSpectral
-billiardsRoomSpectral =
-  location BilliardsRoomSpectral Cards.billiardsRoomSpectral 3 (PerPlayer 1)
+billiardsRoomSpectral = location BilliardsRoomSpectral Cards.billiardsRoomSpectral 3 (PerPlayer 1)
 
 instance HasAbilities BilliardsRoomSpectral where
-  getAbilities (BilliardsRoomSpectral attrs) =
-    withBaseAbilities
-      attrs
-      [haunted "You must either discard an asset you control or take 1 damage." attrs 1]
+  getAbilities (BilliardsRoomSpectral a) =
+    extendRevealed1 a $ scenarioI18n $ hauntedI "billiardsRoomSpectral.haunted" a 1
 
 instance RunMessage BilliardsRoomSpectral where
-  runMessage msg l@(BilliardsRoomSpectral attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(BilliardsRoomSpectral attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       assets <- select $ assetControlledBy iid <> DiscardableAsset
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ Label
-          "Take 1 damage"
-          [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
-        : [ Label
-              "Discard an asset"
-              [ChooseAndDiscardAsset iid (toSource attrs) AnyAsset]
-          | notNull assets
-          ]
+      chooseOrRunOneM iid $ withI18n do
+        countVar 1 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 1) 1
+        unless (null assets) do
+          countVar 1 $ labeled' "discardsAssets" $ chooseAndDiscardAsset iid (attrs.ability 1)
       pure l
-    _ -> BilliardsRoomSpectral <$> runMessage msg attrs
+    _ -> BilliardsRoomSpectral <$> liftRunMessage msg attrs

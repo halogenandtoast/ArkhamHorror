@@ -6,6 +6,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Cost (getSpendableClueCount)
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getInvestigators, getLead, getSetAsideCard)
@@ -14,7 +15,7 @@ import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
-import Arkham.Scenarios.AtDeathsDoorstep.Story
+import Arkham.Scenarios.AtDeathsDoorstep.Helpers
 import Arkham.Trait (Trait (Monster, SilverTwilight))
 
 newtype JusticeXI = JusticeXI AgendaAttrs
@@ -55,18 +56,20 @@ instance RunMessage JusticeXI where
           push $ SpendClues targetAmount iids
           chooseOne lead $ targetLabels lids (only . SpawnEnemyAt josefMeiger)
       pushAll $ map (RemoveAllClues (toSource attrs) . toTarget) allLocations
-      when (Investigators.gavriellaMizrah.cardCode `elem` missingPersons && noCluesOnEntryHall) do
-        story interlude1Gavriella
-        record TheInvestigatorsAreOnGavriella'sTrail
-      when (Investigators.jeromeDavids.cardCode `elem` missingPersons && noCluesOnOffice) do
-        story interlude1Jerome
-        record TheInvestigatorsAreOnJerome'sTrail
-      when (Investigators.pennyWhite.cardCode `elem` missingPersons && noCluesOnBalcony) do
-        story interlude1Penny
-        record TheInvestigatorsAreOnPenny'sTrail
-      when (Investigators.valentinoRivas.cardCode `elem` missingPersons && noCluesOnBilliardsRoom) do
-        story interlude1Valentino
-        record TheInvestigatorsAreOnValentino'sTrail
+      scenarioI18n $ scope "interlude1" do
+        flavor $ setTitle "title" >> p "instructions"
+        when (Investigators.gavriellaMizrah.cardCode `elem` missingPersons) do
+          flavor $ setTitle "title" >> p.green.validate noCluesOnEntryHall "gavriella"
+          when noCluesOnEntryHall $ record TheInvestigatorsAreOnGavriella'sTrail
+        when (Investigators.jeromeDavids.cardCode `elem` missingPersons) do
+          flavor $ setTitle "title" >> p.green.validate noCluesOnOffice "jerome"
+          when noCluesOnOffice $ record TheInvestigatorsAreOnJerome'sTrail
+        when (Investigators.pennyWhite.cardCode `elem` missingPersons) do
+          flavor $ setTitle "title" >> p.green.validate noCluesOnBalcony "penny"
+          when noCluesOnBalcony $ record TheInvestigatorsAreOnPenny'sTrail
+        when (Investigators.valentinoRivas.cardCode `elem` missingPersons) do
+          flavor $ setTitle "title" >> p.green.validate noCluesOnBilliardsRoom "valentino"
+          when noCluesOnBilliardsRoom $ record TheInvestigatorsAreOnValentino'sTrail
       push $ AdvanceAct actId (toSource attrs) #other
       advanceAgendaDeck attrs
       pure a

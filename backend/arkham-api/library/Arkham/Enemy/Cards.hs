@@ -166,6 +166,7 @@ allEncounterEnemyCards =
       , danielChesterfield
       , darkYoungHost
       , declanPearce
+      , dmitriKonstantinovTakingTheLongView
       , caldwellPhilipsCompelledByDreams
       , carlSanfordIntimidatingPresence
       , valeriyaAntonovaDontMessWithHer
@@ -371,6 +372,7 @@ allEncounterEnemyCards =
       , sebastienMoreau
       , seekerOfCarcosa
       , seepingNightmare
+      , senatorNathanielRhodesAdeptPolitician
       , serpentFromYoth
       , serpentGuardian
       , serpentOfTenochtitlan
@@ -3067,6 +3069,19 @@ serpentGuardian =
   (enemy "53079" "Serpent Guardian" VenomousHate 1)
     { cdCardTraits = setFromList [Construct, Serpent]
     , cdKeywords = setFromList [Keyword.Aloof]
+    }
+
+senatorNathanielRhodesAdeptPolitician :: CardDef
+senatorNathanielRhodesAdeptPolitician =
+  (enemy "54025" ("Senator Nathanial Rhodes" <:> "Adept Politician") ReturnToAtDeathsDoorstep 1)
+    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
+    , cdKeywords = singleton Keyword.Aloof
+    }
+
+dmitriKonstantinovTakingTheLongView :: CardDef
+dmitriKonstantinovTakingTheLongView =
+  (enemy "54026" ("Dmitri Konstantinov" <:> "Taking the Long View") ReturnToAtDeathsDoorstep 1)
+    { cdCardTraits = setFromList [Humanoid, Cultist, SilverTwilight]
     }
 
 screechingBanshee :: CardDef

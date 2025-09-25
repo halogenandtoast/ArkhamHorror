@@ -141,10 +141,19 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
     DoStep 1 (LoadScenario opts) -> do
       result <- liftRunMessage (LoadScenario opts) attrs
       pure $ DisappearanceAtTheTwilightEstate $ result & startedL .~ False
-    DoStep 3 (LoadScenario _) -> scope "intro" do
+    DoStep 3 (LoadScenario opts) -> scope "intro" do
       when (null $ scenarioTarotDeck attrs) $ push LoadTarotDeck
       allPlayers >>= traverse_ (push . (`ForPlayer` msg))
+      doStep 4 (LoadScenario opts)
       endOfScenario
+      pure s
+    DoStep 4 (LoadScenario _opts) -> do
+      taken <- selectMap unInvestigatorId Anyone
+      let
+        prologueInvestigatorsNotTaken =
+          map cdCardCode allPrologueInvestigators
+            \\ toList taken
+      crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
       pure s
     ForPlayer player (DoStep 3 (LoadScenario opts)) -> scope "intro" do
       taken <- select Anyone

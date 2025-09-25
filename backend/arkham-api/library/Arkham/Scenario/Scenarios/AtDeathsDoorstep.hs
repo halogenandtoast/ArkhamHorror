@@ -13,12 +13,13 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.GameValue
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
-import Arkham.Matcher
+import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Projection
@@ -26,7 +27,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
 import Arkham.Scenarios.AtDeathsDoorstep.Helpers
-import Arkham.Scenarios.AtDeathsDoorstep.Story
 import Arkham.Token
 import Arkham.Trait (Trait (SilverTwilight, Spectral))
 
@@ -118,11 +118,11 @@ setupAtDeathsDoorstep attrs = do
   gather Set.AtDeathsDoorstep
   gather Set.SilverTwilightLodge
   gather Set.SpectralPredators
-  gather Set.TrappedSpirits
-  gather Set.InexorableFate
-  gather Set.ChillingCold
+  gather Set.TrappedSpirits `orWhenReturnTo` gather Set.BloodthirstySpirits
+  gather Set.InexorableFate `orWhenReturnTo` gather Set.UnspeakableFate
+  gather Set.ChillingCold `orWhenReturnTo` gather Set.ChillingMists
 
-  gatherAndSetAside Set.RealmOfDeath
+  gatherAndSetAside Set.RealmOfDeath `orWhenReturnTo` gatherAndSetAside Set.UnstableRealm
   gatherAndSetAside Set.TheWatcher
 
   setAside
@@ -149,6 +149,13 @@ setupAtDeathsDoorstep attrs = do
     , Locations.trophyRoom
     , Locations.masterBedroom
     ]
+
+  whenReturnTo do
+    place_ Locations.wineCellar
+    senator <- enemyAt Enemies.senatorNathanielRhodesAdeptPolitician entryHall
+    n <- perPlayer 1
+    placeClues ScenarioSource senator n
+    setAside [Locations.wineCellarSpectral]
 
   missingPersons <- getRecordedCardCodes MissingPersons
   evidenceLeftBehind <- getRecordCount PiecesOfEvidenceWereLeftBehind
@@ -182,6 +189,8 @@ setupAtDeathsDoorstep attrs = do
     for_ (doSplit evidenceLeftBehind) \n -> chooseOrRunNM lead n do
       targets locations (removeTokensOn attrs Clue 1)
 
+  whenReturnTo $ addAdditionalReferences ["54024b"]
+
 instance RunMessage AtDeathsDoorstep where
   runMessage msg s@(AtDeathsDoorstep attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
@@ -211,19 +220,20 @@ instance RunMessage AtDeathsDoorstep where
         assignDamageAndHorror iid ElderThing 1 (if isHardExpert attrs then 1 else 0)
       pure s
     ScenarioResolution NoResolution -> do
+      resolution "noResolution"
       getCurrentActStep >>= \case
         1 -> push R2
         2 -> push R3
         3 -> push R1
         _ -> error "Invalid act step"
       pure s
-    ScenarioResolution (Resolution n) -> do
+    ScenarioResolution (Resolution n) -> scope "resolutions" do
       entryHall <- selectJust $ LocationWithTitle "Entry Hall"
       inVictory <- isInVictoryDisplay Enemies.josefMeiger
       underEntryHall <-
         fieldMap
           LocationCardsUnderneath
-          ((elem Enemies.josefMeiger) . map toCardDef)
+          (elem Enemies.josefMeiger . map toCardDef)
           entryHall
       silverTwilightInVictory <-
         scenarioFieldMap
@@ -244,22 +254,18 @@ instance RunMessage AtDeathsDoorstep where
 
       case n of
         1 -> do
-          story resolution1
+          resolutionWithXp "resolution1" $ allGainXp' attrs
           record TheInvestigatorsEscapedTheSpectralRealm
-          allGainXp attrs
           endOfScenarioThen $ InterludeStep 2 (Just interludeKey)
         2 -> do
-          story resolution2
+          resolutionWithXp "resolution2" $ allGainXp' attrs
           record TheInvestigatorsLearnedNothingOfTheLodge'sSchemes
-          allGainXp attrs
           endOfScenarioThen $ UpgradeDeckStep TheSecretName
         3 -> do
-          story resolution3
+          resolutionWithXp "resolution3" $ allGainXp' attrs
           eachUnresigned (kill attrs)
           record TheInvestigatorsAreNeverSeenOrHeardFromAgain
-          allGainXp attrs
           endOfScenarioThen $ UpgradeDeckStep TheSecretName
         _ -> error "Invalid resolution"
-
       pure s
     _ -> AtDeathsDoorstep <$> liftRunMessage msg attrs

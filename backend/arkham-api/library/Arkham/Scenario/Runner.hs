@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Scenario.Runner (runScenarioAttrs, module X) where
 
@@ -810,7 +810,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         pure $ a & discardLens handler %~ (ec :)
       VengeanceCard _ -> error "vengeance card"
   DrewCards iid drew | isNothing drew.target -> do
-    for_ (toList $ traceShowId drew.rules) \case
+    for_ (toList drew.rules) \case
       WithDrawnCardModifiers source modifiers -> do
         for_ drew.cards \card -> Lifted.cardResolutionModifiers card source card modifiers
       _ -> pure ()

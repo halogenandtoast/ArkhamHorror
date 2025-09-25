@@ -2,18 +2,28 @@ module Arkham.Campaign.Campaigns.ReturnToTheCircleUndone (returnToTheCircleUndon
 
 import Arkham.Campaign.Campaigns.TheCircleUndone
 import Arkham.Campaign.Import.Lifted
+import Arkham.CampaignLog
+import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.CampaignSteps
 import Arkham.Campaigns.TheCircleUndone.Helpers
+import Arkham.Campaigns.TheCircleUndone.Key
+import Arkham.Card
 
 newtype ReturnToTheCircleUndone = ReturnToTheCircleUndone TheCircleUndone
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
 
 returnToTheCircleUndone :: Difficulty -> ReturnToTheCircleUndone
 returnToTheCircleUndone =
-  campaign
+  campaignWith
     (ReturnToTheCircleUndone . TheCircleUndone)
     (CampaignId "54")
     "Return to The Circle Undone"
+    $ logL
+    .~ mkCampaignLog
+      { campaignLogRecordedSets =
+          singletonMap (toCampaignLogKey MissingPersons)
+            $ map (recorded . cdCardCode) allPrologueInvestigators
+      }
 
 instance IsCampaign ReturnToTheCircleUndone where
   campaignTokens = campaignTokens @TheCircleUndone

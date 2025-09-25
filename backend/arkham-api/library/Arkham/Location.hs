@@ -918,7 +918,8 @@ allLocations =
     , SomeLocationCard arkhamWoodsPlaceOfPower
     , SomeLocationCard arkhamWoodsBootleggingOperation
     , --- Return to At Death's Doorstep
-      SomeLocationCard wineCellarSpectral
+      SomeLocationCard wineCellar
+    , SomeLocationCard wineCellarSpectral
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

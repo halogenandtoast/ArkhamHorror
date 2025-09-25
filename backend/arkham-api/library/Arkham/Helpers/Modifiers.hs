@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Helpers.Modifiers (module Arkham.Helpers.Modifiers, module X) where
 
 import Arkham.Ability.Types

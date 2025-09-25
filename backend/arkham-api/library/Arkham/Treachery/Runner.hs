@@ -109,9 +109,6 @@ instance RunMessage TreacheryAttrs where
       pure a
     Discard miid _ (TreacheryTarget tid) | tid == treacheryId -> do
       pure $ a & discardedByL .~ miid
-    Discarded target _ _ | target `elem` treacheryAttachedTarget a -> do
-      toDiscard GameSource a
-      pure a
     DefeatedAddToVictory target | target `elem` treacheryAttachedTarget a -> do
       toDiscard GameSource a
       pure a
@@ -167,7 +164,7 @@ instance RunMessage TreacheryAttrs where
         $ [UnsealChaosToken token | token <- treacherySealedChaosTokens]
         <> [RemovedFromPlay source]
       pure a
-    RemoveFromPlay source -> do
+    RemovedFromPlay source -> do
       case a.attached of
         Just target | isTarget target (sourceToTarget source) -> toDiscard GameSource (toTarget a)
         _ -> pure ()

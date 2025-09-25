@@ -267,6 +267,7 @@ allEncounterTreacheryCards =
       , deepOneInvasion
       , delusoryEvils
       , descentIntoMadness
+      , despoiled
       , dholeTunnel
       , diabolicVoices
       , dismalCurse
@@ -341,6 +342,7 @@ allEncounterTreacheryCards =
       , iceShaft
       , idleHands
       , illOmen
+      , impendingEvils
       , imperceptableCreature
       , incriminatingEvidence
       , indescribableApparition
@@ -372,6 +374,7 @@ allEncounterTreacheryCards =
       , macabreMemento
       , maddeningDelusions
       , malfunction
+      , maligned
       , markedByTheSign
       , markedForDeath
       , markOfTheOrder
@@ -518,6 +521,7 @@ allEncounterTreacheryCards =
       , toweringBeasts
       , trappedSpirits
       , treacherousDepths
+      , trespasser
       , twinSuns
       , twistedToHisWill
       , twistOfFate
@@ -529,12 +533,14 @@ allEncounterTreacheryCards =
       , unexpectedAmbush
       , unexpectedTransformation
       , unhallowedCountry
+      , unhallowedLand
       , unknowablePast
       , unlucky
       , unstableEnergies
       , vampiresKiss
       , vastExpanse
       , vaultOfEarthlyDemise
+      , viceAndVillainy
       , viciousAmbush
       , violentCommands
       , violentCommandsTheMidwinterGala
@@ -3229,6 +3235,31 @@ damned =
     , cdPermanent = True
     }
 
+trespasser :: CardDef
+trespasser =
+  (treachery "54062" "Trespasser!" Hexcraft 3)
+    { cdCardTraits = setFromList [Curse]
+    }
+
+despoiled :: CardDef
+despoiled =
+  (treachery "54063" "Despoiled" Hexcraft 2)
+    { cdCardTraits = setFromList [Hex]
+    }
+
+maligned :: CardDef
+maligned =
+  (treachery "54064" "Maligned" Hexcraft 2)
+    { cdCardTraits = setFromList [Hex]
+    }
+
+impendingEvils :: CardDef
+impendingEvils =
+  peril
+    (treachery "54065" "Impending Evils" ImpendingEvils 3)
+      { cdCardTraits = setFromList [Omen]
+      }
+
 unavoidableDemise :: CardDef
 unavoidableDemise =
   (treachery "54066" "Unavoidable Demise" UnspeakableFate 3)
@@ -3251,6 +3282,18 @@ fromTheOtherSide :: CardDef
 fromTheOtherSide =
   (treachery "54069" "From the Other Side" UnstableRealm 2)
     { cdCardTraits = setFromList [Terror, Spectral]
+    }
+
+viceAndVillainy :: CardDef
+viceAndVillainy =
+  (treachery "54070" "Vice and Villainy" CityOfTheDamned 2)
+    { cdCardTraits = setFromList [Curse]
+    }
+
+unhallowedLand :: CardDef
+unhallowedLand =
+  (treachery "54071" "Unhallowed Land" CityOfTheDamned 3)
+    { cdCardTraits = setFromList [Curse]
     }
 
 supernaturalTempest :: CardDef

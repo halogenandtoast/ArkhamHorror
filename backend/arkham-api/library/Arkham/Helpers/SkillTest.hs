@@ -462,7 +462,13 @@ getAlternateSkill st sType = do
 
 getModifiedSkillTestDifficulty :: (HasCallStack, HasGame m) => SkillTest -> m Int
 getModifiedSkillTestDifficulty s = do
-  modifiers' <- getModifiers (SkillTestTarget s.id)
+  -- difficulty can be on the investigator, see: @Despoiled@
+  let
+    forSkillTest = \case
+      Difficulty {} -> True
+      _ -> False
+  imods <- filter forSkillTest <$> getModifiers s.investigator
+  modifiers' <- (imods <>) <$> getModifiers (SkillTestTarget s.id)
   baseDifficulty <- getBaseSkillTestDifficulty s
   let preModifiedDifficulty = foldr applyPreModifier baseDifficulty modifiers'
   let doubledDifficulty = foldr applyDoubler preModifiedDifficulty modifiers'

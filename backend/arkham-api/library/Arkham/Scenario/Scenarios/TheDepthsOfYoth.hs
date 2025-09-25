@@ -94,6 +94,7 @@ setupTheDepthsOfYoth _attrs = do
     startsOnAgenda5 = yigsFury >= 18
     startsOnAgenda6 = yigsFury >= 21
     harbinger = if isReturnTo then Enemies.harbingerOfValusiaTheSleeperReturns else Enemies.harbingerOfValusia
+  theHarbingerIsStillAlive <- getHasRecord TheHarbingerIsStillAlive
 
   setup $ ul do
     li "gatherSets"
@@ -106,8 +107,8 @@ setupTheDepthsOfYoth _attrs = do
       li.validate (yigsFury >= 18 && yigsFury <= 20) "tally18to20"
       li.validate (yigsFury >= 21) "tally21OrMore"
     li "placeLocations"
-    scope "theHarbinger" $ li.nested "description" do
-      li.validate (startsOnAgenda5 || startsOnAgenda6) "agenda5or6"
+    scope "theHarbinger" $ li.nested.validate theHarbingerIsStillAlive "description" do
+      li.validate (theHarbingerIsStillAlive && (startsOnAgenda5 || startsOnAgenda6)) "agenda5or6"
     scope "yig" $ li.nested "description" do
       li.validate startsOnAgenda6 "agenda6"
     li "explorationDeck"
@@ -157,12 +158,10 @@ setupTheDepthsOfYoth _attrs = do
   setMeta (toMeta startLocation Nothing)
   setCount CurrentDepth 1
 
-  when startsOnAgenda5 $ placeEnemy harbinger (OutOfPlay PursuitZone)
+  when (startsOnAgenda5 && theHarbingerIsStillAlive) $ placeEnemy harbinger (OutOfPlay PursuitZone)
   when startsOnAgenda6 $ placeEnemy Enemies.yig (OutOfPlay PursuitZone)
 
   setAsidePoisonedCount <- getSetAsidePoisonedCount
-  theHarbingerIsStillAlive <- getHasRecord TheHarbingerIsStillAlive
-
   setAside
     $ Assets.relicOfAgesRepossessThePast
     : [harbinger | theHarbingerIsStillAlive && not startsOnAgenda5]

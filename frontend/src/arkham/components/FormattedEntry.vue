@@ -233,6 +233,13 @@ export default defineComponent({
 
 :deep([data-image-id]) {
   color: var(--embed-color, black);
+  display: inline-flex;
+  gap: 2px;
+  &:after {
+    font-family: "Materials";
+    content: "\e412";
+    align-self: center;
+  }
 }
 
 p, :deep(p) {

@@ -3982,9 +3982,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 else Choose.chooseNM iid (min n (length choices)) do
                   Choose.targets choices \card -> do
                     Choose.chooseOrRunOneM iid do
+                      Choose.labeled "Add to hand" $ Lifted.addToHand iid (only card)
                       when (card `elem` playableCards) do
-                        Choose.labeled "Add to hand" $ Lifted.addToHand iid (only card)
-                      Choose.labeled "Play Card" $ Lifted.playCardPayingCost iid card
+                        Choose.labeled "Play Card" $ Lifted.playCardPayingCost iid card
             DrawOrCommitFound who n -> do
               -- [TODO] We need this to determine what state the skill test
               -- is in, if we are committing cards we need to use

@@ -98,6 +98,13 @@ button {
 }
 
 @font-face {
+  font-family: 'Materials';
+  font-style: normal;
+  font-weight: 200;
+  src: url("/fonts/materials.ttf");
+}
+
+@font-face {
   font-family: "Noto Sans";
   src: url("/fonts/NotoSans.ttf");
 }

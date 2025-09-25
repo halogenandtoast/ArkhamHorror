@@ -126,6 +126,7 @@ clearCards :: MonadState ScenarioBuilderState m => m ()
 clearCards = do
   attrsL . encounterDeckL .= Deck []
   attrsL . discardL .= []
+  attrsL . victoryDisplayL .= []
 
 gather :: CardGen m => Set.EncounterSet -> ScenarioBuilderT m ()
 gather encounterSet = do

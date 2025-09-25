@@ -96,6 +96,7 @@ import Arkham.Matcher hiding (
  )
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (removeLocation)
+import Arkham.Modifier (Modifier (modifierSource, modifierType))
 import Arkham.Movement
 import Arkham.Name
 import Arkham.Phase
@@ -2589,15 +2590,24 @@ runGameMessage msg g = case msg of
                 , spawnDetailsOverridden = True
                 }
         mlid <- getLocationOf iid
+
+        mWhenSpawns <- case mlid of
+          Just lid -> Just <$> checkWindows [mkWhen (Window.EnemySpawns enemyId lid)]
+          Nothing -> pure Nothing
+        mAfterSpawns <- case mlid of
+          Just lid -> Just <$> checkWindows [mkAfter (Window.EnemySpawns enemyId lid)]
+          Nothing -> pure Nothing
         pushAll
           $ enemyCreationBefore enemyCreation
           <> [ Will (EnemySpawn details)
              , When (EnemySpawn details)
-             , EnemySpawn details
              ]
+          <> maybeToList mWhenSpawns
+          <> [EnemySpawn details]
           <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mTarget, lid <- maybeToList mlid]
           <> enemyCreationAfter enemyCreation
           <> [After (EnemySpawn details)]
+          <> maybeToList mAfterSpawns
       Arkham.Enemy.Creation.SpawnAtLocation lid -> do
         windows' <- checkWindows [mkWhen (Window.EnemyWouldSpawnAt enemyId lid)]
         let details =
@@ -2636,20 +2646,22 @@ runGameMessage msg g = case msg of
                  ]
       SpawnWithPlacement placement -> do
         mLocation <- getPlacementLocation placement
-        let
-          (beforeMessages, afterMessages) = case mLocation of
-            Nothing -> ([], [])
-            Just lid ->
-              let details =
-                    SpawnDetails
-                      { spawnDetailsEnemy = enemyId
-                      , spawnDetailsInvestigator = Nothing
-                      , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
-                      , spawnDetailsOverridden = True
-                      }
-               in ( [Will (EnemySpawn details), When (EnemySpawn details)]
-                  , [After (EnemySpawn details)]
-                  )
+        (beforeMessages, afterMessages) <- case mLocation of
+          Nothing -> pure ([], [])
+          Just lid -> do
+            whenSpawns <- checkWindows [mkWhen (Window.EnemySpawns enemyId lid)]
+            afterSpawns <- checkWindows [mkAfter (Window.EnemySpawns enemyId lid)]
+            let details =
+                  SpawnDetails
+                    { spawnDetailsEnemy = enemyId
+                    , spawnDetailsInvestigator = Nothing
+                    , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
+                    , spawnDetailsOverridden = True
+                    }
+            pure
+              ( [Will (EnemySpawn details), When (EnemySpawn details), whenSpawns]
+              , [After (EnemySpawn details), afterSpawns]
+              )
         pushAll
           $ enemyCreationBefore enemyCreation
           <> beforeMessages
@@ -2850,9 +2862,13 @@ runGameMessage msg g = case msg of
         push $ AddToEncounterDiscard card
         pure g
       else do
-        mods <- getModifiers iid
-        let hasForesight =  Foresight (toTitle card) `elem` mods
-        when (DrawGainsPeril `elem` mods) $ pushM $ cardResolutionModifier card GameSource card (AddKeyword Keyword.Peril)
+        fullMods <- getFullModifiers iid
+        let mForesightMod = find ((== Foresight (toTitle card)) . modifierType) fullMods
+        -- let hasForesight = Foresight (toTitle card) `elem` mods
+        let mods = map modifierType fullMods
+        when (DrawGainsPeril `elem` mods)
+          $ pushM
+          $ cardResolutionModifier card GameSource card (AddKeyword Keyword.Peril)
         whenDraw <- checkWindows [mkWhen (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
         let uiRevelation = getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
         case toCardType card of
@@ -2862,8 +2878,8 @@ runGameMessage msg g = case msg of
           EncounterEventType -> uiRevelation
           LocationType -> uiRevelation
           _ -> pure ()
-        if hasForesight
-          then do
+        case mForesightMod of
+          Just foresight -> do
             canCancel <- EncounterCard card <=~> CanCancelRevelationEffect (InvestigatorWithId iid) #any
             if canCancel
               then do
@@ -2873,14 +2889,14 @@ runGameMessage msg g = case msg of
                     player
                     [ Label
                         "Cancel card effects and discard it"
-                        [UnfocusCards, CancelNext GameSource RevelationMessage, AddToEncounterDiscard card]
+                        [UnfocusCards, CancelNext (modifierSource foresight) RevelationMessage, AddToEncounterDiscard card]
                     , Label "Draw as normal" [UnfocusCards, whenDraw, Do msg]
                     ]
                 pure $ g & focusedCardsL %~ ([toCard card] :)
               else do
                 pushAll [FocusCards [toCard card], whenDraw, UnfocusCards, Do msg]
                 pure g
-          else do
+          Nothing -> do
             pushAll [FocusCards [toCard card], whenDraw, UnfocusCards, Do msg]
             pure g
   Do (InvestigatorDrewEncounterCardFrom iid card mdeck) -> do

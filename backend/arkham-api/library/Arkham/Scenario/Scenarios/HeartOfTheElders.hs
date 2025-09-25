@@ -39,7 +39,7 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
 import Arkham.Scenario.Types (
   Field (ScenarioVictoryDisplay),
-  ScenarioAttrs (scenarioAdditionalReferences),
+  ScenarioAttrs (..),
  )
 import Arkham.Scenarios.HeartOfTheElders.Helpers
 import Arkham.Token
@@ -366,7 +366,10 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
         allGainXp attrs
         push RestartScenario
         pure
-          $ HeartOfTheElders (attrs {scenarioAdditionalReferences = []} `With` metadata {scenarioStep = Two})
+          $ HeartOfTheElders
+            ( attrs {scenarioAdditionalReferences = []}
+                `With` metadata {scenarioStep = Two}
+            )
       _ -> pure s
   _ -> HeartOfTheElders . (`with` metadata) <$> liftRunMessage msg attrs
 
@@ -397,9 +400,10 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
           else do
             damage <-
               selectOne
-                (mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]) >>= \case
-                Just eid -> field EnemyDamage eid
-                Nothing -> getRecordCount TheHarbingerIsStillAlive
+                (mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns])
+                >>= \case
+                  Just eid -> field EnemyDamage eid
+                  Nothing -> getRecordCount TheHarbingerIsStillAlive
             recordCount TheHarbingerIsStillAlive damage
         endOfScenario
     pure s

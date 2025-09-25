@@ -16,7 +16,7 @@ const { currentUser } = storeToRefs(store)
 const games: Ref<GameDetails[]> = ref([])
 const notifications: Ref<Notification[]> = ref([])
 
-const dismissedNotifications = localStorage.getItem('dismissedNotifications') ?? []
+const dismissedNotifications = JSON.parse(localStorage.getItem('dismissedNotifications') ?? "[]")
 
 const activeGames = computed(() => games.value.filter(g => g.gameState.tag !== 'IsOver'))
 const finishedGames = computed(() => games.value.filter(g => g.gameState.tag === 'IsOver'))

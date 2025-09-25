@@ -128,6 +128,11 @@ button {
 }
 
 @font-face {
+  font-family: "Billenia";
+  src: url("/fonts/billenia.ttf");
+}
+
+@font-face {
   font-family: "Anke";
   src: url("/fonts/ankecallig-fg.ttf");
 }

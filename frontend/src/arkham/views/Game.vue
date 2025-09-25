@@ -432,6 +432,7 @@ const toggleSidebar = function () {
 const undoLock = ref(false)
 async function undo() {
   processing.value = true
+  const oldQuestion = game.value?.question
   if (game.value) game.value.question = {}
   resultQueue.value = []
   gameCard.value = null
@@ -439,7 +440,13 @@ async function undo() {
   uiLock.value = false
   if (undoLock.value) return
   undoLock.value = true
-  await undoChoice(props.gameId, debug.active)
+  try {
+    await undoChoice(props.gameId, debug.active)
+  } catch (e) {
+    processing.value = false
+    if (game.value && oldQuestion) game.value.question = oldQuestion
+    console.log(e)
+  }
   undoLock.value = false
 }
 
@@ -575,6 +582,9 @@ onMounted(() => {
   ; (window as any).debugChoose = choose
   document.addEventListener('mousemove', onMove, { passive: true })
   document.addEventListener('keydown', handleKeyPress)
+  for (var key in localStorage){
+    if (key.startsWith('selected-tab:')) localStorage.removeItem(key)
+  }
 })
 
 onBeforeRouteLeave(() => close())

@@ -13,6 +13,7 @@ spec = describe "Guard Dog" $ do
     enemy `spawnAt` location
     self `moveTo` location
     run EnemiesAttack
+    chooseTarget enemy
     self `assignDamageTo` guardDog
     useReaction
     enemy.damage `shouldReturn` 1

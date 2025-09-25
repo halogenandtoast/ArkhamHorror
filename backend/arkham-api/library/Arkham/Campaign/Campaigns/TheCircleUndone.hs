@@ -69,7 +69,6 @@ instance RunMessage TheCircleUndone where
       players <- allPlayers
       push $ chooseDecks players
       lift $ defaultCampaignRunner msg c
-
     CampaignStep ReturnToTheWitchingHour -> do
       players <- allPlayers
       push $ chooseDecks players
@@ -78,22 +77,25 @@ instance RunMessage TheCircleUndone where
       flavor $ setTitle "title" >> p "body"
       nextCampaignStep
       pure c
-    CampaignStep (InterludeStep 2 mInterludeKey) -> do
+    CampaignStep (InterludeStep 2 mInterludeKey) -> scope "interlude2" do
       anySilverTwilight <- selectAny $ InvestigatorWithTrait SilverTwilight
       let
         showThePriceOfProgress4 = mInterludeKey == Just ThePriceOfProgress4
         showThePriceOfProgress5 = mInterludeKey == Just ThePriceOfProgress5
         showThePriceOfProgress6 = mInterludeKey == Just ThePriceOfProgress6
         lodgeChoices = do
-          labeled "\"I refuse to be part of this\"" $ interludeStepPart 2 mInterludeKey 7
-          labeled "\"I agree\"" $ interludeStepPart 2 mInterludeKey 8
-          labeled "\"I agree\" (You are lying)" $ interludeStepPart 2 mInterludeKey 9
+          labeled' "refuse" $ interludeStepPart 2 mInterludeKey 7
+          labeled' "agree" $ interludeStepPart 2 mInterludeKey 8
+          labeled' "lie" $ interludeStepPart 2 mInterludeKey 9
 
-      story $ if anySilverTwilight then thePriceOfProgress1 else thePriceOfProgress2
-      story thePriceOfProgress3
+      flavor $ setTitle "title" >> p "instructions"
+      flavor
+        $ setTitle "title"
+        >> p (if anySilverTwilight then "thePriceOfProgress1" else "thePriceOfProgress2")
+      flavor $ setTitle "title" >> p "thePriceOfProgress3"
 
       when showThePriceOfProgress4 do
-        story thePriceOfProgress4
+        flavor $ setTitle "title" >> p "thePriceOfProgress4"
         record JosefDisappearedIntoTheMist
         record TheInvestigatorsAreEnemiesOfTheLodge
         nextCampaignStep
@@ -101,22 +103,25 @@ instance RunMessage TheCircleUndone where
       when showThePriceOfProgress5 do
         record TheInvestigatorsRescuedJosef
         interludeXpAll (WithBonus "Gained insight into the inner workings of the Silver Twilight Lodge" 2)
-        storyWithChooseOneM thePriceOfProgress5 lodgeChoices
+        storyWithChooseOneM' (setTitle "title" >> p "thePriceOfProgress5") lodgeChoices
 
       when showThePriceOfProgress6 do
         record JosefIsAliveAndWell
-        storyWithChooseOneM thePriceOfProgress6 lodgeChoices
+        storyWithChooseOneM' (setTitle "title" >> p "thePriceOfProgress6") lodgeChoices
       pure c
-    CampaignStep (InterludeStepPart 2 _ 7) -> do
+    CampaignStep (InterludeStepPart 2 _ 7) -> scope "interlude2" do
+      flavor $ setTitle "title" >> p "thePriceOfProgress7"
       record TheInvestigatorsAreEnemiesOfTheLodge
       nextCampaignStep
       pure c
-    CampaignStep (InterludeStepPart 2 _ 8) -> do
+    CampaignStep (InterludeStepPart 2 _ 8) -> scope "interlude2" do
+      flavor $ setTitle "title" >> p "thePriceOfProgress8"
       record TheInvestigatorsAreMembersOfTheLodge
       addChaosToken Cultist
       nextCampaignStep
       pure c
-    CampaignStep (InterludeStepPart 2 _ 9) -> do
+    CampaignStep (InterludeStepPart 2 _ 9) -> scope "interlude2" do
+      flavor $ setTitle "title" >> p "thePriceOfProgress9"
       record TheInvestigatorsAreMembersOfTheLodge
       addChaosToken Cultist
       record TheInvestigatorsAreDeceivingTheLodge

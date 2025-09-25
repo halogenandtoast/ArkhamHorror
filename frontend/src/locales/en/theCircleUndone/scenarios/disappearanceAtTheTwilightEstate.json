@@ -54,5 +54,11 @@
   "noWayOut": {
     "title": "No Way Out",
     "body": "<p class='basic'>There is no positive resolution for this scenario. Investigators should strive to last as long as they can and gather as many clues as they can before their inevitable demise. Note that while cards can still be added to the victory display during this scenario, experience and victory points will not be gathered for this scenario.</p><p class='basic'>Since these investigators do not have decks, ignore any instruction or effect that would cause them to draw cards or interact with player decks. Additionally, since these investigators do not have discard piles, _each player card that would be placed in their discard pile is removed from the game, instead_.</p><p class='basic'>Good luck. You’ll need it.</p>"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_No resolution was reached, because each investigator was defeated_: “Mr. Sanford, thank you so much for coming. I know you are a busy man. Your presence at tonight’s meeting is very much appreciated.” Josef shakes Carl Sanford’s hand firmly as he speaks. Sanford merely nods. “I know you’ve only just arrived, but I have some…private matters to discuss with you, if that is all right,” Josef continues, his narrow eyes shifting back and forth between the men flanking Mr. Sanford.</p><p>“Very well.” The elderly man nods to his two enforcers, who step aside to give him privacy. He cradles his hands behind his back, his stature impressive for his age. His discerning eyes fall on Josef. “What is the matter?”</p><p>Josef leans closer. “It’s here, sir. It’s here in this very house.”</p><p>There is a quiet pause between the two men, and then Carl Sanford smiles.</p><ul><li>No experience is earned for this prologue.</li><li>In your Campaign Log, record *X pieces of evidence were left behind*. X is the total number of clues on Act 1a—“The Disappearance.”</li><li>Return each of the player cards used in this scenario to the collection.</li><li>Each player chooses an investigator from the standard pool of investigators and assembles his or her investigator deck, as usual.</li><li>Proceed to _Scenario I: The Witching Hour_.</li></ul>"
+    }
   }
 }

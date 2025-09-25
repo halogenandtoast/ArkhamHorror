@@ -152,13 +152,13 @@ export default defineComponent({
     }
   }
 
-  &::after {
+  &::before {
     border-radius: 55px;
     box-shadow: inset 0 0 15px color-mix(in srgb, #3a4a69, transparent 10%), 1px 1px 3px color-mix(in srgb, #3a4a69, transparent 30%);
     content: "";
     position: absolute;
     inset: 0;
-    z-index: 1;
+    z-index: -1;
   }
 
   > p:first-child {

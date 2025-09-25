@@ -31,7 +31,7 @@ instance RunMessage ForbiddingShore where
       sid <- getRandom
       chooseOneM iid do
         for_ [#willpower, #intellect] \sType -> do
-          skillLabeled sType $ beginSkillTest sid iid (attrs.ability 1) iid sType (Fixed 3)
+          skillLabeled sType $ circleTest sid iid (attrs.ability 1) iid [sType] (Fixed 3)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       hasResources <- fieldMap InvestigatorResources (> 0) iid

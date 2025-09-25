@@ -235,7 +235,10 @@ instance RunMessage TheForgottenAge where
         when isReturnTo $ doStep 1 msg -- convert xp to supply points
         doStep 2 msg -- remove poisoned
         doStep 3 msg -- heal trauma
-        pickSupplies iid True metadata resupplyPointSupplies msg
+        pickSupplies iid True metadata resupplyPointSupplies (Do msg)
+        pure c
+      Do msg'@(ForInvestigator iid (CampaignStep ResupplyPoint)) -> do
+        pickSupplies iid True metadata resupplyPointSupplies (Do msg')
         pure c
       DoStep 0 (DoStep spend (ForInvestigator iid (CampaignStep ResupplyPoint))) -> do
         pure

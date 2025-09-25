@@ -19,6 +19,7 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
+import Arkham.Name
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
@@ -152,7 +153,7 @@ instance RunMessage LostInTimeAndSpace where
       drawAnotherChaosToken iid
       pure s
     RequestedEncounterCard (ChaosTokenEffectSource Cultist) (Just iid) (Just card) -> do
-      moveTo Cultist iid =<< placeLocation (EncounterCard card)
+      moveTo Cultist iid =<< placeLabeledLocation (nameToLabel (toName card)) (EncounterCard card)
       pure s
     ScenarioResolution r -> scope "resolutions" do
       readInvestigatorDefeat attrs

@@ -265,7 +265,9 @@ resolveFirstUnresolved source iid strategy = \case
                 collectChaosTokens xs _ = xs
                 tokensThatCannotBeIgnored = foldl' collectChaosTokens [] mods
                 uncanceleableSteps =
-                  filter (any ((`elem` tokensThatCannotBeIgnored) . chaosTokenFace) . toChaosTokens) steps
+                  if CannotCancelCardOrGameEffects `elem` mods
+                    then steps
+                    else filter (any ((`elem` tokensThatCannotBeIgnored) . chaosTokenFace) . toChaosTokens) steps
                 remainingSteps = filter (`notElem` uncanceleableSteps) steps
               if (notNull uncanceleableSteps && tokenStrategy == ResolveChoice)
                 || (null remainingSteps && tokenStrategy /= ResolveChoice)
@@ -358,16 +360,31 @@ resolveFirstUnresolved source iid strategy = \case
           player <- lift $ getPlayer iid
 
           pure
-            $ if null choices'
-              then (Resolved $ concatMap toChaosTokens steps <> concat tokens', [])
-              else
-                ( Decided $ ChooseMatchChoice steps tokens' choices
-                ,
-                  [ chooseOrRunOne
-                      player
-                      [Label label [SetChaosBagChoice source iid (fixStep step')] | (label, step') <- choices']
-                  ]
-                )
+            $ case choices' of
+              [] -> (Resolved $ concatMap toChaosTokens steps <> concat tokens', [])
+              ((_, fstep) : _) ->
+                -- This assumption could be wrong, but if we can not cancel and
+                -- all the choices end up the same then we want to just skip by
+                -- taking the first choice. We may want this to be more specific
+                let
+                  cannotChoose = \case
+                    ChooseMatch _ _ CancelChoice _ _ _ _ -> CannotCancelCardOrGameEffects `elem` mods
+                    ChooseMatch _ _ IgnoreChoice _ _ _ _ -> CannotIgnoreCardOrGameEffects `elem` mods
+                    _ -> False
+                 in
+                  if CannotCancelCardOrGameEffects `elem` mods && all (cannotChoose . snd) choices'
+                    then
+                      ( Decided $ ChooseMatchChoice steps tokens' choices
+                      , [SetChaosBagChoice source iid (fixStep fstep)]
+                      )
+                    else
+                      ( Decided $ ChooseMatchChoice steps tokens' choices
+                      ,
+                        [ chooseOrRunOne
+                            player
+                            [Label label [SetChaosBagChoice source iid (fixStep step')] | (label, step') <- choices']
+                        ]
+                      )
         else do
           (steps', msgs) <- resolveFirstChooseUnresolved source iid strategy steps
           pure (Decided $ ChooseMatchChoice steps' tokens' choices, msgs)

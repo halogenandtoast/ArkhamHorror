@@ -1,10 +1,11 @@
 module Arkham.Location.Cards.MoldyHalls (moldyHalls) where
 
+import Arkham.Ability
 import Arkham.GameValue
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype MoldyHalls = MoldyHalls LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -14,16 +15,16 @@ moldyHalls :: LocationCard MoldyHalls
 moldyHalls = location MoldyHalls Cards.moldyHalls 4 (PerPlayer 1)
 
 instance HasAbilities MoldyHalls where
-  getAbilities (MoldyHalls attrs) =
-    withBaseAbilities
-      attrs
-      [ haunted "Lose 3 resources" attrs 1
-          `withCriteria` InvestigatorExists (You <> InvestigatorWithAnyResources)
-      ]
+  getAbilities (MoldyHalls a) =
+    extendRevealed1 a
+      $ withI18n
+      $ countVar 3
+      $ hauntedI "loseResources" a 1
+      `withCriteria` InvestigatorExists (You <> InvestigatorWithAnyResources)
 
 instance RunMessage MoldyHalls where
-  runMessage msg l@(MoldyHalls attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ LoseResources iid (toSource attrs) 3
+  runMessage msg l@(MoldyHalls attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      loseResources iid (attrs.ability 1) 3
       pure l
-    _ -> MoldyHalls <$> runMessage msg attrs
+    _ -> MoldyHalls <$> liftRunMessage msg attrs

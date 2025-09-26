@@ -42,6 +42,11 @@ class WithEffect m where
     builder <- execStateT (runEffectBuilder body) =<< makeEffectBuilder "genef" Nothing ?source target
     push $ CreateEffect builder {effectBuilderEffectId = Just effectId}
 
+effectWithSource
+  :: (ReverseQueue m, Targetable target, Sourceable source, WithEffect m)
+  => source -> target -> EffectBuilderT m () -> m ()
+effectWithSource source target body = withSource source $ effect target body
+
 instance WithEffect GameT
 instance WithEffect m => WithEffect (QueueT Message m)
 instance WithEffect m => WithEffect (StateT s m)

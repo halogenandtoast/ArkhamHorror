@@ -1,42 +1,34 @@
-module Arkham.Location.Cards.FrankElwoodsRoom (
-  frankElwoodsRoom,
-  FrankElwoodsRoom (..),
-) where
+module Arkham.Location.Cards.FrankElwoodsRoom (frankElwoodsRoom) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
+import Arkham.I18n
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Scenarios.TheSecretName.Helpers
 
 newtype FrankElwoodsRoom = FrankElwoodsRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 frankElwoodsRoom :: LocationCard FrankElwoodsRoom
-frankElwoodsRoom =
-  location FrankElwoodsRoom Cards.frankElwoodsRoom 3 (PerPlayer 1)
+frankElwoodsRoom = location FrankElwoodsRoom Cards.frankElwoodsRoom 3 (PerPlayer 1)
 
 instance HasAbilities FrankElwoodsRoom where
-  getAbilities (FrankElwoodsRoom attrs) = withRevealedAbilities attrs [haunted hauntedText attrs 1]
-   where
-    hauntedText =
-      "You must either place 1 of your clues on Frank Elwood's Room, or place 1 doom on the current agenda."
+  getAbilities (FrankElwoodsRoom a) =
+    extendRevealed1 a $ scenarioI18n $ hauntedI "frankElwoodsRoom.haunted" a 1
 
 instance RunMessage FrankElwoodsRoom where
-  runMessage msg l@(FrankElwoodsRoom attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(FrankElwoodsRoom attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ [ Label
-            "Place 1 of your clues on Frank Elwood's Room"
-            [InvestigatorSpendClues iid 1, PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1]
-          | hasClues
-          ]
-        <> [Label "Place 1 doom on the current agenda" [placeDoomOnAgenda]]
+      chooseOneM iid $ scenarioI18n do
+        labeledValidate' hasClues "frankElwoodsRoom.place" do
+          removeTokens (attrs.ability 1) iid #clue 1
+          placeClues (attrs.ability 1) attrs 1
+        unscoped $ labeled' "placeAgendaDoom" $ placeDoomOnAgenda 1
       pure l
-    _ -> FrankElwoodsRoom <$> runMessage msg attrs
+    _ -> FrankElwoodsRoom <$> liftRunMessage msg attrs

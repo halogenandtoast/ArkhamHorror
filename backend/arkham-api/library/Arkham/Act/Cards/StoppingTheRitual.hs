@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.StoppingTheRitual (StoppingTheRitual (..), stoppingTheRitual) where
+module Arkham.Act.Cards.StoppingTheRitual (stoppingTheRitual) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -20,14 +20,12 @@ instance HasModifiersFor StoppingTheRitual where
     modifySelect a (enemyIs Enemies.nahab) [CannotMove]
 
 instance HasAbilities StoppingTheRitual where
-  getAbilities (StoppingTheRitual a)
-    | onSide A a =
-        [ mkAbility a 1 $ forced $ EnemyDefeated #when Anyone ByAny $ enemyIs Enemies.nahab
-        , restricted a 2 (exists $ enemyIs Enemies.nahab <> not_ EnemyWithAnyDoom)
-            $ Objective
-            $ forced AnyWindow
-        ]
-  getAbilities _ = []
+  getAbilities = actAbilities \a ->
+    [ mkAbility a 1 $ forced $ EnemyDefeated #when Anyone ByAny $ enemyIs Enemies.nahab
+    , restricted a 2 (exists $ enemyIs Enemies.nahab <> not_ EnemyWithAnyDoom)
+        $ Objective
+        $ forced AnyWindow
+    ]
 
 instance RunMessage StoppingTheRitual where
   runMessage msg a@(StoppingTheRitual attrs) = runQueueT $ case msg of

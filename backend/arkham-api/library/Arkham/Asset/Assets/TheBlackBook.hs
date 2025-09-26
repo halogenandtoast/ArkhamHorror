@@ -8,7 +8,6 @@ import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.SkillType ()
 
 newtype TheBlackBook = TheBlackBook AssetAttrs
   deriving anyclass IsAsset

@@ -1,11 +1,11 @@
-module Arkham.Location.Cards.WalterGilmansRoom (walterGilmansRoom, WalterGilmansRoom (..)) where
+module Arkham.Location.Cards.WalterGilmansRoom (walterGilmansRoom) where
 
 import Arkham.Ability
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype WalterGilmansRoom = WalterGilmansRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,19 +19,19 @@ walterGilmansRoom =
 
 instance HasAbilities WalterGilmansRoom where
   getAbilities (WalterGilmansRoom a) =
-    withRevealedAbilities
+    extendRevealed
       a
-      [ restrictedAbility a 1 Here actionAbility
-      , haunted "Discard the top 2 cards of the encounter deck." a 2
+      [ restricted a 1 Here actionAbility
+      , withI18n $ countVar 2 $ hauntedI "discardTopOfEncounterDeck" a 2
       ]
 
 instance RunMessage WalterGilmansRoom where
-  runMessage msg l@(WalterGilmansRoom attrs) = case msg of
+  runMessage msg l@(WalterGilmansRoom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      mDrawing <- drawCardsIfCan iid (attrs.ability 1) 3
-      pushAll $ toList mDrawing <> [assignHorror iid (attrs.ability 1) 1]
+      drawCards iid (attrs.ability 1) 3
+      assignHorror iid (attrs.ability 1) 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ DiscardTopOfEncounterDeck iid 2 (attrs.ability 2) Nothing
+      discardTopOfEncounterDeck iid (attrs.ability 2) 2
       pure l
-    _ -> WalterGilmansRoom <$> runMessage msg attrs
+    _ -> WalterGilmansRoom <$> liftRunMessage msg attrs

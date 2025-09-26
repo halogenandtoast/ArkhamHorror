@@ -33,6 +33,7 @@ import Arkham.Discover qualified as Msg
 import Arkham.Draw.Types
 import Arkham.Effect.Builder
 import Arkham.Effect.Types (EffectBuilder (effectBuilderEffectId), Field (..))
+import Arkham.Effect.Window
 import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.EncounterSet
 import Arkham.Enemy.Creation
@@ -3443,3 +3444,13 @@ allDrawEncounterCard = push Msg.AllDrawEncounterCard
 
 removeEnemy :: (ToId enemy EnemyId, ReverseQueue m) => enemy -> m ()
 removeEnemy = push . RemoveEnemy . asId
+
+createWindowModifierEffect_
+  :: (Sourceable source, Targetable target, ReverseQueue m)
+  => EffectWindow
+  -> source
+  -> target
+  -> [ModifierType]
+  -> m ()
+createWindowModifierEffect_ eWindow source target mods = do
+  Msg.pushM $ Msg.createWindowModifierEffect eWindow source target mods

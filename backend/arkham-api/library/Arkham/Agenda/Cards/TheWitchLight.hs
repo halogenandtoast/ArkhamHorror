@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.TheWitchLight (TheWitchLight (..), theWitchLight) where
+module Arkham.Agenda.Cards.TheWitchLight (theWitchLight) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards

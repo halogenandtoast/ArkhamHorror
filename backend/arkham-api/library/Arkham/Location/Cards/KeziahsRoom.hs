@@ -5,6 +5,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Discover
 import Arkham.Draw.Types
 import Arkham.GameValue
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -12,6 +13,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.TheSecretName.Helpers
 import Arkham.Trait (Trait (Hex))
 
 newtype Metadata = Metadata {revealTopCard :: Bool}
@@ -30,10 +32,7 @@ instance HasAbilities KeziahsRoom where
     extendRevealed
       a
       [ mkAbility a 1 $ freeReaction $ SkillTestResult #when You (WhileInvestigating $ be a) #success
-      , haunted
-          "Discard cards from the top of the encounter deck until a Hex card is discarded. Draw that card."
-          a
-          2
+      , scenarioI18n $ hauntedI "keziahsRoom.haunted" a 2
       ]
 
 instance RunMessage KeziahsRoom where
@@ -46,9 +45,9 @@ instance RunMessage KeziahsRoom where
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       for_ drewCards.cards \card -> do
         lid <- placeLabeledLocation "unknownPlaces" card
-        chooseOneM iid do
-          labeled "Do not move" nothing
-          labeled "Move to location" $ moveTo attrs iid lid
+        chooseOneM iid $ withI18n do
+          labeled' "doNotMove" nothing
+          labeled' "move" $ moveTo attrs iid lid
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       discardUntilFirst iid attrs Deck.EncounterDeck (basic $ withTrait Hex)

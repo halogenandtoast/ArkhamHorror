@@ -25,13 +25,11 @@ returnToTheWitchingHour difficulty =
     (referenceL .~ "05050")
 
 instance RunMessage ReturnToTheWitchingHour where
-  runMessage msg ( ReturnToTheWitchingHour
-                     theWitchingHour'@(TheWitchingHour attrs)
-                   ) = runQueueT $ scenarioI18n $ case msg of
-    Setup ->
-      runScenarioSetup
-        (ReturnToTheWitchingHour . TheWitchingHour)
-        attrs
-        (setIsReturnTo >> setupTheWitchingHour attrs)
-    _ ->
-      ReturnToTheWitchingHour <$> liftRunMessage msg theWitchingHour'
+  runMessage msg (ReturnToTheWitchingHour theWitchingHour'@(TheWitchingHour attrs)) =
+    runQueueT $ scenarioI18n $ case msg of
+      Setup ->
+        runScenarioSetup
+          (ReturnToTheWitchingHour . TheWitchingHour)
+          attrs
+          (setIsReturnTo >> setupTheWitchingHour attrs)
+      _ -> ReturnToTheWitchingHour <$> liftRunMessage msg theWitchingHour'

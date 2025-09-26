@@ -696,7 +696,7 @@ section {
 }
 
 .intro-text {
-  &:deep(> div) {
+  &:deep(> div:only-child) {
     overflow-y: auto;
   }
 

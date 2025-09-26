@@ -3118,6 +3118,7 @@ library
       Arkham.Location.Cards.LeMarais217
       Arkham.Location.Cards.LeMarais218
       Arkham.Location.Cards.Library
+      Arkham.Location.Cards.LibraryOfEbla
       Arkham.Location.Cards.LibraryOfKos
       Arkham.Location.Cards.LibraryTheMidwinterGala
       Arkham.Location.Cards.LighthouseKeepersCottage
@@ -3392,6 +3393,7 @@ library
       Arkham.Location.Cards.TearThroughSpace
       Arkham.Location.Cards.TearThroughTime
       Arkham.Location.Cards.TeetawnPassage
+      Arkham.Location.Cards.TempleOfRlyeh
       Arkham.Location.Cards.TempleOfTheElderThings
       Arkham.Location.Cards.TempleOfTheFang
       Arkham.Location.Cards.TempleOfTheMoonLizard
@@ -3405,6 +3407,7 @@ library
       Arkham.Location.Cards.TemploMayor_175
       Arkham.Location.Cards.TenAcreMeadow_246
       Arkham.Location.Cards.TenAcreMeadow_247
+      Arkham.Location.Cards.The9thWard
       Arkham.Location.Cards.Theatre
       Arkham.Location.Cards.TheatreLounge
       Arkham.Location.Cards.TheBlackCore
@@ -3436,6 +3439,7 @@ library
       Arkham.Location.Cards.TheLittleBookshopInTooDeep
       Arkham.Location.Cards.TheMoonRoom
       Arkham.Location.Cards.TheOnyxCastle
+      Arkham.Location.Cards.ThePriceManor
       Arkham.Location.Cards.TheSummit
       Arkham.Location.Cards.TheThroneRoom
       Arkham.Location.Cards.TheWhiteShip
@@ -3671,6 +3675,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks
       Arkham.Scenario.Scenarios.ReturnToTheMiskatonicMuseum
       Arkham.Scenario.Scenarios.ReturnToThePallidMask
+      Arkham.Scenario.Scenarios.ReturnToTheSecretName
       Arkham.Scenario.Scenarios.ReturnToTheUnspeakableOath
       Arkham.Scenario.Scenarios.ReturnToTheUntamedWilds
       Arkham.Scenario.Scenarios.ReturnToTheWitchingHour
@@ -3775,7 +3780,6 @@ library
       Arkham.Scenarios.TheSearchForKadath.FlavorText
       Arkham.Scenarios.TheSearchForKadath.Helpers
       Arkham.Scenarios.TheSecretName.Helpers
-      Arkham.Scenarios.TheSecretName.Story
       Arkham.Scenarios.TheUnspeakableOath.Helpers
       Arkham.Scenarios.TheUntamedWilds.Helpers
       Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers

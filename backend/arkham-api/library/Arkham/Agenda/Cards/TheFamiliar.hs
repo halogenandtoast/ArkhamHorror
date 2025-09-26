@@ -38,13 +38,19 @@ instance RunMessage TheFamiliar where
     AdvanceAgenda (isSide B attrs -> True) -> do
       getCurrentActStep >>= \case
         1 -> do
-          nahab <- getSetAsideCard Enemies.nahab
           walterGilmansRoom <- selectJust $ locationIs Locations.walterGilmansRoom
-          createEnemyAt_ nahab walterGilmansRoom
+          selectOne (IncludeOutOfPlayEnemy $ enemyIs Enemies.nahab) >>= \case
+            Just nahab -> place nahab (AtLocation walterGilmansRoom)
+            Nothing -> do
+              nahab <- getSetAsideCard Enemies.nahab
+              createEnemyAt_ nahab walterGilmansRoom
         2 -> do
-          nahab <- getSetAsideCard Enemies.nahab
           keziahsRoom <- selectJust $ locationIs Locations.keziahsRoom
-          createEnemyAt_ nahab keziahsRoom
+          selectOne (IncludeOutOfPlayEnemy $ enemyIs Enemies.nahab) >>= \case
+            Just nahab -> place nahab (AtLocation keziahsRoom)
+            Nothing -> do
+              nahab <- getSetAsideCard Enemies.nahab
+              createEnemyAt_ nahab keziahsRoom
         3 -> do
           nahab <- getUniqueEnemy Enemies.nahab
           placeDoom attrs nahab 1

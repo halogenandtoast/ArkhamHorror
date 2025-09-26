@@ -33,6 +33,7 @@ import Arkham.Token
 import Arkham.Xp
 import Arkham.Zone
 import Control.Lens (_Just)
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.TH
 import Data.Data
 import Data.Text qualified as T
@@ -200,6 +201,21 @@ instance HasField "grid" ScenarioAttrs Grid where
 
 instance HasField "meta" ScenarioAttrs Value where
   getField = scenarioMeta
+
+getMetaKeyDefault :: FromJSON a => Key -> a -> ScenarioAttrs -> a
+getMetaKeyDefault k def attrs = case attrs.meta of
+  Object o -> case KeyMap.lookup k o of
+    Nothing -> def
+    Just v -> case fromJSON v of
+      Error _ -> def
+      Success v' -> v'
+  _ -> def
+
+setMetaKey :: (ToJSON a, HasCallStack) => Key -> a -> ScenarioAttrs -> ScenarioAttrs
+setMetaKey k v attrs = case attrs.meta of
+  Object o -> attrs {scenarioMeta = Object $ KeyMap.insert k (toJSON v) o}
+  Null -> attrs {scenarioMeta = object [k .= v]}
+  _ -> error $ "Could not insert meta key, meta is not Null or Object: " <> show attrs.meta
 
 instance HasField "id" Scenario ScenarioId where
   getField = (.id) . toAttrs

@@ -920,6 +920,11 @@ allLocations =
     , --- Return to At Death's Doorstep
       SomeLocationCard wineCellar
     , SomeLocationCard wineCellarSpectral
+    , --- Return to The Secret Name
+      SomeLocationCard templeOfRlyeh
+    , SomeLocationCard thePriceManor
+    , SomeLocationCard the9thWard
+    , SomeLocationCard libraryOfEbla
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

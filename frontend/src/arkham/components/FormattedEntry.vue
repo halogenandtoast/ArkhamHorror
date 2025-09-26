@@ -59,7 +59,7 @@ function formatEntry(t: I18n, entry: FlavorTextEntry): any {
   switch (entry.tag) {
     case 'BasicEntry': return h('p', { innerHTML: formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text) })
     case 'HeaderEntry': return h('header', [h('h1', { innerHTML: formatContent(t(entry.key)) })])
-    case 'I18nEntry': return h('div', { style:"overflow:auto", innerHTML: formatContent(t(entry.key, {...entry.variables, setImgPath: `${baseUrl}/img/arkham/encounter-sets` })) })
+    case 'I18nEntry': return h('div', { innerHTML: formatContent(t(entry.key, {...entry.variables, setImgPath: `${baseUrl}/img/arkham/encounter-sets` })) })
     case 'ModifyEntry': return h('div', { class: entryStyles(entry) }, [formatEntry(t, entry.entry)])
     case 'CompositeEntry': return h('div', { class: "composite" }, entry.entries.map((e) => formatEntry(t, e)))
     case 'ColumnEntry': return h('div', { class: "columns" }, entry.entries.map((e) => formatEntry(t, e)))
@@ -154,7 +154,7 @@ export default defineComponent({
   }
 
   &::before {
-    border-radius: 55px;
+    border-radius: 52px;
     box-shadow: inset 0 0 15px color-mix(in srgb, #3a4a69, transparent 10%), 1px 1px 3px color-mix(in srgb, #3a4a69, transparent 30%);
     content: "";
     position: absolute;
@@ -201,7 +201,7 @@ export default defineComponent({
   }
 
   &::after {
-    border-radius: 55px;
+    border-radius: 52px;
     box-shadow: inset 0 0 15px color-mix(in srgb, var(--color), transparent 10%), 1px 1px 3px color-mix(in srgb, var(--color), transparent 30%);
     content: "";
     position: absolute;
@@ -237,7 +237,7 @@ export default defineComponent({
   gap: 2px;
   &:after {
     font-family: "Materials";
-    content: "\e412";
+    content: "\e3f4";
     align-self: center;
   }
 }

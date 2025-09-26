@@ -507,6 +507,7 @@ allLocationCards =
       , leMarais217
       , leMarais218
       , library
+      , libraryOfEbla
       , libraryOfKos
       , libraryTheMidwinterGala
       , lighthouseKeepersCottage
@@ -781,6 +782,7 @@ allLocationCards =
       , tearThroughSpace
       , tearThroughTime
       , teetawnPassage
+      , templeOfRlyeh
       , templeOfTheElderThings
       , templeOfTheFang
       , templeOfTheMoonLizard
@@ -796,6 +798,7 @@ allLocationCards =
       , tenAcreMeadow_247
       , theatre
       , theatreLounge
+      , the9thWard
       , theBlackCore
       , theBlackStone
       , theBlackThrone
@@ -825,6 +828,7 @@ allLocationCards =
       , theLittleBookshopInTooDeep
       , theMoonRoom
       , theOnyxCastle
+      , thePriceManor
       , theSummit
       , theThroneRoom
       , theWhiteShip
@@ -9270,6 +9274,64 @@ wineCellarSpectral =
     Hourglass
     [T]
     ReturnToAtDeathsDoorstep
+
+templeOfRlyeh :: CardDef
+templeOfRlyeh =
+  victory 1
+    $ locationWithUnrevealed
+      "54030"
+      "Unknown Places"
+      [Extradimensional]
+      Moon
+      [Square]
+      "Temple of R'lyeh"
+      [Extradimensional, Otherworld]
+      Equals
+      [Square, Squiggle]
+      ReturnToTheSecretName
+
+thePriceManor :: CardDef
+thePriceManor =
+    locationWithUnrevealed
+      "54031"
+      "Unknown Places"
+      [Extradimensional]
+      Moon
+      [Square]
+      "The Price Manor"
+      [Extradimensional]
+      Moon
+      [Square]
+      ReturnToTheSecretName
+
+the9thWard :: CardDef
+the9thWard =
+    locationWithUnrevealed
+      "54032"
+      "Unknown Places"
+      [Extradimensional]
+      Moon
+      [Square]
+      "The 9th Ward"
+      [Extradimensional]
+      Moon
+      [Square]
+      ReturnToTheSecretName
+
+libraryOfEbla :: CardDef
+libraryOfEbla =
+  victory 1
+    $ locationWithUnrevealed
+      "54033"
+      "Unknown Places"
+      [Extradimensional]
+      Moon
+      [Square]
+      "Library of Ebla"
+      [Extradimensional]
+      Squiggle
+      [Square, Equals]
+      ReturnToTheSecretName
 
 lobbyTheMidwinterGala :: CardDef
 lobbyTheMidwinterGala =

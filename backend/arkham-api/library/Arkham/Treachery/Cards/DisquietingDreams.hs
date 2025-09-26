@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.DisquietingDreams (disquietingDreams, DisquietingDreams (..)) where
+module Arkham.Treachery.Cards.DisquietingDreams (disquietingDreams) where
 
 import Arkham.Ability
 import Arkham.Matcher
@@ -15,8 +15,8 @@ disquietingDreams = treachery DisquietingDreams Cards.disquietingDreams
 
 instance HasAbilities DisquietingDreams where
   getAbilities (DisquietingDreams a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You) $ forced $ TurnEnds #at You
-    , restrictedAbility a 2 (InThreatAreaOf You) $ forced $ EncounterDeckRunsOutOfCards
+    [ restricted a 1 (InThreatAreaOf You) $ forced $ TurnEnds #at You
+    , restricted a 2 (InThreatAreaOf You) $ forced EncounterDeckRunsOutOfCards
     ]
 
 instance RunMessage DisquietingDreams where

@@ -1,12 +1,11 @@
 module Arkham.Enemy.Cards.BrownJenkin (brownJenkin) where
 
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner hiding (EnemyFight)
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait (Trait (Creature))
 
 newtype BrownJenkin = BrownJenkin EnemyAttrs
@@ -22,27 +21,18 @@ instance HasModifiersFor BrownJenkin where
 
 instance HasAbilities BrownJenkin where
   getAbilities (BrownJenkin x) =
-    extend
-      x
-      [ restrictedAbility
-          x
-          1
-          ( EnemyCriteria (ThisEnemy ReadyEnemy)
-              <> exists (InvestigatorAt (locationWithEnemy $ toId x) <> HandWith AnyCards)
-          )
-          $ forced
-          $ PhaseEnds #when #enemy
-      ]
+    extend1 x
+      $ restricted x 1 (thisExists x ReadyEnemy <> exists (at_ (locationWithEnemy x) <> HandWith AnyCards))
+      $ forced
+      $ PhaseEnds #when #enemy
 
 instance RunMessage BrownJenkin where
-  runMessage msg e@(BrownJenkin attrs) = case msg of
+  runMessage msg e@(BrownJenkin attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       investigatorsWithHand <-
-        selectWithField InvestigatorHand
-          $ InvestigatorAt (locationWithEnemy $ toId attrs)
-          <> HandWith AnyCards
-      for_ investigatorsWithHand $ \(iid, hand) -> do
-        let drawing = drawCards iid (attrs.ability 1) (length hand)
-        pushAll [DiscardHand iid (toSource attrs), drawing]
+        selectWithField InvestigatorHand $ at_ (locationWithEnemy attrs) <> HandWith AnyCards
+      for_ investigatorsWithHand \(iid, hand) -> do
+        push $ DiscardHand iid (toSource attrs)
+        drawCards iid (attrs.ability 1) (length hand)
       pure e
-    _ -> BrownJenkin <$> runMessage msg attrs
+    _ -> BrownJenkin <$> liftRunMessage msg attrs

@@ -8,6 +8,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Move
+import Arkham.Scenarios.TheSecretName.Helpers
 
 newtype SalemGaol1692 = SalemGaol1692 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -21,7 +22,7 @@ instance HasAbilities SalemGaol1692 where
     extendRevealed
       a
       [ skillTestAbility $ playerLimit PerGame $ restricted a 1 Here actionAbility
-      , haunted "Move to Keziah's Room." a 2
+      , scenarioI18n $ hauntedI "salemGaol1692.haunted" a 2
       ]
 
 instance RunMessage SalemGaol1692 where

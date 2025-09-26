@@ -1,19 +1,17 @@
 module Arkham.Location.Cards.CourtOfTheGreatOldOnesANotTooDistantFuture (
   courtOfTheGreatOldOnesANotTooDistantFuture,
-  CourtOfTheGreatOldOnesANotTooDistantFuture (..),
 ) where
 
-import Arkham.Prelude
-
-import Arkham.Action qualified as Action
+import Arkham.Ability
+import Arkham.Effect.Builder
 import Arkham.Effect.Window
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.SkillType
+import Arkham.Scenarios.TheSecretName.Helpers
 
 newtype CourtOfTheGreatOldOnesANotTooDistantFuture
   = CourtOfTheGreatOldOnesANotTooDistantFuture LocationAttrs
@@ -34,27 +32,24 @@ instance HasAbilities CourtOfTheGreatOldOnesANotTooDistantFuture where
     extendRevealed
       a
       [ skillTestAbility $ mkAbility a 1 $ forced $ Enters #after You (be a)
-      , haunted "The next action you perform this round must be an investigate action." a 2
+      , scenarioI18n $ hauntedI "courtOfTheGreatOldOnesANotTooDistantFuture.haunted" a 2
       ]
 
 instance RunMessage CourtOfTheGreatOldOnesANotTooDistantFuture where
-  runMessage msg l@(CourtOfTheGreatOldOnesANotTooDistantFuture attrs) = case msg of
+  runMessage msg l@(CourtOfTheGreatOldOnesANotTooDistantFuture attrs) = runQueueT $ case msg of
     Msg.RevealLocation _ lid | lid == toId attrs -> do
       CourtOfTheGreatOldOnesANotTooDistantFuture
-        <$> runMessage msg (attrs & labelL .~ "courtOfTheGreatOldOnesANotTooDistantFuture")
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+        <$> liftRunMessage msg (attrs & labelL .~ "courtOfTheGreatOldOnesANotTooDistantFuture")
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (attrs.ability 1) iid SkillWillpower (Fixed 3)
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      pushM
-        $ createWindowModifierEffect
-          (FirstEffectWindow [EffectRoundWindow, EffectNextActionWindow])
-          attrs
-          iid
-          [MustTakeAction $ IsAction Action.Investigate]
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      effectWithSource (attrs.ability 2) iid do
+        removeOn $ firstWindow [#round, #nextAction]
+        apply $ MustTakeAction #investigate
       pure l
-    FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ n -> do
-      push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 n
+    FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
+      assignHorror iid (attrs.ability 1) n
       pure l
-    _ -> CourtOfTheGreatOldOnesANotTooDistantFuture <$> runMessage msg attrs
+    _ -> CourtOfTheGreatOldOnesANotTooDistantFuture <$> liftRunMessage msg attrs

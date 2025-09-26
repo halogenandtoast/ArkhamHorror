@@ -1,64 +1,42 @@
-module Arkham.Location.Cards.PhysicsClassroom (
-  physicsClassroom,
-  PhysicsClassroom (..),
-) where
+module Arkham.Location.Cards.PhysicsClassroom (physicsClassroom) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.Discover
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Timing qualified as Timing
+import Arkham.Message.Lifted.Choose
 
 newtype PhysicsClassroom = PhysicsClassroom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 physicsClassroom :: LocationCard PhysicsClassroom
-physicsClassroom =
-  location PhysicsClassroom Cards.physicsClassroom 4 (PerPlayer 1)
+physicsClassroom = location PhysicsClassroom Cards.physicsClassroom 4 (PerPlayer 1)
 
 instance HasAbilities PhysicsClassroom where
   getAbilities (PhysicsClassroom a) =
-    withRevealedAbilities
-      a
-      [ limitedAbility (PlayerLimit PerRound 1)
-          $ restrictedAbility
-            a
-            1
-            ( CanDiscoverCluesAt
-                $ RevealedLocation
-                <> LocationWithAnyClues
-                <> NotLocation (LocationWithId $ toId a)
-            )
-          $ ReactionAbility
-            ( SkillTestResult Timing.After You (WhileInvestigating $ LocationWithId $ toId a)
-                $ SuccessResult
-                $ AtLeast (Static 2)
-            )
-            Free
-      ]
+    extendRevealed1 a
+      $ playerLimit PerRound
+      $ restricted a 1 (CanDiscoverCluesAt $ RevealedLocation <> LocationWithAnyClues <> not_ (be a))
+      $ freeReaction
+      $ SkillTestResult #after You (WhileInvestigating $ be a)
+      $ SuccessResult
+      $ AtLeast (Static 2)
 
 instance RunMessage PhysicsClassroom where
-  runMessage msg l@(PhysicsClassroom attrs) = case msg of
+  runMessage msg l@(PhysicsClassroom attrs) = runQueueT $ case msg of
     Msg.RevealLocation _ lid | lid == toId attrs -> do
-      PhysicsClassroom <$> runMessage msg (attrs & labelL .~ "physicsClassroom")
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      PhysicsClassroom <$> liftRunMessage msg (attrs & labelL .~ "physicsClassroom")
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       locations <-
         select
           $ locationWithDiscoverableCluesBy iid
           <> RevealedLocation
           <> LocationWithAnyClues
-          <> NotLocation (LocationWithId $ toId attrs)
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [ targetLabel lid [Msg.DiscoverClues iid $ discover lid (attrs.ability 1) 1]
-          | lid <- locations
-          ]
+          <> not_ (be attrs)
+      chooseOrRunOneM iid $ targets locations $ discoverAt NotInvestigate iid (attrs.ability 1) 1
       pure l
-    _ -> PhysicsClassroom <$> runMessage msg attrs
+    _ -> PhysicsClassroom <$> liftRunMessage msg attrs

@@ -1,19 +1,11 @@
-module Arkham.Treachery.Cards.MeddlesomeFamiliar (
-  meddlesomeFamiliar,
-  MeddlesomeFamiliar (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.MeddlesomeFamiliar (meddlesomeFamiliar) where
 
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Creation
 import Arkham.Helpers.Enemy
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
-import Arkham.Zone
+import Arkham.Treachery.Import.Lifted
 
 newtype MeddlesomeFamiliar = MeddlesomeFamiliar TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -23,23 +15,17 @@ meddlesomeFamiliar :: TreacheryCard MeddlesomeFamiliar
 meddlesomeFamiliar = treachery MeddlesomeFamiliar Cards.meddlesomeFamiliar
 
 instance RunMessage MeddlesomeFamiliar where
-  runMessage msg t@(MeddlesomeFamiliar attrs) = case msg of
+  runMessage msg t@(MeddlesomeFamiliar attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       brownJenkinInPlay <- getEnemyIsInPlay Enemies.brownJenkin
-      push
-        $ findEncounterCard iid attrs [FromEncounterDeck, FromEncounterDiscard]
-        $ if brownJenkinInPlay then Enemies.swarmOfRats else Enemies.brownJenkin
+      findEncounterCard iid attrs $ if brownJenkinInPlay then Enemies.swarmOfRats else Enemies.brownJenkin
       pure t
-    FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) | card `cardMatch` Enemies.brownJenkin -> do
-      spawnBrownJenkin <- toMessage <$> createEnemy card (locationWithInvestigator iid)
-      pushAll [spawnBrownJenkin, InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
-      pure t
-    FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) | card `cardMatch` Enemies.swarmOfRats -> do
-      spawnSwarmOfRats <- createEnemy card iid
-      push
-        $ toMessage
-        $ spawnSwarmOfRats
-          { enemyCreationAfter = [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
-          }
-      pure t
-    _ -> MeddlesomeFamiliar <$> runMessage msg attrs
+    FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card)
+      | card `cardMatch` Enemies.brownJenkin -> do
+          createEnemy_ card (locationWithInvestigator iid)
+          assignDamage iid attrs 1
+          pure t
+      | card `cardMatch` Enemies.swarmOfRats -> do
+          createEnemyWithAfter_ card iid \_ -> assignDamage iid attrs 1
+          pure t
+    _ -> MeddlesomeFamiliar <$> liftRunMessage msg attrs

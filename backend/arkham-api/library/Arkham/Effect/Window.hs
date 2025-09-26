@@ -54,6 +54,9 @@ instance IsLabel "nextSkillTest" (InvestigatorId -> EffectWindow) where
 instance IsLabel "round" EffectWindow where
   fromLabel = EffectRoundWindow
 
+instance IsLabel "nextAction" EffectWindow where
+  fromLabel = EffectNextActionWindow
+
 instance IsLabel "resolution" EffectWindow where
   fromLabel = EffectResolutionWindow
 
@@ -62,6 +65,9 @@ instance IsLabel "move" EffectWindow where
 
 instance IsLabel "skillTest" (SkillTestId -> EffectWindow) where
   fromLabel = EffectSkillTestWindow
+
+firstWindow :: [EffectWindow] -> EffectWindow
+firstWindow = FirstEffectWindow
 
 $(deriveToJSON defaultOptions ''EffectWindow)
 

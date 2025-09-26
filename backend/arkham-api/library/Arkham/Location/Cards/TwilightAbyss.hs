@@ -1,16 +1,12 @@
-module Arkham.Location.Cards.TwilightAbyss (
-  twilightAbyss,
-  TwilightAbyss (..),
-) where
+module Arkham.Location.Cards.TwilightAbyss (twilightAbyss) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Timing qualified as Timing
+import Arkham.Message.Lifted.Choose
 
 newtype TwilightAbyss = TwilightAbyss LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -21,22 +17,17 @@ twilightAbyss = location TwilightAbyss Cards.twilightAbyss 2 (PerPlayer 2)
 
 instance HasAbilities TwilightAbyss where
   getAbilities (TwilightAbyss a) =
-    withRevealedAbilities
-      a
-      [ skillTestAbility $ mkAbility a 1 $ ForcedAbility $ Enters Timing.After You $ LocationWithId $ toId a
-      ]
+    extendRevealed1 a $ skillTestAbility $ mkAbility a 1 $ forced $ Enters #after You (be a)
 
 instance RunMessage TwilightAbyss where
-  runMessage msg l@(TwilightAbyss attrs) = case msg of
+  runMessage msg l@(TwilightAbyss attrs) = runQueueT $ case msg of
     Msg.RevealLocation _ lid | lid == toId attrs -> do
-      TwilightAbyss <$> runMessage msg (attrs & labelL .~ "twilightAbyss")
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+      TwilightAbyss <$> liftRunMessage msg (attrs & labelL .~ "twilightAbyss")
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      let skillTest sType = beginSkillTest sid iid (attrs.ability 1) iid sType (Fixed 3)
-      player <- getPlayer iid
-      push $ chooseOne player [SkillLabel sType [skillTest sType] | sType <- [#combat, #agility]]
+      chooseBeginSkillTest sid iid (attrs.ability 1) iid [#combat, #agility] (Fixed 3)
       pure l
-    FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ n -> do
-      push $ InvestigatorAssignDamage iid (toAbilitySource attrs 1) DamageAny n 0
+    FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
+      assignDamage iid (attrs.ability 1) n
       pure l
-    _ -> TwilightAbyss <$> runMessage msg attrs
+    _ -> TwilightAbyss <$> liftRunMessage msg attrs

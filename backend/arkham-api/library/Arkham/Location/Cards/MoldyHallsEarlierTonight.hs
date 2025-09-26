@@ -14,14 +14,14 @@ import Arkham.Message.Lifted.Log
 import Arkham.Name qualified as Name
 import Arkham.Projection
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.TheSecretName.Helpers
 
 newtype MoldyHallsEarlierTonight = MoldyHallsEarlierTonight LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 moldyHallsEarlierTonight :: LocationCard MoldyHallsEarlierTonight
-moldyHallsEarlierTonight =
-  location MoldyHallsEarlierTonight Cards.moldyHallsEarlierTonight 2 (Static 0)
+moldyHallsEarlierTonight = location MoldyHallsEarlierTonight Cards.moldyHallsEarlierTonight 2 (Static 0)
 
 instance HasAbilities MoldyHallsEarlierTonight where
   getAbilities (MoldyHallsEarlierTonight a) =
@@ -43,9 +43,9 @@ instance RunMessage MoldyHallsEarlierTonight where
       for_ iids \iid -> do
         name <- field InvestigatorName iid
         discards <- fieldMap InvestigatorDiscard (map toCard) iid
-        chooseOneM iid do
-          labeled "Do not request aid from your past self" nothing
-          labeled "Request aid from your past self" do
+        chooseOneM iid $ scenarioI18n do
+          labeled' "moldyHallsEarlierTonight.doNotRequest" nothing
+          labeled' "moldyHallsEarlierTonight.request" do
             focusCards discards do
               chooseTargetM iid discards (returnToHand iid)
             remember $ MeddledWithThePast $ Name.labeled name iid

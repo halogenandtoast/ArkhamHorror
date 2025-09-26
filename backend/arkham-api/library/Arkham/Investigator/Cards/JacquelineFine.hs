@@ -54,14 +54,14 @@ instance RunMessage JacquelineFine where
           [
             ( ChaosTokenFaceIs #autofail
             ,
-              ( "Cancel 1 {autofail} token"
+              ( "Cancel 1 {autoFail} token"
               , ChooseMatch (attrs.ability 1) 1 CancelChoice [] [] #autofail nested
               )
             )
           ,
             ( ChaosTokenFaceIsNot #autofail
             ,
-              ( "Cancel 2 non-{autofail} tokens"
+              ( "Cancel 2 non-{autoFail} tokens"
               , ChooseMatch (attrs.ability 1) 2 CancelChoice [] [] (ChaosTokenFaceIsNot #autofail) nested
               )
             )

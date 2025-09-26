@@ -160,7 +160,7 @@ instance RunMessage SkillTest where
       -- see: faqs/drawing-thin
       pure $ s & difficultyL %~ \(SkillTestDifficulty d) -> SkillTestDifficulty (SumCalculation [d, Fixed n])
     ChaosTokenCanceled _ _ token -> do
-      let cancelIf t = if t.id == token.id then token {chaosTokenCancelled = True} else token
+      let cancelIf t = if t.id == token.id then token {chaosTokenCancelled = True} else t
       pure
         $ s
         & (setAsideChaosTokensL %~ map cancelIf)

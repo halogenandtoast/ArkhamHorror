@@ -338,8 +338,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
           if canParallelRex
             then (`div` 2) <$> getRemainingCurseTokens
             else pure 0
-        spendableClues <- getSpendableClueCount [iid]
-        pure $ (spendableClues + z) >= n
+        clues <- field InvestigatorClues iid
+        pure $ (clues + z) >= n
       GroupClueCost n locationMatcher -> do
         cost <- getPlayerCountValue n
         iids <- select $ Matcher.InvestigatorAt locationMatcher

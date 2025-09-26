@@ -31,7 +31,6 @@ instance RunMessage Analysis where
       withSkillTestInvestigator \iid' -> do
         cancelChaosToken (attrs.ability 1) iid token
         returnChaosTokens [token]
-        unfocusChaosTokens
         drawAnotherChaosToken iid'
         push RerunSkillTest
       pure s

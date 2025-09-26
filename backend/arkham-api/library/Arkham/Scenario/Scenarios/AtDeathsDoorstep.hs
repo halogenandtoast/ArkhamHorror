@@ -219,7 +219,7 @@ instance RunMessage AtDeathsDoorstep where
       when isSpectralEnemy do
         assignDamageAndHorror iid ElderThing 1 (if isHardExpert attrs then 1 else 0)
       pure s
-    ScenarioResolution NoResolution -> do
+    ScenarioResolution NoResolution -> scope "resolutions" do
       resolution "noResolution"
       getCurrentActStep >>= \case
         1 -> push R2

@@ -1181,6 +1181,7 @@ data Message
   | SetPartnerStatus CardCode PartnerStatus
   | HandleGroupTarget GroupKey Target [Message]
   | HandleGroupTargets AutoStatus GroupKey (Map Target [Message])
+  | KonamiCode
   | -- Commit
     Do Message
   | DoBatch BatchId Message

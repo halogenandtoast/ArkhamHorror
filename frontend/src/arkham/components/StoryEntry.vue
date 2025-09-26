@@ -148,27 +148,34 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
   &:has(.black) {
     background-image: v-bind(grunge);
     background-size: cover;
+    max-height: min-content;
   }
 }
 
 .hunted, :deep(.hunted) {
   display: grid;
   grid-template-columns: 1fr 2fr;
+  max-height: min-content;
   div:first-child {
     width: 100%;
     margin-top: 60px;
+    max-height: min-content;
+    display: flex;
+    flex-direction: column;
     img {
       object-fit: cover;
+      height: 80vh;
+      align-self: flex-end;
     }
   }
 }
 
 .black, :deep(.black) {
   background-color: rgba(0,0,0,0.1);
-  margin-inline: 20px;
   box-shadow: unset;
+  margin-right: 20px;
   border: 5px solid #000;
-  border-radius: 25px;
+  border-radius: 60px;
   &::after {
     border: 5px solid rgba(0,0,0,0.3);
     border-radius: 25px;
@@ -202,7 +209,7 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
     border-image-source: v-bind(black_fleur);
     border-image-slice: 49.9%;
     border-image-repeat: no-repeat;
-    border-image-width: 80px;
+    border-image-width: 90px;
     content: "";
   }
 }

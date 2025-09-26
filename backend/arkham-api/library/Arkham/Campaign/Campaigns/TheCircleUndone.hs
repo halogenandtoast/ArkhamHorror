@@ -98,6 +98,8 @@ instance RunMessage TheCircleUndone where
         flavor $ setTitle "title" >> p "thePriceOfProgress4"
         record JosefDisappearedIntoTheMist
         record TheInvestigatorsAreEnemiesOfTheLodge
+        whenM (getHasRecord YouAreBeingHunted) do
+          flavor $ p "youAreBeingHunted"
         nextCampaignStep
 
       when showThePriceOfProgress5 do
@@ -112,12 +114,16 @@ instance RunMessage TheCircleUndone where
     CampaignStep (InterludeStepPart 2 _ 7) -> scope "interlude2" do
       flavor $ setTitle "title" >> p "thePriceOfProgress7"
       record TheInvestigatorsAreEnemiesOfTheLodge
+      whenM (getHasRecord YouAreBeingHunted) do
+        flavor $ p "youAreBeingHunted"
       nextCampaignStep
       pure c
     CampaignStep (InterludeStepPart 2 _ 8) -> scope "interlude2" do
       flavor $ setTitle "title" >> p "thePriceOfProgress8"
       record TheInvestigatorsAreMembersOfTheLodge
       addChaosToken Cultist
+      whenM (getHasRecord YouAreBeingHunted) do
+        flavor $ p "youAreBeingHunted"
       nextCampaignStep
       pure c
     CampaignStep (InterludeStepPart 2 _ 9) -> scope "interlude2" do
@@ -125,6 +131,8 @@ instance RunMessage TheCircleUndone where
       record TheInvestigatorsAreMembersOfTheLodge
       addChaosToken Cultist
       record TheInvestigatorsAreDeceivingTheLodge
+      whenM (getHasRecord YouAreBeingHunted) do
+        flavor $ p "youAreBeingHunted"
       nextCampaignStep
       pure c
     CampaignStep (InterludeStep 3 mInterludeKey) -> do

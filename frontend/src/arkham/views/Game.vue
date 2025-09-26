@@ -329,12 +329,67 @@ const canUndoScenario = computed(() => {
   return game.value.scenarioSteps > 1
 })
 
+// --- Konami Code support ---
+const KONAMI_SEQ = [
+  'ArrowUp','ArrowUp','ArrowDown','ArrowDown',
+  'ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a',
+] as const
+
+let konamiIndex = 0
+let konamiTimer: number | null = null
+const KONAMI_TIMEOUT_MS = 5000 // reset if user pauses too long
+
+const onKonami = () => {
+  if (!game.value) return
+  debug.send(game.value.id, { tag: 'KonamiCode' })
+}
+
+const feedKonami = (rawKey: string): boolean => {
+  const key = rawKey.length === 1 ? rawKey.toLowerCase() : rawKey
+
+  // match current step
+  if (key === KONAMI_SEQ[konamiIndex]) {
+    konamiIndex++
+    if (konamiIndex === KONAMI_SEQ.length) {
+      // success!
+      konamiIndex = 0
+      if (konamiTimer) { clearTimeout(konamiTimer); konamiTimer = null }
+      onKonami()
+      return true
+    }
+    // keep a rolling timeout while the user is entering
+    if (konamiTimer) clearTimeout(konamiTimer)
+    konamiTimer = window.setTimeout(() => {
+      konamiIndex = 0
+      konamiTimer = null
+    }, KONAMI_TIMEOUT_MS)
+    return false
+  }
+
+  // mismatch: allow overlap if this key is the first symbol of the sequence
+  if (key === KONAMI_SEQ[0]) {
+    konamiIndex = 1
+    if (konamiTimer) clearTimeout(konamiTimer)
+    konamiTimer = window.setTimeout(() => {
+      konamiIndex = 0
+      konamiTimer = null
+    }, KONAMI_TIMEOUT_MS)
+  } else {
+    konamiIndex = 0
+    if (konamiTimer) { clearTimeout(konamiTimer); konamiTimer = null }
+  }
+
+  return false
+}
+
 // Keyboard Shortcuts
 const handleKeyPress = (event: KeyboardEvent) => {
   if (filingBug.value) return
   if (event.ctrlKey) return
   if (event.metaKey) return
   if (event.altKey) return
+
+  if (feedKonami(event.key)) return
 
   if (event.key === 'u') {
     undo()

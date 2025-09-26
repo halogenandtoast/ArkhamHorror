@@ -3,6 +3,7 @@ module Arkham.Act.Cards.TheDisappearance (theDisappearance) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.Act.Sequence
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -22,6 +23,9 @@ instance HasAbilities TheDisappearance where
 
 instance RunMessage TheDisappearance where
   runMessage msg a@(TheDisappearance attrs) = runQueueT $ case msg of
+    KonamiCode -> do
+      advancedWithOther attrs
+      pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       -- Note, you can't actually trigger this
       record YouAreBeingHunted
@@ -31,4 +35,6 @@ instance RunMessage TheDisappearance where
       removeAllClues (attrs.ability 1) iid
       placeClues (attrs.ability 1) attrs =<< field InvestigatorClues iid
       pure a
+    RevertAct (isSide B attrs -> True) -> do
+      pure $ TheDisappearance $ attrs & (sequenceL .~ Sequence 1 A)
     _ -> TheDisappearance <$> liftRunMessage msg attrs

@@ -14,6 +14,7 @@ export interface Props {
 }
 
 const checkpoint_fleur = `url(${imgsrc('checkpoint_fleur.png')})`
+const black_fleur = `url(${imgsrc('black_fleur.png')})`
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const choose = (idx: number) => emit('choose', idx)
@@ -142,6 +143,62 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
       border-image-width: 50px;
       content: "";
     }
+  }
+}
+
+.hunted, :deep(.hunted) {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  div:first-child {
+    width: 100%;
+    margin-top: 60px;
+    img {
+      object-fit: cover;
+    }
+  }
+}
+
+.black, :deep(.black) {
+  background-color: rgba(0,0,0,0.1);
+  margin-inline: 20px;
+  box-shadow: unset;
+  border: 5px solid #000;
+  border-radius: 25px;
+  &::after {
+    border: 5px solid rgba(0,0,0,0.3);
+    border-radius: 25px;
+    position: absolute;
+    inset: 0px;
+    box-sizing: border-box;
+    content: "";
+    filter: blur(0.25em);
+    z-index: 1;
+  }
+  h1 {
+    color: #000 !important;
+    font-family: "Unquiet Spirits", sans-serif !important;
+    font-weight: 500;
+    border: 0 !important;
+    text-transform: uppercase;
+    text-align: center;
+    &::after {
+      border: 0 !important;
+    }
+  }
+  padding: 50px;
+  position: relative;
+  &::before {
+    z-index: 2;
+    pointer-events: none;
+    position: absolute;
+    inset: 0px;
+    inset-block: -5px;
+    inset-inline: -25px;
+    border-image-source: v-bind(black_fleur);
+    border-image-slice: 49.9%;
+    border-image-repeat: no-repeat;
+    border-image-width: 80px;
+    content: "";
   }
 }
 

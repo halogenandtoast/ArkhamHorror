@@ -110,6 +110,11 @@ button {
 }
 
 @font-face {
+  font-family: "Unquiet Spirits";
+  src: url("/fonts/UnquietSpirits.ttf");
+}
+
+@font-face {
   font-family: "ArkhamIcons";
   src: url("/fonts/arkhamicons.ttf");
 }

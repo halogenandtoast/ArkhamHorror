@@ -13,6 +13,7 @@ export interface Props {
   playerId: string
 }
 
+const grunge = `url(${imgsrc('grunge.png')})`
 const checkpoint_fleur = `url(${imgsrc('checkpoint_fleur.png')})`
 const black_fleur = `url(${imgsrc('black_fleur.png')})`
 const props = defineProps<Props>()
@@ -143,6 +144,10 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
       border-image-width: 50px;
       content: "";
     }
+  }
+  &:has(.black) {
+    background-image: v-bind(grunge);
+    background-size: cover;
   }
 }
 

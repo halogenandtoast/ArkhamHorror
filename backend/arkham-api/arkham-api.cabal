@@ -3678,6 +3678,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToTheSecretName
       Arkham.Scenario.Scenarios.ReturnToTheUnspeakableOath
       Arkham.Scenario.Scenarios.ReturnToTheUntamedWilds
+      Arkham.Scenario.Scenarios.ReturnToTheWagesOfSin
       Arkham.Scenario.Scenarios.ReturnToTheWitchingHour
       Arkham.Scenario.Scenarios.ReturnToThreadsOfFate
       Arkham.Scenario.Scenarios.ReturnToTurnBackTime
@@ -3740,7 +3741,6 @@ library
       Arkham.Scenarios.DevilReef.Helpers
       Arkham.Scenarios.DimCarcosa.Helpers
       Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Helpers
-      Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Story
       Arkham.Scenarios.EchoesOfThePast.Helpers
       Arkham.Scenarios.ExtracurricularActivity.Helpers
       Arkham.Scenarios.FatalMirage.Helpers
@@ -3784,7 +3784,6 @@ library
       Arkham.Scenarios.TheUntamedWilds.Helpers
       Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
       Arkham.Scenarios.TheWagesOfSin.Helpers
-      Arkham.Scenarios.TheWagesOfSin.Story
       Arkham.Scenarios.TheWitchingHour.Helpers
       Arkham.Scenarios.ThreadsOfFate.Helpers
       Arkham.Scenarios.ToTheForbiddenPeaks.Helpers

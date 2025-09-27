@@ -1,16 +1,15 @@
-module Arkham.Enemy.Cards.MalevolentSpirit (malevolentSpirit)
-where
+module Arkham.Enemy.Cards.MalevolentSpirit (malevolentSpirit) where
 
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Helpers.Enemy
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Keyword (Keyword (Hunter))
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
-import Arkham.Trait (Trait (Relic, Spectral, Spell))
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
+import Arkham.Trait (Trait (Spectral))
 
 newtype MalevolentSpirit = MalevolentSpirit EnemyAttrs
   deriving anyclass IsEnemy
@@ -18,15 +17,8 @@ newtype MalevolentSpirit = MalevolentSpirit EnemyAttrs
 
 malevolentSpirit :: EnemyCard MalevolentSpirit
 malevolentSpirit =
-  enemyWith
-    MalevolentSpirit
-    Cards.malevolentSpirit
-    (2, Static 2, 4)
-    (0, 1)
-    ( spawnAtL
-        ?~ SpawnAt
-          (LocationMatchAny [LocationWithTitle "Chapel Attic", LocationWithTitle "Chapel Crypt"])
-    )
+  enemy MalevolentSpirit Cards.malevolentSpirit (2, Static 2, 4) (0, 1)
+    & setSpawnAt (mapOneOf LocationWithTitle ["Chapel Attic", "Chapel Crypt"])
 
 instance HasModifiersFor MalevolentSpirit where
   getModifiersFor (MalevolentSpirit a) = do
@@ -35,29 +27,19 @@ instance HasModifiersFor MalevolentSpirit where
 
 instance HasAbilities MalevolentSpirit where
   getAbilities (MalevolentSpirit a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ EnemyDefeated
-            Timing.When
-            Anyone
-            (BySource $ NotSource $ SourceMatchesAny [SourceWithTrait Spell, SourceWithTrait Relic])
-          $ EnemyWithId
-          $ toId a
-      ]
+    extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ EnemyDefeated #when Anyone (BySource $ NotSource $ SourceMatchesAny [#spell, #relic]) (be a)
 
 instance RunMessage MalevolentSpirit where
-  runMessage msg e@(MalevolentSpirit attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg e@(MalevolentSpirit attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      cancelEnemyDefeatWithWindows attrs.id
+      healAllDamage (attrs.ability 1) attrs
+      disengageEnemyFromAll attrs
+      exhaustThis attrs
       spectralLocations <- select $ LocationWithTrait Spectral
-      lead <- getLeadPlayer
-      pushAll
-        $ [ CancelNext (toSource attrs) EnemyDefeatedMessage
-          , HealAllDamage (toTarget attrs) (toSource attrs)
-          , DisengageEnemyFromAll (toId attrs)
-          , Exhaust (toTarget attrs)
-          ]
-        <> [chooseOrRunOne lead [targetLabel lid [EnemyMove (toId attrs) lid]] | lid <- spectralLocations]
+      leadChooseOrRunOneM $ targets spectralLocations $ enemyMoveTo (attrs.ability 1) attrs
       pure e
-    _ -> MalevolentSpirit <$> runMessage msg attrs
+    _ -> MalevolentSpirit <$> liftRunMessage msg attrs

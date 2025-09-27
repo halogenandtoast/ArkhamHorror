@@ -5,6 +5,7 @@ import Arkham.Matcher hiding (StoryCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.TheWagesOfSin.Helpers
 import Arkham.Story.Types (Field (..))
 import Arkham.Trait (Trait (Geist))
 import Arkham.Treachery.Cards qualified as Cards
@@ -21,14 +22,10 @@ instance RunMessage BaneOfTheLiving where
   runMessage msg t@(BaneOfTheLiving attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       hasUnfinishedBusiness <- selectAny $ StoryWithTitle "Unfinished Business"
-      chooseOrRunOneM iid do
+      chooseOrRunOneM iid $ scenarioI18n do
         when hasUnfinishedBusiness do
-          labeled
-            "Choose an Unfinished Business card in play, flip it to its Heretic side, and place damage on it equal to half its health."
-            $ doStep 1 msg
-        labeled
-          "Discard cards from the top of the spectral encounter deck until a Geist enemy is discarded. Spawn that enemy engaged with you."
-          $ doStep 2 msg
+          labeled' "baneOfTheLiving.unfinishedBusiness" $ doStep 1 msg
+        labeled' "baneOfTheLiving.geist" $ doStep 2 msg
       pure t
     DoStep 1 (Revelation iid (isSource attrs -> True)) -> do
       stories <- selectWithField StoryCard $ StoryWithTitle "Unfinished Business"

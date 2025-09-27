@@ -352,6 +352,9 @@ newtype ToSkillType = ToSkillType SkillType
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
+pattern FlipThis :: Target -> Message
+pattern FlipThis target <- Flip _ _ target
+
 pattern SuccessfulInvestigationWith :: InvestigatorId -> Target -> Message
 pattern SuccessfulInvestigationWith iid target <- Successful (Action.Investigate, _) iid _ target _
 

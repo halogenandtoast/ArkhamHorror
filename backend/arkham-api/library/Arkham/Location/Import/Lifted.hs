@@ -45,6 +45,7 @@ import Arkham.Location.Runner as X (
   withResignAction,
   pattern FailedThisSkillTest,
   pattern FailedThisSkillTestBy,
+  pattern FlipThis,
   pattern PassedThisSkillTest,
   pattern PassedThisSkillTestBy,
   pattern PlaceDoom,
@@ -69,7 +70,8 @@ whenRevealed attrs body = when attrs.revealed body
 whenUnrevealed :: HasGame m => LocationAttrs -> m () -> m ()
 whenUnrevealed attrs body = when attrs.unrevealed body
 
-blockedWhenUnrevealed :: (HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m) => LocationAttrs -> m ()
+blockedWhenUnrevealed
+  :: (HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m) => LocationAttrs -> m ()
 blockedWhenUnrevealed attrs = whenUnrevealed attrs $ modifySelf attrs [Blocked]
 
 blockedWhen

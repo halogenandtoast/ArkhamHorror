@@ -1,17 +1,13 @@
-module Arkham.Location.Cards.HangmansBrook (
-  hangmansBrook,
-  HangmansBrook (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.HangmansBrook (hangmansBrook) where
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
+import Arkham.Helpers.Location
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Scenarios.TheWagesOfSin.Helpers
 
 newtype HangmansBrook = HangmansBrook LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,18 +18,11 @@ hangmansBrook = location HangmansBrook Cards.hangmansBrook 4 (PerPlayer 1)
 
 instance HasAbilities HangmansBrook where
   getAbilities (HangmansBrook a) =
-    withRevealedAbilities
-      a
-      [ withTooltip
-        "\"Who's bright idea was this, anyway?\""
-        (locationResignAction a)
-      | locationRevealed a
-      ]
+    extendRevealed1 a $ scenarioI18n $ withI18nTooltip "hangmansBrook.resign" (locationResignAction a)
 
 instance RunMessage HangmansBrook where
-  runMessage msg l@(HangmansBrook attrs) = case msg of
-    Flip _ _ target | isTarget attrs target -> do
-      spectral <- genCard Locations.hangmansBrookSpectral
-      push $ ReplaceLocation (toId attrs) spectral Swap
+  runMessage msg l@(HangmansBrook attrs) = runQueueT $ case msg of
+    FlipThis (isTarget attrs -> True) -> do
+      swapLocation attrs =<< genCard Locations.hangmansBrookSpectral
       pure l
-    _ -> HangmansBrook <$> runMessage msg attrs
+    _ -> HangmansBrook <$> liftRunMessage msg attrs

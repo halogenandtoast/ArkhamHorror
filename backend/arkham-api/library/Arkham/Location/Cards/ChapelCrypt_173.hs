@@ -1,13 +1,13 @@
-module Arkham.Location.Cards.ChapelCrypt_173 (chapelCrypt_173, ChapelCrypt_173 (..)) where
+module Arkham.Location.Cards.ChapelCrypt_173 (chapelCrypt_173) where
 
 import Arkham.Card
 import Arkham.GameValue
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message (ReplaceStrategy (..))
 
 newtype ChapelCrypt_173 = ChapelCrypt_173 LocationAttrs
   deriving anyclass IsLocation
@@ -23,8 +23,7 @@ instance HasModifiersFor ChapelCrypt_173 where
 
 instance RunMessage ChapelCrypt_173 where
   runMessage msg l@(ChapelCrypt_173 attrs) = runQueueT $ case msg of
-    Flip _ _ (isTarget attrs -> True) -> do
-      spectral <- genCard Locations.chapelCryptSpectral_173
-      push $ ReplaceLocation (toId attrs) spectral Swap
+    FlipThis (isTarget attrs -> True) -> do
+      swapLocation attrs =<< genCard Locations.chapelCryptSpectral_173
       pure l
     _ -> ChapelCrypt_173 <$> liftRunMessage msg attrs

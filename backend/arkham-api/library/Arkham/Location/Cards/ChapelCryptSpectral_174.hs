@@ -1,21 +1,18 @@
-module Arkham.Location.Cards.ChapelCryptSpectral_174 (
-  chapelCryptSpectral_174,
-  ChapelCryptSpectral_174 (..),
-)
-where
+module Arkham.Location.Cards.ChapelCryptSpectral_174 (chapelCryptSpectral_174) where
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Deck
 import Arkham.GameValue
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message (ReplaceStrategy (..))
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Scenarios.TheWagesOfSin.Helpers
 import Arkham.Trait (Trait (Hex))
 
 newtype ChapelCryptSpectral_174 = ChapelCryptSpectral_174 LocationAttrs
@@ -32,17 +29,12 @@ instance HasModifiersFor ChapelCryptSpectral_174 where
 
 instance HasAbilities ChapelCryptSpectral_174 where
   getAbilities (ChapelCryptSpectral_174 attrs) =
-    extendRevealed1 attrs
-      $ haunted
-        "Find the topmost Hex treachery in the standard encounter discard pile and put it into play in your threat area."
-        attrs
-        1
+    extendRevealed1 attrs $ scenarioI18n $ hauntedI "chapelCryptSpectral_174.haunted" attrs 1
 
 instance RunMessage ChapelCryptSpectral_174 where
   runMessage msg l@(ChapelCryptSpectral_174 attrs) = runQueueT $ case msg of
-    Flip _ _ (isTarget attrs -> True) -> do
-      spectral <- genCard Locations.chapelCryptSpectral_174
-      push $ ReplaceLocation (toId attrs) spectral Swap
+    FlipThis (isTarget attrs -> True) -> do
+      swapLocation attrs =<< genCard Locations.chapelCryptSpectral_174
       pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       mTopHex <- find (`cardMatch` CardWithTrait Hex) <$> scenarioField ScenarioDiscard

@@ -2,12 +2,12 @@ module Arkham.Location.Cards.HauntedFields (hauntedFields) where
 
 import Arkham.Card
 import Arkham.GameValue
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait (Trait (Spectral))
 
 newtype HauntedFields = HauntedFields LocationAttrs
@@ -22,9 +22,8 @@ instance HasModifiersFor HauntedFields where
     modifySelect attrs (enemyAt (toId attrs) <> EnemyWithTrait Spectral) [HorrorDealt 1]
 
 instance RunMessage HauntedFields where
-  runMessage msg l@(HauntedFields attrs) = case msg of
-    Flip _ _ target | isTarget attrs target -> do
-      spectral <- genCard Locations.hauntedFieldsSpectral
-      push $ ReplaceLocation (toId attrs) spectral Swap
+  runMessage msg l@(HauntedFields attrs) = runQueueT $ case msg of
+    FlipThis (isTarget attrs -> True) -> do
+      swapLocation attrs =<< genCard Locations.hauntedFieldsSpectral
       pure l
-    _ -> HauntedFields <$> runMessage msg attrs
+    _ -> HauntedFields <$> liftRunMessage msg attrs

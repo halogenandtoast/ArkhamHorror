@@ -249,7 +249,7 @@ const handleResult = (result: ServerResult) => {
       }
       return
     case "GameMessage":
-      gameLog.value = Object.freeze([...gameLog.value, result.contents])
+      gameLog.value = Object.freeze([...gameLog.value, localize(result.contents)])
       return
     case "GameShowDiscard":
       emitter.emit('showDiscards', result.contents)
@@ -594,6 +594,13 @@ async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
     processing.value = true
     send(JSON.stringify({tag: 'AmountsAnswer', contents: { amounts } }))
   }
+}
+
+function localize(str: string): string {
+  if (str.startsWith("$")) {
+    return t(str.slice(1))
+  }
+  return str
 }
 
 async function update(state: Arkham.Game) { game.value = state }

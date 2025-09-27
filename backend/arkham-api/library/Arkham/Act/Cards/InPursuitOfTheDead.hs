@@ -5,9 +5,11 @@ import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheCircleUndone.Memento.Helpers
 import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getInvestigators, getJustLocationByName, getSetAsideCardsMatching)
-import Arkham.Helpers.Modifiers (modifySelect, ModifierType(..))
 import Arkham.Matcher
+import Arkham.I18n
+import Arkham.Scenarios.TheWagesOfSin.Helpers
 import Arkham.Trait (Trait (Spectral))
 
 newtype InPursuitOfTheDead = InPursuitOfTheDead ActAttrs
@@ -15,7 +17,6 @@ newtype InPursuitOfTheDead = InPursuitOfTheDead ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 -- Errata: The text on this card should read: "Locations cannot be flipped to their spectral side"
---
 instance HasModifiersFor InPursuitOfTheDead where
   getModifiersFor (InPursuitOfTheDead attrs) = do
     modifySelect attrs (not_ $ LocationWithTrait Spectral) [CannotBeFlipped]
@@ -33,9 +34,6 @@ instance RunMessage InPursuitOfTheDead where
           chapelAttic <- getJustLocationByName "Chapel Attic"
           chapelCrypt <- getJustLocationByName "Chapel Crypt"
 
-          mementosDiscovered <- getMementosDiscoveredCount
-          when (mementosDiscovered >= 3) $ send "\"You understand the tragic lyrics behind the witch's song\""
-
           createEnemyAt_ heretic1 theGallows
           createEnemyAt_ heretic2 hereticsGraves
           createEnemyAt_ heretic3 chapelAttic
@@ -43,12 +41,14 @@ instance RunMessage InPursuitOfTheDead where
 
           let hereticLocations = [theGallows, hereticsGraves, chapelAttic, chapelCrypt]
           for_ hereticLocations \lid -> placeClues attrs lid =<< perPlayer 2
-
           selectEach (locationNotOneOf hereticLocations) \lid -> placeClues attrs lid =<< perPlayer 1
 
-          investigators <- getInvestigators
-          spectralWebs <- getSetAsideCardsMatching $ cardIs Assets.spectralWeb
-          zipWithM_ takeControlOfSetAsideAsset investigators spectralWebs
+          mementosDiscovered <- getMementosDiscoveredCount
+          when (mementosDiscovered >= 3) do
+            send $ scenarioI18n $ ikey' "messages.understandTheTragicLyrics"
+            investigators <- getInvestigators
+            spectralWebs <- getSetAsideCardsMatching $ cardIs Assets.spectralWeb
+            zipWithM_ takeControlOfSetAsideAsset investigators spectralWebs
 
           advanceActDeck attrs
         _ -> error "Invalid number of heretics"

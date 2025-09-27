@@ -2,6 +2,7 @@ module Arkham.Scenarios.TheWagesOfSin.Helpers
 where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
@@ -13,6 +14,7 @@ import Arkham.Helpers
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
 import Arkham.Modifier
@@ -23,6 +25,9 @@ import Arkham.Trait (Trait (Spectral))
 import Control.Lens (non, _1, _2)
 import Control.Monad.Writer.Class
 import Data.Map.Monoidal.Strict (MonoidalMap)
+
+scenarioI18n :: (HasI18n => a) -> a
+scenarioI18n a = campaignI18n $ scope "theWagesOfSin" a
 
 getSpectralDiscards :: HasGame m => m [EncounterCard]
 getSpectralDiscards =

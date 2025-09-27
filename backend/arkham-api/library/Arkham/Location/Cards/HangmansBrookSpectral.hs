@@ -1,15 +1,16 @@
-module Arkham.Location.Cards.HangmansBrookSpectral (hangmansBrookSpectral, HangmansBrookSpectral (..)) where
+module Arkham.Location.Cards.HangmansBrookSpectral (hangmansBrookSpectral) where
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Constants
 import Arkham.GameValue
+import Arkham.Helpers.Location
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message (ReplaceStrategy (..))
 import Arkham.Modifier
+import Arkham.Scenarios.TheWagesOfSin.Helpers
 
 newtype HangmansBrookSpectral = HangmansBrookSpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,11 +23,8 @@ instance HasAbilities HangmansBrookSpectral where
   getAbilities (HangmansBrookSpectral a) =
     extendRevealed
       a
-      [ withTooltip "\"Who's bright idea was this, anyway?\"" (locationResignAction a)
-      , haunted
-          "Take 1 damage. Until the end of the round, the above resign ability cannot be triggered."
-          a
-          1
+      [ scenarioI18n $ withI18nTooltip "hangmansBrookSpectral.resign" (locationResignAction a)
+      , scenarioI18n $ hauntedI "hangmansBrookSpectral.haunted" a 1
       ]
 
 instance RunMessage HangmansBrookSpectral where
@@ -35,8 +33,7 @@ instance RunMessage HangmansBrookSpectral where
       assignDamage iid (attrs.ability 1) 1
       roundModifier attrs iid (CannotTriggerAbilityMatching $ AbilityIs (toSource attrs) ResignAbility)
       pure l
-    Flip _ _ (isTarget attrs -> True) -> do
-      regular <- genCard Locations.hangmansBrook
-      push $ ReplaceLocation (toId attrs) regular Swap
+    FlipThis (isTarget attrs -> True) -> do
+      swapLocation attrs =<< genCard Locations.hangmansBrook
       pure l
     _ -> HangmansBrookSpectral <$> liftRunMessage msg attrs

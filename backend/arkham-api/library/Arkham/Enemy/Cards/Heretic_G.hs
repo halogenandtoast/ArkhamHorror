@@ -1,3 +1,4 @@
+{- HLINT ignore "Use camelCase" -}
 module Arkham.Enemy.Cards.Heretic_G (heretic_G) where
 
 import Arkham.Enemy.Cards qualified as Cards

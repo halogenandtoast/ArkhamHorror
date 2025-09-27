@@ -1,14 +1,13 @@
-module Arkham.Location.Cards.ChapelAttic_175 (chapelAttic_175, ChapelAttic_175 (..)) where
+module Arkham.Location.Cards.ChapelAttic_175 (chapelAttic_175) where
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
-import Arkham.Helpers.Query
+import Arkham.Helpers.Location
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (PlaceUnderneath)
-import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -23,10 +22,8 @@ instance HasAbilities ChapelAttic_175 where
   getAbilities (ChapelAttic_175 a) =
     extendRevealed
       a
-      [ restrictedAbility a 1 Here $ forced $ DrawCard #after You (basic NonWeakness) (DeckOf You)
-      , mkAbility a 2
-          $ freeReaction
-          $ SkillTestResult #after You (WhileInvestigating $ be a) (SuccessResult AnyValue)
+      [ restricted a 1 Here $ forced $ DrawCard #after You (basic NonWeakness) (DeckOf You)
+      , mkAbility a 2 $ freeReaction $ SkillTestResult #after You (WhileInvestigating $ be a) #success
       ]
 
 toDrawn :: [Window] -> Card
@@ -35,23 +32,19 @@ toDrawn ((windowType -> Window.DrawCard _ card _) : _) = card
 toDrawn (_ : xs) = toDrawn xs
 
 instance RunMessage ChapelAttic_175 where
-  runMessage msg l@(ChapelAttic_175 attrs) = case msg of
-    Flip _ _ target | isTarget attrs target -> do
-      spectral <- genCard Locations.chapelAtticSpectral_175
-      push $ ReplaceLocation (toId attrs) spectral Swap
+  runMessage msg l@(ChapelAttic_175 attrs) = runQueueT $ case msg of
+    FlipThis (isTarget attrs -> True) -> do
+      swapLocation attrs =<< genCard Locations.chapelAtticSpectral_175
       pure l
     UseCardAbility _ (isSource attrs -> True) 1 (toDrawn -> card) _ -> do
-      push $ PlaceUnderneath (toTarget attrs) [card]
+      placeUnderneath attrs [card]
       pure l
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      iids <- getInvestigators
-      let
-        returnCards iid =
-          let
-            cards =
-              filter (maybe False ((== Just iid) . pcOwner) . preview _PlayerCard) (locationCardsUnderneath attrs)
-           in
-            guard (notNull cards) $> AddToHand iid cards
-      pushAll $ mapMaybe returnCards iids
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      eachInvestigator \iid -> do
+        let
+          cards =
+            filter (maybe False ((== Just iid) . pcOwner) . preview _PlayerCard) (locationCardsUnderneath attrs)
+        unless (notNull cards) $ addToHand iid cards
+
       pure l
-    _ -> ChapelAttic_175 <$> runMessage msg attrs
+    _ -> ChapelAttic_175 <$> liftRunMessage msg attrs

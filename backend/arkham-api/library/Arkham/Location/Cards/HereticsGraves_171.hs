@@ -2,13 +2,13 @@ module Arkham.Location.Cards.HereticsGraves_171 (hereticsGraves_171) where
 
 import Arkham.Card
 import Arkham.GameValue
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isInvestigating)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Import.Lifted
-import Arkham.Message (ReplaceStrategy (..))
 
 newtype HereticsGraves_171 = HereticsGraves_171 LocationAttrs
   deriving anyclass IsLocation
@@ -25,8 +25,7 @@ instance HasModifiersFor HereticsGraves_171 where
 
 instance RunMessage HereticsGraves_171 where
   runMessage msg l@(HereticsGraves_171 attrs) = runQueueT $ case msg of
-    Flip _ _ (isTarget attrs -> True) -> do
-      spectral <- genCard Locations.hereticsGravesSpectral_171
-      push $ ReplaceLocation (toId attrs) spectral Swap
+    FlipThis (isTarget attrs -> True) -> do
+      swapLocation attrs =<< genCard Locations.hereticsGravesSpectral_171
       pure l
     _ -> HereticsGraves_171 <$> liftRunMessage msg attrs

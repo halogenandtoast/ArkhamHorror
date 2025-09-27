@@ -151,7 +151,6 @@ import Arkham.Investigator.Investigators (
 import Arkham.Location.Locations (
   cursedShoresEffect,
   enchantedWoodsLostWoodsEffect,
-  hereticsGravesSpectral_171Effect,
   longWayAroundEffect,
   restaurantEffect,
   unvisitedIsleMossCoveredStepsEffect,
@@ -472,7 +471,7 @@ allEffects =
     , ("05114", SomeEffect meatCleaverEffect)
     , ("05157", SomeEffect witherEffect)
     , ("05158", SomeEffect sixthSenseEffect)
-    , ("05171", SomeEffect hereticsGravesSpectral_171Effect)
+    , ("05171", SomeEffect $ noop "05171")
     , ("05178j", SomeEffect unfinishedBusiness_JEffect)
     , ("05194", SomeEffect grislyTotemSeeker3Effect)
     , ("05195", SomeEffect grislyTotemSurvivor3Effect)

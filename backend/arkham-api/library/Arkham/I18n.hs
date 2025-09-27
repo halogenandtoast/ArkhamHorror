@@ -28,6 +28,9 @@ popScope a = let ?scope = reverse (drop 1 $ reverse ?scope) in a
 unscoped :: HasI18n => (HasI18n => a) -> a
 unscoped a = let ?scope = [] in a
 
+ikey' :: HasI18n => Scope -> Text
+ikey' t = "$" <> ikey t
+
 ikey :: HasI18n => Scope -> Text
 ikey t = intercalate "." (?scope <> [t]) <> varStr
  where

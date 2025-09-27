@@ -1,13 +1,13 @@
-module Arkham.Location.Cards.TheGallows_169 (theGallows_169, TheGallows_169 (..)) where
+module Arkham.Location.Cards.TheGallows_169 (theGallows_169) where
 
 import Arkham.Card
 import Arkham.GameValue
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message (ReplaceStrategy (..))
 import Arkham.Trait (Trait (Witch))
 
 newtype TheGallows_169 = TheGallows_169 LocationAttrs
@@ -24,8 +24,7 @@ instance HasModifiersFor TheGallows_169 where
 
 instance RunMessage TheGallows_169 where
   runMessage msg l@(TheGallows_169 attrs) = runQueueT $ case msg of
-    Flip _ _ target | isTarget attrs target -> do
-      spectral <- genCard Locations.theGallowsSpectral_169
-      push $ ReplaceLocation attrs.id spectral Swap
+    FlipThis (isTarget attrs -> True) -> do
+      swapLocation attrs =<< genCard Locations.theGallowsSpectral_169
       pure l
     _ -> TheGallows_169 <$> liftRunMessage msg attrs

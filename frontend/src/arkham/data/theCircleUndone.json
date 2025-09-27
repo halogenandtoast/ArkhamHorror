@@ -3,7 +3,7 @@
   { "id": "05050", "name": "The Witching Hour", "campaign": "05", "returnTo": "54017", "returnToName": "Return to The Witching Hour"  },
   { "id": "05065", "name": "At Death's Doorstep", "campaign": "05", "returnTo": "54024", "returnToName": "Return to At Death's Doorstep" },
   { "id": "05120", "name": "The Secret Name", "campaign": "05", "returnTo": "54029", "returnToName": "Return to The Secret Name" },
-  { "id": "05161", "name": "The Wages of Sin", "campaign": "05" },
+  { "id": "05161", "name": "The Wages of Sin", "campaign": "05", "returnTo": "54034", "returnToName": "Return to The Wages of Sin" },
   { "id": "05197", "name": "For the Greater Good", "campaign": "05" },
   {
     "id": "05238",

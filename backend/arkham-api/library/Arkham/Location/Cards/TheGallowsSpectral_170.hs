@@ -2,16 +2,17 @@ module Arkham.Location.Cards.TheGallowsSpectral_170 (theGallowsSpectral_170) whe
 
 import Arkham.Ability
 import Arkham.Card
+import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Helpers
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message (ReplaceStrategy (..))
-import Arkham.Scenario.Types (Field (..))
+import Arkham.Scenario.Deck
+import Arkham.Scenarios.TheWagesOfSin.Helpers
 import Arkham.Trait (Trait (Geist), toTraits)
 
 newtype TheGallowsSpectral_170 = TheGallowsSpectral_170 LocationAttrs
@@ -28,22 +29,18 @@ instance HasModifiersFor TheGallowsSpectral_170 where
 
 instance HasAbilities TheGallowsSpectral_170 where
   getAbilities (TheGallowsSpectral_170 a) =
-    extendRevealed1 a
-      $ haunted
-        "Discard the top 3 cards of the standard encounter deck. If a Geist enemy is discarded by this effect, draw it."
-        a
-        1
+    extendRevealed1 a $ scenarioI18n $ hauntedI "theGallowsSpectral_170.haunted" a 1
 
 instance RunMessage TheGallowsSpectral_170 where
   runMessage msg l@(TheGallowsSpectral_170 attrs) = runQueueT $ case msg of
-    Flip _ _ (isTarget attrs -> True) -> do
-      regular <- genCard Locations.theGallows_170
-      push $ ReplaceLocation (toId attrs) regular Swap
+    FlipThis (isTarget attrs -> True) -> do
+      swapLocation attrs =<< genCard Locations.theGallows_170
       pure l
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       -- We normally want to avoid this, but we need to target the correct deck
-      cards <- scenarioFieldMap ScenarioEncounterDeck (take 3 . unDeck)
+      cards <- take 3 . unDeck <$> getSpectralDeck
       let (geists, rest) = partition (member Geist . toTraits) cards
-      pushAll $ map AddToEncounterDiscard rest <> map (InvestigatorDrewEncounterCard iid) geists
+      addToEncounterDiscard rest
+      for_ geists \geist -> drawCardFrom iid geist (Deck.EncounterDeckByKey SpectralEncounterDeck)
       pure l
     _ -> TheGallowsSpectral_170 <$> liftRunMessage msg attrs

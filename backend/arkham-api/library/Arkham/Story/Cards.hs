@@ -148,6 +148,8 @@ allStoryCards =
       , memoryOfAnUnrequitedLove
       , returnToSickeningReality_23
       , returnToSickeningReality_24
+      , returnToUnfinishedBusiness_38
+      , returnToUnfinishedBusiness_39
       , realityAcid
       , theFoundationAllied
       , theFoundationRival
@@ -504,6 +506,12 @@ theEntity = doubleSided $ story "52062b" "The Entity" ReturnToDimCarcosa
 
 theDelusion :: CardDef
 theDelusion = doubleSided $ story "52063b" "The Delusion" ReturnToDimCarcosa
+
+returnToUnfinishedBusiness_38 :: CardDef
+returnToUnfinishedBusiness_38 = victory 1 $ doubleSided $ story "54038b" "Unfinished Business" ReturnToTheWagesOfSin
+
+returnToUnfinishedBusiness_39 :: CardDef
+returnToUnfinishedBusiness_39 = victory 1 $ doubleSided $ story "54039b" "Unfinished Business" ReturnToTheWagesOfSin
 
 realityAcid :: CardDef
 realityAcid =

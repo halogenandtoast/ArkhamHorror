@@ -154,6 +154,9 @@ allStories =
     , SomeStoryCard theWriter
     , SomeStoryCard theEntity
     , SomeStoryCard theDelusion
+    , --- Return to The Circle Undone
+      SomeStoryCard returnToUnfinishedBusiness_38
+    , SomeStoryCard returnToUnfinishedBusiness_39
     , -- The Midwinter Gala
       SomeStoryCard theFoundationAllied
     , SomeStoryCard theFoundationRival

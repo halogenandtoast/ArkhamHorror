@@ -38,6 +38,7 @@ import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Matcher hiding (FastPlayerWindow, InvestigatorResigned)
+import Arkham.Message qualified as Msg
 import Arkham.Modifier
 import Arkham.Tarot
 import Arkham.Token (Token (Clue))
@@ -129,4 +130,6 @@ instance RunMessage ActAttrs where
     UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
       push $ Do msg
       pure a
+    Msg.PlaceUnderneath target cards | isTarget a target -> do
+      pure $ a & cardsUnderneathL %~ (<> cards)
     _ -> pure a

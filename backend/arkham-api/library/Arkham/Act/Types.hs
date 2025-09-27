@@ -93,6 +93,7 @@ data ActAttrs = ActAttrs
   , actMeta :: Value
   , actKeys :: Set ArkhamKey
   , actFlipped :: Bool
+  , actCardsUnderneath :: [Card]
   }
   deriving stock (Show, Eq, Generic)
 
@@ -102,6 +103,9 @@ instance AsId ActAttrs where
 
 instance HasField "id" ActAttrs ActId where
   getField = actId
+
+instance HasField "underneath" ActAttrs [Card] where
+  getField = actCardsUnderneath
 
 instance HasField "meta" ActAttrs Value where
   getField = actMeta
@@ -123,6 +127,9 @@ keysL = lens actKeys $ \m x -> m {actKeys = x}
 
 flippedL :: Lens' ActAttrs Bool
 flippedL = lens actFlipped $ \m x -> m {actFlipped = x}
+
+cardsUnderneathL :: Lens' ActAttrs [Card]
+cardsUnderneathL = lens actCardsUnderneath $ \m x -> m {actCardsUnderneath = x}
 
 breachesL :: Lens' ActAttrs (Maybe Int)
 breachesL = lens actBreaches $ \m x -> m {actBreaches = x}
@@ -152,6 +159,7 @@ actWith (n, side) f cardDef mCost g =
             , actMeta = Null
             , actKeys = mempty
             , actFlipped = False
+            , actCardsUnderneath = []
             }
     }
 
@@ -185,7 +193,8 @@ instance FromJSON ActAttrs where
     actMeta <- v .: "meta"
     actKeys <- v .:? "keys" .!= mempty
     actFlipped <- v .:? "flipped" .!= False
-    return ActAttrs {..}
+    actCardsUnderneath <- v .:? "cardsUnderneath" .!= []
+    pure ActAttrs {..}
 
 instance Entity ActAttrs where
   type EntityId ActAttrs = ActId

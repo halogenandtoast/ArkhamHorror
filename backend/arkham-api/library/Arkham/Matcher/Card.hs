@@ -42,6 +42,7 @@ data ExtendedCardMatcher
   = BasicCardMatch CardMatcher
   | WillGoIntoSlot SlotType
   | CardIsBeneathInvestigator Who
+  | CardIsBeneathActDeck
   | CardSharesTitleWith ExtendedCardMatcher
   | CardIsBeneathAsset AssetMatcher
   | CardIsAsset AssetMatcher

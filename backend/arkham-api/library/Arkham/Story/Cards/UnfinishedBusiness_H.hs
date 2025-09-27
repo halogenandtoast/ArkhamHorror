@@ -6,6 +6,7 @@ import Arkham.Card
 import Arkham.Discard
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Message.Discard.Lifted (discardFromHand)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -13,6 +14,7 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
+import Arkham.Window qualified as Window
 
 newtype UnfinishedBusiness_H = UnfinishedBusiness_H StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor)
@@ -50,20 +52,22 @@ instance RunMessage UnfinishedBusiness_H where
           InvestigatorHand
           ((>= 2) . length . filter (`cardMatch` NonWeakness))
           iid
-      chooseOneM iid do
+      chooseOneM iid $ withI18n do
         when hasCards do
-          labeled "Choose and discard 2 cards from your hand" do
+          countVar 2 $ labeled' "discardCardsFromHand" do
             discardFromHand iid attrs DiscardChoose 2
-        labeled "Flip this back over" $ flipOverBy iid (attrs.ability 1) attrs
+        labeled' "flipThisBackOver" $ flipOverBy iid (attrs.ability 1) attrs
       pure s
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
       chooseBeginSkillTest sid iid (attrs.ability 2) attrs [#willpower, #combat] (Fixed 4)
       pure s
-    PassedThisSkillTest _ (isAbilitySource attrs 2 -> True) -> do
-      card <- genCard Enemies.heretic_G
-      send $ format card <> " is \"banished\""
-      addToVictory (toTarget attrs)
+    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      let card = lookupCard Enemies.heretic_G (toCardId attrs)
+      batched \_ -> do
+        checkWhen $ Window.ScenarioEvent "wouldBanish" (Just iid) (toJSON card)
+        send $ format card <> " is \"banished\""
+        addToVictory (toTarget attrs)
       pure s
     Flip _ _ (isTarget attrs -> True) -> do
       let heretic = lookupCard Enemies.heretic_G (toCardId attrs)

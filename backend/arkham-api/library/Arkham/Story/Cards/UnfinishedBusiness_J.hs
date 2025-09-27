@@ -16,6 +16,7 @@ import Arkham.Source
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 import Arkham.Trait (Trait (Spectral))
+import Arkham.Window qualified as Window
 
 newtype UnfinishedBusiness_J = UnfinishedBusiness_J StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -32,10 +33,12 @@ instance RunMessage UnfinishedBusiness_J where
       if alreadyResolved
         then do
           let card = lookupCard Enemies.heretic_I (toCardId attrs)
-          send $ format card <> " was \"Banished\""
-          for_ mEnemy (push . RemoveEnemy)
-          push $ ReplaceCard attrs.cardId (toCard attrs)
-          addToVictory attrs
+          batched \_ -> do
+            checkWhen $ Window.ScenarioEvent "wouldBanish" (Just iid) (toJSON card)
+            send $ format card <> " was \"Banished\""
+            for_ mEnemy (push . RemoveEnemy)
+            push $ ReplaceCard attrs.cardId (toCard attrs)
+            addToVictory attrs
         else case mEnemy of
           Just enemy -> do
             cancelEnemyDefeat enemy

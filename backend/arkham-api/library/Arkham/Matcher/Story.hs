@@ -2,6 +2,7 @@
 
 module Arkham.Matcher.Story where
 
+import Arkham.Card.Id
 import Arkham.Card.CardCode
 import {-# SOURCE #-} Arkham.Placement
 import Arkham.Prelude
@@ -12,6 +13,7 @@ data StoryMatcher
   | StoryWithPlacement Placement
   | StoryMatchAll [StoryMatcher]
   | StoryIs CardCode
+  | StoryWithCardId CardId
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup StoryMatcher where

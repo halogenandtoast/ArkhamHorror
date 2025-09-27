@@ -14,7 +14,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers hiding (roundModifiers)
-import Arkham.Helpers.Scenario
+import Arkham.Helpers.Scenario hiding (getIsReturnTo)
 import Arkham.Helpers.SkillTest
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -85,38 +85,48 @@ setupTheWagesOfSin _attrs = do
 
   scope "theSpectralEncounterDeck" $ flavor $ h "title" >> p "body"
 
-  -- The locations are all "single-sided" because we need to handle the
-  -- spectral state separately and therefor have no "unrevealed". So we
-  -- need to exclude them here
+  whenReturnTo $ gather Set.ReturnToTheWagesOfSin
   gather Set.TheWagesOfSin
   gather Set.AnettesCoven
-  gather Set.CityOfSins
-  gather Set.InexorableFate
-  gather Set.RealmOfDeath
-  gather Set.TrappedSpirits
-  gather Set.Witchcraft
+  gather Set.CityOfSins `orWhenReturnTo` gather Set.CityOfTheDamned
+  gather Set.InexorableFate `orWhenReturnTo` gather Set.UnspeakableFate
+  gather Set.RealmOfDeath `orWhenReturnTo` gather Set.UnstableRealm
+  gather Set.TrappedSpirits `orWhenReturnTo` gather Set.BloodthirstySpirits
+  gather Set.Witchcraft `orWhenReturnTo` gather Set.Hexcraft
   gatherAndSetAside Set.TheWatcher
 
-  setAgendaDeck [Agendas.theHangedManXII, Agendas.deathsApproach]
-  setActDeck [Acts.inPursuitOfTheDead, Acts.inPursuitOfTheLiving]
+  whenReturnTo $ setAside [Assets.erynnMacAoidhDevotedEnchantress]
 
-  setExtraEncounterDeck SpectralEncounterDeck
-    =<< amongGathered (CardWithTrait Spectral <> not_ #location)
+  setAgendaDeck [Agendas.theHangedManXII, Agendas.deathsApproach]
+
+  isReturnTo <- getIsReturnTo
+  erynnWantsToMeet <- getHasRecord ErynnWantsToMeet
+  setActDeck
+    $ if isReturnTo && erynnWantsToMeet
+      then [Acts.inPursuitOfAnswers, Acts.inPursuitOfTheLiving, Acts.inPursuitOfTheBeyond]
+      else [Acts.inPursuitOfTheDead, Acts.inPursuitOfTheLiving]
 
   heretics <-
-    pickN
-      4
-      [ Enemies.heretic_A
-      , Enemies.heretic_C
-      , Enemies.heretic_E
-      , Enemies.heretic_G
-      , Enemies.heretic_I
-      , Enemies.heretic_K
-      ]
+    pickN 4
+      $ [ Enemies.heretic_A
+        , Enemies.heretic_C
+        , Enemies.heretic_E
+        , Enemies.heretic_G
+        , Enemies.heretic_I
+        , Enemies.heretic_K
+        ]
+      <> (guard isReturnTo *> [Enemies.returnToHeretic_38, Enemies.returnToHeretic_39])
 
   setAside $ replicate 4 Assets.spectralWeb <> heretics
 
-  startAt =<< place Locations.hangmansBrook
+  -- The locations are all "single-sided" because we need to handle the
+  -- spectral state separately and therefor have no "unrevealed". So we
+  -- need to exclude them here
+  setExtraEncounterDeck SpectralEncounterDeck
+    =<< amongGathered (CardWithTrait Spectral <> not_ #location)
+
+  hangmansBrook <- Locations.hangmansBrook `orSampleIfReturnTo` [Locations.returnToHangmansBrook]
+  startAt =<< place hangmansBrook
 
   placeOneOf_ (Locations.theGallows_169, Locations.theGallows_170)
   placeOneOf_ (Locations.hereticsGraves_171, Locations.hereticsGraves_172)
@@ -126,6 +136,8 @@ setupTheWagesOfSin _attrs = do
     [ Locations.hauntedFields
     , Locations.abandonedChapel
     ]
+
+  whenReturnTo $ addAdditionalReferences ["54034b"]
 
 instance RunMessage TheWagesOfSin where
   runMessage msg s@(TheWagesOfSin attrs) = runQueueT $ scenarioI18n $ case msg of

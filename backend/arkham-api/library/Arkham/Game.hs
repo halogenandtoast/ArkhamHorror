@@ -2966,6 +2966,7 @@ getStoriesMatching matcher = do
     StoryMatchAll ms -> foldM filterMatcher as ms
     StoryWithPlacement placement -> pure $ filter ((== placement) . attr storyPlacement) as
     StoryIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
+    StoryWithCardId cardId -> pure $ filter ((== cardId) . attr storyCardId) as
 
 getOutOfPlayEnemy :: HasGame m => OutOfPlayZone -> EnemyId -> m Enemy
 getOutOfPlayEnemy outOfPlayZone eid =

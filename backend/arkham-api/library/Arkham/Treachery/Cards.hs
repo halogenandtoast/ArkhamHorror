@@ -572,6 +572,7 @@ allEncounterTreacheryCards =
       , whiteout
       , willOfTheSpiderMother
       , windowToAnotherTime
+      , witchweed
       , wondrousLands
       , wordsOfPower
       , worldsMerge
@@ -3233,6 +3234,12 @@ damned =
   (basicWeakness "54014" "Damned")
     { cdCardTraits = setFromList [Curse, Omen]
     , cdPermanent = True
+    }
+
+witchweed :: CardDef
+witchweed =
+  peril (treachery "54040" "Witchweed" ReturnToTheWagesOfSin 2)
+    { cdCardTraits = setFromList [Curse]
     }
 
 trespasser :: CardDef

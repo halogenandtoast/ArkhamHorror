@@ -101,17 +101,19 @@ allActCards =
       , impossiblePursuit
       , inAzathothsDomain
       , infiltratingTheLodge
+      , inLostCarcosa
+      , inPursuitOfAnswers
+      , inPursuitOfTheBeyond
+      , inPursuitOfTheDead
+      , inPursuitOfTheLiving
+      , inTheBellyOfTheMoonBeast
       , intoTheBeyond
       , intoTheBeyondV2
       , intoTheDarkness
       , intoTheRuins
       , intoTheRuinsOnceAgain
-      , investigatingTheWitchHouse
-      , inLostCarcosa
-      , inPursuitOfTheDead
-      , inPursuitOfTheLiving
-      , inTheBellyOfTheMoonBeast
       , investigatingTheTrail
+      , investigatingTheWitchHouse
       , journeyAcrossTheBridge
       , journeyThroughTheColdWastes
       , journeyToTheNexus
@@ -969,6 +971,12 @@ unrestrictedAccess = act "53054" "Unrestricted Access" 2 ReturnToTheCityOfArchiv
 
 returnToACircleUnbroken :: CardDef
 returnToACircleUnbroken = act "54018" "A Circle Unbroken" 4 ReturnToTheWitchingHour
+
+inPursuitOfAnswers :: CardDef
+inPursuitOfAnswers = act "54035" "In Pursuit of Answers" 1 ReturnToTheWagesOfSin
+
+inPursuitOfTheBeyond :: CardDef
+inPursuitOfTheBeyond = act "54036" "In Pursuit of the Beyond" 2 ReturnToTheWagesOfSin
 
 findingLadyEsprit :: CardDef
 findingLadyEsprit = act "81005" "Finding Lady Esprit" 1 TheBayou

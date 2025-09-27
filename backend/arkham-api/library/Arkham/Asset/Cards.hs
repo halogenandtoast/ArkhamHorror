@@ -311,6 +311,7 @@ allPlayerAssetCards =
       , engineer
       , eonChart1
       , eonChart4
+      , erynnMacAoidhDevotedEnchantress
       , esotericAtlas1
       , esotericAtlas2
       , esotericFormula

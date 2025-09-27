@@ -1216,6 +1216,8 @@ allAssets =
     , SomeAssetCard observed4
     , -- weakness [rttcu]
       SomeAssetCard theDevilXv
+    , -- Return to The Wages of Sin [rttcu]
+      SomeAssetCard erynnMacAoidhDevotedEnchantress
     , -- Investigator Starter Decks
       --- Nathaniel Cho
       SomeAssetCard randallCho

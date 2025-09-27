@@ -9,6 +9,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
+import Arkham.Window qualified as Window
 
 newtype UnfinishedBusiness_L = UnfinishedBusiness_L StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -25,8 +26,10 @@ instance RunMessage UnfinishedBusiness_L where
       alreadyResolved <- getAlreadyResolved attrs
       if alreadyResolved
         then do
-          send $ format card <> " was \"Banished\""
-          addToVictory attrs
+          batched \_ -> do
+            checkWhen $ Window.ScenarioEvent "wouldBanish" (Just iid) (toJSON card)
+            send $ format card <> " was \"Banished\""
+            addToVictory attrs
         else afterStoryResolution attrs do
           removeStory attrs
           enemy <- createEnemy card attrs.placement

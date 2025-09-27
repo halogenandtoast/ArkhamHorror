@@ -4494,13 +4494,9 @@ strangeGeometry =
 hangmansBrook :: CardDef
 hangmansBrook =
   singleSided
-    $ location
-      "05166"
-      "Hangman's Brook"
-      mempty
-      Squiggle
-      [Circle, Plus]
-      TheWagesOfSin
+    $ (location "05166" "Hangman's Brook" mempty Squiggle [Circle, Plus] TheWagesOfSin)
+      { cdOtherSide = Just "05166b"
+      }
 
 hangmansBrookSpectral :: CardDef
 hangmansBrookSpectral =
@@ -4517,13 +4513,9 @@ hauntedFields :: CardDef
 hauntedFields =
   victory 1
     $ singleSided
-    $ location
-      "05167"
-      "Haunted Fields"
-      mempty
-      Circle
-      [Squiggle, Plus, Triangle, Square]
-      TheWagesOfSin
+    $ (location "05167" "Haunted Fields" mempty Circle [Squiggle, Plus, Triangle, Square] TheWagesOfSin)
+      { cdOtherSide = Just "05167b"
+      }
 
 hauntedFieldsSpectral :: CardDef
 hauntedFieldsSpectral =
@@ -4541,13 +4533,9 @@ abandonedChapel :: CardDef
 abandonedChapel =
   victory 1
     $ singleSided
-    $ location
-      "05168"
-      "Abandoned Chapel"
-      mempty
-      Plus
-      [Squiggle, Circle, Diamond, Moon]
-      TheWagesOfSin
+    $ (location "05168" "Abandoned Chapel" mempty Plus [Squiggle, Circle, Diamond, Moon] TheWagesOfSin)
+      { cdOtherSide = Just "05168b"
+      }
 
 abandonedChapelSpectral :: CardDef
 abandonedChapelSpectral =
@@ -4564,13 +4552,9 @@ abandonedChapelSpectral =
 theGallows_169 :: CardDef
 theGallows_169 =
   singleSided
-    $ location
-      "05169"
-      "The Gallows"
-      mempty
-      Triangle
-      [Circle, Square]
-      TheWagesOfSin
+    $ (location "05169" "The Gallows" mempty Triangle [Circle, Square] TheWagesOfSin)
+      { cdOtherSide = Just "05169b"
+      }
 
 theGallowsSpectral_169 :: CardDef
 theGallowsSpectral_169 =
@@ -4586,13 +4570,9 @@ theGallowsSpectral_169 =
 theGallows_170 :: CardDef
 theGallows_170 =
   singleSided
-    $ location
-      "05170"
-      "The Gallows"
-      mempty
-      Triangle
-      [Circle, Square]
-      TheWagesOfSin
+    $ (location "05170" "The Gallows" mempty Triangle [Circle, Square] TheWagesOfSin)
+      { cdOtherSide = Just "05170b"
+      }
 
 theGallowsSpectral_170 :: CardDef
 theGallowsSpectral_170 =
@@ -4608,13 +4588,9 @@ theGallowsSpectral_170 =
 hereticsGraves_171 :: CardDef
 hereticsGraves_171 =
   singleSided
-    $ location
-      "05171"
-      "Heretics' Graves"
-      mempty
-      Square
-      [Triangle, Circle]
-      TheWagesOfSin
+    $ (location "05171" "Heretics' Graves" mempty Square [Triangle, Circle] TheWagesOfSin)
+      { cdOtherSide = Just "05171b"
+      }
 
 hereticsGravesSpectral_171 :: CardDef
 hereticsGravesSpectral_171 =
@@ -4630,13 +4606,9 @@ hereticsGravesSpectral_171 =
 hereticsGraves_172 :: CardDef
 hereticsGraves_172 =
   singleSided
-    $ location
-      "05172"
-      "Heretics' Graves"
-      mempty
-      Square
-      [Triangle, Circle]
-      TheWagesOfSin
+    $ (location "05172" "Heretics' Graves" mempty Square [Triangle, Circle] TheWagesOfSin)
+      { cdOtherSide = Just "05172b"
+      }
 
 hereticsGravesSpectral_172 :: CardDef
 hereticsGravesSpectral_172 =
@@ -4652,13 +4624,9 @@ hereticsGravesSpectral_172 =
 chapelCrypt_173 :: CardDef
 chapelCrypt_173 =
   singleSided
-    $ location
-      "05173"
-      "Chapel Crypt"
-      mempty
-      Diamond
-      [Plus, Moon]
-      TheWagesOfSin
+    $ (location "05173" "Chapel Crypt" mempty Diamond [Plus, Moon] TheWagesOfSin)
+      { cdOtherSide = Just "05173b"
+      }
 
 chapelCryptSpectral_173 :: CardDef
 chapelCryptSpectral_173 =
@@ -4674,13 +4642,9 @@ chapelCryptSpectral_173 =
 chapelCrypt_174 :: CardDef
 chapelCrypt_174 =
   singleSided
-    $ location
-      "05174"
-      "Chapel Crypt"
-      mempty
-      Diamond
-      [Plus, Moon]
-      TheWagesOfSin
+    $ (location "05174" "Chapel Crypt" mempty Diamond [Plus, Moon] TheWagesOfSin)
+      { cdOtherSide = Just "05174b"
+      }
 
 chapelCryptSpectral_174 :: CardDef
 chapelCryptSpectral_174 =
@@ -4696,13 +4660,9 @@ chapelCryptSpectral_174 =
 chapelAttic_175 :: CardDef
 chapelAttic_175 =
   singleSided
-    $ location
-      "05175"
-      "Chapel Attic"
-      mempty
-      Moon
-      [Plus, Diamond]
-      TheWagesOfSin
+    $ (location "05175" "Chapel Attic" mempty Moon [Plus, Diamond] TheWagesOfSin)
+      { cdOtherSide = Just "05175b"
+      }
 
 chapelAtticSpectral_175 :: CardDef
 chapelAtticSpectral_175 =
@@ -4718,13 +4678,9 @@ chapelAtticSpectral_175 =
 chapelAttic_176 :: CardDef
 chapelAttic_176 =
   singleSided
-    $ location
-      "05176"
-      "Chapel Attic"
-      mempty
-      Moon
-      [Plus, Diamond]
-      TheWagesOfSin
+    $ (location "05176" "Chapel Attic" mempty Moon [Plus, Diamond] TheWagesOfSin)
+      { cdOtherSide = Just "05176b"
+      }
 
 chapelAtticSpectral_176 :: CardDef
 chapelAtticSpectral_176 =
@@ -9294,31 +9250,31 @@ templeOfRlyeh =
 
 thePriceManor :: CardDef
 thePriceManor =
-    locationWithUnrevealed
-      "54031"
-      "Unknown Places"
-      [Extradimensional]
-      Moon
-      [Square]
-      "The Price Manor"
-      [Extradimensional]
-      Moon
-      [Square]
-      ReturnToTheSecretName
+  locationWithUnrevealed
+    "54031"
+    "Unknown Places"
+    [Extradimensional]
+    Moon
+    [Square]
+    "The Price Manor"
+    [Extradimensional]
+    Moon
+    [Square]
+    ReturnToTheSecretName
 
 the9thWard :: CardDef
 the9thWard =
-    locationWithUnrevealed
-      "54032"
-      "Unknown Places"
-      [Extradimensional]
-      Moon
-      [Square]
-      "The 9th Ward"
-      [Extradimensional]
-      Moon
-      [Square]
-      ReturnToTheSecretName
+  locationWithUnrevealed
+    "54032"
+    "Unknown Places"
+    [Extradimensional]
+    Moon
+    [Square]
+    "The 9th Ward"
+    [Extradimensional]
+    Moon
+    [Square]
+    ReturnToTheSecretName
 
 libraryOfEbla :: CardDef
 libraryOfEbla =
@@ -9338,13 +9294,9 @@ libraryOfEbla =
 returnToHangmansBrook :: CardDef
 returnToHangmansBrook =
   singleSided
-    $ location
-      "54037"
-      "Hangman's Brook"
-      mempty
-      Squiggle
-      [Circle, Plus]
-      ReturnToTheWagesOfSin
+    $ (location "54037" "Hangman's Brook" mempty Squiggle [Circle, Plus] ReturnToTheWagesOfSin)
+      { cdOtherSide = Just "54037b"
+      }
 
 returnToHangmansBrookSpectral :: CardDef
 returnToHangmansBrookSpectral =

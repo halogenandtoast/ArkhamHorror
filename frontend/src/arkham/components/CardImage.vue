@@ -96,6 +96,9 @@ const backImage = computed(() => {
 </template>
 
 <style lang="scss" scoped>
+.card {
+  border-radius: 10px;
+}
 .card-container {
   overflow: hidden;
   width: calc(100% - 20px);

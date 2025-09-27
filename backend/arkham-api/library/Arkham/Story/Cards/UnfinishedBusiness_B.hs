@@ -4,11 +4,13 @@ module Arkham.Story.Cards.UnfinishedBusiness_B (unfinishedBusiness_B) where
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
+import Arkham.Window qualified as Window
 
 newtype UnfinishedBusiness_B = UnfinishedBusiness_B StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor)
@@ -39,18 +41,20 @@ instance RunMessage UnfinishedBusiness_B where
         & (placementL .~ InThreatArea iid)
         & (removeAfterResolutionL .~ False)
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      chooseOneM iid do
-        labeled "Take 1 horror" $ assignHorror iid attrs 1
-        labeled "Flip this back over" $ flipOverBy iid (attrs.ability 1) attrs
+      chooseOneM iid $ withI18n do
+        countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
+        labeled' "flipThisBackOver" $ flipOverBy iid (attrs.ability 1) attrs
       pure s
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
       chooseBeginSkillTest sid iid (attrs.ability 2) attrs [#intellect, #combat] (Fixed 4)
       pure s
-    PassedThisSkillTest _ (isAbilitySource attrs 2 -> True) -> do
-      card <- genCard Enemies.heretic_A
-      send $ format card <> " is \"banished\""
-      addToVictory attrs
+    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      let card = lookupCard Enemies.heretic_A (toCardId attrs)
+      batched \_ -> do
+        checkWhen $ Window.ScenarioEvent "wouldBanish" (Just iid) (toJSON card)
+        send $ format card <> " is \"banished\""
+        addToVictory attrs
       pure s
     Flip _ _ (isTarget attrs -> True) -> do
       let heretic = lookupCard Enemies.heretic_A (toCardId attrs)

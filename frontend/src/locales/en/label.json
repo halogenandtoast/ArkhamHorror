@@ -39,6 +39,8 @@
   "even": "Even",
   "events": "Events",
   "fight": "Fight",
+  "flipThisOver": "Flip this over",
+  "flipThisBackOver": "Flip this back over",
   "gainResources": "Gain 1 resource | Gain {count} resources",
   "gainSurge": "Gain surge",
   "healHorror": "Heal {count} horror",

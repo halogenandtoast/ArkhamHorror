@@ -346,6 +346,9 @@ allActs =
     , -- Return to The Circle Undone
       --- Return to The Witching Hour
       SomeActCard returnToACircleUnbroken
+    , --- Return to The Wages of Sin
+      SomeActCard inPursuitOfAnswers
+    , SomeActCard inPursuitOfTheBeyond
     , -- Curse of the Rougarou
       SomeActCard findingLadyEsprit
     , SomeActCard huntingTheRougarou

@@ -656,6 +656,8 @@ allLocationCards =
       , returnToEngineCar
       , returnToGardensOfLuxembourg
       , returnToGrandGuignol
+      , returnToHangmansBrook
+      , returnToHangmansBrookSpectral
       , returnToHouseInTheReeds
       , returnToKnightsHall
       , returnToMetropolitanCathedral
@@ -9332,6 +9334,28 @@ libraryOfEbla =
       Squiggle
       [Square, Equals]
       ReturnToTheSecretName
+
+returnToHangmansBrook :: CardDef
+returnToHangmansBrook =
+  singleSided
+    $ location
+      "54037"
+      "Hangman's Brook"
+      mempty
+      Squiggle
+      [Circle, Plus]
+      ReturnToTheWagesOfSin
+
+returnToHangmansBrookSpectral :: CardDef
+returnToHangmansBrookSpectral =
+  singleSided
+    $ location
+      "54037b"
+      "Hangman's Brook"
+      [Spectral]
+      Squiggle
+      [Circle, Plus]
+      ReturnToTheWagesOfSin
 
 lobbyTheMidwinterGala :: CardDef
 lobbyTheMidwinterGala =

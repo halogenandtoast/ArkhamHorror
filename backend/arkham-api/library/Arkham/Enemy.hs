@@ -554,6 +554,9 @@ allEnemies =
       --- Return to At Death's Doorstep [rttcu]
       SomeEnemyCard senatorNathanielRhodesAdeptPolitician
     , SomeEnemyCard dmitriKonstantinovTakingTheLongView
+    , --- Return to The Wages of Sin [rttcu]
+      SomeEnemyCard returnToHeretic_38
+    , SomeEnemyCard returnToHeretic_39
     , --- Bloodthirsty Spirits [rttcu]
       SomeEnemyCard screechingBanshee
     , -- Nathanial Cho

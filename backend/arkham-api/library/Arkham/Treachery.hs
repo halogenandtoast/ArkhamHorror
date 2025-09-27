@@ -672,6 +672,8 @@ allTreacheries =
       SomeTreacheryCard wrathOfYig
     , -- Return to the Circle Undone
       SomeTreacheryCard damned
+    , --- Return to The Wages of Sin [rttcu]
+      SomeTreacheryCard witchweed
     , --- Hexcraft [rttcu]
       SomeTreacheryCard trespasser
     , SomeTreacheryCard despoiled

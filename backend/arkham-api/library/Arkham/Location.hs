@@ -925,6 +925,9 @@ allLocations =
     , SomeLocationCard thePriceManor
     , SomeLocationCard the9thWard
     , SomeLocationCard libraryOfEbla
+    , --- Return to The Wages of Sin
+      SomeLocationCard returnToHangmansBrook
+    , SomeLocationCard returnToHangmansBrookSpectral
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

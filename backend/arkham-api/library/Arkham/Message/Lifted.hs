@@ -103,7 +103,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait (Trait)
-import Arkham.Window (Window, WindowType, defaultWindows)
+import Arkham.Window (Window(..), WindowType, defaultWindows)
 import Arkham.Window qualified as Window
 import Arkham.Xp
 import Control.Monad.State.Strict (MonadState, StateT, execStateT, get, put)
@@ -2211,7 +2211,12 @@ batched :: ReverseQueue m => (BatchId -> QueueT Message m ()) -> m ()
 batched f = do
   batchId <- getId
   msgs <- capture (f batchId)
-  push $ Would batchId msgs
+  push $ Would batchId $ map (updateBatch batchId) msgs
+  where
+    -- Sets the batch id for any top level window calls
+    updateBatch batchId = \case
+      CheckWindows ws -> CheckWindows $ map (\w -> w { windowBatchId = Just batchId }) ws
+      other -> other
 
 payBatchCost :: ReverseQueue m => BatchId -> InvestigatorId -> Cost -> m ()
 payBatchCost batchId iid cost = push $ PayAdditionalCost iid batchId cost

@@ -128,6 +128,8 @@ library
       Arkham.Act.Cards.InAzathothsDomain
       Arkham.Act.Cards.InfiltratingTheLodge
       Arkham.Act.Cards.InLostCarcosa
+      Arkham.Act.Cards.InPursuitOfAnswers
+      Arkham.Act.Cards.InPursuitOfTheBeyond
       Arkham.Act.Cards.InPursuitOfTheDead
       Arkham.Act.Cards.InPursuitOfTheLiving
       Arkham.Act.Cards.InTheBellyOfTheMoonBeast
@@ -814,6 +816,7 @@ library
       Arkham.Asset.Assets.Engineer
       Arkham.Asset.Assets.EonChart1
       Arkham.Asset.Assets.EonChart4
+      Arkham.Asset.Assets.ErynnMacAoidhDevotedEnchantress
       Arkham.Asset.Assets.EsotericAtlas1
       Arkham.Asset.Assets.EsotericAtlas2
       Arkham.Asset.Assets.EsotericFormula
@@ -1908,6 +1911,8 @@ library
       Arkham.Enemy.Cards.ReanimatedDead
       Arkham.Enemy.Cards.ReawakenedElderThing
       Arkham.Enemy.Cards.RelentlessDarkYoung
+      Arkham.Enemy.Cards.ReturnToHeretic_38
+      Arkham.Enemy.Cards.ReturnToHeretic_39
       Arkham.Enemy.Cards.RiftSeeker
       Arkham.Enemy.Cards.RoachSwarm
       Arkham.Enemy.Cards.RoaldEllsworthIntrepidExplorer
@@ -3267,6 +3272,8 @@ library
       Arkham.Location.Cards.ReturnToEngineCar
       Arkham.Location.Cards.ReturnToGardensOfLuxembourg
       Arkham.Location.Cards.ReturnToGrandGuignol
+      Arkham.Location.Cards.ReturnToHangmansBrook
+      Arkham.Location.Cards.ReturnToHangmansBrookSpectral
       Arkham.Location.Cards.ReturnToHouseInTheReeds
       Arkham.Location.Cards.ReturnToKnightsHall
       Arkham.Location.Cards.ReturnToMetropolitanCathedral
@@ -4590,6 +4597,7 @@ library
       Arkham.Treachery.Cards.Whiteout
       Arkham.Treachery.Cards.WillOfTheSpiderMother
       Arkham.Treachery.Cards.WindowToAnotherTime
+      Arkham.Treachery.Cards.Witchweed
       Arkham.Treachery.Cards.WondrousLands
       Arkham.Treachery.Cards.WordsOfPower
       Arkham.Treachery.Cards.WorldsMerge

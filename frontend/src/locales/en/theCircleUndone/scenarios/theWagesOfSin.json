@@ -24,6 +24,10 @@
       "resign": "@:theCircleUndone.theWagesOfSin.tooltips.hangmansBrook.resign",
       "haunted": "Take 1 damage. Until the end of the round, the above resign ability cannot be triggered."
     },
+    "returnToHangmansBrookSpectral": {
+      "resign": "@:theCircleUndone.theWagesOfSin.tooltips.hangmansBrook.resign",
+      "haunted": "Place 1 clue from the supply on Hangman's Brook."
+    },
     "hauntedFieldsSpectral": {
       "haunted": "Move the nearest Spectral enemy once toward Haunted Fields."
     },
@@ -97,6 +101,10 @@
     "resolution2": {
       "title": "Resolution 2",
       "body": "<p>_Resolution 2_: Resigned to your fate, you fall to your knees. The mist parts. Time slows to a crawl as the watcher emerges. Its spectral form glides along the ground, approaching with the slow surety of a ticking clock. You close your eyes, unwilling to look upon your killer. Your fingers dig into your palm, and you brace yourself.</p><p>The moment passes.</p><p>When you open your eyes again, the creature is gone, along with the spectral mist.</p><p>…Have you been spared?</p><ul><li>In your Campaign Log, record *the investigators survived the watcher’s embrace*.</li><li>In your Campaign Log, record *X heretics were unleashed unto Arkham*. X is the number of Heretic enemies in play. (If it is act 1, instead record *4 heretics were unleashed unto Arkham*.)<ul><li>If X is 3 or less, under “Mementos Discovered,” record *Wisp of Spectral Mist*.</li></ul></li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: As you depart Hangman’s Hill, the unnatural mist lingers behind—a reminder that you chose information and power over the safety of the city. The last thing you see as you cross the brook is the blood streaking down the bark of the trees flanking the bridge. The sight is repulsive, and yet…perhaps there is information to be gathered here, as well. Hoping you’ve done the right thing, you study the strange carvings for a moment before continuing to your next destination.</p><ul><li>In your Campaign Log, record *1 heretic was unleashed unto Arkham*.</li><li>In your Campaign Log, under “Mementos Discovered,” record *Bloody Tree Carvings*.</li><li>In your Campaign Log, record *Erynn joined the investigators*. Any one investigator may choose to add the Erynn MacAoidh story asset to their deck. This card does not count toward that investigator’s deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
     }
   }
 }

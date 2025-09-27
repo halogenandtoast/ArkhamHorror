@@ -4,9 +4,12 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Story
+import Arkham.Projection
 import Arkham.Window (Window (..), getBatchId)
 import Arkham.Window qualified as Window
 
@@ -16,7 +19,19 @@ newtype InPursuitOfTheBeyond = InPursuitOfTheBeyond ActAttrs
 
 instance HasAbilities InPursuitOfTheBeyond where
   getAbilities = actAbilities \a ->
-    [mkAbility a 1 $ freeReaction $ ScenarioEvent #when (Just You) "wouldBanish"]
+    [ mkAbility a 1 $ freeReaction $ ScenarioEvent #when (Just You) "wouldBanish"
+    , restricted
+        a
+        2
+        ( youExist
+            $ at_
+            $ LocationWithAsset
+            $ assetIs Assets.erynnMacAoidhDevotedEnchantress
+            <> AssetWithCardsUnderneath (HasCard $ CardWithTitle "Heretic")
+        )
+        $ parleyAction (ClueCost (PerPlayer 1))
+    , restricted a 3 (ExtendedCardCount 3 CardIsBeneathActDeck) $ forced AnyWindow
+    ]
 
 inPursuitOfTheBeyond :: ActCard InPursuitOfTheBeyond
 inPursuitOfTheBeyond = act (2, A) InPursuitOfTheBeyond Cards.inPursuitOfTheBeyond Nothing
@@ -38,5 +53,13 @@ instance RunMessage InPursuitOfTheBeyond where
       selectEach (StoryWithCardId heretic.id) (push . StoryMessage . RemoveStory)
       erynn <- selectJust $ assetIs Assets.erynnMacAoidhDevotedEnchantress
       placeUnderneath erynn [heretic]
+      pure a
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      erynn <- selectJust $ assetIs Assets.erynnMacAoidhDevotedEnchantress
+      cards <- field AssetCardsUnderneath erynn
+      focusCards cards $ chooseTargetM iid cards $ placeUnderneath ActDeckTarget . only
+      pure a
+    UseThisAbility _iid (isSource attrs -> True) 3 -> do
+      advancedWithOther attrs
       pure a
     _ -> InPursuitOfTheBeyond <$> liftRunMessage msg attrs

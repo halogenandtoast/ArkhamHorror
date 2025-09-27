@@ -64,5 +64,6 @@ data TheCircleUndoneKey
   | TheLeadInvestigatorHasJoinedThePipersOfAzathoth
   | AzathothSlumbersForNow
   | TheInvestigatorsSignedTheBlackBookOfAzathoth
+  | ErynnJoinedTheInvestigators
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

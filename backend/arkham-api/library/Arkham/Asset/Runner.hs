@@ -617,6 +617,8 @@ instance RunMessage AssetAttrs where
     PlaceUnderneath _ cards | toCard a `elem` cards -> do
       push $ RemoveFromPlay (toSource a)
       pure a
+    PlaceUnderneath _ cards -> do
+      pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
     AddToDiscard _ c -> do
       pure $ a & cardsUnderneathL %~ filter (/= toCard c)
     ObtainCard c -> do

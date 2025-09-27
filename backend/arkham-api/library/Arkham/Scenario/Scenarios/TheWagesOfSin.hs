@@ -14,6 +14,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers hiding (roundModifiers)
+import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Helpers.Scenario hiding (getIsReturnTo)
 import Arkham.Helpers.SkillTest
 import Arkham.Location.Cards qualified as Locations
@@ -175,9 +176,10 @@ instance RunMessage TheWagesOfSin where
           when (maybe False (`elem` [#fight, #evade]) mAction) $ runHauntedAbilities iid
         _ -> pure ()
       pure s
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
+          resolution "noResolution"
           anyResigned <- selectAny ResignedInvestigator
           push $ if anyResigned then R1 else R2
         Resolution res | res `elem` [1, 2] -> do
@@ -188,6 +190,14 @@ instance RunMessage TheWagesOfSin where
           n <- if step == 1 then pure 4 else selectCount $ EnemyWithTitle "Heretic"
           recordCount HereticsWereUnleashedUntoArkham n
           when (n <= 3) $ recordSetInsert MementosDiscovered [WispOfSpectralMist]
+          endOfScenario
+        Resolution 3 -> do
+          investigators <- allInvestigators
+          resolutionWithXp "resolution3" $ allGainXp' attrs
+          recordCount HereticsWereUnleashedUntoArkham 1
+          record ErynnJoinedTheInvestigators
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.erynnMacAoidhDevotedEnchantress
+          recordSetInsert MementosDiscovered [BloodyTreeCarvings]
           endOfScenario
         _ -> error "invalid resolution"
       pure s

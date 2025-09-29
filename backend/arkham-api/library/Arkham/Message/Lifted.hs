@@ -103,7 +103,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait (Trait)
-import Arkham.Window (Window(..), WindowType, defaultWindows)
+import Arkham.Window (Window (..), WindowType, defaultWindows)
 import Arkham.Window qualified as Window
 import Arkham.Xp
 import Control.Monad.State.Strict (MonadState, StateT, execStateT, get, put)
@@ -362,6 +362,18 @@ allGainXp' :: (ReverseQueue m, Sourceable source) => source -> m Int
 allGainXp' source = do
   (initial, details) <- getXp'
   push . ReportXp =<< generateXpReport NoBonus
+  pushAll =<< toGainXp source (pure details)
+  pure initial
+
+allGainXpEdit'
+  :: (ReverseQueue m, Sourceable source)
+  => source
+  -> (XpBreakdown -> XpBreakdown)
+  -> ((Int, [(InvestigatorId, Int)]) -> (Int, [(InvestigatorId, Int)]))
+  -> m Int
+allGainXpEdit' source f g = do
+  (initial, details) <- g <$> getXp'
+  push . ReportXp . f =<< generateXpReport NoBonus
   pushAll =<< toGainXp source (pure details)
   pure initial
 
@@ -2212,11 +2224,11 @@ batched f = do
   batchId <- getId
   msgs <- capture (f batchId)
   push $ Would batchId $ map (updateBatch batchId) msgs
-  where
-    -- Sets the batch id for any top level window calls
-    updateBatch batchId = \case
-      CheckWindows ws -> CheckWindows $ map (\w -> w { windowBatchId = Just batchId }) ws
-      other -> other
+ where
+  -- Sets the batch id for any top level window calls
+  updateBatch batchId = \case
+    CheckWindows ws -> CheckWindows $ map (\w -> w {windowBatchId = Just batchId}) ws
+    other -> other
 
 payBatchCost :: ReverseQueue m => BatchId -> InvestigatorId -> Cost -> m ()
 payBatchCost batchId iid cost = push $ PayAdditionalCost iid batchId cost
@@ -3405,6 +3417,14 @@ revealCard card = do
 
 addToEncounterDiscard :: (ReverseQueue m, IsCard a, Element xs ~ a, MonoFoldable xs) => xs -> m ()
 addToEncounterDiscard = traverse_ (push . AddToEncounterDiscard) . mapMaybe (preview _EncounterCard . toCard) . otoList
+
+addToSpecificEncounterDiscard
+  :: (ReverseQueue m, IsCard a, Element xs ~ a, MonoFoldable xs)
+  => ScenarioEncounterDeckKey -> xs -> m ()
+addToSpecificEncounterDiscard dkey =
+  traverse_ (push . AddToSpecificEncounterDiscard dkey)
+    . mapMaybe (preview _EncounterCard . toCard)
+    . otoList
 
 priority :: ReverseQueue m => QueueT Message m () -> m ()
 priority body = do

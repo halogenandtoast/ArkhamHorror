@@ -478,6 +478,7 @@ data Message
   | -- Adding Cards to Player Discard
     AddToDiscard InvestigatorId PlayerCard
   | AddToEncounterDiscard EncounterCard
+  | AddToSpecificEncounterDiscard ScenarioEncounterDeckKey EncounterCard 
   | -- Slot Messages
     AddSlot InvestigatorId SlotType Slot
   | RemoveSlot InvestigatorId SlotType
@@ -1392,6 +1393,7 @@ uiToRun = \case
   TooltipLabel _ _ msgs -> Run msgs
   CardLabel _ msgs -> Run msgs
   PortraitLabel _ msgs -> Run msgs
+  KeyLabel _ msgs -> Run msgs
   TargetLabel _ msgs -> Run msgs
   GridLabel _ msgs -> Run msgs
   TarotLabel _ msgs -> Run msgs

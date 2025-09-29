@@ -2855,7 +2855,7 @@ runGameMessage msg g = case msg of
     pure $ g & resolvingCardL .~ Nothing & activeCardL %~ unsetActiveCard
   InvestigatorDrewEncounterCard iid card -> do
     runMessage (InvestigatorDrewEncounterCardFrom iid card Nothing) g
-  InvestigatorDrewEncounterCardFrom iid card _ -> runQueueT do
+  InvestigatorDrewEncounterCardFrom iid card mdeck -> runQueueT do
     investigator <- getInvestigator iid
     if investigator.eliminated
       then do
@@ -2869,7 +2869,7 @@ runGameMessage msg g = case msg of
         when (DrawGainsPeril `elem` mods)
           $ pushM
           $ cardResolutionModifier card GameSource card (AddKeyword Keyword.Peril)
-        whenDraw <- checkWindows [mkWhen (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
+        whenDraw <- checkWindows [mkWhen (Window.DrawCard iid (toCard card) $ fromMaybe Deck.EncounterDeck mdeck)]
         let uiRevelation = getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
         case toCardType card of
           EnemyType -> sendEnemy (toTitle investigator <> " drew Enemy") (toJSON $ toCard card)

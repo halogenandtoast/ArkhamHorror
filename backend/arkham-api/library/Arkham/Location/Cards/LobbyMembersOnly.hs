@@ -1,17 +1,11 @@
-module Arkham.Location.Cards.LobbyMembersOnly (
-  lobbyMembersOnly,
-  LobbyMembersOnly (..),
-)
-where
+module Arkham.Location.Cards.LobbyMembersOnly (lobbyMembersOnly) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenarios.ForTheGreaterGood.Helpers
-import Arkham.Timing qualified as Timing
 
 newtype LobbyMembersOnly = LobbyMembersOnly LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -21,16 +15,12 @@ lobbyMembersOnly :: LocationCard LobbyMembersOnly
 lobbyMembersOnly = location LobbyMembersOnly Cards.lobbyMembersOnly 3 (PerPlayer 1)
 
 instance HasAbilities LobbyMembersOnly where
-  getAbilities (LobbyMembersOnly attrs) =
-    withRevealedAbilities
-      attrs
-      [mkAbility attrs 1 $ ForcedAbility $ RevealLocation Timing.After You $ LocationWithId $ toId attrs]
+  getAbilities (LobbyMembersOnly a) =
+    extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
 
 instance RunMessage LobbyMembersOnly where
-  runMessage msg l@(LobbyMembersOnly attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      mKey <- getRandomKey
-      for_ mKey $ \key ->
-        push $ PlaceKey (toTarget attrs) key
+  runMessage msg l@(LobbyMembersOnly attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      getRandomKey >>= traverse_ (placeKey attrs)
       pure l
-    _ -> LobbyMembersOnly <$> runMessage msg attrs
+    _ -> LobbyMembersOnly <$> liftRunMessage msg attrs

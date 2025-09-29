@@ -13,6 +13,7 @@ import {-# SOURCE #-} Arkham.Card.EncounterCard
 import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.ChaosToken.Types
 import Arkham.Id
+import Arkham.Key
 import Arkham.Matcher.Agenda
 import {-# SOURCE #-} Arkham.Matcher.Asset
 import Arkham.Matcher.Card
@@ -57,6 +58,7 @@ data Target
   | PhaseTarget Phase
   | ChaosTokenTarget ChaosToken
   | ChaosTokenFaceTarget ChaosTokenFace
+  | KeyTarget ArkhamKey
   | TestTarget
   | ResourceTarget InvestigatorId
   | YouTarget

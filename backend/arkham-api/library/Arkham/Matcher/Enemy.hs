@@ -25,7 +25,7 @@ import {-# SOURCE #-} Arkham.Placement
 import Arkham.Prelude
 import {-# SOURCE #-} Arkham.Source
 import Arkham.Token
-import Arkham.Trait (Trait (Criminal, Ghoul, Humanoid))
+import Arkham.Trait (Trait (Criminal, Ghoul, Humanoid, Cultist))
 import Arkham.Zone
 import Control.Lens.Plated (Plated)
 import Data.Aeson.TH
@@ -179,6 +179,9 @@ instance IsLabel "ghoul" EnemyMatcher where
 
 instance IsLabel "criminal" EnemyMatcher where
   fromLabel = EnemyWithTrait Criminal
+
+instance IsLabel "cultist" EnemyMatcher where
+  fromLabel = EnemyWithTrait Cultist
 
 instance Semigroup EnemyMatcher where
   AnyEnemy <> x = x

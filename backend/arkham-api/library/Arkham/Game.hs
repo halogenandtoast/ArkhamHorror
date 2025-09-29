@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -4234,6 +4234,33 @@ instance Projection Investigator where
       InvestigatorXp -> pure investigatorXp
       InvestigatorSupplies -> pure investigatorSupplies
 
+emptyKeyDetails :: ArkhamKey -> KeyWithDetails
+emptyKeyDetails k = KeyWithDetails k Nothing Nothing Nothing False
+
+instance Query KeyMatcher where
+  toSomeQuery = KeyQuery
+  select_ matcher = do
+    locationKeys <-
+      concatMap (\(lid, ks) -> map (\k -> (emptyKeyDetails k) {keyLocation = Just lid}) (toList ks))
+        <$> selectWithField LocationKeys Anywhere
+    investigatorKeys <-
+      concatMap
+        (\(iid, ks) -> map (\k -> (emptyKeyDetails k) {keyInvestigator = Just iid}) (toList ks))
+        <$> selectWithField InvestigatorKeys Anyone
+    scenarioKeys <-
+      map (\k -> (emptyKeyDetails k) {keySetAside = True}) . toList <$> scenarioField ScenarioSetAsideKeys
+    let
+      go as = \case
+        AnyKey -> pure as
+        KeyOnCard ->
+          pure
+            $ filter
+              (or . sequence [isJust . (.keyAsset), isJust . (.keyLocation), isJust . (.keyInvestigator)])
+              as
+        KeyIs k -> pure $ filter ((== k) . (.key)) as
+
+    go (locationKeys <> investigatorKeys <> scenarioKeys) matcher
+
 instance Query TargetMatcher where
   toSomeQuery = TargetQuery
   select_ matcher = do
@@ -4493,10 +4520,11 @@ instance Query ExtendedCardMatcher where
         imods <- maybe (pure []) getModifiers miid
         if CannotCancelCardOrGameEffects `elem` imods
           then pure []
-          else go cs matcher' >>= filterM \c -> do
-            modifiers <- getModifiers c.id
-            let cannotBeCanceled = cdRevelation (toCardDef c) == CannotBeCanceledRevelation
-            pure $ EffectsCannotBeCanceled `notElem` modifiers && not cannotBeCanceled
+          else
+            go cs matcher' >>= filterM \c -> do
+              modifiers <- getModifiers c.id
+              let cannotBeCanceled = cdRevelation (toCardDef c) == CannotBeCanceledRevelation
+              pure $ EffectsCannotBeCanceled `notElem` modifiers && not cannotBeCanceled
       CardIsCommittedBy investigatorMatcher -> do
         committed <- selectAgg id InvestigatorCommittedCards investigatorMatcher
         pure $ filter (`elem` committed) cs
@@ -4505,9 +4533,10 @@ instance Query ExtendedCardMatcher where
         imods <- maybe (pure []) getModifiers miid
         if CannotCancelCardOrGameEffects `elem` imods
           then pure []
-          else go cs matcher' >>= filterM \c -> do
-            modifiers <- getModifiers c.id
-            pure $ EffectsCannotBeCanceled `notElem` modifiers
+          else
+            go cs matcher' >>= filterM \c -> do
+              modifiers <- getModifiers c.id
+              pure $ EffectsCannotBeCanceled `notElem` modifiers
       CardWithoutModifier modifier -> do
         flip filterM cs \c -> do
           modifiers <- getModifiers (toCardId c)

@@ -9,6 +9,7 @@ import Arkham.Location.Brazier
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.ForTheGreaterGood.Helpers
 
 newtype PuzzleBox = PuzzleBox AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -45,14 +46,13 @@ instance RunMessage PuzzleBox where
       readySpectralWatcher <- selectOne $ enemyIs Enemies.theSpectralWatcher <> ReadyEnemy
       locationLit <- selectOne $ LocationWithBrazier Lit <> locationWithInvestigator iid
       canDealDamage <- withoutModifier iid CannotDealDamage
-      chooseOrRunOneM iid do
+      chooseOrRunOneM iid $ scenarioI18n do
         for_ locationLit \location ->
-          labeled "Unlight a brazier at your location"
-            $ updateLocation location LocationBrazier (Just Unlit)
-        for_ readySpectralWatcher $ labeled "Exhaust the Spectral Watcher" . exhaustThis
+          labeled' "puzzleBox.unlight" $ updateLocation location LocationBrazier (Just Unlit)
+        for_ readySpectralWatcher $ labeled' "puzzleBox.exhaust" . exhaustThis
         when canDealDamage do
           for_ exhaustedSpectralWatcher
-            $ labeled "Deal 5 damage to the Spectral Watcher"
+            $ labeled' "puzzleBox.damage"
             . nonAttackEnemyDamage (Just iid) (attrs.ability 2) 5
       pure a
     _ -> PuzzleBox <$> liftRunMessage msg attrs

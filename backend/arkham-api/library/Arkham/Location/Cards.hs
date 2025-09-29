@@ -640,6 +640,7 @@ allLocationCards =
       , recessesOfYourOwnMind
       , recordsOffice
       , rehearsalRoom
+      , relicStorage
       , remnantsOfLakesCamp
       , researchSite
       , restaurant
@@ -660,6 +661,7 @@ allLocationCards =
       , returnToHangmansBrookSpectral
       , returnToHouseInTheReeds
       , returnToKnightsHall
+      , returnToLounge
       , returnToMetropolitanCathedral
       , returnToMontparnasse
       , returnToNotreDame
@@ -737,6 +739,7 @@ allLocationCards =
       , shorewardSlums
       , shorewardSlumsInTooDeep
       , shrineToHydra
+      , shroudedArchive
       , silverTwilightLodgeShroudedInMystery
       , silverTwilightLodgeWhereItAllEnds
       , siteOfTheSacrifice
@@ -9308,6 +9311,48 @@ returnToHangmansBrookSpectral =
       Squiggle
       [Circle, Plus]
       ReturnToTheWagesOfSin
+
+returnToLounge :: CardDef
+returnToLounge =
+  locationWithUnrevealed
+    "54043"
+    "Lounge"
+    [Lodge]
+    Moon
+    [Circle, Heart, Plus]
+    "Lounge"
+    [Lodge]
+    Moon
+    [Circle, Heart, Plus, Trefoil]
+    ForTheGreaterGood
+
+relicStorage :: CardDef
+relicStorage =
+  locationWithUnrevealed
+    "54044"
+    "Hidden Passageway"
+    [Lodge]
+    Trefoil
+    [Moon]
+    "Relic Storage"
+    [Lodge]
+    Trefoil
+    [Moon]
+    ReturnToForTheGreaterGood
+
+shroudedArchive :: CardDef
+shroudedArchive =
+  locationWithUnrevealed
+    "54045"
+    "Sanctum Doorway"
+    [Lodge, Sanctum]
+    Star
+    [Squiggle]
+    "Shrouded Archive"
+    [Lodge, Sanctum]
+    Triangle
+    [Squiggle]
+    ReturnToForTheGreaterGood
 
 lobbyTheMidwinterGala :: CardDef
 lobbyTheMidwinterGala =

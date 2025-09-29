@@ -43,6 +43,8 @@ function modifierToStyle(modifier: FlavorTextModifier): string {
     case 'CheckpointEntry': return 'checkpoint'
     case 'InterludeEntry': return 'interlude'
     case 'RightAligned': return 'right'
+    case 'CenteredEntry': return 'center'
+    case 'NoUnderline': return 'no-underline'
     case 'PlainText': return 'basic'
     case 'InvalidEntry': return 'invalid'
     case 'ValidEntry': return 'valid'
@@ -55,12 +57,16 @@ function formatListEntry(t: I18n, entry: { tag: 'ListEntry', list: ListItemEntry
   return h('li',  entry.nested.length == 0 ? inner : [inner, h('ul', entry.nested.map((e) => formatListEntry(t, e)))])
 }
 
-function formatEntry(t: I18n, entry: FlavorTextEntry): any {
+function formatEntry(t: I18n, entry: FlavorTextEntry, classes: { [key: string]: boolean } = {}): any {
   switch (entry.tag) {
     case 'BasicEntry': return h('p', { innerHTML: formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text) })
-    case 'HeaderEntry': return h('header', [h('h1', { innerHTML: formatContent(t(entry.key)) })])
+    case 'HeaderEntry': return h('header', [h('h1', { class: classes, innerHTML: formatContent(t(entry.key)) })])
     case 'I18nEntry': return h('div', { innerHTML: formatContent(t(entry.key, {...entry.variables, setImgPath: `${baseUrl}/img/arkham/encounter-sets` })) })
-    case 'ModifyEntry': return h('div', { class: entryStyles(entry) }, [formatEntry(t, entry.entry)])
+    case 'ModifyEntry': {
+      // HeaderEntry is handled specially to avoid wrapping it in a div
+      if (entry.entry.tag === 'HeaderEntry') return formatEntry(t, entry.entry, entryStyles(entry))
+      return h('div', { class: entryStyles(entry) }, [formatEntry(t, entry.entry)])
+    }
     case 'CompositeEntry': return h('div', { class: "composite" }, entry.entries.map((e) => formatEntry(t, e)))
     case 'ColumnEntry': return h('div', { class: "columns" }, entry.entries.map((e) => formatEntry(t, e)))
     case 'ListEntry': return h('ul', entry.list.map((e) => formatListEntry(t, e)))
@@ -437,13 +443,17 @@ ul, :deep(ul) {
   font-weight: 500;
   color: #38615F;
   padding-bottom: 2px;
-  border-bottom: 1px solid #38615f;
+  &:not(.no-underline) {
+    border-bottom: 1px solid #38615f;
+    &::after {
+      border-bottom: 1px solid #38615f;
+    }
+  }
   font-size: 2em;
   &::after {
     display: block;
     content: " ";
     margin-top: 2px;
-    border-bottom: 1px solid #38615f;
   }
 }
 

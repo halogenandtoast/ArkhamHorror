@@ -5,7 +5,7 @@ import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Message
+import Arkham.Scenarios.ForTheGreaterGood.Helpers
 
 newtype LobbyWeveBeenExpectingYou = LobbyWeveBeenExpectingYou LocationAttrs
   deriving anyclass IsLocation
@@ -18,22 +18,19 @@ instance HasModifiersFor LobbyWeveBeenExpectingYou where
   getModifiersFor (LobbyWeveBeenExpectingYou a) = whenUnrevealed a $ modifySelf a [Blocked]
 
 instance HasAbilities LobbyWeveBeenExpectingYou where
-  getAbilities (LobbyWeveBeenExpectingYou attrs) =
-    extend
-      attrs
-      [ withTooltip
-          "{action}: _Parley._ The guards recognize you from the Meiger estate and let you pass. Reveal the Lobby."
-          $ restricted
-            (proxied (LocationMatcherSource "Lodge Gates") attrs)
-            1
-            (OnLocation "Lodge Gates")
-            parleyAction_
-      | attrs.unrevealed
-      ]
+  getAbilities (LobbyWeveBeenExpectingYou a) =
+    extendUnrevealed1 a
+      $ scenarioI18n
+      $ withI18nTooltip "lobbyWeveBeenExpectingYou.parley"
+      $ restricted
+        (proxied (LocationMatcherSource "Lodge Gates") a)
+        1
+        (OnLocation "Lodge Gates")
+        parleyAction_
 
 instance RunMessage LobbyWeveBeenExpectingYou where
   runMessage msg l@(LobbyWeveBeenExpectingYou attrs) = runQueueT $ case msg of
     UseThisAbility iid (isProxySource attrs -> True) 1 -> do
-      push $ RevealLocation (Just iid) (toId attrs)
+      revealBy iid attrs
       pure l
     _ -> LobbyWeveBeenExpectingYou <$> liftRunMessage msg attrs

@@ -9,8 +9,7 @@ import Arkham.Prelude
 
 import {-# SOURCE #-} Arkham.Calculation
 import Arkham.CampaignLog
-import Arkham.Duration
-import Arkham.CampaignLogKey (CampaignLogKey, IsCampaignLogKey(..))
+import Arkham.CampaignLogKey (CampaignLogKey, IsCampaignLogKey (..))
 import Arkham.Campaigns.TheForgottenAge.Supply (Supply)
 import Arkham.Capability (Capabilities, Capable (..), FromSource)
 import Arkham.Card.CardCode
@@ -18,6 +17,7 @@ import Arkham.Cost.Status (CostStatus)
 import Arkham.Criteria.Override
 import Arkham.Customization
 import Arkham.Direction (GridDirection)
+import Arkham.Duration
 import Arkham.GameValue (GameValue (Static))
 import Arkham.History.Types (HistoryType)
 import Arkham.Key
@@ -32,6 +32,7 @@ import Arkham.Matcher.Enemy
 import Arkham.Matcher.Event
 import Arkham.Matcher.History
 import Arkham.Matcher.Investigator
+import Arkham.Matcher.Key
 import Arkham.Matcher.Location
 import Arkham.Matcher.Patterns
 import Arkham.Matcher.Phase
@@ -209,6 +210,7 @@ data Criterion
   | EnemyCount ValueMatcher EnemyMatcher
   | EventCount ValueMatcher EventMatcher
   | LocationCount Int LocationMatcher
+  | KeyCount ValueMatcher KeyMatcher
   | ExtendedCardCount Int ExtendedCardMatcher
   | AllUndefeatedInvestigatorsResigned
   | EachUndefeatedInvestigator InvestigatorMatcher

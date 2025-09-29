@@ -144,13 +144,13 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
         <header class="entry-header"><h3>{{ $t('upgrade.victoryDisplay') }}</h3><span class="amount" :class="{ 'amount--negative': totalVictoryDisplay < 0 }">{{ $t('upgrade.xp', {total: totalVictoryDisplay}) }}</span></header>
         <div class="column">
           <div v-for="(entry, idx) in allVictoryDisplay" :key="idx" class="box entry">
-            <span>{{getCardName(entry.details.sourceName)}}</span>
+            <span>{{format(entry.details.sourceName)}}</span>
             <span class="amount">+{{entry.details.amount}}</span>
           </div>
         </div>
       </section>
       <section class="box column group" v-for="([iid, info]) in Object.entries(perInvestigator)" :key="name">
-        <header class="entry-header"><h3>{{getCardName(game.investigators[iid].name.title)}}</h3><span class="amount" :class="{ 'amount--negative': info.total < 0 }">{{ $t('upgrade.xp', {total: info.total}) }}</span></header>
+        <header class="entry-header"><h3>{{format(game.investigators[iid].name.title)}}</h3><span class="amount" :class="{ 'amount--negative': info.total < 0 }">{{ $t('upgrade.xp', {total: info.total}) }}</span></header>
         <div v-for="(entry, idx) in info.entries" :key="idx" class="box entry">
           <span v-html="format(entry.details.sourceName)"></span> 
           <span v-if="entry.tag !== 'InvestigatorLoseXp'" class="amount">+{{entry.details.amount}}</span>

@@ -2,18 +2,14 @@ module Arkham.Agenda.Cards.EndsAndMeans (endsAndMeans) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Sanctum, SilverTwilight))
 
 newtype EndsAndMeans = EndsAndMeans AgendaAttrs
@@ -32,31 +28,22 @@ instance HasModifiersFor EndsAndMeans where
 
 instance HasAbilities EndsAndMeans where
   getAbilities (EndsAndMeans a) =
-    [ mkAbility a 1 $ ForcedAbility $ EnemyDefeated Timing.When You ByAny $ EnemyWithTrait SilverTwilight
-    ]
+    [mkAbility a 1 $ forced $ EnemyDefeated #when You ByAny $ EnemyWithTrait SilverTwilight]
 
 instance RunMessage EndsAndMeans where
-  runMessage msg a@(EndsAndMeans attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      mPuzzleBox <- selectOne (assetIs Assets.puzzleBox)
-      acts <- select AnyAct
+  runMessage msg a@(EndsAndMeans attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      selectEach AnyAct $ toDiscard GameSource
       summonedBeast <- getSetAsideCard Enemies.summonedBeast
-      createSummonedBeast <-
-        createEnemyAtLocationMatching_ summonedBeast
-          $ maybe
-            (LocationWithTrait Sanctum)
-            locationWithAsset
-            mPuzzleBox
-
-      pushAll
-        $ map (toDiscard GameSource) acts
-        <> [createSummonedBeast]
-        <> [RemoveFromGame (toTarget puzzleBox) | puzzleBox <- maybeToList mPuzzleBox]
+      mPuzzleBox <- selectOne (assetIs Assets.puzzleBox)
+      createEnemyAtLocationMatching_ summonedBeast
+        $ maybe (LocationWithTrait Sanctum) locationWithAsset mPuzzleBox
+      for_ mPuzzleBox removeFromGame
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 (defeatedEnemy -> enemy) _ -> do
       enemiesWithDoom <- select $ EnemyAt (locationWithEnemy enemy) <> EnemyWithAnyDoom
-      pushAll
-        $ concat
-          [[RemoveDoom (toSource attrs) (toTarget enemy') 1, placeDoomOnAgenda] | enemy' <- enemiesWithDoom]
+      for_ enemiesWithDoom \enemy' -> do
+        removeDoom attrs enemy' 1
+        placeDoomOnAgenda 1
       pure a
-    _ -> EndsAndMeans <$> runMessage msg attrs
+    _ -> EndsAndMeans <$> liftRunMessage msg attrs

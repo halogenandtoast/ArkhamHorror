@@ -61,6 +61,7 @@ instance Query ChaosTokenMatcher
 instance Query TargetMatcher
 instance Query SourceMatcher
 instance Query TreacheryMatcher
+instance Query KeyMatcher
 
 instance Projection Act
 instance Projection Agenda

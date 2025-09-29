@@ -1,8 +1,4 @@
-module Arkham.Location.Cards.LodgeGatesMembersOnly (
-  lodgeGatesMembersOnly,
-  LodgeGatesMembersOnly (..),
-)
-where
+module Arkham.Location.Cards.LodgeGatesMembersOnly (lodgeGatesMembersOnly) where
 
 import Arkham.Ability
 import Arkham.GameValue
@@ -10,6 +6,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenarios.ForTheGreaterGood.Helpers
 
 newtype LodgeGatesMembersOnly = LodgeGatesMembersOnly LocationAttrs
   deriving anyclass IsLocation
@@ -22,9 +19,10 @@ instance HasModifiersFor LodgeGatesMembersOnly where
   getModifiersFor (LodgeGatesMembersOnly a) = whenRevealed a $ modifySelect a AnyEnemy [CannotSpawnIn (be a)]
 
 instance HasAbilities LodgeGatesMembersOnly where
-  getAbilities (LodgeGatesMembersOnly attrs) =
-    extendRevealed1 attrs
-      $ withTooltip "On second thought, maybe coming here was a bad idea" (locationResignAction attrs)
+  getAbilities (LodgeGatesMembersOnly a) =
+    extendRevealed1 a
+      $ scenarioI18n
+      $ withI18nTooltip "lodgeGatesMembersOnly.resign" (locationResignAction a)
 
 instance RunMessage LodgeGatesMembersOnly where
   runMessage msg (LodgeGatesMembersOnly attrs) = LodgeGatesMembersOnly <$> runMessage msg attrs

@@ -1,15 +1,9 @@
-module Arkham.Treachery.Cards.MarkOfTheOrder (
-  markOfTheOrder,
-  MarkOfTheOrder (..),
-)
-where
+module Arkham.Treachery.Cards.MarkOfTheOrder (markOfTheOrder) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype MarkOfTheOrder = MarkOfTheOrder TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -19,24 +13,11 @@ markOfTheOrder :: TreacheryCard MarkOfTheOrder
 markOfTheOrder = treachery MarkOfTheOrder Cards.markOfTheOrder
 
 instance RunMessage MarkOfTheOrder where
-  runMessage msg t@(MarkOfTheOrder attrs) = case msg of
+  runMessage msg t@(MarkOfTheOrder attrs) = runQueueT $ case msg of
     Revelation _ (isSource attrs -> True) -> do
-      skullInvestigator <- selectOne $ InvestigatorWithTokenKey #skull
-      cultistInvestigator <- selectOne $ InvestigatorWithTokenKey #cultist
-      tabletInvestigator <- selectOne $ InvestigatorWithTokenKey #tablet
-      elderThingInvestigator <- selectOne $ InvestigatorWithTokenKey #elderthing
-
-      for_ elderThingInvestigator $ \i ->
-        push $ LoseResources i (toSource attrs) 3
-
-      for_ tabletInvestigator $ \i ->
-        push $ toMessage $ randomDiscard i attrs
-
-      for_ cultistInvestigator $ \i ->
-        push $ InvestigatorAssignDamage i (toSource attrs) DamageAny 0 1
-
-      for_ skullInvestigator $ \i ->
-        push $ InvestigatorAssignDamage i (toSource attrs) DamageAny 1 0
-
+      selectEach (InvestigatorWithTokenKey #elderthing) \i -> loseResources i attrs 3
+      selectEach (InvestigatorWithTokenKey #tablet) (`randomDiscard` attrs)
+      selectEach (InvestigatorWithTokenKey #cultist) \i -> assignHorror i attrs 1
+      selectEach (InvestigatorWithTokenKey #skull) \i -> assignDamage i attrs 1
       pure t
-    _ -> MarkOfTheOrder <$> runMessage msg attrs
+    _ -> MarkOfTheOrder <$> liftRunMessage msg attrs

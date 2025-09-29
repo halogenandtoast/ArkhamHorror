@@ -80,6 +80,16 @@ instance HasField "validate" (Scope -> FlavorTextBuilder ()) (Bool -> Scope -> F
       ModifyEntry mods inner' -> addEntry $ ModifyEntry (modifier : mods) inner'
       inner' -> addEntry $ ModifyEntry [modifier] inner'
 
+instance HasField "center" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBuilder ()) where
+  getField f t = for_ (buildFlavor (f t)).flavorBody \case
+    ModifyEntry mods inner' -> addEntry $ ModifyEntry (CenteredEntry : mods) inner'
+    inner' -> addEntry $ ModifyEntry [CenteredEntry] inner'
+
+instance HasField "noUnderline" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBuilder ()) where
+  getField f t = for_ (buildFlavor (f t)).flavorBody \case
+    ModifyEntry mods inner' -> addEntry $ ModifyEntry (NoUnderline : mods) inner'
+    inner' -> addEntry $ ModifyEntry [NoUnderline] inner'
+
 instance HasField "valid" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBuilder ()) where
   getField f t = for_ (buildFlavor (f t)).flavorBody \case
     ModifyEntry mods inner' -> addEntry $ ModifyEntry (ValidEntry : mods) inner'

@@ -330,6 +330,9 @@ instance IsLabel "skill" CardMatcher where
 instance IsLabel "enemy" CardMatcher where
   fromLabel = CardWithType EnemyType
 
+instance IsLabel "cultist" CardMatcher where
+  fromLabel = CardWithTrait Cultist
+
 instance IsLabel "monster" CardMatcher where
   fromLabel = CardWithTrait Monster
 

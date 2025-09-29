@@ -172,19 +172,20 @@ getEncounterDeckKey a = do
   pure $ fromMaybe RegularEncounterDeck $ asum $ map toEncounterDeckModifier modifiers'
 
 getEncounterDeckHandler :: (HasGame m, Targetable a) => a -> m EncounterDeckHandler
-getEncounterDeckHandler a = do
-  key <- getEncounterDeckKey a
-  pure $ case key of
-    RegularEncounterDeck ->
-      EncounterDeckHandler
-        { deckLens = encounterDeckLensFromKey RegularEncounterDeck
-        , discardLens = discardL
-        }
-    other ->
-      EncounterDeckHandler
-        { deckLens = encounterDeckLensFromKey other
-        , discardLens = encounterDecksL . at other . non (Deck [], []) . _2
-        }
+getEncounterDeckHandler a = specificEncounterDeckHandler <$> getEncounterDeckKey a
+
+specificEncounterDeckHandler :: ScenarioEncounterDeckKey -> EncounterDeckHandler
+specificEncounterDeckHandler = \case
+  RegularEncounterDeck ->
+    EncounterDeckHandler
+      { deckLens = encounterDeckLensFromKey RegularEncounterDeck
+      , discardLens = discardL
+      }
+  other ->
+    EncounterDeckHandler
+      { deckLens = encounterDeckLensFromKey other
+      , discardLens = encounterDecksL . at other . non (Deck [], []) . _2
+      }
 
 toEncounterDeckModifier :: ModifierType -> Maybe ScenarioEncounterDeckKey
 toEncounterDeckModifier (UseEncounterDeck k) = Just k

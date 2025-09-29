@@ -10,8 +10,9 @@ import Arkham.Ability.Types
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.ChaosBagStepState
-import Arkham.Id
 import Arkham.I18n
+import Arkham.Id
+import Arkham.Key
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -63,9 +64,10 @@ pattern ResourceLabel iid msgs <- ComponentLabel (InvestigatorComponent iid Reso
 
 data UI msg
   = Label {label :: Text, messages :: [msg]}
-  | InvalidLabel { label :: Text }
+  | InvalidLabel {label :: Text}
   | TooltipLabel {label :: Text, tooltip :: Tooltip, messages :: [msg]}
   | CardLabel {cardCode :: CardCode, messages :: [msg]}
+  | KeyLabel {key :: ArkhamKey, messages :: [msg]}
   | PortraitLabel {investigatorId :: InvestigatorId, messages :: [msg]}
   | TargetLabel {target :: Target, messages :: [msg]}
   | SkillLabel {skillType :: SkillType, messages :: [msg]}
@@ -130,12 +132,13 @@ data Question msg
   | ChooseUpToN {amount :: Int, choices :: [UI msg]}
   | ChooseOneAtATime {choices :: [UI msg]}
   | ChooseOneAtATimeWithAuto {label :: Text, choices :: [UI msg]}
-  | -- | Choosing payment amounts
-    -- The core idea is that costs get broken up into unitary costs and we
-    -- let the players decide how many times an individual player will pay
-    -- the cost. The @Maybe Int@ is used to designate whether or not there
-    -- is a target value. The tuple of ints are the min and max bound for
-    -- the specific investigator
+  | {- | Choosing payment amounts
+    The core idea is that costs get broken up into unitary costs and we
+    let the players decide how many times an individual player will pay
+    the cost. The @Maybe Int@ is used to designate whether or not there
+    is a target value. The tuple of ints are the min and max bound for
+    the specific investigator
+    -}
     ChoosePaymentAmounts
       { label :: Text
       , paymentAmountTargetValue :: Maybe AmountTarget
@@ -151,7 +154,8 @@ data Question msg
   | ChooseDeck
   | QuestionLabel {label :: Text, card :: Maybe CardCode, question :: Question msg}
   | Read {flavorText :: FlavorText, readChoices :: ReadChoices msg, readCards :: Maybe [CardCode]}
-  | PickSupplies {pointsRemaining :: Int, chosenSupplies :: [Supply], choices :: [UI msg], resupply :: Bool}
+  | PickSupplies
+      {pointsRemaining :: Int, chosenSupplies :: [Supply], choices :: [UI msg], resupply :: Bool}
   | PickDestiny {drawings :: [DestinyDrawing]}
   | DropDown {options :: [(Text, msg)]}
   | PickScenarioSettings
@@ -175,14 +179,14 @@ data ChoosePlayerChoice = SetLeadInvestigator | SetTurnPlayer
   deriving stock (Show, Ord, Eq, Data)
 
 evadeLabel
-  :: (AsId enemy, IdOf enemy ~ EnemyId,  msg ~ Element (t msg), MonoFoldable (t msg))
+  :: (AsId enemy, IdOf enemy ~ EnemyId, msg ~ Element (t msg), MonoFoldable (t msg))
   => enemy
   -> t msg
   -> UI msg
 evadeLabel (asId -> enemy) (toList -> msgs) = EvadeLabel enemy msgs
 
 fightLabel
-  :: (AsId enemy, IdOf enemy ~ EnemyId,  msg ~ Element (t msg), MonoFoldable (t msg))
+  :: (AsId enemy, IdOf enemy ~ EnemyId, msg ~ Element (t msg), MonoFoldable (t msg))
   => enemy
   -> t msg
   -> UI msg

@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.ForTheGreaterGood (forTheGreaterGood) where
+module Arkham.Scenario.Scenarios.ForTheGreaterGood (setupForTheGreaterGood, forTheGreaterGood, ForTheGreaterGood (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -9,9 +9,12 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyDoom))
 import Arkham.Helpers.Agenda
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
-import Arkham.Helpers.Scenario
+import Arkham.Helpers.Scenario hiding (getIsReturnTo)
+import Arkham.I18n
+import Arkham.Investigator.Types (Field (InvestigatorKeys))
 import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -19,9 +22,10 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.Scenarios.ForTheGreaterGood.Story
+import Arkham.Scenarios.ForTheGreaterGood.Helpers
 import Arkham.Token
 import Arkham.Trait qualified as Trait
+import Arkham.Xp
 
 newtype ForTheGreaterGood = ForTheGreaterGood ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -53,132 +57,154 @@ instance HasChaosTokenValue ForTheGreaterGood where
     ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 3)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+{- FOURMOLU_DISABLE -}
 standaloneChaosTokens :: [ChaosTokenFace]
 standaloneChaosTokens =
-  [ PlusOne
-  , Zero
-  , Zero
-  , MinusOne
-  , MinusOne
-  , MinusTwo
-  , MinusTwo
-  , MinusThree
-  , MinusFour
-  , Skull
-  , Skull
-  , Cultist
-  , Tablet
-  , ElderThing
-  , AutoFail
-  , ElderSign
+  [ PlusOne , Zero , Zero , MinusOne , MinusOne , MinusTwo , MinusTwo , MinusThree , MinusFour
+  , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
   ]
+{- FOURMOLU_ENABLE -}
 
-instance RunMessage ForTheGreaterGood where
-  runMessage msg s@(ForTheGreaterGood attrs) = runQueueT $ case msg of
-    PreScenarioSetup -> do
-      story intro1
+setupForTheGreaterGood
+  :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupForTheGreaterGood _attrs = do
+  setup $ ul do
+    li "gatherSets"
+    scope "membersOfTheLodge" $ li.nested "instructions" do
+      li "actDeck"
+      li "weveBeenExpectingYou"
+      li "removeFromGame"
+    scope "otherwise" $ li.nested "instructions" do
+      li "actDeck"
+      li "membersOnly"
+      li "removeFromGame"
+    li "placeLocations"
+    li "setAside"
+    li "setAsideKeys"
+    unscoped $ li "shuffleRemainder"
 
-      membersOfTheLodge <- getHasRecord TheInvestigatorsAreMembersOfTheLodge
-      if membersOfTheLodge
-        then doStep 2 PreScenarioSetup
-        else do
-          enemiesOfTheLodge <- getHasRecord TheInvestigatorsAreEnemiesOfTheLodge
-          if enemiesOfTheLodge
-            then doStep 3 PreScenarioSetup
-            else do
-              learnedNothing <- getHasRecord TheInvestigatorsLearnedNothingOfTheLodge'sSchemes
-              if learnedNothing
-                then doStep 4 PreScenarioSetup
-                else doStep 5 PreScenarioSetup
-      pure s
-    DoStep 2 PreScenarioSetup -> do
-      showSidebar <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
-      let convert = if showSidebar then (`addFlavorEntry` decievingTheLodge) else id
-      story $ convert intro2
-      pure s
-    DoStep 3 PreScenarioSetup -> do
-      story intro3
-      pure s
-    DoStep 4 PreScenarioSetup -> do
-      story intro4
-      pure s
-    DoStep 5 PreScenarioSetup -> do
-      story intro5
-      pure s
-    StandaloneSetup -> do
-      setChaosTokens standaloneChaosTokens
+  scope "keys" $ flavor $ h.noUnderline "title" >> p "body"
 
-      lead <- getLead
-      chooseOneM lead do
-        labeled "The investigators are members of the Lodge." $ record TheInvestigatorsAreMembersOfTheLodge
-        labeled "The investigators are not members of the Lodge." nothing
-      pure s
-    Setup -> runScenarioSetup ForTheGreaterGood attrs do
-      gather Set.ForTheGreaterGood
-      gather Set.CityOfSins
-      gather Set.SilverTwilightLodge
-      gather Set.AncientEvils
-      gather Set.DarkCult
-      gather Set.LockedDoors
+  whenReturnTo $ gather Set.ReturnToForTheGreaterGood
+  gather Set.ForTheGreaterGood
+  gather Set.CityOfSins `orWhenReturnTo` gather Set.CityOfTheDamned
+  gather Set.SilverTwilightLodge
+  gather Set.AncientEvils `orWhenReturnTo` gather Set.ImpendingEvils
+  gather Set.DarkCult
+  gather Set.LockedDoors
 
-      setAgendaDeck [Agendas.theHierophantV, Agendas.endsAndMeans]
+  setAgendaDeck [Agendas.theHierophantV, Agendas.endsAndMeans]
 
-      membersOfTheLodge <- getHasRecord TheInvestigatorsAreMembersOfTheLodge
-      let act1 = if membersOfTheLodge then Acts.warmWelcome else Acts.infiltratingTheLodge
-      setActDeck [act1, Acts.obtainingTheDevice, Acts.theFourKeys]
+  membersOfTheLodge <- getHasRecord TheInvestigatorsAreMembersOfTheLodge
+  let act1 = if membersOfTheLodge then Acts.warmWelcome else Acts.infiltratingTheLodge
+  setActDeck [act1, Acts.obtainingTheDevice, Acts.theFourKeys]
 
-      if membersOfTheLodge
-        then do
-          startAt =<< place Locations.lodgeGatesWeveBeenExpectingYou
-          placeAll [Locations.lobbyWeveBeenExpectingYou, Locations.lodgeCellarWeveBeenExpectingYou]
-          removeOneOfEach
-            [ Locations.lodgeGatesMembersOnly
-            , Locations.lobbyMembersOnly
-            , Locations.lodgeCellarMembersOnly
-            , Enemies.acolyte
-            , Enemies.acolyte
-            , Enemies.acolyte
-            , Enemies.wizardOfTheOrder
-            , Enemies.knightOfTheInnerCircle
-            , Enemies.knightOfTheInnerCircle
-            , Enemies.cellKeeper
-            ]
-        else do
-          startAt =<< place Locations.lodgeGatesMembersOnly
-          placeAll [Locations.lobbyMembersOnly, Locations.lodgeCellarMembersOnly]
-          removeOneOfEach
-            [ Locations.lodgeGatesWeveBeenExpectingYou
-            , Locations.lobbyWeveBeenExpectingYou
-            , Locations.lodgeCellarWeveBeenExpectingYou
-            , Enemies.lodgeNeophyte
-            , Enemies.lodgeNeophyte
-            , Enemies.lodgeNeophyte
-            , Enemies.keeperOfSecrets
-            , Enemies.knightOfTheOuterVoid
-            , Enemies.knightOfTheOuterVoid
-            , Enemies.lodgeJailor
-            ]
-
-      placeAll [Locations.lodgeCatacombs, Locations.lounge]
-
-      setAside
-        [ Locations.library
-        , Locations.vault
-        , Locations.innerSanctum
-        , Locations.sanctumDoorwayHoldingCells
-        , Locations.sanctumDoorwayCeremonyRoom
-        , Assets.puzzleBox
-        , Enemies.summonedBeast
-        , Assets.augustLindquist
-        , Enemies.nathanWickMasterOfInitiation
+  if membersOfTheLodge
+    then do
+      startAt =<< place Locations.lodgeGatesWeveBeenExpectingYou
+      placeAll [Locations.lobbyWeveBeenExpectingYou, Locations.lodgeCellarWeveBeenExpectingYou]
+      removeOneOfEach
+        [ Locations.lodgeGatesMembersOnly
+        , Locations.lobbyMembersOnly
+        , Locations.lodgeCellarMembersOnly
+        , Enemies.acolyte
+        , Enemies.acolyte
+        , Enemies.acolyte
+        , Enemies.wizardOfTheOrder
+        , Enemies.knightOfTheInnerCircle
+        , Enemies.knightOfTheInnerCircle
+        , Enemies.cellKeeper
+        ]
+    else do
+      startAt =<< place Locations.lodgeGatesMembersOnly
+      placeAll [Locations.lobbyMembersOnly, Locations.lodgeCellarMembersOnly]
+      removeOneOfEach
+        [ Locations.lodgeGatesWeveBeenExpectingYou
+        , Locations.lobbyWeveBeenExpectingYou
+        , Locations.lodgeCellarWeveBeenExpectingYou
+        , Enemies.lodgeNeophyte
+        , Enemies.lodgeNeophyte
+        , Enemies.lodgeNeophyte
+        , Enemies.keeperOfSecrets
+        , Enemies.knightOfTheOuterVoid
+        , Enemies.knightOfTheOuterVoid
+        , Enemies.lodgeJailor
         ]
 
-      skullKey <- toKey <$> createChaosToken #skull
-      cultistKey <- toKey <$> createChaosToken #cultist
-      tabletKey <- toKey <$> createChaosToken #tablet
-      elderThingKey <- toKey <$> createChaosToken #elderthing
+  lounge <- Locations.lounge `orSampleIfReturnTo` [Locations.returnToLounge]
+  placeAll [Locations.lodgeCatacombs, lounge]
 
-      setAsideKeys [skullKey, cultistKey, tabletKey, elderThingKey]
+  isReturnTo <- getIsReturnTo
+  setAside
+    $ [ Locations.library
+      , Locations.vault
+      , Locations.innerSanctum
+      , Locations.sanctumDoorwayHoldingCells
+      , Locations.sanctumDoorwayCeremonyRoom
+      , Assets.puzzleBox
+      , Enemies.summonedBeast
+      , Assets.augustLindquist
+      , Enemies.nathanWickMasterOfInitiation
+      ]
+    <> (guard isReturnTo *> [Locations.relicStorage, Locations.shroudedArchive])
+
+  skullKey <- toKey <$> createChaosToken #skull
+  cultistKey <- toKey <$> createChaosToken #cultist
+  tabletKey <- toKey <$> createChaosToken #tablet
+  elderThingKey <- toKey <$> createChaosToken #elderthing
+
+  setAsideKeys [skullKey, cultistKey, tabletKey, elderThingKey]
+
+  whenReturnTo $ addAdditionalReferences ["54042b"]
+
+instance RunMessage ForTheGreaterGood where
+  runMessage msg s@(ForTheGreaterGood attrs) = runQueueT $ scenarioI18n $ case msg of
+    PreScenarioSetup -> scope "intro" do
+      membersOfTheLodge <- getHasRecord TheInvestigatorsAreMembersOfTheLodge
+      enemiesOfTheLodge <- getHasRecord TheInvestigatorsAreEnemiesOfTheLodge
+      learnedNothing <- getHasRecord TheInvestigatorsLearnedNothingOfTheLodge'sSchemes
+      neverSeenOrHeardFromAgain <- getHasRecord TheInvestigatorsAreNeverSeenOrHeardFromAgain
+
+      flavor do
+        setTitle "title"
+        p "intro1"
+        ul do
+          li.validate membersOfTheLodge "membersOfTheLodge"
+          li.validate enemiesOfTheLodge "enemiesOfTheLodge"
+          li.validate learnedNothing "learnedNothingOfTheLodgesSchemes"
+          li.validate neverSeenOrHeardFromAgain "neverSeenOrHeardFromAgain"
+
+      if
+        | membersOfTheLodge -> doStep 2 PreScenarioSetup
+        | enemiesOfTheLodge -> doStep 3 PreScenarioSetup
+        | learnedNothing -> doStep 4 PreScenarioSetup
+        | otherwise -> doStep 5 PreScenarioSetup
+      pure s
+    DoStep 2 PreScenarioSetup -> scope "intro" do
+      showSidebar <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
+      flavor do
+        setTitle "title"
+        p "intro2"
+        p.validate showSidebar "deceivingTheLodge"
+        p "intro2Skip"
+      pure s
+    DoStep 3 PreScenarioSetup -> scope "intro" do
+      flavor $ setTitle "title" >> p "intro3"
+      pure s
+    DoStep 4 PreScenarioSetup -> scope "intro" do
+      flavor $ setTitle "title" >> p "intro4"
+      pure s
+    DoStep 5 PreScenarioSetup -> scope "intro" do
+      flavor $ setTitle "title" >> p "intro5"
+      pure s
+    StandaloneSetup -> scope "standalone" do
+      setChaosTokens standaloneChaosTokens
+
+      leadChooseOneM do
+        labeled' "members" $ record TheInvestigatorsAreMembersOfTheLodge
+        labeled' "notMembers" nothing
+      pure s
+    Setup -> runScenarioSetup ForTheGreaterGood attrs $ setupForTheGreaterGood attrs
     ResolveChaosToken _ Cultist iid -> do
       drawAnotherChaosToken iid
       pure s
@@ -198,7 +224,7 @@ instance RunMessage ForTheGreaterGood where
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderThing)) _ _ -> do
       if isEasyStandard attrs
         then do
-          closestCultists <- select $ NearestEnemyToFallback iid (EnemyWithTrait Trait.Cultist) <> EnemyWithAnyDoom
+          closestCultists <- select $ NearestEnemyToFallback iid #cultist <> EnemyWithAnyDoom
           chooseTargetM iid closestCultists \cultist -> do
             removeDoom ElderThing cultist 1
             placeDoomOnAgenda 1
@@ -208,41 +234,47 @@ instance RunMessage ForTheGreaterGood where
             then do
               agenda <- getCurrentAgenda
               maxDoom <- fieldMax EnemyDoom (EnemyWithTrait Trait.Cultist)
-              chooseOrRunOne
-                iid
-                [ targetLabel
-                  cultist
-                  [ RemoveAllDoom (toSource attrs) (toTarget cultist)
-                  , PlaceTokens (ChaosTokenEffectSource ElderThing) (toTarget agenda) Doom maxDoom
-                  ]
-                | cultist <- maxDoomCultists
-                ]
+              chooseTargetM iid maxDoomCultists \cultist -> do
+                removeAllDoom ElderThing cultist
+                placeTokens ElderThing agenda Doom maxDoom
             else drawAnotherChaosToken iid
       pure s
-    ScenarioResolution n -> do
+    ScenarioResolution n -> scope "resolutions" do
       iids <- allInvestigators
+      let isNumberChaosTokenKey = \case
+            TokenKey chaosToken -> isNumberChaosToken chaosToken.face
+            _ -> False
+      ks <-
+        concatMap (filter isNumberChaosTokenKey . toList)
+          <$> selectField InvestigatorKeys (not_ DefeatedInvestigator)
+
+      let updateTotal = bimap (+ length ks) (map (second (+ length ks)))
+      let recordTokens (XpBreakdown inner) =
+            XpBreakdown
+              $ inner
+              <> map
+                ( \k ->
+                    AllGainXp (XpDetail XpFromVictoryDisplay (withVar "key" (String $ keyName k) $ ikey' "extraKey") 1)
+                )
+                ks
       case n of
         NoResolution -> do
-          story noResolution
+          resolutionWithXp "noResolution" $ allGainXpEdit' attrs recordTokens updateTotal
           record TheGuardianOfTheTrapEmerged
-          allGainXp attrs
           endOfScenario
         Resolution 1 -> do
-          story resolution1
+          resolutionWithXp "resolution1" $ allGainXpEdit' attrs recordTokens updateTotal
           record TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
           addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.puzzleBox
-          allGainXp attrs
           endOfScenarioThen (InterludeStep 3 Nothing)
         Resolution 2 -> do
-          story resolution2
+          resolutionWithXp "resolution2" $ allGainXpEdit' attrs recordTokens updateTotal
           record TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
           addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.puzzleBox
-          allGainXp attrs
           endOfScenario
         Resolution 3 -> do
-          story resolution3
+          resolutionWithXp "resolution3" $ allGainXpEdit' attrs recordTokens updateTotal
           record TheGuardianOfTheTrapEmergedAndWasDefeated
-          allGainXp attrs
           endOfScenario
         _ -> error "invalid resolution"
       pure s

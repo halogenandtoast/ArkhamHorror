@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { TokenType } from '@/arkham/types/Token'
+import { keyToId } from '@/arkham/types/Key'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import Key from '@/arkham/components/Key.vue'
 import Seal from '@/arkham/components/Seal.vue'
@@ -10,11 +11,16 @@ import type { Game } from '@/arkham/types/Game'
 import { useDebug } from '@/arkham/debug'
 import { MessageType } from '@/arkham/types/Message'
 
+const emits = defineEmits<{
+  choose: [value: number]
+}>()
+
 export interface Props {
   choices: Message[]
   investigator: Arkham.Investigator
   game: Game
   portrait?: boolean
+  playerId: string
 }
 
 const props = withDefaults(defineProps<Props>(), { portrait: false })
@@ -68,12 +74,14 @@ const damage = computed(() => (props.investigator.tokens[TokenType.Damage] || 0)
 const alarmLevel = computed(() => props.investigator.tokens[TokenType.AlarmLevel] || 0)
 const leylines = computed(() => props.investigator.tokens[TokenType.Leyline] || 0)
 
+const choose = (index: number) => emits('choose', index)
+
 </script>
 
 <template>
   <div class="resources">
     <div class="keys" v-if="keys.length > 0">
-      <Key v-for="key in keys" :key="key" :name="key" />
+      <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
     </div>
     <div class="seals" v-if="seals.length > 0">
       <Seal v-for="seal in seals" :key="seal.sealKind" :seal="seal" />

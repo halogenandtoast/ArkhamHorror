@@ -291,7 +291,7 @@ function onDrop(event: DragEvent) {
     if (data) {
       const json = JSON.parse(data)
       if (json.tag === "KeyTarget") {
-        debug.send(props.game.id, {tag: 'PlaceKey', contents: [{ tag: "InvestigatorTarget", contents: id.value }, { "tag": json.contents }]})
+        debug.send(props.game.id, {tag: 'PlaceKey', contents: [{ tag: "InvestigatorTarget", contents: id.value }, json.contents]})
       }
 
       if (json.tag === "EnemyTarget") {
@@ -410,6 +410,7 @@ function onDrop(event: DragEvent) {
           :game="game"
           :investigator="investigator"
           :choices="choices"
+          :playerId="playerId"
           @choose="$emit('choose', $event)"
         />
       </div>
@@ -419,6 +420,7 @@ function onDrop(event: DragEvent) {
       :game="game"
       :investigator="investigator"
       :choices="choices"
+      :playerId="playerId"
       @choose="$emit('choose', $event)"
     />
 

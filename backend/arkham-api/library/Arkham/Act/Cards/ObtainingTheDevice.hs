@@ -2,14 +2,11 @@ module Arkham.Act.Cards.ObtainingTheDevice (obtainingTheDevice) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Classes
-import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
+import Arkham.Message.Lifted.Choose
 
 newtype ObtainingTheDevice = ObtainingTheDevice ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -20,29 +17,17 @@ obtainingTheDevice = act (2, A) ObtainingTheDevice Cards.obtainingTheDevice Noth
 
 instance HasAbilities ObtainingTheDevice where
   getAbilities (ObtainingTheDevice attrs) =
-    [ mkAbility attrs 1
-        $ Objective
-        $ ForcedAbility
-        $ AddedToVictory Timing.AtIf
-        $ cardIs Enemies.nathanWickMasterOfInitiation
-    ]
+    [mkAbility attrs 1 $ Objective $ forced $ AddedToVictory #at $ CardWithTitle "Nathan Wick"]
 
 instance RunMessage ObtainingTheDevice where
-  runMessage msg a@(ObtainingTheDevice attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      puzzleBox <- selectJust $ assetIs Assets.puzzleBox
+  runMessage msg a@(ObtainingTheDevice attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       investigators <- getInvestigators
-      lead <- getLeadPlayer
-      pushAll
-        [ chooseOrRunOne
-            lead
-            [ targetLabel investigator [TakeControlOfAsset investigator puzzleBox] | investigator <- investigators
-            ]
-        , AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
-        ]
-
+      puzzleBox <- selectJust $ assetIs Assets.puzzleBox
+      leadChooseOrRunOneM $ targets investigators (`takeControlOfAsset` puzzleBox)
+      advancedWithOther attrs
       pure a
-    AdvanceAct actId _ _ | toId attrs == actId && onSide B attrs -> do
-      push $ advanceActDeck attrs
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      advanceActDeck attrs
       pure a
-    _ -> ObtainingTheDevice <$> runMessage msg attrs
+    _ -> ObtainingTheDevice <$> liftRunMessage msg attrs

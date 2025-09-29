@@ -1,13 +1,14 @@
-module Arkham.Treachery.Cards.BeneathTheLodge (beneathTheLodge, BeneathTheLodge (..)) where
+module Arkham.Treachery.Cards.BeneathTheLodge (beneathTheLodge) where
 
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestSource)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword qualified as Keyword
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype BeneathTheLodge = BeneathTheLodge TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
@@ -18,43 +19,33 @@ beneathTheLodge = treachery BeneathTheLodge Cards.beneathTheLodge
 
 instance HasModifiersFor BeneathTheLodge where
   getModifiersFor (BeneathTheLodge attrs) = do
-    hasKey <- maybe (pure False) (fieldMap InvestigatorKeys notNull) (treacheryOwner attrs)
-    self <- modifySelf attrs $ [AddKeyword Keyword.Peril | hasKey]
-    skillTest <-
-      getSkillTest >>= \case
-        Nothing -> pure mempty
-        Just st -> maybeModified_ attrs (SkillTestTarget st.id) do
-          source <- MaybeT getSkillTestSource
-          guard $ isSource attrs source
-          pure [Difficulty 1 | hasKey]
-    pure $ self <> skillTest
+    hasKey <- fieldMap InvestigatorKeys notNull attrs.drawnBy
+    modifySelf attrs [AddKeyword Keyword.Peril | hasKey]
+    whenJustM getSkillTest \st -> maybeModified_ attrs (SkillTestTarget st.id) do
+      source <- MaybeT getSkillTestSource
+      guard $ isSource attrs source
+      pure [Difficulty 1 | hasKey]
 
 instance RunMessage BeneathTheLodge where
-  runMessage msg t@(BeneathTheLodge attrs) = case msg of
+  runMessage msg t@(BeneathTheLodge attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push $ revelationSkillTest sid iid attrs #intellect (Fixed 3)
+      revelationSkillTest sid iid attrs #intellect (Fixed 3)
       pure t
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n | isSource attrs source -> do
+    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       push $ HandlePointOfFailure iid (toTarget attrs) n
       pure t
     HandlePointOfFailure _ target 0 | isTarget attrs target -> pure t
     HandlePointOfFailure iid target n | isTarget attrs target -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid
-      player <- getPlayer iid
-      pushAll
-        $ if hasClues
-          then
-            [ chooseOne
-                player
-                [ Label "Lose 1 clue" [RemoveClues (toSource attrs) (toTarget iid) 1]
-                , Label "Take 1 horror" [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]
-                ]
-            , HandlePointOfFailure iid (toTarget attrs) (n - 1)
-            ]
-          else
-            [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
-            , HandlePointOfFailure iid (toTarget attrs) (n - 1)
-            ]
+      if hasClues
+        then do
+          chooseOneM iid $ withI18n do
+            countVar 1 $ labeled' "loseClues" $ removeClues attrs iid 1
+            countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
+          push $ HandlePointOfFailure iid (toTarget attrs) (n - 1)
+        else do
+          assignHorror iid attrs 1
+          push $ HandlePointOfFailure iid (toTarget attrs) (n - 1)
       pure t
-    _ -> BeneathTheLodge <$> runMessage msg attrs
+    _ -> BeneathTheLodge <$> liftRunMessage msg attrs

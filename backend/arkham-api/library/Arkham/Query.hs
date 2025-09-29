@@ -32,6 +32,7 @@ type family QueryElement a where
   QueryElement ChaosTokenMatcher = ChaosToken
   QueryElement TargetMatcher = Target
   QueryElement SourceMatcher = Source
+  QueryElement KeyMatcher = KeyWithDetails
 
 data SomeQuery a where
   AssetQuery :: AssetMatcher -> SomeQuery (QueryElement AssetMatcher)
@@ -57,6 +58,7 @@ data SomeQuery a where
   ChaosTokenQuery :: ChaosTokenMatcher -> SomeQuery (QueryElement ChaosTokenMatcher)
   TargetQuery :: TargetMatcher -> SomeQuery (QueryElement TargetMatcher)
   SourceQuery :: SourceMatcher -> SomeQuery (QueryElement SourceMatcher)
+  KeyQuery :: KeyMatcher -> SomeQuery (QueryElement KeyMatcher)
 
 deriving stock instance Show (SomeQuery a)
 deriving stock instance Eq (SomeQuery a)

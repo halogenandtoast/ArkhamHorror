@@ -24,6 +24,7 @@ import { MessageType } from '@/arkham/types/Message';
 import { waitForImagesToLoad, imgsrc, pluralize, groupBy } from '@/arkham/helpers';
 import { useMenu } from '@/composeable/menu';
 import { useSettings } from '@/stores/settings';
+import { keyToId } from '@/arkham/types/Key'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Act from '@/arkham/components/Act.vue';
 import CardView from '@/arkham/components/Card.vue';
@@ -851,7 +852,7 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
             </div>
             <PoolItem class="depth" v-if="currentDepth" type="resource" :amount="currentDepth" />
             <div class="spent-keys" v-if="spentKeys.length > 0">
-              <Key v-for="key in spentKeys" :key="key" :name="key" />
+              <Key v-for="key in spentKeys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
             </div>
             <PoolItem
               v-if="signOfTheGods"
@@ -865,7 +866,7 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
             <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
           </div>
           <div class="keys" v-if="keys.length > 0">
-            <Key v-for="key in keys" :key="key" :name="key" />
+            <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
           </div>
           <button v-if="cardsUnderScenarioReference.length > 0" class="view-cards-under-button" @click="showCardsUnderScenarioReference">{{viewUnderScenarioReference}}</button>
         </div>

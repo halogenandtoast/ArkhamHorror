@@ -251,7 +251,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
 
           <div class="pool">
             <div class="keys" v-if="keys.length > 0">
-              <Key v-for="key in keys" :key="keyToId(key)" :name="key" />
+              <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
             </div>
             <PoolItem v-if="!omnipotent && !attached" type="health" :amount="enemyDamage" />
             <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />

@@ -928,6 +928,10 @@ allLocations =
     , --- Return to The Wages of Sin
       SomeLocationCard returnToHangmansBrook
     , SomeLocationCard returnToHangmansBrookSpectral
+    , --- Return to For the Greater Good
+      SomeLocationCard returnToLounge
+    , SomeLocationCard relicStorage
+    , SomeLocationCard shroudedArchive
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

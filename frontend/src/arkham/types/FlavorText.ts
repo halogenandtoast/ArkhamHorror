@@ -1,7 +1,20 @@
 import * as JsonDecoder from 'ts.data.json';
 import { tarotCardArcanaDecoder, TarotCardArcana } from '@/arkham/types/TarotCard';
 
-export type FlavorTextModifier = 'BlueEntry' | 'GreenEntry' | 'NestedEntry' | 'RightAligned' | 'PlainText' | 'InvalidEntry' | 'ValidEntry' | 'EntrySplit' | 'ResolutionEntry' | 'CheckpointEntry' | 'InterludeEntry'
+export type FlavorTextModifier
+  = 'BlueEntry'
+  | 'GreenEntry'
+  | 'NestedEntry'
+  | 'RightAligned'
+  | 'CenteredEntry'
+  | 'NoUnderline'
+  | 'PlainText'
+  | 'InvalidEntry'
+  | 'ValidEntry'
+  | 'EntrySplit'
+  | 'ResolutionEntry'
+  | 'CheckpointEntry'
+  | 'InterludeEntry'
 
 export type ImageModifier = 'RemoveImage' | 'SelectImage'
 
@@ -42,6 +55,8 @@ export const flavorTextModifierDecoder = JsonDecoder.oneOf<FlavorTextModifier>([
   JsonDecoder.literal('CheckpointEntry'),
   JsonDecoder.literal('InterludeEntry'),
   JsonDecoder.literal('RightAligned'),
+  JsonDecoder.literal('CenteredEntry'),
+  JsonDecoder.literal('NoUnderline'),
   JsonDecoder.literal('PlainText'),
   JsonDecoder.literal('InvalidEntry'),
   JsonDecoder.literal('ValidEntry'),

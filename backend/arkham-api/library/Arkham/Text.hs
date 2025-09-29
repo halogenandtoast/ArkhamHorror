@@ -23,10 +23,12 @@ data FlavorTextModifier
   | PlainText
   | InvalidEntry
   | ValidEntry
+  | CenteredEntry
   | ResolutionEntry
   | CheckpointEntry
   | InterludeEntry
   | NestedEntry
+  | NoUnderline
   deriving stock (Show, Eq, Ord, Data)
 
 data ListItemEntry = ListItemEntry

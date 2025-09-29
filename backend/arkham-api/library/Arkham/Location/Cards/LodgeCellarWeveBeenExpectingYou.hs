@@ -1,36 +1,27 @@
-module Arkham.Location.Cards.LodgeCellarWeveBeenExpectingYou (
-  lodgeCellarWeveBeenExpectingYou,
-  LodgeCellarWeveBeenExpectingYou (..),
-)
-where
+module Arkham.Location.Cards.LodgeCellarWeveBeenExpectingYou (lodgeCellarWeveBeenExpectingYou) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenarios.ForTheGreaterGood.Helpers
-import Arkham.Timing qualified as Timing
 
 newtype LodgeCellarWeveBeenExpectingYou = LodgeCellarWeveBeenExpectingYou LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lodgeCellarWeveBeenExpectingYou :: LocationCard LodgeCellarWeveBeenExpectingYou
-lodgeCellarWeveBeenExpectingYou = location LodgeCellarWeveBeenExpectingYou Cards.lodgeCellarWeveBeenExpectingYou 3 (PerPlayer 1)
+lodgeCellarWeveBeenExpectingYou =
+  location LodgeCellarWeveBeenExpectingYou Cards.lodgeCellarWeveBeenExpectingYou 3 (PerPlayer 1)
 
 instance HasAbilities LodgeCellarWeveBeenExpectingYou where
-  getAbilities (LodgeCellarWeveBeenExpectingYou attrs) =
-    withRevealedAbilities
-      attrs
-      [mkAbility attrs 1 $ ForcedAbility $ RevealLocation Timing.After You $ LocationWithId $ toId attrs]
+  getAbilities (LodgeCellarWeveBeenExpectingYou a) =
+    extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
 
 instance RunMessage LodgeCellarWeveBeenExpectingYou where
-  runMessage msg l@(LodgeCellarWeveBeenExpectingYou attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      mKey <- getRandomKey
-      for_ mKey $ \key ->
-        push $ PlaceKey (toTarget attrs) key
+  runMessage msg l@(LodgeCellarWeveBeenExpectingYou attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      getRandomKey >>= traverse_ (placeKey attrs)
       pure l
-    _ -> LodgeCellarWeveBeenExpectingYou <$> runMessage msg attrs
+    _ -> LodgeCellarWeveBeenExpectingYou <$> liftRunMessage msg attrs

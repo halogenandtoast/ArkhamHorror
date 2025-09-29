@@ -1,11 +1,13 @@
 module Arkham.EncounterCard.Source where
 
 import Arkham.Prelude
+import Arkham.Scenario.Deck
 import GHC.OverloadedLabels
 
 data EncounterCardSource
   = FromDiscard
   | FromEncounterDeck
+  | FromKeyedEncounterDeck ScenarioEncounterDeckKey
   | FromTheVoid
   | FromVictoryDisplay
   deriving stock (Show, Ord, Eq, Generic, Data)

@@ -580,6 +580,18 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       & (encounterDeckL %~ withDeck (filter (/= ec)))
       & (victoryDisplayL %~ filter (/= EncounterCard ec))
       & (setAsideCardsL %~ filter (/= EncounterCard ec))
+  AddToSpecificEncounterDiscard _ ec -> do
+    quietCancelCardDraw (EncounterCard ec)
+    pushAll [ObtainCard (toCardId ec), Do msg]
+    pure a
+  Do (AddToSpecificEncounterDiscard dkey ec) -> do
+    let handler = specificEncounterDeckHandler dkey
+    pure
+      $ a
+      & (discardLens handler %~ (ec :))
+      & (encounterDeckL %~ withDeck (filter (/= ec)))
+      & (victoryDisplayL %~ filter (/= EncounterCard ec))
+      & (setAsideCardsL %~ filter (/= EncounterCard ec))
   AddToVictory (SkillTarget sid) -> do
     card <- field Field.SkillCard sid
     pure $ a & (victoryDisplayL %~ (card :))
@@ -1319,8 +1331,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       encounterDecksF = case cardSource of
         FromEncounterDeck -> encounterDecksL . each . _1 %~ withDeck (filter ((/= cardId) . toCardId))
         _ -> id
+      signifier = case cardSource of
+        FromEncounterDeck -> Just Deck.EncounterDeck
+        FromKeyedEncounterDeck key -> Just $ Deck.EncounterDeckByKey key
+        FromDiscard -> Just Deck.EncounterDiscard
+        _ -> Nothing
     shuffled <- shuffleM encounterDeck
-    push (InvestigatorDrewEncounterCard iid card)
+    push $ InvestigatorDrewEncounterCardFrom iid card signifier
     pure $ a & (encounterDeckL .~ Deck shuffled) & (discardL .~ discard) & encounterDecksF
   FoundEncounterCardFrom iid target cardSource card -> do
     let
@@ -1395,6 +1412,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure a
   FindAndDrawEncounterCard iid matcher includeDiscard -> do
     handler <- getEncounterDeckHandler iid
+    deckKey <-
+      getEncounterDeckKey iid <&> \case
+        RegularEncounterDeck -> FromEncounterDeck
+        other -> FromKeyedEncounterDeck other
     let
       matchingDiscards = filter (`cardMatch` matcher) (a ^. discardLens handler)
       matchingDeckCards =
@@ -1412,7 +1433,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         ]
           <> [ targetLabel
                  (toCardId card)
-                 [FoundAndDrewEncounterCard iid FromEncounterDeck card]
+                 [FoundAndDrewEncounterCard iid deckKey card]
              | card <- matchingDeckCards
              ]
 
@@ -1632,6 +1653,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       & (completedActStackL . at n ?~ (oldAct : completedActStack))
   PlaceKey ScenarioTarget k -> do
     pure $ a & setAsideKeysL %~ deleteSet k & keysL %~ insertSet k
+  PlaceKey GameTarget k -> do
+    pure $ a & setAsideKeysL %~ insertSet k & keysL %~ deleteSet k
   PlaceKey target k | not (isTarget a target) -> do
     pure $ a & (setAsideKeysL %~ deleteSet k)
   RemoveTokens _ ScenarioTarget token amount -> do

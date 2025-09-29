@@ -1,16 +1,10 @@
-module Arkham.Location.Cards.SanctumDoorwayCeremonyRoom (
-  sanctumDoorwayCeremonyRoom,
-  SanctumDoorwayCeremonyRoom (..),
-)
-where
+module Arkham.Location.Cards.SanctumDoorwayCeremonyRoom (sanctumDoorwayCeremonyRoom) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype SanctumDoorwayCeremonyRoom = SanctumDoorwayCeremonyRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -20,28 +14,20 @@ sanctumDoorwayCeremonyRoom :: LocationCard SanctumDoorwayCeremonyRoom
 sanctumDoorwayCeremonyRoom = location SanctumDoorwayCeremonyRoom Cards.sanctumDoorwayCeremonyRoom 3 (PerPlayer 2)
 
 instance HasAbilities SanctumDoorwayCeremonyRoom where
-  getAbilities (SanctumDoorwayCeremonyRoom attrs) =
-    withRevealedAbilities
-      attrs
-      [ restrictedAbility
-          attrs
-          1
-          ( AnyCriterion [AssetExists $ assetAt $ toId attrs, InvestigatorExists $ investigatorAt $ toId attrs]
-          )
-          $ ForcedAbility
-          $ RoundEnds Timing.When
-      ]
+  getAbilities (SanctumDoorwayCeremonyRoom a) =
+    extendRevealed1 a
+      $ restricted a 1 (oneOf [AssetExists $ assetAt a.id, InvestigatorExists $ investigatorAt a.id])
+      $ forced
+      $ RoundEnds #when
 
 instance RunMessage SanctumDoorwayCeremonyRoom where
-  runMessage msg l@(SanctumDoorwayCeremonyRoom attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      cancelEffect <-
-        selectAny $ investigatorAt (toId attrs) <> InvestigatorWithTokenKey #skull
-      unless cancelEffect $ do
-        investigators <- select $ investigatorAt $ toId attrs
-        assets <- select $ assetAt (toId attrs) <> AssetWithSanity
-        pushAll
-          $ [InvestigatorDirectDamage iid (toAbilitySource attrs 1) 0 1 | iid <- investigators]
-          <> [DealAssetDirectDamage aid (toAbilitySource attrs 1) 0 1 | aid <- assets]
+  runMessage msg l@(SanctumDoorwayCeremonyRoom attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      cancelEffect <- selectAny $ investigatorAt attrs.id <> InvestigatorWithTokenKey #skull
+      unless cancelEffect do
+        investigators <- select $ investigatorAt attrs.id
+        for_ investigators \iid -> directHorror iid (attrs.ability 1) 1
+        assets <- select $ assetAt attrs.id <> AssetWithSanity
+        for_ assets \aid -> dealAssetDirectHorror aid (attrs.ability 1) 1
       pure l
-    _ -> SanctumDoorwayCeremonyRoom <$> runMessage msg attrs
+    _ -> SanctumDoorwayCeremonyRoom <$> liftRunMessage msg attrs

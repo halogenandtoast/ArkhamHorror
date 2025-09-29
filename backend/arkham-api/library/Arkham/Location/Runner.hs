@@ -97,6 +97,15 @@ extendRevealed = withRevealedAbilities
 extendRevealed1 :: LocationAttrs -> Ability -> [Ability]
 extendRevealed1 attrs ability = extendRevealed attrs [ability]
 
+withUnrevealedAbilities :: LocationAttrs -> [Ability] -> [Ability]
+withUnrevealedAbilities attrs other = withBaseAbilities attrs $ guard (not $ locationRevealed attrs) *> other
+
+extendUnrevealed :: LocationAttrs -> [Ability] -> [Ability]
+extendUnrevealed = withUnrevealedAbilities
+
+extendUnrevealed1 :: LocationAttrs -> Ability -> [Ability]
+extendUnrevealed1 attrs ability = extendUnrevealed attrs [ability]
+
 getModifiedRevealClueCount :: HasGame m => LocationAttrs -> m Int
 getModifiedRevealClueCount attrs = do
   mods <- getModifiers attrs

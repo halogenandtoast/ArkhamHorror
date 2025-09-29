@@ -67,6 +67,10 @@
     "baneOfTheLiving": {
       "unfinishedBusiness": "Choose an Unfinished Business card in play, flip it to its Heretic side, and place damage on it equal to half its health.",
       "geist": "Discard cards from the top of the spectral encounter deck until a Geist enemy is discarded. Spawn that enemy engaged with you."
+    },
+    "witchweed": {
+      "surge": "Give Witchweed surge to place it in the standard encounter discard pile.",
+      "otherwise": "Place it in the spectral encounter discard pile."
     }
   },
   "intro": {

@@ -1,20 +1,14 @@
-module Arkham.Enemy.Cards.LodgeJailor (
-  lodgeJailor,
-  LodgeJailor (..),
-)
-where
+module Arkham.Enemy.Cards.LodgeJailor (lodgeJailor) where
 
-import Arkham.Prelude
-
-import Arkham.Action qualified as Action
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.SkillTest.Lifted (parley)
+import Arkham.I18n
 import Arkham.Key
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.ForTheGreaterGood.Helpers
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Sanctum))
 
 newtype LodgeJailor = LodgeJailor EnemyAttrs
@@ -23,46 +17,33 @@ newtype LodgeJailor = LodgeJailor EnemyAttrs
 
 lodgeJailor :: EnemyCard LodgeJailor
 lodgeJailor =
-  enemyWith
-    LodgeJailor
-    Cards.lodgeJailor
-    (2, Static 3, 3)
-    (0, 2)
-    (spawnAtL ?~ SpawnAt (LocationWithTrait Sanctum))
+  enemy LodgeJailor Cards.lodgeJailor (2, Static 3, 3) (0, 2)
+    & setSpawnAt (LocationWithTrait Sanctum)
 
 instance HasAbilities LodgeJailor where
-  getAbilities (LodgeJailor attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1 $ ForcedAbility $ EnemySpawns Timing.After Anywhere $ EnemyWithId $ toId attrs
-      , skillTestAbility
-          $ restrictedAbility attrs 2 OnSameLocation
-          $ ActionAbility [Action.Parley] (ActionCost 1)
+  getAbilities (LodgeJailor a) =
+    extend
+      a
+      [ mkAbility a 1 $ forced $ EnemySpawns #after Anywhere (be a)
+      , skillTestAbility $ restricted a 2 OnSameLocation parleyAction_
       ]
 
 instance RunMessage LodgeJailor where
-  runMessage msg e@(LodgeJailor attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg e@(LodgeJailor attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       mKey <- getRandomKey
-      pushAll
-        $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 2
-        : [PlaceKey (toTarget attrs) k | k <- maybeToList mKey]
+      placeDoom (attrs.ability 1) attrs 2
+      for_ mKey (placeKey attrs)
       pure e
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
-      push $ parley sid iid (toAbilitySource attrs 2) attrs SkillIntellect (Fixed 3)
+      parley sid iid (attrs.ability 2) attrs #intellect (Fixed 3)
       pure e
-    PassedSkillTest iid _ (isAbilitySource attrs 2 -> True) SkillTestInitiatorTarget {} _ _ -> do
-      let
-        hasKey = notNull $ enemyKeys attrs
-        hasDoom = enemyDoom attrs > 0
-      player <- getPlayer iid
-      when (hasKey || hasDoom) $ do
-        push
-          $ chooseOrRunOne player
-          $ [Label "Remove 1 Doom" [RemoveDoom (toAbilitySource attrs 2) (toTarget attrs) 1] | hasDoom]
-          <> [ Label ("Take control of the " <> keyName k <> " key") [PlaceKey (toTarget iid) k]
-             | k <- setToList $ enemyKeys attrs
-             ]
+    PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
+      chooseOrRunOneM iid $ withI18n do
+        when (attrs.token #doom > 0) do
+          countVar 1 $ labeled' "removeDoom" $ removeDoom (attrs.ability 2) attrs 1
+        for_ (setToList $ enemyKeys attrs) \k ->
+          withVar "name" (String $ keyName k) $ labeled' "takeControlOfNamedKey" $ placeKey iid k
       pure e
-    _ -> LodgeJailor <$> runMessage msg attrs
+    _ -> LodgeJailor <$> liftRunMessage msg attrs

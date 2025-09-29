@@ -16,6 +16,7 @@ import Arkham.Matcher.Enemy as X
 import Arkham.Matcher.Event as X
 import Arkham.Matcher.History as X
 import Arkham.Matcher.Investigator as X
+import Arkham.Matcher.Key as X
 import Arkham.Matcher.Location as X
 import Arkham.Matcher.Phase as X
 import Arkham.Matcher.Scenario as X

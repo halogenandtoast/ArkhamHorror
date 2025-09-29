@@ -10,6 +10,7 @@ import Arkham.Helpers.FlavorText (FlavorTextBuilder, buildFlavor)
 import Arkham.Helpers.Query (getLead)
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Key
 import Arkham.Message (Message (Would), uiToRun)
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted
@@ -282,6 +283,11 @@ cardLabeled :: (ReverseQueue m, HasCardCode a) => a -> QueueT Message m () -> Ch
 cardLabeled a action = unterminated do
   msgs <- lift $ capture action
   tell [CardLabel (toCardCode a) msgs]
+
+keyLabeled :: ReverseQueue m => ArkhamKey -> QueueT Message m () -> ChooseT m ()
+keyLabeled a action = unterminated do
+  msgs <- lift $ capture action
+  tell [KeyLabel a msgs]
 
 tarotLabeled :: ReverseQueue m => TarotCard -> QueueT Message m () -> ChooseT m ()
 tarotLabeled tarotCard action = unterminated do

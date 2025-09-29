@@ -6,7 +6,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message
+import Arkham.Scenarios.ForTheGreaterGood.Helpers
 
 newtype LodgeCellarMembersOnly = LodgeCellarMembersOnly LocationAttrs
   deriving anyclass IsLocation
@@ -19,19 +19,16 @@ instance HasModifiersFor LodgeCellarMembersOnly where
   getModifiersFor (LodgeCellarMembersOnly a) = whenUnrevealed a $ modifySelf a [Blocked]
 
 instance HasAbilities LodgeCellarMembersOnly where
-  getAbilities (LodgeCellarMembersOnly attrs) =
-    extend
-      attrs
-      [ withTooltip
-          "{action}: Investigators at the Lodge Gates spend 1 {perPlayer} clues, as a group: Reveal the Lodge Cellar."
-          $ restricted (proxied (LocationMatcherSource "Lodge Gates") attrs) 1 Here
-          $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) (LocationWithTitle "Lodge Gates"))
-      | attrs.unrevealed
-      ]
+  getAbilities (LodgeCellarMembersOnly a) =
+    extendUnrevealed1 a
+      $ scenarioI18n
+      $ withI18nTooltip "lodgeCellarMembersOnly.action"
+      $ restricted (proxied (LocationMatcherSource "Lodge Gates") a) 1 Here
+      $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) (LocationWithTitle "Lodge Gates"))
 
 instance RunMessage LodgeCellarMembersOnly where
   runMessage msg l@(LodgeCellarMembersOnly attrs) = runQueueT $ case msg of
     UseThisAbility iid (isProxySource attrs -> True) 1 -> do
-      push $ RevealLocation (Just iid) attrs.id
+      revealBy iid attrs
       pure l
     _ -> LodgeCellarMembersOnly <$> liftRunMessage msg attrs

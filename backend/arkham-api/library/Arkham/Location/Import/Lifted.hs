@@ -19,6 +19,8 @@ import Arkham.Location.Runner as X (
   costToEnterUnrevealedL,
   extendRevealed,
   extendRevealed1,
+  extendUnrevealed,
+  extendUnrevealed1,
   floodLevelL,
   getLeadPlayer,
   getLocationMetaDefault,

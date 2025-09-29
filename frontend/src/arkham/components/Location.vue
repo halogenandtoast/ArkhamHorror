@@ -3,6 +3,7 @@ import { onBeforeUnmount, ComputedRef, ref, computed, watch, nextTick } from 'vu
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
+import { keyToId } from '@/arkham/types/Key'
 import * as ArkhamGame from '@/arkham/types/Game';
 import DebugLocation from '@/arkham/components/debug/Location.vue';
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message';
@@ -370,7 +371,7 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
           </div>
 
           <div class="pool" v-if="hasPool">
-            <Key v-for="key in keys" :key="key" :name="key" />
+            <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
             <Seal v-for="seal in seals" :key="seal.sealKind" :seal="seal" />
             <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
             <PoolItem v-if="horror && horror > 0" type="horror" :amount="horror" />
@@ -541,7 +542,9 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
   flex-direction: row;
   justify-self: flex-start;
   height: 2em;
-  pointer-events: none;
+  &:not(:has(> .key--can-interact)) {
+    pointer-events: none;
+  }
   & :deep(.poolItem) {
     pointer-events: none;
   }
@@ -661,7 +664,9 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
   align-self: flex-start;
   align-items: flex-end;
   gap: 2px;
-  pointer-events: none;
+  &:not(:has(> .key--can-interact)) {
+    pointer-events: none;
+  }
   &.clues {
     top: 10%;
     @media (max-width: 800px) and (orientation: portrait) {

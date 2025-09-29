@@ -191,7 +191,7 @@ const breaches = computed(() => {
         :amount="act.clues"
       />
       <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
-      <Key v-for="key in keys" :key="keyToId(key)" :name="key" />
+      <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="$emit('choose', $event)" />
     </div>
   </div>
 </template>

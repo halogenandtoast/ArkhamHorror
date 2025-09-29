@@ -4235,11 +4235,14 @@ instance Projection Investigator where
       InvestigatorSupplies -> pure investigatorSupplies
 
 emptyKeyDetails :: ArkhamKey -> KeyWithDetails
-emptyKeyDetails k = KeyWithDetails k Nothing Nothing Nothing False
+emptyKeyDetails k = KeyWithDetails k Nothing Nothing Nothing Nothing False
 
 instance Query KeyMatcher where
   toSomeQuery = KeyQuery
   select_ matcher = do
+    enemyKeys <-
+      concatMap (\(eid, ks) -> map (\k -> (emptyKeyDetails k) {keyEnemy = Just eid}) (toList ks))
+        <$> selectWithField EnemyKeys AnyEnemy
     locationKeys <-
       concatMap (\(lid, ks) -> map (\k -> (emptyKeyDetails k) {keyLocation = Just lid}) (toList ks))
         <$> selectWithField LocationKeys Anywhere
@@ -4255,11 +4258,14 @@ instance Query KeyMatcher where
         KeyOnCard ->
           pure
             $ filter
-              (or . sequence [isJust . (.keyAsset), isJust . (.keyLocation), isJust . (.keyInvestigator)])
+              ( or
+                  . sequence
+                    [isJust . (.keyEnemy), isJust . (.keyAsset), isJust . (.keyLocation), isJust . (.keyInvestigator)]
+              )
               as
         KeyIs k -> pure $ filter ((== k) . (.key)) as
 
-    go (locationKeys <> investigatorKeys <> scenarioKeys) matcher
+    go (locationKeys <> investigatorKeys <> enemyKeys <> scenarioKeys) matcher
 
 instance Query TargetMatcher where
   toSomeQuery = TargetQuery

@@ -41,6 +41,7 @@ instance RunMessage ShroudedArchive where
                   [ (`placeKey` b.key) <$> a.keyLocation
                   , (`placeKey` b.key) <$> a.keyInvestigator
                   , (`placeKey` b.key) <$> a.keyAsset
+                  , (`placeKey` b.key) <$> a.keyEnemy
                   , guard a.keySetAside $> placeKey GameTarget b.key
                   ]
           chooseOneM iid $ for ks \k' -> keyLabeled k'.key $ swapKeys k k'

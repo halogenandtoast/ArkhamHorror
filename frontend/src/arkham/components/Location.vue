@@ -365,12 +365,12 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
             </template>
           </div>
 
-          <div class="clues pool" v-if="(clues ?? 0) > 0 || floodLevel">
+          <div class="clues pool location-pool" v-if="(clues ?? 0) > 0 || floodLevel">
             <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
             <img v-if="floodLevel" :src="floodLevel" class="flood-level" />
           </div>
 
-          <div class="pool" v-if="hasPool">
+          <div class="pool location-pool" v-if="hasPool">
             <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
             <Seal v-for="seal in seals" :key="seal.sealKind" :seal="seal" />
             <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
@@ -537,7 +537,7 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
   width: min(calc(10vw + 20px), 60px);//var(--card-width);
 }
 
-.pool {
+.location-pool {
   display: flex;
   flex-direction: row;
   justify-self: flex-start;
@@ -656,7 +656,7 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
   }
 }
 
-.pool {
+.pool.location-pool {
   position: absolute;
   top: 50%;
   align-items: center;
@@ -664,7 +664,7 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
   align-self: flex-start;
   align-items: flex-end;
   gap: 2px;
-  &:not(:has(> .key--can-interact)) {
+  &:not(:has(.keys .key--can-interact)) {
     pointer-events: none;
   }
   &.clues {

@@ -98,9 +98,9 @@ getHasRecord part key = do
       meta <- getCampaignMeta @Metadata
       if meta.currentCampaignMode == Just part
         then Lift.getHasRecord key
-        else case meta.otherCampaignAttrs of
-          Just otherAttrs -> pure $ hasRecord key otherAttrs.log
-          Nothing -> error "no other campaign attrs"
+        else pure $ case meta.otherCampaignAttrs of
+          Just otherAttrs -> hasRecord key otherAttrs.log
+          Nothing -> False
 
 whenHasRecord :: (IsCampaignLogKey k, HasGame m, HasCallStack) => CampaignPart -> k -> m () -> m ()
 whenHasRecord part key action = whenM (getHasRecord part key) action

@@ -40,6 +40,8 @@ const choices = computed(() => {
   return ArkhamGame.choices(props.game, props.playerId)
 })
 
+const tokenKey = computed(() => props.name.tag === 'TokenKey')
+
 function canInteract(c: Message): boolean {
   if (c.tag === MessageType.KEY_LABEL) {
     if (c.key.tag === 'TokenKey') {
@@ -78,15 +80,22 @@ function startDrag(event: DragEvent) {
 </script>
 
 <template>
-  <img :src="keyImage" class="key" :class="{'key--can-interact': keyAction !== -1 }" @dragstart="startDrag($event)" @click="choose" />
+  <img :src="keyImage" class="key" :class="{'key--can-interact': keyAction !== -1, tokenKey }" @dragstart="startDrag($event)" @click="choose" />
 </template>
 
 <style lang="scss" scoped>
 .key {
   width: 20px;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+  &:not(.tokenKey) {
+    border-radius: 4px;
+  }
+}
+
+.tokenKey {
   border-radius: 20px;
 }
+
 .key--can-interact {
   border: 2px solid var(--select);
   cursor: pointer;

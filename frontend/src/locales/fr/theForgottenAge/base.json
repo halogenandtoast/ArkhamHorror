@@ -10,7 +10,7 @@
     "yigsFury": "Colère de Yig",
     "theInvestigatorsRecoveredTheRelicOfAges": "Les investigateurs ont trouvé la Relique des Âges",
     "alejandroRecoveredTheRelicOfAges": "Alejandro a trouvé la Relique des Âges",
-    "theHarbingerIsStillAlive": "le Hérault est toujours vivant",
+    "theHarbingerIsStillAlive": "Le Hérault est toujours vivant",
     "theInvestigatorsGaveCustodyOfTheRelicToAlejandro": "Les investigateurs ont confié la relique à Alejandro",
     "theInvestigatorsHaveEarnedAlejandrosTrust": "Les investigateurs ont gagné la confiance d’Alejandro",
     "theInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone": "Les investigateurs ont confié la relique à Harlan Earnstone",
@@ -20,12 +20,12 @@
     "theRelicIsMissing": "La relique a disparu",
     "theInvestigatorsRescuedAlejandro": "Les investigateurs ont secouru Alejandro",
     "alejandroIsMissing": "Alejandro a disparu",
-    "theInvestigatorsForgedABondWithIchtaca": "les investigateurs ont tissé un lien avec Ichtaca",
+    "theInvestigatorsForgedABondWithIchtaca": "Les investigateurs ont tissé un lien avec Ichtaca",
     "theInvestigatorsRecruitedTheHelpOfAnotherExpedition": "Les investigateurs ont obtenu l'assistance d'une autre expédition",
     "ichtacaIsInTheDark": "Ichtaca est dans les Ténèbres",
     "pathsAreKnownToYou": "chemins connus",
     "ichtacaHasConfidenceInYou": "Ichtaca vous fait confiance",
-    "theInvestigatorsMappedOutTheWayForward": "les investigateurs ont cartographié la voie d’accès",
+    "theInvestigatorsMappedOutTheWayForward": "Les investigateurs ont cartographié la voie d’accès",
     "ichtacasFaithIsRestored": "La foi d’Ichtaca est restaurée.",
     "theJungleWatches": "La jungle veille",
     "theInvestigatorsCooperatedWithTheYithians": "Les investigateurs ont coopéré avec les Yithiens",
@@ -41,7 +41,7 @@
     "theInvestigatorsFellIntoTheDepths": "Les investigateurs ont chuté dans les profondeurs",
     "theNexusIsNear": "Le Nexus est proche",
     "theBraziersAreLit": "Les braseros sont allumés",
-    "theBraziersRemainUnlit": "les braseros restent éteints",
+    "theBraziersRemainUnlit": "Les braseros restent éteints",
     "theInvestigatorsMendedTheTearInTheFabricOfTime": "Les investigateurs ont comblé la brèche dans la structure du temps",
     "theInvestigatorsSavedTheCivilizationOfTheSerpents": "Les investigateurs ont sauvé la civilisation des Serpents",
     "theInvestigatorsSavedTheCivilizationOfTheYithians": "Les investigateurs ont sauvé la civilisation des Yithiens",
@@ -109,5 +109,218 @@
     "medicine": "Vérifiez votre équipement. Chaque investigateur possédant des médicaments a le droit d’en rayer une unité de son équipement pour choisir une faiblesse Empoisonné du deck de n’importe quel investigateur et l’en retirer. Chaque investigateur qui possède encore une faiblesse Empoisonné dans son deck lit _Le Poison se Propage_.",
     "doNotUseMedicine": "Ne pas utiliser de médicaments",
     "thePoisonSpreads": "<p>_Le Poison se Propage_ : Les jours passaient et le poison continuait de se répandre dans mon corps. La deuxième nuit, j’étais trempé de sueur. Je commençais à avoir des difficultés à respirer, et je débutais chaque journée en rendant la plus grande partie du dîner de la veille.</p><p class='basic right'>Vous subissez 1 traumatisme physique.</p>"
+  },
+  "interlude2": {
+    "label": {
+      "pickExpeditionsEnd2": "It belongs in a museum.",
+      "pickExpeditionsEnd3": "It is too dangerous to be on display."
+    },
+    "title": "Interlude II: Expedition’s End",
+    "pickExpeditionsEnd1": "Check Campaign Log. *If the investigators recovered the Relic of Ages*: Read _Expedition’s End 1_.",
+    "pickExpeditionsEnd2": "If Alejandro recovered the Relic of Ages: Skip to _Expedition’s End 5_.",
+    "expeditionsEnd1": "<p>_Expedition’s End 1:_<p><p class='anke'>Friday, July 17th, 1925</p><p>We have finally made it back to Arkham, our expedition a “success.” Alejandro is excited to report his findings to the university. How he maintains his starry-eyed idealism after the hell we went through in the jungle is beyond me. His attention is fixated on the strange relic that we discovered in the ruins. I wish we knew a little more about the artifact’s origins. It unsettles me greatly. It hums at all times and pulses with an otherworldly energy I can scarcely describe. As we traveled home with the artifact in tow, our nights were plagued by bizarre nightmares: dreams of other worlds and civilizations.</p><p>Alejandro wants to bring the relic to the Miskatonic Museum, to put on display along with the other Eztli artifacts we discovered. My feelings are mixed. At the museum, it will receive proper care, and historians will be able to study it and perhaps even discern its purpose. However, I fear that the relic may be too dangerous for the public. After all, we still have no idea what the damned thing even is. Alejandro would hate it, but perhaps it would be better to keep the relic somewhere safe, where Harlan and I can study it in private. I’ll have to decide tonight; after tomorrow, there won’t be time to change my mind…</p><ul><li>The lead investigator must decide (choose one):<ul><li><p>It belongs in a museum. Alejandro and the museum staff will be able to study it and learn more about its purpose.</p><p class='basic'>Proceed to _Expedition’s End 2_.</p></li><li><p>It is too dangerous to be on display. We should keep it hidden and safe until we know more about it.</p><p class='basic'>Skip to _Expedition’s End 3_.</p></li></ul></li></ul>",
+    "expeditionsEnd2": "<p>_Expedition’s End 2:_</p><p class='anke'>Sunday, July 19th, 1925</p><p>I’ve decided to give custody of the relic to Alejandro. This entire expedition was based on his research, after all—he should be the one to study it. If anyone can discover the relic’s secrets, it’s him.</p><p>The relic is to be the centerpiece of a new exhibit at the museum. Alejandro has already written extensively about our discoveries, but his work has only just begun. Many mysteries about our expedition remain. How have the Eztli people remained undiscovered for so long? Why did they appear to be guarding the jungle, and from what? Who really built the temple ruins we explored? I have no doubt Alejandro will uncover the answers to these questions, given enough time.</p><p>As for me, my role in this endeavor has ended. However, I have yet to relax. My thoughts are constantly in the jungle—serpentine figures in the shadows, obsidian arrows embedded in skeletal bodies, malformed voices shrieking in the cavernous depths. When I walk through the streets, I find myself drawn toward the museum without realizing it, as though possessed to see the relic once again. There is a nagging sensation in the back of my mind, as though we have forgotten something important. What must I do to rid myself of—</p><p>(The journal entry ends abruptly.)</p><ul><li>Record in your Campaign Log that *the investigators gave custody of the relic to Alejandro*.</li><li>Record in your Campaign Log that *the investigators have earned Alejandro’s trust*. If it is not already in an investigator’s deck, any one investigator may choose to add Alejandro Vela to their deck. This card does not count toward that investigator’s deck size.</li><li>Add 1 {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.</li><li>Skip to _Expedition’s End 4_.</li></ul>",
+    "expeditionsEnd3": "<p>_Expedition’s End 3:_</p><p class='anke'>Sunday, July 19th, 1925</p><p>I’ve decided to keep the relic hidden for now. Alejandro is not happy with my decision, but until we know what the orb is capable of, it’s important that it stay somewhere safe, where it won’t endanger others. Harlan agrees with me, and has offered to take custody of the relic and keep it in his private office. There, we can study the artifact in secret.</p><p>Alejandro is staying in Arkham for the time being, recording his notes about the expedition and helping the museum put together an exhibit displaying our other, less dangerous discoveries. As for me, I hope to find answers to other mysteries: How have the Eztli people remained undiscovered for so long? Why did they appear to be guarding the jungle, and from what? Who really built the temple ruins we explored?</p><p>My thoughts are constantly in the jungle—serpentine figures in the shadows, obsidian arrows embedded in skeletal bodies, malformed voices shrieking in the cavernous depths. Each time I leave Harlan’s office, I find myself longing to head back and gaze upon the relic once more. There is a nagging sensation in the back of my mind, as though we have forgotten something important. What must I do to rid myself of—</p><p>(The journal entry ends abruptly.)</p><ul><li>Record in your Campaign Log that *the investigators gave custody of the relic to Harlan Earnstone*.</li><li>Record in your Campaign Log that *Alejandro is continuing his research on his own*. If Alejandro Vela is currently in an investigator’s deck, remove him from that investigator’s deck.</li><li>Proceed to _Expedition’s End 4_.</li></ul>",
+    "expeditionsEnd4": "<p>_Expedition’s End 4:_</p><p>You drop your pen as a loud knocking at the door startles you, and you jump to your feet. It is almost 2:30 in the morning. Who could possibly be at your door at this hour? Your thoughts wander again to the jungle, and you are faced with a vision of serpent-creatures attacking you in your own home. Shuddering, you find a weapon and approach the front door carefully, ready to strike if need be. You take a long breath and open the door.</p><p>On the other side is a familiar woman with brown skin, long brown hair, and piercing yellow eyes set in a hard glare. Though her attire has changed, you recognize her instantly as Ichtaca, the Eztli warrior you encountered in the rainforest. Wearing a long coat and a Bollman hat, she is visibly uncomfortable in her shoes. Her jaw is set in anger. You are about to raise your weapon in defense when she lets out a heavy sigh and walks slowly over the threshold of your home, shutting your front door behind her. “Whatever you did, you have to reverse it,” she intones darkly. “Or we will all cease to exist.”</p><p class='basic right'>The story continues in _Scenario III: Threads of Fate_.</p>",
+    "expeditionsEnd5": "<p>_Expedition’s End 5_: Harlan Earnstone paces across your living room, dabbing his wrinkled forehead with his handkerchief. “It’s my fault. I should never have encouraged them to go on that dreadful expedition.” Though your paths have only crossed a few times before, Mr. Earnstone has become a valuable contact of yours within Miskatonic University. When the University’s latest expedition returned with only a few survivors and a handful of strange, archaic artifacts, he came to you for advice.</p><p>“I know, I know. I should at least take solace in the fact that the expedition was successful, despite its heavy losses. Alejandro was right all along. The Eztli people are real. And yet…I am concerned about some of these findings.” Harlan pulls a small leather-bound journal from his suitcase and hands it to you. “Before the expedition leader’s tragic death, the leader recorded many of the group’s discoveries in this journal. One of the surviving members of the expedition managed to grab it from the camp before fleeing the jungle. I think if you read these entries, you’ll understand what I mean. The things they experienced, the creatures they encountered…” Harlan shudders and adjusts his glasses with too-shaky hands. “I am concerned not only for Alejandro, but for all of us. Read this journal, and if you can, please keep an eye on my colleague.” You agree to help, but his worry does not fade. “I only hope that I am not damning you to a similar fate by asking for your aid.”</p><p>You spend the remainder of that night studying the expedition journal, your mind swimming with thoughts of strange serpent-creatures and Aztec warriors. Long after Harlan has left, a loud knocking at the door startles you, and you jump to your feet. It is almost 2:30 in the morning. Who could possibly be at your door at this hour? You open the front door warily. On the other side is a woman with brown skin, long brown hair, and piercing yellow eyes set in a hard glare. She wears a long coat and a Bollman‑style hat, visibly uncomfortable in her shoes. Her jaw is set in anger. A sudden flash of insight crosses your mind, and you realize at once who she must be. After all, you’ve read and re-read the journal’s description of Ichtaca, the Eztli warrior. She lets out a heavy sigh and walks slowly over the threshold of your home, shutting your front door behind her. “Whatever they did, you have to reverse it,” she intones darkly. “Or we will all cease to exist.”</p><p class='basic right'>The story continues in _Scenario III: Threads of Fate_.</p>"
+  },
+  "interlude3": {
+    "title": "Interlude III: The Jungle Beckons",
+    "body": "<p>Once more, you venture south, leaving the safety of civilization behind. There is no time to waste. The path to the Nexus lies on familiar ground, not far from the previous expedition’s trail. Using the leather-bound journal as your guide, you retrace the expedition’s journey. Soon, you are deep within the jungle, surrounded on all sides by hazards—some natural, others bizarre...</p>",
+    "gas": "<p>Check your supplies. Any one investigator must cross off one gasoline from their supplies. If no gasoline was crossed off, read _Out of Gas_.</p>",
+    "outOfGas": "<p>_Out of Gas_: Unfortunately, a dozen or so miles north of the edge of the rainforest, your car ran out of gas. Since you are pressed for time, you decided to walk the rest of the way instead of returning to refuel. Traveling by foot set you back several hours, but soon enough you reached the jungle once more.</p><p class='basic right'>When drawing opening hands during the next scenario, investigators cannot take a mulligan.</p>",
+    "map": "Check your supplies. If any investigator has a map, they read _A Path Discovered_.",
+    "aPathDiscovered": "<p>_A Path Discovered_: Thanks to your map, which has been marked from the previous expedition, you are able to clear a path through the rainforest without getting lost, and you reach your destination on your own terms.</p><p class='basic right'>In your Campaign Log, record that *the investigators mapped out the way forward*.</p>",
+    "provisions": "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read _Low on Rations_.",
+    "lowOnRations": "<p>_Low on Rations_: Traversing the jungle to find the path to the Nexus took longer than you anticipated, and in your haste you have not been able to hunt or forage for more food. Hunger clouds your mind and drills a painful hole in your stomach.</p><p class='basic right'>You begin the next scenario with 3 fewer resources.</p>",
+    "medicine": "Check your supplies. Each investigator with medicine may cross it off from their supplies to choose and remove a Poisoned weakness from any investigator’s deck. Each investigator who still has a Poisoned weakness in their deck reads _The Poison Spreads_.",
+    "doNotUseMedicine": "Do not use medicine",
+    "thePoisonSpreads": "<p>_The Poison Spreads_: The poison continues to work its way through your body, wreacking havoc on your internal organs. A terrible fever burns through you, growing stronger with each passing day. You can hardly keep down your food. Your body feels as though it has been drained of all of its strength.</p><p class='basic right'>You suffer 1 physical trauma.</p>",
+    "canteen": "<p>As you trudge through the lush jungle and pass a series of familiar overgrown temple ruins, your keen eye spots a pattern along the stone wall of the structure. Upon closer examination, you find that vines and caked dirt has hidden an elaborate carving of hieroglyphs.</p><p class='basic right'>Check your supplies. If any investigator has a canteen, they read _Patterns in the Stone_. Otherwise, read _Secrets in the Stone_.</p>",
+    "patternsInTheStone": "<p>_Patterns in the Stone_: You take out your canteen and splash water on the stone walls, washing off the dirt and making the stiff vines easier to manipulate. The pattern of glyphs is clearly visible now, and although its meaning is still a mystery, the repetition of six glyphs in particular hints at a specific instruction…</p><p class='basic right'>Each investigator who has a canteen begins the next scenario with 1 clue (*from the token bank*).</p>",
+    "secretsInTheStone": "<p>_Secrets in the Stone_: Try as you might, you are unable to clear off the dirt and vines with only your bare hands. You have no choice but to leave this mystery behind.</p><p class='basic right'>You suffer no ill effects.</p>",
+    "ichtaca": "Check the chaos bag and the Campaign Log. If all of the following are true, the lead investigator reads Faith Restored.",
+    "cultistCount": "There are 2 or more {'{'}cultist{'}'} tokens in the chaos bag.",
+    "forgedBond": "*The investigators forged a bond with Ichtaca.*",
+    "hasConfidence": "*Ichtaca has confidence in you.*",
+    "faithRestored": "<p>_Faith Restored_: On the eve of your second night within the jungle, you and your companions sit in front of a dim campfire, keeping warm and trying to remain relaxed despite the task ahead of you. Ichtaca approaches the campfire and sits across from you. Her eyes are cast to the ground, and her shoulders sag with a burdensome weight. “I feel that I must apologize to you,” she admits, peering into the flickering fire. “You have proven yourselves to be both wise and formidable, and I have done nothing but command you and endanger you at every turn.” There is a long, peaceful pause between you. “Perhaps there is hope for humanity after all,” she says under her breath as she meets your gaze. Does she speak for you? Or for herself, as well?</p><p>Ichtaca rises to her feet after some time. “I trust you to take the first watch. Be on the lookout for serpents. They are surely on the lookout for us.” Your camp is quiet for the remainder of the night, but for the soothing crackling of the campfire and the choir of chirping insects whose singing fills the night air.</p><p class='basic right'>In your Campaign Log, record that *Ichtaca’s faith is restored*. Add 1 {'{'}cultist{'}'} token to the chaos bag for the remainder of the campaign.</p>"
+  },
+  "interlude4": {
+    "title": "Interlude IV: Those Held Captive",
+    "checkProcess": {
+        "body": "Check Campaign Log. If the process backfired, each investigator reveals a random chaos token from the chaos bag. Consult the list below to see what side effects result from your mishap. If the process backfired spectacularly, each investigator reveals two random chaos tokens instead of one, choosing the token that is lower on this list to resolve, and ignoring the other.",
+        "noIllEffects": "Each investigator who reveals a {'{'}elderSign{'}'} or +1 token suffers no ill effects.",
+        "outOfBodyExperience": "Each investigator who reveals a {'{'}skull{'}'} token or any number other than +1 gains the Out of Body Experience weakness, and must add it to their deck.",
+        "bodyOfAYithian": "Each investigator who reveals a {'{'}cultist{'}'}, {'{'}tablet{'}'}, {'{'}elderThing{'}'}, or {'{'}autoFail{'}'} token must use the Body of a Yithian investigator card as their investigator card for the remainder of the campaign. They also gain the Out of Body Experience weakness, and must add it to their deck."
+    },
+    "checkAMindRecovered": {
+      "body": "Check the chaos bag and the Campaign Log. If all of the following are true, the lead investigator reads _A Mind Recovered_. If any of the following are not true, the lead investigator reads _Forever Lost_ instead.",
+      "tabletCount": "There are 2 or more {'{'}tablet{'}'} tokens in the chaos bag.",
+      "rescuedAlejandro": "*The investigators rescued Alejandro.*",
+      "theCustodianWasUnderControl": "The Custodian was under an investigator’s control when the previous scenario ended."
+    },
+    "aMindRecovered": "<p>_A Mind Recovered_: You turn your attention to your surroundings. Though the creatures that ambushed you are nowhere to be found, Alejandro lies on the ground nearby, stirring into consciousness. To your surprise, he appears just as confused as you are. At first, it seems as though he recalls nothing of the previous expedition or the Eztli relic, but then his eyes suddenly spark with recognition. He grips your shoulder tightly and gazes at you as though for the first time in years. “I do remember! We shared one mind for some time, the creature and I. It wished to find the Eztli relic, though for what purpose, I do not know.” He slumps backward against the stone wall, recovering from the sudden influx of memories. “You believed me at every turn, even when the creature had control. You saved me from that abysmal place and brought me back to humanity. For this, I cannot begin to repay you.” He shakes your hand vigorously, filled with a sudden and intense resolve. “We will right all of this, you and I. Then, we will tell the world what we have seen.”</p><p class='basic right'>In your Campaign Log, record that Alejandro remembers everything. Add 1 {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.</p>",
+    "foreverLost": "<p>_Forever Lost_: You turn your attention to your surroundings. Both Alejandro and the creatures that ambushed you are nowhere to be found. You wonder how long Alejandro was in league with them, and why. Perhaps you will never know. However, you suspect this is not the last you will see of him.</p><p class='basic right'>In your Campaign Log, record that *Alejandro is set against you*. If Alejandro Vela is part of an investigator’s deck, remove him from that investigator’s deck for the remainder of the campaign.</p>",
+    "chalk": "<p>The narrow steps on the other side of the stone doorway seem almost endless. Though a dim red glow emanates from deeper within the cavern, no matter how many steps you traverse, the glow does not brighten. It almost seems to grow more distant with each step, mocking your tenacity. After a short while, you come to a small ledge where a stone gate bars your passage deeper into the cavern. The gate bears a familiar carved pattern, faded from age and disrepair, and seeping with an oddly discolored purulence.</p><p class='basic right'>Check your supplies. If any investigator has chalk, they read _The Way Is Open_. Otherwise, the lead investigator reads _The Way Is Shut_.</p>",
+    "theWayIsOpen": "<p>_The Way Is Open_: The situation sparks your memory, and you consult the expedition journal. The pattern is similar to one found in the Eztli ruins. Using your chalk and the drawings in your journal as a reference, you restore the glyph in its entirety, and the grooves glow brightly once more. The stone gate lifts on its own, and you are able to continue onward.</p><p class='basic right'>You suffer no ill effects.</p>",
+    "theWayIsShut": "<p>_The Way Is Shut_: You are unsure how to proceed. After debating the merits of each of your options, you decide that brute force may be the only solution. It takes all of your strength to lift the stone, and you open the way forward for each of you one at a time. It is no simple task, and your body aches tremendously from the effort.</p><p class='basic right'>When drawing opening hands during the next scenario, investigators cannot take a mulligan.</p>",
+    "provisions": "Check your supplies. The investigators, as a group, must cross off one provisions per investigator from their supplies. For each provisions they cannot cross off, choose an investigator to read Low on Rations",
+    "lowOnRations": "<p>_Low on Rations_: Hours later, you are almost too weary to go on. Every inch of your body aches with intense pain. There is nothing in this desolate cavern to eat but the occasional wild mushroom, and although temptation gnaws at your insides, you cannot tell which are toxic and which are healthy…</p><p class='basic right'>You begin the next scenario with 3 fewer resources.</p>",
+    "medicine": "Check your supplies. Each investigator with medicine may cross it off from their supplies to choose and remove a Poisoned weakness from any investigator’s deck. Each investigator who still has a Poisoned weakness in their deck reads _The Poison Spreads_.",
+    "doNotUseMedicine": "Do not use medicine",
+    "thePoisonSpreads": "<p>_The Poison Spreads_: The poison has spread to nearly every part of your body. Your skin pales, and you are covered in cold feverish sweat. Simply rising to your feet requires a tremendous effort, and you get no rest at night despite your exhaustion. It won’t be long now before the poison claims your life.</p><p class='basic right'>You suffer 1 physical trauma.</p>",
+    "blanket": "<p>After descending hundreds and hundreds of steps, you decide to stop and rest. Though your watch tells you that night has fallen, the lack of natural sky is starting to affect your internal clock. With no flat ledge in sight, each member of your party claims one of the many narrow steps to sleep on.</p><p class='basic right'>Check your supplies. Each investigator with a blanket reads _Restful Sleep_. The rest read _Tossing and Turning_.</p>",
+    "restfulSleep": "<p>_Restful Sleep_: Though you long for a proper bed, at least your blanket protects you from the frigid chill that permeates the cavern. When “morning” arrives, your body longs for more sleep, but you know you must press onward and reach the Nexus as fast as you can…</p><p class='basic right'>You suffer no ill effects.</p>",
+    "tossingAndTurning": "<p>_Tossing and Turning_: Sleep does not come easily for you. Barely any layers protect you from the bitter cold of the underground cavern, and you lie shivering for hours before exhaustion finally claims you. You awaken every hour or so as the shifting of your body almost causes you to tumble off your stone perch. When “morning” comes, you are even more weary than you were the previous night.</p><p class='basic right'>You suffer 1 physical or mental trauma (*your choice*).</p>"
+  },
+  "interlude5": {
+    "xp": {
+      "bonus": "Gained insight into the caverns that dwell beneath the surface of the Earth."
+    },
+    "title": "Interlude V: The Darkness",
+    "fellIntoTheDepths": "Check Campaign Log. *If the investigators fell into the depths*, proceed to _The Darkness 1_.",
+    "theNexusIsNear": "*If the Nexus is near*, skip to _The Darkness 2_.",
+    "theDarkness1": "<p>_The Darkness 1_: You stir awake, lying facedown on the cold, hard stone of the cavern. You are bruised and battered but, somehow, alive. It takes several minutes before you regain enough of your strength to stand. You are absolutely and hopelessly lost within the impossibly vast caverns, enveloped by pitch-black darkness. Have you survived all this way only to perish here, lost to all humanity?</p><p class='basic right'>Proceed to _The Darkness 2_.</p>",
+    "theDarkness2": "<p>_The Darkness 2_: The grim, blood-red caverns and resentful cities of Yoth hold no candle to the terrifying depths that lie below them. You are in the deepest level of this subterranean realm now: the caverns Ichtaca referred to as “N’kai.” Nothing could have prepared you for the impervious murk that surrounds you on all sides, an inky darkness that none of your light sources can penetrate. You grope around in the darkness until you feel the jagged wall of the cavern and begin to follow it aimlessly, desperately hoping to find the way forward. A grim realization dawns on you: Even should you complete your task, you will surely never find a way back to the surface. The overwhelming darkness of the cavern fills you with a dread you have never before experienced. You cannot see your hands as you grope about in the darkness, nor can you tell if you are in a narrow tunnel or a vast open space. The ground beside you could extend for miles or abruptly become a bottomless cavern, and you would not be able to tell the difference unless you stepped there. Hours pass as you stumble in the dark, slowly, carefully, nervously. Every step could be your last.</p><p class='basic right'>In order, read each of the following sections:</p>",
+    "theMissingRelic": "Check Campaign Log. *If the investigators found the missing relic*, the lead investigator reads _Arcane Thrumming_. *If the relic is missing*, the lead investigator reads _Growing Concern_ instead.",
+    "arcaneThrumming": "<p>_Arcane Thrumming_: Worried that your fall may have damaged the Eztli relic, you pull it out of your pack and examine it. Oddly, the device seems completely undamaged. It vibrates with a growing intensity, humming louder now than ever before.</p><p class='basic right'>Check Campaign Log. *If the investigators recovered the Relic of Ages*, and *if you are forging your own path*, read _Final Dawning_, below. Otherwise, you suffer no ill effects.</p>",
+    "growingConcern": "<p>_Growing Concern_: As you rise to your feet, the ground rumbles and growls. Something deep below you is moving. Shifting. Mutating.</p><p class='basic right'>Depending on your difficulty mode, add the following chaos token to the chaos bag for the remainder of the campaign:</p><div class='columns'><div>Easy: –3</div><div>Standard: –4</div><div>Hard: –5</div><div>Expert: –6</div></div>",
+    "finalDawning": "<p>_Final Dawning_: Without Alejandro or Ichtaca to distract you, you find yourself studying the relic intently. Both of your “guides” have only fed you lies. They hid the relic’s true nature from you, manipulating you in an attempt to bring the relic to this very place. After your experience with the Great Race of Yith, you think you understand why. The technology behind the device’s design is far beyond what any human could accomplish, but quite possible for the Yithians. You even recognize some elements of the relic’s construction from the technology in Pnakotus. Somehow, it ended up in the hands of the Eztli, who defended it with care from all manner of creatures. Creatures that predate humanity. Creatures who wished to use it to turn back time. And now that the relic is in your possession, only you can stop this from occurring.</p><p class='basic right'>The investigator with Relic of Ages in their deck swaps it with the new version of Relic of Ages included in this Mythos Pack: Relic of Ages (*Repossess the Past*).</p>",
+    "torches": "<P>After hours of slow progress, you eventually stumble into a brazier, filled with marble cubes.</p><p class='basic right'>Check your supplies. If any investigator has torches, they read _Torchlight_. Otherwise, read _The Abyss_.</p>",
+    "torchlight": "<p>_Torchlight_: Though the light from your torches is snuffed by the overpowering darkness of this realm, you decide to try to light the brazier with the flames. To your surprise, after you hold the torch against the strange cubes for several moments, the brazier erupts in a fury of blue and silver flames, consuming your torch and almost melting your hand to the bone. Though the light from the brilliant flame only reaches a few yards around you, more braziers light up in the distance, their flames guiding your path forward. At least, you hope…</p><p class='basic right'>In your Campaign Log, record that *the braziers are lit*.</p>",
+    "theAbyss": "<p>_The Abyss_: The odd material inside does not seem to accept any source of fire you use to try to light it. Your hope is snuffed out along with the light around you. Miserable, you prepare to endure the darkness ahead.</p><p class='basic right'>In your Campaign Log, record that *the braziers remain unlit*.</p>",
+    "map": "Check Campaign Log. *If the braziers are lit*, check your supplies. If any investigator has a map, they read _Reading Signs_.",
+    "readingSigns": "<p>_Reading Signs_: As you traverse the caverns, something catches your attention: streams of cold, gentle water that drip down the walls of the cavern. Curious, you unfold the previous expedition’s map and sit by one of the lit braziers, mentally retracing your steps. If your calculations are correct, you have traveled much farther south than you could have possibly guessed. Could it be these caverns extend all the way to the coastline? Do the caverns never end?</p><p class='basic right'>Each investigator with a map earns 2 additional experience as they gain insight into the caverns that dwell beneath the surface of the Earth.</p>",
+    "senseOfTime": "<p>You have no sense of how much time passes in the cold, terrible abyss of N’kai.</p><p class='basic right'>Cross off all provisions and medicine the investigators have remaining in their supplies.</p>"
+  },
+  "epilogue": {
+    "title": "Epilogue",
+    "body": "<p>_Check Campaign Log._</p><p>_ Read the following only if *the investigators turned back time*._</p><p>There is only one way to stop all of this from ever happening. Before you arrived and set all of these events into motion, the Eztli ruins were asleep, and the relic was relatively safe in its prison of obscurity. Had it not been for Alejandro’s desire to find it, it might have remained undiscovered for centuries. With your new understanding of the relic’s capabilities, you can return to the past and set things right. You can seal it away forever and prevent your past selves from having ever found it… even if it costs you your own life.</p><ul><li>Proceed to _Scenario IX: Turn Back Time_.</li></ul>"
+  },
+  "resupplyPoint": {
+    "label": {
+      "visitStMarys": "Visit St. Mary’s?",
+      "doNotRemovePoisoned": "Do not remove Poisoned weaknes",
+      "doNotRemoveTrauma": "Do not remove trauma",
+      "removePhysicalTrauma": "Spend 5 xp to visit St. Mary's Hospital and remove a physical trauma",
+      "removeMentalTrauma": "Spend 5 xp to visit St. Mary's Hospital and remove a mental trauma",
+      "removePoisoned": "Spend 3 xp to visit St. Mary's Hospital and remove a Poisoned weakness"
+    },
+    "pickSupplies": "<p class='basic'>It is clear now that you will have to venture once more into the wilds before the mystery behind the Relic of Ages is solved. Each investigator has the option to choose additional supplies to add to their current list of supplies. In the Campaign Log, under each investigator’s “Supplies” section, record the supplies that investigator chooses to bring. (<em>Note: Provisions, Medicine and Gasoline can be taken more than once by recording their name multiple times and spending the appropriate number of supply points each time.</em>)</p><ul><li><p class='basic'>Before departing from Arkham, it might be a good idea to take a visit to St. Mary’s Hospital.</p><ul><li><p class='basic'>Each investigator who has a Poisoned weakness in their deck may spend 3 experience points to remove that weakness from their deck.</p></li><li><p class='basic'>Each investigator may spend 5 experience points to remove a single point of physical or mental trauma from their investigator.</p></li></ul></li><li><p class='basic'>Each investigator may spend supply points to purchase one or more of the supplies listed below. The number of supply points available to each investigator is based on the number of investigators in the campaign:</p><p class='basic'><strong>1 investigator</strong>: 8 supply points</p><p class='basic'><strong>2 investigators</strong>: 5 supply points each</p><p class='basic'><strong>3 investigators</strong>: 4 supply points each</p><p class='basic'><strong>4 investigators</strong>: 3 supply points each</p></li></ul>"
+  },
+  "supplies": {
+    "title": "Supplies",
+    "choose": "Pick Supplies ({pointsRemaining} points remaining)",
+    "chosen": "Chosen Supplies",
+    "provisions": {
+      "name": "Provisions",
+      "cost": "1 supply point each",
+      "description": "Food and water for one person. A must-have for any journey.",
+      "tooltip": "(@:theForgottenAge.supplies.provisions.cost) @:theForgottenAge.supplies.provisions.description",
+      "count": "@:theForgottenAge.supplies.provisions.name | @:theForgottenAge.supplies.provisions.name ({count})"
+    },
+    "medicine": {
+      "name": "Medicine",
+      "cost": "2 supply points each",
+      "description": "To stave off disease, infection, or venom.",
+      "tooltip": "(@:theForgottenAge.supplies.medicine.cost) @:theForgottenAge.supplies.medicine.description",
+      "count": "@:theForgottenAge.supplies.medicine.name | @:theForgottenAge.supplies.medicine.name ({count})"
+    },
+    "rope": {
+      "name": "Rope",
+      "cost": "3 supply points",
+      "description": "Several long coils of strong rope. Vital for climbing and spelunking.",
+      "tooltip": "(@:theForgottenAge.supplies.rope.cost) @:theForgottenAge.supplies.rope.description",
+      "count": "@:theForgottenAge.supplies.rope.name | @:theForgottenAge.supplies.rope.name ({count})"
+    },
+    "blanket": {
+      "name": "Blanket",
+      "cost": "2 supply points",
+      "description": "For warmth at night.",
+      "tooltip": "(@:theForgottenAge.supplies.blanket.cost) @:theForgottenAge.supplies.blanket.description",
+      "count": "@:theForgottenAge.supplies.blanket.name | @:theForgottenAge.supplies.blanket.name ({count})"
+    },
+    "canteen": {
+      "name": "Canteen",
+      "cost": "2 supply points",
+      "description": "Can be refilled at streams and rivers.",
+      "tooltip": "(@:theForgottenAge.supplies.canteen.cost) @:theForgottenAge.supplies.canteen.description",
+      "count": "@:theForgottenAge.supplies.canteen.name | @:theForgottenAge.supplies.canteen.name ({count})"
+    },
+    "torches": {
+      "name": "Torches",
+      "cost": "3 supply points",
+      "description": "Can light up dark areas, or set sconces alight.",
+      "tooltip": "(@:theForgottenAge.supplies.torches.cost) @:theForgottenAge.supplies.torches.description",
+      "count": "@:theForgottenAge.supplies.torches.name | @:theForgottenAge.supplies.torches.name ({count})"
+    },
+    "compass": {
+      "name": "Compass",
+      "cost": "2 supply points",
+      "description": "Can guide you when you are hopelessly lost.",
+      "tooltip": "(@:theForgottenAge.supplies.compass.cost) @:theForgottenAge.supplies.compass.description",
+      "count": "@:theForgottenAge.supplies.compass.name | @:theForgottenAge.supplies.compass.name ({count})"
+    },
+    "map": {
+      "name": "Map",
+      "cost": "3 supply points",
+      "description": "Unmarked for now, but with time, you may be able to map out your surroundings.",
+      "tooltip": "(@:theForgottenAge.supplies.map.cost) @:theForgottenAge.supplies.map.description",
+      "count": "@:theForgottenAge.supplies.map.name | @:theForgottenAge.supplies.map.name ({count})"
+    },
+    "binoculars": {
+      "name": "Binoculars",
+      "cost": "2 supply points",
+      "description": "To help you see faraway places.",
+      "tooltip": "(@:theForgottenAge.supplies.binoculars.cost) @:theForgottenAge.supplies.binoculars.description",
+      "count": "@:theForgottenAge.supplies.binoculars.name | @:theForgottenAge.supplies.binoculars.name ({count})"
+    },
+    "chalk": {
+      "name": "Chalk",
+      "cost": "2 supply point",
+      "description": "For writing on rough stone surfaces.",
+      "tooltip": "(@:theForgottenAge.supplies.chalk.cost) @:theForgottenAge.supplies.chalk.description",
+      "count": "@:theForgottenAge.supplies.chalk.name | @:theForgottenAge.supplies.chalk.name ({count})"
+    },
+    "pendant": {
+      "name": "Pendant",
+      "cost": "1 supply point",
+      "description": "Useless, but fond memories bring comfort to travelers far from home.",
+      "tooltip": "(@:theForgottenAge.supplies.pendant.cost) @:theForgottenAge.supplies.pendant.description",
+      "count": "@:theForgottenAge.supplies.pendant.name | @:theForgottenAge.supplies.pendant.name ({count})"
+    },
+    "gasoline": {
+      "name": "Gasoline",
+      "cost": "1 supply point each",
+      "description": "Enough for a long journey by car.",
+      "tooltip": "(@:theForgottenAge.supplies.gasoline.cost) @:theForgottenAge.supplies.gasoline.description",
+      "count": "@:theForgottenAge.supplies.gasoline.name | @:theForgottenAge.supplies.gasoline.name ({count})"
+    },
+    "pocketknife": {
+      "name": "Pocketknife",
+      "cost": "2 supply points",
+      "description": "Too small to be used as a reliable weapon, but easily concealed.",
+      "tooltip": "(@:theForgottenAge.supplies.pocketknife.cost) @:theForgottenAge.supplies.pocketknife.description",
+      "count": "@:theForgottenAge.supplies.pocketknife.name | @:theForgottenAge.supplies.pocketknife.name ({count})"
+    },
+    "pickaxe": {
+      "name": "Pickaxe",
+      "cost": "2 supply points",
+      "description": "For breaking apart rocky surfaces.",
+      "tooltip": "(@:theForgottenAge.supplies.pickaxe.cost) @:theForgottenAge.supplies.pickaxe.description",
+      "count": "@:theForgottenAge.supplies.pickaxe.name | @:theForgottenAge.supplies.pickaxe.name ({count})"
+    },
+    "keyOfEztli": {
+      "name": "Key of Eztli",
+      "count": "@:theForgottenAge.supplies.keyOfEztli.name | @:theForgottenAge.supplies.keyOfEztli.name ({count})"
+    },
+    "mysteriousScepter": {
+      "name": "Mysterious Scepter",
+      "count": "@:theForgottenAge.supplies.mysteriousScepter.name | @:theForgottenAge.supplies.mysteriousScepter.name ({count})"
+    },
+    "stickyGoop": {
+      "name": "Sticky Goop",
+      "count": "@:theForgottenAge.supplies.stickyGoop.name | @:theForgottenAge.supplies.stickyGoop.name ({count})"
+    }
   }
 }

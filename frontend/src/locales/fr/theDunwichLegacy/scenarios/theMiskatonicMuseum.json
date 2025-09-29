@@ -35,7 +35,7 @@
       "bottom": " Mélangez ensemble la Salle d'Exposition (Salle à Accès Restreint) et 2 autres lieux Salle d'Exposition pris au hasard afin de constituer la base du deck Exposition, face non-révélée visible.",
       "top": "Ensuite, placez les 3 autres lieux Salle d'Exposition au-dessus dans un ordre aléatoire. Les 6 cartes du deck Exposition ne doivent montrer que leur face non-révélée afin que les joueurs ne sachent pas quelle Salle d'Exposition est la Salle d'Exposition (*Salle à Accès Restreint*)."
     },
-    "setAside": "Mettez les cartes suivantes de côté, hors jeu : Harold Walsted, Adam Lynch, Le Necronomicon (*Traduction d'Olaus Wormius*) et Engendrée par l'Ombre."
+    "setAside": "Mettez les cartes suivantes de côté, hors jeu : Harold Walsted, Adam Lynch, Le Necronomicon (*Traduction d'Olaus Wormius*) et Engendrée par l'Ombre."
   },
   "theVoid": {
     "title": "« Le Néant »",
@@ -60,10 +60,10 @@
     "r1": "Il est trop dangereux pour être conservé. Nous devons le détruire. (→ C1)",
     "r2": "Il est trop précieux pour être détruit. Nous devons le conserver. (→ C2)",
     "securityOffice": {
-      "topOfDeck": "Regardez la face révélée de la carte du dessus du deck Exposition."
+      "topOfDeck": "Regarder la face révélée de la carte du dessus du deck Exposition."
     },
     "passageIntoTheVeil": {
-      "damage": "Subir 1 dégât direct et infliger 1 dégât à chacun de vos soutiens Allié."
+      "damage": "Subir 1 dégât direct et infliger 1 dégât à chacun de ses soutiens Allié."
     }
   },
   "tooltips": {
@@ -71,7 +71,7 @@
       "resign": "« Hé. Quelle importance un simple livre peut-il avoir de toute façon ? »"
     },
     "museumHalls": {
-      "action": "{action}: Effectuez un test de {combat} (5) pour tenter d'enfoncer la porte du musée. En cas de réussite, avancez immédiatement à l'Acte 1b."
+      "action": "{'{'}action{'}'}: Effectuer un test de {'{'}combat{'}'} (5) pour tenter d'enfoncer la porte du musée. En cas de réussite, avancer immédiatement à l'Acte 1b."
     }
   }
 }

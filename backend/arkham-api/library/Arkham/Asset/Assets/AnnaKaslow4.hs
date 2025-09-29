@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.AnnaKaslow4 (annaKaslow4, AnnaKaslow4 (..)) where
+module Arkham.Asset.Assets.AnnaKaslow4 (annaKaslow4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -20,8 +20,8 @@ slot attrs = Slot (toSource attrs) []
 
 instance HasAbilities AnnaKaslow4 where
   getAbilities (AnnaKaslow4 a) =
-    [ restrictedAbility a 1 InYourHand $ freeReaction $ GameBegins #when
-    , controlledAbility a 2 (CanSearchDeck <> CanShuffleDeck)
+    [ restricted a 1 InYourHand $ freeReaction $ GameBegins #when
+    , controlled a 2 (CanSearchDeck <> CanShuffleDeck)
         $ freeReaction
         $ AssetEntersPlay #when (be a)
     ]
@@ -35,6 +35,6 @@ instance RunMessage AnnaKaslow4 where
       pushAll $ replicate 2 (AddSlot iid TarotSlot (slot attrs))
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      search iid (attrs.ability 2) iid [fromDeck] (basic $ #tarot <> #asset) $ PlayFound iid 1
+      search iid (attrs.ability 2) iid [fromDeck] (basic $ #tarot <> #asset) $ PlayFoundNoCost iid 1
       pure a
     _ -> AnnaKaslow4 <$> liftRunMessage msg attrs

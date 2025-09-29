@@ -11,6 +11,7 @@ import GHC.OverloadedLabels
 data KeyWithDetails = KeyWithDetails
   { key :: ArkhamKey
   , keyLocation :: Maybe LocationId
+  , keyEnemy :: Maybe EnemyId
   , keyInvestigator :: Maybe InvestigatorId
   , keyAsset :: Maybe AssetId
   , keySetAside :: Bool

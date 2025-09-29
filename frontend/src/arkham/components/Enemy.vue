@@ -395,7 +395,9 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
     width: 20px;
   }
 
-  pointer-events: none;
+  &:not(:has(.key--can-interact)) {
+    pointer-events: none;
+  }
 }
 
 .exhausted {

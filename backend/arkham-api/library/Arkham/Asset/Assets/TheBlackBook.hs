@@ -37,6 +37,6 @@ toHorror = \case
 instance RunMessage TheBlackBook where
   runMessage msg a@(TheBlackBook attrs) = runQueueT $ case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (cardPlayed -> card) (toHorror -> n) -> do
-      reduceCostOf attrs card n
+      reduceCostOf (attrs.ability 1) card n
       pure a
     _ -> TheBlackBook <$> liftRunMessage msg attrs

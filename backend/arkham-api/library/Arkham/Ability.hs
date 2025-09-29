@@ -78,7 +78,15 @@ abilityIsActionAbility a = case abilityType a of
 abilityIsActivate :: Ability -> Bool
 abilityIsActivate a = not a.basic && a.index `notElem` notActivateIndexes && abilityIsActionAbility a
  where
-  notActivateIndexes = [PlayAbility, ResourceAbility, AbilityAttack, AbilityInvestigate, AbilityEvade, AbilityEngage, NonActivateAbility]
+  notActivateIndexes =
+    [ PlayAbility
+    , ResourceAbility
+    , AbilityAttack
+    , AbilityInvestigate
+    , AbilityEvade
+    , AbilityEngage
+    , NonActivateAbility
+    ]
 
 abilityIsFastAbility :: Ability -> Bool
 abilityIsFastAbility a = case abilityType a of
@@ -513,6 +521,7 @@ defaultAbilityLimit :: AbilityType -> AbilityLimit
 defaultAbilityLimit = \case
   ForcedAbility window' -> case window' of
     SkillTestResult {} -> PlayerLimit PerTestOrAbility 1
+    Moves {} -> PlayerLimit PerTestOrAbility 1
     _ -> GroupLimit PerWindow 1
   SilentForcedAbility _ -> GroupLimit PerWindow 1
   ForcedAbilityWithCost _ _ -> GroupLimit PerWindow 1

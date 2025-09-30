@@ -705,7 +705,7 @@ theBrokenRite :: CardDef
 theBrokenRite = act "05248" "The Broken Rite" 4 UnionAndDisillusion
 
 darkKnowledgeV1 :: CardDef
-darkKnowledgeV1 = act "05286a" "Dark Knowledge (v. I)" 1 MusicOfTheDamned
+darkKnowledgeV1 = (act "05286a" "Dark Knowledge (v. I)" 1 MusicOfTheDamned) { cdOtherSide = Just "05286b" }
 
 beyondTheGrave :: CardDef
 beyondTheGrave = act "05287" "Beyond the Grave" 2 MusicOfTheDamned

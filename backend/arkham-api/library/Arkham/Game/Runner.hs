@@ -349,8 +349,10 @@ runGameMessage msg g = case msg of
         )
       & activeInvestigatorF
       & turnPlayerInvestigatorF
-      & playerOrderL %~ map replaceF
-      & leadInvestigatorIdL %~ replaceF
+      & playerOrderL
+      %~ map replaceF
+      & leadInvestigatorIdL
+      %~ replaceF
   Run msgs -> g <$ pushAll msgs
   If wType _ -> do
     window <- checkWindows [mkWindow Timing.AtIf wType]
@@ -1882,11 +1884,13 @@ runGameMessage msg g = case msg of
       & (entitiesL . skillsL . ix sid %~ overAttrs (\x -> x {skillPlacement = OutOfPlay RemovedZone}))
       & (removedFromPlayL %~ (card :))
   RemoveFromGame (EventTarget eid) -> do
-    card <- field EventCard eid
-    pure
-      $ g
-      & (entitiesL . eventsL %~ deleteMap eid)
-      & (removedFromPlayL %~ (card :))
+    fieldMay EventCard eid >>= \case
+      Nothing -> pure g
+      Just card ->
+        pure
+          $ g
+          & (entitiesL . eventsL %~ deleteMap eid)
+          & (removedFromPlayL %~ (card :))
   RemovedFromGame card -> pure $ g & removedFromPlayL %~ (card :)
   PlaceEnemyOutOfPlay _oZone eid -> do
     let
@@ -2872,7 +2876,8 @@ runGameMessage msg g = case msg of
         when (DrawGainsPeril `elem` mods)
           $ pushM
           $ cardResolutionModifier card GameSource card (AddKeyword Keyword.Peril)
-        whenDraw <- checkWindows [mkWhen (Window.DrawCard iid (toCard card) $ fromMaybe Deck.EncounterDeck mdeck)]
+        whenDraw <-
+          checkWindows [mkWhen (Window.DrawCard iid (toCard card) $ fromMaybe Deck.EncounterDeck mdeck)]
         let uiRevelation = getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
         case toCardType card of
           EnemyType -> sendEnemy (toTitle investigator <> " drew Enemy") (toJSON $ toCard card)

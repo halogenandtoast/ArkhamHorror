@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# LANGUAGE TypeAbstractions #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -101,6 +102,7 @@ import Arkham.Helpers.Window (maybeDiscoveredLocation)
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator (lookupInvestigator)
+import Arkham.Investigator qualified as Investigator
 import Arkham.Investigator.Cards (allInvestigatorCards)
 import Arkham.Investigator.Types (
   Field (..),
@@ -113,7 +115,6 @@ import Arkham.Investigator.Types (
   investigatorResources,
   investigatorSanityDamage,
  )
-import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Key (ArkhamKey (..))
 import Arkham.Keyword (_Swarming)
 import Arkham.Keyword qualified as Keyword
@@ -672,24 +673,28 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "treacheries" .= emptyArray
         ]
     otherInvestigators = case gameMode of
-      This c -> campaignOtherInvestigators (toJSON $ attr campaignMeta c)
+      This c -> campaignOtherInvestigators (attr campaignMeta c)
       That _ -> mempty
-      These c _ -> campaignOtherInvestigators (toJSON $ attr campaignMeta c)
-    campaignOtherInvestigators j = case parse (withObject "" (.: "otherCampaignAttrs")) j of
+      These c _ -> campaignOtherInvestigators (attr campaignMeta c)
+    campaignOtherInvestigators j = case parse (withObject "" (.: "otherCampaignPlayers")) j of
       Error _ -> mempty
-      Success attrs ->
+      Success (attrs :: Map PlayerId InvestigatorAttrs) ->
         Map.fromList
           . map
-            ( \iid ->
-                ( iid
+            ( \i ->
+                ( i.id
                 , (`with` emptyAdditionalData)
                     . (`with` ConnectionData [])
                     . (`with` ModifierData [])
-                    . WithDeckSize
-                    $ lookupInvestigator iid (PlayerId nil)
+                    $ WithDeckSize
+                      ( Investigator.withInvestigatorCardCode
+                          (toCardCode i)
+                          ( \(Investigator.SomeInvestigator @a) -> Investigator.Investigator (Investigator.investigatorFromAttrs @a i)
+                          )
+                      )
                 )
             )
-          $ Map.keys (campaignDecks attrs)
+          $ Map.elems attrs
 
 getPlayerInvestigator :: (HasCallStack, HasGame m) => PlayerId -> m Investigator
 getPlayerInvestigator pid = do

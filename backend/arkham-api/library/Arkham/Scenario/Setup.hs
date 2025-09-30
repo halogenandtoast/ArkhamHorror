@@ -357,34 +357,38 @@ enemyAt_ def lid = do
 
 enemyAt :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m EnemyId
 enemyAt def lid = do
+  mcard <- headMay <$> amongGathered (cardIs def)
   attrsL . encounterDeckL %= flip removeEachFromDeck [def]
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
-  card <- genCard def
+  card <- maybe (genCard def) pure mcard
   createEnemyAt card lid
 
 placeEnemy
   :: (ReverseQueue m, IsPlacement placement) => CardDef -> placement -> ScenarioBuilderT m ()
 placeEnemy def placement = do
+  mcard <- headMay <$> amongGathered (cardIs def)
   attrsL . encounterDeckL %= flip removeEachFromDeck [def]
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
-  card <- genCard def
+  card <- maybe (genCard def) pure mcard
   pushM $ createEnemyWithPlacement_ card (toPlacement placement)
 
 placeEnemyCapture
   :: (ReverseQueue m, IsPlacement placement) => CardDef -> placement -> ScenarioBuilderT m EnemyId
 placeEnemyCapture def placement = do
+  mcard <- headMay <$> amongGathered (cardIs def)
   attrsL . encounterDeckL %= flip removeEachFromDeck [def]
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
-  card <- genCard def
+  card <- maybe (genCard def) pure mcard
   (enemyId, msg) <- createEnemyWithPlacement card (toPlacement placement)
   push msg
   pure enemyId
 
 enemyAtMatching :: ReverseQueue m => CardDef -> LocationMatcher -> ScenarioBuilderT m ()
 enemyAtMatching def matcher = do
+  mcard <- headMay <$> amongGathered (cardIs def)
   attrsL . encounterDeckL %= flip removeEachFromDeck [def]
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
-  card <- genCard def
+  card <- maybe (genCard def) pure mcard
   createEnemyAtLocationMatching_ card matcher
 
 sampleEncounterDeck :: (HasCallStack, MonadRandom m) => Int -> ScenarioBuilderT m [EncounterCard]

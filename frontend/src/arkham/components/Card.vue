@@ -21,8 +21,9 @@ const emit = defineEmits<{
   choose: [value: number]
 }>()
 
-const cardContents = computed<CardContents>(() => props.card.tag === "CardContents" ? props.card : (
-  props.card.tag === "VengeanceCard" ? props.card.contents.contents : props.card.contents))
+const cardContents = computed<CardContents>(() => {
+  return props.card.tag === "CardContents" ? props.card : ( props.card.tag === "VengeanceCard" ? props.card.contents.contents : props.card.contents)
+})
 
 const image = computed(() => {
   if (props.card.tag === 'VengeanceCard') {

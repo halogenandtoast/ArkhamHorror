@@ -6,6 +6,7 @@ import Card from '@/arkham/components/Card.vue'
 import DeckList from '@/arkham/components/DeckList.vue'
 import {imgsrc} from '@/arkham/helpers'
 import { useDbCardStore } from '@/stores/dbCards'
+import type { CardContents } from '@/arkham/types/Card';
 
 export interface Props {
   investigator: Investigator
@@ -20,7 +21,15 @@ const props = withDefaults(defineProps<Props>(), {
 
 const expanded = ref(false)
 
-const storyCards = computed(() => props.game.campaign?.storyCards[props.investigator.id] || props.game.scenario?.storyCards[props.investigator.id] || [])
+const storyCards = computed(() => {
+  const fromMeta = props.game.campaign?.meta?.otherCampaignAttrs?.storyCards[props.investigator.id] 
+  if (fromMeta) {
+    return fromMeta.map((c) => ({tag: 'CardContents', ...c} as CardContents))
+  }
+
+
+  return props.game.campaign?.storyCards[props.investigator.id] || props.game.scenario?.storyCards[props.investigator.id] || []
+})
 
 function getInvestigatorName(cardTitle: string): string {
   const language = localStorage.getItem('language') || 'en'
@@ -28,7 +37,9 @@ function getInvestigatorName(cardTitle: string): string {
 }
 
 const deck = computed(() => {
-  const deck = props.game.campaign?.decks[props.investigator.id] // || props.game.scenario?.decks[props.investigator.id]
+  const deck = props.game.campaign?.decks[props.investigator.id] || props.game.campaign?.meta?.otherCampaignAttrs?.decks[props.investigator.id]
+
+    // || props.game.scenario?.decks[props.investigator.id]
   if (!deck) return null
   const slots = deck.reduce((acc, { cardCode }) => {
       acc[cardCode] = (acc[cardCode] ?? 0) + 1;

@@ -5,6 +5,7 @@ import { handleI18n } from '@/arkham/i18n';
 import { computed } from 'vue'
 import scenarios from '@/arkham/data/scenarios'
 import { XpEntry } from '@/arkham/types/Xp'
+import { type Investigator } from '@/arkham/types/Investigator'
 import { CampaignStep } from '@/arkham/types/CampaignStep'
 import { Game } from '@/arkham/types/Game'
 import { useI18n } from 'vue-i18n';
@@ -18,7 +19,8 @@ const props = defineProps<{
   step: CampaignStep
   entries: XpEntry[]
   playerId?: string
-  showAll: bool
+  investigators: Investigator[]
+  showAll: boolean
 }>()
 
 // need to drop the first letter of the scenario code
@@ -57,7 +59,7 @@ const unspendableXp = computed(() => {
 
   if (props.step.tag === 'ScenarioStep') {
     const scenarioId = props.step.contents.slice(1)
-    const investigator = Object.entries(props.game.investigators).find(([,p]) => p.playerId === props.playerId)
+    const investigator = props.investigators.find((p) => p.playerId === props.playerId)
     if (!investigator) return null
     if (scenarioId == "53028") return props.game.campaign.meta.bonusXp[investigator[0]] || null
   }
@@ -83,14 +85,14 @@ interface PerInvestigator {
 }
 
 const perInvestigator = computed<Record<string, PerInvestigator>>(() => {
-  return Object.entries(props.game.investigators).reduce((acc, [id,]) => {
+  return props.investigators.reduce((acc, i) => {
     const gains = props.entries.filter(
       (entry: XpEntry) =>
-        entry.tag === 'InvestigatorGainXp' && entry.investigator === id
+        entry.tag === 'InvestigatorGainXp' && entry.investigator === i.id
     )
     const losses = props.entries.filter(
       (entry: XpEntry) =>
-        entry.tag === 'InvestigatorLoseXp' && entry.investigator === id
+        entry.tag === 'InvestigatorLoseXp' && entry.investigator === i.id
     )
 
     const entries = [...gains, ...losses]
@@ -100,14 +102,13 @@ const perInvestigator = computed<Record<string, PerInvestigator>>(() => {
       gains.reduce((acc, entry) => acc + entry.details.amount, 0) -
       losses.reduce((acc, entry) => acc + entry.details.amount, 0)
 
-    acc[id] = { entries, total }
+    acc[i.id] = { entries, total }
     return acc
   }, {} as Record<string, PerInvestigator>)
 })
 
 const headerInvestigators = computed(() => {
-  const investigators = Object.values(props.game.investigators)
-  return investigators.map(i => ([i, (perInvestigator.value[i.id]?.total || 0) + totalVictoryDisplay.value])).filter(([i, t]) => t !== 0)
+  return props.investigators.map(i => ([i, (perInvestigator.value[i.id]?.total || 0) + totalVictoryDisplay.value])).filter(([_i, t]) => t !== 0)
 })
 
 function format(s: string) {

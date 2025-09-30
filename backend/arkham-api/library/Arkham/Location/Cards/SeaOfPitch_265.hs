@@ -1,5 +1,6 @@
 module Arkham.Location.Cards.SeaOfPitch_265 (seaOfPitch_265) where
 
+import Arkham.Card
 import Arkham.GameValue
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Log
@@ -7,9 +8,8 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Story (readStory)
 import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.Story.Cards qualified as Story
 
@@ -29,10 +29,14 @@ instance HasAbilities SeaOfPitch_265 where
   getAbilities (SeaOfPitch_265 attrs) = veiled attrs []
 
 instance RunMessage SeaOfPitch_265 where
-  runMessage msg (SeaOfPitch_265 attrs) = runQueueT $ case msg of
+  runMessage msg l@(SeaOfPitch_265 attrs) = runQueueT $ case msg of
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.centerOfTheSea
       clues <- selectSum InvestigatorClues UneliminatedInvestigator
       n <- perPlayer 3
       pure . SeaOfPitch_265 $ attrs & canBeFlippedL .~ (clues < n)
+    LookAtRevealed iid _ (isTarget attrs -> True) -> do
+      let storyCard = lookupCard Story.centerOfTheSea (toCardId attrs)
+      focusCards [storyCard] $ continue_ iid
+      pure l
     _ -> SeaOfPitch_265 <$> liftRunMessage msg attrs

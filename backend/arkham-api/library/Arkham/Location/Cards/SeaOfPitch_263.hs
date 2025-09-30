@@ -1,5 +1,6 @@
-module Arkham.Location.Cards.SeaOfPitch_263 (seaOfPitch_263, SeaOfPitch_263 (..)) where
+module Arkham.Location.Cards.SeaOfPitch_263 (seaOfPitch_263) where
 
+import Arkham.Card
 import Arkham.GameValue
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
@@ -25,8 +26,12 @@ instance HasAbilities SeaOfPitch_263 where
   getAbilities (SeaOfPitch_263 attrs) = veiled attrs []
 
 instance RunMessage SeaOfPitch_263 where
-  runMessage msg (SeaOfPitch_263 attrs) = runQueueT $ case msg of
+  runMessage msg l@(SeaOfPitch_263 attrs) = runQueueT $ case msg of
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.stillSurface
       pure . SeaOfPitch_263 $ attrs & canBeFlippedL .~ False
+    LookAtRevealed iid _ (isTarget attrs -> True) -> do
+      let storyCard = lookupCard Story.stillSurface (toCardId attrs)
+      focusCards [storyCard] $ continue_ iid
+      pure l
     _ -> SeaOfPitch_263 <$> liftRunMessage msg attrs

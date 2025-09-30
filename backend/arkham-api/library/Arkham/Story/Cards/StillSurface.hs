@@ -21,8 +21,8 @@ instance RunMessage StillSurface where
         select
           $ LocationWithTitle "Sea of Pitch"
           <> LocationCanBeFlipped
-          <> not_ (locationIs Locations.seaOfPitch_262)
+          <> not_ (locationIs Locations.seaOfPitch_263)
       unless (null seas) do
-        chooseOne iid [targetLabel sea [Flip iid (toSource attrs) (toTarget sea)] | sea <- seas]
+        chooseOne iid [targetLabel sea [LookAtRevealed iid (toSource attrs) (toTarget sea)] | sea <- seas]
       pure s
     _ -> StillSurface <$> liftRunMessage msg attrs

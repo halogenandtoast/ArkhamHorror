@@ -256,9 +256,7 @@ instance RunMessage TheSearchForKadath where
 
       leadId <- getLead
       investigators <- getInvestigators
-      victoryLocations <- select $ LocationWithVictory <> LocationWithoutClues
-      locations <- filter (`notElem` victoryLocations) <$> select Anywhere
-
+      locations <- select Anywhere
       tenebrousNightgaunts <- selectWithField EnemyCardCode $ enemyIs Enemies.tenebrousNightgaunt
 
       let
@@ -279,9 +277,7 @@ instance RunMessage TheSearchForKadath where
           nightgauntMessages
           selectEach (not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
           moveAllTo (toSource attrs) baharna
-          pushAll
-            $ map (AddToVictory . toTarget) victoryLocations
-            <> map RemoveLocation locations
+          for_ locations removeLocation
           search leadId attrs EncounterDeckTarget [fromDeck] (basicCardIs Enemies.nightriders)
             $ defer attrs IsNotDraw
           push $ AdvanceToAct 1 Acts.theIsleOfOriab A (toSource attrs)
@@ -297,10 +293,8 @@ instance RunMessage TheSearchForKadath where
           beingsOfIb <- getSetAsideCard Enemies.beingsOfIb
           createEnemyAt_ beingsOfIb ruinsOfIb
           moveAllTo (toSource attrs) kadatheron
-          pushAll
-            $ map (AddToVictory . toTarget) victoryLocations
-            <> map RemoveLocation locations
-            <> [AdvanceToAct 1 Acts.theDoomThatCameBefore A (toSource attrs), DoStep 1 msg]
+          for_ locations removeLocation
+          pushAll [AdvanceToAct 1 Acts.theDoomThatCameBefore A (toSource attrs), DoStep 1 msg]
         ForbiddenLands -> do
           ilekVad <- placeSetAsideLocation Locations.ilekVad
           forbiddenLands <- placeSetAsideLocation Locations.forbiddenLands
@@ -314,10 +308,8 @@ instance RunMessage TheSearchForKadath where
           createEnemyAt_ stalkingManticore forbiddenLands
           createEnemyAt_ hordeOfNight zulanThek
           moveAllTo (toSource attrs) ilekVad
-          pushAll
-            $ map (AddToVictory . toTarget) victoryLocations
-            <> map RemoveLocation locations
-            <> [AdvanceToAct 1 Acts.seekOutTheNight A (toSource attrs), DoStep 1 msg]
+          for_ locations removeLocation
+          pushAll [AdvanceToAct 1 Acts.seekOutTheNight A (toSource attrs), DoStep 1 msg]
         TimelessRealm -> do
           celephais <- placeSetAsideLocation Locations.celephais
           placeSetAsideLocations_ [Locations.serannian, Locations.hazuthKleg]
@@ -327,9 +319,7 @@ instance RunMessage TheSearchForKadath where
           selectEach (not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
           theCrawlingMist <- getSetAsideCard Enemies.theCrawlingMist
           moveAllTo (toSource attrs) celephais
-          pushAll
-            $ map (AddToVictory . toTarget) victoryLocations
-            <> map RemoveLocation locations
+          for_ locations removeLocation
 
           shuffleCardsIntoDeck Deck.EncounterDeck [theCrawlingMist]
           search leadId attrs EncounterDeckTarget [fromDeck] (basicCardIs Enemies.priestOfAThousandMasks)

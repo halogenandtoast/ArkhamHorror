@@ -24,6 +24,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Queue
 import Data.Aeson (Result (..))
 
 newtype TheDreamEaters = TheDreamEaters CampaignAttrs
@@ -45,49 +46,58 @@ record :: (HasQueue Message m, IsCampaignLogKey k) => CampaignPart -> k -> m ()
 record TheDreamQuest key = push $ InTheDreamQuest (Record $ toCampaignLogKey key)
 record TheWebOfDreams key = push $ InTheWebOfDreams (Record $ toCampaignLogKey key)
 
+inTheWebOfDreams :: ReverseQueue m => QueueT Message m () -> m ()
+inTheWebOfDreams body = do
+  msgs <- capture body
+  push $ InTheWebOfDreams $ Run msgs
+
+inTheDreamQuest :: ReverseQueue m => QueueT Message m () -> m ()
+inTheDreamQuest body = do
+  msgs <- capture body
+  push $ InTheDreamQuest $ Run msgs
+
 setCampaignPart
-  :: ReverseQueue m => CampaignPart -> TheDreamEaters -> CampaignStep -> m TheDreamEaters
-setCampaignPart part c@(TheDreamEaters attrs) step =
-  if (toResult @Metadata attrs.meta).mode == PartialMode part
-    then do
-      push $ CampaignStep step
-      pure c
-    else do
-      if (toResult @Metadata attrs.meta).part == part
-        then do
-          push $ CampaignStep step
-          pure c
-        else do
-          investigators <- allInvestigators
-          currentPlayers <- for investigators \i -> do
-            player <- getPlayer i
-            iattrs <- getAttrs @Investigator i
-            pure (player, iattrs)
+  :: (HasCallStack, ReverseQueue m) => CampaignPart -> TheDreamEaters -> Message -> m TheDreamEaters
+setCampaignPart part c@(TheDreamEaters attrs) msg = do
+  if
+    | (toResult @Metadata attrs.meta).mode == PartialMode part -> do
+        push msg
+        pure c
+    | (toResult @Metadata attrs.meta).part == part -> do
+        push msg
+        pure c
+    | otherwise -> do
+        investigators <- allInvestigators
+        currentPlayers <- for investigators \i -> do
+          player <- getPlayer i
+          iattrs <- getAttrs @Investigator i
+          pure (player, iattrs)
 
-          let meta = toResult @Metadata attrs.meta
-              newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
-              newMeta =
-                meta
-                  { currentCampaignMode = Just part
-                  , otherCampaignAttrs = Just $ attrs {campaignMeta = Null}
-                  , currentCampaignPlayers = meta.otherCampaignPlayers
-                  , otherCampaignPlayers = mapFromList currentPlayers
-                  }
+        let
+          meta = toResult @Metadata attrs.meta
+          newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
+          newMeta =
+            meta
+              { currentCampaignMode = Just part
+              , otherCampaignAttrs = Just $ attrs {campaignMeta = Null}
+              , currentCampaignPlayers = meta.otherCampaignPlayers
+              , otherCampaignPlayers = mapFromList currentPlayers
+              }
 
-          for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
-            let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
-            push $ SetInvestigator pid i
+        for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
+          let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
+          push $ SetInvestigator pid i
 
-          push $ CampaignStep step
+        push msg
 
-          pure
-            $ TheDreamEaters
-              ( newAttrs
-                  { campaignCompletedSteps = campaignCompletedSteps attrs
-                  , campaignStep = campaignStep attrs
-                  , campaignMeta = toJSON newMeta
-                  }
-              )
+        pure
+          $ TheDreamEaters
+            ( newAttrs
+                { campaignCompletedSteps = campaignCompletedSteps attrs
+                , campaignStep = campaignStep attrs
+                , campaignMeta = toJSON newMeta
+                }
+            )
 
 getHasRecord :: (IsCampaignLogKey k, HasGame m, HasCallStack) => CampaignPart -> k -> m Bool
 getHasRecord part key = do
@@ -401,7 +411,7 @@ instance RunMessage TheDreamEaters where
               "You don’t trust this creature one bit. You threaten the black cat, warning it not to approach your friends under any circumstance. The black cat yawns and vanishes out the door."
               [InTheDreamQuest (Record $ toCampaignLogKey OkayFineHaveItYourWayThen)]
           ]
-        push $ CampaignStep (InterludeStepPart 1 Nothing 3)
+        inTheWebOfDreams $ push $ CampaignStep (InterludeStepPart 1 Nothing 3)
         pure c
       CampaignStep (InterludeStepPart 1 _ 3) -> do
         lead <- getLeadPlayer
@@ -448,7 +458,8 @@ instance RunMessage TheDreamEaters where
         push next
         pure c
       CampaignStep (InterludeStep 2 _) -> do
-        setCampaignPart TheWebOfDreams c (InterludeStepPart 2 Nothing 1)
+        inTheWebOfDreams $ push $ CampaignStep $ InterludeStepPart 2 Nothing 1
+        pure c
       CampaignStep (InterludeStepPart 2 _ 1) -> do
         -- Start TheWebOfDreams
         story theOneironauts1
@@ -489,7 +500,8 @@ instance RunMessage TheDreamEaters where
                       [InTheWebOfDreams (Record $ toCampaignLogKey TheBlackCatWarnedTheOthers)]
                   ]
 
-            setCampaignPart TheDreamQuest c (InterludeStepPart 2 Nothing 2)
+            inTheDreamQuest $ push $ CampaignStep $ InterludeStepPart 2 Nothing 2
+            pure c
       CampaignStep (InterludeStepPart 2 _ 2) -> do
         -- TheDreamQuest
         story theOneironauts2
@@ -507,9 +519,9 @@ instance RunMessage TheDreamEaters where
             story searchingForTheTruth
             recordInBoth TheBlackCatIsSearchingForTheTruth
             push $ CampaignStep (InterludeStepPart 2 Nothing 4)
-            pure c
           else do
-            setCampaignPart TheWebOfDreams c (InterludeStepPart 2 Nothing 3)
+            inTheWebOfDreams $ push $ CampaignStep $ InterludeStepPart 2 Nothing 3
+        pure c
       CampaignStep (InterludeStepPart 2 _ 3) -> do
         story nowWhereWasI
 
@@ -566,7 +578,8 @@ instance RunMessage TheDreamEaters where
             ]
         pure c
       CampaignStep (InterludeStep 3 _) -> do
-        setCampaignPart TheDreamQuest c (InterludeStepPart 3 Nothing 1)
+        inTheDreamQuest $ push $ CampaignStep $ InterludeStepPart 3 Nothing 1
+        pure c
       CampaignStep (InterludeStepPart 3 _ 1) -> do
         story theGreatOnes1
         whenM (getHasRecord TheDreamQuest TheDreamersGrowWeaker) do
@@ -610,7 +623,8 @@ instance RunMessage TheDreamEaters where
                       "Tell your companions that you will be okay. The black cat will stay with them once this message is delivered. This might make your quest a little more difficult. "
                       [InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatSpokeOfAtlachNacha)]
                   ]
-            setCampaignPart TheWebOfDreams c (InterludeStepPart 3 Nothing 2)
+            inTheWebOfDreams $ push $ CampaignStep $ InterludeStepPart 3 Nothing 2
+            pure c
       CampaignStep (InterludeStepPart 3 _ 2) -> do
         story theGreatOnes2
         possessTheSilverKey <- getHasRecord TheWebOfDreams TheInvestigatorsPossessTheSilverKey
@@ -623,14 +637,14 @@ instance RunMessage TheDreamEaters where
               , InTheDreamQuest (Record $ toCampaignLogKey TheInvestigatorsPossessTheSilverKey)
               ]
             removeCampaignCard Assets.theSilverKey
-            setCampaignPart TheDreamQuest c (InterludeStepPart 3 Nothing 21)
-          else do
-            push $ CampaignStep (InterludeStepPart 3 Nothing 22)
-            pure c
+            inTheDreamQuest $ push $ CampaignStep $ InterludeStepPart 3 Nothing 21
+          else push $ CampaignStep (InterludeStepPart 3 Nothing 22)
+        pure c
       CampaignStep (InterludeStepPart 3 _ 21) -> do
         investigators <- allInvestigators
         addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.theSilverKey
-        setCampaignPart TheDreamQuest c (InterludeStepPart 3 Nothing 22)
+        inTheDreamQuest $ push $ CampaignStep $ InterludeStepPart 3 Nothing 22
+        pure c
       CampaignStep (InterludeStepPart 3 _ 22) -> do
         -- If the black cat is searching for the truth:
         isSearching <- getHasRecord TheDreamQuest TheBlackCatIsSearchingForTheTruth
@@ -653,8 +667,8 @@ instance RunMessage TheDreamEaters where
                     record TheDreamQuest TheBlackCatIsAtYourSide
                     pushBoth $ AddChaosToken ElderThing
                 | atYourSideTheWebOfDreams -> do
-                    push $ InTheWebOfDreams (CrossOutRecord $ toCampaignLogKey TheBlackCatIsAtYourSide)
-                    push $ InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatIsAtYourSide)
+                    inTheWebOfDreams $ push $ CrossOutRecord $ toCampaignLogKey TheBlackCatIsAtYourSide
+                    record TheDreamQuest TheBlackCatIsAtYourSide
                     pushBoth $ SwapChaosToken Tablet ElderThing
                 | otherwise -> pure ()
 
@@ -666,8 +680,8 @@ instance RunMessage TheDreamEaters where
                     record TheWebOfDreams TheBlackCatIsAtYourSide
                     pushBoth $ AddChaosToken Tablet
                 | atYourSideTheDreamQuest -> do
-                    push $ InTheDreamQuest (CrossOutRecord $ toCampaignLogKey TheBlackCatIsAtYourSide)
-                    push $ InTheWebOfDreams (Record $ toCampaignLogKey TheBlackCatIsAtYourSide)
+                    inTheDreamQuest $ push $ CrossOutRecord $ toCampaignLogKey TheBlackCatIsAtYourSide
+                    record TheWebOfDreams TheBlackCatIsAtYourSide
                     pushBoth $ SwapChaosToken ElderThing Tablet
                 | otherwise -> pure ()
 
@@ -684,9 +698,7 @@ instance RunMessage TheDreamEaters where
         pure c
       CampaignStep EpilogueStep -> do
         case campaignMode meta of
-          PartialMode _ -> do
-            push GameOver
-            pure c
+          PartialMode _ -> push GameOver
           FullMode -> do
             invasionHasBegun <- getHasRecord TheDreamQuest Nyarlathotep'sInvasionHasBegun
             awoke <- getHasRecord TheDreamQuest TheDreamersAwoke
@@ -701,63 +713,64 @@ instance RunMessage TheDreamEaters where
                   if
                     | bridgeCompleted -> do
                         story $ i18n "theDreamEaters.epilogue1"
-                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                        inTheDreamQuest $ push $ CampaignStep $ EpilogueStepPart 17
                     | returned -> do
                         story $ i18n "theDreamEaters.epilogue2"
-                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                        inTheDreamQuest $ push $ CampaignStep $ EpilogueStepPart 17
                     | neverEscaped -> do
                         story $ i18n "theDreamEaters.epilogue3"
-                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                        inTheDreamQuest $ push $ CampaignStep $ EpilogueStepPart 17
                     | stillInDreamlands -> do
                         story $ i18n "theDreamEaters.epilogue4"
-                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                        inTheDreamQuest $ push $ CampaignStep $ EpilogueStepPart 17
                     | otherwise -> error "invalid"
               | awoke ->
                   if
                     | bridgeCompleted -> do
                         story $ i18n "theDreamEaters.epilogue5"
-                        setCampaignPart TheDreamQuest c (EpilogueStepPart 5)
+                        inTheDreamQuest $ push $ CampaignStep $ EpilogueStepPart 5
                     | returned -> do
                         story $ i18n "theDreamEaters.epilogue6"
-                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                        inTheDreamQuest $ push $ CampaignStep $ EpilogueStepPart 17
                     | neverEscaped -> do
                         story $ i18n "theDreamEaters.epilogue7"
-                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                        inTheDreamQuest $ push $ CampaignStep $ EpilogueStepPart 17
                     | stillInDreamlands -> do
                         story $ i18n "theDreamEaters.epilogue8"
-                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                        inTheDreamQuest $ push $ CampaignStep $ EpilogueStepPart 17
                     | otherwise -> error "invalid"
               | stayed ->
                   if
                     | bridgeCompleted -> do
                         story $ i18n "theDreamEaters.epilogue9"
-                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                        inTheDreamQuest $ push $ CampaignStep $ EpilogueStepPart 17
                     | returned -> do
                         story $ i18n "theDreamEaters.epilogue10"
-                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                        inTheDreamQuest $ push $ CampaignStep $ EpilogueStepPart 17
                     | neverEscaped -> do
                         story $ i18n "theDreamEaters.epilogue11"
-                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                        inTheDreamQuest $ push $ CampaignStep $ EpilogueStepPart 17
                     | stillInDreamlands -> do
                         story $ i18n "theDreamEaters.epilogue12"
-                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                        inTheDreamQuest $ push $ CampaignStep $ EpilogueStepPart 17
                     | otherwise -> error "invalid"
               | traveled ->
                   if
                     | bridgeCompleted -> do
                         story $ i18n "theDreamEaters.epilogue13"
-                        setCampaignPart TheDreamQuest c (EpilogueStepPart 13)
+                        inTheDreamQuest $ push $ CampaignStep $ EpilogueStepPart 13
                     | returned -> do
                         story $ i18n "theDreamEaters.epilogue14"
-                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                        inTheDreamQuest $ push $ CampaignStep $ EpilogueStepPart 17
                     | neverEscaped -> do
                         story $ i18n "theDreamEaters.epilogue15"
-                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                        inTheDreamQuest $ push $ CampaignStep $ EpilogueStepPart 17
                     | stillInDreamlands -> do
                         story $ i18n "theDreamEaters.epilogue16"
-                        setCampaignPart TheDreamQuest c (EpilogueStepPart 17)
+                        inTheDreamQuest $ push $ CampaignStep $ EpilogueStepPart 17
                     | otherwise -> error "invalid"
               | otherwise -> error "invalid"
+        pure c
       CampaignStep (EpilogueStepPart 5) -> do
         eachInvestigator (kill attrs)
         push $ CampaignStep (EpilogueStepPart 17)
@@ -776,26 +789,14 @@ instance RunMessage TheDreamEaters where
         pure c
       InTheDreamQuest msg' -> do
         case currentCampaignMode meta of
-          Nothing -> lift (defaultCampaignRunner msg' c)
-          Just TheDreamQuest -> lift (defaultCampaignRunner msg' c)
-          Just TheWebOfDreams -> case otherCampaignAttrs meta of
-            Nothing -> error "called with no other campaign attrs"
-            Just otherAttrs -> do
-              TheDreamEaters otherAttrs' <- lift (defaultCampaignRunner msg' (TheDreamEaters otherAttrs))
-              let meta' = meta {otherCampaignAttrs = Just otherAttrs'}
-              pure
-                $ TheDreamEaters
-                $ attrs {campaignMeta = toJSON meta'}
+          Just TheWebOfDreams -> setCampaignPart TheDreamQuest c msg'
+          _ -> do
+            push msg'
+            pure c
       InTheWebOfDreams msg' -> do
         case currentCampaignMode meta of
-          Nothing -> lift (defaultCampaignRunner msg' c)
-          Just TheWebOfDreams -> lift (defaultCampaignRunner msg' c)
-          Just TheDreamQuest -> case otherCampaignAttrs meta of
-            Nothing -> error "called with no other campaign attrs"
-            Just otherAttrs -> do
-              TheDreamEaters otherAttrs' <- lift (defaultCampaignRunner msg' (TheDreamEaters otherAttrs))
-              let meta' = meta {otherCampaignAttrs = Just otherAttrs'}
-              pure
-                $ TheDreamEaters
-                $ attrs {campaignMeta = toJSON meta'}
+          Just TheDreamQuest -> setCampaignPart TheWebOfDreams c msg'
+          _ -> do
+            push msg'
+            pure c
       _ -> lift (defaultCampaignRunner msg c)

@@ -16,7 +16,7 @@ aCircleUnbroken = act (4, A) ACircleUnbroken Cards.aCircleUnbroken Nothing
 
 instance HasAbilities ACircleUnbroken where
   getAbilities (ACircleUnbroken x) =
-    [ mkAbility x 1 $ Objective $ forced $ EnemyDefeated #after Anyone ByAny $ enemyIs Enemies.anetteMason
+    [ mkAbility x 1 $ Objective $ forced $ ifEnemyDefeated Enemies.anetteMason
     , restricted x 2 (exists $ locationIs Locations.witchesCircle <> LocationWithoutClues)
         $ Objective (forced AnyWindow)
     ]

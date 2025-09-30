@@ -66,6 +66,9 @@
   "tooltips": {
     "laBellaLuna": {
       "resign": "This was a bust"
+    },
+    "backAlley" : {
+      "resign": "We can get out this way!"
     }
   }
 }

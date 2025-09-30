@@ -339,6 +339,7 @@ runGameMessage msg g = case msg of
           if gameTurnPlayerInvestigatorId g `elem` map Just replaceIds
             then set turnPlayerInvestigatorIdL (Just iid)
             else id
+        replaceF x = if Just x == mOldId then iid else x
     pure
       $ g
       & ( entitiesL
@@ -348,6 +349,8 @@ runGameMessage msg g = case msg of
         )
       & activeInvestigatorF
       & turnPlayerInvestigatorF
+      & playerOrderL %~ map replaceF
+      & leadInvestigatorIdL %~ replaceF
   Run msgs -> g <$ pushAll msgs
   If wType _ -> do
     window <- checkWindows [mkWindow Timing.AtIf wType]

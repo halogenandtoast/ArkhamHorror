@@ -1157,7 +1157,9 @@ h2 {
   &:has(.resolution) {
     background-color: #BAA597;
     box-shadow: unset;
-    overflow: hidden;
+    overflow: auto;
+    isolation: isolate;
+    position: relative;
     &::after {
       border: 20px solid #D4CCC3;
       border-left-width: 10px;
@@ -1167,7 +1169,7 @@ h2 {
       box-sizing: border-box;
       content: "";
       filter: blur(0.25em);
-      z-index: 1;
+      z-index: -2;
     }
     h1 {
       color: #19214F;
@@ -1178,10 +1180,8 @@ h2 {
       font-size: 1.3em;
       font-weight: 500;
     }
-    padding: 50px;
-    position: relative;
     &::before {
-      z-index: 2;
+      z-index: -1;
       pointer-events: none;
       position: absolute;
       inset: 10px;

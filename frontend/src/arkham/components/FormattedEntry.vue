@@ -401,6 +401,7 @@ ul, :deep(ul) {
 
 .resolution, :deep(.resolution) {
   overflow-y: auto;
+  padding: 30px;
   li::marker {
     color: var(--bullet-red);
   }

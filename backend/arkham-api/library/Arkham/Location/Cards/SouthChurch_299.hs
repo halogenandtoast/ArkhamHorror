@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.SouthChurch_299 (southChurch_299, SouthChurch_299 (..)) where
+module Arkham.Location.Cards.SouthChurch_299 (southChurch_299) where
 
 import Arkham.Ability
 import Arkham.GameValue
@@ -20,7 +20,7 @@ instance HasAbilities SouthChurch_299 where
       attrs
       [ restricted attrs 1 (withBreaches attrs Here)
           $ actionAbilityWithCost (DiscardAssetCost AnyAsset)
-      , withTooltip "You hide through the night." $ locationResignAction attrs
+      , scenarioI18n $ withI18nTooltip "southChurch.resign" $ locationResignAction attrs
       ]
 
 instance RunMessage SouthChurch_299 where
@@ -28,9 +28,7 @@ instance RunMessage SouthChurch_299 where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       let breachCount = countLocationBreaches attrs
       act <- selectJust AnyAct
-      pushAll
-        [ RemoveBreaches (toTarget attrs) breachCount
-        , PlaceBreaches (toTarget act) breachCount
-        ]
+      removeBreaches attrs breachCount
+      placeBreaches act breachCount
       pure l
     _ -> SouthChurch_299 <$> liftRunMessage msg attrs

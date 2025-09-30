@@ -1,15 +1,14 @@
 module Arkham.Location.Cards.SilverTwilightLodgeShroudedInMystery (
   silverTwilightLodgeShroudedInMystery,
-  SilverTwilightLodgeShroudedInMystery (..),
 )
 where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 
 newtype SilverTwilightLodgeShroudedInMystery = SilverTwilightLodgeShroudedInMystery LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -24,15 +23,14 @@ silverTwilightLodgeShroudedInMystery =
     (PerPlayer 1)
 
 instance HasAbilities SilverTwilightLodgeShroudedInMystery where
-  getAbilities (SilverTwilightLodgeShroudedInMystery attrs) =
-    withRevealedAbilities
-      attrs
-      [fastAbility attrs 1 (HorrorCost (toAbilitySource attrs 1) YouTarget 1) Here]
+  getAbilities (SilverTwilightLodgeShroudedInMystery a) =
+    extendRevealed1 a $ fastAbility a 1 (HorrorCost (a.ability 1) YouTarget 1) Here
 
 instance RunMessage SilverTwilightLodgeShroudedInMystery where
-  runMessage msg l@(SilverTwilightLodgeShroudedInMystery attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(SilverTwilightLodgeShroudedInMystery attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       act <- selectJust AnyAct
-      pushAll [RemoveBreaches (toTarget attrs) 1, PlaceBreaches (toTarget act) 1]
+      removeBreaches attrs 1
+      placeBreaches act 1
       pure l
-    _ -> SilverTwilightLodgeShroudedInMystery <$> runMessage msg attrs
+    _ -> SilverTwilightLodgeShroudedInMystery <$> liftRunMessage msg attrs

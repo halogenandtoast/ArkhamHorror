@@ -1,17 +1,11 @@
-module Arkham.Enemy.Cards.WitnessOfChaos (
-  witnessOfChaos,
-  WitnessOfChaos (..),
-)
-where
+module Arkham.Enemy.Cards.WitnessOfChaos (witnessOfChaos) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Location
 import Arkham.Matcher
-import Arkham.Projection
-import Arkham.Timing qualified as Timing
+import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 
 newtype WitnessOfChaos = WitnessOfChaos EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -19,27 +13,16 @@ newtype WitnessOfChaos = WitnessOfChaos EnemyAttrs
 
 witnessOfChaos :: EnemyCard WitnessOfChaos
 witnessOfChaos =
-  enemyWith
-    WitnessOfChaos
-    Cards.witnessOfChaos
-    (4, Static 4, 2)
-    (1, 1)
-    (spawnAtL ?~ SpawnAt FewestBreaches)
+  enemy WitnessOfChaos Cards.witnessOfChaos (4, Static 4, 2) (1, 1)
+    & setSpawnAt FewestBreaches
 
 instance HasAbilities WitnessOfChaos where
-  getAbilities (WitnessOfChaos attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1
-          $ ForcedAbility
-          $ EnemyEnters Timing.When Anywhere
-          $ EnemyWithId (toId attrs)
-      ]
+  getAbilities (WitnessOfChaos a) =
+    extend1 a $ mkAbility a 1 $ forced $ EnemyEnters #when Anywhere (be a)
 
 instance RunMessage WitnessOfChaos where
-  runMessage msg e@(WitnessOfChaos attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      location <- fieldJust EnemyLocation (toId attrs)
-      push $ PlaceBreaches (toTarget location) 1
+  runMessage msg e@(WitnessOfChaos attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      withLocationOf attrs (`placeBreaches` 1)
       pure e
-    _ -> WitnessOfChaos <$> runMessage msg attrs
+    _ -> WitnessOfChaos <$> liftRunMessage msg attrs

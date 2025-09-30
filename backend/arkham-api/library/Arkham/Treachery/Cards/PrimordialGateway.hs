@@ -1,10 +1,10 @@
-module Arkham.Treachery.Cards.PrimordialGateway (primordialGateway, PrimordialGateway (..)) where
+module Arkham.Treachery.Cards.PrimordialGateway (primordialGateway) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Location.BreachStatus
 import Arkham.Location.Types (Field (..))
+import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
@@ -21,11 +21,10 @@ primordialGateway = treachery PrimordialGateway Cards.primordialGateway
 instance HasModifiersFor PrimordialGateway where
   getModifiersFor (PrimordialGateway a) = case a.placement of
     AttachedToLocation lid -> modified_ a lid [Blank]
-    _ -> pure mempty
+    _ -> pure ()
 
 instance HasAbilities PrimordialGateway where
-  getAbilities (PrimordialGateway x) =
-    [skillTestAbility $ restrictedAbility x 1 OnSameLocation $ ActionAbility [] $ ActionCost 1]
+  getAbilities (PrimordialGateway x) = [skillTestAbility $ restricted x 1 OnSameLocation actionAbility]
 
 instance RunMessage PrimordialGateway where
   runMessage msg t@(PrimordialGateway attrs) = runQueueT $ case msg of
@@ -34,15 +33,11 @@ instance RunMessage PrimordialGateway where
       breaches <- fieldMap LocationBreaches (maybe 0 countBreaches) location
       let amount = max 0 (3 - breaches)
       attachTreachery attrs location
-      push $ PlaceBreaches (toTarget location) amount
+      placeBreaches location amount
       pure t
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      chooseOne
-        iid
-        [ SkillLabel sType [Msg.beginSkillTest sid iid (attrs.ability 1) (toTarget attrs) sType (Fixed 4)]
-        | sType <- [#intellect, #willpower]
-        ]
+      chooseBeginSkillTest sid iid (attrs.ability 1) attrs [#intellect, #willpower] (Fixed 4)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs

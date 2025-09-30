@@ -1,16 +1,10 @@
-module Arkham.Act.Cards.DarkKnowledgeV1 (
-  DarkKnowledgeV1 (..),
-  darkKnowledgeV1,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.DarkKnowledgeV1 (darkKnowledgeV1) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.Matcher
@@ -31,36 +25,30 @@ darkKnowledgeV1 = act (1, A) DarkKnowledgeV1 Cards.darkKnowledgeV1 Nothing
 
 instance HasAbilities DarkKnowledgeV1 where
   getAbilities (DarkKnowledgeV1 x) =
-    withBaseAbilities
+    extend
       x
       [ fastAbility x 1 Free $ if maybe False (>= 3) (actBreaches x) then NoRestriction else Never
       , mkAbility x 2 $ Objective $ ForcedAbilityWithCost AnyWindow (GroupClueCost (PerPlayer 3) Anywhere)
       ]
 
 instance RunMessage DarkKnowledgeV1 where
-  runMessage msg a@(DarkKnowledgeV1 attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg a@(DarkKnowledgeV1 attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      removeBreaches attrs 3
       location <- sampleLocation
-      pushAll
-        [ RemoveBreaches (toTarget attrs) 3
-        , PlaceClues (toAbilitySource attrs 1) (toTarget location) 1
-        ]
+      placeClues (attrs.ability 1) location 1
       pure a
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithClues
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      advancedWithClues attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       -- NOTE: moving the breaches is a bit of a hack as we use the "known" act id
       -- need to make sure this still works for the return to
-      anetteMason <- genCard Enemies.anetteMasonReincarnatedEvil
-      createAnetteMason <- createEnemy anetteMason SpawnViaSpawnInstruction
+      anetteMason <- fetchCard Enemies.anetteMasonReincarnatedEvil
       let breaches = fromMaybe 0 (actBreaches attrs)
-      pushAll
-        $ [ toMessage createAnetteMason
-          , advanceActDeck attrs
-          ]
-        <> [ PlaceBreaches (ActTarget $ ActId $ toCardCode Acts.beyondTheGrave) breaches
-           | breaches > 0
-           ]
+      createEnemy_ anetteMason SpawnViaSpawnInstruction
+      advanceActDeck attrs
+      when (breaches > 0) do
+        placeBreaches (ActTarget $ ActId $ toCardCode Acts.beyondTheGrave) breaches
       pure a
-    _ -> DarkKnowledgeV1 <$> runMessage msg attrs
+    _ -> DarkKnowledgeV1 <$> liftRunMessage msg attrs

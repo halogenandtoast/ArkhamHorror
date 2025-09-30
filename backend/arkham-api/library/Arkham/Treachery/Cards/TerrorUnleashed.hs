@@ -1,18 +1,13 @@
-module Arkham.Treachery.Cards.TerrorUnleashed (
-  terrorUnleashed,
-  TerrorUnleashed (..),
-)
-where
+module Arkham.Treachery.Cards.TerrorUnleashed (terrorUnleashed) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Helpers.Location
 import Arkham.Location.BreachStatus
 import Arkham.Location.Types (Field (..))
-import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype TerrorUnleashed = TerrorUnleashed TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -22,18 +17,15 @@ terrorUnleashed :: TreacheryCard TerrorUnleashed
 terrorUnleashed = treachery TerrorUnleashed Cards.terrorUnleashed
 
 instance RunMessage TerrorUnleashed where
-  runMessage msg t@(TerrorUnleashed attrs) = case msg of
+  runMessage msg t@(TerrorUnleashed attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      mLocation <- selectOne $ locationWithInvestigator iid
-      for_ mLocation $ \location -> do
+      withLocationOf iid \location -> do
         breaches <- fieldMap LocationBreaches (maybe 0 countBreaches) location
         doom <- field LocationDoom location
-
         let x = doom + max 1 breaches
-
-        player <- getPlayer iid
-        pushAll
-          $ (guard (breaches == 0) *> [PlaceBreaches (toTarget location) 1])
-          <> replicate x (chooseOne player [assignDamageLabel iid attrs 1, assignHorrorLabel iid attrs 1])
+        when (breaches == 0) $ placeBreaches location 1
+        repeated x $ chooseOneM iid do
+          damageLabeled iid $ assignDamage iid attrs 1
+          horrorLabeled iid $ assignHorror iid attrs 1
       pure t
-    _ -> TerrorUnleashed <$> runMessage msg attrs
+    _ -> TerrorUnleashed <$> liftRunMessage msg attrs

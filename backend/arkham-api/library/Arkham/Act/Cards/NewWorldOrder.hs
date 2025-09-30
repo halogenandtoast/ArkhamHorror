@@ -31,7 +31,7 @@ instance RunMessage NewWorldOrder where
   runMessage msg a@(NewWorldOrder attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       location <- sampleLocation
-      push $ RemoveBreaches (toTarget attrs) 3
+      removeBreaches (toTarget attrs) 3
       placeClues (attrs.ability 1) location 1
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do

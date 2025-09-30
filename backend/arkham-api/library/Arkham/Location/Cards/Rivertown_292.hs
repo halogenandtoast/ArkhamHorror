@@ -3,7 +3,7 @@ module Arkham.Location.Cards.Rivertown_292 (rivertown_292) where
 import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
-import Arkham.Location.BreachStatus
+import Arkham.Location.BreachStatus hiding (removeBreaches)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -29,6 +29,7 @@ instance RunMessage Rivertown_292 where
       let icons = count (`elem` [#intellect, #wild]) $ concatMap (cdSkills . toCardDef) cards
           n = 1 + min (maybe 0 countBreaches $ locationBreaches attrs) icons
       act <- selectJust AnyAct
-      pushAll [RemoveBreaches (toTarget attrs) n, PlaceBreaches (toTarget act) n]
+      removeBreaches attrs n
+      placeBreaches act n
       pure l
     _ -> Rivertown_292 <$> liftRunMessage msg attrs

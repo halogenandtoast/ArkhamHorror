@@ -236,7 +236,7 @@ instance RunMessage UnionAndDisillusion where
           inductedIntoTheInnerCircle <- getHasRecord TheInvestigatorsWereInductedIntoTheInnerCircle
           deceivingTheLodge <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
 
-          storyWithChooseOneM' (p.resolution "resolution1") $ unscoped do
+          storyWithChooseOneM' (compose.resolution $ setTitle "resolution1.title" >> p "resolution1.body") $ unscoped do
             labeledValidate' (inductedIntoTheInnerCircle && not deceivingTheLodge) "yes" $ push R2
             labeled' "no" $ push R3
         Resolution 2 -> do
@@ -253,7 +253,7 @@ instance RunMessage UnionAndDisillusion where
             then do
               erynnJoinedTheInvestigators <- getHasRecord ErynnJoinedTheInvestigators
               hasBlackBook <- isJust <$> getOwner Assets.theBlackBook
-              storyWithChooseOneM' (p.resolution "returnToResolution4") do
+              storyWithChooseOneM' (compose.resolution $ setTitle "returnToResolution4.title" >> p "returnToResolution4.body") do
                 labeledValidate' (erynnJoinedTheInvestigators && hasBlackBook) "accept" $ push R9
                 labeled' "flee" $ push R10
             else do

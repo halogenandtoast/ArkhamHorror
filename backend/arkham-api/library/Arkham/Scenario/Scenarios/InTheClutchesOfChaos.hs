@@ -197,8 +197,7 @@ instance RunMessage InTheClutchesOfChaos where
             selectAny
               $ AnyInvestigator
               $ map InvestigatorWithTrait [Trait.Sorcerer, Trait.Miskatonic, Trait.Scholar]
-          resolutionWithXp "resolution1" $ allGainXp' attrs
-          leadChooseOneM do
+          resolutionWithXpAndChooseOne "resolution1" (allGainXp' attrs) do
             labeled' "continuedAlone" $ record TheInvestigatorsContinuedAlone
             labeled' "askedForAssistance" $ record TheInvestigatorsAskedAnetteForAssistance
 

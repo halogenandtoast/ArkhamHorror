@@ -5069,7 +5069,7 @@ instance Projection Event where
 
 instance Projection (InHandEntity Event) where
   getAttrs eid = do
-    let missingEvent = "Unknown event: " <> show eid
+    let missingEvent = "Unknown event: " <> show eid <> "\n" <> prettyCallStack callStack
     toAttrs . fromJustNote missingEvent <$> project @(InHandEntity Event) eid
   project eid =
     fmap InHandEntity
@@ -5080,7 +5080,7 @@ instance Projection (InHandEntity Event) where
       . gameInHandEntities
       <$> getGame
   field f eid = do
-    let missingEvent = "Unknown event: " <> show eid
+    let missingEvent = "Unknown event: " <> show eid <> "\n" <> prettyCallStack callStack
     e <- fromJustNote missingEvent <$> project @(InHandEntity Event) eid
     let attrs = toAttrs e
     case f of

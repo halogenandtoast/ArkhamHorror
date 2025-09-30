@@ -61,7 +61,7 @@ getInvestigatorMaybe iid = preview (entitiesL . investigatorsL . ix iid) <$> get
 getEvent :: (HasCallStack, HasGame m) => EventId -> m Event
 getEvent eid = fromJustNote missingEvent <$> getEventMaybe eid
  where
-  missingEvent = "Unknown event: " <> show eid
+  missingEvent = "Unknown event: " <> show eid <> "\n\n" <> prettyCallStack callStack
 
 getEventMaybe :: HasGame m => EventId -> m (Maybe Event)
 getEventMaybe eid = do

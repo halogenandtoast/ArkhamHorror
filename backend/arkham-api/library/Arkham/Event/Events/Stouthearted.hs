@@ -30,21 +30,21 @@ instance RunMessage Stouthearted where
       health <- fieldJust EnemyRemainingHealth eid
       damage <- field InvestigatorDamage iid
       horror <- field InvestigatorHorror iid
-      if (health > 0)
+      if health > 0
         then
           chooseOne iid
             $ Label "Done moving damage/horror" [DoStep 0 msg']
             : [ DamageLabel
-                iid
-                [MoveTokens (toSource attrs) (toSource iid) (toTarget eid) #damage 1, DoStep (n - 1) msg']
+                  iid
+                  [MoveTokens (toSource attrs) (toSource iid) (toTarget eid) #damage 1, DoStep (n - 1) msg']
               | damage > 0
               ]
               <> [ HorrorLabel
-                  iid
-                  [ RemoveTokens (toSource attrs) (toTarget iid) #horror 1
-                  , PlaceTokens (toSource attrs) (toTarget eid) #damage 1
-                  , DoStep (n - 1) msg'
-                  ]
+                     iid
+                     [ RemoveTokens (toSource attrs) (toTarget iid) #horror 1
+                     , PlaceTokens (toSource attrs) (toTarget eid) #damage 1
+                     , DoStep (n - 1) msg'
+                     ]
                  | horror > 0
                  ]
         else doStep 0 msg'

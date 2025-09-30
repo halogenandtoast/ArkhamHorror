@@ -103,7 +103,7 @@ instance RunMessage HankSamson where
       pure i
     ElderSignEffect iid | iid == attrs.id -> do
       case investigatorArt attrs of
-        "10016a" -> do
+        "10016a" | attrs.sanityDamage > 0 -> do
           canHorrorAssets <- select $ assetControlledBy iid <> AssetWithAnyRemainingSanity
           unless (null canHorrorAssets) do
             chooseOne
@@ -111,7 +111,7 @@ instance RunMessage HankSamson where
               [ targetLabel asset [MoveTokens (toSource attrs) (toSource iid) (toTarget asset) #horror 1]
               | asset <- canHorrorAssets
               ]
-        "10016b" -> do
+        "10016b" | attrs.healthDamage > 0 -> do
           canDamageAssets <- select $ assetControlledBy iid <> AssetWithAnyRemainingHealth
           unless (null canDamageAssets) do
             chooseOne

@@ -60,12 +60,16 @@
   "setup": "Setup",
   "addToken": "Add 1 {'{'}{token}{'}'} chaos token to the chaos bag for the remainder of the campaign.",
   "choice": {
+    "ammo": "Ammo",
     "breaches": "Breaches",
     "cards": "Cards",
+    "charge": "Charge",
     "clues": "Clues",
-    "resources": "Resources",
-    "physical": "Physical",
     "mental": "Mental",
+    "physical": "Physical",
+    "resources": "Resources",
+    "secret": "Secret",
+    "supply": "Supply",
     "supplyPoints": "Supply Points to Gain"
   },
   "proceedToSetup": "Proceed to _Setup_",

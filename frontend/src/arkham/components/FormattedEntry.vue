@@ -438,6 +438,17 @@ ul, :deep(ul) {
   }
 }
 
+:deep(h3) {
+  font-family: "Teutonic";
+  font-weight: 800;
+  text-decoration: none;
+  text-align: left;
+  align-self: start;
+  justify-self: start;
+  justify-content: start;
+  margin: 10px;
+}
+
 :deep(h1) {
   font-family: "Teutonic";
   font-weight: 500;

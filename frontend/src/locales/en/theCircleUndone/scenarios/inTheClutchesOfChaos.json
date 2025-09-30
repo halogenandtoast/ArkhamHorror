@@ -23,7 +23,14 @@
       "power": "Resolve the revelation ability on the topmost Power treachery in the encounter discard pile",
       "incursion": "Resolve an incursion at your location"
     },
-    "breachesToRemove": "Breaches to remove"
+    "breachesToRemove": "Breaches to remove",
+    "merchantDistrict": {
+      "choose": "Pay for additional breaches",
+      "removeSupply": "Remove 1 supply",
+      "removeCharge": "Remove 1 charge",
+      "removeAmmo": "Remove 1 ammo",
+      "removeSecret": "Remove 1 secret"
+    }
   },
   "standalone": {
     "label": {

@@ -70,5 +70,10 @@ resolution s = resolutionFlavor $ setTitle (s <> ".title") >> p (s <> ".body")
 resolutionWithChooseOne :: (HasI18n, ReverseQueue m) => Scope -> ChooseT m () -> m ()
 resolutionWithChooseOne s = resolutionFlavorWithChooseOne (setTitle (s <> ".title") >> p (s <> ".body"))
 
+resolutionWithXpAndChooseOne :: (HasI18n, ReverseQueue m) => Scope -> m Int -> ChooseT m () -> m ()
+resolutionWithXpAndChooseOne s f body = do
+  xp <- f
+  resolutionFlavorWithChooseOne (withVars ["xp" .= xp] $ setTitle (s <> ".title") >> p (s <> ".body")) body
+
 eachUnresigned :: ReverseQueue m => (InvestigatorId -> m ()) -> m ()
 eachUnresigned = selectEach (IncludeEliminated $ not_ ResignedInvestigator)

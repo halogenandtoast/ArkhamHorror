@@ -530,7 +530,7 @@ getDamageOrHorrorSource = \case
   ((windowType -> Window.DealtDamage source _ _ _) : _) -> source
   ((windowType -> Window.DealtHorror source _ _) : _) -> source
   ((windowType -> Window.DealtExcessDamage source _ _ _) : _) -> source
-  (_ : rest) -> getDamageSource rest
+  (_ : rest) -> getDamageOrHorrorSource rest
 
 getTotalDamageAmounts :: Targetable target => target -> [Window] -> Map Source (Int, Int)
 getTotalDamageAmounts target =

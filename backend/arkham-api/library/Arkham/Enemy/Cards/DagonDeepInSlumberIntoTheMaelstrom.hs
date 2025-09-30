@@ -39,7 +39,7 @@ instance HasAbilities DagonDeepInSlumberIntoTheMaelstrom where
         )
         $ forced
         $ RoundEnds #when
-    , skillTestAbility $ restricted a 1 OnSameLocation actionAbility
+    , skillTestAbility $ restricted a 2 OnSameLocation actionAbility
     ]
 
 instance RunMessage DagonDeepInSlumberIntoTheMaelstrom where

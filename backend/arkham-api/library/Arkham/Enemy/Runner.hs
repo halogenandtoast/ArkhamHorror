@@ -1315,7 +1315,7 @@ instance RunMessage EnemyAttrs where
       afterMsg <- checkWindows [mkAfter $ Window.EnemyDefeated miid defeatedBy eid]
       mloc <- field EnemyLocation a.id
 
-      withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
+      lift $ withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
 
       pushAll
         $ [whenMsg, When msg, After msg]

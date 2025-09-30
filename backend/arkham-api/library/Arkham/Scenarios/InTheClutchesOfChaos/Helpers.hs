@@ -20,7 +20,7 @@ import Arkham.Projection
 import Arkham.Target
 
 scenarioI18n :: (HasI18n => a) -> a
-scenarioI18n a = campaignI18n $ scope "unionAndDisillusion" a
+scenarioI18n a = campaignI18n $ scope "inTheClutchesOfChaos" a
 
 sampleLocations :: (HasGame m, MonadRandom m) => Int -> m [LocationId]
 sampleLocations n = do

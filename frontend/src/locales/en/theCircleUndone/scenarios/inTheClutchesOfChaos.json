@@ -22,7 +22,8 @@
     "toilAndTrouble": {
       "power": "Resolve the revelation ability on the topmost Power treachery in the encounter discard pile",
       "incursion": "Resolve an incursion at your location"
-    }
+    },
+    "breachesToRemove": "Breaches to remove"
   },
   "standalone": {
     "label": {
@@ -36,6 +37,37 @@
     "intro2": "<p>_Intro 2_: You recognize the soothsayer from your investigation into the disappearances at Josef Meiger’s manor. It was her advice that led the second set of victims to their doom, or so you suspect. Oddly enough, she appears to recognize you, as well. She runs her fingers along the circle of cards before her. “I suspect the past few weeks have been quite arduous for you. Are you here for guidance?” You grimace. The last time Anna read somebody’s fortune, it did not end well for them. What makes you think you will be any different?</p><p class='basic right'>Skip to _Intro 4_.</p>",
     "intro3": "<p>_Intro 3_: Anna opens her eyes. “I was wondering when we would meet again.” You wonder aloud how she could possibly not know, when everything else she has predicted has come to pass. Your remark earns you a hearty chuckle from the soothsayer. “That doesn’t mean I know everything, my dear.” She runs her fingers across the circle of cards. “I suspect the past few weeks have been quite arduous for you. Are you here for more guidance?” You grimace. This all began with a reading of your fortune. What makes you think another reading will make this all go away?</p><p class='basic right'>Proceed to _Intro 4_.</p>",
     "intro4": "<p>_Intro 4_: Before you can answer, Anna turns over the card closest to her. It depicts a furtive hooded figure with five swords embedded in the ground around it. Others cower and flee before the victorious figure, and a maelstrom of dark clouds brew over its head. Above this image, the card reads: FIVE OF SWORDS. “You may feel as though you have been defeated, but you must not give in to despair. The battle may be over, but your struggle has not yet ended.” Misery catches in your throat. You want nothing more than for this nightmare to be over, but Anna’s words ring true: you know it will not end unless you put an end to it yourself.</p><p>A flash of light burns across the sky, followed swiftly by a resounding crack of thunder. The clouds above are not natural. Phantasmal shapes shift and churn within the mist above. If you listen closely, you can faintly hear their howls of pain and sadness drifting on the wind. “It has begun,” Anna utters quietly. You rise to your feet, ignoring your exhaustion, your pain, and your fear.</p><p class='basic right'>Proceed to _Setup_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *In the Clutches of Chaos*, *Agents of Azathoth*, and *Nightgaunts*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/in-the-clutches-of-chaos.png' /><img src='{setImgPath}/agents-of-azathoth.png' /><img src='{setImgPath}/nightgaunts.png' /></section>",
+    "placeLocations": "Randomly choose one of the two Rivertown locations, one of the two Merchant District locations, one of the two French Hill locations, one of the two Uptown locations, one of the two Southside locations, and one of the two South Church locations and put them into play. Remove the other versions of Rivertown, Merchant District, French Hill, Uptown, Southside, and South Church from the game. Each investigator begins play in Southside.",
+    "anetteMasonIsPossessedByEvil": {
+      "checkCampaignLog": "Check Campaign Log. *If Anette Mason is possessed by evil*, perform the following:",
+      "gatherSets": "Gather all cards from the following additional encounter sets: *Music of the Damned*, *Anette’s Coven*, *City of Sins*, and *Witchcraft*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/music-of-the-damned.png' /><img src='{setImgPath}/anettes-coven.png' /><img src='{setImgPath}/city-of-sins.png' /><img src='{setImgPath}/witchcraft.png' /></section>",
+      "actDeck": "When constructing the act deck, use Act 1a—“Dark Knowledge (v. I)” and Act 2a—“Beyond the Grave.”",
+      "placeLocations": "Put Hangman’s Hill (*Where It All Ends*) and Silver Twilight Lodge (*Shrouded in Mystery*) into play."
+    },
+    "carlSanfordPossessesTheSecretsOfTheUniverse": {
+      "checkCampaignLog": "Check Campaign Log. *If Carl Sanford possesses the secrets of the universe*, perform the following:",
+      "gatherSets": "Gather all cards from the following additional encounter sets: *Secrets of the Universe*, *Silver Twilight Lodge*, *Striking Fear*, and *The Midnight Masks*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/secrets-of-the-universe.png' /><img src='{setImgPath}/silver-twilight-lodge.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/midnight-masks.png' /></section>When gathering The Midnight Masks encounter set, only gather the 5 treachery cards (2x False Lead and 3x Hunting Shadow). Do not gather any of the other cards from that encounter set",
+      "actDeck": "When constructing the act deck, use Act 1a—“Dark Knowledge (v. II)” and Act 2a—“New World Order.”",
+      "placeLocations": "Put Silver Twilight Lodge (*Where It All Ends*) and Hangman’s Hill (*Shrouded in Mystery*) into play."
+    },
+    "setAside": "Set the Piper of Azathoth enemy aside, out of play.",
+    "breaches": {
+      "instructions": "Choose 2 different random locations. Place 1 breach on each of those locations (*see Breaches and Incursions on the next page.*)",
+      "twoPlayers": "If there are 2 investigators in the game, perform this step twice.",
+      "threePlayers": "If there are 3 investigators in the game, perform this step three times.",
+      "fourPlayers": "If there are 4 investigators in the game, perform this step three times, choosing 3 different random locations each time, instead of 2."
+    }
+  },
+  "choosingARandomLocation": {
+    "title": "Choosing a Random Location",
+    "body": "<p class='basic'>During this scenario, you will often be instructed to choose a random location. This should be done by shuffling together the 8 locations removed from the game during setup (the versions of each location in play not currently being used) and drawing 1 at random.</p><p class='basic'>If you are instructed to choose multiple different random locations, shuffle together the 8 locations not currently being used and randomly draw a number of different locations equal to the amount specified.</p>"
+  },
+  "breachesAndIncursions": {
+    "title": "Breaches and Incursions",
+    "body": "<p class='basic'>In this scenario, doom does not accrue at the usual rate. Instead, breaches—represented by resource tokens—are placed on locations. When enough breach tokens have been placed on a single location, an _incursion_ occurs, which adds doom to that location and causes breaches to open in connecting locations. The investigators’ primary goal in this scenario should therefore be to prevent incursions from happening by removing breaches from locations. This can only be done using the abilities on each location.</p><h3>Placing Breaches</h3><p class='basic'>Breaches are primarily placed on locations via the following ability on Agenda 1a: “Forced – When doom would be placed on this agenda: Instead, place 1 breach on a number of different random locations equal to 1 more than the number of investigators.” However, card effects can also place breaches directly on locations.</p><p>*For example: There are two investigators in the game, and it is the mythos phase. During the “place 1 doom on the current agenda” step of the mythos phase, instead of placing doom on Agenda 1a, the investigators must choose 3 different locations, at random. The locations randomly chosen are Southside, Rivertown, and French Hill. Therefore, 1 breach is placed on each of those locations.*</p><p>When breaches are placed on multiple different locations, they should be placed one at a time. This process can be interrupted if it causes an _incursion_ (see below).</p><h3>Resolving Incursions</h3><p class='basic'>Incursions are primarily caused via the following ability on Agenda 1a: “_Forced_ – When a breach would be placed on a location with 3 breaches: Instead, resolve an _incursion_ at that location.” However, card effects can also cause an _incursion_ to occur. To resolve an incursion at a location, perform the following steps, in order:</p><ul><li>First, remove all breaches on that location.</li><li>Second, place 1 doom on that location.</li><li>Finally, place 1 breach on each connecting location. This can chain‑react and cause additional incursions to occur, so beware!</li><li>Once an incursion is resolved at a location, breaches from other incursions cannot be placed on that location for the remainder of that phase.</li></ul><p>*For example: A breach is about to be placed on Rivertown, which has 3 breaches on it. Instead, an incursion is resolved at Rivertown. First, all of the breaches on Rivertown are removed. Then, 1 doom is placed on Rivertown. Finally, 1 breach is placed on each of the locations connected to Rivertown. This may cause another incursion at one of those locations.</p>"
   },
   "resolutions": {
     "label": {

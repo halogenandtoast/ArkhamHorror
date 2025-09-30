@@ -663,7 +663,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card) & victoryDisplayL %~ filter (/= card)
   AttachStoryTreacheryTo _ card _ -> do
     pure $ a & setAsideCardsL %~ deleteFirstMatch (== card) & victoryDisplayL %~ filter (/= card)
-  CreateEnemy (enemyCreationCard -> card) -> do
+  CreateEnemy creation@(enemyCreationCard -> card) | not creation.leaveEnemyWhereItIs -> do
     pure
       $ a
       & (setAsideCardsL %~ deleteFirstMatch (== card))

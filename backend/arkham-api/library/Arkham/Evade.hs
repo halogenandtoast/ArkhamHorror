@@ -24,6 +24,7 @@ mkChooseEvade sid iid source =
       , chooseEvadeIsAction = False
       , chooseEvadeOverride = False
       , chooseEvadeSkillTest = sid
+      , chooseEvadeAdditionalOptions = []
       }
 
 mkChooseEvadeMatch

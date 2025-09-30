@@ -1,5 +1,5 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
 {-# LANGUAGE TypeAbstractions #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -3603,19 +3603,16 @@ enemyMatcherFilter es matcher' = do
         excluded <- elem (toId enemy) <$> select (mconcat $ EnemyWithModifier CannotBeEvaded : enemyFilters)
         if excluded
           then pure False
-          else
-            anyM
-              ( andM
-                  . sequence
-                    [ pure . (`abilityIs` Action.Evade)
-                    , -- Because ChooseEvadeEnemy happens after taking a fight action we
-                      -- need to decrement the action cost
-                      getCanPerformAbility iid [window]
-                        . (`applyAbilityModifiers` [ActionCostModifier (-1)])
-                        . overrideAbilityCriteria override
-                    ]
-              )
-              (getAbilities enemy)
+          else do
+            Helpers.withModifiersOf iid GameSource [IgnoreActionCost]
+              $ anyM
+                ( andM
+                    . sequence
+                      [ pure . (`abilityIs` #evade)
+                      , getCanPerformAbility iid [window] . overrideAbilityCriteria override
+                      ]
+                )
+                (getAbilities enemy)
     CanEngageEnemy source -> do
       iid <- view activeInvestigatorIdL <$> getGame
       modifiers' <- getModifiers (InvestigatorTarget iid)
@@ -4764,6 +4761,9 @@ instance Query ExtendedCardMatcher where
           iids <- select who
           names <- concatMapM (fieldMap InvestigatorHand (map toName)) iids
           pure $ count (== name) names > 1
+      InEncounterDiscard -> do
+        cards <- scenarioFieldMap ScenarioDiscard (map toCard)
+        pure $ filter (`elem` cards) cs
       InDiscardOf who -> do
         iids <- select who
         discards <- concatMapM (fieldMap InvestigatorDiscard (map PlayerCard)) iids

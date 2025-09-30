@@ -674,6 +674,8 @@ allTreacheries =
       SomeTreacheryCard damned
     , --- Return to The Wages of Sin [rttcu]
       SomeTreacheryCard witchweed
+    , --- Return to Union and Disillusion [rttcu]
+      SomeTreacheryCard brazierEnchantment
     , --- Hexcraft [rttcu]
       SomeTreacheryCard trespasser
     , SomeTreacheryCard despoiled

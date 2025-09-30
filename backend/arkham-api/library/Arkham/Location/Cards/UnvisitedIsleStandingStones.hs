@@ -34,14 +34,11 @@ instance HasModifiersFor UnvisitedIsleStandingStones where
     pure [Blocked]
 
 instance HasAbilities UnvisitedIsleStandingStones where
-  getAbilities (UnvisitedIsleStandingStones attrs) =
+  getAbilities (UnvisitedIsleStandingStones a) =
     extendRevealed
-      attrs
-      [ restricted attrs 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
-      , haunted
-          "Until the end of the round, increase the difficulty of each skill test during a _circle_ action by 2."
-          attrs
-          2
+      a
+      [ skillTestAbility $ restricted a 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
+      , scenarioI18n $ hauntedI "unvisitedIsleStandingStones.haunted" a 2
       ]
 
 instance RunMessage UnvisitedIsleStandingStones where
@@ -51,8 +48,7 @@ instance RunMessage UnvisitedIsleStandingStones where
       circleTest sid iid (attrs.ability 1) attrs [#willpower, #intellect] (Fixed 10)
       pure l
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      withSkillTest \sid ->
-        createCardEffect Cards.unvisitedIsleStandingStones Nothing attrs (SkillTestTarget sid)
+      withSkillTest $ createCardEffect Cards.unvisitedIsleStandingStones Nothing attrs
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs

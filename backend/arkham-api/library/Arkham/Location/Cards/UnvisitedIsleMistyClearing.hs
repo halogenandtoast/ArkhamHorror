@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.UnvisitedIsleMistyClearing ( unvisitedIsleMistyClearing,) where
+module Arkham.Location.Cards.UnvisitedIsleMistyClearing (unvisitedIsleMistyClearing) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -6,6 +6,7 @@ import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.GameValue
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Location.Brazier
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
@@ -32,8 +33,8 @@ instance HasAbilities UnvisitedIsleMistyClearing where
   getAbilities (UnvisitedIsleMistyClearing attrs) =
     extendRevealed
       attrs
-      [ restricted attrs 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
-      , haunted "You must either place 1 doom on this location, or take 1 damage and 1 horror" attrs 2
+      [ skillTestAbility $ restricted attrs 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
+      , scenarioI18n $ hauntedI "unvisitedIsleMistyClearing.haunted1" attrs 2
       ]
 
 instance RunMessage UnvisitedIsleMistyClearing where
@@ -44,8 +45,12 @@ instance RunMessage UnvisitedIsleMistyClearing where
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       chooseOneM iid do
-        labeled "Place 1 doom on this location" $ placeDoom attrs attrs 1
-        labeled "Take 1 damage and 1 horror" $ assignDamageAndHorror iid (attrs.ability 2) 1 1
+        scenarioI18n $ labeled' "unvisitedIsleMistyClearing.doom" $ placeDoom attrs attrs 1
+        withI18n
+          $ numberVar "damage" 1
+          $ numberVar "horror" 1
+          $ labeled' "takeDamageAndHorror"
+          $ assignDamageAndHorror iid (attrs.ability 2) 1 1
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs

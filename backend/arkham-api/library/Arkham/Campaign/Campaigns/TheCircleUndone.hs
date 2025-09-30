@@ -135,46 +135,48 @@ instance RunMessage TheCircleUndone where
         flavor $ p "youAreBeingHunted"
       nextCampaignStep
       pure c
-    CampaignStep (InterludeStep 3 mInterludeKey) -> do
-      lead <- getLead
-      story theInnerCircle1
-      chooseOneM lead do
-        labeled "Give Mr. Sanford everything you have found." $ interludeStepPart 3 mInterludeKey 2
-        labeled "Tell him you have nothing to show. (You are lying.)" $ interludeStepPart 3 mInterludeKey 3
+    CampaignStep (InterludeStep 3 mInterludeKey) -> scope "interlude3" do
+      storyWithChooseOneM' (setTitle "title" >> p "theInnerCircle1") do
+        labeled' "truth" $ interludeStepPart 3 mInterludeKey 2
+        labeled' "lie" $ interludeStepPart 3 mInterludeKey 3
       pure c
-    CampaignStep (InterludeStepPart 3 mInterludeKey 2) -> do
+    CampaignStep (InterludeStepPart 3 mInterludeKey 2) -> scope "interlude3" do
       rescuedJosef <- getHasRecord TheInvestigatorsRescuedJosef
       toldLodgeAboutCoven <- getHasRecord TheInvestigatorsToldTheLodgeAboutTheCoven
       someMementos <- getRecordSet MementosDiscovered
       let mementos = mapMaybe (unrecorded @Memento) someMementos
-      story theInnerCircle2
+      flavor $ setTitle "title" >> p "theInnerCircle2"
       crossOutRecordSetEntries MementosDiscovered (toList mementos)
       interludeStepPart 3 mInterludeKey $ if rescuedJosef && toldLodgeAboutCoven then 4 else 5
       pure c
-    CampaignStep (InterludeStepPart 3 _ 3) -> do
-      story theInnerCircle3
+    CampaignStep (InterludeStepPart 3 _ 3) -> scope "interlude3" do
+      flavor $ setTitle "title" >> p "theInnerCircle3"
       record TheInvestigatorsKeptsTheirMementosHidden
       nextCampaignStep
       pure c
-    CampaignStep (InterludeStepPart 3 mInterludeKey 4) -> do
-      story theInnerCircle4
-      lead <- getLead
-      chooseUpToNM lead 3 "Done asking question" do
-        labeled "What is the creature?" $ story whatIsTheCreature
-        labeled "What do you want with the creature?" $ story whatDoYouWantWithTheCreature
-        labeled "What do the witches want with the creature?" $ story whatDoTheWitchesWantWithTheCreature
-        labeled "Did you know about the creature before the charity gala?"
-          $ story didYouKnowAboutTheCreatureBeforeTheCharityGala
-        labeled "Where are the four missing people from the charity gala?"
-          $ story whereAreTheFourMissingPeopleFromTheCharityGala
+    CampaignStep (InterludeStepPart 3 mInterludeKey 4) -> scope "interlude3" do
+      survived <- getHasRecord TheInvestigatorsSurvivedTheWatchersEmbrace
+      storyWithChooseUpToNM' 3 "done" (setTitle "title" >> p "theInnerCircle4") do
+        labeled' "whatIsTheCreature" $ flavor $ p.green "whatIsTheCreature"
+        labeled' "whatDoYouWantWithTheCreature" $ flavor $ p.green "whatDoYouWantWithTheCreature"
+        labeled' "whatDoTheWitchesWantWithTheCreature"
+          $ flavor
+          $ p.green "whatDoTheWitchesWantWithTheCreature"
+        labeled' "didYouKnowAboutTheCreature"
+          $ flavor
+          $ p.green "didYouKnowAboutTheCreatureBeforeTheCharityGala"
+        labeled' "whereAreTheFourMissingPeople"
+          $ flavor
+          $ p.green "whereAreTheFourMissingPeopleFromTheCharityGala"
+        when survived $ labeled' "whyAreYouLookingAtMeLikeThat" $ flavor $ p.green "whyAreYouLookingAtMeLikeThat"
       interludeStepPart 3 mInterludeKey 6
       pure c
-    CampaignStep (InterludeStepPart 3 _ 5) -> do
-      story theInnerCircle5
+    CampaignStep (InterludeStepPart 3 _ 5) -> scope "interlude3" do
+      flavor $ setTitle "title" >> p "theInnerCircle5"
       nextCampaignStep
       pure c
-    CampaignStep (InterludeStepPart 3 _ 6) -> do
-      story theInnerCircle6
+    CampaignStep (InterludeStepPart 3 _ 6) -> scope "interlude3" do
+      flavor $ setTitle "title" >> p "theInnerCircle6"
       record TheInvestigatorsWereInductedIntoTheInnerCircle
       nextCampaignStep
       pure c

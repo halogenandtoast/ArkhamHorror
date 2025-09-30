@@ -8,6 +8,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier qualified as Mod
 import Arkham.Phase
+import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype SpectralRaven = SpectralRaven EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -15,9 +16,8 @@ newtype SpectralRaven = SpectralRaven EnemyAttrs
 
 spectralRaven :: EnemyCard SpectralRaven
 spectralRaven =
-  enemyWith SpectralRaven Cards.spectralRaven (2, Static 2, 2) (1, 1)
-    $ preyL
-    .~ Prey (InvestigatorWithLowestSkill #intellect UneliminatedInvestigator)
+  enemy SpectralRaven Cards.spectralRaven (2, Static 2, 2) (1, 1)
+    & setPrey (InvestigatorWithLowestSkill #intellect UneliminatedInvestigator)
 
 instance HasAbilities SpectralRaven where
   getAbilities (SpectralRaven a) = extend1 a $ mkAbility a 1 $ forced $ EnemyEngaged #after You (be a)
@@ -26,11 +26,11 @@ instance RunMessage SpectralRaven where
   runMessage msg e@(SpectralRaven attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasHauntedAbilities <- selectAny $ locationWithInvestigator iid <> HauntedLocation
-      chooseOrRunOneM iid do
+      chooseOrRunOneM iid $ scenarioI18n do
         when hasHauntedAbilities do
-          labeled "Resolve each haunted ability on your location" do
+          labeled' "spectralRaven.haunted" do
             handleTarget iid attrs attrs
-          labeled "Spectral Raven gets +2 fight and +2 evade until the end of the investigation phase" do
+          labeled' "spectralRaven.modify" do
             nextPhaseModifiers InvestigationPhase attrs attrs [Mod.EnemyFight 2, Mod.EnemyEvade 2]
       pure e
     HandleTargetChoice iid (isSource attrs -> True) _ -> do

@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.UnvisitedIsleDecayedWillow ( unvisitedIsleDecayedWillow,) where
+module Arkham.Location.Cards.UnvisitedIsleDecayedWillow (unvisitedIsleDecayedWillow) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -29,11 +29,11 @@ instance HasModifiersFor UnvisitedIsleDecayedWillow where
     pure [Blocked]
 
 instance HasAbilities UnvisitedIsleDecayedWillow where
-  getAbilities (UnvisitedIsleDecayedWillow attrs) =
+  getAbilities (UnvisitedIsleDecayedWillow a) =
     extendRevealed
-      attrs
-      [ restricted attrs 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
-      , haunted "Choose and discard 1 card from your hand." attrs 2
+      a
+      [ skillTestAbility $ restricted a 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
+      , scenarioI18n $ hauntedI "unvisitedIsleDecayedWillow.haunted" a 2
       ]
 
 instance RunMessage UnvisitedIsleDecayedWillow where
@@ -43,7 +43,7 @@ instance RunMessage UnvisitedIsleDecayedWillow where
       circleTest sid iid (attrs.ability 1) attrs [#intellect, #combat] (Fixed 9)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      chooseAndDiscardCard iid attrs
+      chooseAndDiscardCard iid (attrs.ability 2)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs

@@ -55,6 +55,12 @@ p = addEntry . FT.p
 ul :: FT.UlItems -> FlavorTextBuilder ()
 ul = addEntry . FT.ul
 
+cols :: FlavorTextBuilder () -> FlavorTextBuilder ()
+cols body = do
+  let dup x = (x, x)
+  inner <- FlavorTextBuilder $ StateT $ Identity .  dup . execState (runStoryBuilder body)
+  addEntry $ FT.cols inner.flavorBody
+
 img :: HasCardCode a => a -> FlavorTextBuilder ()
 img = addEntry . FT.img . toCardCode
 
@@ -114,6 +120,11 @@ instance HasField "blue" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBui
   getField f t = for_ (buildFlavor (f t)).flavorBody \case
     ModifyEntry mods inner' -> addEntry $ ModifyEntry (BlueEntry : mods) inner'
     inner' -> addEntry $ ModifyEntry [BlueEntry] inner'
+
+instance HasField "resolution" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBuilder ()) where
+  getField f t = for_ (buildFlavor (f t)).flavorBody \case
+    ModifyEntry mods inner' -> addEntry $ ModifyEntry (ResolutionEntry : mods) inner'
+    inner' -> addEntry $ ModifyEntry [ResolutionEntry] inner'
 
 instance HasField "green" (Scope -> FlavorTextBuilder ()) (Scope -> FlavorTextBuilder ()) where
   getField f t = for_ (buildFlavor (f t)).flavorBody \case

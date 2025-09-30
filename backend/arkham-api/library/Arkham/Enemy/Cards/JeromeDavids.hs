@@ -1,17 +1,10 @@
-module Arkham.Enemy.Cards.JeromeDavids (
-  jeromeDavids,
-  JeromeDavids (..),
-)
-where
+module Arkham.Enemy.Cards.JeromeDavids (jeromeDavids) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
-import Arkham.Discard
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype JeromeDavids = JeromeDavids EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -22,17 +15,14 @@ jeromeDavids = enemy JeromeDavids Cards.jeromeDavids (4, Static 4, 4) (1, 1)
 
 instance HasAbilities JeromeDavids where
   getAbilities (JeromeDavids a) =
-    withBaseAbilities a
-      $ [ restrictedAbility a 1 (InvestigatorExists $ You <> InvestigatorWithDiscardableCard)
-            $ ForcedAbility
-            $ EnemyEngaged Timing.After You
-            $ EnemyWithId
-            $ toId a
-        ]
+    extend1 a
+      $ restricted a 1 (youExist InvestigatorWithDiscardableCard)
+      $ forced
+      $ EnemyEngaged #after You (be a)
 
 instance RunMessage JeromeDavids where
-  runMessage msg e@(JeromeDavids attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ toMessage $ discardFromHand iid attrs DiscardChoose 2
+  runMessage msg e@(JeromeDavids attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      discardFromHand iid attrs DiscardChoose 2
       pure e
-    _ -> JeromeDavids <$> runMessage msg attrs
+    _ -> JeromeDavids <$> liftRunMessage msg attrs

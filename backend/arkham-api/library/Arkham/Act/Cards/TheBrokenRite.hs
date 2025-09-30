@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.TheBrokenRite (TheBrokenRite (..), theBrokenRite) where
+module Arkham.Act.Cards.TheBrokenRite (theBrokenRite) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -20,17 +20,15 @@ theBrokenRite :: ActCard TheBrokenRite
 theBrokenRite = act (4, A) TheBrokenRite Cards.theBrokenRite Nothing
 
 instance HasAbilities TheBrokenRite where
-  getAbilities (TheBrokenRite x)
-    | onSide A x =
-        [ restricted x 1 DuringCircleAction $ FastAbility $ ClueCost (Static 1)
-        , mkAbility x 2
-            $ Objective
-            $ freeReaction
-            $ Matcher.EnemyDefeated #when Anyone ByAny
-            $ at_ (locationIs Locations.theGeistTrap <> LocationWithBrazier Unlit)
-            <> enemyIs Enemies.theSpectralWatcher
-        ]
-  getAbilities _ = []
+  getAbilities = actAbilities \x ->
+    [ restricted x 1 DuringCircleAction $ FastAbility $ ClueCost (Static 1)
+    , mkAbility x 2
+        $ Objective
+        $ freeReaction
+        $ Matcher.EnemyDefeated #when Anyone ByAny
+        $ at_ (locationIs Locations.theGeistTrap <> LocationWithBrazier Unlit)
+        <> enemyIs Enemies.theSpectralWatcher
+    ]
 
 instance RunMessage TheBrokenRite where
   runMessage msg a@(TheBrokenRite attrs) = runQueueT $ case msg of

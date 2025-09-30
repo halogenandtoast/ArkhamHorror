@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.BeyondTheMistV3 (BeyondTheMistV3 (..), beyondTheMistV3) where
+module Arkham.Act.Cards.BeyondTheMistV3 (beyondTheMistV3) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -23,20 +23,18 @@ beyondTheMistV3 :: ActCard BeyondTheMistV3
 beyondTheMistV3 = act (3, A) BeyondTheMistV3 Cards.beyondTheMistV3 Nothing
 
 instance HasAbilities BeyondTheMistV3 where
-  getAbilities (BeyondTheMistV3 x)
-    | onSide A x =
-        [ restrictedAbility x 1 DuringCircleAction $ FastAbility $ ClueCost (Static 1)
-        , restrictedAbility
-            x
-            2
-            ( AllLocationsMatch
-                (LocationWithUnrevealedTitle "Unvisited Isle")
-                (RevealedLocation <> LocationWithBrazier Unlit)
-            )
-            $ Objective
-            $ ForcedAbility AnyWindow
-        ]
-  getAbilities _ = []
+  getAbilities = actAbilities \x ->
+    [ restricted x 1 DuringCircleAction $ FastAbility $ ClueCost (Static 1)
+    , restricted
+        x
+        2
+        ( AllLocationsMatch
+            (LocationWithUnrevealedTitle "Unvisited Isle")
+            (RevealedLocation <> LocationWithBrazier Unlit)
+        )
+        $ Objective
+        $ forced AnyWindow
+    ]
 
 instance RunMessage BeyondTheMistV3 where
   runMessage msg a@(BeyondTheMistV3 attrs) = runQueueT $ case msg of

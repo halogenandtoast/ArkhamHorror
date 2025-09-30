@@ -49,6 +49,7 @@ allActCards =
       , beyondTheMistV2
       , beyondTheMistV3
       , beyondTheMistV4
+      , beyondTheMistV5
       , beyondTheWitchHouse
       , bloodbath
       , breakingAndEntering
@@ -977,6 +978,9 @@ inPursuitOfAnswers = act "54035" "In Pursuit of Answers" 1 ReturnToTheWagesOfSin
 
 inPursuitOfTheBeyond :: CardDef
 inPursuitOfTheBeyond = act "54036" "In Pursuit of the Beyond" 2 ReturnToTheWagesOfSin
+
+beyondTheMistV5 :: CardDef
+beyondTheMistV5 = act "54047" "Beyond the Mist (v. V)" 3 ReturnToUnionAndDisillusion
 
 findingLadyEsprit :: CardDef
 findingLadyEsprit = act "81005" "Finding Lady Esprit" 1 TheBayou

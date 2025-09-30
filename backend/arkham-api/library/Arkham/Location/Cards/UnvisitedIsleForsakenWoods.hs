@@ -31,14 +31,11 @@ instance HasModifiersFor UnvisitedIsleForsakenWoods where
     pure [Blocked]
 
 instance HasAbilities UnvisitedIsleForsakenWoods where
-  getAbilities (UnvisitedIsleForsakenWoods attrs) =
+  getAbilities (UnvisitedIsleForsakenWoods a) =
     extendRevealed
-      attrs
-      [ restricted attrs 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
-      , haunted
-          "You must either search the encounter deck and discard pile for a Whippoorwill and spawn it at this location, or the nearest Whippoorwill attack you."
-          attrs
-          2
+      a
+      [ skillTestAbility $ restricted a 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
+      , scenarioI18n $ hauntedI "unvisitedIsleForsakenWoods.haunted" a 2
       ]
 
 instance RunMessage UnvisitedIsleForsakenWoods where
@@ -48,16 +45,14 @@ instance RunMessage UnvisitedIsleForsakenWoods where
       circleTest sid iid (attrs.ability 1) attrs [#willpower, #combat] (Fixed 11)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      whippoorwills <- select $ NearestEnemyToFallback iid $ enemyIs Enemies.whippoorwillUnionAndDisillusion
-      chooseOrRunOneM iid do
-        labeled
-          "Search the encounter deck and discard pile for a Whippoorwill and spawn it at this location"
-          do
-            findEncounterCard iid attrs $ cardIs Enemies.whippoorwillUnionAndDisillusion
+      whippoorwills <-
+        select $ NearestEnemyToFallback iid $ enemyIs Enemies.whippoorwillUnionAndDisillusion
+      chooseOrRunOneM iid $ scenarioI18n do
+        labeled' "unvisitedIsleForsakenWoods.search" do
+          findEncounterCard iid attrs $ cardIs Enemies.whippoorwillUnionAndDisillusion
         unless (null whippoorwills) do
-          labeled "The nearest Whippoorwill attacks you" do
-            chooseOrRunOneM iid do
-              targets whippoorwills \whippoorwill -> initiateEnemyAttack whippoorwill attrs iid
+          labeled' "unvisitedIsleForsakenWoods.attack"
+            $ chooseTargetM iid whippoorwills \whippoorwill -> initiateEnemyAttack whippoorwill attrs iid
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs

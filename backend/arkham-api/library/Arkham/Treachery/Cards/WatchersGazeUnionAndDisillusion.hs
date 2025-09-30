@@ -4,6 +4,7 @@ import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.UnionAndDisillusion.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -25,13 +26,11 @@ instance RunMessage WatchersGazeUnionAndDisillusion where
       yourLocationIsHaunted <- selectAny $ locationWithInvestigator iid <> HauntedLocation
       watchersLocationIsHaunted <-
         selectAny $ LocationWithEnemy (enemyIs Enemies.theSpectralWatcher) <> HauntedLocation
-      chooseOrRunOneM iid do
+      chooseOrRunOneM iid $ scenarioI18n do
         when yourLocationIsHaunted do
-          labeled "Resolve the Haunted ability on your location" $ handleTarget iid attrs iid
+          labeled' "watchersGaze.yourLocation" $ handleTarget iid attrs iid
         when watchersLocationIsHaunted do
-          labeled "Resolve the Haunted ability on The Spectral Watcher's location"
-            $ handleTarget iid attrs attrs
-
+          labeled' "watchersGaze.watchersLocation" $ handleTarget iid attrs attrs
       pure t
     HandleTargetChoice iid (isSource attrs -> True) (InvestigatorTarget _) -> do
       runHauntedAbilities iid

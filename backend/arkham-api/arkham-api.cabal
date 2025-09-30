@@ -75,6 +75,7 @@ library
       Arkham.Act.Cards.BeyondTheMistV2
       Arkham.Act.Cards.BeyondTheMistV3
       Arkham.Act.Cards.BeyondTheMistV4
+      Arkham.Act.Cards.BeyondTheMistV5
       Arkham.Act.Cards.BeyondTheWitchHouse
       Arkham.Act.Cards.Bloodbath
       Arkham.Act.Cards.BreakingAndEntering
@@ -3694,6 +3695,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToThreadsOfFate
       Arkham.Scenario.Scenarios.ReturnToTurnBackTime
       Arkham.Scenario.Scenarios.ReturnToUndimensionedAndUnseen
+      Arkham.Scenario.Scenarios.ReturnToUnionAndDisillusion
       Arkham.Scenario.Scenarios.ReturnToWhereDoomAwaits
       Arkham.Scenario.Scenarios.ShatteredAeons
       Arkham.Scenario.Scenarios.TheBoundaryBeyond
@@ -3800,7 +3802,6 @@ library
       Arkham.Scenarios.TurnBackTime.Helpers
       Arkham.Scenarios.UndimensionedAndUnseen.Helpers
       Arkham.Scenarios.UnionAndDisillusion.Helpers
-      Arkham.Scenarios.UnionAndDisillusion.Story
       Arkham.Scenarios.WakingNightmare.FlavorText
       Arkham.Scenarios.WakingNightmare.Helpers
       Arkham.Scenarios.WakingNightmare.InfestationBag
@@ -4149,6 +4150,7 @@ library
       Arkham.Treachery.Cards.BloodOnYourHands
       Arkham.Treachery.Cards.BloodthirstySpirits
       Arkham.Treachery.Cards.BoughtInBlood
+      Arkham.Treachery.Cards.BrazierEnchantment
       Arkham.Treachery.Cards.BreakALeg
       Arkham.Treachery.Cards.BrokenRails
       Arkham.Treachery.Cards.BumpyRide

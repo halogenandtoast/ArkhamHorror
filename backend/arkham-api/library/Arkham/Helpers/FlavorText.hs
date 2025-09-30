@@ -146,6 +146,16 @@ instance
     ModifyEntry mods inner' -> addEntry $ ModifyEntry (GreenEntry : mods) inner'
     inner' -> addEntry $ ModifyEntry [GreenEntry] inner'
 
+instance
+  HasField
+    "resolution"
+    (FlavorTextBuilder () -> FlavorTextBuilder ())
+    (FlavorTextBuilder () -> FlavorTextBuilder ())
+  where
+  getField f builder = for_ (buildFlavor $ f builder).flavorBody \case
+    ModifyEntry mods inner' -> addEntry $ ModifyEntry (ResolutionEntry : mods) inner'
+    inner' -> addEntry $ ModifyEntry [ResolutionEntry] inner'
+
 storyOnlyBuild :: ReverseQueue m => [InvestigatorId] -> FlavorTextBuilder () -> m ()
 storyOnlyBuild [] _ = pure ()
 storyOnlyBuild iids builder = do

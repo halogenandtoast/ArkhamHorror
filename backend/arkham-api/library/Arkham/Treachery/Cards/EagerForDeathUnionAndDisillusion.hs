@@ -1,14 +1,8 @@
-module Arkham.Treachery.Cards.EagerForDeathUnionAndDisillusion (
-  EagerForDeathUnionAndDisillusion (..),
-  eagerForDeathUnionAndDisillusion,
-) where
+module Arkham.Treachery.Cards.EagerForDeathUnionAndDisillusion ( eagerForDeathUnionAndDisillusion,) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Cards.EagerForDeath
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype EagerForDeathUnionAndDisillusion = EagerForDeathUnionAndDisillusion EagerForDeath
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, IsTreachery, HasModifiersFor, HasAbilities)

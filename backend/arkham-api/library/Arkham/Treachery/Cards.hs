@@ -219,6 +219,7 @@ allEncounterTreacheryCards =
       , blindsense
       , bloodOnYourHands
       , bloodthirstySpirits
+      , brazierEnchantment
       , breakALeg
       , brokenRails
       , bumpyRide
@@ -3238,8 +3239,15 @@ damned =
 
 witchweed :: CardDef
 witchweed =
-  peril (treachery "54040" "Witchweed" ReturnToTheWagesOfSin 2)
-    { cdCardTraits = setFromList [Curse]
+  peril
+    (treachery "54040" "Witchweed" ReturnToTheWagesOfSin 2)
+      { cdCardTraits = setFromList [Curse]
+      }
+
+brazierEnchantment :: CardDef
+brazierEnchantment =
+  (treachery "54048" "Brazier Enchantment" ReturnToUnionAndDisillusion 2)
+    { cdCardTraits = setFromList [Curse, Hex]
     }
 
 trespasser :: CardDef

@@ -14,6 +14,8 @@ import Arkham.Helpers.Message as X (
   pattern R6,
   pattern R7,
   pattern R8,
+  pattern R9,
+  pattern R10,
  )
 import Arkham.Helpers.Scenario as X hiding (getIsReturnTo)
 import Arkham.Message as X (

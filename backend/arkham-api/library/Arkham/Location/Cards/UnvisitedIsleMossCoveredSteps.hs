@@ -33,11 +33,11 @@ instance HasModifiersFor UnvisitedIsleMossCoveredSteps where
     pure [Blocked]
 
 instance HasAbilities UnvisitedIsleMossCoveredSteps where
-  getAbilities (UnvisitedIsleMossCoveredSteps attrs) =
+  getAbilities (UnvisitedIsleMossCoveredSteps a) =
     extendRevealed
-      attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
-      , haunted "Your next move action this round costs 1 additional action" attrs 2
+      a
+      [ skillTestAbility $ restricted a 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
+      , scenarioI18n $ hauntedI "unvisitedIsleMossCoveredSteps.haunted" a 2
       ]
 
 instance RunMessage UnvisitedIsleMossCoveredSteps where

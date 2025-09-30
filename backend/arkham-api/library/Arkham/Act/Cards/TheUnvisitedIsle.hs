@@ -3,14 +3,12 @@ module Arkham.Act.Cards.TheUnvisitedIsle (theUnvisitedIsle) where
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheCircleUndone.Key
-import Arkham.Field
 import Arkham.Helpers.Query (getInvestigators)
-import Arkham.Location.Brazier
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Story
 import Arkham.Movement
+import Arkham.Scenarios.UnionAndDisillusion.Helpers
 import Data.List (cycle)
 import Data.Map.Strict qualified as Map
 
@@ -19,7 +17,7 @@ newtype TheUnvisitedIsle = TheUnvisitedIsle ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theUnvisitedIsle :: ActCard TheUnvisitedIsle
-theUnvisitedIsle = act (1, A) TheUnvisitedIsle Cards.theUnvisitedIsle (Just $ GroupClueCost (PerPlayer 3) Anywhere)
+theUnvisitedIsle = act (1, A) TheUnvisitedIsle Cards.theUnvisitedIsle (groupClueCost (PerPlayer 3))
 
 instance RunMessage TheUnvisitedIsle where
   runMessage msg a@(TheUnvisitedIsle attrs) = runQueueT $ case msg of
@@ -47,7 +45,6 @@ instance RunMessage TheUnvisitedIsle where
         lid <- placeLabeledLocation "unvisitedIsle" unvisitedIsle
         push $ PutLocationInFrontOf iid lid
         moveToEdit attrs iid lid uncancellableMove
-        when sidedWithTheCoven do
-          push $ UpdateLocation lid (LocationBrazier ?=. Lit)
+        when sidedWithTheCoven $ lightBrazier lid
       pure a
     _ -> TheUnvisitedIsle <$> liftRunMessage msg attrs

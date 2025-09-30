@@ -1,24 +1,28 @@
 module Arkham.Scenarios.UnionAndDisillusion.Helpers where
 
-import Arkham.Prelude
-
-import Arkham.Message.Lifted.Queue
-import Arkham.Message.Lifted.Choose
 import Arkham.Action
 import Arkham.Calculation
+import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Classes.HasQueue
 import Arkham.Criteria
 import Arkham.Field
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Brazier
 import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Queue
+import Arkham.Prelude
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
+
+scenarioI18n :: (HasI18n => a) -> a
+scenarioI18n a = campaignI18n $ scope "unionAndDisillusion" a
 
 lightBrazier :: ReverseQueue m => LocationId -> m ()
 lightBrazier locationId = push $ UpdateLocation locationId (LocationBrazier ?=. Lit)

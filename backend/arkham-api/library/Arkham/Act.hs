@@ -349,6 +349,8 @@ allActs =
     , --- Return to The Wages of Sin
       SomeActCard inPursuitOfAnswers
     , SomeActCard inPursuitOfTheBeyond
+    , --- Return to Union and Disillusion
+      SomeActCard beyondTheMistV5
     , -- Curse of the Rougarou
       SomeActCard findingLadyEsprit
     , SomeActCard huntingTheRougarou

@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.UnvisitedIsleHauntedSpring ( unvisitedIsleHauntedSpring,) where
+module Arkham.Location.Cards.UnvisitedIsleHauntedSpring (unvisitedIsleHauntedSpring) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -6,6 +6,7 @@ import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.GameValue
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Location.Brazier
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
@@ -29,11 +30,11 @@ instance HasModifiersFor UnvisitedIsleHauntedSpring where
     pure [Blocked]
 
 instance HasAbilities UnvisitedIsleHauntedSpring where
-  getAbilities (UnvisitedIsleHauntedSpring attrs) =
+  getAbilities (UnvisitedIsleHauntedSpring a) =
     extendRevealed
-      attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility ([Action.Circle]) $ ActionCost 1
-      , haunted "You must either discard an asset you control, or take 1 damage" attrs 2
+      a
+      [ skillTestAbility $ restricted a 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
+      , scenarioI18n $ hauntedI "unvisitedIsleHauntedSpring.haunted" a 2
       ]
 
 instance RunMessage UnvisitedIsleHauntedSpring where
@@ -44,10 +45,10 @@ instance RunMessage UnvisitedIsleHauntedSpring where
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       hasAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid
-      chooseOrRunOneM iid do
+      chooseOrRunOneM iid $ withI18n do
         when hasAssets do
-          labeled "Discard an asset you control" $ push $ ChooseAndDiscardAsset iid (toSource attrs) AnyAsset
-        labeled "Take 1 damage" $ assignDamage iid (attrs.ability 2) 1
+          countVar 1 $ labeled' "discardAssets" $ chooseAndDiscardAsset iid (attrs.ability 2)
+        countVar 1 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 2) 1
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs

@@ -1,16 +1,9 @@
-module Arkham.Enemy.Cards.GavriellaMizrah (
-  gavriellaMizrah,
-  GavriellaMizrah (..),
-)
-where
+module Arkham.Enemy.Cards.GavriellaMizrah (gavriellaMizrah) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype GavriellaMizrah = GavriellaMizrah EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -21,17 +14,14 @@ gavriellaMizrah = enemy GavriellaMizrah Cards.gavriellaMizrah (5, Static 4, 2) (
 
 instance HasAbilities GavriellaMizrah where
   getAbilities (GavriellaMizrah a) =
-    withBaseAbilities a
-      $ [ mkAbility a 1
-            $ ForcedAbility
-            $ EnemyAttackedSuccessfully Timing.After You AnySource
-            $ EnemyWithId
-            $ toId a
-        ]
+    extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ EnemyAttackedSuccessfully #after You AnySource (be a)
 
 instance RunMessage GavriellaMizrah where
-  runMessage msg e@(GavriellaMizrah attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ InvestigatorAssignDamage iid (toAbilitySource attrs 1) DamageAny 0 1
+  runMessage msg e@(GavriellaMizrah attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignHorror iid (attrs.ability 1) 1
       pure e
-    _ -> GavriellaMizrah <$> runMessage msg attrs
+    _ -> GavriellaMizrah <$> liftRunMessage msg attrs

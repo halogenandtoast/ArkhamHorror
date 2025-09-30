@@ -9,6 +9,8 @@
     "id": "05238",
     "name": "Union and Disillusion",
     "campaign": "05",
+    "returnTo": "54046",
+    "returnToName": "Return to Union and Disillusion",
     "settings": [
       { "key": "MissingPersons", "recordable": "RecordableCardCode", "type": "ToggleCrossedOut", "content": [
         { "label": "Gaveriella Mizrah", "key": "05046", "content": true },

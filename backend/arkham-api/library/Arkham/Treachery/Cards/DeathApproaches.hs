@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.DeathApproaches (deathApproaches, DeathApproaches (..)) where
+module Arkham.Treachery.Cards.DeathApproaches (deathApproaches) where
 
 import Arkham.Ability
 import Arkham.Helpers.Message qualified as Msg

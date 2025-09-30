@@ -75,8 +75,11 @@ const cardAction = computed(() => {
   return choices.value.findIndex(canInteract)
 })
 
-
 function isAbility(v: Message): v is AbilityLabel {
+  if (v.tag === MessageType.EVADE_LABEL) {
+    return v.enemyId === id.value
+  }
+
   if (v.tag !== MessageType.ABILITY_LABEL) {
     return false
   }

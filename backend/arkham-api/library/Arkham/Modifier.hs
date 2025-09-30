@@ -274,6 +274,7 @@ data ModifierType
   | EnemyFightActionCriteria CriteriaOverride
   | EnemyFightWithMin Int (Min Int)
   | EntersPlayWithDoom Int
+  | CanEvadeOverride CriteriaOverride
   | ExhaustIfDefeated
   | ExtraResources Int
   | FailTies

@@ -10,6 +10,8 @@ import Arkham.Source
 import Arkham.Target
 import Data.Aeson.TH
 import GHC.Records
+import Arkham.Question
+import {-# SOURCE #-} Arkham.Message
 
 data ChooseEvade = ChooseEvade
   { chooseEvadeInvestigator :: InvestigatorId
@@ -20,6 +22,7 @@ data ChooseEvade = ChooseEvade
   , chooseEvadeIsAction :: Bool
   , chooseEvadeOverride :: Bool
   , chooseEvadeSkillTest :: SkillTestId
+  , chooseEvadeAdditionalOptions :: [UI Message]
   }
   deriving stock (Show, Ord, Eq, Data)
 
@@ -47,8 +50,25 @@ instance HasField "overriden" ChooseEvade Bool where
 instance HasField "skillTest" ChooseEvade SkillTestId where
   getField = chooseEvadeSkillTest
 
+instance HasField "additionalOptions" ChooseEvade [UI Message] where
+  getField = chooseEvadeAdditionalOptions
+
 instance WithTarget ChooseEvade where
   getTarget = chooseEvadeTarget
   setTarget t i = i {chooseEvadeTarget = Just (toTarget t)}
 
-$(deriveJSON defaultOptions ''ChooseEvade)
+$(deriveToJSON defaultOptions ''ChooseEvade)
+
+instance FromJSON ChooseEvade where
+  parseJSON = withObject "ChooseEvade" \o -> do
+    chooseEvadeInvestigator <- o .: "chooseEvadeInvestigator"
+    chooseEvadeEnemyMatcher <- o .: "chooseEvadeEnemyMatcher"
+    chooseEvadeSource <- o .: "chooseEvadeSource"
+    chooseEvadeTarget <- o .:? "chooseEvadeTarget"
+    chooseEvadeSkillType <- o .: "chooseEvadeSkillType"
+    chooseEvadeIsAction <- o .: "chooseEvadeIsAction"
+    chooseEvadeOverride <- o .: "chooseEvadeOverride"
+    chooseEvadeSkillTest <- o .: "chooseEvadeSkillTest"
+    chooseEvadeAdditionalOptions <- o .:? "chooseEvadeAdditionalOptions" .!= []
+
+    pure ChooseEvade {..}

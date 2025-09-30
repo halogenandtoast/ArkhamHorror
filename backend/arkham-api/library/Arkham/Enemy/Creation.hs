@@ -18,6 +18,11 @@ data EnemyCreationMethod
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
+instance HasField "leaveEnemyWhereItIs" EnemyCreationMethod Bool where
+  getField = \case
+    SpawnWithPlacement p -> p == StillInEncounterDiscard
+    _ -> False
+
 class IsEnemyCreationMethod a where
   toEnemyCreationMethod :: a -> EnemyCreationMethod
 
@@ -54,6 +59,9 @@ data EnemyCreation msg = MkEnemyCreation
   }
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass ToJSON
+
+instance HasField "leaveEnemyWhereItIs" (EnemyCreation msg) Bool where
+  getField = getField @"leaveEnemyWhereItIs" . enemyCreationMethod
 
 instance FromJSON msg => FromJSON (EnemyCreation msg) where
   parseJSON = withObject "EnemyCreation" \o -> do

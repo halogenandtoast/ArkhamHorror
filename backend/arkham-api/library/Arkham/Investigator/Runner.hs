@@ -1192,9 +1192,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           modifiers
     player <- getPlayer a.id
     push
-      $ chooseOne
-        player
-        [ EvadeLabel
+      $ chooseOne player
+      $ choose.additionalOptions
+      <> [ EvadeLabel
             eid
             [ ChosenEvadeEnemy choose.skillTest source eid
             , EvadeEnemy choose.skillTest a.id eid source mTarget skillType isAction

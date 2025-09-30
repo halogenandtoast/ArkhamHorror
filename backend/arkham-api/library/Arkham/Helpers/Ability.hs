@@ -173,9 +173,14 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \cas
           CanModify (EnemyEvadeActionCriteria override) -> Just override
           _ -> Nothing
         overrides = mapMaybe isOverride modifiers
-      selectAny $ case nonEmpty overrides of
+      base <- selectAny $ case nonEmpty overrides of
         Nothing -> Matcher.CanEvadeEnemy $ AbilitySource abilitySource abilityIndex
         Just os -> Matcher.CanEvadeEnemyWithOverride $ combineOverrides os
+      if base
+        then pure base
+        else flip anyM modifiers \case
+          CanEvadeOverride (CriteriaOverride c) -> passesCriteria iid Nothing abilitySource abilitySource [] c
+          _ -> pure False
   Action.Engage -> case abilitySource of
     EnemySource _ -> pure True
     _ -> do
@@ -449,7 +454,8 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
           )
           ws
       GroupLimit _ n -> do
-        usedAbilities' <- filterDepthSpecificAbilities
+        usedAbilities' <-
+          filterDepthSpecificAbilities
             =<< concatMapM (field InvestigatorUsedAbilities)
             =<< allInvestigators
         let total = sum $ map usedTimes $ filter ((== ability) . usedAbility) usedAbilities'

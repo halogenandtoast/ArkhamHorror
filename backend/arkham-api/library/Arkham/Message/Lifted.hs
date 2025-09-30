@@ -966,7 +966,7 @@ assignEnemyDamage assignment = push . Msg.assignEnemyDamage assignment
 eachLocation :: ReverseQueue m => (LocationId -> m ()) -> m ()
 eachLocation = selectEach Anywhere
 
-eachInvestigator :: ReverseQueue m => (InvestigatorId -> m ()) -> m ()
+eachInvestigator :: HasGame m => (InvestigatorId -> m ()) -> m ()
 eachInvestigator f = do
   inResolution <- getInResolution
   investigators <- if inResolution then allInvestigators else getInvestigators

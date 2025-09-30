@@ -78,6 +78,11 @@ setupInTheClutchesOfChaos attrs = do
       li "threePlayers"
       li "fourPlayers"
     unscoped $ li "shuffleRemainder"
+
+  scope "choosingARandomLocation" $ flavor $ h "title" >> p "body"
+  scope "breachesAndIncursions" $ flavor $ h "title" >> p "body"
+
+  whenReturnTo $ gather Set.ReturnToInTheClutchesOfChaos
   gather Set.InTheClutchesOfChaos
   gather Set.AgentsOfAzathoth
   gather Set.Nightgaunts
@@ -86,8 +91,8 @@ setupInTheClutchesOfChaos attrs = do
   when anetteMasonIsPossessedByEvil do
     gather Set.MusicOfTheDamned
     gather Set.AnettesCoven
-    gather Set.CityOfSins
-    gather Set.Witchcraft
+    gather Set.CityOfSins `orWhenReturnTo` gather Set.CityOfTheDamned
+    gather Set.Witchcraft `orWhenReturnTo` gather Set.Hexcraft
 
   whenHasRecord CarlSanfordPossessesTheSecretsOfTheUniverse do
     gather Set.SecretsOfTheUniverse
@@ -95,12 +100,21 @@ setupInTheClutchesOfChaos attrs = do
     gather Set.StrikingFear
     gatherJust Set.TheMidnightMasks [Treacheries.huntingShadow, Treacheries.falseLead]
 
-  startAt =<< placeOneOf (Locations.southside_294, Locations.southside_295)
+  startAt
+    =<< ( placeOneOf (Locations.southside_294, Locations.southside_295)
+            `orWhenReturnTo` placeOneOf (Locations.southside_294, Locations.southside_295, Locations.returnToSouthside)
+        )
   placeOneOf_ (Locations.frenchHill_290, Locations.frenchHill_291)
+    `orWhenReturnTo` placeOneOf_ (Locations.frenchHill_290, Locations.frenchHill_291, Locations.returnToFrenchHill)
   placeOneOf_ (Locations.rivertown_292, Locations.rivertown_293)
+    `orWhenReturnTo` placeOneOf_ (Locations.rivertown_292, Locations.rivertown_293, Locations.returnToRivertown)
   placeOneOf_ (Locations.uptown_296, Locations.uptown_297)
+    `orWhenReturnTo` placeOneOf_ (Locations.uptown_296, Locations.uptown_297, Locations.returnToUptown)
   placeOneOf_ (Locations.southChurch_298, Locations.southChurch_299)
+    `orWhenReturnTo` placeOneOf_ (Locations.southChurch_298, Locations.southChurch_299, Locations.returnToSouthChurch)
   placeOneOf_ (Locations.merchantDistrict_300, Locations.merchantDistrict_301)
+    `orWhenReturnTo` placeOneOf_
+      (Locations.merchantDistrict_300, Locations.merchantDistrict_301, Locations.returnToMerchantDistrict)
 
   if anetteMasonIsPossessedByEvil
     then do
@@ -128,15 +142,15 @@ instance RunMessage InTheClutchesOfChaos where
       neverSeenOrHeardFromAgain <- getHasRecord TheInvestigatorsAreNeverSeenOrHeardFromAgain
       doStep (if neverSeenOrHeardFromAgain then 2 else 3) PreScenarioSetup
       pure s
-    DoStep 2 PreScenarioSetup -> scope "intro " do
+    DoStep 2 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro2"
       doStep 4 PreScenarioSetup
       pure s
-    DoStep 3 PreScenarioSetup -> scope "intro " do
+    DoStep 3 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro3"
       doStep 4 PreScenarioSetup
       pure s
-    DoStep 4 PreScenarioSetup -> scope "intro " do
+    DoStep 4 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro4"
       pure s
     StandaloneSetup -> scope "standalone" do

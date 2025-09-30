@@ -932,6 +932,13 @@ allLocations =
       SomeLocationCard returnToLounge
     , SomeLocationCard relicStorage
     , SomeLocationCard shroudedArchive
+    , --- Return to In the Clutches of Chaos
+      SomeLocationCard returnToFrenchHill
+    , SomeLocationCard returnToRivertown
+    , SomeLocationCard returnToSouthside
+    , SomeLocationCard returnToUptown
+    , SomeLocationCard returnToSouthChurch
+    , SomeLocationCard returnToMerchantDistrict
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

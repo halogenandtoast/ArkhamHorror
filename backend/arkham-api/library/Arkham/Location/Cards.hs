@@ -655,6 +655,7 @@ allLocationCards =
       , returnToCongregationalChurch
       , returnToCoyoacan
       , returnToEngineCar
+      , returnToFrenchHill
       , returnToGardensOfLuxembourg
       , returnToGrandGuignol
       , returnToHangmansBrook
@@ -662,6 +663,7 @@ allLocationCards =
       , returnToHouseInTheReeds
       , returnToKnightsHall
       , returnToLounge
+      , returnToMerchantDistrict
       , returnToMetropolitanCathedral
       , returnToMontparnasse
       , returnToNotreDame
@@ -669,9 +671,13 @@ allLocationCards =
       , returnToPalaceOfTheKing
       , returnToPereLachaiseCemetery
       , returnToQuietHalls
+      , returnToRivertown
       , returnToSchoolhouse
       , returnToSecretPassage
+      , returnToSouthChurch
+      , returnToSouthside
       , returnToTempleRuins
+      , returnToUptown
       , returnToXochimilco
       , returnToZocalo
       , rialtoBridge
@@ -9353,6 +9359,66 @@ shroudedArchive =
     Triangle
     [Squiggle]
     ReturnToForTheGreaterGood
+
+returnToFrenchHill :: CardDef
+returnToFrenchHill =
+  location
+    "54050"
+    "French Hill"
+    [Arkham]
+    T
+    [Circle, Square, Star]
+    ReturnToInTheClutchesOfChaos
+
+returnToRivertown :: CardDef
+returnToRivertown =
+  location
+    "54051"
+    "Rivertown"
+    [Arkham]
+    Circle
+    [Square, Triangle, T]
+    ReturnToInTheClutchesOfChaos
+
+returnToSouthside :: CardDef
+returnToSouthside =
+  location
+    "54052"
+    "Southside"
+    [Arkham, Central]
+    Square
+    [Circle, Triangle, Plus, T, Diamond]
+    ReturnToInTheClutchesOfChaos
+
+returnToUptown :: CardDef
+returnToUptown =
+  location
+    "54053"
+    "Uptown"
+    [Arkham]
+    Plus
+    [Square, Triangle, Moon]
+    ReturnToInTheClutchesOfChaos
+
+returnToSouthChurch :: CardDef
+returnToSouthChurch =
+  location
+    "54054"
+    "South Church"
+    [Arkham]
+    Diamond
+    [Square]
+    ReturnToInTheClutchesOfChaos
+
+returnToMerchantDistrict :: CardDef
+returnToMerchantDistrict =
+  location
+    "54055"
+    "Merchant District"
+    [Arkham]
+    Triangle
+    [Circle, Square, Plus]
+    ReturnToInTheClutchesOfChaos
 
 lobbyTheMidwinterGala :: CardDef
 lobbyTheMidwinterGala =

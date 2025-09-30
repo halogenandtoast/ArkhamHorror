@@ -37,6 +37,7 @@ const investigator = computed(() => {
   })
 })
 const investigatorId = computed(() => deckInvestigator.value ? `c${deckInvestigator.value}` : investigator.value?.id)
+const investigators = computed(() => Object.values(props.game.investigators))
 const originalInvestigatorId = computed(() => investigator.value?.id)
 const xp = computed(() => investigator.value?.xp)
 const skipping = ref(false)
@@ -334,7 +335,7 @@ const tabooList = function (investigator: Investigator) {
     </div>
 
     <div v-for="([step, entries], idx) in breakdowns" :key="idx" class="breakdowns">
-      <XpBreakdown :game="game" :step="step" :entries="entries" :playerId="playerId" :showAll="false" />
+      <XpBreakdown :game="game" :step="step" :entries="entries" :playerId="playerId" :showAll="false" :investigators="investigators" />
     </div>
   </div>
 

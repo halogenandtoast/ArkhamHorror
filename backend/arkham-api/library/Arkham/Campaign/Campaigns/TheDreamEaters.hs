@@ -632,12 +632,12 @@ instance RunMessage TheDreamEaters where
         if possessTheSilverKey
           then do
             story theGreatOnes2TheSilverKey
-            pushAll
-              [ InTheWebOfDreams (CrossOutRecord $ toCampaignLogKey TheInvestigatorsPossessTheSilverKey)
-              , InTheDreamQuest (Record $ toCampaignLogKey TheInvestigatorsPossessTheSilverKey)
-              ]
-            removeCampaignCard Assets.theSilverKey
-            inTheDreamQuest $ push $ CampaignStep $ InterludeStepPart 3 Nothing 21
+            inTheWebOfDreams do
+              push $ CrossOutRecord $ toCampaignLogKey TheInvestigatorsPossessTheSilverKey
+              removeCampaignCard Assets.theSilverKey
+            inTheDreamQuest do
+              record TheDreamQuest TheInvestigatorsPossessTheSilverKey
+              push $ CampaignStep $ InterludeStepPart 3 Nothing 21
           else push $ CampaignStep (InterludeStepPart 3 Nothing 22)
         pure c
       CampaignStep (InterludeStepPart 3 _ 21) -> do

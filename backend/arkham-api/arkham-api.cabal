@@ -3747,7 +3747,6 @@ library
       Arkham.Scenarios.AtDeathsDoorstep.Helpers
       Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
       Arkham.Scenarios.BeforeTheBlackThrone.Helpers
-      Arkham.Scenarios.BeforeTheBlackThrone.Story
       Arkham.Scenarios.BeyondTheGatesOfSleep.FlavorText
       Arkham.Scenarios.BlackStarsRise.Helpers
       Arkham.Scenarios.BloodOnTheAltar.Helpers
@@ -3770,7 +3769,6 @@ library
       Arkham.Scenarios.HorrorInHighGear.Helpers
       Arkham.Scenarios.IceAndDeath.Helpers
       Arkham.Scenarios.InTheClutchesOfChaos.Helpers
-      Arkham.Scenarios.InTheClutchesOfChaos.Story
       Arkham.Scenarios.InTooDeep.Helpers
       Arkham.Scenarios.IntoTheMaelstrom.Helpers
       Arkham.Scenarios.LostInTimeAndSpace.Helpers

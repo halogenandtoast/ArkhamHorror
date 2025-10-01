@@ -10,6 +10,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
@@ -29,7 +30,6 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (locationLayoutL)
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
-import Arkham.Scenarios.BeforeTheBlackThrone.Story
 import Arkham.Token qualified as Token
 import Arkham.Trait qualified as Trait
 import Data.Aeson (Result (..))
@@ -64,108 +64,113 @@ instance HasChaosTokenValue BeforeTheBlackThrone where
 readInvestigatorDefeat :: ReverseQueue m => m ()
 readInvestigatorDefeat = do
   defeated <- select DefeatedInvestigator
-  unless (null defeated) do
-    storyOnly defeated investigatorDefeat
+  unless (null defeated) $ scenarioI18n $ scope "resolutions" do
+    storyOnly' defeated "investigatorDefeat"
     for_ defeated drivenInsane
 
+{- FOURMOLU_DISABLE -}
 standaloneChaosTokens :: [ChaosTokenFace]
 standaloneChaosTokens =
-  [ PlusOne
-  , Zero
-  , Zero
-  , MinusOne
-  , MinusOne
-  , MinusTwo
-  , MinusTwo
-  , MinusThree
-  , MinusFour
-  , Skull
-  , Skull
-  , Cultist
-  , Tablet
-  , ElderThing
-  , AutoFail
-  , ElderSign
+  [ PlusOne , Zero , Zero , MinusOne , MinusOne , MinusTwo , MinusTwo , MinusThree , MinusFour
+  , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
   ]
+{- FOURMOLU_ENABLE -}
+
+setupBeforeTheBlackThrone :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupBeforeTheBlackThrone _attrs = do
+  setup $ ul do
+    li "gatherSets"
+    li "setLocationsAside"
+    li "placeStart"
+    li "cosmos"
+    li "placeLocations"
+    li "setAside"
+    li "placeAzathoth"
+    li "thePathWindsBeforeYou"
+    unscoped $ li "shuffleRemainder"
+
+  scope "theCosmos" $ flavor $ h "title" >> p "body"
+  scope "emptySpace" $ flavor $ h "title" >> p "body"
+
+  pathWindsBeforeYouCount <- getRecordCount ThePathWindsBeforeYou
+  gather Set.BeforeTheBlackThrone
+  gather Set.AgentsOfAzathoth
+  gather Set.InexorableFate
+  gather Set.AncientEvils
+  gather Set.DarkCult
+
+  cosmicIngress <- place Locations.cosmicIngress
+  startAt cosmicIngress
+
+  cosmosCards' <-
+    shuffle
+      [ Locations.infinityOfDarkness
+      , Locations.infinityOfDarkness
+      , Locations.infinityOfDarkness
+      , Locations.cosmicGate
+      , Locations.pathwayIntoVoid
+      , Locations.pathwayIntoVoid
+      , Locations.dancersMist
+      , Locations.dancersMist
+      , Locations.dancersMist
+      , Locations.flightIntoOblivion
+      , Locations.flightIntoOblivion
+      , Locations.flightIntoOblivion
+      ]
+
+  let
+    (topCosmosCard, cosmosCards) =
+      case cosmosCards' of
+        (x : xs) -> (x, xs)
+        _ -> error "did not have enough cards"
+
+  (firstCosmosCard, secondCosmosCard) <-
+    shuffleM [topCosmosCard, Locations.hideousPalace] <&> \case
+      [x, y] -> (x, y)
+      _ -> error "did not have enough cards"
+
+  firstCosmos <- place firstCosmosCard
+  secondCosmos <- place secondCosmosCard
+
+  lead <- getLead
+  (map toCard -> cards, _) <- fieldMap InvestigatorDeck (draw 6) lead
+  let
+    emptySpaceLocations = [Pos 0 1, Pos 0 (-1), Pos 1 1, Pos 1 0, Pos 1 (-1), Pos 2 0]
+    emptySpaces = zip emptySpaceLocations cards
+
+  let cosmos = initCosmos @Card @LocationId
+
+  placeEnemy Enemies.azathoth Global
+
+  pushAll
+    $ [ PlaceCosmos lead cosmicIngress (CosmosLocation (Pos 0 0) cosmicIngress)
+      , PlaceCosmos lead firstCosmos (CosmosLocation (Pos 2 1) firstCosmos)
+      , PlaceCosmos lead secondCosmos (CosmosLocation (Pos 2 (-1)) secondCosmos)
+      ]
+    <> map (ObtainCard . toCardId) cards
+
+  for_ emptySpaces $ \(pos, card) -> do
+    emptySpace' <- placeLocationCard Locations.emptySpace
+    push $ PlaceCosmos lead emptySpace' (EmptySpace pos card)
+
+  setAside [Locations.courtOfTheGreatOldOnes, Locations.theBlackThrone, Enemies.piperOfAzathoth]
+  setAgendaDeck [Agendas.wheelOfFortuneX, Agendas.itAwaits, Agendas.theFinalCountdown]
+  setActDeck [Acts.theCosmosBeckons, Acts.inAzathothsDomain, Acts.whatMustBeDone]
+  setLayout $ cosmosToGrid cosmos
+  addExtraDeck CosmosDeck cosmosCards
+  setMeta cosmos
+  setUsesGrid
+  placeTokensOnScenarioReference Token.Resource pathWindsBeforeYouCount
 
 instance RunMessage BeforeTheBlackThrone where
   runMessage msg s@(BeforeTheBlackThrone attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens
       pure s
-    PreScenarioSetup -> do
-      story intro
+    PreScenarioSetup -> scope "intro" do
+      flavor $ setTitle "title" >> p "body"
       pure s
-    Setup -> runScenarioSetup BeforeTheBlackThrone attrs do
-      pathWindsBeforeYouCount <- getRecordCount ThePathWindsBeforeYou
-      gather Set.BeforeTheBlackThrone
-      gather Set.AgentsOfAzathoth
-      gather Set.InexorableFate
-      gather Set.AncientEvils
-      gather Set.DarkCult
-
-      cosmicIngress <- place Locations.cosmicIngress
-      startAt cosmicIngress
-
-      cosmosCards' <-
-        shuffle
-          [ Locations.infinityOfDarkness
-          , Locations.infinityOfDarkness
-          , Locations.infinityOfDarkness
-          , Locations.cosmicGate
-          , Locations.pathwayIntoVoid
-          , Locations.pathwayIntoVoid
-          , Locations.dancersMist
-          , Locations.dancersMist
-          , Locations.dancersMist
-          , Locations.flightIntoOblivion
-          , Locations.flightIntoOblivion
-          , Locations.flightIntoOblivion
-          ]
-
-      let
-        (topCosmosCard, cosmosCards) =
-          case cosmosCards' of
-            (x : xs) -> (x, xs)
-            _ -> error "did not have enough cards"
-
-      (firstCosmosCard, secondCosmosCard) <-
-        shuffleM [topCosmosCard, Locations.hideousPalace] <&> \case
-          [x, y] -> (x, y)
-          _ -> error "did not have enough cards"
-
-      firstCosmos <- place firstCosmosCard
-      secondCosmos <- place secondCosmosCard
-
-      lead <- getLead
-      (map toCard -> cards, _) <- fieldMap InvestigatorDeck (draw 6) lead
-      let
-        emptySpaceLocations = [Pos 0 1, Pos 0 (-1), Pos 1 1, Pos 1 0, Pos 1 (-1), Pos 2 0]
-        emptySpaces = zip emptySpaceLocations cards
-
-      let cosmos = initCosmos @Card @LocationId
-
-      placeEnemy Enemies.azathoth Global
-
-      pushAll
-        $ [ PlaceCosmos lead cosmicIngress (CosmosLocation (Pos 0 0) cosmicIngress)
-          , PlaceCosmos lead firstCosmos (CosmosLocation (Pos 2 1) firstCosmos)
-          , PlaceCosmos lead secondCosmos (CosmosLocation (Pos 2 (-1)) secondCosmos)
-          ]
-        <> map (ObtainCard . toCardId) cards
-
-      for_ emptySpaces $ \(pos, card) -> do
-        emptySpace' <- placeLocationCard Locations.emptySpace
-        push $ PlaceCosmos lead emptySpace' (EmptySpace pos card)
-
-      setAside [Locations.courtOfTheGreatOldOnes, Locations.theBlackThrone, Enemies.piperOfAzathoth]
-      setAgendaDeck [Agendas.wheelOfFortuneX, Agendas.itAwaits, Agendas.theFinalCountdown]
-      setActDeck [Acts.theCosmosBeckons, Acts.inAzathothsDomain, Acts.whatMustBeDone]
-      setLayout $ cosmosToGrid cosmos
-      addExtraDeck CosmosDeck cosmosCards
-      setMeta cosmos
-      setUsesGrid
-      placeTokensOnScenarioReference Token.Resource pathWindsBeforeYouCount
+    Setup -> runScenarioSetup BeforeTheBlackThrone attrs $ setupBeforeTheBlackThrone attrs
     SetScenarioMeta meta -> do
       case fromJSON @(Cosmos Card LocationId) meta of
         Error err -> error err
@@ -234,42 +239,40 @@ instance RunMessage BeforeTheBlackThrone where
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
       when (v == 0) $ placeDoom ElderThing azathoth 1
       pure s
-    ScenarioResolution n -> do
+    ScenarioResolution n -> scope "resolutions" do
       case n of
         NoResolution -> push R1
         Resolution x | x == 1 || x == 11 -> do
           when (x == 1) readInvestigatorDefeat
-          story resolution1
+          resolution "resolution1"
           record AzathothDevouredTheUniverse
           eachInvestigator (kill attrs)
           gameOver
         Resolution 2 -> do
           readInvestigatorDefeat
-          story resolution2
+          resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "resolution2" 5
           record TheLeadInvestigatorHasJoinedThePipersOfAzathoth
           record AzathothSlumbersForNow
           drivenInsane =<< getLead
-          allGainXpWithBonus attrs $ toBonus "resolution2" 5
           eachInvestigator (`sufferMentalTrauma` 2)
           endOfScenario
         Resolution 3 -> do
           readInvestigatorDefeat
-          story resolution3
+          resolutionWithXp "resolution3" $ allGainXpWithBonus' attrs $ toBonus "resolution3" 5
           record AzathothSlumbersForNow
-          allGainXpWithBonus attrs $ toBonus "resolution3" 5
           eachInvestigator (`sufferPhysicalTrauma` 2)
           endOfScenario
         Resolution 4 -> do
           readInvestigatorDefeat
-          storyWithChooseOneM resolution4 do
-            labeled "It must be done." $ push R5
-            labeled "I refuse" $ push $ ScenarioResolution (Resolution 11) -- actually 1
+          storyWithChooseOneM' (compose.resolution $ scope "resolution4" $ setTitle "title" >> p "body")
+            $ scenarioI18n do
+              labeled' "itMustBeDone" $ push R5
+              labeled' "iRefuse" $ push $ ScenarioResolution (Resolution 11) -- actually 1
         Resolution 5 -> do
           readInvestigatorDefeat
-          story resolution5
+          resolutionWithXp "resolution5" $ allGainXpWithBonus' attrs $ toBonus "resolution5" 10
           record AzathothSlumbersForNow
           record TheInvestigatorsSignedTheBlackBookOfAzathoth
-          allGainXpWithBonus attrs $ toBonus "resolution5" 10
           eachInvestigator \iid -> sufferTrauma iid 2 2
           endOfScenario
         _ -> error "unknown resolution"

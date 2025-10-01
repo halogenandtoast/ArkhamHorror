@@ -33,6 +33,8 @@
     }
   },
   "label": {
+    "itMustBeDone": "It must be done.",
+    "iRefuse": "I refuse.",
     "moveUp": "Move Up",
     "moveDown": "Move Down",
     "moveLeft": "Move Left",
@@ -63,6 +65,54 @@
     "whisperedBargain": {
       "doom": "Place 1 Doom on Azathoth",
       "attack": "Azathoth attacks you"
+    }
+  },
+  "intro": {
+    "title": "Scenario VIII: Before the Black Throne",
+    "body": "<p>Onward and onward, your steed carries you into the inky nightmare of the void beyond. You dare not turn and look behind you, for you know that what you see will likely break your heart, or perhaps your mind. Great polypous horrors slide darkly amidst the blackness and loneliness of the cosmos. You had hoped to marvel at a beautiful, glimmering array of stars, but instead you are left with an empty pit in your stomach, as the unabated vastness of the dark, cold universe looms before you. In the distance, a far-off melody rings its chords, a melody you could not possibly recreate in your universe with any known instrument, nor could your ears interpret its notes were it not ringing in your head this very moment.</p><p>There is a rush of air as you breach the turret of a nightmarish onyx barrier and descend into an infinite cavern of black stone and impossible architecture. The music grows as you plunge unswerving through an impossible valley, through shoals of shapeless beings, and between things that lurk and dance in the blackness beyond. You cannot help but listen to the strange music, committing each terrible, dissonant note to memory. No thought or dream of humanity can reach you here, in this place that was long ancient when Earth was born. You can only hope to guide your steed to the place where you must go… The throne upon which Azathoth itself sits.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Before the Black Throne*, *Agents of Azathoth*, *Inexorable Fate*, *Ancient Evils*, and *Dark Cult*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/before-the-black-throne.png' /><img src='{setImgPath}/agents-of-azathoth.png' /><img src='{setImgPath}/inexorable-fate.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/dark-cult.png' /></section>",
+    "setLocationsAside": "Find the Hideous Palace, Court of the Great Old Ones, and The Black Throne locations. (They are on the revealed side of 3 of the “Cosmos” locations.) Set those locations aside, out of play.",
+    "placeStart": "Put the Cosmic Ingress location into play. Each investigator begins play at the Cosmic Ingress.",
+    "cosmos": "Shuffle the remaining location cards into a separate deck, Cosmos-side faceup. This deck is called the Cosmos (see “The Cosmos,” below).",
+    "placeLocations": "Take the set-aside Hideous Palace and the top card of the Cosmos, and shuffle them so you cannot tell which is which. Then, put them into play along with facedown player cards from the top of the lead investigator’s deck, as depicted in “Location Placement for Setup / Act 1.” Facedown player cards represent empty space (*see “Empty Space” on the next page*).",
+    "setAside": "Set the Piper of Azathoth enemy aside, out of play.",
+    "placeAzathoth": "Put Azathoth into play next to the agenda deck. For the remainder of the scenario, Azathoth is in play, but is not at any location.",
+    "thePathWindsBeforeYou": "Check Campaign Log. For each tally mark recorded next to *the path winds before you*, place 1 resource on the scenario reference card."
+  },
+  "theCosmos": {
+    "title": "The Cosmos",
+    "body": "<p class='basic'>Throughout this scenario, new locations will enter play from the top of the Cosmos, a separate deck consisting of double-sided locations. This is primarily done via the ability on each act: “{'{'}action{'}'} Spend X clues: Draw the top X cards of the Cosmos. Choose one to put into play using its connection instructions, and move to it. Shuffle the rest back into the Cosmos.”</p><p class='basic'>The revealed side of each Cosmos location has a “_Cosmos_ –” instruction which tells the investigator where to connect that location. (For example, “_Cosmos_ – Connect above” would mean the newly drawn location should be placed immediately above the investigator’s location, whereas “_Cosmos_ – Connect to the right” would mean the newly drawn location should be placed immediately to the right of the investigator’s location.)</p><p class='basic'>A new location cannot enter play in a position already occupied by a location. If a location’s connection instructions are impossible to fulfill, shuffle that location back into the Cosmos and cancel the effects of the move.</p><p class='basic'>“_Cosmos_ –” instructions are only resolved when a location is being drawn from the Cosmos. When revealing a Cosmos location that is already in play, do not follow its “_Cosmos_ –” instructions.</p>"
+  },
+  "emptySpace": {
+    "title": "Empty Space",
+    "body": "<p class='basic'>During this scenario, you will sometimes be instructed to place “empty space” into play. This is done by taking the top card of the active investigator’s deck and putting it into play facedown, in the indicated position. If there is no active investigator, the top card(s) of the lead investigator’s deck should be used, instead.</p><p class='basic'>Empty space is not a location, and cannot be entered by enemies or investigators unless otherwise noted. It does, however, count as a location for the purposes of determining the distance between two locations.</p><p class='basic'>A location can enter play in a position occupied by empty space. Should this happen, the empty space card is shuffled back into its owner’s deck.</p>"
+  },
+  "resolutions": {
+    "investigatorDefeat": {
+      "title": "Investigator Defeat",
+      "body": "<p>_Before resolving any other resolution, if at least one investigator was defeated_: The defeated investigators read _Investigator Defeat_ first.</p><p>_Investigator Defeat_: Your steed does not catch you when you fall. Down and down and down, through endless voids of sentient blackness, you fall. And fall. And fall. And fall. You beg and scream and plead and pray for an end, even for a floor upon which to crash upon, but it never comes. You will still be falling when the universe ends.</p><ul><li>Each investigator who was defeated is driven _insane_.</li><li>If another resolution was reached, the remaining investigators proceed to that resolution.</li><li>If no resolution was reached (each investigator was defeated): Proceed to _Resolution 1_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: The Primal Chaos awakens. Its hunger is unbearable. It unhinges its cosmic jaw. The maw opens wide. The universe is silenced. Aeons pass. All is still. At the center of the empty cosmos, the Blind Idiot God is lulled to sleep once more. It dreams. Within its dream, a burst of cosmic energy expands outward in all directions. A universe is born. Nebulae collapse and become stars. New worlds are forged, and new beings evolve to inhabit them. Inevitably, one learns of Azathoth. Its worship grows. In the end, all will succumb to madness or join you in oblivion… For in the grand scheme of fate, we are but specks of dust adrift in the aether, living only by the whim of an uncaring cosmos.</p><ul><li>In your Campaign Log, record *Azathoth devoured the universe*.</li><li>Each investigator is _killed_.</li><li>The investigators lose the campaign.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: It was not until recently that you understood the purpose of the awful piping which you have heard constantly throughout your investigation. It is a lullaby of sorts, meant to keep the oblivious god from waking. For just a brief moment, the pipers’ song was interrupted, and Azathoth began to stir. Now you understand why Anna came to you that fateful night and begged to read your fortune. She knew the part you would have to play when you arrived here.</p><p>Sitting down at the edge of the creature’s nighted throne, you take out your flute, and begin to play.</p><p>In this place where time and hunger and age and weariness are mortal aspects of no concern to you, it is your duty to continue to play. Without fail. Without end.</p><ul><li>In your Campaign Log, record *the lead investigator has joined the pipers of Azathoth*.</li><li>In your Campaign Log, record *Azathoth slumbers… for now*.</li><li>The lead investigator is driven _insane_.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 5 bonus experience, as they have saved the universe from being devoured.</li><li>Each investigator suffers 2 mental trauma, as they understand that one day Azathoth will inevitably wake.</li><li>The investigators win the campaign!</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: You refuse to allow this creature to destroy everything you have ever loved. You gather together what you need for your ritual—a bit of shadowy essence from the witches’ cloaks, a fragment of spectral mist from the wraiths you banished, and the knowledge you’ve gained from delving into Arkham’s past. Slowly, quietly, you weave your wall together, stitching darkness with blood, blood with souls, souls with onyx stone. It takes ages to complete. When you are done, your reward is oblivion. A stillness and silence so pure, so perfect, no disturbance can penetrate it. The barrier cannot hold Azathoth—nothing truly can—but perhaps now it will not stir when fools on Earth call forth its name or draw from its power. With your task complete, you turn and face the darkness, summoning your steed. It is time to go home.</p><ul><li>In your Campaign Log, record *Azathoth slumbers… for now*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 5 bonus experience, as they have saved the universe from being devoured.</li><li>Each investigator suffers 2 physical trauma, as their nightmarish journey home takes its toll on their bodies.</li><li>The investigators win the campaign!</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: You have reached the nighted throne of Azathoth, but there is no easy way to reach the creature from here—and even if you did, you’re not sure what you could do to stop it. You cannot kill it, and even attempting to harm it would only risk stirring it. Desperate, you turn to Keziah’s Black Book for answers. A quill appears in your hands as you open the tome, and a voice from beyond reaches your ears. “Sign it with your blood. Take a new secret name, and your desire shall become truth. You and your world will be spared.” You know it is the voice of evil, the voice Walter Gilman heard which surely led to his demise, the voice which seduced Keziah Mason and led to this path in the first place…but what other choice to you have?</p><p class='basic'>The investigators must decide (choose one):</p><ul><li>*“It must be done.”* Proceed to _Resolution 5_. This will doom you.</li><li>*“I refuse!”* Proceed to _Resolution 1_. This will doom the universe.</li></ul>"
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "<p>_Resolution 5_: Pricking your arm with the quill, you sign in blood.</p><ul><li>In your Campaign Log, record *Azathoth slumbers… for now*.</li><li>In your Campaign Log, record *the investigators signed the Black Book of Azathoth*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 10 bonus experience, as they have learned the innermost secrets of the Black Book.</li><li>Each investigator suffers 2 physical trauma and 2 mental trauma—the consequences of their pact with Azathoth’s messenger.</li><li>The investigators win the campaign…?</li></ul>"
     }
   }
 }

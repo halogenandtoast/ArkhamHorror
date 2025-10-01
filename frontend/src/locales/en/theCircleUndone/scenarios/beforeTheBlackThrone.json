@@ -17,5 +17,52 @@
     "resolution2": "Saved the universe from being devoured.",
     "resolution3": "Saved the universe from being devoured.",
     "resolution5": "Learned the innermost secrets of the Black Book."
+  },
+  "tooltips": {
+    "cosmicIngress": {
+      "ability": "Shuffle this location into the Cosmos, moving each investigator and enemy that was at this location to Cosmic Ingress"
+    },
+    "hideousPalace": {
+      "ability": "Shuffle this location into the Cosmos, moving each investigator and enemy that was at this location to Hideous Palace"
+    },
+    "courtOfTheGreatOldOnes": {
+      "ability": "Shuffle this location into the Cosmos, moving each investigator and enemy that was at this location to Court of the Great Old Ones"
+    },
+    "theBlackThrone": {
+      "haunted": "You must either place 1 doom on Azathoth, or Azathoth attacks you"
+    }
+  },
+  "label": {
+    "moveUp": "Move Up",
+    "moveDown": "Move Down",
+    "moveLeft": "Move Left",
+    "moveRight": "Move Right",
+    "moveToLeftLocation": "Move to the location to your left",
+    "moveYourLocationLeftOnce": "Move the placement of your location once to the left",
+    "connectToTheRight": "Connect to the Right",
+    "connectAbove": "Connect Above",
+    "connectBelow": "Connect Below",
+    "dancersMist": {
+      "choice": "Lose 2 resources and connect to an adjacent location in a direction of your choice"
+    },
+    "flightIntoOblivion": {
+      "choice": "Take 2 horror and connect to the topmost revealed location in a direction of your choice" 
+    },
+    "chooseWhereToConnect": "Choose where to connect",
+    "theBlackThrone": {
+      "doom": "Place 1 doom on Azathoth",
+      "attack": "Azathoth attacks you"
+    },
+    "infinityOfDarkness": {
+      "choice": "Take 2 damage and connect to the bottommost revealed location in a direction of your choice"
+    },
+    "ultimateChaos": {
+      "doom": "Place 1 Doom on Azathoth",
+      "attack": "Azathoth attacks you"
+    },
+    "whisperedBargain": {
+      "doom": "Place 1 Doom on Azathoth",
+      "attack": "Azathoth attacks you"
+    }
   }
 }

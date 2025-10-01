@@ -1,17 +1,11 @@
-module Arkham.Treachery.Cards.WhisperedBargain (
-  whisperedBargain,
-  WhisperedBargain (..),
-)
-where
+module Arkham.Treachery.Cards.WhisperedBargain (whisperedBargain) where
 
-import Arkham.Prelude
-
-import Arkham.Attack
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype WhisperedBargain = WhisperedBargain TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -21,17 +15,11 @@ whisperedBargain :: TreacheryCard WhisperedBargain
 whisperedBargain = treachery WhisperedBargain Cards.whisperedBargain
 
 instance RunMessage WhisperedBargain where
-  runMessage msg t@(WhisperedBargain attrs) = case msg of
+  runMessage msg t@(WhisperedBargain attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label "Place 1 Doom on Azathoth" [PlaceDoom (toSource attrs) (toTarget azathoth) 1]
-          , Label
-              "Azathoth attacks each you"
-              [toMessage $ enemyAttack azathoth (toSource attrs) iid]
-          ]
+      chooseOneM iid $ scenarioI18n do
+        labeled' "whisperedBargain.doom" $ placeDoom attrs azathoth 1
+        labeled' "whisperedBargain.attack" $ initiateEnemyAttack azathoth attrs iid
       pure t
-    _ -> WhisperedBargain <$> runMessage msg attrs
+    _ -> WhisperedBargain <$> liftRunMessage msg attrs

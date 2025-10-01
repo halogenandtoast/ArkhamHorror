@@ -1,9 +1,9 @@
-module Arkham.Treachery.Cards.UltimateChaos (ultimateChaos, UltimateChaos (..)) where
+module Arkham.Treachery.Cards.UltimateChaos (ultimateChaos) where
 
-import Arkham.Attack
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -24,15 +24,10 @@ instance RunMessage UltimateChaos where
       instances <- select $ treacheryIs Cards.ultimateChaos
       when (length instances >= 3) $ do
         azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
-        investigators <- getInvestigators
         for_ instances (toDiscard attrs)
-        chooseOne
-          iid
-          [ Label "Place 1 Doom on Azathoth" [PlaceDoom (toSource attrs) (toTarget azathoth) 1]
-          , Label
-              "Azathoth attacks each investigator in player order"
-              [toMessage $ enemyAttack azathoth (toSource attrs) investigator | investigator <- investigators]
-          ]
+        chooseOneM iid $ scenarioI18n do
+          labeled' "ultimateChaos.doom" $ placeDoom attrs azathoth 1
+          labeled' "ultimateChaos.attack" $ eachInvestigator $ initiateEnemyAttack azathoth attrs
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth

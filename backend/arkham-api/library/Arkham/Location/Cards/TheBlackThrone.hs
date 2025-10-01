@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.TheBlackThrone (theBlackThrone, TheBlackThrone (..)) where
+module Arkham.Location.Cards.TheBlackThrone (theBlackThrone) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
@@ -11,6 +11,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 
 newtype TheBlackThrone = TheBlackThrone LocationAttrs
   deriving anyclass IsLocation
@@ -31,15 +32,14 @@ instance HasModifiersFor TheBlackThrone where
 
 instance HasAbilities TheBlackThrone where
   getAbilities (TheBlackThrone attrs) =
-    extendRevealed1 attrs
-      $ haunted "You must either place 1 doom on Azathoth, or Azathoth attacks you" attrs 1
+    extendRevealed1 attrs $ scenarioI18n $ hauntedI "theBlackThrone.haunted" attrs 1
 
 instance RunMessage TheBlackThrone where
   runMessage msg l@(TheBlackThrone attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
-      chooseOneM iid do
-        labeled "Place 1 doom on Azathoth" $ placeDoom (attrs.ability 1) azathoth 1
-        labeled "Azathoth attacks you" $ initiateEnemyAttack azathoth (attrs.ability 1) iid
+      chooseOneM iid $ scenarioI18n do
+        labeled' "theBlackThrone.doom" $ placeDoom (attrs.ability 1) azathoth 1
+        labeled' "theBlackThrone.attack" $ initiateEnemyAttack azathoth (attrs.ability 1) iid
       pure l
     _ -> TheBlackThrone <$> liftRunMessage msg attrs

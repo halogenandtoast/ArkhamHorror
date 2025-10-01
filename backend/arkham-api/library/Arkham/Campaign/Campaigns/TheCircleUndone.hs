@@ -168,7 +168,10 @@ instance RunMessage TheCircleUndone where
         labeled' "whereAreTheFourMissingPeople"
           $ flavor
           $ p.green "whereAreTheFourMissingPeopleFromTheCharityGala"
-        when survived $ labeled' "whyAreYouLookingAtMeLikeThat" $ flavor $ p.green "whyAreYouLookingAtMeLikeThat"
+        when survived
+          $ labeled' "whyAreYouLookingAtMeLikeThat"
+          $ flavor
+          $ p.green "whyAreYouLookingAtMeLikeThat"
       interludeStepPart 3 mInterludeKey 6
       pure c
     CampaignStep (InterludeStepPart 3 _ 5) -> scope "interlude3" do
@@ -180,7 +183,7 @@ instance RunMessage TheCircleUndone where
       record TheInvestigatorsWereInductedIntoTheInnerCircle
       nextCampaignStep
       pure c
-    CampaignStep (InterludeStep 4 _) -> do
+    CampaignStep (InterludeStep 4 _) -> scope "interlude4" do
       acceptedYourFate <- getHasRecord YouHaveAcceptedYourFate
       askedAnetteForAssistance <- getHasRecord TheInvestigatorsAskedAnetteForAssistance
       askedSanfordForAssistance <- getHasRecord TheInvestigatorsAskedSanfordForAssistance
@@ -201,11 +204,33 @@ instance RunMessage TheCircleUndone where
               , mwhen doomDrawsEverCloser (Sum 2)
               ]
 
-      story twistOfFate1
+      flavor do
+        setTitle "title"
+        p "twistOfFate1"
+        ul do
+          li.nested.validate acceptedYourFate "acceptedYourFate" do
+            li "youKnowWhatYouHaveToDo"
+          li.nested.validate askedAnetteForAssistance "askedAnetteForAssistance" do
+            li "anettesAssistance"
+            li "adjustChaosBag"
+          li.nested.validate askedSanfordForAssistance "askedSanfordForAssistance" do
+            li "sanfordsAssistance"
+            li "adjustChaosBag"
+          li.nested.validate (mementosDiscovered <= 2) "twoOrFewerMementos" do
+            li "woefullyUnprepared"
+          li.nested.validate (mementosDiscovered >= 3 && mementosDiscovered <= 5) "threeToFiveMementos" do
+            li "thereIsStillMuchYouDoNotKnow"
+          li.nested.validate (mementosDiscovered >= 6) "sixOrMoreMementos" do
+            li "yourJourneyIsLaidBareBeforeYou"
+          li.nested.validate hasBlackBook "haveTheBlackBook" do
+            li "theBlackBook"
+          li.nested.validate doomDrawsEverCloser "doomDrawsEverCloser" do
+            li "azathothsMawBeginsToOpen"
+
       recordCount ThePathWindsBeforeYou total
       when (askedAnetteForAssistance || askedSanfordForAssistance) do
         addChaosToken $ fromDifficulty MinusThree MinusFour MinusFive MinusSix attrs.difficulty
-      story twistOfFate2
+      flavor $ setTitle "title" >> p "twistOfFate2"
       nextCampaignStep
       pure c
     CampaignStep EpilogueStep -> do

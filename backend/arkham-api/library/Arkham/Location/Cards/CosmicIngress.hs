@@ -11,6 +11,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Arkham.Trait (Trait (Void))
 
 newtype CosmicIngress = CosmicIngress LocationAttrs
@@ -26,8 +27,8 @@ instance HasAbilities CosmicIngress where
     extendRevealed
       a
       [ restricted a 1 (CluesOnThis $ lessThan 3) $ forced $ RoundEnds #when
-      , withTooltip
-          "Shuffle this location into the Cosmos, moving each investigator and enemy that was at this location to Cosmic Ingress"
+      , scenarioI18n
+          $ withI18nTooltip "cosmicIngress.ability"
           $ restricted
             (proxied (LocationMatcherSource $ LocationWithTrait Void) a)
             1

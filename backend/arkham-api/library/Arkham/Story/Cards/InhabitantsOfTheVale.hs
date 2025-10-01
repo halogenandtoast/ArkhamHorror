@@ -20,10 +20,10 @@ inhabitantsOfTheVale = story InhabitantsOfTheVale Cards.inhabitantsOfTheVale
 instance RunMessage InhabitantsOfTheVale where
   runMessage msg s@(InhabitantsOfTheVale attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do
-      valeOfPnath <- selectJust $ locationIs Locations.valeOfPnath
+      peaksOfThok <- selectJust $ locationIs Locations.peaksOfThok
       findEncounterCard iid attrs (cardIs Enemies.huntingNightgaunt)
 
-      selectEach (investigatorAt valeOfPnath) $ \iid' -> do
+      selectEach (investigatorAt peaksOfThok) $ \iid' -> do
         mDrawing <- Msg.drawCardsIfCan iid' attrs 2
         for_ mDrawing $ \drawing -> chooseOne iid' [Label "Do no draw 2 cards" [], Label "Draw 2 cards" [drawing]]
 

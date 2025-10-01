@@ -9,16 +9,23 @@ import Arkham.Campaigns.TheCircleUndone.CampaignSteps
 import Arkham.Campaigns.TheCircleUndone.Import
 import Arkham.Campaigns.TheCircleUndone.Memento.Helpers
 import Arkham.Card
+import Arkham.Card.PlayerCard (lookupPlayerCard)
 import Arkham.ChaosToken
 import Arkham.Helpers.Campaign (getOwner)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
-import Arkham.Helpers.Xp (XpBonus (WithBonus))
+import Arkham.Helpers.Xp (XpBonus (WithBonus), toBonus)
+import Arkham.I18n
+import Arkham.Investigator.Types qualified as Investigator
 import Arkham.Matcher
 import Arkham.Message (chooseDecks)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Trait (Trait (SilverTwilight))
+import Arkham.Modifier
+import Arkham.PlayerCard (allPlayerCards)
+import Arkham.Projection
+import Arkham.Source
+import Arkham.Trait (Trait (Curse, Omen, Pact, SilverTwilight))
 
 newtype TheCircleUndone = TheCircleUndone CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
@@ -190,9 +197,17 @@ instance RunMessage TheCircleUndone where
       mementosDiscovered <- getMementosDiscoveredCount
       doomDrawsEverCloser <- getHasRecord DoomDrawsEverCloser
       hasBlackBook <- isJust <$> getOwner Assets.theBlackBook
+
+      arrestedAnette <- getHasRecord TheInvestigatorsArrestedAnette
+      arrestedSanford <- getHasRecord TheInvestigatorsArrestedSanford
+      anetteTaughtYouTheSpellsOfOld <- getHasRecord AnetteTaughtYouTheSpellsOfOld
+      assumedControlOfTheLodge <- getHasRecord TheInvestigatorsAssumedControlOfTheSilverTwilightLodge
+
+      let isReturnTo = attrs.id == "54"
       let
         total =
-          getSum
+          max 0
+            $ getSum
             $ mconcat
               [ mwhen acceptedYourFate (Sum 1)
               , mwhen askedAnetteForAssistance (Sum 2)
@@ -202,6 +217,8 @@ instance RunMessage TheCircleUndone where
               , mwhen (mementosDiscovered >= 9) (Sum 1)
               , mwhen hasBlackBook (Sum 1)
               , mwhen doomDrawsEverCloser (Sum 2)
+              , mwhen (arrestedAnette && isReturnTo) (Sum (-1))
+              , mwhen (arrestedSanford && isReturnTo) (Sum (-1))
               ]
 
       flavor do
@@ -226,10 +243,63 @@ instance RunMessage TheCircleUndone where
             li "theBlackBook"
           li.nested.validate doomDrawsEverCloser "doomDrawsEverCloser" do
             li "azathothsMawBeginsToOpen"
+          when isReturnTo do
+            li.nested.validate arrestedAnette "arrestedAnette" do
+              li "anetteIsInCustody"
+            li.nested.validate anetteTaughtYouTheSpellsOfOld "anetteTaughtYouTheSpellsOfOld" do
+              li "learnedTheSpellsOfOld"
+            li.nested.validate arrestedSanford "arrestedSanford" do
+              li "sanfordIsInCustody"
+            li.nested.validate assumedControlOfTheLodge "assumedControlOfTheLodge" do
+              li "lodgeUsurped"
 
       recordCount ThePathWindsBeforeYou total
       when (askedAnetteForAssistance || askedSanfordForAssistance) do
         addChaosToken $ fromDifficulty MinusThree MinusFour MinusFive MinusSix attrs.difficulty
+      when isReturnTo do
+        when arrestedAnette $ removeChaosToken Skull
+        when arrestedSanford $ removeChaosToken Skull
+        when assumedControlOfTheLodge do
+          investigators <- allInvestigators
+          for_ investigators \iid -> do
+            scenarioSetupModifier "54056" CampaignSource iid (StartingResources 2)
+            scenarioSetupModifier "54056" CampaignSource iid (StartingHand 2)
+        when anetteTaughtYouTheSpellsOfOld do
+          investigators <- allInvestigators
+          playerCount <- getPlayerCount
+          let
+            multiplayerFilter =
+              if playerCount < 2
+                then notElem MultiplayerOnly . cdDeckRestrictions . toCardDef
+                else const True
+          let collection = map (`lookupPlayerCard` nullCardId) (toList allPlayerCards)
+          for_ investigators \iid -> do
+            chooseOneM iid do
+              campaignI18n $ scope "returnTo" $ questionLabeled' "anetteTaughtYouTheSpellsOfOld"
+              withI18n $ labeled' "yes" do
+                campaignI18n $ scope "returnTo" $ interludeXp iid $ toBonus "bonus" 4
+                investigatorClass <- field Investigator.InvestigatorClass iid
+
+                let
+                  notForClass = \case
+                    OnlyClass c' -> c' /= investigatorClass
+                    _ -> True
+                  classOnlyFilter = not . any notForClass . cdDeckRestrictions . toCardDef
+                  cardFilter =
+                    and
+                      . sequence
+                        [ multiplayerFilter
+                        , classOnlyFilter
+                        , ( `cardMatch`
+                              (BasicWeaknessCard <> mapOneOf CardWithTrait [Pact, Curse, Omen, SilverTwilight])
+                          )
+                        ]
+                  cards = filter cardFilter collection
+                chooseOneM iid do
+                  cardsLabeled cards $ addCampaignCardToDeck iid DoNotShuffleIn
+
+              withI18n $ labeled' "no" nothing
+
       flavor $ setTitle "title" >> p "twistOfFate2"
       nextCampaignStep
       pure c

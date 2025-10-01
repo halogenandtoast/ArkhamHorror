@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.BeforeTheBlackThrone (beforeTheBlackThrone) where
+module Arkham.Scenario.Scenarios.BeforeTheBlackThrone (setupBeforeTheBlackThrone, beforeTheBlackThrone, BeforeTheBlackThrone (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -93,10 +93,11 @@ setupBeforeTheBlackThrone _attrs = do
   scope "emptySpace" $ flavor $ h "title" >> p "body"
 
   pathWindsBeforeYouCount <- getRecordCount ThePathWindsBeforeYou
+  whenReturnTo $ gather Set.ReturnToBeforeTheBlackThrone
   gather Set.BeforeTheBlackThrone
   gather Set.AgentsOfAzathoth
-  gather Set.InexorableFate
-  gather Set.AncientEvils
+  gather Set.InexorableFate `orWhenReturnTo` gather Set.UnspeakableFate
+  gather Set.AncientEvils `orWhenReturnTo` gather Set.ImpendingEvils
   gather Set.DarkCult
 
   cosmicIngress <- place Locations.cosmicIngress

@@ -68,6 +68,14 @@
       "spawn": "Spawn Wraith at this location"
     }
   },
+  "returnTo": {
+    "label": {
+      "anetteTaughtYouTheSpellsOfOld": "<ul><li>Each investigator may search the collection for a basic _Pact_, _Curse_, _Omen_, or _Silver Twilight_ weakness of their choice and add it to their deck. Each investigator who does earns 4 bonus experience, which can only be spent to purchase or upgrade _Spell_, _Ritual_, _Sorcerer_, or _Witch_ cards.</li></ul><p class='basic'>Do you wish to do this?</p>"
+    },
+    "xp": {
+      "bonus": "Can only be spent to purchase or upgrade _Spell_, _Ritual_, _Sorcerer_, or _Witch_ cards."
+    }
+  },
   "label": {
     "fateOfAllFools": {
       "otherInvestigator": "An investigator with another copy of Fate of All Fools in his or her threat area takes 2 direct damage.",
@@ -146,6 +154,14 @@
     "theBlackBook": "It contains knowledge of the land beyond ordered time and space. Record 1 tally mark.",
     "doomDrawsEverCloser": "*If doom draws ever closer*:",
     "azathothsMawBeginsToOpen": "Azathoth’s maw begins to open. Record 2 tally marks.",
+    "arrestedAnette": "*If the investigators arrested Anette*:",
+    "anetteIsInCustody": "Erase 1 tally mark. Remove 1 {'{'}skull{'}'} from the chaos bag.",
+    "anetteTaughtYouTheSpellsOfOld": "*If Anette taught you the spells of old:*",
+    "learnedTheSpellsOfOld": "Each investigator may search the collection for a basic _Pact_, _Curse_, _Omen_, or _Silver Twilight_ weakness of their choice and add it to their deck. Each investigator who does earns 4 bonus experience, which can only be spent to purchase or upgrade _Spell_, _Ritual_, _Sorcerer_, or _Witch_ cards.",
+    "arrestedSanford": "*If the investigators arrested Sanford*:",
+    "sanfordIsInCustody": "Erase 1 tally marks. Remove 1 {'{'}cultist{'}'} from the chaos bag.",
+    "assumedControlOfTheLodge": "*If the investigators assumed control of the Silver Twilight Lodge:*",
+    "lodgeUsurped": "Add 2 {'{'}cultist{'}'} tokens to the chaos bag. Each investigator begins the next scenario with 2 additional resources and 2 additional cards in their opening hand.",
     "twistOfFate2": "<p>_Twist of Fate 2_: For almost an hour, you stare up into the empty abyss, pondering your options and your fate. A flock of faceless winged creatures circle the field where you sit. They almost move like vultures, waiting for your demise so as to feast on your corpse. They draw ever nearer, and you begin to wonder if they can read the thoughts that hover on the surface of your mind. Rising to your feet, you raise your arm and call out to one of them. This may be the most foolish thing you have ever done, you think to yourself. But your instinct proves to be the right move: the creatures descend on black leathery wings, landing on the wet grass in front of you. One lowers itself until it reaches the height of your shoulders, offering its back to you. Swallowing the very last of your doubts and your fear, you climb aboard the creature. With a swift flap of its wings, it carries you off into the void, beyond the limits of space…to the domain of Azathoth."
   }
 }

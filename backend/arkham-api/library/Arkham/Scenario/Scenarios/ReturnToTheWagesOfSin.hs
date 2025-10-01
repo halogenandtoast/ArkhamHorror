@@ -14,7 +14,7 @@ returnToTheWagesOfSin difficulty =
   scenarioWith
     (ReturnToTheWagesOfSin . TheWagesOfSin)
     "54034"
-    "Return to The Witching Hour"
+    "Return to The Wages of Sin"
     difficulty
     [ ".              theGallows    .             chapelAttic     ."
     , "hereticsGraves hauntedFields .             abandonedChapel chapelCrypt"

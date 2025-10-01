@@ -123,6 +123,15 @@ chooseSome1M iid txt choices = do
       Nothing -> chooseSome1 iid txt choices'
       Just l -> questionLabel l iid $ ChooseSome1 txt choices'
 
+chooseSome1M' :: (HasI18n, ReverseQueue m) => InvestigatorId -> Text -> ChooseT m a -> m ()
+chooseSome1M' iid txt choices = do
+  ((_, ChooseState {label}), choices') <- runChooseT choices
+  let lbl = "$" <> ikey ("label." <> txt)
+  unless (shouldSkipQuestion choices') do
+    case label of
+      Nothing -> chooseSome1 iid lbl choices'
+      Just l -> questionLabel l iid $ ChooseSome1 lbl choices'
+
 chooseOneFromEachM :: ReverseQueue m => InvestigatorId -> [ChooseT m a] -> m ()
 chooseOneFromEachM iid choices = do
   choices' <- traverse runChooseT choices
@@ -452,14 +461,6 @@ storyWithChooseUpToNM'
 storyWithChooseUpToNM' n scp builder choices = do
   (_, choices') <- runChooseT choices
   storyWithChooseUpToN n (buildFlavor builder) (Done (toI18n scp) : choices')
-
-chooseSome1M' :: (HasI18n, ReverseQueue m) => InvestigatorId -> Text -> ChooseT m a -> m ()
-chooseSome1M' iid txt choices = do
-  ((_, ChooseState {label}), choices') <- runChooseT choices
-  unless (shouldSkipQuestion choices') do
-    case label of
-      Nothing -> chooseSome1 iid (toI18n txt) choices'
-      Just l -> questionLabel l iid $ ChooseSome1 (toI18n txt) choices'
 
 resolutionFlavorWithChooseOne
   :: (HasI18n, ReverseQueue m) => (HasI18n => FlavorTextBuilder ()) -> ChooseT m () -> m ()

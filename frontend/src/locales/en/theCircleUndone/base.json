@@ -125,5 +125,27 @@
     "whereAreTheFourMissingPeople": "<p>_“Where are the four missing people from the charity gala?”_</p><p>“God only knows,” Mr. Sanford replies with a sigh. “Taken by the revenant, perhaps. Or swallowed by the mist.” He considers this for a while, then adds, “I suspect that if they are still alive, they cannot be far from the revenant. For better or for worse, the anomaly seems localized around it.”</p>",
     "whyAreYouLookingAtMeLikeThat": "<p class='basic'>Check Campaign Log. You may only ask the following question if the investigators survived the watcher’s embrace.</p><p>_“…Why are you looking at me like that?”_</p><p>Mr. Sanford clears his throat. “I… It is nothing,” he lies.</p>",
     "done": "Done asking questions"
+  },
+  "interlude4": {
+    "title": "Interlude IV: Twist of Fate",
+    "twistOfFate1": "<p>_Twist of Fate 1_: You stand underneath the breach, in awe of its presence. Everything the soothsayer predicted has come to pass. “This is a matter of life and death,” she had told you. How right she was. Beyond the cosmic ingress, the nucleus of the cosmos awaits. Now you understand what dwells on the other side, gnawing hungrily at the fabric of reality: the doom of all humanity; no, not just humanity. The doom of all life in the universe.</p><p>There is a bitter taste in your mouth. Tears well in your eyes. You close your fist so hard your nails dig into your flesh. If you have to die, then die you will. But you’re not going to die sitting down.</p><p class='basic'>In your Campaign Log, record the path winds before you. Next to this, record a number of tally marks based on the conditions below. Then, proceed to _Twist of Fate 2_.</p>",
+    "acceptedYourFate": "*If you accepted your fate*:",
+    "youKnowWhatYouHaveToDo": "You know what you have to do. Record 1 tally mark.",
+    "askedAnetteForAssistance": "*If the investigators asked Anette for assistance*:",
+    "anettesAssistance": "*“Keziah was beseeched to sign a book by the messenger of an ancient being. The Black Book of Azathoth.” Just the name of the thing shakes you to your core. Anette clenches her fist. “I was a fool to not have understood before. That was the source of her power. Not witchcraft, but a pact with a terrible, dark god. All of this, these incursions into our world, the broken bonds of death: it is what Keziah wanted all along. It was the silent will of Azathoth,” she says resentfully.*",
+    "askedSanfordForAssistance": "*If the investigators asked Sanford for assistance*:",
+    "sanfordsAssistance": "*“It is a gateway,” Sanford explains, “joining our world and the greater Cosmos. According to some of the most heinous tomes I have read, at the center, there sleeps a creature known as Azathoth.” Just the name of the thing shakes you to your core. “I fear we have stirred it in its slumber. All of this, these breaches in space, these broken barriers between worlds: it is all because for just a brief moment, for one fragment of a second, we interrupted Azathoth’s dreaming. Do you understand?”*",
+    "adjustChaosBag": "Record 2 tally marks. Then, based on your difficulty level, add the following chaos token to the chaos bag:<div class='columns'><ul><li>_Easy_: –3.</li><li>_Standard_: –4.</li></ul><ul><li>_Hard_: –5.</li><li>_Expert_: –6.</li></ul></div>",
+    "twoOrFewerMementos": "If there are 2 or fewer mementos listed under “Mementos Discovered:”",
+    "woefullyUnprepared": "You are woefully unprepared for this journey. (Nothing happens.)",
+    "threeToFiveMementos": "If there are 3-5 mementos listed under “Mementos Discovered:”",
+    "thereIsStillMuchYouDoNotKnow": "From the evidence you have uncovered, you understand the path you must take a little better. But there is still much you do not know. Record 1 tally mark.",
+    "sixOrMoreMementos": "If there are 6 or more mementos listed under “Mementos Discovered:”",
+    "yourJourneyIsLaidBareBeforeYou": "Your journey is laid bare before you. Record 2 tally marks.",
+    "haveTheBlackBook": "If an investigator has The Black Book in his or her deck:",
+    "theBlackBook": "It contains knowledge of the land beyond ordered time and space. Record 1 tally mark.",
+    "doomDrawsEverCloser": "*If doom draws ever closer*:",
+    "azathothsMawBeginsToOpen": "Azathoth’s maw begins to open. Record 2 tally marks.",
+    "twistOfFate2": "<p>_Twist of Fate 2_: For almost an hour, you stare up into the empty abyss, pondering your options and your fate. A flock of faceless winged creatures circle the field where you sit. They almost move like vultures, waiting for your demise so as to feast on your corpse. They draw ever nearer, and you begin to wonder if they can read the thoughts that hover on the surface of your mind. Rising to your feet, you raise your arm and call out to one of them. This may be the most foolish thing you have ever done, you think to yourself. But your instinct proves to be the right move: the creatures descend on black leathery wings, landing on the wet grass in front of you. One lowers itself until it reaches the height of your shoulders, offering its back to you. Swallowing the very last of your doubts and your fear, you climb aboard the creature. With a swift flap of its wings, it carries you off into the void, beyond the limits of space…to the domain of Azathoth."
   }
 }

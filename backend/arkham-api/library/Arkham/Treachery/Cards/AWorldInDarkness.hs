@@ -1,19 +1,15 @@
-module Arkham.Treachery.Cards.AWorldInDarkness (
-  aWorldInDarkness,
-  AWorldInDarkness (..),
-)
-where
+module Arkham.Treachery.Cards.AWorldInDarkness (aWorldInDarkness) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Helpers.Message.Discard.Lifted
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype AWorldInDarkness = AWorldInDarkness TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -23,25 +19,22 @@ aWorldInDarkness :: TreacheryCard AWorldInDarkness
 aWorldInDarkness = treachery AWorldInDarkness Cards.aWorldInDarkness
 
 instance RunMessage AWorldInDarkness where
-  runMessage msg t@(AWorldInDarkness attrs) = case msg of
+  runMessage msg t@(AWorldInDarkness attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
       doom <- field EnemyDoom azathoth
       if doom == 0
-        then push $ GainSurge (toSource attrs) (toTarget attrs)
+        then gainSurge attrs
         else do
           hasResources <- fieldMap InvestigatorResources (>= 1) iid
           canDiscard <- iid <=~> InvestigatorWithDiscardableCard
-          player <- getPlayer iid
-          pushAll
-            $ replicate doom
-            $ chooseOne player
-            $ [Label "Lose 1 resource" [LoseResources iid (toSource attrs) 1] | hasResources]
-            <> [ Label "Choose and discard 1 card from your hand" [toMessage $ chooseAndDiscardCard iid attrs]
-               | canDiscard
-               ]
-            <> [ Label "Take 1 horror" [assignHorror iid attrs 1]
-               , Label "Take 1 damage" [assignDamage iid attrs 1]
-               ]
+          repeated doom do
+            chooseOneM iid $ withI18n do
+              when hasResources do
+                countVar 1 $ labeled' "loseResources" $ loseResources iid attrs 1
+              when canDiscard do
+                countVar 1 $ labeled' "discardCards" $ chooseAndDiscardCard iid attrs
+              countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
+              countVar 1 $ labeled' "takeDamage" $ assignDamage iid attrs 1
       pure t
-    _ -> AWorldInDarkness <$> runMessage msg attrs
+    _ -> AWorldInDarkness <$> liftRunMessage msg attrs

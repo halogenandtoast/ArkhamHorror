@@ -56,10 +56,10 @@ instance RunMessage WheelOfFortuneX where
           (&&) (location `notElem` locationsMoved meta) <$> getCanMoveLocationLeft location
 
         when (isJust mLeftLocation || canMoveLocationLeft) do
-          chooseOrRunOneM iid do
-            for_ mLeftLocation $ labeled "Move to the location to your left" . moveTo attrs iid
+          chooseOrRunOneM iid $ scenarioI18n do
+            for_ mLeftLocation $ labeled' "moveToLeftLocation" . moveTo attrs iid
             when canMoveLocationLeft do
-              labeled "Move the placement of your location once to the left" do
+              labeled "moveYourLocationLeftOnce" do
                 handleTarget iid attrs location
 
       pure a

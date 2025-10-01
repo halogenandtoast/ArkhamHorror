@@ -50,9 +50,9 @@ instance RunMessage DancersMist where
           if null emptyPositions && null rightChoice
             then cosmosFail attrs
             else do
-              chooseOneM iid do
+              chooseOneM iid $ scenarioI18n do
                 when (notNull rightChoice) do
-                  labeled "Connect to the Right" do
+                  labeled' "connectToTheRight" do
                     chooseOrRunOneM iid do
                       for_ rightChoice \pos'@(Pos x y) -> do
                         gridLabeled (cosmicLabel pos')
@@ -61,7 +61,7 @@ instance RunMessage DancersMist where
                           : msgs
 
                 when (notNull emptyPositions) do
-                  labeled "Lose 2 resources and connect to an adjacent location in a direction of your choice" do
+                  labeled' "dancersMist.choice" do
                     push $ LoseResources iid (toAbilitySource attrs 1) 2
                     chooseOrRunOneM iid do
                       for_ emptyPositions \pos'@(Pos x y) -> do

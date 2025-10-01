@@ -32,6 +32,7 @@
   "doNotTakeDamage": "Do not take damage",
   "doneDiscarding": "Done Discarding",
   "done": "Done",
+  "doneMovingInvestigators": "Done Moving Investigators",
   "drawCards": "Draw 1 card | Draw {count} cards",
   "drawTheCard": "Draw the card",
   "drawTopCardOfEncounterDeck": "Draw the top card of the encounter deck | Draw the top {count} cards of the encounter deck",

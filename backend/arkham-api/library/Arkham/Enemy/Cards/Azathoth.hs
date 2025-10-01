@@ -1,11 +1,11 @@
 module Arkham.Enemy.Cards.Azathoth (azathoth) where
 
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Message (pattern R1)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype Azathoth = Azathoth EnemyAttrs
   deriving anyclass IsEnemy
@@ -30,12 +30,12 @@ instance HasModifiersFor Azathoth where
     modifySelf attrs $ Omnipotent : [CountAllDoomInPlay | noAgenda]
 
 instance RunMessage Azathoth where
-  runMessage msg e@(Azathoth attrs) = case msg of
+  runMessage msg e@(Azathoth attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       push R1
       pure e
     PlaceDoomOnAgenda n _ -> do
       noAgenda <- selectNone AnyAgenda
-      pushWhen noAgenda $ placeDoom attrs attrs n
+      when noAgenda $ placeDoom attrs attrs n
       pure e
-    _ -> Azathoth <$> runMessage msg attrs
+    _ -> Azathoth <$> liftRunMessage msg attrs

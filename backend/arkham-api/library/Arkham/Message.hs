@@ -856,6 +856,7 @@ data Message
   | -- | Actual movement, will add MovedBy, MovedBut, and after Entering windows
     MoveTo Movement
   | ResolveMovement InvestigatorId
+  | ResolvedMovement InvestigatorId
   | -- | Move target one location toward a matching location
     MoveToward Target LocationMatcher
   | -- | Move target one location at a time until arrive at location

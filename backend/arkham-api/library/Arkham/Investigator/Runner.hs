@@ -1195,12 +1195,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       $ chooseOne player
       $ choose.additionalOptions
       <> [ EvadeLabel
-            eid
-            [ ChosenEvadeEnemy choose.skillTest source eid
-            , EvadeEnemy choose.skillTest a.id eid source mTarget skillType isAction
-            ]
-        | eid <- enemyIds
-        ]
+             eid
+             [ ChosenEvadeEnemy choose.skillTest source eid
+             , EvadeEnemy choose.skillTest a.id eid source mTarget skillType isAction
+             ]
+         | eid <- enemyIds
+         ]
     pure a
   ChooseEngageEnemy iid source mTarget enemyMatcher isAction | iid == investigatorId -> do
     modifiers <- getModifiers (InvestigatorTarget iid)
@@ -1432,7 +1432,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               -- like Direct, but no moves windows and no costs
 
               let
-                (whenEntering, atIfEntering, afterEntering) = batchedTimings batchId (Window.Entering iid destinationLocationId)
+                (whenEntering, atIfEntering, _) = batchedTimings batchId (Window.Entering iid destinationLocationId)
                 (mWhenLeaving, mAtIfLeaving, mAfterLeaving) = case mFromLocation of
                   Just from ->
                     batchedTimings batchId (Window.Leaving iid from) & \case
@@ -1443,7 +1443,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               mRunAfterLeaving <- for mAfterLeaving \afterLeaving -> checkWindows [afterLeaving]
               runWhenEntering <- checkWindows [whenEntering]
               runAtIfEntering <- checkWindows [atIfEntering]
-              runAfterEntering <- checkWindows [afterEntering]
 
               pushBatched batchId
                 $ maybeToList mRunWhenLeaving
@@ -1451,7 +1450,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 <> [ runWhenEntering
                    , runAtIfEntering
                    , MoveTo movement
-                   , runAfterEntering
                    ]
                 <> maybeToList mRunAfterLeaving
     pure $ a & movementL ?~ movement
@@ -2691,8 +2689,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     moveToEdit source investigatorId lid \m -> m {moveMeans = Place}
     pure a
   MoveTo movement | isTarget a (moveTarget movement) -> do
-    push $ ResolveMovement investigatorId
+    pushAll [ResolveMovement investigatorId, ResolvedMovement investigatorId]
     pure $ a & movementL ?~ movement
+  ResolvedMovement iid | iid == investigatorId -> do
+    pure $ a & (usedAbilitiesL %~ filter (\ab -> ab.limitType /= Just PerMove))
   ResolveMovement iid | iid == investigatorId -> do
     mods <- getModifiers iid
     let canMove =

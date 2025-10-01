@@ -59,7 +59,7 @@ instance HasAbilities AtlachNacha where
 instance RunMessage AtlachNacha where
   runMessage msg e@(AtlachNacha attrs) = runQueueT $ case msg of
     Flip iid _ (isTarget attrs -> True) -> do
-      lids <- liftA2 (<|>) (selectMax LocationDoom Anywhere) (select Anywhere)
+      lids <- liftA2 (<|?>) (selectMax LocationDoom Anywhere) (select Anywhere)
       push $ Flipped (toSource attrs) (toCard attrs)
       chooseOrRunOneM iid $ targets lids (place attrs . AtLocation)
       pure $ AtlachNacha $ attrs & asSelfLocationL .~ Nothing & flippedL .~ True

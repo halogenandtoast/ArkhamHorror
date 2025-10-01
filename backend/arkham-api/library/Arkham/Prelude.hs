@@ -335,6 +335,11 @@ breakNM n p xs = go n ([], xs)
 (<$$>) = ffmap
 infixl 4 <$$>
 
+(<|?>) :: [a] -> [a] -> [a]
+xs <|?> ys | null xs   = ys
+           | otherwise = xs
+infixl 3 <|?>
+
 ffmap :: (Functor f, Functor m) => (a -> b) -> m (f a) -> m (f b)
 ffmap = fmap . fmap
 

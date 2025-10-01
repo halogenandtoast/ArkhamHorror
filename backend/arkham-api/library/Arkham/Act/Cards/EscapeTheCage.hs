@@ -21,7 +21,9 @@ enemyMatcher = InPlayEnemy $ #ready <> withTrait SilverTwilight <> not_ (EnemyAt
 
 instance HasAbilities EscapeTheCage where
   getAbilities = actAbilities \x ->
-    [ restricted x 1 (exists enemyMatcher) $ forced $ RoundEnds #when
+    [ restricted x 1 (exists $ oneOf [enemyMatcher, withTrait SilverTwilight <> at_ "Entry Hall"])
+        $ forced
+        $ RoundEnds #when
     , restricted x 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
     ]
 

@@ -251,4 +251,7 @@ instance RunMessage CarnevaleOfHorrors where
             addCampaignCardToDeck currentInvestigatorId DoNotShuffleIn reward
             push $ ChooseOneRewardByEachPlayer (delete reward rewards) rest
       pure s
+    RequestedPlayerCard iid ScenarioSource (Just card) _ -> do
+      addCampaignCardToDeck iid DoNotShuffleIn card
+      pure s
     _ -> CarnevaleOfHorrors <$> liftRunMessage msg attrs

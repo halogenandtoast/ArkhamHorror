@@ -14,7 +14,7 @@ returnToUnionAndDisillusion difficulty =
   scenarioWith
     (ReturnToUnionAndDisillusion . UnionAndDisillusion)
     "54046"
-    "Return to The Witching Hour"
+    "Return to Union and Disillusion"
     difficulty
     [ ".              miskatonicRiver ."
     , "unvisitedIsle3 forbiddingShore unvisitedIsle4"

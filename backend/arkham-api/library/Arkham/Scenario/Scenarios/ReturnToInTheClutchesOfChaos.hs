@@ -14,7 +14,7 @@ returnToInTheClutchesOfChaos difficulty =
   scenarioWith
     (ReturnToInTheClutchesOfChaos . InTheClutchesOfChaos)
     "54049"
-    "Return to The Witching Hour"
+    "Return to In the Clutches of Chaos"
     difficulty
     [ ".            .            .      merchantDistrict merchantDistrict rivertown   rivertown  .          .                   ."
     , "hangmansHill hangmansHill uptown uptown           southside        southside   frenchHill frenchHill silverTwilightLodge silverTwilightLodge"

@@ -2436,8 +2436,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     let health = if cannotHealDamage then 0 else findWithDefault 0 source investigatorAssignedHealthHeal
     let sanity = if cannotHealHorror then 0 else findWithDefault 0 source investigatorAssignedSanityHeal
 
-    let overHealDamage = max 0 (health - a.healthDamage)
-    let overHealSanity = max 0 (sanity - a.sanityDamage)
+    let overHealDamage = max 0 (health - a.healthDamage - a.assignedHealthDamage)
+    let overHealSanity = max 0 (sanity - a.sanityDamage - a.assignedSanityDamage)
 
     pushWhen (overHealDamage > 0) $ ExcessHealDamage a.id source overHealDamage
     pushWhen (overHealSanity > 0) $ ExcessHealHorror a.id source overHealSanity
@@ -2449,8 +2449,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         <> [mkAfter (Window.Healed HorrorType (toTarget a) source sanity) | sanity > 0]
       push $ AssignedHealing (toTarget a)
 
-    let trueHealth = min health a.healthDamage
-    let trueSanity = min sanity a.sanityDamage
+    let trueHealth = min health (a.healthDamage + a.assignedHealthDamage)
+    let trueSanity = min sanity (a.sanityDamage + a.assignedSanityDamage)
 
     a' <-
       if trueHealth > 0
@@ -2482,7 +2482,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         selectWithField TreacheryCard $ treacheryInThreatAreaOf iid <> TreacheryWithModifier IsPointOfDamage
       if null dmgTreacheries
         then do
-          let remainingDamage = investigatorHealthDamage a - sum (toList investigatorAssignedHealthHeal)
+          let remainingDamage =
+                (investigatorHealthDamage a + investigatorAssignedHealthDamage)
+                  - sum (toList investigatorAssignedHealthHeal)
           when (remainingDamage > 0 || canHealAtFull) do
             pushAll [whenWindow, Do msg]
         else do
@@ -2554,7 +2556,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             guard (null onlyTargets)
               *> [targetLabel t [HealHorror t source 1] | HealHorrorAsIfOnInvestigator t x <- mods, x > 0]
 
-      let remainingHorror = length hrrTreacheries + investigatorSanityDamage a - sum (toList investigatorAssignedSanityHeal)
+      let remainingHorror =
+            length hrrTreacheries
+              + investigatorSanityDamage a
+              + investigatorAssignedSanityDamage
+              - sum (toList investigatorAssignedSanityHeal)
       if null additionalTargets && null onlyTargets
         then do
           let canHealAtFullSources = [sourceMatcher | CanHealAtFull sourceMatcher DamageType <- mods]
@@ -3295,7 +3301,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     push afterPlacedWindowMsg
     pure $ a & tokensL %~ addTokens token n
   RemoveTokens _ (isTarget a -> True) token n -> do
-    pure $ a & tokensL %~ subtractTokens token n
+    case token of
+      Damage | a.assignedHealthDamage > 0 -> do
+        let subtractFromAssigned = min a.assignedHealthDamage n
+            subtractFromPool = max 0 (n - subtractFromAssigned)
+        pure
+          $ a
+          & (tokensL %~ subtractTokens token subtractFromPool)
+          & (assignedHealthDamageL -~ subtractFromAssigned)
+      Horror | a.assignedSanityDamage > 0 -> do
+        let subtractFromAssigned = min a.assignedSanityDamage n
+            subtractFromPool = max 0 (n - subtractFromAssigned)
+        pure
+          $ a
+          & (tokensL %~ subtractTokens token subtractFromPool)
+          & (assignedSanityDamageL -~ subtractFromAssigned)
+      _ -> pure $ a & tokensL %~ subtractTokens token n
   DoBatch _ (EmptyDeck iid mDrawing) | iid == investigatorId -> do
     player <- getPlayer iid
     pushAll

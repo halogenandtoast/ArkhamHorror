@@ -4,5 +4,6 @@ import Arkham.Prelude
 
 data TheScarletKeysKey
   = Time
+  | YouHaventSeenTheLastOfTheRedGlovedMan
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

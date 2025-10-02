@@ -124,9 +124,26 @@ const breakdowns =
 // --- Derived fields from the currently selected log -----------------------------
 const recorded = computed(() => selectedLog.value.recorded.filter(r => !['Teachings1', 'Teachings2', 'Teachings3'].includes(r.tag)).map(formatKey))
 const recordedSets = computed(() => selectedLog.value.recordedSets)
-const recordedCounts = computed(() => selectedLog.value.recordedCounts)
+const recordedCounts = computed(() => selectedLog.value.recordedCounts.filter((r) => {
+  return (r[0].tag !== 'TheScarletKeysKey' && r[0].contents !== 'Time')
+}))
 const partners = computed(() => (selectedLog.value as any).partners ?? {})
 const hasSupplies = computed(() => Object.values(investigators.value).some(i => i.supplies.length > 0))
+
+const time = computed(() => selectedLog.value.recordedCounts.find((r) => {
+  return (r[0].tag === 'TheScarletKeysKey' && r[0].contents === 'Time')
+}))
+
+function symbolForDay(day: number): string {
+  if (!time.value) return ''
+  if (day == 7) return 'α'
+  if (day == 10) return 'ε'
+  if (day == 15) return 'β'
+  if (day == 20) return 'ζ'
+  if (day == 24) return 'γ'
+  if (day == 35) return 'ω'
+  return null
+}
 
 // --- Card loading for recordedSets ---------------------------------------------
 const loadedCards = ref<CardDef[]>([])
@@ -315,6 +332,16 @@ const bonusXp = computed(() => props.game.campaign?.meta?.bonusXp ?? null)
               </tbody>
             </table>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="time" class="time">
+      <!-- we need 35 cells each with an empty div a div with a number and another empty div -->
+      <h2>Time Passed</h2>
+      <div class='calendar'>
+        <div class='day' v-for="n in 35" :key="n">
+          <div class='checkbox'>{{n <= time[1] ? 'x' : null}}</div><div class='numeral'>{{n}}</div><div class='symbol'>{{symbolForDay(n)}}</div>
         </div>
       </div>
     </div>
@@ -510,6 +537,69 @@ tr td:not(:first-child) {
   }
   &.checked {
     background-color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+.time {
+  margin: 20px auto;
+  width: fit-content;
+  text-align: center;
+  --time-bg: beige;
+  padding: 10px;
+  background-color: var(--time-bg);
+  border: 4px solid #333;
+  h2 {
+    text-transform: uppercase;
+    font-family: "Albertus";
+    font-size: 2em;
+  }
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin: 20px auto;
+    width: fit-content;
+    background-color: #333;
+    gap: 1px;
+
+
+    .day {
+      background-color: var(--time-bg);
+      width: 4em;
+      height: 4em;
+      grid-template-areas:
+        "box box . . . num num"
+        "box box . . . num num"
+        ". . symbol symbol symbol . ."
+        ". . symbol symbol symbol . ."
+        ". . . . . . .";
+      display: grid;
+      .checkbox {
+        grid-area: box;
+        border-bottom: 1px solid #333;
+        border-right: 1px solid #333;   
+        width: 1em;
+        height: 1em;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        line-height: 1em;
+        font-weight: bold;
+      }
+      .numeral {
+        grid-area: num;
+        width: 100%;
+        height: 100%;
+        text-align: right;
+        justify-content: start;
+        line-height: 1em;
+      }
+      .symbol {
+        grid-area: symbol;
+        font-size: 1.75em;
+        font-weight: bold;
+      }
+    }
   }
 }
 

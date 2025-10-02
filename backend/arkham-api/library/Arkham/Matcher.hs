@@ -501,6 +501,7 @@ instance Has InvestigatorMatcher CardDef where
     StoryType -> error "invalid matcher"
     InvestigatorType -> error "invalid matcher"
     ScenarioType -> error "invalid matcher"
+    KeyType -> error "invalid matcher"
 
 instance Exists CardDef where
   exists def = case cdCardType def of
@@ -519,3 +520,4 @@ instance Exists CardDef where
     TreacheryType -> exists $ treacheryIs def
     InvestigatorType -> exists $ investigatorIs def
     ScenarioType -> error "Not implemented"
+    KeyType -> error "Not implemented"

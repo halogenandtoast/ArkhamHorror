@@ -2,14 +2,13 @@
 
 module Arkham.Campaign where
 
-import Arkham.Prelude
-
 import Arkham.Campaign.Campaigns
 import Arkham.Campaign.Runner
 import Arkham.Campaigns.TheDreamEaters.Meta qualified as TheDreamEaters
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Id
+import Arkham.Prelude
 import Control.Monad.Fail
 import GHC.Records
 
@@ -50,6 +49,7 @@ allCampaigns =
     , ("06", SomeCampaign theDreamEaters)
     , ("07", SomeCampaign theInnsmouthConspiracy)
     , ("08", SomeCampaign edgeOfTheEarth)
+    , ("09", SomeCampaign theScarletKeys)
     , ("50", SomeCampaign returnToNightOfTheZealot)
     , ("51", SomeCampaign returnToTheDunwichLegacy)
     , ("52", SomeCampaign returnToThePathToCarcosa)

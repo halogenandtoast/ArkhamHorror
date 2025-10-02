@@ -21,6 +21,7 @@ data CardType
   | StoryType
   | InvestigatorType
   | ScenarioType
+  | KeyType
   deriving stock (Eq, Show, Ord, Data)
 
 data CardSubType = Weakness | BasicWeakness
@@ -36,6 +37,7 @@ encounterCardTypes =
   , StoryType
   , ActType
   , AgendaType
+  , KeyType
   ]
 
 playerCardTypes :: [CardType]

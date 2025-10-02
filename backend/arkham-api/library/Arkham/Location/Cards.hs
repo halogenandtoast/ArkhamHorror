@@ -167,6 +167,7 @@ allLocationCards =
       , bathroom
       , bedroom
       , bedroomTheMidwinterGala
+      , bigBen
       , billiardsRoom
       , billiardsRoomSpectral
       , bishopsBrook_202
@@ -490,6 +491,7 @@ allLocationCards =
       , jungleRiver
       , jungleSet
       , kadatheron
+      , kensingtonGardens
       , keziahsRoom
       , kitchen
       , knightsHall
@@ -638,6 +640,7 @@ allLocationCards =
       , quietHalls_131
       , quietHalls_135
       , railroadStation
+      , rainyLondonStreets
       , realmsBeyondAllInOne
       , recessesOfYourOwnMind
       , recordsOffice
@@ -843,6 +846,7 @@ allLocationCards =
       , theOnyxCastle
       , thePriceManor
       , theSummit
+      , theTowerBridge
       , theThroneRoom
       , theWhiteShip
       , throneOfBloodRedAsBloodBlackAsNight
@@ -861,10 +865,13 @@ allLocationCards =
       , tothisBarrens
       , toweringLuminosity
       , towerOfKoth
+      , towerOfLondon
+      , towerPrison
       , towersOfPnakotus
       , townHall
       , trailOfTheDead
       , trainTracks
+      , traitorsGate
       , trappersCabin
       , trapRoom
       , treacherousDescent
@@ -917,6 +924,7 @@ allLocationCards =
       , wavewornIsland
       , wellOfSouls
       , westernRidge
+      , westminsterAbbey
       , whateleyRuins_250
       , whateleyRuins_251
       , whiteBluff
@@ -8211,6 +8219,89 @@ hiddenTunnelAWayOut =
     ("Hidden Tunnel" <:> "A Way Out")
     [Ruins]
     StirringInTheDeep
+
+rainyLondonStreets :: CardDef
+rainyLondonStreets =
+  location
+    "09510"
+    "Rainy London Streets"
+    [London]
+    Equals
+    [Circle, Square, Triangle, Squiggle]
+    RiddlesAndRain
+
+bigBen :: CardDef
+bigBen =
+  victory 1
+    $ location
+      "09511"
+      "Big Ben"
+      [London]
+      Triangle
+      [Equals, Circle]
+      RiddlesAndRain
+
+westminsterAbbey :: CardDef
+westminsterAbbey =
+  location
+    "09512"
+    "Westminster Abbey"
+    [London]
+    Circle
+    [Equals, Triangle]
+    RiddlesAndRain
+
+kensingtonGardens :: CardDef
+kensingtonGardens =
+  victory 1
+    $ location
+      "09513"
+      "Kensington Gardens"
+      [London]
+      Square
+      [Equals]
+      RiddlesAndRain
+
+theTowerBridge :: CardDef
+theTowerBridge =
+  location
+    "09514"
+    "The Tower Bridge"
+    [London]
+    Squiggle
+    [Equals, Moon, T]
+    RiddlesAndRain
+
+traitorsGate :: CardDef
+traitorsGate =
+  location
+    "09515"
+    "Traitor's Gate"
+    [London]
+    T
+    [Squiggle, Moon]
+    RiddlesAndRain
+
+towerOfLondon :: CardDef
+towerOfLondon =
+  location
+    "09516"
+    "Tower of London"
+    [London]
+    Moon
+    [Squiggle, T, Hourglass]
+    RiddlesAndRain
+
+towerPrison :: CardDef
+towerPrison =
+  victory 1
+    $ location
+      "09517"
+      "Tower Prison"
+      [London]
+      Hourglass
+      [Moon]
+      RiddlesAndRain
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

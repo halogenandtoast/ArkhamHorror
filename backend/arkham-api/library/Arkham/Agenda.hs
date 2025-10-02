@@ -277,6 +277,12 @@ allAgendas =
     , --- Stirring in the Deep [eote]
       SomeAgendaCard theSealWeakens
     , SomeAgendaCard thatWhichHasNoName
+    , -- The Scarlet Keys
+      -- Riddles and Rain
+      SomeAgendaCard whenItRains
+    , SomeAgendaCard figuresInTheFog
+    , SomeAgendaCard theConnection
+    , SomeAgendaCard plotsAndPanic
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

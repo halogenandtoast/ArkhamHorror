@@ -163,6 +163,32 @@ data EncounterSet
   | TheGreatSeal
   | TheHeartOfMadness
   | ToTheForbiddenPeaks
+  | RiddlesAndRain
+  | DeadHeat
+  | SanguineShadows
+  | DealingsInTheDark
+  | DancingMad
+  | OnThinIce
+  | DogsOfWar
+  | ShadesOfSuffering
+  | WithoutATrace
+  | CongressOfTheKeys
+  | CrimsonConspiracy
+  | StrangeHappenings
+  | MysteriesAbound
+  | ShadowOfADoubt
+  | DarkVeiling
+  | CleanupCrew
+  | ScarletSorcery
+  | Outsiders
+  | SecretWar
+  | AgentsOfTheOutside
+  | AgentsOfYuggoth
+  | SpatialAnomaly
+  | SpreadingCorruption
+  | BeyondTheBeyond
+  | RedCoterie
+  | Globetrotting
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

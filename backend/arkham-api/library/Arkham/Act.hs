@@ -315,6 +315,12 @@ allActs =
     , --- Stirring in the Deep [eote]
       SomeActCard collapseThePylons
     , SomeActCard theFinalMirage
+    , -- The Scarlet Keys
+      --- Riddles and Rain
+      SomeActCard cluesAndCapers
+    , SomeActCard theGameIsAfoot
+    , SomeActCard eyesInTheTower
+    , SomeActCard caughtRedHanded
     , -- Return to Night of the Zealot
       --- Return to the Gathering
       SomeActCard mysteriousGateway

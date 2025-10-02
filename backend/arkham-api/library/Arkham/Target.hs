@@ -6,6 +6,7 @@ module Arkham.Target (
 
 import Arkham.Prelude
 
+import Arkham.Campaigns.TheScarletKeys.Key.Id (KeyId)
 import {-# SOURCE #-} Arkham.Ability.Types
 import Arkham.Action
 import {-# SOURCE #-} Arkham.Card
@@ -75,6 +76,7 @@ data Target
   | ActiveCostTarget ActiveCostId
   | LabeledTarget Text Target -- Use with caution, this is not a real target
   | ThisTarget -- Used with withModifiers
+  | ScarletKeyTarget KeyId
   deriving stock (Show, Eq, Ord, Data, Generic)
 
 instance HasField "asset" (Maybe Target) (Maybe AssetId) where

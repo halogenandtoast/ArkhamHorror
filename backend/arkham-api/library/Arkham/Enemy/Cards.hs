@@ -419,6 +419,7 @@ allEncounterEnemyCards =
       , theNamelessMadness
       , theOrganistDrapedInMystery
       , theOrganistHopelessIDefiedHim
+      , theRedGlovedManShroudedInMystery
       , theSpectralWatcher
       , theTerrorOfDevilReef_164
       , theTerrorOfDevilReef_165
@@ -2742,6 +2743,14 @@ rampagingShoggoth =
   (enemy "08711" "Rampaging Shoggoth" Shoggoths 1)
     { cdCardTraits = setFromList [Monster, Shoggoth, Elite]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    , cdVictoryPoints = Just 1
+    }
+
+theRedGlovedManShroudedInMystery :: CardDef
+theRedGlovedManShroudedInMystery =
+  (enemy "09518" ("The Red-Gloved Man" <:> "Shrouded in Mystery") RiddlesAndRain 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Concealed (PerPlayer 1), Keyword.Retaliate]
     , cdVictoryPoints = Just 1
     }
 

@@ -482,6 +482,7 @@ allLocationCards =
       , innsmouthSquareInTooDeep
       , intersection_a
       , intersection_b
+      , interstellarAbyss
       , interviewRoomArrivalChamber
       , interviewRoomIchorFilledChamber
       , interviewRoomRestrainingChamber
@@ -581,6 +582,7 @@ allLocationCards =
       , newChurchGreen
       , newChurchGreenInTooDeep
       , nexusOfNKai
+      , nightmareBreach
       , northside
       , northsideTrainStation
       , northTower_287
@@ -920,6 +922,7 @@ allLocationCards =
       , whiteBluff
       , wineCellar
       , wineCellarSpectral
+      , windingGulf
       , windsweptPath
       , witchesCircle
       , witchHauntedWoodsAbandonedMine
@@ -9419,6 +9422,48 @@ returnToMerchantDistrict =
     Triangle
     [Circle, Square, Plus]
     ReturnToInTheClutchesOfChaos
+
+nightmareBreach :: CardDef
+nightmareBreach =
+  locationWithUnrevealed
+    "54058"
+    "Cosmos"
+    [Otherworld]
+    NoSymbol
+    []
+    "Nightmare Breach"
+    [Otherworld, Void]
+    NoSymbol
+    []
+    ReturnToBeforeTheBlackThrone
+
+interstellarAbyss :: CardDef
+interstellarAbyss =
+  locationWithUnrevealed
+    "54059"
+    "Cosmos"
+    [Otherworld]
+    NoSymbol
+    []
+    "Interstellar Abyss"
+    [Otherworld, Void]
+    NoSymbol
+    []
+    ReturnToBeforeTheBlackThrone
+
+windingGulf :: CardDef
+windingGulf =
+  locationWithUnrevealed
+    "54060"
+    "Cosmos"
+    [Otherworld]
+    NoSymbol
+    []
+    "Interstellar Abyss"
+    [Otherworld, Void]
+    NoSymbol
+    []
+    ReturnToBeforeTheBlackThrone
 
 lobbyTheMidwinterGala :: CardDef
 lobbyTheMidwinterGala =

@@ -58,6 +58,7 @@ data TreacheryMatcher
   | NotTreachery TreacheryMatcher
   | IncludeOutOfPlayTreachery TreacheryMatcher
   | SignatureTreachery
+  | DiscardableTreachery
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not TreacheryMatcher where

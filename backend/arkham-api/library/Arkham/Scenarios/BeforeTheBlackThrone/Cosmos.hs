@@ -1,27 +1,33 @@
-module Arkham.Scenarios.BeforeTheBlackThrone.Cosmos where
+module Arkham.Scenarios.BeforeTheBlackThrone.Cosmos (
+  module Arkham.Scenarios.BeforeTheBlackThrone.Cosmos.Types,
+  module Arkham.Scenarios.BeforeTheBlackThrone.Cosmos) where
 
-import Arkham.Prelude hiding ((<|))
-
+import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos.Types
+import Arkham.Card
+import Arkham.Classes.HasGame
 import Arkham.Direction
+import Arkham.Helpers.Scenario (scenarioField)
+import Arkham.Id
 import Arkham.Layout
+import Arkham.Prelude hiding ((<|))
+import Arkham.Scenario.Types (Field (..))
+import Data.Aeson (Result (..))
 import Data.Sequence ((<|), (|>))
 import Data.Sequence qualified as Seq
 import Data.Text qualified as T
 import Text.Printf
 
+getCosmos :: HasGame m => m (Cosmos Card LocationId)
+getCosmos = do
+  cosmos' <- scenarioField ScenarioMeta
+  case fromJSON cosmos' of
+    Error e -> error $ "failed to parse cosmos: " <> e
+    Success result -> pure result
+
 nTimes :: Int -> (a -> a) -> (a -> a)
 nTimes 0 _ = id
 nTimes 1 f = f
 nTimes n f = f . nTimes (n - 1) f
-
-data Pos = Pos Int Int
-  deriving stock (Ord, Eq, Show, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
-
--- Todo hardcode a and b, store location id for empty space
-data CosmosLocation a b = EmptySpace Pos a | CosmosLocation Pos b
-  deriving stock (Show, Ord, Eq, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
 
 cosmosLocationToPosition :: CosmosLocation a b -> Pos
 cosmosLocationToPosition (EmptySpace pos _) = pos
@@ -30,14 +36,6 @@ cosmosLocationToPosition (CosmosLocation pos _) = pos
 setCosmosLocationPosition :: Pos -> CosmosLocation a b -> CosmosLocation a b
 setCosmosLocationPosition pos (EmptySpace _ a) = EmptySpace pos a
 setCosmosLocationPosition pos (CosmosLocation _ b) = CosmosLocation pos b
-
-data CosmosRow a b
-  = CosmosRow
-      (Seq (Maybe (CosmosLocation a b)))
-      (Maybe (CosmosLocation a b))
-      (Seq (Maybe (CosmosLocation a b)))
-  deriving stock (Show, Eq, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
 
 initCosmos :: Cosmos a b
 initCosmos = Cosmos (Seq.singleton initRow) initRow (Seq.singleton initRow)
@@ -49,14 +47,6 @@ cosmosRowLeft (CosmosRow left _ _) = Seq.length left
 
 cosmosRowRight :: CosmosRow a b -> Int
 cosmosRowRight (CosmosRow _ _ right) = Seq.length right
-
-data Cosmos a b = Cosmos
-  { cosmosAbove :: Seq (CosmosRow a b)
-  , cosmosCenter :: CosmosRow a b
-  , cosmosBelow :: Seq (CosmosRow a b)
-  }
-  deriving stock (Show, Eq, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
 
 -- First check do we need to extend cosmos in a direction, if so extend
 -- Then find the correct row to insert
@@ -164,8 +154,7 @@ extendCosmosRight (Cosmos above center below) =
 extendCosmosUp :: Cosmos a b -> Cosmos a b
 extendCosmosUp c@(Cosmos above center below) =
   Cosmos
-    ( (CosmosRow (Seq.replicate leftAmount Nothing) Nothing (Seq.replicate rightAmount Nothing)) <| above
-    )
+    ((CosmosRow (Seq.replicate leftAmount Nothing) Nothing (Seq.replicate rightAmount Nothing)) <| above)
     center
     below
  where
@@ -218,6 +207,11 @@ isEmpty :: Maybe (CosmosLocation a b) -> Bool
 isEmpty Nothing = True
 isEmpty (Just (EmptySpace _ _)) = True
 isEmpty (Just (CosmosLocation _ _)) = False
+
+isEmptySpace :: Maybe (CosmosLocation a b) -> Bool
+isEmptySpace Nothing = False
+isEmptySpace (Just (EmptySpace _ _)) = True
+isEmptySpace (Just (CosmosLocation _ _)) = False
 
 updatePosition :: Pos -> GridDirection -> Pos
 updatePosition (Pos x y) dir = case dir of

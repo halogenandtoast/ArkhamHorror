@@ -939,6 +939,10 @@ allLocations =
     , SomeLocationCard returnToUptown
     , SomeLocationCard returnToSouthChurch
     , SomeLocationCard returnToMerchantDistrict
+    , --- Return to Before the Black Throne
+      SomeLocationCard nightmareBreach
+    , SomeLocationCard interstellarAbyss
+    , SomeLocationCard windingGulf
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

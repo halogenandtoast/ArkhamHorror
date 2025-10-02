@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Criteria where
 
 import Arkham.Ability.Type
@@ -66,7 +67,6 @@ import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos qualified as Cosmos
-import Arkham.Scenarios.BeforeTheBlackThrone.Helpers (getCosmos)
 import Arkham.Skill.Types (Field (..))
 import Arkham.SkillTest.Base
 import Arkham.Source
@@ -231,11 +231,11 @@ passesCriteria iid mcard source' requestor windows' = \case
     (>)
       <$> selectCount (Matcher.ChaosTokenFaceIs #curse)
       <*> selectCount (Matcher.ChaosTokenFaceIs #bless)
-  Criteria.CanMoveTo matcher -> notNull <$> getCanMoveToMatchingLocations iid source matcher
+  Criteria.CanMoveTo matcher -> notNull . traceShowId <$> getCanMoveToMatchingLocations iid source (traceShowId matcher)
   Criteria.CanMoveThis dir -> do
     case source of
       LocationSource lid -> do
-        cosmos' <- getCosmos
+        cosmos' <- Cosmos.getCosmos
         case Cosmos.findInCosmos lid cosmos' of
           Nothing -> pure False
           Just pos -> pure $ Cosmos.isEmpty $ Cosmos.viewCosmos (Cosmos.updatePosition pos dir) cosmos'

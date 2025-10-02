@@ -1218,6 +1218,8 @@ allAssets =
       SomeAssetCard theDevilXv
     , -- Return to The Wages of Sin [rttcu]
       SomeAssetCard erynnMacAoidhDevotedEnchantress
+    , -- Return to Before the Black Throne [rttcu]
+      SomeAssetCard nightgauntSteed
     , -- Investigator Starter Decks
       --- Nathaniel Cho
       SomeAssetCard randallCho

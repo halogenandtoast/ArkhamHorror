@@ -2,22 +2,23 @@ module Arkham.Scenario.Scenarios.BeforeTheBlackThrone (setupBeforeTheBlackThrone
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
-import Arkham.Deck qualified as Deck
-import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
-import Arkham.Helpers.Scenario
+import Arkham.Helpers.Scenario hiding (getIsReturnTo)
+import Arkham.Helpers.Scenario qualified as Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Xp
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Label (mkLabel)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -103,21 +104,23 @@ setupBeforeTheBlackThrone _attrs = do
   cosmicIngress <- place Locations.cosmicIngress
   startAt cosmicIngress
 
+  isReturnTo <- getIsReturnTo
   cosmosCards' <-
     shuffle
-      [ Locations.infinityOfDarkness
-      , Locations.infinityOfDarkness
-      , Locations.infinityOfDarkness
-      , Locations.cosmicGate
-      , Locations.pathwayIntoVoid
-      , Locations.pathwayIntoVoid
-      , Locations.dancersMist
-      , Locations.dancersMist
-      , Locations.dancersMist
-      , Locations.flightIntoOblivion
-      , Locations.flightIntoOblivion
-      , Locations.flightIntoOblivion
-      ]
+      $ [ Locations.infinityOfDarkness
+        , Locations.infinityOfDarkness
+        , Locations.infinityOfDarkness
+        , Locations.cosmicGate
+        , Locations.pathwayIntoVoid
+        , Locations.pathwayIntoVoid
+        , Locations.dancersMist
+        , Locations.dancersMist
+        , Locations.dancersMist
+        , Locations.flightIntoOblivion
+        , Locations.flightIntoOblivion
+        , Locations.flightIntoOblivion
+        ]
+      <> (guard isReturnTo *> [Locations.nightmareBreach, Locations.interstellarAbyss, Locations.windingGulf])
 
   let
     (topCosmosCard, cosmosCards) =
@@ -154,9 +157,13 @@ setupBeforeTheBlackThrone _attrs = do
     emptySpace' <- placeLocationCard Locations.emptySpace
     push $ PlaceCosmos lead emptySpace' (EmptySpace pos card)
 
-  setAside [Locations.courtOfTheGreatOldOnes, Locations.theBlackThrone, Enemies.piperOfAzathoth]
+  setAside
+    $ [Locations.courtOfTheGreatOldOnes, Locations.theBlackThrone, Enemies.piperOfAzathoth]
+    <> (guard isReturnTo *> replicate 4 Assets.nightgauntSteed)
   setAgendaDeck [Agendas.wheelOfFortuneX, Agendas.itAwaits, Agendas.theFinalCountdown]
-  setActDeck [Acts.theCosmosBeckons, Acts.inAzathothsDomain, Acts.whatMustBeDone]
+
+  let act3 = if isReturnTo then Acts.whatMustBeDoneV2 else Acts.whatMustBeDone
+  setActDeck [Acts.theCosmosBeckons, Acts.inAzathothsDomain, act3]
   setLayout $ cosmosToGrid cosmos
   addExtraDeck CosmosDeck cosmosCards
   setMeta cosmos
@@ -172,57 +179,26 @@ instance RunMessage BeforeTheBlackThrone where
       flavor $ setTitle "title" >> p "body"
       pure s
     Setup -> runScenarioSetup BeforeTheBlackThrone attrs $ setupBeforeTheBlackThrone attrs
+    EndSetup -> do
+      isReturnTo <- Scenario.getIsReturnTo
+      pathWindsBeforeYouCount <- getRecordCount ThePathWindsBeforeYou
+      when (isReturnTo && pathWindsBeforeYouCount >= 2) do
+        leadChooseOneM do
+          campaignI18n $ labeled' "nightgauntSteed" do
+            removeTokens ScenarioSource ScenarioTarget #resource 2
+            eachInvestigator $ createAssetAt_ Assets.nightgauntSteed . InPlayArea
+          withI18n $ labeled' "no" nothing
+        doStep 1 EndSetup
+      BeforeTheBlackThrone <$> liftRunMessage msg attrs
+    DoStep 1 EndSetup -> do
+      getSetAsideCardsMatching (cardIs Assets.nightgauntSteed) >>= traverse_ obtainCard
+      pure s
     SetScenarioMeta meta -> do
       case fromJSON @(Cosmos Card LocationId) meta of
         Error err -> error err
         Success cosmos -> pure $ BeforeTheBlackThrone $ attrs & metaL .~ meta & locationLayoutL .~ cosmosToGrid cosmos
     PlaceCosmos {} -> do
       pushAll [Do msg, After msg]
-      pure s
-    Do (PlaceCosmos _ lid cloc) -> do
-      cosmos' <- getCosmos
-      let
-        pos = cosmosLocationToPosition cloc
-        current = viewCosmos pos cosmos'
-        cosmos'' = insertCosmos cloc cosmos'
-      mTopLocation <-
-        selectOne
-          $ IncludeEmptySpace
-          $ not_ (be lid)
-          <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridUp)
-      mBottomLocation <-
-        selectOne
-          $ IncludeEmptySpace
-          $ not_ (be lid)
-          <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridDown)
-      mLeftLocation <-
-        selectOne
-          $ IncludeEmptySpace
-          $ not_ (be lid)
-          <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridLeft)
-      mRightLocation <-
-        selectOne
-          $ IncludeEmptySpace
-          $ not_ (be lid)
-          <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridRight)
-      currentMsgs <- case current of
-        Just (EmptySpace _ c) -> case toCardOwner c of
-          Nothing -> error "Unhandled"
-          Just iid -> do
-            emptySpace <- selectJust $ IncludeEmptySpace $ LocationWithLabel (mkLabel $ cosmicLabel pos)
-            pure [RemoveFromGame (toTarget emptySpace), ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [c]]
-        _ -> pure []
-      pushAll
-        $ currentMsgs
-        <> [ LocationMoved lid
-           , SetLocationLabel lid (cosmicLabel pos)
-           , SetScenarioMeta (toJSON cosmos'')
-           ]
-        <> [PlacedLocationDirection lid Below topLocation | topLocation <- maybeToList mTopLocation]
-        <> [PlacedLocationDirection lid Above bottomLocation | bottomLocation <- maybeToList mBottomLocation]
-        <> [PlacedLocationDirection lid LeftOf rightLocation | rightLocation <- maybeToList mRightLocation]
-        <> [PlacedLocationDirection lid RightOf leftLocation | leftLocation <- maybeToList mLeftLocation]
-
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case chaosTokenFace token of
@@ -275,6 +251,13 @@ instance RunMessage BeforeTheBlackThrone where
           record AzathothSlumbersForNow
           record TheInvestigatorsSignedTheBlackBookOfAzathoth
           eachInvestigator \iid -> sufferTrauma iid 2 2
+          endOfScenario
+        Resolution 6 -> do
+          readInvestigatorDefeat
+          resolutionWithXp "resolution6" $ allGainXpWithBonus' attrs $ toBonus "resolution6" 5
+          record AzathothSlumbersForNow
+          record TheInvestigatorsSignedTheBlackBookOfAzathoth
+          eachInvestigator \iid -> sufferTrauma iid 1 1
           endOfScenario
         _ -> error "unknown resolution"
       pure s

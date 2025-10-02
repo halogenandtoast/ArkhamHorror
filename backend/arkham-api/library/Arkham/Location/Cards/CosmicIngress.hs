@@ -47,4 +47,7 @@ instance RunMessage CosmicIngress where
       card <- field Field.LocationCard lid
       shuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) [card]
       pure l
+    Do (PlaceCosmos _ (is attrs -> True) cloc) -> do
+      handleCosmos attrs cloc
+      pure l
     _ -> CosmicIngress <$> liftRunMessage msg attrs

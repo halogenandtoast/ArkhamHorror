@@ -963,6 +963,7 @@ allEncounterAssetCards =
       , yhanthleiStatueDynamicRelic
       , dianneDevineHidingAnOathUnspoken
       , partyGuest
+      , nightgauntSteed
       , jewelOfSarnath
       , theCustodian
       , heliosTelescopeGateToTheCosmos

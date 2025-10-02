@@ -209,19 +209,27 @@ locationMatches investigatorId source window locationId matcher' = do
     _ -> locationId <=~> matcher
 
 getCanMoveTo :: (Sourceable source, HasGame m) => InvestigatorId -> source -> LocationId -> m Bool
-getCanMoveTo iid source lid = 
+getCanMoveTo iid source lid =
   cached (CanMoveToLocationKey iid (toSource source) lid) do
     elem lid <$> getCanMoveToLocations iid source
 
-getCanMoveToLocations :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
+getCanMoveToLocations
+  :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
 getCanMoveToLocations iid source = cached (CanMoveToLocationsKey iid (toSource source)) do
-  ls <- select $ Matcher.canEnterLocation iid <> Matcher.NotLocation (Matcher.LocationWithInvestigator $ InvestigatorWithId iid)
+  modifiers <- getModifiers iid
+  let includeEmpty = if CanEnterEmptySpace `elem` modifiers then IncludeEmptySpace else id
+  ls <-
+    select
+      $ includeEmpty
+      $ Matcher.canEnterLocation iid
+      <> Matcher.NotLocation (Matcher.LocationWithInvestigator $ InvestigatorWithId iid)
   getCanMoveToLocations_ iid source ls
 
 getCanMoveToLocations_
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> [LocationId] -> m [LocationId]
 getCanMoveToLocations_ iid source ls = cached (CanMoveToLocationsKey_ iid (toSource source) ls) do
-  canMove <- iid <=~> (Matcher.InvestigatorCanMove <> not_ (Matcher.InVehicleMatching Matcher.AnyAsset))
+  canMove <-
+    iid <=~> (Matcher.InvestigatorCanMove <> not_ (Matcher.InVehicleMatching Matcher.AnyAsset))
   onlyScenarioEffects <- hasModifier iid CannotMoveExceptByScenarioCardEffects
   isScenarioEffect <- sourceMatches (toSource source) SourceIsScenarioCardEffect
   if canMove && (not onlyScenarioEffects || isScenarioEffect)

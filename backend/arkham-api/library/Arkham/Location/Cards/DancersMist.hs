@@ -75,4 +75,7 @@ instance RunMessage DancersMist where
       accessibleLocationIds <- select $ accessibleFrom ForMovement startId
       chooseTargetM iid accessibleLocationIds $ moveTo attrs iid
       pure l
+    Do (PlaceCosmos _ lid cloc) | lid == attrs.id -> do
+      handleCosmos lid cloc
+      pure l
     _ -> DancersMist <$> liftRunMessage msg attrs

@@ -67,11 +67,11 @@ instance RunMessage InAzathothsDomain where
       let cosmos' = initCosmos @Card @LocationId
           cardsWithOwners = List.groupOnKey toCardOwner emptySpaceCards
 
+      for_ enemyCards obtainCard
+      shuffleCardsIntoTopOfDeck Deck.EncounterDeck 5 enemyCards
       removeLocation hideousPalace
       for_ (cosmosLocations <> emptySpace) removeLocation
       shuffleCardsIntoDeck CosmosDeck cosmosCards
-      for_ enemyCards obtainCard
-      shuffleCardsIntoTopOfDeck Deck.EncounterDeck 5 enemyCards
       for_ cardsWithOwners \(mOwner, cards) -> for_ mOwner \owner -> do
         shuffleCardsIntoDeck owner cards
       pushAll

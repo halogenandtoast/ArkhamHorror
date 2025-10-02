@@ -580,3 +580,11 @@ erynnMacAoidhDevotedEnchantress =
     , cdSlots = [#ally]
     , cdSkills = [#willpower, #willpower]
     }
+
+nightgauntSteed :: CardDef
+nightgauntSteed =
+  (storyAssetWithMany "54061" "Nightgaunt Steed" 0 ReturnToBeforeTheBlackThrone 4)
+    { cdCardTraits = setFromList [Monster, Nightgaunt]
+    , cdCost = Nothing
+    , cdCardType = EncounterAssetType
+    }

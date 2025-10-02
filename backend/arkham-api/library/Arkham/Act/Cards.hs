@@ -266,6 +266,7 @@ allActCards =
       , whatHappened
       , whatHaveYouDone
       , whatMustBeDone
+      , whatMustBeDoneV2
       , witchHauntings
       , worldsBeyond
       , worshippersOfTheDeep
@@ -981,6 +982,9 @@ inPursuitOfTheBeyond = act "54036" "In Pursuit of the Beyond" 2 ReturnToTheWages
 
 beyondTheMistV5 :: CardDef
 beyondTheMistV5 = act "54047" "Beyond the Mist (v. V)" 3 ReturnToUnionAndDisillusion
+
+whatMustBeDoneV2 :: CardDef
+whatMustBeDoneV2 = act "54057" "What Must Be Done (v. II)" 3 ReturnToBeforeTheBlackThrone
 
 findingLadyEsprit :: CardDef
 findingLadyEsprit = act "81005" "Finding Lady Esprit" 1 TheBayou

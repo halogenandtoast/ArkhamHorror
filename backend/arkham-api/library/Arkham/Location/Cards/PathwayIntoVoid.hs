@@ -49,14 +49,7 @@ instance RunMessage PathwayIntoVoid where
       mpos <- findCosmosPosition iid
       valids <-
         maybe (pure []) (`getEmptyPositionsInDirections` [GridUp, GridDown, GridLeft, GridRight]) mpos
-      if null valids
-        then cosmosFail attrs
-        else do
-          chooseOneM iid do
-            for_ valids \pos'@(Pos x y) ->
-              gridLabeled (cosmicLabel pos') do
-                push $ PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid)
-                pushAll msgs
+      chooseCosmos attrs iid valids msgs
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       canDiscard <- iid <=~> InvestigatorWithDiscardableCard
@@ -95,5 +88,8 @@ instance RunMessage PathwayIntoVoid where
                     push $ PlaceCosmos iid (toId attrs) (CosmosLocation (updatePosition pos dir) (toId attrs))
         [] -> error "empty deck, what should we do?, maybe don't let this be called?"
         _ -> error "too many cards, why did this happen?"
+      pure l
+    Do (PlaceCosmos _ lid cloc) | lid == attrs.id -> do
+      handleCosmos lid cloc
       pure l
     _ -> PathwayIntoVoid <$> liftRunMessage msg attrs

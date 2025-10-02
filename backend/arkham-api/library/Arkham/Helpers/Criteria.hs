@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Criteria where
 
 import Arkham.Ability.Type
@@ -231,7 +230,7 @@ passesCriteria iid mcard source' requestor windows' = \case
     (>)
       <$> selectCount (Matcher.ChaosTokenFaceIs #curse)
       <*> selectCount (Matcher.ChaosTokenFaceIs #bless)
-  Criteria.CanMoveTo matcher -> notNull . traceShowId <$> getCanMoveToMatchingLocations iid source (traceShowId matcher)
+  Criteria.CanMoveTo matcher -> notNull <$> getCanMoveToMatchingLocations iid source matcher
   Criteria.CanMoveThis dir -> do
     case source of
       LocationSource lid -> do

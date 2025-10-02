@@ -140,7 +140,7 @@ const backImage = computed(() => {
   width: 100%;
   backface-visibility: hidden;
   transition: transform 0.3s linear;
-  transform-style: preserve-3d;
+  perspective: 1000px;
   &.flipped {
     transform: rotateY(-180deg);
   }
@@ -151,7 +151,6 @@ const backImage = computed(() => {
   inset: 0;
   transform: rotateY(-180deg);
   transition: transform 0.3s linear;
-  transform-style: preserve-3d;
   backface-visibility: hidden;
 
   &.flipped {

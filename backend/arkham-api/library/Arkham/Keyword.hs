@@ -45,6 +45,7 @@ data Keyword
   | Advanced
   | Replacement
   | Partner
+  | Concealed GameValue
   deriving stock (Show, Eq, Ord, Data)
 
 class HasKeywords a where

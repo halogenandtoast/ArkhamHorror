@@ -147,6 +147,7 @@ data Trait
   | Leader
   | Leng
   | Lodge
+  | London
   | Lunatic
   | Madness
   | Mainland
@@ -233,6 +234,7 @@ data Trait
   | Spider
   | Spirit
   | StMarys
+  | Stable
   | Staff
   | Steps
   | Summon
@@ -259,6 +261,7 @@ data Trait
   | Unbroken
   | Uncharted
   | Unhallowed
+  | Unstable
   | Upgrade
   | Vale
   | Vehicle

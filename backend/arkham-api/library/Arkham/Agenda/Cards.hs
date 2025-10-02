@@ -69,6 +69,7 @@ allAgendaCards =
       , eyesInTheDark
       , fashionablyLate
       , feedTheBeast
+      , figuresInTheFog
       , floodedStreets
       , fogOnTheBay
       , forbiddenPeaks
@@ -108,6 +109,7 @@ allAgendaCards =
       , overTheThreshold
       , pastPresentAndFuture
       , pendulousThreads
+      , plotsAndPanic
       , predatorOrPrey
       , quietHalls
       , rageOfTheDeep
@@ -150,6 +152,7 @@ allAgendaCards =
       , theChillOfNight
       , theCityFloods
       , theCloverClub
+      , theConnection
       , theCurseSpreads
       , theDeadWithNoName
       , theDescentBegins
@@ -224,6 +227,7 @@ allAgendaCards =
       , whatLurksBelowV2
       , whatsGoingOn
       , wheelOfFortuneX
+      , whenItRains
       , whereTheresSmoke
       ]
 
@@ -755,6 +759,18 @@ theSealWeakens = agenda "08671" "The Seal Weakens" 4 StirringInTheDeep
 
 thatWhichHasNoName :: CardDef
 thatWhichHasNoName = agenda "08672" "That Which Has No Name" 5 StirringInTheDeep
+
+whenItRains :: CardDef
+whenItRains = agenda "09502" "When It Rains..." 1 RiddlesAndRain
+
+figuresInTheFog :: CardDef
+figuresInTheFog = agenda "09503" "Figures in the Fog" 2 RiddlesAndRain
+
+theConnection :: CardDef
+theConnection = agenda "09504" "The Connection" 3 RiddlesAndRain
+
+plotsAndPanic :: CardDef
+plotsAndPanic = agenda "09505" "Plots and Panic" 4 RiddlesAndRain
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

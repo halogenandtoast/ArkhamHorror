@@ -62,6 +62,7 @@ sourceTraits = \case
   ThisCard -> error "can not get traits"
   TreacherySource tid -> fromMaybe mempty <$> fieldMay TreacheryTraits tid
   YouSource -> selectJust Matcher.You >>= field InvestigatorTraits
+  ScarletKeySource _ -> pure mempty
 
 getSourceController :: HasGame m => Source -> m (Maybe InvestigatorId)
 getSourceController = \case
@@ -204,6 +205,7 @@ sourceMatches s = \case
         BothSource a b -> go a || go b
         TarotSource {} -> True
         BatchSource {} -> False
+        ScarletKeySource {} -> True
     pure $ go s
   Matcher.SourceIsType t -> case t of
     AssetType -> case s of
@@ -295,6 +297,12 @@ sourceMatches s = \case
       CardIdSource cid -> do
         c <- getCard cid
         pure $ c.kind == ScenarioType
+      _ -> pure False
+    KeyType -> case s of
+      ScarletKeySource _ -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == KeyType
       _ -> pure False
   Matcher.EncounterCardSource ->
     let

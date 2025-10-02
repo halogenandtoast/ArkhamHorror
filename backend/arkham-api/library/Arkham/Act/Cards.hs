@@ -54,11 +54,13 @@ allActCards =
       , bloodbath
       , breakingAndEntering
       , campusSafety
+      , caughtRedHanded
       , cavernOfTheForgottenAge
       , cityOfTheDeepV1
       , cityOfTheDeepV2
       , cityOfTheDeepV3
       , closeTheRift
+      , cluesAndCapers
       , collapseThePylons
       , containingTheOutbreak
       , crossingTheThreshold
@@ -79,6 +81,7 @@ allActCards =
       , exploringPnakotus
       , exploringTheMoon
       , exploringTheRainforest
+      , eyesInTheTower
       , fatedSouls
       , findTheRelic
       , findingANewWay
@@ -208,6 +211,7 @@ allActCards =
       , theFirstOath
       , theForgottenIsland
       , theFourKeys
+      , theGameIsAfoot
       , theGateOpens
       , theGreatSeal
       , theGuardedRuins
@@ -381,7 +385,7 @@ awakening :: CardDef
 awakening = act "03046" "Awakening" 1 CurtainCall
 
 theStrangerACityAflame :: CardDef
-theStrangerACityAflame = (act "03047a" "The Stranger" 2 CurtainCall) { cdOtherSide = Just "03047ab" }
+theStrangerACityAflame = (act "03047a" "The Stranger" 2 CurtainCall) {cdOtherSide = Just "03047ab"}
 
 theStrangerThePathIsMine :: CardDef
 theStrangerThePathIsMine = act "03047b" "The Stranger" 2 CurtainCall
@@ -459,17 +463,20 @@ inLostCarcosa = act "03320" "In Lost Carcosa" 1 DimCarcosa
 searchForTheStrangerV1 :: CardDef
 searchForTheStrangerV1 =
   (act "03321a" "Search For the Stranger (v.I)" 2 DimCarcosa)
-    { cdOtherSide = Just "03321b" }
+    { cdOtherSide = Just "03321b"
+    }
 
 searchForTheStrangerV2 :: CardDef
 searchForTheStrangerV2 =
   (act "03322a" "Search For the Stranger (v.II)" 2 DimCarcosa)
-    { cdOtherSide = Just "03322ab" }
+    { cdOtherSide = Just "03322ab"
+    }
 
 searchForTheStrangerV3 :: CardDef
 searchForTheStrangerV3 =
   (act "03323a" "Search For the Stranger (v.III)" 2 DimCarcosa)
-    { cdOtherSide = Just "03323ab" }
+    { cdOtherSide = Just "03323ab"
+    }
 
 theKingInTatters :: CardDef
 theKingInTatters = act "03324" "The King in Tatters" 3 DimCarcosa
@@ -706,7 +713,7 @@ theBrokenRite :: CardDef
 theBrokenRite = act "05248" "The Broken Rite" 4 UnionAndDisillusion
 
 darkKnowledgeV1 :: CardDef
-darkKnowledgeV1 = (act "05286a" "Dark Knowledge (v. I)" 1 MusicOfTheDamned) { cdOtherSide = Just "05286b" }
+darkKnowledgeV1 = (act "05286a" "Dark Knowledge (v. I)" 1 MusicOfTheDamned) {cdOtherSide = Just "05286b"}
 
 beyondTheGrave :: CardDef
 beyondTheGrave = act "05287" "Beyond the Grave" 2 MusicOfTheDamned
@@ -917,6 +924,18 @@ collapseThePylons = act "08673" "Collapse the Pylons" 3 StirringInTheDeep
 
 theFinalMirage :: CardDef
 theFinalMirage = act "08681" "The Final Mirage" 4 StirringInTheDeep
+
+cluesAndCapers :: CardDef
+cluesAndCapers = act "09506" "Clues and Capers" 1 RiddlesAndRain
+
+theGameIsAfoot :: CardDef
+theGameIsAfoot = act "09507" "The Game is Afoot!" 2 RiddlesAndRain
+
+eyesInTheTower :: CardDef
+eyesInTheTower = act "09508" "Eyes in the Tower" 3 RiddlesAndRain
+
+caughtRedHanded :: CardDef
+caughtRedHanded = act "09509" "Caught Red-Handed" 4 RiddlesAndRain
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

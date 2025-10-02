@@ -6,6 +6,7 @@ module Arkham.Source where
 
 import Arkham.Prelude
 
+import Arkham.Campaigns.TheScarletKeys.Key.Id (KeyId)
 import {-# SOURCE #-} Arkham.Card
 import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.ChaosToken.Types
@@ -70,6 +71,7 @@ data Source
   | BothSource Source Source
   | TarotSource TarotCard
   | BatchSource BatchId
+  | ScarletKeySource KeyId
   deriving stock (Show, Eq, Ord, Data, Generic)
 
 _AssetSource :: Prism' Source AssetId

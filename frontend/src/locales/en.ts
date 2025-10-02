@@ -10,6 +10,7 @@ import theCircleUndone from '@/locales/en/theCircleUndone'
 import theDreamEaters from '@/locales/en/theDreamEaters'
 import theInnsmouthConspiracy from '@/locales/en/theInnsmouthConspiracy'
 import edgeOfTheEarth from '@/locales/en/edgeOfTheEarth'
+import theScarletKeys from '@/locales/en/theScarletKeys'
 import standalone from '@/locales/en/standalone'
 import gameBoard from '@/locales/en/gameBoard/gameBoard'
 import xp from '@/locales/en/xp.json'
@@ -29,5 +30,6 @@ export default
   , theDreamEaters
   , theInnsmouthConspiracy
   , edgeOfTheEarth
+  , theScarletKeys
   , standalone
   }

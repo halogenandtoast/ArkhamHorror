@@ -473,11 +473,13 @@ allEnemies =
       SomeEnemyCard forgottenShoggoth
     , SomeEnemyCard rampagingShoggoth
     , -- The Scarlet Keys
-      -- signature
+      --- signature [tsk]
       SomeEnemyCard agentFletcher
-    , -- basic weakness
+    , --- basic weakness [tsk]
       SomeEnemyCard lurkerInTheDark
     , SomeEnemyCard ectoplasmicHorror
+    , --- Riddles and Rain [tsk]
+      SomeEnemyCard theRedGlovedManShroudedInMystery
     , -- The Feast of Hemloch Vale
       -- signature [fhv]
       SomeEnemyCard zamacona

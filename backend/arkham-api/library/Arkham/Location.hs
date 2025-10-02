@@ -790,6 +790,16 @@ allLocations =
     , SomeLocationCard titanicRamp_184
     , SomeLocationCard titanicRamp_185
     , SomeLocationCard hiddenTunnelAWayOut
+    , -- The Scarlet Keys
+      -- Riddle and Rain [tsk]
+      SomeLocationCard rainyLondonStreets
+    , SomeLocationCard bigBen
+    , SomeLocationCard westminsterAbbey
+    , SomeLocationCard kensingtonGardens
+    , SomeLocationCard theTowerBridge
+    , SomeLocationCard traitorsGate
+    , SomeLocationCard towerOfLondon
+    , SomeLocationCard towerPrison
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

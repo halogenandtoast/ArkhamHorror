@@ -751,7 +751,13 @@ instance RunMessage EnemyAttrs where
       mods <- getModifiers (EnemyTarget enemyId)
       unless (CannotAttack `elem` mods) do
         let mOverride = getFirst $ mconcat [First (Just override) | EnemyAttacksOverride override <- mods]
-        iids <- select $ fromMaybe enemyAttacks mOverride
+        iids <-
+          select (fromMaybe enemyAttacks mOverride) >>= filterM \iid' -> do
+            imods <- getModifiers iid'
+            flip allM imods \case
+              CannotBeAttackedBy matcher -> notElem enemyId <$> select matcher
+              CannotBeAttacked -> pure False
+              _ -> pure True
         case iids of
           [] -> pure ()
           [x] ->
@@ -795,25 +801,26 @@ instance RunMessage EnemyAttrs where
         , afterWindow
         ]
 
-      pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive eid
+      whenM (eid <=~> ReadyEnemy) do
+        pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive eid
       pure a
     HandleElusive eid | eid == enemyId -> do
       -- just a reminder that the messages are handled in reverse, so exhaust happens last
       when (isInPlayPlacement enemyPlacement) do
-        whenM (eid <=~> ReadyEnemy) do
-          push $ DisengageEnemyFromAll eid
-          emptyConnectedLocations <-
-            select $ connectedFrom (locationWithEnemy eid) <> not_ (LocationWithInvestigator Anyone)
-          lead <- getLeadPlayer
-          if notNull emptyConnectedLocations
-            then do
-              push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- emptyConnectedLocations]
-            else do
-              otherConnectedLocations <-
-                select $ connectedFrom (locationWithEnemy eid) <> LocationWithInvestigator Anyone
-              when (notNull otherConnectedLocations) do
-                push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- otherConnectedLocations]
+        push $ DisengageEnemyFromAll eid
+        emptyConnectedLocations <-
+          select $ connectedFrom (locationWithEnemy eid) <> not_ (LocationWithInvestigator Anyone)
+        lead <- getLeadPlayer
+        if notNull emptyConnectedLocations
+          then do
+            push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- emptyConnectedLocations]
+          else do
+            otherConnectedLocations <-
+              select $ connectedFrom (locationWithEnemy eid) <> LocationWithInvestigator Anyone
+            when (notNull otherConnectedLocations) do
+              push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- otherConnectedLocations]
 
+        whenM (eid <=~> ReadyEnemy) do
           push $ Exhaust (toTarget a)
       pure a
     PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isActionTarget a target -> do
@@ -1012,6 +1019,7 @@ instance RunMessage EnemyAttrs where
         , After (PerformEnemyAttack enemyId)
         , afterAttacksEventIfCancelledWindow
         ]
+
       pure
         $ a
         & attackingL
@@ -1021,6 +1029,7 @@ instance RunMessage EnemyAttrs where
       modifiers <- maybe (pure []) getModifiers details.singleTarget
       mods <- getModifiers a
       sourceModifiers <- maybe (pure []) getModifiers (sourceToMaybeTarget details.source)
+      keywords <- getModifiedKeywords a
 
       let
         applyModifiers cards (CancelAttacksByEnemies c n) = do
@@ -1117,15 +1126,17 @@ instance RunMessage EnemyAttrs where
                , DoNotExhaust `notElem` mods
                ]
         _ -> error "Unhandled"
+
+      whenM (eid <=~> ReadyEnemy) do
+        pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive a.id
+
       pure a
     After (EnemyAttack details) | details.enemy == a.id -> do
       for_ enemyAttacking \updatedDetails -> do
-        keywords <- getModifiedKeywords a
         afterAttacksWindow <- checkAfter $ Window.EnemyAttacks updatedDetails
         when (attackType details == AttackOfOpportunity) do
           for_ details.investigator \iid -> push $ UpdateHistory iid (HistoryItem HistoryAttacksOfOpportunity 1)
         pushAll $ afterAttacksWindow : attackAfter updatedDetails
-        pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive a.id
       pure a
     HealDamage (EnemyTarget eid) source n | eid == enemyId -> do
       afterWindow <- checkAfter $ Window.Healed DamageType (toTarget a) source n

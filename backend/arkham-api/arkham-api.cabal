@@ -1566,6 +1566,7 @@ library
       Arkham.Campaigns.ThePathToCarcosa.Key
       Arkham.Campaigns.TheScarletKeys.CampaignSteps
       Arkham.Campaigns.TheScarletKeys.Helpers
+      Arkham.Campaigns.TheScarletKeys.Key
       Arkham.Campaigns.TheScarletKeys.Key.Cards
       Arkham.Campaigns.TheScarletKeys.Key.Cards.TheEyeOfRavens
       Arkham.Campaigns.TheScarletKeys.Key.Id

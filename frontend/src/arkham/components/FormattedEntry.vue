@@ -259,6 +259,21 @@ p.anke, :deep(p.anke) {
   margin: 10px;
 }
 
+p.typewriter, :deep(p.typewriter) {
+  font-family: "Typewriter";
+  font-weight: 600;
+  margin: 10px;
+  text-indent: 50px;
+}
+
+p.accountant, :deep(p.accountant) {
+  font-family: "Accountant";
+  font-weight: 800;
+  margin: 10px;
+  font-size: 1.2em;
+  text-indent: 50px;
+}
+
 p.billenia, :deep(p.billenia) {
   font-family: "Billenia";
   font-weight: 500;

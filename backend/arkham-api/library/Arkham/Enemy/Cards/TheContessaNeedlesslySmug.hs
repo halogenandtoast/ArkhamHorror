@@ -36,8 +36,8 @@ instance HasAbilities TheContessaNeedlesslySmug where
 instance RunMessage TheContessaNeedlesslySmug where
   runMessage msg e@(TheContessaNeedlesslySmug attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      readyThis attrs
       roundModifier (attrs.ability 1) iid (CannotBeAttackedBy (be attrs))
+      readyThis attrs
       pure e
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       throne <- selectJust $ locationIs Locations.throneOfBloodRedAsBloodBlackAsNight

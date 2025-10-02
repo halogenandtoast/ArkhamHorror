@@ -87,8 +87,23 @@ button {
 }
 
 @font-face {
+  font-family: "Typewriter";
+  src: url("/fonts/typewriter.ttf");
+}
+
+@font-face {
+  font-family: "Accountant";
+  src: url("/fonts/accountant.ttf");
+}
+
+@font-face {
   font-family: "AboutDead";
   src: url("/fonts/AboutDead.ttf");
+}
+
+@font-face {
+  font-family: "Arno";
+  src: url("/fonts/ArnoPro-Regular.otf");
 }
 
 .about-dead {

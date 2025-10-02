@@ -415,7 +415,19 @@ const handleKeyPress = (event: KeyboardEvent) => {
   if (event.key === ' ') {
     const skipTriggers = choices.value.findIndex((c) => c.tag === Message.MessageType.SKIP_TRIGGERS_BUTTON)
     if (skipTriggers !== -1) choose(skipTriggers)
-    if (choices.value.length == 1) choose(0)
+    const validIndices = choices.value
+      .map((c, i) => (c.tag !== Message.MessageType.INVALID_LABEL ? i : -1))
+      .filter((i) => i !== -1)
+
+    if (validIndices.length === 1) {
+      choose(validIndices[0])
+      return
+    }
+
+    if (choices.value.length === 1) {
+      choose(0)
+      return
+    }
     return
   }
 

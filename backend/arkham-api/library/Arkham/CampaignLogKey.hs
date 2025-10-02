@@ -12,6 +12,7 @@ import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Campaigns.ThePathToCarcosa.Key
+import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Prelude hiding (toLower)
@@ -34,6 +35,7 @@ data CampaignLogKey
   | TheDreamEatersKey TheDreamEatersKey
   | TheInnsmouthConspiracyKey TheInnsmouthConspiracyKey
   | EdgeOfTheEarthKey EdgeOfTheEarthKey
+  | TheScarletKeysKey TheScarletKeysKey
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
@@ -79,6 +81,7 @@ instance FromJSON CampaignLogKey where
       <|> (TheDreamEatersKey <$> parseJSON o)
       <|> (TheInnsmouthConspiracyKey <$> parseJSON o)
       <|> (EdgeOfTheEarthKey <$> parseJSON o)
+      <|> (TheScarletKeysKey <$> parseJSON o)
       <|> $(mkParseJSON defaultOptions ''CampaignLogKey) o
       <|> parseStringKey o
       <|> fail ("Could not parse CampaignLogKey" <> show o)
@@ -169,6 +172,12 @@ instance IsCampaignLogKey EdgeOfTheEarthKey where
   toCampaignLogKey = EdgeOfTheEarthKey
   fromCampaignLogKey = \case
     EdgeOfTheEarthKey k -> Just k
+    _ -> Nothing
+
+instance IsCampaignLogKey TheScarletKeysKey where
+  toCampaignLogKey = TheScarletKeysKey
+  fromCampaignLogKey = \case
+    TheScarletKeysKey k -> Just k
     _ -> Nothing
 
 instance ToJSONKey CampaignLogKey

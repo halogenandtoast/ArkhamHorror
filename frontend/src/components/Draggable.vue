@@ -244,6 +244,83 @@ function moveUp() {
     max-width: 100%;
   }
 
+  &:not(.minimized) {
+    &:has(p.file) {
+      box-shadow: none;
+      filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3));
+      overflow: visible;
+      background: transparent;
+      border: none;
+      position: relative;
+      :deep(.intro-text) {
+        box-shadow: 1px 2px 4px rgba(0,0,0,0.7);
+      }
+      .content {
+        background: none;
+        position: relative;
+        isolation: isolate;
+        &::before {
+          mix-blend-mode: darken;
+          /* a linear gradiant from transparent to black */
+          background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.1) 100%);
+
+          content: '';
+          inset: 0;
+          position: absolute;
+          z-index: -1;
+        }
+        &::after {
+          background-color: #89745D;
+          content: '';
+          inset: 0;
+          position: absolute;
+          z-index: -2;
+          clip-path: polygon(
+            0 0,
+            calc(100% - 30px) 0,
+            calc(100% - 15px) 20px,
+            100% 20px,
+            100% 100%,
+            0 100%
+          );
+        }
+        margin: 0;
+        padding: 10px;
+        border-top-right-radius: 16px;
+      }
+      header {
+        position: absolute;
+        bottom: calc(100% - 1px);
+        background-color: #89745D;
+        align-items: flex-start;
+        width: fit-content;
+
+        .header-title {
+          &::before {
+            background: linear-gradient(180deg, #DFD2AF, #C4B59C);
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+          }
+          isolation: isolate;
+          position: relative;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+          padding: 5px 10px;
+          color: black;
+          text-transform: none;
+          font-family: Arno, serif;
+          width: fit-content;
+          text-align: left;
+          background: #DFD2AF;
+          display: block;
+          max-width: fit-content;
+          transform: rotate(-1deg)
+        }
+      }
+    }
+  }
+
   &.minimized {
     header .header-title {
       transform: translateX(0);
@@ -284,6 +361,9 @@ function moveUp() {
       display: flex;
       align-items: center;
       justify-content: center;
+      align-content: flex-end;
+      align-self: flex-end;
+      justify-self: flex-end;
       cursor: pointer;
       pointer-events: auto;
       background: #3C4F5A;

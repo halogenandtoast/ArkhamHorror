@@ -468,6 +468,12 @@ instance HasField "sanityDamage" InvestigatorAttrs Int where
 instance HasField "healthDamage" InvestigatorAttrs Int where
   getField = investigatorHealthDamage
 
+instance HasField "assignedSanityDamage" InvestigatorAttrs Int where
+  getField = investigatorAssignedSanityDamage
+
+instance HasField "assignedHealthDamage" InvestigatorAttrs Int where
+  getField = investigatorAssignedHealthDamage
+
 instance HasField "cardsUnderneath" InvestigatorAttrs [Card] where
   getField = investigatorCardsUnderneath
 

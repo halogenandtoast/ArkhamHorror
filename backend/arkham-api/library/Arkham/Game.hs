@@ -1031,9 +1031,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorWithDoom gameValueMatcher ->
       flip runMatchesM as $ (`gameValueMatches` gameValueMatcher) . attr investigatorDoom
-    InvestigatorWithDamage gameValueMatcher -> flip runMatchesM as $ \i -> do
+    InvestigatorWithDamage gameValueMatcher -> flip runMatchesM as \i -> do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfDamage
-      gameValueMatches (attr investigatorHealthDamage i + t) gameValueMatcher
+      gameValueMatches (attr investigatorHealthDamage i + attr investigatorAssignedHealthDamage i + t) gameValueMatcher
     InvestigatorWithHealableHorror source -> flip runMatchesM as $ \i -> do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfHorror
       mods <- getModifiers i.id
@@ -1044,7 +1044,7 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
           then pure False
           else sourceMatches source (mconcat canHealAtFullSources)
 
-      let onSelf = (attr investigatorSanityDamage i + t) > 0 || canHealAtFull
+      let onSelf = (attr investigatorSanityDamage i + attr investigatorAssignedSanityDamage i + t) > 0 || canHealAtFull
       mFoolishness <-
         selectOne
           $ assetIs Assets.foolishnessFoolishCatOfUlthar
@@ -1202,7 +1202,7 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
           let cards = findWithDefault [] (toId i) $ skillTestCommittedCards st
           skillTestCount <- count (`elem` skillIcons) <$> concatMapM iconsForCard cards
           gameValueMatches skillTestCount valueMatcher
-    HealableInvestigator source damageType matcher' -> flip runMatchesM as $ \i -> do
+    HealableInvestigator source damageType matcher' -> flip runMatchesM as \i -> do
       mods <- getActiveInvestigatorModifiers
       let canHealAtFullSources = [sourceMatcher | CanHealAtFull sourceMatcher dType <- mods, dType == damageType]
       canHealAtFull <-

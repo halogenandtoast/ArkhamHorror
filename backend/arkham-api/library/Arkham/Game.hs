@@ -1770,7 +1770,7 @@ getLocationsMatching lmatcher = do
   go [] = const (pure [])
   go ls = \case
     ThatLocation -> error "ThatLocation must be resolved in criteria"
-    IncludeEmptySpace _ -> error "should be unwrapped above"
+    IncludeEmptySpace inner -> go ls inner
     LocationWithCardId cardId -> pure $ filter ((== cardId) . toCardId) ls
     LocationIsInFrontOf investigatorMatcher -> do
       investigators <- select investigatorMatcher

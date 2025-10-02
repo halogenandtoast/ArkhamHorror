@@ -45,7 +45,7 @@ instance IsCampaign TheCircleUndone where
     UnionAndDisillusion -> Just (UpgradeDeckStep InTheClutchesOfChaos)
     InTheClutchesOfChaos -> Just (UpgradeDeckStep $ InterludeStep 4 Nothing)
     InterludeStep 4 _ -> Just (UpgradeDeckStep BeforeTheBlackThrone)
-    BeforeTheBlackThrone -> Nothing
+    BeforeTheBlackThrone -> Just EpilogueStep
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
@@ -303,12 +303,18 @@ instance RunMessage TheCircleUndone where
       flavor $ setTitle "title" >> p "twistOfFate2"
       nextCampaignStep
       pure c
-    CampaignStep EpilogueStep -> do
-      whenHasRecord TheInvestigatorsArrestedAnette $ story epilogueArrestedAnette
-      whenHasRecord TheInvestigatorsAssumedControlOfTheSilverTwilightLodge
-        $ story epilogueAssumedControlOfTheLodge
-      whenHasRecord TheInvestigatorsSurvivedTheWatchersEmbrace $ story epilogueSurvivedTheWatchersEmbrace
-      whenHasRecord TheInvestigatorsSignedTheBlackBookOfAzathoth $ story epilogueSignedTheBlackBook
+    CampaignStep EpilogueStep -> scope "epilogue" do
+      whenHasRecord TheInvestigatorsArrestedAnette do
+        flavor $ setTitle "title" >> p.green "arrestedAnette"
+      whenHasRecord TheInvestigatorsAssumedControlOfTheSilverTwilightLodge do
+        flavor $ setTitle "title" >> p.green "assumedControlOfTheLodge"
+      whenHasRecord TheInvestigatorsSurvivedTheWatchersEmbrace do
+        flavor $ setTitle "title" >> p.green "survivedTheWatchersEmbrace"
+        crossOut TheInvestigatorsSurvivedTheWatchersEmbrace
+      whenHasRecord TheInvestigatorsSignedTheBlackBookOfAzathoth do
+        flavor $ setTitle "title" >> p.green "signedTheBlackBook"
+      whenHasRecord YouAreBeingHunted do
+        flavor $ setTitle "title" >> p "youAreBeingHunted"
       gameOver
 
       pure c

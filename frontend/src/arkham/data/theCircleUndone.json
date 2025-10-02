@@ -132,6 +132,8 @@
     "id": "05325",
     "name": "Before the Black Throne",
     "campaign": "05",
+    "returnTo": "54056",
+    "returnToName": "Return to Before the Black Throne",
     "settings": [
         {
           "key": "ThePathWindsBeforeYou",

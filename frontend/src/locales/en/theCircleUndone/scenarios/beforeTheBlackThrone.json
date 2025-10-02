@@ -30,6 +30,9 @@
     },
     "theBlackThrone": {
       "haunted": "You must either place 1 doom on Azathoth, or Azathoth attacks you"
+    },
+    "windingGulf": {
+      "haunted": "Take 1 damage and 1 horror"
     }
   },
   "label": {
@@ -65,6 +68,16 @@
     "whisperedBargain": {
       "doom": "Place 1 Doom on Azathoth",
       "attack": "Azathoth attacks you"
+    },
+    "windingGulf": {
+      "move": "Move to Winding Gulf",
+      "doNotMove": "Place 1 Doom on Azathoth"
+    },
+    "whatMustBeDone": {
+      "R2": "R2",
+      "R3": "R3",
+      "R4": "R4",
+      "R6": "R6"
     }
   },
   "intro": {

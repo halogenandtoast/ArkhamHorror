@@ -40,7 +40,7 @@ instance IsCampaign ReturnToTheCircleUndone where
     ReturnToUnionAndDisillusion -> Just (UpgradeDeckStep ReturnToInTheClutchesOfChaos)
     ReturnToInTheClutchesOfChaos -> Just (UpgradeDeckStep $ InterludeStep 4 Nothing)
     InterludeStep 4 _ -> Just (UpgradeDeckStep ReturnToBeforeTheBlackThrone)
-    ReturnToBeforeTheBlackThrone -> Nothing
+    ReturnToBeforeTheBlackThrone -> Just EpilogueStep
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing

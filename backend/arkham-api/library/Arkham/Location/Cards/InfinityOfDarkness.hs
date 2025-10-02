@@ -89,4 +89,7 @@ instance RunMessage InfinityOfDarkness where
         [] -> error "empty deck, what should we do?, maybe don't let this be called?"
         _ -> error "too many cards, why did this happen?"
       pure l
+    Do (PlaceCosmos _ lid cloc) | lid == attrs.id -> do
+      handleCosmos lid cloc
+      pure l
     _ -> InfinityOfDarkness <$> liftRunMessage msg attrs

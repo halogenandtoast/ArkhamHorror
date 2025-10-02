@@ -12,6 +12,7 @@ import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Choose
 import Arkham.Movement
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Data.List qualified as List
 
 newtype WhatMustBeDone = WhatMustBeDone ActAttrs
@@ -65,16 +66,15 @@ instance RunMessage WhatMustBeDone where
       haveMesmerizingFlute <- MesmerizingFlute `inRecordSet` MementosDiscovered
       haveRitualComponents <- RitualComponents `inRecordSet` MementosDiscovered
 
-      if count id [youAcceptedYourFate, haveMesmerizingFlute, haveRitualComponents] >= 2
-        then push R2
-        else do
-          youRejectedYourFate <- getHasRecord YouHaveRejectedYourFate
-          haveScrapOfTornShadow <- ScrapOfTornShadow `inRecordSet` MementosDiscovered
-          haveWispOfSpectralMist <- WispOfSpectralMist `inRecordSet` MementosDiscovered
-          push
-            $ if count id [youRejectedYourFate, haveScrapOfTornShadow, haveWispOfSpectralMist] >= 2
-              then R3
-              else R4
+      youRejectedYourFate <- getHasRecord YouHaveRejectedYourFate
+      haveScrapOfTornShadow <- ScrapOfTornShadow `inRecordSet` MementosDiscovered
+      haveWispOfSpectralMist <- WispOfSpectralMist `inRecordSet` MementosDiscovered
 
+      leadChooseOrRunOneM $ scenarioI18n do
+        when (count id [youAcceptedYourFate, haveMesmerizingFlute, haveRitualComponents] >= 2) do
+          labeled' "whatMustBeDone.R2" $ push R2
+        when (count id [youRejectedYourFate, haveScrapOfTornShadow, haveWispOfSpectralMist] >= 2) do
+          labeled' "whatMustBeDone.R3" $ push R3
+        labeled' "whatMustBeDone.R4" $ push R4
       pure a
     _ -> WhatMustBeDone <$> liftRunMessage msg attrs

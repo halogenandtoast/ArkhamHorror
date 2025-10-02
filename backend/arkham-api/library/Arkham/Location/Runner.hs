@@ -627,7 +627,7 @@ instance HasAbilities LocationAttrs where
           l
           102
           ( CanMoveTo (LocationWithId l.id)
-              <> OnLocation (accessibleTo ForMovement l)
+              <> OnLocation (IncludeEmptySpace $ accessibleTo ForMovement l)
               <> exists (You <> can.move <> noModifier (CannotEnter l.id))
           )
         $ ActionAbility [#move] moveCost

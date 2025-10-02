@@ -380,7 +380,7 @@ withLocationConnectionData
 withLocationConnectionData inner@(With target _) = do
   matcher <- getConnectedMatcher NotForMovement target
   lmConnectedLocations <- select matcher
-  lmInvestigators <- select $ investigatorAt $ toId target
+  lmInvestigators <- select $ InvestigatorAt $ IncludeEmptySpace $ LocationWithId $ toId target
   lmEnemies <-
     select
       $ IncludeOmnipotent
@@ -1480,6 +1480,7 @@ getTreacheriesMatching matcher = do
       let treacheryTarget = treacheryAttachedTarget (toAttrs treachery)
       pure $ treacheryTarget == Just target
     SignatureTreachery -> pure . isSignature . toCardDef
+    DiscardableTreachery -> pure . not . cdPermanent . toCardDef
     TreacheryInHandOf investigatorMatcher -> \treachery -> do
       iids <- select investigatorMatcher
       pure $ case treachery.placement of

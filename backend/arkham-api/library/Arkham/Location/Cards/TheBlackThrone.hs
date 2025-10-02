@@ -42,4 +42,7 @@ instance RunMessage TheBlackThrone where
         labeled' "theBlackThrone.doom" $ placeDoom (attrs.ability 1) azathoth 1
         labeled' "theBlackThrone.attack" $ initiateEnemyAttack azathoth (attrs.ability 1) iid
       pure l
+    Do (PlaceCosmos _ (is attrs -> True) cloc) -> do
+      handleCosmos attrs cloc
+      pure l
     _ -> TheBlackThrone <$> liftRunMessage msg attrs

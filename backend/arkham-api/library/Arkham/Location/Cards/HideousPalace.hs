@@ -42,4 +42,7 @@ instance RunMessage HideousPalace where
       push $ RemovedLocation lid
       shuffleCardsIntoDeck CosmosDeck (only card)
       pure l
+    Do (PlaceCosmos _ (is attrs -> True) cloc) -> do
+      handleCosmos attrs cloc
+      pure l
     _ -> HideousPalace <$> liftRunMessage msg attrs

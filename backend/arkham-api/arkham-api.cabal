@@ -292,6 +292,7 @@ library
       Arkham.Act.Cards.WhatHappened
       Arkham.Act.Cards.WhatHaveYouDone
       Arkham.Act.Cards.WhatMustBeDone
+      Arkham.Act.Cards.WhatMustBeDoneV2
       Arkham.Act.Cards.WitchHauntings
       Arkham.Act.Cards.WorldsBeyond
       Arkham.Act.Cards.WorshippersOfTheDeep
@@ -1100,6 +1101,7 @@ library
       Arkham.Asset.Assets.NephthysHuntressOfBast4
       Arkham.Asset.Assets.Newspaper
       Arkham.Asset.Assets.Newspaper2
+      Arkham.Asset.Assets.NightgauntSteed
       Arkham.Asset.Assets.NightmareBauble3
       Arkham.Asset.Assets.NineOfRods3
       Arkham.Asset.Assets.NkosiMabatiEnigmaticWarlock3
@@ -1516,7 +1518,6 @@ library
       Arkham.Campaigns.NightOfTheZealot.Key
       Arkham.Campaigns.TheCircleUndone.CampaignSteps
       Arkham.Campaigns.TheCircleUndone.ChaosBag
-      Arkham.Campaigns.TheCircleUndone.FlavorText
       Arkham.Campaigns.TheCircleUndone.Helpers
       Arkham.Campaigns.TheCircleUndone.I18n
       Arkham.Campaigns.TheCircleUndone.Import
@@ -1532,7 +1533,6 @@ library
       Arkham.Campaigns.TheDreamEaters.Meta
       Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
       Arkham.Campaigns.TheDunwichLegacy.ChaosBag
-      Arkham.Campaigns.TheDunwichLegacy.FlavorText
       Arkham.Campaigns.TheDunwichLegacy.Helpers
       Arkham.Campaigns.TheDunwichLegacy.Import
       Arkham.Campaigns.TheDunwichLegacy.Key
@@ -3099,6 +3099,7 @@ library
       Arkham.Location.Cards.InnsmouthSquareInTooDeep
       Arkham.Location.Cards.Intersection_a
       Arkham.Location.Cards.Intersection_b
+      Arkham.Location.Cards.InterstellarAbyss
       Arkham.Location.Cards.InterviewRoomArrivalChamber
       Arkham.Location.Cards.InterviewRoomIchorFilledChamber
       Arkham.Location.Cards.InterviewRoomRestrainingChamber
@@ -3198,6 +3199,7 @@ library
       Arkham.Location.Cards.NewChurchGreen
       Arkham.Location.Cards.NewChurchGreenInTooDeep
       Arkham.Location.Cards.NexusOfNKai
+      Arkham.Location.Cards.NightmareBreach
       Arkham.Location.Cards.Northside
       Arkham.Location.Cards.NorthsideTrainStation
       Arkham.Location.Cards.NorthTower_287
@@ -3535,6 +3537,7 @@ library
       Arkham.Location.Cards.WhateleyRuins_250
       Arkham.Location.Cards.WhateleyRuins_251
       Arkham.Location.Cards.WhiteBluff
+      Arkham.Location.Cards.WindingGulf
       Arkham.Location.Cards.WindsweptPath
       Arkham.Location.Cards.WineCellar
       Arkham.Location.Cards.WineCellarSpectral
@@ -3747,6 +3750,7 @@ library
       Arkham.Scenarios.APhantomOfTruth.Helpers
       Arkham.Scenarios.AtDeathsDoorstep.Helpers
       Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
+      Arkham.Scenarios.BeforeTheBlackThrone.Cosmos.Types
       Arkham.Scenarios.BeforeTheBlackThrone.Helpers
       Arkham.Scenarios.BeyondTheGatesOfSleep.FlavorText
       Arkham.Scenarios.BlackStarsRise.Helpers

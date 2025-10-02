@@ -184,7 +184,7 @@ investigatorEngagedWith :: (AsId enemy, IdOf enemy ~ EnemyId) => enemy -> Invest
 investigatorEngagedWith = InvestigatorEngagedWith . EnemyWithId . asId
 
 investigatorAt :: IsLocationMatcher a => a -> InvestigatorMatcher
-investigatorAt = InvestigatorAt . toLocationMatcher
+investigatorAt = InvestigatorAt . IncludeEmptySpace . toLocationMatcher
 
 replaceYouMatcher :: Data a => InvestigatorId -> a -> a
 replaceYouMatcher iid = replaceInvestigatorMatcher (transform replace)
@@ -309,7 +309,7 @@ rightOf = LocationInDirection RightOf . LocationWithId . asId
 {-# INLINE rightOf #-}
 
 locationWithInvestigator :: InvestigatorId -> LocationMatcher
-locationWithInvestigator = LocationWithInvestigator . InvestigatorWithId
+locationWithInvestigator = IncludeEmptySpace . LocationWithInvestigator . InvestigatorWithId
 {-# INLINE locationWithInvestigator #-}
 
 instance HasField "location" InvestigatorId LocationMatcher where

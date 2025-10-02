@@ -984,6 +984,15 @@ forInvestigator' iid = capture >=> traverse_ (forInvestigator iid)
 selectEach :: (Query a, HasGame m) => a -> (QueryElement a -> m ()) -> m ()
 selectEach matcher f = select matcher >>= traverse_ f
 
+selectEachDiscardable
+  :: (HasCardCode a, HasGame m) => a -> (forall target. Targetable target => target -> m ()) -> m ()
+selectEachDiscardable (toCardCode -> cardCode) f = do
+  selectEach (AssetIs cardCode <> DiscardableAsset) f
+  selectEach (EventIs cardCode) f
+  selectEach (SkillIs cardCode) f
+  selectEach (TreacheryIs cardCode <> DiscardableTreachery) f
+  selectEach (EnemyIs cardCode) f
+
 selectForEach :: (Query a, ReverseQueue m) => a -> (QueryElement a -> m b) -> m [b]
 selectForEach matcher f = select matcher >>= traverse f
 

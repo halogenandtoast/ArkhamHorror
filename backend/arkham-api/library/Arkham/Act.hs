@@ -351,6 +351,8 @@ allActs =
     , SomeActCard inPursuitOfTheBeyond
     , --- Return to Union and Disillusion
       SomeActCard beyondTheMistV5
+    , --- Return to Before the Black Throne
+      SomeActCard whatMustBeDoneV2
     , -- Curse of the Rougarou
       SomeActCard findingLadyEsprit
     , SomeActCard huntingTheRougarou

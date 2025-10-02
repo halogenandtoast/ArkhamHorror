@@ -290,6 +290,7 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c54042": return "theCircleUndone.forTheGreaterGood"
     case "c54046": return "theCircleUndone.unionAndDisillusion"
     case "c54049": return "theCircleUndone.inTheClutchesOfChaos"
+    case "c54056": return "theCircleUndone.beforeTheBlackThrone"
     case "c71001": return "standalone.theMidwinterGala"
     case "c72001": return "standalone.filmFatale"
     case "c81001": return "standalone.curseOfTheRougarou"

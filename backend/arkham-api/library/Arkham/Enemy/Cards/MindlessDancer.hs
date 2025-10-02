@@ -40,9 +40,9 @@ instance RunMessage MindlessDancer where
       push $ HunterMove (toId attrs)
       pure e
     After (PlaceCosmos _ lid (CosmosLocation pos _)) -> do
-      emptySpace <- selectJust $ IncludeEmptySpace $ LocationWithLabel (mkLabel $ cosmicLabel pos)
+      mEmptySpace <- selectOne $ IncludeEmptySpace $ LocationWithLabel (mkLabel $ cosmicLabel pos)
       case attrs.placement of
-        AtLocation lid' | lid' == emptySpace -> do
+        AtLocation lid' | Just lid' == mEmptySpace -> do
           pure $ MindlessDancer $ attrs & placementL .~ AtLocation lid
         _ -> pure e
     _ -> MindlessDancer <$> liftRunMessage msg attrs

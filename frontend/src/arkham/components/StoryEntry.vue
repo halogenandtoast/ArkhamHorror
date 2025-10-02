@@ -154,17 +154,41 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
 
 .hunted, :deep(.hunted) {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  &:has(> div:first-child > img) {
+    grid-template-columns: 1fr 2fr;
+  }
+  &:has(> div:last-child > img) {
+    grid-template-columns: 2fr 1fr;
+  }
   max-height: min-content;
-  div:first-child {
+  --image-top: 60px;
+
+  div:first-child:has(img) {
     width: 100%;
-    margin-top: 60px;
+    margin-top: var(--image-top);
     max-height: min-content;
     display: flex;
     flex-direction: column;
     img {
       object-fit: cover;
-      height: 80vh;
+      height: calc(80vh - var(--image-top));
+      align-self: flex-end;
+    }
+  }
+
+  div:has(~ div:last-child > img) {
+    margin-left: 20px;
+  }
+
+  div:last-child:has(img) {
+    width: 100%;
+    margin-top: var(--image-top);
+    max-height: min-content;
+    display: flex;
+    flex-direction: column;
+    img {
+      object-fit: cover;
+      height: calc(80vh - var(--image-top));
       align-self: flex-end;
     }
   }

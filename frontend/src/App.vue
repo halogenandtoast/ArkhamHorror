@@ -106,6 +106,11 @@ button {
   src: url("/fonts/ArnoPro-Regular.otf");
 }
 
+@font-face {
+  font-family: "Albertus";
+  src: url("/fonts/albertus.ttf");
+}
+
 .about-dead {
   font-family: "AboutDead";
   text-align: center;

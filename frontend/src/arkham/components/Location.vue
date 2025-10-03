@@ -481,7 +481,7 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .location--can-interact {
   border: 2px solid var(--select);
   cursor: pointer;
@@ -534,7 +534,7 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
   flex-direction: column;
   position: relative;
   grid-area: location;
-  width: min(calc(10vw + 20px), 60px);//var(--card-width);
+  width: min(calc(10vw + 20px), 60px);
 }
 
 .location-pool {

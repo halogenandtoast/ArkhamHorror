@@ -186,7 +186,7 @@ async function createDeck() {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .new-deck {
   :deep(input) {
     outline: 0;

@@ -75,7 +75,7 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1)
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 #pick-supplies {
   width: 100%;
   display: flex;

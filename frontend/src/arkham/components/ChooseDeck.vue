@@ -225,7 +225,7 @@ const chosenDeckTabooList = computed(() => {
 </template>
 
 
-<style lang="scss" scoped>
+<style scoped>
 .investigators {
   width: 100%;
   color: #FFF;

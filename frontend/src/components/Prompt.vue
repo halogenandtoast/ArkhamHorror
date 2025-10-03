@@ -28,7 +28,7 @@ const cancelFun = computed(() => typeof props.cancel === 'function' ? props.canc
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .cd-popup {
   position: fixed;
   left: 0;

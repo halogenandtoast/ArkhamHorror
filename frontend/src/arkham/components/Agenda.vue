@@ -179,7 +179,7 @@ const isVertical = computed(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .card {
   width: var(--card-width);
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);

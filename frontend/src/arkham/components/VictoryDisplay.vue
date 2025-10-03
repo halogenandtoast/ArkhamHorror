@@ -51,7 +51,7 @@ i
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .card {
   width: 100px;
   border-radius: 6px;

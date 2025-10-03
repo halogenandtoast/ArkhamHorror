@@ -325,7 +325,7 @@ const bonusXp = computed(() => props.game.campaign?.meta?.bonusXp ?? null)
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 h1 {
   font-family: teutonic, sans-serif;
   margin: 0;

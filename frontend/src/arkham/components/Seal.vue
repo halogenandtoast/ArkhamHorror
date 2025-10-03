@@ -26,7 +26,7 @@ const sealImage = computed<string>(() => sealToImage(props.seal))
   <img :src="sealImage" class="seal" />
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .seal {
   width: 25px;
   -webkit-filter: drop-shadow(2px 2px 2px #111);

@@ -121,7 +121,7 @@ const choose = (idx: number) => emit('choose', idx)
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .token--can-draw {
   border: min(5px, 1vw) solid #ff00ff;
   border-radius: 500px;

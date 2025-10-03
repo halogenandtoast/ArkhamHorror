@@ -345,7 +345,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .small-treachery :deep(.card) {
   height: calc(var(--card-width) * 0.35);
 }

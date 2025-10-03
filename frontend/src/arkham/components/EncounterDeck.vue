@@ -137,7 +137,7 @@ const debug = useDebug()
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .revealed {
   filter: brightness(50%);
 }

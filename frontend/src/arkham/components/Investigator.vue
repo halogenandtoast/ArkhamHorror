@@ -436,7 +436,7 @@ function onDrop(event: DragEvent) {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 i.action {
   font-family: 'Arkham';
   font-style: normal;

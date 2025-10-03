@@ -125,7 +125,7 @@ export default defineComponent({
 })
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 span[data-image-id] {
   color: #BBB;
   cursor: pointer;

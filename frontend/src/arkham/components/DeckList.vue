@@ -237,7 +237,7 @@ watch(deckRef, (el) => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .container { display: flex; }
 .results { flex: 1; display: flex; flex-direction: column; gap: 10px;}
 

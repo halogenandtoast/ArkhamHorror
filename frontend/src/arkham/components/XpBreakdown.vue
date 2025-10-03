@@ -162,7 +162,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .breakdown {
   width: 100%;
 }

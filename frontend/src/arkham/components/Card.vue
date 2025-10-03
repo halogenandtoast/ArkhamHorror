@@ -164,7 +164,7 @@ const forceSideways = computed(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 
 .card {
   width: var(--card-width);

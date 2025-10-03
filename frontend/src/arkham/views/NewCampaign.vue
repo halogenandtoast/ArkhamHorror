@@ -323,7 +323,7 @@ async function start() {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .container {
   min-width: 60vw;
   margin: 0 auto;

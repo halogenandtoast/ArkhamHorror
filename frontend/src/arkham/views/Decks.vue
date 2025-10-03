@@ -100,7 +100,7 @@ function toggleClass(c: string) {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 #decks {
   min-width: 60vw;
   margin: 0 auto;

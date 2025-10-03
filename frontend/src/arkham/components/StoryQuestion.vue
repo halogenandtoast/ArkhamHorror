@@ -205,7 +205,7 @@ const choose = (idx: number) => emit('choose', idx)
   />
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .question-content {
   width: 60%;
   background: rgba(0, 0, 0, 0.3);

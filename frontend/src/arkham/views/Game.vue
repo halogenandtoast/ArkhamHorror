@@ -915,7 +915,7 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .action { border: 5px solid var(--select); border-radius: 15px; }
 
 #game {
@@ -1121,7 +1121,7 @@ header {
 	0%,
 	100% {
 		border-radius: 30% 70% 70% 30% / 30% 52% 48% 70%;
-		//box-shadow: 10px -2vmin 4vmin LightPink inset, 10px -4vmin 4vmin MediumPurple inset, 10px -2vmin 7vmin purple inset;
+		/*box-shadow: 10px -2vmin 4vmin LightPink inset, 10px -4vmin 4vmin MediumPurple inset, 10px -2vmin 7vmin purple inset;*/
 	}
 
 	10% {
@@ -1134,7 +1134,7 @@ header {
 
 	30% {
 		border-radius: 39% 61% 47% 53% / 37% 40% 60% 63%;
-		//box-shadow: 20px -4vmin 8vmin hotpink inset, -1vmin -2vmin 6vmin LightPink inset, -1vmin -2vmin 4vmin MediumPurple inset, 1vmin 4vmin 8vmin purple inset;
+		/*box-shadow: 20px -4vmin 8vmin hotpink inset, -1vmin -2vmin 6vmin LightPink inset, -1vmin -2vmin 4vmin MediumPurple inset, 1vmin 4vmin 8vmin purple inset;*/
 	}
 
 	40% {
@@ -1143,7 +1143,7 @@ header {
 
 	50% {
 		border-radius: 100%;
-		//box-shadow: 40px 4vmin 16vmin hotpink inset, 40px 2vmin 5vmin LightPink inset, 40px 4vmin 4vmin MediumPurple inset, 40px 6vmin 8vmin purple inset;
+		/*box-shadow: 40px 4vmin 16vmin hotpink inset, 40px 2vmin 5vmin LightPink inset, 40px 4vmin 4vmin MediumPurple inset, 40px 6vmin 8vmin purple inset;*/
 	}
 
 	60% {
@@ -1152,7 +1152,7 @@ header {
 
 	70% {
 		border-radius: 50% 50% 53% 47% / 26% 22% 78% 74%;
-		//box-shadow: 1vmin 1vmin 8vmin LightPink inset, 2vmin -1vmin 4vmin MediumPurple inset, -1vmin -1vmin 16vmin purple inset;
+		/*box-shadow: 1vmin 1vmin 8vmin LightPink inset, 2vmin -1vmin 4vmin MediumPurple inset, -1vmin -1vmin 16vmin purple inset;*/
 	}
 
 	80% {

@@ -516,7 +516,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
   </Draggable>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .skill-test {
   backdrop-filter: blur(0px);
   -webkit-backdrop-filter: blur(0px); /* Safari support */

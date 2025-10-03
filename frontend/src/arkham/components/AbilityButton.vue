@@ -222,7 +222,7 @@ const classObject = computed(() => {
     ></button>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .button{
   border: 0;
   margin-top: 2px;

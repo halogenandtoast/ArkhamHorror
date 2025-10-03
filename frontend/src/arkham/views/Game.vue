@@ -915,7 +915,7 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .action { border: 5px solid var(--select); border-radius: 15px; }
 
 #game {
@@ -1204,7 +1204,7 @@ header {
   width: fit-content;
   height: fit-content;
   display: grid;
-  // glow effect
+  /* glow effect */
   filter: drop-shadow(0 0 3vmin Indigo) drop-shadow(0 5vmin 4vmin Orchid)
 		drop-shadow(2vmin -2vmin 15vmin MediumSlateBlue)
 		drop-shadow(0 0 7vmin MediumOrchid);

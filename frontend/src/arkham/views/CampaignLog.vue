@@ -28,7 +28,7 @@ fetchGame(props.gameId, false).then(({ game: newGame }) => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 h1 {
   font-family: teutonic, sans-serif;
   margin: 0;

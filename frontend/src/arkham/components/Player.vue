@@ -636,7 +636,7 @@ function toggleHandAreaMarginBottom(event: Event) {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .player {
   display: flex;
   gap: 5px;

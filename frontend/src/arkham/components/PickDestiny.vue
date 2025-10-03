@@ -53,7 +53,7 @@ watch(drawings, () => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 #pick-destiny-container {
   box-shadow: inset 0 0 170px rgba(0, 0, 0, 0.5), 1px 1px 3px rgba(0, 0, 0, 0.6);
   border-radius: 5px;

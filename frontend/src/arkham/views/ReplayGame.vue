@@ -145,7 +145,7 @@ watch (play, (newPlay) => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .action { border: 5px solid var(--select); border-radius: 15px; }
 
 .game {

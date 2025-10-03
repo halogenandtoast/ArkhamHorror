@@ -102,7 +102,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
   </Draggable>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .card-no-overlay {
   width: calc(var(--card-width) * 5); 
   max-width: calc(var(--card-width) * 5);

@@ -42,7 +42,7 @@ watch(() => skipTriggers.value, (value) => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .box {
   margin: 10px;
 }

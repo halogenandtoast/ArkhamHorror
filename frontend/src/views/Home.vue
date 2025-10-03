@@ -110,7 +110,7 @@ const dismissNotification = (notification) => {
 
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 h2 {
   color: var(--title);
   font-size: 2em;

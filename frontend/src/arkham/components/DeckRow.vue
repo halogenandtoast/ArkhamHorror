@@ -68,7 +68,7 @@ const tabooList = computed(() => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .deck {
   display: flex;
   margin: 10px;

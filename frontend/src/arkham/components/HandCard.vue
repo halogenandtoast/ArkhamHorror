@@ -256,7 +256,7 @@ function oilPaintEffect(canvas, radius, intensity) {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .card {
   width: var(--card-width);
   min-width: var(--card-width);

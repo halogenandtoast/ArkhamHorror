@@ -543,7 +543,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .fight, .evade, .health, .swarm {
   font-family: "Teutonic";
   position: absolute;
@@ -747,7 +747,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   background-color: rgba(0,0,0,0.4);
 }
 
-// Hunter's Armor
+/* Hunter's Armor */
 .tick-09021 {
   --top-0: 19.1%;
   --top-1: 30.0%;
@@ -822,7 +822,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   left: var(--left-3);
 }
 
-// Runic Axe
+/* Runic Axe */
 .tick-09022 {
   --top-0: 18.6%;
   --top-1: 25.3%;
@@ -903,7 +903,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   left: var(--left-4);
 }
 
-// Custom Modifications
+/* Custom Modifications */
 .tick-09023 {
   --top-0: 19.1%;
   --top-1: 33.4%;
@@ -978,7 +978,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   left: var(--left-4);
 }
 
-// Alchemical Distillation
+/* Alchemical Distillation */
 .tick-09040 {
   --top-0: 19.1%;
   --top-1: 26.7%;
@@ -1055,7 +1055,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   left: var(--left-5);
 }
 
-// Empirical Hypothesis
+/* Empirical Hypothesis */
 .tick-09041 {
   --top-0: 18.4%;
   --top-1: 25.2%;
@@ -1140,7 +1140,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   left: var(--left-4);
 }
 
-// The Raven Quill
+/* The Raven Quill */
 .tick-09042 {
   --top-1: 24.8%;
   --top-2: 31.2%;
@@ -1258,7 +1258,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   left: var(--left-4);
 }
 
-// Damning Testimony
+/* Damning Testimony */
 .tick-09059 {
   --top-0: 18.6%;
   --top-1: 32.7%;
@@ -1333,7 +1333,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   left: var(--left-4);
 }
 
-// Friends in Low Places
+/* Friends in Low Places */
 .tick-09060 {
   --top-1: 24.3%;
   --top-2: 34.0%;
@@ -1436,7 +1436,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   left: var(--left-3);
 }
 
-// Honed Instinct
+/* Honed Instinct */
 .tick-09061 {
   --top-0: 19.0%;
   --top-1: 25.6%;
@@ -1546,7 +1546,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   left: var(--left-5);
 }
 
-// Living Ink
+/* Living Ink */
 .tick-09079 {
   --top-1: 25.5%;
   --top-2: 36.5%;
@@ -1641,7 +1641,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   left: var(--left-3);
 }
 
-// Summoned Servitor
+/* Summoned Servitor */
 .tick-09080 {
   --top-0: 18.3%;
   --top-1: 27.8%;
@@ -1735,7 +1735,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   left: var(--left-5);
 }
 
-// Power Word
+/* Power Word */
 .tick-09081 {
   --top-0: 18.5%;
   --top-1: 28.2%;
@@ -1750,7 +1750,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   --left-3: 14.2%;
 }
 
-// Power Word (Mutated)
+/* Power Word (Mutated) */
 .mutated .tick-09081 {
   --top-0: 18.8%;
   --top-1: 28.4%;
@@ -1826,7 +1826,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   left: var(--left-3);
 }
 
-// Pocket Multi Tool
+/* Pocket Multi Tool */
 .tick-09099 {
   --top-0: 19.1%;
   --top-1: 30.0%;
@@ -1902,7 +1902,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   left: var(--left-4);
 }
 
-// Makeshift Trap
+/* Makeshift Trap */
 .tick-09100 {
   --top-0: 19.2%;
   --top-1: 26.8%;
@@ -1978,7 +1978,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   left: var(--left-4);
 }
 
-// Grizzled
+/* Grizzled */
 .tick-09101 {
   --top-1: 25.4%;
   --top-2: 33.6%;
@@ -2106,7 +2106,7 @@ watch(card, (src) => { if (src) loadAR(src) })
   left: var(--left-5);
 }
 
-// Hyperphysical Shotcaster
+/* Hyperphysical Shotcaster */
 .tick-09119 {
   --top-0: 19.0%;
   --top-1: 28.4%;

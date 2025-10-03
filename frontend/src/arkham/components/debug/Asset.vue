@@ -121,7 +121,7 @@ const hasPool = computed(() => {
   </Draggable>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .card-no-overlay {
   width: calc(var(--card-width) * 5); 
   max-width: calc(var(--card-width) * 5);

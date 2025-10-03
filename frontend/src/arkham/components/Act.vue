@@ -196,7 +196,7 @@ const breaches = computed(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .act-container :deep(.card) {
   flex: 0;
   width: var(--card-width);

@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .game-bar {
   width: 100%;
 }

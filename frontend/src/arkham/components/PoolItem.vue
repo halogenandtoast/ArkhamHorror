@@ -23,7 +23,7 @@ const image = computed(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 
 .poolItem {
   --width: var(--pool-token-width);

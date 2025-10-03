@@ -117,7 +117,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 h2 {
   color: #6E8644;
   font-size: 2em;

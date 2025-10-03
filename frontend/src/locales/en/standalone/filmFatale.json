@@ -121,6 +121,11 @@
     }
   },
   "resolutions": {
+    "xp": {
+      "bonus": {
+        "score": "Made their call time"
+      }
+    },
     "noResolution": {
       "title": "No Resolution",
       "body": "<p>_If no resolution was reached (each investigator was defeated):_ Whatever madness has gripped Lot C, it has taken you as well. You find difficulty in remembering who you were before today’s events. Are you yourself? Are you just playing a part? As you try to find the truth, the end credits begin to roll.</p><ul><li>Each investigator must search the collection for a random basic _Madness_ or _Flaw_ weakness and permanently add it to their deck. This card does not count toward that investigator’s deck size.</li><li>Proceed to _Fin_.</li></ul>"

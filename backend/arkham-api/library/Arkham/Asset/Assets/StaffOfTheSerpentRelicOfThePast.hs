@@ -48,7 +48,7 @@ instance RunMessage StaffOfTheSerpentRelicOfThePast where
         others <- select $ not_ (be controller) <> NearestToLocation (locationWithInvestigator controller)
         chooseOrRunOneM iid $ targets others (`takeControlOfAsset` attrs)
       pure a
-    EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) traits -> do
+    After (EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) traits) -> do
       dealAssetDamage attrs.id (attrs.ability 1) $ if Elite `elem` traits then 2 else 1
       pure a
     _ -> StaffOfTheSerpentRelicOfThePast <$> liftRunMessage msg attrs

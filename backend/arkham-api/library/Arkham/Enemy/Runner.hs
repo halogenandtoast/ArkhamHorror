@@ -1335,14 +1335,14 @@ instance RunMessage EnemyAttrs where
       lift $ withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
 
       pushAll
-        $ [whenMsg, When msg, After msg]
+        $ [whenMsg, When msg]
         <> ( case miid of
                Just iid -> [PlaceKey (toTarget iid) ekey | ekey <- toList enemyKeys]
                Nothing -> case mloc of
                  Just lid -> [PlaceKey (toTarget lid) ekey | ekey <- toList enemyKeys]
                  _ -> []
            )
-        <> [afterMsg, Do msg]
+        <> [Do msg, afterMsg, After msg]
       pure
         $ a
         & (keysL .~ mempty)

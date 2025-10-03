@@ -16,7 +16,7 @@ trailOfTheDead = symbolLabel $ location TrailOfTheDead Cards.trailOfTheDead 2 (P
 instance HasAbilities TrailOfTheDead where
   getAbilities (TrailOfTheDead a) =
     extendRevealed1 a
-      $ restricted a 1 (not_ $ HasSupply Binoculars)
+      $ restricted a 1 (not_ $ exists $ InvestigatorWithSupply Binoculars <> at_ (be a))
       $ forced
       $ oneOf
         [ SkillTestResult #after You (WhileInvestigating (be a)) #any

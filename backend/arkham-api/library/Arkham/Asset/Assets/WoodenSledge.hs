@@ -46,7 +46,7 @@ instance RunMessage WoodenSledge where
         chooseUpToNM iid 3 "Done placing cards underneath Wooden Sledge" do
           targets cards (placeUnderneath attrs . only)
       pure a
-    InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` attrs.cardsUnderneath -> do
+    InitiatePlayCard iid card _ _ _ _ | card `elem` attrs.cardsUnderneath -> do
       let remaining = deleteFirstMatch (== card) attrs.cardsUnderneath
       costModifier attrs iid (AsIfInHandForPlay card.id)
       push msg

@@ -541,26 +541,51 @@ tr td:not(:first-child) {
 }
 
 .time {
-  margin: 20px auto;
+  position: relative;
+  isolation: isolate;
   width: fit-content;
   text-align: center;
   --time-bg: beige;
-  padding: 10px;
   background-color: var(--time-bg);
+  margin: 20px auto;
+  font-family: "Arno", serif;
   border: 4px solid #333;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    inset: -10px;
+    border: 2px solid #333;
+    background-color: transparent;
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    border-radius: 6px;
+    inset: -20px;
+    z-index: -2;
+    border: 4px solid #333;
+    background-color: var(--time-bg);
+    box-shadow: 10px 10px 1px rgba(0,0,0,0.5);
+  }
   h2 {
     text-transform: uppercase;
     font-family: "Albertus";
     font-size: 2em;
+    padding-block: 10px;
+    border: 4px solid #333;
+    border-bottom: 0;
   }
   .calendar {
     display: grid;
+    border: 4px solid #333;
+    border-top-width: 2px;
     grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-    margin: 20px auto;
     width: fit-content;
     background-color: #333;
-    gap: 1px;
+    gap: 2px;
 
 
     .day {
@@ -593,10 +618,11 @@ tr td:not(:first-child) {
         text-align: right;
         justify-content: start;
         line-height: 1em;
+        padding-right: 1px;
       }
       .symbol {
         grid-area: symbol;
-        font-size: 1.75em;
+        font-size: 2em;
         font-weight: bold;
       }
     }

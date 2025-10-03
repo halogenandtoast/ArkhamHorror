@@ -520,7 +520,7 @@ isPerWindowLimit = \case
 defaultAbilityLimit :: AbilityType -> AbilityLimit
 defaultAbilityLimit = \case
   ForcedAbility window' -> case window' of
-    SkillTestResult {} -> PlayerLimit PerTestOrAbility 1
+    SkillTestResult {} -> PlayerLimit PerTest 1
     Moves {} -> PlayerLimit PerMove 1
     Enters {} -> PlayerLimit PerMove 1
     EnemySpawns {} -> GroupLimit PerSpawn 1

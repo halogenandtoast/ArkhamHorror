@@ -4503,8 +4503,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   SkillTestEnds {} -> do
     pure
       $ a
-      & ( usedAbilitiesL
-            %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTestOrAbility)
+      & ( usedAbilitiesL %~ filter \UsedAbility {..} ->
+            case abilityLimitType (abilityLimit usedAbility) of
+              Just PerTestOrAbility -> False
+              Just PerTest -> False
+              _ -> True
         )
       & (usedAbilitiesL %~ map (\u -> u {usedThisWindow = False}))
   AfterRevelation {} -> do

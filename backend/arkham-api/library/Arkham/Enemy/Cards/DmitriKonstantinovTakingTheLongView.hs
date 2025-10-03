@@ -3,8 +3,8 @@ module Arkham.Enemy.Cards.DmitriKonstantinovTakingTheLongView (dmitriKonstantino
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Matcher
 import Arkham.Helpers.Window (getPassedBy)
+import Arkham.Matcher
 import Arkham.Trait (Trait (SilverTwilight))
 
 newtype DmitriKonstantinovTakingTheLongView = DmitriKonstantinovTakingTheLongView EnemyAttrs
@@ -22,10 +22,14 @@ dmitriKonstantinovTakingTheLongView =
       (FarthestLocationFromInvestigator You $ not_ (LocationWithEnemy $ EnemyWithTrait SilverTwilight))
 
 instance HasAbilities DmitriKonstantinovTakingTheLongView where
-  getAbilities (DmitriKonstantinovTakingTheLongView a) = extend a
-    [ restricted a 1 CanPlaceDoomOnThis $ forced $ EnemySpawns #after Anywhere (be a)
-    , restricted a 2 (thisExists a EnemyWithAnyDoom) $ freeReaction $ SkillTestResult #after You (WhileEvadingAnEnemy $ be a) (SuccessResult $ atLeast 2)
-    ]
+  getAbilities (DmitriKonstantinovTakingTheLongView a) =
+    extend
+      a
+      [ restricted a 1 CanPlaceDoomOnThis $ forced $ EnemySpawns #after Anywhere (be a)
+      , restricted a 2 (thisExists a EnemyWithAnyDoom)
+          $ freeReaction
+          $ SkillTestResult #after You (WhileEvadingAnEnemy $ be a) (SuccessResult $ atLeast 2)
+      ]
 
 instance RunMessage DmitriKonstantinovTakingTheLongView where
   runMessage msg e@(DmitriKonstantinovTakingTheLongView attrs) = runQueueT $ case msg of

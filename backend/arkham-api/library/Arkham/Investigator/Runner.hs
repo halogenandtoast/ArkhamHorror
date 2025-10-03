@@ -2697,6 +2697,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   MoveTo movement | isTarget a (moveTarget movement) -> do
     pushAll [ResolveMovement investigatorId, ResolvedMovement investigatorId]
     pure $ a & movementL ?~ movement
+  EnemySpawned _ -> do
+    pure $ a & (usedAbilitiesL %~ filter (\ab -> ab.limitType /= Just PerSpawn))
   ResolvedMovement iid | iid == investigatorId -> do
     pure $ a & (usedAbilitiesL %~ filter (\ab -> ab.limitType /= Just PerMove))
   ResolveMovement iid | iid == investigatorId -> do

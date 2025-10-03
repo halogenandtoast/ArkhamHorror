@@ -3,6 +3,7 @@ module Arkham.Treachery.Cards.WatchersGrasp (watchersGrasp) where
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
+import Arkham.Window qualified as Window
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -26,10 +27,12 @@ instance RunMessage WatchersGrasp where
       healDamage theSpectralWatcher attrs 3
       readyThis theSpectralWatcher
       sendMessage theSpectralWatcher HuntersMove
+      checkAfter Window.HuntersMoveStep
       isReturnTo <- getIsReturnTo
       if isReturnTo
         then temporaryModifier theSpectralWatcher ScenarioSource DoNotExhaust do
           sendMessage theSpectralWatcher EnemiesAttack
         else sendMessage theSpectralWatcher EnemiesAttack
+      checkAfter Window.EnemiesAttackStep
       pure t
     _ -> WatchersGrasp <$> liftRunMessage msg attrs

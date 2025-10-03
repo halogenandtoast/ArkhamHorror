@@ -63,6 +63,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyCardsUnderneath :: [Card]
   , enemyLastKnownLocation :: Maybe LocationId
   , enemyReferenceCards :: [CardCode]
+  , enemySpawnDetails :: Maybe SpawnDetails
   }
   deriving stock (Show, Data)
 
@@ -170,4 +171,5 @@ instance FromJSON EnemyAttrs where
     enemyCardsUnderneath <- v .:? "cardsUnderneath" .!= []
     enemyLastKnownLocation <- v .:? "lastKnownLocation"
     enemyReferenceCards <- v .:? "referenceCards" .!= []
+    enemySpawnDetails <- v .:? "spawnDetails"
     pure EnemyAttrs {..}

@@ -41,6 +41,7 @@ data AbilityLimitType
   | PerWindow
   | PerAttack
   | PerMove
+  | PerSpawn
   | PerTestOrAbility
   | PerSearch Trait
   | PerDepthLevel

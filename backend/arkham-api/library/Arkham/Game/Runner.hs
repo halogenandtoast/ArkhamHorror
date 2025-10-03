@@ -2538,6 +2538,7 @@ runGameMessage msg g = case msg of
       , When (EnemySpawn details)
       , EnemySpawn details
       , After (EnemySpawn details)
+      , EnemySpawned details
       ]
     pure $ g & entitiesL . enemiesL . at enemyId ?~ createEnemy card enemyId
   SpawnEnemyAtEngagedWith card lid iid -> do
@@ -2556,6 +2557,7 @@ runGameMessage msg g = case msg of
       , When (EnemySpawn details)
       , EnemySpawn details
       , After (EnemySpawn details)
+      , EnemySpawned details
       ]
     pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
   CreateEnemy enemyCreation -> do
@@ -2615,6 +2617,7 @@ runGameMessage msg g = case msg of
           <> enemyCreationAfter enemyCreation
           <> [After (EnemySpawn details)]
           <> maybeToList mAfterSpawns
+          <> [EnemySpawned details]
       Arkham.Enemy.Creation.SpawnAtLocation lid -> do
         windows' <- checkWindows [mkWhen (Window.EnemyWouldSpawnAt enemyId lid)]
         let details =
@@ -2633,7 +2636,7 @@ runGameMessage msg g = case msg of
                ]
             <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mTarget]
             <> enemyCreationAfter enemyCreation
-            <> [After (EnemySpawn details)]
+            <> [After (EnemySpawn details), EnemySpawned details]
       SpawnAtLocationMatching locationMatcher -> do
         matches' <- select locationMatcher
         case matches' of
@@ -2667,7 +2670,7 @@ runGameMessage msg g = case msg of
                     }
             pure
               ( [Will (EnemySpawn details), When (EnemySpawn details), whenSpawns]
-              , [After (EnemySpawn details), afterSpawns]
+              , [After (EnemySpawn details), afterSpawns, EnemySpawned details]
               )
         pushAll
           $ enemyCreationBefore enemyCreation

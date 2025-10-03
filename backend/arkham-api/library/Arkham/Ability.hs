@@ -523,6 +523,7 @@ defaultAbilityLimit = \case
     SkillTestResult {} -> PlayerLimit PerTestOrAbility 1
     Moves {} -> PlayerLimit PerMove 1
     Enters {} -> PlayerLimit PerMove 1
+    EnemySpawns {} -> GroupLimit PerSpawn 1
     _ -> GroupLimit PerWindow 1
   SilentForcedAbility _ -> GroupLimit PerWindow 1
   ForcedAbilityWithCost _ _ -> GroupLimit PerWindow 1

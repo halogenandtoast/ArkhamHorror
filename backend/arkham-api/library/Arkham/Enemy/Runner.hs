@@ -366,7 +366,9 @@ instance RunMessage EnemyAttrs where
                                 $ [targetLabel iid [EnemyEntered eid lid, EnemyEngageInvestigator eid iid] | iid <- choices]
                 else pushWhen (#massive `notElem` keywords) $ EnemyEntered eid lid
         _ -> error "Unhandled"
-      pure a
+      pure $ a & spawnDetailsL ?~ details
+    EnemySpawned details | details.enemy == enemyId -> do
+      pure $ a & spawnDetailsL .~ Nothing
     EnemyEntered eid lid | eid == enemyId -> do
       case enemyPlacement of
         AsSwarm eid' _ -> do
@@ -374,7 +376,11 @@ instance RunMessage EnemyAttrs where
           pure a
         _ -> do
           swarm <- select $ SwarmOf eid
-          when (isOutOfPlayPlacement a.placement) do
+          -- If enemySpawnDetails is present it means this enemy is using the
+          -- EnemySpawn flow which will handle these windows, otherwise it
+          -- means an enemy is moving from out of play into play in a
+          -- non-spawning method and we'll want to trigger them
+          when (isOutOfPlayPlacement a.placement && isNothing enemySpawnDetails) do
             pushM $ checkWhen $ Window.EnemySpawns eid lid
             pushM $ checkAfter $ Window.EnemySpawns eid lid
 

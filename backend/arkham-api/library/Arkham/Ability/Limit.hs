@@ -42,6 +42,7 @@ data AbilityLimitType
   | PerAttack
   | PerMove
   | PerSpawn
+  | PerTest
   | PerTestOrAbility
   | PerSearch Trait
   | PerDepthLevel

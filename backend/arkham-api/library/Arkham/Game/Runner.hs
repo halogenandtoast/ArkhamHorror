@@ -1055,8 +1055,8 @@ runGameMessage msg g = case msg of
                       )
               let skill = setPlacement $ createSkill pc iid skillId
               push $ InvestigatorCommittedSkill iid skillId
-              for_ (skillAdditionalCost $ toAttrs skill) $ \cost -> do
-                let ability = abilityEffect skill [] cost
+              for_ (skillAdditionalCost $ toAttrs skill) \cost -> do
+                let ability = abilityEffect skill [] $ replaceYouMatcher iid cost
                 push $ PayForAbility ability []
               pure $ g & entitiesL . skillsL %~ insertMap skillId skill
             _ -> pure g

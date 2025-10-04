@@ -45,7 +45,7 @@ const cancelFun = computed(() => typeof props.cancel === 'function' ? props.canc
   max-width: 400px;
   margin: 4em auto;
   background: #fff;
-  border-radius: .25em .25em 0 0;
+  border-radius: .25em;
   text-align: center;
   box-shadow: 0 0 20px rgba(0,0,0,.2);
 
@@ -54,7 +54,6 @@ const cancelFun = computed(() => typeof props.cancel === 'function' ? props.canc
     margin: 0;
   }
 }
-
 
 .cd-popup-close {
   position: absolute;
@@ -90,6 +89,7 @@ const cancelFun = computed(() => typeof props.cancel === 'function' ? props.canc
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
   a {
     display: block;
     height: 60px;
@@ -113,8 +113,9 @@ const cancelFun = computed(() => typeof props.cancel === 'function' ? props.canc
     }
   }
   li {
-    float: left;
-    width: 50%;
+    padding: 0;
+    margin: 0;
+    flex: 1;
   }
 }
 

@@ -262,10 +262,11 @@ function oilPaintEffect(canvas, radius, intensity) {
   min-width: var(--card-width);
   border-radius: 6px;
 
-  &--can-interact {
-    border: 2px solid var(--select);
-    cursor: pointer;
-  }
+}
+
+.card--can-interact {
+  border: 2px solid var(--select);
+  cursor: pointer;
 }
 
 .card-container {

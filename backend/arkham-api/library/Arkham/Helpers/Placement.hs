@@ -98,9 +98,10 @@ onSameLocation iid = \case
       (==)
       (field InvestigatorLocation iid')
       (field InvestigatorLocation iid)
-  AsSwarm eid _ -> fieldMay EnemyPlacement eid >>= \case
-    Nothing -> pure False
-    Just placement' -> onSameLocation iid placement'
+  AsSwarm eid _ ->
+    fieldMay EnemyPlacement eid >>= \case
+      Nothing -> pure False
+      Just placement' -> onSameLocation iid placement'
   Unplaced -> pure False
   Global -> pure True
   Limbo -> pure False

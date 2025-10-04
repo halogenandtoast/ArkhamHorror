@@ -529,7 +529,7 @@ payCost msg c iid skipAdditionalCosts cost = do
         discardIt = \case
           PlayerCard pc -> [AddToDiscard owner pc | owner <- maybeToList (pcOwner pc)]
           EncounterCard ec -> [AddToEncounterDiscard ec]
-          _ -> error "Unhandled"
+          _ -> error "Unhandled DiscardUnderneathCardCost"
       pushAll
         [ FocusCards cards
         , chooseOrRunOne player [targetLabel card (UnfocusCards : discardIt card) | card <- cards]

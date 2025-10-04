@@ -45,7 +45,6 @@ import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Enemy (getModifiedKeywords, spawnAt)
 import Arkham.Helpers.Investigator hiding (findCard, investigator)
-import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Message hiding (
   EnemyDamage,
   InvestigatorDamage,
@@ -2563,7 +2562,6 @@ runGameMessage msg g = case msg of
   CreateEnemy enemyCreation -> do
     let enemyId = enemyCreationEnemyId enemyCreation
         card = enemyCreationCard enemyCreation
-        mTarget = enemyCreationTarget enemyCreation
         originalCardCode = \case
           EncounterCard ec -> ecOriginalCardCode ec
           PlayerCard pc -> pcOriginalCardCode pc
@@ -2589,95 +2587,41 @@ runGameMessage msg g = case msg of
     enemy <- case getBearer card of
       Nothing -> pure enemy'
       Just iid -> runMessage (SetBearer (toTarget enemy') iid) enemy'
+    let handleSpawnDetails d = pushAll $ enemyCreationBefore enemyCreation <> [EnemySpawn d] <> enemyCreationAfter enemyCreation
+
     case enemyCreationMethod enemyCreation of
       Arkham.Enemy.Creation.SpawnEngagedWith iid -> do
-        let details =
-              SpawnDetails
-                { spawnDetailsEnemy = enemyId
-                , spawnDetailsInvestigator = Just iid
-                , spawnDetailsSpawnAt = Arkham.Spawn.SpawnEngagedWith (InvestigatorWithId iid)
-                , spawnDetailsOverridden = True
-                }
-        mlid <- getLocationOf iid
-
-        mWhenSpawns <- case mlid of
-          Just lid -> Just <$> checkWindows [mkWhen (Window.EnemySpawns enemyId lid)]
-          Nothing -> pure Nothing
-        mAfterSpawns <- case mlid of
-          Just lid -> Just <$> checkWindows [mkAfter (Window.EnemySpawns enemyId lid)]
-          Nothing -> pure Nothing
-        pushAll
-          $ enemyCreationBefore enemyCreation
-          <> [ Will (EnemySpawn details)
-             , When (EnemySpawn details)
-             ]
-          <> maybeToList mWhenSpawns
-          <> [EnemySpawn details]
-          <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mTarget, lid <- maybeToList mlid]
-          <> enemyCreationAfter enemyCreation
-          <> [After (EnemySpawn details)]
-          <> maybeToList mAfterSpawns
-          <> [EnemySpawned details]
+        handleSpawnDetails
+          $ SpawnDetails
+            { spawnDetailsEnemy = enemyId
+            , spawnDetailsInvestigator = Just iid
+            , spawnDetailsSpawnAt = Arkham.Spawn.SpawnEngagedWith (InvestigatorWithId iid)
+            , spawnDetailsOverridden = True
+            }
       Arkham.Enemy.Creation.SpawnAtLocation lid -> do
-        windows' <- checkWindows [mkWhen (Window.EnemyWouldSpawnAt enemyId lid)]
-        let details =
-              SpawnDetails
-                { spawnDetailsEnemy = enemyId
-                , spawnDetailsInvestigator = Nothing
-                , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
-                , spawnDetailsOverridden = True
-                }
-        pushAll
-          $ windows'
-          : enemyCreationBefore enemyCreation
-            <> [ Will (EnemySpawn details)
-               , When (EnemySpawn details)
-               , EnemySpawn details
-               ]
-            <> [CreatedEnemyAt enemyId lid target | target <- maybeToList mTarget]
-            <> enemyCreationAfter enemyCreation
-            <> [After (EnemySpawn details), EnemySpawned details]
+        handleSpawnDetails
+          $ SpawnDetails
+            { spawnDetailsEnemy = enemyId
+            , spawnDetailsInvestigator = Nothing
+            , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
+            , spawnDetailsOverridden = True
+            }
       SpawnAtLocationMatching locationMatcher -> do
-        matches' <- select locationMatcher
-        case matches' of
-          [] -> push (toDiscard GameSource (toTarget enemyId))
-          lids -> do
-            lead <- getLead
-            player <- getPlayer $ fromMaybe lead miid
-            pushAll
-              $ windows [Window.EnemyAttemptsToSpawnAt enemyId locationMatcher]
-              <> [ chooseOrRunOne
-                     player
-                     [ targetLabel
-                         lid
-                         [CreateEnemy $ enemyCreation {enemyCreationMethod = Arkham.Enemy.Creation.SpawnAtLocation lid}]
-                     | lid <- lids
-                     ]
-                 ]
+        handleSpawnDetails
+          $ SpawnDetails
+            { spawnDetailsEnemy = enemyId
+            , spawnDetailsInvestigator = Nothing
+            , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAt locationMatcher
+            , spawnDetailsOverridden = True
+            }
       SpawnWithPlacement placement -> do
-        mLocation <- getPlacementLocation placement
-        (beforeMessages, afterMessages) <- case mLocation of
-          Nothing -> pure ([], [])
-          Just lid -> do
-            whenSpawns <- checkWindows [mkWhen (Window.EnemySpawns enemyId lid)]
-            afterSpawns <- checkWindows [mkAfter (Window.EnemySpawns enemyId lid)]
-            let details =
-                  SpawnDetails
-                    { spawnDetailsEnemy = enemyId
-                    , spawnDetailsInvestigator = Nothing
-                    , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
-                    , spawnDetailsOverridden = True
-                    }
-            pure
-              ( [Will (EnemySpawn details), When (EnemySpawn details), whenSpawns]
-              , [After (EnemySpawn details), afterSpawns, EnemySpawned details]
-              )
-        pushAll
-          $ enemyCreationBefore enemyCreation
-          <> beforeMessages
-          <> [PlaceEnemy enemyId placement]
-          <> enemyCreationAfter enemyCreation
-          <> afterMessages
+        handleSpawnDetails
+          $ SpawnDetails
+            { spawnDetailsEnemy = enemyId
+            , spawnDetailsInvestigator = Nothing
+            , spawnDetailsSpawnAt = Arkham.Spawn.SpawnPlaced placement
+            , spawnDetailsOverridden = True
+            }
       SpawnEngagedWithPrey ->
         pushAll
           $ enemyCreationBefore enemyCreation
@@ -3189,7 +3133,7 @@ runGameMessage msg g = case msg of
                   let iid = eventOwner $ toAttrs event'
                   push $ PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) card
                 else push $ AddToDiscard (eventOwner $ toAttrs event') pc
-            EncounterCard _ -> error "Unhandled"
+            EncounterCard _ -> error "Unhandled Discarded EventTarget"
             VengeanceCard _ -> error "Vengeance card"
     pure g
   Discard miid source (TreacheryTarget tid) -> do

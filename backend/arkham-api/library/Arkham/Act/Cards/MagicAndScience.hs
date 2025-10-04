@@ -67,7 +67,7 @@ instance RunMessage MagicAndScience where
         LocationCandidate location <$> field LocationDoom location <*> field LocationCard location
       let candidateGroups = groupBy ((==) `on` (.doom)) $ sortBy (compare `on` (.doom)) candidates
       for_ candidateGroups \case
-        [] -> error "Unhandled"
+        [] -> error "Unhandled candidate groups empty"
         [c] -> handleTarget lead attrs c.id
         cs -> focusCards (map (.card) cs) do
           chooseOneAtATimeM lead do

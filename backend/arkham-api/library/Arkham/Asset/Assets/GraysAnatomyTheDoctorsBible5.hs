@@ -71,7 +71,7 @@ instance RunMessage GraysAnatomyTheDoctorsBible5 where
         AssetTarget aid -> handleIt aid
         EnemyTarget eid -> handleIt eid
         InvestigatorTarget iid' -> handleIt iid'
-        _ -> error "Unhandled"
+        _ -> error "Unhandled for GraysAnatomyTheDoctorsBible5 skill test target"
       pure a
     _ -> GraysAnatomyTheDoctorsBible5 <$> liftRunMessage msg attrs
 
@@ -84,7 +84,7 @@ instance HasModifiersFor GraysAnatomyTheDoctorsBible5Effect where
     case a.metaInt of
       Just 1 -> modified_ a a.target [HealingTaken 1]
       Just 2 -> modified_ a a.target [DamageTaken 1]
-      _ -> error "Unhandled"
+      _ -> error "Unhandled for GraysAnatomyTheDoctorsBible5Effect"
 
 graysAnatomyTheDoctorsBible5Effect :: EffectArgs -> GraysAnatomyTheDoctorsBible5Effect
 graysAnatomyTheDoctorsBible5Effect =

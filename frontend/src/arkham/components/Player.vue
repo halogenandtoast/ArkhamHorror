@@ -807,17 +807,18 @@ function toggleHandAreaMarginBottom(event: Event) {
   max-width: 100%;
   min-width: fit-content;
 
-  &-ok {
-    background-color: var(--rogue-dark);
-  }
+}
 
-  &-warn {
-    background-color: var(--seeker-dark);
-  }
+.hand-size-ok {
+  background-color: var(--rogue-dark);
+}
 
-  &-alert {
-    background-color: var(--survivor-dark);
-  }
+.hand-size-warn {
+  background-color: var(--seeker-dark);
+}
+
+.hand-size-alert {
+  background-color: var(--survivor-dark);
 }
 
 .hand-area {

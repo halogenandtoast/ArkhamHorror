@@ -482,7 +482,7 @@ instance RunMessage EdgeOfTheEarth where
                       questionLabeled
                         "Any one investigator may begin _Scenario III: City of the Elder Things_ with two additional cards drawn in their opening hand."
                       portraitLabeled iid do
-                        scenarioSetupModifier "08596" CampaignSource iid (StartingHand 2)
+                        scenarioSetupModifier "08621" CampaignSource iid (StartingHand 2)
                     doStep (n - 1) msg'
                 | not owned -> do
                     iids <- getInvestigators
@@ -641,7 +641,7 @@ instance RunMessage EdgeOfTheEarth where
                       questionLabeled
                         "Any one investigator may begin _Scenario III: City of the Elder Things_ with 3 additional resources in their resource pool."
                       portraitLabeled iid do
-                        scenarioSetupModifier "08596" CampaignSource iid (StartingResources 3)
+                        scenarioSetupModifier "08621" CampaignSource iid (StartingResources 3)
                 | not owned -> do
                     iids <- getInvestigators
                     addCampaignCardToDeckChoice iids DoNotShuffleIn Events.takadasCache
@@ -789,7 +789,7 @@ instance RunMessage EdgeOfTheEarth where
                       questionLabeled
                         "Any one investigator may begin _Scenario III: City of the Elder Things_ with two additional cards drawn in their opening hand."
                       portraitLabeled iid do
-                        scenarioSetupModifier "08596" CampaignSource iid (StartingHand 2)
+                        scenarioSetupModifier "08621" CampaignSource iid (StartingHand 2)
                     doStep (n - 1) msg'
                 | not owned -> do
                     iids <- getInvestigators
@@ -947,7 +947,7 @@ instance RunMessage EdgeOfTheEarth where
                       questionLabeled
                         "Any one investigator may begin _Scenario III: City of the Elder Things_ with 3 additional resources in their resource pool."
                       portraitLabeled iid do
-                        scenarioSetupModifier "08596" CampaignSource iid (StartingResources 3)
+                        scenarioSetupModifier "08621" CampaignSource iid (StartingResources 3)
                 | not owned -> do
                     iids <- getInvestigators
                     addCampaignCardToDeckChoice iids DoNotShuffleIn Events.takadasCache

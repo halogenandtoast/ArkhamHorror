@@ -22,7 +22,7 @@ defineEmits<{
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .discards {
   background: #759686;
   display: flex;

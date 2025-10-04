@@ -164,7 +164,7 @@ const forceSideways = computed(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 
 .card {
   width: var(--card-width);
@@ -174,11 +174,11 @@ const forceSideways = computed(() => {
   border-radius: 6px;
   margin: 2px;
   display: inline-block;
+}
 
-  &--can-interact {
-    border: 2px solid var(--select);
-    cursor: pointer;
-  }
+.card--can-interact {
+  border: 2px solid var(--select);
+  cursor: pointer;
 }
 
 .vengeance {

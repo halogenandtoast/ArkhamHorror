@@ -145,5 +145,5 @@ const title = computed(() => {
   </Draggable>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 </style>

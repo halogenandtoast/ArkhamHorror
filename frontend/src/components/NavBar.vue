@@ -48,7 +48,7 @@ async function logout() {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 #nav {
   background-color: var(--background-dark);
   color: #f2f2f2;

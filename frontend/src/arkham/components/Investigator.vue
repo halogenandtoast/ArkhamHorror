@@ -436,7 +436,7 @@ function onDrop(event: DragEvent) {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 i.action {
   font-family: 'Arkham';
   font-style: normal;
@@ -463,10 +463,12 @@ i.action {
 .investigator--can-interact {
   border: 2px solid var(--select);
   cursor: pointer;
-  &--portrait {
-    cursor: pointer;
-    border: 3px solid var(--select);
-  }
+}
+
+
+.investigator--can-interact--portrait {
+  cursor: pointer;
+  border: 3px solid var(--select);
 }
 
 .card {

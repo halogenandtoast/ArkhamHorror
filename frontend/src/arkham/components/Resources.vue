@@ -178,7 +178,7 @@ const choose = (index: number) => emits('choose', index)
   </div>    
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 
 .resources {
   display: flex;

@@ -57,7 +57,7 @@ const updateLanguage = async (a: Event) => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 input[type="radio"] {
   display: unset;
 }

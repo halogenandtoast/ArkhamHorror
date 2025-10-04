@@ -348,7 +348,7 @@ const tabooList = function (investigator: Investigator) {
   />
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 #upgrade-deck {
   overflow: auto;
   display: flex;

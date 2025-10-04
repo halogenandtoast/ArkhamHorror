@@ -223,7 +223,7 @@ function moveUp() {
   </Teleport>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .draggable {
   position: absolute;
   background: rgba(94, 123, 115, 0.5);

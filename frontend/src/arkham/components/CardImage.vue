@@ -95,7 +95,7 @@ const backImage = computed(() => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .card {
   border-radius: 10px;
 }

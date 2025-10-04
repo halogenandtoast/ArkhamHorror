@@ -1002,7 +1002,7 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .card {
   border-radius: 5px;
   width: var(--card-width);
@@ -1485,7 +1485,7 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
   margin-inline: 10px;
 }
 
-// We lower the margin so things line up a bit better.
+/* We lower the margin so things line up a bit better. */
 [data-scenario='c06333'] .location-cards:deep(.location-container) {
   margin: 20px !important;
 }
@@ -1638,7 +1638,7 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
   &:not(:first-of-type) {
     margin-top: -50px;
   }
-  //position: inherit;
+  /*position: inherit; */
   transition: margin-top 0.3s;
   position: relative;
 

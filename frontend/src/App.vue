@@ -51,7 +51,7 @@ const checkAvifSupport = (): Promise<boolean> => {
 };
 </script>
 
-<style lang="scss">
+<style>
 html {
   color-scheme: dark;
   interpolate-size: allow-keywords;

@@ -257,17 +257,7 @@ pattern EvadeCriteria =
 instance HasAbilities EnemyAttrs where
   getAbilities e =
     [ basicAbility
-        $ restrictedAbility
-          e
-          AbilityAttack
-          ( OnSameLocation
-              <> AnyCriterion
-                [ Negate $ EnemyCriteria $ ThisEnemy AloofEnemy
-                , EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith Anyone
-                ]
-              <> EnemyCriteria (ThisEnemy $ CanBeAttackedBy You)
-              <> CanAttack
-          )
+        $ restrictedAbility e AbilityAttack canFightCriteria
         $ ActionAbility [#fight] (ActionCost 1)
     , basicAbility
         $ restrictedAbility e AbilityEvade EvadeCriteria

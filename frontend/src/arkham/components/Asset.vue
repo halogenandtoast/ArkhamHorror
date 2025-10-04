@@ -323,7 +323,7 @@ const assetStory = computed(() => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .card {
   width: var(--card-width);
   max-width: var(--card-width);

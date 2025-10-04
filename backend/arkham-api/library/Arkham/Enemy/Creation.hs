@@ -83,10 +83,6 @@ setExhausted :: Bool -> EnemyCreation msg -> EnemyCreation msg
 setExhausted v ec = ec {enemyCreationExhausted = v}
 {-# INLINE setExhausted #-}
 
-instance WithTarget (EnemyCreation msg) where
-  getTarget = enemyCreationTarget
-  setTarget t x = x {enemyCreationTarget = Just (toTarget t)}
-
 instance HasField "enemy" (EnemyCreation msg) EnemyId where
   getField = enemyCreationEnemyId
 

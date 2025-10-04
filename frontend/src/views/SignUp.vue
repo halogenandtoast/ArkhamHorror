@@ -65,7 +65,7 @@ async function register() {
   </form>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 form {
   margin: 0 auto;
   margin-top: 10vh;

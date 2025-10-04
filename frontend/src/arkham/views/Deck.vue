@@ -303,7 +303,7 @@ watch(deckRef, (el) => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .container {
   display: flex;
   min-width: 60vw;

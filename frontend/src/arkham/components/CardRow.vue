@@ -60,7 +60,7 @@ function startDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
   </Draggable>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .card-row {
   background: #759686;
   width: 100%;

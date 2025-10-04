@@ -256,16 +256,17 @@ function oilPaintEffect(canvas, radius, intensity) {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .card {
   width: var(--card-width);
   min-width: var(--card-width);
   border-radius: 6px;
 
-  &--can-interact {
-    border: 2px solid var(--select);
-    cursor: pointer;
-  }
+}
+
+.card--can-interact {
+  border: 2px solid var(--select);
+  cursor: pointer;
 }
 
 .card-container {

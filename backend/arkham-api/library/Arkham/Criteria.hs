@@ -438,6 +438,18 @@ ignoreAloofFightOverride matcher = fightOverride $ IgnoreAloofFightable <> match
 evadeOverride :: EnemyMatcher -> EnemyMatcher
 evadeOverride = CanEvadeEnemyWithOverride . CriteriaOverride . EnemyCriteria . ThisEnemy
 
+canFightCriteria :: Criterion
+canFightCriteria = canFightCriteriaObeyAloof True
+
+canFightIgnoreAloof :: Criterion
+canFightIgnoreAloof = canFightCriteriaObeyAloof False
+
+canFightCriteriaObeyAloof :: Bool -> Criterion
+canFightCriteriaObeyAloof obeyAloof =
+  OnSameLocation <> EnemyCriteria (ThisEnemy $ wrapAloof $ CanBeAttackedBy You) <> CanAttack
+ where
+  wrapAloof = if obeyAloof then (<> EnemyOneOf [not_ AloofEnemy, EnemyIsEngagedWith Anyone]) else id
+
 instance Semigroup EnemyCriterion where
   EnemyMatchesCriteria xs <> EnemyMatchesCriteria ys =
     EnemyMatchesCriteria $ xs <> ys

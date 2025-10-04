@@ -8,7 +8,7 @@ import TestImport.New
 
 spec :: Spec
 spec = describe "Mysterious Chanting" $ do
-  it "will place a token on the nearest cultist" $ gameTest $ \investigator -> do
+  it "will place a token on the nearest cultist" . gameTest $ \investigator -> do
     cultist <- testEnemyWithDef Cards.acolyte id
     mysteriousChanting <- genEncounterCard Cards.mysteriousChanting
     (location1, location2) <- testConnectedLocations id id

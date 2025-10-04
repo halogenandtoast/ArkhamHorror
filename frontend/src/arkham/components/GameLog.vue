@@ -49,7 +49,7 @@ watch(truncatedGameLog, async () => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .game-log {
   background: var(--neutral-dark);
   width: calc(100% - 20px);

@@ -27,7 +27,7 @@ const supplyLabel = (supply: string, count: number) => t(`theForgottenAge.suppli
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .supplies {
   padding: 10px 20px;
   flex: 1;

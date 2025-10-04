@@ -90,7 +90,7 @@ export default defineComponent({
 })
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .composite { display: contents; }
 .columns, :deep(.columns) {
   display: flex;

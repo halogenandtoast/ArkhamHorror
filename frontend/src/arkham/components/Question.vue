@@ -626,7 +626,7 @@ const cardPiles = computed(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 i {
   font-family: 'Arkham';
   font-style: normal;

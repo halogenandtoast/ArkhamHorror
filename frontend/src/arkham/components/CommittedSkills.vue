@@ -45,7 +45,7 @@ function skillId(card: Card) {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .card-row {
   background: #759686;
   width: 100%;

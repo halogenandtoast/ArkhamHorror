@@ -145,7 +145,7 @@ const activeSettings = computed(() => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .container {
   width: 100%;
   height: fit-content;

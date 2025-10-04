@@ -1712,7 +1712,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         TarotCard Reversed arcana' | arcana' == arcana -> TarotCard Upright arcana'
         c -> c
     pure $ a & tarotCardsL . each %~ map rotate
-  After (X.EnemyDefeated eid _ _ _) -> do
+  Do (X.EnemyDefeated eid _ _ _) -> do
     eattrs <- getAttrs @Enemy eid
     printedHealth <- calculatePrinted (enemyHealth eattrs)
     enemyHealth <- fieldWithDefault printedHealth EnemyHealth eid

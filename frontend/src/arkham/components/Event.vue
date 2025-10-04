@@ -129,7 +129,7 @@ const choose = (index: number) => emits('choose', index)
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .card {
   width: var(--card-width);
   max-width: var(--card-width);

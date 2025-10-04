@@ -40,7 +40,7 @@ instance RunMessage CharlieKane where
       icons <- getSkillTestMatchingSkillIcons
       n <- case p.exhausted of
         [AssetTarget aid] -> fieldMap AssetCard (count (`elem` icons) . (.skills)) aid
-        _ -> error "Unhandled"
+        _ -> error "Unhandled for Charlie Kane"
       withSkillTest \sid ->
         skillTestModifier sid (attrs.ability 1) iid (AnySkillValue (1 + n))
       pure i

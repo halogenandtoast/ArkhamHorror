@@ -147,7 +147,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
   </Draggable>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .enemy {
   display: flex;
   flex-direction: column;

@@ -345,7 +345,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .small-treachery :deep(.card) {
   height: calc(var(--card-width) * 0.35);
 }
@@ -434,7 +434,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
     left: 100%;
     transform: translateY(50%) translateZ(0);
     z-index: 20000000000;
-    //z-index: 0;
+    /*z-index: 0;*/
   }
 
   &.left {

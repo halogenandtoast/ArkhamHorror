@@ -179,7 +179,7 @@ const isVertical = computed(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .card {
   width: var(--card-width);
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
@@ -245,7 +245,7 @@ const isVertical = computed(() => {
   gap: 5px;
   flex-direction: row;
   margin-top: -50px;
-  //position: inherit;
+  /*position: inherit;*/
   transition: margin-top 0.3s;
   position: relative;
 

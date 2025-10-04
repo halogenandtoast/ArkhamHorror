@@ -176,7 +176,7 @@ const forceDisabled = (setting: CampaignSetting, option: ChooseKey) => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .settings-group {
   background: rgba(255, 255, 255, 0.1);
   padding: 10px;

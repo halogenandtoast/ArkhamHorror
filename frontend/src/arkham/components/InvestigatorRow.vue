@@ -91,7 +91,7 @@ const deck = computed(() => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .investigator {
   width: 80%;
   border-radius: 15px;

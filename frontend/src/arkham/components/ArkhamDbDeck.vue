@@ -64,7 +64,7 @@ function pasteDeck(evt: ClipboardEvent) {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 input {
   outline: 0;
   border: 1px solid #000;

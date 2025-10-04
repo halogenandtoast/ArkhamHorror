@@ -64,7 +64,7 @@ instance RunMessage TaskForce where
         pure $ if null abilities then Nothing else Just (iid', abilities)
       chooseOrRunOneM iid do
         for_ investigatorsWithAbilities \(iid', abilities) ->
-          targeting iid' $ chooseOrRunOneM iid' $ for_ abilities \ab -> abilityLabeled iid' ab nothing
+          targeting iid' $ chooseOneM iid' $ for_ abilities \ab -> abilityLabeled iid' ab nothing
       doStep 0 msg'
       pure . TaskForce $ attrs `with` Meta (1 : usedOptions meta)
     DoStep 2 msg'@(PlayThisEvent iid (is attrs -> True)) -> do

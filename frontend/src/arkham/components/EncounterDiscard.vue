@@ -25,7 +25,7 @@ const image = (card: CardContents) => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .discards {
   background: white;
   display: flex;

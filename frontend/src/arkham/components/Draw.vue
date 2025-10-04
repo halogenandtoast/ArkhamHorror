@@ -185,7 +185,7 @@ const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.ma
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 
 .discard {
   cursor: pointer;

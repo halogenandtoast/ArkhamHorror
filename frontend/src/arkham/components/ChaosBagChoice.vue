@@ -128,7 +128,7 @@ const allResolved = computed(() => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .token-choices {
   margin: 10px;
   background: rgba(0, 0, 0, 0.2);

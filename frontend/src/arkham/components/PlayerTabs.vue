@@ -218,7 +218,7 @@ watchEffect(() => {
   </div>
 </template>
 
-<style lang="scss">
+<style scoped>
 ul.tabs__header {
   display: flex;
   list-style: none;

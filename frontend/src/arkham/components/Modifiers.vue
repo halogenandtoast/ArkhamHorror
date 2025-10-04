@@ -18,7 +18,7 @@ defineEmits<{ close: [] }>()
   </Draggable>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .modifiers {
   align-self: flex-start;
   display: flex;

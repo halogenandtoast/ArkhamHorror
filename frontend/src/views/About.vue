@@ -38,7 +38,7 @@ const isSupportPage = computed(() => route.query.support !== undefined);
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .focus {
   .box {
     border: 1px solid var(--select);

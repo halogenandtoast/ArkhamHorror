@@ -37,7 +37,7 @@ async function join() {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .container {
   width: 100%;
   max-width: 800px;

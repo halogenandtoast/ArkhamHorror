@@ -201,7 +201,7 @@ addCardEntityWith i f e card = case card of
         treachery = f $ createTreachery card i treacheryId
        in
         e & treacheriesL %~ insertMap (toId treachery) treachery
-    _ -> error "Unhandled"
+    _ -> error "Unhandled AddCardEntityWith for encounter card"
   VengeanceCard _ -> error "vengeance card"
  where
   uuid = unsafeCardIdToUUID (toCardId card)

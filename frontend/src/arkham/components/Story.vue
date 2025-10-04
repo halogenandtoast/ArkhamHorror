@@ -117,7 +117,7 @@ const hasPool = computed(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .story--can-interact {
   border: 3px solid var(--select);
   border-radius: 15px;

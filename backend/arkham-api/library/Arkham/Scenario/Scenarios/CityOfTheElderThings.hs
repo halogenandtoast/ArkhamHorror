@@ -200,35 +200,36 @@ instance RunMessage CityOfTheElderThings where
       let group3 = group3Count > group1Count && group3Count > group2Count
       let tied = not (group1 || group2 || group3)
 
-      story
-        $ toFlavor
-        $ p "votes"
-        <> cols
-          [ p "group1" <> ul do
-              li.validate kenslerIsAlive "vote.kensler"
-              li.validate ellsworthIsAlive "vote.ellsworth"
-              li.validate sinhaIsAlive "vote.sinha"
-          , p "group2" <> ul do
-              li.validate danforthIsAlive "vote.danforth"
-              li.validate hirokoIsAlive "vote.hiroko"
-              li.validate eliyahIsAlive "vote.eliyah"
-          , p "group3" <> ul do
-              li.validate dyerIsAlive "vote.dyer"
-              li.validate claypoolIsAlive "vote.claypool"
-              li.validate cookieIsAlive "vote.cookie"
-          ]
-        <> ul do
-          li.validate group1 "vote.group1"
-          li.validate group2 "vote.group2"
-          li.validate group3 "vote.group3"
-          li.validate tied "vote.tied"
-
-      when tied do
-        lead <- getLead
-        chooseOneM lead do
-          labeled "Proceed to _Setup (v. I)_" $ doStep 1 PreScenarioSetup
-          labeled "Proceed to _Setup (v. II)_" $ doStep 2 PreScenarioSetup
-          labeled "Proceed to _Setup (v. III)_" $ doStep 3 PreScenarioSetup
+      storyWithChooseOneM
+        ( toFlavor
+            $ p "votes"
+            <> cols
+              [ p "group1" <> ul do
+                  li.validate kenslerIsAlive "vote.kensler"
+                  li.validate ellsworthIsAlive "vote.ellsworth"
+                  li.validate sinhaIsAlive "vote.sinha"
+              , p "group2" <> ul do
+                  li.validate danforthIsAlive "vote.danforth"
+                  li.validate hirokoIsAlive "vote.hiroko"
+                  li.validate eliyahIsAlive "vote.eliyah"
+              , p "group3" <> ul do
+                  li.validate dyerIsAlive "vote.dyer"
+                  li.validate claypoolIsAlive "vote.claypool"
+                  li.validate cookieIsAlive "vote.cookie"
+              ]
+            <> ul do
+              li.validate group1 "vote.group1"
+              li.validate group2 "vote.group2"
+              li.validate group3 "vote.group3"
+              li.validate tied "vote.tied"
+        )
+        do
+          labeledValidate' (group1 || group1Count `elem` [group2Count, group3Count]) "v1"
+            $ doStep 1 PreScenarioSetup
+          labeledValidate' (group2 || group2Count `elem` [group1Count, group3Count]) "v2"
+            $ doStep 2 PreScenarioSetup
+          labeledValidate' (group3 || group3Count `elem` [group1Count, group2Count]) "v3"
+            $ doStep 3 PreScenarioSetup
 
       when group1 $ doStep 1 PreScenarioSetup
       when group2 $ doStep 2 PreScenarioSetup

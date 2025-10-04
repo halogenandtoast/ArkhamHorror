@@ -445,7 +445,7 @@ const toggleIncludeEncounter = () => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .container {
   display: flex;
   height: calc(100% - 40px);

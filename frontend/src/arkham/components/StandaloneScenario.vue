@@ -84,7 +84,7 @@ const questionHash = computed(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .card {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 6px;

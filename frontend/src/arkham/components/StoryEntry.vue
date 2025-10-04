@@ -83,7 +83,7 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .entry {
   border-radius: 5px;
   background: #DCD6D0;

@@ -83,7 +83,7 @@ function startDrag(event: DragEvent) {
   <img :src="keyImage" class="key" :class="{'key--can-interact': keyAction !== -1, tokenKey }" @dragstart="startDrag($event)" @click="choose" />
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .key {
   width: 20px;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);

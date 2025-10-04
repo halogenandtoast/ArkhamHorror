@@ -167,7 +167,7 @@ handleCosmosWithHandleEmptySpace (asId -> lid) cloc f = do
       <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridRight)
   currentMsgs <- case current of
     Just (EmptySpace _ c) -> case toCardOwner c of
-      Nothing -> error "Unhandled"
+      Nothing -> error "Unhandled EmptySpace with no owner"
       Just iid -> do
         emptySpace <- selectJust $ IncludeEmptySpace $ LocationWithLabel (mkLabel $ cosmicLabel pos)
         handleMsgs <- capture (f iid c)

@@ -163,7 +163,7 @@ const normalizeSkill = (skill: string) => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .modifier {
   flex-shrink: 0;
   align-items: center;

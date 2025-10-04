@@ -90,6 +90,7 @@ placementLocation = \case
   OnTopOfDeck _ -> pure Nothing
   NextToAgenda -> pure Nothing
   Near _ -> pure Nothing
+  InTheShadows -> pure Nothing
 
 class Locateable a where
   getLocationOf :: HasGame m => a -> m (Maybe LocationId)

@@ -7,11 +7,17 @@ import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query
 import Arkham.I18n
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Placement
+import Arkham.Projection
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.RiddlesAndRain.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -21,14 +27,19 @@ newtype RiddlesAndRain = RiddlesAndRain ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riddlesAndRain :: Difficulty -> RiddlesAndRain
-riddlesAndRain difficulty = scenario RiddlesAndRain "09501" "Riddles and Rain" difficulty ["equals"]
+riddlesAndRain difficulty = scenario RiddlesAndRain "09501" "Riddles and Rain" difficulty
+  [ "hourglass triangle circle"
+  , "moon      equals   square"
+  , "t         squiggle ."
+  ]
 
 instance HasChaosTokenValue RiddlesAndRain where
   getChaosTokenValue iid tokenFace (RiddlesAndRain attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      clues <- field InvestigatorClues iid
+      pure $ toChaosTokenValue attrs Skull (if clues >= 2 then 3 else 1) (if clues >= 2 then 4 else 2)
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 1 2
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage RiddlesAndRain where
@@ -111,4 +122,19 @@ instance RunMessage RiddlesAndRain where
         , Enemies.theRedGlovedManShroudedInMystery
         , Keys.theEyeOfRavens
         ]
+    ResolveChaosToken _ Tablet iid -> do
+      withLocationOf iid \loc -> do
+        anyConcealed <- fieldMap LocationConcealedCards (not . null) loc
+        when anyConcealed $ drawAnotherChaosToken iid
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        ElderThing -> do
+          inShadowEnemies <- select $ EnemyWithPlacement InTheShadows
+          clues <- field InvestigatorClues iid
+          chooseOneM iid do
+            targets inShadowEnemies $ placeDoomOn ElderThing 1
+            when (clues > 0) $ clueLabeled iid $ spendClues iid 1
+        _ -> pure ()
+      pure s
     _ -> RiddlesAndRain <$> liftRunMessage msg attrs

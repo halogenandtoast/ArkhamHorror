@@ -2,6 +2,7 @@
 
 module Arkham.Keyword where
 
+import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.CampaignLogKey
 import Arkham.Card.CardCode
 import Arkham.GameValue
@@ -45,7 +46,7 @@ data Keyword
   | Advanced
   | Replacement
   | Partner
-  | Concealed GameValue
+  | Concealed ConcealedCard GameValue
   deriving stock (Show, Eq, Ord, Data)
 
 class HasKeywords a where

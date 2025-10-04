@@ -64,7 +64,7 @@ instance RunMessage TheShadowBehindYou where
 
         when hasResources do
           labeled' "loseAllResources" do
-            push $ LoseAllResources iid (attrs.ability 1)
+            loseAllResources iid (attrs.ability 1)
             toDiscardBy iid (attrs.ability 2) attrs
       pure t
     EndTurn iid | treacheryInThreatArea iid attrs -> do

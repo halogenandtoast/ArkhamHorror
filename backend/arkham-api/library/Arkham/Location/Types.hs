@@ -12,6 +12,7 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Calculation
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
+import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
@@ -106,6 +107,7 @@ data instance Field Location :: Type -> Type where
   LocationKeys :: Field Location (Set ArkhamKey)
   LocationSeals :: Field Location (Set Seal)
   LocationInvestigateDifficulty :: Field Location GameCalculation
+  LocationConcealedCards :: Field Location [ConcealedCard]
 
 deriving stock instance Show (Field Location typ)
 deriving stock instance Ord (Field Location typ)
@@ -151,6 +153,7 @@ fieldLens = \case
   LocationVengeance -> virtual
   LocationVictory -> virtual
   LocationInvestigateDifficulty -> virtual
+  LocationConcealedCards -> concealedCardsL
  where
   virtual = error "virtual attribute can not be set directly"
 
@@ -325,6 +328,7 @@ locationWith f def shroud' revealClues g =
             , locationFloodLevel = Nothing
             , locationPosition = Nothing
             , locationBeingRemoved = False
+            , locationConcealedCards = []
             }
     }
 

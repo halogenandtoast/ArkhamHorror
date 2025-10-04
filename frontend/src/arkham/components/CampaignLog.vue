@@ -141,7 +141,7 @@ function symbolForDay(day: number): string {
   if (day == 15) return 'β'
   if (day == 20) return 'ζ'
   if (day == 24) return 'γ'
-  if (day == 35) return 'ω'
+  if (day == 35) return 'Ω'
   return null
 }
 
@@ -341,7 +341,7 @@ const bonusXp = computed(() => props.game.campaign?.meta?.bonusXp ?? null)
       <h2>Time Passed</h2>
       <div class='calendar'>
         <div class='day' v-for="n in 35" :key="n">
-          <div class='checkbox'>{{n <= time[1] ? 'x' : null}}</div><div class='numeral'>{{n}}</div><div class='symbol'>{{symbolForDay(n)}}</div>
+          <div class='checkbox' :class="{ checked: n <= time[1] }">{{n <= time[1] ? 'x' : null}}</div><div class='numeral'>{{n}}</div><div class='symbol'>{{symbolForDay(n)}}</div>
         </div>
       </div>
     </div>
@@ -610,6 +610,10 @@ tr td:not(:first-child) {
         display: flex;
         line-height: 1em;
         font-weight: bold;
+        &.checked {
+          background-color: #333;
+          color: var(--time-bg);
+        }
       }
       .numeral {
         grid-area: num;

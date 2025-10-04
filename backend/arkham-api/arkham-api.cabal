@@ -1565,6 +1565,7 @@ library
       Arkham.Campaigns.ThePathToCarcosa.Import
       Arkham.Campaigns.ThePathToCarcosa.Key
       Arkham.Campaigns.TheScarletKeys.CampaignSteps
+      Arkham.Campaigns.TheScarletKeys.Concealed
       Arkham.Campaigns.TheScarletKeys.Helpers
       Arkham.Campaigns.TheScarletKeys.Key
       Arkham.Campaigns.TheScarletKeys.Key.Cards

@@ -3796,6 +3796,7 @@ instance Projection Location where
       LocationVengeance -> pure $ cdVengeancePoints $ toCardDef attrs
       LocationVictory -> pure $ cdVictoryPoints $ toCardDef attrs
       LocationConnectedLocations -> setFromList <$> select (connectedFrom $ LocationWithId lid)
+      LocationConcealedCards -> pure locationConcealedCards
 
 instance Projection Asset where
   getAttrs aid = toAttrs <$> getAsset aid

@@ -85,6 +85,7 @@ function isCardAction(c: Message): boolean {
   return false
 }
 
+const concealed = computed(() => props.location.concealedCards)
 const cardAction = computed(() => choices.value.findIndex(isCardAction))
 const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
 let clickTimeout: number | null = null
@@ -475,6 +476,9 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
           :atLocation="true"
           @choose="choose"
         />
+        <div v-if="concealed.length > 0">
+          <img :src="imgsrc('mini-cards/concealed-card.jpg')" class="concealed-card" />
+        </div>
       </div>
     </div>
     <DebugLocation v-if="debugging" :game="game" :location="location" :playerId="playerId" @close="debugging = false" />
@@ -897,5 +901,10 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
 
 :deep(.token) {
   width: 30px;
+}
+
+.concealed-card {
+  width: calc(var(--card-width) * 0.55);
+  border-radius: 3px;
 }
 </style>

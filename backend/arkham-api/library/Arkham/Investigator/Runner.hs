@@ -1050,11 +1050,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         [] -> if choose.overriden then AnyInPlayEnemy else CanFightEnemy source
         [o] -> CanFightEnemyWithOverride o
         _ -> error "multiple overrides found"
+    smods <- filter (== IgnoreAloof) <$> getModifiers choose.skillTest
     enemyIds <-
       withAlteredGame withoutCanModifiers
         $ asIfTurn investigatorId
         $ select
-        $ foldr applyMatcherModifiers (canFightMatcher <> enemyMatcher <> mustChooseMatchers) modifiers
+        $ foldr
+          applyMatcherModifiers
+          (canFightMatcher <> enemyMatcher <> mustChooseMatchers)
+          (modifiers <> smods)
 
     canMoveToConnected <- case source.asset of
       Just aid -> aid <=~> AssetWithCustomization InscriptionOfTheHunt

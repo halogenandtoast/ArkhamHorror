@@ -19,18 +19,18 @@ withFightOverride chooseFight = chooseFight {chooseFightOverride = True}
 
 mkChooseFightPure :: Sourceable source => SkillTestId -> InvestigatorId -> source -> ChooseFight
 mkChooseFightPure sid iid source =
-    ChooseFight
-      { chooseFightInvestigator = iid
-      , chooseFightEnemyMatcher = oneOf [AnyInPlayEnemy, EnemyHiddenInHand (InvestigatorWithId iid)]
-      , chooseFightSource = toSource source
-      , chooseFightTarget = Nothing
-      , chooseFightSkillType = #combat
-      , chooseFightIsAction = False
-      , chooseFightOnlyChoose = False
-      , chooseFightOverride = False
-      , chooseFightSkillTest = sid
-      , chooseFightDifficulty = DefaultChooseFightDifficulty
-      }
+  ChooseFight
+    { chooseFightInvestigator = iid
+    , chooseFightEnemyMatcher = oneOf [AnyInPlayEnemy, EnemyHiddenInHand (InvestigatorWithId iid)]
+    , chooseFightSource = toSource source
+    , chooseFightTarget = Nothing
+    , chooseFightSkillType = #combat
+    , chooseFightIsAction = False
+    , chooseFightOnlyChoose = False
+    , chooseFightOverride = False
+    , chooseFightSkillTest = sid
+    , chooseFightDifficulty = DefaultChooseFightDifficulty
+    }
 
 mkChooseFight
   :: (Sourceable source, HasGame m) => SkillTestId -> InvestigatorId -> source -> m ChooseFight

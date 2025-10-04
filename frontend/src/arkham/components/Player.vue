@@ -25,6 +25,7 @@ import * as Arkham from '@/arkham/types/Investigator';
 import { useI18n } from 'vue-i18n';
 import Draw from '@/arkham/components/Draw.vue'
 import { IsMobile } from '@/arkham/isMobile';
+import { Modifier } from '@/arkham/types/Modifier';
 const { t } = useI18n();
 
 interface RefWrapper<T> {
@@ -133,6 +134,8 @@ const inHandTreacheries = computed(() => Object.values(props.game.treacheries).
   filter((t) => t.placement.tag === "HiddenInHand" && t.placement.contents === id.value))
 
 const totalHandSize = computed(() => {
+  const onlyCountFirstCopy = props.investigator.modifiers?.some((m: Modifier) => m.type.tag === 'OtherModifier' && m.type.contents === "OnlyFirstCopyCardCountsTowardMaximumHandSize")
+
   const sizeModifiers: Record<string, number> = props.game.modifiers.reduce((a, m) => {
     if (m[1][0].type?.tag === "HandSizeCardCount") {
       if (m[0].tag === "CardIdTarget") {
@@ -144,7 +147,14 @@ const totalHandSize = computed(() => {
     return a
   }, {})
 
-  const playerHandSize = playerHand.value.reduce((a, c) => {
+  // if onlyCountFirstCopy is true, we need to filter the hand to only count the first copy of each card
+  const hand = onlyCountFirstCopy
+    ? playerHand.value.filter((c, i) => {
+        return playerHand.value.findIndex(cc => CardT.asCardCode(cc) === CardT.asCardCode(c)) === i
+      })
+    : playerHand.value
+
+  const playerHandSize = hand.reduce((a, c) => {
     return a + (sizeModifiers[toCardContents(c).id] ?? 1)
   }, 0)
 
@@ -157,6 +167,10 @@ const totalHandSize = computed(() => {
   }, 0)
 
   return playerHandSize + treacheryHandSize + enemyHandSize
+})
+
+const actualHandSize = computed(() => {
+  return playerHand.value.length + inHandTreacheries.value.length + inHandEnemies.value.length
 })
 
 const handSizeClasses = computed(() => ({
@@ -803,7 +817,7 @@ function toggleHandAreaMarginBottom(event: Event) {
   background-color: var(--neutral-dark);
   display: grid;
   grid-template-columns: 1fr;
-  width: calc((v-bind(totalHandSize) * var(--card-width)) + ((v-bind(totalHandSize) - 1) * 5px));
+  width: calc((v-bind(actualHandSize) * var(--card-width)) + ((v-bind(actualHandSize) - 1) * 5px));
   max-width: 100%;
   min-width: fit-content;
 

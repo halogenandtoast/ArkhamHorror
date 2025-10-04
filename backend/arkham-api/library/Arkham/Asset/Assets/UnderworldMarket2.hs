@@ -1,15 +1,17 @@
 module Arkham.Asset.Assets.UnderworldMarket2 (underworldMarket2) where
 
 import Arkham.Ability
-import Arkham.Message.Lifted.Choose
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
+import Arkham.Deck qualified as Deck
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers
+import Arkham.Helpers hiding (drawCard)
 import Arkham.Helpers.Cost (getSpendableResources)
+import Arkham.Investigator.Deck qualified as DeckKey
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
 newtype Meta = Meta {marketDeck :: [Card]}
@@ -58,7 +60,7 @@ instance RunMessage UnderworldMarket2 where
                   for_ (eachWithRest xs) \(card, cs) -> do
                     targeting card do
                       unfocusCards
-                      addToHand iid (only card)
+                      drawCardFrom iid card (Deck.InvestigatorDeckByKey iid DeckKey.UnderworldMarketDeck)
                       focusCards cs do
                         chooseOrRunOneAtATimeM iid $ targets cs $ handleTarget iid (attrs.ability 2)
                         unfocusCards

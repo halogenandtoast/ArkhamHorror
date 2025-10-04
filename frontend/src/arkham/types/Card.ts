@@ -27,7 +27,7 @@ function cardArt(card: Card): string | undefined {
   }
 }
 
-function asCardCode(card: Card): string {
+export function asCardCode(card: Card): string {
   switch (card.tag) {
     case 'PlayerCard':
       return card.contents.cardCode

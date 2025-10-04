@@ -276,6 +276,7 @@ const enemyGroups = computed(()=>{
 const outOfPlayEnemies = computed(() => enemyGroups.value.outOfPlay)
 const pursuit = computed(() => enemyGroups.value.pursuit)
 const globalEnemies = computed(() => enemyGroups.value.global)
+const inTheShadows = computed(() => Object.values(props.game.enemies).filter((e) => e.placement.tag === "InTheShadows"))
 const enemiesAsLocations = computed(() => enemyGroups.value.asLoc)
 const topEnemyInVoid = computed(() => enemyGroups.value.firstVoid)
 
@@ -675,6 +676,16 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
         @close="hideCards"
       />
       <div class="scenario-cards">
+        <div v-if="inTheShadows.length > 0" class="in-the-shadows">
+          <EnemyView
+            v-for="enemy in inTheShadows"
+            :key="enemy.id"
+            :enemy="enemy"
+            :game="game"
+            :playerId="playerId"
+            @choose="choose"
+          />
+        </div>
         <div v-if="tarotCards.length > 0" class="tarot-cards">
           <div
             v-for="tarotCard in tarotCards"
@@ -1773,5 +1784,12 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
   &:hover {
     background: var(--button-highlight);
   }
+}
+
+.in-the-shadows {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  min-width: 10vw;
+  border-radius: 1vw;
 }
 </style>

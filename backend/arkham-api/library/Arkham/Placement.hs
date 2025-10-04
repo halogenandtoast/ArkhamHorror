@@ -46,6 +46,7 @@ data Placement
   | Global
   | OutOfPlay OutOfPlayZone
   | Near Target
+  | InTheShadows
   deriving stock (Show, Eq, Ord, Data, Generic)
 
 instance HasField "attachedTo" Placement (Maybe Target) where
@@ -97,6 +98,7 @@ placementToAttached = \case
   AsSwarm _ _ -> Nothing
   HiddenInHand _ -> Nothing
   OnTopOfDeck _ -> Nothing
+  InTheShadows -> Nothing
 
 isOutOfPlayPlacement :: Placement -> Bool
 isOutOfPlayPlacement = not . isInPlayPlacement
@@ -126,6 +128,7 @@ isInPlayPlacement = \case
   HiddenInHand _ -> False
   OnTopOfDeck _ -> False
   Near _ -> True
+  InTheShadows -> True
 
 isHiddenPlacement :: Placement -> Bool
 isHiddenPlacement = \case

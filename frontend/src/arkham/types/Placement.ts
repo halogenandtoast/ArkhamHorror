@@ -14,6 +14,7 @@ export type Placement
   | { tag: "Limbo" }
   | { tag: "NextToAgenda" }
   | { tag: "AttachedToAgenda" }
+  | { tag: "InTheShadows" }
   | { tag: "OtherPlacement", contents: string }
 
 export const placementDecoder = JsonDecoder.oneOf<Placement>([
@@ -29,5 +30,6 @@ export const placementDecoder = JsonDecoder.oneOf<Placement>([
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("HiddenInHand"), contents: JsonDecoder.string() }, 'HiddenInHand'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("OnTopOfDeck"), contents: JsonDecoder.string() }, 'OnTopOfDeck'),
   JsonDecoder.object({ tag: JsonDecoder.literal("OutOfPlay"), contents: JsonDecoder.string()}, 'OutOfPlay'),
+  JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("InTheShadows")}, 'InTheShadows'),
   JsonDecoder.object({ tag: JsonDecoder.string() }, 'OtherPlacement').map(({tag}) => ({ tag: "OtherPlacement", contents: tag }))
 ], 'Placement')

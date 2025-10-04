@@ -3,6 +3,7 @@
 module Arkham.Location.Base where
 
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
+import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Card
 import Arkham.ChaosToken.Types
 import Arkham.Cost
@@ -59,6 +60,7 @@ data LocationAttrs = LocationAttrs
   , locationGlobalMeta :: Map Aeson.Key Value
   , locationPosition :: Maybe Pos
   , locationBeingRemoved :: Bool
+  , locationConcealedCards :: [ConcealedCard]
   }
   deriving stock (Show, Eq)
 
@@ -182,5 +184,6 @@ instance FromJSON LocationAttrs where
     locationGlobalMeta <- o .:? "globalMeta" .!= mempty
     locationPosition <- o .:? "position"
     locationBeingRemoved <- o .:? "beingRemoved" .!= False
+    locationConcealedCards <- o .:? "concealedCards" .!= []
 
     pure LocationAttrs {..}

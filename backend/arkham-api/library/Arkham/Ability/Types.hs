@@ -210,11 +210,11 @@ instance FromJSON Ability where
     abilityCanBeCancelled <- o .: "canBeCancelled"
     abilityDisplayAsAction <- o .:? "displayAsAction" .!= False
     abilityDisplayAs <-
-      o .:? "displayAs" .!= if abilityDisplayAsAction then Just DisplayAsAction else Nothing
+      o .:? "displayAs" .!= (guard abilityDisplayAsAction $> DisplayAsAction)
     abilityDelayAdditionalCosts <-
-      (o .: "delayAdditionalCosts" <&> \x -> if x then Just DelayAdditionalCosts else Nothing)
+      ((o .:? "delayAdditionalCosts" .!= False) <&> \x -> guard x $> DelayAdditionalCosts)
         <|> o
-        .: "delayAdditionalCosts"
+        .:? "delayAdditionalCosts"
     abilityBasic <- o .: "basic"
     abilityAdditionalCosts <- o .: "additionalCosts"
     abilityRequestor <- o .:? "requestor" .!= abilitySource

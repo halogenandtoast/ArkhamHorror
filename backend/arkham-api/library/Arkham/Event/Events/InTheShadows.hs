@@ -1,7 +1,7 @@
 module Arkham.Event.Events.InTheShadows (inTheShadows) where
 
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Import.Lifted
+import Arkham.Event.Import.Lifted hiding (Placement(InTheShadows))
 import Arkham.Matcher
 import Arkham.Modifier
 

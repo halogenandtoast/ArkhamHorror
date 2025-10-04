@@ -14,6 +14,67 @@ export const brazierDecoder: JsonDecoder.Decoder<Brazier> = JsonDecoder.oneOf<Br
   JsonDecoder.literal('Unlit'),
 ], 'Brazier');
 
+export type ConcealedCard
+  = 'Decoy'
+  | 'AcolyteAny'
+  | 'ApportionedKa'
+  | 'CityOfRemnantsL'
+  | 'CityOfRemnantsM'
+  | 'CityOfRemnantsR'
+  | 'CoterieAgentA'
+  | 'CoterieAgentB'
+  | 'CoterieAgentC'
+  | 'CoterieAssasinA'
+  | 'CoterieAssasinB'
+  | 'CoteriaEnforcerA'
+  | 'CoteriaEnforcerB'
+  | 'DecoyVoidChimeraEarsplitter'
+  | 'DecoyVoidChimeraFellbeak'
+  | 'DecoyVoidChimeraFellhound'
+  | 'DecoyVoidChimeraGorefeaster'
+  | 'DesiderioDelgadoAlvarez'
+  | 'EmissaryFromYuggoth'
+  | 'LaChicaRoja'
+  | 'MimeticNemesis'
+  | 'SinisterAspirantA'
+  | 'SinisterAspirantB'
+  | 'SinisterAspirantC'
+  | 'TheRedGlovedMan'
+  | 'TzuSanNiang'
+  | 'VoidChimeraTrueForm'
+  | 'WizardOfTheOrder'
+
+export const concealedCardDecoder: JsonDecoder.Decoder<ConcealedCard> = JsonDecoder.oneOf<ConcealedCard>([
+  JsonDecoder.literal('Decoy'),
+  JsonDecoder.literal('AcolyteAny'),
+  JsonDecoder.literal('ApportionedKa'),
+  JsonDecoder.literal('CityOfRemnantsL'),
+  JsonDecoder.literal('CityOfRemnantsM'),
+  JsonDecoder.literal('CityOfRemnantsR'),
+  JsonDecoder.literal('CoterieAgentA'),
+  JsonDecoder.literal('CoterieAgentB'),
+  JsonDecoder.literal('CoterieAgentC'),
+  JsonDecoder.literal('CoterieAssasinA'),
+  JsonDecoder.literal('CoterieAssasinB'),
+  JsonDecoder.literal('CoteriaEnforcerA'),
+  JsonDecoder.literal('CoteriaEnforcerB'),
+  JsonDecoder.literal('DecoyVoidChimeraEarsplitter'),
+  JsonDecoder.literal('DecoyVoidChimeraFellbeak'),
+  JsonDecoder.literal('DecoyVoidChimeraFellhound'),
+  JsonDecoder.literal('DecoyVoidChimeraGorefeaster'),
+  JsonDecoder.literal('DesiderioDelgadoAlvarez'),
+  JsonDecoder.literal('EmissaryFromYuggoth'),
+  JsonDecoder.literal('LaChicaRoja'),
+  JsonDecoder.literal('MimeticNemesis'),
+  JsonDecoder.literal('SinisterAspirantA'),
+  JsonDecoder.literal('SinisterAspirantB'),
+  JsonDecoder.literal('SinisterAspirantC'),
+  JsonDecoder.literal('TheRedGlovedMan'),
+  JsonDecoder.literal('TzuSanNiang'),
+  JsonDecoder.literal('VoidChimeraTrueForm'),
+  JsonDecoder.literal('WizardOfTheOrder'),
+], 'ConcealedCard');
+
 
 export type FloodLevel = "Unflooded" | "PartiallyFlooded" | "FullyFlooded"
 
@@ -46,6 +107,7 @@ export type Location = {
   keys: ArkhamKey[];
   seals: Seal[];
   sealedChaosTokens: ChaosToken[];
+  concealedCards: ConcealedCard[];
 }
 
 type GameValue = { tag: "Static", contents: number } | { tag: "PerPlayer", contents: number }
@@ -79,6 +141,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
     seals: JsonDecoder.array<Seal>(sealDecoder, 'Seal[]'),
     sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
+    concealedCards: JsonDecoder.array<ConcealedCard>(concealedCardDecoder, 'ConcealedCard[]'),
   },
   'Location',
 );

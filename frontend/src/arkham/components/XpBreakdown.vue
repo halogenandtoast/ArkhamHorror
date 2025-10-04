@@ -193,9 +193,9 @@ span {
     background: var(--spooky-green);
     color: white;
     border-radius: 3px;
-    &--negative {
-      background: darkred;
-    }
+  }
+  .amount--negative {
+    background: darkred;
   }
 }
 
@@ -217,9 +217,10 @@ span {
     background: var(--spooky-green);
     color: white;
     border-radius: 3px;
-    &--negative {
-      background: darkred;
-    }
+  }
+
+  .amount--negative {
+    background: darkred;
   }
 }
 
@@ -238,9 +239,10 @@ span {
     background: var(--spooky-green);
     color: white;
     border-radius: 3px;
-    &--negative {
-      background: darkred;
-    }
+  }
+
+  .amount--negative {
+    background: darkred;
   }
 }
 
@@ -313,6 +315,7 @@ span {
 .investigator-amount {
   display: flex;
   isolation: isolate;
+  align-items: flex-end;
   .amount {
     max-height: fit-content;
     padding-left: 10px;
@@ -320,10 +323,9 @@ span {
     z-index: -1;
     margin-bottom: 5px;
 
-    &--negative {
-      background: darkred;
-    }
   }
-  align-items: flex-end;
+  .amount--negative {
+    background: darkred;
+  }
 }
 </style>

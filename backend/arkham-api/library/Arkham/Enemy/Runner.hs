@@ -43,7 +43,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf, placementLocation)
 import Arkham.Helpers.Modifiers hiding (ModifierType (..))
 import Arkham.Helpers.Placement
 import Arkham.Helpers.Query
@@ -311,6 +311,18 @@ instance RunMessage EnemyAttrs where
                       [EnemySpawn details {spawnDetailsSpawnAt = SpawnEngagedWith (InvestigatorWithId iid)}]
                   | iid <- iids
                   ]
+        SpawnAt matcher -> do
+          locations <- select matcher
+          if null locations
+            then push (toDiscard GameSource eid)
+            else do
+              player <- maybe getLeadPlayer getPlayer details.investigator
+              push
+                $ chooseOrRunOne
+                  player
+                  [ targetLabel lid [EnemySpawn details {spawnDetailsSpawnAt = SpawnAtLocation lid}]
+                  | lid <- locations
+                  ]
         SpawnAtLocation lid -> do
           locations' <- select $ IncludeEmptySpace Anywhere
           canEnter <- eid <=~> IncludeOmnipotent (EnemyCanSpawnIn $ IncludeEmptySpace $ LocationWithId lid)
@@ -365,7 +377,16 @@ instance RunMessage EnemyAttrs where
                                 $ chooseOne lead
                                 $ [targetLabel iid [EnemyEntered eid lid, EnemyEngageInvestigator eid iid] | iid <- choices]
                 else pushWhen (#massive `notElem` keywords) $ EnemyEntered eid lid
-        _ -> error "Unhandled"
+        SpawnPlaced placement -> do
+          mLocation <- placementLocation placement
+          (beforeMessages, afterMessages) <- case mLocation of
+            Nothing -> pure ([], [])
+            Just lid -> do
+              whenSpawns <- checkWindows [mkWhen (Window.EnemySpawns enemyId lid)]
+              afterSpawns <- checkWindows [mkAfter (Window.EnemySpawns enemyId lid)]
+              pure ([whenSpawns], [afterSpawns, EnemySpawned details])
+          pushAll $ beforeMessages <> [PlaceEnemy enemyId placement] <> afterMessages
+        _ -> error $ "Unhandled spawn: " <> show details.spawnAt
       pure $ a & spawnDetailsL ?~ details
     EnemySpawned details | details.enemy == enemyId -> do
       pure $ a & spawnDetailsL .~ Nothing
@@ -380,7 +401,7 @@ instance RunMessage EnemyAttrs where
           -- EnemySpawn flow which will handle these windows, otherwise it
           -- means an enemy is moving from out of play into play in a
           -- non-spawning method and we'll want to trigger them
-          when (isOutOfPlayPlacement a.placement && isNothing enemySpawnDetails) do
+          when (isOutOfPlayPlacement a.placement) do
             pushM $ checkWhen $ Window.EnemySpawns eid lid
             pushM $ checkAfter $ Window.EnemySpawns eid lid
 
@@ -1131,7 +1152,7 @@ instance RunMessage EnemyAttrs where
                , attackExhaustsEnemy details
                , DoNotExhaust `notElem` mods
                ]
-        _ -> error "Unhandled"
+        _ -> error $ "Unhandled attack target: " <> show (attackTarget details)
 
       whenM (eid <=~> ReadyEnemy) do
         pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive a.id

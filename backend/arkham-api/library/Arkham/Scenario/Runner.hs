@@ -1781,4 +1781,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ a & setAsideCardsL %~ filter (/= card)
   SetDecksLayout layout -> do
     pure $ a & decksLayoutL .~ layout
+  PlaceConcealedCards iid (card : cards) lids -> do
+    locations <- select $ Matcher.NearestLocationTo iid (Matcher.mapOneOf Matcher.LocationWithId lids)
+    chooseTargetM iid locations \lid -> do
+      push $ PlaceConcealedCard iid card (toTarget lid)
+      push $ PlaceConcealedCards iid cards (deleteFirst lid lids)
+    pure a
   _ -> pure a

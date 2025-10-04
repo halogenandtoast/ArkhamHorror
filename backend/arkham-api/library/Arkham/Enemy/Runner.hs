@@ -29,6 +29,7 @@ import Arkham.Target as X
 import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -1552,56 +1553,76 @@ instance RunMessage EnemyAttrs where
       pure a
     InvestigatorDrawEnemy iid eid | eid == enemyId -> do
       push $ UpdateHistory iid (HistoryItem HistoryEnemiesDrawn [toCardCode a])
-      mods <- (<>) <$> getModifiers enemyId <*> getModifiers (CardIdTarget $ toCardId a)
-      let
-        getModifiedSpawnAt [] = enemySpawnAt
-        getModifiedSpawnAt (ForceSpawnLocation m : _) = Just $ SpawnAt m
-        getModifiedSpawnAt (ForceSpawn m : _) = Just m
-        getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
-        spawnAtMatcher = getModifiedSpawnAt mods
-        LocationFilter cannotSpawnMatchers = fold [LocationFilter m | CannotSpawnIn m <- mods]
-        (LocationFilter changeSpawnMatchers, changedSpawnMatchers) = fold [(LocationFilter x, y) | ChangeSpawnLocation x y <- mods]
-        applyMatcherExclusions ms (SpawnAtFirst sas) =
-          SpawnAtFirst (map (applyMatcherExclusions ms) sas)
-        applyMatcherExclusions [] m = m
-        applyMatcherExclusions (CannotSpawnIn n : xs) (SpawnAt m) =
-          applyMatcherExclusions xs (SpawnAt $ m <> NotLocation n)
-        applyMatcherExclusions (_ : xs) m = applyMatcherExclusions xs m
-
-      case spawnAtMatcher of
+      mconcealed <-
+        getModifiedKeywords a <&> foldMap \case
+          Keyword.Concealed card n -> First $ Just (card, n)
+          _ -> First Nothing
+      case getFirst mconcealed of
+        Just (card, gv) -> do
+          n <- getGameValue gv
+          concealedCards <- shuffle (card : replicate n Decoy)
+          locations <- select Anywhere
+          pushAll
+            $ resolve
+            $ EnemySpawn
+            $ SpawnDetails
+              { spawnDetailsInvestigator = Just iid
+              , spawnDetailsSpawnAt = SpawnPlaced InTheShadows
+              , spawnDetailsEnemy = eid
+              , spawnDetailsOverridden = True
+              }
+          push $ PlaceConcealedCards iid concealedCards locations
         Nothing -> do
-          mlid <- getMaybeLocation iid
-          case mlid of
-            Just lid -> do
-              canSpawn <- lid <!=~> cannotSpawnMatchers
-              unchanged <- lid <!=~> changeSpawnMatchers
-              if canSpawn && unchanged
-                then do
-                  windows' <- checkWindows [mkWhen $ Window.EnemyWouldSpawnAt eid lid]
-                  canBeEngaged <- matches iid (InvestigatorCanBeEngagedBy eid)
-                  isAloof <- matches eid AloofEnemy
-                  pushAll $ windows'
-                    : resolve
-                      ( EnemySpawn
-                          $ SpawnDetails
-                            { spawnDetailsInvestigator = Just iid
-                            , spawnDetailsSpawnAt =
-                                if canBeEngaged && not isAloof
-                                  then SpawnEngagedWith (InvestigatorWithId iid)
-                                  else SpawnAtLocation lid
-                            , spawnDetailsEnemy = eid
-                            , spawnDetailsOverridden = False
-                            }
-                      )
-                else
-                  if not unchanged
+          mods <- (<>) <$> getModifiers enemyId <*> getModifiers (CardIdTarget $ toCardId a)
+          let
+            getModifiedSpawnAt [] = enemySpawnAt
+            getModifiedSpawnAt (ForceSpawnLocation m : _) = Just $ SpawnAt m
+            getModifiedSpawnAt (ForceSpawn m : _) = Just m
+            getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
+            spawnAtMatcher = getModifiedSpawnAt mods
+            LocationFilter cannotSpawnMatchers = fold [LocationFilter m | CannotSpawnIn m <- mods]
+            (LocationFilter changeSpawnMatchers, changedSpawnMatchers) = fold [(LocationFilter x, y) | ChangeSpawnLocation x y <- mods]
+            applyMatcherExclusions ms (SpawnAtFirst sas) =
+              SpawnAtFirst (map (applyMatcherExclusions ms) sas)
+            applyMatcherExclusions [] m = m
+            applyMatcherExclusions (CannotSpawnIn n : xs) (SpawnAt m) =
+              applyMatcherExclusions xs (SpawnAt $ m <> NotLocation n)
+            applyMatcherExclusions (_ : xs) m = applyMatcherExclusions xs m
+
+          case spawnAtMatcher of
+            Nothing -> do
+              mlid <- getMaybeLocation iid
+              case mlid of
+                Just lid -> do
+                  canSpawn <- lid <!=~> cannotSpawnMatchers
+                  unchanged <- lid <!=~> changeSpawnMatchers
+                  if canSpawn && unchanged
                     then do
-                      spawnAt enemyId (Just iid)
-                        $ applyMatcherExclusions mods
-                        $ replaceYouMatcher iid (SpawnAt $ not_ changeSpawnMatchers <> changedSpawnMatchers)
-                    else noSpawn a (Just iid)
-            Nothing -> noSpawn a (Just iid)
-        Just matcher -> spawnAt enemyId (Just iid) (applyMatcherExclusions mods $ replaceYouMatcher iid matcher)
+                      windows' <- checkWindows [mkWhen $ Window.EnemyWouldSpawnAt eid lid]
+                      canBeEngaged <- matches iid (InvestigatorCanBeEngagedBy eid)
+                      isAloof <- matches eid AloofEnemy
+                      pushAll $ windows'
+                        : resolve
+                          ( EnemySpawn
+                              $ SpawnDetails
+                                { spawnDetailsInvestigator = Just iid
+                                , spawnDetailsSpawnAt =
+                                    if canBeEngaged && not isAloof
+                                      then SpawnEngagedWith (InvestigatorWithId iid)
+                                      else SpawnAtLocation lid
+                                , spawnDetailsEnemy = eid
+                                , spawnDetailsOverridden = False
+                                }
+                          )
+                    else
+                      if not unchanged
+                        then do
+                          spawnAt enemyId (Just iid)
+                            $ applyMatcherExclusions mods
+                            $ replaceYouMatcher iid (SpawnAt $ not_ changeSpawnMatchers <> changedSpawnMatchers)
+                        else noSpawn a (Just iid)
+                Nothing -> noSpawn a (Just iid)
+            Just matcher -> spawnAt enemyId (Just iid) (applyMatcherExclusions mods $ replaceYouMatcher iid matcher)
       pure a
     EnemySpawnAtLocationMatching miid locationMatcher eid | eid == enemyId -> do
       activeInvestigatorId <- getActiveInvestigatorId

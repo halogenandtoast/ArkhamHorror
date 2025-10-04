@@ -23,6 +23,7 @@ import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Campaigns.TheForgottenAge.Supply
+import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Card
 import Arkham.Card.Settings
 import Arkham.ChaosBag.RevealStrategy
@@ -197,6 +198,11 @@ instance Sourceable a => Is a Source where
 
 instance Targetable a => Is a Target where
   is = isTarget
+
+pattern LoseAllResources :: InvestigatorId -> Source -> Message
+pattern LoseAllResources iid source <- LoseAll iid source Token.Resource
+  where
+    LoseAllResources iid source = LoseAll iid source Token.Resource
 
 pattern MovedDamage :: Source -> Source -> Target -> Int -> Message
 pattern MovedDamage source source' target n <- MoveTokens source source' target Token.Damage n
@@ -836,7 +842,7 @@ data Message
   | LookAtTopOfDeck InvestigatorId Target Int
   | LoseActions InvestigatorId Source Int
   | LoseResources InvestigatorId Source Int
-  | LoseAllResources InvestigatorId Source
+  | LoseAll InvestigatorId Source Token
   | SpendActions InvestigatorId Source [Action] Int
   | -- | Handles complex movement for a target, triggers Moves windows, and uses MoveFrom, MoveTo messages
     Move Movement
@@ -1188,6 +1194,8 @@ data Message
   | HandleGroupTarget GroupKey Target [Message]
   | HandleGroupTargets AutoStatus GroupKey (Map Target [Message])
   | KonamiCode
+  | PlaceConcealedCards InvestigatorId [ConcealedCard] [LocationId]
+  | PlaceConcealedCard InvestigatorId ConcealedCard Target
   | -- Commit
     Do Message
   | DoBatch BatchId Message
@@ -1212,6 +1220,11 @@ instance FromJSON Message where
         case contents of
           Right (a, b) -> pure $ RemoveCardEntity a b
           Left b -> pure $ RemoveCardEntity (fromWords64 6128981282234515924 12039885860129472512) b
+      "LoseAllResources" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left i -> pure $ LoseAll i GameSource Token.Resource
+          Right (i, s) -> pure $ LoseAll i s Token.Resource
       "DrawEnded" -> do
         contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
         case contents of
@@ -1340,11 +1353,6 @@ instance FromJSON Message where
         case contents of
           Left (i, n) -> pure $ ExcessHealDamage i GameSource n
           Right (i, s, n) -> pure $ ExcessHealDamage i s n
-      "LoseAllResources" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Left i -> pure $ LoseAllResources i GameSource
-          Right (i, s) -> pure $ LoseAllResources i s
       "RunWindow" -> do
         (_a :: Value, b) <- o .: "contents"
         pure $ CheckWindows b

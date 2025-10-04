@@ -40,6 +40,7 @@ placedInThreatArea = \case
   HiddenInHand _ -> pure Nothing
   OnTopOfDeck _ -> pure Nothing
   NextToAgenda -> pure Nothing
+  InTheShadows -> pure Nothing
 
 checkEntersThreatArea :: (HasGame m, HasQueue Message m, IsCard a) => a -> Placement -> m ()
 checkEntersThreatArea a p =
@@ -113,3 +114,4 @@ onSameLocation iid = \case
   OnTopOfDeck _ -> pure False
   NextToAgenda -> pure False
   Near _ -> pure False
+  InTheShadows -> pure False

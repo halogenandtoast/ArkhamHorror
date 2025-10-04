@@ -3263,8 +3263,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
     pure a
   Do (LoseResources iid source n) | iid == investigatorId -> liftRunMessage (RemoveTokens source (toTarget a) #resource n) a
-  LoseAllResources iid source | iid == investigatorId -> do
-    liftRunMessage (LoseResources iid source a.resources) a
+  LoseAll iid source tkn | iid == investigatorId -> do
+    case tkn of
+      Token.Resource -> liftRunMessage (LoseResources iid source a.resources) a
+      _ -> pure $ a & tokensL %~ insertMap tkn 0
   TakeResources iid n source True | iid == investigatorId -> do
     let ability = restricted iid ResourceAbility (Self <> Never) (ActionAbility [#resource] $ ActionCost 1)
     whenActivateAbilityWindow <- checkWhen $ Window.ActivateAbility iid [] ability

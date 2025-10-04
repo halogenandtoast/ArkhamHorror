@@ -2,6 +2,7 @@ module Arkham.Enemy.Cards where
 
 import Arkham.Prelude
 
+import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
@@ -2750,7 +2751,7 @@ theRedGlovedManShroudedInMystery :: CardDef
 theRedGlovedManShroudedInMystery =
   (enemy "09518" ("The Red-Gloved Man" <:> "Shrouded in Mystery") RiddlesAndRain 1)
     { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
-    , cdKeywords = setFromList [Keyword.Concealed (PerPlayer 1), Keyword.Retaliate]
+    , cdKeywords = setFromList [Keyword.Concealed TheRedGlovedMan (PerPlayer 1), Keyword.Retaliate]
     , cdVictoryPoints = Just 1
     }
 

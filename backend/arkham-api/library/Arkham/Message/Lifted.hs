@@ -1854,6 +1854,9 @@ loseResourcesOf source n iid = loseResources iid source n
 loseAllResources :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 loseAllResources iid source = loseResources iid source =<< field InvestigatorResources iid
 
+loseAllClues :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
+loseAllClues iid (toSource -> source) = push $ Msg.LoseAll iid source #clue
+
 drawEncounterCard :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 drawEncounterCard i source = drawEncounterCards i source 1
 

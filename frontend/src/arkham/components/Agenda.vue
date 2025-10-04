@@ -245,7 +245,7 @@ const isVertical = computed(() => {
   gap: 5px;
   flex-direction: row;
   margin-top: -50px;
-  //position: inherit;
+  /*position: inherit;*/
   transition: margin-top 0.3s;
   position: relative;
 

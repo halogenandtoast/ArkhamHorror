@@ -671,8 +671,8 @@ watch(card, (src) => { if (src) loadAR(src) })
   }
   &.sideways {
     height: 300px !important;
-    //width: fit-content !important;
-    //aspect-ratio: var(--card-sideways-aspect);
+    /*width: fit-content !important;*/
+    /*aspect-ratio: var(--card-sideways-aspect);*/
     width: auto;
     @media (max-width: 800px) and (orientation: portrait){
       overflow: auto;

@@ -146,7 +146,7 @@ h2 {
 }
 
 .campaign-icon {
-  //filter: invert(28%) sepia(100%) hue-rotate(-180deg) saturate(3);
+  /*filter: invert(28%) sepia(100%) hue-rotate(-180deg) saturate(3);*/
   filter: invert(100%) brightness(85%);
   max-height: 50px;
   width: 100%;
@@ -332,7 +332,7 @@ h2 {
     width: 100%;
     height: 100%;
     opacity: 0.1;
-    //background-image: v-bind(box);
+    /*background-image: v-bind(box);*/
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;

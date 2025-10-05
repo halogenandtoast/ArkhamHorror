@@ -22,12 +22,7 @@ instance HasModifiersFor TheDreamEaters where
 
 instance HasAbilities TheDreamEaters where
   getAbilities (TheDreamEaters x) =
-    [ mkAbility x 1
-        $ Objective
-        $ forced
-        $ EnemyDefeated #after Anyone ByAny
-        $ enemyIs Enemies.nyarlathotepTrueShape
-    ]
+    [mkAbility x 1 $ Objective $ forced $ ifEnemyDefeated Enemies.nyarlathotepTrueShape]
 
 instance RunMessage TheDreamEaters where
   runMessage msg a@(TheDreamEaters attrs) = runQueueT $ case msg of

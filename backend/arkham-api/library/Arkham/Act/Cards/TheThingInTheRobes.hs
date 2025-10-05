@@ -24,11 +24,7 @@ instance HasAbilities TheThingInTheRobes where
             <> exists (enemyIs Enemies.highPriestNotToBeDescribed)
         )
         actionAbility
-    , mkAbility attrs 2
-        $ Objective
-        $ forced
-        $ EnemyDefeated #after Anyone ByAny
-        $ enemyIs Enemies.highPriestNotToBeDescribed
+    , mkAbility attrs 2 $ Objective $ forced $ ifEnemyDefeated Enemies.highPriestNotToBeDescribed
     ]
 
 instance RunMessage TheThingInTheRobes where

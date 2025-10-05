@@ -1385,9 +1385,9 @@ instance RunMessage EnemyAttrs where
           guard (not a.placement.isInVictory) *> [Discard miid GameSource $ toTarget a | not placeInVictory]
 
       pushAll
-        $ victoryMsgs
+        $ afterDefeatMsg
+        : victoryMsgs
         <> (guard (not a.placement.isInVictory) *> windows [Window.EntityDiscarded source (toTarget a)])
-        <> [afterDefeatMsg]
         <> defeatMsgs
         <> [afterMsg]
       pure a

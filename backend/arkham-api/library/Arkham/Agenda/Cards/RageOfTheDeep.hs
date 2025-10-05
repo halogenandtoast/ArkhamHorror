@@ -15,7 +15,7 @@ newtype RageOfTheDeep = RageOfTheDeep AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rageOfTheDeep :: AgendaCard RageOfTheDeep
-rageOfTheDeep = agenda (4, A) RageOfTheDeep Cards.rageOfTheDeep (Static 12)
+rageOfTheDeep = agenda (4, A) RageOfTheDeep Cards.rageOfTheDeep (Static 3)
 
 instance HasModifiersFor RageOfTheDeep where
   getModifiersFor (RageOfTheDeep a) = do

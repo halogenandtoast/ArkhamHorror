@@ -1513,6 +1513,7 @@ heretic_G =
   (enemy "05178g" "Heretic" TheWagesOfSin 1)
     { cdCardTraits = setFromList [Monster, Geist, Witch, Spectral, Elite]
     , cdOtherSide = Just "05178h"
+    , cdOutOfPlayEffects = [InDiscardEffect]
     }
 
 heretic_I :: CardDef

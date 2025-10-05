@@ -58,8 +58,7 @@ instance RunMessage ACosmicJourney where
       lead <- getLead
       centralLot <- placeSetAsideLocation Locations.centralLotQuietOnSet
       flipOverBy lead attrs centralLot
-      monarchCard <-
-        selectJust $ VictoryDisplayCardMatch $ basic $ cardIs Enemies.saturniteMonarchGraciousHost
+      monarchCard <- fetchCard Enemies.saturniteMonarchGraciousHost
       monarch <- createEnemyAt monarchCard centralLot
       flipOverBy lead attrs monarch
 

@@ -2696,7 +2696,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       pushAll $ [ChooseLeadInvestigator | isLead] <> [Msg.InvestigatorDefeated source iid]
     pure $ a & defeatedL .~ True & endedTurnL .~ True & killedL .~ True
   MoveAllTo source lid | not (a ^. defeatedL || a ^. resignedL) -> do
-    moveToEdit source investigatorId lid \m -> m {moveMeans = Place}
+    moveToEdit source investigatorId lid \m ->
+      m
+        { moveMeans = Place
+        , movePayAdditionalCosts = False
+        , moveCancelable = False
+        }
     pure a
   MoveTo movement | isTarget a (moveTarget movement) -> do
     pushAll [ResolveMovement investigatorId, ResolvedMovement investigatorId]

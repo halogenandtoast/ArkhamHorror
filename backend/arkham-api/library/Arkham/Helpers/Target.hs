@@ -41,6 +41,7 @@ targetTraits = \case
   EffectTarget _ -> pure mempty
   KeyTarget _ -> pure mempty
   ScarletKeyTarget _ -> pure mempty
+  ConcealedCardTarget _ -> pure mempty
   EnemyTarget eid -> do
     result <-
       runMaybeT

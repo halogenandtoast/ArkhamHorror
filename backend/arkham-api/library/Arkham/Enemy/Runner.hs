@@ -1560,7 +1560,7 @@ instance RunMessage EnemyAttrs where
       case getFirst mconcealed of
         Just (card, gv) -> do
           n <- getGameValue gv
-          concealedCards <- shuffle (card : replicate n Decoy)
+          concealedCards <- shuffle (card : replicate n Decoy) >>= traverse mkConcealedCard
           locations <- select Anywhere
           pushAll
             $ resolve
@@ -1571,7 +1571,8 @@ instance RunMessage EnemyAttrs where
               , spawnDetailsEnemy = eid
               , spawnDetailsOverridden = True
               }
-          push $ PlaceConcealedCards iid concealedCards locations
+          for_ concealedCards $ push . CreateConcealedCard
+          push $ PlaceConcealedCards iid (map toId concealedCards) locations
         Nothing -> do
           mods <- (<>) <$> getModifiers enemyId <*> getModifiers (CardIdTarget $ toCardId a)
           let

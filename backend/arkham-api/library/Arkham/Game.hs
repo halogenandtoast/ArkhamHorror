@@ -27,6 +27,7 @@ import Arkham.Asset.Uses (Uses (..), useType)
 import Arkham.Campaign
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.CampaignStep
+import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -544,6 +545,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("agendas" .= agendas)
       <> ("treacheries" .= treacheries)
       <> ("events" .= events)
+      <> ("concealed" .= gameConcealed g)
       <> ("skills" .= gameSkills g) -- no need for modifiers... yet
       <> ("stories" .= entitiesStories gameEntities)
       <> ("playerCount" .= gamePlayerCount)
@@ -636,6 +638,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "agendas" .= toJSON agendas
         , "treacheries" .= toJSON treacheries
         , "events" .= toJSON events
+        , "concealed" .= toJSON (gameConcealed g)
         , "skills" .= toJSON (gameSkills g) -- no need for modifiers... yet
         , "stories" .= toJSON (entitiesStories gameEntities)
         , "playerCount" .= toJSON gamePlayerCount
@@ -1826,8 +1829,12 @@ getLocationsMatching lmatcher = do
           let lowestShroud = getMin $ foldMap (Min . snd) ls''
           filterM (maybe (pure False) (\v -> (< lowestShroud) <$> getGameValue v) . attr locationShroud) ls
     LocationWithDiscoverableCluesBy whoMatcher -> do
-      go ls LocationWithAnyClues >>= filterM \l -> do
+      go ls (oneOf [LocationWithAnyClues, LocationWithConcealedCard]) >>= filterM \l -> do
         selectAny $ whoMatcher <> InvestigatorCanDiscoverCluesAt (LocationWithId l.id)
+    LocationWithConcealedCard ->
+      ls & filterM \l -> do
+        concealedCards <- field LocationConcealedCards (toId l)
+        pure $ notNull concealedCards
     LocationNotAtClueLimit -> do
       flip filterM ls \l -> do
         clues <- field LocationClues (toId l)
@@ -3122,17 +3129,21 @@ enemyMatcherFilter es matcher' = do
     EnemyWillMoveWith imatcher -> enemyMatcherFilter es (EnemyIsEngagedWith imatcher <> not_ MassiveEnemy)
     EnemyCanMove -> flip filterM es \enemy -> do
       modifiers <- getModifiers enemy
-      if CannotMove `elem` modifiers
+      let inShadows = attr enemyPlacement enemy == InTheShadows
+      if CannotMove `elem` modifiers || inShadows
         then pure False
         else
           selectAny $ LocationCanBeEnteredBy (toId enemy) <> connectedFrom (locationWithEnemy $ toId enemy)
     EnemyCanEnter locationMatcher -> do
       locations <- traverse (traverseToSnd getModifiers) =<< select locationMatcher
-      flip filterM es \enemy -> do
-        flip anyM locations $ \(_lid, mods) -> do
-          flip noneM mods \case
-            CannotBeEnteredBy matcher -> null <$> enemyMatcherFilter [enemy] matcher
-            _ -> pure False
+      es & filterM \enemy -> do
+        if attr enemyPlacement enemy == InTheShadows
+          then pure False
+          else
+            locations & anyM \(_lid, mods) -> do
+              mods & noneM \case
+                CannotBeEnteredBy matcher -> null <$> enemyMatcherFilter [enemy] matcher
+                _ -> pure False
     EnemyCanSpawnIn locationMatcher -> flip filterM es \enemy -> do
       mods <- getModifiers (toId enemy)
       let noSpawn = [matcher | CannotSpawnIn matcher <- mods]
@@ -3150,13 +3161,14 @@ enemyMatcherFilter es matcher' = do
         _ -> False
     EnemyCanBeDamagedBySource source -> flip filterM es \enemy -> do
       modifiers <- getModifiers (toTarget enemy)
+      let inShadows = attr enemyPlacement enemy == InTheShadows
       flip allM modifiers $ \case
         CannotBeDamagedByPlayerSourcesExcept sourceMatcher ->
           sourceMatches source (oneOf [NotSource SourceIsPlayerCard, sourceMatcher])
         CannotBeDamagedByPlayerSources sourceMatcher ->
           not <$> sourceMatches source (oneOf [NotSource SourceIsPlayerCard, sourceMatcher])
         CannotBeDamaged -> pure False
-        _ -> pure True
+        _ -> pure $ not inShadows
     EnemyWithAsset assetMatcher -> do
       assets <- select assetMatcher
       flip filterM es \enemy -> do
@@ -3803,7 +3815,10 @@ instance Projection Location where
       LocationVengeance -> pure $ cdVengeancePoints $ toCardDef attrs
       LocationVictory -> pure $ cdVictoryPoints $ toCardDef attrs
       LocationConnectedLocations -> setFromList <$> select (connectedFrom $ LocationWithId lid)
-      LocationConcealedCards -> pure locationConcealedCards
+      LocationConcealedCards -> do
+        g <- getGame
+        let concealedCards = g ^. entitiesL . concealedL . to Map.elems
+        pure $ concealedCards & filter ((== AtLocation lid) . (.placement)) & map toId
 
 instance Projection Asset where
   getAttrs aid = toAttrs <$> getAsset aid
@@ -5234,6 +5249,15 @@ instance Projection (InDiscardEntity Skill) where
     let attrs = toAttrs a
     case f of
       InDiscardSkillCardId -> pure $ toCardId attrs
+
+instance Projection ConcealedCard where
+  getAttrs cid = toAttrs <$> getConcealedCard cid
+  project = maybeConcealedCard
+  field fld cid = do
+    c <- getConcealedCard cid
+    pure $ case fld of
+      ConcealedCardKind -> c.kind
+      ConcealedCardPlacement -> c.placement
 
 instance Projection Story where
   getAttrs sid = toAttrs <$> getStory sid

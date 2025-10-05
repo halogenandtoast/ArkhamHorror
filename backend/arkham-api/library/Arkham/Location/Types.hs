@@ -107,7 +107,7 @@ data instance Field Location :: Type -> Type where
   LocationKeys :: Field Location (Set ArkhamKey)
   LocationSeals :: Field Location (Set Seal)
   LocationInvestigateDifficulty :: Field Location GameCalculation
-  LocationConcealedCards :: Field Location [ConcealedCard]
+  LocationConcealedCards :: Field Location [ConcealedCardId]
 
 deriving stock instance Show (Field Location typ)
 deriving stock instance Ord (Field Location typ)

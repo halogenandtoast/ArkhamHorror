@@ -13,10 +13,10 @@ import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Target as X
 
-import Arkham.Prelude hiding (Key)
+import Arkham.Prelude
 
-instance RunMessage Key where
-  runMessage msg (Key a) = Key <$> runMessage msg a
+instance RunMessage ScarletKey where
+  runMessage msg (ScarletKey a) = ScarletKey <$> runMessage msg a
 
-instance RunMessage KeyAttrs where
+instance RunMessage ScarletKeyAttrs where
   runMessage _msg attrs = pure attrs

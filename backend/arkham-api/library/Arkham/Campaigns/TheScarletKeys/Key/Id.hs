@@ -4,10 +4,10 @@ import Arkham.Prelude
 import Arkham.Card.CardCode
 import Arkham.Id
 
-instance AsId KeyId where
-  type IdOf KeyId = KeyId
+instance AsId ScarletKeyId where
+  type IdOf ScarletKeyId = ScarletKeyId
   asId = id
 
-newtype KeyId = KeyId { unKeyId :: CardCode }
+newtype ScarletKeyId = ScarletKeyId { unScarletKeyId :: CardCode }
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, IsString, HasCardCode)

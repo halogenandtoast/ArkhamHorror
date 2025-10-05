@@ -5,6 +5,7 @@ import Arkham.ActiveCost
 import Arkham.Agenda.Types (Agenda)
 import Arkham.Asset.Types (Asset)
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
+import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
@@ -230,6 +231,14 @@ getStory sid = fromJustNote missingStory <$> maybeStory sid
 maybeStory :: HasGame m => StoryId -> m (Maybe Story)
 maybeStory sid = preview (entitiesL . storiesL . ix sid) <$> getGame
 
+getConcealedCard :: (HasCallStack, HasGame m) => ConcealedCardId -> m ConcealedCard
+getConcealedCard cid = fromJustNote missingConcealedCard <$> maybeConcealedCard cid
+ where
+  missingConcealedCard = "Unknown concealed card: " <> show cid
+
+maybeConcealedCard :: HasGame m => ConcealedCardId -> m (Maybe ConcealedCard)
+maybeConcealedCard cid = preview (entitiesL . concealedL . ix cid) <$> getGame
+
 getActiveInvestigator :: HasGame m => m Investigator
 getActiveInvestigator = getGame >>= getInvestigator . gameActiveInvestigatorId
 
@@ -376,6 +385,9 @@ gameSkills = entitiesSkills . gameEntities
 
 gameEvents :: Game -> EntityMap Event
 gameEvents = entitiesEvents . gameEntities
+
+gameConcealed :: Game -> EntityMap ConcealedCard
+gameConcealed = entitiesConcealed . gameEntities
 
 gameEffects :: Game -> EntityMap Effect
 gameEffects = entitiesEffects . gameEntities

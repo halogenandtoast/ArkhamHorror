@@ -10,6 +10,9 @@ import Arkham.Agenda.Types (Agenda)
 import Arkham.Asset (createAsset)
 import Arkham.Asset.Types (Asset)
 import Arkham.Campaign ()
+import Arkham.Campaigns.TheScarletKeys.Concealed.Runner ()
+import Arkham.Campaigns.TheScarletKeys.Concealed
+import Arkham.Campaigns.TheScarletKeys.Keys
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
@@ -54,6 +57,8 @@ data Entities = Entities
   , entitiesEffects :: EntityMap Effect
   , entitiesSkills :: EntityMap Skill
   , entitiesStories :: EntityMap Story
+  , entitiesScarletKeys :: EntityMap ScarletKey
+  , entitiesConcealed :: EntityMap ConcealedCard
   }
   deriving stock (Eq, Show, Generic, Data)
 
@@ -70,7 +75,21 @@ instance ToJSON Entities where
   toJSON = genericToJSON $ aesonOptions $ Just "entities"
 
 instance FromJSON Entities where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "entities"
+  parseJSON = withObject "Entities" $ \o -> do
+    entitiesLocations <- o .: "locations"
+    entitiesInvestigators <- o .: "investigators"
+    entitiesEnemies <- o .:? "enemies" .!= mempty
+    entitiesAssets <- o .:? "assets" .!= mempty
+    entitiesActs <- o .:? "acts" .!= mempty
+    entitiesAgendas <- o .:? "agendas" .!= mempty
+    entitiesTreacheries <- o .:? "treacheries" .!= mempty
+    entitiesEvents <- o .:? "events" .!= mempty
+    entitiesEffects <- o .:? "effects" .!= mempty
+    entitiesSkills <- o .:? "skills" .!= mempty
+    entitiesStories <- o .:? "stories" .!= mempty
+    entitiesScarletKeys <- o .:? "scarletKeys" .!= mempty
+    entitiesConcealed <- o .:? "concealed" .!= mempty
+    pure Entities {..}
 
 clearRemovedEntities :: Entities -> Entities
 clearRemovedEntities entities =
@@ -93,6 +112,8 @@ defaultEntities =
     , entitiesEffects = mempty
     , entitiesSkills = mempty
     , entitiesStories = mempty
+    , entitiesScarletKeys = mempty
+    , entitiesConcealed = mempty
     }
 
 instance Monoid Entities where
@@ -112,6 +133,8 @@ instance Semigroup Entities where
       , entitiesEffects = entitiesEffects a <> entitiesEffects b
       , entitiesSkills = entitiesSkills a <> entitiesSkills b
       , entitiesStories = entitiesStories a <> entitiesStories b
+      , entitiesScarletKeys = entitiesScarletKeys a <> entitiesScarletKeys b
+      , entitiesConcealed = entitiesConcealed a <> entitiesConcealed b
       }
 
 instance HasAbilities Entities where
@@ -127,6 +150,8 @@ instance HasAbilities Entities where
       <> concatMap getAbilities (toList entitiesEffects)
       <> concatMap getAbilities (toList entitiesSkills)
       <> concatMap getAbilities (toList entitiesStories)
+      <> concatMap getAbilities (toList entitiesScarletKeys)
+      <> concatMap getAbilities (toList entitiesConcealed)
 
 data SomeEntity where
   SomeEntity :: (Entity a, HasModifiersFor a, Targetable a, Sourceable a, Show a) => a -> SomeEntity
@@ -161,6 +186,8 @@ toSomeEntities Entities {..} =
     <> map SomeEntity (toList entitiesEffects)
     <> map SomeEntity (toList entitiesSkills)
     <> map SomeEntity (toList entitiesStories)
+    <> map SomeEntity (toList entitiesScarletKeys)
+    <> map SomeEntity (toList entitiesConcealed)
 
 makeLensesWith suffixedFields ''Entities
 
@@ -223,3 +250,5 @@ instance RunMessage Entities where
       >>= traverseOf (skillsL . traverse) (runMessage msg)
       >>= traverseOf (storiesL . traverse) (runMessage msg)
       >>= traverseOf (investigatorsL . traverse) (runMessage msg)
+      >>= traverseOf (scarletKeysL . traverse) (runMessage msg)
+      >>= traverseOf (concealedL . traverse) (runMessage msg)

@@ -1860,6 +1860,8 @@ runGameMessage msg g = case msg of
         pure $ g & entitiesL . treacheriesL %~ deleteMap aid
       LocationTarget aid -> pure $ g & entitiesL . locationsL %~ deleteMap aid
       _ -> error $ "Unhandled quiet removal of target: " <> show target
+  RemoveFromGame (ConcealedCardTarget cid) -> do
+    pure $ g & entitiesL . concealedL %~ deleteMap cid
   RemoveFromGame (StoryTarget sid) -> do
     pure $ g & entitiesL . storiesL %~ deleteMap sid
   RemoveFromGame (AssetTarget aid) -> do
@@ -2368,6 +2370,8 @@ runGameMessage msg g = case msg of
             player <- getPlayer skillTest.investigator
             pure $ g & activeInvestigatorIdL .~ skillTest.investigator & activePlayerIdL .~ player
           else pure g
+  CreateConcealedCard card -> do
+    pure $ g & entitiesL . concealedL %~ insertMap (toId card) card
   CreateStoryAssetAtLocationMatching cardCode locationMatcher -> do
     lid <- selectJust locationMatcher
     assetId <- getRandom

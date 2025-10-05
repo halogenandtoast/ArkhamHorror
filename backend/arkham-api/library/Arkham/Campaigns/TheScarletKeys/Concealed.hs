@@ -1,39 +1,49 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Campaigns.TheScarletKeys.Concealed where
+module Arkham.Campaigns.TheScarletKeys.Concealed (
+  module Arkham.Campaigns.TheScarletKeys.Concealed.Types,
+  module Arkham.Campaigns.TheScarletKeys.Concealed.Kind,
+  module Arkham.Campaigns.TheScarletKeys.Concealed,
+) where
 
+import Arkham.Ability
+import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
+import Arkham.Campaigns.TheScarletKeys.Concealed.Types
+import Arkham.Card.CardCode
+import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasModifiersFor
+import Arkham.Field
+import Arkham.Json
+import Arkham.Placement
 import Arkham.Prelude
 import Data.Aeson.TH
 
-data ConcealedCard
-  = Decoy
-  | AcolyteAny
-  | ApportionedKa
-  | CityOfRemnantsL
-  | CityOfRemnantsM
-  | CityOfRemnantsR
-  | CoterieAgentA
-  | CoterieAgentB
-  | CoterieAgentC
-  | CoterieAssasinA
-  | CoterieAssasinB
-  | CoteriaEnforcerA
-  | CoteriaEnforcerB
-  | DecoyVoidChimeraEarsplitter
-  | DecoyVoidChimeraFellbeak
-  | DecoyVoidChimeraFellhound
-  | DecoyVoidChimeraGorefeaster
-  | DesiderioDelgadoAlvarez
-  | EmissaryFromYuggoth
-  | LaChicaRoja
-  | MimeticNemesis
-  | SinisterAspirantA
-  | SinisterAspirantB
-  | SinisterAspirantC
-  | TheRedGlovedMan
-  | TzuSanNiang
-  | VoidChimeraTrueForm
-  | WizardOfTheOrder
-  deriving stock (Show, Eq, Ord, Data, Generic)
+mkConcealedCard :: MonadRandom m => ConcealedCardKind -> m ConcealedCard
+mkConcealedCard kind = do
+  cid <- getRandom
+  pure
+    $ ConcealedCard
+      { concealedCardKind = kind
+      , concealedCardId = cid
+      , concealedCardPlacement = Unplaced
+      , concealedCardFlipped = False
+      }
 
-$(deriveJSON (defaultOptions {tagSingleConstructors = True}) ''ConcealedCard)
+data instance Field ConcealedCard :: Type -> Type where
+  ConcealedCardKind :: Field ConcealedCard ConcealedCardKind
+  ConcealedCardPlacement :: Field ConcealedCard Placement
+
+instance HasCardCode ConcealedCard where
+  toCardCode = const "xconcealed"
+
+instance HasAbilities ConcealedCard where
+  getAbilities a =
+    [ restricted a 1 OnSameLocation fightAction_
+    , restricted a 2 OnSameLocation evadeAction_
+    ]
+
+instance HasModifiersFor ConcealedCard where
+  getModifiersFor _ = pure ()
+
+$(deriveJSON (aesonOptions $ Just "concealedCard") ''ConcealedCard)

@@ -1784,7 +1784,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   PlaceConcealedCards iid (card : cards) lids -> do
     locations <- select $ Matcher.NearestLocationTo iid (Matcher.mapOneOf Matcher.LocationWithId lids)
     chooseTargetM iid locations \lid -> do
-      push $ PlaceConcealedCard iid card (toTarget lid)
+      push $ PlaceConcealedCard iid card (AtLocation lid)
       push $ PlaceConcealedCards iid cards (deleteFirst lid lids)
     pure a
   _ -> pure a

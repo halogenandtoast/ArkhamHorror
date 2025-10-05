@@ -1,35 +1,35 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Campaigns.TheScarletKeys.Keys (Key (..), createKey, lookupKey) where
+module Arkham.Campaigns.TheScarletKeys.Keys (ScarletKey (..), createScarletKey, lookupScarletKey) where
 
 import Arkham.Campaigns.TheScarletKeys.Key.Keys
 import Arkham.Campaigns.TheScarletKeys.Key.Types
 import Arkham.Card
-import Arkham.Prelude hiding (Key, fold)
+import Arkham.Prelude hiding (fold)
 import Arkham.Target
 
-createKey :: IsCard a => a -> Target -> KeyId -> Key
-createKey a target sId = lookupKey sId target (toCardId a)
+createScarletKey :: IsCard a => a -> Target -> ScarletKeyId -> ScarletKey
+createScarletKey a target sId = lookupScarletKey sId target (toCardId a)
 
-lookupKey :: KeyId -> Target -> CardId -> Key
-lookupKey keyId = case lookup (unKeyId keyId) allKeys of
+lookupScarletKey :: ScarletKeyId -> Target -> CardId -> ScarletKey
+lookupScarletKey keyId = case lookup (unScarletKeyId keyId) allScarletKeys of
   Nothing -> error $ "Unknown key: " <> show keyId
-  Just (SomeKeyCard a) -> \target cardId -> Key $ cbCardBuilder a cardId (target, keyId)
+  Just (SomeScarletKeyCard a) -> \target cardId -> ScarletKey $ cbCardBuilder a cardId (target, keyId)
 
-instance FromJSON Key where
-  parseJSON = withObject "Key" $ \o -> do
+instance FromJSON ScarletKey where
+  parseJSON = withObject "ScarletKey" $ \o -> do
     cCode <- o .: "id"
-    withKeyCardCode cCode $ \(_ :: KeyCard a) -> Key <$> parseJSON @a (Object o)
+    withScarletKeyCardCode cCode $ \(_ :: ScarletKeyCard a) -> ScarletKey <$> parseJSON @a (Object o)
 
-withKeyCardCode :: CardCode -> (forall a. IsKey a => KeyCard a -> r) -> r
-withKeyCardCode cCode f = case lookup cCode allKeys of
+withScarletKeyCardCode :: CardCode -> (forall a. IsScarletKey a => ScarletKeyCard a -> r) -> r
+withScarletKeyCardCode cCode f = case lookup cCode allScarletKeys of
   Nothing -> error $ "Unknown key: " <> show cCode
-  Just (SomeKeyCard a) -> f a
+  Just (SomeScarletKeyCard a) -> f a
 
-allKeys :: Map CardCode SomeKeyCard
-allKeys =
+allScarletKeys :: Map CardCode SomeScarletKeyCard
+allScarletKeys =
   mapFrom
-    someKeyCardCode
+    someScarletKeyCardCode
     [ -- Riddles and Rain
-      SomeKeyCard theEyeOfRavens
+      SomeScarletKeyCard theEyeOfRavens
     ]

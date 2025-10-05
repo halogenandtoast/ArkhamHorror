@@ -43,7 +43,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.Location (withLocationOf, placementLocation)
+import Arkham.Helpers.Location (placementLocation, withLocationOf)
 import Arkham.Helpers.Modifiers hiding (ModifierType (..))
 import Arkham.Helpers.Placement
 import Arkham.Helpers.Query
@@ -1350,7 +1350,6 @@ instance RunMessage EnemyAttrs where
         defeatedBy = if defeatedByDamage then DefeatedByDamage source else DefeatedByOther source
       miid <- getSourceController source
       whenMsg <- checkWindows [mkWhen $ Window.EnemyDefeated miid defeatedBy eid]
-      afterMsg <- checkWindows [mkAfter $ Window.EnemyDefeated miid defeatedBy eid]
       mloc <- field EnemyLocation a.id
 
       lift $ withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
@@ -1363,7 +1362,7 @@ instance RunMessage EnemyAttrs where
                  Just lid -> [PlaceKey (toTarget lid) ekey | ekey <- toList enemyKeys]
                  _ -> []
            )
-        <> [Do msg, afterMsg, After msg]
+        <> [Do msg, After msg]
       pure
         $ a
         & (keysL .~ mempty)
@@ -1377,6 +1376,7 @@ instance RunMessage EnemyAttrs where
       victory <- getVictoryPoints eid
       vengeance <- getVengeancePoints eid
       afterMsg <- checkWindows [mkAfter $ Window.IfEnemyDefeated miid defeatedBy eid]
+      afterDefeatMsg <- checkWindows [mkAfter $ Window.EnemyDefeated miid defeatedBy eid]
       let
         placeInVictory = isJust (victory <|> vengeance) && not a.placement.isSwarm
         victoryMsgs =
@@ -1387,6 +1387,7 @@ instance RunMessage EnemyAttrs where
       pushAll
         $ victoryMsgs
         <> (guard (not a.placement.isInVictory) *> windows [Window.EntityDiscarded source (toTarget a)])
+        <> [afterDefeatMsg]
         <> defeatMsgs
         <> [afterMsg]
       pure a

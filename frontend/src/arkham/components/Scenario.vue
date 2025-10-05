@@ -326,12 +326,14 @@ const unusedLabels = computed(() => {
 })
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const resources = computed(() => props.scenario.tokens[TokenType.Resource])
-const hasPool = computed(() => resources.value && resources.value > 0)
+const damage = computed(() => props.scenario.tokens[TokenType.Damage])
+const hasPool = computed(() => resources.value && resources.value > 0 || damage.value && damage.value > 0)
 const tarotCards = computed(() => props.scenario.tarotCards.filter((c) => c.scope.tag === 'GlobalTarot'))
 const phase = computed(() => props.game.phase)
 const phaseStep = computed(() => props.game.phaseStep)
 const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
 const signOfTheGods = computed(() => props.scenario.counts["SignOfTheGods"])
+const distortion = computed(() => props.scenario.counts["Distortion"])
 const gameOver = computed(() => props.game.gameState.tag === "IsOver")
 
 // Reactive
@@ -861,9 +863,17 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
               tooltip="Sign of the Gods"
               :amount="signOfTheGods"
             />
+            <PoolItem
+              v-if="distortion"
+              class="distortion"
+              type="damage"
+              tooltip="Distortion"
+              :amount="distortion"
+            />
           </div>
           <div class="pool" v-if="hasPool">
             <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
+            <PoolItem v-if="damage && damage > 0" type="damage" :amount="damage" />
           </div>
           <div class="keys" v-if="keys.length > 0">
             <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
@@ -1068,7 +1078,19 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
   }
 }
 
-@mixin splitView {
+.scenario-body {
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+  z-index: 1;
+  width: 100%;
+  flex: 1;
+  inset: 0;
+
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+
+  &.split-view {
     grid-template-columns: 1fr 2fr;
     grid-template-rows: 1fr 3fr;
     padding-bottom: 10px;
@@ -1115,22 +1137,6 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
       grid-column: 2;
       grid-row: 1 / 5;
     }
-}
-
-.scenario-body {
-  display: flex;
-  flex-direction: column;
-  background: var(--background);
-  z-index: 1;
-  width: 100%;
-  flex: 1;
-  inset: 0;
-
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-
-  &.split-view {
-    @include splitView;
   }
 }
 
@@ -1356,6 +1362,14 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
   }
 
   .signOfTheGods {
+    z-index: 10;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    pointer-events: none;
+  }
+
+  .distortion {
     z-index: 10;
     position: absolute;
     bottom: 0;

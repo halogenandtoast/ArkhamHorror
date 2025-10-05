@@ -31,12 +31,7 @@ instance HasModifiersFor ThePathIsBarred where
 
 instance HasAbilities ThePathIsBarred where
   getAbilities (ThePathIsBarred a) =
-    extend1 a
-      $ mkAbility a 1
-      $ Objective
-      $ forced
-      $ EnemyDefeated #after Anyone ByAny
-      $ enemyIs Enemies.theManInThePallidMask
+    extend1 a $ mkAbility a 1 $ Objective $ forced $ ifEnemyDefeated Enemies.theManInThePallidMask
 
 instance RunMessage ThePathIsBarred where
   runMessage msg a@(ThePathIsBarred attrs) = runQueueT $ case msg of

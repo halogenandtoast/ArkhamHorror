@@ -32,5 +32,5 @@ allEncounterCards =
     <> allStoryCards
     <> allActCards
     <> allAgendaCards
-    <> allKeyCards
+    <> allScarletKeyCards
     <> allEncounterInvestigatorCards -- technically player

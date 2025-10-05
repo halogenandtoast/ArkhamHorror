@@ -104,6 +104,7 @@ sourceToMaybeTarget = \case
   BatchSource bId -> Just $ BatchTarget bId
   ActiveCostSource acId -> Just $ ActiveCostTarget acId
   ScarletKeySource kId -> Just $ ScarletKeyTarget kId
+  ConcealedCardSource kId -> Just $ ConcealedCardTarget kId
 
 targetToSource :: Target -> Source
 targetToSource = \case
@@ -152,3 +153,4 @@ targetToSource = \case
   ActiveCostTarget acId -> ActiveCostSource acId
   LabeledTarget _ target -> targetToSource target
   ScarletKeyTarget kId -> ScarletKeySource kId
+  ConcealedCardTarget kId -> ConcealedCardSource kId

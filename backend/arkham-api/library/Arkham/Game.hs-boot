@@ -10,6 +10,7 @@ import Arkham.Act.Types
 import Arkham.Agenda.Types
 import Arkham.Asset.Types
 import Arkham.Campaign.Types
+import Arkham.Campaigns.TheScarletKeys.Concealed.Types
 import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasAbilities
@@ -70,6 +71,7 @@ instance Projection (DiscardedEntity Asset)
 instance Projection (InHandEntity Asset)
 instance Projection (InDiscardEntity Asset)
 instance Projection Campaign
+instance Projection ConcealedCard
 instance Projection Effect
 instance Projection Enemy
 instance KnownOutOfPlayZone zone => Projection (OutOfPlayEntity zone Enemy)

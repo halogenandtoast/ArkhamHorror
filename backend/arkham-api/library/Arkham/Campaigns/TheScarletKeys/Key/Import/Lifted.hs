@@ -3,9 +3,9 @@ module Arkham.Campaigns.TheScarletKeys.Key.Import.Lifted (module X) where
 import Arkham.Calculation as X
 import Arkham.Campaigns.TheScarletKeys.Key.Runner as X (
   Is (..),
-  IsKey,
-  KeyAttrs,
-  KeyCard,
+  IsScarletKey,
+  ScarletKeyAttrs,
+  ScarletKeyCard,
   key,
   push,
   pushAll,

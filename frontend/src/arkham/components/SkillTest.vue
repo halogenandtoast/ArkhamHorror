@@ -220,6 +220,10 @@ const targetCard = computed(() => {
   return props.game.cards[props.skillTest.targetCard]
 })
 
+const isConcealed = computed(() => {
+  return props.skillTest.source.tag === 'AbilitySource' && props.skillTest.source.contents[0].tag === 'ConcealedCardSource'
+})
+
 type SwarmEnemy = Omit<Enemy, "placement"> & {
   placement: { tag: "AsSwarm"; swarmHost: string; swarmCard: Cards.Card };
 };
@@ -336,6 +340,12 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
           </div>
         </div>
         <Card v-else-if="targetCard" :game="game" :card="targetCard" class="target-card" :revealed="true" playerId="" />
+        <img
+          v-else-if="isConcealed"
+          :src="imgsrc('mini-cards/concealed-card.jpg')"
+          class="target-card concealed"
+          :data-image="imgsrc('mini-cards/concealed-card.jpg')"
+        />
         <div class="test-status">
           <div class="test-difficulty">
             <button
@@ -995,6 +1005,10 @@ i.iconSkillAgility {
 .target-card {
   width: 100%;
   align-items: flex-end;
+  &.concealed {
+    width: 50%;
+    max-width: calc(var(--card-width) * 0.75);
+  }
 }
 
 .test-source {

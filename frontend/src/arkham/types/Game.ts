@@ -2,6 +2,7 @@ import * as JsonDecoder from 'ts.data.json';
 import { v2Optional } from '@/arkham/parser';
 import { Investigator, InvestigatorDetails, investigatorDecoder, investigatorDetailsDecoder } from '@/arkham/types/Investigator';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
+import { ConcealedCard, concealedCardDecoder } from '@/arkham/types/ConcealedCard';
 import { Enemy, enemyDecoder } from '@/arkham/types/Enemy';
 import { Story, storyDecoder } from '@/arkham/types/Story';
 import { Location, locationDecoder } from '@/arkham/types/Location';
@@ -76,6 +77,7 @@ export type Game = {
   leadInvestigatorId: string;
   activePlayerId: string;
   locations: Record<string, Location>;
+  concealed: Record<string, ConcealedCard>;
   phase: Phase;
   phaseStep: PhaseStep | null;
   playerOrder: string[];
@@ -214,6 +216,7 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
     leadInvestigatorId: JsonDecoder.string(),
     activePlayerId: JsonDecoder.string(),
     locations: JsonDecoder.record<Location>(locationDecoder, 'Dict<UUID, Location>'),
+    concealed: JsonDecoder.record<ConcealedCard>(concealedCardDecoder, 'Dict<UUID, ConcealedCard>'),
     phase: phaseDecoder,
     phaseStep: JsonDecoder.nullable(phaseStepDecoder),
     playerOrder: JsonDecoder.array(JsonDecoder.string(), 'PlayerOrder[]'),

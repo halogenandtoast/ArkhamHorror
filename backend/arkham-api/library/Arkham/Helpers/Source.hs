@@ -63,6 +63,7 @@ sourceTraits = \case
   TreacherySource tid -> fromMaybe mempty <$> fieldMay TreacheryTraits tid
   YouSource -> selectJust Matcher.You >>= field InvestigatorTraits
   ScarletKeySource _ -> pure mempty
+  ConcealedCardSource _ -> pure mempty
 
 getSourceController :: HasGame m => Source -> m (Maybe InvestigatorId)
 getSourceController = \case
@@ -206,6 +207,7 @@ sourceMatches s = \case
         TarotSource {} -> True
         BatchSource {} -> False
         ScarletKeySource {} -> True
+        ConcealedCardSource {} -> True
     pure $ go s
   Matcher.SourceIsType t -> case t of
     AssetType -> case s of

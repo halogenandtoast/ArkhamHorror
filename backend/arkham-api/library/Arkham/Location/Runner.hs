@@ -566,9 +566,11 @@ instance RunMessage LocationAttrs where
     RemoveAllCopiesOfEncounterCardFromGame cardMatcher | toCard a `cardMatch` cardMatcher -> do
       push $ RemoveLocation (toId a)
       pure a
-    PlaceConcealedCard _ card (isTarget a -> True) -> do
+    PlaceConcealedCard _ card (AtLocation lid) | a.id == lid -> do
       cards <- shuffleM $ card : locationConcealedCards
       pure $ a & concealedCardsL .~ cards
+    RemoveFromGame (ConcealedCardTarget card) -> do
+      pure $ a & concealedCardsL %~ filter (/= card)
     _ -> pure a
 
 locationInvestigatorsWithClues :: HasGame m => LocationAttrs -> m [InvestigatorId]

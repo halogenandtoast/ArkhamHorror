@@ -7,6 +7,7 @@ import { keyToId } from '@/arkham/types/Key'
 import * as ArkhamGame from '@/arkham/types/Game';
 import DebugLocation from '@/arkham/components/debug/Location.vue';
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message';
+import ConcealedCard from '@/arkham/components/ConcealedCard.vue';
 import Key from '@/arkham/components/Key.vue';
 import Seal from '@/arkham/components/Seal.vue';
 import Locus from '@/arkham/components/Locus.vue';
@@ -85,7 +86,7 @@ function isCardAction(c: Message): boolean {
   return false
 }
 
-const concealed = computed(() => props.location.concealedCards)
+const concealed = computed(() => Object.values(props.game.concealed).filter((c) => props.location.concealedCards.includes(c.id)))
 const cardAction = computed(() => choices.value.findIndex(isCardAction))
 const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
 let clickTimeout: number | null = null
@@ -477,7 +478,7 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
           @choose="choose"
         />
         <div v-if="concealed.length > 0">
-          <img :src="imgsrc('mini-cards/concealed-card.jpg')" class="concealed-card" />
+          <ConcealedCard :card="concealed[0]" :game="game" :playerId="playerId" @choose="choose" />
         </div>
       </div>
     </div>

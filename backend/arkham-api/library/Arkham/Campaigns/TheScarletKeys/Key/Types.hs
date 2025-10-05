@@ -13,11 +13,11 @@ import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Id
-import Arkham.Json hiding (Key)
+import Arkham.Json
 import Arkham.Message (Is (..))
 import Arkham.Name
 import Arkham.Placement
-import Arkham.Prelude hiding (Key)
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
@@ -35,26 +35,26 @@ class
   , HasModifiersFor a
   , RunMessage a
   , Entity a
-  , EntityId a ~ KeyId
-  , EntityAttrs a ~ KeyAttrs
+  , EntityId a ~ ScarletKeyId
+  , EntityAttrs a ~ ScarletKeyAttrs
   , RunType a ~ a
   ) =>
-  IsKey a
+  IsScarletKey a
 
-type KeyCard a = CardBuilder (Target, KeyId) a
+type ScarletKeyCard a = CardBuilder (Target, ScarletKeyId) a
 
-data instance Field Key :: Type -> Type where
-  KeyCard :: Field Key Card
-  KeyClues :: Field Key Int
-  KeyPlacement :: Field Key Placement
-  KeyOtherSide :: Field Key (Maybe Target)
-  KeyCardsUnderneath :: Field Key [Card]
+data instance Field ScarletKey :: Type -> Type where
+  ScarletKeyCard :: Field ScarletKey Card
+  ScarletKeyClues :: Field ScarletKey Int
+  ScarletKeyPlacement :: Field ScarletKey Placement
+  ScarletKeyOtherSide :: Field ScarletKey (Maybe Target)
+  ScarletKeyCardsUnderneath :: Field ScarletKey [Card]
 
 data Stability = Stable | Unstable
   deriving stock (Show, Eq, Data)
 
-data KeyAttrs = KeyAttrs
-  { keyId :: KeyId
+data ScarletKeyAttrs = ScarletKeyAttrs
+  { keyId :: ScarletKeyId
   , keyCardId :: CardId
   , keyPlacement :: Placement
   , keyStability :: Stability
@@ -62,33 +62,33 @@ data KeyAttrs = KeyAttrs
   }
   deriving stock (Show, Eq)
 
-instance Is KeyAttrs KeyId where
+instance Is ScarletKeyAttrs ScarletKeyId where
   is = (==) . toId
   {-# INLINE is #-}
 
-instance AsId KeyAttrs where
-  type IdOf KeyAttrs = KeyId
+instance AsId ScarletKeyAttrs where
+  type IdOf ScarletKeyAttrs = ScarletKeyId
   asId = keyId
 
-instance HasField "cardId" KeyAttrs CardId where
+instance HasField "cardId" ScarletKeyAttrs CardId where
   getField = keyCardId
 
-instance HasField "id" KeyAttrs KeyId where
+instance HasField "id" ScarletKeyAttrs ScarletKeyId where
   getField = keyId
 
-instance HasField "ability" KeyAttrs (Int -> Source) where
+instance HasField "ability" ScarletKeyAttrs (Int -> Source) where
   getField = toAbilitySource
 
-instance HasField "placement" KeyAttrs Placement where
+instance HasField "placement" ScarletKeyAttrs Placement where
   getField = keyPlacement
 
-key :: (KeyAttrs -> a) -> CardDef -> CardBuilder (Target, KeyId) a
+key :: (ScarletKeyAttrs -> a) -> CardDef -> CardBuilder (Target, ScarletKeyId) a
 key f cardDef =
   CardBuilder
     { cbCardCode = cdCardCode cardDef
     , cbCardBuilder = \cardId (bearer, kid) ->
         f
-          $ KeyAttrs
+          $ ScarletKeyAttrs
             { keyId = kid
             , keyCardId = cardId
             , keyPlacement = Unplaced
@@ -99,105 +99,105 @@ key f cardDef =
             }
     }
 
-instance HasCardDef KeyAttrs where
-  toCardDef e = case lookup (unKeyId $ keyId e) allKeyCards of
+instance HasCardDef ScarletKeyAttrs where
+  toCardDef e = case lookup (unScarletKeyId $ keyId e) allScarletKeyCards of
     Just def -> def
-    Nothing -> error $ "missing card def for key " <> show (unKeyId $ keyId e)
+    Nothing -> error $ "missing card def for key " <> show (unScarletKeyId $ keyId e)
 
-instance HasCardCode Key where
-  toCardCode (Key a) = toCardCode (toAttrs a)
+instance HasCardCode ScarletKey where
+  toCardCode (ScarletKey a) = toCardCode (toAttrs a)
   {-# INLINE toCardCode #-}
 
-instance Entity KeyAttrs where
-  type EntityId KeyAttrs = KeyId
-  type EntityAttrs KeyAttrs = KeyAttrs
+instance Entity ScarletKeyAttrs where
+  type EntityId ScarletKeyAttrs = ScarletKeyId
+  type EntityAttrs ScarletKeyAttrs = ScarletKeyAttrs
   toId = keyId
   toAttrs = id
   overAttrs f = f
 
-instance Named Key where
+instance Named ScarletKey where
   toName = toName . toAttrs
 
-instance Named KeyAttrs where
+instance Named ScarletKeyAttrs where
   toName = toName . toCardDef
 
-instance Targetable KeyAttrs where
+instance Targetable ScarletKeyAttrs where
   toTarget = ScarletKeyTarget . toId
-  isTarget KeyAttrs {keyId} (ScarletKeyTarget sid) = keyId == sid
+  isTarget ScarletKeyAttrs {keyId} (ScarletKeyTarget sid) = keyId == sid
   isTarget _ _ = False
 
-instance Sourceable KeyAttrs where
+instance Sourceable ScarletKeyAttrs where
   toSource = ScarletKeySource . toId
-  isSource KeyAttrs {keyId} (ScarletKeySource sid) = keyId == sid
+  isSource ScarletKeyAttrs {keyId} (ScarletKeySource sid) = keyId == sid
   isSource _ _ = False
 
-data Key = forall a. IsKey a => Key a
+data ScarletKey = forall a. IsScarletKey a => ScarletKey a
 
-instance Data Key where
-  gunfold _ _ _ = error "gunfold(Key)"
-  toConstr _ = error "toConstr(Key)"
-  dataTypeOf _ = error "dataTypeOf(Key)"
+instance Data ScarletKey where
+  gunfold _ _ _ = error "gunfold(ScarletKey)"
+  toConstr _ = error "toConstr(ScarletKey)"
+  dataTypeOf _ = error "dataTypeOf(ScarletKey)"
 
-instance Eq Key where
-  (Key (a :: a)) == (Key (b :: b)) = case eqT @a @b of
+instance Eq ScarletKey where
+  (ScarletKey (a :: a)) == (ScarletKey (b :: b)) = case eqT @a @b of
     Just Refl -> a == b
     Nothing -> False
 
-instance Show Key where
-  show (Key a) = show a
+instance Show ScarletKey where
+  show (ScarletKey a) = show a
 
-instance ToJSON Key where
-  toJSON (Key a) = toJSON a
+instance ToJSON ScarletKey where
+  toJSON (ScarletKey a) = toJSON a
 
-instance HasAbilities Key where
-  getAbilities (Key a) = getAbilities a
+instance HasAbilities ScarletKey where
+  getAbilities (ScarletKey a) = getAbilities a
 
-instance HasModifiersFor Key where
-  getModifiersFor (Key a) = getModifiersFor a
+instance HasModifiersFor ScarletKey where
+  getModifiersFor (ScarletKey a) = getModifiersFor a
 
-instance Entity Key where
-  type EntityId Key = KeyId
-  type EntityAttrs Key = KeyAttrs
+instance Entity ScarletKey where
+  type EntityId ScarletKey = ScarletKeyId
+  type EntityAttrs ScarletKey = ScarletKeyAttrs
   toId = toId . toAttrs
-  toAttrs (Key a) = toAttrs a
-  overAttrs f (Key a) = Key $ overAttrs f a
+  toAttrs (ScarletKey a) = toAttrs a
+  overAttrs f (ScarletKey a) = ScarletKey $ overAttrs f a
 
-instance Targetable Key where
+instance Targetable ScarletKey where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
 
-instance Sourceable Key where
+instance Sourceable ScarletKey where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
-instance HasCardCode KeyAttrs where
-  toCardCode = unKeyId . keyId
+instance HasCardCode ScarletKeyAttrs where
+  toCardCode = unScarletKeyId . keyId
 
-instance IsCard KeyAttrs where
+instance IsCard ScarletKeyAttrs where
   toCardId = keyCardId
-  toCard a = lookupCard (unKeyId $ keyId a) (toCardId a)
+  toCard a = lookupCard (unScarletKeyId $ keyId a) (toCardId a)
   toCardOwner _ = Nothing
 
-data SomeKeyCard = forall a. IsKey a => SomeKeyCard (KeyCard a)
+data SomeScarletKeyCard = forall a. IsScarletKey a => SomeScarletKeyCard (ScarletKeyCard a)
 
-liftSomeKeyCard :: (forall a. KeyCard a -> b) -> SomeKeyCard -> b
-liftSomeKeyCard f (SomeKeyCard a) = f a
+liftSomeScarletKeyCard :: (forall a. ScarletKeyCard a -> b) -> SomeScarletKeyCard -> b
+liftSomeScarletKeyCard f (SomeScarletKeyCard a) = f a
 
-someKeyCardCode :: SomeKeyCard -> CardCode
-someKeyCardCode = liftSomeKeyCard cbCardCode
+someScarletKeyCardCode :: SomeScarletKeyCard -> CardCode
+someScarletKeyCardCode = liftSomeScarletKeyCard cbCardCode
 
-makeLensesWith suffixedFields ''KeyAttrs
+makeLensesWith suffixedFields ''ScarletKeyAttrs
 
 mconcat
   [ deriveJSON defaultOptions ''Stability
-  , deriveToJSON (aesonOptions $ Just "key") ''KeyAttrs
+  , deriveToJSON (aesonOptions $ Just "key") ''ScarletKeyAttrs
   ]
 
-instance FromJSON KeyAttrs where
-  parseJSON = withObject "KeyAttrs" \o -> do
+instance FromJSON ScarletKeyAttrs where
+  parseJSON = withObject "ScarletKeyAttrs" \o -> do
     keyId <- o .: "id"
     keyCardId <- o .: "cardId"
     keyPlacement <- o .: "placement"
     keyStability <- o .: "stability"
     keyBearer <- o .: "bearer"
-    pure KeyAttrs {..}
+    pure ScarletKeyAttrs {..}

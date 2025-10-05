@@ -2,8 +2,8 @@
 
 module Arkham.Keyword where
 
-import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Card.CardCode
 import Arkham.GameValue
 import Arkham.Matcher.ChaosToken
@@ -46,7 +46,7 @@ data Keyword
   | Advanced
   | Replacement
   | Partner
-  | Concealed ConcealedCard GameValue
+  | Concealed ConcealedCardKind GameValue
   deriving stock (Show, Eq, Ord, Data)
 
 class HasKeywords a where

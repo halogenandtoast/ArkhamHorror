@@ -1,4 +1,4 @@
-module Arkham.Event.Events.InTheShadows (inTheShadows, InTheShadows (..)) where
+module Arkham.Event.Events.InTheShadows (inTheShadows) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -18,5 +18,6 @@ instance RunMessage InTheShadows where
       enemies <- select $ enemyEngagedWith iid
       for_ enemies $ disengageEnemy iid
       roundModifiers attrs iid [CannotBeEngaged, CannotDealDamage]
+      for_ enemies enemyCheckEngagement
       pure e
     _ -> InTheShadows <$> liftRunMessage msg attrs

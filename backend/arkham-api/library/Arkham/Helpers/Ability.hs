@@ -127,6 +127,7 @@ canDoAction :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Action 
 canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \case
   Action.Fight -> case abilitySource of
     LocationSource _lid -> pure True
+    ConcealedCardSource _ -> pure True
     EnemySource eid -> do
       modifiers' <- getModifiers iid
       let valid = maybe True (== eid) $ listToMaybe [x | MustFight x <- modifiers']
@@ -165,6 +166,7 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \cas
       pure $ enemies || locations
   Action.Evade -> case abilitySource of
     EnemySource _ -> pure True
+    ConcealedCardSource _ -> pure True
     _ -> do
       modifiers <- getModifiers (AbilityTarget iid ab.ref)
       let

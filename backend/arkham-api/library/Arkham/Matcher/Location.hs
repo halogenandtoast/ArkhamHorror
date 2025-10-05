@@ -127,6 +127,7 @@ data LocationMatcher
   | LocationWithoutModifier ModifierType
   | LocationWithModifier ModifierType
   | LocationWithDiscoverableCluesBy InvestigatorMatcher
+  | LocationWithConcealedCard
   | LocationNotAtClueLimit
   | LocationMatchAll [LocationMatcher]
   | LocationMatchAny [LocationMatcher]

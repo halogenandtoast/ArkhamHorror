@@ -1194,8 +1194,10 @@ data Message
   | HandleGroupTarget GroupKey Target [Message]
   | HandleGroupTargets AutoStatus GroupKey (Map Target [Message])
   | KonamiCode
-  | PlaceConcealedCards InvestigatorId [ConcealedCard] [LocationId]
-  | PlaceConcealedCard InvestigatorId ConcealedCard Target
+  | CreateConcealedCard ConcealedCard
+  | PlaceConcealedCards InvestigatorId [ConcealedCardId] [LocationId]
+  | PlaceConcealedCard InvestigatorId ConcealedCardId Placement
+  | RemoveAllConcealed
   | -- Commit
     Do Message
   | DoBatch BatchId Message

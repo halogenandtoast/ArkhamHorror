@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards where
 
 import Arkham.Prelude
 
-import Arkham.Campaigns.TheScarletKeys.Concealed
+import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType

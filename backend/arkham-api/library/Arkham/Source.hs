@@ -182,6 +182,9 @@ instance Sourceable TreacheryId where
 instance Sourceable InvestigatorId where
   toSource = InvestigatorSource
 
+instance Sourceable ConcealedCardId where
+  toSource = ConcealedCardSource
+
 instance Sourceable LocationId where
   toSource = LocationSource
 

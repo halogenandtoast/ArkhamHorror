@@ -8,7 +8,7 @@ import Arkham.Ability.Limit
 import Arkham.Ability.Type
 import Arkham.Action
 import Arkham.Card.CardCode
-import Arkham.Card.EncounterCard
+import {-# SOURCE #-} Arkham.Card.EncounterCard
 import Arkham.Cost
 import Arkham.Criteria (Criterion (NoRestriction))
 import Arkham.Json

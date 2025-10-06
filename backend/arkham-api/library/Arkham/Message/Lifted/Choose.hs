@@ -6,11 +6,16 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.DamageEffect
 import Arkham.Helpers.FlavorText (FlavorTextBuilder, buildFlavor)
 import Arkham.Helpers.Query (getLead)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Key
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher.Enemy
+import Arkham.Matcher.Investigator
+import Arkham.Matcher.Location
 import Arkham.Message (Message (Would), uiToRun)
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted
@@ -481,3 +486,27 @@ resolutionFlavorWithChooseOne builder f = flip storyWithChooseOneM f do
         { flavorTitle
         , flavorBody = [ModifyEntry [ResolutionEntry] $ CompositeEntry flavorBody]
         }
+
+chooseAutomaticallyEvade :: ReverseQueue m => InvestigatorId -> EnemyMatcher -> m ()
+chooseAutomaticallyEvade iid = chooseAutomaticallyEvadeAt iid (LocationWithInvestigator $ InvestigatorWithId iid)
+
+chooseAutomaticallyEvadeAt
+  :: ReverseQueue m => InvestigatorId -> LocationMatcher -> EnemyMatcher -> m ()
+chooseAutomaticallyEvadeAt iid lmatcher ematcher = do
+  enemies <- select $ ematcher <> EnemyAt lmatcher
+  concealed <- mapMaybe (headMay . snd) <$> selectWithField LocationConcealedCards lmatcher
+  chooseOneM iid do
+    targets enemies $ automaticallyEvadeEnemy iid
+    when (ematcher == AnyEnemy) do
+      for_ concealed \card -> targeting (ConcealedCardTarget card) $ push $ Msg.Flip iid GameSource (ConcealedCardTarget card)
+
+chooseDamageEnemy
+  :: (ReverseQueue m, Sourceable source)
+  => InvestigatorId -> source -> LocationMatcher -> EnemyMatcher -> Int -> m ()
+chooseDamageEnemy iid source lmatcher ematcher n = do
+  enemies <- select $ ematcher <> EnemyAt lmatcher
+  concealed <- mapMaybe (headMay . snd) <$> selectWithField LocationConcealedCards lmatcher
+  chooseOrRunOneM iid do
+    targets enemies $ assignEnemyDamage (nonAttack (Just iid) source n)
+    when (ematcher == AnyEnemy) do
+      for_ concealed \card -> targeting (ConcealedCardTarget card) $ push $ Msg.Flip iid GameSource (ConcealedCardTarget card)

@@ -181,6 +181,9 @@ instance Targetable AgendaId where
 instance Targetable BatchId where
   toTarget = BatchTarget
 
+instance Targetable ConcealedCardId where
+  toTarget = ConcealedCardTarget
+
 instance Targetable CardCode where
   toTarget = CardCodeTarget
 

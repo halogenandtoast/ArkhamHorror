@@ -1,14 +1,11 @@
-module Arkham.Asset.Assets.DrCharlesWestIIIKnowsHisPurpose (
-  drCharlesWestIiiKnowsHisPurpose,
-  DrCharlesWestIIIKnowsHisPurpose (..),
-)
-where
+module Arkham.Asset.Assets.DrCharlesWestIIIKnowsHisPurpose (drCharlesWestIiiKnowsHisPurpose) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Slot
 import Arkham.Trait
 
@@ -21,8 +18,8 @@ drCharlesWestIiiKnowsHisPurpose = ally DrCharlesWestIIIKnowsHisPurpose Cards.drC
 
 instance HasAbilities DrCharlesWestIIIKnowsHisPurpose where
   getAbilities (DrCharlesWestIIIKnowsHisPurpose a) =
-    [ controlledAbility a 1 (exists $ EnemyAt YourLocation <> EnemyCanBeDamagedBySource (a.ability 1))
-        $ ReactionAbility
+    [ controlled a 1 (canDamageEnemyAt (a.ability 1) YourLocation)
+        $ triggered
           ( SkillTestResult #after You #investigating
               $ oneOf [SuccessResult (static 1), SuccessResult (static 3)]
           )
@@ -38,11 +35,6 @@ instance RunMessage DrCharlesWestIIIKnowsHisPurpose where
       push $ AddSlot iid #hand (slot attrs)
       DrCharlesWestIIIKnowsHisPurpose <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      selectOneToHandle iid (attrs.ability 1)
-        $ enemyAtLocationWith iid
-        <> EnemyCanBeDamagedBySource (attrs.ability 1)
-      pure a
-    HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
-      nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1 eid
+      chooseDamageEnemy iid (attrs.ability 1) (locationWithInvestigator iid) AnyEnemy 1
       pure a
     _ -> DrCharlesWestIIIKnowsHisPurpose <$> liftRunMessage msg attrs

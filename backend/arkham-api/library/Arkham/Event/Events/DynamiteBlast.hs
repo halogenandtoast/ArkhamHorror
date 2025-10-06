@@ -24,9 +24,10 @@ instance RunMessage DynamiteBlast where
       chooseOneM iid do
         for_ locations \location -> do
           enemies <- if canDealDamage then select (enemyAt location) else pure []
-          mconcealed <- fieldMap LocationConcealedCards headMay location
+          mconcealed <-
+            runMaybeT $ guard canDealDamage >> MaybeT (fieldMap LocationConcealedCards headMay location)
           investigators <- select $ investigatorAt location
-          unless (null enemies && null investigators) do
+          unless (null enemies && null investigators && isNothing mconcealed) do
             targeting location do
               uiEffect attrs location Explosion
               for_ enemies (nonAttackEnemyDamage (Just iid) attrs 3)

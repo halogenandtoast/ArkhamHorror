@@ -45,7 +45,10 @@ instance RunMessage CallForBackup2 where
         andM
           [ control chosen Guardian
           , iid <=~> InvestigatorWithoutModifier CannotDealDamage
-          , selectAny $ EnemyAt YourLocation <> EnemyCanBeDamagedBySource (toSource attrs)
+          , orM
+              [ selectAny $ EnemyAt YourLocation <> EnemyCanBeDamagedBySource (toSource attrs)
+              , selectAny $ locationWithInvestigator iid <> LocationWithConcealedCard
+              ]
           ]
 
       hasSeeker <-
@@ -102,8 +105,7 @@ instance RunMessage CallForBackup2 where
       let chosen = toResultDefault [] attrs.meta
       pure $ overAttrs (setMeta (Rogue : chosen)) e
     DoStep 2 (PlayThisEvent iid (is attrs -> True)) -> do
-      enemies <- select $ EnemyAt YourLocation <> EnemyCanBeDamagedBySource (toSource attrs)
-      chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) attrs 1
+      chooseDamageEnemy iid attrs (locationWithInvestigator iid) AnyEnemy 1
       let chosen = toResultDefault [] attrs.meta
       pure $ overAttrs (setMeta (Guardian : chosen)) e
     DoStep 3 (PlayThisEvent iid (is attrs -> True)) -> do

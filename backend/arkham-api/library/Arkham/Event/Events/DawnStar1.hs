@@ -1,4 +1,4 @@
-module Arkham.Event.Events.DawnStar1 (dawnStar1, dawnStar1Effect, DawnStar1 (..)) where
+module Arkham.Event.Events.DawnStar1 (dawnStar1, dawnStar1Effect) where
 
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
@@ -42,10 +42,9 @@ instance RunMessage DawnStar1Effect where
       disableReturn e
     DoStep n msg'@(CreatedEffect eid _ _ _) | eid == attrs.id && n > 0 -> do
       for_ attrs.metaTarget \case
-        InvestigatorTarget iid ->
-          selectOneToHandleWith iid attrs (DoStep (n - 1) msg')
-            $ enemyAtLocationWith iid
-            <> EnemyCanBeDamagedBySource (toSource attrs)
+        InvestigatorTarget iid -> do
+          chooseDamageEnemy iid attrs.source (locationWithInvestigator iid) AnyEnemy 1
+          doStep (n - 1) msg'
         _ -> pure ()
       pure e
     After (RevealChaosToken _ _ token) | token.face == #curse -> do
@@ -55,8 +54,5 @@ instance RunMessage DawnStar1Effect where
             $ enemyAtLocationWith iid
             <> EnemyCanBeDamagedBySource (toSource attrs)
         _ -> pure ()
-      pure e
-    HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
-      nonAttackEnemyDamage (Just iid) attrs 1 eid
       pure e
     _ -> DawnStar1Effect <$> liftRunMessage msg attrs

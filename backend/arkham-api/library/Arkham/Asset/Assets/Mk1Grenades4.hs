@@ -5,13 +5,11 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.DamageEffect
-import Arkham.Helpers.Location
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Projection
 
 newtype Mk1Grenades4 = Mk1Grenades4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -35,9 +33,6 @@ instance RunMessage Mk1Grenades4 where
       let source = attrs.ability 1
       iids <- select $ colocatedWith iid <> NotInvestigator (InvestigatorWithId iid)
       eids <- select $ enemyAtLocationWith iid
-      mconcealed <-
-        runMaybeT $ MaybeT (getLocationOf iid) >>= MaybeT . fieldMap LocationConcealedCards headMay
-
       let
         handleOptions :: ReverseQueue n => ChooseT n () -> n ()
         handleOptions body = do
@@ -51,7 +46,7 @@ instance RunMessage Mk1Grenades4 where
             body
           for_ eids (checkDefeated source)
 
-      case mconcealed of
+      getConcealed iid >>= \case
         Just card -> do
           chooseOneM iid do
             labeled "Apply damage to concealed" $ handleOptions do

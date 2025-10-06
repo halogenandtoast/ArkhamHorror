@@ -5,15 +5,13 @@ import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Effect.Import
 import Arkham.Fight
-import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.SkillTest (withSkillTest)
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Projection
 
 newtype Armageddon4 = Armageddon4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -57,8 +55,7 @@ instance RunMessage Armageddon4Effect where
             handleIt assetId = do
               when (token.face == #curse) do
                 enemies <- select $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource attrs.source
-                mconcealed <-
-                  runMaybeT $ MaybeT (getLocationOf iid) >>= MaybeT . fieldMap LocationConcealedCards headMay
+                mconcealed <- getConcealed iid
                 stillInPlay <- selectAny $ AssetWithId assetId
                 when (stillInPlay || notNull enemies || isJust mconcealed) do
                   chooseOrRunOneM iid do

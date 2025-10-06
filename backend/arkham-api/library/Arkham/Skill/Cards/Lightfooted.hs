@@ -1,5 +1,6 @@
 module Arkham.Skill.Cards.Lightfooted (lightfooted) where
 
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy, isEvading)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -21,10 +22,12 @@ instance RunMessage Lightfooted where
         liftGuardM $ isEvading eid
         otherEnemies <-
           select $ enemyAtLocationWith attrs.owner <> EnemyCanBeEvadedBy (toSource attrs) <> not_ (be eid)
+        mconcealed <- getConcealed attrs.owner
         guard $ notNull otherEnemies
         lift $ skillTestResultOption "Lightfooted" do
           chooseOneM attrs.owner do
             labeled "Do not evade another enemy" nothing
             targets otherEnemies $ automaticallyEvadeEnemy attrs.owner
+            for_ mconcealed \concealed -> targeting concealed $ exposeConcealed attrs.owner attrs concealed
       pure s
     _ -> Lightfooted <$> liftRunMessage msg attrs

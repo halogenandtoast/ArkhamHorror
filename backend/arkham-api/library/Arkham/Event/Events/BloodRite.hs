@@ -1,5 +1,6 @@
 module Arkham.Event.Events.BloodRite (bloodRite) where
 
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Capability
 import Arkham.Classes.HasGame
 import Arkham.Cost hiding (discardedCards)
@@ -7,12 +8,9 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.Enemy (getDamageableEnemies)
-import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Projection ()
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Projection
 
 newtype BloodRite = BloodRite EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -46,8 +44,7 @@ instance RunMessage BloodRite where
     DoStep n msg'@(PayForCardAbility iid (isSource attrs -> True) _ 1 _) | n > 0 -> do
       resources <- getSpendableResources iid
       enemies <- getDamageableEnemies iid attrs (enemyAtLocationWith iid)
-      mconcealed <-
-        runMaybeT $ MaybeT (getLocationOf iid) >>= MaybeT . fieldMap LocationConcealedCards headMay
+      mconcealed <- getConcealed iid
       chooseOneM iid do
         whenM (can.gain.resources FromPlayerCardEffect iid) do
           labeled "Gain Resource" $ gainResources iid attrs 1 >> doStep (n - 1) msg'

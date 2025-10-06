@@ -487,15 +487,24 @@ resolutionFlavorWithChooseOne builder f = flip storyWithChooseOneM f do
         , flavorBody = [ModifyEntry [ResolutionEntry] $ CompositeEntry flavorBody]
         }
 
-chooseAutomaticallyEvade :: ReverseQueue m => InvestigatorId -> EnemyMatcher -> m ()
-chooseAutomaticallyEvade iid = chooseAutomaticallyEvadeAt iid (LocationWithInvestigator $ InvestigatorWithId iid)
+chooseAutomaticallyEvade
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> EnemyMatcher -> m ()
+chooseAutomaticallyEvade iid source = chooseAutomaticallyEvadeAt iid source (LocationWithInvestigator $ InvestigatorWithId iid)
 
 chooseAutomaticallyEvadeAt
-  :: ReverseQueue m => InvestigatorId -> LocationMatcher -> EnemyMatcher -> m ()
-chooseAutomaticallyEvadeAt iid lmatcher ematcher = do
-  enemies <- select $ ematcher <> EnemyAt lmatcher
+  :: (ReverseQueue m, Sourceable source)
+  => InvestigatorId -> source -> LocationMatcher -> EnemyMatcher -> m ()
+chooseAutomaticallyEvadeAt iid source lmatcher = chooseAutomaticallyEvadeNAt iid source 1 lmatcher
+
+chooseAutomaticallyEvadeNAt
+  :: forall m source
+   . (ReverseQueue m, Sourceable source)
+  => InvestigatorId -> source -> Int -> LocationMatcher -> EnemyMatcher -> m ()
+chooseAutomaticallyEvadeNAt iid source n lmatcher ematcher = do
+  enemies <- select $ ematcher <> EnemyAt lmatcher <> EnemyCanBeEvadedBy (toSource source)
   concealed <- mapMaybe (headMay . snd) <$> selectWithField LocationConcealedCards lmatcher
-  chooseOneM iid do
+  let handleChoose = if n == 1 then chooseOneM iid else chooseNM iid n
+  handleChoose do
     targets enemies $ automaticallyEvadeEnemy iid
     when (ematcher == AnyEnemy) do
       for_ concealed \card -> targeting (ConcealedCardTarget card) $ push $ Msg.Flip iid GameSource (ConcealedCardTarget card)

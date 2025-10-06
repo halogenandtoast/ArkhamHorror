@@ -40,8 +40,8 @@ instance HasCardCode ConcealedCard where
 
 instance HasAbilities ConcealedCard where
   getAbilities a =
-    [ restricted a AbilityAttack OnSameLocation fightAction_
-    , restricted a AbilityEvade OnSameLocation evadeAction_
+    [ basicAbility $ restricted a AbilityAttack OnSameLocation fightAction_
+    , basicAbility $ restricted a AbilityEvade OnSameLocation evadeAction_
     ]
 
 instance HasModifiersFor ConcealedCard where

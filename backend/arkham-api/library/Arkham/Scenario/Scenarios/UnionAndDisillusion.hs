@@ -253,9 +253,11 @@ instance RunMessage UnionAndDisillusion where
             then do
               erynnJoinedTheInvestigators <- getHasRecord ErynnJoinedTheInvestigators
               hasBlackBook <- isJust <$> getOwner Assets.theBlackBook
-              storyWithChooseOneM' (compose.resolution $ setTitle "returnToResolution4.title" >> p "returnToResolution4.body") do
-                labeledValidate' (erynnJoinedTheInvestigators && hasBlackBook) "accept" $ push R9
-                labeled' "flee" $ push R10
+              storyWithChooseOneM'
+                (compose.resolution $ setTitle "returnToResolution4.title" >> p "returnToResolution4.body")
+                do
+                  labeledValidate' (erynnJoinedTheInvestigators && hasBlackBook) "accept" $ push R9
+                  labeled' "flee" $ push R10
             else do
               resolution "resolution4"
               record AnetteMasonIsPossessedByEvil
@@ -267,9 +269,9 @@ instance RunMessage UnionAndDisillusion where
           hereticsUnleashed <- getRecordCount HereticsWereUnleashedUntoArkham
           let total = count id [not spellCast, not josefDisappearedIntoTheMist, hereticsUnleashed <= 1]
 
-          resolutionFlavor do
-            setTitle "resolution5.title"
-            p "resolution5.body"
+          resolutionFlavor $ scope "resolution5" do
+            setTitle "title"
+            p "body"
             cols do
               ul do
                 li.validate (not spellCast) "spellBroken"
@@ -279,7 +281,7 @@ instance RunMessage UnionAndDisillusion where
                 li.validate spellCast "spellCast"
                 li.validate josefDisappearedIntoTheMist "disappeared"
                 li.validate (hereticsUnleashed >= 2) "moreHeretics"
-            p "resolution5.continue"
+            p "continue"
           push $ if total >= 2 then R6 else R7
         Resolution 6 -> do
           resolution "resolution6"

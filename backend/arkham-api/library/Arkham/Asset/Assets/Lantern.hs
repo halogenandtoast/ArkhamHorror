@@ -19,7 +19,7 @@ instance HasAbilities Lantern where
   getAbilities (Lantern x) =
     [ investigateAbility x 1 mempty ControlsThis
     , noAOO
-        $ controlled x 2 (CanDealDamage <> exists (at_ YourLocation <> canBeDamagedBy (x.ability 2)))
+        $ controlled x 2 (canDamageEnemyAt (x.ability 2) YourLocation)
         $ actionAbilityWithCost (discardCost x)
     ]
 
@@ -32,7 +32,6 @@ instance RunMessage Lantern where
         investigate sid iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      enemies <- select $ enemyAtLocationWith iid <> canBeDamagedBy (attrs.ability 2)
-      chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 2) 1
+      chooseDamageEnemy iid (attrs.ability 2) (locationWithInvestigator iid) AnyEnemy 1
       pure a
     _ -> Lantern <$> liftRunMessage msg attrs

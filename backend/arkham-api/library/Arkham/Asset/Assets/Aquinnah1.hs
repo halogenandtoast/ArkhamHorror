@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Attack.Types
 import Arkham.Enemy.Types (Field (EnemyHealthDamage))
 import Arkham.Helpers.Window
+import Arkham.Location.Types (Field (LocationConcealedCards))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
@@ -22,7 +23,12 @@ instance HasAbilities Aquinnah1 where
     [ controlled
         a
         1
-        (CanDealDamage <> EnemyCriteria (NotAttackingEnemy <> EnemyExists (EnemyAt YourLocation)))
+        ( CanDealDamage
+            <> oneOf
+              [ EnemyCriteria (NotAttackingEnemy <> EnemyExists (EnemyAt YourLocation))
+              , exists $ YourLocation <> LocationWithConcealedCard
+              ]
+        )
         $ triggered (EnemyAttacks #when You AnyEnemyAttack AnyEnemy) (exhaust a <> horrorCost a 1)
     ]
 
@@ -32,6 +38,10 @@ instance RunMessage Aquinnah1 where
       changeAttackDetails attack.enemy attack {attackDealDamage = False}
       healthDamage' <- field EnemyHealthDamage attack.enemy
       enemies <- select $ enemyAtLocationWith iid <> not_ (be attack.enemy)
-      chooseOneM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) healthDamage'
+      concealed <-
+        mapMaybe (headMay . snd) <$> selectWithField LocationConcealedCards (locationWithInvestigator iid)
+      chooseOneM iid do
+        targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) healthDamage'
+        for_ concealed \card -> targeting (ConcealedCardTarget card) $ doFlip iid GameSource (ConcealedCardTarget card)
       pure a
     _ -> Aquinnah1 <$> liftRunMessage msg attrs

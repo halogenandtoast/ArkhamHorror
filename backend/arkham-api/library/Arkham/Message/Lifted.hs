@@ -3501,3 +3501,7 @@ createWindowModifierEffect_
   -> m ()
 createWindowModifierEffect_ eWindow source target mods = do
   Msg.pushM $ Msg.createWindowModifierEffect eWindow source target mods
+
+doFlip
+  :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
+doFlip iid (toSource -> source) (toTarget -> target) = push $ Flip iid source target

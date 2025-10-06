@@ -2,17 +2,21 @@
 
 module Arkham.Campaigns.TheScarletKeys.Concealed.Runner where
 
+import Arkham.Action qualified as Action
 import Arkham.Calculation
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Classes.RunMessage
+import Arkham.Constants
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.SkillTest.Lifted (beginSkillTestEdit)
+import Arkham.Fight.Types
+import Arkham.Helpers.SkillTest.Lifted (beginSkillTestEdit, fight)
+import Arkham.Id
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Message.Lifted
+import Arkham.Message.Lifted hiding (choose)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Placement
@@ -21,18 +25,21 @@ import Arkham.SkillTest.Base
 import Arkham.Source
 import Arkham.Target
 
+isActionTarget :: Targetable a => a -> Target -> Bool
+isActionTarget a = isTarget a . toProxyTarget
+
 instance RunMessage ConcealedCard where
   runMessage msg c = runQueueT $ case msg of
     PlaceConcealedCard _iid cardId placement | c.id == cardId -> do
       pure $ c {concealedCardPlacement = placement}
-    UseThisAbility iid (isSource c -> True) 1 -> do
+    UseThisAbility iid (isSource c -> True) AbilityAttack -> do
       case c.placement of
         AtLocation location -> do
           sid <- getRandom
           beginSkillTestEdit
             sid
             iid
-            (c.ability 1)
+            (c.ability AbilityAttack)
             c
             #combat
             (LocationMaybeFieldCalculation location LocationShroud)
@@ -40,14 +47,14 @@ instance RunMessage ConcealedCard where
               st {skillTestAction = Just #fight}
         _ -> pure ()
       pure c
-    UseThisAbility iid (isSource c -> True) 2 -> do
+    UseThisAbility iid (isSource c -> True) AbilityEvade -> do
       case c.placement of
         AtLocation location -> do
           sid <- getRandom
           beginSkillTestEdit
             sid
             iid
-            (c.ability 2)
+            (c.ability AbilityEvade)
             c
             #agility
             (LocationMaybeFieldCalculation location LocationShroud)
@@ -55,11 +62,11 @@ instance RunMessage ConcealedCard where
               st {skillTestAction = Just #evade}
         _ -> pure ()
       pure c
-    PassedThisSkillTest iid (isAbilitySource c 1 -> True) -> do
-      push $ Flip iid (c.ability 1) (toTarget c)
+    PassedThisSkillTest iid (isAbilitySource c AbilityAttack -> True) -> do
+      push $ Flip iid (c.ability AbilityAttack) (toTarget c)
       pure c
-    PassedThisSkillTest iid (isAbilitySource c 2 -> True) -> do
-      push $ Flip iid (c.ability 2) (toTarget c)
+    PassedThisSkillTest iid (isAbilitySource c AbilityEvade -> True) -> do
+      push $ Flip iid (c.ability AbilityEvade) (toTarget c)
       pure c
     Flip iid _ (isTarget c -> True) -> do
       chooseTargetM iid [c] \_ -> doStep 1 msg
@@ -80,6 +87,28 @@ instance RunMessage ConcealedCard where
       removeFromGame (toTarget c)
       inShadows <- selectAny (EnemyWithPlacement InTheShadows)
       unless inShadows $ push RemoveAllConcealed
+      pure c
+    AttackEnemy eid choose | eid == coerce (unConcealedCardId c.id) -> do
+      let iid = choose.investigator
+      let source = choose.source
+      let sid = choose.skillTest
+      let target = maybe (toTarget c) (ProxyTarget (toTarget c)) choose.target
+      let skillType = choose.skillType
+      let
+        difficulty =
+          case choose.difficulty of
+            DefaultChooseFightDifficulty -> case c.placement of
+              AtLocation location -> LocationMaybeFieldCalculation location LocationShroud
+              _ -> error "invalid placement for concealed card"
+            CalculatedChooseFightDifficulty ccfd -> ccfd
+
+      fight sid iid source target skillType difficulty
+      pure c
+    PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ _ | isActionTarget c target -> do
+      push $ Flip iid source (toTarget c)
+      pure c
+    Successful (Action.Fight, _) iid source target _ | isTarget c target -> do
+      push $ Flip iid source (toTarget c)
       pure c
     RemoveAllConcealed -> do
       removeFromGame (toTarget c)

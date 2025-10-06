@@ -3,13 +3,11 @@ module Arkham.Asset.Assets.NephthysHuntressOfBast4 (nephthysHuntressOfBast4) whe
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.ChaosToken
-import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Projection
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -41,8 +39,7 @@ instance RunMessage NephthysHuntressOfBast4 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (attrs.ability 2)
-      mconcealed <-
-        runMaybeT $ MaybeT (getLocationOf iid) >>= MaybeT . fieldMap LocationConcealedCards headMay
+      mconcealed <- getConcealed iid
       blessTokens <-
         take 3 <$> filterM (<=~> IncludeSealed (ChaosTokenFaceIs #bless)) attrs.sealedChaosTokens
       chooseOrRunOneM iid do

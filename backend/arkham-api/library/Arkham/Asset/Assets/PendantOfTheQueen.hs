@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Helpers.Investigator (searchBonded)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (EnemyEvaded)
@@ -32,6 +33,7 @@ instance HasAbilities PendantOfTheQueen where
                 <> oneOf
                   [ LocationWithDiscoverableCluesBy You
                   , LocationWithEnemy (EnemyWithEvade <> EnemyWithoutModifier CannotBeEvaded)
+                  , LocationWithConcealedCard
                   ]
             ]
         )
@@ -68,6 +70,7 @@ instance RunMessage PendantOfTheQueen where
       discoverChoice <- lid <=~> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
       enemies <-
         select $ at_ (LocationWithId lid) <> EnemyWithEvade <> EnemyWithoutModifier CannotBeEvaded
+      mconcealed <- getConcealedAt lid
 
       chooseOrRunOneM iid do
         when (canMove && moveChoice) do
@@ -76,8 +79,8 @@ instance RunMessage PendantOfTheQueen where
         when discoverChoice do
           labeled "Discover a clue at this location" $ discoverAt NotInvestigate iid (attrs.ability 1) 1 lid
 
-        when (notNull enemies) do
+        when (notNull enemies || isJust mconcealed) do
           labeled "Evade an enemy at this location" do
-            chooseOrRunOneM iid $ targets enemies (automaticallyEvadeEnemy iid)
+            chooseAutomaticallyEvadeAt iid (attrs.ability 1) (LocationWithId lid) AnyEnemy
       pure a
     _ -> PendantOfTheQueen <$> liftRunMessage msg attrs

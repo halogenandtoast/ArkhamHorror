@@ -466,6 +466,20 @@ canDamageEnemyAtMatch (toSource -> source) locationMatcher enemyMatcher =
           ]
       else exists (EnemyAt locationMatcher <> EnemyCanBeDamagedBySource source <> enemyMatcher)
 
+canEvadeEnemyAt :: Sourceable source => source -> LocationMatcher -> Criterion
+canEvadeEnemyAt source locationMatcher = canEvadeEnemyAtMatch source locationMatcher AnyEnemy
+
+canEvadeEnemyAtMatch
+  :: Sourceable source => source -> LocationMatcher -> EnemyMatcher -> Criterion
+canEvadeEnemyAtMatch (toSource -> source) locationMatcher enemyMatcher =
+  if enemyMatcher == AnyEnemy
+    then
+      oneOf -- technically Criteria
+        [ exists (EnemyAt locationMatcher <> EnemyCanBeEvadedBy source)
+        , exists (LocationWithConcealedCard <> locationMatcher)
+        ]
+    else exists (EnemyAt locationMatcher <> EnemyCanBeEvadedBy source <> enemyMatcher)
+
 instance Semigroup EnemyCriterion where
   EnemyMatchesCriteria xs <> EnemyMatchesCriteria ys =
     EnemyMatchesCriteria $ xs <> ys

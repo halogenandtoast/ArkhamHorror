@@ -1,12 +1,11 @@
 module Arkham.Event.Events.DynamiteBlast (dynamiteBlast) where
 
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.ForMovement
 import Arkham.Helpers.Modifiers (ModifierType (..), withoutModifier)
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Projection
 import Arkham.UI
 
 newtype DynamiteBlast = DynamiteBlast EventAttrs
@@ -24,8 +23,7 @@ instance RunMessage DynamiteBlast where
       chooseOneM iid do
         for_ locations \location -> do
           enemies <- if canDealDamage then select (enemyAt location) else pure []
-          mconcealed <-
-            runMaybeT $ guard canDealDamage >> MaybeT (fieldMap LocationConcealedCards headMay location)
+          mconcealed <- runMaybeT $ guard canDealDamage >> getConcealedT iid
           investigators <- select $ investigatorAt location
           unless (null enemies && null investigators && isNothing mconcealed) do
             targeting location do

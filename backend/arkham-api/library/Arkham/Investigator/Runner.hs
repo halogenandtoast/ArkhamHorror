@@ -1205,16 +1205,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           (canEvadeMatcher <> enemyMatcher <> mustChooseMatchers)
           modifiers
     player <- getPlayer a.id
-    push
-      $ chooseOne player
-      $ choose.additionalOptions
-      <> [ EvadeLabel
-             eid
-             [ ChosenEvadeEnemy choose.skillTest source eid
-             , EvadeEnemy choose.skillTest a.id eid source mTarget skillType isAction
-             ]
-         | eid <- enemyIds
-         ]
+    mconcealed <-
+      runMaybeT
+        $ MaybeT
+        . fieldMap LocationConcealedCards headMay
+        =<< MaybeT (getLocationOf investigatorId)
+    let choices = enemyIds <> map coerce (maybeToList mconcealed)
+    unless (null choices) do
+      push
+        $ chooseOne player
+        $ choose.additionalOptions
+        <> [ EvadeLabel
+               eid
+               [ ChosenEvadeEnemy choose.skillTest source eid
+               , EvadeEnemy choose.skillTest a.id eid source mTarget skillType isAction
+               ]
+           | eid <- choices
+           ]
     pure a
   ChooseEngageEnemy iid source mTarget enemyMatcher isAction | iid == investigatorId -> do
     modifiers <- getModifiers (InvestigatorTarget iid)

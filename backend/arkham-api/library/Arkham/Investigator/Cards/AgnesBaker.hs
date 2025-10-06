@@ -6,6 +6,7 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Message.Lifted.Choose
 import Arkham.Script
 
 newtype AgnesBaker = AgnesBaker InvestigatorAttrs
@@ -21,7 +22,7 @@ agnesBaker =
 instance HasAbilities AgnesBaker where
   getAbilities (AgnesBaker x) =
     [ playerLimit PerPhase
-        $ restricted x 1 (Self <> CanDealDamage <> exists (EnemyAt YourLocation))
+        $ restricted x 1 (Self <> canDamageEnemyAt (x.ability 1) YourLocation)
         $ freeReaction (PlacedCounter #after You AnySource #horror $ atLeast 1)
     ]
 
@@ -32,4 +33,4 @@ instance HasChaosTokenValue AgnesBaker where
 
 instance RunMessage AgnesBaker where
   runMessage = script $ onAbility 1 do
-    chooseEnemy (atYourLocation <> ability.canDamage) $ nonAttackEnemyDamage (Just you) ability 1
+    chooseDamageEnemy you ability (locationWithInvestigator you) AnyEnemy 1

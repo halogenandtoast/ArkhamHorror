@@ -19,7 +19,7 @@ instance HasModifiersFor BeatCop2 where
 
 instance HasAbilities BeatCop2 where
   getAbilities (BeatCop2 x) =
-    [ controlled x 1 (exists (EnemyAt YourLocation) <> CanDealDamage)
+    [ controlled x 1 (canDamageEnemyAt (x.ability 1) YourLocation)
         $ FastAbility
         $ Costs [exhaust x, damageCost x 1]
     ]
@@ -27,7 +27,6 @@ instance HasAbilities BeatCop2 where
 instance RunMessage BeatCop2 where
   runMessage msg a@(BeatCop2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- select $ enemyAtLocationWith iid
-      chooseOrRunOneM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
+      chooseDamageEnemy iid (attrs.ability 1) (locationWithInvestigator iid) AnyEnemy 1
       pure a
     _ -> BeatCop2 <$> liftRunMessage msg attrs

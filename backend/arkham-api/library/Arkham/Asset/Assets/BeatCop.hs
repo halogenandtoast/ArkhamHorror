@@ -3,7 +3,6 @@ module Arkham.Asset.Assets.BeatCop (beatCop) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.DamageEffect
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message.Lifted.Choose
@@ -20,14 +19,13 @@ instance HasModifiersFor BeatCop where
 
 instance HasAbilities BeatCop where
   getAbilities (BeatCop x) =
-    [ controlled x 1 (exists (EnemyAt YourLocation) <> CanDealDamage)
+    [ controlled x 1 (canDamageEnemyAt (x.ability 1) YourLocation)
         $ FastAbility (DiscardCost FromPlay $ toTarget x)
     ]
 
 instance RunMessage BeatCop where
   runMessage msg a@(BeatCop attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- select $ enemyAtLocationWith iid
-      chooseOrRunOneM iid $ targets enemies $ assignEnemyDamage (nonAttack (Just iid) (attrs.ability 1) 1)
+      chooseDamageEnemy iid (attrs.ability 1) (locationWithInvestigator iid) AnyEnemy 1
       pure a
     _ -> BeatCop <$> liftRunMessage msg attrs

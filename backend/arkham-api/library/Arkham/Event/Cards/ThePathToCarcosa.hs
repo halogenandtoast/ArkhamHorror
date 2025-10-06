@@ -167,8 +167,7 @@ sneakAttack2 =
     { cdSkills = [#intellect, #combat, #combat]
     , cdCardTraits = setFromList [Tactic]
     , cdLevel = Just 2
-    , cdCriteria =
-        Just $ exists (EnemyAt YourLocation <> EnemyNotEngagedWithYou) <> Criteria.CanDealDamage
+    , cdCriteria = Just $ Criteria.canDamageEnemyAtMatch ThisCard YourLocation EnemyNotEngagedWithYou
     }
 
 stormOfSpirits :: CardDef
@@ -285,7 +284,10 @@ snareTrap2 =
   (event "03199" "Snare Trap" 2 Survivor)
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Trap, Improvised]
-    , cdCriteria = Just $ Criteria.Negate (exists $ "Snare Trap" <> AssetAt YourLocation) <> exists (YourLocation <> LocationCanHaveAttachments)
+    , cdCriteria =
+        Just
+          $ Criteria.Negate (exists $ "Snare Trap" <> AssetAt YourLocation)
+          <> exists (YourLocation <> LocationCanHaveAttachments)
     , cdLevel = Just 2
     }
 

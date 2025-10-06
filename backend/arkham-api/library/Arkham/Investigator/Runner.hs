@@ -68,7 +68,12 @@ import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
 import Arkham.Helpers.Game (withAlteredGame)
-import Arkham.Helpers.Location (getCanMoveTo, getCanMoveToMatchingLocations, withLocationOf)
+import Arkham.Helpers.Location (
+  getCanMoveTo,
+  getCanMoveToMatchingLocations,
+  getLocationOf,
+  withLocationOf,
+ )
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Playable (getIsPlayable, getIsPlayableWithResources, getPlayableCards)
 import Arkham.Helpers.Ref (sourceToCard)
@@ -1071,8 +1076,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         <> if canMoveToConnected
           then orConnected ForMovement (locationWithInvestigator investigatorId)
           else locationWithInvestigator investigatorId
+    mconcealed <-
+      runMaybeT
+        $ MaybeT
+        . fieldMap LocationConcealedCards headMay
+        =<< MaybeT (getLocationOf investigatorId)
     player <- getPlayer investigatorId
-    let choices = enemyIds <> map coerce locationIds
+    let choices = enemyIds <> map coerce locationIds <> map coerce (maybeToList mconcealed)
     -- we might have killed the enemy via a reaction before getting here
     unless (null choices) do
       push
@@ -1084,7 +1094,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               : [ FightEnemy eid choose
                 | not choose.onlyChoose
                 ]
-          | eid <- enemyIds <> map coerce locationIds
+          | eid <- choices
           ]
     pure a
   EngageEnemy iid eid _ True | iid == investigatorId -> do
@@ -2050,16 +2060,28 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             : mkAfter (Window.GainsClues iid d.source clueCount)
             : [mkAfter (Window.DiscoveringLastClue iid lid) | lastClue]
 
-        pushAll
-          $ [ locationWindowsBefore
-            , UpdateHistory iid (HistoryItem HistoryCluesDiscovered $ singletonMap lid clueCount)
-            , RemoveClues d.source (LocationTarget lid) clueCount
-            , After $ GainClues iid d.source clueCount
-            , locationWindowsAfter
-            ]
-          <> d.discoverThen
+        mconcealed <- headMay <$> field LocationConcealedCards lid
+
+        let
+          defaultDiscover :: Lifted.ReverseQueue n => n ()
+          defaultDiscover =
+            pushAll
+              $ [ locationWindowsBefore
+                , UpdateHistory iid (HistoryItem HistoryCluesDiscovered $ singletonMap lid clueCount)
+                , MoveTokens d.source (toSource lid) (toTarget iid) Clue clueCount
+                , After $ GainClues iid d.source clueCount
+                , locationWindowsAfter
+                ]
+              <> d.discoverThen
+
+        case mconcealed of
+          Just concealed -> Choose.chooseOneM iid do
+            Choose.labeled "Expose concealed" $ push $ Flip iid GameSource (ConcealedCardTarget concealed)
+            Choose.labeled "Discover normally" defaultDiscover
+          Nothing -> defaultDiscover
+
         send $ format a <> " discovered " <> pluralize clueCount "clue"
-        pure $ a & tokensL %~ addTokens Clue clueCount
+        pure a
       else pure a
   InvestigatorDiscardAllClues _ iid | iid == investigatorId -> do
     pure $ a & tokensL %~ removeAllTokens Clue

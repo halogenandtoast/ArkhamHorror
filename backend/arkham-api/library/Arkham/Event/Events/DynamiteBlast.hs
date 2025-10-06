@@ -4,7 +4,9 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.ForMovement
 import Arkham.Helpers.Modifiers (ModifierType (..), withoutModifier)
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Projection
 import Arkham.UI
 
 newtype DynamiteBlast = DynamiteBlast EventAttrs
@@ -22,11 +24,16 @@ instance RunMessage DynamiteBlast where
       chooseOneM iid do
         for_ locations \location -> do
           enemies <- if canDealDamage then select (enemyAt location) else pure []
+          mconcealed <- fieldMap LocationConcealedCards headMay location
           investigators <- select $ investigatorAt location
           unless (null enemies && null investigators) do
             targeting location do
               uiEffect attrs location Explosion
               for_ enemies (nonAttackEnemyDamage (Just iid) attrs 3)
               for_ investigators \iid' -> assignDamage iid' attrs 3
+              for_ mconcealed \concealed -> do
+                chooseOneM iid do
+                  labeled "Expose concealed card" $ push $ Flip iid GameSource (ConcealedCardTarget concealed)
+                  labeled "Do not expose concealed card" nothing
       pure e
     _ -> DynamiteBlast <$> liftRunMessage msg attrs

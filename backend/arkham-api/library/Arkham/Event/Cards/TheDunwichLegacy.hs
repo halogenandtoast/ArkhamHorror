@@ -155,7 +155,10 @@ oops =
     , cdCardTraits = singleton Fortune
     , cdCriteria =
         Just
-          $ exists (EnemyAt YourLocation <> NotEnemy AttackedEnemy <> EnemyCanBeDamagedBySource ThisCard)
+          $ oneOf
+            [ exists (EnemyAt YourLocation <> NotEnemy AttackedEnemy <> EnemyCanBeDamagedBySource ThisCard)
+            , exists (YourLocation <> LocationWithConcealedCard)
+            ]
           <> Criteria.CanDealDamage
     , cdFastWindow =
         Just

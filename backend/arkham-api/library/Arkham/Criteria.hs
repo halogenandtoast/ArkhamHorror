@@ -46,6 +46,7 @@ import Arkham.Matcher.Value
 import Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
+import Arkham.Source
 import Arkham.Taboo.Types
 import Arkham.Token
 import Arkham.Trait
@@ -449,6 +450,21 @@ canFightCriteriaObeyAloof obeyAloof =
   OnSameLocation <> EnemyCriteria (ThisEnemy $ wrapAloof $ CanBeAttackedBy You) <> CanAttack
  where
   wrapAloof = if obeyAloof then (<> EnemyOneOf [not_ AloofEnemy, EnemyIsEngagedWith Anyone]) else id
+
+canDamageEnemyAt :: Sourceable source => source -> LocationMatcher -> Criterion
+canDamageEnemyAt source locationMatcher = canDamageEnemyAtMatch source locationMatcher AnyEnemy
+
+canDamageEnemyAtMatch
+  :: Sourceable source => source -> LocationMatcher -> EnemyMatcher -> Criterion
+canDamageEnemyAtMatch (toSource -> source) locationMatcher enemyMatcher =
+  CanDealDamage
+    <> if enemyMatcher == AnyEnemy
+      then
+        oneOf -- technically Criteria
+          [ exists (EnemyAt locationMatcher <> EnemyCanBeDamagedBySource source)
+          , exists (LocationWithConcealedCard <> locationMatcher)
+          ]
+      else exists (EnemyAt locationMatcher <> EnemyCanBeDamagedBySource source <> enemyMatcher)
 
 instance Semigroup EnemyCriterion where
   EnemyMatchesCriteria xs <> EnemyMatchesCriteria ys =

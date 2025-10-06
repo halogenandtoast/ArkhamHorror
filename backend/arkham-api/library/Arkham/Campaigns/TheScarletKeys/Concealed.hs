@@ -13,6 +13,7 @@ import Arkham.Campaigns.TheScarletKeys.Concealed.Types
 import Arkham.Card.CardCode
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasModifiersFor
+import Arkham.Constants
 import Arkham.Field
 import Arkham.Json
 import Arkham.Placement
@@ -39,8 +40,8 @@ instance HasCardCode ConcealedCard where
 
 instance HasAbilities ConcealedCard where
   getAbilities a =
-    [ restricted a 1 OnSameLocation fightAction_
-    , restricted a 2 OnSameLocation evadeAction_
+    [ restricted a AbilityAttack OnSameLocation fightAction_
+    , restricted a AbilityEvade OnSameLocation evadeAction_
     ]
 
 instance HasModifiersFor ConcealedCard where

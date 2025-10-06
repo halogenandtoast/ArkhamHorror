@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 
-import { computed } from 'vue'
+import { computed, ref, onBeforeUnmount, nextTick } from 'vue'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
 import { ConcealedCard } from '@/arkham/types/Game';
-import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 
 const props = defineProps<{
@@ -18,9 +18,19 @@ const emit = defineEmits<{
   choose: [value: number]
 }>()
 
+const frame = ref(null)
 const id = computed(() => props.card.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const choose = (idx: number) => emit('choose', idx)
+
+const showAbilities = ref<boolean>(false)
+
+const abilitiesEl = ref<HTMLElement | null>(null)
+
+async function chooseAbility(ability: number) {
+  abilitiesEl.value?.blur()
+  choose(ability)
+}
 
 const imageName = computed(() => {
   if (!props.card.flipped) return 'concealed-card'
@@ -62,6 +72,10 @@ const image = computed(() => {
 })
 
 function isAbility(v: Message): v is AbilityLabel {
+  if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
+    return true
+  }
+
   if (v.tag !== MessageType.ABILITY_LABEL) {
     return false
   }
@@ -91,34 +105,73 @@ const abilities = computed(() => {
     }, []);
 })
 
-function canInteract(c: Message): boolean {
+function isCardAction(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value) {
     return true
   }
   return false
 }
 
-const cardAction = computed(() => choices.value.findIndex(canInteract))
+const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
+const cardAction = computed(() => choices.value.findIndex(isCardAction))
+
+let clickTimeout: ReturnType<typeof setTimeout> | null = null
+// clickCount is used to determine if the user clicked once or twice
+let clickCount = 0
+
+onBeforeUnmount(() => {
+  if (clickTimeout) {
+    clearTimeout(clickTimeout)
+    clickTimeout = null
+  }
+  clickCount = 0
+})
+
+async function clicked() {
+  clickCount++;
+  if (clickTimeout) clearTimeout(clickTimeout);
+  clickTimeout = setTimeout(async () => {
+    // Ensure this does not conflict with the double-click zoom-in functionality (toggleZoom in Scenario.vue)
+    if (clickCount === 1){
+      if(cardAction.value !== -1) {
+        choose(cardAction.value)
+      } else if (abilities.value.length > 0) {
+        showAbilities.value = !showAbilities.value
+        await nextTick()
+        if (showAbilities.value === true) {
+          abilitiesEl.value?.focus()
+        } else {
+          abilitiesEl.value?.blur()
+        }
+      }
+    }
+
+    // Reset click count and timeout
+    clickCount = 0;
+    clickTimeout = null;
+  }, 300);
+}
 
 </script>
 
 <template>
-  <div class="concealed-card">
+  <div class="concealed-card" ref="frame">
     <img
       :src="image"
       class="concealed-card"
       :data-image="image"
-      :class="{'concealed-card--can-interact': cardAction !== -1 }"
-      @click="$emit('choose', cardAction)"
+      :class="{'concealed-card--can-interact': canInteract}"
+      @click="clicked"
     />
-    <AbilityButton
-      v-for="ability in abilities"
-      :key="ability.index"
-      :ability="ability.contents"
-      :data-image="image"
+    <AbilitiesMenu
+      v-model="showAbilities"
+      :abilities="abilities"
+      :frame="frame"
+      :show-move="abilities.length > 1"
       :game="game"
-      @click="$emit('choose', ability.index)"
-      />
+      position="left"
+      @choose="chooseAbility"
+    />
   </div>
 </template>
 

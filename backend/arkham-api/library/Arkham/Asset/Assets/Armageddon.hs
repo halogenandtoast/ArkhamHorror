@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Armageddon (armageddon, armageddonEffect, Armageddon (..)) where
+module Arkham.Asset.Assets.Armageddon (armageddon, armageddonEffect) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)
@@ -7,10 +7,13 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Effect.Import
 import Arkham.Fight
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
+import Arkham.Projection
 
 newtype Armageddon = Armageddon AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,10 +24,8 @@ armageddon = asset Armageddon Cards.armageddon
 
 instance HasAbilities Armageddon where
   getAbilities (Armageddon a) =
-    [ restricted a 1 ControlsThis
-        $ ActionAbilityWithSkill [#fight] #willpower
-        $ ActionCost 1
-        <> assetUseCost a Charge 1
+    [ controlled_ a 1
+        $ ActionAbilityWithSkill [#fight] #willpower (ActionCost 1 <> assetUseCost a Charge 1)
     ]
 
 instance RunMessage Armageddon where
@@ -54,16 +55,19 @@ instance RunMessage ArmageddonEffect where
             handleIt assetId = do
               when (token.face == #curse) do
                 enemies <- select $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource attrs.source
+
+                mconcealed <-
+                  runMaybeT $ MaybeT (getLocationOf iid) >>= MaybeT . fieldMap LocationConcealedCards headMay
                 stillInPlay <- selectAny $ AssetWithId assetId
 
-                when (stillInPlay || notNull enemies) do
+                when (stillInPlay || notNull enemies || isJust mconcealed) do
                   chooseOrRunOneM iid do
                     when stillInPlay do
                       labeled "Place 1 Charge on Armageddon" do
                         push $ AddUses attrs.source assetId Charge 1
-                    when (notNull enemies) do
+                    when (notNull enemies || isJust mconcealed) do
                       labeled "Deal 1 damage to an enemy at your location" do
-                        chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) attrs.source 1
+                        chooseDamageEnemy iid attrs.source (locationWithInvestigator iid) AnyEnemy 1
 
                   disable attrs
           case attrs.source of

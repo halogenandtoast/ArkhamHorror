@@ -1,6 +1,5 @@
-module Arkham.Event.Events.CoupDeGrace (coupDeGrace, CoupDeGrace (..)) where
+module Arkham.Event.Events.CoupDeGrace (coupDeGrace) where
 
-import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher hiding (EnemyDefeated, NonAttackDamageEffect)
@@ -15,11 +14,7 @@ coupDeGrace = event CoupDeGrace Cards.coupDeGrace
 instance RunMessage CoupDeGrace where
   runMessage msg e@(CoupDeGrace attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
-      chooseOrRunOne
-        iid
-        [targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) attrs 1] | enemy <- enemies]
-
+      chooseDamageEnemy iid attrs (locationWithInvestigator iid) AnyEnemy 1
       pushWhenM (iid <=~> TurnInvestigator) $ ChooseEndTurn iid
       pure e
     EnemyDefeated _ _ (isSource attrs -> True) _ -> do

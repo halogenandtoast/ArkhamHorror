@@ -61,7 +61,7 @@ quickShot3 =
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Spirit]
     , cdKeywords = setFromList [Keyword.Myriad]
-    , cdCriteria = Just $ exists $ EnemyAt YourLocation <> EnemyCanBeDamagedBySource ThisCard
+    , cdCriteria = Just $ Criteria.canDamageEnemyAt ThisCard YourLocation
     , cdFastWindow = Just $ DuringTurn You
     , cdOutOfPlayEffects = [InHandEffect]
     , cdLevel = Just 3
@@ -296,7 +296,7 @@ nameYourPrice2 =
   (event "11105" "Name Your Price" 20 Neutral)
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Favor]
-    , cdCriteria = Just $ exists $ EnemyCanBeDamagedBySource ThisCard <> at_ YourLocation
+    , cdCriteria = Just $ Criteria.canDamageEnemyAt ThisCard YourLocation
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Criminal, Socialite]]
     , cdActions = [#parley]
     , cdLevel = Just 2

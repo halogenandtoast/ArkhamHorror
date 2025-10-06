@@ -297,7 +297,7 @@ manoAMano1 =
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spirit, Bold]
     , cdCriteria =
-        Just $ Criteria.FirstAction <> exists EnemyEngagedWithYou <> Criteria.CanDealDamage
+        Just $ Criteria.FirstAction <> Criteria.canDamageEnemyAtMatch ThisCard Anywhere EnemyEngagedWithYou
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = Just 1
     }

@@ -145,8 +145,7 @@ manoAMano2 =
     , cdCriteria =
         Just
           $ Criteria.FirstAction
-          <> exists (EnemyEngagedWithYou <> EnemyCanBeDamagedBySource ThisCard)
-          <> Criteria.CanDealDamage
+          <> Criteria.canDamageEnemyAtMatch ThisCard Anywhere EnemyEngagedWithYou
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = Just 2
     }

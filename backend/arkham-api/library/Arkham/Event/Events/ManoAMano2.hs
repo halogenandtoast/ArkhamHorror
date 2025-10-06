@@ -1,14 +1,7 @@
-module Arkham.Event.Events.ManoAMano2 (
-  manoAMano2,
-  ManoAMano2 (..),
-) where
+module Arkham.Event.Events.ManoAMano2 (manoAMano2) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
-import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 
 newtype ManoAMano2 = ManoAMano2 EventAttrs
@@ -19,16 +12,8 @@ manoAMano2 :: EventCard ManoAMano2
 manoAMano2 = event ManoAMano2 Cards.manoAMano2
 
 instance RunMessage ManoAMano2 where
-  runMessage msg e@(ManoAMano2 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      enemies <- select $ enemyEngagedWith iid
-      player <- getPlayer iid
-      pushAll
-        [ chooseOrRunOne
-            player
-            [ targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) attrs 2]
-            | enemy <- enemies
-            ]
-        ]
+  runMessage msg e@(ManoAMano2 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      chooseDamageEnemy iid (attrs.ability 1) Anywhere (enemyEngagedWith iid) 2
       pure e
-    _ -> ManoAMano2 <$> runMessage msg attrs
+    _ -> ManoAMano2 <$> liftRunMessage msg attrs

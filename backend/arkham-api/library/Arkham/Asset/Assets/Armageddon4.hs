@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Armageddon4 (armageddon4, armageddon4Effect, Armageddon4 (..)) where
+module Arkham.Asset.Assets.Armageddon4 (armageddon4, armageddon4Effect) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)
@@ -7,10 +7,13 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Effect.Import
 import Arkham.Fight
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
+import Arkham.Projection
 
 newtype Armageddon4 = Armageddon4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -54,15 +57,17 @@ instance RunMessage Armageddon4Effect where
             handleIt assetId = do
               when (token.face == #curse) do
                 enemies <- select $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource attrs.source
+                mconcealed <-
+                  runMaybeT $ MaybeT (getLocationOf iid) >>= MaybeT . fieldMap LocationConcealedCards headMay
                 stillInPlay <- selectAny $ AssetWithId assetId
-                when (stillInPlay || notNull enemies) do
+                when (stillInPlay || notNull enemies || isJust mconcealed) do
                   chooseOrRunOneM iid do
                     when stillInPlay do
                       labeled "Place 1 Charge on Armageddon4" do
                         push $ AddUses attrs.source assetId Charge 1
-                    when (notNull enemies) do
+                    when (notNull enemies || isJust mconcealed) do
                       labeled "Deal 1 damage to an enemy at your location" do
-                        chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) attrs.source 1
+                        chooseDamageEnemy iid attrs.source (locationWithInvestigator iid) AnyEnemy 1
           case attrs.source of
             AbilitySource (AssetSource assetId) 1 -> handleIt assetId
             AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId

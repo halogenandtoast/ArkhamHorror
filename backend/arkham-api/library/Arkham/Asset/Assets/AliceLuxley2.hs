@@ -27,14 +27,13 @@ instance HasModifiersFor AliceLuxley2 where
 
 instance HasAbilities AliceLuxley2 where
   getAbilities (AliceLuxley2 a) =
-    [ controlled a 1 (exists (at_ YourLocation <> (a.ability 1).canDamage) <> CanDealDamage)
+    [ controlled a 1 (canDamageEnemyAt (a.ability 1) YourLocation)
         $ triggered (DiscoverClues #after You Anywhere $ atLeast 1) (exhaust a)
     ]
 
 instance RunMessage AliceLuxley2 where
   runMessage msg a@(AliceLuxley2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- select $ at_ (locationWithInvestigator iid) <> (attrs.ability 1).canDamage
-      chooseOrRunOneM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
+      chooseDamageEnemy iid attrs (locationWithInvestigator iid) AnyEnemy 1
       pure a
     _ -> AliceLuxley2 <$> liftRunMessage msg attrs

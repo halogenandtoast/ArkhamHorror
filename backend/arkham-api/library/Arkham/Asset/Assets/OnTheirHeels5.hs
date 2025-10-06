@@ -6,8 +6,10 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Projection
 
 newtype OnTheirHeels5 = OnTheirHeels5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -36,10 +38,12 @@ instance RunMessage OnTheirHeels5 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withLocationOf iid \lid -> do
         enemies <- select $ at_ (be lid) <> EnemyCanBeDamagedBySource (attrs.ability 1)
+        mconcealed <- fieldMap LocationConcealedCards headMay lid
         chooseOrRunOneM iid do
           whenM (canDiscoverCluesAtYourLocation NotInvestigate iid) do
             labeled "Discover a clue at your location"
               $ discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
           targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
+          for_ mconcealed \card -> targeting card $ doFlip iid attrs card
       pure a
     _ -> OnTheirHeels5 <$> liftRunMessage msg attrs

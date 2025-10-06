@@ -228,7 +228,8 @@ warningShot =
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic, Trick]
     , cdAdditionalCost = Just $ UseCost (AssetWithTrait Firearm <> AssetControlledBy You) Uses.Ammo 1
-    , cdCriteria = Just $ exists (EnemyAt YourLocation <> EnemyCanEnter (ConnectedLocation NotForMovement))
+    , cdCriteria =
+        Just $ exists (EnemyAt YourLocation <> EnemyCanEnter (ConnectedLocation NotForMovement))
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     }
 
@@ -313,8 +314,14 @@ smallFavor =
         Just
           $ Criteria.CanDealDamage
           <> Criteria.AnyCriterion
-            [ exists $ EnemyAt YourLocation <> NonEliteEnemy
-            , exists (oneOf [EnemyAt (LocationWithDistanceFrom n YourLocation Anywhere) | n <- [1 .. 2]])
+            [ Criteria.canDamageEnemyAtMatch ThisCard YourLocation NonEliteEnemy
+            , oneOf
+                [ Criteria.canDamageEnemyAtMatch
+                    ThisCard
+                    (LocationWithDistanceFrom n YourLocation Anywhere)
+                    NonEliteEnemy
+                | n <- [1 .. 2]
+                ]
                 <> Criteria.CanAffordCostIncrease 2
             ]
     , cdOutOfPlayEffects = [InHandEffect]

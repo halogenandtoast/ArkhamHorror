@@ -9,9 +9,12 @@ import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Fight
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest (getSkillTestTarget)
+import Arkham.Location.Types (Field (LocationConcealedCards))
 import Arkham.Matcher hiding (AttackDamageEffect, RevealChaosToken)
+import Arkham.Projection
 import Arkham.Window qualified as Window
 
 newtype StormOfSpirits3 = StormOfSpirits3 EventAttrs
@@ -37,6 +40,12 @@ instance RunMessage StormOfSpirits3 where
             then EnemyDamage eid' $ delayDamage $ attack attrs 3
             else EnemyDamage eid' $ delayDamage $ isDirect $ attack attrs 3
       for_ eids $ checkDefeated attrs
+      mconcealed <-
+        runMaybeT $ MaybeT (getLocationOf iid) >>= MaybeT . fieldMap LocationConcealedCards headMay
+      for_ mconcealed \concealed -> do
+        chooseOneM iid do
+          labeled "Expose concealed card" $ doFlip iid attrs concealed
+          labeled "Do not expose concealed card" nothing
       pure e
     _ -> StormOfSpirits3 <$> liftRunMessage msg attrs
 

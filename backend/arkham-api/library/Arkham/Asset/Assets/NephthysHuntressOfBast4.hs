@@ -1,17 +1,15 @@
-module Arkham.Asset.Assets.NephthysHuntressOfBast4 (
-  nephthysHuntressOfBast4,
-  NephthysHuntressOfBast4 (..),
-)
-where
+module Arkham.Asset.Assets.NephthysHuntressOfBast4 (nephthysHuntressOfBast4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
-import Arkham.DamageEffect
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted.Choose
+import Arkham.Projection
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -23,15 +21,12 @@ nephthysHuntressOfBast4 :: AssetCard NephthysHuntressOfBast4
 nephthysHuntressOfBast4 = ally NephthysHuntressOfBast4 Cards.nephthysHuntressOfBast4 (2, 2)
 
 instance HasModifiersFor NephthysHuntressOfBast4 where
-  getModifiersFor (NephthysHuntressOfBast4 a) = case a.controller of
-    Just iid -> modified_ a iid [SkillModifier #willpower 1]
-    Nothing -> pure mempty
+  getModifiersFor (NephthysHuntressOfBast4 a) = controllerGets a [SkillModifier #willpower 1]
 
 instance HasAbilities NephthysHuntressOfBast4 where
   getAbilities (NephthysHuntressOfBast4 x) =
-    [ restrictedAbility x 1 ControlsThis $ freeReaction (TokensWouldBeRemovedFromChaosBag #when #bless)
-    , restrictedAbility x 2 (ControlsThis <> exists (be x <> AssetWithSealedChaosTokens 3 #bless))
-        $ FastAbility (exhaust x)
+    [ controlled_ x 1 $ freeReaction (TokensWouldBeRemovedFromChaosBag #when #bless)
+    , controlled x 2 (exists (be x <> AssetWithSealedChaosTokens 3 #bless)) $ FastAbility (exhaust x)
     ]
 
 getRemovedBlessTokens :: [Window] -> [ChaosToken]
@@ -42,24 +37,19 @@ getRemovedBlessTokens = foldMap \case
 instance RunMessage NephthysHuntressOfBast4 where
   runMessage msg a@(NephthysHuntressOfBast4 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getRemovedBlessTokens -> tokens) _ -> do
-      for_ tokens $ \token ->
-        pushAll [SealChaosToken token, SealedChaosToken token (Just iid) $ toTarget attrs]
+      for_ tokens $ sealChaosToken iid attrs
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (attrs.ability 2)
+      mconcealed <-
+        runMaybeT $ MaybeT (getLocationOf iid) >>= MaybeT . fieldMap LocationConcealedCards headMay
       blessTokens <-
         take 3 <$> filterM (<=~> IncludeSealed (ChaosTokenFaceIs #bless)) attrs.sealedChaosTokens
-      player <- getPlayer iid
-      chooseOrRunOne iid
-        $ [Label "Release 3 {bless} tokens" $ map UnsealChaosToken blessTokens]
-        <> [ Label
-               "Return 3 {bless} tokens to the pool to do 2 damage to an enemy at your location"
-               [ ReturnChaosTokensToPool blessTokens
-               , Msg.chooseOrRunOne
-                   player
-                   [targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) (attrs.ability 2) 2] | enemy <- enemies]
-               ]
-           | notNull enemies
-           ]
+      chooseOrRunOneM iid do
+        labeled "Release 3 {bless} tokens" $ for_ blessTokens unsealChaosToken
+        when (notNull enemies || isJust mconcealed) do
+          labeled "Return 3 {bless} tokens to the pool to do 2 damage to an enemy at your location" do
+            push $ ReturnChaosTokensToPool blessTokens
+            chooseDamageEnemy iid (attrs.ability 2) (locationWithInvestigator iid) AnyEnemy 2
       pure a
     _ -> NephthysHuntressOfBast4 <$> liftRunMessage msg attrs

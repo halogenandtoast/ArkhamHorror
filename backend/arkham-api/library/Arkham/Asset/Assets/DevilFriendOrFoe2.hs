@@ -1,13 +1,13 @@
-module Arkham.Asset.Assets.DevilFriendOrFoe2 (
-  devilFriendOrFoe2,
-  DevilFriendOrFoe2 (..),
-)
-where
+module Arkham.Asset.Assets.DevilFriendOrFoe2 (devilFriendOrFoe2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (AssetDefeated)
+import Arkham.Helpers.Location (getLocationOf)
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Projection
 import Arkham.Token
 
 newtype DevilFriendOrFoe2 = DevilFriendOrFoe2 AssetAttrs
@@ -19,10 +19,8 @@ devilFriendOrFoe2 = allyWith DevilFriendOrFoe2 Cards.devilFriendOrFoe2 (3, 0) (s
 
 instance HasAbilities DevilFriendOrFoe2 where
   getAbilities (DevilFriendOrFoe2 a) =
-    [ controlledAbility a 1 (youExist InvestigatorWithAnyDamage) $ forced $ TurnBegins #when You
-    , controlledAbility a 2 (youExist $ InvestigatorAt Anywhere)
-        $ forced
-        $ AssetDefeated #when ByAny (be a)
+    [ controlled a 1 (youExist InvestigatorWithAnyDamage) $ forced $ TurnBegins #when You
+    , controlled a 2 (youExist $ InvestigatorAt Anywhere) $ forced $ AssetDefeated #when ByAny (be a)
     ]
 
 instance RunMessage DevilFriendOrFoe2 where
@@ -33,6 +31,12 @@ instance RunMessage DevilFriendOrFoe2 where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (attrs.ability 2)
       for_ enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 2) 2
+      mconcealed <-
+        runMaybeT $ MaybeT (getLocationOf iid) >>= MaybeT . fieldMap LocationConcealedCards headMay
+      for_ mconcealed \concealed -> do
+        chooseOneM iid do
+          labeled "Damage concealed card" $ doFlip iid (attrs.ability 2) concealed
+          labeled "Do not damage concealed card" nothing
 
       investigators <- select $ colocatedWith iid
       for_ investigators \iid' -> do

@@ -504,7 +504,7 @@ chooseDamageEnemy
   :: (ReverseQueue m, Sourceable source)
   => InvestigatorId -> source -> LocationMatcher -> EnemyMatcher -> Int -> m ()
 chooseDamageEnemy iid source lmatcher ematcher n = do
-  enemies <- select $ ematcher <> EnemyAt lmatcher
+  enemies <- select $ ematcher <> EnemyAt lmatcher <> EnemyCanBeDamagedBySource (toSource source)
   concealed <- mapMaybe (headMay . snd) <$> selectWithField LocationConcealedCards lmatcher
   chooseOrRunOneM iid do
     targets enemies $ assignEnemyDamage (nonAttack (Just iid) source n)

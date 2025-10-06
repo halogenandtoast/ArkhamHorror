@@ -7,9 +7,12 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.Enemy (getDamageableEnemies)
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Projection ()
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Projection
 
 newtype BloodRite = BloodRite EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -43,13 +46,15 @@ instance RunMessage BloodRite where
     DoStep n msg'@(PayForCardAbility iid (isSource attrs -> True) _ 1 _) | n > 0 -> do
       resources <- getSpendableResources iid
       enemies <- getDamageableEnemies iid attrs (enemyAtLocationWith iid)
+      mconcealed <-
+        runMaybeT $ MaybeT (getLocationOf iid) >>= MaybeT . fieldMap LocationConcealedCards headMay
       chooseOneM iid do
         whenM (can.gain.resources FromPlayerCardEffect iid) do
           labeled "Gain Resource" $ gainResources iid attrs 1 >> doStep (n - 1) msg'
-        when (notNull enemies && resources > 0) do
+        when ((notNull enemies || isJust mconcealed) && resources > 0) do
           labeled "Spend Resource and Deal 1 Damage To Enemy At Your Location" do
             spendResources iid 1
-            chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) attrs 1
+            chooseDamageEnemy iid attrs (locationWithInvestigator iid) AnyEnemy 1
             doStep (n - 1) msg'
       pure e
     _ -> BloodRite <$> liftRunMessage msg attrs

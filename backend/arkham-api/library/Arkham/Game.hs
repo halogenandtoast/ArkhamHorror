@@ -1713,6 +1713,7 @@ getGameAbilities = do
   agendaAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities agendasL)
   storyAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities storiesL)
   skillAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities skillsL)
+  concealedAbilities <- concatMap getAbilities <$> filterM unblanked (findEntities concealedL)
   eventAbilities <-
     concatMap getAbilities
       <$> filterM unblanked (findEntities eventsL <> toList (g ^. inSearchEntitiesL . eventsL))
@@ -1740,6 +1741,7 @@ getGameAbilities = do
     <> investigatorAbilities
     <> storyAbilities
     <> skillAbilities
+    <> concealedAbilities
 
 replaceMatcherSources :: HasGame m => Ability -> m [Ability]
 replaceMatcherSources ability = case abilitySource ability of

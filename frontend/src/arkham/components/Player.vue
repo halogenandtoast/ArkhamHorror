@@ -531,6 +531,7 @@ function toggleHandAreaMarginBottom(event: Event) {
           :playerId="playerId"
           @choose="$emit('choose', $event)"
           @showCards="doShowCards"
+          @hideCards="hideCards"
         />
         <Draw
           v-if="!isMobile"

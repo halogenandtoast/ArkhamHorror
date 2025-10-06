@@ -2139,7 +2139,7 @@ runGameMessage msg g = case msg of
       [ phaseStep EnemyPhaseBeginsStep [phaseBeginsWindow]
       , phaseStep HunterEnemiesMoveStep [HuntersMove, afterHuntersMoveWindow]
       , phaseStep ResolveAttacksWindow [fastWindow, enemiesAttackWindow]
-      , phaseStep ResolveAttacksStep [EnemiesAttack]
+      , phaseStep ResolveAttacksStep [EnemiesAttack, fastWindow]
       , phaseStep EnemyPhaseEndsStep [EndEnemy]
       ]
     pure $ g & phaseL .~ EnemyPhase

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.ChaosToken
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (AncientOne))
@@ -20,7 +21,7 @@ instance HasAbilities TheSchemesDemise where
     [ restrictedAbility attrs 1 (exists $ at_ YourLocation <> EnemyWithTrait AncientOne)
         $ actionAbilityWithCost (ClueCost $ Static 1)
     , mkAbility attrs 2 $ forced $ PhaseBegins #when #mythos
-    , mkAbility attrs 3 $ Objective $ forced $ EnemyDefeated #after Anyone ByAny "Atlach-Nacha"
+    , mkAbility attrs 3 $ Objective $ forced $ ifEnemyDefeated Enemies.atlachNacha
     ]
 
 instance RunMessage TheSchemesDemise where

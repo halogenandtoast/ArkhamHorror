@@ -30,7 +30,12 @@
   "label": {
     "unlight": "Unlight a brazier at your location",
     "exhaust": "Exhaust the Spectral Watcher",
-    "damage": "Deal 5 damage to the Spectral Watcher"
+    "damage": "Deal 5 damage to the Spectral Watcher",
+    "puzzleBox": {
+      "unlight": "Unlight a brazier at your location",
+      "damage": "Deal 5 damage to the Spectral Watcher",
+      "exhaust": "Exhaust the Spectral Watcher"
+    }
   },
   "standalone": {
     "label": {

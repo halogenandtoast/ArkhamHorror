@@ -25,7 +25,7 @@ huntressOfTheEztli = act (2, A) HuntressOfTheEztli Cards.huntressOfTheEztli Noth
 
 instance HasAbilities HuntressOfTheEztli where
   getAbilities = actAbilities \x ->
-    [ mkAbility x 1 $ Objective $ forced $ EnemyDefeated #after Anyone ByAny "Ichtaca"
+    [ mkAbility x 1 $ Objective $ forced $ ifEnemyDefeated Enemies.ichtaca
     , restricted x 2 (exists $ "Ichtaca" <> EnemyWithClues (AtLeast $ PerPlayer 1))
         $ Objective
         $ forced AnyWindow

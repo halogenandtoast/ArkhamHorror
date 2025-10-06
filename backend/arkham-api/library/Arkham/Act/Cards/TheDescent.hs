@@ -1,12 +1,15 @@
-module Arkham.Act.Cards.TheDescent (TheDescent (..), theDescent) where
+module Arkham.Act.Cards.TheDescent (theDescent) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet (EncounterSet (AgentsOfAtlachNacha, DescentIntoThePitch))
+import Arkham.Enemy.Types (Field (EnemyClues))
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
+import Arkham.Helpers.Window
 import Arkham.Matcher
+import Arkham.Projection
 import Arkham.Trait (Trait (Depths))
 
 newtype TheDescent = TheDescent ActAttrs
@@ -22,14 +25,14 @@ instance HasAbilities TheDescent where
 
 instance RunMessage TheDescent where
   runMessage msg a@(TheDescent attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ GainClues iid (attrs.ability 1) 1
+    UseCardAbility iid (isSource attrs -> True) 1 (defeatedEnemy -> eid) _ -> do
+      gainClues iid (attrs.ability 1) =<< field EnemyClues eid
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      placeRandomLocationGroup "seaOfPitch"
-        =<< getSetAsideCardsMatching (#location <> withTrait Depths)
+      placeRandomLocationGroup "seaOfPitch" =<< getSetAsideCardsMatching (#location <> withTrait Depths)
       encounterSets <- getSetAsideCardsMatching (fromSets [DescentIntoThePitch, AgentsOfAtlachNacha])
-      pushAll [ShuffleCardsIntoDeck Deck.EncounterDeck encounterSets, ShuffleEncounterDiscardBackIn]
+      shuffleCardsIntoDeck Deck.EncounterDeck encounterSets
+      shuffleEncounterDiscardBackIn
       advanceActDeck attrs
       pure a
     _ -> TheDescent <$> liftRunMessage msg attrs

@@ -8,7 +8,6 @@ import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Brazier
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
@@ -25,7 +24,7 @@ instance HasAbilities TheBrokenRite where
     , mkAbility x 2
         $ Objective
         $ freeReaction
-        $ Matcher.EnemyDefeated #when Anyone ByAny
+        $ ifEnemyDefeatedMatch
         $ at_ (locationIs Locations.theGeistTrap <> LocationWithBrazier Unlit)
         <> enemyIs Enemies.theSpectralWatcher
     ]

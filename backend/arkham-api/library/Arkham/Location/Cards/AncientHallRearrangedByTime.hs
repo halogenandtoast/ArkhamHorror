@@ -35,9 +35,9 @@ instance RunMessage AncientHallRearrangedByTime where
       n <- perPlayer 1
       AncientHallRearrangedByTime <$> liftRunMessage msg (attrs & tokensL %~ addTokens #doom n)
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      when (attrs.clues > 0) $ flipDoomToClues attrs 1
+      when (attrs.doom > 0) $ flipDoomToClues attrs 1
       pure l
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      when (attrs.clues > 0) $ flipDoomToClues attrs 1
+      when (attrs.doom > 0) $ flipDoomToClues attrs 1
       pure l
     _ -> AncientHallRearrangedByTime <$> liftRunMessage msg attrs

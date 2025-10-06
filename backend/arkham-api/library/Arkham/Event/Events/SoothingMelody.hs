@@ -34,19 +34,23 @@ instance RunMessage SoothingMelody where
 
       let limit = foldl' updateLimit 2 modifiers'
       let location = locationWithInvestigator iid
-      damageInvestigators <- select $ HealableInvestigator (toSource attrs) #damage $ at_ location
-      horrorInvestigators <- select $ HealableInvestigator (toSource attrs) #horror $ at_ location
+      damageInvestigators <- select $ HealableInvestigator (toSource attrs) #damage (colocatedWith iid)
+      horrorInvestigators <- select $ HealableInvestigator (toSource attrs) #horror (colocatedWith iid)
       let source = toSource attrs
       let assetFor k =
             select $ HealableAsset source k (at_ location <> #ally <> AssetControlledBy (affectsOthers Anyone))
       damageAssets <- assetFor #damage
       horrorAssets <- assetFor #horror
+      treacheryIsDamage <- select $ TreacheryInThreatAreaOf (colocatedWith iid) <> TreacheryWithModifier IsPointOfDamage
+      treacheryIsHorror <- select $ TreacheryInThreatAreaOf (colocatedWith iid) <> TreacheryWithModifier IsPointOfHorror
 
       chooseOneM iid do
         for_ damageInvestigators \i -> damageLabeled i $ healDamageDelayed i attrs 1
         for_ horrorInvestigators \i -> horrorLabeled i $ healHorrorDelayed i attrs 1
         for_ damageAssets \asset -> assetDamageLabeled asset $ healDamageDelayed asset attrs 1
         for_ horrorAssets \asset -> assetHorrorLabeled asset $ healHorrorDelayed asset attrs 1
+        targets treacheryIsDamage $ toDiscardBy iid attrs
+        targets treacheryIsHorror $ toDiscardBy iid attrs
 
       when (n < limit) $ doStep (n + 1) msg'
       pure e

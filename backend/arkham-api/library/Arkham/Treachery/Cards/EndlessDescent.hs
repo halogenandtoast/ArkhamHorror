@@ -6,6 +6,7 @@ import Arkham.Location.Types (Field (LocationLabel))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -22,7 +23,8 @@ instance RunMessage EndlessDescent where
     Revelation _iid (isSource attrs -> True) -> do
       selectSortedBy LocationLabel (LocationWithTitle "Mysterious Stairs") >>= \case
         a : b : rest -> do
-          selectEach (investigatorAt a) \investigator -> push . Move =<< move attrs investigator b
+          selectEach (investigatorAt a) \investigator ->
+            push $ PlaceInvestigator investigator (AtLocation b)
 
           selectEach (enemyAt a <> oneOf [UnengagedEnemy, MassiveEnemy]) \enemy ->
             push . Move =<< move attrs enemy b

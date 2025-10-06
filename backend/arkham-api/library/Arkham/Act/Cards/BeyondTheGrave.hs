@@ -4,8 +4,6 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Matcher
-import Arkham.Matcher qualified as Matcher
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 
 newtype BeyondTheGrave = BeyondTheGrave ActAttrs
@@ -20,11 +18,7 @@ instance HasAbilities BeyondTheGrave where
     extend
       x
       [ fastAbility x 1 Free $ if maybe False (>= 3) (actBreaches x) then NoRestriction else Never
-      , mkAbility x 2
-          $ Objective
-          $ forced
-          $ Matcher.EnemyDefeated #after Anyone ByAny
-          $ enemyIs Enemies.anetteMasonReincarnatedEvil
+      , mkAbility x 2 $ Objective $ forced $ ifEnemyDefeated Enemies.anetteMasonReincarnatedEvil
       ]
 
 instance RunMessage BeyondTheGrave where

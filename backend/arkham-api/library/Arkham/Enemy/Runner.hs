@@ -294,6 +294,7 @@ instance RunMessage EnemyAttrs where
                 then do
                   pushAll $ EnemyEntered enemyId lid
                     : [EnemyEngageInvestigator enemyId iid | not enemyDelayEngagement]
+                      <> [EnemySpawned details]
                   case swarms of
                     [] -> pure ()
                     [x] -> do
@@ -340,7 +341,8 @@ instance RunMessage EnemyAttrs where
 
               when (#massive `elem` keywords) do
                 investigatorIds <- select $ investigatorAt lid
-                pushAll $ EnemyEntered eid lid : [EnemyEngageInvestigator eid iid | iid <- investigatorIds]
+                pushAll $ EnemyEntered eid lid
+                  : [EnemyEngageInvestigator eid iid | iid <- investigatorIds] <> [EnemySpawned details]
 
               if (all (`notElem` keywords) [#aloof, #massive] && not enemyExhausted) || forcedEngagement
                 then do
@@ -355,6 +357,7 @@ instance RunMessage EnemyAttrs where
                       atSameLocation <- iid <=~> investigatorAt lid
                       pushAll $ EnemyEntered eid lid
                         : [EnemyEngageInvestigator eid iid | atSameLocation && not enemyDelayEngagement]
+                          <> [EnemySpawned details]
                     _ -> do
                       investigatorIds <- if null preyIds then select $ investigatorAt lid else pure []
                       lead <- getLeadPlayer
@@ -369,15 +372,18 @@ instance RunMessage EnemyAttrs where
                         [iid] -> do
                           pushAll $ EnemyEntered eid lid
                             : [EnemyEngageInvestigator eid iid | not onlyPrey || iid `elem` preyIds]
+                              <> [EnemySpawned details]
                         iids -> do
                           let scoped = if not onlyPrey then iids else filter (`elem` preyIds) iids
                           case scoped of
-                            [] -> push $ EnemyEntered eid lid
+                            [] -> pushAll [EnemyEntered eid lid, EnemySpawned details]
                             choices ->
                               push
                                 $ chooseOne lead
-                                $ [targetLabel iid [EnemyEntered eid lid, EnemyEngageInvestigator eid iid] | iid <- choices]
-                else pushWhen (#massive `notElem` keywords) $ EnemyEntered eid lid
+                                $ [ targetLabel iid [EnemyEntered eid lid, EnemyEngageInvestigator eid iid, EnemySpawned details]
+                                  | iid <- choices
+                                  ]
+                else unless (#massive `elem` keywords) $ pushAll [EnemyEntered eid lid, EnemySpawned details]
         SpawnPlaced placement -> do
           mLocation <- placementLocation placement
           (beforeMessages, afterMessages) <- case mLocation of
@@ -1351,7 +1357,6 @@ instance RunMessage EnemyAttrs where
         defeatedBy = if defeatedByDamage then DefeatedByDamage source else DefeatedByOther source
       miid <- getSourceController source
       whenMsg <- checkWindows [mkWhen $ Window.EnemyDefeated miid defeatedBy eid]
-      afterMsg <- checkWindows [mkAfter $ Window.EnemyDefeated miid defeatedBy eid]
       mloc <- field EnemyLocation a.id
 
       lift $ withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
@@ -1364,7 +1369,7 @@ instance RunMessage EnemyAttrs where
                  Just lid -> [PlaceKey (toTarget lid) ekey | ekey <- toList enemyKeys]
                  _ -> []
            )
-        <> [Do msg, afterMsg, After msg]
+        <> [Do msg, After msg]
       pure
         $ a
         & (keysL .~ mempty)
@@ -1378,6 +1383,7 @@ instance RunMessage EnemyAttrs where
       victory <- getVictoryPoints eid
       vengeance <- getVengeancePoints eid
       afterMsg <- checkWindows [mkAfter $ Window.IfEnemyDefeated miid defeatedBy eid]
+      afterDefeatMsg <- checkWindows [mkAfter $ Window.EnemyDefeated miid defeatedBy eid]
       let
         placeInVictory = isJust (victory <|> vengeance) && not a.placement.isSwarm
         victoryMsgs =
@@ -1386,10 +1392,11 @@ instance RunMessage EnemyAttrs where
           guard (not a.placement.isInVictory) *> [Discard miid GameSource $ toTarget a | not placeInVictory]
 
       pushAll
-        $ victoryMsgs
-        <> (guard (not a.placement.isInVictory) *> windows [Window.EntityDiscarded source (toTarget a)])
-        <> defeatMsgs
-        <> [afterMsg]
+        $ afterDefeatMsg
+        : victoryMsgs
+          <> (guard (not a.placement.isInVictory) *> windows [Window.EntityDiscarded source (toTarget a)])
+          <> defeatMsgs
+          <> [afterMsg]
       pure a
     After (Arkham.Message.EnemyDefeated eid _ source _) | eid == toId a -> do
       case a.placement of

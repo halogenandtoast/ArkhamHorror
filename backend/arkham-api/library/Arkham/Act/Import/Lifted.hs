@@ -62,7 +62,10 @@ advanceVia
 advanceVia method actId source = push $ Msg.advanceVia method actId source
 
 ifEnemyDefeated :: CardDef -> WindowMatcher
-ifEnemyDefeated = IfEnemyDefeated #after Anyone ByAny . enemyIs
+ifEnemyDefeated = ifEnemyDefeatedMatch . enemyIs
+
+ifEnemyDefeatedMatch :: EnemyMatcher -> WindowMatcher
+ifEnemyDefeatedMatch = IfEnemyDefeated #after Anyone ByAny
 
 actAbilities
   :: (EntityAttrs act ~ ActAttrs, Entity act) => (ActAttrs -> [Ability]) -> act -> [Ability]

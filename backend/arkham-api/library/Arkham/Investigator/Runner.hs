@@ -2696,13 +2696,21 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       pushAll $ [ChooseLeadInvestigator | isLead] <> [Msg.InvestigatorDefeated source iid]
     pure $ a & defeatedL .~ True & endedTurnL .~ True & killedL .~ True
   MoveAllTo source lid | not (a ^. defeatedL || a ^. resignedL) -> do
-    moveToEdit source investigatorId lid \m -> m {moveMeans = Place}
+    moveToEdit source investigatorId lid \m ->
+      m
+        { moveMeans = Place
+        , movePayAdditionalCosts = False
+        , moveCancelable = False
+        }
     pure a
   MoveTo movement | isTarget a (moveTarget movement) -> do
     pushAll [ResolveMovement investigatorId, ResolvedMovement investigatorId]
     pure $ a & movementL ?~ movement
-  EnemySpawned _ -> do
-    pure $ a & (usedAbilitiesL %~ filter (\ab -> ab.limitType /= Just PerSpawn))
+  EnemySpawned details -> do
+    pure
+      $ a
+      & usedAbilitiesL
+      %~ filter \ab -> ab.limitType /= Just PerSpawn || maybe True (not . isTarget details.enemy) ab.target
   ResolvedMovement iid | iid == investigatorId -> do
     pure $ a & (usedAbilitiesL %~ filter (\ab -> ab.limitType /= Just PerMove))
   ResolveMovement iid | iid == investigatorId -> do
@@ -4471,6 +4479,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           <> [SetActiveInvestigator x | x <- maybeToList activeInvestigator, iid /= x]
     player <- getPlayer iid
 
+    let
+      target =
+        case ability.limitType of
+          Just PerSpawn -> Just $ toTarget $ Helpers.spawnedEnemy windows
+          _ -> Nothing
+
     if mayIgnore
       then push $ chooseOne player [Label "Ignore effect" [], Label "Do not ignore effect" resolveAbility]
       else pushAll resolveAbility
@@ -4491,6 +4505,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               , usedDepth = depth
               , usedAbilityTraits = traits'
               , usedThisWindow = depth > 0
+              , usedAbilityTarget = target
               }
         pure $ a & usedAbilitiesL %~ (used :)
       Just _ -> do

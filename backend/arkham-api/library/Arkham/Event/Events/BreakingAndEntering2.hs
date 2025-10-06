@@ -21,9 +21,7 @@ instance RunMessage BreakingAndEntering2 where
       investigate_ sid iid attrs
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      when (n >= 1) do
-        enemies <- select $ enemyAtLocationWith iid <> EnemyWithoutModifier CannotBeEvaded
-        chooseTargetM iid enemies $ automaticallyEvadeEnemy iid
+      when (n >= 1) $ chooseAutomaticallyEvadeAt iid attrs (locationWithInvestigator iid) AnyEnemy
       when (n >= 3) $ atEndOfTurn attrs iid $ addToHand iid (only attrs)
       pure e
     _ -> BreakingAndEntering2 <$> liftRunMessage msg attrs

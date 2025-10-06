@@ -2,15 +2,13 @@ module Arkham.Event.Events.StormOfSpirits (stormOfSpirits) where
 
 import Arkham.Action qualified as Action
 import Arkham.Aspect hiding (aspect)
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Fight
-import Arkham.Helpers.Location (getLocationOf)
-import Arkham.Location.Types (Field (LocationConcealedCards))
 import Arkham.Matcher hiding (AttackDamageEffect, RevealChaosToken)
-import Arkham.Projection
 
 newtype StormOfSpirits = StormOfSpirits EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -42,11 +40,6 @@ instance RunMessage StormOfSpirits where
       eids <- select $ enemyAtLocationWith iid
       pushAll $ map toMsg eids
       for_ eids (checkDefeated attrs)
-      mconcealed <-
-        runMaybeT $ MaybeT (getLocationOf iid) >>= MaybeT . fieldMap LocationConcealedCards headMay
-      for_ mconcealed \concealed -> do
-        chooseOneM iid do
-          labeled "Expose concealed card" $ doFlip iid attrs concealed
-          labeled "Do not expose concealed card" nothing
+      chooseExposeConcealed iid attrs
       pure e
     _ -> StormOfSpirits <$> liftRunMessage msg attrs

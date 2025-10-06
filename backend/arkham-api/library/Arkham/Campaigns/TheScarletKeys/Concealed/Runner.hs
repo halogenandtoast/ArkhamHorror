@@ -11,7 +11,7 @@ import Arkham.Classes.RunMessage
 import Arkham.Constants
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Fight.Types
-import Arkham.Helpers.SkillTest.Lifted (beginSkillTestEdit, fight)
+import Arkham.Helpers.SkillTest.Lifted (beginSkillTestEdit, evade, fight)
 import Arkham.Id
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
@@ -25,8 +25,11 @@ import Arkham.SkillTest.Base
 import Arkham.Source
 import Arkham.Target
 
-isActionTarget :: Targetable a => a -> Target -> Bool
-isActionTarget a = isTarget a . toProxyTarget
+isEnemyTarget :: ConcealedCard -> Target -> Bool
+isEnemyTarget c target =
+  isTarget (EnemyId $ coerce $ unConcealedCardId c.id) target || isActionTarget c target
+ where
+  isActionTarget a = isTarget a . toProxyTarget
 
 instance RunMessage ConcealedCard where
   runMessage msg c = runQueueT $ case msg of
@@ -36,34 +39,22 @@ instance RunMessage ConcealedCard where
       case c.placement of
         AtLocation location -> do
           sid <- getRandom
-          beginSkillTestEdit
-            sid
-            iid
-            (c.ability AbilityAttack)
-            c
-            #combat
-            (LocationMaybeFieldCalculation location LocationShroud)
-            \st ->
-              st {skillTestAction = Just #fight}
+          let difficulty = LocationMaybeFieldCalculation location LocationShroud
+          beginSkillTestEdit sid iid (c.ability AbilityAttack) c #combat difficulty \st ->
+            st {skillTestAction = Just #fight}
         _ -> pure ()
+      pure c
+    PassedThisSkillTest iid (isAbilitySource c AbilityAttack -> True) -> do
+      push $ Flip iid (c.ability AbilityAttack) (toTarget c)
       pure c
     UseThisAbility iid (isSource c -> True) AbilityEvade -> do
       case c.placement of
         AtLocation location -> do
           sid <- getRandom
-          beginSkillTestEdit
-            sid
-            iid
-            (c.ability AbilityEvade)
-            c
-            #agility
-            (LocationMaybeFieldCalculation location LocationShroud)
-            \st ->
-              st {skillTestAction = Just #evade}
+          let difficulty = LocationMaybeFieldCalculation location LocationShroud
+          beginSkillTestEdit sid iid (c.ability AbilityEvade) c #agility difficulty \st ->
+            st {skillTestAction = Just #evade}
         _ -> pure ()
-      pure c
-    PassedThisSkillTest iid (isAbilitySource c AbilityAttack -> True) -> do
-      push $ Flip iid (c.ability AbilityAttack) (toTarget c)
       pure c
     PassedThisSkillTest iid (isAbilitySource c AbilityEvade -> True) -> do
       push $ Flip iid (c.ability AbilityEvade) (toTarget c)
@@ -104,10 +95,18 @@ instance RunMessage ConcealedCard where
 
       fight sid iid source target skillType difficulty
       pure c
-    PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ _ | isActionTarget c target -> do
+    PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ _ | isEnemyTarget c target -> do
       push $ Flip iid source (toTarget c)
       pure c
-    Successful (Action.Fight, _) iid source target _ | isTarget c target -> do
+    TryEvadeEnemy sid iid eid source mTarget skillType | eid == coerce (unConcealedCardId c.id) -> do
+      case c.placement of
+        AtLocation location -> do
+          let target = maybe (toTarget eid) (ProxyTarget (toTarget eid)) mTarget
+          let difficulty = LocationMaybeFieldCalculation location LocationShroud
+          evade sid iid source target skillType difficulty
+        _ -> error "invalid placement for concealed card"
+      pure c
+    PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ _ | isEnemyTarget c target -> do
       push $ Flip iid source (toTarget c)
       pure c
     RemoveAllConcealed -> do

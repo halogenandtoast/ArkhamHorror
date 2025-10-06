@@ -4,9 +4,9 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Attack.Types
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Enemy.Types (Field (EnemyHealthDamage))
 import Arkham.Helpers.Window
-import Arkham.Location.Types (Field (LocationConcealedCards))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
@@ -38,8 +38,7 @@ instance RunMessage Aquinnah1 where
       changeAttackDetails attack.enemy attack {attackDealDamage = False}
       healthDamage' <- field EnemyHealthDamage attack.enemy
       enemies <- select $ enemyAtLocationWith iid <> not_ (be attack.enemy)
-      concealed <-
-        mapMaybe (headMay . snd) <$> selectWithField LocationConcealedCards (locationWithInvestigator iid)
+      concealed <- getConcealed iid
       chooseOneM iid do
         targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) healthDamage'
         for_ concealed \card -> targeting (ConcealedCardTarget card) $ doFlip iid GameSource (ConcealedCardTarget card)

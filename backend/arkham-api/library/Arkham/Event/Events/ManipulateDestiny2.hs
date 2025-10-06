@@ -1,11 +1,9 @@
 module Arkham.Event.Events.ManipulateDestiny2 (manipulateDestiny2) where
 
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Location (getLocationOf)
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Projection
 
 newtype ManipulateDestiny2 = ManipulateDestiny2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -24,8 +22,7 @@ instance RunMessage ManipulateDestiny2 where
       if any ((`elem` [#curse, #autofail, #bless, #eldersign]) . (.face)) tokens
         then do
           enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
-          mconcealed <-
-            runMaybeT $ MaybeT (getLocationOf iid) >>= MaybeT . fieldMap LocationConcealedCards headMay
+          mconcealed <- getConcealed iid
           damageInvestigators <- select $ HealableInvestigator (toSource attrs) #damage $ colocatedWith iid
           damageAssets <-
             select

@@ -6,6 +6,7 @@ import Arkham.Ability
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Act.Types (ActAttrs (actDeckId))
 import Arkham.Action (Action)
+import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Agenda.Types (AgendaAttrs (agendaDeckId))
 import Arkham.Aspect (IsAspect (..))
 import Arkham.Aspect qualified as Msg
@@ -1019,6 +1020,12 @@ advanceToAct attrs nextAct actSide = push $ AdvanceToAct (actDeckId attrs) nextA
 advanceToAct'
   :: (ReverseQueue m, Sourceable source) => source -> Int -> CardDef -> Act.ActSide -> m ()
 advanceToAct' source deckId nextAct actSide = push $ AdvanceToAct deckId nextAct actSide (toSource source)
+
+advanceToActA :: (ReverseQueue m, Sourceable source) => source -> CardDef -> m ()
+advanceToActA source nextAct = push $ AdvanceToAct 1 nextAct Act.A (toSource source)
+
+advanceToAgendaA :: (ReverseQueue m, Sourceable source) => source -> CardDef -> m ()
+advanceToAgendaA source nextAgenda = push $ AdvanceToAgenda 1 nextAgenda Agenda.A (toSource source)
 
 shuffleSetAsideEncounterSet :: ReverseQueue m => EncounterSet -> m ()
 shuffleSetAsideEncounterSet eset = do
@@ -3083,6 +3090,12 @@ createAssetAt_
 createAssetAt_ c placement = do
   card <- fetchCard c
   push =<< Msg.createAssetAt_ card placement
+
+createScarletKeyAt_
+  :: (ReverseQueue m, FetchCard card) => card -> Placement -> m ()
+createScarletKeyAt_ c placement = do
+  card <- fetchCard c
+  push $ CreateScarletKeyAt card placement
 
 createAssetAt
   :: (ReverseQueue m, FetchCard card) => card -> Placement -> m AssetId

@@ -29,7 +29,7 @@ instance HasModifiersFor AllosaurusIndomitablePredator where
 instance HasAbilities AllosaurusIndomitablePredator where
   getAbilities (AllosaurusIndomitablePredator a) =
     extend1 a
-      $ restricted a 1 (thisExists a (EnemyWithTokens 4 Seal))
+      $ restricted a 1 (thisExists a (EnemyWithTokens (Static 4) Seal))
       $ forced
       $ PlacedToken #after AnySource (targetIs a) Seal
 

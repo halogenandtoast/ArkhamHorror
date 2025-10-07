@@ -25,7 +25,7 @@ import Arkham.Customization
 import Arkham.EncounterCard
 import Arkham.Enemy.Cards (allSpecialEnemyCards)
 import Arkham.Id
-import Arkham.Keyword (Keyword (Hidden, Peril))
+import Arkham.Keyword (Keyword (Concealed, Hidden, Peril))
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.PlayerCard
@@ -250,6 +250,10 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
     _ -> Peril `notMember` cdKeywords (toCardDef a)
   CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)
   CardWithKeyword k -> k `member` cdKeywords (toCardDef a)
+  CardWithConcealed ->
+    cdKeywords (toCardDef a) & any \case
+      Concealed {} -> True
+      _ -> False
   NonWeakness -> isNothing . cdCardSubType $ toCardDef a
   SignatureCard -> isSignature $ toCardDef a
   BasicWeaknessCard -> (== Just BasicWeakness) . cdCardSubType $ toCardDef a

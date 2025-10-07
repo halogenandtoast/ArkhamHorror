@@ -1,4 +1,27 @@
 {
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 (-3 instead if you have 2 or more clues).",
+      "tablet": "-1. If there is a concealed mini-card at your location, reveal another chaos token.",
+      "elderThing": "-3. If you fail, you must either spend 1 clue or place 1 doom on an enemy in the shadows."
+    },
+    "hardExpert": {
+      "skull": "-2 (-4 instead if you have 2 or more clues).",
+      "tablet": "-2. If there is a concealed mini-card at your location, reveal another chaos token.",
+      "elderThing": "-4. If you fail, you must either spend 1 clue or place 1 doom on an enemy in the shadows."
+    }
+  },
+  "label": {
+    "theConnection": {
+      "coterieAgent": "Search the encounter deck and discard pile for a Coterie Agent enemy and draw it. Shuffle the encounter deck.",
+      "damageAndHorror": "Each investigator takes 1 damage and 1 horror."
+    }
+  },
+  "tooltips": {
+    "rainyLondonStreets": {
+      "resign": "\"We should wait for Inspector Flint...\""
+    }
+  },
   "intro": {
     "label": {
       "onlyOne": "Proceed to _Intro 2_",

@@ -35,6 +35,7 @@ export type Location = {
   treacheries: string[];
   assets: string[];
   events: string[];
+  scarletKeys: string[];
   cardsUnderneath: Card[];
   modifiers: Modifier[];
   connectedLocations: string[];
@@ -69,6 +70,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     treacheries: JsonDecoder.array<string>(JsonDecoder.string(), 'TreacheryId[]'),
     assets: JsonDecoder.array<string>(JsonDecoder.string(), 'AssetId[]'),
     events: JsonDecoder.array<string>(JsonDecoder.string(), 'EventId[]'),
+    scarletKeys: JsonDecoder.array<string>(JsonDecoder.string(), 'ScarletKey[]'),
     cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'UnderneathCard[]'),
     modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]'),
     connectedLocations: JsonDecoder.array<string>(JsonDecoder.string(), 'LocationId[]'),

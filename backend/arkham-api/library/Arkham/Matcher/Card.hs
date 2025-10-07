@@ -198,6 +198,7 @@ data CardMatcher
   | CardWithMaxLevel Int
   | CardWithoutKeyword Keyword
   | CardWithKeyword Keyword
+  | CardWithConcealed
   | CardWithClass ClassSymbol
   | CardWithAction Action
   | CardWithoutAction

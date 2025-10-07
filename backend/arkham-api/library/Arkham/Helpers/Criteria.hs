@@ -9,6 +9,7 @@ import {-# SOURCE #-} Arkham.Asset (createAsset)
 import Arkham.Asset.Types (Asset, AssetAttrs (..), Field (..))
 import Arkham.Attack.Types
 import Arkham.Campaigns.EdgeOfTheEarth.Partner (getPartner)
+import Arkham.Campaigns.TheScarletKeys.Concealed.Types (Field (..))
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.Entity

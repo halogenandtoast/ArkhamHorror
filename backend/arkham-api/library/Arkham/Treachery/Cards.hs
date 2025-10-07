@@ -241,6 +241,7 @@ allEncounterTreacheryCards =
       , coldStreak
       , collapsingReality
       , confusion
+      , conspiracyInRed
       , conspiracyOfBlood
       , conspiracyOfDeepOnes
       , corrosion
@@ -2825,6 +2826,12 @@ burdenOfLeadership :: CardDef
 burdenOfLeadership =
   (weakness "09020" "Burden of Leadership")
     { cdCardTraits = setFromList [Flaw]
+    }
+
+conspiracyInRed :: CardDef
+conspiracyInRed =
+  (treachery "09717" "Conspiracy in Red" CrimsonConspiracy 2)
+    { cdCardTraits = setFromList [Scheme]
     }
 
 hastyRepairs :: CardDef

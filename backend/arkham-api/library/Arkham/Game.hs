@@ -28,6 +28,8 @@ import Arkham.Campaign
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheScarletKeys.Concealed
+import Arkham.Campaigns.TheScarletKeys.Key.Matcher
+import Arkham.Campaigns.TheScarletKeys.Key.Types hiding (key)
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -408,6 +410,12 @@ withLocationConnectionData inner@(With target _) = do
         [ TreacheryWithPlacement $ AtLocation $ toId target
         , TreacheryWithPlacement $ AttachedToLocation $ toId target
         ]
+  lmScarletKeys <-
+    select
+      $ oneOf
+        [ ScarletKeyWithPlacement $ AtLocation $ toId target
+        , ScarletKeyWithPlacement $ AttachedToLocation $ toId target
+        ]
   pure $ inner `with` LocationMetadata {..}
 
 withAssetMetadata :: HasGame m => Asset -> m (With Asset AssetMetadata)
@@ -548,6 +556,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("concealed" .= gameConcealed g)
       <> ("skills" .= gameSkills g) -- no need for modifiers... yet
       <> ("stories" .= entitiesStories gameEntities)
+      <> ("scarletKeys" .= entitiesScarletKeys gameEntities)
       <> ("playerCount" .= gamePlayerCount)
       <> ("activeInvestigatorId" .= gameActiveInvestigatorId)
       <> ("activePlayerId" .= gameActivePlayerId)
@@ -641,6 +650,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "concealed" .= toJSON (gameConcealed g)
         , "skills" .= toJSON (gameSkills g) -- no need for modifiers... yet
         , "stories" .= toJSON (entitiesStories gameEntities)
+        , "scarletKeys" .= toJSON (entitiesScarletKeys gameEntities)
         , "playerCount" .= toJSON gamePlayerCount
         , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
         , "activePlayerId" .= toJSON gameActivePlayerId
@@ -2978,6 +2988,31 @@ getSkillsMatching matcher = do
           (\a -> any (`member` skillIcons) (cdSkills (toCardDef a)) || null (cdSkills $ toCardDef a))
           as
 
+getConcealedCardsMatching :: HasGame m => ConcealedCardMatcher -> m [ConcealedCard]
+getConcealedCardsMatching matcher = do
+  cs <- toList . view (entitiesL . concealedL) <$> getGame
+  filterMatcher cs matcher
+ where
+  filterMatcher as = \case
+    ConcealedCardMatchAll ms -> foldM filterMatcher as ms
+    ConcealedCardWithPlacement placement -> pure $ filter ((== placement) . attr concealedCardPlacement) as
+    ConcealedCardAny -> pure as
+    ConcealedCardOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
+    ConcealedCardAt locationMatcher -> do
+      placements <- selectMap AtLocation locationMatcher
+      pure $ filter ((`elem` placements) . attr concealedCardPlacement) as
+
+getScarletKeysMatching :: HasGame m => ScarletKeyMatcher -> m [ScarletKey]
+getScarletKeysMatching matcher = do
+  skeys <- toList . view (entitiesL . scarletKeysL) <$> getGame
+  filterMatcher skeys matcher
+ where
+  filterMatcher as = \case
+    ScarletKeyMatchAll ms -> foldM filterMatcher as ms
+    ScarletKeyWithPlacement placement -> pure $ filter ((== placement) . attr keyPlacement) as
+    ScarletKeyAny -> pure as
+    ScarletKeyOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
+
 getStoriesMatching :: HasGame m => StoryMatcher -> m [Story]
 getStoriesMatching matcher = do
   stories <- toList . view (entitiesL . storiesL) <$> getGame
@@ -3030,7 +3065,9 @@ enemyMatcherFilter es matcher' = do
   case matcher' of
     AttackingEnemy -> filterM (fieldMap EnemyAttacking isJust . toId) es
     EnemyWithToken tkn -> filterM (fieldMap EnemyTokens (Token.hasToken tkn) . toId) es
-    EnemyWithTokens n tkn -> filterM (fieldMap EnemyTokens ((>= n) . Token.countTokens tkn) . toId) es
+    EnemyWithTokens gv tkn -> do
+      n <- getGameValue gv
+      filterM (fieldMap EnemyTokens ((>= n) . Token.countTokens tkn) . toId) es
     DefeatedEnemy matcher -> do
       iids <- allInvestigators
       history <-
@@ -5010,6 +5047,14 @@ instance Query SkillMatcher where
 instance Query StoryMatcher where
   toSomeQuery = StoryQuery
   select_ = fmap (map toId) . getStoriesMatching
+
+instance Query ScarletKeyMatcher where
+  toSomeQuery = ScarletKeyQuery
+  select_ = fmap (map toId) . getScarletKeysMatching
+
+instance Query ConcealedCardMatcher where
+  toSomeQuery = ConcealedCardQuery
+  select_ = getConcealedCardsMatching
 
 instance Query TreacheryMatcher where
   toSomeQuery = TreacheryQuery

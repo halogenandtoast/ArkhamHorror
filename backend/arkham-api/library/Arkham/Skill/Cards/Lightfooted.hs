@@ -22,12 +22,12 @@ instance RunMessage Lightfooted where
         liftGuardM $ isEvading eid
         otherEnemies <-
           select $ enemyAtLocationWith attrs.owner <> EnemyCanBeEvadedBy (toSource attrs) <> not_ (be eid)
-        mconcealed <- getConcealed attrs.owner
+        concealed <- getConcealedIds attrs.owner
         guard $ notNull otherEnemies
         lift $ skillTestResultOption "Lightfooted" do
           chooseOneM attrs.owner do
             labeled "Do not evade another enemy" nothing
             targets otherEnemies $ automaticallyEvadeEnemy attrs.owner
-            for_ mconcealed \concealed -> targeting concealed $ exposeConcealed attrs.owner attrs concealed
+            targets concealed $ exposeConcealed attrs.owner attrs
       pure s
     _ -> Lightfooted <$> liftRunMessage msg attrs

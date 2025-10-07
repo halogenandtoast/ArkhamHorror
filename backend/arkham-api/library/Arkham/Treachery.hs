@@ -560,11 +560,13 @@ allTreacheries =
     , SomeTreacheryCard tekelili_228
     , SomeTreacheryCard tekelili_229
     , -- The Scarlet Keys
-      -- signature
+      --- signature [tsk]
       SomeTreacheryCard selflessToAFault
     , SomeTreacheryCard deafeningSilence
     , SomeTreacheryCard ruinedFilm
     , SomeTreacheryCard burdenOfLeadership
+    , --- Crimson Conspiracy [tsk]
+      SomeTreacheryCard conspiracyInRed
     , -- The Feast of Hemloch Vale
       -- signature [fhv]
       SomeTreacheryCard hastyRepairs

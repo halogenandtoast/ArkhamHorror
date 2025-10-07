@@ -46,12 +46,12 @@ instance RunMessage Mk1Grenades4 where
             body
           for_ eids (checkDefeated source)
 
-      getConcealed iid >>= \case
-        Just card -> do
-          chooseOneM iid do
-            labeled "Apply damage to concealed" $ handleOptions do
-              targeting card $ doFlip iid source card
-            labeled "Do not apply damage to concealed" $ handleOptions (pure ())
-        Nothing -> handleOptions (pure ())
+      concealed <- getConcealedIds iid
+      if null concealed
+        then handleOptions (pure ())
+        else chooseOneM iid do
+          labeled "Apply damage to concealed" $ handleOptions do
+            targets concealed $ exposeConcealed iid source
+          labeled "Do not apply damage to concealed" $ handleOptions (pure ())
       pure a
     _ -> Mk1Grenades4 <$> liftRunMessage msg attrs

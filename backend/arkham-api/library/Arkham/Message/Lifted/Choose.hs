@@ -2,6 +2,7 @@ module Arkham.Message.Lifted.Choose where
 
 import Arkham.Ability.Types
 import Arkham.Calculation
+import Arkham.Campaigns.TheScarletKeys.Concealed.Query (getConcealedChoicesAt)
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
@@ -12,7 +13,6 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Key
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher.Enemy
 import Arkham.Matcher.Investigator
 import Arkham.Matcher.Location
@@ -502,20 +502,20 @@ chooseAutomaticallyEvadeNAt
   => InvestigatorId -> source -> Int -> LocationMatcher -> EnemyMatcher -> m ()
 chooseAutomaticallyEvadeNAt iid source n lmatcher ematcher = do
   enemies <- select $ ematcher <> EnemyAt lmatcher <> EnemyCanBeEvadedBy (toSource source)
-  concealed <- mapMaybe (headMay . snd) <$> selectWithField LocationConcealedCards lmatcher
+  concealed <- getConcealedChoicesAt lmatcher
   let handleChoose = if n == 1 then chooseOneM iid else chooseNM iid n
   handleChoose do
     targets enemies $ automaticallyEvadeEnemy iid
     when (ematcher == AnyEnemy) do
-      for_ concealed \card -> targeting (ConcealedCardTarget card) $ push $ Msg.Flip iid GameSource (ConcealedCardTarget card)
+      for_ concealed \card -> targeting card $ push $ Msg.Flip iid GameSource (ConcealedCardTarget card.id)
 
 chooseDamageEnemy
   :: (ReverseQueue m, Sourceable source)
   => InvestigatorId -> source -> LocationMatcher -> EnemyMatcher -> Int -> m ()
 chooseDamageEnemy iid source lmatcher ematcher n = do
   enemies <- select $ ematcher <> EnemyAt lmatcher <> EnemyCanBeDamagedBySource (toSource source)
-  concealed <- mapMaybe (headMay . snd) <$> selectWithField LocationConcealedCards lmatcher
+  concealed <- getConcealedChoicesAt lmatcher
   chooseOrRunOneM iid do
     targets enemies $ assignEnemyDamage (nonAttack (Just iid) source n)
     when (ematcher == AnyEnemy) do
-      for_ concealed \card -> targeting (ConcealedCardTarget card) $ push $ Msg.Flip iid GameSource (ConcealedCardTarget card)
+      for_ concealed \card -> targeting card $ push $ Msg.Flip iid GameSource (ConcealedCardTarget card.id)

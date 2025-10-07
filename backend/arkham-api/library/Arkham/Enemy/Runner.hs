@@ -1747,9 +1747,11 @@ instance RunMessage EnemyAttrs where
             , EnemySpawn details
             , After (EnemySpawn details)
             ]
+          pushM $ checkAfter $ Window.EnemyPlaced enemyId placement
           pure a
         _ -> do
           checkEntersThreatArea a placement
+          pushM $ checkAfter $ Window.EnemyPlaced enemyId placement
           when (isInPlayPlacement a.placement && not (isInPlayPlacement placement)) do
             pushM $ checkWhen $ Window.LeavePlay (toTarget a)
             pushM $ checkAfter $ Window.LeavePlay (toTarget a)

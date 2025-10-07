@@ -1568,6 +1568,8 @@ library
       Arkham.Campaigns.TheScarletKeys.Concealed
       Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
       Arkham.Campaigns.TheScarletKeys.Concealed.Kind
+      Arkham.Campaigns.TheScarletKeys.Concealed.Matcher
+      Arkham.Campaigns.TheScarletKeys.Concealed.Query
       Arkham.Campaigns.TheScarletKeys.Concealed.Runner
       Arkham.Campaigns.TheScarletKeys.Concealed.Types
       Arkham.Campaigns.TheScarletKeys.Helpers
@@ -1577,6 +1579,7 @@ library
       Arkham.Campaigns.TheScarletKeys.Key.Id
       Arkham.Campaigns.TheScarletKeys.Key.Import.Lifted
       Arkham.Campaigns.TheScarletKeys.Key.Keys
+      Arkham.Campaigns.TheScarletKeys.Key.Matcher
       Arkham.Campaigns.TheScarletKeys.Key.Runner
       Arkham.Campaigns.TheScarletKeys.Key.Types
       Arkham.Campaigns.TheScarletKeys.Keys
@@ -1729,6 +1732,9 @@ library
       Arkham.Enemy.Cards.CorpseTaker
       Arkham.Enemy.Cards.CorruptedOrderly
       Arkham.Enemy.Cards.CorsairOfLeng
+      Arkham.Enemy.Cards.CoterieAgentA
+      Arkham.Enemy.Cards.CoterieAgentB
+      Arkham.Enemy.Cards.CoterieAgentC
       Arkham.Enemy.Cards.CovenInitiate
       Arkham.Enemy.Cards.CrazedGuest
       Arkham.Enemy.Cards.CrazedShoggoth
@@ -4228,6 +4234,7 @@ library
       Arkham.Treachery.Cards.CollapsingReality
       Arkham.Treachery.Cards.Confiscation
       Arkham.Treachery.Cards.Confusion
+      Arkham.Treachery.Cards.ConspiracyInRed
       Arkham.Treachery.Cards.ConspiracyOfBlood
       Arkham.Treachery.Cards.ConspiracyOfDeepOnes
       Arkham.Treachery.Cards.Corrosion

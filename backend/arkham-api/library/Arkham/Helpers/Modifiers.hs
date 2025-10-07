@@ -498,6 +498,15 @@ createCostModifiers source (toCard -> card) modifiers' =
 reduceCostOf :: (HasGame m, Sourceable source, IsCard card) => source -> card -> Int -> m Message
 reduceCostOf source (toCard -> card) n = createCostModifiers source card [ReduceCostOf (CardWithId $ toCardId card) n]
 
+defeatModifier
+  :: (Sourceable source, Targetable target, HasGame m)
+  => EnemyId
+  -> source
+  -> target
+  -> ModifierType
+  -> m Message
+defeatModifier eid source target modifier = createWindowModifierEffect (EffectDefeatWindow eid) source target [modifier]
+
 turnModifier
   :: (Sourceable source, Targetable target, HasGame m)
   => InvestigatorId

@@ -292,6 +292,7 @@ data ModifierType
   | GainVictory Int
   | GiveAdditionalAction AdditionalAction
   | HandSize Int
+  | Hollow CardId
   | MaxHandSize Int
   | HandSizeCardCount Int
   | HealHorrorAsIfOnInvestigator Target Int

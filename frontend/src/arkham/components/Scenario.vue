@@ -17,6 +17,7 @@ import { type Scenario } from '@/arkham/types/Scenario';
 import { type Card } from '@/arkham/types/Card';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import { TokenType } from '@/arkham/types/Token';
+import { ModifierType, Hollow } from '@/arkham/types/Modifier';
 import { Source } from '@/arkham/types/Source';
 import { Treachery } from '@/arkham/types/Treachery';
 import { Message, AbilityMessage, AbilityLabel } from '@/arkham/types/Message';
@@ -280,6 +281,11 @@ const inTheShadows = computed(() => Object.values(props.game.enemies).filter((e)
 const enemiesAsLocations = computed(() => enemyGroups.value.asLoc)
 const topEnemyInVoid = computed(() => enemyGroups.value.firstVoid)
 
+function isHollow(m: ModifierType): m is Hollow {
+  return m.tag === "Hollow"
+}
+const hollowed = computed(() => Object.values(props.game.investigators).flatMap(i => (i.modifiers || []).map((m) => m.type).filter(isHollow).map(m => props.game.cards[m.contents])))
+
 const outOfPlay = computed(() => props.scenario?.setAsideCards || [])
 const removedFromPlay = computed(() => props.game.removedFromPlay)
 const noCards = computed<Card[]>(() => [])
@@ -507,6 +513,7 @@ const doShowCards = (cards: ComputedRef<Card[]>, title: string, isDiscards: bool
 }
 const showRemovedFromPlay = () => doShowCards(removedFromPlay, t('scenario.removedFromPlay'), true)
 const showDiscards = () => doShowCards(discards, t('scenario.discards'), true)
+const showHollowed = () => doShowCards(hollowed, t('scenario.hollowed'), true)
 const hideCards = () => showCards.ref = noCards
 const showCardsUnderScenarioReference = () => doShowCards(cardsUnderScenarioReference, t('scenario.cardsUnderScenarioReference'), false)
 const unusedCanInteract = (u: string) => choices.value.findIndex((c) =>
@@ -890,6 +897,18 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
             <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
           </div>
           <button v-if="cardsUnderScenarioReference.length > 0" class="view-cards-under-button" @click="showCardsUnderScenarioReference">{{viewUnderScenarioReference}}</button>
+        </div>
+
+        <div v-if="hollowed.length > 0" class="discard">
+          <div class="discard-card">
+            <CardView
+              :game="game"
+              :card="hollowed[0]"
+              class="card"
+              @click="showHollowed"
+            />
+            <span class="deck-size">{{hollowed.length}}</span>
+          </div>
         </div>
         <SkillTest
             v-if="game.skillTest"

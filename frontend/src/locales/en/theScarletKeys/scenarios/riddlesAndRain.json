@@ -15,6 +15,9 @@
     "theConnection": {
       "coterieAgent": "Search the encounter deck and discard pile for a Coterie Agent enemy and draw it. Shuffle the encounter deck.",
       "damageAndHorror": "Each investigator takes 1 damage and 1 horror."
+    },
+    "towerOfLondon": {
+      "attack": "Each enemy in the shadows attacks you."
     }
   },
   "tooltips": {

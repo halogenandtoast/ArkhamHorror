@@ -43,6 +43,7 @@ export type ModifierType
   | BaseSkill
   | BaseSkillOf
   | CannotEnter
+  | Hollow
   | CannotDiscoverCluesAt
   | DamageDealt
   | DiscoveredClues
@@ -201,6 +202,11 @@ export type CannotEnter = {
   contents: string
 }
 
+export type Hollow = {
+  tag: "Hollow"
+  contents: string
+}
+
 export type OtherModifier = {
   tag: "OtherModifier"
   contents: string
@@ -302,6 +308,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.literal('CannotEnter'),
       contents: JsonDecoder.string()
     }, 'CannotEnter'),
+  JsonDecoder.object<Hollow>(
+    {
+      tag: JsonDecoder.literal('Hollow'),
+      contents: JsonDecoder.string()
+    }, 'Hollow'),
   JsonDecoder.object<CannotDiscoverCluesAt>(
     {
       tag: JsonDecoder.literal('CannotDiscoverCluesAt'),

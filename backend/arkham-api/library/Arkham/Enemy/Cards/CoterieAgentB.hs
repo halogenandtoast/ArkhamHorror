@@ -1,5 +1,4 @@
 module Arkham.Enemy.Cards.CoterieAgentB (coterieAgentB) where
-
 import Arkham.Ability
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Enemy.Cards qualified as Cards

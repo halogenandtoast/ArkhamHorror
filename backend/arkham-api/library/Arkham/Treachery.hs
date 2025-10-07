@@ -567,6 +567,11 @@ allTreacheries =
     , SomeTreacheryCard burdenOfLeadership
     , --- Crimson Conspiracy [tsk]
       SomeTreacheryCard conspiracyInRed
+    , --- Dark Veiling [tsk]
+      SomeTreacheryCard seeingShadows
+    , SomeTreacheryCard figuresInTheDark
+    , --- Outsiders [tsk]
+      SomeTreacheryCard substanceDissimulation
     , -- The Feast of Hemloch Vale
       -- signature [fhv]
       SomeTreacheryCard hastyRepairs

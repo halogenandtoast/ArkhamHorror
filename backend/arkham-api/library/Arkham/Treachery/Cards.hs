@@ -301,6 +301,7 @@ allEncounterTreacheryCards =
       , fateOfAllFools
       , fateOfAllFoolsUnspeakableFate
       , figureInTheShadows
+      , figuresInTheDark
       , finalMistake
       , fineDining
       , flipTheScript
@@ -461,6 +462,7 @@ allEncounterTreacheryCards =
       , secretGathering
       , secretsInTheAttic
       , secretsOfTheBeyond
+      , seeingShadows
       , serpentsCall
       , serpentsIre
       , shadowed
@@ -488,6 +490,7 @@ allEncounterTreacheryCards =
       , stowaway
       , straitjacket
       , strangeSigns
+      , substanceDissimulation
       , supernaturalTempest
       , syzygy
       , takenCaptive
@@ -2832,6 +2835,25 @@ conspiracyInRed :: CardDef
 conspiracyInRed =
   (treachery "09717" "Conspiracy in Red" CrimsonConspiracy 2)
     { cdCardTraits = setFromList [Scheme]
+    }
+
+seeingShadows :: CardDef
+seeingShadows =
+  (treachery "09724" "Seeing Shadows" DarkVeiling 2)
+    { cdCardTraits = setFromList [Terror]
+    }
+
+figuresInTheDark :: CardDef
+figuresInTheDark =
+  peril
+    (treachery "09725" "Figures in the Dark" DarkVeiling 2)
+      { cdCardTraits = setFromList [Scheme]
+      }
+
+substanceDissimulation :: CardDef
+substanceDissimulation =
+  (treachery "09733" "Substance Dissimulation" Outsiders 2)
+    { cdCardTraits = setFromList [Power]
     }
 
 hastyRepairs :: CardDef

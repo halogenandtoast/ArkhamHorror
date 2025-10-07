@@ -80,7 +80,9 @@ instance RunMessage ConcealedCard where
       pure $ c {concealedCardFlipped = True, concealedCardKnown = True}
     DoStep 1 msg'@(Flip iid _ (isTarget c -> True)) -> do
       case concealedToCardDef c of
-        Nothing -> pure ()
+        Nothing -> case c.kind of
+          Decoy -> exposedDecoy iid
+          _ -> pure ()
         Just def -> whenJustM (selectOne (EnemyWithPlacement InTheShadows <> EnemyWithTitle def.title)) \enemy -> do
           exposed iid def
           case c.placement of

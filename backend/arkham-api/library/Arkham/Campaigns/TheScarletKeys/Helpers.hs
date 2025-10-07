@@ -29,6 +29,14 @@ exposed :: (ReverseQueue m, HasCardCode c) => InvestigatorId -> c -> m ()
 exposed iid c = do
   let ekey = "exposed[" <> unCardCode (toCardCode c) <> "]"
   checkWhen $ Window.CampaignEvent ekey (Just iid) Null
+  checkWhen $ Window.CampaignEvent "exposed[enemy]" (Just iid) Null
+  checkAfter $ Window.CampaignEvent ekey (Just iid) Null
+  checkAfter $ Window.CampaignEvent "exposed[enemy]" (Just iid) Null
+
+exposedDecoy :: ReverseQueue m => InvestigatorId -> m ()
+exposedDecoy iid = do
+  let ekey = "exposed[decoy]"
+  checkWhen $ Window.CampaignEvent ekey (Just iid) Null
   checkAfter $ Window.CampaignEvent ekey (Just iid) Null
 
 whenExposed :: HasCardCode c => c -> WindowMatcher

@@ -623,6 +623,9 @@ instance RunMessage AssetAttrs where
       pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
     AddToDiscard _ c -> do
       pure $ a & cardsUnderneathL %~ filter (/= toCard c)
+    ObtainCard cid | cid == a.cardId -> do
+      push $ RemoveFromPlay (toSource a)
+      pure a
     ObtainCard c -> do
       pure $ a & cardsUnderneathL %~ filter ((/= c) . toCardId)
     CommitCard _ card -> do

@@ -176,6 +176,7 @@ data Trait
   | OothNargai
   | Oriab
   | Otherworld
+  | Outsider
   | Pact
   | Paradox
   | Paris

@@ -1,10 +1,11 @@
 module Arkham.Campaigns.TheScarletKeys.Helpers where
 
 import Arkham.Campaigns.TheScarletKeys.Key
-import Arkham.Card.CardCode
+import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.Effect.Window
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Types (Field (LocationConcealedCards))
@@ -12,8 +13,10 @@ import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Log
+import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Prelude
+import Arkham.Source
 import Arkham.Window qualified as Window
 
 campaignI18n :: (HasI18n => a) -> a
@@ -49,3 +52,8 @@ allConcealedMiniCards = concat <$> selectField LocationConcealedCards Anywhere
 
 placeConcealedCard :: ReverseQueue m => InvestigatorId -> ConcealedCardId -> Placement -> m ()
 placeConcealedCard iid c placement = push $ Msg.PlaceConcealedCard iid c placement
+
+hollow :: ReverseQueue m => InvestigatorId -> Card -> m ()
+hollow iid card = do
+  setCardAside card
+  createWindowModifierEffect_ (EffectHollowWindow card.id) ScenarioSource iid [Hollow card.id]

@@ -1387,11 +1387,12 @@ instance RunMessage EnemyAttrs where
         defeatedBy = if defeatedByDamage then DefeatedByDamage source else DefeatedByOther source
       miid <- getSourceController source
       victory <- getVictoryPoints eid
+      mods <- getModifiers a
       vengeance <- getVengeancePoints eid
       afterMsg <- checkWindows [mkAfter $ Window.IfEnemyDefeated miid defeatedBy eid]
       afterDefeatMsg <- checkWindows [mkAfter $ Window.EnemyDefeated miid defeatedBy eid]
       let
-        placeInVictory = isJust (victory <|> vengeance) && not a.placement.isSwarm
+        placeInVictory = isJust (victory <|> vengeance) && not a.placement.isSwarm && LoseVictory `notElem` mods
         victoryMsgs =
           guard (not a.placement.isInVictory) *> [DefeatedAddToVictory $ toTarget a | placeInVictory]
         defeatMsgs =

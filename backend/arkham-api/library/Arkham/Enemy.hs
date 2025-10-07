@@ -484,6 +484,9 @@ allEnemies =
       SomeEnemyCard coterieAgentA
     , SomeEnemyCard coterieAgentB
     , SomeEnemyCard coterieAgentC
+    , --- Outsiders [tsk]
+      SomeEnemyCard paracausalEntity
+    , SomeEnemyCard apocalypticPresage
     , -- The Feast of Hemloch Vale
       -- signature [fhv]
       SomeEnemyCard zamacona

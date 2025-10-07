@@ -94,8 +94,12 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     Move _ | isEndOfWindow a EffectMoveWindow -> do
       a <$ push (DisableEffect effectId)
+    EnemyDefeated eid _ _ _ | isEndOfWindow a (EffectDefeatWindow eid) -> do
+      a <$ push (DisableEffect effectId)
     WhenCanMove _ _ | isEndOfWindow a EffectMoveWindow -> do
       -- We've killed the entire batch at this point so we can resume
+      a <$ push (DisableEffect effectId)
+    AddToHand _ cards | any (\c -> isEndOfWindow a (EffectHollowWindow c.id)) cards -> do
       a <$ push (DisableEffect effectId)
     ResolvedAbility ab | #move `elem` ab.actions && isEndOfWindow a EffectMoveWindow -> do
       a <$ push (DisableEffect effectId)

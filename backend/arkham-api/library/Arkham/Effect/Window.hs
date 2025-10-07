@@ -40,6 +40,8 @@ data EffectWindow
   | EffectUI
   | EffectMoveWindow
   | EffectRevelationWindow TreacheryId
+  | EffectDefeatWindow EnemyId
+  | EffectHollowWindow CardId
   deriving stock (Ord, Eq, Show, Data)
 
 instance IsLabel "endOfCurrentPhase" EffectWindow where

@@ -105,6 +105,7 @@ allEncounterEnemyCards =
       , anetteMasonReincarnatedEvil
       , angryMob
       , apexStrangleweed
+      , apocalypticPresage
       , apostleOfDagon
       , aquaticAbomination
       , arkhamOfficer
@@ -331,6 +332,7 @@ allEncounterEnemyCards =
       , otherworldlyMeddler
       , packOfVooniths
       , padmaAmrita
+      , paracausalEntity
       , pennyWhite
       , peterWarren
       , piperOfAzathoth
@@ -2750,6 +2752,29 @@ rampagingShoggoth =
     , cdVictoryPoints = Just 1
     }
 
+agentFletcher :: CardDef
+agentFletcher =
+  (weakness "09010" "Agent Fletcher")
+    { cdCardTraits = setFromList [Humanoid, Coterie, Detective]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
+    }
+
+lurkerInTheDark :: CardDef
+lurkerInTheDark =
+  (basicWeakness "09124" "Lurker in the Dark")
+    { cdCardTraits = setFromList [Monster, Shoggoth]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdDeckRestrictions = [OnlyClass Guardian]
+    }
+
+ectoplasmicHorror :: CardDef
+ectoplasmicHorror =
+  (basicWeakness "09127" "Ectoplasmic Horror")
+    { cdCardTraits = setFromList [Monster, Geist]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdDeckRestrictions = [OnlyClass Mystic]
+    }
+
 theRedGlovedManShroudedInMystery :: CardDef
 theRedGlovedManShroudedInMystery =
   (enemy "09518" ("The Red-Gloved Man" <:> "Shrouded in Mystery") RiddlesAndRain 1)
@@ -2779,27 +2804,18 @@ coterieAgentC =
     , cdKeywords = singleton $ Keyword.Concealed CoterieAgentC (Static 2)
     }
 
-agentFletcher :: CardDef
-agentFletcher =
-  (weakness "09010" "Agent Fletcher")
-    { cdCardTraits = setFromList [Humanoid, Coterie, Detective]
-    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
+paracausalEntity :: CardDef
+paracausalEntity =
+  (enemy "09731" "Paracausal Entity" Outsiders 3)
+    { cdCardTraits = setFromList [Monster, Outsider]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
-lurkerInTheDark :: CardDef
-lurkerInTheDark =
-  (basicWeakness "09124" "Lurker in the Dark")
-    { cdCardTraits = setFromList [Monster, Shoggoth]
-    , cdKeywords = setFromList [Keyword.Hunter]
-    , cdDeckRestrictions = [OnlyClass Guardian]
-    }
-
-ectoplasmicHorror :: CardDef
-ectoplasmicHorror =
-  (basicWeakness "09127" "Ectoplasmic Horror")
-    { cdCardTraits = setFromList [Monster, Geist]
-    , cdKeywords = setFromList [Keyword.Hunter]
-    , cdDeckRestrictions = [OnlyClass Mystic]
+apocalypticPresage :: CardDef
+apocalypticPresage =
+  (enemy "09732" "Apocalyptic Presage" Outsiders 1)
+    { cdCardTraits = setFromList [Monster, Outsider]
+    , cdVictoryPoints = Just 1
     }
 
 zamacona :: CardDef

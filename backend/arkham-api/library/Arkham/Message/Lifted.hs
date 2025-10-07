@@ -1570,6 +1570,15 @@ currentTurnModifier
 currentTurnModifier source target modifier =
   selectOne TurnInvestigator >>= traverse_ \iid -> turnModifier iid source target modifier
 
+defeatModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => EnemyId
+  -> source
+  -> target
+  -> ModifierType
+  -> m ()
+defeatModifier eid source target modifier = Msg.pushM $ Msg.defeatModifier eid source target modifier
+
 turnModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
   => InvestigatorId

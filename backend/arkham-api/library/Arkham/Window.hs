@@ -20,6 +20,7 @@ import Arkham.Key
 import Arkham.Location.FloodLevel
 import Arkham.Matcher (LocationMatcher, MovesVia)
 import Arkham.Phase (Phase)
+import Arkham.Placement
 import Arkham.ScenarioLogKey
 import {-# SOURCE #-} Arkham.SkillTest.Base
 import Arkham.SkillTest.Step
@@ -204,6 +205,7 @@ data WindowType
   | EnemyLeaves EnemyId LocationId
   | EnemyWouldSpawnAt EnemyId LocationId
   | EnemySpawns EnemyId LocationId
+  | EnemyPlaced EnemyId Placement
   | EnemyWouldAttack EnemyAttackDetails
   | EnemyWouldBeDefeated EnemyId
   | EnterPlay Target
@@ -330,6 +332,7 @@ data WindowType
   | ScenarioCountIncremented ScenarioCountKey
   | IncreasedAlarmLevel InvestigatorId
   | ScenarioEvent Text (Maybe InvestigatorId) Value
+  | CampaignEvent Text (Maybe InvestigatorId) Value
   | -- used to avoid checking a window
     DoNotCheckWindow
   deriving stock (Show, Eq, Ord, Data)

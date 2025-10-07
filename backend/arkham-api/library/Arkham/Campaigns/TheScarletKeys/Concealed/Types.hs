@@ -1,12 +1,18 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Campaigns.TheScarletKeys.Concealed.Types where
 
-import {-# SOURCE #-} Arkham.Placement
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
+import Arkham.Card.CardCode
 import Arkham.Classes.Entity
-import Arkham.Prelude
+import Arkham.Field
 import Arkham.Id
+import Arkham.Json
+import {-# SOURCE #-} Arkham.Placement
+import Arkham.Prelude
 import Arkham.Source
 import Arkham.Target
+import Data.Aeson.TH
 import GHC.Records
 
 data ConcealedCard = ConcealedCard
@@ -14,6 +20,7 @@ data ConcealedCard = ConcealedCard
   , concealedCardId :: ConcealedCardId
   , concealedCardPlacement :: Placement
   , concealedCardFlipped :: Bool
+  , concealedCardKnown :: Bool
   }
   deriving stock (Show, Eq, Ord, Data)
 
@@ -45,3 +52,11 @@ instance Entity ConcealedCard where
   toAttrs = id
   overAttrs f = f
 
+data instance Field ConcealedCard :: Type -> Type where
+  ConcealedCardKind :: Field ConcealedCard ConcealedCardKind
+  ConcealedCardPlacement :: Field ConcealedCard Placement
+
+instance HasCardCode ConcealedCard where
+  toCardCode = const "xconcealed"
+
+$(deriveJSON (aesonOptions $ Just "concealedCard") ''ConcealedCard)

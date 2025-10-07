@@ -29,6 +29,7 @@ import Arkham.Matcher.Source
 import Arkham.Matcher.Target
 import Arkham.Matcher.Treachery
 import Arkham.Matcher.Value
+import {-# SOURCE #-} Arkham.Placement
 import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.SkillTest.Step
@@ -173,6 +174,7 @@ data WindowMatcher
   | EnemyAttemptsToSpawnAt Timing EnemyMatcher LocationMatcher
   | EnemyWouldSpawnAt EnemyMatcher LocationMatcher
   | EnemySpawns Timing Where EnemyMatcher
+  | EnemyPlaced Timing Placement EnemyMatcher
   | EnemyEntersPlay Timing EnemyMatcher
   | EnemyMovedTo Timing Where MovesVia EnemyMatcher
   | EnemyMoves Timing Where EnemyMatcher
@@ -212,6 +214,7 @@ data WindowMatcher
   | InvestigatorEliminated Timing Who
   | InvestigatorResigned Timing Who
   | AnyWindow
+  | AnyWindowIfEnemy EnemyMatcher
   | NotAnyWindow
   | NotWindow WindowMatcher
   | CommittingCardsFromHandToSkillTestStep Timing Who
@@ -234,6 +237,7 @@ data WindowMatcher
   | IncreasedAlarmLevel Timing Who
   | WindowWhen Criterion WindowMatcher
   | ScenarioEvent Timing (Maybe InvestigatorMatcher) Text
+  | CampaignEvent Timing (Maybe InvestigatorMatcher) Text
   | TakeControlOfClues Timing Who SourceMatcher
   | TakeControlOfKey Timing Who KeyMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)

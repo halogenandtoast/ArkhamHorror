@@ -152,6 +152,9 @@ allEncounterEnemyCards =
       , corpseTaker
       , corruptedOrderly
       , corsairOfLeng
+      , coterieAgentA
+      , coterieAgentB
+      , coterieAgentC
       , covenInitiate
       , crazedGuest
       , crazedShoggoth
@@ -2753,6 +2756,27 @@ theRedGlovedManShroudedInMystery =
     { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
     , cdKeywords = setFromList [Keyword.Concealed TheRedGlovedMan (PerPlayer 1), Keyword.Retaliate]
     , cdVictoryPoints = Just 1
+    }
+
+coterieAgentA :: CardDef
+coterieAgentA =
+  (enemy "09716a" "Coterie Agent (A)" CrimsonConspiracy 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie]
+    , cdKeywords = singleton $ Keyword.Concealed CoterieAgentA (Static 2)
+    }
+
+coterieAgentB :: CardDef
+coterieAgentB =
+  (enemy "09716b" "Coterie Agent (B)" CrimsonConspiracy 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie]
+    , cdKeywords = singleton $ Keyword.Concealed CoterieAgentB (Static 2)
+    }
+
+coterieAgentC :: CardDef
+coterieAgentC =
+  (enemy "09716c" "Coterie Agent (C)" CrimsonConspiracy 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie]
+    , cdKeywords = singleton $ Keyword.Concealed CoterieAgentC (Static 2)
     }
 
 agentFletcher :: CardDef

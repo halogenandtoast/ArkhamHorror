@@ -23,7 +23,8 @@ import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Campaigns.TheForgottenAge.Supply
-import Arkham.Campaigns.TheScarletKeys.Concealed
+import Arkham.Campaigns.TheScarletKeys.Concealed.Types
+import Arkham.Campaigns.TheScarletKeys.Key.Id
 import Arkham.Card
 import Arkham.Card.Settings
 import Arkham.ChaosBag.RevealStrategy
@@ -627,9 +628,11 @@ data Message
   | CreateEndOfTurnEffect Source InvestigatorId [Message]
   | CreateEndOfRoundEffect Source [Message]
   | CreateAssetAt AssetId Card Placement
+  | CreateScarletKeyAt Card Placement
   | CreateEventAt InvestigatorId Card Placement
   | CreateTreacheryAt TreacheryId Card Placement
   | PlaceAsset AssetId Placement
+  | PlaceScarletKey ScarletKeyId Placement
   | PlaceEvent EventId Placement
   | PlaceTreachery TreacheryId Placement
   | PlaceSkill SkillId Placement

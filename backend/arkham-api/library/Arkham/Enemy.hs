@@ -480,6 +480,10 @@ allEnemies =
     , SomeEnemyCard ectoplasmicHorror
     , --- Riddles and Rain [tsk]
       SomeEnemyCard theRedGlovedManShroudedInMystery
+    , --- Crimson Conspiracy [tsk]
+      SomeEnemyCard coterieAgentA
+    , SomeEnemyCard coterieAgentB
+    , SomeEnemyCard coterieAgentC
     , -- The Feast of Hemloch Vale
       -- signature [fhv]
       SomeEnemyCard zamacona

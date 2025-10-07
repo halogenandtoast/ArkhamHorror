@@ -1,5 +1,6 @@
 module Arkham.Matcher.Types (module X) where
 
+import Arkham.Campaigns.TheScarletKeys.Concealed.Matcher as X
 import Arkham.Matcher.Ability as X
 import Arkham.Matcher.Act as X
 import Arkham.Matcher.Action as X

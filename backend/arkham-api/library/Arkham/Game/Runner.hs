@@ -15,6 +15,8 @@ import Arkham.Asset.Types (Asset, AssetAttrs (..), Field (..), assetIsStory)
 import Arkham.Attack
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.CampaignLog
+import Arkham.Campaigns.TheScarletKeys.Key.Id
+import Arkham.Campaigns.TheScarletKeys.Keys
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Card.Settings
@@ -2452,6 +2454,11 @@ runGameMessage msg g = case msg of
           $ g
           & (entitiesL . assetsL . at assetId ?~ asset)
           & (activeCostL %~ insertMap (activeCostId cost) cost)
+  CreateScarletKeyAt card placement -> do
+    let keyId = ScarletKeyId card.cardCode
+    let scarletKey = createScarletKey card ScenarioTarget keyId
+    push $ PlaceScarletKey keyId placement
+    pure $ g & entitiesL . scarletKeysL . at keyId ?~ scarletKey
   CreateEventAt iid card placement -> do
     eventId <- getRandom
     let event' = createEvent card iid eventId

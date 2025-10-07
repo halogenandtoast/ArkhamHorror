@@ -47,11 +47,11 @@ instance RunMessage TrishScarborough where
       let source = attrs.ability 1
       ok <- getCanDiscoverClues IsInvestigate iid lid
       enemies <- select $ enemyAt lid <> EnemyCanBeEvadedBy source
-      mconcealed <- getConcealed iid
+      concealed <- getConcealedIds iid
       chooseOrRunOneM iid do
         when ok do
           labeled "Discover 1 additional clue at that location" $ discoverAt NotInvestigate iid source 1 lid
-        when (notNull enemies || isJust mconcealed) do
+        when (notNull enemies || notNull concealed) do
           labeled "Automatically evade that enemy" do
             chooseAutomaticallyEvadeAt iid iid (LocationWithId lid) AnyEnemy
       pure i

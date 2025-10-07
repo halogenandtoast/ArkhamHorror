@@ -94,6 +94,7 @@ key f cardDef =
             , keyPlacement = Unplaced
             , keyStability = case bearer of
                 InvestigatorTarget _ -> Stable
+                ScenarioTarget -> Stable
                 _ -> Unstable
             , keyBearer = bearer
             }

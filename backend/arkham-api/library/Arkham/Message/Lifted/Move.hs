@@ -39,6 +39,19 @@ moveToMatch
   :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> LocationMatcher -> m ()
 moveToMatch (toSource -> source) iid = push . Move <=< Arkham.Movement.moveToMatch source iid
 
+enemyMoveToIfInPlay
+  :: (ReverseQueue m, Sourceable source, Targetable enemy, ToId enemy EnemyId, ToId location LocationId)
+  => source
+  -> enemy
+  -> location
+  -> m ()
+enemyMoveToIfInPlay source enemy location =
+  push
+    . IfEnemyExists (InPlayEnemy $ EnemyWithId $ asId enemy)
+    . (: [])
+    . Move
+    =<< asMoveTo source enemy (asId location)
+
 enemyMoveTo
   :: (ReverseQueue m, Sourceable source, Targetable enemy, ToId location LocationId)
   => source

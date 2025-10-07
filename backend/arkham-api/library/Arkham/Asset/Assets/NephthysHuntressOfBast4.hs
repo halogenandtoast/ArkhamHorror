@@ -39,12 +39,12 @@ instance RunMessage NephthysHuntressOfBast4 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (attrs.ability 2)
-      mconcealed <- getConcealed iid
+      concealed <- getConcealedIds iid
       blessTokens <-
         take 3 <$> filterM (<=~> IncludeSealed (ChaosTokenFaceIs #bless)) attrs.sealedChaosTokens
       chooseOrRunOneM iid do
         labeled "Release 3 {bless} tokens" $ for_ blessTokens unsealChaosToken
-        when (notNull enemies || isJust mconcealed) do
+        when (notNull enemies || notNull concealed) do
           labeled "Return 3 {bless} tokens to the pool to do 2 damage to an enemy at your location" do
             push $ ReturnChaosTokensToPool blessTokens
             chooseDamageEnemy iid (attrs.ability 2) (locationWithInvestigator iid) AnyEnemy 2

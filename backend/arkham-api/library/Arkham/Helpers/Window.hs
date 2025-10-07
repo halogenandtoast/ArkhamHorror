@@ -709,6 +709,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         <*> windowMatches iid rawSource window' mtchr'
     Matcher.NotAnyWindow -> noMatch
     Matcher.AnyWindow -> isMatch'
+    Matcher.AnyWindowIfEnemy enemyMatcher -> do
+      ok <- selectAny enemyMatcher
+      if ok then isMatch' else noMatch
     Matcher.FloodLevelChanged timing whereMatcher -> guardTiming timing \case
       Window.FloodLevelChanged where' _ _ -> locationMatches iid source window' where' whereMatcher
       _ -> noMatch
@@ -899,6 +902,16 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
               mWhoMatcher
           ]
       _ -> noMatch
+    Matcher.CampaignEvent timing mWhoMatcher eKey -> guardTiming timing \case
+      Window.CampaignEvent eKey' mWho _ ->
+        andM
+          [ pure $ eKey == eKey'
+          , maybe
+              (pure True)
+              (\matcher -> maybe (pure False) (\who -> matchWho iid who matcher) mWho)
+              mWhoMatcher
+          ]
+      _ -> noMatch
     Matcher.LostResources timing whoMatcher sourceMatcher -> guardTiming timing $ \case
       Window.LostResources who source' _ ->
         andM
@@ -942,6 +955,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.EnemyMoves timing locationMatcher enemyMatcher -> guardTiming timing $ \case
       Window.EnemyMoves eid lid ->
         andM [elem eid <$> select enemyMatcher, elem lid <$> select locationMatcher]
+      _ -> noMatch
+    Matcher.EnemyPlaced timing p enemyMatcher -> guardTiming timing $ \case
+      Window.EnemyPlaced eid p' | p' == p -> elem eid <$> select enemyMatcher
       _ -> noMatch
     Matcher.PlaceUnderneath timing targetMatcher cardMatcher -> guardTiming timing $ \case
       Window.PlaceUnderneath target' card ->

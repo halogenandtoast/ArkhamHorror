@@ -17,6 +17,9 @@ getConcealedChoicesAt lmatcher = do
 
 getConcealedAt :: (HasGame m, ToId location LocationId) => location -> m [ConcealedCard]
 getConcealedAt location = do
-  concealed <- select $ ConcealedCardAt (LocationWithId $ asId location)
+  concealed <- getConcealedAtAll location
   let (known, unknown) = partition (attr concealedCardKnown) concealed
   pure $ known <> take 1 unknown
+
+getConcealedAtAll :: (HasGame m, ToId location LocationId) => location -> m [ConcealedCard]
+getConcealedAtAll location = select $ ConcealedCardAt (LocationWithId $ asId location)

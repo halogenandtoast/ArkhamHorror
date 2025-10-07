@@ -55,14 +55,14 @@ instance RunMessage Armageddon4Effect where
             handleIt assetId = do
               when (token.face == #curse) do
                 enemies <- select $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource attrs.source
-                mconcealed <- getConcealed iid
+                concealed <- getConcealedIds iid
                 stillInPlay <- selectAny $ AssetWithId assetId
-                when (stillInPlay || notNull enemies || isJust mconcealed) do
+                when (stillInPlay || notNull enemies || notNull concealed) do
                   chooseOrRunOneM iid do
                     when stillInPlay do
                       labeled "Place 1 Charge on Armageddon4" do
                         push $ AddUses attrs.source assetId Charge 1
-                    when (notNull enemies || isJust mconcealed) do
+                    when (notNull enemies || notNull concealed) do
                       labeled "Deal 1 damage to an enemy at your location" do
                         chooseDamageEnemy iid attrs.source (locationWithInvestigator iid) AnyEnemy 1
           case attrs.source of

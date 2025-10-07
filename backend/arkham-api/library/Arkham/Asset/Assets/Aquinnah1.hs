@@ -38,9 +38,9 @@ instance RunMessage Aquinnah1 where
       changeAttackDetails attack.enemy attack {attackDealDamage = False}
       healthDamage' <- field EnemyHealthDamage attack.enemy
       enemies <- select $ enemyAtLocationWith iid <> not_ (be attack.enemy)
-      concealed <- getConcealed iid
+      concealed <- getConcealedIds iid
       chooseOneM iid do
         targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) healthDamage'
-        for_ concealed \card -> targeting (ConcealedCardTarget card) $ doFlip iid GameSource (ConcealedCardTarget card)
+        targets concealed $ exposeConcealed iid (attrs.ability 1)
       pure a
     _ -> Aquinnah1 <$> liftRunMessage msg attrs

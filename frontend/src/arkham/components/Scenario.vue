@@ -1791,5 +1791,8 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
   padding: 10px;
   min-width: 10vw;
   border-radius: 1vw;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 </style>

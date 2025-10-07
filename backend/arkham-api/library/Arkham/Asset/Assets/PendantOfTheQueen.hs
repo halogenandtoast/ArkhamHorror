@@ -70,7 +70,7 @@ instance RunMessage PendantOfTheQueen where
       discoverChoice <- lid <=~> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
       enemies <-
         select $ at_ (LocationWithId lid) <> EnemyWithEvade <> EnemyWithoutModifier CannotBeEvaded
-      mconcealed <- getConcealedAt lid
+      concealed <- getConcealedAt lid
 
       chooseOrRunOneM iid do
         when (canMove && moveChoice) do
@@ -79,7 +79,7 @@ instance RunMessage PendantOfTheQueen where
         when discoverChoice do
           labeled "Discover a clue at this location" $ discoverAt NotInvestigate iid (attrs.ability 1) 1 lid
 
-        when (notNull enemies || isJust mconcealed) do
+        when (notNull enemies || notNull concealed) do
           labeled "Evade an enemy at this location" do
             chooseAutomaticallyEvadeAt iid (attrs.ability 1) (LocationWithId lid) AnyEnemy
       pure a

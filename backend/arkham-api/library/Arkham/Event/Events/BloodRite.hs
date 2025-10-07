@@ -44,11 +44,11 @@ instance RunMessage BloodRite where
     DoStep n msg'@(PayForCardAbility iid (isSource attrs -> True) _ 1 _) | n > 0 -> do
       resources <- getSpendableResources iid
       enemies <- getDamageableEnemies iid attrs (enemyAtLocationWith iid)
-      mconcealed <- getConcealed iid
+      concealed <- getConcealed iid
       chooseOneM iid do
         whenM (can.gain.resources FromPlayerCardEffect iid) do
           labeled "Gain Resource" $ gainResources iid attrs 1 >> doStep (n - 1) msg'
-        when ((notNull enemies || isJust mconcealed) && resources > 0) do
+        when ((notNull enemies || notNull concealed) && resources > 0) do
           labeled "Spend Resource and Deal 1 Damage To Enemy At Your Location" do
             spendResources iid 1
             chooseDamageEnemy iid attrs (locationWithInvestigator iid) AnyEnemy 1

@@ -19,4 +19,7 @@ instance RunMessage ScarletKey where
   runMessage msg (ScarletKey a) = ScarletKey <$> runMessage msg a
 
 instance RunMessage ScarletKeyAttrs where
-  runMessage _msg attrs = pure attrs
+  runMessage msg attrs = case msg of
+    PlaceScarletKey skid p | skid == attrs.id -> do
+      pure $ attrs & placementL .~ p
+    _ -> pure attrs

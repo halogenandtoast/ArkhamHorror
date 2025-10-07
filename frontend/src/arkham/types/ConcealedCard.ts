@@ -1,9 +1,10 @@
 import * as JsonDecoder from 'ts.data.json';
 
-interface ConcealedCard {
+export interface ConcealedCard {
   id: string;
   kind: ConcealedCardKind;
   flipped: boolean;
+  known: boolean;
 }
 
 export type ConcealedCardKind
@@ -72,6 +73,7 @@ export const concealedCardDecoder: JsonDecoder.Decoder<ConcealedCard> = JsonDeco
     id: JsonDecoder.string(),
     kind: concealedKindCardDecoder,
     flipped: JsonDecoder.boolean(),
+    known: JsonDecoder.boolean(),
   },
   'ConcealedCard',
 );

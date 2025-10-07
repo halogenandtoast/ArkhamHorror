@@ -23,16 +23,16 @@ instance RunMessage DynamiteBlast where
       chooseOneM iid do
         for_ locations \location -> do
           enemies <- if canDealDamage then select (enemyAt location) else pure []
-          mconcealed <- runMaybeT $ guard canDealDamage >> getConcealedT iid
+          concealed <- if canDealDamage then getConcealedIds iid else pure []
           investigators <- select $ investigatorAt location
-          unless (null enemies && null investigators && isNothing mconcealed) do
+          unless (null enemies && null investigators && null concealed) do
             targeting location do
               uiEffect attrs location Explosion
               for_ enemies (nonAttackEnemyDamage (Just iid) attrs 3)
               for_ investigators \iid' -> assignDamage iid' attrs 3
-              for_ mconcealed \concealed -> do
+              unless (null concealed) do
                 chooseOneM iid do
-                  labeled "Expose concealed card" $ push $ Flip iid GameSource (ConcealedCardTarget concealed)
+                  labeled "Expose concealed card" $ chooseTargetM iid concealed $ exposeConcealed iid attrs
                   labeled "Do not expose concealed card" nothing
       pure e
     _ -> DynamiteBlast <$> liftRunMessage msg attrs

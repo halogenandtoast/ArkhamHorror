@@ -33,7 +33,7 @@ async function chooseAbility(ability: number) {
 }
 
 const imageName = computed(() => {
-  if (!props.card.flipped) return 'concealed-card'
+  if (!props.card.flipped && !props.card.known) return 'concealed-card'
 
   switch (props.card.kind) {
     case "Decoy": return 'decoy'
@@ -69,6 +69,10 @@ const imageName = computed(() => {
 
 const image = computed(() => {
   return imgsrc(`mini-cards/${imageName.value}.jpg`);
+})
+
+const concealedImage = computed(() => {
+  return imgsrc(`mini-cards/concealed-card.jpg`);
 })
 
 function isAbility(v: Message): v is AbilityLabel {
@@ -161,10 +165,19 @@ async function clicked() {
 <template>
   <div class="concealed-card" ref="frame">
     <img
-      :src="image"
-      class="concealed-card"
+      v-if="!card.flipped && card.known"
+      :src="concealedImage"
       :data-image="image"
       :class="{'concealed-card--can-interact': canInteract}"
+      class="concealed-card"
+      @click="clicked"
+    />
+    <img
+      v-else
+      :src="image"
+      :data-image="image"
+      :class="{'concealed-card--can-interact': canInteract}"
+      class="concealed-card"
       @click="clicked"
     />
     <AbilitiesMenu

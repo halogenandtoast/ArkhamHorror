@@ -5,6 +5,8 @@ module Arkham.Campaigns.TheScarletKeys.Concealed.Runner where
 import Arkham.Action qualified as Action
 import Arkham.Calculation
 import Arkham.Campaigns.TheScarletKeys.Concealed
+import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.Card.CardDef
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Classes.RunMessage
@@ -31,10 +33,24 @@ isEnemyTarget c target =
  where
   isActionTarget a = isTarget a . toProxyTarget
 
+concealedToCardDef :: ConcealedCard -> Maybe CardDef
+concealedToCardDef c = case c.kind of
+  Decoy -> Nothing
+  TheRedGlovedMan -> Just Enemies.theRedGlovedManShroudedInMystery
+  CoterieAgentA -> Just Enemies.coterieAgentA
+  CoterieAgentB -> Just Enemies.coterieAgentB
+  CoterieAgentC -> Just Enemies.coterieAgentC
+  _ -> error "Unhandled Concealed Card Kind"
+
 instance RunMessage ConcealedCard where
   runMessage msg c = runQueueT $ case msg of
     PlaceConcealedCard _iid cardId placement | c.id == cardId -> do
-      pure $ c {concealedCardPlacement = placement}
+      pure
+        $ c
+          { concealedCardPlacement = placement
+          , concealedCardKnown = False
+          , concealedCardFlipped = False
+          }
     UseThisAbility iid (isSource c -> True) AbilityAttack -> do
       case c.placement of
         AtLocation location -> do
@@ -61,17 +77,15 @@ instance RunMessage ConcealedCard where
       pure c
     Flip iid _ (isTarget c -> True) -> do
       chooseTargetM iid [c] \_ -> doStep 1 msg
-      pure $ c {concealedCardFlipped = True}
-    DoStep 1 msg'@(Flip _iid _ (isTarget c -> True)) -> do
-      let getConcealedEnemy card = whenJustM (selectOne (EnemyWithPlacement InTheShadows <> enemyIs card))
-      case c.placement of
-        AtLocation location -> do
-          case c.kind of
-            Decoy -> pure ()
-            TheRedGlovedMan -> getConcealedEnemy Enemies.theRedGlovedManShroudedInMystery \enemy ->
-              enemyMoveTo c enemy location
-            _ -> error "Unhandled"
-        _ -> pure ()
+      pure $ c {concealedCardFlipped = True, concealedCardKnown = True}
+    DoStep 1 msg'@(Flip iid _ (isTarget c -> True)) -> do
+      case concealedToCardDef c of
+        Nothing -> pure ()
+        Just def -> whenJustM (selectOne (EnemyWithPlacement InTheShadows <> EnemyWithTitle def.title)) \enemy -> do
+          exposed iid def
+          case c.placement of
+            AtLocation location -> enemyMoveToIfInPlay c enemy location
+            _ -> error "invalid placement for concealed card"
       doStep 2 msg'
       pure $ c {concealedCardPlacement = Unplaced}
     DoStep 2 (Flip _iid _ (isTarget c -> True)) -> do
@@ -112,6 +126,13 @@ instance RunMessage ConcealedCard where
     RemoveAllConcealed -> do
       removeFromGame (toTarget c)
       pure c
+    LookAtRevealed iid _ (isTarget c -> True) -> do
+      chooseOneM iid $ targeting c $ doStep 1 msg
+      pure $ c {concealedCardKnown = True, concealedCardFlipped = True}
+    DoStep 1 (LookAtRevealed _ _ (isTarget c -> True)) -> do
+      pure $ c {concealedCardFlipped = False}
+    PlaceConcealedCard _ card placement | card /= c.id && c.placement == placement -> do
+      pure $ c {concealedCardKnown = False}
     UseAbility _ ab _ | isSource c ab.source || isProxySource c ab.source -> do
       do_ msg
       pure c

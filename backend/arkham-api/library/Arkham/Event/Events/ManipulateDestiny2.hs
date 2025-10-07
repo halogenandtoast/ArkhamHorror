@@ -22,7 +22,7 @@ instance RunMessage ManipulateDestiny2 where
       if any ((`elem` [#curse, #autofail, #bless, #eldersign]) . (.face)) tokens
         then do
           enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
-          mconcealed <- getConcealed iid
+          concealed <- getConcealedIds iid
           damageInvestigators <- select $ HealableInvestigator (toSource attrs) #damage $ colocatedWith iid
           damageAssets <-
             select
@@ -30,7 +30,7 @@ instance RunMessage ManipulateDestiny2 where
               $ at_ (locationWithInvestigator iid)
               <> AssetControlledBy (affectsOthers Anyone)
 
-          let canDamage = any ((`elem` [#curse, #autofail]) . (.face)) tokens && (notNull enemies || isJust mconcealed)
+          let canDamage = any ((`elem` [#curse, #autofail]) . (.face)) tokens && (notNull enemies || notNull concealed)
           let canHeal =
                 any ((`elem` [#bless, #eldersign]) . (.face)) tokens
                   && (notNull damageInvestigators || notNull damageAssets)

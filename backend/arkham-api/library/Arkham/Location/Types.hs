@@ -1,18 +1,11 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Location.Types (
-  module Arkham.Location.Types,
-  module X,
-  Field (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Types (module Arkham.Location.Types, module X, Field (..)) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Calculation
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
-import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
@@ -36,6 +29,7 @@ import Arkham.Matcher.Base (Be (..))
 import Arkham.Matcher.Location (LocationMatcher (..))
 import Arkham.Message
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target

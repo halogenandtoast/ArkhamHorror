@@ -88,6 +88,7 @@ import Data.Data.Lens (biplate)
 import Data.IntMap.Strict qualified as IntMap
 import Data.List.NonEmpty qualified as NE
 import Data.Map.Strict qualified as Map
+import Data.Monoid (First (..))
 
 instance HasChaosTokenValue ScenarioAttrs where
   getChaosTokenValue iid chaosTokenFace _ = case chaosTokenFace of
@@ -1782,9 +1783,17 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   SetDecksLayout layout -> do
     pure $ a & decksLayoutL .~ layout
   PlaceConcealedCards iid (card : cards) lids -> do
-    locations <- select $ Matcher.NearestLocationTo iid (Matcher.mapOneOf Matcher.LocationWithId lids)
-    chooseTargetM iid locations \lid -> do
-      push $ PlaceConcealedCard iid card (AtLocation lid)
-      push $ PlaceConcealedCards iid cards (deleteFirst lid lids)
+    let
+      isForcedPlacement = \case
+        ForceConcealedPlacement p -> Just p
+        _ -> Nothing
+    forcedPlacement <- getFirst . foldMap (First . isForcedPlacement) <$> getModifiers ScenarioTarget
+    case forcedPlacement of
+      Just p -> for_ (card : cards) \c -> push $ PlaceConcealedCard iid c p
+      Nothing -> do
+        locations <- select $ Matcher.NearestLocationTo iid (Matcher.mapOneOf Matcher.LocationWithId lids)
+        chooseTargetM iid locations \lid -> do
+          push $ PlaceConcealedCard iid card (AtLocation lid)
+          push $ PlaceConcealedCards iid cards (deleteFirst lid lids)
     pure a
   _ -> pure a

@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.RiddlesAndRain (riddlesAndRain) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.Campaigns.TheScarletKeys.Key
+import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -15,7 +15,6 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Import.Lifted
@@ -27,11 +26,16 @@ newtype RiddlesAndRain = RiddlesAndRain ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riddlesAndRain :: Difficulty -> RiddlesAndRain
-riddlesAndRain difficulty = scenario RiddlesAndRain "09501" "Riddles and Rain" difficulty
-  [ "hourglass triangle circle"
-  , "moon      equals   square"
-  , "t         squiggle ."
-  ]
+riddlesAndRain difficulty =
+  scenario
+    RiddlesAndRain
+    "09501"
+    "Riddles and Rain"
+    difficulty
+    [ "hourglass triangle circle"
+    , "moon      equals   square"
+    , "t         squiggle ."
+    ]
 
 instance HasChaosTokenValue RiddlesAndRain where
   getChaosTokenValue iid tokenFace (RiddlesAndRain attrs) = case tokenFace of
@@ -76,13 +80,13 @@ instance RunMessage RiddlesAndRain where
       flavor $ setTitle "title" >> p "intro6"
       removeChaosToken ElderThing
       addChaosToken Tablet
-      incrementRecordCount Time 1
+      markTime 1
       pure s
     DoStep 7 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro7"
       removeChaosToken Tablet
       addChaosToken ElderThing
-      incrementRecordCount Time 2
+      markTime 2
       pure s
     Setup -> runScenarioSetup RiddlesAndRain attrs do
       gather Set.RiddlesAndRain

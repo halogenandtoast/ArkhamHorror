@@ -16,6 +16,7 @@ import Investigator from '@/arkham/components/Investigator.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Event from '@/arkham/components/Event.vue';
 import Story from '@/arkham/components/Story.vue';
+import ScarletKey from '@/arkham/components/ScarletKey.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Token from '@/arkham/components/Token.vue'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
@@ -87,6 +88,8 @@ function isCardAction(c: Message): boolean {
 }
 
 const concealed = computed(() => Object.values(props.game.concealed).filter((c) => props.location.concealedCards.includes(c.id)))
+const unknownConcealed = computed(() => concealed.value.filter(c => !c.known))
+const knownConcealed = computed(() => concealed.value.filter(c => c.known))
 const cardAction = computed(() => choices.value.findIndex(isCardAction))
 const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
 let clickTimeout: number | null = null
@@ -193,6 +196,13 @@ const attachedEnemies = computed(() => {
     .filter((e) => props.game.enemies[e].placement.tag === 'AttachedToLocation')
 })
 
+const attachedKeys = computed(() => {
+  const scarletKeyIds = props.location.scarletKeys;
+
+  return scarletKeyIds
+    .filter((e) => props.game.scarletKeys[e].placement.tag === 'AttachedToLocation')
+})
+
 const stories = computed(() => {
   return Object.values(props.game.stories)
     .filter((s) => {
@@ -213,7 +223,7 @@ const treacheries = computed(() => {
 })
 
 const hasAttachments = computed(() => {
-  return treacheries.value.length > 0 || props.location.events.length > 0 || attachedEnemies.value.length > 0
+  return treacheries.value.length > 0 || props.location.events.length > 0 || attachedEnemies.value.length > 0 || attachedKeys.value.length > 0
 })
 
 const encounterCardsUnderneath = computed(() => {
@@ -448,6 +458,15 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
           @choose="choose"
           :attached="true"
         />
+        <ScarletKey
+          v-for="skId in attachedKeys"
+          :scarletKey="game.scarletKeys[skId]"
+          :game="game"
+          :playerId="playerId"
+          :key="skId"
+          @choose="choose"
+          :attached="true"
+        />
       </div>
       <div class="location-asset-column">
         <Asset
@@ -477,9 +496,11 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
           :atLocation="true"
           @choose="choose"
         />
-        <div v-if="concealed.length > 0">
-          <ConcealedCard :card="concealed[0]" :game="game" :playerId="playerId" @choose="choose" />
+        <div v-if="unknownConcealed.length > 0" class='concealed-card-stack'>
+          <ConcealedCard :card="unknownConcealed[0]" :game="game" :playerId="playerId" @choose="choose" />
+          <span class='count'>{{unknownConcealed.length}}</span>
         </div>
+        <ConcealedCard v-for="card in knownConcealed" :key="card.id" :card="card" :game="game" :playerId="playerId" @choose="choose" />
       </div>
     </div>
     <DebugLocation v-if="debugging" :game="game" :location="location" :playerId="playerId" @close="debugging = false" />
@@ -645,7 +666,7 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
   }
   &:hover {
     animation-fill-mode:forwards;
-    div:not(:last-child) {
+    > div:not(:last-child) {
       margin-top: 10px;
     }
   }
@@ -656,7 +677,7 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
     transition: all 0.2s;
   }
 
-  div:not(:last-child) {
+  > div:not(:last-child) {
     margin-top: -40px;
   }
 }
@@ -907,5 +928,32 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
 .concealed-card {
   width: calc(var(--card-width) * 0.55);
   border-radius: 3px;
+}
+
+.concealed-card-stack {
+  position: relative;
+  display: grid;
+  grid-template-areas: "stack";
+  align-items: center;
+  justify-items: center;
+  > * {
+    grid-area: stack;
+    justify-self: center;
+  }
+  .count {
+    align-self: start;
+    margin-top: 5%;
+    font-weight: bold;
+    border-radius: 100vw;
+    background-color: rgba(255, 255, 255, 0.6);
+    width: auto;
+    height: 1.2em;
+    display: grid;
+    aspect-ratio: 1 / 1;
+    text-align: center;
+    align-content: center;
+    justify-content: center;
+    pointer-events: none;
+  }
 }
 </style>

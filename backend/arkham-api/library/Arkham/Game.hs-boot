@@ -11,6 +11,8 @@ import Arkham.Agenda.Types
 import Arkham.Asset.Types
 import Arkham.Campaign.Types
 import Arkham.Campaigns.TheScarletKeys.Concealed.Types
+import Arkham.Campaigns.TheScarletKeys.Concealed.Matcher
+import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasAbilities
@@ -55,6 +57,7 @@ instance Query InvestigatorMatcher
 instance Query LocationMatcher
 instance Query PreyMatcher
 instance Query RemainingActMatcher
+instance Query ScarletKeyMatcher
 instance Query ScenarioMatcher
 instance Query SkillMatcher
 instance Query StoryMatcher
@@ -63,6 +66,7 @@ instance Query TargetMatcher
 instance Query SourceMatcher
 instance Query TreacheryMatcher
 instance Query KeyMatcher
+instance Query ConcealedCardMatcher
 
 instance Projection Act
 instance Projection Agenda

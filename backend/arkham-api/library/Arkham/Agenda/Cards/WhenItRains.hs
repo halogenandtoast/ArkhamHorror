@@ -1,12 +1,11 @@
 module Arkham.Agenda.Cards.WhenItRains (whenItRains) where
 
 import Arkham.Act.Cards qualified as Acts
-import Arkham.Act.Sequence qualified as Act
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Helpers.Query (getLead)
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 
 newtype WhenItRains = WhenItRains AgendaAttrs
@@ -29,7 +28,7 @@ instance RunMessage WhenItRains where
       lead <- getLead
       theRedGlovedMan <- fetchCard Enemies.theRedGlovedManShroudedInMystery
       drawCard lead theRedGlovedMan
-      push $ AdvanceToAct 1 Acts.theGameIsAfoot Act.A (toSource attrs)
+      advanceToActA attrs Acts.theGameIsAfoot
       advanceAgendaDeck attrs
       placeDoomOnAgenda attrs.doom
       pure a

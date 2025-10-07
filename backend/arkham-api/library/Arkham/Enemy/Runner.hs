@@ -1732,9 +1732,11 @@ instance RunMessage EnemyAttrs where
             , EnemySpawn details
             , After (EnemySpawn details)
             ]
+          pushM $ checkAfter $ Window.EnemyPlaced enemyId placement
           pure a
         _ -> do
           checkEntersThreatArea a placement
+          pushM $ checkAfter $ Window.EnemyPlaced enemyId placement
           pure $ a & placementL .~ placement
     Blanked msg' -> liftRunMessage msg' a
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do

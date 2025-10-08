@@ -33,7 +33,7 @@ function symbolForDay(day: number): string | null {
   width: fit-content;
   height: fit-content;
   text-align: center;
-  --time-bg: beige;
+  --time-bg: #FCF5E2;
   background-color: var(--time-bg);
   margin: 20px auto;
   font-family: "Arno", serif;

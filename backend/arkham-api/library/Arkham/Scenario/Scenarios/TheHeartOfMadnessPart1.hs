@@ -47,7 +47,7 @@ instance HasModifiersFor TheHeartOfMadnessPart1 where
   getModifiersFor (TheHeartOfMadnessPart1 _a) = do
     getSkillTestInvestigator >>= traverse_ \iid -> do
       whenM (sealAtLocationOf iid) do
-        modifySelect Cultist (ChaosTokenFaceIs #cultist) [ChaosTokenFaceModifier [#frost]]
+        modifySelect Cultist (ChaosTokenOriginalFaceIs #cultist) [ChaosTokenFaceModifier [#frost]]
 
 instance HasChaosTokenValue TheHeartOfMadnessPart1 where
   getChaosTokenValue = getChaosTokenValueFromScenario

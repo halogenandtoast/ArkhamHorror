@@ -21,7 +21,8 @@ theStrangerAlaranMists = act (2, A) TheStrangerAlaranMists Cards.theStrangerAlar
 
 instance HasAbilities TheStrangerAlaranMists where
   getAbilities (TheStrangerAlaranMists a) =
-    [ mkAbility a 1
+    [ onlyOnce
+        $ mkAbility a 1
         $ Objective
         $ forced
         $ EnemyWouldBeDiscarded #when

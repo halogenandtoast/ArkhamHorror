@@ -82,66 +82,82 @@ function select(location: string) {
 
     <g id="anchorage" class="marker" transform="translate(226,289)" @click="select('Anchorage')">
       <use href="#marker-blue"/>
+      <rect width="153" x="-160" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="san_francisco" class="marker" transform="translate(273,545)" @click="select('San Francisco')">
       <use href="#marker-blue"/>
+      <rect width="213" x="-218" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="arkham" class="marker" transform="translate(771,494)" @click="select('Arkham')">
       <use href="#marker-green"/>
+      <rect width="89" y="-11" height="20" fill="#00000000" />
     </g>
 
     <g id="ybor_city" class="marker" transform="translate(616,657)" @click="select('Ybor City')">
       <use href="#marker-blue"/>
+      <rect width="159" x="-155" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="havana" class="marker" transform="translate(617,712)" @click="select('Havana')">
       <use href="#marker-blue"/>
+      <rect width="129" x="-125" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="bermuda" class="marker" transform="translate(815,603)" @click="select('Bermuda')">
       <use href="#marker-blue"/>
+      <rect width="134" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="new_orleans" class="marker" transform="translate(548,635)" @click="select('New Orleans')">
       <use href="#marker-green"/>
+      <rect width="134" x="-134" y="-11" height="20" fill="#00000000" />
     </g>
 
     <g id="san_juan" class="marker" transform="translate(758,766)" @click="select('San Juan')">
       <use href="#marker-red"/>
+      <rect width="145" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="quito" class="marker" transform="translate(624,980)" @click="select('Quito')">
       <use href="#marker-red"/>
+      <rect width="100" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="rio_de_janeiro" class="marker" transform="translate(991,1240)" @click="select('Rio de Janeiro')">
       <use href="#marker-blue"/>
+      <rect width="220" x="-225" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="buenos_aires" class="marker" transform="translate(866,1382)" @click="select('Buenos Aires')">
       <use href="#marker-blue"/>
+      <rect width="200" x="-200" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="lagos" class="marker" transform="translate(1437,904)" @click="select('Lagos')">
       <use href="#marker-blue"/>
+      <rect width="100" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="nairobi" class="marker" transform="translate(1776,990)" @click="select('Nairobi')">
       <use href="#marker-blue"/>
+      <rect width="132" x="-132" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="marrakesh" class="marker" transform="translate(1334,612)" @click="select('Marrakesh')">
       <use href="#marker-blue"/>
+      <rect width="168" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="alexandria" class="marker" transform="translate(1691,613)" @click="select('Alexandria')">
       <use href="#marker-blue"/>
+      <rect width="179" x="-179" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="cairo" class="marker" transform="translate(1706,646)" @click="select('Cairo')">
       <use href="#marker-green"/>
+      <rect width="75" y="-11" height="21" fill="#00000000" />
     </g>
 
     <g id="bermuda_triangle" class="marker" transform="translate(728,680)" @click="select('Bermuda Triangle')">
@@ -150,78 +166,97 @@ function select(location: string) {
 
     <g id="london" class="marker" transform="translate(1419,384)" @click="select('London')">
       <use href="#marker-red"/>
+      <rect width="120" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="reykjavik" class="marker" transform="translate(1258,249)" @click="select('Reykjavik')">
       <use href="#marker-red"/>
+      <rect width="161" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="stockholm" class="marker" transform="translate(1568,299)" @click="select('Stockholm')">
       <use href="#marker-blue"/>
+      <rect width="155" x="-155" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="rome" class="marker" transform="translate(1530,498)" @click="select('Rome')">
       <use href="#marker-blue"/>
+      <rect width="85" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="moscow" class="marker" transform="translate(1746,332)" @click="select('Moscow')">
       <use href="#marker-blue"/>
+      <rect width="120" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="constantinople" class="marker" transform="translate(1675,503)" @click="select('Constantinople')">
       <use href="#marker-blue"/>
+      <rect width="230" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="bombay" class="marker" transform="translate(2117,760)" @click="select('Bombay')">
       <use href="#marker-blue"/>
+      <rect width="120" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="kathmandu" class="marker" transform="translate(2238,673)" @click="select('Kathmandu')">
       <use href="#marker-blue"/>
+      <rect width="170" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="shanghai" class="marker" transform="translate(2565,619)" @click="select('Shanghai')">
       <use href="#marker-blue"/>
+      <rect width="150" x="-150" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="tokyo" class="marker" transform="translate(2714,573)" @click="select('Tokyo')">
       <use href="#marker-blue"/>
+      <rect width="100" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="perth" class="marker" transform="translate(2506,1345)" @click="select('Perth')">
       <use href="#marker-blue"/>
+      <rect width="100" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="sydney" class="marker" transform="translate(2837,1362)" @click="select('Sydney')">
       <use href="#marker-blue"/>
+      <rect width="115" x="-115" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="venice" class="marker" transform="translate(1523,453)" @click="select('Venice')">
       <use href="#marker-green"/>
+      <rect width="85" y="-11" height="21" fill="#00000000" />
     </g>
 
     <g id="monte_carlo" class="marker" transform="translate(1483,472)" @click="select('Monte Carlo')">
       <use href="#marker-green"/>
+      <rect width="135" x="-135" y="-11" height="21" fill="#00000000" />
     </g>
 
     <g id="tunguska" class="marker" transform="translate(2299,295)" @click="select('Tunguska')">
       <use href="#marker-red"/>
+      <rect width="153" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="kabul" class="marker" transform="translate(2064,568)" @click="select('Kabul')">
       <use href="#marker-red"/>
+      <rect width="103" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="hong_kong" class="marker" transform="translate(2515,719)" @click="select('Hong Kong')">
       <use href="#marker-red"/>
+      <rect width="160" x="-160" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="kuala_lumpur" class="marker" transform="translate(2412,944)" @click="select('Kuala Lumpur')">
       <use href="#marker-red"/>
+      <rect width="210" x="-210" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g id="manokwari" class="marker" transform="translate(2735,987)" @click="select('Manokwari')">
       <use href="#marker-red"/>
+      <rect width="160" x="-160" y="-11" height="23" fill="#00000000" />
     </g>
 
     <g v-if="coordinates" :transform="`translate(${coordinates.x}, ${coordinates.y}) scale(1.5)`">
@@ -268,9 +303,11 @@ use {
   transform-origin: center;     /* scale about the center */
   transition: transform .15s ease;
 }
-use:hover {
+.marker:hover {
   cursor: pointer;
-  transform: scale(1.5);        /* now it grows in place */
+  use {
+    transform: scale(1.5);        /* now it grows in place */
+  }
 }
 
 .route-base {

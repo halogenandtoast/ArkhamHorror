@@ -7,10 +7,10 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
-import Arkham.Helpers.SkillTest (getSkillTestTarget)
 import Arkham.ChaosToken
 import Arkham.Effect.Import
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.SkillTest (getSkillTestTarget)
 import Arkham.Matcher hiding (Discarded)
 import Arkham.Scenarios.CurtainCall.Helpers
 import Arkham.Trait hiding (ElderThing)
@@ -26,7 +26,8 @@ theStrangerTheShoresOfHali =
 
 instance HasAbilities TheStrangerTheShoresOfHali where
   getAbilities (TheStrangerTheShoresOfHali a) =
-    [ mkAbility a 1
+    [ onlyOnce
+        $ mkAbility a 1
         $ Objective
         $ forced
         $ EnemyWouldBeDiscarded #when

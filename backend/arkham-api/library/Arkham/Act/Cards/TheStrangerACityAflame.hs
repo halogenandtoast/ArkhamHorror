@@ -19,7 +19,8 @@ theStrangerACityAflame = act (2, A) TheStrangerACityAflame Cards.theStrangerACit
 
 instance HasAbilities TheStrangerACityAflame where
   getAbilities (TheStrangerACityAflame a) =
-    [ mkAbility a 1
+    [ onlyOnce
+        $ mkAbility a 1
         $ Objective
         $ forced
         $ EnemyWouldBeDiscarded #when

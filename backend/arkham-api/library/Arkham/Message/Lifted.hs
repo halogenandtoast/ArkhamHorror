@@ -3293,7 +3293,7 @@ don'tRemove source ws = do
   don't $ RemovedFromPlay (toSource source)
 
 cancelWindowBatch :: ReverseQueue m => [Window] -> m ()
-cancelWindowBatch = cancelBatch . Window.getBatchId
+cancelWindowBatch ws = for_ (Window.getMaybeBatchId ws) cancelBatch
 
 cancelBatch :: ReverseQueue m => BatchId -> m ()
 cancelBatch bId = push $ CancelBatch bId

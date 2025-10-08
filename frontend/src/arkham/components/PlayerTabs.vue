@@ -33,8 +33,10 @@ const userPicked = ref(false)
 const solo = inject<Ref<boolean>>('solo')
 const switchInvestigator = inject<((i: string) => void)>('switchInvestigator')
 const hasChoices = (iid: string) => ArkhamGame.choices(props.game, iid).length > 0
-const investigators = computed(() => props.playerOrder.map(iid => props.players[iid]))
-const inactiveInvestigators = computed(() => Object.values(props.players).filter((p) => !props.playerOrder.includes(p.id)))
+const investigators = computed(() => 
+  props.playerOrder.filter(iid => !props.game.investigators[iid]?.eliminated ?? True).map(iid => props.players[iid])
+)
+const inactiveInvestigators = computed(() => props.playerOrder.filter(iid => props.game.investigators[iid]?.eliminated ?? False).map(iid => props.players[iid]))
 const lead = computed(() => `url('${imgsrc(`lead-investigator.png`)}')`)
 const { isMobile } = IsMobile();
 const store = useDbCardStore()

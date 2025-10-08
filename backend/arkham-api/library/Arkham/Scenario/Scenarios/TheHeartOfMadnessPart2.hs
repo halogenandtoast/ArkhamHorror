@@ -14,7 +14,9 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.FlavorText
 import Arkham.Helpers.Log ()
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query
+import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -28,7 +30,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 import Control.Monad.State.Strict (execStateT, modify)
 
 newtype TheHeartOfMadnessPart2 = TheHeartOfMadnessPart2 ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theHeartOfMadnessPart2 :: Difficulty -> TheHeartOfMadnessPart2
@@ -40,6 +42,12 @@ theHeartOfMadnessPart2 difficulty =
     difficulty
     theHeartOfMadnessLayout
     (referenceL .~ "08648")
+
+instance HasModifiersFor TheHeartOfMadnessPart2 where
+  getModifiersFor (TheHeartOfMadnessPart2 _a) = do
+    getSkillTestInvestigator >>= traverse_ \iid -> do
+      whenM (sealAtLocationOf iid) do
+        modifySelect Cultist (ChaosTokenOriginalFaceIs #cultist) [ChaosTokenFaceModifier [#frost]]
 
 instance HasChaosTokenValue TheHeartOfMadnessPart2 where
   getChaosTokenValue = getChaosTokenValueFromScenario

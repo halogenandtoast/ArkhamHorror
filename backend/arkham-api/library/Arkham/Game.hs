@@ -1033,7 +1033,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       flip runMatchesM as $ (`gameValueMatches` gameValueMatcher) . attr investigatorDoom
     InvestigatorWithDamage gameValueMatcher -> flip runMatchesM as \i -> do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfDamage
-      gameValueMatches (attr investigatorHealthDamage i + attr investigatorAssignedHealthDamage i + t) gameValueMatcher
+      gameValueMatches
+        (attr investigatorHealthDamage i + attr investigatorAssignedHealthDamage i + t)
+        gameValueMatcher
     InvestigatorWithHealableHorror source -> flip runMatchesM as $ \i -> do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfHorror
       mods <- getModifiers i.id
@@ -1044,7 +1046,8 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
           then pure False
           else sourceMatches source (mconcat canHealAtFullSources)
 
-      let onSelf = (attr investigatorSanityDamage i + attr investigatorAssignedSanityDamage i + t) > 0 || canHealAtFull
+      let onSelf =
+            (attr investigatorSanityDamage i + attr investigatorAssignedSanityDamage i + t) > 0 || canHealAtFull
       mFoolishness <-
         selectOne
           $ assetIs Assets.foolishnessFoolishCatOfUlthar
@@ -1144,12 +1147,14 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         . attr investigatorDeck
     InvestigatorWithTrait t -> flip runMatchesM as $ fieldMap InvestigatorTraits (member t) . toId
     InvestigatorWithClass t -> flip runMatchesM as $ fieldMap InvestigatorClass (== t) . toId
-    InvestigatorWithoutModifier modifierType -> flip runMatchesM as $ \i -> do
-      modifiers' <- getModifiers (toTarget i)
-      pure $ modifierType `notElem` modifiers'
-    InvestigatorWithModifier modifierType -> flip runMatchesM as $ \i -> do
-      modifiers' <- getModifiers (toTarget i)
-      pure $ modifierType `elem` modifiers'
+    InvestigatorWithoutModifier modifierType ->
+      as & runMatchesM \i -> do
+        modifiers' <- getModifiers (toTarget i)
+        pure $ modifierType `notElem` modifiers'
+    InvestigatorWithModifier modifierType ->
+      as & runMatchesM \i -> do
+        modifiers' <- getModifiers (toTarget i)
+        pure $ modifierType `elem` modifiers'
     UneliminatedInvestigator ->
       flip runMatchesM as
         $ pure
@@ -4391,6 +4396,7 @@ instance Query ChaosTokenMatcher where
           ChaosTokenValue _ (NegativeModifier _) -> True
           ChaosTokenValue _ (DoubleNegativeModifier _) -> True
           _ -> False
+      ChaosTokenOriginalFaceIs face -> pure . (== face) . chaosTokenFace
       ChaosTokenFaceIs face -> fmap (elem face) . getModifiedChaosTokenFace
       ChaosTokenFaceIsNot face -> fmap not . go (ChaosTokenFaceIs face)
       AnyChaosToken -> pure . const True

@@ -27,7 +27,8 @@ instance RunMessage TerribleSecret where
           unfocusCards
           doStep 1 msg
       pure t
-    DoStep 1 (Revelation iid source) | isSource attrs source -> do
-      assignHorror iid attrs =<< fieldLength InvestigatorCardsUnderneath iid
+    DoStep 1 (Revelation iid (isSource attrs -> True)) -> do
+      n <- fieldLength InvestigatorCardsUnderneath iid
+      repeated n (assignHorror iid attrs 1)
       pure t
     _ -> TerribleSecret <$> liftRunMessage msg attrs

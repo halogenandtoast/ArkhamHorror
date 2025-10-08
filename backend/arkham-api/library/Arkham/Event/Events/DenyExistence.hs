@@ -35,6 +35,7 @@ instance RunMessage DenyExistence where
       chooseOrRunOne iid choices
       pure e
     ResolveEvent _ eid _ [w] | eid == toId attrs -> do
+      cancelWindowBatch [w]
       lift $ case windowType w of
         WouldDiscardFromHand iid source -> do
           popMessageMatching_ \case

@@ -69,9 +69,14 @@ windowTypes :: [Window] -> [WindowType]
 windowTypes = map windowType
 
 getBatchId :: [Window] -> BatchId
-getBatchId ((windowBatchId -> Just batchId) : _) = batchId
-getBatchId (_ : rest) = getBatchId rest
-getBatchId [] = error "No batch id found"
+getBatchId ws = case getMaybeBatchId ws of
+  Just batchId -> batchId
+  Nothing -> error "No BatchId found in windows"
+
+getMaybeBatchId :: [Window] -> Maybe BatchId
+getMaybeBatchId ((windowBatchId -> Just batchId) : _) = Just batchId
+getMaybeBatchId (_ : rest) = getMaybeBatchId rest
+getMaybeBatchId [] = Nothing
 
 duringTurnWindow :: InvestigatorId -> Window
 duringTurnWindow = mkWindow Timing.When . DuringTurn
@@ -321,7 +326,7 @@ data WindowType
   | EnemiesAttackStep
   | AddingToCurrentDepth
   | EntersThreatArea InvestigatorId Card
-  | CancelledOrIgnoredCardOrGameEffect Source (Maybe CardId)-- Diana Stanley
+  | CancelledOrIgnoredCardOrGameEffect Source (Maybe CardId) -- Diana Stanley
   | ScenarioCountIncremented ScenarioCountKey
   | IncreasedAlarmLevel InvestigatorId
   | ScenarioEvent Text (Maybe InvestigatorId) Value

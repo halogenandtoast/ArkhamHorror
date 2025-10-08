@@ -19,7 +19,8 @@ theStrangerHereIsMyReply = act (2, A) TheStrangerHereIsMyReply Cards.theStranger
 
 instance HasAbilities TheStrangerHereIsMyReply where
   getAbilities (TheStrangerHereIsMyReply a) =
-    [ mkAbility a 1
+    [ onlyOnce
+        $ mkAbility a 1
         $ Objective
         $ forced
         $ EnemyWouldBeDiscarded #when

@@ -21,7 +21,8 @@ theStrangerUnderTheCity = act (2, A) TheStrangerUnderTheCity Cards.theStrangerUn
 
 instance HasAbilities TheStrangerUnderTheCity where
   getAbilities (TheStrangerUnderTheCity a) =
-    [ mkAbility a 1
+    [ onlyOnce
+        $ mkAbility a 1
         $ Objective
         $ forced
         $ EnemyWouldBeDiscarded #when

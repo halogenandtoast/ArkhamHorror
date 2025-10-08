@@ -187,29 +187,23 @@ getCanEngage a = do
   pure $ all (`notElem` keywords) [#aloof, #massive] && unengaged
 
 getAvailablePrey :: HasGame m => EnemyAttrs -> m [InvestigatorId]
-getAvailablePrey a = do
-  enemyLocation <- field EnemyLocation a.id
-  iids <-
-    fromMaybe []
-      <$> traverse (select . (<> InvestigatorCanBeEngagedBy a.id) . investigatorAt) enemyLocation
-  if null iids
-    then pure []
-    else do
-      getCanEngage a >>= \case
-        False -> pure []
-        True -> do
-          let valids = mapOneOf InvestigatorWithId iids
-          getPreyMatcher a >>= \case
-            Prey m -> do
-              preyIds <- select $ Prey $ m <> valids
-              pure $ if null preyIds then iids else preyIds
-            OnlyPrey m -> select $ OnlyPrey $ m <> valids
-            other@(BearerOf {}) -> do
-              mBearer <- selectOne other
-              pure $ maybe [] (\bearer -> [bearer | bearer `elem` iids]) mBearer
-            other@(RestrictedBearerOf {}) -> do
-              mBearer <- selectOne other
-              pure $ maybe [] (\bearer -> [bearer | bearer `elem` iids]) mBearer
+getAvailablePrey a = runDefaultMaybeT [] do
+  enemyLocation <- MaybeT $ field EnemyLocation a.id
+  iids <- select $ investigatorAt enemyLocation <> InvestigatorCanBeEngagedBy a.id
+  guard $ notNull iids
+  liftGuardM $ getCanEngage a
+  let valids = mapOneOf InvestigatorWithId iids
+  getPreyMatcher a >>= \case
+    Prey m -> do
+      preyIds <- select $ Prey $ m <> valids
+      pure $ if null preyIds then iids else preyIds
+    OnlyPrey m -> select $ OnlyPrey $ m <> valids
+    other@(BearerOf {}) -> do
+      mBearer <- selectOne other
+      pure $ maybe iids (\bearer -> if bearer `elem` iids then [bearer] else iids) mBearer
+    other@(RestrictedBearerOf {}) -> do
+      mBearer <- selectOne other
+      pure $ maybe [] (\bearer -> [bearer | bearer `elem` iids]) mBearer
 
 instance RunMessage EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = runQueueT $ case msg of
@@ -1454,10 +1448,16 @@ instance RunMessage EnemyAttrs where
         <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
-      alreadyEngaged <- eid <=~> enemyEngagedWith iid
-      if alreadyEngaged
-        then pure a
-        else liftRunMessage (EngageEnemy iid eid Nothing False) a
+      eliminated <- not <$> matches iid UneliminatedInvestigator
+      if eliminated
+        then do
+          push $ EnemyCheckEngagement eid
+          pure a
+        else do
+          alreadyEngaged <- eid <=~> enemyEngagedWith iid
+          if alreadyEngaged
+            then pure a
+            else liftRunMessage (EngageEnemy iid eid Nothing False) a
     EngageEnemy iid eid mTarget False | eid == enemyId -> do
       eliminated <- selectNone $ InvestigatorWithId iid
       if eliminated

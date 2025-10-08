@@ -10,6 +10,7 @@ import Arkham.Classes.Query
 import Arkham.DamageEffect
 import Arkham.Helpers.FlavorText (FlavorTextBuilder, buildFlavor)
 import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.SkillTest.Lifted (beginSkillTestEdit)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Key
@@ -23,6 +24,7 @@ import Arkham.Prelude
 import Arkham.Query
 import Arkham.Question
 import Arkham.Queue
+import Arkham.SkillTest.Base
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -257,6 +259,19 @@ chooseBeginSkillTest
   -> m ()
 chooseBeginSkillTest sid iid source target kinds n = do
   chooseOneM iid $ for_ kinds \kind -> skillLabeled kind $ beginSkillTest sid iid source target kind n
+
+chooseBeginSkillTestEdit
+  :: (Sourceable source, Targetable target, ReverseQueue m)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> target
+  -> [SkillType]
+  -> GameCalculation
+  -> (SkillTest -> SkillTest)
+  -> m ()
+chooseBeginSkillTestEdit sid iid source target kinds n f = do
+  chooseOneM iid $ for_ kinds \kind -> skillLabeled kind $ beginSkillTestEdit sid iid source target kind n f
 
 skip :: ReverseQueue m => Text -> ChooseT m ()
 skip = (`labeled` nothing)

@@ -567,6 +567,12 @@ allTreacheries =
     , SomeTreacheryCard burdenOfLeadership
     , --- Crimson Conspiracy [tsk]
       SomeTreacheryCard conspiracyInRed
+    , --- Strange Happenings [tsk]
+      SomeTreacheryCard pinchInReality
+    , SomeTreacheryCard heavyRain
+    , --- Shadow of a Doubt [tsk]
+      SomeTreacheryCard knivesInTheDark
+    , SomeTreacheryCard undercover
     , --- Dark Veiling [tsk]
       SomeTreacheryCard seeingShadows
     , SomeTreacheryCard figuresInTheDark

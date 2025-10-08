@@ -10,6 +10,7 @@ import Arkham.Campaign.Runner as X (
   campaignWith,
   defaultCampaignRunner,
   logL,
+  metaL,
   modifiersL,
   push,
   pushAll,
@@ -41,3 +42,6 @@ prologueStepPart part = campaignStep_ (PrologueStepPart part)
 
 campaignStep_ :: ReverseQueue m => CampaignStep -> m ()
 campaignStep_ = push . CampaignStep
+
+overMeta :: forall a. (ToJSON a, FromJSON a) => (a -> a) -> (CampaignAttrs -> CampaignAttrs)
+overMeta f = metaL %~ \m -> toJSON $ f $ toResult @a m

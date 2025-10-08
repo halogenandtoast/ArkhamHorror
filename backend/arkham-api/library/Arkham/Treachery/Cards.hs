@@ -332,6 +332,7 @@ allEncounterTreacheryCards =
       , hastursGaze
       , hastursGrasp
       , hauntingRecollections
+      , heavyRain
       , hellfire
       , heraldsOfTheDeep
       , hideousLullaby
@@ -358,6 +359,7 @@ allEncounterTreacheryCards =
       , kidnapped
       , kindredMist
       , kissOfBrine
+      , knivesInTheDark
       , lastLooks
       , lawOfYgirothChaos
       , lawOfYgirothDiscord
@@ -418,6 +420,7 @@ allEncounterTreacheryCards =
       , passageIntoTheVeil
       , perilsOfYoth
       , phantasmagoria
+      , pinchInReality
       , pitfall
       , poisonousSpores
       , polarMirage
@@ -534,6 +537,7 @@ allEncounterTreacheryCards =
       , umordhothsHunger
       , umordhothsWrath
       , unavoidableDemise
+      , undercover
       , undertow
       , unexpectedAmbush
       , unexpectedTransformation
@@ -2834,6 +2838,30 @@ burdenOfLeadership =
 conspiracyInRed :: CardDef
 conspiracyInRed =
   (treachery "09717" "Conspiracy in Red" CrimsonConspiracy 2)
+    { cdCardTraits = setFromList [Scheme]
+    }
+
+pinchInReality :: CardDef
+pinchInReality =
+  (treachery "09718" "Pinch in Reality" StrangeHappenings 2)
+    { cdCardTraits = setFromList [Power]
+    }
+
+heavyRain :: CardDef
+heavyRain =
+  (treachery "09719" "Heavy Rain" StrangeHappenings 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+knivesInTheDark :: CardDef
+knivesInTheDark =
+  (treachery "09722" "Knives in the Dark" ShadowOfADoubt 2)
+    { cdCardTraits = setFromList [Scheme]
+    }
+
+undercover :: CardDef
+undercover =
+  (treachery "09723" "Undercover" ShadowOfADoubt 2)
     { cdCardTraits = setFromList [Scheme]
     }
 

@@ -272,35 +272,37 @@ p.billenia, :deep(p.billenia) {
   font-family: auto !important;
 }
 
-div, :deep(div) {
-  &:has(.note-green) {
-    min-height: fit-content;
-    margin-block: 20px;
-    margin-inline: 50px;
-    box-shadow: unset;
-    overflow: hidden;
-    padding: 50px;
-    position: relative;
-    &::after {
-      position: absolute;
-      inset: 0px;
-      box-sizing: border-box;
-      content: "";
-      filter: blur(0.25em);
-      margin: 20px;
-      background-color: #E1E4DF;
-      mix-blend-mode: multiply;
-    }
-    &::before {
-      z-index: 2;
-      pointer-events: none;
-      position: absolute;
-      inset: 10px;
-      border-image-source: v-bind(green_fleur);
-      border-image-slice: 49.9%;
-      border-image-repeat: no-repeat;
-      border-image-width: 50px;
-      content: "";
+.intro-text {
+  div, :deep(div) {
+    &:has(.note-green) {
+      min-height: fit-content;
+      margin-block: 20px;
+      margin-inline: 50px;
+      box-shadow: unset;
+      overflow: hidden;
+      padding: 50px;
+      position: relative;
+      &::after {
+        position: absolute;
+        inset: 0px;
+        box-sizing: border-box;
+        content: "";
+        filter: blur(0.25em);
+        margin: 20px;
+        background-color: #E1E4DF;
+        mix-blend-mode: multiply;
+      }
+      &::before {
+        z-index: 2;
+        pointer-events: none;
+        position: absolute;
+        inset: 10px;
+        border-image-source: v-bind(green_fleur);
+        border-image-slice: 49.9%;
+        border-image-repeat: no-repeat;
+        border-image-width: 50px;
+        content: "";
+      }
     }
   }
 }

@@ -1143,6 +1143,7 @@ data Message
   | BecomeHomunculus InvestigatorId
   | SetScenarioMeta Value
   | ScenarioSpecific Text Value
+  | CampaignSpecific Text Value
   | SetCampaignMeta Value
   | DoStep Int Message
   | ForInvestigator InvestigatorId Message

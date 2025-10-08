@@ -1583,6 +1583,7 @@ library
       Arkham.Campaigns.TheScarletKeys.Key.Runner
       Arkham.Campaigns.TheScarletKeys.Key.Types
       Arkham.Campaigns.TheScarletKeys.Keys
+      Arkham.Campaigns.TheScarletKeys.Meta
       Arkham.CampaignStep
       Arkham.Capability
       Arkham.Card
@@ -4356,6 +4357,7 @@ library
       Arkham.Treachery.Cards.HastyRepairs
       Arkham.Treachery.Cards.Haunted
       Arkham.Treachery.Cards.HauntingRecollections
+      Arkham.Treachery.Cards.HeavyRain
       Arkham.Treachery.Cards.Hellfire
       Arkham.Treachery.Cards.HeraldsOfTheDeep
       Arkham.Treachery.Cards.HideousLullaby
@@ -4388,6 +4390,7 @@ library
       Arkham.Treachery.Cards.Kidnapped
       Arkham.Treachery.Cards.KindredMist
       Arkham.Treachery.Cards.KissOfBrine
+      Arkham.Treachery.Cards.KnivesInTheDark
       Arkham.Treachery.Cards.LastLooks
       Arkham.Treachery.Cards.LawOfYgirothChaos
       Arkham.Treachery.Cards.LawOfYgirothDiscord
@@ -4460,6 +4463,7 @@ library
       Arkham.Treachery.Cards.PassageIntoTheVeil
       Arkham.Treachery.Cards.PerilsOfYoth
       Arkham.Treachery.Cards.Phantasmagoria
+      Arkham.Treachery.Cards.PinchInReality
       Arkham.Treachery.Cards.Pitfall
       Arkham.Treachery.Cards.Poisoned
       Arkham.Treachery.Cards.PoisonousSpores
@@ -4613,6 +4617,7 @@ library
       Arkham.Treachery.Cards.UmordhothsHunger
       Arkham.Treachery.Cards.UmordhothsWrath
       Arkham.Treachery.Cards.UnavoidableDemise
+      Arkham.Treachery.Cards.Undercover
       Arkham.Treachery.Cards.Undertow
       Arkham.Treachery.Cards.UnexpectedAmbush
       Arkham.Treachery.Cards.UnexpectedTransformation

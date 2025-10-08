@@ -1,6 +1,7 @@
 {
   "key": {
-    "time": "Time"
+    "time": "Time",
+    "youHaventSeenTheLastOfTheRedGlovedMan": "You haven't seen the last of the Red-Gloved Man"
   },
   "prologue": {
     "title": "The Secret War",
@@ -10,6 +11,9 @@
     "figuresInTheDark": {
       "attack": "Each enemy in the shadows attacks you.",
       "loseAction": "Each investigator loses an action."
+    },
+    "pinchInReality": {
+      "discard": "Discard half of the non-weakness cards in your hand (rounded up)."
     }
   }
 }

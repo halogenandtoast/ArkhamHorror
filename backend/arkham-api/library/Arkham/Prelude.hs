@@ -100,6 +100,12 @@ suffixedWithFields suffix =
 suffixedFields :: LensRules
 suffixedFields = defaultFieldRules & lensField .~ suffixedNamer
 
+lNamer :: FieldNamer
+lNamer _ _ n = [TopName (mkName (nameBase n ++ "L"))]
+
+lFields :: LensRules
+lFields = defaultFieldRules & lensField .~ lNamer
+
 guardM :: (Alternative m, Monad m) => m Bool -> m ()
 guardM p = p >>= guard
 

@@ -3,7 +3,9 @@ module Arkham.Scenario.Scenarios.RiddlesAndRain (riddlesAndRain) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
+import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
@@ -15,8 +17,10 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.RiddlesAndRain.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -140,5 +144,43 @@ instance RunMessage RiddlesAndRain where
             targets inShadowEnemies $ placeDoomOn ElderThing 1
             when (clues > 0) $ clueLabeled iid $ spendClues iid 1
         _ -> pure ()
+      pure s
+    ScenarioResolution r -> scope "resolutions" do
+      let
+        chooseBearer = do
+          investigators <- getInvestigators
+          leadChooseOneM do
+            questionLabeled "Choose bearer"
+            questionLabeledCard Keys.theEyeOfRavens
+            portraits investigators $ setBearer Keys.theEyeOfRavens . KeyWithInvestigator
+      case r of
+        NoResolution -> do
+          resolution "noResolution"
+          push R4
+        Resolution 1 -> do
+          record YouHaventSeenTheLastOfTheRedGlovedMan
+          markTime 1
+          resolutionWithXp "resolution1" $ allGainXp' attrs
+          chooseBearer
+          endOfScenario
+        Resolution 2 -> do
+          record YouHaventSeenTheLastOfTheRedGlovedMan
+          markTime 1
+          resolutionWithXp "resolution2" $ allGainXp' attrs
+          chooseBearer
+          endOfScenario
+        Resolution 3 -> do
+          record YouHaventSeenTheLastOfTheRedGlovedMan
+          markTime 1
+          setBearer Keys.theEyeOfRavens $ keyWithEnemy Enemies.theRedGlovedManShroudedInMystery
+          resolutionWithXp "resolution3" $ allGainXp' attrs
+          endOfScenario
+        Resolution 4 -> do
+          record YouHaventSeenTheLastOfTheRedGlovedMan
+          markTime 2
+          setBearer Keys.theEyeOfRavens $ keyWithEnemy Enemies.theRedGlovedManShroudedInMystery
+          resolutionWithXp "resolution4" $ allGainXp' attrs
+          endOfScenario
+        _ -> error "invalid resolution"
       pure s
     _ -> RiddlesAndRain <$> liftRunMessage msg attrs

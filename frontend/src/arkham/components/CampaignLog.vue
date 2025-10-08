@@ -8,6 +8,9 @@ import type { CardDef } from '@/arkham/types/CardDef'
 import { type Name, simpleName } from '@/arkham/types/Name'
 import { scenarioToI18n, type Remembered } from '@/arkham/types/Scenario'
 import LogIcons from '@/arkham/components/LogIcons.vue'
+import Calendar from '@/arkham/components/TheScarletKeys/Calendar.vue'
+import KeysStatus from '@/arkham/components/TheScarletKeys/KeysStatus.vue'
+import WorldMap from '@/arkham/components/TheScarletKeys/WorldMap.vue'
 import Supplies from '@/arkham/components/Supplies.vue'
 import XpBreakdown from '@/arkham/components/XpBreakdown.vue'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
@@ -41,8 +44,13 @@ const sealImage = (seal: Seal): string => {
     case 'SealD': return imgsrc(`seals/seal-d-${revealed}.png`)
     case 'SealE': return imgsrc(`seals/seal-e-${revealed}.png`)
   }
-  return ''
 }
+
+const time = computed(() => selectedLog.value.recordedCounts.find((r) => {
+  return (r[0].tag === 'TheScarletKeysKey' && r[0].contents === 'Time')
+}))
+
+const scarletKeys = computed(() => props.game.campaign?.meta?.keyStatus)
 
 const setClass = (key: string): string => key.split('.').pop() || ''
 
@@ -130,21 +138,6 @@ const recordedCounts = computed(() => selectedLog.value.recordedCounts.filter((r
 const partners = computed(() => (selectedLog.value as any).partners ?? {})
 const hasSupplies = computed(() => Object.values(investigators.value).some(i => i.supplies.length > 0))
 
-const time = computed(() => selectedLog.value.recordedCounts.find((r) => {
-  return (r[0].tag === 'TheScarletKeysKey' && r[0].contents === 'Time')
-}))
-
-function symbolForDay(day: number): string {
-  if (!time.value) return ''
-  if (day == 7) return 'α'
-  if (day == 10) return 'ε'
-  if (day == 15) return 'β'
-  if (day == 20) return 'ζ'
-  if (day == 24) return 'γ'
-  if (day == 35) return 'Ω'
-  return null
-}
-
 // --- Card loading for recordedSets ---------------------------------------------
 const loadedCards = ref<CardDef[]>([])
 const NON_CARD_KEYS = new Set([
@@ -214,6 +207,11 @@ const displayRecordValue = (key: string, value: any): string => {
   return code ? cardCodeToTitle(code) : ''
 }
 
+const cardCodeToShortTitle = (cardCode: string): string => {
+  const title = cardCodeToTitle(cardCode)
+  return title.includes(':') ? title.split(':')[0] : title
+}
+
 const cardCodeToTitle = (cardCode: string): string => {
   const card = findCard(cardCode)
   const language = localStorage.getItem('language') || 'en'
@@ -250,11 +248,19 @@ const bonusXp = computed(() => props.game.campaign?.meta?.bonusXp ?? null)
     <div class="investigators-log">
       <InvestigatorRow v-for="investigator in investigators" :key="investigator.id" :investigator="investigator" :game="game" :bonus-xp="bonusXp && bonusXp[investigator.id]" />
     </div>
+    <div v-if="time || scarletKeys" class="column">
+      <WorldMap position="London" />
+      <div class="scarlet-keys">
+        <Calendar v-if="time" :time="time" />
+        <KeysStatus v-if="scarletKeys" :keys="scarletKeys" :toTitle="cardCodeToShortTitle" />
+      </div>
+    </div>
 
     <div class="campaign-log column">
       <h1>Campaign Log: {{ game.name }}</h1>
 
       <div v-if="emptyLog" class="box">No entries yet.</div>
+
 
       <div v-if="remembered.length > 0" class="remembered box">
         <h3 class="title">Remembered</h3>
@@ -336,15 +342,6 @@ const bonusXp = computed(() => props.game.campaign?.meta?.bonusXp ?? null)
       </div>
     </div>
 
-    <div v-if="time" class="time">
-      <!-- we need 35 cells each with an empty div a div with a number and another empty div -->
-      <h2>Time Passed</h2>
-      <div class='calendar'>
-        <div class='day' v-for="n in 35" :key="n">
-          <div class='checkbox' :class="{ checked: n <= time[1] }">{{n <= time[1] ? 'x' : null}}</div><div class='numeral'>{{n}}</div><div class='symbol'>{{symbolForDay(n)}}</div>
-        </div>
-      </div>
-    </div>
 
     <div v-for="([step, entries], idx) in breakdowns" :key="idx" class="breakdowns">
       <XpBreakdown :game="game" :step="step" :entries="entries" :playerId="playerId" :showAll="true" :investigators="investigators" />
@@ -540,96 +537,15 @@ tr td:not(:first-child) {
   }
 }
 
-.time {
-  position: relative;
-  isolation: isolate;
-  width: fit-content;
-  text-align: center;
-  --time-bg: beige;
-  background-color: var(--time-bg);
-  margin: 20px auto;
-  font-family: "Arno", serif;
-  border: 4px solid #333;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    inset: -10px;
-    border: 2px solid #333;
-    background-color: transparent;
-  }
-  &::after {
-    content: '';
-    position: absolute;
-    border-radius: 6px;
-    inset: -20px;
-    z-index: -2;
-    border: 4px solid #333;
-    background-color: var(--time-bg);
-    box-shadow: 10px 10px 1px rgba(0,0,0,0.5);
-  }
-  h2 {
-    text-transform: uppercase;
-    font-family: "Albertus";
-    font-size: 2em;
-    padding-block: 10px;
-    border: 4px solid #333;
-    border-bottom: 0;
-  }
-  .calendar {
-    display: grid;
-    border: 4px solid #333;
-    border-top-width: 2px;
-    grid-template-columns: repeat(7, 1fr);
-    width: fit-content;
-    background-color: #333;
-    gap: 2px;
-
-
-    .day {
-      background-color: var(--time-bg);
-      width: 4em;
-      height: 4em;
-      grid-template-areas:
-        "box box . . . num num"
-        "box box . . . num num"
-        ". . symbol symbol symbol . ."
-        ". . symbol symbol symbol . ."
-        ". . . . . . .";
-      display: grid;
-      .checkbox {
-        grid-area: box;
-        border-bottom: 1px solid #333;
-        border-right: 1px solid #333;   
-        width: 1em;
-        height: 1em;
-        justify-content: center;
-        align-items: center;
-        display: flex;
-        line-height: 1em;
-        font-weight: bold;
-        &.checked {
-          background-color: #333;
-          color: var(--time-bg);
-        }
-      }
-      .numeral {
-        grid-area: num;
-        width: 100%;
-        height: 100%;
-        text-align: right;
-        justify-content: start;
-        line-height: 1em;
-        padding-right: 1px;
-      }
-      .symbol {
-        grid-area: symbol;
-        font-size: 2em;
-        font-weight: bold;
-      }
-    }
+.scarlet-keys {
+  display: flex;
+  max-width: 90vw;
+  margin: 0 auto;
+  flex-direction: row;
+  gap: 20px;
+  @media (max-width: 1500px) {
+    flex-direction: column;
+    align-items: center;
   }
 }
 

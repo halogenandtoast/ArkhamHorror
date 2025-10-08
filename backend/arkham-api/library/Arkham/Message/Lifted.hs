@@ -3527,3 +3527,6 @@ createWindowModifierEffect_ eWindow source target mods = do
 doFlip
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 doFlip iid (toSource -> source) (toTarget -> target) = push $ Flip iid source target
+
+campaignSpecific :: (ToJSON a, ReverseQueue m) => Text -> a -> m ()
+campaignSpecific key value = push $ CampaignSpecific key (toJSON value)

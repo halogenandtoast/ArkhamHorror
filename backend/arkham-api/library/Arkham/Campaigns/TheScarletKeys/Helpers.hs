@@ -1,6 +1,7 @@
 module Arkham.Campaigns.TheScarletKeys.Helpers where
 
 import Arkham.Campaigns.TheScarletKeys.Key
+import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
@@ -57,3 +58,11 @@ hollow :: ReverseQueue m => InvestigatorId -> Card -> m ()
 hollow iid card = do
   setCardAside card
   createWindowModifierEffect_ (EffectHollowWindow card.id) ScenarioSource iid [Hollow card.id]
+
+setBearer :: ReverseQueue m => CardDef -> KeyStatus -> m ()
+setBearer skey sts@(KeyWithInvestigator iid) = do
+  addCampaignCardToDeck iid Msg.DoNotShuffleIn skey
+  campaignSpecific "setBearer" (skey.cardCode, sts)
+setBearer skey sts@(KeyWithEnemy {}) = do
+  removeCampaignCard skey
+  campaignSpecific "setBearer" (skey.cardCode, sts)

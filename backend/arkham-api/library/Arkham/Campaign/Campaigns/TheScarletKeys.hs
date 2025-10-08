@@ -3,6 +3,7 @@ module Arkham.Campaign.Campaigns.TheScarletKeys (theScarletKeys) where
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.CampaignSteps
 import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.Campaigns.TheScarletKeys.Meta (initMeta, keyStatusL)
 import Arkham.ChaosToken
 import Arkham.Helpers.FlavorText
 
@@ -44,9 +45,12 @@ instance IsCampaign TheScarletKeys where
     _ -> Nothing
 
 instance RunMessage TheScarletKeys where
-  runMessage msg c@(TheScarletKeys _attrs) = runQueueT $ campaignI18n $ case msg of
+  runMessage msg c@(TheScarletKeys attrs) = runQueueT $ campaignI18n $ case msg of
     CampaignStep PrologueStep -> scope "prologue" do
       flavor $ setTitle "title" >> p "body"
       nextCampaignStep
-      pure c
+      pure $ TheScarletKeys $ attrs & metaL .~ toJSON initMeta
+    CampaignSpecific "setBearer" v -> do
+      let (cardCode, status) = toResult v
+      pure $ TheScarletKeys $ attrs & overMeta (keyStatusL %~ insertMap cardCode status)
     _ -> lift $ defaultCampaignRunner msg c

@@ -7,9 +7,9 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Strategy
-import Arkham.Message.Lifted.Choose
 
 newtype TheSealWeakens = TheSealWeakens AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -32,15 +32,18 @@ instance RunMessage TheSealWeakens where
     ForInvestigator iid (AdvanceAgenda (isSide B attrs -> True)) -> do
       search iid attrs iid [fromDeck] (basic "Tekeli-li") (defer attrs IsNotDraw)
       pure a
-    SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
-      for_ cards obtainCard 
-      focusCards cards do
-        chooseOneAtATimeM iid do
-          targets cards \c -> do
-            cardResolutionModifier c attrs c LeaveCardWhereItIs
-            drawCardFrom iid c iid
-
+    SearchFound iid target@(isTarget attrs -> True) deck cards | notNull cards -> do
+      for_ cards obtainCard
+      cards' <- shuffle cards
+      doStep 1 $ SearchFound iid target deck cards'
       shuffleCardsIntoDeck iid cards
-
+      pure a
+    DoStep 1 (SearchFound iid target@(isTarget attrs -> True) deck (card : cards)) -> do
+      focusCards (card : cards) do
+        chooseOneM iid do
+          targeting card do
+            cardResolutionModifier card attrs card LeaveCardWhereItIs
+            drawCardFrom iid card deck
+      doStep 1 $ SearchFound iid target deck cards
       pure a
     _ -> TheSealWeakens <$> liftRunMessage msg attrs

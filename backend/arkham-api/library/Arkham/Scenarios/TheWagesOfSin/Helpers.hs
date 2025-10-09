@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Scenarios.TheWagesOfSin.Helpers
 where
 
@@ -17,7 +19,9 @@ import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
+import Arkham.Message.Lifted (checkWindows)
 import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
@@ -84,7 +88,7 @@ hereticRunner
      )
   => storyCard
   -> Runner b
-hereticRunner storyCard msg heretic = case msg of
+hereticRunner storyCard msg heretic = runQueueT $ case msg of
   UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
     let card = lookupCard storyCard (toCardId attrs)
     pushAll
@@ -104,13 +108,15 @@ hereticRunner storyCard msg heretic = case msg of
     pure heretic
   Flip iid _ (isTarget attrs -> True) -> do
     let card = lookupCard storyCard (toCardId attrs)
-    cancelEnemyDefeatWithWindows attrs
+    mWindow <- lift $ cancelEnemyDefeatCapture attrs
     pushAll
-      [ RemoveEnemy (toId attrs)
+      [ PlaceEnemy (toId attrs) (OutOfPlay RemovedZone)
       , ReplaceCard (toCardId attrs) card
       , StoryMessage $ ReadStoryWithPlacement iid card ResolveIt Nothing (enemyPlacement attrs)
       ]
+    for_ (traceShowId mWindow) (checkWindows . pure . traceShowId)
+    push $ RemoveEnemy (toId attrs)
     pure heretic
-  _ -> overAttrsM (runMessage msg) heretic
+  _ -> overAttrsM (liftRunMessage msg) heretic
  where
   attrs = toAttrs heretic

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, ref, computed, watch, watchEffect, onMounted, onUnmounted } from 'vue'
+import { ComputedRef, reactive, ref, computed, watch, watchEffect, onMounted, onUnmounted } from 'vue'
 import { imgsrc, isLocalized, toCamelCase } from '@/arkham/helpers'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import Key from '@/arkham/components/Key.vue'
@@ -217,6 +217,15 @@ watch([hoveredElement, sideways], ([el]) => {
 const ds = <T extends string = string>(key: T) =>
   computed<string | null>(() => hoveredElement.value?.dataset?.[key as any] ?? null)
 
+const dsMap = <X>(
+  key: keyof DOMStringMap,          // dataset keys
+  map: (v: string) => X
+): ComputedRef<X | null> =>
+  computed(() => {
+    const v = hoveredElement.value?.dataset?.[key]
+    return v !== undefined ? map(v) : null
+  })
+
 const jsonDs = <T>(key: string): T => {
   try { return JSON.parse(hoveredElement.value?.dataset?.[key] ?? '[]') as T }
   catch { return [] as unknown as T }
@@ -227,7 +236,7 @@ const health = ds('health')
 const evade = ds('evade')
 const victory = ds('victory')
 const keywords = ds('keywords')
-const swarm = ds('swarm')
+const swarm = dsMap('swarm', v => v === 'true')
 
 const depth = computed<number | null>(() => {
   const d = hoveredElement.value?.dataset?.depth
@@ -635,6 +644,7 @@ watch(card, (src) => { if (src) loadAR(src) })
     aspect-ratio: var(--card-aspect);
   }
   img.damage {
+    box-shadow: none;
     width: auto;
     height: 22px;
     position: absolute;
@@ -653,6 +663,7 @@ watch(card, (src) => { if (src) loadAR(src) })
 
   }
   img.horror {
+    box-shadow: none;
     width: auto;
     height: 22px;
     position: absolute;

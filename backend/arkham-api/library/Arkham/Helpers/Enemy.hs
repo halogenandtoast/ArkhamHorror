@@ -13,6 +13,7 @@ import Arkham.Enemy.Creation (EnemyCreation (..))
 import Arkham.Enemy.Types
 import Arkham.ForMovement
 import Arkham.GameValue
+import Arkham.Helpers.Calculation
 import Arkham.Helpers.Damage (damageEffectMatches)
 import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Helpers.Location
@@ -38,8 +39,11 @@ import Arkham.Spawn
 import Arkham.Target
 import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
+import Arkham.Zone
 import Data.Foldable (foldrM)
 import Data.List qualified as List
+import Data.Monoid (First (..))
+import Data.Proxy
 
 spawned :: EnemyAttrs -> Bool
 spawned EnemyAttrs {enemyPlacement} = enemyPlacement /= Unplaced
@@ -349,3 +353,19 @@ createEngagedWith investigator ec =
         enemyCreationAfter ec <> [EngageEnemy (asId investigator) (enemyCreationEnemyId ec) Nothing False]
     }
 {-# INLINE createEngagedWith #-}
+
+getDefeatedEnemyHealth :: HasGame m => EnemyId -> m (Maybe Int)
+getDefeatedEnemyHealth eid = do
+  healthValue <-
+    getFirst
+      . foldMap First
+      <$> sequence
+        ( fieldMayJoin EnemyHealthActual eid
+            : overOutOfPlayZones
+              ( \(p :: Proxy a) ->
+                  fieldMayJoin @(OutOfPlayEntity a Enemy)
+                    (OutOfPlayEnemyField (knownOutOfPlayZone p) EnemyHealthActual)
+                    eid
+              )
+        )
+  for healthValue calculate

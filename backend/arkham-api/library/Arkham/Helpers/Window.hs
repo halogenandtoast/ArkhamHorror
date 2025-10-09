@@ -600,7 +600,6 @@ getDefeatedAsset = \case
   (_ : rest) -> getDefeatedAsset rest
   _ -> error "impossible"
 
-
 getWindowAsset :: [Window] -> Maybe AssetId
 getWindowAsset [] = Nothing
 getWindowAsset ((windowType -> Window.ActivateAbility _ _ ability) : xs) = case abilitySource ability of

@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.TheSecretMustBeKept (theSecretMustBeKept) where
 
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Treachery.Cards qualified as Cards
@@ -22,7 +23,8 @@ instance RunMessage TheSecretMustBeKept where
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       deckCount <- getActDecksInPlayCount
-      let n = 3 - deckCount
+      isReturnTo <- getIsReturnTo
+      let n = max 0 ((if isReturnTo then 4 else 3) - deckCount)
       assignDamageAndHorror iid attrs (1 + n) (1 + n)
       pure t
     _ -> TheSecretMustBeKept <$> liftRunMessage msg attrs

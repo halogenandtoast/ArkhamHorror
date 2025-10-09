@@ -908,7 +908,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         else
           asMatch . mins <$> forMaybeM as \i -> runMaybeT do
             loc <- MaybeT $ getMaybeLocation i
-            minDistance <- MaybeT $ minimumMay <$> mapMaybeM (getDistance loc) destinations
+            -- we flip the distance because we need to measure from the enemy
+            -- in case connections are one way
+            minDistance <- MaybeT $ minimumMay <$> mapMaybeM (`getDistance` loc) destinations
             pure (i, unDistance minDistance)
     HasMostMatchingAsset assetMatcher -> do
       allCounts <-

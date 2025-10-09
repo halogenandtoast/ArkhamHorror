@@ -23,8 +23,8 @@ instance HasAbilities TheBrokenRite where
     [ restricted x 1 DuringCircleAction $ FastAbility $ ClueCost (Static 1)
     , mkAbility x 2
         $ Objective
-        $ freeReaction
-        $ ifEnemyDefeatedMatch
+        $ forced
+        $ EnemyDefeated #after Anyone ByAny
         $ at_ (locationIs Locations.theGeistTrap <> LocationWithBrazier Unlit)
         <> enemyIs Enemies.theSpectralWatcher
     ]

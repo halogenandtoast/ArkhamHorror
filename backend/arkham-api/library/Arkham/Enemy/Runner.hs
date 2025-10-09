@@ -641,11 +641,6 @@ instance RunMessage EnemyAttrs where
               $ NearestEnemyToLocation loc
               $ EnemyWithModifier CountsAsInvestigatorForHunterEnemies
 
-          -- The logic here is an artifact of doing this incorrect
-          -- Prey is only used for breaking ties unless we're dealing
-          -- with the Only keyword for prey, so here we hardcode prey
-          -- to AnyPrey and then find if there are any investigators
-          -- who qualify as prey to filter
           prey <- getPreyMatcher a
           matchingClosestLocationIds <- withModifiers loc (toModifiers a additionalConnections)
             $ case (forcedTargetLocation, prey) of
@@ -670,8 +665,8 @@ instance RunMessage EnemyAttrs where
                   select
                     $ locationMatcherModifier
                     $ LocationWithInvestigator
-                    $ NearestToEnemy (be eid)
-                    <> CanBeHuntedBy eid
+                    $ CanBeHuntedBy eid
+                    <> NearestToEnemy (be eid)
                 select
                   $ locationMatcherModifier
                   $ NearestLocationToLocation

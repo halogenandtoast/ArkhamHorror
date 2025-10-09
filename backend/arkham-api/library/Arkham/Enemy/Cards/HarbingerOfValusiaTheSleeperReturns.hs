@@ -48,8 +48,9 @@ instance RunMessage HarbingerOfValusiaTheSleeperReturns where
       if attrs.resources + 1 >= n
         then do
           place attrs (OutOfPlay SetAsideZone)
+          -- copy current placement so we can trigger any movements
           pure
-            $ overAttrs (tokensL %~ setTokens #damage attrs.damage)
+            $ overAttrs (\a -> a & tokensL %~ setTokens #damage attrs.damage & placementL .~ attrs.placement)
             $ cbCardBuilder harbingerOfValusiaTheSleeperReturns attrs.cardId attrs.id
         else do
           placeTokens (attrs.ability 1) attrs #resource 1

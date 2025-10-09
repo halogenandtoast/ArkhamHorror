@@ -197,13 +197,17 @@ explore iid source cardMatcher exploreRule matchCount = do
           replacedIsRevealed <- field LocationRevealed lid
           replacedIsWithoutClues <- lid <=~> LocationWithoutClues
 
-          when (canMove && exploreRule == PlaceExplored) $ moveTo source iid lid
           updateHistory iid $ HistoryItem HistorySuccessfulExplore True
+          -- done before the move so trail of the dead handle binoculars check correctly
           checkAfter $ Window.Explored iid mlid (Success lid)
+          when (canMove && exploreRule == PlaceExplored) $ moveTo source iid lid
           when (exploreRule == ReplaceExplored) do
             setGlobal lid "replacedIsRevealed" replacedIsRevealed
             setGlobal lid "replacedIsWithoutClues" replacedIsWithoutClues
         else do
+          -- Perils of Yoth will handle this case
+          unless (toCardDef x == Treacheries.perilsOfYoth) do
+            checkAfter $ Window.Explored iid mlid (Failure x)
           push
             $ DrewCards iid
             $ CardDrew
@@ -214,9 +218,6 @@ explore iid source cardMatcher exploreRule matchCount = do
               , cardDrewRules = mempty
               , cardDrewTarget = Nothing
               }
-          -- Perils of Yoth will handle this case
-          unless (toCardDef x == Treacheries.perilsOfYoth) do
-            checkAfter $ Window.Explored iid mlid (Failure x)
     xs -> do
       deck' <- if null notMatched then pure rest else shuffle $ rest <> notMatched
       focusCards drawn do

@@ -1708,6 +1708,9 @@ instance RunMessage EnemyAttrs where
           pure a
         _ -> do
           checkEntersThreatArea a placement
+          when (isInPlayPlacement a.placement && not (isInPlayPlacement placement)) do
+            pushM $ checkWhen $ Window.LeavePlay (toTarget a)
+            pushM $ checkAfter $ Window.LeavePlay (toTarget a)
           pure $ a & placementL .~ placement
     Blanked msg' -> liftRunMessage msg' a
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do

@@ -61,6 +61,7 @@ data AgendaAttrs = AgendaAttrs
   , agendaDeckId :: Int
   , agendaRemoveDoomMatchers :: RemoveDoomMatchers
   , agendaUsedWheelOfFortuneX :: Bool
+  , agendaMeta :: Value
   }
   deriving stock (Show, Eq, Generic)
 
@@ -77,7 +78,20 @@ instance ToJSON AgendaAttrs where
   toEncoding = genericToEncoding $ aesonOptions $ Just "agenda"
 
 instance FromJSON AgendaAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "agenda"
+  parseJSON = withObject "AgendaAttrs" $ \o -> do
+    agendaDoom <- o .: "doom"
+    agendaDoomThreshold <- o .:? "doomThreshold"
+    agendaId <- o .: "id"
+    agendaCardId <- o .: "cardId"
+    agendaSequence <- o .: "sequence"
+    agendaFlipped <- o .: "flipped"
+    agendaCardsUnderneath <- o .: "cardsUnderneath"
+    agendaDeckId <- o .: "deckId"
+    agendaRemoveDoomMatchers <- o .: "removeDoomMatchers"
+    agendaUsedWheelOfFortuneX <- o .: "usedWheelOfFortuneX"
+    agendaMeta <- o .:? "meta" .!= Null
+
+    pure AgendaAttrs {..}
 
 instance Entity AgendaAttrs where
   type EntityId AgendaAttrs = AgendaId
@@ -138,11 +152,15 @@ agendaWith (n, side) f cardDef threshold g =
             , agendaDeckId = deckId
             , agendaRemoveDoomMatchers = defaultRemoveDoomMatchers
             , agendaUsedWheelOfFortuneX = False
+            , agendaMeta = Null
             }
     }
 
 instance HasField "id" AgendaAttrs AgendaId where
   getField = agendaId
+
+instance HasField "meta" AgendaAttrs Value where
+  getField = agendaMeta
 
 instance HasField "doom" AgendaAttrs Int where
   getField = agendaDoom

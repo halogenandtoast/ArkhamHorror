@@ -38,7 +38,7 @@ instance RunMessage TheSealWeakens where
         chooseOneAtATimeM iid do
           targets cards \c -> do
             cardResolutionModifier c attrs c LeaveCardWhereItIs
-            drawCard iid c
+            drawCardFrom iid c iid
 
       shuffleCardsIntoDeck iid cards
 

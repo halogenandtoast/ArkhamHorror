@@ -20,9 +20,11 @@ import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
+import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheHeartOfMadness.Helpers
@@ -163,6 +165,14 @@ instance RunMessage TheHeartOfMadnessPart2 where
             inPlay <- selectAny $ assetIs partner.cardCode
             unless inPlay do
               cardLabeled partner.cardCode $ handleTarget iid ScenarioSource (CardCodeTarget partner.cardCode)
+      pure s
+    HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
+      for_ (lookupCardDef cardCode) \def -> do
+        card <- genCard def
+        assetId <- createAssetAt card (InPlayArea iid)
+        partner <- getPartner cardCode
+        pushWhen (partner.damage > 0) $ Msg.PlaceDamage CampaignSource (toTarget assetId) partner.damage
+        pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
       pure s
     Setup -> runScenarioSetup TheHeartOfMadnessPart2 attrs do
       gather Set.TheHeartOfMadness

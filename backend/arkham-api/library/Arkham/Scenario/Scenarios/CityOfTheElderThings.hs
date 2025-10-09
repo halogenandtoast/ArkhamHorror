@@ -29,6 +29,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move (moveAllTo, moveTowardsMatching)
+import Arkham.Modifier (ModifierType (AdditionalStartingUses))
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
@@ -231,10 +232,6 @@ instance RunMessage CityOfTheElderThings where
           labeledValidate' (group3 || group3Count `elem` [group1Count, group2Count]) "v3"
             $ doStep 3 PreScenarioSetup
 
-      when group1 $ doStep 1 PreScenarioSetup
-      when group2 $ doStep 2 PreScenarioSetup
-      when group3 $ doStep 3 PreScenarioSetup
-
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s
     DoStep n PreScenarioSetup -> do
@@ -251,12 +248,34 @@ instance RunMessage CityOfTheElderThings where
               cardLabeled partner.cardCode $ handleTarget iid ScenarioSource (CardCodeTarget partner.cardCode)
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
+      let
+        chosenGroup = map toCardCode $ case toResult @Int attrs.meta of
+          1 ->
+            [ Assets.drAmyKenslerProfessorOfBiology
+            , Assets.roaldEllsworthIntrepidExplorer
+            , Assets.drMalaSinhaDaringPhysician
+            ]
+          2 ->
+            [ Assets.danforthBrilliantStudent
+            , Assets.takadaHirokoAeroplaneMechanic
+            , Assets.eliyahAshevakDogHandler
+            ]
+          3 ->
+            [ Assets.professorWilliamDyerProfessorOfGeology
+            , Assets.averyClaypoolAntarcticGuide
+            , Assets.jamesCookieFredericksDubiousChoice
+            ]
+          _ -> error "Invalid group"
+
       for_ (lookupCardDef cardCode) \def -> do
         card <- genCard def
+        when (toPartnerCode card `elem` chosenGroup) do
+          setupModifier ScenarioSource card (AdditionalStartingUses 1)
         assetId <- createAssetAt card (InPlayArea iid)
         partner <- getPartner cardCode
         pushWhen (partner.damage > 0) $ Msg.PlaceDamage CampaignSource (toTarget assetId) partner.damage
         pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
+
       pure s
     Setup -> do
       doStep (toResult @Int attrs.meta) msg

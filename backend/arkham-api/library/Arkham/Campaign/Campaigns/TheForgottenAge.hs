@@ -330,7 +330,7 @@ instance RunMessage TheForgottenAge where
           getInvestigatorsWithSupply Gasoline >>= \case
             [] -> do
               flavor $ setTitle "title" >> p.green "outOfGas"
-              cannotMulligan <- toModifiers CampaignSource [CannotMulligan]
+              cannotMulligan <- map setActiveDuringSetup <$> toModifiers CampaignSource [CannotMulligan]
               pure $ ala Endo foldMap [modifiersL %~ insertWith (<>) iid cannotMulligan | iid <- investigators]
             x : _ -> do
               useSupply x Gasoline
@@ -518,7 +518,7 @@ instance RunMessage TheForgottenAge where
         hasChalk <- getAnyHasSupply Chalk
         flavor $ setTitle "title" >> p.green (if hasChalk then "theWayIsOpen" else "theWayIsShut")
 
-        mods <- toModifiers CampaignSource [CannotMulligan]
+        mods <- map setActiveDuringSetup <$> toModifiers CampaignSource [CannotMulligan]
         iids <- allInvestigators
         let
           update =

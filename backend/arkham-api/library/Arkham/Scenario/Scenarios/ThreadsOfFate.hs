@@ -8,6 +8,7 @@ import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheForgottenAge.Meta
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card hiding (addCampaignCardToDeckChoice, forceAddCampaignCardToDeckChoice)
@@ -22,7 +23,8 @@ import Arkham.Matcher
 import Arkham.Message.Lifted qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Scenario.Import.Lifted
+import Arkham.Projection
+import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Trait qualified as Trait
@@ -335,6 +337,22 @@ instance RunMessage ThreadsOfFate where
       forgingYourOwnPath <- getHasRecord YouAreForgingYourOwnWay
       alejandroOwned <- getIsAlreadyOwned Assets.alejandroVela
 
+      inVictory <-
+        selectAny
+          $ VictoryDisplayCardMatch
+          $ basic
+          $ mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+      if inVictory
+        then crossOut TheHarbingerIsStillAlive
+        else do
+          inPlayHarbinger <-
+            selectOne
+              $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+          damage <- case inPlayHarbinger of
+            Just eid -> field EnemyDamage eid
+            Nothing -> getRecordCount TheHarbingerIsStillAlive
+          recordCount TheHarbingerIsStillAlive damage
+
       isReturnTo <- Arkham.Helpers.Scenario.getIsReturnTo
       if isReturnTo
         then do
@@ -364,6 +382,9 @@ instance RunMessage ThreadsOfFate where
 
       when (act3fCompleted && not forgingYourOwnPath) do
         addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.ichtacaTheForgottenGuardian
+
+      when act3hCompleted do
+        addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.vedaWhitsleySkilledBotanist
 
       addCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.expeditionJournal
       endOfScenario

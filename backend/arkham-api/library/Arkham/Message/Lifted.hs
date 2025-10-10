@@ -2676,6 +2676,11 @@ cancelEnemyDamage enemy =
     EnemyDamaged eid _ -> eid == asId enemy
     _ -> False
 
+shouldMoveWithSkillTest :: ReverseQueue m => SkillTestId -> QueueT Message m () -> m ()
+shouldMoveWithSkillTest _sid f = do
+  msgs <- capture f
+  push $ MoveWithSkillTest $ Run msgs
+
 moveWithSkillTest :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
 moveWithSkillTest f = lift $ Arkham.Classes.HasQueue.mapQueue \msg -> if f msg then MoveWithSkillTest msg else msg
 

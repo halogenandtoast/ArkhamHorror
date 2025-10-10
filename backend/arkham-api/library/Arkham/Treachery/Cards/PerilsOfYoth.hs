@@ -2,6 +2,7 @@ module Arkham.Treachery.Cards.PerilsOfYoth (perilsOfYoth) where
 
 import Arkham.Card
 import Arkham.Helpers.Location
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
@@ -26,7 +27,10 @@ instance RunMessage PerilsOfYoth where
         labeled' "perilsOfYoth.fail" do
           checkAfter $ Window.Explored iid mlid (Failure $ toCard attrs)
         labeled' "perilsOfYoth.continue" do
-          assignDamageAndHorror iid attrs depth depth
+          chooseOneM iid $ unscoped do
+            countVar depth $ labeled' "takeDamage" $ assignDamage iid attrs depth
+            countVar depth $ labeled' "takeHorror" $ assignHorror iid attrs depth
+
           matcher <- case mlid of
             Just lid -> mapOneOf CardWithPrintedLocationSymbol <$> toConnections lid
             Nothing -> pure $ NotCard AnyCard

@@ -1402,7 +1402,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         | m >= n ->
             andM [matchWho iid iid' whoMatcher, anyM (\a -> actionMatches iid a actionMatcher) actions]
       _ -> noMatch
-    Matcher.WouldHaveSkillTestResult timing whoMatcher _ skillTestResultMatcher -> do
+    Matcher.WouldHaveSkillTestResult timing whoMatcher skillTestMatcher skillTestResultMatcher -> do
       -- The #when is questionable, but "Would" based timing really is
       -- only meant to have a When window
       let
@@ -1418,7 +1418,10 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             Window.WouldFailSkillTest who _ -> matchWho iid who whoMatcher
             Window.WouldPassSkillTest who _ -> matchWho iid who whoMatcher
             _ -> noMatch
-      isWindowMatch skillTestResultMatcher
+      mSkillTest <- getSkillTest
+      case mSkillTest of
+        Nothing -> noMatch
+        Just st -> andM [isWindowMatch skillTestResultMatcher, skillTestMatches iid source st skillTestMatcher]
     Matcher.InitiatedSkillTest timing whoMatcher skillTypeMatcher skillValueMatcher skillTestMatcher ->
       guardTiming timing $ \case
         Window.InitiatedSkillTest st -> case skillTestType st of

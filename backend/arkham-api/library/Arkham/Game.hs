@@ -921,7 +921,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         else
           asMatch . mins <$> forMaybeM as \i -> runMaybeT do
             loc <- MaybeT $ getMaybeLocation i
-            minDistance <- MaybeT $ minimumMay <$> mapMaybeM (getDistance loc) destinations
+            -- we flip the distance because we need to measure from the enemy
+            -- in case connections are one way
+            minDistance <- MaybeT $ minimumMay <$> mapMaybeM (`getDistance` loc) destinations
             pure (i, unDistance minDistance)
     HasMostMatchingAsset assetMatcher -> do
       allCounts <-
@@ -1160,12 +1162,14 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         . attr investigatorDeck
     InvestigatorWithTrait t -> flip runMatchesM as $ fieldMap InvestigatorTraits (member t) . toId
     InvestigatorWithClass t -> flip runMatchesM as $ fieldMap InvestigatorClass (== t) . toId
-    InvestigatorWithoutModifier modifierType -> flip runMatchesM as $ \i -> do
-      modifiers' <- getModifiers (toTarget i)
-      pure $ modifierType `notElem` modifiers'
-    InvestigatorWithModifier modifierType -> flip runMatchesM as $ \i -> do
-      modifiers' <- getModifiers (toTarget i)
-      pure $ modifierType `elem` modifiers'
+    InvestigatorWithoutModifier modifierType ->
+      as & runMatchesM \i -> do
+        modifiers' <- getModifiers (toTarget i)
+        pure $ modifierType `notElem` modifiers'
+    InvestigatorWithModifier modifierType ->
+      as & runMatchesM \i -> do
+        modifiers' <- getModifiers (toTarget i)
+        pure $ modifierType `elem` modifiers'
     UneliminatedInvestigator ->
       flip runMatchesM as
         $ pure
@@ -4449,6 +4453,7 @@ instance Query ChaosTokenMatcher where
           ChaosTokenValue _ (NegativeModifier _) -> True
           ChaosTokenValue _ (DoubleNegativeModifier _) -> True
           _ -> False
+      ChaosTokenOriginalFaceIs face -> pure . (== face) . chaosTokenFace
       ChaosTokenFaceIs face -> fmap (elem face) . getModifiedChaosTokenFace
       ChaosTokenFaceIsNot face -> fmap not . go (ChaosTokenFaceIs face)
       AnyChaosToken -> pure . const True

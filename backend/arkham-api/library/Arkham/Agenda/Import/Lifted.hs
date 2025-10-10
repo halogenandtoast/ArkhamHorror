@@ -10,6 +10,7 @@ import Arkham.Agenda.Runner as X (
   doomThresholdL,
   is,
   isSide,
+  metaL,
   onSide,
   push,
   pushAll,
@@ -57,3 +58,6 @@ noResolution = push $ ScenarioResolution NoResolution
 
 advanceToAgenda :: ReverseQueue m => AgendaAttrs -> CardDef -> AgendaSide -> m ()
 advanceToAgenda attrs newAgenda side = push $ AdvanceToAgenda attrs.deck newAgenda side (toSource attrs)
+
+setMeta :: ToJSON a => a -> AgendaAttrs -> AgendaAttrs
+setMeta meta attrs = attrs & metaL .~ toJSON meta

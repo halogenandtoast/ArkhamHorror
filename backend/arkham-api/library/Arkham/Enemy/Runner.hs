@@ -188,29 +188,23 @@ getCanEngage a = do
   pure $ all (`notElem` keywords) [#aloof, #massive] && unengaged
 
 getAvailablePrey :: HasGame m => EnemyAttrs -> m [InvestigatorId]
-getAvailablePrey a = do
-  enemyLocation <- field EnemyLocation a.id
-  iids <-
-    fromMaybe []
-      <$> traverse (select . (<> InvestigatorCanBeEngagedBy a.id) . investigatorAt) enemyLocation
-  if null iids
-    then pure []
-    else do
-      getCanEngage a >>= \case
-        False -> pure []
-        True -> do
-          let valids = mapOneOf InvestigatorWithId iids
-          getPreyMatcher a >>= \case
-            Prey m -> do
-              preyIds <- select $ Prey $ m <> valids
-              pure $ if null preyIds then iids else preyIds
-            OnlyPrey m -> select $ OnlyPrey $ m <> valids
-            other@(BearerOf {}) -> do
-              mBearer <- selectOne other
-              pure $ maybe [] (\bearer -> [bearer | bearer `elem` iids]) mBearer
-            other@(RestrictedBearerOf {}) -> do
-              mBearer <- selectOne other
-              pure $ maybe [] (\bearer -> [bearer | bearer `elem` iids]) mBearer
+getAvailablePrey a = runDefaultMaybeT [] do
+  enemyLocation <- MaybeT $ field EnemyLocation a.id
+  iids <- select $ investigatorAt enemyLocation <> InvestigatorCanBeEngagedBy a.id
+  guard $ notNull iids
+  liftGuardM $ getCanEngage a
+  let valids = mapOneOf InvestigatorWithId iids
+  getPreyMatcher a >>= \case
+    Prey m -> do
+      preyIds <- select $ Prey $ m <> valids
+      pure $ if null preyIds then iids else preyIds
+    OnlyPrey m -> select $ OnlyPrey $ m <> valids
+    other@(BearerOf {}) -> do
+      mBearer <- selectOne other
+      pure $ maybe iids (\bearer -> if bearer `elem` iids then [bearer] else iids) mBearer
+    other@(RestrictedBearerOf {}) -> do
+      mBearer <- selectOne other
+      pure $ maybe [] (\bearer -> [bearer | bearer `elem` iids]) mBearer
 
 instance RunMessage EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = runQueueT $ case msg of
@@ -648,11 +642,6 @@ instance RunMessage EnemyAttrs where
               $ NearestEnemyToLocation loc
               $ EnemyWithModifier CountsAsInvestigatorForHunterEnemies
 
-          -- The logic here is an artifact of doing this incorrect
-          -- Prey is only used for breaking ties unless we're dealing
-          -- with the Only keyword for prey, so here we hardcode prey
-          -- to AnyPrey and then find if there are any investigators
-          -- who qualify as prey to filter
           prey <- getPreyMatcher a
           matchingClosestLocationIds <- withModifiers loc (toModifiers a additionalConnections)
             $ case (forcedTargetLocation, prey) of
@@ -677,8 +666,8 @@ instance RunMessage EnemyAttrs where
                   select
                     $ locationMatcherModifier
                     $ LocationWithInvestigator
-                    $ NearestToEnemy (be eid)
-                    <> CanBeHuntedBy eid
+                    $ CanBeHuntedBy eid
+                    <> NearestToEnemy (be eid)
                 select
                   $ locationMatcherModifier
                   $ NearestLocationToLocation
@@ -1456,10 +1445,16 @@ instance RunMessage EnemyAttrs where
         <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
-      alreadyEngaged <- eid <=~> enemyEngagedWith iid
-      if alreadyEngaged
-        then pure a
-        else liftRunMessage (EngageEnemy iid eid Nothing False) a
+      eliminated <- not <$> matches iid UneliminatedInvestigator
+      if eliminated
+        then do
+          push $ EnemyCheckEngagement eid
+          pure a
+        else do
+          alreadyEngaged <- eid <=~> enemyEngagedWith iid
+          if alreadyEngaged
+            then pure a
+            else liftRunMessage (EngageEnemy iid eid Nothing False) a
     EngageEnemy iid eid mTarget False | eid == enemyId -> do
       eliminated <- selectNone $ InvestigatorWithId iid
       if eliminated
@@ -1738,6 +1733,9 @@ instance RunMessage EnemyAttrs where
         _ -> do
           checkEntersThreatArea a placement
           pushM $ checkAfter $ Window.EnemyPlaced enemyId placement
+          when (isInPlayPlacement a.placement && not (isInPlayPlacement placement)) do
+            pushM $ checkWhen $ Window.LeavePlay (toTarget a)
+            pushM $ checkAfter $ Window.LeavePlay (toTarget a)
           pure $ a & placementL .~ placement
     Blanked msg' -> liftRunMessage msg' a
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do

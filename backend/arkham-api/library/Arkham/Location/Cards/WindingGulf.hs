@@ -15,7 +15,7 @@ newtype WindingGulf = WindingGulf LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 windingGulf :: LocationCard WindingGulf
-windingGulf = location WindingGulf Cards.windingGulf 2 (Static 2)
+windingGulf = locationWith WindingGulf Cards.windingGulf 2 (Static 2) (connectsToL .~ adjacentLocations)
 
 instance HasAbilities WindingGulf where
   getAbilities (WindingGulf a) = extendRevealed a [cosmos a 1, scenarioI18n $ hauntedI "windingGulf.haunted" a 2]

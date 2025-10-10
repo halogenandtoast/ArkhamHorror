@@ -16,6 +16,7 @@ data OutOfPlayZone
   | VictoryDisplayZone
   | RemovedZone
   | TheDepths
+  | DefeatedZone
   deriving stock (Show, Eq, Ord, Enum, Bounded, Data)
 
 overOutOfPlayZones :: (forall a. KnownOutOfPlayZone a => Proxy a -> b) -> [b]
@@ -114,8 +115,9 @@ instance ToJSONKey Zone where
         PursuitZone -> "FromPursuit"
         SetAsideZone -> "FromSetAside"
         VictoryDisplayZone -> "FromVictoryDisplay"
-        RemovedZone -> "RemovedZone"
+        RemovedZone -> "FromRemovedZone"
         TheDepths -> "TheDepths"
+        DefeatedZone -> "FromDefeatedZone"
       other -> tshow other
 
 instance FromJSONKey Zone where
@@ -128,6 +130,8 @@ instance FromJSONKey Zone where
     "FromPursuit" -> FromOutOfPlay PursuitZone
     "FromSetAside" -> FromOutOfPlay SetAsideZone
     "FromVictoryDisplay" -> FromOutOfPlay VictoryDisplayZone
+    "FromDefeatedZoen" -> FromOutOfPlay DefeatedZone
+    "FromRemovedZone" -> FromOutOfPlay RemovedZone
     "FromCollection" -> FromCollection
     other -> error ("Unhandled FromJSONKey for zone" <> show other)
 

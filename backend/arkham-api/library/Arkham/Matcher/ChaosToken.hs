@@ -19,6 +19,7 @@ data ChaosTokenMatcher
   = WithNegativeModifier
   | OnlyInBag ChaosTokenMatcher
   | ChaosTokenFaceIs ChaosTokenFace
+  | ChaosTokenOriginalFaceIs ChaosTokenFace
   | ChaosTokenFaceIsNot ChaosTokenFace
   | ChaosTokenMatchesAny [ChaosTokenMatcher]
   | AnyChaosToken
@@ -56,6 +57,7 @@ instance ToDisplay ChaosTokenMatcher where
     OnlyInBag inner -> toDisplay inner
     ChaosTokenIs _ -> "Specific chaos token"
     WithNegativeModifier -> "Chaos token with negative modifier"
+    ChaosTokenOriginalFaceIs face -> toDisplay face
     ChaosTokenFaceIs face -> toDisplay face
     ChaosTokenFaceIsNot face -> "not " <> toDisplay face
     ChaosTokenMatchesAny inner -> "one of: " <> T.intercalate "," (map toDisplay inner)

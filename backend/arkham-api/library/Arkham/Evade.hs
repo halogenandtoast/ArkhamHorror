@@ -17,7 +17,7 @@ mkChooseEvade sid iid source =
   pure
     $ ChooseEvade
       { chooseEvadeInvestigator = iid
-      , chooseEvadeEnemyMatcher = AnyInPlayEnemy
+      , chooseEvadeEnemyMatcher = oneOf [AnyInPlayEnemy, EnemyHiddenInHand (InvestigatorWithId iid)]
       , chooseEvadeSource = toSource source
       , chooseEvadeTarget = Nothing
       , chooseEvadeSkillType = #agility

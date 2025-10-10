@@ -8,15 +8,18 @@ import Arkham.Classes.HasChaosTokenValue
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.Helpers.Location
 import Arkham.Helpers.Scenario (toChaosTokenValue)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Label
 import Arkham.Layout
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
+import Arkham.Projection
 import Arkham.Scenario.Types
 import Arkham.Target
 import Arkham.Trait (Trait (Ancient))
@@ -24,8 +27,11 @@ import Arkham.Trait (Trait (Ancient))
 scenarioI18n :: Int -> (HasI18n => a) -> a
 scenarioI18n n a = campaignI18n $ scope ("theHeartOfMadness.part" <> tshow n) a
 
-sealAtLocationOf :: Applicative m => InvestigatorId -> m Bool
-sealAtLocationOf _iid = pure False
+sealAtLocationOf :: HasGame m => InvestigatorId -> m Bool
+sealAtLocationOf iid =
+  getLocationOf iid >>= \case
+    Nothing -> pure False
+    Just lid -> fieldMap LocationSeals (not . null) lid
 
 placeSeal :: (ReverseQueue m, Targetable target) => target -> Seal -> m ()
 placeSeal target = push . PlaceSeal (toTarget target)

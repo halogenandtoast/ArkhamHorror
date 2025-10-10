@@ -76,7 +76,7 @@
       "discard": "Discard Towering Luminosity"
     },
     "unstableVortex": {
-      "chooseTearThroughSpaces": "Choose tear through space to discard",
+      "chooseTearThroughSpace": "Choose tear through space to discard",
       "shuffle": "Shuffle Unstable Vortex into the encounter deck"
     }
   }

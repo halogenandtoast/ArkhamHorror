@@ -32,7 +32,8 @@ instance RunMessage BrownJenkin where
       investigatorsWithHand <-
         selectWithField InvestigatorHand $ at_ (locationWithEnemy attrs) <> HandWith AnyCards
       for_ investigatorsWithHand \(iid, hand) -> do
-        push $ DiscardHand iid (toSource attrs)
-        drawCards iid (attrs.ability 1) (length hand)
+        batched \_ -> do
+          push $ DiscardHand iid (toSource attrs)
+          drawCards iid (attrs.ability 1) (length hand)
       pure e
     _ -> BrownJenkin <$> liftRunMessage msg attrs

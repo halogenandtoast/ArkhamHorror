@@ -136,6 +136,9 @@ noLimit = limitedAbility NoLimit
 groupLimit :: AbilityLimitType -> Ability -> Ability
 groupLimit lType = limitedAbility (GroupLimit lType 1)
 
+onlyOnce :: Ability -> Ability
+onlyOnce = groupLimit PerGame
+
 withTooltip :: Text -> Ability -> Ability
 withTooltip t a = a & abilityTooltipL ?~ t
 

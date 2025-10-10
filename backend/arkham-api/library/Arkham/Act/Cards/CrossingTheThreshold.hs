@@ -33,12 +33,14 @@ instance RunMessage CrossingTheThreshold where
       let iid = fromJustNote "no advancing investigator" $ advancingInvestigator metadata
       sid <- getRandom
       beginSkillTest sid iid attrs iid #willpower (Fixed 4)
-      advanceActDeck attrs
+      shouldMoveWithSkillTest sid $ advanceActDeck attrs
       pure a
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       searchCollectionForRandom iid (toSource attrs) $ BasicWeaknessCard <> hasAnyTrait [Madness, Injury]
       pure a
     RequestedPlayerCard iid (isSource attrs -> True) (Just card) _ -> do
-      addCampaignCardToDeck iid ShuffleIn card
+      focusCards [card] do
+        continue_ iid
+        addCampaignCardToDeck iid ShuffleIn card
       pure a
     _ -> CrossingTheThreshold . (`with` metadata) <$> liftRunMessage msg attrs

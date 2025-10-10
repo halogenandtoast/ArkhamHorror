@@ -25,7 +25,8 @@ theStrangerThePathIsMine =
 
 instance HasAbilities TheStrangerThePathIsMine where
   getAbilities (TheStrangerThePathIsMine a) =
-    [ mkAbility a 1
+    [ onlyOnce
+        $ mkAbility a 1
         $ Objective
         $ forced
         $ EnemyWouldBeDiscarded #when

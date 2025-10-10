@@ -6,5 +6,6 @@
   { "id": "04205", "name": "Heart of the Elders", "campaign": "04", "returnTo": "53045", "returnToName": "Return to Heart of the Elders" },
   { "id": "04237", "name": "The City of Archives", "campaign": "04", "returnTo": "53053", "returnToName": "Return to The City of Archives" },
   { "id": "04277", "name": "The Depths of Yoth", "campaign": "04", "returnTo": "53059", "returnToName": "Return to The Depths of Yoth" },
-  { "id": "04314", "name": "Shattered Aeons", "campaign": "04", "returnTo": "53061", "returnToName": "Return to Shattered Aeons" }
+  { "id": "04314", "name": "Shattered Aeons", "campaign": "04", "returnTo": "53061", "returnToName": "Return to Shattered Aeons" },
+  { "id": "04344", "name": "Turn Back Time", "campaign": "04", "returnTo": "53066", "returnToName": "Return to Turn Back Time", "show": false }
 ]

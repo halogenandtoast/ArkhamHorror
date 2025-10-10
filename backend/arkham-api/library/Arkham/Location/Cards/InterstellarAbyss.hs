@@ -13,7 +13,13 @@ newtype InterstellarAbyss = InterstellarAbyss LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 interstellarAbyss :: LocationCard InterstellarAbyss
-interstellarAbyss = location InterstellarAbyss Cards.interstellarAbyss 6 (Static 0)
+interstellarAbyss =
+  locationWith
+    InterstellarAbyss
+    Cards.interstellarAbyss
+    6
+    (Static 0)
+    (connectsToL .~ adjacentLocations)
 
 instance HasModifiersFor InterstellarAbyss where
   getModifiersFor (InterstellarAbyss a) = modifySelect a (investigatorAt a) [CannotSpendClues]

@@ -44,6 +44,7 @@ import Data.Foldable (foldrM)
 import Data.List qualified as List
 import Data.Monoid (First (..))
 import Data.Proxy
+import Data.Typeable
 
 spawned :: EnemyAttrs -> Bool
 spawned EnemyAttrs {enemyPlacement} = enemyPlacement /= Unplaced
@@ -356,16 +357,32 @@ createEngagedWith investigator ec =
 
 getDefeatedEnemyHealth :: HasGame m => EnemyId -> m (Maybe Int)
 getDefeatedEnemyHealth eid = do
-  healthValue <-
+  healthValue <- getEnemyField EnemyHealthActual eid
+  for healthValue calculate
+
+type family FlatField k where
+  FlatField (Maybe a) = a
+  FlatField a = a
+
+getEnemyField
+  :: forall a m
+   . (Typeable a, Typeable (FlatField a), HasGame m)
+  => Field Enemy a -> EnemyId -> m (Maybe (FlatField a))
+getEnemyField fld eid = do
+  val <-
     getFirst
       . foldMap First
       <$> sequence
-        ( fieldMayJoin EnemyHealthActual eid
+        ( fieldMay fld eid
             : overOutOfPlayZones
-              ( \(p :: Proxy a) ->
-                  fieldMayJoin @(OutOfPlayEntity a Enemy)
-                    (OutOfPlayEnemyField (knownOutOfPlayZone p) EnemyHealthActual)
+              ( \(p :: Proxy zone) ->
+                  fieldMay @(OutOfPlayEntity zone Enemy)
+                    (OutOfPlayEnemyField (knownOutOfPlayZone p) fld)
                     eid
               )
         )
-  for healthValue calculate
+  pure $ case eqT @(Maybe a) @(Maybe (FlatField a)) of
+    Just Refl -> val
+    Nothing -> case eqT @a @(Maybe (FlatField a)) of
+      Just Refl -> join val
+      Nothing -> Nothing

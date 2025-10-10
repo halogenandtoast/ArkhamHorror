@@ -25,7 +25,11 @@ instance RunMessage UnhallowedLand where
     DiscardedTopOfEncounterDeck iid cards _ (isTarget attrs -> True) -> do
       when (any (`cardMatch` card_ (#treachery <> #curse)) cards) do
         assets <-
-          select $ assetControlledBy iid <> AssetWithSanity <> AssetCanBeDamagedBySource (toSource attrs)
+          select
+            $ assetControlledBy iid
+            <> #ally
+            <> AssetWithSanity
+            <> AssetCanBeDamagedBySource (toSource attrs)
         chooseOrRunOneAtATimeM iid do
           targeting iid $ directHorror iid attrs 1
           targets assets \asset -> dealAssetDirectHorror asset attrs 1

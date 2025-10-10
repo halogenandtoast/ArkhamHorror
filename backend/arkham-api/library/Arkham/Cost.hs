@@ -139,11 +139,6 @@ data Cost
   | SpendKeyCost ArkhamKey
   | SpendTokenKeyCost Int ChaosTokenFace
   | GroupSpendKeyCost ArkhamKey LocationMatcher
-  | DamageCost Source Target Int
-  | DirectDamageCost Source InvestigatorMatcher Int
-  | DirectHorrorCost Source InvestigatorMatcher Int
-  | DirectDamageAndHorrorCost Source InvestigatorMatcher Int Int
-  | InvestigatorDamageCost Source InvestigatorMatcher DamageStrategy Int
   | DiscardTopOfDeckCost Int
   | DiscardTopOfDeckWithTargetCost Target Int
   | DiscardCost Zone Target
@@ -168,8 +163,6 @@ data Cost
   | SameSkillIconCost Int
   | DiscardCombinedCost Int
   | ShuffleDiscardCost Int CardMatcher
-  | HorrorCost Source Target Int
-  | HorrorCostX Source -- for The Black Book
   | Free
   | ScenarioResourceCost Int
   | ResourceCost Int
@@ -213,6 +206,14 @@ data Cost
   | GloriaCost -- lol, not going to attempt to make this generic
   | ArchiveOfConduitsUnidentifiedCost -- this either
   | LabeledCost Text Cost
+  | -- We do the costs that can kill the investigator last so we don't trigger discards before the cost is paid
+    DirectHorrorCost Source InvestigatorMatcher Int
+  | DirectDamageAndHorrorCost Source InvestigatorMatcher Int Int
+  | HorrorCost Source Target Int
+  | HorrorCostX Source -- for The Black Book
+  | DamageCost Source Target Int
+  | DirectDamageCost Source InvestigatorMatcher Int
+  | InvestigatorDamageCost Source InvestigatorMatcher DamageStrategy Int
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Cost

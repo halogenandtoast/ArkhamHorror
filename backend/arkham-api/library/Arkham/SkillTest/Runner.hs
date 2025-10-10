@@ -415,6 +415,9 @@ instance RunMessage SkillTest where
           ]
       pure $ s & toResolveChaosTokensL .~ mempty & resolvedChaosTokensL <>~ skillTestToResolveChaosTokens
     PassSkillTest -> do
+      pushAll [CheckAllAdditionalCommitCosts, Do PassSkillTest]
+      pure s
+    Do PassSkillTest -> do
       modifiedSkillValue' <- totalModifiedSkillValue s
       player <- getPlayer skillTestInvestigator
       removeAllMessagesMatching \case
@@ -434,6 +437,9 @@ instance RunMessage SkillTest where
       push $ chooseOne player [SkillTestApplyResultsButton]
       pure $ s & resultL .~ SucceededBy NonAutomatic n
     FailSkillTest -> do
+      pushAll [CheckAllAdditionalCommitCosts, Do FailSkillTest]
+      pure s
+    Do FailSkillTest -> do
       resultsData <- autoFailSkillTestResultsData s
       difficulty <- getModifiedSkillTestDifficulty s
       -- player <- getPlayer skillTestInvestigator

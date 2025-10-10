@@ -110,6 +110,9 @@ instance HasField "controller" SkillAttrs InvestigatorId where
 instance HasField "owner" SkillAttrs InvestigatorId where
   getField = skillOwner
 
+instance HasField "placement" Skill Placement where
+  getField = (.placement) . toAttrs
+
 instance HasField "placement" SkillAttrs Placement where
   getField = skillPlacement
 
@@ -241,8 +244,12 @@ instance HasCardDef Skill where
 instance HasAbilities Skill where
   getAbilities (Skill a) = getAbilities a
 
+-- skills that remove themselves from the game end up in the removed zone, but
+-- we don't want them to apply modifiers anymore
 instance HasModifiersFor Skill where
-  getModifiersFor (Skill a) = getModifiersFor a
+  getModifiersFor s@(Skill a) = case s.placement of
+    OutOfPlay _ -> pure ()
+    _ -> getModifiersFor a
 
 instance Entity Skill where
   type EntityId Skill = SkillId

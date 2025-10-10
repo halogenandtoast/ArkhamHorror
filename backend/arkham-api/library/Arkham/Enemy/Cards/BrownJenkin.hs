@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Trait (Trait (Creature))
 
@@ -29,11 +28,12 @@ instance HasAbilities BrownJenkin where
 instance RunMessage BrownJenkin where
   runMessage msg e@(BrownJenkin attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      investigatorsWithHand <-
-        selectWithField InvestigatorHand $ at_ (locationWithEnemy attrs) <> HandWith AnyCards
-      for_ investigatorsWithHand \(iid, hand) -> do
-        batched \_ -> do
-          push $ DiscardHand iid (toSource attrs)
-          drawCards iid (attrs.ability 1) (length hand)
+      investigators <- select $ investigator_ $ at_ (locationWithEnemy attrs)
+      for_ investigators \iid -> do
+        handCount <- selectCount $ inHandOf NotForPlay iid <> not_ HiddenInHandCard
+        when (handCount > 0) do
+          batched \_ -> do
+            push $ DiscardHand iid (toSource attrs)
+            drawCards iid (attrs.ability 1) handCount
       pure e
     _ -> BrownJenkin <$> liftRunMessage msg attrs

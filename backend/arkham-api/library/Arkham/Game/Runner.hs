@@ -389,7 +389,6 @@ runGameMessage msg g = case msg of
     -- The gameActionDiff will be empty after this so we do not need the diffs to store any data
     pure $ foldl' unsafePatch g (gameActionDiff g)
   EndOfGame mNextCampaignStep -> do
-    pushM $ checkWindows [mkWhen Window.EndOfGame]
     pushEnd $ EndOfScenario mNextCampaignStep
     pure g
   EndOfScenario _ -> do
@@ -3340,7 +3339,6 @@ runPreGameMessage msg g = case msg of
       & (skillTestResultsL .~ Nothing)
       & (windowStackL .~ mempty)
       & (windowDepthL .~ 0)
-      & (modeL . there %~ overAttrs (\attrs -> attrs {scenarioInResolution = True}))
   ResetInvestigators ->
     pure
       $ g

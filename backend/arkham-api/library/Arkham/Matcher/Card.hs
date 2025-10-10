@@ -40,6 +40,8 @@ instance Plated ForPlay
 -- | Relies on game state, can not be used purely
 data ExtendedCardMatcher
   = BasicCardMatch CardMatcher
+  | NotExtendedCard ExtendedCardMatcher
+  | HiddenInHandCard
   | WillGoIntoSlot SlotType
   | CardIsBeneathInvestigator Who
   | CardIsBeneathActDeck
@@ -83,6 +85,9 @@ data ExtendedCardMatcher
   | ActiveCard
   | ResolvingCard
   deriving stock (Show, Eq, Ord, Data)
+
+instance Not ExtendedCardMatcher where
+  not_ = NotExtendedCard
 
 instance Plated ExtendedCardMatcher
 

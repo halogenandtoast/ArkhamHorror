@@ -11,7 +11,8 @@ newtype NightmareBreach = NightmareBreach LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 nightmareBreach :: LocationCard NightmareBreach
-nightmareBreach = location NightmareBreach Cards.nightmareBreach 5 (Static 1)
+nightmareBreach =
+  locationWith NightmareBreach Cards.nightmareBreach 5 (Static 1) (connectsToL .~ adjacentLocations)
 
 instance HasAbilities NightmareBreach where
   getAbilities (NightmareBreach a) = extendRevealed1 a $ cosmos a 1

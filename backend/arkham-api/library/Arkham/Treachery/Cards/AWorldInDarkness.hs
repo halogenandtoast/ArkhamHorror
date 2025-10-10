@@ -20,7 +20,7 @@ aWorldInDarkness = treachery AWorldInDarkness Cards.aWorldInDarkness
 
 instance RunMessage AWorldInDarkness where
   runMessage msg t@(AWorldInDarkness attrs) = runQueueT $ case msg of
-    Revelation iid (isSource attrs -> True) -> do
+    Revelation _iid (isSource attrs -> True) -> do
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
       doom <- field EnemyDoom azathoth
       if doom == 0

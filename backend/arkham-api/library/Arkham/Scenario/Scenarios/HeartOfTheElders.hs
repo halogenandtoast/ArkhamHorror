@@ -363,7 +363,6 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
           filter (isJust . cdVengeancePoints . toCardDef)
             <$> scenarioField ScenarioVictoryDisplay
         recordSetInsert TheJungleWatches (map toCardCode vengeanceCards)
-        allGainXp attrs
         push RestartScenario
         pure
           $ HeartOfTheElders

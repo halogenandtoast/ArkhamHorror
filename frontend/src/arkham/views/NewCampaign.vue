@@ -8,10 +8,11 @@ import * as Arkham from '@/arkham/types/Deck'
 import { fetchDecks, newGame } from '@/arkham/api'
 import { imgsrc } from '@/arkham/helpers'
 import type { Difficulty } from '@/arkham/types/Difficulty'
+import type { Scenario, Campaign } from '@/arkham/data'
 
-import campaignJSON from '@/arkham/data/campaigns.json'
+import campaignJSON from '@/arkham/data/campaigns'
 import scenarioJSON from '@/arkham/data/scenarios'
-import sideStoriesJSON from '@/arkham/data/side-stories.json'
+import sideStoriesJSON from '@/arkham/data/side-stories'
 
 const store = useUserStore()
 const currentUser = computed<User | null>(() => store.currentUser)
@@ -34,13 +35,13 @@ const gameMode = ref<GameMode>('Campaign')
 
 const includeTarotReadings = ref(false)
 
-const scenarios = computed(() => scenarioJSON.filter((s) =>
+const scenarios = computed<Scenario[]>(() => (scenarioJSON as Scenario[]).filter((s) =>
   s.beta || s.alpha
     ? currentUser.value && currentUser.value.beta
     : true
 ))
 
-const sideStories = computed(() => sideStoriesJSON.filter((s) =>
+const sideStories = computed<Scenario[]>(() => sideStoriesJSON.filter((s) =>
   s.beta
     ? currentUser.value && currentUser.value.beta
     : true
@@ -48,7 +49,8 @@ const sideStories = computed(() => sideStoriesJSON.filter((s) =>
 
 const dev = import.meta.env.PROD ? false : true
 
-const campaigns = computed(() => campaignJSON.filter((c) => {
+
+const campaigns = computed<Campaign[]>(() => campaignJSON.filter((c) => {
   if (c.dev && !dev && !alpha.value) return false
 
   return c.beta || c.alpha
@@ -89,7 +91,7 @@ const multiplayerVariant = ref<MultiplayerVariant>('WithFriends')
 const returnTo = ref(false)
 
 const campaignScenarios = computed(() => selectedCampaign.value
-  ? scenarios.value.filter((s) => s.campaign == selectedCampaign.value)
+  ? scenarios.value.filter((s) => s.campaign == selectedCampaign.value && ((s.show ?? true) !== false))
   : []
 )
 
@@ -233,9 +235,9 @@ async function start() {
               </div>
 
               <div class="alpha-warning" v-if="campaign && campaign.alpha">{{$t('create.alphaWarning')}}</div>
-              <div class="alpha-warning" v-if="returnTo && campaign.returnTo && campaign.returnTo.alpha">{{$t('create.alphaWarning')}}</div>
+              <div class="alpha-warning" v-if="campaign && returnTo && campaign.returnTo && campaign.returnTo.alpha">{{$t('create.alphaWarning')}}</div>
               <div class="beta-warning" v-if="campaign && campaign.beta">{{$t('create.betaWarning')}}</div>
-              <div class="beta-warning" v-if="returnTo && campaign.returnTo && campaign.returnTo.beta">{{$t('create.betaWarning')}}</div>
+              <div class="beta-warning" v-if="campaign && returnTo && campaign.returnTo && campaign.returnTo.beta">{{$t('create.betaWarning')}}</div>
             <!-- </select> -->
           </template>
 
@@ -393,8 +395,12 @@ async function start() {
     margin: 0;
     padding: 0;
     text-transform: uppercase;
-    text-box-trim: trim-both;
-    text-box-edge: cap alphabetic;
+    @supports (text-box-trim: trim-both) {
+      text-box-trim: trim-both;
+    }
+    @supports (text-box-edge: cap alphabetic) {
+      text-box-edge: cap alphabetic;
+    }
   }
 }
 
@@ -415,11 +421,10 @@ h2 {
 
 input[type=radio] {
   display: none;
-  /* margin: 10px; */
 }
 
 input[type=radio] + label {
-  display:inline-block;
+  display: inline-block;
   padding: 4px 12px;
   background-color: hsl(80, 5%, 39%);
   border-color: #ddd;
@@ -434,7 +439,6 @@ input[type=radio]:checked + label {
 
 input[type=checkbox] {
   display: none;
-  /* margin: 10px; */
 }
 
 input[type=checkbox] + label {
@@ -523,7 +527,6 @@ header {
 }
 
 .campaign-box:not(.selected-campaign) {
-  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
   filter: grayscale(100%);
 }
 
@@ -540,7 +543,6 @@ header {
 }
 
 .scenario-box:not(.selected-scenario) {
-  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
   filter: grayscale(100%) sepia(0);
   transition: filter 1s linear;
   &:hover {
@@ -588,8 +590,6 @@ header {
     font-weight: bold;
     color: white;
     line-height: 27px;
-    -ms-transform:rotate(-45deg);
-    -webkit-transform:rotate(-45deg);
     transform:rotate(-45deg);
   }
 
@@ -610,8 +610,6 @@ header {
     font-weight: bold;
     color: white;
     line-height: 27px;
-    -ms-transform:rotate(-45deg);
-    -webkit-transform:rotate(-45deg);
     transform:rotate(-45deg);
   }
 }

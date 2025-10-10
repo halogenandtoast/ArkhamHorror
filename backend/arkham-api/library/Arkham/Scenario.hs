@@ -23,6 +23,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Tarot
+import Arkham.Helpers.Window (checkWindows)
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator.Types qualified as Field
@@ -37,7 +38,7 @@ import Arkham.Scenario.Scenarios
 import Arkham.Slot
 import Arkham.Tarot
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window (duringTurnWindow)
+import Arkham.Window (duringTurnWindow, mkWhen)
 import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
 
@@ -486,8 +487,6 @@ instance RunMessage Scenario where
       if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
         then pure x
         else go
-    ScenarioResolution _ -> do
-      overAttrs (\a -> a & inResolutionL .~ True) <$> go
     SetupInvestigators -> do
       result <- go
       let isTowerXVI = (== TheTowerXVI) . toTarotArcana
@@ -509,6 +508,15 @@ instance RunMessage Scenario where
       for_ damned $ \iid -> do
         push $ DrawAndChooseTarot iid Reversed 1
       pure result
+    ScenarioResolution {} -> do
+      -- This is a bit of a hack, but we want to trigger the end game window
+      -- before going into the resolution
+      if not $ attr scenarioInResolution x
+        then do
+          whenEnd :: Message <- checkWindows [mkWhen Window.EndOfGame]
+          pushAll [whenEnd, msg]
+          pure $ overAttrs (\a -> a & inResolutionL .~ True) x
+        else go
     _ -> go
    where
     go = Scenario <$> runMessage msg s

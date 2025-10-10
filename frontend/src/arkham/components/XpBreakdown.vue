@@ -155,7 +155,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
         <div v-for="(entry, idx) in info.entries" :key="idx" class="box entry">
           <span v-html="format(entry.details.sourceName)"></span> 
           <span v-if="entry.tag !== 'InvestigatorLoseXp'" class="amount">+{{entry.details.amount}}</span>
-          <span v-if="entry.tag === 'InvestigatorLoseXp'" class="amount amount--negative">{{entry.details.amount}}</span>
+          <span v-if="entry.tag === 'InvestigatorLoseXp'" class="amount amount--negative">-{{Math.abs(entry.details.amount)}}</span>
         </div>
       </section>
     </div>

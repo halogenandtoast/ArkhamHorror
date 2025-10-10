@@ -354,7 +354,7 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
         -- We need to clear out the additional references because they will stack up over time
         pure
           $ HeartOfTheElders
-            ( attrs {scenarioAdditionalReferences = []}
+            ( attrs {scenarioAdditionalReferences = [], scenarioSetAsideCards = []}
                 `With` metadata {reachedAct2 = reachedAct2 metadata || actStep >= 2}
             )
       Resolution 1 -> do
@@ -366,7 +366,7 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
         push RestartScenario
         pure
           $ HeartOfTheElders
-            ( attrs {scenarioAdditionalReferences = []}
+            ( attrs {scenarioAdditionalReferences = [], scenarioSetAsideCards = []}
                 `With` metadata {scenarioStep = Two}
             )
       _ -> pure s

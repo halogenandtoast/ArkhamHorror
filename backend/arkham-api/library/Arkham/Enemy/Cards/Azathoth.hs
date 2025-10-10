@@ -22,7 +22,10 @@ azathoth =
 
 instance HasAbilities Azathoth where
   getAbilities (Azathoth a) =
-    [restricted a 1 (exists $ be a <> EnemyWithDoom (atLeast 10)) $ forced AnyWindow]
+    [ groupLimit PerGame
+        $ restricted a 1 (exists $ IncludeOmnipotent $ be a <> EnemyWithDoom (atLeast 10))
+        $ forced AnyWindow
+    ]
 
 instance HasModifiersFor Azathoth where
   getModifiersFor (Azathoth attrs) = do

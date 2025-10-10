@@ -712,7 +712,7 @@ beyondTheGrave :: CardDef
 beyondTheGrave = act "05287" "Beyond the Grave" 2 MusicOfTheDamned
 
 darkKnowledgeV2 :: CardDef
-darkKnowledgeV2 = act "05288a" "Dark Knowledge (v. II)" 1 SecretsOfTheUniverse
+darkKnowledgeV2 = (act "05288a" "Dark Knowledge (v. II)" 1 SecretsOfTheUniverse) { cdOtherSide = Just "05288b" }
 
 newWorldOrder :: CardDef
 newWorldOrder = act "05289" "New World Order" 2 SecretsOfTheUniverse

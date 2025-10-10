@@ -415,6 +415,9 @@ instance RunMessage SkillTest where
           ]
       pure $ s & toResolveChaosTokensL .~ mempty & resolvedChaosTokensL <>~ skillTestToResolveChaosTokens
     PassSkillTest -> do
+      pushAll [CheckAllAdditionalCommitCosts, Do PassSkillTest]
+      pure s
+    Do PassSkillTest -> do
       modifiedSkillValue' <- totalModifiedSkillValue s
       player <- getPlayer skillTestInvestigator
       removeAllMessagesMatching \case

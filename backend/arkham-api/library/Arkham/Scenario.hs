@@ -513,7 +513,7 @@ instance RunMessage Scenario where
       -- before going into the resolution
       if not $ attr scenarioInResolution x
         then do
-          whenEnd :: Message <- checkWindows [mkWhen Window.EndOfGame]
+          whenEnd <- checkWindows [mkWhen Window.EndOfGame]
           pushAll [whenEnd, msg]
           pure $ overAttrs (\a -> a & inResolutionL .~ True) x
         else go

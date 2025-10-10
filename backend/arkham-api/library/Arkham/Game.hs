@@ -4785,6 +4785,14 @@ instance Query ExtendedCardMatcher where
           skills <- selectFields SkillCard (SkillWithPlacement $ InPlayArea i)
           pure $ assets <> events <> skills
         pure $ filter (`elem` cards) cs
+      HiddenInHandCard -> do
+        cs & filterM \c -> do
+          mEnemy <- selectOne $ EnemyWithCardId c.id <> EnemyHiddenInHand Anyone
+          mTreachery <- selectOne $ TreacheryWithCardId c.id <> HiddenTreachery
+          pure $ isJust mEnemy || isJust mTreachery
+      NotExtendedCard matcher' -> do
+        cards <- go cs matcher'
+        pure $ filter (`notElem` cards) cs
       WillGoIntoSlot s -> do
         flip filterM cs \c -> do
           mods <- getModifiers c

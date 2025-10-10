@@ -1606,7 +1606,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       <> [StandaloneSetup | scenarioOptionsStandalone opts]
       <> [ChooseLeadInvestigator, SetPlayerOrder]
       <> [PerformTarotReading | scenarioOptionsPerformTarotReading opts]
-      <> [SetupInvestigators, InvestigatorsMulligan, CheckDestiny, Setup, EndSetup]
+      <> [CheckDestiny, SetupInvestigators, InvestigatorsMulligan, Setup, EndSetup]
     pure $ a & startedL .~ True
   CheckDestiny ->
     fromMaybe a <$> runMaybeT do

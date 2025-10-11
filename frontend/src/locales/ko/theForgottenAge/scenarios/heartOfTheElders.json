@@ -19,8 +19,8 @@
       "shuffle": "‘구덩이 함정’을 탐사 덱에 합친 후 섞습니다. ‘구덩이 함정’을 탐사 덱에서 뽑은 경우 이 효과를 선택할 수 없습니다."
     },
     "descentToYoth": {
-      "placeDoom": "Place 1 doom on Descent to Yoth",
-      "draw": "Draw the top 2 cards of the encounter deck"
+      "placeDoom": "‘요스의 하강로’에 파멸을 1개 올려놓기",
+      "draw": "조우 덱 맨 위 카드를 2장 뽑기"
     }
   },
   "tooltips": {

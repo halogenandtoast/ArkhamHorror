@@ -95,6 +95,7 @@
   },
   "resolutions": {
     "xp": {
+      "bonus": "결사단의 음모에 대해 알게 됨",
       "forgingYourOwnPath": "자신만의 방법을 찾아 나섰음"
     },
     "resolution1": {

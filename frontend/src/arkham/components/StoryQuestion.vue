@@ -11,6 +11,7 @@ import PickSupplies from '@/arkham/components/PickSupplies.vue';
 import PickDestiny from '@/arkham/components/PickDestiny.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
+import WorldMap from '@/arkham/components/TheScarletKeys/WorldMap.vue';
 
 export interface Props {
   game: Game
@@ -157,6 +158,10 @@ const choose = (idx: number) => emit('choose', idx)
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="question-label" v-else-if="question && question.tag === 'PickCampaignSpecific'">
+    <WorldMap v-if="question.contents[0] === 'embark'" :game="game" :playerId="playerId" :mapData="question.contents[1]" @choose="choose" />
   </div>
 
   <div class="question-label" v-else-if="question && question.tag === 'PickSupplies'">

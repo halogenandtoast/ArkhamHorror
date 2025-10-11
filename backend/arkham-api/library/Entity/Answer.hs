@@ -36,6 +36,7 @@ data Answer
   | CampaignSettingsAnswer CampaignSettings
   | DeckAnswer {deckId :: ArkhamDeckId, playerId :: PlayerId}
   | PickDestinyAnswer [DestinyDrawing]
+  | CampaignSpecificAnswer Text Value
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
 
@@ -247,6 +248,7 @@ answerPlayer = \case
   PaymentAmountsAnswer _ -> Nothing
   StandaloneSettingsAnswer _ -> Nothing
   CampaignSettingsAnswer _ -> Nothing
+  CampaignSpecificAnswer {} -> Nothing
   DeckAnswer _ pid -> Just pid
   PickDestinyAnswer _ -> Nothing
 
@@ -270,13 +272,16 @@ handleAnswer Game {..} playerId = \case
     let investigatorId = investigator_code $ arkhamDeckList deck
     runDB $ update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]
     let question' = Map.delete playerId gameQuestion
-    handled $ LoadDecklist playerId (arkhamDeckList deck) : [AskMap question' | not (Map.null question')]
+    handled $ LoadDecklist playerId (arkhamDeckList deck)
+      : [AskMap question' | not (Map.null question')]
   StandaloneSettingsAnswer settings' -> do
     let standaloneCampaignLog = makeStandaloneCampaignLog settings'
     handled [SetCampaignLog standaloneCampaignLog]
   CampaignSettingsAnswer settings' -> do
     let campaignLog' = makeCampaignLog settings'
     handled [SetCampaignLog campaignLog']
+  CampaignSpecificAnswer k v -> do
+    handled [CampaignSpecific k v]
   PickDestinyAnswer choices -> do
     handled [SetDestiny $ Map.fromList $ map (\(DestinyDrawing scope card) -> (scope, card)) choices]
   AmountsAnswer response -> case Map.lookup playerId gameQuestion of

@@ -639,6 +639,7 @@ function debugExport (full: boolean) {
 
 // provides
 provide('chooseDeck', chooseDeck)
+provide('send', send)
 provide('choosePaymentAmounts', choosePaymentAmounts)
 provide('chooseAmounts', chooseAmounts)
 provide('switchInvestigator', switchInvestigator)

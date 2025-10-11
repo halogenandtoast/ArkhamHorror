@@ -287,6 +287,18 @@ p.billenia, :deep(p.billenia) {
   font-family: auto !important;
 }
 
+.term, :deep(.term) {
+  font-weight: bold;
+  font-family: "Arno";
+  text-transform: uppercase;
+  font-size: 0.8em;
+  display: inline-block;
+  color: black;
+  &::first-letter {
+    font-size: 1.2em;
+  }
+}
+
 .intro-text {
   div, :deep(div) {
     &:has(.note-green) {

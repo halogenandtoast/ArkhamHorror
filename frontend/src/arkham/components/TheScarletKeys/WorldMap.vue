@@ -1,57 +1,136 @@
 <script setup lang="ts">
 import { imgsrc } from '@/arkham/helpers';
-import { computed, ref, nextTick } from 'vue'
+import { computed, ref, inject } from 'vue'
 import { ArrowsPointingOutIcon, ArrowsPointingInIcon } from '@heroicons/vue/24/solid'
+import { Game } from '@/arkham/types/Game';
+
+type MapLocationId =
+  | 'Alexandria'
+  | 'Anchorage'
+  | 'Arkham'
+  | 'Bermuda'
+  | 'BermudaTriangle'
+  | 'Bombay'
+  | 'BuenosAires'
+  | 'Cairo'
+  | 'Constantinople'
+  | 'Havana'
+  | 'HongKong'
+  | 'Kabul'
+  | 'Kathmandu'
+  | 'KualaLumpur'
+  | 'Lagos'
+  | 'London'
+  | 'Manokwari'
+  | 'Marrakesh'
+  | 'MonteCarlo'
+  | 'Moscow'
+  | 'Nairobi'
+  | 'NewOrleans'
+  | 'Perth'
+  | 'Quito'
+  | 'Reykjavik'
+  | 'RioDeJaneiro'
+  | 'Rome'
+  | 'SanFrancisco'
+  | 'SanJuan'
+  | 'Shanghai'
+  | 'Stockholm'
+  | 'Sydney'
+  | 'Tokyo'
+  | 'Tunguska'
+  | 'Venice'
+  | 'YborCity'
+
+interface LocationData {
+  travel: number | null
+}
+interface MapData {
+  current: string
+  available: MapLocationId[]
+  locations: [MapLocationId, LocationData][]
+} 
+
+const send = inject<(msg: string) => void>('send', () => {})
 
 const props = defineProps<{
-  position: string
+  game: Game
+  playerId: string
+  mapData: MapData
 }>()
 
-const data = {
-  'Alexandria': { x: 1691, y: 613, unlocked: true },
-  'Anchorage': { x: 226, y: 289, unlocked: true },
-  'Arkham': { x: 771, y: 494 },
-  'Bermuda': { x: 815, y: 603, unlocked: true },
-  'BermudaTriangle': { x: 728, y: 680, unlocked: false },
-  'Bombay': { x: 2117, y: 760, unlocked: true },
-  'BuenosAires': { x: 866, y: 1382, unlocked: true },
-  'Cairo': { x: 1706, y: 646 },
-  'Constantinople': { x: 1675, y: 503, unlocked: true },
-  'Havana': { x: 617, y: 712, unlocked: true },
-  'HongKong': { x: 2515, y: 719, unlocked: false },
-  'Kabul': { x: 2064, y: 568, unlocked: false },
-  'Kathmandu': { x: 2238, y: 673, unlocked: true },
-  'KualaLumpur': { x: 2412, y: 944, unlocked: false },
-  'Lagos': { x: 1437, y: 904, unlocked: true },
-  'London': { x: 1419, y: 386, unlocked: false },
-  'Manokwari': { x: 2735, y: 987, unlocked: false },
-  'Marrakesh': { x: 1334, y: 612, unlocked: true },
-  'MonteCarlo': { x: 1483, y: 472 },
-  'Moscow': { x: 1746, y: 332, unlocked: true },
-  'Nairobi': { x: 1776, y: 990, unlocked: true },
-  'NewOrleans': { x: 548, y: 635 },
-  'Perth': { x: 2506, y: 1345, unlocked: true },
-  'Quito': { x: 624, y: 980, unlocked: false },
-  'Reykjavik': { x: 1258, y: 249, unlocked: false },
-  'RioDeJaneiro': { x: 991, y: 1240, unlocked: true },
-  'Rome': { x: 1530, y: 498, unlocked: true },
-  'SanFrancisco': { x: 273, y: 545, unlocked: true },
-  'SanJuan': { x: 758, y: 766, unlocked: false },
-  'Shanghai': { x: 2565, y: 619, unlocked: true },
-  'Stockholm': { x: 1568, y: 299, unlocked: true },
-  'Sydney': { x: 2837, y: 1362, unlocked: true },
-  'Tokyo': { x: 2714, y: 573, unlocked: true },
-  'Tunguska': { x: 2299, y: 295, unlocked: false },
-  'Venice': { x: 1523, y: 453 },
-  'YborCity': { x: 616, y: 657, unlocked: true },
-}
+const greenLocations = ['Arkham', 'Cairo', 'NewOrleans', 'Venice', 'MonteCarlo'] as MapLocationId[]
+
+//convert props.mapData.locations to a Record<MapLocationId, LocationData>
+const locationData = computed<Record<MapLocationId, LocationData>>(() => {
+  const record: Record<MapLocationId, LocationData> = {} as Record<MapLocationId, LocationData>
+  for (const [key, value] of props.mapData.locations) {
+    if (greenLocations.includes(key)) {
+      record[key] = {...value, travel: (value.travel ?? 0) + 1 }
+    } else {
+      record[key] = value
+    }
+  }
+  return record
+})
+
+
+const data = computed(() => ({
+  'Alexandria': { x: 1691, y: 613, unlocked: props.mapData.available.includes('Alexandria') },
+  'Anchorage': { x: 226, y: 289, unlocked: props.mapData.available.includes('Anchorage') },
+  'Arkham': { x: 771, y: 494, unlocked: props.mapData.available.includes('Arkham') },
+  'Bermuda': { x: 815, y: 603, unlocked: props.mapData.available.includes('Bermuda') },
+  'BermudaTriangle': { x: 728, y: 680, unlocked: props.mapData.available.includes('BermudaTriangle') },
+  'Bombay': { x: 2117, y: 760, unlocked: props.mapData.available.includes('Bombay') },
+  'BuenosAires': { x: 866, y: 1382, unlocked: props.mapData.available.includes('BuenosAires') },
+  'Cairo': { x: 1706, y: 646, unlocked: props.mapData.available.includes('Cairo') },
+  'Constantinople': { x: 1675, y: 503, unlocked: props.mapData.available.includes('Constantinople') },
+  'Havana': { x: 617, y: 712, unlocked: props.mapData.available.includes('Havana') },
+  'HongKong': { x: 2515, y: 719, unlocked: props.mapData.available.includes('HongKong') },
+  'Kabul': { x: 2064, y: 568, unlocked: props.mapData.available.includes('Kabul') },
+  'Kathmandu': { x: 2238, y: 673, unlocked: props.mapData.available.includes('Kathmandu') },
+  'KualaLumpur': { x: 2412, y: 944, unlocked: props.mapData.available.includes('KualaLumpur') },
+  'Lagos': { x: 1437, y: 904, unlocked: props.mapData.available.includes('Lagos') },  
+  'London': { x: 1419, y: 386, unlocked: props.mapData.available.includes('London') },
+  'Manokwari': { x: 2735, y: 987, unlocked: props.mapData.available.includes('Manokwari') },
+  'Marrakesh': { x: 1334, y: 612, unlocked: props.mapData.available.includes('Marrakesh') },
+  'MonteCarlo': { x: 1483, y: 472, unlocked: props.mapData.available.includes('MonteCarlo') },
+  'Moscow': { x: 1746, y: 332, unlocked: props.mapData.available.includes('Moscow') },
+  'Nairobi': { x: 1776, y: 990, unlocked: props.mapData.available.includes('Nairobi') },
+  'NewOrleans': { x: 548, y: 635, unlocked: props.mapData.available.includes('NewOrleans') },
+  'Perth': { x: 2506, y: 1345, unlocked: props.mapData.available.includes('Perth') },
+  'Quito': { x: 624, y: 980, unlocked: props.mapData.available.includes('Quito') },
+  'Reykjavik': { x: 1258, y: 249, unlocked: props.mapData.available.includes('Reykjavik') },
+  'RioDeJaneiro': { x: 991, y: 1240, unlocked: props.mapData.available.includes('RioDeJaneiro') },
+  'Rome': { x: 1530, y: 498, unlocked: props.mapData.available.includes('Rome') },
+  'SanFrancisco': { x: 273, y: 545, unlocked: props.mapData.available.includes('SanFrancisco') },
+  'SanJuan': { x: 758, y: 766, unlocked: props.mapData.available.includes('SanJuan') },
+  'Shanghai': { x: 2565, y: 619, unlocked: props.mapData.available.includes('Shanghai') },
+  'Stockholm': { x: 1568, y: 299, unlocked: props.mapData.available.includes('Stockholm') },
+  'Sydney': { x: 2837, y: 1362, unlocked: props.mapData.available.includes('Sydney') },
+  'Tokyo': { x: 2714, y: 573, unlocked: props.mapData.available.includes('Tokyo') },
+  'Tunguska': { x: 2299, y: 295, unlocked: props.mapData.available.includes('Tunguska') },
+  'Venice': { x: 1523, y: 453, unlocked: props.mapData.available.includes('Venice') },
+  'YborCity': { x: 616, y: 657, unlocked: props.mapData.available.includes('YborCity') },
+}))
 
 const svgEl = ref<SVGSVGElement | null>(null)
 const fullScreen = ref(false);
 // select a location
-const selectedLocation = ref<string | null>(null)
-function select(location: string) {
+const selectedLocation = ref<MapLocationId | null>(null)
+function select(location: MapLocationId) {
   selectedLocation.value = location
+}
+
+function travelToSelected() {
+  if (selectedLocation.value) {
+    const goTo = selectedLocation.value  
+    selectedLocation.value = null
+    send(JSON.stringify({
+      tag: 'CampaignSpecificAnswer',
+      contents: ["travel", goTo]
+    }))
+  }
 }
 
 // close the popup
@@ -60,7 +139,7 @@ function closePopup() {
 }
 
 const coordinates = computed(() => {
-  const loc = data[props.position]
+  const loc = data.value[props.mapData.current as MapLocationId]
   if (loc) return { x: loc.x, y: loc.y }
   return null
 })
@@ -152,7 +231,7 @@ document.addEventListener('fullscreenchange', () => {
       <rect width="153" x="-160" y="-11" height="23" fill="#00000000" />
     </g>
 
-    <g id="san_francisco" class="marker" transform="translate(273,545)" @click="select('San Francisco')">
+    <g id="san_francisco" class="marker" transform="translate(273,545)" @click="select('SanFrancisco')">
       <use :href="`#marker-${data.SanFrancisco.unlocked ? 'blue' : 'red'}`"/>
       <rect width="213" x="-218" y="-11" height="23" fill="#00000000" />
     </g>
@@ -162,7 +241,7 @@ document.addEventListener('fullscreenchange', () => {
       <rect width="89" y="-11" height="20" fill="#00000000" />
     </g>
 
-    <g id="ybor_city" class="marker" transform="translate(616,657)" @click="select('Ybor City')">
+    <g id="ybor_city" class="marker" transform="translate(616,657)" @click="select('YborCity')">
       <use :href="`#marker-${data.YborCity.unlocked ? 'blue' : 'red'}`"/>
       <rect width="159" x="-155" y="-11" height="23" fill="#00000000" />
     </g>
@@ -177,12 +256,12 @@ document.addEventListener('fullscreenchange', () => {
       <rect width="134" y="-11" height="23" fill="#00000000" />
     </g>
 
-    <g id="new_orleans" class="marker" transform="translate(548,635)" @click="select('New Orleans')">
+    <g id="new_orleans" class="marker" transform="translate(548,635)" @click="select('NewOrleans')">
       <use href="#marker-green"/>
       <rect width="134" x="-134" y="-11" height="20" fill="#00000000" />
     </g>
 
-    <g id="san_juan" class="marker" transform="translate(758,766)" @click="select('San Juan')">
+    <g id="san_juan" class="marker" transform="translate(758,766)" @click="select('SanJuan')">
       <use :href="`#marker-${data.SanJuan.unlocked ? 'blue' : 'red'}`"/>
       <rect width="145" y="-11" height="23" fill="#00000000" />
     </g>
@@ -192,12 +271,12 @@ document.addEventListener('fullscreenchange', () => {
       <rect width="100" y="-11" height="23" fill="#00000000" />
     </g>
 
-    <g id="rio_de_janeiro" class="marker" transform="translate(991,1240)" @click="select('Rio de Janeiro')">
+    <g id="rio_de_janeiro" class="marker" transform="translate(991,1240)" @click="select('RioDeJaneiro')">
       <use :href="`#marker-${data.RioDeJaneiro.unlocked ? 'blue' : 'red'}`"/>
       <rect width="220" x="-225" y="-11" height="23" fill="#00000000" />
     </g>
 
-    <g id="buenos_aires" class="marker" transform="translate(866,1382)" @click="select('Buenos Aires')">
+    <g id="buenos_aires" class="marker" transform="translate(866,1382)" @click="select('BuenosAires')">
       <use :href="`#marker-${data.BuenosAires.unlocked ? 'blue' : 'red'}`"/>
       <rect width="200" x="-200" y="-11" height="23" fill="#00000000" />
     </g>
@@ -227,7 +306,7 @@ document.addEventListener('fullscreenchange', () => {
       <rect width="75" y="-11" height="21" fill="#00000000" />
     </g>
 
-    <g v-if="data.BermudaTriangle.unlocked === true" id="bermuda_triangle" class="marker" transform="translate(728,680)" @click="select('Bermuda Triangle')">
+    <g v-if="data.BermudaTriangle.unlocked === true" id="bermuda_triangle" class="marker" transform="translate(728,680)" @click="select('BermudaTriangle')">
       <use href="#marker-blue"/>
     </g>
 
@@ -296,7 +375,7 @@ document.addEventListener('fullscreenchange', () => {
       <rect width="85" y="-11" height="21" fill="#00000000" />
     </g>
 
-    <g id="monte_carlo" class="marker" transform="translate(1483,472)" @click="select('Monte Carlo')">
+    <g id="monte_carlo" class="marker" transform="translate(1483,472)" @click="select('MonteCarlo')">
       <use href="#marker-green"/>
       <rect width="135" x="-135" y="-11" height="21" fill="#00000000" />
     </g>
@@ -311,12 +390,12 @@ document.addEventListener('fullscreenchange', () => {
       <rect width="103" y="-11" height="23" fill="#00000000" />
     </g>
 
-    <g id="hong_kong" class="marker" transform="translate(2515,719)" @click="select('Hong Kong')">
+    <g id="hong_kong" class="marker" transform="translate(2515,719)" @click="select('HongKong')">
       <use :href="`#marker-${data.HongKong.unlocked ? 'blue' : 'red'}`"/>
       <rect width="160" x="-160" y="-11" height="23" fill="#00000000" />
     </g>
 
-    <g id="kuala_lumpur" class="marker" transform="translate(2412,944)" @click="select('Kuala Lumpur')">
+    <g id="kuala_lumpur" class="marker" transform="translate(2412,944)" @click="select('KualaLumpur')">
       <use :href="`#marker-${data.KualaLumpur.unlocked ? 'blue' : 'red'}`"/>
       <rect width="210" x="-210" y="-11" height="23" fill="#00000000" />
     </g>
@@ -392,9 +471,9 @@ document.addEventListener('fullscreenchange', () => {
 
           <div class="drawer-content" v-if="selectedLocation">
             <p><strong>Location:</strong> Russian Soviet Federative Socialist Republic</p>
-            <p><strong>Travel time:</strong> 1</p>
+            <p><strong>Travel time:</strong> {{locationData[selectedLocation].travel}}</p>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
-            <button class="action">Travel here</button>
+            <button class="action" @click="travelToSelected" >Travel here</button>
             <button class="action secondary">Travel here without stopping</button>
           </div>
         </div>

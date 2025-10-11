@@ -3,7 +3,7 @@ import { Message, messageDecoder } from '@/arkham/types/Message';
 import { FlavorText, flavorTextDecoder } from '@/arkham/types/FlavorText';
 import { TarotCard, tarotCardDecoder } from '@/arkham/types/TarotCard';
 
-export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseSome1 | ChooseN | ChooseOneAtATime | ChooseOneAtATimeWithAuto | ChooseDeck | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies | DropDown | PickScenarioSettings | PickCampaignSettings | ChooseOneFromEach | PickDestiny;
+export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseSome1 | ChooseN | ChooseOneAtATime | ChooseOneAtATimeWithAuto | ChooseDeck | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies | DropDown | PickScenarioSettings | PickCampaignSettings | ChooseOneFromEach | PickDestiny | PickCampaignSpecific;
 
 export enum QuestionType {
   CHOOSE_ONE = 'ChooseOne',
@@ -26,6 +26,7 @@ export enum QuestionType {
   DROP_DOWN = 'DropDown',
   PICK_SCENARIO_SETTINGS = 'PickScenarioSettings',
   PICK_CAMPAIGN_SETTINGS = 'PickCampaignSettings',
+  PICK_CAMPAIGN_SPECIFIC = 'PickCampaignSpecific',
 }
 
 export type PickScenarioSettings = {
@@ -114,6 +115,11 @@ export type DestinyDrawing = {
 export type PickDestiny = {
   tag: QuestionType.PICK_DESTINY
   drawings: DestinyDrawing[]
+}
+
+export type PickCampaignSpecific = {
+  tag: QuestionType.PICK_CAMPAIGN_SPECIFIC
+  contents: any
 }
 
 export type DropDown = {
@@ -334,6 +340,14 @@ export const pickDestinyDecoder = JsonDecoder.object<PickDestiny>(
   'PickSupplies',
 );
 
+export const pickCampaignSpecificDecoder = JsonDecoder.object<PickCampaignSpecific>(
+  {
+    tag: JsonDecoder.literal(QuestionType.PICK_CAMPAIGN_SPECIFIC),
+    contents: JsonDecoder.succeed()
+  },
+  'PickCampaignSpecific',
+);
+
 export const dropDownDecoder = JsonDecoder.object<DropDown>(
   {
     tag: JsonDecoder.literal(QuestionType.DROP_DOWN),
@@ -430,6 +444,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     readDecoder,
     pickSuppliesDecoder,
     pickDestinyDecoder,
+    pickCampaignSpecificDecoder,
     dropDownDecoder,
     pickScenarioSettingsDecoder,
     pickCampaignSettingsDecoder,

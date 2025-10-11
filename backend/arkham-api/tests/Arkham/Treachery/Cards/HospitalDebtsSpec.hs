@@ -34,7 +34,7 @@ spec = describe "Hospital Debts" $ do
     context "with less than 6 resources on it" $ do
       it "causes you to earn 2 fewer experience" . gameTest $ \self -> do
         self `putCardIntoPlay` Treacheries.hospitalDebts
-        run $ EndOfGame Nothing
+        endGame
         useForcedAbility
         getXpWithBonus 3 `shouldReturn` [(toId self, 1)]
 
@@ -42,6 +42,6 @@ spec = describe "Hospital Debts" $ do
       it "does not cause you to earn 2 fewer experience" . gameTest $ \self -> do
         hospitalDebts <- self `putTreacheryIntoPlay` Treacheries.hospitalDebts
         run $ PlaceTokens GameSource (toTarget hospitalDebts) #resource 6
-        run $ EndOfGame Nothing
+        endGame
         self `getActionsFrom` hospitalDebts `shouldReturn` []
         getXpWithBonus 3 `shouldReturn` [(toId self, 3)]

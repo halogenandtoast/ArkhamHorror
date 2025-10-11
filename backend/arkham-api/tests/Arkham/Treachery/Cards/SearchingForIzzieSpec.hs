@@ -41,6 +41,6 @@ spec = describe "Searching for Izzie" $ do
     loadDeck investigator [Cards.searchingForIzzie]
     moveTo investigator location
     drawCards investigator 1
-    run $ EndOfGame Nothing
+    endGame
     chooseOnlyOption "trigger searching for izzie"
     fieldAssert InvestigatorMentalTrauma (== 1) investigator

@@ -3,8 +3,10 @@
 module Arkham.Campaigns.TheScarletKeys.Meta where
 
 import Arkham.Card.CardCode
-import Arkham.Prelude
 import Arkham.Id
+import Arkham.Prelude
+import Data.Map.Strict qualified as Map
+import Data.Set qualified as Set
 
 data MapLocationId
   = Alexandria
@@ -43,8 +45,11 @@ data MapLocationId
   | Tunguska
   | Venice
   | YborCity
-  deriving stock (Show, Eq, Ord, Generic, Data)
+  deriving stock (Show, Eq, Ord, Bounded, Enum, Generic, Data)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
+
+greenLocations :: [MapLocationId]
+greenLocations = [Arkham, Cairo, Venice, NewOrleans, MonteCarlo]
 
 data MapLocationType = Standard | Locked | Side
   deriving stock (Show, Eq, Ord, Generic, Data)
@@ -120,13 +125,65 @@ keyWithEnemy :: HasCardCode enemy => enemy -> KeyStatus
 keyWithEnemy = KeyWithEnemy . toCardCode
 
 initMeta :: TheScarletKeysMeta
-initMeta = TheScarletKeysMeta [London] [] mempty worldMap
+initMeta = TheScarletKeysMeta [London] initUnlockedLocations mempty worldMap London
+
+initUnlockedLocations :: [MapLocationId]
+initUnlockedLocations =
+  [ Anchorage
+  , SanFrancisco
+  , YborCity
+  , Havana
+  , BuenosAires
+  , RioDeJaneiro
+  , Bermuda
+  , Stockholm
+  , Moscow
+  , Rome
+  , Constantinople
+  , Marrakesh
+  , Lagos
+  , Nairobi
+  , Alexandria
+  , Bombay
+  , Kathmandu
+  , Shanghai
+  , Tokyo
+  , Perth
+  , Sydney
+  ]
+
+mapDistance :: TheScarletKeysMeta -> MapLocationId -> Maybe Int
+mapDistance meta = mapDistance' meta.campaignMap meta.currentLocation
+
+mapDistance'
+  :: WorldMap
+  -> MapLocationId
+  -- ^ Starting location
+  -> MapLocationId
+  -- ^ Destination location
+  -> Maybe Int
+  -- ^ Distance in hops (0 if same location)
+mapDistance' world start goal
+  | start == goal = Just 0
+  | otherwise = bfs Set.empty [(start, 0)]
+ where
+  bfs _ [] = Nothing
+  bfs visited ((loc, dist) : rest)
+    | loc == goal = Just dist
+    | Set.member loc visited = bfs visited rest
+    | otherwise =
+        let neighbors = maybe [] mapLocationConnections (Map.lookup loc world)
+            newQueue =
+              rest
+                ++ [(n, dist + if n `elem` greenLocations then 0 else 1) | n <- neighbors, Set.notMember n visited]
+         in bfs (Set.insert loc visited) newQueue
 
 data TheScarletKeysMeta = TheScarletKeysMeta
   { visitedLocations :: [MapLocationId]
   , unlockedLocations :: [MapLocationId]
   , keyStatus :: Map CardCode KeyStatus
   , campaignMap :: WorldMap
+  , currentLocation :: MapLocationId
   }
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

@@ -3,9 +3,17 @@ module Arkham.Campaign.Campaigns.TheScarletKeys (theScarletKeys) where
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.CampaignSteps
 import Arkham.Campaigns.TheScarletKeys.Helpers
-import Arkham.Campaigns.TheScarletKeys.Meta (initMeta, keyStatusL)
+import Arkham.Campaigns.TheScarletKeys.Key
+import Arkham.Campaigns.TheScarletKeys.Meta hiding (MapLocationType (..))
 import Arkham.ChaosToken
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Query (getLeadPlayer)
+import Arkham.Helpers.Xp
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
+import Arkham.Question
+import Data.Aeson.Key qualified as Key
+import Data.Aeson.Types (Pair)
 
 newtype TheScarletKeys = TheScarletKeys CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
@@ -39,7 +47,8 @@ instance IsCampaign TheScarletKeys where
   invalidCards _ = ["02310"] -- The Red-Gloved Man can not be included
   nextStep a = case campaignStep (toAttrs a) of
     PrologueStep -> Just RiddlesAndRain
-    RiddlesAndRain -> Nothing
+    RiddlesAndRain -> Just (InterludeStep 1 Nothing)
+    InterludeStep 1 _ -> Just (CampaignSpecificStep "embark")
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
@@ -50,7 +59,77 @@ instance RunMessage TheScarletKeys where
       flavor $ setTitle "title" >> p "body"
       nextCampaignStep
       pure $ TheScarletKeys $ attrs & metaL .~ toJSON initMeta
+    CampaignStep (InterludeStep 1 _) -> scope "interlude1" do
+      storyWithChooseOneM' (setTitle "title" >> p "theFoundation1") do
+        labeled' "tell" $ interludeStepPart 1 Nothing 2
+        labeled' "doNotTell" $ interludeStepPart 1 Nothing 3
+      pure c
+    CampaignStep (InterludeStepPart 1 _ 2) -> scope "interlude1" do
+      flavor $ setTitle "title" >> p "theFoundation2"
+      interludeStepPart 1 Nothing 4
+      pure c
+    CampaignStep (InterludeStepPart 1 _ 3) -> scope "interlude1" do
+      flavor $ setTitle "title" >> p "theFoundation3"
+      interludeStepPart 1 Nothing 4
+      pure c
+    CampaignStep (InterludeStepPart 1 _ 4) -> scope "interlude1" do
+      flavor $ setTitle "title" >> p "theFoundation4"
+      unscoped $ campaignI18n do
+        scope "embarkingAndTravel" $ flavor $ setTitle "title" >> p "body"
+        scope "theFoundationDossiers" $ flavor $ setTitle "title" >> p "body"
+      campaignStep_ (CampaignSpecificStep "embark")
+      pure c
+    CampaignStep (CampaignSpecificStep "embark") -> scope "embark" do
+      lead <- getLeadPlayer
+      let meta = toResult attrs.meta
+
+      let
+        mapKey :: MapLocationId -> Key
+        mapKey = Key.fromText . tshow
+        toEntry :: MapLocationId -> Pair
+        toEntry locId = mapKey locId .= object ["travel" .= mapDistance meta locId]
+
+      push
+        $ Ask lead
+        $ PickCampaignSpecific "embark"
+        $ object
+          [ "current" .= meta.currentLocation
+          , "available" .= meta.unlockedLocations
+          , "locations" .= map toEntry [minBound ..]
+          ]
+      pure c
+    CampaignSpecific "travel" v -> do
+      let locId = toResult v
+      let meta = toResult attrs.meta
+      let n = fromMaybe 0 (mapDistance meta locId) + (if locId `elem` greenLocations then 1 else 0)
+      markTime n
+      case locId of
+        Moscow -> campaignStep_ (InterludeStep 26 Nothing)
+        _ -> pure ()
+      pure
+        $ TheScarletKeys
+        $ attrs
+        & overMeta
+          ( (visitedLocationsL %~ (locId :))
+              . (currentLocationL .~ locId)
+              . (unlockedLocationsL %~ filter (/= locId))
+          )
     CampaignSpecific "setBearer" v -> do
       let (cardCode, status) = toResult v
       pure $ TheScarletKeys $ attrs & overMeta (keyStatusL %~ insertMap cardCode status)
+    CampaignStep (InterludeStep 26 _) -> scope "quidProQuo" do
+      let meta = toResult @TheScarletKeysMeta attrs.meta
+      let visitedHavana = Havana `elem` meta.visitedLocations
+      storyWithChooseOneM' (setTitle "title" >> p "body" >> p "quidProQuo2") do
+        labeled' "ticket" $ campaignStep_ (CampaignSpecificStep "embark")
+        labeled' "supplies" do
+          interludeXpAll (toBonus "supplies" 1)
+          campaignStep_ (CampaignSpecificStep "embark")
+        labeledValidate' (not visitedHavana) "information" $ interludeStepPart 26 Nothing 4
+      pure c
+    CampaignStep (InterludeStepPart 26 _ 4) -> scope "quidProQuo" do
+      record TheCellKnowsOfDesisPast
+      flavor $ setTitle "title" >> p "quidProQuo4"
+      campaignStep_ (CampaignSpecificStep "embark")
+      pure c
     _ -> lift $ defaultCampaignRunner msg c

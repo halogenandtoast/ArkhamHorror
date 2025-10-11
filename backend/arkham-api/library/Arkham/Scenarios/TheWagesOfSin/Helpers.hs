@@ -114,7 +114,7 @@ hereticRunner storyCard msg heretic = runQueueT $ case msg of
       , ReplaceCard (toCardId attrs) card
       , StoryMessage $ ReadStoryWithPlacement iid card ResolveIt Nothing (enemyPlacement attrs)
       ]
-    for_ (traceShowId mWindow) (checkWindows . pure . traceShowId)
+    for_ mWindow (checkWindows . pure)
     push $ RemoveEnemy (toId attrs)
     pure heretic
   _ -> overAttrsM (liftRunMessage msg) heretic

@@ -160,6 +160,7 @@ data Question msg
   | DropDown {options :: [(Text, msg)]}
   | PickScenarioSettings
   | PickCampaignSettings
+  | PickCampaignSpecific Text Value
   deriving stock (Show, Ord, Eq, Data)
 
 data DestinyDrawing = DestinyDrawing

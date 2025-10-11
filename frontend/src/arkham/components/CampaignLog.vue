@@ -28,6 +28,7 @@ const props = defineProps<Props>()
 const store = useDbCardStore()
 const { t } = useI18n()
 
+
 // --- Utilities -----------------------------------------------------------------
 const EMPTY_LOG: LogContents = { recorded: [], recordedSets: [], recordedCounts: [], partners: {} as any }
 
@@ -239,6 +240,11 @@ const emptyLog = computed(() => {
 })
 
 const bonusXp = computed(() => props.game.campaign?.meta?.bonusXp ?? null)
+
+const mapData = computed(() => {
+  const current = props.game.campaign?.meta?.currentLocation || 'London'
+  return { current }
+})
 </script>
 
 
@@ -249,7 +255,7 @@ const bonusXp = computed(() => props.game.campaign?.meta?.bonusXp ?? null)
       <InvestigatorRow v-for="investigator in investigators" :key="investigator.id" :investigator="investigator" :game="game" :bonus-xp="bonusXp && bonusXp[investigator.id]" />
     </div>
     <div v-if="time || scarletKeys" class="column">
-      <WorldMap position="London" />
+      <WorldMap :game="game" :playerId="playerId" :mapData="mapData" />
       <div class="scarlet-keys">
         <Calendar v-if="time" :time="time" />
         <KeysStatus v-if="scarletKeys" :keys="scarletKeys" :toTitle="cardCodeToShortTitle" />

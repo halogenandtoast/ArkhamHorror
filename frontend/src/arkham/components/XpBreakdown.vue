@@ -9,9 +9,10 @@ import { type Investigator } from '@/arkham/types/Investigator'
 import { CampaignStep } from '@/arkham/types/CampaignStep'
 import { Game } from '@/arkham/types/Game'
 import { useI18n } from 'vue-i18n';
+import { toCamelCase } from '@/arkham/helpers'
 import { useDbCardStore } from '@/stores/dbCards'
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 const store = useDbCardStore()
 
 const props = defineProps<{
@@ -35,6 +36,12 @@ const name = computed(() => {
   }
 
   if (props.step.tag === 'InterludeStep') {
+    if (props.game.campaign) {
+      const key = `${toCamelCase(props.game.campaign.name)}.interludes.${props.step.contents}`
+      if (te(key)) {
+        return t(key)
+      }
+    }
     return `Interlude ${props.step.contents}`
   }
 

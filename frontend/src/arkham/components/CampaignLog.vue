@@ -243,7 +243,7 @@ const bonusXp = computed(() => props.game.campaign?.meta?.bonusXp ?? null)
 
 const mapData = computed(() => {
   const current = props.game.campaign?.meta?.currentLocation || 'London'
-  return { current }
+  return { current, available: [] }
 })
 </script>
 
@@ -255,7 +255,9 @@ const mapData = computed(() => {
       <InvestigatorRow v-for="investigator in investigators" :key="investigator.id" :investigator="investigator" :game="game" :bonus-xp="bonusXp && bonusXp[investigator.id]" />
     </div>
     <div v-if="time || scarletKeys" class="column">
-      <WorldMap :game="game" :playerId="playerId" :mapData="mapData" />
+      <div class="world-map-container">
+        <WorldMap :game="game" :playerId="playerId" :mapData="mapData" />
+      </div>
       <div class="scarlet-keys">
         <Calendar v-if="time" :time="time" />
         <KeysStatus v-if="scarletKeys" :keys="scarletKeys" :toTitle="cardCodeToShortTitle" />
@@ -553,6 +555,11 @@ tr td:not(:first-child) {
     flex-direction: column;
     align-items: center;
   }
+}
+
+.world-map-container {
+  margin: 0 auto;
+  max-width: 60vw;
 }
 
 </style>

@@ -44,6 +44,7 @@ type MapLocationId =
 
 interface LocationData {
   travel: number | null
+  unlocked: boolean
 }
 interface MapData {
   current: string
@@ -65,10 +66,11 @@ const greenLocations = ['Arkham', 'Cairo', 'NewOrleans', 'Venice', 'MonteCarlo']
 const locationData = computed<Record<MapLocationId, LocationData>>(() => {
   const record: Record<MapLocationId, LocationData> = {} as Record<MapLocationId, LocationData>
   for (const [key, value] of props.mapData.locations) {
+    const unlocked = props.mapData.available.includes(key)
     if (greenLocations.includes(key)) {
-      record[key] = {...value, travel: (value.travel ?? 0) + 1 }
+      record[key] = {...value, travel: (value.travel ?? 0) + 1 , unlocked }
     } else {
-      record[key] = value
+      record[key] = {...value, unlocked}
     }
   }
   return record
@@ -169,7 +171,7 @@ document.addEventListener('fullscreenchange', () => {
 </script>
 
 <template>
-  <svg width="60vw" viewBox="0 0 3000 1952" fill="none" xmlns="http://www.w3.org/2000/svg" ref="svgEl">
+  <svg width="90vw" viewBox="0 0 3000 1952" fill="none" xmlns="http://www.w3.org/2000/svg" ref="svgEl">
     <defs>
       <g id="marker-red">
         <!-- outer red ring -->
@@ -470,11 +472,20 @@ document.addEventListener('fullscreenchange', () => {
           <h2 v-if="selectedLocation">{{ selectedLocation }}</h2>
 
           <div class="drawer-content" v-if="selectedLocation">
-            <p><strong>Location:</strong> Russian Soviet Federative Socialist Republic</p>
-            <p><strong>Travel time:</strong> {{locationData[selectedLocation].travel}}</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
-            <button class="action" @click="travelToSelected" >Travel here</button>
-            <button class="action secondary">Travel here without stopping</button>
+            <template v-if="selectedLocation === props.mapData.current">
+              <p>You are currently here.</p>
+            </template>
+            <template v-else>
+              <p><strong>Travel time:</strong> {{locationData[selectedLocation].travel}}</p>
+              <template v-if="locationData[selectedLocation].unlocked">
+                <button class="action" @click="travelToSelected" >Travel here</button>
+                <button class="action secondary">Travel here without stopping</button>
+              </template>
+              <template v-else>
+                <p class="action locked">This location is currently locked.</p>
+                <button class="action secondary">Travel here without stopping</button>
+              </template>
+            </template>
           </div>
         </div>
       </foreignObject>
@@ -484,7 +495,10 @@ document.addEventListener('fullscreenchange', () => {
 
 <style scoped>
 svg {
-  width: 60vw;
+  width: auto;
+  max-width: 95%;
+  min-width: 60vw;
+  max-height: 95%;
   margin: 0 auto;
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
@@ -537,18 +551,13 @@ use {
 /*.route:hover .route-base { stroke-width: 7 }
 .route:hover .route-highlight { stroke-width: 3.6 }*/
 
-/* Drawer container */
-/* Header */
-.drawer h2 {
-  margin: 1rem 2rem 0.5rem;
-}
-
 /* Scrollable content */
 .drawer-content {
   flex: 1;
   overflow-y: auto;
   padding: 0 2rem 2rem;
   scrollbar-width: thin;
+  margin-top: 1em;
 }
 
 /* Buttons inside the drawer */
@@ -558,16 +567,17 @@ use {
   margin-top: 0.75rem;
   padding: 0.75rem;
   border-radius: 4px;
-  background: #e2dfcc;
-  color: #222;
   font-weight: bold;
+  background: #2e3a4f;
+  color: #eee;
   font-size: 2rem;
   cursor: pointer;
   border: none;
 }
+
 .action.secondary {
-  background: #2e3a4f;
-  color: #eee;
+  background: #e2dfcc;
+  color: #222;
 }
 
 /* Close button */
@@ -618,5 +628,20 @@ use {
 .drawer-enter-to,
 .drawer-leave-from {
   transform: scaleY(1);
+}
+
+h2 {
+  background: rgba(255,255,255,0.2);
+  color: var(--title);
+  font-size: 1.5em;
+  margin: 0;
+  padding: 0;
+  padding: 10px 15px;
+}
+
+p.locked {
+  color: #888;
+  background-color: darkred;
+  font-style: italic;
 }
 </style>

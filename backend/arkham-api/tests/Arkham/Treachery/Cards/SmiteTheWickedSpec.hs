@@ -30,7 +30,7 @@ spec = describe "Smite the Wicked" $ do
     loadDeck investigator [Cards.smiteTheWicked]
     moveTo investigator location
     drawCards investigator 1
-    run $ EndOfGame Nothing
+    endGame
     chooseOnlyOption "trigger smite the wicked"
     fieldAssert InvestigatorMentalTrauma (== 1) investigator
 
@@ -49,8 +49,8 @@ spec = describe "Smite the Wicked" $ do
           (toCardId enemy)
           (toSource investigator)
           []
-      , EndOfGame Nothing
       ]
+    endGame
     fieldAssert InvestigatorMentalTrauma (== 0) investigator
     fieldAssert InvestigatorDiscard (elem Cards.smiteTheWicked . map toCardDef) investigator
 

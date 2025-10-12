@@ -316,6 +316,7 @@ allPlayerAssetCards =
       , esotericAtlas2
       , esotericFormula
       , evanescentAscensionTheMorningStar
+      , expeditedTicket
       , expeditionJournal
       , eyeOfChaos
       , eyeOfChaos4

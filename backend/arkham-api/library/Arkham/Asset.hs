@@ -985,6 +985,8 @@ allAssets =
     , SomeAssetCard toolBelt
     , SomeAssetCard flashlight3
     , SomeAssetCard soulSanctification3
+    , --- Globetrotting [tsk]
+      SomeAssetCard expeditedTicket
     , -- The Feast of Hemloch Vale
       --- signature [fhv]
       SomeAssetCard fluxStabilizerInactive

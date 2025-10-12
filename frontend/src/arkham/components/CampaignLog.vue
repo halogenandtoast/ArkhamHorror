@@ -243,7 +243,45 @@ const bonusXp = computed(() => props.game.campaign?.meta?.bonusXp ?? null)
 
 const mapData = computed(() => {
   const current = props.game.campaign?.meta?.currentLocation || 'London'
-  return { current, available: [] }
+  const unlocked = props.game.campaign?.meta?.unlockedLocations || []
+  return { current, available: unlocked, locations: [
+    ['Alexandria', { unlocked: false }],
+    ['Anchorage', { unlocked: false }],
+    ['Arkham', { unlocked: false }],
+    ['Bermuda', { unlocked: false }],
+    ['BermudaTriangle', { unlocked: false }],
+    ['Bombay', { unlocked: false }],
+    ['BuenosAires', { unlocked: false }],
+    ['Cairo', { unlocked: false }],
+    ['Constantinople', { unlocked: false }],
+    ['Havana', { unlocked: false }],
+    ['HongKong', { unlocked: false }],
+    ['Kabul', { unlocked: false }],
+    ['Kathmandu', { unlocked: false }],
+    ['KualaLumpur', { unlocked: false }],
+    ['Lagos', { unlocked: false }],
+    ['London', { unlocked: false }],
+    ['Manokwari', { unlocked: false }],
+    ['Marrakesh', { unlocked: false }],
+    ['MonteCarlo', { unlocked: false }],
+    ['Moscow', { unlocked: false }],
+    ['Nairobi', { unlocked: false }],
+    ['NewOrleans', { unlocked: false }],
+    ['Perth', { unlocked: false }],
+    ['Quito', { unlocked: false }],
+    ['Reykjavik', { unlocked: false }],
+    ['RioDeJaneiro', { unlocked: false }],
+    ['Rome', { unlocked: false }],
+    ['SanFrancisco', { unlocked: false }],
+    ['SanJuan', { unlocked: false }],
+    ['Shanghai', { unlocked: false }],
+    ['Stockholm', { unlocked: false }],
+    ['Sydney', { unlocked: false }],
+    ['Tokyo', { unlocked: false }],
+    ['Tunguska', { unlocked: false }],
+    ['Venice', { unlocked: false }],
+    ['YborCity', { unlocked: false }],
+  ]}
 })
 </script>
 

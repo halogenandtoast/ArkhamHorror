@@ -161,7 +161,7 @@ const choose = (idx: number) => emit('choose', idx)
   </div>
 
   <div class="question-label" v-else-if="question && question.tag === 'PickCampaignSpecific'">
-    <WorldMap v-if="question.contents[0] === 'embark'" :game="game" :playerId="playerId" :mapData="question.contents[1]" @choose="choose" />
+    <WorldMap v-if="question.contents[0] === 'embark'" :game="game" :playerId="playerId" :mapData="question.contents[1]" @choose="choose" :embark="true" />
   </div>
 
   <div class="question-label" v-else-if="question && question.tag === 'PickSupplies'">

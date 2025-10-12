@@ -1,19 +1,22 @@
 module Arkham.Campaign.Campaigns.TheScarletKeys (theScarletKeys) where
 
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.CampaignSteps
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Meta hiding (MapLocationType (..))
+import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Query (getLeadPlayer)
+import Arkham.Helpers.Query (getLead, getLeadPlayer)
 import Arkham.Helpers.Xp
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Question
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.Types (Pair)
+import Data.Map.Strict qualified as Map
 
 newtype TheScarletKeys = TheScarletKeys CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
@@ -41,6 +44,23 @@ campaignChaosBag = \case
     , Skull, Skull, Tablet, ElderThing, AutoFail, ElderSign
     ]
 {- FOURMOLU_ENABLE -}
+
+travel :: ReverseQueue m => CampaignAttrs -> MapLocationId -> Bool -> Int -> m TheScarletKeys
+travel attrs locId doTravel n = do 
+  markTime n
+  if doTravel
+    then case locId of
+      Moscow -> campaignStep_ (InterludeStep 26 Nothing)
+      _ -> pure ()
+    else campaignStep_ (CampaignSpecificStep "embark")
+  pure
+    $ TheScarletKeys
+    $ attrs
+    & overMeta
+      ( (visitedLocationsL %~ (locId :))
+          . (currentLocationL .~ locId)
+          . (unlockedLocationsL %~ filter (/= locId))
+      )
 
 instance IsCampaign TheScarletKeys where
   campaignTokens = campaignChaosBag
@@ -89,6 +109,9 @@ instance RunMessage TheScarletKeys where
         toEntry :: MapLocationId -> Pair
         toEntry locId = mapKey locId .= object ["travel" .= mapDistance meta locId]
 
+        hasTicket =
+          any (any ((== Assets.expeditedTicket.cardCode) . toCardCode)) (Map.elems attrs.storyCards)
+
       push
         $ Ask lead
         $ PickCampaignSpecific "embark"
@@ -96,32 +119,35 @@ instance RunMessage TheScarletKeys where
           [ "current" .= meta.currentLocation
           , "available" .= meta.unlockedLocations
           , "locations" .= map toEntry [minBound ..]
+          , "hasTicket" .= hasTicket
           ]
       pure c
     CampaignSpecific "travel" v -> do
       let locId = toResult v
       let meta = toResult attrs.meta
       let n = fromMaybe 0 (mapDistance meta locId) + (if locId `elem` greenLocations then 1 else 0)
-      markTime n
-      case locId of
-        Moscow -> campaignStep_ (InterludeStep 26 Nothing)
-        _ -> pure ()
-      pure
-        $ TheScarletKeys
-        $ attrs
-        & overMeta
-          ( (visitedLocationsL %~ (locId :))
-              . (currentLocationL .~ locId)
-              . (unlockedLocationsL %~ filter (/= locId))
-          )
+      travel attrs locId True n
+    CampaignSpecific "travelVia" v -> do
+      let locId = toResult v
+      let meta = toResult attrs.meta
+      let n = fromMaybe 0 (mapDistance meta locId) + (if locId `elem` greenLocations then 1 else 0)
+      travel attrs locId False n
+    CampaignSpecific "travelWithTicket" v -> do
+      let locId = toResult v
+      removeCampaignCard Assets.expeditedTicket
+      travel attrs locId True 1
     CampaignSpecific "setBearer" v -> do
       let (cardCode, status) = toResult v
       pure $ TheScarletKeys $ attrs & overMeta (keyStatusL %~ insertMap cardCode status)
     CampaignStep (InterludeStep 26 _) -> scope "quidProQuo" do
+      -- Moscow
       let meta = toResult @TheScarletKeysMeta attrs.meta
       let visitedHavana = Havana `elem` meta.visitedLocations
       storyWithChooseOneM' (setTitle "title" >> p "body" >> p "quidProQuo2") do
-        labeled' "ticket" $ campaignStep_ (CampaignSpecificStep "embark")
+        labeled' "ticket" do
+          lead <- getLead
+          forceAddCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.expeditedTicket
+          campaignStep_ (CampaignSpecificStep "embark")
         labeled' "supplies" do
           interludeXpAll (toBonus "supplies" 1)
           campaignStep_ (CampaignSpecificStep "embark")

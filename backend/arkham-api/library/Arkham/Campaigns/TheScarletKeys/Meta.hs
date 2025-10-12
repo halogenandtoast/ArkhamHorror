@@ -151,6 +151,7 @@ initUnlockedLocations =
   , Perth
   , Sydney
   ]
+    <> greenLocations
 
 mapDistance :: TheScarletKeysMeta -> MapLocationId -> Maybe Int
 mapDistance meta = mapDistance' meta.campaignMap meta.currentLocation

@@ -646,3 +646,10 @@ soulSanctification3 =
       { cdCardTraits = setFromList [Ritual]
       , cdLevel = Just 3
       }
+
+expeditedTicket :: CardDef
+expeditedTicket =
+  permanent
+    (storyAsset "09765" "Expedited Ticket" 0 Globetrotting)
+      { cdCardTraits = setFromList [Item]
+      }

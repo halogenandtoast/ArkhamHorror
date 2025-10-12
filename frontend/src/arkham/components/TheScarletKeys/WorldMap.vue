@@ -50,6 +50,7 @@ interface LocationData {
 }
 interface MapData {
   current: string
+  hasTicket: boolean
   available: MapLocationId[]
   locations: [MapLocationId, LocationData][]
 } 
@@ -60,6 +61,7 @@ const props = defineProps<{
   game: Game
   playerId: string
   mapData: MapData
+  embark: boolean
 }>()
 
 const greenLocations = ['Arkham', 'Cairo', 'NewOrleans', 'Venice', 'MonteCarlo'] as MapLocationId[]
@@ -502,12 +504,12 @@ document.addEventListener('fullscreenchange', () => {
             <template v-if="selectedLocation === props.mapData.current">
               <p>You are currently here.</p>
             </template>
-            <template v-else>
+            <template v-else-if="embark === true">
               <p><strong>Travel time:</strong> {{locationData[selectedLocation].travel}}</p>
               <template v-if="locationData[selectedLocation].unlocked">
                 <button class="action" @click="travelToSelected">Travel here</button>
                 <button
-                  v-if="(locationData[selectedLocation].travel ?? 0) > 1"
+                  v-if="mapData.hasTicket && (locationData[selectedLocation].travel ?? 0) > 1"
                   class="action"
                   @click="travelWithTicket"
                 >Travel with Expedited Ticket (1 time)</button>
@@ -1153,6 +1155,7 @@ header {
   padding: 10px 15px;
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
+  text-align: center;
 }
 
 h2 {

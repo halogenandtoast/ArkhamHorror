@@ -244,7 +244,7 @@ const bonusXp = computed(() => props.game.campaign?.meta?.bonusXp ?? null)
 const mapData = computed(() => {
   const current = props.game.campaign?.meta?.currentLocation || 'London'
   const unlocked = props.game.campaign?.meta?.unlockedLocations || []
-  return { current, available: unlocked, locations: [
+  return { current, hasTicket: false, available: unlocked, locations: [
     ['Alexandria', { unlocked: false }],
     ['Anchorage', { unlocked: false }],
     ['Arkham', { unlocked: false }],
@@ -294,7 +294,7 @@ const mapData = computed(() => {
     </div>
     <div v-if="time || scarletKeys" class="column">
       <div class="world-map-container">
-        <WorldMap :game="game" :playerId="playerId" :mapData="mapData" />
+        <WorldMap :game="game" :playerId="playerId" :mapData="mapData" :embark="false" />
       </div>
       <div class="scarlet-keys">
         <Calendar v-if="time" :time="time" />

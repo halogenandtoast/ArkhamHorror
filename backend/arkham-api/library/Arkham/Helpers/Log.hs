@@ -7,10 +7,12 @@ import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card.CardCode
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasQueue
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message
+import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
@@ -28,7 +30,7 @@ getInvestigatorHasRecord iid k = fieldMap InvestigatorLog (hasRecord k) iid
 getHasRecord :: (HasGame m, IsCampaignLogKey k) => k -> m Bool
 getHasRecord k = hasRecord k <$> getCampaignLog
 
-hasRecord :: (IsCampaignLogKey k) => k -> CampaignLog -> Bool
+hasRecord :: IsCampaignLogKey k => k -> CampaignLog -> Bool
 hasRecord (toCampaignLogKey -> k) campaignLog =
   or
     [ k `member` campaignLogRecorded campaignLog
@@ -108,6 +110,12 @@ whenRemembered k = whenM (remembered k)
 scenarioCount :: HasGame m => ScenarioCountKey -> m Int
 scenarioCount k = fromMaybe 0 . lookup k <$> scenarioField ScenarioCounts
 
+scenarioCountIncrement :: ReverseQueue m => ScenarioCountKey -> m ()
+scenarioCountIncrement k = scenarioCountIncrementBy k 1
+
+scenarioCountIncrementBy :: ReverseQueue m => ScenarioCountKey -> Int -> m ()
+scenarioCountIncrementBy k n = push $ ScenarioCountIncrementBy k n
+
 recordSetInsert
   :: (Recordable a, MonoFoldable t, Element t ~ a, IsCampaignLogKey k)
   => k
@@ -115,9 +123,8 @@ recordSetInsert
   -> Message
 recordSetInsert k xs = RecordSetInsert (toCampaignLogKey k) $ map recorded $ toList xs
 
-recordSetReplace :: (IsCampaignLogKey k) => k -> SomeRecorded -> SomeRecorded -> Message
+recordSetReplace :: IsCampaignLogKey k => k -> SomeRecorded -> SomeRecorded -> Message
 recordSetReplace k v v' = RecordSetReplace (toCampaignLogKey k) v v'
 
 crossOutRecordSetEntries :: (Recordable a, IsCampaignLogKey k) => k -> [a] -> Message
 crossOutRecordSetEntries k xs = CrossOutRecordSetEntries (toCampaignLogKey k) $ map recorded xs
-

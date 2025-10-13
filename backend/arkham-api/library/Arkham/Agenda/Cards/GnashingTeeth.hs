@@ -4,7 +4,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location
-import Arkham.Helpers.Log (scenarioCount)
+import Arkham.Helpers.Log (scenarioCount, scenarioCountIncrement)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Location.Types (Field (..))
@@ -45,7 +45,7 @@ instance RunMessage GnashingTeeth where
               hasCivilians <- fieldMap LocationTokens (hasToken Civilian) lid
               when hasCivilians $ do
                 removeTokens attrs lid Civilian 1
-                push $ ScenarioCountIncrementBy CiviliansSlain 1
+                scenarioCountIncrement CiviliansSlain
       advanceAgendaDeck attrs
       pure a
     _ -> GnashingTeeth <$> liftRunMessage msg attrs

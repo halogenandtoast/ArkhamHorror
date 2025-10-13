@@ -39,6 +39,7 @@ data SpawnAt
   | SpawnAtLocation LocationId
   | SpawnPlaced Placement
   | SpawnAtRandomSetAsideLocation
+  | SpawnAtRandomLocation
   | SpawnAtFirst [SpawnAt]
   | SpawnEngagedWith InvestigatorMatcher
   | NoSpawn

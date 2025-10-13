@@ -791,7 +791,7 @@ allLocations =
     , SomeLocationCard titanicRamp_185
     , SomeLocationCard hiddenTunnelAWayOut
     , -- The Scarlet Keys
-      -- Riddle and Rain [tsk]
+      --- Riddle and Rain [tsk]
       SomeLocationCard rainyLondonStreets
     , SomeLocationCard bigBen
     , SomeLocationCard westminsterAbbey
@@ -800,6 +800,17 @@ allLocations =
     , SomeLocationCard traitorsGate
     , SomeLocationCard towerOfLondon
     , SomeLocationCard towerPrison
+    , --- Dead Heat [tsk]
+      SomeLocationCard marrakeshRailwayStation
+    , SomeLocationCard jemaaElFnaaSquare
+    , SomeLocationCard saadiansTombs
+    , SomeLocationCard tanneries
+    , SomeLocationCard bahiaPalaceGardens
+    , SomeLocationCard marrakeshRailwayStationAbandoned
+    , SomeLocationCard jemaaElFnaaSquareAbandoned
+    , SomeLocationCard saadiansTombsAbandoned
+    , SomeLocationCard tanneriesAbandoned
+    , SomeLocationCard bahiaPalaceGardensAbandoned
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

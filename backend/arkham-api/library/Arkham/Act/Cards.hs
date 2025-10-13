@@ -83,6 +83,7 @@ allActCards =
       , exploringTheRainforest
       , eyesInTheTower
       , fatedSouls
+      , findAmaranth
       , findTheRelic
       , findingANewWay
       , findingAWayInside
@@ -149,6 +150,7 @@ allActCards =
       , pursuitOfTheUnknownV1
       , pursuitOfTheUnknownV2
       , pursuitOfTheUnknownV3
+      , queenOfNothingAtAll
       , raceForAnswers
       , recoverTheRelic
       , reefOfMysteries
@@ -156,6 +158,7 @@ allActCards =
       , restrictedAccess
       , returnToACircleUnbroken
       , ricesWhereabouts
+      , ritualOfLifeAndDeath
       , row
       , run
       , saracenicScript
@@ -719,7 +722,7 @@ beyondTheGrave :: CardDef
 beyondTheGrave = act "05287" "Beyond the Grave" 2 MusicOfTheDamned
 
 darkKnowledgeV2 :: CardDef
-darkKnowledgeV2 = (act "05288a" "Dark Knowledge (v. II)" 1 SecretsOfTheUniverse) { cdOtherSide = Just "05288b" }
+darkKnowledgeV2 = (act "05288a" "Dark Knowledge (v. II)" 1 SecretsOfTheUniverse) {cdOtherSide = Just "05288b"}
 
 newWorldOrder :: CardDef
 newWorldOrder = act "05289" "New World Order" 2 SecretsOfTheUniverse
@@ -936,6 +939,15 @@ eyesInTheTower = act "09508" "Eyes in the Tower" 3 RiddlesAndRain
 
 caughtRedHanded :: CardDef
 caughtRedHanded = act "09509" "Caught Red-Handed" 4 RiddlesAndRain
+
+findAmaranth :: CardDef
+findAmaranth = act "09523" "Find Amaranth" 1 DeadHeat
+
+ritualOfLifeAndDeath :: CardDef
+ritualOfLifeAndDeath = act "09524" "Ritual of Life and Death" 2 DeadHeat
+
+queenOfNothingAtAll :: CardDef
+queenOfNothingAtAll = act "09525" "Queen of Nothing at All" 3 DeadHeat
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

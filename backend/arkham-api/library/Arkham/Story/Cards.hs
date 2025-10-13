@@ -151,6 +151,7 @@ allStoryCards =
       , returnToUnfinishedBusiness_38
       , returnToUnfinishedBusiness_39
       , realityAcid
+      , saveTheCivilians
       , theFoundationAllied
       , theFoundationRival
       , theSyndicateAllied
@@ -488,6 +489,9 @@ memoryOfAnAlienTranslation = victory 1 $ doubleSided $ story "08582b" "Memory of
 
 memoryOfAnUnrequitedLove :: CardDef
 memoryOfAnUnrequitedLove = victory 1 $ doubleSided $ story "08583b" "Memory of an Unrequited Love" FatalMirage
+
+saveTheCivilians :: CardDef
+saveTheCivilians = doubleSided $ story "09536a" "Save the Civilians" DeadHeat
 
 returnToSickeningReality_23 :: CardDef
 returnToSickeningReality_23 = doubleSided $ story "52023" "Sickening Reality" ReturnToTheLastKing

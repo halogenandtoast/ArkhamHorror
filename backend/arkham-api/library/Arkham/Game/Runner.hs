@@ -249,11 +249,21 @@ runGameMessage msg g = case msg of
       & activeInvestigatorF
       & turnPlayerInvestigatorF
   LoadDecklist playerId decklist -> do
+    let
+      invalid =
+        case gameMode g of
+          This (Campaign c) -> invalidCards c
+          That _ -> []
+          These (Campaign c) _ -> invalidCards c
+
     -- if the player is changing decks during the game (i.e. prologue investigators) we need to replace the old investigator
     let mOldId = toId <$> find ((== playerId) . attr investigatorPlayerId) (toList $ gameInvestigators g)
         replaceIds = InvestigatorId "00000" : toList mOldId
 
     dl <- loadDecklist decklist
+    let invalids = filter ((`elem` invalid) . toCardCode) dl.cards
+    unless (null invalids) $
+      error $ "Decklist contains invalid cards for this campaign: " <> show (map toName invalids)
     let iid' = dl.investigator
     let deck = dl.cards
     let sideDeck = dl.extra

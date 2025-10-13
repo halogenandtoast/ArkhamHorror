@@ -344,7 +344,7 @@
        "",
        "instance RunMessage {dot} where",
        "  runMessage msg s@({dot} attrs) = runQueueT $ case msg of",
-       "    ResolveStory _ ResolveIt story' | story' == toId attrs -> do",
+       "    ResolveThisStory _ (is attrs -> True) -> do",
        "      pure s",
        "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]

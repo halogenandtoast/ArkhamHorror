@@ -18,7 +18,10 @@ key cardCode name encounterSet =
     }
 
 allScarletKeyCards :: Map CardCode CardDef
-allScarletKeyCards = mapFromList $ map (toCardCode &&& id) [theEyeOfRavens]
+allScarletKeyCards = mapFromList $ map (toCardCode &&& id) [theEyeOfRavens, theLastBlossom]
 
 theEyeOfRavens :: CardDef
 theEyeOfRavens = key "09519" ("The Eye of Ravens" <:> "Macabre Ruby Marble") RiddlesAndRain
+
+theLastBlossom :: CardDef
+theLastBlossom = key "09544" ("The Last Blossom" <:> "Paracausal Symbiote") DeadHeat

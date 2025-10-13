@@ -565,6 +565,9 @@ allTreacheries =
     , SomeTreacheryCard deafeningSilence
     , SomeTreacheryCard ruinedFilm
     , SomeTreacheryCard burdenOfLeadership
+    , --- Dead Heat [tsk]
+      SomeTreacheryCard famine
+    , SomeTreacheryCard cornered
     , --- Crimson Conspiracy [tsk]
       SomeTreacheryCard conspiracyInRed
     , --- Strange Happenings [tsk]

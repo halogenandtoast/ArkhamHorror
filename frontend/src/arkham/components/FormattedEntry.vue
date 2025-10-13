@@ -264,6 +264,9 @@ p.typewriter, :deep(p.typewriter) {
   font-weight: 600;
   margin: 10px;
   text-indent: 50px;
+  &.center {
+    text-indent: unset;
+  }
 }
 
 p.accountant, :deep(p.accountant) {

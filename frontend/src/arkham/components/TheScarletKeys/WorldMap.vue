@@ -199,18 +199,13 @@ document.addEventListener('fullscreenchange', () => {
   <svg width="90vw" viewBox="0 0 3000 1952" fill="none" xmlns="http://www.w3.org/2000/svg" ref="svgEl">
     <defs>
       <g id="marker-red">
-        <!-- outer red ring -->
         <circle r="13" fill="none" stroke="#d82e21" stroke-width="3"/>
-        <!-- white ring -->
         <circle r="10" fill="#ffffff" stroke="#ffffff" stroke-width="3"/>
-        <!-- red center -->
         <circle r="7" fill="#d82e21" stroke="#d82e21" stroke-width="1.6"/>
       </g>
 
       <g id="marker-blue">
-        <!-- outer ring -->
         <circle r="13" fill="#EAEAEC" stroke="#31369B" stroke-width="3"/>
-        <!-- 5-point star (radius ~11) -->
         <path
           d="M 0,-11
              L 2.95,-3.4 11, -3.4
@@ -224,11 +219,8 @@ document.addEventListener('fullscreenchange', () => {
       </g>
 
       <g id="marker-green">
-        <!-- outer green ring -->
         <circle r="9.5" fill="none" stroke="#2f6a3f" stroke-width="2.5"/>
-        <!-- white ring -->
         <circle r="7" fill="#D6DFCC" stroke="#D6DFCC" stroke-width="2.5"/>
-        <!-- white center -->
         <circle r="4" fill="#ffffff" stroke="#2f6a3f" stroke-width="2.5"/>
       </g>
     </defs>

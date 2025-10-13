@@ -59,6 +59,7 @@ allAgendaCards =
       , drawnIn
       , empireOfTheDead
       , empireOfTheUndead
+      , emptyStreets
       , encore
       , endlessCaverns
       , endsAndMeans
@@ -75,6 +76,7 @@ allAgendaCards =
       , forbiddenPeaks
       , franticPursuit
       , furyThatShakesTheEarth
+      , gnashingTeeth
       , growingSuspicion
       , hallsOfStMarys
       , hiddenEntanglements
@@ -771,6 +773,12 @@ theConnection = agenda "09504" "The Connection" 3 RiddlesAndRain
 
 plotsAndPanic :: CardDef
 plotsAndPanic = agenda "09505" "Plots and Panic" 4 RiddlesAndRain
+
+gnashingTeeth :: CardDef
+gnashingTeeth = agenda "09521" "Gnashing Teeth" 1 DeadHeat
+
+emptyStreets :: CardDef
+emptyStreets = agenda "09522" "Empty Steets" 2 DeadHeat
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

@@ -11,9 +11,9 @@ data Token
   | AlarmLevel
   | Ammo
   | Antiquity
-  | Portent
   | Bounty
   | Charge
+  | Civilian
   | Clue
   | Corruption
   | Damage
@@ -31,20 +31,21 @@ data Token
   | LostSoul
   | Offering
   | Pillar
+  | Portent
   | Resource
   | Seal
+  | Secret
   | Shard
   | Shell
-  | Secret
   | Supply
   | Suspicion
   | Ticket
   | Time
+  | Truth
   | Try
   | Warning
-  | Wish
   | Whistle
-  | Truth
+  | Wish
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
 

@@ -339,6 +339,7 @@ const tarotCards = computed(() => props.scenario.tarotCards.filter((c) => c.scop
 const phase = computed(() => props.game.phase)
 const phaseStep = computed(() => props.game.phaseStep)
 const currentDepth = computed(() => props.scenario.counts["CurrentDepth"])
+const civiliansSlain = computed(() => props.scenario.counts["CiviliansSlain"])
 const signOfTheGods = computed(() => props.scenario.counts["SignOfTheGods"])
 const distortion = computed(() => props.scenario.counts["Distortion"])
 const gameOver = computed(() => props.game.gameState.tag === "IsOver")
@@ -871,6 +872,7 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
               />
             </div>
             <PoolItem class="depth" v-if="currentDepth" type="resource" :amount="currentDepth" />
+            <PoolItem class="depth" v-if="civiliansSlain" type="resource" :amount="civiliansSlain" />
             <div class="spent-keys" v-if="spentKeys.length > 0">
               <Key v-for="key in spentKeys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
             </div>

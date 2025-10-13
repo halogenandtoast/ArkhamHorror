@@ -246,6 +246,7 @@ const hasPool = computed(() => {
     (pillars.value && pillars.value > 0) ||
     (leylines.value && leylines.value > 0) ||
     (antiquities.value && antiquities.value > 0) ||
+    (civilians.value && civilians.value > 0) ||
     (sealTokens.value && sealTokens.value > 0) ||
     (depth.value && depth.value > 0) ||
     (breaches.value && breaches.value > 0) ||
@@ -286,6 +287,7 @@ const depth = computed(() => props.location.tokens[TokenType.Depth])
 const leylines = computed(() => props.location.tokens[TokenType.Leyline])
 const shards = computed(() => props.location.tokens[TokenType.Shard])
 const antiquities = computed(() => props.location.tokens[TokenType.Antiquity])
+const civilians = computed(() => props.location.tokens[TokenType.Civilian])
 const breaches = computed(() => {
   const {breaches} = props.location
   if (breaches) {
@@ -396,6 +398,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
             <PoolItem v-if="leylines && leylines > 0" type="resource" tooltip="Leyline" :amount="leylines" />
             <PoolItem v-if="shards && shards > 0" type="resource" tooltip="Shard" :amount="shards" />
             <PoolItem v-if="antiquities && antiquities > 0" type="resource" tooltip="Antiquity" :amount="antiquities" />
+            <PoolItem v-if="civilians && civilians > 0" type="resource" tooltip="Civilian" :amount="civilians" />
             <PoolItem v-if="sealTokens && sealTokens > 0" type="resource" tooltip="Seal" :amount="sealTokens" />
 
             <PoolItem v-if="depth && depth > 0" type="resource" :amount="depth" />

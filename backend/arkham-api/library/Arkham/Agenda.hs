@@ -278,11 +278,14 @@ allAgendas =
       SomeAgendaCard theSealWeakens
     , SomeAgendaCard thatWhichHasNoName
     , -- The Scarlet Keys
-      -- Riddles and Rain
+      --- Riddles and Rain [tsk]
       SomeAgendaCard whenItRains
     , SomeAgendaCard figuresInTheFog
     , SomeAgendaCard theConnection
     , SomeAgendaCard plotsAndPanic
+    , --- Dead Heat [tsk]
+      SomeAgendaCard gnashingTeeth
+    , SomeAgendaCard emptyStreets
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

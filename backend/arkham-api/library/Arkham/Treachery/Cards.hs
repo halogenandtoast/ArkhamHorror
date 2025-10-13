@@ -244,6 +244,7 @@ allEncounterTreacheryCards =
       , conspiracyInRed
       , conspiracyOfBlood
       , conspiracyOfDeepOnes
+      , cornered
       , corrosion
       , crashingFloods
       , creatureFeature
@@ -298,6 +299,7 @@ allEncounterTreacheryCards =
       , eyesInTheTrees
       , eyesInTheWalls
       , falseLead
+      , famine
       , fateOfAllFools
       , fateOfAllFoolsUnspeakableFate
       , figureInTheShadows
@@ -2833,6 +2835,18 @@ burdenOfLeadership :: CardDef
 burdenOfLeadership =
   (weakness "09020" "Burden of Leadership")
     { cdCardTraits = setFromList [Flaw]
+    }
+
+famine :: CardDef
+famine =
+  (treachery "09542" "Famine" DeadHeat 2)
+    { cdCardTraits = setFromList [Corruption]
+    }
+
+cornered :: CardDef
+cornered =
+  (treachery "09543" "Cornered!" DeadHeat 2)
+    { cdCardTraits = setFromList [Hazard]
     }
 
 conspiracyInRed :: CardDef

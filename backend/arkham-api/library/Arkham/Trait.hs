@@ -11,7 +11,8 @@ import Data.Char (isLower, isUpper)
 newtype EnemyTrait = EnemyTrait {unEnemyTrait :: Trait}
 
 data Trait
-  = Abomination
+  = Abandoned
+  | Abomination
   | Agency
   | Allied
   | Ally
@@ -56,6 +57,7 @@ data Trait
   | Connection
   | Conspirator
   | Construct
+  | Corruption
   | Cosmos
   | Coterie
   | Courage
@@ -153,6 +155,7 @@ data Trait
   | Mainland
   | Manifold
   | Manor
+  | Marrakesh
   | Mask
   | Medic
   | Melee
@@ -199,6 +202,7 @@ data Trait
   | Reporter
   | Research
   | Resolute
+  | Risen
   | Ritual
   | RitualSite
   | Rival

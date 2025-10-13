@@ -100,6 +100,9 @@ allEncounterEnemyCards =
       , allosaurusIndomitablePredator
       , allosaurusRampagingPredator
       , almaHill
+      , amaranthLurkingCorruption
+      , amaranthCorruptionRevealed
+      , ancientRaider
       , ancientZoog
       , anetteMason
       , anetteMasonReincarnatedEvil
@@ -273,6 +276,7 @@ allEncounterEnemyCards =
       , keeperOfSecrets
       , keeperOfTheGreatLibrary
       , keeperOfTheOath
+      , khalidBelovedCompanion
       , knightOfTheInnerCircle
       , knightOfTheOuterVoid
       , laComtesseSubverterOfPlans
@@ -356,6 +360,7 @@ allEncounterEnemyCards =
       , rampagingShoggoth
       , ravagerFromTheDeep
       , ravenousGhoul
+      , razinFarhiReanimatedArtificer
       , reawakenedElderThing
       , relentlessDarkYoung
       , returnToHeretic_38
@@ -435,6 +440,7 @@ allEncounterEnemyCards =
       , theWingedSerpent
       , theWingedSerpentTheFuryOfYig
       , thrall
+      , thrallDeadHeat
       , tidalTerror
       , tindalosAlpha
       , umordhoth
@@ -2781,6 +2787,60 @@ theRedGlovedManShroudedInMystery =
     { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
     , cdKeywords = setFromList [Keyword.Concealed TheRedGlovedMan (PerPlayer 1), Keyword.Retaliate]
     , cdVictoryPoints = Just 1
+    , cdUnique = True
+    }
+
+amaranthLurkingCorruption :: CardDef
+amaranthLurkingCorruption =
+  (enemy "09537a" ("Amaranth" <:> "Lurking Corruption") DeadHeat 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09537b"
+    }
+
+amaranthCorruptionRevealed :: CardDef
+amaranthCorruptionRevealed =
+  (enemy "09537b" ("Amaranth" <:> "Corruption Revealed") DeadHeat 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09537a"
+    }
+
+razinFarhiReanimatedArtificer :: CardDef
+razinFarhiReanimatedArtificer =
+  (enemy "09538" ("Razin Farhi" <:> "Reanimated Artificer") DeadHeat 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Risen, Elite]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Retaliate]
+    , cdVictoryPoints = Just 0
+    , cdUnique = True
+    }
+
+thrallDeadHeat :: CardDef
+thrallDeadHeat =
+  (enemy "09539" "Thrall" DeadHeat 4)
+    { cdCardTraits = setFromList [Humanoid, Risen]
+    }
+
+ancientRaider :: CardDef
+ancientRaider =
+  (enemy "09540" "Ancient Raider" DeadHeat 2)
+    { cdCardTraits = setFromList [Humanoid, Risen]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    }
+
+khalidBelovedCompanion :: CardDef
+khalidBelovedCompanion =
+  (enemy "09541" ("Khalid" <:> "Beloved Companion") DeadHeat 1)
+    { cdCardTraits = setFromList [Creature, Risen]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
     }
 
 coterieAgentA :: CardDef

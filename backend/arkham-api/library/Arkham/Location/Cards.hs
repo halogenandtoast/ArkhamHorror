@@ -151,6 +151,8 @@ allLocationCards =
       , backstage
       , baggageCar
       , baharna
+      , bahiaPalaceGardens
+      , bahiaPalaceGardensAbandoned
       , balcony
       , balconyAtDeathsDoorstep
       , balconySpectral
@@ -487,6 +489,8 @@ allLocationCards =
       , interviewRoomArrivalChamber
       , interviewRoomIchorFilledChamber
       , interviewRoomRestrainingChamber
+      , jemaaElFnaaSquare
+      , jemaaElFnaaSquareAbandoned
       , joeMazurewiczsRoom
       , jungleRiver
       , jungleSet
@@ -536,6 +540,8 @@ allLocationCards =
       , lounge
       , mainPath
       , mapRoom
+      , marrakeshRailwayStation
+      , marrakeshRailwayStationAbandoned
       , marshRefinery
       , marshRefineryInTooDeep
       , masterBedroom
@@ -713,6 +719,8 @@ allLocationCards =
       , ruinsOfKnYan
       , ruinsOfNewYork
       , ruinsOfTheSerpentKing
+      , saadiansTombs
+      , saadiansTombsAbandoned
       , sacredWoods_184
       , sacredWoods_185
       , salemGaol1692
@@ -794,6 +802,8 @@ allLocationCards =
       , sunkenGrottoUpperDepths
       , sunkenHalls
       , syzygyChamber
+      , tanneries
+      , tanneriesAbandoned
       , tarPit
       , tearThroughSpace
       , tearThroughTime
@@ -8302,6 +8312,106 @@ towerPrison =
       Hourglass
       [Moon]
       RiddlesAndRain
+
+marrakeshRailwayStation :: CardDef
+marrakeshRailwayStation =
+  location
+    "09526"
+    "Marrakesh Railway Station"
+    [Marrakesh]
+    Squiggle
+    [Diamond, Heart, Square]
+    DeadHeat
+
+jemaaElFnaaSquare :: CardDef
+jemaaElFnaaSquare =
+  location
+    "09527"
+    "Jemaa el-Fnaa Square"
+    [Marrakesh]
+    Diamond
+    [Squiggle, Heart, Triangle]
+    DeadHeat
+
+saadiansTombs :: CardDef
+saadiansTombs =
+  location
+    "09528"
+    "Saadian's Tombs"
+    [Marrakesh]
+    Heart
+    [Squiggle, Diamond]
+    DeadHeat
+
+tanneries :: CardDef
+tanneries =
+  location
+    "09529"
+    "Tanneries"
+    [Marrakesh]
+    Triangle
+    [Diamond, Square]
+    DeadHeat
+
+bahiaPalaceGardens :: CardDef
+bahiaPalaceGardens =
+  location
+    "09530"
+    "Bahia Palace Gardens"
+    [Marrakesh]
+    Square
+    [Squiggle, Triangle]
+    DeadHeat
+
+marrakeshRailwayStationAbandoned :: CardDef
+marrakeshRailwayStationAbandoned =
+  location
+    "09531"
+    "Marrakesh Railway Station"
+    [Marrakesh, Abandoned]
+    Squiggle
+    [Diamond, Heart, Square]
+    DeadHeat
+
+jemaaElFnaaSquareAbandoned :: CardDef
+jemaaElFnaaSquareAbandoned =
+  location
+    "09532"
+    "Jemaa el-Fnaa Square"
+    [Marrakesh, Abandoned]
+    Diamond
+    [Squiggle, Heart, Triangle]
+    DeadHeat
+
+saadiansTombsAbandoned :: CardDef
+saadiansTombsAbandoned =
+  location
+    "09533"
+    "Saadian's Tombs"
+    [Marrakesh, Abandoned]
+    Heart
+    [Squiggle, Diamond]
+    DeadHeat
+
+tanneriesAbandoned :: CardDef
+tanneriesAbandoned =
+  location
+    "09534"
+    "Tanneries"
+    [Marrakesh, Abandoned]
+    Triangle
+    [Diamond, Square]
+    DeadHeat
+
+bahiaPalaceGardensAbandoned :: CardDef
+bahiaPalaceGardensAbandoned =
+  location
+    "09535"
+    "Bahia Palace Gardens"
+    [Marrakesh, Abandoned]
+    Square
+    [Squiggle, Triangle]
+    DeadHeat
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

@@ -316,11 +316,15 @@ allActs =
       SomeActCard collapseThePylons
     , SomeActCard theFinalMirage
     , -- The Scarlet Keys
-      --- Riddles and Rain
+      --- Riddles and Rain [tsk]
       SomeActCard cluesAndCapers
     , SomeActCard theGameIsAfoot
     , SomeActCard eyesInTheTower
     , SomeActCard caughtRedHanded
+    , --- Riddles and Rain [tsk]
+      SomeActCard findAmaranth
+    , SomeActCard ritualOfLifeAndDeath
+    , SomeActCard queenOfNothingAtAll
     , -- Return to Night of the Zealot
       --- Return to the Gathering
       SomeActCard mysteriousGateway

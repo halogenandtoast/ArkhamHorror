@@ -145,6 +145,9 @@ allStories =
     , SomeStoryCard memoryOfATerribleDiscovery
     , SomeStoryCard memoryOfAnAlienTranslation
     , SomeStoryCard memoryOfAnUnrequitedLove
+    , -- The Scarlet Keys
+      --- Dead Heat [tsk]
+      SomeStoryCard saveTheCivilians
     , -- Return to The Path to Carcosa
       --- Return to The Last King
       SomeStoryCard returnToSickeningReality_23

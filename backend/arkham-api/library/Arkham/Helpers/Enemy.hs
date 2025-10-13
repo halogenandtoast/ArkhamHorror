@@ -89,6 +89,13 @@ spawnAt eid miid (SpawnAtFirst (x : xs)) = case x of
       then spawnAt eid miid (SpawnAt matcher)
       else spawnAt eid miid (SpawnAtFirst xs)
   other -> spawnAt eid miid other
+spawnAt eid miid SpawnAtRandomLocation = do
+  locations <- shuffle =<< select Anywhere
+  case nonEmpty locations of
+    Nothing -> do
+      attrs <- getAttrs @Enemy eid
+      noSpawn attrs miid
+    Just (x :| _) -> spawnAt eid miid (SpawnAtLocation x)
 spawnAt eid miid SpawnAtRandomSetAsideLocation = do
   cards <- getSetAsideCardsMatching (CardWithType LocationType)
   case nonEmpty cards of

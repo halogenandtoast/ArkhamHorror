@@ -480,6 +480,13 @@ allEnemies =
     , SomeEnemyCard ectoplasmicHorror
     , --- Riddles and Rain [tsk]
       SomeEnemyCard theRedGlovedManShroudedInMystery
+    , --- Dead Heat [tsk]
+      SomeEnemyCard amaranthLurkingCorruption
+    , SomeEnemyCard amaranthCorruptionRevealed
+    , SomeEnemyCard razinFarhiReanimatedArtificer
+    , SomeEnemyCard thrallDeadHeat
+    , SomeEnemyCard ancientRaider
+    , SomeEnemyCard khalidBelovedCompanion
     , --- Crimson Conspiracy [tsk]
       SomeEnemyCard coterieAgentA
     , SomeEnemyCard coterieAgentB

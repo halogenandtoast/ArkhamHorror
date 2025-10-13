@@ -46,20 +46,21 @@ campaignChaosBag = \case
 {- FOURMOLU_ENABLE -}
 
 travel :: ReverseQueue m => CampaignAttrs -> MapLocationId -> Bool -> Int -> m TheScarletKeys
-travel attrs locId doTravel n = do 
+travel attrs locId doTravel n = do
   markTime n
   if doTravel
     then case locId of
       Moscow -> campaignStep_ (InterludeStep 26 Nothing)
+      Marrakesh -> campaignStep_ DeadHeat
       _ -> pure ()
     else campaignStep_ (CampaignSpecificStep "embark")
   pure
     $ TheScarletKeys
     $ attrs
     & overMeta
-      ( (visitedLocationsL %~ (locId :))
+      ( (visitedLocationsL %~ if doTravel then (locId :) else id)
           . (currentLocationL .~ locId)
-          . (unlockedLocationsL %~ filter (/= locId))
+          . (unlockedLocationsL %~ if doTravel then filter (/= locId) else id)
       )
 
 instance IsCampaign TheScarletKeys where
@@ -136,6 +137,12 @@ instance RunMessage TheScarletKeys where
       let locId = toResult v
       removeCampaignCard Assets.expeditedTicket
       travel attrs locId True 1
+    CampaignSpecific "unlock" v -> do
+      let locId = toResult v
+      pure
+        $ TheScarletKeys
+        $ attrs
+        & overMeta (unlockedLocationsL %~ (locId :))
     CampaignSpecific "setBearer" v -> do
       let (cardCode, status) = toResult v
       pure $ TheScarletKeys $ attrs & overMeta (keyStatusL %~ insertMap cardCode status)

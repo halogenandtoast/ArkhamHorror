@@ -32,4 +32,6 @@ allScarletKeys =
     someScarletKeyCardCode
     [ -- Riddles and Rain
       SomeScarletKeyCard theEyeOfRavens
+    , -- Dead Heat
+      SomeScarletKeyCard theLastBlossom
     ]

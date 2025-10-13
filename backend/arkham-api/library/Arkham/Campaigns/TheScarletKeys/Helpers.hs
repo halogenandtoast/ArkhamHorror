@@ -26,6 +26,9 @@ campaignI18n a = withI18n $ scope "theScarletKeys" a
 markTime :: ReverseQueue m => Int -> m ()
 markTime = incrementRecordCount Time
 
+getTime :: ReverseQueue m => m Int
+getTime = getRecordCount Time
+
 removeAllConcealed :: ReverseQueue m => m ()
 removeAllConcealed = push Msg.RemoveAllConcealed
 

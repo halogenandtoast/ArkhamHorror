@@ -1883,6 +1883,12 @@ loseAllClues iid (toSource -> source) = push $ Msg.LoseAll iid source #clue
 drawEncounterCard :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 drawEncounterCard i source = drawEncounterCards i source 1
 
+drawEncounterCardAndThen
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> QueueT Message m () -> m ()
+drawEncounterCardAndThen i source andThenDo = do
+  msgs <- capture andThenDo
+  drawEncounterCardsEdit i source 1 \d -> d `andThen` Run msgs
+
 drawEncounterCardEdit
   :: (ReverseQueue m, Sourceable source)
   => InvestigatorId -> source -> (CardDraw Message -> CardDraw Message) -> m ()

@@ -21,6 +21,13 @@ doubleSided def =
     , cdOtherSide = Just $ flippedCardCode def.cardCode
     }
 
+otherSideIs :: CardCode -> CardDef -> CardDef
+otherSideIs ccode def =
+  def
+    { cdDoubleSided = True
+    , cdOtherSide = Just ccode
+    }
+
 story :: CardCode -> Name -> EncounterSet -> CardDef
 story cardCode name encounterSet =
   (emptyCardDef cardCode name StoryType)
@@ -491,7 +498,7 @@ memoryOfAnUnrequitedLove :: CardDef
 memoryOfAnUnrequitedLove = victory 1 $ doubleSided $ story "08583b" "Memory of an Unrequited Love" FatalMirage
 
 saveTheCivilians :: CardDef
-saveTheCivilians = doubleSided $ story "09536a" "Save the Civilians" DeadHeat
+saveTheCivilians = story "09536a" "Save the Civilians" DeadHeat & otherSideIs "09536b"
 
 returnToSickeningReality_23 :: CardDef
 returnToSickeningReality_23 = doubleSided $ story "52023" "Sickening Reality" ReturnToTheLastKing

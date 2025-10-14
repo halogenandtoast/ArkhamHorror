@@ -444,7 +444,7 @@ function toggleHandAreaMarginBottom(event: Event) {
             :game="game"
             :playerId="playerId"
             :key="skId"
-            @choose="choose"
+            @choose="$emit('choose', $event)"
           />
           <Asset
             v-for="asset in assets"

@@ -262,8 +262,10 @@ runGameMessage msg g = case msg of
 
     dl <- loadDecklist decklist
     let invalids = filter ((`elem` invalid) . toCardCode) dl.cards
-    unless (null invalids) $
-      error $ "Decklist contains invalid cards for this campaign: " <> show (map toName invalids)
+    unless (null invalids)
+      $ error
+      $ "Decklist contains invalid cards for this campaign: "
+      <> show (map toName invalids)
     let iid' = dl.investigator
     let deck = dl.cards
     let sideDeck = dl.extra
@@ -2466,7 +2468,13 @@ runGameMessage msg g = case msg of
           & (activeCostL %~ insertMap (activeCostId cost) cost)
   CreateScarletKeyAt card placement -> do
     let keyId = ScarletKeyId card.cardCode
-    let scarletKey = createScarletKey card ScenarioTarget keyId
+    let
+      starget =
+        case placement of
+          AttachedToEnemy eid -> EnemyTarget eid
+          AttachedToInvestigator iid -> InvestigatorTarget iid
+          _ -> ScenarioTarget
+    let scarletKey = createScarletKey card starget keyId
     push $ PlaceScarletKey keyId placement
     pure $ g & entitiesL . scarletKeysL . at keyId ?~ scarletKey
   CreateEventAt iid card placement -> do

@@ -28,4 +28,7 @@ instance RunMessage ScarletKeyAttrs where
         _ -> pure $ attrs & placementL .~ p
     Flip _ _ (isTarget attrs -> True) -> do
       pure $ attrs & stabilityL .~ if attrs.stability == Stable then Unstable else Stable
+    UseAbility _ ab _ | isSource attrs ab.source || isProxySource attrs ab.source -> do
+      push $ Do msg
+      pure attrs
     _ -> pure attrs

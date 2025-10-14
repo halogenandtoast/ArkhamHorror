@@ -22,6 +22,7 @@ import Arkham.Story.Runner as X (
   IsStory,
   StoryAttrs,
   StoryCard,
+  flippedL,
   getAlreadyResolved,
   metaL,
   placementL,

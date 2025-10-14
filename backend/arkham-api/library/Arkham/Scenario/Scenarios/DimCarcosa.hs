@@ -3,7 +3,7 @@ module Arkham.Scenario.Scenarios.DimCarcosa (setupDimCarcosa, dimCarcosa, DimCar
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Campaigns.ThePathToCarcosa.Import
-import Arkham.Card (genCards, toCard)
+import Arkham.Card (genCards, toCard, _PlayerCard)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Card
@@ -184,7 +184,7 @@ setupDimCarcosa attrs = do
       =<< fieldMap InvestigatorSanity (`div` 2) iid
 
   theManInThePallidMask <- getCampaignStoryCard Enemies.theManInThePallidMask
-  push $ RemoveFromBearersDeckOrDiscard theManInThePallidMask
+  for_ (preview _PlayerCard theManInThePallidMask) (push . RemoveFromBearersDeckOrDiscard)
 
   setAside [toCard theManInThePallidMask]
 

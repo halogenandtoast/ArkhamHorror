@@ -124,7 +124,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         let deckCardCodes = map toCardCode $ unDeck deck
         let ifShouldAdd pc = pc.cardCode `notElem` deckCardCodes
         let investigatorStoryCards = filter ifShouldAdd $ findWithDefault [] iid scenarioStoryCards
-        push $ LoadDeck iid (Deck $ unDeck deck <> investigatorStoryCards)
+        push $ LoadDeck iid (Deck $ unDeck deck <> mapMaybe (preview _PlayerCard) investigatorStoryCards)
     pure $ overAttrs (inResolutionL .~ False) a
   BeginGame -> do
     mFalseAwakeningPointOfNoReturn <-
@@ -806,7 +806,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     replaceCard card.id card'
     when (shouldShuffleIn == ShuffleIn) do
       push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card']
-    pure $ if standalone then a & storyCardsL %~ insertWith (<>) iid (onlyPlayerCards [card']) else a
+    pure $ if standalone then a & storyCardsL %~ insertWith (<>) iid [card'] else a
   LookAtTopOfDeck iid EncounterDeckTarget n -> do
     let cards = map EncounterCard . take n $ unDeck scenarioEncounterDeck
     player <- getPlayer iid

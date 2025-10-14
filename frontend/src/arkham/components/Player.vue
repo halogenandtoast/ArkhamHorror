@@ -13,6 +13,7 @@ import Enemy from '@/arkham/components/Enemy.vue';
 import Story from '@/arkham/components/Story.vue';
 import Location from '@/arkham/components/Location.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
+import ScarletKey from '@/arkham/components/ScarletKey.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Event from '@/arkham/components/Event.vue';
 import Skill from '@/arkham/components/Skill.vue';
@@ -435,6 +436,15 @@ function toggleHandAreaMarginBottom(event: Event) {
             :data-index="event.cardId"
             @choose="$emit('choose', $event)"
             @showCards="doShowCards"
+          />
+
+          <ScarletKey
+            v-for="skId in investigator.scarletKeys"
+            :scarletKey="game.scarletKeys[skId]"
+            :game="game"
+            :playerId="playerId"
+            :key="skId"
+            @choose="choose"
           />
           <Asset
             v-for="asset in assets"

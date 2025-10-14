@@ -56,17 +56,17 @@ withOwner cardDef f =
     Nothing -> pure ()
     Just iid -> f iid
 
-getCampaignStoryCards :: HasGame m => m (Map InvestigatorId [PlayerCard])
+getCampaignStoryCards :: HasGame m => m (Map InvestigatorId [Card])
 getCampaignStoryCards = do
   mCampaignId <- selectOne TheCampaign
   case mCampaignId of
     Just campaignId -> field CampaignStoryCards campaignId
     Nothing -> scenarioField ScenarioStoryCards
 
-getCampaignStoryCard :: (HasCallStack, HasGame m) => CardDef -> m PlayerCard
+getCampaignStoryCard :: (HasCallStack, HasGame m) => CardDef -> m Card
 getCampaignStoryCard def = fromJustNote "missing card" <$> getMaybeCampaignStoryCard def
 
-getMaybeCampaignStoryCard :: (HasGame m, HasCardCode def) => def -> m (Maybe PlayerCard)
+getMaybeCampaignStoryCard :: (HasGame m, HasCardCode def) => def -> m (Maybe Card)
 getMaybeCampaignStoryCard (toCardCode -> cardCode) = do
   cards <- concat . Map.elems <$> getCampaignStoryCards
   pure $ find ((== toCardCode cardCode) . toCardCode) cards

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.ThePathToCarcosa.Key
+import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Card
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
@@ -47,7 +48,7 @@ instance RunMessage ThePathIsBarred where
       recordCount convictionOrDoubt (convictionOrDoubtCount + 2)
 
       enemy <- getCampaignStoryCard Enemies.theManInThePallidMask
-      push $ RemoveFromBearersDeckOrDiscard enemy
+      for_ (preview _PlayerCard enemy) (push . RemoveFromBearersDeckOrDiscard)
 
       mTheManInThePallidMaskId <- selectOne $ enemyIs Enemies.theManInThePallidMask
       for_ mTheManInThePallidMaskId $ push . RemoveEnemy

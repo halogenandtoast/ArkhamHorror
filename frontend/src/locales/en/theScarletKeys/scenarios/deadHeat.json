@@ -20,6 +20,9 @@
     },
     "tablet": {
       "doNotTakeDamage": "Do not take damage (a civilian at your location, if any, will be slain)"
+    },
+    "cornered": {
+      "slain": "1 civilian at your location is slain."
     }
   },
   "tooltips": {

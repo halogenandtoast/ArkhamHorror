@@ -78,7 +78,7 @@ defaultCampaignRunner msg a = case msg of
   SetChaosTokensForScenario -> a <$ push (SetChaosTokens $ campaignChaosBag $ toAttrs a)
   AddCampaignCardToDeck iid _ card -> do
     card' <- setOwner iid card
-    pure $ updateAttrs a (storyCardsL %~ insertWith (<>) iid (onlyPlayerCards [card']))
+    pure $ updateAttrs a (storyCardsL %~ insertWith (<>) iid [card'])
   RemoveCampaignCard cardDef -> do
     pure
       $ updateAttrs a
@@ -235,7 +235,7 @@ defaultCampaignRunner msg a = case msg of
               deck
       for_ removals \c -> removeCard c.id
 
-      push (LoadDeck iid . Deck $ deck' <> storyCards)
+      push (LoadDeck iid . Deck $ deck' <> mapMaybe (preview _PlayerCard) storyCards)
     pure a
   CrossOutRecord key -> do
     let

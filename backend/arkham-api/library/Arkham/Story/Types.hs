@@ -83,6 +83,9 @@ instance HasField "meta" StoryAttrs Value where
 instance HasField "placement" StoryAttrs Placement where
   getField = storyPlacement
 
+instance HasField "tokens" StoryAttrs Tokens where
+  getField = storyTokens
+
 storyWith
   :: (StoryAttrs -> a)
   -> CardDef

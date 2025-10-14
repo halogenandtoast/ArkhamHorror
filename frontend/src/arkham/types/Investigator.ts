@@ -149,6 +149,7 @@ export type Investigator = {
   deck: CardContents[];
   decks: [string, Card[]][];
   treacheries: string[];
+  scarletKeys: string[];
   defeated: boolean;
   resigned: boolean;
   eliminated: boolean;
@@ -257,6 +258,7 @@ export const investigatorDecoder = JsonDecoder.object({
   devoured: v2Optional(JsonDecoder.array<Card>(cardDecoder, 'Card[]')),
   // traits: HashSet Trait,
   treacheries: JsonDecoder.array<string>(JsonDecoder.string(), 'TreacheryId[]'),
+  scarletKeys: JsonDecoder.array<string>(JsonDecoder.string(), 'ScarletKey[]'),
   defeated: JsonDecoder.boolean(),
   resigned: JsonDecoder.boolean(),
   additionalActions: JsonDecoder.array<AdditionalAction>(additionalActionDecoder, 'AdditionalAction').map((arr) => arr.map((action) => action.kind)),

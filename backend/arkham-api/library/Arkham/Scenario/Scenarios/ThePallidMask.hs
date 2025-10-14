@@ -157,7 +157,7 @@ setupThePallidMask attrs = do
   placeTokens attrs start Resource 1
 
   theManInThePallidMask <- getCampaignStoryCard Enemies.theManInThePallidMask
-  push $ RemoveFromBearersDeckOrDiscard theManInThePallidMask
+  for_ (preview _PlayerCard theManInThePallidMask) (push . RemoveFromBearersDeckOrDiscard)
   setAside [toCard theManInThePallidMask]
 
   let (bottom3, rest) = splitAt 3 $ if isReturnTo then drop 4 remainingCatacombs else remainingCatacombs

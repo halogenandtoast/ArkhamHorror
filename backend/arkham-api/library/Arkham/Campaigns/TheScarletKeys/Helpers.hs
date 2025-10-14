@@ -8,8 +8,8 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Effect.Window
+import Arkham.Helpers.Campaign (getCampaignStoryCards)
 import Arkham.I18n
-import Arkham.Projection
 import Arkham.Id
 import Arkham.Location.Types (Field (LocationConcealedCards))
 import Arkham.Matcher
@@ -19,6 +19,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Prelude
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Window qualified as Window
 
@@ -76,3 +77,11 @@ shift :: ReverseQueue m => ScarletKeyId -> m ()
 shift skeyId = do
   cCode <- field ScarletKeyCardCode skeyId
   push $ Msg.CampaignSpecific ("shift[" <> unCardCode cCode <> "]") Null
+
+setupKeys :: ReverseQueue m => m ()
+setupKeys = do
+  skeys <- getCampaignStoryCards
+  for_ (mapToList skeys) \(iid, cards) -> do
+    for_ cards \card -> do
+      when (card.kind == KeyType) do
+        createScarletKeyAt_ card (AttachedToInvestigator iid)

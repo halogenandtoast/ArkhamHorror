@@ -80,7 +80,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioKeys :: Field Scenario (Set ArkhamKey)
   ScenarioName :: Field Scenario Name
   ScenarioMeta :: Field Scenario Value
-  ScenarioStoryCards :: Field Scenario (Map InvestigatorId [PlayerCard])
+  ScenarioStoryCards :: Field Scenario (Map InvestigatorId [Card])
   ScenarioPlayerDecks :: Field Scenario (Map InvestigatorId (Deck PlayerCard))
   ScenarioTokens :: Field Scenario Tokens
   ScenarioTarotCards :: Field Scenario (Map TarotCardScope [TarotCard])
@@ -141,7 +141,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioStarted :: Bool
   , scenarioScope :: Scope
   , -- for standalone
-    scenarioStoryCards :: Map InvestigatorId [PlayerCard]
+    scenarioStoryCards :: Map InvestigatorId [Card]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
   , scenarioXpBreakdown :: Maybe XpBreakdown
   }
@@ -431,7 +431,8 @@ instance FromJSON ScenarioAttrs where
     scenarioDefeatedEnemies <- o .: "defeatedEnemies"
     scenarioIsSideStory <- o .:? "isSideStory" .!= False
     scenarioInShuffle <- o .:? "inShuffle" .!= False
-    scenarioStoryCards <- o .: "storyCards"
+    scenarioStoryCards :: Map InvestigatorId [Card] <-
+      (o .: "storyCards") <|> (map (toCard @PlayerCard) <$$> (o .: "storyCards"))
     scenarioPlayerDecks <- o .: "playerDecks"
     scenarioXpBreakdown <- o .:? "xpBreakdown"
     scenarioSearch <- o .:? "search"

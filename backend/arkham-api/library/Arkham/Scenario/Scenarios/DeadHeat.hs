@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.DeadHeat (deadHeat) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.Campaigns.TheScarletKeys.Helpers (getTime)
+import Arkham.Campaigns.TheScarletKeys.Helpers (getTime, setupKeys)
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -67,6 +67,7 @@ instance RunMessage DeadHeat where
       when (n < 15) $ doStep 2 PreScenarioSetup
       when (n >= 15 && n <= 24) $ doStep 3 PreScenarioSetup
       when (n > 24) $ doStep 4 PreScenarioSetup
+      setupKeys
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro2"

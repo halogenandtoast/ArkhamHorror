@@ -460,6 +460,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
               ]
           ]
     treacheries <- select (treacheryInThreatAreaOf $ toId investigator')
+    scarletKeys <- select $ ScarletKeyWithPlacement $ AttachedToInvestigator $ toId investigator'
     mLocation <- field InvestigatorLocation (toId investigator')
     willpower <- field InvestigatorBaseWillpower (toId investigator')
     intellect <- field InvestigatorBaseIntellect (toId investigator')
@@ -480,6 +481,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
           , "combat" .= combat
           , "agility" .= agility
           , "handSize" .= handSize
+          , "scarletKeys" .= scarletKeys
           ]
     case mLocation of
       Nothing -> pure $ inner `with` ConnectionData [] `with` additionalData

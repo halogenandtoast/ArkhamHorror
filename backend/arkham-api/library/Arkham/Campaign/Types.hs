@@ -14,8 +14,8 @@ import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Difficulty
 import Arkham.Helpers
-import Arkham.Id
 import Arkham.I18n
+import Arkham.Id
 import Arkham.Json
 import Arkham.Modifier
 import Arkham.PlayerCard
@@ -56,7 +56,7 @@ class
 
 data instance Field Campaign :: Type -> Type where
   CampaignCompletedSteps :: Field Campaign [CampaignStep]
-  CampaignStoryCards :: Field Campaign (Map InvestigatorId [PlayerCard])
+  CampaignStoryCards :: Field Campaign (Map InvestigatorId [Card])
   CampaignCampaignLog :: Field Campaign CampaignLog
   CampaignDecks :: Field Campaign (Map InvestigatorId (Deck PlayerCard))
   CampaignMeta :: Field Campaign Value
@@ -68,7 +68,7 @@ data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId
   , campaignName :: Text
   , campaignDecks :: Map InvestigatorId (Deck PlayerCard)
-  , campaignStoryCards :: Map InvestigatorId [PlayerCard]
+  , campaignStoryCards :: Map InvestigatorId [Card]
   , campaignDifficulty :: Difficulty
   , campaignChaosBag :: [ChaosTokenFace]
   , campaignLog :: CampaignLog
@@ -101,7 +101,7 @@ instance HasField "completedSteps" CampaignAttrs [CampaignStep] where
 instance HasField "decks" CampaignAttrs (Map InvestigatorId (Deck PlayerCard)) where
   getField = campaignDecks
 
-instance HasField "storyCards" CampaignAttrs (Map InvestigatorId [PlayerCard]) where
+instance HasField "storyCards" CampaignAttrs (Map InvestigatorId [Card]) where
   getField = campaignStoryCards
 
 instance HasField "log" CampaignAttrs CampaignLog where
@@ -150,7 +150,7 @@ completedStepsL =
 chaosBagL :: Lens' CampaignAttrs [ChaosTokenFace]
 chaosBagL = lens campaignChaosBag $ \m x -> m {campaignChaosBag = x}
 
-storyCardsL :: Lens' CampaignAttrs (Map InvestigatorId [PlayerCard])
+storyCardsL :: Lens' CampaignAttrs (Map InvestigatorId [Card])
 storyCardsL = lens campaignStoryCards $ \m x -> m {campaignStoryCards = x}
 
 decksL :: Lens' CampaignAttrs (Map InvestigatorId (Deck PlayerCard))
@@ -298,7 +298,7 @@ instance FromJSON CampaignAttrs where
     campaignId <- o .: "id"
     campaignName <- o .: "name"
     campaignDecks <- o .: "decks"
-    campaignStoryCards <- o .: "storyCards"
+    campaignStoryCards :: Map InvestigatorId [Card] <- (o .: "storyCards") <|> (map (toCard @PlayerCard) <$$> (o .: "storyCards"))
     campaignDifficulty <- o .: "difficulty"
     campaignChaosBag <- o .: "chaosBag"
     campaignLog <- o .: "log"

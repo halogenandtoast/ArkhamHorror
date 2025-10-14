@@ -226,6 +226,9 @@ instance Targetable StoryId where
 instance Targetable SkillTestId where
   toTarget = SkillTestTarget
 
+instance Targetable ScarletKeyId where
+  toTarget = ScarletKeyTarget
+
 instance Targetable ChaosTokenFace where
   toTarget = ChaosTokenFaceTarget
 

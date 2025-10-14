@@ -17,6 +17,7 @@ import Event from '@/arkham/components/Event.vue'
 import Skill from '@/arkham/components/Skill.vue'
 import Token from '@/arkham/components/Token.vue'
 import Story from '@/arkham/components/Story.vue'
+import ScarletKey from '@/arkham/components/ScarletKey.vue';
 import * as Arkham from '@/arkham/types/Enemy'
 
 const props = withDefaults(defineProps<{
@@ -324,6 +325,16 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
         :attached="true"
         @choose="$emit('choose', $event)"
       />
+      <ScarletKey
+        v-for="skId in enemy.scarletKeys"
+        :scarletKey="game.scarletKeys[skId]"
+        :game="game"
+        :playerId="playerId"
+        :key="skId"
+        @choose="choose"
+        :attached="true"
+      />
+
       <template v-if="debug.active">
         <button @click="debugging = true">Debug</button>
       </template>
@@ -355,6 +366,10 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
   object-position: bottom;
   height: calc(var(--card-width) * 0.6);
   margin-top: 2px;
+}
+
+:deep(.scarletKey) {
+  margin-top: calc(var(--card-width) * -0.4);
 }
 
 .enemy--can-interact {

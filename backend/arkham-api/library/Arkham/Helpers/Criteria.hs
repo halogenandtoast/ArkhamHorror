@@ -49,7 +49,13 @@ import Arkham.Helpers.Phase (matchPhase)
 import Arkham.Helpers.Placement (onSameLocation)
 import {-# SOURCE #-} Arkham.Helpers.Playable (getIsPlayable, getIsPlayableWithResources)
 import Arkham.Helpers.Query (getPlayerCount)
-import Arkham.Helpers.Scenario (getScenarioDeck, getVictoryDisplay, scenarioField, scenarioFieldMap)
+import Arkham.Helpers.Scenario (
+  getScenarioDeck,
+  getVictoryDisplay,
+  scenarioField,
+  scenarioFieldMap,
+  scenarioFieldMaybe,
+ )
 import Arkham.Helpers.SkillTest (skillTestMatches)
 import Arkham.Helpers.Source (sourceMatches)
 import Arkham.Helpers.Tarot (affectedByTarot)
@@ -351,7 +357,10 @@ passesCriteria iid mcard source' requestor windows' = \case
           $ "Can not check if "
           <> show source
           <> " is in players threat area"
-  Criteria.NotSetup -> not <$> getInSetup
+  Criteria.NotSetup -> do
+    scenarioFieldMaybe ScenarioTurn >>= \case
+      Nothing -> not <$> getInSetup
+      Just n -> pure $ n > 0
   Criteria.Self -> case source of
     InvestigatorSource iid' -> pure $ iid == iid'
     _ -> pure False

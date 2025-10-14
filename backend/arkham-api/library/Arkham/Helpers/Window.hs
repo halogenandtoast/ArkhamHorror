@@ -490,6 +490,8 @@ getEnemy :: [Window] -> EnemyId
 getEnemy = \case
   ((windowType -> Window.EnemySpawns eid _) : _) -> eid
   ((windowType -> Window.EnemyDefeated _ _ eid) : _) -> eid
+  ((windowType -> Window.EnemyMoves eid _) : _) -> eid
+  ((windowType -> Window.EnemyEnters eid _) : _) -> eid
   (_ : rest) -> getEnemy rest
   _ -> error "invalid window"
 
@@ -511,6 +513,13 @@ damagedEnemy :: [Window] -> EnemyId
 damagedEnemy = \case
   ((windowType -> Window.DealtDamage _ _ (EnemyTarget eid) _) : _) -> eid
   _ -> error "Expected DealtDamage window"
+
+damagedAsset :: [Window] -> AssetId
+damagedAsset = \case
+  [] -> error "Expected DealtDamageOrHorro to asset window"
+  ((windowType -> Window.DealtDamage _ _ (AssetTarget aid) _) : _) -> aid
+  ((windowType -> Window.DealtHorror _ (AssetTarget aid) _) : _) -> aid
+  (_ : rest) -> damagedAsset rest
 
 getDamageSource :: HasCallStack => [Window] -> Source
 getDamageSource = \case

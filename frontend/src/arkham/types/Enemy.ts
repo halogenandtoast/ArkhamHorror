@@ -19,6 +19,7 @@ export type Enemy = {
   assets: string[];
   skills: string[];
   events: string[];
+  scarletKeys: string[];
   asSelfLocation: string | null;
   sealedChaosTokens: ChaosToken[];
   placement: Placement;
@@ -70,6 +71,7 @@ export const enemyDecoder = JsonDecoder.object<Enemy>({
   assets: JsonDecoder.array<string>(JsonDecoder.string(), 'AssetId[]'),
   skills: JsonDecoder.array<string>(JsonDecoder.string(), 'SkillId[]'),
   events: JsonDecoder.array<string>(JsonDecoder.string(), 'EventId[]'),
+  scarletKeys: JsonDecoder.array<string>(JsonDecoder.string(), 'ScarletKey[]'),
   asSelfLocation: JsonDecoder.nullable(JsonDecoder.string()),
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
   placement: placementDecoder,

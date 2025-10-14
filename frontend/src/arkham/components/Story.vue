@@ -81,6 +81,7 @@ const abilities = computed(() => {
 })
 
 const clues = computed(() => props.story.tokens[TokenType.Clue])
+const civilians = computed(() => props.story.tokens[TokenType.Civilian])
 
 const hasPool = computed(() => {
   return (clues.value && clues.value > 0)
@@ -100,6 +101,7 @@ const hasPool = computed(() => {
         <div class="pool" v-if="hasPool">
           <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
         </div>
+        <PoolItem class="civilians" v-if="civilians" type="resource" :amount="civilians" />
       </div>
       <AbilityButton
         v-for="ability in abilities"
@@ -168,5 +170,18 @@ const hasPool = computed(() => {
   width: var(--card-width);
   max-width: var(--card-width);
   border-radius: 5px;
+}
+
+.image-container {
+  position: relative;
+  isolation: isolate;
+}
+
+.civilians {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 10;
 }
 </style>

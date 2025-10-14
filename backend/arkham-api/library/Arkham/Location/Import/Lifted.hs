@@ -62,6 +62,7 @@ import Arkham.Target as X
 
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Modifiers
+import Arkham.Matcher
 import Arkham.Modifier
 import Control.Monad.Writer.Class
 import Data.Map.Monoidal.Strict
@@ -92,3 +93,8 @@ blockedWhenAny
   -> query
   -> m ()
 blockedWhenAny attrs query = blockedWhen attrs (selectAny query)
+
+hereGets
+  :: (HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => LocationAttrs -> [ModifierType] -> m ()
+hereGets a mods = modifySelect a (investigatorAt a) mods

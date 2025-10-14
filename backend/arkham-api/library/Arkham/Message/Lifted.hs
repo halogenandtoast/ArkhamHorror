@@ -754,6 +754,13 @@ createEnemyCard_
   -> m ()
 createEnemyCard_ fetch creation = fetchCard fetch >>= (`createEnemy_` creation)
 
+createEnemyCard
+  :: (ReverseQueue m, FetchCard card, IsEnemyCreationMethod creation)
+  => card
+  -> creation
+  -> m EnemyId
+createEnemyCard fetch creation = fetchCard fetch >>= (`createEnemy` creation)
+
 createEnemy_
   :: (ReverseQueue m, IsCard card, IsEnemyCreationMethod creation)
   => card

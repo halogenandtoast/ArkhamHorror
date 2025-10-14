@@ -255,6 +255,7 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c08648a": return "edgeOfTheEarth.theHeartOfMadness"
     case "c08648b": return "edgeOfTheEarth.theHeartOfMadness"
     case "c09501": return "theScarletKeys.riddlesAndRain"
+    case "c09520": return "theScarletKeys.deadHeat"
     case "c50011": return "nightOfTheZealot.theGathering"
     case "c50025": return "nightOfTheZealot.theMidnightMasks"
     case "c50032": return "nightOfTheZealot.theDevourerBelow"

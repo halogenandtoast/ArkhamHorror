@@ -3901,8 +3901,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
       ShuffleBackIn -> do
         when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck: Investigator<ShuffleBackIn>")
-        for_ investigatorSearch \MkSearch {searchType} ->
+        for_ investigatorSearch \MkSearch {searchType} -> do
           pushWhen (searchType == Searching) $ ShuffleDeck (Deck.InvestigatorDeck a.id)
+          pushWhen (searchType == Revealing) $ ShuffleDeck (Deck.InvestigatorDeck a.id)
       PutBack -> pure () -- Nothing moves while searching
       DoNothing -> pure () -- Nothing moves while searching
       RemoveRestFromGame -> do

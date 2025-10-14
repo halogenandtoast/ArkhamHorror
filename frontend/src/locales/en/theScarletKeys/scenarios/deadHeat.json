@@ -1,4 +1,35 @@
 {
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 for every 1 {'{'}perPlayer{'}'} civilians slain.",
+      "cultist": "-4. If you fail, choose a non-_Elite_ enemy at your location. That enemy readies and attacks you.",
+      "tablet": "-1. You may take 1 damage. If you do not, a civilian at your location is slain.",
+      "elderThing": "-3. If you fail, choose and discard 1 card from your hand."
+    },
+    "hardExpert": {
+      "skull": "-2 for every 1 {'{'}perPlayer{'}'} civilians slain.",
+      "cultist": "-6. Choose a non-_Elite_ enemy at your location. That enemy readies and attacks you.",
+      "tablet": "-2. Take 1 damage. A civilian at your location is slain.",
+      "elderThing": "-4. If you fail, discard 1 card from your hand at random."
+    }
+  },
+  "label": {
+    "gnashingTeeth": {
+      "heal": "Heal 2 damage from each Elite enemy in play.",
+      "slain": "1 civilian at your location is slain."
+    },
+    "tablet": {
+      "doNotTakeDamage": "Do not take damage (a civilian at your location, if any, will be slain)"
+    }
+  },
+  "tooltips": {
+    "marrakeshRailwayStation": {
+      "resign": "You flee the city. (Note: If there are no investigators in play, all remaining civilians in play will be slain.)"
+    },
+    "marrakeshRailwayStationAbandoned": {
+      "resign": "You run for your life. (Note: If there are no investigators in play, all remaining civilians in play will be slain.)"
+    }
+  },
   "intro": {
     "title": "File #11–B: Dead Heat",
     "lessThan15": "If fewer than 15 time has passed, proceed to Intro 2.",

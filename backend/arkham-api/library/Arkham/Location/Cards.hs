@@ -8355,10 +8355,14 @@ tanneries =
 
 bahiaPalaceGardens :: CardDef
 bahiaPalaceGardens =
-  location
+  locationWithUnrevealed
     "09530"
     "Bahia Palace Gardens"
     [Marrakesh]
+    Square
+    [Squiggle, Triangle]
+    "Bahia Palace Gardens"
+    [Marrakesh, RitualSite]
     Square
     [Squiggle, Triangle]
     DeadHeat
@@ -8405,10 +8409,14 @@ tanneriesAbandoned =
 
 bahiaPalaceGardensAbandoned :: CardDef
 bahiaPalaceGardensAbandoned =
-  location
+  locationWithUnrevealed
     "09535"
     "Bahia Palace Gardens"
     [Marrakesh, Abandoned]
+    Square
+    [Squiggle, Triangle]
+    "Bahia Palace Gardens"
+    [Marrakesh, RitualSite, Abandoned]
     Square
     [Squiggle, Triangle]
     DeadHeat

@@ -2805,7 +2805,7 @@ amaranthCorruptionRevealed :: CardDef
 amaranthCorruptionRevealed =
   (enemy "09537b" ("Amaranth" <:> "Corruption Revealed") DeadHeat 1)
     { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
-    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     , cdVictoryPoints = Just 1
     , cdUnique = True
     , cdDoubleSided = True

@@ -872,7 +872,7 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
               />
             </div>
             <PoolItem class="depth" v-if="currentDepth" type="resource" :amount="currentDepth" />
-            <PoolItem class="depth" v-if="civiliansSlain" type="resource" :amount="civiliansSlain" />
+            <PoolItem class="civilians-slain" v-if="civiliansSlain" type="resource" :amount="civiliansSlain" />
             <div class="spent-keys" v-if="spentKeys.length > 0">
               <Key v-for="key in spentKeys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
             </div>
@@ -1385,7 +1385,7 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
   position: relative;
   isolation: isolate;
 
-  .depth {
+  .depth, .civilians-slain {
     position: absolute;
     bottom: 0;
     right: 0;

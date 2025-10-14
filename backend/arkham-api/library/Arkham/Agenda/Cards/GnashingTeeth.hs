@@ -4,17 +4,14 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location
-import Arkham.Helpers.Log (scenarioCount, scenarioCountIncrement)
+import Arkham.Helpers.Log (scenarioCount)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getLead)
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.DeadHeat.Helpers
 import Arkham.Spawn
-import Arkham.Token
 import Arkham.Trait (Trait (Ghoul, Risen))
 
 newtype GnashingTeeth = GnashingTeeth AgendaAttrs
@@ -39,13 +36,8 @@ instance RunMessage GnashingTeeth where
       shuffleEncounterDiscardBackIn
       eachInvestigator \iid -> do
         chooseOneM iid $ scenarioI18n do
-          labeled' "gnashingTeeth.heal" nothing
-          labeled' "gnashingTeeth.slain" do
-            withLocationOf iid \lid -> do
-              hasCivilians <- fieldMap LocationTokens (hasToken Civilian) lid
-              when hasCivilians $ do
-                removeTokens attrs lid Civilian 1
-                scenarioCountIncrement CiviliansSlain
+          labeled' "gnashingTeeth.heal" $ selectEach EliteEnemy $ healDamageOn attrs 1
+          labeled' "gnashingTeeth.slain" $ withLocationOf iid slayCivilian
       advanceAgendaDeck attrs
       pure a
     _ -> GnashingTeeth <$> liftRunMessage msg attrs

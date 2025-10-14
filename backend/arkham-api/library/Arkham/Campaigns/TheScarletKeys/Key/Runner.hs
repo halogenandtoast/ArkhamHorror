@@ -13,6 +13,7 @@ import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Target as X
 
+import Arkham.Placement
 import Arkham.Prelude
 
 instance RunMessage ScarletKey where
@@ -21,5 +22,10 @@ instance RunMessage ScarletKey where
 instance RunMessage ScarletKeyAttrs where
   runMessage msg attrs = case msg of
     PlaceScarletKey skid p | skid == attrs.id -> do
-      pure $ attrs & placementL .~ p
+      case p of
+        AttachedToEnemy _ | attrs.stability == Stable -> do
+          pure $ attrs & placementL .~ p & stabilityL .~ Unstable
+        _ -> pure $ attrs & placementL .~ p
+    Flip _ _ (isTarget attrs -> True) -> do
+      pure $ attrs & stabilityL .~ if attrs.stability == Stable then Unstable else Stable
     _ -> pure attrs

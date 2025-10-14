@@ -1,6 +1,7 @@
 module Arkham.Campaigns.TheScarletKeys.Helpers where
 
 import Arkham.Campaigns.TheScarletKeys.Key
+import Arkham.Campaigns.TheScarletKeys.Key.Types (Field (..), ScarletKeyId)
 import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.Card
 import Arkham.Classes.HasGame
@@ -8,6 +9,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Effect.Window
 import Arkham.I18n
+import Arkham.Projection
 import Arkham.Id
 import Arkham.Location.Types (Field (LocationConcealedCards))
 import Arkham.Matcher
@@ -69,3 +71,8 @@ setBearer skey sts@(KeyWithInvestigator iid) = do
 setBearer skey sts@(KeyWithEnemy {}) = do
   removeCampaignCard skey
   campaignSpecific "setBearer" (skey.cardCode, sts)
+
+shift :: ReverseQueue m => ScarletKeyId -> m ()
+shift skeyId = do
+  cCode <- field ScarletKeyCardCode skeyId
+  push $ Msg.CampaignSpecific ("shift[" <> unCardCode cCode <> "]") Null

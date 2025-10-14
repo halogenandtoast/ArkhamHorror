@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedLabels #-}
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Enemy.Runner (module Arkham.Enemy.Runner, module X) where
 
@@ -365,7 +365,7 @@ instance RunMessage EnemyAttrs where
               when (#massive `elem` keywords) do
                 investigatorIds <- select $ investigatorAt lid
                 pushAll $ EnemyEntered eid lid
-                  : [EnemyEngageInvestigator eid iid | iid <- investigatorIds] <> [EnemySpawned details]
+                  : [Will (EnemyEngageInvestigator eid iid) | iid <- investigatorIds] <> [EnemySpawned details]
 
               if (all (`notElem` keywords) [#aloof, #massive] && not enemyExhausted) || forcedEngagement
                 then do
@@ -379,7 +379,7 @@ instance RunMessage EnemyAttrs where
                     Just iid | not onlyPrey || iid `elem` preyIds -> do
                       atSameLocation <- iid <=~> investigatorAt lid
                       pushAll $ EnemyEntered eid lid
-                        : [EnemyEngageInvestigator eid iid | atSameLocation && not enemyDelayEngagement]
+                        : [Will (EnemyEngageInvestigator eid iid) | atSameLocation && not enemyDelayEngagement]
                           <> [EnemySpawned details]
                     _ -> do
                       investigatorIds <- if null preyIds then select $ investigatorAt lid else pure []
@@ -621,10 +621,13 @@ instance RunMessage EnemyAttrs where
               pushWhen wantsToPatrol $ HandleGroupTarget HunterGroup (toTarget a) [PatrolMove (toId a) lMatcher]
             Keyword.Hunter -> do
               wantsToHunt <-
-                (&&)
-                  <$> selectNone (InvestigatorAt $ locationWithEnemy enemyId)
-                  <*> selectNone
-                    (EnemyAt (locationWithEnemy enemyId) <> EnemyWithModifier CountsAsInvestigatorForHunterEnemies)
+                andM
+                  [ selectNone (InvestigatorAt $ locationWithEnemy enemyId)
+                  , selectNone
+                      (EnemyAt (locationWithEnemy enemyId) <> EnemyWithModifier CountsAsInvestigatorForHunterEnemies)
+                  , selectNone
+                      $ EnemyAt (locationWithEnemy enemyId <> LocationWithModifier CountsAsInvestigatorForHunterEnemies)
+                  ]
 
               when wantsToHunt do
                 (batchId, windowMessages) <- wouldWindows $ Window.WouldMoveFromHunter (toId a)
@@ -651,11 +654,6 @@ instance RunMessage EnemyAttrs where
             forcedTargetLocation = firstJust matchForcedTargetLocation mods
             additionalConnections = [ConnectedToWhen (LocationWithId loc) (LocationWithId lid') | HunterConnectedTo lid' <- mods]
 
-          -- applyConnectionMapModifier connectionMap (HunterConnectedTo lid') =
-          --  unionWith (<>) connectionMap $ singletonMap loc [lid']
-          -- applyConnectionMapModifier connectionMap _ = connectionMap
-          -- extraConnectionsMap :: Map LocationId [LocationId] = foldl' applyConnectionMapModifier mempty mods
-
           enemiesAsInvestigatorLocations <-
             withModifiers loc (toModifiers a additionalConnections)
               $ select
@@ -663,6 +661,12 @@ instance RunMessage EnemyAttrs where
               $ LocationWithEnemy
               $ NearestEnemyToLocation loc
               $ EnemyWithModifier CountsAsInvestigatorForHunterEnemies
+
+          locationsToHuntTo <-
+            withModifiers loc (toModifiers a additionalConnections)
+              $ select
+              $ locationMatcherModifier
+              $ LocationWithModifier CountsAsInvestigatorForHunterEnemies
 
           prey <- getPreyMatcher a
           matchingClosestLocationIds <- withModifiers loc (toModifiers a additionalConnections)
@@ -694,24 +698,31 @@ instance RunMessage EnemyAttrs where
                   $ locationMatcherModifier
                   $ NearestLocationToLocation
                     loc
-                    (mapOneOf LocationWithId $ enemiesAsInvestigatorLocations <> investigatorLocations)
+                    ( mapOneOf LocationWithId
+                        $ traceShowId locationsToHuntTo
+                        <> enemiesAsInvestigatorLocations
+                        <> investigatorLocations
+                    )
 
           preyIds <- select prey
           let includeEnemies = prey == Prey Anyone
 
-          filteredClosestLocationIds <-
-            flip filterM matchingClosestLocationIds $ \lid -> do
-              hasInvestigators <-
-                notNull
-                  . List.intersect preyIds
-                  <$> select (InvestigatorAt (locationMatcherModifier $ LocationWithId lid))
-              hasEnemies <-
-                notNull
-                  <$> select
-                    ( EnemyAt (locationMatcherModifier $ LocationWithId lid)
-                        <> EnemyWithModifier CountsAsInvestigatorForHunterEnemies
-                    )
-              pure $ hasInvestigators || (includeEnemies && hasEnemies)
+          filteredClosestLocationIds <- flip filterM matchingClosestLocationIds \lid -> do
+            hasInvestigators <-
+              notNull
+                . List.intersect preyIds
+                <$> select (InvestigatorAt (locationMatcherModifier $ LocationWithId lid))
+            hasEnemies <-
+              notNull
+                <$> select
+                  ( EnemyAt (locationMatcherModifier $ LocationWithId lid)
+                      <> EnemyWithModifier CountsAsInvestigatorForHunterEnemies
+                  )
+            hasCountsModifier <-
+              notNull
+                <$> select
+                  (LocationWithId lid <> LocationWithModifier CountsAsInvestigatorForHunterEnemies)
+            pure $ hasInvestigators || hasCountsModifier || (includeEnemies && hasEnemies)
 
           -- If we have any locations with prey, that takes priority, otherwise
           -- we return all locations which may have matched via AnyPrey
@@ -787,7 +798,12 @@ instance RunMessage EnemyAttrs where
               CannotBeAttacked -> pure False
               _ -> pure True
         case iids of
-          [] -> pure ()
+          [] -> do
+            whenM
+              (selectAny $ locationWithEnemy enemyId <> LocationWithModifier CountsAsInvestigatorForHunterEnemies)
+              do
+                push $ ScenarioSpecific "enemyAttackedAtLocation" (toJSON enemyId)
+            pure ()
           [x] ->
             push
               $ EnemyWillAttack
@@ -1464,6 +1480,9 @@ instance RunMessage EnemyAttrs where
       pushAll
         $ map (toDiscard GameSource) enemyAssets
         <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
+      pure a
+    Will msg'@(EnemyEngageInvestigator eid _) | eid == enemyId -> do
+      unless enemyExhausted $ push msg'
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       eliminated <- not <$> matches iid UneliminatedInvestigator

@@ -45,6 +45,7 @@
   "gainResources": "Gain 1 resource | Gain {count} resources",
   "gainSurge": "Gain surge",
   "healHorror": "Heal {count} horror",
+  "healDamage": "Heal {count} damage",
   "investigate": "Investigate",
   "loseActions": "Lose 1 action | Lose {count} actions",
   "loseResources": "Lose 1 resource | Lose {count} resources",

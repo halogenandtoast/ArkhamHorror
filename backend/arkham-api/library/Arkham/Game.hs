@@ -362,6 +362,7 @@ withEnemyMetadata a = do
   emAssets <- select $ EnemyAsset (toId a)
   emEvents <- select $ EnemyEvent (toId a)
   emSkills <- select $ EnemySkill (toId a)
+  emScarletKeys <- select $ ScarletKeyWithPlacement $ AttachedToEnemy $ toId a
   pure $ a `with` EnemyMetadata {..}
 
 withAgendaMetadata :: HasGame m => Agenda -> m (With Agenda AgendaMetadata)
@@ -5305,6 +5306,18 @@ instance Projection ConcealedCard where
     pure $ case fld of
       ConcealedCardKind -> c.kind
       ConcealedCardPlacement -> c.placement
+
+instance Projection ScarletKey where
+  getAttrs sid = toAttrs <$> getScarletKey sid
+  project = maybeScarletKey
+  field fld sid = do
+    c <- getScarletKey sid
+    pure $ case fld of
+      ScarletKeyCard -> toCard c
+      ScarletKeyCardCode -> toCardCode c
+      ScarletKeyStability -> attr keyStability c
+      ScarletKeyPlacement -> attr keyPlacement c
+      ScarletKeyBearer -> attr keyBearer c
 
 instance Projection Story where
   getAttrs sid = toAttrs <$> getStory sid

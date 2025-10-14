@@ -2,18 +2,18 @@ module Arkham.Location.Cards.JemaaElFnaaSquareAbandoned (jemaaElFnaaSquareAbando
 
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Modifier (ModifierType (..))
 
 newtype JemaaElFnaaSquareAbandoned = JemaaElFnaaSquareAbandoned LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+
+instance HasModifiersFor JemaaElFnaaSquareAbandoned where
+  getModifiersFor (JemaaElFnaaSquareAbandoned a) = hereGets a [IncreaseCostOf #asset 2]
 
 jemaaElFnaaSquareAbandoned :: LocationCard JemaaElFnaaSquareAbandoned
 jemaaElFnaaSquareAbandoned = symbolLabel $ location JemaaElFnaaSquareAbandoned Cards.jemaaElFnaaSquareAbandoned 4 (Static 0)
 
-instance HasAbilities JemaaElFnaaSquareAbandoned where
-  getAbilities (JemaaElFnaaSquareAbandoned attrs) =
-    extendRevealed attrs []
-
 instance RunMessage JemaaElFnaaSquareAbandoned where
-  runMessage msg (JemaaElFnaaSquareAbandoned attrs) = runQueueT $ case msg of
-    _ -> JemaaElFnaaSquareAbandoned <$> liftRunMessage msg attrs
+  runMessage msg (JemaaElFnaaSquareAbandoned attrs) =
+    JemaaElFnaaSquareAbandoned <$> runMessage msg attrs

@@ -8,18 +8,24 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Helpers.Log (scenarioCount)
+import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCard, randomDiscard)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getLead)
+import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
+import Arkham.ScenarioLogKey
 import Arkham.Scenarios.DeadHeat.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Token
 
 newtype DeadHeat = DeadHeat ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deadHeat :: Difficulty -> DeadHeat
@@ -35,11 +41,17 @@ deadHeat difficulty =
 
 instance HasChaosTokenValue DeadHeat where
   getChaosTokenValue iid tokenFace (DeadHeat attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      n <- liftA2 div (scenarioCount CiviliansSlain) (perPlayer 1)
+      pure $ toChaosTokenValue attrs Skull n (n * 2)
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 4 6
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 1 2
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
     otherFace -> getChaosTokenValue iid otherFace attrs
+
+instance HasModifiersFor DeadHeat where
+  getModifiersFor (DeadHeat a) = do
+    modifySelect a (LocationWithToken Civilian) [CountsAsInvestigatorForHunterEnemies]
 
 instance RunMessage DeadHeat where
   runMessage msg s@(DeadHeat attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -139,5 +151,34 @@ instance RunMessage DeadHeat where
           flavor $ setTitle "title" >> p "resolution5"
           endOfScenario
         _ -> error "Unknown resolution for Dead Heat"
+      pure s
+    ScenarioSpecific "enemyAttackedAtLocation" v -> do
+      let enemy :: EnemyId = toResult v
+      withLocationOf enemy slayCivilian
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Cultist | isEasyStandard attrs -> do
+          enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy
+          chooseTargetM iid enemies \enemy -> do
+            readyThis enemy
+            initiateEnemyAttack enemy Cultist iid
+        Tablet | isEasyStandard attrs -> do
+          chooseOneM iid do
+            unscoped $ countVar 1 $ labeled' "takeDamage" $ assignDamage iid Tablet 1
+            labeled' "tablet.doNotTakeDamage" $ withLocationOf iid slayCivilian
+        ElderThing | isEasyStandard attrs -> chooseAndDiscardCard iid ElderThing
+        ElderThing | isHardExpert attrs -> randomDiscard iid ElderThing
+        _ -> pure ()
+      pure s
+    ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
+      enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy
+      chooseTargetM iid enemies \enemy -> do
+        readyThis enemy
+        initiateEnemyAttack enemy Cultist iid
+      pure s
+    ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
+      assignDamage iid Tablet 1
+      withLocationOf iid slayCivilian
       pure s
     _ -> DeadHeat <$> liftRunMessage msg attrs

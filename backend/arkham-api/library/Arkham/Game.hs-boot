@@ -10,9 +10,10 @@ import Arkham.Act.Types
 import Arkham.Agenda.Types
 import Arkham.Asset.Types
 import Arkham.Campaign.Types
-import Arkham.Campaigns.TheScarletKeys.Concealed.Types
 import Arkham.Campaigns.TheScarletKeys.Concealed.Matcher
+import Arkham.Campaigns.TheScarletKeys.Concealed.Types
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
+import Arkham.Campaigns.TheScarletKeys.Key.Types
 import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasAbilities
@@ -89,6 +90,7 @@ instance Projection Scenario
 instance Projection Skill
 instance Projection Treachery
 instance Projection Story
+instance Projection ScarletKey
 
 instance HasChaosTokenValue InvestigatorId
 instance HasChaosTokenValue ()

@@ -6,6 +6,7 @@ import Arkham.Agenda.Types (Agenda)
 import Arkham.Asset.Types (Asset)
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.Campaigns.TheScarletKeys.Concealed
+import Arkham.Campaigns.TheScarletKeys.Key.Types
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
@@ -230,6 +231,14 @@ getStory sid = fromJustNote missingStory <$> maybeStory sid
 
 maybeStory :: HasGame m => StoryId -> m (Maybe Story)
 maybeStory sid = preview (entitiesL . storiesL . ix sid) <$> getGame
+
+getScarletKey :: (HasCallStack, HasGame m) => ScarletKeyId -> m ScarletKey
+getScarletKey sid = fromJustNote missingScarletKey <$> maybeScarletKey sid
+ where
+  missingScarletKey = "Unknown scarlet key: " <> show sid
+
+maybeScarletKey :: HasGame m => ScarletKeyId -> m (Maybe ScarletKey)
+maybeScarletKey sid = preview (entitiesL . scarletKeysL . ix sid) <$> getGame
 
 getConcealedCard :: (HasCallStack, HasGame m) => ConcealedCardId -> m ConcealedCard
 getConcealedCard cid = fromJustNote missingConcealedCard <$> maybeConcealedCard cid

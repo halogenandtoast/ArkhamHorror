@@ -3,6 +3,7 @@
 module Arkham.Campaigns.TheScarletKeys.Key.Types (
   module Arkham.Campaigns.TheScarletKeys.Key.Types,
   module Arkham.Campaigns.TheScarletKeys.Key.Id,
+  Field (..),
 ) where
 
 import Arkham.Campaigns.TheScarletKeys.Key.Cards
@@ -45,10 +46,10 @@ type ScarletKeyCard a = CardBuilder (Target, ScarletKeyId) a
 
 data instance Field ScarletKey :: Type -> Type where
   ScarletKeyCard :: Field ScarletKey Card
-  ScarletKeyClues :: Field ScarletKey Int
+  ScarletKeyCardCode :: Field ScarletKey CardCode
+  ScarletKeyStability :: Field ScarletKey Stability
   ScarletKeyPlacement :: Field ScarletKey Placement
-  ScarletKeyOtherSide :: Field ScarletKey (Maybe Target)
-  ScarletKeyCardsUnderneath :: Field ScarletKey [Card]
+  ScarletKeyBearer :: Field ScarletKey Target
 
 data Stability = Stable | Unstable
   deriving stock (Show, Eq, Data)
@@ -79,6 +80,18 @@ instance HasField "id" ScarletKeyAttrs ScarletKeyId where
 instance HasField "ability" ScarletKeyAttrs (Int -> Source) where
   getField = toAbilitySource
 
+instance HasField "stability" ScarletKeyAttrs Stability where
+  getField = keyStability
+
+instance HasField "stable" ScarletKeyAttrs Bool where
+  getField = (== Stable) . keyStability
+
+instance HasField "unstable" ScarletKeyAttrs Bool where
+  getField = (== Unstable) . keyStability
+
+instance HasField "bearer" ScarletKeyAttrs Target where
+  getField = keyBearer
+
 instance HasField "placement" ScarletKeyAttrs Placement where
   getField = keyPlacement
 
@@ -99,6 +112,9 @@ key f cardDef =
             , keyBearer = bearer
             }
     }
+
+instance HasCardDef ScarletKey where
+  toCardDef = toCardDef . toAttrs
 
 instance HasCardDef ScarletKeyAttrs where
   toCardDef e = case lookup (unScarletKeyId $ keyId e) allScarletKeyCards of
@@ -173,6 +189,11 @@ instance Sourceable ScarletKey where
 
 instance HasCardCode ScarletKeyAttrs where
   toCardCode = unScarletKeyId . keyId
+
+instance IsCard ScarletKey where
+  toCardId = toCardId . toAttrs
+  toCard = toCard . toAttrs
+  toCardOwner = toCardOwner . toAttrs
 
 instance IsCard ScarletKeyAttrs where
   toCardId = keyCardId

@@ -165,7 +165,11 @@ async function clicked() {
   if(cardAction.value !== -1) {
     emits('choose', cardAction.value)
   } else if (abilities.value.length > 0) {
-    showAbilities.value = !showAbilities.value
+    if (abilities.value.length === 1 ) {
+      emits('choose', abilities.value[0].index)
+    } else {
+      showAbilities.value = !showAbilities.value
+    }
   }
 }
 
@@ -341,6 +345,9 @@ const assetStory = computed(() => {
   transition: transform 0.2s linear;
   transform: rotate(90deg);
   margin: 0 30px;
+  @media (max-width: 800px) and (orientation: portrait) {
+    margin: 0 8px;
+  }
 }
 
 .asset--can-interact {

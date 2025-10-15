@@ -27,6 +27,7 @@ instance HasAbilities HideousPalace where
       [ restricted a 1 (CluesOnThis $ lessThan 4) $ forced $ RoundEnds #when
       , scenarioI18n
           $ withI18nTooltip "hideousPalace.ability"
+          $ withHighlight a
           $ restricted (proxied (LocationMatcherSource $ withTrait Void) a) 1 Here actionAbility
       ]
 

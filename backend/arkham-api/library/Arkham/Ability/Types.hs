@@ -44,6 +44,7 @@ data Ability = Ability
   , abilityRequestor :: Source
   , abilityTriggersSkillTest :: Bool
   , abilityWantsSkillTest :: Maybe SkillTestMatcher
+  , abilityTarget :: Maybe Target -- used to highlight the target of the ability in the UI
   }
   deriving stock (Show, Ord, Data)
 
@@ -77,7 +78,11 @@ buildAbility source idx abilityType =
     , abilityRequestor = toSource source
     , abilityTriggersSkillTest = False
     , abilityWantsSkillTest = Nothing
+    , abilityTarget = Nothing
     }
+
+withHighlight :: Targetable target => target -> Ability -> Ability
+withHighlight target ab = ab {abilityTarget = Just (toTarget target)}
 
 skillTestAbility :: Ability -> Ability
 skillTestAbility ab = ab {abilityTriggersSkillTest = True}
@@ -215,6 +220,7 @@ instance FromJSON Ability where
     abilityRequestor <- o .:? "requestor" .!= abilitySource
     abilityTriggersSkillTest <- o .:? "triggersSkillTest" .!= False
     abilityWantsSkillTest <- o .:? "wantsSkillTest" .!= Nothing
+    abilityTarget <- o .:? "target"
 
     pure Ability {..}
 

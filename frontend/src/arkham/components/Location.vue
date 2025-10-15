@@ -22,6 +22,7 @@ import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Location';
 import { TokenType } from '@/arkham/types/Token';
 import { Card } from '../types/Card';
+import useHighlighter from '@/composeable/useHighlighter';
 
 export interface Props {
   game: Game
@@ -34,6 +35,7 @@ const frame = ref(null)
 const debugging = ref(false)
 const showAbilities = ref<boolean>(false)
 const abilitiesEl = ref<HTMLElement | null>(null)
+const highlighter = useHighlighter()
 
 const dragover = (e: DragEvent) => {
   e.preventDefault()
@@ -319,6 +321,7 @@ function onDrop(event: DragEvent) {
 }
 
 const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Underneath", false)
+const highlighted = computed(() => highlighter.highlighted.value === props.location.id)
 </script>
 
 <template>
@@ -347,7 +350,7 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
             <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
           </span>
 
-          <div class="card-frame-inner">
+          <div class="card-frame-inner" :class="{ highlighted }">
             <Story v-if="locationStory" :story="locationStory" :game="game" :playerId="playerId" @choose="choose"/>
             <template v-else>
               <div class="wave" v-if="location.floodLevel" :class="{ [location.floodLevel]: true }"></div>
@@ -687,6 +690,21 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
   }
 }
 
+@property --glow-rotation {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes glow {
+  from {
+    --glow-rotation: 0deg;
+  }
+  to {
+    --glow-rotation: 360deg;
+  }
+}
+
 .card-frame {
   position: relative;
   display: flex;
@@ -698,13 +716,33 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
   .card-frame-inner {
     overflow: hidden;
     position: relative;
+    transition: transform 0.2s;
+    transform: scale(1);
     line-height: 0;
+    box-sizing: border-box;
     box-shadow: var(--card-shadow);
     &:deep(.card) {
       width: calc(var(--card-width) + 4px);
       min-width: calc(var(--card-width) + 4px);
       border-radius: 3px;
       border-width: 1px;
+    }
+    &.highlighted {
+      --gradient-glow: #BDE038, rebeccapurple, rebeccapurple, #BDE038;
+      transform: scale(1.1);
+      border: 2px solid transparent;
+      background: conic-gradient(from var(--glow-rotation), var(--gradient-glow)) border-box;
+      border-style: inset;
+      border-radius: 3px;
+      margin-left: -2px;
+      position: relative;
+      animation: glow 3s linear infinite;
+
+      &::before, &::after {
+        content: '';
+        position: absolute;
+        border-radius: inherit;
+      }
     }
   }
 }
@@ -898,4 +936,5 @@ const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Un
 :deep(.token) {
   width: 30px;
 }
+
 </style>

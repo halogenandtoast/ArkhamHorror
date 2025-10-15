@@ -3,7 +3,6 @@ module Arkham.Scenario.Scenarios.BeforeTheBlackThrone (setupBeforeTheBlackThrone
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
@@ -184,7 +183,8 @@ instance RunMessage BeforeTheBlackThrone where
       pathWindsBeforeYouCount <- getRecordCount ThePathWindsBeforeYou
       when (isReturnTo && pathWindsBeforeYouCount >= 2) do
         leadChooseOneM do
-          campaignI18n $ labeled' "nightgauntSteed" do
+          scenarioI18n $ questionLabeled' "nightgauntSteed"
+          withI18n $ labeled' "yes" do
             removeTokens ScenarioSource ScenarioTarget #resource 2
             eachInvestigator $ createAssetAt_ Assets.nightgauntSteed . InPlayArea
           withI18n $ labeled' "no" nothing

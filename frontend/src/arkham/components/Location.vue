@@ -690,21 +690,6 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   }
 }
 
-@property --glow-rotation {
-  syntax: '<angle>';
-  inherits: false;
-  initial-value: 0deg;
-}
-
-@keyframes glow {
-  from {
-    --glow-rotation: 0deg;
-  }
-  to {
-    --glow-rotation: 360deg;
-  }
-}
-
 .card-frame {
   position: relative;
   display: flex;
@@ -728,22 +713,9 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
       border-width: 1px;
     }
     &.highlighted {
-      --gradient-glow: #BDE038, rebeccapurple, rebeccapurple, #BDE038;
       transform: scale(1.1);
-      border: 2px solid transparent;
-      background: conic-gradient(from var(--glow-rotation), var(--gradient-glow)) border-box;
-      border-style: inset;
-      border-radius: 3px;
-      margin-left: -2px;
-      position: relative;
-      animation: glow 3s linear infinite;
-
-      &::before, &::after {
-        content: '';
-        position: absolute;
-        border-radius: inherit;
-      }
     }
+    --gradient-glow: #BDE038, rebeccapurple, rebeccapurple, #BDE038;
   }
 }
 

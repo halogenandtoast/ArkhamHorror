@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.OccultLexicon where
+module Arkham.Asset.Assets.OccultLexicon (occultLexicon) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -15,8 +15,7 @@ occultLexicon :: AssetCard OccultLexicon
 occultLexicon = asset OccultLexicon Cards.occultLexicon
 
 instance HasAbilities OccultLexicon where
-  getAbilities (OccultLexicon a) =
-    [restricted a 1 ControlsThis $ forced $ AssetEntersPlay #after (be a)]
+  getAbilities (OccultLexicon a) = [controlled_ a 1 $ forced $ AssetEntersPlay #after (be a)]
 
 instance RunMessage OccultLexicon where
   runMessage msg (OccultLexicon attrs) = runQueueT $ case msg of
@@ -27,6 +26,8 @@ instance RunMessage OccultLexicon where
         whenM (getCanShuffleDeck iid) $ shuffleCardsIntoDeck iid deckBloodRites
       OccultLexicon <$> liftRunMessage msg attrs
     RemovedFromPlay (isSource attrs -> True) -> do
-      for_ attrs.owner \iid -> push (RemoveAllCopiesOfCardFromGame iid "05317")
+      for_ attrs.owner \iid -> do
+        bloodRite <- select $ basic $ CardOwnedBy iid <> cardIs Events.bloodRite
+        for_ bloodRite $ placeInBonded iid
       OccultLexicon <$> liftRunMessage msg attrs
     _ -> OccultLexicon <$> liftRunMessage msg attrs

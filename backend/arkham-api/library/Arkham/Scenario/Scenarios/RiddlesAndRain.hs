@@ -146,13 +146,6 @@ instance RunMessage RiddlesAndRain where
         _ -> pure ()
       pure s
     ScenarioResolution r -> scope "resolutions" do
-      let
-        chooseBearer = do
-          investigators <- getInvestigators
-          leadChooseOneM do
-            questionLabeled "Choose bearer"
-            questionLabeledCard Keys.theEyeOfRavens
-            portraits investigators $ setBearer Keys.theEyeOfRavens . KeyWithInvestigator
       case r of
         NoResolution -> do
           resolution "noResolution"
@@ -161,13 +154,13 @@ instance RunMessage RiddlesAndRain where
           record YouHaventSeenTheLastOfTheRedGlovedMan
           markTime 1
           resolutionWithXp "resolution1" $ allGainXp' attrs
-          chooseBearer
+          chooseBearer Keys.theEyeOfRavens
           endOfScenario
         Resolution 2 -> do
           record YouHaventSeenTheLastOfTheRedGlovedMan
           markTime 1
           resolutionWithXp "resolution2" $ allGainXp' attrs
-          chooseBearer
+          chooseBearer Keys.theEyeOfRavens
           endOfScenario
         Resolution 3 -> do
           record YouHaventSeenTheLastOfTheRedGlovedMan

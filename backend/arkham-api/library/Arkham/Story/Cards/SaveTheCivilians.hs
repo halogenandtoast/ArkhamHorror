@@ -43,7 +43,10 @@ instance RunMessage SaveTheCivilians where
         cardCode <- field LocationCardCode lid
         checkAfter $ Window.ScenarioEvent ("rescueCivilian[" <> unCardCode cardCode <> "]") (Just iid) Null
       pure s
-    UseThisAbility _ (isSource attrs -> True) 2 -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      flipOverBy iid (attrs.ability 2) attrs
+      pure s
+    Flip _ _ (isTarget attrs -> True) -> do
       slain <- scenarioCount CiviliansSlain
       let rescued = countTokens Civilian attrs.tokens
       leadChooseOneM $ targeting attrs do

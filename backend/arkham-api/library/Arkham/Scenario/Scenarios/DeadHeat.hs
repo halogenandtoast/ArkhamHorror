@@ -2,21 +2,30 @@ module Arkham.Scenario.Scenarios.DeadHeat (deadHeat) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.Campaigns.TheScarletKeys.Helpers (getTime, setupKeys)
+import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
+import Arkham.Campaigns.TheScarletKeys.Meta
+import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Helpers.Log (scenarioCount)
 import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCard, randomDiscard)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher
+import Arkham.Location.Types (Field (LocationTokens))
+import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
+import Arkham.Message.Lifted.Story
+import Arkham.Placement
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
@@ -103,15 +112,17 @@ instance RunMessage DeadHeat where
       gather Set.StrikingFear
 
       setAgendaDeck [Agendas.gnashingTeeth, Agendas.emptyStreets]
-      setActDeck [Acts.findAmaranth, Acts.ritualOfLifeAndDeath, Acts.queenOfNothingAtAll]
+      if n >= 15
+        then do
+          setActDeck [Acts.ritualOfLifeAndDeath, Acts.queenOfNothingAtAll]
+          doom <- perPlayer 2
+          placeDoomOnAgenda doom
+        else setActDeck [Acts.findAmaranth, Acts.ritualOfLifeAndDeath, Acts.queenOfNothingAtAll]
 
       startAt =<< place Locations.marrakeshRailwayStation
-      placeAll
-        [ Locations.jemaaElFnaaSquare
-        , Locations.saadiansTombs
-        , Locations.tanneries
-        , Locations.bahiaPalaceGardens
-        ]
+      placeAll [Locations.jemaaElFnaaSquare, Locations.saadiansTombs, Locations.tanneries]
+
+      bahiaPalaceGardens <- place Locations.bahiaPalaceGardens
 
       setAside
         [ Locations.marrakeshRailwayStationAbandoned
@@ -129,6 +140,17 @@ instance RunMessage DeadHeat where
         ]
 
       doStep 2 Setup
+
+      when (n >= 15) do
+        -- remove from set aside
+        traverse_ fromSetAside [Enemies.amaranthLurkingCorruption, Keys.theLastBlossom]
+        amaranth <- enemyAt Enemies.amaranthLurkingCorruption bahiaPalaceGardens
+        createScarletKeyAt_ Keys.theLastBlossom (AttachedToEnemy amaranth)
+        lead <- getLead
+        saveTheCivilians <- fromSetAside Stories.saveTheCivilians
+        resolveStoryWithPlacement lead saveTheCivilians Global
+        khalid <- fromSetAside Enemies.khalidBelovedCompanion
+        shuffleCardsIntoDeck Deck.EncounterDeck [khalid]
     DoStep 2 Setup -> do
       locations <- select Anywhere
       n <- perPlayer 1
@@ -146,10 +168,59 @@ instance RunMessage DeadHeat where
               $ removeTokensOn ScenarioSource Civilian 1
           else chooseNM lead (n * 2) $ targets locations $ removeTokensOn ScenarioSource Civilian 1
       pure s
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scope "resolutions" do
       case r of
-        Resolution 5 -> scope "resolution" do
-          flavor $ setTitle "title" >> p "resolution5"
+        NoResolution -> do
+          razin <- selectAny $ enemyIs Enemies.razinFarhiReanimatedArtificer
+          resolutionFlavor $ scope "noResolution" do
+            setTitle "title"
+            p "body"
+            ul do
+              li "slay"
+              li.nested "checkEnemies" do
+                li.validate razin "razin"
+                li.validate (not razin) "noRazin"
+          selectEach (LocationWithToken Civilian) \location -> do
+            civilians <- fieldMap LocationTokens (countTokens Civilian) location
+            removeTokens ScenarioSource location Civilian civilians
+            scenarioCountIncrementBy CiviliansSlain civilians
+          currentAct <- getCurrentActStep
+          when (currentAct == 1) do
+            lead <- getLead
+            saveTheCivilians <- fetchCard Stories.saveTheCivilians
+            resolveStoryWithPlacement lead saveTheCivilians Global
+            flipOverBy lead ScenarioSource (StoryId Stories.saveTheCivilians.cardCode)
+          push $ if razin then R1 else R2
+        Resolution 1 -> do
+          setBearer Keys.theLastBlossom $ keyWithEnemy Enemies.amaranthLurkingCorruption
+          record TheLoversAreReunited
+          markTime 1
+          resolutionWithXp "resolution1" $ allGainXp' attrs
+          endOfScenario
+        Resolution 2 -> do
+          setBearer Keys.theLastBlossom $ keyWithEnemy Enemies.amaranthLurkingCorruption
+          record YouHaventSeenTheLastOfAmaranth
+          markTime 1
+          resolutionWithXp "resolution2" $ allGainXp' attrs
+          endOfScenario
+        Resolution 3 -> do
+          chooseBearer Keys.theLastBlossom
+          record AmaranthHasLeftTheCoterie
+          markTime 2
+          resolutionWithXp "resolution3" $ allGainXp' attrs
+          endOfScenario
+        Resolution 4 -> do
+          chooseBearer Keys.theLastBlossom
+          record YouHaventSeenTheLastOfAmaranth
+          markTime 1
+          resolutionWithXp "resolution4" $ allGainXp' attrs
+          endOfScenario
+        Resolution 5 -> do
+          record YouHaventSeenTheLastOfAmaranth
+          eachInvestigator (`sufferMentalTrauma` 1)
+          setBearer Keys.theLastBlossom $ keyWithEnemy Enemies.amaranthLurkingCorruption
+          markTime 1
+          resolutionWithXp "resolution5" $ allGainXpWithBonus' attrs (toBonus "bonus" 3)
           endOfScenario
         _ -> error "Unknown resolution for Dead Heat"
       pure s

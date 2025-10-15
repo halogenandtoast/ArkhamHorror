@@ -9,12 +9,14 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Effect.Window
 import Arkham.Helpers.Campaign (getCampaignStoryCards)
+import Arkham.Helpers.Query (getInvestigators)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Types (Field (LocationConcealedCards))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Placement
@@ -85,3 +87,11 @@ setupKeys = do
     for_ cards \card -> do
       when (card.kind == KeyType) do
         createScarletKeyAt_ card (AttachedToInvestigator iid)
+
+chooseBearer :: ReverseQueue m => CardDef -> m ()
+chooseBearer def = do
+  investigators <- getInvestigators
+  leadChooseOneM do
+    questionLabeled "Choose bearer"
+    questionLabeledCard def
+    portraits investigators $ setBearer def . KeyWithInvestigator

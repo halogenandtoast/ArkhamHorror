@@ -16,19 +16,13 @@ queenOfNothingAtAll = act (3, A) QueenOfNothingAtAll Cards.queenOfNothingAtAll N
 
 instance HasAbilities QueenOfNothingAtAll where
   getAbilities = actAbilities1 \a ->
-    restricted
-      a
-      1
-      ( not_
-          $ exists
-          $ mapOneOf
-            enemyIs
-            [ Enemies.amaranthLurkingCorruption
-            , Enemies.amaranthCorruptionRevealed
-            , Enemies.razinFarhiReanimatedArtificer
-            ]
-      )
-      $ forced AnyWindow
+    restricted a 1 (not_ $ exists $ InPlayEnemy $ mapOneOf enemyIs enemies) $ forced AnyWindow
+   where
+    enemies =
+      [ Enemies.amaranthLurkingCorruption
+      , Enemies.amaranthCorruptionRevealed
+      , Enemies.razinFarhiReanimatedArtificer
+      ]
 
 instance RunMessage QueenOfNothingAtAll where
   runMessage msg a@(QueenOfNothingAtAll attrs) = runQueueT $ case msg of

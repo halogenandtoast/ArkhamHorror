@@ -7,5 +7,8 @@ data TheScarletKeysKey
   | YouHaventSeenTheLastOfTheRedGlovedMan
   | TheCellKnowsOfDesisPast
   | TheCellKnowsAmaranthsRealName
+  | YouHaventSeenTheLastOfAmaranth
+  | TheLoversAreReunited
+  | AmaranthHasLeftTheCoterie
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

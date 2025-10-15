@@ -3,6 +3,7 @@
 
 module Arkham.Modifier where
 
+import {-# SOURCE #-} Arkham.Ability.Types
 import Arkham.Action
 import Arkham.Action.Additional
 import Arkham.Asset.Uses
@@ -352,6 +353,7 @@ data ModifierType
   | MustChooseEnemy EnemyMatcher
   | MustFight EnemyId
   | MustTakeAction ActionTarget
+  | MustPerformAbilityIfCan AbilityRef
   | NegativeToPositive
   | NoDamageDealt
   | NoInitialSwarm

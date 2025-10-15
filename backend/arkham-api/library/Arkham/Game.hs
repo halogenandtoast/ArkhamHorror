@@ -3014,6 +3014,13 @@ getScarletKeysMatching matcher = do
     ScarletKeyMatchAll ms -> foldM filterMatcher as ms
     ScarletKeyWithPlacement placement -> pure $ filter ((== placement) . attr keyPlacement) as
     ScarletKeyAny -> pure as
+    ScarletKeyWithBearer im -> do
+      iids <- selectMap toTarget im
+      pure $ filter ((`elem` iids) . attr keyBearer) as
+    ScarletKeyWithEnemyBearer em -> do
+      eids <- selectMap toTarget em
+      pure $ filter ((`elem` eids) . attr keyBearer) as
+    ScarletKeyWithStability s -> pure $ filter ((== s) . attr keyStability) as
     ScarletKeyOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
 
 getStoriesMatching :: HasGame m => StoryMatcher -> m [Story]

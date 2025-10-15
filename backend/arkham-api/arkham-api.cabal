@@ -1588,6 +1588,7 @@ library
       Arkham.Campaigns.TheScarletKeys.Key.Keys
       Arkham.Campaigns.TheScarletKeys.Key.Matcher
       Arkham.Campaigns.TheScarletKeys.Key.Runner
+      Arkham.Campaigns.TheScarletKeys.Key.Stability
       Arkham.Campaigns.TheScarletKeys.Key.Types
       Arkham.Campaigns.TheScarletKeys.Keys
       Arkham.Campaigns.TheScarletKeys.Meta
@@ -4231,6 +4232,7 @@ library
       Arkham.Treachery.Cards.BloodOnYourHands
       Arkham.Treachery.Cards.BloodthirstySpirits
       Arkham.Treachery.Cards.BoughtInBlood
+      Arkham.Treachery.Cards.BoundInRed
       Arkham.Treachery.Cards.BrazierEnchantment
       Arkham.Treachery.Cards.BreakALeg
       Arkham.Treachery.Cards.BrokenRails
@@ -4261,6 +4263,7 @@ library
       Arkham.Treachery.Cards.CloudedMemory
       Arkham.Treachery.Cards.ColdStreak
       Arkham.Treachery.Cards.CollapsingReality
+      Arkham.Treachery.Cards.Compulsion
       Arkham.Treachery.Cards.Confiscation
       Arkham.Treachery.Cards.Confusion
       Arkham.Treachery.Cards.ConspiracyInRed
@@ -4309,6 +4312,7 @@ library
       Arkham.Treachery.Cards.DisquietingDreams
       Arkham.Treachery.Cards.DisruptivePoltergeist
       Arkham.Treachery.Cards.DissonantVoices
+      Arkham.Treachery.Cards.DistortedReasoning
       Arkham.Treachery.Cards.Doomed
       Arkham.Treachery.Cards.DownAndOut
       Arkham.Treachery.Cards.DraggedUnder
@@ -4415,6 +4419,7 @@ library
       Arkham.Treachery.Cards.InsatiableBloodlust
       Arkham.Treachery.Cards.InternalInjury
       Arkham.Treachery.Cards.Inundated
+      Arkham.Treachery.Cards.KeyCharge
       Arkham.Treachery.Cards.Kidnapped
       Arkham.Treachery.Cards.KindredMist
       Arkham.Treachery.Cards.KissOfBrine
@@ -4633,6 +4638,7 @@ library
       Arkham.Treachery.Cards.ToilAndTrouble
       Arkham.Treachery.Cards.TorturousChords
       Arkham.Treachery.Cards.Totality
+      Arkham.Treachery.Cards.TouchOfTheBeyond
       Arkham.Treachery.Cards.ToughCrowd
       Arkham.Treachery.Cards.ToweringBeasts
       Arkham.Treachery.Cards.TrappedSpirits

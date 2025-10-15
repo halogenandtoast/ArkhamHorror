@@ -481,6 +481,7 @@ passesCriteria iid mcard source' requestor windows' = \case
         go source
   Criteria.DuringTurn (Matcher.replaceYouMatcher iid -> who) -> selectAny (Matcher.TurnInvestigator <> who)
   Criteria.CardExists cardMatcher -> selectAny cardMatcher
+  Criteria.ScarletKeyExists skeyMatcher -> selectAny skeyMatcher
   Criteria.ExtendedCardExists cardMatcher ->
     case mcard of
       Just (card, _) -> selectAny (Matcher.replaceYouMatcher iid $ Matcher.replaceThisCard (toCardId card) cardMatcher)

@@ -3,9 +3,11 @@
 module Arkham.Campaigns.TheScarletKeys.Key.Types (
   module Arkham.Campaigns.TheScarletKeys.Key.Types,
   module Arkham.Campaigns.TheScarletKeys.Key.Id,
+  module Arkham.Campaigns.TheScarletKeys.Key.Stability,
   Field (..),
 ) where
 
+import Arkham.Campaigns.TheScarletKeys.Key.Stability
 import Arkham.Campaigns.TheScarletKeys.Key.Cards
 import Arkham.Campaigns.TheScarletKeys.Key.Id
 import Arkham.Card
@@ -51,8 +53,6 @@ data instance Field ScarletKey :: Type -> Type where
   ScarletKeyPlacement :: Field ScarletKey Placement
   ScarletKeyBearer :: Field ScarletKey Target
 
-data Stability = Stable | Unstable
-  deriving stock (Show, Eq, Data)
 
 data ScarletKeyAttrs = ScarletKeyAttrs
   { keyId :: ScarletKeyId
@@ -210,10 +210,7 @@ someScarletKeyCardCode = liftSomeScarletKeyCard cbCardCode
 
 makeLensesWith suffixedFields ''ScarletKeyAttrs
 
-mconcat
-  [ deriveJSON defaultOptions ''Stability
-  , deriveToJSON (aesonOptions $ Just "key") ''ScarletKeyAttrs
-  ]
+$(deriveToJSON (aesonOptions $ Just "key") ''ScarletKeyAttrs)
 
 instance FromJSON ScarletKeyAttrs where
   parseJSON = withObject "ScarletKeyAttrs" \o -> do

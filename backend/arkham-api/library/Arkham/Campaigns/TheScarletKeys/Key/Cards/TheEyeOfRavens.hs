@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Campaigns.TheScarletKeys.Key.Cards.TheEyeOfRavens (theEyeOfRavens) where
 
 import Arkham.Ability

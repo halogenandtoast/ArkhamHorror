@@ -110,6 +110,7 @@ import Control.Monad.State.Strict (MonadState, StateT, execStateT, get, put)
 import Control.Monad.Trans.Class
 import Data.Aeson.Key qualified as Aeson
 import Data.Map.Strict qualified as Map
+import Data.Typeable
 
 capture :: MonadIO m => QueueT msg m a -> m [msg]
 capture = evalQueueT
@@ -2920,11 +2921,15 @@ initiateEnemyAttackWith
   -> m ()
 initiateEnemyAttackWith enemy source target f = push $ InitiateEnemyAttack $ f $ enemyAttack enemy source target
 
-withCardEntity :: (IsCard card, ReverseQueue m) => card -> m () -> m ()
+withCardEntity
+  :: forall a m card. (Typeable a, IsCard card, ReverseQueue m) => card -> (a -> m ()) -> m ()
 withCardEntity (toCard -> card) body = do
-  push $ AddCardEntity card
-  body
-  push $ RemoveCardEntity card
+  uuid <- getRandom
+  push $ AddCardEntity uuid card
+  case card.kind of
+    AssetType | Just Refl <- eqT @a @AssetId -> body (coerce uuid)
+    _ -> pure ()
+  push $ RemoveCardEntity uuid card
 
 handleTarget
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()

@@ -3,7 +3,6 @@ module Arkham.Asset.Assets.RobertCastaigneHasYourBack (robertCastaigneHasYourBac
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Card.Id
 import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
@@ -34,7 +33,7 @@ instance HasAbilities RobertCastaigneHasYourBack where
 instance RunMessage RobertCastaigneHasYourBack where
   runMessage msg a@(RobertCastaigneHasYourBack attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (discardedCards -> [card]) -> do
-      withCardEntity card $ handleTarget iid attrs (AssetId $ unsafeCardIdToUUID card.id)
+      withCardEntity @AssetId card $ handleTarget iid attrs
       pure a
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       let

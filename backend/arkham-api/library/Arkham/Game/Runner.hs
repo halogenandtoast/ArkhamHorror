@@ -859,7 +859,10 @@ runGameMessage msg g = case msg of
           setAssetPlacement a = case eqT @a @Asset of
             Just Refl -> overAttrs (\attrs -> attrs {assetPlacement = StillInHand iid, assetController = Just iid}) a
             Nothing -> a
-        pure $ g & actionRemovedEntitiesL %~ (\e -> addCardEntityWith iid setAssetPlacement e card)
+        pure
+          $ g
+          & actionRemovedEntitiesL
+          %~ (\e -> addCardEntityWith iid setAssetPlacement (unsafeCardIdToUUID card.id) e card)
       else pure g
   RemoveAsset aid -> do
     removedEntitiesF <-
@@ -3054,20 +3057,18 @@ runGameMessage msg g = case msg of
     afterResolve <- checkAfter $ Window.ResolvesTreachery iid treacheryId
     pushAll [afterResolve, Do msg]
     pure $ g & activeCardL .~ Nothing
-  AddCardEntity card -> do
+  AddCardEntity uuid card -> do
     let
       iid = view activeInvestigatorIdL g
       setAssetPlacement :: forall a. Typeable a => a -> a
       setAssetPlacement a = case eqT @a @Asset of
         Just Refl -> overAttrs (\attrs -> attrs {assetPlacement = StillInHand iid, assetController = Just iid}) a
         Nothing -> a
-      extraEntities = addCardEntityWith iid setAssetPlacement mempty card
+      extraEntities = addCardEntityWith iid setAssetPlacement uuid mempty card
     pure $ g & entitiesL <>~ extraEntities
-  RemoveCardEntity card -> do
+  RemoveCardEntity uuid card -> do
     case toCardType card of
-      AssetType -> do
-        let aid = AssetId (unsafeCardIdToUUID $ toCardId card)
-        runMessage (RemoveAsset aid) g
+      AssetType -> runMessage (RemoveAsset (coerce uuid)) g
       _ -> error "Unhandle remove card entity type"
   UseAbility _ a _ -> pure $ g & activeAbilitiesL %~ (a :)
   ResolvedAbility ab -> do
@@ -3191,7 +3192,14 @@ preloadEntities g = do
             let
               handEntities =
                 foldl'
-                  (addCardEntityWith (toId investigator') (setPlacement $ StillInHand investigator'.id))
+                  ( \e c ->
+                      addCardEntityWith
+                        (toId investigator')
+                        (setPlacement $ StillInHand investigator'.id)
+                        (unsafeCardIdToUUID c.id)
+                        e
+                        c
+                  )
                   defaultEntities
                   handEffectCards
              in
@@ -3221,7 +3229,14 @@ preloadEntities g = do
             let
               discardEntities =
                 foldl'
-                  (addCardEntityWith (toId investigator') (setPlacement $ StillInDiscard investigator'.id))
+                  ( \e c ->
+                      addCardEntityWith
+                        (toId investigator')
+                        (setPlacement $ StillInDiscard investigator'.id)
+                        (unsafeCardIdToUUID c.id)
+                        e
+                        c
+                  )
                   defaultEntities
                   discardEffectCards
              in
@@ -3241,7 +3256,14 @@ preloadEntities g = do
             let
               topOfDeckEntities =
                 foldl'
-                  (addCardEntityWith (toId investigator') (setPlacement $ OnTopOfDeck investigator'.id))
+                  ( \e c ->
+                      addCardEntityWith
+                        (toId investigator')
+                        (setPlacement $ OnTopOfDeck investigator'.id)
+                        (unsafeCardIdToUUID c.id)
+                        e
+                        c
+                  )
                   defaultEntities
                   topOfDeckEffectCards
              in
@@ -3252,7 +3274,11 @@ preloadEntities g = do
         $ (concat . Map.elems $ gameFoundCards g)
         <> concatMap foundOfElems (view (entitiesL . investigatorsL) g)
   active <- getActiveInvestigatorId
-  let searchEntities = foldl' (addCardEntityWith active id) defaultEntities searchEffectCards
+  let searchEntities =
+        foldl'
+          (\e c -> addCardEntityWith active id (unsafeCardIdToUUID c.id) e c)
+          defaultEntities
+          searchEffectCards
   handEntities <- foldM preloadHandEntities mempty investigators
   discardEntities <- foldM preloadDiscardEntities mempty investigators
   topOfDeckEntities <- foldM preloadTopOfDeckEntities mempty investigators

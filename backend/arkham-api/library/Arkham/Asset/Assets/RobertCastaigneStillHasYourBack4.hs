@@ -3,12 +3,11 @@ module Arkham.Asset.Assets.RobertCastaigneStillHasYourBack4 (robertCastaigneStil
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Card.Id
-import Arkham.Helpers.Ability (getCanPerformAbility)
-import Arkham.Helpers.Playable (getIsPlayable)
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
-import Arkham.Matcher
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Ability (getCanPerformAbility)
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Playable (getIsPlayable)
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Window (defaultWindows)
 
@@ -45,7 +44,7 @@ instance RunMessage RobertCastaigneStillHasYourBack4 where
           <> CardWithPerformableAbility #fight [IgnoreAllCosts]
       focusCards cards do
         chooseTargetM iid cards \card -> do
-          withCardEntity card $ handleTarget iid attrs (AssetId $ unsafeCardIdToUUID card.id)
+          withCardEntity @AssetId card $ handleTarget iid attrs
           handleTarget iid attrs card
       pure a
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
@@ -70,8 +69,6 @@ instance RunMessage RobertCastaigneStillHasYourBack4 where
             discardCard iid (attrs.ability 1) card
             drawCards iid (attrs.ability 1) 1
           when canPlay do
-            labeled "Play card paying cost" do
-              playCardPayingCost iid card
-            
+            labeled "Play card paying cost" $ playCardPayingCost iid card
       pure a
     _ -> RobertCastaigneStillHasYourBack4 <$> liftRunMessage msg attrs

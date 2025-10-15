@@ -85,6 +85,7 @@ import Data.Map.Monoidal.Strict (getMonoidalMap)
 import Data.Set qualified as Set
 import Data.Text qualified as T
 import Data.Typeable
+import Data.UUID qualified as UUID
 
 passesCriteria
   :: (HasCallStack, HasGame m)
@@ -614,7 +615,7 @@ passesCriteria iid mcard source' requestor windows' = \case
             _ -> a
         runReaderT
           (selectAny (Matcher.replaceYouMatcher iid matcher))
-          (g & entitiesL %~ (<> addCardEntityWith iid setPlacement mempty card))
+          (g & entitiesL %~ (<> addCardEntityWith iid setPlacement UUID.nil mempty card))
       _ -> selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.TargetExists matcher -> do
     selectAny (Matcher.replaceYouMatcher iid matcher)

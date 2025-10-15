@@ -4567,7 +4567,7 @@ instance Query ExtendedCardMatcher where
             Nothing -> a
         g <- getGame
         flip filterM cs \c -> do
-          let extraEntities = addCardEntityWith iid setAssetPlacement defaultEntities c
+          let extraEntities = addCardEntityWith iid setAssetPlacement (unsafeCardIdToUUID c.id) defaultEntities c
 
           abilities <- filterM (`abilityMatches` abilityMatcher) (getAbilities extraEntities)
           flip runReaderT (g {gameEntities = gameEntities g <> extraEntities}) $ do

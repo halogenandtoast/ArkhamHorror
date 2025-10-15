@@ -92,7 +92,7 @@ import Control.Monad.Fail
 import Data.Aeson.Key qualified as Aeson
 import Data.Aeson.TH
 import Data.Aeson.Types
-import Data.UUID (nil)
+import Data.UUID (fromWords64, nil)
 import Data.UUID qualified as UUID
 import GHC.OverloadedLabels
 
@@ -478,7 +478,7 @@ data Message
   | -- Adding Cards to Player Discard
     AddToDiscard InvestigatorId PlayerCard
   | AddToEncounterDiscard EncounterCard
-  | AddToSpecificEncounterDiscard ScenarioEncounterDeckKey EncounterCard 
+  | AddToSpecificEncounterDiscard ScenarioEncounterDeckKey EncounterCard
   | -- Slot Messages
     AddSlot InvestigatorId SlotType Slot
   | RemoveSlot InvestigatorId SlotType
@@ -1099,8 +1099,8 @@ data Message
   | ChaosTokenCanceled InvestigatorId Source ChaosToken
   | SetActiveCard Card
   | UnsetActiveCard
-  | AddCardEntity Card
-  | RemoveCardEntity Card
+  | AddCardEntity UUID Card
+  | RemoveCardEntity UUID Card
   | UseCardAbility InvestigatorId Source Int [Window] Payment
   | UseCardAbilityStep InvestigatorId Source Int [Window] Payment Int -- todo eliminated in favor of DoStep
   | UseCardAbilityChoice InvestigatorId Source Int AbilityMetadata [Window] Payment
@@ -1202,6 +1202,16 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "AddCardEntity" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (a, b) -> pure $ AddCardEntity a b
+          Left b -> pure $ AddCardEntity (fromWords64 6128981282234515924 12039885860129472512) b
+      "RemoveCardEntity" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (a, b) -> pure $ RemoveCardEntity a b
+          Left b -> pure $ RemoveCardEntity (fromWords64 6128981282234515924 12039885860129472512) b
       "DrawEnded" -> do
         contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
         case contents of

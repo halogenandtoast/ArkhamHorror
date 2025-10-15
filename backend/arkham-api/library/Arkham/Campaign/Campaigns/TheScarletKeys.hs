@@ -70,6 +70,7 @@ instance IsCampaign TheScarletKeys where
     PrologueStep -> Just RiddlesAndRain
     RiddlesAndRain -> Just (InterludeStep 1 Nothing)
     InterludeStep 1 _ -> Just (CampaignSpecificStep "embark")
+    DeadHeat -> Just (CampaignSpecificStep "embark")
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing

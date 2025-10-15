@@ -99,11 +99,15 @@ const label = function(body: string) {
 
 const skillTestResults = computed(() => props.game.skillTestResults)
 
-const title = computed(() => {
+const body = computed(() => {
   if (question.value && question.value.tag === 'QuestionLabel') {
     return replaceIcons(question.value.label)
   }
 
+  return null
+})
+
+const title = computed(() => {
   if (skillTestResults.value) {
     return t("Results")
   }
@@ -141,9 +145,19 @@ const title = computed(() => {
 <template>
   <Draggable v-if="requiresModal">
     <template #handle><h1 v-html="label(title)"></h1></template>
+    <p class="body" v-if="body" v-html="label(body)"></p>
     <Question v-if="question" :game="game" :playerId="playerId" @choose="choose" />
   </Draggable>
 </template>
 
 <style scoped>
+.body {
+  font-size: 1.3em;
+  font-family: "Noto Sans", sans-serif;
+  color: var(--title);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #111;
+}
 </style>

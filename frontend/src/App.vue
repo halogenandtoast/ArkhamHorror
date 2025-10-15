@@ -634,4 +634,31 @@ footer {
     margin-bottom: 10px;
   }
 }
+
+@property --glow-rotation {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes glow {
+  from {
+    --glow-rotation: 0deg;
+  }
+  to {
+    --glow-rotation: 360deg;
+  }
+}
+
+
+* {
+  &.highlighted {
+    border: 2px solid transparent;
+    background: conic-gradient(from var(--glow-rotation), var(--gradient-glow)) border-box;
+    border-style: inset;
+    border-radius: 3px;
+    position: relative;
+    animation: glow 3s linear infinite;
+  }
+}
 </style>

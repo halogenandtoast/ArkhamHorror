@@ -31,6 +31,7 @@
     }
   },
   "label": {
+    "nightgauntSteed": "Remove 2 resources from the scenario reference card to have each investigator begin the game with a Nightgaunt Steed story asset in play?",
     "itMustBeDone": "It must be done.",
     "iRefuse": "I refuse.",
     "moveUp": "Move Up",

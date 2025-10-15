@@ -1,7 +1,4 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
-module Arkham.Scenarios.TheWagesOfSin.Helpers
-where
+module Arkham.Scenarios.TheWagesOfSin.Helpers where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheCircleUndone.Helpers
@@ -114,7 +111,7 @@ hereticRunner storyCard msg heretic = runQueueT $ case msg of
       , ReplaceCard (toCardId attrs) card
       , StoryMessage $ ReadStoryWithPlacement iid card ResolveIt Nothing (enemyPlacement attrs)
       ]
-    for_ (traceShowId mWindow) (checkWindows . pure . traceShowId)
+    for_ mWindow (checkWindows . pure)
     push $ RemoveEnemy (toId attrs)
     pure heretic
   _ -> overAttrsM (liftRunMessage msg) heretic

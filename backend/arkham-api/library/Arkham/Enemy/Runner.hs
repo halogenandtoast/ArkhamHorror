@@ -905,8 +905,9 @@ instance RunMessage EnemyAttrs where
       pure a
     Do (EnemyEvaded iid eid) | eid == enemyId -> do
       mods <- getModifiers iid
+      emods <- getModifiers eid
       pushWhen (DoNotDisengageEvaded `notElem` mods) $ DisengageEnemyFromAll eid
-      pushWhen (DoNotExhaustEvaded `notElem` mods) $ Exhaust (toTarget a)
+      pushWhen (DoNotExhaustEvaded `notElem` emods) $ Exhaust (toTarget a)
       pure a
     Exhaust (isTarget a -> True) -> do
       let

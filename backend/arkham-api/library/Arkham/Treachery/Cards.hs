@@ -219,6 +219,7 @@ allEncounterTreacheryCards =
       , blindsense
       , bloodOnYourHands
       , bloodthirstySpirits
+      , boundInRed
       , brazierEnchantment
       , breakALeg
       , brokenRails
@@ -240,6 +241,7 @@ allEncounterTreacheryCards =
       , cloudedMemory
       , coldStreak
       , collapsingReality
+      , compulsion
       , confusion
       , conspiracyInRed
       , conspiracyOfBlood
@@ -276,6 +278,7 @@ allEncounterTreacheryCards =
       , dismalCurse
       , disquietingDreams
       , dissonantVoices
+      , distortedReasoning
       , draggedUnder
       , draggedUnderDevilReef
       , dreamersCurse
@@ -358,6 +361,7 @@ allEncounterTreacheryCards =
       , innsmouthLook
       , insatiableBloodlust
       , inundated
+      , keyCharge
       , kidnapped
       , kindredMist
       , kissOfBrine
@@ -527,6 +531,7 @@ allEncounterTreacheryCards =
       , toilAndTrouble
       , torturousChords
       , totality
+      , touchOfTheBeyond
       , toughCrowd
       , toweringBeasts
       , trappedSpirits
@@ -2892,10 +2897,41 @@ figuresInTheDark =
       { cdCardTraits = setFromList [Scheme]
       }
 
+boundInRed :: CardDef
+boundInRed =
+  (treachery "09729" "Bound in Red" ScarletSorcery 2)
+    { cdCardTraits = setFromList [Hex]
+    }
+
+keyCharge :: CardDef
+keyCharge =
+  surge
+    $ (treachery "09730" "Key Charge" ScarletSorcery 2)
+      { cdCardTraits = setFromList [Hex]
+      }
+
 substanceDissimulation :: CardDef
 substanceDissimulation =
   (treachery "09733" "Substance Dissimulation" Outsiders 2)
     { cdCardTraits = setFromList [Power]
+    }
+
+touchOfTheBeyond :: CardDef
+touchOfTheBeyond =
+  (treachery "09744" "Touch of the Beyond" SpreadingCorruption 2)
+    { cdCardTraits = setFromList [Curse]
+    }
+
+compulsion :: CardDef
+compulsion =
+  (treachery "09745" "Compulsion" SpreadingCorruption 2)
+    { cdCardTraits = setFromList [Curse, Terror]
+    }
+
+distortedReasoning :: CardDef
+distortedReasoning =
+  (treachery "09746" "Compulsion" SpreadingCorruption 2)
+    { cdCardTraits = setFromList [Curse, Terror]
     }
 
 hastyRepairs :: CardDef

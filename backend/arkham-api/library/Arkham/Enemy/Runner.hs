@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedLabels #-}
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Enemy.Runner (module Arkham.Enemy.Runner, module X) where
 
@@ -699,7 +699,7 @@ instance RunMessage EnemyAttrs where
                   $ NearestLocationToLocation
                     loc
                     ( mapOneOf LocationWithId
-                        $ traceShowId locationsToHuntTo
+                        $ locationsToHuntTo
                         <> enemiesAsInvestigatorLocations
                         <> investigatorLocations
                     )

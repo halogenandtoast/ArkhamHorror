@@ -34,6 +34,6 @@ instance RunMessage AmaranthLurkingCorruption where
       assetDefeated (attrs.ability 1) asset
       skeys <- select $ ScarletKeyWithPlacement (AttachedToEnemy attrs.id)
       lead <- getLead
-      chooseOrRunOneAtATimeM lead $ targets skeys shift
+      chooseOneAtATimeM lead $ targets skeys shift
       pure e
     _ -> AmaranthLurkingCorruption <$> liftRunMessage msg attrs

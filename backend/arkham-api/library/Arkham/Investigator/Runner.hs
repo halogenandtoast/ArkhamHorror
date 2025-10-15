@@ -4365,6 +4365,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           <> [chooseOne player (toUseAbilities normal) | notNull normal]
           <> [PlayerWindow iid additionalActions isAdditional]
       else do
+        let mustTakeAbilities = [aref | MustPerformAbilityIfCan aref <- modifiers]
+        let mustTakeActions = if null mustTakeAbilities then [] else filter ((`elem` mustTakeAbilities) . (.ref)) actions
+        let actions' = if null mustTakeActions then actions else mustTakeActions
+
         canAffordTakeResources <- getCanAfford a [#resource]
         canAffordDrawCards <- getCanAfford a [#draw]
         additionalActions' <- getAdditionalActions a
@@ -4383,9 +4387,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         playableCards <- getPlayableCards iid iid (UnpaidCost NeedsAction) windows
         let drawing = drawCardsF iid a 1
 
-        canDraw <- canDo iid #draw
-        canTakeResource <- (&&) <$> canDo iid #resource <*> can.gain.resources FromOtherSource iid
-        canPlay <- canDo iid #play
+        let guardMustTake = if null mustTakeActions then id else const (pure False)
+
+        canDraw <- guardMustTake $ canDo iid #draw
+        canTakeResource <- guardMustTake $ (&&) <$> canDo iid #resource <*> can.gain.resources FromOtherSource iid
+        canPlay <- guardMustTake $ canDo iid #play
         player <- getPlayer iid
         let playableCards' = if canPlay then playableCards else filter isFastCard playableCards
 
@@ -4407,7 +4413,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
              | c <- playableCards'
              ]
           <> [EndTurnButton iid [ChooseEndTurn iid]]
-          <> map ((\f -> f windows [] []) . AbilityLabel iid) actions
+          <> map ((\f -> f windows [] []) . AbilityLabel iid) actions'
           <> effectActions
     pure a
   PlayerWindow iid additionalActions isAdditional | iid /= investigatorId && a.inGame -> do

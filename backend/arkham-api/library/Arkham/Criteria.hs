@@ -11,6 +11,7 @@ import {-# SOURCE #-} Arkham.Calculation
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey (CampaignLogKey, IsCampaignLogKey (..))
 import Arkham.Campaigns.TheForgottenAge.Supply (Supply)
+import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Capability (Capabilities, Capable (..), FromSource)
 import Arkham.Card.CardCode
 import Arkham.Cost.Status (CostStatus)
@@ -194,6 +195,7 @@ data Criterion
   | DuringTurn InvestigatorMatcher
   | EnemyCriteria EnemyCriterion
   | ExtendedCardExists ExtendedCardMatcher
+  | ScarletKeyExists ScarletKeyMatcher
   | CommitedCardsMatch CardListMatcher
   | FirstAction
   | HasSupply Supply
@@ -394,6 +396,9 @@ instance Exists EnemyMatcher where
 
 instance Exists ExtendedCardMatcher where
   exists = ExtendedCardExists
+
+instance Exists ScarletKeyMatcher where
+  exists = ScarletKeyExists
 
 thisExists :: (Be a matcher, Exists matcher, Semigroup matcher) => a -> matcher -> Criterion
 thisExists a matcher = exists (be a <> matcher)

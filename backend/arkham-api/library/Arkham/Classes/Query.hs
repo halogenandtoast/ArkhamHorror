@@ -147,6 +147,23 @@ selectAgg f p matcher = do
   values <- traverse (fieldMap p f) results
   pure $ fold values
 
+selectAggM
+  :: ( Monoid monoid
+     , Query a
+     , QueryElement a ~ EntityId attrs
+     , Projection attrs
+     , HasGame m
+     , HasCallStack
+     )
+  => (typ -> m monoid)
+  -> Field attrs typ
+  -> a
+  -> m monoid
+selectAggM f p matcher = do
+  results <- select matcher
+  values <- traverse (fieldMapM p f) results
+  pure $ fold values
+
 selectAll
   :: ( Monoid typ
      , Query a
@@ -173,6 +190,21 @@ selectAgg'
   -> a
   -> m b
 selectAgg' f p matcher = coerce <$> selectAgg f p matcher
+
+selectAggM'
+  :: forall attrs a b typ monoid m
+   . ( Monoid monoid
+     , Query a
+     , QueryElement a ~ EntityId attrs
+     , Projection attrs
+     , HasGame m
+     , Coercible monoid b
+     )
+  => (typ -> m monoid)
+  -> Field attrs typ
+  -> a
+  -> m b
+selectAggM' f p matcher = coerce <$> selectAggM f p matcher
 
 selectSum
   :: ( QueryElement matcher ~ EntityId attrs
@@ -225,6 +257,20 @@ fieldMaxBy
   -> matcher
   -> m a
 fieldMaxBy fld f matcher = selectAgg' (Max0 . f) fld matcher
+
+fieldMaxByM
+  :: ( QueryElement matcher ~ EntityId attrs
+     , Num a
+     , Ord a
+     , Query matcher
+     , Projection attrs
+     , HasGame m
+     )
+  => Field attrs b
+  -> (b -> m a)
+  -> matcher
+  -> m a
+fieldMaxByM fld f matcher = selectAggM' (fmap Max0 . f) fld matcher
 
 maybeFieldMax
   :: forall attrs a matcher m
@@ -279,6 +325,26 @@ selectMaxBy fld f matcher = do
     then do
       results <- select matcher
       filterM (fmap (== maxValue) . fieldMap fld f) results
+    else pure []
+
+selectMaxByM
+  :: ( QueryElement matcher ~ EntityId attrs
+     , Num b
+     , Query matcher
+     , Projection attrs
+     , HasGame m
+     , Ord b
+     )
+  => Field attrs a
+  -> (a -> m b)
+  -> matcher
+  -> m [QueryElement matcher]
+selectMaxByM fld f matcher = do
+  maxValue <- fieldMaxByM fld f matcher
+  if maxValue > 0
+    then do
+      results <- select matcher
+      filterM (fmap (== maxValue) . fieldMapM fld f) results
     else pure []
 
 selectMaybeMax

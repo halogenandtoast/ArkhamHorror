@@ -31,7 +31,7 @@ instance RunMessage AmaranthCorruptionRevealed where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       skeys <- select $ ScarletKeyWithPlacement (AttachedToEnemy attrs.id)
       lead <- getLead
-      chooseOrRunOneAtATimeM lead $ targets skeys shift
+      chooseOneAtATimeM lead $ targets skeys shift
       pure e
     UseCardAbility _ (isSource attrs -> True) 2 (damagedAsset -> asset) _ -> do
       assetDefeated (attrs.ability 1) asset

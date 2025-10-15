@@ -579,8 +579,15 @@ allTreacheries =
     , --- Dark Veiling [tsk]
       SomeTreacheryCard seeingShadows
     , SomeTreacheryCard figuresInTheDark
+    , --- Scarlet Sorcery [tsk]
+      SomeTreacheryCard boundInRed
+    , SomeTreacheryCard keyCharge
     , --- Outsiders [tsk]
       SomeTreacheryCard substanceDissimulation
+    , --- Spreading Corruption [tsk]
+      SomeTreacheryCard touchOfTheBeyond
+    , SomeTreacheryCard compulsion
+    , SomeTreacheryCard distortedReasoning
     , -- The Feast of Hemloch Vale
       -- signature [fhv]
       SomeTreacheryCard hastyRepairs

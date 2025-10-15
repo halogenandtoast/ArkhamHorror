@@ -33,8 +33,6 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Id
-import Arkham.Message.Lifted.Choose
-import Arkham.Queue
 import Arkham.Window
 
 withInvestigatorBearer
@@ -48,8 +46,8 @@ withEnemyBearer attrs f = case attrs.bearer of
   EnemyTarget eid -> f eid
   _ -> pure ()
 
-shiftKey :: ReverseQueue m => ScarletKeyAttrs -> QueueT Message m () -> m ()
+shiftKey :: ReverseQueue m => ScarletKeyAttrs -> m () -> m ()
 shiftKey attrs body = do
   checkWhen $ CampaignEvent "shiftKey" Nothing (toJSON attrs.id)
-  leadChooseOneM $ targeting attrs body
+  body
   checkAfter $ CampaignEvent "shiftKey" Nothing (toJSON attrs.id)

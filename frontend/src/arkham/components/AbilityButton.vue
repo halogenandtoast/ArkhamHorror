@@ -20,6 +20,14 @@ const props = withDefaults(defineProps<{
 
 const ability = computed<Ability | null>(() => "ability" in props.ability ? props.ability.ability : null)
 
+const attributes = computed(() => {
+  if (ability.value.target) {
+    return { 'data-highlight-id': ability.value.target.contents }
+  }
+
+  return {}
+})
+
 const tooltip = computed(() => {
   var body = ability.value && ability.value.tooltip
   if (body) {
@@ -217,6 +225,7 @@ const classObject = computed(() => {
     class="button"
     :class="classObject"
     @click="$emit('choose', ability)"
+    v-bind="attributes"
     v-tooltip="!isButtonText && tooltip"
     v-html="abilityLabel"
     ></button>

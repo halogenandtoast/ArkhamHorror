@@ -290,6 +290,7 @@ mkAbility entity idx type' =
     , abilityBasic = False
     , abilityAdditionalCosts = []
     , abilityWantsSkillTest = Nothing
+    , abilityTarget = Nothing
     }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability

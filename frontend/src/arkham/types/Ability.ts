@@ -1,5 +1,6 @@
 import * as JsonDecoder from 'ts.data.json';
 import { Source, sourceDecoder } from '@/arkham/types/Source';
+import { Target, targetDecoder } from '@/arkham/types/Target';
 import { Cost, costDecoder } from '@/arkham/types/Cost';
 import { Action, actionDecoder } from '@/arkham/types/Action';
 import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
@@ -206,6 +207,7 @@ export type Ability = {
   tooltip: string | null
   displayAs: DisplayAs | null
   index: number
+  target: Target | null
 }
 
 const displayAsDecoder = JsonDecoder.oneOf<DisplayAs>([
@@ -219,7 +221,8 @@ export const abilityDecoder = JsonDecoder.object<Ability>(
     source: sourceDecoder,
     tooltip: JsonDecoder.nullable(JsonDecoder.string()),
     displayAs: JsonDecoder.nullable(displayAsDecoder),
-    index: JsonDecoder.number()
+    index: JsonDecoder.number(),
+    target: JsonDecoder.nullable(targetDecoder)
   }, 'Ability')
 
 export type AbilityRef = {

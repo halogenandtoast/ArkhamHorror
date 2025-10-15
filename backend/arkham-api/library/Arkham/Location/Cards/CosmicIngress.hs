@@ -29,6 +29,7 @@ instance HasAbilities CosmicIngress where
       [ restricted a 1 (CluesOnThis $ lessThan 3) $ forced $ RoundEnds #when
       , scenarioI18n
           $ withI18nTooltip "cosmicIngress.ability"
+          $ withHighlight a
           $ restricted
             (proxied (LocationMatcherSource $ LocationWithTrait Void) a)
             1

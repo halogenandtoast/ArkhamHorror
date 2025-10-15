@@ -11,12 +11,10 @@ import Arkham.Asset.Types
 import Arkham.Card
 import Arkham.ChaosBag.Base (chaosBagChaosTokens)
 import Arkham.Classes.Entity
-import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Deck
 import Arkham.Enemy.Types
-import {-# SOURCE #-} Arkham.Entities
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.ChaosToken
@@ -138,10 +136,6 @@ getHasVictoryPoints c = isJust <$> getVictoryPoints c
 
 getPrintedVictoryPoints :: (ConvertToCard c, HasGame m) => c -> m (Maybe Int)
 getPrintedVictoryPoints = getCardField cdVictoryPoints
-
--- To get abilities we convert to some entity in Entities and get all abilities
-getCardAbilities :: InvestigatorId -> Card -> [Ability]
-getCardAbilities iid c = getAbilities $ addCardEntityWith iid id mempty c
 
 findJustCard :: HasGame m => (Card -> Bool) -> m Card
 findJustCard cardPred = fromJustNote "invalid card" <$> findCard cardPred

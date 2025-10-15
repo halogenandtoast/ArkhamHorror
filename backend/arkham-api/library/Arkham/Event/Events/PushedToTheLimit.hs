@@ -1,7 +1,6 @@
 module Arkham.Event.Events.PushedToTheLimit (pushedToTheLimit) where
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -30,9 +29,7 @@ instance RunMessage PushedToTheLimit where
         chooseOneM iid do
           targets cards \card -> do
             unfocusCards
-            push $ AddCardEntity card
-            handleTarget iid attrs (AssetId $ unsafeCardIdToUUID card.id)
-            push $ RemoveCardEntity card
+            withCardEntity @AssetId card $ handleTarget iid attrs
             shuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do

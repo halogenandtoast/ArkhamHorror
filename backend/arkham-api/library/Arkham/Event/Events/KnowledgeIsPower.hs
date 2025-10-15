@@ -38,12 +38,8 @@ instance RunMessage KnowledgeIsPower where
       chooseOneM iid do
         targets assets $ handleTarget iid attrs
         targets cards \card -> do
-          pushAll
-            [ AddCardEntity card
-            , HandleTargetChoice iid (toSource attrs) (AssetTarget $ AssetId $ unsafeCardIdToUUID $ toCardId card)
-            , RemoveCardEntity card
-            , ForTarget (toTarget card.id) msg
-            ]
+          withCardEntity @AssetId card $ handleTarget iid attrs
+          forTarget card.id msg
       pure e
     ForTarget (CardIdTarget cid) (PlayThisEvent iid (is attrs -> True)) -> do
       inHand <- selectMap toCardId $ InHandOf NotForPlay (InvestigatorWithId iid)

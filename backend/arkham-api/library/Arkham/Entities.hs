@@ -166,8 +166,8 @@ makeLensesWith suffixedFields ''Entities
 
 -- Entity id generation uses the card id, this is only necessary for entities with non in-play effects
 addCardEntityWith
-  :: InvestigatorId -> (forall a. Typeable a => a -> a) -> Entities -> Card -> Entities
-addCardEntityWith i f e card = case card of
+  :: InvestigatorId -> (forall a. Typeable a => a -> a) -> UUID -> Entities -> Card -> Entities
+addCardEntityWith i f uuid e card = case card of
   PlayerCard pc -> case toCardType pc of
     EventType ->
       let
@@ -203,8 +203,6 @@ addCardEntityWith i f e card = case card of
         e & treacheriesL %~ insertMap (toId treachery) treachery
     _ -> error "Unhandled AddCardEntityWith for encounter card"
   VengeanceCard _ -> error "vengeance card"
- where
-  uuid = unsafeCardIdToUUID (toCardId card)
 
 addEntity :: forall a. Typeable a => a -> Entities -> Entities
 addEntity a e =

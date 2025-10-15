@@ -383,6 +383,14 @@ chooseTargetM
   -> m ()
 chooseTargetM iid ts action = chooseOneM iid $ unterminated $ for_ ts \t -> targeting t (action t)
 
+chooseThisM
+  :: (ReverseQueue m, Targetable target)
+  => InvestigatorId
+  -> target
+  -> QueueT Message m ()
+  -> m ()
+chooseThisM iid t action = chooseOneM iid $ unterminated $ targeting t action
+
 chooseOrRunTargetM
   :: (ReverseQueue m, Targetable target)
   => InvestigatorId

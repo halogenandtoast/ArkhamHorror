@@ -15,9 +15,10 @@ daredevil2 = skill Daredevil2 Cards.daredevil2
 
 instance RunMessage Daredevil2 where
   runMessage msg s@(Daredevil2 attrs) = runQueueT $ case msg of
-    InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
-      revealUntilFirst iid attrs iid
-        $ CommittableCard (InvestigatorWithId iid) (basic $ #rogue <> #skill)
+    Do (CommitCard iid card) | attrs.cardId == card.id -> do
+      chooseThisM iid attrs do
+        revealUntilFirst iid attrs iid
+          $ CommittableCard (InvestigatorWithId iid) (basic $ #rogue <> #skill)
       Daredevil2 <$> liftRunMessage msg attrs
     RevealedCards iid (isSource attrs -> True) _ mcard (map toCard -> rest) -> do
       focusCards (rest <> maybeToList mcard) do

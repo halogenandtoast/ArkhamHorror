@@ -11,6 +11,7 @@ import Arkham.Enemy.Runner as X (
   EnemyCard,
   IsEnemy,
   asSelfLocationL,
+  attacksL,
   cardCodeL,
   damageStrategyL,
   defeatedL,

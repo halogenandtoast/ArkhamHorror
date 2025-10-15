@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Event.Events.WheresTheParty (wheresTheParty) where
 
 import Arkham.Card

@@ -1223,7 +1223,7 @@ instance RunMessage EnemyAttrs where
       let mDamageAssignment = lookup source enemyAssignedDamage
       case mDamageAssignment of
         Nothing -> do
-          hasSwarm <- selectAny $ SwarmOf (toId a)
+          hasSwarm <- selectAny $ InPlayEnemy $ SwarmOf (toId a)
           canBeDefeated <- withoutModifier a CannotBeDefeated
           modifiers' <- getModifiers (toTarget a)
           let
@@ -1248,7 +1248,7 @@ instance RunMessage EnemyAttrs where
                 pushAll $ [whenMsg, afterMsg] <> defeatMsgs
           pure a
         Just da -> do
-          hasSwarm <- selectAny $ SwarmOf (toId a)
+          hasSwarm <- selectAny $ InPlayEnemy $ SwarmOf (toId a)
           canBeDefeated <- withoutModifier a CannotBeDefeated
           modifiers' <- getModifiers (toTarget a)
           let
@@ -1304,7 +1304,16 @@ instance RunMessage EnemyAttrs where
                                                 "Deal Excess Damage to Host or Swarm?"
                                                 [ chooseOrRunOne
                                                     controller
-                                                    [ targetLabel other [Msg.EnemyDamage other (da {damageAssignmentAmount = excess})]
+                                                    [ targetLabel
+                                                        other
+                                                        [ Msg.EnemyDamage
+                                                            other
+                                                            ( da
+                                                                { damageAssignmentAmount = excess
+                                                                , damageAssignmentDelayed = False
+                                                                }
+                                                            )
+                                                        ]
                                                     | other <- excessDamageTargets
                                                     ]
                                                 ]
@@ -1385,11 +1394,14 @@ instance RunMessage EnemyAttrs where
           <> (guard (not a.placement.isInVictory) *> windows [Window.EntityDiscarded source (toTarget a)])
           <> defeatMsgs
           <> [afterMsg]
-      pure a
-    After (Arkham.Message.EnemyDefeated eid _ source _) | eid == toId a -> do
+
       case a.placement of
-        AsSwarm eid' _ -> push $ CheckDefeated source (toTarget eid')
+        AsSwarm eid' _ -> do
+          n <- selectCount $ SwarmOf eid'
+          when (n <= 1) $ push $ CheckDefeated source (toTarget eid')
         _ -> pure ()
+      pure a
+    After (Arkham.Message.EnemyDefeated eid _ _source _) | eid == toId a -> do
       pure $ a & defeatedL .~ True
     DefeatedAddToVictory (isTarget a -> True) -> do
       pushAll

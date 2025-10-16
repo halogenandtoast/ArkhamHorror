@@ -9,6 +9,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Trait (Trait (Ocean))
+import Arkham.Window qualified as Window
 
 newtype FishingVessel = FishingVessel AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -30,6 +31,9 @@ instance RunMessage FishingVessel where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       getLocationOf attrs.id >>= traverse_ \lid -> do
         oceans <- select $ withTrait Ocean <> connectedTo (LocationWithId lid)
-        chooseTargetM iid oceans $ place attrs
+        chooseTargetM iid oceans \ocean -> do
+          place attrs ocean
+          iids <- select $ InVehicleMatching (AssetWithId attrs.id)
+          checkWindows $ map (\iid' -> Window.mkAfter $ Window.Entering iid' ocean) iids
       pure a
     _ -> FishingVessel <$> liftRunMessage msg attrs

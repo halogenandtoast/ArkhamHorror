@@ -251,6 +251,8 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
       flavor $ setTitle "title" >> p "body"
       -- investigators have not been chosen yet so we have to send to players
       allPlayers >>= traverse_ (push . (`ForPlayer` msg))
+      -- Now that investigators have been chosen we need to set the player order
+      push SetPlayerOrder
       doStep 2 msg
       pure s
     ForPlayer player PreScenarioSetup -> scope "intro" do

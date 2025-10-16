@@ -1,6 +1,7 @@
 module Arkham.Treachery.Cards.TerrorUnleashed (terrorUnleashed) where
 
 import Arkham.Helpers.Location
+import Arkham.I18n
 import Arkham.Location.BreachStatus
 import Arkham.Location.Types (Field (..))
 import Arkham.Message.Lifted.Choose
@@ -24,8 +25,8 @@ instance RunMessage TerrorUnleashed where
         doom <- field LocationDoom location
         let x = doom + max 1 breaches
         when (breaches == 0) $ placeBreaches location 1
-        repeated x $ chooseOneM iid do
-          damageLabeled iid $ assignDamage iid attrs 1
-          horrorLabeled iid $ assignHorror iid attrs 1
+        repeated x $ chooseOneM iid $ withI18n do
+          countVar 1 $ labeled' "takeDamage" $ assignDamage iid attrs 1
+          countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
       pure t
     _ -> TerrorUnleashed <$> liftRunMessage msg attrs

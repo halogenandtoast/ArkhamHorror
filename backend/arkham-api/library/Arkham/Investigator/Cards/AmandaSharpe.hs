@@ -25,8 +25,8 @@ amandaSharpe =
 
 instance HasAbilities AmandaSharpe where
   getAbilities (AmandaSharpe attrs) =
-    [ restricted attrs 1 Self $ forced $ PhaseBegins #when #investigation
-    , restricted attrs 2 Self $ forced $ InitiatedSkillTest #at You #any #any #any
+    [ self_ attrs 1 $ forced $ PhaseBegins #when #investigation
+    , self_ attrs 2 $ forced $ InitiatedSkillTest #at You #any #any #any
     ]
 
 instance HasChaosTokenValue AmandaSharpe where
@@ -48,45 +48,36 @@ instance RunMessage AmandaSharpe where
       for_ mCard \card -> do
         obtainCard card
         push $ AddToDiscard iid card
-      push $ DoStep 1 msg
+      doStep 1 msg
       pure $ AmandaSharpe $ attrs & setMeta @(Maybe CardId) Nothing
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       hand <- field InvestigatorHand iid
-      let mWhispersFromTheDeep = find (`cardMatch` cardIs Skills.whispersFromTheDeep) hand
-      case mWhispersFromTheDeep of
+      case find (`cardMatch` cardIs Skills.whispersFromTheDeep) hand of
         Nothing -> when (notNull hand) do
-          chooseOrRunOneM iid do
-            targets hand $ handleTarget iid (attrs.ability 1)
+          chooseOrRunOneM iid $ targets hand $ handleTarget iid (attrs.ability 1)
         Just whispersFromTheDeep -> do
           chooseOneM iid do
-            abilityLabeled
-              iid
-              ( mkAbility
-                  (proxied (CardIdSource $ toCardId whispersFromTheDeep) attrs)
-                  1
-                  (ForcedAbility AnyWindow)
-              )
-              do
-                handleTarget iid (attrs.ability 1) (CardIdTarget $ toCardId whispersFromTheDeep)
+            abilityLabeled iid (mkAbility (proxied whispersFromTheDeep.id attrs) 1 (forced AnyWindow)) do
+              handleTarget iid (attrs.ability 1) whispersFromTheDeep.id
       pure i
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
       card <- getCard cid
-      push $ PlaceUnderneath (toTarget iid) [card]
+      placeUnderneath iid (only card)
       pure $ AmandaSharpe $ attrs & setMeta @(Maybe CardId) (Just cid)
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let meta = toResult @(Maybe CardId) attrs.meta
       withSkillTest \sid -> do
-        for_ meta $ \cardId -> do
+        for_ meta \cardId -> do
           card <- getCard cardId
           committable <- getIsCommittable iid card
           when committable do
-            skillTestModifiers sid (toSource attrs) cardId [MustBeCommitted, LeaveCardWhereItIs]
-            push $ SkillTestCommitCard iid card
+            -- because we force it to be committed, we do not pay additional costs
+            skillTestModifiers sid attrs cardId [MustBeCommitted, NoAdditionalCosts, LeaveCardWhereItIs]
+            commitCard iid card
       pure i
-    ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      let meta = toResult @(Maybe CardId) attrs.meta
+    ElderSignEffect iid | attrs `is` iid -> do
       withSkillTest \sid -> do
-        for_ meta $ \cardId -> do
+        for_ (toResult @(Maybe CardId) attrs.meta) \cardId -> do
           chooseOneM iid do
             labeled "Double skill icons" $ skillTestModifier sid (toSource attrs) cardId DoubleSkillIcons
             labeled "Do not double skill icons" nothing

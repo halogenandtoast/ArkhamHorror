@@ -340,6 +340,7 @@ data ModifierType
   | MayChooseNotToTakeUpkeepResources
   | MayChooseToRemoveChaosToken InvestigatorId
   | MayIgnoreAttacksOfOpportunity
+  | MayIgnoreAttacksOfOpportunityOf EnemyMatcher
   | MayIgnoreLocationEffectsAndKeywords
   | MetaModifier Value
   | ModifierIfSucceededBy Int Modifier

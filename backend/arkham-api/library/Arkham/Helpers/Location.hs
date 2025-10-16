@@ -240,7 +240,8 @@ getCanMoveToLocations_ iid source ls = cached (CanMoveToLocationsKey_ iid (toSou
           imods <- getModifiers iid
           mods <- getModifiers lid
           let extraCostsToLeave = mconcat [c | AdditionalCostToLeave c <- mods]
-          flip filterM (filter (/= lid) ls) $ \l -> do
+          let barricaded = concat [xs | Barricades xs <- mods]
+          ls & filter (and . sequence [(/= lid), (`notElem` barricaded)]) & filterM \l -> do
             mods' <- getModifiers l
             pcosts <- filterM ((l <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
             revealed' <- field LocationRevealed l

@@ -52,6 +52,7 @@ travel attrs locId doTravel n = do
     then case locId of
       Moscow -> campaignStep_ (InterludeStep 26 Nothing)
       Marrakesh -> campaignStep_ DeadHeat
+      BuenosAires -> campaignStep_ SanguineShadows
       _ -> pure ()
     else campaignStep_ (CampaignSpecificStep "embark")
   pure

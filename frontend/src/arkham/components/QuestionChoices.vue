@@ -26,6 +26,7 @@ const label = function(body: string) {
 }
 </script>
 <template>
+  <div class='question-choices'>
     <template v-for="(choice, index) in choices" :key="index">
       <template v-if="choice.tag === 'AbilityLabel' && ['DisplayAsCard'].includes(choice.ability.displayAs)">
         <AbilityButton
@@ -75,30 +76,51 @@ const label = function(body: string) {
         Use <i :class="`icon${choice.skillType}`"></i>: {{choice.label}}
       </a>
     </template>
+  </div>
 </template>
 
 <style scoped>
 
-.button {
-  display: inline-block;
-  padding: 5px 10px;
-  margin: 2px;
+a.button {
+  display: block;
   background-color: #333;
   color: white;
   border: 1px solid #666;
   cursor: pointer;
+  align-content: center;
+  align-items: center;
+  line-height: 1.2em;
+
+  &:has(i.iconSkillCombat) {
+    background-color: #8b0000;
+    &:hover {
+      background-color: #5a0000;
+    }
+  }
+  &:has(i.iconSkillAgility) {
+    background-color: #004d00;
+    &:hover {
+      background-color: #003300;
+    }
+  }
+  &:has(i.iconSkillWillpower) {
+    background-color: #00008b;
+    &:hover {
+      background-color: #00005a;
+    }
+  }
 }
 
-.button:hover {
+a.button:hover {
   background-color: #111;
 }
 
-.button:active {
+a.button:active {
   background-color: #666;
   border-color: #111;
 }
 
-button {
+button, a.button {
   background-color: #532e61;
   border-radius: 0.6em;
   border: 0;
@@ -126,11 +148,65 @@ button {
   }
 }
 
-button:hover {
+  button:hover, a.button:hover {
   background-color: #311b3e;
 
   &[disabled] {
     background-color: #999 !important;
   }
+}
+
+i {
+  font-family: 'Arkham';
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+i.iconSkull:before {
+  content: "\004E";
+}
+
+i.iconCultist:before {
+  content: "\0042";
+}
+
+i.iconTablet:before {
+  content: "\0056";
+}
+
+i.iconElderThing:before {
+  content: "\0043";
+}
+
+i.iconSkillWillpower:before {
+  content: "\0041";
+  font-size: 1.3em;
+}
+
+i.iconSkillIntellect:before {
+  content: "\0046";
+  font-size: 1.3em;
+}
+
+i.iconSkillCombat:before {
+  content: "\0044";
+  font-size: 1.3em;
+}
+
+i.iconSkillAgility:before {
+  content: "\0053";
+  font-size: 1.3em;
+}
+
+.question-choices {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  padding: 10px;
 }
 </style>

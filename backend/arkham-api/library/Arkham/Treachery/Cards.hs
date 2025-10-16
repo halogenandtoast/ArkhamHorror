@@ -2618,8 +2618,10 @@ frostbitten =
 
 possessed :: CardDef
 possessed =
-  (treachery "08647" "Possessed" CityOfTheElderThings 4)
+  (weakness "08647" "Possessed")
     { cdCardTraits = setFromList [Madness]
+    , cdEncounterSet = Just CityOfTheElderThings
+    , cdEncounterSetQuantity = Just 4
     }
 
 primevalTerror :: CardDef

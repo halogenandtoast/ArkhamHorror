@@ -62,6 +62,7 @@ instance RunMessage CollapseThePylons where
       theFinalMirage <- getSetAsideCard Cards.theFinalMirage
       push $ SetCurrentActDeck 1 [theFinalMirage]
       push $ SetCurrentAgendaDeck 1 []
+      selectEach AnyAgenda (toDiscard attrs)
       gameModifier attrs (ActTarget $ ActId Cards.theFinalMirage.cardCode) (ScenarioModifier "collapsed")
       toDiscard GameSource attrs
       pure a

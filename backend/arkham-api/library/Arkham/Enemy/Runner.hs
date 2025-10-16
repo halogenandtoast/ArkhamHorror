@@ -43,7 +43,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.Location (placementLocation, withLocationOf)
+import Arkham.Helpers.Location (getLocationOf, placementLocation, withLocationOf)
 import Arkham.Helpers.Modifiers hiding (ModifierType (..))
 import Arkham.Helpers.Placement
 import Arkham.Helpers.Query
@@ -185,6 +185,34 @@ getCanEngage a = do
   keywords <- getModifiedKeywords a
   unengaged <- selectNone $ investigatorEngagedWith a.id
   pure $ all (`notElem` keywords) [#aloof, #massive] && unengaged
+
+getPaths :: HasGame m => EnemyAttrs -> [LocationId] -> m [LocationId]
+getPaths a destinations =
+  getLocationOf a >>= \case
+    Nothing -> pure []
+    Just loc -> do
+      mods <- getModifiers a
+      let locationMatcherModifier = if CanEnterEmptySpace `elem` mods then IncludeEmptySpace else id
+      let additionalConnections = [ConnectedToWhen (LocationWithId loc) (LocationWithId lid') | HunterConnectedTo lid' <- mods]
+
+      pathIds' <- withModifiers loc (toModifiers a additionalConnections) do
+        concatForM destinations
+          $ select
+          . locationMatcherModifier
+          . (LocationCanBeEnteredBy a.id <>)
+          . ClosestPathLocation loc
+
+      withModifiers loc (toModifiers a additionalConnections) do
+        if CanIgnoreBarriers `elem` mods
+          then do
+            barricadedPathIds <-
+              concatForM destinations
+                $ select
+                . locationMatcherModifier
+                . (LocationCanBeEnteredBy a.id <>)
+                . ClosestUnbarricadedPathLocation loc
+            pure $ if null barricadedPathIds then pathIds' else barricadedPathIds
+          else pure pathIds'
 
 getAvailablePrey :: HasGame m => EnemyAttrs -> m [InvestigatorId]
 getAvailablePrey a = runDefaultMaybeT [] do
@@ -457,19 +485,12 @@ instance RunMessage EnemyAttrs where
     MoveToward target locationMatcher | isTarget a target -> do
       case enemyPlacement of
         AsSwarm eid' _ -> push $ MoveToward (EnemyTarget eid') locationMatcher
-        _ -> do
-          enemyLocation <- field EnemyLocation enemyId
-          for_ enemyLocation $ \loc -> do
-            lid <- fromJustNote "can't move toward" <$> selectOne locationMatcher
-            when (lid /= loc) $ do
-              lead <- getLeadPlayer
-              adjacentLocationIds <-
-                select $ AccessibleFrom NotForMovement $ LocationWithId loc
-              closestLocationIds <- select $ ClosestPathLocation loc lid
-              if lid `elem` adjacentLocationIds
-                then push $ chooseOne lead [targetLabel lid [EnemyMove enemyId lid]]
-                else
-                  pushAll [chooseOne lead [targetLabel lid' [EnemyMove enemyId lid'] | lid' <- closestLocationIds]]
+        _ -> withLocationOf a \loc -> do
+          lid <- fromJustNote "can't move toward" <$> selectOne locationMatcher
+          when (lid /= loc) $ do
+            lead <- getLeadPlayer
+            pathIds <- getPaths a [lid]
+            pushAll [chooseOne lead [targetLabel lid' [EnemyMove enemyId lid'] | lid' <- pathIds]]
       pure a
     MoveUntil lid target | isTarget a target -> do
       case enemyPlacement of
@@ -699,24 +720,7 @@ instance RunMessage EnemyAttrs where
                 else filteredClosestLocationIds
 
           lead <- getLeadPlayer
-          pathIds' <- withModifiers loc (toModifiers a additionalConnections) do
-            concatForM destinationLocationIds
-              $ select
-              . locationMatcherModifier
-              . (LocationCanBeEnteredBy enemyId <>)
-              . ClosestPathLocation loc
-
-          pathIds <- withModifiers loc (toModifiers a additionalConnections) do
-            if CanIgnoreBarriers `elem` mods
-              then do
-                barricadedPathIds <-
-                  concatForM destinationLocationIds
-                    $ select
-                    . locationMatcherModifier
-                    . (LocationCanBeEnteredBy enemyId <>)
-                    . ClosestUnbarricadedPathLocation loc
-                pure $ if null barricadedPathIds then pathIds' else barricadedPathIds
-              else pure pathIds'
+          pathIds <- getPaths a destinationLocationIds
 
           case pathIds of
             [] -> pure a

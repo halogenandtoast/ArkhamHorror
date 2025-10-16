@@ -564,7 +564,7 @@ const cardPiles = computed(() => {
             </template>
           </div>
 
-          <div class="choices-wrapper">
+          <div v-if="questionImage" class="choices-wrapper">
             <QuestionChoices :choices="choices" :game="game" :playerId="playerId" @choose="choose" />
           </div>
         </div>

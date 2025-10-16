@@ -13,7 +13,7 @@ newtype UnstableVortex = UnstableVortex LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unstableVortex :: LocationCard UnstableVortex
-unstableVortex = location UnstableVortex Cards.unstableVortex 0 (Static 0)
+unstableVortex = location UnstableVortex Cards.unstableVortex 3 (PerPlayer 1)
 
 instance HasAbilities UnstableVortex where
   getAbilities (UnstableVortex a) =

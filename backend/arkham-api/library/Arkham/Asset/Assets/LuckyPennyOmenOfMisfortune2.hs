@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.LuckyPennyOmenOfMisfortune2 (
-  luckyPennyOmenOfMisfortune2,
-  LuckyPennyOmenOfMisfortune2 (..),
-)
-where
+module Arkham.Asset.Assets.LuckyPennyOmenOfMisfortune2 (luckyPennyOmenOfMisfortune2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -22,7 +18,7 @@ luckyPennyOmenOfMisfortune2 = asset LuckyPennyOmenOfMisfortune2 Cards.luckyPenny
 
 instance HasAbilities LuckyPennyOmenOfMisfortune2 where
   getAbilities (LuckyPennyOmenOfMisfortune2 x) =
-    [ restrictedAbility x 1 (DuringSkillTest $ YourSkillTest #any)
+    [ controlled x 1 (DuringSkillTest $ YourSkillTest #any)
         $ forced (RevealChaosToken #when You $ oneOf [#bless, #curse])
     ]
 

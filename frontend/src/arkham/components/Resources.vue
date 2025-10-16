@@ -114,7 +114,7 @@ const choose = (index: number) => emits('choose', index)
     <PoolItem
       type="clue"
       :amount="clues"
-      :class="{ 'resource--can-spend': spendCluesAction !== -1 }"
+      :class="{ 'clue--can-spend': spendCluesAction !== -1 }"
       @choose="$emit('choose', spendCluesAction)"
     />
     <template v-if="debug.active">

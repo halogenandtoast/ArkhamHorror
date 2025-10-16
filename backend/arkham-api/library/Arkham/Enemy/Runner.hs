@@ -1019,8 +1019,11 @@ instance RunMessage EnemyAttrs where
       whenM (attackIsValid details a) do
         case details.investigator of
           Just iid -> do
-            canIgnore <- hasModifier iid MayIgnoreAttacksOfOpportunity
-            willIgnore <- hasModifier iid IgnoreAttacksOfOpportunity
+            mods <- getModifiers iid
+            let ignoreMatchers = [m | MayIgnoreAttacksOfOpportunityOf m <- mods]
+            ignoreMatches <- if null ignoreMatchers then pure False else matches enemyId (concat ignoreMatchers)
+            let canIgnore = MayIgnoreAttacksOfOpportunity `elem` mods || ignoreMatches
+            let willIgnore = IgnoreAttacksOfOpportunity `elem` mods
             if (canIgnore || willIgnore) && details.kind == AttackOfOpportunity
               then do
                 player <- getPlayer iid

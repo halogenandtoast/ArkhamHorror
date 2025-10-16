@@ -17,9 +17,12 @@ instance RunMessage TheSecretMustBeKept where
   runMessage msg t@(TheSecretMustBeKept attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       -- max 3 decks so we subtract the number of decks in play from 3
+      -- 4 decks in return to
       sid <- getRandom
+      isReturnTo <- getIsReturnTo
       revelationSkillTest sid iid attrs #willpower
-        $ SumCalculation [Fixed 3, SubtractCalculation (Fixed 3) (CountActs AnyAct)]
+        $ SumCalculation
+          [Fixed 3, SubtractCalculation (Fixed $ if isReturnTo then 4 else 3) (CountActs AnyAct)]
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       deckCount <- getActDecksInPlayCount

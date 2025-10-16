@@ -93,7 +93,9 @@ chooseOneM iid choices = do
   ((_, ChooseState {label, labelCardCode}), choices') <- runChooseT choices
   unless (shouldSkipQuestion choices') do
     case label of
-      Nothing -> chooseOne iid choices'
+      Nothing -> case labelCardCode of
+        Nothing -> chooseOne iid choices'
+        Just cCode -> questionLabelWithCard "@none" cCode iid $ ChooseOne choices'
       Just l -> case labelCardCode of
         Nothing -> questionLabel l iid $ ChooseOne choices'
         Just cCode -> questionLabelWithCard l cCode iid $ ChooseOne choices'

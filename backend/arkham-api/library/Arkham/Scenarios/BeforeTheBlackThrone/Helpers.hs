@@ -124,6 +124,7 @@ chooseCosmos attrs (asId -> iid) valids msgs = do
   if null valids
     then cosmosFail attrs
     else chooseOneM iid do
+      questionLabeledCard attrs
       for_ valids \pos'@(Pos x y) ->
         gridLabeled (cosmicLabel pos') do
           placeCosmos iid attrs (CosmosLocation (Pos x y) attrs.id)

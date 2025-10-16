@@ -17,9 +17,8 @@ newtype MindlessDancer = MindlessDancer EnemyAttrs
 
 mindlessDancer :: EnemyCard MindlessDancer
 mindlessDancer =
-  enemyWith MindlessDancer Cards.mindlessDancer (6, Static 5, 3) (2, 1)
-    $ spawnAtL
-    ?~ SpawnAt
+  enemy MindlessDancer Cards.mindlessDancer (6, Static 5, 3) (2, 1)
+    & setSpawnAt
       (IncludeEmptySpace $ FarthestLocationFromYou (IncludeEmptySpace $ locationIs Locations.emptySpace))
 
 instance HasAbilities MindlessDancer where
@@ -39,7 +38,7 @@ instance RunMessage MindlessDancer where
       checkWhen $ Window.MovedFromHunter attrs.id
       push $ HunterMove (toId attrs)
       pure e
-    After (PlaceCosmos _ lid (CosmosLocation pos _)) -> do
+    Do (PlaceCosmos _ lid (CosmosLocation pos _)) -> do
       mEmptySpace <- selectOne $ IncludeEmptySpace $ LocationWithLabel (mkLabel $ cosmicLabel pos)
       case attrs.placement of
         AtLocation lid' | Just lid' == mEmptySpace -> do

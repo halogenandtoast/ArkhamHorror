@@ -54,7 +54,6 @@ instance RunMessage InfinityOfDarkness where
             then cosmosFail attrs
             else do
               chooseOneM iid $ scenarioI18n do
-                questionLabeled "chooseWhereToConnect"
                 questionLabeledCard attrs
                 when (notNull belowChoice) do
                   labeled' "connectBelow" do

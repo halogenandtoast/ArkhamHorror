@@ -170,7 +170,7 @@ instance RunMessage CityOfTheElderThings where
         <> validateEntry (not dyerIsAlive) "dyer.otherwise"
 
       unless dyerIsAlive do
-        eachInvestigator \iid -> addCampaignCardToDeck iid DoNotShuffleIn Treacheries.possessed
+        eachInvestigator \iid -> addCampaignCardToDeck iid ShuffleIn Treacheries.possessed
 
       story $ i18n "entrance"
 

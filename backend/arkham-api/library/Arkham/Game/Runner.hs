@@ -3354,12 +3354,14 @@ runPreGameMessage msg g = case msg of
       & (skillTestResultsL .~ Nothing)
       & (windowStackL .~ mempty)
       & (windowDepthL .~ 0)
-  ResetInvestigators ->
+  ResetInvestigators -> do
+    -- if we reset and there is no player order, set it to the current investigator keys
     pure
       $ g
       & (modifiersL .~ mempty)
       & (entitiesL . investigatorsL %~ map returnToBody)
       & (removedFromPlayL .~ [])
+      & (playerOrderL %~ \po -> if null po then view (entitiesL . investigatorsL . to Map.keys) g else po)
   Setup -> pure $ g & inSetupL .~ True
   StartScenario _ -> pure $ g & inSetupL .~ True & scenarioStepsL .~ 0
   EndSetup -> pure $ g & inSetupL .~ False

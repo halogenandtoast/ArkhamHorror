@@ -55,7 +55,7 @@ const shouldRender = (mod: Modifier) => {
   if (type.tag === 'DamageDealt') return true
   if (type.tag === 'AnySkillValue') return true
   if (type.tag === 'SkillModifier') return true
-  if (type.tag === 'ActionSkillModifier') return true
+  if (type.tag === 'ActionSkillModifier') return type.action === props.skillTest.action
   if (type.tag === 'AddSkillValue') return true
   if (type.tag === 'RevealAnotherChaosToken') return true
   if (type.tag === 'DoubleSuccess') return true

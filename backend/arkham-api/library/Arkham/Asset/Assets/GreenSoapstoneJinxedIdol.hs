@@ -18,9 +18,7 @@ greenSoapstoneJinxedIdol = asset GreenSoapstoneJinxedIdol Cards.greenSoapstoneJi
 instance HasAbilities GreenSoapstoneJinxedIdol where
   getAbilities (GreenSoapstoneJinxedIdol a) =
     [ storyControlled_ a 1
-        $ ReactionAbility
-          (EnemyAttackedSuccessfully #when You AnySource AnyEnemy)
-          (assetUseCost a Charge 1 <> exhaust a)
+        $ triggered (SkillTestResult #when You #attacking #success) (assetUseCost a Charge 1 <> exhaust a)
     ]
 
 instance RunMessage GreenSoapstoneJinxedIdol where

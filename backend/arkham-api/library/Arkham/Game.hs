@@ -355,7 +355,7 @@ withEnemyMetadata :: HasGame m => Enemy -> m (With Enemy EnemyMetadata)
 withEnemyMetadata a = do
   emModifiers <- getModifiers' (toTarget a)
   emEngagedInvestigators <- select $ investigatorEngagedWith (toId a)
-  emTreacheries <- select $ TreacheryOnEnemy $ EnemyWithId (toId a)
+  emTreacheries <- select $ TreacheryOnEnemy $ IncludeOmnipotent $ EnemyWithId (toId a)
   emAssets <- select $ EnemyAsset (toId a)
   emEvents <- select $ EnemyEvent (toId a)
   emSkills <- select $ EnemySkill (toId a)

@@ -14,7 +14,7 @@ import Token from '@/arkham/components/Token.vue';
 import type { Game } from '@/arkham/types/Game';
 import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
-import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import QuestionChoices from '@/arkham/components/QuestionChoices.vue';
 
 export interface Props {
   game: Game
@@ -406,223 +406,179 @@ const cardPiles = computed(() => {
 </script>
 
 <template>
-  <ChaosBagChoice v-if="chaosBagChoice" :choice="chaosBagChoice" :game="game" :playerId="playerId" @choose="choose" />
-  <div v-if="cardPiles.length > 0" class="cardPiles">
-    <div v-for="{pile, index} in cardPiles" :key="pile" class="card-pile" @click="choose(index)">
-      <div v-for="card in pile" :key="card" class="pile-card">
-        <img class="card" :src="cardIdImage(card.cardId)" />
-        <img v-if="card.cardOwner" class="portrait" :src="portraitLabelImage(card.cardOwner)" />
+  <div class='question-wrapper'>
+    <ChaosBagChoice v-if="chaosBagChoice" :choice="chaosBagChoice" :game="game" :playerId="playerId" @choose="choose" />
+    <div v-if="cardPiles.length > 0" class="cardPiles">
+      <div v-for="{pile, index} in cardPiles" :key="pile" class="card-pile" @click="choose(index)">
+        <div v-for="card in pile" :key="card" class="pile-card">
+          <img class="card" :src="cardIdImage(card.cardId)" />
+          <img v-if="card.cardOwner" class="portrait" :src="portraitLabelImage(card.cardOwner)" />
+        </div>
       </div>
     </div>
-  </div>
 
-  <div v-if="cardLabels.length > 0" class="cardLabels">
-    <template v-for="{choice, index} in cardLabels" :key="index">
-      <img class="card" :src="cardLabelImage(choice.cardCode)" @click="choose(index)" />
-    </template>
-  </div>
+    <div v-if="cardLabels.length > 0" class="cardLabels">
+      <template v-for="{choice, index} in cardLabels" :key="index">
+        <img class="card" :src="cardLabelImage(choice.cardCode)" @click="choose(index)" />
+      </template>
+    </div>
 
-  <div v-if="tarotChoices.length > 0" class="tarotLabels">
-    <template v-for="{card, index} in tarotChoices" :key="index">
-      <img v-if="index === undefined" class="card" :src="imgsrc(`tarot/${tarotCardImage(card)}`)" :class="{ [card.facing]: true}" />
-      <a v-else href='#' @click.prevent="choose(index)">
-        <img class="card" :src="imgsrc(`tarot/${tarotCardImage(card)}`)" :class="{ [card.facing]: true}" />
-      </a>
-    </template>
-  </div>
+    <div v-if="tarotChoices.length > 0" class="tarotLabels">
+      <template v-for="{card, index} in tarotChoices" :key="index">
+        <img v-if="index === undefined" class="card" :src="imgsrc(`tarot/${tarotCardImage(card)}`)" :class="{ [card.facing]: true}" />
+        <a v-else href='#' @click.prevent="choose(index)">
+          <img class="card" :src="imgsrc(`tarot/${tarotCardImage(card)}`)" :class="{ [card.facing]: true}" />
+        </a>
+      </template>
+    </div>
 
-  <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
-    <div v-if="readCards.length > 0" class="story-with-card">
-      <img :src="imgsrc(`cards/${cardCode.replace('c', '')}.avif`)" v-for="cardCode in readCards" class="card no-overlay" />
-      <div>
+    <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
+      <div v-if="readCards.length > 0" class="story-with-card">
+        <img :src="imgsrc(`cards/${cardCode.replace('c', '')}.avif`)" v-for="cardCode in readCards" class="card no-overlay" />
+        <div>
+          <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
+        </div>
+      </div>
+      <template v-else>
         <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
-      </div>
-    </div>
-    <template v-else>
-      <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
-    </template>
-  </div>
-
-
-  <div class="question-label dropdown" v-if="question && question.tag === 'DropDown'">
-    <div class="question-image" v-if="questionImage">
-      <img :src="questionImage" class="card" />
+      </template>
     </div>
 
-    <DropDown @choose="choose" :options="question.options" />
-  </div>
 
-  <div class="question-label dropdown" v-if="question && question.tag === 'QuestionLabel' && question.question.tag === 'DropDown'">
-    <div class="question-image" v-if="questionImage">
-      <img :src="questionImage" class="card" />
-    </div>
-
-    <DropDown @choose="choose" :options="question.question.options" />
-  </div>
-
-  <div v-if="!isSkillTest && !inSkillTest && focusedChaosTokens.length > 0" class="tokens">
-    <div class="question-image" v-if="questionImage">
-      <img :src="questionImage" class="card" />
-    </div>
-
-    <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="choose" />
-  </div>
-
-  <div v-if="showChoices" class="choices">
-    <div class="question-label">
+    <div class="question-label dropdown" v-if="question && question.tag === 'DropDown'">
       <div class="question-image" v-if="questionImage">
         <img :src="questionImage" class="card" />
       </div>
 
-      <div class='question-content'>
-        <div v-if="focusedCards.length > 0 && choices.length > 0" class="modal">
-          <div class="modal-contents focused-cards">
-            <Card
-              v-for="(card, index) in focusedCards"
-              :card="card"
-              :game="game"
-              :playerId="playerId"
-              :key="index"
-              @choose="$emit('choose', $event)"
-            />
-          </div>
+      <DropDown @choose="choose" :options="question.options" />
+    </div>
+
+    <div class="question-label dropdown" v-if="question && question.tag === 'QuestionLabel' && question.question.tag === 'DropDown'">
+      <div class="question-image" v-if="questionImage">
+        <img :src="questionImage" class="card" />
+      </div>
+
+      <DropDown @choose="choose" :options="question.question.options" />
+    </div>
+
+    <div v-if="!isSkillTest && !inSkillTest && focusedChaosTokens.length > 0" class="tokens">
+      <div class="question-image" v-if="questionImage">
+        <img :src="questionImage" class="card" />
+      </div>
+
+      <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="choose" />
+    </div>
+
+    <div v-if="showChoices" class="choices">
+      <div class="question-label">
+        <div class="question-image" v-if="questionImage">
+          <img :src="questionImage" class="card" />
         </div>
-        <div v-if="searchedCards.length > 0 && choices.length > 0" class="modal">
-          <div class="modal-contents searched-cards">
-            <div v-for="[group, cards] in searchedCards" :key="group" class="group">
-              <h2>{{zoneToLabel(group)}}</h2>
-              <div class="group-cards">
-                <Card
-                  v-for="card in cards"
-                  :card="card"
-                  :game="game"
-                  :playerId="playerId"
-                  :key="`${group}-${toCardContents(card).id}`"
-                  @choose="$emit('choose', $event)"
-                />
-              </div>
+
+        <div class='question-content'>
+          <div v-if="focusedCards.length > 0 && choices.length > 0" class="modal">
+            <div class="modal-contents focused-cards">
+              <Card
+                v-for="(card, index) in focusedCards"
+                :card="card"
+                :game="game"
+                :playerId="playerId"
+                :key="index"
+                @choose="$emit('choose', $event)"
+              />
             </div>
           </div>
-        </div>
-        <div v-if="paymentAmountsLabel" class="modal amount-modal">
-          <div class="modal-contents amount-contents">
-            <form @submit.prevent="submitPaymentAmounts" :disabled="unmetAmountRequirements">
-              <legend v-html="paymentAmountsLabel"></legend>
-              <template v-for="amountChoice in paymentAmountsChoices" :key="amountChoice.investigatorId">
-                <div v-if="amountChoice.maxBound !== 0">
-                  {{amountChoice.title}}
-                  <input
-                    type="number"
-                    :min="amountChoice.minBound"
-                    :max="amountChoice.maxBound"
-                    v-model.number="amountSelections[amountChoice.choiceId]"
-                    onclick="this.select()"
+          <div v-if="searchedCards.length > 0 && choices.length > 0" class="modal">
+            <div class="modal-contents searched-cards">
+              <div v-for="[group, cards] in searchedCards" :key="group" class="group">
+                <h2>{{zoneToLabel(group)}}</h2>
+                <div class="group-cards">
+                  <Card
+                    v-for="card in cards"
+                    :card="card"
+                    :game="game"
+                    :playerId="playerId"
+                    :key="`${group}-${toCardContents(card).id}`"
+                    @choose="$emit('choose', $event)"
                   />
                 </div>
-              </template>
-              <button :disabled="unmetAmountRequirements">Submit</button>
-            </form>
-          </div>
-        </div>
-        <div v-if="amountsLabel" class="modal amount-modal">
-          <div v-if="searchedCards.length > 0" class="modal-contents searched-cards">
-            <div v-for="[group, cards] in searchedCards" :key="group" class="group">
-              <h2>{{zoneToLabel(group)}}</h2>
-              <div class="group-cards">
-                <Card
-                  v-for="card in cards"
-                  :card="card"
-                  :game="game"
-                  :playerId="playerId"
-                  :key="`${group}-${toCardContents(card).id}`"
-                  @choose="$emit('choose', $event)"
-                />
               </div>
             </div>
           </div>
-          <div class="modal-contents amount-contents">
-            <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
-              <legend v-html="amountsLabel"></legend>
-              <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.choiceId">
-                <div v-if="paymentChoice.maxBound !== 0">
-                  <label :for="`choice-${paymentChoice.choiceId}`" v-html="paymentChoiceLabel(paymentChoice.label)"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
+          <div v-if="paymentAmountsLabel" class="modal amount-modal">
+            <div class="modal-contents amount-contents">
+              <form @submit.prevent="submitPaymentAmounts" :disabled="unmetAmountRequirements">
+                <legend v-html="paymentAmountsLabel"></legend>
+                <template v-for="amountChoice in paymentAmountsChoices" :key="amountChoice.investigatorId">
+                  <div v-if="amountChoice.maxBound !== 0">
+                    {{amountChoice.title}}
+                    <input
+                      type="number"
+                      :min="amountChoice.minBound"
+                      :max="amountChoice.maxBound"
+                      v-model.number="amountSelections[amountChoice.choiceId]"
+                      onclick="this.select()"
+                    />
+                  </div>
+                </template>
+                <button :disabled="unmetAmountRequirements">Submit</button>
+              </form>
+            </div>
+          </div>
+          <div v-if="amountsLabel" class="modal amount-modal">
+            <div v-if="searchedCards.length > 0" class="modal-contents searched-cards">
+              <div v-for="[group, cards] in searchedCards" :key="group" class="group">
+                <h2>{{zoneToLabel(group)}}</h2>
+                <div class="group-cards">
+                  <Card
+                    v-for="card in cards"
+                    :card="card"
+                    :game="game"
+                    :playerId="playerId"
+                    :key="`${group}-${toCardContents(card).id}`"
+                    @choose="$emit('choose', $event)"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="modal-contents amount-contents">
+              <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
+                <legend v-html="amountsLabel"></legend>
+                <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.choiceId">
+                  <div v-if="paymentChoice.maxBound !== 0">
+                    <label :for="`choice-${paymentChoice.choiceId}`" v-html="paymentChoiceLabel(paymentChoice.label)"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
+                  </div>
+                </template>
+                <button :disabled="unmetAmountRequirements">Submit</button>
+              </form>
+            </div>
+          </div>
+
+          <div v-if="portraits.length > 0" class="portraits">
+            <template v-for="([choice, index]) in portraits" :key="index">
+              <template v-if="choice.tag === 'PortraitLabel'">
+                <div class="portrait">
+                  <img class="active" :src="portraitLabelImage(choice.investigatorId)" @click="choose(index)" />
                 </div>
               </template>
-              <button :disabled="unmetAmountRequirements">Submit</button>
-            </form>
+            </template>
+          </div>
+
+          <div class="choices-wrapper">
+            <QuestionChoices :choices="choices" :game="game" :playerId="playerId" @choose="choose" />
           </div>
         </div>
-
-        <div v-if="portraits.length > 0" class="portraits">
-          <template v-for="([choice, index]) in portraits" :key="index">
-            <template v-if="choice.tag === 'PortraitLabel'">
-              <div class="portrait">
-                <img class="active" :src="portraitLabelImage(choice.investigatorId)" @click="choose(index)" />
-              </div>
-            </template>
-          </template>
-        </div>
       </div>
+      <QuestionChoices v-if="!questionImage" :choices="choices" :game="game" :playerId="playerId" @choose="choose" />
     </div>
-
-    <template v-for="(choice, index) in choices" :key="index">
-      <template v-if="choice.tag === 'AbilityLabel' && ['DisplayAsCard'].includes(choice.ability.displayAs)">
-        <AbilityButton
-          :ability="choice"
-          :game="game"
-          @click="$emit('choose', index)"
-          />
-      </template>
-      <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
-        <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
-      </template>
-      <template v-if="choice.tag === MessageType.ABILITY_LABEL && choice.ability.type.tag === 'ConstantReaction'">
-        <button @click="choose(index)">{{choice.ability.type.label}}</button>
-      </template>
-      <div v-if="choice.tag === MessageType.LABEL" class="message-label">
-        <button v-if="choice.label == 'Choose {skull}'" @click="choose(index)">
-          Choose <i class="iconSkull"></i>
-        </button>
-        <button v-else-if="choice.label == 'Choose {cultist}'" @click="choose(index)">
-          Choose <i class="iconCultist"></i>
-        </button>
-        <button v-else-if="choice.label == 'Choose {tablet}'" @click="choose(index)">
-          Choose <i class="iconTablet"></i>
-        </button>
-        <button v-else-if="choice.label == 'Choose {elderThing}'" @click="choose(index)">
-          Choose <i class="iconElderThing"></i>
-        </button>
-        <button v-else @click="choose(index)" v-html="label(choice.label)"></button>
+    <template v-else-if="question && question.tag === 'QuestionLabel' && question.question.tag !== 'DropDown'">
+      <div v-if="questionImage" class="question-image">
+        <img :src="questionImage" class="card" />
       </div>
-      <div v-else-if="choice.tag === MessageType.INVALID_LABEL" class="message-label">
-        <button v-html="label(choice.label)" disabled></button>
-      </div>
-
-      <a
-        v-if="choice.tag === MessageType.SKILL_LABEL"
-        class="button"
-        @click="choose(index)"
-      >
-        Use <i :class="`icon${choice.skillType}`"></i>
-      </a>
-
-      <a
-        v-if="choice.tag === MessageType.SKILL_LABEL_WITH_LABEL"
-        class="button"
-        @click="choose(index)"
-      >
-        Use <i :class="`icon${choice.skillType}`"></i>: {{choice.label}}
-      </a>
-
     </template>
-  </div>
-  <template v-else-if="question && question.tag === 'QuestionLabel' && question.question.tag !== 'DropDown'">
-    <div v-if="questionImage" class="question-image">
-      <img :src="questionImage" class="card" />
+    <div v-if="doneLabel">
+      <button class="done" @click="$emit('choose', doneLabel.index)" v-html="label(doneLabel.label)"></button>
     </div>
-  </template>
-  <div v-if="doneLabel">
-    <button class="done" @click="$emit('choose', doneLabel.index)" v-html="label(doneLabel.label)"></button>
   </div>
 </template>
 
@@ -1333,5 +1289,29 @@ h2 {
   border: 1px solid var(--select);
 }
 
+.choices-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 10px;
+  padding: 10px;
+  button {
+    border: 1px solid #444;
+  }
+  border-radius: inherit;
+  border: 1px solid #444;
+}
 
+.question-wrapper:has(> .question-image) .question-image{
+  width: var(--card-width);
+  align-self: center;
+  justify-self: center;
+  img {
+    flex-basis: 100%;
+    height: auto;
+    border-radius: 3px;
+  }
+}
 </style>

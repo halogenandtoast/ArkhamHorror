@@ -51,6 +51,7 @@ instance RunMessage DancersMist where
             then cosmosFail attrs
             else do
               chooseOneM iid $ scenarioI18n do
+                questionLabeledCard attrs
                 when (notNull rightChoice) do
                   labeled' "connectToTheRight" do
                     chooseOrRunOneM iid do

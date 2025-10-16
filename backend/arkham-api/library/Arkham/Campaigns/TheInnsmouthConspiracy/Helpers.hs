@@ -9,6 +9,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (HasQueue, push)
 import Arkham.Classes.Query
 import Arkham.Effect.Types (makeEffectBuilder)
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Log hiding (recordSetInsert)
 import Arkham.Helpers.Scenario
 import Arkham.I18n
@@ -66,6 +67,16 @@ needsAir a n =
 
 getFloodLevel :: (HasGame m, AsId location, IdOf location ~ LocationId) => location -> m FloodLevel
 getFloodLevel = fieldWithDefault Unflooded LocationFloodLevel . asId
+
+getFloodLevelFor :: HasGame m => InvestigatorId -> m FloodLevel
+getFloodLevelFor iid = do
+  inFishingVessel <- matches iid $ InVehicleMatching $ assetIs Assets.fishingVessel
+  if inFishingVessel
+    then pure Unflooded
+    else
+      getLocationOf iid >>= \case
+        Nothing -> pure Unflooded
+        Just location -> getFloodLevel location
 
 canIncreaseFloodLevel
   :: (HasGame m, AsId location, IdOf location ~ LocationId) => location -> m Bool

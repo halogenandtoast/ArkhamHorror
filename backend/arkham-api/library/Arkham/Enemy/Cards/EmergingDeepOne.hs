@@ -24,11 +24,11 @@ instance HasAbilities EmergingDeepOne where
 
 instance RunMessage EmergingDeepOne where
   runMessage msg e@(EmergingDeepOne attrs) = runQueueT $ case msg of
-    Revelation _iid (isSource attrs -> True) -> do
+    Revelation iid (isSource attrs -> True) -> do
       getLocationOf attrs.id >>= \case
         Nothing -> error "We do not have a location yet..."
         Just loc ->
-          getFloodLevel loc >>= \case
+          getFloodLevelFor iid >>= \case
             FullyFlooded -> do
               enemyCheckEngagement attrs.id
               pure $ EmergingDeepOne $ attrs & delayEngagementL .~ False

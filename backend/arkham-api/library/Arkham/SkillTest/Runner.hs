@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.SkillTest.Runner (module X, totalModifiedSkillValue) where
 
@@ -493,17 +493,17 @@ instance RunMessage SkillTest where
       pure s
     CheckAdditionalCommitCosts iid cards -> do
       modifiers' <- getModifiers iid
-      cardModifiers <- concat <$> traverse getModifiers cards
-      let
-        msgs = map (CommitCard iid) cards
-        additionalCosts =
-          mapMaybe
-            ( \case
-                CommitCost c -> Just c
-                AdditionalCostToCommit iid' c | iid' == iid -> Just c
-                _ -> Nothing
-            )
-            (modifiers' <> cardModifiers)
+      let msgs = map (CommitCard iid) cards
+      cardsAdditionalCosts <-
+        cards & concatMapM \c -> do
+          cardModifiers <- getModifiers c
+          let noAdditionalCosts = NoAdditionalCosts `elem` cardModifiers
+          pure $ cardModifiers & mapMaybe \case
+            AdditionalCostToCommit iid' cst | iid' == iid && noAdditionalCosts -> Just cst
+            _ -> Nothing
+
+      let playerCommitCosts = [c | CommitCost c <- modifiers']
+      let additionalCosts = cardsAdditionalCosts <> playerCommitCosts
       afterMsg <- checkWindows [mkAfter $ Window.CommittedCards iid cards]
       whenMsg <- checkWindows [mkWhen $ Window.CommittedCards iid cards]
       if null additionalCosts

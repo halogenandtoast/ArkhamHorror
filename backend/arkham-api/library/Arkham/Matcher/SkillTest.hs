@@ -23,6 +23,7 @@ import GHC.OverloadedLabels
 data SkillTestMatcher
   = WhileInvestigating LocationMatcher
   | WhileAttackingAnEnemy EnemyMatcher
+  | WhileAttacking
   | WhileEvadingAnEnemy EnemyMatcher
   | WhileParleyingWithAnEnemy EnemyMatcher
   | WhileParleying
@@ -86,7 +87,7 @@ instance IsLabel "fighting" SkillTestMatcher where
   fromLabel = WhileAttackingAnEnemy AnyEnemy
 
 instance IsLabel "attacking" SkillTestMatcher where
-  fromLabel = WhileAttackingAnEnemy AnyEnemy
+  fromLabel = WhileAttacking
 
 instance IsLabel "evading" SkillTestMatcher where
   fromLabel = WhileEvadingAnEnemy AnyEnemy

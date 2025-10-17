@@ -37,6 +37,7 @@ concealedToCardDef :: ConcealedCard -> Maybe CardDef
 concealedToCardDef c = case c.kind of
   Decoy -> Nothing
   TheRedGlovedMan -> Just Enemies.theRedGlovedManShroudedInMystery
+  LaChicaRoja -> Just Enemies.laChicaRojaTheGirlInTheCarmineCoat
   CoterieAgentA -> Just Enemies.coterieAgentA
   CoterieAgentB -> Just Enemies.coterieAgentB
   CoterieAgentC -> Just Enemies.coterieAgentC

@@ -58,6 +58,7 @@ data instance Field Campaign :: Type -> Type where
   CampaignCompletedSteps :: Field Campaign [CampaignStep]
   CampaignStoryCards :: Field Campaign (Map InvestigatorId [Card])
   CampaignCampaignLog :: Field Campaign CampaignLog
+  CampaignChaosBag :: Field Campaign [ChaosTokenFace]
   CampaignDecks :: Field Campaign (Map InvestigatorId (Deck PlayerCard))
   CampaignMeta :: Field Campaign Value
   CampaignStore :: Field Campaign (Map Text Value)

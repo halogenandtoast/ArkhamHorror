@@ -138,6 +138,7 @@ library
       Arkham.Act.Cards.InPursuitOfTheDead
       Arkham.Act.Cards.InPursuitOfTheLiving
       Arkham.Act.Cards.InTheBellyOfTheMoonBeast
+      Arkham.Act.Cards.InTheSearchlight
       Arkham.Act.Cards.IntoTheBeyond
       Arkham.Act.Cards.IntoTheBeyondV2
       Arkham.Act.Cards.IntoTheDarkness
@@ -267,6 +268,7 @@ library
       Arkham.Act.Cards.TheRelicIsMissing
       Arkham.Act.Cards.TheRescue
       Arkham.Act.Cards.TheReturnTrip
+      Arkham.Act.Cards.TheScarletShadow
       Arkham.Act.Cards.TheSchemesDemise
       Arkham.Act.Cards.TheSearchForAgentHarper
       Arkham.Act.Cards.TheSecondOath
@@ -421,6 +423,7 @@ library
       Arkham.Agenda.Cards.SecretsBetterLeftHidden
       Arkham.Agenda.Cards.SecretsOfTheSeaV1
       Arkham.Agenda.Cards.SecretsOfTheSeaV2
+      Arkham.Agenda.Cards.SeeingRed
       Arkham.Agenda.Cards.SettingSun
       Arkham.Agenda.Cards.ShadowsDeepen
       Arkham.Agenda.Cards.ShowbusinessAsUsual
@@ -523,6 +526,7 @@ library
       Arkham.Agenda.Cards.WhatsGoingOn
       Arkham.Agenda.Cards.WheelOfFortuneX
       Arkham.Agenda.Cards.WhenItRains
+      Arkham.Agenda.Cards.WhereIsShe
       Arkham.Agenda.Cards.WhereTheresSmoke
       Arkham.Agenda.Import.Lifted
       Arkham.Agenda.Runner
@@ -1023,6 +1027,7 @@ library
       Arkham.Asset.Assets.Kukri
       Arkham.Asset.Assets.LabCoat1
       Arkham.Asset.Assets.LaboratoryAssistant
+      Arkham.Asset.Assets.LaChicaRojaYourWatchfulShadow
       Arkham.Asset.Assets.LadyEsprit
       Arkham.Asset.Assets.Lantern
       Arkham.Asset.Assets.Lantern2
@@ -1581,8 +1586,17 @@ library
       Arkham.Campaigns.TheScarletKeys.Helpers
       Arkham.Campaigns.TheScarletKeys.Key
       Arkham.Campaigns.TheScarletKeys.Key.Cards
+      Arkham.Campaigns.TheScarletKeys.Key.Cards.TheBaleEngine
       Arkham.Campaigns.TheScarletKeys.Key.Cards.TheEyeOfRavens
       Arkham.Campaigns.TheScarletKeys.Key.Cards.TheLastBlossom
+      Arkham.Campaigns.TheScarletKeys.Key.Cards.TheLightOfPharos
+      Arkham.Campaigns.TheScarletKeys.Key.Cards.TheMirroringBlade
+      Arkham.Campaigns.TheScarletKeys.Key.Cards.TheRuinousChime
+      Arkham.Campaigns.TheScarletKeys.Key.Cards.TheSableGlass
+      Arkham.Campaigns.TheScarletKeys.Key.Cards.TheShadeReaper
+      Arkham.Campaigns.TheScarletKeys.Key.Cards.TheTwistedAntiprism
+      Arkham.Campaigns.TheScarletKeys.Key.Cards.TheWeepingLady
+      Arkham.Campaigns.TheScarletKeys.Key.Cards.TheWellspringOfFortune
       Arkham.Campaigns.TheScarletKeys.Key.Id
       Arkham.Campaigns.TheScarletKeys.Key.Import.Lifted
       Arkham.Campaigns.TheScarletKeys.Key.Keys
@@ -1696,6 +1710,7 @@ library
       Arkham.Enemy.Cards.ApexStrangleweed
       Arkham.Enemy.Cards.ApocalypticPresage
       Arkham.Enemy.Cards.ApostleOfDagon
+      Arkham.Enemy.Cards.ApportionedKa
       Arkham.Enemy.Cards.AquaticAbomination
       Arkham.Enemy.Cards.ArkhamOfficer
       Arkham.Enemy.Cards.AshleighClarke
@@ -1714,6 +1729,7 @@ library
       Arkham.Enemy.Cards.BillyCooper
       Arkham.Enemy.Cards.BoaConstrictor
       Arkham.Enemy.Cards.BogGator
+      Arkham.Enemy.Cards.BoundNightgaunt
       Arkham.Enemy.Cards.BrianBurnhamWantsOut
       Arkham.Enemy.Cards.BroodOfYig
       Arkham.Enemy.Cards.BroodOfYogSothoth
@@ -1871,6 +1887,7 @@ library
       Arkham.Enemy.Cards.KnightOfTheInnerCircle
       Arkham.Enemy.Cards.KnightOfTheOuterVoid
       Arkham.Enemy.Cards.LaboringGug
+      Arkham.Enemy.Cards.LaChicaRojaTheGirlInTheCarmineCoat
       Arkham.Enemy.Cards.LaComtesseSubverterOfPlans
       Arkham.Enemy.Cards.LanternClubMember
       Arkham.Enemy.Cards.LegsOfAtlachNacha_347
@@ -2035,6 +2052,7 @@ library
       Arkham.Enemy.Cards.TheOrganistHopelessIDefiedHim
       Arkham.Enemy.Cards.TheRedGlovedManShroudedInMystery
       Arkham.Enemy.Cards.TheRougarou
+      Arkham.Enemy.Cards.TheSanguineWatcherWithTheRubySpectacles
       Arkham.Enemy.Cards.TheSpectralWatcher
       Arkham.Enemy.Cards.TheTerrorOfDevilReef_164
       Arkham.Enemy.Cards.TheTerrorOfDevilReef_165
@@ -2811,6 +2829,7 @@ library
       Arkham.Location.Cards.Attic
       Arkham.Location.Cards.Attic_AThousandShapesOfHorror
       Arkham.Location.Cards.AudubonPark
+      Arkham.Location.Cards.AvenidaDeMayo
       Arkham.Location.Cards.BackAlley
       Arkham.Location.Cards.Backstage
       Arkham.Location.Cards.BaggageCar
@@ -2822,6 +2841,7 @@ library
       Arkham.Location.Cards.BalconySpectral
       Arkham.Location.Cards.Ballroom
       Arkham.Location.Cards.BallroomTheMidwinterGala
+      Arkham.Location.Cards.BancoDeLaProvincia
       Arkham.Location.Cards.BarrierCamp
       Arkham.Location.Cards.Barroom
       Arkham.Location.Cards.BaseCamp
@@ -2870,13 +2890,16 @@ library
       Arkham.Location.Cards.CanalsOfTenochtitlan_180
       Arkham.Location.Cards.CanalsOfTenochtitlan_181
       Arkham.Location.Cards.CandlelitTunnels
+      Arkham.Location.Cards.CasaRosada
       Arkham.Location.Cards.CastleHallwaysSeeminglyEndless
       Arkham.Location.Cards.CatacombsStinksOfDeath
+      Arkham.Location.Cards.CatedralMetropolitana
       Arkham.Location.Cards.CavernsBeneathTheMoonDarkSide
       Arkham.Location.Cards.CavernsBeneathTheMoonLightSide
       Arkham.Location.Cards.CavernsOfYoth
       Arkham.Location.Cards.Celephais
       Arkham.Location.Cards.Cellar
+      Arkham.Location.Cards.CementarioDeLaRecoleta
       Arkham.Location.Cards.CentralLotBlurred
       Arkham.Location.Cards.CentralLotQuietOnSet
       Arkham.Location.Cards.ChamberOfTime
@@ -3279,6 +3302,7 @@ library
       Arkham.Location.Cards.OvergrownCairns
       Arkham.Location.Cards.OvergrownRuins
       Arkham.Location.Cards.PalaceOfTheKing
+      Arkham.Location.Cards.PalacioErrazuriz
       Arkham.Location.Cards.Parlor
       Arkham.Location.Cards.ParlorCar
       Arkham.Location.Cards.ParlorTheMidwinterGala
@@ -3473,6 +3497,7 @@ library
       Arkham.Location.Cards.TarPit
       Arkham.Location.Cards.TearThroughSpace
       Arkham.Location.Cards.TearThroughTime
+      Arkham.Location.Cards.TeatroColon
       Arkham.Location.Cards.TeetawnPassage
       Arkham.Location.Cards.TempleOfRlyeh
       Arkham.Location.Cards.TempleOfTheElderThings
@@ -3494,6 +3519,7 @@ library
       Arkham.Location.Cards.TheBlackCore
       Arkham.Location.Cards.TheBlackStone
       Arkham.Location.Cards.TheBlackThrone
+      Arkham.Location.Cards.TheCabildo
       Arkham.Location.Cards.TheCavernOfFlame
       Arkham.Location.Cards.TheDarkCrater
       Arkham.Location.Cards.TheEdgeOfTheUniverse
@@ -3777,6 +3803,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToUnionAndDisillusion
       Arkham.Scenario.Scenarios.ReturnToWhereDoomAwaits
       Arkham.Scenario.Scenarios.RiddlesAndRain
+      Arkham.Scenario.Scenarios.SanguineShadows
       Arkham.Scenario.Scenarios.ShatteredAeons
       Arkham.Scenario.Scenarios.TheBoundaryBeyond
       Arkham.Scenario.Scenarios.TheCityOfArchives
@@ -3850,6 +3877,7 @@ library
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.FlavorText
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
       Arkham.Scenarios.RiddlesAndRain.Helpers
+      Arkham.Scenarios.SanguineShadows.Helpers
       Arkham.Scenarios.ShatteredAeons.Helpers
       Arkham.Scenarios.TheBoundaryBeyond.Helpers
       Arkham.Scenarios.TheCityOfArchives.Helpers
@@ -4243,10 +4271,12 @@ library
       Arkham.Treachery.Cards.BuriedSecrets
       Arkham.Treachery.Cards.BuriedSecretsAdvanced
       Arkham.Treachery.Cards.CalledByTheMists
+      Arkham.Treachery.Cards.CallingCard
       Arkham.Treachery.Cards.CallOfTheUnknown
       Arkham.Treachery.Cards.CallToOrder
       Arkham.Treachery.Cards.CaptiveMind
       Arkham.Treachery.Cards.CastAdrift
+      Arkham.Treachery.Cards.CatAndMouse
       Arkham.Treachery.Cards.CaughtCheating
       Arkham.Treachery.Cards.CaughtInAWeb
       Arkham.Treachery.Cards.CaughtRedHanded
@@ -4488,6 +4518,7 @@ library
       Arkham.Treachery.Cards.OppressiveMists
       Arkham.Treachery.Cards.Outbreak
       Arkham.Treachery.Cards.OutOfBodyExperience
+      Arkham.Treachery.Cards.Outsmarted
       Arkham.Treachery.Cards.Overgrowth
       Arkham.Treachery.Cards.Overzealous
       Arkham.Treachery.Cards.PainfulReflection

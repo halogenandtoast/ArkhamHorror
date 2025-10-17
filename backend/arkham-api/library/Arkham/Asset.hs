@@ -985,6 +985,8 @@ allAssets =
     , SomeAssetCard toolBelt
     , SomeAssetCard flashlight3
     , SomeAssetCard soulSanctification3
+    , --- Sanguine Shadows [tsk]
+      SomeAssetCard laChicaRojaYourWatchfulShadow
     , --- Globetrotting [tsk]
       SomeAssetCard expeditedTicket
     , -- The Feast of Hemloch Vale

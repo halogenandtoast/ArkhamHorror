@@ -57,6 +57,8 @@ data StoryAttrs = StoryAttrs
   , storyRemoveAfterResolution :: Bool
   , storyCardsUnderneath :: [Card]
   , storyTokens :: Map Token Int
+  , storyArt :: CardCode
+  , storyFlippedArt :: CardCode
   }
   deriving stock (Show, Eq)
 
@@ -107,6 +109,8 @@ storyWith f cardDef g =
             , storyRemoveAfterResolution = True
             , storyCardsUnderneath = []
             , storyTokens = mempty
+            , storyArt = cdCardCode cardDef
+            , storyFlippedArt = fromMaybe (flippedCardCode $ cdCardCode cardDef) (cdOtherSide cardDef)
             }
     }
 
@@ -218,4 +222,6 @@ instance FromJSON StoryAttrs where
     storyRemoveAfterResolution <- o .: "removeAfterResolution"
     storyCardsUnderneath <- o .:? "cardsUnderneath" .!= []
     storyTokens <- o .:? "tokens" .!= mempty
+    storyArt <- o .:? "art" .!= toCardCode storyId
+    storyFlippedArt <- o .:? "flippedArt" .!= toCardCode storyId
     pure StoryAttrs {..}

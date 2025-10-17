@@ -110,6 +110,7 @@ allEncounterEnemyCards =
       , apexStrangleweed
       , apocalypticPresage
       , apostleOfDagon
+      , apportionedKa
       , aquaticAbomination
       , arkhamOfficer
       , ashleighClarke
@@ -127,6 +128,7 @@ allEncounterEnemyCards =
       , billyCooper
       , boaConstrictor
       , bogGator
+      , boundNightgaunt
       , brianBurnhamWantsOut
       , broodOfYig
       , broodOfYogSothoth
@@ -279,6 +281,7 @@ allEncounterEnemyCards =
       , khalidBelovedCompanion
       , knightOfTheInnerCircle
       , knightOfTheOuterVoid
+      , laChicaRojaTheGirlInTheCarmineCoat
       , laComtesseSubverterOfPlans
       , laboringGug
       , legsOfAtlachNacha_347
@@ -431,6 +434,7 @@ allEncounterEnemyCards =
       , theOrganistDrapedInMystery
       , theOrganistHopelessIDefiedHim
       , theRedGlovedManShroudedInMystery
+      , theSanguineWatcherWithTheRubySpectacles
       , theSpectralWatcher
       , theTerrorOfDevilReef_164
       , theTerrorOfDevilReef_165
@@ -2841,6 +2845,40 @@ khalidBelovedCompanion =
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdVictoryPoints = Just 1
     , cdUnique = True
+    }
+
+laChicaRojaTheGirlInTheCarmineCoat :: CardDef
+laChicaRojaTheGirlInTheCarmineCoat =
+  (enemy "09557" ("La Chica Roja" <:> "The Girl in the Carmine Coat") SanguineShadows 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Concealed LaChicaRoja (Static 5)]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "09557b"
+    }
+
+boundNightgaunt :: CardDef
+boundNightgaunt =
+  (enemy "09558" "Bound Nightgaunt" SanguineShadows 2)
+    { cdCardTraits = setFromList [Monster, Nightgaunt]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+theSanguineWatcherWithTheRubySpectacles :: CardDef
+theSanguineWatcherWithTheRubySpectacles =
+  (enemy "09563" ("The Sanguine Watcher" <:> "With the Ruby Spectacles") SanguineShadows 1)
+    { cdCardTraits = setFromList [Humanoid, Coterie, Elite]
+    , cdKeywords = setFromList [Keyword.Retaliate]
+    , cdVictoryPoints = Just 2
+    , cdUnique = True
+    }
+
+apportionedKa :: CardDef
+apportionedKa =
+  (enemy "09564" "Apportioned Ka" SanguineShadows 1)
+    { cdCardTraits = setFromList [Ritual, Elite]
+    , cdKeywords = setFromList [Keyword.Concealed ApportionedKa (Static 4)]
     }
 
 coterieAgentA :: CardDef

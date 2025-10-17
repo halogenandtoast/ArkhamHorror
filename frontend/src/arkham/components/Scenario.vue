@@ -334,6 +334,7 @@ const unusedLabels = computed(() => {
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const resources = computed(() => props.scenario.tokens[TokenType.Resource])
 const damage = computed(() => props.scenario.tokens[TokenType.Damage])
+const targets = computed(() => props.scenario.tokens[TokenType.Target])
 const hasPool = computed(() => resources.value && resources.value > 0 || damage.value && damage.value > 0)
 const tarotCards = computed(() => props.scenario.tarotCards.filter((c) => c.scope.tag === 'GlobalTarot'))
 const phase = computed(() => props.game.phase)
@@ -873,6 +874,7 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
             </div>
             <PoolItem class="depth" v-if="currentDepth" type="resource" :amount="currentDepth" />
             <PoolItem class="civilians-slain" v-if="civiliansSlain" type="resource" :amount="civiliansSlain" />
+            <PoolItem class="targets" v-if="targets" type="resource" :amount="targets" />
             <div class="spent-keys" v-if="spentKeys.length > 0">
               <Key v-for="key in spentKeys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
             </div>
@@ -1385,7 +1387,7 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
   position: relative;
   isolation: isolate;
 
-  .depth, .civilians-slain {
+  .depth, .civilians-slain, .targets {
     position: absolute;
     bottom: 0;
     right: 0;

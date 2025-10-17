@@ -487,6 +487,11 @@ allEnemies =
     , SomeEnemyCard thrallDeadHeat
     , SomeEnemyCard ancientRaider
     , SomeEnemyCard khalidBelovedCompanion
+    , --- Sanguine Shadows [tsk]
+      SomeEnemyCard laChicaRojaTheGirlInTheCarmineCoat
+    , SomeEnemyCard boundNightgaunt
+    , SomeEnemyCard theSanguineWatcherWithTheRubySpectacles
+    , SomeEnemyCard apportionedKa
     , --- Crimson Conspiracy [tsk]
       SomeEnemyCard coterieAgentA
     , SomeEnemyCard coterieAgentB

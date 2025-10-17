@@ -39,6 +39,7 @@ data Token
   | Shell
   | Supply
   | Suspicion
+  | Target
   | Ticket
   | Time
   | Truth

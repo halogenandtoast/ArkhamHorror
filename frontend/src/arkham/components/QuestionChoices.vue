@@ -207,6 +207,8 @@ i.iconSkillAgility:before {
   display: flex;
   gap: 10px;
   flex-direction: column;
-  padding: 10px;
+  &:has(.question-label) {
+    padding: 10px;
+  }
 }
 </style>

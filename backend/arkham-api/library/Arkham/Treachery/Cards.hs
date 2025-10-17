@@ -226,7 +226,9 @@ allEncounterTreacheryCards =
       , bumpyRide
       , burdensOfThePast
       , callToOrder
+      , callingCard
       , captiveMind
+      , catAndMouse
       , caughtCheating
       , caughtInAWeb
       , celestialShower
@@ -421,6 +423,7 @@ allEncounterTreacheryCards =
       , oozeAndFilth
       , oppressiveMists
       , outbreak
+      , outsmarted
       , overgrowth
       , painfulReflection
       , passageIntoTheVeil
@@ -2852,6 +2855,24 @@ cornered :: CardDef
 cornered =
   (treachery "09543" "Cornered!" DeadHeat 2)
     { cdCardTraits = setFromList [Hazard]
+    }
+
+catAndMouse :: CardDef
+catAndMouse =
+  (treachery "09559" "Cat and Mouse" SanguineShadows 2)
+    { cdCardTraits = setFromList [Scheme]
+    }
+
+callingCard :: CardDef
+callingCard =
+  (treachery "09560" "Calling Card" SanguineShadows 2)
+    { cdCardTraits = setFromList [Evidence]
+    }
+
+outsmarted :: CardDef
+outsmarted =
+  (treachery "09561" "Outsmarted" SanguineShadows 2)
+    { cdCardTraits = setFromList [Scheme]
     }
 
 conspiracyInRed :: CardDef

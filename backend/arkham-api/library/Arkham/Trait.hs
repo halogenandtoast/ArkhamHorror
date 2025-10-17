@@ -36,6 +36,7 @@ data Trait
   | Boon
   | Bridge
   | Broken
+  | BuenosAires
   | Byakhee
   | Bystander
   | Campsite

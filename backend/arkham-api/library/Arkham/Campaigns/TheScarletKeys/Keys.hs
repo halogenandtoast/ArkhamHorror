@@ -34,4 +34,6 @@ allScarletKeys =
       SomeScarletKeyCard theEyeOfRavens
     , -- Dead Heat
       SomeScarletKeyCard theLastBlossom
+    , -- Sanguine Shadows
+      SomeScarletKeyCard theWeepingLady
     ]

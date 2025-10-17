@@ -29,7 +29,7 @@ import Arkham.Target as X
 import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.Campaigns.TheForgottenAge.Helpers
-import Arkham.Campaigns.TheScarletKeys.Concealed
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -1574,15 +1574,8 @@ instance RunMessage EnemyAttrs where
       pure a
     InvestigatorDrawEnemy iid eid | eid == enemyId -> do
       push $ UpdateHistory iid (HistoryItem HistoryEnemiesDrawn [toCardCode a])
-      mconcealed <-
-        getModifiedKeywords a <&> foldMap \case
-          Keyword.Concealed card n -> First $ Just (card, n)
-          _ -> First Nothing
-      case getFirst mconcealed of
-        Just (card, gv) -> do
-          n <- getGameValue gv
-          concealedCards <- shuffle (card : replicate n Decoy) >>= traverse mkConcealedCard
-          locations <- select Anywhere
+      gatherConcealedCards a.id >>= \case
+        Just (kind, cards) -> do
           pushAll
             $ resolve
             $ EnemySpawn
@@ -1592,8 +1585,7 @@ instance RunMessage EnemyAttrs where
               , spawnDetailsEnemy = eid
               , spawnDetailsOverridden = True
               }
-          for_ concealedCards $ push . CreateConcealedCard
-          push $ PlaceConcealedCards iid (map toId concealedCards) locations
+          placeConcealed iid kind cards
         Nothing -> do
           mods <- (<>) <$> getModifiers enemyId <*> getModifiers (CardIdTarget $ toCardId a)
           let

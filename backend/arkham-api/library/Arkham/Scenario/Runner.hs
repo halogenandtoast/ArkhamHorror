@@ -278,7 +278,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           $ a
           & (agendaStackL . ix n %~ (prepend <>))
           & (completedAgendaStackL . at n ?~ remaining)
-      _ -> error "Invalid agenda deck to reset"
+      _ -> do
+        -- must be stage 1 already
+        pure a
   AdvanceActDeck n _ -> do
     let completedActStack = fromMaybe mempty $ lookup n scenarioCompletedActStack
     (oldAct, actStack') <- case lookup n scenarioActStack of
@@ -1658,6 +1660,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ a & setAsideKeysL %~ insertSet k & keysL %~ deleteSet k
   PlaceKey target k | not (isTarget a target) -> do
     pure $ a & (setAsideKeysL %~ deleteSet k)
+  PlaceTokens _ ScenarioTarget token amount -> do
+    pure $ a & tokensL %~ addTokens token amount
   RemoveTokens _ ScenarioTarget token amount -> do
     pure $ a & tokensL %~ subtractTokens token amount
   RestartScenario -> do
@@ -1782,23 +1786,31 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ a & setAsideCardsL %~ filter (/= card)
   SetDecksLayout layout -> do
     pure $ a & decksLayoutL .~ layout
-  PlaceConcealedCards iid (card : cards) lids -> do
+  PlaceConcealedCards _iid _cards lids -> do
+    Lifted.forTargets lids msg
+    pure a
+  ForTargets ls (PlaceConcealedCards iid (card : cards) lids) -> do
     let
       isForcedPlacement = \case
         ForceConcealedPlacement p -> Just p
         _ -> Nothing
     forcedPlacement <- getFirst . foldMap (First . isForcedPlacement) <$> getModifiers ScenarioTarget
+    let original = [l | LocationTarget l <- ls]
     case forcedPlacement of
       Just p -> for_ (card : cards) \c -> push $ PlaceConcealedCard iid c p
       Nothing -> do
         case lids of
+          [] | notNull original -> Lifted.forTargets original $ PlaceConcealedCards iid (card : cards) original
           [lid] -> do
             push $ PlaceConcealedCard iid card (AtLocation lid)
-            push $ PlaceConcealedCards iid cards (deleteFirst lid lids)
+            Lifted.forTargets original $ PlaceConcealedCards iid cards (deleteFirst lid lids)
           _ -> do
-            locations <- select $ Matcher.NearestLocationTo iid (Matcher.mapOneOf Matcher.LocationWithId lids)
-            chooseTargetM iid locations \lid -> do
-              push $ PlaceConcealedCard iid card (AtLocation lid)
-              push $ PlaceConcealedCards iid cards (deleteFirst lid lids)
+            if length lids == length (card : cards)
+              then for_ (zip (card : cards) lids) \(c, lid) -> push $ PlaceConcealedCard iid c (AtLocation lid)
+              else do
+                locations <- select $ Matcher.NearestLocationTo iid (Matcher.mapOneOf Matcher.LocationWithId lids)
+                chooseTargetM iid locations \lid -> do
+                  push $ PlaceConcealedCard iid card (AtLocation lid)
+                  Lifted.forTargets original $ PlaceConcealedCards iid cards (deleteFirst lid lids)
     pure a
   _ -> pure a

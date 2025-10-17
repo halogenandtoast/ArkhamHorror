@@ -209,57 +209,55 @@ getActionsWith iid ws f = do
         _ -> pure [action]
 
   actions'' <-
-    catMaybes <$> for
-      actionsWithSources
-      \ability -> do
-        modifiers' <- getModifiers (sourceToTarget $ abilitySource ability)
-        investigatorModifiers <- getModifiers (InvestigatorTarget iid)
-        let bountiesOnly = BountiesOnly `elem` investigatorModifiers
-        cardClasses <- case abilitySource ability of
-          AssetSource aid -> field Field.AssetClasses aid
-          _ -> pure $ singleton Neutral
+    catMaybes <$> for actionsWithSources \ability -> do
+      modifiers' <- getModifiers (sourceToTarget $ abilitySource ability)
+      investigatorModifiers <- getModifiers (InvestigatorTarget iid)
+      let bountiesOnly = BountiesOnly `elem` investigatorModifiers
+      cardClasses <- case abilitySource ability of
+        AssetSource aid -> field Field.AssetClasses aid
+        _ -> pure $ singleton Neutral
 
-        -- if enemy only bounty enemies
-        sourceIsBounty <- case abilitySource ability of
-          EnemySource eid -> eid <=~> EnemyWithBounty
-          _ -> pure True
+      -- if enemy only bounty enemies
+      sourceIsBounty <- case abilitySource ability of
+        EnemySource eid -> eid <=~> EnemyWithBounty
+        _ -> pure True
 
-        isForced <- isForcedAbility iid ability
-        let
-          -- Lola Hayes: Forced abilities will always trigger
-          prevents (CanOnlyUseCardsInRole role) =
-            null (setFromList [role, Neutral] `intersect` cardClasses)
-              && not isForced
-          prevents CannotTriggerFastAbilities = isFastAbility ability
-          prevents _ = False
-          -- Blank excludes any non-default abilities (index >= 100)
-          -- TODO: this is a leaky abstraction, we may want to track this
-          -- on the abilities themselves
-          blankPrevents Blank = abilityIndex ability < 100
-          blankPrevents BlankExceptForcedAbilities = not isForced
-          blankPrevents _ = False
-          -- If the window is fast we only permit fast abilities, but forced
-          -- abilities need to be everpresent so we include them
-          needsToBeFast =
-            all
-              ( \window ->
-                  windowType window
-                    == Window.FastPlayerWindow
-                    && not
-                      ( isFastAbility ability
-                          || isForced
-                          || isReactionAbility ability
-                      )
-              )
-              ws
+      isForced <- isForcedAbility iid ability
+      let
+        -- Lola Hayes: Forced abilities will always trigger
+        prevents (CanOnlyUseCardsInRole role) =
+          null (setFromList [role, Neutral] `intersect` cardClasses)
+            && not isForced
+        prevents CannotTriggerFastAbilities = isFastAbility ability
+        prevents _ = False
+        -- Blank excludes any non-default abilities (index >= 100)
+        -- TODO: this is a leaky abstraction, we may want to track this
+        -- on the abilities themselves
+        blankPrevents Blank = abilityIndex ability < 100
+        blankPrevents BlankExceptForcedAbilities = not isForced
+        blankPrevents _ = False
+        -- If the window is fast we only permit fast abilities, but forced
+        -- abilities need to be everpresent so we include them
+        needsToBeFast =
+          all
+            ( \window ->
+                windowType window
+                  == Window.FastPlayerWindow
+                  && not
+                    ( isFastAbility ability
+                        || isForced
+                        || isReactionAbility ability
+                    )
+            )
+            ws
 
-        pure
-          $ if any prevents investigatorModifiers
-            || any blankPrevents modifiers'
-            || needsToBeFast
-            || (bountiesOnly && not sourceIsBounty)
-            then Nothing
-            else Just $ applyAbilityModifiers ability modifiers'
+      pure
+        $ if any prevents investigatorModifiers
+          || any blankPrevents modifiers'
+          || needsToBeFast
+          || (bountiesOnly && not sourceIsBounty)
+          then Nothing
+          else Just $ applyAbilityModifiers ability modifiers'
 
   actions''' <-
     filterM

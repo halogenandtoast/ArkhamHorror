@@ -903,6 +903,9 @@ addUsesOn
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Token -> Int -> target -> m ()
 addUsesOn src tkn n trgt = placeTokens src trgt tkn n
 
+removeAllOfTokenOn :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Token -> target -> m ()
+removeAllOfTokenOn source token = removeTokensOn source token 1000
+
 removeTokens
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
 removeTokens source lid token n = push $ RemoveTokens (toSource source) (toTarget lid) token n

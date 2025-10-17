@@ -50,6 +50,7 @@ import Arkham.Target as X
 
 import Arkham.Card.CardDef
 import Arkham.Resolution
+import Arkham.Matcher
 
 advanceAgenda :: ReverseQueue m => AgendaAttrs -> m ()
 advanceAgenda attrs = push $ AdvanceAgenda attrs.id
@@ -62,3 +63,9 @@ advanceToAgenda attrs newAgenda side = push $ AdvanceToAgenda attrs.deck newAgen
 
 setMeta :: ToJSON a => a -> AgendaAttrs -> AgendaAttrs
 setMeta meta attrs = attrs & metaL .~ toJSON meta
+
+ifEnemyDefeated :: CardDef -> WindowMatcher
+ifEnemyDefeated = ifEnemyDefeatedMatch . enemyIs
+
+ifEnemyDefeatedMatch :: EnemyMatcher -> WindowMatcher
+ifEnemyDefeatedMatch = IfEnemyDefeated #after Anyone ByAny

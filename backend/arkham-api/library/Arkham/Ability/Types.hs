@@ -130,6 +130,9 @@ data AbilityRef = AbilityRef Source Int
 abilityToRef :: Ability -> AbilityRef
 abilityToRef a = AbilityRef a.source a.index
 
+isAbilityRef :: Sourceable source => source -> Int -> AbilityRef -> Bool
+isAbilityRef a idx' (AbilityRef s idx) = isSource a s && idx == idx'
+
 instance HasField "source" AbilityRef Source where
   getField (AbilityRef s _) = s
 

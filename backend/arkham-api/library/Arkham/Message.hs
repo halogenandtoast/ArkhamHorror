@@ -615,6 +615,7 @@ data Message
   | CheckAdditionalCosts ActiveCostId
   | PayCosts ActiveCostId
   | PayCost ActiveCostId InvestigatorId Bool Cost
+  | PaidInitialCostForAbility ActiveCostId InvestigatorId AbilityRef Payment
   | PayCostFinished ActiveCostId
   | PaidCost ActiveCostId InvestigatorId (Maybe Action) Payment
   | PaidAllCosts

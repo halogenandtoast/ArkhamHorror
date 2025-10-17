@@ -16,6 +16,11 @@
   "label": {
     "coterieAttack": "The nearest _Coterie_ enemy attacks you (*even if it is in the shadows*)"
   },
+  "tooltips": {
+    "avenidaDeMayo": {
+      "resign": "Looks like La Chica Roja wins this game."
+    }
+  },
   "intro": {
     "label": {
       "everything": "Tell Bolívar everything regarding the target.",

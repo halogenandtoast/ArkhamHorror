@@ -535,6 +535,14 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
   text-align: center;
   z-index: 10;
   overflow: auto;
+
+  .choices, :deep(.choices) {
+    gap: 0px;
+  }
+
+  .question-choices, :deep(.question-choices) {
+    gap: 0px;
+  }
 }
 
 .skill-test-contents {
@@ -1015,4 +1023,5 @@ i.iconSkillAgility {
   width: 100%;
   align-items: flex-start;
 }
+
 </style>

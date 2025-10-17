@@ -5,19 +5,24 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.ForMovement
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith)
 import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types (Field (LocationConcealedCards))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier (setActiveDuringSetup)
+import Arkham.Placement
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.SanguineShadows.Helpers
 import Arkham.Token qualified as Token
-import Arkham.Trait (Trait (Central, Criminal))
+import Arkham.Trait (Trait (Central, Coterie, Criminal))
 
 newtype SanguineShadows = SanguineShadows ScenarioAttrs
   deriving anyclass IsScenario
@@ -58,10 +63,12 @@ sanguineShadows difficulty =
 
 instance HasChaosTokenValue SanguineShadows where
   getChaosTokenValue iid tokenFace (SanguineShadows attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      let x = attrs.token Token.Target
+      pure $ toChaosTokenValue attrs Skull x (x + 1)
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 5 7
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 1 2
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 3
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage SanguineShadows where
@@ -130,4 +137,27 @@ instance RunMessage SanguineShadows where
       lead <- getLead
       laChicaRoja <- fetchCard Enemies.laChicaRojaTheGirlInTheCarmineCoat
       drawCard lead laChicaRoja
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+      case token.face of
+        Cultist | n >= 2 -> do
+          locations <-
+            selectWithField LocationConcealedCards
+              $ orConnected NotForMovement (locationWithInvestigator iid)
+              <> LocationWithConcealedCard
+          let (ls, cs) = unzip $ concatMap (\(l, cs') -> (l,) <$> cs') locations
+          cs' <- shuffleM cs
+          for_ (zip ls cs') \(l, c) -> push $ PlaceConcealedCard iid c (AtLocation l)
+        ElderThing -> do
+          coteries <- select $ NearestEnemyToFallback iid (EnemyWithTrait Coterie)
+          chooseOneM iid do
+            withI18n $ countVar 1 $ labeled' "placeAgendaDoom" $ placeDoomOnAgenda 1
+            scenarioI18n $ labeledValidate' (notNull coteries) "coterieAttack" do
+              chooseTargetM iid coteries \targetCoterie -> initiateEnemyAttack targetCoterie ElderThing iid
+        _ -> pure ()
+      pure s
+    ResolveChaosToken drawnToken Tablet _iid -> do
+      withSkillTest \sid -> do
+        skillTestModifier sid drawnToken.face sid CancelSkills
+        push CancelSkillEffects
+      pure s
     _ -> SanguineShadows <$> liftRunMessage msg attrs

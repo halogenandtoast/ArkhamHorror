@@ -1,4 +1,21 @@
 {
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of targets on this card.",
+      "cultist": "-5. If you fail by 2 or more, shuffle each concealed mini-card at your location and at each connecting location facedown, then place them at random in the positions they were in.",
+      "tablet": "-1. Cancel the effects and icons of each card committed to this skill test.",
+      "elderThing": "-2. If you fail, you must either place 1 doom on the current agenda, or the nearest _Coterie_ enemy attacks you (*even if it is in the shadows*)."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the number of targets on this card.",
+      "cultist": "-7. If you fail by 2 or more, shuffle each concealed mini-card at your location and at each connecting location facedown, then place them at random in the positions they were in.",
+      "tablet": "-2. Cancel the effects and icons of each card committed to this skill test.",
+      "elderThing": "-3. If you fail, you must either place 1 doom on the current agenda, or the nearest _Coterie_ enemy attacks you (*even if it is in the shadows*)."
+    }
+  },
+  "label": {
+    "coterieAttack": "The nearest _Coterie_ enemy attacks you (*even if it is in the shadows*)"
+  },
   "intro": {
     "label": {
       "everything": "Tell Bolívar everything regarding the target.",

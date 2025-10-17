@@ -160,6 +160,12 @@ instance HasField "standaloneCampaignLog" ScenarioAttrs CampaignLog where
 instance HasField "hasOption" ScenarioAttrs (CampaignOption -> Bool) where
   getField s k = k `member` s.standaloneCampaignLog.options
 
+instance HasField "tokens" ScenarioAttrs Tokens where
+  getField = scenarioTokens
+
+instance HasField "token" ScenarioAttrs (Token -> Int) where
+  getField a tkn = countTokens tkn a.tokens
+
 instance HasField "discard" ScenarioAttrs [EncounterCard] where
   getField = scenarioDiscard
 

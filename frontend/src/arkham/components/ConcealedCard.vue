@@ -2,9 +2,11 @@
 
 import { computed, ref, onBeforeUnmount, nextTick } from 'vue'
 import * as ArkhamGame from '@/arkham/types/Game'
+import { useDebug } from '@/arkham/debug';
 import { imgsrc } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
-import { ConcealedCard } from '@/arkham/types/Game';
+import { ConcealedCard } from '@/arkham/types/ConcealedCard';
+import DebugConcealedCard from '@/arkham/components/debug/ConcealedCard.vue';
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 
@@ -14,10 +16,10 @@ const props = defineProps<{
   playerId: string
 }>()
 
-const emit = defineEmits<{
-  choose: [value: number]
-}>()
+const emit = defineEmits<{ choose: [value: number] }>()
 
+const debug = useDebug()
+const debugging = ref(false)
 const frame = ref(null)
 const id = computed(() => props.card.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
@@ -189,6 +191,10 @@ async function clicked() {
       position="left"
       @choose="chooseAbility"
     />
+    <template v-if="debug.active">
+      <button @click="debugging = true">Debug</button>
+    </template>
+    <DebugConcealedCard v-if="debugging" :game="game" :card="card" :playerId="playerId" @close="debugging = false" @choose="$emit('choose', $event)"/>
   </div>
 </template>
 

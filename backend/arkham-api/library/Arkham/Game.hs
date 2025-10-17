@@ -3004,6 +3004,7 @@ getConcealedCardsMatching matcher = do
     ConcealedCardAt locationMatcher -> do
       placements <- selectMap AtLocation locationMatcher
       pure $ filter ((`elem` placements) . attr concealedCardPlacement) as
+    ConcealedCardIs k -> pure $ filter ((== k) . attr concealedCardKind) as
 
 getScarletKeysMatching :: HasGame m => ScarletKeyMatcher -> m [ScarletKey]
 getScarletKeysMatching matcher = do

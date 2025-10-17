@@ -2,6 +2,7 @@
 
 module Arkham.Campaigns.TheScarletKeys.Concealed.Matcher where
 
+import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Matcher.Base
 import Arkham.Matcher.Location
 import {-# SOURCE #-} Arkham.Placement
@@ -14,7 +15,13 @@ data ConcealedCardMatcher
   | ConcealedCardOneOf [ConcealedCardMatcher]
   | ConcealedCardMatchAll [ConcealedCardMatcher]
   | ConcealedCardAt LocationMatcher
+  | ConcealedCardIs ConcealedCardKind
   deriving stock (Show, Eq, Ord, Data)
+
+pattern IsDecoy :: ConcealedCardMatcher
+pattern IsDecoy <- ConcealedCardIs Decoy
+  where
+    IsDecoy = ConcealedCardIs Decoy
 
 instance OneOf ConcealedCardMatcher where
   oneOf = ConcealedCardOneOf

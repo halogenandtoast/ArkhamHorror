@@ -830,10 +830,10 @@ placeCluesOn source n target = placeClues source target n
 
 placeCluesUpToClueValue
   :: (ReverseQueue m, Sourceable source, ToId location LocationId) => source -> location -> m ()
-placeCluesUpToClueValue source location = do
-  n <- getGameValue =<< field LocationRevealClues (asId location)
-  current <- field LocationClues (asId location)
-  push $ PlaceCluesUpToClueValue (asId location) (toSource source) (max 0 (n - current))
+placeCluesUpToClueValue source (asId -> location) = whenM (field LocationRevealed location) do
+  n <- getGameValue =<< field LocationRevealClues location
+  current <- field LocationClues location
+  push $ PlaceCluesUpToClueValue location (toSource source) (max 0 (n - current))
 
 removeClues
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
@@ -903,7 +903,8 @@ addUsesOn
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Token -> Int -> target -> m ()
 addUsesOn src tkn n trgt = placeTokens src trgt tkn n
 
-removeAllOfTokenOn :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Token -> target -> m ()
+removeAllOfTokenOn
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> Token -> target -> m ()
 removeAllOfTokenOn source token = removeTokensOn source token 1000
 
 removeTokens

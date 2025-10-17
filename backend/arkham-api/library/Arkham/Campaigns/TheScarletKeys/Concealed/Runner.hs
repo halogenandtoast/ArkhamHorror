@@ -134,6 +134,8 @@ instance RunMessage ConcealedCard where
       pure $ c {concealedCardKnown = True, concealedCardFlipped = True}
     DoStep 1 (LookAtRevealed _ _ (isTarget c -> True)) -> do
       pure $ c {concealedCardFlipped = False}
+    DoStep 2 (LookAtRevealed _ _ (isTarget c -> True)) -> do
+      pure $ c {concealedCardKnown = True, concealedCardFlipped = True}
     PlaceConcealedCard _ card placement | card /= c.id && c.placement == placement -> do
       pure $ c {concealedCardKnown = False}
     UseAbility _ ab _ | isSource c ab.source || isProxySource c ab.source -> do

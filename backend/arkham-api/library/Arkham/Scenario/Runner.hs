@@ -273,7 +273,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           (toAgenda : _, Just (fromAgenda : _)) -> do
             let fromAgendaId = AgendaId (toCardCode fromAgenda)
             push (ReplaceAgenda fromAgendaId toAgenda)
-          _ -> error "Could not reset agenda deck to stage"
+          _ -> pure ()
         pure
           $ a
           & (agendaStackL . ix n %~ (prepend <>))
@@ -372,7 +372,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           (toAct : _, Just (fromAct : _)) -> do
             let fromActId = ActId (toCardCode fromAct)
             push (ReplaceAct fromActId toAct)
-          _ -> error "Could not reset act deck to stage"
+          _ -> pure ()
         pure
           $ a
           & (actStackL . ix n %~ (prepend <>))

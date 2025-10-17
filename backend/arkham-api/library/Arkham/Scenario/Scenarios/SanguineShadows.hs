@@ -2,15 +2,20 @@ module Arkham.Scenario.Scenarios.SanguineShadows (sanguineShadows) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Campaigns.TheScarletKeys.Helpers
+import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
+import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.ForMovement
+import Arkham.Helpers.Agenda
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (LocationConcealedCards))
@@ -19,6 +24,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier (setActiveDuringSetup)
 import Arkham.Placement
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.SanguineShadows.Helpers
@@ -167,5 +173,47 @@ instance RunMessage SanguineShadows where
       withSkillTest \sid -> do
         skillTestModifier sid drawnToken.face sid CancelSkills
         push CancelSkillEffects
+      pure s
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> do
+          getCurrentAgendaStep >>= \case
+            3 -> do
+              record TheSanguineWatchersTormentContinues
+              record LaChicaRojaIsOnYourSide
+              setBearer Keys.theWeepingLady $ keyWithEnemy Enemies.theSanguineWatcherWithTheRubySpectacles
+              markTime 2
+              resolutionWithXp "noResolutionSeeingRed" $ allGainXpWithBonus' attrs $ toBonus "bonus.insight" 3
+            _ -> do
+              resolution "noResolution"
+              push R3
+        Resolution 1 -> do
+          n <- countScenarioTokens Token.Target
+          record YouHaventSeenTheLastOfLaChicaRoja
+          markTime 1
+          resolutionWithXp "resolution1"
+            $ if n > 0
+              then allGainXpWithBonus' attrs $ toBonus "bonus.targets" n
+              else allGainXp' attrs
+          chooseBearer Keys.theWeepingLady
+          endOfScenario
+        Resolution 2 -> do
+          record YouHaventSeenTheLastOfTheSanguineWatcher
+          record LaChicaRojaIsOnYourSide
+          markTime 3
+          resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "bonus.insight" 3
+          chooseBearer Keys.theWeepingLady
+          endOfScenario
+        Resolution 3 -> do
+          n <- countScenarioTokens Token.Target
+          record YouHaventSeenTheLastOfLaChicaRoja
+          setBearer Keys.theWeepingLady $ keyWithEnemy Enemies.laChicaRojaTheGirlInTheCarmineCoat
+          markTime 1
+          resolutionWithXp "resolution3"
+            $ if n > 0
+              then allGainXpWithBonus' attrs $ toBonus "bonus.targets" n
+              else allGainXp' attrs
+          endOfScenario
+        _ -> error "invalid resolution"
       pure s
     _ -> SanguineShadows <$> liftRunMessage msg attrs

@@ -20,7 +20,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Modifier
 import Arkham.Projection
-import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.SanguineShadows.Helpers
 import Arkham.Token qualified as Token
@@ -72,7 +71,7 @@ instance RunMessage InTheSearchlight where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       laChicaRoja <- selectJust $ enemyIs Enemies.laChicaRojaTheGirlInTheCarmineCoat
       withLocationOf laChicaRoja \loc -> do
-        targetCount <- scenarioFieldMap ScenarioTokens (Token.countTokens Token.Target)
+        targetCount <- countScenarioTokens Token.Target
         hasTarget <- matches loc (LocationWithToken Token.Target)
         if hasTarget
           then do
@@ -100,12 +99,16 @@ instance RunMessage InTheSearchlight where
             cancelEnemyDefeatWithWindows laChicaRoja
             healAllDamage attrs laChicaRoja
             place laChicaRoja InTheShadows
-            lead <- getLead
-            resolveConcealed lead laChicaRoja
+            doStep 0 msg -- resolveConcealed lead laChicaRoja needs the target to be removed first
             push $ ResetActDeckToStage 1
             push $ ResetAgendaDeckToStage 1
             eachInvestigator (`loseAllClues` attrs)
             selectEach Anywhere (placeCluesUpToClueValue attrs)
+      pure a
+    DoStep 0 (AdvanceAct (isSide B attrs -> True) _ _) -> do
+      lead <- getLead
+      laChicaRoja <- selectJust $ enemyIs Enemies.laChicaRojaTheGirlInTheCarmineCoat
+      resolveConcealed lead laChicaRoja
       pure a
     DoStep 2 msg'@(AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "interlude" do
       storyWithChooseOneM' (setTitle "title" >> p "castALight2") do

@@ -41,13 +41,17 @@
     "26": "File #26–G: Quid Pro Quo"
   },
   "key": {
-    "time": "Time",
-    "youHaventSeenTheLastOfTheRedGlovedMan": "You haven't seen the last of the Red-Gloved Man",
-    "youHaventSeenTheLastOfAmaranth": "You haven't seen the last of Amaranth",
-    "theCellKnowsOfDesisPast": "The cell knows of Desi's past",
+    "amaranthHasLeftTheCoterie": "Amaranth has left the Coterie",
+    "laChicaRojaIsOnYourSide": "La Chica Roja is on your side",
     "theCellKnowsAmaranthsRealName": "The cell knows Amaranth's real name",
+    "theCellKnowsOfDesisPast": "The cell knows of Desi's past",
     "theLoversAreReunited": "The lovers are reunited",
-    "amaranthHasLeftTheCoterie": "Amaranth has left the Coterie"
+    "theSanguineWatchersTormentContinues": "The Sanguine Watcher's torment continues",
+    "time": "Time",
+    "youHaventSeenTheLastOfAmaranth": "You haven't seen the last of Amaranth",
+    "youHaventSeenTheLastOfLaChicaRoja": "You haven't seen the last of La Chica Roja",
+    "youHaventSeenTheLastOfTheRedGlovedMan": "You haven't seen the last of the Red-Gloved Man",
+    "youHaventSeenTheLastOfTheSanguineWatcher": "You haven't seen the last of the Sanguine Watcher"
   },
   "label": {
     "figuresInTheDark": {

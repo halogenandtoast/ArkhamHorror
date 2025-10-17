@@ -42,8 +42,6 @@ instance RunMessage WhereIsShe where
       turnOverAllConcealed attrs
       WhereIsShe <$> liftRunMessage msg attrs
     AdvanceAgenda (isSide B attrs -> True) -> do
-      lead <- getLead
-      -- step 2 will show the card without UI interaction
       selectEach IsDecoy removeFromGame
       mLaChicaRojaMiniCard <- selectOne $ ConcealedCardIs LaChicaRoja
       laChicaRoja <- selectJust $ enemyIs Enemies.laChicaRojaTheGirlInTheCarmineCoat
@@ -65,10 +63,15 @@ instance RunMessage WhereIsShe where
         then push R3
         else do
           for_ mLaChicaRojaMiniCard removeFromGame
-          resolveConcealed lead laChicaRoja
+          doStep 2 msg -- resolveConcealed lead laChicaRoja needs the decision above to have removed a target
           push $ ResetActDeckToStage 1
           push $ ResetAgendaDeckToStage 1
           selectEach Anywhere (placeCluesUpToClueValue attrs)
+      pure a
+    DoStep 2 (AdvanceAgenda (isSide B attrs -> True)) -> do
+      laChicaRoja <- selectJust $ enemyIs Enemies.laChicaRojaTheGirlInTheCarmineCoat
+      lead <- getLead
+      resolveConcealed lead laChicaRoja
       pure a
     ResetAgendaDeckToStage 1 -> do
       lead <- getLead

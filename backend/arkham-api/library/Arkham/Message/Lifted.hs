@@ -2180,7 +2180,7 @@ cancelRevelation a card = do
 
 cancelCardEffects :: (ReverseQueue m, Sourceable a, IsCard card) => a -> card -> m ()
 cancelCardEffects a card = do
-  cardResolutionModifier card a (CardIdTarget $ toCardId card) IgnoreRevelation
+  cardResolutionModifiers card a (CardIdTarget $ toCardId card) [IgnoreRevelation, CancelEffects]
   push $ CancelRevelation (toCardId card) (toSource a)
   push $ CancelNext (toSource a) DrawEnemyMessage
   push $ CancelSurge (toSource a)

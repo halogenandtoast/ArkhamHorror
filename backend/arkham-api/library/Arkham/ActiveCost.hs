@@ -4,6 +4,7 @@ module Arkham.ActiveCost (module Arkham.ActiveCost, module X) where
 
 import Arkham.ActiveCost.Base as X
 
+import Data.List.NonEmpty.Extra (minimum1)
 import Arkham.Ability hiding (PaidCost)
 import Arkham.Action hiding (TakenAction)
 import Arkham.Action qualified as Action
@@ -198,6 +199,25 @@ payCost msg c iid skipAdditionalCosts cost = do
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
+    XCost inner -> do
+      let
+        go = \case
+          ResourceCost n -> Just . (`div` n) <$> getSpendableResources iid
+          ClueCost n -> do
+            gv <- getGameValue n
+            Just . (`div` gv) <$> getSpendableClueCount [iid]
+          Costs cs -> do
+            possible <- catMaybes <$> traverse go cs
+            pure $ minimum1 <$> nonEmpty possible 
+          _ -> pure Nothing
+      mVal <- fromMaybe 100 <$> go inner
+      push
+        $ questionLabel "Spend X" player
+        $ DropDown
+          [ (tshow n, pay (mconcat $ replicate n inner))
+          | n <- [1 .. mVal]
+          ]
+      pure c
     LabeledCost _ inner -> payCost msg c iid skipAdditionalCosts inner
     ShuffleTopOfScenarioDeckIntoYourDeck n TekeliliDeck -> do
       runQueueT $ addTekelili iid . take n =<< getScenarioDeck TekeliliDeck
@@ -1373,7 +1393,7 @@ instance RunMessage ActiveCost where
           let
             modifiersPreventAttackOfOpportunity =
               any ((`elem` modifiers') . ActionDoesNotCauseAttacksOfOpportunity) a.actions
-          push $ PayCostFinished acId
+          pushAll [PaidInitialCostForAbility acId iid (abilityToRef a) c.payments, PayCostFinished acId]
           startAbilityPayment
             c
             iid

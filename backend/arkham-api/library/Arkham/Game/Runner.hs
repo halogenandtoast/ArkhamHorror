@@ -97,6 +97,7 @@ import Arkham.Matcher hiding (
  )
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (removeLocation)
+import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Modifier (Modifier (modifierSource, modifierType))
 import Arkham.Movement
 import Arkham.Name
@@ -2902,55 +2903,59 @@ runGameMessage msg g = case msg of
     --
     modifiers' <- getModifiers card
     let ignoreRevelation = IgnoreRevelation `elem` modifiers'
-    case toCardType card of
-      StoryType -> do
-        pushAll [afterDraw, StoryMessage (ReadStory iid (toCard card) ResolveIt Nothing), UnsetActiveCard]
+    if CancelEffects `elem` modifiers'
+      then do
+        runQueueT $ Lifted.discardCard iid GameSource card
         pure g'
-      EnemyType -> do
-        enemyId <- getRandom
-        let enemy = createEnemy card enemyId
-        pushAll
-          $ [afterDraw, InvestigatorDrawEnemy iid enemyId]
-          <> [Revelation iid (EnemySource enemyId) | hasRevelation card && not ignoreRevelation]
-          <> [UnsetActiveCard]
-        pure
-          $ g'
-          & (entitiesL . enemiesL . at enemyId ?~ enemy)
-          & (activeCardL ?~ toCard card)
-      TreacheryType -> do
-        -- handles draw windows
-        pushAll [DrewTreachery iid (mdeck <|> Just Deck.EncounterDeck) (toCard card)]
-        pure g'
-      EncounterAssetType -> do
-        assetId <- getRandom
-        let asset = createAsset card assetId
-        -- Asset is assumed to have a revelation ability if drawn from encounter deck
-        pushAll $ afterDraw
-          : (guard (not ignoreRevelation) *> resolve (Revelation iid $ AssetSource assetId))
-        pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
-      EncounterEventType -> do
-        eventId <- getRandom
-        let owner = fromMaybe iid (toCardOwner card)
-        let event' = createEvent card owner eventId
-        -- Event is assumed to have a revelation ability if drawn from encounter deck
-        pushAll $ afterDraw
-          : (guard (not ignoreRevelation) *> resolve (Revelation iid $ EventSource eventId))
-        pure $ g' & (entitiesL . eventsL . at eventId ?~ event')
-      LocationType -> do
-        locationId <- getRandom
-        let location = createLocation card locationId
+      else case toCardType card of
+        StoryType -> do
+          pushAll [afterDraw, StoryMessage (ReadStory iid (toCard card) ResolveIt Nothing), UnsetActiveCard]
+          pure g'
+        EnemyType -> do
+          enemyId <- getRandom
+          let enemy = createEnemy card enemyId
+          pushAll
+            $ [afterDraw, InvestigatorDrawEnemy iid enemyId]
+            <> [Revelation iid (EnemySource enemyId) | hasRevelation card && not ignoreRevelation]
+            <> [UnsetActiveCard]
+          pure
+            $ g'
+            & (entitiesL . enemiesL . at enemyId ?~ enemy)
+            & (activeCardL ?~ toCard card)
+        TreacheryType -> do
+          -- handles draw windows
+          pushAll [DrewTreachery iid (mdeck <|> Just Deck.EncounterDeck) (toCard card)]
+          pure g'
+        EncounterAssetType -> do
+          assetId <- getRandom
+          let asset = createAsset card assetId
+          -- Asset is assumed to have a revelation ability if drawn from encounter deck
+          pushAll $ afterDraw
+            : (guard (not ignoreRevelation) *> resolve (Revelation iid $ AssetSource assetId))
+          pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
+        EncounterEventType -> do
+          eventId <- getRandom
+          let owner = fromMaybe iid (toCardOwner card)
+          let event' = createEvent card owner eventId
+          -- Event is assumed to have a revelation ability if drawn from encounter deck
+          pushAll $ afterDraw
+            : (guard (not ignoreRevelation) *> resolve (Revelation iid $ EventSource eventId))
+          pure $ g' & (entitiesL . eventsL . at eventId ?~ event')
+        LocationType -> do
+          locationId <- getRandom
+          let location = createLocation card locationId
 
-        pushAll
-          $ afterDraw
-          : PlacedLocation (toName location) (toCardCode card) locationId
-          : (guard (not ignoreRevelation) *> resolve (Revelation iid (LocationSource locationId)))
-        pure $ g' & (entitiesL . locationsL . at locationId ?~ location)
-      _ ->
-        error
-          $ "Unhandled card type: "
-          <> show (toCardType card)
-          <> ": "
-          <> show card
+          pushAll
+            $ afterDraw
+            : PlacedLocation (toName location) (toCardCode card) locationId
+            : (guard (not ignoreRevelation) *> resolve (Revelation iid (LocationSource locationId)))
+          pure $ g' & (entitiesL . locationsL . at locationId ?~ location)
+        _ ->
+          error
+            $ "Unhandled card type: "
+            <> show (toCardType card)
+            <> ": "
+            <> show card
   ResolveRevelation iid card -> do
     getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
     let

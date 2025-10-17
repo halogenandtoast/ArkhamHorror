@@ -72,6 +72,7 @@ getCanAffordCost_
 getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_ =
   cached (CanAffordCostKey iid source actions windows' canModify cost_) do
     case cost_ of
+      XCost c -> getCanAffordCost_ iid source actions windows' canModify c -- just need to afford once
       LabeledCost _ inner -> getCanAffordCost_ iid source actions windows' canModify inner
       ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> (>= n) . length <$> getScenarioDeck deckKey
       RemoveEnemyDamageCost x matcher -> do

@@ -214,6 +214,7 @@ data Cost
   | DamageCost Source Target Int
   | DirectDamageCost Source InvestigatorMatcher Int
   | InvestigatorDamageCost Source InvestigatorMatcher DamageStrategy Int
+  | XCost Cost
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Cost
@@ -250,6 +251,7 @@ data DynamicUseCostValue = DrawnCardsValue | DynamicCalculation GameCalculation
 
 displayCostType :: Cost -> Text
 displayCostType = \case
+  XCost c -> "X " <> displayCostType c
   LabeledCost lbl _ -> lbl
   ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> "Shuffle top " <> tshow n <> " cards of the " <> toDisplay deckKey <> " deck into your deck"
   RemoveEnemyDamageCost _n _k -> "Remove damage from enemy"
@@ -605,8 +607,13 @@ combineCosts :: [Cost] -> [Cost]
 combineCosts l@[] = l
 combineCosts l@[_] = l
 combineCosts (x : y : rest) = case (x, y) of
+  (ClueCost (Static a), ClueCost (Static b)) -> combineCosts $ ClueCost (Static $ a + b) : rest
+  (ClueCost (PerPlayer a), ClueCost (PerPlayer b)) -> combineCosts $ ClueCost (PerPlayer $ a + b) : rest
+  (ClueCost (Static a), ClueCost (PerPlayer b)) -> combineCosts $ ClueCost (StaticWithPerPlayer a b) : rest
+  (ClueCost (PerPlayer a), ClueCost (Static b)) -> combineCosts $ ClueCost (StaticWithPerPlayer b a) : rest
   (ActionCost a, ActionCost b) -> combineCosts $ ActionCost (a + b) : rest
   (ResourceCost a, ResourceCost b) -> combineCosts $ ResourceCost (a + b) : rest
+  (HorrorCost s1 t1 a, HorrorCost s2 t2 b) | s1 == s2 && t1 == t2 -> combineCosts $ HorrorCost s1 t1 (a + b) : rest
   _ -> x : combineCosts (y : rest)
 
 instance Monoid Cost where

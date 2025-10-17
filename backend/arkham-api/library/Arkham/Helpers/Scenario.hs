@@ -129,6 +129,9 @@ getEncounterDiscard RegularEncounterDeck = scenarioField ScenarioDiscard
 getEncounterDiscard k =
   scenarioFieldMap ScenarioEncounterDecks (view (at k . non (Deck [], []) . _2))
 
+getDifficulty :: HasGame m => m Difficulty
+getDifficulty = scenarioField ScenarioDifficulty
+
 withStandalone
   :: HasGame m => (CampaignId -> m a) -> (ScenarioId -> m a) -> m a
 withStandalone cf sf =

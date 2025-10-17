@@ -85,7 +85,7 @@ instance RunMessage InTheSearchlight where
                 removeTokens attrs targetLocation Token.Target 1
                 placeTokens attrs ScenarioTarget Token.Target 1
         if targetCount + 1 >= 3
-          then scenarioI18n $ scope "interlude" do
+          then delayIfSkillTest $ scenarioI18n $ scope "interlude" do
             n <- fieldMap EnemyTokens (Token.countTokens Token.Target) laChicaRoja
             flavor do
               setTitle "title"

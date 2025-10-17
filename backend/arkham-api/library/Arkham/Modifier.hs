@@ -226,6 +226,7 @@ data ModifierType
   | ChangeRevealStrategy RevealStrategy
   | DrawAdditionalChaosTokens Int
   | ChangeSpawnLocation LocationMatcher LocationMatcher
+  | ChangeSpawnWith InvestigatorId SpawnAt
   | ChaosTokenFaceModifier [ChaosTokenFace]
   | ChaosTokenValueModifier Int
   | CheckHandSizeAfterDraw

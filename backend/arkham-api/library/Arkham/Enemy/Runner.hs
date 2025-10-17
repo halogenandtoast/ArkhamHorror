@@ -311,21 +311,29 @@ instance RunMessage EnemyAttrs where
           iids <- select imatcher
           case iids of
             [] -> pure ()
-            [iid] -> withLocationOf iid \lid -> do
-              canEnter <- canEnterLocation enemyId lid
-              if canEnter
-                then do
-                  pushAll $ EnemyEntered enemyId lid
-                    : [EnemyEngageInvestigator enemyId iid | not enemyDelayEngagement]
-                      <> [EnemySpawned details]
-                  case swarms of
-                    [] -> pure ()
-                    [x] -> do
-                      n <- getGameValue x
-                      lead <- getLead
-                      push $ PlaceSwarmCards lead eid n
-                    _ -> error "more than one swarming value"
-                else push (toDiscard GameSource eid)
+            [iid] -> do
+              let
+                getModifiedSpawnAt [] = Nothing
+                getModifiedSpawnAt (ChangeSpawnWith iid' m : _) | iid' == iid = Just m
+                getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
+
+              case getModifiedSpawnAt mods of
+                Just m -> push $ EnemySpawn details {spawnDetailsSpawnAt = m}
+                Nothing -> withLocationOf iid \lid -> do
+                  canEnter <- canEnterLocation enemyId lid
+                  if canEnter
+                    then do
+                      pushAll $ EnemyEntered enemyId lid
+                        : [EnemyEngageInvestigator enemyId iid | not enemyDelayEngagement]
+                          <> [EnemySpawned details]
+                      case swarms of
+                        [] -> pure ()
+                        [x] -> do
+                          n <- getGameValue x
+                          lead <- getLead
+                          push $ PlaceSwarmCards lead eid n
+                        _ -> error "more than one swarming value"
+                    else push (toDiscard GameSource eid)
             _ -> do
               lead <- getLeadPlayer
               push
@@ -1592,6 +1600,7 @@ instance RunMessage EnemyAttrs where
             getModifiedSpawnAt [] = enemySpawnAt
             getModifiedSpawnAt (ForceSpawnLocation m : _) = Just $ SpawnAt m
             getModifiedSpawnAt (ForceSpawn m : _) = Just m
+            getModifiedSpawnAt (ChangeSpawnWith iid' m : _) | iid' == iid = Just m
             getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
             spawnAtMatcher = getModifiedSpawnAt mods
             LocationFilter cannotSpawnMatchers = fold [LocationFilter m | CannotSpawnIn m <- mods]

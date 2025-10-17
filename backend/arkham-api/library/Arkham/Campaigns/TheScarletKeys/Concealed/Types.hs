@@ -24,6 +24,9 @@ data ConcealedCard = ConcealedCard
   }
   deriving stock (Show, Eq, Ord, Data)
 
+instance HasField "isDecoy" ConcealedCard Bool where
+  getField c = c.kind == Decoy
+
 instance HasField "placement" ConcealedCard Placement where
   getField = concealedCardPlacement
 

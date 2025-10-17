@@ -21,6 +21,7 @@ import Arkham.Message
 import Arkham.Message.Lifted hiding (choose)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
+import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.SkillTest.Base
@@ -62,7 +63,11 @@ instance RunMessage ConcealedCard where
         _ -> pure ()
       pure c
     PassedThisSkillTest iid (isAbilitySource c AbilityAttack -> True) -> do
-      push $ Flip iid (c.ability AbilityAttack) (toTarget c)
+      case c.placement of
+        AtLocation location -> do
+          whenM (matches location $ LocationWithoutModifier (CampaignModifier "noExposeAt")) do
+            push $ Flip iid (c.ability AbilityAttack) (toTarget c)
+        _ -> push $ Flip iid (c.ability AbilityAttack) (toTarget c)
       pure c
     UseThisAbility iid (isSource c -> True) AbilityEvade -> do
       case c.placement of
@@ -74,7 +79,11 @@ instance RunMessage ConcealedCard where
         _ -> pure ()
       pure c
     PassedThisSkillTest iid (isAbilitySource c AbilityEvade -> True) -> do
-      push $ Flip iid (c.ability AbilityEvade) (toTarget c)
+      case c.placement of
+        AtLocation location -> do
+          whenM (matches location $ LocationWithoutModifier (CampaignModifier "noExposeAt")) do
+            push $ Flip iid (c.ability AbilityEvade) (toTarget c)
+        _ -> push $ Flip iid (c.ability AbilityEvade) (toTarget c)
       pure c
     Flip iid _ (isTarget c -> True) -> do
       chooseTargetM iid [c] \_ -> doStep 1 msg
@@ -85,7 +94,7 @@ instance RunMessage ConcealedCard where
           Decoy -> exposedDecoy iid
           _ -> pure ()
         Just def -> whenJustM (selectOne (EnemyWithPlacement InTheShadows <> EnemyWithTitle def.title)) \enemy -> do
-          exposed iid def
+          exposed iid enemy def
           case c.placement of
             AtLocation location -> enemyMoveToIfInPlay c enemy location
             _ -> error "invalid placement for concealed card"

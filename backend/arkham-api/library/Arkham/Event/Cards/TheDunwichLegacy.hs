@@ -157,7 +157,7 @@ oops =
         Just
           $ oneOf
             [ exists (EnemyAt YourLocation <> NotEnemy AttackedEnemy <> EnemyCanBeDamagedBySource ThisCard)
-            , exists (YourLocation <> LocationWithConcealedCard)
+            , exists (YourLocation <> LocationWithExposableConcealedCard ThisCard)
             ]
           <> Criteria.CanDealDamage
     , cdFastWindow =

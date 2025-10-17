@@ -46,7 +46,7 @@ instance RunMessage Mk1Grenades4 where
             body
           for_ eids (checkDefeated source)
 
-      concealed <- getConcealedIds iid
+      concealed <- getConcealedIds (ForExpose $ toSource attrs) iid
       if null concealed
         then handleOptions (pure ())
         else chooseOneM iid do

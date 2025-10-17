@@ -32,6 +32,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Card.PlayerCard
@@ -68,12 +69,7 @@ import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
 import Arkham.Helpers.Game (withAlteredGame)
-import Arkham.Helpers.Location (
-  getCanMoveTo,
-  getCanMoveToMatchingLocations,
-  getLocationOf,
-  withLocationOf,
- )
+import Arkham.Helpers.Location (getCanMoveTo, getCanMoveToMatchingLocations, withLocationOf)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Playable (getIsPlayable, getIsPlayableWithResources, getPlayableCards)
 import Arkham.Helpers.Ref (sourceToCard)
@@ -1076,13 +1072,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         <> if canMoveToConnected
           then orConnected ForMovement (locationWithInvestigator investigatorId)
           else locationWithInvestigator investigatorId
-    mconcealed <-
-      runMaybeT
-        $ MaybeT
-        . fieldMap LocationConcealedCards headMay
-        =<< MaybeT (getLocationOf investigatorId)
+    concealed <- getConcealedIds NotForExpose investigatorId
     player <- getPlayer investigatorId
-    let choices = enemyIds <> map coerce locationIds <> map coerce (maybeToList mconcealed)
+    let choices = enemyIds <> map coerce locationIds <> map coerce concealed
     -- we might have killed the enemy via a reaction before getting here
     unless (null choices) do
       push
@@ -1205,12 +1197,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           (canEvadeMatcher <> enemyMatcher <> mustChooseMatchers)
           modifiers
     player <- getPlayer a.id
-    mconcealed <-
-      runMaybeT
-        $ MaybeT
-        . fieldMap LocationConcealedCards headMay
-        =<< MaybeT (getLocationOf investigatorId)
-    let choices = enemyIds <> map coerce (maybeToList mconcealed)
+    concealed <- getConcealedIds NotForExpose investigatorId
+    let choices = enemyIds <> map coerce concealed
     unless (null choices) do
       push
         $ chooseOne player
@@ -2067,7 +2055,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             : mkAfter (Window.GainsClues iid d.source clueCount)
             : [mkAfter (Window.DiscoveringLastClue iid lid) | lastClue]
 
-        mconcealed <- headMay <$> field LocationConcealedCards lid
+        concealed <- getConcealedAt (ForExpose $ toSource iid) lid
 
         let
           defaultDiscover :: Lifted.ReverseQueue n => n ()
@@ -2081,11 +2069,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 ]
               <> d.discoverThen
 
-        case mconcealed of
-          Just concealed -> Choose.chooseOneM iid do
-            Choose.labeled "Expose concealed" $ push $ Flip iid GameSource (ConcealedCardTarget concealed)
+        if notNull concealed
+          then Choose.chooseOneM iid do
+            Choose.labeled "Expose concealed" $ chooseExposeConcealedAt iid iid (LocationWithId lid)
             Choose.labeled "Discover normally" defaultDiscover
-          Nothing -> defaultDiscover
+          else defaultDiscover
 
         send $ format a <> " discovered " <> pluralize clueCount "clue"
         pure a
@@ -4390,7 +4378,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         let guardMustTake = if null mustTakeActions then id else const (pure False)
 
         canDraw <- guardMustTake $ canDo iid #draw
-        canTakeResource <- guardMustTake $ (&&) <$> canDo iid #resource <*> can.gain.resources FromOtherSource iid
+        canTakeResource <-
+          guardMustTake $ (&&) <$> canDo iid #resource <*> can.gain.resources FromOtherSource iid
         canPlay <- guardMustTake $ canDo iid #play
         player <- getPlayer iid
         let playableCards' = if canPlay then playableCards else filter isFastCard playableCards

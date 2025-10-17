@@ -18,7 +18,7 @@ instance RunMessage Oops where
     PlayThisEvent iid (is attrs -> True) -> do
       let enemy = attackedEnemy attrs.windows
       enemies <- select $ enemyAtLocationWith iid <> not_ (be enemy)
-      mconcealed <- getConcealed iid
+      mconcealed <- getConcealed (ForExpose $ toSource iid) iid
 
       chooseOrRunOneM iid do
         targets enemies \x -> push $ InvestigatorDamageEnemy iid x (toSource enemy)

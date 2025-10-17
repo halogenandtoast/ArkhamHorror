@@ -39,7 +39,7 @@ instance RunMessage NephthysHuntressOfBast4 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (attrs.ability 2)
-      concealed <- getConcealedIds iid
+      concealed <- getConcealedIds (ForExpose $ toSource iid) iid
       blessTokens <-
         take 3 <$> filterM (<=~> IncludeSealed (ChaosTokenFaceIs #bless)) attrs.sealedChaosTokens
       chooseOrRunOneM iid do

@@ -54,7 +54,7 @@ instance RunMessage ArmageddonEffect where
               when (token.face == #curse) do
                 enemies <- select $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource attrs.source
 
-                concealed <- getConcealedIds iid
+                concealed <- getConcealedIds (ForExpose $ toSource iid) iid
                 stillInPlay <- selectAny $ AssetWithId assetId
 
                 when (stillInPlay || notNull enemies || notNull concealed) do

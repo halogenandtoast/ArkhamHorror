@@ -22,7 +22,7 @@ instance RunMessage ManipulateDestiny2 where
       if any ((`elem` [#curse, #autofail, #bless, #eldersign]) . (.face)) tokens
         then do
           enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
-          concealed <- getConcealedIds iid
+          concealed <- getConcealedIds (ForExpose $ toSource iid) iid
           damageInvestigators <- select $ HealableInvestigator (toSource attrs) #damage $ colocatedWith iid
           damageAssets <-
             select

@@ -577,6 +577,8 @@ allTreacheries =
     , --- Strange Happenings [tsk]
       SomeTreacheryCard pinchInReality
     , SomeTreacheryCard heavyRain
+    , --- Mysteries Abound [tsk]
+      SomeTreacheryCard inPlainSight
     , --- Shadow of a Doubt [tsk]
       SomeTreacheryCard knivesInTheDark
     , SomeTreacheryCard undercover

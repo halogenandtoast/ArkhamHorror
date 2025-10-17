@@ -19,7 +19,7 @@ instance RunMessage Oops2 where
   runMessage msg e@(Oops2 attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ (attackedEnemy -> enemy) _ | eid == toId attrs -> do
       enemies <- select (enemyAtLocationWith iid)
-      mconcealed <- getConcealed iid
+      mconcealed <- getConcealed (ForExpose $ toSource iid) iid
       withSkillTest \sid -> do
         skillTestModifier sid (toSource attrs) iid DoesNotDamageOtherInvestigator
         chooseOrRunOneM iid do

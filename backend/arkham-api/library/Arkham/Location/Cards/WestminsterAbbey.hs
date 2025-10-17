@@ -30,7 +30,7 @@ instance RunMessage WestminsterAbbey where
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       whenJustM getSkillTestTarget \case
         LocationTarget lid -> do
-          concealed <- map toId <$> getConcealedAtAll lid
+          concealed <- map toId <$> getConcealedAtAll (ForExpose $ toSource attrs) lid
           chooseNM iid n $ targets concealed $ revealConcealed iid (attrs.ability 1)
         _ -> pure ()
       pure l

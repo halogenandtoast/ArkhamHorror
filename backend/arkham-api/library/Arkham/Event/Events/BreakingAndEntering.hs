@@ -23,7 +23,7 @@ instance RunMessage BreakingAndEntering where
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n | n >= 2 -> do
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeEvadedBy (toSource attrs)
-      concealed <- getConcealedIds iid
+      concealed <- getConcealedIds (ForExpose $ toSource attrs) iid
       chooseOrRunOneM iid do
         targets enemies $ automaticallyEvadeEnemy iid
         targets concealed $ exposeConcealed iid attrs

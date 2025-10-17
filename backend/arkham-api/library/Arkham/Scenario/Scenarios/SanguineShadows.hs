@@ -2,6 +2,7 @@ module Arkham.Scenario.Scenarios.SanguineShadows (sanguineShadows) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -117,6 +118,13 @@ instance RunMessage SanguineShadows where
 
       setAgendaDeck [Agendas.whereIsShe]
       setActDeck [Acts.theScarletShadow, Acts.inTheSearchlight]
+
+      setAside
+        [ Enemies.theSanguineWatcherWithTheRubySpectacles
+        , Enemies.apportionedKa
+        , Agendas.seeingRed
+        , Keys.theWeepingLady
+        ]
 
       startAt =<< place Locations.avenidaDeMayo
       otherLocations <-

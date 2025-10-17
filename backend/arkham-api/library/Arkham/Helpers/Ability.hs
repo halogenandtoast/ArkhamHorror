@@ -163,7 +163,7 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \cas
           <> if canMoveToConnected
             then Matcher.orConnected ForMovement (Matcher.locationWithInvestigator iid)
             else Matcher.locationWithInvestigator iid
-      concealed <- selectAny $ Matcher.locationWithInvestigator iid <> Matcher.LocationWithConcealedCard
+      concealed <- selectAny $ Matcher.locationWithInvestigator iid <> Matcher.LocationWithExposableConcealedCard ab.source
       pure $ enemies || locations || concealed
   Action.Evade -> case abilitySource of
     EnemySource _ -> pure True
@@ -179,7 +179,7 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \cas
       base <- selectAny $ case nonEmpty overrides of
         Nothing -> Matcher.CanEvadeEnemy $ AbilitySource abilitySource abilityIndex
         Just os -> Matcher.CanEvadeEnemyWithOverride $ combineOverrides os
-      concealed <- selectAny $ Matcher.locationWithInvestigator iid <> Matcher.LocationWithConcealedCard
+      concealed <- selectAny $ Matcher.locationWithInvestigator iid <> Matcher.LocationWithExposableConcealedCard ab.source
       if base
         then pure $ base || concealed
         else flip anyM modifiers \case

@@ -7,11 +7,13 @@ import Arkham.Matcher.Base
 import Arkham.Matcher.Location
 import {-# SOURCE #-} Arkham.Placement
 import Arkham.Prelude
+import {-# SOURCE #-} Arkham.Source
 import Data.Aeson.TH
 
 data ConcealedCardMatcher
   = ConcealedCardWithPlacement Placement
   | ConcealedCardAny
+  | ExposableConcealedCard Source
   | ConcealedCardOneOf [ConcealedCardMatcher]
   | ConcealedCardMatchAll [ConcealedCardMatcher]
   | ConcealedCardAt LocationMatcher

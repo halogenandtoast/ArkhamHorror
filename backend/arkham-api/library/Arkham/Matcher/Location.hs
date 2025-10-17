@@ -128,6 +128,7 @@ data LocationMatcher
   | LocationWithModifier ModifierType
   | LocationWithDiscoverableCluesBy InvestigatorMatcher
   | LocationWithConcealedCard
+  | LocationWithExposableConcealedCard Source
   | LocationNotAtClueLimit
   | LocationMatchAll [LocationMatcher]
   | LocationMatchAny [LocationMatcher]

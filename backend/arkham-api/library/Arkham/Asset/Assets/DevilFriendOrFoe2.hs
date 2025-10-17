@@ -29,7 +29,7 @@ instance RunMessage DevilFriendOrFoe2 where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (attrs.ability 2)
       for_ enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 2) 2
-      getConcealed iid >>= traverse_ \concealed -> do
+      getConcealed (ForExpose $ toSource iid) iid >>= traverse_ \concealed -> do
         chooseOneM iid do
           labeled "Damage concealed card" $ doFlip iid (attrs.ability 2) concealed
           labeled "Do not damage concealed card" nothing

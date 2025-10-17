@@ -47,7 +47,7 @@ instance RunMessage CallForBackup2 where
           , iid <=~> InvestigatorWithoutModifier CannotDealDamage
           , orM
               [ selectAny $ EnemyAt YourLocation <> EnemyCanBeDamagedBySource (toSource attrs)
-              , selectAny $ locationWithInvestigator iid <> LocationWithConcealedCard
+              , selectAny $ locationWithInvestigator iid <> LocationWithExposableConcealedCard (toSource attrs)
               ]
           ]
 

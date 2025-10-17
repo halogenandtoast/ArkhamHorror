@@ -1584,6 +1584,7 @@ library
       Arkham.Campaigns.TheScarletKeys.Concealed.Runner
       Arkham.Campaigns.TheScarletKeys.Concealed.Types
       Arkham.Campaigns.TheScarletKeys.Helpers
+      Arkham.Campaigns.TheScarletKeys.I18n
       Arkham.Campaigns.TheScarletKeys.Key
       Arkham.Campaigns.TheScarletKeys.Key.Cards
       Arkham.Campaigns.TheScarletKeys.Key.Cards.TheBaleEngine
@@ -1764,6 +1765,7 @@ library
       Arkham.Enemy.Cards.CoterieAgentA
       Arkham.Enemy.Cards.CoterieAgentB
       Arkham.Enemy.Cards.CoterieAgentC
+      Arkham.Enemy.Cards.CoterieEnvoy
       Arkham.Enemy.Cards.CovenInitiate
       Arkham.Enemy.Cards.CrazedGuest
       Arkham.Enemy.Cards.CrazedShoggoth
@@ -4446,6 +4448,7 @@ library
       Arkham.Treachery.Cards.InexplicableColdTheMidwinterGala
       Arkham.Treachery.Cards.InfiniteDoorway
       Arkham.Treachery.Cards.InnsmouthLook
+      Arkham.Treachery.Cards.InPlainSight
       Arkham.Treachery.Cards.InsatiableBloodlust
       Arkham.Treachery.Cards.InternalInjury
       Arkham.Treachery.Cards.Inundated

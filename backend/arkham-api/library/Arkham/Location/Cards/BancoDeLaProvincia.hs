@@ -24,7 +24,7 @@ instance RunMessage BancoDeLaProvincia where
   runMessage msg l@(BancoDeLaProvincia attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ payments -> do
       let x = totalCluePayment payments
-      concealedCards <- map toId <$> getConcealedAtAll attrs.id
+      concealedCards <- map toId <$> getConcealedAtAll (ForExpose $ toSource attrs) attrs.id
       chooseNM iid x $ targets concealedCards $ revealConcealed iid (attrs.ability 1)
       pure l
     _ -> BancoDeLaProvincia <$> liftRunMessage msg attrs

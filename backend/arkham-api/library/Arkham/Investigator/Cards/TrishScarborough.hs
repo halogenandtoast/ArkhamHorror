@@ -29,7 +29,11 @@ instance HasAbilities TrishScarborough where
     [ playerLimit PerRound
         $ restricted a 1 (Self <> oneOf [exists locationWithAdditionalClues, exists evadableEnemy])
         $ freeReaction
-        $ DiscoverClues #after You (oneOf [LocationWithEnemy AnyEnemy, LocationWithConcealedCard]) (atLeast 1)
+        $ DiscoverClues
+          #after
+          You
+          (oneOf [LocationWithEnemy AnyEnemy, LocationWithExposableConcealedCard (toSource a)])
+          (atLeast 1)
     ]
    where
     tabooModifier = if tabooed TabooList21 a then (NonEliteEnemy <>) else id
@@ -47,7 +51,7 @@ instance RunMessage TrishScarborough where
       let source = attrs.ability 1
       ok <- getCanDiscoverClues IsInvestigate iid lid
       enemies <- select $ enemyAt lid <> EnemyCanBeEvadedBy source
-      concealed <- getConcealedIds iid
+      concealed <- getConcealedIds (ForExpose $ toSource iid) iid
       chooseOrRunOneM iid do
         when ok do
           labeled "Discover 1 additional clue at that location" $ discoverAt NotInvestigate iid source 1 lid

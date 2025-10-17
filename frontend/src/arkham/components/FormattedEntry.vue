@@ -431,6 +431,21 @@ ul, :deep(ul) {
   }
 }
 
+.red, :deep(.red) {
+  position: relative;
+  margin: 20px;
+  isolation: isolate;
+  mix-blend-mode: multiply;
+  &::before {
+    z-index: -1;
+    content: '';
+    position: absolute;
+    inset: -10px;
+    background: #F4DFD1;
+    filter: blur(5px);
+  }
+}
+
 .resolution, :deep(.resolution) {
   overflow-y: auto;
   padding: 30px;

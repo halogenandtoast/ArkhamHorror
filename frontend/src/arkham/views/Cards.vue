@@ -470,7 +470,7 @@ const toggleIncludeEncounter = () => {
 
   &:deep(.card-container) {
     width: unset;
-    max-width: unset;
+    max-width: 300px;
   }
 }
 

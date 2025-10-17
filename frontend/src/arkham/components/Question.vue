@@ -42,6 +42,20 @@ function zoneToLabel(s: string) {
 }
 const inSkillTest = computed(() => props.game.skillTest !== null)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const questionChoices = computed(() => {
+  return choices.value.filter((choice) => {
+    const { tag } = choice
+    if (tag === 'AbilityLabel' && ['DisplayAsCard'].includes(choice.ability.displayAs)) return true
+    if (tag === MessageType.TOOLTIP_LABEL) return true
+    if (tag === MessageType.ABILITY_LABEL && choice.ability.type.tag === 'ConstantReaction') return true
+    if (tag === MessageType.LABEL) return true
+    if (tag === MessageType.INVALID_LABEL) return true
+    if (tag === MessageType.SKILL_LABEL) return true
+    if (tag === MessageType.SKILL_LABEL_WITH_LABEL) return true
+
+    return false
+  })
+})
 const choosePaymentAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('choosePaymentAmounts')
 const chooseAmounts = inject<(amounts: Record<string, number>) => Promise<void>>('chooseAmounts')
 const question = computed(() => props.game.question[props.playerId])
@@ -165,6 +179,15 @@ const paymentChoiceLabel = function(text: string): string {
 
   return formatContent(text)
 }
+
+const hasInnerContent = computed(() => {
+  return questionImage.value
+    || (focusedCards.value.length > 0 && choices.value.length > 0)
+    || (searchedCards.value.length > 0 && choices.value.length > 0)
+    || paymentAmountsLabel.value
+    || amountsLabel.value
+    || (portraits.value.length > 0)
+})
 
 onMounted(setInitialAmounts)
 
@@ -470,7 +493,7 @@ const cardPiles = computed(() => {
     </div>
 
     <div v-if="showChoices" class="choices">
-      <div class="question-label">
+      <div v-if="hasInnerContent" class="question-label">
         <div class="question-image" v-if="questionImage">
           <img :src="questionImage" class="card" />
         </div>
@@ -564,12 +587,12 @@ const cardPiles = computed(() => {
             </template>
           </div>
 
-          <div v-if="questionImage" class="choices-wrapper">
-            <QuestionChoices :choices="choices" :game="game" :playerId="playerId" @choose="choose" />
+          <div v-if="questionImage && questionChoices.length > 0" class="choices-wrapper">
+            <QuestionChoices :choices="questionChoices" :game="game" :playerId="playerId" @choose="choose" />
           </div>
         </div>
       </div>
-      <QuestionChoices v-if="!questionImage" :choices="choices" :game="game" :playerId="playerId" @choose="choose" />
+      <QuestionChoices v-if="!questionImage" :choices="questionChoices" :game="game" :playerId="playerId" @choose="choose" />
     </div>
     <template v-else-if="question && question.tag === 'QuestionLabel' && question.question.tag !== 'DropDown'">
       <div v-if="questionImage" class="question-image">
@@ -833,7 +856,6 @@ button:hover {
 
 .choices:has(.portrait) {
   flex-direction: row;
-  padding: 10px;
   justify-content: center;
 }
 
@@ -1302,6 +1324,12 @@ h2 {
   }
   border-radius: inherit;
   border: 1px solid #444;
+}
+
+.question-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .question-wrapper:has(> .question-image) .question-image{

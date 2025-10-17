@@ -568,6 +568,10 @@ allTreacheries =
     , --- Dead Heat [tsk]
       SomeTreacheryCard famine
     , SomeTreacheryCard cornered
+    , --- Sanguine Shadows[tsk]
+      SomeTreacheryCard catAndMouse
+    , SomeTreacheryCard callingCard
+    , SomeTreacheryCard outsmarted
     , --- Crimson Conspiracy [tsk]
       SomeTreacheryCard conspiracyInRed
     , --- Strange Happenings [tsk]

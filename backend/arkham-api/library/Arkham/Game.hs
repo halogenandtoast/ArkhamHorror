@@ -5111,6 +5111,7 @@ instance Projection Campaign where
       CampaignCompletedSteps -> pure campaignCompletedSteps
       CampaignStoryCards -> pure campaignStoryCards
       CampaignCampaignLog -> pure campaignLog
+      CampaignChaosBag -> pure campaignChaosBag
       CampaignDecks -> pure campaignDecks
       CampaignMeta -> pure campaignMeta
       CampaignStore -> pure campaignStore

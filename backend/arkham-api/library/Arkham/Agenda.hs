@@ -1,12 +1,12 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Agenda ( module Arkham.Agenda,) where
+module Arkham.Agenda (module Arkham.Agenda) where
 
-import Arkham.Prelude
 import Arkham.Agenda.Agendas
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Prelude
 
 lookupAgenda :: AgendaId -> Int -> CardId -> Agenda
 lookupAgenda agendaId = case lookup (unAgendaId agendaId) allAgendas of
@@ -286,6 +286,9 @@ allAgendas =
     , --- Dead Heat [tsk]
       SomeAgendaCard gnashingTeeth
     , SomeAgendaCard emptyStreets
+    , --- Sanguine Shadows [tsk]
+      SomeAgendaCard whereIsShe
+    , SomeAgendaCard seeingRed
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

@@ -80,6 +80,9 @@ data ScenarioLogKey
     TheTeamStudiedTheHistoryOfTheElderThings
   | TheTeamDiscernedTheOriginOfTheShoggoths
   | TheTeamDiscoveredAHiddenPower
+  | -- | Sanguine Shadows
+    MatiasBolivarTrustsYou
+  | MatiasBolivarDoesntTrustYou
   | -- | Return to the City of Archives
     ReadAboutEarth
   | SawAFamiliarSpecimen

@@ -811,6 +811,15 @@ allLocations =
     , SomeLocationCard saadiansTombsAbandoned
     , SomeLocationCard tanneriesAbandoned
     , SomeLocationCard bahiaPalaceGardensAbandoned
+    , --- Sanguine Shadows [tsk]
+      SomeLocationCard avenidaDeMayo
+    , SomeLocationCard casaRosada
+    , SomeLocationCard catedralMetropolitana
+    , SomeLocationCard cementarioDeLaRecoleta
+    , SomeLocationCard palacioErrazuriz
+    , SomeLocationCard theCabildo
+    , SomeLocationCard bancoDeLaProvincia
+    , SomeLocationCard teatroColon
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

@@ -128,6 +128,7 @@ allAgendaCards =
       , secretsBetterLeftHidden
       , secretsOfTheSeaV1
       , secretsOfTheSeaV2
+      , seeingRed
       , settingSun
       , shadowsDeepen
       , showbusinessAsUsual
@@ -230,6 +231,7 @@ allAgendaCards =
       , whatsGoingOn
       , wheelOfFortuneX
       , whenItRains
+      , whereIsShe
       , whereTheresSmoke
       ]
 
@@ -779,6 +781,12 @@ gnashingTeeth = agenda "09521" "Gnashing Teeth" 1 DeadHeat
 
 emptyStreets :: CardDef
 emptyStreets = agenda "09522" "Empty Steets" 2 DeadHeat
+
+whereIsShe :: CardDef
+whereIsShe = agenda "09546" "Where is She...?" 1 SanguineShadows
+
+seeingRed :: CardDef
+seeingRed = agenda "09562" "Seeing Red" 3 SanguineShadows
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

@@ -321,10 +321,13 @@ allActs =
     , SomeActCard theGameIsAfoot
     , SomeActCard eyesInTheTower
     , SomeActCard caughtRedHanded
-    , --- Riddles and Rain [tsk]
+    , --- Dead Heat [tsk]
       SomeActCard findAmaranth
     , SomeActCard ritualOfLifeAndDeath
     , SomeActCard queenOfNothingAtAll
+    , --- Sanguine Shadows [tsk]
+      SomeActCard theScarletShadow
+    , SomeActCard inTheSearchlight
     , -- Return to Night of the Zealot
       --- Return to the Gathering
       SomeActCard mysteriousGateway

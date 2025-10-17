@@ -962,6 +962,7 @@ allEncounterAssetCards =
       , elinaHarpersCarStopped
       , yhanthleiStatueMysteriousRelic
       , yhanthleiStatueDynamicRelic
+      , laChicaRojaYourWatchfulShadow
       , dianneDevineHidingAnOathUnspoken
       , partyGuest
       , nightgauntSteed

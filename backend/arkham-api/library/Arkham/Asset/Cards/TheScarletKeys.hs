@@ -647,6 +647,17 @@ soulSanctification3 =
       , cdLevel = Just 3
       }
 
+laChicaRojaYourWatchfulShadow :: CardDef
+laChicaRojaYourWatchfulShadow =
+  (storyAsset "09557b" ("La Chica Roja" <:> "Your Watchful Shadow") 0 SanguineShadows)
+      { cdCardTraits = setFromList [Ally, Conspirator]
+      , cdCost = Nothing
+      , cdUnique = True
+      , cdDoubleSided = True
+      , cdOtherSide = Just "09557"
+      , cdCardType = EncounterAssetType
+      }
+
 expeditedTicket :: CardDef
 expeditedTicket =
   permanent

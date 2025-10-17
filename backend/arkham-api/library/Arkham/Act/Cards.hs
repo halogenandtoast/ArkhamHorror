@@ -112,6 +112,7 @@ allActCards =
       , inPursuitOfTheDead
       , inPursuitOfTheLiving
       , inTheBellyOfTheMoonBeast
+      , inTheSearchlight
       , intoTheBeyond
       , intoTheBeyondV2
       , intoTheDarkness
@@ -241,6 +242,7 @@ allActCards =
       , theRelicIsMissing
       , theRescue
       , theReturnTrip
+      , theScarletShadow
       , theSchemesDemise
       , theSearchForAgentHarper
       , theSecondOath
@@ -948,6 +950,12 @@ ritualOfLifeAndDeath = act "09524" "Ritual of Life and Death" 2 DeadHeat
 
 queenOfNothingAtAll :: CardDef
 queenOfNothingAtAll = act "09525" "Queen of Nothing at All" 3 DeadHeat
+
+theScarletShadow :: CardDef
+theScarletShadow = act "09547" "The Scarlet Shadow" 1 SanguineShadows
+
+inTheSearchlight :: CardDef
+inTheSearchlight = act "09548" "In the Searchlight" 2 SanguineShadows
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

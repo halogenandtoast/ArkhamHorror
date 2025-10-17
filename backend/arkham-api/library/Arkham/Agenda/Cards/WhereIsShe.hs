@@ -39,8 +39,7 @@ instance RunMessage WhereIsShe where
       initiateEnemyAttack laChicaRoja (attrs.ability 2) iid
       pure a
     AdvanceAgenda (isSide A attrs -> True) -> do
-      lead <- getLead
-      selectEach ConcealedCardAny $ push . DoStep 2 . LookAtRevealed lead (toSource attrs) . toTarget
+      turnOverAllConcealed attrs
       WhereIsShe <$> liftRunMessage msg attrs
     AdvanceAgenda (isSide B attrs -> True) -> do
       lead <- getLead

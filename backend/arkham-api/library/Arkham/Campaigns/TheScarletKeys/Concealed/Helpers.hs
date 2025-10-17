@@ -12,6 +12,7 @@ import Arkham.Classes.Query
 import Arkham.Helpers.Enemy
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Location
+import Arkham.Helpers.Query (getLead)
 import Arkham.Id
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher.Investigator
@@ -38,6 +39,15 @@ exposeConcealed iid source cid = doFlip iid source cid
 revealConcealed
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> ConcealedCardId -> m ()
 revealConcealed iid source cid = push $ Msg.LookAtRevealed iid (toSource source) (toTarget cid)
+
+turnOverConcealed
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> ConcealedCardId -> m ()
+turnOverConcealed iid source = push . Msg.DoStep 2 . Msg.LookAtRevealed iid (toSource source) . toTarget
+
+turnOverAllConcealed :: (ReverseQueue m, Sourceable source) => source -> m ()
+turnOverAllConcealed source = do
+  lead <- getLead
+  selectEach ConcealedCardAny \c -> turnOverConcealed lead source c.id
 
 chooseExposeConcealed :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 chooseExposeConcealed iid source = chooseExposeConcealedAt iid source (LocationWithInvestigator $ InvestigatorWithId iid)

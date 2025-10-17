@@ -26,6 +26,7 @@ import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Scenario.Types
 import Arkham.Target
+import Arkham.Token (Token, countTokens)
 import Control.Lens (non, _1, _2)
 import Control.Monad.Writer
 import Data.List.NonEmpty qualified as NE
@@ -131,6 +132,9 @@ getEncounterDiscard k =
 
 getDifficulty :: HasGame m => m Difficulty
 getDifficulty = scenarioField ScenarioDifficulty
+
+countScenarioTokens :: HasGame m => Token -> m Int
+countScenarioTokens token = scenarioFieldMap ScenarioTokens (countTokens token)
 
 withStandalone
   :: HasGame m => (CampaignId -> m a) -> (ScenarioId -> m a) -> m a

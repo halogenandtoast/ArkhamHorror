@@ -130,6 +130,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
       <div v-else-if="setModifiers" class="buttons">
         <button @click="createModifier({tag: 'EnemyTarget', contents: id}, {tag: 'DamageDealt', contents: 1})">Increase Damage Dealt</button>
         <button @click="createModifier({tag: 'EnemyTarget', contents: id}, {tag: 'AddKeyword', contents: {tag: 'Hunter'}})">Add Hunter</button>
+        <button @click="createModifier({tag: 'EnemyTarget', contents: id}, {tag: 'HealthModifier', contents: 1})">Increase Health</button>
         <button @click="setModifiers = false">Back</button>
         <Modifier :modifier="modifier" v-for="(modifier, idx) in enemy.modifiers" :key="idx" />
       </div>

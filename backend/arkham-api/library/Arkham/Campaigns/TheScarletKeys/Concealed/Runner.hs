@@ -39,6 +39,7 @@ concealedToCardDef c = case c.kind of
   Decoy -> Nothing
   TheRedGlovedMan -> Just Enemies.theRedGlovedManShroudedInMystery
   LaChicaRoja -> Just Enemies.laChicaRojaTheGirlInTheCarmineCoat
+  ApportionedKa -> Just Enemies.apportionedKa
   CoterieAgentA -> Just Enemies.coterieAgentA
   CoterieAgentB -> Just Enemies.coterieAgentB
   CoterieAgentC -> Just Enemies.coterieAgentC
@@ -94,11 +95,11 @@ instance RunMessage ConcealedCard where
           Decoy -> exposedDecoy iid
           _ -> pure ()
         Just def -> whenJustM (selectOne (EnemyWithPlacement InTheShadows <> EnemyWithTitle def.title)) \enemy -> do
-          exposed iid enemy def
-          case c.placement of
-            AtLocation location -> enemyMoveToIfInPlay c enemy location
-            _ -> error "invalid placement for concealed card"
-      doStep 2 msg'
+          exposed iid enemy def do
+            case c.placement of
+              AtLocation location -> enemyMoveToIfInPlay c enemy location
+              _ -> error "invalid placement for concealed card"
+            doStep 2 msg'
       pure $ c {concealedCardPlacement = Unplaced}
     DoStep 2 (Flip _iid _ (isTarget c -> True)) -> do
       removeFromGame (toTarget c)

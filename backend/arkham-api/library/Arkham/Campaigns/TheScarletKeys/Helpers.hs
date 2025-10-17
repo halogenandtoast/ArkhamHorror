@@ -38,13 +38,14 @@ getTime = getRecordCount Time
 removeAllConcealed :: ReverseQueue m => m ()
 removeAllConcealed = push Msg.RemoveAllConcealed
 
-exposed :: (ReverseQueue m, HasCardCode c, ToId enemy EnemyId) => InvestigatorId -> enemy -> c -> m ()
-exposed iid enemy c = do
+exposed :: (ReverseQueue m, HasCardCode c, ToId enemy EnemyId) => InvestigatorId -> enemy -> c -> m () -> m ()
+exposed iid enemy c body = do
   let ekey = "exposed[" <> unCardCode (toCardCode c) <> "]"
   let ikey = "exposed[" <> tshow (asId enemy) <> "]"
   checkWhen $ Window.CampaignEvent ekey (Just iid) Null
   checkWhen $ Window.CampaignEvent ikey (Just iid) Null
   checkWhen $ Window.CampaignEvent "exposed[enemy]" (Just iid) Null
+  body
   checkAfter $ Window.CampaignEvent ekey (Just iid) Null
   checkAfter $ Window.CampaignEvent ikey (Just iid) Null
   checkAfter $ Window.CampaignEvent "exposed[enemy]" (Just iid) Null
@@ -61,7 +62,7 @@ whenExposed c = CampaignEvent #when Nothing ekey
   ekey = "exposed[" <> unCardCode (toCardCode c) <> "]"
 
 afterExposed :: HasCardCode c => c -> WindowMatcher
-afterExposed c = CampaignEvent #when Nothing ekey
+afterExposed c = CampaignEvent #after Nothing ekey
  where
   ekey = "exposed[" <> unCardCode (toCardCode c) <> "]"
 

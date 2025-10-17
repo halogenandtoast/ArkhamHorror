@@ -23,7 +23,7 @@ instance RunMessage DynamiteBlast where
       chooseOneM iid do
         for_ locations \location -> do
           enemies <- if canDealDamage then select (enemyAt location) else pure []
-          concealed <- if canDealDamage then getConcealedIds iid else pure []
+          concealed <- if canDealDamage then getConcealedIds (ForExpose $ toSource attrs) iid else pure []
           investigators <- select $ investigatorAt location
           unless (null enemies && null investigators && null concealed) do
             targeting location do

@@ -26,7 +26,7 @@ instance HasAbilities Aquinnah1 where
         ( CanDealDamage
             <> oneOf
               [ EnemyCriteria (NotAttackingEnemy <> EnemyExists (EnemyAt YourLocation))
-              , exists $ YourLocation <> LocationWithConcealedCard
+              , exists $ YourLocation <> LocationWithExposableConcealedCard (toSource a)
               ]
         )
         $ triggered (EnemyAttacks #when You AnyEnemyAttack AnyEnemy) (exhaust a <> horrorCost a 1)
@@ -38,7 +38,7 @@ instance RunMessage Aquinnah1 where
       changeAttackDetails attack.enemy attack {attackDealDamage = False}
       healthDamage' <- field EnemyHealthDamage attack.enemy
       enemies <- select $ enemyAtLocationWith iid <> not_ (be attack.enemy)
-      concealed <- getConcealedIds iid
+      concealed <- getConcealedIds (ForExpose $ toSource attrs) iid
       chooseOneM iid do
         targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) healthDamage'
         targets concealed $ exposeConcealed iid (attrs.ability 1)

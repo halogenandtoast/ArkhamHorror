@@ -29,7 +29,7 @@ instance RunMessage BigBen where
       locations <- select (orConnected_ (LocationWithId attrs.id) <> LocationWithConcealedCard)
       sid <- getRandom
       chooseTargetM iid locations \lid -> do
-        concealed <- map toId <$> getConcealedAt lid
+        concealed <- map toId <$> getConcealedAt (ForExpose $ toSource attrs) lid
         chooseOrRunOneM iid do
           targets concealed \card -> beginSkillTest sid iid (attrs.ability 1) card #agility (Fixed 2)
       pure l

@@ -613,6 +613,7 @@ passesCriteria iid mcard source' requestor windows' = \case
           <> Matcher.NotAgenda (Matcher.AgendaWithModifier CannotRemoveDoomOnThis)
       ]
   Criteria.ChaosTokenExists matcher -> selectAny matcher
+  Criteria.ConcealedCardExists matcher -> selectAny matcher
   Criteria.AssetExists matcher -> do
     -- N.B. Old Shotgun (2) needs to have a different uses when playing an
     -- event We add the event card to the "game" when asking for a matching

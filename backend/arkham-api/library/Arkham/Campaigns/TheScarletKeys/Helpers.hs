@@ -1,5 +1,10 @@
-module Arkham.Campaigns.TheScarletKeys.Helpers where
+module Arkham.Campaigns.TheScarletKeys.Helpers
+  ( module Arkham.Campaigns.TheScarletKeys.Helpers
+  , module Arkham.Campaigns.TheScarletKeys.I18n
+  )
+  where
 
+import Arkham.Campaigns.TheScarletKeys.I18n
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Types (Field (..), ScarletKeyId)
 import Arkham.Campaigns.TheScarletKeys.Meta
@@ -10,7 +15,6 @@ import Arkham.Classes.Query
 import Arkham.Effect.Window
 import Arkham.Helpers.Campaign (getCampaignStoryCards)
 import Arkham.Helpers.Query (getInvestigators)
-import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Types (Field (LocationConcealedCards))
 import Arkham.Matcher
@@ -25,9 +29,6 @@ import Arkham.Projection
 import Arkham.Source
 import Arkham.Window qualified as Window
 
-campaignI18n :: (HasI18n => a) -> a
-campaignI18n a = withI18n $ scope "theScarletKeys" a
-
 markTime :: ReverseQueue m => Int -> m ()
 markTime = incrementRecordCount Time
 
@@ -37,12 +38,15 @@ getTime = getRecordCount Time
 removeAllConcealed :: ReverseQueue m => m ()
 removeAllConcealed = push Msg.RemoveAllConcealed
 
-exposed :: (ReverseQueue m, HasCardCode c) => InvestigatorId -> c -> m ()
-exposed iid c = do
+exposed :: (ReverseQueue m, HasCardCode c, ToId enemy EnemyId) => InvestigatorId -> enemy -> c -> m ()
+exposed iid enemy c = do
   let ekey = "exposed[" <> unCardCode (toCardCode c) <> "]"
+  let ikey = "exposed[" <> tshow (asId enemy) <> "]"
   checkWhen $ Window.CampaignEvent ekey (Just iid) Null
+  checkWhen $ Window.CampaignEvent ikey (Just iid) Null
   checkWhen $ Window.CampaignEvent "exposed[enemy]" (Just iid) Null
   checkAfter $ Window.CampaignEvent ekey (Just iid) Null
+  checkAfter $ Window.CampaignEvent ikey (Just iid) Null
   checkAfter $ Window.CampaignEvent "exposed[enemy]" (Just iid) Null
 
 exposedDecoy :: ReverseQueue m => InvestigatorId -> m ()
@@ -53,6 +57,11 @@ exposedDecoy iid = do
 
 whenExposed :: HasCardCode c => c -> WindowMatcher
 whenExposed c = CampaignEvent #when Nothing ekey
+ where
+  ekey = "exposed[" <> unCardCode (toCardCode c) <> "]"
+
+afterExposed :: HasCardCode c => c -> WindowMatcher
+afterExposed c = CampaignEvent #when Nothing ekey
  where
   ekey = "exposed[" <> unCardCode (toCardCode c) <> "]"
 

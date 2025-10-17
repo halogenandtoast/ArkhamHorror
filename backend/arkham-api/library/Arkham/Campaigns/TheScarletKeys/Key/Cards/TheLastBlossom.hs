@@ -16,7 +16,20 @@ theLastBlossom = key TheLastBlossom Cards.theLastBlossom
 
 instance HasAbilities TheLastBlossom where
   getAbilities (TheLastBlossom a) = case a.bearer of
-    InvestigatorTarget iid -> [restricted a 1 (youExist (InvestigatorWithId iid)) $ FastAbility Free]
+    InvestigatorTarget iid ->
+      if a.stable
+        then
+          [ restricted
+              a
+              1
+              ( exists
+                  ( oneOf
+                      [HealableInvestigator (a.ability 1) k (affectsOthers $ colocatedWith iid) | k <- [#damage, #horror]]
+                  )
+              )
+              $ FastAbility Free
+          ]
+        else [restricted a 2 (exists EnemyWithAnyDamage) $ FastAbility Free]
     _ -> []
 
 instance RunMessage TheLastBlossom where

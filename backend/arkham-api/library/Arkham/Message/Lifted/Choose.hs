@@ -2,7 +2,7 @@ module Arkham.Message.Lifted.Choose where
 
 import Arkham.Ability.Types
 import Arkham.Calculation
-import Arkham.Campaigns.TheScarletKeys.Concealed.Query (getConcealedChoicesAt)
+import Arkham.Campaigns.TheScarletKeys.Concealed.Query (ForExpose (..), getConcealedChoicesAt)
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
@@ -517,7 +517,7 @@ chooseAutomaticallyEvadeNAt
   => InvestigatorId -> source -> Int -> LocationMatcher -> EnemyMatcher -> m ()
 chooseAutomaticallyEvadeNAt iid source n lmatcher ematcher = do
   enemies <- select $ ematcher <> EnemyAt lmatcher <> EnemyCanBeEvadedBy (toSource source)
-  concealed <- getConcealedChoicesAt lmatcher
+  concealed <- getConcealedChoicesAt (ForExpose $ toSource iid) lmatcher
   let handleChoose = if n == 1 then chooseOneM iid else chooseNM iid n
   handleChoose do
     targets enemies $ automaticallyEvadeEnemy iid
@@ -529,7 +529,7 @@ chooseDamageEnemy
   => InvestigatorId -> source -> LocationMatcher -> EnemyMatcher -> Int -> m ()
 chooseDamageEnemy iid source lmatcher ematcher n = do
   enemies <- select $ ematcher <> EnemyAt lmatcher <> EnemyCanBeDamagedBySource (toSource source)
-  concealed <- getConcealedChoicesAt lmatcher
+  concealed <- getConcealedChoicesAt (ForExpose $ toSource iid) lmatcher
   chooseOrRunOneM iid do
     targets enemies $ assignEnemyDamage (nonAttack (Just iid) source n)
     when (ematcher == AnyEnemy) do

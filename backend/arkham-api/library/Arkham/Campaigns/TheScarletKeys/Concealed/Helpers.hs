@@ -5,6 +5,7 @@ module Arkham.Campaigns.TheScarletKeys.Concealed.Helpers (
 
 import Arkham.Campaigns.TheScarletKeys.Concealed
 import Arkham.Campaigns.TheScarletKeys.Concealed.Query
+import Arkham.Campaigns.TheScarletKeys.I18n
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
@@ -21,16 +22,17 @@ import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Source
 import Arkham.Target
 import Data.Monoid (First (..))
 
-getConcealedIds :: HasGame m => InvestigatorId -> m [ConcealedCardId]
-getConcealedIds iid = map toId <$> getConcealed iid
+getConcealedIds :: HasGame m => ForExpose -> InvestigatorId -> m [ConcealedCardId]
+getConcealedIds fe iid = map toId <$> getConcealed fe iid
 
-getConcealed :: HasGame m => InvestigatorId -> m [ConcealedCard]
-getConcealed iid = getLocationOf iid >>= maybe (pure []) getConcealedAt
+getConcealed :: HasGame m => ForExpose -> InvestigatorId -> m [ConcealedCard]
+getConcealed fe iid = getLocationOf iid >>= maybe (pure []) (getConcealedAt fe)
 
 exposeConcealed
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> ConcealedCardId -> m ()
@@ -55,10 +57,18 @@ chooseExposeConcealed iid source = chooseExposeConcealedAt iid source (LocationW
 chooseExposeConcealedAt
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> LocationMatcher -> m ()
 chooseExposeConcealedAt iid source lmatcher = do
-  concealed <- getConcealedChoicesAt lmatcher
+  concealed <- getConcealedChoicesAt (ForExpose $ toSource source) lmatcher
   chooseOneM iid do
-    targets concealed $ doFlip iid source . toId
-    labeled "Do not expose concealed" nothing
+    targets concealed (exposeConcealed iid source . (.id))
+    campaignI18n $ labeled' "doNotExposeConcealed" nothing
+
+chooseRevealConcealedAt
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> LocationMatcher -> m ()
+chooseRevealConcealedAt iid source lmatcher = do
+  concealed <- getConcealedChoicesAt NotForExpose lmatcher
+  chooseOneM iid do
+    targets concealed (revealConcealed iid source . (.id))
+    campaignI18n $ labeled' "doNotRevealConcealed" nothing
 
 gatherConcealedCards
   :: (MonadRandom m, HasGame m) => EnemyId -> m (Maybe (ConcealedCardKind, [ConcealedCard]))
@@ -83,3 +93,11 @@ resolveConcealed iid eid =
   gatherConcealedCards eid >>= \case
     Nothing -> pure ()
     Just (kind, cards) -> placeConcealed iid kind cards
+
+shuffleConcealedAt :: (ReverseQueue m, ToId location LocationId) => location -> m ()
+shuffleConcealedAt location = do
+  concealed <- getConcealedAtAll NotForExpose location
+  let (known, unknown) = partition (attr concealedCardKnown) concealed
+  case known <> unknown of
+    (x : _) -> push $ Msg.PlaceConcealedCard "00000" x.id (AtLocation $ asId location)
+    [] -> pure ()

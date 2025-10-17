@@ -33,7 +33,7 @@ instance RunMessage CatedralMetropolitana where
       beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 4)
       pure l
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) succeededBy -> do
-      concealedCards <- map toId <$> getConcealedAtAll attrs.id
+      concealedCards <- map toId <$> getConcealedAtAll (ForExpose $ toSource attrs) attrs.id
       let n = 1 + succeededBy `div` 2
       chooseNM iid n $ targets concealedCards $ revealConcealed iid (attrs.ability 1)
       pure l

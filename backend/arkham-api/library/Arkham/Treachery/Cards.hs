@@ -355,6 +355,7 @@ allEncounterTreacheryCards =
       , illOmen
       , impendingEvils
       , imperceptableCreature
+      , inPlainSight
       , incriminatingEvidence
       , indescribableApparition
       , inexplicableCold
@@ -2859,9 +2860,11 @@ cornered =
 
 catAndMouse :: CardDef
 catAndMouse =
-  (treachery "09559" "Cat and Mouse" SanguineShadows 2)
-    { cdCardTraits = setFromList [Scheme]
-    }
+  peril
+    $ surge
+    $ (treachery "09559" "Cat and Mouse" SanguineShadows 2)
+      { cdCardTraits = setFromList [Scheme]
+      }
 
 callingCard :: CardDef
 callingCard =
@@ -2891,6 +2894,12 @@ heavyRain :: CardDef
 heavyRain =
   (treachery "09719" "Heavy Rain" StrangeHappenings 2)
     { cdCardTraits = setFromList [Hazard]
+    }
+
+inPlainSight :: CardDef
+inPlainSight =
+  (treachery "09721" "In Plain Sight" MysteriesAbound 2)
+    { cdCardTraits = setFromList [Scheme]
     }
 
 knivesInTheDark :: CardDef

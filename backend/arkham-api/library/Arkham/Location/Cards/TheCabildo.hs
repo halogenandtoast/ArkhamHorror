@@ -25,7 +25,7 @@ instance HasAbilities TheCabildo where
 instance RunMessage TheCabildo where
   runMessage msg l@(TheCabildo attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      concealedCards <- map toId <$> getConcealedAtAll attrs.id
+      concealedCards <- map toId <$> getConcealedAtAll (ForExpose $ toSource attrs) attrs.id
       chooseOneM iid $ targets concealedCards $ revealConcealed iid (attrs.ability 1)
       drawEncounterCardEdit iid (attrs.ability 1) (setTarget attrs)
       pure l

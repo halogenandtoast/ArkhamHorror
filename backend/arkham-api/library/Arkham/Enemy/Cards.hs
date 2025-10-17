@@ -161,6 +161,7 @@ allEncounterEnemyCards =
       , coterieAgentA
       , coterieAgentB
       , coterieAgentC
+      , coterieEnvoy
       , covenInitiate
       , crazedGuest
       , crazedShoggoth
@@ -2900,6 +2901,17 @@ coterieAgentC =
   (enemy "09716c" "Coterie Agent (C)" CrimsonConspiracy 1)
     { cdCardTraits = setFromList [Humanoid, Coterie]
     , cdKeywords = singleton $ Keyword.Concealed CoterieAgentC (Static 2)
+    }
+
+coterieEnvoy :: CardDef
+coterieEnvoy =
+  (enemy "09720" "Coterie Envoy" MysteriesAbound 2)
+    { cdCardTraits = setFromList [Humanoid, Coterie]
+    , cdKeywords =
+        setFromList
+          [ Keyword.Aloof
+          , Keyword.Patrol (LocationWithConcealedCard <> not_ (LocationWithEnemy $ EnemyIs "09720"))
+          ]
     }
 
 paracausalEntity :: CardDef

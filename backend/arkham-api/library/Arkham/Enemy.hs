@@ -496,6 +496,8 @@ allEnemies =
       SomeEnemyCard coterieAgentA
     , SomeEnemyCard coterieAgentB
     , SomeEnemyCard coterieAgentC
+    , --- Mysteries Abound [tsk]
+      SomeEnemyCard coterieEnvoy
     , --- Outsiders [tsk]
       SomeEnemyCard paracausalEntity
     , SomeEnemyCard apocalypticPresage

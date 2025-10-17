@@ -33,7 +33,6 @@ instance HasAbilities PendantOfTheQueen where
                 <> oneOf
                   [ LocationWithDiscoverableCluesBy You
                   , LocationWithEnemy (EnemyWithEvade <> EnemyWithoutModifier CannotBeEvaded)
-                  , LocationWithConcealedCard
                   ]
             ]
         )
@@ -70,7 +69,7 @@ instance RunMessage PendantOfTheQueen where
       discoverChoice <- lid <=~> LocationWithDiscoverableCluesBy (InvestigatorWithId iid)
       enemies <-
         select $ at_ (LocationWithId lid) <> EnemyWithEvade <> EnemyWithoutModifier CannotBeEvaded
-      concealed <- getConcealedAt lid
+      concealed <- getConcealedAt (ForExpose $ toSource iid) lid
 
       chooseOrRunOneM iid do
         when (canMove && moveChoice) do

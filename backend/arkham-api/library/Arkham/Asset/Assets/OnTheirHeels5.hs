@@ -37,7 +37,7 @@ instance RunMessage OnTheirHeels5 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withLocationOf iid \lid -> do
         enemies <- select $ at_ (be lid) <> EnemyCanBeDamagedBySource (attrs.ability 1)
-        mconcealed <- getConcealed iid
+        mconcealed <- getConcealed (ForExpose $ toSource iid) iid
         chooseOrRunOneM iid do
           whenM (canDiscoverCluesAtYourLocation NotInvestigate iid) do
             labeled "Discover a clue at your location"

@@ -32,7 +32,7 @@ instance RunMessage ExpeditiousRetreat1 where
         iid <- MaybeT getSkillTestInvestigator
         enemies <-
           select $ enemyAtLocationWith iid <> not_ (EnemyWithId eid) <> EnemyCanBeEvadedBy (toSource iid)
-        concealed <- getConcealedIds iid
+        concealed <- getConcealedIds (ForExpose $ toSource attrs) iid
         unless (null enemies && null concealed) do
           lift $ skillTestResultOption "Expeditious Retreat (1)" do
             chooseOneM iid $ withI18n do

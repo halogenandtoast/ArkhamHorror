@@ -1844,11 +1844,22 @@ getLocationsMatching lmatcher = do
           let lowestShroud = getMin $ foldMap (Min . snd) ls''
           filterM (maybe (pure False) (\v -> (< lowestShroud) <$> getGameValue v) . attr locationShroud) ls
     LocationWithDiscoverableCluesBy whoMatcher -> do
-      go ls (oneOf [LocationWithAnyClues, LocationWithConcealedCard]) >>= filterM \l -> do
-        selectAny $ whoMatcher <> InvestigatorCanDiscoverCluesAt (LocationWithId l.id)
+      go
+        ls
+        ( oneOf
+            [ LocationWithAnyClues
+            , LocationWithConcealedCard <> LocationWithoutModifier (CampaignModifier "noExposeAt")
+            ]
+        )
+        >>= filterM \l -> do
+          selectAny $ whoMatcher <> InvestigatorCanDiscoverCluesAt (LocationWithId l.id)
     LocationWithConcealedCard ->
       ls & filterM \l -> do
         concealedCards <- field LocationConcealedCards (toId l)
+        pure $ notNull concealedCards
+    LocationWithExposableConcealedCard source -> do
+      ls & filterM \l -> do
+        concealedCards <- getConcealedAt (ForExpose source) l.id
         pure $ notNull concealedCards
     LocationNotAtClueLimit -> do
       flip filterM ls \l -> do
@@ -3001,6 +3012,7 @@ getConcealedCardsMatching matcher = do
     ConcealedCardWithPlacement placement -> pure $ filter ((== placement) . attr concealedCardPlacement) as
     ConcealedCardAny -> pure as
     ConcealedCardOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
+    ExposableConcealedCard source -> filterMatcher as (ConcealedCardAt $ LocationWithExposableConcealedCard source)
     ConcealedCardAt locationMatcher -> do
       placements <- selectMap AtLocation locationMatcher
       pure $ filter ((`elem` placements) . attr concealedCardPlacement) as

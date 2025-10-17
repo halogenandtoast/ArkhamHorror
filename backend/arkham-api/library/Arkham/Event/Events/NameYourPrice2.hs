@@ -17,7 +17,7 @@ instance RunMessage NameYourPrice2 where
   runMessage msg e@(NameYourPrice2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       enemies <- select $ EnemyCanBeDamagedBySource (toSource attrs) <> at_ (locationWithInvestigator iid)
-      mconcealed <- getConcealed iid
+      mconcealed <- getConcealed (ForExpose $ toSource iid) iid
       chooseOneM iid do
         targets enemies \eid -> do
           isElite <- eid <=~> EliteEnemy

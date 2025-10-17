@@ -567,7 +567,7 @@ instance RunMessage LocationAttrs where
       push $ RemoveLocation (toId a)
       pure a
     PlaceConcealedCard _ card (AtLocation lid) | a.id == lid -> do
-      cards <- shuffleM $ card : locationConcealedCards
+      cards <- shuffleM $ nub $ card : locationConcealedCards
       pure $ a & concealedCardsL .~ cards
     PlaceConcealedCard _ card _ -> do
       pure $ a & concealedCardsL %~ filter (/= card)

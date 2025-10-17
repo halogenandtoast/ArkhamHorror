@@ -11,6 +11,7 @@ import {-# SOURCE #-} Arkham.Calculation
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey (CampaignLogKey, IsCampaignLogKey (..))
 import Arkham.Campaigns.TheForgottenAge.Supply (Supply)
+import Arkham.Campaigns.TheScarletKeys.Concealed.Matcher
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Capability (Capabilities, Capable (..), FromSource)
 import Arkham.Card.CardCode
@@ -251,6 +252,7 @@ data Criterion
   | DuringPhase PhaseMatcher
   | ChaosTokenCountIs ChaosTokenMatcher ValueMatcher
   | ChaosTokenExists ChaosTokenMatcher
+  | ConcealedCardExists ConcealedCardMatcher
   | CanMoveThis GridDirection
   | CanMoveTo LocationMatcher
   | TabooCriteria TabooList Criterion Criterion
@@ -354,6 +356,9 @@ overrideExists = CriteriaOverride . exists
 
 notExists :: Exists a => a -> Criterion
 notExists = not_ . exists
+
+instance Exists ConcealedCardMatcher where
+  exists = ConcealedCardExists
 
 instance Exists ChaosTokenMatcher where
   exists = ChaosTokenExists
@@ -467,7 +472,7 @@ canDamageEnemyAtMatch (toSource -> source) locationMatcher enemyMatcher =
       then
         oneOf -- technically Criteria
           [ exists (EnemyAt locationMatcher <> EnemyCanBeDamagedBySource source)
-          , exists (LocationWithConcealedCard <> locationMatcher)
+          , exists (LocationWithExposableConcealedCard source <> locationMatcher)
           ]
       else exists (EnemyAt locationMatcher <> EnemyCanBeDamagedBySource source <> enemyMatcher)
 
@@ -481,7 +486,7 @@ canEvadeEnemyAtMatch (toSource -> source) locationMatcher enemyMatcher =
     then
       oneOf -- technically Criteria
         [ exists (EnemyAt locationMatcher <> EnemyCanBeEvadedBy source)
-        , exists (LocationWithConcealedCard <> locationMatcher)
+        , exists (LocationWithExposableConcealedCard source <> locationMatcher)
         ]
     else exists (EnemyAt locationMatcher <> EnemyCanBeEvadedBy source <> enemyMatcher)
 

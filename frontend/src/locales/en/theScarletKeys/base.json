@@ -56,7 +56,9 @@
     },
     "pinchInReality": {
       "discard": "Discard half of the non-weakness cards in your hand (rounded up)."
-    }
+    },
+    "doNotExposeConcealed": "Do not expose Concealed Card",
+    "doNotRevealConcealed": "Do not reveal Concealed Card"
   },
   "prologue": {
     "title": "The Secret War",

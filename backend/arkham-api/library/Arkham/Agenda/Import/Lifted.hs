@@ -49,8 +49,8 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Card.CardDef
-import Arkham.Resolution
 import Arkham.Matcher
+import Arkham.Resolution
 
 advanceAgenda :: ReverseQueue m => AgendaAttrs -> m ()
 advanceAgenda attrs = push $ AdvanceAgenda attrs.id

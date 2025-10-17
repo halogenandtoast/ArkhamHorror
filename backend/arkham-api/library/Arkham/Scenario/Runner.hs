@@ -377,7 +377,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           $ a
           & (actStackL . ix n %~ (prepend <>))
           & (completedActStackL . at n ?~ remaining)
-      _ -> error "Invalid act deck to reset"
+      _ -> pure a
   Do (AdvanceToAgenda n agendaDef newAgendaSide _) -> do
     agendaStack' <- case lookup n scenarioAgendaStack of
       Just (x : ys) -> do

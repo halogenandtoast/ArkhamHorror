@@ -32,6 +32,7 @@ import CardView from '@/arkham/components/Card.vue';
 import Draggable from '@/components/Draggable.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
+import Investigator from '@/arkham/components/Investigator.vue';
 import EnemyView from '@/arkham/components/Enemy.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
 import Key from '@/arkham/components/Key.vue';
@@ -278,6 +279,7 @@ const outOfPlayEnemies = computed(() => enemyGroups.value.outOfPlay)
 const pursuit = computed(() => enemyGroups.value.pursuit)
 const globalEnemies = computed(() => enemyGroups.value.global)
 const inTheShadows = computed(() => Object.values(props.game.enemies).filter((e) => e.placement.tag === "InTheShadows"))
+const inTheShadowsInvestigators = computed(() => Object.values(props.game.investigators).filter((e) => e.placement.tag === "InTheShadows"))
 const enemiesAsLocations = computed(() => enemyGroups.value.asLoc)
 const topEnemyInVoid = computed(() => enemyGroups.value.firstVoid)
 
@@ -685,7 +687,7 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
         @close="hideCards"
       />
       <div class="scenario-cards">
-        <div v-if="inTheShadows.length > 0" class="in-the-shadows">
+        <div v-if="inTheShadows.length > 0 || inTheShadowsInvestigators.length > 0" class="in-the-shadows">
           <EnemyView
             v-for="enemy in inTheShadows"
             :key="enemy.id"
@@ -693,6 +695,15 @@ const frostTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
             :game="game"
             :playerId="playerId"
             @choose="choose"
+          />
+          <Investigator
+            v-for="investigator in inTheShadowsInvestigators"
+            :key="investigator.id"
+            :choices="[]"
+            :investigator="investigator"
+            :playerId="playerId"
+            :game="game"
+            :portrait="true"
           />
         </div>
         <div v-if="tarotCards.length > 0" class="tarot-cards">

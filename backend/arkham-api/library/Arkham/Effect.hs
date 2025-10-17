@@ -65,6 +65,7 @@ import Arkham.Asset.Assets (
   grislyTotemSeeker3Effect,
   grislyTotemSurvivor3Effect,
   highRoller2Effect,
+  laChicaRojaYourWatchfulShadowEffect,
   lockpicks1Effect,
   lockpicksEffect,
   luckyDice2Effect,
@@ -535,6 +536,7 @@ allEffects =
     , ("09087", SomeEffect explosiveWardEffect)
     , ("09109", SomeEffect atACrossroads1Effect)
     , ("09113", SomeEffect $ noop "09113")
+    , ("09557b", SomeEffect laChicaRojaYourWatchfulShadowEffect)
     , ("10035", SomeEffect eyesOfValusiaTheMothersCunning4Effect)
     , ("10053", SomeEffect steadyHanded1Effect)
     , ("10056", SomeEffect prismaticSpectaclesLensToTheOtherworld2Effect)

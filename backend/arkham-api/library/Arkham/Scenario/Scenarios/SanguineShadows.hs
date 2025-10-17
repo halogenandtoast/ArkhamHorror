@@ -17,7 +17,7 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.SanguineShadows.Helpers
 import Arkham.Token qualified as Token
-import Arkham.Trait (Trait (Criminal))
+import Arkham.Trait (Trait (Central, Criminal))
 
 newtype SanguineShadows = SanguineShadows ScenarioAttrs
   deriving anyclass IsScenario
@@ -30,6 +30,11 @@ instance HasModifiersFor SanguineShadows where
       (not_ $ LocationWithToken Token.Target)
       setActiveDuringSetup
       [ScenarioModifier "noConcealed[LaChicaRoja]"]
+    modifySelectWith
+      attrs
+      (oneOf [LocationWithToken Token.Target, LocationWithTrait Central])
+      setActiveDuringSetup
+      [ScenarioModifier "noConcealed[ApportionedKa]"]
 
 sanguineShadows :: Difficulty -> SanguineShadows
 sanguineShadows difficulty =

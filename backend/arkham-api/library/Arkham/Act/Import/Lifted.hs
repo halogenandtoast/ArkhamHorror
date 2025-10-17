@@ -82,3 +82,6 @@ actAbilities' side abilities (toAttrs -> attrs) = extend attrs $ guard (onSide s
 actAbilities1'
   :: (EntityAttrs act ~ ActAttrs, Entity act) => ActSide -> (ActAttrs -> Ability) -> act -> [Ability]
 actAbilities1' side ability (toAttrs -> attrs) = extend attrs $ guard (onSide side attrs) *> [ability attrs]
+
+removeAct :: ReverseQueue m => ActAttrs -> m ()
+removeAct = toDiscard GameSource

@@ -15,7 +15,8 @@ stubbornDetective =
     $ \a -> a & preyL .~ BearerOf (toId a)
 
 instance HasModifiersFor StubbornDetective where
-  getModifiersFor (StubbornDetective a) = modifySelect a (InvestigatorAt $ locationWithEnemy a) [Blank]
+  getModifiersFor (StubbornDetective a) =
+    unless (enemyDefeated a) $ modifySelect a (InvestigatorAt $ locationWithEnemy a) [Blank]
 
 instance RunMessage StubbornDetective where
   runMessage msg (StubbornDetective attrs) = StubbornDetective <$> runMessage msg attrs

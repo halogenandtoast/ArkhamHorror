@@ -18,11 +18,68 @@
     "successful": "Pour avoir entraperçu les secrets de la Terre",
     "backfired": "Pour avoir entraperçu les secrets de la Terre"
   },
+  "label": {
+    "cardsToDiscard": "Cartes à défausser"
+  },
+  "tooltips": {
+    "cyclopeanVaults": {
+      "discard": "Défausser chaque carte non-faiblesse de sa main",
+      "remember": "Si vous n'avez aucune carte dans votre main : souvenez-vous que vous avez « cherché des informations sur la Terre »"
+    }
+  },
   "remembered": {
     "foundTheProcess": "Vous avez trouvé la marche à suivre.",
     "dissectedAnOrgan": "Vous avez disséqué un organe.",
     "interviewedASubject": "Vous avez interrogé un sujet.",
     "realizedWhatYearItIs": "Vous avez découvert la date.",
     "activatedTheDevice": "Vous avez activé le mécanisme."
+    "readAboutEarth": "Vous avez cherché des informations sur la Terre.",
+    "sawAFamiliarSpecimen": "Vous avez vu un spécimen familier."
+  },
+  "intro": {
+    "label": {
+      "cooperate": "*Coopérer avec les créatures et leur dire tout ce que vous savez*",
+      "resist": "*Refuser et résister à l’emprisonnement*"
+    },
+    "title": "Scénario VI : La Cité des Archives",
+    "intro1": "<p>_Introduction 1_ : Vous n’avez que peu de souvenirs des jours suivants. Votre conscience va et vient au gré de l’épuisement de votre corps, et votre esprit tente péniblement de comprendre ce qui vous est arrivé.</p><p>Les habitants de ce lieu sont les mêmes créatures que vous avez vues en compagnie d’Alejandro : d’immenses cônes ondulés de chair molle, avec quatre larges appendices au sommet. Elles sont horribles à regarder mais elles ne vous font aucun mal, contrairement à ce que vous aviez craint. Vous passez vos premiers jours emprisonné et interrogé par les créatures, dont certaines semblent capables de communiquer dans votre langue. D’autres la reproduisent en utilisant une étrange machine futuriste qui ressemble à un instrument de musique. Cela vous rappelle curieusement le piano jazz au Rossignol. C’est à ce moment que vous vous rendez compte que votre corps a été altéré. Vous n’avez plus ni mains ni doigts pour presser les touches, plus de jambes pour marcher, plus de poumons pour crier. Vous êtes l’un d’entre eux désormais, l’une des créatures qui vous ont capturé, et vous ignorez où se trouve votre véritable corps.</p><p>Malgré votre captivité, les créatures n’ont pas l’air de vous vouloir du mal. Elles préfèrent converser avec vous et vous poser toutes sortes de questions sur divers sujets : votre société, votre profession, votre technologie, votre écosystème, votre corps humain. Leur soif de savoir est intarissable et leurs questions vont du trivial au complexe. Elles vous demandent d’écrire copieusement dans votre propre langue et prennent toutes vos notes pour les ranger dans leurs vastes archives. On vous informe bientôt que vous pourrez circuler librement dans la cité si vous vous soumettez.</p><ul><li>Les investigateurs doivent décider (choisir une option) :<ul><li>*Il faut coopérer avec les créatures et leur dire tout ce que vous savez*. Continuez à l’_Introduction 2_.</li><li>*Il faut refuser et résister à l’emprisonnement*. Passez à l’_Introduction 3_.</li></ul></li></ul>",
+    "intro2": "<p>_Introduction 2_ : Vous coopérez avec les créatures dans l’espoir de gagner votre liberté. Vous n’en pouvez plus d’être enfermé, et circuler librement dans la ville vous permettra peut-être de trouver un moyen de rentrer chez vous. Les créatures semblent satisfaites de vos réponses à leurs questions, bien que leurs manières totalement étrangères soient difficiles à décrypter. Les jours deviennent des semaines, peut-être même plus. C’est difficile à dire. Enfin, l’une des créatures vous informe que vous êtes libre d’arpenter les rues de la ville en respectant quelques restrictions : vous n’avez pas le droit d’endommager le corps que vous occupez actuellement car il appartient à l’une des leurs, et vous avez interdiction de quitter la cité. Vos liens sont brisés, et les créatures observent avec intérêt la manière dont vous utilisez votre corps conique.</p><p class='basic right'>Dans votre carnet de campagne, indiquez que *les investigateurs ont coopéré avec les Yithiens*.</p><p class='basic right'>Passez à la _Mise en Place_.</p>",
+    "intro3": "<p>_Introduction 3_ : Ces créatures vous ont enlevé et ont même dérobé votre corps. Pas question de leur donner une seule réponse ! Vous leur cracheriez à la figure si vous le pouviez – pour cela, il faudrait déjà savoir comment cracher avec un tel corps… mais aussi lequel des quatre appendices des créatures correspond à la figure. Il est inutile d’espérer pouvoir s’enfuir, mais vous essayez tout de même. Vos tentatives ne passent pas inaperçues, et l’une des créatures est bientôt affectée à votre surveillance. Elle semble plus concernée par le fait de vous empêcher d’endommager votre corps que de prévenir toute velléité de fuite. Après de nombreux jours de captivité, vous trouvez un moyen d’utiliser cela à votre avantage. Vous vous débattez si fort dans vos entraves que vous vous blessez. Un peu de sang visqueux s’échappe de votre chair épaisse et froide. Votre gardien s’approche, claquant ses pinces l’une contre l’autre. Il défait vos liens et vous en profitez pour abattre votre appendice griffu sur ce que vous pensez être la gorge de la créature. Elle s’effondre au sol en se tortillant de douleur.</p><p class='basic right'>Dans votre Carnet de Campagne, indiquez que *les investigateurs ont résisté à l’emprisonnement*.</p><p class='basic right'>Passez à la _Mise en Place_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : *La Cité des Archives*, *Agents de Yog-Sothoth*, *Portes Closes*, *Un Froid Mordant* et *Répandre la Peur*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/city-of-archives.png' /><img src='{setImgPath}/agents-of-yog.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "beforeDrawingOpeningHandsItems": "Avant de piocher les mains de départ, chaque investigateur cherche tous les soutiens uniques Objet de son deck et dans sa zone de jeu. Mettez chacun de ces soutiens de côté, hors jeu. Ils n’existent pas à cette époque.",
+    "beforeDrawingOpeningHandsAlejandro": "Avant de piocher les mains de départ, si un joueur a Alejandro Vela dans son deck, cherchez-le dans le deck de cet investigateur et mettez-le de côté, hors jeu.",
+    "bodyOfAYithian": "Remplacez la carte Investigateur de chaque joueur par une carte Investigateur Corps de Yithien (voir _Corps de Yithien_ ci-dessous).",
+    "checkCampaignLog": "Vérifiez votre Carnet de Campagne.",
+    "cooperated1": "Si *les investigateurs ont coopéré avec les Yithiens*, Mettez en jeu la Salle d’Entrevue (*Chambre d’Arrivée*) (il s’agit de l’un des trois lieux Salle d’Entrevue). Chaque investigateur débute la partie dans la Salle d’Entrevue (*Chambre d’Arrivée*). Mélangez les deux autres lieux Salle d’Entrevue de manière à ne pas savoir lequel est lequel, et mettez-les également en jeu.",
+    "resisted1": " Si *les investigateurs ont résisté à l’emprisonnement*, Mettez en jeu la Salle d’Entrevue (*Chambre d’Astreinte*) (il s’agit de l’un des trois lieux Salle d’Entrevue). Chaque investigateur débute la partie dans la Salle d’Entrevue (*Chambre d’Astreinte*). Mélangez les deux autres lieux Salle d’Entrevue de manière à ne pas savoir lequel est lequel, et mettez-les également en jeu.",
+    "cooperated2": "Si *les investigateurs ont coopéré avec les Yithiens*, cherchez un Observateur Yithien dans les sets de rencontre réunis et générez-le non-engagé dans le lieu de l’investigateur principal (notez bien qu’il gagne Distant grâce au texte de l’Acte 1a). Ensuite, chaque investigateur gagne 1 indice pris dans la réserve de pions.",
+    "resisted2": "Si *les investigateurs ont résisté à l’emprisonnement*, cherchez un Observateur Yithien dans les sets de rencontre réunis et placez-le dans la pile de victoire.",
+    "placeLocations": "Mettez en jeu les trois lieux Couloirs de Pnakotus (voir la suggestion de placement des lieux ci-contre). Mettez chaque lieu restant de côté, hors jeu.",
+    "setAside": "Mettez de côté Le Concierge, hors jeu."
+  },
+  "bodyOfAYithian": {
+    "title": "Corps de Yithien",
+    "body": "<p class='basic'>Lors de la mise en place de ce scénario, chaque investigateur doit remplacer sa carte Investigateur par une carte Investigateur Corps de Yithien fournie dans ce Paquet Mythe.</p><ul><li>Le deck de chaque investigateur reste inchangé mais, pour la durée de ce scénario, il doit utiliser la carte Investigateur Corps de Yithien et ne peut donc plus avoir recours aux capacités de son investigateur.<ul><li>Chaque investigateur continue cependant d’utiliser sa mini-carte Investigateur afin de savoir qui est qui.</li></ul></li><li>Tout traumatisme qui devrait normalement être placé sur votre investigateur est transféré à votre carte Investigateur Corps de Yithien.</li><li>Toute carte qui était attachée à ou placée sous votre carte Investigateur est attachée à ou placée sous votre carte Corps de Yithien.</li><li>Pour la durée de ce scénario, votre carte Corps de Yithien est considérée comme ayant le même titre que votre ancienne carte Investigateur. *Par exemple, si vous jouiez Wendy Adams, considérez que votre carte Corps de Yithien s’intitule « Wendy Adams » pour la durée de ce scénario*.</li><li>La carte Corps de Yithien possède l’icône de set de rencontre de *La Cité des Archives* et ne peut donc pas être utilisée dans un autre scénario que *La Cité des Archives*, à moins que cela ne soit spécifiquement indiqué.</li></ul>"
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": "Pour avoir entraperçu les secrets de la Terre"
+    },
+    "noResolution": {
+      "title": "Pas de conclusion",
+      "body": "<p>_Si aucune conclusion n’est atteinte (tous les investigateurs ont été vaincus)_ : « Alejandro, qu’es-tu… ? » criez-vous soudain. Une infirmière se penche sur vous, auscultant vos yeux avec une petite lumière. Vous la repoussez et vous vous levez, confus et désorienté. Malgré les protestations de l’infirmière, vous vous précipitez hors de la pièce en titubant. Vous êtes dans un hôpital dont les murs blancs sentent le désinfectant et les produits chimiques. N’étiez-vous pas en train d’explorer une caverne souterraine il y a quelques instants ? … Vous n’arrivez pas à vous rappeler.</p><p>« Excusez-moi ? Revenez, vous devez vous reposer ! » L’infirmière vous agrippe le poignet et vous ramène dans votre lit. Elle vous examine minutieusement tandis que vous vous remettez du choc d’avoir été transporté si loin en si peu de temps. « Qui est Alejandro ? » demande-t-elle, mais vous êtes incapable de vous en souvenir. Ce nom ne vous dit rien.</p><p>Vous demandez à l’infirmière comment vous êtes arrivé ici, étonné qu’elle n’ait pas semblé surprise par votre soudaine apparition. « Quoi ? Vous êtes venu vous-même à Sainte Marie hier soir. Vous vous rappelez ? » Vous n’en avez aucun souvenir et vous commencez à paniquer. « Vous agissiez de manière étrange, si je peux me permettre. Et vous parliez d’une curieuse façon, comme si l’anglais n’était pas votre langue maternelle. Mais j’imagine que vous aviez juste trop bu. » Elle remarque votre expression interrogatrice et sourit. « Ne vous inquiétez pas. On voit cela tous les jours, maintenant que la prohibition est levée. »</p><p>Vous vous observez dans le miroir. Vous avez l’air las et plus vieux que dans vos souvenirs. Quelque chose d’important mais de flou vogue à la frontière de votre mémoire. Il vous faut quelques minutes pour réaliser l’importance que revêt la dernière phrase de l’infirmière. Vous vous tournez vers elle et lui demandez, terrifié, en quelle année vous êtes.</p><p>« Comment ? En 1934 bien sûr. Vous avez dû avoir une sacrée nuit ! » glousse-t-elle.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *les souvenirs des investigateurs ont été effacés*.</li><li>Chaque investigateur devient _dément_.</li><li>Les investigateurs ont perdu la campagne.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Conclusion 1",
+      "body": "<p>_Conclusion 1_ : Vous vous réveillez sur le sol dur et froid de la caverne. Votre tête tourne encore suite au voyage à travers l’espace et le temps.</p>",
+      "tasks": "Vérifiez le nombre de tâches sur l’Acte 2b qui ont été accomplies lors de ce scénario.",
+      "tasks6": "Si les 6 tâches ont été complétées, indiquez dans le Carnet de Campagne que *le processus a parfaitement fonctionné*. Chaque investigateur reçoit 4 points d’expérience bonus pour avoir entraperçu les secrets de la Terre.",
+      "tasks5": "Si 5 tâches ont été complétées, indiquez dans le Carnet de Campagne que *le processus a fonctionné*. Chaque investigateur reçoit 2 points d’expérience bonus pour avoir entraperçu les secrets de la Terre.",
+      "tasks4": "Si 4 tâches ont été complétées, indiquez dans le Carnet de Campagne que *le processus a échoué*. Chaque investigateur reçoit 1 point d’expérience bonus pour avoir entraperçu les secrets de la Terre.",
+      "tasks3": "Si 3 tâches ont été complétées, indiquez dans le Carnet de Campagne que *le processus a échoué de manière spectaculaire*.",
+      "xp": "Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire."
+    }
   }
 }

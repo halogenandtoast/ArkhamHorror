@@ -49,6 +49,7 @@
     }
   },
   "remembered": {
-    "ichtachaIsLeadingTheWay": "Ichtaca ouvre la voie."
+    "ichtachaIsLeadingTheWay": "Ichtaca ouvre la voie.",
+    "youFoughtWithIchtaca": "Vous avez combattu Ichtaca."
   }
 }

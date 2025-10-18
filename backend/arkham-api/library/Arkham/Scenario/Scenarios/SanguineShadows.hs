@@ -85,6 +85,7 @@ instance RunMessage SanguineShadows where
         labeled' "everything" $ doStep 2 PreScenarioSetup
         labeled' "breadcrumbs" $ doStep 3 PreScenarioSetup
         labeled' "insist" $ doStep 4 PreScenarioSetup
+      setupKeys
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
       criminal <- selectAny $ InvestigatorWithTrait Criminal

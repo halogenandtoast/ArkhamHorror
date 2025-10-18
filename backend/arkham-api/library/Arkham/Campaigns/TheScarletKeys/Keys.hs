@@ -36,4 +36,18 @@ allScarletKeys =
       SomeScarletKeyCard theLastBlossom
     , -- Sanguine Shadows
       SomeScarletKeyCard theWeepingLady
+    , -- Dealings in the Dark
+      SomeScarletKeyCard theTwistedAntiprism
+    , -- On Thin Ice
+      SomeScarletKeyCard theSableGlass
+    , -- Dogs of War
+      SomeScarletKeyCard theLightOfPharos
+    , -- Shades of Suffering
+      SomeScarletKeyCard theShadeReaper
+    , -- Globetrotting
+      SomeScarletKeyCard theMirroringBlade
+    , SomeScarletKeyCard theBaleEngine
+    , SomeScarletKeyCard theRuinousChime
+    , -- Fortune and Folly
+      SomeScarletKeyCard theWellspringOfFortune
     ]

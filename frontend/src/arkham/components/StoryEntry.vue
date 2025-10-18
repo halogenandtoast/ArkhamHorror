@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
 import type { Read } from '@/arkham/types/Question';
+import { MessageType } from '@/arkham/types/Message';
 import Token from '@/arkham/components/Token.vue';
 import { useI18n } from 'vue-i18n';
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
@@ -36,23 +37,29 @@ const pickCards = computed(() => props.question.readChoices.contents.reduce((acc
   return acc
 }, [] as { cardCode: string, index: number }[]))
 
+interface ReadChoice {
+  label: string
+  index: number
+  disabled: boolean
+}
+
 const readChoices = computed(() => {
   switch (props.question.readChoices.tag) {
     case "BasicReadChoices":
-      return props.question.readChoices.contents.reduce<{ label: string, index: number}[]>((acc, v, i) => {
+      return props.question.readChoices.contents.reduce<ReadChoice[]>((acc, v, i) => {
         if ("label" in v) {
-          return [...acc, { label: v.label, index: i }]
+          return [...acc, { label: v.label, index: i, disabled: v.tag === MessageType.INVALID_LABEL }]
         }
         return acc
-      }, [] as { label: string, index: number }[])
+      }, [] as ReadChoice[])
 
     case "LeadInvestigatorMustDecide":
-      return props.question.readChoices.contents.reduce<{ label: string, index: number}[]>((acc, v, i) => {
+      return props.question.readChoices.contents.reduce<ReadChoice[]>((acc, v, i) => {
         if ("label" in v) {
-          return [...acc, { label: v.label, index: i }]
+          return [...acc, { label: v.label, index: i, disabled: false }]
         }
         return acc
-      }, [] as { label: string, index: number }[])
+      }, [] as ReadChoice[])
   }
 })
 
@@ -74,11 +81,16 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
       </div>
     </div>
     <div class="options">
-      <button
-        v-for="readChoice in readChoices"
-        @click="choose(readChoice.index)"
-        :key="readChoice.index"
-        ><i class="option"></i><span v-html="formatContent(maybeFormat(readChoice.label))"></span></button>
+      <template v-for="readChoice in readChoices" :key="readChoice.index">
+        <button
+          v-if="readChoice.disabled"
+          disabled
+          ><i class="option"></i><span v-html="formatContent(maybeFormat(readChoice.label))"></span></button>
+        <button
+          v-else
+          @click="choose(readChoice.index)"
+          ><i class="option"></i><span v-html="formatContent(maybeFormat(readChoice.label))"></span></button>
+      </template>
     </div>
   </div>
 </template>
@@ -304,6 +316,11 @@ button, a.button {
   &:deep(strong) {
     color: white;
   }
+
+  &[disabled] {
+    cursor: not-allowed;
+    background-color: #999 !important;
+  }
 }
 
 a.button {
@@ -420,5 +437,4 @@ a.button {
   padding: 10px;
   border-radius: 10px;
 }
-
 </style>

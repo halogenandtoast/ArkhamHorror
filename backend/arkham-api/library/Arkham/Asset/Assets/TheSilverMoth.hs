@@ -6,7 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Message.Lifted.Choose
-import Arkham.Placement
+import Arkham.Message.Lifted.Placement
 
 newtype TheSilverMoth = TheSilverMoth AssetAttrs
   deriving anyclass IsAsset
@@ -28,7 +28,7 @@ instance RunMessage TheSilverMoth where
     Revelation iid (isSource attrs -> True) -> do
       chooseOrRunOneM iid do
         labeled "Put The Silver Moth into play in your threat area" do
-          putCardIntoPlay iid attrs
+          place attrs (InThreatArea iid)
           checkDefeated attrs iid
         whenM (lift $ can.shuffle.deck iid) do
           labeled "Take 1 horror and shuffle it into your deck" do

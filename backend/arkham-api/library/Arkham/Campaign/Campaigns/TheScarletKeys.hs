@@ -57,6 +57,7 @@ travel attrs locId doTravel n = do
       Marrakesh -> campaignStep_ DeadHeat
       BuenosAires -> campaignStep_ SanguineShadows
       Bermuda -> campaignStep_ (InterludeStep 20 Nothing)
+      SanFrancisco -> campaignStep_ (InterludeStep 26 Nothing)
       _ -> pure ()
     else campaignStep_ (CampaignSpecificStep "embark")
   pure
@@ -201,10 +202,20 @@ instance RunMessage TheScarletKeys where
       campaignStep_ (CampaignSpecificStep "embark")
       pure $ TheScarletKeys $ attrs & overMeta (canResetL %~ (Bermuda :))
     CampaignStep (InterludeStep 26 _) -> scope "quidProQuo" do
-      -- Moscow
       let meta = toResult @TheScarletKeysMeta attrs.meta
-      let visitedHavana = Havana `elem` meta.visitedLocations
-      storyWithChooseOneM' (setTitle "title" >> p "body" >> p "quidProQuo2") do
+      let current = meta.currentLocation
+      flavor do
+        setTitle "title"
+        p "body"
+        ul do
+          li.validate (current == SanFrancisco) "sanFrancisco"
+          li.validate (current == Moscow) "moscow"
+      interludeStepPart 26 Nothing $ if current == SanFrancisco then 1 else 2
+      pure c
+    CampaignStep (InterludeStepPart 26 _ 1) -> scope "quidProQuo" do
+      let meta = toResult @TheScarletKeysMeta attrs.meta
+      let visitedMarrakesh = Marrakesh `elem` meta.visitedLocations
+      storyWithChooseOneM' (setTitle "title" >> p "quidProQuo1") do
         labeled' "ticket" do
           lead <- getLead
           forceAddCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.expeditedTicket
@@ -212,7 +223,25 @@ instance RunMessage TheScarletKeys where
         labeled' "supplies" do
           interludeXpAll (toBonus "supplies" 1)
           campaignStep_ (CampaignSpecificStep "embark")
-        labeledValidate' (not visitedHavana) "information" $ interludeStepPart 26 Nothing 4
+        labeledValidate' (not visitedMarrakesh) "intel11" $ interludeStepPart 26 Nothing 3
+      pure c
+    CampaignStep (InterludeStepPart 26 _ 2) -> scope "quidProQuo" do
+      let meta = toResult @TheScarletKeysMeta attrs.meta
+      let visitedHavana = Havana `elem` meta.visitedLocations
+      storyWithChooseOneM' (setTitle "title" >> p "quidProQuo2") do
+        labeled' "ticket" do
+          lead <- getLead
+          forceAddCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.expeditedTicket
+          campaignStep_ (CampaignSpecificStep "embark")
+        labeled' "supplies" do
+          interludeXpAll (toBonus "supplies" 1)
+          campaignStep_ (CampaignSpecificStep "embark")
+        labeledValidate' (not visitedHavana) "intel28" $ interludeStepPart 26 Nothing 4
+      pure c
+    CampaignStep (InterludeStepPart 26 _ 3) -> scope "quidProQuo" do
+      record TheCellKnowsAmaranthsRealName
+      flavor $ setTitle "title" >> p "quidProQuo3"
+      campaignStep_ (CampaignSpecificStep "embark")
       pure c
     CampaignStep (InterludeStepPart 26 _ 4) -> scope "quidProQuo" do
       record TheCellKnowsOfDesisPast

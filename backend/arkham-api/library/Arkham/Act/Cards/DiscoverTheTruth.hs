@@ -47,7 +47,7 @@ instance RunMessage DiscoverTheTruth where
         select
           $ NearestToLocation
           $ if clintonInPlay
-            then LocationWithAsset $ assetIs Assets.relicOfAgesADeviceOfSomeSort
+            then LocationWithAsset $ assetIs Assets.clintonFreemanShouldHaveStayedHome
             else locationIs Locations.loadingDocks
       leadChooseOrRunOneM $ targets iids (`takeControlOfSetAsideAsset` veda)
       deckCount <- getActDecksInPlayCount

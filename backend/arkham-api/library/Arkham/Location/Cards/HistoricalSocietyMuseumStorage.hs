@@ -18,13 +18,19 @@ historicalSocietyMuseumStorage = location HistoricalSocietyMuseumStorage Cards.h
 
 instance HasAbilities HistoricalSocietyMuseumStorage where
   getAbilities (HistoricalSocietyMuseumStorage a) =
-    extendRevealed1 a
-      $ restricted a 1 (exists $ EnemyWithTrait Cultist)
-      $ forced
-      $ InitiatedSkillTest #when You AnySkillType AnySkillTestValue (WhileInvestigating $ be a)
+    if a.unrevealed
+      then extendUnrevealed1 a $ mkAbility a 1 $ forced $ EnemySpawns #when (be a) AnyEnemy
+      else
+        extendRevealed1 a
+          $ restricted a 1 (exists $ EnemyWithTrait Cultist)
+          $ forced
+          $ InitiatedSkillTest #when You AnySkillType AnySkillTestValue (WhileInvestigating $ be a)
 
 instance RunMessage HistoricalSocietyMuseumStorage where
   runMessage msg l@(HistoricalSocietyMuseumStorage attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 | attrs.unrevealed -> do
+      reveal attrs
+      pure l
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid -> do
         skillTestModifier sid (attrs.ability 1) attrs (ShroudModifier (-3))

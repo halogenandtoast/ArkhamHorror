@@ -5,6 +5,7 @@ import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.TheScarletKeys.CampaignSteps
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
+import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Meta hiding (MapLocationType (..))
 import Arkham.Card
 import Arkham.ChaosToken
@@ -13,7 +14,9 @@ import Arkham.Helpers.Query (getLead, getLeadPlayer)
 import Arkham.Helpers.Xp
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Modifier
 import Arkham.Question
+import Arkham.Source
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.Types (Pair)
 import Data.Map.Strict qualified as Map
@@ -53,6 +56,7 @@ travel attrs locId doTravel n = do
       Moscow -> campaignStep_ (InterludeStep 26 Nothing)
       Marrakesh -> campaignStep_ DeadHeat
       BuenosAires -> campaignStep_ SanguineShadows
+      Bermuda -> campaignStep_ (InterludeStep 20 Nothing)
       _ -> pure ()
     else campaignStep_ (CampaignSpecificStep "embark")
   pure
@@ -149,6 +153,53 @@ instance RunMessage TheScarletKeys where
     CampaignSpecific "setBearer" v -> do
       let (cardCode, status) = toResult v
       pure $ TheScarletKeys $ attrs & overMeta (keyStatusL %~ insertMap cardCode status)
+    CampaignStep (InterludeStep 20 _) -> scope "theGreatWork" do
+      ok <- getHasRecord TuwileMasaiFledToBermuda
+      flavor do
+        setTitle "title"
+        p "theGreatWork1"
+        ul do
+          li.validate ok "activity"
+          li.validate (not ok) "noActivity"
+      interludeStepPart 20 Nothing $ if ok then 2 else 5
+      pure c
+    CampaignStep (InterludeStepPart 20 _ 2) -> scope "theGreatWork" do
+      n <-
+        countHasRecords
+          [ EceDoesNotTrustTheCell
+          , YouHaventSeenTheLastOfLaChicaRoja
+          , YouHaventSeenTheLastOfDesi
+          , YouHaventSeenTheLastOfTheClaretKnight
+          , YouHaventSeenTheLastOfThorn
+          , YouHaventSeenTheLastOfAlikiZoniUperetria
+          ]
+
+      flavor do
+        setTitle "title"
+        p "theGreatWork2"
+        ul do
+          li.validate (n >= 2) "proceed"
+          li.validate (n < 2) "otherwise"
+      interludeStepPart 20 Nothing $ if n >= 2 then 3 else 4
+      pure c
+    CampaignStep (InterludeStepPart 20 _ 3) -> scope "theGreatWork" do
+      interludeXpAll (toBonus "bonus" 3)
+      flavor $ setTitle "title" >> p "theGreatWork3"
+      campaignStep_ (CampaignSpecificStep "embark")
+      pure c
+    CampaignStep (InterludeStepPart 20 _ 4) -> scope "theGreatWork" do
+      record TuwileMasaiIsOnYourSide
+      interludeXpAll (toBonus "bonus" 1)
+      markTime 1
+      flavor $ setTitle "title" >> p "theGreatWork4"
+      chooseBearer Keys.theBaleEngine
+      campaignStep_ (CampaignSpecificStep "embark")
+      pure c
+    CampaignStep (InterludeStepPart 20 _ 5) -> scope "theGreatWork" do
+      flavor $ setTitle "title" >> p "theGreatWork5"
+      eachInvestigator \iid -> setupModifier CampaignSource iid (StartingHand 1)
+      campaignStep_ (CampaignSpecificStep "embark")
+      pure $ TheScarletKeys $ attrs & overMeta (canResetL %~ (Bermuda :))
     CampaignStep (InterludeStep 26 _) -> scope "quidProQuo" do
       -- Moscow
       let meta = toResult @TheScarletKeysMeta attrs.meta
@@ -168,4 +219,11 @@ instance RunMessage TheScarletKeys where
       flavor $ setTitle "title" >> p "quidProQuo4"
       campaignStep_ (CampaignSpecificStep "embark")
       pure c
+    CampaignStep (ScenarioStep _) -> do
+      TheScarletKeys attrs' <- lift $ defaultCampaignRunner msg c
+      let meta = toResult @TheScarletKeysMeta attrs'.meta
+      pure
+        $ TheScarletKeys
+        $ attrs
+        & overMeta ((canResetL .~ []) . (unlockedLocationsL %~ (meta.canReset <>)))
     _ -> lift $ defaultCampaignRunner msg c

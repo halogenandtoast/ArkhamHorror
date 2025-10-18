@@ -30,6 +30,9 @@ getInvestigatorHasRecord iid k = fieldMap InvestigatorLog (hasRecord k) iid
 getHasRecord :: (HasGame m, IsCampaignLogKey k) => k -> m Bool
 getHasRecord k = hasRecord k <$> getCampaignLog
 
+countHasRecords :: (HasGame m, IsCampaignLogKey k) => [k] -> m Int
+countHasRecords ks = count id <$> traverse getHasRecord ks
+
 hasRecord :: IsCampaignLogKey k => k -> CampaignLog -> Bool
 hasRecord (toCampaignLogKey -> k) campaignLog =
   or

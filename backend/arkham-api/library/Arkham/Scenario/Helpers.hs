@@ -11,9 +11,9 @@ import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.EncounterSet
 import Arkham.Helpers
+import Arkham.Helpers.Campaign as X
 import Arkham.Helpers.EncounterSet (gatherEncounterSet)
 import Arkham.Helpers.Log (getHasRecord)
-import Arkham.Helpers.Campaign as X
 import Arkham.Matcher
 
 getHasRecordOrStandalone
@@ -48,7 +48,7 @@ excludeBSides :: [EncounterCard] -> [EncounterCard]
 excludeBSides = filter (not . hasBSide)
 
 hasBSide :: EncounterCard -> Bool
-hasBSide = isSuffixOf "b" . unCardCode . toCardCode
+hasBSide = and . sequence [isDoubleSided, isSuffixOf "b" . unCardCode . toCardCode]
 
 isDoubleSided :: EncounterCard -> Bool
 isDoubleSided = cdDoubleSided . toCardDef

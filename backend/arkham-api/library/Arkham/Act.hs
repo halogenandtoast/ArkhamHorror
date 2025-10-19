@@ -328,6 +328,9 @@ allActs =
     , --- Sanguine Shadows [tsk]
       SomeActCard theScarletShadow
     , SomeActCard inTheSearchlight
+    , --- Dealings in the Dark [tsk]
+      SomeActCard searchForTheManuscript
+    , SomeActCard searchForTheTalisman
     , -- Return to Night of the Zealot
       --- Return to the Gathering
       SomeActCard mysteriousGateway

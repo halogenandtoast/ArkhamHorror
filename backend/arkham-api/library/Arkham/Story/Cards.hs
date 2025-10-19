@@ -159,6 +159,8 @@ allStoryCards =
       , returnToUnfinishedBusiness_39
       , realityAcid
       , saveTheCivilians
+      , theUnveiling
+      , theUnsealing
       , theFoundationAllied
       , theFoundationRival
       , theSyndicateAllied
@@ -499,6 +501,12 @@ memoryOfAnUnrequitedLove = victory 1 $ doubleSided $ story "08583b" "Memory of a
 
 saveTheCivilians :: CardDef
 saveTheCivilians = story "09536a" "Save the Civilians" DeadHeat & otherSideIs "09536b"
+
+theUnveiling :: CardDef
+theUnveiling = story "09571a" "The Unveiling" DealingsInTheDark & otherSideIs "09571b"
+
+theUnsealing :: CardDef
+theUnsealing = story "09571b" "The Unsealing" DealingsInTheDark & otherSideIs "09571a"
 
 returnToSickeningReality_23 :: CardDef
 returnToSickeningReality_23 = doubleSided $ story "52023" "Sickening Reality" ReturnToTheLastKing

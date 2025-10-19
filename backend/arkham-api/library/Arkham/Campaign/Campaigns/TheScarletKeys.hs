@@ -58,6 +58,7 @@ travel attrs locId doTravel n = do
       BuenosAires -> campaignStep_ SanguineShadows
       Bermuda -> campaignStep_ (InterludeStep 20 Nothing)
       SanFrancisco -> campaignStep_ (InterludeStep 26 Nothing)
+      Constantinople -> campaignStep_ DealingsInTheDark
       _ -> pure ()
     else campaignStep_ (CampaignSpecificStep "embark")
   pure
@@ -94,10 +95,12 @@ instance RunMessage TheScarletKeys where
         labeled' "doNotTell" $ interludeStepPart 1 Nothing 3
       pure c
     CampaignStep (InterludeStepPart 1 _ 2) -> scope "interlude1" do
+      swapTokens ElderThing Tablet
       flavor $ setTitle "title" >> p "theFoundation2"
       interludeStepPart 1 Nothing 4
       pure c
     CampaignStep (InterludeStepPart 1 _ 3) -> scope "interlude1" do
+      swapTokens Tablet ElderThing
       flavor $ setTitle "title" >> p "theFoundation3"
       interludeStepPart 1 Nothing 4
       pure c

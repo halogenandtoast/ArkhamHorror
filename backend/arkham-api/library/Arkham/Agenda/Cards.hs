@@ -24,6 +24,7 @@ allAgendaCards =
     $ map
       (toCardCode &&& id)
       [ aCreatureOfTheBayou
+      , agentsOfTheDark
       , agentsOfTheOuterGods
       , aHarshWindBlows
       , aKillerParty
@@ -150,6 +151,7 @@ allAgendaCards =
       , theBoundaryBroken
       , theBridgeOfWebs
       , theChariotVII
+      , theChase
       , theChaseIsOnV1
       , theChaseIsOnV2
       , theChillOfNight
@@ -787,6 +789,12 @@ whereIsShe = agenda "09546" "Where is She...?" 1 SanguineShadows
 
 seeingRed :: CardDef
 seeingRed = agenda "09562" "Seeing Red" 3 SanguineShadows
+
+agentsOfTheDark :: CardDef
+agentsOfTheDark = agenda "09567" "Agents of the Dark" 1 DealingsInTheDark
+
+theChase :: CardDef
+theChase = agenda "09570" "The Chase" 2 DealingsInTheDark
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

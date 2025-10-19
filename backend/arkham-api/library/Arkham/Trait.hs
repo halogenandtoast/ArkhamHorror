@@ -28,6 +28,7 @@ data Trait
   | Avatar
   | Basement
   | Bayou
+  | Bazaar
   | Believer
   | Blessed
   | Blunder
@@ -138,6 +139,7 @@ data Trait
   | Insight
   | Instrument
   | Island
+  | Istanbul
   | Item
   | Job
   | Jungle
@@ -285,6 +287,7 @@ data Trait
   | Yhanthlei
   | Yithian
   | Yoth
+  | Yuggoth
   | Zoog
   deriving stock (Show, Eq, Generic, Ord, Enum, Bounded, Read, Data)
   deriving anyclass (ToJSON, FromJSON, Hashable)

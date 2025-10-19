@@ -963,6 +963,7 @@ allEncounterAssetCards =
       , yhanthleiStatueMysteriousRelic
       , yhanthleiStatueDynamicRelic
       , laChicaRojaYourWatchfulShadow
+      , eceSahinTheVermillionVeiledLady
       , dianneDevineHidingAnOathUnspoken
       , partyGuest
       , nightgauntSteed

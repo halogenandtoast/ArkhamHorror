@@ -1,20 +1,24 @@
-module Arkham.Campaigns.TheScarletKeys.Helpers
-  ( module Arkham.Campaigns.TheScarletKeys.Helpers
-  , module Arkham.Campaigns.TheScarletKeys.I18n
-  )
-  where
+module Arkham.Campaigns.TheScarletKeys.Helpers (
+  module Arkham.Campaigns.TheScarletKeys.Helpers,
+  module Arkham.Campaigns.TheScarletKeys.I18n,
+)
+where
 
+import Arkham.Campaign.Types (Field (..))
 import Arkham.Campaigns.TheScarletKeys.I18n
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Types (Field (..), ScarletKeyId)
 import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.Card
+import Arkham.ChaosToken
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Effect.Window
 import Arkham.Helpers.Campaign (getCampaignStoryCards)
 import Arkham.Helpers.Query (getInvestigators)
+import Arkham.Helpers.Xp
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Types (Field (LocationConcealedCards))
 import Arkham.Matcher
@@ -28,6 +32,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Window qualified as Window
+import Arkham.Xp
 
 markTime :: ReverseQueue m => Int -> m ()
 markTime = incrementRecordCount Time
@@ -38,16 +43,17 @@ getTime = getRecordCount Time
 removeAllConcealed :: ReverseQueue m => m ()
 removeAllConcealed = push Msg.RemoveAllConcealed
 
-exposed :: (ReverseQueue m, HasCardCode c, ToId enemy EnemyId) => InvestigatorId -> enemy -> c -> m () -> m ()
+exposed
+  :: (ReverseQueue m, HasCardCode c, ToId enemy EnemyId) => InvestigatorId -> enemy -> c -> m () -> m ()
 exposed iid enemy c body = do
   let ekey = "exposed[" <> unCardCode (toCardCode c) <> "]"
-  let ikey = "exposed[" <> tshow (asId enemy) <> "]"
+  let idkey = "exposed[" <> tshow (asId enemy) <> "]"
   checkWhen $ Window.CampaignEvent ekey (Just iid) Null
-  checkWhen $ Window.CampaignEvent ikey (Just iid) Null
+  checkWhen $ Window.CampaignEvent idkey (Just iid) Null
   checkWhen $ Window.CampaignEvent "exposed[enemy]" (Just iid) Null
   body
   checkAfter $ Window.CampaignEvent ekey (Just iid) Null
-  checkAfter $ Window.CampaignEvent ikey (Just iid) Null
+  checkAfter $ Window.CampaignEvent idkey (Just iid) Null
   checkAfter $ Window.CampaignEvent "exposed[enemy]" (Just iid) Null
 
 exposedDecoy :: ReverseQueue m => InvestigatorId -> m ()
@@ -105,3 +111,22 @@ chooseBearer def = do
     questionLabeled "Choose bearer"
     questionLabeledCard def
     portraits investigators $ setBearer def . KeyWithInvestigator
+
+swapTokens :: (HasI18n, ReverseQueue m) => ChaosTokenFace -> ChaosTokenFace -> m ()
+swapTokens face1 face2 = do
+  removeChaosToken face1
+  selectOne TheCampaign >>= \case
+    Nothing -> addChaosToken face2
+    Just c -> do
+      tknCount <- fieldMap CampaignChaosBag (count (== face2)) c
+      if tknCount >= 4
+        then do
+          let xp = toBonus "chaosTokens" 1
+          eachInvestigator \iid ->
+            pushAll
+              [ Msg.ReportXp
+                  $ XpBreakdown
+                    [InvestigatorGainXp iid $ XpDetail XpBonus txt n | WithBonus txt n <- xp.flatten]
+              , Msg.GainXP iid CampaignSource xp.value
+              ]
+        else addChaosToken face2

@@ -185,6 +185,7 @@ allEncounterTreacheryCards =
       , abandonedByTheGods
       , abandonedToMadness
       , abduction
+      , accosted
       , acridMiasma
       , action
       , alteredBeast
@@ -376,6 +377,7 @@ allEncounterTreacheryCards =
       , ledAstray
       , lightlessShadow
       , lightOfAforgomon
+      , lightOutOfVoid
       , litByDeathFire
       , lockedDoor
       , lostHumanity
@@ -479,6 +481,7 @@ allEncounterTreacheryCards =
       , serpentsCall
       , serpentsIre
       , shadowed
+      , shadowedDealingsInTheDark
       , shadowOfAtlachNacha
       , shadowSpawned
       , shapesInTheMist
@@ -508,6 +511,7 @@ allEncounterTreacheryCards =
       , syzygy
       , takenCaptive
       , tasteOfLifeblood
+      , tenebrousEclipse
       , terrorFromBeyond
       , terrorGate
       , terrorInTheNight
@@ -2878,6 +2882,25 @@ outsmarted =
     { cdCardTraits = setFromList [Scheme]
     }
 
+shadowedDealingsInTheDark :: CardDef
+shadowedDealingsInTheDark =
+  (treachery "09587" "Shadowed" DealingsInTheDark 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+accosted :: CardDef
+accosted =
+  (treachery "09588" "Accosted" DealingsInTheDark 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+lightOutOfVoid :: CardDef
+lightOutOfVoid =
+  peril
+    $ (treachery "09589" "Light Out of Void" DealingsInTheDark 2)
+      { cdCardTraits = singleton Hex
+      }
+
 conspiracyInRed :: CardDef
 conspiracyInRed =
   (treachery "09717" "Conspiracy in Red" CrimsonConspiracy 2)
@@ -2944,6 +2967,12 @@ substanceDissimulation :: CardDef
 substanceDissimulation =
   (treachery "09733" "Substance Dissimulation" Outsiders 2)
     { cdCardTraits = setFromList [Power]
+    }
+
+tenebrousEclipse :: CardDef
+tenebrousEclipse =
+  (treachery "09740" "Tenebrous Eclipse" AgentsOfYuggoth 3)
+    { cdCardTraits = setFromList [Omen]
     }
 
 touchOfTheBeyond :: CardDef

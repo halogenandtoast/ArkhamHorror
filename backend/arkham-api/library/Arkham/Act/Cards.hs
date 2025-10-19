@@ -166,6 +166,7 @@ allActCards =
       , searchForACampSite
       , searchForAlejandro
       , searchForTheBrotherhood
+      , searchForTheManuscript
       , searchForTheMeaning
       , searchForThePatient
       , searchForThePattern
@@ -174,6 +175,7 @@ allActCards =
       , searchForTheStrangerV1
       , searchForTheStrangerV2
       , searchForTheStrangerV3
+      , searchForTheTalisman
       , searchingForAnswers
       , searchingForTheTome
       , searchingTheUnnamable
@@ -956,6 +958,12 @@ theScarletShadow = act "09547" "The Scarlet Shadow" 1 SanguineShadows
 
 inTheSearchlight :: CardDef
 inTheSearchlight = act "09548" "In the Searchlight" 2 SanguineShadows
+
+searchForTheManuscript :: CardDef
+searchForTheManuscript = act "09568" "Search for the Manuscript" 1 DealingsInTheDark
+
+searchForTheTalisman :: CardDef
+searchForTheTalisman = act "09569" "Search for the Talisman" 2 DealingsInTheDark
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

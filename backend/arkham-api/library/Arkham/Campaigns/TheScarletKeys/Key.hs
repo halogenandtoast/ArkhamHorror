@@ -5,9 +5,13 @@ import Arkham.Prelude
 data TheScarletKeysKey
   = AmaranthHasLeftTheCoterie
   | EceDoesNotTrustTheCell
+  | EceTrustsTheCell
   | LaChicaRojaIsOnYourSide
+  | TheCellIsDecievingEce
+  | TheCellIsWorkingWithEce
   | TheCellKnowsAmaranthsRealName
   | TheCellKnowsOfDesisPast
+  | TheCellRefusedEcesOffer
   | TheLoversAreReunited
   | TheSanguineWatchersTormentContinues
   | Time

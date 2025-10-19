@@ -658,6 +658,15 @@ laChicaRojaYourWatchfulShadow =
       , cdCardType = EncounterAssetType
       }
 
+eceSahinTheVermillionVeiledLady :: CardDef
+eceSahinTheVermillionVeiledLady =
+  (storyAsset "09584" ("Ece Şahin" <:> "The Vermillion-Veiled Lady") 0 DealingsInTheDark)
+      { cdCardTraits = setFromList [Ally, Conspirator]
+      , cdCost = Nothing
+      , cdUnique = True
+      , cdCardType = EncounterAssetType
+      }
+
 expeditedTicket :: CardDef
 expeditedTicket =
   permanent

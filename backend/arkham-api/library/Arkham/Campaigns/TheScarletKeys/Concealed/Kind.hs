@@ -12,13 +12,13 @@ data ConcealedCardKind
   | CityOfRemnantsL
   | CityOfRemnantsM
   | CityOfRemnantsR
+  | CoterieEnforcerA
+  | CoterieEnforcerB
   | CoterieAgentA
   | CoterieAgentB
   | CoterieAgentC
   | CoterieAssasinA
   | CoterieAssasinB
-  | CoteriaEnforcerA
-  | CoteriaEnforcerB
   | DecoyVoidChimeraEarsplitter
   | DecoyVoidChimeraFellbeak
   | DecoyVoidChimeraFellhound

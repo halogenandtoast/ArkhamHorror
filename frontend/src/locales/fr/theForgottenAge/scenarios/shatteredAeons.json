@@ -1,19 +1,92 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-2 (-4 instead if the Relic of Ages is at your location).",
-      "cultist": "-2. If you do not succeed by at least 1, place 1 doom on the nearest _Cultist_ enemy.",
-      "tablet": "-2. If you are poisoned, this test automatically fails instead.",
-      "elderThing": "-2. If you fail, shuffle the topmost _Hex_ treachery in the encounter discard pile into the exploration deck."
+      "skull": "–2 (–4 à la place si la Relique des Âges est dans votre lieu).",
+      "cultist": "–2. Si vous ne réussissez pas avec une différence d'au moins 1, placez 1 fatalité sur l'ennemi _Cultiste_ le plus proche.",
+      "tablet": "–2. Si vous êtes empoisonné, ce test échoue automatiquement à la place.",
+      "elderThing": "–2. En cas d'échec, mélangez dans le deck Exploration la traîtrise _Sortilège_ la plus proche du sommet de la pile de défausse Rencontre."
     },
     "hardExpert": {
-      "skull": "-3 (-5 instead if the Relic of Ages is at your location).",
-      "cultist": "-3. If you do not succeed by at least 1, place 1 doom on each _Cultist_ enemy.",
-      "tablet": "-3. If you are poisoned, this test automatically fails instead. If you are not poisoned and you fail, put a set-aside Poisoned weakness into play in your threat area.",
-      "elderThing": "-3. Shuffle the topmost _Hex_ treachery in the encounter discard pile into the exploration deck."
+      "skull": "–3 (-5 à la place si la Relique des Âges est dans votre lieu).",
+      "cultist": "–3. Si vous ne réussissez pas avec une différence d'au moins 1, placez 1 fatalité sur chaque ennemi _Cultiste_.",
+      "tablet": "–3. Si vous êtes empoisonné, ce test échoue automatiquement à la place. Si vous n'êtes pas empoisonné et que vous échouez, mettez en jeu dans votre zone de menace une faiblesse Empoisonné mise de côté.",
+      "elderThing": "–3. Mélangez dans le deck Exploration la traîtrise Sortilège la plus proche du sommet de la pile de défausse Rencontre."
     }
   },
   "xp": {
-    "resolution1": "Mended the shattered timeline and saved the Earth from catastrophe."
+    "resolution1": "Pour avoir comblé la brèche dans la structure du temps et sauvé la Terre de la catastrophe."
+  },
+  "label": {
+    "yigsMercy": {
+      "refused": "Ichtaca refuse.",
+      "reject": "Je ne pourrai jamais tourner le dos à l'humanité",
+      "accept": "J'accepte"
+    },
+    "anotherWay": {
+      "reject": "Je ne pourrai jamais tourner le dos à l'humanité",
+      "accept": "J'accepte"
+    },
+    "unknowablePast": {
+      "reveal": "Révéler 4 pions Chaos. Pour chaque symbole {'{'}skull{'}'}, {'{'}cultist{'}'}, {'{'}tablet{'}'}, {'{'}elderThing{'}'}, ou {'{'}autoFail{'}'} révélé, subissez 1 dégât et 1 horreur.",
+      "discard": "Choisir et défausser 1 carte de votre main et mélanger Passé Indéfinissable dans le deck Exploration. Vous ne pouvez pas choisir cette option si Passé Indéfinissable a été pioché dans le deck Exploration."
+
+    },
+    "checkSupplies": "Vérifiez votre équipement"
+  },
+  "intro": {
+    "title": "Scénario VIII : Paradoxes Temporels",
+    "theBraziersAreLit": "Vérifiez votre Carnet de Campagne. Si *les braseros sont allumés*, continuez à l’_Introduction 1_.",
+    "theBraziersRemainUnlit": "Si *les braseros restent éteints*, passez à l’_Introduction 2_.",
+    "intro1": "<p>_Introduction 1_ : La flamme bleue argentée qui vous a guidé à travers ces passages est le dernier vestige d’espoir qui vous reste. Un par un, les braseros vous conduisent vers l’avant. Quelqu’un ou quelque chose les a placés ici. Cette technologie n’est pas très différente de ce que vous avez vu dans les cavernes de K’n-yan ou dans les ruines de la cité Eztli, où la relique a été trouvée. Cependant, il semble que tous ceux qui se sont aventurés aussi profondément sous la croûte terrestre ont dû fuir, car le dernier brasero cassé et renversé vous empêche de voir plus loin. Heureusement, vous n’aurez pas à voyager dans le noir bien longtemps. Au bout de quelques minutes, vous atteignez une énorme porte de pierre : l’entrée du Nexus, à n’en pas douter.</p><p class='basic right'>Passez à l’_Introduction 3_.</p>",
+    "intro2": "<p>_Introduction 2_ : Depuis que vous n’avez plus de lumière pour vous guider, vous avez passé chaque instant collé contre la paroi de la caverne, utilisant la pierre froide pour avancer sans vous perdre. Pendant la progression, vos doigts rencontrent des sillons lisses et chauds sur le mur : la même technologie dormante que dans les ruines eztli. Vous n’êtes clairement pas le premier à pénétrer dans ce lieu abyssal. Quoi qu’il en soit, ceux qui vous ont précédé ont fui avant d’avoir achevé leur travail, puisque les sillons ne brillent pas pour éclairer votre chemin ni ne luisent de colère à votre approche. Vous avancez petit à petit dans les ténèbres jusqu’à atteindre une énorme porte de pierre : l’entrée du Nexus, à n’en pas douter.</p><p class='basic right'>Chaque investigateur débute ce scénario avec 2 cartes en moins dans sa main de départ. Continuez à l’_Introduction 3_.</p>",
+    "intro3": {
+      "body": "<p>_Introduction 3_ : Votre main caresse les lignes gravées sur l’embrasure de la porte. Une inscription. Un avertissement qui vous somme de faire demi-tour, car ouvrir ce passage reviendrait à semer la mort et la désolation. Il fait trop sombre pour reconnaître la langue, mais vous savez qu’il ne s’agit pas d’une de celles parlées par l’humanité ; pas à cette époque. Vous ignorez également ce qui vous permet de comprendre les inscriptions. Peut-être une réminiscence de votre passage à Pnakotus, la cité perdue des Yithiens ? Ou bien êtes-vous simplement fou de voir une signification dans les indentations naturelles de la pierre. Après tout, cela fait bientôt une semaine que n’avez pas vu la lumière du jour.",
+      "foundTheMissingRelic": "Si *les investigateurs ont trouvé la relique perdue*, continuez à l’_Introduction 4_.",
+      "theRelicIsMissing": "Si *la relique a disparu*, passez à l’_Introduction 5_."
+    },
+    "intro4": "<p>_Introduction 4_ : La porte de pierre est scellée lorsque vous arrivez; mais dès que vous vous rapprochez, l’artefact commence à trembler et à bourdonner bruyamment. Les sillons le long de la porte s’illuminent alors d’une lumière chatoyante, et les battants s’ouvrent d’eux-mêmes. Vous serrez fermement l’artefact et entrez.</p><p class='basic right'>Passez à la _Mise en Place_.</p>",
+    "intro5": "<p>_Introduction 5_ : Les battants de pierre sont ouverts lorsque vous arrivez. Les sillons le long de la porte brillent d’une lumière chatoyante. La Fraternité doit déjà être là : il n’y a pas de temps à perdre.</p><p class='basic right'>Continuez à la _Mise en Place_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : *Paradoxes Temporels*, *Confrérie Pnakotique*, *Flux Temporel* et *Antiques Fléaux*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/shattered-aeons.png' /><img src='{setImgPath}/pnakotic-brotherhood.png' /><img src='{setImgPath}/temporal-flux.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
+    "gatherSetsCultist": "S’il y a plus de pions {'{'}cultist{'}'} que de pions {'{'}tablet{'}'} dans la réserve du Chaos, réunissez également le set de rencontre *Sombre Culte*, reconnaissable à cette icône :<section class='encounter-sets'><img src='{setImgPath}/dark-cult.png' /></section>",
+    "gatherSetsTablet": "S’il y a plus de pions {'{'}tablet{'}'} que de pions {'{'}cultist{'}'} dans la réserve du Chaos, réunissez également le set de rencontre *Agents de Yig*, reconnaissable à cette icône :<section class='encounter-sets'><img src='{setImgPath}/agents-of-yig.png' /></section>",
+    "gatherSetsEqual": "S’il y a autant de pions {'{'}cultist{'}'} que de pions {'{'}tablet{'}'} dans la réserve du Chaos, réunissez également les sets de rencontre *Sombre Culte* et *Agents de Yig*, reconnaissables à ces icônes :<section class='encounter-sets'><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/agents-of-yig.png' /></section>",
+    "placeLocations": "Mettez en jeu le Nexus de N’kai. Chaque investigateur débute la partie dans le Nexus de N’kai.",
+    "setAsideEnemies": "Mettez de côté, hors jeu, les deux cartes Ennemi Ichtaca (*Descendante de Yig*) et Alejandro Vela (*Est-ce Bien Lui ?*).",
+    "setAsideEnemiesNote": "<div class='columns' style='overflow: none;padding-bottom: 40px;'><div style='flex-basis: 20%;'>*Note : ces cartes sont recto-verso et possèdent une carte Histoire sur leur verso. Afin de profiter de la meilleure expérience de jeu possible, nous vous invitons à ne pas regarder le verso de ces cartes, à moins qu’un effet ne vous le demande.*</div><div style='flex:1; margin-top: 30px;' class='fan'><img src='{setImgPath}/../cards/04325.avif' /><img src='{setImgPath}/../cards/04326.avif' /></div></div>",
+    "setAside": "Mettez les cartes suivantes de côté, hors jeu : Rejeton Informe, Relique des Âges (*Libérer le Flux Temporel*), Une Bulle Hors du Temps, Acte 4a – « Paradis Perdu », Acte 4a – « Verrou Temporel », et les 6 lieux _Dévasté_ mono-face.",
+    "explorationDeck": "Constituez le deck Exploration. Pour ce faire, prenez les 3 lieux mono-face restants et mélangez-les avec 1 exemplaire de chacune des cartes Rencontre suivantes : Ravagé par le Temps, Entre les Mondes et Antiques Fléaux.",
+    "yigsFury": "Vérifiez votre Carnet de Campagne. Pour chaque groupe de 10 traits inscrits sous la mention « Colère de Yig », placez la carte du dessus du deck de l’investigateur principal dans la pile de victoire, face cachée. Pour le reste de ce scénario, traitez chacune de ces cartes comme si elle avait _Vengeance 1_."
+  },
+  "storyCards": {
+    "title": "Cartes Histoire",
+    "body": "Les cartes Histoire sont un nouveau type de cartes apparaissant dans ce Paquet Mythe. Ces cartes ont pour but d’accroître l’aspect narratif du jeu et apparaissent généralement au dos d’une autre carte Scénario. Quand on vous demande de résoudre une carte Histoire, lisez simplement son texte narratif, puis résolvez son texte de jeu s’il y en a un."
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "Pas de conclusion",
+      "body": "_Si aucune conclusion n’est atteinte (tous les investigateurs ont abandonné ou été vaincus)_ : lisez la _Conclusion 4_."
+    },
+    "resolution1": {
+      "title": "Conclusion 1",
+      "body": "<p>_Conclusion 1_ :</p><p class='anke'>Jeudi 17 décembre 1925</p><p>Il est difficile pour moi de transmettre l’intégralité de mes pensées quant aux événements de l’été 1925. Bien entendu, j’ai fait un compte rendu complet à Harlan – que je pense être la seule personne à croire en mon histoire –, mais je n’ai pas encore commencé à la coucher sur le papier jusqu’à maintenant. Peut-être aurais-je préféré que ces événements ne soient que le fruit de mon imagination.</p><p>En vérité, je n’ai aucune idée de la manière dont nous sommes sortis vivants des cavernes sous la jungle. Atteindre ce lieu effroyable avait déjà été un immense calvaire. Mes souvenirs de notre voyage de retour sont flous et mélangés. Nous avons rampé dans le noir pendant ce qui m’a semblé des siècles. Nous n’avions plus ni nourriture, ni équipement, ni espoir – mais nous avons tout de même fini par atteindre une sortie.</p><p>Pour avoir empêché une telle calamité, nous n’avons récolté que du dédain et été tournés en ridicule. Aucun journal sérieux, aucune université ne publiera nos découvertes et, bien entendu, nous n’avons aucune preuve de notre expédition à part nos cicatrices et nos cauchemars. J’aimerais pouvoir dire que les souvenirs de ces événements s’estompent avec le temps, mais je n’oublierai jamais la cité extraterrestre que nous avons explorée dans nos corps coniques, les serpents qui nous ont poursuivis dans cette Yoth baignée de lumière rouge, l’abomination informe qui vivait dans les profondeurs de la Terre…</p><p>Peut-être est-ce la raison pour laquelle j’ai peur d’entamer un rapport écrit de nos trouvailles – parce que cela rendrait ces souvenirs concrets, gravés à jamais dans mon esprit, me condamnant à une vie de terreur et de désarroi. Cependant, le monde doit savoir ce que nous avons vu. Ce que nous avons fait.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *les investigateurs ont comblé la brèche dans la structure du temps*.</li><li>Chaque investigateur subit 2 traumatismes physiques et 2 traumatismes mentaux car il ne se remettra jamais de son expédition à N’kai.</li><li>Chaque lieu avec Victoire X attaché à la Relique des Âges est ajouté à la pile de victoire.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire. Chaque investigateur reçoit 5 points d’expérience supplémentaires pour avoir comblé la brèche dans la structure du temps et sauvé la Terre de la catastrophe.</li><li>Les investigateurs ont gagné la campagne !</li></ul>"
+    },
+    "resolution2": {
+      "title": "Conclusion 2",
+      "body": "<p>_Conclusion 2_ : Transposés à une autre époque, Valusia et les enfants de Yig ont survécu. Préservé par la nouvelle ligne temporelle que vous avez créée, le Peuple Serpent est comme vous à l’abri des événements qui ont causé la destruction de sa terre d’origine il y a bien longtemps, dans une ère différente. Toutes vos offenses passées envers ce peuple sont oubliées et vous avez la chance de vivre dans le royaume paradisiaque de Valusia, remodelé à l’image de Yig. Bien que vous ayez tourné le dos à l’humanité, le fait d’avoir sauvé la Terre de la destruction vous apporte un certain réconfort. De plus, vos actions vous ont acquis le respect des Serpents et de votre nouveau Père. Votre existence est confortable, pleines de merveilles que vous n’auriez jamais pu imaginer. Pourtant, de temps en temps, vous regardez vers les terres sauvages au-delà de Valusia et vous vous demandez si les choses n’auraient pas pu se terminer autrement…</p><ul><li>Dans votre Carnet de Campagne, indiquez que *les investigateurs ont sauvé la civilisation des Serpents*.</li><li>La Terre est sauvée et les investigateurs ont gagné la campagne…</li><li>… mais ils ont remodelé le monde et existent désormais dans une ligne temporelle parallèle. Ces investigateurs ne peuvent pas être transférés vers une autre campagne. (Vous devrez en créer d’autres.)</li></ul>"
+    },
+    "resolution3": {
+      "title": "Conclusion 3",
+      "body": "<p>_Conclusion 3_ : Transposées à une autre époque, Pnakotus et la Grande Race de Yith ont survécu. Préservés par la nouvelle ligne temporelle que vous avez créée, les Yithiens sont comme vous à l’abri des extraterrestres qui ont exterminé leur espèce il y a bien longtemps, dans une ère différente. Vous êtes amenés dans la ville et vous vous voyez accorder des libertés qu’aucun autre esprit captif n’a jamais eues. Bien qu’au début vous regrettiez votre ancienne vie, les émotions s’estompent avec le temps passé sur cette nouvelle Terre. Vous arpentez le monde dans des vaisseaux titanesques et vous plongez dans le savoir collectif accumulé au fil des siècles par les Yithiens dans leurs vastes archives. Vos études dévoilent des mystères qu’aucun humain ne connaîtra. Vous utilisez une technologie que l’humanité ne pourra découvrir. Et vous vous préparez pour un futur maudit qui n’adviendra peut-être jamais.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *les investigateurs ont sauvé la civilisation des Yithiens*.</li><li>La Terre est sauvée et les investigateurs ont gagné la campagne…</li><li>… mais ils ont remodelé le monde et existent désormais dans une ligne temporelle parallèle. Ces investigateurs ne peuvent pas être transférés vers une autre campagne. (Vous devrez en créer d’autres.)</li></ul>"
+    },
+    "resolution4": {
+      "title": "Conclusion 4",
+      "body": "<p>_Conclusion 4_ : La réalité telle que vous la connaissez ne sera plus jamais la même, mais peut-être n’est-ce pas la fin du monde. Après tout, le temps n’est qu’une dimension : une dimension que l’humanité comprend à peine. Nous ressentons son flux, mais nous ne pouvons pas le voir. Nous pouvons le mesurer, mais jamais l’altérer. Quelle importance alors si la quatrième dimension a été brisée en des centaines de milliers de plans d’existence ? Nos piètres esprits humains ne peuvent appréhender ce qui vient, mais l’univers s’en remettra : ses frontières en expansion ne sont plus limitées par les confins du temps.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *la structure du temps s’est déchirée*.</li><li>Tous les investigateurs deviennent _déments_.</li><li>Les investigateurs ont perdu la campagne.</li></ul>"
+    },
+    "resolution5": {
+      "title": "Conclusion 5",
+      "body": "<p>_Conclusion 5_ : Tout a commencé quand les ruines de la cité Eztli ont été profanées pour la première fois. Le premier avertissement d’Ichtaca représentait l’ultime vestige de son humanité qui s’adressait à vous. Elle voulait que les autres explorateurs et vous fassiez demi-tour, mais l’avidité et la curiosité ont eu raison de vous. Avant cela, l’équilibre était maintenu. Certes, Alejandro voulait le mécanisme pour servir ses propres desseins, tandis qu’Ichtaca a entendu l’appel de son maître et y a répondu; mais l’humanité est la véritable cause de tout ce chaos. Vous savez désormais ce qui vous reste à faire. Vous savez comment sauver tout le monde.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *les investigateurs ont remonté le temps*.</li><li>Chaque lieu avec Victoire X attaché à la Relique des Âges est ajouté à la pile de victoire.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.</li><li>Continuez à l’_Épilogue_.</li></ul>"
+    }
   }
 }

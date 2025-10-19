@@ -1,19 +1,110 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the current depth level.",
-      "cultist": "Reveal another token. If you fail, each _Serpent_ enemy at your location or a connecting location heals 2 damage.",
-      "tablet": "Reveal another token. If you fail, place 1 clue on your location (from the token pool).",
-      "elderThing": "-2. If there are 3 or more vengeance points in the victory display, you automatically fail this test, instead."
+      "skull": "–X. X est le niveau de profondeur actuel.",
+      "cultist": "Révélez un autre pion. En cas d'échec, chaque ennemi _Serpent_ dans votre lieu ou dans un lieu connexe se soigne de 2 dégâts.",
+      "tablet": "Révélez un autre pion. En cas d'échec, placez 1 indice (pris dans la réserve de pions) sur votre lieu.",
+      "elderThing": "–2. S'il y a au moins 3 points de vengeance dans la pile de victoire, vous échouez automatiquement ce test à la place."
     },
     "hardExpert": {
-      "skull": "-X. X is the current depth level. If you fail, take 1 horror.",
-      "cultist": "Reveal another token. If you fail, each _Serpent_ enemy at your location or a connecting location heals 2 damage.",
-      "tablet": "Reveal another token. If you fail, place 1 clue on your location (from the token pool).",
-      "elderThing": "-4. If there are 3 or more vengeance points in the victory display, you automatically fail this test, instead."
+      "skull": "–X. X est le niveau de profondeur actuel. En cas d'échec, subissez 1 horreur.",
+      "cultist": "Révélez un autre pion. En cas d'échec, chaque ennemi _Serpent_ dans votre lieu ou dans un lieu connexe se soigne de 2 dégâts.",
+      "tablet": "Révélez un autre pion. En cas d'échec, placez 1 indice (pris dans la réserve de pions) sur votre lieu.",
+      "elderThing": "–4. S'il y a au moins 3 points de vengeance dans la pile de victoire, vous échouez automatiquement ce test à la place."
     }
   },
   "xp": {
-    "depth": "Depth Level"
+    "depth": "Niveau de Profondeur"
+  },
+  "intro": {
+    "title": "Scénario VII : Les Profondeurs de Yoth",
+    "intro1": {
+      "body": "<p>_Introduction 1_ : Plusieurs heures après votre réveil, vous récoltez enfin les fruits de votre laborieuse descente. La lueur rouge qui émane du bas de l’escalier commence à briller plus intensément à chaque marche. Vous atteignez enfin un sol de pierre, et les murs étouffants du tunnel s’ouvrent pour révéler un immense et labyrinthique réseau de grottes. Les ruines d’une vaste cité, d’un genre que vous n’aviez jamais vu auparavant, jonchent le sol des cavernes. L’architecture élaborée est rongée par des siècles d’abandon, mais vous avez le sentiment que l’histoire de ces ruines va bien au-delà de votre imagination. Quand vous vous retournez pour questionner Ichtaca, vous remarquez une légère lueur jaune dans ses yeux. Ses pupilles sont étroites et contractées. « Yoth… le dernier refuge de Valusia… », dit-elle calmement.</p><p>Un terrible rugissement retentit alors dans la caverne. Les murs et le sol se mettent à trembler, et la lueur rouge qui imprègne ce lieu brille plus intensément. Un concert de sifflements émane des tunnels tout autour de vous. Ichtaca se dirige vers le rebord du précipice et scrute les vastes profondeurs. « Il est ici. Je sens sa présence. Le Père des Serpents… Yig. »</p>",
+      "forgingYourOwnPath": "Vérifiez votre Carnet de Campagne. Si *vous suivez votre propre voie*, continuez à l’_Introduction 2_.",
+      "faithIsRestored": "Si *la foi d’Ichtaca est restaurée*, passez à l’_Introduction 3_.",
+      "otherwise": "Sinon, passez à l’_Introduction 4_."
+    },
+    "intro2": "<p>_Introduction 2_ : Vous réalisez à présent qu’Ichtaca a son propre dessein, de même qu’Alejandro : tous deux vous ont utilisé à leurs propres fins, en vous cachant la vérité. Vous levez votre arme et exigez des réponses, la prenant au dépourvu. « Yig veut que la relique soit apportée au Nexus », répond-elle avec anxiété. Ses yeux brillent de plus en plus fort et sa peau commence à s’écailler. Vos yeux s’étrécissent et vous vous positionnez de manière à l’acculer au bord du précipice pour qu’elle ne puisse pas fuir. « La relique ne doit pas tomber entre les mains de la Fraternité : cela au moins est vrai… Car c’est à Valusia de retrouver sa gloire d’antan. Je dois répondre à l’appel de Yig. » Avant que vous ne puissiez réagir, elle se jette dans le précipice et tombe vers les profondeurs en contrebas.</p><p class='basic right'>Dans votre Carnet de Campagne, indiquez qu’*Ichtaca est contre vous*.</p><p class='basic right'>Ajoutez 1 pion {'{'}elderThing{'}'} à la réserve du Chaos pour le reste de la campagne.</p><p class='basic right'>Passez à la _Mise en Place_.</p>",
+    "intro3": "<p>_Introduction 3_ : Vous vous approchez d’Ichtaca et posez la main sur son épaule. Votre compagne prend une profonde respiration et se tourne vers vous. Ses yeux sont pleins de honte et ont retrouvé leur couleur d’origine. « Je… je suis désolée. Je vous ai mené à votre perte. Il m’appelle depuis longtemps en me parlant de mon héritage, de mon peuple. J’ai exécuté sa volonté de mon plein gré. » Elle serre le poing et vous regarde droit dans les yeux. « Mais je réalise à présent que j’ai eu tort. Les humains méritent leur temps sur Terre. Peut-être l’avez-vous héritée de forces bien plus puissantes… mais cette ère est celle de l’humanité, pas la leur. » Vous ne comprenez pas tout ce qu’elle raconte, mais sa sincérité est réelle. Quelle que soit la nature d’Ichtaca, elle est de votre côté. Un silence s’installe entre vous, un lien muet vous lie. « Nous devons aller jusqu’au Nexus et empêcher les serpents de récupérer la relique », explique-t-elle après un moment en brisant le silence. Vous hochez la tête en signe d’acquiescement.</p><p>Passez à la _Mise en Place_.</p>",
+    "intro4": {
+      "body": "<p>_Introduction 4_ : Vous hésitez, incertain quant à la marche à suivre. Quelles sont les véritables motivations d’Ichtaca ? Pourquoi vous a-t-elle amené ici ? Avant que vous ne puissiez réagir, elle bande son arc et vise votre cœur. « Merci de m’avoir aidée jusqu’ici », déclare-t-elle sèchement, « mais il est temps de nous séparer. Je dois répondre à l’appel de Yig. » Ses yeux jaunes s’étrécissent et brillent de plus en plus fort.</p><p class='basic right'>Dans votre Carnet de Campagne, indiquez qu’*Ichtaca est contre vous*. Si Ichtaca faisait partie du deck d’un investigateur, retirez-la de son deck pour le reste de la campagne.</p>",
+      "theRelicIsMissing": "Vérifiez votre Carnet de Campagne. Si *la relique a disparu*, continuez à l’_Introduction 5_.",
+      "foundTheMissingRelic": "Si *les investigateurs ont trouvé la relique perdue*, passez à l’_Introduction 6_."
+    },
+    "intro5": "<p>_Introduction 5_ : « Vous devez quitter cet endroit immédiatement. Ce n’est pas le combat des humains, c’est le nôtre. Nous ne pouvons pas vous laisser, vous ou la Fraternité, interférer avec nos plans. Pas maintenant, pas alors que nous sommes si proches. » Sa main tremble pendant un instant, et ses yeux clignent à nouveau. Quelque chose semble la tirailler, peser sur sa conscience. « Partez maintenant. Avant que je ne change d’avis. Et si vous tenez à la vie, ne me suivez pas. Vous n’aurez pas de seconde chance », achève-t-elle. Ichtaca s’en va, ne vous quittant pas des yeux jusqu’à se trouver hors d’atteinte. Malgré sa mise en garde, vous n’avez d’autre choix que de la suivre. Sinon, qui protégera l’humanité ?</p><p class='basic right'>Passez à la _Mise en Place_.</p>",
+    "intro6": "<p>_Introduction 6_ : « Lâchez vos armes, maintenant. » Sa trahison vous transperce en plein cœur, et vous sentez la colère et le désespoir vous submerger. Vous pensez un instant à vous enfuir, mais vous avez pu constater son habileté à l’arc – vous serez mort avant d’avoir fait deux pas. Vous n’avez d’autre choix que d’obtempérer. Vos armes tombent au sol, une par une. « Bien. Maintenant, la relique : donnez-la-moi. » En grimaçant, vous faites quelques pas en avant et tendez l’artefact à Ichtaca.</p><p class='basic right'>Vérifiez votre équipement. Si un investigateur possède un canif, cet investigateur lit l’_Introduction 7_. Sinon, passez à l’_Introduction 8_.</p>",
+    "intro7": "<p>_Introduction 7_ : Au moment où Ichtaca tend la main vers la relique, vous sortez votre canif resté caché et l’attaquez par surprise. La lame s’enfonce profondément dans son avant-bras. Du sang éclabousse votre poitrine tandis qu’elle vacille de douleur en se tenant le bras. Son talon heurte une pierre au bord du précipice et elle bascule dans le vide, l’écho de son cri déclinant à mesure qu’elle tombe. Vous avez à peine le temps de vous remettre de ce qui vient d’arriver qu’un autre rugissement retentit et que le sol tremble à nouveau. Vous rassemblez vos affaires et poursuivez votre descente.</p><p class='basic right'>Passez à la _Mise en Place_.</p>",
+    "intro8": "<p>_Introduction 8_ : Ichtaca s’empare de la relique. Vous pouvez voir la peau sur le dos de sa main qui devient dure et écailleuse. Vous reculez de quelques pas en serrant les poings de rage. « Partez maintenant. Avant que je ne change d’avis », dit-elle. « Et si vous tenez à la vie, ne me suivez pas. Vous n’aurez pas de seconde chance. » Ichtaca s’en va, ne vous quittant pas des yeux jusqu’à se trouver hors d’atteinte. Malgré sa mise en garde, vous n’avez d’autre choix que de la suivre. Sinon, qui protégera l’humanité ?</p><p class='basic right'>Si la Relique des Âges faisait partie du deck d’un investigateur, retirez-la de son deck pour le reste de la campagne.</p><p class='basic right'>Passez à la _Mise en Place_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : *Les Profondeurs de Yoth*, *Agents de Yig*, *Venin de Yig*, *Expédition*, *Ruines Oubliées* et *Poison*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/the-depths-of-yoth.png' /><img src='{setImgPath}/agents-of-yig.png' /><img src='{setImgPath}/yigs-venom.png' /><img src='{setImgPath}/expedition.png' /><img src='{setImgPath}/forgotten-ruins.png' /><img src='{setImgPath}/poison.png' /></section>",
+    "yigsFury": {
+      "description": "Vérifiez le nombre de traits inscrits sous la mention « Colère de Yig » dans votre Carnet de Campagne.",
+      "tally0": "S’il y a 0 trait, cherchez Yig et chaque exemplaire du Gardien des Fosses parmi les cartes réunies. Retirez ces cartes de la partie.",
+      "tally1to5": "S’il y a entre 1 et 5 traits, aucun changement n’est effectué.",
+      "tally6to10": " S’il y a entre 6 et 10 traits, retirez l’Intrigue 1a de la partie. La partie débute à l’Intrigue 2a.",
+      "tally11to14": "S’il y a entre 11 et 14 traits, retirez les Intrigues 1a et 2a de la partie. La partie débute à l’Intrigue 3a.",
+      "tally15to17": "S’il y a entre 15 et 17 traits, retirez les Intrigues 1a, 2a et 3a de la partie. La partie débute à l’Intrigue 4a.",
+      "tally18to20": " S’il y a entre 18 et 20 traits, retirez les Intrigues 1a, 2a, 3a et 4a de la partie. La partie débute à l’Intrigue 5a.",
+      "tally21OrMore": "S’il y a au moins 21 traits, retirez les Intrigues 1a, 2a, 3a, 4a et 5a de la partie. La partie débute à l’Intrigue 6a."
+    },
+    "placeLocations": "Mettez de côté chacun des 10 lieux mono-face, hors jeu. Piochez l’un de ces lieux au hasard, autre que les Marches de Yoth, et mettez-le en jeu. Chaque investigateur débute la partie dans ce lieu sélectionné au hasard.",
+    "theHarbinger": {
+      "description": "Vérifiez votre Carnet de Campagne. Si le Héraut est toujours vivant, cherchez le Héraut de Valusia dans la collection et mettez-le de côté. Placez sur lui un montant de dégâts égal à celui inscrit entre parenthèses dans votre Carnet de Campagne.",
+      "agenda5or6": "Si vous êtes à l’Intrigue 5a ou 6a, déplacez l’ennemi Héraut de Valusia dans la zone de poursuite. (Voir « Poursuite » ci-après.)"
+    },
+    "yig": {
+      "description": "Mettez de côté l’ennemi Yig, hors jeu.",
+      "agenda6": "Si vous êtes à l’Intrigue 6a, déplacez l’ennemi Yig dans la zone de poursuite."
+    },
+    "explorationDeck": "Constituez le deck Exploration. Pour ce faire, prenez les Marches de Yoth et 4 des lieux mono-face restants mis de côté (prenez-les au hasard) et mélangez-les.",
+    "currentDepth": "Placez 1 pion Ressource sur la carte de référence du scénario, sous la mention « Profondeur Actuelle ». Pour le reste de la campagne, le nombre de ressources sous la mention « Profondeur Actuelle » indique le niveau de profondeur où vous vous situez. (Voir « Niveau de Profondeur » ci-après.)",
+    "setOutOfPlay": "Mettez de côté la Relique des Âges (*Se Réapproprier le Passé*), hors jeu.",
+    "poisoned": "Mettez de côté chaque faiblesse Empoisonné qui n’est pas déjà dans le deck d’un investigateur."
+  },
+  "depthLevel": {
+    "title": "Niveau de Profondeur",
+    "body": "<p class='basic'>Au cours de ce scénario, le nombre de ressources sous la mention « Profondeur Actuelle » sur la carte de Référence du Scénario indique le niveau de profondeur où vous vous situez. Au fur et à mesure que les investigateurs s’enfoncent dans les profondeurs de Yoth en terminant l’Acte 1, des ressources sont ajoutées au niveau de profondeur actuel et la partie continue jusqu’à ce que les investigateurs atteignent un certain niveau ou soient vaincus. Les niveaux les plus profonds sont les plus dangereux, mais également ceux qui donneront la meilleure conclusion aux investigateurs.</p><p class='basic'>Le niveau de profondeur actuel n’a aucun effet en soi ; cependant, certains effets de cartes Rencontre peuvent changer ou se renforcer en fonction du niveau de profondeur actuel.</p>"
+  },
+  "pursuit": {
+    "title": "Poursuite",
+    "body": "<p class='basic'>Certaines cartes de ce scénario font référence à une zone appelée « zone de poursuite ». La zone de poursuite est une zone hors jeu, située près des decks Acte et Intrigue, que les ennemis peuvent rejoindre ou quitter via des effets de carte. En général, les ennemis en jeu se déplaceront dans la zone de poursuite quand les investigateurs atteindront le niveau de profondeur suivant. Bien que la zone de poursuite soit hors jeu, quand un ennemi s’y déplace, il conserve tous ses pions et attachements.</p><p class='basic'>Les ennemis dans la zone de poursuite sont considérés comme étant « en poursuite ». Les ennemis en poursuite sont considérés comme étant hors jeu et ne peuvent pas être affectés par des cartes Joueur ou des actions d’investigateur. Il existe cependant plusieurs capacités de carte qui permettant à des ennemis en poursuite d’entrer à nouveau en jeu.</p>"
+  },
+  "remembered": {
+    "collectedAStrangeLiquid": "Nous avons collecté un étrange liquide"
+  },
+  "label": {
+    "perilsOfYoth": {
+      "fail": "Mettre de côté Périls de Yoth, hors jeu. (*Cette exploration est infructueuse*)",
+      "continue": "Mettre de côté Périls de Yoth, hors jeu ; subir des horreurs ou dégâts égaux au niveau de profondeur actuel et continuer l'exploration comme si vous n'aviez pas pioché Périls de Yoth."
+    },
+    "endlessCaverns": {
+      "scout": "Choisir l'éclaireur du groupe"
+    },
+    "horrificDescent": {
+      "description": "Vérifiez votre équipement. Si un investigateur possède une gourde, il doit se décider entre :",
+      "collect": "*Cela pourrait être utile*. Souvenez-vous que vous avez « collecté un étrange liquide ».",
+      "doNotCollect": "*Pas question d'y toucher*. Vous ne subissez aucun effet néfaste."
+    }
+  },
+  "resolutions": {
+    "xp": {
+      "depth": "Niveau de Profondeur"
+    },
+    "label": {
+      "stickyGoop": "Vérifiez votre équipement. Si n'importe quel investigateur a une substance visqueuse et qu'un investigateur a collecté un étrange liquide le liquide de la fontaine dissout la substance visqueuse, révélant un objet solide à l'intérieur. Inscrivez la « Clé des Eztli » dans l'équipement de n'importe quel investigateur."
+    },
+    "noResolution": {
+      "title": "Pas de conclusion",
+      "body": "_Si aucune conclusion n’est atteinte (tous les investigateurs ont abandonné ou été vaincus)_ :  lisez la _Conclusion 1_."
+    },
+    "resolution1": {
+      "title": "Conclusion 1",
+      "body": "<p>_Conclusion 1_ : Après des heures et des heures d’exploration, vous avez à peine efeuré la surface de ce monde souterrain illimité. L’humanité pourrait passer des siècles à cartographier ces tunnels sans en voir le bout. Vous avez beau vous précipiter dans les profondeurs, les serpents sont toujours sur vos talons. Vous êtes des intrus pour eux, et ils connaissent ces tunnels infernaux bien mieux que vous. Vos blessures vous ralentissent et la panique sape chacune de vos décisions; votre mort aux mains de ces créatures est inévitable. Le désespoir s’insinue dans votre esprit. Quand les serpents fnissent par vous ratraper, vous traversez l’un des longs ponts de pierre surplombant un sombre goufre dans l’une des cavernes. Des créatures ophidiennes vous encerclent de part et d’autre du goufre, les pointes de leurs lances vous pressant contre le mince rebord du pont. Un petit morceau de pierre craque sous votre pied et se détache avant de tomber dans les abîmes d’encre en contrebas. Vous ne l’entendez pas toucher le sol. Il n’y a aucune échappatoire cete fois – vous n’avez d’autre choix que d’accepter votre funeste destin. Les pointes de lances vous poussent plus près du bord. Fermant les yeux, vous vous jetez dans le vide.</p><ul><li>Dans votre Carnet de Campagne, indiquez que les investigateurs ont chuté dans les profondeurs. Vérifiez le niveau de profondeur actuel au moment où le scénario se termine.<ul><li>Si le niveau de profondeur actuel est 1, la chute est mortelle et les ténèbres de N’kai dévorent votre corps brisé. Chaque investigateur est _tué_. Les investigateurs ont perdu la campagne.</li><li>Si le niveau de profondeur actuel est 2, chaque investigateur subit 2 traumatismes physiques, prend au hasard dans la collection une faiblesse de base Blessure et l’ajoute à son deck. Si ces traumatismes tuent tous les investigateurs, ils ont perdu la campagne.</li><li> Si le niveau de profondeur actuel est 3, chaque investigateur subit 1 traumatisme physique. Si ce traumatisme tue tous les investigateurs, ils ont perdu la campagne.</li><li> Si le niveau de profondeur actuel est 4, vous ne subissez aucun effet néfaste.</li></ul></li><li>Si le Héraut de Valusia est entré en jeu lors de ce scénario :<ul><li> S’il est dans la pile de victoire, rayez la mention « le Héraut est toujours vivant » dans votre Carnet de Campagne.</li><li> S’il est toujours en jeu ou mis de côté, précisez entre parenthèses le nombre de blessures sur le Héraut de Valusia à côté de la mention « le Héraut est toujours vivant » dans votre Carnet de Campagne. Ce nombre remplace le précédent nombre qui était entre parenthèses.</li></ul></li><li>Pour chaque point de vengeance dans la pile de victoire, inscrivez un trait sous la mention « Colère de Yig » dans le Carnet de Campagne.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire. Chaque investigateur reçoit autant de points d’expérience supplémentaire que le niveau de profondeur actuel.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Conclusion 2",
+      "body": "<p>_Conclusion 2_ : Même si ce n’était pas gagné d’avance, vous avez atteint votre destination. La lumière rouge qui vous enveloppe depuis que vous êtes entré dans Yoth recule, remplacée par une profonde obscurité. Le Nexus ne doit pas être loin… Vous pouvez le sentir.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *le Nexus est proche*.</li><li>Si le Héraut de Valusia est entré en jeu lors de ce scénario :<ul><li>S’il est dans la pile de victoire, rayez la mention « le Héraut est toujours vivant » dans votre Carnet de Campagne.</li><li>S’il est toujours en jeu ou mis de côté, précisez entre parenthèses le nombre de blessures sur le Héraut de Valusia à côté de la mention « le Héraut est toujours vivant » dans votre Carnet de Campagne. Ce nombre remplace le précédent nombre qui était entre parenthèses.</li></ul></li><li>Pour chaque point de vengeance dans la pile de victoire, inscrivez un trait sous la mention « Colère de Yig » dans le Carnet de Campagne.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire. Chaque investigateur reçoit autant de points d’expérience supplémentaires que le niveau de profondeur actuel.</li></ul>"
+    }
   }
 }

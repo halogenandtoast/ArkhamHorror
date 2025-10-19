@@ -11,7 +11,7 @@
   },
   "activeGames": "Parties en cours",
   "cancel": "Annuler",
-  "continue": "Continue",
+  "continue": "Continuer",
   "debugGame": "Debug",
   "doDeleteGame": "Êtes-vous certain de vouloir supprimer cette partie ?",
   "email": "Email",
@@ -28,7 +28,7 @@
   "register": "S'enregistrer",
   "resetPassword": "Réinitialisation du mot de passe",
   "settings": "Paramètres",
-  "updatePassword": "Renouveller le mot de passe",
+  "updatePassword": "Renouveler le mot de passe",
   "username": "Identifiant",
   "usernameOrEmailAlreadyTaken": "Identifiant ou email non disponible",
   "tooltips": {
@@ -53,7 +53,7 @@
   "Objective": "Objectif",
   "Haunted": "Hanté",
 
-  "Results": "Resultats",
+  "Results": "Résultats",
   "Story": "Histoire",
   "ChooseOne": "Choisir l'un",
   "Choose": "Choisir",
@@ -93,7 +93,7 @@
   },
   "pickDestiny": {
     "title": "Prendre Destinée",
-    "instructions": "Placez à l'envers la moitié des cartes (arrondie au supérieur)."
+    "instructions": "Renverser la moitié des cartes (arrondie au supérieur)."
   },
   "tarot": {
     "TheFool0": "Le Fou • 0",

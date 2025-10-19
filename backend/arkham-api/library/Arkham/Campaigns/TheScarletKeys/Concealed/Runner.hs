@@ -37,12 +37,18 @@ isEnemyTarget c target =
 concealedToCardDef :: ConcealedCard -> Maybe CardDef
 concealedToCardDef c = case c.kind of
   Decoy -> Nothing
-  TheRedGlovedMan -> Just Enemies.theRedGlovedManShroudedInMystery
-  LaChicaRoja -> Just Enemies.laChicaRojaTheGirlInTheCarmineCoat
+  AcolyteAny -> Just Enemies.acolyte
   ApportionedKa -> Just Enemies.apportionedKa
   CoterieAgentA -> Just Enemies.coterieAgentA
   CoterieAgentB -> Just Enemies.coterieAgentB
   CoterieAgentC -> Just Enemies.coterieAgentC
+  EmissaryFromYuggoth -> Just Enemies.emissaryFromYuggoth
+  LaChicaRoja -> Just Enemies.laChicaRojaTheGirlInTheCarmineCoat
+  SinisterAspirantA -> Just Enemies.sinisterAspirantA
+  SinisterAspirantB -> Just Enemies.sinisterAspirantB
+  SinisterAspirantC -> Just Enemies.sinisterAspirantC
+  TheRedGlovedMan -> Just Enemies.theRedGlovedManShroudedInMystery
+  WizardOfTheOrder -> Just Enemies.wizardOfTheOrder
   _ -> error "Unhandled Concealed Card Kind"
 
 instance RunMessage ConcealedCard where
@@ -96,12 +102,15 @@ instance RunMessage ConcealedCard where
             exposedDecoy iid
             removeFromGame (toTarget c)
           _ -> pure ()
-        Just def -> whenJustM (selectOne (EnemyWithPlacement InTheShadows <> EnemyWithTitle def.title)) \enemy -> do
-          exposed iid enemy def do
-            case c.placement of
-              AtLocation location -> enemyMoveToIfInPlay c enemy location
-              _ -> error "invalid placement for concealed card"
-            doStep 2 msg'
+        Just def -> do
+          enemies <- select $ EnemyWithPlacement InTheShadows <> EnemyWithTitle def.title
+          chooseOrRunOneM iid do
+            targets enemies \enemy -> do
+              exposed iid enemy def do
+                case c.placement of
+                  AtLocation location -> enemyMoveToIfInPlay c enemy location
+                  _ -> error "invalid placement for concealed card"
+                doStep 2 msg'
       pure $ c {concealedCardPlacement = Unplaced}
     DoStep 2 (Flip _iid _ (isTarget c -> True)) -> do
       removeFromGame (toTarget c)

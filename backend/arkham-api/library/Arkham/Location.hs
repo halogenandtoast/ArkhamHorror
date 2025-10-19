@@ -820,6 +820,19 @@ allLocations =
     , SomeLocationCard theCabildo
     , SomeLocationCard bancoDeLaProvincia
     , SomeLocationCard teatroColon
+    , --- Sanguine Shadows [tsk]
+      SomeLocationCard galataDocks
+    , SomeLocationCard galata
+    , SomeLocationCard obeliskOfTheodosius
+    , SomeLocationCard istanbulUniversity
+    , SomeLocationCard hagiaSophia
+    , SomeLocationCard grandBazaarDarkenedAlley
+    , SomeLocationCard grandBazaarPublicBaths
+    , SomeLocationCard grandBazaarMarbleFountain
+    , SomeLocationCard grandBazaarCrowdedShops
+    , SomeLocationCard grandBazaarBusyWalkway
+    , SomeLocationCard grandBazaarRooftopAccess
+    , SomeLocationCard grandBazaarJewelersRoad
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

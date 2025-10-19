@@ -289,6 +289,9 @@ allAgendas =
     , --- Sanguine Shadows [tsk]
       SomeAgendaCard whereIsShe
     , SomeAgendaCard seeingRed
+    , --- Dealings in the Dark [tsk]
+      SomeAgendaCard agentsOfTheDark
+    , SomeAgendaCard theChase
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

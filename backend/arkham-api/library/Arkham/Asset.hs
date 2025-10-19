@@ -987,6 +987,8 @@ allAssets =
     , SomeAssetCard soulSanctification3
     , --- Sanguine Shadows [tsk]
       SomeAssetCard laChicaRojaYourWatchfulShadow
+    , --- Dealings in the Dark [tsk]
+      SomeAssetCard eceSahinTheVermillionVeiledLady
     , --- Globetrotting [tsk]
       SomeAssetCard expeditedTicket
     , -- The Feast of Hemloch Vale

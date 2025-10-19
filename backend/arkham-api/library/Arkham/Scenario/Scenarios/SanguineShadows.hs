@@ -91,7 +91,7 @@ instance RunMessage SanguineShadows where
       criminal <- selectAny $ InvestigatorWithTrait Criminal
       flavor $ setTitle "title" >> p "intro2Part1" >> p.validate criminal "criminal" >> p "intro2Part2"
       remember MatiasBolivarTrustsYou
-      removeChaosToken ElderThing
+      swapTokens ElderThing Tablet
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro3"
@@ -99,7 +99,7 @@ instance RunMessage SanguineShadows where
     DoStep 4 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro4"
       remember MatiasBolivarDoesntTrustYou
-      removeChaosToken Tablet
+      swapTokens Tablet ElderThing
       pure s
     Setup -> runScenarioSetup SanguineShadows attrs do
       setup $ ul do

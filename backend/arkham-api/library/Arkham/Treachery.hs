@@ -568,10 +568,14 @@ allTreacheries =
     , --- Dead Heat [tsk]
       SomeTreacheryCard famine
     , SomeTreacheryCard cornered
-    , --- Sanguine Shadows[tsk]
+    , --- Sanguine Shadows [tsk]
       SomeTreacheryCard catAndMouse
     , SomeTreacheryCard callingCard
     , SomeTreacheryCard outsmarted
+    , --- Dealings in the Dark [tsk]
+      SomeTreacheryCard shadowedDealingsInTheDark
+    , SomeTreacheryCard accosted
+    , SomeTreacheryCard lightOutOfVoid
     , --- Crimson Conspiracy [tsk]
       SomeTreacheryCard conspiracyInRed
     , --- Strange Happenings [tsk]
@@ -590,6 +594,8 @@ allTreacheries =
     , SomeTreacheryCard keyCharge
     , --- Outsiders [tsk]
       SomeTreacheryCard substanceDissimulation
+    , --- Agents of Yuggoth [tsk]
+      SomeTreacheryCard tenebrousEclipse
     , --- Spreading Corruption [tsk]
       SomeTreacheryCard touchOfTheBeyond
     , SomeTreacheryCard compulsion

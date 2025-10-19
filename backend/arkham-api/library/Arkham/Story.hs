@@ -148,6 +148,9 @@ allStories =
     , -- The Scarlet Keys
       --- Dead Heat [tsk]
       SomeStoryCard saveTheCivilians
+    , --- Dealings in the Dark [tsk]
+      SomeStoryCard theUnveiling
+    , SomeStoryCard theUnsealing
     , -- Return to The Path to Carcosa
       --- Return to The Last King
       SomeStoryCard returnToSickeningReality_23

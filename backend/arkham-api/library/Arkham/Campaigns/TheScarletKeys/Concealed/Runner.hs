@@ -92,7 +92,9 @@ instance RunMessage ConcealedCard where
     DoStep 1 msg'@(Flip iid _ (isTarget c -> True)) -> do
       case concealedToCardDef c of
         Nothing -> case c.kind of
-          Decoy -> exposedDecoy iid
+          Decoy -> do
+            exposedDecoy iid
+            removeFromGame (toTarget c)
           _ -> pure ()
         Just def -> whenJustM (selectOne (EnemyWithPlacement InTheShadows <> EnemyWithTitle def.title)) \enemy -> do
           exposed iid enemy def do

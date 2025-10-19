@@ -23,7 +23,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move (moveAllTo)
 import Arkham.Placement
 import Arkham.Prelude hiding ((.=))
-import Arkham.Scenario.Helpers (excludeBSides, excludeDoubleSided, hasBSide, isDoubleSided)
+import Arkham.Scenario.Helpers (excludeDoubleSided, isDoubleSided)
 import Arkham.Scenario.Runner (createEnemyWithPlacement, createEnemyWithPlacement_, pushM)
 import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
@@ -130,8 +130,7 @@ clearCards = do
 
 gather :: CardGen m => Set.EncounterSet -> ScenarioBuilderT m ()
 gather encounterSet = do
-  (other, cards) <-
-    partition (or . sequence [isDoubleSided, hasBSide]) <$> gatherEncounterSet encounterSet
+  (other, cards) <- partition isDoubleSided <$> gatherEncounterSet encounterSet
   attrsL . encounterDeckL %= (Deck cards <>)
   otherCardsL %= (map toCard other <>)
 
@@ -139,7 +138,6 @@ gatherJust :: CardGen m => Set.EncounterSet -> [CardDef] -> ScenarioBuilderT m (
 gatherJust encounterSet defs = do
   cards <-
     filter ((`cardMatch` mapOneOf cardIs defs) . toCard)
-      . excludeBSides
       . excludeDoubleSided
       <$> gatherEncounterSet encounterSet
   attrsL . encounterDeckL %= (Deck cards <>)

@@ -19,6 +19,8 @@ sophieItWasAllMyFault =
       { cdCardTraits = setFromList [Item, Madness]
       , cdUnique = True
       , cdCost = Nothing
+      , cdDoubleSided = True
+      , cdOtherSide = Just "03009"
       }
 
 analyticalMind :: CardDef

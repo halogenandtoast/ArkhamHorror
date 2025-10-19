@@ -492,6 +492,11 @@ allEnemies =
     , SomeEnemyCard boundNightgaunt
     , SomeEnemyCard theSanguineWatcherWithTheRubySpectacles
     , SomeEnemyCard apportionedKa
+    , --- Dealings in the Dark [tsk]
+      SomeEnemyCard umbralHarbinger
+    , SomeEnemyCard sinisterAspirantA
+    , SomeEnemyCard sinisterAspirantB
+    , SomeEnemyCard sinisterAspirantC
     , --- Crimson Conspiracy [tsk]
       SomeEnemyCard coterieAgentA
     , SomeEnemyCard coterieAgentB
@@ -501,6 +506,8 @@ allEnemies =
     , --- Outsiders [tsk]
       SomeEnemyCard paracausalEntity
     , SomeEnemyCard apocalypticPresage
+    , --- Agents of Yuggoth [tsk]
+      SomeEnemyCard emissaryFromYuggoth
     , -- The Feast of Hemloch Vale
       -- signature [fhv]
       SomeEnemyCard zamacona

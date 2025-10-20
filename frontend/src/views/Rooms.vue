@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import api from '@/api'
 import AdminUI from '@/arkham/components/Admin/UI.vue'
+import Room from '@/components/admin/Room.vue'
 
 interface RoomData {
   roomClients: number
@@ -9,7 +11,7 @@ interface RoomData {
 }
 
 const request = await api.get<RoomData[]>('admin/rooms')
-const data = request.data
+const data = computed(() => request.data)
 </script>
 
 <template>
@@ -21,11 +23,7 @@ const data = request.data
       <h1>Rooms</h1>
     </header>
 
-    <div class='room' v-for="room in data" :key="room.roomArkhamGameId">
-      <span>{{room.roomClients}}</span>
-      <span>{{room.roomLastUpdatedAt}}</span>
-      <span><router-link :to="`/admin/games/${room.roomArkhamGameId}`">View</router-link></span>
-    </div>
+    <Room v-for="room in data" :room="room" :key="room.roomArkhamGameId" />
   </AdminUI>
 </template>
 

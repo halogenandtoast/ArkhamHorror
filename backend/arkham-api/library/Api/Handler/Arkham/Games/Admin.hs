@@ -52,7 +52,7 @@ selectCount inner = fmap (sum . map unValue . toList) . selectOne $ inner $> cou
 getApiV1AdminR :: Handler AdminData
 getApiV1AdminR = do
   recent <- addUTCTime (negate (14 * nominalDay)) <$> liftIO getCurrentTime
-  rooms <- getRoomData
+  roomData <- getRoomData
 
   runDB do
     currentUsers <- selectCount $ from $ table @User
@@ -69,10 +69,11 @@ getApiV1AdminR = do
 
     activeGames <- map toGameDetailsEntry <$> select do
       games <- from $ table @ArkhamGameRaw
-      where_ (games.id `in_` valList (coerce $ map (.roomArkhamGameId) rooms))
+      where_ (games.id `in_` valList (coerce $ map (.roomArkhamGameId) roomData))
       pure games
+    recentGames <- getRecentGames 20
 
-    AdminData currentUsers activeUsers rooms activeGames <$> recentGames 20
+    pure $ AdminData {..}
 
 getApiV1AdminGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1AdminGameR gameId = do
@@ -90,8 +91,8 @@ getApiV1AdminFindGameR playerId = do
     g <- getEntity404 $ coerce player.arkhamGameId
     pure $ toGameDetailsEntry g
 
-recentGames :: Int64 -> DB [GameDetailsEntry]
-recentGames n = do
+getRecentGames :: Int64 -> DB [GameDetailsEntry]
+getRecentGames n = do
   games <- select do
     games <- from $ table @ArkhamGameRaw
     orderBy [desc games.updatedAt]
@@ -100,7 +101,7 @@ recentGames n = do
   pure $ map toGameDetailsEntry games
 
 getApiV1AdminGamesR :: Handler [GameDetailsEntry]
-getApiV1AdminGamesR = runDB $ recentGames 20
+getApiV1AdminGamesR = runDB $ getRecentGames 20
 
 putApiV1AdminGameR :: ArkhamGameId -> Handler ()
 putApiV1AdminGameR gameId = do

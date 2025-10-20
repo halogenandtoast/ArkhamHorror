@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import api from '@/api'
 import GameRow from '@/arkham/components/GameRow.vue'
 import GameFinder from '@/components/admin/GameFinder.vue'
 import type { GameDetails } from '@/arkham/types/Game'
 import AdminUI from '@/arkham/components/Admin/UI.vue'
+import Room from '@/components/admin/Room.vue'
 
 interface RoomData {
   roomClients: number
@@ -20,20 +22,14 @@ interface AdminData {
 }
 
 const request = await api.get<AdminData>('admin')
-const data = request.data
+const data = computed(() => request.data)
 
-const activeGames   = data.activeGames.filter(g => !g.error && g.gameState.tag !== 'IsOver')
-const finishedGames = data.activeGames.filter(g => !g.error && g.gameState.tag === 'IsOver')
+const activeGames   = data.value.activeGames.filter(g => !g.error && g.gameState.tag !== 'IsOver')
+const finishedGames = data.value.activeGames.filter(g => !g.error && g.gameState.tag === 'IsOver')
 
-const recentActiveGames   = data.recentGames.filter(g => !g.error && g.gameState.tag !== 'IsOver')
-const recentFinishedGames = data.recentGames.filter(g => !g.error && g.gameState.tag === 'IsOver')
+const recentActiveGames   = data.value.recentGames.filter(g => !g.error && g.gameState.tag !== 'IsOver')
+const recentFinishedGames = data.value.recentGames.filter(g => !g.error && g.gameState.tag === 'IsOver')
 
-function deleteRoom(gameId: string) {
-  return async () => {
-    await api.delete(`admin/rooms/${gameId}`)
-    window.location.reload()
-  }
-}
 </script>
 
 <template>
@@ -115,12 +111,7 @@ function deleteRoom(gameId: string) {
         <h2>Rooms</h2>
       </div>
       <div class="game-list">
-        <div class='room' v-for="room in data" :key="room.roomArkhamGameId">
-          <span>{{room.roomClients}}</span>
-          <span>{{room.roomLastUpdatedAt ? room.roomLastUpdatedAt : 'deleted'}}</span>
-          <span><router-link :to="`/admin/games/${room.roomArkhamGameId}`">View</router-link></span>
-          <span><a href='#' @click.prevent="deleteRoom(room.roomArkhamGameId)">Delete</a></span>
-        </div>
+        <Room v-for="room in data.roomData" :room="room" :key="room.roomArkhamGameId" />
       </div>
     </section>
   </AdminUI>
@@ -360,12 +351,4 @@ function deleteRoom(gameId: string) {
     var(--panel);
 }
 
-.room {
-  padding: 20px;
-  border-bottom: 1px solid var(--line);
-  display: flex;
-  *  {
-    flex: 1;
-  }
-}
 </style>

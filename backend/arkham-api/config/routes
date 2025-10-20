@@ -42,6 +42,7 @@
           /reload ApiV1ArkhamGameReloadR GET
     /admin AdminP:
       / ApiV1AdminR GET
+      /rooms ApiV1AdminRoomsR GET
       /games ApiV1AdminGamesP:
         / ApiV1AdminGamesR GET
         !/find/#ArkhamPlayerId ApiV1AdminFindGameR GET

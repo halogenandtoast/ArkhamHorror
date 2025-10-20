@@ -62,7 +62,7 @@ getApiV1ArkhamGameSpectateR gameId = do
 getApiV1ArkhamGamesR :: Handler [GameDetailsEntry]
 getApiV1ArkhamGamesR = do
   userId <- getRequestUserId
-  games <- runDB $ select do
+  fmap (map toGameDetailsEntry) . runDB $ select do
     (players :& games) <-
       distinct
         $ from
@@ -72,8 +72,6 @@ getApiV1ArkhamGamesR = do
     where_ $ players.userId ==. val userId
     orderBy [desc games.updatedAt]
     pure games
-
-  pure $ map toGameDetailsEntry games
 
 data CreateGamePost = CreateGamePost
   { deckIds :: [Maybe ArkhamDeckId]

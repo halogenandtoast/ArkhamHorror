@@ -20,6 +20,7 @@ import Conduit
 import Data.Map.Strict qualified as Map
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (update, (=.))
+import Database.Esqueleto.Experimental qualified as E
 import Entity.Answer
 import Entity.Arkham.GameRaw
 import Entity.Arkham.Player
@@ -38,7 +39,7 @@ data AdminData = AdminData
 
 data RoomData = RoomData
   { roomClients :: Int
-  , roomLastUpdatedAt :: UTCTime
+  , roomLastUpdatedAt :: Maybe UTCTime
   , roomArkhamGameId :: ArkhamGameId
   }
   deriving stock (Show, Generic)
@@ -126,11 +127,11 @@ getRoomData = do
 
   runDB do
     rooms & Map.assocs & traverse \(arkhamGameId, Room {..}) -> do
-      roomLastUpdatedAt <- arkhamGameUpdatedAt <$> get404 arkhamGameId
+      mRoomLastUpdatedAt <- fmap arkhamGameUpdatedAt <$> E.get arkhamGameId
       pure
         $ RoomData
           { roomClients = socketClients
-          , roomLastUpdatedAt = roomLastUpdatedAt
+          , roomLastUpdatedAt = mRoomLastUpdatedAt
           , roomArkhamGameId = arkhamGameId
           }
 

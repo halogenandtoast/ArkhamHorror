@@ -191,7 +191,7 @@ updateGame response gameId userId writeChannel = do
       updatedLog <- readIORef logRef
 
       now <- liftIO getCurrentTime
-      runDB $ do
+      runDB do
         void $ select do
           game <- from $ table @ArkhamGame
           where_ $ game.id ==. val gameId

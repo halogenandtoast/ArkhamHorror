@@ -3045,6 +3045,7 @@ getStoriesMatching matcher = do
     StoryWithTitle title -> pure $ filter (`hasTitle` title) as
     StoryMatchAll ms -> foldM filterMatcher as ms
     StoryWithPlacement placement -> pure $ filter ((== placement) . attr storyPlacement) as
+    StoryWithModifier modifier -> as & filterM \s -> elem modifier <$> getModifiers (toTarget s)
     StoryIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
     StoryWithCardId cardId -> pure $ filter ((== cardId) . attr storyCardId) as
 
@@ -5113,6 +5114,7 @@ instance Projection Agenda where
       AgendaAbilities -> pure $ getAbilities a
       AgendaCard -> pure $ lookupCard (unAgendaId aid) agendaCardId
       AgendaUsedWheelOfFortuneX -> pure agendaUsedWheelOfFortuneX
+      AgendaTokens -> pure agendaTokens
 
 instance Projection Campaign where
   getAttrs _ = toAttrs . fromJustNote "should be impossible, was looking campaign attrs" <$> getCampaign

@@ -4,6 +4,7 @@ module Arkham.Matcher.Story where
 
 import Arkham.Card.Id
 import Arkham.Card.CardCode
+import {-# SOURCE #-} Arkham.Modifier
 import {-# SOURCE #-} Arkham.Placement
 import Arkham.Prelude
 import Data.Aeson.TH
@@ -14,6 +15,7 @@ data StoryMatcher
   | StoryMatchAll [StoryMatcher]
   | StoryIs CardCode
   | StoryWithCardId CardId
+  | StoryWithModifier ModifierType
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup StoryMatcher where

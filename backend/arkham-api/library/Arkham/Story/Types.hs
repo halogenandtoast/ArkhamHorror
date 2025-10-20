@@ -88,6 +88,9 @@ instance HasField "placement" StoryAttrs Placement where
 instance HasField "tokens" StoryAttrs Tokens where
   getField = storyTokens
 
+instance HasField "token" StoryAttrs (Token -> Int) where
+  getField a tkn = countTokens tkn a.tokens
+
 storyWith
   :: (StoryAttrs -> a)
   -> CardDef

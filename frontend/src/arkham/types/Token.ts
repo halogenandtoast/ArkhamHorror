@@ -14,6 +14,7 @@ export type Token
   | 'Depth'
   | 'Doom'
   | 'Durability'
+  | 'Eclipse'
   | 'Evidence'
   | 'Growth'
   | 'Horror'
@@ -57,6 +58,7 @@ export const TokenType = {
   Depth: 'Depth',
   Doom: 'Doom',
   Durability: 'Durability',
+  Eclipse: 'Eclipse',
   Evidence: 'Evidence',
   Growth: 'Growth',
   Horror: 'Horror',
@@ -99,6 +101,7 @@ export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>
   JsonDecoder.literal('Depth'),
   JsonDecoder.literal('Doom'),
   JsonDecoder.literal('Durability'),
+  JsonDecoder.literal('Eclipse'),
   JsonDecoder.literal('Evidence'),
   JsonDecoder.literal('Growth'),
   JsonDecoder.literal('Horror'),

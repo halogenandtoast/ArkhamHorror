@@ -1,4 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
+import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 
 export type AgendaSequence = {
   step: number
@@ -13,6 +14,7 @@ export type Agenda = {
   treacheries: string[];
   flipped: boolean;
   sequence: AgendaSequence
+  tokens: Tokens;
 }
 
 export const agendaSequenceDecoder = JsonDecoder.object({
@@ -29,4 +31,5 @@ export const agendaDecoder = JsonDecoder.object<Agenda>({
   treacheries: JsonDecoder.array<string>(JsonDecoder.string(), 'TreacheryId[]'),
   flipped: JsonDecoder.boolean(),
   sequence: agendaSequenceDecoder,
+  tokens: tokensDecoder,
 }, 'Agenda');

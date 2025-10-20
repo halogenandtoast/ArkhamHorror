@@ -21,6 +21,7 @@ import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token
 import Data.Data
 import GHC.Records
 
@@ -49,6 +50,7 @@ data instance Field Agenda :: Type -> Type where
   AgendaDeckId :: Field Agenda Int
   AgendaAbilities :: Field Agenda [Ability]
   AgendaUsedWheelOfFortuneX :: Field Agenda Bool
+  AgendaTokens :: Field Agenda Tokens
 
 data AgendaAttrs = AgendaAttrs
   { agendaDoom :: Int
@@ -62,6 +64,7 @@ data AgendaAttrs = AgendaAttrs
   , agendaRemoveDoomMatchers :: RemoveDoomMatchers
   , agendaUsedWheelOfFortuneX :: Bool
   , agendaMeta :: Value
+  , agendaTokens :: Tokens
   }
   deriving stock (Show, Eq, Generic)
 
@@ -90,6 +93,7 @@ instance FromJSON AgendaAttrs where
     agendaRemoveDoomMatchers <- o .: "removeDoomMatchers"
     agendaUsedWheelOfFortuneX <- o .: "usedWheelOfFortuneX"
     agendaMeta <- o .:? "meta" .!= Null
+    agendaTokens <- o .:? "tokens" .!= mempty
 
     pure AgendaAttrs {..}
 
@@ -153,11 +157,18 @@ agendaWith (n, side) f cardDef threshold g =
             , agendaRemoveDoomMatchers = defaultRemoveDoomMatchers
             , agendaUsedWheelOfFortuneX = False
             , agendaMeta = Null
+            , agendaTokens = mempty
             }
     }
 
 instance HasField "id" AgendaAttrs AgendaId where
   getField = agendaId
+
+instance HasField "tokens" AgendaAttrs Tokens where
+  getField = agendaTokens
+
+instance HasField "token" AgendaAttrs (Token -> Int) where
+  getField a tkn = countTokens tkn a.tokens
 
 instance HasField "meta" AgendaAttrs Value where
   getField = agendaMeta

@@ -8,6 +8,7 @@ import AdminUI from '@/arkham/components/Admin/UI.vue'
 interface AdminData {
   currentUsers: number
   activeUsers: number
+  recentGames: GameDetails[]
   activeGames: GameDetails[]
 }
 
@@ -16,6 +17,9 @@ const data = request.data
 
 const activeGames   = data.activeGames.filter(g => !g.error && g.gameState.tag !== 'IsOver')
 const finishedGames = data.activeGames.filter(g => !g.error && g.gameState.tag === 'IsOver')
+
+const recentActiveGames   = data.recentGames.filter(g => !g.error && g.gameState.tag !== 'IsOver')
+const recentFinishedGames = data.recentGames.filter(g => !g.error && g.gameState.tag === 'IsOver')
 </script>
 
 <template>
@@ -67,6 +71,27 @@ const finishedGames = data.activeGames.filter(g => !g.error && g.gameState.tag =
       </div>
       <div class="game-list">
         <GameRow v-for="g in finishedGames" :key="g.id" :game="g" :admin="true" />
+      </div>
+    </section>
+
+    <!-- Active Games -->
+    <section class="block">
+      <div class="block-header">
+        <h2>Recent Active Games (from last 20)</h2>
+      </div>
+      <div v-if="recentActiveGames.length === 0" class="empty">No active games.</div>
+      <div class="game-list">
+        <GameRow v-for="g in recentActiveGames" :key="g.id" :game="g" :admin="true" />
+      </div>
+    </section>
+
+    <!-- Finished Games -->
+    <section class="block" v-if="recentFinishedGames.length > 0">
+      <div class="block-header">
+        <h2>Recent Finished Games (from last 20)</h2>
+      </div>
+      <div class="game-list">
+        <GameRow v-for="g in recentFinishedGames" :key="g.id" :game="g" :admin="true" />
       </div>
     </section>
   </AdminUI>

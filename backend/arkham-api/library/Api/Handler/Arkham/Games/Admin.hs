@@ -5,6 +5,7 @@
 
 module Api.Handler.Arkham.Games.Admin (
   getApiV1AdminR,
+  getApiV1AdminRoomsR,
   getApiV1AdminGameR,
   getApiV1AdminFindGameR,
   putApiV1AdminGameR,
@@ -16,6 +17,7 @@ import Api.Arkham.Helpers
 import Api.Handler.Arkham.Games.Shared
 import Arkham.Game
 import Conduit
+import Data.Map.Strict qualified as Map
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (update, (=.))
 import Entity.Answer
@@ -96,3 +98,26 @@ putApiV1AdminGameRawR gameId = do
   response <- requireCheckJsonBody @_ @RawGameJsonPut
   writeChannel <- (.channel) <$> getRoom gameId
   updateGame (Raw response.gameMessage) gameId userId writeChannel
+
+data RoomData = RoomData
+  { roomClients :: Int
+  , roomLastUpdatedAt :: UTCTime
+  , roomArkhamGameId :: ArkhamGameId
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass ToJSON
+
+getApiV1AdminRoomsR :: Handler [RoomData]
+getApiV1AdminRoomsR = do
+  roomsRef <- getsApp appGameRooms
+  rooms <- readIORef roomsRef
+
+  runDB do
+    rooms & Map.assocs & traverse \(arkhamGameId, Room {..}) -> do
+      roomLastUpdatedAt <- arkhamGameUpdatedAt <$> get404 arkhamGameId
+      pure
+        $ RoomData
+          { roomClients = socketClients
+          , roomLastUpdatedAt = roomLastUpdatedAt
+          , roomArkhamGameId = arkhamGameId
+          }

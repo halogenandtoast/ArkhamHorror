@@ -16,11 +16,9 @@ const props = defineProps<{
 const lastUpdated = computed(() => props.room.roomLastUpdatedAt ? props.room.roomLastUpdatedAt : 'deleted')
 const deleted = computed(() => lastUpdated.value === 'deleted')
 
-function deleteRoom() {
-  return async () => {
-    await api.delete(`admin/rooms/${props.room.roomArkhamGameId}`)
-    window.location.reload()
-  }
+async function deleteRoom() {
+  await api.delete(`admin/rooms/${props.room.roomArkhamGameId}`)
+  window.location.reload()
 }
 
 </script>

@@ -29,8 +29,17 @@ import Yesod.WebSockets
 data AdminData = AdminData
   { currentUsers :: Int
   , activeUsers :: Int
+  , roomData :: [RoomData]
   , activeGames :: [GameDetailsEntry]
   , recentGames :: [GameDetailsEntry]
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass ToJSON
+
+data RoomData = RoomData
+  { roomClients :: Int
+  , roomLastUpdatedAt :: UTCTime
+  , roomArkhamGameId :: ArkhamGameId
   }
   deriving stock (Show, Generic)
   deriving anyclass ToJSON
@@ -41,8 +50,7 @@ selectCount inner = fmap (sum . map unValue . toList) . selectOne $ inner $> cou
 getApiV1AdminR :: Handler AdminData
 getApiV1AdminR = do
   recent <- addUTCTime (negate (14 * nominalDay)) <$> liftIO getCurrentTime
-  roomsRef <- getsApp appGameRooms
-  rooms <- readIORef roomsRef
+  rooms <- getRoomData
 
   runDB do
     currentUsers <- selectCount $ from $ table @User
@@ -60,11 +68,11 @@ getApiV1AdminR = do
 
     activeGames <- map toGameDetailsEntry <$> select do
       games <- from $ table @ArkhamGameRaw
-      where_ (games.id `in_` valList (coerce $ Map.keys rooms))
+      where_ (games.id `in_` valList (coerce $ map (.roomArkhamGameId) rooms))
       pure games
 
 
-    AdminData currentUsers activeUsers activeGames <$> recentGames 20
+    AdminData currentUsers activeUsers rooms activeGames <$> recentGames 20
 
 getApiV1AdminGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1AdminGameR gameId = do
@@ -109,16 +117,11 @@ putApiV1AdminGameRawR gameId = do
   writeChannel <- (.channel) <$> getRoom gameId
   updateGame (Raw response.gameMessage) gameId userId writeChannel
 
-data RoomData = RoomData
-  { roomClients :: Int
-  , roomLastUpdatedAt :: UTCTime
-  , roomArkhamGameId :: ArkhamGameId
-  }
-  deriving stock (Show, Generic)
-  deriving anyclass ToJSON
-
 getApiV1AdminRoomsR :: Handler [RoomData]
-getApiV1AdminRoomsR = do
+getApiV1AdminRoomsR = getRoomData
+
+getRoomData :: Handler [RoomData]
+getRoomData = do
   roomsRef <- getsApp appGameRooms
   rooms <- readIORef roomsRef
 
@@ -131,3 +134,4 @@ getApiV1AdminRoomsR = do
           , roomLastUpdatedAt = roomLastUpdatedAt
           , roomArkhamGameId = arkhamGameId
           }
+

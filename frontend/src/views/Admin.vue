@@ -5,9 +5,16 @@ import GameFinder from '@/components/admin/GameFinder.vue'
 import type { GameDetails } from '@/arkham/types/Game'
 import AdminUI from '@/arkham/components/Admin/UI.vue'
 
+interface RoomData {
+  roomClients: number
+  roomLastUpdateAt: string
+  roomArkhamGameId: string
+}
+
 interface AdminData {
   currentUsers: number
   activeUsers: number
+  roomData: RoomData[]
   recentGames: GameDetails[]
   activeGames: GameDetails[]
 }
@@ -92,6 +99,20 @@ const recentFinishedGames = data.recentGames.filter(g => !g.error && g.gameState
       </div>
       <div class="game-list">
         <GameRow v-for="g in recentFinishedGames" :key="g.id" :game="g" :admin="true" />
+      </div>
+    </section>
+
+    <!-- Rooms -->
+    <section class="block" v-if="recentFinishedGames.length > 0">
+      <div class="block-header">
+        <h2>Rooms</h2>
+      </div>
+      <div class="game-list">
+        <div class='room' v-for="room in data" :key="room.roomArkhamGameId">
+          <span>{{room.roomClients}}</span>
+          <span>{{room.roomLastUpdatedAt}}</span>
+          <span><router-link :to="`/admin/games/${room.roomArkhamGameId}`">View</router-link></span>
+        </div>
       </div>
     </section>
   </AdminUI>
@@ -329,5 +350,14 @@ const recentFinishedGames = data.recentGames.filter(g => !g.error && g.gameState
   background:
     repeating-linear-gradient(135deg, rgba(125,211,252,.04) 0 10px, transparent 10px 20px),
     var(--panel);
+}
+
+.room {
+  padding: 20px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  *  {
+    flex: 1;
+  }
 }
 </style>

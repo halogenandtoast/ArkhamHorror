@@ -30,6 +30,7 @@ data AdminData = AdminData
   { currentUsers :: Int
   , activeUsers :: Int
   , activeGames :: [GameDetailsEntry]
+  , recentGames :: [GameDetailsEntry]
   }
   deriving stock (Show, Generic)
   deriving anyclass ToJSON
@@ -40,6 +41,9 @@ selectCount inner = fmap (sum . map unValue . toList) . selectOne $ inner $> cou
 getApiV1AdminR :: Handler AdminData
 getApiV1AdminR = do
   recent <- addUTCTime (negate (14 * nominalDay)) <$> liftIO getCurrentTime
+  roomsRef <- getsApp appGameRooms
+  rooms <- readIORef roomsRef
+
   runDB do
     currentUsers <- selectCount $ from $ table @User
     activeUsers <-
@@ -54,7 +58,13 @@ getApiV1AdminR = do
         where_ (games.updatedAt >=. val recent)
         pure (countDistinct users.id)
 
-    AdminData currentUsers activeUsers <$> recentGames 20
+    activeGames <- map toGameDetailsEntry <$> select do
+      games <- from $ table @ArkhamGameRaw
+      where_ (games.id `in_` valList (coerce $ Map.keys rooms))
+      pure games
+
+
+    AdminData currentUsers activeUsers activeGames <$> recentGames 20
 
 getApiV1AdminGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1AdminGameR gameId = do

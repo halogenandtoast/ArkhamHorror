@@ -117,6 +117,10 @@ class AsId a where
   type IdOf a
   asId :: a -> IdOf a
 
+instance AsId AgendaId where
+  type IdOf AgendaId = AgendaId
+  asId = id
+
 instance AsId ConcealedCardId where
   type IdOf ConcealedCardId = ConcealedCardId
   asId = id

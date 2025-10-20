@@ -177,7 +177,7 @@ const hasPool = computed(() => {
   isolation: isolate;
 }
 
-.civilians {
+.civilians, .pool {
   position: absolute;
   bottom: 0;
   right: 0;

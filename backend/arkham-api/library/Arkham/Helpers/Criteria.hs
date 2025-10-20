@@ -679,6 +679,9 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.InvestigatorsHaveSpendableClues valueMatcher -> do
     total <- selectSum InvestigatorClues (Matcher.InvestigatorWithoutModifier CannotSpendClues)
     total `gameValueMatches` valueMatcher
+  Criteria.InvestigatorsHaveClues valueMatcher -> do
+    total <- selectSum InvestigatorClues Matcher.Anyone
+    total `gameValueMatches` valueMatcher
   Criteria.Criteria rs -> allM (passesCriteria iid mcard source' requestor windows') rs
   Criteria.AnyCriterion rs -> anyM (passesCriteria iid mcard source' requestor windows') rs
   Criteria.AgendaCount n matcher -> do

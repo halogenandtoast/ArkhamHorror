@@ -208,6 +208,7 @@ data Criterion
   | InvestigatorExists InvestigatorMatcher
   | InvestigatorIsAlone
   | InvestigatorsHaveSpendableClues ValueMatcher
+  | InvestigatorsHaveClues ValueMatcher
   | LocationExists LocationMatcher
   | AgendaCount Int AgendaMatcher
   | AssetCount Int AssetMatcher

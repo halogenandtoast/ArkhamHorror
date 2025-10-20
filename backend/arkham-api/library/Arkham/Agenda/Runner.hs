@@ -25,6 +25,7 @@ import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Prelude
 import Arkham.Tarot
 import Arkham.Window qualified as Window
+import Control.Lens (non)
 
 advanceAgendaDeck :: AgendaAttrs -> Message
 advanceAgendaDeck attrs = AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
@@ -127,4 +128,6 @@ instance RunMessage AgendaAttrs where
     UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
       push $ Do msg
       pure a
+    PlaceTokens _source target tType n | isTarget a target -> do
+      pure $ a & tokensL . at tType . non 0 %~ (+ n)
     _ -> pure a

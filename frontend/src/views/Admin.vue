@@ -7,7 +7,7 @@ import AdminUI from '@/arkham/components/Admin/UI.vue'
 
 interface RoomData {
   roomClients: number
-  roomLastUpdateAt: string
+  roomLastUpdateAt: string | null
   roomArkhamGameId: string
 }
 
@@ -110,7 +110,7 @@ const recentFinishedGames = data.recentGames.filter(g => !g.error && g.gameState
       <div class="game-list">
         <div class='room' v-for="room in data" :key="room.roomArkhamGameId">
           <span>{{room.roomClients}}</span>
-          <span>{{room.roomLastUpdatedAt}}</span>
+          <span>{{room.roomLastUpdatedAt ? room.roomLastUpdatedAt : 'deleted'}}</span>
           <span><router-link :to="`/admin/games/${room.roomArkhamGameId}`">View</router-link></span>
         </div>
       </div>

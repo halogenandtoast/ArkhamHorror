@@ -11,6 +11,7 @@ module Api.Handler.Arkham.Games.Admin (
   putApiV1AdminGameR,
   getApiV1AdminGamesR,
   putApiV1AdminGameRawR,
+  deleteApiV1AdminRoomR
 ) where
 
 import Api.Arkham.Helpers
@@ -134,3 +135,7 @@ getRoomData = do
           , roomArkhamGameId = arkhamGameId
           }
 
+deleteApiV1AdminRoomR :: ArkhamGameId -> Handler ()
+deleteApiV1AdminRoomR gameId = do
+  roomsRef <- getsYesod appGameRooms
+  atomicModifyIORef' roomsRef \rooms -> (Map.delete gameId rooms, ())

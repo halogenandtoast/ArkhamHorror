@@ -32,45 +32,33 @@ import Entity.Answer
 import Entity.Arkham.GameRaw
 import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.))
-import UnliftIO (catch)
-import Yesod.Core.Types (HandlerContents)
 import Yesod.WebSockets
 
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
-getApiV1ArkhamGameR gameId =
-  do
-    userId <- getRequestUserId
-    webSockets $ gameStream (Just userId) gameId
-    runDB do
-      g <- get404 gameId
-      gameLog <- getGameLog gameId Nothing
-      Entity playerId _ <- getBy404 (UniquePlayer userId gameId)
-      let Game {..} = g.currentData
-      let
-        player =
-          case g.variant of
-            WithFriends -> coerce playerId
-            Solo -> gameActivePlayerId
-      pure $ GetGameJson (Just player) g.variant (PublicGame gameId g.name gameLog.entries g.currentData)
-    `catch` \(_ :: HandlerContents) -> do
-      roomsRef <- getsYesod appGameRooms
-      liftIO $ atomicModifyIORef' roomsRef \rooms -> (Map.delete gameId rooms, ())
-      notFound
+getApiV1ArkhamGameR gameId = do
+  userId <- getRequestUserId
+  webSockets $ gameStream (Just userId) gameId
+  runDB do
+    g <- get404 gameId
+    gameLog <- getGameLog gameId Nothing
+    Entity playerId _ <- getBy404 (UniquePlayer userId gameId)
+    let Game {..} = g.currentData
+    let
+      player =
+        case g.variant of
+          WithFriends -> coerce playerId
+          Solo -> gameActivePlayerId
+    pure $ GetGameJson (Just player) g.variant (PublicGame gameId g.name gameLog.entries g.currentData)
 
 getApiV1ArkhamGameSpectateR :: ArkhamGameId -> Handler GetGameJson
-getApiV1ArkhamGameSpectateR gameId =
-  do
-    webSockets $ gameStream Nothing gameId
-    runDB do
-      g <- get404 gameId
-      let Game {..} = g.currentData
-      gameLog <- getGameLog gameId Nothing
-      let player = gameActivePlayerId
-      pure $ GetGameJson (Just player) g.variant (PublicGame gameId g.name gameLog.entries g.currentData)
-    `catch` \(_ :: HandlerContents) -> do
-      roomsRef <- getsYesod appGameRooms
-      liftIO $ atomicModifyIORef' roomsRef \rooms -> (Map.delete gameId rooms, ())
-      notFound
+getApiV1ArkhamGameSpectateR gameId = do
+  webSockets $ gameStream Nothing gameId
+  runDB do
+    g <- get404 gameId
+    let Game {..} = g.currentData
+    gameLog <- getGameLog gameId Nothing
+    let player = gameActivePlayerId
+    pure $ GetGameJson (Just player) g.variant (PublicGame gameId g.name gameLog.entries g.currentData)
 
 getApiV1ArkhamGamesR :: Handler [GameDetailsEntry]
 getApiV1ArkhamGamesR = do

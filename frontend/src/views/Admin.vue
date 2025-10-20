@@ -27,6 +27,13 @@ const finishedGames = data.activeGames.filter(g => !g.error && g.gameState.tag =
 
 const recentActiveGames   = data.recentGames.filter(g => !g.error && g.gameState.tag !== 'IsOver')
 const recentFinishedGames = data.recentGames.filter(g => !g.error && g.gameState.tag === 'IsOver')
+
+function deleteRoom(gameId: string) {
+  return async () => {
+    await api.delete(`admin/rooms/${gameId}`)
+    window.location.reload()
+  }
+}
 </script>
 
 <template>
@@ -112,6 +119,7 @@ const recentFinishedGames = data.recentGames.filter(g => !g.error && g.gameState
           <span>{{room.roomClients}}</span>
           <span>{{room.roomLastUpdatedAt ? room.roomLastUpdatedAt : 'deleted'}}</span>
           <span><router-link :to="`/admin/games/${room.roomArkhamGameId}`">View</router-link></span>
+          <span><a href='#' @click.prevent="deleteRoom(room.roomArkhamGameId)">Delete</a></span>
         </div>
       </div>
     </section>

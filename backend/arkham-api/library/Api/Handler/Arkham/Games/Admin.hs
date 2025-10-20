@@ -51,8 +51,7 @@ selectCount inner = fmap (sum . map unValue . toList) . selectOne $ inner $> cou
 getApiV1AdminR :: Handler AdminData
 getApiV1AdminR = do
   recent <- addUTCTime (negate (14 * nominalDay)) <$> liftIO getCurrentTime
-  -- rooms <- getRoomData
-  let rooms = [] :: [RoomData]
+  rooms <- getRoomData
 
   runDB do
     currentUsers <- selectCount $ from $ table @User

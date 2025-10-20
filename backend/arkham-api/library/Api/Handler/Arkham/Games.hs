@@ -25,6 +25,7 @@ import Conduit
 import Control.Monad.Random (mkStdGen)
 import Control.Monad.Random.Class (getRandom)
 import Data.Coerce
+import Data.Map.Strict qualified as Map
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (update, (=.))
 import Entity.Answer
@@ -150,3 +151,5 @@ deleteApiV1ArkhamGameR gameId = do
       players <- from $ table @ArkhamPlayer
       where_ $ players.arkhamGameId ==. games.id
       where_ $ players.userId ==. val userId
+  roomsRef <- getsYesod appGameRooms
+  atomicModifyIORef' roomsRef \rooms -> (Map.delete gameId rooms, ())

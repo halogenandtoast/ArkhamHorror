@@ -50,15 +50,15 @@ selectCount inner = fmap (sum . map unValue . toList) . selectOne $ inner $> cou
 getApiV1AdminR :: Handler AdminData
 getApiV1AdminR = do
   recent <- addUTCTime (negate (14 * nominalDay)) <$> liftIO getCurrentTime
-  rooms <- getRoomData
+  -- rooms <- getRoomData
+  let rooms = [] :: [RoomData]
 
   runDB do
     currentUsers <- selectCount $ from $ table @User
     activeUsers <-
       fmap (sum . map unValue . toList) . selectOne $ do
-        (users :& _players :& games) <-
-          from
-            $ table @User
+        (users :& _players :& games) <- from do
+          table @User
             `innerJoin` table @ArkhamPlayer
               `on` (\(users :& players) -> users.id ==. players.userId)
             `innerJoin` table @ArkhamGame
@@ -70,7 +70,6 @@ getApiV1AdminR = do
       games <- from $ table @ArkhamGameRaw
       where_ (games.id `in_` valList (coerce $ map (.roomArkhamGameId) rooms))
       pure games
-
 
     AdminData currentUsers activeUsers rooms activeGames <$> recentGames 20
 

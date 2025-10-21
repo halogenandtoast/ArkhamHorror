@@ -46,6 +46,8 @@ library:
         - -Wall
         - -fwarn-tabs
         - -O0
+        - -plugin-package opentelemetry-plugin
+        - -fplugin=OpenTelemetry.Plugin
         cpp-options: -DDEVELOPMENT
       else:
         ghc-options:
@@ -53,6 +55,8 @@ library:
         - -fwarn-tabs
         - -O2
         - +RTS -V0 -RTS
+        - -plugin-package opentelemetry-plugin
+        - -fplugin=OpenTelemetry.Plugin
   dependencies:
     - MonadRandom
     - aeson

@@ -4788,10 +4788,10 @@ library
     , yesod-websockets
   default-language: GHC2021
   if (flag(dev)) || (flag(library-only))
-    ghc-options: -Wall -fwarn-tabs -O0
+    ghc-options: -Wall -fwarn-tabs -O0 -plugin-package opentelemetry-plugin -fplugin=OpenTelemetry.Plugin
     cpp-options: -DDEVELOPMENT
   else
-    ghc-options: -Wall -fwarn-tabs -O2 +RTS -V0 -RTS
+    ghc-options: -Wall -fwarn-tabs -O2 +RTS -V0 -RTS -plugin-package opentelemetry-plugin -fplugin=OpenTelemetry.Plugin
 
 executable arkham-api
   main-is: main.hs

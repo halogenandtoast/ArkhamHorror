@@ -14,6 +14,7 @@ module Api.Handler.Arkham.Games.Admin (
   deleteApiV1AdminRoomR
 ) where
 
+import Control.Concurrent.MVar
 import Api.Arkham.Helpers
 import Api.Handler.Arkham.Games.Shared
 import Arkham.Game
@@ -25,7 +26,7 @@ import Database.Esqueleto.Experimental qualified as E
 import Entity.Answer
 import Entity.Arkham.GameRaw
 import Entity.Arkham.Player
-import Import hiding (delete, exists, on, (==.), (>=.))
+import Import hiding (readMVar, delete, exists, on, (==.), (>=.))
 import Yesod.WebSockets
 
 data AdminData = AdminData
@@ -123,8 +124,8 @@ getApiV1AdminRoomsR = getRoomData
 
 getRoomData :: Handler [RoomData]
 getRoomData = do
-  roomsRef <- getsApp appGameRooms
-  rooms <- readIORef roomsRef
+  roomsVar <- getsApp appGameRooms
+  rooms <- liftIO $ readMVar roomsVar
 
   runDB do
     rooms & Map.assocs & traverse \(arkhamGameId, Room {..}) -> do
@@ -137,6 +138,4 @@ getRoomData = do
           }
 
 deleteApiV1AdminRoomR :: ArkhamGameId -> Handler ()
-deleteApiV1AdminRoomR gameId = do
-  roomsRef <- getsYesod appGameRooms
-  atomicModifyIORef' roomsRef \rooms -> (Map.delete gameId rooms, ())
+deleteApiV1AdminRoomR = deleteRoom

@@ -415,8 +415,13 @@ each_ as f = traverse_ f =<< as
 upon :: Applicative m => m () -> Bool -> m ()
 upon = flip when
 
-whenNothing :: Applicative m => Maybe a -> m () -> m ()
-whenNothing ma body = when (isNothing ma) body
+whenNothing_ :: Applicative m => Maybe a -> m () -> m ()
+whenNothing_ Nothing body = body
+whenNothing_ _ _ = pure ()
+
+whenNothing :: Applicative m => Maybe a -> m a -> m a
+whenNothing Nothing body = body
+whenNothing (Just x) _ = pure x
 
 whenJustM :: Monad m => m (Maybe a) -> (a -> m ()) -> m ()
 whenJustM mma f = mma >>= traverse_ f

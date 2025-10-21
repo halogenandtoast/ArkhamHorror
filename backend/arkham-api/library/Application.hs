@@ -24,6 +24,7 @@ module Application (
 ) where
 
 import Config
+import Control.Concurrent.MVar (newMVar)
 import Control.Monad.Logger (liftLoc, runLoggingT)
 import Data.Bugsnag.Settings qualified as Bugsnag
 import Data.CaseInsensitive (mk)
@@ -44,7 +45,7 @@ import Database.Redis (
   parseConnectInfo,
   pubSubForever,
  )
-import Import hiding (sendResponse)
+import Import hiding (sendResponse, newMVar)
 import Language.Haskell.TH.Syntax (qLocation)
 import Network.HTTP.Client.TLS (getGlobalManager)
 import Network.HTTP.Types (ResponseHeaders, status200)
@@ -115,7 +116,7 @@ makeFoundation appSettings = do
   appLogger <- newStdoutLoggerSet defaultBufSize >>= makeYesodLogger
   let appBugsnag = Bugsnag.defaultSettings (appBugsnagApiKey appSettings)
 
-  appGameRooms <- newIORef mempty
+  appGameRooms <- newMVar mempty
 
   appMessageBroker <- case appRedisConnectionInfo appSettings of
     Nothing -> pure WebSocketBroker

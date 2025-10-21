@@ -106,6 +106,7 @@ library:
     - monoidal-containers
     - mtl >= 2.3.1
     - opentelemetry
+    - opentelemetry-plugin
     - parsec
     - path-pieces
     - persistent
@@ -157,6 +158,7 @@ executables:
       - foreign-store
       - warp
       - arkham-api
+      - opentelemetry-plugin
     when:
       - condition: flag(library-only)
         buildable: false

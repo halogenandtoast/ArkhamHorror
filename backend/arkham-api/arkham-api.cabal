@@ -4750,6 +4750,7 @@ library
     , monoidal-containers
     , mtl >=2.3.1
     , opentelemetry
+    , opentelemetry-plugin
     , parsec
     , path-pieces
     , persistent
@@ -4832,6 +4833,7 @@ executable arkham-api
       arkham-api
     , base
     , foreign-store
+    , opentelemetry-plugin
     , warp
   default-language: GHC2021
   if flag(library-only)

@@ -23,6 +23,7 @@ import Arkham.Message
 import Arkham.Name
 import Arkham.Queue
 import Conduit
+import Control.Concurrent.MVar
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
 import Data.Aeson.Types (parse)
@@ -51,9 +52,12 @@ gameStream :: Maybe UserId -> ArkhamGameId -> WebSocketsT Handler ()
 gameStream mUserId gameId = catchingConnectionException do
   writeChannel :: TChan BSL.ByteString <- lift $ (.channel) <$> getRoom gameId
   broker <- lift $ getsYesod appMessageBroker
-  roomsRef <- getsYesod appGameRooms
-  atomicModifyIORef' roomsRef \rooms -> do
-    (Map.adjust (\room -> room {socketClients = room.clients + 1}) gameId rooms, ())
+  roomsVar <- getsYesod appGameRooms
+  liftIO
+    $ modifyMVar_ roomsVar
+    $ pure
+    . Map.adjust (\room -> room {socketClients = room.clients + 1}) gameId
+
   bracket (atomically $ dupTChan writeChannel) closeConnection \readChannel -> do
     mtid <- case broker of
       RedisBroker redisConn _ -> do
@@ -82,17 +86,20 @@ gameStream mUserId gameId = catchingConnectionException do
         Left err -> $(logWarn) $ tshow err
         Right answer ->
           updateGame answer gameId userId writeChannel `catch` \(e :: SomeException) -> do
-            liftIO $ atomically $ writeTChan writeChannel $ encode $ GameError $ tshow e
+            atomically $ writeTChan writeChannel $ encode $ GameError $ tshow e
 
   closeConnection _ = do
-    roomsRef <- getsYesod appGameRooms
-    clientCount <- atomicModifyIORef' roomsRef \rooms ->
-      ( Map.adjust (\room -> room {socketClients = max 0 (room.clients - 1)}) gameId rooms
-      , maybe 0 (\room -> max 0 (room.clients - 1)) $ Map.lookup gameId rooms
-      )
-    when (clientCount == 0) do
-      lift $ removeChannel (gameChannel gameId)
-      atomicModifyIORef' roomsRef \rooms -> (Map.delete gameId rooms, ())
+    roomsVar <- getsYesod appGameRooms
+    remove <- liftIO $ modifyMVar roomsVar \rooms -> pure do
+      case Map.lookup gameId rooms of
+        Nothing -> (rooms, False)
+        Just room -> do
+          let room' = room {socketClients = max 0 (room.clients - 1)}
+          if room'.clients == 0
+            then (Map.delete gameId rooms, True)
+            else (Map.insert gameId room' rooms, False)
+
+    when remove $ lift $ removeChannel (gameChannel gameId)
 
 catchingConnectionException :: WebSocketsT Handler () -> WebSocketsT Handler ()
 catchingConnectionException f =
@@ -304,3 +311,8 @@ toGameDetailsEntry (Entity gameId game) =
   campaignOtherInvestigators j = case parse (withObject "" (.: "otherCampaignAttrs")) j of
     Error _ -> mempty
     Success (attrs :: CampaignAttrs) -> map (`lookupInvestigator` PlayerId nil) $ Map.keys attrs.decks
+
+deleteRoom :: ArkhamGameId -> Handler ()
+deleteRoom gameId = do
+  roomsVar <- getsYesod appGameRooms
+  liftIO $ modifyMVar_ roomsVar $ pure . Map.delete gameId

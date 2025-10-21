@@ -1,10 +1,6 @@
 {-# LANGUAGE OverloadedRecordDot #-}
-{-# LANGUAGE TupleSections #-}
-{-# LANGUAGE ViewPatterns #-}
 
 module Api.Arkham.Helpers where
-
-import Import hiding (appLogger, (==.), (>=.))
 
 import Arkham.Card
 import Arkham.Card.EncounterCard
@@ -18,8 +14,9 @@ import Arkham.Id
 import Arkham.Message
 import Arkham.Queue
 import Arkham.Random
+import Control.Concurrent.MVar
 import Control.Lens hiding (from)
-import Control.Monad.Random (MonadRandom (..), StdGen, mkStdGen)
+import Control.Monad.Random (MonadRandom (..), StdGen)
 import Data.Aeson qualified as Aeson
 import Data.Map.Strict qualified as Map
 import Data.Time.Clock
@@ -27,6 +24,7 @@ import Database.Esqueleto.Experimental
 import Database.Redis (RedisChannel)
 import Entity.Arkham.LogEntry
 import GHC.Records
+import Import hiding (appLogger, (==.), (>=.))
 
 newtype GameLog = GameLog {gameLogToLogEntries :: [Text]}
   deriving newtype (Monoid, Semigroup)
@@ -47,19 +45,10 @@ getGameLog :: MonadIO m => ArkhamGameId -> Maybe Int -> SqlPersistT m GameLog
 getGameLog gameId mStep = fmap (GameLog . fmap unValue) $ select $ do
   entries <- from $ table @ArkhamLogEntry
   where_ $ entries.arkhamGameId ==. val gameId
-  for_ mStep $ \step ->
+  for_ mStep \step ->
     where_ $ entries.step >=. val step
   orderBy [asc entries.createdAt]
   pure entries.body
-
-getGameLogEntries :: MonadIO m => ArkhamGameId -> SqlPersistT m [ArkhamLogEntry]
-getGameLogEntries gameId = fmap (fmap entityVal)
-  . select
-  $ do
-    entries <- from $ table @ArkhamLogEntry
-    where_ $ entries.arkhamGameId ==. val gameId
-    orderBy [asc entries.createdAt]
-    pure entries
 
 toPublicGame :: Entity ArkhamGame -> GameLog -> PublicGame ArkhamGameId
 toPublicGame (Entity gId ArkhamGame {..}) gameLog =
@@ -94,39 +83,25 @@ instance HasGame GameAppT where
   getGame = readIORef =<< asks appGame
   getCache = GameCache \_ build -> build
 
+overGameCards :: (Map CardId Card -> Map CardId Card) -> GameAppT ()
+overGameCards f = do
+  ref <- asks appGame
+  atomicModifyIORef' ref \g -> (g {gameCards = f (gameCards g)}, ())
+
 instance CardGen GameAppT where
   genEncounterCard a = do
     cardId <- unsafeMakeCardId <$> getRandom
     let card = lookupEncounterCard (toCardDef a) cardId
-    ref <- asks appGame
-    atomicModifyIORef' ref $ \g ->
-      (g {gameCards = Map.insert cardId (EncounterCard card) (gameCards g)}, ())
+    overGameCards $ Map.insert cardId (toCard card)
     pure card
   genPlayerCard a = do
     cardId <- unsafeMakeCardId <$> getRandom
     let card = lookupPlayerCard (toCardDef a) cardId
-    ref <- asks appGame
-    atomicModifyIORef' ref $ \g ->
-      (g {gameCards = Map.insert cardId (PlayerCard card) (gameCards g)}, ())
+    overGameCards $ Map.insert cardId (toCard card)
     pure card
-  replaceCard cardId card = do
-    ref <- asks appGame
-    atomicModifyIORef' ref $ \g ->
-      (g {gameCards = Map.insert cardId card (gameCards g)}, ())
-  removeCard cardId = do
-    ref <- asks appGame
-    atomicModifyIORef' ref $ \g ->
-      (g {gameCards = Map.delete cardId (gameCards g)}, ())
-  clearCardCache = do
-    ref <- asks appGame
-    atomicModifyIORef' ref $ \g -> (g {gameCards = Map.filter (not . isEncounterCard) (gameCards g)}, ())
-
-newApp :: MonadIO m => Game -> (ClientMessage -> IO ()) -> [Message] -> m GameApp
-newApp g logger msgs = do
-  gameRef <- newIORef g
-  queueRef <- newQueue msgs
-  genRef <- newIORef (mkStdGen (gameSeed g))
-  pure $ GameApp gameRef queueRef genRef logger
+  replaceCard cardId card = overGameCards $ Map.insert cardId card
+  removeCard cardId = overGameCards $ Map.delete cardId
+  clearCardCache = overGameCards $ Map.filter (not . isEncounterCard)
 
 instance HasStdGen GameApp where
   genL = lens appGen $ \m x -> m {appGen = x}
@@ -153,25 +128,20 @@ gameChannel gameId = "arkham-" <> encodeUtf8 (tshow gameId)
 
 getRoom :: (MonadIO m, HasApp m) => ArkhamGameId -> m Room
 getRoom gid = do
-  roomsRef <- getsApp appGameRooms
-  mb <- liftIO $ atomicModifyIORef' roomsRef \m ->
-    case Map.lookup gid m of
-      Just r -> (m, Right r)
-      Nothing -> (m, Left ())
-  case mb of
-    Right r -> pure r
-    Left () -> do
-      chan <- atomically newBroadcastTChan
-      let r =
-            Room
-              { socketChannel = chan
-              , socketClients = 0
-              , messageBrokerChannel = gameChannel gid
-              }
-      liftIO $ atomicModifyIORef' roomsRef \m ->
-        case Map.lookup gid m of
-          Just r' -> (m, r')
-          Nothing -> (Map.insert gid r m, r)
+  roomsVar <- getsApp appGameRooms
+  liftIO do
+    modifyMVar roomsVar \rooms -> do
+      case Map.lookup gid rooms of
+        Just r -> pure (rooms, r)
+        Nothing -> do
+          chan <- atomically newBroadcastTChan
+          let r =
+                Room
+                  { socketChannel = chan
+                  , socketClients = 0
+                  , messageBrokerChannel = gameChannel gid
+                  }
+          pure (Map.insert gid r rooms, r)
 
 displayCardType :: CardType -> Text
 displayCardType = \case

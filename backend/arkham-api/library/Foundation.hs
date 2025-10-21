@@ -101,7 +101,7 @@ data App = App
   -- ^ Database connection pool.
   , appHttpManager :: Manager
   , appLogger :: Logger
-  , appGameRooms :: !(IORef (Map ArkhamGameId Room))
+  , appGameRooms :: !(MVar (Map ArkhamGameId Room))
   , appBugsnag :: Bugsnag.Settings
   }
 

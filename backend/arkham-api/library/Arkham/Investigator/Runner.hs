@@ -4324,7 +4324,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} =
             map (mkWhen . Window.DuringTurn) mTurnInvestigator
               <> [mkWhen Window.FastPlayerWindow, mkWhen Window.NonFast]
 
-        actions <- lift $ withSpan_ "getActions" $ asIfTurn iid (getActions iid windows)
+        actions <- asIfTurn iid (getActions iid windows)
         anyForced <- anyM (isForcedAbility iid) actions
         if anyForced
           then do
@@ -4387,7 +4387,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} =
         pure a
       PlayerWindow iid additionalActions isAdditional | iid /= investigatorId && a.inGame -> do
         let windows = [mkWhen Window.FastPlayerWindow]
-        actions <- lift $ withSpan_ "getActions" $ getActions investigatorId windows
+        actions <- getActions investigatorId windows
         anyForced <- anyM (isForcedAbility investigatorId) actions
         unless anyForced $ do
           playableCards <-

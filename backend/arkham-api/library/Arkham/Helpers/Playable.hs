@@ -45,6 +45,8 @@ import Arkham.Taboo.Types
 import Arkham.Tracing
 import Arkham.Window
 import Control.Lens (over)
+import Data.Conduit (runConduit, (.|))
+import Data.Conduit.Combinators qualified as C
 import Data.Data.Lens (biplate)
 
 getPlayableCards
@@ -56,7 +58,7 @@ getPlayableCards
      , IdOf investigator ~ InvestigatorId
      )
   => source -> investigator -> CostStatus -> [Window] -> m [Card]
-getPlayableCards source investigator costStatus windows' = do
+getPlayableCards source investigator costStatus windows' = withSpan_ "getPlayableCards" do
   asIfInHandCards <- withSpan_ "getAsIfInHandCards" $ getAsIfInHandCards (asId investigator)
   otherPlayersPlayableCards <-
     withSpan_ "getOtherPlayersPlayableCards"
@@ -65,8 +67,7 @@ getPlayableCards source investigator costStatus windows' = do
     withSpan_ "getPlayableDiscards" $ getPlayableDiscards source (asId investigator) costStatus windows'
   hand <- field InvestigatorHand (asId investigator)
   playableHandCards <-
-    withSpan_ "filterPlayable"
-      $ filterM (getIsPlayable (asId investigator) source costStatus windows') (hand <> asIfInHandCards)
+    filterPlayable investigator source costStatus windows' (hand <> asIfInHandCards)
   pure $ playableHandCards <> playableDiscards <> otherPlayersPlayableCards
 
 getPlayableCardsMatch
@@ -121,8 +122,11 @@ filterPlayable
   -> [Window]
   -> [Card]
   -> m [Card]
-filterPlayable investigator source costStatus windows' =
-  filterM (getIsPlayable investigator source costStatus windows')
+filterPlayable investigator source costStatus windows' cards = withSpan_ "filterPlayable" do
+  runConduit
+    $ C.yieldMany cards
+    .| C.filterM (getIsPlayable investigator source costStatus windows')
+    .| C.sinkList
 
 getIsPlayable
   :: ( HasCallStack

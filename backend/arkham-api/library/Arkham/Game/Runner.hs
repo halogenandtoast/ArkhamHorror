@@ -139,11 +139,9 @@ import Data.Data.Lens (biplate)
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
 import Data.Set qualified as Set
-import Data.Text qualified as T
 import Data.These
 import Data.These.Lens
 import Data.Typeable
-import OpenTelemetry.Trace qualified as Trace
 
 getInvestigatorsInOrder :: HasGame m => m [InvestigatorId]
 getInvestigatorsInOrder = do
@@ -3303,7 +3301,7 @@ preloadEntities g = do
 instance RunMessage Game where
   runMessage msg g =
     withSpan' "Game.runMessage" \currentSpan -> do
-      Trace.addAttribute currentSpan "message" (T.pack $ show msg)
+      addAttribute currentSpan "message" (tshow msg)
       ( (modeL . here) (runMessage msg) g
           >>= (modeL . there) (runMessage msg)
           >>= entitiesL (runMessage msg)

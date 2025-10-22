@@ -206,6 +206,7 @@ instance Tracing TestAppT where
   type SpanType TestAppT = Trace.Span
   type SpanArgs TestAppT = Trace.SpanArguments
   defaultSpanArgs = Trace.defaultSpanArguments
+  addAttribute = Trace.addAttribute
   doTrace name args action = inSpan' name args action
 
 instance MonadTracer TestAppT where
@@ -784,6 +785,7 @@ instance Tracing IO where
   type SpanType IO = ()
   type SpanArgs IO = ()
   defaultSpanArgs = ()
+  addAttribute _ _ _ = pure ()
   doTrace _ _ action = action ()
 
 gameTestFromFile :: FilePath -> (Investigator -> TestAppT ()) -> IO ()

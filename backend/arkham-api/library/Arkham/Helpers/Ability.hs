@@ -61,18 +61,17 @@ getCanPerformAbility !iid !ws !ability = do
       Just lid -> Matcher.replaceThisLocation lid $ abilityWindow ability
 
   -- We use toSource to make sure we can track that we are talkign about an ability
-  andM
-    [ getCanAffordCost iid (toSource ability) actions ws (mconcat $ cost : additionalCosts)
-    , meetsActionRestrictions iid ws ability
-    , anyM (\window -> windowMatches iid (toSource ability) window abWindow) ws
-    , withActiveInvestigator iid do
-        passesCriteria iid Nothing (toSource ability) ability.requestor ws criteria
-    , not <$> preventedByInvestigatorModifiers iid ability
-    ]
+  runValidT do
+    liftGuardM $ getCanAffordCost iid (toSource ability) actions ws (mconcat $ cost : additionalCosts)
+    liftGuardM $ meetsActionRestrictions iid ws ability
+    liftGuardM $ anyM (\window -> windowMatches iid (toSource ability) window abWindow) ws
+    liftGuardM $ withActiveInvestigator iid do
+      passesCriteria iid Nothing (toSource ability) ability.requestor ws criteria
+    liftGuardM $ not <$> preventedByInvestigatorModifiers iid ability
 
 preventedByInvestigatorModifiers
   :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> m Bool
-preventedByInvestigatorModifiers iid ability = do
+preventedByInvestigatorModifiers iid ability = withSpan_ "preventedByInvestigatorModifiers" do
   modifiers <- getModifiers (InvestigatorTarget iid)
   isForced <- isForcedAbility iid ability
   if isForced then pure False else anyM prevents modifiers
@@ -101,7 +100,7 @@ preventedByInvestigatorModifiers iid ability = do
 
 meetsActionRestrictions
   :: (Tracing m, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
-meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
+meetsActionRestrictions iid _ ab@Ability {..} = withSpan_ "meetsActionRestrictions" $ go abilityType
  where
   go = \case
     Haunted -> pure False

@@ -512,6 +512,7 @@ getConnectedMatcher forMovement = Helpers.getConnectedMatcher forMovement . toId
 instance Tracing Identity where
   type SpanType Identity = ()
   type SpanArgs Identity = ()
+  addAttribute _ _ _ = pure ()
   defaultSpanArgs = ()  
   doTrace _ _ f = f ()
 

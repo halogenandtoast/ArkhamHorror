@@ -14,9 +14,10 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Story.Types (Field (..))
+import Arkham.Tracing
 import Arkham.Trait (Trait, toTraits)
 
-sourceTraits :: (HasCallStack, HasGame m) => Source -> m (Set Trait)
+sourceTraits :: (HasCallStack, HasGame m, Tracing m) => Source -> m (Set Trait)
 sourceTraits = \case
   UseAbilitySource _ s _ -> sourceTraits s
   AbilitySource s _ -> sourceTraits s
@@ -63,7 +64,7 @@ sourceTraits = \case
   TreacherySource tid -> fromMaybe mempty <$> fieldMay TreacheryTraits tid
   YouSource -> selectJust Matcher.You >>= field InvestigatorTraits
 
-getSourceController :: HasGame m => Source -> m (Maybe InvestigatorId)
+getSourceController :: (HasGame m, Tracing m) => Source -> m (Maybe InvestigatorId)
 getSourceController = \case
   AbilitySource s _ -> getSourceController s
   UseAbilitySource iid _ _ -> pure $ Just iid
@@ -73,7 +74,7 @@ getSourceController = \case
   InvestigatorSource iid -> pure $ Just iid
   _ -> pure Nothing
 
-sourceMatches :: (HasCallStack, HasGame m) => Source -> Matcher.SourceMatcher -> m Bool
+sourceMatches :: (HasCallStack, HasGame m, Tracing m) => Source -> Matcher.SourceMatcher -> m Bool
 sourceMatches s = \case
   Matcher.SourceIsCancelable sm -> case s of
     CardCostSource _ -> pure False

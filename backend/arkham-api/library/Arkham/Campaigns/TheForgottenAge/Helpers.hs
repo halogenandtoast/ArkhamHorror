@@ -43,6 +43,7 @@ import Arkham.SkillType (SkillType)
 import Arkham.Source
 import Arkham.Target
 import Arkham.Text (Tooltip (..))
+import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Result (..), mkAfter)
 import Arkham.Window qualified as Window
@@ -50,25 +51,25 @@ import Arkham.Window qualified as Window
 pickSupply :: ReverseQueue m => InvestigatorId -> Supply -> m ()
 pickSupply iid s = push $ PickSupply iid s
 
-getHasSupply :: HasGame m => InvestigatorId -> Supply -> m Bool
+getHasSupply :: (HasGame m, Tracing m) => InvestigatorId -> Supply -> m Bool
 getHasSupply iid s = (> 0) <$> getSupplyCount iid s
 
-getSupplyCount :: HasGame m => InvestigatorId -> Supply -> m Int
+getSupplyCount :: (HasGame m, Tracing m) => InvestigatorId -> Supply -> m Int
 getSupplyCount iid s = fieldMap InvestigatorSupplies (length . filter (== s)) iid
 
-getAnyHasSupply :: HasGame m => Supply -> m Bool
+getAnyHasSupply :: (HasGame m, Tracing m) => Supply -> m Bool
 getAnyHasSupply = fmap notNull . getInvestigatorsWithSupply
 
-unlessAnyHasSupply :: HasGame m => Supply -> m () -> m ()
+unlessAnyHasSupply :: (HasGame m, Tracing m) => Supply -> m () -> m ()
 unlessAnyHasSupply s = unlessM (getAnyHasSupply s)
 
-getInvestigatorsWithSupply :: HasGame m => Supply -> m [InvestigatorId]
+getInvestigatorsWithSupply :: (HasGame m, Tracing m) => Supply -> m [InvestigatorId]
 getInvestigatorsWithSupply s = getInvestigators >>= filterM (`getHasSupply` s)
 
-getInvestigatorsWithoutSupply :: HasGame m => Supply -> m [InvestigatorId]
+getInvestigatorsWithoutSupply :: (HasGame m, Tracing m) => Supply -> m [InvestigatorId]
 getInvestigatorsWithoutSupply s = getInvestigators >>= filterM (fmap not . (`getHasSupply` s))
 
-getTotalVengeanceInVictoryDisplay :: forall m. (HasCallStack, HasGame m) => m Int
+getTotalVengeanceInVictoryDisplay :: forall m. (HasCallStack, HasGame m, Tracing m) => m Int
 getTotalVengeanceInVictoryDisplay = do
   n <- getVengeanceInVictoryDisplay
   locationVengeance <- fmap getSum . toVengeance =<< select (RevealedLocation <> LocationWithoutClues)
@@ -77,7 +78,7 @@ getTotalVengeanceInVictoryDisplay = do
   toVengeance :: ConvertToCard c => [c] -> m (Sum Int)
   toVengeance = fmap (mconcat . map Sum . catMaybes) . traverse getVengeancePoints
 
-getVengeanceInVictoryDisplay :: forall m. (HasCallStack, HasGame m) => m Int
+getVengeanceInVictoryDisplay :: forall m. (HasCallStack, HasGame m, Tracing m) => m Int
 getVengeanceInVictoryDisplay = do
   victoryDisplay <- getVictoryDisplay
   let
@@ -95,39 +96,39 @@ getVengeanceInVictoryDisplay = do
         (LocationWithModifier InVictoryDisplayForCountingVengeance)
   pure $ inVictoryDisplay' + locationsWithModifier + vengeanceCards
 
-getExplorationDeck :: HasGame m => m [Card]
+getExplorationDeck :: (HasGame m, Tracing m) => m [Card]
 getExplorationDeck = scenarioFieldMap ScenarioDecks (findWithDefault [] ExplorationDeck)
 
 setExplorationDeck :: ReverseQueue m => [Card] -> m ()
 setExplorationDeck = setScenarioDeck ExplorationDeck
 
-getSetAsidePoisonedCount :: HasGame m => m Int
+getSetAsidePoisonedCount :: (HasGame m, Tracing m) => m Int
 getSetAsidePoisonedCount = do
   n <- selectCount $ InDeckOf Anyone <> basic (cardIs Treacheries.poisoned)
   pure $ 4 - n
 
-getIsPoisoned :: HasGame m => InvestigatorId -> m Bool
+getIsPoisoned :: (HasGame m, Tracing m) => InvestigatorId -> m Bool
 getIsPoisoned iid = selectAny $ treacheryIs Treacheries.poisoned <> treacheryInThreatAreaOf iid
 
-unlessPoisoned :: HasGame m => InvestigatorId -> m () -> m ()
+unlessPoisoned :: (HasGame m, Tracing m) => InvestigatorId -> m () -> m ()
 unlessPoisoned iid body = do
   ok <- not <$> getIsPoisoned iid
   when ok body
 
-whenPoisoned :: HasGame m => InvestigatorId -> m () -> m ()
+whenPoisoned :: (HasGame m, Tracing m) => InvestigatorId -> m () -> m ()
 whenPoisoned iid body = do
   ok <- getIsPoisoned iid
   when ok body
 
-eachUnpoisoned :: HasGame m => (InvestigatorId -> m ()) -> m ()
+eachUnpoisoned :: (HasGame m, Tracing m) => (InvestigatorId -> m ()) -> m ()
 eachUnpoisoned body = do
   unpoisoned <- getUnpoisoned
   for_ unpoisoned body
 
-getUnpoisoned :: HasGame m => m [InvestigatorId]
+getUnpoisoned :: (HasGame m, Tracing m) => m [InvestigatorId]
 getUnpoisoned = select $ NotInvestigator $ HasMatchingTreachery $ treacheryIs $ Treacheries.poisoned
 
-getSetAsidePoisoned :: HasGame m => m Card
+getSetAsidePoisoned :: (HasGame m, Tracing m) => m Card
 getSetAsidePoisoned =
   fromJustNote "not enough poison cards"
     . find ((== Treacheries.poisoned) . toCardDef)
@@ -236,7 +237,7 @@ explore iid source cardMatcher exploreRule matchCount = do
           | lid <- locations
           ]
 
-getVengeancePoints :: (HasCallStack, ConvertToCard c, HasGame m) => c -> m (Maybe Int)
+getVengeancePoints :: (HasCallStack, ConvertToCard c, HasGame m, Tracing m) => c -> m (Maybe Int)
 getVengeancePoints c = do
   card <- convertToCard c
   mods <- getModifiers card
@@ -244,7 +245,7 @@ getVengeancePoints c = do
     then pure Nothing
     else getCardField cdVengeancePoints card
 
-getHasVengeancePoints :: (ConvertToCard c, HasGame m) => c -> m Bool
+getHasVengeancePoints :: (ConvertToCard c, HasGame m, Tracing m) => c -> m Bool
 getHasVengeancePoints c = isJust <$> getVengeancePoints c
 
 exploreAction :: Cost -> AbilityType

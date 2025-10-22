@@ -28,6 +28,7 @@ import Arkham.Projection
 import Arkham.Scenario.Types
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 
 placeUnrevealedKeyOn :: (ReverseQueue m, Targetable target) => target -> m ()
 placeUnrevealedKeyOn target = do
@@ -65,10 +66,10 @@ needsAir a n =
     $ forced
     $ TurnBegins #when You
 
-getFloodLevel :: (HasGame m, AsId location, IdOf location ~ LocationId) => location -> m FloodLevel
+getFloodLevel :: (HasGame m, Tracing m, AsId location, IdOf location ~ LocationId) => location -> m FloodLevel
 getFloodLevel = fieldWithDefault Unflooded LocationFloodLevel . asId
 
-getFloodLevelFor :: HasGame m => InvestigatorId -> m FloodLevel
+getFloodLevelFor :: (HasGame m, Tracing m) => InvestigatorId -> m FloodLevel
 getFloodLevelFor iid = do
   inFishingVessel <- matches iid $ InVehicleMatching $ assetIs Assets.fishingVessel
   if inFishingVessel
@@ -79,7 +80,7 @@ getFloodLevelFor iid = do
         Just location -> getFloodLevel location
 
 canIncreaseFloodLevel
-  :: (HasGame m, AsId location, IdOf location ~ LocationId) => location -> m Bool
+  :: (HasGame m, Tracing m, AsId location, IdOf location ~ LocationId) => location -> m Bool
 canIncreaseFloodLevel = (<=~> CanHaveFloodLevelIncreased) . asId
 
 increaseThisFloodLevelOrElse
@@ -105,15 +106,15 @@ setThisFloodLevel
   :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> FloodLevel -> m ()
 setThisFloodLevel location level = push $ SetFloodLevel (asId location) level
 
-struggleForAir :: (Sourceable a, HasGame m, HasQueue Message m) => a -> InvestigatorId -> m ()
+struggleForAir :: (Sourceable a, HasGame m, Tracing m, HasQueue Message m) => a -> InvestigatorId -> m ()
 struggleForAir a iid = do
   builder <- makeEffectBuilder "noair" Nothing a iid
   push $ CreateEffect builder
 
-whenRecoveredMemory :: HasGame m => Memory -> m () -> m ()
+whenRecoveredMemory :: (HasGame m, Tracing m) => Memory -> m () -> m ()
 whenRecoveredMemory memory action = whenM (hasMemory memory) action
 
-hasMemory :: HasGame m => Memory -> m Bool
+hasMemory :: (HasGame m, Tracing m) => Memory -> m Bool
 hasMemory memory = inRecordSet memory MemoriesRecovered
 
 recoverMemory :: ReverseQueue m => Memory -> m ()

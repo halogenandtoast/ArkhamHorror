@@ -6,7 +6,6 @@ module Arkham.Prelude (
 import ClassyPrelude as X hiding (foldlM, on, (\\))
 import Data.Type.Equality as X (type (~))
 
-import OpenTelemetry.Eventlog as X (withSpan_)
 import Control.Exception as X (throw)
 import Control.Lens as X (
   Lens',
@@ -206,7 +205,8 @@ sampleNonEmptyN n xs = do
     Nothing -> pure (x :| [])
     Just xs' -> (x :|) <$> sampleN (n - 1) xs'
 
-sampleListN :: (Eq (Element mono), MonoFoldable mono, MonadRandom m) => Int -> mono -> m [Element mono]
+sampleListN
+  :: (Eq (Element mono), MonoFoldable mono, MonadRandom m) => Int -> mono -> m [Element mono]
 sampleListN n xs = maybe (pure []) (sampleN n) (nonEmpty $ otoList xs)
 
 infix 9 !!?
@@ -337,8 +337,9 @@ breakNM n p xs = go n ([], xs)
 infixl 4 <$$>
 
 (<|?>) :: [a] -> [a] -> [a]
-xs <|?> ys | null xs   = ys
-           | otherwise = xs
+xs <|?> ys
+  | null xs = ys
+  | otherwise = xs
 infixl 3 <|?>
 
 ffmap :: (Functor f, Functor m) => (a -> b) -> m (f a) -> m (f b)

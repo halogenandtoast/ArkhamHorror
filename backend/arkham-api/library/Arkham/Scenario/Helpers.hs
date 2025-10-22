@@ -15,9 +15,10 @@ import Arkham.Helpers.EncounterSet (gatherEncounterSet)
 import Arkham.Helpers.Log (getHasRecord)
 import Arkham.Helpers.Campaign as X
 import Arkham.Matcher
+import Arkham.Tracing
 
 getHasRecordOrStandalone
-  :: (HasGame m, IsCampaignLogKey k)
+  :: (HasGame m, Tracing m, IsCampaignLogKey k)
   => k
   -> Bool
   -> m Bool

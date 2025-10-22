@@ -14,29 +14,30 @@ import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Tracing
 
-getOnlyChaosTokensInBag :: HasGame m => m [ChaosToken]
+getOnlyChaosTokensInBag :: (HasGame m, Tracing m) => m [ChaosToken]
 getOnlyChaosTokensInBag = scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
 
-getBagChaosTokens :: HasGame m => m [ChaosToken]
+getBagChaosTokens :: (HasGame m, Tracing m) => m [ChaosToken]
 getBagChaosTokens = scenarioFieldMap ScenarioChaosBag allChaosBagChaosTokens
 
-getTokenPool :: HasGame m => m [ChaosToken]
+getTokenPool :: (HasGame m, Tracing m) => m [ChaosToken]
 getTokenPool = scenarioFieldMap ScenarioChaosBag chaosBagTokenPool
 
-getRemainingFrostTokens :: HasGame m => m Int
+getRemainingFrostTokens :: (HasGame m, Tracing m) => m Int
 getRemainingFrostTokens = selectCount $ InTokenPool #frost
 
-hasRemainingFrostTokens :: HasGame m => m Bool
+hasRemainingFrostTokens :: (HasGame m, Tracing m) => m Bool
 hasRemainingFrostTokens = (> 0) <$> getRemainingFrostTokens
 
-getRemainingCurseTokens :: HasGame m => m Int
+getRemainingCurseTokens :: (HasGame m, Tracing m) => m Int
 getRemainingCurseTokens = selectCount $ InTokenPool #curse
 
-getRemainingBlessTokens :: HasGame m => m Int
+getRemainingBlessTokens :: (HasGame m, Tracing m) => m Int
 getRemainingBlessTokens = selectCount $ InTokenPool #bless
 
-getSealedChaosTokens :: HasGame m => m [ChaosToken]
+getSealedChaosTokens :: (HasGame m, Tracing m) => m [ChaosToken]
 getSealedChaosTokens =
   concat
     <$> sequence
@@ -46,13 +47,13 @@ getSealedChaosTokens =
       , selectAgg id InvestigatorSealedChaosTokens Anyone
       ]
 
-getAllChaosTokens :: HasGame m => m [ChaosToken]
+getAllChaosTokens :: (HasGame m, Tracing m) => m [ChaosToken]
 getAllChaosTokens = nub . concat <$> sequence [getBagChaosTokens, getSealedChaosTokens]
 
-getChaosBagChoice :: HasGame m => m (Maybe ChaosBagStepState)
+getChaosBagChoice :: (HasGame m, Tracing m) => m (Maybe ChaosBagStepState)
 getChaosBagChoice = scenarioFieldMap ScenarioChaosBag chaosBagChoice
 
-getChaosBag :: HasGame m => m ChaosBag
+getChaosBag :: (HasGame m, Tracing m) => m ChaosBag
 getChaosBag = scenarioField ScenarioChaosBag
 
 getSteps :: ChaosBagStepState -> [ChaosBagStepState]
@@ -68,4 +69,3 @@ getSteps = \case
     Choose {..} -> steps
     ChooseMatch {..} -> steps
     ChooseMatchChoice {..} -> steps
-

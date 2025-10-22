@@ -2,6 +2,7 @@ module Arkham.Queue where
 
 import Arkham.Classes.GameLogger
 import Arkham.Prelude
+import Arkham.Tracing
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.State.Strict
 
@@ -19,6 +20,7 @@ newtype QueueT msg m a = QueueT {unQueueT :: ReaderT (Queue msg) m a}
     , MonadCatch
     , MonadThrow
     , MonadMask
+    , Tracing
     )
 
 instance HasGameLogger m => HasGameLogger (QueueT msg m) where

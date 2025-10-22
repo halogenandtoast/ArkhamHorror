@@ -73,6 +73,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token qualified as Token
+import Arkham.Tracing
 import Arkham.Window (Window (..), mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 import Control.Lens (non, over, transform)
@@ -111,7 +112,7 @@ costPaymentsL = lens activeCostPayments $ \m x -> m {activeCostPayments = x}
 costSealedChaosTokensL :: Lens' ActiveCost [ChaosToken]
 costSealedChaosTokensL = lens activeCostSealedChaosTokens $ \m x -> m {activeCostSealedChaosTokens = x}
 
-getActionCostModifier :: HasGame m => ActiveCost -> m Int
+getActionCostModifier :: (HasGame m, Tracing m) => ActiveCost -> m Int
 getActionCostModifier ac = do
   let iid = ac.investigator
   takenActions <- field InvestigatorActionsTaken iid
@@ -183,7 +184,7 @@ nonAttackOfOpportunityActions = [#fight, #evade, #resign, #parley]
 
 payCost
   :: forall m
-   . (HasGame m, HasQueue Message m, HasCallStack, CardGen m)
+   . (Tracing m, HasGame m, HasQueue Message m, HasCallStack, CardGen m)
   => Message
   -> ActiveCost
   -> InvestigatorId

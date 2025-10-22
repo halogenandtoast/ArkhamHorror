@@ -31,6 +31,7 @@ import Entity.Answer
 import Entity.Arkham.GameRaw
 import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.))
+import OpenTelemetry.Trace.Monad (MonadTracer (..))
 import Yesod.WebSockets
 
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
@@ -105,12 +106,14 @@ postApiV1ArkhamGamesR = do
     ag = ArkhamGame campaignName game 0 multiplayerVariant now now
     repeatCount = if multiplayerVariant == WithFriends then 1 else playerCount
 
+  tracer <- getTracer
+
   runDB do
     gameId <- insert ag
     pids <- replicateM repeatCount $ insert $ ArkhamPlayer userId gameId "00000"
     gameRef <- liftIO $ newIORef game
 
-    runGameApp (GameApp gameRef queueRef genRef (pure . const ())) do
+    runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer) do
       for_ pids \pid -> addPlayer (PlayerId $ coerce pid)
       runMessages Nothing
 

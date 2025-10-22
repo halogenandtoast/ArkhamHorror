@@ -37,6 +37,7 @@ import Arkham.Queue
 import Arkham.Source
 import Arkham.Spawn
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 import Arkham.Zone
@@ -56,7 +57,8 @@ isActionTarget :: Targetable a => a -> Target -> Bool
 isActionTarget a = isTarget a . toProxyTarget
 
 spawnAt
-  :: (HasGame m, HasQueue Message m, MonadRandom m) => EnemyId -> Maybe InvestigatorId -> SpawnAt -> m ()
+  :: (HasGame m, Tracing m, HasQueue Message m, MonadRandom m)
+  => EnemyId -> Maybe InvestigatorId -> SpawnAt -> m ()
 spawnAt _ _ NoSpawn = pure ()
 spawnAt eid miid (SpawnAtLocation lid) = do
   pushAll
@@ -134,7 +136,7 @@ getModifiedDamageAmount target damageAssignment = do
   applyModifierCaps _ n = n
 
 getModifiedKeywords
-  :: (HasCallStack, HasGame m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> m (Set Keyword)
+  :: (HasCallStack, HasGame m, Tracing m, ToId enemy EnemyId) => enemy -> m (Set Keyword)
 getModifiedKeywords e = do
   mods <- getModifiers (asId e)
   keywords <- field EnemyKeywords (asId e)
@@ -144,7 +146,7 @@ getModifiedKeywords e = do
        in Swarming $ case fromNullable xs of Nothing -> k; Just ys -> Static $ maximum ys
     k -> k
 
-canEnterLocation :: HasGame m => EnemyId -> LocationId -> m Bool
+canEnterLocation :: (HasGame m, Tracing m) => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do
   modifiers' <- (<>) <$> getModifiers lid <*> getModifiers eid
   not <$> flip anyM modifiers' \case
@@ -152,7 +154,8 @@ canEnterLocation eid lid = do
     Modifier.CannotMove -> fieldMap EnemyPlacement isInPlayPlacement eid
     _ -> pure False
 
-getFightableEnemyIds :: (HasGame m, Sourceable source) => InvestigatorId -> source -> m [EnemyId]
+getFightableEnemyIds
+  :: (HasGame m, Tracing m, Sourceable source) => InvestigatorId -> source -> m [EnemyId]
 getFightableEnemyIds iid (toSource -> source) = do
   fightAnywhereEnemyIds <-
     select AnyInPlayEnemy >>= filterM \eid -> do
@@ -180,20 +183,20 @@ getFightableEnemyIds iid (toSource -> source) = do
         )
         modifiers'
 
-getEnemyAccessibleLocations :: HasGame m => EnemyId -> m [LocationId]
+getEnemyAccessibleLocations :: (HasGame m, Tracing m) => EnemyId -> m [LocationId]
 getEnemyAccessibleLocations eid = do
   location <- fieldMap EnemyLocation (fromJustNote "must be at a location") eid
   matcher <- getConnectedMatcher NotForMovement location
   connectedLocationIds <- select matcher
   filterM (canEnterLocation eid) connectedLocationIds
 
-getUniqueEnemy :: (HasCallStack, HasGame m) => CardDef -> m EnemyId
+getUniqueEnemy :: (HasCallStack, HasGame m, Tracing m) => CardDef -> m EnemyId
 getUniqueEnemy = selectJust . enemyIs
 
-getUniqueEnemyMaybe :: HasGame m => CardDef -> m (Maybe EnemyId)
+getUniqueEnemyMaybe :: (HasGame m, Tracing m) => CardDef -> m (Maybe EnemyId)
 getUniqueEnemyMaybe = selectOne . enemyIs
 
-getEnemyIsInPlay :: HasGame m => CardDef -> m Bool
+getEnemyIsInPlay :: (HasGame m, Tracing m) => CardDef -> m Bool
 getEnemyIsInPlay = selectAny . enemyIs
 
 defeatEnemy :: (HasGame m, Sourceable source) => EnemyId -> InvestigatorId -> source -> m [Message]
@@ -202,7 +205,7 @@ defeatEnemy enemyId investigatorId (toSource -> source) = do
   afterMsg <- checkWindow $ mkAfter $ Window.EnemyWouldBeDefeated enemyId
   pure [whenMsg, afterMsg, DefeatEnemy enemyId investigatorId source]
 
-enemyEngagedInvestigators :: HasGame m => EnemyId -> m [InvestigatorId]
+enemyEngagedInvestigators :: (HasGame m, Tracing m) => EnemyId -> m [InvestigatorId]
 enemyEngagedInvestigators eid = do
   asIfEngaged <- select $ InvestigatorWithModifier (AsIfEngagedWith eid)
   mPlacement <- fieldMay EnemyPlacement eid
@@ -215,11 +218,12 @@ enemyEngagedInvestigators eid = do
     _ -> pure []
   pure . nub $ asIfEngaged <> others
 
-enemyMatches :: HasGame m => EnemyId -> Matcher.EnemyMatcher -> m Bool
+enemyMatches :: (HasGame m, Tracing m) => EnemyId -> Matcher.EnemyMatcher -> m Bool
 enemyMatches !enemyId !mtchr = elem enemyId <$> select mtchr
 
 enemyAttackMatches
-  :: HasGame m => InvestigatorId -> EnemyAttackDetails -> Matcher.EnemyAttackMatcher -> m Bool
+  :: (HasGame m, Tracing m)
+  => InvestigatorId -> EnemyAttackDetails -> Matcher.EnemyAttackMatcher -> m Bool
 enemyAttackMatches youId details@EnemyAttackDetails {..} = \case
   Matcher.EnemyAttackMatches as -> allM (enemyAttackMatches youId details) as
   Matcher.AnyEnemyAttack -> pure True
@@ -250,7 +254,8 @@ enemyAttackMatches youId details@EnemyAttackDetails {..} = \case
       ]
 
 spawnAtOneOf
-  :: (HasGame m, HasQueue Message m) => Maybe InvestigatorId -> EnemyId -> [LocationId] -> m ()
+  :: (HasGame m, Tracing m, HasQueue Message m)
+  => Maybe InvestigatorId -> EnemyId -> [LocationId] -> m ()
 spawnAtOneOf miid eid targetLids = do
   locations' <- select $ Matcher.IncludeEmptySpace Matcher.Anywhere
   player <- maybe getLeadPlayer getPlayer miid
@@ -289,7 +294,7 @@ spawnAtOneOf miid eid targetLids = do
           | (windows', lid) <- windowPairs
           ]
 
-sourceCanDamageEnemy :: HasGame m => EnemyId -> Source -> m Bool
+sourceCanDamageEnemy :: (HasGame m, Tracing m) => EnemyId -> Source -> m Bool
 sourceCanDamageEnemy eid source = do
   modifiers' <- getModifiers (EnemyTarget eid)
   not <$> anyM prevents modifiers'
@@ -308,7 +313,7 @@ sourceCanDamageEnemy eid source = do
     _ -> pure False
 
 getDamageableEnemies
-  :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId, Sourceable source)
+  :: (HasGame m, Tracing m, ToId investigator InvestigatorId, Sourceable source)
   => investigator -> source -> EnemyMatcher -> m [EnemyId]
 getDamageableEnemies investigator source matcher = do
   canDealDamage <- can.deal.damage (asId investigator)
@@ -355,7 +360,7 @@ createEngagedWith investigator ec =
     }
 {-# INLINE createEngagedWith #-}
 
-getDefeatedEnemyHealth :: HasGame m => EnemyId -> m (Maybe Int)
+getDefeatedEnemyHealth :: (HasGame m, Tracing m) => EnemyId -> m (Maybe Int)
 getDefeatedEnemyHealth eid = do
   healthValue <- getEnemyField EnemyHealthActual eid
   for healthValue calculate
@@ -366,7 +371,7 @@ type family FlatField k where
 
 getEnemyField
   :: forall a m
-   . (Typeable a, Typeable (FlatField a), HasGame m)
+   . (Typeable a, Typeable (FlatField a), HasGame m, Tracing m)
   => Field Enemy a -> EnemyId -> m (Maybe (FlatField a))
 getEnemyField fld eid = do
   val <-

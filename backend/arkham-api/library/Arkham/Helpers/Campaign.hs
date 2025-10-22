@@ -1,7 +1,5 @@
 module Arkham.Helpers.Campaign where
 
-import Arkham.Prelude
-
 import Arkham.Campaign.Types
 import Arkham.CampaignStep
 import Arkham.Card
@@ -14,24 +12,26 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Tracing
 import Data.Aeson (Result (..))
 import Data.Map.Strict qualified as Map
 
-completedScenario :: HasGame m => ScenarioId -> m Bool
+completedScenario :: (HasGame m, Tracing m) => ScenarioId -> m Bool
 completedScenario cCode = elem cCode <$> getCompletedScenarios
 
-getCompletedScenarios :: HasGame m => m (Set ScenarioId)
+getCompletedScenarios :: (HasGame m, Tracing m) => m (Set ScenarioId)
 getCompletedScenarios = setFromList <$> getCompletedScenariosList
 
-getCompletedSteps :: HasGame m => m [CampaignStep]
+getCompletedSteps :: (HasGame m, Tracing m) => m [CampaignStep]
 getCompletedSteps =
   selectOne TheCampaign >>= \case
     Nothing -> pure mempty
     Just campaignId -> field CampaignCompletedSteps campaignId
 
-getCompletedScenariosList :: HasGame m => m [ScenarioId]
+getCompletedScenariosList :: (HasGame m, Tracing m) => m [ScenarioId]
 getCompletedScenariosList = do
   selectOne TheCampaign >>= \case
     Nothing -> pure mempty
@@ -43,51 +43,51 @@ getCompletedScenariosList = do
           ScenarioStep scenarioId -> Just scenarioId
           _ -> Nothing
 
-getOwner :: HasGame m => CardDef -> m (Maybe InvestigatorId)
+getOwner :: (HasGame m, Tracing m) => CardDef -> m (Maybe InvestigatorId)
 getOwner cardDef = do
   iids <- select $ IncludeEliminated Anyone
   cardMap <- getCampaignStoryCards
   let inGame = Map.filterWithKey (\k _ -> k `elem` iids) cardMap
   pure $ findKey (any ((== cardDef) . toCardDef)) inGame
 
-withOwner :: HasGame m => CardDef -> (InvestigatorId -> m ()) -> m ()
+withOwner :: (HasGame m, Tracing m) => CardDef -> (InvestigatorId -> m ()) -> m ()
 withOwner cardDef f =
   getOwner cardDef >>= \case
     Nothing -> pure ()
     Just iid -> f iid
 
-getCampaignStoryCards :: HasGame m => m (Map InvestigatorId [PlayerCard])
+getCampaignStoryCards :: (HasGame m, Tracing m) => m (Map InvestigatorId [PlayerCard])
 getCampaignStoryCards = do
   mCampaignId <- selectOne TheCampaign
   case mCampaignId of
     Just campaignId -> field CampaignStoryCards campaignId
     Nothing -> scenarioField ScenarioStoryCards
 
-getCampaignStoryCard :: (HasCallStack, HasGame m) => CardDef -> m PlayerCard
+getCampaignStoryCard :: (HasCallStack, HasGame m, Tracing m) => CardDef -> m PlayerCard
 getCampaignStoryCard def = fromJustNote "missing card" <$> getMaybeCampaignStoryCard def
 
-getMaybeCampaignStoryCard :: (HasGame m, HasCardCode def) => def -> m (Maybe PlayerCard)
+getMaybeCampaignStoryCard :: (HasGame m, Tracing m, HasCardCode def) => def -> m (Maybe PlayerCard)
 getMaybeCampaignStoryCard (toCardCode -> cardCode) = do
   cards <- concat . Map.elems <$> getCampaignStoryCards
   pure $ find ((== toCardCode cardCode) . toCardCode) cards
 
-getIsAlreadyOwned :: HasGame m => CardDef -> m Bool
+getIsAlreadyOwned :: (HasGame m, Tracing m) => CardDef -> m Bool
 getIsAlreadyOwned cDef = any (any ((== cDef) . toCardDef)) . toList <$> getCampaignStoryCards
 
-campaignField :: (HasCallStack, HasGame m) => Field Campaign a -> m a
+campaignField :: (HasCallStack, HasGame m, Tracing m) => Field Campaign a -> m a
 campaignField fld = selectJust TheCampaign >>= field fld
 
-getCampaignMeta :: forall a m. (HasCallStack, HasGame m, FromJSON a) => m a
+getCampaignMeta :: forall a m. (HasCallStack, HasGame m, Tracing m, FromJSON a) => m a
 getCampaignMeta = do
   result <- fromJSON @a <$> campaignField CampaignMeta
   case result of
     Success a -> pure a
     Error e -> error $ "Failed to parse campaign meta: " <> e
 
-getCampaignStore :: (HasCallStack, HasGame m) => m (Map Text Value)
+getCampaignStore :: (HasCallStack, HasGame m, Tracing m) => m (Map Text Value)
 getCampaignStore = campaignField CampaignStore
 
-stored :: forall a m. (HasCallStack, HasGame m, FromJSON a) => Text -> m (Maybe a)
+stored :: forall a m. (HasCallStack, HasGame m, Tracing m, FromJSON a) => Text -> m (Maybe a)
 stored k = do
   store <- getCampaignStore
   pure $ case lookup k store of
@@ -97,7 +97,7 @@ stored k = do
       Error e -> error $ "Failed to parse stored value: " <> e
 
 matchingCardsAlreadyInDeck
-  :: HasGame m => CardMatcher -> m (Map InvestigatorId (Set CardCode))
+  :: (HasGame m, Tracing m) => CardMatcher -> m (Map InvestigatorId (Set CardCode))
 matchingCardsAlreadyInDeck matcher = do
   decks <- campaignField CampaignDecks
   pure $ Map.map (setFromList . map toCardCode . filter (`cardMatch` matcher) . unDeck) decks

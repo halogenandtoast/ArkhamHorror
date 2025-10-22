@@ -10,9 +10,10 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Token
+import Arkham.Tracing
 import Arkham.Window
 
-getAlarmLevel :: HasGame m => InvestigatorId -> m Int
+getAlarmLevel :: (HasGame m, Tracing m) => InvestigatorId -> m Int
 getAlarmLevel = fieldMap InvestigatorTokens (countTokens AlarmLevel)
 {-# INLINE getAlarmLevel #-}
 
@@ -30,7 +31,7 @@ reduceAlarmLevelBy :: (Sourceable source, ReverseQueue m) => Int -> source -> In
 reduceAlarmLevelBy n (toSource -> source) iid = removeTokens source iid AlarmLevel n
 {-# INLINE reduceAlarmLevelBy #-}
 
-getMaxAlarmLevel :: HasGame m => m Int
+getMaxAlarmLevel :: (HasGame m, Tracing m) => m Int
 getMaxAlarmLevel = do
   investigators <- getInvestigators
   alarmLevels <- traverse (fieldMap InvestigatorTokens (countTokens AlarmLevel)) investigators

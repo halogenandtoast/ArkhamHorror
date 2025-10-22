@@ -16,15 +16,16 @@ import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Treachery.Types
 
 class HasDoom a where
-  getDoom :: (HasCallStack, HasGame m) => a -> m Int
+  getDoom :: (HasCallStack, Tracing m, HasGame m) => a -> m Int
 
 instance HasDoom LocationId where
   getDoom = field LocationDoom
 
-targetsWithDoom :: HasGame m => m [Target]
+targetsWithDoom :: (HasGame m, Tracing m) => m [Target]
 targetsWithDoom = do
   locations <- selectTargets LocationWithAnyDoom
   investigators <- selectTargets InvestigatorWithAnyDoom
@@ -44,7 +45,7 @@ targetsWithDoom = do
     <> agendas
     <> treacheries
 
-getDoomOnTarget :: HasGame m => Target -> m Int
+getDoomOnTarget :: (HasGame m, Tracing m) => Target -> m Int
 getDoomOnTarget = \case
   AssetTarget aid -> field AssetDoom aid
   InvestigatorTarget iid -> field InvestigatorDoom iid
@@ -55,7 +56,7 @@ getDoomOnTarget = \case
   EventTarget lid -> field EventDoom lid
   _ -> pure 0
 
-getDoomCount :: (HasCallStack, HasGame m) => m Int
+getDoomCount :: (HasCallStack, HasGame m, Tracing m) => m Int
 getDoomCount = do
   adds <-
     getSum
@@ -107,7 +108,7 @@ getDoomCount = do
         _ -> Nothing
   pure $ max 0 ((adds - ignoredDoomAdd) - (subtracts + ignoredDoomSubtract))
 
-getSubtractDoomCount :: HasGame m => m Int
+getSubtractDoomCount :: (HasGame m, Tracing m) => m Int
 getSubtractDoomCount = do
   adds <-
     getSum

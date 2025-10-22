@@ -145,6 +145,7 @@ import Arkham.Slot
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token
+import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
@@ -157,12 +158,11 @@ import Data.List qualified as List
 import Data.Map.Strict qualified as Map
 import Data.Monoid
 import Data.Set qualified as Set
-import Data.Text.Encoding qualified as T
 import Data.UUID (nil)
 
 instance RunMessage Investigator where
   runMessage msg i@(Investigator (a :: original)) =
-    withSpan_ ("Investigator[" <> T.encodeUtf8 (unCardCode $ toCardCode i) <> "].runMessage") do
+    withSpan_ ("Investigator[" <> unCardCode (toCardCode i) <> "].runMessage") do
       modifiers' <- getModifiers (toTarget i)
       let msg' = if Blank `elem` modifiers' then Blanked msg else msg
       case investigatorForm (toAttrs a) of
@@ -246,10 +246,10 @@ onlyCampaignAbilities UsedAbility {..} = case abilityLimitType (abilityLimit use
 -- There are a few conditions that can occur that mean we must need to use an ability.
 -- No valid targets. For example Marksmanship
 -- Can't afford card. For example On Your Own
-getAllAbilitiesSkippable :: HasGame m => InvestigatorAttrs -> [Window] -> m Bool
+getAllAbilitiesSkippable :: (Tracing m, HasGame m) => InvestigatorAttrs -> [Window] -> m Bool
 getAllAbilitiesSkippable attrs windows = allM (getWindowSkippable attrs windows) windows
 
-getWindowSkippable :: HasGame m => InvestigatorAttrs -> [Window] -> Window -> m Bool
+getWindowSkippable :: (Tracing m, HasGame m) => InvestigatorAttrs -> [Window] -> Window -> m Bool
 getWindowSkippable
   attrs
   ws
@@ -293,7 +293,7 @@ getWindowSkippable attrs ws (windowType -> Window.WouldPayCardCost iid _ _ card@
 getWindowSkippable _ _ _ = pure True
 
 getHealthDamageableAssets
-  :: HasGame m
+  :: (HasGame m, Tracing m)
   => InvestigatorId
   -> AssetMatcher
   -> Source
@@ -319,7 +319,7 @@ getHealthDamageableAssets iid matcher source _ damageTargets horrorTargets = do
   pure $ setFromList $ filter (`notElem` excludes) allAssets
 
 getSanityDamageableAssets
-  :: HasGame m
+  :: (HasGame m, Tracing m)
   => InvestigatorId
   -> AssetMatcher
   -> Source
@@ -345,7 +345,8 @@ getSanityDamageableAssets iid matcher source _ damageTargets horrorTargets = do
   pure $ setFromList $ filter (`notElem` excludes) allAssets
 
 runWindow
-  :: (HasGame m, HasQueue Message m) => InvestigatorAttrs -> [Window] -> [Ability] -> [Card] -> m ()
+  :: (HasGame m, Tracing m, HasQueue Message m)
+  => InvestigatorAttrs -> [Window] -> [Ability] -> [Card] -> m ()
 runWindow attrs windows actions playableCards = do
   let iid = toId attrs
   unless (null playableCards && null actions) $ do
@@ -4313,7 +4314,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} =
         pushM $ checkWindows $ mkAfter (Window.PassSkillTest mAction source iid n) : windows
         pure a
       PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
-        modifiers <- getModifiers iid
+        modifiers <- lift $ withSpan_ "getModifiers" $ getModifiers iid
         mTurnInvestigator <-
           if AsIfTurn iid `elem` modifiers
             then pure [iid]
@@ -4323,7 +4324,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} =
             map (mkWhen . Window.DuringTurn) mTurnInvestigator
               <> [mkWhen Window.FastPlayerWindow, mkWhen Window.NonFast]
 
-        actions <- asIfTurn iid (getActions iid windows)
+        actions <- lift $ withSpan_ "getActions" $ asIfTurn iid (getActions iid windows)
         anyForced <- anyM (isForcedAbility iid) actions
         if anyForced
           then do
@@ -4353,7 +4354,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} =
                       [UseEffectAction iid effectId windows]
                 _ -> Nothing
 
-            playableCards <- getPlayableCards iid iid (UnpaidCost NeedsAction) windows
+            playableCards <-
+              lift $ withSpan_ "getPlayableCards" $ getPlayableCards iid iid (UnpaidCost NeedsAction) windows
             let drawing = drawCardsF iid a 1
 
             canDraw <- canDo iid #draw
@@ -4385,10 +4387,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} =
         pure a
       PlayerWindow iid additionalActions isAdditional | iid /= investigatorId && a.inGame -> do
         let windows = [mkWhen Window.FastPlayerWindow]
-        actions <- getActions investigatorId windows
+        actions <- lift $ withSpan_ "getActions" $ getActions investigatorId windows
         anyForced <- anyM (isForcedAbility investigatorId) actions
         unless anyForced $ do
-          playableCards <- getPlayableCards investigatorId investigatorId (UnpaidCost NeedsAction) windows
+          playableCards <-
+            lift
+              $ withSpan_ "getPlayableCards"
+              $ getPlayableCards investigatorId investigatorId (UnpaidCost NeedsAction) windows
           let
             usesAction = not isAdditional
             choices =
@@ -4580,7 +4585,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} =
 investigatorLocation :: InvestigatorAttrs -> Maybe LocationId
 investigatorLocation a = preview _AtLocation a.placement
 
-getFacingDefeat :: HasGame m => InvestigatorAttrs -> m Bool
+getFacingDefeat :: (HasGame m, Tracing m) => InvestigatorAttrs -> m Bool
 getFacingDefeat a@InvestigatorAttrs {..} = do
   canOnlyBeDefeatedByDamage <- hasModifier a CanOnlyBeDefeatedByDamage
   modifiedHealth <- field InvestigatorHealth (toId a)

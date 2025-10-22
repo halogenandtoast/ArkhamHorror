@@ -13,8 +13,9 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
+import Arkham.Tracing
 
-getHauntedAbilities :: HasGame m => InvestigatorId -> m [Ability]
+getHauntedAbilities :: (HasGame m, Tracing m) => InvestigatorId -> m [Ability]
 getHauntedAbilities iid = select $ HauntedAbility <> AbilityOnLocation (locationWithInvestigator iid)
 
 runHauntedAbilities :: ReverseQueue m => InvestigatorId -> m ()

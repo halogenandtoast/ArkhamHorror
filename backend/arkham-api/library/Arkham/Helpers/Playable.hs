@@ -42,12 +42,19 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Taboo.Types
+import Arkham.Tracing
 import Arkham.Window
 import Control.Lens (over)
 import Data.Data.Lens (biplate)
 
 getPlayableCards
-  :: (HasCallStack, HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  :: ( HasCallStack
+     , Tracing m
+     , HasGame m
+     , Sourceable source
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
   => source -> investigator -> CostStatus -> [Window] -> m [Card]
 getPlayableCards source investigator costStatus windows' = do
   asIfInHandCards <- getAsIfInHandCards (asId investigator)
@@ -62,6 +69,7 @@ getPlayableCardsMatch
   :: ( HasCallStack
      , IsCardMatcher cardMatcher
      , HasGame m
+     , Tracing m
      , Sourceable source
      , AsId investigator
      , IdOf investigator ~ InvestigatorId
@@ -71,7 +79,7 @@ getPlayableCardsMatch source investigator costStatus windows' cardMatcher =
   filterCards cardMatcher <$> getPlayableCards source investigator costStatus windows'
 
 getPlayableDiscards
-  :: (HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  :: (HasGame m, Tracing m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
   => source -> investigator -> CostStatus -> [Window] -> m [Card]
 getPlayableDiscards source investigator costStatus windows' = do
   attrs <- getAttrs @Investigator (asId investigator)
@@ -96,7 +104,13 @@ getPlayableDiscards source investigator costStatus windows' = do
   allowsPlayFromDiscard _ _ _ _ = False
 
 filterPlayable
-  :: (HasCallStack, HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  :: ( HasCallStack
+     , Tracing m
+     , HasGame m
+     , Sourceable source
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
   => investigator
   -> source
   -> CostStatus
@@ -107,20 +121,33 @@ filterPlayable investigator source costStatus windows' =
   filterM (getIsPlayable investigator source costStatus windows')
 
 getIsPlayable
-  :: (HasCallStack, HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  :: ( HasCallStack
+     , Tracing m
+     , HasGame m
+     , Sourceable source
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
   => investigator
   -> source
   -> CostStatus
   -> [Window]
   -> Card
   -> m Bool
-getIsPlayable (asId -> iid) source costStatus windows' c = do
-  availableResources <- getSpendableResources iid
-  getIsPlayableWithResources iid source availableResources costStatus windows' c
+getIsPlayable (asId -> iid) source costStatus windows' c =
+  withSpan_ ("getIsPlayable[ " <> unCardCode c.cardCode <> "]") do
+    availableResources <- getSpendableResources iid
+    getIsPlayableWithResources iid source availableResources costStatus windows' c
 
 getIsPlayableWithResources
   :: forall m source investigator
-   . (HasCallStack, HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+   . ( HasCallStack
+     , Tracing m
+     , HasGame m
+     , Sourceable source
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
   => investigator
   -> source
   -> Int
@@ -140,7 +167,7 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
       base <- go @m
       others <-
         traverse
-          (\(matcher, ctx) -> (cardMatch c matcher &&) <$> withModifiers iid (toModifiers iid ctx) go)
+          (\(matcher, ctx) -> (cardMatch c matcher &&) <$> withModifiers @m iid (toModifiers iid ctx) go)
           (if ignoreContexts then [] else contexts)
       pure $ or (base : others)
  where
@@ -150,7 +177,7 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
   prevents (CannotPlay matcher) = cardMatch c matcher
   prevents (CannotPutIntoPlay matcher) = cardMatch c matcher
   prevents _ = False
-  go :: forall n. HasGame n => n Bool
+  go :: forall n. (Tracing n, HasGame n) => n Bool
   go = withDepthGuard 3 False do
     attrs <- getAttrs @Investigator iid
     isBobJenkins <- case source of
@@ -458,7 +485,8 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
       && passesSlots
       && canAffordAdditionalCosts
 
-getOtherPlayersPlayableCards :: HasGame m => InvestigatorId -> CostStatus -> [Window] -> m [Card]
+getOtherPlayersPlayableCards
+  :: (Tracing m, HasGame m) => InvestigatorId -> CostStatus -> [Window] -> m [Card]
 getOtherPlayersPlayableCards iid costStatus windows' = do
   mods <- getModifiers iid
   forMaybeM mods $ \case

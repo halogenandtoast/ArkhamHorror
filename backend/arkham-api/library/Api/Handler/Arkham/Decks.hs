@@ -32,6 +32,7 @@ import Json hiding (Success)
 import Network.HTTP.Conduit (simpleHttp)
 import Network.HTTP.Types
 import Network.HTTP.Types.Status qualified as Status
+import OpenTelemetry.Trace.Monad (MonadTracer (..))
 
 getApiV1ArkhamDecksR :: Handler [Entity ArkhamDeck]
 getApiV1ArkhamDecksR = do
@@ -110,7 +111,8 @@ putApiV1ArkhamGameDecksR gameId = do
   gameRef <- newIORef arkhamGameCurrentData
   queueRef <- newQueue currentQueue
   genRef <- newIORef $ mkStdGen gameSeed
-  runGameApp (GameApp gameRef queueRef genRef $ pure . const ()) do
+  tracer <- getTracer
+  runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer) do
     playerId <- getPlayer investigatorId
 
     let question' = Map.delete (coerce playerId) gameQuestion

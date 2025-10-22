@@ -44,6 +44,7 @@ import Import hiding (delete, exists, on, (==.), (>=.))
 import Import qualified as P
 import Json
 import Network.WebSockets (ConnectionException)
+import OpenTelemetry.Trace.Monad (MonadTracer (..))
 import UnliftIO.Async (async, cancel)
 import UnliftIO.Exception hiding (Handler)
 import Yesod.WebSockets
@@ -185,9 +186,10 @@ updateGame response gameId userId writeChannel = do
       gameRef <- newIORef gameJson
       queueRef <- newQueue ((ClearUI : messages) <> currentQueue)
       genRef <- newIORef $ mkStdGen gameSeed
+      tracer <- getTracer
 
       runGameApp
-        (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
+        (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel) tracer)
         (runMessages Nothing)
 
       ge <- readIORef gameRef

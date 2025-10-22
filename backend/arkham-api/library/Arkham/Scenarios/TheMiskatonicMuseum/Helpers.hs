@@ -9,20 +9,21 @@ import Arkham.Id
 import Arkham.Layout
 import Arkham.Matcher
 import Arkham.Prelude
+import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "theMiskatonicMuseum" a
 
-getInPlayHuntingHorror :: HasGame m => m (Maybe EnemyId)
+getInPlayHuntingHorror :: (Tracing m, HasGame m) => m (Maybe EnemyId)
 getInPlayHuntingHorror = getHuntingHorrorWith AnyInPlayEnemy
 
-getHuntingHorror :: HasGame m => m (Maybe EnemyId)
+getHuntingHorror :: (Tracing m, HasGame m) => m (Maybe EnemyId)
 getHuntingHorror = getHuntingHorrorWith AnyEnemy
 
-getHuntingHorrorWith :: HasGame m => EnemyMatcher -> m (Maybe EnemyId)
+getHuntingHorrorWith :: (Tracing m, HasGame m) => EnemyMatcher -> m (Maybe EnemyId)
 getHuntingHorrorWith matcher = selectOne $ enemyIs Cards.huntingHorror <> matcher
 
-getRestrictedHall :: HasGame m => m LocationId
+getRestrictedHall :: (Tracing m, HasGame m) => m LocationId
 getRestrictedHall = selectJust $ LocationWithFullTitle "Exhibit Hall" "Restricted Hall"
 
 scenarioLayout :: [GridTemplateRow]

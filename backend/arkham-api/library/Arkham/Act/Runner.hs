@@ -31,6 +31,7 @@ import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Target as X
 
+import Arkham.Card.CardCode
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Classes.HasGame
@@ -42,6 +43,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Modifier
 import Arkham.Tarot
 import Arkham.Token (Token (Clue))
+import Arkham.Tracing
 import Arkham.Window hiding (InvestigatorResigned)
 import Arkham.Window qualified as Window
 
@@ -49,7 +51,7 @@ advanceActDeck :: ActAttrs -> Message
 advanceActDeck attrs = AdvanceActDeck (actDeckId attrs) (toSource attrs)
 
 advanceActSideA
-  :: HasGame m => ActAttrs -> AdvancementMethod -> m [Message]
+  :: (HasGame m, Tracing m) => ActAttrs -> AdvancementMethod -> m [Message]
 advanceActSideA attrs advanceMode = do
   whenWindow <- checkWhen $ ActAdvance attrs.id
   afterWindow <- checkAfter $ ActAdvance attrs.id
@@ -61,7 +63,9 @@ advanceActSideA attrs advanceMode = do
     ]
 
 instance RunMessage Act where
-  runMessage msg (Act a) = Act <$> runMessage msg a
+  runMessage msg x@(Act a) =
+    withSpan_ ("Act[" <> unCardCode (unActId x.id) <> "].runMessage") do
+      Act <$> runMessage msg a
 
 onFrontSide :: ActAttrs -> Bool
 onFrontSide = (`elem` [A, C, E, G]) . actSide . actSequence

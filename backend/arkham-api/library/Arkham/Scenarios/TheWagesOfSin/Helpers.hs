@@ -22,6 +22,7 @@ import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Tracing
 import Arkham.Trait (Trait (Spectral))
 import Control.Lens (non, _1, _2)
 import Control.Monad.Writer.Class
@@ -30,11 +31,11 @@ import Data.Map.Monoidal.Strict (MonoidalMap)
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "theWagesOfSin" a
 
-getSpectralDiscards :: HasGame m => m [EncounterCard]
+getSpectralDiscards :: (HasGame m, Tracing m) => m [EncounterCard]
 getSpectralDiscards =
   scenarioFieldMap ScenarioEncounterDecks (view (at SpectralEncounterDeck . non (Deck [], []) . _2))
 
-getSpectralDeck :: HasGame m => m (Deck EncounterCard)
+getSpectralDeck :: (HasGame m, Tracing m) => m (Deck EncounterCard)
 getSpectralDeck =
   scenarioFieldMap ScenarioEncounterDecks (view (at SpectralEncounterDeck . non (Deck [], []) . _1))
 
@@ -45,6 +46,7 @@ hereticModifiers
   :: ( EntityId (EntityAttrs a) ~ EnemyId
      , Targetable (EntityAttrs a)
      , HasGame m
+     , Tracing m
      , Entity a
      , Entity (EntityAttrs a)
      , Sourceable (EntityAttrs a)

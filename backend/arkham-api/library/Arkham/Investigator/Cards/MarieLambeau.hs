@@ -12,6 +12,7 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Token
+import Arkham.Tracing
 
 newtype MarieLambeau = MarieLambeau InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
@@ -32,7 +33,7 @@ instance HasModifiersFor MarieLambeau where
     modifySelf a
       $ [GiveAdditionalAction (AdditionalAction "Marie Lambeau" (toSource a) marieAction) | hasDoom]
 
-getDoomAmongstControlledCards :: HasGame m => InvestigatorId -> m Int
+getDoomAmongstControlledCards :: (HasGame m, Tracing m) => InvestigatorId -> m Int
 getDoomAmongstControlledCards iid =
   sumAllM
     [ selectAgg Sum AssetDoom (assetControlledBy iid)

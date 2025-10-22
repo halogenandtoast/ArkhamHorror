@@ -42,6 +42,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Token qualified as Token
+import Arkham.Tracing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Control.Lens (non)
@@ -50,7 +51,7 @@ import Data.List qualified as List
 import Data.Set qualified as Set
 
 getCanAffordCost
-  :: (HasGame m, Sourceable source)
+  :: (HasGame m, Tracing m, Sourceable source)
   => InvestigatorId
   -> source
   -> [Action]
@@ -61,7 +62,7 @@ getCanAffordCost iid source actions windows' cost =
   getCanAffordCost_ iid source actions windows' True cost
 
 getCanAffordCost_
-  :: (HasGame m, Sourceable source)
+  :: (HasGame m, Tracing m, Sourceable source)
   => InvestigatorId
   -> source
   -> [Action]
@@ -521,7 +522,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         iid <=~> (Matcher.InvestigatorWithSupply supply <> Matcher.InvestigatorAt locationMatcher)
       ResolveEachHauntedAbility _ -> pure True
 
-getSpendableResources :: HasGame m => InvestigatorId -> m Int
+getSpendableResources :: (HasGame m, Tracing m) => InvestigatorId -> m Int
 getSpendableResources iid = do
   mods <- getModifiers iid
   let extraResources = sum [x | ExtraResources x <- mods]
@@ -529,7 +530,7 @@ getSpendableResources iid = do
     selectSum AssetResources $ Matcher.assetIs Assets.familyInheritance <> Matcher.assetControlledBy iid
   fieldMap InvestigatorResources (+ (familyInheritanceResources + extraResources)) iid
 
-getSpendableClueCount :: HasGame m => [InvestigatorId] -> m Int
+getSpendableClueCount :: (HasGame m, Tracing m) => [InvestigatorId] -> m Int
 getSpendableClueCount investigatorIds =
   getSum <$> foldMapM (fmap Sum . Investigator.getSpendableClueCount) investigatorIds
 

@@ -7,6 +7,7 @@ import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Projection
+import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -17,7 +18,7 @@ newtype WorldsMerge = WorldsMerge TreacheryAttrs
 worldsMerge :: TreacheryCard WorldsMerge
 worldsMerge = treachery WorldsMerge Cards.worldsMerge
 
-getStep :: HasGame m => Maybe AgendaId -> m Int
+getStep :: (HasGame m, Tracing m) => Maybe AgendaId -> m Int
 getStep Nothing = pure 3 -- if no agenda than act is 3
 getStep (Just agenda) = do
   side <- fieldMap AgendaSequence AS.agendaStep agenda

@@ -53,6 +53,7 @@ import Arkham.Target
 import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
 import Arkham.Token
+import Arkham.Tracing
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window
 import Arkham.Window qualified as Window
@@ -607,12 +608,12 @@ getWindowAsset ((windowType -> Window.ActivateAbility _ _ ability) : xs) = case 
   _ -> getWindowAsset xs
 getWindowAsset (_ : xs) = getWindowAsset xs
 
-enemyMatches :: HasGame m => EnemyId -> EnemyMatcher -> m Bool
+enemyMatches :: (HasGame m, Tracing m) => EnemyId -> EnemyMatcher -> m Bool
 enemyMatches _eid Matcher.AnyEnemy = pure True
 enemyMatches eid matcher = orM [matches eid matcher, matches eid (Matcher.OutOfPlayEnemy RemovedZone matcher)]
 
 windowMatches
-  :: (HasGame m, HasCallStack)
+  :: (Tracing m, HasGame m, HasCallStack)
   => InvestigatorId
   -> Source
   -> Window

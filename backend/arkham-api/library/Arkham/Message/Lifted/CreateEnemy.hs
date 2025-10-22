@@ -11,11 +11,20 @@ import Arkham.Message
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Queue
+import Arkham.Tracing
 import Control.Monad.State.Strict
 
 newtype CreateEnemyT m a = CreateEnemyT {unCreateEnemyT :: StateT (EnemyCreation Message) m a}
   deriving newtype
-    (Functor, Applicative, Monad, MonadIO, MonadTrans, MonadState (EnemyCreation Message), MonadRandom)
+    ( Functor
+    , Applicative
+    , Monad
+    , MonadIO
+    , MonadTrans
+    , MonadState (EnemyCreation Message)
+    , MonadRandom
+    , Tracing
+    )
 
 instance HasGame m => HasGame (CreateEnemyT m) where
   getGame = lift getGame

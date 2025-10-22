@@ -7,14 +7,14 @@ import {-# SOURCE #-} Arkham.Game.Base
 import {-# SOURCE #-} Arkham.Message
 import Arkham.Prelude
 import Arkham.Queue
-import Arkham.Tracing
 import Arkham.Random
+import Arkham.Tracing
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.Random
 import Data.Dependent.Map (DMap)
 import Data.Dependent.Map qualified as DMap
 import OpenTelemetry.Trace qualified as Trace
-import OpenTelemetry.Trace.Monad (inSpan', MonadTracer(..))
+import OpenTelemetry.Trace.Monad (MonadTracer (..), inSpan')
 
 data GameEnv = GameEnv
   { gameEnvGame :: IORef Game
@@ -45,6 +45,7 @@ instance Tracing GameT where
   type SpanType GameT = Trace.Span
   type SpanArgs GameT = Trace.SpanArguments
   defaultSpanArgs = Trace.defaultSpanArguments
+  addAttribute = Trace.addAttribute
   doTrace name args action = inSpan' name args action
 
 clearCache :: GameT ()

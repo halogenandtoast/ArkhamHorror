@@ -140,6 +140,7 @@ instance HasGameLogger GameAppT where
 instance Tracing GameAppT where
   type SpanType GameAppT = Trace.Span
   type SpanArgs GameAppT = Trace.SpanArguments
+  addAttribute = Trace.addAttribute
   defaultSpanArgs = Trace.defaultSpanArguments
   doTrace name args action = inSpan' name args action
 

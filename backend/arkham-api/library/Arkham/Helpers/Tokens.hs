@@ -10,6 +10,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Query
 import Arkham.Token
+import Arkham.Tracing
 
 class HasTokens a where
   type HasTokensRoot a :: Type
@@ -23,6 +24,7 @@ selectCountTokens
   :: forall m matcher el
    . ( Query matcher
      , HasGame m
+     , Tracing m
      , QueryElement matcher ~ el
      , HasTokens el
      , Projection (HasTokensRoot el)

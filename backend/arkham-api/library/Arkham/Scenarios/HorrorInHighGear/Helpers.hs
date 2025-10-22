@@ -22,6 +22,7 @@ import Arkham.Message (
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Scenario.Deck
+import Arkham.Tracing
 import Arkham.Trait (Trait (Vehicle))
 import Arkham.Window
 import Arkham.Window qualified as Window
@@ -34,7 +35,7 @@ import Text.Read
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "horrorInHighGear" a
 
-getRoadDeck :: HasGame m => m [Card]
+getRoadDeck :: (HasGame m, Tracing m) => m [Card]
 getRoadDeck = getScenarioDeck RoadDeck
 
 getLabelPosition :: Text -> Int
@@ -82,7 +83,7 @@ road n attrs = do
       layout' = map (\(idx, GridTemplateRow row) -> GridTemplateRow $ row <> go idx) (withIndex1 layout)
     push $ SetLayout layout'
 
-getRear :: HasGame m => m [LocationId]
+getRear :: (HasGame m, Tracing m) => m [LocationId]
 getRear = do
   labels <- getRearLabels <$> getLayout
   select $ mapOneOf (LocationWithLabel . Label) labels
@@ -98,7 +99,7 @@ getRearLabels layout =
    in
     mapMaybe getRearLabel layout
 
-getRearmostInvestigator :: HasGame m => m [InvestigatorId]
+getRearmostInvestigator :: (HasGame m, Tracing m) => m [InvestigatorId]
 getRearmostInvestigator = do
   locations <- selectWithField LocationLabel $ LocationWithInvestigator Anyone
   case nonEmpty locations of

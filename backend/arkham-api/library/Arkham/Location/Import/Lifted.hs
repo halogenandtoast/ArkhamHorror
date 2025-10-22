@@ -63,6 +63,7 @@ import Arkham.Target as X
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Modifiers
 import Arkham.Modifier
+import Arkham.Tracing
 import Control.Monad.Writer.Class
 import Data.Map.Monoidal.Strict
 
@@ -73,21 +74,22 @@ whenUnrevealed :: HasGame m => LocationAttrs -> m () -> m ()
 whenUnrevealed attrs body = when attrs.unrevealed body
 
 blockedWhenUnrevealed
-  :: (HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m) => LocationAttrs -> m ()
+  :: (HasGame m, Tracing m, MonadWriter (MonoidalMap Target [Modifier]) m) => LocationAttrs -> m ()
 blockedWhenUnrevealed attrs = whenUnrevealed attrs $ modifySelf attrs [Blocked]
 
 blockedWhen
-  :: (HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m) => LocationAttrs -> m Bool -> m ()
+  :: (HasGame m, Tracing m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => LocationAttrs -> m Bool -> m ()
 blockedWhen attrs body = do
   cond <- body
   when cond $ modifySelf attrs [Blocked]
 
 blockedUnless
-  :: (HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m) => LocationAttrs -> m Bool -> m ()
+  :: (HasGame m, Tracing m, MonadWriter (MonoidalMap Target [Modifier]) m) => LocationAttrs -> m Bool -> m ()
 blockedUnless attrs body = blockedWhen attrs (not <$> body)
 
 blockedWhenAny
-  :: (Query query, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  :: (Query query, HasGame m, Tracing m, MonadWriter (MonoidalMap Target [Modifier]) m)
   => LocationAttrs
   -> query
   -> m ()

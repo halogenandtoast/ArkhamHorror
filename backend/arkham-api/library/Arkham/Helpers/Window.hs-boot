@@ -5,10 +5,11 @@ import Arkham.Id
 import Arkham.Matcher qualified as Matcher
 import Arkham.Prelude
 import Arkham.Source
+import Arkham.Tracing
 import Arkham.Window
 
 windowMatches
-  :: (HasGame m, HasCallStack)
+  :: (Tracing m, HasGame m, HasCallStack)
   => InvestigatorId
   -> Source
   -> Window

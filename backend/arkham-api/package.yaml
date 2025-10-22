@@ -46,8 +46,6 @@ library:
         - -Wall
         - -fwarn-tabs
         - -O0
-        - -plugin-package opentelemetry-plugin
-        - -fplugin=OpenTelemetry.Plugin
         cpp-options: -DDEVELOPMENT
       else:
         ghc-options:
@@ -55,8 +53,6 @@ library:
         - -fwarn-tabs
         - -O2
         - +RTS -V0 -RTS
-        - -plugin-package opentelemetry-plugin
-        - -fplugin=OpenTelemetry.Plugin
   dependencies:
     - MonadRandom
     - aeson
@@ -93,6 +89,8 @@ library:
     - file-embed
     - hashable
     - hedis
+    - hs-opentelemetry-sdk
+    - hs-opentelemetry-instrumentation-wai
     - http-api-data
     - http-client-tls
     - http-conduit
@@ -106,7 +104,6 @@ library:
     - monoidal-containers
     - mtl >= 2.3.1
     - opentelemetry
-    - opentelemetry-plugin
     - parsec
     - path-pieces
     - persistent
@@ -152,13 +149,10 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    - -plugin-package opentelemetry-plugin
-    - -fplugin=OpenTelemetry.Plugin
     dependencies:
       - foreign-store
       - warp
       - arkham-api
-      - opentelemetry-plugin
     when:
       - condition: flag(library-only)
         buildable: false
@@ -183,6 +177,8 @@ tests:
       - exceptions
       - hspec
       - hspec-expectations-lifted
+      - hs-opentelemetry-api
+      - hs-opentelemetry-sdk
       - lens
       - uuid
       - mtl

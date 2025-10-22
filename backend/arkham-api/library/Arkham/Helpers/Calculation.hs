@@ -31,13 +31,14 @@ import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 import Arkham.Target
 import Arkham.Token
+import Arkham.Tracing
 
-calculatePrinted :: HasGame m => Maybe GameCalculation -> m Int
+calculatePrinted :: (HasGame m, Tracing m) => Maybe GameCalculation -> m Int
 calculatePrinted = \case
   Nothing -> pure 0
   Just calculation -> calculate calculation
 
-calculate :: (HasCallStack, HasGame m) => GameCalculation -> m Int
+calculate :: (HasCallStack, HasGame m, Tracing m) => GameCalculation -> m Int
 calculate = go
  where
   go = \case

@@ -10,6 +10,7 @@ import Arkham.Event.Runner
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy
+import Arkham.Tracing
 
 newtype ManipulateDestiny2 = ManipulateDestiny2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -27,7 +28,7 @@ componentLabel component (toTarget -> target) = case target of
 damageComponentLabel :: Targetable target => target -> Source -> UI Message
 damageComponentLabel (toTarget -> thing) source = componentLabel DamageToken thing [HealDamage thing source 2]
 
-getInvestigatorChoices :: HasGame m => InvestigatorId -> Source -> m [UI Message]
+getInvestigatorChoices :: (HasGame m, Tracing m) => InvestigatorId -> Source -> m [UI Message]
 getInvestigatorChoices iid source = do
   damageInvestigators <- select $ HealableInvestigator source #damage $ colocatedWith iid
   pure [damageComponentLabel i source | i <- damageInvestigators]
@@ -35,7 +36,7 @@ getInvestigatorChoices iid source = do
 healableAsset :: Sourceable source => source -> DamageType -> LocationMatcher -> AssetMatcher
 healableAsset (toSource -> source) hType loc = HealableAsset source hType $ at_ loc <> AssetControlledBy (affectsOthers Anyone)
 
-getAssetChoices :: HasGame m => InvestigatorId -> Source -> m [UI Message]
+getAssetChoices :: (HasGame m, Tracing m) => InvestigatorId -> Source -> m [UI Message]
 getAssetChoices iid source = do
   damageAssets <- select $ healableAsset source #damage (locationWithInvestigator iid)
   pure [damageComponentLabel asset' source | asset' <- damageAssets]
@@ -63,13 +64,16 @@ instance RunMessage ManipulateDestiny2 where
             push
               $ chooseOrRunOneAtATime player
               $ [ Label
-                  "Deal 2 damage to an enemy at your location"
-                  [chooseOne player [targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) attrs 2] | enemy <- enemies]]
+                    "Deal 2 damage to an enemy at your location"
+                    [ chooseOne
+                        player
+                        [targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) attrs 2] | enemy <- enemies]
+                    ]
                 | canDamage
                 ]
               <> [ Label
-                  "Heal 2 damage from an investigator or Ally asset at your location"
-                  [chooseOne player allChoices]
+                     "Heal 2 damage from an investigator or Ally asset at your location"
+                     [chooseOne player allChoices]
                  | canHeal
                  ]
         else

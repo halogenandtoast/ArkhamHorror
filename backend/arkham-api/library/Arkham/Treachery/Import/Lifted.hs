@@ -63,6 +63,7 @@ import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Message.Lifted.Placement
 import Arkham.SkillType
+import Arkham.Tracing
 import Arkham.Treachery.Helpers qualified as Msg
 
 revelationSkillTest
@@ -108,7 +109,7 @@ gainSurge = push . Msg.gainSurge
 guardInThreatArea :: Monad m => InvestigatorId -> TreacheryAttrs -> MaybeT m ()
 guardInThreatArea iid attrs = guard $ treacheryInThreatArea iid attrs
 
-isFirstCopyThisPhase :: (HasGame m, HasCardCode a) => a -> m Bool
+isFirstCopyThisPhase :: (HasGame m, Tracing m, HasCardCode a) => a -> m Bool
 isFirstCopyThisPhase attrs = do
   drawn <- getAllHistoryField #phase HistoryTreacheriesDrawn
   pure $ count (== toCardCode attrs) drawn == 1

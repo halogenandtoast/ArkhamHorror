@@ -24,6 +24,7 @@ import Arkham.Modifier (setActiveDuringSetup)
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Aeson (Result (..))
 import Data.Aeson.Types (parseMaybe)
@@ -66,10 +67,10 @@ instance IsCampaign TheForgottenAge where
 theForgottenAge :: Difficulty -> TheForgottenAge
 theForgottenAge = campaign TheForgottenAge (CampaignId "04") "The Forgotten Age"
 
-initialSupplyPoints :: HasGame m => m Int
+initialSupplyPoints :: (HasGame m, Tracing m) => m Int
 initialSupplyPoints = getPlayerCountValue (ByPlayerCount 10 7 5 4)
 
-initialResupplyPoints :: HasGame m => m Int
+initialResupplyPoints :: (HasGame m, Tracing m) => m Int
 initialResupplyPoints = getPlayerCountValue (ByPlayerCount 8 5 4 3)
 
 instance RunMessage TheForgottenAge where

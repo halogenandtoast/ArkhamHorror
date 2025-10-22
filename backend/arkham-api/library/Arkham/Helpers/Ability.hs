@@ -26,14 +26,15 @@ import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
-getAbility :: HasGame m => AbilityRef -> m (Maybe Ability)
+getAbility :: (HasGame m, Tracing m) => AbilityRef -> m (Maybe Ability)
 getAbility ref = selectOne (Matcher.AbilityIs ref.source ref.index)
 
 getCanPerformAbility
-  :: (HasCallStack, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
+  :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
 getCanPerformAbility !iid !ws !ability = do
   -- can perform an ability means you can afford it
   -- it is in the right window
@@ -70,7 +71,7 @@ getCanPerformAbility !iid !ws !ability = do
     ]
 
 preventedByInvestigatorModifiers
-  :: HasGame m => InvestigatorId -> Ability -> m Bool
+  :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> m Bool
 preventedByInvestigatorModifiers iid ability = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   isForced <- isForcedAbility iid ability
@@ -99,7 +100,7 @@ preventedByInvestigatorModifiers iid ability = do
       _ -> pure False
 
 meetsActionRestrictions
-  :: HasGame m => InvestigatorId -> [Window] -> Ability -> m Bool
+  :: (Tracing m, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
 meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
  where
   go = \case
@@ -123,7 +124,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
     ServitorAbility _ -> pure True
     ConstantAbility -> pure False
 
-canDoAction :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
+canDoAction :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
 canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \case
   Action.Fight -> case abilitySource of
     LocationSource _lid -> pure True
@@ -228,14 +229,15 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \cas
   Action.Circle -> pure True
 
 getCanAffordAbility
-  :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
+  :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
 getCanAffordAbility iid ability ws = do
   andM
     [ getCanAffordUse iid ability ws
     , getCanAffordAbilityCost iid ability ws
     ]
 
-getCanAffordAbilityCost :: HasGame m => InvestigatorId -> Ability -> [Window] -> m Bool
+getCanAffordAbilityCost
+  :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
 getCanAffordAbilityCost iid a@Ability {..} ws = do
   modifiers <- getModifiers (AbilityTarget iid a.ref)
   doDelayAdditionalCosts <- case abilityDelayAdditionalCosts of
@@ -340,13 +342,14 @@ getAbilityLimit iid ability = do
 -- limits for instance won't work if we have a group limit higher than one, for
 -- that we need to sum uses across all investigators. So we should fix this
 -- soon.
-getCanAffordUse :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
+getCanAffordUse
+  :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> Ability -> [Window] -> m Bool
 getCanAffordUse = getCanAffordUseWith id CanIgnoreAbilityLimit
 
 -- Use `f` to modify use count, used for `getWindowSkippable` to exclude the current call
 -- EMAIL: Cards can't react to themselves, i.e. Grotesque Statue (4)
 getCanAffordUseWith
-  :: (HasCallStack, HasGame m)
+  :: (HasCallStack, HasGame m, Tracing m)
   => ([UsedAbility] -> [UsedAbility])
   -> CanIgnoreAbilityLimit
   -> InvestigatorId
@@ -461,10 +464,10 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
         let total = sum $ map usedTimes $ filter ((== ability) . usedAbility) usedAbilities'
         pure $ total < n
 
-isForcedAbility :: HasGame m => InvestigatorId -> Ability -> m Bool
+isForcedAbility :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> m Bool
 isForcedAbility iid Ability {abilitySource, abilityType} = isForcedAbilityType iid abilitySource abilityType
 
-isForcedAbilityType :: HasGame m => InvestigatorId -> Source -> AbilityType -> m Bool
+isForcedAbilityType :: (Tracing m, HasGame m) => InvestigatorId -> Source -> AbilityType -> m Bool
 isForcedAbilityType iid source = \case
   SilentForcedAbility {} -> pure True
   ForcedAbility {} -> pure True

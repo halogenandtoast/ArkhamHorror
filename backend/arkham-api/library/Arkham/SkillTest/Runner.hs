@@ -34,18 +34,19 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Arkham.Tracing
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (each)
 import Data.Map.Strict qualified as Map
 
-totalChaosTokenValues :: HasGame m => SkillTest -> m Int
+totalChaosTokenValues :: (HasGame m, Tracing m) => SkillTest -> m Int
 totalChaosTokenValues s = do
   x <- sum <$> for (skillTestSetAsideChaosTokens s) (getModifiedChaosTokenValue s)
   y <- getAdditionalChaosTokenValues s
   pure $ x + y
 
-totalModifiedSkillValue :: HasGame m => SkillTest -> m Int
+totalModifiedSkillValue :: (HasGame m, Tracing m) => SkillTest -> m Int
 totalModifiedSkillValue s = do
   results <- calculateSkillTestResultsData s
   chaosTokenValues <- totalChaosTokenValues s
@@ -55,7 +56,7 @@ totalModifiedSkillValue s = do
       0
       (skillTestResultsSkillValue results + chaosTokenValues + skillTestResultsIconValue results)
 
-calculateSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
+calculateSkillTestResultsData :: (HasGame m, Tracing m) => SkillTest -> m SkillTestResultsData
 calculateSkillTestResultsData s = do
   modifiers' <- getModifiers (SkillTestTarget s.id)
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
@@ -81,7 +82,7 @@ calculateSkillTestResultsData s = do
       (resultValueModifiers <$ guard (resultValueModifiers /= 0))
       isSuccess
 
-autoFailSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
+autoFailSkillTestResultsData :: (HasGame m, Tracing m) => SkillTest -> m SkillTestResultsData
 autoFailSkillTestResultsData s = do
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
   mods <- getModifiers s
@@ -96,7 +97,7 @@ subtractSkillIconCount SkillTest {..} =
   matches WildIcon = False
   matches (SkillIcon _) = False
 
-getAdditionalChaosTokenValues :: HasGame m => SkillTest -> m Int
+getAdditionalChaosTokenValues :: (HasGame m, Tracing m) => SkillTest -> m Int
 getAdditionalChaosTokenValues s = do
   mods <- getModifiers s
   let vs = [v | AddChaosTokenValue v <- mods]
@@ -104,7 +105,7 @@ getAdditionalChaosTokenValues s = do
 
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
-getModifiedChaosTokenValue :: HasGame m => SkillTest -> ChaosToken -> m Int
+getModifiedChaosTokenValue :: (HasGame m, Tracing m) => SkillTest -> ChaosToken -> m Int
 getModifiedChaosTokenValue _ t | t.cancelled = pure 0
 getModifiedChaosTokenValue s t = do
   tokenModifiers' <- getModifiers (ChaosTokenTarget t)

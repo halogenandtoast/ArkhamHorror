@@ -22,12 +22,13 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Skill.Types (Field (..))
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Trait (Trait)
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Zone (knownOutOfPlayZone, overOutOfPlayZones)
 import Data.Proxy
 
-targetTraits :: (HasCallStack, HasGame m) => Target -> m (Set Trait)
+targetTraits :: (HasCallStack, HasGame m, Tracing m) => Target -> m (Set Trait)
 targetTraits = \case
   GameTarget -> pure mempty
   ActDeckTarget -> pure mempty
@@ -85,7 +86,7 @@ targetTraits = \case
   LabeledTarget _ t -> targetTraits t
   ThisTarget -> pure mempty
 
-targetMatches :: forall m. HasGame m => Target -> TargetMatcher -> m Bool
+targetMatches :: forall m. (HasGame m, Tracing m) => Target -> TargetMatcher -> m Bool
 targetMatches s = \case
   TargetControlledBy whoMatcher ->
     let
@@ -206,7 +207,7 @@ targetMatches s = \case
     _ -> pure False
 
 targetListMatches
-  :: HasGame m => [Target] -> Matcher.TargetListMatcher -> m Bool
+  :: (HasGame m, Tracing m) => [Target] -> Matcher.TargetListMatcher -> m Bool
 targetListMatches targets = \case
   Matcher.AnyTargetList -> pure True
   Matcher.HasTarget targetMatcher ->

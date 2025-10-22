@@ -32,6 +32,7 @@ import Arkham.Skill.Types (Skill)
 import Arkham.Source
 import Arkham.Story
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Treachery
 import Arkham.Treachery.Types (Treachery)
 import Arkham.Zone

@@ -6,9 +6,10 @@ import Arkham.Classes.HasGame
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Log
 import Arkham.Prelude
+import Arkham.Tracing
 
 discoverMemento :: ReverseQueue m => Memento -> m ()
 discoverMemento memento = recordSetInsert MementosDiscovered [memento]
 
-getMementosDiscoveredCount :: HasGame m => m Int
+getMementosDiscoveredCount :: (HasGame m, Tracing m) => m Int
 getMementosDiscoveredCount = length <$> getRecordSet MementosDiscovered

@@ -33,6 +33,7 @@ import Arkham.Scenario.Types hiding (scenario)
 import Arkham.Skill.Types (Skill)
 import Arkham.Story.Types (Story)
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Treachery.Types (Treachery)
 import Arkham.Window (Window)
 import Control.Lens (each)
@@ -234,7 +235,7 @@ getActiveInvestigator :: HasGame m => m Investigator
 getActiveInvestigator = getGame >>= getInvestigator . gameActiveInvestigatorId
 
 createActiveCostForCard
-  :: (MonadRandom m, HasGame m)
+  :: (MonadRandom m, HasGame m, Tracing m)
   => InvestigatorId
   -> Card
   -> IsPlayAction

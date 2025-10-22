@@ -23,10 +23,12 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Tarot
 import Arkham.Text (FlavorText (..), FlavorTextEntry (..), FlavorTextModifier (..), toI18n)
+import Arkham.Tracing
 import Arkham.Window (defaultWindows)
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.State.Strict
 import Control.Monad.Writer.Strict
+import OpenTelemetry.Trace.Monad (MonadTracer (..))
 
 data ChooseState = ChooseState
   { terminated :: Bool
@@ -47,7 +49,11 @@ newtype ChooseT m a = ChooseT {unChooseT :: StateT ChooseState (WriterT [UI Mess
     , MonadCatch
     , MonadThrow
     , MonadMask
+    , Tracing
     )
+
+instance MonadTracer m => MonadTracer (ChooseT m) where
+  getTracer = ChooseT $ lift $ lift getTracer
 
 instance HasGame m => HasGame (ChooseT m) where
   getGame = lift getGame

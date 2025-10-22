@@ -171,6 +171,13 @@ packages:
       size: 168
   original:
     hackage: proto-lens-runtime-0.7.0.7@sha256:9144556f1a58945e455dd67431bd16d0bd6b2960732dd9b60aa44dd472123a50,3057
+- completed:
+    hackage: hs-opentelemetry-instrumentation-wai-0.1.1.0@sha256:d97b4cb3870217e64e95da3f51db814eca62eb57484ee0a6f747366da5940bc2,1371
+    pantry-tree:
+      sha256: 23bbd4e58ba48b0ec3541a494d02e08e6b934d7173523be8aab04c6b2c7bb98b
+      size: 360
+  original:
+    hackage: hs-opentelemetry-instrumentation-wai-0.1.1.0@sha256:d97b4cb3870217e64e95da3f51db814eca62eb57484ee0a6f747366da5940bc2,1371
 snapshots:
 - completed:
     sha256: cd7c0bda539e01dd990b90e13f3c82169c16e65052557cf49fdd93590c5a7931

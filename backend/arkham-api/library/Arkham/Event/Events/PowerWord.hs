@@ -14,6 +14,7 @@ import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher hiding (DiscoverClues, EnemyEvaded)
 import Arkham.Projection
 import Arkham.Taboo
+import Arkham.Tracing
 import Data.Map.Strict qualified as Map
 
 data Command = GoCommand | CowerCommand | BetrayCommand | MercyCommand | ConfessCommand | DistractCommand
@@ -137,7 +138,7 @@ allCommands a =
          | a `hasCustomization` Distract
          ]
 
-determineMeta :: HasGame m => EventAttrs -> m Value
+determineMeta :: (HasGame m, Tracing m) => EventAttrs -> m Value
 determineMeta attrs = do
   let used = getMetaKeyDefault "used" [] attrs
   case attrs.placement of

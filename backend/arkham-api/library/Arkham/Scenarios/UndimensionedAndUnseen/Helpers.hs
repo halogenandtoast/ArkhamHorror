@@ -1,7 +1,5 @@
 module Arkham.Scenarios.UndimensionedAndUnseen.Helpers where
 
-import Arkham.Prelude
-
 import Arkham.Campaigns.TheDunwichLegacy.Helpers
 import Arkham.Card (Card)
 import Arkham.Classes
@@ -12,6 +10,8 @@ import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Name
+import Arkham.Prelude
+import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "undimensionedAndUnseen" a
@@ -19,11 +19,11 @@ scenarioI18n a = campaignI18n $ scope "undimensionedAndUnseen" a
 broodTitle :: Text
 broodTitle = nameTitle . toName $ Cards.broodOfYogSothoth
 
-getMatchingBroodOfYogSothoth :: HasGame m => EnemyMatcher -> m [EnemyId]
+getMatchingBroodOfYogSothoth :: (HasGame m, Tracing m) => EnemyMatcher -> m [EnemyId]
 getMatchingBroodOfYogSothoth matcher = select $ InPlayEnemy $ EnemyWithTitle broodTitle <> matcher
 
-getBroodOfYogSothoth :: HasGame m => m [EnemyId]
+getBroodOfYogSothoth :: (HasGame m, Tracing m) => m [EnemyId]
 getBroodOfYogSothoth = select $ InPlayEnemy $ EnemyWithTitle broodTitle
 
-getSetAsideBroodOfYogSothoth :: HasGame m => m [Card]
+getSetAsideBroodOfYogSothoth :: (HasGame m, Tracing m) => m [Card]
 getSetAsideBroodOfYogSothoth = getSetAsideCardsMatching $ CardWithTitle broodTitle

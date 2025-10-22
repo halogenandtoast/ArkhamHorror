@@ -1,19 +1,20 @@
 module Arkham.Scenarios.TheEssexCountyExpress.Helpers where
 
-import Arkham.Layout
 import Arkham.Campaigns.TheDunwichLegacy.Helpers
 import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Direction
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Layout
 import Arkham.Matcher
 import Arkham.Prelude
+import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "theEssexCountyExpress" a
 
-leftmostLocation :: HasGame m => m LocationId
+leftmostLocation :: (Tracing m, HasGame m) => m LocationId
 leftmostLocation = go =<< selectJust (LocationWithTitle "Engine Car")
  where
   go lid = maybe (pure lid) go =<< selectOne (LocationInDirection LeftOf $ LocationWithId lid)

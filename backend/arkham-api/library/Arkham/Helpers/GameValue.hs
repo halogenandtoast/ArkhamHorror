@@ -5,17 +5,18 @@ import Arkham.GameValue as X
 import Arkham.Helpers.Query
 import Arkham.Matcher qualified as Matcher
 import Arkham.Prelude
+import Arkham.Tracing
 
-getPlayerCountValue :: HasGame m => GameValue -> m Int
+getPlayerCountValue :: (HasGame m, Tracing m) => GameValue -> m Int
 getPlayerCountValue gameValue = fromGameValue gameValue <$> getPlayerCount
 
-getGameValue :: HasGame m => GameValue -> m Int
+getGameValue :: (HasGame m, Tracing m) => GameValue -> m Int
 getGameValue = getPlayerCountValue
 
-perPlayer :: HasGame m => Int -> m Int
+perPlayer :: (HasGame m, Tracing m) => Int -> m Int
 perPlayer = getPlayerCountValue . PerPlayer
 
-gameValueMatches :: HasGame m => Int -> Matcher.ValueMatcher -> m Bool
+gameValueMatches :: (HasGame m, Tracing m) => Int -> Matcher.ValueMatcher -> m Bool
 gameValueMatches n = \case
   Matcher.AnyValue -> pure True
   Matcher.LessThan gv -> (n <) <$> getPlayerCountValue gv

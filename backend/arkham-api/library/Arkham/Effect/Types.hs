@@ -3,8 +3,6 @@
 
 module Arkham.Effect.Types where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes.Entity
@@ -18,9 +16,11 @@ import {-# SOURCE #-} Arkham.Helpers.Ref
 import Arkham.Id
 import Arkham.Json
 import Arkham.Message
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Trait
 import Data.Aeson.TH
 import Data.Data
@@ -287,7 +287,7 @@ setEffectMeta :: ToJSON a => a -> EffectAttrs -> EffectAttrs
 setEffectMeta a = extraL .~ toJSON a
 
 makeEffectBuilder
-  :: (Sourceable source, Targetable target, HasGame m)
+  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
   => CardCode
   -> Maybe (EffectMetadata Message)
   -> source

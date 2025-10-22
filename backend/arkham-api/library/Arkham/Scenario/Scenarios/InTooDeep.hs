@@ -10,8 +10,8 @@ import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
-import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Helpers.Location (getConnectedLocations, getLocationOf)
+import Arkham.Tracing
+import Arkham.Helpers.Location (getConnectedLocations, getLocationOf, withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectMaybe )
 import Arkham.Helpers.Xp
 import Arkham.I18n
@@ -37,7 +37,7 @@ newtype InTooDeep = InTooDeep ScenarioAttrs
   deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-getBlockedFrom :: HasGame m => Meta -> LocationId -> m [LocationId]
+getBlockedFrom :: (HasGame m, Tracing m) => Meta -> LocationId -> m [LocationId]
 getBlockedFrom (Meta meta) lid = do
   isDreamGate <- matches lid $ mapOneOf locationIs [Locations.dreamGatePointlessReality, Locations.dreamGateWondrousJourney]
   if isDreamGate

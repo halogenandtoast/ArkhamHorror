@@ -9,10 +9,11 @@ import Arkham.Message.Lifted
 import Arkham.Movement
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Tracing
 import Control.Monad.Trans.Class
 
 replaceMovement
-  :: (MonadTrans t, HasQueue Message m, HasGame (t m))
+  :: (MonadTrans t, HasQueue Message m, HasGame (t m), Tracing (t m))
   => InvestigatorId -> (Movement -> Movement) -> t m ()
 replaceMovement iid f =
   field InvestigatorMovement iid >>= traverse_ \movement -> do

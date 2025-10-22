@@ -14,6 +14,7 @@ import Arkham.Id
 import Arkham.Message
 import Arkham.Queue
 import Arkham.Random
+import Arkham.Tracing
 import Control.Concurrent.MVar
 import Control.Lens hiding (from)
 import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
@@ -25,7 +26,9 @@ import Database.Esqueleto.Experimental
 import Database.Redis (RedisChannel)
 import Entity.Arkham.LogEntry
 import GHC.Records
-import Import hiding (appLogger, (==.), (>=.))
+import Import hiding (appLogger, appTracer, (==.), (>=.))
+import OpenTelemetry.Trace qualified as Trace
+import OpenTelemetry.Trace.Monad (inSpan', MonadTracer (..))
 
 newtype GameLog = GameLog {gameLogToLogEntries :: [Text]}
   deriving newtype (Monoid, Semigroup)
@@ -79,6 +82,7 @@ newtype GameAppT a = GameAppT {unGameAppT :: ReaderT GameApp IO a}
     , MonadMask
     , MonadCatch
     , MonadThrow
+    , MonadUnliftIO
     )
 
 data GameApp = GameApp
@@ -86,6 +90,7 @@ data GameApp = GameApp
   , appQueue :: Queue Message
   , appGen :: IORef StdGen
   , appLogger :: ClientMessage -> IO ()
+  , appTracer :: Trace.Tracer
   }
 
 instance HasDebugLevel GameAppT where
@@ -124,10 +129,19 @@ instance HasGameRef GameApp where
 instance HasQueue Message GameAppT where
   messageQueue = asks appQueue
 
+instance MonadTracer GameAppT where
+  getTracer = asks appTracer
+
 instance HasGameLogger GameAppT where
   getLogger = do
     logger <- asks appLogger
     pure $ \msg -> liftIO $ logger msg
+
+instance Tracing GameAppT where
+  type SpanType GameAppT = Trace.Span
+  type SpanArgs GameAppT = Trace.SpanArguments
+  defaultSpanArgs = Trace.defaultSpanArguments
+  doTrace name args action = inSpan' name args action
 
 runGameApp :: MonadIO m => GameApp -> GameAppT a -> m a
 runGameApp gameApp = liftIO . flip runReaderT gameApp . unGameAppT

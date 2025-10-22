@@ -33,6 +33,7 @@ import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
+import Arkham.Tracing
 import Arkham.Trait
 import Arkham.Window (Window)
 import Arkham.Window qualified as Window
@@ -70,6 +71,7 @@ newtype ScriptT b a = Script
     , CardGen
     , MonadRandom
     , HasGameLogger
+    , Tracing
     )
 
 instance ReverseQueue (ScriptT a) where
@@ -294,7 +296,7 @@ instance AtYourLocation EnemyMatcher where
 
 class ChooseAmong a where
   type ChosenType a :: Type
-  toChooseAmong :: HasGame m => a -> m [ChosenType a]
+  toChooseAmong :: (HasGame m, Tracing m) => a -> m [ChosenType a]
 
 instance ChooseAmong [Target] where
   type ChosenType [Target] = Target
@@ -405,6 +407,7 @@ newtype FightT m a = FightT {runFightT :: StateT FightDetails m a}
     , CardGen
     , MonadRandom
     , MonadIO
+    , Tracing
     )
 
 instance HasQueue msg m => HasQueue msg (FightT m) where

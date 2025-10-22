@@ -8,6 +8,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
+import Arkham.Tracing
 
 newtype TheBeastUnleashed = TheBeastUnleashed AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -25,7 +26,7 @@ instance HasAbilities TheBeastUnleashed where
         $ EnemyEnters #after (locationIs Cards.dormitories) (enemyIs Cards.theExperiment)
     ]
 
-getTheExperiment :: (HasCallStack, HasGame m) => m EnemyId
+getTheExperiment :: (HasCallStack, HasGame m, Tracing m) => m EnemyId
 getTheExperiment = selectJust (enemyIs Cards.theExperiment)
 
 instance RunMessage TheBeastUnleashed where

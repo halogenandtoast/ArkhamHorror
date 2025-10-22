@@ -57,12 +57,16 @@ getPlayableCards
      )
   => source -> investigator -> CostStatus -> [Window] -> m [Card]
 getPlayableCards source investigator costStatus windows' = do
-  asIfInHandCards <- getAsIfInHandCards (asId investigator)
-  otherPlayersPlayableCards <- getOtherPlayersPlayableCards (asId investigator) costStatus windows'
-  playableDiscards <- getPlayableDiscards source (asId investigator) costStatus windows'
+  asIfInHandCards <- withSpan_ "getAsIfInHandCards" $ getAsIfInHandCards (asId investigator)
+  otherPlayersPlayableCards <-
+    withSpan_ "getOtherPlayersPlayableCards"
+      $ getOtherPlayersPlayableCards (asId investigator) costStatus windows'
+  playableDiscards <-
+    withSpan_ "getPlayableDiscards" $ getPlayableDiscards source (asId investigator) costStatus windows'
   hand <- field InvestigatorHand (asId investigator)
   playableHandCards <-
-    filterM (getIsPlayable (asId investigator) source costStatus windows') (hand <> asIfInHandCards)
+    withSpan_ "filterPlayable"
+      $ filterM (getIsPlayable (asId investigator) source costStatus windows') (hand <> asIfInHandCards)
   pure $ playableHandCards <> playableDiscards <> otherPlayersPlayableCards
 
 getPlayableCardsMatch
@@ -178,7 +182,34 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
   prevents (CannotPutIntoPlay matcher) = cardMatch c matcher
   prevents _ = False
   go :: forall n. (Tracing n, HasGame n) => n Bool
-  go = withDepthGuard 3 False do
+  go = withDepthGuard 3 False $ runValidT do
+    guard (cdCardType pcDef /= SkillType)
+
+    let title = nameTitle (cdName pcDef)
+    liftGuardM $ case (cdUnique pcDef, cdCardType pcDef) of
+      (True, AssetType) ->
+        not <$> case nameSubtitle (cdName pcDef) of
+          Nothing -> selectAny (AssetWithTitle title)
+          Just subtitle -> selectAny (AssetWithFullTitle title subtitle)
+      _ -> pure True
+
+    modifiers <- getModifiers iid
+
+    guard $ none prevents modifiers
+
+    let
+      goNoAction = \case
+        UnpaidCost NoAction -> True
+        PaidCost ->
+          -- NOTE: This addition is recent and is related to changes with
+          -- windows. Because we pass all windows now it confuses the logic for
+          -- playing a card outside of a normal window, but my choice here is
+          -- that if we've PaidCost then we should not care.
+          True
+        AuxiliaryCost _ inner -> goNoAction inner
+        _ -> False
+      noAction = isNothing (cdFastWindow pcDef) && goNoAction costStatus
+
     attrs <- getAttrs @Investigator iid
     isBobJenkins <- case source of
       AbilitySource (InvestigatorSource "08016") 1 -> do
@@ -221,7 +252,6 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
         _ -> pure False
       pure $ bobJenkinsPermitted || modifierPermitted
 
-    modifiers <- getModifiers iid
     resourcesFromAssets <-
       sum <$> for ((iid, modifiers) : iidsWithModifiers) \(iid', modifiers') -> do
         sum <$> for modifiers' \case
@@ -237,14 +267,6 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
       (resourcesFromAssets +)
         . sum
         <$> traverse (field InvestigatorResources . fst) canHelpPay
-    cardModifiers <- getModifiers c
-    let title = nameTitle (cdName pcDef)
-    passesUnique <- case (cdUnique pcDef, cdCardType pcDef) of
-      (True, AssetType) ->
-        not <$> case nameSubtitle (cdName pcDef) of
-          Nothing -> selectAny (AssetWithTitle title)
-          Just subtitle -> selectAny (AssetWithFullTitle title subtitle)
-      _ -> pure True
 
     baseModifiedCardCost <- getModifiedCardCost iid c
     modifiedCardCost <- getPotentiallyModifiedCardCost iid c True baseModifiedCardCost
@@ -262,6 +284,7 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
       _ -> anyM (getCanAffordCost iid source (cdActions $ toCardDef c) windows') alternateResourceCosts
 
     mTaboo <- field InvestigatorTaboo iid
+    cardModifiers <- getModifiers c
 
     let
       auxiliaryCosts =
@@ -308,8 +331,10 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
       applyModifier _ val = val
       source' = replaceThisCardSource source
 
-    passesCriterias <-
-      maybe
+    guard $ (costStatus == PaidCost) || (canAffordCost || canAffordAlternateResourceCost)
+
+    liftGuardM
+      $ maybe
         (pure True)
         (passesCriteria iid (Just (c, costStatus)) source' (CardIdSource c.id) windows')
         (foldl' handleCriteriaReplacement (replaceThisCardSource $ cdCriteria pcDef) cardModifiers)
@@ -320,6 +345,12 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
         (cardInFastWindows iid source c windows')
         (cdFastWindow pcDef <|> canBecomeFastWindow)
 
+    guard
+      $ (isNothing (cdFastWindow pcDef) && notFastWindow)
+      || inFastWindow
+      || isBobJenkins
+      || noAction
+
     ac <- getActionCost attrs (cdActions pcDef)
 
     let
@@ -328,19 +359,24 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
         _ -> False
       doAsIfTurn = any isDuringTurnWindow windows'
 
-    canEvade <- withGrantedActions iid GameSource ac do
-      if #evade `elem` cdActions pcDef
-        then
+    liftGuardM $ passesLimits iid c
+    unless (null (cdSlots pcDef)) do
+      liftGuardM do
+        possibleSlots <- getPotentialSlots c iid
+        pure $ null $ cdSlots pcDef \\ possibleSlots
+
+    when (#evade `elem` pcDef.actions) do
+      unless (cdOverrideActionPlayableIfCriteriaMet pcDef && #evade `elem` cdActions pcDef) do
+        liftGuardM $ withGrantedActions iid GameSource ac do
           if inFastWindow || doAsIfTurn
             then
               asIfTurn iid
                 $ hasEvadeActions iid (Window.DuringTurn You) (defaultWindows iid <> windows')
             else hasEvadeActions iid (Window.DuringTurn You) (defaultWindows iid <> windows')
-        else pure False
 
-    canFight <- withGrantedActions iid GameSource ac do
-      if #fight `elem` pcDef.actions
-        then
+    when (#fight `elem` pcDef.actions) do
+      unless (cdOverrideActionPlayableIfCriteriaMet pcDef && #fight `elem` cdActions pcDef) do
+        liftGuardM $ withGrantedActions iid GameSource ac do
           if inFastWindow || doAsIfTurn
             then
               asIfTurn iid
@@ -355,15 +391,11 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
                 (CardIdSource c.id)
                 (Window.DuringTurn You)
                 (defaultWindows iid <> windows')
-        else pure False
 
-    canInvestigate <- runValidT do
-      guard $ #investigate `elem` pcDef.actions
+    when (#investigate `elem` pcDef.actions) do
       loc <- MaybeT $ field InvestigatorLocation iid
       liftGuardM $ loc <=~> InvestigatableLocation
       liftGuardM $ withoutModifier iid (CannotInvestigateLocation loc)
-
-    passesLimits' <- passesLimits iid c
 
     let
       isPlayAction = \case
@@ -434,56 +466,16 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
 
     -- NOTE: WE just changed this to pass False for can modify We may want to
     -- consolidate this in a way where this is covered by the default case
-    canAffordAdditionalCosts <-
-      getCanAffordCost_ iid (CardIdSource c.id) c.actions windows' False
-        $ fold
-        $ [ActionCost actionCost | actionCost > 0 && not inFastWindow && costStatus /= PaidCost]
-        <> additionalCosts
-        <> auxiliaryCosts
-        <> investigateCosts
-        <> resignCosts
-        <> sealedChaosTokenCost
-        <> [fromMaybe mempty (cdAdditionalCost pcDef) | costStatus /= PaidCost]
-
-    passesSlots <-
-      if null (cdSlots pcDef)
-        then pure True
-        else do
-          possibleSlots <- getPotentialSlots c iid
-          pure $ null $ cdSlots pcDef \\ possibleSlots
-
-    let
-      goNoAction = \case
-        UnpaidCost NoAction -> True
-        PaidCost ->
-          -- NOTE: This addition is recent and is related to changes with
-          -- windows. Because we pass all windows now it confuses the logic for
-          -- playing a card outside of a normal window, but my choice here is
-          -- that if we've PaidCost then we should not care.
-          True
-        AuxiliaryCost _ inner -> goNoAction inner
-        _ -> False
-      noAction = isNothing (cdFastWindow pcDef) && goNoAction costStatus
-
-    pure
-      $ (cdCardType pcDef /= SkillType)
-      && ((costStatus == PaidCost) || (canAffordCost || canAffordAlternateResourceCost))
-      && none prevents modifiers
-      && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow || isBobJenkins || noAction)
-      && ( (#evade `notElem` pcDef.actions)
-             || canEvade
-             || (cdOverrideActionPlayableIfCriteriaMet pcDef && #evade `elem` cdActions pcDef)
-         )
-      && ( (#fight `notElem` pcDef.actions)
-             || canFight
-             || (cdOverrideActionPlayableIfCriteriaMet pcDef && #fight `elem` cdActions pcDef)
-         )
-      && ((#investigate `notElem` cdActions pcDef) || canInvestigate)
-      && passesCriterias
-      && passesLimits'
-      && passesUnique
-      && passesSlots
-      && canAffordAdditionalCosts
+    liftGuardM
+      $ getCanAffordCost_ iid (CardIdSource c.id) c.actions windows' False
+      $ fold
+      $ [ActionCost actionCost | actionCost > 0 && not inFastWindow && costStatus /= PaidCost]
+      <> additionalCosts
+      <> auxiliaryCosts
+      <> investigateCosts
+      <> resignCosts
+      <> sealedChaosTokenCost
+      <> [fromMaybe mempty (cdAdditionalCost pcDef) | costStatus /= PaidCost]
 
 getOtherPlayersPlayableCards
   :: (Tracing m, HasGame m) => InvestigatorId -> CostStatus -> [Window] -> m [Card]

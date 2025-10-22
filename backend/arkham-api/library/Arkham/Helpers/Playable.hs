@@ -45,8 +45,6 @@ import Arkham.Taboo.Types
 import Arkham.Tracing
 import Arkham.Window
 import Control.Lens (over)
-import Data.Conduit (runConduit, (.|))
-import Data.Conduit.Combinators qualified as C
 import Data.Data.Lens (biplate)
 
 getPlayableCards
@@ -123,10 +121,7 @@ filterPlayable
   -> [Card]
   -> m [Card]
 filterPlayable investigator source costStatus windows' cards = withSpan_ "filterPlayable" do
-  runConduit
-    $ C.yieldMany cards
-    .| C.filterM (getIsPlayable investigator source costStatus windows')
-    .| C.sinkList
+  filterM (getIsPlayable investigator source costStatus windows') cards
 
 getIsPlayable
   :: ( HasCallStack

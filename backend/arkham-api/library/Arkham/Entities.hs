@@ -37,8 +37,6 @@ import Arkham.Tracing
 import Arkham.Treachery
 import Arkham.Treachery.Types (Treachery)
 import Arkham.Zone
-import Data.Conduit (runConduit, (.|))
-import Data.Conduit.Combinators qualified as C
 import Data.Map.Strict qualified as Map
 import Data.Typeable
 import GHC.Records
@@ -216,14 +214,8 @@ addEntity a e =
 instance RunMessage Entities where
   runMessage msg entities = withSpan_ "Entities.runMessage" do
     let
-      runEntities
-        :: (a ~ RunType a, Entity a, RunMessage a, Ord (EntityId a))
-        => Lens' Entities (EntityMap a) -> GameT (EntityMap a)
-      runEntities lensL =
-        runConduit
-          $ C.yieldMany (Map.elems $ entities ^. lensL)
-          .| C.mapM (runMessage msg)
-          .| C.foldMap (\inv -> Map.singleton (toId inv) inv)
+      runEntities :: (a ~ RunType a, RunMessage a) => Lens' Entities (EntityMap a) -> GameT (EntityMap a)
+      runEntities lensL = traverse (runMessage msg) (entities ^. lensL)
 
     entitiesActs <- runEntities actsL
     entitiesAgendas <- runEntities agendasL

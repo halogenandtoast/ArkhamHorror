@@ -33,8 +33,6 @@ import Arkham.Target
 import Arkham.Tracing
 import Arkham.Window (Window (..), defaultWindows)
 import Arkham.Window qualified as Window
-import Data.Conduit (runConduit, (.|))
-import Data.Conduit.Combinators qualified as C
 
 actionMatches :: (Tracing m, HasGame m) => InvestigatorId -> Action -> ActionMatcher -> m Bool
 actionMatches _ _ AnyAction = pure True
@@ -265,14 +263,9 @@ getActionsWith iid ws f = withSpan_ "getActions" do
             else Just $ applyAbilityModifiers ability modifiers'
 
   actions''' <-
-    runConduit
-      $ C.yieldMany actions''
-      .| C.filterM
-        ( \action -> runValidT do
-            liftGuardM $ getCanPerformAbility iid ws action
-            liftGuardM $ getCanAffordAbility iid action ws
-        )
-      .| C.sinkList
+    actions'' & filterM \action -> runValidT do
+      liftGuardM $ getCanPerformAbility iid ws action
+      liftGuardM $ getCanAffordAbility iid action ws
   forcedActions <- filterM (isForcedAbility iid) actions'''
   pure $ nub $ if null forcedActions then actions''' else forcedActions
 

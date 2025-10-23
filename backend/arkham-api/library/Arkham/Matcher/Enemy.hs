@@ -39,7 +39,7 @@ instance Be EnemyId EnemyMatcher where
 
 data PreyMatcher
   = Prey InvestigatorMatcher
-  | OnlyPrey InvestigatorMatcher
+  | OnlyPrey PreyMatcher
   | BearerOf EnemyId
   | RestrictedBearerOf EnemyId InvestigatorMatcher
   deriving stock (Show, Eq, Ord, Data)

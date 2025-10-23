@@ -192,7 +192,6 @@ const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.ma
   button {
     white-space: nowrap;
     text-wrap: pretty;
-    display: none;
   }
 
   @media (min-width: 801px) {

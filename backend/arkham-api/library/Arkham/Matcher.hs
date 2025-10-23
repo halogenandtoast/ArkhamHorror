@@ -218,7 +218,7 @@ noModifier = InvestigatorWithoutModifier
 -- would always return that prey
 preyWith :: PreyMatcher -> InvestigatorMatcher -> PreyMatcher
 preyWith (Prey m1) m2 = Prey $ m1 <> m2
-preyWith (OnlyPrey m1) m2 = OnlyPrey $ m1 <> m2
+preyWith (OnlyPrey p1) m1 = OnlyPrey $ preyWith p1 m1
 preyWith (BearerOf e) m = RestrictedBearerOf e m
 preyWith (RestrictedBearerOf e m1) m2 = RestrictedBearerOf e $ m1 <> m2
 

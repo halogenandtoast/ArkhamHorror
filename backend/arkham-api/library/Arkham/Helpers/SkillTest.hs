@@ -165,45 +165,39 @@ isInvestigation :: HasGame m => m Bool
 isInvestigation = (== Just #investigate) <$> getSkillTestAction
 
 isInvestigationOf :: (HasGame m, Tracing m) => LocationMatcher -> m Bool
-isInvestigationOf matcher =
-  isJust <$> runMaybeT do
-    Action.Investigate <- MaybeT getSkillTestAction
-    LocationTarget lid <- MaybeT getSkillTestTarget
-    liftGuardM $ lid <=~> matcher
+isInvestigationOf matcher = runValidT do
+  Action.Investigate <- MaybeT getSkillTestAction
+  LocationTarget lid <- MaybeT getSkillTestTarget
+  liftGuardM $ lid <=~> matcher
 
 isSkillTestAt :: (HasGame m, Tracing m, ToId location LocationId) => location -> m Bool
-isSkillTestAt location =
-  isJust <$> runMaybeT do
-    iid <- MaybeT getSkillTestInvestigator
-    liftGuardM $ asId location <=~> locationWithInvestigator iid
+isSkillTestAt location = runValidT do
+  iid <- MaybeT getSkillTestInvestigator
+  liftGuardM $ asId location <=~> locationWithInvestigator iid
 
 isFightWith :: (HasGame m, Tracing m) => EnemyMatcher -> m Bool
-isFightWith matcher =
-  isJust <$> runMaybeT do
-    Action.Fight <- MaybeT getSkillTestAction
-    eid <- hoistMaybe . (.enemy) =<< MaybeT getSkillTestTarget
-    liftGuardM $ eid <=~> matcher
+isFightWith matcher = runValidT do
+  Action.Fight <- MaybeT getSkillTestAction
+  eid <- hoistMaybe . (.enemy) =<< MaybeT getSkillTestTarget
+  liftGuardM $ eid <=~> matcher
 
 isEvadeWith :: (HasGame m, Tracing m) => EnemyMatcher -> m Bool
-isEvadeWith matcher =
-  isJust <$> runMaybeT do
-    Action.Evade <- MaybeT getSkillTestAction
-    eid <- hoistMaybe . (.enemy) =<< MaybeT getSkillTestTarget
-    liftGuardM $ eid <=~> matcher
+isEvadeWith matcher = runValidT do
+  Action.Evade <- MaybeT getSkillTestAction
+  eid <- hoistMaybe . (.enemy) =<< MaybeT getSkillTestTarget
+  liftGuardM $ eid <=~> matcher
 
 isEvading :: (HasGame m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> m Bool
-isEvading enemy =
-  isJust <$> runMaybeT do
-    Action.Evade <- MaybeT getSkillTestAction
-    eid <- hoistMaybe . (.enemy) =<< MaybeT getSkillTestTarget
-    guard $ asId enemy == eid
+isEvading enemy = runValidT do
+  Action.Evade <- MaybeT getSkillTestAction
+  eid <- hoistMaybe . (.enemy) =<< MaybeT getSkillTestTarget
+  guard $ asId enemy == eid
 
 isFighting :: (HasGame m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> m Bool
-isFighting enemy =
-  isJust <$> runMaybeT do
-    Action.Fight <- MaybeT getSkillTestAction
-    eid <- hoistMaybe . (.enemy) =<< MaybeT getSkillTestTarget
-    guard $ asId enemy == eid
+isFighting enemy = runValidT do
+  Action.Fight <- MaybeT getSkillTestAction
+  eid <- hoistMaybe . (.enemy) =<< MaybeT getSkillTestTarget
+  guard $ asId enemy == eid
 
 isParley :: (HasGame m, Tracing m) => m Bool
 isParley =
@@ -508,114 +502,99 @@ pushAfterSkillTest = pushAfter \case
   _ -> False
 
 getIsCommittable :: (Tracing m, HasGame m) => InvestigatorId -> Card -> m Bool
-getIsCommittable a c = do
-  getSkillTest >>= \case
-    Nothing -> pure False
-    Just skillTest -> do
-      let iid = skillTest.investigator
-      modifiers' <- getModifiers a
-      mlid <- getMaybeLocation a
-      allowedToCommit <-
-        if iid /= a
-          then do
-            cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
-            let locationsCardCanBePlayedAt = [matcher | CanCommitToSkillTestPerformedByAnInvestigatorAt matcher <- cardModifiers]
-            otherLocation <- field InvestigatorLocation iid
-            sameLocation <-
-              maybe
-                (pure False)
-                (\x -> (mlid == Just x &&) <$> withoutModifier x CountsAsDifferentLocation)
-                otherLocation
-            otherLocationOk <-
-              maybe
-                (pure False)
-                ( \l ->
-                    orM
-                      [ canCommitToAnotherLocation a l
-                      , if notNull locationsCardCanBePlayedAt
-                          then l <=~> oneOf locationsCardCanBePlayedAt
-                          else pure False
-                      ]
-                )
-                otherLocation
-            perilous <- getIsPerilous skillTest
-            alreadyCommitted <- fieldMap InvestigatorCommittedCards notNull a
-            pure
-              $ and
-                [ not perilous
-                , CannotCommitToOtherInvestigatorsSkillTests `notElem` modifiers'
-                , isJust mlid && (sameLocation || otherLocationOk)
-                , not alreadyCommitted || IgnoreCommitOneRestriction `elem` modifiers'
-                ]
-          else pure True
-      if not allowedToCommit
-        then pure False
-        else do
-          allCommittedCards <- selectAll InvestigatorCommittedCards Anyone
-          let
-            onlyCardCommittedToTest = elem OnlyCardCommittedToTest . cdCommitRestrictions . toCardDef
-            onlyCardComittedToTestCommitted = any onlyCardCommittedToTest allCommittedCards
-          let cannotCommitCards = CannotCommitCards AnyCard `elem` modifiers'
-          if c `elem` allCommittedCards || cannotCommitCards || onlyCardComittedToTestCommitted
-            then pure False
-            else case c of
-              PlayerCard card -> do
-                let
-                  committedCardTitles = map toTitle allCommittedCards
-                  passesCommitRestriction = \case
-                    OnlySkillTestSource matcher -> sourceMatches skillTest.source matcher
-                    OnlySkillTest matcher -> skillTestMatches iid skillTest.source skillTest matcher
-                    CommittableTreachery -> error "unhandled"
-                    AnyCommitRestriction cs -> anyM passesCommitRestriction cs
-                    OnlyFightAgainst matcher -> case skillTest.target.enemy of
-                      Just eid -> andM [pure $ skillTestAction skillTest == Just #fight, eid <=~> matcher]
-                      _ -> pure False
-                    OnlyEvasionAgainst matcher -> case skillTestTarget skillTest of
-                      EnemyTarget eid -> andM [pure $ skillTestAction skillTest == Just #evade, eid <=~> matcher]
-                      _ -> pure False
-                    MaxOnePerTest -> pure $ toTitle card `notElem` committedCardTitles
-                    OnlyInvestigator matcher -> iid <=~> replaceYouMatcher a matcher
-                    OnlyCardCommittedToTest -> pure $ null committedCardTitles
-                    OnlyYourTest -> pure $ iid == a
-                    OnlyTestDuringYourTurn -> iid <=~> TurnInvestigator
-                    OnlyNotYourTest -> pure $ iid /= a
-                    MustBeCommittedToYourTest -> pure $ iid == a
-                    OnlyIfYourLocationHasClues -> maybe (pure False) (fieldMap LocationClues (> 0)) mlid
-                    OnlyTestWithActions as -> pure $ maybe False (`elem` as) (skillTestAction skillTest)
-                    ScenarioAbility -> getIsScenarioAbility
-                    SelfCanCommitWhen matcher -> notNull <$> select (You <> matcher)
-                    MinSkillTestValueDifference n -> do
-                      x <- getSkillTestDifficultyDifferenceFromBaseValue a skillTest
-                      pure $ x >= n
-                  prevented = flip any modifiers' $ \case
-                    CanOnlyUseCardsInRole role ->
-                      null $ intersect (cdClassSymbols $ toCardDef card) (setFromList [Neutral, role])
-                    CannotCommitCards matcher -> cardMatch card matcher
-                    _ -> False
+getIsCommittable a c = runValidT do
+  skillTest <- MaybeT getSkillTest
+  let iid = skillTest.investigator
+  modifiers' <- getModifiers a
+  mlid <- getMaybeLocation a
+  when (iid /= a) do
+    lid <- hoistMaybe mlid
+    guard $ CannotCommitToOtherInvestigatorsSkillTests `notElem` modifiers'
+    liftGuardM $ not <$> getIsPerilous skillTest
+    cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
+    let locationsCardCanBePlayedAt = [matcher | CanCommitToSkillTestPerformedByAnInvestigatorAt matcher <- cardModifiers]
 
-                passesCommitRestrictions <- allM passesCommitRestriction (cdCommitRestrictions $ toCardDef card)
-                icons <- iconsForCard c
-                otherAdditionalCosts <-
-                  fold <$> for allCommittedCards \c' -> do
-                    mods <- getModifiers c'
-                    pure $ fold [cst | AdditionalCostToCommit iid' cst <- mods, iid' == a]
-                cmods <- getModifiers (CardIdTarget $ toCardId c)
-                let costToCommit = fold [cst | AdditionalCostToCommit iid' cst <- cmods, iid' == a]
-                affordable <- getCanAffordCost a (toSource a) [] [] (costToCommit <> otherAdditionalCosts)
-                skillIcons <- getSkillTestMatchingSkillIcons
+    otherLocation <- field InvestigatorLocation iid
+    sameLocation <-
+      maybe
+        (pure False)
+        (\x -> (lid == x &&) <$> withoutModifier x CountsAsDifferentLocation)
+        otherLocation
+    otherLocationOk <-
+      maybe
+        (pure False)
+        ( \l ->
+            orM
+              [ canCommitToAnotherLocation a l
+              , if notNull locationsCardCanBePlayedAt
+                  then l <=~> oneOf locationsCardCanBePlayedAt
+                  else pure False
+              ]
+        )
+        otherLocation
+    guard $ sameLocation || otherLocationOk
+    alreadyCommitted <- fieldMap InvestigatorCommittedCards notNull a
+    guard $ not alreadyCommitted || IgnoreCommitOneRestriction `elem` modifiers'
 
-                pure
-                  $ and
-                    [ or
-                        [ any (`member` skillIcons) icons
-                        , and [null icons, cdCanCommitWhenNoIcons (toCardDef card)]
-                        ]
-                    , not prevented
-                    , affordable
-                    , passesCommitRestrictions
-                    ]
-              EncounterCard card -> pure $ CommittableTreachery `elem` cdCommitRestrictions (toCardDef card)
-              VengeanceCard _ -> error "vengeance card"
+  allCommittedCards <- selectAll InvestigatorCommittedCards Anyone
+  let
+    onlyCardCommittedToTest = elem OnlyCardCommittedToTest . cdCommitRestrictions . toCardDef
+    onlyCardComittedToTestCommitted = any onlyCardCommittedToTest allCommittedCards
+  let cannotCommitCards = CannotCommitCards AnyCard `elem` modifiers'
+  guard $ c `elem` allCommittedCards || cannotCommitCards || onlyCardComittedToTestCommitted
+  case c of
+    PlayerCard card -> do
+      let
+        committedCardTitles = map toTitle allCommittedCards
+        passesCommitRestriction = \case
+          OnlySkillTestSource matcher -> sourceMatches skillTest.source matcher
+          OnlySkillTest matcher -> skillTestMatches iid skillTest.source skillTest matcher
+          CommittableTreachery -> error "unhandled"
+          AnyCommitRestriction cs -> anyM passesCommitRestriction cs
+          OnlyFightAgainst matcher -> case skillTest.target.enemy of
+            Just eid -> andM [pure $ skillTestAction skillTest == Just #fight, eid <=~> matcher]
+            _ -> pure False
+          OnlyEvasionAgainst matcher -> case skillTestTarget skillTest of
+            EnemyTarget eid -> andM [pure $ skillTestAction skillTest == Just #evade, eid <=~> matcher]
+            _ -> pure False
+          MaxOnePerTest -> pure $ toTitle card `notElem` committedCardTitles
+          OnlyInvestigator matcher -> iid <=~> replaceYouMatcher a matcher
+          OnlyCardCommittedToTest -> pure $ null committedCardTitles
+          OnlyYourTest -> pure $ iid == a
+          OnlyTestDuringYourTurn -> iid <=~> TurnInvestigator
+          OnlyNotYourTest -> pure $ iid /= a
+          MustBeCommittedToYourTest -> pure $ iid == a
+          OnlyIfYourLocationHasClues -> maybe (pure False) (fieldMap LocationClues (> 0)) mlid
+          OnlyTestWithActions as -> pure $ maybe False (`elem` as) (skillTestAction skillTest)
+          ScenarioAbility -> getIsScenarioAbility
+          SelfCanCommitWhen matcher -> notNull <$> select (You <> matcher)
+          MinSkillTestValueDifference n -> do
+            x <- getSkillTestDifficultyDifferenceFromBaseValue a skillTest
+            pure $ x >= n
+        prevented = flip any modifiers' $ \case
+          CanOnlyUseCardsInRole role ->
+            null $ intersect (cdClassSymbols $ toCardDef card) (setFromList [Neutral, role])
+          CannotCommitCards matcher -> cardMatch card matcher
+          _ -> False
+      guard $ not prevented
+      skillIcons <- getSkillTestMatchingSkillIcons
+
+      icons <- iconsForCard c
+      guard
+        $ or
+          [ any (`member` skillIcons) icons
+          , and [null icons, cdCanCommitWhenNoIcons (toCardDef card)]
+          ]
+      otherAdditionalCosts <-
+        fold <$> for allCommittedCards \c' -> do
+          mods <- getModifiers c'
+          pure $ fold [cst | AdditionalCostToCommit iid' cst <- mods, iid' == a]
+      cmods <- getModifiers (CardIdTarget $ toCardId c)
+      let costToCommit = fold [cst | AdditionalCostToCommit iid' cst <- cmods, iid' == a]
+      liftGuardM $ getCanAffordCost a (toSource a) [] [] (costToCommit <> otherAdditionalCosts)
+      liftGuardM $ allM passesCommitRestriction (cdCommitRestrictions $ toCardDef card)
+    EncounterCard card -> guard $ CommittableTreachery `elem` cdCommitRestrictions (toCardDef card)
+    VengeanceCard _ -> error "vengeance card"
 
 getMustBeCommittableCards :: (Tracing m, HasGame m) => InvestigatorId -> m [Card]
 getMustBeCommittableCards = filterM (`hasModifier` MustBeCommitted) <=< getCommittableCards

@@ -17,7 +17,7 @@ newtype BiancaDieKatz = BiancaDieKatz (EnemyAttrs `With` Meta)
 biancaDieKatz :: EnemyCard BiancaDieKatz
 biancaDieKatz =
   enemy (BiancaDieKatz . (`with` Meta False)) Cards.biancaDieKatz (3, Static 3, 3) (2, 0)
-    & setPreyIsBearer
+    & setPreyIsOnlyBearer
 
 instance HasAbilities BiancaDieKatz where
   getAbilities (BiancaDieKatz (With attrs meta)) =

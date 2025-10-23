@@ -11,8 +11,8 @@ newtype StubbornDetective = StubbornDetective EnemyAttrs
 
 stubbornDetective :: EnemyCard StubbornDetective
 stubbornDetective =
-  enemyWith StubbornDetective Cards.stubbornDetective (3, Static 2, 2) (1, 0)
-    $ \a -> a & preyL .~ BearerOf (toId a)
+  enemy StubbornDetective Cards.stubbornDetective (3, Static 2, 2) (1, 0)
+    & setPreyIsOnlyBearer
 
 instance HasModifiersFor StubbornDetective where
   getModifiersFor (StubbornDetective a) =

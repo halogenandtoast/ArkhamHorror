@@ -1,39 +1,27 @@
 module Arkham.Enemy.Cards.YourWorstNightmare (yourWorstNightmare) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype YourWorstNightmare = YourWorstNightmare EnemyAttrs
   deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 yourWorstNightmare :: EnemyCard YourWorstNightmare
-yourWorstNightmare = enemyWith YourWorstNightmare Cards.yourWorstNightmare (2, Static 3, 2) (0, 2)
-  $ \a -> a & preyL .~ BearerOf (toId a)
+yourWorstNightmare =
+  enemy YourWorstNightmare Cards.yourWorstNightmare (2, Static 3, 2) (0, 2) & setPreyIsOnlyBearer
 
 instance HasModifiersFor YourWorstNightmare where
   getModifiersFor (YourWorstNightmare a) = do
-    bearer <- case enemyBearer a of
-      Nothing -> pure mempty
-      Just iid -> modified_ a iid [CannotTakeAction $ EnemyAction #fight $ EnemyWithId a.id]
-    self <-
+    for_ (enemyBearer a) \iid -> do
+      modified_ a iid [CannotTakeAction $ EnemyAction #fight $ EnemyWithId a.id]
       modifySelf
         a
-        [ CannotBeDamagedByPlayerSources
-            (SourceOwnedBy $ InvestigatorWithId $ fromJustNote "must have bearer" $ enemyBearer a)
-        , CanOnlyBeDefeatedBy
-            ( NotSource
-                $ SourceOwnedBy
-                $ InvestigatorWithId
-                $ fromJustNote "must have bearer"
-                $ enemyBearer a
-            )
+        [ CannotBeDamagedByPlayerSources (SourceOwnedBy $ InvestigatorWithId iid)
+        , CanOnlyBeDefeatedBy (NotSource $ SourceOwnedBy $ InvestigatorWithId iid)
         ]
-    pure $ bearer <> self
 
 instance RunMessage YourWorstNightmare where
   runMessage msg (YourWorstNightmare attrs) =

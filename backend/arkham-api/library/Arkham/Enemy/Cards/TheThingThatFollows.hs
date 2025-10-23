@@ -15,7 +15,7 @@ theThingThatFollows :: EnemyCard TheThingThatFollows
 theThingThatFollows =
   enemyWith TheThingThatFollows Cards.theThingThatFollows (3, Static 2, 3) (1, 1)
     $ (spawnAtL ?~ SpawnAt (FarthestLocationFromYou Anywhere))
-    . (\a -> a & preyL .~ BearerOf (toId a))
+    . preyIsOnlyBearer
 
 instance HasAbilities TheThingThatFollows where
   getAbilities (TheThingThatFollows x) =

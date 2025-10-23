@@ -13,7 +13,7 @@ beingsOfIb :: EnemyCard BeingsOfIb
 beingsOfIb =
   enemyWith BeingsOfIb Cards.beingsOfIb (4, Static 1, 4) (0, 1) \a ->
     a
-      & (preyL .~ OnlyPrey (at_ $ LocationWithTrait Ruins))
+      & (preyL .~ OnlyPrey (Prey $ at_ $ LocationWithTrait Ruins))
       & (attacksL .~ at_ (locationWithEnemy a))
 
 instance RunMessage BeingsOfIb where

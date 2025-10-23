@@ -156,9 +156,9 @@ damageValueFor baseValue iid damageFor = do
   applyModifier NoDamageDealt _ = pure 0
   applyModifier _ n = pure n
 
-getHandSize :: HasGame m => InvestigatorAttrs -> m Int
-getHandSize attrs = do
-  modifiers <- getModifiers (InvestigatorTarget $ investigatorId attrs)
+getHandSize :: (HasGame m, ToId investigator InvestigatorId) => investigator -> m Int
+getHandSize (asId -> iid) = do
+  modifiers <- getModifiers iid
   let ignoreReduction = IgnoreHandSizeReduction `elem` modifiers
   pure $ foldr (applyModifier ignoreReduction) (foldr applyMaxModifier 8 modifiers) modifiers
  where
@@ -168,11 +168,18 @@ getHandSize attrs = do
   applyMaxModifier (MaxHandSize m) n = min m n
   applyMaxModifier _ n = n
 
-getInHandCount :: (HasGame m, Tracing m) => InvestigatorAttrs -> m Int
-getInHandCount attrs = do
-  onlyFirstCopies <- hasModifier attrs OnlyFirstCopyCardCountsTowardMaximumHandSize
+getExcessInHandCount
+  :: (HasGame m, Tracing m, ToId investigator InvestigatorId) => investigator -> m Int
+getExcessInHandCount inv = do
+  handSize <- getHandSize inv
+  inHandCount <- getInHandCount inv
+  pure $ max 0 (inHandCount - handSize)
+
+getInHandCount :: (HasGame m, Tracing m, ToId investigator InvestigatorId) => investigator -> m Int
+getInHandCount (asId -> iid) = do
+  onlyFirstCopies <- hasModifier iid OnlyFirstCopyCardCountsTowardMaximumHandSize
   let f = if onlyFirstCopies then nubBy ((==) `on` toName) else id
-  cards <- fieldMap InvestigatorHand f (toId attrs)
+  cards <- fieldMap InvestigatorHand f iid
   let
     applyModifier n = \case
       HandSizeCardCount m -> m

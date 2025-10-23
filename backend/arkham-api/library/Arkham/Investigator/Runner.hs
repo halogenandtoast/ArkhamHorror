@@ -803,25 +803,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
   PlaceSeal (isTarget a -> False) k -> pure $ a & sealsL %~ Set.filter ((/= k.kind) . (.kind))
   ActivateSeal k -> pure $ a & sealsL %~ Set.map (\s -> if s.kind == k then s {sealActive = True} else s)
   AllCheckHandSize | not (a ^. defeatedL || a ^. resignedL) -> do
-    handSize <- getHandSize a
-    inHandCount <- getInHandCount a
-    pushWhen (inHandCount > handSize) $ CheckHandSize investigatorId
+    excess <- getExcessInHandCount a
+    pushWhen (excess > 0) $ CheckHandSize investigatorId
     pure a
   CheckHandSize iid | iid == investigatorId -> do
-    handSize <- getHandSize a
-    inHandCount <- getInHandCount a
-    when (inHandCount > handSize) $ do
+    excess <- getExcessInHandCount a
+    when (excess > 0) $ do
+      handSize <- getHandSize a
       send $ format a <> " must discard down to " <> tshow handSize <> " cards"
       pushAll [SetActiveInvestigator iid, Do msg]
     pure a
   Do (CheckHandSize iid) | iid == investigatorId -> do
-    handSize <- getHandSize a
-    inHandCount <- getInHandCount a
+    excess <- getExcessInHandCount a
     -- investigatorHand: can only discard cards actually in hand
     player <- getPlayer iid
     let viable = filter (isNothing . cdCardSubType . toCardDef) $ onlyPlayerCards investigatorHand
 
-    pushWhen (inHandCount > handSize && notNull viable)
+    pushWhen (excess > 0 && notNull viable)
       $ chooseOne player
       $ [ targetLabel (toCardId card) [DiscardCard iid GameSource (toCardId card), Do (CheckHandSize iid)]
         | card <- viable

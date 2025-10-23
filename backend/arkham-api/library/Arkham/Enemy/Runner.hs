@@ -228,7 +228,7 @@ getAvailablePrey a = runDefaultMaybeT [] do
     Prey m -> do
       preyIds <- select $ Prey $ m <> valids
       pure $ if null preyIds then iids else preyIds
-    OnlyPrey m -> select $ OnlyPrey $ m <> valids
+    OnlyPrey m -> select $ preyWith m valids
     other@(BearerOf {}) -> do
       mBearer <- selectOne other
       pure $ maybe iids (\bearer -> if bearer `elem` iids then [bearer] else iids) mBearer
@@ -579,7 +579,7 @@ instance RunMessage EnemyAttrs where
           Prey m -> do
             preyIds <- select $ Prey $ m <> valids
             pure $ if null preyIds then investigatorIds' else preyIds
-          OnlyPrey m -> select $ OnlyPrey $ m <> valids
+          OnlyPrey m -> select $ OnlyPrey $ preyWith m valids
           other@(BearerOf {}) -> do
             mBearer <- selectOne other
             pure $ maybe [] (\bearer -> [bearer | bearer `elem` investigatorIds']) mBearer
@@ -678,24 +678,23 @@ instance RunMessage EnemyAttrs where
               $ LocationWithModifier CountsAsInvestigatorForHunterEnemies
 
           prey <- getPreyMatcher a
-          matchingClosestLocationIds <- withModifiers loc (toModifiers a additionalConnections)
-            $ case (forcedTargetLocation, prey) of
+          matchingClosestLocationIds <- withModifiers loc (toModifiers a additionalConnections) do
+            select . locationMatcherModifier =<< case (forcedTargetLocation, prey) of
               (Just forcedTargetLocationId, _) ->
                 -- Lure (1)
-                select $ locationMatcherModifier $ ClosestPathLocation loc forcedTargetLocationId
+                pure $ ClosestPathLocation loc forcedTargetLocationId
               (Nothing, BearerOf _) ->
-                select
-                  $ locationMatcherModifier
+                pure
                   $ locationWithInvestigator
                   $ fromJustNote "must have bearer" enemyBearer
               (Nothing, RestrictedBearerOf _ _) -> do
                 -- this case should never happen, but just in case
-                select
-                  $ locationMatcherModifier
+                pure
                   $ locationWithInvestigator
                   $ fromJustNote "must have bearer" enemyBearer
-              (Nothing, OnlyPrey onlyPrey) ->
-                select $ locationMatcherModifier $ LocationWithInvestigator $ onlyPrey <> NearestToEnemy (be eid)
+              (Nothing, OnlyPrey onlyPrey) -> do
+                preyIds <- select onlyPrey
+                pure $ LocationWithInvestigator $ mapOneOf InvestigatorWithId preyIds <> NearestToEnemy (be eid)
               (Nothing, _prey) -> do
                 investigatorLocations <-
                   select
@@ -703,15 +702,11 @@ instance RunMessage EnemyAttrs where
                     $ LocationWithInvestigator
                     $ CanBeHuntedBy eid
                     <> NearestToEnemy (be eid)
-                select
-                  $ locationMatcherModifier
-                  $ NearestLocationToLocation
-                    loc
-                    ( mapOneOf LocationWithId
-                        $ locationsToHuntTo
-                        <> enemiesAsInvestigatorLocations
-                        <> investigatorLocations
-                    )
+                pure
+                  $ NearestLocationToLocation loc
+                  $ mapOneOf
+                    LocationWithId
+                    (locationsToHuntTo <> enemiesAsInvestigatorLocations <> investigatorLocations)
 
           preyIds <- select prey
           let includeEnemies = prey == Prey Anyone

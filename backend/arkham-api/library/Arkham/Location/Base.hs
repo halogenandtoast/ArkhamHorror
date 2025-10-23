@@ -136,6 +136,9 @@ instance HasField "keys" LocationAttrs (Set ArkhamKey) where
 instance HasField "seals" LocationAttrs (Set Seal) where
   getField = locationSeals
 
+instance HasField "cardCode" LocationAttrs CardCode where
+  getField = locationCardCode
+
 makeLensesWith suffixedFields ''LocationAttrs
 
 setMeta :: ToJSON a => a -> LocationAttrs -> LocationAttrs

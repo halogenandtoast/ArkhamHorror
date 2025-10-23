@@ -36,6 +36,7 @@ import Arkham.Target
 import Arkham.Token
 import Arkham.Trait (Trait)
 import Control.Lens (non, over, set)
+import Data.Aeson.Key qualified as Aeson
 import Data.Data
 import Data.Text qualified as T
 import GHC.Records
@@ -102,12 +103,14 @@ data instance Field Location :: Type -> Type where
   LocationSeals :: Field Location (Set Seal)
   LocationInvestigateDifficulty :: Field Location GameCalculation
   LocationConcealedCards :: Field Location [ConcealedCardId]
+  LocationGlobalMeta :: Field Location (Map Aeson.Key Value)
 
 deriving stock instance Show (Field Location typ)
 deriving stock instance Ord (Field Location typ)
 
 fieldLens :: Field Location typ -> Lens' LocationAttrs typ
 fieldLens = \case
+  LocationGlobalMeta -> globalMetaL
   LocationTokens -> tokensL
   LocationKeys -> keysL
   LocationSeals -> sealsL
@@ -212,6 +215,7 @@ instance FromJSON (SomeField Location) where
     "LocationInvestigateDifficulty" -> pure $ SomeField LocationInvestigateDifficulty
     "LocationPosition" -> pure $ SomeField LocationPosition
     "LocationCostToEnterUnrevealed" -> pure $ SomeField LocationCostToEnterUnrevealed
+    "LocationGlobalMeta" -> pure $ SomeField LocationGlobalMeta
     _ -> error "no such field"
 
 instance Entity LocationAttrs where

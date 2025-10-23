@@ -2244,7 +2244,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
             . filter (any isPerRound . cdLimits)
             . mapMaybe lookupCardDef
             $ Map.keys (view cardUsesL g)
-    let tabooRoundEndUses = ["02266", "08055"]
+    let tabooRoundEndUses = ["02266", "05156", "08055"]
     pure
       $ g
       & (roundHistoryL .~ mempty)

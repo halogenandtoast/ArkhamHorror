@@ -604,9 +604,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     Choose.chooseTargetM iid iids \iid' -> do
       resources' <- field InvestigatorResources iid'
       push $ Ask pid $ ChooseExchangeAmounts source iid resources iid' resources' #resource
-      -- Lifted.moveTokens source iid iid' #resource 1
-      -- Lifted.gainResources iid' source 1
-      -- Lifted.spendResources iid 1
     pure a
   PlaceSwarmCards iid eid n | iid == investigatorId && n > 0 -> do
     let cards = map toCard . take n $ unDeck investigatorDeck

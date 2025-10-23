@@ -348,20 +348,6 @@ defaultCampaignRunner msg a = case msg of
       a
   ReportXp report -> do
     let
-      normalizedCampaignStep = \case
-        PrologueStep -> PrologueStep
-        PrologueStepPart _ -> PrologueStep
-        ScenarioStep sid -> ScenarioStep sid
-        ScenarioStepPart sid _ -> ScenarioStep sid
-        InterludeStep n _ -> InterludeStep n Nothing
-        InterludeStepPart n _ _ -> InterludeStep n Nothing
-        UpgradeDeckStep c -> normalizedCampaignStep c
-        EpilogueStep -> EpilogueStep
-        EpilogueStepPart _ -> EpilogueStep
-        InvestigatorCampaignStep _ c -> normalizedCampaignStep c
-        ResupplyPoint -> ResupplyPoint
-        CheckpointStep n -> CheckpointStep n
-        CampaignSpecificStep t -> CampaignSpecificStep t
     pure $ updateAttrs a \attrs ->
       case campaignXpBreakdown attrs of
         (step, report') : rest

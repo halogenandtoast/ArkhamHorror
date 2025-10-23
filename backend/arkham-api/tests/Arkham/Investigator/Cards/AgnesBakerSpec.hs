@@ -13,7 +13,6 @@ spec = describe "Agnes Baker" $ do
       self `moveTo` location
       self `addHorror` 1
       useReaction
-      click "damage enemy"
       enemy.damage `shouldReturn` 1
 
   context "elder sign" $ do

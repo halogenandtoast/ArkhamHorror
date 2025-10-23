@@ -59,9 +59,10 @@ chooseExposeConcealedAt
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> LocationMatcher -> m ()
 chooseExposeConcealedAt iid source lmatcher = do
   concealed <- getConcealedChoicesAt (ForExpose $ toSource source) lmatcher
-  chooseOneM iid do
-    targets concealed (exposeConcealed iid source . (.id))
-    campaignI18n $ labeled' "doNotExposeConcealed" nothing
+  when (notNull concealed) do
+    chooseOneM iid do
+      targets concealed (exposeConcealed iid source . (.id))
+      campaignI18n $ labeled' "doNotExposeConcealed" nothing
 
 chooseRevealConcealedAt
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> LocationMatcher -> m ()

@@ -2,6 +2,7 @@ module Arkham.CampaignStep where
 
 import Arkham.Id
 import Arkham.Prelude
+import GHC.Records
 
 data CampaignStep
   = PrologueStep
@@ -19,6 +20,9 @@ data CampaignStep
   | CampaignSpecificStep Text
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
+
+instance HasField "normalize" CampaignStep CampaignStep where
+  getField = normalizedCampaignStep
 
 data InterludeKey
   = DanielSurvived
@@ -40,3 +44,19 @@ data InterludeKey
   | HasNoKeys
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
+
+normalizedCampaignStep :: CampaignStep -> CampaignStep
+normalizedCampaignStep = \case
+  PrologueStep -> PrologueStep
+  PrologueStepPart _ -> PrologueStep
+  ScenarioStep sid -> ScenarioStep sid
+  ScenarioStepPart sid _ -> ScenarioStep sid
+  InterludeStep n _ -> InterludeStep n Nothing
+  InterludeStepPart n _ _ -> InterludeStep n Nothing
+  UpgradeDeckStep c -> normalizedCampaignStep c
+  EpilogueStep -> EpilogueStep
+  EpilogueStepPart _ -> EpilogueStep
+  InvestigatorCampaignStep _ c -> normalizedCampaignStep c
+  ResupplyPoint -> ResupplyPoint
+  CheckpointStep n -> CheckpointStep n
+  CampaignSpecificStep t -> CampaignSpecificStep t

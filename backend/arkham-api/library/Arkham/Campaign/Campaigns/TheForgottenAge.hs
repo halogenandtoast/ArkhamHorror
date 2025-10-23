@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Campaign.Campaigns.TheForgottenAge (theForgottenAge, TheForgottenAge (..)) where
 
 import Arkham.Asset.Cards qualified as Assets
@@ -43,7 +44,7 @@ instance FromJSON TheForgottenAge where
 
 instance IsCampaign TheForgottenAge where
   campaignTokens = chaosBagContents
-  nextStep a = case campaignStep (toAttrs a) of
+  nextStep a = case traceShowId (campaignStep (toAttrs a)).normalize of
     PrologueStep -> Just TheUntamedWilds
     TheUntamedWilds -> Just (InterludeStep 1 Nothing)
     InterludeStep 1 _ -> Just (UpgradeDeckStep TheDoomOfEztli)

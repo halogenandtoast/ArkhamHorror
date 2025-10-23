@@ -247,9 +247,9 @@ instance RunMessage TheForgottenAge where
         let extraXp = Map.findWithDefault 0 iid (bonusXp metadata)
         xp <- field InvestigatorXp iid
         when (xp + extraXp >= 2) do
-          chooseAmount'
+          countVar extraXp $ chooseAmount'
             iid
-            "supplyPointsToGain"
+            (if extraXp > 0 then "supplyPointsToGainWithExtra" else "supplyPointsToGain")
             "$supplyPoints"
             0
             (min 5 $ xp + extraXp `div` 2)
@@ -331,6 +331,18 @@ instance RunMessage TheForgottenAge where
             labeled' "doNotRemoveTrauma" nothing
 
         pure c
+      DoStep 0 (DoStep n (ForInvestigator iid (CampaignStep ResupplyPoint))) -> do
+        pure
+          . TheForgottenAge
+          $ attrs
+            { campaignMeta =
+                toJSON
+                  $ Metadata (supplyPoints metadata) (yithians metadata) (expeditionLeader metadata)
+                  $ Map.alter
+                    (maybe Nothing (\v -> let v' = max 0 (v - n) in guard (v' > 0) $> v'))
+                    iid
+                    (bonusXp metadata)
+            }
       CampaignStep (InterludeStep 3 mkey) -> scope "interlude3" do
         investigators <- allInvestigators
         flavor $ setTitle "title" >> p "body"

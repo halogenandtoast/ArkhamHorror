@@ -822,6 +822,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
                     orKey "replacedIsWithoutClues" (locationWithoutClues attrs) && oldAttrs.clues == 0
                 , locationTokens = locationTokens oldAttrs
                 , locationCardsUnderneath = locationCardsUnderneath oldAttrs
+                , locationGlobalMeta = Map.insert "replacedLocation" (toJSON oldAttrs.cardCode) (locationGlobalMeta oldAttrs)
                 }
             Swap ->
               attrs
@@ -830,6 +831,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
                 , locationCardsUnderneath = locationCardsUnderneath oldAttrs
                 , locationWithoutClues =
                     orKey "replacedIsWithoutClues" (locationWithoutClues oldAttrs) && oldAttrs.clues == 0
+                , locationGlobalMeta = Map.insert "replacedLocation" (toJSON oldAttrs.cardCode) (locationGlobalMeta oldAttrs)
                 }
     -- todo: should we just run this in place?
     enemies <- select $ enemyAt lid

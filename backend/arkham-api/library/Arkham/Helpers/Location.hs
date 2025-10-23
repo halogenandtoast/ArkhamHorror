@@ -30,6 +30,7 @@ import Arkham.Tracing
 import Arkham.Treachery.Types (Field (..), TreacheryAttrs)
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
+import Data.Aeson.Key qualified as Aeson
 
 getConnectedLocations :: (HasGame m, Tracing m) => LocationId -> m [LocationId]
 getConnectedLocations = fieldMap LocationConnectedLocations toList
@@ -306,14 +307,22 @@ unrevealLocation l = push $ Msg.UnrevealLocation (asId l)
 locationMoved :: (ReverseQueue m, AsId l, IdOf l ~ LocationId) => l -> m ()
 locationMoved l = push $ Msg.LocationMoved (asId l)
 
--- | Swaps the location
--- Will keep revealed status
+{- | Swaps the location
+Will keep revealed status
+-}
 swapLocation
   :: (ReverseQueue m, AsId location, IdOf location ~ LocationId, IsCard card) => location -> card -> m ()
 swapLocation location card = push $ Msg.ReplaceLocation (asId location) (toCard card) Msg.Swap
 
--- | Replaces the location
--- Will not keep revealed status
+{- | Replaces the location
+Will not keep revealed status
+-}
 replaceLocation
   :: (ReverseQueue m, AsId location, IdOf location ~ LocationId, IsCard card) => location -> card -> m ()
 replaceLocation location card = push $ Msg.ReplaceLocation (asId location) (toCard card) Msg.DefaultReplace
+
+getLocationGlobalMeta
+  :: (FromJSON a, HasGame m, Tracing m, ToId location LocationId) => Aeson.Key -> location -> m (Maybe a)
+getLocationGlobalMeta key (asId -> lid) = do
+  globalMeta <- field LocationGlobalMeta lid
+  pure $ lookup key globalMeta >>= maybeResult

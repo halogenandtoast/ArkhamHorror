@@ -14,6 +14,7 @@ import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Location (getLocationGlobalMeta)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers hiding (setupModifier)
 import Arkham.Helpers.Scenario hiding (getIsReturnTo)
@@ -240,15 +241,18 @@ instance RunMessage TheBoundaryBeyond where
     RemoveLocation lid -> do
       -- we handle remove location special because we need to replace it
       title <- fieldMap LocationName nameTitle lid
+      oldCardCode <- getLocationGlobalMeta @CardCode "replacedLocation" lid
       let
-        replacement = case title of
-          "Templo Mayor" -> Locations.templeRuins
-          "Temples of Tenochtitlán" -> Locations.metropolitanCathedral
-          "Chapultepec Hill" -> Locations.chapultepecPark
-          "Canals of Tenochtitlán" -> Locations.zocalo
-          "Lake Xochimilco" -> Locations.xochimilco
-          "Sacred Woods" -> Locations.coyoacan
-          _ -> error $ "Unmatched location title: " <> show title
+        replacement = case oldCardCode of
+          Just cc -> fromMaybe (error "invalid card code") (lookupCardDef cc)
+          Nothing -> case title of
+            "Templo Mayor" -> Locations.templeRuins
+            "Temples of Tenochtitlán" -> Locations.metropolitanCathedral
+            "Chapultepec Hill" -> Locations.chapultepecPark
+            "Canals of Tenochtitlán" -> Locations.zocalo
+            "Lake Xochimilco" -> Locations.xochimilco
+            "Sacred Woods" -> Locations.coyoacan
+            _ -> error $ "Unmatched location title: " <> show title
       card <- genCard replacement
       push $ ReplaceLocation lid card Swap
       pure s
@@ -297,11 +301,17 @@ instance RunMessage TheBoundaryBeyond where
       yigsFury <- getRecordCount YigsFury
       recordCount YigsFury (yigsFury + vengeance)
 
-      inVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+      inVictory <-
+        selectAny
+          $ VictoryDisplayCardMatch
+          $ basic
+          $ mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
       if inVictory
         then crossOut TheHarbingerIsStillAlive
         else do
-          inPlayHarbinger <- selectOne $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+          inPlayHarbinger <-
+            selectOne
+              $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
           damage <- case inPlayHarbinger of
             Just eid -> field EnemyDamage eid
             Nothing -> getRecordCount TheHarbingerIsStillAlive

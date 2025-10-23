@@ -3892,6 +3892,7 @@ instance Projection Location where
         g <- getGame
         let concealedCards = g ^. entitiesL . concealedL . to Map.elems
         pure $ concealedCards & filter ((== AtLocation lid) . (.placement)) & map toId
+      LocationGlobalMeta -> pure locationGlobalMeta
 
 instance Projection Asset where
   getAttrs aid = toAttrs <$> getAsset aid

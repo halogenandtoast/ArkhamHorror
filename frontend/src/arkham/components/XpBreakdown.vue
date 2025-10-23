@@ -68,7 +68,7 @@ const unspendableXp = computed(() => {
     const scenarioId = props.step.contents.slice(1)
     const investigator = props.investigators.find((p) => p.playerId === props.playerId)
     if (!investigator) return null
-    if (scenarioId == "53028") return props.game.campaign.meta.bonusXp[investigator[0]] || null
+    if (scenarioId === "53028") return props.game.campaign.meta.bonusXp[investigator.id] || null
   }
 
   return null
@@ -115,6 +115,10 @@ const perInvestigator = computed<Record<string, PerInvestigator>>(() => {
 })
 
 const headerInvestigators = computed(() => {
+  if (unspendableXp.value) {
+    return props.investigators.map(i => ([i, (perInvestigator.value[i.id]?.total || 0) + totalVictoryDisplay.value]))
+  }
+
   return props.investigators.map(i => ([i, (perInvestigator.value[i.id]?.total || 0) + totalVictoryDisplay.value])).filter(([_i, t]) => t !== 0)
 })
 

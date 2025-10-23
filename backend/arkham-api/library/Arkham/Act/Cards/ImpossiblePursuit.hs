@@ -19,6 +19,7 @@ impossiblePursuit = act (3, G) ImpossiblePursuit Cards.impossiblePursuit Nothing
 instance HasAbilities ImpossiblePursuit where
   getAbilities = actAbilities1' G \a ->
     mkAbility a 1
+      $ Objective
       $ forced
       $ EnemyLeavesPlay #when
       $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]

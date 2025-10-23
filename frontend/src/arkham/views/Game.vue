@@ -416,7 +416,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
     const skipTriggers = choices.value.findIndex((c) => c.tag === Message.MessageType.SKIP_TRIGGERS_BUTTON)
     if (skipTriggers !== -1) choose(skipTriggers)
     const validIndices = choices.value
-      .map((c, i) => (c.tag !== Message.MessageType.INVALID_LABEL ? i : -1))
+      .map((c, i) => (![Message.MessageType.INVALID_LABEL, Message.MessageType.INFO].includes(c.tag) ? i : -1))
       .filter((i) => i !== -1)
 
     if (validIndices.length === 1) {

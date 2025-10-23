@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Campaign.Campaigns.TheForgottenAge (theForgottenAge, TheForgottenAge (..)) where
 
 import Arkham.Asset.Cards qualified as Assets
@@ -286,6 +287,10 @@ instance RunMessage TheForgottenAge where
           chooseOneM iid do
             questionLabeled' "visitStMarys"
             questionLabeledCard iid
+
+            when (extraXp > 0) do
+              info' $ countVar extraXp $ p "extraXp"
+
             labeled' "removePoisoned" do
               doStep 0 (DoStep 3 msg') -- spend extra first
               push $ SpendXP iid toSpend
@@ -307,6 +312,10 @@ instance RunMessage TheForgottenAge where
           chooseOneM iid do
             questionLabeled' "visitStMarys"
             questionLabeledCard iid
+
+            when (extraXp > 0) do
+              info' $ countVar extraXp $ p "extraXp"
+
             when hasPhysicalTrauma do
               labeled' "removePhysicalTrauma" do
                 doStep 0 (DoStep 5 msg') -- spend extra first

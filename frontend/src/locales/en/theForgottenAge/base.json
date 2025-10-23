@@ -206,6 +206,7 @@
     "body": "<p>_Check Campaign Log._</p><p>_ Read the following only if *the investigators turned back time*._</p><p>There is only one way to stop all of this from ever happening. Before you arrived and set all of these events into motion, the Eztli ruins were asleep, and the relic was relatively safe in its prison of obscurity. Had it not been for Alejandro’s desire to find it, it might have remained undiscovered for centuries. With your new understanding of the relic’s capabilities, you can return to the past and set things right. You can seal it away forever and prevent your past selves from having ever found it… even if it costs you your own life.</p><ul><li>Proceed to _Scenario IX: Turn Back Time_.</li></ul>"
   },
   "resupplyPoint": {
+    "extraXp": "<div class='unspendable'>Extra Xp to spend: {count}</div>",
     "label": {
       "visitStMarys": "Visit St. Mary’s?",
       "doNotRemovePoisoned": "Do not remove Poisoned weaknes",

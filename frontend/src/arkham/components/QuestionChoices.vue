@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import FormattedEntry from '@/arkham/components/FormattedEntry.vue'
 import { MessageType, Message } from '@/arkham/types/Message';
 import { formatContent } from '@/arkham/helpers';
 import { handleI18n } from '@/arkham/i18n';
@@ -58,6 +59,9 @@ const label = function(body: string) {
       </div>
       <div v-else-if="choice.tag === MessageType.INVALID_LABEL" class="message-label">
         <button v-html="label(choice.label)" disabled></button>
+      </div>
+      <div v-else-if="choice.tag === MessageType.INFO" class="message-label">
+        <FormattedEntry :entry="choice.flavor" />
       </div>
 
       <a

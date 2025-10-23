@@ -49,6 +49,7 @@ const questionChoices = computed(() => {
     if (tag === MessageType.TOOLTIP_LABEL) return true
     if (tag === MessageType.ABILITY_LABEL && choice.ability.type.tag === 'ConstantReaction') return true
     if (tag === MessageType.LABEL) return true
+    if (tag === MessageType.INFO) return true
     if (tag === MessageType.INVALID_LABEL) return true
     if (tag === MessageType.SKILL_LABEL) return true
     if (tag === MessageType.SKILL_LABEL_WITH_LABEL) return true

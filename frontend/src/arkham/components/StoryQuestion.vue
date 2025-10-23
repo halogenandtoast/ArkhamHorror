@@ -10,6 +10,7 @@ import StoryEntry from '@/arkham/components/StoryEntry.vue';
 import PickSupplies from '@/arkham/components/PickSupplies.vue';
 import PickDestiny from '@/arkham/components/PickDestiny.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
+import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import WorldMap from '@/arkham/components/TheScarletKeys/WorldMap.vue';
 
@@ -74,7 +75,7 @@ const labelChoices = computed(() => {
     }
 
     return question.value.question.choices.flatMap<[Label | TooltipLabel | CardLabel | Done, number]>((c, idx) => {
-      if (c.tag === MessageType.LABEL || c.tag === MessageType.TOOLTIP_LABEL || c.tag === MessageType.CARD_LABEL || c.tag === MessageType.DONE) {
+      if ([MessageType.LABEL, MessageType.INFO, MessageType.TOOLTIP_LABEL, MessageType.CARD_LABEL, MessageType.DONE].includes(c.tag)) {
         return [[c, idx]]
       } else {
         return []
@@ -151,6 +152,9 @@ const choose = (idx: number) => emit('choose', idx)
           </template>
           <template v-if="choice.tag === MessageType.LABEL">
             <button @click="choose(index)">{{label(choice.label)}}</button>
+          </template>
+          <template v-if="choice.tag === MessageType.INFO">
+            <FormattedEntry :entry="entry" v-for="entry in choice.flavor.body" />
           </template>
           <template v-if="choice.tag === MessageType.DONE">
             <button @click="choose(index)">{{$t(choice.label)}}</button>

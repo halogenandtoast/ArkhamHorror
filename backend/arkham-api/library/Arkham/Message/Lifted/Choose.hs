@@ -236,6 +236,9 @@ labeled' label action = unterminated do
   msgs <- lift $ capture action
   tell [Label ("$" <> ikey ("label." <> label)) msgs]
 
+info' :: (ReverseQueue m) => FlavorTextBuilder () -> ChooseT m ()
+info' flavor = unterminated $ tell [Info $ buildFlavor flavor]
+
 labeledI :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
 labeledI label action = unterminated do
   msgs <- lift $ capture action

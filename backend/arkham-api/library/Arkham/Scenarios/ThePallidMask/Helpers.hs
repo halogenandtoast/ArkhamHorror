@@ -15,15 +15,16 @@ import Arkham.Location.Types
 import Arkham.Matcher.Location
 import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
+import Arkham.Tracing
 import Control.Monad (zipWithM)
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "thePallidMask" a
 
-getStartingLocation :: HasGame m => m LocationId
+getStartingLocation :: (HasGame m, Tracing m) => m LocationId
 getStartingLocation = selectJust $ LocationInPosition (Pos 0 0)
 
-directionEmpty :: HasGame m => LocationAttrs -> Direction -> m Bool
+directionEmpty :: (HasGame m, Tracing m) => LocationAttrs -> Direction -> m Bool
 directionEmpty attrs dir = case attrs.position of
   Nothing -> pure False
   Just pos -> do
@@ -32,7 +33,7 @@ directionEmpty attrs dir = case attrs.position of
     pure $ Grid.isEmpty pos' grid
 
 toMaybePlacement
-  :: (MonadRandom m, HasGame m) => LocationAttrs -> Direction -> m (Maybe (Card -> m Message))
+  :: (MonadRandom m, HasGame m, Tracing m) => LocationAttrs -> Direction -> m (Maybe (Card -> m Message))
 toMaybePlacement attrs dir = runMaybeT do
   pos <- hoistMaybe attrs.position
   grid <- getGrid
@@ -41,7 +42,8 @@ toMaybePlacement attrs dir = runMaybeT do
   pure $ fmap snd . placeLocationInGrid pos'
 
 placeDrawnLocations
-  :: (MonadRandom m, HasQueue Message m, HasGame m) => LocationAttrs -> [Card] -> [Direction] -> m ()
+  :: (MonadRandom m, HasQueue Message m, HasGame m, Tracing m)
+  => LocationAttrs -> [Card] -> [Direction] -> m ()
 placeDrawnLocations attrs cards directions = do
   placements <- mapMaybeM (toMaybePlacement attrs) directions
   msgs <- zipWithM ($) placements cards

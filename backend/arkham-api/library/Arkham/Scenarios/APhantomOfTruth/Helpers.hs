@@ -17,11 +17,12 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Prelude
 import Arkham.Source
+import Arkham.Tracing
 
-getTheOrganist :: HasGame m => m EnemyId
+getTheOrganist :: (HasGame m, Tracing m) => m EnemyId
 getTheOrganist = selectJust $ EnemyWithTitle "The Organist"
 
-withTheOrganist :: HasGame m => (EnemyId -> m ()) -> m ()
+withTheOrganist :: (HasGame m, Tracing m) => (EnemyId -> m ()) -> m ()
 withTheOrganist f = getTheOrganist >>= f
 
 moveOrganistAwayFromNearestInvestigator :: ReverseQueue m => m ()

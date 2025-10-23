@@ -9,6 +9,7 @@ import Arkham.Id
 import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Tracing
 
 class GetName a where
   type NameRoot a :: Type
@@ -16,7 +17,7 @@ class GetName a where
 
 getName
   :: forall a m
-   . (GetName a, HasGame m, Projection (NameRoot a), AsId a, IdOf a ~ EntityId (NameRoot a))
+   . (GetName a, HasGame m, Tracing m, Projection (NameRoot a), AsId a, IdOf a ~ EntityId (NameRoot a))
   => a -> m Name
 getName = field (nameField @a) . asId
 
@@ -25,7 +26,7 @@ instance GetName EnemyId where
   nameField = EnemyName
 
 class HasFormatted a where
-  getFormatted :: (HasGame m, CardGen m) => a -> m Text
+  getFormatted :: (HasGame m, Tracing m, CardGen m) => a -> m Text
 
 instance HasFormatted EnemyId where
   getFormatted eid = do

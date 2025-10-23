@@ -17,6 +17,7 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Xp
 import Control.Lens (non, _1)
 import Data.Map.Strict qualified as Map
@@ -35,7 +36,7 @@ removeEveryFromDeck :: HasCardDef a => Deck a -> [CardDef] -> Deck a
 removeEveryFromDeck deck removals = flip withDeck deck $ \cards ->
   foldl' (\cs m -> filter ((/= m) . toCardDef) cs) cards removals
 
-getDeck :: HasGame m => Deck.DeckSignifier -> m [Card]
+getDeck :: (HasGame m, Tracing m) => Deck.DeckSignifier -> m [Card]
 getDeck = \case
   Deck.InvestigatorDeck iid -> fieldMap InvestigatorDeck (map PlayerCard . unDeck) iid
   Deck.InvestigatorDiscard iid -> fieldMap InvestigatorDiscard (map PlayerCard) iid
@@ -97,7 +98,7 @@ initDeckTrauma deck' iid target = do
     <> [chooseMsg | anyTrauma > 0]
 
 deckMatch
-  :: HasGame m
+  :: (HasGame m, Tracing m)
   => InvestigatorId
   -> Deck.DeckSignifier
   -> Matcher.DeckMatcher

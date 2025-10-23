@@ -18,9 +18,11 @@ import Arkham.Source as X
 import Arkham.Story.Types as X
 import Arkham.Target as X
 
+import Arkham.Card.CardCode
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Scenario
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Tracing
 import Control.Lens (non)
 
 afterStoryResolution :: HasQueue Message m => StoryAttrs -> [Message] -> m ()
@@ -30,11 +32,13 @@ afterStoryResolution (toId -> storyId) = traverse_ (pushAfter isResolution) . re
     StoryMessage (ResolvedStory _ story') | story' == storyId -> True
     _ -> False
 
-getAlreadyResolved :: HasGame m => StoryAttrs -> m Bool
+getAlreadyResolved :: (HasGame m, Tracing m) => StoryAttrs -> m Bool
 getAlreadyResolved (toId -> storyId) = scenarioFieldMap ScenarioResolvedStories (elem storyId)
 
 instance RunMessage Story where
-  runMessage msg (Story a) = Story <$> runMessage msg a
+  runMessage msg x@(Story a) =
+    withSpan_ ("Story[" <> unCardCode (toCardCode x) <> "].runMessage") do
+      Story <$> runMessage msg a
 
 instance RunMessage StoryAttrs where
   runMessage msg attrs = case msg of

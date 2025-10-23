@@ -19,6 +19,7 @@ import Data.Aeson
 import Data.Time.Clock
 import Database.Persist ((==.))
 import Entity.Arkham.Step
+import OpenTelemetry.Trace.Monad (MonadTracer (..))
 
 getApiV1ArkhamPendingGameR :: ArkhamGameId -> Handler (PublicGame ArkhamGameId)
 getApiV1ArkhamPendingGameR gameId = do
@@ -46,8 +47,9 @@ putApiV1ArkhamPendingGameR gameId = do
           genRef <- newIORef (mkStdGen (gameSeed arkhamGameCurrentData))
 
           pid <- runDB $ insert $ ArkhamPlayer userId gameId "00000"
+          tracer <- getTracer
 
-          runGameApp (GameApp gameRef queueRef genRef (pure . const ())) $ do
+          runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer) $ do
             addPlayer (PlayerId $ coerce pid)
             runMessages Nothing
 

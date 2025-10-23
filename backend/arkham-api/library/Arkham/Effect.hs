@@ -22,6 +22,7 @@ import Arkham.Message
 import Arkham.Modifier
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 
 -- start importing directly
 
@@ -206,7 +207,7 @@ createEffect builder = do
   pure (eid, lookupEffect eid builder)
 
 createChaosTokenValueEffect
-  :: (HasGame m, MonadRandom m) => SkillTestId -> Int -> Source -> Target -> m (EffectId, Effect)
+  :: (HasGame m, Tracing m, MonadRandom m) => SkillTestId -> Int -> Source -> Target -> m (EffectId, Effect)
 createChaosTokenValueEffect sid n source target = do
   eid <- getRandom
   (eid,) <$> buildChaosTokenValueEffect sid eid n source target
@@ -236,7 +237,7 @@ createChaosTokenEffect effectMetadata source token = do
   pure (eid, buildChaosTokenEffect eid effectMetadata source token)
 
 createOnSucceedByEffect
-  :: (MonadRandom m, HasGame m)
+  :: (MonadRandom m, HasGame m, Tracing m)
   => SkillTestId
   -> ValueMatcher
   -> Source
@@ -250,7 +251,7 @@ createOnSucceedByEffect sid matchr source target messages = do
   pure (eid, updateAttrs effect \a -> a {effectCardId = mCardId})
 
 createOnFailedByEffect
-  :: (MonadRandom m, HasGame m)
+  :: (MonadRandom m, HasGame m, Tracing m)
   => SkillTestId
   -> ValueMatcher
   -> Source
@@ -264,7 +265,7 @@ createOnFailedByEffect sid matchr source target messages = do
   pure (eid, updateAttrs effect \a -> a {effectCardId = mCardId})
 
 createOnNextTurnEffect
-  :: (MonadRandom m, HasGame m)
+  :: (MonadRandom m, HasGame m, Tracing m)
   => Source
   -> InvestigatorId
   -> [Message]
@@ -276,7 +277,7 @@ createOnNextTurnEffect source iid messages = do
   pure (eid, updateAttrs effect \a -> a {effectCardId = mCardId})
 
 createOnRevealChaosTokenEffect
-  :: (MonadRandom m, HasGame m)
+  :: (MonadRandom m, HasGame m, Tracing m)
   => SkillTestId
   -> ChaosTokenMatcher
   -> Source
@@ -309,7 +310,7 @@ createEndOfTurnEffect source iid messages = do
   pure (eid, buildEndOfTurnEffect eid source iid messages)
 
 createSurgeEffect
-  :: (MonadRandom m, Sourceable source, Targetable target, HasGame m)
+  :: (MonadRandom m, Sourceable source, Targetable target, HasGame m, Tracing m)
   => source
   -> target
   -> m (EffectId, Effect)
@@ -336,7 +337,7 @@ lookupEffect eid builder =
     Just (SomeEffect f) -> Effect $ f (eid, builder)
 
 buildChaosTokenValueEffect
-  :: HasGame m => SkillTestId -> EffectId -> Int -> Source -> Target -> m Effect
+  :: (HasGame m, Tracing m) => SkillTestId -> EffectId -> Int -> Source -> Target -> m Effect
 buildChaosTokenValueEffect sid eid n source target = do
   ems <- effectModifiers source [ChaosTokenValueModifier n]
   pure $ buildWindowModifierEffect eid ems (EffectSkillTestWindow sid) source target

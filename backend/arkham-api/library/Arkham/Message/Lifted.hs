@@ -103,6 +103,7 @@ import Arkham.SkillType qualified as SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
+import Arkham.Tracing
 import Arkham.Trait (Trait)
 import Arkham.Window (Window (..), WindowType, defaultWindows)
 import Arkham.Window qualified as Window
@@ -979,7 +980,7 @@ assignEnemyDamage assignment = push . Msg.assignEnemyDamage assignment
 eachLocation :: ReverseQueue m => (LocationId -> m ()) -> m ()
 eachLocation = selectEach Anywhere
 
-eachInvestigator :: HasGame m => (InvestigatorId -> m ()) -> m ()
+eachInvestigator :: (HasGame m, Tracing m) => (InvestigatorId -> m ()) -> m ()
 eachInvestigator f = do
   inResolution <- getInResolution
   investigators <- if inResolution then allInvestigators else getInvestigators
@@ -994,11 +995,12 @@ forEachInvestigator body = eachInvestigator (`forInvestigator'` body)
 forInvestigator' :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> m ()
 forInvestigator' iid = capture >=> traverse_ (forInvestigator iid)
 
-selectEach :: (Query a, HasGame m) => a -> (QueryElement a -> m ()) -> m ()
+selectEach :: (Query a, HasGame m, Tracing m) => a -> (QueryElement a -> m ()) -> m ()
 selectEach matcher f = select matcher >>= traverse_ f
 
 selectEachDiscardable
-  :: (HasCardCode a, HasGame m) => a -> (forall target. Targetable target => target -> m ()) -> m ()
+  :: (HasCardCode a, HasGame m, Tracing m)
+  => a -> (forall target. Targetable target => target -> m ()) -> m ()
 selectEachDiscardable (toCardCode -> cardCode) f = do
   selectEach (AssetIs cardCode <> DiscardableAsset) f
   selectEach (EventIs cardCode) f
@@ -2848,7 +2850,7 @@ addCurseTokens mWho n = do
       ]
   Msg.push $ Would batchId $ would : replicate n (Msg.AddChaosToken #curse)
 
-whenNotAtMax :: HasGame m => CardDef -> Int -> (Int -> m ()) -> m ()
+whenNotAtMax :: (HasGame m, Tracing m) => CardDef -> Int -> (Int -> m ()) -> m ()
 whenNotAtMax def n f = do
   mEffect <-
     selectOne $ EffectWithCardCode "maxef" <> EffectWithTarget (CardCodeTarget $ toCardCode def)
@@ -3212,7 +3214,7 @@ lookAtRevealed
 lookAtRevealed iid source target = push $ LookAtRevealed iid (toSource source) (toTarget target)
 
 temporaryModifier
-  :: (Targetable target, Sourceable source, HasQueue Message m, MonadRandom m, HasGame m)
+  :: (Targetable target, Sourceable source, HasQueue Message m, MonadRandom m, HasGame m, Tracing m)
   => target
   -> source
   -> ModifierType
@@ -3221,7 +3223,7 @@ temporaryModifier
 temporaryModifier target source modType = temporaryModifiers target source [modType]
 
 temporaryModifiers
-  :: (Targetable target, Sourceable source, HasQueue Message m, MonadRandom m, HasGame m)
+  :: (Targetable target, Sourceable source, HasQueue Message m, MonadRandom m, HasGame m, Tracing m)
   => target
   -> source
   -> [ModifierType]
@@ -3241,6 +3243,7 @@ temporaryModifiersMany
      , HasQueue Message m
      , MonadRandom m
      , HasGame m
+     , Tracing m
      )
   => source
   -> [(target, [ModifierType])]

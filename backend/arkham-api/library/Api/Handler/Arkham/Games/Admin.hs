@@ -5,29 +5,44 @@
 
 module Api.Handler.Arkham.Games.Admin (
   getApiV1AdminR,
+  getApiV1AdminRoomsR,
   getApiV1AdminGameR,
   getApiV1AdminFindGameR,
   putApiV1AdminGameR,
   getApiV1AdminGamesR,
   putApiV1AdminGameRawR,
+  deleteApiV1AdminRoomR
 ) where
 
+import Control.Concurrent.MVar
 import Api.Arkham.Helpers
 import Api.Handler.Arkham.Games.Shared
 import Arkham.Game
 import Conduit
+import Data.Map.Strict qualified as Map
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (update, (=.))
+import Database.Esqueleto.Experimental qualified as E
 import Entity.Answer
 import Entity.Arkham.GameRaw
 import Entity.Arkham.Player
-import Import hiding (delete, exists, on, (==.), (>=.))
+import Import hiding (readMVar, delete, exists, on, (==.), (>=.))
 import Yesod.WebSockets
 
 data AdminData = AdminData
   { currentUsers :: Int
   , activeUsers :: Int
+  , roomData :: [RoomData]
   , activeGames :: [GameDetailsEntry]
+  , recentGames :: [GameDetailsEntry]
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass ToJSON
+
+data RoomData = RoomData
+  { roomClients :: Int
+  , roomLastUpdatedAt :: Maybe UTCTime
+  , roomArkhamGameId :: ArkhamGameId
   }
   deriving stock (Show, Generic)
   deriving anyclass ToJSON
@@ -38,13 +53,14 @@ selectCount inner = fmap (sum . map unValue . toList) . selectOne $ inner $> cou
 getApiV1AdminR :: Handler AdminData
 getApiV1AdminR = do
   recent <- addUTCTime (negate (14 * nominalDay)) <$> liftIO getCurrentTime
+  roomData <- getRoomData
+
   runDB do
     currentUsers <- selectCount $ from $ table @User
     activeUsers <-
       fmap (sum . map unValue . toList) . selectOne $ do
-        (users :& _players :& games) <-
-          from
-            $ table @User
+        (users :& _players :& games) <- from do
+          table @User
             `innerJoin` table @ArkhamPlayer
               `on` (\(users :& players) -> users.id ==. players.userId)
             `innerJoin` table @ArkhamGame
@@ -52,7 +68,13 @@ getApiV1AdminR = do
         where_ (games.updatedAt >=. val recent)
         pure (countDistinct users.id)
 
-    AdminData currentUsers activeUsers <$> recentGames 20
+    activeGames <- map toGameDetailsEntry <$> select do
+      games <- from $ table @ArkhamGameRaw
+      where_ (games.id `in_` valList (coerce $ map (.roomArkhamGameId) roomData))
+      pure games
+    recentGames <- getRecentGames 20
+
+    pure $ AdminData {..}
 
 getApiV1AdminGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1AdminGameR gameId = do
@@ -70,8 +92,8 @@ getApiV1AdminFindGameR playerId = do
     g <- getEntity404 $ coerce player.arkhamGameId
     pure $ toGameDetailsEntry g
 
-recentGames :: Int64 -> DB [GameDetailsEntry]
-recentGames n = do
+getRecentGames :: Int64 -> DB [GameDetailsEntry]
+getRecentGames n = do
   games <- select do
     games <- from $ table @ArkhamGameRaw
     orderBy [desc games.updatedAt]
@@ -80,7 +102,7 @@ recentGames n = do
   pure $ map toGameDetailsEntry games
 
 getApiV1AdminGamesR :: Handler [GameDetailsEntry]
-getApiV1AdminGamesR = runDB $ recentGames 20
+getApiV1AdminGamesR = runDB $ getRecentGames 20
 
 putApiV1AdminGameR :: ArkhamGameId -> Handler ()
 putApiV1AdminGameR gameId = do
@@ -96,3 +118,24 @@ putApiV1AdminGameRawR gameId = do
   response <- requireCheckJsonBody @_ @RawGameJsonPut
   writeChannel <- (.channel) <$> getRoom gameId
   updateGame (Raw response.gameMessage) gameId userId writeChannel
+
+getApiV1AdminRoomsR :: Handler [RoomData]
+getApiV1AdminRoomsR = getRoomData
+
+getRoomData :: Handler [RoomData]
+getRoomData = do
+  roomsVar <- getsApp appGameRooms
+  rooms <- liftIO $ readMVar roomsVar
+
+  runDB do
+    rooms & Map.assocs & traverse \(arkhamGameId, Room {..}) -> do
+      mRoomLastUpdatedAt <- fmap arkhamGameUpdatedAt <$> E.get arkhamGameId
+      pure
+        $ RoomData
+          { roomClients = socketClients
+          , roomLastUpdatedAt = mRoomLastUpdatedAt
+          , roomArkhamGameId = arkhamGameId
+          }
+
+deleteApiV1AdminRoomR :: ArkhamGameId -> Handler ()
+deleteApiV1AdminRoomR = deleteRoom

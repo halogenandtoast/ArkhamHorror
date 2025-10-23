@@ -3,6 +3,7 @@ module Arkham.Campaigns.EdgeOfTheEarth.Partner where
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.Card
+import Arkham.Tracing
 import Arkham.Classes.HasGame
 import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.Game ()
@@ -57,7 +58,7 @@ expeditionTeam =
 instance HasCardDef Partner where
   toCardDef = fromMaybe (error "missing") . lookupCardDef
 
-getPartnersWithStatus :: HasGame m => (PartnerStatus -> Bool) -> m [Partner]
+getPartnersWithStatus :: (HasGame m, Tracing m) => (PartnerStatus -> Bool) -> m [Partner]
 getPartnersWithStatus f = do
   partners <- view partnersL <$> getCampaignLog
   pure $ flip mapMaybe (mapToList partners) \(cardCode, partner) -> do
@@ -101,10 +102,10 @@ toResolute = \case
         Assets.takadaHirokoAeroplaneMechanicResolute.cardCode
   c -> c
 
-getRemainingPartners :: HasGame m => m [Partner]
+getRemainingPartners :: (HasGame m, Tracing m) => m [Partner]
 getRemainingPartners = getPartnersWithStatus (`elem` [Safe, Resolute])
 
-getPartner :: (HasGame m, HasCardCode a) => a -> m Partner
+getPartner :: (HasGame m, Tracing m, HasCardCode a) => a -> m Partner
 getPartner (toCardCode -> cardCode) = do
   partners <- view partnersL <$> getCampaignLog
   pure $ fromJustNote "Not a valid partner" do
@@ -117,10 +118,10 @@ getPartner (toCardCode -> cardCode) = do
         , partnerStatus = partner.status
         }
 
-getPartnerIsAlive :: (HasGame m, HasCardCode a) => a -> m Bool
+getPartnerIsAlive :: (HasGame m, Tracing m, HasCardCode a) => a -> m Bool
 getPartnerIsAlive x = (`elem` [Safe, Resolute]) <$> getPartnerStatus x
 
-getPartnerStatus :: (HasCallStack, HasGame m, HasCardCode a) => a -> m PartnerStatus
+getPartnerStatus :: (HasCallStack, HasGame m, Tracing m, HasCardCode a) => a -> m PartnerStatus
 getPartnerStatus (toPartnerCode -> cardCode) = do
   partners <- view partnersL <$> getCampaignLog
   pure $ fromJustNote ("Not a valid partner: " <> show cardCode)  $ (lookup cardCode partners <|> lookup (toResolute cardCode) partners) <&> \partner -> partner.status

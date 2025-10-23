@@ -26,12 +26,13 @@ import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 import Data.Monoid (First (..))
 
-getConcealedIds :: HasGame m => ForExpose -> InvestigatorId -> m [ConcealedCardId]
+getConcealedIds :: (HasGame m, Tracing m) => ForExpose -> InvestigatorId -> m [ConcealedCardId]
 getConcealedIds fe iid = map toId <$> getConcealed fe iid
 
-getConcealed :: HasGame m => ForExpose -> InvestigatorId -> m [ConcealedCard]
+getConcealed :: (HasGame m, Tracing m) => ForExpose -> InvestigatorId -> m [ConcealedCard]
 getConcealed fe iid = getLocationOf iid >>= maybe (pure []) (getConcealedAt fe)
 
 exposeConcealed
@@ -71,7 +72,7 @@ chooseRevealConcealedAt iid source lmatcher = do
     campaignI18n $ labeled' "doNotRevealConcealed" nothing
 
 gatherConcealedCards
-  :: (MonadRandom m, HasGame m) => EnemyId -> m (Maybe (ConcealedCardKind, [ConcealedCard]))
+  :: (MonadRandom m, HasGame m, Tracing m) => EnemyId -> m (Maybe (ConcealedCardKind, [ConcealedCard]))
 gatherConcealedCards a = do
   mconcealed <-
     getModifiedKeywords a <&> foldMap \case

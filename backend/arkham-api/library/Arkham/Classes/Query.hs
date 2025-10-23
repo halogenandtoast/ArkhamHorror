@@ -6,35 +6,38 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Query
 import Arkham.Target
+import Arkham.Tracing
 import Data.List qualified as List
 import Data.Typeable
 
-selectWhenNotNull :: (HasCallStack, Query a, HasGame m) => a -> ([QueryElement a] -> m ()) -> m ()
+selectWhenNotNull
+  :: (HasCallStack, Query a, Tracing m, HasGame m) => a -> ([QueryElement a] -> m ()) -> m ()
 selectWhenNotNull q f = select q >>= \xs -> if null xs then pure () else f xs
 
-selectCount :: (HasCallStack, Query a, HasGame m) => a -> m Int
+selectCount :: (HasCallStack, Query a, Tracing m, HasGame m) => a -> m Int
 selectCount = fmap length . select
 
-withCount :: (HasCallStack, Query a, HasGame m) => (Int -> m ()) -> a -> m ()
+withCount :: (HasCallStack, Query a, Tracing m, HasGame m) => (Int -> m ()) -> a -> m ()
 withCount f = selectCount >=> f
 
-selectAny :: (HasCallStack, Query a, HasGame m) => a -> m Bool
+selectAny :: (HasCallStack, Query a, Tracing m, HasGame m) => a -> m Bool
 selectAny = selectExists
 
-whenAny :: (HasCallStack, Query a, HasGame m) => a -> m () -> m ()
+whenAny :: (HasCallStack, Query a, Tracing m, HasGame m) => a -> m () -> m ()
 whenAny q f = whenM (selectAny q) f
 
-selectNone :: (HasCallStack, Query a, HasGame m) => a -> m Bool
+selectNone :: (HasCallStack, Query a, Tracing m, HasGame m) => a -> m Bool
 selectNone = fmap not . selectAny
 
-whenNone :: (HasCallStack, Query a, HasGame m) => a -> m () -> m ()
+whenNone :: (HasCallStack, Query a, Tracing m, HasGame m) => a -> m () -> m ()
 whenNone q f = whenM (selectNone q) f
 
-selectFilter :: (HasCallStack, Query a, HasGame m) => a -> [QueryElement a] -> m [QueryElement a]
+selectFilter
+  :: (HasCallStack, Query a, Tracing m, HasGame m) => a -> [QueryElement a] -> m [QueryElement a]
 selectFilter matcher ids = (ids `List.intersect`) <$> select matcher
 
 selectShuffled
-  :: (HasCallStack, Query a, HasGame m, MonadRandom m)
+  :: (HasCallStack, Query a, Tracing m, HasGame m, MonadRandom m)
   => a
   -> m [QueryElement a]
 selectShuffled = shuffleM <=< select
@@ -42,6 +45,7 @@ selectShuffled = shuffleM <=< select
 selectWithField
   :: ( EntityId rec ~ QueryElement a
      , Projection rec
+     , Tracing m
      , HasGame m
      , Query a
      )
@@ -53,6 +57,7 @@ selectWithField fld = traverse (traverseToSnd (field fld)) <=< select
 selectField
   :: ( EntityId rec ~ QueryElement a
      , Projection rec
+     , Tracing m
      , HasGame m
      , Query a
      )
@@ -62,7 +67,7 @@ selectField
 selectField fld = traverse (field fld) <=< select
 
 selectRandom
-  :: (HasCallStack, Query a, HasGame m, MonadRandom m)
+  :: (HasCallStack, Query a, Tracing m, HasGame m, MonadRandom m)
   => a
   -> m (Maybe (QueryElement a))
 selectRandom matcher = do
@@ -70,7 +75,7 @@ selectRandom matcher = do
   maybe (pure Nothing) (fmap Just . sample) (nonEmpty results)
 
 selectRandomJust
-  :: (HasCallStack, Query a, HasGame m, MonadRandom m)
+  :: (HasCallStack, Query a, Tracing m, HasGame m, MonadRandom m)
   => String
   -> a
   -> m (QueryElement a)
@@ -79,27 +84,27 @@ selectRandomJust err matcher = do
   maybe (error err) sample (nonEmpty results)
 
 selectMap
-  :: (HasCallStack, Query a, HasGame m)
+  :: (HasCallStack, Query a, Tracing m, HasGame m)
   => (QueryElement a -> b)
   -> a
   -> m [b]
 selectMap f = selectMapM (pure . f)
 
 selectTargets
-  :: (HasCallStack, Query a, HasGame m, Targetable (QueryElement a))
+  :: (HasCallStack, Query a, Tracing m, HasGame m, Targetable (QueryElement a))
   => a
   -> m [Target]
 selectTargets = selectMap toTarget
 
 selectMapM
-  :: (HasCallStack, Query a, HasGame m)
+  :: (HasCallStack, Query a, Tracing m, HasGame m)
   => (QueryElement a -> m b)
   -> a
   -> m [b]
 selectMapM f = traverse f <=< select
 
 selectJust
-  :: (HasCallStack, Show a, Query a, HasGame m)
+  :: (HasCallStack, Show a, Query a, Tracing m, HasGame m)
   => a
   -> m (QueryElement a)
 selectJust matcher = fromJustNote errorNote <$> selectOne matcher
@@ -110,6 +115,7 @@ selectJustField
   :: ( HasCallStack
      , Show a
      , Query a
+     , Tracing m
      , HasGame m
      , QueryElement a ~ EntityId entity
      , Projection entity
@@ -123,6 +129,7 @@ selectFields
   :: ( Query a
      , QueryElement a ~ EntityId attrs
      , Projection attrs
+     , Tracing m
      , HasGame m
      )
   => Field attrs typ
@@ -135,6 +142,7 @@ selectAgg
      , Query a
      , QueryElement a ~ EntityId attrs
      , Projection attrs
+     , Tracing m
      , HasGame m
      , HasCallStack
      )
@@ -153,6 +161,7 @@ selectAggM
      , QueryElement a ~ EntityId attrs
      , Projection attrs
      , HasGame m
+     , Tracing m
      , HasCallStack
      )
   => (typ -> m monoid)
@@ -169,6 +178,7 @@ selectAll
      , Query a
      , QueryElement a ~ EntityId attrs
      , Projection attrs
+     , Tracing m
      , HasGame m
      )
   => Field attrs typ
@@ -182,6 +192,7 @@ selectAgg'
      , Query a
      , QueryElement a ~ EntityId attrs
      , Projection attrs
+     , Tracing m
      , HasGame m
      , Coercible monoid b
      )
@@ -198,6 +209,7 @@ selectAggM'
      , QueryElement a ~ EntityId attrs
      , Projection attrs
      , HasGame m
+     , Tracing m
      , Coercible monoid b
      )
   => (typ -> m monoid)
@@ -211,6 +223,7 @@ selectSum
      , Num a
      , Query matcher
      , Projection attrs
+     , Tracing m
      , HasGame m
      )
   => Field attrs a
@@ -223,6 +236,7 @@ selectSumWith
      , Num a
      , Query matcher
      , Projection attrs
+     , Tracing m
      , HasGame m
      )
   => (b -> a)
@@ -237,6 +251,7 @@ fieldMax
      , Ord a
      , Query matcher
      , Projection attrs
+     , Tracing m
      , HasGame m
      )
   => Field attrs a
@@ -250,6 +265,7 @@ fieldMaxBy
      , Ord a
      , Query matcher
      , Projection attrs
+     , Tracing m
      , HasGame m
      )
   => Field attrs b
@@ -265,6 +281,7 @@ fieldMaxByM
      , Query matcher
      , Projection attrs
      , HasGame m
+     , Tracing m
      )
   => Field attrs b
   -> (b -> m a)
@@ -279,6 +296,7 @@ maybeFieldMax
      , Ord a
      , Query matcher
      , Projection attrs
+     , Tracing m
      , HasGame m
      )
   => Field attrs (Maybe a)
@@ -293,6 +311,7 @@ selectMax
      , Num a
      , Query matcher
      , Projection attrs
+     , Tracing m
      , HasGame m
      , Ord a
      )
@@ -313,6 +332,7 @@ selectMaxBy
      , Query matcher
      , Projection attrs
      , HasGame m
+     , Tracing m
      , Ord b
      )
   => Field attrs a
@@ -333,6 +353,7 @@ selectMaxByM
      , Query matcher
      , Projection attrs
      , HasGame m
+     , Tracing m
      , Ord b
      )
   => Field attrs a
@@ -352,6 +373,7 @@ selectMaybeMax
      , Num a
      , Query matcher
      , Projection attrs
+     , Tracing m
      , HasGame m
      , Ord a
      )
@@ -367,7 +389,7 @@ selectMaybeMax fld matcher = do
     else pure []
 
 selectOne
-  :: (HasCallStack, Query a, HasGame m)
+  :: (HasCallStack, Query a, Tracing m, HasGame m)
   => a
   -> m (Maybe (QueryElement a))
 selectOne matcher = do
@@ -376,17 +398,18 @@ selectOne matcher = do
     [] -> Nothing
     x : _ -> Just x
 
-selectOrDefault :: (HasCallStack, Query a, HasGame m) => QueryElement a -> a -> m (QueryElement a)
+selectOrDefault
+  :: (HasCallStack, Query a, Tracing m, HasGame m) => QueryElement a -> a -> m (QueryElement a)
 selectOrDefault def matcher = selectMaybe def id matcher
 
-selectMaybeT :: (HasCallStack, Query a, HasGame m) => a -> MaybeT m (QueryElement a)
+selectMaybeT :: (HasCallStack, Query a, Tracing m, HasGame m) => a -> MaybeT m (QueryElement a)
 selectMaybeT = MaybeT . selectOne
 
-selectMapMaybeM :: (Query a, HasGame m) => a -> (QueryElement a -> m (Maybe b)) -> m [b]
+selectMapMaybeM :: (Query a, Tracing m, HasGame m) => a -> (QueryElement a -> m (Maybe b)) -> m [b]
 selectMapMaybeM q f = select q >>= mapMaybeM f
 
 selectMaybe
-  :: (HasCallStack, Query a, HasGame m)
+  :: (HasCallStack, Query a, Tracing m, HasGame m)
   => b
   -> (QueryElement a -> b)
   -> a
@@ -394,7 +417,7 @@ selectMaybe
 selectMaybe def f matcher = maybe def f <$> selectOne matcher
 
 selectMaybeM
-  :: (HasCallStack, Query a, HasGame m)
+  :: (HasCallStack, Query a, Tracing m, HasGame m)
   => b
   -> a
   -> (QueryElement a -> m b)
@@ -402,11 +425,12 @@ selectMaybeM
 selectMaybeM def matcher f = maybe (pure def) f =<< selectOne matcher
 
 selectWithFilterM
-  :: (HasCallStack, Query a, HasGame m) => a -> (QueryElement a -> m Bool) -> m [QueryElement a]
+  :: (HasCallStack, Query a, Tracing m, HasGame m)
+  => a -> (QueryElement a -> m Bool) -> m [QueryElement a]
 selectWithFilterM matcher f = filterM f =<< select matcher
 
 selectForMaybeM
-  :: (HasCallStack, Query a, HasGame m)
+  :: (HasCallStack, Query a, Tracing m, HasGame m)
   => a
   -> (QueryElement a -> m ())
   -> m ()
@@ -414,7 +438,7 @@ selectForMaybeM = selectMaybeM ()
 
 selectOnlyOne
   :: forall a m
-   . (HasCallStack, Show a, Query a, HasGame m)
+   . (HasCallStack, Show a, Query a, Tracing m, HasGame m)
   => a
   -> m (QueryElement a)
 selectOnlyOne matcher =
@@ -432,6 +456,7 @@ selectOnlyOne matcher =
 selectSortedBy
   :: ( EntityId rec ~ QueryElement a
      , Projection rec
+     , Tracing m
      , HasGame m
      , Query a
      , Ord typ
@@ -444,7 +469,7 @@ selectSortedBy fld matcher = do
   pure $ map fst $ sortOn snd results
 
 isMatch
-  :: (HasCallStack, Query matcher, HasGame m)
+  :: (HasCallStack, Query matcher, Tracing m, HasGame m)
   => QueryElement matcher
   -> matcher
   -> m Bool
@@ -452,26 +477,27 @@ isMatch a m = elem a <$> select m
 
 class (Ord (QueryElement a), Eq (QueryElement a), Typeable (QueryElement a)) => Query a where
   toSomeQuery :: a -> SomeQuery (QueryElement a)
-  select_ :: (HasCallStack, HasGame m) => a -> m [QueryElement a]
-  selectExists :: (HasCallStack, HasGame m) => a -> m Bool
+  select_ :: (HasCallStack, Tracing m, HasGame m) => a -> m [QueryElement a]
+  selectExists :: (HasCallStack, Tracing m, HasGame m) => a -> m Bool
   selectExists q = cached (ExistKey $ toSomeQuery q) $ notNull <$> select_ q
-  select :: (HasCallStack, HasGame m) => a -> m [QueryElement a]
+  select :: (HasCallStack, Tracing m, HasGame m) => a -> m [QueryElement a]
   select q = cached (SelectKey $ toSomeQuery q) (select_ q)
 
-matches :: (HasCallStack, HasGame m, Query a) => QueryElement a -> a -> m Bool
+matches :: (HasCallStack, Tracing m, HasGame m, Query a) => QueryElement a -> a -> m Bool
 matches a matcher = elem a <$> select matcher
 
-guardMatches :: (HasCallStack, HasGame m, Query a, Alternative m) => QueryElement a -> a -> m ()
+guardMatches
+  :: (HasCallStack, Tracing m, HasGame m, Query a, Alternative m) => QueryElement a -> a -> m ()
 guardMatches a matcher = guardM $ elem a <$> select matcher
 
-(<=~>) :: (HasGame m, Query a) => QueryElement a -> a -> m Bool
+(<=~>) :: (Tracing m, HasGame m, Query a) => QueryElement a -> a -> m Bool
 (<=~>) = matches
 
-(<!=~>) :: (HasGame m, Query a) => QueryElement a -> a -> m Bool
+(<!=~>) :: (Tracing m, HasGame m, Query a) => QueryElement a -> a -> m Bool
 (<!=~>) el q = not <$> matches el q
 
 unlessMatch
-  :: (HasCallStack, Query matcher, HasGame m)
+  :: (HasCallStack, Query matcher, Tracing m, HasGame m)
   => QueryElement matcher
   -> matcher
   -> m ()
@@ -481,7 +507,7 @@ unlessMatch a m body = do
   unless p body
 
 whenMatch
-  :: (HasCallStack, Query matcher, HasGame m)
+  :: (HasCallStack, Query matcher, Tracing m, HasGame m)
   => QueryElement matcher
   -> matcher
   -> m ()

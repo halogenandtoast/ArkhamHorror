@@ -48,6 +48,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -57,18 +58,18 @@ import Data.Map.Monoidal.Strict (MonoidalMap (..))
 import Data.Map.Strict qualified as Map
 
 getBaseValueDifferenceForSkillTest
-  :: HasGame m => InvestigatorId -> SkillTest -> m Int
+  :: (HasGame m, Tracing m) => InvestigatorId -> SkillTest -> m Int
 getBaseValueDifferenceForSkillTest iid st = do
   base <- getBaseValueForSkillTest iid st
   difficulty <- getModifiedSkillTestDifficulty st
   pure $ difficulty - base
 
 getBaseValueForSkillTest
-  :: HasGame m => InvestigatorId -> SkillTest -> m Int
+  :: (HasGame m, Tracing m) => InvestigatorId -> SkillTest -> m Int
 getBaseValueForSkillTest iid st = getBaseValueForSkillTestType iid st.action st.kind
 
 getBaseValueForSkillTestType
-  :: HasGame m => InvestigatorId -> Maybe Action -> SkillTestType -> m Int
+  :: (HasGame m, Tracing m) => InvestigatorId -> Maybe Action -> SkillTestType -> m Int
 getBaseValueForSkillTestType iid mAction = \case
   SkillSkillTest skillType -> baseSkillValueFor skillType mAction iid
   AndSkillTest types -> sum <$> traverse (\skillType -> baseSkillValueFor skillType mAction iid) types
@@ -117,14 +118,14 @@ getSkillTestAbilitySource = runMaybeT do
 isSkillTestSource :: (HasGame m, Sourceable source) => source -> m Bool
 isSkillTestSource source = maybe False (isSource source) <$> getSkillTestSource
 
-getSkillTestBaseSkill :: HasGame m => InvestigatorId -> m (Maybe Int)
+getSkillTestBaseSkill :: (HasGame m, Tracing m) => InvestigatorId -> m (Maybe Int)
 getSkillTestBaseSkill iid = do
   mSkillTest <- getSkillTest
   case mSkillTest of
     Nothing -> pure Nothing
     Just sTest -> Just <$> getSkillTestBaseSkillForSkillTest iid sTest
 
-getSkillTestBaseSkillForSkillTest :: HasGame m => InvestigatorId -> SkillTest -> m Int
+getSkillTestBaseSkillForSkillTest :: (HasGame m, Tracing m) => InvestigatorId -> SkillTest -> m Int
 getSkillTestBaseSkillForSkillTest iid sTest =
   getBaseValueForSkillTestType iid (skillTestAction sTest) (skillTestType sTest)
 
@@ -163,27 +164,27 @@ getSkillTestMatchingSkillIcons =
 isInvestigation :: HasGame m => m Bool
 isInvestigation = (== Just #investigate) <$> getSkillTestAction
 
-isInvestigationOf :: HasGame m => LocationMatcher -> m Bool
+isInvestigationOf :: (HasGame m, Tracing m) => LocationMatcher -> m Bool
 isInvestigationOf matcher =
   isJust <$> runMaybeT do
     Action.Investigate <- MaybeT getSkillTestAction
     LocationTarget lid <- MaybeT getSkillTestTarget
     liftGuardM $ lid <=~> matcher
 
-isSkillTestAt :: (HasGame m, AsId location, IdOf location ~ LocationId) => location -> m Bool
+isSkillTestAt :: (HasGame m, Tracing m, ToId location LocationId) => location -> m Bool
 isSkillTestAt location =
   isJust <$> runMaybeT do
     iid <- MaybeT getSkillTestInvestigator
     liftGuardM $ asId location <=~> locationWithInvestigator iid
 
-isFightWith :: HasGame m => EnemyMatcher -> m Bool
+isFightWith :: (HasGame m, Tracing m) => EnemyMatcher -> m Bool
 isFightWith matcher =
   isJust <$> runMaybeT do
     Action.Fight <- MaybeT getSkillTestAction
     eid <- hoistMaybe . (.enemy) =<< MaybeT getSkillTestTarget
     liftGuardM $ eid <=~> matcher
 
-isEvadeWith :: HasGame m => EnemyMatcher -> m Bool
+isEvadeWith :: (HasGame m, Tracing m) => EnemyMatcher -> m Bool
 isEvadeWith matcher =
   isJust <$> runMaybeT do
     Action.Evade <- MaybeT getSkillTestAction
@@ -204,7 +205,7 @@ isFighting enemy =
     eid <- hoistMaybe . (.enemy) =<< MaybeT getSkillTestTarget
     guard $ asId enemy == eid
 
-isParley :: HasGame m => m Bool
+isParley :: (HasGame m, Tracing m) => m Bool
 isParley =
   orM
     [ (== Just #parley) <$> getSkillTestAction
@@ -318,7 +319,7 @@ investigate sid iid (toSource -> source) (toTarget -> target) sType n =
       }
 
 -- NOTE: 100 and 102 are the range for the basic abilities
-getIsScenarioAbility :: HasGame m => m Bool
+getIsScenarioAbility :: (HasGame m, Tracing m) => m Bool
 getIsScenarioAbility = do
   source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
   go source
@@ -365,7 +366,7 @@ inAttackSkillTest = (== Just #fight) <$> getSkillTestAction
 inEvasionSkillTest :: HasGame m => m Bool
 inEvasionSkillTest = (== Just #evade) <$> getSkillTestAction
 
-getIsPerilous :: HasGame m => SkillTest -> m Bool
+getIsPerilous :: (HasGame m, Tracing m) => SkillTest -> m Bool
 getIsPerilous skillTest = case skillTestSource skillTest of
   TreacherySource tid -> do
     keywords <- fromMaybe mempty <$> fieldMay TreacheryKeywords tid
@@ -375,21 +376,21 @@ getIsPerilous skillTest = case skillTestSource skillTest of
     pure $ Peril `elem` keywords
   _ -> pure False
 
-getSkillTestModifiedSkillValue :: HasGame m => m Int
+getSkillTestModifiedSkillValue :: (HasGame m, Tracing m) => m Int
 getSkillTestModifiedSkillValue = do
   st <- getJustSkillTest
   currentSkillValue <- getCurrentSkillValue st
   iconCount <- skillIconCount st
   pure $ max 0 (currentSkillValue + iconCount)
 
-getSkillTestDifficulty :: (HasCallStack, HasGame m) => m (Maybe Int)
+getSkillTestDifficulty :: (HasCallStack, HasGame m, Tracing m) => m (Maybe Int)
 getSkillTestDifficulty = do
   mSkillTest <- getSkillTest
   case mSkillTest of
     Nothing -> pure Nothing
     Just st -> Just <$> getModifiedSkillTestDifficulty st
 
-getCurrentSkillValue :: HasGame m => SkillTest -> m Int
+getCurrentSkillValue :: (HasGame m, Tracing m) => SkillTest -> m Int
 getCurrentSkillValue st = do
   mods <- getModifiers st.investigator
   let
@@ -460,7 +461,7 @@ getAlternateSkill st sType = do
   applyModifier (UseSkillInsteadOf original replacement) a | original == a = replacement
   applyModifier _ a = a
 
-getModifiedSkillTestDifficulty :: (HasCallStack, HasGame m) => SkillTest -> m Int
+getModifiedSkillTestDifficulty :: (HasCallStack, HasGame m, Tracing m) => SkillTest -> m Int
 getModifiedSkillTestDifficulty s = do
   -- difficulty can be on the investigator, see: @Despoiled@
   let
@@ -484,7 +485,7 @@ getModifiedSkillTestDifficulty s = do
   applyPreModifier (SetDifficulty m) _ = m
   applyPreModifier _ n = n
 
-getBaseSkillTestDifficulty :: (HasGame m, HasCallStack) => SkillTest -> m Int
+getBaseSkillTestDifficulty :: (HasGame m, Tracing m, HasCallStack) => SkillTest -> m Int
 getBaseSkillTestDifficulty s = go (skillTestDifficulty s)
  where
   go (SkillTestDifficulty c) = calculate c
@@ -506,7 +507,7 @@ pushAfterSkillTest = pushAfter \case
   SkillTestEnds {} -> True
   _ -> False
 
-getIsCommittable :: HasGame m => InvestigatorId -> Card -> m Bool
+getIsCommittable :: (Tracing m, HasGame m) => InvestigatorId -> Card -> m Bool
 getIsCommittable a c = do
   getSkillTest >>= \case
     Nothing -> pure False
@@ -616,10 +617,10 @@ getIsCommittable a c = do
               EncounterCard card -> pure $ CommittableTreachery `elem` cdCommitRestrictions (toCardDef card)
               VengeanceCard _ -> error "vengeance card"
 
-getMustBeCommittableCards :: HasGame m => InvestigatorId -> m [Card]
+getMustBeCommittableCards :: (Tracing m, HasGame m) => InvestigatorId -> m [Card]
 getMustBeCommittableCards = filterM (`hasModifier` MustBeCommitted) <=< getCommittableCards
 
-getCommittableCards :: HasGame m => InvestigatorId -> m [Card]
+getCommittableCards :: (Tracing m, HasGame m) => InvestigatorId -> m [Card]
 getCommittableCards iid = do
   modifiers' <- getModifiers iid
   let asIfInHandForCommit = mapMaybe (preview _CanCommitToSkillTestsAsIfInHand) modifiers'
@@ -628,7 +629,7 @@ getCommittableCards iid = do
   treacheryCards <- traverse (field TreacheryCard) committableTreacheries
   filterM (getIsCommittable iid) (asIfInHandForCommit <> hand <> treacheryCards)
 
-getCommittedCards :: HasGame m => InvestigatorId -> m [Card]
+getCommittedCards :: (HasGame m, Tracing m) => InvestigatorId -> m [Card]
 getCommittedCards = field InvestigatorCommittedCards
 
 cancelTokenDraw :: HasQueue Message m => m ()
@@ -649,7 +650,8 @@ cancelTokenDraw = do
     RunBag {} -> True
     _ -> False
 
-getSkillTestDifficultyDifferenceFromBaseValue :: HasGame m => InvestigatorId -> SkillTest -> m Int
+getSkillTestDifficultyDifferenceFromBaseValue
+  :: (HasGame m, Tracing m) => InvestigatorId -> SkillTest -> m Int
 getSkillTestDifficultyDifferenceFromBaseValue iid skillTest = do
   skillDifficulty <- getModifiedSkillTestDifficulty skillTest
   case skillTestType skillTest of
@@ -677,7 +679,7 @@ getCanCancelSkillTestEffects = do
     Just target -> withoutModifier target EffectsCannotBeCanceled
 
 skillTestMatches
-  :: HasGame m
+  :: (Tracing m, HasGame m)
   => InvestigatorId
   -> Source
   -> SkillTest
@@ -802,7 +804,7 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
   Matcher.SkillTestOneOf ms -> anyM (skillTestMatches iid source st) ms
 
 skillTestValueMatches
-  :: HasGame m
+  :: (HasGame m, Tracing m)
   => InvestigatorId
   -> Maybe Action
   -> SkillTestType
@@ -858,6 +860,7 @@ onNextTurnEffect source investigator msgs = CreateOnNextTurnEffect (toSource sou
 maybeModifyThisSkillTest
   :: ( Sourceable source
      , HasGame m
+     , Tracing m
      , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => source

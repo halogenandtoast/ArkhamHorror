@@ -5,9 +5,10 @@ import Arkham.DefeatedBy
 import Arkham.Helpers.Source
 import Arkham.Matcher qualified as Matcher
 import Arkham.Prelude
+import Arkham.Tracing
 
 defeatedByMatches
-  :: HasGame m => DefeatedBy -> Matcher.DefeatedByMatcher -> m Bool
+  :: (HasGame m, Tracing m) => DefeatedBy -> Matcher.DefeatedByMatcher -> m Bool
 defeatedByMatches defeatedBy = \case
   Matcher.ByAnyOf xs -> anyM (defeatedByMatches defeatedBy) xs
   Matcher.ByHorror -> pure $ wasDefeatedByHorror defeatedBy

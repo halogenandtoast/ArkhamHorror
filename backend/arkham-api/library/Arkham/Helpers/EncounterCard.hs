@@ -11,8 +11,10 @@ import Arkham.Matcher
 import Arkham.Message
 import Arkham.Prelude
 import Arkham.Source
+import Arkham.Tracing
 
-changeEncounterCardDrawer :: (HasQueue Message m, HasGame m) => CardId -> InvestigatorId -> m ()
+changeEncounterCardDrawer
+  :: (HasQueue Message m, Tracing m, HasGame m) => CardId -> InvestigatorId -> m ()
 changeEncounterCardDrawer cardId iid = do
   mTreachery <- selectOne $ TreacheryWithCardId cardId
   mEnemy <- selectOne $ EnemyWithCardId cardId

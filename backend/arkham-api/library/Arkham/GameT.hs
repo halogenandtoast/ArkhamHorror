@@ -8,9 +8,13 @@ import {-# SOURCE #-} Arkham.Message
 import Arkham.Prelude
 import Arkham.Queue
 import Arkham.Random
+import Arkham.Tracing
+import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.Random
 import Data.Dependent.Map (DMap)
 import Data.Dependent.Map qualified as DMap
+import OpenTelemetry.Trace qualified as Trace
+import OpenTelemetry.Trace.Monad (MonadTracer (..), inSpan')
 
 data GameEnv = GameEnv
   { gameEnvGame :: IORef Game
@@ -18,10 +22,31 @@ data GameEnv = GameEnv
   , gameRandomGen :: IORef StdGen
   , gameLogger :: ClientMessage -> IO ()
   , gameCacheRef :: IORef (DMap CacheKey Identity)
+  , gameTracer :: Trace.Tracer
   }
 
 newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
-  deriving newtype (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
+  deriving newtype
+    ( MonadReader GameEnv
+    , Functor
+    , Applicative
+    , Monad
+    , MonadIO
+    , MonadUnliftIO
+    , MonadMask
+    , MonadCatch
+    , MonadThrow
+    )
+
+instance MonadTracer GameT where
+  getTracer = asks gameTracer
+
+instance Tracing GameT where
+  type SpanType GameT = Trace.Span
+  type SpanArgs GameT = Trace.SpanArguments
+  defaultSpanArgs = Trace.defaultSpanArguments
+  addAttribute = Trace.addAttribute
+  doTrace name args action = inSpan' name args action
 
 clearCache :: GameT ()
 clearCache = do

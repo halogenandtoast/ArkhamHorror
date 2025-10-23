@@ -79,6 +79,7 @@ import Arkham.Source
 import Arkham.Story.Types (Field (..))
 import Arkham.Target
 import Arkham.Token qualified as Token
+import Arkham.Tracing
 import Arkham.Trait
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkWhen)
@@ -95,7 +96,7 @@ import Data.Typeable
 import Data.UUID qualified as UUID
 
 passesCriteria
-  :: (HasCallStack, HasGame m)
+  :: (HasCallStack, Tracing m, HasGame m)
   => InvestigatorId
   -> Maybe (Card, CostStatus)
   -> Source
@@ -103,7 +104,7 @@ passesCriteria
   -> [Window]
   -> Criterion
   -> m Bool
-passesCriteria iid mcard source' requestor windows' = \case
+passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCriteria" \currentSpan -> addAttribute currentSpan "criterion" (tshow ctr) >> case ctr of
   Criteria.CanEnterThisVehicle -> do
     case source.asset of
       Just aid -> do
@@ -563,7 +564,7 @@ passesCriteria iid mcard source' requestor windows' = \case
     pure $ notNull filteredDiscards
   Criteria.CanAffordCostIncrease n -> do
     let
-      go :: HasGame n => Maybe (Card, CostStatus) -> n Bool
+      go :: (HasGame n, Tracing n) => Maybe (Card, CostStatus) -> n Bool
       go = \case
         Just (card, AuxiliaryCost aux inner) -> do
           let increase = IncreaseCostOf (Matcher.basic $ Matcher.CardWithId card.id) $ totalResourceCost aux
@@ -747,7 +748,7 @@ passesCriteria iid mcard source' requestor windows' = \case
 
 -- | Build a matcher and check the list
 passesEnemyCriteria
-  :: HasGame m
+  :: (HasGame m, Tracing m)
   => InvestigatorId
   -> Source
   -> [Window]

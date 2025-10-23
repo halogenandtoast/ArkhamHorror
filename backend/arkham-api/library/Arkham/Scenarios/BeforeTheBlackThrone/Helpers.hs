@@ -28,9 +28,10 @@ import Arkham.Scenario.Deck
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Trait (Trait (Cultist))
 
-findCosmosPosition :: HasGame m => InvestigatorId -> m (Maybe Pos)
+findCosmosPosition :: (HasGame m, Tracing m) => InvestigatorId -> m (Maybe Pos)
 findCosmosPosition iid = do
   cosmos' <- getCosmos
   lid <- getJustLocation iid
@@ -43,19 +44,19 @@ cosmosFail attrs = do
     , ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) [toCard attrs]
     ]
 
-getEmptyPositionsInDirections :: HasGame m => Pos -> [GridDirection] -> m [Pos]
+getEmptyPositionsInDirections :: (HasGame m, Tracing m) => Pos -> [GridDirection] -> m [Pos]
 getEmptyPositionsInDirections pos directions = do
   cosmos' <- getCosmos
   let adjacents = positionsInDirections pos directions
   pure $ filter (\adj -> isEmpty $ viewCosmos adj cosmos') adjacents
 
-getEmptySpacePositionsInDirections :: HasGame m => Pos -> [GridDirection] -> m [Pos]
+getEmptySpacePositionsInDirections :: (HasGame m, Tracing m) => Pos -> [GridDirection] -> m [Pos]
 getEmptySpacePositionsInDirections pos directions = do
   cosmos' <- getCosmos
   let adjacents = positionsInDirections pos directions
   pure $ filter (\adj -> isEmptySpace $ viewCosmos adj cosmos') adjacents
 
-getLocationInDirection :: HasGame m => Pos -> GridDirection -> m (Maybe LocationId)
+getLocationInDirection :: (HasGame m, Tracing m) => Pos -> GridDirection -> m (Maybe LocationId)
 getLocationInDirection pos dir = do
   cosmos' <- getCosmos
   pure $ case viewCosmos (updatePosition pos dir) cosmos' of
@@ -63,7 +64,7 @@ getLocationInDirection pos dir = do
     Just (EmptySpace _ _) -> Nothing
     Just (CosmosLocation _ lid') -> Just lid'
 
-getCanMoveLocationLeft :: HasGame m => LocationId -> m Bool
+getCanMoveLocationLeft :: (HasGame m, Tracing m) => LocationId -> m Bool
 getCanMoveLocationLeft lid = do
   cosmos' <- getCosmos
   pure $ case findInCosmos lid cosmos' of
@@ -82,13 +83,13 @@ commitRitualSuicide (toSource -> source) = do
   doom <- getSum <$> foldMapM (fieldMap EnemyDoom Sum) cultists
   push $ PlaceDoom source (toTarget azathoth) doom
 
-getEmptySpaceCards :: HasGame m => m [Card]
+getEmptySpaceCards :: (HasGame m, Tracing m) => m [Card]
 getEmptySpaceCards = cosmosEmptySpaceCards <$> getCosmos
 
-findLocationInCosmos :: HasGame m => LocationId -> m (Maybe Pos)
+findLocationInCosmos :: (HasGame m, Tracing m) => LocationId -> m (Maybe Pos)
 findLocationInCosmos lid = findInCosmos lid <$> getCosmos
 
-topmostRevealedLocationPositions :: HasGame m => m [Pos]
+topmostRevealedLocationPositions :: (HasGame m, Tracing m) => m [Pos]
 topmostRevealedLocationPositions = do
   cosmosLocations <- flattenCosmos <$> getCosmos
   revealedCosmosLocations <- flip mapMaybeM cosmosLocations $ \case
@@ -97,7 +98,7 @@ topmostRevealedLocationPositions = do
 
   pure $ maxes revealedCosmosLocations
 
-bottommostRevealedLocationPositions :: HasGame m => m [Pos]
+bottommostRevealedLocationPositions :: (HasGame m, Tracing m) => m [Pos]
 bottommostRevealedLocationPositions = do
   cosmosLocations <- flattenCosmos <$> getCosmos
   revealedCosmosLocations <- flip mapMaybeM cosmosLocations $ \case

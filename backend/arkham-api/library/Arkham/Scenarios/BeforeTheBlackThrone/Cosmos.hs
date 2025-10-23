@@ -1,8 +1,8 @@
 module Arkham.Scenarios.BeforeTheBlackThrone.Cosmos (
   module Arkham.Scenarios.BeforeTheBlackThrone.Cosmos.Types,
-  module Arkham.Scenarios.BeforeTheBlackThrone.Cosmos) where
+  module Arkham.Scenarios.BeforeTheBlackThrone.Cosmos,
+) where
 
-import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos.Types
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Direction
@@ -11,13 +11,15 @@ import Arkham.Id
 import Arkham.Layout
 import Arkham.Prelude hiding ((<|))
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos.Types
+import Arkham.Tracing
 import Data.Aeson (Result (..))
 import Data.Sequence ((<|), (|>))
 import Data.Sequence qualified as Seq
 import Data.Text qualified as T
 import Text.Printf
 
-getCosmos :: HasGame m => m (Cosmos Card LocationId)
+getCosmos :: (HasGame m, Tracing m) => m (Cosmos Card LocationId)
 getCosmos = do
   cosmos' <- scenarioField ScenarioMeta
   case fromJSON cosmos' of

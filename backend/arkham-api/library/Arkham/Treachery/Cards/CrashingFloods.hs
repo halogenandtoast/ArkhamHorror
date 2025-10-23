@@ -6,6 +6,7 @@ import Arkham.Classes.HasGame
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Projection
+import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -16,7 +17,7 @@ newtype CrashingFloods = CrashingFloods TreacheryAttrs
 crashingFloods :: TreacheryCard CrashingFloods
 crashingFloods = treachery CrashingFloods Cards.crashingFloods
 
-getStep :: HasGame m => Maybe AgendaId -> m Int
+getStep :: (HasGame m, Tracing m) => Maybe AgendaId -> m Int
 getStep Nothing = pure 3 -- if no agenda than act is 3
 getStep (Just agenda) = do
   side <- fieldMap AgendaSequence AS.agendaStep agenda

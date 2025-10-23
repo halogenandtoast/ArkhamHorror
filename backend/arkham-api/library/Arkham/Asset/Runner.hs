@@ -48,6 +48,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
+import Arkham.Tracing
 import Arkham.Window (mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
@@ -57,7 +58,7 @@ import Data.Aeson.Lens (_Bool)
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
 
-defeated :: HasGame m => AssetAttrs -> Source -> m (Maybe DefeatedBy)
+defeated :: (HasGame m, Tracing m) => AssetAttrs -> Source -> m (Maybe DefeatedBy)
 defeated AssetAttrs {assetId, assetAssignedHealthDamage, assetAssignedSanityDamage} source = do
   remainingHealth <- field AssetRemainingHealth assetId
   remainingSanity <- field AssetRemainingSanity assetId
@@ -73,7 +74,7 @@ hasUses :: AssetAttrs -> Bool
 hasUses = any (> 0) . toList . assetUses
 
 instance RunMessage Asset where
-  runMessage msg x@(Asset a) = do
+  runMessage msg x@(Asset a) = withSpan_ ("Asset[" <> unCardCode (toCardCode x) <> "].runMessage") do
     inPlay <- elem (toId x) <$> select AnyAsset
     modifiers' <- if inPlay then getModifiers (toTarget x) else pure []
     let msg' = if any (`elem` modifiers') [Blank, BlankExceptForcedAbilities] then Blanked msg else msg
@@ -208,7 +209,7 @@ instance RunMessage AssetAttrs where
     RemoveAllChaosTokens face -> do
       pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
     ReadyExhausted -> do
-      mods <- getModifiers a  
+      mods <- getModifiers a
       unless (CannotReady `elem` mods) do
         case a.controller of
           Just iid -> do

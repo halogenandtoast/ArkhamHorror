@@ -10,6 +10,7 @@ import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Skill.Runner
 import Arkham.Skill.Skills
+import Arkham.Tracing
 
 createSkill :: IsCard a => a -> InvestigatorId -> SkillId -> Skill
 createSkill a iid sId =
@@ -40,12 +41,13 @@ createSkill a iid sId =
     _ -> Nothing
 
 instance RunMessage Skill where
-  runMessage msg (Skill a) = case msg of
-    SkillTestEnds {} ->
-      if isInPlayPlacement $ attr (.placement) a
-        then pure $ Skill a
-        else Skill <$> runMessage msg a
-    _ -> Skill <$> runMessage msg a
+  runMessage msg x@(Skill a) = withSpan_ ("Skill[" <> unCardCode (toCardCode x) <> "].runMessage") do
+    case msg of
+      SkillTestEnds {} ->
+        if isInPlayPlacement $ attr (.placement) a
+          then pure $ Skill a
+          else Skill <$> runMessage msg a
+      _ -> Skill <$> runMessage msg a
 
 lookupSkill :: CardCode -> InvestigatorId -> SkillId -> CardId -> Skill
 lookupSkill cardCode = case lookup cardCode allSkills of

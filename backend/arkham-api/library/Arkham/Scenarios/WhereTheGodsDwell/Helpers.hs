@@ -15,6 +15,7 @@ import Arkham.Message
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Treachery.Types (Field (..))
 
@@ -38,23 +39,23 @@ forsakenTowerAbilities attrs = [markSkillTest $ restrictedAbility attrs 1 (forsa
     "06305" -> skillTestAbility
     _ -> id
 
-getWhisperingChaos :: HasGame m => LocationAttrs -> m TreacheryId
+getWhisperingChaos :: (HasGame m, Tracing m) => LocationAttrs -> m TreacheryId
 getWhisperingChaos attrs = selectJust $ treacheryIs (whichWhisperingChaos attrs)
 
-revealWhisperingChaos :: (HasQueue Message m, HasGame m) => LocationAttrs -> m ()
+revealWhisperingChaos :: (HasQueue Message m, HasGame m, Tracing m) => LocationAttrs -> m ()
 revealWhisperingChaos attrs = do
   x <- getWhisperingChaos attrs
   card <- field TreacheryCard x
   push $ RevealCard (toCardId card)
 
-discardWhisperingChaos :: (HasQueue Message m, HasGame m) => LocationAttrs -> m ()
+discardWhisperingChaos :: (HasQueue Message m, HasGame m, Tracing m) => LocationAttrs -> m ()
 discardWhisperingChaos attrs = do
   x <- getWhisperingChaos attrs
   iid <- selectJust $ InvestigatorWithTreacheryInHand $ TreacheryWithId x
   push $ toDiscardBy iid attrs x
 
 shuffleWhisperingChaosBackIntoEncounterDeck
-  :: (HasQueue Message m, HasGame m) => LocationAttrs -> m ()
+  :: (HasQueue Message m, HasGame m, Tracing m) => LocationAttrs -> m ()
 shuffleWhisperingChaosBackIntoEncounterDeck attrs = do
   x <- getWhisperingChaos attrs
   push $ ShuffleBackIntoEncounterDeck (toTarget x)

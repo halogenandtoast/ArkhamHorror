@@ -13,8 +13,9 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Queue
 import Arkham.Search (Search (..))
+import Arkham.Tracing
 
-getFoundCards :: HasGame m => InvestigatorId -> m [Card]
+getFoundCards :: (HasGame m, Tracing m) => InvestigatorId -> m [Card]
 getFoundCards iid = do
   field InvestigatorSearch iid <&> \case
     Nothing -> []

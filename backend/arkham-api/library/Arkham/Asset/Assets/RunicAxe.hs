@@ -19,6 +19,7 @@ import Arkham.Matcher hiding (DiscoverClues, EnemyDefeated)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
+import Arkham.Tracing
 import Arkham.Trait (Trait (Relic))
 
 data Inscription = Accuracy | Power | Glory | Elders | Hunt | Fury
@@ -88,7 +89,8 @@ instance HasModifiersFor RunicAxe where
 instance HasAbilities RunicAxe where
   getAbilities (RunicAxe (With a _)) = [restrictedAbility a 1 ControlsThis fightAction_]
 
-availableInscriptions :: HasGame m => InvestigatorId -> AssetAttrs -> Metadata -> m [Inscription]
+availableInscriptions
+  :: (HasGame m, Tracing m) => InvestigatorId -> AssetAttrs -> Metadata -> m [Inscription]
 availableInscriptions iid attrs meta = do
   connectedLocations <- notNull <$> getAccessibleLocations iid (attrs.ability 1)
   unengagedEnemies <- selectAny $ CanEngageEnemy (attrs.ability 1) <> enemyAtLocationWith iid

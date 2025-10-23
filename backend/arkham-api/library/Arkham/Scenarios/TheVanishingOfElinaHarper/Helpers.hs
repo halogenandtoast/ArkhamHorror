@@ -23,9 +23,10 @@ import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Trait (Trait (Suspect))
 
-getLeadsDeck :: HasGame m => m [Card]
+getLeadsDeck :: (HasGame m, Tracing m) => m [Card]
 getLeadsDeck = getScenarioDeck LeadsDeck
 
 shuffleLeadsDeck :: ReverseQueue m => m ()
@@ -42,10 +43,10 @@ data Meta = Meta {kidnapper :: Card, hideout :: Card}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-getKidnapper :: (HasCallStack, HasGame m) => m Card
+getKidnapper :: (HasCallStack, HasGame m, Tracing m) => m Card
 getKidnapper = kidnapper <$> getScenarioMeta
 
-getHideout :: (HasCallStack, HasGame m) => m Card
+getHideout :: (HasCallStack, HasGame m, Tracing m) => m Card
 getHideout = hideout <$> getScenarioMeta
 
 outForBlood :: ReverseQueue m => EnemyId -> m ()
@@ -76,7 +77,7 @@ crossOutLead lead =
   when (cardMatch lead (toList suspects <> toList hideouts)) do
     push $ ForTarget (StoryTarget $ StoryId $ Stories.findingAgentHarper.cardCode) (RevealCard lead.id)
 
-getPossibleSuspects :: (HasCallStack, HasGame m) => m [CardDef]
+getPossibleSuspects :: (HasCallStack, HasGame m, Tracing m) => m [CardDef]
 getPossibleSuspects =
   filterM
     ( \suspect ->
@@ -84,7 +85,7 @@ getPossibleSuspects =
     )
     (toList suspects)
 
-getPossibleHideouts :: (HasCallStack, HasGame m) => m [CardDef]
+getPossibleHideouts :: (HasCallStack, HasGame m, Tracing m) => m [CardDef]
 getPossibleHideouts =
   filterM
     ( \hideout ->

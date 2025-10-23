@@ -13,6 +13,7 @@ import Arkham.Matcher.Asset
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Slot as X
+import Arkham.Tracing
 
 isEmptySlot :: Slot -> Bool
 isEmptySlot = null . slotItems
@@ -76,7 +77,7 @@ removeIfMatchesOnce aid = \case
   AdjustableSlot source restriction trait assets -> AdjustableSlot source restriction trait (deleteFirst aid assets)
 
 getPotentialSlots
-  :: (HasGame m, IsCard a) => a -> InvestigatorId -> m [SlotType]
+  :: (HasGame m, Tracing m, IsCard a) => a -> InvestigatorId -> m [SlotType]
 getPotentialSlots card iid = do
   slots <- field InvestigatorSlots iid
   let

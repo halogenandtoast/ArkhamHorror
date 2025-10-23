@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<{
 const ability = computed<Ability | null>(() => "ability" in props.ability ? props.ability.ability : null)
 
 const attributes = computed(() => {
-  if (ability.value.target) {
+  if (ability.value && ability.value.target) {
     return { 'data-highlight-id': ability.value.target.contents }
   }
 

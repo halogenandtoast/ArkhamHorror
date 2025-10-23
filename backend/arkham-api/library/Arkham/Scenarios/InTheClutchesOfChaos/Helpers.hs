@@ -18,11 +18,12 @@ import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Target
+import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "inTheClutchesOfChaos" a
 
-sampleLocations :: (HasGame m, MonadRandom m) => Int -> m [LocationId]
+sampleLocations :: (HasGame m, Tracing m, MonadRandom m) => Int -> m [LocationId]
 sampleLocations n = do
   lbls <-
     sampleN n
@@ -37,14 +38,14 @@ sampleLocations n = do
          ]
   select $ LocationMatchAny $ map LocationWithLabel lbls
 
-sampleLocation :: (HasGame m, MonadRandom m) => m LocationId
+sampleLocation :: (HasGame m, Tracing m, MonadRandom m) => m LocationId
 sampleLocation = do
   result <- sampleLocations 1
   case result of
     [] -> error "No locations found"
     (x : _) -> pure x
 
-getBreaches :: HasGame m => LocationId -> m Int
+getBreaches :: (HasGame m, Tracing m) => LocationId -> m Int
 getBreaches = fieldMap LocationBreaches (maybe 0 countBreaches)
 
 withBreaches :: LocationAttrs -> Criterion -> Criterion

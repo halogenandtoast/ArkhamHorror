@@ -12,10 +12,11 @@ import Arkham.Placement as X
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window qualified as Window
 
-placedInThreatArea :: (HasCallStack, HasGame m) => Placement -> m (Maybe InvestigatorId)
+placedInThreatArea :: (HasCallStack, HasGame m, Tracing m) => Placement -> m (Maybe InvestigatorId)
 placedInThreatArea = \case
   AtLocation _ -> pure Nothing
   AttachedToLocation _ -> pure Nothing
@@ -42,7 +43,7 @@ placedInThreatArea = \case
   NextToAgenda -> pure Nothing
   InTheShadows -> pure Nothing
 
-checkEntersThreatArea :: (HasGame m, HasQueue Message m, IsCard a) => a -> Placement -> m ()
+checkEntersThreatArea :: (HasGame m, Tracing m, HasQueue Message m, IsCard a) => a -> Placement -> m ()
 checkEntersThreatArea a p =
   placedInThreatArea p >>= traverse_ \iid -> do
     pushM $ checkAfter $ Window.EntersThreatArea iid (toCard a)
@@ -57,7 +58,7 @@ attachTo t = case toTarget t of
   InvestigatorTarget iid -> AttachedToInvestigator iid
   _ -> error $ "cannot attach to target: " <> show t
 
-onSameLocation :: (HasCallStack, HasGame m) => InvestigatorId -> Placement -> m Bool
+onSameLocation :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> Placement -> m Bool
 onSameLocation iid = \case
   AttachedToLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid
   AtLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid

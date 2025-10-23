@@ -14,6 +14,7 @@ import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 import Control.Monad.Writer.Class (MonadWriter)
 import Data.Map.Monoidal.Strict (MonoidalMap)
 import GHC.Records
@@ -32,7 +33,7 @@ pattern SpellboundAsset :: AssetMatcher -> AssetMatcher
 pattern SpellboundAsset inner =
   IgnoreVisibility (AssetMatches [AssetWithModifier (ScenarioModifier "spellbound"), inner])
 
-getGuestDeck :: HasGame m => m [Card]
+getGuestDeck :: (HasGame m, Tracing m) => m [Card]
 getGuestDeck = getScenarioDeck GuestDeck
 
 shuffleGuestDeck :: ReverseQueue m => m ()
@@ -46,6 +47,7 @@ shuffleIntoGuestDeck cs = shuffleCardsIntoDeck GuestDeck $ map toCard $ toList c
 
 handleSpellbound
   :: ( HasGame m
+     , Tracing m
      , Targetable a
      , Sourceable a
      , HasField "meta" a Value

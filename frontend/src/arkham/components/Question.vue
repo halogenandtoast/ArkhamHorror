@@ -12,6 +12,7 @@ import { cardImage, toCardContents } from '@/arkham/types/Card';
 import DropDown from '@/components/DropDown.vue';
 import Token from '@/arkham/components/Token.vue';
 import type { Game } from '@/arkham/types/Game';
+import ExchangeTokens from '@/arkham/components/ExchangeTokens.vue';
 import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 import QuestionChoices from '@/arkham/components/QuestionChoices.vue';
@@ -476,6 +477,18 @@ const cardPiles = computed(() => {
 
       <DropDown @choose="choose" :options="question.options" />
     </div>
+
+    <template v-if="question && question.tag === 'ChooseExchangeAmounts'">
+      <ExchangeTokens
+        :game="game"
+        :source="question.source"
+        :investigator1="question.investigator1Id"
+        :investigator1Amount="question.investigator1InitialAmount"
+        :investigator2="question.investigator2Id"
+        :investigator2Amount="question.investigator2InitialAmount"
+        :token="question.token"
+      />
+    </template>
 
     <div class="question-label dropdown" v-if="question && question.tag === 'QuestionLabel' && question.question.tag === 'DropDown'">
       <div class="question-image" v-if="questionImage">

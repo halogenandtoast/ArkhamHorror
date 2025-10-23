@@ -20,6 +20,9 @@ import Arkham.Game
 import Arkham.Id
 import Arkham.Investigator.Types (InvestigatorAttrs (investigatorPlayerId))
 import Arkham.Message
+import Arkham.Source
+import Arkham.Target
+import Arkham.Token
 import Data.Aeson
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
@@ -37,6 +40,7 @@ data Answer
   | DeckAnswer {deckId :: ArkhamDeckId, playerId :: PlayerId}
   | PickDestinyAnswer [DestinyDrawing]
   | CampaignSpecificAnswer Text Value
+  | ExchangeAmountsAnswer { source :: Source, fromInvestigator :: InvestigatorId, toInvestigator :: InvestigatorId, token :: Token, amount :: Int }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
 
@@ -251,6 +255,7 @@ answerPlayer = \case
   CampaignSpecificAnswer {} -> Nothing
   DeckAnswer _ pid -> Just pid
   PickDestinyAnswer _ -> Nothing
+  ExchangeAmountsAnswer {} -> Nothing
 
 playerInvestigator :: Entities -> PlayerId -> InvestigatorId
 playerInvestigator Entities {..} pid = case find ((== pid) . attr investigatorPlayerId) (toList entitiesInvestigators) of
@@ -284,6 +289,10 @@ handleAnswer Game {..} playerId = \case
     handled [CampaignSpecific k v]
   PickDestinyAnswer choices -> do
     handled [SetDestiny $ Map.fromList $ map (\(DestinyDrawing scope card) -> (scope, card)) choices]
+  ExchangeAmountsAnswer source fromInvestigator toInvestigator token n -> do
+    if n < 0
+      then handled [MoveTokens source (toSource toInvestigator) (toTarget fromInvestigator) token (abs n)]
+      else handled [MoveTokens source (toSource fromInvestigator) (toTarget toInvestigator) token n]
   AmountsAnswer response -> case Map.lookup playerId gameQuestion of
     Just (ChooseAmounts _ _ choices target) -> do
       let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices

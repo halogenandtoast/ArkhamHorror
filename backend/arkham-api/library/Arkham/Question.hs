@@ -4,8 +4,6 @@
 
 module Arkham.Question where
 
-import Arkham.Prelude hiding (maxBound, minBound)
-
 import Arkham.Ability.Types
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
@@ -13,11 +11,13 @@ import Arkham.ChaosBagStepState
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Key
+import Arkham.Prelude hiding (maxBound, minBound)
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Tarot
 import Arkham.Text
+import Arkham.Token
 import Arkham.Window
 import Control.Monad.Fail
 import Data.Aeson.TH
@@ -93,7 +93,7 @@ data UI msg
   | Done {label :: Text}
   | SkipTriggersButton {investigatorId :: InvestigatorId}
   | CardPile {pile :: [PileCard], messages :: [msg]}
-  | Info { flavor :: FlavorText }
+  | Info {flavor :: FlavorText}
   deriving stock (Show, Ord, Eq, Data)
 
 data PileCard = PileCard
@@ -162,6 +162,14 @@ data Question msg
   | PickScenarioSettings
   | PickCampaignSettings
   | PickCampaignSpecific Text Value
+  | ChooseExchangeAmounts
+      { source :: Source
+      , investigator1Id :: InvestigatorId
+      , investigator1InitialAmount :: Int
+      , investigator2Id :: InvestigatorId
+      , investigator2InitialAmount :: Int
+      , token :: Token
+      }
   deriving stock (Show, Ord, Eq, Data)
 
 data DestinyDrawing = DestinyDrawing

@@ -54,4 +54,5 @@ spec = describe "Pendant of the Queen" do
         pendantOfTheQueen <- self `putAssetIntoPlay` Assets.pendantOfTheQueen
         [usePendant] <- self `getActionsFrom` pendantOfTheQueen
         self `useAbility` usePendant
+        chooseTarget enemy
         assert enemy.exhausted

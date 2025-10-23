@@ -541,7 +541,7 @@ getIsCommittable a c = runValidT do
     onlyCardCommittedToTest = elem OnlyCardCommittedToTest . cdCommitRestrictions . toCardDef
     onlyCardComittedToTestCommitted = any onlyCardCommittedToTest allCommittedCards
   let cannotCommitCards = CannotCommitCards AnyCard `elem` modifiers'
-  guard $ c `elem` allCommittedCards || cannotCommitCards || onlyCardComittedToTestCommitted
+  guard $ not $ c `elem` allCommittedCards || cannotCommitCards || onlyCardComittedToTestCommitted
   case c of
     PlayerCard card -> do
       let
@@ -576,9 +576,10 @@ getIsCommittable a c = runValidT do
             null $ intersect (cdClassSymbols $ toCardDef card) (setFromList [Neutral, role])
           CannotCommitCards matcher -> cardMatch card matcher
           _ -> False
-      guard $ not prevented
-      skillIcons <- getSkillTestMatchingSkillIcons
 
+      guard $ not prevented
+
+      skillIcons <- getSkillTestMatchingSkillIcons
       icons <- iconsForCard c
       guard
         $ or

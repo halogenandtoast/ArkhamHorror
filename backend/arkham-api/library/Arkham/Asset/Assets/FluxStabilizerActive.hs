@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Effect.Window
+import Arkham.Effect.Builder
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Token
@@ -18,7 +18,7 @@ fluxStabilizerActive = asset FluxStabilizerActive Cards.fluxStabilizerActive
 
 instance HasAbilities FluxStabilizerActive where
   getAbilities (FluxStabilizerActive a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ controlled_ a 1
         $ freeReaction
         $ PlacedToken #after AnySource (AssetTargetMatches $ AssetControlledBy You) Clue
     ]
@@ -29,12 +29,9 @@ instance RunMessage FluxStabilizerActive where
       push $ ReplaceInvestigatorAsset iid attrs.id (flipCard $ toCard attrs)
       pure $ FluxStabilizerActive $ attrs & flippedL .~ True
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      ems <- effectModifiers (attrs.ability 1) [AnySkillValue 2]
-      push
-        $ CreateWindowModifierEffect
-          (FirstEffectWindow [EffectNextSkillTestWindow iid, EffectPhaseWindow])
-          ems
-          (attrs.ability 1)
-          (toTarget iid)
+      withSource (attrs.ability 1) $ effect iid do
+        apply $ AnySkillValue 2
+        during $ #nextSkillTest iid
+        removeOn #endOfCurrentPhase
       pure a
     _ -> FluxStabilizerActive <$> liftRunMessage msg attrs

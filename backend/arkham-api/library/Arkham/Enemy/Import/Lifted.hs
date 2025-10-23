@@ -74,6 +74,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher (LocationMatcher (EmptyLocation))
 import Arkham.Modifier
 import Arkham.Queue
+import Arkham.Tracing
 import Arkham.Window qualified as Window
 import Control.Monad.Trans
 
@@ -89,7 +90,7 @@ insteadOfDefeat asEnemy body = whenM (beingDefeated asEnemy) do
 
 -- See: The Spectral Watcher
 insteadOfDefeatWithWindows
-  :: (HasQueue Message m, HasGame m, ToId enemy EnemyId, CardGen m)
+  :: (HasQueue Message m, Tracing m, HasGame m, ToId enemy EnemyId, CardGen m)
   => enemy -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
 insteadOfDefeatWithWindows e body = whenBeingDefeated e \miid defeatedBy -> do
   cancelEnemyDefeat e

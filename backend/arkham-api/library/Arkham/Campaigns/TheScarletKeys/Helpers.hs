@@ -31,6 +31,7 @@ import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
+import Arkham.Tracing
 import Arkham.Window qualified as Window
 import Arkham.Xp
 
@@ -72,7 +73,7 @@ afterExposed c = CampaignEvent #after Nothing ekey
  where
   ekey = "exposed[" <> unCardCode (toCardCode c) <> "]"
 
-allConcealedMiniCards :: HasGame m => m [ConcealedCardId]
+allConcealedMiniCards :: (HasGame m, Tracing m) => m [ConcealedCardId]
 allConcealedMiniCards = concat <$> selectField LocationConcealedCards Anywhere
 
 placeConcealedCard :: ReverseQueue m => InvestigatorId -> ConcealedCardId -> Placement -> m ()

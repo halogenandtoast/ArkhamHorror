@@ -39,6 +39,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Window (Window (..), WindowType (Healed))
 import Data.Foldable (foldrM)
 import Data.Function (on)
@@ -46,7 +47,7 @@ import Data.List (nubBy)
 import Data.Map.Strict qualified as Map
 import Data.Monoid
 
-getSkillValue :: HasGame m => SkillType -> InvestigatorId -> m Int
+getSkillValue :: (HasGame m, Tracing m) => SkillType -> InvestigatorId -> m Int
 getSkillValue st iid = do
   mods <- getModifiers iid
   let
@@ -68,7 +69,7 @@ getSkillValue st iid = do
 
 skillValueFor
   :: forall m
-   . (HasCallStack, HasGame m)
+   . (HasCallStack, HasGame m, Tracing m)
   => SkillType
   -> Maybe Action
   -> InvestigatorId
@@ -113,7 +114,7 @@ skillValueFor skill maction iid = go 2 skill =<< getModifiers iid
     applyModifier _ n = pure n
 
 baseSkillValueFor
-  :: (HasCallStack, HasGame m)
+  :: (HasCallStack, HasGame m, Tracing m)
   => SkillType
   -> Maybe Action
   -> InvestigatorId
@@ -141,7 +142,7 @@ baseSkillValueFor skill _maction iid = do
 data DamageFor = DamageForEnemy | DamageForInvestigator
   deriving stock Eq
 
-damageValueFor :: HasGame m => Int -> InvestigatorId -> DamageFor -> m Int
+damageValueFor :: (Tracing m, HasGame m) => Int -> InvestigatorId -> DamageFor -> m Int
 damageValueFor baseValue iid damageFor = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   let baseValue' = if NoStandardDamage `elem` modifiers then 0 else baseValue
@@ -167,7 +168,7 @@ getHandSize attrs = do
   applyMaxModifier (MaxHandSize m) n = min m n
   applyMaxModifier _ n = n
 
-getInHandCount :: HasGame m => InvestigatorAttrs -> m Int
+getInHandCount :: (HasGame m, Tracing m) => InvestigatorAttrs -> m Int
 getInHandCount attrs = do
   onlyFirstCopies <- hasModifier attrs OnlyFirstCopyCardCountsTowardMaximumHandSize
   let f = if onlyFirstCopies then nubBy ((==) `on` toName) else id
@@ -189,14 +190,15 @@ getAbilitiesForTurn attrs = do
   applyModifier (FewerActions m) n = max 0 (n - m)
   applyModifier _ n = n
 
-canDiscoverCluesAtYourLocation :: HasGame m => IsInvestigate -> InvestigatorId -> m Bool
+canDiscoverCluesAtYourLocation
+  :: (HasGame m, Tracing m) => IsInvestigate -> InvestigatorId -> m Bool
 canDiscoverCluesAtYourLocation isInvestigate iid = do
   getMaybeLocation iid >>= \case
     Nothing -> pure False
     Just lid -> getCanDiscoverClues isInvestigate iid lid
 
 getCanDiscoverClues
-  :: HasGame m => IsInvestigate -> InvestigatorId -> LocationId -> m Bool
+  :: (HasGame m, Tracing m) => IsInvestigate -> InvestigatorId -> LocationId -> m Bool
 getCanDiscoverClues isInvestigation iid lid = do
   modifiers <- getModifiers iid
   hasClues <- fieldSome LocationClues lid
@@ -225,7 +227,7 @@ removeFromSlots aid = fmap (map (removeIfMatches aid))
 data FitsSlots = FitsSlots | MissingSlots [SlotType]
   deriving stock Show
 
-fitsAvailableSlots :: HasGame m => AssetId -> InvestigatorAttrs -> m FitsSlots
+fitsAvailableSlots :: (HasGame m, Tracing m) => AssetId -> InvestigatorAttrs -> m FitsSlots
 fitsAvailableSlots aid a = do
   assetCard <- field Field.AssetCard aid
   slotTypes <- field Field.AssetSlots aid
@@ -431,12 +433,13 @@ defaultSlots iid =
     ]
 
 getSpendableClueCount
-  :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> m Int
+  :: (HasGame m, Tracing m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator -> m Int
 getSpendableClueCount (asId -> iid) = do
   canSpendClues <- getCanSpendClues iid
   if canSpendClues then field InvestigatorClues iid else pure 0
 
-getCanSpendNClues :: HasGame m => InvestigatorId -> Int -> m Bool
+getCanSpendNClues :: (HasGame m, Tracing m) => InvestigatorId -> Int -> m Bool
 getCanSpendNClues iid n = iid <=~> InvestigatorCanSpendClues (Static n)
 
 drawOpeningHand
@@ -454,7 +457,7 @@ drawOpeningHand a n = do
       else go replaceWeaknesses (m - 1) (d, PlayerCard c : h, cs)
 
 canCommitToAnotherLocation
-  :: HasGame m => InvestigatorId -> LocationId -> m Bool
+  :: (HasGame m, Tracing m) => InvestigatorId -> LocationId -> m Bool
 canCommitToAnotherLocation iid otherLocation = do
   modifiers <- getModifiers iid
   if CannotCommitToOtherInvestigatorsSkillTests `elem` modifiers
@@ -475,11 +478,11 @@ findCard cardId a =
   findMatch = find ((== cardId) . toCardId)
 
 getJustLocation
-  :: (HasCallStack, HasGame m) => InvestigatorId -> m LocationId
+  :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> m LocationId
 getJustLocation = fieldJust InvestigatorLocation
 
 getMaybeLocation
-  :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  :: (HasGame m, Tracing m, ToId investigator InvestigatorId)
   => investigator
   -> m (Maybe LocationId)
 getMaybeLocation = fmap join . fieldMay InvestigatorLocation . asId
@@ -488,7 +491,7 @@ enemiesColocatedWith :: InvestigatorId -> EnemyMatcher
 enemiesColocatedWith = EnemyAt . LocationWithInvestigator . InvestigatorWithId
 
 modifiedStatsOf
-  :: HasGame m => Maybe Action -> InvestigatorId -> m Stats
+  :: (HasGame m, Tracing m) => Maybe Action -> InvestigatorId -> m Stats
 modifiedStatsOf maction i = do
   remainingHealth <- field InvestigatorRemainingHealth i
   remainingSanity <- field InvestigatorRemainingSanity i
@@ -516,14 +519,14 @@ getAvailableSkillsFor skillType iid = do
     | toReplace == skillType = insertSet toUse skills
   applyModifier _ skills = skills
 
-isEliminated :: (HasCallStack, HasGame m) => InvestigatorId -> m Bool
+isEliminated :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> m Bool
 isEliminated iid =
   orM $ sequence [field InvestigatorResigned, field InvestigatorDefeated] iid
 
-getHandCount :: HasGame m => InvestigatorId -> m Int
+getHandCount :: (HasGame m, Tracing m) => InvestigatorId -> m Int
 getHandCount = fieldMap InvestigatorHand length
 
-canTriggerParallelRex :: HasGame m => InvestigatorId -> m Bool
+canTriggerParallelRex :: (HasGame m, Tracing m) => InvestigatorId -> m Bool
 canTriggerParallelRex =
   ( <=~>
       ( InvestigatorIs "90078"
@@ -531,71 +534,71 @@ canTriggerParallelRex =
       )
   )
 
-getCanPlaceCluesOnLocationCount :: HasGame m => InvestigatorId -> m Int
+getCanPlaceCluesOnLocationCount :: (HasGame m, Tracing m) => InvestigatorId -> m Int
 getCanPlaceCluesOnLocationCount iid = do
   canRex <- canTriggerParallelRex iid
   m <- if canRex then (`div` 2) <$> getRemainingCurseTokens else pure 0
   (+ m) <$> field InvestigatorClues iid
 
-canHaveHorrorHealed :: (HasGame m, Sourceable a) => a -> InvestigatorId -> m Bool
+canHaveHorrorHealed :: (HasGame m, Tracing m, Sourceable a) => a -> InvestigatorId -> m Bool
 canHaveHorrorHealed a = selectAny . HealableInvestigator (toSource a) HorrorType . InvestigatorWithId
 
-canHaveDamageHealed :: (HasGame m, Sourceable a) => a -> InvestigatorId -> m Bool
+canHaveDamageHealed :: (HasGame m, Tracing m, Sourceable a) => a -> InvestigatorId -> m Bool
 canHaveDamageHealed a = selectAny . HealableInvestigator (toSource a) DamageType . InvestigatorWithId
-
--- canFight <- selectAny $ CanFightEnemy source <> EnemyWithBounty
--- canEngage <- selectAny $ CanEngageEnemy <> EnemyWithBounty
--- pure $ (canFight && maction == Just #fight) || (canEngage && maction == Just #engage)
 
 eliminationWindow :: InvestigatorId -> WindowMatcher
 eliminationWindow iid = OrWindowMatcher [GameEnds #when, InvestigatorEliminated #when (InvestigatorWithId iid)]
 
-getCanShuffleDeck :: HasGame m => InvestigatorId -> m Bool
+getCanShuffleDeck :: (HasGame m, Tracing m) => InvestigatorId -> m Bool
 getCanShuffleDeck iid =
   andM
     [ withoutModifier iid CannotManipulateDeck
     , fieldMap InvestigatorDeck notNull iid
     ]
 
-check :: (EntityId a ~ InvestigatorId, Entity a, HasGame m) => a -> InvestigatorMatcher -> m Bool
+check
+  :: (EntityId a ~ InvestigatorId, Entity a, HasGame m, Tracing m) => a -> InvestigatorMatcher -> m Bool
 check (toId -> iid) capability = iid <=~> capability
 
 checkAll
-  :: (EntityId a ~ InvestigatorId, Entity a, HasGame m) => a -> [InvestigatorMatcher] -> m Bool
+  :: (EntityId a ~ InvestigatorId, Entity a, HasGame m, Tracing m)
+  => a -> [InvestigatorMatcher] -> m Bool
 checkAll (toId -> iid) capabilities = iid <=~> fold capabilities
 
-searchBonded :: (HasGame m, AsId iid, IdOf iid ~ InvestigatorId) => iid -> CardDef -> m [Card]
+searchBonded
+  :: (HasGame m, Tracing m, AsId iid, IdOf iid ~ InvestigatorId) => iid -> CardDef -> m [Card]
 searchBonded (asId -> iid) def = fieldMap InvestigatorBondedCards (filter ((== def) . toCardDef)) iid
 
-searchBondedJust :: (HasGame m, AsId iid, IdOf iid ~ InvestigatorId) => iid -> CardDef -> m Card
+searchBondedJust
+  :: (HasGame m, Tracing m, AsId iid, IdOf iid ~ InvestigatorId) => iid -> CardDef -> m Card
 searchBondedJust (asId -> iid) def =
   fromJustNote "must be"
     . listToMaybe
     <$> fieldMap InvestigatorBondedCards (filter ((== def) . toCardDef)) iid
 
 searchBondedFor
-  :: (HasGame m, AsId iid, IdOf iid ~ InvestigatorId) => iid -> CardMatcher -> m [Card]
+  :: (HasGame m, Tracing m, AsId iid, IdOf iid ~ InvestigatorId) => iid -> CardMatcher -> m [Card]
 searchBondedFor (asId -> iid) matcher = fieldMap InvestigatorBondedCards (filter (`cardMatch` matcher)) iid
 
 -- TODO: Decide if we want to use or keep these instances, these let you do
 -- >       canModifyDeck <- can.manipulate.deck attrs
 
-instance HasGame m => Capable (InvestigatorId -> m Bool) where
+instance (HasGame m, Tracing m) => Capable (InvestigatorId -> m Bool) where
   can =
     let can' = can :: Capabilities InvestigatorMatcher
      in fmap (flip (<=~>)) can'
 
-instance HasGame m => Capable (FromSource -> InvestigatorId -> m Bool) where
+instance (HasGame m, Tracing m) => Capable (FromSource -> InvestigatorId -> m Bool) where
   can =
     let can' = can :: Capabilities (FromSource -> InvestigatorMatcher)
      in fmap (\m fSource iid -> iid <=~> m fSource) can'
 
-instance HasGame m => Capable (InvestigatorAttrs -> m Bool) where
+instance (HasGame m, Tracing m) => Capable (InvestigatorAttrs -> m Bool) where
   can =
     let can' = can :: Capabilities InvestigatorMatcher
      in fmap (\c -> (<=~> c) . toId) can'
 
-instance HasGame m => Capable (FromSource -> InvestigatorAttrs -> m Bool) where
+instance (HasGame m, Tracing m) => Capable (FromSource -> InvestigatorAttrs -> m Bool) where
   can =
     let can' = can :: Capabilities (FromSource -> InvestigatorMatcher)
      in fmap (\c fSource attrs -> toId attrs <=~> c fSource) can'
@@ -649,7 +652,7 @@ healAdditional (toSource -> source) dType ws' additional = do
     HorrorType -> push $ HealHorrorDirectly healedTarget source 1
     DamageType -> push $ HealDamageDirectly healedTarget source 1
 
-getAsIfInHandCards :: (HasCallStack, HasGame m) => InvestigatorId -> m [Card]
+getAsIfInHandCards :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> m [Card]
 getAsIfInHandCards iid = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   let
@@ -684,7 +687,7 @@ getAsIfInHandCards iid = do
     <> cardsAddedViaModifiers
 
 matchWho
-  :: HasGame m
+  :: (HasGame m, Tracing m)
   => InvestigatorId
   -> InvestigatorId
   -> Matcher.InvestigatorMatcher
@@ -706,16 +709,18 @@ matchWho iid who matcher = do
         <$> replaceMatchWhoLocations iid' inner
     other -> pure other
 
-getCardAttachments :: (HasGame m, HasCardCode c) => InvestigatorId -> c -> m [CardCode]
+getCardAttachments :: (HasGame m, Tracing m, HasCardCode c) => InvestigatorId -> c -> m [CardCode]
 getCardAttachments iid c = fromMaybe [] <$> getMaybeCardAttachments iid c
 
-getMaybeCardAttachments :: (HasGame m, HasCardCode c) => InvestigatorId -> c -> m (Maybe [CardCode])
+getMaybeCardAttachments
+  :: (HasGame m, Tracing m, HasCardCode c) => InvestigatorId -> c -> m (Maybe [CardCode])
 getMaybeCardAttachments iid c = do
   settings <- field InvestigatorSettings iid
   pure $ cardAttachments <$> lookup (toCardCode c) (perCardSettings settings)
 
 getCanLoseActions
-  :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> m Bool
+  :: (HasGame m, Tracing m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator -> m Bool
 getCanLoseActions (asId -> iid) = do
   remaining <- field InvestigatorRemainingActions iid
   additional <- fieldLength InvestigatorAdditionalActions iid

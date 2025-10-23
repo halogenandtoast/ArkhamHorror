@@ -211,7 +211,8 @@ sampleNonEmptyN n xs = do
     Nothing -> pure (x :| [])
     Just xs' -> (x :|) <$> sampleN (n - 1) xs'
 
-sampleListN :: (Eq (Element mono), MonoFoldable mono, MonadRandom m) => Int -> mono -> m [Element mono]
+sampleListN
+  :: (Eq (Element mono), MonoFoldable mono, MonadRandom m) => Int -> mono -> m [Element mono]
 sampleListN n xs = maybe (pure []) (sampleN n) (nonEmpty $ otoList xs)
 
 infix 9 !!?
@@ -342,8 +343,9 @@ breakNM n p xs = go n ([], xs)
 infixl 4 <$$>
 
 (<|?>) :: [a] -> [a] -> [a]
-xs <|?> ys | null xs   = ys
-           | otherwise = xs
+xs <|?> ys
+  | null xs = ys
+  | otherwise = xs
 infixl 3 <|?>
 
 ffmap :: (Functor f, Functor m) => (a -> b) -> m (f a) -> m (f b)
@@ -421,8 +423,13 @@ each_ as f = traverse_ f =<< as
 upon :: Applicative m => m () -> Bool -> m ()
 upon = flip when
 
-whenNothing :: Applicative m => Maybe a -> m () -> m ()
-whenNothing ma body = when (isNothing ma) body
+whenNothing_ :: Applicative m => Maybe a -> m () -> m ()
+whenNothing_ Nothing body = body
+whenNothing_ _ _ = pure ()
+
+whenNothing :: Applicative m => Maybe a -> m a -> m a
+whenNothing Nothing body = body
+whenNothing (Just x) _ = pure x
 
 whenJustM :: Monad m => m (Maybe a) -> (a -> m ()) -> m ()
 whenJustM mma f = mma >>= traverse_ f

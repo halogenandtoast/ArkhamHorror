@@ -8,11 +8,12 @@ import Arkham.I18n
 import Arkham.Key
 import Arkham.Prelude
 import Arkham.Scenario.Types
+import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "forTheGreaterGood" a
 
-getRandomKey :: (HasGame m, MonadRandom m) => m (Maybe ArkhamKey)
+getRandomKey :: (HasGame m, Tracing m, MonadRandom m) => m (Maybe ArkhamKey)
 getRandomKey = do
   ks <- setToList <$> scenarioField ScenarioSetAsideKeys
   isReturnTo <- getIsReturnTo

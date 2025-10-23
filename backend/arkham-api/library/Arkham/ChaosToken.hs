@@ -7,6 +7,7 @@ import Arkham.ChaosToken.Types
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Calculation
 import Arkham.Prelude
+import Arkham.Tracing
 import Data.Function (on)
 import GHC.Records
 
@@ -35,10 +36,10 @@ pattern DoubleModifier inner <- CalculatedModifier (MultiplyCalculation (Fixed 2
   where
     DoubleModifier inner = CalculatedModifier (MultiplyCalculation (Fixed 2) inner)
 
-chaosTokenValue :: HasGame m => ChaosTokenValue -> m (Maybe Int)
+chaosTokenValue :: (HasGame m, Tracing m) => ChaosTokenValue -> m (Maybe Int)
 chaosTokenValue (ChaosTokenValue _ modifier) = chaosTokenModifierToInt modifier
 
-chaosTokenModifierToInt :: HasGame m => ChaosTokenModifier -> m (Maybe Int)
+chaosTokenModifierToInt :: (HasGame m, Tracing m) => ChaosTokenModifier -> m (Maybe Int)
 chaosTokenModifierToInt = \case
   CalculatedModifier n -> Just <$> calculate n
   AutoSuccessModifier -> pure Nothing

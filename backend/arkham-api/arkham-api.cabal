@@ -4238,6 +4238,7 @@ library
       Arkham.Timing
       Arkham.Token
       Arkham.TokenStrategy
+      Arkham.Tracing
       Arkham.Trait
       Arkham.Treachery
       Arkham.Treachery.Cards
@@ -4888,6 +4889,8 @@ library
     , file-embed
     , hashable
     , hedis
+    , hs-opentelemetry-instrumentation-wai
+    , hs-opentelemetry-sdk
     , http-api-data
     , http-client-tls
     , http-conduit
@@ -4900,6 +4903,7 @@ library
     , monad-time
     , monoidal-containers
     , mtl >=2.3.1
+    , opentelemetry
     , parsec
     , path-pieces
     , persistent
@@ -5195,6 +5199,9 @@ test-suite spec
       arkham-api
     , base
     , containers
+    , exceptions
+    , hs-opentelemetry-api
+    , hs-opentelemetry-sdk
     , hspec
     , hspec-expectations-lifted
     , lens

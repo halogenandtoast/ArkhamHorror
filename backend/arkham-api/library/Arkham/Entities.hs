@@ -2,8 +2,6 @@
 
 module Arkham.Entities where
 
-import Arkham.Prelude
-
 import Arkham.Act
 import Arkham.Agenda ()
 import Arkham.Agenda.Types (Agenda)
@@ -24,18 +22,21 @@ import Arkham.Enemy ()
 import Arkham.Enemy.Types (Enemy)
 import Arkham.Event
 import Arkham.Event.Types (Event)
+import Arkham.GameT
 import Arkham.Id
 import Arkham.Investigator ()
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Json
 import Arkham.Location
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Scenario ()
 import Arkham.Skill (createSkill)
 import Arkham.Skill.Types (Skill)
 import Arkham.Source
 import Arkham.Story
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Treachery
 import Arkham.Treachery.Types (Treachery)
 import Arkham.Zone
@@ -238,17 +239,22 @@ addEntity a e =
     | otherwise -> e
 
 instance RunMessage Entities where
-  runMessage msg entities =
-    traverseOf (actsL . traverse) (runMessage msg) entities
-      >>= traverseOf (agendasL . traverse) (runMessage msg)
-      >>= traverseOf (treacheriesL . traverse) (runMessage msg)
-      >>= traverseOf (eventsL . traverse) (runMessage msg)
-      >>= traverseOf (locationsL . traverse) (runMessage msg)
-      >>= traverseOf (enemiesL . traverse) (runMessage msg)
-      >>= traverseOf (effectsL . traverse) (runMessage msg)
-      >>= traverseOf (assetsL . traverse) (runMessage msg)
-      >>= traverseOf (skillsL . traverse) (runMessage msg)
-      >>= traverseOf (storiesL . traverse) (runMessage msg)
-      >>= traverseOf (investigatorsL . traverse) (runMessage msg)
-      >>= traverseOf (scarletKeysL . traverse) (runMessage msg)
-      >>= traverseOf (concealedL . traverse) (runMessage msg)
+  runMessage msg entities = withSpan_ "Entities.runMessage" do
+    let
+      runEntities :: (a ~ RunType a, RunMessage a) => Lens' Entities (EntityMap a) -> GameT (EntityMap a)
+      runEntities lensL = traverse (runMessage msg) (entities ^. lensL)
+
+    entitiesActs <- runEntities actsL
+    entitiesAgendas <- runEntities agendasL
+    entitiesTreacheries <- runEntities treacheriesL
+    entitiesEvents <- runEntities eventsL
+    entitiesLocations <- runEntities locationsL
+    entitiesEnemies <- runEntities enemiesL
+    entitiesEffects <- runEntities effectsL
+    entitiesAssets <- runEntities assetsL
+    entitiesSkills <- runEntities skillsL
+    entitiesStories <- runEntities storiesL
+    entitiesInvestigators <- runEntities investigatorsL
+    entitiesConcealed <- runEntities concealedL
+    entitiesScarletKeys <- runEntities scarletKeysL
+    pure Entities {..}

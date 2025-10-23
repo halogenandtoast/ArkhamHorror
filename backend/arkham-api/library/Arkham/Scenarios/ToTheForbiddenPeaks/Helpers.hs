@@ -10,6 +10,7 @@ import Arkham.Matcher.Base
 import Arkham.Matcher.Location
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Tracing
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "toTheForbiddenPeaks" a
@@ -21,7 +22,8 @@ inRow :: LocationAttrs -> Int -> LocationMatcher
 inRow a n = be a <> LocationInRow n
 
 getLevel
-  :: (AsId investigator, IdOf investigator ~ InvestigatorId, HasGame m) => investigator -> m Int
+  :: (AsId investigator, IdOf investigator ~ InvestigatorId, HasGame m, Tracing m)
+  => investigator -> m Int
 getLevel investigator =
   fromMaybe 0 <$> runMaybeT do
     loc <- MaybeT $ getMaybeLocation investigator

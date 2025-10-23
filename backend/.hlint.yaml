@@ -8,6 +8,7 @@
 - ignore: {name: "Use ."}  # commonly broken or less readable
 - ignore: {name: "Use &&"}  # we like "and" at 3+ elements
 - ignore: {name: "Use ||"}  # we like "or" at 3+ elements
+- ignore: {name: "Use on once"} # esqueleto
 
 # Custom Warnings
 - warn: {lhs: mapM, rhs: traverse}

@@ -9,13 +9,16 @@ import Arkham.Enemy.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
+import Arkham.Tracing
 
 createEnemy :: (HasCallStack, IsCard a) => a -> EnemyId -> Enemy
 createEnemy a eid = lookupEnemy (toCardCode a) eid (toCardId a)
 
 instance RunMessage Enemy where
-  runMessage (SendMessage target msg) e | e `is` target = runMessage msg e
-  runMessage msg e@(Enemy x) = do
+  runMessage (SendMessage target msg) e | e `is` target =
+    withSpan_ ("Enemy[" <> unCardCode (toCardCode e) <> "].runMessage") do
+      runMessage msg e
+  runMessage msg e@(Enemy x) = withSpan_ ("Enemy[" <> unCardCode (toCardCode e) <> "].runMessage") do
     -- we must check that an enemy exists when grabbing modifiers
     -- as some messages are not masked when targetting cards in the
     -- discard.

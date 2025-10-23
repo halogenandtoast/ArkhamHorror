@@ -24,6 +24,7 @@ module Application (
 ) where
 
 import Config
+import Control.Concurrent.MVar (newMVar)
 import Control.Monad.Logger (liftLoc, runLoggingT)
 import Data.Bugsnag.Settings qualified as Bugsnag
 import Data.CaseInsensitive (mk)
@@ -44,7 +45,7 @@ import Database.Redis (
   parseConnectInfo,
   pubSubForever,
  )
-import Import hiding (sendResponse)
+import Import hiding (newMVar, sendResponse)
 import Language.Haskell.TH.Syntax (qLocation)
 import Network.HTTP.Client.TLS (getGlobalManager)
 import Network.HTTP.Types (ResponseHeaders, status200)
@@ -71,6 +72,7 @@ import Network.Wai.Middleware.RequestLogger (
   mkRequestLogger,
   outputFormat,
  )
+import OpenTelemetry.Trace
 import System.Log.FastLogger (defaultBufSize, newStdoutLoggerSet, toLogStr)
 import Text.Regex.Posix ((=~))
 
@@ -115,7 +117,7 @@ makeFoundation appSettings = do
   appLogger <- newStdoutLoggerSet defaultBufSize >>= makeYesodLogger
   let appBugsnag = Bugsnag.defaultSettings (appBugsnagApiKey appSettings)
 
-  appGameRooms <- newIORef mempty
+  appGameRooms <- newMVar mempty
 
   appMessageBroker <- case appRedisConnectionInfo appSettings of
     Nothing -> pure WebSocketBroker
@@ -124,6 +126,9 @@ makeFoundation appSettings = do
       ctrl <- newPubSubController [] []
       _ <- forkIO $ pubSubForever conn ctrl (pure ())
       pure $ RedisBroker conn ctrl
+
+  provider <- initializeGlobalTracerProvider
+  let appTracer = makeTracer provider $(detectInstrumentationLibrary) tracerOptions
 
   -- We need a log function to create a connection pool. We need a connection
   -- pool to create our foundation. And we need our foundation to get a

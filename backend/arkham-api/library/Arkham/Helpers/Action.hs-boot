@@ -5,5 +5,6 @@ import Arkham.Classes.HasGame
 import Arkham.Id
 import Arkham.Matcher.Action
 import Arkham.Prelude
+import Arkham.Tracing
 
-actionMatches :: HasGame m => InvestigatorId -> Action -> ActionMatcher -> m Bool
+actionMatches :: (Tracing m, HasGame m) => InvestigatorId -> Action -> ActionMatcher -> m Bool

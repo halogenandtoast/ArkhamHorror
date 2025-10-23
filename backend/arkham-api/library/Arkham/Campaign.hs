@@ -9,11 +9,14 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Id
 import Arkham.Prelude
+import Arkham.Tracing
 import Control.Monad.Fail
 import GHC.Records
 
 instance RunMessage Campaign where
-  runMessage msg (Campaign a) = Campaign <$> runMessage msg a
+  runMessage msg x@(Campaign a) =
+    withSpan_ ("Campaign[" <> unCampaignId x.id <> "].runMessage") do
+      Campaign <$> runMessage msg a
 
 lookupCampaign :: CampaignId -> Difficulty -> Campaign
 lookupCampaign cid = case lookup cid allCampaigns of

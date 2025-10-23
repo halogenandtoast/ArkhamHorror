@@ -4,6 +4,7 @@ import SignUp from '@/views/SignUp.vue';
 import Settings from '@/views/Settings.vue';
 import About from '@/views/About.vue';
 import Admin from '@/views/Admin.vue';
+import Rooms from '@/views/Rooms.vue';
 import PasswordReset from '@/views/PasswordReset.vue';
 import UpdatePassword from '@/views/UpdatePassword.vue';
 
@@ -36,7 +37,13 @@ export default [
     path: '/admin',
     name: 'Admin',
     component: Admin,
-    meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: About" },
+    meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Admin" },
+  },
+  {
+    path: '/admin/rooms',
+    name: 'Rooms',
+    component: Rooms,
+    meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Rooms" },
   },
   {
     path: '/sign-in',

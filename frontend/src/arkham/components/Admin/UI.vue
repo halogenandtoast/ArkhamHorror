@@ -1,120 +1,59 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import api from '@/api'
-import GameRow from '@/arkham/components/GameRow.vue'
-import GameFinder from '@/components/admin/GameFinder.vue'
-import type { GameDetails } from '@/arkham/types/Game'
-import AdminUI from '@/arkham/components/Admin/UI.vue'
-import Room from '@/components/admin/Room.vue'
-
-interface RoomData {
-  roomClients: number
-  roomLastUpdateAt: string | null
-  roomArkhamGameId: string
-}
-
-interface AdminData {
-  currentUsers: number
-  activeUsers: number
-  roomData: RoomData[]
-  recentGames: GameDetails[]
-  activeGames: GameDetails[]
-}
-
-const request = await api.get<AdminData>('admin')
-const data = computed(() => request.data)
-
-const activeGames   = data.value.activeGames.filter(g => !g.error && g.gameState.tag !== 'IsOver')
-const finishedGames = data.value.activeGames.filter(g => !g.error && g.gameState.tag === 'IsOver')
-
-const recentActiveGames   = data.value.recentGames.filter(g => !g.error && g.gameState.tag !== 'IsOver')
-const recentFinishedGames = data.value.recentGames.filter(g => !g.error && g.gameState.tag === 'IsOver')
-
+import { ref } from 'vue'
+const props = defineProps<{
+  selected: string
+}>()
+const sidebarOpen = ref(false)
+const toggleSidebar = () => (sidebarOpen.value = !sidebarOpen.value)
 </script>
 
 <template>
-  <AdminUI :selected="'dashboard'">
-    <header class="topbar">
-      <button class="hamburger" @click="toggleSidebar" aria-label="Open menu">
-        <svg viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 10h18v2H3v-2zm0-5h18v2H3v-2z" fill="currentColor"/></svg>
-      </button>
-      <h1>Dashboard</h1>
-    </header>
+  <div class="admin-shell" :class="{ 'sidebar-open': sidebarOpen }">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span>Admin</span>
+      </div>
 
-    <!-- Cards row -->
-    <section class="cards-row">
-      <div class="card kpi accent-blue">
-        <div class="kpi-head">Current Users</div>
-        <div class="kpi-value">{{ data.currentUsers }}</div>
-      </div>
-      <div class="card kpi accent-purple">
-        <div class="kpi-head">Active Users (14d)</div>
-        <div class="kpi-value">{{ data.activeUsers }}</div>
-      </div>
-      <div class="card kpi accent-green">
-        <div class="kpi-head">Active Games</div>
-        <div class="kpi-value">{{ activeGames.length }}</div>
-      </div>
-      <div class="card kpi accent-orange">
-        <div class="kpi-head">Finished Games</div>
-        <div class="kpi-value">{{ finishedGames.length }}</div>
-      </div>
-    </section>
+      <nav class="nav">
+        <a class="nav-link" :class="{ active: selected == 'dashboard' }" href="#/admin">
+          <!-- dashboard icon -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/></svg>
+          Dashboard
+        </a>
+        <a class="nav-link" :class="{ active: selected == 'rooms' }" href="#/admin/rooms">
+          <!-- users icon -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v3H4V5zm0 6h10v3H4v-3zm0 6h7v3H4v-3z" fill="currentColor"/></svg>
+          Rooms
+        </a>
+        <a class="nav-link" href="#">
+          <!-- users icon -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zM8 11c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V20h14v-3.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.98 1.97 3.45V20h6v-3.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/></svg>
+          Users
+        </a>
+        <a class="nav-link" href="#">
+          <!-- games icon -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 6h-7V3H3v15h3v3h15V6zm-2 13H8v-3H6V5h6v3h7v11z" fill="currentColor"/></svg>
+          Games
+        </a>
 
-    <GameFinder />
+        <div class="nav-section">Insights</div>
+        <a class="nav-link" href="#"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm4 0h14v-2H7v2zM3 17h2v-2H3v2zm4 0h14v-2H7v2zM3 9h2V7H3v2zm4 0h14V7H7v2z" fill="currentColor"/></svg>Reports</a>
+        <a class="nav-link" href="#"><svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm0-8h2V7h-2v2zm1-7C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="currentColor"/></svg>Status</a>
+      </nav>
 
-    <!-- Active Games -->
-    <section class="block">
-      <div class="block-header">
-        <h2>Active Games</h2>
+      <div class="sidebar-footer">
+        <button class="collapse" @click="toggleSidebar" aria-label="Toggle sidebar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6l6 6-6 6V6z" fill="currentColor"/></svg>
+        </button>
       </div>
-      <div v-if="activeGames.length === 0" class="empty">No active games.</div>
-      <div class="game-list">
-        <GameRow v-for="g in activeGames" :key="g.id" :game="g" :admin="true" />
-      </div>
-    </section>
+    </aside>
 
-    <!-- Finished Games -->
-    <section class="block" v-if="finishedGames.length > 0">
-      <div class="block-header">
-        <h2>Finished Games</h2>
-      </div>
-      <div class="game-list">
-        <GameRow v-for="g in finishedGames" :key="g.id" :game="g" :admin="true" />
-      </div>
-    </section>
-
-    <!-- Active Games -->
-    <section class="block">
-      <div class="block-header">
-        <h2>Recent Active Games (from last 20)</h2>
-      </div>
-      <div v-if="recentActiveGames.length === 0" class="empty">No active games.</div>
-      <div class="game-list">
-        <GameRow v-for="g in recentActiveGames" :key="g.id" :game="g" :admin="true" />
-      </div>
-    </section>
-
-    <!-- Finished Games -->
-    <section class="block" v-if="recentFinishedGames.length > 0">
-      <div class="block-header">
-        <h2>Recent Finished Games (from last 20)</h2>
-      </div>
-      <div class="game-list">
-        <GameRow v-for="g in recentFinishedGames" :key="g.id" :game="g" :admin="true" />
-      </div>
-    </section>
-
-    <!-- Rooms -->
-    <section class="block" v-if="recentFinishedGames.length > 0">
-      <div class="block-header">
-        <h2>Rooms</h2>
-      </div>
-      <div class="game-list">
-        <Room v-for="room in data.roomData" :room="room" :key="room.roomArkhamGameId" />
-      </div>
-    </section>
-  </AdminUI>
+    <!-- Main -->
+    <main class="content">
+      <slot></slot>
+    </main>
+  </div>
 </template>
 
 <style scoped>
@@ -350,5 +289,4 @@ const recentFinishedGames = data.value.recentGames.filter(g => !g.error && g.gam
     repeating-linear-gradient(135deg, rgba(125,211,252,.04) 0 10px, transparent 10px 20px),
     var(--panel);
 }
-
 </style>

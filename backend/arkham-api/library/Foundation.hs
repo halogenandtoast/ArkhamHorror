@@ -52,6 +52,8 @@ import GHC.Records
 import Network.Bugsnag.Exception (AsException (..))
 import Network.Bugsnag.Yesod (bugsnagYesodMiddleware)
 import Network.HTTP.Client.Conduit (HasHttpManager (..), Manager)
+import OpenTelemetry.Trace qualified as Trace
+import OpenTelemetry.Trace.Monad (MonadTracer (..))
 import Orphans ()
 import Yesod.Core.Types (Logger)
 import Yesod.Core.Unsafe qualified as Unsafe
@@ -101,9 +103,13 @@ data App = App
   -- ^ Database connection pool.
   , appHttpManager :: Manager
   , appLogger :: Logger
-  , appGameRooms :: !(IORef (Map ArkhamGameId Room))
+  , appGameRooms :: !(MVar (Map ArkhamGameId Room))
   , appBugsnag :: Bugsnag.Settings
+  , appTracer :: Trace.Tracer
   }
+
+instance MonadTracer (HandlerFor App) where
+  getTracer = getsYesod appTracer
 
 class Monad m => HasApp m where
   getApp :: m App

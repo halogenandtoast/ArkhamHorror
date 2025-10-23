@@ -17,6 +17,85 @@
     "pitfall": {
       "jumpTheGap": "Effectuer un test de {agility} (3) pour tenter de sauter au-dessus du trou. En cas d'échec, subissez 1 dégât pour chaque point manquant.",
       "shuffle": "Mélanger la Chausse-Trappe dans le deck Exploration. Vous ne pouvez pas choisir cette option si la Chausse-Trappe a été piochée dans le deck Exploration."
+    },
+    "descentToYoth": {
+      "placeDoom": "Placer 1 fatalité sur la Descente vers Yoth",
+      "draw": "Piocher les 2 cartes du dessus du deck Rencontre"
+    }
+  },
+  "tooltips": {
+    "mouthOfKnYanTheCavernsMaw": {
+      "resign": "« Rentrons au campement, nous résoudrons ce mystère demain. »"
+    },
+    "featheredSerpent": {
+      "evade": "Vérifiez votre équipement. Si vous possédez un mystérieux sceptre, vous échappez automatiquement au Serpent à Plumes et lui commandez d'infliger ses dégâts à un autre ennemi dans son lieu."
+    }
+  },
+  "part1": {
+    "intro": {
+      "title": "Scénario V-A : Le Cœur des Anciens, Partie 1",
+      "intro1": "<p>_Introduction 1_ : Plusieurs jours ont passé depuis que votre groupe s’est aventuré dans la forêt vierge, et les dangers que vous affrontez sont plus grands et plus nombreux à chaque étape. Conserver assez de vivres pour le voyage est une lutte de chaque instant, et vous êtes régulièrement assailli par les habitants de la jungle. Par chance, vous n’avez vu aucun signe des hommes-serpents qui ont attaqué la précédente expédition, mais vous êtes certain qu’ils sont là. À observer. À attendre.</p><p>Au matin du sixième jour, vous trouvez l’entrée. C’est celle d’une large grotte partiellement cachée par des arbres, des broussailles et des plantes grimpantes. Vous avez failli manquer l’immense gueule de la caverne malgré sa taille. Six piliers de pierre entourent l’entrée, chacun recouvert d’étranges sillons et gravures qui luisent d’une lumière rouge ténue. Peut-être l’un de vos guides comprendra-t-il leur signification ?</p><ul><li>Les investigateurs doivent décider (choisir une option) :<ul><li>*Consultons Ichtaca*. Ce choix n’est possible que si Ichtaca est dans le deck d’un investigateur. Continuez à l’_Introduction 2_.</li><li>*Consultons Alejandro*. Ce choix n’est possible que si Alejandro Vela est dans le deck d’un investigateur. Passez à l’_Introduction 3_.</li><li>*Consultons le journal de l’expédition*. Ce choix n’est possible que si le Journal de l’Expédition est dans le deck d’un investigateur. Passez à l’_Introduction 4_.</li><li>*J’aurais aimé que nous en sachions davantage à ce sujet…* Passez à la _Mise en Place_.</li></ul></li>",
+      "label": {
+        "ichtaca": "*Consultons Ichtaca*",
+        "alejandro": "*Consultons Alejandro*",
+        "expeditionJournal": "*Consultons le journal de l’expédition*",
+        "else": "*J’aurais aimé que nous en sachions davantage à ce sujet…*"
+      },
+      "intro2": "<p>_Introduction 2_ : « L’entrée est protégée contre les intrus », annonce Ichtaca, les yeux fermés comme si elle analysait la caverne avec un sens surnaturel. « Ces piliers sont la clé. Chacun est une épreuve d’intelligence et de volonté. » Elle avance vers l’une des colonnes et la touche avec la paume de sa main. Elle se met à briller plus intensément. Vous remarquez à présent que les sillons au pied du pilier forment un motif qui vous semble familier. Si Ichtaca pense que cet endroit est protégé, vous la croyez – il doit bien y avoir un moyen de briser ces protections…</p><p class='basic right'>Vous débutez ce scénario avec Ichtaca en jeu. Passez à la _Mise en Place_.</p>",
+      "intro3": "<p>_Introduction 3_ : Alejandro examine attentivement chacun des piliers. « C’est une sorte de serrure. Regardez ici, vous voyez ? Les sillons ne sont pas parfaitement alignés. » Il fait pivoter l’une des colonnes, et vous voyez le motif sur son flanc se modifier. « J’ai peur que nous n’allions pas très loin si nous entrons dans la grotte sans que les piliers soient disposés correctement. Ce n’est qu’une intuition, cependant… mais je pense que nous devrions examiner la zone plus attentivement avant d’entrer. » Vous connaissez Alejandro depuis suffisamment longtemps pour savoir que son instinct a tendance à être fiable.</p><p class='basic right'>Vous débutez ce scénario avec Alejandro Vela en jeu. Passez à la _Mise en Place_.</p>",
+      "intro4": "<p>_Introduction 4_ : Le journal de la précédente expédition ne recèle pas toutes les réponses ; mais en tournant les pages, vous tombez sur un schéma familier – une œuvre de Lorenzo, l’un des membres de l’expédition qui n’est jamais rentré à Arkham. C’est une reproduction détaillée d’une gravure qui se trouvait sur l’un des murs des ruines eztli. Beaucoup des motifs et des hiéroglyphes que vous avez vus sont communs à tous les piliers. Cela ne peut pas être une coïncidence. Ces colonnes sont sans doute la clé de la voie menant à N’kai…</p><p class='basic right'>Vous débutez ce scénario avec le Journal de l’Expédition en jeu. Passez à la _Mise en Place_.</p>"
+    },
+    "setup": {
+      "pathsKnownToYou": "Vérifiez votre Carnet de Campagne. Si *vous connaissez 6 chemins*, passez ce scénario et continuez directement à la _Conclusion 1_.",
+      "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : Piliers du Jugement, Le Cœur des Anciens, Forêt Vierge, Serpents, Expédition et Poison. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/pillars-of-judgement.png' /><img src='{setImgPath}/heart-of-the-elders.png' /><img src='{setImgPath}/rainforest.png' /><img src='{setImgPath}/serpents.png' /><img src='{setImgPath}/expedition.png' /><img src='{setImgPath}/poison.png' /></section>",
+      "placeLocations": "Mettez en jeu la Bouche de K’n-yan, face (*La Gueule de la Caverne*) visible. Chaque investigateur débute la partie dans la Bouche de K’n-yan (*La Gueule de la Caverne*).",
+      "insightIntoHowToEnterKnYan": "Vérifiez votre Carnet de Campagne. Votre voyage aux limites du temps vous a donné des indications sur la manière de pénétrer dans K’n-yan. Pour chaque *chemin que vous connaissez*, placez 1 ressource sur la Bouche de K’n-yan en tant que pion Pilier.",
+      "playedBefore": "Si vous avez déjà joué ce scénario lors de cette campagne et atteint l’Acte 2, retournez l’Acte 1a et placez-le dans la Bouche de K’n-yan.",
+      "explorationDeck": "Constituez le deck Exploration en prenant les 6 lieux _Jungle_ mono-face et en les mélangeant avec 1 exemplaire de chacune des cartes Rencontre suivantes : Chausse-Trappe, Des Fourmis !, Perdu dans la Nature et Épuisement des Réserves.",
+      "chooseLocations": "Prenez l’un des 3 lieux _Ruines_ suivants au hasard : Ruines Couvertes de Verdure, Temple du Croc et Autel de Pierre. Mélangez le lieu pris au hasard dans le deck Exploration. Retirez les 2 autres de la partie.",
+      "mappedOutTheWayForward": "Vérifiez votre Carnet de Campagne. Si *les investigateurs ont cartographié la voie d’accès*, au lieu de mélanger le lieu pris au hasard dans le deck Exploration, mettez-le en jeu.",
+      "poisoned": "Mettez de côté chaque faiblesse Empoisonné qui n’est pas déjà dans le deck d’un investigateur."
+    },
+    "resolutions": {
+      "noResolution": {
+        "label": {
+          "replay": "rejouer le _Scénario V-A : Le Cœur des Anciens, Partie 1_",
+          "resolution2": "Proceed to _Resolution 2_"
+        },
+        "title": "Pas de conclusion",
+        "body": "<p>_Si aucune conclusion n’est atteinte (tous les investigateurs ont abandonné ou été vaincus)_ : Les périls de la jungle sont trop insurmontables pour que vous poursuiviez votre exploration. Si vous restez plus longtemps, ces étranges piliers deviendront votre tombe. Vous fuyez jusqu’à une clairière familière située à quelques lieues de là, où vous pourrez récupérer. Vous savez que vous devrez revenir vers les piliers et trouver le motif qui ouvrira la voie… mais pour l’instant du moins, vous êtes sauf.</p><ul><li>S’il y a plus de pions Pilier sur la Bouche de K’n-yan qu’au début du scénario, rayez le nombre de *chemins que vous connaissez* dans votre Carnet de Campagne. Ensuite, indiquez que *vous connaissez X chemins*. X est le nombre de pions Pilier sur la Bouche de K’n-yan.</li><li>Les investigateurs doivent rejouer le _Scénario V-A : Le Cœur des Anciens, Partie 1_. Réinitialisez la partie à la _Mise en Place_ de ce scénario. N’inscrivez rien dans le Carnet de Campagne, à l’exception des éventuels traumatismes subis lors de votre partie précédente. Aucun point d’expérience n’est reçu pour cette partie. Tout joueur dont l’investigateur a été tué ou rendu dément doit choisir un nouvel investigateur à incarner, selon la règle habituelle.</li></ul>"
+      },
+      "resolution1": {
+        "title": "Conclusion 1",
+        "body": "<p>_Conclusion 1_ : Ravalant votre peur, vous pénétrez dans la caverne…</p><ul><li>Dans votre Carnet de Campagne, indiquez que *la jungle veille*. À côté, inscrivez entre parenthèses le nom de chaque carte avec Vengeance X dans la pile de victoire. N’inscrivez pas de trait sous la mention « Colère de Yig ».</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.</li><li>Les investigateurs n’ont pas le droit de dépenser d’expérience ou de modifier leurs decks entre les scénarios V-A et V-B. Continuez immédiatement au _Scénario V-B : Le Cœur des Anciens, Partie 2_.</li></ul>"
+      },
+      "resolution2": {
+        "title": "Conclusion 2",
+        "body": "<p>_Conclusion 2_ : Vous n'avez pas réussi à compléter le puzzle des six piliers qui servent de passage vers K'n-yan, mais vous n'avez pas l'intention de vous attarder dans cette jungle hostile. Vous décidez d'entrer dans la grotte malgré tout, priant pour que la « protection » des piliers ne soit qu'une sorte de superstition…</p><ul><li>Vous avez pénétré dans un territoire hostile. Placez des pions Pilier sur la Bouche de K'n-yan jusqu'à ce qu'il y ait exactement 6 pions Pilier. Ensuite, pour chaque pion Pilier ainsi ajouté, inscrivez 2 traits sous la mention « Colère de Yig » de votre Carnet de Campagne.</li><li>Lorsque vous passez les piliers, une intense douleur s'empare de votre corps tout entier. Vous êtes touché par une terrible malédiction. Chaque investigateur empoisonné subit 1 traumatisme mental. Chaque investigateur qui n'est pas empoisonné ajoute à son deck une faiblesse Empoisonné mise de côté.</li><li>Continuez à la _Conclusion 1_.</li></ul>"
+      }
+    }
+  },
+  "part2": {
+    "setup": {
+      "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : *K’n-yan*, *Le Cœur des Anciens*, *Agents de Yig*, *Venin de Yig*, *Ruines Oubliées*, *Pièges Mortels* et *Poison*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/knyan.png' /><img src='{setImgPath}/heart-of-the-elders.png' /><img src='{setImgPath}/agents-of-yig.png' /><img src='{setImgPath}/yigs-venom.png' /><img src='{setImgPath}/forgotten-ruins.png' /><img src='{setImgPath}/deadly-traps.png' /><img src='{setImgPath}/poison.png' /></section>",
+      "placeLocations": "Mettez en jeu la Bouche de K’n-yan, face (*Les Profondeurs Insondables*) visible. Chaque investigateur débute la partie dans la Bouche de K’n-yan (*Les Profondeurs Insondables*).",
+      "theJungleWatches": "Cherchez dans votre collection toutes les cartes inscrites à côté de « la jungle veille » dans votre Carnet de Campagne. Ajoutez ces cartes à la pile de victoire.",
+      "explorationDeck": "Constituez le deck Exploration en prenant les 5 lieux mono-face restants du set de rencontre K’n-yan et en les mélangeant avec 1 exemplaire de chacune des cartes Rencontre suivantes : Chausse-Trappe, Demi-Tour Impossible, Obscurité Profonde et Erreur Fatale.",
+      "poisoned": "Mettez de côté chaque faiblesse Empoisonné qui n’est pas déjà dans le deck d’un investigateur."
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "Pas de conclusion",
+        "body": "<p>_Si aucune conclusion n’est atteinte (tous les investigateurs ont été vaincus)_ : Vous vous réveillez sur un sol de pierre dure dans un endroit plus froid et plus profond qu’auparavant. Vous vous levez et scrutez les alentours, notant la lueur rouge qui semble émaner de la caverne à votre gauche. Vous la suivez pendant plusieurs minutes et vous parvenez dans un vestibule bien éclairé garni de piliers de pierre. Tout au bout de la pièce s’ouvre l’embrasure richement décorée d’un portail. Un disque de pierre a été roulé sur le côté pour révéler le royaume infernal qui se trouve derrière.</p><ul><li>Vérifiez votre Carnet de Campagne.<ul><li> Si *les investigateurs ont secouru Alejandro*, continuez à la _Conclusion 1_.</li><li>Si *Alejandro a disparu*, passez à la _Conclusion 2_.</li></ul></li></ul>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Conclusion 1_ : « Enfin ! Yoth, la caverne des serpents ! Les maudits qui ont fui la destruction de Valusia ! » Alejandro examine l’entrée; les yeux étincelants et les bras levés, il exulte. Vous ignorez de quoi il parle et vous commencez à vous inquiéter. C’est alors que quelque chose surgit derrière vous et qu’un son semblable au claquement d’une pince vous prend par surprise. De terribles créatures extraterrestres émergent des ténèbres derrière vous, des êtes tels que vous n’en avez jamais vus : trois mètres de haut, avec des corps coniques qui se terminent en quatre étranges appendices de taille variable. « Vous êtes là », dit calmement Alejandro. L’une des créatures lui répond en claquant ses pinces l’une contre l’autre selon un rythme délibéré. « Emparez-vous de leurs esprits », ordonne Alejandro aux créatures. « Nous n’avons plus besoin d’eux. » Vos souvenirs humains s’arrêtent ici.</p><ul><li>Si le Héraut de Valusia est entré en jeu lors de ce scénario :<ul><li>S’il est dans la pile de victoire, rayez la mention « *le Héraut est toujours vivant* » dans votre Carnet de Campagne.</li><li>S’il est toujours en jeu ou mis de côté, précisez entre parenthèses le nombre de blessures sur le Héraut de Valusia à côté de la mention « le Héraut est toujours vivant » dans votre Carnet de Campagne. Ce nombre remplace le précédent nombre qui était entre parenthèses.</li></ul></li><li>Pour chaque point de vengeance dans la pile de victoire, inscrivez un trait sous la mention « Colère de Yig » dans le Carnet de Campagne.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.</li></ul>"
+      },
+      "resolution2": {
+        "title": "Conclusion 2",
+        "body": "<p>_Conclusion 2_ : Avant que vous ne puissiez atteindre le niveau suivant de la caverne, un son semblable au claquement d’une pince vous prend par surprise. De terribles créatures extraterrestres émergent des ténèbres derrière vous, des êtes tels que vous n’en avez jamais vus : dix pieds de haut, avec des corps coniques qui se terminent en quatre étranges appendices de taille variable. Vous êtes estomaqué de voir un être humain à la tête de ce groupe : nul autre qu’Alejandro Vela en personne. « Emparez-vous de leurs esprits », ordonne Alejandro aux créatures. « Nous n’avons plus besoin d’eux. » Vos souvenirs humains s’arrêtent ici.</p><ul><li>Si le Héraut de Valusia est entré en jeu lors de ce scénario :<ul><li>S’il est dans la pile de victoire, rayez la mention « *le Héraut est toujours vivant* » dans votre Carnet de Campagne.</li><li>S’il est toujours en jeu ou mis de côté, précisez entre parenthèses le nombre de blessures sur le Héraut de Valusia à côté de la mention « le Héraut est toujours vivant » dans votre Carnet de Campagne. Ce nombre remplace le précédent nombre qui était entre parenthèses.</li></ul></li><li>Pour chaque point de vengeance dans la pile de victoire, inscrivez un trait sous la mention « Colère de Yig » dans le Carnet de Campagne.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.</li></ul>"
+      }
     }
   }
 }

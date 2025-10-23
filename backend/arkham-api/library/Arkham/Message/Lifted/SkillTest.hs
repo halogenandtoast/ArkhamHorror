@@ -13,9 +13,10 @@ import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Treachery.Import.Lifted qualified as Lifted (revelationSkillTest)
 import Control.Monad.Random
-import Control.Monad.State
+import Control.Monad.State.Strict
 
 data Origin where
   Origin :: (Sourceable a, Targetable a) => a -> Origin
@@ -36,7 +37,8 @@ data SkillTestState = SkillTestState
   }
 
 newtype SkillTestT m a = SkillTestT {runSkillTestT :: StateT SkillTestState m a}
-  deriving newtype (Functor, Applicative, Monad, MonadTrans, MonadIO, MonadState SkillTestState)
+  deriving newtype
+    (Functor, Applicative, Monad, MonadTrans, MonadIO, MonadState SkillTestState, Tracing)
 
 instance HasQueue msg m => HasQueue msg (SkillTestT m) where
   messageQueue = lift messageQueue

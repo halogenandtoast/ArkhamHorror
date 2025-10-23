@@ -124,6 +124,7 @@ import Arkham.Target
 import Arkham.Tarot qualified as Tarot
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
+import Arkham.Tracing
 import Arkham.Treachery
 import Arkham.Treachery.Types (
   Field (..),
@@ -151,7 +152,7 @@ getInvestigatorsInOrder = do
   pure $ g ^. playerOrderL
 
 runGameMessage :: Runner Game
-runGameMessage msg g = case msg of
+runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   AfterThisTestResolves _sid msgs -> do
     insertAfterMatching [AfterSkillTestQuiet msgs] (== EndSkillTestWindow)
     pure g
@@ -3203,7 +3204,7 @@ runGameMessage msg g = case msg of
   _ -> pure g
 
 -- TODO: Clean this up, the found of stuff is a bit messy
-preloadEntities :: HasGame m => Game -> m Game
+preloadEntities :: (HasGame m, Tracing m) => Game -> m Game
 preloadEntities g = do
   let
     investigators = view (entitiesL . investigatorsL) g
@@ -3333,27 +3334,25 @@ preloadEntities g = do
 -- too late.
 instance RunMessage Game where
   runMessage msg g =
-    ( (modeL . here) (runMessage msg) g
-        >>= (modeL . there) (runMessage msg)
-        >>= entitiesL (runMessage msg)
-        >>= actionRemovedEntitiesL (runMessage msg)
-        >>= itraverseOf
-          (inHandEntitiesL . itraversed)
-          (\i -> runMessage (InHand i msg))
-        >>= itraverseOf
-          (inDiscardEntitiesL . itraversed)
-          (\i -> runMessage (InDiscard i msg))
-        >>= (inDiscardEntitiesL . itraversed) (runMessage msg)
-        >>= encounterDiscardEntitiesL (runMessage msg)
-        >>= inSearchEntitiesL (runMessage (InSearch msg))
-        >>= (skillTestL . traverse) (runMessage msg)
-        >>= (activeCostL . traverse) (runMessage msg)
-        >>= runGameMessage msg
-    )
-      <&> handleActionDiff g
+    withSpan' "Game.runMessage" \currentSpan -> do
+      addAttribute currentSpan "message" (tshow msg)
+      ( (modeL . here) (runMessage msg) g
+          >>= (modeL . there) (runMessage msg)
+          >>= entitiesL (runMessage msg)
+          >>= actionRemovedEntitiesL (runMessage msg)
+          >>= itraverseOf (inHandEntitiesL . itraversed) (\i -> runMessage (InHand i msg))
+          >>= itraverseOf (inDiscardEntitiesL . itraversed) (\i -> runMessage (InDiscard i msg))
+          >>= (inDiscardEntitiesL . itraversed) (runMessage msg)
+          >>= encounterDiscardEntitiesL (runMessage msg)
+          >>= inSearchEntitiesL (runMessage (InSearch msg))
+          >>= (skillTestL . traverse) (runMessage msg)
+          >>= (activeCostL . traverse) (runMessage msg)
+          >>= runGameMessage msg
+        )
+        <&> handleActionDiff g
 
 runPreGameMessage :: Runner Game
-runPreGameMessage msg g = case msg of
+runPreGameMessage msg g = withSpan_ "runPreGameMessage" $ case msg of
   ForInvestigator iid _ -> do
     player <- getPlayer iid
     pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player

@@ -87,6 +87,7 @@ import Arkham.Projection
 import Arkham.SkillType ()
 import Arkham.Token
 import Arkham.Token qualified as Token
+import Arkham.Tracing
 import Arkham.Trait
 import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
@@ -157,7 +158,7 @@ filterOutEnemyUiMessages eid = \case
   FightLabel eid' _ | eid == eid' -> Nothing
   other -> Just other
 
-getInvestigatorsAtSameLocation :: HasGame m => EnemyAttrs -> m [InvestigatorId]
+getInvestigatorsAtSameLocation :: (HasGame m, Tracing m) => EnemyAttrs -> m [InvestigatorId]
 getInvestigatorsAtSameLocation attrs = do
   field EnemyLocation (toId attrs) >>= \case
     Nothing -> pure []
@@ -182,13 +183,13 @@ getCanReady a = do
   phase <- getPhase
   pure $ CannotReady `notElem` mods && (DoesNotReadyDuringUpkeep `notElem` mods || phase /= #upkeep)
 
-getCanEngage :: HasGame m => EnemyAttrs -> m Bool
+getCanEngage :: (HasGame m, Tracing m) => EnemyAttrs -> m Bool
 getCanEngage a = do
   keywords <- getModifiedKeywords a
   unengaged <- selectNone $ investigatorEngagedWith a.id
   pure $ all (`notElem` keywords) [#aloof, #massive] && unengaged
 
-getPaths :: HasGame m => EnemyAttrs -> [LocationId] -> m [LocationId]
+getPaths :: (HasGame m, Tracing m) => EnemyAttrs -> [LocationId] -> m [LocationId]
 getPaths a destinations =
   getLocationOf a >>= \case
     Nothing -> pure []
@@ -216,7 +217,7 @@ getPaths a destinations =
             pure $ if null barricadedPathIds then pathIds' else barricadedPathIds
           else pure pathIds'
 
-getAvailablePrey :: HasGame m => EnemyAttrs -> m [InvestigatorId]
+getAvailablePrey :: (HasGame m, Tracing m) => EnemyAttrs -> m [InvestigatorId]
 getAvailablePrey a = runDefaultMaybeT [] do
   enemyLocation <- MaybeT $ field EnemyLocation a.id
   iids <- select $ investigatorAt enemyLocation <> InvestigatorCanBeEngagedBy a.id

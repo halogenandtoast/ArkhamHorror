@@ -18,8 +18,9 @@ import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 import Arkham.Source
+import Arkham.Tracing
 
-getActDecksInPlayCount :: HasGame m => m Int
+getActDecksInPlayCount :: (HasGame m, Tracing m) => m Int
 getActDecksInPlayCount = do
   hasDeckA <- selectAny $ ActOneOf [ActWithSide Act.A, ActWithSide Act.B]
   hasDeckC <- selectAny $ ActOneOf [ActWithSide Act.C, ActWithSide Act.D]
@@ -27,37 +28,39 @@ getActDecksInPlayCount = do
   hasDeckG <- selectAny $ ActOneOf [ActWithSide Act.G, ActWithSide Act.H]
   pure $ count id [hasDeckA, hasDeckC, hasDeckE, hasDeckG]
 
-isIchtacasPrey :: HasGame m => EnemyId -> m Bool
+isIchtacasPrey :: (HasGame m, Tracing m) => EnemyId -> m Bool
 isIchtacasPrey eid = scenarioFieldMap ScenarioRemembered $ any $ \case
   IchtacasPrey (Labeled _ eid' `With` _) -> eid == eid'
   _ -> False
 
-getIchtacasPrey :: HasGame m => m [EnemyId]
+getIchtacasPrey :: (HasGame m, Tracing m) => m [EnemyId]
 getIchtacasPrey = do
   xs <- scenarioField ScenarioRemembered
   pure $ flip mapMaybe (toList xs) \case
     IchtacasPrey (Labeled _ eid' `With` _) -> Just eid'
     _ -> Nothing
 
-isIchtacasDestination :: HasGame m => LocationId -> m Bool
+isIchtacasDestination :: (HasGame m, Tracing m) => LocationId -> m Bool
 isIchtacasDestination lid = scenarioFieldMap ScenarioRemembered $ any $ \case
   IchtacasDestination (Labeled _ lid' `With` _) -> lid == lid'
   _ -> False
 
 rememberIchtacasPrey :: (ReverseQueue m, HasCardDef card) => EnemyId -> card -> m ()
 rememberIchtacasPrey eid (toCardDef -> card) = do
-  scenarioI18n $ gameModifier
-    ScenarioSource
-    eid
-    (UIModifier $ ImportantToScenario $ ikey "labels.ichtacasPrey")
+  scenarioI18n
+    $ gameModifier
+      ScenarioSource
+      eid
+      (UIModifier $ ImportantToScenario $ ikey "labels.ichtacasPrey")
   remember $ IchtacasPrey $ Labeled (toName card) eid `With` Envelope @"cardCode" card.cardCode
 
 rememberIchtacasDestination :: (ReverseQueue m, HasCardDef card) => LocationId -> card -> m ()
 rememberIchtacasDestination lid (toCardDef -> card) = do
-  scenarioI18n $ gameModifier
-    ScenarioSource
-    lid
-    (UIModifier $ ImportantToScenario $ ikey "labels.ichtacasDestination")
+  scenarioI18n
+    $ gameModifier
+      ScenarioSource
+      lid
+      (UIModifier $ ImportantToScenario $ ikey "labels.ichtacasDestination")
   remember $ IchtacasDestination $ Labeled (toName card) lid `With` Envelope @"cardCode" card.cardCode
 
 scenarioI18n :: (HasI18n => a) -> a

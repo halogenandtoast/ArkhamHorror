@@ -30,10 +30,11 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Window (Window (..), defaultWindows)
 import Arkham.Window qualified as Window
 
-actionMatches :: HasGame m => InvestigatorId -> Action -> ActionMatcher -> m Bool
+actionMatches :: (Tracing m, HasGame m) => InvestigatorId -> Action -> ActionMatcher -> m Bool
 actionMatches _ _ AnyAction = pure True
 actionMatches _ a (ActionIs a') = pure $ a == a'
 actionMatches iid a (ActionMatches as) = allM (actionMatches iid a) as
@@ -63,7 +64,7 @@ actionMatches iid a RepeatableAction = do
       , canPlay && notNull playableCards && a == #play
       ]
 
-canDo :: HasGame m => InvestigatorId -> Action -> m Bool
+canDo :: (HasGame m, Tracing m) => InvestigatorId -> Action -> m Bool
 canDo iid action = do
   mods <- getModifiers iid
   let
@@ -88,7 +89,7 @@ canDo iid action = do
   not <$> anyM prevents mods
 
 additionalActionCovers
-  :: HasGame m => Source -> [Action] -> AdditionalAction -> m Bool
+  :: (HasGame m, Tracing m) => Source -> [Action] -> AdditionalAction -> m Bool
 additionalActionCovers source actions (AdditionalAction _ _ aType) = case aType of
   PlayCardRestrictedAdditionalAction matcher -> case source of
     CardIdSource cid -> elem cid . map toCardId <$> select matcher
@@ -106,7 +107,7 @@ additionalActionCovers source actions (AdditionalAction _ _ aType) = case aType 
   BountyAction -> pure False -- Has to be handled by Tony Morgan
   BobJenkinsAction -> pure False -- Has to be handled by Bob Jenkins
 
-getCanAfford :: HasGame m => InvestigatorAttrs -> [Action] -> m Bool
+getCanAfford :: (HasGame m, Tracing m) => InvestigatorAttrs -> [Action] -> m Bool
 getCanAfford a@InvestigatorAttrs {..} as = do
   actionCost <- getActionCost a as
   additionalActions <- getAdditionalActions a
@@ -146,16 +147,16 @@ matchTarget _ (EnemyAction a _) action = action == a
 matchTarget _ (AssetAction a _) action = action == a
 matchTarget _ IsAnyAction _ = True
 
-getActions :: (HasGame m, HasCallStack) => InvestigatorId -> [Window] -> m [Ability]
+getActions :: (Tracing m, HasGame m, HasCallStack) => InvestigatorId -> [Window] -> m [Ability]
 getActions iid ws = getActionsWith iid ws id
 
 getActionsWith
-  :: (HasCallStack, HasGame m)
+  :: (HasCallStack, Tracing m, HasGame m)
   => InvestigatorId
   -> [Window]
   -> (Ability -> Ability)
   -> m [Ability]
-getActionsWith iid ws f = do
+getActionsWith iid ws f = withSpan_ "getActions" do
   modifiersForFilter <- getModifiers iid
   let
     abilityFilters =
@@ -260,19 +261,14 @@ getActionsWith iid ws f = do
           else Just $ applyAbilityModifiers ability modifiers'
 
   actions''' <-
-    filterM
-      ( \action -> do
-          andM
-            [ getCanPerformAbility iid ws action
-            , getCanAffordAbility iid action ws
-            ]
-      )
-      actions''
+    actions'' & filterM \action -> runValidT do
+      liftGuardM $ getCanPerformAbility iid ws action
+      liftGuardM $ getCanAffordAbility iid action ws
   forcedActions <- filterM (isForcedAbility iid) actions'''
   pure $ nub $ if null forcedActions then actions''' else forcedActions
 
 hasFightActions
-  :: (Sourceable source, HasGame m)
+  :: (Sourceable source, Tracing m, HasGame m)
   => InvestigatorId
   -> source
   -> WindowMatcher
@@ -284,7 +280,7 @@ hasFightActions iid requestor window windows' =
     =<< select (BasicAbility <> AbilityIsAction #fight <> AbilityWindow window)
 
 hasEvadeActions
-  :: (HasCallStack, HasGame m)
+  :: (HasCallStack, Tracing m, HasGame m)
   => InvestigatorId
   -> WindowMatcher
   -> [Window]

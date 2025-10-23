@@ -360,18 +360,47 @@ instance RunMessage ThreadsOfFate where
           let completedCount =
                 (+ sum (IntMap.elems actPairCountMap)) . sum . map length $ toList attrs.completedActStack
           push $ SetCampaignMeta $ toJSON $ meta {bonusXp = Map.fromList $ map (,completedCount) iids}
-          resolutionWithXp "resolution1"
-            $ allGainXpWithBonus' attrs
-            $ mconcat
-            $ [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath]
-            <> [toBonus "forgingYourOwnPath" 2 | act3fCompleted && forgingYourOwnPath]
+          xp <- allGainXpWithBonus' attrs $ mconcat $ [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath] <> [toBonus "forgingYourOwnPath" 2 | act3fCompleted && forgingYourOwnPath]
+          resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution1" do
+            setTitle "title"
+            p "body"
+            ul do
+              li.nested "checkCompletedActs" do
+                li.validate act3bCompleted "act3b"
+                li.validate (not act3bCompleted) "abActDeckStillInPlay"
+                li.validate act3dCompleted "act3d"
+                li.validate (not act3dCompleted) "cdActDeckStillInPlay"
+                li.validate act3fCompleted "act3f"
+                li.validate (not act3fCompleted) "efActDeckStillInPlay"
+                li.validate act3hCompleted "act3g"
+              li "expeditionJournal" 
+              li "returnToXp"
+              li "additionalXp"
+              li "outline"
+              li "resupply"
+
         else do
-          resolutionWithXp "resolution1"
-            $ allGainXpWithBonus' attrs
+          xp <-
+            allGainXpWithBonus' attrs
             $ mconcat
             $ toBonus "bonus" act1sCompleted
             : [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath]
               <> [toBonus "forgingYourOwnPath" 2 | act3fCompleted && forgingYourOwnPath]
+
+          resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution1" do
+            setTitle "title"
+            p "body"
+            ul do
+              li.nested "checkCompletedActs" do
+                li.validate act3bCompleted "act3b"
+                li.validate (not act3bCompleted) "abActDeckStillInPlay"
+                li.validate act3dCompleted "act3d"
+                li.validate (not act3dCompleted) "cdActDeckStillInPlay"
+                li.validate act3fCompleted "act3f"
+                li.validate (not act3fCompleted) "efActDeckStillInPlay"
+              li "expeditionJournal" 
+              li "xp"
+              li "resupply"
 
       relicOwned <- getIsAlreadyOwned Assets.relicOfAgesADeviceOfSomeSort
       when (act3bCompleted && not relicOwned) do

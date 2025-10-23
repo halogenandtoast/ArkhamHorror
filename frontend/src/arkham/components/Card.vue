@@ -94,7 +94,9 @@ function isAbility(v: Message): v is AbilityLabel {
 
   if (source.tag === 'AssetSource') {
     const asset = props.game.assets[source.contents]
-    return asset.cardId === id.value && asset.placement.tag === 'StillInHand'
+    if (asset) {
+      return asset.cardId === id.value && asset.placement.tag === 'StillInHand'
+    }
   }
 
   return source.contents === id.value

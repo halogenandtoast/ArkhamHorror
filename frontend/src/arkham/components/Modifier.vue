@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { Modifier } from '@/arkham/types/Modifier';
 import { Source } from '@/arkham/types/Source';
 import { Game } from '@/arkham/types/Game';
+import { imgsrc } from '@/arkham/helpers';
 
 const props = defineProps<{ modifier: Modifier, game: Game }>()
 

@@ -93,6 +93,7 @@ data UI msg
   | Done {label :: Text}
   | SkipTriggersButton {investigatorId :: InvestigatorId}
   | CardPile {pile :: [PileCard], messages :: [msg]}
+  | Info { flavor :: FlavorText }
   deriving stock (Show, Ord, Eq, Data)
 
 data PileCard = PileCard

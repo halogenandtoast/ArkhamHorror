@@ -4,10 +4,12 @@ import { chaosBagStepDecoder, ChaosBagStep } from '@/arkham/types/ChaosBag';
 import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Target, targetDecoder } from '@/arkham/types/Target';
+import { FlavorText, flavorTextDecoder } from '@/arkham/types/FlavorText';
 import { tarotCardDecoder, TarotCard } from '@/arkham/types/TarotCard';
 
 export enum MessageType {
   LABEL = 'Label',
+  INFO = 'Info',
   INVALID_LABEL = 'InvalidLabel',
   TARGET_LABEL = 'TargetLabel',
   TOOLTIP_LABEL = 'TooltipLabel',
@@ -57,6 +59,11 @@ export type Label = {
 export type InvalidLabel = {
   tag: MessageType.INVALID_LABEL
   label: string
+}
+
+export type Info = {
+  tag: MessageType.INFO
+  flavor: FlavorText
 }
 
 export type CardPile = {
@@ -274,7 +281,32 @@ export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestAp
     tag: JsonDecoder.literal(MessageType.SKILL_TEST_APPLY_RESULTS_BUTTON),
   }, 'SkillTestApplyResultsButton')
 
-export type Message = Label | InvalidLabel | TooltipLabel | TargetLabel | SkillLabel | SkillLabelWithLabel | CardLabel | KeyLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | EngageLabel | GridLabel | TarotLabel | Done | ChaosTokenGroupChoice | EffectActionButton | SkipTriggersButton | CardPile;
+export type Message =
+  | Label
+  | Info
+  | InvalidLabel
+  | TooltipLabel
+  | TargetLabel
+  | SkillLabel 
+  | SkillLabelWithLabel 
+  | CardLabel 
+  | KeyLabel 
+  | PortraitLabel 
+  | ComponentLabel 
+  | AbilityLabel 
+  | EndTurnButton 
+  | StartSkillTestButton 
+  | SkillTestApplyResultsButton 
+  | FightLabel 
+  | EvadeLabel 
+  | EngageLabel 
+  | GridLabel 
+  | TarotLabel 
+  | Done 
+  | ChaosTokenGroupChoice 
+  | EffectActionButton 
+  | SkipTriggersButton 
+  | CardPile
 
 export const skipTriggersDecoder = JsonDecoder.object<SkipTriggersButton>(
   {
@@ -299,6 +331,12 @@ export const invalidLabelDecoder = JsonDecoder.object<InvalidLabel>(
     tag: JsonDecoder.literal(MessageType.INVALID_LABEL),
     label: JsonDecoder.string()
   }, 'InvalidLabel')
+
+export const infoDecoder = JsonDecoder.object<Info>(
+  {
+    tag: JsonDecoder.literal(MessageType.INFO),
+    flavor: flavorTextDecoder
+  }, 'Info')
 
 export const pileCardDecoder = JsonDecoder.object<PileCard>(
   {
@@ -380,6 +418,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
   [
     labelDecoder,
     invalidLabelDecoder,
+    infoDecoder,
     cardPileDecoder,
     tooltipLabelDecoder,
     skillLabelDecoder,

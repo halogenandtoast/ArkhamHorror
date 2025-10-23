@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
 import type { Read } from '@/arkham/types/Question';
+import type { FlavorText } from '@/arkham/types/FlavorText';
 import { MessageType } from '@/arkham/types/Message';
 import Token from '@/arkham/components/Token.vue';
 import { useI18n } from 'vue-i18n';
@@ -37,18 +38,25 @@ const pickCards = computed(() => props.question.readChoices.contents.reduce((acc
   return acc
 }, [] as { cardCode: string, index: number }[]))
 
-interface ReadChoice {
-  label: string
-  index: number
-  disabled: boolean
-}
+type ReadChoice =
+  | { tag: "Label", label: string, index: number }
+  | { tag: "InvalidLabel", label: string, index: number }
+  | { tag: "Info", flavor: FlavorText}
 
 const readChoices = computed(() => {
   switch (props.question.readChoices.tag) {
     case "BasicReadChoices":
       return props.question.readChoices.contents.reduce<ReadChoice[]>((acc, v, i) => {
         if ("label" in v) {
-          return [...acc, { label: v.label, index: i, disabled: v.tag === MessageType.INVALID_LABEL }]
+          if (v.tag === MessageType.LABEL) {
+            return [...acc, { tag: "Label", label: v.label, index: i }]
+          }
+          if (v.tag === MessageType.INVALID_LABEL) {
+            return [...acc, { tag: "InvalidLabel", label: v.label, index: i }]
+          }
+        }
+        if ("flavorText" in v) {
+          return [...acc, { tag: "Info", flavor: v.flavorText }]
         }
         return acc
       }, [] as ReadChoice[])
@@ -56,7 +64,15 @@ const readChoices = computed(() => {
     case "LeadInvestigatorMustDecide":
       return props.question.readChoices.contents.reduce<ReadChoice[]>((acc, v, i) => {
         if ("label" in v) {
-          return [...acc, { label: v.label, index: i, disabled: false }]
+          if (v.tag === MessageType.LABEL) {
+            return [...acc, { tag: "Label", label: v.label, index: i }]
+          }
+          if (v.tag === MessageType.INVALID_LABEL) {
+            return [...acc, { tag: "InvalidLabel", label: v.label, index: i }]
+          }
+        }
+        if ("flavorText" in v) {
+          return [...acc, { tag: "Info", flavor: v.flavorText }]
         }
         return acc
       }, [] as ReadChoice[])
@@ -83,11 +99,11 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
     <div class="options">
       <template v-for="readChoice in readChoices" :key="readChoice.index">
         <button
-          v-if="readChoice.disabled"
+          v-if="readChoice.tag === 'InvalidLabel'"
           disabled
           ><i class="option"></i><span v-html="formatContent(maybeFormat(readChoice.label))"></span></button>
         <button
-          v-else
+          v-else-if="readChoice.tag === 'Label'"
           @click="choose(readChoice.index)"
           ><i class="option"></i><span v-html="formatContent(maybeFormat(readChoice.label))"></span></button>
       </template>

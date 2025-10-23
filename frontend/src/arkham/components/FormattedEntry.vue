@@ -646,4 +646,13 @@ div:has(> img.remove) {
     --shift: -44px;
   }
 }
+
+div:has(.unspendable) {
+  border: 2px dashed teal;
+  margin-inline: 10px;
+  display: block;
+  width: 100%;
+  padding: 10px;
+  text-transform: uppercase;
+}
 </style>

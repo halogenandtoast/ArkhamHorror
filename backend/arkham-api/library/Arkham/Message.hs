@@ -474,7 +474,6 @@ data Message
   | -- Adding Cards to Hand
     AddFocusedToHand InvestigatorId Target Zone CardId
   | AddToHand InvestigatorId [Card]
-  | DebugAddToHand InvestigatorId CardId
   | DrawFocusedToHand InvestigatorId Target Zone CardId
   | DrawToHand InvestigatorId [Card]
   | DrawToHandFrom InvestigatorId DeckSignifier [Card]
@@ -515,7 +514,6 @@ data Message
   | SwapChaosToken ChaosTokenFace ChaosTokenFace
   | RemoveAllChaosTokens ChaosTokenFace
   | RemoveChaosToken ChaosTokenFace
-  | DebugRemoveChaosToken ChaosTokenFace
   | ResetTokenPool
   | -- Asset Uses
     AddUses Source AssetId UseType Int
@@ -1211,6 +1209,10 @@ data Message
   | -- UI
     ClearUI
   | Priority Message
+  | -- Debug
+    ClearQueue
+  | DebugAddToHand InvestigatorId CardId
+  | DebugRemoveChaosToken ChaosTokenFace
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveToJSON defaultOptions ''Message)

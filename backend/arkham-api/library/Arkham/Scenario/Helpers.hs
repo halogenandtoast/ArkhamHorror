@@ -52,7 +52,7 @@ hasBSide :: EncounterCard -> Bool
 hasBSide = and . sequence [isDoubleSided, isSuffixOf "b" . unCardCode . toCardCode]
 
 isDoubleSided :: EncounterCard -> Bool
-isDoubleSided = cdDoubleSided . toCardDef
+isDoubleSided = or . sequence [cdDoubleSided, isJust . cdOtherSide] . toCardDef
 
 buildEncounterDeckWith
   :: CardGen m

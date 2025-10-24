@@ -163,7 +163,10 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \cas
           <> if canMoveToConnected
             then Matcher.orConnected ForMovement (Matcher.locationWithInvestigator iid)
             else Matcher.locationWithInvestigator iid
-      concealed <- selectAny $ Matcher.locationWithInvestigator iid <> Matcher.LocationWithExposableConcealedCard ab.source
+      concealed <-
+        selectAny
+          $ Matcher.locationWithInvestigator iid
+          <> Matcher.LocationWithExposableConcealedCard ab.source
       pure $ enemies || locations || concealed
   Action.Evade -> case abilitySource of
     EnemySource _ -> pure True
@@ -179,7 +182,10 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \cas
       base <- selectAny $ case nonEmpty overrides of
         Nothing -> Matcher.CanEvadeEnemy $ AbilitySource abilitySource abilityIndex
         Just os -> Matcher.CanEvadeEnemyWithOverride $ combineOverrides os
-      concealed <- selectAny $ Matcher.locationWithInvestigator iid <> Matcher.LocationWithExposableConcealedCard ab.source
+      concealed <-
+        selectAny
+          $ Matcher.locationWithInvestigator iid
+          <> Matcher.LocationWithExposableConcealedCard ab.source
       if base
         then pure $ base || concealed
         else flip anyM modifiers \case
@@ -339,7 +345,10 @@ filterDepthSpecificAbilities usedAbilities = do
 getAbilityLimit :: HasGame m => InvestigatorId -> Ability -> m AbilityLimit
 getAbilityLimit iid ability = do
   ignoreLimit <- (IgnoreLimit `elem`) <$> getModifiers (AbilityTarget iid ability.ref)
-  pure $ if ignoreLimit then PlayerLimit PerWindow 1 else abilityLimit ability
+  pure
+    $ if ignoreLimit
+      then if ability.fast then NoLimit else PlayerLimit PerWindow 1
+      else abilityLimit ability
 
 -- TODO: The limits that are correct are the one that check usedTimes Group
 -- limits for instance won't work if we have a group limit higher than one, for
@@ -413,11 +422,15 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
             usedAbilities
       PlayerLimit PerRound n -> do
         pure
-          $ maybe True (and . sequence [not . usedThisWindow, (< n) . usedTimes])
+          $ maybe
+            True
+            (and . sequence [if ability.fast then const True else not . usedThisWindow, (< n) . usedTimes])
           $ find ((== ability) . usedAbility) usedAbilities
       PlayerLimit _ n -> do
         pure
-          $ maybe True (and . sequence [not . usedThisWindow, (< n) . usedTimes])
+          $ maybe
+            True
+            (and . sequence [if ability.fast then const True else not . usedThisWindow, (< n) . usedTimes])
           $ find ((== ability) . usedAbility) usedAbilities
       MaxPer cardDef _ n -> do
         let

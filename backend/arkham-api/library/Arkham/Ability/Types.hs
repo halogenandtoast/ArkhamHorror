@@ -120,6 +120,9 @@ instance HasField "cardCode" Ability CardCode where
 instance HasField "index" Ability Int where
   getField = abilityIndex
 
+instance HasField "fast" Ability Bool where
+  getField Ability {abilityType}= isFastAbilityType abilityType
+
 instance HasField "ref" Ability AbilityRef where
   getField = abilityToRef
 

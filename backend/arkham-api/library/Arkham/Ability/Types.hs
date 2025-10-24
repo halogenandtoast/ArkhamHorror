@@ -121,7 +121,7 @@ instance HasField "index" Ability Int where
   getField = abilityIndex
 
 instance HasField "fast" Ability Bool where
-  getField Ability {abilityType}= isFastAbilityType abilityType
+  getField Ability {abilityType} = isFastAbilityType abilityType
 
 instance HasField "ref" Ability AbilityRef where
   getField = abilityToRef
@@ -154,7 +154,10 @@ data AbilityMetadata
   deriving stock (Eq, Show, Ord, Data)
 
 instance Eq Ability where
-  a == b = (abilitySource a == abilitySource b) && (abilityIndex a == abilityIndex b)
+  a == b =
+    (abilitySource a == abilitySource b)
+      && (abilityIndex a == abilityIndex b)
+      && (abilityCardCode a == abilityCardCode b)
 
 instance Sourceable Ability where
   toSource a = AbilitySource (abilitySource a) (abilityIndex a)

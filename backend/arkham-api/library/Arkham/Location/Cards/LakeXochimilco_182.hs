@@ -28,13 +28,13 @@ instance HasModifiersFor LakeXochimilco_182 where
 instance HasAbilities LakeXochimilco_182 where
   getAbilities (LakeXochimilco_182 attrs) =
     extendRevealed1 attrs
-      $ restricted attrs 1 (exists $ investigatorAt attrs)
+      $ mkAbility attrs 1
       $ forced
       $ PutLocationIntoPlay #after Anyone (be attrs)
 
 instance RunMessage LakeXochimilco_182 where
   runMessage msg l@(LakeXochimilco_182 attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      selectEach (investigatorAt (toId attrs)) (\iid -> setActions iid (attrs.ability 1) 0)
+      selectEach (investigatorAt attrs) \iid -> setActions iid (attrs.ability 1) 0
       pure l
     _ -> LakeXochimilco_182 <$> liftRunMessage msg attrs

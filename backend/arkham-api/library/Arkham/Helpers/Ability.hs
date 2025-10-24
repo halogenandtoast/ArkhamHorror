@@ -60,9 +60,9 @@ getCanPerformAbility !iid !ws !ability = do
       Nothing -> abilityWindow ability
       Just lid -> Matcher.replaceThisLocation lid $ abilityWindow ability
 
-  -- We use toSource to make sure we can track that we are talkign about an ability
   runValidT do
-    liftGuardM $ getCanAffordCost iid (toSource ability) actions ws (mconcat $ cost : additionalCosts)
+    liftGuardM
+      $ getCanAffordCost iid (toSource ability) actions ws (mconcat $ cost : additionalCosts)
     liftGuardM $ meetsActionRestrictions iid ws ability
     liftGuardM $ anyM (\window -> windowMatches iid (toSource ability) window abWindow) ws
     liftGuardM $ withActiveInvestigator iid do
@@ -369,7 +369,8 @@ getCanAffordUseWith
   -> [Window]
   -> m Bool
 getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
-  usedAbilities <- fmap f . filterDepthSpecificAbilities =<< field InvestigatorUsedAbilities iid
+  usedAbilities <-
+    fmap f . filterDepthSpecificAbilities =<< field InvestigatorUsedAbilities iid
   limit <- getAbilityLimit iid ability
   ignoreLimit <-
     or

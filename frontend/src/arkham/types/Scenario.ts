@@ -130,27 +130,12 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   cardsUnderScenarioReference: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
   cardsUnderAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
   cardsUnderActDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathActCards'),
-  cardsNextToActDeck: JsonDecoder.array<Card>(cardDecoder, 'CardsNextToActDeck'),
-  cardsNextToAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'CardsNextToAgendaDeck'),
-  setAsideKeys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
-  keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
-  search: v2Optional(searchDecoder).map((search: Search) => search?.searchFoundCards || {}),
-  setAsideCards: JsonDecoder.array<Card>(cardDecoder, 'SetAsideCards'),
-  chaosBag: chaosBagDecoder,
-  discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'EncounterCardContents[]'),
-  victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
-  encounterDeck: JsonDecoder.array<CardContents>(cardContentsDecoder, 'CardContents[]'),
-  xpBreakdown: v2Optional(JsonDecoder.array<XpEntry>(xpEntryDecoder, 'XpEntry[]')),
-  standaloneCampaignLog: logContentsDecoder,
-  tokens: tokensDecoder,
-  hasEncounterDeck: JsonDecoder.boolean(),
-  started: JsonDecoder.boolean(),
-  // tarotCards: JsonDecoder.array<TarotCard>(tarotCardDecoder, 'TarotCard[]'),
   tarotCards: JsonDecoder.
     array(
       JsonDecoder.tuple([tarotScopeDecoder, JsonDecoder.array(tarotCardDecoder, 'TarotCard[]')], '[TarotScope, TarotCard[]]'),
       '[TarotScope, TarotCard[]][]'
     ).map(res => res.reduce<TarotCard[]>((acc, [k, vs]) => [...acc, ...vs.map(v => ({ ...v, scope: k }))], [])),
+  search: v2Optional(searchDecoder).map((search: Search) => search?.searchFoundCards || {}),
   counts:
     JsonDecoder.array<[string, number]>(
       JsonDecoder.oneOf([
@@ -168,6 +153,21 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
         return acc
       }, {})
     }),
+  cardsNextToActDeck: JsonDecoder.array<Card>(cardDecoder, 'CardsNextToActDeck'),
+  cardsNextToAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'CardsNextToAgendaDeck'),
+  setAsideKeys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
+  keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
+  setAsideCards: JsonDecoder.array<Card>(cardDecoder, 'SetAsideCards'),
+  chaosBag: chaosBagDecoder,
+  discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'EncounterCardContents[]'),
+  victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
+  standaloneCampaignLog: logContentsDecoder,
+  tokens: tokensDecoder,
+
+  encounterDeck: JsonDecoder.array<CardContents>(cardContentsDecoder, 'CardContents[]'),
+  xpBreakdown: v2Optional(JsonDecoder.array<XpEntry>(xpEntryDecoder, 'XpEntry[]')),
+  hasEncounterDeck: JsonDecoder.boolean(),
+  started: JsonDecoder.boolean(),
   encounterDecks: JsonDecoder.array<[string, [CardContents[], CardContents[]]]>(
     JsonDecoder.tuple([
       JsonDecoder.string(),
@@ -182,8 +182,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
         return acc
       }, {})
     }),
-  storyCards: JsonDecoder.record(JsonDecoder.array(cardContentsDecoder, 'CardDef[]'), 'CardDef[]')
-
+  storyCards: JsonDecoder.record(JsonDecoder.array(cardDecoder, 'CardDef[]'), 'CardDef[]'),
 }, 'Scenario').map(({search, ...rest}) => ({...rest, foundCards: search}));
 
 export function scenarioToKeyI18n(scenario: Scenario): string {

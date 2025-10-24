@@ -274,47 +274,46 @@ instance RunMessage SkillTest where
     TriggerSkillTest iid -> do
       modifiers' <- getModifiers iid
       modifiers'' <- getModifiers (SkillTestTarget skillTestId)
-      if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
-        then do
-          let
-            tokensTreatedAsRevealed = flip mapMaybe modifiers' $ \case
-              TreatRevealedChaosTokenAs t -> Just t
-              _ -> Nothing
-          if null tokensTreatedAsRevealed
-            then push (RunSkillTest iid)
-            else do
-              pushAll
-                [ When (RevealSkillTestChaosTokens iid)
-                , RevealSkillTestChaosTokens iid
-                , RunSkillTest iid
-                ]
-              for_ tokensTreatedAsRevealed $ \chaosTokenFace -> do
-                t <- getRandom
+      if
+        | SkillTestAutomaticallySucceeds `elem` modifiers'' -> pushAll [PassSkillTest, UnsetActiveCard]
+        | SkillTestAutomaticallyFails `elem` modifiers'' -> pushAll [FailSkillTest, UnsetActiveCard]
+        | DoNotDrawChaosTokensForSkillChecks `elem` modifiers' -> do
+            let
+              tokensTreatedAsRevealed = flip mapMaybe modifiers' $ \case
+                TreatRevealedChaosTokenAs t -> Just t
+                _ -> Nothing
+            if null tokensTreatedAsRevealed
+              then push (RunSkillTest iid)
+              else do
                 pushAll
-                  $ resolve (RevealChaosToken (toSource s) iid (ChaosToken t chaosTokenFace (Just iid) False False))
-        else
-          if SkillTestAutomaticallySucceeds `elem` modifiers''
-            then pushAll [PassSkillTest, UnsetActiveCard]
-            else do
-              let
-                applyRevealStategyModifier (MultiReveal _ b) (ChangeRevealStrategy n) = MultiReveal n b
-                applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
-                applyRevealStategyModifier n RevealAnotherChaosToken = MultiReveal n (Reveal 1)
-                applyRevealStategyModifier n (DrawAdditionalChaosTokens m) =
-                  let
-                    go = \case
-                      Reveal x -> RevealAndChoose (x + m) 1
-                      RevealAndChoose x z -> RevealAndChoose (x + m) z
-                      other -> other
-                   in
-                    go n
-                applyRevealStategyModifier n _ = n
-                revealStrategy =
-                  foldl' applyRevealStategyModifier (Reveal 1) (modifiers' <> modifiers'')
-              pushAll
-                [ RequestChaosTokens (toSource s) (Just iid) revealStrategy SetAside
-                , RunSkillTest iid
-                ]
+                  [ When (RevealSkillTestChaosTokens iid)
+                  , RevealSkillTestChaosTokens iid
+                  , RunSkillTest iid
+                  ]
+                for_ tokensTreatedAsRevealed $ \chaosTokenFace -> do
+                  t <- getRandom
+                  pushAll
+                    $ resolve (RevealChaosToken (toSource s) iid (ChaosToken t chaosTokenFace (Just iid) False False))
+        | otherwise -> do
+            let
+              applyRevealStategyModifier (MultiReveal _ b) (ChangeRevealStrategy n) = MultiReveal n b
+              applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
+              applyRevealStategyModifier n RevealAnotherChaosToken = MultiReveal n (Reveal 1)
+              applyRevealStategyModifier n (DrawAdditionalChaosTokens m) =
+                let
+                  go = \case
+                    Reveal x -> RevealAndChoose (x + m) 1
+                    RevealAndChoose x z -> RevealAndChoose (x + m) z
+                    other -> other
+                 in
+                  go n
+              applyRevealStategyModifier n _ = n
+              revealStrategy =
+                foldl' applyRevealStategyModifier (Reveal 1) (modifiers' <> modifiers'')
+            pushAll
+              [ RequestChaosTokens (toSource s) (Just iid) revealStrategy SetAside
+              , RunSkillTest iid
+              ]
       pure s
     DrawAnotherChaosToken iid -> do
       player <- getPlayer skillTestInvestigator

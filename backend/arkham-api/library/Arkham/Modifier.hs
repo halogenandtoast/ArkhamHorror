@@ -412,6 +412,7 @@ data ModifierType
   | SkillModifier {skillType :: SkillType, value :: Int}
   | SkillModifiersAffectOtherSkill SkillType SkillType
   | SkillTestAutomaticallySucceeds
+  | SkillTestAutomaticallyFails
   | SkillTestResultValueModifier Int
   | SkipMythosPhaseStep MythosPhaseStep
   | SlotCanBe SlotType SlotType

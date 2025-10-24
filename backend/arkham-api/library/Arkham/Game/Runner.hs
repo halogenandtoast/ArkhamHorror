@@ -1058,7 +1058,8 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         _ -> error "impossible"
     pure g
   CommitCard iid card -> do
-    let alreadyCommitted = any ((== card.id) . toCardId) (g ^. entitiesL . skillsL)
+    -- let skillTestCards = maybe [] (map (.id) . concat . Map.elems . skillTestCommittedCards) (g ^. skillTestL)
+    let alreadyCommitted = any ((== card.id) . toCardId) (g ^. entitiesL . skillsL) -- || card.id `elem` skillTestCards
     if alreadyCommitted
       then pure g
       else do

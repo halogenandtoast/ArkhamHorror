@@ -3623,13 +3623,16 @@ mouthOfKnYanTheCavernsMaw =
 mouthOfKnYanTheDepthsBeneath :: CardDef
 mouthOfKnYanTheDepthsBeneath =
   singleSided
-    $ location
-      "04206b"
-      ("Mouth of K'n-yan" <:> "The Depths Beneath")
-      [Cave]
-      Equals
-      [Circle, Triangle, Diamond]
-      HeartOfTheElders
+    $ ( location
+          "04206b"
+          ("Mouth of K'n-yan" <:> "The Depths Beneath")
+          [Cave]
+          Equals
+          [Circle, Triangle, Diamond]
+          HeartOfTheElders
+      )
+      { cdOtherSide = Just "04206"
+      }
 
 timeWrackedWoods :: CardDef
 timeWrackedWoods =

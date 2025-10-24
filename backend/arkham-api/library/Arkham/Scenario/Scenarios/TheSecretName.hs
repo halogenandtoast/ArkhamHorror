@@ -215,8 +215,9 @@ instance RunMessage TheSecretName where
         _ -> pure ()
       pure s
     EnemyDefeated _ cardId _ _ -> do
-      isBrownJenkin <- selectAny $ cardIs Enemies.brownJenkin <> CardWithId cardId
-      isNahab <- selectAny $ cardIs Enemies.nahab <> CardWithId cardId
+      card <- fetchCard cardId
+      let isBrownJenkin = cardMatch card $ cardIs Enemies.brownJenkin
+      let isNahab = cardMatch card $ cardIs Enemies.nahab
 
       let brownJenkinDefeated = getMetaKeyDefault "brownJenkinDefeated" False attrs || isBrownJenkin
       let nahabDefeated = getMetaKeyDefault "nahabDefeated" False attrs || isNahab

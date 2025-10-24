@@ -55,6 +55,8 @@ function isAbility(v: Message): v is AbilityLabel {
   }
 
   const { source } = v.ability;
+  console.log(source)
+  console.log(v.ability)
 
   if (source.sourceTag === 'ProxySource') {
     if ("contents" in source.source) {
@@ -65,7 +67,10 @@ function isAbility(v: Message): v is AbilityLabel {
   } else if (source.tag === 'EventSource') {
     return source.contents === id.value
   } else if (source.tag === 'AssetSource') {
-    return source.contents === id.value
+    const asset = props.game.assets[source.contents]
+    if (asset) {
+      return asset.cardId === id.value && asset.placement.tag === 'StillInHand'
+    }
   } else if (source.tag === 'SkillSource') {
     return source.contents === id.value
   }

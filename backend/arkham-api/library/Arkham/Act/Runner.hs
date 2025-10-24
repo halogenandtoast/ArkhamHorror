@@ -98,6 +98,7 @@ instance RunMessage ActAttrs where
     PlaceClues _ (ActTarget aid) n | aid == actId -> do
       let totalClues = n + actClues
       pure $ a {actClues = totalClues}
+    MoveTokens _ (InvestigatorSource _) (ActTarget aid) Clue _ | aid == actId -> pure a
     MoveTokens _ _ (ActTarget aid) Clue n | aid == actId -> do
       let totalClues = n + actClues
       pure $ a {actClues = totalClues}

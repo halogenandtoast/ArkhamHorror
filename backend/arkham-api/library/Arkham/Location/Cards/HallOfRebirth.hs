@@ -15,7 +15,7 @@ hallOfRebirth = location HallOfRebirth Cards.hallOfRebirth 2 (Static 1)
 
 instance HasAbilities HallOfRebirth where
   getAbilities (HallOfRebirth a) =
-    extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
+    extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
 
 instance RunMessage HallOfRebirth where
   runMessage msg l@(HallOfRebirth attrs) = runQueueT $ case msg of

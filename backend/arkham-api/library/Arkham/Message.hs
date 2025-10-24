@@ -515,6 +515,8 @@ data Message
   | SwapChaosToken ChaosTokenFace ChaosTokenFace
   | RemoveAllChaosTokens ChaosTokenFace
   | RemoveChaosToken ChaosTokenFace
+  | DebugRemoveChaosToken ChaosTokenFace
+  | ResetTokenPool
   | -- Asset Uses
     AddUses Source AssetId UseType Int
   | -- Asks

@@ -16,7 +16,7 @@ import Arkham.Helpers.Query (getActiveInvestigatorId, getInvestigators, getLead)
 import Arkham.Helpers.Window (checkWhen, checkWindows)
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
-import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIsNot))
+import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIsNot, IncludeSealed))
 import Arkham.Message.Lifted.Queue
 import Arkham.Modifier (_CancelAnyChaosToken, _CancelAnyChaosTokenAndDrawAnother)
 import Arkham.Prelude
@@ -963,6 +963,30 @@ instance RunMessage ChaosBag where
         & (chaosTokensL %~ sort . (token {chaosTokenCancelled = False, chaosTokenSealed = False} :))
         & (setAsideChaosTokensL %~ filter (/= token))
         & (revealedChaosTokensL %~ filter (/= token))
+    ResetTokenPool -> do
+      bless <- selectCount $ IncludeSealed #bless
+      curse <- selectCount $ IncludeSealed #curse
+      frost <- selectCount $ IncludeSealed #frost
+
+      blessTokens <- replicateM (10 - bless) $ createChaosToken #bless
+      curseTokens <- replicateM (10 - curse) $ createChaosToken #curse
+      frostTokens <- replicateM (8 - frost) $ createChaosToken #frost
+      pure $ c & tokenPoolL .~ blessTokens <> curseTokens <> frostTokens
+    DebugRemoveChaosToken face ->
+      case find ((== face) . chaosTokenFace) chaosBagChaosTokens of
+        Nothing -> pure c
+        Just token -> do
+          let shouldReturnToPool = face `elem` [#bless, #curse, #frost]
+          if shouldReturnToPool
+            then do
+              push $ ReturnChaosTokensToPool [token]
+              pure c
+            else
+              pure
+                $ c
+                & (chaosTokensL %~ delete token)
+                & (setAsideChaosTokensL %~ delete token)
+                & (revealedChaosTokensL %~ delete token)
     RemoveChaosToken face ->
       pure $ c & chaosTokensL %~ deleteFirstMatch ((== face) . chaosTokenFace)
     RemoveAllChaosTokens face ->

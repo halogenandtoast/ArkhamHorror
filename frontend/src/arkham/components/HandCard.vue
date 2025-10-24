@@ -55,8 +55,6 @@ function isAbility(v: Message): v is AbilityLabel {
   }
 
   const { source } = v.ability;
-  console.log(source)
-  console.log(v.ability)
 
   if (source.sourceTag === 'ProxySource') {
     if ("contents" in source.source) {

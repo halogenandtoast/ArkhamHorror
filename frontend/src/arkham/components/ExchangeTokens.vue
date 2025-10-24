@@ -41,6 +41,15 @@ async function submit() {
   await exchangeTokens(props.game.id, props.source, props.investigator1, props.investigator2, props.token, amount.value)
 }
 
+async function adjustAmount(delta: number) {
+  const newAmount = amount.value + delta
+
+  if (props.investigator1Amount - newAmount < 0) return
+  if (props.investigator2Amount + newAmount < 0) return
+
+  amount.value = newAmount
+}
+
 </script>
 
 <template>
@@ -51,11 +60,11 @@ async function submit() {
         <span class="amount">{{amount1}}</span>
       </div>
       <div class='controls'>
-        <button id="btn__back" @click="amount = amount - 1">&larr;</button>
+        <button id="btn__back" @click="adjustAmount(-1)">&larr;</button>
         <div class="item">
           <PoolItem :type="token.toLowerCase()" />
         </div>
-        <button id="btn__forward" @click="amount = amount + 1">&rarr;</button>
+        <button id="btn__forward" @click="adjustAmount(1)">&rarr;</button>
       </div>
       <div class="investigator">
         <img class="portrait" :src="portraitLabelImage(investigator2)"/>

@@ -133,7 +133,7 @@ onSameLocation a b = do
     _ -> False
 
 locationMatches
-  :: (HasGame m, Tracing m)
+  :: (HasGame m, Tracing m, HasCallStack)
   => InvestigatorId
   -> Source
   -> Window
@@ -153,20 +153,20 @@ locationMatches investigatorId source window locationId matcher' = do
 
     -- normal cases
     Matcher.LocationWithClues valueMatcher ->
-      (`gameValueMatches` valueMatcher) =<< field LocationClues locationId
+      maybe (pure False) (`gameValueMatches` valueMatcher) =<< fieldMay LocationClues locationId
     Matcher.LocationWithDoom valueMatcher ->
-      (`gameValueMatches` valueMatcher) =<< field LocationDoom locationId
+      maybe (pure False) (`gameValueMatches` valueMatcher) =<< fieldMay LocationDoom locationId
     Matcher.LocationWithHorror valueMatcher ->
-      (`gameValueMatches` valueMatcher) =<< field LocationHorror locationId
+      maybe (pure False) (`gameValueMatches` valueMatcher) =<< fieldMay LocationHorror locationId
     Matcher.LocationWithShroud valueMatcher ->
-      field LocationShroud locationId >>= \case
+      fieldMayJoin LocationShroud locationId >>= \case
         Nothing -> pure False
         Just shroud -> gameValueMatches shroud valueMatcher
     Matcher.LocationWithMostClues locationMatcher ->
       elem locationId
         <$> select (Matcher.LocationWithMostClues locationMatcher)
     Matcher.LocationWithResources valueMatcher ->
-      (`gameValueMatches` valueMatcher) =<< field LocationResources locationId
+      maybe (pure False) (`gameValueMatches` valueMatcher) =<< fieldMay LocationResources locationId
     Matcher.LocationLeavingPlay -> case windowType window of
       Window.LeavePlay (LocationTarget lid) ->
         pure $ locationId == lid
@@ -174,8 +174,8 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.SameLocation -> do
       let
         getSameLocationSource = \case
-          EnemySource eid -> field EnemyLocation eid
-          AssetSource aid -> field AssetLocation aid
+          EnemySource eid -> fieldMayJoin EnemyLocation eid
+          AssetSource aid -> fieldMayJoin AssetLocation aid
           AbilitySource s _ -> getSameLocationSource s
           UseAbilitySource _ s _ -> getSameLocationSource s
           _ -> error $ "can't detect same location for source " <> show source
@@ -183,7 +183,7 @@ locationMatches investigatorId source window locationId matcher' = do
       mlid' <- getSameLocationSource source
       pure $ Just locationId == mlid'
     Matcher.YourLocation -> do
-      yourLocationId <- field InvestigatorLocation investigatorId
+      yourLocationId <- fieldMayJoin InvestigatorLocation investigatorId
       pure $ Just locationId == yourLocationId
     Matcher.ThisLocation ->
       let
@@ -197,7 +197,7 @@ locationMatches investigatorId source window locationId matcher' = do
        in
         go source
     Matcher.NotYourLocation -> do
-      yourLocationId <- field InvestigatorLocation investigatorId
+      yourLocationId <- fieldMayJoin InvestigatorLocation investigatorId
       pure $ Just locationId /= yourLocationId
     Matcher.LocationMatchAll ms ->
       allM (locationMatches investigatorId source window locationId) ms

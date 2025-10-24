@@ -95,7 +95,8 @@
   },
   "resolutions": {
     "xp": {
-      "forgingYourOwnPath": "You are forging your own path"
+      "forgingYourOwnPath": "You are forging your own path",
+      "bonus": "Completed acts during this scenario"
     },
     "resolution1": {
       "title": "Resolution 1",

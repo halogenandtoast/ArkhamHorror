@@ -95,6 +95,9 @@ instance IsLabel "evading" SkillTestMatcher where
 instance IsLabel "any" SkillTestMatcher where
   fromLabel = AnySkillTest
 
+instance IsLabel "none" SkillTestMatcher where
+  fromLabel = NotSkillTest AnySkillTest
+
 instance IsLabel "failed" SkillTestMatcher where
   fromLabel = SkillTestWasFailed
 

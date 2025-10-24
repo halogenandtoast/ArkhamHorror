@@ -453,26 +453,6 @@ defaultAbilityWindow = \case
   ForcedWhen _ aType -> defaultAbilityWindow aType
   ConstantAbility -> AnyWindow
 
-isFastAbilityType :: AbilityType -> Bool
-isFastAbilityType = \case
-  FastAbility' {} -> True
-  ForcedAbility {} -> False
-  SilentForcedAbility {} -> False
-  ForcedAbilityWithCost {} -> False
-  Objective aType -> isFastAbilityType aType
-  DelayedAbility aType -> isFastAbilityType aType
-  ReactionAbility {} -> False
-  CustomizationReaction {} -> False
-  ConstantReaction {} -> False
-  ActionAbility {} -> False
-  ActionAbilityWithSkill {} -> False
-  AbilityEffect {} -> False
-  Haunted {} -> False
-  ServitorAbility {} -> False
-  Cosmos {} -> False
-  ForcedWhen _ aType -> isFastAbilityType aType
-  ConstantAbility -> False
-
 isReactionAbilityType :: AbilityType -> Bool
 isReactionAbilityType = \case
   SilentForcedAbility {} -> False

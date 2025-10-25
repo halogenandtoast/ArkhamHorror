@@ -1298,10 +1298,11 @@ handOfTheBrotherhood =
 
 theWingedSerpent :: CardDef
 theWingedSerpent =
-  (enemy "04209b" ("The Winged Serpent" <:> "The Wrath of Yig") PillarsOfJudgement 1)
-    { cdCardTraits = setFromList [Monster, Serpent, Elite]
-    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Massive]
-    }
+  doubleSided "04209" $
+    (enemy "04209b" ("The Winged Serpent" <:> "The Wrath of Yig") PillarsOfJudgement 1)
+      { cdCardTraits = setFromList [Monster, Serpent, Elite]
+      , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Massive]
+      }
 
 apexStrangleweed :: CardDef
 apexStrangleweed =

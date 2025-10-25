@@ -1213,6 +1213,7 @@ data Message
     ClearQueue
   | DebugAddToHand InvestigatorId CardId
   | DebugRemoveChaosToken ChaosTokenFace
+  | SetCampaignStep CampaignStep
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveToJSON defaultOptions ''Message)

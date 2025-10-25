@@ -6,7 +6,6 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Capability
 import Arkham.Card
-import Arkham.Deck qualified as Deck
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
@@ -51,7 +50,7 @@ instance RunMessage VedaWhitsleySkilledBotanist where
               (basic AnyCard)
               (defer attrs IsNotDraw)
       pure a
-    SearchFound iid (isTarget attrs -> True) Deck.EncounterDeck (c : _) -> do
+    SearchFound iid (isTarget attrs -> True) _ (c : _) -> do
       focusCards [c] do
         if
           | cardMatch c (CardWithType EnemyType) ->

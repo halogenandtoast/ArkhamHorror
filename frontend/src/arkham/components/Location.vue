@@ -208,8 +208,11 @@ const attachedKeys = computed(() => {
 const stories = computed(() => {
   return Object.values(props.game.stories)
     .filter((s) => {
-      const { enemies } = props.game
+      const { assets, enemies } = props.game
       if (Object.values(enemies).find((e) => s.otherSide?.contents === e.id)) {
+        return false
+      }
+      if (Object.values(assets).find((a) => s.otherSide?.contents === a.id)) {
         return false
       }
       return s.placement.tag === 'AtLocation' && s.placement.contents === props.location.id && s.otherSide?.contents !== props.location.id

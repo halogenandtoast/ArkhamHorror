@@ -1,17 +1,12 @@
-module Arkham.Asset.Assets.Thermos (
-  thermos,
-  Thermos (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Thermos (thermos) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Damage
-import Arkham.Helpers.Investigator
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
 newtype Thermos = Thermos AssetAttrs
@@ -25,58 +20,30 @@ instance HasAbilities Thermos where
   getAbilities (Thermos a) =
     [ withTooltip
         "Heal 1 damage from an investigator at your location (2 damage instead if he or she has 2 or more physical trauma)."
-        $ controlledAbility
-          a
-          1
-          (exists $ HealableInvestigator (toSource a) DamageType $ colocatedWithMatch You)
-        $ ActionAbility []
-        $ ActionCost 1
-        <> ExhaustCost (toTarget a)
+        $ controlled a 1 (exists $ HealableInvestigator (toSource a) #damage $ colocatedWithMatch You)
+        $ actionAbilityWithCost (exhaust a <> assetUseCost a Supply 1)
     , withTooltip
         "Heal 1 horror from an investigator at your location (2 horror instead if he or she has 2 or more mental trauma)."
-        $ controlledAbility
-          a
-          2
-          (exists $ HealableInvestigator (toSource a) HorrorType $ InvestigatorAt YourLocation)
-        $ ActionAbility []
-        $ ActionCost 1
-        <> ExhaustCost (toTarget a)
+        $ controlled a 2 (exists $ HealableInvestigator (toSource a) #horror $ colocatedWithMatch You)
+        $ actionAbilityWithCost (exhaust a <> assetUseCost a Supply 1)
     ]
 
 instance RunMessage Thermos where
-  runMessage msg a@(Thermos attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 windows' payment -> do
-      targets <- selectTargets $ HealableInvestigator (toSource attrs) DamageType $ colocatedWith iid
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [ TargetLabel target [UseCardAbilityChoiceTarget iid (toSource attrs) 1 target windows' payment]
-          | target <- targets
-          ]
+  runMessage msg a@(Thermos attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      investigators <- select $ HealableInvestigator (toSource attrs) #damage $ colocatedWith iid
+      chooseOrRunOneM iid $ targets investigators $ handleTarget iid (attrs.ability 1)
       pure a
-    UseCardAbilityChoiceTarget _ (isSource attrs -> True) 1 (InvestigatorTarget iid') _ _ ->
-      do
-        trauma <- field InvestigatorPhysicalTrauma iid'
-        push
-          $ HealDamage
-            (InvestigatorTarget iid')
-            (toSource attrs)
-            (if trauma >= 2 then 2 else 1)
-        pure a
-    UseCardAbility iid (isSource attrs -> True) 2 windows' payment -> do
-      targets <- selectTargets $ HealableInvestigator (toSource attrs) HorrorType $ colocatedWith iid
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [ TargetLabel target [UseCardAbilityChoiceTarget iid (toSource attrs) 2 target windows' payment]
-          | target <- targets
-          ]
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      investigators <- select $ HealableInvestigator (toSource attrs) #horror $ colocatedWith iid
+      chooseOrRunOneM iid $ targets investigators $ handleTarget iid (attrs.ability 2)
       pure a
-    UseCardAbilityChoiceTarget _ (isSource attrs -> True) 2 (InvestigatorTarget iid') _ _ -> do
+    HandleTargetChoice _ (isAbilitySource attrs 1 -> True) (InvestigatorTarget iid') -> do
+      trauma <- field InvestigatorPhysicalTrauma iid'
+      healDamageIfCan iid' (attrs.ability 1) $ if trauma >= 2 then 2 else 1
+      pure a
+    HandleTargetChoice _ (isAbilitySource attrs 2 -> True) (InvestigatorTarget iid') -> do
       trauma <- field InvestigatorMentalTrauma iid'
-      canBeHealed <- canHaveHorrorHealed (attrs.ability 1) iid'
-      pushWhen canBeHealed $ HealHorror (toTarget iid') (attrs.ability 1) (if trauma >= 2 then 2 else 1)
+      healHorrorIfCan iid' (attrs.ability 2) $ if trauma >= 2 then 2 else 1
       pure a
-    _ -> Thermos <$> runMessage msg attrs
+    _ -> Thermos <$> liftRunMessage msg attrs

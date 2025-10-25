@@ -115,7 +115,7 @@ postApiV1ArkhamGamesR = do
 
     runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer) do
       for_ pids \pid -> addPlayer (PlayerId $ coerce pid)
-      runMessages Nothing
+      runMessages (gameIdToText gameId) Nothing
 
     updatedQueue <- liftIO $ readIORef (queueToRef queueRef)
     updatedGame <- liftIO $ readIORef gameRef

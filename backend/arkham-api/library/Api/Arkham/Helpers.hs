@@ -22,13 +22,15 @@ import Control.Monad.Random (MonadRandom (..), StdGen)
 import Data.Aeson qualified as Aeson
 import Data.Map.Strict qualified as Map
 import Data.Time.Clock
+import Data.UUID qualified as UUID
 import Database.Esqueleto.Experimental
 import Database.Redis (RedisChannel)
+import Entity.Arkham.Game
 import Entity.Arkham.LogEntry
 import GHC.Records
 import Import hiding (appLogger, appTracer, (==.), (>=.))
 import OpenTelemetry.Trace qualified as Trace
-import OpenTelemetry.Trace.Monad (inSpan', MonadTracer (..))
+import OpenTelemetry.Trace.Monad (MonadTracer (..), inSpan')
 
 newtype GameLog = GameLog {gameLogToLogEntries :: [Text]}
   deriving newtype (Monoid, Semigroup)
@@ -143,6 +145,9 @@ instance Tracing GameAppT where
   addAttribute = Trace.addAttribute
   defaultSpanArgs = Trace.defaultSpanArguments
   doTrace name args action = inSpan' name args action
+
+gameIdToText :: ArkhamGameId -> Text
+gameIdToText = UUID.toText . coerce
 
 runGameApp :: MonadIO m => GameApp -> GameAppT a -> m a
 runGameApp gameApp = liftIO . flip runReaderT gameApp . unGameAppT

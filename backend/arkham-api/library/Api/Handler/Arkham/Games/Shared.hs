@@ -160,6 +160,7 @@ instance ToJSON GameDetailsEntry where
 
 updateGame :: Answer -> ArkhamGameId -> UserId -> TChan BSL.ByteString -> Handler ()
 updateGame response gameId userId writeChannel = do
+  tracer <- getTracer
   ArkhamGame {..} <- runDB do
     user <- get404 userId
     unless user.admin $ void $ getBy404 (UniquePlayer userId gameId)
@@ -186,11 +187,9 @@ updateGame response gameId userId writeChannel = do
       gameRef <- newIORef gameJson
       queueRef <- newQueue ((ClearUI : messages) <> currentQueue)
       genRef <- newIORef $ mkStdGen gameSeed
-      tracer <- getTracer
 
-      runGameApp
-        (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel) tracer)
-        (runMessages Nothing)
+      runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel) tracer) do
+        runMessages (gameIdToText gameId) Nothing
 
       ge <- readIORef gameRef
       let diffDown = diff ge arkhamGameCurrentData

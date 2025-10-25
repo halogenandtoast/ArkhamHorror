@@ -128,7 +128,7 @@ putApiV1ArkhamGameDecksR gameId = do
                   then UpgradeDecklist investigatorId decklist
                   else ReplaceInvestigator investigatorId decklist
             else UpgradeDecklist investigatorId decklist
-    runMessages Nothing
+    runMessages (gameIdToText gameId) Nothing
   ge <- readIORef gameRef
 
   let diffDown = diff ge arkhamGameCurrentData

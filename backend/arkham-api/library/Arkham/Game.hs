@@ -5463,9 +5463,10 @@ runMessages
      , MonadMask m
      , Tracing m
      )
-  => Maybe (Message -> IO ())
+  => Text
+  -> Maybe (Message -> IO ())
   -> m ()
-runMessages mLogger = do
+runMessages gameId mLogger = do
   g <- readGame
   debugLevel <- getDebugLevel
   when (debugLevel == 2) $ peekQueue >>= pPrint >> putStrLn "\n"
@@ -5512,7 +5513,7 @@ runMessages mLogger = do
                       | iid <- xs
                       ]
 
-              runMessages mLogger
+              runMessages gameId mLogger
             else do
               let turnPlayer = fromJustNote "verified above" mTurnInvestigator
               pushAllEnd
@@ -5520,7 +5521,7 @@ runMessages mLogger = do
                     (InvestigationPhaseStep InvestigatorTakesActionStep)
                     [PlayerWindow (toId turnPlayer) [] False]
                 ]
-                >> runMessages mLogger
+                >> runMessages gameId mLogger
       Just msg -> do
         when (debugLevel == 1) $ do
           pPrint msg
@@ -5530,13 +5531,13 @@ runMessages mLogger = do
 
         let
           go = \case
-            Priority msg' -> push msg' >> runMessages mLogger
+            Priority msg' -> push msg' >> runMessages gameId mLogger
             Run msgs -> do
               pushAll msgs
-              runMessages mLogger
-            ClearUI -> runWithEnv (overGameM $ runMessage ClearUI) >> runMessages mLogger
-            Ask _ (ChooseOneAtATime []) -> runMessages mLogger
-            Ask _ (ChooseOneAtATimeWithAuto _ []) -> runMessages mLogger
+              runMessages gameId mLogger
+            ClearUI -> runWithEnv (overGameM $ runMessage ClearUI) >> runMessages gameId mLogger
+            Ask _ (ChooseOneAtATime []) -> runMessages gameId mLogger
+            Ask _ (ChooseOneAtATimeWithAuto _ []) -> runMessages gameId mLogger
             Ask pid q -> do
               -- if we are choosing decks, we do not want to clobber other ChooseDeck
               moreChooseDecks <-
@@ -5550,7 +5551,7 @@ runMessages mLogger = do
                       AskMap askMap | not (null askMap) && ChooseDeck `elem` Map.elems askMap -> AskMap $ insertMap pid q askMap
                       other -> other
                   withQueue_ (map updateChooseDeck)
-                  runMessages mLogger
+                  runMessages gameId mLogger
                 else do
                   let
                     shouldCheckTarget = \case
@@ -5574,7 +5575,7 @@ runMessages mLogger = do
                     then
                       runWithEnv (toExternalGame (g & activePlayerIdL .~ pid & scenarioStepsL +~ 1) (singletonMap pid q))
                         >>= putGame
-                    else runMessages mLogger
+                    else runMessages gameId mLogger
             AskMap askMap -> do
               -- Read might have only one player being prompted so we need to find the active player
               let current = g ^. activePlayerIdL
@@ -5586,8 +5587,8 @@ runMessages mLogger = do
               let activePid = fromMaybe current $ find (`elem` activePids) (current : keys askMap)
               runWithEnv (toExternalGame (g & activePlayerIdL .~ activePid & scenarioStepsL +~ 1) askMap)
                 >>= putGame
-            CheckWindows {} | not (gameRunWindows g) -> runMessages mLogger
-            Do (CheckWindows {}) | not (gameRunWindows g) -> runMessages mLogger
+            CheckWindows {} | not (gameRunWindows g) -> runMessages gameId mLogger
+            Do (CheckWindows {}) | not (gameRunWindows g) -> runMessages gameId mLogger
             _ -> do
               -- Hidden Library handling
               -- > While an enemy is moving, Hidden Library gains the Passageway trait.
@@ -5635,7 +5636,8 @@ runMessages mLogger = do
                   Would {} -> False
                   _ -> True
 
-              runWithEnv do
+              runWithEnv $ withSpan' "Root" \currentSpan -> do
+                addAttribute currentSpan "gameId" gameId
                 overGameM preloadEntities
                 overGameM $ runPreGameMessage msg
                 overGameM
@@ -5651,7 +5653,7 @@ runMessages mLogger = do
                         >=> handleBlanked
                     else runMessage msg
                 overGame $ set enemyMovingL Nothing . set enemyEvadingL Nothing
-              runMessages mLogger
+              runMessages gameId mLogger
         go msg
 
 getAsIfLocationMap :: (HasGame m, Tracing m) => m (Map InvestigatorId LocationId)

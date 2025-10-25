@@ -2779,12 +2779,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           when (movement.means /= Place) do
             moveWith <-
               select (InvestigatorWithModifier (CanMoveWith $ InvestigatorWithId iid) <> colocatedWith iid)
-                >>= filterM (\iid' -> getCanMoveTo iid' (moveSource movement) lid)
-
-            for_ moveWith \iid' ->
-              Choose.chooseOneM iid' do
-                Choose.labeled "Move too" $ moveTo iid' iid' lid
-                Choose.labeled "Skip" Choose.nothing
+            for_ moveWith \iid' -> push $ ForInvestigator iid' $ ForTarget (LocationTarget lid) (MoveTo movement)
 
           afterMoveButBeforeEnemyEngagement <-
             Helpers.checkWindows [mkAfter (Window.MovedButBeforeEnemyEngagement iid lid)]
@@ -2794,6 +2789,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
             <> [afterMoveButBeforeEnemyEngagement | movement.means /= Place]
             <> [CheckEnemyEngagement iid]
           pure $ a & movementL .~ Nothing
+  ForInvestigator iid' (ForTarget (LocationTarget lid) (MoveTo movement)) | isTarget a (moveTarget movement) -> do
+    whenM (getCanMoveTo iid' (moveSource movement) lid) do
+      Choose.chooseOneM iid' do
+        Choose.labeled "Move too" $ moveTo iid' iid' lid
+        Choose.labeled "Skip" Choose.nothing
+
+    pure a
   Do (WhenWillEnterLocation iid lid) | iid == investigatorId -> do
     pure $ a & placementL .~ AtLocation lid
   CheckEnemyEngagement iid | iid == investigatorId -> do

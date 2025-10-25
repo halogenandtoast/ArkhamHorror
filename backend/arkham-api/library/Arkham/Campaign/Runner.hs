@@ -342,6 +342,7 @@ defaultCampaignRunner msg a = case msg of
       $ updateAttrs a
       $ \attrs ->
         attrs & (stepL %~ maybe id const mstep) & (completedStepsL %~ completeStep (campaignStep attrs))
+  SetCampaignStep step' -> pure $ updateAttrs a $ stepL .~ step'
   SetCampaignLog newLog -> pure $ updateAttrs a $ logL .~ newLog
   SpendXP iid n -> do
     runMessage

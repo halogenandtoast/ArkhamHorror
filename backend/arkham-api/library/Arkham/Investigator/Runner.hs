@@ -96,6 +96,7 @@ import Arkham.Helpers.Window (
  )
 import Arkham.Helpers.Window qualified as Helpers
 import Arkham.History
+import Arkham.I18n (withI18n)
 import Arkham.Investigate.Types
 import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Investigator.Types qualified as Attrs
@@ -701,19 +702,31 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
     killed <- hasModifier a KilledIfDefeated
     becomeHomunculus <- hasModifier a BecomeHomunculusWhenDefeated
 
+    push windowMsg
+
+    let chooseTrauma = physicalTrauma > 0 && mentalTrauma > 0
+
+    when chooseTrauma do
+      Choose.chooseOneM iid $ withI18n do
+        Choose.labeled' "sufferPhysicalTrauma" $ Lifted.sufferPhysicalTrauma iid 1
+        Choose.labeled' "sufferMentalTrauma" $ Lifted.sufferMentalTrauma iid 1
+
     pushAll
-      $ windowMsg
-      : CheckTrauma iid
+      $ CheckTrauma iid
       : [ChooseLeadInvestigator | isLead]
         <> [InvestigatorKilled (toSource a) iid | killed]
         <> [BecomeHomunculus iid | not killed && becomeHomunculus]
         <> [InvestigatorWhenEliminated (toSource a) iid Nothing]
+
     pure
-      $ a
-      & (defeatedL .~ True)
-      & (endedTurnL .~ True)
-      & (physicalTraumaL +~ physicalTrauma)
-      & (mentalTraumaL +~ mentalTrauma)
+      $ if chooseTrauma
+        then a & (defeatedL .~ True) & (endedTurnL .~ True)
+        else
+          a
+            & (defeatedL .~ True)
+            & (endedTurnL .~ True)
+            & (physicalTraumaL +~ physicalTrauma)
+            & (mentalTraumaL +~ mentalTrauma)
   Msg.InvestigatorResigned iid | iid == investigatorId -> do
     pushAll [InvestigatorWhenEliminated (toSource a) iid (Just $ Do msg)]
     pure $ a & endedTurnL .~ True

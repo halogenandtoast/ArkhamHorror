@@ -28,6 +28,7 @@ import Control.Monad.Catch qualified as Catch
 import UnliftIO.Exception qualified as UnliftIO
 
 import Arkham.Card.CardCode
+import Arkham.Tracing
 import Auth.JWT qualified as JWT
 import Control.Monad.Logger (LogSource)
 import Data.Aeson (Result (Success), fromJSON)
@@ -53,7 +54,7 @@ import Network.Bugsnag.Exception (AsException (..))
 import Network.Bugsnag.Yesod (bugsnagYesodMiddleware)
 import Network.HTTP.Client.Conduit (HasHttpManager (..), Manager)
 import OpenTelemetry.Trace qualified as Trace
-import OpenTelemetry.Trace.Monad (MonadTracer (..))
+import OpenTelemetry.Trace.Monad (MonadTracer (..), inSpan')
 import Orphans ()
 import Yesod.Core.Types (Logger)
 import Yesod.Core.Unsafe qualified as Unsafe
@@ -110,6 +111,13 @@ data App = App
 
 instance MonadTracer (HandlerFor App) where
   getTracer = getsYesod appTracer
+
+instance Tracing (HandlerFor App) where
+  type SpanType (HandlerFor App) = Trace.Span
+  type SpanArgs (HandlerFor App) = Trace.SpanArguments
+  defaultSpanArgs = Trace.defaultSpanArguments
+  addAttribute = Trace.addAttribute
+  doTrace name args action = inSpan' name args action
 
 class Monad m => HasApp m where
   getApp :: m App

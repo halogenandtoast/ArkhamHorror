@@ -108,7 +108,7 @@ runMessages :: TestAppT ()
 runMessages = do
   logger <- gets testLogger
   env <- get
-  runReaderT (Game.runMessages logger) env
+  runReaderT (Game.runMessages "TEST" logger) env
 
 pushAndRun :: Message -> TestAppT ()
 pushAndRun msg = push msg >> runMessages

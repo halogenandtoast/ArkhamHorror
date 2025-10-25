@@ -66,7 +66,7 @@ runGameMessage gameUUID msg = do
   let tracer = makeTracer provider $(detectInstrumentationLibrary) tracerOptions
   runGameApp
     (GameApp gameRef queueRef genRef (pure . const ()) tracer)
-    (runMessages Nothing)
+    (runMessages (gameIdToText gameId) Nothing)
   ge <- readIORef gameRef
   now <- liftIO getCurrentTime
   void $ dbGhci $ do

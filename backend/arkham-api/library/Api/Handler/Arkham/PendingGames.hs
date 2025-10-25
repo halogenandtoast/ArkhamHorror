@@ -51,7 +51,7 @@ putApiV1ArkhamPendingGameR gameId = do
 
           runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer) $ do
             addPlayer (PlayerId $ coerce pid)
-            runMessages Nothing
+            runMessages (gameIdToText gameId) Nothing
 
           updatedGame <- readIORef gameRef
           updatedQueue <- readIORef (queueToRef queueRef)

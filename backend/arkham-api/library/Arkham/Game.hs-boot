@@ -118,7 +118,8 @@ runMessages
      , MonadMask m
      , Tracing m
      )
-  => Maybe (Message -> IO ())
+  => Text
+  -> Maybe (Message -> IO ())
   -> m ()
 preloadModifiers :: (HasCallStack, Monad m, Tracing m) => Game -> m Game
 handleTraitRestrictedModifiers :: (Monad m, Tracing m) => Game -> m Game

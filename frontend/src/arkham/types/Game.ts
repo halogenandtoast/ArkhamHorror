@@ -70,6 +70,7 @@ export type Game = {
   agendas: Record<string, Agenda>;
   assets: Record<string, Asset>;
   events: Record<string, Event>;
+  scarletKeys: Record<string, ScarletKey>;
   enemies: Record<string, Enemy>;
   stories: Record<string, Story>;
   gameState: GameState;

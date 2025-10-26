@@ -7,6 +7,7 @@ import Arkham.Difficulty as X
 import Arkham.Helpers.Log as X (getHasRecord)
 import Arkham.Helpers.Message as X (
   pattern R1,
+  pattern R10,
   pattern R2,
   pattern R3,
   pattern R4,
@@ -15,7 +16,6 @@ import Arkham.Helpers.Message as X (
   pattern R7,
   pattern R8,
   pattern R9,
-  pattern R10,
  )
 import Arkham.Helpers.Scenario as X hiding (getIsReturnTo)
 import Arkham.Message as X (
@@ -44,6 +44,7 @@ import Arkham.Scenario.Runner as X (
   scenarioTimesPlayed,
   scenarioWith,
   setMetaKey,
+  getMetaKeyDefault,
   sideStory,
   standaloneCampaignLogL,
   tarotDeckL,
@@ -73,7 +74,9 @@ resolutionWithChooseOne s = resolutionFlavorWithChooseOne (setTitle (s <> ".titl
 resolutionWithXpAndChooseOne :: (HasI18n, ReverseQueue m) => Scope -> m Int -> ChooseT m () -> m ()
 resolutionWithXpAndChooseOne s f body = do
   xp <- f
-  resolutionFlavorWithChooseOne (withVars ["xp" .= xp] $ setTitle (s <> ".title") >> p (s <> ".body")) body
+  resolutionFlavorWithChooseOne
+    (withVars ["xp" .= xp] $ setTitle (s <> ".title") >> p (s <> ".body"))
+    body
 
 eachUnresigned :: ReverseQueue m => (InvestigatorId -> m ()) -> m ()
 eachUnresigned = selectEach (IncludeEliminated $ not_ ResignedInvestigator)

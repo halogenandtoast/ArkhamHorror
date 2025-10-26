@@ -1001,6 +1001,13 @@ revelation def = def {cdRevelation = IsRevelation}
 singleSided :: CardDef -> CardDef
 singleSided def = def {cdDoubleSided = False}
 
+otherSideIs :: CardCode -> CardDef -> CardDef
+otherSideIs ccode def =
+  def
+    { cdDoubleSided = False
+    , cdOtherSide = Just ccode
+    }
+
 veiled :: CardDef -> CardDef
 veiled def =
   def
@@ -3362,7 +3369,7 @@ overgrownRuins =
 eztliExhibit :: CardDef
 eztliExhibit =
   victory 1
-    $ singleSided
+    $ otherSideIs "04117"
     $ location
       "04117b"
       "Eztli Exhibit"
@@ -3388,7 +3395,7 @@ townHall =
 arkhamPoliceStation :: CardDef
 arkhamPoliceStation =
   victory 1
-    $ singleSided
+    $ otherSideIs "04126"
     $ location
       "04126b"
       "Arkham Police Station"
@@ -3399,13 +3406,13 @@ arkhamPoliceStation =
 
 trainTracks :: CardDef
 trainTracks =
-  singleSided
+  otherSideIs "04128"
     $ location "04128b" "Train Tracks" [Arkham] NoSymbol [T] ThreadsOfFate
 
 blackCave :: CardDef
 blackCave =
   victory 1
-    $ singleSided
+    $ otherSideIs "04133"
     $ location
       "04133b"
       "Black Cave"
@@ -3608,31 +3615,25 @@ sacredWoods_185 =
 
 mouthOfKnYanTheCavernsMaw :: CardDef
 mouthOfKnYanTheCavernsMaw =
-  singleSided
-    $ ( location
-          "04206"
-          ("Mouth of K'n-yan" <:> "The Cavern's Maw")
-          [Cave]
-          Equals
-          [Squiggle, T, Hourglass]
-          HeartOfTheElders
-      )
-      { cdOtherSide = Just "04206b"
-      }
+  otherSideIs "04206b"
+    $ location
+      "04206"
+      ("Mouth of K'n-yan" <:> "The Cavern's Maw")
+      [Cave]
+      Equals
+      [Squiggle, T, Hourglass]
+      HeartOfTheElders
 
 mouthOfKnYanTheDepthsBeneath :: CardDef
 mouthOfKnYanTheDepthsBeneath =
-  singleSided
-    $ ( location
-          "04206b"
-          ("Mouth of K'n-yan" <:> "The Depths Beneath")
-          [Cave]
-          Equals
-          [Circle, Triangle, Diamond]
-          HeartOfTheElders
-      )
-      { cdOtherSide = Just "04206"
-      }
+  otherSideIs "04206"
+    $ location
+      "04206b"
+      ("Mouth of K'n-yan" <:> "The Depths Beneath")
+      [Cave]
+      Equals
+      [Circle, Triangle, Diamond]
+      HeartOfTheElders
 
 timeWrackedWoods :: CardDef
 timeWrackedWoods =
@@ -4091,14 +4092,8 @@ witchesCircle :: CardDef
 witchesCircle =
   revelation
     $ victory 2
-    $ singleSided
-    $ location
-      "05055b"
-      "Witches' Circle"
-      [Woods, Trait.Circle]
-      Plus
-      [Squiggle]
-      TheWitchingHour
+    $ otherSideIs "05055"
+    $ location "05055b" "Witches' Circle" [Woods, Trait.Circle] Plus [Squiggle] TheWitchingHour
 
 witchHauntedWoodsAbandonedMine :: CardDef
 witchHauntedWoodsAbandonedMine =
@@ -4546,34 +4541,24 @@ strangeGeometry =
 
 hangmansBrook :: CardDef
 hangmansBrook =
-  singleSided
-    $ (location "05166" "Hangman's Brook" mempty Squiggle [Circle, Plus] TheWagesOfSin)
-      { cdOtherSide = Just "05166b"
-      }
+  otherSideIs "05166b"
+    $ location "05166" "Hangman's Brook" mempty Squiggle [Circle, Plus] TheWagesOfSin
 
 hangmansBrookSpectral :: CardDef
 hangmansBrookSpectral =
-  singleSided
-    $ location
-      "05166b"
-      "Hangman's Brook"
-      [Spectral]
-      Squiggle
-      [Circle, Plus]
-      TheWagesOfSin
+  location "05166b" "Hangman's Brook" [Spectral] Squiggle [Circle, Plus] TheWagesOfSin
+    & otherSideIs "05166"
 
 hauntedFields :: CardDef
 hauntedFields =
   victory 1
-    $ singleSided
-    $ (location "05167" "Haunted Fields" mempty Circle [Squiggle, Plus, Triangle, Square] TheWagesOfSin)
-      { cdOtherSide = Just "05167b"
-      }
+    $ otherSideIs "05167b"
+    $ location "05167" "Haunted Fields" mempty Circle [Squiggle, Plus, Triangle, Square] TheWagesOfSin
 
 hauntedFieldsSpectral :: CardDef
 hauntedFieldsSpectral =
   victory 1
-    $ singleSided
+    $ otherSideIs "05167"
     $ location
       "05167b"
       "Haunted Fields"
@@ -4585,15 +4570,13 @@ hauntedFieldsSpectral =
 abandonedChapel :: CardDef
 abandonedChapel =
   victory 1
-    $ singleSided
-    $ (location "05168" "Abandoned Chapel" mempty Plus [Squiggle, Circle, Diamond, Moon] TheWagesOfSin)
-      { cdOtherSide = Just "05168b"
-      }
+    $ otherSideIs "05168b"
+    $ location "05168" "Abandoned Chapel" mempty Plus [Squiggle, Circle, Diamond, Moon] TheWagesOfSin
 
 abandonedChapelSpectral :: CardDef
 abandonedChapelSpectral =
   victory 1
-    $ singleSided
+    $ otherSideIs "05168"
     $ location
       "05168b"
       "Abandoned Chapel"
@@ -4604,32 +4587,21 @@ abandonedChapelSpectral =
 
 theGallows_169 :: CardDef
 theGallows_169 =
-  singleSided
-    $ (location "05169" "The Gallows" mempty Triangle [Circle, Square] TheWagesOfSin)
-      { cdOtherSide = Just "05169b"
-      }
+  otherSideIs "05169b"
+    $ location "05169" "The Gallows" mempty Triangle [Circle, Square] TheWagesOfSin
 
 theGallowsSpectral_169 :: CardDef
 theGallowsSpectral_169 =
-  singleSided
-    $ location
-      "05169b"
-      "The Gallows"
-      [Spectral]
-      Triangle
-      [Circle, Square]
-      TheWagesOfSin
+  otherSideIs "05169"
+    $ location "05169b" "The Gallows" [Spectral] Triangle [Circle, Square] TheWagesOfSin
 
 theGallows_170 :: CardDef
 theGallows_170 =
-  singleSided
-    $ (location "05170" "The Gallows" mempty Triangle [Circle, Square] TheWagesOfSin)
-      { cdOtherSide = Just "05170b"
-      }
+  otherSideIs "05170b" $ location "05170" "The Gallows" mempty Triangle [Circle, Square] TheWagesOfSin
 
 theGallowsSpectral_170 :: CardDef
 theGallowsSpectral_170 =
-  singleSided
+  otherSideIs "05170"
     $ location
       "05170b"
       "The Gallows"
@@ -4640,14 +4612,12 @@ theGallowsSpectral_170 =
 
 hereticsGraves_171 :: CardDef
 hereticsGraves_171 =
-  singleSided
-    $ (location "05171" "Heretics' Graves" mempty Square [Triangle, Circle] TheWagesOfSin)
-      { cdOtherSide = Just "05171b"
-      }
+  otherSideIs "05171b"
+    $ location "05171" "Heretics' Graves" mempty Square [Triangle, Circle] TheWagesOfSin
 
 hereticsGravesSpectral_171 :: CardDef
 hereticsGravesSpectral_171 =
-  singleSided
+  otherSideIs "05171"
     $ location
       "05171b"
       "Heretics' Graves"
@@ -4658,93 +4628,53 @@ hereticsGravesSpectral_171 =
 
 hereticsGraves_172 :: CardDef
 hereticsGraves_172 =
-  singleSided
-    $ (location "05172" "Heretics' Graves" mempty Square [Triangle, Circle] TheWagesOfSin)
-      { cdOtherSide = Just "05172b"
-      }
+  location "05172" "Heretics' Graves" mempty Square [Triangle, Circle] TheWagesOfSin
+    & otherSideIs "05172b"
 
 hereticsGravesSpectral_172 :: CardDef
 hereticsGravesSpectral_172 =
-  singleSided
-    $ location
-      "05172b"
-      "Heretics' Graves"
-      [Spectral]
-      Square
-      [Triangle, Circle]
-      TheWagesOfSin
+  location "05172b" "Heretics' Graves" [Spectral] Square [Triangle, Circle] TheWagesOfSin
+    & otherSideIs "05172"
 
 chapelCrypt_173 :: CardDef
 chapelCrypt_173 =
-  singleSided
-    $ (location "05173" "Chapel Crypt" mempty Diamond [Plus, Moon] TheWagesOfSin)
-      { cdOtherSide = Just "05173b"
-      }
+  location "05173" "Chapel Crypt" mempty Diamond [Plus, Moon] TheWagesOfSin
+    & otherSideIs "05173b"
 
 chapelCryptSpectral_173 :: CardDef
 chapelCryptSpectral_173 =
-  singleSided
-    $ location
-      "05173b"
-      "Chapel Crypt"
-      [Spectral]
-      Diamond
-      [Plus, Moon]
-      TheWagesOfSin
+  location "05173b" "Chapel Crypt" [Spectral] Diamond [Plus, Moon] TheWagesOfSin
+    & otherSideIs "05173"
 
 chapelCrypt_174 :: CardDef
 chapelCrypt_174 =
-  singleSided
-    $ (location "05174" "Chapel Crypt" mempty Diamond [Plus, Moon] TheWagesOfSin)
-      { cdOtherSide = Just "05174b"
-      }
+  location "05174" "Chapel Crypt" mempty Diamond [Plus, Moon] TheWagesOfSin
+    & otherSideIs "05174b"
 
 chapelCryptSpectral_174 :: CardDef
 chapelCryptSpectral_174 =
-  singleSided
-    $ location
-      "05174b"
-      "Chapel Crypt"
-      [Spectral]
-      Diamond
-      [Plus, Moon]
-      TheWagesOfSin
+  location "05174b" "Chapel Crypt" [Spectral] Diamond [Plus, Moon] TheWagesOfSin
+    & otherSideIs "05174"
 
 chapelAttic_175 :: CardDef
 chapelAttic_175 =
-  singleSided
-    $ (location "05175" "Chapel Attic" mempty Moon [Plus, Diamond] TheWagesOfSin)
-      { cdOtherSide = Just "05175b"
-      }
+  location "05175" "Chapel Attic" mempty Moon [Plus, Diamond] TheWagesOfSin
+    & otherSideIs "05175b"
 
 chapelAtticSpectral_175 :: CardDef
 chapelAtticSpectral_175 =
-  singleSided
-    $ location
-      "05175b"
-      "Chapel Attic"
-      [Spectral]
-      Moon
-      [Plus, Diamond]
-      TheWagesOfSin
+  location "05175b" "Chapel Attic" [Spectral] Moon [Plus, Diamond] TheWagesOfSin
+    & otherSideIs "05175"
 
 chapelAttic_176 :: CardDef
 chapelAttic_176 =
-  singleSided
-    $ (location "05176" "Chapel Attic" mempty Moon [Plus, Diamond] TheWagesOfSin)
-      { cdOtherSide = Just "05176b"
-      }
+  location "05176" "Chapel Attic" mempty Moon [Plus, Diamond] TheWagesOfSin
+    & otherSideIs "05176b"
 
 chapelAtticSpectral_176 :: CardDef
 chapelAtticSpectral_176 =
-  singleSided
-    $ location
-      "05176b"
-      "Chapel Attic"
-      [Spectral]
-      Moon
-      [Plus, Diamond]
-      TheWagesOfSin
+  location "05176b" "Chapel Attic" [Spectral] Moon [Plus, Diamond] TheWagesOfSin
+    & otherSideIs "05176"
 
 lodgeGatesWeveBeenExpectingYou :: CardDef
 lodgeGatesWeveBeenExpectingYou =
@@ -6016,31 +5946,25 @@ vaultsOfZin =
 cityOfGugs :: CardDef
 cityOfGugs =
   victory 1
-    $ singleSided
-    $ ( location
-          "06255"
-          "City of Gugs"
-          []
-          T
-          [Heart, Squiggle, Moon]
-          PointOfNoReturn
-      )
-      { cdOtherSide = Just "06255b"
-      }
+    $ otherSideIs "06255b"
+    $ location
+      "06255"
+      "City of Gugs"
+      []
+      T
+      [Heart, Squiggle, Moon]
+      PointOfNoReturn
 
 towerOfKoth :: CardDef
 towerOfKoth =
-  singleSided
-    $ ( location
-          "06256"
-          "Tower of Koth"
-          []
-          Squiggle
-          [T, Square]
-          PointOfNoReturn
-      )
-      { cdOtherSide = Just "06256b"
-      }
+  otherSideIs "06256b"
+    $ location
+      "06256"
+      "Tower of Koth"
+      []
+      Squiggle
+      [T, Square]
+      PointOfNoReturn
 
 plainOfTheGhouls :: CardDef
 plainOfTheGhouls =
@@ -6069,31 +5993,25 @@ cragOfTheGhouls =
 seaOfBones :: CardDef
 seaOfBones =
   victory 1
-    $ singleSided
-    $ ( location
-          "06259"
-          "Sea of Bones"
-          [Vale]
-          Circle
-          [Hourglass, Star, Equals]
-          PointOfNoReturn
-      )
-      { cdOtherSide = Just "06259b"
-      }
+    $ otherSideIs "06259b"
+    $ location
+      "06259"
+      "Sea of Bones"
+      [Vale]
+      Circle
+      [Hourglass, Star, Equals]
+      PointOfNoReturn
 
 peaksOfThok :: CardDef
 peaksOfThok =
-  singleSided
-    $ ( location
-          "06260"
-          "Peaks of Thok"
-          [Vale, Central]
-          Star
-          [Equals, Circle]
-          PointOfNoReturn
-      )
-      { cdOtherSide = Just "06260b"
-      }
+  otherSideIs "06260b"
+    $ location
+      "06260"
+      "Peaks of Thok"
+      [Vale, Central]
+      Star
+      [Equals, Circle]
+      PointOfNoReturn
 
 valeOfPnath :: CardDef
 valeOfPnath =
@@ -9742,14 +9660,12 @@ libraryOfEbla =
 
 returnToHangmansBrook :: CardDef
 returnToHangmansBrook =
-  singleSided
-    $ (location "54037" "Hangman's Brook" mempty Squiggle [Circle, Plus] ReturnToTheWagesOfSin)
-      { cdOtherSide = Just "54037b"
-      }
+  otherSideIs "54037b"
+    $ location "54037" "Hangman's Brook" mempty Squiggle [Circle, Plus] ReturnToTheWagesOfSin
 
 returnToHangmansBrookSpectral :: CardDef
 returnToHangmansBrookSpectral =
-  singleSided
+  otherSideIs "54037"
     $ location
       "54037b"
       "Hangman's Brook"
@@ -10005,31 +9921,25 @@ parlorTheMidwinterGala =
 
 centralLotQuietOnSet :: CardDef
 centralLotQuietOnSet =
-  singleSided
-    $ ( location
-          "72008"
-          ("Central Lot" <:> "Quiet on Set")
-          [Set, Central]
-          Circle
-          [Moon, Diamond, Triangle]
-          FilmFatale
-      )
-      { cdOtherSide = Just "72008b"
-      }
+  otherSideIs "72008b"
+    $ location
+      "72008"
+      ("Central Lot" <:> "Quiet on Set")
+      [Set, Central]
+      Circle
+      [Moon, Diamond, Triangle]
+      FilmFatale
 
 centralLotBlurred :: CardDef
 centralLotBlurred =
-  singleSided
-    $ ( location
-          "72008b"
-          ("Central Lot" <:> "Blurred")
-          [Set, Central, Extradimensional]
-          Circle
-          [Moon, Diamond, Triangle]
-          FilmFatale
-      )
-      { cdOtherSide = Just "72008"
-      }
+  otherSideIs "72008"
+    $ location
+      "72008b"
+      ("Central Lot" <:> "Blurred")
+      [Set, Central, Extradimensional]
+      Circle
+      [Moon, Diamond, Triangle]
+      FilmFatale
 
 spaceSet :: CardDef
 spaceSet = location "72009" "Space Set" [Set] Moon [Circle] FilmFatale

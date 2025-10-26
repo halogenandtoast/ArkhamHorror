@@ -55,8 +55,10 @@
     "intro7": "<p>_Intro 7_: As if you didn’t already have several other pressing concerns, this morning’s article in the Arkham Advertiser piques your interest: “Chaos in French Hill!” The article goes on to describe several strange happenings sighted around the estate of one Marshall Hastings in French Hill, an old and storied neighborhood of Arkham. According to the article’s source—who goes unnamed—the mansion has become a tangled mess of overgrowth and serpents. The article reports that a recent expedition returned with several strange artifacts in tow, meant to be displayed in the Hastings manor. You wonder if this has anything to do with your expedition to find the Eztli. Even if these events are unrelated, your investigation might connect you with others who can assist you in turn.</p>"
   },
   "standalone": {
-    "gaveCustoryToAlejandro": "The investigators gave custody of the relic to Alejandro.",
-    "gaveCustodyToHarlan": "The investigators gave custody of the relic to Harlan Earnstone."
+    "label": {
+      "gaveCustodyToAlejandro": "The investigators gave custody of the relic to Alejandro.",
+      "gaveCustodyToHarlan": "The investigators gave custody of the relic to Harlan Earnstone."
+    }
   },
   "setup": {
     "label": {

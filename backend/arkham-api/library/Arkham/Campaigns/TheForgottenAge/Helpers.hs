@@ -15,7 +15,7 @@ import Arkham.Helpers.Location (getLocationOf, toConnections)
 import Arkham.Helpers.Message ()
 import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Helpers.Query (getInvestigators)
-import Arkham.Helpers.Scenario (getVictoryDisplay, scenarioField, scenarioFieldMap)
+import Arkham.Helpers.Scenario (getInResolution, getVictoryDisplay, scenarioField, scenarioFieldMap)
 import Arkham.History
 import Arkham.I18n
 import Arkham.Id
@@ -125,8 +125,22 @@ eachUnpoisoned body = do
   unpoisoned <- getUnpoisoned
   for_ unpoisoned body
 
+eachPoisoned :: (HasGame m, Tracing m) => (InvestigatorId -> m ()) -> m ()
+eachPoisoned body = do
+  poisoned <- getPoisoned
+  for_ poisoned body
+
+getPoisoned :: (HasGame m, Tracing m) => m [InvestigatorId]
+getPoisoned = do
+  inResolution <- getInResolution
+  let wrapper = if inResolution then IncludeEliminated else id
+  select $ wrapper $ HasMatchingTreachery $ treacheryIs Treacheries.poisoned
+
 getUnpoisoned :: (HasGame m, Tracing m) => m [InvestigatorId]
-getUnpoisoned = select $ NotInvestigator $ HasMatchingTreachery $ treacheryIs $ Treacheries.poisoned
+getUnpoisoned = do
+  inResolution <- getInResolution
+  let wrapper = if inResolution then IncludeEliminated else id
+  select $ wrapper $ NotInvestigator $ HasMatchingTreachery $ treacheryIs Treacheries.poisoned
 
 getSetAsidePoisoned :: (HasGame m, Tracing m) => m Card
 getSetAsidePoisoned =

@@ -339,6 +339,13 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
           else resolution "noResolution"
       Resolution 2 -> do
         resolution "resolution2"
+        mouthOfKnYanTheCavernsMaw <- selectJust $ locationIs Locations.mouthOfKnYanTheCavernsMaw
+        pillarTokens <- countTokensOf Pillar mouthOfKnYanTheCavernsMaw
+        repeated (6 - pillarTokens) do
+          placeTokens attrs mouthOfKnYanTheCavernsMaw Pillar 1
+          incrementRecordCount YigsFury 2
+        eachPoisoned (`sufferMentalTrauma` 1)
+        eachUnpoisoned \iid -> addCampaignCardToDeck iid DoNotShuffleIn Treacheries.poisoned
         do_ R1
       _ -> do_ msg
     pure s

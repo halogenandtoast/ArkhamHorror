@@ -10206,9 +10206,8 @@ overgrownCairns =
 
 gondola :: CardDef
 gondola =
-  (location "82006b" "Gondola" [Venice, Boat] NoSymbol [] CarnevaleOfHorrors)
-    { cdDoubleSided = False
-    }
+  location "82006b" "Gondola" [Venice, Boat] NoSymbol [] CarnevaleOfHorrors
+    & otherSideIs "82006"
 
 sanMarcoBasilica :: CardDef
 sanMarcoBasilica =

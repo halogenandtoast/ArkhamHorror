@@ -4,6 +4,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheForgottenAge.Meta
 import Arkham.Card
@@ -337,21 +338,22 @@ instance RunMessage ThreadsOfFate where
       forgingYourOwnPath <- getHasRecord YouAreForgingYourOwnWay
       alejandroOwned <- getIsAlreadyOwned Assets.alejandroVela
 
-      inVictory <-
-        selectAny
-          $ VictoryDisplayCardMatch
-          $ basic
-          $ mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
-      if inVictory
-        then crossOut TheHarbingerIsStillAlive
-        else do
-          inPlayHarbinger <-
-            selectOne
-              $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
-          damage <- case inPlayHarbinger of
-            Just eid -> field EnemyDamage eid
-            Nothing -> getRecordCount TheHarbingerIsStillAlive
-          recordCount TheHarbingerIsStillAlive damage
+      whenHarbingerHasEnteredPlay attrs do
+        inVictory <-
+          selectAny
+            $ VictoryDisplayCardMatch
+            $ basic
+            $ mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+        if inVictory
+          then crossOut TheHarbingerIsStillAlive
+          else do
+            inPlayHarbinger <-
+              selectOne
+                $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+            damage <- case inPlayHarbinger of
+              Just eid -> field EnemyDamage eid
+              Nothing -> getRecordCount TheHarbingerIsStillAlive
+            recordCount TheHarbingerIsStillAlive damage
 
       isReturnTo <- Arkham.Helpers.Scenario.getIsReturnTo
       if isReturnTo
@@ -360,7 +362,11 @@ instance RunMessage ThreadsOfFate where
           let completedCount =
                 (+ sum (IntMap.elems actPairCountMap)) . sum . map length $ toList attrs.completedActStack
           push $ SetCampaignMeta $ toJSON $ meta {bonusXp = Map.fromList $ map (,completedCount) iids}
-          xp <- allGainXpWithBonus' attrs $ mconcat $ [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath] <> [toBonus "forgingYourOwnPath" 2 | act3fCompleted && forgingYourOwnPath]
+          xp <-
+            allGainXpWithBonus' attrs
+              $ mconcat
+              $ [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath]
+              <> [toBonus "forgingYourOwnPath" 2 | act3fCompleted && forgingYourOwnPath]
           resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution1" do
             setTitle "title"
             p "body"
@@ -373,19 +379,18 @@ instance RunMessage ThreadsOfFate where
                 li.validate act3fCompleted "act3f"
                 li.validate (not act3fCompleted) "efActDeckStillInPlay"
                 li.validate act3hCompleted "act3g"
-              li "expeditionJournal" 
+              li "expeditionJournal"
               li "returnToXp"
               li "additionalXp"
               li "outline"
               li "resupply"
-
         else do
           xp <-
             allGainXpWithBonus' attrs
-            $ mconcat
-            $ toBonus "bonus" act1sCompleted
-            : [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath]
-              <> [toBonus "forgingYourOwnPath" 2 | act3fCompleted && forgingYourOwnPath]
+              $ mconcat
+              $ toBonus "bonus" act1sCompleted
+              : [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath]
+                <> [toBonus "forgingYourOwnPath" 2 | act3fCompleted && forgingYourOwnPath]
 
           resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution1" do
             setTitle "title"
@@ -398,7 +403,7 @@ instance RunMessage ThreadsOfFate where
                 li.validate (not act3dCompleted) "cdActDeckStillInPlay"
                 li.validate act3fCompleted "act3f"
                 li.validate (not act3fCompleted) "efActDeckStillInPlay"
-              li "expeditionJournal" 
+              li "expeditionJournal"
               li "xp"
               li "resupply"
 
@@ -418,4 +423,5 @@ instance RunMessage ThreadsOfFate where
       addCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.expeditionJournal
       endOfScenario
       pure s
+    CreateEnemy (isHarbinger -> True) -> pure $ setHarbingerHasEnteredPlay s
     _ -> ThreadsOfFate <$> liftRunMessage msg attrs

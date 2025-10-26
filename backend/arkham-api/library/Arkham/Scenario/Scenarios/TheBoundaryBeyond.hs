@@ -301,21 +301,22 @@ instance RunMessage TheBoundaryBeyond where
       yigsFury <- getRecordCount YigsFury
       recordCount YigsFury (yigsFury + vengeance)
 
-      inVictory <-
-        selectAny
-          $ VictoryDisplayCardMatch
-          $ basic
-          $ mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
-      if inVictory
-        then crossOut TheHarbingerIsStillAlive
-        else do
-          inPlayHarbinger <-
-            selectOne
-              $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
-          damage <- case inPlayHarbinger of
-            Just eid -> field EnemyDamage eid
-            Nothing -> getRecordCount TheHarbingerIsStillAlive
-          recordCount TheHarbingerIsStillAlive damage
+      whenHarbingerHasEnteredPlay attrs do
+        inVictory <-
+          selectAny
+            $ VictoryDisplayCardMatch
+            $ basic
+            $ mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+        if inVictory
+          then crossOut TheHarbingerIsStillAlive
+          else do
+            inPlayHarbinger <-
+              selectOne
+                $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+            damage <- case inPlayHarbinger of
+              Just eid -> field EnemyDamage eid
+              Nothing -> getRecordCount TheHarbingerIsStillAlive
+            recordCount TheHarbingerIsStillAlive damage
       endOfScenario
       pure s
     DoStep 1 (ScenarioResolution r) -> scope "resolutions" do
@@ -324,4 +325,5 @@ instance RunMessage TheBoundaryBeyond where
       recordWhen (n >= 3 && r == Resolution 1) IchtacaHasConfidenceInYou
       allGainXpWithBonus attrs $ toBonus "additional" n
       pure s
+    CreateEnemy (isHarbinger -> True) -> pure $ setHarbingerHasEnteredPlay s
     _ -> TheBoundaryBeyond <$> liftRunMessage msg attrs

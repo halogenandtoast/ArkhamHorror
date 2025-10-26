@@ -396,7 +396,7 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
         yigsFury <- getRecordCount YigsFury
         recordCount YigsFury (yigsFury + vengeance)
 
-        when (getMetaKeyDefault "harbingerEnteredPlay" False attrs) do
+        whenHarbingerHasEnteredPlay attrs do
           inVictory <-
             selectAny
               $ VictoryDisplayCardMatch
@@ -445,11 +445,7 @@ instance RunMessage HeartOfTheElders where
         Deck [] -> pure ()
         Deck (x : _) -> shuffleCardsIntoDeck ExplorationDeck [x]
       pure s
-    CreateEnemy c
-      | cardMatch
-          c.card
-          (mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]) -> do
-          pure $ HeartOfTheElders . (`with` metadata) $ attrs & setMetaKey "harbingerEnteredPlay" True
+    CreateEnemy (isHarbinger -> True) -> pure $ setHarbingerHasEnteredPlay s
     _ -> case scenarioStep metadata of
       One -> runAMessage msg s
       Two -> runBMessage msg s

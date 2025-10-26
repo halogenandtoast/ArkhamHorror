@@ -5,11 +5,14 @@ import Arkham.Calculation
 import Arkham.Campaigns.TheForgottenAge.Meta
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
+import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
 import Arkham.Deck
 import Arkham.Draw.Types
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Creation (EnemyCreation)
 import Arkham.Helpers.Card
 import Arkham.Helpers.Location (getLocationOf, toConnections)
 import Arkham.Helpers.Message ()
@@ -38,6 +41,7 @@ import Arkham.Projection
 import Arkham.Question (Question (..), UI (..))
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types
+import Arkham.Scenario.Types qualified as Scenario
 import Arkham.SkillTest.Base
 import Arkham.SkillType (SkillType)
 import Arkham.Source
@@ -330,3 +334,16 @@ exploreTest sid iid (toSource -> source) (toTarget -> target) sType n =
     $ (initSkillTest sid iid source target sType (SkillTestDifficulty n))
       { skillTestAction = Just #explore
       }
+
+isHarbinger :: EnemyCreation msg -> Bool
+isHarbinger c =
+  cardMatch c.card
+    $ mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+
+whenHarbingerHasEnteredPlay
+  :: (Applicative m, Entity sc, EntityAttrs sc ~ ScenarioAttrs) => sc -> m () -> m ()
+whenHarbingerHasEnteredPlay sc action = do
+  when (Scenario.getMetaKeyDefault "harbingerEnteredPlay" False (toAttrs sc)) action
+
+setHarbingerHasEnteredPlay :: (Entity sc, EntityAttrs sc ~ ScenarioAttrs) => sc -> sc
+setHarbingerHasEnteredPlay = overAttrs (setMetaKey "harbingerEnteredPlay" True)

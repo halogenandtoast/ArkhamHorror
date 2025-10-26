@@ -60,6 +60,9 @@ data EnemyCreation msg = MkEnemyCreation
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass ToJSON
 
+instance HasField "card" (EnemyCreation msg) Card where
+  getField = enemyCreationCard
+
 instance HasField "leaveEnemyWhereItIs" (EnemyCreation msg) Bool where
   getField = getField @"leaveEnemyWhereItIs" . enemyCreationMethod
 

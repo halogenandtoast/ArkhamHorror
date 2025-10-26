@@ -396,21 +396,22 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
         yigsFury <- getRecordCount YigsFury
         recordCount YigsFury (yigsFury + vengeance)
 
-        inVictory <-
-          selectAny
-            $ VictoryDisplayCardMatch
-            $ basic
-            $ mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
-        if inVictory
-          then crossOut TheHarbingerIsStillAlive
-          else do
-            damage <-
-              selectOne
-                (mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns])
-                >>= \case
-                  Just eid -> field EnemyDamage eid
-                  Nothing -> getRecordCount TheHarbingerIsStillAlive
-            recordCount TheHarbingerIsStillAlive damage
+        when (getMetaKeyDefault "harbingerEnteredPlay" False attrs) do
+          inVictory <-
+            selectAny
+              $ VictoryDisplayCardMatch
+              $ basic
+              $ mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+          if inVictory
+            then crossOut TheHarbingerIsStillAlive
+            else do
+              damage <-
+                selectOne
+                  (mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns])
+                  >>= \case
+                    Just eid -> field EnemyDamage eid
+                    Nothing -> getRecordCount TheHarbingerIsStillAlive
+              recordCount TheHarbingerIsStillAlive damage
         endOfScenario
     pure s
   _ -> HeartOfTheElders . (`with` metadata) <$> liftRunMessage msg attrs
@@ -444,6 +445,11 @@ instance RunMessage HeartOfTheElders where
         Deck [] -> pure ()
         Deck (x : _) -> shuffleCardsIntoDeck ExplorationDeck [x]
       pure s
+    CreateEnemy c
+      | cardMatch
+          c.card
+          (mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]) -> do
+          pure $ HeartOfTheElders . (`with` metadata) $ attrs & setMetaKey "harbingerEnteredPlay" True
     _ -> case scenarioStep metadata of
       One -> runAMessage msg s
       Two -> runBMessage msg s

@@ -94,7 +94,6 @@ defaultCampaignRunner msg a = case msg of
       then pure $ updateAttrs a (chaosBagL %~ (token :))
       else pure a
   RemoveChaosToken token -> pure $ updateAttrs a (chaosBagL %~ deleteFirstMatch (== token))
-  DebugRemoveChaosToken token -> pure $ updateAttrs a (chaosBagL %~ deleteFirstMatch (== token))
   RemoveAllChaosTokens token -> pure $ updateAttrs a (chaosBagL %~ filter (/= token))
   InitDeck iid _ deck -> do
     playerCount <- getPlayerCount

@@ -1212,7 +1212,6 @@ data Message
   | -- Debug
     ClearQueue
   | DebugAddToHand InvestigatorId CardId
-  | DebugRemoveChaosToken ChaosTokenFace
   | SetCampaignStep CampaignStep
   deriving stock (Show, Eq, Ord, Data)
 

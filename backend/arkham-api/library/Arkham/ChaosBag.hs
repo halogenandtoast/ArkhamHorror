@@ -972,7 +972,7 @@ instance RunMessage ChaosBag where
       curseTokens <- replicateM (10 - curse) $ createChaosToken #curse
       frostTokens <- replicateM (8 - frost) $ createChaosToken #frost
       pure $ c & tokenPoolL .~ blessTokens <> curseTokens <> frostTokens
-    DebugRemoveChaosToken face ->
+    RemoveChaosToken face ->
       case find ((== face) . chaosTokenFace) chaosBagChaosTokens of
         Nothing -> pure c
         Just token -> do
@@ -987,8 +987,6 @@ instance RunMessage ChaosBag where
                 & (chaosTokensL %~ delete token)
                 & (setAsideChaosTokensL %~ delete token)
                 & (revealedChaosTokensL %~ delete token)
-    RemoveChaosToken face ->
-      pure $ c & chaosTokensL %~ deleteFirstMatch ((== face) . chaosTokenFace)
     RemoveAllChaosTokens face ->
       pure
         $ c

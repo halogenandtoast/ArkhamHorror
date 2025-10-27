@@ -263,11 +263,8 @@ instance RunMessage EnemyAttrs where
           [ targetLabel iid
               $ resolve
                 ( EnemySpawn
-                    $ SpawnDetails
+                    $ (mkSpawnDetails eid $ SpawnAtLocation lid)
                       { spawnDetailsInvestigator = Just iid
-                      , spawnDetailsSpawnAt = SpawnAtLocation lid
-                      , spawnDetailsEnemy = eid
-                      , spawnDetailsOverridden = False
                       }
                 )
           | (iid, lid) <- toList iidsWithLocations
@@ -326,7 +323,7 @@ instance RunMessage EnemyAttrs where
                   if canEnter
                     then do
                       pushAll $ EnemyEntered enemyId lid
-                        : [EnemyEngageInvestigator enemyId iid | not enemyDelayEngagement]
+                        : [EnemyEngageInvestigator enemyId iid | not (spawnDetailsUnengaged details) && not forcedEngagement]
                           <> [EnemySpawned details]
                       case swarms of
                         [] -> pure ()
@@ -389,7 +386,7 @@ instance RunMessage EnemyAttrs where
                     Just iid | not onlyPrey || iid `elem` preyIds -> do
                       atSameLocation <- iid <=~> investigatorAt lid
                       pushAll $ EnemyEntered eid lid
-                        : [Will (EnemyEngageInvestigator eid iid) | atSameLocation && not enemyDelayEngagement]
+                        : [Will (EnemyEngageInvestigator eid iid) | atSameLocation && not (spawnDetailsUnengaged details)]
                           <> [EnemySpawned details]
                     _ -> do
                       investigatorIds <- if null preyIds then select $ investigatorAt lid else pure []
@@ -427,7 +424,7 @@ instance RunMessage EnemyAttrs where
               pure ([whenSpawns], [afterSpawns, EnemySpawned details])
           pushAll $ beforeMessages <> [PlaceEnemy enemyId placement] <> afterMessages
         _ -> error $ "Unhandled spawn: " <> show details.spawnAt
-      pure $ a & spawnDetailsL ?~ details
+      pure $ a & spawnDetailsL ?~ details & exhaustedL .~ spawnDetailsExhausted details & delayEngagementL .~ False
     EnemySpawned details | details.enemy == enemyId -> do
       pure $ a & spawnDetailsL .~ Nothing
     EnemyEntered eid lid | eid == enemyId -> do
@@ -1584,11 +1581,8 @@ instance RunMessage EnemyAttrs where
           pushAll
             $ resolve
             $ EnemySpawn
-            $ SpawnDetails
+            $ (mkSpawnDetails eid $ SpawnPlaced InTheShadows)
               { spawnDetailsInvestigator = Just iid
-              , spawnDetailsSpawnAt = SpawnPlaced InTheShadows
-              , spawnDetailsEnemy = eid
-              , spawnDetailsOverridden = True
               }
           placeConcealed iid kind cards
         Nothing -> do
@@ -1624,14 +1618,12 @@ instance RunMessage EnemyAttrs where
                       pushAll $ windows'
                         : resolve
                           ( EnemySpawn
-                              $ SpawnDetails
-                                { spawnDetailsInvestigator = Just iid
-                                , spawnDetailsSpawnAt =
-                                    if canBeEngaged && not isAloof
+                              $ ( mkSpawnDetails eid
+                                    $ if canBeEngaged && not isAloof
                                       then SpawnEngagedWith (InvestigatorWithId iid)
                                       else SpawnAtLocation lid
-                                , spawnDetailsEnemy = eid
-                                , spawnDetailsOverridden = False
+                                )
+                                { spawnDetailsInvestigator = Just iid
                                 }
                           )
                     else
@@ -1651,16 +1643,7 @@ instance RunMessage EnemyAttrs where
         [] -> noSpawn a miid
         [lid] -> do
           windows' <- checkWindows [mkWhen $ Window.EnemyWouldSpawnAt eid lid]
-          pushAll $ windows'
-            : resolve
-              ( EnemySpawn
-                  $ SpawnDetails
-                    { spawnDetailsInvestigator = Nothing
-                    , spawnDetailsSpawnAt = SpawnAtLocation lid
-                    , spawnDetailsEnemy = eid
-                    , spawnDetailsOverridden = False
-                    }
-              )
+          pushAll $ windows' : resolve (EnemySpawn $ mkSpawnDetails eid (SpawnAtLocation lid))
         xs -> spawnAtOneOf Nothing eid xs
       pure a
     After (InvestigatorEliminated iid) ->
@@ -1752,14 +1735,7 @@ instance RunMessage EnemyAttrs where
     PlaceEnemy eid placement | eid == enemyId -> do
       case placement of
         AtLocation lid -> do
-          let
-            details =
-              SpawnDetails
-                { spawnDetailsEnemy = enemyId
-                , spawnDetailsInvestigator = Nothing
-                , spawnDetailsSpawnAt = X.SpawnAtLocation lid
-                , spawnDetailsOverridden = False
-                }
+          let details = mkSpawnDetails enemyId (X.SpawnAtLocation lid)
           pushAll
             [ Will (EnemySpawn details)
             , When (EnemySpawn details)

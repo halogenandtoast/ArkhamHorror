@@ -1058,8 +1058,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         _ -> error "impossible"
     pure g
   CommitCard iid card -> do
-    -- let skillTestCards = maybe [] (map (.id) . concat . Map.elems . skillTestCommittedCards) (g ^. skillTestL)
-    let alreadyCommitted = any ((== card.id) . toCardId) (g ^. entitiesL . skillsL) -- || card.id `elem` skillTestCards
+    let alreadyCommitted = any ((== card.id) . toCardId) (g ^. entitiesL . skillsL)
     if alreadyCommitted
       then pure g
       else do
@@ -1071,11 +1070,8 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
               let hasInDiscardEffects = cdCardInDiscardEffects (toCardDef card)
               inDiscard <- selectAny $ inDiscardOf iid <> basic (CardWithId card.id)
 
-              let setPlacement =
-                    overAttrs
-                      ( \attrs ->
-                          attrs {skillPlacement = if hasInDiscardEffects && inDiscard then StillInDiscard iid else Unplaced}
-                      )
+              let setPlacement = overAttrs \attrs ->
+                    attrs {skillPlacement = if hasInDiscardEffects && inDiscard then StillInDiscard iid else Unplaced}
               let skill = setPlacement $ createSkill pc iid skillId
               push $ InvestigatorCommittedSkill iid skillId
               mods <- getModifiers card.id
@@ -1928,15 +1924,11 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     pure g
   EnemySpawnFromOutOfPlay _oZone miid lid eid -> do
     pushAll
-      ( resolve
-          $ EnemySpawn
-          $ SpawnDetails
-            { spawnDetailsInvestigator = miid
-            , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
-            , spawnDetailsEnemy = eid
-            , spawnDetailsOverridden = False
-            }
-      )
+      $ resolve
+      $ EnemySpawn
+      $ (mkSpawnDetails eid $ Arkham.Spawn.SpawnAtLocation lid)
+        { spawnDetailsInvestigator = miid
+        }
     pure $ g & (activeCardL .~ Nothing) & (focusedCardsL .~ mempty)
   Discard _ _ (SearchedCardTarget cardId) -> do
     investigator' <- getActiveInvestigator
@@ -1944,7 +1936,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       card =
         fromJustNote "must exist"
           $ find ((== cardId) . toCardId)
-          $ (fromMaybe [] $ headMay $ g ^. focusedCardsL)
+          $ fromMaybe [] (headMay $ g ^. focusedCardsL)
           <> ( concat
                  . Map.elems
                  . view Investigator.foundCardsL
@@ -2565,14 +2557,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   -- TODO: CHECK SpawnEnemyAt and SpawnEnemyAtEngagedWith
   SpawnEnemyAt card lid -> do
     enemyId <- getRandom
-    let
-      details =
-        SpawnDetails
-          { spawnDetailsEnemy = enemyId
-          , spawnDetailsInvestigator = Nothing
-          , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
-          , spawnDetailsOverridden = False
-          }
+    let details = mkSpawnDetails enemyId $ Arkham.Spawn.SpawnAtLocation lid
     windows' <- checkWindows [mkWhen (Window.EnemyWouldSpawnAt enemyId lid)]
     pushAll
       [ windows'
@@ -2588,11 +2573,8 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     let enemy = createEnemy card enemyId
     let
       details =
-        SpawnDetails
-          { spawnDetailsEnemy = enemyId
-          , spawnDetailsInvestigator = Just iid
-          , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
-          , spawnDetailsOverridden = False
+        (mkSpawnDetails enemyId $ Arkham.Spawn.SpawnAtLocation lid)
+          { spawnDetailsInvestigator = Just iid
           }
     pushAll
       [ Will (EnemySpawn details)
@@ -2635,35 +2617,24 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     case enemyCreationMethod enemyCreation of
       Arkham.Enemy.Creation.SpawnEngagedWith iid -> do
         handleSpawnDetails
-          $ SpawnDetails
-            { spawnDetailsEnemy = enemyId
-            , spawnDetailsInvestigator = Just iid
-            , spawnDetailsSpawnAt = Arkham.Spawn.SpawnEngagedWith (InvestigatorWithId iid)
+          $ (mkSpawnDetails enemyId $ Arkham.Spawn.SpawnEngagedWith (InvestigatorWithId iid))
+            { spawnDetailsInvestigator = Just iid
             , spawnDetailsOverridden = True
             }
       Arkham.Enemy.Creation.SpawnAtLocation lid -> do
         handleSpawnDetails
-          $ SpawnDetails
-            { spawnDetailsEnemy = enemyId
-            , spawnDetailsInvestigator = Nothing
-            , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
-            , spawnDetailsOverridden = True
+          $ (mkSpawnDetails enemyId $ Arkham.Spawn.SpawnAtLocation lid)
+            { spawnDetailsOverridden = True
             }
       SpawnAtLocationMatching locationMatcher -> do
         handleSpawnDetails
-          $ SpawnDetails
-            { spawnDetailsEnemy = enemyId
-            , spawnDetailsInvestigator = Nothing
-            , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAt locationMatcher
-            , spawnDetailsOverridden = True
+          $ (mkSpawnDetails enemyId $ Arkham.Spawn.SpawnAt locationMatcher)
+            { spawnDetailsOverridden = True
             }
       SpawnWithPlacement placement -> do
         handleSpawnDetails
-          $ SpawnDetails
-            { spawnDetailsEnemy = enemyId
-            , spawnDetailsInvestigator = Nothing
-            , spawnDetailsSpawnAt = Arkham.Spawn.SpawnPlaced placement
-            , spawnDetailsOverridden = True
+          $ (mkSpawnDetails enemyId $ Arkham.Spawn.SpawnPlaced placement)
+            { spawnDetailsOverridden = True
             }
       SpawnEngagedWithPrey ->
         pushAll
@@ -2924,9 +2895,9 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
           enemyId <- getRandom
           let enemy = createEnemy card enemyId
           pushAll
-            $ [afterDraw, InvestigatorDrawEnemy iid enemyId]
-            <> [Revelation iid (EnemySource enemyId) | hasRevelation card && not ignoreRevelation]
-            <> [UnsetActiveCard]
+            $ afterDraw
+            : [Revelation iid (EnemySource enemyId) | hasRevelation card && not ignoreRevelation]
+              <> [InvestigatorDrawEnemy iid enemyId, UnsetActiveCard]
           pure
             $ g'
             & (entitiesL . enemiesL . at enemyId ?~ enemy)

@@ -1001,6 +1001,7 @@ data Message
   | RevealSkillTestChaosTokensAgain InvestigatorId -- meant for when we reveal during resolving
   | RevealChaosToken Source InvestigatorId ChaosToken
   | Revelation InvestigatorId Source
+  | RevelationSkipped InvestigatorId Source
   | RevelationChoice InvestigatorId Source Int
   | RevelationSkillTest SkillTestId InvestigatorId Source SkillType SkillTestDifficulty
   | ResolveRevelation InvestigatorId Card
@@ -1273,12 +1274,7 @@ instance FromJSON Message where
           Left (miid, lid, eid) ->
             pure
               $ EnemySpawn
-              $ SpawnDetails
-                { spawnDetailsEnemy = eid
-                , spawnDetailsInvestigator = miid
-                , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
-                , spawnDetailsOverridden = False
-                }
+              $ (mkSpawnDetails eid (Arkham.Spawn.SpawnAtLocation lid)) {spawnDetailsInvestigator = miid}
       "FightEnemy" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

@@ -65,11 +65,8 @@ spawnAt eid miid (SpawnAtLocation lid) = do
     $ windows [Window.EnemyWouldSpawnAt eid lid]
     <> resolve
       ( EnemySpawn
-          $ SpawnDetails
+          $ (mkSpawnDetails eid $ SpawnAtLocation lid)
             { spawnDetailsInvestigator = miid
-            , spawnDetailsSpawnAt = SpawnAtLocation lid
-            , spawnDetailsEnemy = eid
-            , spawnDetailsOverridden = False
             }
       )
 spawnAt eid miid (SpawnAt locationMatcher) = do
@@ -273,11 +270,8 @@ spawnAtOneOf miid eid targetLids = do
       pushAll $ windows'
         : resolve
           ( EnemySpawn
-              $ SpawnDetails
+              $ (mkSpawnDetails eid $ SpawnAtLocation lid)
                 { spawnDetailsInvestigator = miid
-                , spawnDetailsSpawnAt = SpawnAtLocation lid
-                , spawnDetailsEnemy = eid
-                , spawnDetailsOverridden = False
                 }
           )
     lids -> do
@@ -291,11 +285,8 @@ spawnAtOneOf miid eid targetLids = do
           [ targetLabel lid $ windows'
               : resolve
                 ( EnemySpawn
-                    $ SpawnDetails
-                      { spawnDetailsEnemy = eid
-                      , spawnDetailsInvestigator = miid
-                      , spawnDetailsSpawnAt = SpawnAtLocation lid
-                      , spawnDetailsOverridden = False
+                    $ (mkSpawnDetails eid $ SpawnAtLocation lid)
+                      { spawnDetailsInvestigator = miid
                       }
                 )
           | (windows', lid) <- windowPairs

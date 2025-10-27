@@ -44,11 +44,8 @@ instance RunMessage SerpentsIre where
           chooseTargetM iid choices \eid -> do
             push
               $ EnemySpawn
-              $ SpawnDetails
+              $ (mkSpawnDetails eid $ SpawnAtLocation lid)
                 { spawnDetailsInvestigator = Just iid
-                , spawnDetailsSpawnAt = SpawnAtLocation lid
-                , spawnDetailsEnemy = eid
-                , spawnDetailsOverridden = False
                 }
             handleTarget iid attrs eid
       pure t

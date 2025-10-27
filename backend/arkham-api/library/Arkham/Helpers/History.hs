@@ -2,6 +2,7 @@ module Arkham.Helpers.History (module Arkham.Helpers.History, module X) where
 
 import Arkham.Classes.HasGame
 import {-# SOURCE #-} Arkham.GameEnv
+import {-# SOURCE #-} Arkham.GameEnv as X (getHistoryField)
 import Arkham.Helpers.GameValue (gameValueMatches)
 import Arkham.Helpers.Query
 import Arkham.History as X

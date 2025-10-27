@@ -128,6 +128,7 @@ allPlayerTreacheryCards =
       , panic
       , paranoia
       , poisoned
+      , possessed
       , prophecyOfTheEnd
       , psychosis
       , rationalThought
@@ -437,7 +438,6 @@ allEncounterTreacheryCards =
       , poisonousSpores
       , polarMirage
       , polarVortex
-      , possessed
       , possessionMurderous
       , possessionTorturous
       , possessionTraitorous

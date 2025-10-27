@@ -3562,14 +3562,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
 
     case specificAdditionalActions of
       [] -> case anyAdditionalActions of
-        [] -> pure $ a & remainingActionsL %~ max 0 . subtract n
+        [] -> do
+          Lifted.updateHistory iid (HistoryItem HistoryActionsSpent n)
+          pure $ a & remainingActionsL %~ max 0 . subtract n
         xs -> do
           player <- getPlayer iid
           push
             $ chooseOrRunOne player
             $ [ Label
                   ("Use action from " <> lbl)
-                  [LoseAdditionalAction iid ac, SpendActions iid source mAction (n - 1)]
+                  [ UpdateHistory iid (HistoryItem HistoryActionsSpent 1)
+                  , LoseAdditionalAction iid ac
+                  , SpendActions iid source mAction (n - 1)
+                  ]
               | ac@(AdditionalAction lbl _ _) <- xs
               ]
           pure a
@@ -3579,7 +3584,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           $ chooseOrRunOne player
           $ [ Label
                 ("Use action from " <> lbl)
-                [LoseAdditionalAction iid ac, SpendActions iid source mAction (n - 1)]
+                [ UpdateHistory iid (HistoryItem HistoryActionsSpent 1)
+                , LoseAdditionalAction iid ac
+                , SpendActions iid source mAction (n - 1)
+                ]
             | ac@(AdditionalAction lbl _ _) <- xs
             ]
         pure a

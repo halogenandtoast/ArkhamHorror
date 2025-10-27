@@ -38,6 +38,10 @@ export function asCardCode(card: Card): string {
   }
 }
 
+export function cardId(card: Card): string {
+  return toCardContents(card).id
+}
+
 export function cardImage(card: Card) {
   const side = cardIsFlipped(card) ? 'b' : ''
   // TODO, send art with cards next to

@@ -14,7 +14,7 @@ import {
 import { type Game } from '@/arkham/types/Game';
 import { type Enemy } from '@/arkham/types/Enemy';
 import { type Scenario } from '@/arkham/types/Scenario';
-import { type Card } from '@/arkham/types/Card';
+import { type Card, cardId } from '@/arkham/types/Card';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import { TokenType } from '@/arkham/types/Token';
 import { ModifierType, Hollow } from '@/arkham/types/Modifier';
@@ -221,7 +221,7 @@ const gridAreas = computed(()=>{
     if (r < withHoriz.length - 1){
       const next = withHoriz[r + 1]
       let need = false
-      const barrierRow = row.map((cell, idx) => {
+      const barrierRow = row.map((_cell, idx) => {
         const a = row[idx], b = next[idx]
         const idA = grid[a], idB = grid[b]
         const v = idA && idB ? `barrier-${[idA,idB].sort().join('--')}` : '.'
@@ -317,10 +317,10 @@ const cardsUnderAgenda = computed(() => props.scenario.cardsUnderAgendaDeck)
 const cardsUnderAct = computed(() => props.scenario.cardsUnderActDeck)
 const cardsNextToAct = computed(() => props.scenario.cardsNextToActDeck)
 const cardsNextToAgenda = computed(() => props.scenario.cardsNextToAgendaDeck)
-const nextToTreacheries = computed(() => Object.values(props.game.treacheries).
+const nextToTreacheries = computed<string[]>(() => Object.values(props.game.treacheries).
   filter((t) => t.placement.tag === "NextToAgenda").
   map((t) => t.id))
-const agendaGroupedTreacheries = computed(() => Object.entries(groupBy(nextToTreacheries.value, (t: Treachery) => props.game.treacheries[t].cardCode)))
+const agendaGroupedTreacheries = computed(() => Object.entries(groupBy(nextToTreacheries.value, (t) => props.game.treacheries[t].cardCode)))
 
 const keys = computed(() => props.scenario.setAsideKeys)
 const spentKeys = computed(() => props.scenario.keys)
@@ -398,7 +398,7 @@ watchEffect(() => {
 
 // Helpers
 function rotateImages(init: boolean) {
-  const atlachNacha = document.querySelector('[data-label=atlachNacha]')
+  const atlachNacha = document.querySelector('[data-label=atlachNacha]') as HTMLElement
   const locationCards = document.querySelector('.location-cards')
   if (atlachNacha && locationCards) {
     needsInit.value = false
@@ -421,8 +421,9 @@ function rotateImages(init: boolean) {
       })
     }
 
-    const degrees = parseFloat(atlachNacha.dataset.rotation) || 0
+    const degrees = parseFloat(atlachNacha.dataset?.rotation || "0") || 0
     const middleCardImg = atlachNacha.querySelector('img')
+    if (!middleCardImg) return
     const middleCardRect = atlachNacha.getBoundingClientRect()
     const middleCardImgRect = middleCardImg.getBoundingClientRect()
     const originX = middleCardImgRect.left + middleCardImgRect.width / 2 - middleCardRect.left
@@ -434,7 +435,7 @@ function rotateImages(init: boolean) {
     const oX = middleCardImgRect.left + middleCardImgRect.width / 2
     const oY = middleCardImgRect.top + middleCardImgRect.height / 2
 
-    document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((img) => {
+    document.querySelectorAll('[data-label=legs1],[data-label=legs2],[data-label=legs3],[data-label=legs4]').forEach((img: HTMLElement) => {
 
       if (init || !legsSet.value.includes(img.dataset.label)) {
         if(!legsSet.value.includes(img.dataset.label)) {
@@ -568,7 +569,7 @@ async function addChaosToken(face: any){
       <Draggable v-if="showOutOfPlay || forcedShowOutOfPlay">
         <template #handle><header><h2>{{ $t('gameBar.outOfPlay') }}</h2></header></template>
         <div class="card-row-cards">
-          <div v-for="card in outOfPlay" :key="card.id" class="card-row-card">
+          <div v-for="card in outOfPlay" :key="cardId(card)" class="card-row-card">
             <CardView :game="game" :card="card" :playerId="playerId" @choose="$emit('choose', $event)" />
           </div>
           <EnemyView

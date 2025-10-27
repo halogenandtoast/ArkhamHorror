@@ -63,10 +63,16 @@ instance RunMessage BobJenkins where
       let windows' = defaultWindows iid
       investigators <- select (affectsColocated iid)
       playableCards <- concatForM investigators \iid' -> do
-        cards <- select $ inHandOf ForPlay iid' <> basic (#asset <> #item)
-        withModifiersOf iid' attrs [CanSpendResourcesOnCardFromInvestigator (be iid) AnyCard] do
-          withModifiersOf iid attrs (PlayableCardOf iid' <$> cards) do
-            getPlayableCardsMatch attrs iid (UnpaidCost NoAction) windows' (card_ $ #asset <> #item)
+        if iid == iid'
+          then getPlayableCardsMatch attrs iid (UnpaidCost NoAction) windows' (card_ $ #asset <> #item)
+          else withModifiersOf iid attrs [CanSpendResourcesOnCardFromInvestigator (be iid') (#asset <> #item)] do
+            getPlayableCardsMatch attrs iid' (UnpaidCost NoAction) windows' (card_ $ #asset <> #item)
+
+      -- playableCards <- concatForM investigators \iid' -> do
+      --   cards <- select $ inHandOf ForPlay iid' <> basic (#asset <> #item)
+      --   withModifiersOf iid' attrs [CanSpendResourcesOnCardFromInvestigator (be iid) AnyCard] do
+      --     withModifiersOf iid attrs (PlayableCardOf iid' <$> cards) do
+      --       getPlayableCardsMatch attrs iid (UnpaidCost NoAction) windows' (card_ $ #asset <> #item)
 
       chooseTargetM iid playableCards $ handleTarget iid (attrs.ability 1)
       pure $ BobJenkins $ attrs & (usedAdditionalActionsL %~ (bobJenkinsAction attrs :))

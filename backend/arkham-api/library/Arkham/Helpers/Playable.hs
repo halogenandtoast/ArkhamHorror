@@ -235,21 +235,16 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
           Nothing -> pure False
       _ -> pure False
     iids <- filter (/= iid) <$> getInvestigators
-    iidsWithModifiers <- for iids $ \iid' -> (iid',) <$> getModifiers iid'
-    canHelpPay <- flip filterM iidsWithModifiers \(iid', modifiers') -> do
-      bobJenkinsPermitted <-
-        if isBobJenkins
-          then do
-            case toCardOwner c of
-              Just owner | owner == iid' -> pure True
-              _ -> pure False
-          else pure False
-      modifierPermitted <- flip anyM modifiers' $ \case
-        CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher
-          | cardMatch c cMatcher && CannotAffectOtherPlayersWithPlayerEffectsExceptDamage `notElem` modifiers' ->
-              iid <=~> iMatcher
-        _ -> pure False
-      pure $ bobJenkinsPermitted || modifierPermitted
+    iidsWithModifiers <- for iids \iid' -> (iid',) <$> getModifiers iid'
+
+    canHelpPay <-
+      iidsWithModifiers & filterM \(_iid', modifiers') -> do
+        modifiers' & anyM \case
+          CanSpendResourcesOnCardFromInvestigator iMatcher cMatcher -> runValidT do
+            guard $ cardMatch c cMatcher
+            guard $ CannotAffectOtherPlayersWithPlayerEffectsExceptDamage `notElem` modifiers'
+            liftGuardM $ iid <=~> iMatcher
+          _ -> pure False
 
     resourcesFromAssets <-
       sum <$> for ((iid, modifiers) : iidsWithModifiers) \(iid', modifiers') -> do

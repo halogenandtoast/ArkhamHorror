@@ -35,27 +35,26 @@ const gameMode = ref<GameMode>('Campaign')
 
 const includeTarotReadings = ref(false)
 
-const scenarios = computed<Scenario[]>(() => (scenarioJSON as Scenario[]).filter((s) =>
-  s.beta || s.alpha
-    ? currentUser.value && currentUser.value.beta
-    : true
-))
+const scenarios = computed<Scenario[]>(() => (scenarioJSON as Scenario[]).filter((s) => {
+  if (s.beta) return currentUser.value && currentUser.value.beta
+  if (s.alpha) return alpha.value
+  return true
+}))
 
-const sideStories = computed<Scenario[]>(() => sideStoriesJSON.filter((s) =>
-  s.beta
-    ? currentUser.value && currentUser.value.beta
-    : true
-))
+const sideStories = computed<Scenario[]>(() => sideStoriesJSON.filter((s) => {
+  if (s.beta) return currentUser.value && currentUser.value.beta
+  if (s.alpha) return alpha.value
+  return true
+}))
 
 const dev = import.meta.env.PROD ? false : true
 
 
 const campaigns = computed<Campaign[]>(() => campaignJSON.filter((c) => {
   if (c.dev && !dev && !alpha.value) return false
-
-  return c.beta || c.alpha
-    ? currentUser.value && currentUser.value.beta
-    : true
+  if (c.beta) currentUser.value && currentUser.value.beta
+  if (c.alpha) return alpha.value
+  return true
 }))
 
 const difficulties = computed<Difficulty[]>(() => {

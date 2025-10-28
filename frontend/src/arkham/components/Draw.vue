@@ -148,7 +148,7 @@ watch(choices, async (newChoices) => {
     }
     return false
   }
-  const showDiscard = newChoices.some(isDiscardChoice)
+  const showDiscard = newChoices.length > 0 && newChoices.every(isDiscardChoice)
   if (showDiscard) {
     showDiscards(new CustomEvent('showDiscards'))
     forcedShowDiscard.value = true

@@ -13,7 +13,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import * as Arkham from '@/arkham/types/Investigator'
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
-import { toCardContents } from '@/arkham/types/Card'
+import { cardId } from '@/arkham/types/Card'
 import Token from '@/arkham/components/Token.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { useMenu } from '@/composeable/menu';
@@ -189,7 +189,7 @@ watch(() => choices.value, () => {
   const isUnderChoice = (c: Message) => {
     if (c.tag !== "TargetLabel") return false
     if (c.target.tag !== "CardIdTarget") return false
-    return props.investigator.cardsUnderneath.some(card => card.contents.id === c.target.contents)
+    return props.investigator.cardsUnderneath.some(card => cardId(card) === c.target.contents)
   }
   const showUnder = choices.value.some(isUnderChoice)
   if (showUnder) {
@@ -444,7 +444,7 @@ function onDrop(event: DragEvent) {
     <Draggable v-if="doShowBonded">
       <template #handle><header><h2>{{$t('gameBar.bonded')}}</h2></header></template>
       <div class="card-row-cards">
-        <div v-for="card in investigator.bondedCards" :key="toCardContents(card).id" class="card-row-card">
+        <div v-for="card in investigator.bondedCards" :key="cardId(card)" class="card-row-card">
           <CardView :game="game" :card="card" :playerId="playerId" />
         </div>
       </div>

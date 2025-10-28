@@ -19,7 +19,6 @@ import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import { TokenType } from '@/arkham/types/Token';
 import { ModifierType, Hollow } from '@/arkham/types/Modifier';
 import { Source } from '@/arkham/types/Source';
-import { Treachery } from '@/arkham/types/Treachery';
 import { Message, AbilityMessage, AbilityLabel } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import { waitForImagesToLoad, imgsrc, pluralize, groupBy } from '@/arkham/helpers';

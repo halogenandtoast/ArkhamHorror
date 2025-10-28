@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Assets
 import TestImport.New
 
 spec :: Spec
-spec = describe "Leo De Luca" $ do
+spec = describe "Leo De Luca" do
   it "gives +1 action" . gameTest $ \self -> do
     self `putCardIntoPlay` Assets.leoDeLuca
     self.additionalActions `shouldSatisfyM` ((== 1) . length)
@@ -13,8 +13,8 @@ spec = describe "Leo De Luca" $ do
   faq "additions actions are used first" $ do
     it "when discarded doesn't lose you an action" . gameTest $ \self -> do
       leoDeLuca <- self `putAssetIntoPlay` Assets.leoDeLuca
-      duringRound $ do
-        duringTurn self $ do
+      duringRound do
+        duringTurn self do
           takeResource self
           self.remainingActions `shouldReturn` 3
           discard leoDeLuca
@@ -22,8 +22,8 @@ spec = describe "Leo De Luca" $ do
 
     it "loses the action if discarded before taking an action" . gameTest $ \self -> do
       leoDeLuca <- self `putAssetIntoPlay` Assets.leoDeLuca
-      duringRound $ do
-        duringTurn self $ do
+      duringRound do
+        duringTurn self do
           self.additionalActions `shouldSatisfyM` notNull
           discard leoDeLuca
           self.additionalActions `shouldSatisfyM` null
@@ -36,15 +36,20 @@ spec = describe "Leo De Luca" $ do
       self `gainResources` 15
       location <- testLocation
       self `moveTo` location
-      withEach [leoDeLuca, theBlackFan3] $ \choice -> do
-        duringRound $ do
-          duringTurn self $ do
+      withEach [leoDeLuca, theBlackFan3] \choice -> do
+        duringRound do
+          duringTurn self do
             [chosenAction] <-
               filter ((== IndexedSource 1 (toSource choice)) . additionalActionSource)
                 <$> self.additionalActions
             takeResource self
-            chooseOptionMatching "use action from choice" $ \case
-              Label _ (LoseAdditionalAction _ additionalAction : _) -> additionalAction == chosenAction
+            chooseOptionMatching "use action from choice" \case
+              Label _ msgs  ->
+                let
+                  isMatching = \case
+                    LoseAdditionalAction _ additionalAction -> additionalAction == chosenAction
+                    _ -> False
+                in any isMatching msgs
               _ -> False
             self.additionalActions `shouldSatisfyM` none ((== toSource choice) . additionalActionSource)
             self.additionalActions `shouldSatisfyM` notNull

@@ -24,9 +24,7 @@ haste2 = asset Haste2 Cards.haste2
 
 instance HasAbilities Haste2 where
   getAbilities (Haste2 a) =
-    [ restricted a 1 ControlsThis
-        $ triggered (PerformedSameTypeOfAction #after You RepeatableAction) (exhaust a)
-    ]
+    [controlled_ a 1 $ triggered (PerformedSameTypeOfAction #after You RepeatableAction) (exhaust a)]
 
 getActionTypes :: [Window] -> [Action]
 getActionTypes = concatMap ((^. _PerformedSameTypeOfAction . _2) . windowType)

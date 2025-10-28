@@ -2351,14 +2351,24 @@ afterSkillTest
   :: ( MonadTrans t
      , HasQueue Message m
      , HasQueue Message (t m)
-     , AsId investigator
-     , IdOf investigator ~ InvestigatorId
+     , HasGame (t m)
+     , ToId investigator InvestigatorId
      , HasCallStack
      )
   => investigator -> Text -> QueueT Message (t m) a -> t m ()
 afterSkillTest investigator lbl body = do
   msgs <- capture body
-  insertAfterMatching [AfterSkillTestOption (asId investigator) lbl msgs] (== EndSkillTestWindow)
+  Msg.getSkillTestSource >>= \case
+    Just (AbilitySource s n) -> do
+      let
+        isEndOfAbility = \case
+          MoveWithSkillTest msg -> isEndOfAbility msg
+          ResolvedAbility ab -> ab.source == s && ab.index == n
+          _ -> False
+      insertAfterMatching [AfterSkillTestOption (asId investigator) lbl msgs] isEndOfAbility
+    Just (EventSource e) ->
+      insertAfterMatching [AfterSkillTestOption (asId investigator) lbl msgs] (== FinishedEvent e)
+    _ -> insertAfterMatching [AfterSkillTestOption (asId investigator) lbl msgs] (== EndSkillTestWindow)
 
 afterSkillTestQuiet
   :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m), HasCallStack)

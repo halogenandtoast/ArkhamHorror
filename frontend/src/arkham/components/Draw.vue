@@ -1,10 +1,11 @@
 <script lang="ts" setup>   
 import { useDebug } from '@/arkham/debug'
+import type { Message } from '@/arkham/types/Message'
 import * as ArkhamCard from '@/arkham/types/Card';
 import * as Arkham from '@/arkham/types/Investigator'
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { Game } from '@/arkham/types/Game'
-import {computed, ComputedRef, ref, reactive} from 'vue'
+import {computed, ComputedRef, ref, reactive, watch} from 'vue'
 import { imgsrc, pluralize } from '@/arkham/helpers';
 import { useI18n } from 'vue-i18n';
 import Card from '@/arkham/components/Card.vue';
@@ -132,6 +133,31 @@ const doShowCards = (event: Event, cards: ComputedRef<ArkhamCard.Card[]>, title:
 }
 const showDiscards = (e: Event) => doShowCards(e, discards, t('investigator.discards'), true)
 const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
+
+const forcedShowDiscard = ref(false)
+watch(choices, async (newChoices) => {
+  const isDiscardChoice = (c: Message) => {
+    if (c.tag === "TargetLabel") {
+      if (c.target.tag !== "CardIdTarget") return false
+      return props.investigator.discard.some(card => card.id === c.target.contents)
+    }
+    if (c.tag === "AbilityLabel") {
+      return props.investigator.discard.some(card => {
+        return card.id === c.ability.source.contents
+      })
+    }
+    return false
+  }
+  const showDiscard = newChoices.some(isDiscardChoice)
+  if (showDiscard) {
+    showDiscards(new CustomEvent('showDiscards'))
+    forcedShowDiscard.value = true
+  } else {
+    if (!forcedShowDiscard.value) return
+    showCards.ref = noCards
+    forcedShowDiscard.value = false
+  }
+}, { immediate: true })
 
 </script>
 

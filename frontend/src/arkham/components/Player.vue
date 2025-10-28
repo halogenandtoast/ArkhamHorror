@@ -186,15 +186,6 @@ const doShowCards = (event: Event, cards: ComputedRef<ArkhamCard.Card[]>, title:
   viewingDiscard.value = isDiscards
 }
 
-const showDiscards = (e: Event) => doShowCards(e, discards, t('investigator.discards'), true)
-
-watch(choices, async (newChoices) => {
-  const shouldShow = newChoices.some((c) => c.tag === "AbilityLabel" && discards.value.map((d) => toCardContents(d).id).includes(c.ability.source.contents))
-  if (shouldShow) {
-    showDiscards(new CustomEvent("showDiscards"))
-  }
-})
-
 const hideCards = () => {
   showCards.ref = noCards
   viewingDiscard.value = false

@@ -3,15 +3,16 @@
 
 module Arkham.I18n where
 
+import Arkham.Card.CardCode
 import Arkham.Name
 import Arkham.Prelude hiding (intercalate)
 import Arkham.SkillType
 import Data.Aeson.Key qualified as K
 import Data.Aeson.Types (Pair)
+import Data.Char qualified as Char
 import Data.Map.Strict qualified as Map
 import Data.Text (intercalate)
 import Data.Text qualified as T
-import Data.Char qualified as Char
 
 type Scope = Text
 type HasI18n = (?scope :: [Scope], ?scopeVars :: Map Text Value)
@@ -51,6 +52,10 @@ numberVar var val a = withVar var (Number $ fromIntegral val) a
 
 nameVar :: (Named b, HasI18n) => b -> (HasI18n => a) -> a
 nameVar val a = withVar "name" (String $ toTitle val) a
+
+-- __name will be used to override to locale
+cardNameVar :: (HasCardCode c, Named c, HasI18n) => c -> (HasI18n => a) -> a
+cardNameVar val a = withVar "name" (String $ toTitle val) $ withVar "__name" (String $ unCardCode $ toCardCode val) a
 
 keyVar :: HasI18n => Text -> Text -> (HasI18n => a) -> a
 keyVar k val a = withVar k (String val) a

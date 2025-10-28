@@ -42,6 +42,7 @@ import Arkham.Fight
 import Arkham.ForMovement
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
+import Arkham.Helpers.GameLog
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location (getLocationOf, placementLocation, withLocationOf)
@@ -52,6 +53,7 @@ import Arkham.Helpers.Ref
 import Arkham.Helpers.Source
 import Arkham.Helpers.Window
 import Arkham.History
+import Arkham.I18n
 import Arkham.Keyword (_Swarming)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher (
@@ -891,7 +893,7 @@ instance RunMessage EnemyAttrs where
         push $ Successful (Action.Fight, toTarget a) iid source target' n
       pushWhen (null alternateSuccess) $ InvestigatorDamageEnemy iid enemyId source
       pure a
-    FailedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isTarget a target -> do
+    FailedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isActionTarget a target -> do
       pushAll
         [ FailedAttackEnemy iid enemyId
         , CheckWindows [mkAfter $ Window.FailAttackEnemy iid enemyId n]
@@ -899,20 +901,23 @@ instance RunMessage EnemyAttrs where
         , Failed (Action.Fight, toProxyTarget target) iid source (toActionTarget target) n
         ]
       pure a
-    Failed (Action.Fight, _) iid _source target _ | isTarget a target -> do
+    Failed (Action.Fight, target) iid _source _ _ | isTarget a target -> do
       mods <- getCombinedModifiers [toTarget iid, toTarget a]
       keywords <- getModifiedKeywords a
 
-      pushWhen
+      when
         ( (Keyword.Retaliate `elem` keywords)
             && (IgnoreRetaliate `notElem` mods)
             && (not enemyExhausted || CanRetaliateWhileExhausted `elem` mods)
         )
-        $ EnemyAttack
-        $ (enemyAttack enemyId a iid)
-          { attackDamageStrategy = enemyDamageStrategy
-          , attackType = RetaliateAttack
-          }
+        do
+          withI18n $ cardNameVar a $ sendI18n "log.retaliate"
+          push
+            $ EnemyAttack
+            $ (enemyAttack enemyId a iid)
+              { attackDamageStrategy = enemyDamageStrategy
+              , attackType = RetaliateAttack
+              }
       pure a
     EnemyAttackIfEngaged eid miid | eid == enemyId -> do
       case miid of
@@ -1002,7 +1007,7 @@ instance RunMessage EnemyAttrs where
         , afterWindow
         ]
       pure a
-    Failed (Action.Evade, _) iid _ target _ | isTarget a target -> do
+    Failed (Action.Evade, target) iid _ _ _ | isTarget a target -> do
       mods <- getModifiers iid
       keywords <- getModifiedKeywords a
       pushAll

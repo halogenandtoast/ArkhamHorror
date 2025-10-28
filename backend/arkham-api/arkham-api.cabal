@@ -2647,6 +2647,7 @@ library
       Arkham.Helpers.FetchCard
       Arkham.Helpers.FlavorText
       Arkham.Helpers.Game
+      Arkham.Helpers.GameLog
       Arkham.Helpers.GameValue
       Arkham.Helpers.Healing
       Arkham.Helpers.History

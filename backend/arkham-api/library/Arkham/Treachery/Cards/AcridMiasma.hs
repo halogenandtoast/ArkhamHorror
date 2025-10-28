@@ -2,6 +2,7 @@ module Arkham.Treachery.Cards.AcridMiasma (acridMiasma, AcridMiasma (..)) where
 
 import Arkham.Ability
 import Arkham.Helpers.Message qualified as Msg
+import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -21,8 +22,9 @@ instance HasAbilities AcridMiasma where
 instance RunMessage AcridMiasma where
   runMessage msg t@(AcridMiasma attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      mLocation <- selectOne $ NearestLocationTo iid $ locationWithoutTreachery Cards.acridMiasma
-      for_ mLocation $ attachTreachery (toId attrs)
+      withLocationOf iid \lid -> do
+        mLocation <- selectOne $ NearestLocationToLocation lid $ locationWithoutTreachery Cards.acridMiasma
+        for_ mLocation $ attachTreachery (toId attrs)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom

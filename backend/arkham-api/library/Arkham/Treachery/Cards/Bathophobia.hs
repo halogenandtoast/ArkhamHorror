@@ -1,10 +1,8 @@
-module Arkham.Treachery.Cards.Bathophobia (bathophobia, Bathophobia (..)) where
+module Arkham.Treachery.Cards.Bathophobia (bathophobia) where
 
-import Arkham.Classes
-import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Bathophobia = Bathophobia TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -14,14 +12,13 @@ bathophobia :: TreacheryCard Bathophobia
 bathophobia = treachery Bathophobia Cards.bathophobia
 
 instance RunMessage Bathophobia where
-  runMessage msg t@(Bathophobia attrs) = case msg of
+  runMessage msg t@(Bathophobia attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push
-        $ revelationSkillTest sid iid attrs #willpower
+      revelationSkillTest sid iid attrs #willpower
         $ SumCalculation [Fixed 1, ScenarioCount CurrentDepth]
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      push $ assignHorror iid attrs 2
+      assignHorror iid attrs 2
       pure t
-    _ -> Bathophobia <$> runMessage msg attrs
+    _ -> Bathophobia <$> liftRunMessage msg attrs

@@ -28,7 +28,7 @@ intFromMetadata = \case
 
 instance RunMessage EffectAttrs where
   runMessage msg a@EffectAttrs {..} = case msg of
-    DrawEnded _ | isEndOfWindow a EffectCardDrawWindow -> do
+    DrawEnded cid _ | isEndOfWindow a (EffectCardDrawWindow cid) -> do
       a <$ push (DisableEffect effectId)
     SearchEnded _ | isEndOfWindow a EffectSearchWindow -> do
       a <$ push (DisableEffect effectId)
@@ -94,8 +94,12 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     Move _ | isEndOfWindow a EffectMoveWindow -> do
       a <$ push (DisableEffect effectId)
+    EnemyDefeated eid _ _ _ | isEndOfWindow a (EffectDefeatWindow eid) -> do
+      a <$ push (DisableEffect effectId)
     WhenCanMove _ _ | isEndOfWindow a EffectMoveWindow -> do
       -- We've killed the entire batch at this point so we can resume
+      a <$ push (DisableEffect effectId)
+    AddToHand _ cards | any (\c -> isEndOfWindow a (EffectHollowWindow c.id)) cards -> do
       a <$ push (DisableEffect effectId)
     ResolvedAbility ab | #move `elem` ab.actions && isEndOfWindow a EffectMoveWindow -> do
       a <$ push (DisableEffect effectId)
@@ -130,10 +134,10 @@ instance RunMessage EffectAttrs where
     InSearch msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
       push $ Do msg'
       pure a
-    InDiscard _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+    InDiscard iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
       push $ Do msg'
       pure a
-    InHand _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+    InHand iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
       push $ Do msg'
       pure a
     _ -> pure a

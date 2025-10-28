@@ -1,7 +1,4 @@
-module Arkham.Story.Cards.RealityAcid
-  ( RealityAcid(..)
-  , realityAcid
-  ) where
+module Arkham.Story.Cards.RealityAcid (realityAcid) where
 
 -- Placeholder so appears in cards UI
 
@@ -17,6 +14,6 @@ realityAcid = story RealityAcid Cards.realityAcid
 
 instance RunMessage RealityAcid where
   runMessage msg s@(RealityAcid attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       pure s
     _ -> RealityAcid <$> liftRunMessage msg attrs

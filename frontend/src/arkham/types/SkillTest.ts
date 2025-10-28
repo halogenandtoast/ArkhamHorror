@@ -99,7 +99,7 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     revealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     resolvedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     // result: skillTestResultDecoder,
-    committedCards: JsonDecoder.dictionary(JsonDecoder.array(cardDecoder, 'Card[]'), 'Record<string, Card[]>').map((record) => Object.values(record).flat()),
+    committedCards: JsonDecoder.record(JsonDecoder.array(cardDecoder, 'Card[]'), 'Record<string, Card[]>').map((record) => Object.values(record).flat()),
     source: sourceDecoder,
     targetCard: v2Optional(JsonDecoder.string()),
     sourceCard: v2Optional(JsonDecoder.string()),

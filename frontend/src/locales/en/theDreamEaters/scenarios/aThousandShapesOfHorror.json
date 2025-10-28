@@ -50,6 +50,7 @@
   "remembered": {
     "recoveredAStrangeKey": "Recovered a strange key",
     "studiedADesecratedPortrait": "Studied a Desecrated Portrait",
-    "noticedTheMissingBones": "Noticed the Missing Bones"
+    "noticedTheMissingBones": "Noticed the Missing Bones",
+    "foundACrackedMirror": "Found a Cracked Mirror"
   }
 }

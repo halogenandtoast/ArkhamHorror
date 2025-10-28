@@ -1,5 +1,6 @@
 module Arkham.Event.Events.BloodRite (bloodRite) where
 
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Capability
 import Arkham.Classes.HasGame
 import Arkham.Cost hiding (discardedCards)
@@ -43,13 +44,14 @@ instance RunMessage BloodRite where
     DoStep n msg'@(PayForCardAbility iid (isSource attrs -> True) _ 1 _) | n > 0 -> do
       resources <- getSpendableResources iid
       enemies <- getDamageableEnemies iid attrs (enemyAtLocationWith iid)
+      concealed <- getConcealed (ForExpose $ toSource iid) iid
       chooseOneM iid do
         whenM (can.gain.resources FromPlayerCardEffect iid) do
           labeled "Gain Resource" $ gainResources iid attrs 1 >> doStep (n - 1) msg'
-        when (notNull enemies && resources > 0) do
+        when ((notNull enemies || notNull concealed) && resources > 0) do
           labeled "Spend Resource and Deal 1 Damage To Enemy At Your Location" do
             spendResources iid 1
-            chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) attrs 1
+            chooseDamageEnemy iid attrs (locationWithInvestigator iid) AnyEnemy 1
             doStep (n - 1) msg'
       pure e
     _ -> BloodRite <$> liftRunMessage msg attrs

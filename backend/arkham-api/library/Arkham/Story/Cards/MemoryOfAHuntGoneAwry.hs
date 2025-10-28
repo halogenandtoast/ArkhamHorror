@@ -19,7 +19,7 @@ memoryOfAHuntGoneAwry = story MemoryOfAHuntGoneAwry Cards.memoryOfAHuntGoneAwry
 
 instance RunMessage MemoryOfAHuntGoneAwry where
   runMessage msg s@(MemoryOfAHuntGoneAwry attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       record EliyahHasConfrontedHisDemons
       setPartnerStatus Assets.eliyahAshevakDogHandler Resolute
       selectForMaybeM (assetIs Assets.eliyahAshevakDogHandler) \eliyah ->

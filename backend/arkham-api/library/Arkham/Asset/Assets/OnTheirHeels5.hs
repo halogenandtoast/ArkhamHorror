@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Matcher
@@ -36,10 +37,12 @@ instance RunMessage OnTheirHeels5 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withLocationOf iid \lid -> do
         enemies <- select $ at_ (be lid) <> EnemyCanBeDamagedBySource (attrs.ability 1)
+        mconcealed <- getConcealed (ForExpose $ toSource iid) iid
         chooseOrRunOneM iid do
           whenM (canDiscoverCluesAtYourLocation NotInvestigate iid) do
             labeled "Discover a clue at your location"
               $ discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
           targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
+          for_ mconcealed \card -> targeting card $ doFlip iid attrs card
       pure a
     _ -> OnTheirHeels5 <$> liftRunMessage msg attrs

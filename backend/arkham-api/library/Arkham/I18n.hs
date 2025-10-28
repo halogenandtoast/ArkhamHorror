@@ -10,6 +10,8 @@ import Data.Aeson.Key qualified as K
 import Data.Aeson.Types (Pair)
 import Data.Map.Strict qualified as Map
 import Data.Text (intercalate)
+import Data.Text qualified as T
+import Data.Char qualified as Char
 
 type Scope = Text
 type HasI18n = (?scope :: [Scope], ?scopeVars :: Map Text Value)
@@ -25,6 +27,9 @@ popScope a = let ?scope = reverse (drop 1 $ reverse ?scope) in a
 
 unscoped :: HasI18n => (HasI18n => a) -> a
 unscoped a = let ?scope = [] in a
+
+ikey' :: HasI18n => Scope -> Text
+ikey' t = "$" <> ikey t
 
 ikey :: HasI18n => Scope -> Text
 ikey t = intercalate "." (?scope <> [t]) <> varStr
@@ -46,6 +51,9 @@ numberVar var val a = withVar var (Number $ fromIntegral val) a
 
 nameVar :: (Named b, HasI18n) => b -> (HasI18n => a) -> a
 nameVar val a = withVar "name" (String $ toTitle val) a
+
+keyVar :: HasI18n => Text -> Text -> (HasI18n => a) -> a
+keyVar k val a = withVar k (String val) a
 
 skillVar :: HasI18n => SkillType -> (HasI18n => a) -> a
 skillVar v a = case v of
@@ -69,3 +77,15 @@ withVar k v a = let ?scopeVars = ?scopeVars <> singletonMap k v in a
 
 withVars :: HasI18n => [Pair] -> (HasI18n => a) -> a
 withVars kv a = let ?scopeVars = ?scopeVars <> Map.fromList (map (first K.toText) kv) in a
+
+toScope :: Text -> Scope
+toScope t = case T.words t of
+  [] -> ""
+  (x : xs) -> lowerFirst x <> mconcat (map capitalizeFirst xs)
+ where
+  lowerFirst txt = case T.uncons txt of
+    Just (c, r) -> T.cons (Char.toLower c) r
+    Nothing -> txt
+  capitalizeFirst txt = case T.uncons txt of
+    Just (c, r) -> T.cons (Char.toUpper c) r
+    Nothing -> txt

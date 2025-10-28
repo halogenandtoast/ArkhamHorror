@@ -1,15 +1,9 @@
-module Arkham.Location.Cards.SilverTwilightLodgeWhereItAllEnds (
-  silverTwilightLodgeWhereItAllEnds,
-  SilverTwilightLodgeWhereItAllEnds (..),
-)
-where
+module Arkham.Location.Cards.SilverTwilightLodgeWhereItAllEnds (silverTwilightLodgeWhereItAllEnds) where
 
-import Arkham.Prelude
-
-import Arkham.Card
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 import Arkham.Trait (Trait (SilverTwilight))
@@ -22,18 +16,16 @@ silverTwilightLodgeWhereItAllEnds :: LocationCard SilverTwilightLodgeWhereItAllE
 silverTwilightLodgeWhereItAllEnds = location SilverTwilightLodgeWhereItAllEnds Cards.silverTwilightLodgeWhereItAllEnds 2 (Static 0)
 
 instance HasAbilities SilverTwilightLodgeWhereItAllEnds where
-  getAbilities (SilverTwilightLodgeWhereItAllEnds attrs) =
-    withRevealedAbilities attrs [restrictedAbility attrs 1 Here $ ActionAbility [] $ ActionCost 1]
+  getAbilities (SilverTwilightLodgeWhereItAllEnds a) = extendRevealed1 a $ restricted a 1 Here actionAbility
 
 instance RunMessage SilverTwilightLodgeWhereItAllEnds where
-  runMessage msg l@(SilverTwilightLodgeWhereItAllEnds attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(SilverTwilightLodgeWhereItAllEnds attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       let breaches = countLocationBreaches attrs
       act <- selectJust AnyAct
-      pushAll
-        $ findAndDrawEncounterCard iid (CardWithType EnemyType <> CardWithTrait SilverTwilight)
-        : ( guard (breaches > 0)
-              *> [RemoveBreaches (toTarget attrs) breaches, PlaceBreaches (toTarget act) breaches]
-          )
+      findAndDrawEncounterCard iid (#enemy <> CardWithTrait SilverTwilight)
+      when (breaches > 0) do
+        removeBreaches attrs breaches
+        placeBreaches act breaches
       pure l
-    _ -> SilverTwilightLodgeWhereItAllEnds <$> runMessage msg attrs
+    _ -> SilverTwilightLodgeWhereItAllEnds <$> liftRunMessage msg attrs

@@ -1,6 +1,5 @@
 module Arkham.Skill.Cards.CalculatedRisk (calculatedRisk) where
 
-import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
@@ -16,7 +15,7 @@ calculatedRisk = skill CalculatedRisk Cards.calculatedRisk
 instance HasModifiersFor CalculatedRisk where
   getModifiersFor (CalculatedRisk attrs) = do
     n <- fieldMap InvestigatorActionsTaken length attrs.owner
-    modifySelf attrs.cardId [AddSkillIcons $ replicate (n + 1) #wild]
+    addSkillIcons attrs $ replicate (n + 1) #wild
 
 instance RunMessage CalculatedRisk where
   runMessage msg (CalculatedRisk attrs) = runQueueT $ case msg of

@@ -18,11 +18,12 @@ theHomeFront = skill TheHomeFront Cards.theHomeFront
 instance RunMessage TheHomeFront where
   runMessage msg s@(TheHomeFront attrs) = runQueueT $ case msg of
     PassedSkillTest _ (Just Fight) _ (isTarget attrs -> True) _ _ -> do
-      getSkillTestTargetedEnemy >>= traverse_ \eid -> do
+      withSkillTestTargetedEnemy \eid -> do
         damageCount <- field InvestigatorDamage attrs.owner
         canDamage <- sourceCanDamageEnemy eid (toSource attrs)
         when (canDamage && damageCount > 0) do
-          push $ HealDamageDirectly (InvestigatorTarget attrs.owner) (toSource attrs) 1
-          nonAttackEnemyDamage (Just attrs.owner) attrs 1 eid
+          skillTestResultOption "The Home Front" do
+            push $ HealDamageDirectly (InvestigatorTarget attrs.owner) (toSource attrs) 1
+            nonAttackEnemyDamage (Just attrs.owner) attrs 1 eid
       pure s
     _ -> TheHomeFront <$> liftRunMessage msg attrs

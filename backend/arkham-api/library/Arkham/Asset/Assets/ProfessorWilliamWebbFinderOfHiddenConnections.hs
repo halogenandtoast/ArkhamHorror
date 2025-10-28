@@ -39,7 +39,7 @@ instance RunMessage ProfessorWilliamWebbFinderOfHiddenConnections where
       hasItems <- selectAny $ #item <> inDiscardOf iid
       canGetItem <- can.have.cards.leaveDiscard iid
       hasLocations <-
-        selectAny $ ConnectedFrom (locationWithInvestigator iid) <> locationWithDiscoverableCluesBy iid
+        selectAny $ connectedFrom (locationWithInvestigator iid) <> locationWithDiscoverableCluesBy iid
 
       -- We redirect success to this, but do nothing since the ability handles it
       withLocationOf iid \lid ->
@@ -63,7 +63,7 @@ instance RunMessage ProfessorWilliamWebbFinderOfHiddenConnections where
       pure a
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       locations <-
-        select $ ConnectedFrom (locationWithInvestigator iid) <> locationWithDiscoverableCluesBy iid
+        select $ connectedFrom (locationWithInvestigator iid) <> locationWithDiscoverableCluesBy iid
       chooseTargetM iid locations $ discoverAt NotInvestigate iid (attrs.ability 1) 1
       pure a
     _ -> ProfessorWilliamWebbFinderOfHiddenConnections <$> liftRunMessage msg attrs

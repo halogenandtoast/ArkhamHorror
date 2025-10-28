@@ -27,6 +27,8 @@ import Arkham.SlotType
 import Arkham.Trait (Trait (..))
 import Arkham.Trait qualified as Trait
 import Control.Lens.Plated (Plated)
+import Control.Monad.Fail (fail)
+import Data.Aeson (Result (..))
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 
@@ -38,8 +40,11 @@ instance Plated ForPlay
 -- | Relies on game state, can not be used purely
 data ExtendedCardMatcher
   = BasicCardMatch CardMatcher
+  | NotExtendedCard ExtendedCardMatcher
+  | HiddenInHandCard
   | WillGoIntoSlot SlotType
   | CardIsBeneathInvestigator Who
+  | CardIsBeneathActDeck
   | CardSharesTitleWith ExtendedCardMatcher
   | CardIsBeneathAsset AssetMatcher
   | CardIsAsset AssetMatcher
@@ -54,6 +59,7 @@ data ExtendedCardMatcher
   | InDeckOf Who
   | InPlayAreaOf Who
   | InDiscardOf Who
+  | InEncounterDiscard
   | TopOfDeckOf Who
   | EligibleForCurrentSkillTest
   | SetAsideCardMatch CardMatcher
@@ -68,8 +74,8 @@ data ExtendedCardMatcher
   | PlayableCardWithCriteria ActionStatus CriteriaOverride ExtendedCardMatcher
   | CommittableCard InvestigatorMatcher ExtendedCardMatcher
   | CardWithPerformableAbility AbilityMatcher [ModifierType]
-  | CanCancelRevelationEffect ExtendedCardMatcher
-  | CanCancelAllEffects ExtendedCardMatcher
+  | CanCancelRevelationEffect InvestigatorMatcher ExtendedCardMatcher
+  | CanCancelAllEffects InvestigatorMatcher ExtendedCardMatcher
   | CardWithoutModifier ModifierType
   | CardIsCommittedBy InvestigatorMatcher
   | ChosenViaCustomization ExtendedCardMatcher
@@ -80,6 +86,9 @@ data ExtendedCardMatcher
   | ResolvingCard
   deriving stock (Show, Eq, Ord, Data)
 
+instance Not ExtendedCardMatcher where
+  not_ = NotExtendedCard
+
 instance Plated ExtendedCardMatcher
 
 instance Semigroup ExtendedCardMatcher where
@@ -87,6 +96,7 @@ instance Semigroup ExtendedCardMatcher where
     ExtendedCardMatches $ xs <> ys
   ExtendedCardMatches xs <> x = ExtendedCardMatches (x : xs)
   x <> ExtendedCardMatches xs = ExtendedCardMatches (x : xs)
+  BasicCardMatch a <> BasicCardMatch b = BasicCardMatch (a <> b)
   x <> y = ExtendedCardMatches [x, y]
 
 instance IsLabel "any" ExtendedCardMatcher where
@@ -115,6 +125,12 @@ instance IsLabel "skill" ExtendedCardMatcher where
 
 instance IsLabel "spell" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #spell
+
+instance IsLabel "hex" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #hex
+
+instance IsLabel "curse" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #curse
 
 instance IsLabel "item" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #item
@@ -149,6 +165,12 @@ instance IsLabel "story" ExtendedCardMatcher where
 instance IsLabel "enemy" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #enemy
 
+instance IsLabel "monster" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #monster
+
+instance IsLabel "silverTwilight" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #silverTwilight
+
 instance IsLabel "treachery" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #treachery
 
@@ -176,6 +198,7 @@ data CardMatcher
   | CardWithMaxLevel Int
   | CardWithoutKeyword Keyword
   | CardWithKeyword Keyword
+  | CardWithConcealed
   | CardWithClass ClassSymbol
   | CardWithAction Action
   | CardWithoutAction
@@ -215,6 +238,7 @@ data CardMatcher
   | CardWithEvenNumberOfWordsInTitle
   | CardWithAvailableCustomization
   | CardTaggedWith Text
+  | SingleSidedCard
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not CardMatcher where
@@ -313,11 +337,26 @@ instance IsLabel "skill" CardMatcher where
 instance IsLabel "enemy" CardMatcher where
   fromLabel = CardWithType EnemyType
 
+instance IsLabel "cultist" CardMatcher where
+  fromLabel = CardWithTrait Cultist
+
+instance IsLabel "monster" CardMatcher where
+  fromLabel = CardWithTrait Monster
+
+instance IsLabel "silverTwilight" CardMatcher where
+  fromLabel = CardWithTrait SilverTwilight
+
 instance IsLabel "asset" CardMatcher where
   fromLabel = CardWithOneOf [CardWithType AssetType, CardWithType EncounterAssetType]
 
 instance IsLabel "ally" CardMatcher where
   fromLabel = CardWithTrait Ally
+
+instance IsLabel "hex" CardMatcher where
+  fromLabel = CardWithTrait Hex
+
+instance IsLabel "curse" CardMatcher where
+  fromLabel = CardWithTrait Curse
 
 instance IsLabel "parley" CardMatcher where
   fromLabel = CardWithAction #parley
@@ -401,9 +440,25 @@ instance FromJSON ExtendedCardMatcher where
       "CardMatches" -> BasicCardMatch . CardMatches <$> o .: "contents"
       "InHandOf" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        pure $ case contents of
+          Left iid -> InHandOf ForPlay iid
+          Right (forPlay, iid) -> InHandOf forPlay iid
+      "CanCancelRevelationEffect" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of
-          Left iid -> pure $ InHandOf ForPlay iid
-          Right (forPlay, iid) -> pure $ InHandOf forPlay iid
+          Left matcher -> do
+            case fromJSON (object ["tag" .= ("Anyone" :: Text)]) of
+              Success imatcher -> pure $ CanCancelRevelationEffect imatcher matcher
+              Error err -> fail err
+          Right (imatcher, matcher) -> pure $ CanCancelRevelationEffect imatcher matcher
+      "CanCancelAllEffects" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left matcher -> do
+            case fromJSON (object ["tag" .= ("Anyone" :: Text)]) of
+              Success imatcher -> pure $ CanCancelAllEffects imatcher matcher
+              Error err -> fail err
+          Right (imatcher, matcher) -> pure $ CanCancelAllEffects imatcher matcher
       _ -> $(mkParseJSON defaultOptions ''ExtendedCardMatcher) (Object o)
 
 -- ** Card Helpers **

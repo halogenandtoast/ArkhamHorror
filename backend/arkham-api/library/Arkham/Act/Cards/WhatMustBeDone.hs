@@ -12,6 +12,7 @@ import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Choose
 import Arkham.Movement
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Data.List qualified as List
 
 newtype WhatMustBeDone = WhatMustBeDone ActAttrs
@@ -50,32 +51,30 @@ instance RunMessage WhatMustBeDone where
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       let cards = drewCards.cards
 
-      focusCards (map flipCard drewCards.cards) do
+      focusCards (map showRevealed drewCards.cards) do
         chooseOrRunOneM iid do
-          for_ drewCards.cards \card -> do
-            targeting card do
-              unfocusCards
-              shuffleCardsIntoDeck CosmosDeck (List.delete card cards)
-              lid <- placeLocation card
-              revealBy iid lid
-              movemsg <- move (attrs.ability 1) iid lid
-              push $ RunCosmos iid lid [Move movemsg]
+          targets drewCards.cards \card -> do
+            unfocusCards
+            shuffleCardsIntoDeck CosmosDeck (List.delete card cards)
+            lid <- placeLocation card
+            revealBy iid lid
+            movemsg <- move (attrs.ability 1) iid lid
+            push $ RunCosmos iid lid [Move movemsg]
       pure a
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       youAcceptedYourFate <- getHasRecord YouHaveAcceptedYourFate
       haveMesmerizingFlute <- MesmerizingFlute `inRecordSet` MementosDiscovered
       haveRitualComponents <- RitualComponents `inRecordSet` MementosDiscovered
 
-      if count id [youAcceptedYourFate, haveMesmerizingFlute, haveRitualComponents] >= 2
-        then push R2
-        else do
-          youRejectedYourFate <- getHasRecord YouHaveRejectedYourFate
-          haveScrapOfTornShadow <- ScrapOfTornShadow `inRecordSet` MementosDiscovered
-          haveWispOfSpectralMist <- WispOfSpectralMist `inRecordSet` MementosDiscovered
-          push
-            $ if count id [youRejectedYourFate, haveScrapOfTornShadow, haveWispOfSpectralMist] >= 2
-              then R3
-              else R4
+      youRejectedYourFate <- getHasRecord YouHaveRejectedYourFate
+      haveScrapOfTornShadow <- ScrapOfTornShadow `inRecordSet` MementosDiscovered
+      haveWispOfSpectralMist <- WispOfSpectralMist `inRecordSet` MementosDiscovered
 
+      leadChooseOrRunOneM $ scenarioI18n do
+        when (count id [youAcceptedYourFate, haveMesmerizingFlute, haveRitualComponents] >= 2) do
+          labeled' "whatMustBeDone.R2" $ push R2
+        when (count id [youRejectedYourFate, haveScrapOfTornShadow, haveWispOfSpectralMist] >= 2) do
+          labeled' "whatMustBeDone.R3" $ push R3
+        labeled' "whatMustBeDone.R4" $ push R4
       pure a
     _ -> WhatMustBeDone <$> liftRunMessage msg attrs

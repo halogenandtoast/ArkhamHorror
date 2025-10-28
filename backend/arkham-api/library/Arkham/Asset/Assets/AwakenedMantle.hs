@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.AwakenedMantle (awakenedMantle, AwakenedMantle (..)) where
+module Arkham.Asset.Assets.AwakenedMantle (awakenedMantle) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -16,10 +17,10 @@ awakenedMantle = assetWith AwakenedMantle Cards.awakenedMantle (healthL ?~ 2)
 
 instance HasAbilities AwakenedMantle where
   getAbilities (AwakenedMantle x) =
-    [ restricted
+    [ controlled
         x
         1
-        (ControlsThis <> CanMoveTo (ConnectedFrom (YourLocation <> FloodedLocation) <> FloodedLocation))
+        (CanMoveTo $ ConnectedFrom ForMovement (YourLocation <> FloodedLocation) <> FloodedLocation)
         $ FastAbility (exhaust x)
     ]
 
@@ -29,7 +30,7 @@ instance RunMessage AwakenedMantle where
       locations <-
         select
           $ CanMoveToLocation (InvestigatorWithId iid) (attrs.ability 1)
-          $ ConnectedFrom (YourLocation <> FloodedLocation)
+          $ ConnectedFrom ForMovement (YourLocation <> FloodedLocation)
           <> FloodedLocation
       chooseTargetM iid locations $ moveTo (attrs.ability 1) iid
       pure a

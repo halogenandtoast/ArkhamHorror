@@ -30,10 +30,11 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Window (Window (..), defaultWindows)
 import Arkham.Window qualified as Window
 
-actionMatches :: HasGame m => InvestigatorId -> Action -> ActionMatcher -> m Bool
+actionMatches :: (Tracing m, HasGame m) => InvestigatorId -> Action -> ActionMatcher -> m Bool
 actionMatches _ _ AnyAction = pure True
 actionMatches _ a (ActionIs a') = pure $ a == a'
 actionMatches iid a (ActionMatches as) = allM (actionMatches iid a) as
@@ -63,7 +64,7 @@ actionMatches iid a RepeatableAction = do
       , canPlay && notNull playableCards && a == #play
       ]
 
-canDo :: HasGame m => InvestigatorId -> Action -> m Bool
+canDo :: (HasGame m, Tracing m) => InvestigatorId -> Action -> m Bool
 canDo iid action = do
   mods <- getModifiers iid
   let
@@ -88,7 +89,7 @@ canDo iid action = do
   not <$> anyM prevents mods
 
 additionalActionCovers
-  :: HasGame m => Source -> [Action] -> AdditionalAction -> m Bool
+  :: (HasGame m, Tracing m) => Source -> [Action] -> AdditionalAction -> m Bool
 additionalActionCovers source actions (AdditionalAction _ _ aType) = case aType of
   PlayCardRestrictedAdditionalAction matcher -> case source of
     CardIdSource cid -> elem cid . map toCardId <$> select matcher
@@ -106,14 +107,12 @@ additionalActionCovers source actions (AdditionalAction _ _ aType) = case aType 
   BountyAction -> pure False -- Has to be handled by Tony Morgan
   BobJenkinsAction -> pure False -- Has to be handled by Bob Jenkins
 
-getCanAfford :: HasGame m => InvestigatorAttrs -> [Action] -> m Bool
+getCanAfford :: (HasGame m, Tracing m) => InvestigatorAttrs -> [Action] -> m Bool
 getCanAfford a@InvestigatorAttrs {..} as = do
   actionCost <- getActionCost a as
   additionalActions <- getAdditionalActions a
   additionalActionCount <-
-    countM
-      (\aa -> anyM (\ac -> additionalActionCovers (toSource a) [ac] aa) as)
-      additionalActions
+    countM (\aa -> anyM (\ac -> additionalActionCovers (toSource a) [ac] aa) as) additionalActions
   pure $ actionCost <= (investigatorRemainingActions + additionalActionCount)
 
 getAdditionalActions :: HasGame m => InvestigatorAttrs -> m [AdditionalAction]
@@ -135,6 +134,8 @@ getActionCost attrs as = do
  where
   applyModifier (ActionCostOf match m) n =
     if any (matchTarget attrs match) as then n + m else n
+  applyModifier (AdditionalActionCostOf match m) n =
+    if any (matchTarget attrs match) as then n + m else n
   applyModifier _ n = n
 
 matchTarget :: InvestigatorAttrs -> ActionTarget -> Action -> Bool
@@ -146,16 +147,16 @@ matchTarget _ (EnemyAction a _) action = action == a
 matchTarget _ (AssetAction a _) action = action == a
 matchTarget _ IsAnyAction _ = True
 
-getActions :: (HasGame m, HasCallStack) => InvestigatorId -> [Window] -> m [Ability]
+getActions :: (Tracing m, HasGame m, HasCallStack) => InvestigatorId -> [Window] -> m [Ability]
 getActions iid ws = getActionsWith iid ws id
 
 getActionsWith
-  :: (HasCallStack, HasGame m)
+  :: (HasCallStack, Tracing m, HasGame m)
   => InvestigatorId
   -> [Window]
   -> (Ability -> Ability)
   -> m [Ability]
-getActionsWith iid ws f = do
+getActionsWith iid ws f = withSpan_ "getActions" do
   modifiersForFilter <- getModifiers iid
   let
     abilityFilters =
@@ -209,73 +210,65 @@ getActionsWith iid ws f = do
         _ -> pure [action]
 
   actions'' <-
-    catMaybes <$> for
-      actionsWithSources
-      \ability -> do
-        modifiers' <- getModifiers (sourceToTarget $ abilitySource ability)
-        investigatorModifiers <- getModifiers (InvestigatorTarget iid)
-        let bountiesOnly = BountiesOnly `elem` investigatorModifiers
-        cardClasses <- case abilitySource ability of
-          AssetSource aid -> field Field.AssetClasses aid
-          _ -> pure $ singleton Neutral
+    catMaybes <$> for actionsWithSources \ability -> do
+      modifiers' <- getModifiers (sourceToTarget $ abilitySource ability)
+      investigatorModifiers <- getModifiers (InvestigatorTarget iid)
+      let bountiesOnly = BountiesOnly `elem` investigatorModifiers
+      cardClasses <- case abilitySource ability of
+        AssetSource aid -> field Field.AssetClasses aid
+        _ -> pure $ singleton Neutral
 
-        -- if enemy only bounty enemies
-        sourceIsBounty <- case abilitySource ability of
-          EnemySource eid -> eid <=~> EnemyWithBounty
-          _ -> pure True
+      -- if enemy only bounty enemies
+      sourceIsBounty <- case abilitySource ability of
+        EnemySource eid -> eid <=~> EnemyWithBounty
+        _ -> pure True
 
-        isForced <- isForcedAbility iid ability
-        let
-          -- Lola Hayes: Forced abilities will always trigger
-          prevents (CanOnlyUseCardsInRole role) =
-            null (setFromList [role, Neutral] `intersect` cardClasses)
-              && not isForced
-          prevents CannotTriggerFastAbilities = isFastAbility ability
-          prevents _ = False
-          -- Blank excludes any non-default abilities (index >= 100)
-          -- TODO: this is a leaky abstraction, we may want to track this
-          -- on the abilities themselves
-          blankPrevents Blank = abilityIndex ability < 100
-          blankPrevents BlankExceptForcedAbilities = not isForced
-          blankPrevents _ = False
-          -- If the window is fast we only permit fast abilities, but forced
-          -- abilities need to be everpresent so we include them
-          needsToBeFast =
-            all
-              ( \window ->
-                  windowType window
-                    == Window.FastPlayerWindow
-                    && not
-                      ( isFastAbility ability
-                          || isForced
-                          || isReactionAbility ability
-                      )
-              )
-              ws
+      isForced <- isForcedAbility iid ability
+      let
+        -- Lola Hayes: Forced abilities will always trigger
+        prevents (CanOnlyUseCardsInRole role) =
+          null (setFromList [role, Neutral] `intersect` cardClasses)
+            && not isForced
+        prevents CannotTriggerFastAbilities = isFastAbility ability
+        prevents _ = False
+        -- Blank excludes any non-default abilities (index >= 100)
+        -- TODO: this is a leaky abstraction, we may want to track this
+        -- on the abilities themselves
+        blankPrevents Blank = abilityIndex ability < 100
+        blankPrevents BlankExceptForcedAbilities = not isForced
+        blankPrevents _ = False
+        -- If the window is fast we only permit fast abilities, but forced
+        -- abilities need to be everpresent so we include them
+        needsToBeFast =
+          all
+            ( \window ->
+                windowType window
+                  == Window.FastPlayerWindow
+                  && not
+                    ( isFastAbility ability
+                        || isForced
+                        || isReactionAbility ability
+                    )
+            )
+            ws
 
-        pure
-          $ if any prevents investigatorModifiers
-            || any blankPrevents modifiers'
-            || needsToBeFast
-            || (bountiesOnly && not sourceIsBounty)
-            then Nothing
-            else Just $ applyAbilityModifiers ability modifiers'
-
+      pure
+        $ if any prevents investigatorModifiers
+          || any blankPrevents modifiers'
+          || needsToBeFast
+          || (bountiesOnly && not sourceIsBounty)
+          then Nothing
+          else Just $ applyAbilityModifiers ability modifiers'
 
   actions''' <-
-    filterM
-      ( \action -> do
-          andM
-            [ getCanPerformAbility iid ws action
-            , getCanAffordAbility iid action ws
-            ]
-      )
-      actions''
+    actions'' & filterM \action -> runValidT do
+      liftGuardM $ getCanPerformAbility iid ws action
+      liftGuardM $ getCanAffordAbility iid action ws
   forcedActions <- filterM (isForcedAbility iid) actions'''
   pure $ nub $ if null forcedActions then actions''' else forcedActions
 
 hasFightActions
-  :: (Sourceable source, HasGame m)
+  :: (Sourceable source, Tracing m, HasGame m)
   => InvestigatorId
   -> source
   -> WindowMatcher
@@ -287,7 +280,7 @@ hasFightActions iid requestor window windows' =
     =<< select (BasicAbility <> AbilityIsAction #fight <> AbilityWindow window)
 
 hasEvadeActions
-  :: (HasCallStack, HasGame m)
+  :: (HasCallStack, Tracing m, HasGame m)
   => InvestigatorId
   -> WindowMatcher
   -> [Window]

@@ -34,18 +34,19 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Arkham.Tracing
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (each)
 import Data.Map.Strict qualified as Map
 
-totalChaosTokenValues :: HasGame m => SkillTest -> m Int
+totalChaosTokenValues :: (HasGame m, Tracing m) => SkillTest -> m Int
 totalChaosTokenValues s = do
   x <- sum <$> for (skillTestSetAsideChaosTokens s) (getModifiedChaosTokenValue s)
   y <- getAdditionalChaosTokenValues s
   pure $ x + y
 
-totalModifiedSkillValue :: HasGame m => SkillTest -> m Int
+totalModifiedSkillValue :: (HasGame m, Tracing m) => SkillTest -> m Int
 totalModifiedSkillValue s = do
   results <- calculateSkillTestResultsData s
   chaosTokenValues <- totalChaosTokenValues s
@@ -55,7 +56,7 @@ totalModifiedSkillValue s = do
       0
       (skillTestResultsSkillValue results + chaosTokenValues + skillTestResultsIconValue results)
 
-calculateSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
+calculateSkillTestResultsData :: (HasGame m, Tracing m) => SkillTest -> m SkillTestResultsData
 calculateSkillTestResultsData s = do
   modifiers' <- getModifiers (SkillTestTarget s.id)
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
@@ -75,13 +76,13 @@ calculateSkillTestResultsData s = do
   pure
     $ SkillTestResultsData
       currentSkillValue
-      (iconCount - subtractIconCount)
+      ((if SkillIconsSubtract `elem` modifiers' then negate . abs else id) iconCount - subtractIconCount)
       chaosTokenValues
       modifiedSkillTestDifficulty
       (resultValueModifiers <$ guard (resultValueModifiers /= 0))
       isSuccess
 
-autoFailSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
+autoFailSkillTestResultsData :: (HasGame m, Tracing m) => SkillTest -> m SkillTestResultsData
 autoFailSkillTestResultsData s = do
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
   mods <- getModifiers s
@@ -96,7 +97,7 @@ subtractSkillIconCount SkillTest {..} =
   matches WildIcon = False
   matches (SkillIcon _) = False
 
-getAdditionalChaosTokenValues :: HasGame m => SkillTest -> m Int
+getAdditionalChaosTokenValues :: (HasGame m, Tracing m) => SkillTest -> m Int
 getAdditionalChaosTokenValues s = do
   mods <- getModifiers s
   let vs = [v | AddChaosTokenValue v <- mods]
@@ -104,7 +105,7 @@ getAdditionalChaosTokenValues s = do
 
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
-getModifiedChaosTokenValue :: HasGame m => SkillTest -> ChaosToken -> m Int
+getModifiedChaosTokenValue :: (HasGame m, Tracing m) => SkillTest -> ChaosToken -> m Int
 getModifiedChaosTokenValue _ t | t.cancelled = pure 0
 getModifiedChaosTokenValue s t = do
   tokenModifiers' <- getModifiers (ChaosTokenTarget t)
@@ -160,7 +161,7 @@ instance RunMessage SkillTest where
       -- see: faqs/drawing-thin
       pure $ s & difficultyL %~ \(SkillTestDifficulty d) -> SkillTestDifficulty (SumCalculation [d, Fixed n])
     ChaosTokenCanceled _ _ token -> do
-      let cancelIf t = if t.id == token.id then token {chaosTokenCancelled = True} else token
+      let cancelIf t = if t.id == token.id then token {chaosTokenCancelled = True} else t
       pure
         $ s
         & (setAsideChaosTokensL %~ map cancelIf)
@@ -257,6 +258,12 @@ instance RunMessage SkillTest where
           , Do (SkillTestEnds skillTestId skillTestInvestigator skillTestSource)
           ]
       pure s
+    RemovedFromPlay (SkillSource sid) -> do
+      card <- field Field.SkillCard sid
+      pure
+        $ s
+        & (committedCardsL . each %~ filter ((/= card.id) . toCardId))
+        & (subscribersL %~ filter (not . isTarget sid))
     RemoveFromGame target | target == skillTestTarget -> do
       when (skillTestStep < RevealChaosTokenStep) do
         pushAll
@@ -267,47 +274,46 @@ instance RunMessage SkillTest where
     TriggerSkillTest iid -> do
       modifiers' <- getModifiers iid
       modifiers'' <- getModifiers (SkillTestTarget skillTestId)
-      if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
-        then do
-          let
-            tokensTreatedAsRevealed = flip mapMaybe modifiers' $ \case
-              TreatRevealedChaosTokenAs t -> Just t
-              _ -> Nothing
-          if null tokensTreatedAsRevealed
-            then push (RunSkillTest iid)
-            else do
-              pushAll
-                [ When (RevealSkillTestChaosTokens iid)
-                , RevealSkillTestChaosTokens iid
-                , RunSkillTest iid
-                ]
-              for_ tokensTreatedAsRevealed $ \chaosTokenFace -> do
-                t <- getRandom
+      if
+        | SkillTestAutomaticallySucceeds `elem` modifiers'' -> pushAll [PassSkillTest, UnsetActiveCard]
+        | SkillTestAutomaticallyFails `elem` modifiers'' -> pushAll [FailSkillTest, UnsetActiveCard]
+        | DoNotDrawChaosTokensForSkillChecks `elem` modifiers' -> do
+            let
+              tokensTreatedAsRevealed = flip mapMaybe modifiers' $ \case
+                TreatRevealedChaosTokenAs t -> Just t
+                _ -> Nothing
+            if null tokensTreatedAsRevealed
+              then push (RunSkillTest iid)
+              else do
                 pushAll
-                  $ resolve (RevealChaosToken (toSource s) iid (ChaosToken t chaosTokenFace (Just iid) False False))
-        else
-          if SkillTestAutomaticallySucceeds `elem` modifiers''
-            then pushAll [PassSkillTest, UnsetActiveCard]
-            else do
-              let
-                applyRevealStategyModifier (MultiReveal _ b) (ChangeRevealStrategy n) = MultiReveal n b
-                applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
-                applyRevealStategyModifier n RevealAnotherChaosToken = MultiReveal n (Reveal 1)
-                applyRevealStategyModifier n (DrawAdditionalChaosTokens m) =
-                  let
-                    go = \case
-                      Reveal x -> RevealAndChoose (x + m) 1
-                      RevealAndChoose x z -> RevealAndChoose (x + m) z
-                      other -> other
-                   in
-                    go n
-                applyRevealStategyModifier n _ = n
-                revealStrategy =
-                  foldl' applyRevealStategyModifier (Reveal 1) (modifiers' <> modifiers'')
-              pushAll
-                [ RequestChaosTokens (toSource s) (Just iid) revealStrategy SetAside
-                , RunSkillTest iid
-                ]
+                  [ When (RevealSkillTestChaosTokens iid)
+                  , RevealSkillTestChaosTokens iid
+                  , RunSkillTest iid
+                  ]
+                for_ tokensTreatedAsRevealed $ \chaosTokenFace -> do
+                  t <- getRandom
+                  pushAll
+                    $ resolve (RevealChaosToken (toSource s) iid (ChaosToken t chaosTokenFace (Just iid) False False))
+        | otherwise -> do
+            let
+              applyRevealStategyModifier (MultiReveal _ b) (ChangeRevealStrategy n) = MultiReveal n b
+              applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
+              applyRevealStategyModifier n RevealAnotherChaosToken = MultiReveal n (Reveal 1)
+              applyRevealStategyModifier n (DrawAdditionalChaosTokens m) =
+                let
+                  go = \case
+                    Reveal x -> RevealAndChoose (x + m) 1
+                    RevealAndChoose x z -> RevealAndChoose (x + m) z
+                    other -> other
+                 in
+                  go n
+              applyRevealStategyModifier n _ = n
+              revealStrategy =
+                foldl' applyRevealStategyModifier (Reveal 1) (modifiers' <> modifiers'')
+            pushAll
+              [ RequestChaosTokens (toSource s) (Just iid) revealStrategy SetAside
+              , RunSkillTest iid
+              ]
       pure s
     DrawAnotherChaosToken iid -> do
       player <- getPlayer skillTestInvestigator
@@ -409,6 +415,9 @@ instance RunMessage SkillTest where
           ]
       pure $ s & toResolveChaosTokensL .~ mempty & resolvedChaosTokensL <>~ skillTestToResolveChaosTokens
     PassSkillTest -> do
+      pushAll [CheckAllAdditionalCommitCosts, Do PassSkillTest]
+      pure s
+    Do PassSkillTest -> do
       modifiedSkillValue' <- totalModifiedSkillValue s
       player <- getPlayer skillTestInvestigator
       removeAllMessagesMatching \case
@@ -428,6 +437,9 @@ instance RunMessage SkillTest where
       push $ chooseOne player [SkillTestApplyResultsButton]
       pure $ s & resultL .~ SucceededBy NonAutomatic n
     FailSkillTest -> do
+      pushAll [CheckAllAdditionalCommitCosts, Do FailSkillTest]
+      pure s
+    Do FailSkillTest -> do
       resultsData <- autoFailSkillTestResultsData s
       difficulty <- getModifiedSkillTestDifficulty s
       -- player <- getPlayer skillTestInvestigator
@@ -481,17 +493,17 @@ instance RunMessage SkillTest where
       pure s
     CheckAdditionalCommitCosts iid cards -> do
       modifiers' <- getModifiers iid
-      cardModifiers <- concat <$> traverse getModifiers cards
-      let
-        msgs = map (CommitCard iid) cards
-        additionalCosts =
-          mapMaybe
-            ( \case
-                CommitCost c -> Just c
-                AdditionalCostToCommit iid' c | iid' == iid -> Just c
-                _ -> Nothing
-            )
-            (modifiers' <> cardModifiers)
+      let msgs = map (CommitCard iid) cards
+      cardsAdditionalCosts <-
+        cards & concatMapM \c -> do
+          cardModifiers <- getModifiers c
+          let noAdditionalCosts = NoAdditionalCosts `elem` cardModifiers
+          pure $ cardModifiers & mapMaybe \case
+            AdditionalCostToCommit iid' cst | iid' == iid && noAdditionalCosts -> Just cst
+            _ -> Nothing
+
+      let playerCommitCosts = [c | CommitCost c <- modifiers']
+      let additionalCosts = cardsAdditionalCosts <> playerCommitCosts
       afterMsg <- checkWindows [mkAfter $ Window.CommittedCards iid cards]
       whenMsg <- checkWindows [mkWhen $ Window.CommittedCards iid cards]
       if null additionalCosts
@@ -533,8 +545,17 @@ instance RunMessage SkillTest where
       cmods <- getModifiers card
       let costToCommit = fold [cst | AdditionalCostToCommit iid' cst <- cmods, iid' == iid]
       batchId <- getRandom
+      push $ Do msg
       when (costToCommit /= mempty) do
         push $ PayAdditionalCost iid batchId costToCommit
+      unless (LeaveCardWhereItIs `elem` cmods) do
+        push $ ObtainCard card.id
+      pure s
+    CommitCard iid card | card `elem` findWithDefault [] iid skillTestCommittedCards -> do
+      cmods <- getModifiers card
+      pushAll $ [ObtainCard card.id | LeaveCardWhereItIs `notElem` cmods] <> [Do msg]
+      pure s
+    Do (CommitCard iid card) | card `notElem` findWithDefault [] iid skillTestCommittedCards -> do
       pure $ s & committedCardsL %~ insertWith (<>) iid [card]
     SkillTestUncommitCard _ card ->
       pure $ s & committedCardsL %~ map (filter (/= card))
@@ -592,7 +613,10 @@ instance RunMessage SkillTest where
       pure s
     ReturnToHand _ (SkillTarget sid) -> do
       card <- field Field.SkillCard sid
-      pure $ s & committedCardsL . each %~ filter ((/= card.id) . toCardId)
+      pure
+        $ s
+        & (committedCardsL . each %~ filter ((/= card.id) . toCardId))
+        & (subscribersL %~ filter (not . isTarget sid))
     ReturnToHand _ (CardIdTarget cardId) -> do
       pure $ s & committedCardsL . each %~ filter ((/= cardId) . toCardId)
     SkillTestResults {} -> do

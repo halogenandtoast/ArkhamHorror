@@ -19,7 +19,7 @@ theNecronomicon :: AssetCard TheNecronomicon
 theNecronomicon =
   assetWith TheNecronomicon Cards.theNecronomicon
     $ (tokensL %~ setTokens #horror 3)
-    . (canLeavePlayByNormalMeansL .~ False)
+    . cannotLeavePlay
 
 instance HasModifiersFor TheNecronomicon where
   getModifiersFor (TheNecronomicon a) = for_ a.controller \iid -> do

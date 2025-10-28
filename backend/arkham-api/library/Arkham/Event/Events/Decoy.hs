@@ -59,25 +59,40 @@ instance RunMessage Decoy where
           $ NonEliteEnemy
           <> oneOf
             ( at_ (locationWithInvestigator iid)
-                : [ at_ (LocationWithDistanceFrom n (locationWithInvestigator iid) Anywhere) | upToTwoAway, n <- [1 .. 2]
+                : [ at_ (LocationWithDistanceFrom n (locationWithInvestigator iid) Anywhere)
+                  | upToTwoAway
+                  , n <- [1 .. 2]
                   ]
             )
 
       let
-        performEvade :: ReverseQueue m => ChooseT m ()
-        performEvade = targets enemies $ automaticallyEvadeEnemy iid
+        handleOne :: ReverseQueue n => n ()
+        handleOne =
+          chooseAutomaticallyEvadeAt
+            iid
+            attrs
+            ( oneOf $ locationWithInvestigator iid
+                : [LocationWithDistanceFrom n (locationWithInvestigator iid) Anywhere | upToTwoAway, n <- [1 .. 2]]
+            )
+            NonEliteEnemy
       if enemyCount == 2 && length enemies > 1
         then chooseOneM iid do
-          labeled "Evade 1 enemy" do
-            chooseOrRunOneM iid performEvade
+          labeled "Evade 1 enemy" handleOne
           labeled "Evade 2 enemies" do
-            chooseOrRunNM iid 2 performEvade
-        else chooseOrRunOneM iid performEvade
+            chooseAutomaticallyEvadeNAt
+              iid
+              attrs
+              2
+              ( oneOf $ locationWithInvestigator iid
+                  : [LocationWithDistanceFrom n (locationWithInvestigator iid) Anywhere | upToTwoAway, n <- [1 .. 2]]
+              )
+              NonEliteEnemy
+        else handleOne
       pure e
-    InHand _ (UseThisAbility _ (isSource attrs -> True) 1) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 1) | iid == iid' -> do
       eventModifier attrs (toCardId attrs) $ MetaModifier $ object ["enemyCount" .= (2 :: Int)]
       pure e
-    InHand _ (UseThisAbility _ (isSource attrs -> True) 2) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 2) | iid == iid' -> do
       eventModifier attrs (toCardId attrs) $ MetaModifier $ object ["upToTwoAway" .= True]
       pure e
     _ -> Decoy <$> liftRunMessage msg attrs

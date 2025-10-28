@@ -10,16 +10,17 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
+import Arkham.Tracing
 
 mkInvestigate
-  :: (Sourceable source, HasGame m) => SkillTestId -> InvestigatorId -> source -> m Investigate
+  :: (Sourceable source, HasGame m, Tracing m) => SkillTestId -> InvestigatorId -> source -> m Investigate
 mkInvestigate sid iid source = mkInvestigateLocation sid iid source =<< fieldJust InvestigatorLocation iid
 
 withSkillType :: SkillType -> Investigate -> Investigate
 withSkillType skillType investigate = investigate {investigateSkillType = skillType}
 
 mkInvestigateLocation
-  :: (Sourceable source, HasGame m)
+  :: (Sourceable source, HasGame m, Tracing m)
   => SkillTestId
   -> InvestigatorId
   -> source

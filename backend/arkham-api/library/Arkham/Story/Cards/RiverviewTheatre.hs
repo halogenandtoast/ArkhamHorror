@@ -15,7 +15,7 @@ riverviewTheatre = story RiverviewTheatre Cards.riverviewTheatre
 
 instance RunMessage RiverviewTheatre where
   runMessage msg s@(RiverviewTheatre attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       mDrKenslersOffice <- getSetAsideCardMaybe Locations.drKenslersOffice
       mInfirmary <- getSetAsideCardMaybe Locations.infirmaryFatalMirage
 

@@ -1,21 +1,18 @@
-module Arkham.Location.Cards.ChapelCryptSpectral_173 (
-  chapelCryptSpectral_173,
-  ChapelCryptSpectral_173 (..),
-)
-where
+module Arkham.Location.Cards.ChapelCryptSpectral_173 (chapelCryptSpectral_173) where
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
 import Arkham.Helpers
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message (ReplaceStrategy (..))
 import Arkham.Projection
+import Arkham.Scenarios.TheWagesOfSin.Helpers
 
 newtype ChapelCryptSpectral_173 = ChapelCryptSpectral_173 LocationAttrs
   deriving anyclass IsLocation
@@ -30,18 +27,13 @@ instance HasModifiersFor ChapelCryptSpectral_173 where
     pure [ShroudModifier (-3)]
 
 instance HasAbilities ChapelCryptSpectral_173 where
-  getAbilities (ChapelCryptSpectral_173 attrs) =
-    extendRevealed1 attrs
-      $ haunted
-        "Spawn the top card of your deck facedown, engaged with you. Treat that card as a Reanimated Dead enemy with 1 fight, 1 health, 1 evade, 1 damage, and the Monster trait."
-        attrs
-        1
+  getAbilities (ChapelCryptSpectral_173 a) =
+    extendRevealed1 a $ scenarioI18n $ hauntedI "chapelCryptSpectral_173.haunted" a 1
 
 instance RunMessage ChapelCryptSpectral_173 where
   runMessage msg l@(ChapelCryptSpectral_173 attrs) = runQueueT $ case msg of
-    Flip _ _ (isTarget attrs -> True) -> do
-      spectral <- genCard Locations.chapelCryptSpectral_173
-      push $ ReplaceLocation (toId attrs) spectral Swap
+    FlipThis (isTarget attrs -> True) -> do
+      swapLocation attrs =<< genCard Locations.chapelCryptSpectral_173
       pure l
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       mTopCard <- fieldMap InvestigatorDeck (listToMaybe . take 1 . unDeck) iid

@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.EsotericMethod1 (esotericMethod1, EsotericMethod1 (..)) where
+module Arkham.Skill.Cards.EsotericMethod1 (esotericMethod1) where
 
 import Arkham.Helpers.ChaosBag (getRemainingCurseTokens)
 import Arkham.Skill.Cards qualified as Cards
@@ -15,10 +15,12 @@ instance RunMessage EsotericMethod1 where
   runMessage msg s@(EsotericMethod1 attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ n | n > 0 -> do
       x <- getRemainingCurseTokens
-      addCurseTokens (Just iid) (min x n)
+      skillTestResultOption "Esoteric Method (1)" do
+        addCurseTokens (Just iid) (min x n)
       pure s
     FailedSkillTest iid _ _ (isTarget attrs -> True) _ n | n > 0 -> do
       x <- getRemainingCurseTokens
-      addCurseTokens (Just iid) (min x n)
+      skillTestResultOption "Esoteric Method (1)" do
+        addCurseTokens (Just iid) (min x n)
       pure s
     _ -> EsotericMethod1 <$> liftRunMessage msg attrs

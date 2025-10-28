@@ -140,7 +140,7 @@ instance RunMessage PointOfNoReturn where
             select
               $ ReadyEnemy
               <> oneOf
-                [EnemyAt (locationWithInvestigator iid), EnemyAt $ ConnectedFrom (locationWithInvestigator iid)]
+                [EnemyAt (locationWithInvestigator iid), EnemyAt $ connectedFrom (locationWithInvestigator iid)]
           when (notNull enemies) do
             chooseOne
               iid

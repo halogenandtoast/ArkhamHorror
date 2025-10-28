@@ -5,8 +5,8 @@ import Arkham.Scenario.Scenarios.ThePallidMask
 import Arkham.Scenarios.ThePallidMask.Helpers
 
 newtype ReturnToThePallidMask = ReturnToThePallidMask ThePallidMask
-  deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue)
+  deriving anyclass IsScenario
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue, HasModifiersFor)
 
 returnToThePallidMask :: Difficulty -> ReturnToThePallidMask
 returnToThePallidMask difficulty =

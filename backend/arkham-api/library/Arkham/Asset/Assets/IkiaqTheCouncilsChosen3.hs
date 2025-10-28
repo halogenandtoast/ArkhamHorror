@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.IkiaqTheCouncilsChosen3 ( ikiaqTheCouncilsChosen3,) where
+module Arkham.Asset.Assets.IkiaqTheCouncilsChosen3 (ikiaqTheCouncilsChosen3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -28,7 +28,7 @@ instance HasAbilities IkiaqTheCouncilsChosen3 where
           ( DrawCard
               #when
               (affectsOthers $ colocatedWithMatch You)
-              (CanCancelRevelationEffect $ basic BasicWeaknessCard)
+              (CanCancelRevelationEffect You $ basic BasicWeaknessCard)
               AnyDeck
           )
           (exhaust x)

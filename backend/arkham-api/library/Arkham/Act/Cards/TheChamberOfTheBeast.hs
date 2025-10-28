@@ -17,7 +17,7 @@ theChamberOfTheBeast =
 
 instance HasAbilities TheChamberOfTheBeast where
   getAbilities = actAbilities \x ->
-    [ mkAbility x 1 $ Objective $ forced $ EnemyDefeated #after Anyone ByAny $ enemyIs Cards.silasBishop
+    [ mkAbility x 1 $ Objective $ forced $ ifEnemyDefeated Cards.silasBishop
     , restricted x 2 (exists $ LocationWithTitle "The Hidden Chamber" <> LocationWithoutClues)
         $ Objective
         $ forced AnyWindow

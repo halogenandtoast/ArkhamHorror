@@ -6,6 +6,7 @@ import Arkham.Calculation
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.Entity
+import Arkham.Classes.GameLogger
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
@@ -17,6 +18,7 @@ import Arkham.GameT
 import Arkham.Helpers.SkillTest.Lifted qualified as Msg (revelationSkillTest)
 import Arkham.Helpers.Window qualified as Window
 import Arkham.Id
+import Arkham.Investigator.Projection ()
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message.Lifted qualified as Msg
@@ -27,11 +29,11 @@ import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Queue
 import Arkham.SkillType
-import Arkham.Investigator.Projection ()
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
+import Arkham.Tracing
 import Arkham.Trait
 import Arkham.Window (Window)
 import Arkham.Window qualified as Window
@@ -44,6 +46,7 @@ newtype ScriptState = ScriptState {scriptStateInHand :: Bool}
 
 instance HasGame m => HasGame (ReaderT ScriptState m) where
   getGame = lift getGame
+  getCache = GameCache \_ build -> build
 
 initScriptState :: ScriptState
 initScriptState = ScriptState False
@@ -67,6 +70,8 @@ newtype ScriptT b a = Script
     , HasGame
     , CardGen
     , MonadRandom
+    , HasGameLogger
+    , Tracing
     )
 
 instance ReverseQueue (ScriptT a) where
@@ -291,7 +296,7 @@ instance AtYourLocation EnemyMatcher where
 
 class ChooseAmong a where
   type ChosenType a :: Type
-  toChooseAmong :: HasGame m => a -> m [ChosenType a]
+  toChooseAmong :: (HasGame m, Tracing m) => a -> m [ChosenType a]
 
 instance ChooseAmong [Target] where
   type ChosenType [Target] = Target
@@ -402,6 +407,7 @@ newtype FightT m a = FightT {runFightT :: StateT FightDetails m a}
     , CardGen
     , MonadRandom
     , MonadIO
+    , Tracing
     )
 
 instance HasQueue msg m => HasQueue msg (FightT m) where

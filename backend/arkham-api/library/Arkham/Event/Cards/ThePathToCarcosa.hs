@@ -158,7 +158,7 @@ forewarned1 =
     , cdLevel = Just 1
     , cdCriteria = Just $ exists (You <> oneOf [InvestigatorWithAnyClues, canParallelRexClues])
     , cdFastWindow =
-        Just $ DrawCard #when You (CanCancelRevelationEffect $ basic NonWeaknessTreachery) EncounterDeck
+        Just $ DrawCard #when You (CanCancelRevelationEffect You $ basic NonWeaknessTreachery) EncounterDeck
     }
 
 sneakAttack2 :: CardDef
@@ -167,8 +167,7 @@ sneakAttack2 =
     { cdSkills = [#intellect, #combat, #combat]
     , cdCardTraits = setFromList [Tactic]
     , cdLevel = Just 2
-    , cdCriteria =
-        Just $ exists (EnemyAt YourLocation <> EnemyNotEngagedWithYou) <> Criteria.CanDealDamage
+    , cdCriteria = Just $ Criteria.canDamageEnemyAtMatch ThisCard YourLocation EnemyNotEngagedWithYou
     }
 
 stormOfSpirits :: CardDef
@@ -197,12 +196,12 @@ aTestOfWill1 =
             [ DrawCard
                 #when
                 (InvestigatorAt YourLocation)
-                (CanCancelRevelationEffect $ basic $ NonPeril <> NonWeaknessTreachery)
+                (CanCancelRevelationEffect You $ basic $ NonPeril <> NonWeaknessTreachery)
                 EncounterDeck
             , DrawCard
                 #when
                 You
-                (CanCancelRevelationEffect $ basic NonWeaknessTreachery)
+                (CanCancelRevelationEffect You $ basic NonWeaknessTreachery)
                 EncounterDeck
             ]
     , cdLevel = Just 1
@@ -285,7 +284,10 @@ snareTrap2 =
   (event "03199" "Snare Trap" 2 Survivor)
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Trap, Improvised]
-    , cdCriteria = Just $ Criteria.Negate (exists $ "Snare Trap" <> AssetAt YourLocation) <> exists (YourLocation <> LocationCanHaveAttachments)
+    , cdCriteria =
+        Just
+          $ Criteria.Negate (exists $ "Snare Trap" <> AssetAt YourLocation)
+          <> exists (YourLocation <> LocationCanHaveAttachments)
     , cdLevel = Just 2
     }
 
@@ -295,7 +297,7 @@ manoAMano1 =
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Spirit, Bold]
     , cdCriteria =
-        Just $ Criteria.FirstAction <> exists EnemyEngagedWithYou <> Criteria.CanDealDamage
+        Just $ Criteria.FirstAction <> Criteria.canDamageEnemyAtMatch ThisCard Anywhere EnemyEngagedWithYou
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = Just 1
     }
@@ -387,12 +389,12 @@ wardOfProtection2 =
             [ DrawCard
                 #when
                 (affectsOthers $ InvestigatorAt Anywhere)
-                (CanCancelRevelationEffect $ basic $ NonPeril <> NonWeaknessTreachery)
+                (CanCancelRevelationEffect You $ basic $ NonPeril <> NonWeaknessTreachery)
                 EncounterDeck
             , DrawCard
                 #when
                 You
-                (CanCancelRevelationEffect $ basic NonWeaknessTreachery)
+                (CanCancelRevelationEffect You $ basic NonWeaknessTreachery)
                 EncounterDeck
             ]
     , cdLevel = Just 2

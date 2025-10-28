@@ -1,4 +1,9 @@
 {
+  "label": {
+    "v1": "Proceed to _Setup (v. I)_",
+    "v2": "Proceed to _Setup (v. II)_",
+    "v3": "Proceed to _Setup (v. III)_"
+  },
   "intro": {
     "title": "Scenario III: City of the Elder Things",
     "body": "<p>_Intro_: Even with the knowledge afforded to you by Dyer’s report, you find yourself wholly unprepared for the terrible vastness of the blasphemous city at the heart of Antarctica, and its alien inscrutability. Massive towers, temples, bridges, and pyramids dot the broad landscape. In the ineluctable light of dawn, the nameless maze of cyclopean structures and angular blocks extends for miles in every direction, unmistakably real and yet impossible to believe. It is truly a wonder of the world.</p>"

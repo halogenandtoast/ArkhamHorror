@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.Momentum1 (momentum1, momentum1Effect, Momentum1 (..)) where
+module Arkham.Skill.Cards.Momentum1 (momentum1, momentum1Effect) where
 
 import Arkham.Effect.Import
 import Arkham.Helpers.Modifiers
@@ -16,7 +16,8 @@ momentum1 = skill Momentum1 Cards.momentum1
 instance RunMessage Momentum1 where
   runMessage msg s@(Momentum1 attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ n | n > 0 -> do
-      afterSkillTestQuiet $ createCardEffect Cards.momentum1 (Just $ EffectInt (min 3 n)) attrs attrs.owner
+      afterSkillTestQuiet
+        $ createCardEffect Cards.momentum1 (Just $ EffectInt (min 3 n)) attrs attrs.owner
       pure s
     _ -> Momentum1 <$> liftRunMessage msg attrs
 
@@ -29,9 +30,8 @@ momentum1Effect = cardEffect Momentum1Effect Cards.momentum1
 
 instance HasModifiersFor Momentum1Effect where
   getModifiersFor (Momentum1Effect attrs) =
-    getSkillTest >>= \case
-      Nothing -> pure mempty
-      Just st -> maybeModified_ attrs (SkillTestTarget st.id) do
+    whenJustM getSkillTest \st ->
+      maybeModified_ attrs (SkillTestTarget st.id) do
         guard $ st.investigator `is` attrs.target
         EffectInt n <- hoistMaybe attrs.meta
         pure [Difficulty (-n)]

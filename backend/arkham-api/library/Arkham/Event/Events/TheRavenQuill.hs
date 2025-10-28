@@ -1,11 +1,8 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Event.Events.TheRavenQuill (theRavenQuill) where
 
 import Arkham.Ability
 import Arkham.Asset.Uses
 import Arkham.Capability
-import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (InvestigatorResigned)
 import Arkham.Helpers.Customization
@@ -75,7 +72,7 @@ instance RunMessage TheRavenQuill where
       assets <- getUpgradeTargets iid $ assetControlledBy iid <> oneOf (AssetWithTitle <$> titles)
 
       defaultChoose <-
-        evalQueueT
+        capture
           $ when (notNull assets)
           $ chooseOne
             iid

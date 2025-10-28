@@ -1,11 +1,9 @@
-module Arkham.Treachery.Cards.ShatteredAges (shatteredAges, ShatteredAges (..)) where
+module Arkham.Treachery.Cards.ShatteredAges (shatteredAges) where
 
-import Arkham.Classes
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype ShatteredAges = ShatteredAges TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -15,13 +13,13 @@ shatteredAges :: TreacheryCard ShatteredAges
 shatteredAges = treachery ShatteredAges Cards.shatteredAges
 
 instance RunMessage ShatteredAges where
-  runMessage msg t@(ShatteredAges attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(ShatteredAges attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push $ revelationSkillTest sid iid attrs #willpower (Fixed 4)
+      revelationSkillTest sid iid attrs #willpower (Fixed 4)
       pure t
-    FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    FailedThisSkillTest _ (isSource attrs -> True) -> do
       locations <- select $ NotLocation $ locationIs Locations.nexusOfNKai
-      pushAll [PlaceClues (toSource attrs) (toTarget location) 1 | location <- locations]
+      for_ locations (placeCluesOn attrs 1)
       pure t
-    _ -> ShatteredAges <$> runMessage msg attrs
+    _ -> ShatteredAges <$> liftRunMessage msg attrs

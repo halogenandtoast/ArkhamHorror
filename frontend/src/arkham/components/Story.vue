@@ -23,9 +23,9 @@ const emit = defineEmits<{
 }>()
 
 const image = computed(() => {
-  const { id, flipped } = props.story
-  const suffix = flipped ? 'b' : ''
-  return imgsrc(`cards/${id.replace('c', '')}${suffix}.avif`);
+  const { art, flippedArt, flipped } = props.story
+  const storyArt = flipped ? flippedArt : art
+  return imgsrc(`cards/${storyArt.replace(/^c/, '')}.avif`);
 })
 
 const id = computed(() => props.story.id)
@@ -81,6 +81,7 @@ const abilities = computed(() => {
 })
 
 const clues = computed(() => props.story.tokens[TokenType.Clue])
+const civilians = computed(() => props.story.tokens[TokenType.Civilian])
 
 const hasPool = computed(() => {
   return (clues.value && clues.value > 0)
@@ -100,6 +101,7 @@ const hasPool = computed(() => {
         <div class="pool" v-if="hasPool">
           <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
         </div>
+        <PoolItem class="civilians" v-if="civilians" type="resource" :amount="civilians" />
       </div>
       <AbilityButton
         v-for="ability in abilities"
@@ -117,7 +119,7 @@ const hasPool = computed(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .story--can-interact {
   border: 3px solid var(--select);
   border-radius: 15px;
@@ -168,5 +170,18 @@ const hasPool = computed(() => {
   width: var(--card-width);
   max-width: var(--card-width);
   border-radius: 5px;
+}
+
+.image-container {
+  position: relative;
+  isolation: isolate;
+}
+
+.civilians, .pool {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 10;
 }
 </style>

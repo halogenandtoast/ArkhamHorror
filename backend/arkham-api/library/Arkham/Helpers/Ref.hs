@@ -15,14 +15,15 @@ import Arkham.Skill.Types (Field (..))
 import Arkham.Source
 import Arkham.Story.Types (Field (..))
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Treachery.Types (Field (..))
 
-targetToCard :: (HasCallStack, HasGame m) => Target -> m Card
+targetToCard :: (HasCallStack, HasGame m, Tracing m) => Target -> m Card
 targetToCard target = fromMaybe handleMissing <$> targetToMaybeCard target
  where
   handleMissing = error $ "unhandled: " <> show target
 
-targetToMaybeCard :: (HasCallStack, HasGame m) => Target -> m (Maybe Card)
+targetToMaybeCard :: (HasCallStack, HasGame m, Tracing m) => Target -> m (Maybe Card)
 targetToMaybeCard = \case
   ActTarget aid -> fieldMay ActCard aid
   AssetTarget aid -> fieldMay AssetCard aid
@@ -41,10 +42,11 @@ targetToMaybeCard = \case
     pure $ aCard <|> bCard
   _ -> pure Nothing
 
-sourceToCard :: (HasCallStack, HasGame m) => Source -> m Card
+sourceToCard :: (HasCallStack, HasGame m, Tracing m) => Source -> m Card
 sourceToCard = targetToCard . sourceToTarget
 
-sourceToMaybeCard :: (HasCallStack, HasGame m, Sourceable source) => source -> m (Maybe Card)
+sourceToMaybeCard
+  :: (HasCallStack, HasGame m, Tracing m, Sourceable source) => source -> m (Maybe Card)
 sourceToMaybeCard (toSource -> source) = case source of
   ProxySource u t -> runMaybeT $ MaybeT (sourceToMaybeCard t) <|> MaybeT (sourceToMaybeCard u)
   IndexedSource _ t -> sourceToMaybeCard t
@@ -103,6 +105,8 @@ sourceToMaybeTarget = \case
   BothSource s1 s2 -> BothTarget <$> sourceToMaybeTarget s1 <*> sourceToMaybeTarget s2
   BatchSource bId -> Just $ BatchTarget bId
   ActiveCostSource acId -> Just $ ActiveCostTarget acId
+  ScarletKeySource kId -> Just $ ScarletKeyTarget kId
+  ConcealedCardSource kId -> Just $ ConcealedCardTarget kId
 
 targetToSource :: Target -> Source
 targetToSource = \case
@@ -120,9 +124,10 @@ targetToSource = \case
   SkillTestTarget sid -> SkillTestSource sid
   TreacheryTarget tid -> TreacherySource tid
   EncounterDeckTarget -> error "can not covert"
-  ScenarioDeckTarget -> error "can not covert"
+  ScenarioDeckTarget _ -> error "can not covert"
   AgendaTarget aid -> AgendaSource aid
   ActTarget aid -> ActSource aid
+  KeyTarget {} -> error "can not convert"
   CardIdTarget cid -> CardIdSource cid
   CardCostTarget cid -> CardCostSource cid
   CardCodeTarget ccode -> CardCodeSource ccode
@@ -149,3 +154,5 @@ targetToSource = \case
   BatchTarget bId -> BatchSource bId
   ActiveCostTarget acId -> ActiveCostSource acId
   LabeledTarget _ target -> targetToSource target
+  ScarletKeyTarget kId -> ScarletKeySource kId
+  ConcealedCardTarget kId -> ConcealedCardSource kId

@@ -2,14 +2,12 @@ module Arkham.Treachery.Cards.ThreadsOfReality (threadsOfReality) where
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
-import Arkham.Classes
 import Arkham.Helpers.Modifiers (ModifierType (BlankExceptForcedAbilities), modified_)
 import Arkham.Matcher
-import Arkham.Message
+import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype ThreadsOfReality = ThreadsOfReality TreacheryAttrs
   deriving anyclass IsTreachery
@@ -25,22 +23,17 @@ instance HasModifiersFor ThreadsOfReality where
 
 instance HasAbilities ThreadsOfReality where
   getAbilities (ThreadsOfReality a) =
-    [ restrictedAbility a 1 OnSameLocation
-        $ actionAbilityWithCost
-        $ DiscardAssetCost
-        $ AssetControlledBy You
-    ]
+    [restricted a 1 OnSameLocation $ actionAbilityWithCost $ DiscardAssetCost $ AssetControlledBy You]
 
 instance RunMessage ThreadsOfReality where
-  runMessage msg t@(ThreadsOfReality attrs) = case msg of
+  runMessage msg t@(ThreadsOfReality attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       assets <- selectMax AssetCost $ assetControlledBy iid <> not_ PermanentAsset <> NonWeaknessAsset
-      player <- getPlayer iid
       if null assets
-        then push $ gainSurge attrs
-        else push $ chooseOrRunOne player $ targetLabels assets (only . attachTreachery attrs)
+        then gainSurge attrs
+        else chooseOrRunOneM iid $ targets assets (attachTreachery attrs)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ toDiscardBy iid (attrs.ability 1) attrs
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> ThreadsOfReality <$> runMessage msg attrs
+    _ -> ThreadsOfReality <$> liftRunMessage msg attrs

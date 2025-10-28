@@ -1,15 +1,12 @@
-module Arkham.Location.Cards.WitchHouseRuins (
-  witchHouseRuins,
-  WitchHouseRuins (..),
-) where
+module Arkham.Location.Cards.WitchHouseRuins (witchHouseRuins) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.GameValue
-import Arkham.Investigate
+import Arkham.Helpers.SkillTest.Lifted (investigateLocation_)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Message qualified as Msg
 
 newtype WitchHouseRuins = WitchHouseRuins LocationAttrs
@@ -21,23 +18,24 @@ witchHouseRuins = location WitchHouseRuins Cards.witchHouseRuins 2 (Static 0)
 
 instance HasAbilities WitchHouseRuins where
   getAbilities (WitchHouseRuins a) =
-    withRevealedAbilities a
-      $ [ playerLimit PerGame $ investigateAbility a 1 mempty Here
-        , haunted "Lose 1 action." a 2
-        ]
+    extendRevealed
+      a
+      [ playerLimit PerGame $ investigateAbility a 1 mempty Here
+      , withI18n $ countVar 1 $ hauntedI "loseActions" a 2
+      ]
 
 instance RunMessage WitchHouseRuins where
-  runMessage msg l@(WitchHouseRuins attrs) = case msg of
+  runMessage msg l@(WitchHouseRuins attrs) = runQueueT $ case msg of
     Msg.RevealLocation _ lid | lid == toId attrs -> do
-      WitchHouseRuins <$> runMessage msg (attrs & labelL .~ "witchHouseRuins")
+      WitchHouseRuins <$> liftRunMessage msg (attrs & labelL .~ "witchHouseRuins")
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      pushM $ mkInvestigate sid iid (toAbilitySource attrs 1)
+      investigateLocation_ sid iid (attrs.ability 1) attrs
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ LoseActions iid (toSource attrs) 1
+      loseActions iid (attrs.ability 2) 1
       pure l
     Successful (Action.Investigate, _) iid ab _ _ | isAbilitySource attrs 1 ab -> do
-      push $ HealHorror (toTarget iid) ab 2
+      healHorrorIfCan iid (attrs.ability 1) 2
       pure l
-    _ -> WitchHouseRuins <$> runMessage msg attrs
+    _ -> WitchHouseRuins <$> liftRunMessage msg attrs

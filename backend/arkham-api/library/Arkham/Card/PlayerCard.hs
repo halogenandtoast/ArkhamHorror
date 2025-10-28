@@ -75,13 +75,14 @@ instance HasCardDef PlayerCard where
     Just def -> maybe def (`tabooListModify` def) (pcTabooList c)
     Nothing -> case lookup (pcCardCode c) allEncounterAssetCards of
       Just def -> def
-      Nothing -> error $ "missing card def for player card " <> show (pcCardCode c)
+      Nothing -> error $ "missing card def for player card " <> show (pcCardCode c) <> "\n" <> prettyCallStack callStack
 
 instance Named PlayerCard where
   toName = toName . toCardDef
 
 instance HasOriginalCardCode PlayerCard where
   toOriginalCardCode = pcOriginalCardCode
+  setOriginalCardCode (toCardCode -> cCode) c = c { pcOriginalCardCode = cCode }
 
 lookupPlayerCard :: CardDef -> CardId -> PlayerCard
 lookupPlayerCard cardDef cardId =

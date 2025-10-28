@@ -1,11 +1,10 @@
 module Arkham.Enemy.Creation where
 
-import Arkham.Prelude
-
 import Arkham.Card
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Target
 import GHC.Records
 
@@ -16,8 +15,13 @@ data EnemyCreationMethod
   | SpawnAtLocationMatching LocationMatcher
   | SpawnEngagedWithPrey
   | SpawnViaSpawnInstruction
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
+
+instance HasField "leaveEnemyWhereItIs" EnemyCreationMethod Bool where
+  getField = \case
+    SpawnWithPlacement p -> p == StillInEncounterDiscard
+    _ -> False
 
 class IsEnemyCreationMethod a where
   toEnemyCreationMethod :: a -> EnemyCreationMethod
@@ -53,8 +57,14 @@ data EnemyCreation msg = MkEnemyCreation
   , enemyCreationAfter :: [msg]
   , enemyCreationInvestigator :: Maybe InvestigatorId
   }
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass ToJSON
+
+instance HasField "card" (EnemyCreation msg) Card where
+  getField = enemyCreationCard
+
+instance HasField "leaveEnemyWhereItIs" (EnemyCreation msg) Bool where
+  getField = getField @"leaveEnemyWhereItIs" . enemyCreationMethod
 
 instance FromJSON msg => FromJSON (EnemyCreation msg) where
   parseJSON = withObject "EnemyCreation" \o -> do
@@ -75,10 +85,6 @@ createExhausted = setExhausted True
 setExhausted :: Bool -> EnemyCreation msg -> EnemyCreation msg
 setExhausted v ec = ec {enemyCreationExhausted = v}
 {-# INLINE setExhausted #-}
-
-instance WithTarget (EnemyCreation msg) where
-  getTarget = enemyCreationTarget
-  setTarget t x = x {enemyCreationTarget = Just (toTarget t)}
 
 instance HasField "enemy" (EnemyCreation msg) EnemyId where
   getField = enemyCreationEnemyId

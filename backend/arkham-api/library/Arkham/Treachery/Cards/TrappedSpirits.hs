@@ -1,15 +1,14 @@
 module Arkham.Treachery.Cards.TrappedSpirits (trappedSpirits) where
 
-import Arkham.Classes
 import Arkham.Cost
 import Arkham.Helpers.Modifiers (ModifierType (CommitCost), modifySelectMaybe)
+import Arkham.Helpers.SkillTest (getSkillTestInvestigator, getSkillTestSource)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype TrappedSpirits = TrappedSpirits TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
@@ -28,12 +27,12 @@ instance HasModifiersFor TrappedSpirits where
     pure [CommitCost (ResolveEachHauntedAbility lid)]
 
 instance RunMessage TrappedSpirits where
-  runMessage msg t@(TrappedSpirits attrs) = case msg of
+  runMessage msg t@(TrappedSpirits attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push $ revelationSkillTest sid iid attrs #agility (Fixed 3)
+      revelationSkillTest sid iid attrs #agility (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      push $ assignDamage iid attrs n
+      assignDamage iid attrs n
       pure t
-    _ -> TrappedSpirits <$> runMessage msg attrs
+    _ -> TrappedSpirits <$> liftRunMessage msg attrs

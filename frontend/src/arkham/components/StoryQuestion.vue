@@ -8,8 +8,11 @@ import { Done, CardLabel, Label, MessageType, PortraitLabel, TooltipLabel } from
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import StoryEntry from '@/arkham/components/StoryEntry.vue';
 import PickSupplies from '@/arkham/components/PickSupplies.vue';
+import PickDestiny from '@/arkham/components/PickDestiny.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
+import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
+import WorldMap from '@/arkham/components/TheScarletKeys/WorldMap.vue';
 
 export interface Props {
   game: Game
@@ -72,7 +75,7 @@ const labelChoices = computed(() => {
     }
 
     return question.value.question.choices.flatMap<[Label | TooltipLabel | CardLabel | Done, number]>((c, idx) => {
-      if (c.tag === MessageType.LABEL || c.tag === MessageType.TOOLTIP_LABEL || c.tag === MessageType.CARD_LABEL || c.tag === MessageType.DONE) {
+      if ([MessageType.LABEL, MessageType.INFO, MessageType.TOOLTIP_LABEL, MessageType.CARD_LABEL, MessageType.DONE].includes(c.tag)) {
         return [[c, idx]]
       } else {
         return []
@@ -150,6 +153,9 @@ const choose = (idx: number) => emit('choose', idx)
           <template v-if="choice.tag === MessageType.LABEL">
             <button @click="choose(index)">{{label(choice.label)}}</button>
           </template>
+          <template v-if="choice.tag === MessageType.INFO">
+            <FormattedEntry :entry="entry" v-for="entry in choice.flavor.body" />
+          </template>
           <template v-if="choice.tag === MessageType.DONE">
             <button @click="choose(index)">{{$t(choice.label)}}</button>
           </template>
@@ -158,8 +164,15 @@ const choose = (idx: number) => emit('choose', idx)
     </div>
   </div>
 
+  <div class="question-label" v-else-if="question && question.tag === 'PickCampaignSpecific'">
+    <WorldMap v-if="question.contents[0] === 'embark'" :game="game" :playerId="playerId" :mapData="question.contents[1]" @choose="choose" :embark="true" />
+  </div>
+
   <div class="question-label" v-else-if="question && question.tag === 'PickSupplies'">
     <PickSupplies :game="game" :playerId="playerId" :question="question" @choose="choose" />
+  </div>
+  <div class="question-label" v-else-if="question && question.tag === 'PickDestiny'">
+    <PickDestiny :game="game" :playerId="playerId" :question="question" @choose="choose" />
   </div>
   <template v-else-if="choices.length > 0">
     <div class="choices box">
@@ -196,12 +209,12 @@ const choose = (idx: number) => emit('choose', idx)
     :game="game"
     :playerId="playerId"
     :noStory="true"
-    v-else-if="!question || question.tag !== 'PickSupplies'"
+    v-else-if="!question || (question.tag !== 'PickSupplies' && question.tag !== 'PickDestiny')"
     @choose="$emit('choose', $event)"
   />
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .question-content {
   width: 60%;
   background: rgba(0, 0, 0, 0.3);

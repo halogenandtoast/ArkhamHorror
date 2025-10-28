@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.TheHermitIX (TheHermitIX (..), theHermitIX) where
+module Arkham.Agenda.Cards.TheHermitIX (theHermitIX) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards

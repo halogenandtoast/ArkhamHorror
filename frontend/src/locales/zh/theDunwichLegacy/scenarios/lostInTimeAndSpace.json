@@ -12,5 +12,72 @@
       "tablet": "-5. 如果犹格·索托斯在场，在检定结束后，它立刻攻击你。",
       "elderSign": "-X. X为你所在地点的隐藏值的两倍。如果失败，并且你的所在地点为 _异次元_，将其丢弃。"
     }
+  },
+  "intro": {
+    "title": "冒險 VII: 迷失時空",
+    "body": "<p>穿越傳送門後，你見到了一生中前所未見的世界。你感到自己的身體不斷扭曲，強大的漩渦將你帶到了一個遙遠的境地，這是遠遠超越人類想像力極限的空間。</p><p>旅途的疲勞令你感到耳鳴，周圍的環境異常安靜，令耳鳴聲變得更加尖銳。待你緩過神來，你向四周看去，這裡的景象超越你的理解範圍，甚至不屬於任何一顆星球的表面景象。這裡的景象超乎現實，詭異至極，建築外觀極其不合理。你離開家鄉實在太遠，家鄉成了你幾乎記不起的一個舊夢。即使你能夠離開這個鬼地方，你也不再是從前的你了。</p>"
+  },
+  "setup": {
+    "gatherSets": "在所有遭遇組中，以下遭遇卡找出: *迷失時空*, *巫術*, *異世界*, *醜陋異形*, *猶格·索托斯的使者*。這些遭遇組的圖標為:<section class='encounter-sets'><img src='{setImgPath}/lost-in-time-and-space.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/agents-of-yog.png' /></section>",
+    "placeLocations": "將另一個次元放置入場，每位調查員從另一個次元開始遊戲。",
+    "setAside": "將下列卡牌放在一邊: 宇宙的邊緣、時間縫隙、猶格·索托斯。"
+  },
+  "locationsInTheEncounterDeck": {
+    "title": "遭遇牌堆中的地點卡",
+    "body": "<p class='basic'>該冒險的遭遇牌堆中，帶有一些單面的地點卡。這些地點卡只有已進入面，當你抽出這些卡牌時，根據其顯現效果來決定如何放置入場。</p><p class='basic'>當這些地點卡入場時，將其已進入面朝上放置。這些地點沒有未進入狀態，其他規則與普通地點卡一致。</p>"
+  },
+  "resolutions": {
+    "defeated": "<div class='resolution'><p class='basic'>_在達成其他結局之前，若至少有一名調查員被擊敗_: 被擊敗的調查員先閱讀 _調查員被擊敗_ 。</p><p>_調查員被擊敗_: 你從哪裡來？要往哪裡去？你是在夢中，還是在現實？你是第一次來到這兒，還是曾經來過？你慢慢思考著，終於想起，這裡才是你的家。你往前走著，終於來到台階的盡頭，而面前是無窮盡的深淵。現在，只要再往前走一步，你就到家了......</p><ul><li>所有被擊敗的調查員_陣亡_。</li><li>若達成了其他結局，則其他調查員閱讀該結局。</li><li>若沒有達成任何結局(所有調查員都被擊敗)且劇本結束時，調查員位於場景4，前往 _結局 2_.</li><li>若沒有達成任何結局(所有調查員都被擊敗)且劇本結束時，調查員位於場景1,2或3，前往 _結局 4_.</li></ul></div>",
+    "resolution1": {
+      "title": "結局 1",
+      "body": "<div class='resolution'><p>_結局 1_: 你躺在潮濕的草地上，發現自己正呆滯地凝望著夜空的群星。不知道為什麼，你又回到了哨兵峰，你已經記不起是如何到達這兒的。你被這夜色迷住了，你看著星空，任憑時間如水般流逝。直到一群敦威治村民走上山頭，把你團團圍住，問道：「怎麼回事？你在這兒做甚麼呢？」他們的聲音裡，充滿著驚恐和好奇。你想要說點什麼，卻發現自己詞窮了。原來世間一切的詞彙，都無法描述那個時空外領域的景色。你想了想，就算告訴他們，應該也不會有人相信。賽斯・畢曉普早已不見蹤影，山上的怪物也消失不見，也許他們永遠困在了異界之中。每當你入睡，你就會做夢——夢中一切又都回來了。</p><ul><li>在冒險日誌中，記錄下*調查員關上了現實的縫隙*。</li><li>超越領域中的經歷，造成的損傷將永遠無法彌補，每位調查員受到2點肉體創傷和2點精神創傷。</li><li>每位調查員獲得等同於勝利牌區中勝利點數總值的經驗。因為拯救了這個將要支離破碎的世界，每位調查員獲得額外5點經驗。<ul><li>_經驗_: {xp}</li></ul></li><li>調查員遊戲勝利！</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<div class='resolution'><p>_Resolution 2_: 嗚兵山的喧鬧聲吸引來了敦威治的村民。但是面前的景象令他們大為不解。</p><p>“你，你們說，這到底是怎麼回事呢？”柯蒂斯·沃特雷畏畏縮縮地問道。其他的村民在檢查嗚兵峰後，都不解地搖著頭。“我昨天看到了，天空突然打起雷，還出現一個巨大的洞。”一個村民說道，一邊抬頭，仰望著嗚兵山上的天空。</p><p>“那些阿卡姆來的傢伙似乎怎麼不見了？”柯蒂斯小心翼翼地查看破碎的祭壇。另一個年輕人指著另一處地面上的屍體，說道：“除了那些屍體，什麼東西都沒留下，連畢曉普先生都不見了。”</p><p>“要不然，把這些屍體扛到艾斯伯里山好了？”</p><p>“不要不要，不然那些人又要嘲笑我們了。”柯蒂斯反對道。“他們也不會相信我們的，這真是太荒唐了。”他朝祭壇看了一眼，身子還是有點發抖。“我們還是趕緊把這些屍體埋起來，忘了這一切吧。”</p><ul><li>調查成功，但是從此再也沒人見過調查員們……</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<div class='resolution'><p>_Resolution 3_: 那怪物憤怒地朝著你咆哮著，頓時，顏色、聲音和混亂的時間都一下子具象化，把你震得老遠。你驚恐地看著它的手臂撕裂了現世，而其形狀不定的身體彷像是穿過漏斗一般，從狹縫中擠了出去，連同整個世界一同撼動。你試圖抓住什麼東西，但你還是被無情地吸入裂縫，感覺整個身體都被撕裂，神智崩潰，終於，你失去了意識。</p><ul><li>在冒險日誌中，記錄下*猶格·索托斯逃往了另一個次元。*</li><li>每位調查員_陣亡_.</li><li>調查成功，但是從此再也沒人見過調查員們……</li></ul></div>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<div class='resolution'><p>_Resolution 4_: 敦威治的法師們，窮極一生尋找著異界的魔力源泉，他們完成了威爾伯和老沃特雷沒能做到的事情。經過了鮮血獻祭和不可名狀的實驗，法師們掌握了他們所追尋的黑暗力量。但是，他們永遠都沒有機會去運用這股力量了。他們曾向威爾伯的父親索要知識，將這個生物從異界招來。貓格·索托斯從哨兵山上空開啟的裂縫出現，遮蔽蒼穹，籠罩整個世界。現在它已降臨到地球，統治人類曾經立足的世界。</p><ul><li>在冒險日誌中，記錄下*猶格·索托斯將所有世界的間隔撕裂，一切變為一個原點。*</li><li>每位存活的調查員_發瘋_。</li><li>調查失敗。</li></ul></div>"
+    },
+    "xp": {
+      "bonus": "拯救了這個將要支離破碎的世界"
+    }
+  },
+  "tooltips": {
+    "tearThroughTime": {
+      "resign": "你找到一條路徑，希望能安全返回。"
+    }
+  },
+  "label": {
+    "yogSothoth": "Discard the top {cards} cards and take {horror} horror",
+    "tearThroughSpace": {
+      "placeDoom": "Place 1 doom on Tear through Space",
+      "discard": "Discard Tear through Space"
+    },
+    "endlessBridge": {
+      "placeDoom": "Place 1 doom on Endless Bridge",
+      "discard": "Discard Endless Bridge"
+    },
+    "sethBishop": {
+      "move": "Move to Another Dimension after this attack",
+      "damage": "Seth Bishop deals +2 damage for this attack"
+    },
+    "indecipherableStairs": {
+      "discard": "Discard Indecipherable Stairs"
+    },
+    "toweringLuminosity": {
+      "doom": "Place 1 doom on Towering Luminosity",
+      "flipClue": "Flip 1 clue on Towering Luminosity to its doom side",
+      "discard": "Discard Towering Luminosity"
+    },
+    "unstableVortex": {
+      "chooseTearThroughSpaces": "Choose tear through space to discard",
+      "shuffle": "Shuffle Unstable Vortex into the encounter deck"
+    }
   }
 }

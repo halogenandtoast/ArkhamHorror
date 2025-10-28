@@ -29,6 +29,7 @@ import Arkham.Matcher.Source
 import Arkham.Matcher.Target
 import Arkham.Matcher.Treachery
 import Arkham.Matcher.Value
+import {-# SOURCE #-} Arkham.Placement
 import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.SkillTest.Step
@@ -73,6 +74,7 @@ data WindowMatcher
   | DeckHasNoCards Timing Who
   | EncounterDeckRunsOutOfCards
   | MovedBy Timing Who SourceMatcher
+  | WouldBeMovedBy Timing Who SourceMatcher
   | MovedButBeforeEnemyEngagement Timing Who Where
   | WouldMoveFromHunter Timing EnemyMatcher
   | MovedFromHunter Timing EnemyMatcher
@@ -100,6 +102,7 @@ data WindowMatcher
   | AgendaWouldAdvance Timing AgendaAdvancementReason AgendaMatcher
   | AssetDefeated Timing DefeatedByMatcher AssetMatcher
   | AttemptToEvade Timing Who EnemyMatcher
+  | AttemptToFight Timing Who EnemyMatcher
   | AttachCard Timing (Maybe Who) CardMatcher TargetMatcher
   | EnemyEvaded Timing Who EnemyMatcher
   | EnemyEngaged Timing Who EnemyMatcher
@@ -124,6 +127,7 @@ data WindowMatcher
   | LocationLeavesPlay Timing LocationMatcher
   | TookControlOfAsset Timing Who AssetMatcher
   | DiscoveringLastClue Timing Who Where
+  | LastClueRemovedFromLocation Timing LocationMatcher
   | DiscoverClues Timing Who Where ValueMatcher
   | WouldDiscoverClues Timing Who Where ValueMatcher
   | GainsClues Timing Who ValueMatcher
@@ -170,6 +174,7 @@ data WindowMatcher
   | EnemyAttemptsToSpawnAt Timing EnemyMatcher LocationMatcher
   | EnemyWouldSpawnAt EnemyMatcher LocationMatcher
   | EnemySpawns Timing Where EnemyMatcher
+  | EnemyPlaced Timing Placement EnemyMatcher
   | EnemyEntersPlay Timing EnemyMatcher
   | EnemyMovedTo Timing Where MovesVia EnemyMatcher
   | EnemyMoves Timing Where EnemyMatcher
@@ -201,6 +206,7 @@ data WindowMatcher
   | PhaseEnds Timing PhaseMatcher
   | PlayerHasPlayableCard CostStatus ExtendedCardMatcher
   | RevealLocation Timing Who Where
+  | UnrevealedRevealLocation Timing Who Where
   | FlipLocation Timing Who Where
   | PutLocationIntoPlay Timing Who Where
   | GameBegins Timing
@@ -208,6 +214,7 @@ data WindowMatcher
   | InvestigatorEliminated Timing Who
   | InvestigatorResigned Timing Who
   | AnyWindow
+  | AnyWindowIfEnemy EnemyMatcher
   | NotAnyWindow
   | NotWindow WindowMatcher
   | CommittingCardsFromHandToSkillTestStep Timing Who
@@ -230,6 +237,7 @@ data WindowMatcher
   | IncreasedAlarmLevel Timing Who
   | WindowWhen Criterion WindowMatcher
   | ScenarioEvent Timing (Maybe InvestigatorMatcher) Text
+  | CampaignEvent Timing (Maybe InvestigatorMatcher) Text
   | TakeControlOfClues Timing Who SourceMatcher
   | TakeControlOfKey Timing Who KeyMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
@@ -302,5 +310,5 @@ instance FromJSON WindowMatcher where
         econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case econtents of
           Left (a, b, c) -> pure $ WouldAddChaosTokensToChaosBag a Nothing b c
-          Right (a, b, c, d) -> pure $ EnemyAttackedSuccessfully a b c d
+          Right (a, b, c, d) -> pure $ WouldAddChaosTokensToChaosBag a b c d
       _ -> genericParseJSON defaultOptions (Object o)

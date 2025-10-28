@@ -4,6 +4,7 @@ module Arkham.ModifierData (
 
 import Arkham.Prelude
 
+import Arkham.Campaigns.TheScarletKeys.Key.Id
 import Arkham.Id
 import Arkham.Json
 import Arkham.Modifier
@@ -23,6 +24,7 @@ data LocationMetadata = LocationMetadata
   , lmTreacheries :: [TreacheryId]
   , lmAssets :: [AssetId]
   , lmEvents :: [EventId]
+  , lmScarletKeys :: [ScarletKeyId]
   }
   deriving stock (Show, Eq, Generic)
 
@@ -44,6 +46,7 @@ data EnemyMetadata = EnemyMetadata
   , emEvents :: [EventId]
   , emSkills :: [SkillId]
   , emModifiers :: [Modifier]
+  , emScarletKeys :: [ScarletKeyId]
   }
   deriving stock (Show, Eq, Generic)
 

@@ -20,8 +20,7 @@ instance HasAbilities Pathfinder1 where
     [ controlled
         attrs
         1
-        ( youExist (UnengagedInvestigator <> InvestigatorCanMove)
-            <> exists AccessibleLocation
+        ( youExist (UnengagedInvestigator <> InvestigatorCanMoveTo (attrs.ability 1) Anywhere)
             <> DuringTurn You
         )
         $ FastAbility (exhaust attrs)

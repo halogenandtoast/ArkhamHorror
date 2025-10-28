@@ -18,21 +18,19 @@ zulanThek :: LocationCard ZulanThek
 zulanThek = location ZulanThek Cards.zulanThek 4 (PerPlayer 1)
 
 instance HasAbilities ZulanThek where
-  getAbilities (ZulanThek attrs) =
-    veiled
-      attrs
-      [ restricted attrs 1 (exists Enemies.hordeOfNight <> exists (investigatorAt attrs.id))
-          $ forced
-          $ RoundEnds #when
-      ]
+  getAbilities (ZulanThek a) =
+    veiled1 a
+      $ restricted a 1 (exists (InPlayEnemy $ enemyIs Enemies.hordeOfNight) <> exists (investigatorAt a.id))
+      $ forced
+      $ RoundEnds #when
 
 instance RunMessage ZulanThek where
   runMessage msg l@(ZulanThek attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      hordeOfNight <- selectJust $ enemyIs Enemies.hordeOfNight
-      n <- selectCount $ investigatorAt attrs.id
-      lead <- getLead
-      push $ PlaceSwarmCards lead hordeOfNight n
+      selectOne (InPlayEnemy $ enemyIs Enemies.hordeOfNight) >>= traverse_ \hordeOfNight -> do
+        n <- selectCount $ investigatorAt attrs.id
+        lead <- getLead
+        push $ PlaceSwarmCards lead hordeOfNight n
       pure l
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.theCryptOfZulanThek

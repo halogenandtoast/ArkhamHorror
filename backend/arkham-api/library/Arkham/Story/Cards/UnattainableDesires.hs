@@ -1,9 +1,8 @@
-module Arkham.Story.Cards.UnattainableDesires (UnattainableDesires (..), unattainableDesires) where
+module Arkham.Story.Cards.UnattainableDesires (unattainableDesires) where
 
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype UnattainableDesires = UnattainableDesires StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -13,8 +12,8 @@ unattainableDesires :: StoryCard UnattainableDesires
 unattainableDesires = story UnattainableDesires Cards.unattainableDesires
 
 instance RunMessage UnattainableDesires where
-  runMessage msg s@(UnattainableDesires attrs) = case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+  runMessage msg s@(UnattainableDesires attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
       push $ PlaceLocationMatching (CardWithTitle "Temple of Unattainable Desires")
       pure s
-    _ -> UnattainableDesires <$> runMessage msg attrs
+    _ -> UnattainableDesires <$> liftRunMessage msg attrs

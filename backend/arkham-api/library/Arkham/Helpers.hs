@@ -46,6 +46,7 @@ newtype Deck a = Deck {unDeck :: [a]}
     , FromJSON
     , Show
     , Eq
+    , Ord
     , MonoFoldable
     , SemiSequence
     , GrowingAppend

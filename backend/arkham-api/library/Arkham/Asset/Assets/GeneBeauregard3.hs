@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.GeneBeauregard3 (geneBeauregard3) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (DuringTurn)
@@ -26,10 +27,10 @@ instance HasAbilities GeneBeauregard3 where
         1
         ( DuringTurn You
             <> oneOf
-              [ exists (YourLocation <> CanMoveCluesFromLocation) <> exists ConnectedLocation
-              , exists (ConnectedLocation <> CanMoveCluesFromLocation)
-              , exists (NonEliteEnemy <> EnemyAt YourLocation <> EnemyCanEnter ConnectedLocation)
-              , exists (NonEliteEnemy <> EnemyAt ConnectedLocation <> EnemyCanEnter YourLocation)
+              [ exists (YourLocation <> CanMoveCluesFromLocation) <> exists (ConnectedLocation NotForMovement)
+              , exists (ConnectedLocation NotForMovement <> CanMoveCluesFromLocation)
+              , exists (NonEliteEnemy <> EnemyAt YourLocation <> EnemyCanEnter (ConnectedLocation NotForMovement))
+              , exists (NonEliteEnemy <> EnemyAt (ConnectedLocation NotForMovement) <> EnemyCanEnter YourLocation)
               ]
         )
         $ triggered (Enters #after You Anywhere) (exhaust x)
@@ -38,7 +39,7 @@ instance HasAbilities GeneBeauregard3 where
 instance RunMessage GeneBeauregard3 where
   runMessage msg a@(GeneBeauregard3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let connectedLocation = ConnectedTo (locationWithInvestigator iid)
+      let connectedLocation = connectedTo (locationWithInvestigator iid)
       option1 <-
         andM [selectAny $ locationWithInvestigator iid <> LocationWithAnyClues, selectAny connectedLocation]
       option2 <- selectAny $ connectedLocation <> LocationWithAnyClues
@@ -60,24 +61,24 @@ instance RunMessage GeneBeauregard3 where
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 1 -> do
       yourLocation <- selectJust $ locationWithInvestigator iid <> LocationWithAnyClues
-      connected <- select $ ConnectedTo (locationWithInvestigator iid)
+      connected <- select $ connectedTo (locationWithInvestigator iid)
       chooseOrRunOneM iid do
         targets connected \l -> moveTokens (attrs.ability 1) yourLocation l #clue 1
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 2 -> do
       yourLocation <- selectJust $ locationWithInvestigator iid
-      connected <- select $ ConnectedTo (locationWithInvestigator iid) <> LocationWithAnyClues
+      connected <- select $ connectedTo (locationWithInvestigator iid) <> LocationWithAnyClues
       chooseOrRunOneM iid do
         targets connected \l -> moveTokens (attrs.ability 1) l yourLocation #clue 1
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 3 -> do
       enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy
-      connected <- select $ ConnectedTo (locationWithInvestigator iid)
+      connected <- select $ connectedTo (locationWithInvestigator iid)
       chooseOrRunOneM iid do
         targets enemies $ chooseOrRunOneM iid . targets connected . enemyMoveTo attrs
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 4 -> do
-      enemies <- select $ at_ (ConnectedTo (locationWithInvestigator iid)) <> NonEliteEnemy
+      enemies <- select $ at_ (connectedTo (locationWithInvestigator iid)) <> NonEliteEnemy
       location <- getJustLocation iid
       chooseOrRunOneM iid $ targets enemies \e -> enemyMoveTo attrs e location
       pure a

@@ -16,7 +16,7 @@ theHeightOfTheDepths = story TheHeightOfTheDepths Cards.theHeightOfTheDepths
 
 instance RunMessage TheHeightOfTheDepths where
   runMessage msg s@(TheHeightOfTheDepths attrs) = runQueueT $ case msg of
-    ResolveStory _ _ (is attrs -> True) -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       selectEach (HealableInvestigator (toSource attrs) #horror Anyone) \iid -> healHorror iid attrs 5
       setAsideDepthsOfDemhe <- getSetAsideCardsMatching $ CardWithTitle "Depths of Demhe"
       otherDepthsOfDemhe <- case nonEmpty setAsideDepthsOfDemhe of

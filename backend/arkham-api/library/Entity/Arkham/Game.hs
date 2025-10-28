@@ -2,11 +2,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Entity.Arkham.Game (
-  module Entity.Arkham.Game,
-) where
-
-import Relude
+module Entity.Arkham.Game (module Entity.Arkham.Game) where
 
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Game
@@ -15,11 +11,14 @@ import Data.Time.Clock
 import Data.UUID
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.TH
+import Entity
+import GHC.Records
 import Json
 import Orphans ()
+import Relude
 
-share
-  [mkPersist sqlSettings]
+mkEntity
+  $(discoverEntities)
   [persistLowerCase|
 ArkhamGame sql=arkham_games
   Id UUID default=uuid_generate_v4()
@@ -35,3 +34,6 @@ ArkhamGame sql=arkham_games
 instance ToJSON ArkhamGame where
   toJSON = genericToJSON $ aesonOptions $ Just "arkhamGame"
   toEncoding = genericToEncoding $ aesonOptions $ Just "arkhamGame"
+
+instance HasField "variant" ArkhamGame MultiplayerVariant where
+  getField = arkhamGameMultiplayerVariant

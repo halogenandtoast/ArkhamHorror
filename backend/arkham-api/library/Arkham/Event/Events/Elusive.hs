@@ -2,6 +2,7 @@ module Arkham.Event.Events.Elusive (elusive) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
@@ -19,12 +20,10 @@ instance RunMessage Elusive where
     PlayThisEvent iid eid | attrs `is` eid -> do
       enemies <- select $ enemyEngagedWith iid
       ts <-
-        getCanMoveToMatchingLocations
-          iid
-          attrs
+        getCanMoveToMatchingLocations iid attrs
           $ LocationWithoutEnemies
           <> if tabooed TabooList19 attrs
-            then AccessibleFrom (locationWithInvestigator iid)
+            then AccessibleFrom ForMovement (locationWithInvestigator iid)
             else RevealedLocation
       for_ enemies $ disengageEnemy iid
       chooseOrRunOneM iid $ targets ts (moveTo attrs iid)

@@ -21,9 +21,11 @@ import Arkham.GameT (GameT)
 import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario hiding (getIsReturnTo)
+import Arkham.Helpers.Scenario qualified as Scenario
 import Arkham.Helpers.Tokens
 import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
@@ -35,8 +37,11 @@ import Arkham.Queue (QueueT)
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
-import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
-import Arkham.Scenarios.HeartOfTheElders.Story
+import Arkham.Scenario.Types (
+  Field (ScenarioVictoryDisplay),
+  ScenarioAttrs (..),
+ )
+import Arkham.Scenarios.HeartOfTheElders.Helpers
 import Arkham.Token
 import Arkham.Trait (Trait (Cave))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -120,13 +125,29 @@ instance HasChaosTokenValue HeartOfTheElders where
 
 setupHeartOfTheElders
   :: ReverseQueue m => HeartOfTheEldersMetadata -> ScenarioAttrs -> ScenarioBuilderT m ()
-setupHeartOfTheElders metadata attrs = case scenarioStep metadata of
-  One -> do
+setupHeartOfTheElders metadata attrs = scenarioI18n $ case scenarioStep metadata of
+  One -> scope "part1" do
     pathsKnown <- getRecordCount PathsAreKnownToYou
 
     if pathsKnown == 6
-      then push R1
+      then do
+        setup $ ul $ li.valid "pathsKnownToYou"
+        push R1
       else do
+        mappedOutTheWayForward <- getHasRecord TheInvestigatorsMappedOutTheWayForward
+        setup do
+          ul do
+            li.invalid "pathsKnownToYou"
+            li "gatherSets"
+            li.nested "placeLocations" do
+              li "insightIntoHowToEnterKnYan"
+            li.validate (reachedAct2 metadata) "playedBefore"
+            li "explorationDeck"
+            li.nested "chooseLocations" do
+              li.validate mappedOutTheWayForward "mappedOutTheWayForward"
+            li "poisoned"
+            unscoped $ li "shuffleRemainder"
+
         whenReturnTo do
           gather Set.ReturnToHeartOfTheElders
           gather Set.ReturnToPillarsOfJudgement
@@ -140,14 +161,13 @@ setupHeartOfTheElders metadata attrs = case scenarioStep metadata of
 
         mouthOfKnYanTheCavernsMaw <- place Locations.mouthOfKnYanTheCavernsMaw
         startAt mouthOfKnYanTheCavernsMaw
-        placeTokens attrs mouthOfKnYanTheCavernsMaw Resource pathsKnown
+        placeTokens attrs mouthOfKnYanTheCavernsMaw Pillar pathsKnown
 
         (ruinsLocation, toRemove) <-
           sampleWithRest $ Locations.overgrownRuins :| [Locations.templeOfTheFang, Locations.stoneAltar]
 
         removeOneOfEach toRemove
 
-        mappedOutTheWayForward <- getHasRecord TheInvestigatorsMappedOutTheWayForward
         when mappedOutTheWayForward $ place_ ruinsLocation
 
         square <- Locations.pathOfThorns `orSampleIfReturnTo` [Locations.riversideTemple]
@@ -199,7 +219,17 @@ setupHeartOfTheElders metadata attrs = case scenarioStep metadata of
             $ mkAbility (SourceableWithCardCode (CardCode "53045b") ScenarioSource) 1
             $ forced
             $ Explored #after Anyone Anywhere (SuccessfulExplore Anywhere)
-  Two -> do
+  Two -> scope "part2" do
+    setup do
+      ul do
+        li "gatherSets"
+        li "placeLocations"
+        li "theJungleWatches"
+        li "setAside"
+        li "explorationDeck"
+        li "poisoned"
+        unscoped $ li "shuffleRemainder"
+
     whenReturnTo do
       gather Set.ReturnToHeartOfTheElders
       gather Set.ReturnToKnYan
@@ -264,88 +294,124 @@ setupHeartOfTheElders metadata attrs = case scenarioStep metadata of
         $ Explored #after Anyone Anywhere (SuccessfulExplore Anywhere)
 
 runAMessage :: Message -> HeartOfTheElders -> QueueT Message GameT HeartOfTheElders
-runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
-  StandaloneSetup -> do
+runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ scope "part1" $ case msg of
+  StandaloneSetup -> scope "standalone" do
     lead <- getLead
     setChaosTokens standaloneChaosTokens
 
     chooseOneM lead do
-      questionLabeled
-        "The investigators may choose how many paths are known to you (choose a number between 0 and 5). The more paths are known to you, the quicker and easier the scenario will be."
+      questionLabeled' "paths"
       for_ [0 .. 5] \n -> do
         labeled (tshow n) $ recordCount PathsAreKnownToYou n
     pure s
-  PreScenarioSetup -> do
-    story intro1
+  PreScenarioSetup -> scope "intro" do
+    storyWithChooseOneM' (h "title" >> p "intro1") do
+      getOwner Assets.ichtacaTheForgottenGuardian >>= \case
+        Nothing -> invalidLabeled' "ichtaca"
+        Just iid ->
+          labeled "ichtaca" do
+            flavor $ h "title" >> p "intro2"
+            putCampaignCardIntoPlay iid Assets.ichtacaTheForgottenGuardian
 
-    lead <- getLead
-    chooseOneM lead do
-      withOwner Assets.ichtacaTheForgottenGuardian \iid -> do
-        labeled "Let’s consult with Ichtaca." do
-          story intro2
-          putCampaignCardIntoPlay iid Assets.ichtacaTheForgottenGuardian
+      getOwner Assets.alejandroVela >>= \case
+        Nothing -> invalidLabeled' "alejandro"
+        Just iid ->
+          labeled "alejandro" do
+            flavor $ h "title" >> p "intro3"
+            putCampaignCardIntoPlay iid Assets.alejandroVela
 
-      withOwner Assets.alejandroVela \iid -> do
-        labeled "Let’s consult with Alejandro." do
-          story intro3
-          putCampaignCardIntoPlay iid Assets.alejandroVela
-
-      withOwner Assets.expeditionJournal \iid -> do
-        labeled "Let’s consult the expedition journal." do
-          story intro4
-          putCampaignCardIntoPlay iid Assets.expeditionJournal
-      labeled "I wish we knew more about this..." nothing
+      getOwner Assets.expeditionJournal >>= \case
+        Nothing -> invalidLabeled' "expeditionJournal"
+        Just iid ->
+          labeled' "expeditionJournal" do
+            flavor $ h "title" >> p "intro4"
+            putCampaignCardIntoPlay iid Assets.expeditionJournal
+      labeled' "else" nothing
     pure s
-  ScenarioResolution r -> case r of
-    NoResolution -> do
-      story noResolutionA
-      pathsKnown <- getRecordCount PathsAreKnownToYou
-      pillarTokens <- selectCountTokens Pillar (locationIs Locations.mouthOfKnYanTheCavernsMaw)
-      when (pillarTokens > pathsKnown) do
-        recordCount PathsAreKnownToYou pillarTokens
-      push RestartScenario
-      actStep <- getCurrentActStep
-      pure $ HeartOfTheElders (attrs `With` metadata {reachedAct2 = reachedAct2 metadata || actStep >= 2})
-    Resolution 1 -> do
-      story resolution1A
-      vengeanceCards <-
-        filter (isJust . cdVengeancePoints . toCardDef)
-          <$> scenarioField ScenarioVictoryDisplay
-      recordSetInsert TheJungleWatches (map toCardCode vengeanceCards)
-      allGainXp attrs
-      push RestartScenario
-      pure $ HeartOfTheElders (attrs `With` metadata {scenarioStep = Two})
-    _ -> pure s
+  ScenarioResolution r -> scope "resolutions" do
+    case r of
+      NoResolution -> do
+        isReturnTo <- Scenario.getIsReturnTo
+        if isReturnTo
+          then resolutionWithChooseOne "noResolution" $ scope "noResolution" do
+            labeled' "replay" $ do_ msg
+            labeled' "resolution2" $ push R2
+          else resolution "noResolution"
+      Resolution 2 -> do
+        resolution "resolution2"
+        mouthOfKnYanTheCavernsMaw <- selectJust $ locationIs Locations.mouthOfKnYanTheCavernsMaw
+        pillarTokens <- countTokensOf Pillar mouthOfKnYanTheCavernsMaw
+        repeated (6 - pillarTokens) do
+          placeTokens attrs mouthOfKnYanTheCavernsMaw Pillar 1
+          incrementRecordCount YigsFury 2
+        eachPoisoned (`sufferMentalTrauma` 1)
+        eachUnpoisoned \iid -> addCampaignCardToDeck iid DoNotShuffleIn Treacheries.poisoned
+        do_ R1
+      _ -> do_ msg
+    pure s
+  Do (ScenarioResolution r) -> scope "resolutions" do
+    case r of
+      NoResolution -> do
+        pathsKnown <- getRecordCount PathsAreKnownToYou
+        pillarTokens <- selectCountTokens Pillar (locationIs Locations.mouthOfKnYanTheCavernsMaw)
+        when (pillarTokens > pathsKnown) do
+          recordCount PathsAreKnownToYou pillarTokens
+        push RestartScenario
+        actStep <- getCurrentActStep
+        -- We need to clear out the additional references because they will stack up over time
+        pure
+          $ HeartOfTheElders
+            ( attrs {scenarioAdditionalReferences = [], scenarioSetAsideCards = []}
+                `With` metadata {reachedAct2 = reachedAct2 metadata || actStep >= 2}
+            )
+      Resolution 1 -> do
+        resolutionWithXp "resolution1" (allGainXp' attrs)
+        vengeanceCards <-
+          filter (isJust . cdVengeancePoints . toCardDef)
+            <$> scenarioField ScenarioVictoryDisplay
+        recordSetInsert TheJungleWatches (map toCardCode vengeanceCards)
+        push RestartScenario
+        pure
+          $ HeartOfTheElders
+            ( attrs {scenarioAdditionalReferences = [], scenarioSetAsideCards = []}
+                `With` metadata {scenarioStep = Two}
+            )
+      _ -> pure s
   _ -> HeartOfTheElders . (`with` metadata) <$> liftRunMessage msg attrs
 
 runBMessage :: Message -> HeartOfTheElders -> QueueT Message GameT HeartOfTheElders
-runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
-  ScenarioResolution r -> do
+runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ scope "part2" $ case msg of
+  ScenarioResolution r -> scope "resolutions" do
     case r of
       NoResolution -> do
-        story noResolutionB
+        resolution "noResolution"
         rescuedAlejandro <- getHasRecord TheInvestigatorsRescuedAlejandro
         push $ if rescuedAlejandro then R1 else R2
       Resolution n -> do
-        story $ case n of
-          1 -> resolution1B
-          2 -> resolution2B
-          _ -> error "invalid resolution"
+        let resolutionBody = if n == 1 then "resolution1" else "resolution2"
+
+        resolutionWithXp resolutionBody (allGainXp' attrs)
 
         vengeance <- getTotalVengeanceInVictoryDisplay
         yigsFury <- getRecordCount YigsFury
         recordCount YigsFury (yigsFury + vengeance)
 
-        inVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Enemies.harbingerOfValusia
-        if inVictory
-          then crossOut TheHarbingerIsStillAlive
-          else do
-            damage <-
-              selectOne (enemyIs Enemies.harbingerOfValusia) >>= \case
-                Just eid -> field EnemyDamage eid
-                Nothing -> getRecordCount TheHarbingerIsStillAlive
-            recordCount TheHarbingerIsStillAlive damage
-        allGainXp attrs
+        whenHarbingerHasEnteredPlay attrs do
+          inVictory <-
+            selectAny
+              $ VictoryDisplayCardMatch
+              $ basic
+              $ mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+          if inVictory
+            then crossOut TheHarbingerIsStillAlive
+            else do
+              damage <-
+                selectOne
+                  (mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns])
+                  >>= \case
+                    Just eid -> field EnemyDamage eid
+                    Nothing -> getRecordCount TheHarbingerIsStillAlive
+              recordCount TheHarbingerIsStillAlive damage
         endOfScenario
     pure s
   _ -> HeartOfTheElders . (`with` metadata) <$> liftRunMessage msg attrs
@@ -379,6 +445,7 @@ instance RunMessage HeartOfTheElders where
         Deck [] -> pure ()
         Deck (x : _) -> shuffleCardsIntoDeck ExplorationDeck [x]
       pure s
+    CreateEnemy (isHarbinger -> True) -> pure $ setHarbingerHasEnteredPlay s
     _ -> case scenarioStep metadata of
       One -> runAMessage msg s
       Two -> runBMessage msg s

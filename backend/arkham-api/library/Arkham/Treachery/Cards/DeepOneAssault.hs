@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.DeepOneAssault (deepOneAssault, DeepOneAssault (..)) where
+module Arkham.Treachery.Cards.DeepOneAssault (deepOneAssault) where
 
 import Arkham.Card
 import Arkham.Matcher
@@ -27,7 +27,7 @@ instance RunMessage DeepOneAssault where
           $ enemy_
           $ oneOf
             [ at_ (locationWithInvestigator iid)
-            , at_ (ConnectedFrom $ locationWithInvestigator iid)
+            , at_ (connectedFrom $ locationWithInvestigator iid)
                 <> EnemyCanEnter (locationWithInvestigator iid)
             ]
           <> withTrait DeepOne

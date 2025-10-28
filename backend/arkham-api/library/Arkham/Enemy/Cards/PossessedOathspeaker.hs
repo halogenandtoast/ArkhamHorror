@@ -42,6 +42,7 @@ instance RunMessage PossessedOathspeaker where
         else placeDoom (attrs.ability 1) attrs 1
       pure e
     UseThisAbility _ (isSource attrs -> True) 2 -> do
+      addToVictory attrs
       push R3
       pure e
     _ -> PossessedOathspeaker <$> liftRunMessage msg attrs

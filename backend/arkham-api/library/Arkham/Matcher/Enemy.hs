@@ -8,6 +8,7 @@ import Arkham.Card.Id
 import Arkham.Criteria.Override
 import {-# SOURCE #-} Arkham.Enemy.Types (Enemy)
 import Arkham.Field
+import Arkham.GameValue
 import Arkham.Id
 import Arkham.Keyword (Keyword)
 import {-# SOURCE #-} Arkham.Matcher.Asset
@@ -25,7 +26,7 @@ import {-# SOURCE #-} Arkham.Placement
 import Arkham.Prelude
 import {-# SOURCE #-} Arkham.Source
 import Arkham.Token
-import Arkham.Trait (Trait (Ghoul, Criminal))
+import Arkham.Trait (Trait (Criminal, Cultist, Ghoul, Humanoid))
 import Arkham.Zone
 import Control.Lens.Plated (Plated)
 import Data.Aeson.TH
@@ -38,7 +39,7 @@ instance Be EnemyId EnemyMatcher where
 
 data PreyMatcher
   = Prey InvestigatorMatcher
-  | OnlyPrey InvestigatorMatcher
+  | OnlyPrey PreyMatcher
   | BearerOf EnemyId
   | RestrictedBearerOf EnemyId InvestigatorMatcher
   deriving stock (Show, Eq, Ord, Data)
@@ -50,6 +51,7 @@ data EnemyMatcher
   | EnemyWithId EnemyId
   | EnemyWithTrait Trait
   | EnemyWithToken Token
+  | EnemyWithTokens GameValue Token
   | EnemyAt LocationMatcher
   | EnemyAttachedToAsset AssetMatcher
   | EnemyAttachedTo TargetMatcher
@@ -66,6 +68,7 @@ data EnemyMatcher
   | EnemyWithEqualFields (Field Enemy Int) (Field Enemy Int)
   | EnemyWithNonZeroField (Field Enemy Int)
   | EnemyWithMaybeFieldLessThanOrEqualToThis EnemyId (Field Enemy (Maybe Int))
+  | EnemyWithMaybeFieldLessThanOrEqualTo Int (Field Enemy (Maybe Int))
   | EnemyWithRemainingHealth ValueMatcher
   | EnemyWithDamage ValueMatcher
   | EnemyWithDoom ValueMatcher
@@ -89,6 +92,7 @@ data EnemyMatcher
   | AttackingEnemy
   | AttackedYouSinceTheEndOfYourLastTurn
   | CanFightEnemy Source
+  | CanFightEnemyWith SourceMatcher
   | CanEvadeEnemy Source -- This checks for an ability
   | EnemyCanBeEvadedBy Source -- This is not checking for an ability
   | EnemyCanBeDefeatedBy Source
@@ -140,6 +144,7 @@ data EnemyMatcher
   | EnemyIfReturnTo EnemyMatcher EnemyMatcher
   | EnemyWithAnyCardsUnderneath
   | SignatureEnemy
+  | EnemyHiddenInHand InvestigatorMatcher
   | -- | Must be replaced
     ThatEnemy
   deriving stock (Show, Eq, Ord, Data)
@@ -167,11 +172,17 @@ instance IsLabel "ready" EnemyMatcher where
 instance IsLabel "unengaged" EnemyMatcher where
   fromLabel = UnengagedEnemy
 
+instance IsLabel "humanoid" EnemyMatcher where
+  fromLabel = EnemyWithTrait Humanoid
+
 instance IsLabel "ghoul" EnemyMatcher where
   fromLabel = EnemyWithTrait Ghoul
 
 instance IsLabel "criminal" EnemyMatcher where
   fromLabel = EnemyWithTrait Criminal
+
+instance IsLabel "cultist" EnemyMatcher where
+  fromLabel = EnemyWithTrait Cultist
 
 instance Semigroup EnemyMatcher where
   AnyEnemy <> x = x
@@ -225,6 +236,17 @@ instance Not EnemyAttackMatcher where
 
 mconcat
   [ deriveJSON defaultOptions ''PreyMatcher
-  , deriveJSON defaultOptions ''EnemyMatcher
+  , deriveToJSON defaultOptions ''EnemyMatcher
   , deriveJSON defaultOptions ''EnemyAttackMatcher
   ]
+
+instance FromJSON EnemyMatcher where
+  parseJSON = withObject "EnemyMatcher" $ \o -> do
+    tag :: Text <- o .: "tag"
+    case tag of
+      "EnemyWithTokens" -> do
+        contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+        case contents of
+          Left (n, token) -> pure $ EnemyWithTokens (Static n) token
+          Right (gv, token) -> pure $ EnemyWithTokens gv token
+      _ -> $(mkParseJSON defaultOptions ''EnemyMatcher) (Object o)

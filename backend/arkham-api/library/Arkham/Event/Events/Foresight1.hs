@@ -24,20 +24,20 @@ foresight1 = event Foresight1 Cards.foresight1
 allCardNames :: HasGame m => m [Text]
 allCardNames = nub . sort . map toTitle <$> findAllCards (const True)
 
-getWindowInvestigator :: [Window] -> InvestigatorId
+getWindowInvestigator :: [Window] -> (InvestigatorId, CardDrawId)
 getWindowInvestigator [] = error "getWindowInvestigator: empty list"
-getWindowInvestigator ((windowType -> Window.WouldDrawCard iid _) : _) = iid
+getWindowInvestigator ((windowType -> Window.WouldDrawCard iid cid _) : _) = (iid, cid)
 getWindowInvestigator (_ : ws) = getWindowInvestigator ws
 
 -- The actual cancel or play part is encoded in the card draw kind `Foresight`
 
 instance RunMessage Foresight1 where
   runMessage msg e@(Foresight1 attrs) = runQueueT $ case msg of
-    InvestigatorPlayEvent iid eid _ (getWindowInvestigator -> iid') _ | eid == toId attrs -> do
+    InvestigatorPlayEvent iid eid _ (getWindowInvestigator -> (iid', cid)) _ | eid == toId attrs -> do
       cardNames <- allCardNames
 
       chooseOneDropDown iid =<< for cardNames \name -> do
-        enabled <- cardDrawModifier attrs iid' (Foresight name)
+        enabled <- cardDrawModifier cid attrs iid' (Foresight name)
         pure (name, enabled)
       pure e
     _ -> Foresight1 <$> liftRunMessage msg attrs

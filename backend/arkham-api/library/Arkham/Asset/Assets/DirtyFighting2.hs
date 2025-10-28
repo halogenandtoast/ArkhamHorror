@@ -20,8 +20,8 @@ instance HasModifiersFor DirtyFighting2 where
     maybeModified_ a iid do
       eid <- MaybeT getSkillTestTargetedEnemy
       guardM $ eid <=~> ExhaustedEnemy
-      action <- MaybeT getSkillTestAction
-      guardM $ (action `elem` [#fight, #evade, #parley] ||) <$> isParley
+      maction <- lift getSkillTestAction
+      guardM $ (maybe False (`elem` [#fight, #evade, #parley]) maction ||) <$> isParley
       pure [AnySkillValue 2]
 
 instance HasAbilities DirtyFighting2 where

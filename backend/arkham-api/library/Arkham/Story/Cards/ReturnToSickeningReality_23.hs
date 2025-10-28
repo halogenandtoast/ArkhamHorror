@@ -16,7 +16,7 @@ returnToSickeningReality_23 = story ReturnToSickeningReality_23 Cards.returnToSi
 
 instance RunMessage ReturnToSickeningReality_23 where
   runMessage msg s@(ReturnToSickeningReality_23 attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       dianne <- selectJust (assetIs Assets.dianneDevineHidingAnOathUnspoken)
       withLocationOf dianne \lid -> do
         selectEach (investigatorAt lid) \iid -> assignHorror iid attrs 1

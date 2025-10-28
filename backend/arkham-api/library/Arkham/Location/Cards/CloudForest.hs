@@ -17,7 +17,7 @@ cloudForest = symbolLabel $ location CloudForest Cards.cloudForest 3 (PerPlayer 
 instance HasAbilities CloudForest where
   getAbilities (CloudForest a) =
     extendRevealed1 a
-      $ restricted a 1 (not_ $ HasSupply Torches)
+      $ restricted a 1 (not_ $ exists $ at_ (be a) <> InvestigatorWithSupply Torches)
       $ forced
       $ EnemyDealtDamage #when AnyDamageEffect (at_ $ be a) AnySource
 

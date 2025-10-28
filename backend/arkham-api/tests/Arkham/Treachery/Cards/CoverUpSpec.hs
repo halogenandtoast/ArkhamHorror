@@ -26,7 +26,7 @@ spec = describe "Cover Up" $ do
   it "causes one mental trauma when the game ends if there are any clues on it" $ gameTest $ \self -> do
     self `loadDeck` [Cards.coverUp]
     self `drawCards` 1
-    run $ EndOfGame Nothing
+    endGame
     click "trigger cover up"
     self.mentalTrauma `shouldReturn` 1
 
@@ -39,5 +39,5 @@ spec = describe "Cover Up" $ do
     useReaction
     coverUp <- selectJust $ treacheryIs Cards.coverUp
     coverUp.clues `shouldReturn` 0
-    run $ EndOfGame Nothing
+    endGame
     self.mentalTrauma `shouldReturn` 0

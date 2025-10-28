@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.FrozenShores (frozenShores, FrozenShores (..)) where
+module Arkham.Location.Cards.FrozenShores (frozenShores) where
 
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
@@ -14,10 +14,8 @@ frozenShores = symbolLabel $ location FrozenShores Cards.frozenShores 2 (PerPlay
 
 instance HasModifiersFor FrozenShores where
   getModifiersFor (FrozenShores a) = modifySelfMaybe a do
-    n <- selectCount $ TreacheryAttachedToLocation (be a)
-    guard $ n > 0
-    pure [ShroudModifier (n * 2)]
+    liftGuardM $ selectAny $ TreacheryAttachedToLocation (be a)
+    pure [ShroudModifier 2]
 
 instance RunMessage FrozenShores where
-  runMessage msg (FrozenShores attrs) = runQueueT $ case msg of
-    _ -> FrozenShores <$> liftRunMessage msg attrs
+  runMessage msg (FrozenShores attrs) = FrozenShores <$> runMessage msg attrs

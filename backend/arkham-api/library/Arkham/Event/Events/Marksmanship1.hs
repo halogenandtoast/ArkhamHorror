@@ -8,6 +8,7 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner hiding (targetL)
+import Arkham.ForMovement
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Playable
 import Arkham.Helpers.Source
@@ -55,7 +56,7 @@ instance HasModifiersFor Marksmanship1 where
               $ EnemyFightActionCriteria
               $ CriteriaOverride
               $ EnemyCriteria
-              $ ThisEnemy (EnemyWithoutModifier CannotBeAttacked <> at_ (orConnected lid))
+              $ ThisEnemy (EnemyWithoutModifier CannotBeAttacked <> at_ (orConnected NotForMovement lid))
           ]
       _ -> error "Invalid branch"
 
@@ -89,7 +90,7 @@ instance HasModifiersFor Marksmanship1Effect where
         modifySelectMap a AnyEnemy \eid ->
           [ EnemyFightActionCriteria
               $ CriteriaOverride
-              $ AnyCriterion [OnSameLocation, OnLocation $ ConnectedTo $ locationWithEnemy eid]
+              $ AnyCriterion [OnSameLocation, OnLocation $ connectedTo $ locationWithEnemy eid]
               <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
           ]
       _ -> pure mempty
@@ -97,10 +98,11 @@ instance HasModifiersFor Marksmanship1Effect where
 instance RunMessage Marksmanship1Effect where
   runMessage msg e@(Marksmanship1Effect attrs@EffectAttrs {..}) = case msg of
     FightEnemy eid choose -> do
-      let sid = choose.skillTest 
+      let sid = choose.skillTest
       let iid = choose.investigator
       ignored <- selectAny $ EnemyWithId eid <> oneOf [EnemyWithKeyword Retaliate, EnemyWithKeyword Aloof]
-      ignoreWindow <- checkWindows [mkAfter $ Window.CancelledOrIgnoredCardOrGameEffect effectSource Nothing]
+      ignoreWindow <-
+        checkWindows [mkAfter $ Window.CancelledOrIgnoredCardOrGameEffect effectSource Nothing]
       enabled <- skillTestModifiers sid attrs iid [IgnoreRetaliate, IgnoreAloof]
 
       pushAll $ enabled : [ignoreWindow | ignored]

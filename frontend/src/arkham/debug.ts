@@ -6,7 +6,7 @@ const debug = reactive({
   toggle: () => {
     debug.active = !debug.active
   },
-  send: (gameId: string, message: any) => updateGameRaw(gameId, message)
+  send: async (gameId: string, message: any) => updateGameRaw(gameId, message)
 })
 
 export function useDebug() {

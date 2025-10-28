@@ -4,6 +4,7 @@ import { computed, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { TokenType, Token } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
+import { keyToId } from '@/arkham/types/Key'
 import type { Game } from '@/arkham/types/Game';
 import Key from '@/arkham/components/Key.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
@@ -73,7 +74,7 @@ const hasPool = computed(() => {
           </div>
           <div v-if="hasPool" class="pool">
             <div class="keys" v-if="keys.length > 0">
-              <Key v-for="key in keys" :key="key" :name="key" />
+              <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" />
             </div>
             <template v-for="[use, amount] in uses" :key="use">
               <PoolItem
@@ -120,7 +121,7 @@ const hasPool = computed(() => {
   </Draggable>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .card-no-overlay {
   width: calc(var(--card-width) * 5); 
   max-width: calc(var(--card-width) * 5);

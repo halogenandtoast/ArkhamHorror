@@ -1,13 +1,10 @@
-module Arkham.Asset.Assets.JoeSargentRattletrapBusDriver (
-  joeSargentRattletrapBusDriver,
-  JoeSargentRattletrapBusDriver (..),
-)
-where
+module Arkham.Asset.Assets.JoeSargentRattletrapBusDriver (joeSargentRattletrapBusDriver) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -28,10 +25,10 @@ joeSargentRattletrapBusDriver =
 instance HasAbilities JoeSargentRattletrapBusDriver where
   getAbilities (JoeSargentRattletrapBusDriver x) =
     [ mkAbility x 1 $ forced $ AssetLeavesPlay #when (be x)
-    , restricted
+    , controlled
         x
         2
-        (ControlsThis <> exists (UnbarricadedConnectedFrom YourLocation <> not_ FullyFloodedLocation))
+        (exists $ UnbarricadedConnectedFrom ForMovement YourLocation <> not_ FullyFloodedLocation)
         $ FastAbility
         $ assetUseCost x Ticket 1
     ]
@@ -43,7 +40,8 @@ instance RunMessage JoeSargentRattletrapBusDriver where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       locations <-
-        select (UnbarricadedConnectedFrom (locationWithInvestigator iid) <> not_ FullyFloodedLocation)
+        select
+          (UnbarricadedConnectedFrom ForMovement (locationWithInvestigator iid) <> not_ FullyFloodedLocation)
       chooseTargetM iid locations $ moveTo (attrs.ability 2) iid
       pure a
     _ -> JoeSargentRattletrapBusDriver <$> liftRunMessage msg attrs

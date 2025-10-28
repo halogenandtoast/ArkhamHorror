@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.CaughtRedHanded (caughtRedHanded) where
 
+import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Treachery.Cards qualified as Cards
@@ -15,8 +16,8 @@ caughtRedHanded = treachery CaughtRedHanded Cards.caughtRedHanded
 instance RunMessage CaughtRedHanded where
   runMessage msg t@(CaughtRedHanded attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      enemies <- selectTargets $ EnemyAt $ orConnected $ locationWithInvestigator iid
-      hunters <- selectTargets $ HunterEnemy <> at_ (ConnectedFrom $ locationWithInvestigator iid)
+      enemies <- selectTargets $ EnemyAt $ orConnected NotForMovement $ locationWithInvestigator iid
+      hunters <- selectTargets $ HunterEnemy <> at_ (connectedFrom $ locationWithInvestigator iid)
       for_ enemies readyThis
       for_ hunters (`moveToward` locationWithInvestigator iid)
       when (null hunters) $ shuffleIntoDeck iid attrs

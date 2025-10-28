@@ -1,4 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
+import { type Search, searchDecoder } from '@/arkham/types/Search';
 import { type Name, nameDecoder } from '@/arkham/types/Name';
 import { v2Optional } from '@/arkham/parser';
 import {
@@ -53,6 +54,7 @@ export type Scenario = {
   cardsUnderAgendaDeck: Card[];
   cardsUnderActDeck: Card[];
   cardsNextToActDeck: Card[];
+  foundCards: Record<string, Card[]>;
   cardsNextToAgendaDeck: Card[];
   setAsideCards: Card[];
   setAsideKeys: ArkhamKey[];
@@ -65,11 +67,13 @@ export type Scenario = {
   counts: Record<string, number>; // eslint-disable-line
   encounterDecks: Record<string, [CardContents[], CardContents[]]>;
   hasEncounterDeck: boolean;
+  started: boolean;
   encounterDeck: CardContents[];
   tarotCards: TarotCard[];
   xpBreakdown?: XpEntry[];
   meta: any;
   log: Remembered[];
+  storyCards: { [key: string]: CardContents[] };
 }
 
 export const scenarioDeckDecoder = JsonDecoder.object({
@@ -126,25 +130,12 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   cardsUnderScenarioReference: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
   cardsUnderAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
   cardsUnderActDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathActCards'),
-  cardsNextToActDeck: JsonDecoder.array<Card>(cardDecoder, 'CardsNextToActDeck'),
-  cardsNextToAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'CardsNextToAgendaDeck'),
-  setAsideKeys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
-  keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
-  setAsideCards: JsonDecoder.array<Card>(cardDecoder, 'SetAsideCards'),
-  chaosBag: chaosBagDecoder,
-  discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'EncounterCardContents[]'),
-  victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
-  encounterDeck: JsonDecoder.array<CardContents>(cardContentsDecoder, 'CardContents[]'),
-  xpBreakdown: v2Optional(JsonDecoder.array<XpEntry>(xpEntryDecoder, 'XpEntry[]')),
-  standaloneCampaignLog: logContentsDecoder,
-  tokens: tokensDecoder,
-  hasEncounterDeck: JsonDecoder.boolean(),
-  // tarotCards: JsonDecoder.array<TarotCard>(tarotCardDecoder, 'TarotCard[]'),
   tarotCards: JsonDecoder.
     array(
       JsonDecoder.tuple([tarotScopeDecoder, JsonDecoder.array(tarotCardDecoder, 'TarotCard[]')], '[TarotScope, TarotCard[]]'),
       '[TarotScope, TarotCard[]][]'
     ).map(res => res.reduce<TarotCard[]>((acc, [k, vs]) => [...acc, ...vs.map(v => ({ ...v, scope: k }))], [])),
+  search: v2Optional(searchDecoder).map((search: Search) => search?.searchFoundCards || {}),
   counts:
     JsonDecoder.array<[string, number]>(
       JsonDecoder.oneOf([
@@ -162,6 +153,21 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
         return acc
       }, {})
     }),
+  cardsNextToActDeck: JsonDecoder.array<Card>(cardDecoder, 'CardsNextToActDeck'),
+  cardsNextToAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'CardsNextToAgendaDeck'),
+  setAsideKeys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
+  keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
+  setAsideCards: JsonDecoder.array<Card>(cardDecoder, 'SetAsideCards'),
+  chaosBag: chaosBagDecoder,
+  discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'EncounterCardContents[]'),
+  victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
+  standaloneCampaignLog: logContentsDecoder,
+  tokens: tokensDecoder,
+
+  encounterDeck: JsonDecoder.array<CardContents>(cardContentsDecoder, 'CardContents[]'),
+  xpBreakdown: v2Optional(JsonDecoder.array<XpEntry>(xpEntryDecoder, 'XpEntry[]')),
+  hasEncounterDeck: JsonDecoder.boolean(),
+  started: JsonDecoder.boolean(),
   encounterDecks: JsonDecoder.array<[string, [CardContents[], CardContents[]]]>(
     JsonDecoder.tuple([
       JsonDecoder.string(),
@@ -176,8 +182,8 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
         return acc
       }, {})
     }),
-
-}, 'Scenario');
+  storyCards: JsonDecoder.record(JsonDecoder.array(cardDecoder, 'CardDef[]'), 'CardDef[]'),
+}, 'Scenario').map(({search, ...rest}) => ({...rest, foundCards: search}));
 
 export function scenarioToKeyI18n(scenario: Scenario): string {
   const full = scenarioToI18n(scenario);
@@ -247,6 +253,10 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c08621": return "edgeOfTheEarth.cityOfTheElderThings"
     case "c08648a": return "edgeOfTheEarth.theHeartOfMadness"
     case "c08648b": return "edgeOfTheEarth.theHeartOfMadness"
+    case "c09501": return "theScarletKeys.riddlesAndRain"
+    case "c09520": return "theScarletKeys.deadHeat"
+    case "c09545": return "theScarletKeys.sanguineShadows"
+    case "c09566": return "theScarletKeys.dealingsInTheDark"
     case "c50011": return "nightOfTheZealot.theGathering"
     case "c50025": return "nightOfTheZealot.theMidnightMasks"
     case "c50032": return "nightOfTheZealot.theDevourerBelow"
@@ -272,10 +282,20 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c53038": return "theForgottenAge.theBoundaryBeyond"
     case "c53045": return "theForgottenAge.heartOfTheElders"
     case "c53053": return "theForgottenAge.theCityOfArchives"
-    case "c53049": return "theForgottenAge.theDepthsOfYoth"
+    case "c53059": return "theForgottenAge.theDepthsOfYoth"
     case "c53061": return "theForgottenAge.shatteredAeons"
     case "c53066": return "theForgottenAge.turnBackTime"
+    case "c54016": return "theCircleUndone.disappearanceAtTheTwilightEstate"
+    case "c54017": return "theCircleUndone.theWitchingHour"
+    case "c54024": return "theCircleUndone.atDeathsDoorstep"
+    case "c54029": return "theCircleUndone.theSecretName"
+    case "c54034": return "theCircleUndone.theWagesOfSin"
+    case "c54042": return "theCircleUndone.forTheGreaterGood"
+    case "c54046": return "theCircleUndone.unionAndDisillusion"
+    case "c54049": return "theCircleUndone.inTheClutchesOfChaos"
+    case "c54056": return "theCircleUndone.beforeTheBlackThrone"
     case "c71001": return "standalone.theMidwinterGala"
+    case "c72001": return "standalone.filmFatale"
     case "c81001": return "standalone.curseOfTheRougarou"
     case "c82001": return "standalone.carnevaleOfHorrors"
     case "c84001": return "standalone.murderAtTheExcelsiorHotel"

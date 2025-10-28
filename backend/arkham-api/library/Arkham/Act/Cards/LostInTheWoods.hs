@@ -52,9 +52,9 @@ instance RunMessage LostInTheWoods where
       relentlessDarkYoung <- getSetAsideCard Enemies.relentlessDarkYoung
 
       arkhamWoods <-
-        shuffleM
+        fmap (take (length iids)) . shuffleM
           =<< select (SetAsideCardMatch $ CardWithTitle "Arkham Woods")
-      placements <- traverse placeLocation arkhamWoods
+      placements <- placeRandomLocationGroupCapture "woods" arkhamWoods
 
       placementMap <-
         Map.fromList <$> for (zip iids placements) \(iid, lid) -> do

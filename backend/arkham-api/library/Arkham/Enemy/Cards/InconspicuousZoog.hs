@@ -3,6 +3,7 @@ module Arkham.Enemy.Cards.InconspicuousZoog (inconspicuousZoog) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -16,7 +17,7 @@ inconspicuousZoog :: EnemyCard InconspicuousZoog
 inconspicuousZoog =
   enemyWith InconspicuousZoog Cards.inconspicuousZoog (2, Static 1, 2) (1, 1)
     $ spawnAtL
-    ?~ SpawnAt ConnectedLocation
+    ?~ SpawnAt (ConnectedLocation NotForMovement)
 
 instance HasAbilities InconspicuousZoog where
   getAbilities (InconspicuousZoog x) =
@@ -35,7 +36,7 @@ instance RunMessage InconspicuousZoog where
       case attrs.placement of
         AsSwarm host _ -> do
           connectingLocations <-
-            select $ ConnectedFrom (locationWithEnemy host) <> LocationCanBeEnteredBy host
+            select $ connectedFrom (locationWithEnemy host) <> LocationCanBeEnteredBy host
           unless (null connectingLocations) do
             exhaustThis host
             chooseOrRunOneM iid $ targets connectingLocations $ enemyMoveTo (attrs.ability 1) host

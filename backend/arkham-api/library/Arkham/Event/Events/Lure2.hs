@@ -1,6 +1,7 @@
 module Arkham.Event.Events.Lure2 (lure2) where
 
 import Arkham.Ability
+import Arkham.ForMovement
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
@@ -32,7 +33,7 @@ instance HasModifiersFor Lure2 where
 instance RunMessage Lure2 where
   runMessage msg e@(Lure2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      lids <- select $ LocationMatchAny [locationWithInvestigator iid, ConnectedLocation]
+      lids <- select $ LocationMatchAny [locationWithInvestigator iid, ConnectedLocation NotForMovement]
       player <- getPlayer iid
       push
         $ chooseOne player [targetLabel lid [PlaceEvent eid $ AttachedToLocation lid] | lid <- lids]

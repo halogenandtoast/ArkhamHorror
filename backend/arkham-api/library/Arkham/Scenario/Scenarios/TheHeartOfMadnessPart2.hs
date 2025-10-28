@@ -14,13 +14,17 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.FlavorText
 import Arkham.Helpers.Log ()
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query
+import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
+import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheHeartOfMadness.Helpers
@@ -28,7 +32,7 @@ import Arkham.Treachery.Cards qualified as Treacheries
 import Control.Monad.State.Strict (execStateT, modify)
 
 newtype TheHeartOfMadnessPart2 = TheHeartOfMadnessPart2 ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theHeartOfMadnessPart2 :: Difficulty -> TheHeartOfMadnessPart2
@@ -40,6 +44,12 @@ theHeartOfMadnessPart2 difficulty =
     difficulty
     theHeartOfMadnessLayout
     (referenceL .~ "08648")
+
+instance HasModifiersFor TheHeartOfMadnessPart2 where
+  getModifiersFor (TheHeartOfMadnessPart2 _a) = do
+    getSkillTestInvestigator >>= traverse_ \iid -> do
+      whenM (sealAtLocationOf iid) do
+        modifySelect Cultist (ChaosTokenOriginalFaceIs #cultist) [ChaosTokenFaceModifier [#frost]]
 
 instance HasChaosTokenValue TheHeartOfMadnessPart2 where
   getChaosTokenValue = getChaosTokenValueFromScenario
@@ -155,6 +165,14 @@ instance RunMessage TheHeartOfMadnessPart2 where
             inPlay <- selectAny $ assetIs partner.cardCode
             unless inPlay do
               cardLabeled partner.cardCode $ handleTarget iid ScenarioSource (CardCodeTarget partner.cardCode)
+      pure s
+    HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
+      for_ (lookupCardDef cardCode) \def -> do
+        card <- genCard def
+        assetId <- createAssetAt card (InPlayArea iid)
+        partner <- getPartner cardCode
+        pushWhen (partner.damage > 0) $ Msg.PlaceDamage CampaignSource (toTarget assetId) partner.damage
+        pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
       pure s
     Setup -> runScenarioSetup TheHeartOfMadnessPart2 attrs do
       gather Set.TheHeartOfMadness

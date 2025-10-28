@@ -63,7 +63,7 @@ instance RunMessage MakeshiftTrap where
       withLocationOf iid \lid -> do
         if attrs `hasCustomization` RemoteConfiguration
           then do
-            connected <- select $ ConnectedFrom (LocationWithId lid) <> RevealedLocation
+            connected <- select $ connectedFrom (LocationWithId lid) <> RevealedLocation
             chooseOrRunOne
               iid
               [targetLabel lid' [PlaceEvent attrs.id (AttachedToLocation lid')] | lid' <- lid : connected]

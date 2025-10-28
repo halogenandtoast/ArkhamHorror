@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.Safeguard (safeguard) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Window (Window (..))
@@ -24,7 +25,7 @@ instance HasAbilities Safeguard where
               (affectsOthers NotYou)
               AnySource
               YourLocation
-              (CanMoveToLocation You (toSource a) $ AccessibleFrom YourLocation <> CanEnterLocation You)
+              (CanMoveToLocation You (toSource a) $ AccessibleFrom ForMovement YourLocation <> CanEnterLocation You)
           )
           (exhaust a)
     ]

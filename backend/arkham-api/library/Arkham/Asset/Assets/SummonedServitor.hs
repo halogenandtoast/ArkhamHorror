@@ -1,6 +1,7 @@
 module Arkham.Asset.Assets.SummonedServitor (summonedServitor) where
 
 import Arkham.Ability
+import Arkham.ForMovement
 import Arkham.Action (Action)
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
@@ -43,7 +44,7 @@ instance HasAbilities SummonedServitor where
       *> [ controlled
              a
              1
-             (exists $ RevealedLocation <> ConnectedFrom (locationWithAsset a.id))
+             (exists $ RevealedLocation <> ConnectedFrom NotForMovement (locationWithAsset a.id))
              $ ServitorAbility #move
          | #move `notElem` used
          ]
@@ -76,13 +77,13 @@ instance RunMessage SummonedServitor where
           then SummonedServitor $ attrs & healthL ?~ 3
           else a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      locations <- select $ RevealedLocation <> ConnectedFrom (locationWithAsset attrs.id)
+      locations <- select $ RevealedLocation <> connectedFrom (locationWithAsset attrs.id)
       when (notNull locations) do
         onSame <- onSameLocation iid attrs.placement
         locationsCanEnter <-
           select
             $ RevealedLocation
-            <> AccessibleFrom (locationWithAsset attrs.id)
+            <> AccessibleFrom NotForMovement (locationWithAsset attrs.id)
             <> CanEnterLocation (InvestigatorWithId iid)
         chooseTargetM iid locations \lid -> do
           place attrs (AtLocation lid)

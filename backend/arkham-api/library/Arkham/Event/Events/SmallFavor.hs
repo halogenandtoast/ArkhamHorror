@@ -2,7 +2,6 @@ module Arkham.Event.Events.SmallFavor (smallFavor) where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (PlayCard)
 import Arkham.Matcher hiding (EnemyEvaded)
@@ -54,25 +53,19 @@ instance RunMessage SmallFavor where
             _ -> n
         updateUpToTwoAway n _ = n
         upToTwoAway = foldl' updateUpToTwoAway False modifiers'
-
-      enemies <-
-        select
-          $ NonEliteEnemy
-          <> EnemyOneOf
-            ( EnemyAt (locationWithInvestigator iid)
-                : [ EnemyAt (LocationWithDistanceFrom n (locationWithInvestigator iid) Anywhere)
-                  | upToTwoAway
-                  , n <- [1 .. 2]
-                  ]
-            )
-
-      chooseOrRunOneM iid do
-        targets enemies \enemy -> push $ EnemyDamage enemy $ nonAttack (Just iid) attrs damageCount
+      chooseDamageEnemy
+        iid
+        attrs
+        ( oneOf $ locationWithInvestigator iid
+            : [LocationWithDistanceFrom n (locationWithInvestigator iid) Anywhere | upToTwoAway, n <- [1 .. 2]]
+        )
+        NonEliteEnemy
+        damageCount
       pure e
-    InHand _ (UseCardAbility _ (isSource attrs -> True) 1 _ _) -> do
+    InHand iid (UseCardAbility iid' (isSource attrs -> True) 1 _ _) | iid == iid' -> do
       eventModifier attrs (toCardId attrs) $ MetaModifier $ object ["damageCount" .= (2 :: Int)]
       pure e
-    InHand _ (UseCardAbility _ (isSource attrs -> True) 2 _ _) -> do
+    InHand iid (UseCardAbility iid' (isSource attrs -> True) 2 _ _) | iid == iid' -> do
       eventModifier attrs (toCardId attrs) $ MetaModifier $ object ["upToTwoAway" .= True]
       pure e
     _ -> SmallFavor <$> liftRunMessage msg attrs

@@ -5,24 +5,32 @@ import Arkham.Calculation
 import Arkham.Campaigns.TheForgottenAge.Meta
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
+import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
 import Arkham.Deck
 import Arkham.Draw.Types
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Creation (EnemyCreation)
 import Arkham.Helpers.Card
 import Arkham.Helpers.Location (getLocationOf, toConnections)
 import Arkham.Helpers.Message ()
 import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Helpers.Query (getInvestigators)
-import Arkham.Helpers.Scenario (getVictoryDisplay, scenarioField, scenarioFieldMap)
+import Arkham.Helpers.Scenario (getInResolution, getVictoryDisplay, scenarioField, scenarioFieldMap)
 import Arkham.History
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Location.Types
 import Arkham.Matcher
-import Arkham.Message (Message (..), ReplaceStrategy (..), pattern CancelNext, pattern BeginSkillTest)
+import Arkham.Message (
+  Message (..),
+  ReplaceStrategy (..),
+  pattern BeginSkillTest,
+  pattern CancelNext,
+ )
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -33,34 +41,39 @@ import Arkham.Projection
 import Arkham.Question (Question (..), UI (..))
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types
+import Arkham.Scenario.Types qualified as Scenario
 import Arkham.SkillTest.Base
 import Arkham.SkillType (SkillType)
 import Arkham.Source
 import Arkham.Target
 import Arkham.Text (Tooltip (..))
+import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Result (..), mkAfter)
 import Arkham.Window qualified as Window
 
-getHasSupply :: HasGame m => InvestigatorId -> Supply -> m Bool
+pickSupply :: ReverseQueue m => InvestigatorId -> Supply -> m ()
+pickSupply iid s = push $ PickSupply iid s
+
+getHasSupply :: (HasGame m, Tracing m) => InvestigatorId -> Supply -> m Bool
 getHasSupply iid s = (> 0) <$> getSupplyCount iid s
 
-getSupplyCount :: HasGame m => InvestigatorId -> Supply -> m Int
+getSupplyCount :: (HasGame m, Tracing m) => InvestigatorId -> Supply -> m Int
 getSupplyCount iid s = fieldMap InvestigatorSupplies (length . filter (== s)) iid
 
-getAnyHasSupply :: HasGame m => Supply -> m Bool
+getAnyHasSupply :: (HasGame m, Tracing m) => Supply -> m Bool
 getAnyHasSupply = fmap notNull . getInvestigatorsWithSupply
 
-unlessAnyHasSupply :: HasGame m => Supply -> m () -> m ()
+unlessAnyHasSupply :: (HasGame m, Tracing m) => Supply -> m () -> m ()
 unlessAnyHasSupply s = unlessM (getAnyHasSupply s)
 
-getInvestigatorsWithSupply :: HasGame m => Supply -> m [InvestigatorId]
+getInvestigatorsWithSupply :: (HasGame m, Tracing m) => Supply -> m [InvestigatorId]
 getInvestigatorsWithSupply s = getInvestigators >>= filterM (`getHasSupply` s)
 
-getInvestigatorsWithoutSupply :: HasGame m => Supply -> m [InvestigatorId]
+getInvestigatorsWithoutSupply :: (HasGame m, Tracing m) => Supply -> m [InvestigatorId]
 getInvestigatorsWithoutSupply s = getInvestigators >>= filterM (fmap not . (`getHasSupply` s))
 
-getTotalVengeanceInVictoryDisplay :: forall m. (HasCallStack, HasGame m) => m Int
+getTotalVengeanceInVictoryDisplay :: forall m. (HasCallStack, HasGame m, Tracing m) => m Int
 getTotalVengeanceInVictoryDisplay = do
   n <- getVengeanceInVictoryDisplay
   locationVengeance <- fmap getSum . toVengeance =<< select (RevealedLocation <> LocationWithoutClues)
@@ -69,7 +82,7 @@ getTotalVengeanceInVictoryDisplay = do
   toVengeance :: ConvertToCard c => [c] -> m (Sum Int)
   toVengeance = fmap (mconcat . map Sum . catMaybes) . traverse getVengeancePoints
 
-getVengeanceInVictoryDisplay :: forall m. (HasCallStack, HasGame m) => m Int
+getVengeanceInVictoryDisplay :: forall m. (HasCallStack, HasGame m, Tracing m) => m Int
 getVengeanceInVictoryDisplay = do
   victoryDisplay <- getVictoryDisplay
   let
@@ -87,39 +100,53 @@ getVengeanceInVictoryDisplay = do
         (LocationWithModifier InVictoryDisplayForCountingVengeance)
   pure $ inVictoryDisplay' + locationsWithModifier + vengeanceCards
 
-getExplorationDeck :: HasGame m => m [Card]
+getExplorationDeck :: (HasGame m, Tracing m) => m [Card]
 getExplorationDeck = scenarioFieldMap ScenarioDecks (findWithDefault [] ExplorationDeck)
 
 setExplorationDeck :: ReverseQueue m => [Card] -> m ()
 setExplorationDeck = setScenarioDeck ExplorationDeck
 
-getSetAsidePoisonedCount :: HasGame m => m Int
+getSetAsidePoisonedCount :: (HasGame m, Tracing m) => m Int
 getSetAsidePoisonedCount = do
   n <- selectCount $ InDeckOf Anyone <> basic (cardIs Treacheries.poisoned)
   pure $ 4 - n
 
-getIsPoisoned :: HasGame m => InvestigatorId -> m Bool
+getIsPoisoned :: (HasGame m, Tracing m) => InvestigatorId -> m Bool
 getIsPoisoned iid = selectAny $ treacheryIs Treacheries.poisoned <> treacheryInThreatAreaOf iid
 
-unlessPoisoned :: HasGame m => InvestigatorId -> m () -> m ()
+unlessPoisoned :: (HasGame m, Tracing m) => InvestigatorId -> m () -> m ()
 unlessPoisoned iid body = do
   ok <- not <$> getIsPoisoned iid
   when ok body
 
-whenPoisoned :: HasGame m => InvestigatorId -> m () -> m ()
+whenPoisoned :: (HasGame m, Tracing m) => InvestigatorId -> m () -> m ()
 whenPoisoned iid body = do
   ok <- getIsPoisoned iid
   when ok body
 
-eachUnpoisoned :: HasGame m => (InvestigatorId -> m ()) -> m ()
+eachUnpoisoned :: (HasGame m, Tracing m) => (InvestigatorId -> m ()) -> m ()
 eachUnpoisoned body = do
   unpoisoned <- getUnpoisoned
   for_ unpoisoned body
 
-getUnpoisoned :: HasGame m => m [InvestigatorId]
-getUnpoisoned = select $ NotInvestigator $ HasMatchingTreachery $ treacheryIs $ Treacheries.poisoned
+eachPoisoned :: (HasGame m, Tracing m) => (InvestigatorId -> m ()) -> m ()
+eachPoisoned body = do
+  poisoned <- getPoisoned
+  for_ poisoned body
 
-getSetAsidePoisoned :: HasGame m => m Card
+getPoisoned :: (HasGame m, Tracing m) => m [InvestigatorId]
+getPoisoned = do
+  inResolution <- getInResolution
+  let wrapper = if inResolution then IncludeEliminated else id
+  select $ wrapper $ HasMatchingTreachery $ treacheryIs Treacheries.poisoned
+
+getUnpoisoned :: (HasGame m, Tracing m) => m [InvestigatorId]
+getUnpoisoned = do
+  inResolution <- getInResolution
+  let wrapper = if inResolution then IncludeEliminated else id
+  select $ wrapper $ NotInvestigator $ HasMatchingTreachery $ treacheryIs Treacheries.poisoned
+
+getSetAsidePoisoned :: (HasGame m, Tracing m) => m Card
 getSetAsidePoisoned =
   fromJustNote "not enough poison cards"
     . find ((== Treacheries.poisoned) . toCardDef)
@@ -189,13 +216,17 @@ explore iid source cardMatcher exploreRule matchCount = do
           replacedIsRevealed <- field LocationRevealed lid
           replacedIsWithoutClues <- lid <=~> LocationWithoutClues
 
-          when (canMove && exploreRule == PlaceExplored) $ moveTo source iid lid
           updateHistory iid $ HistoryItem HistorySuccessfulExplore True
+          -- done before the move so trail of the dead handle binoculars check correctly
           checkAfter $ Window.Explored iid mlid (Success lid)
+          when (canMove && exploreRule == PlaceExplored) $ moveTo source iid lid
           when (exploreRule == ReplaceExplored) do
             setGlobal lid "replacedIsRevealed" replacedIsRevealed
             setGlobal lid "replacedIsWithoutClues" replacedIsWithoutClues
         else do
+          -- Perils of Yoth will handle this case
+          unless (toCardDef x == Treacheries.perilsOfYoth) do
+            checkAfter $ Window.Explored iid mlid (Failure x)
           push
             $ DrewCards iid
             $ CardDrew
@@ -206,7 +237,6 @@ explore iid source cardMatcher exploreRule matchCount = do
               , cardDrewRules = mempty
               , cardDrewTarget = Nothing
               }
-          checkAfter $ Window.Explored iid mlid (Failure x)
     xs -> do
       deck' <- if null notMatched then pure rest else shuffle $ rest <> notMatched
       focusCards drawn do
@@ -225,7 +255,7 @@ explore iid source cardMatcher exploreRule matchCount = do
           | lid <- locations
           ]
 
-getVengeancePoints :: (HasCallStack, ConvertToCard c, HasGame m) => c -> m (Maybe Int)
+getVengeancePoints :: (HasCallStack, ConvertToCard c, HasGame m, Tracing m) => c -> m (Maybe Int)
 getVengeancePoints c = do
   card <- convertToCard c
   mods <- getModifiers card
@@ -233,7 +263,7 @@ getVengeancePoints c = do
     then pure Nothing
     else getCardField cdVengeancePoints card
 
-getHasVengeancePoints :: (ConvertToCard c, HasGame m) => c -> m Bool
+getHasVengeancePoints :: (ConvertToCard c, HasGame m, Tracing m) => c -> m Bool
 getHasVengeancePoints c = isJust <$> getVengeancePoints c
 
 exploreAction :: Cost -> AbilityType
@@ -248,70 +278,43 @@ cancelExplore source = push $ CancelNext (toSource source) ExploreMessage
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "theForgottenAge" a
 
-pickSupplies :: ReverseQueue m => InvestigatorId -> Metadata -> [Supply] -> Message -> m ()
-pickSupplies iid metadata supplies cont = do
-  let remaining = findWithDefault 0 iid (supplyPoints metadata)
-  when (remaining > 0) do
+pickSupplies :: ReverseQueue m => InvestigatorId -> Bool -> Metadata -> [Supply] -> Message -> m ()
+pickSupplies iid resupply metadata supplies cont = do
+  let pointsRemaining = findWithDefault 0 iid (supplyPoints metadata)
+  when (pointsRemaining > 0) do
     player <- getPlayer iid
-    investigatorSupplies <- field InvestigatorSupplies iid
+    chosenSupplies <- field InvestigatorSupplies iid
     let
-      availableSupply s = s `notElem` investigatorSupplies || s `elem` [Provisions, Medicine, Gasoline]
-      affordableSupplies = filter ((<= remaining) . supplyCost) supplies
+      availableSupply s = s `notElem` chosenSupplies || s `elem` [Provisions, Medicine, Gasoline]
+      affordableSupplies = filter ((<= pointsRemaining) . supplyCost) supplies
       availableSupplies = filter availableSupply affordableSupplies
-    push
-      $ Ask player
-      $ PickSupplies remaining investigatorSupplies
-      $ Label "Done" []
-      : map (\s -> supplyLabel s [PickSupply iid s, cont]) availableSupplies
+      choices = Label "$done" [] : map (\s -> supplyLabel s [PickSupply iid s, cont]) availableSupplies
+    push $ Ask player $ PickSupplies {..}
 
 supplyLabel :: Supply -> [Message] -> UI Message
 supplyLabel s = case s of
-  Provisions ->
-    go
-      "Provisions"
-      "(1 supply point each): Food and water for one person. A must-have for any journey."
-  Medicine ->
-    go
-      "Medicine"
-      "(2 supply points each): To stave off disease, infection, or venom."
-  Gasoline ->
-    go "Gasoline" "(1 supply points each): Enough for a long journey by car."
-  Rope ->
-    go
-      "Rope"
-      "(3 supply points): Several long coils of strong rope.  Vital for climbing and spelunking."
-  Blanket -> go "Blanket" "(2 supply points): For warmth at night."
-  Canteen ->
-    go "Canteen" "(2 supply points): Can be refilled at streams and rivers."
-  Torches ->
-    go
-      "Torches"
-      "(3 supply points): Can light up dark areas, or set sconces alight."
-  Compass ->
-    go
-      "Compass"
-      "(2 supply points): Can guide you when you are hopelessly lost."
-  Map ->
-    go
-      "Map"
-      "(3 supply points): Unmarked for now, but with time, you may be able to map out your surroundings."
-  Binoculars ->
-    go "Binoculars" "(2 supply points): To help you see faraway places."
-  Chalk -> go "Chalk" "(2 supply points): For writing on rough stone surfaces."
-  Pendant ->
-    go
-      "Pendant"
-      "(1 supply point): Useless, but fond memories bring comfort to travelers far from home."
-  Pocketknife ->
-    go
-      "Pocketknife"
-      "(2 supply point): Too small to be used as a reliable weapon, but easily concealed."
-  Pickaxe ->
-    go "Pickaxe" "(2 supply point): For breaking apart rocky surfaces."
-  KeyOfEztli -> go "Key of Eztli" "can not purchase"
-  MysteriousScepter -> go "Mysterious Scepter" "can not purchase"
+  Provisions -> go "provisions"
+  Medicine -> go "medicine"
+  Gasoline -> go "gasoline"
+  Rope -> go "rope"
+  Blanket -> go "blanket"
+  Canteen -> go "canteen"
+  Torches -> go "torches"
+  Compass -> go "compass"
+  Map -> go "map"
+  Binoculars -> go "binoculars"
+  Chalk -> go "chalk"
+  Pendant -> go "pendant"
+  Pocketknife -> go "pocketknife"
+  Pickaxe -> go "pickaxe"
+  KeyOfEztli -> go "keyOfEztli"
+  MysteriousScepter -> go "mysteriousScepter"
+  StickyGoop -> go "stickyGoop"
  where
-  go label tooltip = TooltipLabel label (Tooltip tooltip)
+  go label =
+    campaignI18n
+      $ let toKey suffix = "$" <> ikey ("supplies." <> label <> "." <> suffix)
+         in TooltipLabel (toKey "name") (Tooltip (toKey "tooltip"))
 
 useSupply :: ReverseQueue m => InvestigatorId -> Supply -> m ()
 useSupply iid s = push $ UseSupply iid s
@@ -331,3 +334,16 @@ exploreTest sid iid (toSource -> source) (toTarget -> target) sType n =
     $ (initSkillTest sid iid source target sType (SkillTestDifficulty n))
       { skillTestAction = Just #explore
       }
+
+isHarbinger :: EnemyCreation msg -> Bool
+isHarbinger c =
+  cardMatch c.card
+    $ mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+
+whenHarbingerHasEnteredPlay
+  :: (Applicative m, Entity sc, EntityAttrs sc ~ ScenarioAttrs) => sc -> m () -> m ()
+whenHarbingerHasEnteredPlay sc action = do
+  when (Scenario.getMetaKeyDefault "harbingerEnteredPlay" False (toAttrs sc)) action
+
+setHarbingerHasEnteredPlay :: (Entity sc, EntityAttrs sc ~ ScenarioAttrs) => sc -> sc
+setHarbingerHasEnteredPlay = overAttrs (setMetaKey "harbingerEnteredPlay" True)

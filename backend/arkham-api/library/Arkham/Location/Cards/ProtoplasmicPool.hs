@@ -20,7 +20,7 @@ instance HasAbilities ProtoplasmicPool where
   getAbilities (ProtoplasmicPool a) =
     extendRevealed1 a
       $ skillTestAbility
-      $ restricted a 1 (youExist (InvestigatorWithDormantSeal SealB)) actionAbility
+      $ restricted a 1 (Here <> youExist (InvestigatorWithDormantSeal SealB)) actionAbility
 
 instance RunMessage ProtoplasmicPool where
   runMessage msg l@(ProtoplasmicPool attrs) = runQueueT $ case msg of

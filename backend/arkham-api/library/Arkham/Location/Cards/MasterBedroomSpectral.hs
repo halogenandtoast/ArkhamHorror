@@ -3,26 +3,23 @@ module Arkham.Location.Cards.MasterBedroomSpectral (masterBedroomSpectral) where
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
-import Arkham.Prelude
+import Arkham.Location.Import.Lifted
+import Arkham.Scenarios.AtDeathsDoorstep.Helpers
 
 newtype MasterBedroomSpectral = MasterBedroomSpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 masterBedroomSpectral :: LocationCard MasterBedroomSpectral
-masterBedroomSpectral =
-  location MasterBedroomSpectral Cards.masterBedroomSpectral 3 (PerPlayer 1)
+masterBedroomSpectral = location MasterBedroomSpectral Cards.masterBedroomSpectral 3 (PerPlayer 1)
 
 instance HasAbilities MasterBedroomSpectral where
-  getAbilities (MasterBedroomSpectral attrs) =
-    withBaseAbilities
-      attrs
-      [haunted "Place 1 of your clues on Master Bedroom." attrs 1]
+  getAbilities (MasterBedroomSpectral a) =
+    extendRevealed1 a $ scenarioI18n $ hauntedI "masterBedroomSpectral.haunted" a 1
 
 instance RunMessage MasterBedroomSpectral where
-  runMessage msg l@(MasterBedroomSpectral attrs) = case msg of
+  runMessage msg l@(MasterBedroomSpectral attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ InvestigatorPlaceCluesOnLocation iid (toAbilitySource attrs 1) 1
+      placeCluesOnLocation iid (attrs.ability 1) 1
       pure l
-    _ -> MasterBedroomSpectral <$> runMessage msg attrs
+    _ -> MasterBedroomSpectral <$> liftRunMessage msg attrs

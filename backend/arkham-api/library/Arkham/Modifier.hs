@@ -1,15 +1,17 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -O0 -fomit-interface-pragmas -fno-specialise #-}
 
 module Arkham.Modifier where
 
+import {-# SOURCE #-} Arkham.Ability.Types
 import Arkham.Action
 import Arkham.Action.Additional
 import Arkham.Asset.Uses
 import {-# SOURCE #-} Arkham.Calculation
 import {-# SOURCE #-} Arkham.Card (Card, CardCode)
 import Arkham.Card.CardType
-import Arkham.Card.Id
 import {-# SOURCE #-} Arkham.Card.EncounterCard
+import Arkham.Card.Id
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken.Types
 import Arkham.ClassSymbol
@@ -24,6 +26,7 @@ import Arkham.Json
 import Arkham.Keyword
 import Arkham.Matcher.Types
 import Arkham.Phase
+import {-# SOURCE #-} Arkham.Placement
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.SkillType
@@ -58,6 +61,7 @@ data ModifierType
   | AdditionalActionCostOf ActionTarget Int
   | AdditionalActions Text Source Int
   | AdditionalCost Cost
+  | NoAdditionalCosts
   | AdditionalPlayCostOf ExtendedCardMatcher Cost
   | AdditionalCostToCommit InvestigatorId Cost
   | AdditionalCostToEnter Cost
@@ -87,6 +91,7 @@ data ModifierType
   | AsIfInHandForPlay CardId
   | AsIfUnderControlOf InvestigatorId
   | AsIfTurn InvestigatorId
+  | EnemyAttacksOverride InvestigatorMatcher
   | AttackDealsEitherDamageOrHorror
   | AttacksCannotBeCancelled
   | Barricades [LocationId]
@@ -211,6 +216,7 @@ data ModifierType
   | CannotSpendClues
   | CannotSpendKeys
   | CannotTakeKeys
+  | CannotLeavePlay
   | CannotTakeAction ActionTarget
   | CannotTakeControlOfClues
   | CannotTriggerAbilityMatching AbilityMatcher
@@ -220,12 +226,14 @@ data ModifierType
   | ChangeRevealStrategy RevealStrategy
   | DrawAdditionalChaosTokens Int
   | ChangeSpawnLocation LocationMatcher LocationMatcher
+  | ChangeSpawnWith InvestigatorId SpawnAt
   | ChaosTokenFaceModifier [ChaosTokenFace]
   | ChaosTokenValueModifier Int
   | CheckHandSizeAfterDraw
   | ChuckFergus2Modifier CardMatcher Int -- Used by Chuck Fergus (2), check for notes
   | CommitCost Cost
   | ConnectedToWhen LocationMatcher LocationMatcher
+  | ForMovementConnectedToWhen LocationMatcher LocationMatcher
   | ControlledAssetsCannotReady
   | CountAllDoomInPlay
   | CountsAsInvestigatorForHunterEnemies
@@ -258,6 +266,9 @@ data ModifierType
   | DoubleSuccess
   | DuringEnemyPhaseMustMoveToward Target
   | EffectsCannotBeCanceled
+  | CannotCancelCardOrGameEffects
+  | CannotIgnoreCardOrGameEffects
+  | DrawGainsPeril
   | EnemyEngageActionCriteria CriteriaOverride
   | EnemyEvade Int
   | SwapFightAndEvade
@@ -267,6 +278,7 @@ data ModifierType
   | EnemyFightActionCriteria CriteriaOverride
   | EnemyFightWithMin Int (Min Int)
   | EntersPlayWithDoom Int
+  | CanEvadeOverride CriteriaOverride
   | ExhaustIfDefeated
   | ExtraResources Int
   | FailTies
@@ -274,6 +286,7 @@ data ModifierType
   | FewerMatchingIconsPerCard Int
   | FewerSlots SlotType Int
   | ForEach GameCalculation [ModifierType]
+  | ForceConcealedPlacement Placement
   | ForcePrey PreyMatcher
   | ForceSpawn SpawnAt
   | ForceSpawnLocation LocationMatcher
@@ -282,6 +295,7 @@ data ModifierType
   | GainVictory Int
   | GiveAdditionalAction AdditionalAction
   | HandSize Int
+  | Hollow CardId
   | MaxHandSize Int
   | HandSizeCardCount Int
   | HealHorrorAsIfOnInvestigator Target Int
@@ -311,6 +325,7 @@ data ModifierType
   | IgnorePlayableModifierContexts
   | IgnoreRetaliate
   | IgnoreRevelation
+  | RevelationModifier Source ModifierType
   | IgnoreText
   | IgnoreTextOnLocation LocationMatcher
   | InVictoryDisplayForCountingVengeance
@@ -330,6 +345,7 @@ data ModifierType
   | MayChooseNotToTakeUpkeepResources
   | MayChooseToRemoveChaosToken InvestigatorId
   | MayIgnoreAttacksOfOpportunity
+  | MayIgnoreAttacksOfOpportunityOf EnemyMatcher
   | MayIgnoreLocationEffectsAndKeywords
   | MetaModifier Value
   | ModifierIfSucceededBy Int Modifier
@@ -338,6 +354,7 @@ data ModifierType
   | MustChooseEnemy EnemyMatcher
   | MustFight EnemyId
   | MustTakeAction ActionTarget
+  | MustPerformAbilityIfCan AbilityRef
   | NegativeToPositive
   | NoDamageDealt
   | NoInitialSwarm
@@ -364,6 +381,7 @@ data ModifierType
   | RemoveSkillIcons [SkillIcon]
   | RemoveTrait Trait
   | ReplaceAllSkillIconsWithWild
+  | SkillIconsSubtract
   | ResolveEffectsAgain -- NOTE: If used for more than Tekelili, need to figure out what to do
   | ResolveEffectsAgainMatch CardMatcher -- NOTE: If used for more than Tekelili, need to figure out what to do
   | ResolvesFailedEffects
@@ -373,6 +391,7 @@ data ModifierType
   | RevealAnotherChaosToken -- TODO: Only ShatteredAeons handles this, if a player card affects this, all scenarios have to be updated, we also use this for Cats of Ulthar directly on the SkillTest
   | RevealChaosTokensBeforeCommittingCards
   | SanityModifier Int
+  | CampaignModifier Text
   | ScenarioModifier Text
   | ScenarioModifierValue Text Value
   | SearchDepth Int
@@ -383,7 +402,7 @@ data ModifierType
   | SetAttackDamageStrategy DamageStrategy
   | SetDifficulty Int
   | SetShroud Int
-  | SetSkillValue { skillType :: SkillType, value :: Int }
+  | SetSkillValue {skillType :: SkillType, value :: Int}
   | SharesSlotWith Int CardMatcher -- card matcher allows us to check more easily from hand
   | ShroudModifier Int
   | ShuffleIntoAnyDeckInsteadOfDiscard
@@ -393,6 +412,7 @@ data ModifierType
   | SkillModifier {skillType :: SkillType, value :: Int}
   | SkillModifiersAffectOtherSkill SkillType SkillType
   | SkillTestAutomaticallySucceeds
+  | SkillTestAutomaticallyFails
   | SkillTestResultValueModifier Int
   | SkipMythosPhaseStep MythosPhaseStep
   | SlotCanBe SlotType SlotType
@@ -428,6 +448,7 @@ data UIModifier
   = Ethereal -- from Ethereal Form
   | Explosion -- from Dyanamite Blast
   | Locus -- from Prophesiae Profana
+  | ImportantToScenario Text -- from Threads of Fate
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "combat" (Int -> ModifierType) where
@@ -447,6 +468,15 @@ instance IsLabel "willpower" (Int -> ModifierType) where
 
 instance IsLabel "damage" (Int -> ModifierType) where
   fromLabel = DamageDealt
+
+instance IsLabel "noAction" ModifierType where
+  fromLabel = ActionCostModifier (-1)
+
+instance IsLabel "retaliate" ModifierType where
+  fromLabel = AddKeyword Retaliate
+
+instance IsLabel "alert" ModifierType where
+  fromLabel = AddKeyword Alert
 
 data Modifier = Modifier
   { modifierSource :: Source
@@ -470,7 +500,8 @@ mconcat
           tag :: Text <- v .: "tag"
           case tag of
             "SetSkillValue" -> do
-              contents <- (Left <$> v .: "contents") <|> (Right <$> (SetSkillValue <$> v .: "skillType" <*> v .: "value"))
+              contents <-
+                (Left <$> v .: "contents") <|> (Right <$> (SetSkillValue <$> v .: "skillType" <*> v .: "value"))
               case contents of
                 Left (a, b) -> pure $ SetSkillValue a b
                 Right a -> pure a

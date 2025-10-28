@@ -145,6 +145,12 @@ allStories =
     , SomeStoryCard memoryOfATerribleDiscovery
     , SomeStoryCard memoryOfAnAlienTranslation
     , SomeStoryCard memoryOfAnUnrequitedLove
+    , -- The Scarlet Keys
+      --- Dead Heat [tsk]
+      SomeStoryCard saveTheCivilians
+    , --- Dealings in the Dark [tsk]
+      SomeStoryCard theUnveiling
+    , SomeStoryCard theUnsealing
     , -- Return to The Path to Carcosa
       --- Return to The Last King
       SomeStoryCard returnToSickeningReality_23
@@ -154,6 +160,9 @@ allStories =
     , SomeStoryCard theWriter
     , SomeStoryCard theEntity
     , SomeStoryCard theDelusion
+    , --- Return to The Circle Undone
+      SomeStoryCard returnToUnfinishedBusiness_38
+    , SomeStoryCard returnToUnfinishedBusiness_39
     , -- The Midwinter Gala
       SomeStoryCard theFoundationAllied
     , SomeStoryCard theFoundationRival

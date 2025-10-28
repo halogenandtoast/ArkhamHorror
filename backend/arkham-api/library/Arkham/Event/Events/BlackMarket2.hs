@@ -8,7 +8,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv (getCard, getPhase)
 import Arkham.Helpers (unDeck)
-import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_, modified_)
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Investigator.Types (Field (..))
@@ -26,23 +25,26 @@ blackMarket2 = event BlackMarket2 Cards.blackMarket2
 
 instance RunMessage BlackMarket2 where
   runMessage msg e@(BlackMarket2 attrs) = runQueueT $ case msg of
-    PlayThisEvent _iid eid | eid == attrs.id -> do
-      push $ DoStep 5 msg
+    PlayThisEvent _iid (is attrs -> True) -> do
+      doStep 5 msg
       pure . BlackMarket2 $ attrs & setMeta @[CardId] []
     DoStep n msg'@(PlayThisEvent iid eid) | eid == attrs.id && n > 0 -> do
       investigators <- select $ affectsOthers can.manipulate.deck
       if null investigators
-        then push $ DoStep 0 msg'
+        then doStep 0 msg'
         else do
-          chooseOrRunOne iid $ targetLabels investigators $ only . handleTargetChoice iid attrs
-          push $ DoStep (n - 1) msg'
+          chooseOrRunOneM iid $ targets investigators $ handleTarget iid attrs
+          doStep (n - 1) msg'
       pure e
     DoStep 0 (PlayThisEvent _iid eid) | eid == attrs.id -> do
       for_ (toResult @[CardId] attrs.meta) $ createCardEffect Cards.blackMarket2 Nothing attrs
       pure e
     HandleTargetChoice _iid (isSource attrs -> True) (InvestigatorTarget iid') -> do
       cards <- fieldMap InvestigatorDeck (map toCard . take 1 . unDeck) iid'
-      pushAll $ map (ObtainCard . toCardId) cards <> [SetAsideCards cards]
+      for_ cards \card -> do
+        obtainCard card
+        revealCard card
+      push $ SetAsideCards cards
       pure . BlackMarket2 $ attrs & overMeta (map toCardId cards <>)
     _ -> BlackMarket2 <$> liftRunMessage msg attrs
 

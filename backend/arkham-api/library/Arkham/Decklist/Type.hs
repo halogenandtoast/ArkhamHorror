@@ -5,6 +5,7 @@ import Arkham.Id
 import Arkham.Investigator.Cards
 import Arkham.Name
 import Arkham.Prelude
+import GHC.Records
 
 data ArkhamDBDecklist = ArkhamDBDecklist
   { slots :: Map CardCode Int
@@ -15,8 +16,24 @@ data ArkhamDBDecklist = ArkhamDBDecklist
   , taboo_id :: Maybe Int
   , url :: Maybe Text
   }
-  deriving stock (Generic, Show, Eq, Data)
+  deriving stock (Generic, Show, Ord, Eq, Data)
   deriving anyclass ToJSON
+
+data ArkhamDBDecklistMeta = ArkhamDBDecklistMeta
+  { alternate_front :: Maybe InvestigatorId
+  , attachments_11080 :: Maybe Text
+  }
+  deriving stock (Generic, Show)
+  deriving anyclass FromJSON
+
+decklistInvestigatorId :: ArkhamDBDecklist -> InvestigatorId
+decklistInvestigatorId decklist = fromMaybe (investigator_code decklist) do
+  meta' <- meta decklist
+  ArkhamDBDecklistMeta {alternate_front} <- decode (encodeUtf8 $ fromStrict meta')
+  guard (alternate_front /= Just "") *> alternate_front
+
+instance HasField "investigator" ArkhamDBDecklist InvestigatorId where
+  getField = decklistInvestigatorId
 
 instance FromJSON ArkhamDBDecklist where
   parseJSON = withObject "ArkhamDBDecklist" $ \o -> do

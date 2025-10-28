@@ -8,7 +8,6 @@ import Arkham.Modifier
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 import Arkham.Strategy
-import Arkham.Target
 
 newtype ScoutingTheVale = ScoutingTheVale StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -19,7 +18,7 @@ scoutingTheVale = story ScoutingTheVale Cards.scoutingTheVale
 
 instance RunMessage ScoutingTheVale where
   runMessage msg s@(ScoutingTheVale attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       n <- perPlayer 2
       lookAt iid attrs EncounterDeckTarget [fromTopOfDeck n] #any (defer attrs IsNotDraw)
       cragOfTheGhouls <- selectJust $ locationIs Locations.cragOfTheGhouls

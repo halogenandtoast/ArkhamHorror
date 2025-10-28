@@ -13,6 +13,7 @@ manualDexterity = skill ManualDexterity Cards.manualDexterity
 instance RunMessage ManualDexterity where
   runMessage msg s@(ManualDexterity attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      drawCards attrs.owner attrs 1
+      skillTestResultOption "Manual Dexterity" do
+        drawCards attrs.owner attrs 1
       pure s
     _ -> ManualDexterity <$> liftRunMessage msg attrs

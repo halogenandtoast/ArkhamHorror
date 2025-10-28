@@ -34,6 +34,8 @@ export const storyMetaDecoder = JsonDecoder.object<StoryMeta>({
 
 export type Story = {
   id: string
+  art: string
+  flippedArt: string
   cardId: string
   placement: Placement
   otherSide: Target | null
@@ -44,6 +46,8 @@ export type Story = {
 
 export const storyDecoder = JsonDecoder.object<Story>({
   id: JsonDecoder.string(),
+  art: JsonDecoder.string(),
+  flippedArt: JsonDecoder.string(),
   cardId: JsonDecoder.string(),
   placement: placementDecoder,
   otherSide: JsonDecoder.nullable(targetDecoder),

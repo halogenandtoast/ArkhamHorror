@@ -3,6 +3,7 @@ module Arkham.Location.Cards.Southside_294 (southside_294) where
 import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -25,18 +26,17 @@ instance HasAbilities Southside_294 where
 instance RunMessage Southside_294 where
   runMessage msg l@(Southside_294 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ DiscardTopOfEncounterDeck iid 3 (attrs.ability 1) (Just $ toTarget attrs)
+      discardTopOfEncounterDeckAndHandle iid (attrs.ability 1) 3 attrs
       pure l
     DiscardedTopOfEncounterDeck iid cards (isSource attrs -> True) (isTarget attrs -> True) -> do
       let powerTreacheries = filterCards (CardWithTrait Power) cards
       act <- selectJust AnyAct
-      pushAll [RemoveBreaches (toTarget attrs) 1, PlaceBreaches (toTarget act) 1]
+      removeBreaches attrs 1
+      placeBreaches act 1
 
       focusCards cards do
         chooseOneM iid do
-          when (null powerTreacheries) $ labeled "Continue" unfocusCards
-          targets powerTreacheries \card -> do
-            unfocusCards
-            drawCard iid card
+          when (null powerTreacheries) $ withI18n $ labeled' "continue" nothing
+          targets powerTreacheries (drawCard iid)
       pure l
     _ -> Southside_294 <$> liftRunMessage msg attrs

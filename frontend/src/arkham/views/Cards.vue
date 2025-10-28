@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import { watch, ref, computed } from 'vue';
 import { fetchCards } from '@/arkham/api';
-import { imgsrc, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
+import { localizeArkhamDBBaseUrl } from '@/arkham/helpers';
 import { useRouter, useRoute, LocationQueryValue } from 'vue-router';
 import * as Arkham from '@/arkham/types/CardDef';
 import CardImage from '@/arkham/components/CardImage.vue';
-
 import sets from '@/arkham/data/sets.json'
 import cycles from '@/arkham/data/cycles.json'
 import { shallowRef } from 'vue';
@@ -87,10 +86,11 @@ watch(() => view.value, (newView) => {
 
 watch(() => allCards.value, () => {
   const language = localStorage.getItem('language') || 'en'
-  if (language === 'en') return;
+  if (language === 'en') return
+  if (!allCards.value) return
   
   for (const card of allCards.value) {
-    const match: ArkhamDBCard = store.getDbCard(card.art)
+    const match: ArkhamDBCard | null = store.getDbCard(card.art)
     if (!match) continue
     
     // Name
@@ -150,10 +150,6 @@ const setCountText = (set: CardSet) => {
   return ` (${implementedCount}/${total})`
 }
 
-const image = (card: Arkham.CardDef) => imgsrc(`cards/${card.art}.avif`)
-
-const backImage = (card: Arkham.CardDef) => imgsrc(`cards/${card.otherSide.replace(/^c/, '')}.avif`)
-
 const cards = computed(() => {
   if (!allCards.value) return []
 
@@ -190,7 +186,6 @@ const cards = computed(() => {
 
     if (cardTypes.length > 0) {
       const sanitizedCardTypes = cardTypes.map((ct) => ct.toLowerCase().trim())
-      console.log(sanitizedCardTypes, cardType(c))
       if (!sanitizedCardTypes.includes(cardType(c).toLowerCase().trim())) return false
     }
 
@@ -361,7 +356,7 @@ const cardSetText = (card: Arkham.CardDef) => {
   var setName = ''
   
   if (language !== 'en') {
-    const match: ArkhamDBCard = store.getDbCard(card.art)
+    const match: ArkhamDBCard | null = store.getDbCard(card.art)
     if (match) setName = match.pack_name
   }
   
@@ -450,7 +445,7 @@ const toggleIncludeEncounter = () => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .container {
   display: flex;
   height: calc(100% - 40px);
@@ -463,8 +458,6 @@ const toggleIncludeEncounter = () => {
   overflow-y: auto;
 }
 .card {
-  width: calc(100% - 20px);
-  max-width: 250px;
   margin: 10px;
   border-radius: 10px;
 }
@@ -472,11 +465,12 @@ const toggleIncludeEncounter = () => {
 .cards {
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(250px, auto));
+  grid-template-columns: repeat(auto-fit,minmax(250px, 1fr));
   padding: 10px;
 
-  a {
-    max-width: fit-content;
+  &:deep(.card-container) {
+    width: unset;
+    max-width: 300px;
   }
 }
 

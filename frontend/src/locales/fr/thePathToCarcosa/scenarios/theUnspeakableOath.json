@@ -1,0 +1,91 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "–1. En cas d'échec, prenez un ennemi au hasard parmi les ennemis _Monstre_ mis de côté et placez-le sous le deck Acte sans le regarder.",
+      "cultist": "–X. X est le nombre d'horreurs sur vous.",
+      "tablet": "–X. X est la valeur occulte de base de votre lieu.",
+      "elderThing": "0. Soit vous prenez un ennemi au hasard parmi les ennemis Monstre mis de côté et vous le placez sous le deck Acte sans le regarder, soit vous échouez automatiquement à ce test à la place."
+    },
+    "hardExpert": {
+      "skull": "Révélez un autre pion. En cas d'échec, prenez un ennemi au hasard parmi les ennemis _Monstre_ mis de côté et placez-le sous le deck Acte sans le regarder. (Limite d'une fois par test.)",
+      "cultist": "–X. X est le nombre d'horreurs sur vous. En cas d'échec, subissez 1 horreur.",
+      "tablet": "–X. X est la valeur occulte de base de votre lieu. En cas d'échec, subissez 1 horreur.",
+      "elderThing": "0. Soit vous prenez un ennemi au hasard parmi les ennemis _Monstre_ mis de côté et vous le placez sous le deck Acte sans le regarder, soit vous échouez automatiquement à ce test à la place."
+    }
+  },
+  "remembered": {
+    "setAFireInTheKitchen": "vous avez mis le feu aux cuisines",
+    "incitedAFightAmongstThePatients": "vous avez provoqué une bagarre entre patients",
+    "distractedTheGuards": "vous avez distrait les gardes",
+    "releasedADangerousPatient": "vous avez libéré un patient dangereux",
+    "knowTheGuardsPatrols": "vous avez pris connaissance des patrouilles de gardes",
+    "recalledTheWayOut": "vous avez retrouvé la sortie",
+    "youTookTheKeysByForce": "vous avez pris les clés par la force"
+  },
+  "intro": {
+    "title": "Scénario IV : Le Serment Indicible",
+    "foundTheWayForward": "Vérifiez votre Carnet de Campagne. Si *les adorateurs du signe ont trouvé la marche à suivre* : Lisez l’_Introduction 1_.",
+    "didNotFindTheWayForward": "Sinon, lisez l’_Introduction 2_.",
+    "intro1": "<p>_Introduction 1_ : « Réveille-toi, Daniel. » Les mots résonnent dans votre esprit tandis que vous faites les cent pas dans cette chambre miteuse en essayant de trouver un sens à ce que vous venez de vivre. Vous vous êtes réveillé en sursaut dans l’après-midi, le corps tremblant et les draps imbibés de sueur. Bien que vous ayez sommeillé plus de huit heures, vous vous sentez encore plus fatigué que la veille. Vous apercevez votre reflet dans le miroir jouxtant la commode. Vos yeux sont rouges et cernés. Vous vous demandez si vous avez réellement dormi.</p><p>Qui peut bien être ce Daniel ? La chambre dont vous avez rêvé ressemblait à une prison, mais cet homme - Daniel - avait l’air cinglé, comme s’il avait totalement perdu l’esprit. Une conclusion s’impose à vous : un asile. Sachant que vous ne trouverez plus le sommeil ici, vous vous dirigez vers l’Asile d’Arkham en espérant que votre intuition soit la bonne.</p><p class='basic right'>Continuez à l’_Introduction 3_.</p>",
+    "intro2": "<p>_Introduction 2_ : Vous avez passé les quelques jours suivants à exploiter les preuves réunies en espérant dénicher des informations concernant Daniel Chesterfield, l’un des machinistes de la précédente représentation du Roi en Jaune. À votre connaissance, il est le seul survivant de la troupe. Les autres - du moins, ceux dont vous avez pu trouver une trace - ont tous disparu ou sont morts peu après la première représentation, de manières diverses et variées dont le seul point commun semble être leur caractère morbide. Accidents insolites. Suicides. Disparitions.</p><p>Il semble que Daniel soit la seule piste qu’il vous reste pour continuer votre enquête. D’après les archives que vous avez trouvées, il aurait été interné à l’Asile d’Arkham il y a de nombreuses années. Il ne semble pas y avoir plus de détails concernant le sort de Daniel. Vous n’êtes pas sûr qu’il soit encore en vie. Peut-être a-t-il été libéré après sa guérison. Vous auriez préféré éviter cela, mais il semble n’y avoir qu’un seul moyen de le découvrir. Vous rassemblez vos affaires et vous vous dirigez vers l’Asile d’Arkham, dans le centre-ville.</p><p class='basic right'>Continuez à l’_Introduction 3_.</p>",
+    "intro3": "<p>_Introduction 3_ : Vous pénétrez dans l’asile et vous vous arrêtez pour parler au réceptionniste, malgré votre impatience à explorer cette maison de fous. Il paraît tout d’abord incrédule lorsque vous lui parlez du Roi en Jaune et de Daniel mais, devant votre insistance, il fouille dans ses tiroirs et finit par en extirper un austère dossier de couleur blanche. À l’intérieur se trouve une foule d’informations concernant les patients de l’asile - rapports médicaux, évaluations psychiatriques, ce genre de choses. Vous reconnaissez quelques visages au fur et à mesure qu’il tourne les pages. « Daniel… Daniel Chesterfield, c’est bien cela ? Il est sous la supervision du docteur Mintz. Mais vous ne pouvez pas le rencontrer : seul le personnel autorisé a accès à son niveau ». Vous insistez et tentez de négocier afin de pénétrer dans l’aile des patients, sachant que Daniel doit détenir la clé pour comprendre ce qui se passe réellement.</p><p>Le réceptionniste vous adresse un sourire compatissant et semble changer d’avis. Il fait signe aux gardes de sécurité derrière vous. « Oh, bien sûr, bien sûr », déclare-t-il avec toute l’honnêteté d’un vendeur à la sauvette. « Je vais vous arranger une entrevue avec le docteur Mintz, ainsi vous pourrez lui parler de Daniel. Ces gentlemen vont vous escorter. » Soulagé d’avoir bientôt les réponses à vos questions, vous suivez les gardes jusqu’à l’aile des patients de l’Asile d’Arkham…</p>",
+    "proceedToConstancesInformation": "Lisez _Les Informations de Constance_.",
+    "otherwise": "Sinon, passez à la _Mise en Place_.",
+    "constancesInformation": "<p>_Les Informations de Constance_ : Vous vous remémorez ce que Constance vous a dit lorsque vous lui avez parlé pendant son satané dîner. Le metteur en scène, Nigel Engram, avait demandé à l’ensemble de l’équipe de prononcer une sorte de serment. Au début, Constance avait pris cela pour la lubie d’un artiste excentrique : une curieuse cérémonie que M. Engram effectuait pour renforcer les liens entre les membres de l’équipe. Elle prétendait d’ailleurs que cela avait fonctionné : après avoir prononcé le serment, Constance et les autres membres de la troupe s’étaient sentis bien plus confiants et pleins d’ardeur. Peut-être Daniel avait-il vécu la même chose durant la précédente représentation du Roi en Jaune. Vous devez lui en toucher un mot.</p><ul><li>Chaque investigateur place la carte du dessus de son deck face cachée dans sa zone de jeu, sans la regarder. Traitez cette carte comme un soutien _Courage_ ayant un coût de 0, aucune icône et 2 de santé mentale. Défaussez cette carte si elle quitte le jeu pour quelque raison que ce soit.</li></ul><div class='basic right'>Continuez à la _Mise en Place_.</div>"
+  },
+  "setup": {
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : *Le Serment Indicible*, *Présent d’Hastur*, *Les Habitants de Carcosa*, *Hallucinations*, *Souillures et Immondices* et *Agents d’Hastur*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/the-unspeakable-oath.png' /><img src='{setImgPath}/hasturs-gift.png' /><img src='{setImgPath}/inhabitants-of-carcosa.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/decay-and-filth.png' /><img src='{setImgPath}/agents-of-hastur.png' /></section>",
+    "monsters": "Mettez chaque ennemi _Monstre_ des sets de rencontre réunis dans une pile séparée. (Il doit y avoir 7 ennemis _Monstre_ au total.)",
+    "lunatics": "Mettez chaque ennemi _Possédé_ des sets de rencontre réunis dans une pile séparée. (Il doit y avoir 7 ennemis _Possédé_ au total.)",
+    "chooseLocations": "Prenez au hasard 1 exemplaire des Couloirs de l’Asile (Aile Est) et 1 exemplaire des Couloirs de l’Asile (Aile Ouest). Retirez ces cartes de la partie. Mettez les Couloirs de l’Asile restants en jeu. Chaque investigateur commence la partie dans le lieu Couloirs de l’Asile de son choix.",
+    "setAside": "Mettez les cartes suivantes de côté, hors jeu : Daniel Chesterfield et tous les exemplaires de la Cellule d’Isolement.",
+    "placeLocations": "Mettez en jeu les lieux suivants : Cantine, Cuisines, Promenade, Jardin, Infirmerie et Couloir du Sous-sol. (Voir ci-contre pour une suggestion de placement.)",
+    "adjustChaosBag": "Selon le niveau de difficulté, ajoutez le pion Chaos suivant à la réserve du Chaos pour le reste de la campagne :<div class='columns'><ul><li>_Facile_ : -2</li><li>_Standard_ : -3</li></ul><ul><li>_Difficile_ : -4</li><li>_Expert_ : -5</li></ul></div>",
+    "act2": {
+      "instructions": "Vérifiez votre Carnet de Campagne. Selon les circonstances suivantes, une version différente de l’Acte 2 sera utilisée dans ce scénario. Chaque autre version de l’Acte 2 est retirée de la partie.",
+      "v1": "Si *vous avez pris la broche en onyx*, utilisez l’Acte 2 - « Les Vrais Méchants » (v. I)",
+      "v2": "Sinon, utilisez l’Acte 2 - « Les Vrais Méchants » (v. II)"
+    }
+  },
+  "tooltips": {
+    "noAsylum": {
+      "resign": "Enfin, une issue !"
+    }
+  },
+  "label": {
+    "cloudedMemory": {
+      "forget": "Oublier quelque chose dont un investigateur « s'est souvenu » grâce à une capacité de lieu. (*Ce n'est plus vrai*)",
+      "chooseForget": "Oublier quelque chose dont un investigateur « s'est souvenu » grâce à une capacité de lieu. (*Ce n'est plus vrai*)",
+      "horror": "Subir 1 horreur et les Souvenirs Nébuleux gagnent Renfort."
+
+    },
+    "infirmary": {
+      "healDamage": "Soignez 1 dégât et subissez 1 horreur directe",
+      "healHorror": "Soignez 1 horreur et subissez un dégât direct"
+    },
+    "wallsClosingIn": {
+      "chooseEnemy": "Prendre un ennemi au hasard parmi les ennemis _Monstre_ mis de côté et le placer sous le deck Acte sans le regarder"
+    },
+    "arkhamAsylum": {
+      "youKnockHerOverAndGrabTheKeys": "Vous l’assommez et lui prenez les clés"
+    }
+  },
+  "resolutions": {
+    "defeated": {
+      "title": "Investigateur Vaincu",
+      "body": "<div class='resolution'><p class='basic'>_Avant de résoudre n’importe quelle autre conclusion, si au moins 1 investigateur a été vaincu_: Les investigateurs vaincus lisent d’abord _Investigateur Vaincu_.</p><p>_Investigateur Vaincu_ : « Docteur Mintz, le patient a été traité et est maintenant prêt à vous voir. » L’infirmière Heather ouvrit le classeur sur le bureau et prit un moment pour passer en revue les dossiers des patients.</p><p>« Des changements dans l’état du patient ? », demanda le docteur d’une voix monotone. Simple habitude. Tous deux savaient que les patients ne guérissaient pas.</p><p>« Aucun. Les hallucinations du patient subsistent. Il demande à voir le Directeur et maintient qu’il n’était ici qu’un simple visiteur. Il divague également à propos de la pièce de théâtre qui a été jouée l’autre jour : Le Roi en Jaune. »</p><p>« Et ses autres crimes ? L’incident au théâtre ? Les événements du 1452 Atlantic Avenue ? »</p><p>« Il croit avoir été attaqué et s’être simplement défendu. » Sa voix était pleine de compassion. Comment quelqu’un avait-il pu sombrer si vite dans la folie ? Le dossier du patient ne mentionnait aucun antécédent d’instabilité mentale. « Comment expliquer cela, docteur ? »</p><p>« Qui peut le dire ? » Le docteur Mintz poussa un soupir et se leva, attrapant le dossier sur son bureau. « Mon travail n’est pas de comprendre, mais de soigner. Peut-être que mes traitements expérimentaux fonctionneront sur celui-là. » L’infirmière tressaillit et réprima un frisson. Elle savait comment finissaient ces traitements, et elle doutait que quoi que ce soit fonctionne.</p><ul><li>Chaque investigateur qui a été vaincu devient _dément_.</li><li>S’il n’y a plus assez d’investigateurs pour continuer la campagne, celle-ci est terminée et les joueurs ont perdu.</li><li>Si une autre conclusion a été atteinte, les investigateurs restants lisent cette conclusion.</li><li>Si aucune conclusion n’a été atteinte (tous les investigateurs ont été vaincus) : lisez la _Conclusion 1_.</li></ul></div>"
+    },
+    "resolution1": {
+      "title": "Conclusion 1",
+      "body": "<div class='resolution'><p>_Conclusion 1_ : …Et ainsi s’acheva la folie du Roi en Jaune.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *le Roi a réclamé ses victimes*.</li><li>S’il n’y a plus assez d’investigateurs pour continuer la campagne, celle-ci est terminée et les joueurs ont perdu. Sinon, la campagne continue. (Chaque joueur dont l’investigateur est devenu dément doit choisir un nouvel investigateur dans la réserve d’investigateurs disponibles.)</li><li>Vérifiez votre Carnet de Campagne. Si *vous avez pris la broche en onyx*, choisissez un nouvel investigateur qui récupère la broche. Cet investigateur doit inclure la faiblesse Broche d’Onyx Noir dans son deck. Cette carte ne compte pas dans la Taille du Deck de l’investigateur.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li><li>Si Constance Dumaine (*Un Peu Trop Sociable*) est dans la pile de victoire, inscrivez son nom dans votre Carnet de Campagne sous la mention « Personnalités Tuées ».</li><li>Retirez tous les pions {'{'}cultist{'}'}, {'{'}tablet{'}'} et {'{'}elderThing{'}'} de la réserve du Chaos. Ensuite, ajoutez 2 pions {'{'}cultist{'}'} dans la réserve du Chaos.</li><li>Ignorez l’_Interlude II : Âme Perdue_ et passez directement au _Scénario V : Le Spectre de la Vérité_.</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Conclusion 2",
+      "body": "<div class='resolution'><p>_Conclusion 2 (chaque investigateur vaincu doit d’abord lire _Investigateur Vaincu_) : Vous êtes cerné par les aides-soignants et les gardes de sécurité. Vous n’avez d’autre choix que de vous battre pour vous frayer un chemin vers la liberté. Tandis que vous vous ruez vers la sortie, plusieurs patients voient là une opportunité et se mettent à attaquer les gardes avec une folie furieuse. L’infirmière Heather hurle et bat en retraite, et vous profitez de tout ce tapage pour vous enfuir. Vous êtes couvert de bleus mais de nouveau libre. Vous mettrez un moment à vous remettre de vos blessures, mais vous n’avez pas le temps de vous appesantir là-dessus.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *les investigateurs ont été attaqués en fuyant l’Asile*.</li><li>Chaque investigateur subit 1 traumatisme physique en affrontant les gardes de l’Asile.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li><li>Si Constance Dumaine (*Un Peu Trop Sociable*) est dans la pile de victoire, inscrivez son nom dans votre Carnet de Campagne sous la mention « Personnalités Tuées ».</li><li>Retirez tous les pions {'{'}cultist{'}'}, {'{'}tablet{'}'} et {'{'}elderThing{'}'} de la réserve du Chaos. Ensuite, ajoutez 2 pions {'{'}tablet{'}'} dans la réserve du Chaos.</li><li>Continuez à l’_Interlude II : Âme Perdue_.</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Conclusion 3",
+      "body": "<div class='resolution'><p>_Conclusion 3 (chaque investigateur vaincu doit d’abord lire _Investigateur Vaincu_) : Entre la distraction du personnel de l’asile et les patients qui courent dans tous les sens, vous parvenez à vous éclipser sans être remarqué. Vous vous enfoncez profondément dans le jardin derrière l’asile, où une immense clôture couverte de fil barbelé est tout ce qui vous sépare du monde extérieur. Le temps presse, et vous devez fuir le plus loin possible avant que les gardes ne reviennent et ne vous repèrent. Utilisant une camisole de force trouvée à l’intérieur pour couvrir les barbelés, vous escaladez prestement la clôture et détalez à toutes jambes une fois de l’autre côté.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *les investigateurs se sont échappés de l’Asile*.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li><li>Si Constance Dumaine (Un Peu Trop Sociable) est dans la pile de victoire, inscrivez son nom dans votre Carnet de Campagne sous la mention « Personnalités Tuées ».</li><li>Retirez tous les pions {'{'}cultist{'}'}, {'{'}tablet{'}'} et {'{'}elderThing{'}'} de la réserve du Chaos. Ensuite, ajoutez 2 pions {'{'}elderThing{'}'} dans la réserve du Chaos.</li><li>Continuez à l’_Interlude II : Âme Perdue_.</li></ul></div>"
+    }
+  }
+}

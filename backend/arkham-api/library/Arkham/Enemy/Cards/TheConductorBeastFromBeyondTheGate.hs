@@ -47,5 +47,5 @@ instance RunMessage TheConductorBeastFromBeyondTheGate where
       pure e
     UseThisAbility iid (isSource attrs -> True) 3 -> do
       push $ InvestigatorDrawEnemy iid attrs.id
-      pure e
+      pure $ updateAttrs e (defeatedL .~ False)
     _ -> TheConductorBeastFromBeyondTheGate <$> liftRunMessage msg attrs

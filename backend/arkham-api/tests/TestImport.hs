@@ -1,6 +1,8 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module TestImport (
   module X,
@@ -90,19 +92,23 @@ import Arkham.Scenario.Types
 import Arkham.SkillTest.Type
 import Arkham.Timing qualified as Timing
 import Arkham.Token
+import Arkham.Tracing
 import Arkham.Trait (Trait (Elite))
+import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.State
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
 import GHC.OverloadedLabels
 import GHC.TypeLits
+import OpenTelemetry.Trace qualified as Trace
+import OpenTelemetry.Trace.Monad (MonadTracer (..), inSpan')
 import System.Random (StdGen, mkStdGen)
 
 runMessages :: TestAppT ()
 runMessages = do
   logger <- gets testLogger
   env <- get
-  runReaderT (Game.runMessages logger) env
+  runReaderT (Game.runMessages "TEST" logger) env
 
 pushAndRun :: Message -> TestAppT ()
 pushAndRun msg = push msg >> runMessages
@@ -156,6 +162,7 @@ data TestApp = TestApp
   , testLogger :: Maybe (Message -> IO ())
   , testGameLogger :: ClientMessage -> IO ()
   , debugLevel :: IORef Int
+  , testTracer :: Trace.Tracer
   }
 
 cloneTestApp :: TestApp -> IO TestApp
@@ -171,17 +178,39 @@ cloneTestApp testApp = do
       , testLogger = testLogger testApp
       , testGameLogger = testGameLogger testApp
       , debugLevel = debugLevel testApp
+      , testTracer = testTracer testApp
       }
 
 newtype TestAppT a = TestAppT {unTestAppT :: StateT TestApp IO a}
   deriving newtype
-    (MonadState TestApp, Functor, Applicative, Monad, MonadFail, MonadIO, MonadRandom, MonadUnliftIO)
+    ( MonadState TestApp
+    , Functor
+    , Applicative
+    , Monad
+    , MonadFail
+    , MonadIO
+    , MonadRandom
+    , MonadUnliftIO
+    , MonadMask
+    , MonadCatch
+    , MonadThrow
+    )
 
 -- Bad instance, only exists for timeout functionality
 instance MonadUnliftIO m => MonadUnliftIO (StateT TestApp m) where
   withRunInIO inner =
     get >>= \st -> StateT $ \_ ->
       withRunInIO $ \runInIO -> (,st) <$> inner (runInIO . flip evalStateT st)
+
+instance Tracing TestAppT where
+  type SpanType TestAppT = Trace.Span
+  type SpanArgs TestAppT = Trace.SpanArguments
+  defaultSpanArgs = Trace.defaultSpanArguments
+  addAttribute = Trace.addAttribute
+  doTrace name args action = inSpan' name args action
+
+instance MonadTracer TestAppT where
+  getTracer = gets testTracer
 
 instance HasDebugLevel TestAppT where
   getDebugLevel = liftIO . readIORef =<< gets debugLevel
@@ -190,6 +219,7 @@ instance HasGame TestAppT where
   getGame = do
     env <- get
     atomicModifyIORef (game env) (\x -> (x, x))
+  getCache = GameCache \_ build -> build
 
 instance CardGen TestAppT where
   genEncounterCard a = do
@@ -436,7 +466,7 @@ instance UpdateField "revealed" Location Bool where
   updateField revealed' = pure . overAttrs (\attrs -> attrs {locationRevealed = revealed'})
 
 instance UpdateField "shroud" Location Int where
-  updateField shroud = pure . overAttrs (\attrs -> attrs {locationShroud = Just shroud})
+  updateField shroud = pure . overAttrs (\attrs -> attrs {locationShroud = Just (Static shroud)})
 
 instance UpdateField "damage" Investigator Int where
   updateField damage = pure . overAttrs (Arkham.Investigator.Types.tokensL %~ setTokens #damage damage)
@@ -751,6 +781,13 @@ newtype ArkhamGameExportData = ArkhamGameExportData {currentData :: Game}
   deriving stock Generic
   deriving anyclass FromJSON
 
+instance Tracing IO where
+  type SpanType IO = ()
+  type SpanArgs IO = ()
+  defaultSpanArgs = ()
+  addAttribute _ _ _ = pure ()
+  doTrace _ _ action = action ()
+
 gameTestFromFile :: FilePath -> (Investigator -> TestAppT ()) -> IO ()
 gameTestFromFile fp body = do
   export <- fromJustNote "failed to parse file" <$> decodeFileStrict' ("tests/" <> fp)
@@ -765,7 +802,9 @@ gameTestFromFile fp body = do
   queueRef <- newQueue []
   genRef <- newIORef $ mkStdGen (gameSeed g)
   debugLevelRef <- newIORef 0
-  let testApp = TestApp gameRef queueRef genRef Nothing (pure . const ()) debugLevelRef
+  provider <- Trace.initializeGlobalTracerProvider
+  let tracer = Trace.makeTracer provider $(Trace.detectInstrumentationLibrary) Trace.tracerOptions
+  let testApp = TestApp gameRef queueRef genRef Nothing (pure . const ()) debugLevelRef tracer
   runReaderT (overGameM preloadModifiers) testApp
   runTestApp testApp (body investigator)
 
@@ -777,7 +816,9 @@ gameTestWith investigatorDef body = do
   queueRef <- newQueue []
   genRef <- newIORef $ mkStdGen (gameSeed g)
   debugLevelRef <- newIORef 0
-  let testApp = TestApp gameRef queueRef genRef Nothing (pure . const ()) debugLevelRef
+  provider <- Trace.initializeGlobalTracerProvider
+  let tracer = Trace.makeTracer provider $(Trace.detectInstrumentationLibrary) Trace.tracerOptions
+  let testApp = TestApp gameRef queueRef genRef Nothing (pure . const ()) debugLevelRef tracer
   runReaderT (overGameM preloadModifiers) testApp
   runTestApp testApp (body investigator)
 
@@ -852,8 +893,10 @@ newGame investigator = do
     queueRef <- Queue <$> newIORef []
     genRef <- newIORef $ mkStdGen (gameSeed game)
     debugLevelRef <- newIORef 0
+    provider <- Trace.initializeGlobalTracerProvider
+    let tracer = Trace.makeTracer provider $(Trace.detectInstrumentationLibrary) Trace.tracerOptions
 
-    runTestApp (TestApp gameRef queueRef genRef Nothing (pure . const ()) debugLevelRef) $ do
+    runTestApp (TestApp gameRef queueRef genRef Nothing (pure . const ()) debugLevelRef tracer) $ do
       a1 <- testAgenda "01105" id
       let s'' = overAttrs (agendaStackL .~ IntMap.fromList [(1, [toCard a1, toCard a1])]) scenario'
       pure $ game {gameMode = That s''}

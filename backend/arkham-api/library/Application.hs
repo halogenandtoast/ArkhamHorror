@@ -24,6 +24,7 @@ module Application (
 ) where
 
 import Config
+import Control.Concurrent.MVar (newMVar)
 import Control.Monad.Logger (liftLoc, runLoggingT)
 import Data.Bugsnag.Settings qualified as Bugsnag
 import Data.CaseInsensitive (mk)
@@ -44,7 +45,7 @@ import Database.Redis (
   parseConnectInfo,
   pubSubForever,
  )
-import Import hiding (sendResponse)
+import Import hiding (newMVar, sendResponse)
 import Language.Haskell.TH.Syntax (qLocation)
 import Network.HTTP.Client.TLS (getGlobalManager)
 import Network.HTTP.Types (ResponseHeaders, status200)
@@ -71,6 +72,7 @@ import Network.Wai.Middleware.RequestLogger (
   mkRequestLogger,
   outputFormat,
  )
+import OpenTelemetry.Trace
 import System.Log.FastLogger (defaultBufSize, newStdoutLoggerSet, toLogStr)
 import Text.Regex.Posix ((=~))
 
@@ -82,6 +84,7 @@ import Api.Handler.Arkham.Decks
 import Api.Handler.Arkham.Game.Bug
 import Api.Handler.Arkham.Game.Debug
 import Api.Handler.Arkham.Games
+import Api.Handler.Arkham.Games.Admin
 import Api.Handler.Arkham.Investigators
 import Api.Handler.Arkham.Old
 import Api.Handler.Arkham.PendingGames
@@ -89,10 +92,10 @@ import Api.Handler.Arkham.Replay
 import Api.Handler.Arkham.Undo
 import Base.Api.Handler.Authentication
 import Base.Api.Handler.CurrentUser
+import Base.Api.Handler.Notifications
 import Base.Api.Handler.PasswordReset
 import Base.Api.Handler.Registration
 import Base.Api.Handler.Settings
-import Base.Api.Handler.Notifications
 import Control.Concurrent (forkIO)
 import Handler.Health
 
@@ -114,7 +117,7 @@ makeFoundation appSettings = do
   appLogger <- newStdoutLoggerSet defaultBufSize >>= makeYesodLogger
   let appBugsnag = Bugsnag.defaultSettings (appBugsnagApiKey appSettings)
 
-  appGameRooms <- newIORef mempty
+  appGameRooms <- newMVar mempty
 
   appMessageBroker <- case appRedisConnectionInfo appSettings of
     Nothing -> pure WebSocketBroker
@@ -123,6 +126,9 @@ makeFoundation appSettings = do
       ctrl <- newPubSubController [] []
       _ <- forkIO $ pubSubForever conn ctrl (pure ())
       pure $ RedisBroker conn ctrl
+
+  provider <- initializeGlobalTracerProvider
+  let appTracer = makeTracer provider $(detectInstrumentationLibrary) tracerOptions
 
   -- We need a log function to create a connection pool. We need a connection
   -- pool to create our foundation. And we need our foundation to get a

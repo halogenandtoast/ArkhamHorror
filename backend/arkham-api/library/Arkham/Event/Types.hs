@@ -125,6 +125,12 @@ instance HasField "use" EventAttrs (UseType -> Int) where
 instance HasField "ready" EventAttrs Bool where
   getField = not . eventExhausted
 
+instance HasField "playedFrom" EventAttrs Zone where
+  getField = eventPlayedFrom
+
+instance HasField "playedFromDiscard" EventAttrs Bool where
+  getField = (== FromDiscard) . eventPlayedFrom
+
 instance HasField "taboo" EventAttrs (Maybe TabooList) where
   getField = eventTaboo
 
@@ -164,9 +170,15 @@ instance HasField "ability" EventAttrs (Int -> Source) where
 instance HasField "doom" EventAttrs Int where
   getField = countTokens Doom . eventTokens
 
+instance HasField "target" EventAttrs (Maybe Target) where
+  getField = eventTarget
+
 instance HasField "cardId" EventAttrs CardId where
   getField = toCardId
   {-# INLINE getField #-}
+
+instance HasField "sealed" EventAttrs [ChaosToken] where
+  getField = eventSealedChaosTokens
 
 instance HasCardCode EventAttrs where
   toCardCode = eventCardCode
@@ -181,6 +193,8 @@ instance IsCard EventAttrs where
   toCardId = eventCardId
   toCardOwner = Just . eventOwner
   toCustomizations = eventCustomizations
+  toTabooList = eventTaboo
+  toMutated = eventMutated
 
 eventWith
   :: (EventAttrs -> a)

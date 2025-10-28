@@ -21,7 +21,7 @@ data DefeatedEnemyAttrs = DefeatedEnemyAttrs
   { defeatedEnemyAttrs :: EnemyAttrs
   , defeatedEnemyHealth :: Int
   }
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (FromJSON, ToJSON)
 
 instance Entity DefeatedEnemyAttrs where
@@ -48,8 +48,9 @@ data History = History
   , historySuccessfulEvasions :: Int
   , historySuccessfulInvestigations :: Int
   , historyEnemiesAttackedBy :: [EnemyId]
+  , historyActionsSpent :: Int
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 data HistoryField k where
   HistoryTreacheriesDrawn :: HistoryField [CardCode]
@@ -68,9 +69,11 @@ data HistoryField k where
   HistorySuccessfulAttacks :: HistoryField Int
   HistorySuccessfulEvasions :: HistoryField Int
   HistorySuccessfulInvestigations :: HistoryField Int
+  HistoryActionsSpent :: HistoryField Int
 
 deriving stock instance Show (HistoryField k)
 deriving stock instance Eq (HistoryField k)
+deriving stock instance Ord (HistoryField k)
 
 viewHistoryField :: HistoryField k -> History -> k
 viewHistoryField = \case
@@ -90,13 +93,14 @@ viewHistoryField = \case
   HistorySuccessfulAttacks -> historySuccessfulAttacks
   HistorySuccessfulEvasions -> historySuccessfulEvasions
   HistorySuccessfulInvestigations -> historySuccessfulInvestigations
+  HistoryActionsSpent -> historyActionsSpent
 
 instance ToJSON (HistoryField k) where
   toJSON = toJSON . show
 
 data SomeHistoryField where
   SomeHistoryField
-    :: (Typeable k, Show k, Eq k, ToJSON k, FromJSON k) => HistoryField k -> SomeHistoryField
+    :: (Typeable k, Show k, Ord k, Eq k, ToJSON k, FromJSON k) => HistoryField k -> SomeHistoryField
 
 instance FromJSON SomeHistoryField where
   parseJSON = withText "SomeHistoryField" $ \t -> case t of
@@ -116,10 +120,11 @@ instance FromJSON SomeHistoryField where
     "HistorySuccessfulEvasions" -> pure $ SomeHistoryField HistorySuccessfulEvasions
     "HistorySuccessfulInvestigations" -> pure $ SomeHistoryField HistorySuccessfulInvestigations
     "HistoryEnemiesDrawn" -> pure $ SomeHistoryField HistoryEnemiesDrawn
+    "HistoryActionsSpent" -> pure $ SomeHistoryField HistoryActionsSpent
     _ -> fail $ "Invalid HistoryField: " <> T.unpack t
 
 data HistoryItem where
-  HistoryItem :: (Show k, Eq k, ToJSON k, Typeable k) => HistoryField k -> k -> HistoryItem
+  HistoryItem :: (Show k, Ord k, Eq k, ToJSON k, Typeable k) => HistoryField k -> k -> HistoryItem
 
 deriving stock instance Show HistoryItem
 
@@ -132,6 +137,14 @@ instance Eq HistoryItem where
   (HistoryItem (fld1 :: HistoryField k1) k1) == (HistoryItem (fld2 :: HistoryField k2) k2) = case eqT @k1 @k2 of
     Just Refl -> fld1 == fld2 && k1 == k2
     Nothing -> False
+
+instance Ord HistoryItem where
+  compare (HistoryItem (fld1 :: HistoryField k1) k1) (HistoryItem (fld2 :: HistoryField k2) k2) =
+    case compare (show fld1) (show fld2) of
+      EQ -> case eqT @k1 @k2 of
+        Just Refl -> compare k1 k2
+        Nothing -> error $ "Cannot compare HistoryItems with different types: " <> show fld1 <> " and " <> show fld2
+      other -> other
 
 instance ToJSON HistoryItem where
   toJSON (HistoryItem fld k) = object ["field" .= fld, "value" .= k]
@@ -167,6 +180,7 @@ insertHistoryItem (HistoryItem fld k) h =
     HistorySuccessfulAttacks -> h {historySuccessfulAttacks = historySuccessfulAttacks h + k}
     HistorySuccessfulEvasions -> h {historySuccessfulEvasions = historySuccessfulEvasions h + k}
     HistorySuccessfulInvestigations -> h {historySuccessfulInvestigations = historySuccessfulInvestigations h + k}
+    HistoryActionsSpent -> h {historyActionsSpent = historyActionsSpent h + k}
 
 instance Semigroup History where
   h <> g =
@@ -189,10 +203,11 @@ instance Semigroup History where
       , historySuccessfulAttacks = historySuccessfulAttacks h + historySuccessfulAttacks g
       , historySuccessfulEvasions = historySuccessfulEvasions h + historySuccessfulEvasions g
       , historySuccessfulInvestigations = historySuccessfulInvestigations h + historySuccessfulInvestigations g
+      , historyActionsSpent = historyActionsSpent h + historyActionsSpent g
       }
 
 instance Monoid History where
-  mempty = History [] [] [] [] False mempty False 0 [] [] mempty 0 0 0 0 []
+  mempty = History [] [] [] [] False mempty False 0 [] [] mempty 0 0 0 0 [] 0
 
 insertHistory
   :: InvestigatorId
@@ -222,4 +237,5 @@ instance FromJSON History where
     historySuccessfulEvasions <- o .:? "historySuccessfulEvasions" .!= 0
     historySuccessfulInvestigations <- o .:? "historySuccessfulInvestigations" .!= 0
     historyEnemiesDrawn <- o .:? "historyEnemiesDrawn" .!= []
+    historyActionsSpent <- o .:? "historyActionsSpent" .!= 0
     pure History {..}

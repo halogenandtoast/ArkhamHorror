@@ -2,14 +2,15 @@
 
 module Arkham.Entities where
 
-import Arkham.Prelude
-
 import Arkham.Act
 import Arkham.Agenda ()
 import Arkham.Agenda.Types (Agenda)
 import Arkham.Asset (createAsset)
 import Arkham.Asset.Types (Asset)
 import Arkham.Campaign ()
+import Arkham.Campaigns.TheScarletKeys.Concealed.Runner ()
+import Arkham.Campaigns.TheScarletKeys.Concealed
+import Arkham.Campaigns.TheScarletKeys.Keys
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
@@ -21,17 +22,21 @@ import Arkham.Enemy ()
 import Arkham.Enemy.Types (Enemy)
 import Arkham.Event
 import Arkham.Event.Types (Event)
+import Arkham.GameT
 import Arkham.Id
 import Arkham.Investigator ()
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Json
 import Arkham.Location
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Scenario ()
 import Arkham.Skill (createSkill)
 import Arkham.Skill.Types (Skill)
+import Arkham.Source
 import Arkham.Story
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Treachery
 import Arkham.Treachery.Types (Treachery)
 import Arkham.Zone
@@ -53,6 +58,8 @@ data Entities = Entities
   , entitiesEffects :: EntityMap Effect
   , entitiesSkills :: EntityMap Skill
   , entitiesStories :: EntityMap Story
+  , entitiesScarletKeys :: EntityMap ScarletKey
+  , entitiesConcealed :: EntityMap ConcealedCard
   }
   deriving stock (Eq, Show, Generic, Data)
 
@@ -69,7 +76,21 @@ instance ToJSON Entities where
   toJSON = genericToJSON $ aesonOptions $ Just "entities"
 
 instance FromJSON Entities where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "entities"
+  parseJSON = withObject "Entities" $ \o -> do
+    entitiesLocations <- o .: "locations"
+    entitiesInvestigators <- o .: "investigators"
+    entitiesEnemies <- o .:? "enemies" .!= mempty
+    entitiesAssets <- o .:? "assets" .!= mempty
+    entitiesActs <- o .:? "acts" .!= mempty
+    entitiesAgendas <- o .:? "agendas" .!= mempty
+    entitiesTreacheries <- o .:? "treacheries" .!= mempty
+    entitiesEvents <- o .:? "events" .!= mempty
+    entitiesEffects <- o .:? "effects" .!= mempty
+    entitiesSkills <- o .:? "skills" .!= mempty
+    entitiesStories <- o .:? "stories" .!= mempty
+    entitiesScarletKeys <- o .:? "scarletKeys" .!= mempty
+    entitiesConcealed <- o .:? "concealed" .!= mempty
+    pure Entities {..}
 
 clearRemovedEntities :: Entities -> Entities
 clearRemovedEntities entities =
@@ -92,6 +113,8 @@ defaultEntities =
     , entitiesEffects = mempty
     , entitiesSkills = mempty
     , entitiesStories = mempty
+    , entitiesScarletKeys = mempty
+    , entitiesConcealed = mempty
     }
 
 instance Monoid Entities where
@@ -111,6 +134,8 @@ instance Semigroup Entities where
       , entitiesEffects = entitiesEffects a <> entitiesEffects b
       , entitiesSkills = entitiesSkills a <> entitiesSkills b
       , entitiesStories = entitiesStories a <> entitiesStories b
+      , entitiesScarletKeys = entitiesScarletKeys a <> entitiesScarletKeys b
+      , entitiesConcealed = entitiesConcealed a <> entitiesConcealed b
       }
 
 instance HasAbilities Entities where
@@ -126,14 +151,19 @@ instance HasAbilities Entities where
       <> concatMap getAbilities (toList entitiesEffects)
       <> concatMap getAbilities (toList entitiesSkills)
       <> concatMap getAbilities (toList entitiesStories)
+      <> concatMap getAbilities (toList entitiesScarletKeys)
+      <> concatMap getAbilities (toList entitiesConcealed)
 
 data SomeEntity where
-  SomeEntity :: (Entity a, HasModifiersFor a, Targetable a, Show a) => a -> SomeEntity
+  SomeEntity :: (Entity a, HasModifiersFor a, Targetable a, Sourceable a, Show a) => a -> SomeEntity
 
 deriving stock instance Show SomeEntity
 
 instance Targetable SomeEntity where
   toTarget (SomeEntity e) = toTarget e
+
+instance Sourceable SomeEntity where
+  toSource (SomeEntity e) = toSource e
 
 instance HasModifiersFor SomeEntity where
   getModifiersFor (SomeEntity e) = getModifiersFor e
@@ -157,13 +187,15 @@ toSomeEntities Entities {..} =
     <> map SomeEntity (toList entitiesEffects)
     <> map SomeEntity (toList entitiesSkills)
     <> map SomeEntity (toList entitiesStories)
+    <> map SomeEntity (toList entitiesScarletKeys)
+    <> map SomeEntity (toList entitiesConcealed)
 
 makeLensesWith suffixedFields ''Entities
 
 -- Entity id generation uses the card id, this is only necessary for entities with non in-play effects
 addCardEntityWith
-  :: InvestigatorId -> (forall a. Typeable a => a -> a) -> Entities -> Card -> Entities
-addCardEntityWith i f e card = case card of
+  :: InvestigatorId -> (forall a. Typeable a => a -> a) -> UUID -> Entities -> Card -> Entities
+addCardEntityWith i f uuid e card = case card of
   PlayerCard pc -> case toCardType pc of
     EventType ->
       let
@@ -197,10 +229,8 @@ addCardEntityWith i f e card = case card of
         treachery = f $ createTreachery card i treacheryId
        in
         e & treacheriesL %~ insertMap (toId treachery) treachery
-    _ -> error "Unhandled"
+    _ -> error "Unhandled AddCardEntityWith for encounter card"
   VengeanceCard _ -> error "vengeance card"
- where
-  uuid = unsafeCardIdToUUID (toCardId card)
 
 addEntity :: forall a. Typeable a => a -> Entities -> Entities
 addEntity a e =
@@ -209,15 +239,22 @@ addEntity a e =
     | otherwise -> e
 
 instance RunMessage Entities where
-  runMessage msg entities =
-    traverseOf (actsL . traverse) (runMessage msg) entities
-      >>= traverseOf (agendasL . traverse) (runMessage msg)
-      >>= traverseOf (treacheriesL . traverse) (runMessage msg)
-      >>= traverseOf (eventsL . traverse) (runMessage msg)
-      >>= traverseOf (locationsL . traverse) (runMessage msg)
-      >>= traverseOf (enemiesL . traverse) (runMessage msg)
-      >>= traverseOf (effectsL . traverse) (runMessage msg)
-      >>= traverseOf (assetsL . traverse) (runMessage msg)
-      >>= traverseOf (skillsL . traverse) (runMessage msg)
-      >>= traverseOf (storiesL . traverse) (runMessage msg)
-      >>= traverseOf (investigatorsL . traverse) (runMessage msg)
+  runMessage msg entities = withSpan_ "Entities.runMessage" do
+    let
+      runEntities :: (a ~ RunType a, RunMessage a) => Lens' Entities (EntityMap a) -> GameT (EntityMap a)
+      runEntities lensL = traverse (runMessage msg) (entities ^. lensL)
+
+    entitiesActs <- runEntities actsL
+    entitiesAgendas <- runEntities agendasL
+    entitiesTreacheries <- runEntities treacheriesL
+    entitiesEvents <- runEntities eventsL
+    entitiesLocations <- runEntities locationsL
+    entitiesEnemies <- runEntities enemiesL
+    entitiesEffects <- runEntities effectsL
+    entitiesAssets <- runEntities assetsL
+    entitiesSkills <- runEntities skillsL
+    entitiesStories <- runEntities storiesL
+    entitiesInvestigators <- runEntities investigatorsL
+    entitiesConcealed <- runEntities concealedL
+    entitiesScarletKeys <- runEntities scarletKeysL
+    pure Entities {..}

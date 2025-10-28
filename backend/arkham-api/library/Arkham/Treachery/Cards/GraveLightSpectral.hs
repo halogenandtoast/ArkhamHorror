@@ -1,16 +1,9 @@
-module Arkham.Treachery.Cards.GraveLightSpectral (
-  graveLightSpectral,
-  GraveLightSpectral (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.GraveLightSpectral (graveLightSpectral) where
 
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Deck
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype GraveLightSpectral = GraveLightSpectral TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -20,14 +13,12 @@ graveLightSpectral :: TreacheryCard GraveLightSpectral
 graveLightSpectral = treachery GraveLightSpectral Cards.graveLightSpectral
 
 instance RunMessage GraveLightSpectral where
-  runMessage msg t@(GraveLightSpectral attrs) = case msg of
+  runMessage msg t@(GraveLightSpectral attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
+      assignDamage iid attrs 2
+      removeTreachery attrs
       let graveLight = lookupCard Cards.graveLight (toCardId attrs)
-      pushAll
-        [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
-        , RemoveTreachery (toId attrs)
-        , ReplaceCard (toCardId attrs) graveLight
-        , ShuffleCardsIntoDeck EncounterDeck [graveLight]
-        ]
+      replaceCard (toCardId attrs) graveLight
+      shuffleCardsIntoDeck EncounterDeck [graveLight]
       pure t
-    _ -> GraveLightSpectral <$> runMessage msg attrs
+    _ -> GraveLightSpectral <$> liftRunMessage msg attrs

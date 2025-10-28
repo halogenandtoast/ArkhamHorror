@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.JimsTrumpetAdvanced (jimsTrumpetAdvanced) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
+import Arkham.ForMovement
 import Arkham.Matcher
 
 newtype JimsTrumpetAdvanced = JimsTrumpetAdvanced AssetAttrs
@@ -18,8 +19,12 @@ instance HasAbilities JimsTrumpetAdvanced where
         x
         1
         ( oneOf
-            [ exists (HealableInvestigator (toSource x) #horror $ at_ (oneOf [YourLocation, ConnectedLocation]))
-            , exists (HealableAsset (toSource x) #horror $ at_ (oneOf [YourLocation, ConnectedLocation]))
+            [ exists
+                ( HealableInvestigator (toSource x) #horror
+                    $ at_ (oneOf [YourLocation, ConnectedLocation NotForMovement])
+                )
+            , exists
+                (HealableAsset (toSource x) #horror $ at_ (oneOf [YourLocation, ConnectedLocation NotForMovement]))
             ]
             <> DuringSkillTest (YourSkillTest AnySkillTest)
         )
@@ -30,7 +35,7 @@ instance RunMessage JimsTrumpetAdvanced where
   runMessage msg a@(JimsTrumpetAdvanced attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       selectOneToHandle iid (attrs.ability 1)
-        $ oneOf [locationWithInvestigator iid, ConnectedFrom (locationWithInvestigator iid)]
+        $ oneOf [locationWithInvestigator iid, connectedFrom (locationWithInvestigator iid)]
         <> oneOf
           [ LocationWithInvestigator (HealableInvestigator (attrs.ability 1) #horror Anyone)
           , LocationWithAsset (HealableAsset (attrs.ability 1) #horror AnyAsset)

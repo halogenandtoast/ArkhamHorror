@@ -1,14 +1,11 @@
-module Arkham.Asset.Assets.AncientStoneKnowledgeOfTheElders4 (
-  ancientStoneKnowledgeOfTheElders4,
-  AncientStoneKnowledgeOfTheElders4 (..),
-) where
+module Arkham.Asset.Assets.AncientStoneKnowledgeOfTheElders4 (ancientStoneKnowledgeOfTheElders4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.DamageEffect
 import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Message.Lifted.Choose
 
 newtype AncientStoneKnowledgeOfTheElders4 = AncientStoneKnowledgeOfTheElders4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -20,14 +17,13 @@ ancientStoneKnowledgeOfTheElders4 = asset AncientStoneKnowledgeOfTheElders4 Card
 
 instance HasAbilities AncientStoneKnowledgeOfTheElders4 where
   getAbilities (AncientStoneKnowledgeOfTheElders4 a) =
-    [ controlledAbility a 1 (exists (EnemyAt YourLocation) <> CanDealDamage)
-        $ ReactionAbility (DrawsCards #when You AnyCards AnyValue) (DynamicUseCost (be a) Secret DrawnCardsValue)
+    [ controlled a 1 (canDamageEnemyAt (a.ability 1) YourLocation)
+        $ triggered (DrawsCards #when You AnyCards AnyValue) (DynamicUseCost (be a) Secret DrawnCardsValue)
     ]
 
 instance RunMessage AncientStoneKnowledgeOfTheElders4 where
   runMessage msg a@(AncientStoneKnowledgeOfTheElders4 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (totalUsesPayment -> damage) -> do
-      enemies <- select $ EnemyAt $ locationWithInvestigator iid
-      chooseOrRunOne iid [targetLabel x [EnemyDamage x $ nonAttack (Just iid) attrs damage] | x <- enemies]
+      chooseDamageEnemy iid (attrs.ability 1) (locationWithInvestigator iid) AnyEnemy damage
       pure a
     _ -> AncientStoneKnowledgeOfTheElders4 <$> liftRunMessage msg attrs

@@ -151,6 +151,9 @@ instance RunMessage TheEssexCountyExpress where
         , Agendas.outOfTime
         ]
       setActDeck [Acts.run, Acts.getTheEngineRunning]
+    ResolveChaosToken _ Cultist iid -> do
+      when (isHardExpert attrs) $ drawAnotherChaosToken iid
+      pure s
     ResolveChaosToken _ Tablet iid | isEasyStandard attrs -> do
       closestCultists <- select $ NearestEnemyToFallback iid $ EnemyWithTrait Trait.Cultist
       case closestCultists of

@@ -32,7 +32,7 @@ instance HasModifiersFor EnchantedBow2 where
             $ ThisEnemy
             $ EnemyWithoutModifier CannotBeAttacked
             <> oneOf
-              [NonEliteEnemy <> at_ (ConnectedFrom $ locationWithInvestigator iid), enemyAtLocationWith iid]
+              [NonEliteEnemy <> at_ (connectedFrom $ locationWithInvestigator iid), enemyAtLocationWith iid]
         ]
 
 instance HasAbilities EnchantedBow2 where
@@ -43,7 +43,7 @@ instance HasAbilities EnchantedBow2 where
             ( CostWhenEnemy
                 ( NonEliteEnemy
                     <> EnemyWithoutModifier CannotBeAttacked
-                    <> EnemyAt (ConnectedFrom (LocationWithInvestigator $ HasMatchingAsset (be a)))
+                    <> EnemyAt (connectedFrom (LocationWithInvestigator $ HasMatchingAsset (be a)))
                 )
                 (UpTo (Fixed 1) (assetUseCost a Charge 1))
             )
@@ -64,7 +64,7 @@ instance RunMessage EnchantedBow2 where
               $ EnemyCriteria
               $ ThisEnemy
               $ NonEliteEnemy
-              <> EnemyAt (ConnectedFrom (locationWithInvestigator iid))
+              <> EnemyAt (connectedFrom (locationWithInvestigator iid))
       sid <- getRandom
       let fight = if n > 0 then mkChooseFightMatch sid iid source override else mkChooseFight sid iid source
       skillTestModifiers sid source iid

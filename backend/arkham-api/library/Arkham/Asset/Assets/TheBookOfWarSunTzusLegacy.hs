@@ -26,6 +26,8 @@ instance RunMessage TheBookOfWarSunTzusLegacy where
   runMessage msg a@(TheBookOfWarSunTzusLegacy attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getPlayedEvent -> eid) _ -> do
       card <- fetchCard eid
-      atEndOfTurn (attrs.ability 1) iid $ addToHand iid [card]
+      atEndOfTurn (attrs.ability 1) iid do
+        removeFromGame eid
+        addToHand iid [card]
       pure a
     _ -> TheBookOfWarSunTzusLegacy <$> liftRunMessage msg attrs

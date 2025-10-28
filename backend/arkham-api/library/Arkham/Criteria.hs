@@ -9,15 +9,17 @@ import Arkham.Prelude
 
 import {-# SOURCE #-} Arkham.Calculation
 import Arkham.CampaignLog
-import Arkham.Duration
-import Arkham.CampaignLogKey (CampaignLogKey, IsCampaignLogKey(..))
+import Arkham.CampaignLogKey (CampaignLogKey, IsCampaignLogKey (..))
 import Arkham.Campaigns.TheForgottenAge.Supply (Supply)
+import Arkham.Campaigns.TheScarletKeys.Concealed.Matcher
+import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Capability (Capabilities, Capable (..), FromSource)
 import Arkham.Card.CardCode
 import Arkham.Cost.Status (CostStatus)
 import Arkham.Criteria.Override
 import Arkham.Customization
 import Arkham.Direction (GridDirection)
+import Arkham.Duration
 import Arkham.GameValue (GameValue (Static))
 import Arkham.History.Types (HistoryType)
 import Arkham.Key
@@ -32,6 +34,7 @@ import Arkham.Matcher.Enemy
 import Arkham.Matcher.Event
 import Arkham.Matcher.History
 import Arkham.Matcher.Investigator
+import Arkham.Matcher.Key
 import Arkham.Matcher.Location
 import Arkham.Matcher.Patterns
 import Arkham.Matcher.Phase
@@ -45,6 +48,7 @@ import Arkham.Matcher.Value
 import Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
+import Arkham.Source
 import Arkham.Taboo.Types
 import Arkham.Token
 import Arkham.Trait
@@ -192,6 +196,7 @@ data Criterion
   | DuringTurn InvestigatorMatcher
   | EnemyCriteria EnemyCriterion
   | ExtendedCardExists ExtendedCardMatcher
+  | ScarletKeyExists ScarletKeyMatcher
   | CommitedCardsMatch CardListMatcher
   | FirstAction
   | HasSupply Supply
@@ -203,11 +208,14 @@ data Criterion
   | InvestigatorExists InvestigatorMatcher
   | InvestigatorIsAlone
   | InvestigatorsHaveSpendableClues ValueMatcher
+  | InvestigatorsHaveClues ValueMatcher
   | LocationExists LocationMatcher
+  | AgendaCount Int AgendaMatcher
   | AssetCount Int AssetMatcher
-  | EnemyCount Int EnemyMatcher
+  | EnemyCount ValueMatcher EnemyMatcher
   | EventCount ValueMatcher EventMatcher
   | LocationCount Int LocationMatcher
+  | KeyCount ValueMatcher KeyMatcher
   | ExtendedCardCount Int ExtendedCardMatcher
   | AllUndefeatedInvestigatorsResigned
   | EachUndefeatedInvestigator InvestigatorMatcher
@@ -245,6 +253,7 @@ data Criterion
   | DuringPhase PhaseMatcher
   | ChaosTokenCountIs ChaosTokenMatcher ValueMatcher
   | ChaosTokenExists ChaosTokenMatcher
+  | ConcealedCardExists ConcealedCardMatcher
   | CanMoveThis GridDirection
   | CanMoveTo LocationMatcher
   | TabooCriteria TabooList Criterion Criterion
@@ -349,6 +358,9 @@ overrideExists = CriteriaOverride . exists
 notExists :: Exists a => a -> Criterion
 notExists = not_ . exists
 
+instance Exists ConcealedCardMatcher where
+  exists = ConcealedCardExists
+
 instance Exists ChaosTokenMatcher where
   exists = ChaosTokenExists
 
@@ -390,6 +402,9 @@ instance Exists EnemyMatcher where
 
 instance Exists ExtendedCardMatcher where
   exists = ExtendedCardExists
+
+instance Exists ScarletKeyMatcher where
+  exists = ScarletKeyExists
 
 thisExists :: (Be a matcher, Exists matcher, Semigroup matcher) => a -> matcher -> Criterion
 thisExists a matcher = exists (be a <> matcher)
@@ -435,6 +450,47 @@ ignoreAloofFightOverride matcher = fightOverride $ IgnoreAloofFightable <> match
 evadeOverride :: EnemyMatcher -> EnemyMatcher
 evadeOverride = CanEvadeEnemyWithOverride . CriteriaOverride . EnemyCriteria . ThisEnemy
 
+canFightCriteria :: Criterion
+canFightCriteria = canFightCriteriaObeyAloof True
+
+canFightIgnoreAloof :: Criterion
+canFightIgnoreAloof = canFightCriteriaObeyAloof False
+
+canFightCriteriaObeyAloof :: Bool -> Criterion
+canFightCriteriaObeyAloof obeyAloof =
+  OnSameLocation <> EnemyCriteria (ThisEnemy $ wrapAloof $ CanBeAttackedBy You) <> CanAttack
+ where
+  wrapAloof = if obeyAloof then (<> EnemyOneOf [not_ AloofEnemy, EnemyIsEngagedWith Anyone]) else id
+
+canDamageEnemyAt :: Sourceable source => source -> LocationMatcher -> Criterion
+canDamageEnemyAt source locationMatcher = canDamageEnemyAtMatch source locationMatcher AnyEnemy
+
+canDamageEnemyAtMatch
+  :: Sourceable source => source -> LocationMatcher -> EnemyMatcher -> Criterion
+canDamageEnemyAtMatch (toSource -> source) locationMatcher enemyMatcher =
+  CanDealDamage
+    <> if enemyMatcher == AnyEnemy
+      then
+        oneOf -- technically Criteria
+          [ exists (EnemyAt locationMatcher <> EnemyCanBeDamagedBySource source)
+          , exists (LocationWithExposableConcealedCard source <> locationMatcher)
+          ]
+      else exists (EnemyAt locationMatcher <> EnemyCanBeDamagedBySource source <> enemyMatcher)
+
+canEvadeEnemyAt :: Sourceable source => source -> LocationMatcher -> Criterion
+canEvadeEnemyAt source locationMatcher = canEvadeEnemyAtMatch source locationMatcher AnyEnemy
+
+canEvadeEnemyAtMatch
+  :: Sourceable source => source -> LocationMatcher -> EnemyMatcher -> Criterion
+canEvadeEnemyAtMatch (toSource -> source) locationMatcher enemyMatcher =
+  if enemyMatcher == AnyEnemy
+    then
+      oneOf -- technically Criteria
+        [ exists (EnemyAt locationMatcher <> EnemyCanBeEvadedBy source)
+        , exists (LocationWithExposableConcealedCard source <> locationMatcher)
+        ]
+    else exists (EnemyAt locationMatcher <> EnemyCanBeEvadedBy source <> enemyMatcher)
+
 instance Semigroup EnemyCriterion where
   EnemyMatchesCriteria xs <> EnemyMatchesCriteria ys =
     EnemyMatchesCriteria $ xs <> ys
@@ -477,4 +533,15 @@ $(deriveJSON defaultOptions ''CostReduction)
 $(deriveJSON defaultOptions ''DiscardSignifier)
 $(deriveJSON defaultOptions ''UnderZone)
 $(deriveJSON defaultOptions ''EnemyCriterion)
-$(deriveJSON defaultOptions ''Criterion)
+$(deriveToJSON defaultOptions ''Criterion)
+
+instance FromJSON Criterion where
+  parseJSON = withObject "Criterion" $ \o -> do
+    tag <- o .: "tag"
+    case (tag :: Text) of
+      "EnemyCount" -> do
+        contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+        pure $ case contents of
+          Right (vm, em) -> EnemyCount vm em
+          Left (n, em) -> EnemyCount (GreaterThanOrEqualTo (Static n)) em
+      _ -> $(mkParseJSON defaultOptions ''Criterion) (Object o)

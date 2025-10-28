@@ -35,6 +35,7 @@ instance RunMessage PrestonFairmont where
           canGainResources <- not <$> hasModifier attrs CannotGainResources
           case source of
             InvestigatorSource iid' | iid == iid' -> PrestonFairmont <$> runMessage msg attrs
+            ResourceSource iid' | iid == iid' -> PrestonFairmont <$> runMessage msg attrs
             AbilitySource abilitySource _ -> do
               if abilitySource == AssetSource familyInheritance
                 then PrestonFairmont <$> runMessage msg attrs

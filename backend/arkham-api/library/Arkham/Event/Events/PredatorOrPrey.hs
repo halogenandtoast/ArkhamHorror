@@ -3,6 +3,7 @@ module Arkham.Event.Events.PredatorOrPrey (predatorOrPrey) where
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
@@ -42,7 +43,7 @@ instance RunMessage PredatorOrPrey where
         locations <-
           select
             $ CanMoveToLocation (InvestigatorWithId iid) (toSource attrs)
-            $ AccessibleFrom (LocationWithId loc)
+            $ AccessibleFrom ForMovement (LocationWithId loc)
             <> LocationFartherFrom loc (NearestLocationTo iid $ LocationWithEnemy AnyEnemy)
         chooseTargetM iid locations $ moveTo attrs iid
       pure e

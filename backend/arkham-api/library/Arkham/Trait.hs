@@ -11,8 +11,10 @@ import Data.Char (isLower, isUpper)
 newtype EnemyTrait = EnemyTrait {unEnemyTrait :: Trait}
 
 data Trait
-  = Abomination
+  = Abandoned
+  | Abomination
   | Agency
+  | Allied
   | Ally
   | Altered
   | Ancient
@@ -26,6 +28,7 @@ data Trait
   | Avatar
   | Basement
   | Bayou
+  | Bazaar
   | Believer
   | Blessed
   | Blunder
@@ -34,10 +37,12 @@ data Trait
   | Boon
   | Bridge
   | Broken
+  | BuenosAires
   | Byakhee
   | Bystander
   | Campsite
   | Carnevale
+  | Castle
   | Cave
   | Central
   | Charm
@@ -54,6 +59,8 @@ data Trait
   | Connection
   | Conspirator
   | Construct
+  | Corruption
+  | Cosmos
   | Coterie
   | Courage
   | Covenant
@@ -71,6 +78,7 @@ data Trait
   | Developed
   | Dhole
   | Dilemma
+  | Dinosaur
   | Double
   | Dreamer
   | Dreamlands
@@ -131,6 +139,7 @@ data Trait
   | Insight
   | Instrument
   | Island
+  | Istanbul
   | Item
   | Job
   | Jungle
@@ -143,11 +152,13 @@ data Trait
   | Leader
   | Leng
   | Lodge
+  | London
   | Lunatic
   | Madness
   | Mainland
   | Manifold
   | Manor
+  | Marrakesh
   | Mask
   | Medic
   | Melee
@@ -171,6 +182,7 @@ data Trait
   | OothNargai
   | Oriab
   | Otherworld
+  | Outsider
   | Pact
   | Paradox
   | Paris
@@ -186,13 +198,16 @@ data Trait
   | Practiced
   | PresentDay
   | Private
+  | Prop
   | Rail
   | Ranged
   | Relic
   | Reporter
   | Research
   | Resolute
+  | Risen
   | Ritual
+  | RitualSite
   | Rival
   | River
   | Riverside
@@ -201,6 +216,8 @@ data Trait
   | Ruins
   | Salem
   | Sanctum
+  | Satellite
+  | Saturnite
   | Scheme
   | Scholar
   | Science
@@ -210,6 +227,7 @@ data Trait
   | Serpent
   | Service
   | Servitor
+  | Set
   | Shantak
   | Shattered
   | Ship
@@ -224,6 +242,7 @@ data Trait
   | Spider
   | Spirit
   | StMarys
+  | Stable
   | Staff
   | Steps
   | Summon
@@ -250,6 +269,7 @@ data Trait
   | Unbroken
   | Uncharted
   | Unhallowed
+  | Unstable
   | Upgrade
   | Vale
   | Vehicle
@@ -267,6 +287,7 @@ data Trait
   | Yhanthlei
   | Yithian
   | Yoth
+  | Yuggoth
   | Zoog
   deriving stock (Show, Eq, Generic, Ord, Enum, Bounded, Read, Data)
   deriving anyclass (ToJSON, FromJSON, Hashable)

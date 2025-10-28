@@ -23,6 +23,7 @@ instance HasAbilities OpeningTheMaw where
         a
         2
         (TokensOnLocation (locationIs Locations.mouthOfKnYanTheCavernsMaw) Pillar (atLeast 6))
+        $ Objective
         $ forced AnyWindow
     ]
 

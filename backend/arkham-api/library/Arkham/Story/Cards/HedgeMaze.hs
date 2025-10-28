@@ -15,7 +15,7 @@ hedgeMaze = story HedgeMaze Cards.hedgeMaze
 
 instance RunMessage HedgeMaze where
   runMessage msg s@(HedgeMaze attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       mMoaiStatues <- getSetAsideCardMaybe Locations.moaiStatues
 
       chooseOneM iid do

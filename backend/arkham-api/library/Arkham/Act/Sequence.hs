@@ -7,7 +7,7 @@ import Data.Aeson.TH
 
 newtype ActStep = ActStep {unActStep :: Int}
   deriving stock Data
-  deriving newtype (Eq, Ord)
+  deriving newtype (Eq, Ord, Show)
 
 actStep :: ActSequence -> ActStep
 actStep (Sequence num _) = ActStep num

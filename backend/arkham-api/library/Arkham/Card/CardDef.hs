@@ -344,6 +344,7 @@ hasRevelation = isRevelation . cdRevelation . toCardDef
 
 class HasOriginalCardCode a where
   toOriginalCardCode :: a -> CardCode
+  setOriginalCardCode :: HasCardCode c => c -> a -> a
 
 class HasCardType a where
   toCardType :: HasCallStack => a -> CardType

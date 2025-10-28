@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.StalkingManticore (stalkingManticore, StalkingManticore (..)) where
+module Arkham.Enemy.Cards.StalkingManticore (stalkingManticore) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
@@ -23,7 +23,6 @@ instance HasAbilities StalkingManticore where
 instance RunMessage StalkingManticore where
   runMessage msg e@(StalkingManticore attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      -- we may double up the DoNotExhaustEvaded but it should not matter
       phaseModifiers (attrs.ability 1) attrs [DoNotExhaustEvaded, CannotEngage iid]
       pure e
     _ -> StalkingManticore <$> liftRunMessage msg attrs

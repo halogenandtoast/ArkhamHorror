@@ -11,14 +11,24 @@ import Arkham.Message
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Queue
+import Arkham.Tracing
 import Control.Monad.State.Strict
 
 newtype CreateEnemyT m a = CreateEnemyT {unCreateEnemyT :: StateT (EnemyCreation Message) m a}
   deriving newtype
-    (Functor, Applicative, Monad, MonadIO, MonadTrans, MonadState (EnemyCreation Message), MonadRandom)
+    ( Functor
+    , Applicative
+    , Monad
+    , MonadIO
+    , MonadTrans
+    , MonadState (EnemyCreation Message)
+    , MonadRandom
+    , Tracing
+    )
 
 instance HasGame m => HasGame (CreateEnemyT m) where
   getGame = lift getGame
+  getCache = GameCache \_ build -> build
 
 instance CardGen m => CardGen (CreateEnemyT m) where
   genEncounterCard = lift . genEncounterCard
@@ -59,7 +69,7 @@ runCreateEnemyT a creation body = do
 
 afterCreate :: MonadIO m => QueueT Message m () -> CreateEnemyT m ()
 afterCreate body = do
-  msgs <- lift $ evalQueueT body
+  msgs <- lift $ capture body
   modify' \creation -> creation {enemyCreationAfter = msgs}
 
 createExhausted :: Monad m => CreateEnemyT m ()

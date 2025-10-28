@@ -3,13 +3,13 @@ module Arkham.Location.Cards.AbandonedChapel (abandonedChapel) where
 import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Phase
-import Arkham.Prelude
 import Arkham.SkillType
 
 newtype AbandonedChapel = AbandonedChapel LocationAttrs
@@ -30,9 +30,8 @@ instance HasModifiersFor AbandonedChapel where
       [SkillModifier sType (-1) | sType <- allSkills]
 
 instance RunMessage AbandonedChapel where
-  runMessage msg l@(AbandonedChapel attrs) = case msg of
-    Flip _ _ (isTarget attrs -> True) -> do
-      spectral <- genCard Locations.abandonedChapelSpectral
-      push $ ReplaceLocation (toId attrs) spectral Swap
+  runMessage msg l@(AbandonedChapel attrs) = runQueueT $ case msg of
+    FlipThis (isTarget attrs -> True) -> do
+      swapLocation attrs =<< genCard Locations.abandonedChapelSpectral
       pure l
-    _ -> AbandonedChapel <$> runMessage msg attrs
+    _ -> AbandonedChapel <$> liftRunMessage msg attrs

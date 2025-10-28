@@ -4,8 +4,7 @@
 
 module Arkham.Source where
 
-import Arkham.Prelude
-
+import Arkham.Campaigns.TheScarletKeys.Key.Id (ScarletKeyId)
 import {-# SOURCE #-} Arkham.Card
 import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.ChaosToken.Types
@@ -17,6 +16,7 @@ import Arkham.Matcher.Types (
   EnemyMatcher,
   LocationMatcher,
  )
+import Arkham.Prelude
 import Arkham.Tarot
 import Arkham.Trait hiding (ElderThing)
 import Control.Lens (Prism', prism')
@@ -70,6 +70,8 @@ data Source
   | BothSource Source Source
   | TarotSource TarotCard
   | BatchSource BatchId
+  | ScarletKeySource ScarletKeyId
+  | ConcealedCardSource ConcealedCardId
   deriving stock (Show, Eq, Ord, Data, Generic)
 
 _AssetSource :: Prism' Source AssetId
@@ -179,6 +181,9 @@ instance Sourceable TreacheryId where
 
 instance Sourceable InvestigatorId where
   toSource = InvestigatorSource
+
+instance Sourceable ConcealedCardId where
+  toSource = ConcealedCardSource
 
 instance Sourceable LocationId where
   toSource = LocationSource

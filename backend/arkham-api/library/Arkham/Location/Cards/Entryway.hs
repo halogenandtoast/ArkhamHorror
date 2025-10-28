@@ -18,7 +18,7 @@ newtype Entryway = Entryway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 entryway :: LocationCard Entryway
-entryway = location Entryway Cards.entryway 2 (PerPlayer 1) & setConnectsTo (singleton LeftOf)
+entryway = symbolLabel $ location Entryway Cards.entryway 2 (PerPlayer 1) & setConnectsTo (singleton LeftOf)
 
 instance HasAbilities Entryway where
   getAbilities (Entryway a) =
@@ -31,13 +31,13 @@ instance HasAbilities Entryway where
 instance RunMessage Entryway where
   runMessage msg l@(Entryway attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      explorationDeck <- getExplorationDeck
-      let (viewing, rest) = splitAt 2 explorationDeck
+      (viewing, rest) <- splitAt 2 <$> getExplorationDeck
       let (treacheries, other) = partition (`cardMatch` CardWithType TreacheryType) viewing
       focusCards viewing do
         setScenarioDeck ExplorationDeck $ other <> rest
         chooseOneAtATimeM iid do
           targets (onlyEncounterCards treacheries) (addToEncounterDiscard . only)
+        when (null treacheries) $ continue_ iid
       for_ other $ putCardOnBottomOfDeck iid ExplorationDeck
       shuffleDeck ExplorationDeck
       pure l

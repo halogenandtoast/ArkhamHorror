@@ -1,12 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Location.Types (
-  module Arkham.Location.Types,
-  module X,
-  Field (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Types (module Arkham.Location.Types, module X, Field (..)) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -35,12 +29,14 @@ import Arkham.Matcher.Base (Be (..))
 import Arkham.Matcher.Location (LocationMatcher (..))
 import Arkham.Message
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token
 import Arkham.Trait (Trait)
 import Control.Lens (non, over, set)
+import Data.Aeson.Key qualified as Aeson
 import Data.Data
 import Data.Text qualified as T
 import GHC.Records
@@ -93,6 +89,7 @@ data instance Field Location :: Type -> Type where
   LocationRevealClues :: Field Location GameValue
   LocationRevealed :: Field Location Bool
   LocationRevealedConnectedMatchers :: Field Location [LocationMatcher]
+  LocationPrintedShroud :: Field Location (Maybe GameValue)
   LocationShroud :: Field Location (Maybe Int)
   LocationJustShroud :: Field Location Int
   LocationTokens :: Field Location Tokens
@@ -105,12 +102,15 @@ data instance Field Location :: Type -> Type where
   LocationKeys :: Field Location (Set ArkhamKey)
   LocationSeals :: Field Location (Set Seal)
   LocationInvestigateDifficulty :: Field Location GameCalculation
+  LocationConcealedCards :: Field Location [ConcealedCardId]
+  LocationGlobalMeta :: Field Location (Map Aeson.Key Value)
 
 deriving stock instance Show (Field Location typ)
 deriving stock instance Ord (Field Location typ)
 
 fieldLens :: Field Location typ -> Lens' LocationAttrs typ
 fieldLens = \case
+  LocationGlobalMeta -> globalMetaL
   LocationTokens -> tokensL
   LocationKeys -> keysL
   LocationSeals -> sealsL
@@ -120,7 +120,8 @@ fieldLens = \case
   LocationDamage -> tokensL . at #damage . non 0
   LocationHorror -> tokensL . at Horror . non 0
   LocationDoom -> tokensL . at Doom . non 0
-  LocationShroud -> shroudL
+  LocationPrintedShroud -> shroudL
+  LocationShroud -> virtual
   LocationJustShroud -> virtual
   LocationConnectedMatchers -> connectedMatchersL
   LocationRevealedConnectedMatchers -> revealedConnectedMatchersL
@@ -149,6 +150,7 @@ fieldLens = \case
   LocationVengeance -> virtual
   LocationVictory -> virtual
   LocationInvestigateDifficulty -> virtual
+  LocationConcealedCards -> concealedCardsL
  where
   virtual = error "virtual attribute can not be set directly"
 
@@ -201,6 +203,7 @@ instance FromJSON (SomeField Location) where
     "LocationRevealClues" -> pure $ SomeField LocationRevealClues
     "LocationRevealed" -> pure $ SomeField LocationRevealed
     "LocationRevealedConnectedMatchers" -> pure $ SomeField LocationRevealedConnectedMatchers
+    "LocationPrintedShroud" -> pure $ SomeField LocationPrintedShroud
     "LocationShroud" -> pure $ SomeField LocationShroud
     "LocationTokens" -> pure $ SomeField LocationTokens
     "LocationKeys" -> pure $ SomeField LocationKeys
@@ -212,6 +215,7 @@ instance FromJSON (SomeField Location) where
     "LocationInvestigateDifficulty" -> pure $ SomeField LocationInvestigateDifficulty
     "LocationPosition" -> pure $ SomeField LocationPosition
     "LocationCostToEnterUnrevealed" -> pure $ SomeField LocationCostToEnterUnrevealed
+    "LocationGlobalMeta" -> pure $ SomeField LocationGlobalMeta
     _ -> error "no such field"
 
 instance Entity LocationAttrs where
@@ -291,7 +295,7 @@ locationWith f def shroud' revealClues g =
             , locationLabel = nameToLabel (cdName def)
             , locationRevealClues = revealClues
             , locationTokens = mempty
-            , locationShroud = Just shroud'
+            , locationShroud = Just (Static shroud')
             , locationRevealed = not (cdDoubleSided def)
             , locationSymbol = fromJustNote "missing location symbol" (cdLocationSymbol def)
             , locationRevealedSymbol =
@@ -316,10 +320,13 @@ locationWith f def shroud' revealClues g =
             , locationGlobalMeta = mempty
             , locationKeys = mempty
             , locationSeals = mempty
+            , locationSealedChaosTokens = mempty
             , locationBrazier = Nothing
             , locationBreaches = Nothing
             , locationFloodLevel = Nothing
             , locationPosition = Nothing
+            , locationBeingRemoved = False
+            , locationConcealedCards = []
             }
     }
 

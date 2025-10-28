@@ -1,10 +1,11 @@
-module Arkham.Asset.Assets.Armageddon4 (armageddon4, armageddon4Effect, Armageddon4 (..)) where
+module Arkham.Asset.Assets.Armageddon4 (armageddon4, armageddon4Effect) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Effect.Import
 import Arkham.Fight
 import Arkham.Helpers.SkillTest (withSkillTest)
@@ -54,15 +55,16 @@ instance RunMessage Armageddon4Effect where
             handleIt assetId = do
               when (token.face == #curse) do
                 enemies <- select $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource attrs.source
+                concealed <- getConcealedIds (ForExpose $ toSource iid) iid
                 stillInPlay <- selectAny $ AssetWithId assetId
-                when (stillInPlay || notNull enemies) do
+                when (stillInPlay || notNull enemies || notNull concealed) do
                   chooseOrRunOneM iid do
                     when stillInPlay do
                       labeled "Place 1 Charge on Armageddon4" do
                         push $ AddUses attrs.source assetId Charge 1
-                    when (notNull enemies) do
+                    when (notNull enemies || notNull concealed) do
                       labeled "Deal 1 damage to an enemy at your location" do
-                        chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) attrs.source 1
+                        chooseDamageEnemy iid attrs.source (locationWithInvestigator iid) AnyEnemy 1
           case attrs.source of
             AbilitySource (AssetSource assetId) 1 -> handleIt assetId
             AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId

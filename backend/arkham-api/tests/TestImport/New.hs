@@ -37,6 +37,7 @@ import Arkham.Enemy.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Entities qualified as Entities
 import Arkham.Fight
+import Arkham.ForMovement
 import Arkham.Game.Settings
 import Arkham.GameEnv
 import Arkham.Helpers.Action
@@ -60,7 +61,8 @@ import Arkham.SkillTestResult
 import Arkham.Slot
 import Arkham.Token qualified as Token
 import Arkham.Treachery.Types
-import Arkham.Window (defaultWindows)
+import Arkham.Window (defaultWindows, mkWhen)
+import Arkham.Window qualified as Window
 import Data.Text qualified as T
 import GHC.Records
 import GHC.TypeLits
@@ -78,6 +80,10 @@ loadDeck i cs = run . LoadDeck (toId i) . Deck =<< traverse (`genPlayerCardWith`
 
 loadDeckCards :: Investigator -> [PlayerCard] -> TestAppT ()
 loadDeckCards i = run . LoadDeck (toId i) . Deck
+
+endGame :: TestAppT ()
+endGame = do
+  run $ CheckWindows [mkWhen Window.EndOfGame]
 
 drawCards :: Investigator -> Int -> TestAppT ()
 drawCards i n = run $ Helpers.drawCards (toId i) i n
@@ -225,16 +231,16 @@ instance HasField "accessibleLocations" Investigator (TestAppT [LocationId]) whe
       Just lid ->
         select
           $ Matcher.canEnterLocation (toId self)
-          <> Matcher.AccessibleFrom (Matcher.LocationWithId lid)
+          <> Matcher.AccessibleFrom ForMovement (Matcher.LocationWithId lid)
 
 instance HasField "clues" Location (TestAppT Int) where
   getField = field LocationClues . toEntityId
 
 instance HasField "connectedLocations" LocationId (TestAppT [LocationId]) where
-  getField = select . Matcher.ConnectedTo . Matcher.LocationWithId
+  getField = select . Matcher.ConnectedTo NotForMovement . Matcher.LocationWithId
 
 instance HasField "connectedLocations" Location (TestAppT [LocationId]) where
-  getField = select . Matcher.ConnectedTo . Matcher.LocationWithId . toId
+  getField = select . Matcher.ConnectedTo NotForMovement . Matcher.LocationWithId . toId
 
 instance HasField "clues" TreacheryId (TestAppT Int) where
   getField = field TreacheryClues

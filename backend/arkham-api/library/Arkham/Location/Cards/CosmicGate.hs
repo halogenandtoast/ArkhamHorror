@@ -4,12 +4,12 @@ import Arkham.Ability
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Helpers.Cost (getSpendableClueCount)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Arkham.Trait qualified as Trait
 
@@ -44,26 +44,23 @@ instance RunMessage CosmicGate where
       allEmpty <- concatForM positions \pos ->
         getEmptyPositionsInDirections pos [GridUp, GridDown, GridLeft, GridRight]
 
-      if null allEmpty
-        then cosmosFail attrs
-        else chooseOrRunOneM iid do
-          for_ allEmpty \pos'@(Pos x y) ->
-            gridLabeled (cosmicLabel pos') do
-              placeCosmos iid attrs (CosmosLocation (Pos x y) lid)
-              pushAll msgs
+      chooseCosmos attrs iid allEmpty msgs
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       n <- getSpendableClueCount [iid]
-      chooseOrRunOneM iid do
-        when (n >= 1) $ labeled "Spend 1 Clue" $ spendClues iid 1
-        labeled "Take 1 Horror" $ assignHorror iid (attrs.ability 2) 1
+      chooseOrRunOneM iid $ withI18n do
+        when (n >= 1) $ countVar 1 $ labeled' "spendClues" $ spendClues iid 1
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 2) 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 3 -> do
       investigators <- select $ investigatorAt attrs
       otherLocations <- select $ LocationWithTrait Trait.Void <> not_ (be attrs)
       unless (null otherLocations) do
-        chooseSome1M iid "Done moving investigators" do
+        withI18n $ chooseSome1M' iid "doneMovingInvestigators" do
           targets investigators \investigator -> do
             chooseTargetM iid otherLocations $ moveTo (attrs.ability 3) investigator
+      pure l
+    Do (PlaceCosmos _ lid cloc) | lid == attrs.id -> do
+      handleCosmos lid cloc
       pure l
     _ -> CosmicGate <$> liftRunMessage msg attrs

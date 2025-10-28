@@ -1,11 +1,12 @@
-module Arkham.Story.Cards.DreamlikeHorrors (DreamlikeHorrors (..), dreamlikeHorrors) where
+module Arkham.Story.Cards.DreamlikeHorrors (dreamlikeHorrors) where
 
 import Arkham.Deck qualified as Deck
+import Arkham.Helpers.Query (getLead)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 import Arkham.Trait (Trait (Creature))
 
 newtype DreamlikeHorrors = DreamlikeHorrors StoryAttrs
@@ -16,19 +17,17 @@ dreamlikeHorrors :: StoryCard DreamlikeHorrors
 dreamlikeHorrors = story DreamlikeHorrors Cards.dreamlikeHorrors
 
 instance RunMessage DreamlikeHorrors where
-  runMessage msg s@(DreamlikeHorrors attrs) = case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
-      enemies <-
-        select $ at_ (locationIs Locations.skaiRiver) <> EnemyWithTrait Creature <> not_ IsSwarm
+  runMessage msg s@(DreamlikeHorrors attrs) = runQueueT $ case msg of
+    ResolveThisStory iid (is attrs -> True) -> do
+      enemies <- select $ at_ (locationIs Locations.skaiRiver) <> EnemyWithTrait Creature <> not_ IsSwarm
       if null enemies
-        then push $ DiscardUntilFirst iid (toSource attrs) Deck.EncounterDeck (basic $ CardWithTrait Creature)
+        then discardUntilFirst iid attrs Deck.EncounterDeck (basic $ CardWithTrait Creature)
         else do
-          player <- getPlayer iid
           lead <- getLead
-          push $ chooseOne player [targetLabel enemy [PlaceSwarmCards lead enemy 1] | enemy <- enemies]
+          chooseTargetM iid enemies \enemy -> push $ PlaceSwarmCards lead enemy 1
 
       pure s
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just ec) -> do
-      pushM $ createEnemy ec iid
+      createEnemy_ ec iid
       pure s
-    _ -> DreamlikeHorrors <$> runMessage msg attrs
+    _ -> DreamlikeHorrors <$> liftRunMessage msg attrs

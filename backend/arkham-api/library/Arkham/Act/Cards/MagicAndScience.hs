@@ -10,8 +10,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Direction
-import Arkham.Helpers.Investigator
-import Arkham.Helpers.Location
 import Arkham.Label
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (LocationCard)
@@ -43,8 +41,7 @@ data LocationCandidate = LocationCandidate
 instance RunMessage MagicAndScience where
   runMessage msg a@(MagicAndScience attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      locationSymbols <- toConnections =<< getJustLocation iid
-      push $ Explore iid (attrs.ability 1) $ mapOneOf CardWithPrintedLocationSymbol locationSymbols
+      runExplore iid (attrs.ability 1)
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       lead <- getLead
@@ -53,7 +50,7 @@ instance RunMessage MagicAndScience where
         maybe
           (Left <$> fetchCard (SetAsideCardMatch $ cardIs Assets.relicOfAgesADeviceOfSomeSort))
           (pure . Right)
-          =<< selectOne (assetIs Assets.relicOfAgesADeviceOfSomeSort)
+          =<< selectOne (asset_ "Relic of Ages")
       investigators <- select $ investigatorAt chamberOfTime
       entryway <- selectJust $ location_ "Entryway"
       chooseOrRunOneM lead do
@@ -70,7 +67,7 @@ instance RunMessage MagicAndScience where
         LocationCandidate location <$> field LocationDoom location <*> field LocationCard location
       let candidateGroups = groupBy ((==) `on` (.doom)) $ sortBy (compare `on` (.doom)) candidates
       for_ candidateGroups \case
-        [] -> error "Unhandled"
+        [] -> error "Unhandled candidate groups empty"
         [c] -> handleTarget lead attrs c.id
         cs -> focusCards (map (.card) cs) do
           chooseOneAtATimeM lead do

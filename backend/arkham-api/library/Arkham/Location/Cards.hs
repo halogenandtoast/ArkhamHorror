@@ -113,6 +113,7 @@ allLocationCards =
       , administrationOffice_131
       , airfield
       , alaskanWilds
+      , alienConservatory
       , alchemyLabs
       , altarToDagon
       , ancientHall
@@ -120,11 +121,14 @@ allLocationCards =
       , ancientPlanetarium
       , anotherDimension
       , arkhamPoliceStation
+      , arkhamWoodsBootleggingOperation
       , arkhamWoodsCliffside
       , arkhamWoodsCorpseRiddenClearing
       , arkhamWoodsGreatWillow
+      , arkhamWoodsHiddenPath
       , arkhamWoodsLakeside
       , arkhamWoodsOldHouse
+      , arkhamWoodsPlaceOfPower
       , arkhamWoodsQuietGlade
       , arkhamWoodsTangledThicket
       , arkhamWoodsTwistingPaths
@@ -143,15 +147,19 @@ allLocationCards =
       , attic
       , attic_AThousandShapesOfHorror
       , audubonPark
+      , avenidaDeMayo
       , backAlley
       , backstage
       , baggageCar
       , baharna
+      , bahiaPalaceGardens
+      , bahiaPalaceGardensAbandoned
       , balcony
       , balconyAtDeathsDoorstep
       , balconySpectral
       , ballroom
       , ballroomTheMidwinterGala
+      , bancoDeLaProvincia
       , barrierCamp
       , barroom
       , baseCamp
@@ -163,6 +171,7 @@ allLocationCards =
       , bathroom
       , bedroom
       , bedroomTheMidwinterGala
+      , bigBen
       , billiardsRoom
       , billiardsRoomSpectral
       , bishopsBrook_202
@@ -188,6 +197,7 @@ allLocationCards =
       , brokenPassage
       , brokenSteps_289
       , brokenSteps_290
+      , buenosAires
       , burialGround
       , burialPit
       , burnedRuins_204
@@ -197,11 +207,18 @@ allLocationCards =
       , canalsOfTenochtitlan_180
       , canalsOfTenochtitlan_181
       , candlelitTunnels
+      , casaRosada
+      , castleHallwaysSeeminglyEndless
+      , catacombsStinksOfDeath
+      , catedralMetropolitana
       , cavernsBeneathTheMoonDarkSide
       , cavernsBeneathTheMoonLightSide
       , cavernsOfYoth
       , celephais
+      , cementarioDeLaRecoleta
       , cellar
+      , centralLotBlurred
+      , centralLotQuietOnSet
       , chamberOfTime
       , chamberOfTimeRearrangedByTime
       , chapelAttic_175
@@ -230,6 +247,7 @@ allLocationCards =
       , cityWhichAppearsOnNoMap
       , cliffsideRoad_a
       , cliffsideRoad_b
+      , clockTowerIncessantlyTicking
       , cloister
       , cloudForest
       , cloverClubBar
@@ -260,6 +278,7 @@ allLocationCards =
       , cyclopeanRuins_176a
       , cyclopeanRuins_176b
       , cyclopeanSpires
+      , cyclopeanVaults
       , cylindricalTower
       , dancersMist
       , darkAbyss
@@ -307,6 +326,7 @@ allLocationCards =
       , dunwichVillage_243
       , dyersClassroom
       , dylathLeen
+      , easternRidge
       , easttown
       , easttownArkhamPoliceStation
       , eerieGlade
@@ -381,6 +401,8 @@ allLocationCards =
       , frontPorchEntryway
       , frozenShores
       , frozenSpring
+      , galata
+      , galataDocks
       , gallery
       , garden
       , gardenDistrict
@@ -392,15 +414,25 @@ allLocationCards =
       , gilmanHouseInTooDeep
       , glacialGrotto
       , gondola
+      , gothicSet
+      , grandBazaarBusyWalkway
+      , grandBazaarCrowdedShops
+      , grandBazaarDarkenedAlley
+      , grandBazaarJewelersRoad
+      , grandBazaarMarbleFountain
+      , grandBazaarPublicBaths
+      , grandBazaarRooftopAccess
       , grandChamber
       , grandChamberRearrangedByTime
       , grandEntryway
       , grandGuignol
       , grandRue
       , graveyard
+      , greatHallOfCeleano
       , greatLibrary
       , greenRoom
       , guestHall
+      , hagiaSophia
       , hallOfBlood
       , hallOfHeresy
       , hallOfIdolatry
@@ -411,6 +443,7 @@ allLocationCards =
       , hallOfTheSunlessSea
       , hallsOfPnakotusEasternCorridors
       , hallsOfPnakotusNorthernCorridors
+      , hallsOfPnakotusSouthernCorridors
       , hallsOfPnakotusWesternCorridors
       , hallway
       , hangmansBrook
@@ -430,6 +463,7 @@ allLocationCards =
       , hiddenTunnelAWayOut
       , hiddenTunnelEntranceToTheDepths
       , hideousPalace
+      , highRulersBastion
       , historicalSocietyBoilerRoom
       , historicalSocietyDustyArchives
       , historicalSocietyHistoricalLibrary_133
@@ -466,11 +500,18 @@ allLocationCards =
       , innsmouthSquareInTooDeep
       , intersection_a
       , intersection_b
+      , interstellarAbyss
       , interviewRoomArrivalChamber
       , interviewRoomIchorFilledChamber
       , interviewRoomRestrainingChamber
+      , istanbulUniversity
+      , jemaaElFnaaSquare
+      , jemaaElFnaaSquareAbandoned
       , joeMazurewiczsRoom
+      , jungleRiver
+      , jungleSet
       , kadatheron
+      , kensingtonGardens
       , keziahsRoom
       , kitchen
       , knightsHall
@@ -489,6 +530,7 @@ allLocationCards =
       , leMarais217
       , leMarais218
       , library
+      , libraryOfEbla
       , libraryOfKos
       , libraryTheMidwinterGala
       , lighthouseKeepersCottage
@@ -509,10 +551,13 @@ allLocationCards =
       , lodgeGatesWeveBeenExpectingYou
       , lonelyIsle
       , longWayAround
+      , lostAsteroid
       , lostMemories
       , lounge
       , mainPath
       , mapRoom
+      , marrakeshRailwayStation
+      , marrakeshRailwayStationAbandoned
       , marshRefinery
       , marshRefineryInTooDeep
       , masterBedroom
@@ -539,6 +584,7 @@ allLocationCards =
       , montparnasse
       , moonBeastGalley
       , moonForest
+      , moonlitGardenPoisonedBeauty
       , morgue
       , mosaicChamber
       , moundOfBones
@@ -560,11 +606,13 @@ allLocationCards =
       , newChurchGreen
       , newChurchGreenInTooDeep
       , nexusOfNKai
+      , nightmareBreach
       , northside
       , northsideTrainStation
       , northTower_287
       , northTower_288
       , notreDame
+      , obeliskOfTheodosius
       , office
       , officeMurderAtTheExcelsiorHotel
       , officeSpectral
@@ -582,6 +630,7 @@ allLocationCards =
       , overgrownCairns
       , overgrownRuins
       , palaceOfTheKing
+      , palacioErrazuriz
       , parlor
       , parlorCar
       , parlorTheMidwinterGala
@@ -615,10 +664,12 @@ allLocationCards =
       , quietHalls_131
       , quietHalls_135
       , railroadStation
+      , rainyLondonStreets
       , realmsBeyondAllInOne
       , recessesOfYourOwnMind
       , recordsOffice
       , rehearsalRoom
+      , relicStorage
       , remnantsOfLakesCamp
       , researchSite
       , restaurant
@@ -633,10 +684,15 @@ allLocationCards =
       , returnToCongregationalChurch
       , returnToCoyoacan
       , returnToEngineCar
+      , returnToFrenchHill
       , returnToGardensOfLuxembourg
       , returnToGrandGuignol
+      , returnToHangmansBrook
+      , returnToHangmansBrookSpectral
       , returnToHouseInTheReeds
       , returnToKnightsHall
+      , returnToLounge
+      , returnToMerchantDistrict
       , returnToMetropolitanCathedral
       , returnToMontparnasse
       , returnToNotreDame
@@ -644,14 +700,20 @@ allLocationCards =
       , returnToPalaceOfTheKing
       , returnToPereLachaiseCemetery
       , returnToQuietHalls
+      , returnToRivertown
       , returnToSchoolhouse
       , returnToSecretPassage
+      , returnToSouthChurch
+      , returnToSouthside
       , returnToTempleRuins
+      , returnToUptown
       , returnToXochimilco
       , returnToZocalo
       , rialtoBridge
       , ritualGrounds
       , ritualSite
+      , ritualSiteTeetawn
+      , ritualSiteTothis
       , riverCanyon
       , riversideTemple
       , rivertown
@@ -674,6 +736,9 @@ allLocationCards =
       , ruinsOfIb
       , ruinsOfKnYan
       , ruinsOfNewYork
+      , ruinsOfTheSerpentKing
+      , saadiansTombs
+      , saadiansTombsAbandoned
       , sacredWoods_184
       , sacredWoods_185
       , salemGaol1692
@@ -711,6 +776,7 @@ allLocationCards =
       , shorewardSlums
       , shorewardSlumsInTooDeep
       , shrineToHydra
+      , shroudedArchive
       , silverTwilightLodgeShroudedInMystery
       , silverTwilightLodgeWhereItAllEnds
       , siteOfTheSacrifice
@@ -726,6 +792,7 @@ allLocationCards =
       , southside_295
       , southsideHistoricalSociety
       , southsideMasBoardingHouse
+      , spaceSet
       , stageOfTheWardTheatre
       , stairwell
       , standingStones
@@ -753,8 +820,14 @@ allLocationCards =
       , sunkenGrottoUpperDepths
       , sunkenHalls
       , syzygyChamber
+      , tanneries
+      , tanneriesAbandoned
+      , tarPit
+      , teatroColon
       , tearThroughSpace
       , tearThroughTime
+      , teetawnPassage
+      , templeOfRlyeh
       , templeOfTheElderThings
       , templeOfTheFang
       , templeOfTheMoonLizard
@@ -770,9 +843,11 @@ allLocationCards =
       , tenAcreMeadow_247
       , theatre
       , theatreLounge
+      , the9thWard
       , theBlackCore
       , theBlackStone
       , theBlackThrone
+      , theCabildo
       , theCavernOfFlame
       , theDarkCrater
       , theEdgeOfTheUniverse
@@ -799,9 +874,12 @@ allLocationCards =
       , theLittleBookshopInTooDeep
       , theMoonRoom
       , theOnyxCastle
+      , thePriceManor
       , theSummit
+      , theTowerBridge
       , theThroneRoom
       , theWhiteShip
+      , throneOfBloodRedAsBloodBlackAsNight
       , throneRoom
       , tidalPool
       , tightTurn_a
@@ -814,12 +892,16 @@ allLocationCards =
       , titanicRamp_185
       , tombOfShadows
       , tombOfTheAncients
+      , tothisBarrens
       , toweringLuminosity
       , towerOfKoth
+      , towerOfLondon
+      , towerPrison
       , towersOfPnakotus
       , townHall
       , trailOfTheDead
       , trainTracks
+      , traitorsGate
       , trappersCabin
       , trapRoom
       , treacherousDescent
@@ -829,6 +911,7 @@ allLocationCards =
       , twilightAbyss
       , twistedUnderbrush
       , ulthar
+      , ultimaThule
       , undercityAltar
       , undergroundRiver
       , undergroundRuins
@@ -870,9 +953,14 @@ allLocationCards =
       , waterfall
       , wavewornIsland
       , wellOfSouls
+      , westernRidge
+      , westminsterAbbey
       , whateleyRuins_250
       , whateleyRuins_251
       , whiteBluff
+      , wineCellar
+      , wineCellarSpectral
+      , windingGulf
       , windsweptPath
       , witchesCircle
       , witchHauntedWoodsAbandonedMine
@@ -882,6 +970,8 @@ allLocationCards =
       , witchHauntedWoodsOvergrownBarn
       , witchHauntedWoodsTaintedWell
       , witchHauntedWoodsTheLonelyTree
+      , witchHauntedWoodsUnmarkedGraveyard
+      , witchHauntedWoodsWitchTree
       , witchHouseRuins
       , xochimilco
       , yard
@@ -911,6 +1001,13 @@ revelation def = def {cdRevelation = IsRevelation}
 singleSided :: CardDef -> CardDef
 singleSided def = def {cdDoubleSided = False}
 
+otherSideIs :: CardCode -> CardDef -> CardDef
+otherSideIs ccode def =
+  def
+    { cdDoubleSided = False
+    , cdOtherSide = Just ccode
+    }
+
 veiled :: CardDef -> CardDef
 veiled def =
   def
@@ -920,7 +1017,10 @@ veiled def =
     }
 
 storyOnBack :: CardDef -> CardDef
-storyOnBack def = def {cdDoubleSided = False}
+storyOnBack def = def {cdDoubleSided = False, cdOtherSide = Just (flippedCardCode def.cardCode)}
+
+storyOnBack' :: CardCode -> CardDef -> CardDef
+storyOnBack' back def = def {cdDoubleSided = False, cdOtherSide = Just back}
 
 quantity :: Int -> CardDef -> CardDef
 quantity n def = def {cdEncounterSetQuantity = Just n}
@@ -2996,11 +3096,11 @@ abbeyTowerSpiresForbidden =
 
 shoresOfHali :: CardDef
 shoresOfHali =
-  storyOnBack $ location "03325a" "Shores of Hali" [Otherworld] Circle [Square] DimCarcosa
+  storyOnBack' "03325b" $ location "03325a" "Shores of Hali" [Otherworld] Circle [Square] DimCarcosa
 
 bleakPlainsStarsOfAldebaran :: CardDef
 bleakPlainsStarsOfAldebaran =
-  storyOnBack
+  storyOnBack' "03326b"
     $ location
       "03326a"
       "Bleak Plains"
@@ -3011,7 +3111,7 @@ bleakPlainsStarsOfAldebaran =
 
 bleakPlainsBleakDesolation :: CardDef
 bleakPlainsBleakDesolation =
-  storyOnBack
+  storyOnBack' "03326d"
     $ location
       "03326c"
       "Bleak Plains"
@@ -3022,7 +3122,7 @@ bleakPlainsBleakDesolation =
 
 ruinsOfCarcosaInhabitantOfCarcosa :: CardDef
 ruinsOfCarcosaInhabitantOfCarcosa =
-  storyOnBack
+  storyOnBack' "03327b"
     $ location
       "03327a"
       "Ruins of Carcosa"
@@ -3033,7 +3133,7 @@ ruinsOfCarcosaInhabitantOfCarcosa =
 
 ruinsOfCarcosaAMomentsRest :: CardDef
 ruinsOfCarcosaAMomentsRest =
-  storyOnBack
+  storyOnBack' "03327d"
     $ location
       "03327c"
       "Ruins of Carcosa"
@@ -3044,7 +3144,7 @@ ruinsOfCarcosaAMomentsRest =
 
 ruinsOfCarcosaTheCoffin :: CardDef
 ruinsOfCarcosaTheCoffin =
-  storyOnBack
+  storyOnBack' "03327f"
     $ location
       "03327e"
       "Ruins of Carcosa"
@@ -3055,7 +3155,7 @@ ruinsOfCarcosaTheCoffin =
 
 dimStreetsMappingTheStreets :: CardDef
 dimStreetsMappingTheStreets =
-  storyOnBack
+  storyOnBack' "03328b"
     $ location
       "03328a"
       "Dim Streets"
@@ -3066,7 +3166,7 @@ dimStreetsMappingTheStreets =
 
 dimStreetsTheKingsParade :: CardDef
 dimStreetsTheKingsParade =
-  storyOnBack
+  storyOnBack' "03328d"
     $ location
       "03328c"
       "Dim Streets"
@@ -3077,7 +3177,7 @@ dimStreetsTheKingsParade =
 
 dimStreetsTheArchway :: CardDef
 dimStreetsTheArchway =
-  storyOnBack
+  storyOnBack' "03328f"
     $ location
       "03328e"
       "Dim Streets"
@@ -3088,7 +3188,7 @@ dimStreetsTheArchway =
 
 depthsOfDemheTheHeightOfTheDepths :: CardDef
 depthsOfDemheTheHeightOfTheDepths =
-  storyOnBack
+  storyOnBack' "03329b"
     $ location
       "03329a"
       "Depths of Demhe"
@@ -3099,7 +3199,7 @@ depthsOfDemheTheHeightOfTheDepths =
 
 depthsOfDemheStepsOfThePalace :: CardDef
 depthsOfDemheStepsOfThePalace =
-  storyOnBack
+  storyOnBack' "03329d"
     $ location
       "03329c"
       "Depths of Demhe"
@@ -3109,11 +3209,14 @@ depthsOfDemheStepsOfThePalace =
       DimCarcosa
 
 darkSpires :: CardDef
-darkSpires = storyOnBack $ location "03330" "Dark Spires" [Otherworld] Moon [Equals] DimCarcosa
+darkSpires =
+  storyOnBack' "03330b"
+    $ location "03330" "Dark Spires" [Otherworld] Moon [Equals] DimCarcosa
 
 palaceOfTheKing :: CardDef
 palaceOfTheKing =
-  storyOnBack $ location "03331" "Palace of the King" [Otherworld] Star [Triangle, Diamond] DimCarcosa
+  storyOnBack' "03331b"
+    $ location "03331" "Palace of the King" [Otherworld] Star [Triangle, Diamond] DimCarcosa
 
 expeditionCamp :: CardDef
 expeditionCamp =
@@ -3126,49 +3229,24 @@ ruinsOfEztli =
     $ location "04053" "Ruins of Eztli" [Ancient, Ruins] Hourglass [Triangle, Heart] TheUntamedWilds
 
 entryway :: CardDef
-entryway =
-  location
-    "04060"
-    "Entryway"
-    [Ancient, Ruins]
-    Circle
-    [Square, Star]
-    TheDoomOfEztli
+entryway = location "04060" "Entryway" [Ancient, Ruins] Circle [Square, Star] TheDoomOfEztli
 
 ancientHall :: CardDef
 ancientHall =
   singleSided
-    $ location
-      "04063"
-      "Ancient Hall"
-      [Ancient, Ruins]
-      Square
-      [Circle, Star, Diamond]
-      TheDoomOfEztli
+    $ location "04063" "Ancient Hall" [Ancient, Ruins] Square [Circle, Star, Diamond] TheDoomOfEztli
 
 grandChamber :: CardDef
 grandChamber =
   victory 1
     $ singleSided
-    $ location
-      "04064"
-      "Grand Chamber"
-      [Ancient, Ruins]
-      Star
-      [Circle, Square, Triangle]
-      TheDoomOfEztli
+    $ location "04064" "Grand Chamber" [Ancient, Ruins] Star [Circle, Square, Triangle] TheDoomOfEztli
 
 burialPit :: CardDef
 burialPit =
   victory 1
     $ singleSided
-    $ location
-      "04065"
-      "Burial Pit"
-      [Ancient, Ruins]
-      Triangle
-      [Star, Diamond, Squiggle]
-      TheDoomOfEztli
+    $ location "04065" "Burial Pit" [Ancient, Ruins] Triangle [Star, Diamond, Squiggle] TheDoomOfEztli
 
 undergroundRuins :: CardDef
 undergroundRuins =
@@ -3291,7 +3369,7 @@ overgrownRuins =
 eztliExhibit :: CardDef
 eztliExhibit =
   victory 1
-    $ singleSided
+    $ otherSideIs "04117"
     $ location
       "04117b"
       "Eztli Exhibit"
@@ -3317,7 +3395,7 @@ townHall =
 arkhamPoliceStation :: CardDef
 arkhamPoliceStation =
   victory 1
-    $ singleSided
+    $ otherSideIs "04126"
     $ location
       "04126b"
       "Arkham Police Station"
@@ -3328,13 +3406,13 @@ arkhamPoliceStation =
 
 trainTracks :: CardDef
 trainTracks =
-  singleSided
+  otherSideIs "04128"
     $ location "04128b" "Train Tracks" [Arkham] NoSymbol [T] ThreadsOfFate
 
 blackCave :: CardDef
 blackCave =
   victory 1
-    $ singleSided
+    $ otherSideIs "04133"
     $ location
       "04133b"
       "Black Cave"
@@ -3537,21 +3615,18 @@ sacredWoods_185 =
 
 mouthOfKnYanTheCavernsMaw :: CardDef
 mouthOfKnYanTheCavernsMaw =
-  singleSided
-    $ ( location
-          "04206"
-          ("Mouth of K'n-yan" <:> "The Cavern's Maw")
-          [Cave]
-          Equals
-          [Squiggle, T, Hourglass]
-          HeartOfTheElders
-      )
-      { cdOtherSide = Just "04206b"
-      }
+  otherSideIs "04206b"
+    $ location
+      "04206"
+      ("Mouth of K'n-yan" <:> "The Cavern's Maw")
+      [Cave]
+      Equals
+      [Squiggle, T, Hourglass]
+      HeartOfTheElders
 
 mouthOfKnYanTheDepthsBeneath :: CardDef
 mouthOfKnYanTheDepthsBeneath =
-  singleSided
+  otherSideIs "04206"
     $ location
       "04206b"
       ("Mouth of K'n-yan" <:> "The Depths Beneath")
@@ -4017,14 +4092,8 @@ witchesCircle :: CardDef
 witchesCircle =
   revelation
     $ victory 2
-    $ singleSided
-    $ location
-      "05055b"
-      "Witches' Circle"
-      [Woods, Trait.Circle]
-      Plus
-      [Squiggle]
-      TheWitchingHour
+    $ otherSideIs "05055"
+    $ location "05055b" "Witches' Circle" [Woods, Trait.Circle] Plus [Squiggle] TheWitchingHour
 
 witchHauntedWoodsAbandonedMine :: CardDef
 witchHauntedWoodsAbandonedMine =
@@ -4472,42 +4541,24 @@ strangeGeometry =
 
 hangmansBrook :: CardDef
 hangmansBrook =
-  singleSided
-    $ location
-      "05166"
-      "Hangman's Brook"
-      mempty
-      Squiggle
-      [Circle, Plus]
-      TheWagesOfSin
+  otherSideIs "05166b"
+    $ location "05166" "Hangman's Brook" mempty Squiggle [Circle, Plus] TheWagesOfSin
 
 hangmansBrookSpectral :: CardDef
 hangmansBrookSpectral =
-  singleSided
-    $ location
-      "05166b"
-      "Hangman's Brook"
-      [Spectral]
-      Squiggle
-      [Circle, Plus]
-      TheWagesOfSin
+  location "05166b" "Hangman's Brook" [Spectral] Squiggle [Circle, Plus] TheWagesOfSin
+    & otherSideIs "05166"
 
 hauntedFields :: CardDef
 hauntedFields =
   victory 1
-    $ singleSided
-    $ location
-      "05167"
-      "Haunted Fields"
-      mempty
-      Circle
-      [Squiggle, Plus, Triangle, Square]
-      TheWagesOfSin
+    $ otherSideIs "05167b"
+    $ location "05167" "Haunted Fields" mempty Circle [Squiggle, Plus, Triangle, Square] TheWagesOfSin
 
 hauntedFieldsSpectral :: CardDef
 hauntedFieldsSpectral =
   victory 1
-    $ singleSided
+    $ otherSideIs "05167"
     $ location
       "05167b"
       "Haunted Fields"
@@ -4519,19 +4570,13 @@ hauntedFieldsSpectral =
 abandonedChapel :: CardDef
 abandonedChapel =
   victory 1
-    $ singleSided
-    $ location
-      "05168"
-      "Abandoned Chapel"
-      mempty
-      Plus
-      [Squiggle, Circle, Diamond, Moon]
-      TheWagesOfSin
+    $ otherSideIs "05168b"
+    $ location "05168" "Abandoned Chapel" mempty Plus [Squiggle, Circle, Diamond, Moon] TheWagesOfSin
 
 abandonedChapelSpectral :: CardDef
 abandonedChapelSpectral =
   victory 1
-    $ singleSided
+    $ otherSideIs "05168"
     $ location
       "05168b"
       "Abandoned Chapel"
@@ -4542,40 +4587,21 @@ abandonedChapelSpectral =
 
 theGallows_169 :: CardDef
 theGallows_169 =
-  singleSided
-    $ location
-      "05169"
-      "The Gallows"
-      mempty
-      Triangle
-      [Circle, Square]
-      TheWagesOfSin
+  otherSideIs "05169b"
+    $ location "05169" "The Gallows" mempty Triangle [Circle, Square] TheWagesOfSin
 
 theGallowsSpectral_169 :: CardDef
 theGallowsSpectral_169 =
-  singleSided
-    $ location
-      "05169b"
-      "The Gallows"
-      [Spectral]
-      Triangle
-      [Circle, Square]
-      TheWagesOfSin
+  otherSideIs "05169"
+    $ location "05169b" "The Gallows" [Spectral] Triangle [Circle, Square] TheWagesOfSin
 
 theGallows_170 :: CardDef
 theGallows_170 =
-  singleSided
-    $ location
-      "05170"
-      "The Gallows"
-      mempty
-      Triangle
-      [Circle, Square]
-      TheWagesOfSin
+  otherSideIs "05170b" $ location "05170" "The Gallows" mempty Triangle [Circle, Square] TheWagesOfSin
 
 theGallowsSpectral_170 :: CardDef
 theGallowsSpectral_170 =
-  singleSided
+  otherSideIs "05170"
     $ location
       "05170b"
       "The Gallows"
@@ -4586,18 +4612,12 @@ theGallowsSpectral_170 =
 
 hereticsGraves_171 :: CardDef
 hereticsGraves_171 =
-  singleSided
-    $ location
-      "05171"
-      "Heretics' Graves"
-      mempty
-      Square
-      [Triangle, Circle]
-      TheWagesOfSin
+  otherSideIs "05171b"
+    $ location "05171" "Heretics' Graves" mempty Square [Triangle, Circle] TheWagesOfSin
 
 hereticsGravesSpectral_171 :: CardDef
 hereticsGravesSpectral_171 =
-  singleSided
+  otherSideIs "05171"
     $ location
       "05171b"
       "Heretics' Graves"
@@ -4608,113 +4628,53 @@ hereticsGravesSpectral_171 =
 
 hereticsGraves_172 :: CardDef
 hereticsGraves_172 =
-  singleSided
-    $ location
-      "05172"
-      "Heretics' Graves"
-      mempty
-      Square
-      [Triangle, Circle]
-      TheWagesOfSin
+  location "05172" "Heretics' Graves" mempty Square [Triangle, Circle] TheWagesOfSin
+    & otherSideIs "05172b"
 
 hereticsGravesSpectral_172 :: CardDef
 hereticsGravesSpectral_172 =
-  singleSided
-    $ location
-      "05172b"
-      "Heretics' Graves"
-      [Spectral]
-      Square
-      [Triangle, Circle]
-      TheWagesOfSin
+  location "05172b" "Heretics' Graves" [Spectral] Square [Triangle, Circle] TheWagesOfSin
+    & otherSideIs "05172"
 
 chapelCrypt_173 :: CardDef
 chapelCrypt_173 =
-  singleSided
-    $ location
-      "05173"
-      "Chapel Crypt"
-      mempty
-      Diamond
-      [Plus, Moon]
-      TheWagesOfSin
+  location "05173" "Chapel Crypt" mempty Diamond [Plus, Moon] TheWagesOfSin
+    & otherSideIs "05173b"
 
 chapelCryptSpectral_173 :: CardDef
 chapelCryptSpectral_173 =
-  singleSided
-    $ location
-      "05173b"
-      "Chapel Crypt"
-      [Spectral]
-      Diamond
-      [Plus, Moon]
-      TheWagesOfSin
+  location "05173b" "Chapel Crypt" [Spectral] Diamond [Plus, Moon] TheWagesOfSin
+    & otherSideIs "05173"
 
 chapelCrypt_174 :: CardDef
 chapelCrypt_174 =
-  singleSided
-    $ location
-      "05174"
-      "Chapel Crypt"
-      mempty
-      Diamond
-      [Plus, Moon]
-      TheWagesOfSin
+  location "05174" "Chapel Crypt" mempty Diamond [Plus, Moon] TheWagesOfSin
+    & otherSideIs "05174b"
 
 chapelCryptSpectral_174 :: CardDef
 chapelCryptSpectral_174 =
-  singleSided
-    $ location
-      "05174b"
-      "Chapel Crypt"
-      [Spectral]
-      Diamond
-      [Plus, Moon]
-      TheWagesOfSin
+  location "05174b" "Chapel Crypt" [Spectral] Diamond [Plus, Moon] TheWagesOfSin
+    & otherSideIs "05174"
 
 chapelAttic_175 :: CardDef
 chapelAttic_175 =
-  singleSided
-    $ location
-      "05175"
-      "Chapel Attic"
-      mempty
-      Moon
-      [Plus, Diamond]
-      TheWagesOfSin
+  location "05175" "Chapel Attic" mempty Moon [Plus, Diamond] TheWagesOfSin
+    & otherSideIs "05175b"
 
 chapelAtticSpectral_175 :: CardDef
 chapelAtticSpectral_175 =
-  singleSided
-    $ location
-      "05175b"
-      "Chapel Attic"
-      [Spectral]
-      Moon
-      [Plus, Diamond]
-      TheWagesOfSin
+  location "05175b" "Chapel Attic" [Spectral] Moon [Plus, Diamond] TheWagesOfSin
+    & otherSideIs "05175"
 
 chapelAttic_176 :: CardDef
 chapelAttic_176 =
-  singleSided
-    $ location
-      "05176"
-      "Chapel Attic"
-      mempty
-      Moon
-      [Plus, Diamond]
-      TheWagesOfSin
+  location "05176" "Chapel Attic" mempty Moon [Plus, Diamond] TheWagesOfSin
+    & otherSideIs "05176b"
 
 chapelAtticSpectral_176 :: CardDef
 chapelAtticSpectral_176 =
-  singleSided
-    $ location
-      "05176b"
-      "Chapel Attic"
-      [Spectral]
-      Moon
-      [Plus, Diamond]
-      TheWagesOfSin
+  location "05176b" "Chapel Attic" [Spectral] Moon [Plus, Diamond] TheWagesOfSin
+    & otherSideIs "05176"
 
 lodgeGatesWeveBeenExpectingYou :: CardDef
 lodgeGatesWeveBeenExpectingYou =
@@ -5986,31 +5946,25 @@ vaultsOfZin =
 cityOfGugs :: CardDef
 cityOfGugs =
   victory 1
-    $ singleSided
-    $ ( location
-          "06255"
-          "City of Gugs"
-          []
-          T
-          [Heart, Squiggle, Moon]
-          PointOfNoReturn
-      )
-      { cdOtherSide = Just "06255b"
-      }
+    $ otherSideIs "06255b"
+    $ location
+      "06255"
+      "City of Gugs"
+      []
+      T
+      [Heart, Squiggle, Moon]
+      PointOfNoReturn
 
 towerOfKoth :: CardDef
 towerOfKoth =
-  singleSided
-    $ ( location
-          "06256"
-          "Tower of Koth"
-          []
-          Squiggle
-          [T, Square]
-          PointOfNoReturn
-      )
-      { cdOtherSide = Just "06256b"
-      }
+  otherSideIs "06256b"
+    $ location
+      "06256"
+      "Tower of Koth"
+      []
+      Squiggle
+      [T, Square]
+      PointOfNoReturn
 
 plainOfTheGhouls :: CardDef
 plainOfTheGhouls =
@@ -6039,31 +5993,25 @@ cragOfTheGhouls =
 seaOfBones :: CardDef
 seaOfBones =
   victory 1
-    $ singleSided
-    $ ( location
-          "06259"
-          "Sea of Bones"
-          [Vale]
-          Circle
-          [Hourglass, Star, Equals]
-          PointOfNoReturn
-      )
-      { cdOtherSide = Just "06259b"
-      }
+    $ otherSideIs "06259b"
+    $ location
+      "06259"
+      "Sea of Bones"
+      [Vale]
+      Circle
+      [Hourglass, Star, Equals]
+      PointOfNoReturn
 
 peaksOfThok :: CardDef
 peaksOfThok =
-  singleSided
-    $ ( location
-          "06260"
-          "Peaks of Thok"
-          [Vale, Central]
-          Star
-          [Equals, Circle]
-          PointOfNoReturn
-      )
-      { cdOtherSide = Just "06260b"
-      }
+  otherSideIs "06260b"
+    $ location
+      "06260"
+      "Peaks of Thok"
+      [Vale, Central]
+      Star
+      [Equals, Circle]
+      PointOfNoReturn
 
 valeOfPnath :: CardDef
 valeOfPnath =
@@ -8223,6 +8171,402 @@ hiddenTunnelAWayOut =
     [Ruins]
     StirringInTheDeep
 
+rainyLondonStreets :: CardDef
+rainyLondonStreets =
+  location
+    "09510"
+    "Rainy London Streets"
+    [London]
+    Equals
+    [Circle, Square, Triangle, Squiggle]
+    RiddlesAndRain
+
+bigBen :: CardDef
+bigBen =
+  victory 1
+    $ location
+      "09511"
+      "Big Ben"
+      [London]
+      Triangle
+      [Equals, Circle]
+      RiddlesAndRain
+
+westminsterAbbey :: CardDef
+westminsterAbbey =
+  location
+    "09512"
+    "Westminster Abbey"
+    [London]
+    Circle
+    [Equals, Triangle]
+    RiddlesAndRain
+
+kensingtonGardens :: CardDef
+kensingtonGardens =
+  victory 1
+    $ location
+      "09513"
+      "Kensington Gardens"
+      [London]
+      Square
+      [Equals]
+      RiddlesAndRain
+
+theTowerBridge :: CardDef
+theTowerBridge =
+  location
+    "09514"
+    "The Tower Bridge"
+    [London]
+    Squiggle
+    [Equals, Moon, T]
+    RiddlesAndRain
+
+traitorsGate :: CardDef
+traitorsGate =
+  location
+    "09515"
+    "Traitor's Gate"
+    [London]
+    T
+    [Squiggle, Moon]
+    RiddlesAndRain
+
+towerOfLondon :: CardDef
+towerOfLondon =
+  location
+    "09516"
+    "Tower of London"
+    [London]
+    Moon
+    [Squiggle, T, Hourglass]
+    RiddlesAndRain
+
+towerPrison :: CardDef
+towerPrison =
+  victory 1
+    $ location
+      "09517"
+      "Tower Prison"
+      [London]
+      Hourglass
+      [Moon]
+      RiddlesAndRain
+
+marrakeshRailwayStation :: CardDef
+marrakeshRailwayStation =
+  location
+    "09526"
+    "Marrakesh Railway Station"
+    [Marrakesh]
+    Squiggle
+    [Diamond, Heart, Square]
+    DeadHeat
+
+jemaaElFnaaSquare :: CardDef
+jemaaElFnaaSquare =
+  location
+    "09527"
+    "Jemaa el-Fnaa Square"
+    [Marrakesh]
+    Diamond
+    [Squiggle, Heart, Triangle]
+    DeadHeat
+
+saadiansTombs :: CardDef
+saadiansTombs =
+  location
+    "09528"
+    "Saadian's Tombs"
+    [Marrakesh]
+    Heart
+    [Squiggle, Diamond]
+    DeadHeat
+
+tanneries :: CardDef
+tanneries =
+  location
+    "09529"
+    "Tanneries"
+    [Marrakesh]
+    Triangle
+    [Diamond, Square]
+    DeadHeat
+
+bahiaPalaceGardens :: CardDef
+bahiaPalaceGardens =
+  locationWithUnrevealed
+    "09530"
+    "Bahia Palace Gardens"
+    [Marrakesh]
+    Square
+    [Squiggle, Triangle]
+    "Bahia Palace Gardens"
+    [Marrakesh, RitualSite]
+    Square
+    [Squiggle, Triangle]
+    DeadHeat
+
+marrakeshRailwayStationAbandoned :: CardDef
+marrakeshRailwayStationAbandoned =
+  location
+    "09531"
+    "Marrakesh Railway Station"
+    [Marrakesh, Abandoned]
+    Squiggle
+    [Diamond, Heart, Square]
+    DeadHeat
+
+jemaaElFnaaSquareAbandoned :: CardDef
+jemaaElFnaaSquareAbandoned =
+  location
+    "09532"
+    "Jemaa el-Fnaa Square"
+    [Marrakesh, Abandoned]
+    Diamond
+    [Squiggle, Heart, Triangle]
+    DeadHeat
+
+saadiansTombsAbandoned :: CardDef
+saadiansTombsAbandoned =
+  location
+    "09533"
+    "Saadian's Tombs"
+    [Marrakesh, Abandoned]
+    Heart
+    [Squiggle, Diamond]
+    DeadHeat
+
+tanneriesAbandoned :: CardDef
+tanneriesAbandoned =
+  location
+    "09534"
+    "Tanneries"
+    [Marrakesh, Abandoned]
+    Triangle
+    [Diamond, Square]
+    DeadHeat
+
+bahiaPalaceGardensAbandoned :: CardDef
+bahiaPalaceGardensAbandoned =
+  locationWithUnrevealed
+    "09535"
+    "Bahia Palace Gardens"
+    [Marrakesh, Abandoned]
+    Square
+    [Squiggle, Triangle]
+    "Bahia Palace Gardens"
+    [Marrakesh, RitualSite, Abandoned]
+    Square
+    [Squiggle, Triangle]
+    DeadHeat
+
+avenidaDeMayo :: CardDef
+avenidaDeMayo =
+  location
+    "09549"
+    "Avenida de Mayo"
+    [BuenosAires, Central]
+    Equals
+    [Moon, T, Square, Circle]
+    SanguineShadows
+
+casaRosada :: CardDef
+casaRosada =
+  location
+    "09550"
+    "Casa Rosada"
+    [BuenosAires]
+    Moon
+    [Equals, Moon]
+    SanguineShadows
+
+catedralMetropolitana :: CardDef
+catedralMetropolitana =
+  location
+    "09551"
+    "Catedral Metropolitana"
+    [BuenosAires]
+    Moon
+    [Equals, Moon]
+    SanguineShadows
+
+cementarioDeLaRecoleta :: CardDef
+cementarioDeLaRecoleta =
+  location
+    "09552"
+    "Cementario de la Recoleta"
+    [BuenosAires]
+    T
+    [Equals, T]
+    SanguineShadows
+
+palacioErrazuriz :: CardDef
+palacioErrazuriz =
+  location
+    "09553"
+    "Palacio Errázuriz"
+    [BuenosAires]
+    T
+    [Equals, T]
+    SanguineShadows
+
+theCabildo :: CardDef
+theCabildo =
+  location
+    "09554"
+    "The Cabildo"
+    [BuenosAires]
+    Square
+    [Equals, Square]
+    SanguineShadows
+
+bancoDeLaProvincia :: CardDef
+bancoDeLaProvincia =
+  location
+    "09555"
+    "Banco de la Provincia"
+    [BuenosAires]
+    Square
+    [Equals, Square]
+    SanguineShadows
+
+teatroColon :: CardDef
+teatroColon =
+  location
+    "09556"
+    "Teatro Colón"
+    [BuenosAires]
+    Circle
+    [Equals]
+    SanguineShadows
+
+galataDocks :: CardDef
+galataDocks =
+  victory 1
+    $ location
+      "09572"
+      "Galata Docks"
+      [Istanbul]
+      Squiggle
+      [Diamond, Plus]
+      DealingsInTheDark
+
+galata :: CardDef
+galata =
+  location
+    "09573"
+    "Galata"
+    [Istanbul]
+    Plus
+    [Moon, Circle, Squiggle]
+    DealingsInTheDark
+
+obeliskOfTheodosius :: CardDef
+obeliskOfTheodosius =
+  victory 1
+    $ location
+      "09574"
+      "Obelisk of Theodosius"
+      [Istanbul]
+      Moon
+      [Plus, Square]
+      DealingsInTheDark
+
+istanbulUniversity :: CardDef
+istanbulUniversity =
+  victory 1
+    $ location
+      "09575"
+      "Istanbul University"
+      [Istanbul]
+      Circle
+      [Plus, Square]
+      DealingsInTheDark
+
+hagiaSophia :: CardDef
+hagiaSophia =
+  location
+    "09576"
+    "Hagia Sophia"
+    [Istanbul]
+    Square
+    [Moon, Circle]
+    DealingsInTheDark
+
+grandBazaarDarkenedAlley :: CardDef
+grandBazaarDarkenedAlley =
+  locationWithUnrevealed_
+    "09577"
+    "Grand Bazaar"
+    [Istanbul, Bazaar]
+    ("Grand Bazaar" <:> "Darkened Alley")
+    [Istanbul, Bazaar]
+    DealingsInTheDark
+
+grandBazaarPublicBaths :: CardDef
+grandBazaarPublicBaths =
+  locationWithUnrevealed_
+    "09578"
+    "Grand Bazaar"
+    [Istanbul, Bazaar]
+    ("Grand Bazaar" <:> "Public Baths")
+    [Istanbul, Bazaar]
+    DealingsInTheDark
+
+grandBazaarMarbleFountain :: CardDef
+grandBazaarMarbleFountain =
+  victory 1
+    $ locationWithUnrevealed_
+      "09579"
+      "Grand Bazaar"
+      [Istanbul, Bazaar]
+      ("Grand Bazaar" <:> "Marble Fountain")
+      [Istanbul, Bazaar]
+      DealingsInTheDark
+
+grandBazaarCrowdedShops :: CardDef
+grandBazaarCrowdedShops =
+  locationWithUnrevealed_
+    "09580"
+    "Grand Bazaar"
+    [Istanbul, Bazaar]
+    ("Grand Bazaar" <:> "Crowded Shops")
+    [Istanbul, Bazaar]
+    DealingsInTheDark
+
+grandBazaarBusyWalkway :: CardDef
+grandBazaarBusyWalkway =
+  locationWithUnrevealed_
+    "09581"
+    "Grand Bazaar"
+    [Istanbul, Bazaar]
+    ("Grand Bazaar" <:> "Busy Walkway")
+    [Istanbul, Bazaar]
+    DealingsInTheDark
+
+grandBazaarRooftopAccess :: CardDef
+grandBazaarRooftopAccess =
+  victory 1
+    $ locationWithUnrevealed_
+      "09582"
+      "Grand Bazaar"
+      [Istanbul, Bazaar]
+      ("Grand Bazaar" <:> "Rooftop Access")
+      [Istanbul, Bazaar]
+      DealingsInTheDark
+
+grandBazaarJewelersRoad :: CardDef
+grandBazaarJewelersRoad =
+  locationWithUnrevealed_
+    "09583"
+    "Grand Bazaar"
+    [Istanbul, Bazaar]
+    ("Grand Bazaar" <:> "Jewelers' Road")
+    [Istanbul, Bazaar]
+    DealingsInTheDark
+
 studyAberrantGateway :: CardDef
 studyAberrantGateway =
   location
@@ -9072,6 +9416,52 @@ treacherousDescent =
       [Heart, Diamond, Circle]
       ReturnToKnYan
 
+hallsOfPnakotusSouthernCorridors :: CardDef
+hallsOfPnakotusSouthernCorridors =
+  location
+    "53055"
+    ("Halls of Pnakotus" <:> "Southern Corridors")
+    [Ancient, Pnakotus]
+    Plus
+    [Square, Diamond, Heart, Hourglass]
+    ReturnToTheCityOfArchives
+
+cyclopeanVaults :: CardDef
+cyclopeanVaults =
+  victory 1
+    $ location
+      "53056"
+      "Cyclopean Vaults"
+      [Ancient, Pnakotus]
+      Hourglass
+      [Plus, Heart]
+      ReturnToTheCityOfArchives
+
+alienConservatory :: CardDef
+alienConservatory =
+  location
+    "53057"
+    "Alien Conservatory"
+    [Ancient, Pnakotus]
+    Heart
+    [Plus, Hourglass]
+    ReturnToTheCityOfArchives
+
+greatHallOfCeleano :: CardDef
+greatHallOfCeleano =
+  singleSided
+    $ location "53062" "Great Hall of Celeano" [Otherworld] Droplet [Diamond] ReturnToShatteredAeons
+
+buenosAires :: CardDef
+buenosAires =
+  singleSided
+    $ location "53063" "Buenos Aires" [Shattered] Equals [Star] ReturnToShatteredAeons
+
+ultimaThule :: CardDef
+ultimaThule =
+  singleSided
+    $ location "53064" "Ultima Thule" [Shattered] Equals [Star] ReturnToShatteredAeons
+
 riversideTemple :: CardDef
 riversideTemple =
   singleSided
@@ -9117,6 +9507,316 @@ cloudForest =
       Heart
       [Hourglass, Diamond, Moon, T]
       ReturnToRainforest
+
+witchHauntedWoodsWitchTree :: CardDef
+witchHauntedWoodsWitchTree =
+  victory 1
+    $ locationWithUnrevealed
+      "54019"
+      "Witch-Haunted Woods"
+      [Woods]
+      Squiggle
+      [Squiggle, Plus]
+      ("Witch-Haunted Woods" <:> "Witch Tree")
+      [Woods]
+      Squiggle
+      [Squiggle, Plus]
+      ReturnToTheWitchingHour
+
+witchHauntedWoodsUnmarkedGraveyard :: CardDef
+witchHauntedWoodsUnmarkedGraveyard =
+  victory 1
+    $ locationWithUnrevealed
+      "54020"
+      "Witch-Haunted Woods"
+      [Woods]
+      Squiggle
+      [Squiggle, Plus]
+      ("Witch-Haunted Woods" <:> "Unmarked Graveyard")
+      [Woods]
+      Squiggle
+      [Squiggle, Plus]
+      ReturnToTheWitchingHour
+
+arkhamWoodsHiddenPath :: CardDef
+arkhamWoodsHiddenPath =
+  locationWithUnrevealed
+    "54021"
+    "Arkham Woods"
+    [Woods]
+    Square
+    [Squiggle]
+    ("Arkham Woods" <:> "Hidden Path")
+    [Woods]
+    Spade
+    [Squiggle, Trefoil]
+    ReturnToTheWitchingHour
+
+arkhamWoodsPlaceOfPower :: CardDef
+arkhamWoodsPlaceOfPower =
+  locationWithUnrevealed
+    "54022"
+    "Arkham Woods"
+    [Woods]
+    Square
+    [Squiggle]
+    ("Arkham Woods" <:> "Place of Power")
+    [Woods]
+    Trefoil
+    [Squiggle, Spade]
+    ReturnToTheWitchingHour
+
+arkhamWoodsBootleggingOperation :: CardDef
+arkhamWoodsBootleggingOperation =
+  locationWithUnrevealed
+    "54023"
+    "Arkham Woods"
+    [Woods]
+    Square
+    [Squiggle]
+    ("Arkham Woods" <:> "Bootlegging Operation")
+    [Woods]
+    Trefoil
+    [Squiggle, Equals, Hourglass]
+    ReturnToTheWitchingHour
+
+wineCellar :: CardDef
+wineCellar =
+  location
+    "54027"
+    "Wine Cellar"
+    []
+    Hourglass
+    [T]
+    ReturnToAtDeathsDoorstep
+
+wineCellarSpectral :: CardDef
+wineCellarSpectral =
+  location
+    "54028"
+    "Wine Cellar"
+    [Spectral]
+    Hourglass
+    [T]
+    ReturnToAtDeathsDoorstep
+
+templeOfRlyeh :: CardDef
+templeOfRlyeh =
+  victory 1
+    $ locationWithUnrevealed
+      "54030"
+      "Unknown Places"
+      [Extradimensional]
+      Moon
+      [Square]
+      "Temple of R'lyeh"
+      [Extradimensional, Otherworld]
+      Equals
+      [Square, Squiggle]
+      ReturnToTheSecretName
+
+thePriceManor :: CardDef
+thePriceManor =
+  locationWithUnrevealed
+    "54031"
+    "Unknown Places"
+    [Extradimensional]
+    Moon
+    [Square]
+    "The Price Manor"
+    [Extradimensional]
+    Moon
+    [Square]
+    ReturnToTheSecretName
+
+the9thWard :: CardDef
+the9thWard =
+  locationWithUnrevealed
+    "54032"
+    "Unknown Places"
+    [Extradimensional]
+    Moon
+    [Square]
+    "The 9th Ward"
+    [Extradimensional]
+    Moon
+    [Square]
+    ReturnToTheSecretName
+
+libraryOfEbla :: CardDef
+libraryOfEbla =
+  victory 1
+    $ locationWithUnrevealed
+      "54033"
+      "Unknown Places"
+      [Extradimensional]
+      Moon
+      [Square]
+      "Library of Ebla"
+      [Extradimensional]
+      Squiggle
+      [Square, Equals]
+      ReturnToTheSecretName
+
+returnToHangmansBrook :: CardDef
+returnToHangmansBrook =
+  otherSideIs "54037b"
+    $ location "54037" "Hangman's Brook" mempty Squiggle [Circle, Plus] ReturnToTheWagesOfSin
+
+returnToHangmansBrookSpectral :: CardDef
+returnToHangmansBrookSpectral =
+  otherSideIs "54037"
+    $ location
+      "54037b"
+      "Hangman's Brook"
+      [Spectral]
+      Squiggle
+      [Circle, Plus]
+      ReturnToTheWagesOfSin
+
+returnToLounge :: CardDef
+returnToLounge =
+  locationWithUnrevealed
+    "54043"
+    "Lounge"
+    [Lodge]
+    Moon
+    [Circle, Heart, Plus]
+    "Lounge"
+    [Lodge]
+    Moon
+    [Circle, Heart, Plus, Trefoil]
+    ForTheGreaterGood
+
+relicStorage :: CardDef
+relicStorage =
+  locationWithUnrevealed
+    "54044"
+    "Hidden Passageway"
+    [Lodge]
+    Trefoil
+    [Moon]
+    "Relic Storage"
+    [Lodge]
+    Trefoil
+    [Moon]
+    ReturnToForTheGreaterGood
+
+shroudedArchive :: CardDef
+shroudedArchive =
+  locationWithUnrevealed
+    "54045"
+    "Sanctum Doorway"
+    [Lodge, Sanctum]
+    Star
+    [Squiggle]
+    "Shrouded Archive"
+    [Lodge, Sanctum]
+    Triangle
+    [Squiggle]
+    ReturnToForTheGreaterGood
+
+returnToFrenchHill :: CardDef
+returnToFrenchHill =
+  location
+    "54050"
+    "French Hill"
+    [Arkham]
+    T
+    [Circle, Square, Star]
+    ReturnToInTheClutchesOfChaos
+
+returnToRivertown :: CardDef
+returnToRivertown =
+  location
+    "54051"
+    "Rivertown"
+    [Arkham]
+    Circle
+    [Square, Triangle, T]
+    ReturnToInTheClutchesOfChaos
+
+returnToSouthside :: CardDef
+returnToSouthside =
+  location
+    "54052"
+    "Southside"
+    [Arkham, Central]
+    Square
+    [Circle, Triangle, Plus, T, Diamond]
+    ReturnToInTheClutchesOfChaos
+
+returnToUptown :: CardDef
+returnToUptown =
+  location
+    "54053"
+    "Uptown"
+    [Arkham]
+    Plus
+    [Square, Triangle, Moon]
+    ReturnToInTheClutchesOfChaos
+
+returnToSouthChurch :: CardDef
+returnToSouthChurch =
+  location
+    "54054"
+    "South Church"
+    [Arkham]
+    Diamond
+    [Square]
+    ReturnToInTheClutchesOfChaos
+
+returnToMerchantDistrict :: CardDef
+returnToMerchantDistrict =
+  location
+    "54055"
+    "Merchant District"
+    [Arkham]
+    Triangle
+    [Circle, Square, Plus]
+    ReturnToInTheClutchesOfChaos
+
+nightmareBreach :: CardDef
+nightmareBreach =
+  locationWithUnrevealed
+    "54058"
+    "Cosmos"
+    [Otherworld]
+    NoSymbol
+    []
+    "Nightmare Breach"
+    [Otherworld, Void]
+    NoSymbol
+    []
+    ReturnToBeforeTheBlackThrone
+
+interstellarAbyss :: CardDef
+interstellarAbyss =
+  locationWithUnrevealed
+    "54059"
+    "Cosmos"
+    [Otherworld]
+    NoSymbol
+    []
+    "Interstellar Abyss"
+    [Otherworld, Void]
+    NoSymbol
+    []
+    ReturnToBeforeTheBlackThrone
+
+windingGulf :: CardDef
+windingGulf =
+  locationWithUnrevealed
+    "54060"
+    "Cosmos"
+    [Otherworld]
+    NoSymbol
+    []
+    "Interstellar Abyss"
+    [Otherworld, Void]
+    NoSymbol
+    []
+    ReturnToBeforeTheBlackThrone
 
 lobbyTheMidwinterGala :: CardDef
 lobbyTheMidwinterGala =
@@ -9218,6 +9918,135 @@ parlorTheMidwinterGala =
       Circle
       [T, Hourglass, Heart]
       TheMidwinterGala
+
+centralLotQuietOnSet :: CardDef
+centralLotQuietOnSet =
+  otherSideIs "72008b"
+    $ location
+      "72008"
+      ("Central Lot" <:> "Quiet on Set")
+      [Set, Central]
+      Circle
+      [Moon, Diamond, Triangle]
+      FilmFatale
+
+centralLotBlurred :: CardDef
+centralLotBlurred =
+  otherSideIs "72008"
+    $ location
+      "72008b"
+      ("Central Lot" <:> "Blurred")
+      [Set, Central, Extradimensional]
+      Circle
+      [Moon, Diamond, Triangle]
+      FilmFatale
+
+spaceSet :: CardDef
+spaceSet = location "72009" "Space Set" [Set] Moon [Circle] FilmFatale
+
+jungleSet :: CardDef
+jungleSet = location "72010" "Jungle Set" [Set] Diamond [Circle, Droplet] FilmFatale
+
+gothicSet :: CardDef
+gothicSet =
+  location
+    "72011"
+    "Gothic Set"
+    [Set]
+    Triangle
+    [Circle, Heart, Hourglass, Trefoil, Square, Equals]
+    FilmFatale
+
+highRulersBastion :: CardDef
+highRulersBastion = location "72027" "High Ruler's Bastion" [Cosmos] NoSymbol [] CosmicJourney
+
+teetawnPassage :: CardDef
+teetawnPassage = victory 1 $ location "72028" "Teetawn Passage" [Cosmos] Droplet [Squiggle] CosmicJourney
+
+ritualSiteTeetawn :: CardDef
+ritualSiteTeetawn = location "72029" "Ritual Site Teetawn" [RitualSite] Squiggle [Droplet] CosmicJourney
+
+tothisBarrens :: CardDef
+tothisBarrens = victory 1 $ location "72030" "Tothis Barrens" [Cosmos] T [Star] CosmicJourney
+
+ritualSiteTothis :: CardDef
+ritualSiteTothis = location "72031" "Ritual Site Tothis" [RitualSite] Star [T] CosmicJourney
+
+lostAsteroid :: CardDef
+lostAsteroid =
+  quantity 2
+    $ singleSided
+    $ revelation
+    $ location "72034" "Lost Asteroid" [Cosmos] NoSymbol [] CosmicJourney
+
+westernRidge :: CardDef
+westernRidge = location "72039" "Western Ridge" [Jungle] Droplet [Diamond, T, Plus] ForgottenIsland
+
+tarPit :: CardDef
+tarPit = victory 1 $ location "72040" "Tar Pit" [Jungle] T [Droplet, Hourglass] ForgottenIsland
+
+easternRidge :: CardDef
+easternRidge = location "72041" "Eastern Ridge" [Jungle] Hourglass [T, Plus] ForgottenIsland
+
+jungleRiver :: CardDef
+jungleRiver = location "72042" "Jungle River" [Jungle] Plus [Droplet, Hourglass, Squiggle] ForgottenIsland
+
+ruinsOfTheSerpentKing :: CardDef
+ruinsOfTheSerpentKing =
+  victory 1
+    $ location "72043" "Ruins of the Serpent King" [Jungle, Ruins] Squiggle [Plus] ForgottenIsland
+
+castleHallwaysSeeminglyEndless :: CardDef
+castleHallwaysSeeminglyEndless =
+  location
+    "72050"
+    ("Castle Hallways" <:> "Seemingly Endless")
+    [Castle]
+    Heart
+    [Triangle, Square]
+    AbominableContessa
+
+catacombsStinksOfDeath :: CardDef
+catacombsStinksOfDeath =
+  location
+    "72051"
+    ("Catacombs" <:> "Stinks of Death")
+    [Castle]
+    Hourglass
+    [Triangle, Trefoil]
+    AbominableContessa
+
+clockTowerIncessantlyTicking :: CardDef
+clockTowerIncessantlyTicking =
+  victory 1
+    $ location
+      "72052"
+      ("Clock Tower" <:> "Incessantly Ticking")
+      [Castle]
+      Trefoil
+      [Triangle, Hourglass]
+      AbominableContessa
+
+moonlitGardenPoisonedBeauty :: CardDef
+moonlitGardenPoisonedBeauty =
+  location
+    "72053"
+    ("Moonlit Garden" <:> "Poisoned Beauty")
+    [Castle]
+    Square
+    [Triangle, Heart]
+    AbominableContessa
+
+throneOfBloodRedAsBloodBlackAsNight :: CardDef
+throneOfBloodRedAsBloodBlackAsNight =
+  victory 1
+    $ location
+      "72054"
+      ("Throne of Blood" <:> "Red as Blood, Black as Night")
+      [Castle, Sanctum]
+      Equals
+      [Triangle]
+      AbominableContessa
 
 cursedShores :: CardDef
 cursedShores =
@@ -9377,9 +10206,8 @@ overgrownCairns =
 
 gondola :: CardDef
 gondola =
-  (location "82006b" "Gondola" [Venice, Boat] NoSymbol [] CarnevaleOfHorrors)
-    { cdDoubleSided = False
-    }
+  location "82006b" "Gondola" [Venice, Boat] NoSymbol [] CarnevaleOfHorrors
+    & otherSideIs "82006"
 
 sanMarcoBasilica :: CardDef
 sanMarcoBasilica =

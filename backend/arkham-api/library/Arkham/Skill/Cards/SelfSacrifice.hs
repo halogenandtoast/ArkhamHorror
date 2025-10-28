@@ -1,17 +1,11 @@
-module Arkham.Skill.Cards.SelfSacrifice (
-  selfSacrifice,
-  SelfSacrifice (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.SelfSacrifice (selfSacrifice) where
 
 import Arkham.Capability
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
+import Arkham.Message.Lifted.Choose
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype SelfSacrifice = SelfSacrifice SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
@@ -25,22 +19,14 @@ instance HasModifiersFor SelfSacrifice where
     modified_ attrs attrs.controller [ResolvesFailedEffects]
 
 instance RunMessage SelfSacrifice where
-  runMessage msg s@(SelfSacrifice attrs) = case msg of
+  runMessage msg s@(SelfSacrifice attrs) = runQueueT $ case msg of
     FailedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
       performing <- fromJustNote "missing investigator" <$> getSkillTestInvestigator
       let you = attrs.controller
-
-      youCanDraw <- can.draw.cards you
-      performingCanDraw <- can.draw.cards performing
-
-      when (youCanDraw || performingCanDraw) $ do
-        player <- getPlayer you
-        let yourDraw = drawCards you attrs 2
-        let performingDraw = drawCards performing attrs 2
-        push
-          $ chooseOrRunOne player
-          $ [targetLabel you [yourDraw] | youCanDraw]
-          <> [targetLabel performing [performingDraw] | performingCanDraw]
-
+      chooseOrRunOneM you do
+        whenM (can.draw.cards you) do
+          targeting you $ drawCards you attrs 2
+        whenM (can.draw.cards performing) do
+          targeting performing $ drawCards performing attrs 2
       pure s
-    _ -> SelfSacrifice <$> runMessage msg attrs
+    _ -> SelfSacrifice <$> liftRunMessage msg attrs

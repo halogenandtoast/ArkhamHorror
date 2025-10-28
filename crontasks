@@ -1,0 +1,1 @@
+*/5 * * * * root /opt/arkham/bin/check.sh >> /var/log/check_arkham.log 2>&1

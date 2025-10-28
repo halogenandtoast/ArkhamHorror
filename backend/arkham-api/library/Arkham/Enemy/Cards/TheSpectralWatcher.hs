@@ -24,10 +24,10 @@ instance HasAbilities TheSpectralWatcher where
 instance RunMessage TheSpectralWatcher where
   runMessage msg e@(TheSpectralWatcher attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      cancelEnemyDefeatWithWindows attrs
-      healAllDamage (attrs.ability 1) attrs
-      disengageEnemyFromAll attrs
-      exhaustThis attrs
-      doesNotReadyDuringUpkeep (attrs.ability 1) attrs
+      insteadOfDefeatWithWindows attrs do
+        healAllDamage (attrs.ability 1) attrs
+        disengageEnemyFromAll attrs
+        exhaustThis attrs
+        doesNotReadyDuringUpkeep (attrs.ability 1) attrs
       pure e
     _ -> TheSpectralWatcher <$> liftRunMessage msg attrs

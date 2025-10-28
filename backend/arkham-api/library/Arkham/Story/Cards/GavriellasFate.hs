@@ -26,7 +26,7 @@ gavriellasFate = story GavriellasFate Cards.gavriellasFate
 
 instance RunMessage GavriellasFate where
   runMessage msg s@(GavriellasFate attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       disappearedIntoTheMist <-
         Investigators.gavriellaMizrah.cardCode `inRecordSet` DisappearedIntoTheMist
       claimedBySpecters <- Investigators.gavriellaMizrah.cardCode `inRecordSet` WasClaimedBySpecters

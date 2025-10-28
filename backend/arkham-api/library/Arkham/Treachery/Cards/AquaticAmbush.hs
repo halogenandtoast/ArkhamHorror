@@ -1,6 +1,7 @@
-module Arkham.Treachery.Cards.AquaticAmbush (aquaticAmbush, AquaticAmbush (..)) where
+module Arkham.Treachery.Cards.AquaticAmbush (aquaticAmbush) where
 
 import Arkham.Ability
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTest, isFightWith)
 import Arkham.Matcher
@@ -17,16 +18,14 @@ aquaticAmbush = treachery AquaticAmbush Cards.aquaticAmbush
 
 instance HasModifiersFor AquaticAmbush where
   getModifiersFor (AquaticAmbush a) =
-    getSkillTest >>= \case
-      Nothing -> pure mempty
-      Just st -> maybeModified_ a (SkillTestTarget st.id) do
-        liftGuardM $ isFightWith (EnemyAt FloodedLocation)
-        pure [RevealAnotherChaosToken]
+    whenJustM getSkillTest \st -> maybeModified_ a (SkillTestTarget st.id) do
+      liftGuardM $ matches st.investigator (not_ $ InVehicleMatching $ assetIs Assets.fishingVessel)
+      liftGuardM $ isFightWith (EnemyAt FloodedLocation)
+      pure [RevealAnotherChaosToken]
 
 instance HasAbilities AquaticAmbush where
   getAbilities (AquaticAmbush a) =
-    [ limitedAbility (MaxPer Cards.aquaticAmbush PerRound 1) $ mkAbility a 1 $ forced $ RoundEnds #when
-    ]
+    [limited (MaxPer Cards.aquaticAmbush PerRound 1) $ mkAbility a 1 $ forced $ RoundEnds #when]
 
 instance RunMessage AquaticAmbush where
   runMessage msg t@(AquaticAmbush attrs) = runQueueT $ case msg of

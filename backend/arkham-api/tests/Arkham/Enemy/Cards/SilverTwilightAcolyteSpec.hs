@@ -15,6 +15,7 @@ spec = describe "Silver Twilight Acolyte" $ do
       silverTwilightAcolyte <- createWeaknessEnemy self Enemies.silverTwilightAcolyte
       silverTwilightAcolyte `spawnAt` location
       run EnemiesAttack
+      chooseTarget silverTwilightAcolyte
       applyAllDamage
       useForcedAbility
       agenda.updated.doom `shouldReturn` 1

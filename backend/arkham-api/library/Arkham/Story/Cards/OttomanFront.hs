@@ -16,7 +16,7 @@ ottomanFront = story OttomanFront Cards.ottomanFront
 
 instance RunMessage OttomanFront where
   runMessage msg s@(OttomanFront attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       handleMemory
         attrs
         Assets.jamesCookieFredericksDubiousChoice

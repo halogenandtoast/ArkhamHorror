@@ -26,7 +26,7 @@ instance RunMessage TheWorldXXI3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
-    InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 2) | iid == iid' -> do
       push $ putCardIntoPlay iid attrs
       pure a
     _ -> TheWorldXXI3 <$> runMessage msg attrs

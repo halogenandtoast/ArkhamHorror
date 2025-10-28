@@ -3,10 +3,12 @@ module Arkham.Helpers.Ability where
 import Arkham.Ability
 import Arkham.Action (Action)
 import Arkham.Action qualified as Action
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Customization
+import Arkham.ForMovement
 import Arkham.Game.Settings
 import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Helpers.Cost (getCanAffordCost)
@@ -24,14 +26,15 @@ import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
-getAbility :: HasGame m => AbilityRef -> m (Maybe Ability)
+getAbility :: (HasGame m, Tracing m) => AbilityRef -> m (Maybe Ability)
 getAbility ref = selectOne (Matcher.AbilityIs ref.source ref.index)
 
 getCanPerformAbility
-  :: (HasCallStack, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
+  :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
 getCanPerformAbility !iid !ws !ability = do
   -- can perform an ability means you can afford it
   -- it is in the right window
@@ -57,19 +60,18 @@ getCanPerformAbility !iid !ws !ability = do
       Nothing -> abilityWindow ability
       Just lid -> Matcher.replaceThisLocation lid $ abilityWindow ability
 
-  -- We use toSource to make sure we can track that we are talkign about an ability
-  andM
-    [ getCanAffordCost iid (toSource ability) actions ws (mconcat $ cost : additionalCosts)
-    , meetsActionRestrictions iid ws ability
-    , anyM (\window -> windowMatches iid (toSource ability) window abWindow) ws
-    , withActiveInvestigator iid
-        $ passesCriteria iid Nothing (toSource ability) ability.requestor ws criteria
-    , not <$> preventedByInvestigatorModifiers iid ability
-    ]
+  runValidT do
+    liftGuardM
+      $ getCanAffordCost iid (toSource ability) actions ws (mconcat $ cost : additionalCosts)
+    liftGuardM $ meetsActionRestrictions iid ws ability
+    liftGuardM $ anyM (\window -> windowMatches iid (toSource ability) window abWindow) ws
+    liftGuardM $ withActiveInvestigator iid do
+      passesCriteria iid Nothing (toSource ability) ability.requestor ws criteria
+    liftGuardM $ not <$> preventedByInvestigatorModifiers iid ability
 
 preventedByInvestigatorModifiers
-  :: HasGame m => InvestigatorId -> Ability -> m Bool
-preventedByInvestigatorModifiers iid ability = do
+  :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> m Bool
+preventedByInvestigatorModifiers iid ability = withSpan_ "preventedByInvestigatorModifiers" do
   modifiers <- getModifiers (InvestigatorTarget iid)
   isForced <- isForcedAbility iid ability
   if isForced then pure False else anyM prevents modifiers
@@ -97,8 +99,8 @@ preventedByInvestigatorModifiers iid ability = do
       _ -> pure False
 
 meetsActionRestrictions
-  :: HasGame m => InvestigatorId -> [Window] -> Ability -> m Bool
-meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
+  :: (Tracing m, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
+meetsActionRestrictions iid _ ab@Ability {..} = withSpan_ "meetsActionRestrictions" $ go abilityType
  where
   go = \case
     Haunted -> pure False
@@ -121,10 +123,11 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
     ServitorAbility _ -> pure True
     ConstantAbility -> pure False
 
-canDoAction :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
-canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
+canDoAction :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
+canDoAction iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \case
   Action.Fight -> case abilitySource of
     LocationSource _lid -> pure True
+    ConcealedCardSource _ -> pure True
     EnemySource eid -> do
       modifiers' <- getModifiers iid
       let valid = maybe True (== eid) $ listToMaybe [x | MustFight x <- modifiers']
@@ -158,11 +161,16 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
         selectAny
           $ Matcher.LocationWithModifier CanBeAttackedAsIfEnemy
           <> if canMoveToConnected
-            then Matcher.orConnected (Matcher.locationWithInvestigator iid)
+            then Matcher.orConnected ForMovement (Matcher.locationWithInvestigator iid)
             else Matcher.locationWithInvestigator iid
-      pure $ enemies || locations
+      concealed <-
+        selectAny
+          $ Matcher.locationWithInvestigator iid
+          <> Matcher.LocationWithExposableConcealedCard ab.source
+      pure $ enemies || locations || concealed
   Action.Evade -> case abilitySource of
     EnemySource _ -> pure True
+    ConcealedCardSource _ -> pure True
     _ -> do
       modifiers <- getModifiers (AbilityTarget iid ab.ref)
       let
@@ -171,9 +179,18 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
           CanModify (EnemyEvadeActionCriteria override) -> Just override
           _ -> Nothing
         overrides = mapMaybe isOverride modifiers
-      selectAny $ case nonEmpty overrides of
+      base <- selectAny $ case nonEmpty overrides of
         Nothing -> Matcher.CanEvadeEnemy $ AbilitySource abilitySource abilityIndex
         Just os -> Matcher.CanEvadeEnemyWithOverride $ combineOverrides os
+      concealed <-
+        selectAny
+          $ Matcher.locationWithInvestigator iid
+          <> Matcher.LocationWithExposableConcealedCard ab.source
+      if base
+        then pure $ base || concealed
+        else flip anyM modifiers \case
+          CanEvadeOverride (CriteriaOverride c) -> (|| concealed) <$> passesCriteria iid Nothing abilitySource abilitySource [] c
+          _ -> pure concealed
   Action.Engage -> case abilitySource of
     EnemySource _ -> pure True
     _ -> do
@@ -200,6 +217,11 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
     _ -> selectAny (Matcher.canParleyEnemy iid)
   Action.Investigate -> case abilitySource of
     LocationSource lid -> withoutModifier iid (CannotInvestigateLocation lid)
+    AssetSource _ | abilityCardCode == Assets.duke.cardCode && abilityIndex == 2 -> do
+      orM
+        [ notNull <$> select Matcher.InvestigatableLocation
+        , matches iid $ Matcher.InvestigatorCanMoveTo abilitySource Matcher.Anywhere
+        ]
     _ -> notNull <$> select Matcher.InvestigatableLocation
   -- The below actions may not be handled correctly yet
   Action.Activate -> pure True
@@ -216,14 +238,15 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
   Action.Circle -> pure True
 
 getCanAffordAbility
-  :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
+  :: (HasCallStack, Tracing m, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
 getCanAffordAbility iid ability ws = do
   andM
     [ getCanAffordUse iid ability ws
     , getCanAffordAbilityCost iid ability ws
     ]
 
-getCanAffordAbilityCost :: HasGame m => InvestigatorId -> Ability -> [Window] -> m Bool
+getCanAffordAbilityCost
+  :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
 getCanAffordAbilityCost iid a@Ability {..} ws = do
   modifiers <- getModifiers (AbilityTarget iid a.ref)
   doDelayAdditionalCosts <- case abilityDelayAdditionalCosts of
@@ -322,19 +345,23 @@ filterDepthSpecificAbilities usedAbilities = do
 getAbilityLimit :: HasGame m => InvestigatorId -> Ability -> m AbilityLimit
 getAbilityLimit iid ability = do
   ignoreLimit <- (IgnoreLimit `elem`) <$> getModifiers (AbilityTarget iid ability.ref)
-  pure $ if ignoreLimit then PlayerLimit PerWindow 1 else abilityLimit ability
+  pure
+    $ if ignoreLimit
+      then if ability.fast then NoLimit else PlayerLimit PerWindow 1
+      else abilityLimit ability
 
 -- TODO: The limits that are correct are the one that check usedTimes Group
 -- limits for instance won't work if we have a group limit higher than one, for
 -- that we need to sum uses across all investigators. So we should fix this
 -- soon.
-getCanAffordUse :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> [Window] -> m Bool
+getCanAffordUse
+  :: (HasCallStack, HasGame m, Tracing m) => InvestigatorId -> Ability -> [Window] -> m Bool
 getCanAffordUse = getCanAffordUseWith id CanIgnoreAbilityLimit
 
 -- Use `f` to modify use count, used for `getWindowSkippable` to exclude the current call
 -- EMAIL: Cards can't react to themselves, i.e. Grotesque Statue (4)
 getCanAffordUseWith
-  :: (HasCallStack, HasGame m)
+  :: (HasCallStack, HasGame m, Tracing m)
   => ([UsedAbility] -> [UsedAbility])
   -> CanIgnoreAbilityLimit
   -> InvestigatorId
@@ -342,7 +369,8 @@ getCanAffordUseWith
   -> [Window]
   -> m Bool
 getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
-  usedAbilities <- fmap f . filterDepthSpecificAbilities =<< field InvestigatorUsedAbilities iid
+  usedAbilities <-
+    fmap f . filterDepthSpecificAbilities =<< field InvestigatorUsedAbilities iid
   limit <- getAbilityLimit iid ability
   ignoreLimit <-
     or
@@ -395,11 +423,15 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
             usedAbilities
       PlayerLimit PerRound n -> do
         pure
-          $ maybe True (and . sequence [not . usedThisWindow, (< n) . usedTimes])
+          $ maybe
+            True
+            (and . sequence [if ability.fast then const True else not . usedThisWindow, (< n) . usedTimes])
           $ find ((== ability) . usedAbility) usedAbilities
       PlayerLimit _ n -> do
         pure
-          $ maybe True (and . sequence [not . usedThisWindow, (< n) . usedTimes])
+          $ maybe
+            True
+            (and . sequence [if ability.fast then const True else not . usedThisWindow, (< n) . usedTimes])
           $ find ((== ability) . usedAbility) usedAbilities
       MaxPer cardDef _ n -> do
         let
@@ -443,17 +475,16 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
           ws
       GroupLimit _ n -> do
         usedAbilities' <-
-          fmap (map usedAbility)
-            . filterDepthSpecificAbilities
+          filterDepthSpecificAbilities
             =<< concatMapM (field InvestigatorUsedAbilities)
             =<< allInvestigators
-        let total = count (== ability) usedAbilities'
+        let total = sum $ map usedTimes $ filter ((== ability) . usedAbility) usedAbilities'
         pure $ total < n
 
-isForcedAbility :: HasGame m => InvestigatorId -> Ability -> m Bool
+isForcedAbility :: (Tracing m, HasGame m) => InvestigatorId -> Ability -> m Bool
 isForcedAbility iid Ability {abilitySource, abilityType} = isForcedAbilityType iid abilitySource abilityType
 
-isForcedAbilityType :: HasGame m => InvestigatorId -> Source -> AbilityType -> m Bool
+isForcedAbilityType :: (Tracing m, HasGame m) => InvestigatorId -> Source -> AbilityType -> m Bool
 isForcedAbilityType iid source = \case
   SilentForcedAbility {} -> pure True
   ForcedAbility {} -> pure True

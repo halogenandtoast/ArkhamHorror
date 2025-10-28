@@ -1,8 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Arkham.Effect.Window (
-  module Arkham.Effect.Window,
-) where
+module Arkham.Effect.Window (module Arkham.Effect.Window) where
 
 import Arkham.Ability.Types
 import Arkham.Card.Id
@@ -10,6 +8,7 @@ import Arkham.Id
 import Arkham.Phase
 import Arkham.Prelude
 import Data.Aeson.TH
+import Data.UUID qualified as UUID
 import GHC.OverloadedLabels
 
 data EffectWindow
@@ -37,11 +36,13 @@ data EffectWindow
   | EffectGainResourcesWindow InvestigatorId
   | EffectSearchWindow
   | EffectCardCostWindow CardId
-  | EffectCardDrawWindow
+  | EffectCardDrawWindow CardDrawId
   | EffectUI
   | EffectMoveWindow
   | EffectRevelationWindow TreacheryId
-  deriving stock (Eq, Show, Data)
+  | EffectDefeatWindow EnemyId
+  | EffectHollowWindow CardId
+  deriving stock (Ord, Eq, Show, Data)
 
 instance IsLabel "endOfCurrentPhase" EffectWindow where
   fromLabel = EffectPhaseWindow
@@ -55,6 +56,9 @@ instance IsLabel "nextSkillTest" (InvestigatorId -> EffectWindow) where
 instance IsLabel "round" EffectWindow where
   fromLabel = EffectRoundWindow
 
+instance IsLabel "nextAction" EffectWindow where
+  fromLabel = EffectNextActionWindow
+
 instance IsLabel "resolution" EffectWindow where
   fromLabel = EffectResolutionWindow
 
@@ -64,4 +68,16 @@ instance IsLabel "move" EffectWindow where
 instance IsLabel "skillTest" (SkillTestId -> EffectWindow) where
   fromLabel = EffectSkillTestWindow
 
-$(deriveJSON defaultOptions ''EffectWindow)
+firstWindow :: [EffectWindow] -> EffectWindow
+firstWindow = FirstEffectWindow
+
+$(deriveToJSON defaultOptions ''EffectWindow)
+
+instance FromJSON EffectWindow where
+  parseJSON = withObject "EffectWindow" \o -> do
+    t <- o .: "tag"
+    case t :: Text of
+      "EffectCardDrawWindow" -> do
+        contents <- o .:? "contents" .!= CardDrawId UUID.nil
+        pure $ EffectCardDrawWindow contents
+      _ -> $(mkParseJSON defaultOptions ''EffectWindow) (Object o)

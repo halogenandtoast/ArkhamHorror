@@ -10,6 +10,10 @@ import Arkham.Act.Types
 import Arkham.Agenda.Types
 import Arkham.Asset.Types
 import Arkham.Campaign.Types
+import Arkham.Campaigns.TheScarletKeys.Concealed.Matcher
+import Arkham.Campaigns.TheScarletKeys.Concealed.Types
+import Arkham.Campaigns.TheScarletKeys.Key.Matcher
+import Arkham.Campaigns.TheScarletKeys.Key.Types
 import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasAbilities
@@ -34,8 +38,11 @@ import Arkham.Random
 import Arkham.Scenario.Types
 import Arkham.Skill.Types
 import Arkham.Story.Types
+import Arkham.Tracing
 import Arkham.Treachery.Types
 import Arkham.Zone
+import Control.Monad.Catch (MonadMask)
+import OpenTelemetry.Trace.Monad (MonadTracer)
 
 class HasGameRef a where
   gameRefL :: Lens' a (IORef Game)
@@ -54,12 +61,16 @@ instance Query InvestigatorMatcher
 instance Query LocationMatcher
 instance Query PreyMatcher
 instance Query RemainingActMatcher
+instance Query ScarletKeyMatcher
 instance Query ScenarioMatcher
 instance Query SkillMatcher
 instance Query StoryMatcher
 instance Query ChaosTokenMatcher
 instance Query TargetMatcher
+instance Query SourceMatcher
 instance Query TreacheryMatcher
+instance Query KeyMatcher
+instance Query ConcealedCardMatcher
 
 instance Projection Act
 instance Projection Agenda
@@ -68,6 +79,7 @@ instance Projection (DiscardedEntity Asset)
 instance Projection (InHandEntity Asset)
 instance Projection (InDiscardEntity Asset)
 instance Projection Campaign
+instance Projection ConcealedCard
 instance Projection Effect
 instance Projection Enemy
 instance KnownOutOfPlayZone zone => Projection (OutOfPlayEntity zone Enemy)
@@ -81,15 +93,16 @@ instance Projection Scenario
 instance Projection Skill
 instance Projection Treachery
 instance Projection Story
+instance Projection ScarletKey
 
 instance HasChaosTokenValue InvestigatorId
 instance HasChaosTokenValue ()
 
 delve :: Game -> Game
 withoutCanModifiers :: Game -> Game
-abilityMatches :: HasGame m => Ability -> AbilityMatcher -> m Bool
-asIfTurn :: HasGame m => InvestigatorId -> (forall n. HasGame n => n a) -> m a
-asActive :: HasGame m => InvestigatorId -> (forall n. HasGame n => n a) -> m a
+abilityMatches :: (HasGame m, Tracing m) => Ability -> AbilityMatcher -> m Bool
+asIfTurn :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
+asActive :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
 
 instance HasDistance Game
 instance HasAbilities Game
@@ -101,10 +114,13 @@ runMessages
      , MonadReader env m
      , HasGameLogger m
      , HasDebugLevel m
+     , MonadTracer m
+     , MonadMask m
+     , Tracing m
      )
-  => Maybe (Message -> IO ())
+  => Text
+  -> Maybe (Message -> IO ())
   -> m ()
-
-preloadModifiers :: (HasCallStack, Monad m) => Game -> m Game
-handleTraitRestrictedModifiers :: Monad m => Game -> m Game
+preloadModifiers :: (HasCallStack, Monad m, Tracing m) => Game -> m Game
+handleTraitRestrictedModifiers :: (Monad m, Tracing m) => Game -> m Game
 handleBlanked :: Monad m => Game -> m Game

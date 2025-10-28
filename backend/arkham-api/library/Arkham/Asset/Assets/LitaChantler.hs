@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest (withSkillTest)
-import Arkham.Helpers.Window (attackedEnemy)
+import Arkham.Helpers.Window (attackingInvestigator)
 import Arkham.Matcher
 import Arkham.Trait
 
@@ -30,7 +30,7 @@ instance HasAbilities LitaChantler where
 
 instance RunMessage LitaChantler where
   runMessage msg a@(LitaChantler attrs) = runQueueT $ case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (attackedEnemy -> enemyId) _ -> do
-      withSkillTest \sid -> skillTestModifier sid attrs enemyId (DamageTaken 1)
+    UseCardAbility _ (isSource attrs -> True) 1 (attackingInvestigator -> iid) _ -> do
+      withSkillTest \sid -> skillTestModifier sid attrs iid (DamageDealt 1)
       pure a
     _ -> LitaChantler <$> liftRunMessage msg attrs

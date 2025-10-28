@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.HideousLullaby (hideousLullaby, HideousLullaby (..)) where
+module Arkham.Treachery.Cards.HideousLullaby (hideousLullaby) where
 
 import Arkham.Calculation
 import Arkham.Enemy.Types (Field (EnemyFight))
@@ -18,7 +18,7 @@ hideousLullaby = treachery HideousLullaby Cards.hideousLullaby
 instance RunMessage HideousLullaby where
   runMessage msg t@(HideousLullaby attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      deepOnes <- selectMaybeMax EnemyFight $ EnemyWithTrait DeepOne
+      deepOnes <- selectMaybeMax EnemyFight $ InPlayEnemy $ EnemyWithTrait DeepOne
       if null deepOnes
         then gainSurge attrs
         else do

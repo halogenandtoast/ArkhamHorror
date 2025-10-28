@@ -1,12 +1,10 @@
-module Arkham.Act.Cards.RestrictedAccess (RestrictedAccess (..), restrictedAccess) where
+module Arkham.Act.Cards.RestrictedAccess (restrictedAccess) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.ScenarioLogKey
 
 newtype RestrictedAccess = RestrictedAccess ActAttrs
@@ -17,8 +15,8 @@ restrictedAccess :: ActCard RestrictedAccess
 restrictedAccess = act (2, A) RestrictedAccess Cards.restrictedAccess Nothing
 
 instance HasAbilities RestrictedAccess where
-  getAbilities (RestrictedAccess a) =
-    [ restrictedAbility
+  getAbilities = actAbilities1 \a ->
+    restricted
       a
       1
       ( AtLeastNCriteriaMet
@@ -31,19 +29,16 @@ instance HasAbilities RestrictedAccess where
           , Remembered ActivatedTheDevice
           ]
       )
-      $ Objective Anytime
-    | onSide A a
-    ]
+      $ Objective
+      $ forced AnyWindow
 
 instance RunMessage RestrictedAccess where
-  runMessage msg a@(RestrictedAccess attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+  runMessage msg a@(RestrictedAccess attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
-      pushAll
-        [ AddToVictory (toTarget attrs)
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-        ]
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      addToVictory (toTarget attrs)
+      advanceActDeck attrs
       pure a
-    _ -> RestrictedAccess <$> runMessage msg attrs
+    _ -> RestrictedAccess <$> liftRunMessage msg attrs

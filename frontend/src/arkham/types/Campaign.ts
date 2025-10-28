@@ -4,7 +4,7 @@ import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';
 import { LogContents, logContentsDecoder } from '@/arkham/types/Log';
 import { XpBreakdown, xpBreakdownDecoder} from '@/arkham/types/Xp';
 import { CampaignStep, campaignStepDecoder} from '@/arkham/types/CampaignStep';
-import { CardContents, cardContentsDecoder} from '@/arkham/types/Card';
+import { CardContents, Card, cardDecoder, cardContentsDecoder} from '@/arkham/types/Card';
 
 export type CampaignDetails = {
   id: string;
@@ -20,7 +20,8 @@ export type Campaign = {
   difficulty: Difficulty;
   meta: any;
   xpBreakdown: XpBreakdown;
-  storyCards: { [key: string]: CardContents[] };
+  storyCards: { [key: string]: Card[] };
+  decks: { [key: string]: CardContents[]  };
 }
 
 export const campaignDetailsDecoder = JsonDecoder.object<CampaignDetails>({
@@ -37,5 +38,6 @@ export const campaignDecoder = JsonDecoder.object<Campaign>({
   step: JsonDecoder.nullable(campaignStepDecoder),
   meta: JsonDecoder.succeed(),
   xpBreakdown: xpBreakdownDecoder,
-  storyCards: JsonDecoder.record(JsonDecoder.array(cardContentsDecoder, 'CardDef[]'), 'CardDef[]')
+  storyCards: JsonDecoder.record(JsonDecoder.array(cardDecoder, 'CardDef[]'), 'CardDef[]'),
+  decks: JsonDecoder.record(JsonDecoder.array(cardContentsDecoder, 'CardDef[]'), 'CardDef[]'),
 }, 'Campaign');

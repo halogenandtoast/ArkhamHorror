@@ -2,8 +2,6 @@
 
 module Arkham.GameEnv where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.ActiveCost.Base
 import {-# SOURCE #-} Arkham.Card (
@@ -32,12 +30,16 @@ import Arkham.Id
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Phase
+import Arkham.Prelude
 import Arkham.Random
 import Arkham.SkillTest.Base
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Window
 import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
+import Data.Dependent.Map qualified as DMap
 import Data.Map.Strict qualified as Map
+import OpenTelemetry.Trace.Monad (MonadTracer (..))
 
 -- Some ORPHANS we may want to move
 
@@ -93,13 +95,17 @@ toGameEnv
      , HasStdGen env
      , HasGameLogger m
      , MonadReader env m
+     , MonadTracer m
      )
   => m GameEnv
 toGameEnv = do
-  game <- view gameRefL
-  gen <- view genL
-  queueRef <- messageQueue
-  GameEnv game queueRef gen <$> getLogger
+  gameEnvGame <- view gameRefL
+  gameRandomGen <- view genL
+  gameEnvQueue <- messageQueue
+  gameCacheRef <- newIORef DMap.empty
+  gameLogger <- getLogger
+  gameTracer <- getTracer
+  pure $ GameEnv {..}
 
 runWithEnv
   :: ( HasGameRef env
@@ -107,6 +113,7 @@ runWithEnv
      , HasStdGen env
      , HasGameLogger m
      , MonadReader env m
+     , MonadTracer m
      )
   => GameT a
   -> m a
@@ -158,13 +165,19 @@ getHistory RoundHistory iid = do
 getHistoryField :: HasGame m => HistoryType -> InvestigatorId -> HistoryField k -> m k
 getHistoryField htype iid fld = viewHistoryField fld <$> getHistory htype iid
 
-getDistance :: HasGame m => LocationId -> LocationId -> m (Maybe Distance)
+getDistance :: (HasGame m, Tracing m) => LocationId -> LocationId -> m (Maybe Distance)
 getDistance l1 l2 = do
   game <- getGame
   getDistance' game l1 l2
 
 getPhase :: HasGame m => m Phase
 getPhase = gamePhase <$> getGame
+
+getEnemyPhaseStep :: HasGame m => m (Maybe EnemyPhaseStep)
+getEnemyPhaseStep =
+  getGame <&> \g -> case gamePhaseStep g of
+    Just (EnemyPhaseStep s) -> Just s
+    _ -> Nothing
 
 getWindowDepth :: HasGame m => m Int
 getWindowDepth = gameWindowDepth <$> getGame
@@ -194,7 +207,7 @@ withModifiers'
   :: (Targetable target, HasGame m)
   => target
   -> m [Modifier]
-  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> ReaderT Game m a
   -> m a
 withModifiers' (toTarget -> target) mods body = do
   game <- getGame
@@ -204,20 +217,13 @@ withModifiers' (toTarget -> target) mods body = do
     modifiers' = insertWith (<>) target mods' modifiers
   runReaderT body $ game & modifiersL .~ modifiers'
 
-withActiveInvestigator
-  :: HasGame m
-  => InvestigatorId
-  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
-  -> m a
+withActiveInvestigator :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
 withActiveInvestigator iid body = do
   game <- getGame
   runReaderT body $ game & activeInvestigatorIdL .~ iid
 
 withActiveInvestigatorAdjust
-  :: HasGame m
-  => InvestigatorId
-  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
-  -> m a
+  :: (HasGame m, Tracing m) => InvestigatorId -> ReaderT Game m a -> m a
 withActiveInvestigatorAdjust iid body = do
   game <- getGame
   game' <-
@@ -249,4 +255,10 @@ getCardUses cCode = findWithDefault [] cCode . gameCardUses <$> getGame
 
 getAllCardUses :: HasGame m => m [CardDef]
 getAllCardUses =
-  concatMap (mapMaybe lookupCardDef . (\ (k, v) -> replicate (length v) k)) . Map.toList . gameCardUses <$> getGame
+  concatMap (mapMaybe lookupCardDef . (\(k, v) -> replicate (length v) k))
+    . Map.toList
+    . gameCardUses
+    <$> getGame
+
+getTurnOrder :: HasGame m => m [InvestigatorId]
+getTurnOrder = gamePlayerOrder <$> getGame

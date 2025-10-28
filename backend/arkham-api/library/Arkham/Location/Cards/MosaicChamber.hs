@@ -14,7 +14,8 @@ newtype MosaicChamber = MosaicChamber LocationAttrs
 
 mosaicChamber :: LocationCard MosaicChamber
 mosaicChamber =
-  location MosaicChamber Cards.mosaicChamber 3 (PerPlayer 1)
+  symbolLabel
+    $ location MosaicChamber Cards.mosaicChamber 3 (PerPlayer 1)
     & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasAbilities MosaicChamber where

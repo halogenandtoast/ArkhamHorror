@@ -1,9 +1,9 @@
 [
-  { "id": "01", "name": "The Night of the Zealot", "returnToId": "50" },
+  { "id": "01", "name": "The Night of the Zealot", "returnTo": { "id": "50" } },
   {
     "id": "02",
     "name": "The Dunwich Legacy",
-    "returnToId": "51",
+    "returnTo": { "id": "51" },
     "settings": [
       {
         "key": "Extracurricular Activity",
@@ -30,8 +30,8 @@
           },
           {
             "type": "SetKey",
-            "key": "TheInvestigatorsWereUnconsciousForSeveralHours",
-            "ckey": "TheInvestigatorsWereUnconsciousForSeveralHours",
+            "key": "InvestigatorsWereUnconsciousForSeveralHours",
+            "ckey": "InvestigatorsWereUnconsciousForSeveralHours",
             "ifRecorded": [
               {"type": "key", "key": "ProfessorWarrenRiceWasKidnapped"}
             ]
@@ -46,7 +46,7 @@
                   "type": "or",
                   "content": [
                     { "type": "key", "key": "TheInvestigatorsRescuedProfessorWarrenRice" },
-                    { "type": "key", "key": "TheInvestigatorsWereUnconsciousForSeveralHours", "scope": "Extracurricular Activity" }
+                    { "type": "key", "key": "InvestigatorsWereUnconsciousForSeveralHours", "scope": "Extracurricular Activity" }
                   ]
                 }
               },
@@ -95,8 +95,8 @@
           },
           {
             "type": "SetKey",
-            "key": "TheInvestigatorsWereUnconsciousForSeveralHours",
-            "ckey": "TheInvestigatorsWereUnconsciousForSeveralHours",
+            "key": "InvestigatorsWereUnconsciousForSeveralHours",
+            "ckey": "InvestigatorsWereUnconsciousForSeveralHours",
             "ifRecorded": [{
               "type": "nor",
               "content": [
@@ -119,14 +119,14 @@
             "type": "ForceKey",
             "key": "DrHenryArmitageWasKidnapped",
             "ifRecorded": [
-              { "type": "key", "key": "TheInvestigatorsWereUnconsciousForSeveralHours" }
+              { "type": "key", "key": "InvestigatorsWereUnconsciousForSeveralHours" }
             ]
           },
           {
             "type": "ForceKey",
             "key": "TheInvestigatorsRescuedDrHenryArmitage",
             "ifRecorded": [
-              { "type": "not", "content": { "type": "key", "key": "TheInvestigatorsWereUnconsciousForSeveralHours" } }
+              { "type": "not", "content": { "type": "key", "key": "InvestigatorsWereUnconsciousForSeveralHours" } }
             ]
           },
           {
@@ -391,9 +391,9 @@
       }
     ]
   },
-  { "id": "03", "name": "The Path to Carcosa", "returnToId": "52" },
-  { "id": "04", "name": "The Forgotten Age" },
-  { "id": "05", "name": "The Circle Undone", "settings": [
+  { "id": "03", "name": "The Path to Carcosa", "returnTo": { "id": "52" } },
+  { "id": "04", "name": "The Forgotten Age", "returnTo": { "id": "53", "beta": true } },
+  { "id": "05", "name": "The Circle Undone", "returnTo": { "id": "54", "beta": true }, "settings": [
     {
       "key": "Disappearance at the Twilight Estate",
       "scenarioId": "05043",
@@ -954,5 +954,6 @@
   ]},
   { "id": "06", "name": "The Dream-Eaters" },
   { "id": "07", "name": "The Innsmouth Conspiracy" },
-  { "id": "08", "name": "Edge of the Earth" }
+  { "id": "08", "name": "Edge of the Earth" },
+  { "id": "09", "name": "The Scarlet Keys", "alpha": true }
 ]

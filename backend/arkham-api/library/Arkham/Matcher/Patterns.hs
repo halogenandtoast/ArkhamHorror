@@ -1,14 +1,14 @@
 module Arkham.Matcher.Patterns where
 
-import Arkham.Prelude
-
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
+import Arkham.ForMovement
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher.Types
 import Arkham.Modifier
+import Arkham.Prelude
 import Arkham.Source
 import Arkham.Timing
 import Arkham.Trait
@@ -16,7 +16,8 @@ import Arkham.Trait
 -- ** Investigator Patterns **
 
 pattern AtYourLocation :: InvestigatorMatcher
-pattern AtYourLocation = InvestigatorIfLocation
+pattern AtYourLocation =
+  InvestigatorIfLocation
     (LocationMatchAll [LocationWithInvestigator You, LocationWithModifier CountsAsDifferentLocation])
     You
     (InvestigatorAt (LocationWithInvestigator You))
@@ -32,85 +33,68 @@ pattern InvestigatorWithDiscardableCard <- HandWith (HasCard DiscardableCard)
     InvestigatorWithDiscardableCard = HandWith (HasCard DiscardableCard)
 
 pattern InvestigatorWithoutActionsRemaining :: InvestigatorMatcher
-pattern InvestigatorWithoutActionsRemaining <-
-  InvestigatorWithActionsRemaining (EqualTo (Static 0))
+pattern InvestigatorWithoutActionsRemaining <- InvestigatorWithActionsRemaining (EqualTo (Static 0))
   where
-    InvestigatorWithoutActionsRemaining =
-      InvestigatorWithActionsRemaining (EqualTo (Static 0))
+    InvestigatorWithoutActionsRemaining = InvestigatorWithActionsRemaining (EqualTo (Static 0))
 
 pattern InvestigatorWithAnyActionsRemaining :: InvestigatorMatcher
-pattern InvestigatorWithAnyActionsRemaining <-
-  InvestigatorWithActionsRemaining (GreaterThan (Static 0))
+pattern InvestigatorWithAnyActionsRemaining <- InvestigatorWithActionsRemaining (GreaterThan (Static 0))
   where
-    InvestigatorWithAnyActionsRemaining =
-      InvestigatorWithActionsRemaining (GreaterThan (Static 0))
+    InvestigatorWithAnyActionsRemaining = InvestigatorWithActionsRemaining (GreaterThan (Static 0))
 
 pattern InvestigatorWithAnyDoom :: InvestigatorMatcher
-pattern InvestigatorWithAnyDoom <-
-  InvestigatorWithDoom (GreaterThan (Static 0))
+pattern InvestigatorWithAnyDoom <- InvestigatorWithDoom (GreaterThan (Static 0))
   where
     InvestigatorWithAnyDoom = InvestigatorWithDoom (GreaterThan (Static 0))
 
 pattern InvestigatorWithAnyDamage :: InvestigatorMatcher
-pattern InvestigatorWithAnyDamage <-
-  InvestigatorWithDamage (GreaterThan (Static 0))
+pattern InvestigatorWithAnyDamage <- InvestigatorWithDamage (GreaterThan (Static 0))
   where
     InvestigatorWithAnyDamage = InvestigatorWithDamage (GreaterThan (Static 0))
 
 pattern InvestigatorWithAnyHorror :: InvestigatorMatcher
-pattern InvestigatorWithAnyHorror <-
-  InvestigatorWithHorror (GreaterThan (Static 0))
+pattern InvestigatorWithAnyHorror <- InvestigatorWithHorror (GreaterThan (Static 0))
   where
     InvestigatorWithAnyHorror = InvestigatorWithHorror (GreaterThan (Static 0))
 
 pattern InvestigatorWithAnyClues :: InvestigatorMatcher
-pattern InvestigatorWithAnyClues <-
-  InvestigatorWithClues (GreaterThan (Static 0))
+pattern InvestigatorWithAnyClues <- InvestigatorWithClues (GreaterThan (Static 0))
   where
     InvestigatorWithAnyClues = InvestigatorWithClues (GreaterThan (Static 0))
 
 pattern InvestigatorWithAnyCluesInPool :: InvestigatorMatcher
-pattern InvestigatorWithAnyCluesInPool <-
-  InvestigatorWithCluesInPool (GreaterThan (Static 0))
+pattern InvestigatorWithAnyCluesInPool <- InvestigatorWithCluesInPool (GreaterThan (Static 0))
   where
     InvestigatorWithAnyCluesInPool = InvestigatorWithCluesInPool (GreaterThan (Static 0))
 
 pattern InvestigatorWithoutAnyClues :: InvestigatorMatcher
-pattern InvestigatorWithoutAnyClues <-
-  InvestigatorWithClues (EqualTo (Static 0))
+pattern InvestigatorWithoutAnyClues <- InvestigatorWithClues (EqualTo (Static 0))
   where
     InvestigatorWithoutAnyClues = InvestigatorWithClues (EqualTo (Static 0))
 
 pattern InvestigatorWithAnyResources :: InvestigatorMatcher
-pattern InvestigatorWithAnyResources <-
-  InvestigatorWithResources (GreaterThan (Static 0))
+pattern InvestigatorWithAnyResources <- InvestigatorWithResources (GreaterThan (Static 0))
   where
-    InvestigatorWithAnyResources =
-      InvestigatorWithResources (GreaterThan (Static 0))
+    InvestigatorWithAnyResources = InvestigatorWithResources (GreaterThan (Static 0))
 
 investigatorWithSpendableResources :: Int -> InvestigatorMatcher
 investigatorWithSpendableResources = InvestigatorWithSpendableResources . AtLeast . toGameValue
 
 pattern InvestigatorCanGainResources :: InvestigatorMatcher
-pattern InvestigatorCanGainResources <-
-  InvestigatorWithoutModifier CannotGainResources
+pattern InvestigatorCanGainResources <- InvestigatorWithoutModifier CannotGainResources
   where
-    InvestigatorCanGainResources =
-      InvestigatorWithoutModifier CannotGainResources
+    InvestigatorCanGainResources = InvestigatorWithoutModifier CannotGainResources
 
 pattern InvestigatorCanSearchDeck :: InvestigatorMatcher
-pattern InvestigatorCanSearchDeck <-
-  InvestigatorWithoutModifier CannotManipulateDeck
+pattern InvestigatorCanSearchDeck <- InvestigatorWithoutModifier CannotManipulateDeck
   where
     InvestigatorCanSearchDeck = InvestigatorWithoutModifier CannotManipulateDeck
 
 -- placeholder in case a modifier prevents spending resources
 pattern InvestigatorCanSpendResources :: GameValue -> InvestigatorMatcher
-pattern InvestigatorCanSpendResources value <-
-  InvestigatorWithResources (AtLeast value)
+pattern InvestigatorCanSpendResources value <- InvestigatorWithResources (AtLeast value)
   where
-    InvestigatorCanSpendResources value =
-      InvestigatorWithResources (AtLeast value)
+    InvestigatorCanSpendResources value = InvestigatorWithResources (AtLeast value)
 
 -- placeholder in case a modifier prevents spending resources
 pattern InvestigatorCanSpendClues :: GameValue -> InvestigatorMatcher
@@ -141,8 +125,7 @@ pattern InvestigatorCanMove <- InvestigatorWithoutModifier CannotMove
     InvestigatorCanMove = InvestigatorWithoutModifier CannotMove
 
 pattern InvestigatorCanHealHorror :: InvestigatorMatcher
-pattern InvestigatorCanHealHorror <-
-  InvestigatorWithoutModifier CannotHealHorror
+pattern InvestigatorCanHealHorror <- InvestigatorWithoutModifier CannotHealHorror
   where
     InvestigatorCanHealHorror = InvestigatorWithoutModifier CannotHealHorror
 
@@ -285,9 +268,10 @@ pattern NotYourLocation <- NotLocation YourLocation
     NotYourLocation = NotLocation YourLocation
 
 pattern AccessibleLocation :: LocationMatcher
-pattern AccessibleLocation <- LocationMatchAll [AccessibleFrom YourLocation, CanEnterLocation You]
+pattern AccessibleLocation <-
+  LocationMatchAll [AccessibleFrom ForMovement YourLocation, CanEnterLocation You]
   where
-    AccessibleLocation = LocationMatchAll [AccessibleFrom YourLocation, CanEnterLocation You]
+    AccessibleLocation = LocationMatchAll [AccessibleFrom ForMovement YourLocation, CanEnterLocation You]
 
 pattern CanMoveCluesFromLocation :: LocationMatcher
 pattern CanMoveCluesFromLocation <-
@@ -295,10 +279,10 @@ pattern CanMoveCluesFromLocation <-
   where
     CanMoveCluesFromLocation = LocationMatchAll [LocationWithoutModifier CannotMoveCluesFromHere, LocationWithAnyClues]
 
-pattern ConnectedLocation :: LocationMatcher
-pattern ConnectedLocation <- ConnectedFrom YourLocation
+pattern ConnectedLocation :: ForMovement -> LocationMatcher
+pattern ConnectedLocation forMovement <- ConnectedFrom forMovement YourLocation
   where
-    ConnectedLocation = ConnectedFrom YourLocation
+    ConnectedLocation forMovement = ConnectedFrom forMovement YourLocation
 
 pattern LocationWithAnyDoom :: LocationMatcher
 pattern LocationWithAnyDoom <- LocationWithDoom (GreaterThan (Static 0))
@@ -306,8 +290,7 @@ pattern LocationWithAnyDoom <- LocationWithDoom (GreaterThan (Static 0))
     LocationWithAnyDoom = LocationWithDoom (GreaterThan (Static 0))
 
 pattern LocationWithAnyClues :: LocationMatcher
-pattern LocationWithAnyClues <-
-  LocationWithClues (GreaterThan (Static 0))
+pattern LocationWithAnyClues <- LocationWithClues (GreaterThan (Static 0))
   where
     LocationWithAnyClues = LocationWithClues (GreaterThan (Static 0))
 
@@ -366,8 +349,7 @@ pattern NonSignature <- NotCard SignatureCard
     NonSignature = NotCard SignatureCard
 
 pattern NonWeaknessTreachery :: CardMatcher
-pattern NonWeaknessTreachery =
-  CardMatches [NonWeakness, CardWithType TreacheryType]
+pattern NonWeaknessTreachery = CardMatches [NonWeakness, CardWithType TreacheryType]
 
 pattern NonPeril :: CardMatcher
 pattern NonPeril <- CardWithoutKeyword Keyword.Peril
@@ -400,8 +382,7 @@ pattern LocationCard <- CardWithType LocationType
     LocationCard = CardWithType LocationType
 
 pattern IsAlly :: CardMatcher
-pattern IsAlly <-
-  CardMatches [CardWithType AssetType, CardWithTrait Ally]
+pattern IsAlly <- CardMatches [CardWithType AssetType, CardWithTrait Ally]
   where
     IsAlly = CardMatches [CardWithType AssetType, CardWithTrait Ally]
 
@@ -454,8 +435,7 @@ pattern AgendaWithoutModifier m <- NotAgenda (AgendaWithModifier m)
 -- ** Treachery Patterns **
 
 pattern TreacheryWithAnyDoom :: TreacheryMatcher
-pattern TreacheryWithAnyDoom <-
-  TreacheryWithDoom (GreaterThan (Static 0))
+pattern TreacheryWithAnyDoom <- TreacheryWithDoom (GreaterThan (Static 0))
   where
     TreacheryWithAnyDoom = TreacheryWithDoom (GreaterThan (Static 0))
 
@@ -480,17 +460,14 @@ pattern SuccessfulInvestigationResult timing who where_ amount <-
   where
     SuccessfulInvestigationResult timing who where_ amount = SkillTestResult timing who (WhileInvestigating where_) (SuccessResult amount)
 
-pattern SuccessfulInvestigation
-  :: Timing -> Who -> LocationMatcher -> WindowMatcher
+pattern SuccessfulInvestigation :: Timing -> Who -> LocationMatcher -> WindowMatcher
 pattern SuccessfulInvestigation timing who where_ <-
   SkillTestResult timing who (WhileInvestigating where_) (SuccessResult AnyValue)
   where
     SuccessfulInvestigation timing who where_ = SkillTestResult timing who (WhileInvestigating where_) (SuccessResult AnyValue)
 
-pattern SuccessfulParley
-  :: Timing -> Who -> WindowMatcher
-pattern SuccessfulParley timing who <-
-  SkillTestResult timing who WhileParleying (SuccessResult AnyValue)
+pattern SuccessfulParley :: Timing -> Who -> WindowMatcher
+pattern SuccessfulParley timing who <- SkillTestResult timing who WhileParleying (SuccessResult AnyValue)
   where
     SuccessfulParley timing who = SkillTestResult timing who WhileParleying (SuccessResult AnyValue)
 

@@ -7,8 +7,6 @@ module Arkham.Matcher (
   module Arkham.Matcher.Types,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
@@ -16,11 +14,13 @@ import Arkham.Card.CardType
 import Arkham.Card.Id
 import Arkham.Criteria
 import Arkham.Direction
+import Arkham.ForMovement
 import Arkham.Id
 import Arkham.Matcher.Base
 import Arkham.Matcher.Patterns
 import Arkham.Matcher.Types
 import Arkham.Modifier
+import Arkham.Prelude
 import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Trait (Trait)
@@ -67,6 +67,15 @@ have = has
 
 instance Has InvestigatorMatcher Supply where
   has = InvestigatorWithSupply
+
+affectsColocatedMatch :: InvestigatorMatcher -> InvestigatorMatcher
+affectsColocatedMatch = affectsOthers . colocatedWithMatch
+{-# INLINE affectsColocatedMatch #-}
+
+affectsColocated
+  :: (AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> InvestigatorMatcher
+affectsColocated = affectsOthers . colocatedWith
+{-# INLINE affectsColocated #-}
 
 affectsOthers :: InvestigatorMatcher -> InvestigatorMatcher
 affectsOthers You = You
@@ -175,7 +184,7 @@ investigatorEngagedWith :: (AsId enemy, IdOf enemy ~ EnemyId) => enemy -> Invest
 investigatorEngagedWith = InvestigatorEngagedWith . EnemyWithId . asId
 
 investigatorAt :: IsLocationMatcher a => a -> InvestigatorMatcher
-investigatorAt = InvestigatorAt . toLocationMatcher
+investigatorAt = InvestigatorAt . IncludeEmptySpace . toLocationMatcher
 
 replaceYouMatcher :: Data a => InvestigatorId -> a -> a
 replaceYouMatcher iid = replaceInvestigatorMatcher (transform replace)
@@ -209,7 +218,7 @@ noModifier = InvestigatorWithoutModifier
 -- would always return that prey
 preyWith :: PreyMatcher -> InvestigatorMatcher -> PreyMatcher
 preyWith (Prey m1) m2 = Prey $ m1 <> m2
-preyWith (OnlyPrey m1) m2 = OnlyPrey $ m1 <> m2
+preyWith (OnlyPrey p1) m1 = OnlyPrey $ preyWith p1 m1
 preyWith (BearerOf e) m = RestrictedBearerOf e m
 preyWith (RestrictedBearerOf e m1) m2 = RestrictedBearerOf e $ m1 <> m2
 
@@ -300,7 +309,7 @@ rightOf = LocationInDirection RightOf . LocationWithId . asId
 {-# INLINE rightOf #-}
 
 locationWithInvestigator :: InvestigatorId -> LocationMatcher
-locationWithInvestigator = LocationWithInvestigator . InvestigatorWithId
+locationWithInvestigator = IncludeEmptySpace . LocationWithInvestigator . InvestigatorWithId
 {-# INLINE locationWithInvestigator #-}
 
 instance HasField "location" InvestigatorId LocationMatcher where
@@ -311,8 +320,7 @@ locationWithLowerPrintedShroudThan = LocationWithLowerPrintedShroudThan . Locati
 {-# INLINE locationWithLowerPrintedShroudThan #-}
 
 locationWithDiscoverableCluesBy :: InvestigatorId -> LocationMatcher
-locationWithDiscoverableCluesBy =
-  LocationWithDiscoverableCluesBy . InvestigatorWithId
+locationWithDiscoverableCluesBy = LocationWithDiscoverableCluesBy . InvestigatorWithId
 {-# INLINE locationWithDiscoverableCluesBy #-}
 
 locationWithTreachery :: (AsId a, IdOf a ~ TreacheryId) => a -> LocationMatcher
@@ -323,21 +331,25 @@ locationWithoutTreachery :: HasCardCode a => a -> LocationMatcher
 locationWithoutTreachery = LocationWithoutTreachery . treacheryIs
 {-# INLINE locationWithoutTreachery #-}
 
-accessibleFrom :: (AsId a, IdOf a ~ LocationId) => a -> LocationMatcher
-accessibleFrom = AccessibleFrom . LocationWithId . asId
+accessibleFrom :: (AsId a, IdOf a ~ LocationId) => ForMovement -> a -> LocationMatcher
+accessibleFrom forMovement = IncludeEmptySpace . AccessibleFrom forMovement . LocationWithId . asId
 {-# INLINE accessibleFrom #-}
 
-accessibleTo :: (AsId a, IdOf a ~ LocationId) => a -> LocationMatcher
-accessibleTo = AccessibleTo . LocationWithId . asId
+accessibleTo :: (AsId a, IdOf a ~ LocationId) => ForMovement -> a -> LocationMatcher
+accessibleTo forMovement = IncludeEmptySpace . AccessibleTo forMovement . LocationWithId . asId
 {-# INLINE accessibleTo #-}
 
 locationNotOneOf :: IsLocationMatcher a => [a] -> LocationMatcher
 locationNotOneOf = LocationNotOneOf . map toLocationMatcher
 {-# INLINE locationNotOneOf #-}
 
-orConnected :: Be matcher LocationMatcher => matcher -> LocationMatcher
-orConnected x = let m = be x in oneOf [m, ConnectedTo m]
+orConnected :: Be matcher LocationMatcher => ForMovement -> matcher -> LocationMatcher
+orConnected forMovement x = let m = be x in oneOf [m, ConnectedTo forMovement m]
 {-# INLINE orConnected #-}
+
+orConnected_ :: Be matcher LocationMatcher => matcher -> LocationMatcher
+orConnected_ = orConnected NotForMovement
+{-# INLINE orConnected_ #-}
 
 whileInvestigating :: (AsId a, IdOf a ~ LocationId) => a -> SkillTestMatcher
 whileInvestigating = WhileInvestigating . LocationWithId . asId
@@ -489,6 +501,7 @@ instance Has InvestigatorMatcher CardDef where
     StoryType -> error "invalid matcher"
     InvestigatorType -> error "invalid matcher"
     ScenarioType -> error "invalid matcher"
+    KeyType -> error "invalid matcher"
 
 instance Exists CardDef where
   exists def = case cdCardType def of
@@ -507,3 +520,4 @@ instance Exists CardDef where
     TreacheryType -> exists $ treacheryIs def
     InvestigatorType -> exists $ investigatorIs def
     ScenarioType -> error "Not implemented"
+    KeyType -> error "Not implemented"

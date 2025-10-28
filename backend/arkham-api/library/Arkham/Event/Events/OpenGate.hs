@@ -19,7 +19,7 @@ instance HasModifiersFor OpenGate where
       modified_
         a
         lid
-        [ ConnectedToWhen
+        [ ForMovementConnectedToWhen
             (LocationWithId lid)
             (not_ (LocationWithId lid) <> LocationWithAttachedEvent (eventIs Cards.openGate))
         ]

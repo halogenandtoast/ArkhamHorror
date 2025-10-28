@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.OminousPortents (ominousPortents, OminousPortents (..)) where
+module Arkham.Treachery.Cards.OminousPortents (ominousPortents) where
 
 import Arkham.Card
-import Arkham.Helpers
+import Arkham.Helpers (unDeck)
 import Arkham.Keyword (Keyword (Peril))
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -21,14 +21,12 @@ instance RunMessage OminousPortents where
     Revelation iid (isSource attrs -> True) -> do
       mTopSpectralCard <- headMay . unDeck <$> getSpectralDeck
       sid <- getRandom
-      chooseOrRunOneM iid do
-        labeled
-          "Draw the top card of the spectral encounter deck. That card gains peril, and its effects cannot be canceled."
-          do
-            for_ mTopSpectralCard \card -> do
-              cardResolutionModifiers card attrs card [AddKeyword Peril, EffectsCannotBeCanceled]
-              push $ InvestigatorDrewEncounterCard iid (card {ecAddedPeril = True})
-        labeled "Test {willpower} (3). If you fail take 2 horror." do
+      chooseOrRunOneM iid $ scenarioI18n do
+        labeled' "ominousPortents.spectral" do
+          for_ mTopSpectralCard \card -> do
+            cardResolutionModifiers card attrs card [AddKeyword Peril, EffectsCannotBeCanceled]
+            drawCard iid (card {ecAddedPeril = True})
+        labeled' "ominousPortents.test" do
           revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

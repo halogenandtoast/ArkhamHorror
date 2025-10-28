@@ -1,14 +1,16 @@
 module Arkham.EncounterCard.Source where
 
 import Arkham.Prelude
+import Arkham.Scenario.Deck
 import GHC.OverloadedLabels
 
 data EncounterCardSource
   = FromDiscard
   | FromEncounterDeck
+  | FromKeyedEncounterDeck ScenarioEncounterDeckKey
   | FromTheVoid
   | FromVictoryDisplay
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 instance IsLabel "discard" EncounterCardSource where

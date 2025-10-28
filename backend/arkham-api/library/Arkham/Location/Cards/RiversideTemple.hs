@@ -20,7 +20,7 @@ riversideTemple = symbolLabel $ location RiversideTemple Cards.riversideTemple 1
 instance HasAbilities RiversideTemple where
   getAbilities (RiversideTemple a) =
     extendRevealed1 a
-      $ restricted a 1 (not_ $ HasSupply Chalk)
+      $ restricted a 1 (not_ $ exists $ at_ (be a) <> InvestigatorWithSupply Chalk)
       $ forced
       $ DiscoverClues #after Anyone (be a) (atLeast 1)
 
@@ -28,8 +28,6 @@ instance RunMessage RiversideTemple where
   runMessage msg l@(RiversideTemple attrs) = runQueueT $ case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (discoveredClues -> n) _ -> do
       cards <- take n . unDeck <$> getEncounterDeck
-      case cards of
-        [] -> pure ()
-        xs -> shuffleCardsIntoDeck ExplorationDeck xs
+      shuffleCardsIntoDeck ExplorationDeck cards
       pure l
     _ -> RiversideTemple <$> liftRunMessage msg attrs

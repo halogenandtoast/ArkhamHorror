@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.TheSecretMustBeKept (theSecretMustBeKept) where
 
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Treachery.Cards qualified as Cards
@@ -16,13 +17,17 @@ instance RunMessage TheSecretMustBeKept where
   runMessage msg t@(TheSecretMustBeKept attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       -- max 3 decks so we subtract the number of decks in play from 3
+      -- 4 decks in return to
       sid <- getRandom
+      isReturnTo <- getIsReturnTo
       revelationSkillTest sid iid attrs #willpower
-        $ SumCalculation [Fixed 3, SubtractCalculation (Fixed 3) (CountActs AnyAct)]
+        $ SumCalculation
+          [Fixed 3, SubtractCalculation (Fixed $ if isReturnTo then 4 else 3) (CountActs AnyAct)]
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       deckCount <- getActDecksInPlayCount
-      let n = 3 - deckCount
+      isReturnTo <- getIsReturnTo
+      let n = max 0 ((if isReturnTo then 4 else 3) - deckCount)
       assignDamageAndHorror iid attrs (1 + n) (1 + n)
       pure t
     _ -> TheSecretMustBeKept <$> liftRunMessage msg attrs

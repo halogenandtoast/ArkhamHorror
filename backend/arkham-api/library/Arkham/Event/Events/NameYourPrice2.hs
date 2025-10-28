@@ -1,5 +1,6 @@
 module Arkham.Event.Events.NameYourPrice2 (nameYourPrice2) where
 
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher
@@ -16,8 +17,12 @@ instance RunMessage NameYourPrice2 where
   runMessage msg e@(NameYourPrice2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       enemies <- select $ EnemyCanBeDamagedBySource (toSource attrs) <> at_ (locationWithInvestigator iid)
-      chooseTargetM iid enemies \eid -> do
-        isElite <- eid <=~> EliteEnemy
-        nonAttackEnemyDamage (Just iid) attrs (if isElite then 5 else 10) eid
+      mconcealed <- getConcealed (ForExpose $ toSource iid) iid
+      chooseOneM iid do
+        targets enemies \eid -> do
+          isElite <- eid <=~> EliteEnemy
+          nonAttackEnemyDamage (Just iid) attrs (if isElite then 5 else 10) eid
+        for_ mconcealed \card -> do
+          targeting card $ doFlip iid attrs card
       pure e
     _ -> NameYourPrice2 <$> liftRunMessage msg attrs

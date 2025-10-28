@@ -1,12 +1,11 @@
-module Arkham.Story.Cards.TimelessBeauty (TimelessBeauty (..), timelessBeauty) where
+module Arkham.Story.Cards.TimelessBeauty (timelessBeauty) where
 
-import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype TimelessBeauty = TimelessBeauty StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -16,14 +15,12 @@ timelessBeauty :: StoryCard TimelessBeauty
 timelessBeauty = story TimelessBeauty Cards.timelessBeauty
 
 instance RunMessage TimelessBeauty where
-  runMessage msg s@(TimelessBeauty attrs) = case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+  runMessage msg s@(TimelessBeauty attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
       push $ ScenarioCountIncrementBy SignOfTheGods 1
       iids <- select $ InvestigatorAt (locationIs Locations.serannian)
       for_ iids \iid -> do
-        mResources <- gainResourcesIfCan iid attrs 2
-        canHealDamage <- canHaveDamageHealed attrs iid
-        for_ mResources push
-        pushWhen canHealDamage $ HealDamage (toTarget iid) (toSource attrs) 2
+        gainResources iid attrs 2
+        healDamageIfCan iid attrs 2
       pure s
-    _ -> TimelessBeauty <$> runMessage msg attrs
+    _ -> TimelessBeauty <$> liftRunMessage msg attrs

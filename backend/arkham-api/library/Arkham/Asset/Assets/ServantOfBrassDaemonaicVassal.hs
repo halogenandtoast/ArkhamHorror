@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Card
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted.Choose
 
 newtype ServantOfBrassDaemonaicVassal = ServantOfBrassDaemonaicVassal AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -25,9 +26,7 @@ instance HasAbilities ServantOfBrassDaemonaicVassal where
 instance RunMessage ServantOfBrassDaemonaicVassal where
   runMessage msg a@(ServantOfBrassDaemonaicVassal attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      selectOneToHandle iid (attrs.ability 1)
-        $ EnemyAt (oneOf [locationWithInvestigator iid, ConnectedFrom (locationWithInvestigator iid)])
-        <> EnemyCanBeDamagedBySource (attrs.ability 1)
+      chooseDamageEnemy iid (attrs.ability 1) (orConnected_ (locationWithInvestigator iid)) AnyEnemy 1
       push $ Msg.DealAssetDamage attrs.id (attrs.ability 1) 1 0
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget eid) -> do

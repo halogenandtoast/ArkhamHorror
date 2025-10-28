@@ -1,0 +1,51 @@
+{
+    "closeLog": "Fermer le journal",
+    "viewLog": "Journal",
+
+    "view": "Affichage",
+    "shortcuts": "Raccourcis",
+    "shortcutsTitle": "Raccourcis clavier",
+    "shortcutSkipTriggers": "(espace) Ignorer déclenchements",
+    "shortcutUndo": "Annuler",
+    "shortcutToggleDebug": "Passer en Debug",
+    "shortcutShowOrHideShortcuts": "Cacher/Afficher raccourcis",
+    "shortcutDraw": "Piocher du deck / deck rencontre",
+    "shortcutTakeResources": "Prendre des Resources",
+    "shortcutEndTurn": "Fin du tour",
+
+    "viewSettings": "Paramètres",
+    "viewSettingTitle": "Paramètres de {investigator}",
+    "viewSettingSkipTriggers": "Ignorer les déclenchements sans effet",
+
+    "viewChaosBag": "Voir la Réserve du Chaos",
+    "chaosBag": "Réserve du Chaos",
+    "add": "Ajouter",
+    
+    "splitView": "Vue transposée",
+
+    "viewBonded": "Voir cartes liées",
+    "bonded": "Liées",
+
+    "showOutOfPlay": "Voir Hors-Jeu",
+    "outOfPlay": "Hors-Jeu",
+
+
+    "debug": "Debug",
+    "toggleDebug": "Activer Debug",
+    "debugExport": "Export de Debug",
+
+    "undo": "Annuler",
+    "restartScenario": "Redémarrer le Scénario",
+
+    "fileABug": "Signaler un Bug",
+    "fileBugPart1": "Un export du jeu sera réalisé, et placé dans un rapport de bug Github. Il vous faut un compte Github pour poursuivre.",
+    "fileBugPart2": "Cela ne vous prendra qu'un instant de signaler le bug et vous pourrez reprendre votre partie ensuite.",
+    "fileBugPart3": "L'export ne contiendra que les 30 derniers coups, donc assurez-vous que votre problème s'y trouve, ou bien détaillez la marche à suivre pour le reproduire.",
+    "bugTitleholder": "Un titre concis",
+    "bugDescriptionholder": "Ce qu'il s'est passé",
+    "bugSubmittingTitle": "Soumettre le bug, SVP patientez quelques instants",
+    "bugSubmittingContent": "Quand le signalement sera terminé, une fenêtre github s'ouvrira et vous pourrez reprendre votre partie.",
+    "bugSubmittingFail": "Impossible de signaler un bug",
+
+    "toggleSidebar": "Activer la barre latérale"
+}

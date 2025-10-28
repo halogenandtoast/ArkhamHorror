@@ -6,6 +6,7 @@ data Message
 
 instance Data Message
 instance Show Message
+instance Ord Message
 instance Eq Message
 instance ToJSON Message
 instance FromJSON Message

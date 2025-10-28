@@ -1,32 +1,22 @@
 module Arkham.Act.Cards.TheSpectralRealm (theSpectralRealm) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Query
-import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Prelude
 
 newtype TheSpectralRealm = TheSpectralRealm ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theSpectralRealm :: ActCard TheSpectralRealm
-theSpectralRealm =
-  act
-    (2, A)
-    TheSpectralRealm
-    Cards.theSpectralRealm
-    (Just $ GroupClueCost (PerPlayer 4) Anywhere)
+theSpectralRealm = act (2, A) TheSpectralRealm Cards.theSpectralRealm (groupClueCost (PerPlayer 4))
 
 instance RunMessage TheSpectralRealm where
-  runMessage msg a@(TheSpectralRealm attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
+  runMessage msg a@(TheSpectralRealm attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       entryHallId <- getJustLocationByName "Entry Hall"
-      pushAll
-        [ RevealLocation Nothing entryHallId
-        , ShuffleEncounterDiscardBackIn
-        , AdvanceActDeck (actDeckId attrs) (toSource attrs)
-        ]
+      push $ RevealLocation Nothing entryHallId
+      shuffleEncounterDiscardBackIn
+      advanceActDeck attrs
       pure a
-    _ -> TheSpectralRealm <$> runMessage msg attrs
+    _ -> TheSpectralRealm <$> liftRunMessage msg attrs

@@ -3,6 +3,7 @@ module Arkham.Event.Events.WarningShot (warningShot, WarningShot (..)) where
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -21,7 +22,7 @@ instance RunMessage WarningShot where
       lids <-
         nub <$> concatForM eids \eid' -> do
           select
-            $ ConnectedLocation
+            $ ConnectedLocation NotForMovement
             <> LocationCanBeEnteredBy eid'
       player <- getPlayer iid
       push

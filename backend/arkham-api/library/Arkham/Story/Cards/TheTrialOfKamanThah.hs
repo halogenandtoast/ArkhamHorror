@@ -1,12 +1,7 @@
-module Arkham.Story.Cards.TheTrialOfKamanThah (
-  TheTrialOfKamanThah (..),
-  theTrialOfKamanThah,
-) where
-
-import Arkham.Prelude
+module Arkham.Story.Cards.TheTrialOfKamanThah (theTrialOfKamanThah) where
 
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype TheTrialOfKamanThah = TheTrialOfKamanThah StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -16,8 +11,8 @@ theTrialOfKamanThah :: StoryCard TheTrialOfKamanThah
 theTrialOfKamanThah = story TheTrialOfKamanThah Cards.theTrialOfKamanThah
 
 instance RunMessage TheTrialOfKamanThah where
-  runMessage msg s@(TheTrialOfKamanThah attrs) = case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
-      push $ AddToVictory (toTarget attrs)
+  runMessage msg s@(TheTrialOfKamanThah attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
+      addToVictory attrs
       pure s
-    _ -> TheTrialOfKamanThah <$> runMessage msg attrs
+    _ -> TheTrialOfKamanThah <$> liftRunMessage msg attrs

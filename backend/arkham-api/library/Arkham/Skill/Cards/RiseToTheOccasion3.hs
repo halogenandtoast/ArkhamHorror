@@ -1,7 +1,6 @@
 module Arkham.Skill.Cards.RiseToTheOccasion3 (riseToTheOccasion3) where
 
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
@@ -15,13 +14,11 @@ riseToTheOccasion3 = skill RiseToTheOccasion3 Cards.riseToTheOccasion3
 
 instance HasModifiersFor RiseToTheOccasion3 where
   getModifiersFor (RiseToTheOccasion3 attrs) = do
-    getSkillTest >>= \case
-      Just skillTest -> do
-        base <- getSkillTestBaseSkillForSkillTest (skillOwner attrs) skillTest
-        difficulty <- getModifiedSkillTestDifficulty skillTest
-        let n = max 0 (min 3 (difficulty - base))
-        modifySelf attrs.cardId [AddSkillIcons $ replicate n #wild]
-      _ -> pure mempty
+    whenJustM getSkillTest \skillTest -> do
+      base <- getSkillTestBaseSkillForSkillTest attrs.owner skillTest
+      difficulty <- getModifiedSkillTestDifficulty skillTest
+      let n = max 0 (min 3 (difficulty - base))
+      addSkillIcons attrs $ replicate n #wild
 
 instance RunMessage RiseToTheOccasion3 where
   runMessage msg (RiseToTheOccasion3 attrs) =

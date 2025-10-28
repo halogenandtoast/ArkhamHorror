@@ -4,15 +4,14 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types qualified as Field
 import Arkham.Asset.Uses
-import Arkham.Id
+import Arkham.Capability
+import Arkham.Helpers.Window (getDefeatedAsset)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted hiding (InvestigatorDamage)
 import Arkham.Investigator.Types (Field (InvestigatorDamage, InvestigatorHorror))
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Projection
-import Arkham.Window (Window, windowType)
-import Arkham.Window qualified as Window
 
 newtype TommyMuldoon = TommyMuldoon InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -26,7 +25,7 @@ tommyMuldoon =
 
 instance HasAbilities TommyMuldoon where
   getAbilities (TommyMuldoon attrs) =
-    [ restrictedAbility attrs 1 (Self <> CanGainResources)
+    [ restricted attrs 1 (Self <> youExist (oneOf [can.gain.resources, can.shuffle.deck]))
         $ freeReaction
         $ Matcher.AssetDefeated #when ByAny
         $ AssetControlledBy You
@@ -38,30 +37,24 @@ instance HasChaosTokenValue TommyMuldoon where
     pure $ ChaosTokenValue ElderSign $ PositiveModifier 2
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
-getAsset :: [Window] -> AssetId
-getAsset = \case
-  ((windowType -> Window.AssetDefeated aid _) : _) -> aid
-  (_ : rest) -> getAsset rest
-  _ -> error "impossible"
-
 instance RunMessage TommyMuldoon where
   runMessage msg i@(TommyMuldoon attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (getAsset -> asset) _ -> do
-      damage <- field Field.AssetDamage asset
-      horror <- field Field.AssetHorror asset
+    UseCardAbility iid (isSource attrs -> True) 1 (getDefeatedAsset -> asset) _ -> do
+      whenM (can.gain.resources iid) do
+        damage <- field Field.AssetDamage asset
+        horror <- field Field.AssetHorror asset
+        hasBecky <- selectAny (assetIs Assets.becky)
 
-      hasBecky <- selectAny (assetIs Assets.becky)
-
-      if hasBecky
-        then do
-          chooseAmounts
-            iid
-            ("Distribute " <> tshow (damage + horror) <> " Resources")
-            (TotalAmountTarget $ damage + horror)
-            [("Tommy Muldoon Resources", (0, damage + horror)), ("Becky Resources", (0, damage + horror))]
-            (toTarget iid)
-        else do
-          gainResourcesIfCan iid (attrs.ability 1) (damage + horror)
+        if hasBecky
+          then do
+            chooseAmounts
+              iid
+              ("Distribute " <> tshow (damage + horror) <> " Resources")
+              (TotalAmountTarget $ damage + horror)
+              [("Tommy Muldoon Resources", (0, damage + horror)), ("Becky Resources", (0, damage + horror))]
+              (toTarget iid)
+          else do
+            gainResources iid (attrs.ability 1) (damage + horror)
       shuffleIntoDeck iid asset
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do

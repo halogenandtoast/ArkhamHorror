@@ -40,3 +40,15 @@
           /export ApiV1ArkhamGameExportR GET
           /full-export ApiV1ArkhamGameFullExportR GET
           /reload ApiV1ArkhamGameReloadR GET
+    /admin AdminP:
+      / ApiV1AdminR GET
+      /rooms ApiV1AdminRoomsP:
+        / ApiV1AdminRoomsR GET
+        /#ArkhamGameId ApiV1AdminRoomP:
+          / ApiV1AdminRoomR DELETE
+      /games ApiV1AdminGamesP:
+        / ApiV1AdminGamesR GET
+        !/find/#ArkhamPlayerId ApiV1AdminFindGameR GET
+        /#ArkhamGameId ApiV1AdminGameP:
+          / ApiV1AdminGameR GET PUT
+          /raw ApiV1AdminGameRawR PUT

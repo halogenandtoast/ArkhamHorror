@@ -4,6 +4,7 @@ import { PickSupplies  } from '@/arkham/types/Question';
 import { MessageType } from '@/arkham/types/Message';
 import { imgsrc } from '@/arkham/helpers';
 import { useI18n } from 'vue-i18n';
+import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 
 const props = defineProps<{
   game: Game,
@@ -13,6 +14,8 @@ const props = defineProps<{
 const emit = defineEmits(['choose'])
 const choose = (idx: number) => emit('choose', idx)
 const { t } = useI18n()
+
+const context = computed(() => props.question.resupply ? 'resupplyPoint' : 'prologue')
 
 const investigatorId = computed(() => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)?.id)
 const pointsRemaining = computed(() => props.question.pointsRemaining)
@@ -35,6 +38,8 @@ const portrait = (investigatorId: string) => {
   return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
 }
 
+const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1)
+
 </script>
 <template>
   <div id="pick-supplies">
@@ -42,36 +47,35 @@ const portrait = (investigatorId: string) => {
       <div class="pick-supplies-portrait">
         <img :src="portrait(investigatorId)" alt="Investigator Portrait" class="portrait" />
       </div>
-      <div class="pick-supplies-contents"><ul><li v-html="t('theForgottenAge.prologue.pickSupplies')"></li></ul></div>
+      <FormattedEntry class="pick-supplies-contents" :entry="{ tag: 'I18nEntry', key: `theForgottenAge.${context}.pickSupplies`}" />
     </div>
     <div class="pick-supplies">
-      <h2>Pick Supplies ({{pointsRemaining}} points remaining)</h2>
+      <h2>{{t('theForgottenAge.supplies.choose', { pointsRemaining })}}</h2>
 
       <div class="supply-choices">
         <template v-for="(choice, index) in supplies" :key="index">
           <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
-            <button @click="choose(index + 1)" v-tooltip="choice.tooltip">{{choice.label}}</button>
+            <button @click="choose(index + 1)" v-tooltip="t(choice.tooltip.slice(1))">{{t(choice.label.slice(1))}}</button>
           </template>
         </template>
       </div>
 
-      <button class="done-button" @click="choose(0)">Done</button>
+      <button class="done-button" @click="choose(0)">{{t('label.done')}}</button>
     </div>
 
     <div class="pick-supplies" v-if="chosenSupplies.size > 0">
-      <h2>Chosen Supplies</h2>
+      <h2>{{t('theForgottenAge.supplies.chosen')}}</h2>
 
       <ul>
-        <template v-for="([supply, count], index) in chosenSupplies" :key="index">
-          <li v-if="count > 1">{{supply}} ({{count}})</li>
-          <li v-else>{{supply}}</li>
-        </template>
+        <li v-for="([supply, count], index) in chosenSupplies" :key="index">
+          {{t(`theForgottenAge.supplies.${lowerFirst(supply)}.count`, { count })}}
+        </li>
       </ul>
     </div>
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 #pick-supplies {
   width: 100%;
   display: flex;
@@ -117,6 +121,7 @@ button {
     margin: 0;
     padding: 0;
   }
+
 }
 
 .pick-supplies {
@@ -191,10 +196,22 @@ ul li {
 
 .pick-supplies-contents {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  padding: 10px;
   background: #DCD6D0;
   border-radius: 10px;
   box-shadow: inset 0 0 170px rgba(0, 0, 0, 0.5), 1px 1px 3px rgba(0, 0, 0, 0.6);
+
+  :deep(p) {
+    font-size: 1.2em !important;
+  }
+
+  :deep(em) {
+    font-style: italic;
+  }
 }
 
 .pick-supplies-portrait {

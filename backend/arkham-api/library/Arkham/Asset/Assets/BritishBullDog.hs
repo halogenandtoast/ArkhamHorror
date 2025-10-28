@@ -35,7 +35,7 @@ instance RunMessage BritishBullDog where
         , Label "Use {combat}" [toMessage fight]
         ]
       pure a
-    InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 2) | iid == iid' -> do
       putCardIntoPlay iid attrs
       pure a
     _ -> BritishBullDog <$> liftRunMessage msg attrs

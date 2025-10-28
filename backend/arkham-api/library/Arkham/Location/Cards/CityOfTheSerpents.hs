@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.CityOfTheSerpents (cityOfTheSerpents, CityOfTheSerpents (..)) where
+module Arkham.Location.Cards.CityOfTheSerpents (cityOfTheSerpents) where
 
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers

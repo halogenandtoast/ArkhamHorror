@@ -128,6 +128,7 @@ allPlayerTreacheryCards =
       , panic
       , paranoia
       , poisoned
+      , possessed
       , prophecyOfTheEnd
       , psychosis
       , rationalThought
@@ -182,12 +183,12 @@ allEncounterTreacheryCards =
     $ map
       (toCardCode &&& id)
       [ aBalefulWelcome
-      , aTearInTime
-      , aWorldInDarkness
       , abandonedByTheGods
       , abandonedToMadness
       , abduction
+      , accosted
       , acridMiasma
+      , action
       , alteredBeast
       , anamnesis
       , ancestralFear
@@ -199,8 +200,10 @@ allEncounterTreacheryCards =
       , arcaneBarrier
       , arousingSuspicions
       , arrowsFromTheTrees
+      , aTearInTime
       , attractingAttention
       , avalanche
+      , aWorldInDarkness
       , baneOfTheLiving
       , bathophobia
       , beastOfTheBayou
@@ -211,17 +214,26 @@ allEncounterTreacheryCards =
       , beyondTheVeil
       , blackStarsRise
       , blasphemousVisions
+      , bleedingReality
       , bleedingWalls
+      , bleedingWallsTheMidwinterGala
       , bleedingWallsTheMidwinterGala
       , blindsense
       , bloodOnYourHands
+      , bloodthirstySpirits
+      , boundInRed
+      , brazierEnchantment
+      , breakALeg
       , brokenRails
       , bumpyRide
       , burdensOfThePast
       , callToOrder
-      , caughtInAWeb
+      , callingCard
       , captiveMind
+      , catAndMouse
       , caughtCheating
+      , caughtInAWeb
+      , celestialShower
       , centuriesOfSecrets
       , chaosInTheWater
       , chaosManifest
@@ -231,19 +243,25 @@ allEncounterTreacheryCards =
       , clawsOfSteam
       , closeWatch
       , cloudedMemory
+      , coldStreak
       , collapsingReality
+      , compulsion
+      , confusion
+      , conspiracyInRed
       , conspiracyOfBlood
       , conspiracyOfDeepOnes
+      , cornered
       , corrosion
       , crashingFloods
+      , creatureFeature
       , creepingDarkness
       , creepingPoison
       , cruelInterrogations
       , crumblingRuins
       , cryptChill
-      , curseOfYig
       , cursedLuck
       , cursedSwamp
+      , curseOfYig
       , daemonicPiping
       , danceOfTheYellowKing
       , darkAurora
@@ -253,16 +271,18 @@ allEncounterTreacheryCards =
       , deathApproaches
       , deceptiveMemories
       , deepDark
+      , deeperSlumber
       , deepOneAssault
       , deepOneInvasion
-      , deeperSlumber
       , delusoryEvils
       , descentIntoMadness
+      , despoiled
       , dholeTunnel
       , diabolicVoices
       , dismalCurse
       , disquietingDreams
       , dissonantVoices
+      , distortedReasoning
       , draggedUnder
       , draggedUnderDevilReef
       , dreamersCurse
@@ -276,6 +296,7 @@ allEncounterTreacheryCards =
       , endlessDescent
       , endlessWeaving
       , entombed
+      , entrap
       , ephemeralExhibits
       , esotericRitual
       , evanescentMist
@@ -285,24 +306,30 @@ allEncounterTreacheryCards =
       , eyesInTheTrees
       , eyesInTheWalls
       , falseLead
+      , famine
       , fateOfAllFools
+      , fateOfAllFoolsUnspeakableFate
       , figureInTheShadows
+      , figuresInTheDark
       , finalMistake
       , fineDining
+      , flipTheScript
       , fogOverInnsmouth
       , forcedIntoHiding
+      , foundFootage
       , fracturedConsciousness
       , fragileThoughts
       , fromAnotherTime
-      , frostbitten
       , fromTheDepths
+      , fromTheOtherSide
+      , frostbitten
       , frozenInFear
       , frozenInFearAPhantomOfTruth
       , fulfillTheOaths
       , furtiveLocals
+      , ghostlyPresence
       , giftOfMadnessMisery
       , giftOfMadnessPity
-      , ghostlyPresence
       , glimpseOfTheUnderworld
       , glimpseTheUnspeakable
       , glowingEyes
@@ -314,6 +341,8 @@ allEncounterTreacheryCards =
       , hastursGaze
       , hastursGrasp
       , hauntingRecollections
+      , heavyRain
+      , hellfire
       , heraldsOfTheDeep
       , hideousLullaby
       , horrorsFromTheDeep
@@ -326,23 +355,30 @@ allEncounterTreacheryCards =
       , iceShaft
       , idleHands
       , illOmen
+      , impendingEvils
       , imperceptableCreature
+      , inPlainSight
       , incriminatingEvidence
       , indescribableApparition
       , inexplicableCold
+      , inexplicableColdTheMidwinterGala
       , infiniteDoorway
       , innsmouthLook
       , insatiableBloodlust
       , inundated
+      , keyCharge
       , kidnapped
       , kindredMist
       , kissOfBrine
+      , knivesInTheDark
+      , lastLooks
       , lawOfYgirothChaos
       , lawOfYgirothDiscord
       , lawOfYgirothPandemonium
       , ledAstray
       , lightlessShadow
       , lightOfAforgomon
+      , lightOutOfVoid
       , litByDeathFire
       , lockedDoor
       , lostHumanity
@@ -355,11 +391,12 @@ allEncounterTreacheryCards =
       , macabreMemento
       , maddeningDelusions
       , malfunction
-      , markOfTheOrder
+      , maligned
       , markedByTheSign
       , markedForDeath
-      , maskOfUmordhoth
+      , markOfTheOrder
       , maskedHorrors
+      , maskOfUmordhoth
       , massHysteria
       , meddlesomeFamiliar
       , melancholy
@@ -367,6 +404,8 @@ allEncounterTreacheryCards =
       , mergingTimelines
       , mesmerize
       , miasmaticTorment
+      , mindExtraction
+      , mistsFromBeyond
       , morbidAwareness
       , myriadForms
       , mysteriesOfTheLodge
@@ -374,11 +413,12 @@ allEncounterTreacheryCards =
       , nebulousMiasma
       , needForKnowledge
       , nightBeyondVoid
-      , nightTerrors
       , nightmarishVapors
-      , noTurningBack
+      , nightTerrors
       , nobodysHome
+      , noTurningBack
       , noxiousFumes
+      , noxiousFumesTheMidwinterGala
       , obscuringFog
       , offerOfPower
       , ominousPortents
@@ -387,20 +427,23 @@ allEncounterTreacheryCards =
       , oozeAndFilth
       , oppressiveMists
       , outbreak
+      , outsmarted
       , overgrowth
       , painfulReflection
       , passageIntoTheVeil
+      , perilsOfYoth
       , phantasmagoria
+      , pinchInReality
       , pitfall
       , poisonousSpores
       , polarMirage
       , polarVortex
-      , possessed
       , possessionMurderous
       , possessionTorturous
       , possessionTraitorous
       , primevalTerror
       , primordialGateway
+      , primordialTerror
       , prismaticPhenomenon
       , prophecyOfTheEnd
       , psychicPull
@@ -410,6 +453,7 @@ allEncounterTreacheryCards =
       , pulledByTheStars
       , punishment
       , pushedIntoTheBeyond
+      , pushedIntoTheBeyondTheMidwinterGala
       , radicalTreatment
       , raiseTheStakes
       , realmOfMadness
@@ -429,14 +473,17 @@ allEncounterTreacheryCards =
       , rottingRemainsBloodOnTheAltar
       , ruinAndDestruction
       , secretDoor
+      , secretDoorTheMidwinterGala
       , secretGathering
       , secretsInTheAttic
       , secretsOfTheBeyond
+      , seeingShadows
       , serpentsCall
       , serpentsIre
+      , shadowed
+      , shadowedDealingsInTheDark
       , shadowOfAtlachNacha
       , shadowSpawned
-      , shadowed
       , shapesInTheMist
       , shapesInTheWater
       , shatteredAges
@@ -459,11 +506,15 @@ allEncounterTreacheryCards =
       , stowaway
       , straitjacket
       , strangeSigns
+      , substanceDissimulation
+      , supernaturalTempest
       , syzygy
       , takenCaptive
       , tasteOfLifeblood
-      , terrorInTheNight
+      , tenebrousEclipse
       , terrorFromBeyond
+      , terrorGate
+      , terrorInTheNight
       , terrorUnleashed
       , thalassophobia
       , theCreaturesTracks
@@ -479,8 +530,8 @@ allEncounterTreacheryCards =
       , theSignOfHastur
       , theSpinnerInDarkness
       , theYellowSign
-      , theZealotsSeal
       , theyreCatchingUp
+      , theZealotsSeal
       , threadsOfReality
       , throughTheIce
       , tidalAlignment
@@ -488,36 +539,36 @@ allEncounterTreacheryCards =
       , toilAndTrouble
       , torturousChords
       , totality
+      , touchOfTheBeyond
       , toughCrowd
       , toweringBeasts
       , trappedSpirits
       , treacherousDepths
+      , trespasser
       , twinSuns
-      , twistOfFate
       , twistedToHisWill
+      , twistOfFate
       , ultimateChaos
       , umordhothsHunger
       , umordhothsWrath
+      , unavoidableDemise
+      , undercover
       , undertow
       , unexpectedAmbush
+      , unexpectedTransformation
       , unhallowedCountry
+      , unhallowedLand
+      , unknowablePast
+      , unlucky
+      , unstableEnergies
+      , vampiresKiss
       , vastExpanse
       , vaultOfEarthlyDemise
+      , viceAndVillainy
+      , viciousAmbush
       , violentCommands
       , violentCommandsTheMidwinterGala
-      , viciousAmbush
-      , bleedingWallsTheMidwinterGala
-      , entrap
-      , inexplicableColdTheMidwinterGala
-      , mindExtraction
-      , noxiousFumesTheMidwinterGala
-      , pushedIntoTheBeyondTheMidwinterGala
-      , secretDoorTheMidwinterGala
-      , terrorGate
-      , unlucky
       , wardOfPreservation
-      , coldStreak
-      , confusion
       , violentOutburst
       , visionsInYourMindDeath
       , visionsInYourMindFailure
@@ -545,6 +596,7 @@ allEncounterTreacheryCards =
       , whiteout
       , willOfTheSpiderMother
       , windowToAnotherTime
+      , witchweed
       , wondrousLands
       , wordsOfPower
       , worldsMerge
@@ -2589,8 +2641,10 @@ frostbitten =
 
 possessed :: CardDef
 possessed =
-  (treachery "08647" "Possessed" CityOfTheElderThings 4)
+  (weakness "08647" "Possessed")
     { cdCardTraits = setFromList [Madness]
+    , cdEncounterSet = Just CityOfTheElderThings
+    , cdEncounterSetQuantity = Just 4
     }
 
 primevalTerror :: CardDef
@@ -2796,6 +2850,149 @@ burdenOfLeadership =
     { cdCardTraits = setFromList [Flaw]
     }
 
+famine :: CardDef
+famine =
+  (treachery "09542" "Famine" DeadHeat 2)
+    { cdCardTraits = setFromList [Corruption]
+    }
+
+cornered :: CardDef
+cornered =
+  (treachery "09543" "Cornered!" DeadHeat 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+catAndMouse :: CardDef
+catAndMouse =
+  peril
+    $ surge
+    $ (treachery "09559" "Cat and Mouse" SanguineShadows 2)
+      { cdCardTraits = setFromList [Scheme]
+      }
+
+callingCard :: CardDef
+callingCard =
+  (treachery "09560" "Calling Card" SanguineShadows 2)
+    { cdCardTraits = setFromList [Evidence]
+    }
+
+outsmarted :: CardDef
+outsmarted =
+  (treachery "09561" "Outsmarted" SanguineShadows 2)
+    { cdCardTraits = setFromList [Scheme]
+    }
+
+shadowedDealingsInTheDark :: CardDef
+shadowedDealingsInTheDark =
+  (treachery "09587" "Shadowed" DealingsInTheDark 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+accosted :: CardDef
+accosted =
+  (treachery "09588" "Accosted" DealingsInTheDark 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+lightOutOfVoid :: CardDef
+lightOutOfVoid =
+  peril
+    $ (treachery "09589" "Light Out of Void" DealingsInTheDark 2)
+      { cdCardTraits = singleton Hex
+      }
+
+conspiracyInRed :: CardDef
+conspiracyInRed =
+  (treachery "09717" "Conspiracy in Red" CrimsonConspiracy 2)
+    { cdCardTraits = setFromList [Scheme]
+    }
+
+pinchInReality :: CardDef
+pinchInReality =
+  (treachery "09718" "Pinch in Reality" StrangeHappenings 2)
+    { cdCardTraits = setFromList [Power]
+    }
+
+heavyRain :: CardDef
+heavyRain =
+  (treachery "09719" "Heavy Rain" StrangeHappenings 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+inPlainSight :: CardDef
+inPlainSight =
+  (treachery "09721" "In Plain Sight" MysteriesAbound 2)
+    { cdCardTraits = setFromList [Scheme]
+    }
+
+knivesInTheDark :: CardDef
+knivesInTheDark =
+  (treachery "09722" "Knives in the Dark" ShadowOfADoubt 2)
+    { cdCardTraits = setFromList [Scheme]
+    }
+
+undercover :: CardDef
+undercover =
+  (treachery "09723" "Undercover" ShadowOfADoubt 2)
+    { cdCardTraits = setFromList [Scheme]
+    }
+
+seeingShadows :: CardDef
+seeingShadows =
+  (treachery "09724" "Seeing Shadows" DarkVeiling 2)
+    { cdCardTraits = setFromList [Terror]
+    }
+
+figuresInTheDark :: CardDef
+figuresInTheDark =
+  peril
+    (treachery "09725" "Figures in the Dark" DarkVeiling 2)
+      { cdCardTraits = setFromList [Scheme]
+      }
+
+boundInRed :: CardDef
+boundInRed =
+  (treachery "09729" "Bound in Red" ScarletSorcery 2)
+    { cdCardTraits = setFromList [Hex]
+    }
+
+keyCharge :: CardDef
+keyCharge =
+  surge
+    $ (treachery "09730" "Key Charge" ScarletSorcery 2)
+      { cdCardTraits = setFromList [Hex]
+      }
+
+substanceDissimulation :: CardDef
+substanceDissimulation =
+  (treachery "09733" "Substance Dissimulation" Outsiders 2)
+    { cdCardTraits = setFromList [Power]
+    }
+
+tenebrousEclipse :: CardDef
+tenebrousEclipse =
+  (treachery "09740" "Tenebrous Eclipse" AgentsOfYuggoth 3)
+    { cdCardTraits = setFromList [Omen]
+    }
+
+touchOfTheBeyond :: CardDef
+touchOfTheBeyond =
+  (treachery "09744" "Touch of the Beyond" SpreadingCorruption 2)
+    { cdCardTraits = setFromList [Curse]
+    }
+
+compulsion :: CardDef
+compulsion =
+  (treachery "09745" "Compulsion" SpreadingCorruption 2)
+    { cdCardTraits = setFromList [Curse, Terror]
+    }
+
+distortedReasoning :: CardDef
+distortedReasoning =
+  (treachery "09746" "Compulsion" SpreadingCorruption 2)
+    { cdCardTraits = setFromList [Curse, Terror]
+    }
+
 hastyRepairs :: CardDef
 hastyRepairs =
   (weakness "10003" "Hasty Repairs")
@@ -2867,6 +3064,8 @@ vaultOfEarthlyDemise :: CardDef
 vaultOfEarthlyDemise =
   (treachery "50032b" "Vault of Earthly Demise" ReturnToTheDevourerBelow 1)
     { cdCardTraits = setFromList [Eldritch, Otherworld]
+    , cdOtherSide = Just "50032"
+    , cdDoubleSided = True
     }
 
 umordhothsHunger :: CardDef
@@ -3155,6 +3354,20 @@ finePrint = (weakness "53014" "Fine Print") {cdCardTraits = singleton Pact}
 sellYourSoul :: CardDef
 sellYourSoul = (weakness "53015" "Sell Your Soul") {cdCardTraits = singleton Pact}
 
+perilsOfYoth :: CardDef
+perilsOfYoth =
+  peril
+    (treachery "53060" "Perils of Yoth" ReturnToTheDepthsOfYoth 2)
+      { cdCardTraits = setFromList [Hazard]
+      }
+
+unknowablePast :: CardDef
+unknowablePast =
+  peril
+    (treachery "53065" "Unknowable Past" ReturnToShatteredAeons 2)
+      { cdCardTraits = setFromList [Hex]
+      }
+
 fromAnotherTime :: CardDef
 fromAnotherTime =
   (treachery "53073" "From Another Time" CultOfPnakotus 2)
@@ -3192,6 +3405,98 @@ damned =
   (basicWeakness "54014" "Damned")
     { cdCardTraits = setFromList [Curse, Omen]
     , cdPermanent = True
+    }
+
+witchweed :: CardDef
+witchweed =
+  peril
+    (treachery "54040" "Witchweed" ReturnToTheWagesOfSin 2)
+      { cdCardTraits = setFromList [Curse]
+      }
+
+brazierEnchantment :: CardDef
+brazierEnchantment =
+  (treachery "54048" "Brazier Enchantment" ReturnToUnionAndDisillusion 2)
+    { cdCardTraits = setFromList [Curse, Hex]
+    }
+
+trespasser :: CardDef
+trespasser =
+  (treachery "54062" "Trespasser!" Hexcraft 3)
+    { cdCardTraits = setFromList [Curse]
+    }
+
+despoiled :: CardDef
+despoiled =
+  (treachery "54063" "Despoiled" Hexcraft 2)
+    { cdCardTraits = setFromList [Hex]
+    }
+
+maligned :: CardDef
+maligned =
+  (treachery "54064" "Maligned" Hexcraft 2)
+    { cdCardTraits = setFromList [Hex]
+    }
+
+impendingEvils :: CardDef
+impendingEvils =
+  peril
+    (treachery "54065" "Impending Evils" ImpendingEvils 3)
+      { cdCardTraits = setFromList [Omen]
+      }
+
+unavoidableDemise :: CardDef
+unavoidableDemise =
+  (treachery "54066" "Unavoidable Demise" UnspeakableFate 3)
+    { cdCardTraits = setFromList [Hazard, Spectral]
+    }
+
+fateOfAllFoolsUnspeakableFate :: CardDef
+fateOfAllFoolsUnspeakableFate =
+  (treachery "54067" "Fate of All Fools" UnspeakableFate 3)
+    { cdCardTraits = setFromList [Omen, Spectral]
+    }
+
+unstableEnergies :: CardDef
+unstableEnergies =
+  (treachery "54068" "Unstable Energies" UnstableRealm 2)
+    { cdCardTraits = setFromList [Hazard, Spectral]
+    }
+
+fromTheOtherSide :: CardDef
+fromTheOtherSide =
+  (treachery "54069" "From the Other Side" UnstableRealm 2)
+    { cdCardTraits = setFromList [Terror, Spectral]
+    }
+
+viceAndVillainy :: CardDef
+viceAndVillainy =
+  (treachery "54070" "Vice and Villainy" CityOfTheDamned 2)
+    { cdCardTraits = setFromList [Curse]
+    }
+
+unhallowedLand :: CardDef
+unhallowedLand =
+  (treachery "54071" "Unhallowed Land" CityOfTheDamned 3)
+    { cdCardTraits = setFromList [Curse]
+    }
+
+supernaturalTempest :: CardDef
+supernaturalTempest =
+  (treachery "54072" "Supernatural Tempest" ChillingMists 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+mistsFromBeyond :: CardDef
+mistsFromBeyond =
+  (treachery "54073" "Mists from Beyond" ChillingMists 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+bloodthirstySpirits :: CardDef
+bloodthirstySpirits =
+  (treachery "54075" "Bloodthirsty Spiris" BloodthirstySpirits 2)
+    { cdCardTraits = setFromList [Terror, Spectral]
     }
 
 selfDestructive :: CardDef
@@ -3575,4 +3880,77 @@ violentCommandsTheMidwinterGala :: CardDef
 violentCommandsTheMidwinterGala =
   (treachery "71062" "Violent Commands" TheMidwinterGala 2)
     { cdCardTraits = singleton Terror
+    }
+
+flipTheScript :: CardDef
+flipTheScript =
+  (treachery "72012" "Flip the Script" FilmFatale 2)
+    { cdCardTraits = singleton Paradox
+    }
+
+foundFootage :: CardDef
+foundFootage =
+  (treachery "72013" "Found Footage" FilmFatale 2)
+    { cdCardTraits = singleton Terror
+    }
+
+action :: CardDef
+action =
+  peril
+    $ (treachery "72014" "Action!" FilmFatale 2)
+      { cdCardTraits = singleton Terror
+      }
+
+breakALeg :: CardDef
+breakALeg =
+  (treachery "72015" "\"Break a Leg!\"" FilmFatale 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+bleedingReality :: CardDef
+bleedingReality =
+  (treachery "72016" "Bleeding Reality" FilmFatale 3)
+    { cdCardTraits = setFromList [Power, Extradimensional]
+    }
+
+lastLooks :: CardDef
+lastLooks =
+  (treachery "72017" "Last Looks" FilmFatale 2)
+    { cdCardTraits = singleton Terror
+    }
+
+creatureFeature :: CardDef
+creatureFeature =
+  (treachery "72018" "Creature Feature" FilmFatale 2)
+    { cdCardTraits = singleton Terror
+    }
+
+celestialShower :: CardDef
+celestialShower =
+  (treachery "72035" "Celestial Shower" CosmicJourney 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+primordialTerror :: CardDef
+primordialTerror =
+  (treachery "72046" "Primordial Terror" ForgottenIsland 2)
+    { cdCardTraits = singleton Terror
+    }
+
+unexpectedTransformation :: CardDef
+unexpectedTransformation =
+  (treachery "72047" "Unexpected Transformation" ForgottenIsland 2)
+    { cdCardTraits = singleton Power
+    }
+
+hellfire :: CardDef
+hellfire =
+  (treachery "72058" "Hellfire" AbominableContessa 2)
+    { cdCardTraits = singleton Power
+    }
+
+vampiresKiss :: CardDef
+vampiresKiss =
+  (treachery "72059" "Vampire's Kiss" AbominableContessa 2)
+    { cdCardTraits = singleton Scheme
     }

@@ -1,7 +1,4 @@
-module Arkham.Location.Cards.WitchHauntedWoodsTaintedWell (
-  witchHauntedWoodsTaintedWell,
-  WitchHauntedWoodsTaintedWell (..),
-) where
+module Arkham.Location.Cards.WitchHauntedWoodsTaintedWell (witchHauntedWoodsTaintedWell) where
 
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
@@ -17,11 +14,7 @@ newtype WitchHauntedWoodsTaintedWell = WitchHauntedWoodsTaintedWell LocationAttr
 
 witchHauntedWoodsTaintedWell :: LocationCard WitchHauntedWoodsTaintedWell
 witchHauntedWoodsTaintedWell =
-  location
-    WitchHauntedWoodsTaintedWell
-    Cards.witchHauntedWoodsTaintedWell
-    3
-    (PerPlayer 1)
+  location WitchHauntedWoodsTaintedWell Cards.witchHauntedWoodsTaintedWell 3 (PerPlayer 1)
 
 instance HasModifiersFor WitchHauntedWoodsTaintedWell where
   getModifiersFor (WitchHauntedWoodsTaintedWell a) =

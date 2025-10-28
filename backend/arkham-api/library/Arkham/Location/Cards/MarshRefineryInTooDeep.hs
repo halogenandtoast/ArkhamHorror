@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.MarshRefineryInTooDeep (marshRefineryInTooDeep) where
 
 import Arkham.Ability
+import Arkham.ForMovement
 import Arkham.Helpers.Location (getConnectedMoveLocations)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -20,7 +21,10 @@ instance HasAbilities MarshRefineryInTooDeep where
   getAbilities (MarshRefineryInTooDeep a) =
     extendRevealed
       a
-      [ restricted a 1 (Here <> youExist InvestigatorWithAnyKey <> CanMoveTo (ConnectedFrom (be a)))
+      [ restricted
+          a
+          1
+          (Here <> youExist InvestigatorWithAnyKey <> CanMoveTo (ConnectedFrom ForMovement (be a)))
           $ FastAbility Free
       , restricted a 2 Here $ actionAbilityWithCost $ DiscardAssetCost (AssetControlledBy You)
       ]

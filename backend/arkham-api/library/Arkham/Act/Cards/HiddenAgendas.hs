@@ -49,6 +49,10 @@ instance RunMessage HiddenAgendas where
       trophyRoom <- selectJust $ locationIs Locations.trophyRoom
       replaceLocation trophyRoom =<< getSetAsideCard Locations.trophyRoomSpectral
 
+      mWineCellar <- selectOne $ locationIs Locations.wineCellar
+      for_ mWineCellar \wineCellar -> do
+        replaceLocation wineCellar =<< getSetAsideCard Locations.wineCellarSpectral
+
       doStep 0 msg
       eachInvestigator (`forInvestigator` msg)
 

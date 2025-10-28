@@ -38,8 +38,8 @@ instance RunMessage Counterespionage1 where
         then drawCardsIfCan iid attrs 1
         else drawEncounterCard iid attrs
       pure e
-    InHand _ (UseThisAbility _ (isSource attrs -> True) 1) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 1) | iid == iid' -> do
       eventModifier attrs attrs.cardId (MetaModifier $ object ["yourDeck" .= True])
       pure e
-    InHand _ (UseThisAbility _ (isSource attrs -> True) 2) -> pure e
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 2) | iid == iid' -> pure e
     _ -> Counterespionage1 <$> liftRunMessage msg attrs

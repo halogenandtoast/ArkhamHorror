@@ -4,7 +4,7 @@ import { imgsrc } from '@/arkham/helpers'
 
 export interface Props {
   type: string
-  amount: number
+  amount?: number
   tooltip?: string
 }
 const props = defineProps<Props>()
@@ -19,11 +19,11 @@ const image = computed(() => {
 <template>
   <div class="poolItem" :class="`poolItem-${type}`" @click="emit('choose')" v-tooltip="tooltip">
     <img :src="image" />
-    <span>{{amount}}</span>
+    <span v-if="amount !== null && amount !== undefined">{{amount}}</span>
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 
 .poolItem {
   --width: var(--pool-token-width);
@@ -77,6 +77,17 @@ const image = computed(() => {
     width: 1.2em;
     height: auto;
   }
+}
+
+.clue--can-take, .clue--can-spend {
+  pointer-events: auto;
+  padding: 0px;
+  cursor: pointer;
+  border: 2px solid var(--select);
+  width: fit-content;
+  height: fit-content;
+  border-radius: 100vw;
+  img { filter: unset; flex: 1; width: 100%; height: auto;}
 }
 
 .resource--can-take, .resource--can-spend {

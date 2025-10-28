@@ -1,14 +1,9 @@
-module Arkham.Skill.Cards.Cunning (cunning, Cunning (..)) where
+module Arkham.Skill.Cards.Cunning (cunning) where
 
-import Arkham.Card
-import Arkham.Classes
-import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
-import Arkham.SkillType
+import Arkham.Skill.Import.Lifted
 
 newtype Cunning = Cunning SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
@@ -19,21 +14,11 @@ cunning = skill Cunning Cards.cunning
 
 instance HasModifiersFor Cunning where
   getModifiersFor (Cunning attrs) = do
-    resources <- field InvestigatorResources (skillOwner attrs)
-    modifiedWhen_
-      attrs
-      (resources >= 5)
-      (CardIdTarget $ toCardId attrs)
-      [ AddSkillIcons
-          $ if resources >= 10
-            then
-              [ SkillIcon SkillIntellect
-              , SkillIcon SkillIntellect
-              , SkillIcon SkillAgility
-              , SkillIcon SkillAgility
-              ]
-            else [SkillIcon SkillIntellect, SkillIcon SkillAgility]
-      ]
+    resources <- field InvestigatorResources attrs.owner
+    addSkillIconsWhen attrs (resources >= 5)
+      $ if resources >= 10
+        then [#intellect, #intellect, #agility, #agility]
+        else [#intellect, #agility]
 
 instance RunMessage Cunning where
   runMessage msg (Cunning attrs) = Cunning <$> runMessage msg attrs

@@ -5,13 +5,16 @@ import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query (whenMatch)
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher.Enemy
 import Arkham.Matcher.Location
 import Arkham.Message hiding (story)
 import Arkham.Message.Lifted.Queue
 import Arkham.Movement
 import Arkham.Movement qualified as Msg
+import Arkham.Placement
 import Arkham.Prelude
+import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 
@@ -26,11 +29,28 @@ moveTo source iid location = moveToEdit source iid location id
 moveToEdit
   :: (ReverseQueue m, Sourceable source, ToId location LocationId)
   => source -> InvestigatorId -> location -> (Movement -> Movement) -> m ()
-moveToEdit (toSource -> source) iid location f = push . Move . f =<< move source iid (asId location)
+moveToEdit (toSource -> source) iid location f = do
+  field InvestigatorPlacement (asId iid) >>= \case
+    AtLocation current -> when (current /= asId location) do
+      push . Move . f =<< move source iid (asId location)
+    _ -> push . Move . f =<< move source iid (asId location)
 
 moveToMatch
   :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> LocationMatcher -> m ()
 moveToMatch (toSource -> source) iid = push . Move <=< Arkham.Movement.moveToMatch source iid
+
+enemyMoveToIfInPlay
+  :: (ReverseQueue m, Sourceable source, Targetable enemy, ToId enemy EnemyId, ToId location LocationId)
+  => source
+  -> enemy
+  -> location
+  -> m ()
+enemyMoveToIfInPlay source enemy location =
+  push
+    . IfEnemyExists (InPlayEnemy $ EnemyWithId $ asId enemy)
+    . (: [])
+    . Move
+    =<< asMoveTo source enemy (asId location)
 
 enemyMoveTo
   :: (ReverseQueue m, Sourceable source, Targetable enemy, ToId location LocationId)

@@ -14,7 +14,7 @@ aboveAndBelow = story AboveAndBelow Cards.aboveAndBelow
 
 instance RunMessage AboveAndBelow where
   runMessage msg s@(AboveAndBelow attrs) = runQueueT $ case msg of
-    ResolveStory _ _ (is attrs -> True) -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       remember InterviewedAshleigh
       pure s
     _ -> AboveAndBelow <$> liftRunMessage msg attrs

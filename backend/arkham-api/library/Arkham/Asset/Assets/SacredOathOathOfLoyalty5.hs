@@ -27,7 +27,7 @@ instance HasAbilities SacredOathOathOfLoyalty5 where
         ( DrawCard
             #when
             You
-            (CanCancelRevelationEffect $ basic $ NonWeaknessTreachery <> hasAnyTrait [Pact, Terror])
+            (CanCancelRevelationEffect You $ basic $ NonWeaknessTreachery <> hasAnyTrait [Pact, Terror])
             AnyDeck
         )
         ControlsThis

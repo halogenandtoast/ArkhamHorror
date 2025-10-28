@@ -20,16 +20,18 @@ instance RunMessage SurvivalInstinct2 where
   runMessage msg s@(SurvivalInstinct2 attrs) = runQueueT $ case msg of
     PassedSkillTest iid (Just Action.Evade) _ (isTarget attrs -> True) _ _ -> do
       enemies <- select EnemyEngagedWithYou
-
-      unless (null enemies) do
-        chooseOneM iid do
-          labeled "Evade each other enemy" do
-            for_ enemies (push . EnemyEvaded iid)
-          labeled "Skip" nothing
-
       locations <- getAccessibleLocations iid attrs
-      unless (null locations) $ chooseOrRunOneM iid do
-        labeled "Do not move to a connecting location" nothing
-        targets locations (moveTo attrs iid)
+
+      unless (null enemies && null locations) do
+        skillTestResultOption "Survival Instinct (2)" do
+          unless (null enemies) do
+            chooseOneM iid do
+              labeled "Evade each other enemy" do
+                for_ enemies (push . EnemyEvaded iid)
+              labeled "Skip" nothing
+
+          unless (null locations) $ chooseOrRunOneM iid do
+            labeled "Do not move to a connecting location" nothing
+            targets locations (moveTo attrs iid)
       pure s
     _ -> SurvivalInstinct2 <$> liftRunMessage msg attrs

@@ -16,7 +16,7 @@ deloresGadling = allyWith DeloresGadling Cards.deloresGadling (1, 3) noSlots
 
 instance HasModifiersFor DeloresGadling where
   getModifiersFor (DeloresGadling a) = do
-    controllerGets a [MayIgnoreAttacksOfOpportunity]
+    controllerGets a [MayIgnoreAttacksOfOpportunityOf $ EnemyWithTrait Humanoid]
     for_ a.controller \iid -> maybeModified_ a iid do
       liftGuardM $ (||) <$> isInvestigation <*> isParley
       n <- selectCount $ EnemyAt YourLocation <> EnemyWithTrait Humanoid

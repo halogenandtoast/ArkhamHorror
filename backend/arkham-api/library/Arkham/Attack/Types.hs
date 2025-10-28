@@ -12,10 +12,10 @@ import Data.Aeson.TH
 import GHC.Records
 
 data EnemyAttackType = AttackOfOpportunity | RegularAttack | AlertAttack | RetaliateAttack
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Eq, Ord, Data)
 
 data AttackTarget = SingleAttackTarget Target | MassiveAttackTargets [Target]
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Eq, Ord, Data)
 
 data EnemyAttackDetails = EnemyAttackDetails
   { attackTarget :: AttackTarget
@@ -31,7 +31,7 @@ data EnemyAttackDetails = EnemyAttackDetails
   , attackDealDamage :: Bool
   , attackDespiteExhausted :: Bool
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Eq, Ord, Data)
 
 instance HasField "despiteExhausted" EnemyAttackDetails Bool where
   getField = attackDespiteExhausted

@@ -30,20 +30,23 @@ instance HasAbilities WoodenSledge where
 instance RunMessage WoodenSledge where
   runMessage msg a@(WoodenSledge attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      search
-        iid
-        (attrs.ability 1)
-        iid
-        [fromTopOfDeck 6]
-        (basic $ NonWeakness <> hasAnyTrait [Item, Supply])
-        (defer attrs IsNotDraw)
+      investigators <- select $ affectsColocated iid
+      chooseOrRunOneM iid do
+        targets investigators \iid' ->
+          search
+            iid'
+            (attrs.ability 1)
+            iid'
+            [fromTopOfDeck 6]
+            (basic $ NonWeakness <> hasAnyTrait [Item, Supply])
+            (defer attrs IsNotDraw)
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       focusCards cards do
         chooseUpToNM iid 3 "Done placing cards underneath Wooden Sledge" do
           targets cards (placeUnderneath attrs . only)
       pure a
-    InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` attrs.cardsUnderneath -> do
+    InitiatePlayCard iid card _ _ _ _ | card `elem` attrs.cardsUnderneath -> do
       let remaining = deleteFirstMatch (== card) attrs.cardsUnderneath
       costModifier attrs iid (AsIfInHandForPlay card.id)
       push msg

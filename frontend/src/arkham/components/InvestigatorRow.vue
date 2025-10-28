@@ -3,8 +3,10 @@ import * as Arkham from '@/arkham/types/Game'
 import { ref, computed } from 'vue';
 import { Investigator } from '@/arkham/types/Investigator';
 import Card from '@/arkham/components/Card.vue'
+import DeckList from '@/arkham/components/DeckList.vue'
 import {imgsrc} from '@/arkham/helpers'
 import { useDbCardStore } from '@/stores/dbCards'
+import type { CardContents } from '@/arkham/types/Card';
 
 export interface Props {
   investigator: Investigator
@@ -19,12 +21,42 @@ const props = withDefaults(defineProps<Props>(), {
 
 const expanded = ref(false)
 
-const storyCards = computed(() => props.game.campaign.storyCards[props.investigator.id] || [])
+const storyCards = computed(() => {
+  const fromMeta = props.game.campaign?.meta?.otherCampaignAttrs?.storyCards[props.investigator.id] 
+  if (fromMeta) {
+    return fromMeta.map((c) => ({tag: 'CardContents', ...c} as CardContents))
+  }
+
+
+  return props.game.campaign?.storyCards[props.investigator.id] || props.game.scenario?.storyCards[props.investigator.id] || []
+})
 
 function getInvestigatorName(cardTitle: string): string {
   const language = localStorage.getItem('language') || 'en'
   return language === 'en'? cardTitle : store.getCardName(cardTitle, "investigator")
 }
+
+const deck = computed(() => {
+  const deck = props.game.campaign?.decks[props.investigator.id] || props.game.campaign?.meta?.otherCampaignAttrs?.decks[props.investigator.id]
+
+    // || props.game.scenario?.decks[props.investigator.id]
+  if (!deck) return null
+  const slots = deck.reduce((acc, { cardCode }) => {
+      acc[cardCode] = (acc[cardCode] ?? 0) + 1;
+      return acc;
+    }, {});
+  return {
+    id: props.investigator.id,
+    name: "",
+    url: props.investigator.deckUrl,
+    list: {
+      investigator_code: props.investigator.id,
+      taboo_id: null,
+      meta: null,
+      slots
+    }
+  }
+})
 </script>
 
 <template>
@@ -54,11 +86,12 @@ function getInvestigatorName(cardTitle: string): string {
           </div>
         </section>
       </section>
+      <DeckList v-if="deck" :deck="deck" />
     </div>
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .investigator {
   width: 80%;
   border-radius: 15px;

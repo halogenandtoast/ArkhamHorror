@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.ThePathToCarcosa.Key
+import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Card
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
@@ -31,12 +32,7 @@ instance HasModifiersFor ThePathIsBarred where
 
 instance HasAbilities ThePathIsBarred where
   getAbilities (ThePathIsBarred a) =
-    extend1 a
-      $ mkAbility a 1
-      $ Objective
-      $ forced
-      $ EnemyDefeated #after Anyone ByAny
-      $ enemyIs Enemies.theManInThePallidMask
+    extend1 a $ mkAbility a 1 $ Objective $ forced $ ifEnemyDefeated Enemies.theManInThePallidMask
 
 instance RunMessage ThePathIsBarred where
   runMessage msg a@(ThePathIsBarred attrs) = runQueueT $ case msg of
@@ -52,7 +48,7 @@ instance RunMessage ThePathIsBarred where
       recordCount convictionOrDoubt (convictionOrDoubtCount + 2)
 
       enemy <- getCampaignStoryCard Enemies.theManInThePallidMask
-      push $ RemoveFromBearersDeckOrDiscard enemy
+      for_ (preview _PlayerCard enemy) (push . RemoveFromBearersDeckOrDiscard)
 
       mTheManInThePallidMaskId <- selectOne $ enemyIs Enemies.theManInThePallidMask
       for_ mTheManInThePallidMaskId $ push . RemoveEnemy

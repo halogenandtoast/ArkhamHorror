@@ -8,6 +8,7 @@ data Investigator
 instance Data Investigator
 instance Show Investigator
 instance Eq Investigator
+instance Ord Investigator
 instance ToJSON Investigator
 
 data InvestigatorForm
@@ -15,6 +16,7 @@ data InvestigatorForm
 instance Data InvestigatorForm
 instance Show InvestigatorForm
 instance Eq InvestigatorForm
+instance Ord InvestigatorForm
 instance ToJSON InvestigatorForm
 instance FromJSON InvestigatorForm
 

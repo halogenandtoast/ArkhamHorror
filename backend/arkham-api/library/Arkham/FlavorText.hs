@@ -58,6 +58,9 @@ li t = tell [ListItemEntry (i18nEntry t) []]
 specialize :: (Text -> UlItems) -> Text -> (ListItemEntry -> ListItemEntry) -> UlItems
 specialize f t convert = tell $ map convert $ execWriter $ f t
 
+specializeS :: (String -> UlItems) -> String -> (ListItemEntry -> ListItemEntry) -> UlItems
+specializeS f t convert = tell $ map convert $ execWriter $ f t
+
 instance HasField "nested" (Text -> UlItems) (String -> UlItems -> UlItems) where
   getField f t items = specialize f (T.pack t) \case
     ListItemEntry entry nested -> ListItemEntry entry (nested <> execWriter items)
@@ -72,7 +75,15 @@ instance HasField "invalid" (Text -> UlItems) (String -> UlItems) where
   getField f t = specialize f (T.pack t) \case
     ListItemEntry entry nested -> case entry of
       ModifyEntry modifiers inner -> ListItemEntry (ModifyEntry (InvalidEntry : modifiers) inner) nested
-      _ -> ListItemEntry (ModifyEntry [ValidEntry] entry) nested
+      _ -> ListItemEntry (ModifyEntry [InvalidEntry] entry) nested
+
+instance HasField "validate" (String -> UlItems -> UlItems) (Bool -> String -> UlItems -> UlItems) where
+  getField f cond t items =
+    let modifier = if cond then ValidEntry else InvalidEntry
+     in specializeS (`f` items) t \case
+          ListItemEntry entry nested -> case entry of
+            ModifyEntry modifiers inner -> ListItemEntry (ModifyEntry (modifier : modifiers) inner) nested
+            _ -> ListItemEntry (ModifyEntry [modifier] entry) nested
 
 instance HasField "validate" (Text -> UlItems) (Bool -> String -> UlItems) where
   getField f cond t =

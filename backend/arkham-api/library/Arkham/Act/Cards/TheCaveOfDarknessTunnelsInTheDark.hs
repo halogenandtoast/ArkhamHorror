@@ -7,9 +7,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message.Lifted.Log
-import Arkham.Name
-import Arkham.ScenarioLogKey
+import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype TheCaveOfDarknessTunnelsInTheDark = TheCaveOfDarknessTunnelsInTheDark ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -33,7 +31,7 @@ instance RunMessage TheCaveOfDarknessTunnelsInTheDark where
     AdvanceAct (isSide F attrs -> True) _ _ -> do
       blackCave <- selectJust $ locationIs Locations.blackCave
       townHall <- selectOrPlaceSetAsideLocation Locations.townHall
-      remember $ IchtacasDestination $ labeled Locations.townHall townHall
+      rememberIchtacasDestination townHall Locations.townHall
       push $ AddDirectConnection blackCave townHall
       push $ AddDirectConnection townHall blackCave
       eachInvestigator \iid -> discardTopOfEncounterDeckAndHandle iid attrs 1 attrs

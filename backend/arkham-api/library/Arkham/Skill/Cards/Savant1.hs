@@ -1,13 +1,9 @@
-module Arkham.Skill.Cards.Savant1 (savant1, Savant1 (..)) where
+module Arkham.Skill.Cards.Savant1 (savant1) where
 
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Helpers.Investigator (modifiedStatsOf)
-import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestSkillTypes)
-import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 import Arkham.SkillType
 import Arkham.Stats
 
@@ -31,7 +27,7 @@ instance HasModifiersFor Savant1 where
         SkillCombat -> stats.combat
         SkillAgility -> stats.agility
     let n = fromMaybe 0 $ minimumMay (map getType types)
-    modified_ attrs (toCardId attrs) [AddSkillIcons $ replicate n #wild | n > 0]
+    addSkillIcons attrs $ replicate n #wild
 
 instance RunMessage Savant1 where
   runMessage msg (Savant1 attrs) = Savant1 <$> runMessage msg attrs

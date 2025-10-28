@@ -28,6 +28,9 @@ instance RunMessage RiseOfTheElderThings where
         focusCards elderThings do
           chooseTargetM iid elderThings \elderThing -> do
             pushM $ createEnemyWithPlacement_ (toCard elderThing) (InThreatArea iid)
+      doStep 2 msg
+      pure t
+    DoStep 2 (Revelation iid (isSource attrs -> True)) -> do
       selectEach (enemyEngagedWith iid <> withTrait ElderThing) \x -> do
         roundModifiers attrs x [EnemyFight 1, EnemyEvade 1]
       pure t

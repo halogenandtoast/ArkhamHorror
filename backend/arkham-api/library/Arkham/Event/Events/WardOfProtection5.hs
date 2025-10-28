@@ -15,6 +15,7 @@ instance RunMessage WardOfProtection5 where
   runMessage msg e@(WardOfProtection5 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       cancelCardEffects attrs (cardDrawn attrs.windows)
+      discardCard iid attrs (cardDrawn attrs.windows)
       assignHorror iid attrs 1
       pure e
     _ -> WardOfProtection5 <$> liftRunMessage msg attrs

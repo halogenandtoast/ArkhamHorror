@@ -36,7 +36,7 @@ instance HasModifiersFor UnspeakableOathCowardice where
 
 instance HasAbilities UnspeakableOathCowardice where
   getAbilities (UnspeakableOathCowardice attrs) =
-    [ restrictedAbility attrs 1 InYourHand
+    [ restricted attrs 1 InYourHand
         $ forced
         $ oneOf [Matcher.GameEnds #when, Matcher.InvestigatorEliminated #when You]
     , evadeAbility attrs 2 (ActionCost 1) InYourHand

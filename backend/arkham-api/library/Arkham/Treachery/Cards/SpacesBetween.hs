@@ -22,7 +22,7 @@ instance RunMessage SpacesBetween where
 
       for_ nonSentinelHillLocations \flipLocation -> do
         let locationMatcher = LocationWithId flipLocation
-        mdestination <- selectOne $ ConnectedTo locationMatcher <> LocationWithTrait SentinelHill
+        mdestination <- selectOne $ connectedTo locationMatcher <> LocationWithTrait SentinelHill
         for_ mdestination \destination -> do
           selectEach (InvestigatorAt locationMatcher) \iid -> moveTo attrs iid destination
           selectEach (at_ locationMatcher <> UnengagedEnemy) \e -> enemyMoveTo attrs e destination

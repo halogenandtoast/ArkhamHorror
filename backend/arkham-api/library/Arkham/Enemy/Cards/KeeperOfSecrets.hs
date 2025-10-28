@@ -1,14 +1,9 @@
-module Arkham.Enemy.Cards.KeeperOfSecrets (
-  keeperOfSecrets,
-  KeeperOfSecrets (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.KeeperOfSecrets (keeperOfSecrets) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher
 
 newtype KeeperOfSecrets = KeeperOfSecrets EnemyAttrs
@@ -17,27 +12,27 @@ newtype KeeperOfSecrets = KeeperOfSecrets EnemyAttrs
 
 keeperOfSecrets :: EnemyCard KeeperOfSecrets
 keeperOfSecrets =
-  enemyWith KeeperOfSecrets Cards.keeperOfSecrets (4, Static 2, 3) (1, 1)
-    $ spawnAtL
-    ?~ SpawnAt EmptyLocation
+  enemy KeeperOfSecrets Cards.keeperOfSecrets (4, Static 2, 3) (1, 1)
+    & setSpawnAt EmptyLocation
 
 instance HasAbilities KeeperOfSecrets where
   getAbilities (KeeperOfSecrets a) =
-    withBaseAbilities a
-      $ [ restrictedAbility a 1 CanPlaceDoomOnThis $ ForcedAbility $ PhaseEnds #when #mythos
-        , skillTestAbility $ restrictedAbility a 2 OnSameLocation parleyAction_
-        ]
+    extend
+      a
+      [ restricted a 1 CanPlaceDoomOnThis $ forced $ PhaseEnds #when #mythos
+      , skillTestAbility $ restricted a 2 OnSameLocation parleyAction_
+      ]
 
 instance RunMessage KeeperOfSecrets where
-  runMessage msg e@(KeeperOfSecrets attrs) = case msg of
+  runMessage msg e@(KeeperOfSecrets attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ placeDoom (toAbilitySource attrs 1) attrs 1
+      placeDoom (attrs.ability 1) attrs 1
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
-      push $ parley sid iid (attrs.ability 2) attrs #intellect (Fixed 3)
+      parley sid iid (attrs.ability 2) attrs #intellect (Fixed 3)
       pure e
     PassedThisSkillTest _ (isAbilitySource attrs 2 -> True) -> do
-      push $ RemoveAllDoom (toAbilitySource attrs 2) (toTarget attrs)
+      removeAllDoom (attrs.ability 2) attrs
       pure e
-    _ -> KeeperOfSecrets <$> runMessage msg attrs
+    _ -> KeeperOfSecrets <$> liftRunMessage msg attrs

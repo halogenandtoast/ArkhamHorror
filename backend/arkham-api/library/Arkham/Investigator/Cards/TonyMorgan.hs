@@ -1,18 +1,20 @@
 module Arkham.Investigator.Cards.TonyMorgan (tonyMorgan) where
 
+import Arkham.Ability
 import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Uses
 import Arkham.Card
+import Arkham.ChaosToken.Types
 import Arkham.Constants
 import Arkham.Fight
 import Arkham.Helpers.Action
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Playable
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Window (defaultWindows)
 import Control.Lens (over)
 import Data.Data.Lens (biplate)
@@ -40,17 +42,17 @@ instance HasModifiersFor TonyMorgan where
       : [BountiesOnly | active meta]
 
 instance HasAbilities TonyMorgan where
-  getAbilities (TonyMorgan (attrs `With` _)) =
+  getAbilities (TonyMorgan (a `With` _)) =
     [ doesNotProvokeAttacksOfOpportunity
-        $ restricted
-          attrs
+        $ selfAbility
+          a
           NonActivateAbility
-          (Self <> exists (EnemyWithBounty <> oneOf [CanFightEnemy source, CanEngageEnemy source]))
-        $ ActionAbility [] mempty
-    | BountyAction `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
+          (exists (EnemyWithBounty <> oneOf [CanFightEnemyWith (SourceOwnedBy $ be a), CanEngageEnemy source]))
+          (ActionAbility [] Free)
+    | BountyAction `notElem` map additionalActionType a.usedAdditionalActions
     ]
    where
-    source = toSource attrs
+    source = toSource a
 
 instance HasChaosTokenValue TonyMorgan where
   getChaosTokenValue iid ElderSign (TonyMorgan (attrs `With` _)) | iid == toId attrs = do
@@ -58,7 +60,7 @@ instance HasChaosTokenValue TonyMorgan where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage TonyMorgan where
-  runMessage msg i@(TonyMorgan (attrs `With` meta)) = case msg of
+  runMessage msg i@(TonyMorgan (attrs `With` meta)) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) NonActivateAbility -> do
       let windows' = defaultWindows iid
 
@@ -71,42 +73,37 @@ instance RunMessage TonyMorgan where
         filter (any (`elem` [#fight, #engage]) . cdActions . toCardDef)
           <$> getPlayableCards attrs iid (UnpaidCost NoAction) windows'
 
-      canPlay <- canDo (toId attrs) #play
-      player <- getPlayer iid
-
-      push
-        $ AskPlayer
-        $ chooseOne player
-        $ [ targetLabel (toCardId c) [InitiatePlayCard iid c Nothing NoPayment windows' False, DoStep 1 msg]
-          | canPlay
-          , c <- playableCards
-          ]
-        <> map ((\f -> f windows' [] [DoStep 1 msg]) . AbilityLabel iid) actions
+      chooseOneM iid do
+        whenM (canDo (toId attrs) #play) do
+          targets playableCards \c -> do
+            playCardPayingCost iid c
+            doStep 1 msg
+        for_ actions \ab -> abilityLabeled iid ab (doStep 1 msg)
       pure
         $ TonyMorgan
         . (`with` Meta True)
         $ attrs
         & (usedAdditionalActionsL %~ (AdditionalAction "Tony Morgan" (toSource attrs) BountyAction :))
-    ChooseFightEnemy choose | choose.investigator == toId attrs -> do
+    ChooseFightEnemy c | c.investigator == toId attrs -> do
       bountiesOnly <- hasModifier attrs BountiesOnly
       let matcherF = if bountiesOnly then (<> EnemyWithBounty) else id
       result <-
-        runMessage (ChooseFightEnemy $ choose {chooseFightEnemyMatcher = matcherF choose.matcher}) attrs
+        liftRunMessage (ChooseFightEnemy $ c {chooseFightEnemyMatcher = matcherF c.matcher}) attrs
       pure $ TonyMorgan . (`with` Meta False) $ result
     ChooseEngageEnemy iid source mTarget enemyMatcher isAction | iid == toId attrs -> do
       bountiesOnly <- hasModifier iid BountiesOnly
       let matcherF = if bountiesOnly then (<> EnemyWithBounty) else id
       result <-
-        runMessage
+        liftRunMessage
           (ChooseEngageEnemy iid source mTarget (matcherF enemyMatcher) isAction)
           attrs
       pure $ TonyMorgan . (`with` Meta False) $ result
     DoStep 1 (UseThisAbility _ (isSource attrs -> True) NonActivateAbility) -> do
       pure $ TonyMorgan $ attrs `with` Meta False
-    ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
+    ElderSignEffect (is attrs -> True) -> do
       mBountyContracts <- selectOne $ assetIs Assets.bountyContracts
-      for_ mBountyContracts $ \bountyContracts ->
-        push $ AddUses #elderSign bountyContracts Bounty 1
+      for_ mBountyContracts \bountyContracts ->
+        placeTokens ElderSign bountyContracts Bounty 1
       pure i
-    ResetGame -> TonyMorgan . (`with` Meta False) <$> runMessage msg attrs
-    _ -> TonyMorgan . (`with` meta) <$> runMessage msg attrs
+    ResetGame -> TonyMorgan . (`with` Meta False) <$> liftRunMessage msg attrs
+    _ -> TonyMorgan . (`with` meta) <$> liftRunMessage msg attrs

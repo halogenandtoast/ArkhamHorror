@@ -78,7 +78,15 @@ abilityIsActionAbility a = case abilityType a of
 abilityIsActivate :: Ability -> Bool
 abilityIsActivate a = not a.basic && a.index `notElem` notActivateIndexes && abilityIsActionAbility a
  where
-  notActivateIndexes = [PlayAbility, ResourceAbility, AbilityAttack, AbilityInvestigate, AbilityEvade, AbilityEngage, NonActivateAbility]
+  notActivateIndexes =
+    [ PlayAbility
+    , ResourceAbility
+    , AbilityAttack
+    , AbilityInvestigate
+    , AbilityEvade
+    , AbilityEngage
+    , NonActivateAbility
+    ]
 
 abilityIsFastAbility :: Ability -> Bool
 abilityIsFastAbility a = case abilityType a of
@@ -96,9 +104,13 @@ abilityIsReactionAbility a = case abilityType a of
   ReactionAbility {} -> True
   _ -> False
 
+doesNotProvokeAttacksOfOpportunityFrom :: EnemyMatcher -> Ability -> Ability
+doesNotProvokeAttacksOfOpportunityFrom mtchr =
+  set abilityDoesNotProvokeAttacksOfOpportunityL (Just mtchr)
+
 doesNotProvokeAttacksOfOpportunity :: Ability -> Ability
 doesNotProvokeAttacksOfOpportunity =
-  set abilityDoesNotProvokeAttacksOfOpportunityL True
+  set abilityDoesNotProvokeAttacksOfOpportunityL (Just AnyEnemy)
 
 noAOO :: Ability -> Ability
 noAOO = doesNotProvokeAttacksOfOpportunity
@@ -127,6 +139,9 @@ noLimit = limitedAbility NoLimit
 
 groupLimit :: AbilityLimitType -> Ability -> Ability
 groupLimit lType = limitedAbility (GroupLimit lType 1)
+
+onlyOnce :: Ability -> Ability
+onlyOnce = groupLimit PerGame
 
 withTooltip :: Text -> Ability -> Ability
 withTooltip t a = a & abilityTooltipL ?~ t
@@ -164,6 +179,10 @@ controlledAbility entity idx restriction = restrictedAbility entity idx (Control
 controlled
   :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
 controlled = controlledAbility
+
+controlled_
+  :: (HasCardCode a, Sourceable a) => a -> Int -> AbilityType -> Ability
+controlled_ entity idx = restricted entity idx ControlsThis
 
 storyControlled
   :: (HasCardCode a, Sourceable a, Be a AssetMatcher) => a -> Int -> Criterion -> AbilityType -> Ability
@@ -235,6 +254,9 @@ restrict = flip withCriteria
 haunted :: (HasCardCode a, Sourceable a) => Text -> a -> Int -> Ability
 haunted tooltip a n = withTooltip tooltip $ mkAbility a n Haunted
 
+hauntedI :: (HasI18n, HasCardCode a, Sourceable a) => Scope -> a -> Int -> Ability
+hauntedI tooltip a n = withI18nTooltip tooltip $ mkAbility a n Haunted
+
 cosmos :: (HasCardCode a, Sourceable a) => a -> Int -> Ability
 cosmos a n = mkAbility a n Cosmos
 
@@ -264,7 +286,7 @@ mkAbility entity idx type' =
     , abilityWindow = defaultAbilityWindow type'
     , abilityMetadata = Nothing
     , abilityCriteria = NoRestriction
-    , abilityDoesNotProvokeAttacksOfOpportunity = False
+    , abilityDoesNotProvokeAttacksOfOpportunity = Nothing
     , abilityTooltip = Nothing
     , abilityCanBeCancelled = True
     , abilityDisplayAs = Nothing
@@ -272,6 +294,7 @@ mkAbility entity idx type' =
     , abilityBasic = False
     , abilityAdditionalCosts = []
     , abilityWantsSkillTest = Nothing
+    , abilityTarget = Nothing
     }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability
@@ -434,26 +457,6 @@ defaultAbilityWindow = \case
   ForcedWhen _ aType -> defaultAbilityWindow aType
   ConstantAbility -> AnyWindow
 
-isFastAbilityType :: AbilityType -> Bool
-isFastAbilityType = \case
-  FastAbility' {} -> True
-  ForcedAbility {} -> False
-  SilentForcedAbility {} -> False
-  ForcedAbilityWithCost {} -> False
-  Objective aType -> isFastAbilityType aType
-  DelayedAbility aType -> isFastAbilityType aType
-  ReactionAbility {} -> False
-  CustomizationReaction {} -> False
-  ConstantReaction {} -> False
-  ActionAbility {} -> False
-  ActionAbilityWithSkill {} -> False
-  AbilityEffect {} -> False
-  Haunted {} -> False
-  ServitorAbility {} -> False
-  Cosmos {} -> False
-  ForcedWhen _ aType -> isFastAbilityType aType
-  ConstantAbility -> False
-
 isReactionAbilityType :: AbilityType -> Bool
 isReactionAbilityType = \case
   SilentForcedAbility {} -> False
@@ -505,7 +508,10 @@ isPerWindowLimit = \case
 defaultAbilityLimit :: AbilityType -> AbilityLimit
 defaultAbilityLimit = \case
   ForcedAbility window' -> case window' of
-    SkillTestResult {} -> PlayerLimit PerTestOrAbility 1
+    SkillTestResult {} -> PlayerLimit PerTest 1
+    Moves {} -> PlayerLimit PerMove 1
+    Enters {} -> PlayerLimit PerMove 1
+    EnemySpawns {} -> GroupLimit PerSpawn 1
     _ -> GroupLimit PerWindow 1
   SilentForcedAbility _ -> GroupLimit PerWindow 1
   ForcedAbilityWithCost _ _ -> GroupLimit PerWindow 1

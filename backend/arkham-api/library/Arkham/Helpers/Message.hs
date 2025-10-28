@@ -32,6 +32,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
+import Arkham.Tracing
 import Arkham.Window (Window (..), WindowType, defaultWindows, mkAfter, mkWindow)
 import Arkham.Window qualified as Window
 import Control.Monad.Trans
@@ -51,11 +52,20 @@ drawCardsWith i source n f = DrawCards i $ f $ newCardDraw source i n
 drawEncounterCard :: Sourceable source => InvestigatorId -> source -> Message
 drawEncounterCard i source = drawEncounterCards i source 1
 
+drawEncounterCardEdit
+  :: Sourceable source => InvestigatorId -> source -> (CardDraw Message -> CardDraw Message) -> Message
+drawEncounterCardEdit i source = drawEncounterCardsEdit i source 1
+
 drawEncounterCards :: Sourceable source => InvestigatorId -> source -> Int -> Message
 drawEncounterCards i source n = DrawCards i $ newCardDraw source Deck.EncounterDeck n
 
+drawEncounterCardsEdit
+  :: Sourceable source
+  => InvestigatorId -> source -> Int -> (CardDraw Message -> CardDraw Message) -> Message
+drawEncounterCardsEdit = drawEncounterCardsWith
+
 drawCardsIfCan
-  :: (MonadRandom m, Sourceable source, HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  :: (MonadRandom m, Sourceable source, HasGame m, Tracing m, ToId investigator InvestigatorId)
   => investigator
   -> source
   -> Int
@@ -65,7 +75,7 @@ drawCardsIfCan i source n = do
   pure $ guard canDraw $> drawCards (asId i) source n
 
 drawCardsIfCanWith
-  :: (MonadRandom m, Sourceable source, HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  :: (MonadRandom m, Sourceable source, HasGame m, Tracing m, ToId investigator InvestigatorId)
   => investigator
   -> source
   -> Int
@@ -240,7 +250,13 @@ createEnemyAt c lid mTarget = do
   creation <- createEnemy c lid
   pure (enemyCreationEnemyId creation, CreateEnemy $ creation {enemyCreationTarget = mTarget})
 
-createEnemyAtEdit :: MonadRandom m => Card -> LocationId -> Maybe Target -> (EnemyCreation Message -> EnemyCreation Message) -> m (EnemyId, Message)
+createEnemyAtEdit
+  :: MonadRandom m
+  => Card
+  -> LocationId
+  -> Maybe Target
+  -> (EnemyCreation Message -> EnemyCreation Message)
+  -> m (EnemyId, Message)
 createEnemyAtEdit c lid mTarget f = do
   creation <- createEnemy c lid
   pure (enemyCreationEnemyId creation, CreateEnemy $ f $ creation {enemyCreationTarget = mTarget})
@@ -277,13 +293,14 @@ placeLocationInGrid pos c = do
 placeLocation_ :: MonadRandom m => Card -> m Message
 placeLocation_ = fmap snd . placeLocation
 
-placeSetAsideLocation :: (HasCallStack, MonadRandom m, HasGame m) => CardDef -> m (LocationId, Message)
+placeSetAsideLocation
+  :: (HasCallStack, MonadRandom m, HasGame m, Tracing m) => CardDef -> m (LocationId, Message)
 placeSetAsideLocation = placeLocation <=< getSetAsideCard
 
-placeSetAsideLocation_ :: (MonadRandom m, HasGame m) => CardDef -> m Message
+placeSetAsideLocation_ :: (MonadRandom m, HasGame m, Tracing m) => CardDef -> m Message
 placeSetAsideLocation_ = placeLocation_ <=< getSetAsideCard
 
-placeSetAsideLocations :: (MonadRandom m, HasGame m) => [CardDef] -> m [Message]
+placeSetAsideLocations :: (MonadRandom m, HasGame m, Tracing m) => [CardDef] -> m [Message]
 placeSetAsideLocations = traverse placeSetAsideLocation_
 
 placeLocationCard :: (CardGen m, HasGame m) => CardDef -> m (LocationId, Message)
@@ -324,6 +341,12 @@ pattern R7 = ScenarioResolution (Resolution 7)
 
 pattern R8 :: Message
 pattern R8 = ScenarioResolution (Resolution 8)
+
+pattern R9 :: Message
+pattern R9 = ScenarioResolution (Resolution 9)
+
+pattern R10 :: Message
+pattern R10 = ScenarioResolution (Resolution 10)
 
 gainSurge :: (Sourceable a, Targetable a) => a -> Message
 gainSurge a = GainSurge (toSource a) (toTarget a)
@@ -406,7 +429,7 @@ findEncounterCard
 findEncounterCard iid (toTarget -> target) zones (toCardMatcher -> cardMatcher) =
   FindEncounterCard iid target zones cardMatcher
 
-placeLabeledLocationCards_ :: (HasGame m, CardGen m) => Text -> [CardDef] -> m [Message]
+placeLabeledLocationCards_ :: (HasGame m, Tracing m, CardGen m) => Text -> [CardDef] -> m [Message]
 placeLabeledLocationCards_ lbl cards = do
   startIndex <- getStartIndex 1
   concatForM (withIndexN startIndex cards) $ \(idx, card) -> do
@@ -425,7 +448,7 @@ placeLabeledLocationCards lbl cards = fmap fold
     (location, placement) <- placeLocationCard card
     pure [([location], [placement, SetLocationLabel location (lbl <> tshow idx)])]
 
-placeLabeledLocations_ :: (HasGame m, CardGen m) => Text -> [Card] -> m [Message]
+placeLabeledLocations_ :: (HasGame m, Tracing m, CardGen m) => Text -> [Card] -> m [Message]
 placeLabeledLocations_ lbl cards = do
   startIndex <- getStartIndex 1
   concatForM (withIndexN startIndex cards) $ \(idx, card) -> do
@@ -465,7 +488,8 @@ putCardIntoPlayWithAdditionalCostsAndWindows
   :: IsCard card => InvestigatorId -> card -> [Window] -> Message
 putCardIntoPlayWithAdditionalCostsAndWindows iid (toCard -> card) ws = PutCardIntoPlayWithAdditionalCosts iid card Nothing NoPayment ws
 
-placeLabeledLocation :: (MonadRandom m, HasGame m) => Text -> Card -> m (LocationId, Message)
+placeLabeledLocation
+  :: (MonadRandom m, HasGame m, Tracing m) => Text -> Card -> m (LocationId, Message)
 placeLabeledLocation lbl card = do
   idx <- getStartIndex (1 :: Int)
   (location, placement) <- placeLocation card
@@ -542,11 +566,21 @@ revealing
   -> Message
 revealing iid (toSource -> source) (toTarget -> target) zone = Search $ mkSearch Revealing iid source target [(zone, PutBack)] (basic AnyCard) ReturnCards
 
+revealingEdit
+  :: (Targetable target, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> target
+  -> Zone
+  -> (Search -> Search)
+  -> Message
+revealingEdit iid (toSource -> source) (toTarget -> target) zone f = Search $ f $ mkSearch Revealing iid source target [(zone, PutBack)] (basic AnyCard) ReturnCards
+
 takeResources :: Sourceable source => InvestigatorId -> source -> Int -> Message
 takeResources iid (toSource -> source) n = TakeResources iid n source False
 
 gainResourcesIfCan
-  :: (HasGame m, Sourceable source, AsId a, IdOf a ~ InvestigatorId)
+  :: (HasGame m, Tracing m, Sourceable source, ToId a InvestigatorId)
   => a
   -> source
   -> Int

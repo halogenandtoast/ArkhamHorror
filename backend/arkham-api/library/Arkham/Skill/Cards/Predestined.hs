@@ -1,11 +1,10 @@
-module Arkham.Skill.Cards.Predestined (predestined, Predestined (..)) where
+module Arkham.Skill.Cards.Predestined (predestined) where
 
-import Arkham.Classes
 import Arkham.Helpers.ChaosBag
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype Predestined = Predestined SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -15,18 +14,16 @@ predestined :: SkillCard Predestined
 predestined = skill Predestined Cards.predestined
 
 instance RunMessage Predestined where
-  runMessage msg s@(Predestined attrs) = case msg of
+  runMessage msg s@(Predestined attrs) = runQueueT $ case msg of
     FailedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == toId attrs -> do
-      n <- min 2 <$> getRemainingBlessTokens
-      x <- selectCount $ ChaosTokenFaceIs #curse
+      chooseOrRunOneM iid do
+        n <- min 2 <$> getRemainingBlessTokens
+        when (n > 0) do
+          labeled ("Add " <> pluralize n "{bless} token") $ repeated n (addChaosToken #bless)
 
-      when (n > 0 || x > 0) do
-        player <- getPlayer iid
-        push
-          $ chooseOrRunOne
-            player
-          $ [Label ("Add " <> pluralize n "{bless} token") $ replicate n (AddChaosToken #bless) | n > 0]
-          <> [Label ("Remove " <> pluralize x "{curse} token") $ replicate x (RemoveChaosToken #curse) | x > 0]
+        x <- selectCount $ ChaosTokenFaceIs #curse
+        when (x > 0) do
+          labeled ("Remove " <> pluralize x "{curse} token") $ repeated x (removeChaosToken #curse)
 
       pure s
-    _ -> Predestined <$> runMessage msg attrs
+    _ -> Predestined <$> liftRunMessage msg attrs

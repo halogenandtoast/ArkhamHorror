@@ -1,15 +1,12 @@
 module Arkham.Enemy.Cards.PriestessOfTheCoven (priestessOfTheCoven) where
 
 import Arkham.Ability
-import Arkham.Attack
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier
-import Arkham.Prelude
 import Arkham.Trait (Trait (Witch))
 
 newtype PriestessOfTheCoven = PriestessOfTheCoven EnemyAttrs
@@ -33,11 +30,10 @@ instance HasAbilities PriestessOfTheCoven where
   getAbilities (PriestessOfTheCoven a) = extend1 a $ mkAbility a 1 $ forced EncounterDeckRunsOutOfCards
 
 instance RunMessage PriestessOfTheCoven where
-  runMessage msg e@(PriestessOfTheCoven attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      iids <- select $ InvestigatorAt $ locationWithEnemy $ toId attrs
-      pushAll
-        $ Ready (toTarget attrs)
-        : map (InitiateEnemyAttack . enemyAttack (toId attrs) attrs) iids
+  runMessage msg e@(PriestessOfTheCoven attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      readyThis attrs
+      iids <- select $ InvestigatorAt $ locationWithEnemy attrs
+      for_ iids $ initiateEnemyAttack attrs (attrs.ability 1)
       pure e
-    _ -> PriestessOfTheCoven <$> runMessage msg attrs
+    _ -> PriestessOfTheCoven <$> liftRunMessage msg attrs

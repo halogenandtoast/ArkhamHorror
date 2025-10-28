@@ -25,20 +25,19 @@ instance HasAbilities LocalsOfKingsportRival where
     [ restricted
         a
         1
-        (exists $ enemyIs Enemies.williamBainDefiantToTheLast <> EnemyAt YourLocation)
+        (exists $ enemyIs Enemies.williamBainDefiantToTheLast <> at_ YourLocation)
         parleyAction_
     , restricted a 2 (CluesOnThis $ AtLeast $ StaticWithPerPlayer 1 1) $ forced AnyWindow
     ]
 
 instance RunMessage LocalsOfKingsportRival where
   runMessage msg s@(LocalsOfKingsportRival attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       unlucky <- getSetAsideCardsMatching $ cardIs Treacheries.unlucky
       shuffleCardsIntoDeck Deck.EncounterDeck unlucky
       bain <- getSetAsideCardsMatching $ cardIs Enemies.williamBainDefiantToTheLast
-      for_ bain \card -> do
-        lead <- getLead
-        withLocationOf lead (createEnemyAt_ card)
+      lead <- getLead
+      for_ bain $ withLocationOf lead . createEnemyAt_
       pure s
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       enemy <- selectJust $ enemyIs Enemies.williamBainDefiantToTheLast <> enemyAtLocationWith iid

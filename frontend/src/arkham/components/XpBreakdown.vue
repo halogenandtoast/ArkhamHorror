@@ -1,16 +1,18 @@
 <script setup lang="ts">
 
-import { replaceIcons } from '@/arkham/helpers';
+import { replaceIcons, imgsrc } from '@/arkham/helpers';
 import { handleI18n } from '@/arkham/i18n';
 import { computed } from 'vue'
 import scenarios from '@/arkham/data/scenarios'
 import { XpEntry } from '@/arkham/types/Xp'
+import { type Investigator } from '@/arkham/types/Investigator'
 import { CampaignStep } from '@/arkham/types/CampaignStep'
 import { Game } from '@/arkham/types/Game'
 import { useI18n } from 'vue-i18n';
+import { toCamelCase } from '@/arkham/helpers'
 import { useDbCardStore } from '@/stores/dbCards'
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 const store = useDbCardStore()
 
 const props = defineProps<{
@@ -18,7 +20,8 @@ const props = defineProps<{
   step: CampaignStep
   entries: XpEntry[]
   playerId?: string
-  showAll: bool
+  investigators: Investigator[]
+  showAll: boolean
 }>()
 
 // need to drop the first letter of the scenario code
@@ -33,6 +36,12 @@ const name = computed(() => {
   }
 
   if (props.step.tag === 'InterludeStep') {
+    if (props.game.campaign) {
+      const key = `${toCamelCase(props.game.campaign.name)}.interludes.${props.step.contents}`
+      if (te(key)) {
+        return t(key)
+      }
+    }
     return `Interlude ${props.step.contents}`
   }
 
@@ -57,9 +66,9 @@ const unspendableXp = computed(() => {
 
   if (props.step.tag === 'ScenarioStep') {
     const scenarioId = props.step.contents.slice(1)
-    const investigator = Object.entries(props.game.investigators).find(([,p]) => p.playerId === props.playerId)
+    const investigator = props.investigators.find((p) => p.playerId === props.playerId)
     if (!investigator) return null
-    if (scenarioId == "53028") return props.game.campaign.meta.bonusXp[investigator[0]] || null
+    if (scenarioId === "53028") return props.game.campaign.meta.bonusXp[investigator.id] || null
   }
 
   return null
@@ -77,22 +86,40 @@ const totalVictoryDisplay = computed(() => {
   return allVictoryDisplay.value.reduce((acc, entry) => acc + entry.details.amount, 0)
 })
 
-const perInvestigator = computed(() => {
-  return Object.entries(props.game.investigators).map(([id,investigator]) => {
-    if (!props.showAll && props.playerId && investigator.playerId !== props.playerId) {
-      return [id, [], 0]
-    }
-    const gains = props.entries.filter((entry: XpEntry) => entry.tag === 'InvestigatorGainXp' && entry.investigator === id)
-    const losses = props.entries.filter((entry: XpEntry) => entry.tag === 'InvestigatorLoseXp' && entry.investigator === id)
+interface PerInvestigator {
+  entries: XpEntry[]
+  total: number
+}
 
-    let total = gains.reduce((acc, entry) => acc + entry.details.amount, 0) + losses.reduce((acc, entry) => acc + entry.details.amount, 0)
+const perInvestigator = computed<Record<string, PerInvestigator>>(() => {
+  return props.investigators.reduce((acc, i) => {
+    const gains = props.entries.filter(
+      (entry: XpEntry) =>
+        entry.tag === 'InvestigatorGainXp' && entry.investigator === i.id
+    )
+    const losses = props.entries.filter(
+      (entry: XpEntry) =>
+        entry.tag === 'InvestigatorLoseXp' && entry.investigator === i.id
+    )
 
-    return [investigator.name.title, [...gains, ...losses], total]
-  }).filter(([_, xp,]) => xp.length > 0)
+    const entries = [...gains, ...losses]
+    if (entries.length === 0) return acc
+
+    const total =
+      gains.reduce((acc, entry) => acc + entry.details.amount, 0) -
+      losses.reduce((acc, entry) => acc + entry.details.amount, 0)
+
+    acc[i.id] = { entries, total }
+    return acc
+  }, {} as Record<string, PerInvestigator>)
 })
 
-const scenarioTotal = computed(() => {
-  return perInvestigator.value.reduce((acc, [, , total]) => acc + total, 0) + totalVictoryDisplay.value
+const headerInvestigators = computed(() => {
+  if (unspendableXp.value) {
+    return props.investigators.map(i => ([i, (perInvestigator.value[i.id]?.total || 0) + totalVictoryDisplay.value]))
+  }
+
+  return props.investigators.map(i => ([i, (perInvestigator.value[i.id]?.total || 0) + totalVictoryDisplay.value])).filter(([_i, t]) => t !== 0)
 })
 
 function format(s: string) {
@@ -104,11 +131,23 @@ function getCardName(s: string) {
   const language = localStorage.getItem('language') || 'en'
   return language === 'en' ? s : store.getCardName(s)
 }
+
+const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring(1)
 </script>
 
 <template>
   <div class="breakdown column box">
-    <header class="breakdown-header"><h2 class="title">{{name}}</h2><span class="amount" :class="{ 'amount--negative': scenarioTotal < 0 }">{{ $t('upgrade.xp', {total: scenarioTotal}) }}</span></header>
+    <header class="breakdown-header">
+        <h2 class="title">{{name}}</h2>
+        <section class='amounts'>
+          <div class="investigator-amount" v-for="[investigator, total] in headerInvestigators" :key="investigator.id">
+            <div :class="`investigator-portrait-container ${toCssName(investigator.class)}`">
+              <img :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
+            </div>
+            <span class="amount" :class="{ 'amount--negative': total < 0 }">{{ $t('upgrade.xp', {total : total }) }}</span>
+          </div>
+      </section>
+    </header>
     <div class="sections">
       <section class="box column group" v-if="unspendableXp">
         <header class="entry-header"><h3>{{ $t('upgrade.unspendableXp') }}</h3><span class="amount unspendable">{{ unspendableXp }}</span></header>
@@ -117,24 +156,24 @@ function getCardName(s: string) {
         <header class="entry-header"><h3>{{ $t('upgrade.victoryDisplay') }}</h3><span class="amount" :class="{ 'amount--negative': totalVictoryDisplay < 0 }">{{ $t('upgrade.xp', {total: totalVictoryDisplay}) }}</span></header>
         <div class="column">
           <div v-for="(entry, idx) in allVictoryDisplay" :key="idx" class="box entry">
-            <span>{{getCardName(entry.details.sourceName)}}</span>
+            <span>{{format(entry.details.sourceName)}}</span>
             <span class="amount">+{{entry.details.amount}}</span>
           </div>
         </div>
       </section>
-      <section class="box column group" v-for="([name, entries, total]) in perInvestigator" :key="name">
-        <header class="entry-header"><h3>{{getCardName(name)}}</h3><span class="amount" :class="{ 'amount--negative': total < 0 }">{{ $t('upgrade.xp', {total: total}) }}</span></header>
-        <div v-for="(entry, idx) in entries" :key="idx" class="box entry">
+      <section class="box column group" v-for="([iid, info]) in Object.entries(perInvestigator)" :key="name">
+        <header class="entry-header"><h3>{{format(game.investigators[iid].name.title)}}</h3><span class="amount" :class="{ 'amount--negative': info.total < 0 }">{{ $t('upgrade.xp', {total: info.total}) }}</span></header>
+        <div v-for="(entry, idx) in info.entries" :key="idx" class="box entry">
           <span v-html="format(entry.details.sourceName)"></span> 
           <span v-if="entry.tag !== 'InvestigatorLoseXp'" class="amount">+{{entry.details.amount}}</span>
-          <span v-if="entry.tag === 'InvestigatorLoseXp'" class="amount amount--negative">{{entry.details.amount}}</span>
+          <span v-if="entry.tag === 'InvestigatorLoseXp'" class="amount amount--negative">-{{Math.abs(entry.details.amount)}}</span>
         </div>
       </section>
     </div>
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .breakdown {
   width: 100%;
 }
@@ -153,7 +192,7 @@ span {
 .breakdown-header {
   display: flex;
   gap: 10px;
-  margin-top: 10px;
+  min-height: 50px;
 
   .amount {
     margin-left: auto;
@@ -165,9 +204,9 @@ span {
     background: var(--spooky-green);
     color: white;
     border-radius: 3px;
-    &--negative {
-      background: darkred;
-    }
+  }
+  .amount--negative {
+    background: darkred;
   }
 }
 
@@ -189,9 +228,10 @@ span {
     background: var(--spooky-green);
     color: white;
     border-radius: 3px;
-    &--negative {
-      background: darkred;
-    }
+  }
+
+  .amount--negative {
+    background: darkred;
   }
 }
 
@@ -210,9 +250,10 @@ span {
     background: var(--spooky-green);
     color: white;
     border-radius: 3px;
-    &--negative {
-      background: darkred;
-    }
+  }
+
+  .amount--negative {
+    background: darkred;
   }
 }
 
@@ -229,6 +270,73 @@ span {
   }
   @media (max-width: 800px) and (orientation: portrait) {
       flex-direction: column;
+  }
+}
+
+.amounts {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: flex-end;
+  justify-self: flex-end;
+}
+
+.investigator-portrait-container {
+  width: 50px;
+  height:50px;
+  overflow: hidden;
+  border-radius: 5px;
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+
+  &.survivor {
+    border: 3px solid var(--survivor-extra-dark);
+  }
+
+  &.guardian {
+    border: 3px solid var(--guardian-extra-dark);
+  }
+
+  &.mystic {
+    border: 3px solid var(--mystic-extra-dark);
+  }
+
+  &.seeker {
+    border: 3px solid var(--seeker-extra-dark);
+  }
+
+  &.rogue {
+    border: 3px solid var(--rogue-extra-dark);
+  }
+
+  &.neutral {
+    border: 3px solid var(--neutral);
+  }
+}
+
+.investigator-portrait {
+  width: 150px;
+  grid-area: cell;
+}
+
+.title {
+  flex: 1;
+  align-content: center;
+}
+
+.investigator-amount {
+  display: flex;
+  isolation: isolate;
+  align-items: flex-end;
+  .amount {
+    max-height: fit-content;
+    padding-left: 10px;
+    margin-left: -5px;
+    z-index: -1;
+    margin-bottom: 5px;
+
+  }
+  .amount--negative {
+    background: darkred;
   }
 }
 </style>

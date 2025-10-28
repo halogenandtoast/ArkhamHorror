@@ -1,0 +1,46 @@
+{
+  "intro1": {
+    "title": "Scenario IV: Devil Reef",
+    "body": "<header><p>FRIDAY, SEPTEMBER 2, 1927</p><p>THREE WEEKS EARLIER</p></header><p><b>Intro 1:</b> The rumbling of the boat’s engine startles you from your thoughts. “Yeh all right there?” the ship’s captain growls. “Yeh look like ye’ve seen a ghost. Pale as a sheet, yeh are.”</p><p>You turn and face the grizzled old man. Mr. Moore was the only ship captain you could find in Innsmouth who was unafflicted by whatever curse or deformity has gripped most of the town. His apparent humanity, however, has done nothing to spare his broken teeth, crooked jaw, or the massive scar torn down his right cheek. Still, he is a welcome sight, considering the way the rest of your investigation has gone.</p><p>“Can’t believe you want to head to that accurs’d Devil Reef,” he exclaims, shaking his head. “It’s a fool’s errand.”</p><p>You point out that the sailor was happy enough to provide passage after you showed him his payment, earning a raspy chuckle out of him.</p><p>“Yeh got me there,” he admits. “Now get ready. We set off in ten.” He stumbles from the main deck into the bridge to chart a course while you prepare for the journey ahead.</p>"
+  },
+  "intro2": {
+    "title": "Scenario IV: Devil Reef",
+    "body": "<p><b>Intro 2:</b> Agent Dawson boards the ship at last. He sports a heavy overcoat and carries a shotgun slugged over his shoulder. “Agent Harper had a cache with some extra firepower,” he explains. “I figured, given the rumors, it couldn’t hurt.”</p><p>You know what rumors Dawson refers to: Devil Reef is supposedly haunted, or perhaps infested, with some manner of devilish sea creature. The sailors of Innsmouth speak of silhouettes crawling in and out of caves along the reef ’s many islands, of strangely misshapen fins sighted along the surface of the sea, and of entire boats crashing against the jagged rocks and vanishing beneath the waves.</p><p>“All of our research has led to this. Whatever is going on in this town, the Esoteric Order of Dagon and this ‘Devil Reef ’ are at the heart of it. Agent Harper suspects these rumors were spread by the Order to keep sailors away from the reef. If that’s true, there must be something the Order is hiding.”</p><p>You ask where Harper is, and Dawson shoots you a hard glance. “She has her mission. We have ours.” You remind Dawson that you’ve already accomplished the mission you were hired to perform, which yields a smirk from the hardened vet. “True. And yet here you are.”</p><p>He has a point. You could have left right after Harper was rescued, but you stayed to assist with their investigation. Perhaps out of a sense of duty, or perhaps curiosity. Whatever it was, you’re here now, and there’s no going back.</p>"
+  },
+  "intro3": {
+    "title": "Scenario IV: Devil Reef",
+    "body": "<p><b>Intro 3:</b> Agent Dawson boards the ship at last. Heavy bags hang under his weary eyes. “All of our leads are cold,” he says with resignation. “Wherever Agent Harper is now, she’s beyond our reach.”</p><p>You attempt to console Dawson by reminding him why you’ve chosen to investigate Devil Reef. The rumors say it is haunted, or perhaps infested, with some manner of devilish sea creature. The sailors of Innsmouth speak of silhouettes crawling in and out of caves along the reef ’s many islands, of strangely misshapen fins sighted along the surface of the sea, and of entire boats crashing against the jagged rocks and vanishing beneath the waves.</p><p>“You’re right,” Dawson admits with a sigh. “Whatever happened to Agent Harper, it has something to do with the Esoteric Order of Dagon. That book that was slipped under your hotel room door is evidence enough of that. And if my hypothesis is right, the ones who have been spreading these rumors about Devil Reef are none other than the Order themselves. If that’s true, there must be something they’re hiding.”</p><p>You nod and begin preparing for the mission. Agent Dawson gazes at you inquisitively the entire time. “Why did you stay?” he finally asks. “You could have left Innsmouth after we failed to rescue Agent Harper, but you chose to stick around. Why?”</p><p>Truth be told, you aren’t sure. Perhaps it was a sense of duty. Perhaps it was curiosity. You shrug and tell him that it doesn’t matter. You’re here now, and there’s no going back. Your admission earns you a smile from the hardened vet.</p><p>“Right. Let’s go find what they’re hiding,” he says.</p>"
+  },
+  "flashback9": {
+    "title": "Flashback IX",
+    "body": "<p>As you wade through the flooded cavern, your foot strikes something hard and metallic. The water is too dark and murky for you to see what lies beneath the surface. Holding your breath, you dive into the water and grope around for the object. Eventually, your hands wrap around something smooth and heavy. You drag it up to the surface and heave it onto an outcropping of rock.</p><p>It is a statue depicting some kind of entity—or perhaps a deity—although it is unlike any religious figure you have ever seen. The sight of its uncanny spined tendrils and its sole glaring eye of translucent crystal makes your skin crawl. And yet, it also calls to you, like the sound of ocean waves crashing on the shore on a foggy, overcast day…</p>"
+  },
+  "flashback10": {
+    "title": "Flashback X",
+    "body": "<p>You swim through an array of vast undersea halls until at last you come to a circle of pillars. Inside this submerged henge stands an altar covered in an ornate cloth. It is embroidered with rich threads of gold and inlaid with cerulean opals. Despite being immersed in water, the fabric appears perfectly preserved. Wondering what such an object is doing deep in this underwater cavern, you decide to take it with you.</p><p>The moment you emerge from the depths and onto dry stone, you realize with amazement that the cloth is perfectly dry. Turning it over in your hands, you find a clasp of gold and realize it is not simply shapeless cloth, but a mantle—perhaps even part of a greater outfit. When you don the strange cloak, its gemstones pulse with arcane power.</p>"
+  },
+  "flashback11": {
+    "title": "Flashback XI",
+    "body": "<p>You reach an outcropping of rock overlooking a ceremony of sorts. Horrifying fish-like creatures prostrate themselves in front of two enormous statues: one of onyx, another of white marble. At the precipice of this ridge sits a golden crown sporting a shell-like pattern and three distinct horns. Whatever this artifact is, it is clearly important to these creatures. Summoning your courage, you snatch the artifact and escape while you still can. The relic thrums with power in your hands as you flee.</p>"
+  },
+  "resolutions": {
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p><b>Resolution 1:</b> With daylight fading and the tide rising to swallow the various islands off the coast of Innsmouth, you decide to make your way back to the harbor with your discoveries. “Found what yer lookin’ for?” Mr. Moore asks once you’ve made it to the coast safely.</p><p>Truth be told, you’re not completely sure. What you found was startling. The coves and tidal caverns of Devil Reef were home not just to relics of the Esoteric Order of Dagon, but also to a horde of strange creatures: hybrids between fish, man, and monster. You might have escaped with your life, but the horrors you saw in those caves will stay with you forever. Sharp, jagged teeth—blood-stained altars—unholy prayers—signs of a coming catastrophe—it still haunts you even after your escape.</p><p>But is Innsmouth truly safe? Is any land at all?</p>"
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of keys the investigators control.",
+      "cultist": "-2. If you fail and this is an attack or evasion attempt against a _Deep One_ enemy, it engages you. (If it is already engaged with you, it disengages first, then re-engages you.)",
+      "tablet": "-3. If you fail and you are not in a vehicle, take 1 damage.",
+      "elderThing": "-4. If you fail and your location has a key on it, take 1 horror."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the number of keys the investigators control.",
+      "cultist": "-3. If this is an attack or evasion attempt against a _Deep One_ enemy, it engages you. (If it is already engaged with you, it disengages first, then re-engages you.)",
+      "tablet": "-4. If you are not in a vehicle, take 1 damage.",
+      "elderThing": "-5. If your location has a key on it, take 1 horror."
+    }
+  }
+}

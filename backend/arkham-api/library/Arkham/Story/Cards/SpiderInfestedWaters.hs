@@ -18,7 +18,7 @@ spiderInfestedWaters = story SpiderInfestedWaters Cards.spiderInfestedWaters
 
 instance RunMessage SpiderInfestedWaters where
   runMessage msg s@(SpiderInfestedWaters attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       shuffleEncounterDiscardBackIn
       push
         $ DiscardUntilFirst

@@ -24,7 +24,14 @@ instance HasAbilities Duke where
   getAbilities (Duke a) =
     [ fightAbility a 1 (exhaust a) ControlsThis
     , delayAdditionalCostsWhen (youExist $ InvestigatorCanMoveTo (a.ability 2) Anywhere)
-        $ investigateAbility a 2 (exhaust a) ControlsThis
+        $ (mkAbility a 2 (investigateAction $ exhaust a))
+          { abilityCriteria =
+              ControlsThis
+                <> oneOf
+                  [ exists (YourLocation <> InvestigatableLocation)
+                  , youExist $ InvestigatorCanMoveTo (a.ability 2) Anywhere
+                  ]
+          }
     ]
 
 instance RunMessage Duke where

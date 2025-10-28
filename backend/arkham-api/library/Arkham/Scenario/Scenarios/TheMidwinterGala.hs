@@ -25,9 +25,9 @@ import Arkham.I18n
 import Arkham.Investigator.Types (Field (InvestigatorDamage, InvestigatorHorror))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
-import Arkham.Message (StoryMode (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement qualified as Placement
+import Arkham.Message.Lifted.Story
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
@@ -37,6 +37,7 @@ import Arkham.Scenarios.TheMidwinterGala.Faction
 import Arkham.Scenarios.TheMidwinterGala.Helpers
 import Arkham.Scenarios.TheMidwinterGala.Meta
 import Arkham.Story.Cards qualified as Stories
+import Arkham.Tracing
 import Arkham.Trait (Trait (Guest, Leader, Manor, Monster, Private, SecondFloor))
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Map.Strict qualified as Map
@@ -95,7 +96,7 @@ instance HasChaosTokenValue TheMidwinterGala where
       pure $ ChaosTokenValue ElderThing (NegativeModifier $ if isEasyStandard attrs then 3 else 4)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-calculateScore :: HasGame m => ScenarioAttrs -> m (Map Tally Int)
+calculateScore :: (HasGame m, Tracing m) => ScenarioAttrs -> m (Map Tally Int)
 calculateScore attrs = do
   let Meta {rival} = toResult attrs.meta
   manorNoClue <-
@@ -394,7 +395,7 @@ instance RunMessage TheMidwinterGala where
       let Meta {rival} = toResult attrs.meta
       lead <- getLead
       rivalCard <- getSetAsideCard (factionStoryRival rival)
-      push $ ReadStoryWithPlacement lead rivalCard ResolveIt Nothing Global
+      resolveStoryWithPlacement lead rivalCard Global
       pure s
     ScenarioSpecific "readInterlude" _ -> scope "theFabledJewel" do
       let Meta {ally} = toResult attrs.meta
@@ -405,7 +406,7 @@ instance RunMessage TheMidwinterGala where
 
       lead <- getLead
       alliedCard <- getSetAsideCard (factionStoryAllied ally)
-      push $ ReadStoryWithPlacement lead alliedCard ResolveIt Nothing Global
+      resolveStoryWithPlacement lead alliedCard Global
       case ally of
         TheFoundation -> do
           lanternChamber <- selectJust $ locationIs Locations.lanternChamber

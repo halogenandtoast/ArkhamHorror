@@ -37,7 +37,7 @@ instance RunMessage FakeCredentials4 where
         NotInvestigate
         iid
         (attrs.ability 1)
-        (oneOf [locationWithInvestigator iid, ConnectedTo (locationWithInvestigator iid)])
+        (oneOf [locationWithInvestigator iid, connectedTo (locationWithInvestigator iid)])
         1
       when (n < 2) do
         placeTokens (attrs.ability 1) attrs Suspicion 1

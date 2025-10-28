@@ -20,6 +20,7 @@ import Arkham.Act.Runner as X (
   onSide,
   push,
   pushAll,
+  sequenceL,
   targetLabel,
   pattern FailedThisSkillTest,
   pattern FailedThisSkillTestBy,
@@ -61,7 +62,10 @@ advanceVia
 advanceVia method actId source = push $ Msg.advanceVia method actId source
 
 ifEnemyDefeated :: CardDef -> WindowMatcher
-ifEnemyDefeated = IfEnemyDefeated #after Anyone ByAny . enemyIs
+ifEnemyDefeated = ifEnemyDefeatedMatch . enemyIs
+
+ifEnemyDefeatedMatch :: EnemyMatcher -> WindowMatcher
+ifEnemyDefeatedMatch = IfEnemyDefeated #after Anyone ByAny
 
 actAbilities
   :: (EntityAttrs act ~ ActAttrs, Entity act) => (ActAttrs -> [Ability]) -> act -> [Ability]
@@ -78,3 +82,6 @@ actAbilities' side abilities (toAttrs -> attrs) = extend attrs $ guard (onSide s
 actAbilities1'
   :: (EntityAttrs act ~ ActAttrs, Entity act) => ActSide -> (ActAttrs -> Ability) -> act -> [Ability]
 actAbilities1' side ability (toAttrs -> attrs) = extend attrs $ guard (onSide side attrs) *> [ability attrs]
+
+removeAct :: ReverseQueue m => ActAttrs -> m ()
+removeAct = toDiscard GameSource

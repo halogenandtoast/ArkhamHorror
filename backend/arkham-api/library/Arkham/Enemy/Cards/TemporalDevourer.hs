@@ -13,11 +13,7 @@ newtype TemporalDevourer = TemporalDevourer EnemyAttrs
 
 temporalDevourer :: EnemyCard TemporalDevourer
 temporalDevourer =
-  enemyWith
-    TemporalDevourer
-    Cards.temporalDevourer
-    (4, Static 5, 4)
-    (1, 1)
+  enemyWith TemporalDevourer Cards.temporalDevourer (4, Static 5, 4) (1, 1)
     $ (spawnAtL ?~ SpawnAt (FarthestLocationFromYou $ hasAnyTrait [Shattered, Extradimensional]))
     . (surgeIfUnableToSpawnL .~ True)
 

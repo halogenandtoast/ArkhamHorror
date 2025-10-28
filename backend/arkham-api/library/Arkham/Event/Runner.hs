@@ -37,6 +37,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
 import Arkham.Matcher (EnemyMatcher (..))
 import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Window (mkAfter)
@@ -55,7 +56,7 @@ instance RunMessage EventAttrs where
         else result
 
 runEventMessage :: Runner EventAttrs
-runEventMessage msg a@EventAttrs {..} = case msg of
+runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
   IncreaseCustomization iid cardCode customization choices | toCardCode a == cardCode && a.owner == iid -> do
     case customizationIndex a customization of
       Nothing -> pure a
@@ -75,12 +76,10 @@ runEventMessage msg a@EventAttrs {..} = case msg of
         case card.kind of
           EnemyType -> do
             menemy <- selectOne $ EnemyWithCardId cid
-            for_ menemy \enemy ->
-              push $ PlaceEvent eid (AttachedToEnemy enemy)
+            for_ menemy $ push . PlaceEvent eid . AttachedToEnemy
           PlayerEnemyType -> do
             menemy <- selectOne $ EnemyWithCardId cid
-            for_ menemy \enemy ->
-              push $ PlaceEvent eid (AttachedToEnemy enemy)
+            for_ menemy $ push . PlaceEvent eid . AttachedToEnemy
           _ -> error "Cannot attach event to that type"
       _ -> error "Cannot attach event to that type"
     pure a
@@ -148,19 +147,24 @@ runEventMessage msg a@EventAttrs {..} = case msg of
           AttachedToInvestigator iid' -> iid'
           InPlayArea iid' -> iid'
           _ -> a.controller
-    for_ placement.attachedTo \target ->
-      pushM $ checkAfter $ Window.AttachCard (Just a.controller) (toCard a) target
+      handleWindows = do
+        for_ placement.attachedTo $ Lifted.checkAfter . Window.AttachCard (Just a.controller) (toCard a)
+      updated = a & placementL .~ placement & controllerL .~ controller
     case placement of
       InThreatArea iid' -> do
-        pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid' (toCard a)]
+        Lifted.checkAfter $ Window.EntersThreatArea iid' (toCard a)
+        handleWindows
+        pure updated
       AttachedToEnemy eid' -> do
-        p <- field EnemyPlacement eid'
-        case p of
-          InThreatArea iid' -> do
-            pushM $ checkWindows [mkAfter $ Window.EntersThreatArea iid' (toCard a)]
-          _ -> pure ()
-      _ -> pure ()
-    pure $ a & placementL .~ placement & controllerL .~ controller
+        fieldMay EnemyPlacement eid' >>= \case
+          Nothing -> pure a
+          Just p -> do
+            case p of
+              InThreatArea iid' -> Lifted.checkAfter $ Window.EntersThreatArea iid' (toCard a)
+              _ -> pure ()
+            handleWindows
+            pure updated
+      _ -> pure updated
   FinishedEvent eid | eid == eventId -> do
     mods <- liftA2 (<>) (getModifiers eid) (getModifiers $ toCardId $ toCard a)
     let
@@ -188,19 +192,19 @@ runEventMessage msg a@EventAttrs {..} = case msg of
           ReturnThisToHand -> push (ReturnToHand eventController (toTarget a))
           DevourThis iid' -> do
             c <- field EventCard a.id
-            push $ RemovedFromPlay (toSource a)
             push $ Devoured iid' c
+            push $ RemovedFromPlay (toSource a)
         _ -> case afterPlay of
           PlaceThisBeneath target -> pushAll [PlaceUnderneath target [toCard a]]
           AbsoluteRemoveThisFromGame -> push (RemoveEvent $ toId a)
           DevourThis iid' -> do
             c <- field EventCard a.id
-            push $ RemovedFromPlay (toSource a)
             push $ Devoured iid' c
+            push $ RemovedFromPlay (toSource a)
           _ -> pushAll [after, afterAfter] -- Changed to allow Fast Cards to be played
     pure a
   After (Revelation _iid (isSource a -> True)) -> do
-    result <- runMessage (FinishedEvent a.id) a
+    result <- liftRunMessage (FinishedEvent a.id) a
     push $ ObtainCard (toCard result).id
     pure result
   InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do
@@ -261,21 +265,29 @@ runEventMessage msg a@EventAttrs {..} = case msg of
             ]
     pure a
   Do (SpendUses source target useType' n) | isTarget a target -> do
-    pushM $ checkAfter $ Window.SpentToken source (toTarget a) useType' n
-    runMessage (RemoveTokens source target useType' n) a
-  MoveTokens s source _ tType n | isSource a source -> runMessage (RemoveTokens s (toTarget a) tType n) a
+    result <- liftRunMessage (RemoveTokens source target useType' n) a
+    Lifted.checkAfter $ Window.SpentToken source (toTarget a) useType' n
+    pure result
+  MoveTokens s source _ tType n | isSource a source -> liftRunMessage (RemoveTokens s (toTarget a) tType n) a
   MoveTokens _s (InvestigatorSource _) target Clue _ | isTarget a target -> pure a
-  MoveTokens s _ target tType n | isTarget a target -> runMessage (PlaceTokens s (toTarget a) tType n) a
+  MoveTokens s _ target tType n | isTarget a target -> liftRunMessage (PlaceTokens s (toTarget a) tType n) a
   RemoveTokens _ target tType n | isTarget a target -> pure $ a & tokensL %~ subtractTokens tType n
   PlaceTokens source target tType n | isTarget a target -> do
-    pushM $ checkAfter $ Window.PlacedToken source target tType n
-    when (tType == Doom && a.doom == 0) do
-      pushM $ checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source target n
+    let
+      handleWindows = do
+        Lifted.checkAfter $ Window.PlacedToken source target tType n
+        when (tType == Doom && a.doom == 0) do
+          Lifted.checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source target n
     if tokenIsUse tType
       then case eventPrintedUses of
-        NoUses -> pure $ a & tokensL . at tType . non 0 %~ (+ n)
-        Uses useType'' _ | tType == useType'' -> pure $ a & tokensL . at tType . non 0 %~ (+ n)
+        NoUses -> do
+          handleWindows
+          pure $ a & tokensL . at tType . non 0 %~ (+ n)
+        Uses useType'' _ | tType == useType'' -> do
+          handleWindows
+          pure $ a & tokensL . at tType . non 0 %~ (+ n)
         UsesWithLimit useType'' _ pl | tType == useType'' -> do
+          handleWindows
           l <- calculate pl
           pure $ a & tokensL . at tType . non 0 %~ min l . (+ n)
         _ ->
@@ -286,6 +298,7 @@ runEventMessage msg a@EventAttrs {..} = case msg of
             <> show tType
       else do
         pushWhen (tType == Horror) $ checkDefeated source a
+        handleWindows
         pure $ a & tokensL %~ addTokens tType n
   UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
     push $ Do msg
@@ -293,10 +306,10 @@ runEventMessage msg a@EventAttrs {..} = case msg of
   InSearch msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
     push $ Do msg'
     pure a
-  InDiscard _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+  InDiscard iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
     push $ Do msg'
     pure a
-  InHand _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+  InHand iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
     push $ Do msg'
     pure a
   _ -> pure a

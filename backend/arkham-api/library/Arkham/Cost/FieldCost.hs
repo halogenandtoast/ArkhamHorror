@@ -70,7 +70,7 @@ instance FromJSON FieldCost where
                 mtchr :: LocationMatcher <- v .: "matcher"
                 pure $ FieldCost mtchr fld
               _ -> error "Must be an int"
-      _ -> error "Unhandled"
+      _ -> error "Unhandled FieldCost"
 
 -- we do not care about this instance really
 instance Ord FieldCost where

@@ -1,20 +1,15 @@
-module Arkham.Location.Cards.ChapelAtticSpectral_175 (
-  chapelAtticSpectral_175,
-  ChapelAtticSpectral_175 (..),
-)
-where
+module Arkham.Location.Cards.ChapelAtticSpectral_175 (chapelAtticSpectral_175) where
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
-import Arkham.Helpers.Query
+import Arkham.Helpers.Location
+import Arkham.Helpers.Window
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (PlaceUnderneath)
-import Arkham.Prelude
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
+import Arkham.Scenarios.TheWagesOfSin.Helpers
 
 newtype ChapelAtticSpectral_175 = ChapelAtticSpectral_175 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -25,54 +20,33 @@ chapelAtticSpectral_175 = location ChapelAtticSpectral_175 Cards.chapelAtticSpec
 
 instance HasAbilities ChapelAtticSpectral_175 where
   getAbilities (ChapelAtticSpectral_175 a) =
-    withRevealedAbilities
+    extendRevealed
       a
-      [ restrictedAbility a 1 Here $ forced $ DrawCard #after You (basic NonWeakness) (DeckOf You)
-      , mkAbility a 2
-          $ freeReaction
-          $ SkillTestResult #after You (WhileInvestigating $ be a) (SuccessResult AnyValue)
-      , withTooltip "Discard a random card from beneath Chapel Attic."
-          $ restrictedAbility a 3 hauntedCriteria Haunted
+      [ restricted a 1 Here $ forced $ DrawCard #after You (basic NonWeakness) (DeckOf You)
+      , mkAbility a 2 $ freeReaction $ SkillTestResult #after You (WhileInvestigating $ be a) #success
+      , scenarioI18n
+          $ withI18nTooltip "chapelAtticSpectral_175.haunted"
+          $ restricted a 3 hauntedCriteria Haunted
       ]
    where
     hauntedCriteria = if null (locationCardsUnderneath a) then Never else NoRestriction
 
-toDrawn :: [Window] -> Card
-toDrawn [] = error "invalid call"
-toDrawn ((windowType -> Window.DrawCard _ card _) : _) = card
-toDrawn (_ : xs) = toDrawn xs
-
 instance RunMessage ChapelAtticSpectral_175 where
-  runMessage msg l@(ChapelAtticSpectral_175 attrs) = case msg of
-    Flip _ _ target | isTarget attrs target -> do
-      regular <- genCard Locations.chapelAttic_175
-      push $ ReplaceLocation (toId attrs) regular Swap
+  runMessage msg l@(ChapelAtticSpectral_175 attrs) = runQueueT $ case msg of
+    FlipThis (isTarget attrs -> True) -> do
+      swapLocation attrs =<< genCard Locations.chapelAttic_175
       pure l
-    UseCardAbility _ (isSource attrs -> True) 1 (toDrawn -> card) _ -> do
-      push $ PlaceUnderneath (toTarget attrs) [card]
+    UseCardAbility _ (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
+      placeUnderneath attrs [card]
       pure l
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      iids <- getInvestigators
-      let
-        returnCards iid =
-          let
-            cards =
-              filter (maybe False ((== Just iid) . pcOwner) . preview _PlayerCard) (locationCardsUnderneath attrs)
-           in
-            guard (notNull cards) $> AddToHand iid cards
-      pushAll $ mapMaybe returnCards iids
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      eachInvestigator \iid -> do
+        let
+          cards =
+            filter (maybe False ((== Just iid) . pcOwner) . preview _PlayerCard) (locationCardsUnderneath attrs)
+        unless (null cards) $ addToHand iid cards
       pure l
-    UseCardAbility _ (isSource attrs -> True) 3 _ _ -> do
-      let
-        toDiscardMsg = \case
-          PlayerCard pc -> case pcOwner pc of
-            Just iid' -> AddToDiscard iid' pc
-            Nothing -> RemovePlayerCardFromGame False (PlayerCard pc)
-          EncounterCard ec -> AddToEncounterDiscard ec
-          VengeanceCard _ -> error "unexpected vengeance card"
-
-      for_ (nonEmpty $ locationCardsUnderneath attrs) $ \cards -> do
-        card <- sample cards
-        push $ toDiscardMsg card
+    UseThisAbility iid (isSource attrs -> True) 3 -> do
+      for_ (nonEmpty $ locationCardsUnderneath attrs) $ sample >=> discardCard iid (attrs.ability 3)
       pure l
-    _ -> ChapelAtticSpectral_175 <$> runMessage msg attrs
+    _ -> ChapelAtticSpectral_175 <$> liftRunMessage msg attrs

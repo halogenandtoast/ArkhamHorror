@@ -41,7 +41,7 @@ instance RunMessage KindredMist where
         cancelBatch batchId
         for_ (onlyPlayerCards cards) \card -> do
           -- A bit of an issue here since normally adding shuffle the deck we need to use this variant
-          push $ AddCardToDeckForCampaign iid card
+          addCampaignCardToDeck iid DoNotShuffleIn card
           cardResolutionModifier card (attrs.ability 1) card PlaceOnBottomOfDeckInsteadOfDiscard
           drawCard iid (toCard card)
         atEndOfRound (attrs.ability 1) $ toDiscard (attrs.ability 1) attrs

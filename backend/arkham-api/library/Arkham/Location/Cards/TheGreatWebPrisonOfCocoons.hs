@@ -1,8 +1,4 @@
-module Arkham.Location.Cards.TheGreatWebPrisonOfCocoons (
-  theGreatWebPrisonOfCocoons,
-  TheGreatWebPrisonOfCocoons (..),
-)
-where
+module Arkham.Location.Cards.TheGreatWebPrisonOfCocoons (theGreatWebPrisonOfCocoons) where
 
 import Arkham.Ability
 import Arkham.Direction
@@ -26,8 +22,8 @@ theGreatWebPrisonOfCocoons =
     (connectsToL .~ setFromList [Above, Below])
 
 instance HasAbilities TheGreatWebPrisonOfCocoons where
-  getAbilities (TheGreatWebPrisonOfCocoons attrs) =
-    extendRevealed attrs [skillTestAbility $ forcedAbility attrs 1 $ Enters #after You $ be attrs]
+  getAbilities (TheGreatWebPrisonOfCocoons a) =
+    extendRevealed1 a $ skillTestAbility $ forcedAbility a 1 $ Enters #after You (be a)
 
 instance RunMessage TheGreatWebPrisonOfCocoons where
   runMessage msg l@(TheGreatWebPrisonOfCocoons attrs) = runQueueT $ case msg of

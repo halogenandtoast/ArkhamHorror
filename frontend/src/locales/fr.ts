@@ -1,0 +1,16 @@
+import base from '@/locales/fr/base.json'
+import label from '@/locales/fr/label.json'
+import campaignLog from '@/locales/fr/campaignLog.json'
+import nightOfTheZealot from '@/locales/fr/nightOfTheZealot'
+import theDunwichLegacy from '@/locales/fr/theDunwichLegacy'
+import thePathToCarcosa from '@/locales/fr/thePathToCarcosa'
+import theForgottenAge from '@/locales/fr/theForgottenAge'
+import theCircleUndone from '@/locales/fr/theCircleUndone'
+import theDreamEaters from '@/locales/fr/theDreamEaters'
+import theInnsmouthConspiracy from '@/locales/fr/theInnsmouthConspiracy'
+import edgeOfTheEarth from '@/locales/fr/edgeOfTheEarth'
+import standalone from '@/locales/fr/standalone'
+import gameBoard from '@/locales/fr/gameBoard/gameBoard'
+import xp from '@/locales/fr/xp.json'
+
+export default {...base, ...campaignLog, ...gameBoard, label, xp, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, standalone}

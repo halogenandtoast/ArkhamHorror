@@ -14,7 +14,6 @@ import Arkham.Message.Lifted.Placement
 import Arkham.Projection
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted hiding (EnemyDefeated)
-import Arkham.Target
 import Arkham.Token
 
 newtype LocalsOfKingsportAllied = LocalsOfKingsportAllied StoryAttrs

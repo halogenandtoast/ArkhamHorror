@@ -1,4 +1,4 @@
-module Arkham.Story.Cards.DissectedExplorer (DissectedExplorer (..), dissectedExplorer) where
+module Arkham.Story.Cards.DissectedExplorer (dissectedExplorer) where
 
 import Arkham.I18n
 import Arkham.Matcher
@@ -7,7 +7,6 @@ import Arkham.Scenario.Deck
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 import Arkham.Strategy
-import Arkham.Target
 
 newtype DissectedExplorer = DissectedExplorer StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -18,12 +17,12 @@ dissectedExplorer = story DissectedExplorer Cards.dissectedExplorer
 
 instance RunMessage DissectedExplorer where
   runMessage msg s@(DissectedExplorer attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       search iid attrs iid [fromDeck] (basic $ CardWithTitle "Tekeli-li") (defer attrs IsNotDraw)
       addToVictory attrs
       pure s
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
-      chooseOneM iid $ targets cards $ putCardOnBottomOfDeck iid TekeliliDeck
+      chooseTargetM iid cards $ putCardOnBottomOfDeck iid TekeliliDeck
       pure s
     SearchFound iid (isTarget attrs -> True) _ [] -> do
       withI18n $ prompt_ iid "noCardsFound"

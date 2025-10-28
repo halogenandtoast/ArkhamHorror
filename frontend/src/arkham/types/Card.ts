@@ -27,7 +27,7 @@ function cardArt(card: Card): string | undefined {
   }
 }
 
-function asCardCode(card: Card): string {
+export function asCardCode(card: Card): string {
   switch (card.tag) {
     case 'PlayerCard':
       return card.contents.cardCode
@@ -36,6 +36,10 @@ function asCardCode(card: Card): string {
     case 'VengeanceCard':
       return asCardCode(card.contents);
   }
+}
+
+export function cardId(card: Card): string {
+  return toCardContents(card).id
 }
 
 export function cardImage(card: Card) {

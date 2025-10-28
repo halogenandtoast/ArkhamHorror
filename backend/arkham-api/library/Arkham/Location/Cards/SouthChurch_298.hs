@@ -1,10 +1,10 @@
-module Arkham.Location.Cards.SouthChurch_298 (southChurch_298, SouthChurch_298 (..)) where
+module Arkham.Location.Cards.SouthChurch_298 (southChurch_298) where
 
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 
 newtype SouthChurch_298 = SouthChurch_298 LocationAttrs
@@ -15,26 +15,21 @@ southChurch_298 :: LocationCard SouthChurch_298
 southChurch_298 = location SouthChurch_298 Cards.southChurch_298 1 (Static 0)
 
 instance HasAbilities SouthChurch_298 where
-  getAbilities (SouthChurch_298 attrs) =
-    let breachCount = countLocationBreaches attrs
-     in extendRevealed attrs
-          $ [ restricted
-                attrs
-                1
-                (Here <> (if breachCount > 0 then EncounterDeckIsNotEmpty else Never))
-                actionAbility
-            , withTooltip "You hide through the night." $ locationResignAction attrs
-            ]
+  getAbilities (SouthChurch_298 a) =
+    let n = countLocationBreaches a
+     in extendRevealed
+          a
+          [ restricted a 1 (Here <> (if n > 0 then EncounterDeckIsNotEmpty else Never)) actionAbility
+          , scenarioI18n $ withI18nTooltip "southChurch.resign" $ locationResignAction a
+          ]
 
 instance RunMessage SouthChurch_298 where
-  runMessage msg l@(SouthChurch_298 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(SouthChurch_298 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       let breachCount = countLocationBreaches attrs
       act <- selectJust AnyAct
-      pushAll
-        [ drawEncounterCard iid attrs
-        , RemoveBreaches (toTarget attrs) breachCount
-        , PlaceBreaches (toTarget act) breachCount
-        ]
+      drawEncounterCard iid attrs
+      removeBreaches attrs breachCount
+      placeBreaches act breachCount
       pure l
-    _ -> SouthChurch_298 <$> runMessage msg attrs
+    _ -> SouthChurch_298 <$> liftRunMessage msg attrs

@@ -45,7 +45,7 @@ instance RunMessage InAzathothsDomain where
       drawCardsEdit iid (attrs.ability 1) x (setDrawDeck CosmosDeck . setTarget attrs)
       pure a
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
-      focusCards (map flipCard drewCards.cards) do
+      focusCards (map showRevealed drewCards.cards) do
         chooseOrRunOneM iid do
           targets drewCards.cards \card -> do
             unfocusCards
@@ -67,11 +67,11 @@ instance RunMessage InAzathothsDomain where
       let cosmos' = initCosmos @Card @LocationId
           cardsWithOwners = List.groupOnKey toCardOwner emptySpaceCards
 
+      for_ enemyCards obtainCard
+      shuffleCardsIntoTopOfDeck Deck.EncounterDeck 5 enemyCards
       removeLocation hideousPalace
       for_ (cosmosLocations <> emptySpace) removeLocation
       shuffleCardsIntoDeck CosmosDeck cosmosCards
-      for_ enemyCards obtainCard
-      shuffleCardsIntoTopOfDeck Deck.EncounterDeck 5 enemyCards
       for_ cardsWithOwners \(mOwner, cards) -> for_ mOwner \owner -> do
         shuffleCardsIntoDeck owner cards
       pushAll

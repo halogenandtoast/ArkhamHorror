@@ -1,13 +1,10 @@
 module Arkham.Enemy.Cards.ScientistOfYith (scientistOfYith) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword qualified as Keyword
-import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.ScenarioLogKey
 
 newtype ScientistOfYith = ScientistOfYith EnemyAttrs
@@ -16,9 +13,8 @@ newtype ScientistOfYith = ScientistOfYith EnemyAttrs
 
 scientistOfYith :: EnemyCard ScientistOfYith
 scientistOfYith =
-  enemyWith ScientistOfYith Cards.scientistOfYith (4, Static 3, 1) (2, 0)
-    $ spawnAtL
-    ?~ SpawnAt (LocationWithTitle "Laboratory of the Great Race")
+  enemy ScientistOfYith Cards.scientistOfYith (4, Static 3, 1) (2, 0)
+    & setSpawnAt "Laboratory of the Great Race"
 
 instance HasModifiersFor ScientistOfYith where
   getModifiersFor (ScientistOfYith a) = do

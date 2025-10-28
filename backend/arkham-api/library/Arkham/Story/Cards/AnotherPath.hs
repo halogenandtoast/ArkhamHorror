@@ -15,7 +15,7 @@ anotherPath = story AnotherPath Cards.anotherPath
 
 instance RunMessage AnotherPath where
   runMessage msg s@(AnotherPath attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       placeSetAsideLocation_ Locations.enchantedWoodsStoneTrapdoor
       record TheInvestigatorsFoundAWayOutOfTheUnderworld
       pure s

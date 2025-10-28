@@ -1,14 +1,7 @@
-module Arkham.Agenda.Cards.TheDescentBegins (
-  TheDescentBegins (..),
-  theDescentBegins,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheDescentBegins (theDescentBegins) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
+import Arkham.Agenda.Import.Lifted
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 
 newtype TheDescentBegins = TheDescentBegins AgendaAttrs
@@ -16,15 +9,12 @@ newtype TheDescentBegins = TheDescentBegins AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theDescentBegins :: AgendaCard TheDescentBegins
-theDescentBegins =
-  agenda (1, A) TheDescentBegins Cards.theDescentBegins (Static 3)
+theDescentBegins = agenda (1, A) TheDescentBegins Cards.theDescentBegins (Static 3)
 
 instance RunMessage TheDescentBegins where
-  runMessage msg a@(TheDescentBegins attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      enemyMsgs <- getPlacePursuitEnemyMessages
-      pushAll
-        $ enemyMsgs
-        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+  runMessage msg a@(TheDescentBegins attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      placePursuitEnemies
+      advanceAgendaDeck attrs
       pure a
-    _ -> TheDescentBegins <$> runMessage msg attrs
+    _ -> TheDescentBegins <$> liftRunMessage msg attrs

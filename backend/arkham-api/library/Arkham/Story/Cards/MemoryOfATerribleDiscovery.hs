@@ -19,7 +19,7 @@ memoryOfATerribleDiscovery = story MemoryOfATerribleDiscovery Cards.memoryOfATer
 
 instance RunMessage MemoryOfATerribleDiscovery where
   runMessage msg s@(MemoryOfATerribleDiscovery attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       record ClaypoolHasConfrontedHisDemons
       setPartnerStatus Assets.averyClaypoolAntarcticGuide Resolute
       selectForMaybeM (assetIs Assets.averyClaypoolAntarcticGuide) \claypool ->

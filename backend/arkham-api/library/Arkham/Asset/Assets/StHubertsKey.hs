@@ -23,14 +23,17 @@ instance HasModifiersFor StHubertsKey where
 instance HasAbilities StHubertsKey where
   getAbilities (StHubertsKey a) =
     [ restricted a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           (InvestigatorDefeated #when ByHorror $ HealableInvestigator (toSource a) #horror You)
-        $ DiscardCost FromPlay
-        $ toTarget a
+          (DiscardCost FromPlay $ toTarget a)
     ]
 
 instance RunMessage StHubertsKey where
   runMessage msg a@(StHubertsKey attrs) = runQueueT $ case msg of
+    CardEnteredPlay iid card | card.id == attrs.cardId -> do
+      -- since we adjust sanity we must check for defeated
+      checkDefeated attrs iid
+      pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       mDefeatedMessage <- lift $ findFromQueue \case
         Msg.InvestigatorIsDefeated {} -> True

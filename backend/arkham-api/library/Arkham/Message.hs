@@ -1,7 +1,9 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -O0 -fomit-interface-pragmas -fno-specialise #-}
 
 module Arkham.Message (module Arkham.Message, module X) where
 
+import Arkham.Message.Story as X
 import Arkham.Message.Type as X
 import Arkham.Question as X
 import Arkham.Strategy as X
@@ -21,6 +23,8 @@ import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Campaigns.TheForgottenAge.Supply
+import Arkham.Campaigns.TheScarletKeys.Concealed.Types
+import Arkham.Campaigns.TheScarletKeys.Key.Id
 import Arkham.Card
 import Arkham.Card.Settings
 import Arkham.ChaosBag.RevealStrategy
@@ -51,6 +55,7 @@ import Arkham.Fight.Types
 import Arkham.Game.State
 import Arkham.Helpers
 import Arkham.History
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigate.Types
 import {-# SOURCE #-} Arkham.Investigator
@@ -68,8 +73,9 @@ import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Resolution
 import Arkham.Scenario.Deck
+import Arkham.Scenario.Options
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
+import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos.Types
 import Arkham.Search
 import {-# SOURCE #-} Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
@@ -87,7 +93,9 @@ import Arkham.Xp
 import Control.Monad.Fail
 import Data.Aeson.Key qualified as Aeson
 import Data.Aeson.TH
-import Data.UUID (nil)
+import Data.Aeson.Types
+import Data.UUID (fromWords64, nil)
+import Data.UUID qualified as UUID
 import GHC.OverloadedLabels
 
 messageType :: Message -> Maybe MessageType
@@ -164,7 +172,7 @@ storyWithChooseUpToN lead pids n flavor choices =
     )
 
 data AdvancementMethod = AdvancedWithClues | AdvancedWithOther
-  deriving stock (Generic, Eq, Show, Data)
+  deriving stock (Generic, Ord, Eq, Show, Data)
   deriving anyclass (FromJSON, ToJSON)
 
 instance IsLabel "clues" AdvancementMethod where
@@ -174,7 +182,7 @@ instance IsLabel "other" AdvancementMethod where
   fromLabel = AdvancedWithOther
 
 data AgendaAdvancementMethod = AgendaAdvancedWithDoom | AgendaAdvancedWithOther
-  deriving stock (Generic, Eq, Show, Data)
+  deriving stock (Generic, Ord, Eq, Show, Data)
   deriving anyclass (FromJSON, ToJSON)
 
 instance IsLabel "doom" AgendaAdvancementMethod where
@@ -191,6 +199,11 @@ instance Sourceable a => Is a Source where
 
 instance Targetable a => Is a Target where
   is = isTarget
+
+pattern LoseAllResources :: InvestigatorId -> Source -> Message
+pattern LoseAllResources iid source <- LoseAll iid source Token.Resource
+  where
+    LoseAllResources iid source = LoseAll iid source Token.Resource
 
 pattern MovedDamage :: Source -> Source -> Target -> Int -> Message
 pattern MovedDamage source source' target n <- MoveTokens source source' target Token.Damage n
@@ -294,6 +307,10 @@ getChoiceAmount key choices =
 class IsMessage msg where
   toMessage :: msg -> Message
 
+instance IsMessage StoryMessage where
+  toMessage = StoryMessage
+  {-# INLINE toMessage #-}
+
 instance IsMessage Message where
   toMessage = id
   {-# INLINE toMessage #-}
@@ -327,24 +344,23 @@ instance IsMessage (EnemyCreation Message) where
   {-# INLINE toMessage #-}
 
 data ReplaceStrategy = DefaultReplace | Swap
-  deriving stock (Show, Eq, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
-
-data StoryMode = ResolveIt | DoNotResolveIt
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data IncludeDiscard = IncludeDiscard | ExcludeDiscard
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype FromSkillType = FromSkillType SkillType
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype ToSkillType = ToSkillType SkillType
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
+
+pattern FlipThis :: Target -> Message
+pattern FlipThis target <- Flip _ _ target
 
 pattern SuccessfulInvestigationWith :: InvestigatorId -> Target -> Message
 pattern SuccessfulInvestigationWith iid target <- Successful (Action.Investigate, _) iid _ target _
@@ -362,7 +378,7 @@ pattern DealAssetDamage aid source damage horror <- DealAssetDamageWithCheck aid
 type IsSameAction = Bool
 
 data CanAdvance = CanAdvance | CanNotAdvance
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 class AndThen a where
@@ -375,15 +391,15 @@ instance AndThen EnemyAttackDetails where
   andThen cd msg = cd {attackAfter = [msg]}
 
 data ShuffleIn = ShuffleIn | DoNotShuffleIn
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data GroupKey = HunterGroup
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data AutoStatus = Auto | Manual | NoAutoStatus
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 instance Semigroup AutoStatus where
@@ -395,33 +411,27 @@ instance Semigroup AutoStatus where
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
+  | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
+  | AbilityIsSkillTest AbilityRef
   | SkillTestResultOption Text [Message]
   | SkillTestResultOptions [UI Message]
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
-  | SetDriver AssetId InvestigatorId
   | SetGameState GameState
   | SetGlobal Target Aeson.Key Value
+  | MoveWithSkillTest Message
+  | MovedWithSkillTest SkillTestId Message
+  | NextSkillTest SkillTestId
+  | SetInvestigator PlayerId Investigator
+  | SetDriver AssetId InvestigatorId
   | IncreaseFloodLevel LocationId
   | DecreaseFloodLevel LocationId
   | SetFloodLevel LocationId FloodLevel
   | Devour InvestigatorId
   | Devoured InvestigatorId Card
-  | MoveWithSkillTest Message
-  | MovedWithSkillTest SkillTestId Message
-  | NextSkillTest SkillTestId
-  | AddSubscriber Target
-  | SetInvestigator PlayerId Investigator
-  | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
-  | AbilityIsSkillTest AbilityRef
-  | -- Story Card Messages
-    ReadStory InvestigatorId Card StoryMode (Maybe Target)
-  | ReadStoryWithPlacement InvestigatorId Card StoryMode (Maybe Target) Placement
-  | ResolveStory InvestigatorId StoryMode StoryId
-  | ResolvedStory StoryMode StoryId
-  | PlaceStory Card Placement
-  | -- | ResolveStoryStep InvestigatorId StoryId Int
-    RemoveStory StoryId
+  | -- Skill Test Specific
+    AddSubscriber Target
+  | StoryMessage StoryMessage
   | -- Handle discard costs
     DiscardedCost Target
   | -- Act Deck Messages
@@ -461,11 +471,9 @@ data Message
   | SetFlippable LocationId Bool
   | AddCampaignCardToDeck InvestigatorId ShuffleIn Card
   | RemoveCardFromDeckForCampaign InvestigatorId CardId
-  | AddCardToDeckForCampaign InvestigatorId PlayerCard
   | -- Adding Cards to Hand
     AddFocusedToHand InvestigatorId Target Zone CardId
   | AddToHand InvestigatorId [Card]
-  | DebugAddToHand InvestigatorId CardId
   | DrawFocusedToHand InvestigatorId Target Zone CardId
   | DrawToHand InvestigatorId [Card]
   | DrawToHandFrom InvestigatorId DeckSignifier [Card]
@@ -476,6 +484,7 @@ data Message
   | -- Adding Cards to Player Discard
     AddToDiscard InvestigatorId PlayerCard
   | AddToEncounterDiscard EncounterCard
+  | AddToSpecificEncounterDiscard ScenarioEncounterDeckKey EncounterCard
   | -- Slot Messages
     AddSlot InvestigatorId SlotType Slot
   | RemoveSlot InvestigatorId SlotType
@@ -487,7 +496,7 @@ data Message
   | DrawStartingHand InvestigatorId
   | DrawCards InvestigatorId (CardDraw Message)
   | DoDrawCards InvestigatorId
-  | DrawEnded InvestigatorId
+  | DrawEnded CardDrawId InvestigatorId
   | Instead Message Message
   | ReplaceCurrentCardDraw InvestigatorId (CardDraw Message)
   | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
@@ -505,6 +514,7 @@ data Message
   | SwapChaosToken ChaosTokenFace ChaosTokenFace
   | RemoveAllChaosTokens ChaosTokenFace
   | RemoveChaosToken ChaosTokenFace
+  | ResetTokenPool
   | -- Asset Uses
     AddUses Source AssetId UseType Int
   | -- Asks
@@ -512,7 +522,7 @@ data Message
   | Ask PlayerId (Question Message)
   | WindowAsk [Window] PlayerId (Question Message)
   | AskMap (Map PlayerId (Question Message))
-  | After Message -- TODO: REMOVE
+  | After Message
   | AfterEvadeEnemy InvestigatorId EnemyId
   | AfterRevelation InvestigatorId TreacheryId
   | AllCheckHandSize
@@ -558,7 +568,7 @@ data Message
   | CancelDamage InvestigatorId Int
   | CancelAssetDamage AssetId Source Int
   | CancelAssetHorror AssetId Source Int
-  | CheckAttackOfOpportunity InvestigatorId Bool
+  | CheckAttackOfOpportunity InvestigatorId Bool (Maybe EnemyMatcher)
   | CheckDefeated Source Target
   | AssignDamage Target
   | CancelAssignedDamage Target Int Int
@@ -580,6 +590,7 @@ data Message
   | PreScenarioSetup
   | StandaloneSetup
   | ChoosePlayer InvestigatorId ChoosePlayerChoice
+  | SetPlayerOrder
   | ChoosePlayerOrder InvestigatorId [InvestigatorId] [InvestigatorId]
   | ChooseRandomLocation Target [LocationId]
   | ChosenRandomLocation Target LocationId
@@ -604,6 +615,7 @@ data Message
   | CheckAdditionalCosts ActiveCostId
   | PayCosts ActiveCostId
   | PayCost ActiveCostId InvestigatorId Bool Cost
+  | PaidInitialCostForAbility ActiveCostId InvestigatorId AbilityRef Payment
   | PayCostFinished ActiveCostId
   | PaidCost ActiveCostId InvestigatorId (Maybe Action) Payment
   | PaidAllCosts
@@ -617,9 +629,11 @@ data Message
   | CreateEndOfTurnEffect Source InvestigatorId [Message]
   | CreateEndOfRoundEffect Source [Message]
   | CreateAssetAt AssetId Card Placement
+  | CreateScarletKeyAt Card Placement
   | CreateEventAt InvestigatorId Card Placement
   | CreateTreacheryAt TreacheryId Card Placement
   | PlaceAsset AssetId Placement
+  | PlaceScarletKey ScarletKeyId Placement
   | PlaceEvent EventId Placement
   | PlaceTreachery TreacheryId Placement
   | PlaceSkill SkillId Placement
@@ -645,6 +659,7 @@ data Message
   | DiscardTopOfEncounterDeck InvestigatorId Int Source (Maybe Target)
   | DiscardTopOfEncounterDeckWithDiscardedCards InvestigatorId Int Source (Maybe Target) [EncounterCard]
   | Discarded Target Source Card
+  | DiscardedCards InvestigatorId Source Target [Card]
   | DiscardedCard CardId
   | DiscardedTopOfEncounterDeck InvestigatorId [EncounterCard] Source Target
   | DiscardedTopOfDeck InvestigatorId [PlayerCard] Source Target
@@ -673,8 +688,8 @@ data Message
   | BeginRoundWindow
   | EndRoundWindow
   | EndSearch InvestigatorId Source Target [(Zone, ZoneReturnStrategy)]
-  | SearchEnded InvestigatorId
-  | CancelSearch InvestigatorId
+  | SearchEnded Target
+  | CancelSearch Target
   | EndTurn InvestigatorId
   | EndUpkeep
   | EnemiesAttack
@@ -703,6 +718,7 @@ data Message
   | SpawnEnemyAt Card LocationId
   | SpawnEnemyAtEngagedWith Card LocationId InvestigatorId
   | EnemySpawn SpawnDetails
+  | EnemySpawned SpawnDetails
   | EnemySpawnAtLocationMatching (Maybe InvestigatorId) LocationMatcher EnemyId
   | EnemySpawnEngagedWithPrey EnemyId
   | EnemySpawnEngagedWith EnemyId InvestigatorMatcher
@@ -830,7 +846,7 @@ data Message
   | LookAtTopOfDeck InvestigatorId Target Int
   | LoseActions InvestigatorId Source Int
   | LoseResources InvestigatorId Source Int
-  | LoseAllResources InvestigatorId Source
+  | LoseAll InvestigatorId Source Token
   | SpendActions InvestigatorId Source [Action] Int
   | -- | Handles complex movement for a target, triggers Moves windows, and uses MoveFrom, MoveTo messages
     Move Movement
@@ -851,6 +867,7 @@ data Message
   | -- | Actual movement, will add MovedBy, MovedBut, and after Entering windows
     MoveTo Movement
   | ResolveMovement InvestigatorId
+  | ResolvedMovement InvestigatorId
   | -- | Move target one location toward a matching location
     MoveToward Target LocationMatcher
   | -- | Move target one location at a time until arrive at location
@@ -983,7 +1000,9 @@ data Message
   | RevealSkillTestChaosTokens InvestigatorId
   | RevealSkillTestChaosTokensAgain InvestigatorId -- meant for when we reveal during resolving
   | RevealChaosToken Source InvestigatorId ChaosToken
+  | SilentRevealChaosToken Source InvestigatorId ChaosToken
   | Revelation InvestigatorId Source
+  | RevelationSkipped InvestigatorId Source
   | RevelationChoice InvestigatorId Source Int
   | RevelationSkillTest SkillTestId InvestigatorId Source SkillType SkillTestDifficulty
   | ResolveRevelation InvestigatorId Card
@@ -997,14 +1016,16 @@ data Message
   | SearchCollectionForRandom InvestigatorId Source CardMatcher
   | FinishedSearch
   | Search Search
-  | ResolveSearch InvestigatorId
+  | ResolveSearch Target
+  | PreSearchFound InvestigatorId (Maybe Target) DeckSignifier [Card]
   | SearchFound InvestigatorId Target DeckSignifier [Card]
-  | FoundCards (Map Zone [Card])
+  | FoundCards (Map Zone [Card]) -- Deprecated
   | SearchNoneFound InvestigatorId Target
   | UpdateSearchReturnStrategy InvestigatorId Zone ZoneReturnStrategy
   | SetActions InvestigatorId Source Int
   | SetEncounterDeck (Deck EncounterCard)
   | SetLayout [GridTemplateRow]
+  | SetDecksLayout [GridTemplateRow]
   | SetLocationLabel LocationId Text
   | SetRole InvestigatorId ClassSymbol
   | ForceChaosTokenDraw ChaosTokenFace
@@ -1048,6 +1069,7 @@ data Message
   | SpentAllUses Target
   | StartCampaign
   | StartScenario ScenarioId
+  | LoadScenario ScenarioOptions
   | RestartScenario
   | StartSkillTest InvestigatorId
   | SkippedWindow InvestigatorId
@@ -1089,8 +1111,8 @@ data Message
   | ChaosTokenCanceled InvestigatorId Source ChaosToken
   | SetActiveCard Card
   | UnsetActiveCard
-  | AddCardEntity Card
-  | RemoveCardEntity Card
+  | AddCardEntity UUID Card
+  | RemoveCardEntity UUID Card
   | UseCardAbility InvestigatorId Source Int [Window] Payment
   | UseCardAbilityStep InvestigatorId Source Int [Window] Payment Int -- todo eliminated in favor of DoStep
   | UseCardAbilityChoice InvestigatorId Source Int AbilityMetadata [Window] Payment
@@ -1124,10 +1146,14 @@ data Message
   | BecomeHomunculus InvestigatorId
   | SetScenarioMeta Value
   | ScenarioSpecific Text Value
+  | CampaignSpecific Text Value
   | SetCampaignMeta Value
   | DoStep Int Message
   | ForInvestigator InvestigatorId Message
+  | ForInvestigators [InvestigatorId] Message
   | ForTrait Trait Message
+  | ForAction Action Message
+  | ForActions [Action] Message
   | ForTarget Target Message
   | ForTargets [Target] Message
   | ForPlayer PlayerId Message
@@ -1149,6 +1175,10 @@ data Message
   | FocusTarotCards [TarotCard]
   | UnfocusTarotCards
   | RotateTarot TarotCard
+  | SetDestiny (Map Scope TarotCard)
+  | CheckDestiny
+  | RunDestiny
+  | ResolveDestiny TarotCard
   | Incursion LocationId
   | SetInvestigatorForm InvestigatorId InvestigatorForm
   | PlaceReferenceCard Target CardCode
@@ -1164,17 +1194,28 @@ data Message
   | AddDeckBuildingAdjustment InvestigatorId DeckBuildingAdjustment
   | IncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]
   | ChoosingDecks
+  | UpgradingDecks
   | DoneChoosingDecks
+  | DoneUpgradingDecks
   | SetPartnerStatus CardCode PartnerStatus
   | HandleGroupTarget GroupKey Target [Message]
   | HandleGroupTargets AutoStatus GroupKey (Map Target [Message])
+  | KonamiCode
+  | CreateConcealedCard ConcealedCard
+  | PlaceConcealedCards InvestigatorId [ConcealedCardId] [LocationId]
+  | PlaceConcealedCard InvestigatorId ConcealedCardId Placement
+  | RemoveAllConcealed
   | -- Commit
     Do Message
   | DoBatch BatchId Message
   | -- UI
     ClearUI
   | Priority Message
-  deriving stock (Show, Eq, Data)
+  | -- Debug
+    ClearQueue
+  | DebugAddToHand InvestigatorId CardId
+  | SetCampaignStep CampaignStep
+  deriving stock (Show, Eq, Ord, Data)
 
 $(deriveToJSON defaultOptions ''Message)
 
@@ -1182,6 +1223,36 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "CheckAttackOfOpportunity" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (a, b, c) -> pure $ CheckAttackOfOpportunity a b c
+          Left (a, b) -> pure $ CheckAttackOfOpportunity a b Nothing
+      "AddCardEntity" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (a, b) -> pure $ AddCardEntity a b
+          Left b -> pure $ AddCardEntity (fromWords64 6128981282234515924 12039885860129472512) b
+      "RemoveCardEntity" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (a, b) -> pure $ RemoveCardEntity a b
+          Left b -> pure $ RemoveCardEntity (fromWords64 6128981282234515924 12039885860129472512) b
+      "LoseAllResources" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left i -> pure $ LoseAll i GameSource Token.Resource
+          Right (i, s) -> pure $ LoseAll i s Token.Resource
+      "DrawEnded" -> do
+        contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+        case contents of
+          Right (a, b) -> pure $ DrawEnded a b
+          Left a -> pure $ DrawEnded (CardDrawId UUID.nil) a
+      "PreSearchFound" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (a, b, c, d) -> pure $ PreSearchFound a b c d
+          Left (a, b, c, d) -> pure $ PreSearchFound a (Just b) c d
       "CancelEachNext" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of
@@ -1209,12 +1280,7 @@ instance FromJSON Message where
           Left (miid, lid, eid) ->
             pure
               $ EnemySpawn
-              $ SpawnDetails
-                { spawnDetailsEnemy = eid
-                , spawnDetailsInvestigator = miid
-                , spawnDetailsSpawnAt = Arkham.Spawn.SpawnAtLocation lid
-                , spawnDetailsOverridden = False
-                }
+              $ (mkSpawnDetails eid (Arkham.Spawn.SpawnAtLocation lid)) {spawnDetailsInvestigator = miid}
       "FightEnemy" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of
@@ -1300,11 +1366,6 @@ instance FromJSON Message where
         case contents of
           Left (i, n) -> pure $ ExcessHealDamage i GameSource n
           Right (i, s, n) -> pure $ ExcessHealDamage i s n
-      "LoseAllResources" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Left i -> pure $ LoseAllResources i GameSource
-          Right (i, s) -> pure $ LoseAllResources i s
       "RunWindow" -> do
         (_a :: Value, b) <- o .: "contents"
         pure $ CheckWindows b
@@ -1319,20 +1380,54 @@ instance FromJSON Message where
         pure $ InvestigatorDrewPlayerCardFrom a b Nothing
       "ReportXp" -> do
         ReportXp <$> (o .: "contents" <|> (snd @ScenarioId <$> o .: "contents"))
-      _ -> $(mkParseJSON defaultOptions ''Message) (Object o)
+      "ReadStoryWithPlacement" -> do
+        (a, b, c, d, e) <- o .: "contents"
+        pure $ StoryMessage $ ReadStoryWithPlacement a b c d e
+      "ReadStory" -> do
+        (a, b, c, d) <- o .: "contents"
+        pure $ StoryMessage $ ReadStory a b c d
+      "ResolveStory" -> do
+        (a, b, c) <- o .: "contents"
+        pure $ StoryMessage $ ResolveStory a b c
+      "ResolvedStory" -> do
+        (a, b) <- o .: "contents"
+        pure $ StoryMessage $ ResolvedStory a b
+      "PlaceStory" -> do
+        (a, b) <- o .: "contents"
+        pure $ StoryMessage $ PlaceStory a b
+      "RemoveStory" -> do
+        a <- o .: "contents"
+        pure $ StoryMessage $ RemoveStory a
+      "ResolveSearch" -> do
+        ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case ea of
+          Left a -> pure $ ResolveSearch (InvestigatorTarget a)
+          Right a -> pure $ ResolveSearch a
+      "SearchEnded" -> do
+        ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case ea of
+          Left a -> pure $ SearchEnded (InvestigatorTarget a)
+          Right a -> pure $ SearchEnded a
+      "CancelSearch" -> do
+        ea <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case ea of
+          Left a -> pure $ CancelSearch (InvestigatorTarget a)
+          Right a -> pure $ CancelSearch a
+      _ -> defaultParseMessage (Object o)
 
-stepMessage :: Int -> Message -> Message
-stepMessage n = \case
-  UseCardAbility iid source idx ws payment ->
-    UseCardAbilityStep iid source idx ws payment n
-  other -> other
+defaultParseMessage :: Value -> Parser Message
+defaultParseMessage = $(mkParseJSON defaultOptions ''Message)
+{-# NOINLINE defaultParseMessage #-}
 
 uiToRun :: UI Message -> Message
 uiToRun = \case
   Label _ msgs -> Run msgs
+  InvalidLabel {} -> error "InvalidLabel in uiToRun"
+  Info {} -> error "Info in uiToRun"
   TooltipLabel _ _ msgs -> Run msgs
   CardLabel _ msgs -> Run msgs
   PortraitLabel _ msgs -> Run msgs
+  KeyLabel _ msgs -> Run msgs
   TargetLabel _ msgs -> Run msgs
   GridLabel _ msgs -> Run msgs
   TarotLabel _ msgs -> Run msgs
@@ -1426,7 +1521,7 @@ chooseAmounts pid label total choiceMap (toTarget -> target) = do
   rs <- getRandoms
   pure $ Ask pid (ChooseAmounts label total (amountChoices rs) target)
  where
-  amountChoices rs = map toAmountChoice (zip rs choiceMap)
+  amountChoices rs = zipWith (curry toAmountChoice) rs choiceMap
   toAmountChoice (choiceId, (l, (m, n))) = AmountChoice choiceId l m n
 
 chooseAmountsLabeled
@@ -1442,11 +1537,17 @@ chooseAmountsLabeled pid title label total choiceMap (toTarget -> target) = do
   rs <- getRandoms
   pure $ Ask pid (QuestionLabel title Nothing $ ChooseAmounts label total (amountChoices rs) target)
  where
-  amountChoices rs = map toAmountChoice (zip rs choiceMap)
+  amountChoices rs = zipWith (curry toAmountChoice) rs choiceMap
   toAmountChoice (choiceId, (l, (m, n))) = AmountChoice choiceId l m n
 
-chooseUpgradeDeck :: PlayerId -> Message
-chooseUpgradeDeck pid = Ask pid ChooseUpgradeDeck
+chooseUpgradeDecks :: [PlayerId] -> Message
+chooseUpgradeDecks pids =
+  Run
+    [ SetGameState (IsChooseDecks pids)
+    , UpgradingDecks
+    , AskMap $ mapFromList $ map (,ChooseUpgradeDeck) pids
+    , DoneUpgradingDecks
+    ]
 
 chooseDecks :: [PlayerId] -> Message
 chooseDecks pids =

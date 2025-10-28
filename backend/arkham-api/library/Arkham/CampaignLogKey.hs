@@ -12,6 +12,7 @@ import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Campaigns.ThePathToCarcosa.Key
+import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Prelude hiding (toLower)
@@ -34,6 +35,7 @@ data CampaignLogKey
   | TheDreamEatersKey TheDreamEatersKey
   | TheInnsmouthConspiracyKey TheInnsmouthConspiracyKey
   | EdgeOfTheEarthKey EdgeOfTheEarthKey
+  | TheScarletKeysKey TheScarletKeysKey
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
@@ -79,6 +81,7 @@ instance FromJSON CampaignLogKey where
       <|> (TheDreamEatersKey <$> parseJSON o)
       <|> (TheInnsmouthConspiracyKey <$> parseJSON o)
       <|> (EdgeOfTheEarthKey <$> parseJSON o)
+      <|> (TheScarletKeysKey <$> parseJSON o)
       <|> $(mkParseJSON defaultOptions ''CampaignLogKey) o
       <|> parseStringKey o
       <|> fail ("Could not parse CampaignLogKey" <> show o)
@@ -171,6 +174,12 @@ instance IsCampaignLogKey EdgeOfTheEarthKey where
     EdgeOfTheEarthKey k -> Just k
     _ -> Nothing
 
+instance IsCampaignLogKey TheScarletKeysKey where
+  toCampaignLogKey = TheScarletKeysKey
+  fromCampaignLogKey = \case
+    TheScarletKeysKey k -> Just k
+    _ -> Nothing
+
 instance ToJSONKey CampaignLogKey
 instance FromJSONKey CampaignLogKey
 
@@ -234,7 +243,7 @@ instance ToGameLoggerFormat CampaignLogKey where
     go' (x : xs) | isUpper x = ' ' : toLower x : go' xs
     go' (x : xs) = x : go' xs
 
-class (ToJSON a, FromJSON a, Eq a, Show a, Typeable a) => Recordable a where
+class (ToJSON a, FromJSON a, Ord a, Eq a, Show a, Typeable a) => Recordable a where
   recordableType :: RecordableType a
 
 instance Recordable CardCode where
@@ -269,6 +278,7 @@ data SomeRecordableType where
 
 deriving stock instance Show (RecordableType a)
 deriving stock instance Eq (RecordableType a)
+deriving stock instance Ord (RecordableType a)
 
 deriving stock instance Show SomeRecordableType
 
@@ -297,6 +307,11 @@ instance Eq SomeRecorded where
   (SomeRecorded _ (a :: a)) == (SomeRecorded _ (b :: b)) = case eqT @a @b of
     Just Refl -> a == b
     Nothing -> False
+
+instance Ord SomeRecorded where
+  compare (SomeRecorded _ (a :: a)) (SomeRecorded _ (b :: b)) = case eqT @a @b of
+    Just Refl -> compare a b
+    Nothing -> compare (show $ typeOf a) (show $ typeOf b)
 
 instance ToJSON SomeRecorded where
   toJSON (SomeRecorded rType rVal) = object ["recordType" .= rType, "recordVal" .= rVal]

@@ -1,10 +1,15 @@
 import * as JsonDecoder from 'ts.data.json';
 import { Name, nameDecoder } from '@/arkham/types/Name';
 
-type CardCost = { contents: number, tag: "StaticCost" } | { tag: "DynamicCost" } | { tag: "DiscardAmountCost" }
+type CardCost
+  = { contents: number, tag: "StaticCost" }
+  | { tag: "DynamicCost" }
+  | { tag: "DiscardAmountCost" }
 
-type SkillIcon = { contents: string, tag: "SkillIcon" } | { tag: "WildIcon" } | { tag: "WildMinusIcon" }
-
+type SkillIcon
+  = { contents: string, tag: "SkillIcon" }
+  | { tag: "WildIcon" }
+  | { tag: "WildMinusIcon" }
 
 export type CardDef = {
   cardCode: string;

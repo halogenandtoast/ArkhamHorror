@@ -985,6 +985,12 @@ allAssets =
     , SomeAssetCard toolBelt
     , SomeAssetCard flashlight3
     , SomeAssetCard soulSanctification3
+    , --- Sanguine Shadows [tsk]
+      SomeAssetCard laChicaRojaYourWatchfulShadow
+    , --- Dealings in the Dark [tsk]
+      SomeAssetCard eceSahinTheVermillionVeiledLady
+    , --- Globetrotting [tsk]
+      SomeAssetCard expeditedTicket
     , -- The Feast of Hemloch Vale
       --- signature [fhv]
       SomeAssetCard fluxStabilizerInactive
@@ -1216,6 +1222,10 @@ allAssets =
     , SomeAssetCard observed4
     , -- weakness [rttcu]
       SomeAssetCard theDevilXv
+    , -- Return to The Wages of Sin [rttcu]
+      SomeAssetCard erynnMacAoidhDevotedEnchantress
+    , -- Return to Before the Black Throne [rttcu]
+      SomeAssetCard nightgauntSteed
     , -- Investigator Starter Decks
       --- Nathaniel Cho
       SomeAssetCard randallCho
@@ -1389,6 +1399,12 @@ allAssets =
     , SomeAssetCard thePaleLanternHypnoticGlow
     , SomeAssetCard thePaleLanternBeguilingAura
     , SomeAssetCard jewelOfSarnath
+    , -- Film Fatale
+      SomeAssetCard heliosTelescopeGateToTheCosmos
+    , SomeAssetCard staffOfTheSerpentRelicOfThePast
+    , SomeAssetCard accursedCapeShroudOfChaos
+    , SomeAssetCard andrePatelMadeForTheSpotlight
+    , SomeAssetCard rocketShipRattlingWithEnergy
     , -- Misc
       SomeAssetCard courage
     ]

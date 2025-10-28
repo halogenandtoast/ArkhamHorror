@@ -1,9 +1,10 @@
-module Arkham.Location.Cards.TheGeistTrap (theGeistTrap, TheGeistTrap (..)) where
+module Arkham.Location.Cards.TheGeistTrap (theGeistTrap) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -19,18 +20,16 @@ theGeistTrap = location TheGeistTrap Cards.theGeistTrap 4 (PerPlayer 1)
 
 instance HasModifiersFor TheGeistTrap where
   getModifiersFor (TheGeistTrap a) = do
-    self <- whenUnrevealed a $ modifySelf a [Blocked]
-    enemies <-
-      whenRevealed a
-        $ modifySelect a (enemyIs Enemies.theSpectralWatcher <> enemyAt a) [AddKeyword Keyword.Retaliate]
-    pure $ self <> enemies
+    whenUnrevealed a $ modifySelf a [Blocked]
+    whenRevealed a
+      $ modifySelect a (enemyIs Enemies.theSpectralWatcher <> enemyAt a) [AddKeyword Keyword.Retaliate]
 
 instance HasAbilities TheGeistTrap where
-  getAbilities (TheGeistTrap attrs) =
+  getAbilities (TheGeistTrap a) =
     extendRevealed
-      attrs
-      [ restricted attrs 1 Here $ ActionAbility [#circle] $ ActionCost 1
-      , haunted "Take 1 damage and 1 horror" attrs 2
+      a
+      [ restricted a 1 Here $ ActionAbility [#circle] $ ActionCost 1
+      , withI18n $ numberVar "damage" 1 $ numberVar "horror" 1 $ hauntedI "takeDamageAndHorror" a 2
       ]
 
 instance RunMessage TheGeistTrap where

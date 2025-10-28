@@ -14,19 +14,20 @@ import Arkham.Name
 import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Source
+import Arkham.Tracing
 import Arkham.Xp
 import GHC.Records
 
 toGainXp :: (HasGame m, Sourceable source) => source -> m [(InvestigatorId, Int)] -> m [Message]
 toGainXp (toSource -> source) f = map (\(iid, n) -> GainXP iid source n) <$> f
 
-getXp :: HasGame m => m [(InvestigatorId, Int)]
+getXp :: (HasGame m, Tracing m) => m [(InvestigatorId, Int)]
 getXp = getXpWithBonus 0
 
-getXp' :: HasGame m => m (Int, [(InvestigatorId, Int)])
+getXp' :: (HasGame m, Tracing m) => m (Int, [(InvestigatorId, Int)])
 getXp' = getXpWithBonus' 0
 
-getInitialVictory :: (HasCallStack, HasGame m) => m Int
+getInitialVictory :: (HasCallStack, HasGame m, Tracing m) => m Int
 getInitialVictory = do
   victoryPileVictory <- toVictory =<< getVictoryDisplay
   locationVictory <- toVictory =<< select (RevealedLocation <> LocationWithoutClues)
@@ -34,10 +35,11 @@ getInitialVictory = do
  where
   toVictory = fmap (mconcat . map Sum . catMaybes) . traverse getVictoryPoints
 
-getXpWithBonus :: forall m. (HasCallStack, HasGame m) => Int -> m [(InvestigatorId, Int)]
+getXpWithBonus :: forall m. (HasCallStack, HasGame m, Tracing m) => Int -> m [(InvestigatorId, Int)]
 getXpWithBonus bonus = snd <$> getXpWithBonus' bonus
 
-getXpWithBonus' :: forall m. (HasCallStack, HasGame m) => Int -> m (Int, [(InvestigatorId, Int)])
+getXpWithBonus'
+  :: forall m. (HasCallStack, HasGame m, Tracing m) => Int -> m (Int, [(InvestigatorId, Int)])
 getXpWithBonus' bonus = do
   initialAmount <- (bonus +) <$> getInitialVictory
   investigatorIds <- select InvestigatorCanGainXp
@@ -83,7 +85,7 @@ instance HasField "value" XpBonus Int where
 instance HasField "flatten" XpBonus [XpBonus] where
   getField = flattenBonus
 
-generateXpReport :: forall m. (HasCallStack, HasGame m) => XpBonus -> m XpBreakdown
+generateXpReport :: forall m. (HasCallStack, HasGame m, Tracing m) => XpBonus -> m XpBreakdown
 generateXpReport bonus = do
   victoryPileVictory <- fmap (map AllGainXp) . toVictory =<< scenarioField ScenarioVictoryDisplay
   locationVictory <-
@@ -103,7 +105,7 @@ generateXpReport bonus = do
     <> fromModifiers
  where
   modifierToXpDetail iid (XPModifier lbl m) | m > 0 = Just (InvestigatorGainXp iid $ XpDetail XpFromCardEffect lbl m)
-  modifierToXpDetail iid (XPModifier lbl m) | m < 0 = Just (InvestigatorLoseXp iid $ XpDetail XpFromCardEffect lbl m)
+  modifierToXpDetail iid (XPModifier lbl m) | m < 0 = Just (InvestigatorLoseXp iid $ XpDetail XpFromCardEffect lbl (abs m))
   modifierToXpDetail _ _ = Nothing
   toVictory :: ConvertToCard c => [c] -> m [XpDetail]
   toVictory = mapMaybeM toEntry

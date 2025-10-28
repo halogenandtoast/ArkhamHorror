@@ -1,15 +1,13 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Agenda (
-  module Arkham.Agenda,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda (module Arkham.Agenda) where
 
 import Arkham.Agenda.Agendas
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Prelude
+import Arkham.Tracing
 
 lookupAgenda :: AgendaId -> Int -> CardId -> Agenda
 lookupAgenda agendaId = case lookup (unAgendaId agendaId) allAgendas of
@@ -17,7 +15,9 @@ lookupAgenda agendaId = case lookup (unAgendaId agendaId) allAgendas of
   Just (SomeAgendaCard a) -> \i cardId -> Agenda $ cbCardBuilder a cardId (i, agendaId)
 
 instance RunMessage Agenda where
-  runMessage msg (Agenda a) = Agenda <$> runMessage msg a
+  runMessage msg x@(Agenda a) =
+    withSpan_ ("Agenda[" <> unCardCode (toCardCode x) <> "].runMessage") do
+      Agenda <$> runMessage msg a
 
 instance FromJSON Agenda where
   parseJSON = withObject "Agenda" $ \o -> do
@@ -280,6 +280,21 @@ allAgendas =
     , --- Stirring in the Deep [eote]
       SomeAgendaCard theSealWeakens
     , SomeAgendaCard thatWhichHasNoName
+    , -- The Scarlet Keys
+      --- Riddles and Rain [tsk]
+      SomeAgendaCard whenItRains
+    , SomeAgendaCard figuresInTheFog
+    , SomeAgendaCard theConnection
+    , SomeAgendaCard plotsAndPanic
+    , --- Dead Heat [tsk]
+      SomeAgendaCard gnashingTeeth
+    , SomeAgendaCard emptyStreets
+    , --- Sanguine Shadows [tsk]
+      SomeAgendaCard whereIsShe
+    , SomeAgendaCard seeingRed
+    , --- Dealings in the Dark [tsk]
+      SomeAgendaCard agentsOfTheDark
+    , SomeAgendaCard theChase
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey
@@ -317,4 +332,7 @@ allAgendas =
       SomeAgendaCard maskedRevelers
     , SomeAgendaCard unexpectedGuests
     , SomeAgendaCard aKillerParty
+    , -- Film Fatale
+      SomeAgendaCard showbusinessAsUsual
+    , SomeAgendaCard collidingRealities
     ]

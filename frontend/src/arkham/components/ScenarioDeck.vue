@@ -1,13 +1,34 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ComputedRef } from 'vue';
+import { useDebug } from '@/arkham/debug';
 import type { Card } from '@/arkham/types/Card';
 import { imgsrc } from '@/arkham/helpers';
+import { MessageType } from '@/arkham/types/Message'
+import * as ArkhamGame from '@/arkham/types/Game'
+import { Game } from '@/arkham/types/Game'
 
 export interface Props {
+  game: Game
+  playerId: string
   deck: [string, Card[]]
 }
 
+
+const cards = computed(() => props.deck[1])
+const debug = useDebug()
 const props = defineProps<Props>()
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const emits = defineEmits<{
+  show: [cards: ComputedRef<Card[]>, title: string, isDiscards: boolean]
+  choose: [value: number]
+}>()
+
+const choose = (idx: number) => emits('choose', idx)
+const deckAction = computed(() => {
+  return choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && c.target.tag === "ScenarioDeckTarget")
+})
+
+const showCards = () => emits('show', cards, props.deck[0], false)
 
 const deckImage = computed(() => {
   switch(props.deck[0]) {
@@ -51,13 +72,16 @@ const deckLabel = computed(() => {
     <img
       :src="deckImage"
       class="card"
+      :class="{ 'can-interact': deckAction !== -1 }"
+      @click="choose(deckAction)"
     />
     <span v-if="deckLabel" class="deck-label">{{deckLabel}}</span>
     <span class="deck-size">{{deck[1].length}}</span>
   </div>
+  <button v-if="debug.active" @click="showCards">Show Cards</button>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .card {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 6px;
@@ -94,5 +118,10 @@ const deckLabel = computed(() => {
   bottom: 0%;
   transform: translateX(-50%) translateY(-50%);
   pointer-events: none;
+}
+
+.can-interact {
+  border: 3px solid var(--select);
+  cursor: pointer;
 }
 </style>

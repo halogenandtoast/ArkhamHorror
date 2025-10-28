@@ -1,0 +1,63 @@
+{
+  "intro1": {
+    "title": "Scenario VII: The Lair of Dagon",
+    "body": "<header><p>THURSDAY, SEPTEMBER 15, 1927</p><p>ONE WEEK EARLIER</p></header><p><b>Intro 1:</b> You stand outside the cracked marble steps leading up to the masonic hall of the Esoteric Order of Dagon. All of your evidence has lead you here. Whatever is going on in this town, this Order is behind it. You’re sure of it… though their ultimate goal remains a mystery.</p><p>The town is eerily quiet as you stand before the building’s entrance. Once, this place might have been impressive and opulent. Years of disrepair and flood damage have reduced it to to near-ruin. Its once-white paint is gray and peeling, and many of the pillars outside the entryway are beginning to crumble. Still, it is one of the more intimidating places in Innsmouth, projecting authority despite its decrepitude. No, not authority—something darker. A looming, unspoken threat.</p><p>“Are you ready?” Agent Dawson asks. His usually calm demeanor has vanished, replaced with a humorless gravity that throws you off guard. “This is it. This is where we’ll find answers.”</p><p>You’re not so sure. Every other lead you’ve followed has led to only more questions.</p>"
+  },
+  "intro2": {
+    "title": "Scenario VII: The Lair of Dagon",
+    "body": "<p><b>Intro 2:</b> Agent Harper was kidnapped when she got too close to the Order, but interrogating her kidnapper didn’t exactly yield the answers you needed. What you know now is that the Order’s influence pervades Innsmouth, from important civic figures to everyday citizens. Finances, religion, politics…everything is wrapped up in this cult’s business in some way or another. What’s worse, many of the town’s inhabitants seem to follow the Order with blind, fanatical devotion. So many that you’re not sure this is even a functioning town anymore. It’s no wonder the people are so hostile toward outsiders.</p><p>It wasn’t until your investigation of Devil Reef that you truly began to peel away the outer layers of Innsmouth and reveal the rot beneath. There, you found what the Order was hiding: the monstrous creatures that emerged from the depths and prowled the tidal islands, congregating in prayers to some horrific deity. Perhaps it is even the same “Dagon” worshipped by the Order.</p>"
+  },
+  "intro3": {
+    "title": "Scenario VII: The Lair of Dagon",
+    "body": "<p><b>Intro 3:</b> You are sure that Agent Harper was kidnapped after she began investigating the Order. Your own investigation might have ended the same way had you not laid low for a week after the townsfolk got riled up. It seems that the Order’s influence pervades Innsmouth, from important civic figures to everyday citizens. Finances, religion, politics…everything is wrapped up in this cult’s business in some way or another. But why?</p><p>It wasn’t until your investigation of Devil Reef that you truly began to peel away the outer layers of Innsmouth and reveal the rot beneath. There, you found what the Order was hiding: the monstrous creatures that emerged from the depths and prowled the tidal islands, congregating in prayers to some horrific deity. Perhaps it is even the same “Dagon” worshipped by the Order.</p>"
+  },
+  "intro4": {
+    "title": "Scenario VII: The Lair of Dagon",
+    "body": "<p><b>Intro 4:</b> Creeeak. Agent Dawson opens the large doors serving as the entrance to the building, and you follow close behind. Inside, the halls are dark and eerily still. Only the faint sound of trickling water lingers in the air. “I don’t like this one bit,” Dawson says as the front door closes behind you. He unholsters his gun, turns on his flashlight, and scans the room. “We should stay together. Safety in numbers.” You nod in agreement. The Order has proven to be very dangerous, and they surely don’t want you poking around in their headquarters…</p>"
+  },
+  "intro5": {
+    "title": "Scenario VII: The Lair of Dagon",
+    "body": "<p><b>Intro 5:</b> Creeeak. Agent Dawson creaks open the large doors serving as the entrance to the building, and you follow close behind. Inside, the halls are dark and eerily still. Only the faint sound of trickling water lingers in the air. “It’s quiet. I guess there are no ceremonies going on tonight. That’s good,” Dawson says as the front door closes behind you. He turns on his flashlight and illuminates a nearby doorway. “We should split up. We’ll be able to cover more ground that way. See if you can figure out what they’re hiding here. I’ll meet up with you later.” You nod and head in the opposite direction…</p>"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p><b>If no resolution was reached (each investigator resigned or was defeated):</b> This place is more dangerous than you could have possibly imagined. You stumble as you flee through the dark, flooded corridors, retracing your steps as quickly as you can to reach the entrance. Your heart races in your chest as you see the exit at last. You gasp in relief as you crash through the doors, to safety—</p><p>—Only you are not safe. Standing at the bottom of the steps is an angry throng of citizens, far too many for you to fight your way through. “There! Get ‘em!” a wrinkled woman at the head of the mob shouts. You are surrounded and grabbed within moments. You struggle and fight for your life, but it’s no use. The last thing you remember is being dragged back through the halls of the Order to some unknown fate…</p>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p><b>Resolution 1:</b> You’re somewhere else now, lying on your stomach on cold, damp stone. Your arms are held tight behind your back. You have no idea how you got here. As consciousness returns, your vision comes into focus. You crane your neck up to view your surroundings, but it’s too dark to see anything inside your stone cell.</p><p>“I’ll ask you one last time. Who sent you here?” a voice asks. It is deep and husky, like the croaking of a frog.</p><p>You hear the familiar, cool baritone of Agent Dawson reply: “Your breath smells awful. Ever heard of brushing your teeth?” Despite the sarcasm dripping from his words, his voice wavers ever so slightly.</p><p>“Your mockery only masks the fear that hides within,” the voice replies. “Very well. If you are of no use to us, you will be the first to be sacrificed.”</p><p>Your vision continues to adjust. You can just barely make out Dawson’s silhouette on the other side of the cell. He is kneeling before a metal hatch in the stone floor. An elderly robed figure presses a curved knife against Dawson’s throat. Someone lifts the hatch, and Dawson’s eyes go wide. He gives you one last despairing look, shakes his head slowly and deliberately, and quietly slides something across the stone floor. Then the hooded figure pushes him in. In the scuffle and the low light, nobody notices the car key that skitters to a halt directly next to you.</p><p>You grab the key and stuff it into your pocket just before you are shoved forward. Two more sets of cold, clammy hands grab your shoulders, and the hooded figure slides his knife up to your neck. All you can see of his face are his wide, unblinking eyes.</p><p>“Oceiros, these ones were found in Dagon’s lair as well,” another voice explains to the elderly figure in the robes. “We believe they were the ones snooping around Devil Reef.”</p><p>The man with the knife to your throat nods. “Your turn,” he declares. “Tell us why you have come and perhaps we will let you go. Who sent you? What have you seen?”</p>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p><b>Resolution 2:</b> You remember the slow, gentle shaking of Agent Dawson’s head and know what he meant by the gesture. You look up into the man’s unblinking eyes, set your jaw, and say nothing. A moment of silent understanding passes between you and your interrogator. “Very well. Your defiance has earned you naught but a slow, agonizing death.” The metal hatch opens again. Inside, you see nothing but darkness. You glare long and hard at your captor.</p><p>“Take what they have stolen to the lighthouse at once,” Oceiros commands one of the other robed figures. “It is time to begin our great work. None will disrupt the Order’s business ever again. Soon, all will understand the natural order of life.” Then he nods to your captors, and you are shoved forward. The clammy hands release you and suddenly you are tumbling into darkness. The last thing you feel is your head striking cold stone, and then—</p>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p><b>Resolution 3:</b> You can think of only one way out of this situation. The Order believes that you are poking around their business, so you will have to convince them that you don’t know or care what they are up to. You lie as best you can, spinning a story that might convince them you were simply in the wrong place at the wrong time. “And what of your unfortunate friend?” your interrogator asks. You tell him that you have never met that man in your life. “Perhaps you speak the truth,” the man says, and you breathe a short-lived sigh of relief before he dashes your hopes: “…but it matters not. You have seen too much, and for that, you must be silenced. Worry not. You will be joining our kindred soon.” The metal hatch opens again. Inside, you see nothing but darkness.</p><p>“Take what they have stolen to the lighthouse at once,” Oceiros commands one of the other robed figures. “It is time to begin our great work. None will disrupt the Order’s business ever again. Soon, all will understand the natural order of life.” Then he nods to your captors, and you are shoved forward. The clammy hands release you and suddenly you are tumbling into darkness. The last thing you feel is your head striking cold stone, and then—</p>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p><b>Resolution 4:</b> None of this is what you signed up for. Hoping to avoid Dawson’s fate, you have no choice but to tell your interrogator everything. You explain you were hired by Dawson to find his missing agent, and go on to describe the events that followed over the past few weeks, including your exploration of Devil Reef and your investigation into the Order. A slow smile crawls across the man’s face as you divulge everything you know. “I thank you for your candor. Sadly, there is only one way I can repay you. You have seen too much, and for that, you must be silenced.” Your heart goes cold as you realize what he means. The metal hatch opens again. Inside, you see nothing but darkness.</p><p>“Take what they have stolen to the lighthouse at once,” Oceiros commands one of the other robed figures. “It is time to begin our great work. None will disrupt the Order’s business ever again. Soon, all will understand the natural order of life.” Then he nods to your captors, and you are shoved forward. The clammy hands release you and suddenly you are tumbling into darkness. The last thing you feel is your head striking cold stone, and then—</p>"
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 for each key on this card.",
+      "cultist": "0. Reveal an additional chaos token. If you reveal 1 or more {'{'}curse{'}'} tokens during this test, you automatically fail.",
+      "tablet": "-3. If you fail, place each key you control on your location.",
+      "elderThing": "-4. If you fail, add 1 {'{'}curse{'}'} token to the chaos bag."
+    },
+    "hardExpert": {
+      "skull": "-2 for each key on this card.",
+      "cultist": "-2. Reveal an additional chaos token. If you reveal 1 or more {'{'}curse{'}'} tokens during this test, you automatically fail.",
+      "tablet": "-3. Place each key you control on your location and take 1 damage.",
+      "elderThing": "-4. Add 2 {'{'}curse{'}'} tokens to the chaos bag."
+    }
+  },
+  "remembered": {
+    "unlockedTheEntranceToTheCaves": "Unlocked the entrance to the caves",
+    "unlockedTheThirdFloor": "Unlocked the third floor",
+    "unlockedTheFinalDepths": "Unlocked the final depths"
+  }
+}

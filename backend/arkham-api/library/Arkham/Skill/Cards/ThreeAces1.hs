@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.ThreeAces1 (threeAces1, ThreeAces1 (..)) where
+module Arkham.Skill.Cards.ThreeAces1 (threeAces1) where
 
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
@@ -21,10 +21,10 @@ instance RunMessage ThreeAces1 where
         n <- select $ skillIs Cards.threeAces1 <> skillControlledBy iid
         mods <- getModifiers (SkillTestTarget stId)
         when (length n >= 3 && MetaModifier "ThreeAces1" `notElem` mods) $ do
-          for_ n \copy -> skillTestModifier stId (toSource attrs) copy (SetAfterPlay RemoveThisFromGame)
+          for_ n \copy -> skillTestModifier stId attrs copy (SetAfterPlay RemoveThisFromGame)
           skillTestModifier stId attrs sid (MetaModifier "ThreeAces1")
           passSkillTest
-          drawCardsIfCan iid attrs 3
-          gainResourcesIfCan iid attrs 3
+          drawCards iid attrs 3
+          gainResources iid attrs 3
       ThreeAces1 <$> liftRunMessage msg attrs
     _ -> ThreeAces1 <$> liftRunMessage msg attrs

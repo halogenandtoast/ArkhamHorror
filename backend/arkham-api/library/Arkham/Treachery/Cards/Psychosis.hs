@@ -14,7 +14,7 @@ psychosis = treachery Psychosis Cards.psychosis
 
 instance HasAbilities Psychosis where
   getAbilities (Psychosis a) =
-    [ restricted a 1 (InThreatAreaOf You) $ forced $ DealtHorror #after AnySource You
+    [ restricted a 1 (InThreatAreaOf You) $ forced $ InvestigatorTakeHorror #after You AnySource
     , restricted a 2 OnSameLocation doubleActionAbility
     ]
 

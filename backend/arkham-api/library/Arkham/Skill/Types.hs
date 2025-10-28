@@ -71,8 +71,13 @@ data SkillAttrs = SkillAttrs
   , skillMeta :: Value
   , skillCustomizations :: Customizations
   , skillTaboo :: Maybe TabooList
+  , skillMutated :: Maybe Text
   }
   deriving stock (Show, Eq)
+
+instance AsId SkillAttrs where
+  type IdOf SkillAttrs = SkillId
+  asId = skillId
 
 instance Is SkillAttrs SkillId where
   is = (==) . toId
@@ -105,6 +110,9 @@ instance HasField "controller" SkillAttrs InvestigatorId where
 instance HasField "owner" SkillAttrs InvestigatorId where
   getField = skillOwner
 
+instance HasField "placement" Skill Placement where
+  getField = (.placement) . toAttrs
+
 instance HasField "placement" SkillAttrs Placement where
   getField = skillPlacement
 
@@ -113,6 +121,9 @@ instance HasField "meta" SkillAttrs Value where
 
 instance HasField "sealed" SkillAttrs [ChaosToken] where
   getField = skillSealedChaosTokens
+
+instance HasField "additionalPayment" SkillAttrs (Maybe Payment) where
+  getField = skillAdditionalPayment
 
 metaL :: Lens' SkillAttrs Value
 metaL = lens skillMeta $ \m x -> m {skillMeta = x}
@@ -145,6 +156,8 @@ instance IsCard SkillAttrs where
   toCardId = skillCardId
   toCardOwner = Just . skillOwner
   toCustomizations = skillCustomizations
+  toTabooList = skillTaboo
+  toMutated = skillMutated
 
 instance Entity SkillAttrs where
   type EntityId SkillAttrs = SkillId
@@ -197,6 +210,7 @@ skill f cardDef =
             , skillMeta = Null
             , skillCustomizations = mempty
             , skillTaboo = Nothing
+            , skillMutated = Nothing
             }
     }
 
@@ -230,8 +244,12 @@ instance HasCardDef Skill where
 instance HasAbilities Skill where
   getAbilities (Skill a) = getAbilities a
 
+-- skills that remove themselves from the game end up in the removed zone, but
+-- we don't want them to apply modifiers anymore
 instance HasModifiersFor Skill where
-  getModifiersFor (Skill a) = getModifiersFor a
+  getModifiersFor s@(Skill a) = case s.placement of
+    OutOfPlay _ -> pure ()
+    _ -> getModifiersFor a
 
 instance Entity Skill where
   type EntityId Skill = SkillId
@@ -256,6 +274,8 @@ instance IsCard Skill where
   toCardId = toCardId . toAttrs
   toCardOwner = toCardOwner . toAttrs
   toCustomizations = toCustomizations . toAttrs
+  toTabooList = toTabooList . toAttrs
+  toMutated = toMutated . toAttrs
 
 data SomeSkillCard = forall a. IsSkill a => SomeSkillCard (SkillCard a)
 
@@ -274,4 +294,21 @@ controlledBy SkillAttrs {..} iid = case skillPlacement of
   AttachedToAsset _ (Just (InPlayArea iid')) -> iid == iid'
   _ -> False
 
-$(deriveJSON (aesonOptions $ Just "skill") ''SkillAttrs)
+$(deriveToJSON (aesonOptions $ Just "skill") ''SkillAttrs)
+
+instance FromJSON SkillAttrs where
+  parseJSON = withObject "SkillAttrs" \o -> do
+    skillId <- o .: "id"
+    skillCardId <- o .: "cardId"
+    skillCardCode <- o .: "cardCode"
+    skillOwner <- o .: "owner"
+    skillAdditionalCost <- o .:? "additionalCost"
+    skillAdditionalPayment <- o .:? "additionalPayment"
+    skillAfterPlay <- o .: "afterPlay"
+    skillPlacement <- o .: "placement"
+    skillSealedChaosTokens <- o .:? "sealedChaosTokens" .!= []
+    skillMeta <- o .:? "meta" .!= Null
+    skillCustomizations <- o .:? "customizations" .!= mempty
+    skillTaboo <- o .:? "taboo"
+    skillMutated <- o .:? "mutated"
+    pure SkillAttrs {..}

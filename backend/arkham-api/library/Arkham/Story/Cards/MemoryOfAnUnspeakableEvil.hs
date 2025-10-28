@@ -19,7 +19,7 @@ memoryOfAnUnspeakableEvil = story MemoryOfAnUnspeakableEvil Cards.memoryOfAnUnsp
 
 instance RunMessage MemoryOfAnUnspeakableEvil where
   runMessage msg s@(MemoryOfAnUnspeakableEvil attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       record DanforthHasConfrontedHisDemons
       setPartnerStatus Assets.danforthBrilliantStudent Resolute
       selectForMaybeM (assetIs Assets.danforthBrilliantStudent) \danforth ->

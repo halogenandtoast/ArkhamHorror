@@ -41,7 +41,7 @@ instance RunMessage ProfessorWilliamWebbFinderOfHiddenConnections2 where
         focusCards items $ chooseTargetM iid items $ addToHand iid . only
 
       hasLocations <-
-        selectAny $ ConnectedFrom (locationWithInvestigator iid) <> locationWithDiscoverableCluesBy iid
+        selectAny $ connectedFrom (locationWithInvestigator iid) <> locationWithDiscoverableCluesBy iid
 
       when hasLocations do
         chooseOneM iid do
@@ -56,7 +56,7 @@ instance RunMessage ProfessorWilliamWebbFinderOfHiddenConnections2 where
           skillTestModifier sid (attrs.ability 1) lid
             $ AlternateSuccessfullInvestigation (toTarget attrs)
       locations <-
-        select $ ConnectedFrom (locationWithInvestigator iid) <> locationWithDiscoverableCluesBy iid
+        select $ connectedFrom (locationWithInvestigator iid) <> locationWithDiscoverableCluesBy iid
       chooseTargetM iid locations $ discoverAt NotInvestigate iid (attrs.ability 1) 1
       pure a
     _ -> ProfessorWilliamWebbFinderOfHiddenConnections2 <$> liftRunMessage msg attrs

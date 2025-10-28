@@ -76,12 +76,29 @@ export default defineComponent({
         }
       } else if (/{enemy:"((?:[^"]|\\.)+)":(.+):"([^"]+)"}/.test(split)) {
         const found = split.match(/{enemy:"((?:[^"]|\\.)+)":(.+):"([^"]+)"}/)
-        console.log(split, found)
         if (found) {
           const [, name, , cardCode ] = found
           if (cardCode) {
             return name ? h('span', { 'data-image-id': cardCode }, name.replace(/\\"/g, "\"")) : split
           }
+        }
+      } else if (/{location:"((?:[^"]|\\.)+)":(.+):"([^"]+)"}/.test(split)) {
+        const found = split.match(/{location:"((?:[^"]|\\.)+)":(.+):"([^"]+)"}/)
+        if (found) {
+          const [, name, locationId, cardCode ] = found
+          const location = this.game.locations[locationId]
+
+          if (location) {
+            const suffix = location.revealed ? '' : 'b'
+            const actualCardCode = `${location.cardCode.replace('c', '')}${suffix}`
+            return name ? h('span', { 'data-image-id': actualCardCode }, name.replace(/\\"/g, "\"")) : split
+          }
+
+          if (cardCode) {
+            return name ? h('span', { 'data-image-id': cardCode }, name.replace(/\\"/g, "\"")) : split
+          }
+
+          return name ? h('span', { 'data-image-id': cardCode }, name.replace(/\\"/g, "\"")) : split
         }
       } else if (/{location:"((?:[^"]|\\.)+)":(.+)}/.test(split)) {
         const found = split.match(/{location:"((?:[^"]|\\.)+)":(.+)}/)
@@ -108,7 +125,7 @@ export default defineComponent({
 })
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 span[data-image-id] {
   color: #BBB;
   cursor: pointer;

@@ -28,4 +28,7 @@ instance RunMessage EvanescentMist where
         place attrs (AttachedToLocation location)
         placeClues attrs location 2
       pure t
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      toDiscardBy iid (attrs.ability 1) attrs
+      pure t
     _ -> EvanescentMist <$> liftRunMessage msg attrs

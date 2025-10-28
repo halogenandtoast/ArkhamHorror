@@ -1,4 +1,4 @@
-{-# LANGUAGE ImplicitParams #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module GHCI (
@@ -27,6 +27,7 @@ import Data.Time
 import Data.UUID (UUID)
 import Data.UUID qualified as UUID
 import Database.Persist.Postgresql
+import OpenTelemetry.Trace
 
 instance IsString UUID where
   fromString = fromJust . UUID.fromString
@@ -61,9 +62,11 @@ runGameMessage gameUUID msg = do
   gameRef <- newIORef arkhamGameCurrentData
   queueRef <- newQueue [msg]
   genRef <- newIORef (mkStdGen gameSeed)
+  provider <- initializeGlobalTracerProvider
+  let tracer = makeTracer provider $(detectInstrumentationLibrary) tracerOptions
   runGameApp
-    (GameApp gameRef queueRef genRef $ pure . const ())
-    (runMessages Nothing)
+    (GameApp gameRef queueRef genRef (pure . const ()) tracer)
+    (runMessages (gameIdToText gameId) Nothing)
   ge <- readIORef gameRef
   now <- liftIO getCurrentTime
   void $ dbGhci $ do

@@ -16,7 +16,8 @@ newtype TombOfTheAncients = TombOfTheAncients LocationAttrs
 
 tombOfTheAncients :: LocationCard TombOfTheAncients
 tombOfTheAncients =
-  location TombOfTheAncients Cards.tombOfTheAncients 4 (PerPlayer 1)
+  symbolLabel
+    $ location TombOfTheAncients Cards.tombOfTheAncients 4 (PerPlayer 1)
     & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasAbilities TombOfTheAncients where

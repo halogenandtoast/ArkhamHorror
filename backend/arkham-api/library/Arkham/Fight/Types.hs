@@ -15,7 +15,7 @@ import GHC.Records
 data ChooseFightDifficulty
   = DefaultChooseFightDifficulty
   | CalculatedChooseFightDifficulty GameCalculation
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 data ChooseFight = ChooseFight
   { chooseFightInvestigator :: InvestigatorId
@@ -29,7 +29,7 @@ data ChooseFight = ChooseFight
   , chooseFightSkillTest :: SkillTestId
   , chooseFightDifficulty :: ChooseFightDifficulty
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 instance HasField "investigator" ChooseFight InvestigatorId where
   getField = chooseFightInvestigator

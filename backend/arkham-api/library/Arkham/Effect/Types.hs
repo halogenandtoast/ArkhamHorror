@@ -1,8 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -O0 -fomit-interface-pragmas -fno-specialise #-}
 
 module Arkham.Effect.Types where
-
-import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
@@ -17,9 +16,11 @@ import {-# SOURCE #-} Arkham.Helpers.Ref
 import Arkham.Id
 import Arkham.Json
 import Arkham.Message
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Trait
 import Data.Aeson.TH
 import Data.Data
@@ -75,7 +76,7 @@ data EffectBuilder = EffectBuilder
   , effectBuilderEffectId :: Maybe EffectId
   , effectBuilderCardId :: Maybe CardId
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 data EffectAttrs = EffectAttrs
   { effectId :: EffectId
@@ -96,7 +97,7 @@ data EffectAttrs = EffectAttrs
   , effectMetaKeys :: [Text]
   , effectOnDisable :: Maybe [Message]
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 replaceNextSkillTest :: SkillTestId -> InvestigatorId -> EffectAttrs -> EffectAttrs
 replaceNextSkillTest sid iid e = e {effectWindow = go <$> e.window}
@@ -243,6 +244,9 @@ instance Eq Effect where
     Just Refl -> a == b
     Nothing -> False
 
+instance Ord Effect where
+  compare (Effect a) (Effect b) = compare (toId a) (toId b)
+
 instance Show Effect where
   show (Effect a) = show a
 
@@ -283,7 +287,7 @@ setEffectMeta :: ToJSON a => a -> EffectAttrs -> EffectAttrs
 setEffectMeta a = extraL .~ toJSON a
 
 makeEffectBuilder
-  :: (Sourceable source, Targetable target, HasGame m)
+  :: (Sourceable source, Targetable target, HasGame m, Tracing m)
   => CardCode
   -> Maybe (EffectMetadata Message)
   -> source

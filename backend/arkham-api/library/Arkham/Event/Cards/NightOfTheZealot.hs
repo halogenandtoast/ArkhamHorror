@@ -2,6 +2,7 @@ module Arkham.Event.Cards.NightOfTheZealot where
 
 import Arkham.Criteria qualified as Criteria
 import Arkham.Event.Cards.Import
+import Arkham.ForMovement
 
 onTheLam :: CardDef
 onTheLam =
@@ -122,14 +123,8 @@ elusive =
             [ exists EnemyEngagedWithYou
             , Criteria.TabooCriteria
                 TabooList19
-                ( Criteria.CanMoveTo
-                    $ AccessibleFrom YourLocation
-                    <> LocationWithoutEnemies
-                )
-                ( Criteria.CanMoveTo
-                    $ RevealedLocation
-                    <> LocationWithoutEnemies
-                )
+                (Criteria.CanMoveTo $ AccessibleFrom ForMovement YourLocation <> LocationWithoutEnemies)
+                (Criteria.CanMoveTo $ RevealedLocation <> LocationWithoutEnemies)
             ]
     , cdAlternateCardCodes = ["01550"]
     }
@@ -148,10 +143,7 @@ sneakAttack =
   (event "01052" "Sneak Attack" 2 Rogue)
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = setFromList [Tactic]
-    , cdCriteria =
-        Just
-          $ exists (EnemyAt YourLocation <> ExhaustedEnemy <> EnemyCanBeDamagedBySource ThisCard)
-          <> Criteria.CanDealDamage
+    , cdCriteria = Just $ Criteria.canDamageEnemyAtMatch ThisCard YourLocation ExhaustedEnemy
     , cdAlternateCardCodes = ["01552"]
     }
 
@@ -188,7 +180,7 @@ wardOfProtection =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Spell, Spirit]
     , cdFastWindow =
-        Just $ DrawCard #when You (CanCancelRevelationEffect $ basic NonWeaknessTreachery) EncounterDeck
+        Just $ DrawCard #when You (CanCancelRevelationEffect You $ basic NonWeaknessTreachery) EncounterDeck
     , cdAlternateCardCodes = ["01565"]
     }
 

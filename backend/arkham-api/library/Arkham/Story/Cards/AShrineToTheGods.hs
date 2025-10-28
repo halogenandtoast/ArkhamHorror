@@ -1,12 +1,12 @@
-module Arkham.Story.Cards.AShrineToTheGods (AShrineToTheGods (..), aShrineToTheGods) where
+module Arkham.Story.Cards.AShrineToTheGods (aShrineToTheGods) where
 
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype AShrineToTheGods = AShrineToTheGods StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -16,11 +16,10 @@ aShrineToTheGods :: StoryCard AShrineToTheGods
 aShrineToTheGods = story AShrineToTheGods Cards.aShrineToTheGods
 
 instance RunMessage AShrineToTheGods where
-  runMessage msg s@(AShrineToTheGods attrs) = case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+  runMessage msg s@(AShrineToTheGods attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
+      push $ ScenarioCountIncrementBy SignOfTheGods 1
       tenebrousNightgaunts <- getSetAsideCardsMatching $ cardIs Enemies.tenebrousNightgaunt
-      pushAll
-        $ ScenarioCountIncrementBy SignOfTheGods 1
-        : [ShuffleCardsIntoDeck Deck.EncounterDeck [card] | card <- take 1 tenebrousNightgaunts]
+      shuffleCardsIntoDeck Deck.EncounterDeck (take 1 tenebrousNightgaunts)
       pure s
-    _ -> AShrineToTheGods <$> runMessage msg attrs
+    _ -> AShrineToTheGods <$> liftRunMessage msg attrs

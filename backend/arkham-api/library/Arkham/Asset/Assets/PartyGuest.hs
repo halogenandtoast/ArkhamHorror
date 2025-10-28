@@ -34,7 +34,7 @@ instance RunMessage PartyGuest where
       chooseTargetM iid assets (`withLocationOf` place attrs)
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      locations <- select $ ConnectedTo $ locationWithInvestigator iid
+      locations <- select $ connectedTo $ locationWithInvestigator iid
       chooseTargetM iid locations (place attrs)
       pure a
     _ -> PartyGuest <$> liftRunMessage msg attrs

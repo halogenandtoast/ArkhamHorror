@@ -14,7 +14,7 @@ engramsOath = story EngramsOath Cards.engramsOath
 
 instance RunMessage EngramsOath where
   runMessage msg s@(EngramsOath attrs) = runQueueT $ case msg of
-    ResolveStory _ _ (is attrs -> True) -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       remember InterviewedConstance
       pure s
     _ -> EngramsOath <$> liftRunMessage msg attrs

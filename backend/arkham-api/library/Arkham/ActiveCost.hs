@@ -73,10 +73,12 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token qualified as Token
+import Arkham.Tracing
 import Arkham.Window (Window (..), mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 import Control.Lens (non, over, transform)
 import Data.Data.Lens (biplate)
+import Data.List.NonEmpty.Extra (minimum1)
 import GHC.Records
 
 activeCostActions :: ActiveCost -> [Action]
@@ -111,7 +113,7 @@ costPaymentsL = lens activeCostPayments $ \m x -> m {activeCostPayments = x}
 costSealedChaosTokensL :: Lens' ActiveCost [ChaosToken]
 costSealedChaosTokensL = lens activeCostSealedChaosTokens $ \m x -> m {activeCostSealedChaosTokens = x}
 
-getActionCostModifier :: HasGame m => ActiveCost -> m Int
+getActionCostModifier :: (HasGame m, Tracing m) => ActiveCost -> m Int
 getActionCostModifier ac = do
   let iid = ac.investigator
   takenActions <- field InvestigatorActionsTaken iid
@@ -143,12 +145,12 @@ startAbilityPayment
   -> Window
   -> AbilityType
   -> Source
-  -> Bool
+  -> Maybe EnemyMatcher
   -> m ()
-startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType source provokeAttacksOfOpportunity =
+startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType source noAooFrom =
   case abilityType of
-    Objective aType -> startAbilityPayment activeCost iid window aType source provokeAttacksOfOpportunity
-    DelayedAbility aType -> startAbilityPayment activeCost iid window aType source provokeAttacksOfOpportunity
+    Objective aType -> startAbilityPayment activeCost iid window aType source noAooFrom
+    DelayedAbility aType -> startAbilityPayment activeCost iid window aType source noAooFrom
     ForcedAbility _ -> pure ()
     SilentForcedAbility _ -> pure ()
     Haunted -> pure ()
@@ -159,27 +161,31 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     AbilityEffect {} -> push (PayCosts activeCostId)
     FastAbility' _ mAction ->
       pushAll $ PayCosts activeCostId : [PerformedActions iid [action] | action <- toList mAction]
-    ForcedWhen _ aType -> startAbilityPayment activeCost iid window aType source provokeAttacksOfOpportunity
+    ForcedWhen _ aType -> startAbilityPayment activeCost iid window aType source noAooFrom
     CustomizationReaction {} -> push (PayCosts activeCostId)
     ConstantReaction {} -> push (PayCosts activeCostId)
     ReactionAbility {} -> push (PayCosts activeCostId)
     ActionAbilityWithSkill actions' _ _ -> handleActions $ Action.Activate : actions'
     ActionAbility actions' _ -> handleActions $ Action.Activate : actions'
  where
-  checkAttackOfOpportunity actions =
-    not provokeAttacksOfOpportunity && all (`notElem` nonAttackOfOpportunityActions) actions
+  checkAttackOfOpportunity mods actions =
+    (noAooFrom /= Just AnyEnemy)
+      && ( all (`notElem` nonAttackOfOpportunityActions) actions
+             || any (\action -> ActionDoesNotCauseAttacksOfOpportunity action `elem` mods) actions
+         )
   handleActions actions = do
+    mods <- getModifiers iid
     beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid action | action <- actions]
     pushAll
       $ [BeginAction, beforeWindowMsg, PayCosts activeCostId]
-      <> [CheckAttackOfOpportunity iid False | checkAttackOfOpportunity actions]
+      <> [CheckAttackOfOpportunity iid False noAooFrom | checkAttackOfOpportunity mods actions]
 
 nonAttackOfOpportunityActions :: [Action]
 nonAttackOfOpportunityActions = [#fight, #evade, #resign, #parley]
 
 payCost
   :: forall m
-   . (HasGame m, HasQueue Message m, HasCallStack, CardGen m)
+   . (Tracing m, HasGame m, HasQueue Message m, HasCallStack, CardGen m)
   => Message
   -> ActiveCost
   -> InvestigatorId
@@ -194,6 +200,25 @@ payCost msg c iid skipAdditionalCosts cost = do
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
+    XCost inner -> do
+      let
+        go = \case
+          ResourceCost n -> Just . (`div` n) <$> getSpendableResources iid
+          ClueCost n -> do
+            gv <- getGameValue n
+            Just . (`div` gv) <$> getSpendableClueCount [iid]
+          Costs cs -> do
+            possible <- catMaybes <$> traverse go cs
+            pure $ minimum1 <$> nonEmpty possible
+          _ -> pure Nothing
+      mVal <- fromMaybe 100 <$> go inner
+      push
+        $ questionLabel "Spend X" player
+        $ DropDown
+          [ (tshow n, pay (mconcat $ replicate n inner))
+          | n <- [1 .. mVal]
+          ]
+      pure c
     LabeledCost _ inner -> payCost msg c iid skipAdditionalCosts inner
     ShuffleTopOfScenarioDeckIntoYourDeck n TekeliliDeck -> do
       runQueueT $ addTekelili iid . take n =<< getScenarioDeck TekeliliDeck
@@ -229,6 +254,21 @@ payCost msg c iid skipAdditionalCosts cost = do
     ChooseEnemyCost mtch -> do
       enemies <- select mtch
       push $ chooseOne player $ targetLabels enemies $ only . pay . ChosenEnemyCost
+      pure c
+    ChooseEnemyCostAndMaybeFieldClueCost mtch fld -> do
+      spendable <- getSpendableClueCount [iid]
+      enemies <-
+        select mtch >>= mapMaybeM \enemy -> runMaybeT do
+          clueCount <- MaybeT $ field fld enemy
+          guard $ spendable >= clueCount
+          pure (enemy, clueCount)
+
+      push $ chooseOne player $ flip map enemies \(enemy, clues) ->
+        targetLabel
+          enemy
+          [ pay $ ChosenEnemyCost enemy
+          , pay $ ClueCost (Static clues)
+          ]
       pure c
     ChosenEnemyCost eid -> withPayment $ ChosenEnemyPayment eid
     CostIfCustomization customization cost1 cost2 -> do
@@ -510,7 +550,7 @@ payCost msg c iid skipAdditionalCosts cost = do
         discardIt = \case
           PlayerCard pc -> [AddToDiscard owner pc | owner <- maybeToList (pcOwner pc)]
           EncounterCard ec -> [AddToEncounterDiscard ec]
-          _ -> error "Unhandled"
+          _ -> error "Unhandled DiscardUnderneathCardCost"
       pushAll
         [ FocusCards cards
         , chooseOrRunOne player [targetLabel card (UnfocusCards : discardIt card) | card <- cards]
@@ -604,6 +644,20 @@ payCost msg c iid skipAdditionalCosts cost = do
         [iid'] -> do
           push $ InvestigatorDirectDamage iid' source x 0
           withPayment $ DirectDamagePayment x
+        _ -> error "exactly one investigator expected for direct damage"
+    DirectHorrorCost _ investigatorMatcher x -> do
+      investigators <- select investigatorMatcher
+      case investigators of
+        [iid'] -> do
+          push $ InvestigatorDirectDamage iid' source 0 x
+          withPayment $ DirectHorrorPayment x
+        _ -> error "exactly one investigator expected for direct damage"
+    DirectDamageAndHorrorCost _ investigatorMatcher x y -> do
+      investigators <- select investigatorMatcher
+      case investigators of
+        [iid'] -> do
+          push $ InvestigatorDirectDamage iid' source x y
+          withPayment $ DirectDamagePayment x <> DirectHorrorPayment y
         _ -> error "exactly one investigator expected for direct damage"
     InvestigatorDamageCost source' investigatorMatcher damageStrategy x -> do
       investigators <- select investigatorMatcher
@@ -812,7 +866,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           if ucost < 0
             then pure (-ucost)
             else pure 0
-        _ -> pure 0 
+        _ -> pure 0
       withPayment $ ResourcePayment $ x + extra
     AdditionalActionsCost -> do
       actionRemainingCount <- field InvestigatorRemainingActions iid
@@ -1046,6 +1100,20 @@ payCost msg c iid skipAdditionalCosts cost = do
               push
                 $ Ask lead
                 $ ChoosePaymentAmounts (displayCostType cost) (Just $ TotalAmountTarget totalClues) paymentOptions
+      pure c
+    -- push (SpendClues totalClues iids)
+    -- withPayment $ CluePayment totalClues
+    SameLocationGroupClueCost x locationMatcher -> do
+      totalClues <- getPlayerCountValue x
+      locations <-
+        select locationMatcher >>= filterM \lid -> do
+          total <- getSpendableClueCount =<< select (investigatorAt lid)
+          pure $ total >= totalClues
+      lead <- getLeadPlayer
+      push
+        $ chooseOrRunOne
+          lead
+          [targetLabel lid [pay (GroupClueCost x $ LocationWithId lid)] | lid <- locations]
       pure c
     -- push (SpendClues totalClues iids)
     -- withPayment $ CluePayment totalClues
@@ -1311,7 +1379,7 @@ instance RunMessage ActiveCost where
                , Would
                    batchId
                    $ [PayCosts acId]
-                   <> [ CheckAttackOfOpportunity iid False
+                   <> [ CheckAttackOfOpportunity iid False Nothing
                       | not modifiersPreventAttackOfOpportunity
                           && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
                           && isNothing cardDef.fastWindow
@@ -1321,19 +1389,17 @@ instance RunMessage ActiveCost where
                    <> [PayCostFinished acId]
                ]
           pure c
-        ForAbility a@Ability {..} -> do
+        ForAbility a@(Ability {..}) -> do
           modifiers' <- getCombinedModifiers [toTarget iid, AbilityTarget iid $ abilityToRef a]
           let
             modifiersPreventAttackOfOpportunity =
               any ((`elem` modifiers') . ActionDoesNotCauseAttacksOfOpportunity) a.actions
-          push $ PayCostFinished acId
-          startAbilityPayment
-            c
-            iid
-            (mkWhen Window.NonFast) -- TODO: a thing
-            abilityType
-            abilitySource
-            (abilityDoesNotProvokeAttacksOfOpportunity || modifiersPreventAttackOfOpportunity)
+          pushAll [PaidInitialCostForAbility acId iid (abilityToRef a) c.payments, PayCostFinished acId]
+          let aoo =
+                if modifiersPreventAttackOfOpportunity
+                  then Just AnyEnemy
+                  else abilityDoesNotProvokeAttacksOfOpportunity
+          startAbilityPayment c iid (mkWhen Window.NonFast) abilityType abilitySource aoo
           pure c
     PayCost acId iid skipAdditionalCosts cost | acId == c.id -> do
       let

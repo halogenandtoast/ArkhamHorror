@@ -9,7 +9,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
-
+import Arkham.Window qualified as Window
 
 newtype UnfinishedBusiness_L = UnfinishedBusiness_L StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -20,20 +20,22 @@ unfinishedBusiness_L = story UnfinishedBusiness_L Cards.unfinishedBusiness_L
 
 instance RunMessage UnfinishedBusiness_L where
   runMessage msg s@(UnfinishedBusiness_L attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == attrs.id -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       let card = lookupCard Enemies.heretic_K (toCardId attrs)
 
       alreadyResolved <- getAlreadyResolved attrs
       if alreadyResolved
         then do
-          send $ format card <> " was \"Banished\""
-          addToVictory attrs
+          batched \_ -> do
+            checkWhen $ Window.ScenarioEvent "wouldBanish" (Just iid) (toJSON card)
+            send $ format card <> " was \"Banished\""
+            addToVictory attrs
         else afterStoryResolution attrs do
           removeStory attrs
           enemy <- createEnemy card attrs.placement
           initiateEnemyAttack enemy attrs iid
       pure s
-    ResolveStory iid DoNotResolveIt story' | story' == attrs.id -> do
+    DoNotResolveThisStory iid (is attrs -> True) -> do
       chooseOneM iid $ abilityLabeled iid (mkAbility attrs 1 $ forced AnyWindow) nothing
       pure s
     UseThisAbility iid (isSource attrs -> True) 1 -> do

@@ -1,8 +1,4 @@
-module Arkham.Event.Events.ElaborateDistraction (
-  elaborateDistraction,
-  ElaborateDistraction (..),
-)
-where
+module Arkham.Event.Events.ElaborateDistraction (elaborateDistraction) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -19,7 +15,7 @@ instance RunMessage ElaborateDistraction where
   runMessage msg e@(ElaborateDistraction attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       handleOneAtATimeSelect iid attrs
-        $ EnemyAt (oneOf [locationWithInvestigator iid, ConnectedFrom $ locationWithInvestigator iid])
+        $ EnemyAt (oneOf [locationWithInvestigator iid, connectedFrom $ locationWithInvestigator iid])
         <> oneOf
           [NonEliteEnemy <> EnemyCanBeEvadedBy (toSource attrs), EnemyCanBeDamagedBySource (toSource attrs)]
       pure e
@@ -30,6 +26,8 @@ instance RunMessage ElaborateDistraction where
         when canBeEvaded
           $ labeled "Automatically evade that enemy if it is not elite"
           $ automaticallyEvadeEnemy iid eid
-        when canBeDamaged $ labeled "Deal 1 damage to that enemy" $ nonAttackEnemyDamage (Just iid) attrs 1 eid
+        when canBeDamaged
+          $ labeled "Deal 1 damage to that enemy"
+          $ nonAttackEnemyDamage (Just iid) attrs 1 eid
       pure e
     _ -> ElaborateDistraction <$> liftRunMessage msg attrs

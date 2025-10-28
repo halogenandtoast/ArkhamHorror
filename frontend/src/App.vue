@@ -19,25 +19,21 @@
     </Suspense>
     <ModalsContainer />
   </template>
-  <footer><a href="https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/" rel="noreferrer" target="_blank" tabindex="-1">Arkham Horror: The Card Game™</a> and all related content © <a href="https://www.fantasyflightgames.com" rel="noreferrer" target="_blank" tabindex="-1">Fantasy Flight Games (FFG)</a>. This site is not produced, endorsed by or affiliated with FFG. <router-link to="/about">{{$t('about')}}.</router-link></footer>
+  <footer><a href="https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/" rel="noreferrer" target="_blank" tabindex="-1">Arkham Horror: The Card Game™</a> and all related content © <a href="https://www.fantasyflightgames.com" rel="noreferrer" target="_blank" tabindex="-1">Fantasy Flight Games (FFG)</a>. This site is not produced, endorsed by or affiliated with FFG. <router-link to="/about">{{$t('nav.about')}}.</router-link></footer>
 </template>
 
 <script lang="ts" setup>
 import { ModalsContainer } from 'vue-final-modal'
 import { ref, onMounted } from 'vue'
-import { useUserStore } from '@/stores/user'
 import { useSiteSettingsStore } from '@/stores/site_settings'
 import { useDbCardStore } from '@/stores/dbCards'
 import { checkImageExists } from '@/arkham/helpers'
 import NavBar from '@/components/NavBar.vue'
 import 'floating-vue/dist/style.css'
 
-const store = useUserStore()
 const settingsStore = useSiteSettingsStore()
 
 onMounted(async () => {
-  // order here is important, user must be loaded first
-  await store.loadUserFromStorage()
   await settingsStore.init()
   avifSupported.value = await checkAvifSupport();
   await useDbCardStore().initDbCards()
@@ -55,7 +51,7 @@ const checkAvifSupport = (): Promise<boolean> => {
 };
 </script>
 
-<style lang="scss">
+<style>
 html {
   color-scheme: dark;
   interpolate-size: allow-keywords;
@@ -91,8 +87,28 @@ button {
 }
 
 @font-face {
+  font-family: "Typewriter";
+  src: url("/fonts/typewriter.ttf");
+}
+
+@font-face {
+  font-family: "Accountant";
+  src: url("/fonts/accountant.ttf");
+}
+
+@font-face {
   font-family: "AboutDead";
   src: url("/fonts/AboutDead.ttf");
+}
+
+@font-face {
+  font-family: "Arno";
+  src: url("/fonts/ArnoPro-Regular.otf");
+}
+
+@font-face {
+  font-family: "Albertus";
+  src: url("/fonts/albertus.ttf");
 }
 
 .about-dead {
@@ -102,8 +118,20 @@ button {
 }
 
 @font-face {
+  font-family: 'Materials';
+  font-style: normal;
+  font-weight: 200;
+  src: url("/fonts/materials.ttf");
+}
+
+@font-face {
   font-family: "Noto Sans";
   src: url("/fonts/NotoSans.ttf");
+}
+
+@font-face {
+  font-family: "Unquiet Spirits";
+  src: url("/fonts/UnquietSpirits.ttf");
 }
 
 @font-face {
@@ -129,6 +157,11 @@ button {
 @font-face {
   font-family: "Wolgast";
   src: url("/fonts/WolgastScript.ttf");
+}
+
+@font-face {
+  font-family: "Billenia";
+  src: url("/fonts/billenia.ttf");
 }
 
 @font-face {
@@ -163,6 +196,7 @@ button {
   -moz-osx-font-smoothing: grayscale;
   width: 100%;
   height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -419,6 +453,8 @@ button {
   --combat-light: #F1D3D0;
   --agility-light: #8CEEBD;
 
+  --important: rgba(212, 165, 10, 0.9);
+
   --wild: #8a7d5a;
   --guardian: #5cb4fd;
   --mystic: #ba81f2;
@@ -450,6 +486,12 @@ button {
   --blessed: #6a5720;
   --cursed: #270F31;
   --frost: #39394C;
+  --auto-fail: #4A1216;
+  --elder-sign: #4A6973;
+  --skull: #26110E;
+  --cultist: #172615;
+  --tablet: #1E2A3A;
+  --elder-thing: #2D1F25;
 
   --delete: #c13131;
   --background: #2e3440;
@@ -460,8 +502,13 @@ button {
   --box-border: #434c5e;
 
   --title: #cecece;
+  --green-title: #38615F;
+  --text: white;
   --spooky-green: #879C5A;
   --spooky-green-dark: #3A5144;
+
+  --button: #555;
+  --button-highlight: #444;
 
   --button-1: #6E8640;
   --button-1-highlight: #5a6e34;
@@ -472,10 +519,11 @@ button {
   --card-width: min(calc(2.5vw + 20px), 60px);
   --card-height: min(calc(3.545vw + 28.36px), 85.08px);
   --card-aspect: 0.705;
+  --tarot-aspec: 0.571429;
   --card-sideways-aspect: 1.41844;
   --card-tarot-aspect: 0.571429;
 
-  --card-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+  --card-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 
   --select: #ff00ff;
   --select-dark: #d400d4;
@@ -539,6 +587,7 @@ h2.title {
 
 .router-container {
   position: relative;
+  overflow: auto;
 }
 
 footer {
@@ -603,6 +652,33 @@ footer {
   header {
     text-align: center;
     margin-bottom: 10px;
+  }
+}
+
+@property --glow-rotation {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes glow {
+  from {
+    --glow-rotation: 0deg;
+  }
+  to {
+    --glow-rotation: 360deg;
+  }
+}
+
+
+* {
+  &.highlighted {
+    border: 2px solid transparent;
+    background: conic-gradient(from var(--glow-rotation), var(--gradient-glow)) border-box;
+    border-style: inset;
+    border-radius: 3px;
+    position: relative;
+    animation: glow 3s linear infinite;
   }
 }
 </style>

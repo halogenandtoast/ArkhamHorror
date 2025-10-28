@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { TokenType } from '@/arkham/types/Token';
 import { ComputedRef, computed, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { imgsrc, groupBy } from '@/arkham/helpers';
@@ -103,6 +104,8 @@ const isVertical = computed(() => {
   const cardCode = props.agenda.flipped ? id.value.replace(/a?$/, 'b') : id.value
   return ["c01121b", "c03241b", "c06169b", "c50026b", "c07164b", "c07165b", "c07199b", "c82002b", "c90033b", "c90066b"].includes(cardCode) 
 })
+
+const eclipses = computed(() => props.agenda.tokens[TokenType.Eclipse])
 </script>
 
 <template>
@@ -123,6 +126,7 @@ const isVertical = computed(() => {
           type="doom"
           :amount="agenda.doom"
         />
+        <PoolItem class="eclipse" v-if="eclipses" type="resource" :amount="eclipses" />
 
         <template v-if="debug.active">
           <button
@@ -179,7 +183,7 @@ const isVertical = computed(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .card {
   width: var(--card-width);
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
@@ -245,7 +249,7 @@ const isVertical = computed(() => {
   gap: 5px;
   flex-direction: row;
   margin-top: -50px;
-  //position: inherit;
+  /*position: inherit;*/
   transition: margin-top 0.3s;
   position: relative;
 

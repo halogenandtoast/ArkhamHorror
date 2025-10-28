@@ -646,3 +646,30 @@ soulSanctification3 =
       { cdCardTraits = setFromList [Ritual]
       , cdLevel = Just 3
       }
+
+laChicaRojaYourWatchfulShadow :: CardDef
+laChicaRojaYourWatchfulShadow =
+  (storyAsset "09557b" ("La Chica Roja" <:> "Your Watchful Shadow") 0 SanguineShadows)
+      { cdCardTraits = setFromList [Ally, Conspirator]
+      , cdCost = Nothing
+      , cdUnique = True
+      , cdDoubleSided = True
+      , cdOtherSide = Just "09557"
+      , cdCardType = EncounterAssetType
+      }
+
+eceSahinTheVermillionVeiledLady :: CardDef
+eceSahinTheVermillionVeiledLady =
+  (storyAsset "09584" ("Ece Şahin" <:> "The Vermillion-Veiled Lady") 0 DealingsInTheDark)
+      { cdCardTraits = setFromList [Ally, Conspirator]
+      , cdCost = Nothing
+      , cdUnique = True
+      , cdCardType = EncounterAssetType
+      }
+
+expeditedTicket :: CardDef
+expeditedTicket =
+  permanent
+    (storyAsset "09765" "Expedited Ticket" 0 Globetrotting)
+      { cdCardTraits = setFromList [Item]
+      }

@@ -20,6 +20,14 @@ const props = withDefaults(defineProps<{
 
 const ability = computed<Ability | null>(() => "ability" in props.ability ? props.ability.ability : null)
 
+const attributes = computed(() => {
+  if (ability.value && ability.value.target) {
+    return { 'data-highlight-id': ability.value.target.contents }
+  }
+
+  return {}
+})
+
 const tooltip = computed(() => {
   var body = ability.value && ability.value.tooltip
   if (body) {
@@ -165,7 +173,7 @@ const abilityLabel = computed(() => {
     const { actions, cost } = ability.value.type
     const total = totalActionCost(cost)
     if (actions.length === 1) {
-      return `${total > 0 ? replaceIcons("{action}".repeat(total)) : ""}${t(actions[0])}`
+      return `${total > 0 ? `<span>${replaceIcons("{action}".repeat(total))}</span>` : ""}<span>${t(actions[0])}</span>`
     }
 
     return replaceIcons("{action}".repeat(totalActionCost(cost)))
@@ -217,12 +225,13 @@ const classObject = computed(() => {
     class="button"
     :class="classObject"
     @click="$emit('choose', ability)"
+    v-bind="attributes"
     v-tooltip="!isButtonText && tooltip"
     v-html="abilityLabel"
     ></button>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .button{
   border: 0;
   margin-top: 2px;

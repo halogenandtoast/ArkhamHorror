@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.LurkerInTheDark (lurkerInTheDark, LurkerInTheDark (..)) where
+module Arkham.Enemy.Cards.LurkerInTheDark (lurkerInTheDark) where
 
 import Arkham.Ability
 import Arkham.Card.CardType
@@ -6,6 +6,7 @@ import Arkham.Constants
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
@@ -22,7 +23,7 @@ lurkerInTheDark =
     Cards.lurkerInTheDark
     (3, Static 2, 1)
     (1, 0)
-    (spawnAtL ?~ SpawnAt ConnectedLocation)
+    (spawnAtL ?~ SpawnAt (ConnectedLocation NotForMovement))
 
 instance HasAbilities LurkerInTheDark where
   getAbilities (LurkerInTheDark attrs) = map updateFight (getAbilities attrs)

@@ -14,8 +14,21 @@ data SpawnDetails = SpawnDetails
   , spawnDetailsInvestigator :: Maybe InvestigatorId
   , spawnDetailsSpawnAt :: SpawnAt
   , spawnDetailsOverridden :: Bool
+  , spawnDetailsExhausted :: Bool
+  , spawnDetailsUnengaged :: Bool
   }
   deriving stock (Show, Eq, Ord, Data)
+
+mkSpawnDetails :: EnemyId -> SpawnAt -> SpawnDetails
+mkSpawnDetails enemy spawnAt =
+  SpawnDetails
+    { spawnDetailsEnemy = enemy
+    , spawnDetailsInvestigator = Nothing
+    , spawnDetailsSpawnAt = spawnAt
+    , spawnDetailsOverridden = False
+    , spawnDetailsExhausted = False
+    , spawnDetailsUnengaged = False
+    }
 
 instance HasField "overridden" SpawnDetails Bool where
   getField = spawnDetailsOverridden
@@ -39,6 +52,7 @@ data SpawnAt
   | SpawnAtLocation LocationId
   | SpawnPlaced Placement
   | SpawnAtRandomSetAsideLocation
+  | SpawnAtRandomLocation
   | SpawnAtFirst [SpawnAt]
   | SpawnEngagedWith InvestigatorMatcher
   | NoSpawn
@@ -70,4 +84,6 @@ instance FromJSON SpawnDetails where
     spawnDetailsInvestigator <- o .:? "spawnDetailsInvestigator"
     spawnDetailsSpawnAt <- o .: "spawnDetailsSpawnAt"
     spawnDetailsOverridden <- o .:? "spawnDetailsOverridden" .!= False
+    spawnDetailsExhausted <- o .:? "spawnDetailsExhausted" .!= False
+    spawnDetailsUnengaged <- o .:? "spawnDetailsUnengaged" .!= False
     pure SpawnDetails {..}

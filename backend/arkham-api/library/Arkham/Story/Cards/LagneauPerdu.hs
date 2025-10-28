@@ -14,7 +14,7 @@ lagneauPerdu = story LagneauPerdu Cards.lagneauPerdu
 
 instance RunMessage LagneauPerdu where
   runMessage msg s@(LagneauPerdu attrs) = runQueueT $ case msg of
-    ResolveStory _ _ (is attrs -> True) -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       remember InterviewedJordan
       pure s
     _ -> LagneauPerdu <$> liftRunMessage msg attrs

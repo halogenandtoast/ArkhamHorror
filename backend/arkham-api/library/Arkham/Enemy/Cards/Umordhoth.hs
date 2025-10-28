@@ -21,16 +21,13 @@ instance HasModifiersFor Umordhoth where
     modifySelf a [HealthModifier healthModifier]
 
 instance HasAbilities Umordhoth where
-  getAbilities (Umordhoth a) =
-    extend
-      a
-      [ mkAbility a 1 $ forced $ TurnEnds #after Anyone
-      , restricted
-          a
-          2
-          (OnSameLocation <> exists (AssetControlledBy You <> assetIs Cards.litaChantler))
-          actionAbility
-      ]
+  getAbilities (Umordhoth a) = extend a do
+    guard a.isInPlay
+      *> [ mkAbility a 1 $ forced $ TurnEnds #after Anyone
+         , restricted a 2 litaCriteria actionAbility
+         ]
+   where
+    litaCriteria = OnSameLocation <> exists (AssetControlledBy You <> assetIs Cards.litaChantler)
 
 instance RunMessage Umordhoth where
   runMessage msg e@(Umordhoth attrs) = runQueueT $ case msg of

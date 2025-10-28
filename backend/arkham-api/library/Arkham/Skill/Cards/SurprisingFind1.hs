@@ -1,8 +1,7 @@
-module Arkham.Skill.Cards.SurprisingFind1 (surprisingFind1, surprisingFind1Effect, SurprisingFind1 (..)) where
+module Arkham.Skill.Cards.SurprisingFind1 (surprisingFind1) where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Effect.Import
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
@@ -21,10 +20,12 @@ surprisingFind1 = skill SurprisingFind1 Cards.surprisingFind1
 instance HasAbilities SurprisingFind1 where
   getAbilities (SurprisingFind1 x) =
     [ playerLimit (PerSearch Research) $ mkAbility x 1 $ freeReaction (AmongSearchedCards You)
-    , controlledAbility
+    , controlled
         x
         2
-        (exists $ SkillWithId (toId x) <> NotSkill (SkillWithPlacement Limbo) <> EligibleSkill)
+        ( DuringYourSkillTest
+            <> exists (SkillWithId (toId x) <> NotSkill (SkillWithPlacement Limbo) <> EligibleSkill)
+        )
         Anytime
     ]
 
@@ -40,21 +41,6 @@ instance RunMessage SurprisingFind1 where
         skillTestModifier sid (toSource attrs) (toCardId attrs) MustBeCommitted
         push $ RemoveSkill (toId attrs)
         push $ SkillTestCommitCard iid (toCard attrs)
-        createCardEffect Cards.surprisingFind1 Nothing (toSource attrs) iid
+        onSucceedByEffect sid AnyValue (attrs.ability 2) sid $ drawCards iid (attrs.ability 2) 1
       pure s
     _ -> SurprisingFind1 <$> liftRunMessage msg attrs
-
-newtype SurprisingFind1Effect = SurprisingFind1Effect EffectAttrs
-  deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-
-surprisingFind1Effect :: EffectArgs -> SurprisingFind1Effect
-surprisingFind1Effect = cardEffect SurprisingFind1Effect Cards.surprisingFind1
-
-instance RunMessage SurprisingFind1Effect where
-  runMessage msg e@(SurprisingFind1Effect attrs) = runQueueT $ case msg of
-    PassedSkillTest iid _ _ _ _ _ -> do
-      drawCardsIfCan iid attrs.source 1
-      disableReturn e
-    SkillTestEnds {} -> disableReturn e
-    _ -> SurprisingFind1Effect <$> liftRunMessage msg attrs

@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Event.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.UI
@@ -18,14 +19,12 @@ dynamite = asset Dynamite Cards.dynamite
 
 instance HasAbilities Dynamite where
   getAbilities (Dynamite a) =
-    [ storyControlled a 1 CanDealDamage
-        $ actionAbilityWithCost (exhaust a <> assetUseCost a Supply 1)
-    ]
+    [storyControlled a 1 CanDealDamage $ actionAbilityWithCost (exhaust a <> assetUseCost a Supply 1)]
 
 instance RunMessage Dynamite where
   runMessage msg a@(Dynamite attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      locations <- select $ orConnected (locationWithInvestigator iid)
+      locations <- select $ orConnected NotForMovement (locationWithInvestigator iid)
       canDealDamage <- withoutModifier iid CannotDealDamage
       chooseOneM iid do
         for_ locations \location -> do

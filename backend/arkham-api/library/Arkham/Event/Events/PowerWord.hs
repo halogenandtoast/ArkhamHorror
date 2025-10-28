@@ -1,8 +1,7 @@
-module Arkham.Event.Events.PowerWord (powerWord, PowerWord (..)) where
+module Arkham.Event.Events.PowerWord (powerWord) where
 
 import Arkham.Ability
 import Arkham.Classes.HasGame
-import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.DamageEffect
 import Arkham.Discover
 import Arkham.Enemy.Types (
@@ -15,6 +14,7 @@ import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher hiding (DiscoverClues, EnemyEvaded)
 import Arkham.Projection
 import Arkham.Taboo
+import Arkham.Tracing
 import Data.Map.Strict qualified as Map
 
 data Command = GoCommand | CowerCommand | BetrayCommand | MercyCommand | ConfessCommand | DistractCommand
@@ -57,7 +57,7 @@ instance HasAbilities PowerWord where
         additionalEnemyCriteria = oneOf $ map (\(_, f) -> f eid) commands
         fromLocation =
           if a `hasCustomization` Bonded
-            then oneOf [YourLocation, ConnectedFrom YourLocation]
+            then oneOf [YourLocation, connectedFrom YourLocation]
             else YourLocation
         handleThriceSpoken inner =
           if a `hasCustomization` ThriceSpoken
@@ -73,16 +73,14 @@ instance HasAbilities PowerWord where
                 ]
             else exists $ inner <> additionalEnemyCriteria
        in
-        [ controlledAbility
+        [ controlled
             a
             1
             (handleThriceSpoken $ EnemyWithId eid <> EnemyAt fromLocation <> CanParleyEnemy You)
             parleyAction_
         | notNull commands || tabooed TabooList21 a -- the taboo'd version will initiate a skill test
         ]
-          <> [ restrictedAbility a 2 ControlsThis $ FastAbility Free
-             | a `hasCustomization` GreaterControl
-             ]
+          <> [restricted a 2 ControlsThis $ FastAbility Free | a `hasCustomization` GreaterControl]
     _ -> []
 
 availableCommands :: EventAttrs -> [(Command, EnemyId -> EnemyMatcher)]
@@ -91,9 +89,9 @@ availableCommands a = filter (\(x, _) -> getMetaKey (toKey x) a) (allCommands a)
 allCommands :: EventAttrs -> [(Command, EnemyId -> EnemyMatcher)]
 allCommands a =
   ( GoCommand
-  , \eid -> EnemyWhenLocation $ ConnectedTo (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
+  , \eid -> EnemyWhenLocation $ connectedTo (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
   )
-    : [ (CowerCommand, \_ -> ReadyEnemy)
+    : [ (CowerCommand, const ReadyEnemy)
       | not (tabooed TabooList21 a) || (tabooed TabooList21 a && a `hasCustomization` Mercy)
       ]
       <> [ ( BetrayCommand
@@ -140,7 +138,7 @@ allCommands a =
          | a `hasCustomization` Distract
          ]
 
-determineMeta :: HasGame m => EventAttrs -> m Value
+determineMeta :: (HasGame m, Tracing m) => EventAttrs -> m Value
 determineMeta attrs = do
   let used = getMetaKeyDefault "used" [] attrs
   case attrs.placement of
@@ -183,7 +181,7 @@ runAbility iid attrs canTonguetwister = do
   let tonguetwister =
         guard (canTonguetwister && attrs `hasCustomization` Tonguetwister)
           $> Do (UseCardAbility iid (toSource attrs) 1 [] NoPayment)
-  choices <- forToSnd (Map.toList allMap) $ \(cmd, pairings) -> evalQueueT do
+  choices <- forToSnd (Map.toList allMap) $ \(cmd, pairings) -> capture do
     chooseOrRunOneAtATime
       iid
       [ targetLabel eid [DoStep (fromEnum cmd) (UseCardAbility iid (toSource pid) 1 [] NoPayment)]
@@ -229,7 +227,7 @@ instance RunMessage PowerWord where
           let command = toEnum step
           case command of
             GoCommand -> do
-              choices <- select $ ConnectedFrom (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
+              choices <- select $ connectedFrom (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
               when (notNull choices) $ chooseOrRunOne iid $ targetLabels choices (only . EnemyMove eid)
             CowerCommand -> pushWhenM (eid <=~> ReadyEnemy) $ Exhaust (toTarget eid)
             BetrayCommand -> do
@@ -251,7 +249,7 @@ instance RunMessage PowerWord where
                 if horror > 0 then select (HealableInvestigator source #horror $ colocatedWith iid) else pure []
               damageInvestigators <-
                 if damage > 0 then select (HealableInvestigator source #damage $ colocatedWith iid) else pure []
-              choices <- forToSnd (nub $ horrorInvestigators <> damageInvestigators) $ \investigator -> evalQueueT do
+              choices <- forToSnd (nub $ horrorInvestigators <> damageInvestigators) $ \investigator -> capture do
                 chooseOrRunOne iid
                   $ [ Label ("Heal " <> tshow damage <> " damage") [HealDamage (toTarget investigator) source damage]
                     | investigator `elem` damageInvestigators

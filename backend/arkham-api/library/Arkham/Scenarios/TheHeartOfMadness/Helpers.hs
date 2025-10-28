@@ -8,24 +8,31 @@ import Arkham.Classes.HasChaosTokenValue
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.Helpers.Location
 import Arkham.Helpers.Scenario (toChaosTokenValue)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Label
 import Arkham.Layout
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
+import Arkham.Projection
 import Arkham.Scenario.Types
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Trait (Trait (Ancient))
 
 scenarioI18n :: Int -> (HasI18n => a) -> a
 scenarioI18n n a = campaignI18n $ scope ("theHeartOfMadness.part" <> tshow n) a
 
-sealAtLocationOf :: Applicative m => InvestigatorId -> m Bool
-sealAtLocationOf _iid = pure False
+sealAtLocationOf :: (HasGame m, Tracing m) => InvestigatorId -> m Bool
+sealAtLocationOf iid =
+  getLocationOf iid >>= \case
+    Nothing -> pure False
+    Just lid -> fieldMap LocationSeals (not . null) lid
 
 placeSeal :: (ReverseQueue m, Targetable target) => target -> Seal -> m ()
 placeSeal target = push . PlaceSeal (toTarget target)
@@ -33,7 +40,7 @@ placeSeal target = push . PlaceSeal (toTarget target)
 activateSeal :: ReverseQueue m => SealKind -> m ()
 activateSeal = push . ActivateSeal
 
-getLocationsOnSameSpoke :: HasGame m => Text -> LocationMatcher -> m [LocationId]
+getLocationsOnSameSpoke :: (HasGame m, Tracing m) => Text -> LocationMatcher -> m [LocationId]
 getLocationsOnSameSpoke facility matcher = case find (elem facility) spokes of
   Nothing -> pure []
   Just spoke -> select $ matcher <> mapOneOf (LocationWithLabel . mkLabel) spoke
@@ -45,7 +52,7 @@ getLocationsOnSameSpoke facility matcher = case find (elem facility) spokes of
   spoke5 = ["facility11", "facility13", "facility15"]
   spokes = [spoke1, spoke2, spoke3, spoke4, spoke5]
 
-getLocationsOnSameRing :: HasGame m => Text -> LocationMatcher -> m [LocationId]
+getLocationsOnSameRing :: (HasGame m, Tracing m) => Text -> LocationMatcher -> m [LocationId]
 getLocationsOnSameRing facility matcher = case find (elem facility) rings of
   Nothing -> pure []
   Just ring -> select $ matcher <> mapOneOf (LocationWithLabel . mkLabel) ring
@@ -74,7 +81,7 @@ theHeartOfMadnessLayout =
   ]
 
 getChaosTokenValueFromScenario
-  :: (HasCallStack, HasGame m, Entity s, EntityAttrs s ~ ScenarioAttrs)
+  :: (HasCallStack, HasGame m, Tracing m, Entity s, EntityAttrs s ~ ScenarioAttrs)
   => InvestigatorId -> ChaosTokenFace -> s -> m ChaosTokenValue
 getChaosTokenValueFromScenario iid tokenFace (toAttrs -> attrs) = case tokenFace of
   Skull -> do

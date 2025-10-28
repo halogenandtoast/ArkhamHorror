@@ -15,7 +15,7 @@ desertedStation = story DesertedStation Cards.desertedStation
 
 instance RunMessage DesertedStation where
   runMessage msg s@(DesertedStation attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       mAlaskanWilds <- getSetAsideCardMaybe Locations.alaskanWilds
 
       chooseOneM iid do

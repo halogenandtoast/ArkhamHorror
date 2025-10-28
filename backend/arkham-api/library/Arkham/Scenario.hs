@@ -23,6 +23,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Tarot
+import Arkham.Helpers.Window (checkWindows)
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator.Types qualified as Field
@@ -36,8 +37,9 @@ import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios
 import Arkham.Slot
 import Arkham.Tarot
+import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window (duringTurnWindow)
+import Arkham.Window (duringTurnWindow, mkWhen)
 import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
 
@@ -121,7 +123,7 @@ instance HasAbilities TarotCard where
     TheWorldXXI -> [restricted (fromTarot c) 1 AffectedByTarot $ forced (Matcher.GameEnds #when)]
     _ -> []
 
-tarotInvestigator :: HasGame m => TarotCard -> m (Maybe InvestigatorId)
+tarotInvestigator :: (HasGame m, Tracing m) => TarotCard -> m (Maybe InvestigatorId)
 tarotInvestigator card = do
   tarotCards <- Map.assocs <$> scenarioField ScenarioTarotCards
   pure $ case find (\(_, vs) -> card `elem` vs) tarotCards of
@@ -257,259 +259,263 @@ isTarotSource ab = case ab.source of
   _ -> False
 
 instance RunMessage Scenario where
-  runMessage msg x@(Scenario s) = case msg of
-    UseThisAbility _ source@(TarotSource card@(TarotCard facing TheLoversVI)) 1 -> do
-      investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
-      pushAll
-        [ search
-            iid
-            source
-            iid
-            [fromDeck]
-            (#asset <> #ally)
-            (if facing == Upright then DrawFound iid 1 else RemoveFoundFromGame iid 1)
-        | iid <- investigators
-        ]
-      pure x
-    UseThisAbility _ source@(TarotSource card@(TarotCard Upright StrengthVIII)) 1 -> do
-      investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
-      msgs <- forMaybeM investigators $ \investigator -> do
-        results <-
-          select (Matcher.InHandOf Matcher.ForPlay (Matcher.InvestigatorWithId investigator) <> #asset)
-        resources <- getSpendableResources investigator
-        cards <-
-          filterM
-            ( getIsPlayableWithResources
-                investigator
-                source
-                (resources + 2)
-                (UnpaidCost NoAction)
-                [duringTurnWindow investigator]
-            )
-            results
-        player <- getPlayer investigator
-        choices <- for cards \c -> do
-          enabled <- costModifier source investigator (ReduceCostOf (Matcher.CardWithId $ toCardId c) 2)
-          pure $ targetLabel c [enabled, PayCardCost investigator c [duringTurnWindow investigator]]
-
-        pure $ Just $ chooseOne player $ Label "Do not play asset" [] : choices
-      pushAll msgs
-      pure x
-    UseAbility _ (isTarotSource -> True) _ -> do
-      push $ Do msg
-      pure x
-    UseCardAbility _ source@(TarotSource card@(TarotCard facing JusticeXI)) 1 ws _ -> do
-      case facing of
-        Upright -> do
-          let
-            getDoomTarget [] = error "wrong window"
-            getDoomTarget ((Window.windowType -> Window.WouldPlaceDoom _ doomTarget _) : _) = doomTarget
-            getDoomTarget (_ : xs) = getDoomTarget xs
-            target = getDoomTarget ws
-          cancelDoom target 1
-        Reversed -> do
-          mInvestigator <- tarotInvestigator card
-          lead <- getLead
-          let investigator = fromMaybe lead mInvestigator
-          player <- getPlayer investigator
-
-          agendas <- select Matcher.AnyAgenda
-          push
-            $ chooseOrRunOne
-              player
-              [targetLabel agenda [PlaceDoom source (toTarget agenda) 1] | agenda <- agendas]
-      -- cancelDoom 1
-      pure x
-    UseThisAbility _ source@(TarotSource card@(TarotCard facing TheDevilXV)) 1 -> do
-      investigatorPlayers <- filterM ((`affectedByTarot` card) . fst) =<< getInvestigatorPlayers
-      case facing of
-        Upright -> do
+  runMessage msg x@(Scenario s) =
+    withSpan_ ("Scenario[" <> unCardCode (unScenarioId x.id) <> "].runMessage") do
+      case msg of
+        UseThisAbility _ source@(TarotSource card@(TarotCard facing TheLoversVI)) 1 -> do
+          investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
           pushAll
-            [ chooseOne
-                player
-                [ Label ("Add " <> slotName slotType <> " Slot") [AddSlot investigator slotType (Slot source [])]
-                | slotType <- allSlotTypes
-                ]
-            | (investigator, player) <- investigatorPlayers
-            ]
-        Reversed -> do
-          for_ investigatorPlayers $ \(investigator, player) -> do
-            slotTypes <- keys . filterMap notNull <$> field Field.InvestigatorSlots investigator
-            pushWhen (notNull slotTypes)
-              $ chooseN
-                player
-                (min 3 $ length slotTypes)
-                [ Label ("Remove " <> slotName slotType <> " Slot") [RemoveSlot investigator slotType]
-                | slotType <- slotTypes
-                ]
-      pure x
-    UseThisAbility _ source@(TarotSource card@(TarotCard facing TheTowerXVI)) 1 -> do
-      investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
-      case facing of
-        Upright ->
-          pushAll
-            [ search
-                iid
-                source
-                iid
-                [fromDeck]
-                (Matcher.basic $ Matcher.CardWithSubType BasicWeakness)
-                (RemoveFoundFromGame iid 1)
+            [ search iid source iid [fromDeck] (#asset <> #ally)
+                $ if facing == Upright then DrawFound iid 1 else RemoveFoundFromGame iid 1
             | iid <- investigators
             ]
-        Reversed ->
-          for_ investigators $ \investigator ->
-            push
-              $ SearchCollectionForRandom investigator source
-              $ Matcher.BasicWeaknessCard
-      pure x
-    RequestedPlayerCard iid (TarotSource (TarotCard Reversed TheTowerXVI)) (Just c) _ -> do
-      push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [toCard c]
-      pure x
-    UseThisAbility iid source@(TarotSource (TarotCard facing TheStarXVII)) 1 -> do
-      player <- getPlayer iid
-      case facing of
-        Upright -> do
-          canHealDamage <- Helpers.canHaveDamageHealed source iid
-          canHealHorror <- Helpers.canHaveHorrorHealed source iid
-          push
-            $ chooseOrRunOne player
-            $ [DamageLabel iid [HealDamage (toTarget iid) source 1] | canHealDamage]
-            <> [HorrorLabel iid [HealHorror (toTarget iid) source 1] | canHealHorror]
-        Reversed -> do
-          push
-            $ chooseOne
-              player
-              [ Label "Take 1 damage" [assignDamage iid source 1]
-              , Label "Take 1 horror" [assignHorror iid source 1]
-              ]
-      pure x
-    UseCardAbility
-      iid
-      (TarotSource (TarotCard Upright TheMoonXVIII))
-      1
-      (Window.getBatchId -> batchId)
-      _ -> do
-        let
-          getDraw [] = Nothing
-          getDraw (Would batchId' msgs : _) | batchId' == batchId = getDraw msgs
-          getDraw (Do (EmptyDeck _ (Just draw)) : _) = Just draw
-          getDraw (_ : rest) = getDraw rest
-        mDrawing <- fromQueue getDraw
-        cards <- map toCard . take 10 . reverse <$> field Field.InvestigatorDiscard iid
-        player <- getPlayer iid
-        push
-          $ chooseOne
-            player
-            [ Label
-                "Shuffle the bottom 10 cards of your discard back into your Deck"
-                $ [IgnoreBatch batchId, ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards]
-                <> maybeToList mDrawing
-            , Label "Do Nothing" []
-            ]
-        pure x
-    UseThisAbility _ source@(TarotSource card@(TarotCard Reversed TheMoonXVIII)) 1 -> do
-      investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
-      for_ investigators $ \investigator -> do
-        push $ DiscardTopOfDeck investigator 5 source (Just $ TarotTarget (TarotCard Reversed TheMoonXVIII))
-      pure x
-    DiscardedTopOfDeck iid cards _ (TarotTarget (TarotCard Reversed TheMoonXVIII)) -> do
-      let weaknesses = filter (`cardMatch` Matcher.WeaknessCard) cards
-      unless (null weaknesses)
-        $ push
-        $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) (map toCard weaknesses)
-      pure x
-    UseThisAbility _ (TarotSource (TarotCard facing JudgementXX)) 1 -> do
-      case facing of
-        Upright -> push $ SwapChaosToken Skull Zero
-        Reversed -> do
-          tokenFaces <- filter isNonNegativeChaosToken . map chaosTokenFace <$> getBagChaosTokens
-          case nonEmpty tokenFaces of
-            Just (face :| faces) -> do
-              let maxFace =
-                    foldr
-                      ( \f g ->
-                          if chaosTokenToFaceValue f > chaosTokenToFaceValue g then f else g
-                      )
-                      face
-                      faces
-              push $ SwapChaosToken maxFace Skull
-            Nothing -> pure ()
-      pure x
-    UseThisAbility _ (TarotSource card@(TarotCard facing TheWorldXXI)) 1 -> do
-      case facing of
-        Upright -> do
+          pure x
+        UseThisAbility _ source@(TarotSource card@(TarotCard Upright StrengthVIII)) 1 -> do
           investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
-          investigatorsWhoCanHealTrauma <-
-            catMaybes <$> for
-              investigators
-              \iid -> do
-                hasPhysicalTrauma <- fieldP Field.InvestigatorPhysicalTrauma (> 0) iid
-                hasMentalTrauma <- fieldP Field.InvestigatorMentalTrauma (> 0) iid
-                player <- getPlayer iid
-                if (hasPhysicalTrauma || hasMentalTrauma)
-                  then pure $ Just (iid, player, hasPhysicalTrauma, hasMentalTrauma)
-                  else pure Nothing
+          msgs <- forMaybeM investigators $ \investigator -> do
+            results <-
+              select (Matcher.InHandOf Matcher.ForPlay (Matcher.InvestigatorWithId investigator) <> #asset)
+            resources <- getSpendableResources investigator
+            cards <-
+              filterM
+                ( getIsPlayableWithResources
+                    investigator
+                    source
+                    (resources + 2)
+                    (UnpaidCost NoAction)
+                    [duringTurnWindow investigator]
+                )
+                results
+            player <- getPlayer investigator
+            choices <- for cards \c -> do
+              enabled <- costModifier source investigator (ReduceCostOf (Matcher.CardWithId $ toCardId c) 2)
+              pure $ targetLabel c [enabled, PayCardCost investigator c [duringTurnWindow investigator]]
 
-          pushAll
-            $ [ chooseOne player
-                  $ [Label "Remove a physical trauma" [HealTrauma iid 1 0] | hasPhysical]
-                  <> [Label "Remove a mental trauma" [HealTrauma iid 0 1] | hasMental]
-                  <> [Label "Do not remove trauma" []]
-              | (iid, player, hasPhysical, hasMental) <- investigatorsWhoCanHealTrauma
-              ]
-        Reversed -> do
-          defeatedInvestigators <-
-            filterM (`affectedByTarot` card) =<< select Matcher.DefeatedInvestigator
-          defeatedInvestigatorPlayers <- traverse (traverseToSnd getPlayer) defeatedInvestigators
-          pushAll
-            $ [ chooseOne
+            pure $ Just $ chooseOne player $ Label "Do not play asset" [] : choices
+          pushAll msgs
+          pure x
+        UseAbility _ (isTarotSource -> True) _ -> do
+          push $ Do msg
+          pure x
+        UseCardAbility _ source@(TarotSource card@(TarotCard facing JusticeXI)) 1 ws _ -> do
+          case facing of
+            Upright -> do
+              let
+                getDoomTarget [] = error "wrong window"
+                getDoomTarget ((Window.windowType -> Window.WouldPlaceDoom _ doomTarget _) : _) = doomTarget
+                getDoomTarget (_ : xs) = getDoomTarget xs
+                target = getDoomTarget ws
+              cancelDoom target 1
+            Reversed -> do
+              mInvestigator <- tarotInvestigator card
+              lead <- getLead
+              let investigator = fromMaybe lead mInvestigator
+              player <- getPlayer investigator
+
+              agendas <- select Matcher.AnyAgenda
+              push
+                $ chooseOrRunOne
                   player
-                  [ Label "Suffer physical trauma" [SufferTrauma iid 1 0]
-                  , Label "Suffer mental trauma" [SufferTrauma iid 0 1]
+                  [targetLabel agenda [PlaceDoom source (toTarget agenda) 1] | agenda <- agendas]
+          -- cancelDoom 1
+          pure x
+        UseThisAbility _ source@(TarotSource card@(TarotCard facing TheDevilXV)) 1 -> do
+          investigatorPlayers <- filterM ((`affectedByTarot` card) . fst) =<< getInvestigatorPlayers
+          case facing of
+            Upright -> do
+              pushAll
+                [ chooseOne
+                    player
+                    [ Label ("Add " <> slotName slotType <> " Slot") [AddSlot investigator slotType (Slot source [])]
+                    | slotType <- allSlotTypes
+                    ]
+                | (investigator, player) <- investigatorPlayers
+                ]
+            Reversed -> do
+              for_ investigatorPlayers $ \(investigator, player) -> do
+                slotTypes <- keys . filterMap notNull <$> field Field.InvestigatorSlots investigator
+                pushWhen (notNull slotTypes)
+                  $ chooseN
+                    player
+                    (min 3 $ length slotTypes)
+                    [ Label ("Remove " <> slotName slotType <> " Slot") [RemoveSlot investigator slotType]
+                    | slotType <- slotTypes
+                    ]
+          pure x
+        UseThisAbility _ source@(TarotSource card@(TarotCard facing TheTowerXVI)) 1 -> do
+          investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
+          case facing of
+            Upright ->
+              pushAll
+                [ search
+                    iid
+                    source
+                    iid
+                    [fromDeck]
+                    (Matcher.basic $ Matcher.CardWithSubType BasicWeakness)
+                    (RemoveFoundFromGame iid 1)
+                | iid <- investigators
+                ]
+            Reversed ->
+              for_ investigators $ \investigator ->
+                push
+                  $ SearchCollectionForRandom investigator source
+                  $ Matcher.BasicWeaknessCard
+          pure x
+        RequestedPlayerCard iid (TarotSource (TarotCard Reversed TheTowerXVI)) (Just c) _ -> do
+          push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [toCard c]
+          pure x
+        UseThisAbility iid source@(TarotSource (TarotCard facing TheStarXVII)) 1 -> do
+          player <- getPlayer iid
+          case facing of
+            Upright -> do
+              canHealDamage <- Helpers.canHaveDamageHealed source iid
+              canHealHorror <- Helpers.canHaveHorrorHealed source iid
+              push
+                $ chooseOrRunOne player
+                $ [DamageLabel iid [HealDamage (toTarget iid) source 1] | canHealDamage]
+                <> [HorrorLabel iid [HealHorror (toTarget iid) source 1] | canHealHorror]
+            Reversed -> do
+              push
+                $ chooseOne
+                  player
+                  [ Label "Take 1 damage" [assignDamage iid source 1]
+                  , Label "Take 1 horror" [assignHorror iid source 1]
                   ]
-              | (iid, player) <- defeatedInvestigatorPlayers
-              ]
-      pure x
-    ResolveChaosToken drawnToken chaosTokenFace _ -> do
-      modifiers' <- foldMapM getModifiers [toTarget chaosTokenFace, toTarget drawnToken]
-      if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
-        then pure x
-        else go
-    FailedSkillTest _ _ _ (ChaosTokenTarget token) _ _ -> do
-      modifiers' <- foldMapM getModifiers [toTarget token.face, toTarget token]
-      if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
-        then pure x
-        else go
-    PassedSkillTest _ _ _ (ChaosTokenTarget token) _ _ -> do
-      modifiers' <- foldMapM getModifiers [toTarget token.face, toTarget token]
-      if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
-        then pure x
-        else go
-    ScenarioResolution _ -> do
-      overAttrs (\a -> a & inResolutionL .~ True) <$> go
-    SetupInvestigators -> do
-      result <- go
-      let isTowerXVI = (== TheTowerXVI) . toTarotArcana
-      for_ (concatMap (filter isTowerXVI) (toList $ attr scenarioTarotCards s)) \card -> do
-        lead <- getLead
-        mInvestigator <- tarotInvestigator card
-        let investigator = fromMaybe lead mInvestigator
-        let abilities = getAbilities card
-        player <- getPlayer investigator
-        for_ abilities $ \ability -> do
-          push $ chooseOne player [AbilityLabel investigator ability [] [] []]
-      pure result
-    PreScenarioSetup -> do
-      result <- go
-      observed <- select $ Matcher.DeckWith $ Matcher.HasCard $ Matcher.cardIs Assets.observed4
-      for_ observed $ \iid -> do
-        push $ DrawAndChooseTarot iid Upright 3
-      damned <- select $ Matcher.DeckWith $ Matcher.HasCard $ Matcher.cardIs Treacheries.damned
-      for_ damned $ \iid -> do
-        push $ DrawAndChooseTarot iid Reversed 1
-      pure result
-    _ -> go
+          pure x
+        UseCardAbility
+          iid
+          (TarotSource (TarotCard Upright TheMoonXVIII))
+          1
+          (Window.getBatchId -> batchId)
+          _ -> do
+            let
+              getDraw [] = Nothing
+              getDraw (Would batchId' msgs : _) | batchId' == batchId = getDraw msgs
+              getDraw (Do (EmptyDeck _ (Just draw)) : _) = Just draw
+              getDraw (_ : rest) = getDraw rest
+            mDrawing <- fromQueue getDraw
+            cards <- map toCard . take 10 . reverse <$> field Field.InvestigatorDiscard iid
+            player <- getPlayer iid
+            push
+              $ chooseOne
+                player
+                [ Label
+                    "Shuffle the bottom 10 cards of your discard back into your Deck"
+                    $ [IgnoreBatch batchId, ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards]
+                    <> maybeToList mDrawing
+                , Label "Do Nothing" []
+                ]
+            pure x
+        UseThisAbility _ source@(TarotSource card@(TarotCard Reversed TheMoonXVIII)) 1 -> do
+          investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
+          for_ investigators $ \investigator -> do
+            push $ DiscardTopOfDeck investigator 5 source (Just $ TarotTarget (TarotCard Reversed TheMoonXVIII))
+          pure x
+        DiscardedTopOfDeck iid cards _ (TarotTarget (TarotCard Reversed TheMoonXVIII)) -> do
+          let weaknesses = filter (`cardMatch` Matcher.WeaknessCard) cards
+          unless (null weaknesses)
+            $ push
+            $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) (map toCard weaknesses)
+          pure x
+        UseThisAbility _ (TarotSource (TarotCard facing JudgementXX)) 1 -> do
+          case facing of
+            Upright -> push $ SwapChaosToken Skull Zero
+            Reversed -> do
+              tokenFaces <- filter isNonNegativeChaosToken . map chaosTokenFace <$> getBagChaosTokens
+              case nonEmpty tokenFaces of
+                Just (face :| faces) -> do
+                  let maxFace =
+                        foldr
+                          ( \f g ->
+                              if chaosTokenToFaceValue f > chaosTokenToFaceValue g then f else g
+                          )
+                          face
+                          faces
+                  push $ SwapChaosToken maxFace Skull
+                Nothing -> pure ()
+          pure x
+        UseThisAbility _ (TarotSource card@(TarotCard facing TheWorldXXI)) 1 -> do
+          case facing of
+            Upright -> do
+              investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
+              investigatorsWhoCanHealTrauma <-
+                catMaybes <$> for
+                  investigators
+                  \iid -> do
+                    hasPhysicalTrauma <- fieldP Field.InvestigatorPhysicalTrauma (> 0) iid
+                    hasMentalTrauma <- fieldP Field.InvestigatorMentalTrauma (> 0) iid
+                    player <- getPlayer iid
+                    if (hasPhysicalTrauma || hasMentalTrauma)
+                      then pure $ Just (iid, player, hasPhysicalTrauma, hasMentalTrauma)
+                      else pure Nothing
+
+              pushAll
+                $ [ chooseOne player
+                      $ [Label "Remove a physical trauma" [HealTrauma iid 1 0] | hasPhysical]
+                      <> [Label "Remove a mental trauma" [HealTrauma iid 0 1] | hasMental]
+                      <> [Label "Do not remove trauma" []]
+                  | (iid, player, hasPhysical, hasMental) <- investigatorsWhoCanHealTrauma
+                  ]
+            Reversed -> do
+              defeatedInvestigators <-
+                filterM (`affectedByTarot` card) =<< select Matcher.DefeatedInvestigator
+              defeatedInvestigatorPlayers <- traverse (traverseToSnd getPlayer) defeatedInvestigators
+              pushAll
+                $ [ chooseOne
+                      player
+                      [ Label "Suffer physical trauma" [SufferTrauma iid 1 0]
+                      , Label "Suffer mental trauma" [SufferTrauma iid 0 1]
+                      ]
+                  | (iid, player) <- defeatedInvestigatorPlayers
+                  ]
+          pure x
+        ResolveChaosToken drawnToken chaosTokenFace _ -> do
+          modifiers' <- foldMapM getModifiers [toTarget chaosTokenFace, toTarget drawnToken]
+          if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
+            then pure x
+            else go
+        FailedSkillTest _ _ _ (ChaosTokenTarget token) _ _ -> do
+          modifiers' <- foldMapM getModifiers [toTarget token.face, toTarget token]
+          if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
+            then pure x
+            else go
+        PassedSkillTest _ _ _ (ChaosTokenTarget token) _ _ -> do
+          modifiers' <- foldMapM getModifiers [toTarget token.face, toTarget token]
+          if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
+            then pure x
+            else go
+        SetupInvestigators -> do
+          result <- go
+          let isTowerXVI = (== TheTowerXVI) . toTarotArcana
+          for_ (concatMap (filter isTowerXVI) (toList $ attr scenarioTarotCards s)) \card -> do
+            lead <- getLead
+            mInvestigator <- tarotInvestigator card
+            let investigator = fromMaybe lead mInvestigator
+            let abilities = getAbilities card
+            player <- getPlayer investigator
+            for_ abilities $ \ability -> do
+              push $ chooseOne player [AbilityLabel investigator ability [] [] []]
+          pure result
+        PreScenarioSetup -> do
+          result <- go
+          observed <- select $ Matcher.DeckWith $ Matcher.HasCard $ Matcher.cardIs Assets.observed4
+          for_ observed $ \iid -> do
+            push $ DrawAndChooseTarot iid Upright 3
+          damned <- select $ Matcher.DeckWith $ Matcher.HasCard $ Matcher.cardIs Treacheries.damned
+          for_ damned $ \iid -> do
+            push $ DrawAndChooseTarot iid Reversed 1
+          pure result
+        ScenarioResolution {} -> do
+          -- This is a bit of a hack, but we want to trigger the end game window
+          -- before going into the resolution
+          if not $ attr scenarioInResolution x
+            then do
+              whenEnd <- checkWindows [mkWhen Window.EndOfGame]
+              pushAll [whenEnd, msg]
+              pure $ overAttrs (\a -> a & inResolutionL .~ True) x
+            else go
+        _ -> go
    where
     go = Scenario <$> runMessage msg s
 
@@ -624,6 +630,10 @@ allScenarios =
     , ("08648", SomeScenario theHeartOfMadnessPart1)
     , ("08648a", SomeScenario theHeartOfMadnessPart1)
     , ("08648b", SomeScenario theHeartOfMadnessPart2)
+    , ("09501", SomeScenario riddlesAndRain)
+    , ("09520", SomeScenario deadHeat)
+    , ("09545", SomeScenario sanguineShadows)
+    , ("09566", SomeScenario dealingsInTheDark)
     , ("50011", SomeScenario returnToTheGathering)
     , ("50025", SomeScenario returnToTheMidnightMasks)
     , ("50032", SomeScenario returnToTheDevourerBelow)
@@ -649,7 +659,21 @@ allScenarios =
     , ("53038", SomeScenario returnToTheBoundaryBeyond)
     , ("53045", SomeScenario returnToHeartOfTheEldersPart1)
     , ("53048", SomeScenario returnToHeartOfTheEldersPart2)
+    , ("53053", SomeScenario returnToTheCityOfArchives)
+    , ("53059", SomeScenario returnToTheDepthsOfYoth)
+    , ("53061", SomeScenario returnToShatteredAeons)
+    , ("53066", SomeScenario returnToTurnBackTime)
+    , ("54016", SomeScenario returnToDisappearanceAtTheTwilightEstate)
+    , ("54017", SomeScenario returnToTheWitchingHour)
+    , ("54024", SomeScenario returnToAtDeathsDoorstep)
+    , ("54029", SomeScenario returnToTheSecretName)
+    , ("54034", SomeScenario returnToTheWagesOfSin)
+    , ("54042", SomeScenario returnToForTheGreaterGood)
+    , ("54046", SomeScenario returnToUnionAndDisillusion)
+    , ("54049", SomeScenario returnToInTheClutchesOfChaos)
+    , ("54056", SomeScenario returnToBeforeTheBlackThrone)
     , ("71001", SomeScenario theMidwinterGala)
+    , ("72001", SomeScenario filmFatale)
     , ("81001", SomeScenario curseOfTheRougarou)
     , ("82001", SomeScenario carnevaleOfHorrors)
     , ("84001", SomeScenario murderAtTheExcelsiorHotel)
@@ -720,6 +744,10 @@ scenarioEncounterSets =
     , ("08648", EncounterSet.TheHeartOfMadness)
     , ("08648a", EncounterSet.TheHeartOfMadness)
     , ("08648b", EncounterSet.TheHeartOfMadness)
+    , ("09501", EncounterSet.RiddlesAndRain)
+    , ("09520", EncounterSet.DeadHeat)
+    , ("09545", EncounterSet.SanguineShadows)
+    , ("09566", EncounterSet.DealingsInTheDark)
     , ("50011", EncounterSet.ReturnToTheGathering)
     , ("50025", EncounterSet.ReturnToTheMidnightMasks)
     , ("50032", EncounterSet.ReturnToTheDevourerBelow)
@@ -745,7 +773,21 @@ scenarioEncounterSets =
     , ("53038", EncounterSet.ReturnToTheBoundaryBeyond)
     , ("53045", EncounterSet.ReturnToHeartOfTheElders)
     , ("53048", EncounterSet.ReturnToHeartOfTheElders)
+    , ("53053", EncounterSet.ReturnToTheCityOfArchives)
+    , ("53059", EncounterSet.ReturnToTheDepthsOfYoth)
+    , ("53061", EncounterSet.ReturnToShatteredAeons)
+    , ("53066", EncounterSet.ReturnToTurnBackTime)
+    , ("54016", EncounterSet.ReturnToDisappearanceAtTheTwilightEstate)
+    , ("54017", EncounterSet.ReturnToTheWitchingHour)
+    , ("54024", EncounterSet.ReturnToAtDeathsDoorstep)
+    , ("54029", EncounterSet.ReturnToTheWitchingHour)
+    , ("54034", EncounterSet.ReturnToTheWagesOfSin)
+    , ("54042", EncounterSet.ReturnToForTheGreaterGood)
+    , ("54046", EncounterSet.ReturnToUnionAndDisillusion)
+    , ("54049", EncounterSet.ReturnToInTheClutchesOfChaos)
+    , ("54056", EncounterSet.ReturnToBeforeTheBlackThrone)
     , ("71001", EncounterSet.TheMidwinterGala)
+    , ("72001", EncounterSet.FilmFatale)
     , ("81001", EncounterSet.CurseOfTheRougarou)
     , ("82001", EncounterSet.CarnevaleOfHorrors)
     , ("84001", EncounterSet.MurderAtTheExcelsiorHotel)

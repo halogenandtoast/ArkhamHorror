@@ -9,12 +9,17 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.DamageEffect
+import Arkham.Enemy.Creation (EnemyCreation (..))
+import Arkham.Enemy.Helpers
 import Arkham.Enemy.Types
+import Arkham.ForMovement
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
+import Arkham.Helpers.Calculation
 import Arkham.Helpers.Damage (damageEffectMatches)
 import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Helpers.Location
-import Arkham.Helpers.Message (placeLocation, toDiscard)
+import Arkham.Helpers.Message (placeLocation, pushM, toDiscard)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref
@@ -34,10 +39,15 @@ import Arkham.Queue
 import Arkham.Source
 import Arkham.Spawn
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
+import Arkham.Zone
 import Data.Foldable (foldrM)
 import Data.List qualified as List
+import Data.Monoid (First (..))
+import Data.Proxy
+import Data.Typeable
 
 spawned :: EnemyAttrs -> Bool
 spawned EnemyAttrs {enemyPlacement} = enemyPlacement /= Unplaced
@@ -49,18 +59,16 @@ isActionTarget :: Targetable a => a -> Target -> Bool
 isActionTarget a = isTarget a . toProxyTarget
 
 spawnAt
-  :: (HasGame m, HasQueue Message m, MonadRandom m) => EnemyId -> Maybe InvestigatorId -> SpawnAt -> m ()
+  :: (HasGame m, Tracing m, HasQueue Message m, MonadRandom m)
+  => EnemyId -> Maybe InvestigatorId -> SpawnAt -> m ()
 spawnAt _ _ NoSpawn = pure ()
 spawnAt eid miid (SpawnAtLocation lid) = do
   pushAll
     $ windows [Window.EnemyWouldSpawnAt eid lid]
     <> resolve
       ( EnemySpawn
-          $ SpawnDetails
+          $ (mkSpawnDetails eid $ SpawnAtLocation lid)
             { spawnDetailsInvestigator = miid
-            , spawnDetailsSpawnAt = SpawnAtLocation lid
-            , spawnDetailsEnemy = eid
-            , spawnDetailsOverridden = False
             }
       )
 spawnAt eid miid (SpawnAt locationMatcher) = do
@@ -82,6 +90,13 @@ spawnAt eid miid (SpawnAtFirst (x : xs)) = case x of
       then spawnAt eid miid (SpawnAt matcher)
       else spawnAt eid miid (SpawnAtFirst xs)
   other -> spawnAt eid miid other
+spawnAt eid miid SpawnAtRandomLocation = do
+  locations <- shuffle =<< select Anywhere
+  case nonEmpty locations of
+    Nothing -> do
+      attrs <- getAttrs @Enemy eid
+      noSpawn attrs miid
+    Just (x :| _) -> spawnAt eid miid (SpawnAtLocation x)
 spawnAt eid miid SpawnAtRandomSetAsideLocation = do
   cards <- getSetAsideCardsMatching (CardWithType LocationType)
   case nonEmpty cards of
@@ -127,7 +142,7 @@ getModifiedDamageAmount target damageAssignment = do
   applyModifierCaps _ n = n
 
 getModifiedKeywords
-  :: (HasCallStack, HasGame m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> m (Set Keyword)
+  :: (HasCallStack, HasGame m, Tracing m, ToId enemy EnemyId) => enemy -> m (Set Keyword)
 getModifiedKeywords e = do
   mods <- getModifiers (asId e)
   keywords <- field EnemyKeywords (asId e)
@@ -137,7 +152,7 @@ getModifiedKeywords e = do
        in Swarming $ case fromNullable xs of Nothing -> k; Just ys -> Static $ maximum ys
     k -> k
 
-canEnterLocation :: HasGame m => EnemyId -> LocationId -> m Bool
+canEnterLocation :: (HasGame m, Tracing m) => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do
   modifiers' <- (<>) <$> getModifiers lid <*> getModifiers eid
   not <$> flip anyM modifiers' \case
@@ -145,7 +160,8 @@ canEnterLocation eid lid = do
     Modifier.CannotMove -> fieldMap EnemyPlacement isInPlayPlacement eid
     _ -> pure False
 
-getFightableEnemyIds :: (HasGame m, Sourceable source) => InvestigatorId -> source -> m [EnemyId]
+getFightableEnemyIds
+  :: (HasGame m, Tracing m, Sourceable source) => InvestigatorId -> source -> m [EnemyId]
 getFightableEnemyIds iid (toSource -> source) = do
   fightAnywhereEnemyIds <-
     select AnyInPlayEnemy >>= filterM \eid -> do
@@ -173,20 +189,20 @@ getFightableEnemyIds iid (toSource -> source) = do
         )
         modifiers'
 
-getEnemyAccessibleLocations :: HasGame m => EnemyId -> m [LocationId]
+getEnemyAccessibleLocations :: (HasGame m, Tracing m) => EnemyId -> m [LocationId]
 getEnemyAccessibleLocations eid = do
   location <- fieldMap EnemyLocation (fromJustNote "must be at a location") eid
-  matcher <- getConnectedMatcher location
+  matcher <- getConnectedMatcher NotForMovement location
   connectedLocationIds <- select matcher
   filterM (canEnterLocation eid) connectedLocationIds
 
-getUniqueEnemy :: (HasCallStack, HasGame m) => CardDef -> m EnemyId
+getUniqueEnemy :: (HasCallStack, HasGame m, Tracing m) => CardDef -> m EnemyId
 getUniqueEnemy = selectJust . enemyIs
 
-getUniqueEnemyMaybe :: HasGame m => CardDef -> m (Maybe EnemyId)
+getUniqueEnemyMaybe :: (HasGame m, Tracing m) => CardDef -> m (Maybe EnemyId)
 getUniqueEnemyMaybe = selectOne . enemyIs
 
-getEnemyIsInPlay :: HasGame m => CardDef -> m Bool
+getEnemyIsInPlay :: (HasGame m, Tracing m) => CardDef -> m Bool
 getEnemyIsInPlay = selectAny . enemyIs
 
 defeatEnemy :: (HasGame m, Sourceable source) => EnemyId -> InvestigatorId -> source -> m [Message]
@@ -195,24 +211,25 @@ defeatEnemy enemyId investigatorId (toSource -> source) = do
   afterMsg <- checkWindow $ mkAfter $ Window.EnemyWouldBeDefeated enemyId
   pure [whenMsg, afterMsg, DefeatEnemy enemyId investigatorId source]
 
-enemyEngagedInvestigators :: HasGame m => EnemyId -> m [InvestigatorId]
+enemyEngagedInvestigators :: (HasGame m, Tracing m) => EnemyId -> m [InvestigatorId]
 enemyEngagedInvestigators eid = do
   asIfEngaged <- select $ InvestigatorWithModifier (AsIfEngagedWith eid)
-  placement <- field EnemyPlacement eid
-  others <- case placement of
-    InThreatArea iid -> pure [iid]
-    AtLocation lid -> do
+  mPlacement <- fieldMay EnemyPlacement eid
+  others <- case mPlacement of
+    Just (InThreatArea iid) -> pure [iid]
+    Just (AtLocation lid) -> do
       isEngagedMassive <- eid <=~> (MassiveEnemy <> ReadyEnemy)
       if isEngagedMassive then select (investigatorAt lid) else pure []
-    AsSwarm eid' _ -> enemyEngagedInvestigators eid'
+    Just (AsSwarm eid' _) -> enemyEngagedInvestigators eid'
     _ -> pure []
   pure . nub $ asIfEngaged <> others
 
-enemyMatches :: HasGame m => EnemyId -> Matcher.EnemyMatcher -> m Bool
+enemyMatches :: (HasGame m, Tracing m) => EnemyId -> Matcher.EnemyMatcher -> m Bool
 enemyMatches !enemyId !mtchr = elem enemyId <$> select mtchr
 
 enemyAttackMatches
-  :: HasGame m => InvestigatorId -> EnemyAttackDetails -> Matcher.EnemyAttackMatcher -> m Bool
+  :: (HasGame m, Tracing m)
+  => InvestigatorId -> EnemyAttackDetails -> Matcher.EnemyAttackMatcher -> m Bool
 enemyAttackMatches youId details@EnemyAttackDetails {..} = \case
   Matcher.EnemyAttackMatches as -> allM (enemyAttackMatches youId details) as
   Matcher.AnyEnemyAttack -> pure True
@@ -243,7 +260,8 @@ enemyAttackMatches youId details@EnemyAttackDetails {..} = \case
       ]
 
 spawnAtOneOf
-  :: (HasGame m, HasQueue Message m) => Maybe InvestigatorId -> EnemyId -> [LocationId] -> m ()
+  :: (HasGame m, Tracing m, HasQueue Message m)
+  => Maybe InvestigatorId -> EnemyId -> [LocationId] -> m ()
 spawnAtOneOf miid eid targetLids = do
   locations' <- select $ Matcher.IncludeEmptySpace Matcher.Anywhere
   player <- maybe getLeadPlayer getPlayer miid
@@ -254,11 +272,8 @@ spawnAtOneOf miid eid targetLids = do
       pushAll $ windows'
         : resolve
           ( EnemySpawn
-              $ SpawnDetails
+              $ (mkSpawnDetails eid $ SpawnAtLocation lid)
                 { spawnDetailsInvestigator = miid
-                , spawnDetailsSpawnAt = SpawnAtLocation lid
-                , spawnDetailsEnemy = eid
-                , spawnDetailsOverridden = False
                 }
           )
     lids -> do
@@ -272,17 +287,14 @@ spawnAtOneOf miid eid targetLids = do
           [ targetLabel lid $ windows'
               : resolve
                 ( EnemySpawn
-                    $ SpawnDetails
-                      { spawnDetailsEnemy = eid
-                      , spawnDetailsInvestigator = miid
-                      , spawnDetailsSpawnAt = SpawnAtLocation lid
-                      , spawnDetailsOverridden = False
+                    $ (mkSpawnDetails eid $ SpawnAtLocation lid)
+                      { spawnDetailsInvestigator = miid
                       }
                 )
           | (windows', lid) <- windowPairs
           ]
 
-sourceCanDamageEnemy :: HasGame m => EnemyId -> Source -> m Bool
+sourceCanDamageEnemy :: (HasGame m, Tracing m) => EnemyId -> Source -> m Bool
 sourceCanDamageEnemy eid source = do
   modifiers' <- getModifiers (EnemyTarget eid)
   not <$> anyM prevents modifiers'
@@ -301,7 +313,7 @@ sourceCanDamageEnemy eid source = do
     _ -> pure False
 
 getDamageableEnemies
-  :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId, Sourceable source)
+  :: (HasGame m, Tracing m, ToId investigator InvestigatorId, Sourceable source)
   => investigator -> source -> EnemyMatcher -> m [EnemyId]
 getDamageableEnemies investigator source matcher = do
   canDealDamage <- can.deal.damage (asId investigator)
@@ -313,28 +325,61 @@ disengageEnemyFromAll :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => e
 disengageEnemyFromAll e = push $ DisengageEnemyFromAll (asId e)
 
 insteadOfDiscarding
-  :: (HasQueue Message m, AsId enemy, IdOf enemy ~ EnemyId)
-  => enemy -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
+  :: (HasQueue Message m, HasGame m, AsId enemy, IdOf enemy ~ EnemyId)
+  => enemy -> QueueT Message m () -> QueueT Message m ()
 insteadOfDiscarding e body = do
-  msgs <- evalQueueT body
+  ws <- concat <$> getWindowStack
   let
-    isEntityDiscarded w = case w.kind of
-      Window.EntityDiscarded _ target -> isTarget (asId e) target
-      _ -> False
-  lift $ replaceAllMessagesMatching
-    \case
-      CheckWindows ws -> any isEntityDiscarded ws
-      Do (CheckWindows ws) -> any isEntityDiscarded ws
-      Discard _ _ target -> isTarget (asId e) target
-      _ -> False
-    \case
-      CheckWindows ws ->
-        case filter (not . isEntityDiscarded) ws of
-          [] -> []
-          ws' -> [CheckWindows ws']
-      Do (CheckWindows ws) ->
-        case filter (not . isEntityDiscarded) ws of
-          [] -> []
-          ws' -> [Do (CheckWindows ws')]
-      Discard {} -> msgs
-      _ -> error "Invalid replacement"
+    go = \case
+      ((Window.windowType -> Window.EnemyDefeated miid dBy eid) : _) | eid == asId e -> Just (miid, dBy)
+      (_ : rest) -> go rest
+      [] -> Nothing
+
+  mWindow <- lift $ cancelEnemyDefeatCapture e
+  body
+  case mWindow of
+    Just w -> pushM $ checkWindows (pure w)
+    Nothing -> case go ws of
+      Just (miid, dBy) -> pushM $ checkAfter $ Window.EnemyDefeated miid dBy (asId e)
+      Nothing -> pure ()
+
+createEngagedWith
+  :: ToId investigator InvestigatorId => investigator -> EnemyCreation Message -> EnemyCreation Message
+createEngagedWith investigator ec =
+  ec
+    { enemyCreationAfter =
+        enemyCreationAfter ec <> [EngageEnemy (asId investigator) (enemyCreationEnemyId ec) Nothing False]
+    }
+{-# INLINE createEngagedWith #-}
+
+getDefeatedEnemyHealth :: (HasGame m, Tracing m) => EnemyId -> m (Maybe Int)
+getDefeatedEnemyHealth eid = do
+  healthValue <- getEnemyField EnemyHealthActual eid
+  for healthValue calculate
+
+type family FlatField k where
+  FlatField (Maybe a) = a
+  FlatField a = a
+
+getEnemyField
+  :: forall a m
+   . (Typeable a, Typeable (FlatField a), HasGame m, Tracing m)
+  => Field Enemy a -> EnemyId -> m (Maybe (FlatField a))
+getEnemyField fld eid = do
+  val <-
+    getFirst
+      . foldMap First
+      <$> sequence
+        ( fieldMay fld eid
+            : overOutOfPlayZones
+              ( \(p :: Proxy zone) ->
+                  fieldMay @(OutOfPlayEntity zone Enemy)
+                    (OutOfPlayEnemyField (knownOutOfPlayZone p) fld)
+                    eid
+              )
+        )
+  pure $ case eqT @(Maybe a) @(Maybe (FlatField a)) of
+    Just Refl -> val
+    Nothing -> case eqT @a @(Maybe (FlatField a)) of
+      Just Refl -> join val
+      Nothing -> Nothing

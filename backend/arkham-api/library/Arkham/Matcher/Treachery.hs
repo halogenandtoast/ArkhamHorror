@@ -58,6 +58,7 @@ data TreacheryMatcher
   | NotTreachery TreacheryMatcher
   | IncludeOutOfPlayTreachery TreacheryMatcher
   | SignatureTreachery
+  | DiscardableTreachery
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not TreacheryMatcher where
@@ -73,5 +74,8 @@ instance Semigroup TreacheryMatcher where
 
 instance Monoid TreacheryMatcher where
   mempty = AnyTreachery
+
+instance IsString TreacheryMatcher where
+  fromString = TreacheryWithTitle . fromString
 
 $(deriveJSON defaultOptions ''TreacheryMatcher)

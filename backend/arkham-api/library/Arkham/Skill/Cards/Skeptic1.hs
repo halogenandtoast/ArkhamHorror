@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.Skeptic1 (skeptic1, Skeptic1 (..)) where
+module Arkham.Skill.Cards.Skeptic1 (skeptic1) where
 
 import Arkham.ChaosToken
 import Arkham.Classes

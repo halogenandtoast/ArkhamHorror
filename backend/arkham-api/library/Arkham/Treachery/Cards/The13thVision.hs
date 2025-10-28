@@ -1,12 +1,12 @@
 module Arkham.Treachery.Cards.The13thVision (the13thVision) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
+import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestInvestigator)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype The13thVision = The13thVision TreacheryAttrs
   deriving anyclass IsTreachery
@@ -24,18 +24,17 @@ instance HasModifiersFor The13thVision where
           iid <- MaybeT getSkillTestInvestigator
           liftGuardM $ iid <=~> colocatedWith iid'
           pure [FailTies]
-    _ -> pure mempty
+    _ -> pure ()
 
 instance HasAbilities The13thVision where
-  getAbilities (The13thVision a) =
-    [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]
+  getAbilities (The13thVision a) = [restricted a 1 OnSameLocation doubleActionAbility]
 
 instance RunMessage The13thVision where
-  runMessage msg t@(The13thVision attrs) = case msg of
+  runMessage msg t@(The13thVision attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ placeInThreatArea attrs iid
+      placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ toDiscardBy iid (attrs.ability 1) attrs
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> The13thVision <$> runMessage msg attrs
+    _ -> The13thVision <$> liftRunMessage msg attrs

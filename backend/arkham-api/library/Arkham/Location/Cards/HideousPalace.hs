@@ -10,6 +10,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Arkham.Trait (Trait (Void))
 
 newtype HideousPalace = HideousPalace LocationAttrs
@@ -24,8 +25,9 @@ instance HasAbilities HideousPalace where
     extendRevealed
       a
       [ restricted a 1 (CluesOnThis $ lessThan 4) $ forced $ RoundEnds #when
-      , withTooltip
-          "Shuffle this location into the Cosmos, moving each investigator and enemy that was at this location to Hideous Palace"
+      , scenarioI18n
+          $ withI18nTooltip "hideousPalace.ability"
+          $ withHighlight a
           $ restricted (proxied (LocationMatcherSource $ withTrait Void) a) 1 Here actionAbility
       ]
 
@@ -40,5 +42,8 @@ instance RunMessage HideousPalace where
       for_ investigators \iid -> moveTo (attrs.ability 1) iid attrs
       push $ RemovedLocation lid
       shuffleCardsIntoDeck CosmosDeck (only card)
+      pure l
+    Do (PlaceCosmos _ (is attrs -> True) cloc) -> do
+      handleCosmos attrs cloc
       pure l
     _ -> HideousPalace <$> liftRunMessage msg attrs

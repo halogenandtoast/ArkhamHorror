@@ -1,13 +1,10 @@
-module Arkham.Skill.Cards.FightingLessons where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.FightingLessons (fightingLessons) where
 
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher.Types
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype FightingLessons = FightingLessons SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)

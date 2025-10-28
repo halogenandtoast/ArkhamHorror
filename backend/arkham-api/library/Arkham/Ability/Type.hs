@@ -4,15 +4,15 @@
 
 module Arkham.Ability.Type where
 
-import Arkham.Prelude
-
 import Arkham.Action
 import Arkham.Cost
 import Arkham.Criteria (Criterion)
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.SkillType
 import Data.Aeson.TH
 import GHC.OverloadedLabels
+import GHC.Records
 
 evadeAction :: Cost -> AbilityType
 evadeAction cost = ActionAbility [Evade] (ActionCost 1 <> cost)
@@ -102,6 +102,9 @@ data AbilityType
   | ConstantAbility
   deriving stock (Show, Ord, Eq, Data)
 
+instance HasField "fast" AbilityType Bool where
+  getField = isFastAbilityType
+
 overAbilityTypeActions :: ([Action] -> [Action]) -> AbilityType -> AbilityType
 overAbilityTypeActions f = \case
   FastAbility' cost actions -> FastAbility' cost (f actions)
@@ -148,6 +151,26 @@ pattern Anytime :: AbilityType
 pattern Anytime <- SilentForcedAbility AnyWindow
   where
     Anytime = SilentForcedAbility AnyWindow
+
+isFastAbilityType :: AbilityType -> Bool
+isFastAbilityType = \case
+  FastAbility' {} -> True
+  ForcedAbility {} -> False
+  SilentForcedAbility {} -> False
+  ForcedAbilityWithCost {} -> False
+  Objective aType -> isFastAbilityType aType
+  DelayedAbility aType -> isFastAbilityType aType
+  ReactionAbility {} -> False
+  CustomizationReaction {} -> False
+  ConstantReaction {} -> False
+  ActionAbility {} -> False
+  ActionAbilityWithSkill {} -> False
+  AbilityEffect {} -> False
+  Haunted {} -> False
+  ServitorAbility {} -> False
+  Cosmos {} -> False
+  ForcedWhen _ aType -> isFastAbilityType aType
+  ConstantAbility -> False
 
 abilityTypeCostL :: Traversal' AbilityType Cost
 abilityTypeCostL f = \case

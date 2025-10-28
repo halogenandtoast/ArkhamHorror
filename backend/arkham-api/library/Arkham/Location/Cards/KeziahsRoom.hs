@@ -2,17 +2,19 @@ module Arkham.Location.Cards.KeziahsRoom (keziahsRoom) where
 
 import Arkham.Ability
 import Arkham.Deck qualified as Deck
-import Arkham.Action qualified as Action
+import Arkham.Discover
 import Arkham.Draw.Types
 import Arkham.GameValue
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Trait (Trait(Hex))
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.TheSecretName.Helpers
+import Arkham.Trait (Trait (Hex))
 
 newtype Metadata = Metadata {revealTopCard :: Bool}
   deriving stock (Show, Eq, Generic)
@@ -30,35 +32,22 @@ instance HasAbilities KeziahsRoom where
     extendRevealed
       a
       [ mkAbility a 1 $ freeReaction $ SkillTestResult #when You (WhileInvestigating $ be a) #success
-      , haunted
-          "Discard cards from the top of the encounter deck until a Hex card is discarded. Draw that card."
-          a
-          2
+      , scenarioI18n $ hauntedI "keziahsRoom.haunted" a 2
       ]
 
 instance RunMessage KeziahsRoom where
   runMessage msg l@(KeziahsRoom (attrs `With` meta)) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       pure $ KeziahsRoom $ attrs `with` Metadata True
-    Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ | revealTopCard meta -> do
+    Msg.DiscoverClues iid d | revealTopCard meta && d.location == DiscoverAtLocation attrs.id && d.isInvestigate == IsInvestigate -> do
       push $ DrawCards iid $ targetCardDraw attrs UnknownPlacesDeck 1
       pure $ KeziahsRoom $ attrs `with` Metadata False
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
-      labels <-
-        selectFields LocationLabel
-          $ LocationWithUnrevealedTitle "Unknown Places"
-          <> UnrevealedLocation
-      let
-        nextLabel =
-          fromJustNote "too many locations"
-            $ find (`notElem` labels)
-            $ map (\n -> "unknownPlaces" <> tshow @Int n) [1 .. 7]
       for_ drewCards.cards \card -> do
-        lid <- placeLocation card
-        setLocationLabel lid nextLabel
-        chooseOneM iid do
-          labeled "Do not move" nothing
-          labeled "Move to location" $ moveTo attrs iid lid
+        lid <- placeLabeledLocation "unknownPlaces" card
+        chooseOneM iid $ withI18n do
+          labeled' "doNotMove" nothing
+          labeled' "move" $ moveTo attrs iid lid
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       discardUntilFirst iid attrs Deck.EncounterDeck (basic $ withTrait Hex)

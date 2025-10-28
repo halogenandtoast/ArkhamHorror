@@ -16,7 +16,8 @@ newtype SecretPassage = SecretPassage LocationAttrs
 
 secretPassage :: LocationCard SecretPassage
 secretPassage =
-  location SecretPassage Cards.secretPassage 5 (PerPlayer 1)
+  symbolLabel
+    $ location SecretPassage Cards.secretPassage 5 (PerPlayer 1)
     & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasAbilities SecretPassage where

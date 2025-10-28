@@ -12,5 +12,90 @@
       "tablet": "-3. If you fail, place 1 doom on each _Cultist_ enemy in play. If there are no _Cultist_ enemies in play, reveal another token.",
       "elderThing": "-3. If you fail, move all doom from the _Cultist_ enemy with the most doom on it to the current agenda. If no _Cultist_ enemies in play have doom on them, reveal another token."
     }
+  },
+  "tooltips": {
+    "lodgeGatesWeveBeenExpectingYou": {
+      "resign": "On second thought, maybe coming here was a bad idea"
+    },
+    "lodgeGatesMembersOnly": {
+      "resign": "On second thought, maybe coming here was a bad idea"
+    },
+    "lobbyWeveBeenExpectingYou": {
+      "parley": "{'{'}action{'}'}: _Parley._ The guards recognize you from the Meiger estate and let you pass. Reveal the Lobby."
+    },
+    "lodgeCellarMembersOnly": {
+      "action": "{'{'}action{'}'}: Investigators at the Lodge Gates spend 1 {perPlayer} clues, as a group: Reveal the Lodge Cellar."
+    }
+  },
+  "label": {
+    "unlight": "Unlight a brazier at your location",
+    "exhaust": "Exhaust the Spectral Watcher",
+    "damage": "Deal 5 damage to the Spectral Watcher",
+    "puzzleBox": {
+      "unlight": "Unlight a brazier at your location",
+      "damage": "Deal 5 damage to the Spectral Watcher",
+      "exhaust": "Exhaust the Spectral Watcher"
+    }
+  },
+  "standalone": {
+    "label": {
+      "members": "The investigators are members of the Lodge.",
+      "notMembers": "The investigators are not members of the Lodge."
+    }
+  },
+  "intro": {
+    "title": "Scenario V: For the Greater Good",
+    "intro1": "<p>_Intro 1_: Ever since your brush with death at Hangman’s Hill, the situation in Arkham has only worsened. In the days since, there have been more reports of “ghost sightings” and even several more disappearances. A thin layer of grey mist lingers over the streets at all hours, day and night. As soon as the sun begins to set each evening, doors are shut and locked. Without truly realizing why, very few people dare venture out at night. Some businesses have even closed their doors to customers during the day, citing “poor weather.” Things are getting out of hand.</p><p class='basic'>Check Campaign Log.</p>",
+    "membersOfTheLodge": "*If the investigators are members of the Lodge*, proceed to _Intro 2_.",
+    "enemiesOfTheLodge": "*If the investigators are enemies of the Lodge*, skip to _Intro 3_.",
+    "learnedNothingOfTheLodgesSchemes": "*If the investigators learned nothing of the Lodge’s schemes*, skip to _Intro 4_.",
+    "neverSeenOrHeardFromAgain": "*If the investigators are never seen or heard from again*, skip to _Intro 5_.",
+    "intro2": "<p>_Intro 2_: The creature that appeared at the Lodge’s charity gala is clearly not bound to Josef Meiger’s manor, which means the horrors you’ve experienced could be just the start of something much worse. It is time to report your findings to the Silver Twilight Lodge. Perhaps they can help interpret the knowledge you’ve gathered, and inform you as to what your next step should be. With their help, you may be able to save Arkham…</p><p class='basic'>Check Campaign Log. *If the investigators are deceiving the Lodge*, read the sidebar below. Otherwise, skip this sidebar.</p>",
+    "deceivingTheLodge": "<p class='green'>…though you suspect the Lodge has other interests. The Lodge clearly knows more about what is happening than they care to admit. There is a sinister purpose that lurks beneath the surface of the Lodge, and you intend to discover what that purpose is.</p>",
+    "intro2Skip": "<p class='basic right'>Skip to _Setup_.</p>",
+    "intro3": "<p>_Intro 3_: The creature that appeared at the Lodge’s charity gala is clearly not bound to Josef Meiger’s manor, which means the horrors you’ve experienced could be just the start of something much worse. You’re not sure why just yet, but you know the Silver Twilight Lodge is connected to the creature in some way. Perhaps it’s time to pay the Lodge a visit—with or without their permission.</p><p class='basic right'>Skip to _Setup_.</p>",
+    "intro4": "<p>_Intro 4_: You can’t help but wonder if you missed something important in the home of Josef Meiger. The four disappearances that occurred at the Lodge’s charity gala could not have been a coincidence. If those victims encountered a creature like the one you saw at the graveyard, the horrors you’ve experienced could be just the start of something much worse. You’re not sure why just yet, but you are sure that the Silver Twilight Lodge is connected to these events in some way. Perhaps it’s time to pay the Lodge a visit—with or without their permission.</p><p class='basic right'>Skip to _Setup_.</p>",
+    "intro5": "<p>_Intro 5_: Too many disappearances have occurred at Josef Meiger’s estate for it to be a coincidence: first, the four victims at the charity gala, then the ones who attended the benefit dinner one week later. If they encountered a creature like the one you saw at the graveyard, the horrors you’ve experienced could be just the start of something much worse. You’re not sure why just yet, but you are sure that the Silver Twilight Lodge is connected to these events in some way. Perhaps it’s time to pay the Lodge a visit—with or without their permission.</p><p class='basic right'>Proceed to _Setup_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *For the Greater Good*, *City of Sins*, *Silver Twilight Lodge*, *Ancient Evils*, *Dark Cult*, and *Locked Doors*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/for-the-greater-good.png' /><img src='{setImgPath}/city-of-sins.png' /><img src='{setImgPath}/silver-twilight-lodge.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+    "membersOfTheLodge": {
+      "instructions": "Check Campaign Log. If the investigators are members of the Lodge, perform the following:",
+      "actDeck": "When constructing the act deck, use Act 1a—“Warm Welcome” and remove Act 1a—“Infiltrating the Lodge” from the game.",
+      "weveBeenExpectingYou": "Put the versions of Lodge Gates, Lobby, and Lodge Cellar with the (*We’ve Been Expecting You*) subtitle into play. Remove the other versions of those locations from the game.",
+      "removeFromGame": "Search the gathered encounter sets for the following cards, and remove them from the game: 3 copies of Acolyte, 1 copy of Wizard of the Order, 2 copies of Knight of the Inner Circle, and 1 copy of Cell Keeper."
+    },
+    "otherwise": {
+      "instructions": "Otherwise, perform the following, instead:",
+      "actDeck": "When constructing the act deck, use Act 1a—“Infiltrating the Lodge” and remove Act 1a—“Warm Welcome” from the game.",
+      "membersOnly": "Put the versions of Lodge Gates, Lobby, and Lodge Cellar with the (*Members Only*) subtitle into play. Remove the other versions of those locations from the game.",
+      "removeFromGame": "Search the gathered encounter sets for the following cards, and remove them from the game: 3 copies of Lodge Neophyte, 1 copy of Keeper of Secrets, 2 copies of Knight of the Outer Void, and 1 copy of Lodge Jailor."
+    },
+    "placeLocations": "Put the Lodge Catacombs and the Lounge into play. Each investigator begins play at the Lodge Gates. Set each other remaining location aside, out of play (Library, Vault, Inner Sanctum, and the 2 Sanctum Doorway locations).",
+    "setAside": "Set the following cards aside, out of play: the Puzzle Box asset, the Summoned Beast enemy, the August Lindquist asset, and the double‑sided Nathan Wick enemy.",
+    "setAsideKeys": "Set 1 {'{'}skull{'}'} token, 1 {'{'}cultist{'}'} token, 1 {'{'}tablet{'}'} token, and 1 {'{'}elderThing{'}'} token aside, out of play. These tokens should be taken from your collection, not from your chaos bag. These tokens are keys. (See “Keys” on next page.)"
+  },
+  "keys": {
+    "title": "Keys",
+    "body": "<p class='basic'>The setup of this scenario instructs the players to set aside 1 {'{'}skull{'}'} token, 1 {'{'}cultist{'}'} token, 1 {'{'}tablet{'}'} token, and 1 {'{'}elderThing{'}'} token, as keys. These keys are never placed in the chaos bag and do not act as traditional chaos tokens. Instead, they represent keys which investigators can recover and use throughout the scenario.</p><p class='basic'>Keys can enter play via several different card effects, and are usually placed on an enemy, location, or story asset. Keys can be acquired in one of three ways:</p><ul><li>If a location with a key on it has no clues, an investigator can take control of its key as a {'{'}fast{'}'} ability.</li><li>If an enemy with a key on it leaves play, the investigator who caused that enemy to leave play must take control of its key. (If the enemy leaves play through some other means, place its key on its location.)</li><li>Some card effects may allow investigators to take control of keys in other ways.</li></ul><p class='basic'>When an investigator takes control of a key, he or she places that key on his or her investigator card. If an investigator who controls 1 or more keys is eliminated, place each of those keys on his or her location. As an {'{'}action{'}'} ability, an investigator may give any number of his or her keys to another investigator at the same location."
+  },
+  "resolutions": {
+    "extraKey": "Extra Key ({key})",
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: You manage to escape the building and flee on foot. As you run, you can hear a thunderous rumble coming from the manor. Several others burst through the front door behind you, too preoccupied to notice you. One yells to her companions: “Get out and gather at the Unvisited Isle! We have to perform the binding rite with or without the device!”</p><p>“What about the guardian?” A man at the gates asks.</p><p>“It’s no use,” she replies. “Just go!”</p><p>That is when the screaming begins. A spray of blood splatters against the basement window. Those who escaped immediately panic and flee.</p><p>You don’t stop or look back. You run until the building has faded behind the dense, grey mist, until you can no longer hear the screams of those still inside, until your legs can barely move.</p><p>Is this the kind of “sacrifice” the Silver Twilight Lodge believes in making? And if so, what does this mean for the “binding rite” they seek to complete at the Unvisited Isle?</p><ul><li>In your Campaign Log, record *the guardian of the trap emerged*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>Skip _Interlude III: The Inner Circle_, and proceed directly to _Scenario VI: Union and Disillusion_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Every fiber of your being is stretched as the box pulls you in. However, before it can accomplish its task, the lid is suddenly slammed shut by an elderly hand. You reel backward and collapse as the pulling force ceases. When your senses finally return to you, Carl Sanford is standing over you, unflappable as ever. “I see you managed to open the device without defeating its guardian. How fortunate,” he declares. He examines the box closely, removing the key and the coin from the container and recognizing them instantly. “I had a feeling you would be a valuable asset to the Lodge, but it seems I underestimated your resourcefulness. Perhaps it is time that you learn the truth behind our organization. I have a feeling you are destined for great things.” Unexpectedly, Mr. Sanford hands the puzzle box back to you, along with the components that unlocked it. “Come with me. There is much to discuss.”</p><ul><li>In your Campaign Log, record *the investigators discovered how to open the puzzle box*. Any one investigator may choose to add the Puzzle Box story asset to his or her deck. This card does not count toward that investigator’s deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>Proceed to _Interlude III: The Inner Circle_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Every fiber of your being is stretched as the box pulls you in. However, before it can accomplish its task, you manage to reach out and slam the lid shut. You shudder uncontrollably as your senses slowly return to you. This box is more dangerous than you could have imagined. In the hands of the Lodge, it could have been a powerful weapon, though you’re not sure what they intended to do with it. Just then, you hear several Lodge members approaching. You quickly shift one of the room’s bookcases aside and hide behind it before they enter the room. “You’re sure you heard something in here? I don’t see anybody,” one of them says.</p><p>“Hm…” the other pauses, presumably inspecting the room for signs of intruders. “Must have been nothing.”</p><p>“It’s all right. We’re all a bit on edge since the trap box went missing. Come, we don’t want to be late for the ceremony. Tonight is an important night.” Their footfalls become softer as they depart. The man’s words linger in your thoughts momentarily. What did he mean by tonight being an important night? This could be just as important as the puzzle box they had been attempting to open. You quietly follow the two men as they head deep into the tunnels beneath the Lodge. You struggle to keep up with them while trying to keep your footsteps silent on the stone floor of the passageway. Finally, they enter a large door with the familiar three arrows of Silver Twilight emblazoned along its surface. Ritualistic chanting fills the hall from the other side. You approach softly, placing your ear against the door to listen in.</p><p>“Brothers and sisters,” an elderly voice announces, “thank you for coming to this hallowed gathering. The time we have long waited for approaches.” You recognize the man’s voice – it is Carl Sanford, president of the Silver Twilight Lodge. “For many decades, the Order of the Silver Twilight has pursued knowledge that can elevate humanity. We have defended against threats to our very existence. We have sacrificed everything for this sacred cause. Now, one of these threats terrorizes our city, and once again we must do what has to be done in order to protect it.” The crowd responds with solemn approval. “Tonight, we will complete the ritual we began many nights ago at the center of the Unvisited Isle. Tonight, we will finally bind the revenant and learn what it knows. We must not allow the secrets of AZATHOTH to be lost to those who would do humanity harm.”</p><p>The cult replies with a monotone hymn, and you take this opportunity to flee the Lodge before you are discovered. The conspiracy you have unveiled leaves you with even more questions. If the revenant Mr. Sanford speaks of is what you think it is, binding it will surely protect Arkham, as he claims. But what knowledge do they seek to learn from it?…and what in the hell is an “AZATHOTH?”</p><ul><li>In your Campaign Log, record *the investigators discovered how to open the puzzle box*. Any one investigator may choose to add the Puzzle Box story asset to his or her deck. This card does not count toward that investigator’s deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>Skip _Interlude III: The Inner Circle_, and proceed directly to _Scenario VI: Union and Disillusion_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: The beast that had emerged from the box was a vicious guardian, slaughtering anyone in its path. Somehow you were able to slay the creature, but the consequences were dire. Many Lodge members were gruesomely killed by the creature’s rampage before you were able to put it down. Worse, the device it emerged from was destroyed beyond recognition. You’re not sure whether it broke as a result of the beast’s emergence or as a result of its death, but either way, it is a regretful outcome. “This didn’t work as planned,” one of the robed members of the Order states matter-of-factly as you examine the crushed puzzle box.</p><p>“That’s a hell of an understatement,” another adds. She places a hand on your shoulder and gently pulls you away from the remains of the device. “Come on, that’s a lost cause,” she says.</p><p>Her partner ignores your presence and stoically addresses her. “We’ll have to get to the Unvisited Isle and complete the binding rite without the trap.” She nods and takes one last look at you before the remaining Lodge members flee the building. Is this the kind of “sacrifice” the Silver Twilight Lodge believes in making? And if so, what does this mean for the “binding rite” they seek to complete at the Unvisited Isle?</p><ul><li>In your Campaign Log, record *the guardian of the trap emerged and was defeated*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>Skip _Interlude III: The Inner Circle_, and proceed directly to _Scenario VI: Union and Disillusion_.</li></ul>"
+    }
   }
 }

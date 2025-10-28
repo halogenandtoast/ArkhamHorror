@@ -14,6 +14,7 @@ data TheCircleUndoneKey
   | YouHaveRejectedYourFate
   | TheWitches'SpellWasBroken
   | TheWitches'SpellWasCast
+  | ErynnWantsToMeet
   | MementosDiscovered
   | TheInvestigatorsAreOnGavriella'sTrail
   | TheInvestigatorsAreOnJerome'sTrail
@@ -63,5 +64,7 @@ data TheCircleUndoneKey
   | TheLeadInvestigatorHasJoinedThePipersOfAzathoth
   | AzathothSlumbersForNow
   | TheInvestigatorsSignedTheBlackBookOfAzathoth
+  | ErynnJoinedTheInvestigators
+  | TheCovenOfKeziahHoldsTheWorldInItsGrasp
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

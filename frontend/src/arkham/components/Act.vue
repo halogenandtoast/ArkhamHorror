@@ -138,7 +138,7 @@ async function chooseAbility(index: number) {
 }
 
 const isVertical = computed(() => {
-  return ["03321b", "04117b", "04118b", "04122b", "04125b", "04126b", "04128b", "04130b", "04133b", "04134b", "04137b", "04209b", "05055b", "05286b", "05288b", "10607b", "53029b", "53030b", "53032b", "53034b", "53046b", "82006b"].includes(cardCode.value)
+  return ["03321b", "04117b", "04118b", "04122b", "04125b", "04126b", "04128b", "04130b", "04133b", "04134b", "04137b", "04209b", "05055b", "05288ab", "05286ab", "05286b", "05288b", "10607b", "53029b", "53030b", "53032b", "53034b", "53046b", "82006b"].includes(cardCode.value)
 })
 
 const breaches = computed(() => {
@@ -169,12 +169,12 @@ const breaches = computed(() => {
       @choose="chooseAbility"
       />
     <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="showCardsUnderAct">{{viewUnderLabel}}</button>
-    <img
-      v-for="(card, idx) in cardsNextTo"
-      class="card card--sideways"
-      :key="idx"
-      :src="imageForCard(card)"
-    />
+    <div class="card-container" v-for="(card, idx) in cardsNextTo" :key="idx">
+      <img
+        class="card card--sideways"
+        :src="imageForCard(card)"
+      />
+    </div>
     <Treachery
       v-for="treacheryId in act.treacheries"
       :key="treacheryId"
@@ -191,12 +191,12 @@ const breaches = computed(() => {
         :amount="act.clues"
       />
       <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
-      <Key v-for="key in keys" :key="keyToId(key)" :name="key" />
+      <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="$emit('choose', $event)" />
     </div>
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .act-container :deep(.card) {
   flex: 0;
   width: var(--card-width);

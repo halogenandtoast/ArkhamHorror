@@ -1,18 +1,9 @@
-module Arkham.Agenda.Cards.SnappedThreads (
-  SnappedThreads (..),
-  snappedThreads,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.SnappedThreads (snappedThreads) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
+import Arkham.Agenda.Import.Lifted hiding (InvestigatorEliminated)
 import Arkham.Matcher
-import Arkham.Resolution
-import Arkham.Timing qualified as Timing
 
 newtype SnappedThreads = SnappedThreads AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -24,22 +15,22 @@ snappedThreads = agenda (3, A) SnappedThreads Cards.snappedThreads (Static 12)
 instance HasAbilities SnappedThreads where
   getAbilities (SnappedThreads a) =
     [ mkAbility a 1
-        $ ForcedAbility
-        $ InvestigatorEliminated Timing.When
-        $ AnyInvestigator
-          [ HandWith (HasCard $ CardWithTitle "Relic of Ages")
-          , DiscardWith (HasCard $ CardWithTitle "Relic of Ages")
-          , DeckWith (HasCard $ CardWithTitle "Relic of Ages")
-          , HasMatchingAsset (AssetWithTitle "Relic of Ages")
+        $ forced
+        $ InvestigatorEliminated #when
+        $ oneOf
+          [ HandWith (HasCard "Relic of Ages")
+          , DiscardWith (HasCard "Relic of Ages")
+          , DeckWith (HasCard "Relic of Ages")
+          , HasMatchingAsset "Relic of Ages"
           ]
     ]
 
 instance RunMessage SnappedThreads where
-  runMessage msg a@(SnappedThreads attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ AdvanceAgenda (toId attrs)
+  runMessage msg a@(SnappedThreads attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advanceAgenda attrs
       pure a
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      push $ ScenarioResolution $ Resolution 4
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      push R4
       pure a
-    _ -> SnappedThreads <$> runMessage msg attrs
+    _ -> SnappedThreads <$> liftRunMessage msg attrs

@@ -12,14 +12,15 @@ import Arkham.Id
 import Arkham.Matcher.Card
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Tracing
 import Arkham.Treachery.Types qualified as Field
 import Data.Monoid (First (..))
 
-class FetchCard a where
-  fetchCardMaybe :: (HasCallStack, HasGame m, CardGen m) => a -> m (Maybe Card)
+class Show a => FetchCard a where
+  fetchCardMaybe :: (HasCallStack, Tracing m, HasGame m, CardGen m) => a -> m (Maybe Card)
 
-fetchCard :: (HasCallStack, HasGame m, CardGen m, FetchCard a) => a -> m Card
-fetchCard a = fromJustNote "Card not found" <$> fetchCardMaybe a
+fetchCard :: (HasCallStack, Tracing m, HasGame m, CardGen m, FetchCard a) => a -> m Card
+fetchCard a = fromJustNote ("Card not found: " <> show a) <$> fetchCardMaybe a
 
 instance FetchCard UniqueFetchCard where
   fetchCardMaybe (UniqueFetchCard def) = do
@@ -34,6 +35,7 @@ instance FetchCard CardDef where
       else maybe (Just <$> genCard def) (pure . Just) =<< maybeGetSetAsideCard def
 
 newtype SetAsideCard = SetAsideCard CardDef
+  deriving newtype Show
 
 instance FetchCard SetAsideCard where
   fetchCardMaybe (SetAsideCard def) = maybeGetSetAsideCard def

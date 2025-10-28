@@ -42,14 +42,7 @@ moveAllTo :: Location -> Message
 moveAllTo = MoveAllTo (TestSource mempty) . toId
 
 spawnAt :: Enemy -> Location -> Message
-spawnAt e l =
-  EnemySpawn
-    $ SpawnDetails
-      { spawnDetailsInvestigator = Nothing
-      , spawnDetailsSpawnAt = SpawnAtLocation (toId l)
-      , spawnDetailsEnemy = toId e
-      , spawnDetailsOverridden = False
-      }
+spawnAt e l = EnemySpawn $ mkSpawnDetails (toId e) (SpawnAtLocation $ toId l)
 
 loadDeck :: Investigator -> [PlayerCard] -> Message
 loadDeck i cs = LoadDeck (toId i) (Deck cs)

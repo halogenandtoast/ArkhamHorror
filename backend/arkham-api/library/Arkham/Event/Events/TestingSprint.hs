@@ -1,7 +1,8 @@
-module Arkham.Event.Events.TestingSprint (testingSprint, TestingSprint (..)) where
+module Arkham.Event.Events.TestingSprint (testingSprint) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
@@ -31,9 +32,7 @@ instance RunMessage TestingSprint where
           . mapMaybe (\(x, my) -> Map.singleton <$> my <*> pure (NE.singleton x))
           <$> selectWithField
             LocationShroud
-            ( InvestigatableLocation
-                <> oneOf [locationWithInvestigator iid, ConnectedFrom (locationWithInvestigator iid)]
-            )
+            (InvestigatableLocation <> orConnected NotForMovement (locationWithInvestigator iid))
       push $ Do msg
       pure . TestingSprint $ attrs `with` Meta locations
     Do (PlayThisEvent iid (is attrs -> True)) -> do
@@ -46,7 +45,7 @@ instance RunMessage TestingSprint where
           chooseOneToHandle iid attrs (x : xs)
           pure e
     HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do
-      let filterChoice (n, (x :| xs)) = (n,) <$> nonEmpty (deleteFirst lid (x : xs))
+      let filterChoice (n, x :| xs) = (n,) <$> nonEmpty (deleteFirst lid (x : xs))
       let meta' = mapMaybe filterChoice (remainingLocations meta)
       sid <- getRandom
       pushM $ mkInvestigateLocation sid iid attrs lid

@@ -3,6 +3,7 @@ import { ComputedRef, computed, watch, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
+import { keyToId } from '@/arkham/types/Key'
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
@@ -247,7 +248,7 @@ const assetStory = computed(() => {
         </div>
         <div v-if="hasPool" class="pool">
           <div class="keys" v-if="keys.length > 0">
-            <Key v-for="key in keys" :key="key" :name="key" />
+            <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
           </div>
           <template v-for="[use, amount] in uses" :key="use">
             <PoolItem
@@ -326,7 +327,7 @@ const assetStory = computed(() => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .card {
   width: var(--card-width);
   max-width: var(--card-width);

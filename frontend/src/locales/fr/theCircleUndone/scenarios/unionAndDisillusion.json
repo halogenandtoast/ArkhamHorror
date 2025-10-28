@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-2. If this is a skill test during a _circle_ action, reveal another token.",
+      "cultist": "-3. If you have no damage on you, take 1 damage. If you have no horror on you, take 1 horror.",
+      "tablet": "-3. If you fail, a _Spectral_ enemy at your location attacks you (even if it is exhausted).",
+      "elderThing": "-3. If this is a skill test during a _circle_ action and you fail, resolve each haunted ability on your location."
+    },
+    "hardExpert": {
+      "skull": "-3. If this is a skill test during a _circle_ action, reveal another token.",
+      "cultist": "-4. If you have no damage on you, take 1 damage. If you have no horror on you, take 1 horror.",
+      "tablet": "-4. If you fail, a _Spectral_ enemy at your location attacks you (even if it is exhausted).",
+      "elderThing": "-4. If this is a skill test during a _circle_ action and you fail, resolve each haunted ability on your location."
+    }
+  }
+}

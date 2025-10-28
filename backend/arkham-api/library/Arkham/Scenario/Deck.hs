@@ -3,7 +3,6 @@
 module Arkham.Scenario.Deck where
 
 import Arkham.Prelude
-
 import Data.Aeson.TH
 
 data ScenarioDeckKey
@@ -21,6 +20,7 @@ data ScenarioDeckKey
   | GuestDeck -- The Midwinter Gala
   | RoadDeck -- Horror in High Gear
   | TekeliliDeck -- Edge of the Earth
+  | ReelDeck -- FilmFatale
   deriving stock (Show, Ord, Eq, Data)
 
 instance ToDisplay ScenarioDeckKey where
@@ -39,6 +39,7 @@ instance ToDisplay ScenarioDeckKey where
     GuestDeck -> "Guest"
     RoadDeck -> "Road"
     TekeliliDeck -> "Tekeli-li"
+    ReelDeck -> "Reel"
 
 $(deriveJSON defaultOptions ''ScenarioDeckKey)
 

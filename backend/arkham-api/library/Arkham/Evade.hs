@@ -17,13 +17,14 @@ mkChooseEvade sid iid source =
   pure
     $ ChooseEvade
       { chooseEvadeInvestigator = iid
-      , chooseEvadeEnemyMatcher = AnyInPlayEnemy
+      , chooseEvadeEnemyMatcher = oneOf [AnyInPlayEnemy, EnemyHiddenInHand (InvestigatorWithId iid)]
       , chooseEvadeSource = toSource source
       , chooseEvadeTarget = Nothing
       , chooseEvadeSkillType = #agility
       , chooseEvadeIsAction = False
       , chooseEvadeOverride = False
       , chooseEvadeSkillTest = sid
+      , chooseEvadeAdditionalOptions = []
       }
 
 mkChooseEvadeMatch

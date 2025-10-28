@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.TakenCaptive (takenCaptive, TakenCaptive (..)) where
+module Arkham.Treachery.Cards.TakenCaptive (takenCaptive) where
 
 import Arkham.Investigator.Projection ()
 import Arkham.Location.Cards qualified as Locations
@@ -20,9 +20,12 @@ instance RunMessage TakenCaptive where
       revelationSkillTest sid iid attrs #agility (Fixed 4)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
+      forInvestigator iid $ ScenarioSpecific "captured" Null
+      doStep 2 msg
+      pure t
+    DoStep 2 (FailedThisSkillTest iid (isSource attrs -> True)) -> do
       holdingCells <- selectJust $ locationIs Locations.holdingCells
       ks <- iid.keys
       for_ ks (placeKey holdingCells)
-      forInvestigator iid $ ScenarioSpecific "captured" Null
       pure t
     _ -> TakenCaptive <$> liftRunMessage msg attrs

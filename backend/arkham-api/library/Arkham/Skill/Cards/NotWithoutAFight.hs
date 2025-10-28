@@ -1,7 +1,5 @@
 module Arkham.Skill.Cards.NotWithoutAFight (notWithoutAFight) where
 
-import Arkham.Card
-import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
@@ -16,10 +14,7 @@ notWithoutAFight = skill NotWithoutAFight Cards.notWithoutAFight
 instance HasModifiersFor NotWithoutAFight where
   getModifiersFor (NotWithoutAFight attrs) = do
     n <- selectCount $ EnemyIsEngagedWith $ InvestigatorWithId attrs.owner
-    modified_
-      attrs
-      (CardIdTarget $ toCardId attrs)
-      [AddSkillIcons $ cycleN n [#willpower, #combat, #agility]]
+    addSkillIcons attrs $ cycleN n [#willpower, #combat, #agility]
 
 instance RunMessage NotWithoutAFight where
   runMessage msg (NotWithoutAFight attrs) = NotWithoutAFight <$> runMessage msg attrs

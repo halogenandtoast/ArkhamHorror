@@ -1,6 +1,7 @@
 module Arkham.Enemy.Cards.Wraith (wraith) where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Card
 import Arkham.Classes.HasQueue (HasQueue)
 import Arkham.Enemy.Cards qualified as Cards
@@ -20,7 +21,7 @@ wraith = enemy Wraith Cards.wraith (2, Static 2, 2) (0, 2)
 
 instance HasAbilities Wraith where
   getAbilities (Wraith a) = case a.placement of
-    AttachedToLocation lid -> [haunted "Spawn Wraith at this location" (proxied lid a) 2]
+    AttachedToLocation lid -> [campaignI18n $ hauntedI "wraith.spawn" (proxied lid a) 2]
     _ ->
       extend1 a
         $ mkAbility a 1

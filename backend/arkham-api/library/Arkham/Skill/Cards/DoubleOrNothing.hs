@@ -1,7 +1,7 @@
 module Arkham.Skill.Cards.DoubleOrNothing (doubleOrNothing) where
 
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest (getSkillTestId)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
 
@@ -14,9 +14,8 @@ doubleOrNothing = skill DoubleOrNothing Cards.doubleOrNothing
 
 instance HasModifiersFor DoubleOrNothing where
   getModifiersFor (DoubleOrNothing attrs) =
-    getSkillTestId >>= \case
-      Nothing -> pure mempty
-      Just sid -> modified_ attrs (SkillTestTarget sid) [DoubleDifficulty, DoubleSuccess]
+    withSkillTest \sid ->
+      modified_ attrs (SkillTestTarget sid) [DoubleDifficulty, DoubleSuccess]
 
 instance RunMessage DoubleOrNothing where
   runMessage msg (DoubleOrNothing attrs) = DoubleOrNothing <$> runMessage msg attrs

@@ -2,7 +2,6 @@ module Arkham.Enemy.Cards.PursuingMotorcar (pursuingMotorcar, PursuingMotorcar (
 
 import Arkham.Ability
 import Arkham.Attack.Types
-import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Helpers.Window
@@ -48,7 +47,7 @@ instance RunMessage PursuingMotorcar where
         select
           $ not_ (InvestigatorWithId iid)
           <> InVehicleMatching (VehicleWithInvestigator $ InvestigatorWithId iid)
-      msgs <- evalQueueT $ for_ others $ initiateEnemyAttack attrs (attrs.ability 2)
+      msgs <- capture $ for_ others $ initiateEnemyAttack attrs (attrs.ability 2)
       push $ ChangeEnemyAttackDetails attrs.id $ details {attackAfter = msgs}
       pure e
     _ -> PursuingMotorcar <$> liftRunMessage msg attrs

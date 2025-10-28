@@ -18,7 +18,7 @@ import Data.Vector ((!?))
 import GHC.Records
 
 data SearchType = Searching | Looking | Revealing
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data Search = MkSearch
@@ -32,7 +32,7 @@ data Search = MkSearch
   , searchFoundCards :: Map Zone [Card]
   , searchDrawnCards :: [Card]
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 mkSearch
   :: (Sourceable source, Targetable target, AsId investigator, IdOf investigator ~ InvestigatorId)
@@ -67,6 +67,9 @@ instance HasField "foundCards" Search (Map Zone [Card]) where
 
 instance HasField "allFoundCards" Search [Card] where
   getField = concat . Map.elems . searchFoundCards
+
+instance HasField "investigator" Search InvestigatorId where
+  getField = searchInvestigator
 
 deriveToJSON defaultOptions ''Search
 

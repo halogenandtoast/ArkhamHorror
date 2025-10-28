@@ -29,6 +29,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move (moveAllTo, moveTowardsMatching)
+import Arkham.Modifier (ModifierType (AdditionalStartingUses))
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
@@ -169,7 +170,7 @@ instance RunMessage CityOfTheElderThings where
         <> validateEntry (not dyerIsAlive) "dyer.otherwise"
 
       unless dyerIsAlive do
-        eachInvestigator \iid -> addCampaignCardToDeck iid DoNotShuffleIn Treacheries.possessed
+        eachInvestigator \iid -> addCampaignCardToDeck iid ShuffleIn Treacheries.possessed
 
       story $ i18n "entrance"
 
@@ -200,39 +201,36 @@ instance RunMessage CityOfTheElderThings where
       let group3 = group3Count > group1Count && group3Count > group2Count
       let tied = not (group1 || group2 || group3)
 
-      story
-        $ toFlavor
-        $ p "votes"
-        <> cols
-          [ p "group1" <> ul do
-              li.validate kenslerIsAlive "vote.kensler"
-              li.validate ellsworthIsAlive "vote.ellsworth"
-              li.validate sinhaIsAlive "vote.sinha"
-          , p "group2" <> ul do
-              li.validate danforthIsAlive "vote.danforth"
-              li.validate hirokoIsAlive "vote.hiroko"
-              li.validate eliyahIsAlive "vote.eliyah"
-          , p "group3" <> ul do
-              li.validate dyerIsAlive "vote.dyer"
-              li.validate claypoolIsAlive "vote.claypool"
-              li.validate cookieIsAlive "vote.cookie"
-          ]
-        <> ul do
-          li.validate group1 "vote.group1"
-          li.validate group2 "vote.group2"
-          li.validate group3 "vote.group3"
-          li.validate tied "vote.tied"
-
-      when tied do
-        lead <- getLead
-        chooseOneM lead do
-          labeled "Proceed to _Setup (v. I)_" $ doStep 1 PreScenarioSetup
-          labeled "Proceed to _Setup (v. II)_" $ doStep 2 PreScenarioSetup
-          labeled "Proceed to _Setup (v. III)_" $ doStep 3 PreScenarioSetup
-
-      when group1 $ doStep 1 PreScenarioSetup
-      when group2 $ doStep 2 PreScenarioSetup
-      when group3 $ doStep 3 PreScenarioSetup
+      storyWithChooseOneM
+        ( toFlavor
+            $ p "votes"
+            <> cols
+              [ p "group1" <> ul do
+                  li.validate kenslerIsAlive "vote.kensler"
+                  li.validate ellsworthIsAlive "vote.ellsworth"
+                  li.validate sinhaIsAlive "vote.sinha"
+              , p "group2" <> ul do
+                  li.validate danforthIsAlive "vote.danforth"
+                  li.validate hirokoIsAlive "vote.hiroko"
+                  li.validate eliyahIsAlive "vote.eliyah"
+              , p "group3" <> ul do
+                  li.validate dyerIsAlive "vote.dyer"
+                  li.validate claypoolIsAlive "vote.claypool"
+                  li.validate cookieIsAlive "vote.cookie"
+              ]
+            <> ul do
+              li.validate group1 "vote.group1"
+              li.validate group2 "vote.group2"
+              li.validate group3 "vote.group3"
+              li.validate tied "vote.tied"
+        )
+        do
+          labeledValidate' (group1 || group1Count `elem` [group2Count, group3Count]) "v1"
+            $ doStep 1 PreScenarioSetup
+          labeledValidate' (group2 || group2Count `elem` [group1Count, group3Count]) "v2"
+            $ doStep 2 PreScenarioSetup
+          labeledValidate' (group3 || group3Count `elem` [group1Count, group2Count]) "v3"
+            $ doStep 3 PreScenarioSetup
 
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s
@@ -250,12 +248,34 @@ instance RunMessage CityOfTheElderThings where
               cardLabeled partner.cardCode $ handleTarget iid ScenarioSource (CardCodeTarget partner.cardCode)
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
+      let
+        chosenGroup = map toCardCode $ case toResult @Int attrs.meta of
+          1 ->
+            [ Assets.drAmyKenslerProfessorOfBiology
+            , Assets.roaldEllsworthIntrepidExplorer
+            , Assets.drMalaSinhaDaringPhysician
+            ]
+          2 ->
+            [ Assets.danforthBrilliantStudent
+            , Assets.takadaHirokoAeroplaneMechanic
+            , Assets.eliyahAshevakDogHandler
+            ]
+          3 ->
+            [ Assets.professorWilliamDyerProfessorOfGeology
+            , Assets.averyClaypoolAntarcticGuide
+            , Assets.jamesCookieFredericksDubiousChoice
+            ]
+          _ -> error "Invalid group"
+
       for_ (lookupCardDef cardCode) \def -> do
         card <- genCard def
+        when (toPartnerCode card `elem` chosenGroup) do
+          setupModifier ScenarioSource card (AdditionalStartingUses 1)
         assetId <- createAssetAt card (InPlayArea iid)
         partner <- getPartner cardCode
         pushWhen (partner.damage > 0) $ Msg.PlaceDamage CampaignSource (toTarget assetId) partner.damage
         pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
+
       pure s
     Setup -> do
       doStep (toResult @Int attrs.meta) msg

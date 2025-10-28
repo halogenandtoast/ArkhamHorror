@@ -6,11 +6,9 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Story
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
-import Arkham.Target
 
 newtype ReturnToSickeningReality_24 = ReturnToSickeningReality_24 StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -21,13 +19,13 @@ returnToSickeningReality_24 = story ReturnToSickeningReality_24 Cards.returnToSi
 
 instance RunMessage ReturnToSickeningReality_24 where
   runMessage msg s@(ReturnToSickeningReality_24 attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       partyGuests <- select (assetIs Assets.partyGuest)
       if null partyGuests
         then do
           storyCards <-
             select $ UnderScenarioReferenceMatch $ #story <> not_ (cardIs Cards.returnToSickeningReality_24)
-          push $ Msg.PlaceUnderneath ScenarioTarget [toCard attrs]
+          placeUnderneath ScenarioTarget [attrs]
           for_ (nonEmpty storyCards) \xs -> do
             card <- sample xs
             obtainCard card

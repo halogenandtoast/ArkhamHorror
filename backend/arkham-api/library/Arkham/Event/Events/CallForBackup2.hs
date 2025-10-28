@@ -10,6 +10,7 @@ import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
+import Arkham.Tracing
 
 newtype CallForBackup2 = CallForBackup2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -18,7 +19,7 @@ newtype CallForBackup2 = CallForBackup2 EventAttrs
 callForBackup2 :: EventCard CallForBackup2
 callForBackup2 = event CallForBackup2 Cards.callForBackup2
 
-control :: HasGame m => [ClassSymbol] -> ClassSymbol -> m Bool
+control :: (HasGame m, Tracing m) => [ClassSymbol] -> ClassSymbol -> m Bool
 control ks k =
   if k `notElem` ks
     then selectAny (ControlledBy You <> basic (CardWithClass k))
@@ -45,7 +46,10 @@ instance RunMessage CallForBackup2 where
         andM
           [ control chosen Guardian
           , iid <=~> InvestigatorWithoutModifier CannotDealDamage
-          , selectAny $ EnemyAt YourLocation <> EnemyCanBeDamagedBySource (toSource attrs)
+          , orM
+              [ selectAny $ EnemyAt YourLocation <> EnemyCanBeDamagedBySource (toSource attrs)
+              , selectAny $ locationWithInvestigator iid <> LocationWithExposableConcealedCard (toSource attrs)
+              ]
           ]
 
       hasSeeker <-
@@ -102,8 +106,7 @@ instance RunMessage CallForBackup2 where
       let chosen = toResultDefault [] attrs.meta
       pure $ overAttrs (setMeta (Rogue : chosen)) e
     DoStep 2 (PlayThisEvent iid (is attrs -> True)) -> do
-      enemies <- select $ EnemyAt YourLocation <> EnemyCanBeDamagedBySource (toSource attrs)
-      chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) attrs 1
+      chooseDamageEnemy iid attrs (locationWithInvestigator iid) AnyEnemy 1
       let chosen = toResultDefault [] attrs.meta
       pure $ overAttrs (setMeta (Guardian : chosen)) e
     DoStep 3 (PlayThisEvent iid (is attrs -> True)) -> do

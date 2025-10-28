@@ -22,7 +22,7 @@ instance HasAbilities AceOfSwords1 where
 
 instance RunMessage AceOfSwords1 where
   runMessage msg a@(AceOfSwords1 attrs) = runQueueT $ case msg of
-    InHand _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 1) | iid == iid' -> do
       putCardIntoPlay iid attrs
       pure a
     _ -> AceOfSwords1 <$> liftRunMessage msg attrs

@@ -5,10 +5,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
-import Arkham.Helpers.Investigator
-import Arkham.Helpers.Location
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher
 import Arkham.Scenario.Deck
 
 newtype IntoTheRuins = IntoTheRuins ActAttrs
@@ -24,8 +21,7 @@ instance HasAbilities IntoTheRuins where
 instance RunMessage IntoTheRuins where
   runMessage msg a@(IntoTheRuins attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      locationSymbols <- toConnections =<< getJustLocation iid
-      push $ Explore iid (attrs.ability 1) $ mapOneOf CardWithPrintedLocationSymbol locationSymbols
+      runExplore iid (attrs.ability 1)
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       chamberOfTime <- fetchCard Locations.chamberOfTime

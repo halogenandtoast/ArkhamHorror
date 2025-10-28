@@ -15,7 +15,7 @@ standingStones = story StandingStones Cards.standingStones
 
 instance RunMessage StandingStones where
   runMessage msg s@(StandingStones attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       mTheBlackStone <- getSetAsideCardMaybe Locations.theBlackStone
       mDyersClassroom <- getSetAsideCardMaybe Locations.dyersClassroom
 

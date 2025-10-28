@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is 1 higher than the number of copies of Unfinished Business in the victory display.",
+      "cultist": "-3. Until the end of the round, each Heretic enemy in play gets +1 fight and +1 evade.",
+      "tablet": "-3. If you fail, trigger the forced ability on a copy of Unfinished Business in yout threat area as if it were the end of the round.",
+      "elderThing": "-2. If you fail and this is an attack or evasion attempt, resolve each haunted ability on your location."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of copies of Unfinished Business in the victory display. Reveal another token.",
+      "cultist": "-4. Until the end of the round, each Heretic enemy in play gets +1 fight and +1 evade.",
+      "tablet": "-4. If you fail, trigger the forced ability on a copy of Unfinished Business in your threat area as if it were the end of the round.",
+      "elderThing": "-2. If this is an attack or evasion attempt, resolve each haunted ability on your location."
+    }
+  }
+}

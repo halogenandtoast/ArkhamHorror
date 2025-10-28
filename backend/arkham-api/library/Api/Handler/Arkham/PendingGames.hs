@@ -19,17 +19,17 @@ import Data.Aeson
 import Data.Time.Clock
 import Database.Persist ((==.))
 import Entity.Arkham.Step
-import Safe (fromJustNote)
+import OpenTelemetry.Trace.Monad (MonadTracer (..))
 
 getApiV1ArkhamPendingGameR :: ArkhamGameId -> Handler (PublicGame ArkhamGameId)
 getApiV1ArkhamPendingGameR gameId = do
-  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
+  _ <- getRequestUserId
   ge <- runDB $ get404 gameId
   pure $ toPublicGame (Entity gameId ge) mempty
 
 putApiV1ArkhamPendingGameR :: ArkhamGameId -> Handler (PublicGame ArkhamGameId)
 putApiV1ArkhamPendingGameR gameId = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  userId <- getRequestUserId
   original@ArkhamGame {..} <- runDB $ get404 gameId
 
   case gameGameState arkhamGameCurrentData of
@@ -47,10 +47,11 @@ putApiV1ArkhamPendingGameR gameId = do
           genRef <- newIORef (mkStdGen (gameSeed arkhamGameCurrentData))
 
           pid <- runDB $ insert $ ArkhamPlayer userId gameId "00000"
+          tracer <- getTracer
 
-          runGameApp (GameApp gameRef queueRef genRef (pure . const ())) $ do
+          runGameApp (GameApp gameRef queueRef genRef (pure . const ()) tracer) $ do
             addPlayer (PlayerId $ coerce pid)
-            runMessages Nothing
+            runMessages (gameIdToText gameId) Nothing
 
           updatedGame <- readIORef gameRef
           updatedQueue <- readIORef (queueToRef queueRef)

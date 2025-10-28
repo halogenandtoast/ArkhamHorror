@@ -3,6 +3,7 @@ module Arkham.Enemy.Cards.RoyalEmissary (royalEmissary) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.GameValue (getGameValue)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Helpers.Scenario (getIsReturnTo)
@@ -26,7 +27,7 @@ investigatorMatcher :: EnemyAttrs -> InvestigatorMatcher
 investigatorMatcher a =
   oneOf
     [ at_ $ locationWithEnemy (toId a)
-    , at_ $ AccessibleFrom $ locationWithEnemy (toId a)
+    , at_ $ AccessibleFrom NotForMovement $ locationWithEnemy (toId a)
     ]
 
 instance HasAbilities RoyalEmissary where
@@ -45,7 +46,7 @@ instance RunMessage RoyalEmissary where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       placeTokens (attrs.ability 2) attrs #warning 1
       pure e
-    DefeatedAddToVictory (isTarget attrs -> True) -> do
+    Do (DefeatedAddToVictory (isTarget attrs -> True)) -> do
       let warnings = attrs.token #warning
       attrs' <- liftRunMessage msg attrs
       pure $ RoyalEmissary $ attrs' & tokensL %~ insertMap #warning warnings

@@ -87,6 +87,10 @@ instance IsCard Asset where
   {-# INLINE toCardOwner #-}
   toCustomizations (Asset a) = toCustomizations (toAttrs a)
   {-# INLINE toCustomizations #-}
+  toTabooList (Asset a) = toTabooList (toAttrs a)
+  {-# INLINE toTabooList #-}
+  toMutated (Asset a) = toMutated (toAttrs a)
+  {-# INLINE toMutated #-}
 
 instance Eq Asset where
   Asset (a :: a) == Asset (b :: b) = case eqT @a @b of
@@ -288,6 +292,7 @@ data AssetAttrs = AssetAttrs
   , assetMutated :: Maybe Text -- for art display
   , assetDriver :: Maybe InvestigatorId
   , assetVisible :: Bool
+  , assetResolved :: Bool
   }
   deriving stock (Show, Eq)
 
@@ -493,6 +498,7 @@ assetWith f cardDef g =
             , assetMutated = Nothing
             , assetDriver = Nothing
             , assetVisible = True
+            , assetResolved = False
             }
     }
 
@@ -662,4 +668,5 @@ instance FromJSON AssetAttrs where
     assetMutated <- o .: "mutated"
     assetDriver <- o .: "driver"
     assetVisible <- o .:? "visible" .!= True
+    assetResolved <- o .:? "visible" .!= True
     pure AssetAttrs {..}

@@ -20,6 +20,9 @@ import Arkham.Game
 import Arkham.Id
 import Arkham.Investigator.Types (InvestigatorAttrs (investigatorPlayerId))
 import Arkham.Message
+import Arkham.Source
+import Arkham.Target
+import Arkham.Token
 import Data.Aeson
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
@@ -35,6 +38,9 @@ data Answer
   | StandaloneSettingsAnswer [StandaloneSetting]
   | CampaignSettingsAnswer CampaignSettings
   | DeckAnswer {deckId :: ArkhamDeckId, playerId :: PlayerId}
+  | PickDestinyAnswer [DestinyDrawing]
+  | CampaignSpecificAnswer Text Value
+  | ExchangeAmountsAnswer { source :: Source, fromInvestigator :: InvestigatorId, toInvestigator :: InvestigatorId, token :: Token, amount :: Int }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
 
@@ -246,34 +252,54 @@ answerPlayer = \case
   PaymentAmountsAnswer _ -> Nothing
   StandaloneSettingsAnswer _ -> Nothing
   CampaignSettingsAnswer _ -> Nothing
+  CampaignSpecificAnswer {} -> Nothing
   DeckAnswer _ pid -> Just pid
+  PickDestinyAnswer _ -> Nothing
+  ExchangeAmountsAnswer {} -> Nothing
 
 playerInvestigator :: Entities -> PlayerId -> InvestigatorId
 playerInvestigator Entities {..} pid = case find ((== pid) . attr investigatorPlayerId) (toList entitiesInvestigators) of
   Just investigator -> toId investigator
   Nothing -> error $ "No investigator for player " <> tshow pid
 
-handleAnswer :: (CanRunDB m, MonadHandler m) => Game -> PlayerId -> Answer -> m [Message]
+data Reply = Handled [Message] | Unhandled Text
+
+handled :: Applicative m => [Message] -> m Reply
+handled = pure . Handled
+
+unhandled :: Applicative m => Text -> m Reply
+unhandled = pure . Unhandled
+
+handleAnswer :: (CanRunDB m, MonadHandler m) => Game -> PlayerId -> Answer -> m Reply
 handleAnswer Game {..} playerId = \case
   DeckAnswer deckId _ -> do
     deck <- runDB $ get404 deckId
     let investigatorId = investigator_code $ arkhamDeckList deck
     runDB $ update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]
     let question' = Map.delete playerId gameQuestion
-    pure $ LoadDecklist playerId (arkhamDeckList deck) : [AskMap question' | not (Map.null question')]
+    handled $ LoadDecklist playerId (arkhamDeckList deck)
+      : [AskMap question' | not (Map.null question')]
   StandaloneSettingsAnswer settings' -> do
     let standaloneCampaignLog = makeStandaloneCampaignLog settings'
-    pure [SetCampaignLog standaloneCampaignLog]
+    handled [SetCampaignLog standaloneCampaignLog]
   CampaignSettingsAnswer settings' -> do
     let campaignLog' = makeCampaignLog settings'
-    pure [SetCampaignLog campaignLog']
+    handled [SetCampaignLog campaignLog']
+  CampaignSpecificAnswer k v -> do
+    handled [CampaignSpecific k v]
+  PickDestinyAnswer choices -> do
+    handled [SetDestiny $ Map.fromList $ map (\(DestinyDrawing scope card) -> (scope, card)) choices]
+  ExchangeAmountsAnswer source fromInvestigator toInvestigator token n -> do
+    if n < 0
+      then handled [MoveTokens source (toSource toInvestigator) (toTarget fromInvestigator) token (abs n)]
+      else handled [MoveTokens source (toSource fromInvestigator) (toTarget toInvestigator) token n]
   AmountsAnswer response -> case Map.lookup playerId gameQuestion of
     Just (ChooseAmounts _ _ choices target) -> do
       let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
       let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
       let question' = Map.delete playerId gameQuestion
       let amounts = map (first toNamedUUID) $ Map.toList $ arAmounts response
-      pure
+      handled
         $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
         : [AskMap question' | not (Map.null question')]
     Just (QuestionLabel _ _ (ChooseAmounts _ _ choices target)) -> do
@@ -281,10 +307,10 @@ handleAnswer Game {..} playerId = \case
       let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
       let question' = Map.delete playerId gameQuestion
       let amounts = map (first toNamedUUID) $ Map.toList $ arAmounts response
-      pure
+      handled
         $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
         : [AskMap question' | not (Map.null question')]
-    _ -> error "Wrong question type"
+    _ -> unhandled "Wrong question type"
   PaymentAmountsAnswer response ->
     case Map.lookup playerId gameQuestion of
       Just (ChoosePaymentAmounts _ _ info) -> do
@@ -295,21 +321,22 @@ handleAnswer Game {..} playerId = \case
             PayCost acId iid skip (ResourceCost _) | n == 0 -> [PayCost acId iid skip (ResourceCost 0)]
             payMsg -> replicate n payMsg
         let handleCost (cId, n) = combinePaymentAmounts n $ Map.findWithDefault Noop cId costMap
-        pure $ concatMap handleCost $ Map.toList (parAmounts response)
-      _ -> error "Wrong question type"
+        handled $ concatMap handleCost $ Map.toList (parAmounts response)
+      _ -> unhandled "Wrong question type"
   Raw message -> do
     let isPlayerWindowChoose = \case
           PlayerWindowChooseOne _ -> True
           _ -> False
     if not (Map.null gameQuestion) && not (any isPlayerWindowChoose $ toList gameQuestion)
       then case message of
-        PassSkillTest -> pure [message]
-        FailSkillTest -> pure [message]
-        ForceChaosTokenDraw _ -> pure [message]
-        _ -> pure [message, AskMap gameQuestion]
-      else pure [message]
+        PassSkillTest -> handled [message]
+        FailSkillTest -> handled [message]
+        ForceChaosTokenDraw _ -> handled [message]
+        _ -> handled [message, AskMap gameQuestion]
+      else handled [message]
   Answer response -> do
-    pure $ maybe [] (\q -> go id q response) $ Map.lookup playerId gameQuestion
+    maybe (unhandled "Player not being asked") (\q -> handled $ go id q response)
+      $ Map.lookup playerId gameQuestion
  where
   go
     :: (Question Message -> Question Message)
@@ -426,8 +453,8 @@ handleAnswer Game {..} playerId = \case
           [Done _] -> [uiToRun m']
           rest -> [uiToRun m', Ask playerId $ f $ ChooseSome $ Done doneMsg : rest]
         (Nothing, msgs'') -> [Ask playerId $ f $ ChooseSome $ Done doneMsg : msgs'']
-    PickSupplies remaining chosen qs -> case qs !!? qrChoice response of
-      Nothing -> [Ask playerId $ f $ PickSupplies remaining chosen qs]
+    PickSupplies remaining chosen qs rs -> case qs !!? qrChoice response of
+      Nothing -> [Ask playerId $ f $ PickSupplies remaining chosen qs rs]
       Just msg -> [uiToRun msg]
     DropDown qs -> case qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ DropDown qs]

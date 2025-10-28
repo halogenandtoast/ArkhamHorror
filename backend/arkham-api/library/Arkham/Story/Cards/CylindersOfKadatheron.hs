@@ -1,12 +1,12 @@
-module Arkham.Story.Cards.CylindersOfKadatheron (CylindersOfKadatheron (..), cylindersOfKadatheron) where
+module Arkham.Story.Cards.CylindersOfKadatheron (cylindersOfKadatheron) where
 
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype CylindersOfKadatheron = CylindersOfKadatheron StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -16,11 +16,10 @@ cylindersOfKadatheron :: StoryCard CylindersOfKadatheron
 cylindersOfKadatheron = story CylindersOfKadatheron Cards.cylindersOfKadatheron
 
 instance RunMessage CylindersOfKadatheron where
-  runMessage msg s@(CylindersOfKadatheron attrs) = case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+  runMessage msg s@(CylindersOfKadatheron attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
       tenebrousNightgaunts <- getSetAsideCardsMatching $ cardIs Enemies.tenebrousNightgaunt
-      pushAll
-        $ ScenarioCountIncrementBy SignOfTheGods 1
-        : [ShuffleCardsIntoDeck Deck.EncounterDeck [card] | card <- take 1 tenebrousNightgaunts]
+      push $ ScenarioCountIncrementBy SignOfTheGods 1
+      shuffleCardsIntoDeck Deck.EncounterDeck (take 1 tenebrousNightgaunts)
       pure s
-    _ -> CylindersOfKadatheron <$> runMessage msg attrs
+    _ -> CylindersOfKadatheron <$> liftRunMessage msg attrs

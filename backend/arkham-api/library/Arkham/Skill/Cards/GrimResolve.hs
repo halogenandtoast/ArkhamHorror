@@ -17,11 +17,11 @@ grimResolve = skill GrimResolve Cards.grimResolve
 
 instance RunMessage GrimResolve where
   runMessage msg s@(GrimResolve attrs) = runQueueT $ case msg of
-    PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      push $ ForTarget (toTarget attrs) msg
+    PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
+      afterSkillTest iid "Grim Resolve" $ forTarget attrs msg
       pure s
-    FailedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      push $ ForTarget (toTarget attrs) msg
+    FailedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
+      afterSkillTest iid "Grim Resolve" $ forTarget attrs msg
       pure s
     ForTarget (isTarget attrs -> True) _ -> do
       under <- field InvestigatorCardsUnderneath attrs.owner

@@ -1,0 +1,14 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is half the number of cards in your hand (rounded up).",
+      "cultist": "-X. X is the number of revealed Enchanted Woods locations.",
+      "tablet": "-2. If you fail and this is an attack or evasion attempt against a swarming enemy, add 1 swarm card to it."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of cards in your hand.",
+      "cultist": "-X. X is the number of revealed _Woods_ locations.",
+      "tablet": "-2. If this is an attack or evasion attempt against a swarming enemy, add 1 swarm card to it."
+    }
+  }
+}

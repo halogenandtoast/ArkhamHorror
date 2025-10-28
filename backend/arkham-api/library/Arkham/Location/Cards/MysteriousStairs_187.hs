@@ -27,7 +27,7 @@ instance HasModifiersFor MysteriousStairs_187 where
     theUnnamable <- MaybeT $ selectOne $ enemyIs Enemies.theUnnamable <> enemyAt a
     n <- lift $ perPlayer 1
     liftGuardM $ fieldMap EnemyDamage (< n) theUnnamable
-    pure [CannotTakeAction #move, CannotTakeAction #resign]
+    pure [CannotMove, CannotTakeAction #resign]
 
 instance HasAbilities MysteriousStairs_187 where
   getAbilities (MysteriousStairs_187 attrs) =

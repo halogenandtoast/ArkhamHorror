@@ -1,15 +1,14 @@
 module Arkham.Event.Events.DynamiteBlast3 (dynamiteBlast3) where
 
-import Arkham.Classes
-import Arkham.DamageEffect
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.UI
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Prelude
 import Arkham.Projection
+import Arkham.UI
 
 newtype DynamiteBlast3 = DynamiteBlast3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -19,27 +18,24 @@ dynamiteBlast3 :: EventCard DynamiteBlast3
 dynamiteBlast3 = event DynamiteBlast3 Cards.dynamiteBlast3
 
 instance RunMessage DynamiteBlast3 where
-  runMessage msg e@(DynamiteBlast3 attrs@EventAttrs {..}) = case msg of
-    PlayThisEvent iid eid | eid == eventId -> do
+  runMessage msg e@(DynamiteBlast3 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       currentLocationId <- fieldJust InvestigatorLocation iid
-      connectedLocationIds <- select $ AccessibleFrom $ LocationWithId currentLocationId
+      connectedLocationIds <- select $ AccessibleFrom NotForMovement $ LocationWithId currentLocationId
       canDealDamage <- withoutModifier iid CannotDealDamage
-      choices <- forMaybeM (currentLocationId : connectedLocationIds) $ \lid -> do
-        enemyIds <- if canDealDamage then select (enemyAt lid) else pure []
-        investigatorIds <- select $ investigatorAt lid
-        if null enemyIds && null investigatorIds
-          then pure Nothing
-          else do
-            animation <- uiEffect eid lid Explosion
-            pure
-              $ Just
-                ( lid
-                , animation
-                    : map (\enid -> EnemyDamage enid $ nonAttack (Just iid) attrs 3) enemyIds
-                      <> map (\iid' -> assignDamage iid' eid 3) investigatorIds
-                )
-      let availableChoices = map (uncurry targetLabel) $ filter (notNull . snd) choices
-      player <- getPlayer iid
-      pushAll [chooseOne player availableChoices]
+      chooseOneM iid do
+        for_ (currentLocationId : connectedLocationIds) \lid -> do
+          enemies <- if canDealDamage then select (enemyAt lid) else pure []
+          concealed <- if canDealDamage then getConcealedIds (ForExpose $ toSource attrs) iid else pure []
+          investigators <- select $ investigatorAt lid
+          unless (null enemies && null investigators && null concealed) do
+            targeting lid do
+              uiEffect attrs lid Explosion
+              for_ enemies (nonAttackEnemyDamage (Just iid) attrs 3)
+              for_ investigators \iid' -> assignDamage iid' attrs 3
+              unless (null concealed) do
+                chooseOneM iid do
+                  labeled "Expose concealed card" $ chooseTargetM iid concealed $ exposeConcealed iid attrs
+                  labeled "Do not expose concealed card" nothing
       pure e
-    _ -> DynamiteBlast3 <$> runMessage msg attrs
+    _ -> DynamiteBlast3 <$> liftRunMessage msg attrs

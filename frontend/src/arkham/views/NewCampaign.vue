@@ -8,13 +8,14 @@ import * as Arkham from '@/arkham/types/Deck'
 import { fetchDecks, newGame } from '@/arkham/api'
 import { imgsrc } from '@/arkham/helpers'
 import type { Difficulty } from '@/arkham/types/Difficulty'
+import type { Scenario, Campaign } from '@/arkham/data'
 
-import campaignJSON from '@/arkham/data/campaigns.json'
+import campaignJSON from '@/arkham/data/campaigns'
 import scenarioJSON from '@/arkham/data/scenarios'
-import sideStoriesJSON from '@/arkham/data/side-stories.json'
+import sideStoriesJSON from '@/arkham/data/side-stories'
 
 const store = useUserStore()
-const currentUser = computed<User | null>(() => store.getCurrentUser)
+const currentUser = computed<User | null>(() => store.currentUser)
 const route = useRoute();
 const queryParams = route.query;
 
@@ -34,26 +35,26 @@ const gameMode = ref<GameMode>('Campaign')
 
 const includeTarotReadings = ref(false)
 
-const scenarios = computed(() => scenarioJSON.filter((s) =>
-  s.beta || s.alpha
-    ? currentUser.value && currentUser.value.beta
-    : true
-))
+const scenarios = computed<Scenario[]>(() => (scenarioJSON as Scenario[]).filter((s) => {
+  if (s.beta) return currentUser.value && currentUser.value.beta
+  if (s.alpha) return alpha.value
+  return true
+}))
 
-const sideStories = computed(() => sideStoriesJSON.filter((s) =>
-  s.beta
-    ? currentUser.value && currentUser.value.beta
-    : true
-))
+const sideStories = computed<Scenario[]>(() => sideStoriesJSON.filter((s) => {
+  if (s.beta) return currentUser.value && currentUser.value.beta
+  if (s.alpha) return alpha.value
+  return true
+}))
 
 const dev = import.meta.env.PROD ? false : true
 
-const campaigns = computed(() => campaignJSON.filter((c) => {
-  if (c.dev && !dev && !alpha.value) return false
 
-  return c.beta || c.alpha
-    ? currentUser.value && currentUser.value.beta
-    : true
+const campaigns = computed<Campaign[]>(() => campaignJSON.filter((c) => {
+  if (c.dev && !dev && !alpha.value) return false
+  if (c.beta) currentUser.value && currentUser.value.beta
+  if (c.alpha) return alpha.value
+  return true
 }))
 
 const difficulties = computed<Difficulty[]>(() => {
@@ -89,13 +90,14 @@ const multiplayerVariant = ref<MultiplayerVariant>('WithFriends')
 const returnTo = ref(false)
 
 const campaignScenarios = computed(() => selectedCampaign.value
-  ? scenarios.value.filter((s) => s.campaign == selectedCampaign.value)
+  ? scenarios.value.filter((s) => s.campaign == selectedCampaign.value && ((s.show ?? true) !== false))
   : []
 )
 
 const selectCampaign = (campaignId: string) => {
   selectedCampaign.value = campaignId,
   selectedScenario.value = null
+  returnTo.value = false
 }
 
 watch(
@@ -108,9 +110,12 @@ fetchDecks().then((result) => {
   ready.value = true;
 })
 
-const selectedCampaignReturnToId = computed(() => {
+const selectedCampaignReturnTo = computed(() => {
   const campaign = campaigns.value.find((c) => c.id === selectedCampaign.value);
-  return campaign?.returnToId
+  if (campaign?.returnTo?.alpha && !alpha.value) {
+    return null
+  }
+  return campaign?.returnTo
 })
 
 const disabled = computed(() => {
@@ -177,12 +182,12 @@ async function start() {
   } else {
     const mcampaign = campaigns.value.find((campaign) => campaign.id === selectedCampaign.value);
     if (mcampaign && currentCampaignName.value) {
-      const campaignId = returnTo.value && mcampaign.returnToId ? mcampaign.returnToId : mcampaign.id
+      const campaignId = returnTo.value && mcampaign.returnTo && mcampaign.returnTo.id ? mcampaign.returnTo.id : mcampaign.id
       newGame(
         deckIds.value,
         playerCount.value,
         campaignId,
-        fullCampaign.value ? null : selectedScenario.value,
+        fullCampaign.value !== 'PartialCampaign' ? null : selectedScenario.value,
         selectedDifficulty.value,
         currentCampaignName.value,
         multiplayerVariant.value,
@@ -221,14 +226,17 @@ async function start() {
             <!-- <select v-model="selectedCampaign"> -->
               <div class="campaigns">
                 <template v-for="c in campaigns" :key="c.id">
-                  <div class="campaign" :class="{ beta: c.beta, alpha: c.alpha }">
+                  <div class="campaign" :class="{ beta: returnTo && c.returnTo && c.returnTo.beta ? c.returnTo.beta : c.beta, alpha: returnTo && c.returnTo && c.returnTo.alpha ? c.returnTo.alpha : c.alpha }">
+                    {{selectedCampaignReturnTo}}
                     <input type="image" class="campaign-box" :class="{ 'selected-campaign': selectedCampaign == c.id }" :src="imgsrc(`boxes/${c.id}.jpg`)" @click.prevent="selectCampaign(c.id)">
                   </div>
                 </template>
               </div>
 
               <div class="alpha-warning" v-if="campaign && campaign.alpha">{{$t('create.alphaWarning')}}</div>
+              <div class="alpha-warning" v-if="campaign && returnTo && campaign.returnTo && campaign.returnTo.alpha">{{$t('create.alphaWarning')}}</div>
               <div class="beta-warning" v-if="campaign && campaign.beta">{{$t('create.betaWarning')}}</div>
+              <div class="beta-warning" v-if="campaign && returnTo && campaign.returnTo && campaign.returnTo.beta">{{$t('create.betaWarning')}}</div>
             <!-- </select> -->
           </template>
 
@@ -248,7 +256,7 @@ async function start() {
             </transition>
 
 
-            <div v-if="(gameMode === 'Campaign' || fullCampaign === 'Standalone') && selectedCampaign && selectedCampaignReturnToId" class="options">
+            <div v-if="(gameMode === 'Campaign' || fullCampaign === 'Standalone') && selectedCampaign && selectedCampaignReturnTo" class="options">
               <input type="radio" v-model="returnTo" :value="false" id="normal"> <label for="normal">{{$t('create.normal')}}</label>
               <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">{{$t('create.returnTo')}}</label>
             </div>
@@ -261,7 +269,7 @@ async function start() {
               </template>
             </div>
 
-            <template v-if="['Standalone', 'PartialCampaign'].includes(fullCampaign) && selectedCampaign">
+            <template v-if="['Standalone', 'PartialCampaign'].includes(fullCampaign) && selectedCampaign && gameMode === 'Campaign'">
               <div class="scenarios">
                 <div v-for="scenario in campaignScenarios" :key="scenario.id">
                   <img class="scenario-box" :class="{ 'selected-scenario': selectedScenario == scenario.id }" :src="imgsrc(`boxes/${scenario.id}.jpg`)" @click="selectedScenario = scenario.id">
@@ -316,7 +324,7 @@ async function start() {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .container {
   min-width: 60vw;
   margin: 0 auto;
@@ -386,8 +394,12 @@ async function start() {
     margin: 0;
     padding: 0;
     text-transform: uppercase;
-    text-box-trim: trim-both;
-    text-box-edge: cap alphabetic;
+    @supports (text-box-trim: trim-both) {
+      text-box-trim: trim-both;
+    }
+    @supports (text-box-edge: cap alphabetic) {
+      text-box-edge: cap alphabetic;
+    }
   }
 }
 
@@ -408,11 +420,10 @@ h2 {
 
 input[type=radio] {
   display: none;
-  /* margin: 10px; */
 }
 
 input[type=radio] + label {
-  display:inline-block;
+  display: inline-block;
   padding: 4px 12px;
   background-color: hsl(80, 5%, 39%);
   border-color: #ddd;
@@ -427,7 +438,6 @@ input[type=radio]:checked + label {
 
 input[type=checkbox] {
   display: none;
-  /* margin: 10px; */
 }
 
 input[type=checkbox] + label {
@@ -516,14 +526,13 @@ header {
 }
 
 .campaign-box:not(.selected-campaign) {
-  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
   filter: grayscale(100%);
 }
 
 .scenarios {
   display: grid;
   line-height: 0;
-  grid-template-columns: repeat(4, auto);
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   margin-bottom: 10px;
 
@@ -533,7 +542,6 @@ header {
 }
 
 .scenario-box:not(.selected-scenario) {
-  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
   filter: grayscale(100%) sepia(0);
   transition: filter 1s linear;
   &:hover {
@@ -581,8 +589,6 @@ header {
     font-weight: bold;
     color: white;
     line-height: 27px;
-    -ms-transform:rotate(-45deg);
-    -webkit-transform:rotate(-45deg);
     transform:rotate(-45deg);
   }
 
@@ -603,8 +609,6 @@ header {
     font-weight: bold;
     color: white;
     line-height: 27px;
-    -ms-transform:rotate(-45deg);
-    -webkit-transform:rotate(-45deg);
     transform:rotate(-45deg);
   }
 }

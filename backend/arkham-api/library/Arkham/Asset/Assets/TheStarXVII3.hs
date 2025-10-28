@@ -24,7 +24,7 @@ instance HasAbilities TheStarXVII3 where
 
 instance RunMessage TheStarXVII3 where
   runMessage msg a@(TheStarXVII3 attrs) = case msg of
-    InHand _ (UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
+    InHand iid (UseCardAbility iid' (isSource attrs -> True) 1 _ _) | iid == iid' -> do
       push $ putCardIntoPlay iid attrs
       pure a
     _ -> TheStarXVII3 <$> runMessage msg attrs

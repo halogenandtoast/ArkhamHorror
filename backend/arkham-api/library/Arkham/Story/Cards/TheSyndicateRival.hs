@@ -32,7 +32,7 @@ instance HasAbilities TheSyndicateRival where
 
 instance RunMessage TheSyndicateRival where
   runMessage msg s@(TheSyndicateRival attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       coldStreak <- getSetAsideCardsMatching $ cardIs Treacheries.coldStreak
       shuffleCardsIntoDeck Deck.EncounterDeck coldStreak
       johnny <- getSetAsideCardsMatching $ cardIs Enemies.johnnyValoneHereToCollect

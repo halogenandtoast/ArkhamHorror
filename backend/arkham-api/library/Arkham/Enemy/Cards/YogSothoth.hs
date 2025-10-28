@@ -37,7 +37,6 @@ instance RunMessage YogSothoth where
           eid <- createCardEffectCapture Cards.yogSothoth (effectInt n) (attrs.ability 1) iid
           push $ DiscardTopOfDeck iid n (attrs.ability 1) Nothing
           disable eid
-          when (5 > n) $ assignHorror iid (attrs.ability 1) (5 - n)
       pure e
     _ -> YogSothoth <$> liftRunMessage msg attrs
 

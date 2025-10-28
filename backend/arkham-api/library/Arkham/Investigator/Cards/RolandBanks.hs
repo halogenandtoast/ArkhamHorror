@@ -22,7 +22,7 @@ instance HasAbilities RolandBanks where
   getAbilities (RolandBanks attrs) =
     [ playerLimit PerRound
         $ selfAbility attrs 1 (AbleToDiscoverCluesAt YourLocation)
-        $ freeReaction (EnemyDefeated #after You ByAny AnyEnemy)
+        $ freeReaction (IfEnemyDefeated #after You ByAny AnyEnemy)
     ]
 
 instance HasChaosTokenValue RolandBanks where

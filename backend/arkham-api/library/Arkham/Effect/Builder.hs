@@ -28,6 +28,7 @@ import Arkham.Queue
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 import Control.Monad.State.Strict
 
 newtype EffectBuilderT m a = EffectBuilderT {runEffectBuilder :: StateT EffectBuilder m a}
@@ -41,6 +42,11 @@ class WithEffect m where
     effectId <- getRandom
     builder <- execStateT (runEffectBuilder body) =<< makeEffectBuilder "genef" Nothing ?source target
     push $ CreateEffect builder {effectBuilderEffectId = Just effectId}
+
+effectWithSource
+  :: (ReverseQueue m, Targetable target, Sourceable source, WithEffect m)
+  => source -> target -> EffectBuilderT m () -> m ()
+effectWithSource source target body = withSource source $ effect target body
 
 instance WithEffect GameT
 instance WithEffect m => WithEffect (QueueT Message m)
@@ -84,7 +90,7 @@ instance (Monad m, a ~ ()) => Duration (EffectBuilderT m a) where
     enableOn window
     removeOn window
 
-applyWhen :: HasGame m => Criterion -> EffectBuilderT m () -> EffectBuilderT m ()
+applyWhen :: (HasGame m, Tracing m) => Criterion -> EffectBuilderT m () -> EffectBuilderT m ()
 applyWhen c inner = do
   builder <- EffectBuilderT $ StateT $ \s ->
     (,s)
@@ -94,10 +100,11 @@ applyWhen c inner = do
       for_ mods $ apply . CriteriaModifier c . modifierType
     _ -> pure ()
 
-whenAttackedEnemy :: HasGame m => EffectBuilderT m () -> EnemyMatcher -> EffectBuilderT m ()
+whenAttackedEnemy
+  :: (HasGame m, Tracing m) => EffectBuilderT m () -> EnemyMatcher -> EffectBuilderT m ()
 whenAttackedEnemy body matcher = applyWhen (exists $ AttackedEnemy <> matcher) body
 
-apply :: HasGame m => ModifierType -> EffectBuilderT m ()
+apply :: (HasGame m, Tracing m) => ModifierType -> EffectBuilderT m ()
 apply modKind = EffectBuilderT $ do
   b <- get
   meta <- addModifier b
@@ -110,13 +117,13 @@ apply modKind = EffectBuilderT $ do
         Just $ EffectModifiers $ mods <> mods'
       _ -> Just $ EffectModifiers mods
 
-damageDealt :: HasGame m => Int -> EffectBuilderT m ()
+damageDealt :: (HasGame m, Tracing m) => Int -> EffectBuilderT m ()
 damageDealt n = apply $ DamageDealt n
 
-combat :: HasGame m => GameCalculation -> EffectBuilderT m ()
+combat :: (HasGame m, Tracing m) => GameCalculation -> EffectBuilderT m ()
 combat = modifySkill #combat
 
-modifySkill :: HasGame m => SkillType -> GameCalculation -> EffectBuilderT m ()
+modifySkill :: (HasGame m, Tracing m) => SkillType -> GameCalculation -> EffectBuilderT m ()
 modifySkill sKind calc = apply $ CalculatedSkillModifier sKind calc
 
 class IfLocation a where

@@ -11,11 +11,12 @@ newtype StubbornDetective = StubbornDetective EnemyAttrs
 
 stubbornDetective :: EnemyCard StubbornDetective
 stubbornDetective =
-  enemyWith StubbornDetective Cards.stubbornDetective (3, Static 2, 2) (1, 0)
-    $ \a -> a & preyL .~ BearerOf (toId a)
+  enemy StubbornDetective Cards.stubbornDetective (3, Static 2, 2) (1, 0)
+    & setPreyIsOnlyBearer
 
 instance HasModifiersFor StubbornDetective where
-  getModifiersFor (StubbornDetective a) = modifySelect a (InvestigatorAt $ locationWithEnemy a) [Blank]
+  getModifiersFor (StubbornDetective a) =
+    unless (enemyDefeated a) $ modifySelect a (InvestigatorAt $ locationWithEnemy a) [Blank]
 
 instance RunMessage StubbornDetective where
   runMessage msg (StubbornDetective attrs) = StubbornDetective <$> runMessage msg attrs

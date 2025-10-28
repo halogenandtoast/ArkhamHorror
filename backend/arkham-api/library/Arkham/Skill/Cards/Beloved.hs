@@ -19,7 +19,7 @@ instance RunMessage Beloved where
       getSkillTestId >>= \case
         Nothing -> pure s
         Just sid ->
-          if toResult @Bool attrs.meta
+          if toResult attrs.meta
             then do
               chooseOneM attrs.owner do
                 labeled
@@ -29,6 +29,6 @@ instance RunMessage Beloved where
                     skillTestModifier sid attrs (ChaosTokenTarget token) ReturnBlessedToChaosBag
                     passSkillTest
                 labeled "Do not remove" nothing
-              pure $ Beloved $ attrs & setMeta @Bool False
+              pure $ Beloved $ attrs & setMeta False
             else pure s
     _ -> Beloved <$> liftRunMessage msg attrs

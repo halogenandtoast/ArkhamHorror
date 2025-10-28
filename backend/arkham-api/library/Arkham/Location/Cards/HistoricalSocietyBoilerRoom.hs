@@ -15,10 +15,15 @@ historicalSocietyBoilerRoom = location HistoricalSocietyBoilerRoom Cards.histori
 
 instance HasAbilities HistoricalSocietyBoilerRoom where
   getAbilities (HistoricalSocietyBoilerRoom a) =
-    extendRevealed1 a $ mkAbility a 1 $ forced $ DiscoverClues #after You (be a) AnyValue
+    if a.unrevealed
+      then extendUnrevealed1 a $ mkAbility a 1 $ forced $ EnemySpawns #when (be a) AnyEnemy
+      else extendRevealed1 a $ mkAbility a 1 $ forced $ DiscoverClues #after You (be a) AnyValue
 
 instance RunMessage HistoricalSocietyBoilerRoom where
   runMessage msg l@(HistoricalSocietyBoilerRoom attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 | attrs.unrevealed -> do
+      reveal attrs
+      pure l
     UseCardAbility iid (isSource attrs -> True) 1 (discoveredClues -> n) _ -> do
       repeated n $ drawEncounterCard iid (attrs.ability 1)
       pure l

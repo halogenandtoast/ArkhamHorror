@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Enemy.Types (Field (..))
+import Arkham.ForMovement
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGetsMaybe)
 import Arkham.Matcher
@@ -32,7 +33,7 @@ instance HasAbilities DakotaGarofaloOnTheHunt3 where
         ( exists
             $ oneOf
               [ at_ YourLocation <> CanEngageEnemy (x.ability 1)
-              , at_ (AccessibleFrom YourLocation <> CanEnterLocation You)
+              , at_ (AccessibleFrom ForMovement YourLocation <> CanEnterLocation You)
               ]
         )
         $ FastAbility (exhaust x)
@@ -45,7 +46,10 @@ instance RunMessage DakotaGarofaloOnTheHunt3 where
         select
           $ oneOf
             [ enemyAtLocationWith iid <> CanEngageEnemy (attrs.ability 1)
-            , EnemyAt (AccessibleFrom (locationWithInvestigator iid) <> CanEnterLocation (InvestigatorWithId iid))
+            , EnemyAt
+                ( AccessibleFrom ForMovement (locationWithInvestigator iid)
+                    <> CanEnterLocation (InvestigatorWithId iid)
+                )
             ]
       chooseTargetM iid enemies (handleTarget iid attrs)
       pure a

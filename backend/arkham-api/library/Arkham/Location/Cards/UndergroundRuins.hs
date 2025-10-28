@@ -14,7 +14,8 @@ newtype UndergroundRuins = UndergroundRuins LocationAttrs
 
 undergroundRuins :: LocationCard UndergroundRuins
 undergroundRuins =
-  location UndergroundRuins Cards.undergroundRuins 2 (PerPlayer 1)
+  symbolLabel
+    $ location UndergroundRuins Cards.undergroundRuins 2 (PerPlayer 1)
     & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasModifiersFor UndergroundRuins where

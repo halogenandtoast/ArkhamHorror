@@ -2,6 +2,7 @@ module Arkham.Event.Events.StormOfSpirits (stormOfSpirits) where
 
 import Arkham.Action qualified as Action
 import Arkham.Aspect hiding (aspect)
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
@@ -39,5 +40,6 @@ instance RunMessage StormOfSpirits where
       eids <- select $ enemyAtLocationWith iid
       pushAll $ map toMsg eids
       for_ eids (checkDefeated attrs)
+      chooseExposeConcealed iid attrs
       pure e
     _ -> StormOfSpirits <$> liftRunMessage msg attrs

@@ -16,7 +16,7 @@ import Arkham.Helpers.Query (getActiveInvestigatorId, getInvestigators, getLead)
 import Arkham.Helpers.Window (checkWhen, checkWindows)
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
-import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIsNot))
+import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIsNot, IncludeSealed))
 import Arkham.Message.Lifted.Queue
 import Arkham.Modifier (_CancelAnyChaosToken, _CancelAnyChaosTokenAndDrawAnother)
 import Arkham.Prelude
@@ -25,6 +25,7 @@ import Arkham.RequestedChaosTokenStrategy
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
+import Arkham.Tracing
 import Arkham.Window (Window (..), mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 import Control.Monad.State.Strict (StateT, execStateT, gets, modify', put, runStateT)
@@ -138,7 +139,7 @@ replaceFirstChooseChoice source iid strategy replacement = \case
     replaceFirstChoice source iid strategy replacement (Decided step) : rest
 
 resolveFirstUnresolved
-  :: (HasCallStack, HasGame m, MonadRandom m)
+  :: (HasCallStack, HasGame m, Tracing m, MonadRandom m)
   => Source
   -> InvestigatorId
   -> RequestedChaosTokenStrategy
@@ -265,7 +266,9 @@ resolveFirstUnresolved source iid strategy = \case
                 collectChaosTokens xs _ = xs
                 tokensThatCannotBeIgnored = foldl' collectChaosTokens [] mods
                 uncanceleableSteps =
-                  filter (any ((`elem` tokensThatCannotBeIgnored) . chaosTokenFace) . toChaosTokens) steps
+                  if CannotCancelCardOrGameEffects `elem` mods
+                    then steps
+                    else filter (any ((`elem` tokensThatCannotBeIgnored) . chaosTokenFace) . toChaosTokens) steps
                 remainingSteps = filter (`notElem` uncanceleableSteps) steps
               if (notNull uncanceleableSteps && tokenStrategy == ResolveChoice)
                 || (null remainingSteps && tokenStrategy /= ResolveChoice)
@@ -358,22 +361,37 @@ resolveFirstUnresolved source iid strategy = \case
           player <- lift $ getPlayer iid
 
           pure
-            $ if null choices'
-              then (Resolved $ concatMap toChaosTokens steps <> concat tokens', [])
-              else
-                ( Decided $ ChooseMatchChoice steps tokens' choices
-                ,
-                  [ chooseOrRunOne
-                      player
-                      [Label label [SetChaosBagChoice source iid (fixStep step')] | (label, step') <- choices']
-                  ]
-                )
+            $ case choices' of
+              [] -> (Resolved $ concatMap toChaosTokens steps <> concat tokens', [])
+              ((_, fstep) : _) ->
+                -- This assumption could be wrong, but if we can not cancel and
+                -- all the choices end up the same then we want to just skip by
+                -- taking the first choice. We may want this to be more specific
+                let
+                  cannotChoose = \case
+                    ChooseMatch _ _ CancelChoice _ _ _ _ -> CannotCancelCardOrGameEffects `elem` mods
+                    ChooseMatch _ _ IgnoreChoice _ _ _ _ -> CannotIgnoreCardOrGameEffects `elem` mods
+                    _ -> False
+                 in
+                  if CannotCancelCardOrGameEffects `elem` mods && all (cannotChoose . snd) choices'
+                    then
+                      ( Decided $ ChooseMatchChoice steps tokens' choices
+                      , [SetChaosBagChoice source iid (fixStep fstep)]
+                      )
+                    else
+                      ( Decided $ ChooseMatchChoice steps tokens' choices
+                      ,
+                        [ chooseOrRunOne
+                            player
+                            [Label label [SetChaosBagChoice source iid (fixStep step')] | (label, step') <- choices']
+                        ]
+                      )
         else do
           (steps', msgs) <- resolveFirstChooseUnresolved source iid strategy steps
           pure (Decided $ ChooseMatchChoice steps' tokens' choices, msgs)
 
 resolveFirstChooseUnresolved
-  :: (HasCallStack, HasGame m, MonadRandom m)
+  :: (HasCallStack, HasGame m, Tracing m, MonadRandom m)
   => Source
   -> InvestigatorId
   -> RequestedChaosTokenStrategy
@@ -945,8 +963,30 @@ instance RunMessage ChaosBag where
         & (chaosTokensL %~ sort . (token {chaosTokenCancelled = False, chaosTokenSealed = False} :))
         & (setAsideChaosTokensL %~ filter (/= token))
         & (revealedChaosTokensL %~ filter (/= token))
+    ResetTokenPool -> do
+      bless <- selectCount $ IncludeSealed #bless
+      curse <- selectCount $ IncludeSealed #curse
+      frost <- selectCount $ IncludeSealed #frost
+
+      blessTokens <- replicateM (10 - bless) $ createChaosToken #bless
+      curseTokens <- replicateM (10 - curse) $ createChaosToken #curse
+      frostTokens <- replicateM (8 - frost) $ createChaosToken #frost
+      pure $ c & tokenPoolL .~ blessTokens <> curseTokens <> frostTokens
     RemoveChaosToken face ->
-      pure $ c & chaosTokensL %~ deleteFirstMatch ((== face) . chaosTokenFace)
+      case find ((== face) . chaosTokenFace) chaosBagChaosTokens of
+        Nothing -> pure c
+        Just token -> do
+          let shouldReturnToPool = face `elem` [#bless, #curse, #frost]
+          if shouldReturnToPool
+            then do
+              push $ ReturnChaosTokensToPool [token]
+              pure c
+            else
+              pure
+                $ c
+                & (chaosTokensL %~ delete token)
+                & (setAsideChaosTokensL %~ delete token)
+                & (revealedChaosTokensL %~ delete token)
     RemoveAllChaosTokens face ->
       pure
         $ c

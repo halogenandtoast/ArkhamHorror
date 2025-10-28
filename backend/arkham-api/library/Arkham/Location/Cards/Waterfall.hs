@@ -20,7 +20,7 @@ instance HasAbilities Waterfall where
   getAbilities (Waterfall a) =
     extendRevealed
       a
-      [ restricted a 1 (HasSupply Rope)
+      [ restricted a 1 (exists $ InvestigatorWithSupply Rope <> at_ (be a))
           $ freeReaction (InitiatedSkillTest #when You #any #any $ WhileInvestigating (be a))
       , restricted a 2 (youExist $ HandWith AnyCards)
           $ forced

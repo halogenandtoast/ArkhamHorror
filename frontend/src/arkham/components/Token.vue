@@ -70,7 +70,7 @@ const classObject = computed(() => ({
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .active-token {
   border: 5px solid #ff00ff;
   border-radius: 500px;

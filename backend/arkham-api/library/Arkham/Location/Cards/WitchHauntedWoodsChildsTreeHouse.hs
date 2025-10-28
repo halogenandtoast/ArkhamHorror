@@ -1,6 +1,4 @@
-module Arkham.Location.Cards.WitchHauntedWoodsChildsTreeHouse (
-  witchHauntedWoodsChildsTreeHouse,
-) where
+module Arkham.Location.Cards.WitchHauntedWoodsChildsTreeHouse (witchHauntedWoodsChildsTreeHouse) where
 
 import Arkham.Ability
 import Arkham.Deck qualified as Deck
@@ -18,11 +16,7 @@ newtype WitchHauntedWoodsChildsTreeHouse = WitchHauntedWoodsChildsTreeHouse Loca
 witchHauntedWoodsChildsTreeHouse
   :: LocationCard WitchHauntedWoodsChildsTreeHouse
 witchHauntedWoodsChildsTreeHouse =
-  location
-    WitchHauntedWoodsChildsTreeHouse
-    Cards.witchHauntedWoodsChildsTreeHouse
-    1
-    (PerPlayer 2)
+  location WitchHauntedWoodsChildsTreeHouse Cards.witchHauntedWoodsChildsTreeHouse 1 (PerPlayer 2)
 
 instance HasAbilities WitchHauntedWoodsChildsTreeHouse where
   getAbilities (WitchHauntedWoodsChildsTreeHouse a) =

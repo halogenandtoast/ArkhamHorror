@@ -28,7 +28,7 @@ instance RunMessage AceOfRods1 where
       removeFromGame attrs
       createCardEffect Cards.aceOfRods1 Nothing attrs iid
       pure a
-    InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 2) | iid == iid' -> do
       putCardIntoPlay iid attrs
       pure a
     _ -> AceOfRods1 <$> liftRunMessage msg attrs

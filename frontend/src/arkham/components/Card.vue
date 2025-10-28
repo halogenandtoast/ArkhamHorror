@@ -21,8 +21,9 @@ const emit = defineEmits<{
   choose: [value: number]
 }>()
 
-const cardContents = computed<CardContents>(() => props.card.tag === "CardContents" ? props.card : (
-  props.card.tag === "VengeanceCard" ? props.card.contents.contents : props.card.contents))
+const cardContents = computed<CardContents>(() => {
+  return props.card.tag === "CardContents" ? props.card : ( props.card.tag === "VengeanceCard" ? props.card.contents.contents : props.card.contents)
+})
 
 const image = computed(() => {
   if (props.card.tag === 'VengeanceCard') {
@@ -60,7 +61,7 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 function canInteract(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL) {
     if (c.target.tag === 'SkillTarget') {
-      if (props.game.skills[c.target.contents].cardId == id.value) {
+      if (typeof c.target.contents === 'string' && props.game.skills[c.target.contents].cardId == id.value) {
         return true
       }
     }
@@ -74,8 +75,11 @@ const cardAction = computed(() => {
   return choices.value.findIndex(canInteract)
 })
 
-
 function isAbility(v: Message): v is AbilityLabel {
+  if (v.tag === MessageType.EVADE_LABEL) {
+    return v.enemyId === id.value
+  }
+
   if (v.tag !== MessageType.ABILITY_LABEL) {
     return false
   }
@@ -86,11 +90,16 @@ function isAbility(v: Message): v is AbilityLabel {
     if ("contents" in source.source) {
       return source.source.contents === id.value
     }
-  } else {
-    return source.contents === id.value
   }
 
-  return false
+  if (source.tag === 'AssetSource') {
+    const asset = props.game.assets[source.contents]
+    if (asset) {
+      return asset.cardId === id.value && asset.placement.tag === 'StillInHand'
+    }
+  }
+
+  return source.contents === id.value
 }
 
 const abilities = computed<AbilityMessage[]>(() => {
@@ -160,7 +169,7 @@ const forceSideways = computed(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 
 .card {
   width: var(--card-width);
@@ -170,11 +179,11 @@ const forceSideways = computed(() => {
   border-radius: 6px;
   margin: 2px;
   display: inline-block;
+}
 
-  &--can-interact {
-    border: 2px solid var(--select);
-    cursor: pointer;
-  }
+.card--can-interact {
+  border: 2px solid var(--select);
+  cursor: pointer;
 }
 
 .vengeance {

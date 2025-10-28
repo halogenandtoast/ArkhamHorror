@@ -21,7 +21,7 @@ instance RunMessage GetOverHere where
         enemies <-
           select
             $ NonEliteEnemy
-            <> at_ (oneOf [m, ConnectedFrom m, LocationWithDistanceFrom 2 m Anywhere])
+            <> at_ (oneOf [m, connectedFrom m, LocationWithDistanceFrom 2 m Anywhere])
         sid <- getRandom
         chooseTargetM iid enemies \enemy -> do
           push $ EnemyEngageInvestigator enemy iid

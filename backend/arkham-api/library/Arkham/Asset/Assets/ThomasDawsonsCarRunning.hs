@@ -1,12 +1,9 @@
-module Arkham.Asset.Assets.ThomasDawsonsCarRunning (
-  thomasDawsonsCarRunning,
-  ThomasDawsonsCarRunning (..),
-)
-where
+module Arkham.Asset.Assets.ThomasDawsonsCarRunning (thomasDawsonsCarRunning) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), withoutModifier)
 import Arkham.Matcher
@@ -41,7 +38,7 @@ instance RunMessage ThomasDawsonsCarRunning where
       drawEncounterCard iid (attrs.ability 1)
       whenM (withoutModifier attrs VehicleCannotMove) do
         getLocationOf attrs.id >>= traverse_ \lid -> do
-          roads <- select $ withTrait Road <> ConnectedTo (LocationWithId lid)
+          roads <- select $ withTrait Road <> ConnectedTo ForMovement (LocationWithId lid)
           chooseTargetM iid roads $ place attrs
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

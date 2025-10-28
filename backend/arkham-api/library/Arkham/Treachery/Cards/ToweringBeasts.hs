@@ -32,4 +32,7 @@ instance RunMessage ToweringBeasts where
             lid' <- selectJust (locationWithEnemy brood)
             when (lid == lid') $ assignDamage iid attrs 1
       pure t
+    RemoveTreachery tid | tid == attrs.id -> do
+      for_ attrs.attached $ push . CheckDefeated (attrs.ability 1)
+      pure t
     _ -> ToweringBeasts <$> liftRunMessage msg attrs

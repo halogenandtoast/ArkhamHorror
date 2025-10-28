@@ -4,6 +4,7 @@ import Arkham.Action
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.ForMovement
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
@@ -26,7 +27,7 @@ instance HasModifiersFor Narogath where
     modifySelectWhen
       a
       a.ready
-      (InvestigatorAt $ AccessibleFrom $ locationWithEnemy a)
+      (InvestigatorAt $ AccessibleFrom NotForMovement $ locationWithEnemy a)
       [CannotTakeAction $ EnemyAction Parley $ EnemyWithTrait Cultist]
     n <- perPlayer 3
     modifySelf a [HealthModifier n]

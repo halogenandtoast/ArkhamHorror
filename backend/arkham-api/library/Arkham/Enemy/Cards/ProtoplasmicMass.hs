@@ -11,14 +11,12 @@ newtype ProtoplasmicMass = ProtoplasmicMass EnemyAttrs
 
 protoplasmicMass :: EnemyCard ProtoplasmicMass
 protoplasmicMass =
-  enemyWith ProtoplasmicMass Cards.protoplasmicMass (6, Static 4, 3) (1, 1)
-    $ ( spawnAtL
-          ?~ SpawnAt
-            ( FarthestLocationFromYou
-                $ mapOneOf LocationWithLabel ["facility1", "facility2", "facility3", "facility14", "facility15"]
-            )
+  enemy ProtoplasmicMass Cards.protoplasmicMass (6, Static 4, 3) (1, 1)
+    & setSpawnAt
+      ( FarthestLocationFromYou
+          $ mapOneOf LocationWithLabel ["facility1", "facility2", "facility3", "facility14", "facility15"]
       )
-    . (preyL .~ OnlyPrey (mapOneOf InvestigatorWithSeal [minBound ..]))
+    & setOnlyPrey (mapOneOf InvestigatorWithSeal [minBound ..])
 
 instance HasAbilities ProtoplasmicMass where
   getAbilities (ProtoplasmicMass a) =

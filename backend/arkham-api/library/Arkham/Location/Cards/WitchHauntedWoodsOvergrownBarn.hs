@@ -16,16 +16,13 @@ newtype WitchHauntedWoodsOvergrownBarn = WitchHauntedWoodsOvergrownBarn Location
 
 witchHauntedWoodsOvergrownBarn :: LocationCard WitchHauntedWoodsOvergrownBarn
 witchHauntedWoodsOvergrownBarn =
-  location
-    WitchHauntedWoodsOvergrownBarn
-    Cards.witchHauntedWoodsOvergrownBarn
-    3
-    (PerPlayer 1)
+  location WitchHauntedWoodsOvergrownBarn Cards.witchHauntedWoodsOvergrownBarn 3 (PerPlayer 1)
 
 instance HasAbilities WitchHauntedWoodsOvergrownBarn where
   getAbilities (WitchHauntedWoodsOvergrownBarn a) =
     extendRevealed1 a
-      $ mkAbility a 1
+      $ groupLimit PerWindow
+      $ restricted a 1 Here
       $ freeReaction
       $ EnemyWouldSpawnAt AnyEnemy (not_ (be a) <> "Witch-Haunted Woods")
 
@@ -46,7 +43,11 @@ instance RunMessage WitchHauntedWoodsOvergrownBarn where
             EnemySpawn details -> details.enemy == enemyId
             _ -> False
           \case
-            EnemySpawn details -> pure [EnemySpawn $ details {spawnDetailsSpawnAt = SpawnAtLocation attrs.id}]
+            EnemySpawn details ->
+              pure
+                [ EnemySpawn $ details {spawnDetailsSpawnAt = SpawnAtLocation attrs.id}
+                , EnemyCheckEngagement enemyId
+                ]
             _ -> error "bad match"
         iids <- select $ investigatorAt $ toId attrs
         insteadOfMatchingWith

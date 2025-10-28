@@ -1,6 +1,7 @@
-module Arkham.Location.Cards.UnderseaCorridors (underseaCorridors, UnderseaCorridors (..)) where
+module Arkham.Location.Cards.UnderseaCorridors (underseaCorridors) where
 
 import Arkham.Ability
+import Arkham.ForMovement
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.FloodLevel
@@ -26,7 +27,7 @@ instance HasAbilities UnderseaCorridors where
       a
       [ restricted a 1 (Here <> youExist (InvestigatorWithKey WhiteKey)) actionAbility
       , playerLimit PerRound
-          $ restricted a 2 (thisExists a (LocationWithKey WhiteKey))
+          $ restricted a 2 (thisExists a (LocationWithKey WhiteKey) <> Here)
           $ FastAbility' Free [#move]
       ]
 
@@ -36,7 +37,7 @@ instance RunMessage UnderseaCorridors where
       placeKey attrs WhiteKey
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      connecting <- select $ ConnectedFrom (be attrs)
+      connecting <- select $ ConnectedFrom ForMovement (be attrs)
       chooseTargetM iid connecting $ moveTo (attrs.ability 2) iid
       pure l
     _ -> UnderseaCorridors <$> liftRunMessage msg attrs

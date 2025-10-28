@@ -1,8 +1,32 @@
 import * as JsonDecoder from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
 import { FlavorText, flavorTextDecoder } from '@/arkham/types/FlavorText';
+import { TarotCard, tarotCardDecoder } from '@/arkham/types/TarotCard';
+import { Token, tokenDecoder } from '@/arkham/types/Token';
+import { Source, sourceDecoder } from '@/arkham/types/Source';
 
-export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseSome1 | ChooseN | ChooseOneAtATime | ChooseOneAtATimeWithAuto | ChooseDeck | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies | DropDown | PickScenarioSettings | PickCampaignSettings | ChooseOneFromEach;
+export type Question =
+  | ChooseOne 
+  | ChooseUpToN 
+  | ChooseSome 
+  | ChooseSome1 
+  | ChooseN 
+  | ChooseOneAtATime 
+  | ChooseOneAtATimeWithAuto 
+  | ChooseDeck 
+  | ChooseUpgradeDeck 
+  | ChoosePaymentAmounts 
+  | ChooseAmounts 
+  | QuestionLabel 
+  | Read 
+  | PickSupplies 
+  | DropDown 
+  | PickScenarioSettings 
+  | PickCampaignSettings 
+  | ChooseOneFromEach 
+  | PickDestiny 
+  | PickCampaignSpecific
+  | ChooseExchangeAmounts
 
 export enum QuestionType {
   CHOOSE_ONE = 'ChooseOne',
@@ -21,9 +45,22 @@ export enum QuestionType {
   QUESTION_LABEL = 'QuestionLabel',
   READ = 'Read',
   PICK_SUPPLIES = 'PickSupplies',
+  PICK_DESTINY = 'PickDestiny',
   DROP_DOWN = 'DropDown',
   PICK_SCENARIO_SETTINGS = 'PickScenarioSettings',
   PICK_CAMPAIGN_SETTINGS = 'PickCampaignSettings',
+  PICK_CAMPAIGN_SPECIFIC = 'PickCampaignSpecific',
+  CHOOSE_EXCHANGE_AMOUNTS = 'ChooseExchangeAmounts'
+}
+
+export type ChooseExchangeAmounts = {
+  tag: QuestionType.CHOOSE_EXCHANGE_AMOUNTS;
+  investigator1Id: string;
+  investigator2Id: string;
+  investigator1InitialAmount: number;
+  investigator2InitialAmount: number;
+  token: Token
+  source: Source
 }
 
 export type PickScenarioSettings = {
@@ -74,6 +111,8 @@ type Supply
   | 'Gasoline'
   | 'Pocketknife'
   | 'Pickaxe'
+  | 'MysteriousScepter'
+  | 'StickyGoop'
 
 export const supplyDecoder = JsonDecoder.oneOf<Supply>([
   JsonDecoder.literal('Provisions'),
@@ -89,7 +128,9 @@ export const supplyDecoder = JsonDecoder.oneOf<Supply>([
   JsonDecoder.literal('Pendant'),
   JsonDecoder.literal('Gasoline'),
   JsonDecoder.literal('Pocketknife'),
-  JsonDecoder.literal('Pickaxe')
+  JsonDecoder.literal('Pickaxe'),
+  JsonDecoder.literal('MysteriousScepter'),
+  JsonDecoder.literal('StickyGoop')
 ], 'Supply')
 
 export type PickSupplies = {
@@ -97,6 +138,22 @@ export type PickSupplies = {
   pointsRemaining: number
   chosenSupplies: Supply[]
   choices: Message[]
+  resupply: boolean
+}
+
+export type DestinyDrawing = {
+  scenario: string
+  tarot: TarotCard
+}
+
+export type PickDestiny = {
+  tag: QuestionType.PICK_DESTINY
+  drawings: DestinyDrawing[]
+}
+
+export type PickCampaignSpecific = {
+  tag: QuestionType.PICK_CAMPAIGN_SPECIFIC
+  contents: any
 }
 
 export type DropDown = {
@@ -212,6 +269,19 @@ export const paymentAmountChoiceDecoder = JsonDecoder.object<PaymentAmountChoice
   title: JsonDecoder.string(),
 }, 'PaymentAmountChoice')
 
+export const chooseExchangeAmountsDecoder = JsonDecoder.object<ChooseExchangeAmounts>(
+  {
+    tag: JsonDecoder.literal(QuestionType.CHOOSE_EXCHANGE_AMOUNTS),
+    investigator1Id: JsonDecoder.string(),
+    investigator2Id: JsonDecoder.string(),
+    investigator1InitialAmount: JsonDecoder.number(),
+    investigator2InitialAmount: JsonDecoder.number(),
+    token: tokenDecoder,
+    source: sourceDecoder,
+  },
+  'ChooseExchangeAmounts',
+);
+
 export const choosePaymentAmountsDecoder = JsonDecoder.object<ChoosePaymentAmounts>(
   {
     tag: JsonDecoder.literal(QuestionType.CHOOSE_PAYMENT_AMOUNTS),
@@ -300,8 +370,29 @@ export const pickSuppliesDecoder = JsonDecoder.object<PickSupplies>(
     pointsRemaining: JsonDecoder.number(),
     chosenSupplies: JsonDecoder.array<Supply>(supplyDecoder, 'Supply[]'),
     choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
+    resupply: JsonDecoder.boolean()
   },
   'PickSupplies',
+);
+
+export const pickDestinyDecoder = JsonDecoder.object<PickDestiny>(
+  {
+    tag: JsonDecoder.literal(QuestionType.PICK_DESTINY),
+    drawings: JsonDecoder.array<DestinyDrawing>(JsonDecoder.object<DestinyDrawing>(
+      {
+        scenario: JsonDecoder.string(),
+        tarot: tarotCardDecoder,
+      }, 'DestinyDrawing'), 'DestinyDrawing[]')
+  },
+  'PickSupplies',
+);
+
+export const pickCampaignSpecificDecoder = JsonDecoder.object<PickCampaignSpecific>(
+  {
+    tag: JsonDecoder.literal(QuestionType.PICK_CAMPAIGN_SPECIFIC),
+    contents: JsonDecoder.succeed()
+  },
+  'PickCampaignSpecific',
 );
 
 export const dropDownDecoder = JsonDecoder.object<DropDown>(
@@ -309,7 +400,7 @@ export const dropDownDecoder = JsonDecoder.object<DropDown>(
     tag: JsonDecoder.literal(QuestionType.DROP_DOWN),
     options: JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.succeed()], '[string, message]').map(([s,]) => s), 'string[]') //eslint-disable-line
   },
-  'PickSupplies',
+  'DropDown',
 );
 
 export const chooseOneDecoder = JsonDecoder.object<ChooseOne>(
@@ -396,9 +487,12 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     chooseDeckDecoder,
     chooseAmountsDecoder,
     choosePaymentAmountsDecoder,
+    chooseExchangeAmountsDecoder,
     questionLabelDecoder,
     readDecoder,
     pickSuppliesDecoder,
+    pickDestinyDecoder,
+    pickCampaignSpecificDecoder,
     dropDownDecoder,
     pickScenarioSettingsDecoder,
     pickCampaignSettingsDecoder,

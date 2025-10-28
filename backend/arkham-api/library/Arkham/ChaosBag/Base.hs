@@ -34,8 +34,8 @@ instance FromJSON ChaosBag where
     chaosBagChaosTokens <- o .: "chaosTokens"
     chaosBagSetAsideChaosTokens <- o .: "setAsideChaosTokens"
     chaosBagRevealedChaosTokens <- o .: "revealedChaosTokens"
-    chaosBagChoice <- o .: "choice"
-    chaosBagForceDraw <- o .: "forceDraw"
+    chaosBagChoice <- o .:? "choice"
+    chaosBagForceDraw <- o .:? "forceDraw"
     chaosBagTokenPool <- o .: "tokenPool"
     chaosBagTotalRevealedChaosTokens <- o .:? "totalRevealedChaosTokens" .!= []
     pure ChaosBag {..}

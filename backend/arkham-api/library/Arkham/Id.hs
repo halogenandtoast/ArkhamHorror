@@ -103,6 +103,10 @@ newtype CardDrawId = CardDrawId UUID
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
+newtype ConcealedCardId = ConcealedCardId {unConcealedCardId :: UUID}
+  deriving stock (Show, Eq, Ord, Data)
+  deriving newtype (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Random)
+
 newtype BatchId = BatchId {unBatchId :: UUID}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
@@ -112,6 +116,14 @@ type ToId a b = (AsId a, IdOf a ~ b)
 class AsId a where
   type IdOf a
   asId :: a -> IdOf a
+
+instance AsId AgendaId where
+  type IdOf AgendaId = AgendaId
+  asId = id
+
+instance AsId ConcealedCardId where
+  type IdOf ConcealedCardId = ConcealedCardId
+  asId = id
 
 instance AsId InvestigatorId where
   type IdOf InvestigatorId = InvestigatorId

@@ -50,7 +50,7 @@ export const chaosBagStepStateDecoder = JsonDecoder.oneOf<ChaosBagStepState>([
   decidingDecoder,
 ], 'ChaosBagStepState')
 
-export type ChaosBagStep = Draw | Choose | ChooseMatch | ChooseMatchChoice
+export type ChaosBagStep = Draw | Choose | ChooseMatch | ChooseMatchChoice | Deciding
 
 export type TokenStrategy = "IgnoreChoice" | "CancelChoice" | "ResolveChoice"
 
@@ -119,6 +119,7 @@ export const chaosBagStepDecoder: JsonDecoder.Decoder<ChaosBagStep> = JsonDecode
   chooseDecoder,
   chooseMatchDecoder,
   chooseMatchChoiceDecoder,
+  decidingDecoder,
 ], 'ChaosBagStep')
 
 

@@ -1,25 +1,23 @@
-module Arkham.Location.Cards.PathwayIntoVoid (
-  pathwayIntoVoid,
-  PathwayIntoVoid (..),
-)
-where
+module Arkham.Location.Cards.PathwayIntoVoid (pathwayIntoVoid) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.Card
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Helpers
+import Arkham.Helpers.Message qualified as Msg
+import Arkham.Helpers.Message.Discard.Lifted
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
-import Arkham.Timing qualified as Timing
 
 newtype PathwayIntoVoid = PathwayIntoVoid LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -35,49 +33,30 @@ pathwayIntoVoid =
     (connectsToL .~ adjacentLocations)
 
 instance HasAbilities PathwayIntoVoid where
-  getAbilities (PathwayIntoVoid attrs) =
-    withRevealedAbilities
-      attrs
-      [ cosmos attrs 1
-      , forcedAbility attrs 2 $ Enters Timing.After You $ LocationWithId (toId attrs)
-      , limitedAbility (GroupLimit PerRound 1)
-          $ restrictedAbility
-            attrs
-            3
-            ( Here
-                <> AnyCriterion [CanMoveThis GridDown, CanMoveThis GridUp, CanMoveThis GridLeft, CanMoveThis GridRight]
-            )
-          $ ActionAbility [] (ActionCost 1 <> ScenarioResourceCost 1)
+  getAbilities (PathwayIntoVoid a) =
+    extendRevealed
+      a
+      [ cosmos a 1
+      , forcedAbility a 2 $ Enters #after You (be a)
+      , groupLimit PerRound
+          $ restricted a 3 (Here <> oneOf (map CanMoveThis [GridDown, GridUp, GridLeft, GridRight]))
+          $ actionAbilityWithCost (ScenarioResourceCost 1)
       ]
 
 instance RunMessage PathwayIntoVoid where
-  runMessage msg l@(PathwayIntoVoid attrs) = case msg of
+  runMessage msg l@(PathwayIntoVoid attrs) = runQueueT $ case msg of
     RunCosmos iid lid msgs | lid == toId attrs -> do
       mpos <- findCosmosPosition iid
       valids <-
         maybe (pure []) (`getEmptyPositionsInDirections` [GridUp, GridDown, GridLeft, GridRight]) mpos
-      if null valids
-        then cosmosFail attrs
-        else do
-          player <- getPlayer iid
-          push
-            $ chooseOne
-              player
-              [ GridLabel (cosmicLabel pos') (PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid) : msgs)
-              | pos'@(Pos x y) <- valids
-              ]
+      chooseCosmos attrs iid valids msgs
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       canDiscard <- iid <=~> InvestigatorWithDiscardableCard
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ [ Label
-            "Discard 1 card from your hand"
-            [toMessage $ chooseAndDiscardCard iid (toAbilitySource attrs 2)]
-          | canDiscard
-          ]
-        <> [Label "Take 1 Damage" [assignDamage iid (toAbilitySource attrs 2) 1]]
+      chooseOrRunOneM iid $ withI18n do
+        when canDiscard do
+          countVar 1 $ labeled' "discardCards" $ chooseAndDiscardCard iid (attrs.ability 2)
+        countVar 1 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 2) 1
 
       pure l
     UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do
@@ -94,25 +73,23 @@ instance RunMessage PathwayIntoVoid where
 
               let
                 toGridLabel = \case
-                  GridUp -> "Move Up"
-                  GridDown -> "Move Down"
-                  GridLeft -> "Move Left"
-                  GridRight -> "Move Right"
+                  GridUp -> "moveUp"
+                  GridDown -> "moveDown"
+                  GridLeft -> "moveLeft"
+                  GridRight -> "moveRight"
 
-              (emptySpace', placeEmptySpace) <- placeLocationCard Locations.emptySpace
-              player <- getPlayer iid
-              push
-                $ chooseOrRunOne player
-                $ [ Label
-                    (toGridLabel dir)
-                    [ ObtainCard card.id
-                    , placeEmptySpace
-                    , PlaceCosmos iid emptySpace' (EmptySpace pos card)
-                    , PlaceCosmos iid (toId attrs) (CosmosLocation (updatePosition pos dir) (toId attrs))
-                    ]
-                  | dir <- validDirections
-                  ]
+              (emptySpace', placeEmptySpace) <- Msg.placeLocationCard Locations.emptySpace
+              chooseOrRunOneM iid $ scenarioI18n do
+                for_ validDirections \dir ->
+                  labeled' (toGridLabel dir) do
+                    obtainCard card.id
+                    push placeEmptySpace
+                    push $ PlaceCosmos iid emptySpace' (EmptySpace pos card)
+                    push $ PlaceCosmos iid (toId attrs) (CosmosLocation (updatePosition pos dir) (toId attrs))
         [] -> error "empty deck, what should we do?, maybe don't let this be called?"
         _ -> error "too many cards, why did this happen?"
       pure l
-    _ -> PathwayIntoVoid <$> runMessage msg attrs
+    Do (PlaceCosmos _ lid cloc) | lid == attrs.id -> do
+      handleCosmos lid cloc
+      pure l
+    _ -> PathwayIntoVoid <$> liftRunMessage msg attrs

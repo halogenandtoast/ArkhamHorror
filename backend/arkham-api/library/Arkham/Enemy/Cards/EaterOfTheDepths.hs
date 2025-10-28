@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.EaterOfTheDepths (eaterOfTheDepths, EaterOfTheDepths (..)) where
+module Arkham.Enemy.Cards.EaterOfTheDepths (eaterOfTheDepths) where
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
@@ -21,5 +21,4 @@ instance HasModifiersFor EaterOfTheDepths where
     modifySelfWhen a (depth > 0) [EnemyEvade depth]
 
 instance RunMessage EaterOfTheDepths where
-  runMessage msg (EaterOfTheDepths attrs) =
-    EaterOfTheDepths <$> runMessage msg attrs
+  runMessage msg (EaterOfTheDepths attrs) = EaterOfTheDepths <$> runMessage msg attrs

@@ -21,6 +21,7 @@ import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token
 import Data.Data
 import GHC.Records
 
@@ -49,6 +50,7 @@ data instance Field Agenda :: Type -> Type where
   AgendaDeckId :: Field Agenda Int
   AgendaAbilities :: Field Agenda [Ability]
   AgendaUsedWheelOfFortuneX :: Field Agenda Bool
+  AgendaTokens :: Field Agenda Tokens
 
 data AgendaAttrs = AgendaAttrs
   { agendaDoom :: Int
@@ -61,6 +63,8 @@ data AgendaAttrs = AgendaAttrs
   , agendaDeckId :: Int
   , agendaRemoveDoomMatchers :: RemoveDoomMatchers
   , agendaUsedWheelOfFortuneX :: Bool
+  , agendaMeta :: Value
+  , agendaTokens :: Tokens
   }
   deriving stock (Show, Eq, Generic)
 
@@ -77,7 +81,21 @@ instance ToJSON AgendaAttrs where
   toEncoding = genericToEncoding $ aesonOptions $ Just "agenda"
 
 instance FromJSON AgendaAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "agenda"
+  parseJSON = withObject "AgendaAttrs" $ \o -> do
+    agendaDoom <- o .: "doom"
+    agendaDoomThreshold <- o .:? "doomThreshold"
+    agendaId <- o .: "id"
+    agendaCardId <- o .: "cardId"
+    agendaSequence <- o .: "sequence"
+    agendaFlipped <- o .: "flipped"
+    agendaCardsUnderneath <- o .: "cardsUnderneath"
+    agendaDeckId <- o .: "deckId"
+    agendaRemoveDoomMatchers <- o .: "removeDoomMatchers"
+    agendaUsedWheelOfFortuneX <- o .: "usedWheelOfFortuneX"
+    agendaMeta <- o .:? "meta" .!= Null
+    agendaTokens <- o .:? "tokens" .!= mempty
+
+    pure AgendaAttrs {..}
 
 instance Entity AgendaAttrs where
   type EntityId AgendaAttrs = AgendaId
@@ -138,14 +156,28 @@ agendaWith (n, side) f cardDef threshold g =
             , agendaDeckId = deckId
             , agendaRemoveDoomMatchers = defaultRemoveDoomMatchers
             , agendaUsedWheelOfFortuneX = False
+            , agendaMeta = Null
+            , agendaTokens = mempty
             }
     }
 
 instance HasField "id" AgendaAttrs AgendaId where
   getField = agendaId
 
+instance HasField "tokens" AgendaAttrs Tokens where
+  getField = agendaTokens
+
+instance HasField "token" AgendaAttrs (Token -> Int) where
+  getField a tkn = countTokens tkn a.tokens
+
+instance HasField "meta" AgendaAttrs Value where
+  getField = agendaMeta
+
 instance HasField "doom" AgendaAttrs Int where
   getField = agendaDoom
+
+instance HasField "deck" AgendaAttrs Int where
+  getField = agendaDeckId
 
 instance HasField "ability" AgendaAttrs (Int -> Source) where
   getField this = toAbilitySource this

@@ -6,10 +6,13 @@ import type { CampaignDetails } from '@/arkham/types/Campaign';
 import type { ScenarioDetails } from '@/arkham/types/Scenario';
 import { imgsrc } from '@/arkham/helpers';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   game: GameDetails
-  deleteGame: () => void
-}>()
+  deleteGame?: () => void
+  admin?: boolean
+}>(), {
+  admin: false
+})
 const campaign = computed<CampaignDetails | null>(() => props.game.campaign)
 const scenario = computed<ScenarioDetails | null>(() => props.game.scenario)
 const deleting = ref(false)
@@ -56,7 +59,8 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
           <div class="campaign-icon-container" v-else-if="scenario">
             <img class="campaign-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '')}.png`)" />
           </div>
-          <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
+          <router-link v-if="admin" class="title" :to="`/admin/games/${game.id}`">{{game.name}}</router-link>
+          <router-link v-else class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
           <div v-if="game.multiplayerVariant === 'Solo'" class="solo">Solo</div>
         </div>
         <div v-if="campaign && scenario" class="scenario-details">
@@ -66,7 +70,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
         <div class="extra-details">
           <div class="game-difficulty">{{difficulty}}</div>
 
-          <div class="game-delete">
+          <div v-if="deleteGame" class="game-delete">
               <transition name="slide">
                 <a v-show="!deleting" href="#delete" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
               </transition>
@@ -113,7 +117,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 h2 {
   color: #6E8644;
   font-size: 2em;
@@ -142,7 +146,7 @@ h2 {
 }
 
 .campaign-icon {
-  //filter: invert(28%) sepia(100%) hue-rotate(-180deg) saturate(3);
+  /*filter: invert(28%) sepia(100%) hue-rotate(-180deg) saturate(3);*/
   filter: invert(100%) brightness(85%);
   max-height: 50px;
   width: 100%;
@@ -328,7 +332,7 @@ h2 {
     width: 100%;
     height: 100%;
     opacity: 0.1;
-    //background-image: v-bind(box);
+    /*background-image: v-bind(box);*/
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;

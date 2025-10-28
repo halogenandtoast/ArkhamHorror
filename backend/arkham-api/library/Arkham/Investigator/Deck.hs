@@ -6,7 +6,7 @@ import Arkham.Prelude
 
 import Data.Aeson.TH
 
-data InvestigatorDeckKey = HunchDeck
+data InvestigatorDeckKey = HunchDeck | UnderworldMarketDeck
   deriving stock (Show, Ord, Eq, Data)
 
 $(deriveJSON (defaultOptions {tagSingleConstructors = True}) ''InvestigatorDeckKey)

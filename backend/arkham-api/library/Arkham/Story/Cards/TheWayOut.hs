@@ -18,7 +18,7 @@ theWayOut = story TheWayOut Cards.theWayOut
 
 instance RunMessage TheWayOut where
   runMessage msg s@(TheWayOut attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       investigators <- getInvestigators
       clues <- selectSum InvestigatorClues UneliminatedInvestigator
       n <- perPlayer 3

@@ -15,7 +15,7 @@ prisonOfMemories = story PrisonOfMemories Cards.prisonOfMemories
 
 instance RunMessage PrisonOfMemories where
   runMessage msg s@(PrisonOfMemories attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       mBaseCamp <- getSetAsideCardMaybe Locations.baseCamp
       mDeckOfTheTheodosia <- getSetAsideCardMaybe Locations.deckOfTheTheodosia
       mUniversityOfHalls <- getSetAsideCardMaybe Locations.universityHalls

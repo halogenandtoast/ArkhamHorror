@@ -1,8 +1,4 @@
-module Arkham.Treachery.Cards.MysteriesOfTheLodge (
-  mysteriesOfTheLodge,
-  mysteriesOfTheLodgeEffect,
-  MysteriesOfTheLodge (..),
-) where
+module Arkham.Treachery.Cards.MysteriesOfTheLodge (mysteriesOfTheLodge, mysteriesOfTheLodgeEffect) where
 
 import Arkham.Action qualified as Action
 import Arkham.Effect.Import

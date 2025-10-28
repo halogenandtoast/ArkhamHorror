@@ -17,7 +17,7 @@ import Arkham.History
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Import.Lifted hiding (choose)
-import Arkham.Location.Types (Field(..))
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Projection

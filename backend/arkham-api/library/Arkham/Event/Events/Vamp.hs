@@ -38,7 +38,7 @@ instance RunMessage Vamp where
           SkillAgility -> do
             automaticallyEvadeEnemy iid eid
             whenM (eid <=~> NonEliteEnemy) do
-              locations <- select $ ConnectedFrom (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
+              locations <- select $ connectedFrom (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
               when (notNull locations) do
                 chooseOne iid [targetLabel lid [EnemyMove eid lid] | lid <- locations]
           SkillCombat -> nonAttackEnemyDamage (Just iid) attrs 2 eid

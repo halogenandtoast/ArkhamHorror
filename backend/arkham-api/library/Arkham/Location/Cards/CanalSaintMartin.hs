@@ -28,7 +28,7 @@ instance HasAbilities CanalSaintMartin where
 instance RunMessage CanalSaintMartin where
   runMessage msg a@(CanalSaintMartin attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (evadedEnemy -> eid) _ -> do
-      connectingLocations <- select $ ConnectedFrom (be attrs) <> LocationCanBeEnteredBy eid
+      connectingLocations <- select $ connectedFrom (be attrs) <> LocationCanBeEnteredBy eid
       chooseTargetM iid connectingLocations $ enemyMoveTo (attrs.ability 1) eid
       pure a
     _ -> CanalSaintMartin <$> liftRunMessage msg attrs

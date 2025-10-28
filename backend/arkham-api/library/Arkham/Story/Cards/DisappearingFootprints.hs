@@ -12,7 +12,7 @@ disappearingFootprints = story DisappearingFootprints Cards.disappearingFootprin
 
 instance RunMessage DisappearingFootprints where
   runMessage msg s@(DisappearingFootprints attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       removeChaosToken #frost
       addToVictory attrs
       pure s

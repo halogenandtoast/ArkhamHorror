@@ -5,6 +5,7 @@ import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Cost
+import Arkham.ForMovement
 import Arkham.Helpers.Action (canDo, getActions)
 import Arkham.Helpers.Modifiers (
   ModifierType (..),
@@ -21,6 +22,7 @@ import Arkham.Investigator.Runner (runWindow)
 import Arkham.Matcher hiding (PlayCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Queue (QueueT)
+import Arkham.Tracing
 import Arkham.Window (Window, defaultWindows)
 import Arkham.Window qualified as Window
 
@@ -40,7 +42,7 @@ instance HasModifiersFor LukeRobinson where
   getModifiersFor (LukeRobinson (a `With` meta)) = do
     if active meta
       then do
-        connectingLocations <- select ConnectedLocation
+        connectingLocations <- select (ConnectedLocation NotForMovement)
         mods <- for connectingLocations $ \lid -> do
           enemies <- select $ enemyAt lid
           pure (AsIfAt lid : map AsIfEngagedWith enemies)
@@ -58,10 +60,11 @@ instance HasChaosTokenValue LukeRobinson where
     pure $ ChaosTokenValue ElderSign $ PositiveModifier 1
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
-getLukePlayable :: HasGame m => InvestigatorAttrs -> [Window] -> m [(LocationId, [Card])]
+getLukePlayable
+  :: (Tracing m, HasGame m) => InvestigatorAttrs -> [Window] -> m [(LocationId, [Card])]
 getLukePlayable attrs windows' = do
   let iid = toId attrs
-  connectingLocations <- select ConnectedLocation
+  connectingLocations <- select (ConnectedLocation NotForMovement)
   forToSnd connectingLocations $ \lid -> do
     enemies <- select $ enemyAt lid
     withModifiers iid (toModifiers attrs $ AsIfAt lid : map AsIfEngagedWith enemies) $ do
@@ -115,7 +118,7 @@ instance RunMessage LukeRobinson where
 
       let
         playCard :: ReverseQueue m => QueueT Message m ()
-        playCard = when (not shouldSkip) do
+        playCard = unless shouldSkip do
           checkWhen $ Window.PlayCard iid $ Window.CardPlay card asAction
           push $ PlayCard iid card mtarget payment windows' asAction
           checkAfter $ Window.PlayCard iid $ Window.CardPlay card asAction

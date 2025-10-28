@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.Mu (mu, Mu (..)) where
+module Arkham.Location.Cards.Mu (mu) where
 
 import Arkham.ChaosToken
 import {-# SOURCE #-} Arkham.GameEnv
@@ -24,11 +24,7 @@ instance HasModifiersFor Mu where
       liftGuardM $ iid `isAt` a
       st <- MaybeT getSkillTest
       guard $ length (skillTestRevealedChaosTokens st) == 1
-      lift
-        $ modifyEach
-          a
-          (map ChaosTokenFaceTarget [Skull, Cultist, Tablet, ElderThing])
-          [RevealAnotherChaosToken]
+      modifyEach a (toTarget <$> [Skull, Cultist, Tablet, ElderThing]) [RevealAnotherChaosToken]
 
 instance RunMessage Mu where
   runMessage msg (Mu attrs) = Mu <$> runMessage msg attrs

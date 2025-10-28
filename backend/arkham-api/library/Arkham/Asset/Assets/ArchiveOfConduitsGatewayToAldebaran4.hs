@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.ForMovement
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -41,7 +42,9 @@ instance RunMessage ArchiveOfConduitsGatewayToAldebaran4 where
     HandleTargetChoice iid (isAbilitySource attrs 2 -> True) (InvestigatorTarget iid') -> do
       enemies <- select $ EnemyWithToken Token.Leyline
       connectedLocations <-
-        select $ ConnectedFrom (locationWithInvestigator iid') <> CanEnterLocation (InvestigatorWithId iid')
+        select
+          $ ConnectedFrom ForMovement (locationWithInvestigator iid')
+          <> CanEnterLocation (InvestigatorWithId iid')
 
       chooseOrRunOneM iid do
         targets enemies \enemy -> do

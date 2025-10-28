@@ -1,8 +1,9 @@
-module Arkham.Enemy.Cards.DeepOneNursemaid (deepOneNursemaid, DeepOneNursemaid (..)) where
+module Arkham.Enemy.Cards.DeepOneNursemaid (deepOneNursemaid) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
@@ -20,7 +21,7 @@ instance HasModifiersFor DeepOneNursemaid where
     whenM (a.id <=~> UnengagedEnemy) do
       modifySelect
         a
-        (not_ (be a) <> at_ (orConnected $ locationWithEnemy a.id) <> EnemyWithTrait DeepOne)
+        (not_ (be a) <> at_ (orConnected NotForMovement $ locationWithEnemy a.id) <> EnemyWithTrait DeepOne)
         [EnemyFight 1, EnemyEvade 1]
 
 instance HasAbilities DeepOneNursemaid where

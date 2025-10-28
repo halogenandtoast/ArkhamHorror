@@ -1,13 +1,11 @@
 module Arkham.Agenda.Cards.EndlessCaverns (endlessCaverns) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
-import Arkham.Classes
-import Arkham.GameValue
 import Arkham.Helpers.Query
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 
 newtype EndlessCaverns = EndlessCaverns AgendaAttrs
@@ -18,35 +16,25 @@ endlessCaverns :: AgendaCard EndlessCaverns
 endlessCaverns = agenda (3, A) EndlessCaverns Cards.endlessCaverns (Static 4)
 
 instance RunMessage EndlessCaverns where
-  runMessage msg a@(EndlessCaverns attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      enemyMsgs <- getPlacePursuitEnemyMessages
-      lead <- getLeadPlayer
-      leadId <- getLead
+  runMessage msg a@(EndlessCaverns attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      placePursuitEnemies
+      lead <- getLead
       iids <- getInvestigators
-      pushAll
-        $ enemyMsgs
-        <> [ questionLabel "Choose a scout" lead
-               $ ChooseOne
-                 [ targetLabel iid [HandleTargetChoice leadId (toSource attrs) (InvestigatorTarget iid)]
-                 | iid <- iids
-                 ]
-           , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
-           ]
+      chooseOneM lead do
+        scenarioI18n $ questionLabeled' "endlessCaverns.scout"
+        targets iids $ handleTarget lead attrs
+      advanceAgendaDeck attrs
       pure a
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) -> do
-      player <- getPlayer iid
       hasRope <- getHasSupply iid Rope
       sid <- getRandom
-      unless hasRope
-        $ push
-        $ chooseOne
-          player
-          [ SkillLabel #combat [beginSkillTest sid iid attrs attrs #combat (Fixed 5)]
-          , SkillLabel #agility [beginSkillTest sid iid attrs attrs #agility (Fixed 5)]
-          ]
+      unless hasRope do
+        chooseOneM iid do
+          skillLabeled #combat $ beginSkillTest sid iid attrs attrs #combat (Fixed 5)
+          skillLabeled #agility $ beginSkillTest sid iid attrs attrs #agility (Fixed 5)
       pure a
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isSource attrs source -> do
-      push $ SufferTrauma iid 1 0
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      sufferPhysicalTrauma iid 1
       pure a
-    _ -> EndlessCaverns <$> runMessage msg attrs
+    _ -> EndlessCaverns <$> liftRunMessage msg attrs

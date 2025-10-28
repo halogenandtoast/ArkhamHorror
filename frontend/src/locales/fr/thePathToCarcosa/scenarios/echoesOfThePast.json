@@ -1,0 +1,82 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "–X. X est le plus grand nombre de fatalités sur un ennemi en jeu.",
+      "cultist": "–2. En cas d'échec, placez 1 fatalité sur l'ennemi le plus proche.",
+      "tablet": "–2. En cas d'échec, défaussez une carte prise au hasard dans votre main.",
+      "elderThing": "–2. En cas d'échec, s'il y a un ennemi dans votre lieu, subissez 1 horreur."
+    },
+    "hardExpert": {
+      "skull": "–X. X est le nombre total de fatalités sur les ennemis en jeu.",
+      "cultist": "–4. Placez 1 fatalité sur l'ennemi le plus proche.",
+      "tablet": "–4. Défaussez une carte prise au hasard dans votre main.",
+      "elderThing": "–4. S'il y a un ennemi dans votre lieu, subissez 1 horreur."
+    }
+  },
+  "xp": {
+    "resolution4": "Pour avoir perçu les machinations du Roi en Jaune"
+  },
+  "intro": {
+    "title": "Scénario III : Les Échos du Passé",
+    "body": "<p>Une douleur sourde résonne sous votre crâne tandis que vous roulez à travers les rues pluvieuses d’Arkham afin de rejoindre votre prochaine destination. La menace de l’Étranger plane sur vous et vous jetez régulièrement des coups d’œil dans votre rétroviseur, craignant d’apercevoir le visage inexpressif de son masque qui hante votre esprit. Mais vous ne voyez rien d’autre que la nuit noire et brumeuse, et la route déserte derrière vous.</p><p>Comme elles l’ont souvent fait ces dernières heures, vos pensées vagabondent à nouveau vers <span class='basic'>Le Roi en Jaune</span>, la cité de Carcosa et ses habitants. Quel était le message caché dans cette affreuse pièce de théâtre ? Que signifiait toute cette folie ? Un détail insignifiant perçu lors des discussions au manoir de Mme Dumaine vous revient en mémoire - la représentation de ce soir de la pièce maudite <span class='basic'>Le Roi en Jaune</span> n’était pas la première à se dérouler à Arkham. Il y en avait eu au moins une autre, mise en scène par le même homme : Nigel Engram.</p><p>Il existe un endroit à Arkham où sont archivés tous les événements importants survenus en ville : le manoir de la Société des Historiens, dans le Quartier Sud. S’il subsiste le moindre témoignage de la précédente représentation du <span class='basic'>Roi en Jaune</span>, la Société des Historiens doit en avoir une trace. Vous trouverez peut-être dans ces dossiers les réponses aux questions qui vous hantent.</p>",
+    "proceedToSebastiensInformation": "<div class='right'>Lisez _Les Informations de Sebastien_.</div>",
+    "otherwise": "<div class='right'>Sinon, passez à la _Mise en Place_.</div>",
+    "sebastiensInformation": "<p>_Les Informations de Sebastien_ : Vous vous remémorez ce que Sebastien vous a appris lors du dîner. La pièce Le Roi en Jaune a été jouée à Arkham il y a des décennies, bien avant que le théâtre Ward ne soit construit. Selon Sebastien, il n’est guère surprenant que les gens ne s’en souviennent pas - en fait, le but de la représentation de ce soir était, entre autres, de faire découvrir Le Roi en Jaune à un public plus large. La Société des Historiens a sûrement conservé une trace de ce précédent spectacle, surtout s’il fut suivi d’événements similaires à ceux de cette nuit. Peut-être trouverez-vous des coupures de journaux ou d’autres articles décrivant ce qui s’est passé à cette époque.</p><ul><li>Après avoir mis le Hall en jeu lors de la mise en place, placez 1 {'{'}perPlayer{'}'} indice dessus.</li></ul><div class='right'>Continuez à la _Mise en Place_.</div>"
+  },
+  "setup": {
+    "gatherSets": "Réunissez toutes les cartes des sets de rencontre suivants : *Les Échos du Passé*, *Culte du Signe Jaune*, *Hallucinations*, *Les Masques de Minuit*, *Portes Closes* et *Sombre Culte*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/echoes-of-the-past.png' /><img src='{setImgPath}/cult-of-the-yellow-sign.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/midnight-masks.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/dark-cult.png' /></section>Quand vous réunissez les cartes du set de rencontre *Les Masques de Minuit*, ne prenez que les 5 cartes Traîtrise (2x Fausse Piste et 3x Ombre Chasseresse). Ne prenez pas les cartes Lieu, Acte, Intrigue ou Référence du Scénario de ce set.",
+    "chooseLocations": "Prenez au hasard un lieu Société des Historiens _*Rez-de-chaussée*_, un lieu Société des Historiens _*Premier Étage*_ et un lieu Société des Historiens _*Deuxième Étage*_. Retirez ces lieux de la partie sans regarder leur face révélée.",
+    "placeLocations": "Mettez en jeu les lieux suivants : Hall, les deux exemplaires de Couloirs Silencieux, et les 6 lieux Société des Historiens restants. (Voir ci-dessous pour une suggestion de placement.) Chaque investigateur commence la partie dans le Hall.",
+    "setAside": "Mettez les cartes suivantes de côté, hors jeu : Bibliothèque Cachée, Conjurateur Possédé, M. Peabody, La Cape en Lambeaux et Broche d’Onyx Noir.",
+    "changes": {
+      "instructions": "Selon le nombre de joueurs dans la partie :",
+      "exactly1": "S’il y a exactement 1 joueur dans la partie : aucun changement n’est effectué.",
+      "exactly2": "S’il y a exactement 2 joueurs dans la partie : cherchez 1 exemplaire du Chercheur de Carcosa dans les sets de rencontre réunis. Générez-le dans un lieu Société des Historiens _*Deuxième Étage*_.",
+      "exactly3": "S’il y a exactement 3 joueurs dans la partie : cherchez 2 exemplaires du Chercheur de Carcosa dans les sets de rencontre réunis. Générez chacun d’entre eux dans un lieu Société des Historiens _*Deuxième Étage*_ différent.",
+      "exactly4": "S’il y a exactement 4 joueurs dans la partie : cherchez 3 exemplaires du Chercheur de Carcosa dans les sets de rencontre réunis. Générez chacun d’entre eux dans un lieu Société des Historiens _*Premier Étage*_ ou _*Deuxième Étage*_ différent."
+    },
+    "fledTheDinnerParty": "Vérifiez votre Carnet de Campagne. Si vous avez fui la réception : vous arrivez plus tôt à la Société des Historiens; chaque investigateur peut effectuer 1 action supplémentaire lors de son premier tour de la partie."
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": "Pour avoir perçu les machinations du Roi en Jaune"
+    },
+    "noResolution": {
+      "title": "Pas de conclusion",
+      "body": "<div class='resolution'>_Si aucune conclusion n’est atteinte (tous les investigateurs ont abandonné ou été vaincus)_ : Vous parvenez tout juste à fuir le bâtiment avec le corps et l’esprit intacts. Lisez la _Conclusion 4_.</div>"
+    },
+    "resolution1": {
+      "title": "Conclusion 1",
+      "body": "<div class='resolution'><p>_Conclusion 1_ : Il n’existe pas de coïncidence dès lors qu’il s’agit du Roi en Jaune. Vous ne doutez pas un instant que l’objet que vous avez trouvé est important. Vous décidez de l’emporter avant de pousser plus avant vos investigations. La dernière note que vous trouvez concernant la mise en scène originelle du Roi en Jaune est l’évaluation psychiatrique d’un certain Daniel Chesterfield, un machiniste qui perdit l’esprit après l’ultime représentation. Il semble qu’il ait été admis à l’asile après la fin de la production. Peut-être qu’il y est encore…</p><ul><li>Dans votre Carnet de Campagne, indiquez que *vous avez pris la broche en onyx*. Inscrivez-y également une _Certitude_. Pour le reste de la campagne, un investigateur doit ajouter la Broche d’Onyx Noir à son deck. Cette carte ne compte pas dans la Taille du Deck de l’investigateur.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li><li>Si Sebastien Moreau (*Hystérie Sauvage*) est dans la pile de victoire, inscrivez son nom dans votre Carnet de Campagne sous la mention « Personnalités Tuées ».</li><li>Retirez tous les pions {'{'}cultist{'}'}, {'{'}tablet{'}'} et {'{'}elderThing{'}'} de la réserve du Chaos. Ensuite, ajoutez 2 pions {'{'}tablet{'}'} dans la réserve du Chaos.</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Conclusion 2",
+      "body": "<div class='resolution'><p>_Conclusion 2_ : Cette enquête rendrait n’importe qui paranoïaque. Attribuer une importance démesurée à tout et n’importe quoi pourrait se révéler dangereux. Vous êtes sûr que cette broche est sans intérêt : peut-être s’agit-il seulement d’un accessoire utilisé lors de la première pièce. Vous la laissez de côté et poursuivez vos investigations. La dernière note que vous trouvez concernant la mise en scène originelle du Roi en Jaune est l’évaluation psychiatrique d’un certain Daniel Chesterfield, un machiniste qui perdit l’esprit après l’ultime représentation. Il semble qu’il ait été admis à l’asile après la fin de la production. Peut-être qu’il y est encore…</p><ul><li>Dans votre Carnet de Campagne, indiquez que *vous avez laissé la broche en onyx*. Inscrivez-y également un _Doute_.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li><li>Si Sebastien Moreau (*Hystérie Sauvage*) est dans la pile de victoire, inscrivez son nom dans votre Carnet de Campagne sous la mention « Personnalités Tuées ».</li><li>Retirez tous les pions {'{'}cultist{'}'}, {'{'}tablet{'}'} et {'{'}elderThing{'}'} de la réserve du Chaos. Ensuite, ajoutez 2 pions {'{'}tablet{'}'} dans la réserve du Chaos.</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Conclusion 3",
+      "body": "<div class='resolution'><p>_Conclusion 3_ : La silhouette tombe au sol et son corps commence à fondre tandis qu’elle se tord de douleur. Elle hurle et siffle, et une lueur jaune émane de sa bouche et de derrière ses yeux. « Daniel », articule la chose de sa voix rauque. « Cherchez Daniel… Daniel Chesterfield, le machiniste, il se souvient ! » Une autre voix, profondément enfouie sous les paroles du conjurateur, murmure doucement d’un ton mélodique. « Trouvez-le… Lui aussi a prononcé le serment… Le serment qui a scellé notre destin à tous… ! » Sur ces derniers mots, la peau de l’homme se détache de ses os et il s’écroule sur le sol.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *vous avez détruit le conjurateur*. N’importe quel investigateur a le droit d’ajouter La Cape en Lambeaux à son deck. Cette carte ne compte dans la Taille du Deck de l’investigateur.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>_Expérience_ : {xp}</li></ul></li><li>Si Sebastien Moreau (Hystérie Sauvage) est dans la pile de victoire, inscrivez son nom dans votre Carnet de Campagne sous la mention « Personnalités Tuées ».</li><li>Retirez tous les pions {'{'}cultist{'}'}, {'{'}tablet{'}'} et {'{'}elderThing{'}'} de la réserve du Chaos. Ensuite, ajoutez 2 pions {'{'}tablet{'}'} dans la réserve du Chaos.</li></ul></div>"
+    },
+    "resolution4": {
+      "title": "Conclusion 4",
+      "body": "<div class='resolution'><p>_Conclusion 4_ : Les événements de la nuit vous laissent exténué. Vous n’avez rien trouvé dans le manoir de la Société des Historiens qui puisse vous aider dans votre enquête. Qui qu’aient été ces intrus, ils devaient chercher les mêmes informations que vous. Bouleversé, vous vous dirigez vers le lit le plus proche que vous trouvez - à la Pension de Ma, située non-loin de la Société des Historiens. L’aube vous surprend alors que vous atteignez la pension. La poignée de porte et les fougères du porche sont couvertes de rosée. Vous avez la chance de trouver une chambre libre pour la journée, et vous vous écroulez de fatigue.</p><p>Soudain, vous tombez. Au-dessus et tout autour de vous, une lumière aveuglante flamboie tel un brasier. Des maux de tête et des visions colorées vous assaillent. Votre peau commence à roussir au contact des flammes. Un abîme s’ouvre sous vos pieds et vous engloutit tout entier. Vous vous retrouvez dans une cellule à l’odeur méphitique, humide et dépourvue de fenêtres. Un homme est recroquevillé dans un coin de la pièce, tremblant à cause du froid, de sa situation désespérée, ou peut-être des deux. « Pas de masque », marmonne-t-il encore et encore, « pas de masque, pas de masque... » Vous tentez de vous approcher de lui mais, avant que vous ne puissiez l’atteindre, le loquet métallique de la porte sa cellule s’ouvre et vous entendez une voix l’appeler. « Daniel, il est l’heure », dit-elle. « Daniel, réveille-toi. Réveille-toi, Daniel. » Et vous vous réveillez.</p><ul><li>Dans votre Carnet de Campagne, indiquez que *les adorateurs du signe ont trouvé la marche à suivre*.</li><li>Chaque investigateur reçoit un total de points d’expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire. Chaque investigateur reçoit 1 point d’expérience supplémentaire pour avoir perçu les machinations du Roi en Jaune.<ul><li>_Expérience_ : {xp}</li></ul></li><li>Si Sebastien Moreau (Hystérie Sauvage) est dans la pile de victoire, inscrivez son nom dans votre Carnet de Campagne sous la mention « Personnalités Tuées ».</li><li>Retirez tous les pions {'{'}cultist{'}'}, {'{'}tablet{'}'} et {'{'}elderThing{'}'} de la réserve du Chaos. Ensuite, ajoutez 1 pion {'{'}cultist{'}'}, 1 pion {'{'}tablet{'}'} et 1 pion {'{'}elderThing{'}'} dans la réserve du Chaos.</li></ul></div>"
+    }
+  },
+  "label": {
+    "theOath": {
+      "r1": "C'est une découverte capitale ! Nous devrions l'emporter. (→C1).",
+      "r2": "Ce n'est qu'une stupide breloque et ce serait mal de la dérober à la Société des Historiens. Laissons-la. (→C2)"
+    },
+    "ledAstray": {
+      "placeClues": "Placez 1 de vos indices sur un ennemi Cultiste"
+    }
+  },
+  "tooltips": {
+    "entryHall": {
+      "resign": "Vous fuyez, laissant les énigmes du passé aux mystérieux cultistes."
+    },
+    "historicalSocietyReadingRoom": {
+      "investigate": "{'{'}action{'}'}: _Enquêter_. En cas de réussite, choisissez un ennemi avec au moins une fatalité sur lui au lieu de découvrir des indices. Prenez 1 des fatalités de cet ennemi, retournez-la sur sa face indice et placez cet indice sur votre investigateur. (Limite collective d'une fois par round)."
+    }
+  }
+}

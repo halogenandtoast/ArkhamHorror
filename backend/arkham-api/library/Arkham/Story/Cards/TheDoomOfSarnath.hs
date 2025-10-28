@@ -1,9 +1,8 @@
-module Arkham.Story.Cards.TheDoomOfSarnath (TheDoomOfSarnath (..), theDoomOfSarnath) where
+module Arkham.Story.Cards.TheDoomOfSarnath (theDoomOfSarnath) where
 
-import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype TheDoomOfSarnath = TheDoomOfSarnath StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -13,8 +12,8 @@ theDoomOfSarnath :: StoryCard TheDoomOfSarnath
 theDoomOfSarnath = story TheDoomOfSarnath Cards.theDoomOfSarnath
 
 instance RunMessage TheDoomOfSarnath where
-  runMessage msg s@(TheDoomOfSarnath attrs) = case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+  runMessage msg s@(TheDoomOfSarnath attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
       push $ ScenarioCountIncrementBy SignOfTheGods 1
       pure s
-    _ -> TheDoomOfSarnath <$> runMessage msg attrs
+    _ -> TheDoomOfSarnath <$> liftRunMessage msg attrs

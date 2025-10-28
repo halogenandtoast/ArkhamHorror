@@ -31,13 +31,14 @@ import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 import Arkham.Target
 import Arkham.Token
+import Arkham.Tracing
 
-calculatePrinted :: HasGame m => Maybe GameCalculation -> m Int
+calculatePrinted :: (HasGame m, Tracing m) => Maybe GameCalculation -> m Int
 calculatePrinted = \case
   Nothing -> pure 0
   Just calculation -> calculate calculation
 
-calculate :: (HasCallStack, HasGame m) => GameCalculation -> m Int
+calculate :: (HasCallStack, HasGame m, Tracing m) => GameCalculation -> m Int
 calculate = go
  where
   go = \case
@@ -158,6 +159,9 @@ calculate = go
       calculate $ if cond then c1 else c2
     IfEnemyExistsCalculation q c1 c2 -> do
       cond <- selectAny q
+      calculate $ if cond then c1 else c2
+    IfInvestigatorExistsCalculation iid q c1 c2 -> do
+      cond <- matches iid q
       calculate $ if cond then c1 else c2
 
 class (Entity a, AsId a) => CalculateFields a where

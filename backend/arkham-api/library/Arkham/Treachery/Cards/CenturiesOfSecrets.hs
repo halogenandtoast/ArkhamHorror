@@ -1,13 +1,10 @@
-module Arkham.Treachery.Cards.CenturiesOfSecrets (centuriesOfSecrets, CenturiesOfSecrets (..)) where
+module Arkham.Treachery.Cards.CenturiesOfSecrets (centuriesOfSecrets) where
 
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
 import Arkham.Trait (Trait (Curse))
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype CenturiesOfSecrets = CenturiesOfSecrets TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -17,19 +14,18 @@ centuriesOfSecrets :: TreacheryCard CenturiesOfSecrets
 centuriesOfSecrets = treachery CenturiesOfSecrets Cards.centuriesOfSecrets
 
 instance RunMessage CenturiesOfSecrets where
-  runMessage msg t@(CenturiesOfSecrets attrs) = case msg of
+  runMessage msg t@(CenturiesOfSecrets attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push $ revelationSkillTest sid iid attrs #willpower (Fixed 5)
+      revelationSkillTest sid iid attrs #willpower (Fixed 5)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n | n > 0 -> do
-      push $ DiscardTopOfEncounterDeck iid n (toSource attrs) (Just $ toTarget attrs)
+      discardTopOfEncounterDeckAndHandle iid attrs n attrs
       pure t
     DiscardedTopOfEncounterDeck iid cards _ (isTarget attrs -> True) -> do
       when (any (`cardMatch` CardWithTrait Curse) cards) $ do
-        assetIds <- select $ assetControlledBy iid <> AllyAsset
-        pushAll
-          $ InvestigatorDirectDamage iid (toSource attrs) 1 0
-          : [Msg.DealAssetDirectDamage aid (toSource attrs) 1 0 | aid <- assetIds]
+        directDamage iid attrs 1
+        assets <- select $ assetControlledBy iid <> AllyAsset
+        for_ assets \asset -> dealAssetDirectDamage asset attrs 1
       pure t
-    _ -> CenturiesOfSecrets <$> runMessage msg attrs
+    _ -> CenturiesOfSecrets <$> liftRunMessage msg attrs

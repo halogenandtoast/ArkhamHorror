@@ -8,6 +8,7 @@ newtype NightOfTheZealot = NightOfTheZealot CampaignAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
 
 instance IsCampaign NightOfTheZealot where
+  campaignTokens = chaosBagContents
   nextStep a = case campaignStep (toAttrs a) of
     PrologueStep -> Just TheGathering
     TheGathering -> Just (UpgradeDeckStep TheMidnightMasks)
@@ -16,8 +17,7 @@ instance IsCampaign NightOfTheZealot where
     _ -> Nothing
 
 nightOfTheZealot :: Difficulty -> NightOfTheZealot
-nightOfTheZealot difficulty =
-  campaign NightOfTheZealot "01" "Night of the Zealot" difficulty (chaosBagContents difficulty)
+nightOfTheZealot = campaign NightOfTheZealot "01" "Night of the Zealot"
 
 instance RunMessage NightOfTheZealot where
   runMessage msg c = runQueueT $ campaignI18n $ case msg of

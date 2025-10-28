@@ -267,7 +267,7 @@ data InvestigatorForm
   | YithianForm
   | HomunculusForm
   | TransfiguredForm CardCode
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass ToJSON
 
 data InvestigatorAttrs = InvestigatorAttrs
@@ -426,6 +426,9 @@ instance Sourceable InvestigatorAttrs where
     iid == investigatorId
   isSource _ _ = False
 
+instance HasField "usedAdditionalActions" InvestigatorAttrs [AdditionalAction] where
+  getField = investigatorUsedAdditionalActions
+
 instance HasField "slots" InvestigatorAttrs (Map SlotType [Slot]) where
   getField = investigatorSlots
 
@@ -464,6 +467,12 @@ instance HasField "sanityDamage" InvestigatorAttrs Int where
 
 instance HasField "healthDamage" InvestigatorAttrs Int where
   getField = investigatorHealthDamage
+
+instance HasField "assignedSanityDamage" InvestigatorAttrs Int where
+  getField = investigatorAssignedSanityDamage
+
+instance HasField "assignedHealthDamage" InvestigatorAttrs Int where
+  getField = investigatorAssignedHealthDamage
 
 instance HasField "cardsUnderneath" InvestigatorAttrs [Card] where
   getField = investigatorCardsUnderneath
@@ -523,9 +532,10 @@ instance Named Investigator where
   toName (Investigator a) = toName (toAttrs a)
 
 instance Eq Investigator where
-  Investigator (a :: a) == Investigator (b :: b) = case eqT @a @b of
-    Just Refl -> a == b
-    Nothing -> False
+  Investigator a == Investigator b = toId a == toId b
+
+instance Ord Investigator where
+  compare (Investigator a) (Investigator b) = compare (toId a) (toId b)
 
 instance Show Investigator where
   show (Investigator a) = show a
@@ -534,7 +544,11 @@ instance ToJSON Investigator where
   toJSON (Investigator a) = toJSON a
 
 instance HasModifiersFor Investigator where
-  getModifiersFor (Investigator a) = getModifiersFor a
+  getModifiersFor (Investigator a) = do
+    case investigatorForm (toAttrs a) of
+      TransfiguredForm inner -> withInvestigatorCardCode inner \(SomeInvestigator @a) ->
+        getModifiersFor (investigatorFromAttrs @a (toAttrs a))
+      _ -> getModifiersFor a
 
 instance HasChaosTokenValue Investigator where
   getChaosTokenValue iid chaosTokenFace (Investigator a) = getChaosTokenValue iid chaosTokenFace a

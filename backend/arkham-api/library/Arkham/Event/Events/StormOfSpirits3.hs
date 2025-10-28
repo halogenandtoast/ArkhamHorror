@@ -2,9 +2,9 @@ module Arkham.Event.Events.StormOfSpirits3 (stormOfSpirits3, stormOfSpirits3Effe
 
 import Arkham.Action qualified as Action
 import Arkham.Aspect hiding (aspect)
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.ChaosToken
 import Arkham.Classes
-import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.DamageEffect
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
@@ -38,6 +38,7 @@ instance RunMessage StormOfSpirits3 where
             then EnemyDamage eid' $ delayDamage $ attack attrs 3
             else EnemyDamage eid' $ delayDamage $ isDirect $ attack attrs 3
       for_ eids $ checkDefeated attrs
+      chooseExposeConcealed iid attrs
       pure e
     _ -> StormOfSpirits3 <$> liftRunMessage msg attrs
 
@@ -55,7 +56,7 @@ instance RunMessage StormOfSpirits3Effect where
       when triggers $ do
         enemy <- fromJustNote "must be enemy" . ((.enemy) =<<) <$> getSkillTestTarget
         iids <- select $ InvestigatorAt $ locationWithEnemy enemy
-        msgs <- evalQueueT $ for_ iids \iid' -> assignDamage iid' attrs.source 2
+        msgs <- capture $ for_ iids \iid' -> assignDamage iid' attrs.source 2
         push $ If (Window.RevealChaosTokenEffect iid token attrs.id) msgs
         disable attrs
       pure e

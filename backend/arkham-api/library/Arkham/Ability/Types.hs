@@ -8,7 +8,7 @@ import Arkham.Ability.Limit
 import Arkham.Ability.Type
 import Arkham.Action
 import Arkham.Card.CardCode
-import Arkham.Card.EncounterCard
+import {-# SOURCE #-} Arkham.Card.EncounterCard
 import Arkham.Cost
 import Arkham.Criteria (Criterion (NoRestriction))
 import Arkham.Json
@@ -34,7 +34,7 @@ data Ability = Ability
   , abilityWindow :: WindowMatcher
   , abilityMetadata :: Maybe AbilityMetadata
   , abilityCriteria :: Criterion
-  , abilityDoesNotProvokeAttacksOfOpportunity :: Bool
+  , abilityDoesNotProvokeAttacksOfOpportunity :: Maybe EnemyMatcher
   , abilityTooltip :: Maybe Text
   , abilityCanBeCancelled :: Bool
   , abilityDisplayAs :: Maybe AbilityDisplayAs
@@ -44,6 +44,7 @@ data Ability = Ability
   , abilityRequestor :: Source
   , abilityTriggersSkillTest :: Bool
   , abilityWantsSkillTest :: Maybe SkillTestMatcher
+  , abilityTarget :: Maybe Target -- used to highlight the target of the ability in the UI
   }
   deriving stock (Show, Ord, Data)
 
@@ -53,7 +54,7 @@ overAbilityActions f ab = ab {Arkham.Ability.Types.abilityType = overAbilityType
 buildFightAbility :: (Sourceable source, HasCardCode source) => source -> Int -> Ability
 buildFightAbility source idx =
   (buildAbility source idx (ActionAbility [#fight] Free))
-    { abilityDoesNotProvokeAttacksOfOpportunity = True
+    { abilityDoesNotProvokeAttacksOfOpportunity = Just AnyEnemy
     }
 
 buildAbility :: (Sourceable source, HasCardCode source) => source -> Int -> AbilityType -> Ability
@@ -67,7 +68,7 @@ buildAbility source idx abilityType =
     , abilityWindow = AnyWindow
     , abilityMetadata = Nothing
     , abilityCriteria = NoRestriction
-    , abilityDoesNotProvokeAttacksOfOpportunity = False
+    , abilityDoesNotProvokeAttacksOfOpportunity = Nothing
     , abilityTooltip = Nothing
     , abilityCanBeCancelled = True
     , abilityDisplayAs = Nothing
@@ -77,7 +78,11 @@ buildAbility source idx abilityType =
     , abilityRequestor = toSource source
     , abilityTriggersSkillTest = False
     , abilityWantsSkillTest = Nothing
+    , abilityTarget = Nothing
     }
+
+withHighlight :: Targetable target => target -> Ability -> Ability
+withHighlight target ab = ab {abilityTarget = Just (toTarget target)}
 
 skillTestAbility :: Ability -> Ability
 skillTestAbility ab = ab {abilityTriggersSkillTest = True}
@@ -115,6 +120,9 @@ instance HasField "cardCode" Ability CardCode where
 instance HasField "index" Ability Int where
   getField = abilityIndex
 
+instance HasField "fast" Ability Bool where
+  getField Ability {abilityType} = isFastAbilityType abilityType
+
 instance HasField "ref" Ability AbilityRef where
   getField = abilityToRef
 
@@ -124,6 +132,9 @@ data AbilityRef = AbilityRef Source Int
 
 abilityToRef :: Ability -> AbilityRef
 abilityToRef a = AbilityRef a.source a.index
+
+isAbilityRef :: Sourceable source => source -> Int -> AbilityRef -> Bool
+isAbilityRef a idx' (AbilityRef s idx) = isSource a s && idx == idx'
 
 instance HasField "source" AbilityRef Source where
   getField (AbilityRef s _) = s
@@ -143,7 +154,10 @@ data AbilityMetadata
   deriving stock (Eq, Show, Ord, Data)
 
 instance Eq Ability where
-  a == b = (abilitySource a == abilitySource b) && (abilityIndex a == abilityIndex b)
+  a == b =
+    (abilitySource a == abilitySource b)
+      && (abilityIndex a == abilityIndex b)
+      && (abilityCardCode a == abilityCardCode b)
 
 instance Sourceable Ability where
   toSource a = AbilitySource (abilitySource a) (abilityIndex a)
@@ -166,7 +180,7 @@ abilityCriteriaL = lens abilityCriteria $ \m x -> m {abilityCriteria = x}
 abilityWantsSkillTestL :: Lens' Ability (Maybe SkillTestMatcher)
 abilityWantsSkillTestL = lens abilityWantsSkillTest $ \m x -> m {abilityWantsSkillTest = x}
 
-abilityDoesNotProvokeAttacksOfOpportunityL :: Lens' Ability Bool
+abilityDoesNotProvokeAttacksOfOpportunityL :: Lens' Ability (Maybe EnemyMatcher)
 abilityDoesNotProvokeAttacksOfOpportunityL =
   lens abilityDoesNotProvokeAttacksOfOpportunity
     $ \m x -> m {abilityDoesNotProvokeAttacksOfOpportunity = x}
@@ -200,21 +214,25 @@ instance FromJSON Ability where
     abilityWindow <- o .: "window"
     abilityMetadata <- o .:? "metadata"
     abilityCriteria <- o .: "criteria"
-    abilityDoesNotProvokeAttacksOfOpportunity <- o .: "doesNotProvokeAttacksOfOpportunity"
+    abilityDoesNotProvokeAttacksOfOpportunity <-
+      o .: "doesNotProvokeAttacksOfOpportunity" <|> do
+        boolVal <- o .: "doesNotProvokeAttacksOfOpportunity"
+        pure $ if boolVal then Just AnyEnemy else Nothing
     abilityTooltip <- o .:? "tooltip"
     abilityCanBeCancelled <- o .: "canBeCancelled"
     abilityDisplayAsAction <- o .:? "displayAsAction" .!= False
     abilityDisplayAs <-
-      o .:? "displayAs" .!= if abilityDisplayAsAction then Just DisplayAsAction else Nothing
+      o .:? "displayAs" .!= (guard abilityDisplayAsAction $> DisplayAsAction)
     abilityDelayAdditionalCosts <-
-      (o .: "delayAdditionalCosts" <&> \x -> if x then Just DelayAdditionalCosts else Nothing)
+      ((o .:? "delayAdditionalCosts" .!= False) <&> \x -> guard x $> DelayAdditionalCosts)
         <|> o
-        .: "delayAdditionalCosts"
+        .:? "delayAdditionalCosts"
     abilityBasic <- o .: "basic"
     abilityAdditionalCosts <- o .: "additionalCosts"
     abilityRequestor <- o .:? "requestor" .!= abilitySource
     abilityTriggersSkillTest <- o .:? "triggersSkillTest" .!= False
     abilityWantsSkillTest <- o .:? "wantsSkillTest" .!= Nothing
+    abilityTarget <- o .:? "target"
 
     pure Ability {..}
 

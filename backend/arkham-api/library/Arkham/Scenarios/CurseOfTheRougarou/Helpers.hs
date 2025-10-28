@@ -1,7 +1,5 @@
 module Arkham.Scenarios.CurseOfTheRougarou.Helpers where
 
-import Arkham.Prelude
-
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Classes.HasGame
@@ -10,15 +8,17 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Prelude
+import Arkham.Tracing
 import Arkham.Trait
 
-bayouLocations :: HasGame m => m [LocationId]
+bayouLocations :: (Tracing m, HasGame m) => m [LocationId]
 bayouLocations = select $ LocationWithTrait Bayou
 
-nonBayouLocations :: HasGame m => m [LocationId]
+nonBayouLocations :: (Tracing m, HasGame m) => m [LocationId]
 nonBayouLocations = select $ LocationWithoutTrait Bayou
 
-getTheRougarou :: HasGame m => m (Maybe EnemyId)
+getTheRougarou :: (Tracing m, HasGame m) => m (Maybe EnemyId)
 getTheRougarou = selectOne $ enemyIs Cards.theRougarou
 
 locationsWithLabels :: (MonadRandom m, HasTraits a) => Trait -> [a] -> m [(Text, a)]

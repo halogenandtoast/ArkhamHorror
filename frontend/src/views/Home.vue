@@ -7,15 +7,16 @@ import type { GameDetails } from '@/arkham/types/Game';
 import type { User } from '@/types';
 import GameRow from '@/arkham/components/GameRow.vue';
 import NewGame from '@/arkham/views/NewCampaign.vue';
+import { storeToRefs } from 'pinia';
 
 const route = useRoute()
 const router = useRouter()
 const store = useUserStore()
-const currentUser = computed<User | null>(() => store.getCurrentUser)
+const { currentUser } = storeToRefs(store)
 const games: Ref<GameDetails[]> = ref([])
 const notifications: Ref<Notification[]> = ref([])
 
-const dismissedNotifications = localStorage.getItem('dismissedNotifications') ?? []
+const dismissedNotifications = JSON.parse(localStorage.getItem('dismissedNotifications') ?? "[]")
 
 const activeGames = computed(() => games.value.filter(g => g.gameState.tag !== 'IsOver'))
 const finishedGames = computed(() => games.value.filter(g => g.gameState.tag === 'IsOver'))
@@ -109,7 +110,7 @@ const dismissNotification = (notification) => {
 
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 h2 {
   color: var(--title);
   font-size: 2em;

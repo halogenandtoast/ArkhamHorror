@@ -9,6 +9,7 @@ import Arkham.Card.CardCode
 import Arkham.I18n
 import Arkham.Json
 import Arkham.Prelude
+import Arkham.Tarot
 import Data.Aeson.TH
 
 newtype Tooltip = Tooltip Text
@@ -22,10 +23,12 @@ data FlavorTextModifier
   | PlainText
   | InvalidEntry
   | ValidEntry
+  | CenteredEntry
   | ResolutionEntry
   | CheckpointEntry
   | InterludeEntry
   | NestedEntry
+  | NoUnderline
   deriving stock (Show, Eq, Ord, Data)
 
 data ListItemEntry = ListItemEntry
@@ -50,6 +53,7 @@ data FlavorTextEntry
       }
   | ListEntry {list :: [ListItemEntry]}
   | CardEntry {cardCode :: CardCode, imageModifiers :: [ImageModifier]}
+  | TarotEntry {tarot :: TarotCardArcana}
   | EntrySplit
   deriving stock (Show, Eq, Ord, Data)
 

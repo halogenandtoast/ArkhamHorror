@@ -22,23 +22,19 @@ theYithianRelic :: ActCard TheYithianRelic
 theYithianRelic = act (3, A) TheYithianRelic Cards.theYithianRelic Nothing
 
 instance HasAbilities TheYithianRelic where
-  getAbilities (TheYithianRelic a) =
-    extend a
-      $ guard (onSide A a)
-      *> [ restricted
-            a
-            1
-            (youExist $ oneOf [DeckWith (HasCard "Relic of Ages"), DiscardWith (HasCard "Relic of Ages")])
-            actionAbility
-         , restricted
-            a
-            2
-            (exists $ asset_ $ at_ (YourLocation <> LocationWithoutClues) <> "Relic of Ages")
-            actionAbility
-         , restricted a 3 (exists $ HasMatchingAsset "Relic of Ages")
-            $ Objective
-            $ ForcedAbility AnyWindow
-         ]
+  getAbilities = actAbilities \a ->
+    [ restricted
+        a
+        1
+        (youExist $ oneOf [DeckWith (HasCard "Relic of Ages"), DiscardWith (HasCard "Relic of Ages")])
+        actionAbility
+    , restricted
+        a
+        2
+        (exists $ asset_ $ at_ (YourLocation <> LocationWithoutClues) <> "Relic of Ages")
+        actionAbility
+    , restricted a 3 (exists $ HasMatchingAsset "Relic of Ages") $ Objective $ forced AnyWindow
+    ]
 
 instance RunMessage TheYithianRelic where
   runMessage msg a@(TheYithianRelic attrs) = runQueueT $ case msg of

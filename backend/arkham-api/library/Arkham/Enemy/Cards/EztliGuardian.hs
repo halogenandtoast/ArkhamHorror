@@ -18,7 +18,7 @@ eztliGuardian =
     ?~ SpawnAt (FirstLocation [EmptyLocation <> LocationWithTrait Ancient, EmptyLocation])
 
 atConnected :: EnemyId -> InvestigatorMatcher
-atConnected eid = InvestigatorAt $ ConnectedFrom $ locationWithEnemy eid
+atConnected eid = InvestigatorAt $ connectedFrom $ locationWithEnemy eid
 
 instance HasAbilities EztliGuardian where
   getAbilities (EztliGuardian a) =

@@ -55,7 +55,43 @@ const questionLabel = computed(() => {
   return question.tag === 'QuestionLabel' ? question.label : null
 })
 
-const upgradeDeck = computed(() => props.game.campaign && props.game.campaign.step?.tag === 'UpgradeDeckStep')
+const upgradeDeck = computed(() => {
+  if (props.game.campaign && props.game.campaign.step?.tag === 'UpgradeDeckStep') return true
+
+  const question = Object.values(props.game.question)[0]
+
+  if (question === null || question == undefined) {
+    return false
+  }
+
+  const { tag } = question
+
+  if (tag === 'ChooseUpgradeDeck' && props.game.gameState.tag === 'IsChooseDecks') {
+    return true
+  }
+
+  if (tag === 'QuestionLabel') {
+    return question.question.tag === 'ChooseUpgradeDeck'
+  }
+
+  return false
+})
+
+const pickDestiny = computed(() => {
+  const question = Object.values(props.game.question)[0]
+
+  if (question === null || question == undefined) {
+    return false
+  }
+
+  const { tag } = question
+
+  if (tag === 'PickDestiny') {
+    return true
+  }
+
+  return false
+})
 
 const questionHash = computed(() => {
   let question = JSON.stringify(props.game.question[props.playerId])
@@ -72,8 +108,11 @@ const questionHash = computed(() => {
     <ChooseDeck :game="game" :key="playerId" :playerId="playerId" @choose="choose" />
   </div>
   <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">
+    <template v-if="pickDestiny">
+      <StoryQuestion :game="game" :key="questionHash" :playerId="playerId" @choose="choose" />
+    </template>
     <Scenario
-      v-if="game.scenario"
+      v-else-if="game.scenario && game.scenario.started && Object.entries(game.investigators).length > 0"
       :game="game"
       :scenario="game.scenario"
       :playerId="playerId"
@@ -86,7 +125,7 @@ const questionHash = computed(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .card {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 6px;

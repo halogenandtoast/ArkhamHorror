@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Source where
 
 import Arkham.Card
@@ -15,9 +14,10 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Story.Types (Field (..))
+import Arkham.Tracing
 import Arkham.Trait (Trait, toTraits)
 
-sourceTraits :: (HasCallStack, HasGame m) => Source -> m (Set Trait)
+sourceTraits :: (HasCallStack, HasGame m, Tracing m) => Source -> m (Set Trait)
 sourceTraits = \case
   UseAbilitySource _ s _ -> sourceTraits s
   AbilitySource s _ -> sourceTraits s
@@ -63,8 +63,10 @@ sourceTraits = \case
   ThisCard -> error "can not get traits"
   TreacherySource tid -> fromMaybe mempty <$> fieldMay TreacheryTraits tid
   YouSource -> selectJust Matcher.You >>= field InvestigatorTraits
+  ScarletKeySource _ -> pure mempty
+  ConcealedCardSource _ -> pure mempty
 
-getSourceController :: HasGame m => Source -> m (Maybe InvestigatorId)
+getSourceController :: (HasGame m, Tracing m) => Source -> m (Maybe InvestigatorId)
 getSourceController = \case
   AbilitySource s _ -> getSourceController s
   UseAbilitySource iid _ _ -> pure $ Just iid
@@ -74,7 +76,7 @@ getSourceController = \case
   InvestigatorSource iid -> pure $ Just iid
   _ -> pure Nothing
 
-sourceMatches :: (HasCallStack, HasGame m) => Source -> Matcher.SourceMatcher -> m Bool
+sourceMatches :: (HasCallStack, HasGame m, Tracing m) => Source -> Matcher.SourceMatcher -> m Bool
 sourceMatches s = \case
   Matcher.SourceIsCancelable sm -> case s of
     CardCostSource _ -> pure False
@@ -88,9 +90,9 @@ sourceMatches s = \case
   Matcher.SourceIsEnemyAttack em -> case s of
     EnemyAttackSource eid -> elem eid <$> select em
     _ -> pure False
-  Matcher.SourceIsTreacheryEffect tm -> case s of
-    TreacherySource tid -> elem tid <$> select tm
-    _ -> pure False
+  Matcher.SourceIsTreacheryEffect tm -> case s.treachery of
+    Just tid -> elem tid <$> select tm
+    Nothing -> pure False
   Matcher.SourceIsEnemy em -> case s.enemy of
     Nothing -> pure False
     Just eid -> eid <=~> em
@@ -205,6 +207,8 @@ sourceMatches s = \case
         BothSource a b -> go a || go b
         TarotSource {} -> True
         BatchSource {} -> False
+        ScarletKeySource {} -> True
+        ConcealedCardSource {} -> True
     pure $ go s
   Matcher.SourceIsType t -> case t of
     AssetType -> case s of
@@ -296,6 +300,12 @@ sourceMatches s = \case
       CardIdSource cid -> do
         c <- getCard cid
         pure $ c.kind == ScenarioType
+      _ -> pure False
+    KeyType -> case s of
+      ScarletKeySource _ -> pure True
+      CardIdSource cid -> do
+        c <- getCard cid
+        pure $ c.kind == KeyType
       _ -> pure False
   Matcher.EncounterCardSource ->
     let

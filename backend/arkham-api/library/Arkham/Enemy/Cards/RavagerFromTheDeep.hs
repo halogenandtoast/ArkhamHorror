@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.RavagerFromTheDeep (ravagerFromTheDeep, RavagerFromTheDeep (..)) where
+module Arkham.Enemy.Cards.RavagerFromTheDeep (ravagerFromTheDeep) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
@@ -8,6 +8,7 @@ import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfMaybe)
 import Arkham.Helpers.Scenario (getGrid)
+import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
 import Arkham.Matcher
@@ -23,7 +24,8 @@ ravagerFromTheDeep = enemy RavagerFromTheDeep Cards.ravagerFromTheDeep (2, Stati
 instance HasModifiersFor RavagerFromTheDeep where
   getModifiersFor (RavagerFromTheDeep a) = modifySelfMaybe a do
     lid <- MaybeT $ getLocationOf a.id
-    getFloodLevel lid <&> \case
+    miid <- lift getSkillTestInvestigator
+    maybe (getFloodLevel lid) getFloodLevelFor miid <&> \case
       FullyFlooded -> [EnemyFight 2, EnemyEvade 2]
       PartiallyFlooded -> [EnemyFight 1, EnemyEvade 1]
       Unflooded -> []

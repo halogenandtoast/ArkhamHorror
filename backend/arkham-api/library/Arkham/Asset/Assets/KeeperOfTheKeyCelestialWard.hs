@@ -26,7 +26,7 @@ instance RunMessage KeeperOfTheKeyCelestialWard where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       selectOneToHandle iid (attrs.ability 1)
         $ locationWithDiscoverableCluesBy iid
-        <> oneOf [locationWithInvestigator iid, ConnectedFrom (locationWithInvestigator iid)]
+        <> oneOf [locationWithInvestigator iid, connectedFrom (locationWithInvestigator iid)]
       push $ Msg.DealAssetDamage attrs.id (attrs.ability 1) 0 1
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (LocationTarget lid) -> do

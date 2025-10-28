@@ -14,7 +14,7 @@ theFirstShow = story TheFirstShow Cards.theFirstShow
 
 instance RunMessage TheFirstShow where
   runMessage msg s@(TheFirstShow attrs) = runQueueT $ case msg of
-    ResolveStory _ _ (is attrs -> True) -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       remember InterviewedSebastien
       pure s
     _ -> TheFirstShow <$> liftRunMessage msg attrs

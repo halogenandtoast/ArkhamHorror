@@ -17,7 +17,7 @@ hidingSpot = event HidingSpot Cards.hidingSpot
 instance HasModifiersFor HidingSpot where
   getModifiersFor (HidingSpot attrs) =
     case attrs.attachedTo.location of
-      Just lid -> modifySelect attrs (enemyAt lid) [AddKeyword Aloof]
+      Just lid -> modifySelect attrs (enemyAt lid <> NonEliteEnemy) [AddKeyword Aloof]
       _ -> pure ()
 
 instance HasAbilities HidingSpot where

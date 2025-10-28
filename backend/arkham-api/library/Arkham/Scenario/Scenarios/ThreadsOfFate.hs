@@ -4,10 +4,12 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheForgottenAge.Meta
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card hiding (addCampaignCardToDeckChoice, forceAddCampaignCardToDeckChoice)
@@ -22,7 +24,8 @@ import Arkham.Matcher
 import Arkham.Message.Lifted qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Scenario.Import.Lifted
+import Arkham.Projection
+import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Trait qualified as Trait
@@ -87,10 +90,38 @@ setupThreadsOfFate _attrs = do
       li "actDecks"
       unscoped $ li "shuffleRemainder"
 
-  scope "threeActsThreeThreads" $ flavor do
-    setTitle "title"
-    h "title"
-    p "body"
+  gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
+  listenedToIchtacasTale <- remembered YouListenedToIchtacasTale
+
+  scope "threeActsThreeThreads" do
+    flavor do
+      setTitle "title"
+      h "title"
+      p "body"
+
+    flavor $ scope "adjustAB" do
+      ul do
+        li.nested "body" do
+          li.validate (not gaveCustodyToHarlan) "option1"
+          li.validate gaveCustodyToHarlan "option2"
+
+    act2Deck1 <- do
+      atTheStation <- sample2 Acts.atTheStationInShadowedTalons Acts.atTheStationTrainTracks
+      genCards [Acts.missingPersons, atTheStation, Acts.alejandrosPrison, Acts.alejandrosPlight]
+    act2Deck2 <- do
+      friendsInHighPlaces <-
+        sample2 Acts.friendsInHighPlacesHenrysInformation Acts.friendsInHighPlacesHenryDeveau
+      genCards
+        [Acts.searchForAlejandro, friendsInHighPlaces, Acts.alejandrosPrison, Acts.alejandrosPlight]
+    scope "adjustCD" $ storyWithChooseOneM' (ul $ li.nested "body" $ li "option1" >> li "option2") do
+      labeled' "goToThePolice" $ push $ SetActDeckCards 2 act2Deck1
+      labeled' "lookOnYourOwn" $ push $ SetActDeckCards 2 act2Deck2
+
+    flavor $ scope "adjustEF" do
+      ul do
+        li.nested "body" do
+          li.validate listenedToIchtacasTale "option1"
+          li.validate (not listenedToIchtacasTale) "option2"
 
   whenReturnTo $ gather Set.ReturnToThreadsOfFate
   gather Set.ThreadsOfFate
@@ -110,7 +141,6 @@ setupThreadsOfFate _attrs = do
     , Locations.curiositieShoppe
     ]
 
-  gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
   setActDeckN 1 =<< do
     if gaveCustodyToHarlan
       then do
@@ -142,20 +172,6 @@ setupThreadsOfFate _attrs = do
     , Agendas.hiddenEntanglements
     ]
 
-  lead <- getLead
-  act2Deck1 <- do
-    atTheStation <- sample2 Acts.atTheStationInShadowedTalons Acts.atTheStationTrainTracks
-    genCards [Acts.missingPersons, atTheStation, Acts.alejandrosPrison, Acts.alejandrosPlight]
-  act2Deck2 <- do
-    friendsInHighPlaces <-
-      sample2 Acts.friendsInHighPlacesHenrysInformation Acts.friendsInHighPlacesHenryDeveau
-    genCards
-      [Acts.searchForAlejandro, friendsInHighPlaces, Acts.alejandrosPrison, Acts.alejandrosPlight]
-  chooseOneM lead $ scope "setup" do
-    labeled' "goToThePolice" $ push $ SetActDeckCards 2 act2Deck1
-    labeled' "lookOnYourOwn" $ push $ SetActDeckCards 2 act2Deck2
-
-  listenedToIchtacasTale <- remembered YouListenedToIchtacasTale
   setActDeckN 3
     =<< if listenedToIchtacasTale
       then do
@@ -187,7 +203,12 @@ instance RunMessage ThreadsOfFate where
       traverse_ obtainCard =<< findCard (`cardMatch` cardIs Assets.relicOfAgesADeviceOfSomeSort)
       traverse_ obtainCard =<< findCard (`cardMatch` cardIs Assets.alejandroVela)
       gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
-      storyWithContinue' (h "title" >> p "intro1")
+      storyWithContinue' do
+        h "title"
+        p "intro1"
+        p.basic.right.validate (not gaveCustodyToHarlan) "proceedToIntro2"
+        p.basic.right.validate gaveCustodyToHarlan "skipToIntro3"
+
       doStep (if gaveCustodyToHarlan then 3 else 2) PreScenarioSetup
       isReturnTo <- Arkham.Helpers.Scenario.getIsReturnTo
       when isReturnTo $ doStep 7 PreScenarioSetup
@@ -199,7 +220,7 @@ instance RunMessage ThreadsOfFate where
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
       storyWithChooseOneM' (h "title" >> p "intro3") do
-        labeled' "skipToIntro4" $ doStep 4 PreScenarioSetup
+        labeled' "proceedToIntro4" $ doStep 4 PreScenarioSetup
         labeled' "skipToIntro5" $ doStep 5 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
@@ -317,6 +338,23 @@ instance RunMessage ThreadsOfFate where
       forgingYourOwnPath <- getHasRecord YouAreForgingYourOwnWay
       alejandroOwned <- getIsAlreadyOwned Assets.alejandroVela
 
+      whenHarbingerHasEnteredPlay attrs do
+        inVictory <-
+          selectAny
+            $ VictoryDisplayCardMatch
+            $ basic
+            $ mapOneOf cardIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+        if inVictory
+          then crossOut TheHarbingerIsStillAlive
+          else do
+            inPlayHarbinger <-
+              selectOne
+                $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+            damage <- case inPlayHarbinger of
+              Just eid -> field EnemyDamage eid
+              Nothing -> getRecordCount TheHarbingerIsStillAlive
+            recordCount TheHarbingerIsStillAlive damage
+
       isReturnTo <- Arkham.Helpers.Scenario.getIsReturnTo
       if isReturnTo
         then do
@@ -324,18 +362,50 @@ instance RunMessage ThreadsOfFate where
           let completedCount =
                 (+ sum (IntMap.elems actPairCountMap)) . sum . map length $ toList attrs.completedActStack
           push $ SetCampaignMeta $ toJSON $ meta {bonusXp = Map.fromList $ map (,completedCount) iids}
-          resolutionWithXp "resolution1"
-            $ allGainXpWithBonus' attrs
-            $ mconcat
-            $ [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath]
-            <> [toBonus "forgingYourOwnPath" 2 | act3fCompleted && forgingYourOwnPath]
-        else do
-          resolutionWithXp "resolution1"
-            $ allGainXpWithBonus' attrs
-            $ mconcat
-            $ toBonus "bonus" act1sCompleted
-            : [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath]
+          xp <-
+            allGainXpWithBonus' attrs
+              $ mconcat
+              $ [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath]
               <> [toBonus "forgingYourOwnPath" 2 | act3fCompleted && forgingYourOwnPath]
+          resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution1" do
+            setTitle "title"
+            p "body"
+            ul do
+              li.nested "checkCompletedActs" do
+                li.validate act3bCompleted "act3b"
+                li.validate (not act3bCompleted) "abActDeckStillInPlay"
+                li.validate act3dCompleted "act3d"
+                li.validate (not act3dCompleted) "cdActDeckStillInPlay"
+                li.validate act3fCompleted "act3f"
+                li.validate (not act3fCompleted) "efActDeckStillInPlay"
+                li.validate act3hCompleted "act3g"
+              li "expeditionJournal"
+              li "returnToXp"
+              li "additionalXp"
+              li "outline"
+              li "resupply"
+        else do
+          xp <-
+            allGainXpWithBonus' attrs
+              $ mconcat
+              $ toBonus "bonus" act1sCompleted
+              : [toBonus "forgingYourOwnPath" 2 | act3dCompleted && not alejandroOwned && forgingYourOwnPath]
+                <> [toBonus "forgingYourOwnPath" 2 | act3fCompleted && forgingYourOwnPath]
+
+          resolutionFlavor $ withVars ["xp" .= xp] $ scope "resolution1" do
+            setTitle "title"
+            p "body"
+            ul do
+              li.nested "checkCompletedActs" do
+                li.validate act3bCompleted "act3b"
+                li.validate (not act3bCompleted) "abActDeckStillInPlay"
+                li.validate act3dCompleted "act3d"
+                li.validate (not act3dCompleted) "cdActDeckStillInPlay"
+                li.validate act3fCompleted "act3f"
+                li.validate (not act3fCompleted) "efActDeckStillInPlay"
+              li "expeditionJournal"
+              li "xp"
+              li "resupply"
 
       relicOwned <- getIsAlreadyOwned Assets.relicOfAgesADeviceOfSomeSort
       when (act3bCompleted && not relicOwned) do
@@ -347,7 +417,11 @@ instance RunMessage ThreadsOfFate where
       when (act3fCompleted && not forgingYourOwnPath) do
         addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.ichtacaTheForgottenGuardian
 
+      when act3hCompleted do
+        addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.vedaWhitsleySkilledBotanist
+
       addCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.expeditionJournal
       endOfScenario
       pure s
+    CreateEnemy (isHarbinger -> True) -> pure $ setHarbingerHasEnteredPlay s
     _ -> ThreadsOfFate <$> liftRunMessage msg attrs

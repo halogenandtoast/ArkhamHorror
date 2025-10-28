@@ -19,7 +19,7 @@ instance HasAbilities PrecariousIceSheet where
     extendRevealed1 attrs
       $ restricted attrs 1 Here
       $ ReactionAbility
-        (DrawCard #when You (CanCancelRevelationEffect $ basic $ #treachery <> withTrait Hazard) AnyDeck)
+        (DrawCard #when You (CanCancelRevelationEffect You $ basic $ #treachery <> withTrait Hazard) AnyDeck)
         (AddFrostTokenCost 1)
 
 instance RunMessage PrecariousIceSheet where

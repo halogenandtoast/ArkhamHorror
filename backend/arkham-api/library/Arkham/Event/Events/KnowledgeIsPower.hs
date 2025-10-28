@@ -38,12 +38,8 @@ instance RunMessage KnowledgeIsPower where
       chooseOneM iid do
         targets assets $ handleTarget iid attrs
         targets cards \card -> do
-          pushAll
-            [ AddCardEntity card
-            , HandleTargetChoice iid (toSource attrs) (AssetTarget $ AssetId $ unsafeCardIdToUUID $ toCardId card)
-            , RemoveCardEntity card
-            , ForTarget (toTarget card.id) msg
-            ]
+          withCardEntity @AssetId card $ handleTarget iid attrs
+          forTarget card.id msg
       pure e
     ForTarget (CardIdTarget cid) (PlayThisEvent iid (is attrs -> True)) -> do
       inHand <- selectMap toCardId $ InHandOf NotForPlay (InvestigatorWithId iid)
@@ -55,11 +51,7 @@ instance RunMessage KnowledgeIsPower where
           labeled "Do not discard" nothing
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
-      let
-        adjustAbility ab =
-          applyAbilityModifiers
-            (ab {abilityDoesNotProvokeAttacksOfOpportunity = True})
-            [IgnoreAllCosts]
+      let adjustAbility ab = applyAbilityModifiers (noAOO ab) [IgnoreAllCosts]
       abilities <-
         selectMap adjustAbility
           $ AssetAbility (AssetWithId aid)

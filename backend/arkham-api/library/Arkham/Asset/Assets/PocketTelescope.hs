@@ -1,12 +1,9 @@
-module Arkham.Asset.Assets.PocketTelescope (
-  pocketTelescope,
-  PocketTelescope (..),
-)
-where
+module Arkham.Asset.Assets.PocketTelescope (pocketTelescope) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Investigate
 import Arkham.Matcher
 import Arkham.Modifier
@@ -20,11 +17,11 @@ pocketTelescope = asset PocketTelescope Cards.pocketTelescope
 
 instance HasAbilities PocketTelescope where
   getAbilities (PocketTelescope a) =
-    [ restrictedAbility a 1 (ControlsThis <> exists UnrevealedLocation) $ FastAbility (exhaust a)
-    , restrictedAbility
+    [ controlled a 1 (exists UnrevealedLocation) $ FastAbility (exhaust a)
+    , controlled
         a
         2
-        (ControlsThis <> exists (RevealedLocation <> ConnectedLocation <> InvestigatableLocation))
+        (exists (RevealedLocation <> ConnectedLocation NotForMovement <> InvestigatableLocation))
         $ ActionAbility [#investigate]
         $ ActionCost 1
     ]
@@ -40,7 +37,7 @@ instance RunMessage PocketTelescope where
         ]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      locations <- select (RevealedLocation <> ConnectedLocation <> InvestigatableLocation)
+      locations <- select (RevealedLocation <> ConnectedLocation NotForMovement <> InvestigatableLocation)
       chooseOne
         iid
         [ targetLabel location [HandleTargetChoice iid (attrs.ability 2) (toTarget location)]

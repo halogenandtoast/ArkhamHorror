@@ -1,20 +1,19 @@
 module Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot where
 
-import Arkham.Prelude
-
 import Arkham.Campaign.Campaigns.NightOfTheZealot
 import Arkham.Campaign.Runner
 import Arkham.CampaignStep
-import Arkham.Campaigns.NightOfTheZealot.Import
 import Arkham.Campaigns.NightOfTheZealot.CampaignSteps
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.Id
+import Arkham.Prelude
 
 newtype ReturnToNightOfTheZealot = ReturnToNightOfTheZealot NightOfTheZealot
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
 
 instance IsCampaign ReturnToNightOfTheZealot where
+  campaignTokens = campaignTokens @NightOfTheZealot
   nextStep a = case campaignStep (toAttrs a) of
     PrologueStep -> Just ReturnToTheGathering
     ReturnToTheGathering -> Just (UpgradeDeckStep ReturnToTheMidnightMasks)
@@ -23,13 +22,11 @@ instance IsCampaign ReturnToNightOfTheZealot where
     _ -> Nothing
 
 returnToNightOfTheZealot :: Difficulty -> ReturnToNightOfTheZealot
-returnToNightOfTheZealot difficulty =
+returnToNightOfTheZealot =
   campaign
     (ReturnToNightOfTheZealot . NightOfTheZealot)
     (CampaignId "50")
     "Return to the Night of the Zealot"
-    difficulty
-    (chaosBagContents difficulty)
 
 instance RunMessage ReturnToNightOfTheZealot where
   runMessage msg c@(ReturnToNightOfTheZealot nightOfTheZealot') = case msg of

@@ -16,6 +16,7 @@ import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Story (StoryMessage(..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Placement
@@ -63,7 +64,7 @@ instance RunMessage TheVanishingOfElinaHarper where
       story $ i18nWithTitle "intro2"
       standalone <- getIsStandalone
       unless standalone do
-        eachInvestigator chooseUpgradeDeck
+        chooseUpgradeDecks
         push ReloadDecks
       pure s
     StandaloneSetup -> do

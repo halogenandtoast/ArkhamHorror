@@ -24,6 +24,7 @@ instance RunMessage InnsmouthLook where
   runMessage msg t@(InnsmouthLook attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       placeInThreatArea attrs iid
+      checkDefeated attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom

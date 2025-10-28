@@ -1,48 +1,31 @@
 module Arkham.Act.Cards.WarmWelcome (warmWelcome) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Classes
-import Arkham.Classes.HasGame
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Prelude
 
 newtype WarmWelcome = WarmWelcome ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 warmWelcome :: ActCard WarmWelcome
-warmWelcome = act (1, A) WarmWelcome Cards.warmWelcome (Just $ GroupClueCost (PerPlayer 3) Anywhere)
-
-spawnNathanWick :: (HasGame m, MonadRandom m) => LocationId -> m [Message]
-spawnNathanWick library = do
-  nathanWick <- getSetAsideCard Enemies.nathanWickMasterOfInitiation
-  puzzleBox <- getSetAsideCard Assets.puzzleBox
-  (nathanWickId, placeNathanWick) <- createEnemyAt nathanWick library Nothing
-  puzzleBoxId <- getRandom
-  pure
-    [ placeNathanWick
-    , CreateAssetAt puzzleBoxId puzzleBox (AttachedToEnemy nathanWickId)
-    ]
+warmWelcome = act (1, A) WarmWelcome Cards.warmWelcome (groupClueCost (PerPlayer 3))
 
 instance RunMessage WarmWelcome where
-  runMessage msg a@(WarmWelcome attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      mLibrary <- selectOne $ locationIs Locations.library
-      case mLibrary of
-        Just library -> do
-          spawnMessages <- spawnNathanWick library
-          pushAll $ spawnMessages <> [advanceActDeck attrs]
-        Nothing -> do
-          (library, placeLibrary) <- placeSetAsideLocation Locations.library
-          spawnMessages <- spawnNathanWick library
-          pushAll
-            $ placeLibrary
-            : spawnMessages <> [advanceActDeck attrs]
+  runMessage msg a@(WarmWelcome attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      library <-
+        selectOne (locationIs Locations.library) >>= \case
+          Just library -> pure library
+          Nothing -> placeSetAsideLocation Locations.library
+      nathanWickCard <- fetchCard Enemies.nathanWickMasterOfInitiation
+      nathanWick <- createEnemyAt nathanWickCard library
+      puzzleBox <- fetchCard Assets.puzzleBox
+      createAssetAt_ puzzleBox (AttachedToEnemy nathanWick)
+      advanceActDeck attrs
       pure a
-    _ -> WarmWelcome <$> runMessage msg attrs
+    _ -> WarmWelcome <$> liftRunMessage msg attrs

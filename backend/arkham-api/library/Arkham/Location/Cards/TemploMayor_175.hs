@@ -21,7 +21,7 @@ instance HasAbilities TemploMayor_175 where
       attrs
       [ mkAbility attrs 1 $ forced $ PutLocationIntoPlay #after Anyone (be attrs)
       , groupLimit PerPhase
-          $ restricted attrs 2 (CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (LocationWithId attrs.id))
+          $ restricted attrs 2 (Here <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (LocationWithId attrs.id))
           $ actionAbilityWithCost (ShuffleDiscardCost 1 WeaknessCard)
       ]
 

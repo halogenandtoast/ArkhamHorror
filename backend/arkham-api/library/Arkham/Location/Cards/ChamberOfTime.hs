@@ -14,7 +14,10 @@ newtype ChamberOfTime = ChamberOfTime LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 chamberOfTime :: LocationCard ChamberOfTime
-chamberOfTime = location ChamberOfTime Cards.chamberOfTime 4 (PerPlayer 2) & setConnectsTo (singleton RightOf)
+chamberOfTime =
+  symbolLabel
+    $ location ChamberOfTime Cards.chamberOfTime 4 (PerPlayer 2)
+    & setConnectsTo (singleton RightOf)
 
 instance HasAbilities ChamberOfTime where
   getAbilities (ChamberOfTime a) =

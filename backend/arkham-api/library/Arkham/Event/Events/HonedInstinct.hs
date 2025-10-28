@@ -28,7 +28,8 @@ instance RunMessage HonedInstinct where
     DoStep 1 (PlayThisEvent iid (is attrs -> True)) -> do
       when (attrs `hasCustomization` ForceOfHabit) do
         chooseOneM iid do
-          labeled "Perform another action and remove this from game  (Force of Habit)" do
+          labeled "Perform another action and remove this from game (Force of Habit)" do
+            removeFromGame attrs
             takeActionAsIfTurn iid attrs
           labeled "Do not perform another action" nothing
       pure e

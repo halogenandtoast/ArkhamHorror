@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.AbandonedSite (abandonedSite, AbandonedSite (..)) where
+module Arkham.Location.Cards.AbandonedSite (abandonedSite) where
 
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers

@@ -1,11 +1,6 @@
-module Arkham.Treachery.Cards.HorrorsFromTheDeep (
-  horrorsFromTheDeep,
-  HorrorsFromTheDeep (..),
-)
-where
+module Arkham.Treachery.Cards.HorrorsFromTheDeep (horrorsFromTheDeep) where
 
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
-import Arkham.Helpers.Location
 import Arkham.Location.FloodLevel
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -21,13 +16,10 @@ instance RunMessage HorrorsFromTheDeep where
   runMessage msg t@(HorrorsFromTheDeep attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       extra <-
-        getLocationOf iid >>= \case
-          Nothing -> pure 0
-          Just loc -> do
-            getFloodLevel loc <&> \case
-              Unflooded -> 0
-              PartiallyFlooded -> 1
-              FullyFlooded -> 2
+        getFloodLevelFor iid <&> \case
+          Unflooded -> 0
+          PartiallyFlooded -> 1
+          FullyFlooded -> 2
       sid <- getRandom
       revelationSkillTest sid iid attrs #agility (Fixed $ 2 + extra)
       pure t

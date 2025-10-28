@@ -3,6 +3,7 @@ module Arkham.Treachery.Cards.NoTurningBack (noTurningBack) where
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
+import Arkham.ForMovement
 import Arkham.Helpers.Modifiers
 import Arkham.I18n
 import Arkham.Matcher
@@ -28,7 +29,11 @@ instance HasModifiersFor NoTurningBack where
 instance HasAbilities NoTurningBack where
   getAbilities (NoTurningBack a) =
     [ skillTestAbility
-        $ restricted a 1 (OnLocation $ orConnected $ LocationWithTreachery (be a)) actionAbility
+        $ restricted
+          a
+          1
+          (OnLocation $ orConnected NotForMovement $ LocationWithTreachery (be a))
+          actionAbility
     ]
 
 instance RunMessage NoTurningBack where
@@ -38,7 +43,7 @@ instance RunMessage NoTurningBack where
         select
           $ LocationMatchAny
             [ locationWithInvestigator iid
-            , ConnectedFrom (locationWithInvestigator iid)
+            , connectedFrom (locationWithInvestigator iid)
             ]
           <> LocationWithoutTreachery (treacheryIs Cards.noTurningBack)
       chooseOrRunOneM iid $ targets xs $ attachTreachery attrs

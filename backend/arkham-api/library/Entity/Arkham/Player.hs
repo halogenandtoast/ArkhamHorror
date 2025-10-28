@@ -8,14 +8,15 @@ module Entity.Arkham.Player (
 
 import Data.UUID (UUID)
 import Database.Persist.TH
+import Entity
 import Entity.Arkham.Game
 import Entity.User
 import Json
 import Orphans ()
 import Relude
 
-mkPersist
-  sqlSettings
+mkEntity
+  $(discoverEntities)
   [persistLowerCase|
 ArkhamPlayer sql=arkham_players
   Id UUID default=uuid_generate_v4()

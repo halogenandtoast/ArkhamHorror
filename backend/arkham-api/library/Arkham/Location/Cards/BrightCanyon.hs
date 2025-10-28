@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.BrightCanyon (brightCanyon, BrightCanyon (..)) where
+module Arkham.Location.Cards.BrightCanyon (brightCanyon) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Supply
@@ -6,10 +6,8 @@ import Arkham.Discover
 import Arkham.GameValue
 import Arkham.Helpers.Window (enters)
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype BrightCanyon = BrightCanyon LocationAttrs
@@ -21,21 +19,19 @@ brightCanyon = symbolLabel $ location BrightCanyon Cards.brightCanyon 2 (PerPlay
 
 instance HasAbilities BrightCanyon where
   getAbilities (BrightCanyon attrs) =
-    withRevealedAbilities
+    extendRevealed
       attrs
-      [ restrictedAbility attrs 1 (you $ have Treacheries.poisoned)
-          $ forced
-          $ enters #after You attrs
+      [ restricted attrs 1 (you $ have Treacheries.poisoned) $ forced $ enters #after You attrs
       , groupLimit PerDepthLevel
-          $ restrictedAbility attrs 2 (Here <> cluesOnThis 1 <> you (have Binoculars)) actionAbility
+          $ restricted attrs 2 (Here <> cluesOnThis 1 <> you (have Binoculars)) actionAbility
       ]
 
 instance RunMessage BrightCanyon where
-  runMessage msg l@(BrightCanyon attrs) = case msg of
+  runMessage msg l@(BrightCanyon attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ assignDamage iid (toAbilitySource attrs 1) 1
+      assignDamage iid (toAbilitySource attrs 1) 1
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ Msg.DiscoverClues iid $ discover (toId attrs) (toAbilitySource attrs 2) 2
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      discoverAt NotInvestigate iid (attrs.ability 2) 2 attrs
       pure l
-    _ -> BrightCanyon <$> runMessage msg attrs
+    _ -> BrightCanyon <$> liftRunMessage msg attrs

@@ -403,7 +403,7 @@ const submit = () => updateCampaignSettings(props.game.id, campaignLog.value)
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .container {
   width: 100%;
   margin: 0 auto;

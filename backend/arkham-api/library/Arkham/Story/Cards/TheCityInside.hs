@@ -1,9 +1,8 @@
-module Arkham.Story.Cards.TheCityInside (TheCityInside (..), theCityInside) where
+module Arkham.Story.Cards.TheCityInside (theCityInside) where
 
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype TheCityInside = TheCityInside StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -13,8 +12,8 @@ theCityInside :: StoryCard TheCityInside
 theCityInside = story TheCityInside Cards.theCityInside
 
 instance RunMessage TheCityInside where
-  runMessage msg s@(TheCityInside attrs) = case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+  runMessage msg s@(TheCityInside attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
       push $ PlaceLocationMatching (CardWithTitle "City-Which-Appears-On-No-Map")
       pure s
-    _ -> TheCityInside <$> runMessage msg attrs
+    _ -> TheCityInside <$> liftRunMessage msg attrs

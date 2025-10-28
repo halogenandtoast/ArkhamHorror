@@ -76,7 +76,7 @@
       "discard": "‘치솟은 광휘’를 버립니다."
     },
     "unstableVortex": {
-      "chooseTearThroughSpaces": "버릴 ‘공간을 가로질러 난 균열’ 사본 1장을 선택합니다.",
+      "chooseTearThroughSpace": "버릴 ‘공간을 가로질러 난 균열’ 사본 1장을 선택합니다.",
       "shuffle": "‘불안정한 소용돌이’를 조우 덱에 섞어 넣습니다."
     }
   }

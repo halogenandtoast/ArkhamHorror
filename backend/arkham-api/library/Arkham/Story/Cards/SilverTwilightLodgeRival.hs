@@ -24,7 +24,7 @@ instance HasAbilities SilverTwilightLodgeRival where
     [ restricted
         attrs
         1
-        (exists $ enemyIs Enemies.carlSanfordIntimidatingPresence <> EnemyAt YourLocation)
+        (exists $ enemyIs Enemies.carlSanfordIntimidatingPresence <> at_ YourLocation)
         parleyAction_
     , restricted attrs 2 (CluesOnThis $ AtLeast $ StaticWithPerPlayer 1 1)
         $ forced AnyWindow
@@ -32,13 +32,11 @@ instance HasAbilities SilverTwilightLodgeRival where
 
 instance RunMessage SilverTwilightLodgeRival where
   runMessage msg s@(SilverTwilightLodgeRival attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       ward <- getSetAsideCardsMatching $ cardIs Treacheries.wardOfPreservation
       shuffleCardsIntoDeck Deck.EncounterDeck ward
       carl <- getSetAsideCardsMatching $ cardIs Enemies.carlSanfordIntimidatingPresence
       lead <- getLead
-      when (notNull carl) do
-        for_ carl $ withLocationOf lead . createEnemyAt_
       for_ carl $ withLocationOf lead . createEnemyAt_
       pure s
     UseThisAbility iid (isSource attrs -> True) 1 -> do

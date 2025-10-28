@@ -25,7 +25,8 @@ const id = computed(() => props.skill.id)
 
 const cardCode = computed(() => props.skill.cardCode)
 const image = computed(() => {
-  return imgsrc(`cards/${cardCode.value.replace('c', '')}.avif`)
+  const mutated = props.skill.mutated ? `_${props.skill.mutated}` : ''
+  return imgsrc(`cards/${cardCode.value.replace('c', '')}${mutated}.avif`)
 })
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
@@ -99,7 +100,7 @@ const choose = (index: number) => emits('choose', index)
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .card {
   width: var(--card-width);
   max-width: var(--card-width);

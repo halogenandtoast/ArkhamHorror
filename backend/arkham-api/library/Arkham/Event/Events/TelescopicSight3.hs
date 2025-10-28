@@ -4,7 +4,8 @@ import Arkham.Ability
 import Arkham.Effect.Import
 import Arkham.Effect.Types (targetL)
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Import.Lifted hiding (choose)
+import Arkham.Event.Import.Lifted hiding (choose, targetL)
+import Arkham.ForMovement
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifyEachMaybe)
 import Arkham.Helpers.Window ()
 import Arkham.Keyword (Keyword (Aloof, Retaliate))
@@ -41,7 +42,7 @@ instance HasModifiersFor TelescopicSight3 where
                     $ handleTaboo
                     $ EnemyWithoutModifier CannotBeAttacked
                     <> NonEliteEnemy
-                    <> at_ (orConnected lid)
+                    <> at_ (orConnected NotForMovement lid)
                 ]
       _ -> pure mempty
 
@@ -94,7 +95,7 @@ instance HasModifiersFor TelescopicSight3Effect where
             $ ThisEnemy
             $ EnemyWithoutModifier CannotBeAttacked
             <> NonEliteEnemy
-            <> at_ (orConnected $ locationWithInvestigator iid)
+            <> at_ (orConnected NotForMovement $ locationWithInvestigator iid)
             <> NotEnemy (enemyEngagedWith iid)
         ]
     _ -> pure mempty

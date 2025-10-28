@@ -39,7 +39,7 @@ instance HasModifiersFor TheBrotherhoodIsRevealed where
 
 instance HasAbilities TheBrotherhoodIsRevealed where
   getAbilities (TheBrotherhoodIsRevealed (a `With` _)) =
-    [ restricted a 1 (not_ $ exists IsIchtacasPrey) $ Objective $ forced AnyWindow
+    [ restricted a 1 (not_ $ exists $ InPlayEnemy IsIchtacasPrey) $ Objective $ forced AnyWindow
     | onSide E a
     ]
 

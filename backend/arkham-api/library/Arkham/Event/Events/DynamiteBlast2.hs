@@ -1,7 +1,9 @@
 module Arkham.Event.Events.DynamiteBlast2 (dynamiteBlast2) where
 
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (NonAttackDamageEffect)
@@ -18,16 +20,21 @@ instance RunMessage DynamiteBlast2 where
   runMessage msg e@(DynamiteBlast2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       withLocationOf iid \current -> do
-        connectedLocationIds <- select $ accessibleFrom current
+        connectedLocationIds <- select $ accessibleFrom NotForMovement current
         canDealDamage <- withoutModifier iid CannotDealDamage
         chooseOneM iid do
           for_ (current : connectedLocationIds) \lid -> do
             enemies <- if canDealDamage then select (enemyAt lid) else pure []
+            concealed <- if canDealDamage then getConcealedIds (ForExpose $ toSource attrs) iid else pure []
             investigators <- select $ investigatorAt lid
-            unless (null enemies && null investigators) do
+            unless (null enemies && null investigators && null concealed) do
               targeting lid do
                 uiEffect attrs lid Explosion
                 for_ enemies $ nonAttackEnemyDamage (Just iid) attrs 3
                 for_ investigators \iid' -> assignDamage iid' attrs 3
+                unless (null concealed) do
+                  chooseOneM iid do
+                    labeled "Expose concealed card" $ chooseTargetM iid concealed $ exposeConcealed iid attrs
+                    labeled "Do not expose concealed card" nothing
       pure e
     _ -> DynamiteBlast2 <$> liftRunMessage msg attrs

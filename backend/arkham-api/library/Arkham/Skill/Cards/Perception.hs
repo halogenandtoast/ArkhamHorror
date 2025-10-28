@@ -13,6 +13,7 @@ perception = skill Perception Cards.perception
 instance RunMessage Perception where
   runMessage msg s@(Perception attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      drawCards attrs.owner attrs 1
+      skillTestResultOption "Perception" do
+        drawCards attrs.owner attrs 1
       pure s
     _ -> Perception <$> liftRunMessage msg attrs

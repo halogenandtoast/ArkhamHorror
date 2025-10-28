@@ -73,7 +73,7 @@ instance RunMessage ReturnToUndimensionedAndUnseen where
       gather Set.Dunwich
       gather Set.ErraticFear
 
-      removeEvery [Enemies.broodOfYogSothoth]
+      repeated 4 $ removeOneOf Enemies.broodOfYogSothoth
 
       tenAcreMeadow <- sample2 Locations.tenAcreMeadow_246 Locations.tenAcreMeadow_247
       whateleyRuins <- sample2 Locations.whateleyRuins_250 Locations.whateleyRuins_251

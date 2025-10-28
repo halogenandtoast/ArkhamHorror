@@ -7,6 +7,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card.CardType
 import Arkham.Damage
+import Arkham.Helpers.Card (getVictoryPoints)
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTargetedEnemy)
@@ -28,7 +29,7 @@ instance HasModifiersFor IchtacaTheForgottenGuardian where
         liftGuardM $ enemy <=~> InPlayEnemy (EnemyWithId enemy)
         MaybeT getSkillTestAction >>= \case
           Action.Fight -> do
-            combat <- lift $ maybe 1 (const 2) <$> getVengeancePoints enemy
+            combat <- lift $ maybe 1 (const 2) <$> getVictoryPoints enemy
             pure (combat, 1)
           Action.Evade -> do
             agility <- lift $ maybe 1 (const 2) <$> getVengeancePoints enemy

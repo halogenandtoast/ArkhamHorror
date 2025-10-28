@@ -2,9 +2,9 @@
 
 module Arkham.Location.Base where
 
-import Arkham.Prelude
-
+import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Card
+import Arkham.ChaosToken.Types
 import Arkham.Cost
 import Arkham.Direction
 import Arkham.GameValue
@@ -12,12 +12,12 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Key
 import Arkham.Location.Brazier
-import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Location.BreachStatus
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
 import Arkham.LocationSymbol
 import Arkham.Matcher (IsLocationMatcher (..), LocationMatcher (..))
+import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Token
 import Data.Aeson.Key qualified as Aeson
@@ -32,7 +32,7 @@ data LocationAttrs = LocationAttrs
   , locationLabel :: Text
   , locationRevealClues :: GameValue
   , locationTokens :: Tokens
-  , locationShroud :: Maybe Int
+  , locationShroud :: Maybe GameValue
   , locationRevealed :: Bool
   , locationSymbol :: LocationSymbol
   , locationRevealedSymbol :: LocationSymbol
@@ -47,6 +47,7 @@ data LocationAttrs = LocationAttrs
   , locationInFrontOf :: Maybe InvestigatorId
   , locationKeys :: Set ArkhamKey
   , locationSeals :: Set Seal
+  , locationSealedChaosTokens :: [ChaosToken]
   , locationFloodLevel :: Maybe FloodLevel
   , locationBrazier :: Maybe Brazier
   , locationBreaches :: Maybe BreachStatus
@@ -57,6 +58,8 @@ data LocationAttrs = LocationAttrs
   , locationMeta :: Value
   , locationGlobalMeta :: Map Aeson.Key Value
   , locationPosition :: Maybe Pos
+  , locationBeingRemoved :: Bool
+  , locationConcealedCards :: [ConcealedCardId]
   }
   deriving stock (Show, Eq)
 
@@ -81,6 +84,9 @@ locationDamage = countTokens Damage . locationTokens
 
 locationResources :: LocationAttrs -> Int
 locationResources = countTokens Resource . locationTokens
+
+instance HasField "underneath" LocationAttrs [Card] where
+  getField = locationCardsUnderneath
 
 instance HasField "cardId" LocationAttrs CardId where
   getField = locationCardId
@@ -130,6 +136,9 @@ instance HasField "keys" LocationAttrs (Set ArkhamKey) where
 instance HasField "seals" LocationAttrs (Set Seal) where
   getField = locationSeals
 
+instance HasField "cardCode" LocationAttrs CardCode where
+  getField = locationCardCode
+
 makeLensesWith suffixedFields ''LocationAttrs
 
 setMeta :: ToJSON a => a -> LocationAttrs -> LocationAttrs
@@ -153,7 +162,7 @@ instance FromJSON LocationAttrs where
     locationLabel <- o .: "label"
     locationRevealClues <- o .: "revealClues"
     locationTokens <- o .: "tokens"
-    locationShroud <- o .:? "shroud"
+    locationShroud <- o .:? "shroud" <|> (Static <$$> o .:? "shroud")
     locationRevealed <- o .: "revealed"
     locationSymbol <- o .: "symbol"
     locationRevealedSymbol <- o .: "revealedSymbol"
@@ -168,6 +177,7 @@ instance FromJSON LocationAttrs where
     locationInFrontOf <- o .:? "inFrontOf"
     locationKeys <- o .: "keys"
     locationSeals <- o .:? "seals" .!= mempty
+    locationSealedChaosTokens <- o .:? "sealedChaosTokens" .!= mempty
     locationFloodLevel <- o .:? "floodLevel"
     locationBrazier <- o .:? "brazier"
     locationBreaches <- o .:? "breaches"
@@ -175,5 +185,7 @@ instance FromJSON LocationAttrs where
     locationMeta <- o .: "meta"
     locationGlobalMeta <- o .:? "globalMeta" .!= mempty
     locationPosition <- o .:? "position"
+    locationBeingRemoved <- o .:? "beingRemoved" .!= False
+    locationConcealedCards <- o .:? "concealedCards" .!= []
 
     pure LocationAttrs {..}

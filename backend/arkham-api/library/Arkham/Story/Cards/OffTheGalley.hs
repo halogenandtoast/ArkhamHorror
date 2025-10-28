@@ -20,7 +20,7 @@ offTheGalley = story OffTheGalley Cards.offTheGalley
 
 instance RunMessage OffTheGalley where
   runMessage msg s@(OffTheGalley attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       moonBeastGalley <- selectJust $ locationIs Locations.moonBeastGalley
       moonForest <- selectJust $ locationIs Locations.moonForest
       clues <- field LocationClues moonBeastGalley

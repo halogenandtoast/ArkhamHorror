@@ -16,7 +16,7 @@ sickeningReality_66 = story SickeningReality_66 Cards.sickeningReality_66
 
 instance RunMessage SickeningReality_66 where
   runMessage msg s@(SickeningReality_66 attrs) = runQueueT $ case msg of
-    ResolveStory _ _ (is attrs -> True) -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       jordan <- selectJust (assetIs Assets.jordanPerry)
       withLocationOf jordan \lid -> do
         selectEach (investigatorAt lid) \iid -> assignHorror iid attrs 1

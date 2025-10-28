@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.BeyondTheMistV1 ( beyondTheMistV1,) where
+module Arkham.Act.Cards.BeyondTheMistV1 (beyondTheMistV1) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -6,12 +6,12 @@ import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query (getJustLocationByName, getPlayerCount, getSetAsideCardsMatching)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Brazier
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Modifier (ModifierType(..))
 import Arkham.Message.Lifted.Move
-import Arkham.Helpers.Query (getSetAsideCardsMatching, getPlayerCount, getJustLocationByName)
-import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Modifier (ModifierType (..))
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 import Arkham.Trait (Trait (Witch))
 
@@ -23,20 +23,18 @@ beyondTheMistV1 :: ActCard BeyondTheMistV1
 beyondTheMistV1 = act (3, A) BeyondTheMistV1 Cards.beyondTheMistV1 Nothing
 
 instance HasAbilities BeyondTheMistV1 where
-  getAbilities (BeyondTheMistV1 x)
-    | onSide A x =
-        [ restricted x 1 DuringCircleAction $ FastAbility $ ClueCost (Static 1)
-        , restricted
-            x
-            2
-            ( AllLocationsMatch
-                (LocationWithUnrevealedTitle "Unvisited Isle")
-                (RevealedLocation <> LocationWithBrazier Lit)
-            )
-            $ Objective
-            $ forced AnyWindow
-        ]
-  getAbilities _ = []
+  getAbilities = actAbilities \x ->
+    [ restricted x 1 DuringCircleAction $ FastAbility $ ClueCost (Static 1)
+    , restricted
+        x
+        2
+        ( AllLocationsMatch
+            (LocationWithUnrevealedTitle "Unvisited Isle")
+            (RevealedLocation <> LocationWithBrazier Lit)
+        )
+        $ Objective
+        $ forced AnyWindow
+    ]
 
 instance RunMessage BeyondTheMistV1 where
   runMessage msg a@(BeyondTheMistV1 attrs) = runQueueT $ case msg of

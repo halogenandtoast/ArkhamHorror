@@ -15,7 +15,7 @@ theEntity = story TheEntity Cards.theEntity
 
 instance RunMessage TheEntity where
   runMessage msg s@(TheEntity attrs) = runQueueT $ case msg of
-    ResolveStory _ _ (is attrs -> True) -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       remember KnowTheSecret
       selectEach (EnemyWithTitle "Hastur") (checkDefeated attrs)
       pure s

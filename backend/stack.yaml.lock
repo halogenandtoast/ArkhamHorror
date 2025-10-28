@@ -81,55 +81,6 @@ packages:
     subdir: lib/services/amazonka-s3
     url: https://github.com/brendanhay/amazonka/archive/4873cc451113147d071721c97704ac648d71e9ee.tar.gz
 - completed:
-    hackage: jwt-0.11.0@sha256:0602735ee4093c6c5bc918461855bcd55499099363bad34eb7a227aeef3cde29,4265
-    pantry-tree:
-      sha256: 0b3155d79cc7d44285762b2012debe8ec70ac377163a8e5f29581bacaf50179e
-      size: 1029
-  original:
-    hackage: jwt-0.11.0@sha256:0602735ee4093c6c5bc918461855bcd55499099363bad34eb7a227aeef3cde29,4265
-- completed:
-    hackage: cryptostore-0.3.1.0@sha256:ce4762361b509d1719b5d500604a5a1f2d75c2c53f4fe75f7c4ef2faec4f8352,4219
-    pantry-tree:
-      sha256: afc133eaba1d8645e8df28fd28beddc8dffa7e182ac91f43da8922b8507c93d1
-      size: 8529
-  original:
-    hackage: cryptostore-0.3.1.0@sha256:ce4762361b509d1719b5d500604a5a1f2d75c2c53f4fe75f7c4ef2faec4f8352,4219
-- completed:
-    hackage: x509-1.7.7@sha256:90eef2d745a654146fc1c325e035eaddac531e4d2145d4bc1dcf4b8fad439d34,2276
-    pantry-tree:
-      sha256: d81ffd09633c0417bcedbfc29f870cc843ec0750edd2f73c8fd60a5e5df278d2
-      size: 1124
-  original:
-    hackage: x509-1.7.7@sha256:90eef2d745a654146fc1c325e035eaddac531e4d2145d4bc1dcf4b8fad439d34,2276
-- completed:
-    hackage: x509-store-1.6.9@sha256:1f1abeab5bacf1407b920d0f34f4c35a5ad450ff0d8121cd3dc76460f81e711d,1716
-    pantry-tree:
-      sha256: 9fc5a6a997af3569c79d5062534cc9836721b39df86bef56308f209164ab500d
-      size: 398
-  original:
-    hackage: x509-store-1.6.9@sha256:1f1abeab5bacf1407b920d0f34f4c35a5ad450ff0d8121cd3dc76460f81e711d,1716
-- completed:
-    hackage: x509-validation-1.6.12@sha256:4f4af20ec77f02c042ecd4726c195bb0e0b694b336de81e7bd4515b2917bd9bc,2169
-    pantry-tree:
-      sha256: f95c21aa9671b10f9384b89c018874246f68220b63266172b47a747b62695e23
-      size: 631
-  original:
-    hackage: x509-validation-1.6.12@sha256:4f4af20ec77f02c042ecd4726c195bb0e0b694b336de81e7bd4515b2917bd9bc,2169
-- completed:
-    hackage: cryptonite-0.30@sha256:12c85dea7be63e5ad90bcb487eb3846bf3c413347f94336fa1dede7b28f9936a,18301
-    pantry-tree:
-      sha256: df1cbe4cc40d569cc75ffed40bc5deac43cb085653980b42b9b6a5d4b745a30a
-      size: 23323
-  original:
-    hackage: cryptonite-0.30@sha256:12c85dea7be63e5ad90bcb487eb3846bf3c413347f94336fa1dede7b28f9936a,18301
-- completed:
-    hackage: persistent-postgresql-2.13.6.2@sha256:f455dcac3145d9f26f95ce2605074785641478bc226071f458995b2b8051a8a8,3809
-    pantry-tree:
-      sha256: aeb880b03a4f8a789718a7cc69ad61eab416a82b036f85315e26ef663fcb9fac
-      size: 1140
-  original:
-    hackage: persistent-postgresql-2.13.6.2@sha256:f455dcac3145d9f26f95ce2605074785641478bc226071f458995b2b8051a8a8,3809
-- completed:
     hackage: yesod-test-1.6.19@sha256:faac869ab6fa86113cde99d28928e196373a04879c03204071956954ed7ba2a3,3003
     pantry-tree:
       sha256: 3ff394578b2de20c7c67bae0a827e658dbea16a04b908804d4f0bb50bf4a5a1c
@@ -137,15 +88,99 @@ packages:
   original:
     hackage: yesod-test-1.6.19@sha256:faac869ab6fa86113cde99d28928e196373a04879c03204071956954ed7ba2a3,3003
 - completed:
-    hackage: postgresql-simple-0.7.0.0@sha256:6ada584a2e6c8f8d6cb695ceddfb0600bfe3f320ccb6cec99ca1a2f0a38d6ded,4772
+    hackage: opentelemetry-plugin-1.1.2@sha256:922bd0c3e0bca12d00e66f55575fb92849484a53f5ed98c1139915cbf5d81ba3,1413
     pantry-tree:
-      sha256: e997336b7a0eb037d9bca472cb8ca0c53491c62b5a76bef3fc65875adcd02273
-      size: 4255
+      sha256: 2ebaa82224ac91ecf33b34311e5f50830bdbb68704f75f01bbcf311e58d6085b
+      size: 363
   original:
-    hackage: postgresql-simple-0.7.0.0@sha256:6ada584a2e6c8f8d6cb695ceddfb0600bfe3f320ccb6cec99ca1a2f0a38d6ded,4772
+    hackage: opentelemetry-plugin-1.1.2
+- completed:
+    hackage: hs-opentelemetry-api-0.3.0.0@sha256:d864e4e1758bdeb8310d99e18084b77cff875a7b56589db55dfaf1dd17864dd3,4162
+    pantry-tree:
+      sha256: 6b4a51fda23eccb2ff6903e166328bb5c85012bd24cf24d10778ee964d80b542
+      size: 4630
+  original:
+    hackage: hs-opentelemetry-api-0.3.0.0@sha256:d864e4e1758bdeb8310d99e18084b77cff875a7b56589db55dfaf1dd17864dd3,4162
+- completed:
+    hackage: hs-opentelemetry-propagator-w3c-0.1.0.0@sha256:2d8d324e61e15953d6fa405eee2f674746b5ea35a74ff9113388f0dca21e9f23,2012
+    pantry-tree:
+      sha256: b225fbceee920c7e2334b14a5a4e9a9db3292e73fcc480f58aa6b30bbd4383f4
+      size: 775
+  original:
+    hackage: hs-opentelemetry-propagator-w3c-0.1.0.0@sha256:2d8d324e61e15953d6fa405eee2f674746b5ea35a74ff9113388f0dca21e9f23,2012
+- completed:
+    hackage: hs-opentelemetry-sdk-0.1.0.1@sha256:54c92cc73e4f52730f38b8c5e5dfc0f29faadc90fa1c5d60529770b882ab08f0,4059
+    pantry-tree:
+      sha256: fa287266bfcd1bc305e6e6b2c49eb1bdcde3bf4b739ae58508a0070590d5b085
+      size: 1935
+  original:
+    hackage: hs-opentelemetry-sdk-0.1.0.1@sha256:54c92cc73e4f52730f38b8c5e5dfc0f29faadc90fa1c5d60529770b882ab08f0,4059
+- completed:
+    hackage: hs-opentelemetry-exporter-otlp-0.1.0.1@sha256:8d03868dc7c0e5eab61b399ed3150cc24650d84000fd32554b2b4336f7879b53,1564
+    pantry-tree:
+      sha256: f5035b89bd0fe3f129f5e5581d236d41249f517d8527c62cf8ad7a40191f3c43
+      size: 511
+  original:
+    hackage: hs-opentelemetry-exporter-otlp-0.1.0.1@sha256:8d03868dc7c0e5eab61b399ed3150cc24650d84000fd32554b2b4336f7879b53,1564
+- completed:
+    hackage: hs-opentelemetry-propagator-b3-0.0.1.3@sha256:effc04fcb6c8176cedf1bfa6c088f9d930bca42262589bab25a61238305b25a0,1340
+    pantry-tree:
+      sha256: c6da5ca675561d4760af338255ad117b7f8a40fc247f3c7b6f025159ba03a979
+      size: 432
+  original:
+    hackage: hs-opentelemetry-propagator-b3-0.0.1.3@sha256:effc04fcb6c8176cedf1bfa6c088f9d930bca42262589bab25a61238305b25a0,1340
+- completed:
+    hackage: hs-opentelemetry-propagator-datadog-0.0.1.1@sha256:eea1d919c3dde97d6ae4c72b978719758ba1b58facb6b7efd32b81c3815d4bf8,2950
+    pantry-tree:
+      sha256: be13b66c86aaff0cfce5991ff268e2bcd4d81cfb9b3a6fd088c7586d851e144a
+      size: 730
+  original:
+    hackage: hs-opentelemetry-propagator-datadog-0.0.1.1@sha256:eea1d919c3dde97d6ae4c72b978719758ba1b58facb6b7efd32b81c3815d4bf8,2950
+- completed:
+    hackage: thread-utils-context-0.3.0.4@sha256:e763da1c6cab3b6d378fb670ca74aa9bf03c9b61b6fcf7628c56363fb0e3e71e,1671
+    pantry-tree:
+      sha256: 57d909a991b5e0b4c7a28121cb52ee9c2db6c09e0419b89af6c82fae52be88d4
+      size: 397
+  original:
+    hackage: thread-utils-context-0.3.0.4@sha256:e763da1c6cab3b6d378fb670ca74aa9bf03c9b61b6fcf7628c56363fb0e3e71e,1671
+- completed:
+    hackage: hs-opentelemetry-otlp-0.1.1.0@sha256:30b10c2f5bf8c008f0e64602ec1d8e480f66d906cbe7e150547ec3a14805fbb3,2991
+    pantry-tree:
+      sha256: e7bd8d521587aab0c26c4cd98168a7f9e61858b180fbc9cbb3484ce0b865a84e
+      size: 3284
+  original:
+    hackage: hs-opentelemetry-otlp-0.1.1.0@sha256:30b10c2f5bf8c008f0e64602ec1d8e480f66d906cbe7e150547ec3a14805fbb3,2991
+- completed:
+    hackage: proto-lens-0.7.1.6@sha256:73372bd1ee8ee9f6504d97a619a5d3f07897874ee709df1b415bb4db9ad2ecdb,2980
+    pantry-tree:
+      sha256: b1d47c6d8e1fd7fecfbfe4c398dd862ed4d28cff4fce74ca730d8810413cc15f
+      size: 1857
+  original:
+    hackage: proto-lens-0.7.1.6@sha256:73372bd1ee8ee9f6504d97a619a5d3f07897874ee709df1b415bb4db9ad2ecdb,2980
+- completed:
+    hackage: thread-utils-finalizers-0.1.1.0@sha256:24944b71d9f1d01695a5908b4a3b44838fab870883114a323336d537995e0a5b,1381
+    pantry-tree:
+      sha256: 8c2c2e2e22c20bf3696ee6f30b50b3a9eeae187a22beb536441eefb0a3f9c549
+      size: 400
+  original:
+    hackage: thread-utils-finalizers-0.1.1.0@sha256:24944b71d9f1d01695a5908b4a3b44838fab870883114a323336d537995e0a5b,1381
+- completed:
+    hackage: proto-lens-runtime-0.7.0.7@sha256:9144556f1a58945e455dd67431bd16d0bd6b2960732dd9b60aa44dd472123a50,3057
+    pantry-tree:
+      sha256: e17d6d14046e2b076e14835d5eaec84c7848352e54e67fe65d25a73f8d45fcda
+      size: 168
+  original:
+    hackage: proto-lens-runtime-0.7.0.7@sha256:9144556f1a58945e455dd67431bd16d0bd6b2960732dd9b60aa44dd472123a50,3057
+- completed:
+    hackage: hs-opentelemetry-instrumentation-wai-0.1.1.0@sha256:d97b4cb3870217e64e95da3f51db814eca62eb57484ee0a6f747366da5940bc2,1371
+    pantry-tree:
+      sha256: 23bbd4e58ba48b0ec3541a494d02e08e6b934d7173523be8aab04c6b2c7bb98b
+      size: 360
+  original:
+    hackage: hs-opentelemetry-instrumentation-wai-0.1.1.0@sha256:d97b4cb3870217e64e95da3f51db814eca62eb57484ee0a6f747366da5940bc2,1371
 snapshots:
 - completed:
-    sha256: 3dec7f4c6dc2dc10047d2941a6bc9ee8fa6a84f6db932096cbd83a0ace83dfa1
-    size: 672916
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2025/7/31.yaml
-  original: nightly-2025-07-31
+    sha256: cd7c0bda539e01dd990b90e13f3c82169c16e65052557cf49fdd93590c5a7931
+    size: 692684
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2025/9/16.yaml
+  original: nightly-2025-09-16

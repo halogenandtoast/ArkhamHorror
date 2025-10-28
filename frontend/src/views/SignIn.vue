@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/stores/user'
-import { useRoute, useRouter } from 'vue-router'
-import { ref, reactive } from 'vue'
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
+import { ref, reactive, onUnmounted } from 'vue'
 import { Credentials } from '../types'
 import { useI18n } from 'vue-i18n'
 
@@ -14,6 +14,22 @@ const credentials = reactive<Credentials>({
   password: '',
 })
 const signInError = ref<string|null>(null)
+
+const health = ref<boolean>(true)
+
+const timeoutId = ref<ReturnType<typeof setTimeout> | null>(null)
+const checkHealth = async () => {
+  try {
+    const response = await fetch("/health")
+    health.value = response.ok
+  } catch {
+    health.value = false
+  }
+
+  timeoutId.value = setTimeout(checkHealth, 5000)
+}
+
+await checkHealth()
 
 async function authenticate() {
   signInError.value = null
@@ -29,10 +45,18 @@ async function authenticate() {
     signInError.value = t("invalidEmailOrPassword")
   }
 }
+
+onUnmounted(() => {
+  if (timeoutId.value) clearTimeout(timeoutId.value)
+})
+
+onBeforeRouteLeave(() => {
+  if (timeoutId.value) clearTimeout(timeoutId.value)
+})
 </script>
 
 <template>
-  <form @submit.prevent="authenticate">
+  <form v-if="health" @submit.prevent="authenticate">
     <header><i class="secret"></i></header>
     <div class="error" v-if="signInError">{{signInError}}</div>
     <section>
@@ -58,9 +82,15 @@ async function authenticate() {
       <router-link to="/password-reset">{{$t('forgotPassword')}}</router-link>
     </section>
   </form>
+  <div v-else class="service-down">
+    <div class="service-down-card">
+      <h1>{{$t('serviceUnavailable')}}</h1>
+      <p>{{$t('pleaseTryAgainLater')}}</p>
+    </div>
+  </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 form {
   margin: 0 auto;
   margin-top: 10vh;
@@ -123,5 +153,36 @@ i.secret {
   border-radius: 5px;
   margin: 10px 5px;
   padding: 5px 10px;
+}
+
+.service-down {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, var(--background-dark), var(--background));
+}
+
+.service-down-card {
+  background: var(--background-dark);
+  color: #2a2f47;
+  padding: 2rem 3rem;
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  text-align: center;
+  max-width: 400px;
+}
+
+.service-down-card h1 {
+  text-transform: uppercase;
+  font-family: 'Teutonic', sans-serif;
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
+  color: var(--title);
+}
+
+.service-down-card p {
+  font-size: 1rem;
+  color: var(--text);
 }
 </style>

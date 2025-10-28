@@ -155,7 +155,10 @@ oops =
     , cdCardTraits = singleton Fortune
     , cdCriteria =
         Just
-          $ exists (EnemyAt YourLocation <> NotEnemy AttackedEnemy <> EnemyCanBeDamagedBySource ThisCard)
+          $ oneOf
+            [ exists (EnemyAt YourLocation <> NotEnemy AttackedEnemy <> EnemyCanBeDamagedBySource ThisCard)
+            , exists (YourLocation <> LocationWithExposableConcealedCard ThisCard)
+            ]
           <> Criteria.CanDealDamage
     , cdFastWindow =
         Just
@@ -340,7 +343,7 @@ wardOfProtection5 =
           $ DrawCard
             #when
             You
-            (CanCancelAllEffects $ BasicCardMatch IsEncounterCard)
+            (CanCancelAllEffects You $ BasicCardMatch IsEncounterCard)
             EncounterDeck
     , cdLevel = Just 5
     }

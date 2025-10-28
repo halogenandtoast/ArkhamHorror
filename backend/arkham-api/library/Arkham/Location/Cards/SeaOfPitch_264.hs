@@ -1,5 +1,6 @@
-module Arkham.Location.Cards.SeaOfPitch_264 (seaOfPitch_264, SeaOfPitch_264 (..)) where
+module Arkham.Location.Cards.SeaOfPitch_264 (seaOfPitch_264) where
 
+import Arkham.Card
 import Arkham.GameValue
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
@@ -31,4 +32,8 @@ instance RunMessage SeaOfPitch_264 where
       pure l
     LocationMoved lid | lid == attrs.id -> do
       SeaOfPitch_264 <$> liftRunMessage msg (attrs & canBeFlippedL .~ True)
+    LookAtRevealed iid _ (isTarget attrs -> True) -> do
+      let storyCard = lookupCard Story.rollingPits (toCardId attrs)
+      focusCards [storyCard] $ continue_ iid
+      pure l
     _ -> SeaOfPitch_264 <$> liftRunMessage msg attrs

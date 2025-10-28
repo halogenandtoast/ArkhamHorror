@@ -7,7 +7,6 @@ import Arkham.Matcher
 import Arkham.Name
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
-import Arkham.Target
 
 newtype Meta = Meta {crossedOff :: [Text]}
   deriving stock (Show, Eq, Generic)
@@ -22,7 +21,7 @@ findingAgentHarper = story FindingAgentHarper Cards.findingAgentHarper
 
 instance RunMessage FindingAgentHarper where
   runMessage msg s@(FindingAgentHarper attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       pure s
     ForTarget (isTarget attrs -> True) (RevealCard cid) -> do
       card <- getCard cid

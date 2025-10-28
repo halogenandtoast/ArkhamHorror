@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.ThroneRoom (throneRoom) where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Direction
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
@@ -14,7 +15,8 @@ newtype ThroneRoom = ThroneRoom LocationAttrs
 
 throneRoom :: LocationCard ThroneRoom
 throneRoom =
-  location ThroneRoom Cards.throneRoom 5 (PerPlayer 1)
+  symbolLabel
+    $ location ThroneRoom Cards.throneRoom 5 (PerPlayer 1)
     & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasModifiersFor ThroneRoom where
@@ -34,6 +36,6 @@ instance HasAbilities ThroneRoom where
 instance RunMessage ThroneRoom where
   runMessage msg l@(ThroneRoom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ PickSupply iid MysteriousScepter
+      pickSupply iid MysteriousScepter
       pure l
     _ -> ThroneRoom <$> liftRunMessage msg attrs

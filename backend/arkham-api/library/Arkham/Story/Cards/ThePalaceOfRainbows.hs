@@ -1,11 +1,9 @@
-module Arkham.Story.Cards.ThePalaceOfRainbows (ThePalaceOfRainbows (..), thePalaceOfRainbows) where
+module Arkham.Story.Cards.ThePalaceOfRainbows (thePalaceOfRainbows) where
 
-import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype ThePalaceOfRainbows = ThePalaceOfRainbows StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -15,13 +13,11 @@ thePalaceOfRainbows :: StoryCard ThePalaceOfRainbows
 thePalaceOfRainbows = story ThePalaceOfRainbows Cards.thePalaceOfRainbows
 
 instance RunMessage ThePalaceOfRainbows where
-  runMessage msg s@(ThePalaceOfRainbows attrs) = case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+  runMessage msg s@(ThePalaceOfRainbows attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
       iids <- select $ InvestigatorAt (locationIs Locations.ilekVad)
       for_ iids \iid -> do
-        mDrawing <- drawCardsIfCan iid (toSource attrs) 2
-        canHeal <- canHaveHorrorHealed (toSource attrs) iid
-        for_ mDrawing push
-        pushWhen canHeal $ HealHorror (toTarget iid) (toSource attrs) 2
+        drawCards iid attrs 2
+        healHorrorIfCan iid attrs 2
       pure s
-    _ -> ThePalaceOfRainbows <$> runMessage msg attrs
+    _ -> ThePalaceOfRainbows <$> liftRunMessage msg attrs

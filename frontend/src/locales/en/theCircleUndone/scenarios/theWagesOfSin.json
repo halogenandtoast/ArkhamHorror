@@ -12,5 +12,103 @@
       "tablet": "-4. If you fail, trigger the forced ability on a copy of Unfinished Business in your threat area as if it were the end of the round.",
       "elderThing": "-2. If this is an attack or evasion attempt, resolve each haunted ability on your location."
     }
+  },
+  "messages": {
+    "understandTheTragicLyrics": "\"You understand the tragic lyrics behind the witch's song\""
+  },
+  "tooltips": {
+    "hangmansBrook": {
+      "resign": "\"Who's bright idea was this, anyway?\""
+    },
+    "hangmansBrookSpectral": {
+      "resign": "@:theCircleUndone.theWagesOfSin.tooltips.hangmansBrook.resign",
+      "haunted": "Take 1 damage. Until the end of the round, the above resign ability cannot be triggered."
+    },
+    "returnToHangmansBrookSpectral": {
+      "resign": "@:theCircleUndone.theWagesOfSin.tooltips.hangmansBrook.resign",
+      "haunted": "Place 1 clue from the supply on Hangman's Brook."
+    },
+    "hauntedFieldsSpectral": {
+      "haunted": "Move the nearest Spectral enemy once toward Haunted Fields."
+    },
+    "abandonedChapelSpectral": {
+      "haunted": "Until the end of the round, you get -1 to each skill."
+    },
+    "theGallowsSpectral_169": {
+      "haunted": "Discard the top 3 cards of the standard encounter deck. If a Witch enemy is discarded by this effect, draw it."
+    },
+    "theGallowsSpectral_170": {
+      "haunted": "Discard the top 3 cards of the standard encounter deck. If a Geist enemy is discarded by this effect, draw it."
+    },
+    "hereticsGravesSpectral_171": {
+      "haunted": "Reduce your base {'{'}willpower{'}'} to 1 until the end of your next turn."
+    },
+    "hereticsGraves_172": {
+      "haunted": "Heal 1 damage from each Heretic and each Witch enemy in play."
+    },
+    "chapelCryptSpectral_173": {
+      "haunted": "Spawn the top card of your deck facedown, engaged with you. Treat that card as a Reanimated Dead enemy with 1 fight, 1 health, 1 evade, 1 damage, and the Monster trait."
+    },
+    "chapelCryptSpectral_174": {
+      "haunted": "Find the topmost Hex treachery in the standard encounter discard pile and put it into play in your threat area."
+    },
+    "chapelCryptSpectral_175": {
+      "haunted": "Discard a random card from beneath Chapel Attic."
+    },
+    "chapelAtticSpectral_176": {
+      "haunted": " Discard a random card from your hand (2 cards instead of you have 5 or more cards in hand)."
+    }
+  },
+  "label": {
+    "ominousPortents": {
+      "spectral": "Draw the top card of the spectral encounter deck. That card gains peril, and its effects cannot be canceled.",
+      "test": "Test {willpower} (3). If you fail take 2 horror."
+    },
+    "baneOfTheLiving": {
+      "unfinishedBusiness": "Choose an Unfinished Business card in play, flip it to its Heretic side, and place damage on it equal to half its health.",
+      "geist": "Discard cards from the top of the spectral encounter deck until a Geist enemy is discarded. Spawn that enemy engaged with you."
+    },
+    "witchweed": {
+      "surge": "Give Witchweed surge to place it in the standard encounter discard pile.",
+      "otherwise": "Place it in the spectral encounter discard pile."
+    }
+  },
+  "intro": {
+    "title": "Scenario IV: The Wages of Sin",
+    "body": "<p>Ever since your encounter with the ghost in the Witch House, you have been forced to reconsider everything you know about life and death. Keziah Mason died over two hundred years ago, but her spirit remains in the spectral mist­ —the same mist you encountered in Josef Meiger’s manor. One question lingers in your mind as you consider the events that have transpired: Does Keziah’s spirit linger because of the mist, or is the mist caused by her presence? Which is the disease, and which the symptom?</p><p>The more you delve into Arkham’s history of witchcraft and persecution, the more restless you become. Night after night, you are assaulted by terrible dreams—dreams of death and decay, of guilt and sin. There is an evil that dwells in this city, an evil that has long remained hidden in the darkness of Arkham’s past. What’s worse, your inquiry has reached an impasse. You believe that if you can find the coven of witches you saw in the woods that fateful night, you might be able to learn more about Keziah Mason or of this unspoken evil.</p><p>As you go through your morning routine, your eyes drift across one of the smaller headlines of today’s newspaper: “Ghost Sightings on Hangman’s Hill? Residents of Uptown claim to have seen human shapes in the thick fog emanating from Hangman’s Brook…” It couldn’t be a coincidence, could it?</p><p>Then the realization dawns on you—if it is witches you seek, the only place you can be certain to find them is six feet underground, in the place where professed witches were executed all those years ago. Searching for specters in a graveyard may not be your safest bet, but you’re not sure one can stay safe in this city anymore.</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *The Wages of Sin*, *Anette’s Coven*, *City of Sins*, *Inexorable Fate*, *Realm of Death*, *Trapped Spirits*, and *Witchcraft*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-wages-of-sin.png' /><img src='{setImgPath}/anettes-coven.png' /><img src='{setImgPath}/city-of-sins.png' /><img src='{setImgPath}/inexorable-fate.png' /><img src='{setImgPath}/realm-of-death.png' /><img src='{setImgPath}/trapped-spirits.png' /><img src='{setImgPath}/witchcraft.png' /></section>",
+    "theWatcherSet": "Set *The Watcher* encounter set aside, out of play. This encounter set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/the-watcher.png' /></section>",
+    "placeLocations": "Randomly choose one of the two The Gallows locations, one of the two Heretics’ Graves locations, one of the two Chapel Attic locations, and one of the two Chapel Crypt locations, and put them into play. Remove the other versions of The Gallows, Heretics’ Graves, Chapel Attic, and Chapel Crypt from the game. Then, put Haunted Fields, Abandoned Chapel, and Hangman’s Brook into play (*see suggested location placement, below*).",
+    "spectral": "These locations have revealed versions on both sides. One side has the _Spectral_ trait, and one side does not. When putting these locations into play, use the revealed sides without the _Spectral_ trait.",
+    "startAt": "Each investigator begins play in Hangman’s Brook.",
+    "setAside": "Set the four Spectral Web assets aside, out of play.",
+    "heretics": "Shuffle the six Heretic enemies and set aside four of them, at random. Remove the other two copies from the game. These cards are double-sided and have story cards on their reverse side. For the best experience, do not look at the story cards on their other side.",
+    "encounterDecks": "This scenario utilizes two separate encounter decks.",
+    "spectralDeck": "Separate each of the remaining cards with the _Spectral_ trait and shuffle them together to build the spectral encounter deck (*see “The Spectral Encounter Deck,” below*).",
+    "standardDeck": "Shuffle each of the remaining non-_Spectral_ cards together to build the standard encounter deck."
+  },
+  "theSpectralEncounterDeck": {
+    "title": "The Spectral Encounter Deck",
+    "body": "<p class='basic'>During the setup of this scenario, two encounter decks are constructed: a “standard” encounter deck and a “spectral” encounter deck. Generally speaking, whenever an investigator would interact with the encounter deck, that investigator should use the standard encounter deck.</p><p class='basic'>However, at a certain point during this scenario, locations may flip over to their _Spectral_ side. While an investigator is at a location with the _Spectral_ trait, that investigator should use the spectral encounter deck instead of the standard encounter deck for all purposes, unless otherwise noted. This includes drawing cards from the encounter deck, as well as searching, looking at, revealing, or otherwise interacting with the encounter deck (or encounter discard pile) in any way. This also includes abilities that trigger when the encounter deck runs out of cards. If an effect specifically refers to the standard encounter deck or spectral encounter deck, it interacts with the specified deck regardless of the investigator’s location.</p><p class='basic'>Each of the two encounter decks have their own discard pile. Whenever a card with the _Spectral_ trait would be discarded, it is placed in the discard pile for the spectral encounter deck. All other encounter cards are discarded to the discard pile for the standard encounter deck.</p><p class='basic'>*Note: Flipping a location over from one side to another during this scenario does not “reveal” the new location.*</p>"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p class='basic'>_If no resolution was reached because each investigator resigned_: Proceed to _Resolution 1_.</p><p class='basic'>_If no resolution was reached because each investigator was defeated_: Proceed to _Resolution 2_.</p>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: Rays of faded sunlight stream through the haze, and the unnatural mist finally recedes. As it does, Hangman’s Hill returns to its original state. No other spiteful ghosts emerge to haunt you, and the witches who summoned them have retreated into the shadows once more. You hope that you have done enough to prevent the rest of Arkham to succumbing to this horror.</p><ul><li>In your Campaign Log, record *X heretics were unleashed unto Arkham*. X is the number of Heretic enemies in play. (If it is act 1, instead record *4 heretics were unleashed unto Arkham*.)<ul><li>If X is 3 or less, under “Mementos Discovered,” record *Wisp of Spectral Mist*.</li></ul></li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: Resigned to your fate, you fall to your knees. The mist parts. Time slows to a crawl as the watcher emerges. Its spectral form glides along the ground, approaching with the slow surety of a ticking clock. You close your eyes, unwilling to look upon your killer. Your fingers dig into your palm, and you brace yourself.</p><p>The moment passes.</p><p>When you open your eyes again, the creature is gone, along with the spectral mist.</p><p>…Have you been spared?</p><ul><li>In your Campaign Log, record *the investigators survived the watcher’s embrace*.</li><li>In your Campaign Log, record *X heretics were unleashed unto Arkham*. X is the number of Heretic enemies in play. (If it is act 1, instead record *4 heretics were unleashed unto Arkham*.)<ul><li>If X is 3 or less, under “Mementos Discovered,” record *Wisp of Spectral Mist*.</li></ul></li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: As you depart Hangman’s Hill, the unnatural mist lingers behind—a reminder that you chose information and power over the safety of the city. The last thing you see as you cross the brook is the blood streaking down the bark of the trees flanking the bridge. The sight is repulsive, and yet…perhaps there is information to be gathered here, as well. Hoping you’ve done the right thing, you study the strange carvings for a moment before continuing to your next destination.</p><ul><li>In your Campaign Log, record *1 heretic was unleashed unto Arkham*.</li><li>In your Campaign Log, under “Mementos Discovered,” record *Bloody Tree Carvings*.</li><li>In your Campaign Log, record *Erynn joined the investigators*. Any one investigator may choose to add the Erynn MacAoidh story asset to their deck. This card does not count toward that investigator’s deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
+    }
   }
 }

@@ -1,7 +1,7 @@
-module Arkham.Scenarios.TheWagesOfSin.Helpers
-where
+module Arkham.Scenarios.TheWagesOfSin.Helpers where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
@@ -13,22 +13,29 @@ import Arkham.Helpers
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
+import Arkham.Message.Lifted (checkWindows)
 import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Tracing
 import Arkham.Trait (Trait (Spectral))
 import Control.Lens (non, _1, _2)
 import Control.Monad.Writer.Class
 import Data.Map.Monoidal.Strict (MonoidalMap)
 
-getSpectralDiscards :: HasGame m => m [EncounterCard]
+scenarioI18n :: (HasI18n => a) -> a
+scenarioI18n a = campaignI18n $ scope "theWagesOfSin" a
+
+getSpectralDiscards :: (HasGame m, Tracing m) => m [EncounterCard]
 getSpectralDiscards =
   scenarioFieldMap ScenarioEncounterDecks (view (at SpectralEncounterDeck . non (Deck [], []) . _2))
 
-getSpectralDeck :: HasGame m => m (Deck EncounterCard)
+getSpectralDeck :: (HasGame m, Tracing m) => m (Deck EncounterCard)
 getSpectralDeck =
   scenarioFieldMap ScenarioEncounterDecks (view (at SpectralEncounterDeck . non (Deck [], []) . _1))
 
@@ -39,6 +46,7 @@ hereticModifiers
   :: ( EntityId (EntityAttrs a) ~ EnemyId
      , Targetable (EntityAttrs a)
      , HasGame m
+     , Tracing m
      , Entity a
      , Entity (EntityAttrs a)
      , Sourceable (EntityAttrs a)
@@ -79,17 +87,18 @@ hereticRunner
      )
   => storyCard
   -> Runner b
-hereticRunner storyCard msg heretic = case msg of
+hereticRunner storyCard msg heretic = runQueueT $ case msg of
   UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
     let card = lookupCard storyCard (toCardId attrs)
     pushAll
       [ ReplaceCard (toCardId attrs) card
-      , ReadStoryWithPlacement
-          iid
-          card
-          DoNotResolveIt
-          (Just $ toTarget $ toAttrs heretic)
-          (enemyPlacement attrs)
+      , StoryMessage
+          $ ReadStoryWithPlacement
+            iid
+            card
+            DoNotResolveIt
+            (Just $ toTarget $ toAttrs heretic)
+            (enemyPlacement attrs)
       , ReplaceCard (toCardId attrs) card
       ]
     pure heretic
@@ -98,13 +107,15 @@ hereticRunner storyCard msg heretic = case msg of
     pure heretic
   Flip iid _ (isTarget attrs -> True) -> do
     let card = lookupCard storyCard (toCardId attrs)
-    cancelEnemyDefeatWithWindows attrs
+    mWindow <- lift $ cancelEnemyDefeatCapture attrs
     pushAll
-      [ RemoveEnemy (toId attrs)
+      [ PlaceEnemy (toId attrs) (OutOfPlay RemovedZone)
       , ReplaceCard (toCardId attrs) card
-      , ReadStoryWithPlacement iid card ResolveIt Nothing (enemyPlacement attrs)
+      , StoryMessage $ ReadStoryWithPlacement iid card ResolveIt Nothing (enemyPlacement attrs)
       ]
+    for_ mWindow (checkWindows . pure)
+    push $ RemoveEnemy (toId attrs)
     pure heretic
-  _ -> overAttrsM (runMessage msg) heretic
+  _ -> overAttrsM (liftRunMessage msg) heretic
  where
   attrs = toAttrs heretic

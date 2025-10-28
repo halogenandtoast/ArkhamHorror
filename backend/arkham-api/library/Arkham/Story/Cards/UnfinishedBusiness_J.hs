@@ -1,8 +1,5 @@
 {- HLINT ignore "Use camelCase" -}
-module Arkham.Story.Cards.UnfinishedBusiness_J (
-  unfinishedBusiness_J,
-  unfinishedBusiness_JEffect,
-) where
+module Arkham.Story.Cards.UnfinishedBusiness_J (unfinishedBusiness_J, unfinishedBusiness_JEffect) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -18,8 +15,8 @@ import Arkham.Message.Lifted.Placement
 import Arkham.Source
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
-import Arkham.Target
 import Arkham.Trait (Trait (Spectral))
+import Arkham.Window qualified as Window
 
 newtype UnfinishedBusiness_J = UnfinishedBusiness_J StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -30,16 +27,18 @@ unfinishedBusiness_J = story UnfinishedBusiness_J Cards.unfinishedBusiness_J
 
 instance RunMessage UnfinishedBusiness_J where
   runMessage msg s@(UnfinishedBusiness_J attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       alreadyResolved <- getAlreadyResolved attrs
       mEnemy <- selectOne $ enemyIs Enemies.heretic_I
       if alreadyResolved
         then do
           let card = lookupCard Enemies.heretic_I (toCardId attrs)
-          send $ format card <> " was \"Banished\""
-          for_ mEnemy (push . RemoveEnemy)
-          push $ ReplaceCard attrs.cardId (toCard attrs)
-          addToVictory attrs
+          batched \_ -> do
+            checkWhen $ Window.ScenarioEvent "wouldBanish" (Just iid) (toJSON card)
+            send $ format card <> " was \"Banished\""
+            for_ mEnemy (push . RemoveEnemy)
+            push $ ReplaceCard attrs.cardId (toCard attrs)
+            addToVictory attrs
         else case mEnemy of
           Just enemy -> do
             cancelEnemyDefeat enemy
@@ -58,10 +57,10 @@ instance RunMessage UnfinishedBusiness_J where
               initiateEnemyAttack enemy attrs iid
 
       pure s
-    ResolveStory iid DoNotResolveIt story' | story' == toId attrs -> do
+    DoNotResolveThisStory iid (is attrs -> True) -> do
       chooseOneM iid $ abilityLabeled iid (mkAbility attrs 1 $ forced AnyWindow) nothing
       pure s
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       resolveStory iid attrs
       pure s
     _ -> UnfinishedBusiness_J <$> liftRunMessage msg attrs
@@ -87,6 +86,5 @@ instance HasModifiersFor UnfinishedBusiness_JEffect where
         ]
 
 instance RunMessage UnfinishedBusiness_JEffect where
-  runMessage msg e@(UnfinishedBusiness_JEffect attrs) = runQueueT $ case msg of
-    EndUpkeep -> disableReturn e
+  runMessage msg (UnfinishedBusiness_JEffect attrs) = runQueueT $ case msg of
     _ -> UnfinishedBusiness_JEffect <$> liftRunMessage msg attrs

@@ -34,8 +34,8 @@
       "oneOrFewer": "If there are 1 or fewer names listed, put 1 copy of Brood of Yog‑Sothoth into play in Cold Spring Glen, put 1 copy of Brood of Yog‑Sothoth into play in Blasted Heath. Then, set the final 3 copies of Brood of Yog‑Sothoth aside, out of play."
     },
     "setAside": "Set each copy of Esoteric Formula aside, out of play.",
-    "powderOfIbnGhazi": "An investigator with the Powder of Ibn-Ghazi in his or her deck may search his or her deck for it and put it into play.",
-    "randomBasicWeakness": "Each investigator searches the collection for a random basic _*Madness*_, _*Injury*_, or _*Pact*_ weakness and adds it to his or her deck for the remainder of the campaign."
+    "powderOfIbnGhazi": "An investigator with the Powder of Ibn-Ghazi in their deck may search their deck for it and put it into play.",
+    "randomBasicWeakness": "Each investigator searches the collection for a random basic _*Madness*_, _*Injury*_, or _*Pact*_ weakness and adds it to their deck for the remainder of the campaign."
   },
   "choosingARandomLocation": {
     "title": "Choosing a Random Location",

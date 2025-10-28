@@ -25,7 +25,7 @@ import Arkham.Customization
 import Arkham.EncounterCard
 import Arkham.Enemy.Cards (allSpecialEnemyCards)
 import Arkham.Id
-import Arkham.Keyword (Keyword (Hidden, Peril))
+import Arkham.Keyword (Keyword (Concealed, Hidden, Peril))
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.PlayerCard
@@ -87,7 +87,14 @@ instance IsCard Card where
 --
 defaultToCard :: (HasCallStack, IsCard a) => a -> Card
 defaultToCard a = case lookupCard (cdCardCode $ toCardDef a) (toCardId a) of
-  PlayerCard pc -> PlayerCard $ pc {pcOwner = toCardOwner a, pcCustomizations = toCustomizations a}
+  PlayerCard pc ->
+    PlayerCard
+      $ pc
+        { pcOwner = toCardOwner a
+        , pcCustomizations = toCustomizations a
+        , pcTabooList = toTabooList a
+        , pcMutated = toMutated a
+        }
   ec -> ec
 
 class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
@@ -96,6 +103,10 @@ class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toCardOwner :: a -> Maybe InvestigatorId
   toCustomizations :: a -> Customizations
   toCustomizations _ = mempty
+  toTabooList :: a -> Maybe TabooList
+  toTabooList _ = Nothing
+  toMutated :: a -> Maybe Text
+  toMutated _ = Nothing
 
 toCards :: (IsCard a, Functor f) => f a -> f Card
 toCards = fmap toCard
@@ -197,6 +208,7 @@ printedCardCost = maybe 0 toPrintedCost . cdCost . toCardDef
 cardMatch :: (IsCard a, IsCardMatcher cardMatcher, HasCallStack) => a -> cardMatcher -> Bool
 cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   AnyCard -> True
+  SingleSidedCard -> let def = toCardDef a in not (cdDoubleSided def) && isNothing (cdOtherSide def)
   CardTaggedWith tx -> tx `elem` cdTags (toCardDef a)
   CardWithAvailableCustomization -> case toCard a of
     PlayerCard pc ->
@@ -238,6 +250,10 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
     _ -> Peril `notMember` cdKeywords (toCardDef a)
   CardWithoutKeyword k -> k `notMember` cdKeywords (toCardDef a)
   CardWithKeyword k -> k `member` cdKeywords (toCardDef a)
+  CardWithConcealed ->
+    cdKeywords (toCardDef a) & any \case
+      Concealed {} -> True
+      _ -> False
   NonWeakness -> isNothing . cdCardSubType $ toCardDef a
   SignatureCard -> isSignature $ toCardDef a
   BasicWeaknessCard -> (== Just BasicWeakness) . cdCardSubType $ toCardDef a
@@ -414,6 +430,16 @@ flipCard (PlayerCard pc) = case cdOtherSide (toCardDef pc) of
   Nothing -> PlayerCard pc
 flipCard (VengeanceCard c) = VengeanceCard c
 
+showRevealed :: Card -> Card
+showRevealed card@(EncounterCard ec) =
+  case ecIsFlipped ec of
+    Just True -> flipCard card
+    _ -> card
+showRevealed (PlayerCard pc) = case cdOtherSide (toCardDef pc) of
+  Just otherSide -> PlayerCard $ pc {pcCardCode = otherSide}
+  Nothing -> PlayerCard pc
+showRevealed (VengeanceCard c) = VengeanceCard c
+
 _PlayerCard :: Traversal' Card PlayerCard
 _PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc
 _PlayerCard _ other = pure other
@@ -455,6 +481,10 @@ instance HasOriginalCardCode Card where
     PlayerCard pc -> toOriginalCardCode pc
     EncounterCard ec -> toOriginalCardCode ec
     VengeanceCard c -> toOriginalCardCode c
+  setOriginalCardCode cCode = \case
+    PlayerCard pc -> PlayerCard $ setOriginalCardCode cCode pc
+    EncounterCard ec -> EncounterCard $ setOriginalCardCode cCode ec
+    VengeanceCard c -> VengeanceCard $ setOriginalCardCode cCode c
 
 data CampaignStoryCard = CampaignStoryCard
   { campaignStoryCardInvestigatorId :: InvestigatorId

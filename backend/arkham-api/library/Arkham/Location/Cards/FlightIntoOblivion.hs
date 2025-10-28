@@ -53,11 +53,10 @@ instance RunMessage FlightIntoOblivion where
           if null aboveChoice && null topmostPositions
             then cosmosFail attrs
             else do
-              chooseOneM iid do
-                questionLabeled "Choose where to connect"
+              chooseOneM iid $ scenarioI18n do
                 questionLabeledCard attrs
                 when (notNull aboveChoice) do
-                  labeled "Connect Above" do
+                  labeled' "connectAbove" do
                     chooseOrRunOneM iid do
                       for_ aboveChoice \pos'@(Pos x y) -> do
                         gridLabeled (cosmicLabel pos')
@@ -65,7 +64,7 @@ instance RunMessage FlightIntoOblivion where
                           $ PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid)
                           : msgs
                 when (notNull emptyPositions) do
-                  labeled "Take 2 horror and connect to the topmost revealed location in a direction of your choice" do
+                  labeled' "flightIntoOblivion.choice" do
                     assignHorror iid (toAbilitySource attrs 1) 2
                     chooseOrRunOneM iid do
                       for_ emptyPositions \pos'@(Pos x y) -> do
@@ -88,5 +87,8 @@ instance RunMessage FlightIntoOblivion where
               push $ PlaceCosmos iid (toId attrs) (CosmosLocation (updatePosition pos GridUp) (toId attrs))
         [] -> error "empty deck, what should we do?, maybe don't let this be called?"
         _ -> error "too many cards, why did this happen?"
+      pure l
+    Do (PlaceCosmos _ lid cloc) | lid == attrs.id -> do
+      handleCosmos lid cloc
       pure l
     _ -> FlightIntoOblivion <$> liftRunMessage msg attrs

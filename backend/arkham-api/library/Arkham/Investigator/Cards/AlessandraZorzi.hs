@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.AlessandraZorzi (alessandraZorzi, AlessandraZorzi (..)) where
+module Arkham.Investigator.Cards.AlessandraZorzi (alessandraZorzi) where
 
 import Arkham.Action.Additional
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
@@ -32,12 +32,19 @@ instance HasChaosTokenValue AlessandraZorzi where
 
 instance RunMessage AlessandraZorzi where
   runMessage msg i@(AlessandraZorzi attrs) = runQueueT $ case msg of
+    -- In case the concealed effect applies here, current argument is that it does not due to:
+    --
+    -- PassedSkillTestWithToken iid ElderSign | attrs `is` iid -> do
+    --   chooseAutomaticallyEvadeAt
+    --     iid
+    --     (oneOf [locationWithInvestigator iid, RevealedLocation <> connectedTo (locationWithInvestigator iid)])
+    --     NonEliteEnemy
+    --   pure i
     PassedSkillTestWithToken iid ElderSign | attrs `is` iid -> do
       selectOneToHandle iid iid
         $ NonEliteEnemy
         <> EnemyAt
-          ( oneOf [locationWithInvestigator iid, RevealedLocation <> ConnectedTo (locationWithInvestigator iid)]
-          )
+          (oneOf [locationWithInvestigator iid, RevealedLocation <> connectedTo (locationWithInvestigator iid)])
       pure i
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
       automaticallyEvadeEnemy iid eid

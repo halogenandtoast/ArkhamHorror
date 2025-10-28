@@ -289,7 +289,7 @@ instance RunMessage BlackStarsRise where
         _ -> error "Unknown resolution"
       pure s
     RequestedPlayerCard iid source mcard _ | isSource attrs source -> do
-      for_ mcard $ push . AddCardToDeckForCampaign iid
+      for_ mcard $ addCampaignCardToDeck iid DoNotShuffleIn
       pure s
     UseCardAbility iid ScenarioSource 1 _ _ -> do
       chooseSelectM iid AgendaWithAnyDoom \agenda -> removeDoom ScenarioSource agenda 1

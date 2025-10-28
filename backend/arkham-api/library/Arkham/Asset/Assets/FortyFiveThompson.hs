@@ -2,10 +2,9 @@ module Arkham.Asset.Assets.FortyFiveThompson (fortyFiveThompson) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Fight
-import Arkham.Helpers.Modifiers
-import Arkham.Prelude
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
+import Arkham.Modifier
 
 newtype FortyFiveThompson = FortyFiveThompson AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -15,16 +14,14 @@ fortyFiveThompson :: AssetCard FortyFiveThompson
 fortyFiveThompson = asset FortyFiveThompson Cards.fortyFiveThompson
 
 instance HasAbilities FortyFiveThompson where
-  getAbilities (FortyFiveThompson a) =
-    [restricted a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1]
+  getAbilities (FortyFiveThompson a) = [controlled_ a 1 $ fightAction $ assetUseCost a Ammo 1]
 
 instance RunMessage FortyFiveThompson where
-  runMessage msg a@(FortyFiveThompson attrs) = case msg of
+  runMessage msg a@(FortyFiveThompson attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFight sid iid source
-      enabled <- skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 2]
-      pushAll [enabled, chooseFight]
+      skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 2]
+      chooseFightEnemy sid iid source
       pure a
-    _ -> FortyFiveThompson <$> runMessage msg attrs
+    _ -> FortyFiveThompson <$> liftRunMessage msg attrs

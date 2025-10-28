@@ -8,6 +8,7 @@ import Arkham.Helpers.GameValue
 import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Story
 import Arkham.Story.Cards qualified as Story
 
 newtype KamanThah = KamanThah EnemyAttrs
@@ -48,6 +49,7 @@ instance RunMessage KamanThah where
       pure e
     Flip iid _ (isTarget attrs -> True) -> do
       theTrialOfKamanThah <- genCard Story.theTrialOfKamanThah
-      pushAll [RemoveEnemy (toId attrs), ReadStory iid theTrialOfKamanThah ResolveIt Nothing]
+      removeEnemy attrs
+      resolveStory iid theTrialOfKamanThah
       pure e
     _ -> KamanThah <$> liftRunMessage msg attrs

@@ -1,7 +1,6 @@
 module Arkham.Event.Events.PushedToTheLimit (pushedToTheLimit) where
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -25,26 +24,17 @@ instance RunMessage PushedToTheLimit where
           $ oneOf [#tool, #weapon]
           <> #asset
           <> inDiscardOf iid
-          <> CardWithPerformableAbility AbilityIsActionAbility [IgnoreAllCosts]
+          <> CardWithPerformableAbility #action [IgnoreAllCosts]
       focusCards cards do
         chooseOneM iid do
           targets cards \card -> do
             unfocusCards
-            push $ AddCardEntity card
-            handleTarget iid attrs (AssetId $ unsafeCardIdToUUID card.id)
-            push $ RemoveCardEntity card
+            withCardEntity @AssetId card $ handleTarget iid attrs
             shuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
-      let
-        adjustAbility ab =
-          applyAbilityModifiers
-            (ab {abilityDoesNotProvokeAttacksOfOpportunity = True})
-            [IgnoreAllCosts]
-      abilities <-
-        selectMap adjustAbility
-          $ AssetAbility (AssetWithId aid)
-          <> AbilityIsActionAbility
+      let adjustAbility ab = applyAbilityModifiers (noAOO ab) [IgnoreAllCosts]
+      abilities <- selectMap adjustAbility $ AssetAbility (AssetWithId aid) <> #action
       abilities' <- filterM (getCanPerformAbility iid (defaultWindows iid)) abilities
       chooseOne iid [AbilityLabel iid ab [] [] [] | ab <- abilities']
       pure e

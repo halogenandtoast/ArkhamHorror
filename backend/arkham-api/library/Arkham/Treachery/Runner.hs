@@ -17,6 +17,9 @@ import Arkham.Helpers.Message as X hiding (
   InvestigatorEliminated,
   RevealChaosToken,
   is,
+  toDiscard,
+  toDiscardBy,
+  addToVictory,
  )
 import Arkham.Helpers.Query as X
 import Arkham.Helpers.SkillTest as X
@@ -32,11 +35,13 @@ import Arkham.Ability.Type
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Helpers.Card (getHasVictoryPoints)
+import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Helpers.Ref (sourceToTarget)
-import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows)
 import Arkham.Matcher.Base (Be (..))
 import Arkham.Matcher.Treachery (TreacheryMatcher (TreacheryWithId))
 import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted
+import Arkham.Modifier (ModifierType (RevelationModifier))
 import Arkham.Prelude
 import Arkham.Token
 import Arkham.Window (mkWindow)
@@ -55,7 +60,7 @@ instance Be TreacheryAttrs TreacheryMatcher where
   be = TreacheryWithId . toId
 
 instance RunMessage TreacheryAttrs where
-  runMessage msg a@TreacheryAttrs {..} = case msg of
+  runMessage msg a@TreacheryAttrs {..} = runQueueT $ case msg of
     Msg.SealedChaosToken token _ (isTarget a -> True) -> do
       pure $ a & sealedChaosTokensL %~ (token :)
     Msg.UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
@@ -71,45 +76,41 @@ instance RunMessage TreacheryAttrs where
           AttachedToInvestigator iid' -> iid == iid'
           _ -> False
 
-      pushWhen (shouldDiscard || owned) $ toDiscard GameSource a
+      when (shouldDiscard || owned) $ toDiscard GameSource a
       pure a
     PlaceTreachery tid placement | tid == treacheryId -> do
-      for_ placement.attachedTo \target ->
-        pushM $ checkAfter $ Window.AttachCard Nothing (toCard a) target
+      for_ placement.attachedTo $ checkWhen . Window.AttachCard Nothing (toCard a)
       let entersPlay = not (isInPlayPlacement a.placement) && isInPlayPlacement placement
       case placement of
         InThreatArea iid -> do
-          pushM $ checkWindows $ Window.mkAfter (Window.EntersThreatArea iid $ toCard a)
+          checkWindows $ Window.mkAfter (Window.EntersThreatArea iid $ toCard a)
             : [Window.mkAfter $ Window.TreacheryEntersPlay tid | entersPlay]
         _ -> when entersPlay do
-          pushM $ checkAfter $ Window.TreacheryEntersPlay tid
-      for_ placement.attachedTo $ pushM . checkWhen . Window.AttachCard Nothing (toCard a)
+          checkAfter $ Window.TreacheryEntersPlay tid
+      for_ placement.attachedTo $ checkAfter . Window.AttachCard Nothing (toCard a)
       pure $ a & placementL .~ placement
     PlaceTokens source target tType n | isTarget a target -> runQueueT do
-      pushM $ checkWhen $ Window.PlacedToken source target tType n
       push $ Do msg
+      checkWhen $ Window.PlacedToken source target tType n
       pure a
     Do (PlaceTokens source target@(isTarget a -> True) token n) -> do
-      pushM $ checkAfter $ Window.PlacedToken source target token n
       when (token == Doom && a.doom == 0) do
-        pushM $ checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source (toTarget a) n
+        checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source (toTarget a) n
+      checkAfter $ Window.PlacedToken source target token n
       pure $ a & tokensL %~ addTokens token n
     RemoveTokens _ (isTarget a -> True) token n -> pure $ a & tokensL %~ subtractTokens token n
-    MoveTokens s source _ tType n | isSource a source -> runMessage (RemoveTokens s (toTarget a) tType n) a
+    MoveTokens s source _ tType n | isSource a source -> liftRunMessage (RemoveTokens s (toTarget a) tType n) a
     MoveTokens _s (InvestigatorSource _) target Clue _ | isTarget a target -> pure a
-    MoveTokens s _ target tType n | isTarget a target -> runMessage (PlaceTokens s (toTarget a) tType n) a
+    MoveTokens s _ target tType n | isTarget a target -> liftRunMessage (PlaceTokens s (toTarget a) tType n) a
     RemoveAllDoom _ (isTarget a -> True) -> do
       pure $ a & tokensL %~ removeAllTokens Doom
     PlaceEnemyOutOfPlay _ eid | EnemyTarget eid `elem` treacheryAttachedTarget a -> do
-      push $ toDiscard GameSource a
+      toDiscard GameSource a
       pure a
     Discard miid _ (TreacheryTarget tid) | tid == treacheryId -> do
       pure $ a & discardedByL .~ miid
-    Discarded target _ _ | target `elem` treacheryAttachedTarget a -> do
-      push $ toDiscard GameSource a
-      pure a
     DefeatedAddToVictory target | target `elem` treacheryAttachedTarget a -> do
-      push $ toDiscard GameSource a
+      toDiscard GameSource a
       pure a
     After (RemoveTreachery tid) | tid == treacheryId -> do
       pure $ a & placementL .~ Unplaced
@@ -117,22 +118,26 @@ instance RunMessage TreacheryAttrs where
       pushAll [RemoveTreachery $ toId a, PutCardOnBottomOfDeck iid deck (toCard a)]
       pure a
     AddToVictory target | target `elem` treacheryAttachedTarget a -> do
-      push $ toDiscard GameSource a
+      toDiscard GameSource a
       pure a
     When (Revelation iid (isSource a -> True)) -> do
-      pushM $ checkWhen $ Window.ResolvingRevelation iid a.id
+      mods <- getModifiers (toCardId a)
+      for_ mods \case
+        RevelationModifier source inner ->
+          eachInvestigator \iid' -> revelationModifier source iid' a.id inner
+        _ -> pure ()
+      checkWhen $ Window.ResolvingRevelation iid a.id
       pure a
     After (Revelation iid (isSource a -> True)) -> do
       when (treacheryPlacement == Limbo) do
         hasVictory <- getHasVictoryPoints (toCard a)
-        push
-          $ if hasVictory
-            then AddToVictory (toTarget a)
-            else toDiscardBy iid iid a
+        if hasVictory
+          then addToVictory a
+          else toDiscardBy iid GameSource a
       pure $ a & resolvedL %~ insertSet iid
     RemoveAllAttachments source target -> do
       case a.placement.attachedTo of
-        Just attached | target == attached -> push $ toDiscard source a
+        Just attached | target == attached -> toDiscard source a
         _ -> pure ()
       pure a
     RemoveAllCopiesOfCardFromGame _ cCode | cCode == toCardCode a -> do
@@ -142,29 +147,26 @@ instance RunMessage TreacheryAttrs where
       push $ RemoveTreachery (toId a)
       pure a
     ReplaceAct aid _ -> do
-      pushWhen (treacheryOnAct aid a) $ toDiscard (toSource a) (toTarget a)
+      when (treacheryOnAct aid a) $ toDiscard (toSource a) (toTarget a)
       pure a
     ReplaceAgenda aid _ -> do
-      pushWhen (treacheryOnAgenda aid a) $ toDiscard (toSource a) (toTarget a)
+      when (treacheryOnAgenda aid a) $ toDiscard (toSource a) (toTarget a)
       pure a
     Discarded (isTarget a -> True) _ _ -> do
-      runMessage (RemoveFromPlay (toSource a)) a
+      liftRunMessage (RemoveFromPlay (toSource a)) a
     RemoveFromGame target | a `isTarget` target -> do
       a <$ push (RemoveFromPlay $ toSource a)
     RemoveFromPlay source | isSource a source -> do
-      windowMsg <-
-        checkWindows
-          ( (`mkWindow` Window.LeavePlay (toTarget a))
-              <$> [#when, #at, #after]
-          )
+      checkWindows
+        $ (`mkWindow` Window.LeavePlay (toTarget a))
+        <$> [#when, #at, #after]
       pushAll
-        $ windowMsg
-        : [UnsealChaosToken token | token <- treacherySealedChaosTokens]
-          <> [RemovedFromPlay source]
+        $ [UnsealChaosToken token | token <- treacherySealedChaosTokens]
+        <> [RemovedFromPlay source]
       pure a
-    RemoveFromPlay source -> do
+    RemovedFromPlay source -> do
       case a.attached of
-        Just target | isTarget target (sourceToTarget source) -> push $ toDiscard GameSource (toTarget a)
+        Just target | isTarget target (sourceToTarget source) -> toDiscard GameSource (toTarget a)
         _ -> pure ()
       pure a
     Exhaust (isTarget a -> True) -> do
@@ -182,10 +184,10 @@ instance RunMessage TreacheryAttrs where
     InSearch msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
       push $ Do msg'
       pure a
-    InDiscard _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+    InDiscard iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
       push $ Do msg'
       pure a
-    InHand _ msg'@(UseAbility _ ab _) | isSource a ab.source || isProxySource a ab.source -> do
+    InHand iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
       push $ Do msg'
       pure a
     _ -> pure a

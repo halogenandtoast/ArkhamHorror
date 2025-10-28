@@ -18,7 +18,8 @@ newtype LegsOfAtlachNacha_349 = LegsOfAtlachNacha_349 EnemyAttrs
 
 instance HasModifiersFor LegsOfAtlachNacha_349 where
   getModifiersFor (LegsOfAtlachNacha_349 attrs) = do
-    x <- maybe (pure 0) (fieldWithDefault 0 LocationShroud) =<< selectOne (locationWithEnemy attrs)
+    x <-
+      maybe (pure 0) (fieldWithDefault 0 LocationShroud) =<< selectOne (locationWithEnemy attrs)
     modifySelf attrs [CannotMakeAttacksOfOpportunity, DoNotExhaustEvaded, Mod.EnemyFight x]
 
 legsOfAtlachNacha_349 :: EnemyCard LegsOfAtlachNacha_349

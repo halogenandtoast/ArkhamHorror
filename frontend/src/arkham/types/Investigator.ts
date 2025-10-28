@@ -9,6 +9,8 @@ import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Seal, sealDecoder } from '@/arkham/types/Seal';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
+import { TabooList, tabooListDecoder } from '@/arkham/types/TabooList';
+import { searchDecoder } from '@/arkham/types/Search';
 import {
   Card,
   CardContents,
@@ -69,14 +71,6 @@ export const additionalActionTypeDecoder = JsonDecoder.oneOf<AdditionalActionTyp
 export const additionalActionDecoder = JsonDecoder.object<AdditionalAction>(
   { kind: additionalActionTypeDecoder }, 'AdditionalAction')
 
-type Search = {
-  searchFoundCards: Record<string, Card[]>;
-}
-
-export const searchDecoder = JsonDecoder.object<Search>({
-  searchFoundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
-}, 'Search');
-
 export type InvestigatorDetails = {
   id: string;
   classSymbol: ClassSymbol;
@@ -114,7 +108,7 @@ export const cardSettingsDecoder = JsonDecoder.object<CardSettings>({
   globalSettings: JsonDecoder.object({
     ignoreUnrelatedSkillTestTriggers: JsonDecoder.boolean(),
   }, 'GlobalSettings'),
-  perCardSettings: JsonDecoder.dictionary(JsonDecoder.object({
+  perCardSettings: JsonDecoder.record(JsonDecoder.object({
     cardIgnoreUnrelatedSkillTestTriggers: JsonDecoder.boolean(),
   }, 'PerCardSettings'), 'Dict<string, PerCardSettings>'),
 }, 'CardSettings');
@@ -138,7 +132,9 @@ export type Investigator = {
   agility: number;
   tokens: Tokens;
   assignedHealthDamage: number;
+  assignedHealthHeal: number;
   assignedSanityDamage: number;
+  assignedSanityHeal: number;
   location: string;
   placement: Placement;
   remainingActions: number;
@@ -153,8 +149,10 @@ export type Investigator = {
   deck: CardContents[];
   decks: [string, Card[]][];
   treacheries: string[];
+  scarletKeys: string[];
   defeated: boolean;
   resigned: boolean;
+  eliminated: boolean;
   additionalActions: AdditionalActionType[];
   cardsUnderneath: Card[];
   sealedChaosTokens: ChaosToken[];
@@ -169,7 +167,7 @@ export type Investigator = {
   revealedHunchCard?: string | null;
   devoured?: Card[]
   mutated?: string;
-  taboo?: string;
+  taboo?: TabooList;
   deckUrl?: string;
   slots: Slot[];
   log: LogContents;
@@ -239,7 +237,9 @@ export const investigatorDecoder = JsonDecoder.object({
   agility: JsonDecoder.number(),
   tokens: tokensDecoder,
   assignedHealthDamage: JsonDecoder.number(),
+  assignedHealthHeal: JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.succeed(), JsonDecoder.number()], '[any, number]'), '[any, number][]').map((arr) => arr.reduce((acc, [_source, heal]) => acc + heal, 0)),
   assignedSanityDamage: JsonDecoder.number(),
+  assignedSanityHeal: JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.succeed(), JsonDecoder.number()], '[any, number]'), '[any, number][]').map((arr) => arr.reduce((acc, [_source, heal]) => acc + heal, 0)),
   placement: placementDecoder,
   remainingActions: JsonDecoder.number(),
   endedTurn: JsonDecoder.boolean(),
@@ -258,6 +258,7 @@ export const investigatorDecoder = JsonDecoder.object({
   devoured: v2Optional(JsonDecoder.array<Card>(cardDecoder, 'Card[]')),
   // traits: HashSet Trait,
   treacheries: JsonDecoder.array<string>(JsonDecoder.string(), 'TreacheryId[]'),
+  scarletKeys: JsonDecoder.array<string>(JsonDecoder.string(), 'ScarletKey[]'),
   defeated: JsonDecoder.boolean(),
   resigned: JsonDecoder.boolean(),
   additionalActions: JsonDecoder.array<AdditionalAction>(additionalActionDecoder, 'AdditionalAction').map((arr) => arr.map((action) => action.kind)),
@@ -275,7 +276,7 @@ export const investigatorDecoder = JsonDecoder.object({
   modifiers: v2Optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
   form: formDecoder,
   mutated: v2Optional(JsonDecoder.string()),
-  taboo: v2Optional(JsonDecoder.string()),
+  taboo: v2Optional(tabooListDecoder),
   deckUrl: v2Optional(JsonDecoder.string()),
   slots: slotsDecoder,
   log: logContentsDecoder,
@@ -285,6 +286,7 @@ export const investigatorDecoder = JsonDecoder.object({
 }, 'Investigator').map(({search, placement, ...rest}) => ({
   foundCards: search,
   location: placement.tag === "AtLocation" ? placement.contents : "00000000-0000-0000-0000-000000000000",
+  eliminated: rest.defeated || rest.resigned,
   placement,
   ...rest
 }))

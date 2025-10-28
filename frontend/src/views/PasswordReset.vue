@@ -46,7 +46,7 @@ const toast = useToast()
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 form, .container {
   margin: 0 auto;
   margin-top: 10vh;

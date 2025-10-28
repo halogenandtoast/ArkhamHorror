@@ -1,12 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Arkham.Scenario.Types (
-  module Arkham.Scenario.Types,
-  module X,
-  Field (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Types (module Arkham.Scenario.Types, module X, Field (..)) where
 
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
@@ -19,23 +13,30 @@ import Arkham.Classes.RunMessage.Internal
 import Arkham.Difficulty
 import Arkham.Helpers
 import Arkham.History
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Json
 import Arkham.Key
 import Arkham.Layout
 import Arkham.Location.Grid
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck as X
 import Arkham.ScenarioLogKey
+import Arkham.Search
+import Arkham.Search qualified as Search
 import Arkham.Source
 import Arkham.Target
 import Arkham.Tarot
 import Arkham.Token
 import Arkham.Xp
+import Arkham.Zone
+import Control.Lens (_Just)
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.TH
-import Data.Typeable
 import Data.Data
+import Data.Text qualified as T
 import GHC.Records
 
 class
@@ -79,7 +80,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioKeys :: Field Scenario (Set ArkhamKey)
   ScenarioName :: Field Scenario Name
   ScenarioMeta :: Field Scenario Value
-  ScenarioStoryCards :: Field Scenario (Map InvestigatorId [PlayerCard])
+  ScenarioStoryCards :: Field Scenario (Map InvestigatorId [Card])
   ScenarioPlayerDecks :: Field Scenario (Map InvestigatorId (Deck PlayerCard))
   ScenarioTokens :: Field Scenario Tokens
   ScenarioTarotCards :: Field Scenario (Map TarotCardScope [TarotCard])
@@ -136,8 +137,11 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioDefeatedEnemies :: Map EnemyId DefeatedEnemyAttrs
   , scenarioIsSideStory :: Bool
   , scenarioInShuffle :: Bool
+  , scenarioSearch :: Maybe Search
+  , scenarioStarted :: Bool
+  , scenarioScope :: Scope
   , -- for standalone
-    scenarioStoryCards :: Map InvestigatorId [PlayerCard]
+    scenarioStoryCards :: Map InvestigatorId [Card]
   , scenarioPlayerDecks :: Map InvestigatorId (Deck PlayerCard)
   , scenarioXpBreakdown :: Maybe XpBreakdown
   }
@@ -155,6 +159,12 @@ instance HasField "standaloneCampaignLog" ScenarioAttrs CampaignLog where
 
 instance HasField "hasOption" ScenarioAttrs (CampaignOption -> Bool) where
   getField s k = k `member` s.standaloneCampaignLog.options
+
+instance HasField "tokens" ScenarioAttrs Tokens where
+  getField = scenarioTokens
+
+instance HasField "token" ScenarioAttrs (Token -> Int) where
+  getField a tkn = countTokens tkn a.tokens
 
 instance HasField "discard" ScenarioAttrs [EncounterCard] where
   getField = scenarioDiscard
@@ -197,6 +207,21 @@ instance HasField "grid" ScenarioAttrs Grid where
 
 instance HasField "meta" ScenarioAttrs Value where
   getField = scenarioMeta
+
+getMetaKeyDefault :: FromJSON a => Key -> a -> ScenarioAttrs -> a
+getMetaKeyDefault k def attrs = case attrs.meta of
+  Object o -> case KeyMap.lookup k o of
+    Nothing -> def
+    Just v -> case fromJSON v of
+      Error _ -> def
+      Success v' -> v'
+  _ -> def
+
+setMetaKey :: (ToJSON a, HasCallStack) => Key -> a -> ScenarioAttrs -> ScenarioAttrs
+setMetaKey k v attrs = case attrs.meta of
+  Object o -> attrs {scenarioMeta = Object $ KeyMap.insert k (toJSON v) o}
+  Null -> attrs {scenarioMeta = object [k .= v]}
+  _ -> error $ "Could not insert meta key, meta is not Null or Object: " <> show attrs.meta
 
 instance HasField "id" Scenario ScenarioId where
   getField = (.id) . toAttrs
@@ -294,6 +319,11 @@ scenario f cardCode name difficulty layout =
       , scenarioIsSideStory = False
       , scenarioInShuffle = False
       , scenarioXpBreakdown = Nothing
+      , scenarioSearch = Nothing
+      , scenarioStarted = False
+      , scenarioScope = toScope $ case T.stripPrefix "Return to " (toTitle name) of
+          Just suffix -> suffix
+          Nothing -> toTitle name
       }
 
 instance Entity ScenarioAttrs where
@@ -354,6 +384,10 @@ scenarioActs s = case mapToList $ scenarioActStack (toAttrs s) of
   _ -> error "Not able to handle multiple act stacks yet"
 
 makeLensesWith suffixedFields ''ScenarioAttrs
+
+foundCardsL :: Traversal' ScenarioAttrs (Map Zone [Card])
+foundCardsL = searchL . _Just . Search.foundCardsL
+
 $(deriveToJSON (aesonOptions $ Just "scenario") ''ScenarioAttrs)
 
 instance FromJSON ScenarioAttrs where
@@ -403,7 +437,11 @@ instance FromJSON ScenarioAttrs where
     scenarioDefeatedEnemies <- o .: "defeatedEnemies"
     scenarioIsSideStory <- o .:? "isSideStory" .!= False
     scenarioInShuffle <- o .:? "inShuffle" .!= False
-    scenarioStoryCards <- o .: "storyCards"
+    scenarioStoryCards :: Map InvestigatorId [Card] <-
+      (o .: "storyCards") <|> (map (toCard @PlayerCard) <$$> (o .: "storyCards"))
     scenarioPlayerDecks <- o .: "playerDecks"
-    scenarioXpBreakdown <- o .:? "xpBreakdown" .!= Nothing
+    scenarioXpBreakdown <- o .:? "xpBreakdown"
+    scenarioSearch <- o .:? "search"
+    scenarioStarted <- o .:? "started" .!= True
+    scenarioScope <- o .:? "scope" .!= "missing"
     pure ScenarioAttrs {..}

@@ -31,6 +31,7 @@ import Arkham.Queue
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Control.Monad.Writer.Class
 import Data.Map.Monoidal.Strict
@@ -104,14 +105,14 @@ handleMemory source partner location memory = do
       selectEach (investigatorAt loc) \investigator ->
         moveTo_ source investigator (locationIs Locations.prisonOfMemories)
       selectEach (oneOf [UnengagedEnemy, MassiveEnemy] <> enemyAt loc) \enemy ->
-        moveTo_ source enemy (locationIs Locations.prisonOfMemories)
+        enemyMoveToMatch source enemy (locationIs Locations.prisonOfMemories)
       addToVictory (asId source)
       removeLocation loc
       mayAdvance source
     _ -> getSetAsideCard memory >>= (`createEnemy_` location)
 
 clearedOfMirages
-  :: (HasCallStack, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  :: (HasCallStack, HasGame m, Tracing m, MonadWriter (MonoidalMap Target [Modifier]) m)
   => LocationAttrs
   -> [CardDef]
   -> m ()

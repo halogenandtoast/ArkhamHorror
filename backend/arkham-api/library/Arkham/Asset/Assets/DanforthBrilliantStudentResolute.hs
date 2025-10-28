@@ -7,6 +7,7 @@ import Arkham.Asset.Uses
 import Arkham.Capability
 import Arkham.Draw.Types
 import Arkham.EncounterSet (EncounterSet (Tekelili))
+import Arkham.Helpers.Window (getTreacheryResolver)
 import Arkham.Matcher
 
 newtype DanforthBrilliantStudentResolute = DanforthBrilliantStudentResolute AssetAttrs
@@ -18,16 +19,16 @@ danforthBrilliantStudentResolute = allyWith DanforthBrilliantStudentResolute Car
 
 instance HasAbilities DanforthBrilliantStudentResolute where
   getAbilities (DanforthBrilliantStudentResolute x) =
-    [ controlled x 1 (can.draw.cards You)
-        $ ReactionAbility
-          (ResolvesTreachery #after You $ TreacheryWithTitle "Tekeli-li")
+    [ controlled x 1 (can.draw.cards (affectsColocatedMatch You))
+        $ triggered
+          (ResolvesTreachery #after (affectsColocatedMatch You) "Tekeli-li")
           (assetUseCost x Secret 1 <> exhaust x)
     ]
 
 instance RunMessage DanforthBrilliantStudentResolute where
   runMessage msg a@(DanforthBrilliantStudentResolute attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      drawCardsIfCanWith iid (attrs.ability 1) 3 \c -> do
+    UseCardAbility _ (isSource attrs -> True) 1 (getTreacheryResolver -> iid) _ -> do
+      drawCardsEdit iid (attrs.ability 1) 3 \c -> do
         c {cardDrawDiscard = Just (CardFromEncounterSet Tekelili)}
       pure a
     _ -> DanforthBrilliantStudentResolute <$> liftRunMessage msg attrs

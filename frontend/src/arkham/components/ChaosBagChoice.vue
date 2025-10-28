@@ -20,7 +20,14 @@ const tokenChoices = computed(() => {
     case 'ChooseMatch': return props.choice.steps
     case 'ChooseMatchChoice': return props.choice.steps
     case 'Choose': return props.choice.steps
-    default: return [props.choice]
+    case 'Deciding': {
+      const { step } = props.choice
+      if ("steps" in step) return step.steps
+      return props.choice.step
+    }
+    default: {
+      return [props.choice]
+    }
   }
 })
 
@@ -121,18 +128,26 @@ const allResolved = computed(() => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .token-choices {
   margin: 10px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 20px;
   display: flex;
   flex-direction: column;
-  .token {
-    width: 150px;
-  }
   border: 1px solid rgba(255, 255, 255, 0.2);
   flex-grow: 0;
+  @media (max-width: 800px) and (orientation: portrait) {
+    margin: 0;
+    margin-top: -8px;
+  }
+}
+
+.token-choice {
+  width: min(100px, 30vw);
+  &:has(.token-choice) {
+    width: auto;
+  }
 }
 
 .deciding {
@@ -146,6 +161,9 @@ const allResolved = computed(() => {
   align-self: center;
   padding: 10px;
   gap: 10px;
+  @media (max-width: 800px) and (orientation: portrait) {
+    padding: 5px;
+  }
 }
 
 .token-prompt {

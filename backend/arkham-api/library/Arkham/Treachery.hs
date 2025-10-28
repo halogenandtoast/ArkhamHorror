@@ -2,12 +2,12 @@
 
 module Arkham.Treachery where
 
-import Arkham.Prelude
-
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Id
+import Arkham.Prelude
+import Arkham.Tracing
 import Arkham.Treachery.Runner
 import Arkham.Treachery.Treacheries
 
@@ -24,9 +24,10 @@ createTreachery a iid tid =
     _ -> Nothing
 
 instance RunMessage Treachery where
-  runMessage msg t@(Treachery a) = case msg of
-    Revelation iid (isSource t -> True) -> Treachery <$> runMessage msg (overAttrs ((resolvedL %~ insertSet iid) . (waitingL .~ True)) a)
-    _ -> Treachery <$> runMessage msg a
+  runMessage msg t@(Treachery a) = withSpan_ ("Treachery[" <> unCardCode (toCardCode t) <> "].runMessage") do
+    case msg of
+      Revelation iid (isSource t -> True) -> Treachery <$> runMessage msg (overAttrs ((resolvedL %~ insertSet iid) . (waitingL .~ True)) a)
+      _ -> Treachery <$> runMessage msg a
 
 lookupTreachery :: CardCode -> InvestigatorId -> TreacheryId -> CardId -> Treachery
 lookupTreachery cardCode = case lookup cardCode allTreacheries of
@@ -560,11 +561,46 @@ allTreacheries =
     , SomeTreacheryCard tekelili_228
     , SomeTreacheryCard tekelili_229
     , -- The Scarlet Keys
-      -- signature
+      --- signature [tsk]
       SomeTreacheryCard selflessToAFault
     , SomeTreacheryCard deafeningSilence
     , SomeTreacheryCard ruinedFilm
     , SomeTreacheryCard burdenOfLeadership
+    , --- Dead Heat [tsk]
+      SomeTreacheryCard famine
+    , SomeTreacheryCard cornered
+    , --- Sanguine Shadows [tsk]
+      SomeTreacheryCard catAndMouse
+    , SomeTreacheryCard callingCard
+    , SomeTreacheryCard outsmarted
+    , --- Dealings in the Dark [tsk]
+      SomeTreacheryCard shadowedDealingsInTheDark
+    , SomeTreacheryCard accosted
+    , SomeTreacheryCard lightOutOfVoid
+    , --- Crimson Conspiracy [tsk]
+      SomeTreacheryCard conspiracyInRed
+    , --- Strange Happenings [tsk]
+      SomeTreacheryCard pinchInReality
+    , SomeTreacheryCard heavyRain
+    , --- Mysteries Abound [tsk]
+      SomeTreacheryCard inPlainSight
+    , --- Shadow of a Doubt [tsk]
+      SomeTreacheryCard knivesInTheDark
+    , SomeTreacheryCard undercover
+    , --- Dark Veiling [tsk]
+      SomeTreacheryCard seeingShadows
+    , SomeTreacheryCard figuresInTheDark
+    , --- Scarlet Sorcery [tsk]
+      SomeTreacheryCard boundInRed
+    , SomeTreacheryCard keyCharge
+    , --- Outsiders [tsk]
+      SomeTreacheryCard substanceDissimulation
+    , --- Agents of Yuggoth [tsk]
+      SomeTreacheryCard tenebrousEclipse
+    , --- Spreading Corruption [tsk]
+      SomeTreacheryCard touchOfTheBeyond
+    , SomeTreacheryCard compulsion
+    , SomeTreacheryCard distortedReasoning
     , -- The Feast of Hemloch Vale
       -- signature [fhv]
       SomeTreacheryCard hastyRepairs
@@ -657,6 +693,10 @@ allTreacheries =
       SomeTreacheryCard offerYouCannotRefuse
     , SomeTreacheryCard finePrint
     , SomeTreacheryCard sellYourSoul
+    , --- Return to The Depths Of Yoth [rttfa]
+      SomeTreacheryCard perilsOfYoth
+    , --- Return to Shattered Aeons [rttfa]
+      SomeTreacheryCard unknowablePast
     , --- Cult of Pnakotus [rttfa]
       SomeTreacheryCard fromAnotherTime
     , --- Doom Expedition [rttfa]
@@ -668,6 +708,30 @@ allTreacheries =
       SomeTreacheryCard wrathOfYig
     , -- Return to the Circle Undone
       SomeTreacheryCard damned
+    , --- Return to The Wages of Sin [rttcu]
+      SomeTreacheryCard witchweed
+    , --- Return to Union and Disillusion [rttcu]
+      SomeTreacheryCard brazierEnchantment
+    , --- Hexcraft [rttcu]
+      SomeTreacheryCard trespasser
+    , SomeTreacheryCard despoiled
+    , SomeTreacheryCard maligned
+    , --- Impending Evils [rttcu]
+      SomeTreacheryCard impendingEvils
+    , --- Unspeakable Fate [rttcu]
+      SomeTreacheryCard unavoidableDemise
+    , SomeTreacheryCard fateOfAllFoolsUnspeakableFate
+    , --- City of the Damned [rttcu]
+      SomeTreacheryCard viceAndVillainy
+    , SomeTreacheryCard unhallowedLand
+    , --- Unstable Realm [rttcu]
+      SomeTreacheryCard unstableEnergies
+    , SomeTreacheryCard fromTheOtherSide
+    , --- Chilling Mists [rttcu]
+      SomeTreacheryCard supernaturalTempest
+    , SomeTreacheryCard mistsFromBeyond
+    , --- Bloodthirsy Spirits [rttcu]
+      SomeTreacheryCard bloodthirstySpirits
     , -- Nathaniel Cho
       SomeTreacheryCard selfDestructive
     , -- Harvey Walters
@@ -726,6 +790,19 @@ allTreacheries =
     , SomeTreacheryCard secretDoorTheMidwinterGala
     , SomeTreacheryCard terrorGate
     , SomeTreacheryCard violentCommandsTheMidwinterGala
+    , --- Film Fatale
+      SomeTreacheryCard flipTheScript
+    , SomeTreacheryCard foundFootage
+    , SomeTreacheryCard action
+    , SomeTreacheryCard breakALeg
+    , SomeTreacheryCard bleedingReality
+    , SomeTreacheryCard lastLooks
+    , SomeTreacheryCard creatureFeature
+    , SomeTreacheryCard celestialShower
+    , SomeTreacheryCard primordialTerror
+    , SomeTreacheryCard unexpectedTransformation
+    , SomeTreacheryCard hellfire
+    , SomeTreacheryCard vampiresKiss
     , --- The Blob That Ate Everything ELSE!
       SomeTreacheryCard realityAcid5U21
     , -- Parallel

@@ -1,12 +1,13 @@
-module Arkham.Story.Cards.AdviceOfTheKing (AdviceOfTheKing (..), adviceOfTheKing) where
+module Arkham.Story.Cards.AdviceOfTheKing (adviceOfTheKing) where
 
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Log (remember)
 import Arkham.ScenarioLogKey
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype AdviceOfTheKing = AdviceOfTheKing StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -16,11 +17,10 @@ adviceOfTheKing :: StoryCard AdviceOfTheKing
 adviceOfTheKing = story AdviceOfTheKing Cards.adviceOfTheKing
 
 instance RunMessage AdviceOfTheKing where
-  runMessage msg s@(AdviceOfTheKing attrs) = case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+  runMessage msg s@(AdviceOfTheKing attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
+      remember BeseechedTheKing
       tenebrousNightgaunts <- getSetAsideCardsMatching $ cardIs Enemies.tenebrousNightgaunt
-      pushAll
-        $ Remember BeseechedTheKing
-        : [ShuffleCardsIntoDeck Deck.EncounterDeck [card] | card <- take 1 tenebrousNightgaunts]
+      shuffleCardsIntoDeck Deck.EncounterDeck (take 1 tenebrousNightgaunts)
       pure s
-    _ -> AdviceOfTheKing <$> runMessage msg attrs
+    _ -> AdviceOfTheKing <$> liftRunMessage msg attrs

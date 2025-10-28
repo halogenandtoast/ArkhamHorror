@@ -12,6 +12,7 @@ data ActMatcher
   = ActWithId ActId
   | AnyAct
   | ActWithSide ActSide
+  | ActWithStep Int
   | ActWithTreachery TreacheryMatcher
   | ActWithDeckId Int
   | NotAct ActMatcher

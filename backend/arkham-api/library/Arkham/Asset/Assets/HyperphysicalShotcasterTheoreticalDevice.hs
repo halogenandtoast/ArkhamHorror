@@ -11,6 +11,7 @@ import Arkham.Card
 import Arkham.Customization
 import Arkham.Evade qualified as Evade
 import Arkham.Fight qualified as Fight
+import Arkham.ForMovement
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Investigator
@@ -67,7 +68,7 @@ instance HasModifiersFor HyperphysicalShotcasterTheoreticalDevice where
                       $ EnemyCriteria
                       $ ThisEnemy
                       $ oneOf
-                        [ EnemyAt (ConnectedFrom YourLocation)
+                        [ EnemyAt (ConnectedFrom NotForMovement YourLocation)
                             <> NonEliteEnemy
                             <> EnemyWithEvade
                             <> EnemyCanEnter YourLocation
@@ -141,13 +142,16 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
           canMoveEnemyToUs <-
             select
               $ if notNull canEvade
-                then EnemyAt ConnectedLocation <> NonEliteEnemy <> EnemyCanEnter (locationWithInvestigator iid)
+                then
+                  EnemyAt (ConnectedLocation NotForMovement)
+                    <> NonEliteEnemy
+                    <> EnemyCanEnter (locationWithInvestigator iid)
                 else
                   CanEvadeEnemyWithOverride
                     $ CriteriaOverride
                     $ EnemyCriteria
                     $ ThisEnemy
-                    $ EnemyAt ConnectedLocation
+                    $ EnemyAt (ConnectedLocation NotForMovement)
                     <> NonEliteEnemy
                     <> EnemyCanEnter (locationWithInvestigator iid)
 
@@ -161,13 +165,13 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
               select
                 $ enemyAtLocationWith iid
                 <> NonEliteEnemy
-                <> EnemyCanEnter (ConnectedFrom $ locationWithInvestigator iid)
+                <> EnemyCanEnter (connectedFrom $ locationWithInvestigator iid)
                 <> not_ (EnemyWithId x)
             _ ->
               select
                 $ enemyAtLocationWith iid
                 <> NonEliteEnemy
-                <> EnemyCanEnter (ConnectedFrom $ locationWithInvestigator iid)
+                <> EnemyCanEnter (connectedFrom $ locationWithInvestigator iid)
 
           -- or we move an investigator, as long as we can evade an enemy
           canMoveOtherInvestigatorsAway <-
@@ -176,7 +180,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
                 select
                   $ affectsOthers
                   $ colocatedWith iid
-                  <> InvestigatorCanMoveTo (toSource attrs) (ConnectedFrom $ locationWithInvestigator iid)
+                  <> InvestigatorCanMoveTo (toSource attrs) (ConnectedFrom ForMovement $ locationWithInvestigator iid)
               else pure []
 
           -- we can move ourself as long as we are engaged with an enemy that can enter the location we can evade OR we will be engaged with an enemy we could evade after moving
@@ -184,26 +188,26 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
             select
               $ enemyEngagedWith iid
               <> CanEvadeEnemy (toSource attrs)
-              <> EnemyCanEnter (ConnectedFrom $ locationWithInvestigator iid)
+              <> EnemyCanEnter (connectedFrom $ locationWithInvestigator iid)
 
           locationWeCanMoveToWithCurrentEvade <-
             if notNull engagedEvadeableEnemy
               then
                 select
-                  $ ConnectedFrom (locationWithInvestigator iid)
+                  $ ConnectedFrom ForMovement (locationWithInvestigator iid)
                   <> oneOf (map LocationCanBeEnteredBy engagedEvadeableEnemy)
                   <> CanEnterLocation (InvestigatorWithId iid)
               else pure []
 
           locationWeCanMoveToWithEvadeableEnemies <-
             select
-              $ ConnectedFrom (locationWithInvestigator iid)
+              $ ConnectedFrom ForMovement (locationWithInvestigator iid)
               <> LocationWithEnemy
                 ( CanEvadeEnemyWithOverride
                     $ CriteriaOverride
                     $ EnemyCriteria
                     $ ThisEnemy
-                      (oneOf [UnengagedEnemy, MassiveEnemy] <> EnemyAt (ConnectedTo $ locationWithInvestigator iid))
+                      (oneOf [UnengagedEnemy, MassiveEnemy] <> EnemyAt (connectedTo $ locationWithInvestigator iid))
                 )
 
           -- we can do this as long as we have an evade target
@@ -213,7 +217,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
                 select
                   $ affectsOthers
                   $ not_ (InvestigatorWithId iid)
-                  <> InvestigatorAt (ConnectedFrom $ locationWithInvestigator iid)
+                  <> InvestigatorAt (ConnectedFrom ForMovement $ locationWithInvestigator iid)
                   <> InvestigatorCanMoveTo (toSource attrs) (locationWithInvestigator iid)
               else pure []
           -- We can only choose to move nothing if we have a valid target
@@ -228,11 +232,11 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
               doStep 0 msg
 
             targets canMoveEnemyAway \e -> do
-              enemyMoveToMatch attrs e (ConnectedFrom $ LocationWithId lid)
+              enemyMoveToMatch attrs e (connectedFrom $ LocationWithId lid)
               doStep 0 msg
 
             targets canMoveOtherInvestigatorsAway \i -> do
-              moveToMatch attrs i (ConnectedFrom $ LocationWithId lid)
+              moveToMatch attrs i (ConnectedFrom ForMovement $ LocationWithId lid)
               doStep 0 msg
 
             targets canMoveOtherInvestigatorsToYourLocation \i -> do
@@ -272,35 +276,40 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
       pure a
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       canMoveEnemyToUs :: [EnemyId] <-
-        select $ EnemyAt ConnectedLocation <> NonEliteEnemy <> EnemyCanEnter (locationWithInvestigator iid)
+        select
+          $ EnemyAt (ConnectedLocation NotForMovement)
+          <> NonEliteEnemy
+          <> EnemyCanEnter (locationWithInvestigator iid)
 
       canMoveEnemyAway <-
         select
           $ enemyAtLocationWith iid
           <> NonEliteEnemy
-          <> EnemyCanEnter (ConnectedFrom $ locationWithInvestigator iid)
+          <> EnemyCanEnter (connectedFrom $ locationWithInvestigator iid)
 
       canMoveOtherInvestigatorsAway <-
         select
           $ affectsOthers
           $ colocatedWith iid
-          <> InvestigatorCanMoveTo (toSource attrs) (ConnectedFrom $ locationWithInvestigator iid)
+          <> InvestigatorCanMoveTo (toSource attrs) (ConnectedFrom ForMovement $ locationWithInvestigator iid)
 
       locationWeCanMoveTo <-
-        select $ CanEnterLocation (InvestigatorWithId iid) <> ConnectedFrom (locationWithInvestigator iid)
+        select
+          $ CanEnterLocation (InvestigatorWithId iid)
+          <> ConnectedFrom ForMovement (locationWithInvestigator iid)
 
       canMoveOtherInvestigatorsToYourLocation <-
         select
           $ affectsOthers
           $ not_ (InvestigatorWithId iid)
-          <> InvestigatorAt (ConnectedFrom $ locationWithInvestigator iid)
+          <> InvestigatorAt (ConnectedFrom ForMovement $ locationWithInvestigator iid)
           <> InvestigatorCanMoveTo (toSource attrs) (locationWithInvestigator iid)
       lid <- getJustLocation iid -- TODO: can we do this?
       chooseOneM iid do
         labeled "Move nothing (after)" nothing
         targets canMoveEnemyToUs \e -> enemyMoveTo attrs e lid
-        targets canMoveEnemyAway \e -> enemyMoveToMatch attrs e (ConnectedFrom $ LocationWithId lid)
-        targets canMoveOtherInvestigatorsAway \i -> moveToMatch attrs i (ConnectedFrom $ LocationWithId lid)
+        targets canMoveEnemyAway \e -> enemyMoveToMatch attrs e (connectedFrom $ LocationWithId lid)
+        targets canMoveOtherInvestigatorsAway \i -> moveToMatch attrs i (ConnectedFrom ForMovement $ LocationWithId lid)
         targets canMoveOtherInvestigatorsToYourLocation \i -> moveTo attrs i lid
         targets locationWeCanMoveTo $ moveTo attrs iid
       pure a

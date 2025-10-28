@@ -37,4 +37,7 @@ instance RunMessage MaskOfUmordhoth where
         attachTreachery attrs enemy
         placeDoom attrs enemy 1
       pure t
+    RemoveTreachery tid | tid == attrs.id -> do
+      for_ attrs.attached $ push . CheckDefeated (attrs.ability 1)
+      pure t
     _ -> MaskOfUmordhoth <$> liftRunMessage msg attrs

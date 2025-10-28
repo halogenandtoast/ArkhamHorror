@@ -2,13 +2,13 @@
 
 module Arkham.Event where
 
-import Arkham.Prelude hiding (catch)
-
 import Arkham.Card
 import Arkham.Card.PlayerCard (tabooMutated)
 import Arkham.Classes
 import Arkham.Event.Events
 import Arkham.Event.Runner
+import Arkham.Prelude hiding (catch)
+import Arkham.Tracing
 
 createEvent :: IsCard a => a -> InvestigatorId -> EventId -> Event
 createEvent a iid eid =
@@ -36,7 +36,8 @@ createEvent a iid eid =
     _ -> Nothing
 
 instance RunMessage Event where
-  runMessage msg (Event a) = Event <$> runMessage msg a
+  runMessage msg x@(Event a) = withSpan_ ("Event[" <> unCardCode (toCardCode x) <> "].runMessage") do
+    Event <$> runMessage msg a
 
 lookupEvent :: CardCode -> InvestigatorId -> EventId -> CardId -> Event
 lookupEvent cardCode = case lookup cardCode allEvents of

@@ -19,19 +19,23 @@ instance HasModifiersFor LongShot where
     modifySelf
       attrs.cardId
       [ CanCommitToSkillTestPerformedByAnInvestigatorAt
-          (ConnectedFrom $ locationWithInvestigator attrs.owner)
+          (connectedFrom $ locationWithInvestigator attrs.owner)
       ]
 
 instance RunMessage LongShot where
   runMessage msg s@(LongShot attrs) = runQueueT $ case msg of
     PassedSkillTest _iid (Just Fight) _ (isTarget attrs -> True) _ _ -> do
       whenJustM getSkillTestTarget \case
-        EnemyTarget eid -> nonAttackEnemyDamage (Just attrs.owner) attrs 1 eid
+        EnemyTarget eid -> 
+          skillTestResultOption "Long Shot" do
+            nonAttackEnemyDamage (Just attrs.owner) attrs 1 eid
         _ -> error "invalid target"
       pure s
     PassedSkillTest _iid (Just Evade) _ (isTarget attrs -> True) _ _ -> do
       whenJustM getSkillTestTarget \case
-        EnemyTarget eid -> nonAttackEnemyDamage (Just attrs.owner) attrs 1 eid
+        EnemyTarget eid -> 
+          skillTestResultOption "Long Shot" do
+            nonAttackEnemyDamage (Just attrs.owner) attrs 1 eid
         _ -> error "invalid target"
       pure s
     _ -> LongShot <$> liftRunMessage msg attrs

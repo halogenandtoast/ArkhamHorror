@@ -24,7 +24,7 @@ instance HasAbilities MiskatonicUniversityRival where
     [ restricted
         a
         1
-        (exists $ enemyIs Enemies.caldwellPhilipsCompelledByDreams <> EnemyAt YourLocation)
+        (exists $ enemyIs Enemies.caldwellPhilipsCompelledByDreams <> at_ YourLocation)
         parleyAction_
     , restricted a 2 (CluesOnThis $ AtLeast $ StaticWithPerPlayer 1 1)
         $ forced AnyWindow
@@ -32,7 +32,7 @@ instance HasAbilities MiskatonicUniversityRival where
 
 instance RunMessage MiskatonicUniversityRival where
   runMessage msg s@(MiskatonicUniversityRival attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       confusion <- getSetAsideCardsMatching $ cardIs Treacheries.confusion
       shuffleCardsIntoDeck Deck.EncounterDeck confusion
       caldwell <- getSetAsideCardsMatching $ cardIs Enemies.caldwellPhilipsCompelledByDreams

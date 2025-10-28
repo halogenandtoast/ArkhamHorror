@@ -17,22 +17,20 @@ theFourKeys = act (3, A) TheFourKeys Cards.theFourKeys Nothing
 -- If investigators at the same location control the Puzzle Box, the Skull key,
 -- the Cultist key, the Tablet key, and the ElderThing key, advance.
 instance HasAbilities TheFourKeys where
-  getAbilities (TheFourKeys attrs) =
-    [ restricted
-      attrs
-      1
-      ( fold
-          $ exists (HasMatchingAsset $ assetIs Assets.puzzleBox)
-          : [ exists
+  getAbilities = actAbilities \a ->
+    [ base a (not_ IsReturnTo) $ forced AnyWindow
+    , base a IsReturnTo $ FastAbility Free
+    ]
+   where
+    base a c action = restricted a 1 (c <> criteria) $ Objective action
+    criteria =
+      fold
+        $ exists (HasMatchingAsset $ assetIs Assets.puzzleBox)
+        : [ exists
               $ at_ (LocationWithInvestigator (HasMatchingAsset $ assetIs Assets.puzzleBox))
               <> InvestigatorWithTokenKey k
-            | k <- [#skull, #cultist, #tablet, #elderthing]
-            ]
-      )
-      $ Objective
-      $ forced AnyWindow
-    | onSide A attrs
-    ]
+          | k <- [#skull, #cultist, #tablet, #elderthing]
+          ]
 
 instance RunMessage TheFourKeys where
   runMessage msg a@(TheFourKeys attrs) = runQueueT $ case msg of

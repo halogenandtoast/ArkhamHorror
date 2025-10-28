@@ -16,7 +16,7 @@ theBlackStone = story TheBlackStone Cards.theBlackStone
 
 instance RunMessage TheBlackStone where
   runMessage msg s@(TheBlackStone attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       handleMemory
         attrs
         Assets.averyClaypoolAntarcticGuide

@@ -1,18 +1,22 @@
-module Arkham.Scenario.Scenarios.UnionAndDisillusion (unionAndDisillusion) where
+module Arkham.Scenario.Scenarios.UnionAndDisillusion (setupUnionAndDisillusion, unionAndDisillusion, UnionAndDisillusion (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Attack.Types
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
-import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Campaigns.TheCircleUndone.Helpers
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Campaign (getOwner)
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.Scenario qualified as Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (Field (..))
@@ -26,7 +30,6 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted hiding (InvestigatorDamage)
 import Arkham.Scenario.Types (setStandaloneCampaignLog)
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
-import Arkham.Scenarios.UnionAndDisillusion.Story
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Trait (Trait (Spectral))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -57,25 +60,13 @@ instance HasChaosTokenValue UnionAndDisillusion where
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+{- FOURMOLU_DISABLE -}
 standaloneChaosTokens :: [ChaosTokenFace]
 standaloneChaosTokens =
-  [ PlusOne
-  , Zero
-  , Zero
-  , MinusOne
-  , MinusOne
-  , MinusTwo
-  , MinusTwo
-  , MinusThree
-  , MinusFour
-  , Skull
-  , Skull
-  , Cultist
-  , Tablet
-  , ElderThing
-  , AutoFail
-  , ElderSign
+  [ PlusOne , Zero , Zero , MinusOne , MinusOne , MinusTwo , MinusTwo , MinusThree , MinusFour
+  , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
   ]
+{- FOURMOLU_ENABLE -}
 
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog =
@@ -97,98 +88,126 @@ standaloneCampaignLog =
     , campaignLogRecorded = setFromList [toCampaignLogKey JosefIsAliveAndWell]
     }
 
-instance RunMessage UnionAndDisillusion where
-  runMessage msg s@(UnionAndDisillusion attrs) = runQueueT $ case msg of
-    PreScenarioSetup -> do
-      story intro
+setupUnionAndDisillusion :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
+setupUnionAndDisillusion _attrs = do
+  setup $ ul do
+    li "gatherSets"
+    li "setSetsAside"
+    li.nested "placeLocations" do
+      li "sidedWithTheCoven"
+    li "setAside"
+    li "setEnemiesAside"
+    li.nested "missingPersons" do
+      li "gavriella"
+      li "penny"
+      li "jerome"
+      li "valentino"
+      li "removeRemainder"
+    li.nested "acts" do
+      li "v1"
+      li "v2"
+      li "v3"
+      li "v4"
+    li "heretics"
+    unscoped $ li "shuffleRemainder"
 
-      lead <- getLead
-      chooseOneM lead do
-        questionLabeled
-          "This is a point of no return—you will not get the chance to change your mind later. The investigators must decide (choose one):"
-        labeled
-          "\"We have to help complete the Lodge’s ritual.\" Completing the ritual should bind the Spectral Watcher and prevent it from doing any more harm."
-          $ record TheInvestigatorsSidedWithTheLodge
-        labeled
-          "\"We have to stop the Lodge’s ritual.\" Disrupting the ritual should release the Spectral Watcher’s tether to the mortal realm."
-          $ record TheInvestigatorsSidedWithTheCoven
+  whenReturnTo $ gather Set.ReturnToUnionAndDisillusion
+  gather Set.UnionAndDisillusion
+  gather Set.InexorableFate `orWhenReturnTo` gather Set.UnspeakableFate
+  gather Set.RealmOfDeath `orWhenReturnTo` gather Set.UnstableRealm
+  gather Set.SpectralPredators
+  gather Set.AncientEvils `orWhenReturnTo` gather Set.ImpendingEvils
+  gather Set.ChillingCold `orWhenReturnTo` gather Set.ChillingMists
+
+  gatherAndSetAside Set.AnettesCoven
+  gatherAndSetAside Set.SilverTwilightLodge
+  gatherAndSetAside Set.TheWatcher -- need to remove the spectral watcher
+  missingPersons <- getRecordedCardCodes MissingPersons
+  (unvisitedIsleCards, unplaceUnvisitedIsles) <-
+    splitAt 2
+      <$> shuffleM
+        [ Locations.unvisitedIsleStandingStones
+        , Locations.unvisitedIsleMistyClearing
+        , Locations.unvisitedIsleForsakenWoods
+        , Locations.unvisitedIsleMossCoveredSteps
+        , Locations.unvisitedIsleHauntedSpring
+        , Locations.unvisitedIsleDecayedWillow
+        ]
+  setAside
+    $ [ Locations.theGeistTrap
+      , Treacheries.watchersGazeUnionAndDisillusion
+      , Enemies.anetteMason
+      , Enemies.josefMeiger
+      ]
+    <> [Assets.gavriellaMizrah | "05046" `elem` missingPersons]
+    <> [Assets.jeromeDavids | "05047" `elem` missingPersons]
+    <> [Assets.valentinoRivas | "05048" `elem` missingPersons]
+    <> [Assets.pennyWhite | "05049" `elem` missingPersons]
+    <> unplaceUnvisitedIsles
+
+  placeUnderScenarioReference
+    $ [Stories.gavriellasFate | "05046" `elem` missingPersons]
+    <> [Stories.jeromesFate | "05047" `elem` missingPersons]
+    <> [Stories.valentinosFate | "05048" `elem` missingPersons]
+    <> [Stories.pennysFate | "05049" `elem` missingPersons]
+
+  startAt =<< place Locations.miskatonicRiver
+  forbiddingShore <- place Locations.forbiddingShore
+  unvisitedIsles <- placeGroupCapture "unvisitedIsle" unvisitedIsleCards
+
+  placeEnemy Enemies.theSpectralWatcher (OutOfPlay SetAsideZone)
+
+  hereticCount <- getRecordCount HereticsWereUnleashedUntoArkham
+  placeDoomOnAgenda hereticCount
+
+  sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
+  when sidedWithTheCoven do
+    traverse_ lightBrazier (forbiddingShore : unvisitedIsles)
+
+  sidedWithTheLodge <- getHasRecord TheInvestigatorsSidedWithTheLodge
+  deceivingTheLodge <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
+  inductedIntoTheInnerCircle <- getHasRecord TheInvestigatorsWereInductedIntoTheInnerCircle
+  hidTheirKnowledge <- getHasRecord TheInvestigatorsHidTheirKnowledgeOfTheCoven
+  keptMementosHidden <- getHasRecord TheInvestigatorsKeptsTheirMementosHidden
+  erynnJoinedTheInvestigators <- getHasRecord ErynnJoinedTheInvestigators
+
+  let
+    (act3, act4)
+      | sidedWithTheLodge && erynnJoinedTheInvestigators = (Acts.beyondTheMistV5, Acts.theBindingRite)
+      | sidedWithTheLodge = (Acts.beyondTheMistV1, Acts.theBindingRite)
+      | sidedWithTheCoven
+      , deceivingTheLodge
+      , inductedIntoTheInnerCircle =
+          (Acts.beyondTheMistV2, Acts.theBrokenRite)
+      | sidedWithTheCoven
+      , count id [deceivingTheLodge, hidTheirKnowledge, keptMementosHidden] >= 2 =
+          (Acts.beyondTheMistV3, Acts.theBrokenRite)
+      | otherwise = (Acts.beyondTheMistV4, Acts.theBrokenRite)
+
+  setAgendaDeck [Agendas.theLoversVI, Agendas.crossroadsOfFate]
+  setActDeck [Acts.theUnvisitedIsle, Acts.fatedSouls, act3, act4]
+
+  whenReturnTo $ addAdditionalReferences ["54016b"]
+
+instance RunMessage UnionAndDisillusion where
+  runMessage msg s@(UnionAndDisillusion attrs) = runQueueT $ scenarioI18n $ case msg of
+    PreScenarioSetup -> scope "intro" do
+      storyWithChooseOneM' (setTitle "title" >> p "body") do
+        labeled' "complete" $ record TheInvestigatorsSidedWithTheLodge
+        labeled' "stop" $ record TheInvestigatorsSidedWithTheCoven
+
+      doStep 2 msg
+      pure s
+    DoStep 2 PreScenarioSetup -> scope "intro" do
+      erynnJoinedTheInvestigators <- getHasRecord ErynnJoinedTheInvestigators
+      sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
+      when (sidedWithTheCoven && erynnJoinedTheInvestigators) do
+        flavor $ setTitle "title" >> p "additionalIntro"
       pure s
     StandaloneSetup -> do
       push (SetChaosTokens standaloneChaosTokens)
       pure $ overAttrs (setStandaloneCampaignLog standaloneCampaignLog) s
-    Setup -> runScenarioSetup UnionAndDisillusion attrs do
-      gather Set.UnionAndDisillusion
-      gather Set.InexorableFate
-      gather Set.RealmOfDeath
-      gather Set.SpectralPredators
-      gather Set.AncientEvils
-      gather Set.ChillingCold
-
-      gatherAndSetAside Set.AnettesCoven
-      gatherAndSetAside Set.SilverTwilightLodge
-      gatherAndSetAside Set.TheWatcher -- need to remove the spectral watcher
-      missingPersons <- getRecordedCardCodes MissingPersons
-      (unvisitedIsleCards, unplaceUnvisitedIsles) <-
-        splitAt 2
-          <$> shuffleM
-            [ Locations.unvisitedIsleStandingStones
-            , Locations.unvisitedIsleMistyClearing
-            , Locations.unvisitedIsleForsakenWoods
-            , Locations.unvisitedIsleMossCoveredSteps
-            , Locations.unvisitedIsleHauntedSpring
-            , Locations.unvisitedIsleDecayedWillow
-            ]
-      setAside
-        $ [ Locations.theGeistTrap
-          , Treacheries.watchersGazeUnionAndDisillusion
-          , Enemies.anetteMason
-          , Enemies.josefMeiger
-          ]
-        <> [Assets.gavriellaMizrah | "05046" `elem` missingPersons]
-        <> [Assets.jeromeDavids | "05047" `elem` missingPersons]
-        <> [Assets.valentinoRivas | "05048" `elem` missingPersons]
-        <> [Assets.pennyWhite | "05049" `elem` missingPersons]
-        <> unplaceUnvisitedIsles
-
-      placeUnderScenarioReference
-        $ [Stories.gavriellasFate | "05046" `elem` missingPersons]
-        <> [Stories.jeromesFate | "05047" `elem` missingPersons]
-        <> [Stories.valentinosFate | "05048" `elem` missingPersons]
-        <> [Stories.pennysFate | "05049" `elem` missingPersons]
-
-      startAt =<< place Locations.miskatonicRiver
-      forbiddingShore <- place Locations.forbiddingShore
-      unvisitedIsles <- placeGroupCapture "unvisitedIsle" unvisitedIsleCards
-
-      placeEnemy Enemies.theSpectralWatcher (OutOfPlay SetAsideZone)
-
-      hereticCount <- getRecordCount HereticsWereUnleashedUntoArkham
-      placeDoomOnAgenda hereticCount
-
-      sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
-      when sidedWithTheCoven do
-        traverse_ lightBrazier (forbiddingShore : unvisitedIsles)
-
-      sidedWithTheLodge <- getHasRecord TheInvestigatorsSidedWithTheLodge
-      deceivingTheLodge <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
-      inductedIntoTheInnerCircle <- getHasRecord TheInvestigatorsWereInductedIntoTheInnerCircle
-      hidTheirKnowledge <- getHasRecord TheInvestigatorsHidTheirKnowledgeOfTheCoven
-      keptMementosHidden <- getHasRecord TheInvestigatorsKeptsTheirMementosHidden
-
-      let
-        (act3, act4)
-          | sidedWithTheLodge = (Acts.beyondTheMistV1, Acts.theBindingRite)
-          | sidedWithTheCoven
-          , deceivingTheLodge
-          , inductedIntoTheInnerCircle =
-              (Acts.beyondTheMistV2, Acts.theBrokenRite)
-          | sidedWithTheCoven
-          , count id [deceivingTheLodge, hidTheirKnowledge, keptMementosHidden] >= 2 =
-              (Acts.beyondTheMistV3, Acts.theBrokenRite)
-          | otherwise = (Acts.beyondTheMistV4, Acts.theBrokenRite)
-
-      setAgendaDeck [Agendas.theLoversVI, Agendas.crossroadsOfFate]
-      setActDeck [Acts.theUnvisitedIsle, Acts.fatedSouls, act3, act4]
+    Setup -> runScenarioSetup UnionAndDisillusion attrs $ setupUnionAndDisillusion attrs
     ResolveChaosToken _ Skull iid -> do
       mAction <- getSkillTestAction
       when (mAction == Just Circle) $ drawAnotherChaosToken iid
@@ -201,54 +220,79 @@ instance RunMessage UnionAndDisillusion where
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Tablet)) _ _ -> do
       enemies <- select $ EnemyAt (locationWithInvestigator iid) <> EnemyWithTrait Spectral
-      chooseTargetM iid enemies \enemy -> initiateEnemyAttack enemy Tablet iid
+      chooseTargetM iid enemies \enemy ->
+        initiateEnemyAttackEdit enemy Tablet iid \atk -> atk {attackDespiteExhausted = True}
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderThing)) _ _ -> do
       mAction <- getSkillTestAction
       when (mAction == Just Circle) $ runHauntedAbilities iid
       pure s
-    ScenarioResolution n -> do
+    ScenarioResolution n -> scope "resolutions" do
       case n of
         NoResolution -> do
-          story noResolution
+          resolution "noResolution"
           push R5
         Resolution 1 -> do
           inductedIntoTheInnerCircle <- getHasRecord TheInvestigatorsWereInductedIntoTheInnerCircle
           deceivingTheLodge <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
 
-          storyWithChooseOneM resolution1 do
-            when (inductedIntoTheInnerCircle && not deceivingTheLodge) do
-              labeled "Yes" $ push R2
-            labeled "No" $ push R3
+          storyWithChooseOneM' (compose.resolution $ setTitle "resolution1.title" >> p "resolution1.body") $ unscoped do
+            labeledValidate' (inductedIntoTheInnerCircle && not deceivingTheLodge) "yes" $ push R2
+            labeled' "no" $ push R3
         Resolution 2 -> do
-          story resolution2
+          resolution "resolution2"
           record TheTrueWorkOfTheSilverTwilightLodgeHasBegun
           gameOver
         Resolution 3 -> do
-          story resolution3
+          resolution "resolution3"
           record CarlSanfordPossessesTheSecretsOfTheUniverse
           push R8
         Resolution 4 -> do
-          story resolution4
-          record AnetteMasonIsPossessedByEvil
-          push R8
+          isReturnTo <- Scenario.getIsReturnTo
+          if isReturnTo
+            then do
+              erynnJoinedTheInvestigators <- getHasRecord ErynnJoinedTheInvestigators
+              hasBlackBook <- isJust <$> getOwner Assets.theBlackBook
+              storyWithChooseOneM'
+                (compose.resolution $ setTitle "returnToResolution4.title" >> p "returnToResolution4.body")
+                do
+                  labeledValidate' (erynnJoinedTheInvestigators && hasBlackBook) "accept" $ push R9
+                  labeled' "flee" $ push R10
+            else do
+              resolution "resolution4"
+              record AnetteMasonIsPossessedByEvil
+              push R8
         Resolution 5 -> do
           -- Right column is easier to check so we use that one
-          spellBroken <- getHasRecord TheWitches'SpellWasCast
+          spellCast <- getHasRecord TheWitches'SpellWasCast
           josefDisappearedIntoTheMist <- getHasRecord JosefDisappearedIntoTheMist
           hereticsUnleashed <- getRecordCount HereticsWereUnleashedUntoArkham
-          let total = count id [spellBroken, josefDisappearedIntoTheMist, hereticsUnleashed >= 2]
-          push $ if total >= 2 then R7 else R6
+          let total = count id [not spellCast, not josefDisappearedIntoTheMist, hereticsUnleashed <= 1]
+
+          resolutionFlavor $ scope "resolution5" do
+            setTitle "title"
+            p "body"
+            cols do
+              ul do
+                li.validate (not spellCast) "spellBroken"
+                li.validate (not josefDisappearedIntoTheMist) "rescued"
+                li.validate (hereticsUnleashed <= 1) "fewerHeretics"
+              ul do
+                li.validate spellCast "spellCast"
+                li.validate josefDisappearedIntoTheMist "disappeared"
+                li.validate (hereticsUnleashed >= 2) "moreHeretics"
+            p "continue"
+          push $ if total >= 2 then R6 else R7
         Resolution 6 -> do
-          story resolution6
+          resolution "resolution6"
           record CarlSanfordPossessesTheSecretsOfTheUniverse
           push R8
         Resolution 7 -> do
-          story resolution7
+          resolution "resolution7"
           record AnetteMasonIsPossessedByEvil
           push R8
         Resolution 8 -> do
-          story resolution8
+          resolutionWithXp "resolution8" $ allGainXp' attrs
           removeCampaignCard Assets.puzzleBox
           investigators <- allInvestigators
 
@@ -271,8 +315,15 @@ instance RunMessage UnionAndDisillusion where
           if valentinoIsAlive
             then addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.valentinoRivas
             else record ValentinoIsDead
-          allGainXp attrs
           endOfScenario
+        Resolution 9 -> do
+          resolution "resolution9"
+          record TheCovenOfKeziahHoldsTheWorldInItsGrasp
+          gameOver
+        Resolution 10 -> do
+          resolution "resolution10"
+          record AnetteMasonIsPossessedByEvil
+          push R8
         _ -> error "Invalid resolution"
       pure s
     _ -> UnionAndDisillusion <$> liftRunMessage msg attrs

@@ -1,7 +1,5 @@
 module Arkham.Skill.Cards.Leadership (leadership) where
 
-import Arkham.Card
-import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
@@ -15,11 +13,8 @@ leadership = skill Leadership Cards.leadership
 
 instance HasModifiersFor Leadership where
   getModifiersFor (Leadership attrs) = do
-    mInvestigator <- getSkillTestInvestigator
-    case mInvestigator of
-      Just iid | skillOwner attrs /= iid -> do
-        modified_ attrs (CardIdTarget $ toCardId attrs) [AddSkillIcons [#willpower, #wild]]
-      _ -> pure mempty
+    withSkillTestInvestigator \iid -> do
+      addSkillIconsWhen attrs (attrs.owner /= iid) [#willpower, #wild]
 
 instance RunMessage Leadership where
   runMessage msg (Leadership attrs) = Leadership <$> runMessage msg attrs

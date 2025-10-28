@@ -4,7 +4,9 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Token (Token (Pillar))
 
 newtype TheWingedSerpent = TheWingedSerpent EnemyAttrs
   deriving anyclass IsEnemy
@@ -24,7 +26,11 @@ instance HasAbilities TheWingedSerpent where
     extend1 a
       $ mkAbility a 1
       $ forced
-      $ PlacedCounterOnLocation #after "Mouth of K'n-yan" AnySource #resource AnyValue
+      $ PlacedToken
+        #after
+        AnySource
+        (LocationTargetMatches $ locationIs Locations.mouthOfKnYanTheCavernsMaw)
+        Pillar
 
 instance RunMessage TheWingedSerpent where
   runMessage msg e@(TheWingedSerpent attrs) = runQueueT $ case msg of

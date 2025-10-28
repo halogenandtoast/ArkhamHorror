@@ -24,6 +24,7 @@ instance HasModifiersFor LastChance3 where
 instance RunMessage LastChance3 where
   runMessage msg s@(LastChance3 attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      drawCards attrs.owner attrs 2
+      skillTestResultOption "Last Chance (3)" do
+        drawCards attrs.owner attrs 2
       pure s
     _ -> LastChance3 <$> liftRunMessage msg attrs

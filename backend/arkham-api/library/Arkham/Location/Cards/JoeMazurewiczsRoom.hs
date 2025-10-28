@@ -2,10 +2,13 @@ module Arkham.Location.Cards.JoeMazurewiczsRoom (joeMazurewiczsRoom) where
 
 import Arkham.Ability
 import Arkham.GameValue
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheSecretName.Helpers
+import Arkham.Strategy
 import Arkham.Trait (Trait (Blessed, Item))
 
 newtype JoeMazurewiczsRoom = JoeMazurewiczsRoom LocationAttrs
@@ -13,47 +16,26 @@ newtype JoeMazurewiczsRoom = JoeMazurewiczsRoom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 joeMazurewiczsRoom :: LocationCard JoeMazurewiczsRoom
-joeMazurewiczsRoom =
-  location JoeMazurewiczsRoom Cards.joeMazurewiczsRoom 3 (PerPlayer 1)
+joeMazurewiczsRoom = location JoeMazurewiczsRoom Cards.joeMazurewiczsRoom 3 (PerPlayer 1)
 
 instance HasAbilities JoeMazurewiczsRoom where
   getAbilities (JoeMazurewiczsRoom a) =
-    withBaseAbilities
+    extendRevealed
       a
-      [ limitedAbility (GroupLimit PerGame 1)
-          $ restrictedAbility a 1 Here
-          $ ActionAbility []
-          $ ActionCost 1
-      , haunted
-          "You must either take 1 horror, or choose and discard an asset you control."
-          a
-          2
+      [ groupLimit PerGame $ restricted a 1 Here actionAbility
+      , scenarioI18n $ hauntedI "joeMazurewiczsRoom.haunted" a 2
       ]
 
 instance RunMessage JoeMazurewiczsRoom where
-  runMessage msg l@(JoeMazurewiczsRoom attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push
-        $ search
-          iid
-          attrs
-          iid
-          [fromDeck]
-          (basic $ oneOf [withTrait Blessed, withTrait Item])
-          (AddFoundToHand iid 1)
+  runMessage msg l@(JoeMazurewiczsRoom attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let source = attrs.ability 1
+      search iid source iid [fromDeck] (basic $ hasAnyTrait [Blessed, Item]) (AddFoundToHand iid 1)
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       hasAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ Label
-          "Take 1 horror"
-          [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]
-        : [ Label
-              "Choose and discard an asset you control"
-              [ChooseAndDiscardAsset iid (toSource attrs) AnyAsset]
-          | hasAssets
-          ]
+      chooseOneM iid $ withI18n do
+        countVar 1 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 2) 1
+        labeledValidate' hasAssets "discardAssets" $ chooseAndDiscardAsset iid (attrs.ability 2)
       pure l
-    _ -> JoeMazurewiczsRoom <$> runMessage msg attrs
+    _ -> JoeMazurewiczsRoom <$> liftRunMessage msg attrs

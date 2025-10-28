@@ -33,6 +33,7 @@
     "debug": "디버깅",
     "toggleDebug": "디버깅 전환",
     "debugExport": "디버깅 내보내기",
+    "debugExportFull": "디버깅 전부 내보내기",
 
     "undo": "되돌리기",
     "restartScenario": "시나리오 재시작",

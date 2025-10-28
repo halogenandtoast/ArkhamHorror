@@ -3,8 +3,8 @@
 module Arkham.Enemy.Types.Attrs where
 
 import Arkham.Attack.Types
-import Arkham.Card
 import Arkham.Calculation
+import Arkham.Card
 import Arkham.ChaosToken.Types
 import Arkham.DamageEffect
 import Arkham.Id
@@ -19,10 +19,11 @@ import Arkham.Spawn
 import Arkham.Strategy
 import Arkham.Token
 import Data.Aeson.TH
+import Data.Function (on)
 import GHC.Records
 
 data UnableToSpawn = DiscardIfUnableToSpawn | ShuffleBackInIfUnableToSpawn
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data EnemyAttrs = EnemyAttrs
@@ -62,8 +63,15 @@ data EnemyAttrs = EnemyAttrs
   , enemyCardsUnderneath :: [Card]
   , enemyLastKnownLocation :: Maybe LocationId
   , enemyReferenceCards :: [CardCode]
+  , enemySpawnDetails :: Maybe SpawnDetails
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Data)
+
+instance Eq EnemyAttrs where
+  (==) = (==) `on` enemyId
+
+instance Ord EnemyAttrs where
+  compare = compare `on` enemyId
 
 instance HasField "id" EnemyAttrs EnemyId where
   getField = enemyId
@@ -82,6 +90,9 @@ instance HasField "meta" EnemyAttrs Value where
 
 instance HasField "placement" EnemyAttrs Placement where
   getField = enemyPlacement
+
+instance HasField "isInPlay" EnemyAttrs Bool where
+  getField = (.placement.isInPlay)
 
 instance HasField "ready" EnemyAttrs Bool where
   getField = not . enemyExhausted
@@ -160,4 +171,5 @@ instance FromJSON EnemyAttrs where
     enemyCardsUnderneath <- v .:? "cardsUnderneath" .!= []
     enemyLastKnownLocation <- v .:? "lastKnownLocation"
     enemyReferenceCards <- v .:? "referenceCards" .!= []
+    enemySpawnDetails <- v .:? "spawnDetails"
     pure EnemyAttrs {..}

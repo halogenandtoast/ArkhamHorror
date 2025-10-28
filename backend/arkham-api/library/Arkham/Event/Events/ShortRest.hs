@@ -16,7 +16,10 @@ shortRest = event ShortRest Cards.shortRest
 
 instance HasAbilities ShortRest where
   getAbilities (ShortRest a) =
-    [ restricted a 1 InYourHand
+    [ restricted
+        a
+        1
+        (InYourHand <> PlayableCardExists (UnpaidCost NoAction) (basic $ CardWithId a.cardId))
         $ freeReaction
           (Arkham.Matcher.PlayEventDiscarding #after (colocatedWithMatch You) (eventIs Cards.shortRest))
     ]
@@ -40,7 +43,7 @@ instance RunMessage ShortRest where
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       assetChooseHealDamageOrHorror attrs iid aid
       pure e
-    InHand _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 1) | iid == iid' -> do
       playCardPayingCost iid (toCard attrs)
       pure e
     _ -> ShortRest <$> liftRunMessage msg attrs

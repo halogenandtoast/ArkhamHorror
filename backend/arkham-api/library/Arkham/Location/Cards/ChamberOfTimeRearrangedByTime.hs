@@ -15,8 +15,8 @@ newtype ChamberOfTimeRearrangedByTime = ChamberOfTimeRearrangedByTime LocationAt
 
 chamberOfTimeRearrangedByTime :: LocationCard ChamberOfTimeRearrangedByTime
 chamberOfTimeRearrangedByTime =
-  location ChamberOfTimeRearrangedByTime Cards.chamberOfTimeRearrangedByTime 4 (PerPlayer 2)
-    & setLabel "chamberOfTime"
+  symbolLabel
+    $ location ChamberOfTimeRearrangedByTime Cards.chamberOfTimeRearrangedByTime 4 (PerPlayer 2)
     & setConnectsTo (singleton RightOf)
 
 instance HasAbilities ChamberOfTimeRearrangedByTime where

@@ -41,6 +41,9 @@ instance RunMessage DrivenToMadness where
           enemyCheckEngagement x
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      toDiscardBy iid (toAbilitySource attrs 1) attrs
+      toDiscardBy iid (attrs.ability 1) attrs
+      pure t
+    RemoveTreachery tid | tid == attrs.id -> do
+      for_ attrs.attached $ push . CheckDefeated (attrs.ability 1)
       pure t
     _ -> DrivenToMadness <$> liftRunMessage msg attrs

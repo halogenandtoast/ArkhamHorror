@@ -19,15 +19,10 @@ newtype TheInnsmouthConspiracy = TheInnsmouthConspiracy CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
 
 theInnsmouthConspiracy :: Difficulty -> TheInnsmouthConspiracy
-theInnsmouthConspiracy difficulty =
-  campaign
-    TheInnsmouthConspiracy
-    (CampaignId "07")
-    "The Innsmouth Conspiracy"
-    difficulty
-    (chaosBagContents difficulty)
+theInnsmouthConspiracy = campaign TheInnsmouthConspiracy (CampaignId "07") "The Innsmouth Conspiracy"
 
 instance IsCampaign TheInnsmouthConspiracy where
+  campaignTokens = chaosBagContents
   nextStep a = case campaignStep (toAttrs a) of
     PrologueStep -> Just ThePitOfDespair
     ThePitOfDespair -> Just (InterludeStep 1 Nothing)

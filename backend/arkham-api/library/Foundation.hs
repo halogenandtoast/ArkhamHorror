@@ -1,7 +1,7 @@
-{-# LANGUAGE PackageImports #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PackageImports #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -9,33 +9,32 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE NoStrictData #-}
 {-# OPTIONS_GHC -Wno-missing-deriving-strategies #-}
-{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 
 module Foundation where
 
 import Import.NoFoundation
 
 import Control.Exception.Annotated qualified as UE
-import Control.Monad.Catch qualified as Catch
 import Control.Exception.Annotated.UnliftIO qualified as AnnotatedIO
-import Control.Monad.Catch
-  ( MonadThrow(..)
-  , MonadCatch(..)
-  , MonadMask(..)
-  , generalBracket
-  )
+import Control.Monad.Catch (
+  MonadCatch (..),
+  MonadMask (..),
+  MonadThrow (..),
+  generalBracket,
+ )
+import Control.Monad.Catch qualified as Catch
 import UnliftIO.Exception qualified as UnliftIO
 
-import "bugsnag-hs" Network.Bugsnag qualified as Bugsnag (Exception)
-import Network.Bugsnag.Exception (AsException(..))
-import Network.Bugsnag.Yesod (bugsnagYesodMiddleware)
-import Data.Bugsnag.Settings qualified as Bugsnag
-import "bugsnag" Network.Bugsnag qualified as Bugsnag
+import Arkham.Card.CardCode
+import Arkham.Tracing
 import Auth.JWT qualified as JWT
 import Control.Monad.Logger (LogSource)
 import Data.Aeson (Result (Success), fromJSON)
+import Data.Bugsnag.Settings qualified as Bugsnag
 import Data.ByteString.Lazy qualified as BSL
+import Data.Traversable (for)
 import Database.Persist.Sql (
   ConnectionPool,
   SqlBackend,
@@ -51,13 +50,16 @@ import Database.Redis (
   removeChannels,
  )
 import GHC.Records
+import Network.Bugsnag.Exception (AsException (..))
+import Network.Bugsnag.Yesod (bugsnagYesodMiddleware)
 import Network.HTTP.Client.Conduit (HasHttpManager (..), Manager)
+import OpenTelemetry.Trace qualified as Trace
+import OpenTelemetry.Trace.Monad (MonadTracer (..), inSpan')
+import Orphans ()
 import Yesod.Core.Types (Logger)
 import Yesod.Core.Unsafe qualified as Unsafe
-
-import Arkham.Card.CardCode
-
-import Orphans ()
+import "bugsnag" Network.Bugsnag qualified as Bugsnag
+import "bugsnag-hs" Network.Bugsnag qualified as Bugsnag (Exception)
 
 data Room = Room
   { socketChannel :: TChan BSL.ByteString
@@ -102,9 +104,20 @@ data App = App
   -- ^ Database connection pool.
   , appHttpManager :: Manager
   , appLogger :: Logger
-  , appGameRooms :: !(IORef (Map ArkhamGameId Room))
+  , appGameRooms :: !(MVar (Map ArkhamGameId Room))
   , appBugsnag :: Bugsnag.Settings
+  , appTracer :: Trace.Tracer
   }
+
+instance MonadTracer (HandlerFor App) where
+  getTracer = getsYesod appTracer
+
+instance Tracing (HandlerFor App) where
+  type SpanType (HandlerFor App) = Trace.Span
+  type SpanArgs (HandlerFor App) = Trace.SpanArguments
+  defaultSpanArgs = Trace.defaultSpanArguments
+  addAttribute = Trace.addAttribute
+  doTrace name args action = inSpan' name args action
 
 class Monad m => HasApp m where
   getApp :: m App
@@ -170,7 +183,31 @@ instance Yesod App where
   -- Routes not requiring authentication.
   isAuthorized HealthR _ = pure Authorized
   isAuthorized ErrorR _ = pure Authorized
-  isAuthorized (ApiP _) _ = pure Authorized
+  isAuthorized (ApiP api) _ = case api of
+    ApiV1P v1 -> case v1 of
+      AdminP _ -> do
+        _ <- getAdminUser
+        pure Authorized
+      ApiV1ArkhamP arkham -> case arkham of
+        ApiV1ArkhamGamesP games -> case games of
+          ApiV1ArkhamGamesImportR -> pure Authorized
+          ApiV1ArkhamGamesFixR -> do
+            _ <- getAdminUser
+            pure Authorized
+          ApiV1ArkhamGamesReloadR -> do
+            _ <- getAdminUser
+            pure Authorized
+          ApiV1ArkhamGameP _ game -> case game of
+            ApiV1ArkhamGameFullExportR -> do
+              _ <- getAdminUser
+              pure Authorized
+            ApiV1ArkhamGameReloadR -> do
+              _ <- getAdminUser
+              pure Authorized
+            _ -> pure Authorized
+          _ -> pure Authorized
+        _ -> pure Authorized
+      _ -> pure Authorized
 
   -- What messages should be logged. The following includes all messages when
   -- in development, and warnings and errors in production.
@@ -214,12 +251,13 @@ instance CanRunDB (HandlerFor App) where
 newtype ExceptionViaIO m a = ExceptionViaIO (m a)
   deriving newtype (Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
 
--- | A variant of 'throwWithCallStackIO' that uses 'MonadIO' instead of
--- 'MonadThrow'.
-throwWithCallStackIO ::
-  (MonadIO m, Exception e) =>
-  e ->
-  m a
+{- | A variant of 'throwWithCallStackIO' that uses 'MonadIO' instead of
+'MonadThrow'.
+-}
+throwWithCallStackIO
+  :: (MonadIO m, Exception e)
+  => e
+  -> m a
 throwWithCallStackIO = liftIO . withFrozenCallStack UE.throwWithCallStack
 
 instance MonadIO m => MonadThrow (ExceptionViaIO m) where
@@ -236,12 +274,12 @@ instance MonadUnliftIO m => MonadMask (ExceptionViaIO m) where
 deriving via ExceptionViaIO (HandlerFor app) instance MonadMask (HandlerFor app)
 deriving via ExceptionViaIO (HandlerFor app) instance MonadCatch (HandlerFor app)
 
-generalBracketIO ::
-  (MonadUnliftIO m) =>
-  m a ->
-  (a -> Catch.ExitCase b -> m c) ->
-  (a -> m b) ->
-  m (b, c)
+generalBracketIO
+  :: MonadUnliftIO m
+  => m a
+  -> (a -> Catch.ExitCase b -> m c)
+  -> (a -> m b)
+  -> m (b, c)
 generalBracketIO acquire release action = do
   UnliftIO.mask \restore -> do
     x <- acquire
@@ -288,12 +326,12 @@ unsafeHandler = Unsafe.fakeHandlerGetLogger appLogger
 userIdToToken :: UserId -> HandlerFor App Text
 userIdToToken userId = do
   jwtSecret <- getJwtSecret
-  pure $ JWT.jsonToToken jwtSecret $ toJSON userId
+  liftIO $ JWT.jsonToToken jwtSecret $ toJSON userId
 
 tokenToUserId :: Text -> Handler (Maybe UserId)
 tokenToUserId token = do
   jwtSecret <- getJwtSecret
-  let mUserId = fromJSON <$> JWT.tokenToJson jwtSecret token
+  mUserId <- liftIO $ fmap fromJSON <$> JWT.tokenToJson jwtSecret token
   case mUserId of
     Just (Success userId) -> pure $ Just userId
     _ -> pure Nothing
@@ -301,10 +339,22 @@ tokenToUserId token = do
 getJwtSecret :: HandlerFor App Text
 getJwtSecret = getsYesod $ appJwtSecret . appSettings
 
-getRequestUserId :: Handler (Maybe UserId)
+getRequestUserId :: Handler UserId
 getRequestUserId = do
   mToken <- JWT.lookupToken
-  liftHandler $ maybe (pure Nothing) tokenToUserId mToken
+  maybe notAuthenticated pure . join =<< for mToken tokenToUserId
+
+getAdminUser :: Handler (Entity User)
+getAdminUser = do
+  userId <- getRequestUserId
+  user <- runDB $ get404 userId
+  unless user.admin $ permissionDenied "You must be an admin to access this endpoint"
+  pure $ Entity userId user
+
+getRequestUser :: Handler (Entity User)
+getRequestUser = do
+  userId <- getRequestUserId
+  runDB $ getEntity404 userId
 
 getEntity404
   :: (PersistEntity record, PersistEntityBackend record ~ SqlBackend) => Key record -> DB (Entity record)

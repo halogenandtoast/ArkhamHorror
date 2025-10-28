@@ -16,7 +16,7 @@ airfield = story Airfield Cards.airfield
 
 instance RunMessage Airfield where
   runMessage msg s@(Airfield attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       handleMemory
         attrs
         Assets.takadaHirokoAeroplaneMechanic

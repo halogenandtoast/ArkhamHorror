@@ -157,7 +157,7 @@ instance RunMessage DarkSideOfTheMoon where
       case r of
         NoResolution -> do
           lead <- getLead
-          story $ i18n "theDreamEaters.darkSideOfTheMoon.noResolution"
+          story $ i18n "theDreamEaters.darkSideOfTheMoon.resolutions.noResolution"
           record TheInvestigatorsWereCarriedToTheColdWastes
           record RandolphCarterDidNotSurviveTheVoyage
           removeCampaignCard Assets.randolphCarterExpertDreamer
@@ -165,7 +165,7 @@ instance RunMessage DarkSideOfTheMoon where
           allGainXp attrs
           endOfScenario
         Resolution 1 -> do
-          story $ i18n "theDreamEaters.darkSideOfTheMoon.resolution1"
+          story $ i18n "theDreamEaters.darkSideOfTheMoon.resolutions.resolution1"
           record TheInvestigatorsTraveledToTheColdWastes
           record RandolphSurvivedTheVoyage
           allGainXp attrs

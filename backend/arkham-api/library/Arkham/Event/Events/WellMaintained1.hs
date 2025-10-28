@@ -24,10 +24,11 @@ instance RunMessage WellMaintained1 where
       assets <- select $ assetControlledBy iid <> #item
       chooseTargetM iid assets \asset -> place attrs $ AttachedToAsset asset Nothing
       pure e
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseCardAbility iid (isSource attrs -> True) 1 windows _ -> do
       case attrs.placement of
         AttachedToAsset aid _ -> do
           otherUpgrades <- select $ EventAttachedToAsset (AssetWithId aid) <> not_ (be attrs) <> #upgrade
+          cancelWindowBatch windows
           returnToHand iid aid
           for_ otherUpgrades (returnToHand iid)
         _ -> error "Invalid placement"

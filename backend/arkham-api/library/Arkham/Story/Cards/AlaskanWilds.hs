@@ -16,7 +16,7 @@ alaskanWilds = story AlaskanWilds Cards.alaskanWilds
 
 instance RunMessage AlaskanWilds where
   runMessage msg s@(AlaskanWilds attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       handleMemory
         attrs
         Assets.eliyahAshevakDogHandler

@@ -1,10 +1,11 @@
-module Arkham.Enemy.Cards.GlacialPhantasm (glacialPhantasm, GlacialPhantasm (..)) where
+module Arkham.Enemy.Cards.GlacialPhantasm (glacialPhantasm) where
 
 import Arkham.Ability
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Capability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 
@@ -26,7 +27,7 @@ instance RunMessage GlacialPhantasm where
       eachInvestigator (`forInvestigator` msg)
       pure e
     ForInvestigator iid (UseThisAbility _ (isSource attrs -> True) 1) -> do
-      whenM (iid <=~> InvestigatorAt (orConnected $ locationWithEnemy attrs)) do
+      whenM (iid <=~> InvestigatorAt (orConnected NotForMovement $ locationWithEnemy attrs)) do
         canShuffle <- can.manipulate.deck iid
         if canShuffle
           then do

@@ -3,7 +3,7 @@ require-stack-version: ">= 3.7.1"
 concurrent-tests: true
 system-ghc: true
 install-ghc: false
-resolver: nightly-2025-07-31
+resolver: nightly-2025-09-16
 compiler: ghc-9.12.2
 notify-if-nix-on-path: false
 
@@ -53,12 +53,17 @@ extra-deps:
     - lib/services/amazonka-sso
     - lib/services/amazonka-sts
     - lib/services/amazonka-s3
-- jwt-0.11.0@sha256:0602735ee4093c6c5bc918461855bcd55499099363bad34eb7a227aeef3cde29,4265
-- cryptostore-0.3.1.0@sha256:ce4762361b509d1719b5d500604a5a1f2d75c2c53f4fe75f7c4ef2faec4f8352,4219
-- x509-1.7.7@sha256:90eef2d745a654146fc1c325e035eaddac531e4d2145d4bc1dcf4b8fad439d34,2276
-- x509-store-1.6.9@sha256:1f1abeab5bacf1407b920d0f34f4c35a5ad450ff0d8121cd3dc76460f81e711d,1716
-- x509-validation-1.6.12@sha256:4f4af20ec77f02c042ecd4726c195bb0e0b694b336de81e7bd4515b2917bd9bc,2169
-- cryptonite-0.30@sha256:12c85dea7be63e5ad90bcb487eb3846bf3c413347f94336fa1dede7b28f9936a,18301
-- persistent-postgresql-2.13.6.2@sha256:f455dcac3145d9f26f95ce2605074785641478bc226071f458995b2b8051a8a8,3809
 - yesod-test-1.6.19@sha256:faac869ab6fa86113cde99d28928e196373a04879c03204071956954ed7ba2a3,3003
-- postgresql-simple-0.7.0.0@sha256:6ada584a2e6c8f8d6cb695ceddfb0600bfe3f320ccb6cec99ca1a2f0a38d6ded,4772
+- opentelemetry-plugin-1.1.2
+- hs-opentelemetry-api-0.3.0.0@sha256:d864e4e1758bdeb8310d99e18084b77cff875a7b56589db55dfaf1dd17864dd3,4162
+- hs-opentelemetry-propagator-w3c-0.1.0.0@sha256:2d8d324e61e15953d6fa405eee2f674746b5ea35a74ff9113388f0dca21e9f23,2012
+- hs-opentelemetry-sdk-0.1.0.1@sha256:54c92cc73e4f52730f38b8c5e5dfc0f29faadc90fa1c5d60529770b882ab08f0,4059
+- hs-opentelemetry-exporter-otlp-0.1.0.1@sha256:8d03868dc7c0e5eab61b399ed3150cc24650d84000fd32554b2b4336f7879b53,1564
+- hs-opentelemetry-propagator-b3-0.0.1.3@sha256:effc04fcb6c8176cedf1bfa6c088f9d930bca42262589bab25a61238305b25a0,1340
+- hs-opentelemetry-propagator-datadog-0.0.1.1@sha256:eea1d919c3dde97d6ae4c72b978719758ba1b58facb6b7efd32b81c3815d4bf8,2950
+- thread-utils-context-0.3.0.4@sha256:e763da1c6cab3b6d378fb670ca74aa9bf03c9b61b6fcf7628c56363fb0e3e71e,1671
+- hs-opentelemetry-otlp-0.1.1.0@sha256:30b10c2f5bf8c008f0e64602ec1d8e480f66d906cbe7e150547ec3a14805fbb3,2991
+- proto-lens-0.7.1.6@sha256:73372bd1ee8ee9f6504d97a619a5d3f07897874ee709df1b415bb4db9ad2ecdb,2980
+- thread-utils-finalizers-0.1.1.0@sha256:24944b71d9f1d01695a5908b4a3b44838fab870883114a323336d537995e0a5b,1381
+- proto-lens-runtime-0.7.0.7@sha256:9144556f1a58945e455dd67431bd16d0bd6b2960732dd9b60aa44dd472123a50,3057
+- hs-opentelemetry-instrumentation-wai-0.1.1.0@sha256:d97b4cb3870217e64e95da3f51db814eca62eb57484ee0a6f747366da5940bc2,1371

@@ -21,8 +21,9 @@ instance RunMessage InspiringPresence where
           $ at_ attrs.owner.location
           <> #ally
           <> oneOf [AssetCanReady, healableAsset attrs AnyAsset]
-      chooseTargetM attrs.owner assets \a -> do
-        whenMatch a AssetCanReady $ readyThis a
-        assetChooseHealDamageOrHorror attrs attrs.owner a
+      skillTestResultOption "Inspiring Presence" do
+        chooseTargetM attrs.owner assets \a -> do
+          whenMatch a AssetCanReady $ readyThis a
+          assetChooseHealDamageOrHorror attrs attrs.owner a
       pure s
     _ -> InspiringPresence <$> liftRunMessage msg attrs

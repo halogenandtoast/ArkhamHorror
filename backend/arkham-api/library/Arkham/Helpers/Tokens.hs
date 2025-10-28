@@ -10,6 +10,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Query
 import Arkham.Token
+import Arkham.Tracing
 
 class HasTokens a where
   type HasTokensRoot a :: Type
@@ -23,6 +24,7 @@ selectCountTokens
   :: forall m matcher el
    . ( Query matcher
      , HasGame m
+     , Tracing m
      , QueryElement matcher ~ el
      , HasTokens el
      , Projection (HasTokensRoot el)
@@ -30,3 +32,15 @@ selectCountTokens
      )
   => Token -> matcher -> m Int
 selectCountTokens tkn matcher = selectSumWith (countTokens tkn) (tokenField @el) matcher
+
+countTokensOf
+  :: forall a m
+   . ( HasGame m
+     , Tracing m
+     , EntityId (HasTokensRoot a) ~ IdOf a
+     , AsId a
+     , HasTokens a
+     , Projection (HasTokensRoot a)
+     )
+  => Token -> a -> m Int
+countTokensOf tkn a = fieldMap (tokenField @a) (countTokens tkn) (asId a)

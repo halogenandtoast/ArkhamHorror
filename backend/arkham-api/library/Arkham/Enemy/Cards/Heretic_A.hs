@@ -1,19 +1,13 @@
-module Arkham.Enemy.Cards.Heretic_A (
-  heretic_A,
-  Heretic_A (..),
-)
-where
+{- HLINT ignore "Use camelCase" -}
+module Arkham.Enemy.Cards.Heretic_A (heretic_A) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Scenarios.TheWagesOfSin.Helpers
 import Arkham.Story.Cards qualified as Story
 
 newtype Heretic_A = Heretic_A EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 heretic_A :: EnemyCard Heretic_A

@@ -1,11 +1,10 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
-import { imgsrc } from '@/arkham/helpers';
+import { ref, computed } from 'vue'
+import { imgsrc } from '@/arkham/helpers'
+import { CardDef } from '@/arkham/types/CardDef'
 import { ArrowPathIcon } from '@heroicons/vue/20/solid'
 
-const props = defineProps<{
-  card: CardDef
-}>()
+const props = defineProps<{ card: CardDef }>()
 
 const flipped = ref(false)
 const vertical = computed(() => {
@@ -96,7 +95,10 @@ const backImage = computed(() => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
+.card {
+  border-radius: 10px;
+}
 .card-container {
   overflow: hidden;
   width: calc(100% - 20px);
@@ -138,7 +140,7 @@ const backImage = computed(() => {
   width: 100%;
   backface-visibility: hidden;
   transition: transform 0.3s linear;
-  transform-style: preserve-3d;
+  perspective: 1000px;
   &.flipped {
     transform: rotateY(-180deg);
   }
@@ -149,7 +151,6 @@ const backImage = computed(() => {
   inset: 0;
   transform: rotateY(-180deg);
   transition: transform 0.3s linear;
-  transform-style: preserve-3d;
   backface-visibility: hidden;
 
   &.flipped {

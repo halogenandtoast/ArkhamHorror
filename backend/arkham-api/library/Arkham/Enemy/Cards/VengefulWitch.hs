@@ -1,17 +1,11 @@
-module Arkham.Enemy.Cards.VengefulWitch (
-  vengefulWitch,
-  VengefulWitch (..),
-)
-where
+module Arkham.Enemy.Cards.VengefulWitch (vengefulWitch) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Types (Field (EnemyHealthDamage, EnemySanityDamage))
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype VengefulWitch = VengefulWitch EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -19,34 +13,22 @@ newtype VengefulWitch = VengefulWitch EnemyAttrs
 
 vengefulWitch :: EnemyCard VengefulWitch
 vengefulWitch =
-  enemyWith
-    VengefulWitch
-    Cards.vengefulWitch
-    (3, Static 3, 3)
-    (1, 1)
-    ( spawnAtL
-        ?~ SpawnAt
-          (LocationMatchAny [LocationWithTitle "The Gallows", LocationWithTitle "Heretics' Graves"])
-    )
+  enemy VengefulWitch Cards.vengefulWitch (3, Static 3, 3) (1, 1)
+    & setSpawnAt (mapOneOf LocationWithTitle ["The Gallows", "Heretics' Graves"])
 
 instance HasAbilities VengefulWitch where
   getAbilities (VengefulWitch a) =
-    withBaseAbilities
-      a
-      [ restrictedAbility a 1 (InvestigatorExists $ InvestigatorAt $ locationWithEnemy (toId a))
-          $ ForcedAbility
-          $ EnemyDefeated Timing.When Anyone ByAny
-          $ EnemyWithId
-          $ toId a
-      ]
+    extend1 a
+      $ restricted a 1 (exists $ InvestigatorAt $ locationWithEnemy (toId a))
+      $ forced
+      $ EnemyDefeated #when Anyone ByAny (be a)
 
 instance RunMessage VengefulWitch where
-  runMessage msg e@(VengefulWitch attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      damage <- field EnemyHealthDamage (toId attrs)
-      horror <- field EnemySanityDamage (toId attrs)
-      investigators <- select $ InvestigatorAt $ locationWithEnemy (toId attrs)
-      pushAll
-        [InvestigatorDirectDamage iid (toSource attrs) damage horror | iid <- investigators]
+  runMessage msg e@(VengefulWitch attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      damage <- field EnemyHealthDamage attrs.id
+      horror <- field EnemySanityDamage attrs.id
+      investigators <- select $ InvestigatorAt $ locationWithEnemy attrs.id
+      for_ investigators \iid -> directDamageAndHorror iid (attrs.ability 1) damage horror
       pure e
-    _ -> VengefulWitch <$> runMessage msg attrs
+    _ -> VengefulWitch <$> liftRunMessage msg attrs

@@ -11,7 +11,7 @@ import Arkham.Field
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
-import Arkham.Location.Types (Field(..))
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -24,8 +24,22 @@ findingThePath = act (2, A) FindingThePath Cards.findingThePath Nothing
 
 instance HasAbilities FindingThePath where
   getAbilities (FindingThePath attrs) | onSide A attrs = do
-    [mkAbility attrs 1 $ Objective $ forced $ Enters #after Anyone $ locationIs Locations.sunkenGrottoUpperDepths]
+    [ mkAbility attrs 1
+        $ Objective
+        $ forced
+        $ Enters #after Anyone
+        $ locationIs Locations.sunkenGrottoUpperDepths
+      ]
   getAbilities _ = []
+
+{- FOURMOLU_DISABLE -}
+positions :: [Pos]
+positions =
+  [ Pos 0 (-1), Pos 1 (-1), Pos 3 (-1)
+  , Pos 0 (-2), Pos 1 (-2), Pos 3 (-2)
+  , Pos 0 (-3), Pos 1 (-3), Pos 3 (-3)
+  ]
+{- FOURMOLU_ENABLE -}
 
 instance RunMessage FindingThePath where
   runMessage msg a@(FindingThePath attrs) = runQueueT $ case msg of
@@ -39,15 +53,6 @@ instance RunMessage FindingThePath where
 
       void $ placeLocationCardInGrid (Pos 2 (-2)) Locations.sunkenGrottoLowerDepths
       void $ placeLocationCardInGrid (Pos 2 (-3)) Locations.sunkenGrottoFinalDepths
-
-      {- FOURMOLU_DISABLE -}
-      let
-        positions =
-          [ Pos 0 (-1), Pos 1 (-1), Pos 3 (-1)
-          , Pos 0 (-2), Pos 1 (-2), Pos 3 (-2)
-          , Pos 0 (-3), Pos 1 (-3), Pos 3 (-3)
-          ]
-      {- FOURMOLU_ENABLE -}
 
       tidalTunnels <- shuffle =<< getSetAsideCardsMatching (CardWithTitle "Tidal Tunnel")
 

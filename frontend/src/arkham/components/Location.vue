@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import { ref, computed, watch, nextTick } from 'vue';
+import { onBeforeUnmount, ComputedRef, ref, computed, watch, nextTick } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
+import { keyToId } from '@/arkham/types/Key'
 import * as ArkhamGame from '@/arkham/types/Game';
 import DebugLocation from '@/arkham/components/debug/Location.vue';
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message';
+import ConcealedCard from '@/arkham/components/ConcealedCard.vue';
 import Key from '@/arkham/components/Key.vue';
 import Seal from '@/arkham/components/Seal.vue';
 import Locus from '@/arkham/components/Locus.vue';
@@ -14,11 +16,15 @@ import Investigator from '@/arkham/components/Investigator.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Event from '@/arkham/components/Event.vue';
 import Story from '@/arkham/components/Story.vue';
+import ScarletKey from '@/arkham/components/ScarletKey.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
+import Token from '@/arkham/components/Token.vue'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Location';
 import { TokenType } from '@/arkham/types/Token';
+import { Card } from '../types/Card';
+import useHighlighter from '@/composeable/useHighlighter';
 
 export interface Props {
   game: Game
@@ -31,6 +37,7 @@ const frame = ref(null)
 const debugging = ref(false)
 const showAbilities = ref<boolean>(false)
 const abilitiesEl = ref<HTMLElement | null>(null)
+const highlighter = useHighlighter()
 
 const dragover = (e: DragEvent) => {
   e.preventDefault()
@@ -40,7 +47,12 @@ const dragover = (e: DragEvent) => {
 }
 
 const props = defineProps<Props>()
-const emits = defineEmits(['choose'])
+const emits = defineEmits<{
+  choose: [value: number]
+  show: [cards: ComputedRef<Card[]>, title: string, isDiscards: boolean]
+}>()
+
+const choose = (n: number) => emits('choose', n)
 
 const image = computed(() => {
   const { cardCode, revealed } = props.location
@@ -52,8 +64,17 @@ const image = computed(() => {
 const id = computed(() => props.location.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
+const locationStory = computed(() => {
+  const { stories } = props.game
+  return Object.values(stories).find((s) => s.otherSide?.contents === props.location.id)
+})
+
 const locus = computed(() => {
   return modifiers.value?.some((m) => m.type.tag === "UIModifier" && m.type.contents === "Locus") ?? false
+})
+
+const important = computed(() => {
+  return modifiers.value?.some((m) => m.type.tag === "UIModifier" && m.type.contents.tag === "ImportantToScenario") ?? false
 })
 
 function isCardAction(c: Message): boolean {
@@ -68,12 +89,24 @@ function isCardAction(c: Message): boolean {
   return false
 }
 
+const concealed = computed(() => Object.values(props.game.concealed).filter((c) => props.location.concealedCards.includes(c.id)))
+const unknownConcealed = computed(() => concealed.value.filter(c => !c.known))
+const knownConcealed = computed(() => concealed.value.filter(c => c.known))
 const cardAction = computed(() => choices.value.findIndex(isCardAction))
 const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
-let clickTimeout: number | null = null;
+let clickTimeout: number | null = null
 // clickCount is used to determine if the user clicked once or twice
-let clickCount = 0;
-async function clicked(e:MouseEvent) {
+let clickCount = 0
+
+onBeforeUnmount(() => {
+  if (clickTimeout) {
+    clearTimeout(clickTimeout)
+    clickTimeout = null
+  }
+  clickCount = 0
+})
+
+async function clicked(e: MouseEvent) {
   clickCount++;
   if (clickTimeout) {
     clearTimeout(clickTimeout);
@@ -82,7 +115,7 @@ async function clicked(e:MouseEvent) {
     // Ensure this does not conflict with the double-click zoom-in functionality (toggleZoom in Scenario.vue)
     if (clickCount === 1){
       if(cardAction.value !== -1) {
-        emits('choose', cardAction.value)
+        choose(cardAction.value)
       } else if (abilities.value.length > 0) {
         showAbilities.value = !showAbilities.value
         await nextTick()
@@ -103,7 +136,7 @@ async function clicked(e:MouseEvent) {
 async function chooseAbility(ability: number) {
   showAbilities.value = false
   abilitiesEl.value?.blur()
-  emits('choose', ability)
+  choose(ability)
 }
 
 function isAbility(v: Message): v is AbilityLabel {
@@ -165,14 +198,24 @@ const attachedEnemies = computed(() => {
     .filter((e) => props.game.enemies[e].placement.tag === 'AttachedToLocation')
 })
 
+const attachedKeys = computed(() => {
+  const scarletKeyIds = props.location.scarletKeys;
+
+  return scarletKeyIds
+    .filter((e) => props.game.scarletKeys[e].placement.tag === 'AttachedToLocation')
+})
+
 const stories = computed(() => {
   return Object.values(props.game.stories)
     .filter((s) => {
-      const { enemies } = props.game
+      const { assets, enemies } = props.game
       if (Object.values(enemies).find((e) => s.otherSide?.contents === e.id)) {
         return false
       }
-      return s.placement.tag === 'AtLocation' && s.placement.contents === props.location.id
+      if (Object.values(assets).find((a) => s.otherSide?.contents === a.id)) {
+        return false
+      }
+      return s.placement.tag === 'AtLocation' && s.placement.contents === props.location.id && s.otherSide?.contents !== props.location.id
     })
     .map((s) => s.id)
 })
@@ -185,7 +228,15 @@ const treacheries = computed(() => {
 })
 
 const hasAttachments = computed(() => {
-  return treacheries.value.length > 0 || props.location.events.length > 0 || attachedEnemies.value.length > 0
+  return treacheries.value.length > 0 || props.location.events.length > 0 || attachedEnemies.value.length > 0 || attachedKeys.value.length > 0
+})
+
+const encounterCardsUnderneath = computed(() => {
+  return props.location.cardsUnderneath.filter(c => c.tag === 'EncounterCard')
+})
+
+const playerCardsUnderneath = computed(() => {
+  return props.location.cardsUnderneath.filter(c => c.tag === 'PlayerCard')
 })
 
 const hasPool = computed(() => {
@@ -198,25 +249,27 @@ const hasPool = computed(() => {
     (pillars.value && pillars.value > 0) ||
     (leylines.value && leylines.value > 0) ||
     (antiquities.value && antiquities.value > 0) ||
+    (civilians.value && civilians.value > 0) ||
+    (targets.value && targets.value > 0) ||
+    (sealTokens.value && sealTokens.value > 0) ||
     (depth.value && depth.value > 0) ||
     (breaches.value && breaches.value > 0) ||
+    (shards.value && shards.value > 0) ||
     (props.location.brazier && props.location.brazier === 'Lit') ||
-    (props.location.cardsUnderneath.length > 0)
+    (props.location.cardsUnderneath.length > 0) ||
+    (props.location.sealedChaosTokens.length > 0)
 })
 
 const blocked = computed(() => {
-  const investigator = Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
-  const { modifiers } = investigator ?? { modifiers: [] }
-  const allModifiers = [...modifiers || [], ...props.location.modifiers]
+  const inv = Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
+  const invMods = inv?.modifiers ?? []
+  const locMods = props.location.modifiers
 
-  if (allModifiers) {
-    return allModifiers.some(modifier =>
-      (modifier.type.tag === "CannotEnter" && modifier.type.contents === props.location.id) ||
-        (modifier.type.tag === "OtherModifier" && modifier.type.contents === "Blocked")
-    )
-  }
+  const isBlocked = (m:any) =>
+    (m.type.tag === 'CannotEnter' && m.type.contents === props.location.id) ||
+    (m.type.tag === 'OtherModifier' && m.type.contents === 'Blocked')
 
-  return false
+  return invMods.some(isBlocked) || locMods.some(isBlocked)
 })
 
 const modifiers = computed(() => props.location.modifiers)
@@ -229,13 +282,17 @@ const explosion = computed(() => {
 const keys = computed(() => props.location.keys)
 const seals = computed(() => props.location.seals)
 
+const sealTokens = computed(() => props.location.tokens[TokenType.Seal])
 const clues = computed(() => props.location.tokens[TokenType.Clue])
 const doom = computed(() => props.location.tokens[TokenType.Doom])
 const resources = computed(() => props.location.tokens[TokenType.Resource])
 const pillars = computed(() => props.location.tokens[TokenType.Pillar])
 const depth = computed(() => props.location.tokens[TokenType.Depth])
 const leylines = computed(() => props.location.tokens[TokenType.Leyline])
+const shards = computed(() => props.location.tokens[TokenType.Shard])
 const antiquities = computed(() => props.location.tokens[TokenType.Antiquity])
+const civilians = computed(() => props.location.tokens[TokenType.Civilian])
+const targets = computed(() => props.location.tokens[TokenType.Target])
 const breaches = computed(() => {
   const {breaches} = props.location
   if (breaches) {
@@ -281,6 +338,9 @@ function onDrop(event: DragEvent) {
     }
   }
 }
+
+const showCardsUnderneath = () => emits('show', playerCardsUnderneath, "Cards Underneath", false)
+const highlighted = computed(() => highlighter.highlighted.value === props.location.id)
 </script>
 
 <template>
@@ -297,7 +357,7 @@ function onDrop(event: DragEvent) {
             :playerId="playerId"
             :portrait="true"
             :investigator="investigator"
-            @choose="$emit('choose', $event)"
+            @choose="choose"
             />
         </div>
       </div>
@@ -305,29 +365,35 @@ function onDrop(event: DragEvent) {
         <div class="card-frame" :class="{ explosion }" ref="frame">
           <Locus v-if="locus" class="locus" />
           <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
+          <span class="important" v-if="important">
+            <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
+          </span>
 
-          <div class="card-frame-inner">
-            <div class="wave" v-if="location.floodLevel" :class="{ [location.floodLevel]: true }"></div>
-            <img
-              :data-id="id"
-              class="card card--locations"
-              :src="image"
-              :class="{ 'location--can-interact': canInteract }"
-              draggable="false"
-              @drop="onDrop($event)"
-              @dragover.prevent="dragover($event)"
-              @dragenter.prevent
-              @click="clicked"
-            />
+          <div class="card-frame-inner" :class="{ highlighted }">
+            <Story v-if="locationStory" :story="locationStory" :game="game" :playerId="playerId" @choose="choose"/>
+            <template v-else>
+              <div class="wave" v-if="location.floodLevel" :class="{ [location.floodLevel]: true }"></div>
+              <img
+                :data-id="id"
+                class="card card--locations"
+                :src="image"
+                :class="{ 'location--can-interact': canInteract }"
+                draggable="false"
+                @drop="onDrop"
+                @dragover.prevent="dragover"
+                @dragenter.prevent
+                @click="clicked"
+              />
+            </template>
           </div>
 
-          <div class="clues pool" v-if="(clues ?? 0) > 0 || floodLevel">
+          <div class="clues pool location-pool" v-if="(clues ?? 0) > 0 || floodLevel">
             <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
             <img v-if="floodLevel" :src="floodLevel" class="flood-level" />
           </div>
 
-          <div class="pool" v-if="hasPool">
-            <Key v-for="key in keys" :key="key" :name="key" />
+          <div class="pool location-pool" v-if="hasPool">
+            <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
             <Seal v-for="seal in seals" :key="seal.sealKind" :seal="seal" />
             <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
             <PoolItem v-if="horror && horror > 0" type="horror" :amount="horror" />
@@ -335,11 +401,27 @@ function onDrop(event: DragEvent) {
             <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
             <PoolItem v-if="pillars && pillars > 0" type="resource" :amount="pillars" />
             <PoolItem v-if="leylines && leylines > 0" type="resource" tooltip="Leyline" :amount="leylines" />
+            <PoolItem v-if="shards && shards > 0" type="resource" tooltip="Shard" :amount="shards" />
             <PoolItem v-if="antiquities && antiquities > 0" type="resource" tooltip="Antiquity" :amount="antiquities" />
+            <PoolItem v-if="civilians && civilians > 0" type="resource" tooltip="Civilian" :amount="civilians" />
+            <PoolItem v-if="targets && targets > 0" type="resource" tooltip="Target" :amount="targets" />
+            <PoolItem v-if="sealTokens && sealTokens > 0" type="resource" tooltip="Seal" :amount="sealTokens" />
+
             <PoolItem v-if="depth && depth > 0" type="resource" :amount="depth" />
             <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
             <PoolItem v-if="location.brazier && location.brazier === 'Lit'" type="resource" :amount="1" />
-            <PoolItem v-if="location.cardsUnderneath.length > 0" type="card" :amount="location.cardsUnderneath.length" />
+            <PoolItem v-if="encounterCardsUnderneath.length > 0" type="card" :amount="encounterCardsUnderneath.length" />
+            <PoolItem v-if="playerCardsUnderneath.length > 0" type="player_card" :amount="playerCardsUnderneath.length" />
+
+            <Token
+              v-for="(sealedToken, index) in location.sealedChaosTokens"
+              :key="index"
+              :token="sealedToken"
+              :playerId="playerId"
+              :game="game"
+              @choose="choose"
+              class="sealed"
+            />
           </div>
         </div>
 
@@ -353,6 +435,9 @@ function onDrop(event: DragEvent) {
           @choose="chooseAbility"
         />
 
+
+        <button v-if="playerCardsUnderneath.length > 0" @click="showCardsUnderneath">Under ({{ playerCardsUnderneath.length }})</button>
+
         <template v-if="debug.active">
           <button @click="debugging = true">Debug</button>
         </template>
@@ -365,7 +450,7 @@ function onDrop(event: DragEvent) {
           :game="game"
           :attached="true"
           :playerId="playerId"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
         />
         <Event
           v-for="eventId in location.events"
@@ -373,7 +458,7 @@ function onDrop(event: DragEvent) {
           :game="game"
           :playerId="playerId"
           :key="eventId"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
           :attached="true"
         />
         <Enemy
@@ -382,7 +467,16 @@ function onDrop(event: DragEvent) {
           :game="game"
           :playerId="playerId"
           :key="enemyId"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
+          :attached="true"
+        />
+        <ScarletKey
+          v-for="skId in attachedKeys"
+          :scarletKey="game.scarletKeys[skId]"
+          :game="game"
+          :playerId="playerId"
+          :key="skId"
+          @choose="choose"
           :attached="true"
         />
       </div>
@@ -394,7 +488,7 @@ function onDrop(event: DragEvent) {
           :playerId="playerId"
           :key="assetId"
           :atLocation="true"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
         />
         <Enemy
           v-for="enemyId in enemies"
@@ -403,7 +497,7 @@ function onDrop(event: DragEvent) {
           :game="game"
           :playerId="playerId"
           :atLocation="true"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
         />
         <Story
           v-for="storyId in stories"
@@ -412,15 +506,20 @@ function onDrop(event: DragEvent) {
           :game="game"
           :playerId="playerId"
           :atLocation="true"
-          @choose="$emit('choose', $event)"
+          @choose="choose"
         />
+        <div v-if="unknownConcealed.length > 0" class='concealed-card-stack'>
+          <ConcealedCard :card="unknownConcealed[0]" :game="game" :playerId="playerId" @choose="choose" />
+          <span class='count'>{{unknownConcealed.length}}</span>
+        </div>
+        <ConcealedCard v-for="card in knownConcealed" :key="card.id" :card="card" :game="game" :playerId="playerId" @choose="choose" />
       </div>
     </div>
     <DebugLocation v-if="debugging" :game="game" :location="location" :playerId="playerId" @close="debugging = false" />
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .location--can-interact {
   border: 2px solid var(--select);
   cursor: pointer;
@@ -430,7 +529,6 @@ function onDrop(event: DragEvent) {
   width: calc(var(--card-width) + 4px);
   min-width: calc(var(--card-width) + 4px);
   border-radius: 3px;
-  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 }
 
 .card.card--locations {
@@ -474,17 +572,28 @@ function onDrop(event: DragEvent) {
   flex-direction: column;
   position: relative;
   grid-area: location;
-  width: min(calc(10vw + 20px), 60px);//var(--card-width);
+  width: min(calc(10vw + 20px), 60px);
 }
 
-.pool {
+.location-pool {
   display: flex;
   flex-direction: row;
   justify-self: flex-start;
   height: 2em;
-  pointer-events: none;
+  &:not(:has(> .key--can-interact)) {
+    pointer-events: none;
+  }
   & :deep(.poolItem) {
     pointer-events: none;
+  }
+
+  :deep(img) {
+    width: 30px;
+    height: auto;
+  }
+
+  :deep(.token-container) {
+    width: 20px;
   }
 }
 
@@ -497,6 +606,25 @@ function onDrop(event: DragEvent) {
   color: rgba(0, 0, 0, 0.8);
   pointer-events: none;
   z-index: 1;
+  min-height: min-content;
+  scale: 0.8;
+}
+
+.important {
+  position: absolute;
+  bottom: 10%;
+  border-radius: 1000px;
+  font-size: 2.6em;
+  color: var(--important);
+  pointer-events: none;
+  z-index: 1;
+  max-width: 40%;
+  max-height: min-content;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0px 0px 1px #000) drop-shadow(0px 0px 2px #000);
 }
 
 .card-container {
@@ -550,7 +678,7 @@ function onDrop(event: DragEvent) {
   }
   &:hover {
     animation-fill-mode:forwards;
-    div:not(:last-child) {
+    > div:not(:last-child) {
       margin-top: 10px;
     }
   }
@@ -561,12 +689,12 @@ function onDrop(event: DragEvent) {
     transition: all 0.2s;
   }
 
-  div:not(:last-child) {
+  > div:not(:last-child) {
     margin-top: -40px;
   }
 }
 
-.pool {
+.pool.location-pool {
   position: absolute;
   top: 50%;
   align-items: center;
@@ -574,7 +702,9 @@ function onDrop(event: DragEvent) {
   align-self: flex-start;
   align-items: flex-end;
   gap: 2px;
-  pointer-events: none;
+  &:not(:has(.keys .key--can-interact)) {
+    pointer-events: none;
+  }
   &.clues {
     top: 10%;
     @media (max-width: 800px) and (orientation: portrait) {
@@ -606,7 +736,21 @@ function onDrop(event: DragEvent) {
   .card-frame-inner {
     overflow: hidden;
     position: relative;
+    transition: transform 0.2s;
+    transform: scale(1);
     line-height: 0;
+    box-sizing: border-box;
+    box-shadow: var(--card-shadow);
+    &:deep(.card) {
+      width: calc(var(--card-width) + 4px);
+      min-width: calc(var(--card-width) + 4px);
+      border-radius: 3px;
+      border-width: 1px;
+    }
+    &.highlighted {
+      transform: scale(1.1);
+    }
+    --gradient-glow: #BDE038, rebeccapurple, rebeccapurple, #BDE038;
   }
 }
 
@@ -794,5 +938,41 @@ function onDrop(event: DragEvent) {
 @keyframes wave {
   from { transform: rotate(0deg)}
   to { transform: rotate(360deg)}
+}
+
+:deep(.token) {
+  width: 30px;
+}
+
+.concealed-card {
+  width: calc(var(--card-width) * 0.55);
+  border-radius: 3px;
+}
+
+.concealed-card-stack {
+  position: relative;
+  display: grid;
+  grid-template-areas: "stack";
+  align-items: center;
+  justify-items: center;
+  > * {
+    grid-area: stack;
+    justify-self: center;
+  }
+  .count {
+    align-self: start;
+    margin-top: 5%;
+    font-weight: bold;
+    border-radius: 100vw;
+    background-color: rgba(255, 255, 255, 0.6);
+    width: auto;
+    height: 1.2em;
+    display: grid;
+    aspect-ratio: 1 / 1;
+    text-align: center;
+    align-content: center;
+    justify-content: center;
+    pointer-events: none;
+  }
 }
 </style>

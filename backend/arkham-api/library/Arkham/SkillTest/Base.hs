@@ -24,7 +24,7 @@ data SkillTestBaseValue
   | AndSkillBaseValue [SkillType]
   | HalfResourcesOf InvestigatorId
   | FixedBaseValue Int
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 newtype SkillTestDifficulty = SkillTestDifficulty GameCalculation
   deriving newtype (Show, Ord, Eq, Generic, FromJSON, ToJSON)
@@ -56,13 +56,16 @@ data SkillTest = SkillTest
   , skillTestStep :: SkillTestStep
   , skillTestRevealedChaosTokensCount :: Int
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 instance HasField "id" SkillTest SkillTestId where
   getField = skillTestId
 
 instance HasField "source" SkillTest Source where
   getField = skillTestSource
+
+instance HasField "sourceCard" SkillTest (Maybe CardId) where
+  getField = skillTestSourceCard
 
 instance HasField "committedCards" SkillTest (Map InvestigatorId [Card]) where
   getField = skillTestCommittedCards
@@ -88,6 +91,9 @@ instance HasField "revealedChaosTokensCount" SkillTest Int where
 instance HasField "chaosTokens" SkillTest [ChaosToken] where
   getField = skillTestSetAsideChaosTokens
 
+setIsRevelation :: SkillTest -> SkillTest
+setIsRevelation st = st {skillTestIsRevelation = True}
+
 allSkillTestChaosTokens :: SkillTest -> [ChaosToken]
 allSkillTestChaosTokens SkillTest {..} = skillTestSetAsideChaosTokens
 
@@ -109,7 +115,7 @@ data SkillTestResultsData = SkillTestResultsData
   , skillTestResultsResultModifiers :: Maybe Int
   , skillTestResultsSuccess :: Bool
   }
-  deriving stock (Eq, Show, Data)
+  deriving stock (Ord, Eq, Show, Data)
 
 initSkillTest
   :: (Sourceable source, Targetable target)

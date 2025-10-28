@@ -5,7 +5,6 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
-import Arkham.Matcher qualified as Matcher
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 
 newtype NewWorldOrder = NewWorldOrder ActAttrs
@@ -20,18 +19,14 @@ instance HasAbilities NewWorldOrder where
     withBaseAbilities
       x
       [ fastAbility x 1 Free $ if maybe False (>= 3) (actBreaches x) then NoRestriction else Never
-      , mkAbility x 2
-          $ Objective
-          $ forced
-          $ Matcher.EnemyDefeated #after Anyone ByAny
-          $ enemyIs Enemies.carlSanfordDeathlessFanatic
+      , mkAbility x 2 $ Objective $ forced $ ifEnemyDefeated Enemies.carlSanfordDeathlessFanatic
       ]
 
 instance RunMessage NewWorldOrder where
   runMessage msg a@(NewWorldOrder attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       location <- sampleLocation
-      push $ RemoveBreaches (toTarget attrs) 3
+      removeBreaches (toTarget attrs) 3
       placeClues (attrs.ability 1) location 1
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do

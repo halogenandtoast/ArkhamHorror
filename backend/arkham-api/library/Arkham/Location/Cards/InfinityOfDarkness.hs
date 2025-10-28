@@ -53,11 +53,10 @@ instance RunMessage InfinityOfDarkness where
           if null belowChoice && null bottommostPositions
             then cosmosFail attrs
             else do
-              chooseOneM iid do
-                questionLabeled "Choose where to connect"
+              chooseOneM iid $ scenarioI18n do
                 questionLabeledCard attrs
                 when (notNull belowChoice) do
-                  labeled "Connect Below" do
+                  labeled' "connectBelow" do
                     chooseOrRunOneM iid do
                       for_ belowChoice \pos'@(Pos x y) -> do
                         gridLabeled (cosmicLabel pos')
@@ -65,16 +64,14 @@ instance RunMessage InfinityOfDarkness where
                           $ PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid)
                           : msgs
                 when (notNull emptyPositions) do
-                  labeled
-                    "Take 2 damage and connect to the bottommost revealed location in a direction of your choice"
-                    do
-                      assignDamage iid (attrs.ability 1) 2
-                      chooseOrRunOneM iid do
-                        for_ emptyPositions \pos'@(Pos x y) -> do
-                          gridLabeled (cosmicLabel pos')
-                            $ pushAll
-                            $ PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid)
-                            : msgs
+                  labeled' "infinityOfDarkness.choice" do
+                    assignDamage iid (attrs.ability 1) 2
+                    chooseOrRunOneM iid do
+                      for_ emptyPositions \pos'@(Pos x y) -> do
+                        gridLabeled (cosmicLabel pos')
+                          $ pushAll
+                          $ PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid)
+                          : msgs
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       (map toCard -> cards, _) <- fieldMap InvestigatorDeck (draw 1) iid
@@ -90,5 +87,8 @@ instance RunMessage InfinityOfDarkness where
               push $ PlaceCosmos iid (toId attrs) (CosmosLocation (updatePosition pos GridDown) (toId attrs))
         [] -> error "empty deck, what should we do?, maybe don't let this be called?"
         _ -> error "too many cards, why did this happen?"
+      pure l
+    Do (PlaceCosmos _ lid cloc) | lid == attrs.id -> do
+      handleCosmos lid cloc
       pure l
     _ -> InfinityOfDarkness <$> liftRunMessage msg attrs

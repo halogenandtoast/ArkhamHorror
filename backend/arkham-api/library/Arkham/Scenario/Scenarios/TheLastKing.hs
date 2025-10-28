@@ -58,7 +58,8 @@ instance HasChaosTokenValue TheLastKing where
     Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
     Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 4)
     ElderThing -> do
-      shroud <- maybe (pure 0) (fieldWithDefault 0 LocationShroud) =<< field InvestigatorLocation iid
+      shroud <-
+        maybe (pure 0) (fieldWithDefault 0 LocationShroud) =<< field InvestigatorLocation iid
       pure $ ChaosTokenValue ElderThing (NegativeModifier shroud)
     otherFace -> getChaosTokenValue iid otherFace attrs
 

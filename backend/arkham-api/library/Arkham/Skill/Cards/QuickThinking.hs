@@ -19,9 +19,10 @@ instance RunMessage QuickThinking where
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ n | n >= 2 -> do
       semaphore (toCardCode attrs) do
         when (tabooed TabooList18 attrs) $ roundModifier attrs (toCardCode attrs) Semaphore
-        chooseOneM iid do
-          labeled "Take additional action" $ doStep 1 msg
-          labeled "Pass on additional action" nothing
+        skillTestResultOption "Quick Thinking" do
+          chooseOneM iid do
+            labeled "Take additional action" $ doStep 1 msg
+            labeled "Pass on additional action" nothing
       pure s
     DoStep 1 (PassedSkillTest iid _ _ (isTarget attrs -> True) _ _) -> do
       afterSkillTest iid "Quick Thinking" $ takeActionAsIfTurn attrs.controller attrs

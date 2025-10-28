@@ -2,6 +2,7 @@
 
 module Arkham.Placement (
   Placement (..),
+  IsPlacement (..),
   placementToAttached,
   isOutOfPlayPlacement,
   isOutOfPlayZonePlacement,
@@ -9,6 +10,8 @@ module Arkham.Placement (
   isHiddenPlacement,
   isInPlayArea,
   treacheryPlacementToPlacement,
+  _AtLocation,
+  _OutOfPlay,
 ) where
 
 import Arkham.Card
@@ -24,7 +27,6 @@ data Placement
   | AttachedToLocation LocationId
   | InPlayArea InvestigatorId
   | InThreatArea InvestigatorId
-  | ActuallyLocation LocationId
   | StillInHand InvestigatorId
   | HiddenInHand InvestigatorId
   | OnTopOfDeck InvestigatorId
@@ -44,6 +46,7 @@ data Placement
   | Global
   | OutOfPlay OutOfPlayZone
   | Near Target
+  | InTheShadows
   deriving stock (Show, Eq, Ord, Data, Generic)
 
 instance HasField "attachedTo" Placement (Maybe Target) where
@@ -60,6 +63,11 @@ instance HasField "isInVictory" Placement Bool where
     OutOfPlay VictoryDisplayZone -> True
     _ -> False
 
+instance HasField "isSwarm" Placement Bool where
+  getField = \case
+    AsSwarm {} -> True
+    _ -> False
+
 instance HasField "inThreatAreaOf" Placement (Maybe InvestigatorId) where
   getField = \case
     InThreatArea iid -> Just iid
@@ -72,7 +80,6 @@ placementToAttached = \case
   AttachedToTreachery tid -> Just $ TreacheryTarget tid
   Near _ -> Nothing
   AtLocation _ -> Nothing
-  ActuallyLocation _ -> Nothing
   InPlayArea _ -> Nothing
   InVehicle _ -> Nothing
   InThreatArea _ -> Nothing
@@ -91,11 +98,7 @@ placementToAttached = \case
   AsSwarm _ _ -> Nothing
   HiddenInHand _ -> Nothing
   OnTopOfDeck _ -> Nothing
-
-isOutOfPlayZonePlacement :: Placement -> Bool
-isOutOfPlayZonePlacement = \case
-  OutOfPlay _ -> True
-  _ -> False
+  InTheShadows -> Nothing
 
 isOutOfPlayPlacement :: Placement -> Bool
 isOutOfPlayPlacement = not . isInPlayPlacement
@@ -103,7 +106,6 @@ isOutOfPlayPlacement = not . isInPlayPlacement
 isInPlayPlacement :: Placement -> Bool
 isInPlayPlacement = \case
   AtLocation {} -> True
-  ActuallyLocation {} -> True
   AttachedToLocation {} -> True
   InPlayArea {} -> True
   InVehicle {} -> True
@@ -126,6 +128,7 @@ isInPlayPlacement = \case
   HiddenInHand _ -> False
   OnTopOfDeck _ -> False
   Near _ -> True
+  InTheShadows -> True
 
 isHiddenPlacement :: Placement -> Bool
 isHiddenPlacement = \case
@@ -166,4 +169,25 @@ $(deriveJSON defaultOptions ''TreacheryPlacement)
 instance FromJSON Placement where
   parseJSON o = genericParseJSON defaultOptions o <|> (treacheryPlacementToPlacement <$> parseJSON o)
 
-$(deriveToJSON defaultOptions ''Placement)
+mconcat
+  [ deriveToJSON defaultOptions ''Placement
+  , makePrisms ''Placement
+  ]
+
+isOutOfPlayZonePlacement :: Placement -> Bool
+isOutOfPlayZonePlacement = isJust . preview _OutOfPlay
+
+class IsPlacement a where
+  toPlacement :: a -> Placement
+
+instance IsPlacement Placement where
+  toPlacement = id
+
+instance IsPlacement OutOfPlayZone where
+  toPlacement = OutOfPlay
+
+instance IsPlacement LocationId where
+  toPlacement = AtLocation
+
+instance IsPlacement AssetId where
+  toPlacement = (`AttachedToAsset` Nothing)

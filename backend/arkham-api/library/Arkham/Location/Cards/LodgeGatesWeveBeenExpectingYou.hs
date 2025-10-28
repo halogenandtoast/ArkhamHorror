@@ -1,8 +1,4 @@
-module Arkham.Location.Cards.LodgeGatesWeveBeenExpectingYou (
-  lodgeGatesWeveBeenExpectingYou,
-  LodgeGatesWeveBeenExpectingYou (..),
-)
-where
+module Arkham.Location.Cards.LodgeGatesWeveBeenExpectingYou (lodgeGatesWeveBeenExpectingYou) where
 
 import Arkham.Ability
 import Arkham.GameValue
@@ -10,6 +6,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenarios.ForTheGreaterGood.Helpers
 
 newtype LodgeGatesWeveBeenExpectingYou = LodgeGatesWeveBeenExpectingYou LocationAttrs
   deriving anyclass IsLocation
@@ -23,9 +20,10 @@ instance HasModifiersFor LodgeGatesWeveBeenExpectingYou where
     whenRevealed a $ modifySelect a AnyEnemy [CannotSpawnIn (be a)]
 
 instance HasAbilities LodgeGatesWeveBeenExpectingYou where
-  getAbilities (LodgeGatesWeveBeenExpectingYou attrs) =
-    extendRevealed1 attrs
-      $ withTooltip "On second thought, maybe coming here was a bad idea" (locationResignAction attrs)
+  getAbilities (LodgeGatesWeveBeenExpectingYou a) =
+    extendRevealed1 a
+      $ scenarioI18n
+      $ withI18nTooltip "lodgeGatesWeveBeenExpectingYou.resign" (locationResignAction a)
 
 instance RunMessage LodgeGatesWeveBeenExpectingYou where
   runMessage msg (LodgeGatesWeveBeenExpectingYou attrs) =

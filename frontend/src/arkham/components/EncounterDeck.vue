@@ -126,14 +126,18 @@ const debug = useDebug()
       :src="investigatorPortrait"
     />
     <template v-if="debug.active">
-      <button @click="debug.send(game.id, {tag: 'InvestigatorDrawEncounterCard', contents: investigatorId})">Draw</button>
+      <button @click="debug.send(game.id, {tag: 'DrawCards', contents: [investigatorId, {cardDrawSource: {tag: 'GameSource'}, cardDrawDeck: {tag: 'EncounterDeck'}, cardDrawAmount: 1, cardDrawState: {tag: 'UnresolvedCardDraw'}, cardDrawTarget: null, cardDrawAction: false, cardDrawKind: 'StandardCardDraw', cardDrawRules: [], cardDrawAndThen: null, cardDrawAlreadyDrawn: [], cardDrawDiscard: null}]})">Draw</button>
+      <button
+        @click.exact="debug.send(game.id, {tag: 'DiscardTopOfEncounterDeck', contents: [investigatorId, 1, {tag: 'GameSource'}, null]})"
+        @click.shift="debug.send(game.id, {tag: 'DiscardTopOfEncounterDeck', contents: [investigatorId, 5, {tag: 'GameSource'}, null]})"
+      >Discard</button>
       <button @click="debug.send(game.id, {tag: 'FindAndDrawEncounterCard', contents: [investigatorId, {'tag': 'AnyCard', contents: []}, 'ExcludeDiscard']})">Select Draw</button>
       <button @click="debug.send(game.id, {tag: 'ShuffleDeck', contents: {'tag': 'EncounterDeck'}})">Shuffle</button>
     </template>
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .revealed {
   filter: brightness(50%);
 }

@@ -14,6 +14,7 @@ fearless = skill Fearless Cards.fearless
 instance RunMessage Fearless where
   runMessage msg s@(Fearless attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      whenM (canHaveHorrorHealed attrs attrs.owner) $ healHorror attrs.owner attrs 1
+      whenM (canHaveHorrorHealed attrs attrs.owner) do
+        skillTestResultOption "Fearless" $ healHorror attrs.owner attrs 1
       pure s
     _ -> Fearless <$> liftRunMessage msg attrs

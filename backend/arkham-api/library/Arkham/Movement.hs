@@ -24,7 +24,7 @@ data Movement = Movement
   , moveAdditionalEnterCosts :: Cost
   , moveId :: MovementId
   }
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 instance HasField "source" Movement Source where
   getField = moveSource
@@ -54,7 +54,7 @@ instance HasField "id" Movement MovementId where
   getField = moveId
 
 data MovementMeans = Direct | OneAtATime | Towards | Place | TowardsN Int
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 -- Forced movement should not require additional costs
 uncancellableMove :: Movement -> Movement
@@ -64,7 +64,7 @@ afterMove :: [Message] -> Movement -> Movement
 afterMove msgs m = m {moveAfter = msgs}
 
 data Destination = ToLocation LocationId | ToLocationMatching LocationMatcher
-  deriving stock (Show, Eq, Data)
+  deriving stock (Show, Ord, Eq, Data)
 
 move
   :: (MonadRandom m, Targetable target, Sourceable source)

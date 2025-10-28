@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.HallOfHeresy (hallOfHeresy, HallOfHeresy (..)) where
+module Arkham.Location.Cards.HallOfHeresy (hallOfHeresy) where
 
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers

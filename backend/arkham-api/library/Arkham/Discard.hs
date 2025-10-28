@@ -8,7 +8,7 @@ import Arkham.Target
 import GHC.Records
 
 data DiscardStrategy = DiscardChoose | DiscardRandom | DiscardAll
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data HandDiscard msg = HandDiscard
@@ -20,7 +20,7 @@ data HandDiscard msg = HandDiscard
   , discardAmount :: Int
   , discardThen :: Maybe msg
   }
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 instance HasField "strategy" (HandDiscard msg) DiscardStrategy where

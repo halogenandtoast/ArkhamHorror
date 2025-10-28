@@ -33,7 +33,7 @@ instance RunMessage KnightOfSwords3 where
             skillTestModifier sid attrs iid (AnySkillValue 1)
             push RecalculateSkillTestResults
       pure a
-    InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 2) | iid == iid' -> do
       putCardIntoPlay iid attrs
       pure a
     _ -> KnightOfSwords3 <$> liftRunMessage msg attrs

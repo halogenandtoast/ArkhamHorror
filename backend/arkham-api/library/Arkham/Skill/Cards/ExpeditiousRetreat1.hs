@@ -1,6 +1,7 @@
 module Arkham.Skill.Cards.ExpeditiousRetreat1 (expeditiousRetreat1) where
 
 import Arkham.Action qualified as Action
+import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Constants
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
@@ -31,9 +32,12 @@ instance RunMessage ExpeditiousRetreat1 where
         iid <- MaybeT getSkillTestInvestigator
         enemies <-
           select $ enemyAtLocationWith iid <> not_ (EnemyWithId eid) <> EnemyCanBeEvadedBy (toSource iid)
-        unless (null enemies) do
-          lift $ chooseOneM iid $ withI18n do
-            labeled' "skip" nothing
-            targets enemies $ automaticallyEvadeEnemy iid
+        concealed <- getConcealedIds (ForExpose $ toSource attrs) iid
+        unless (null enemies && null concealed) do
+          lift $ skillTestResultOption "Expeditious Retreat (1)" do
+            chooseOneM iid $ withI18n do
+              labeled' "skip" nothing
+              targets enemies $ automaticallyEvadeEnemy iid
+              targets concealed $ exposeConcealed iid attrs
       pure s
     _ -> ExpeditiousRetreat1 <$> liftRunMessage msg attrs

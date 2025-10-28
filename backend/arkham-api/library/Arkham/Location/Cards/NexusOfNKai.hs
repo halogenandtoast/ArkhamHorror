@@ -1,15 +1,13 @@
-module Arkham.Location.Cards.NexusOfNKai (nexusOfNKai, NexusOfNKai (..)) where
+module Arkham.Location.Cards.NexusOfNKai (nexusOfNKai) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.GameValue
-import Arkham.Helpers.Investigator
-import Arkham.Helpers.Location
 import Arkham.Id
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Trait (Trait (Otherworld))
 import Arkham.Window (Window (..))
@@ -23,27 +21,19 @@ nexusOfNKai :: LocationCard NexusOfNKai
 nexusOfNKai = location NexusOfNKai Cards.nexusOfNKai 4 (PerPlayer 1)
 
 instance HasAbilities NexusOfNKai where
-  getAbilities (NexusOfNKai attrs) =
-    withRevealedAbilities
-      attrs
-      [ mkAbility attrs 1
-          $ ForcedAbility
-          $ OrWindowMatcher
-            [ Moves
-                #after
-                You
-                (NotSource $ SourceIs (AbilitySource (toSource attrs) 2))
-                (LocationWithId $ toId attrs)
-                (LocationWithTrait Otherworld <> LocationWithAnyClues)
-            , Moves
-                #after
-                You
-                (NotSource $ SourceIs (AbilitySource (toSource attrs) 2))
-                (LocationWithTrait Otherworld <> LocationWithAnyClues)
-                (LocationWithId $ toId attrs)
+  getAbilities (NexusOfNKai a) =
+    extendRevealed
+      a
+      [ mkAbility a 1
+          $ forced
+          $ oneOf
+            [ Moves #after You (NotSource $ SourceIs (a.ability 2)) (be a) match
+            , Moves #after You (NotSource $ SourceIs (a.ability 2)) match (be a)
             ]
-      , restrictedAbility attrs 2 Here exploreAction_
+      , restricted a 2 Here exploreAction_
       ]
+   where
+    match = withTrait Otherworld <> LocationWithAnyClues
 
 getShatteredLocation :: LocationAttrs -> [Window] -> LocationId
 getShatteredLocation _ [] = error "wrong window"
@@ -54,14 +44,12 @@ getShatteredLocation attrs ((windowType -> Window.Moves _ _ _ lid) : _)
 getShatteredLocation attrs (_ : xs) = getShatteredLocation attrs xs
 
 instance RunMessage NexusOfNKai where
-  runMessage msg l@(NexusOfNKai attrs) = case msg of
+  runMessage msg l@(NexusOfNKai attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getShatteredLocation attrs -> lid) _ -> do
       clues <- field LocationClues lid
-      push $ assignHorror iid attrs clues
+      assignHorror iid attrs clues
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      locationSymbols <- toConnections =<< getJustLocation iid
-      let source = toAbilitySource attrs 2
-      push $ Explore iid source (oneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+      runExplore iid (attrs.ability 2)
       pure l
-    _ -> NexusOfNKai <$> runMessage msg attrs
+    _ -> NexusOfNKai <$> liftRunMessage msg attrs

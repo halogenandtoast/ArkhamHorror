@@ -7,7 +7,7 @@ import Arkham.Prelude
 import GHC.Records
 
 data XpSource = XpFromVictoryDisplay | XpBonus | XpFromCardEffect
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data XpDetail = XpDetail
@@ -15,14 +15,14 @@ data XpDetail = XpDetail
   , sourceName :: Text
   , amount :: Int
   }
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data XpEntry
   = AllGainXp {details :: XpDetail}
   | InvestigatorGainXp {investigator :: InvestigatorId, details :: XpDetail}
   | InvestigatorLoseXp {investigator :: InvestigatorId, details :: XpDetail}
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 instance HasField "amount" XpEntry Int where
@@ -32,5 +32,5 @@ instance HasField "amount" XpEntry Int where
     InvestigatorLoseXp _ details -> details.amount
 
 newtype XpBreakdown = XpBreakdown [XpEntry]
-  deriving newtype (Monoid, Semigroup, Show, Eq, ToJSON, FromJSON)
+  deriving newtype (Monoid, Semigroup, Show, Ord, Eq, ToJSON, FromJSON)
   deriving stock Data

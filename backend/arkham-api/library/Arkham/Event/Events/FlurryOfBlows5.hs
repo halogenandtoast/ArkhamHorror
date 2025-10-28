@@ -1,4 +1,4 @@
-module Arkham.Event.Events.FlurryOfBlows5 (flurryOfBlows5, FlurryOfBlows5 (..)) where
+module Arkham.Event.Events.FlurryOfBlows5 (flurryOfBlows5) where
 
 import Arkham.Ability
 import Arkham.Event.Cards qualified as Cards
@@ -19,22 +19,20 @@ instance RunMessage FlurryOfBlows5 where
       doStep 3 msg
       whenM (iid <=~> TurnInvestigator) $ endYourTurn iid
       pure e
-    DoStep n (PlayThisEvent iid (is attrs -> True)) -> do
+    DoStep n msg'@(PlayThisEvent iid (is attrs -> True)) -> do
       selectOneToHandle iid attrs
         $ assetControlledBy iid
         <> #melee
-        <> AssetWithPerformableAbility (AbilityIsAction #fight) [IgnoreActionCost]
+        <> AssetWithPerformableAbility #fight [IgnoreActionCost]
       when (n - 1 > 0) do
-        chooseOne iid [Label "Repeat this effect (Flurry of Blows)" [DoStep (n - 1) msg], Label "Done" []]
+        chooseOneM iid do
+          labeled "Repeat this effect (Flurry of Blows)" $ doStep (n - 1) msg'
+          labeled "Done" nothing
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       abilities <-
         map ((`applyAbilityModifiers` [IgnoreActionCost]) . doesNotProvokeAttacksOfOpportunity)
-          <$> select
-            ( PerformableAbility [IgnoreActionCost]
-                <> AbilityIsAction #fight
-                <> AbilityOnAsset (AssetWithId aid)
-            )
-      chooseOrRunOne iid [AbilityLabel iid ab [] [] [] | ab <- abilities]
+          <$> select (PerformableAbility [IgnoreActionCost] <> #fight <> AbilityOnAsset (AssetWithId aid))
+      chooseOrRunOneM iid $ for_ abilities \ab -> abilityLabeled iid ab nothing
       pure e
     _ -> FlurryOfBlows5 <$> liftRunMessage msg attrs

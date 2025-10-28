@@ -570,3 +570,21 @@ sixthSense4 =
     , cdSlots = [#arcane]
     , cdLevel = Just 4
     }
+
+erynnMacAoidhDevotedEnchantress :: CardDef
+erynnMacAoidhDevotedEnchantress =
+  (storyAsset "54041" ("Erynn MacAoidh" <:> "Devoted Enchantress") 2 ReturnToTheWagesOfSin)
+    { cdCardTraits = setFromList [Ally, Witch]
+    , cdUnique = True
+    , cdUses = uses Secret 3
+    , cdSlots = [#ally]
+    , cdSkills = [#willpower, #willpower]
+    }
+
+nightgauntSteed :: CardDef
+nightgauntSteed =
+  (storyAssetWithMany "54061" "Nightgaunt Steed" 0 ReturnToBeforeTheBlackThrone 4)
+    { cdCardTraits = setFromList [Monster, Nightgaunt]
+    , cdCost = Nothing
+    , cdCardType = EncounterAssetType
+    }

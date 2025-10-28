@@ -49,11 +49,11 @@ theDoomOfEztli difficulty =
     "04054"
     "The Doom of Eztli"
     difficulty
-    [ ".        ancientHall  undergroundRuins .             .             .    ."
-    , "entryway ancientHall  undergroundRuins secretPassage chamberOfTime .    ."
-    , "entryway grandChamber burialPit        secretPassage chamberOfTime .    ."
-    , ".        grandChamber burialPit        .             .             .    ."
-    , "pos1     pos2         pos3             pos4          pos5          pos6 pos7"
+    [ ".      square diamond  .        .         .    ."
+    , "circle square diamond  squiggle hourglass .    ."
+    , "circle star   triangle squiggle hourglass .    ."
+    , ".      star   triangle .        .         .    ."
+    , "pos1   pos2   pos3     pos4     pos5      pos6 pos7"
     ]
 
 instance HasChaosTokenValue TheDoomOfEztli where
@@ -248,8 +248,13 @@ instance RunMessage TheDoomOfEztli where
     Do (ScenarioResolution n) -> scope "resolutions" do
       vengeance <- getTotalVengeanceInVictoryDisplay
       yigsFury <- getRecordCount YigsFury
-      inPlayHarbinger <- selectOne $ enemyIs Enemies.harbingerOfValusia
-      setAsideHarbinger <- selectOne $ OutOfPlayEnemy SetAsideZone $ enemyIs Enemies.harbingerOfValusia
+      inPlayHarbinger <-
+        selectOne
+          $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+      setAsideHarbinger <-
+        selectOne
+          $ OutOfPlayEnemy SetAsideZone
+          $ mapOneOf enemyIs [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
       let
         harbingerMessages = case inPlayHarbinger of
           Just harbinger -> recordCount TheHarbingerIsStillAlive =<< field EnemyDamage harbinger
@@ -288,6 +293,7 @@ instance RunMessage TheDoomOfEztli where
             $ ResetGame
             : [StandaloneSetup | standalone]
               <> [ ChooseLeadInvestigator
+                 , SetPlayerOrder
                  , SetupInvestigators
                  , SetChaosTokensForScenario -- (chaosBagOf campaign')
                  , InvestigatorsMulligan

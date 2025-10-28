@@ -1,12 +1,9 @@
 module Arkham.Agenda.Cards.HumanityFading (humanityFading) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
+import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Prelude
 
 newtype HumanityFading = HumanityFading AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
@@ -17,14 +14,11 @@ humanityFading = agenda (3, A) HumanityFading Cards.humanityFading (Static 7)
 
 instance HasModifiersFor HumanityFading where
   getModifiersFor (HumanityFading attrs) =
-    if onSide A attrs
-      then modifySelect attrs Anyone [HandSize (-4)]
-      else pure mempty
+    when (onSide A attrs) $ modifySelect attrs Anyone [HandSize (-4)]
 
 instance RunMessage HumanityFading where
-  runMessage msg a@(HumanityFading attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      iids <- select UneliminatedInvestigator
-      pushAll $ map (InvestigatorDefeated (toSource attrs)) iids
+  runMessage msg a@(HumanityFading attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      eachInvestigator $ investigatorDefeated attrs
       pure a
-    _ -> HumanityFading <$> runMessage msg attrs
+    _ -> HumanityFading <$> liftRunMessage msg attrs

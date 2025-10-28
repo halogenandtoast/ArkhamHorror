@@ -9,7 +9,6 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
-import Arkham.Target
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype SomethingBelow = SomethingBelow StoryAttrs
@@ -21,7 +20,7 @@ somethingBelow = story SomethingBelow Cards.somethingBelow
 
 instance RunMessage SomethingBelow where
   runMessage msg s@(SomethingBelow attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       seaOfBones <- selectJust $ locationIs Locations.seaOfBones
       hasDholeTunnel <-
         selectAny $ treacheryIs Treacheries.dholeTunnel <> TreacheryIsAttachedTo (toTarget seaOfBones)

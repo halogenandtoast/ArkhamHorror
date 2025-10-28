@@ -206,7 +206,6 @@ instance RunMessage BloodOnTheAltar where
       do_ msg
       pure s
     Do (ScenarioResolution r) -> scope "resolutions" do
-      sacrificed <- filterCards CardIsUnique <$> scenarioField ScenarioCardsUnderAgendaDeck
       let doGainXp = allGainXpWithBonus' attrs $ toBonus "bonus" 2
       case r of
         NoResolution -> do
@@ -226,6 +225,7 @@ instance RunMessage BloodOnTheAltar where
           removeNecronomicon
         other -> throwIO $ UnknownResolution other
 
+      sacrificed <- filterCards CardIsUnique <$> scenarioField ScenarioCardsUnderAgendaDeck
       recordSetInsert SacrificedToYogSothoth $ map toCardCode sacrificed
       for_ sacrificed removeCampaignCard
       endOfScenario

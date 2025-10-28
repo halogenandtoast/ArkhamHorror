@@ -1,10 +1,8 @@
-module Arkham.Treachery.Cards.LightlessShadow (lightlessShadow, LightlessShadow (..)) where
+module Arkham.Treachery.Cards.LightlessShadow (lightlessShadow) where
 
-import Arkham.Classes
-import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype LightlessShadow = LightlessShadow TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -14,14 +12,13 @@ lightlessShadow :: TreacheryCard LightlessShadow
 lightlessShadow = treachery LightlessShadow Cards.lightlessShadow
 
 instance RunMessage LightlessShadow where
-  runMessage msg t@(LightlessShadow attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(LightlessShadow attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push
-        $ revelationSkillTest sid iid source #agility
+      revelationSkillTest sid iid attrs #agility
         $ SumCalculation [Fixed 1, ScenarioCount CurrentDepth]
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      push $ assignDamage iid attrs 2
+      assignDamage iid attrs 2
       pure t
-    _ -> LightlessShadow <$> runMessage msg attrs
+    _ -> LightlessShadow <$> liftRunMessage msg attrs

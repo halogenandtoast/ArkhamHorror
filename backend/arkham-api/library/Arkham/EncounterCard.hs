@@ -13,6 +13,7 @@ import Arkham.Investigator.Cards (allEncounterInvestigatorCards)
 import Arkham.Location.Cards
 import Arkham.Story.Cards
 import Arkham.Treachery.Cards
+import Arkham.Campaigns.TheScarletKeys.Key.Cards
 
 lookupEncounterCardDef :: CardCode -> CardDef
 lookupEncounterCardDef cardCode =
@@ -31,4 +32,5 @@ allEncounterCards =
     <> allStoryCards
     <> allActCards
     <> allAgendaCards
+    <> allScarletKeyCards
     <> allEncounterInvestigatorCards -- technically player

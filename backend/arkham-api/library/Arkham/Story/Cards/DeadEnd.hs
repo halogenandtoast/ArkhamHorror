@@ -12,7 +12,7 @@ deadEnd = story DeadEnd Cards.deadEnd
 
 instance RunMessage DeadEnd where
   runMessage msg s@(DeadEnd attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       removeChaosToken #frost
       addToVictory attrs
       pure s

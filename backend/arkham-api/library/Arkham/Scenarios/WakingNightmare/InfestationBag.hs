@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module Arkham.Scenarios.WakingNightmare.InfestationBag where
 
 import Arkham.ChaosToken
@@ -24,6 +26,15 @@ data InfestationBag = InfestationBag
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+instance HasField "tokens" InfestationBag [InfestationToken] where
+  getField = infestationTokens
+
+instance HasField "currentToken" InfestationBag (Maybe InfestationToken) where
+  getField = infestationCurrentToken
+
+instance HasField "setAside" InfestationBag [InfestationToken] where
+  getField = infestationSetAside
+
 initInfestationBag :: MonadRandom m => m InfestationBag
 initInfestationBag = do
   rs <- getRandoms
@@ -39,3 +50,6 @@ infestationBag :: StoryAttrs -> InfestationBag
 infestationBag attrs = case fromJSON (storyMeta attrs) of
   Success a -> a
   _ -> error "invalid infestation bag"
+
+instance HasField "infestationBag" StoryAttrs InfestationBag where
+  getField = infestationBag

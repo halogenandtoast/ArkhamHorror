@@ -5,7 +5,7 @@ import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { SkillTest } from '@/arkham/types/SkillTest';
-import { MessageType, StartSkillTestButton } from '@/arkham/types/Message';
+import { MessageType } from '@/arkham/types/Message';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
 import Token from '@/arkham/components/Token.vue';
 import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
@@ -121,7 +121,7 @@ const choose = (idx: number) => emit('choose', idx)
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .token--can-draw {
   border: min(5px, 1vw) solid #ff00ff;
   border-radius: 500px;
@@ -139,16 +139,6 @@ const choose = (idx: number) => emit('choose', idx)
   height: auto;
 }
 
-.token-debug {
-  display: inline;
-  img {
-    cursor: pointer;
-    border: 3px solid #ff00ff;
-    border-radius: 25px;
-    width: 50px;
-  }
-}
-
 .chaos-bag-contents {
   display: flex;
   align-items: center;
@@ -163,6 +153,7 @@ const choose = (idx: number) => emit('choose', idx)
 
 .token-preview {
   display: flex;
+  gap: 5px;
   flex-wrap: wrap;
   flex-direction: row;
   justify-content: center;
@@ -200,9 +191,17 @@ const choose = (idx: number) => emit('choose', idx)
   img {
     width: 30px;
     height: auto;
+    transition: transform 0.2s;
+    &:hover {
+      transform: scale(1.2);
+    }
     &.token-big {
       width: 50px;
+      border-radius: 50px;
     }
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 30px;
+    box-shadow: 0 4px 4px rgba(0,0,0,0.5);
   }
 }
 
@@ -213,4 +212,19 @@ const choose = (idx: number) => emit('choose', idx)
   flex-direction: column;
   gap: 10px;
 }
+
+.token-debug {
+  display: inline;
+  img {
+    cursor: pointer;
+    border: 1px solid #ff00ff;
+    border-radius: 30px;
+    width: 30px;
+    &.token-big {
+      width: 50px;
+      border-radius: 50px;
+    }
+  }
+}
+
 </style>

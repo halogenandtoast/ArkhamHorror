@@ -27,7 +27,7 @@ instance HasModifiersFor SpringfieldM19034 where
               <> not_ (enemyEngagedWith iid)
               <> oneOf
                 [ at_ YourLocation
-                , NonEliteEnemy <> at_ (ConnectedTo YourLocation)
+                , NonEliteEnemy <> at_ (connectedTo YourLocation)
                 ]
           ]
 
@@ -49,7 +49,7 @@ instance RunMessage SpringfieldM19034 where
                   . ( <>
                         oneOf
                           [ EnemyAt $ locationWithInvestigator iid
-                          , NonEliteEnemy <> EnemyAt (ConnectedTo $ locationWithInvestigator iid)
+                          , NonEliteEnemy <> EnemyAt (connectedTo $ locationWithInvestigator iid)
                           ]
                     )
               else id

@@ -5,8 +5,6 @@ module Arkham.Location (
   module X,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
@@ -14,6 +12,8 @@ import Arkham.Id
 import Arkham.Location.Locations
 import Arkham.Location.Runner
 import Arkham.Location.Types as X (Location)
+import Arkham.Prelude
+import Arkham.Tracing
 
 createLocation :: IsCard a => a -> LocationId -> Location
 createLocation a lid = lookupLocation (toCardCode a) lid (toCardId a)
@@ -28,9 +28,9 @@ instance RunMessage Location where
     let a = toAttrs x
     pure
       $ overAttrs
-        (\y -> y {locationLabel = locationLabel a})
+        (\y -> y {locationLabel = locationLabel a, locationDirections = locationDirections a})
         (lookupLocation (toCardCode a) a.id (toCardId a))
-  runMessage msg x@(Location l) = do
+  runMessage msg x@(Location l) = withSpan_ ("Location[" <> unCardCode (toCardCode x) <> "].runMessage") do
     modifiers' <- getModifiers (toTarget x)
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
     Location <$> runMessage msg' l
@@ -790,6 +790,49 @@ allLocations =
     , SomeLocationCard titanicRamp_184
     , SomeLocationCard titanicRamp_185
     , SomeLocationCard hiddenTunnelAWayOut
+    , -- The Scarlet Keys
+      --- Riddle and Rain [tsk]
+      SomeLocationCard rainyLondonStreets
+    , SomeLocationCard bigBen
+    , SomeLocationCard westminsterAbbey
+    , SomeLocationCard kensingtonGardens
+    , SomeLocationCard theTowerBridge
+    , SomeLocationCard traitorsGate
+    , SomeLocationCard towerOfLondon
+    , SomeLocationCard towerPrison
+    , --- Dead Heat [tsk]
+      SomeLocationCard marrakeshRailwayStation
+    , SomeLocationCard jemaaElFnaaSquare
+    , SomeLocationCard saadiansTombs
+    , SomeLocationCard tanneries
+    , SomeLocationCard bahiaPalaceGardens
+    , SomeLocationCard marrakeshRailwayStationAbandoned
+    , SomeLocationCard jemaaElFnaaSquareAbandoned
+    , SomeLocationCard saadiansTombsAbandoned
+    , SomeLocationCard tanneriesAbandoned
+    , SomeLocationCard bahiaPalaceGardensAbandoned
+    , --- Sanguine Shadows [tsk]
+      SomeLocationCard avenidaDeMayo
+    , SomeLocationCard casaRosada
+    , SomeLocationCard catedralMetropolitana
+    , SomeLocationCard cementarioDeLaRecoleta
+    , SomeLocationCard palacioErrazuriz
+    , SomeLocationCard theCabildo
+    , SomeLocationCard bancoDeLaProvincia
+    , SomeLocationCard teatroColon
+    , --- Sanguine Shadows [tsk]
+      SomeLocationCard galataDocks
+    , SomeLocationCard galata
+    , SomeLocationCard obeliskOfTheodosius
+    , SomeLocationCard istanbulUniversity
+    , SomeLocationCard hagiaSophia
+    , SomeLocationCard grandBazaarDarkenedAlley
+    , SomeLocationCard grandBazaarPublicBaths
+    , SomeLocationCard grandBazaarMarbleFountain
+    , SomeLocationCard grandBazaarCrowdedShops
+    , SomeLocationCard grandBazaarBusyWalkway
+    , SomeLocationCard grandBazaarRooftopAccess
+    , SomeLocationCard grandBazaarJewelersRoad
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway
@@ -897,11 +940,52 @@ allLocations =
     , SomeLocationCard subterraneanSwamp
     , SomeLocationCard chthonianDepths
     , SomeLocationCard treacherousDescent
+    , --- Return to the City of Archives
+      SomeLocationCard hallsOfPnakotusSouthernCorridors
+    , SomeLocationCard cyclopeanVaults
+    , SomeLocationCard alienConservatory
+    , --- Return to Shattered Aeons
+      SomeLocationCard greatHallOfCeleano
+    , SomeLocationCard buenosAires
+    , SomeLocationCard ultimaThule
     , --- Return to Rainforest
       SomeLocationCard riversideTemple
     , SomeLocationCard waterfall
     , SomeLocationCard trailOfTheDead
     , SomeLocationCard cloudForest
+    , -- Return to The Circle Undone
+      --- Return to The Witching Hour
+      SomeLocationCard witchHauntedWoodsWitchTree
+    , SomeLocationCard witchHauntedWoodsUnmarkedGraveyard
+    , SomeLocationCard arkhamWoodsHiddenPath
+    , SomeLocationCard arkhamWoodsPlaceOfPower
+    , SomeLocationCard arkhamWoodsBootleggingOperation
+    , --- Return to At Death's Doorstep
+      SomeLocationCard wineCellar
+    , SomeLocationCard wineCellarSpectral
+    , --- Return to The Secret Name
+      SomeLocationCard templeOfRlyeh
+    , SomeLocationCard thePriceManor
+    , SomeLocationCard the9thWard
+    , SomeLocationCard libraryOfEbla
+    , --- Return to The Wages of Sin
+      SomeLocationCard returnToHangmansBrook
+    , SomeLocationCard returnToHangmansBrookSpectral
+    , --- Return to For the Greater Good
+      SomeLocationCard returnToLounge
+    , SomeLocationCard relicStorage
+    , SomeLocationCard shroudedArchive
+    , --- Return to In the Clutches of Chaos
+      SomeLocationCard returnToFrenchHill
+    , SomeLocationCard returnToRivertown
+    , SomeLocationCard returnToSouthside
+    , SomeLocationCard returnToUptown
+    , SomeLocationCard returnToSouthChurch
+    , SomeLocationCard returnToMerchantDistrict
+    , --- Return to Before the Black Throne
+      SomeLocationCard nightmareBreach
+    , SomeLocationCard interstellarAbyss
+    , SomeLocationCard windingGulf
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict
@@ -946,4 +1030,30 @@ allLocations =
     , SomeLocationCard bedroomTheMidwinterGala
     , SomeLocationCard libraryTheMidwinterGala
     , SomeLocationCard parlorTheMidwinterGala
+    , -- Film Fatale
+      --- Film Fatale
+      SomeLocationCard centralLotQuietOnSet
+    , SomeLocationCard centralLotBlurred
+    , SomeLocationCard spaceSet
+    , SomeLocationCard jungleSet
+    , SomeLocationCard gothicSet
+    , --- Cosmic Journey
+      SomeLocationCard highRulersBastion
+    , SomeLocationCard teetawnPassage
+    , SomeLocationCard ritualSiteTeetawn
+    , SomeLocationCard tothisBarrens
+    , SomeLocationCard ritualSiteTothis
+    , SomeLocationCard lostAsteroid
+    , --- Forgotten Island
+      SomeLocationCard westernRidge
+    , SomeLocationCard tarPit
+    , SomeLocationCard easternRidge
+    , SomeLocationCard jungleRiver
+    , SomeLocationCard ruinsOfTheSerpentKing
+    , --- Abominable Contessa
+      SomeLocationCard castleHallwaysSeeminglyEndless
+    , SomeLocationCard catacombsStinksOfDeath
+    , SomeLocationCard clockTowerIncessantlyTicking
+    , SomeLocationCard moonlitGardenPoisonedBeauty
+    , SomeLocationCard throneOfBloodRedAsBloodBlackAsNight
     ]

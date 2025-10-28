@@ -43,7 +43,7 @@ instance RunMessage LucasTetlow where
             labeled' "playIt" $ playCardPayingCost iid card
             labeled' "doNotPlay" nothing
         when (Tool `member` traits) $ do
-          locations <- select $ ConnectedTo (locationWithInvestigator iid) <> LocationWithAnyClues
+          locations <- select $ connectedTo (locationWithInvestigator iid) <> LocationWithAnyClues
           chooseTargetM iid locations $ discoverAt NotInvestigate iid (attrs.ability 1) 1
       pure a
     SearchFound iid (isTarget attrs -> True) _ _ -> do

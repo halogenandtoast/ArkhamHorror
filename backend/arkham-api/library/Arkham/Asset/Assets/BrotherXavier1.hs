@@ -24,18 +24,13 @@ instance HasModifiersFor BrotherXavier1 where
 
 instance HasAbilities BrotherXavier1 where
   getAbilities (BrotherXavier1 a) =
-    [ controlled
-        a
-        1
-        (CanDealDamage <> exists (at_ YourLocation <> EnemyCanBeDamagedBySource (a.ability 1)))
+    [ controlled a 1 (canDamageEnemyAt (a.ability 1) YourLocation)
         $ freeReaction (AssetDefeated #when ByAny $ be a)
     ]
 
 instance RunMessage BrotherXavier1 where
   runMessage msg a@(BrotherXavier1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- select $ EnemyAt $ locationWithInvestigator iid
-      chooseOrRunOneM iid do
-        targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 2
+      chooseDamageEnemy iid (attrs.ability 1) (locationWithInvestigator iid) AnyEnemy 2
       pure a
     _ -> BrotherXavier1 <$> liftRunMessage msg attrs

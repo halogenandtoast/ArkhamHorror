@@ -8,6 +8,7 @@ import Arkham.Helpers.GameValue
 import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Story
 import Arkham.Story.Cards qualified as Story
 
 newtype Nasht = Nasht EnemyAttrs
@@ -35,7 +36,7 @@ instance RunMessage Nasht where
           skillLabeled sType $ parley sid iid (attrs.ability 1) iid sType (Fixed $ 2 + n)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ Flip iid (attrs.ability 1) (toTarget attrs)
+      flipOverBy iid (attrs.ability 1) attrs
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       iids <- select $ InvestigatorAt $ locationWithEnemy attrs.id
@@ -43,10 +44,11 @@ instance RunMessage Nasht where
         targets iids $ initiateEnemyAttack attrs (attrs.ability 1)
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ Flip iid (attrs.ability 2) (toTarget attrs)
+      flipOverBy iid (attrs.ability 2) attrs
       pure e
     Flip iid _ (isTarget attrs -> True) -> do
       theTrialOfNasht <- genCard Story.theTrialOfNasht
-      pushAll [RemoveEnemy (toId attrs), ReadStory iid theTrialOfNasht ResolveIt Nothing]
+      removeEnemy attrs
+      resolveStory iid theTrialOfNasht
       pure e
     _ -> Nasht <$> liftRunMessage msg attrs

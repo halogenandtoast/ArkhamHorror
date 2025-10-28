@@ -27,10 +27,7 @@ instance HasModifiersFor WheresPa where
 
 instance HasAbilities WheresPa where
   getAbilities (WheresPa a) =
-    [ restrictedAbility a 1 (youExist $ investigatorIs Investigators.hankSamson)
-        $ forced
-        $ RoundEnds #when
-    ]
+    [restricted a 1 (youExist $ investigatorIs Investigators.hankSamson) $ forced $ RoundEnds #when]
 
 instance RunMessage WheresPa where
   runMessage msg t@(WheresPa attrs) = runQueueT $ case msg of
@@ -43,11 +40,11 @@ instance RunMessage WheresPa where
     RequestedEncounterCard (isSource attrs -> True) _ mcard -> do
       for_ mcard $ \card -> do
         let ownerId = fromJustNote "has to be set" attrs.owner
-        connectedLocations <- selectAny $ ConnectedFrom (locationWithInvestigator ownerId)
+        connectedLocations <- selectAny $ connectedFrom (locationWithInvestigator ownerId)
         let
           location =
             if connectedLocations
-              then ConnectedFrom (locationWithInvestigator ownerId)
+              then connectedFrom (locationWithInvestigator ownerId)
               else locationWithInvestigator ownerId
         runCreateEnemyT card location \enemyId -> do
           setCreationInvestigator ownerId

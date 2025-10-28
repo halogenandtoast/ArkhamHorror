@@ -6,10 +6,17 @@ import Arkham.Cost.Status (CostStatus)
 import Arkham.Id
 import Arkham.Prelude
 import Arkham.Source
+import Arkham.Tracing
 import Arkham.Window (Window)
 
 getIsPlayable
-  :: (HasCallStack, HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  :: ( HasCallStack
+     , Tracing m
+     , HasGame m
+     , Sourceable source
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
   => investigator
   -> source
   -> CostStatus
@@ -17,11 +24,23 @@ getIsPlayable
   -> Card
   -> m Bool
 getPlayableCards
-  :: (HasCallStack, HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId) => source -> investigator -> CostStatus -> [Window] -> m [Card]
-
+  :: ( HasCallStack
+     , Tracing m
+     , HasGame m
+     , Sourceable source
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
+  => source -> investigator -> CostStatus -> [Window] -> m [Card]
 getIsPlayableWithResources
   :: forall m source investigator
-   . (HasCallStack, HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+   . ( HasCallStack
+     , Tracing m
+     , HasGame m
+     , Sourceable source
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
   => investigator
   -> source
   -> Int

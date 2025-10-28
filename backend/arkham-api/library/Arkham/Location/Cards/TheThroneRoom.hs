@@ -20,14 +20,8 @@ theThroneRoom =
 
 instance HasModifiersFor TheThroneRoom where
   getModifiersFor (TheThroneRoom a) = do
-    modifySelect
-      a
-      (EnemyWithTitle "Hastur")
-      [ CannotMove
-      , CannotBeMoved
-      , DoNotExhaust
-      , CannotMakeAttacksOfOpportunity
-      ]
+    modifySelect a (EnemyWithTitle "Hastur" <> at_ (be a.id)) [CannotMove, CannotBeMoved]
+    modifySelect a (EnemyWithTitle "Hastur") [DoNotExhaust, CannotMakeAttacksOfOpportunity]
 
 instance RunMessage TheThroneRoom where
   runMessage msg (TheThroneRoom attrs) = runQueueT $ case msg of

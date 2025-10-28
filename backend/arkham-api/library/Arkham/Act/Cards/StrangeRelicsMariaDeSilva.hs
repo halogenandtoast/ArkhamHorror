@@ -5,12 +5,8 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Asset.Types (Field (..))
-import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Types (Field (..))
 import Arkham.Matcher hiding (AssetCard)
-import Arkham.Projection
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype StrangeRelicsMariaDeSilva = StrangeRelicsMariaDeSilva ActAttrs
@@ -34,14 +30,9 @@ instance RunMessage StrangeRelicsMariaDeSilva where
     AdvanceAct (isSide F attrs -> True) _ _ -> do
       maria <- selectJust $ assetIs Assets.mariaDeSilva
       mariasLocation <- selectJust $ locationWithAsset maria
-      enemyMaria <- lookupCard Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn <$> field AssetCardId maria
-      createEnemyAt_ enemyMaria mariasLocation
-      push $ Flipped (toSource maria) enemyMaria
-      doStep 1 msg
+      removeAsset maria
+      enemyMaria <- createEnemyAt Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn mariasLocation
+      rememberIchtacasPrey enemyMaria Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn
       advanceToAct attrs Acts.theBrotherhoodIsRevealed E
-      pure a
-    DoStep 1 (AdvanceAct (isSide F attrs -> True) _ _) -> do
-      maria <- selectJust (enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn)
-      rememberIchtacasPrey maria =<< field EnemyCard maria
       pure a
     _ -> StrangeRelicsMariaDeSilva <$> liftRunMessage msg attrs

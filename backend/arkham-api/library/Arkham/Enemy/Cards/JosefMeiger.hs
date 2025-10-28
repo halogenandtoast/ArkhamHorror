@@ -1,12 +1,12 @@
-module Arkham.Enemy.Cards.JosefMeiger (josefMeiger, JosefMeiger (..)) where
+module Arkham.Enemy.Cards.JosefMeiger (josefMeiger) where
 
 import Arkham.Ability
-import Arkham.Attack
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Story
 import Arkham.Story.Cards qualified as Story
 import Arkham.Trait (Trait (SilverTwilight))
 
@@ -19,15 +19,13 @@ josefMeiger = enemy JosefMeiger Cards.josefMeiger (3, Static 3, 3) (1, 1)
 
 instance HasAbilities JosefMeiger where
   getAbilities (JosefMeiger a) =
-    withBaseAbilities
-      a
-      [ skillTestAbility
-          $ restrictedAbility
-            a
-            1
-            (OnSameLocation <> notExists (withTrait SilverTwilight <> EnemyWithAnyDoom <> not_ (be a)))
-            parleyAction_
-      ]
+    extend1 a
+      $ skillTestAbility
+      $ restricted
+        a
+        1
+        (OnSameLocation <> notExists (withTrait SilverTwilight <> EnemyWithAnyDoom <> not_ (be a)))
+        parleyAction_
 
 instance RunMessage JosefMeiger where
   runMessage msg e@(JosefMeiger attrs) = runQueueT $ case msg of
@@ -36,13 +34,13 @@ instance RunMessage JosefMeiger where
       parley sid iid (attrs.ability 1) attrs #intellect (Fixed 4)
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid
+      initiateEnemyAttack attrs (attrs.ability 1) iid
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ Flip iid (attrs.ability 1) (toTarget attrs)
+      flipOverBy iid (attrs.ability 1) attrs
       pure e
     Flip iid _ (isTarget attrs -> True) -> do
       josefsPlan <- genCard Story.josefsPlan
-      push $ ReadStory iid josefsPlan ResolveIt (Just $ toTarget attrs)
+      resolveStoryWithTarget iid josefsPlan attrs
       pure e
     _ -> JosefMeiger <$> liftRunMessage msg attrs

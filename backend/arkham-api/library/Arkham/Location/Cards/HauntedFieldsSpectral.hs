@@ -1,13 +1,17 @@
 module Arkham.Location.Cards.HauntedFieldsSpectral (hauntedFieldsSpectral) where
 
+import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
+import Arkham.Scenarios.TheWagesOfSin.Helpers
 import Arkham.Trait (Trait (Spectral))
 
 newtype HauntedFieldsSpectral = HauntedFieldsSpectral LocationAttrs
@@ -23,27 +27,15 @@ instance HasModifiersFor HauntedFieldsSpectral where
 
 instance HasAbilities HauntedFieldsSpectral where
   getAbilities (HauntedFieldsSpectral a) =
-    withRevealedAbilities
-      a
-      [haunted "Move the nearest Spectral enemy once toward Haunted Fields." a 1]
+    extendRevealed1 a $ scenarioI18n $ hauntedI "hauntedFieldsSpectral.haunted" a 1
 
 instance RunMessage HauntedFieldsSpectral where
-  runMessage msg l@(HauntedFieldsSpectral attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(HauntedFieldsSpectral attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemies <- select $ NearestEnemyTo iid $ EnemyWithTrait Spectral
-      unless (null enemies) $ do
-        player <- getPlayer iid
-        push
-          $ chooseOne
-            player
-            [ targetLabel
-                enemy
-                [MoveToward (EnemyTarget enemy) (LocationWithId $ toId attrs)]
-            | enemy <- enemies
-            ]
+      chooseTargetM iid enemies \enemy -> moveToward enemy (LocationWithId attrs.id)
       pure l
-    Flip _ _ target | isTarget attrs target -> do
-      regular <- genCard Locations.hauntedFields
-      push $ ReplaceLocation (toId attrs) regular Swap
+    FlipThis (isTarget attrs -> True) -> do
+      swapLocation attrs =<< genCard Locations.hauntedFields
       pure l
-    _ -> HauntedFieldsSpectral <$> runMessage msg attrs
+    _ -> HauntedFieldsSpectral <$> liftRunMessage msg attrs

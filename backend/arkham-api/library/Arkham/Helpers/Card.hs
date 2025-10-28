@@ -11,12 +11,10 @@ import Arkham.Asset.Types
 import Arkham.Card
 import Arkham.ChaosBag.Base (chaosBagChaosTokens)
 import Arkham.Classes.Entity
-import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Deck
 import Arkham.Enemy.Types
-import {-# SOURCE #-} Arkham.Entities
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.ChaosToken
@@ -38,6 +36,7 @@ import Arkham.Scenario.Types (Field (..))
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
+import Arkham.Tracing
 import Arkham.Trait
 import Arkham.Treachery.Types
 import Arkham.Window (Window)
@@ -65,12 +64,12 @@ getCardPayments c = do
     ForCost c' -> toCardId c == toCardId c'
 
 extendedCardMatch
-  :: (HasGame m, IsCard c) => c -> ExtendedCardMatcher -> m Bool
+  :: (HasGame m, Tracing m, IsCard c) => c -> ExtendedCardMatcher -> m Bool
 extendedCardMatch (toCard -> c) matcher =
   selectAny (basic (CardWithId c.id) <> matcher)
 
 class ConvertToCard a where
-  convertToCard :: (HasCallStack, HasGame m) => a -> m Card
+  convertToCard :: (HasCallStack, HasGame m, Tracing m) => a -> m Card
 
 instance ConvertToCard TreacheryId where
   convertToCard = getEntityCard @Treachery
@@ -97,10 +96,12 @@ instance ConvertToCard CardId where
 class (Projection a, Entity a) => CardEntity a where
   cardField :: Field a Card
 
-getEntityCard :: forall a m. (HasCallStack, CardEntity a, HasGame m) => EntityId a -> m Card
+getEntityCard
+  :: forall a m. (HasCallStack, CardEntity a, HasGame m, Tracing m) => EntityId a -> m Card
 getEntityCard = field (cardField @a)
 
-getEntityCardMaybe :: forall a m. (CardEntity a, HasGame m) => EntityId a -> m (Maybe Card)
+getEntityCardMaybe
+  :: forall a m. (CardEntity a, HasGame m, Tracing m) => EntityId a -> m (Maybe Card)
 getEntityCardMaybe = fieldMay (cardField @a)
 
 instance CardEntity Treachery where
@@ -118,10 +119,10 @@ instance CardEntity Asset where
 instance CardEntity Location where
   cardField = LocationCard
 
-getCardField :: (HasCallStack, ConvertToCard c, HasGame m) => (CardDef -> a) -> c -> m a
+getCardField :: (HasCallStack, ConvertToCard c, HasGame m, Tracing m) => (CardDef -> a) -> c -> m a
 getCardField f c = f . toCardDef <$> convertToCard c
 
-getVictoryPoints :: (ConvertToCard c, HasGame m) => c -> m (Maybe Int)
+getVictoryPoints :: (ConvertToCard c, HasGame m, Tracing m) => c -> m (Maybe Int)
 getVictoryPoints c = do
   card <- convertToCard c
   printedVictory <- getPrintedVictoryPoints card
@@ -133,15 +134,11 @@ getVictoryPoints c = do
   applyModifier (GainVictory n) m = Just (n + fromMaybe 0 m)
   applyModifier _ n = n
 
-getHasVictoryPoints :: (ConvertToCard c, HasGame m) => c -> m Bool
+getHasVictoryPoints :: (ConvertToCard c, HasGame m, Tracing m) => c -> m Bool
 getHasVictoryPoints c = isJust <$> getVictoryPoints c
 
-getPrintedVictoryPoints :: (ConvertToCard c, HasGame m) => c -> m (Maybe Int)
+getPrintedVictoryPoints :: (ConvertToCard c, HasGame m, Tracing m) => c -> m (Maybe Int)
 getPrintedVictoryPoints = getCardField cdVictoryPoints
-
--- To get abilities we convert to some entity in Entities and get all abilities
-getCardAbilities :: InvestigatorId -> Card -> [Ability]
-getCardAbilities iid c = getAbilities $ addCardEntityWith iid id mempty c
 
 findJustCard :: HasGame m => (Card -> Bool) -> m Card
 findJustCard cardPred = fromJustNote "invalid card" <$> findCard cardPred
@@ -164,7 +161,7 @@ iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
   applyAfter _ ys = ys
 iconsForCard _ = pure []
 
-getCardEntityTarget :: HasGame m => Card -> m (Maybe Target)
+getCardEntityTarget :: (HasGame m, Tracing m) => Card -> m (Maybe Target)
 getCardEntityTarget card = case toCardType card of
   EnemyType -> toTarget <$$> selectOne (EnemyWithCardId $ toCardId card)
   PlayerEnemyType -> toTarget <$$> selectOne (EnemyWithCardId $ toCardId card)
@@ -199,7 +196,7 @@ drawThisCardFrom iid card mdeck = case toCard card of
 --     [Revelation iid (CardIdSource card.id), ResolvedCard iid (PlayerCard card)]
 --   _ -> []
 
-playIsValidAfterSeal :: HasGame m => InvestigatorId -> Card -> m Bool
+playIsValidAfterSeal :: (HasGame m, Tracing m) => InvestigatorId -> Card -> m Bool
 playIsValidAfterSeal iid c = do
   tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
   let
@@ -213,7 +210,7 @@ playIsValidAfterSeal iid c = do
       _ -> Nothing
   allM (\matcher -> anyM (\t -> matchChaosToken iid t matcher) tokens) sealChaosTokenMatchers
 
-cardListMatches :: HasGame m => [Card] -> Matcher.CardListMatcher -> m Bool
+cardListMatches :: (HasGame m, Tracing m) => [Card] -> Matcher.CardListMatcher -> m Bool
 cardListMatches cards = \case
   Matcher.AnyCards -> pure $ notNull cards
   Matcher.LengthIs valueMatcher -> gameValueMatches (length cards) valueMatcher
@@ -222,7 +219,7 @@ cardListMatches cards = \case
   Matcher.HasCard cardMatcher -> pure $ any (`cardMatch` cardMatcher) cards
   Matcher.NoCards -> pure $ null cards
 
-passesLimits :: HasGame m => InvestigatorId -> Card -> m Bool
+passesLimits :: (HasGame m, Tracing m) => InvestigatorId -> Card -> m Bool
 passesLimits iid c = allM go (cdLimits $ toCardDef c)
  where
   go = \case
@@ -266,7 +263,7 @@ passesLimits iid c = allM go (cdLimits $ toCardDef c)
       pure $ m > n
 
 cardInFastWindows
-  :: HasGame m
+  :: (Tracing m, HasGame m)
   => InvestigatorId
   -> Source
   -> Card
@@ -310,10 +307,10 @@ getPotentiallyModifiedCardCost iid c@(EncounterCard _) excludeChuckFergus _ = do
 getPotentiallyModifiedCardCost _ (VengeanceCard _) _ _ =
   error "should not check vengeance card"
 
-getModifiedCardCost :: HasGame m => InvestigatorId -> Card -> m Int
+getModifiedCardCost :: (HasGame m, Tracing m) => InvestigatorId -> Card -> m Int
 getModifiedCardCost iid c = max 0 <$> getUnboundedModifiedCardCost iid c
 
-getUnboundedModifiedCardCost :: HasGame m => InvestigatorId -> Card -> m Int
+getUnboundedModifiedCardCost :: (HasGame m, Tracing m) => InvestigatorId -> Card -> m Int
 getUnboundedModifiedCardCost iid c@(PlayerCard _) = do
   modifiers <- getModifiers iid
   cardModifiers <- getModifiers c.id

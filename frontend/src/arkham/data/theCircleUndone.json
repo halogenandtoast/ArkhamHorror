@@ -1,14 +1,16 @@
 [
-  { "id": "05043", "name": "Disappearance at the Twilight Estate", "campaign": "05" },
-  { "id": "05050", "name": "The Witching Hour", "campaign": "05" },
-  { "id": "05065", "name": "At Death's Doorstep", "campaign": "05" },
-  { "id": "05120", "name": "The Secret Name", "campaign": "05" },
-  { "id": "05161", "name": "The Wages of Sin", "campaign": "05" },
-  { "id": "05197", "name": "For the Greater Good", "campaign": "05" },
+  { "id": "05043", "name": "Disappearance at the Twilight Estate", "campaign": "05", "returnTo": "54016", "returnToName": "Return to Disappearance at the Twilight Estate"  },
+  { "id": "05050", "name": "The Witching Hour", "campaign": "05", "returnTo": "54017", "returnToName": "Return to The Witching Hour"  },
+  { "id": "05065", "name": "At Death's Doorstep", "campaign": "05", "returnTo": "54024", "returnToName": "Return to At Death's Doorstep" },
+  { "id": "05120", "name": "The Secret Name", "campaign": "05", "returnTo": "54029", "returnToName": "Return to The Secret Name" },
+  { "id": "05161", "name": "The Wages of Sin", "campaign": "05", "returnTo": "54034", "returnToName": "Return to The Wages of Sin" },
+  { "id": "05197", "name": "For the Greater Good", "campaign": "05", "returnTo": "54042", "returnToName": "Return to For the Greater Good" },
   {
     "id": "05238",
     "name": "Union and Disillusion",
     "campaign": "05",
+    "returnTo": "54046",
+    "returnToName": "Return to Union and Disillusion",
     "settings": [
       { "key": "MissingPersons", "recordable": "RecordableCardCode", "type": "ToggleCrossedOut", "content": [
         { "label": "Gaveriella Mizrah", "key": "05046", "content": true },
@@ -121,6 +123,8 @@
   {
     "id": "05284",
     "name": "In the Clutches of Chaos",
+    "returnTo": "54049",
+    "returnToName": "Return to In the Clutches of Chaos",
     "campaign": "05",
     "settings": []
   },
@@ -128,6 +132,8 @@
     "id": "05325",
     "name": "Before the Black Throne",
     "campaign": "05",
+    "returnTo": "54056",
+    "returnToName": "Return to Before the Black Throne",
     "settings": [
         {
           "key": "ThePathWindsBeforeYou",

@@ -3,9 +3,8 @@ module Arkham.Location.Cards.InterviewRoomArrivalChamber (interviewRoomArrivalCh
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait (Trait (Yithian))
 
 newtype InterviewRoomArrivalChamber = InterviewRoomArrivalChamber LocationAttrs
@@ -17,16 +16,14 @@ interviewRoomArrivalChamber =
   location InterviewRoomArrivalChamber Cards.interviewRoomArrivalChamber 2 (Static 0)
 
 instance HasAbilities InterviewRoomArrivalChamber where
-  getAbilities (InterviewRoomArrivalChamber attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility attrs 1 (Here <> exists (enemyAt (toId attrs) <> EnemyWithTrait Yithian))
-          $ freeReaction (TurnBegins #after You)
-      ]
+  getAbilities (InterviewRoomArrivalChamber a) =
+    extendRevealed1 a
+      $ restricted a 1 (Here <> exists (enemyAt a <> EnemyWithTrait Yithian))
+      $ freeReaction (TurnBegins #after You)
 
 instance RunMessage InterviewRoomArrivalChamber where
-  runMessage msg l@(InterviewRoomArrivalChamber attrs) = case msg of
+  runMessage msg l@(InterviewRoomArrivalChamber attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ drawCards iid (attrs.ability 1) 1
+      drawCards iid (attrs.ability 1) 1
       pure l
-    _ -> InterviewRoomArrivalChamber <$> runMessage msg attrs
+    _ -> InterviewRoomArrivalChamber <$> liftRunMessage msg attrs

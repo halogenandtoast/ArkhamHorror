@@ -34,7 +34,8 @@ import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Setup
 import Arkham.Source
-import Arkham.Treachery.Types (Field (TreacheryCardId, TreacheryCard))
+import Arkham.Tracing
+import Arkham.Treachery.Types (Field (TreacheryCard, TreacheryCardId))
 import Arkham.Window (WindowType (ScenarioEvent))
 
 campaignI18n :: (HasI18n => a) -> a
@@ -42,7 +43,7 @@ campaignI18n a = withI18n $ scope "edgeOfTheEarth" a
 
 -- ** Shelter Helpers ** --
 
-shelterValue :: (HasGame m, AsId location, IdOf location ~ LocationId) => location -> m (Maybe Int)
+shelterValue :: (HasGame m, Tracing m, AsId location, IdOf location ~ LocationId) => location -> m (Maybe Int)
 shelterValue location = do
   card <- field LocationCard (asId location)
   pure $ lookup "shelter" (toCardDef card).meta >>= maybeResult
@@ -55,10 +56,10 @@ getShelterValue a = do
 
 -- ** Supply Helpers ** --
 
-whenRecoveredSupply :: HasGame m => Supply -> m () -> m ()
+whenRecoveredSupply :: (HasGame m, Tracing m) => Supply -> m () -> m ()
 whenRecoveredSupply supply action = whenM (hasSupply supply) action
 
-hasSupply :: HasGame m => Supply -> m Bool
+hasSupply :: (HasGame m, Tracing m) => Supply -> m Bool
 hasSupply supply = inRecordSet (toJSON supply) SuppliesRecovered
 
 recoverSupply :: ReverseQueue m => Supply -> m ()
@@ -69,13 +70,13 @@ toSupply (toCardCode -> cardCode) = fromMaybe (error "missingSupply") $ find ((=
 
 -- ** Tekeli-li Helpers ** --
 
-getTekelili :: HasGame m => Int -> m [Card]
+getTekelili :: (HasGame m, Tracing m) => Int -> m [Card]
 getTekelili n = take n <$> getScenarioDeck TekeliliDeck
 
 addTekeliliDeck :: ReverseQueue m => ScenarioBuilderT m ()
 addTekeliliDeck = addExtraDeck TekeliliDeck =<< shuffle =<< gatherTekelili
 
-gatherTekelili :: (HasGame m, CardGen m) => m [Card]
+gatherTekelili :: (HasGame m, Tracing m, CardGen m) => m [Card]
 gatherTekelili = do
   storyCards <- concat . toList <$> getCampaignStoryCards
   let storyCardDefs = map toCardDef storyCards
@@ -105,12 +106,16 @@ resolveTekelili iid tekelili = do
     | ShuffleIntoDeckInsteadOfDiscard `elem` mods -> shuffleIntoDeck iid (asId tekelili)
     | ShuffleIntoAnyDeckInsteadOfDiscard `elem` mods -> do
         investigators <- getInvestigators
-        chooseTargetM iid investigators \iid' -> shuffleIntoDeck iid' (asId tekelili)
+        chooseTargetM iid investigators \iid' ->
+          if iid == iid'
+            then shuffleIntoDeck iid' (asId tekelili)
+            else do
+              removeCardFromDeckForCampaign iid card
+              addTekelili iid' [card]
     | LeaveCardWhereItIs `elem` mods -> pure ()
-    | otherwise -> do 
+    | otherwise -> do
         removeCardFromDeckForCampaign iid card
         putOnBottomOfDeck iid TekeliliDeck (asId tekelili)
-
 
 drawTekelili :: (Sourceable source, ReverseQueue m) => InvestigatorId -> source -> Int -> m ()
 drawTekelili iid source n = push $ DrawCards iid $ newCardDraw source TekeliliDeck n

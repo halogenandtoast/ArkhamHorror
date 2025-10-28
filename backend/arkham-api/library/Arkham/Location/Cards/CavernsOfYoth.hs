@@ -1,40 +1,27 @@
-module Arkham.Location.Cards.CavernsOfYoth (
-  cavernsOfYoth,
-  CavernsOfYoth (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.CavernsOfYoth (cavernsOfYoth) where
 
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
-import Arkham.Timing qualified as Timing
 
 newtype CavernsOfYoth = CavernsOfYoth LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cavernsOfYoth :: LocationCard CavernsOfYoth
-cavernsOfYoth =
-  symbolLabel $ location CavernsOfYoth Cards.cavernsOfYoth 1 (PerPlayer 1)
+cavernsOfYoth = symbolLabel $ location CavernsOfYoth Cards.cavernsOfYoth 1 (PerPlayer 1)
 
 instance HasAbilities CavernsOfYoth where
   getAbilities (CavernsOfYoth a) =
-    withRevealedAbilities a
-      $ [ mkAbility a 1
-            $ ForcedAbility
-            $ PutLocationIntoPlay Timing.After Anyone
-            $ LocationWithId
-            $ toId a
-        ]
+    extendRevealed1 a $ mkAbility a 1 $ forced $ PutLocationIntoPlay #after Anyone (be a)
 
 instance RunMessage CavernsOfYoth where
-  runMessage msg l@(CavernsOfYoth attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(CavernsOfYoth attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       n <- getCurrentDepth
-      push $ PlaceClues (toAbilitySource attrs 1) (toTarget attrs) n
+      placeClues (attrs.ability 1) attrs n
       pure l
-    _ -> CavernsOfYoth <$> runMessage msg attrs
+    _ -> CavernsOfYoth <$> liftRunMessage msg attrs

@@ -33,6 +33,7 @@
     "debug": "Debug",
     "toggleDebug": "Toggle Debug",
     "debugExport": "Debug Export",
+    "debugExportFull": "Debug Export (Full)",
 
     "undo": "Undo",
     "restartScenario": "Restart Scenario",

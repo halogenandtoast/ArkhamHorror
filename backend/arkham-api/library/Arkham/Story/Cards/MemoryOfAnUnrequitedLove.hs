@@ -19,7 +19,7 @@ memoryOfAnUnrequitedLove = story MemoryOfAnUnrequitedLove Cards.memoryOfAnUnrequ
 
 instance RunMessage MemoryOfAnUnrequitedLove where
   runMessage msg s@(MemoryOfAnUnrequitedLove attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       record DrKenslerHasConfrontedHerDemons
       setPartnerStatus Assets.drAmyKenslerProfessorOfBiology Resolute
       selectForMaybeM (assetIs Assets.drAmyKenslerProfessorOfBiology) \drKensler ->

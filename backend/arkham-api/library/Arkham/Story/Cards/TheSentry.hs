@@ -18,7 +18,7 @@ theSentry = story TheSentry Cards.theSentry
 
 instance RunMessage TheSentry where
   runMessage msg s@(TheSentry attrs) = runQueueT $ case msg of
-    ResolveStory iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory iid (is attrs -> True) -> do
       sid <- getRandom
       beginSkillTest sid iid attrs iid #agility (Fixed 3)
       pure s

@@ -1,0 +1,19 @@
+{
+    "skillTestTitle": "Test de Compétence",
+
+    "waitingForMorePlayers": "En attente d'autres joueurs",
+    "showInviteLink": "Invitez en communiquant cette URL :",
+
+    "gameOver": "Partie terminée",
+    "watchReplay": "Voir le Replay",
+
+    "submit": "Soumettre",
+    "sancel": "Annuler",
+    "close": "Fermer",
+
+    "outOfSyncHint": "Votre partie est désynchronisée, tentez de vous reconnecter…",
+
+    "error": "Erreur",
+    "errorContent": "Ceci est probablement un bug, SVP faites un signalement",
+    "fileBug": "Signaler un bug"
+}

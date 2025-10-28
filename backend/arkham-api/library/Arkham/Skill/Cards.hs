@@ -6,6 +6,7 @@ import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.CommitRestriction
 import Arkham.Customization
+import Arkham.ForMovement
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Keyword qualified as Keyword
@@ -874,8 +875,8 @@ longShot =
     , cdOutOfPlayEffects = [InHandEffect]
     , cdCommitRestrictions =
         [ AnyCommitRestriction
-            [ OnlyFightAgainst (EnemyAt $ oneOf [YourLocation, ConnectedLocation])
-            , OnlyEvasionAgainst (EnemyAt $ oneOf [YourLocation, ConnectedLocation])
+            [ OnlyFightAgainst (EnemyAt $ oneOf [YourLocation, ConnectedLocation NotForMovement])
+            , OnlyEvasionAgainst (EnemyAt $ oneOf [YourLocation, ConnectedLocation NotForMovement])
             ]
         ]
     }
@@ -974,8 +975,8 @@ contemplative =
     , cdCommitRestrictions =
         [ OnlySkillTest
             $ oneOf
-              [ WhileParleying <> SkillTestAt (orConnected YourLocation)
-              , WhileInvestigating (orConnected YourLocation)
+              [ WhileParleying <> SkillTestAt (orConnected NotForMovement YourLocation)
+              , WhileInvestigating (orConnected NotForMovement YourLocation)
               ]
         ]
     }

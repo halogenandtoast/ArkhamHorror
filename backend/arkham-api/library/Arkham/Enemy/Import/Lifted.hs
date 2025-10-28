@@ -11,6 +11,7 @@ import Arkham.Enemy.Runner as X (
   EnemyCard,
   IsEnemy,
   asSelfLocationL,
+  attacksL,
   cardCodeL,
   damageStrategyL,
   defeatedL,
@@ -21,21 +22,28 @@ import Arkham.Enemy.Runner as X (
   exhaustedL,
   fightL,
   flippedL,
+  getEnemyMetaDefault,
   healthL,
   is,
   placementL,
   preyIsBearer,
+  preyIsOnlyBearer,
   preyL,
   push,
   pushAll,
   pushM,
   setExhausted,
   setMeta,
+  setNoSpawn,
+  setOnlyPrey,
   setPrey,
+  setPreyIsBearer,
+  setPreyIsOnlyBearer,
   setSpawnAt,
   spawnAtL,
   surgeIfUnableToSpawnL,
   tokensL,
+  pattern EvadeCriteria,
   pattern R2,
   pattern R3,
  )
@@ -60,38 +68,44 @@ import Arkham.Source as X
 import Arkham.Spawn as X
 import Arkham.Target as X
 
+import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (
   HasQueue,
-  evalQueueT,
  )
+import Arkham.DefeatedBy
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher (LocationMatcher (EmptyLocation))
 import Arkham.Modifier
 import Arkham.Queue
+import Arkham.Tracing
+import Arkham.Window qualified as Window
 import Control.Monad.Trans
 
 doesNotReadyDuringUpkeep :: (ReverseQueue m, Sourceable source) => source -> EnemyAttrs -> m ()
 doesNotReadyDuringUpkeep source attrs = roundModifier source attrs DoesNotReadyDuringUpkeep
 
 insteadOfDefeat
-  :: (HasQueue Message m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
+  :: (HasQueue Message m, AsId enemy, IdOf enemy ~ EnemyId)
+  => enemy -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
 insteadOfDefeat asEnemy body = whenM (beingDefeated asEnemy) do
   cancelEnemyDefeat asEnemy
-  pushAll =<< evalQueueT body
+  pushAll =<< capture body
 
 -- See: The Spectral Watcher
 insteadOfDefeatWithWindows
-  :: (HasQueue Message m, HasGame m, ToId enemy EnemyId)
+  :: (HasQueue Message m, Tracing m, HasGame m, ToId enemy EnemyId, CardGen m)
   => enemy -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
-insteadOfDefeatWithWindows e body = whenM (beingDefeated e) do
-  cancelEnemyDefeatWithWindows e
-  pushAll =<< evalQueueT body
+insteadOfDefeatWithWindows e body = whenBeingDefeated e \miid defeatedBy -> do
+  cancelEnemyDefeat e
+  pushAll =<< capture body
+  checkAfter $ Window.EnemyDefeated miid defeatedBy (asId e)
 
 insteadOfEvading
   :: HasQueue Message m => EnemyAttrs -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
 insteadOfEvading attrs body = whenM (beingEvaded attrs) do
   cancelEvadeEnemy attrs
-  pushAll =<< evalQueueT body
+  pushAll =<< capture body
 
 cancelEvadeEnemy :: (HasQueue Message m, MonadTrans t) => EnemyAttrs -> t m ()
 cancelEvadeEnemy attrs = matchingDon't isEvadedMessage
@@ -118,6 +132,16 @@ beingDefeated (asId -> enemyId) = fromQueue $ any isDefeatedMessage
     After (EnemyDefeated eid _ _ _) -> eid == enemyId
     Do msg -> isDefeatedMessage msg
     _ -> False
+
+whenBeingDefeated
+  :: (ToId enemy EnemyId, HasGame m)
+  => enemy -> (Maybe InvestigatorId -> DefeatedBy -> m ()) -> m ()
+whenBeingDefeated (asId -> enemyId) f = go . concat =<< getWindowStack
+ where
+  go = \case
+    (Window.windowType -> Window.EnemyDefeated miid source eid) : _ | eid == enemyId -> f miid source
+    (_ : rest) -> go rest
+    [] -> pure ()
 
 spawnAtEmptyLocation :: EnemyAttrs -> EnemyAttrs
 spawnAtEmptyLocation = spawnAtL ?~ SpawnAt EmptyLocation

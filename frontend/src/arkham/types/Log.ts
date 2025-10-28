@@ -62,7 +62,7 @@ export const logContentsDecoder = JsonDecoder.object<LogContents>({
     }, {})
   }),
   recordedCounts: JsonDecoder.array<[LogKey, number]>(JsonDecoder.tuple([logKeyDecoder, JsonDecoder.number()], '[LogKey, number]'), '[LogKey, number][]'),
-  partners: JsonDecoder.dictionary<Partner>(partnerDecoder, 'Partners'),
+  partners: JsonDecoder.record<Partner>(partnerDecoder, 'Partners'),
 }, 'LogContents');
 
 export function baseKey(k: string): string {

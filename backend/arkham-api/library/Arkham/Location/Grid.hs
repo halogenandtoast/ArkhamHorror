@@ -33,7 +33,7 @@ instance HasField "column" Pos Int where
   getField = positionColumn
 
 data GridLocation = GridLocation Pos LocationId
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 gridLocationToPosition :: GridLocation -> Pos
@@ -47,7 +47,7 @@ data GridRow
       (Seq (Maybe GridLocation))
       (Maybe GridLocation)
       (Seq (Maybe GridLocation))
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 initGrid :: Grid
@@ -66,7 +66,7 @@ data Grid = Grid
   , gridCenter :: GridRow
   , gridBelow :: Seq GridRow
   }
-  deriving stock (Show, Eq, Generic, Data)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 -- First check do we need to extend grid in a direction, if so extend

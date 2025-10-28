@@ -19,6 +19,8 @@ instance RunMessage PsychicSensitivity where
     PlayThisEvent iid (is attrs -> True) -> do
       let card = cardDrawn attrs.windows
       cancelCardEffects attrs card
+      discardCard iid attrs card
+      quietCancelCardDraw card
       underGloria <- field InvestigatorCardsUnderneath iid
       for_ (find ((== card.title) . toTitle) underGloria) (addToDiscard iid . only)
       drawCards iid attrs 1

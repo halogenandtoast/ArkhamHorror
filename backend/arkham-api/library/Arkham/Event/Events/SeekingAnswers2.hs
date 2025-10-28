@@ -5,6 +5,7 @@ import Arkham.Classes
 import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
+import Arkham.ForMovement
 import Arkham.Investigate
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
@@ -32,13 +33,13 @@ instance RunMessage SeekingAnswers2 where
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
       lids <-
         select
-          $ oneOf [locationWithInvestigator iid, ConnectedLocation]
+          $ oneOf [locationWithInvestigator iid, ConnectedLocation NotForMovement]
           <> locationWithDiscoverableCluesBy iid
       player <- getPlayer iid
       pushIfAny lids
         $ chooseOrRunOne player
         $ [ targetLabel lid'
-            $ [Msg.DiscoverClues iid $ viaInvestigate $ discover lid' (toSource attrs) 1]
+              $ [Msg.DiscoverClues iid $ viaInvestigate $ discover lid' (toSource attrs) 1]
           | lid' <- lids
           ]
       pure e

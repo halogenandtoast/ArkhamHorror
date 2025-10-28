@@ -22,7 +22,7 @@ instance HasAbilities PetesGuitar where
         1
         ( exists
             $ NonEliteEnemy
-            <> EnemyAt (oneOf [YourLocation, ConnectedFrom YourLocation])
+            <> EnemyAt (oneOf [YourLocation, connectedFrom YourLocation])
             <> EnemyCanMove
         )
         $ FastAbility (exhaust a)
@@ -33,11 +33,11 @@ instance RunMessage PetesGuitar where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       selectOneToHandle iid (attrs.ability 1)
         $ NonEliteEnemy
-        <> EnemyAt (oneOf [locationWithInvestigator iid, ConnectedFrom $ locationWithInvestigator iid])
+        <> EnemyAt (oneOf [locationWithInvestigator iid, connectedFrom $ locationWithInvestigator iid])
         <> EnemyCanMove
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget eid) -> do
-      choices <- select $ ConnectedFrom (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
+      choices <- select $ connectedFrom (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
       chooseOne iid $ targetLabels choices $ only . EnemyMove eid
       doStep 1 msg
       pure a

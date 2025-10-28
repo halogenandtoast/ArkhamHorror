@@ -1,4 +1,4 @@
-module Arkham.Story.Cards.Captured (Captured (..), captured) where
+module Arkham.Story.Cards.Captured (captured) where
 
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
@@ -17,7 +17,7 @@ captured = story Captured Cards.captured
 
 instance RunMessage Captured where
   runMessage msg s@(Captured attrs) = runQueueT $ case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _ (is attrs -> True) -> do
       pure s
     ForInvestigator iid (ScenarioSpecific "captured" _) -> do
       assets <- select $ assetControlledBy iid <> #hand

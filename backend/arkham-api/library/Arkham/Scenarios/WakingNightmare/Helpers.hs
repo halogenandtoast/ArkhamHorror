@@ -15,6 +15,7 @@ import Arkham.Source
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Target
 import Arkham.Timing (Timing)
+import Arkham.Tracing
 
 pattern InfestedLocation :: LocationMatcher
 pattern InfestedLocation <- (LocationWithDamage (GreaterThan (Static 0)))
@@ -35,7 +36,7 @@ makeInfestationTest = do
       (StoryTarget theInfestationBegins)
       (RequestChaosTokens (StorySource theInfestationBegins) Nothing (Reveal 1) SetAside)
 
-addInfestationToken :: HasGame m => ChaosTokenFace -> m Message
+addInfestationToken :: (HasGame m, Tracing m) => ChaosTokenFace -> m Message
 addInfestationToken face = do
   theInfestationBegins <- selectJust $ storyIs Stories.theInfestationBegins
   pure $ SendMessage (StoryTarget theInfestationBegins) (AddChaosToken face)

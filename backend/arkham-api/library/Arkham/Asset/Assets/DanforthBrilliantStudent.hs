@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Capability
+import Arkham.Helpers.Window (getTreacheryResolver)
 import Arkham.Matcher
 
 newtype DanforthBrilliantStudent = DanforthBrilliantStudent AssetAttrs
@@ -16,15 +17,15 @@ danforthBrilliantStudent = allyWith DanforthBrilliantStudent Cards.danforthBrill
 
 instance HasAbilities DanforthBrilliantStudent where
   getAbilities (DanforthBrilliantStudent x) =
-    [ controlled x 1 (can.draw.cards You)
+    [ controlled x 1 (can.draw.cards (affectsColocatedMatch You))
         $ triggered
-          (ResolvesTreachery #after You $ TreacheryWithTitle "Tekeli-li")
+          (ResolvesTreachery #after (affectsColocatedMatch You) "Tekeli-li")
           (assetUseCost x Secret 1 <> exhaust x)
     ]
 
 instance RunMessage DanforthBrilliantStudent where
   runMessage msg a@(DanforthBrilliantStudent attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      drawCardsIfCan iid (attrs.ability 1) 2
+    UseCardAbility _ (isSource attrs -> True) 1 (getTreacheryResolver -> iid) _ -> do
+      drawCards iid (attrs.ability 1) 2
       pure a
     _ -> DanforthBrilliantStudent <$> liftRunMessage msg attrs

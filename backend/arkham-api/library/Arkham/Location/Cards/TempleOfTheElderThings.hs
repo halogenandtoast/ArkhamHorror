@@ -32,7 +32,7 @@ instance HasAbilities TempleOfTheElderThings where
 instance RunMessage TempleOfTheElderThings where
   runMessage msg l@(TempleOfTheElderThings attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      assignDamage iid (attrs.ability 1) 1
+      assignHorror iid (attrs.ability 1) 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       ls <- select LocationWithAnyKeys

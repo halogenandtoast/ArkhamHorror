@@ -27,7 +27,7 @@ instance HasModifiersFor OnyxPentacle where
           $ EnemyCriteria
           $ ThisEnemy
           $ EnemyCanBeEvadedBy (a.ability 1)
-          <> at_ (oneOf [YourLocation, ConnectedFrom YourLocation])
+          <> at_ (oneOf [YourLocation, connectedFrom YourLocation])
       ]
 
 instance HasAbilities OnyxPentacle where
@@ -55,7 +55,7 @@ instance RunMessage OnyxPentacle where
           $ evadeOverride
           $ EnemyCanBeEvadedBy (attrs.ability 1)
           <> oneOf
-            [ EnemyAt (ConnectedFrom $ locationWithInvestigator iid)
+            [ EnemyAt (connectedFrom $ locationWithInvestigator iid)
             , enemyAtLocationWith iid
             ]
       chooseOneM iid do

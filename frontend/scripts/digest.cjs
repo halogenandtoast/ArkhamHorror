@@ -11,17 +11,20 @@ if (!lang) {
   process.exit(1);
 }
 
-const dir = path.join(__dirname, `../public/img/arkham/${lang}/cards`);
+const cardsDir = path.join(__dirname, `../public/img/arkham/${lang}/cards`);
+const tarotDir = path.join(__dirname, `../public/img/arkham/${lang}/tarot`);
 const digest = path.join(__dirname, `../src/digests/${lang}.json`);
 
-if (!fs.existsSync(dir)) {
+if (!fs.existsSync(cardsDir)) {
   console.error(`Directory not found: ${dir}`);
   process.exit(1);
 }
 
-const files = fs.readdirSync(dir).filter(f => f.endsWith('.avif'));
+const files = fs.readdirSync(cardsDir).filter(f => f.endsWith('.avif'));
 
-const digests = files.map(f => `cards/${f}`);
+const tarot = fs.existsSync(tarotDir) ? fs.readdirSync(tarotDir).filter(f => f.endsWith('.jpg')) : [];
+
+const digests = [...files.map(f => `cards/${f}`), ...tarot.map(f => `tarot/${f}`)];
 
 fs.writeFileSync(digest, JSON.stringify(digests, null, 2));
 console.log(`Wrote ${digests.length} digests to ${digest}`);

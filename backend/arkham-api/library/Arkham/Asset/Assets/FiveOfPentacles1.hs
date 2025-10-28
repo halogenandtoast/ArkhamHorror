@@ -23,7 +23,7 @@ instance HasAbilities FiveOfPentacles1 where
 
 instance RunMessage FiveOfPentacles1 where
   runMessage msg a@(FiveOfPentacles1 attrs) = case msg of
-    InHand _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
+    InHand iid (UseThisAbility iid' (isSource attrs -> True) 1) | iid == iid' -> do
       push $ putCardIntoPlay iid attrs
       pure a
     _ -> FiveOfPentacles1 <$> runMessage msg attrs

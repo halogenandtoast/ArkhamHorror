@@ -19,7 +19,8 @@ newtype SealedPassage = SealedPassage LocationAttrs
 
 sealedPassage :: LocationCard SealedPassage
 sealedPassage =
-  location SealedPassage Cards.sealedPassage 9 (Static 0)
+  symbolLabel
+    $ location SealedPassage Cards.sealedPassage 9 (Static 0)
     & setConnectsTo (setFromList [LeftOf, RightOf])
 
 instance HasAbilities SealedPassage where
@@ -34,7 +35,7 @@ instance RunMessage SealedPassage where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       mChamberOfTime <- findCard (`cardMatch` cardIs Cards.chamberOfTimeRearrangedByTime)
       n <- getCurrentActStep
-      when (n == 1) $ advanceToAct' (attrs.ability 1) 1 Acts.magicAndScience ActSequence.A
+      when (n == 1) $ advanceToAct' (attrs.ability 1) 1 Acts.theChamberOfStillRemains ActSequence.A
       for_ mChamberOfTime \card -> do
         obtainCard card
         chamberOfTime <- placeLocation card

@@ -1,4 +1,4 @@
-module Arkham.Event.Events.Bolas (bolas, Bolas (..)) where
+module Arkham.Event.Events.Bolas (bolas) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)
@@ -17,16 +17,12 @@ bolas :: EventCard Bolas
 bolas = event Bolas Cards.bolas
 
 instance HasModifiersFor Bolas where
-  getModifiersFor (Bolas e) = case e.attachedTo of
-    Just target -> modified_ e target [EnemyEvade (-1)]
-    _ -> pure mempty
+  getModifiersFor (Bolas e) = for_ e.attachedTo.enemy \target ->
+    modified_ e target [EnemyEvade (-1)]
 
 instance HasAbilities Bolas where
-  getAbilities (Bolas e) = case e.attachedTo of
-    Just (EnemyTarget eid) ->
-      [ restrictedAbility e 1 ControlsThis
-          $ forced (EnemyEnters #after Anywhere $ EnemyWithId eid)
-      ]
+  getAbilities (Bolas e) = case e.attachedTo.enemy of
+    Just eid -> [restricted e 1 ControlsThis $ forced $ EnemyEnters #after Anywhere (be eid)]
     _ -> []
 
 instance RunMessage Bolas where
@@ -36,12 +32,12 @@ instance RunMessage Bolas where
       aspect iid attrs (#combat `InsteadOf` #agility) (mkChooseEvade sid iid attrs)
       pure e
     PassedThisSkillTest _iid (isSource attrs -> True) -> do
-      getSkillTestTarget >>= traverse_ \case
+      whenJustM getSkillTestTarget \case
         EnemyTarget eid -> do
-          whenM (eid <=~> NonEliteEnemy) $ push $ PlaceEvent attrs.id (AttachedToEnemy eid)
+          whenM (eid <=~> NonEliteEnemy) $ place attrs.id (AttachedToEnemy eid)
         _ -> pure ()
       pure e
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      for_ attrs.attachedTo $ push . Exhaust
+      for_ attrs.attachedTo.enemy exhaustThis
       pure e
     _ -> Bolas <$> liftRunMessage msg attrs

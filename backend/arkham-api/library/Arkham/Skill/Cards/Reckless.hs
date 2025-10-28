@@ -18,7 +18,7 @@ instance HasAbilities Reckless where
 
 instance RunMessage Reckless where
   runMessage msg s@(Reckless attrs) = runQueueT $ case msg of
-    InHand _ (UseCardAbility iid (isSource attrs -> True) 1 _ _) -> do
+    InHand iid (UseCardAbility iid' (isSource attrs -> True) 1 _ _) | iid == iid' -> do
       revealCard attrs
       loseResources iid (CardIdSource attrs.cardId) 2
       pure s

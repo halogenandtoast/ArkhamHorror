@@ -1,11 +1,10 @@
-module Arkham.Story.Cards.TheCryptOfZulanThek (TheCryptOfZulanThek (..), theCryptOfZulanThek) where
+module Arkham.Story.Cards.TheCryptOfZulanThek (theCryptOfZulanThek) where
 
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype TheCryptOfZulanThek = TheCryptOfZulanThek StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -15,9 +14,10 @@ theCryptOfZulanThek :: StoryCard TheCryptOfZulanThek
 theCryptOfZulanThek = story TheCryptOfZulanThek Cards.theCryptOfZulanThek
 
 instance RunMessage TheCryptOfZulanThek where
-  runMessage msg s@(TheCryptOfZulanThek attrs) = case msg of
-    ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+  runMessage msg s@(TheCryptOfZulanThek attrs) = runQueueT $ case msg of
+    ResolveThisStory _ (is attrs -> True) -> do
+      push $ ScenarioCountIncrementBy SignOfTheGods 1
       mHordeOfNight <- selectOne $ enemyIs Enemies.hordeOfNight <> IsHost
-      pushAll $ ScenarioCountIncrementBy SignOfTheGods 1 : map addToVictory (maybeToList mHordeOfNight)
+      for_ mHordeOfNight addToVictory
       pure s
-    _ -> TheCryptOfZulanThek <$> runMessage msg attrs
+    _ -> TheCryptOfZulanThek <$> liftRunMessage msg attrs

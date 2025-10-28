@@ -2,15 +2,12 @@ module Arkham.Agenda.Cards.TheHierophantV (theHierophantV) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Card
-import Arkham.Classes
-import Arkham.GameValue
-import Arkham.Helpers.Window (defeatedEnemy)
 import Arkham.Helpers.Query
+import Arkham.Helpers.Window (defeatedEnemy)
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
+import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Cultist, SilverTwilight))
 
 newtype TheHierophantV = TheHierophantV AgendaAttrs
@@ -22,61 +19,42 @@ theHierophantV = agenda (1, A) TheHierophantV Cards.theHierophantV (Static 8)
 
 instance HasAbilities TheHierophantV where
   getAbilities (TheHierophantV a) =
-    [ mkAbility a 1 $ ForcedAbility $ EnemyDefeated Timing.When You ByAny $ EnemyWithTrait SilverTwilight
-    ]
+    [mkAbility a 1 $ forced $ EnemyDefeated #when You ByAny $ EnemyWithTrait SilverTwilight]
 
 -- given a list of investigators and a list of cultists have each investigator choose a cultist to draw
 buildDrawCultists
-  :: [Card] -> NonEmpty (InvestigatorId, PlayerId) -> NonEmpty EncounterCard -> Message
-buildDrawCultists focused ((investigator, player) :| []) cards =
-  Run
-    [ FocusCards focused
-    , chooseOne
-        player
-        [ targetLabel (toCardId card) [UnfocusCards, InvestigatorDrewEncounterCard investigator card]
-        | card <- toList cards
-        ]
-    ]
-buildDrawCultists focused ((investigator, player) :| (nextInvestigator : remainingInvestigators)) cards =
-  Run
-    [ FocusCards focused
-    , chooseOne
-        player
-        [ targetLabel
-            (toCardId card)
-            ( UnfocusCards
-                : InvestigatorDrewEncounterCard investigator card
-                : [ buildDrawCultists
-                      (deleteFirst (toCard card) focused)
-                      (nextInvestigator :| remainingInvestigators)
-                      rest'
-                  | rest' <- maybeToList (nonEmpty rest)
-                  ]
-            )
-        | (card, rest) <- eachWithRest (toList cards)
-        ]
-    ]
+  :: ReverseQueue m => [Card] -> NonEmpty InvestigatorId -> NonEmpty EncounterCard -> m ()
+buildDrawCultists focused (investigator :| []) cards = do
+  focusCards focused do
+    chooseOneM investigator $ targets (toList cards) $ drawCard investigator
+buildDrawCultists focused (investigator :| (nextInvestigator : remainingInvestigators)) cards = do
+  focusCards focused do
+    chooseOneM investigator do
+      for_ (eachWithRest $ toList cards) \(card, rest) -> do
+        targeting card do
+          drawCard investigator card
+          for_ (nonEmpty rest)
+            $ buildDrawCultists
+              (deleteFirst (toCard card) focused)
+              (nextInvestigator :| remainingInvestigators)
 
 instance RunMessage TheHierophantV where
-  runMessage msg a@(TheHierophantV attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+  runMessage msg a@(TheHierophantV attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
       lead <- getLead
-      pushAll
-        [DiscardTopOfEncounterDeck lead 5 (toSource attrs) (Just $ toTarget attrs), advanceAgendaDeck attrs]
+      discardTopOfEncounterDeckAndHandle lead attrs 5 attrs
+      advanceAgendaDeck attrs
       pure a
     DiscardedTopOfEncounterDeck _ cards _ (isTarget attrs -> True) -> do
-      let mCultists = nonEmpty $ filter (`cardMatch` (CardWithTrait Cultist <> CardWithType EnemyType)) cards
-      for_ mCultists $ \cultists -> do
-        mInvestigators <- nonEmpty <$> getInvestigatorPlayers
-        case mInvestigators of
-          Just investigators -> do
-            push $ buildDrawCultists (map toCard cards) investigators cultists
-          Nothing -> error "No investigators"
+      void $ runMaybeT do
+        cultists <- hoistMaybe $ nonEmpty $ filter (`cardMatch` (CardWithTrait Cultist <> #enemy)) cards
+        investigators <- MaybeT $ nonEmpty <$> getInvestigators
+        lift $ buildDrawCultists (map toCard cards) investigators cultists
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 (defeatedEnemy -> enemy) _ -> do
       enemiesWithDoom <- select $ EnemyAt (locationWithEnemy enemy) <> EnemyWithAnyDoom
-      pushAll
-        $ concat
-          [[RemoveDoom (toSource attrs) (toTarget enemy') 1, placeDoomOnAgenda] | enemy' <- enemiesWithDoom]
+      for_ enemiesWithDoom \enemy' -> do
+        removeDoom attrs enemy' 1
+        placeDoomOnAgenda 1
       pure a
-    _ -> TheHierophantV <$> runMessage msg attrs
+    _ -> TheHierophantV <$> liftRunMessage msg attrs

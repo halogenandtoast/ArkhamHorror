@@ -2,6 +2,7 @@ module Arkham.Location.Cards.DancersMist (dancersMist) where
 
 import Arkham.Ability
 import Arkham.Direction
+import Arkham.ForMovement
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
@@ -20,21 +21,15 @@ newtype DancersMist = DancersMist LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dancersMist :: LocationCard DancersMist
-dancersMist =
-  locationWith
-    DancersMist
-    Cards.dancersMist
-    3
-    (Static 2)
-    (connectsToL .~ adjacentLocations)
+dancersMist = locationWith DancersMist Cards.dancersMist 3 (Static 2) (connectsToL .~ adjacentLocations)
 
 instance HasAbilities DancersMist where
-  getAbilities (DancersMist attrs) =
+  getAbilities (DancersMist a) =
     extendRevealed
-      attrs
-      [ cosmos attrs 1
-      , restricted attrs 2 (exists AccessibleLocation)
-          $ triggered (Moves #after You AnySource Anywhere (be attrs)) (ScenarioResourceCost 1)
+      a
+      [ cosmos a 1
+      , restricted a 2 (exists AccessibleLocation)
+          $ triggered (Moves #after You AnySource Anywhere (be a)) (ScenarioResourceCost 1)
       ]
 
 instance RunMessage DancersMist where
@@ -46,7 +41,7 @@ instance RunMessage DancersMist where
           rightChoice <- getEmptyPositionsInDirections pos [GridRight]
           directionsWithLocations <- filterM (fmap isJust . getLocationInDirection pos) [GridUp ..]
           let
-            positionPairs = flip map directionsWithLocations $ \dir ->
+            positionPairs = flip map directionsWithLocations \dir ->
               ( updatePosition pos dir
               , List.delete (oppositeDirection dir) [GridUp ..]
               )
@@ -55,9 +50,10 @@ instance RunMessage DancersMist where
           if null emptyPositions && null rightChoice
             then cosmosFail attrs
             else do
-              chooseOneM iid do
+              chooseOneM iid $ scenarioI18n do
+                questionLabeledCard attrs
                 when (notNull rightChoice) do
-                  labeled "Connect to the Right" do
+                  labeled' "connectToTheRight" do
                     chooseOrRunOneM iid do
                       for_ rightChoice \pos'@(Pos x y) -> do
                         gridLabeled (cosmicLabel pos')
@@ -66,7 +62,7 @@ instance RunMessage DancersMist where
                           : msgs
 
                 when (notNull emptyPositions) do
-                  labeled "Lose 2 resources and connect to an adjacent location in a direction of your choice" do
+                  labeled' "dancersMist.choice" do
                     push $ LoseResources iid (toAbilitySource attrs 1) 2
                     chooseOrRunOneM iid do
                       for_ emptyPositions \pos'@(Pos x y) -> do
@@ -77,7 +73,10 @@ instance RunMessage DancersMist where
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       startId <- fieldJust InvestigatorLocation iid
-      accessibleLocationIds <- select $ accessibleFrom startId
+      accessibleLocationIds <- select $ accessibleFrom ForMovement startId
       chooseTargetM iid accessibleLocationIds $ moveTo attrs iid
+      pure l
+    Do (PlaceCosmos _ lid cloc) | lid == attrs.id -> do
+      handleCosmos lid cloc
       pure l
     _ -> DancersMist <$> liftRunMessage msg attrs

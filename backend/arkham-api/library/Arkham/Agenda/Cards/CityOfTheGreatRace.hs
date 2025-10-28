@@ -1,15 +1,13 @@
 module Arkham.Agenda.Cards.CityOfTheGreatRace (cityOfTheGreatRace) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
+import Arkham.Agenda.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Classes
-import Arkham.GameValue
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Placement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Placement
+import Arkham.Strategy
 import Arkham.Trait (Trait (Item))
 
 newtype CityOfTheGreatRace = CityOfTheGreatRace AgendaAttrs
@@ -17,41 +15,27 @@ newtype CityOfTheGreatRace = CityOfTheGreatRace AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cityOfTheGreatRace :: AgendaCard CityOfTheGreatRace
-cityOfTheGreatRace =
-  agenda (1, A) CityOfTheGreatRace Cards.cityOfTheGreatRace (Static 5)
+cityOfTheGreatRace = agenda (1, A) CityOfTheGreatRace Cards.cityOfTheGreatRace (Static 5)
 
 instance HasModifiersFor CityOfTheGreatRace where
   getModifiersFor (CityOfTheGreatRace attrs) =
-    if onSide A attrs
-      then modifySelect attrs Anyone [CannotPlay $ CardWithTrait Item]
-      else pure mempty
+    when (onSide A attrs) $ modifySelect attrs Anyone [CannotPlay $ CardWithTrait Item]
 
 instance RunMessage CityOfTheGreatRace where
-  runMessage msg a@(CityOfTheGreatRace attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      iids <- getInvestigators
-      shouldMoveCustodian <-
-        selectAny $ assetIs Assets.theCustodian <> UncontrolledAsset
+  runMessage msg a@(CityOfTheGreatRace attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      eachInvestigator \iid -> do
+        search iid attrs iid [fromTopOfDeck 9] #item (DrawFoundUpTo iid 2)
 
-      custodianMessages <-
-        if shouldMoveCustodian
-          then do
-            lead <- getLeadPlayer
-            custodian <- selectJust $ assetIs Assets.theCustodian
-            locationWithMostClues <- select $ LocationWithMostClues Anywhere
-            pure
-              $ [ chooseOrRunOne
-                    lead
-                    [ targetLabel lid [PlaceAsset custodian $ AtLocation lid]
-                    | lid <- locationWithMostClues
-                    ]
-                ]
-          else pure []
+      shuffleEncounterDiscardBackIn
 
-      pushAll
-        $ [search iid attrs iid [fromTopOfDeck 9] #item (DrawFoundUpTo iid 2) | iid <- iids]
-        <> [ShuffleEncounterDiscardBackIn]
-        <> custodianMessages
-        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      shouldMoveCustodian <- selectAny $ assetIs Assets.theCustodian <> UncontrolledAsset
+      when shouldMoveCustodian do
+        custodian <- selectJust $ assetIs Assets.theCustodian
+        locationWithMostClues <- select $ LocationWithMostClues Anywhere
+        leadChooseOrRunOneM do
+          targets locationWithMostClues $ place custodian . AtLocation
+
+      advanceAgendaDeck attrs
       pure a
-    _ -> CityOfTheGreatRace <$> runMessage msg attrs
+    _ -> CityOfTheGreatRace <$> liftRunMessage msg attrs

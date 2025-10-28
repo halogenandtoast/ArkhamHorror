@@ -1,14 +1,12 @@
 module Arkham.Location.Cards.Atlantis (atlantis) where
 
 import Arkham.Ability
-import Arkham.ChaosToken
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner hiding (RevealChaosToken)
+import Arkham.Location.Import.Lifted hiding (RevealChaosToken)
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype Atlantis = Atlantis LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,21 +17,16 @@ atlantis = location Atlantis Cards.atlantis 3 (Static 2)
 
 instance HasAbilities Atlantis where
   getAbilities (Atlantis a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ RevealChaosToken Timing.After Anyone
-          $ ChaosTokenFaceIs AutoFail
-      ]
+    extendRevealed1 a $ mkAbility a 1 $ forced $ RevealChaosToken #after Anyone #autofail
 
 instance RunMessage Atlantis where
-  runMessage msg l@(Atlantis attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      pushAll [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1, stepMessage 1 msg]
+  runMessage msg l@(Atlantis attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeDoom (attrs.ability 1) attrs 1
+      doStep 1 msg
       pure l
-    UseCardAbilityStep _ _ 1 _ _ 1 -> do
-      n <- field LocationDoom (toId attrs)
-      when (n >= 3) $ push $ RemoveLocation (toId attrs)
+    DoStep 1 (UseThisAbility _ (isSource attrs -> True) 1) -> do
+      n <- field LocationDoom attrs.id
+      when (n >= 3) $ removeLocation attrs.id
       pure l
-    _ -> Atlantis <$> runMessage msg attrs
+    _ -> Atlantis <$> liftRunMessage msg attrs

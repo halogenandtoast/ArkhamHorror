@@ -16,7 +16,7 @@ moaiStatues = story MoaiStatues Cards.moaiStatues
 
 instance RunMessage MoaiStatues where
   runMessage msg s@(MoaiStatues attrs) = runQueueT $ case msg of
-    ResolveStory _iid ResolveIt story' | story' == toId attrs -> do
+    ResolveThisStory _iid (is attrs -> True) -> do
       handleMemory
         attrs
         Assets.roaldEllsworthIntrepidExplorer

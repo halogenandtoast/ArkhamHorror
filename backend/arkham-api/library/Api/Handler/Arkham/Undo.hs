@@ -14,10 +14,10 @@ import Data.Time.Clock
 import Database.Esqueleto.Experimental
 import Entity.Arkham.LogEntry
 import Entity.Arkham.Step
-import Import hiding (delete, on, update, (<.), (=.), (==.), (>=.))
+import Import hiding (delete, on, update, (!=.), (<.), (=.), (==.), (>=.))
 import Json
 import Network.HTTP.Types.Status qualified as Status
-import Safe (fromJustNote)
+import OpenTelemetry.Eventlog (withSpan_)
 
 jsonError :: Text -> Handler a
 jsonError msg = sendStatusJSON Status.status400 (object ["error" .= msg])
@@ -26,7 +26,7 @@ jsonErrorContents :: ToJSON v => v -> Text -> Handler a
 jsonErrorContents v msg = sendStatusJSON Status.status400 (object ["error" .= msg, "contents" .= v])
 
 stepBack :: UserId -> ArkhamGameId -> ArkhamGame -> Handler ArkhamGame
-stepBack userId gameId current@ArkhamGame {..} = do
+stepBack userId gameId current@ArkhamGame {..} = withSpan_ "stepBack" do
   Entity pid arkhamPlayer <- runDB $ getBy404 (UniquePlayer userId gameId)
   runDB (getBy (UniqueStep gameId arkhamGameStep)) >>= \case
     Nothing -> jsonError "Missing step"
@@ -34,7 +34,7 @@ stepBack userId gameId current@ArkhamGame {..} = do
       -- never delete the initial step as it can not be redone
       -- NOTE: actually we never want to step back if the patchOperations are empty, the first condition is therefor redundant
       when (arkhamStepStep step <= 0) $ jsonErrorContents step "Can't undo the first step"
-      when (null $ patchOperations $ choicePatchDown $ arkhamStepChoice step) do
+      when (null $ patchOperations $ choicePatchDown $ arkhamStepChoice step) $ withSpan_ "noUpdate" do
         -- we don't need to apply any real updates so let's just remove the step
         arkhamGame <- runDB do
           void $ select do
@@ -73,28 +73,18 @@ stepBack userId gameId current@ArkhamGame {..} = do
             =<< getBy (UniqueStep gameId (arkhamGameStep - 1))
 
           now <- liftIO getCurrentTime
-          isDebug <- lookupGetParam "debug"
-
+          isDebug <- isJust <$> lookupGetParam "debug"
           seed <- liftIO getRandom
+
           let
             arkhamGame =
-              case isDebug of
-                Nothing ->
-                  ArkhamGame
-                    arkhamGameName
-                    (ge {gameSeed = seed})
-                    (arkhamGameStep - 1)
-                    arkhamGameMultiplayerVariant
-                    arkhamGameCreatedAt
-                    now
-                Just _ ->
-                  ArkhamGame
-                    arkhamGameName
-                    ge
-                    (arkhamGameStep - 1)
-                    arkhamGameMultiplayerVariant
-                    arkhamGameCreatedAt
-                    now
+              ArkhamGame
+                arkhamGameName
+                (if isDebug then ge else ge {gameSeed = seed})
+                (arkhamGameStep - 1)
+                arkhamGameMultiplayerVariant
+                arkhamGameCreatedAt
+                now
 
           replace gameId arkhamGame
           delete do
@@ -114,7 +104,7 @@ stepBack userId gameId current@ArkhamGame {..} = do
 
 putApiV1ArkhamGameUndoR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoR gameId = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  userId <- getRequestUserId
   game <- runDB $ get404 gameId
   ArkhamGame {..} <- stepBack userId gameId game
   writeChannel <- socketChannel <$> getRoom gameId
@@ -127,10 +117,12 @@ putApiV1ArkhamGameUndoR gameId = do
 
 putApiV1ArkhamGameUndoScenarioR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoScenarioR gameId = do
-  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  userId <- getRequestUserId
   game <- runDB $ get404 gameId
 
   let n = gameScenarioSteps (arkhamGameCurrentData game) - 1
+
+  when (n <= 0) $ jsonError "No scenario steps to undo"
 
   ArkhamGame {..} <- stepBackN n userId gameId game
 
@@ -172,6 +164,7 @@ stepBackN n userId gameId ArkhamGame {..} = runDB do
     where_ $ steps.arkhamGameId ==. val gameId
     orderBy [desc steps.step]
     limit (fromIntegral n)
+    where_ $ steps.step !=. val 0
     pure steps
 
   void $ select do
@@ -180,7 +173,7 @@ stepBackN n userId gameId ArkhamGame {..} = runDB do
     locking forUpdate
 
   update \g -> do
-    set g [ArkhamGameStep =. val (arkhamGameStep - n)]
+    set g [ArkhamGameStep =. val (min 0 $ arkhamGameStep - n)]
     where_ $ g.id ==. val gameId
 
   delete do
@@ -190,7 +183,7 @@ stepBackN n userId gameId ArkhamGame {..} = runDB do
   delete do
     entries <- from $ table @ArkhamLogEntry
     where_ $ entries.arkhamGameId ==. val gameId
-    where_ $ entries.step >=. val (arkhamGameStep - n)
+    where_ $ entries.step >=. val (min 0 $ arkhamGameStep - n)
 
   now <- liftIO getCurrentTime
 

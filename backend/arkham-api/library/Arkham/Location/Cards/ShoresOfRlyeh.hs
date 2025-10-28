@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.ShoresOfRlyeh (shoresOfRlyeh, ShoresOfRlyeh (..)) where
+module Arkham.Location.Cards.ShoresOfRlyeh (shoresOfRlyeh) where
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (..))

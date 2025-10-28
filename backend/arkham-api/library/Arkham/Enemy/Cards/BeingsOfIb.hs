@@ -1,10 +1,8 @@
-module Arkham.Enemy.Cards.BeingsOfIb (beingsOfIb, BeingsOfIb (..)) where
+module Arkham.Enemy.Cards.BeingsOfIb (beingsOfIb) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Trait (Trait (Ruins))
 
 newtype BeingsOfIb = BeingsOfIb EnemyAttrs
@@ -13,18 +11,10 @@ newtype BeingsOfIb = BeingsOfIb EnemyAttrs
 
 beingsOfIb :: EnemyCard BeingsOfIb
 beingsOfIb =
-  enemyWith
-    BeingsOfIb
-    Cards.beingsOfIb
-    (4, Static 1, 4)
-    (0, 1)
-    $ \a ->
-      a
-        & preyL
-        .~ OnlyPrey (InvestigatorAt $ LocationWithTrait Ruins)
-        & attacksL
-        .~ InvestigatorAt (locationWithEnemy (toId a))
+  enemyWith BeingsOfIb Cards.beingsOfIb (4, Static 1, 4) (0, 1) \a ->
+    a
+      & (preyL .~ OnlyPrey (Prey $ at_ $ LocationWithTrait Ruins))
+      & (attacksL .~ at_ (locationWithEnemy a))
 
 instance RunMessage BeingsOfIb where
-  runMessage msg (BeingsOfIb attrs) =
-    BeingsOfIb <$> runMessage msg attrs
+  runMessage msg (BeingsOfIb attrs) = BeingsOfIb <$> runMessage msg attrs

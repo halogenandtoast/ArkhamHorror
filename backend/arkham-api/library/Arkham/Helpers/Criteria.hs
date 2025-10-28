@@ -41,7 +41,7 @@ import Arkham.Helpers.Customization (hasCustomization)
 import Arkham.Helpers.Doom (getDoomCount)
 import Arkham.Helpers.GameValue (gameValueMatches)
 import Arkham.Helpers.History (historyMatches)
-import Arkham.Helpers.Investigator (getAsIfInHandCards)
+import Arkham.Helpers.Investigator (getAsIfInHandCardsNotForPlay)
 import Arkham.Helpers.Location (getCanMoveToMatchingLocations, locationMatches)
 import Arkham.Helpers.Log (getHasRecord, getRecordCount, scenarioCount)
 import Arkham.Helpers.Modifiers (getModifiers, hasModifier, withModifiersOf)
@@ -294,7 +294,7 @@ passesCriteria iid mcard source' requestor windows' ctr = withSpan' "passesCrite
   Criteria.Never -> pure False
   Criteria.InYourHand -> do
     hand <-
-      liftA2 (<>) (fieldMap InvestigatorHand (map toCardId) iid) (map toCardId <$> getAsIfInHandCards iid)
+      liftA2 (<>) (fieldMap InvestigatorHand (map toCardId) iid) (map toCardId <$> getAsIfInHandCardsNotForPlay iid)
     case source of
       EventSource eid -> do
         mCardId <- fieldMay InHandEventCardId eid

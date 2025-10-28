@@ -3553,8 +3553,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       filterM
         ( andM
             . sequence
-              [ additionalActionCovers source (toList mAction)
-              , pure . ((/= AnyAdditionalAction) . additionalActionType)
+              [ pure . ((/= AnyAdditionalAction) . additionalActionType)
+              , additionalActionCovers source (toList mAction)
               ]
         )
         additionalActions

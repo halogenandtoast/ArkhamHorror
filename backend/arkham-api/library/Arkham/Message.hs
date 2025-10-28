@@ -1000,6 +1000,7 @@ data Message
   | RevealSkillTestChaosTokens InvestigatorId
   | RevealSkillTestChaosTokensAgain InvestigatorId -- meant for when we reveal during resolving
   | RevealChaosToken Source InvestigatorId ChaosToken
+  | SilentRevealChaosToken Source InvestigatorId ChaosToken
   | Revelation InvestigatorId Source
   | RevelationSkipped InvestigatorId Source
   | RevelationChoice InvestigatorId Source Int

@@ -261,7 +261,9 @@ createActiveCostForCard
   -> m ActiveCost
 createActiveCostForCard iid card isPlayAction windows' = do
   acId <- getRandom
-  allModifiers <- mconcat <$> sequence [getModifiers card, getModifiers iid]
+  cardMods <- getModifiers card
+  investigatorMods <- getModifiers iid
+  let allModifiers = cardMods <> investigatorMods
   cost <-
     if IgnoreAllCosts `elem` allModifiers
       then pure Cost.Free
@@ -293,18 +295,15 @@ createActiveCostForCard iid card isPlayAction windows' = do
                   else Cost.Free
               else Cost.ResourceCost resources
 
-        investigateCosts <-
-          if isInvestigate
-            then do
-              getMaybeLocation iid >>= \case
-                Just lid -> do
-                  mods' <- getModifiers lid
-                  pure [c | AdditionalCostToInvestigate c <- mods']
-                _ -> pure []
-            else pure []
+        investigateCosts <- runDefaultMaybeT [] do
+          guard isInvestigate
+          lid <- MaybeT $ getMaybeLocation iid
+          mods' <- lift $ getModifiers lid
+          pure [c | AdditionalCostToInvestigate c <- mods']
 
+        let additionalActionModifiers = if isPlayAction == NotPlayAction then allModifiers else cardMods
         additionalActionCosts <-
-          sum <$> flip mapMaybeM allModifiers \case
+          sum <$> flip mapMaybeM additionalActionModifiers \case
             AdditionalCost (Cost.ActionCost n) -> pure $ Just n
             AdditionalActionCostOf match n -> do
               performedActions <- field InvestigatorActionsPerformed iid
@@ -315,7 +314,8 @@ createActiveCostForCard iid card isPlayAction windows' = do
 
         actionCost <-
           if isPlayAction == NotPlayAction
-            then pure $ if additionalActionCosts > 0 then Cost.ActionCost additionalActionCosts else Cost.Free
+            then do
+              pure $ if additionalActionCosts > 0 then Cost.ActionCost additionalActionCosts else Cost.Free
             else
               Cost.ActionCost . (+ additionalActionCosts) <$> getActionCost (toAttrs investigator') card.actions
 

@@ -78,8 +78,6 @@ const inHandEnemies = computed(() =>
   Object.values(props.game.enemies).filter((e) => (e.placement.tag === "StillInHand" || e.placement.tag === "HiddenInHand") && e.placement.contents === investigatorId.value)
 )
 
-const discards = computed<ArkhamCard.Card[]>(() => props.investigator.discard.map(c => { return { tag: 'PlayerCard', contents: c }}))
-
 const hunchDeck = computed(() => {
   const match = props.investigator.decks.find(([k,]) => k === "HunchDeck")
   if (match) {

@@ -42,28 +42,31 @@ instance RunMessage FriendsInLowPlaces where
       let traits = [t | ChosenTrait t <- concatMap snd (toList attrs.customizations)]
       let lookSources = [fromTopOfDeck $ if attrs `hasCustomization` Experienced then 9 else 6]
       lookAt iid' attrs iid' lookSources (basic $ mapOneOf CardWithTrait traits) (defer attrs IsNotDraw)
-      shuffleDeck iid'
+      pure e
+    SearchNoneFound iid (isTarget attrs -> True) -> do
+      chooseOneM iid do
+        labeled "Shuffle Cards Back In" $ shuffleDeck iid
+        labeled "Place on the top of your deck, in any order" do
+          push $ UpdateSearchReturnStrategy iid FromDeck PutBackInAnyOrder
       pure e
     SearchFound iid (isTarget attrs -> True) x cards -> do
-      when (null cards) $ chooseOne iid [Label "No Cards Founds" []]
-      when (notNull cards) do
-        n <- getSpendableResources iid
-        let traits = [t | ChosenTrait t <- concatMap snd (toList attrs.customizations)]
-        let hasBothTraits = filterCards (foldMap CardWithTrait traits) cards
-        if attrs `hasCustomization` Versatile && notNull hasBothTraits && n > 0
-          then do
-            chooseOneM iid do
-              labeled "Do not add a card to your hand for free (Versatile)" $ doStep 0 msg
-              for_ (eachWithRest hasBothTraits) \(card, cards') -> do
-                targeting card do
-                  when (attrs `hasCustomization` Bolstering) $ phaseModifier attrs card (AddSkillIcons [#wild])
-                  addToHand iid (only card)
-                  handleTarget iid attrs card
-                  doStep 0 $ SearchFound iid (toTarget attrs) x cards'
-          else doStep 0 msg
+      n <- getSpendableResources iid
+      let traits = [t | ChosenTrait t <- concatMap snd (toList attrs.customizations)]
+      let hasBothTraits = filterCards (foldMap CardWithTrait traits) cards
+      if attrs `hasCustomization` Versatile && notNull hasBothTraits && n > 0
+        then do
+          chooseOneM iid do
+            labeled "Do not add a card to your hand for free (Versatile)" $ doStep 0 msg
+            for_ (eachWithRest hasBothTraits) \(card, cards') -> do
+              targeting card do
+                when (attrs `hasCustomization` Bolstering) $ phaseModifier attrs card (AddSkillIcons [#wild])
+                addToHand iid (only card)
+                handleTarget iid attrs card
+                doStep 0 $ SearchFound iid (toTarget attrs) x cards'
+        else doStep 0 msg
       when (attrs `hasCustomization` Clever) do
         chooseOneM iid do
-          labeled "Shuffle Cards Back In" nothing
+          labeled "Shuffle Cards Back In" $ shuffleDeck iid
           labeled "Place on the top of your deck, in any order" do
             push $ UpdateSearchReturnStrategy iid FromDeck PutBackInAnyOrder
       pushWhen (attrs `hasCustomization` Swift) $ Do msg

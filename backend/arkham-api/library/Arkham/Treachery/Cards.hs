@@ -3064,6 +3064,8 @@ vaultOfEarthlyDemise :: CardDef
 vaultOfEarthlyDemise =
   (treachery "50032b" "Vault of Earthly Demise" ReturnToTheDevourerBelow 1)
     { cdCardTraits = setFromList [Eldritch, Otherworld]
+    , cdOtherSide = Just "50032"
+    , cdDoubleSided = True
     }
 
 umordhothsHunger :: CardDef

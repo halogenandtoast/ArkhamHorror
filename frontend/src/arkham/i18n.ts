@@ -1,5 +1,19 @@
+import { useDbCardStore } from '@/stores/dbCards'
+
 export const handleI18n = (body: string, t: (key: string, params: { [key: string]: any }) => string) => {
   const {key, params} = parseInput(body)
+
+  const { __name, name } = params
+
+  if(__name && name) {
+    const dbCardStore = useDbCardStore()
+    const card = dbCardStore.getDbCard(__name)
+    console.log(card)
+    if (card) {
+      params.name = card.name
+    }
+  }
+
   return t(key, params)
 }
 

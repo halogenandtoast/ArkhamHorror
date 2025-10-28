@@ -1,4 +1,5 @@
 import base from '@/locales/en/base.json'
+import log from '@/locales/en/log.json'
 import cards from '@/locales/en/cards.json'
 import label from '@/locales/en/label.json'
 import campaignLog from '@/locales/en/campaignLog.json'
@@ -21,6 +22,7 @@ export default
   , ...gameBoard
   , cards
   , label: { ...label, cards: cards["label"] }
+  , log
   , xp
   , nightOfTheZealot
   , theDunwichLegacy

@@ -1,30 +1,22 @@
-module Arkham.Event.Events.Backstab3 (backstab3, backstab3Effect, Backstab3 (..)) where
+module Arkham.Event.Events.Backstab3 (backstab3, backstab3Effect) where
 
-import Arkham.Action
 import Arkham.Aspect hiding (aspect)
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Fight
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
-import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestSource)
+import Arkham.Helpers.Modifiers (ModifierType (..))
 
 newtype Backstab3 = Backstab3 EventAttrs
-  deriving anyclass (IsEvent, HasAbilities)
+  deriving anyclass (IsEvent, HasAbilities, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 backstab3 :: EventCard Backstab3
 backstab3 = event Backstab3 Cards.backstab3
 
-instance HasModifiersFor Backstab3 where
-  getModifiersFor (Backstab3 attrs) = maybeModified_ attrs attrs.controller do
-    Fight <- MaybeT getSkillTestAction
-    guardM $ MaybeT $ isSource attrs <$$> getSkillTestSource
-    pure [DamageDealt 2]
-
 instance RunMessage Backstab3 where
-  runMessage msg e@(Backstab3 attrs@EventAttrs {..}) = runQueueT $ case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
+  runMessage msg e@(Backstab3 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
       skillTestModifier sid attrs iid (DamageDealt 2)
       aspect iid attrs (#agility `InsteadOf` #combat) (mkChooseFight sid iid attrs)

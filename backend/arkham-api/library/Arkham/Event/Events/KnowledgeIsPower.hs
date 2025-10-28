@@ -51,11 +51,7 @@ instance RunMessage KnowledgeIsPower where
           labeled "Do not discard" nothing
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
-      let
-        adjustAbility ab =
-          applyAbilityModifiers
-            (ab {abilityDoesNotProvokeAttacksOfOpportunity = True})
-            [IgnoreAllCosts]
+      let adjustAbility ab = applyAbilityModifiers (noAOO ab) [IgnoreAllCosts]
       abilities <-
         selectMap adjustAbility
           $ AssetAbility (AssetWithId aid)

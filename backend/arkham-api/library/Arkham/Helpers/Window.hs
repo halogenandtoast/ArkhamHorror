@@ -16,6 +16,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Cost.Status
 import Arkham.Deck
+import Arkham.DefeatedBy (DefeatedBy)
 import Arkham.Effect.Types (Field (..))
 import Arkham.Event.Types qualified as Field
 import {-# SOURCE #-} Arkham.Game (abilityMatches)
@@ -486,6 +487,12 @@ getPassedBy = \case
   ((windowType -> Window.SuccessfulEvadeEnemy _ _ n) : _) -> n
   ((windowType -> Window.PassSkillTest _ _ _ n) : _) -> n
   (_ : rest) -> getPassedBy rest
+
+getDefeatedDetails :: [Window] -> (Maybe InvestigatorId, DefeatedBy, EnemyId)
+getDefeatedDetails = \case
+  ((windowType -> Window.EnemyDefeated miid dBy eid) : _) -> (miid, dBy, eid)
+  (_ : rest) -> getDefeatedDetails rest
+  [] -> error "missing"
 
 getEnemy :: [Window] -> EnemyId
 getEnemy = \case

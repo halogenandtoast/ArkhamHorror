@@ -23,10 +23,7 @@ instance HasAbilities AdHoc where
         $ exhaust a
         <> HandDiscardCost
           1
-          ( #asset
-              <> oneOf [#tool, #weapon]
-              <> CardWithPerformableAbility AbilityIsActionAbility [IgnoreAllCosts]
-          )
+          (#asset <> oneOf [#tool, #weapon] <> CardWithPerformableAbility #action [IgnoreAllCosts])
     ]
 
 instance RunMessage AdHoc where
@@ -42,12 +39,8 @@ instance RunMessage AdHoc where
       withCardEntity @AssetId card (`forTarget` msg)
       pure e
     ForTarget (AssetTarget aid) (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      let
-        adjustAbility ab =
-          applyAbilityModifiers
-            (ab {abilityDoesNotProvokeAttacksOfOpportunity = True})
-            [IgnoreAllCosts]
-      abilities <- selectMap adjustAbility $ AssetAbility (AssetWithId aid) <> AbilityIsActionAbility
+      let adjustAbility ab = applyAbilityModifiers (noAOO ab) [IgnoreAllCosts]
+      abilities <- selectMap adjustAbility $ AssetAbility (AssetWithId aid) <> #action
       abilities' <- filterM (getCanPerformAbility iid (defaultWindows iid)) abilities
       chooseOne iid [AbilityLabel iid ab [] [] [] | ab <- abilities']
       pure e

@@ -34,7 +34,7 @@ data Ability = Ability
   , abilityWindow :: WindowMatcher
   , abilityMetadata :: Maybe AbilityMetadata
   , abilityCriteria :: Criterion
-  , abilityDoesNotProvokeAttacksOfOpportunity :: Bool
+  , abilityDoesNotProvokeAttacksOfOpportunity :: Maybe EnemyMatcher
   , abilityTooltip :: Maybe Text
   , abilityCanBeCancelled :: Bool
   , abilityDisplayAs :: Maybe AbilityDisplayAs
@@ -54,7 +54,7 @@ overAbilityActions f ab = ab {Arkham.Ability.Types.abilityType = overAbilityType
 buildFightAbility :: (Sourceable source, HasCardCode source) => source -> Int -> Ability
 buildFightAbility source idx =
   (buildAbility source idx (ActionAbility [#fight] Free))
-    { abilityDoesNotProvokeAttacksOfOpportunity = True
+    { abilityDoesNotProvokeAttacksOfOpportunity = Just AnyEnemy
     }
 
 buildAbility :: (Sourceable source, HasCardCode source) => source -> Int -> AbilityType -> Ability
@@ -68,7 +68,7 @@ buildAbility source idx abilityType =
     , abilityWindow = AnyWindow
     , abilityMetadata = Nothing
     , abilityCriteria = NoRestriction
-    , abilityDoesNotProvokeAttacksOfOpportunity = False
+    , abilityDoesNotProvokeAttacksOfOpportunity = Nothing
     , abilityTooltip = Nothing
     , abilityCanBeCancelled = True
     , abilityDisplayAs = Nothing
@@ -180,7 +180,7 @@ abilityCriteriaL = lens abilityCriteria $ \m x -> m {abilityCriteria = x}
 abilityWantsSkillTestL :: Lens' Ability (Maybe SkillTestMatcher)
 abilityWantsSkillTestL = lens abilityWantsSkillTest $ \m x -> m {abilityWantsSkillTest = x}
 
-abilityDoesNotProvokeAttacksOfOpportunityL :: Lens' Ability Bool
+abilityDoesNotProvokeAttacksOfOpportunityL :: Lens' Ability (Maybe EnemyMatcher)
 abilityDoesNotProvokeAttacksOfOpportunityL =
   lens abilityDoesNotProvokeAttacksOfOpportunity
     $ \m x -> m {abilityDoesNotProvokeAttacksOfOpportunity = x}
@@ -214,7 +214,10 @@ instance FromJSON Ability where
     abilityWindow <- o .: "window"
     abilityMetadata <- o .:? "metadata"
     abilityCriteria <- o .: "criteria"
-    abilityDoesNotProvokeAttacksOfOpportunity <- o .: "doesNotProvokeAttacksOfOpportunity"
+    abilityDoesNotProvokeAttacksOfOpportunity <-
+      o .: "doesNotProvokeAttacksOfOpportunity" <|> do
+        boolVal <- o .: "doesNotProvokeAttacksOfOpportunity"
+        pure $ if boolVal then Just AnyEnemy else Nothing
     abilityTooltip <- o .:? "tooltip"
     abilityCanBeCancelled <- o .: "canBeCancelled"
     abilityDisplayAsAction <- o .:? "displayAsAction" .!= False

@@ -22,7 +22,7 @@ instance HasAbilities SiteOfTheSacrifice where
   getAbilities (SiteOfTheSacrifice a) =
     extendRevealed
       a
-      [ doesNotProvokeAttacksOfOpportunity
+      [ doesNotProvokeAttacksOfOpportunityFrom (enemyIs Enemies.nahab)
           $ restricted a 1 (Here <> exists (enemyIs Enemies.nahab <> EnemyWithAnyDoom))
           $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) (be a))
       , restricted a 2 (CluesOnThis $ LessThan $ PerPlayer 3) $ forced $ RoundEnds #when

@@ -91,7 +91,7 @@ import Arkham.Tracing
 import Arkham.Trait
 import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
-import Control.Lens (non, _Just)
+import Control.Lens (non, _Just, (||~))
 import Data.Function (on)
 import Data.List (nubBy)
 import Data.List qualified as List
@@ -426,12 +426,9 @@ instance RunMessage EnemyAttrs where
         _ -> error $ "Unhandled spawn: " <> show details.spawnAt
       pure
         $ a
-        & spawnDetailsL
-        ?~ details
-        & exhaustedL
-        .~ spawnDetailsExhausted details
-        & delayEngagementL
-        .~ False
+        & (spawnDetailsL ?~ details)
+        & (exhaustedL ||~ spawnDetailsExhausted details)
+        & (delayEngagementL .~ False)
     EnemySpawned details | details.enemy == enemyId -> do
       pure $ a & spawnDetailsL .~ Nothing
     EnemyEntered eid lid | eid == enemyId -> do

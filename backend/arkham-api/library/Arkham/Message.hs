@@ -568,7 +568,7 @@ data Message
   | CancelDamage InvestigatorId Int
   | CancelAssetDamage AssetId Source Int
   | CancelAssetHorror AssetId Source Int
-  | CheckAttackOfOpportunity InvestigatorId Bool
+  | CheckAttackOfOpportunity InvestigatorId Bool (Maybe EnemyMatcher)
   | CheckDefeated Source Target
   | AssignDamage Target
   | CancelAssignedDamage Target Int Int
@@ -1223,6 +1223,11 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "CheckAttackOfOpportunity" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (a, b, c) -> pure $ CheckAttackOfOpportunity a b c
+          Left (a, b) -> pure $ CheckAttackOfOpportunity a b Nothing
       "AddCardEntity" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

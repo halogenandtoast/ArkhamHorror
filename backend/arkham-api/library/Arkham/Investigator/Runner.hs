@@ -1115,7 +1115,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         , beforeWindowMsg
         , TakeActions iid [#engage] (ActionCost 1)
         ]
-      <> [ CheckAttackOfOpportunity iid False
+      <> [ CheckAttackOfOpportunity iid False Nothing
          | ActionDoesNotCauseAttacksOfOpportunity #engage `notElem` modifiers'
          ]
       <> [EngageEnemy iid eid Nothing False, afterWindowMsg, FinishAction, TakenActions iid [#engage]]
@@ -1992,7 +1992,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           , beforeWindowMsg
           , TakeActions investigatorId [#investigate] (ActionCost investigateCost)
           ]
-        <> [ CheckAttackOfOpportunity investigatorId False
+        <> [ CheckAttackOfOpportunity investigatorId False Nothing
            | ActionDoesNotCauseAttacksOfOpportunity #investigate `notElem` modifiers'
            ]
         <> [ toMessage $ investigation {investigateIsAction = False}
@@ -3034,7 +3034,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           $ [BeginAction, beforeWindowMsg]
           <> [drawEncounterCardWindow | cardDraw.isEncounterDraw]
           <> [ TakeActions iid [#draw] (ActionCost 1)
-             , CheckAttackOfOpportunity iid False
+             , CheckAttackOfOpportunity iid False Nothing
              , wouldDrawCard
              , DoDrawCards iid
              , DrawEnded cid iid
@@ -3314,7 +3314,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         , beforeWindowMsg
         , whenActivateAbilityWindow
         , TakeActions iid [#resource] (ActionCost 1)
-        , CheckAttackOfOpportunity iid False
+        , CheckAttackOfOpportunity iid False Nothing
         , TakeResources iid n source False
         , afterWindowMsg
         , afterActivateAbilityWindow

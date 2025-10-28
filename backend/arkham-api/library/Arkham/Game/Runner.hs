@@ -1728,7 +1728,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         Just (EnemyAttacks as) -> do
           _ <- popMessage
           push $ EnemyAttacks (EnemyAttack details : as)
-        Just aoo@(CheckAttackOfOpportunity _ _) -> do
+        Just aoo@(CheckAttackOfOpportunity {}) -> do
           _ <- popMessage
           pushAll [aoo, msg]
         Just (EnemyWillAttack details2) -> do
@@ -1763,7 +1763,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         _ <- popMessage
         push $ EnemyAttacks $ as ++ as2
         pure g
-      Just aoo@(CheckAttackOfOpportunity _ _) -> do
+      Just aoo@(CheckAttackOfOpportunity {}) -> do
         _ <- popMessage
         pushAll [aoo, msg]
         pure g

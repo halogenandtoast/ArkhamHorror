@@ -36,11 +36,7 @@ instance RunMessage RobertCastaigneHasYourBack where
       withCardEntity @AssetId card $ handleTarget iid attrs
       pure a
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
-      let
-        adjustAbility ab =
-          applyAbilityModifiers
-            (ab {abilityDoesNotProvokeAttacksOfOpportunity = True})
-            [IgnoreAllCosts]
+      let adjustAbility ab = applyAbilityModifiers (noAOO ab) [IgnoreAllCosts]
       abilities <-
         filterM (getCanPerformAbility iid (defaultWindows iid))
           =<< selectMap adjustAbility (AssetAbility (AssetWithId aid) <> #fight)

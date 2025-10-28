@@ -4,7 +4,6 @@ module Arkham.ActiveCost (module Arkham.ActiveCost, module X) where
 
 import Arkham.ActiveCost.Base as X
 
-import Data.List.NonEmpty.Extra (minimum1)
 import Arkham.Ability hiding (PaidCost)
 import Arkham.Action hiding (TakenAction)
 import Arkham.Action qualified as Action
@@ -79,6 +78,7 @@ import Arkham.Window (Window (..), mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 import Control.Lens (non, over, transform)
 import Data.Data.Lens (biplate)
+import Data.List.NonEmpty.Extra (minimum1)
 import GHC.Records
 
 activeCostActions :: ActiveCost -> [Action]
@@ -145,12 +145,12 @@ startAbilityPayment
   -> Window
   -> AbilityType
   -> Source
-  -> Bool
+  -> Maybe EnemyMatcher
   -> m ()
-startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType source provokeAttacksOfOpportunity =
+startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType source noAooFrom =
   case abilityType of
-    Objective aType -> startAbilityPayment activeCost iid window aType source provokeAttacksOfOpportunity
-    DelayedAbility aType -> startAbilityPayment activeCost iid window aType source provokeAttacksOfOpportunity
+    Objective aType -> startAbilityPayment activeCost iid window aType source noAooFrom
+    DelayedAbility aType -> startAbilityPayment activeCost iid window aType source noAooFrom
     ForcedAbility _ -> pure ()
     SilentForcedAbility _ -> pure ()
     Haunted -> pure ()
@@ -161,7 +161,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     AbilityEffect {} -> push (PayCosts activeCostId)
     FastAbility' _ mAction ->
       pushAll $ PayCosts activeCostId : [PerformedActions iid [action] | action <- toList mAction]
-    ForcedWhen _ aType -> startAbilityPayment activeCost iid window aType source provokeAttacksOfOpportunity
+    ForcedWhen _ aType -> startAbilityPayment activeCost iid window aType source noAooFrom
     CustomizationReaction {} -> push (PayCosts activeCostId)
     ConstantReaction {} -> push (PayCosts activeCostId)
     ReactionAbility {} -> push (PayCosts activeCostId)
@@ -169,7 +169,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     ActionAbility actions' _ -> handleActions $ Action.Activate : actions'
  where
   checkAttackOfOpportunity mods actions =
-    not provokeAttacksOfOpportunity
+    (noAooFrom /= Just AnyEnemy)
       && ( all (`notElem` nonAttackOfOpportunityActions) actions
              || any (\action -> ActionDoesNotCauseAttacksOfOpportunity action `elem` mods) actions
          )
@@ -178,7 +178,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid action | action <- actions]
     pushAll
       $ [BeginAction, beforeWindowMsg, PayCosts activeCostId]
-      <> [CheckAttackOfOpportunity iid False | checkAttackOfOpportunity mods actions]
+      <> [CheckAttackOfOpportunity iid False noAooFrom | checkAttackOfOpportunity mods actions]
 
 nonAttackOfOpportunityActions :: [Action]
 nonAttackOfOpportunityActions = [#fight, #evade, #resign, #parley]
@@ -209,7 +209,7 @@ payCost msg c iid skipAdditionalCosts cost = do
             Just . (`div` gv) <$> getSpendableClueCount [iid]
           Costs cs -> do
             possible <- catMaybes <$> traverse go cs
-            pure $ minimum1 <$> nonEmpty possible 
+            pure $ minimum1 <$> nonEmpty possible
           _ -> pure Nothing
       mVal <- fromMaybe 100 <$> go inner
       push
@@ -1379,7 +1379,7 @@ instance RunMessage ActiveCost where
                , Would
                    batchId
                    $ [PayCosts acId]
-                   <> [ CheckAttackOfOpportunity iid False
+                   <> [ CheckAttackOfOpportunity iid False Nothing
                       | not modifiersPreventAttackOfOpportunity
                           && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
                           && isNothing cardDef.fastWindow
@@ -1389,19 +1389,17 @@ instance RunMessage ActiveCost where
                    <> [PayCostFinished acId]
                ]
           pure c
-        ForAbility a@Ability {..} -> do
+        ForAbility a@(Ability {..}) -> do
           modifiers' <- getCombinedModifiers [toTarget iid, AbilityTarget iid $ abilityToRef a]
           let
             modifiersPreventAttackOfOpportunity =
               any ((`elem` modifiers') . ActionDoesNotCauseAttacksOfOpportunity) a.actions
           pushAll [PaidInitialCostForAbility acId iid (abilityToRef a) c.payments, PayCostFinished acId]
-          startAbilityPayment
-            c
-            iid
-            (mkWhen Window.NonFast) -- TODO: a thing
-            abilityType
-            abilitySource
-            (abilityDoesNotProvokeAttacksOfOpportunity || modifiersPreventAttackOfOpportunity)
+          let aoo =
+                if modifiersPreventAttackOfOpportunity
+                  then Just AnyEnemy
+                  else abilityDoesNotProvokeAttacksOfOpportunity
+          startAbilityPayment c iid (mkWhen Window.NonFast) abilityType abilitySource aoo
           pure c
     PayCost acId iid skipAdditionalCosts cost | acId == c.id -> do
       let

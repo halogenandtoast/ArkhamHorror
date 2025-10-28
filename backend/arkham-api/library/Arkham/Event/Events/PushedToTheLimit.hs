@@ -24,7 +24,7 @@ instance RunMessage PushedToTheLimit where
           $ oneOf [#tool, #weapon]
           <> #asset
           <> inDiscardOf iid
-          <> CardWithPerformableAbility AbilityIsActionAbility [IgnoreAllCosts]
+          <> CardWithPerformableAbility #action [IgnoreAllCosts]
       focusCards cards do
         chooseOneM iid do
           targets cards \card -> do
@@ -33,15 +33,8 @@ instance RunMessage PushedToTheLimit where
             shuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
-      let
-        adjustAbility ab =
-          applyAbilityModifiers
-            (ab {abilityDoesNotProvokeAttacksOfOpportunity = True})
-            [IgnoreAllCosts]
-      abilities <-
-        selectMap adjustAbility
-          $ AssetAbility (AssetWithId aid)
-          <> AbilityIsActionAbility
+      let adjustAbility ab = applyAbilityModifiers (noAOO ab) [IgnoreAllCosts]
+      abilities <- selectMap adjustAbility $ AssetAbility (AssetWithId aid) <> #action
       abilities' <- filterM (getCanPerformAbility iid (defaultWindows iid)) abilities
       chooseOne iid [AbilityLabel iid ab [] [] [] | ab <- abilities']
       pure e

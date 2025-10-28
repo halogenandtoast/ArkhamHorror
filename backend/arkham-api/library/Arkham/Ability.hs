@@ -104,9 +104,13 @@ abilityIsReactionAbility a = case abilityType a of
   ReactionAbility {} -> True
   _ -> False
 
+doesNotProvokeAttacksOfOpportunityFrom :: EnemyMatcher -> Ability -> Ability
+doesNotProvokeAttacksOfOpportunityFrom mtchr =
+  set abilityDoesNotProvokeAttacksOfOpportunityL (Just mtchr)
+
 doesNotProvokeAttacksOfOpportunity :: Ability -> Ability
 doesNotProvokeAttacksOfOpportunity =
-  set abilityDoesNotProvokeAttacksOfOpportunityL True
+  set abilityDoesNotProvokeAttacksOfOpportunityL (Just AnyEnemy)
 
 noAOO :: Ability -> Ability
 noAOO = doesNotProvokeAttacksOfOpportunity
@@ -282,7 +286,7 @@ mkAbility entity idx type' =
     , abilityWindow = defaultAbilityWindow type'
     , abilityMetadata = Nothing
     , abilityCriteria = NoRestriction
-    , abilityDoesNotProvokeAttacksOfOpportunity = False
+    , abilityDoesNotProvokeAttacksOfOpportunity = Nothing
     , abilityTooltip = Nothing
     , abilityCanBeCancelled = True
     , abilityDisplayAs = Nothing

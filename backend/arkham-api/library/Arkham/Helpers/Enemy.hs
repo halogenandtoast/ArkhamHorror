@@ -10,14 +10,16 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.DamageEffect
 import Arkham.Enemy.Creation (EnemyCreation (..))
+import Arkham.Enemy.Helpers
 import Arkham.Enemy.Types
 import Arkham.ForMovement
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Calculation
 import Arkham.Helpers.Damage (damageEffectMatches)
 import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Helpers.Location
-import Arkham.Helpers.Message (placeLocation, toDiscard)
+import Arkham.Helpers.Message (placeLocation, pushM, toDiscard)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref
@@ -323,31 +325,23 @@ disengageEnemyFromAll :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => e
 disengageEnemyFromAll e = push $ DisengageEnemyFromAll (asId e)
 
 insteadOfDiscarding
-  :: (HasQueue Message m, AsId enemy, IdOf enemy ~ EnemyId)
-  => enemy -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
+  :: (HasQueue Message m, HasGame m, AsId enemy, IdOf enemy ~ EnemyId)
+  => enemy -> QueueT Message m () -> QueueT Message m ()
 insteadOfDiscarding e body = do
-  msgs <- evalQueueT body
+  ws <- concat <$> getWindowStack
   let
-    isEntityDiscarded w = case w.kind of
-      Window.EntityDiscarded _ target -> isTarget (asId e) target
-      _ -> False
-  lift $ replaceAllMessagesMatching
-    \case
-      CheckWindows ws -> any isEntityDiscarded ws
-      Do (CheckWindows ws) -> any isEntityDiscarded ws
-      Discard _ _ target -> isTarget (asId e) target
-      _ -> False
-    \case
-      CheckWindows ws ->
-        case filter (not . isEntityDiscarded) ws of
-          [] -> []
-          ws' -> [CheckWindows ws']
-      Do (CheckWindows ws) ->
-        case filter (not . isEntityDiscarded) ws of
-          [] -> []
-          ws' -> [Do (CheckWindows ws')]
-      Discard {} -> msgs
-      _ -> error "Invalid replacement"
+    go = \case
+      ((Window.windowType -> Window.EnemyDefeated miid dBy eid) : _) | eid == asId e -> Just (miid, dBy)
+      (_ : rest) -> go rest
+      [] -> Nothing
+
+  mWindow <- lift $ cancelEnemyDefeatCapture e
+  body
+  case mWindow of
+    Just w -> pushM $ checkWindows (pure w)
+    Nothing -> case go ws of
+      Just (miid, dBy) -> pushM $ checkAfter $ Window.EnemyDefeated miid dBy (asId e)
+      Nothing -> pure ()
 
 createEngagedWith
   :: ToId investigator InvestigatorId => investigator -> EnemyCreation Message -> EnemyCreation Message

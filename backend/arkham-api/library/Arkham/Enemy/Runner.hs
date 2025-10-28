@@ -424,7 +424,14 @@ instance RunMessage EnemyAttrs where
               pure ([whenSpawns], [afterSpawns, EnemySpawned details])
           pushAll $ beforeMessages <> [PlaceEnemy enemyId placement] <> afterMessages
         _ -> error $ "Unhandled spawn: " <> show details.spawnAt
-      pure $ a & spawnDetailsL ?~ details & exhaustedL .~ spawnDetailsExhausted details & delayEngagementL .~ False
+      pure
+        $ a
+        & spawnDetailsL
+        ?~ details
+        & exhaustedL
+        .~ spawnDetailsExhausted details
+        & delayEngagementL
+        .~ False
     EnemySpawned details | details.enemy == enemyId -> do
       pure $ a & spawnDetailsL .~ Nothing
     EnemyEntered eid lid | eid == enemyId -> do
@@ -1552,27 +1559,31 @@ instance RunMessage EnemyAttrs where
       pure
         $ a
         & (attackingL . _Just . damagedL . at (toTarget aid) . non (0, 0) %~ first (max 0 . subtract x))
-    CheckAttackOfOpportunity iid isFast | not isFast && not enemyExhausted -> do
-      willAttack <- elem iid <$> select (investigatorEngagedWith enemyId)
-      when willAttack $ do
-        modifiers' <- getModifiers enemyId
-        unless (any (`elem` modifiers') [CannotMakeAttacksOfOpportunity, CannotAttack])
-          $ push
-          $ EnemyWillAttack
-          $ EnemyAttackDetails
-            { attackEnemy = enemyId
-            , attackTarget = SingleAttackTarget (InvestigatorTarget iid)
-            , attackOriginalTarget = SingleAttackTarget (InvestigatorTarget iid)
-            , attackDamageStrategy = enemyDamageStrategy
-            , attackType = AttackOfOpportunity
-            , attackExhaustsEnemy = False
-            , attackSource = toSource a
-            , attackCanBeCanceled = True
-            , attackAfter = []
-            , attackDamaged = mempty
-            , attackDealDamage = True
-            , attackDespiteExhausted = False
-            }
+    CheckAttackOfOpportunity iid isFast mtchr | not isFast && not enemyExhausted -> do
+      let
+        handleAttack = whenM (matches iid $ investigatorEngagedWith enemyId) do
+          modifiers' <- getModifiers enemyId
+          unless (any (`elem` modifiers') [CannotMakeAttacksOfOpportunity, CannotAttack])
+            $ push
+            $ EnemyWillAttack
+            $ EnemyAttackDetails
+              { attackEnemy = enemyId
+              , attackTarget = SingleAttackTarget (InvestigatorTarget iid)
+              , attackOriginalTarget = SingleAttackTarget (InvestigatorTarget iid)
+              , attackDamageStrategy = enemyDamageStrategy
+              , attackType = AttackOfOpportunity
+              , attackExhaustsEnemy = False
+              , attackSource = toSource a
+              , attackCanBeCanceled = True
+              , attackAfter = []
+              , attackDamaged = mempty
+              , attackDealDamage = True
+              , attackDespiteExhausted = False
+              }
+      case mtchr of
+        Nothing -> handleAttack
+        Just AnyEnemy -> pure ()
+        Just m -> whenM (enemyId <!=~> m) handleAttack
       pure a
     InvestigatorDrawEnemy iid eid | eid == enemyId -> do
       push $ UpdateHistory iid (HistoryItem HistoryEnemiesDrawn [toCardCode a])

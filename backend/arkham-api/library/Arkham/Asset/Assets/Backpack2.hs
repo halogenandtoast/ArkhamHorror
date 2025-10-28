@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.Search
-import Arkham.Matcher hiding (PlaceUnderneath)
+import Arkham.Matcher hiding (PlaceUnderneath, PlayCard)
 import Arkham.Strategy
 
 newtype Backpack2 = Backpack2 AssetAttrs
@@ -30,6 +30,10 @@ instance RunMessage Backpack2 where
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       chooseFromSearch iid 3 cards \card -> placeUnderneath attrs [card]
       pure a
+    PlayCard iid card _ _ _ _ -> do
+      let remaining = deleteFirst card attrs.cardsUnderneath
+      when (null remaining) $ toDiscardBy iid attrs attrs
+      pure $ Backpack2 $ attrs & cardsUnderneathL .~ remaining
     InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `under` attrs -> do
       let remaining = deleteFirst card attrs.cardsUnderneath
       when (null remaining) $ toDiscardBy iid attrs attrs
@@ -40,7 +44,7 @@ instance RunMessage Backpack2 where
       when (null attrs.cardsUnderneath) $ toDiscard attrs attrs
       pure a
     _ -> do
-      let hadCards = notNull $ attrs.cardsUnderneath
+      let hadCards = notNull attrs.cardsUnderneath
       result <- liftRunMessage msg attrs
       when (hadCards && null result.cardsUnderneath) $ toDiscard attrs attrs
       pure $ Backpack2 result

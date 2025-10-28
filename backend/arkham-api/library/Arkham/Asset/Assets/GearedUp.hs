@@ -41,7 +41,7 @@ instance RunMessage GearedUp where
           labeled "Done Playing Items" nothing
           targets cards \card -> do
             reduceCostOf (attrs.ability 1) card 1
-            push $ PayCardCost iid card (defaultWindows iid)
+            playCardPayingCost iid card
             do_ msg'
       pure a
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
@@ -53,7 +53,7 @@ instance RunMessage GearedUp where
           labeled "Done Playing Items" nothing
           targets cards \card -> do
             reduceCostOf (attrs.ability 1) card 1
-            push $ PayCardCost iid card (defaultWindows iid)
+            playCardPayingCost iid card
             doStep (n - 1) msg'
       pure a
     _ -> GearedUp <$> liftRunMessage msg attrs

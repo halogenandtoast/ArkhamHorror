@@ -462,15 +462,15 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       & countsL
       %~ Map.alter (Just . max 0 . maybe 0 (subtract n)) logKey
   ResolveChaosToken drawnToken token iid -> do
-    shouldResolve <-
-      withoutModifiers (ChaosTokenTarget drawnToken) [IgnoreChaosTokenEffects, IgnoreChaosToken]
+    mods <- getModifiers (ChaosTokenTarget drawnToken)
+    let shouldResolve = none (`elem` mods) [IgnoreChaosTokenEffects, IgnoreChaosToken]
     when shouldResolve do
       ChaosTokenValue _ tokenModifier <- getChaosTokenValue iid token ()
       if tokenModifier == AutoFailModifier
         then push FailSkillTest
         else do
           when (token `elem` [#curse, #bless, #frost]) do
-            shouldRevealAnother <- withoutModifier (ChaosTokenTarget drawnToken) DoNotRevealAnotherChaosToken
+            let shouldRevealAnother = DoNotRevealAnotherChaosToken `notElem` mods
             pushWhen shouldRevealAnother (DrawAnotherChaosToken iid)
     pure a
   EndOfScenario mNextCampaignStep -> do

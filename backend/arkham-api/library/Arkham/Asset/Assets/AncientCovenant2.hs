@@ -30,7 +30,8 @@ instance HasAbilities AncientCovenant2 where
 
 instance RunMessage AncientCovenant2 where
   runMessage msg a@(AncientCovenant2 attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
-      withSkillTest \sid -> skillTestModifier sid iid (ChaosTokenTarget token) DoNotRevealAnotherChaosToken
+    UseCardAbility _iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
+      withSkillTest \sid ->
+        skillTestModifier sid (attrs.ability 1) (ChaosTokenTarget token) DoNotRevealAnotherChaosToken
       pure a
     _ -> AncientCovenant2 <$> liftRunMessage msg attrs

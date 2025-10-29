@@ -10,7 +10,7 @@ newtype ReturnToThePathToCarcosa = ReturnToThePathToCarcosa ThePathToCarcosa
 
 instance IsCampaign ReturnToThePathToCarcosa where
   campaignTokens = campaignTokens @ThePathToCarcosa
-  nextStep a = case campaignStep (toAttrs a) of
+  nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> Just ReturnToCurtainCall
     ReturnToCurtainCall -> Just (UpgradeDeckStep ReturnToTheLastKing)
     ReturnToTheLastKing -> Just (UpgradeDeckStep ReturnToEchoesOfThePast)

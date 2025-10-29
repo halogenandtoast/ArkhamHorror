@@ -121,7 +121,7 @@ instance IsCampaign TheDreamEaters where
   campaignTokens = const [] -- determined by mode
   nextStep a@(TheDreamEaters attrs) =
     let meta = toResult (campaignMeta attrs)
-     in case campaignStep (toAttrs a) of
+     in case attrs.normalizedStep of
           PrologueStep -> error $ "Unhandled campaign step: " <> show a
           BeyondTheGatesOfSleep ->
             Just

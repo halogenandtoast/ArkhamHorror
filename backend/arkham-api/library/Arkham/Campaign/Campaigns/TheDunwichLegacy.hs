@@ -33,7 +33,7 @@ instance IsCampaign TheDunwichLegacy where
       . findWithDefault [] (toCampaignLogKey SacrificedToYogSothoth)
       . attr (campaignLogRecordedSets . campaignLog)
 
-  nextStep a = case a.attrs.step of
+  nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> error $ "Unhandled campaign step: " <> show a
     ExtracurricularActivity ->
       if TheHouseAlwaysWins `elem` a.attrs.completedSteps

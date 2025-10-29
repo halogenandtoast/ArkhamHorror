@@ -43,7 +43,7 @@ instance FromJSON TheForgottenAge where
 
 instance IsCampaign TheForgottenAge where
   campaignTokens = chaosBagContents
-  nextStep a = case (campaignStep (toAttrs a)).normalize of
+  nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> Just TheUntamedWilds
     TheUntamedWilds -> Just (InterludeStep 1 Nothing)
     InterludeStep 1 _ -> Just (UpgradeDeckStep TheDoomOfEztli)

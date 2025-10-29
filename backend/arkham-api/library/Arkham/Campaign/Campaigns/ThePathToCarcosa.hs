@@ -20,7 +20,7 @@ newtype ThePathToCarcosa = ThePathToCarcosa CampaignAttrs
 
 instance IsCampaign ThePathToCarcosa where
   campaignTokens = chaosBagContents
-  nextStep a = case campaignStep (toAttrs a) of
+  nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> Just CurtainCall
     CurtainCall -> Just (UpgradeDeckStep TheLastKing)
     TheLastKing -> Just (UpgradeDeckStep EchoesOfThePast)

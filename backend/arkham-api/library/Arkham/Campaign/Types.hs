@@ -91,6 +91,9 @@ instance HasField "id" CampaignAttrs CampaignId where
 instance HasField "step" CampaignAttrs CampaignStep where
   getField = campaignStep
 
+instance HasField "normalizedStep" CampaignAttrs CampaignStep where
+  getField = (.normalize) . campaignStep
+
 instance HasField "resolutions" CampaignAttrs (Map ScenarioId Resolution) where
   getField = campaignResolutions
 
@@ -123,6 +126,9 @@ instance HasField "id" Campaign CampaignId where
 
 instance HasField "step" Campaign CampaignStep where
   getField = (.step) . toAttrs
+
+instance HasField "normalizedStep" Campaign CampaignStep where
+  getField  = (.normalize) . (.step)
 
 instance HasField "resolutions" Campaign (Map ScenarioId Resolution) where
   getField = (.resolutions) . toAttrs

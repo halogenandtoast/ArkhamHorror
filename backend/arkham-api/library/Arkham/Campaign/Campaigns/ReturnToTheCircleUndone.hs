@@ -27,7 +27,7 @@ returnToTheCircleUndone =
 
 instance IsCampaign ReturnToTheCircleUndone where
   campaignTokens = campaignTokens @TheCircleUndone
-  nextStep a = case campaignStep (toAttrs a) of
+  nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> Just ReturnToDisappearanceAtTheTwilightEstate
     ReturnToDisappearanceAtTheTwilightEstate -> Just ReturnToTheWitchingHour
     ReturnToTheWitchingHour -> Just (UpgradeDeckStep ReturnToAtDeathsDoorstep)

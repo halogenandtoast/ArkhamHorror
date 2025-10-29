@@ -32,7 +32,7 @@ newtype TheCircleUndone = TheCircleUndone CampaignAttrs
 
 instance IsCampaign TheCircleUndone where
   campaignTokens = chaosBagContents
-  nextStep a = case campaignStep (toAttrs a) of
+  nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> Just DisappearanceAtTheTwilightEstate
     DisappearanceAtTheTwilightEstate -> Just TheWitchingHour
     TheWitchingHour -> Just (UpgradeDeckStep AtDeathsDoorstep)

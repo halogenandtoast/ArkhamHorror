@@ -37,7 +37,7 @@ edgeOfTheEarth = campaign EdgeOfTheEarth (CampaignId "08") "Edge of the Earth"
 
 instance IsCampaign EdgeOfTheEarth where
   campaignTokens = chaosBagContents
-  nextStep a = case campaignStep (toAttrs a) of
+  nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> Just IceAndDeathPart1
     IceAndDeathPart1 -> Just (UpgradeDeckStep $ CheckpointStep 1)
     IceAndDeathPart2 -> Just (UpgradeDeckStep $ CheckpointStep 2)

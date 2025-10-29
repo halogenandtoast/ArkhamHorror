@@ -164,7 +164,7 @@ placeStory def = do
   card <- genCard def
   push $ StoryMessage $ PlaceStory card Global
 
-setAside :: (ReverseQueue m, FindInEncounterDeck a) => [a] -> ScenarioBuilderT m ()
+setAside :: (ReverseQueue m, FindInEncounterDeck a, HasCallStack) => [a] -> ScenarioBuilderT m ()
 setAside as = do
   cards <- for as \a -> do
     deck <- use (attrsL . encounterDeckL)
@@ -177,12 +177,8 @@ setAside as = do
         otherCardsL %= filter (/= toCard card)
 
         for_ (cdOtherSide $ toCardDef card) \otherSide -> do
-          otherCardsBefore <- use otherCardsL
           otherCardsL %= filter ((`notElem` [otherSide, toCardCode card]) . toCardCode)
 
-          otherCardsAfter <- use otherCardsL
-          when (otherCardsBefore == otherCardsAfter) do
-            error $ "Card not found in encounter deck or other cards: " <> show (cdOtherSide $ toCardDef card)
         pure card
 
   attrsL . setAsideCardsL %= (<> cards)

@@ -9287,7 +9287,7 @@ chamberOfTimeRearrangedByTime =
 theHastingsEstate :: CardDef
 theHastingsEstate =
   victory 1
-    $ singleSided
+    $ otherSideIs "53029"
     $ location
       "53029b"
       "The Hastings Estate"
@@ -9299,7 +9299,7 @@ theHastingsEstate =
 loadingDocks :: CardDef
 loadingDocks =
   victory 1
-    $ singleSided
+    $ otherSideIs "53034"
     $ location
       "53034b"
       "Loading Docks"

@@ -9,11 +9,11 @@ import type { Game } from '@/arkham/types/Game';
 
 defineProps<{
   game: Game
-  choices: Message[]
+  choices: [Message, number][]
 }>()
 
 const emit = defineEmits<{
-  choose: (value: number) => void
+  (e: 'choose', value: number): void
 }>()
 
 const choose = (idx: number) => emit('choose', idx)
@@ -28,7 +28,7 @@ const label = function(body: string) {
 </script>
 <template>
   <div class='question-choices'>
-    <template v-for="(choice, index) in choices" :key="index">
+    <template v-for="[choice, index] in choices" :key="index">
       <template v-if="choice.tag === 'AbilityLabel' && ['DisplayAsCard'].includes(choice.ability.displayAs)">
         <AbilityButton
           :ability="choice"

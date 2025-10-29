@@ -44,7 +44,7 @@ function zoneToLabel(s: string) {
 const inSkillTest = computed(() => props.game.skillTest !== null)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const questionChoices = computed(() => {
-  return choices.value.filter((choice) => {
+  return choices.value.map((c, idx) => [c, idx]).filter(([choice, _]) => {
     const { tag } = choice
     if (tag === 'AbilityLabel' && ['DisplayAsCard'].includes(choice.ability.displayAs)) return true
     if (tag === MessageType.TOOLTIP_LABEL) return true

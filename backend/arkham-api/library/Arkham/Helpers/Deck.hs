@@ -38,6 +38,7 @@ removeEveryFromDeck deck removals = flip withDeck deck $ \cards ->
 
 getDeck :: (HasGame m, Tracing m) => Deck.DeckSignifier -> m [Card]
 getDeck = \case
+  Deck.NoDeck -> pure []
   Deck.InvestigatorDeck iid -> fieldMap InvestigatorDeck (map PlayerCard . unDeck) iid
   Deck.InvestigatorDiscard iid -> fieldMap InvestigatorDiscard (map PlayerCard) iid
   Deck.EncounterDeck -> scenarioFieldMap ScenarioEncounterDeck (map EncounterCard . unDeck)

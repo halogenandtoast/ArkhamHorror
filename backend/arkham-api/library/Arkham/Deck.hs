@@ -22,6 +22,7 @@ data DeckSignifier
   | ScenarioDeckByKey ScenarioDeckKey
   | InvestigatorDeckByKey InvestigatorId InvestigatorDeckKey
   | EncounterDeckByKey ScenarioEncounterDeckKey
+  | NoDeck
   deriving stock (Show, Eq, Ord, Data)
 
 class IsDeck a where
@@ -41,6 +42,12 @@ instance IsDeck ScenarioEncounterDeckKey where
 
 instance IsDeck DeckSignifier where
   toDeck = id
+  {-# INLINE toDeck #-}
+
+instance IsDeck (Maybe DeckSignifier) where
+  toDeck = \case
+    Nothing -> NoDeck
+    Just ds -> ds
   {-# INLINE toDeck #-}
 
 pattern HunchDeck :: InvestigatorId -> DeckSignifier

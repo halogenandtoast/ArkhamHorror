@@ -20,9 +20,8 @@ abandonedToMadness = treachery AbandonedToMadness Cards.abandonedToMadness
 instance HasModifiersFor AbandonedToMadness where
   getModifiersFor (AbandonedToMadness a) = case a.placement of
     AttachedToEnemy enemy ->
-      getSkillTest >>= \case
-        Nothing -> pure ()
-        Just st -> maybeModified_ a (SkillTestTarget st.id) do
+      whenJustM getSkillTest \st -> do
+        maybeModified_ a (SkillTestTarget st.id) do
           enemy' <- hoistMaybe st.target.enemy
           guard $ enemy == enemy'
           liftGuardM $ orM [isParley, isFighting enemy, isEvading enemy]

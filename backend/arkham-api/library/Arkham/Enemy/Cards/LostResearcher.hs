@@ -40,7 +40,7 @@ instance RunMessage LostResearcher where
       sid <- getRandom
       chooseOneM iid do
         for_ [#willpower, #intellect] \sType ->
-          skillLabeled sType $ parley sid iid (attrs.ability 2) iid sType (Fixed 3)
+          skillLabeled sType $ parley sid iid (attrs.ability 2) attrs sType (Fixed 3)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       when (attrs.token #doom > 0) do

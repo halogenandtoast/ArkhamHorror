@@ -2,6 +2,7 @@ module Arkham.Location.Cards.InnsmouthJail (innsmouthJail, InnsmouthJail (..)) w
 
 import Arkham.Ability
 import Arkham.Enemy.Types (Field (EnemyCard))
+import Arkham.Helpers.Enemy (insteadOfDiscarding)
 import Arkham.Helpers.Window
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -25,7 +26,8 @@ instance HasAbilities InnsmouthJail where
 instance RunMessage InnsmouthJail where
   runMessage msg l@(InnsmouthJail attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (defeatedEnemy -> enemy) _ -> do
-      push $ RemoveEnemy enemy
-      shuffleIntoLeadsDeck . only =<< field EnemyCard enemy
+      insteadOfDiscarding enemy do
+        push $ RemoveEnemy enemy
+        shuffleIntoLeadsDeck . only =<< field EnemyCard enemy
       pure l
     _ -> InnsmouthJail <$> liftRunMessage msg attrs

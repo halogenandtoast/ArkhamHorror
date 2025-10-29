@@ -28,6 +28,7 @@ import Arkham.Tarot
 import Arkham.Xp
 import Control.Monad.Writer hiding (filterM)
 import Data.Aeson.TH
+import Data.Aeson.Types (Parser)
 import Data.Data
 import Data.List.NonEmpty qualified as NE
 import Data.Map.Monoidal.Strict (MonoidalMap (..))
@@ -299,7 +300,16 @@ instance FromJSON CampaignAttrs where
     campaignId <- o .: "id"
     campaignName <- o .: "name"
     campaignDecks <- o .: "decks"
-    campaignStoryCards :: Map InvestigatorId [Card] <- (o .: "storyCards") <|> (map (toCard @PlayerCard) <$$> (o .: "storyCards"))
+    let
+      parseEitherCards :: Map InvestigatorId [Value] -> Parser (Map InvestigatorId [Card])
+      parseEitherCards = traverse (traverse parseEitherCard)
+
+      parseEitherCard :: Value -> Parser Card
+      parseEitherCard v =
+        parseJSON v
+          <|> (toCard @PlayerCard <$> parseJSON v)
+    campaignStoryCards :: Map InvestigatorId [Card] <-
+      (o .: "storyCards") <|> (o .: "storyCards" >>= parseEitherCards)
     campaignDifficulty <- o .: "difficulty"
     campaignChaosBag <- o .: "chaosBag"
     campaignLog <- o .: "log"

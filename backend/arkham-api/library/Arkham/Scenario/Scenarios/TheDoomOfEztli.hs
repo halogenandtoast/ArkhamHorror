@@ -29,6 +29,7 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
+import Arkham.Scenario.Types (startedL)
 import Arkham.Scenarios.TheDoomOfEztli.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window qualified as Window
@@ -290,7 +291,8 @@ instance RunMessage TheDoomOfEztli where
           standalone <- getIsStandalone
           resolution "resolution4"
           pushAll
-            $ ResetGame
+            $ DoStep 4 msg
+            : ResetGame
             : [StandaloneSetup | standalone]
               <> [ ChooseLeadInvestigator
                  , SetPlayerOrder
@@ -300,17 +302,19 @@ instance RunMessage TheDoomOfEztli where
                  , Setup
                  , EndSetup
                  ]
-          let resetAttrs = toAttrs $ theDoomOfEztli attrs.difficulty
-          let resolution4Count = toResultDefault @Int 0 attrs.meta + 1
-          pure . TheDoomOfEztli $ resetAttrs & metaL .~ toJSON resolution4Count
+          pure s
         Resolution 5 -> do
           resolutionWithXp "resolution5" $ allGainXp' attrs
           record TheInvestigatorsRecoveredTheRelicOfAges
           harbingerMessages
-          recordCount YigsFury (yigsFury + vengeance)
+          recordCount YigsFury (yigsFury + vengeance + 10)
           endOfScenario
           pure s
         _ -> error "Unknown Resolution"
+    DoStep 4 (Do (ScenarioResolution _)) -> do
+      let resetAttrs = toAttrs $ theDoomOfEztli attrs.difficulty
+      let resolution4Count = toResultDefault @Int 0 attrs.meta + 1
+      pure . TheDoomOfEztli $ resetAttrs & metaL .~ toJSON resolution4Count & startedL .~ True
     ChooseLeadInvestigator -> do
       standalone <- getIsStandalone
       leader <- if standalone then pure Nothing else CampaignMeta.expeditionLeader <$> getCampaignMeta

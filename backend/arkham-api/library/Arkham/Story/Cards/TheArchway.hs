@@ -27,7 +27,7 @@ instance RunMessage TheArchway where
       beginSkillTest sid iid attrs iid #willpower (Fixed 1)
       push $ ReplaceLocation dimStreets otherDimStreets DefaultReplace
       pure s
-    PassedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      whenM (canHaveHorrorHealed attrs iid) $ healHorror iid attrs n
+    PassedThisSkillTestBy _ (isSource attrs -> True) n -> do
+      eachInvestigator \iid -> whenM (canHaveHorrorHealed attrs iid) $ healHorror iid attrs n
       pure s
     _ -> TheArchway <$> liftRunMessage msg attrs

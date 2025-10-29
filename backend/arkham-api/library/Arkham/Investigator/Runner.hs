@@ -3227,20 +3227,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       else pushAll $ FocusCards [toCard card] : maybeToList mWhenDraw <> [UnfocusCards, Do msg]
     pure a
   Do (InvestigatorDrewPlayerCardFrom iid card mdeck) | iid == investigatorId -> do
-    mAfterDraw <- for mdeck \deck ->
-      checkWindows [mkAfter $ Window.DrawCard iid (toCard card) deck]
+    afterDraw <- checkWindows [mkAfter $ Window.DrawCard iid (toCard card) (fromMaybe Deck.NoDeck mdeck)]
     inLimit <- passesLimits iid (toCard card)
     if hasRevelation card && inLimit
       then
-        if toCardType card == PlayerTreacheryType
-          then pushAll $ DrewTreachery iid Nothing (toCard card) : maybeToList mAfterDraw
-          else
-            pushAll $ Revelation iid (CardIdSource card.id)
-              : maybeToList mAfterDraw <> [ResolvedCard iid $ toCard card]
+        pushAll
+          $ if toCardType card == PlayerTreacheryType
+            then [DrewTreachery iid Nothing (toCard card), afterDraw]
+            else [Revelation iid (CardIdSource card.id), afterDraw, ResolvedCard iid $ toCard card]
       else
         if toCardType card == PlayerEnemyType
-          then pushAll $ DrewPlayerEnemy iid (toCard card) : maybeToList mAfterDraw
-          else for_ mAfterDraw push
+          then pushAll [DrewPlayerEnemy iid (toCard card), afterDraw]
+          else push afterDraw
 
     let
       cardFilter :: IsCard c => [c] -> [c]

@@ -34,6 +34,6 @@ instance RunMessage AncestralKnowledge3 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       focusCards attrs.cardsUnderneath do
-        chooseTargetM iid attrs.cardsUnderneath (addToHand iid . only)
+        chooseTargetM iid attrs.cardsUnderneath (drawToHand iid . only)
       pure a
     _ -> AncestralKnowledge3 <$> liftRunMessage msg attrs

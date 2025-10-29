@@ -23,7 +23,7 @@ theInnsmouthConspiracy = campaign TheInnsmouthConspiracy (CampaignId "07") "The 
 
 instance IsCampaign TheInnsmouthConspiracy where
   campaignTokens = chaosBagContents
-  nextStep a = case campaignStep (toAttrs a) of
+  nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> Just ThePitOfDespair
     ThePitOfDespair -> Just (InterludeStep 1 Nothing)
     InterludeStep 1 _ -> Just TheVanishingOfElinaHarper

@@ -9,7 +9,7 @@ newtype NightOfTheZealot = NightOfTheZealot CampaignAttrs
 
 instance IsCampaign NightOfTheZealot where
   campaignTokens = chaosBagContents
-  nextStep a = case campaignStep (toAttrs a) of
+  nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> Just TheGathering
     TheGathering -> Just (UpgradeDeckStep TheMidnightMasks)
     TheMidnightMasks -> Just (UpgradeDeckStep TheDevourerBelow)

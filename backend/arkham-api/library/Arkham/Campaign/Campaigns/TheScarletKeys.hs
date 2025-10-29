@@ -73,7 +73,7 @@ travel attrs locId doTravel n = do
 instance IsCampaign TheScarletKeys where
   campaignTokens = campaignChaosBag
   invalidCards _ = ["02310"] -- The Red-Gloved Man can not be included
-  nextStep a = case campaignStep (toAttrs a) of
+  nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> Just RiddlesAndRain
     RiddlesAndRain -> Just (InterludeStep 1 Nothing)
     InterludeStep 1 _ -> Just (CampaignSpecificStep "embark")

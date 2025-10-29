@@ -13,7 +13,7 @@ newtype ReturnToTheDunwichLegacy = ReturnToTheDunwichLegacy TheDunwichLegacy
 
 instance IsCampaign ReturnToTheDunwichLegacy where
   campaignTokens = campaignTokens @TheDunwichLegacy
-  nextStep a = case campaignStep (toAttrs a) of
+  nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> error $ "Unhandled campaign step: " <> show a
     ReturnToExtracurricularActivities ->
       if ReturnToTheHouseAlwaysWins `elem` (toAttrs a).completedSteps

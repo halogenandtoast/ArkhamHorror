@@ -10,7 +10,7 @@ newtype ReturnToTheForgottenAge = ReturnToTheForgottenAge TheForgottenAge
 
 instance IsCampaign ReturnToTheForgottenAge where
   campaignTokens = campaignTokens @TheForgottenAge
-  nextStep a = case (campaignStep (toAttrs a)).normalize of
+  nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> Just ReturnToTheUntamedWilds
     ReturnToTheUntamedWilds -> Just (InterludeStep 1 Nothing)
     InterludeStep 1 _ -> Just (UpgradeDeckStep ReturnToTheDoomOfEztli)

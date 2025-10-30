@@ -82,7 +82,7 @@ targetTraits = \case
   CampaignTarget -> pure mempty
   TarotTarget _ -> pure mempty
   AbilityTarget _ _ -> pure mempty
-  BothTarget _ _ -> error "won't make sense, or need to determine later"
+  BothTarget left right -> (<>) <$> targetTraits left <*> targetTraits right
   BatchTarget {} -> pure mempty
   ActiveCostTarget {} -> pure mempty
   LabeledTarget _ t -> targetTraits t

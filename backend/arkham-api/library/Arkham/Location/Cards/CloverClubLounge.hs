@@ -15,8 +15,8 @@ cloverClubLounge = symbolLabel $ location CloverClubLounge Cards.cloverClubLoung
 instance HasAbilities CloverClubLounge where
   getAbilities (CloverClubLounge attrs) =
     extendRevealed1 attrs
-      $ limitedAbility (PlayerLimit PerGame 1)
-      $ restricted attrs 1 (OnAct 1)
+      $ playerLimit PerGame
+      $ restricted attrs 1 (OnAct 1 <> Here)
       $ actionAbilityWithCost (HandDiscardCost 1 $ #ally <> #asset)
 
 instance RunMessage CloverClubLounge where

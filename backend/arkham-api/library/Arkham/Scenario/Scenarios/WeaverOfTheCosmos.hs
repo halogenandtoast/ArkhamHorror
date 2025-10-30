@@ -13,6 +13,7 @@ import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget)
@@ -173,16 +174,16 @@ instance RunMessage WeaverOfTheCosmos where
           for_ mlid \lid -> removeTokens TabletEffect lid #doom 1
         _ -> pure ()
       pure s
-    ScenarioResolution r -> do
+    ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          story $ i18nWithTitle "resolutions.noResolution"
+          story $ i18nWithTitle "noResolution"
           record TheBridgeWasCompleted
           eachInvestigator $ kill attrs
           whenM getIsTheWebOfDreams $ push GameOver
           endOfScenario
         Resolution 1 -> do
-          story $ i18nWithTitle "resolutions.resolution1"
+          resolution "resolution1"
           record TheBridgeWasDestroyed
           allGainXpWithBonus attrs $ toBonus "resolution1" 5
           foundAWayOut <- getHasRecord TheInvestigatorsFoundAWayOutOfTheUnderworld
@@ -192,25 +193,25 @@ instance RunMessage WeaverOfTheCosmos where
             | trapped -> push R4
             | otherwise -> push R5
         Resolution 2 -> do
-          story $ i18nWithTitle "resolutions.resolution2"
+          resolution "resolution2"
           record TheBridgeWasCompleted
           eachInvestigator $ push . DrivenInsane
           whenM getIsTheWebOfDreams $ push GameOver
           endOfScenario
         Resolution 3 -> do
-          story $ i18nWithTitle "resolutions.resolution3"
+          resolution "resolution3"
           record TheInvestigatorsReturnedToReality
           eachInvestigator (`sufferPhysicalTrauma` 2)
           whenM getIsTheDreamQuest $ push GameOver
           endOfScenario
         Resolution 4 -> do
-          story $ i18nWithTitle "resolution.resolution4"
+          resolution "resolution4"
           record TheInvestigatorsNeverEscaped
           eachInvestigator $ push . DrivenInsane
           whenM getIsTheDreamQuest $ push GameOver
           endOfScenario
         Resolution 5 -> do
-          story $ i18nWithTitle "resolution.resolution5"
+          resolution "resolution5"
           record TheInvestigatorsAreStillInTheDreamlands
           eachInvestigator (`sufferPhysicalTrauma` 2)
           whenM getIsTheDreamQuest $ push GameOver

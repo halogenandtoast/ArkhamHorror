@@ -31,7 +31,7 @@ sourceTraits = \case
   AssetMatcherSource _ -> pure mempty
   AssetSource aid -> fromMaybe mempty <$> fieldMay AssetTraits aid
   BatchSource _ -> pure mempty
-  BothSource _ _ -> error "doesn't make sense, or will solve later"
+  BothSource left right -> (<>) <$> sourceTraits left <*> sourceTraits right
   CampaignSource -> pure mempty
   CardCodeSource _ -> pure mempty
   CardCostSource _ -> pure mempty

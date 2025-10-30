@@ -134,7 +134,7 @@ dealAdditionalDamage iid amount additionalMessages = do
               []
           _ -> error "impossible"
       replaceMessage damageMsg $ newMsg : additionalMessages
-    Nothing -> throwIO $ InvalidState "No damage occured"
+    Nothing -> throwIO $ InvalidState "No damage occured for additional damage"
 
 dealAdditionalHorror :: HasQueue Message m => InvestigatorId -> Int -> [Message] -> m ()
 dealAdditionalHorror iid amount additionalMessages = do
@@ -162,43 +162,14 @@ dealAdditionalHorror iid amount additionalMessages = do
           CheckDefeated source target -> PlaceAdditionalDamage target source 0 amount
           _ -> error "impossible"
       replaceMessage horrorMsg $ newMsg : additionalMessages
-    Nothing -> throwIO $ InvalidState "No horror occured"
+    Nothing -> throwIO $ InvalidState "No horror occured for additional horror"
 
 cancelHorror
-  :: (Sourceable source, HasQueue Message m, HasGame m)
-  => InvestigatorId
-  -> source
-  -> Int
-  -> [Message]
-  -> m ()
-cancelHorror iid (toSource -> source) amount additionalMessages = do
-  mMsg <- findFromQueue $ \case
-    InvestigatorDamage iid' _ _ n | iid' == iid -> n > 0
-    InvestigatorDoAssignDamage iid' _ _ _ _ n [] [] | iid' == iid -> n > 0
-    _ -> False
-  case mMsg of
-    Just horrorMsg -> do
-      let
-        mNewMsg = case horrorMsg of
-          InvestigatorDamage _ source' damage n ->
-            guard (n - amount > 0) $> InvestigatorDamage iid source' damage (n - amount)
-          InvestigatorDoAssignDamage _ source' strategy matcher damage n [] [] ->
-            guard (n - amount > 0)
-              $> InvestigatorDoAssignDamage
-                iid
-                source'
-                strategy
-                matcher
-                damage
-                (n - amount)
-                []
-                []
-          _ -> error "impossible"
-
-      ignoreWindow <- checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect source Nothing)]
-      push ignoreWindow
-      replaceMessage horrorMsg $ maybeToList mNewMsg <> additionalMessages
-    Nothing -> throwIO $ InvalidState "No horror occured"
+  :: (Sourceable source, HasGame m, HasQueue Message m) => InvestigatorId -> source -> Int -> m ()
+cancelHorror iid (toSource -> source) amount = do
+  push $ CancelHorror iid amount
+  ignoreWindow <- checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect source Nothing)]
+  push ignoreWindow
 
 createEnemy
   :: (MonadRandom m, IsCard card, IsEnemyCreationMethod creationMethod)
@@ -264,7 +235,9 @@ createEnemyAtEdit c lid mTarget f = do
 createEnemyAt_ :: MonadRandom m => Card -> LocationId -> Maybe Target -> m Message
 createEnemyAt_ c lid mTarget = snd <$> createEnemyAt c lid mTarget
 
-createEnemyAtLocationMatchingEdit :: MonadRandom m => Card -> LocationMatcher -> (EnemyCreation Message -> EnemyCreation Message) -> m (EnemyId, Message)
+createEnemyAtLocationMatchingEdit
+  :: MonadRandom m
+  => Card -> LocationMatcher -> (EnemyCreation Message -> EnemyCreation Message) -> m (EnemyId, Message)
 createEnemyAtLocationMatchingEdit c matcher f = do
   creation <- createEnemy c matcher
   pure (enemyCreationEnemyId creation, CreateEnemy $ f creation)

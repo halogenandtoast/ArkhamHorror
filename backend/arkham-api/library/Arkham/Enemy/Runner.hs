@@ -325,6 +325,7 @@ instance RunMessage EnemyAttrs where
           do_ msg
           pure a'
         Just lid -> do
+          pushM $ checkWindows [mkWhen $ Window.EnemyWouldSpawnAt enemyId lid]
           whenM (enemyId <=~> IncludeOmnipotent (EnemyCanSpawnIn $ IncludeEmptySpace $ LocationWithId lid)) do
             pushM $ checkWindows [mkWhen (Window.EnemySpawns enemyId lid)]
           do_ msg
@@ -1656,27 +1657,24 @@ instance RunMessage EnemyAttrs where
 
           case spawnAtMatcher of
             Nothing -> do
-              mlid <- getMaybeLocation iid
-              case mlid of
+              getMaybeLocation iid >>= \case
                 Just lid -> do
                   canSpawn <- lid <!=~> cannotSpawnMatchers
                   unchanged <- lid <!=~> changeSpawnMatchers
                   if canSpawn && unchanged
                     then do
-                      windows' <- checkWindows [mkWhen $ Window.EnemyWouldSpawnAt eid lid]
                       canBeEngaged <- matches iid (InvestigatorCanBeEngagedBy eid)
                       isAloof <- matches eid AloofEnemy
-                      pushAll $ windows'
-                        : resolve
-                          ( EnemySpawn
-                              $ ( mkSpawnDetails eid
-                                    $ if canBeEngaged && not isAloof
-                                      then SpawnEngagedWith (InvestigatorWithId iid)
-                                      else SpawnAtLocation lid
-                                )
-                                { spawnDetailsInvestigator = Just iid
-                                }
+                      pushAll
+                        $ resolve
+                        $ EnemySpawn
+                        $ ( mkSpawnDetails eid
+                              $ if canBeEngaged && not isAloof
+                                then SpawnEngagedWith (InvestigatorWithId iid)
+                                else SpawnAtLocation lid
                           )
+                          { spawnDetailsInvestigator = Just iid
+                          }
                     else
                       if not unchanged
                         then do

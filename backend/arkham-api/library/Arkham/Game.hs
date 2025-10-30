@@ -4135,6 +4135,7 @@ getEnemyField f e = do
     EnemyClues -> pure $ enemyClues attrs
     EnemyDamage -> pure $ enemyDamage attrs
     EnemyName -> pure $ toName $ toCardDef attrs
+    EnemySpawnDetails -> pure enemySpawnDetails
     EnemyRemainingHealth -> do
       mTotalHealth <- field EnemyHealth (toId e)
       case mTotalHealth of

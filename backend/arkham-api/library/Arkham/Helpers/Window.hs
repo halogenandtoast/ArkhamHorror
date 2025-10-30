@@ -500,6 +500,7 @@ getEnemy = \case
   ((windowType -> Window.EnemyDefeated _ _ eid) : _) -> eid
   ((windowType -> Window.EnemyMoves eid _) : _) -> eid
   ((windowType -> Window.EnemyEnters eid _) : _) -> eid
+  ((windowType -> Window.EnemyWouldSpawnAt eid _) : _) -> eid
   (_ : rest) -> getEnemy rest
   _ -> error "invalid window"
 

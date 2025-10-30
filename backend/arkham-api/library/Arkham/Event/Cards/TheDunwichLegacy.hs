@@ -68,7 +68,7 @@ thinkOnYourFeet =
   (event "02025" "Think on Your Feet" 1 Rogue)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = singleton Trick
-    , cdFastWindow = Just $ EnemySpawns #when YourLocation AnyEnemy
+    , cdFastWindow = Just $ EnemyWouldSpawnAt AnyEnemy YourLocation
     , cdCriteria = Just $ exists AccessibleLocation <> exists (You <> can.move)
     }
 

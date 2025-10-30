@@ -30,6 +30,9 @@ mkSpawnDetails enemy spawnAt =
     , spawnDetailsUnengaged = False
     }
 
+setLocation :: LocationId -> SpawnDetails -> SpawnDetails
+setLocation lid sd = sd {spawnDetailsSpawnAt = SpawnAtLocation lid}
+
 instance HasField "overridden" SpawnDetails Bool where
   getField = spawnDetailsOverridden
 

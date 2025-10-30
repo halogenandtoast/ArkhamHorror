@@ -28,7 +28,7 @@ instance RunMessage TheGreatWebCosmicWeb where
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure l
-    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
+    FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       canDiscard <- iid <=~> InvestigatorWithDiscardableCard
       chooseOrRunOneM iid do
         when canDiscard do

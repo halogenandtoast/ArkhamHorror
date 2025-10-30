@@ -81,7 +81,7 @@ import Arkham.Matcher (
  )
 import Arkham.Message
 import Arkham.Message qualified as Msg
-import Arkham.Message.Lifted (selectEach)
+import Arkham.Message.Lifted (do_, selectEach)
 import Arkham.Modifier hiding (EnemyEvade, EnemyFight)
 import Arkham.Movement
 import Arkham.Prelude
@@ -294,6 +294,43 @@ instance RunMessage EnemyAttrs where
         VengeanceCard _ -> error "not valid"
       pure a
     EnemySpawn details | details.enemy == enemyId -> do
+      let
+        getSpawnLocation = \case
+          SpawnEngagedWith imatcher -> do
+            select imatcher >>= \case
+              [iid] -> do
+                let
+                  getModifiedSpawnAt [] = Nothing
+                  getModifiedSpawnAt (ChangeSpawnWith iid' m : _) | iid' == iid = Just m
+                  getModifiedSpawnAt (_ : xs) = getModifiedSpawnAt xs
+                mods <- getCombinedModifiers [toTarget enemyId, toTarget (toCardId a)]
+
+                case getModifiedSpawnAt mods of
+                  Just m -> getSpawnLocation m
+                  Nothing -> getLocationOf iid
+              _ -> pure Nothing
+          SpawnAt _matcher -> pure Nothing
+          SpawnAtLocation lid -> pure $ Just lid
+          SpawnPlaced placement -> placementLocation placement
+          _ -> error $ "Unhandled spawn: " <> show details.spawnAt
+
+        a' =
+          a
+            & (spawnDetailsL ?~ details)
+            & (exhaustedL ||~ spawnDetailsExhausted details)
+            & (delayEngagementL .~ False)
+
+      getSpawnLocation details.spawnAt >>= \case
+        Nothing -> do
+          do_ msg
+          pure a'
+        Just lid -> do
+          whenM (enemyId <=~> IncludeOmnipotent (EnemyCanSpawnIn $ IncludeEmptySpace $ LocationWithId lid)) do
+            pushM $ checkWindows [mkWhen (Window.EnemySpawns enemyId lid)]
+          do_ msg
+          pure $ a' & placementL .~ AtLocation lid
+    Do (EnemySpawn originalDetails) | originalDetails.enemy == enemyId -> do
+      let details = fromMaybe originalDetails enemySpawnDetails
       let miid = details.investigator
       let eid = enemyId
       keywords <- getModifiedKeywords a
@@ -418,19 +455,14 @@ instance RunMessage EnemyAttrs where
                 else unless (#massive `elem` keywords) $ pushAll [EnemyEntered eid lid, EnemySpawned details]
         SpawnPlaced placement -> do
           mLocation <- placementLocation placement
-          (beforeMessages, afterMessages) <- case mLocation of
-            Nothing -> pure ([], [])
+          afterMessages <- case mLocation of
+            Nothing -> pure []
             Just lid -> do
-              whenSpawns <- checkWindows [mkWhen (Window.EnemySpawns enemyId lid)]
               afterSpawns <- checkWindows [mkAfter (Window.EnemySpawns enemyId lid)]
-              pure ([whenSpawns], [afterSpawns, EnemySpawned details])
-          pushAll $ beforeMessages <> [PlaceEnemy enemyId placement] <> afterMessages
+              pure [afterSpawns, EnemySpawned details]
+          pushAll $ [PlaceEnemy enemyId placement] <> afterMessages
         _ -> error $ "Unhandled spawn: " <> show details.spawnAt
-      pure
-        $ a
-        & (spawnDetailsL ?~ details)
-        & (exhaustedL ||~ spawnDetailsExhausted details)
-        & (delayEngagementL .~ False)
+      pure a
     EnemySpawned details | details.enemy == enemyId -> do
       pure $ a & spawnDetailsL .~ Nothing
     EnemyEntered eid lid | eid == enemyId -> do
@@ -941,7 +973,13 @@ instance RunMessage EnemyAttrs where
       emods <- getModifiers eid
       pushWhen (DoNotDisengageEvaded `notElem` mods) $ DisengageEnemyFromAll eid
       pushWhen (DoNotExhaustEvaded `notElem` emods) $ Exhaust (toTarget a)
-      pure a
+      runDefaultMaybeT a do
+        pendingSpawnAt <- hoistMaybe $ (.spawnAt) <$> enemySpawnDetails
+        lid <- MaybeT $ case pendingSpawnAt of
+          SpawnEngagedWith (InvestigatorWithId iid') -> getLocationOf iid'
+          SpawnPlaced p -> placementLocation p
+          _ -> placementLocation a.placement
+        pure $ a & spawnDetailsL . _Just %~ \sd -> sd {spawnDetailsSpawnAt = SpawnAtLocation lid}
     Exhaust (isTarget a -> True) -> do
       let
         isEnemyAttack = \case

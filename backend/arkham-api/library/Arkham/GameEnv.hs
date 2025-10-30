@@ -9,7 +9,7 @@ import {-# SOURCE #-} Arkham.Card (
   CardCode,
   CardGen (..),
   CardId,
-  isEncounterCard,
+  toCardCode,
   lookupCardDef,
   unsafeMakeCardId,
  )
@@ -68,7 +68,7 @@ instance CardGen GameT where
       (g {gameCards = deleteMap cardId (gameCards g)}, ())
   clearCardCache = do
     ref <- asks gameEnvGame
-    atomicModifyIORef' ref $ \g -> (g {gameCards = filterMap (not . isEncounterCard) (gameCards g)}, ())
+    atomicModifyIORef' ref $ \g -> (g {gameCards = mempty }, ())
 
 instance HasGameRef GameEnv where
   gameRefL = lens gameEnvGame $ \m x -> m {gameEnvGame = x}

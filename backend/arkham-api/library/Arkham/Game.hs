@@ -5420,7 +5420,8 @@ putGame g = do
   -- we want to retain the card database between puts
   ref <- view gameRefL
   g' <- readGame
-  atomicWriteIORef ref $ g {gameCards = gameCards g' <> gameCards g}
+  atomicWriteIORef ref
+    $ g {gameCards = if null (gameCards g) then mempty else gameCards g' <> gameCards g}
 
 overGameReader :: (MonadIO m, HasGame m) => Reader Game a -> m a
 overGameReader body = runReader body <$> getGame

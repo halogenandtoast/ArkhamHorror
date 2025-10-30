@@ -250,6 +250,9 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
         )
       & activeInvestigatorF
       & turnPlayerInvestigatorF
+  LoadDeck _ deck -> do
+    let cards' = Map.fromList [(c.id, toCard c) | c <- deck.cards]
+    pure $ g & cardsL <>~ cards'
   LoadDecklist playerId decklist -> do
     let
       invalid =
@@ -435,6 +438,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       These c _ -> pure $ update $ g & (modeL .~ This c)
       _ -> pure $ update g
   ResetGame -> do
+    -- clearCardCache
     pure
       $ g
       & (encounterDiscardEntitiesL .~ defaultEntities)
@@ -468,6 +472,7 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
       & (phaseHistoryL .~ mempty)
       & (turnHistoryL .~ mempty)
       & (roundHistoryL .~ mempty)
+      & (cardsL .~ mempty)
   StartScenario sid -> do
     -- NOTE: The campaign log and player decks need to be copied over for
     -- standalones because we effectively reset it here when we `setScenario`.
@@ -482,8 +487,6 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
 
       standalone = isNothing $ modeCampaign $ g ^. modeL
       setPlayerDecks = overAttrs (playerDecksL .~ playerDecks)
-
-    clearCardCache
 
     pushAll
       $ [HandleOption option | standalone, option <- maybe [] (toList . campaignLogOptions) mCampaignLog]

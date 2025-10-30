@@ -3,8 +3,6 @@
 module Api.Arkham.Helpers where
 
 import Arkham.Card
-import Arkham.Card.EncounterCard
-import Arkham.Card.PlayerCard
 import Arkham.Classes hiding (Entity (..), select)
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
@@ -101,26 +99,6 @@ instance HasDebugLevel GameAppT where
 instance HasGame GameAppT where
   getGame = readIORef =<< asks appGame
   getCache = GameCache \_ build -> build
-
-overGameCards :: (Map CardId Card -> Map CardId Card) -> GameAppT ()
-overGameCards f = do
-  ref <- asks appGame
-  atomicModifyIORef' ref \g -> (g {gameCards = f (gameCards g)}, ())
-
-instance CardGen GameAppT where
-  genEncounterCard a = do
-    cardId <- unsafeMakeCardId <$> getRandom
-    let card = lookupEncounterCard (toCardDef a) cardId
-    overGameCards $ Map.insert cardId (toCard card)
-    pure card
-  genPlayerCard a = do
-    cardId <- unsafeMakeCardId <$> getRandom
-    let card = lookupPlayerCard (toCardDef a) cardId
-    overGameCards $ Map.insert cardId (toCard card)
-    pure card
-  replaceCard cardId card = overGameCards $ Map.insert cardId card
-  removeCard cardId = overGameCards $ Map.delete cardId
-  clearCardCache = overGameCards $ Map.filter (not . isEncounterCard)
 
 instance HasStdGen GameApp where
   genL = lens appGen $ \m x -> m {appGen = x}

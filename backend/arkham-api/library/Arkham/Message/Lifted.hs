@@ -667,6 +667,17 @@ createEnemyAtLocationMatching c matcher = do
   Msg.push msg
   pure eid
 
+createEnemyAtLocationMatchingEdit
+  :: (ReverseQueue m, IsCard card) => card -> LocationMatcher -> (EnemyCreation Message -> EnemyCreation Message) -> m EnemyId
+createEnemyAtLocationMatchingEdit c matcher f = do
+  (eid, msg) <- Msg.createEnemyAtLocationMatchingEdit (toCard c) matcher f
+  Msg.push msg
+  pure eid
+
+createEnemyAtLocationMatchingEdit_
+  :: (ReverseQueue m, IsCard card) => card -> LocationMatcher -> (EnemyCreation Message -> EnemyCreation Message) -> m ()
+createEnemyAtLocationMatchingEdit_ c matcher f = void $ createEnemyAtLocationMatchingEdit c matcher f
+
 createSetAsideEnemy
   :: (ReverseQueue m, IsEnemyCreationMethod creation) => CardDef -> creation -> m EnemyId
 createSetAsideEnemy def creation = createSetAsideEnemyWith def creation id

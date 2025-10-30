@@ -144,7 +144,7 @@ setupForTheGreaterGood _attrs = do
       , Assets.puzzleBox
       , Enemies.summonedBeast
       , Assets.augustLindquist
-      , Enemies.nathanWickMasterOfInitiation
+      , if membersOfTheLodge then Enemies.nathanWickMasterOfInitiation else Enemies.nathanWickMasterOfIndoctrination
       ]
     <> (guard isReturnTo *> [Locations.relicStorage, Locations.shroudedArchive])
 

@@ -45,20 +45,20 @@ getCanPerformAbility !iid !ws !ability = do
   let
     mThatEnemy = getThatEnemy ws
     fixEnemy = maybe id Matcher.replaceThatEnemy mThatEnemy
-    actions = abilityActions ability
+    actions = ability.actions
     additionalCosts =
       abilityAdditionalCosts ability <> flip mapMaybe abilityModifiers \case
         AdditionalCost x -> Just x
         _ -> Nothing
-    cost = (`applyCostModifiers` abilityModifiers) $ fixEnemy $ abilityCost ability
+    cost = (`applyCostModifiers` abilityModifiers) $ fixEnemy ability.cost
     criteria = foldr setCriteria (abilityCriteria ability) abilityModifiers
     setCriteria :: ModifierType -> Criterion -> Criterion
     setCriteria = \case
       SetAbilityCriteria (CriteriaOverride c) -> const c
       _ -> id
     abWindow = case ability.source.location of
-      Nothing -> abilityWindow ability
-      Just lid -> Matcher.replaceThisLocation lid $ abilityWindow ability
+      Nothing -> ability.window
+      Just lid -> Matcher.replaceThisLocation lid ability.window
 
   runValidT do
     liftGuardM

@@ -102,6 +102,9 @@ instance HasField "wantsSkillTest" Ability (Maybe SkillTestMatcher) where
 instance HasField "limitType" Ability (Maybe AbilityLimitType) where
   getField = abilityLimitType . abilityLimit
 
+instance HasField "window" Ability WindowMatcher where
+  getField = abilityWindow
+
 instance HasField "criteria" Ability Criterion where
   getField = abilityCriteria
 

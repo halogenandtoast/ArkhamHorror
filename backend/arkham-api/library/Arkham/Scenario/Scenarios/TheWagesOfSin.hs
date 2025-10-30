@@ -124,7 +124,7 @@ setupTheWagesOfSin _attrs = do
   -- spectral state separately and therefor have no "unrevealed". So we
   -- need to exclude them here
   setExtraEncounterDeck SpectralEncounterDeck
-    =<< amongGathered (CardWithTrait Spectral <> not_ #location)
+    =<< amongGathered (SingleSidedCard <> CardWithTrait Spectral <> not_ #location)
 
   hangmansBrook <- Locations.hangmansBrook `orSampleIfReturnTo` [Locations.returnToHangmansBrook]
   startAt =<< place hangmansBrook

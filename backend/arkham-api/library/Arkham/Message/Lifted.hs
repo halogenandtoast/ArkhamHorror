@@ -44,6 +44,7 @@ import Arkham.Evade
 import Arkham.Evade qualified as Evade
 import Arkham.Fight
 import Arkham.Fight qualified as Fight
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Act
@@ -821,7 +822,12 @@ removeCampaignCard (toCardDef -> def) = do
     case def.kind of
       AssetType -> selectOne (assetIs def) >>= traverse_ removeFromGame
       _ -> pure ()
-  for_ mOwner (`removeCampaignCardFromDeck` def)
+  for_ mOwner \owner -> do
+    findCard ((== def) . toCardDef) >>= traverse_ \card -> do
+      deck <- field InvestigatorDeck owner
+      obtainCard card
+      when (any ((== card.id) . toCardId) deck.cards) $ shuffleDeck owner
+    removeCampaignCardFromDeck owner def
 
 removeCampaignCardFromDeck
   :: (HasCardDef a, ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)

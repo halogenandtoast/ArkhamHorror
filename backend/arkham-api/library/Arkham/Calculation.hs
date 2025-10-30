@@ -33,6 +33,7 @@ data GameCalculation
   = Negated GameCalculation
   | Fixed Int
   | MaxCalculation GameCalculation GameCalculation
+  | MinCalculation GameCalculation GameCalculation
   | DividedByCalculation GameCalculation Int
   | SumCalculation [GameCalculation]
   | SubtractCalculation GameCalculation GameCalculation

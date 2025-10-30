@@ -45,6 +45,7 @@ calculate = go
     Fixed n -> pure n
     Negated n -> negate . abs <$> go n
     MaxCalculation n d -> min <$> go n <*> go d
+    MinCalculation n d -> max <$> go n <*> go d
     DividedByCalculation d n -> (`div` n) <$> go d
     SumCalculation ds -> sum <$> traverse go ds
     SubtractCalculation d1 d2 -> (-) <$> go d1 <*> go d2

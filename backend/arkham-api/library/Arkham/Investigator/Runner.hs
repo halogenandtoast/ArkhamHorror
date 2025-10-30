@@ -2049,13 +2049,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       whenM (getCanDiscoverClues d.isInvestigate iid lid') do
         discoveredClues' <- min <$> total lid' (getSum n) <*> field LocationClues lid'
         when (discoveredClues' > 0) do
-          checkWindowMsg' <- checkWindows [mkWhen (Window.DiscoverClues iid lid' d.source discoveredClues')]
-          pushAll
-            [ checkWindowMsg'
-            , Do
-                $ DiscoverClues iid
-                $ d {discoverLocation = DiscoverAtLocation lid', discoverCount = discoveredClues'}
-            ]
+          push
+            $ Do
+            $ DiscoverClues iid
+            $ d {discoverLocation = DiscoverAtLocation lid', discoverCount = discoveredClues'}
     pure a
   Do (DiscoverClues iid d) | iid == investigatorId -> do
     lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
@@ -2077,9 +2074,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           defaultDiscover :: Lifted.ReverseQueue n => n ()
           defaultDiscover =
             pushAll
-              $ [ locationWindowsBefore
-                , UpdateHistory iid (HistoryItem HistoryCluesDiscovered $ singletonMap lid clueCount)
+              $ [ UpdateHistory iid (HistoryItem HistoryCluesDiscovered $ singletonMap lid clueCount)
                 , MoveTokens d.source (toSource lid) (toTarget iid) Clue clueCount
+                , locationWindowsBefore
                 , After $ GainClues iid d.source clueCount
                 , locationWindowsAfter
                 ]
@@ -3227,7 +3224,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       else pushAll $ FocusCards [toCard card] : maybeToList mWhenDraw <> [UnfocusCards, Do msg]
     pure a
   Do (InvestigatorDrewPlayerCardFrom iid card mdeck) | iid == investigatorId -> do
-    afterDraw <- checkWindows [mkAfter $ Window.DrawCard iid (toCard card) (fromMaybe Deck.NoDeck mdeck)]
+    afterDraw <-
+      checkWindows [mkAfter $ Window.DrawCard iid (toCard card) (fromMaybe Deck.NoDeck mdeck)]
     inLimit <- passesLimits iid (toCard card)
     if hasRevelation card && inLimit
       then

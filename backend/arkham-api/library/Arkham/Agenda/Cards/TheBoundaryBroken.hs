@@ -6,6 +6,7 @@ import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log (getRecordCount, whenHasRecord)
 import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -14,15 +15,19 @@ newtype TheBoundaryBroken = TheBoundaryBroken AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theBoundaryBroken :: AgendaCard TheBoundaryBroken
-theBoundaryBroken =
-  agenda (1, A) TheBoundaryBroken Cards.theBoundaryBroken (Static 8)
+theBoundaryBroken = agenda (1, A) TheBoundaryBroken Cards.theBoundaryBroken (Static 8)
 
 instance RunMessage TheBoundaryBroken where
   runMessage msg a@(TheBoundaryBroken attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
       whenHasRecord TheHarbingerIsStillAlive do
-        mharbinger <-
-          fetchCardMaybe [Enemies.harbingerOfValusia, Enemies.harbingerOfValusiaTheSleeperReturns]
+        isReturnTo <- getIsReturnTo
+        harbinger <-
+          fetchCard
+            $ if isReturnTo
+              then Enemies.harbingerOfValusiaTheSleeperReturns
+              else Enemies.harbingerOfValusia
+
         lead <- getLead
         yigsFury <- getRecordCount YigsFury
         locations <-
@@ -31,10 +36,9 @@ instance RunMessage TheBoundaryBroken where
               then locationWithInvestigator lead
               else FarthestLocationFromAll Anywhere
         chooseOrRunOneM lead $ targets locations \location -> do
-          for_ mharbinger \harbinger ->
-            createEnemyWithAfter_ harbinger location \harbingerId -> do
-              startingDamage <- getRecordCount TheHarbingerIsStillAlive
-              when (startingDamage > 0) $ placeTokens attrs harbingerId #damage startingDamage
+          createEnemyWithAfter_ harbinger location \harbingerId -> do
+            startingDamage <- getRecordCount TheHarbingerIsStillAlive
+            when (startingDamage > 0) $ placeTokens attrs harbingerId #damage startingDamage
       advanceAgendaDeck attrs
       pure a
     _ -> TheBoundaryBroken <$> liftRunMessage msg attrs

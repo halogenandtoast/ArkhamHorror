@@ -1,4 +1,4 @@
-module Arkham.Event.Events.AtACrossroads1 (atACrossroads1, atACrossroads1Effect, AtACrossroads1 (..)) where
+module Arkham.Event.Events.AtACrossroads1 (atACrossroads1, atACrossroads1Effect) where
 
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
@@ -27,7 +27,7 @@ instance RunMessage AtACrossroads1 where
             randomDiscard iid' attrs
         labeled "The chosen investigator loses 1 action during their next turn, then draws 3 cards." do
           createCardEffect Cards.atACrossroads1 Nothing attrs iid'
-          drawCardsIfCan iid' attrs 3
+          drawCards iid' attrs 3
       pure e
     _ -> AtACrossroads1 <$> liftRunMessage msg attrs
 

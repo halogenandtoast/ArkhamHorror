@@ -1989,7 +1989,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           ]
       _ -> noMatch
     Matcher.DrawCard timing whoMatcher cardMatcher deckMatcher ->
-      guardTiming timing $ \case
+      guardTiming timing \case
         Window.DrawCard who card deck ->
           andM
             [ matchWho iid who whoMatcher

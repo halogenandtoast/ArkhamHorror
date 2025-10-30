@@ -60,6 +60,9 @@ abilityCost = abilityTypeCost . abilityType
 abilityActions :: Ability -> [Action]
 abilityActions Ability {abilityBasic, abilityType} = abilityTypeActions abilityBasic abilityType
 
+instance HasField "cost" Ability Cost where
+  getField = abilityCost
+
 instance HasField "actions" Ability [Action] where
   getField = abilityActions
 

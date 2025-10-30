@@ -1,11 +1,11 @@
 module Arkham.Helpers where
 
 import Arkham.Prelude hiding (toLower, toUpper, unpack)
-
 import Data.Char (isLetter, toLower, toUpper)
 import Data.Data
 import Data.Foldable (foldr, foldrM)
 import Data.Foldable qualified as Foldable
+import GHC.Records
 
 toLabel :: String -> String
 toLabel [] = []
@@ -51,6 +51,9 @@ newtype Deck a = Deck {unDeck :: [a]}
     , SemiSequence
     , GrowingAppend
     )
+
+instance HasField "cards" (Deck a) [a] where
+  getField = unDeck
 
 instance Data a => Data (Deck a) where
   gfoldl k z (Deck a) = z Deck `k` a

@@ -1,17 +1,16 @@
-module Arkham.Investigator.Cards.HarveyWalters (harveyWalters, HarveyWalters (..)) where
+module Arkham.Investigator.Cards.HarveyWalters (harveyWalters) where
 
 import Arkham.Ability
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype HarveyWalters = HarveyWalters InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 harveyWalters :: InvestigatorCard HarveyWalters
 harveyWalters =
@@ -21,8 +20,8 @@ harveyWalters =
 instance HasAbilities HarveyWalters where
   getAbilities (HarveyWalters a) =
     [ playerLimit PerRound
-        $ restrictedAbility a 1 (Self <> DuringPhase #investigation)
-        $ freeReaction (DrawsCards #after (affectsOthers $ at_ YourLocation) AnyCards (atLeast 1))
+        $ restricted a 1 (Self <> DuringPhase #investigation)
+        $ freeReaction (DrawsCards #after (affectsOthersKnown a.id $ at_ YourLocation) AnyCards (atLeast 1))
     ]
 
 instance HasChaosTokenValue HarveyWalters where
@@ -31,11 +30,11 @@ instance HasChaosTokenValue HarveyWalters where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage HarveyWalters where
-  runMessage msg i@(HarveyWalters attrs) = case msg of
+  runMessage msg i@(HarveyWalters attrs) = runQueueT $ case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (map windowType -> [Window.DrawCards iid' _]) _ -> do
-      push $ drawCards iid' (attrs.ability 1) 1
+      drawCards iid' (attrs.ability 1) 1
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      push $ drawCards iid ElderSign 1
+      drawCards iid ElderSign 1
       pure i
-    _ -> HarveyWalters <$> runMessage msg attrs
+    _ -> HarveyWalters <$> liftRunMessage msg attrs

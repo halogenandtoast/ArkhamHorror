@@ -77,6 +77,21 @@ affectsColocated
 affectsColocated = affectsOthers . colocatedWith
 {-# INLINE affectsColocated #-}
 
+affectsOthersKnown :: InvestigatorId -> InvestigatorMatcher -> InvestigatorMatcher
+affectsOthersKnown iid You = InvestigatorWithId iid
+affectsOthersKnown iid NotYou =
+  InvestigatorIfThenKnown
+    iid
+    (InvestigatorWithModifier CannotAffectOtherPlayersWithPlayerEffectsExceptDamage)
+    NoOne
+    (NotInvestigator $ InvestigatorWithId iid)
+affectsOthersKnown iid matcher =
+  InvestigatorIfThenKnown
+    iid
+    (InvestigatorWithModifier CannotAffectOtherPlayersWithPlayerEffectsExceptDamage)
+    (InvestigatorWithId iid <> matcher)
+    matcher
+
 affectsOthers :: InvestigatorMatcher -> InvestigatorMatcher
 affectsOthers You = You
 affectsOthers NotYou =

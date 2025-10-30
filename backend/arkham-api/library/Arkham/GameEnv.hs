@@ -9,7 +9,6 @@ import {-# SOURCE #-} Arkham.Card (
   CardCode,
   CardGen (..),
   CardId,
-  toCardCode,
   lookupCardDef,
   unsafeMakeCardId,
  )

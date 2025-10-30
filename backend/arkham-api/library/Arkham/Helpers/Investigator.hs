@@ -765,3 +765,9 @@ getCanLoseActions (asId -> iid) = do
   remaining <- field InvestigatorRemainingActions iid
   additional <- fieldLength InvestigatorAdditionalActions iid
   pure $ remaining + additional > 0
+
+selectAffectsOthers :: (HasGame m, Tracing m) => InvestigatorId -> InvestigatorMatcher -> m [InvestigatorId]
+selectAffectsOthers iid matcher = withActiveInvestigator iid $ select $ affectsOthers matcher
+
+selectAffectsColocated :: (HasGame m, Tracing m) => InvestigatorId -> InvestigatorMatcher -> m [InvestigatorId]
+selectAffectsColocated iid matcher = selectAffectsOthers iid (colocatedWith iid <> matcher)

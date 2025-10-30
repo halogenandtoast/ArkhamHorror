@@ -1312,6 +1312,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       you <- view activeInvestigatorIdL <$> getGame
       youMatch <- you <=~> m1
       toId i <=~> (if youMatch then m2 else m3)
+    InvestigatorIfThenKnown you m1 m2 m3 -> flip runMatchesM as $ \i -> do
+      youMatch <- you <=~> m1
+      toId i <=~> (if youMatch then m2 else m3)
     InvestigatorCanTarget t -> flip runMatchesM as $ \_i -> do
       case t of
         EncounterDeckTarget -> scenarioField ScenarioHasEncounterDeck

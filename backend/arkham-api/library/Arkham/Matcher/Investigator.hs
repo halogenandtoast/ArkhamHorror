@@ -170,6 +170,7 @@ data InvestigatorMatcher
   | InvestigatorWithTokenKey ChaosTokenFace
   | InvestigatorWithAnyKey
   | InvestigatorWithBondedCard CardMatcher
+  | InvestigatorIfThenKnown InvestigatorId InvestigatorMatcher InvestigatorMatcher InvestigatorMatcher
   | InvestigatorIfThen InvestigatorMatcher InvestigatorMatcher InvestigatorMatcher
   | InvestigatorCanTarget Target
   | InvestigatorWithRecord CampaignLogKey

@@ -1,14 +1,11 @@
-module Arkham.Treachery.Cards.EndlessWeaving (
-  endlessWeaving,
-  EndlessWeaving (..),
-)
-where
+module Arkham.Treachery.Cards.EndlessWeaving (endlessWeaving) where
 
 import Arkham.Attack
-import Arkham.Card.CardType
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Trait (Trait (Spider))
@@ -27,12 +24,10 @@ instance RunMessage EndlessWeaving where
     Revelation iid (isSource attrs -> True) -> do
       enemies <- select $ EnemyWithTrait Spider
       case enemies of
-        [] -> findAndDrawEncounterCard iid $ CardWithType EnemyType <> CardWithTrait Spider
+        [] -> findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Spider
         xs -> do
-          chooseOne
-            iid
-            [targetLabel eid [HandleTargetChoice iid (toSource attrs) (toTarget eid)] | eid <- xs]
-          push $ ShuffleDeck Deck.EncounterDeck
+          chooseOneM iid $ targets xs $ handleTarget iid attrs
+          shuffleDeck Deck.EncounterDeck
       pure t
     HandleTargetChoice _ (isSource attrs -> True) (EnemyTarget eid) -> do
       placement <- field EnemyPlacement eid
@@ -41,10 +36,11 @@ instance RunMessage EndlessWeaving where
           case placement of
             AsSwarm hostId _ -> hostId
             _ -> eid
-      miid <- selectOne $ investigatorEngagedWith eid'
-      for_ miid \iid -> do
-        swarms <- select $ SwarmOf eid'
-        for_ (eid' : swarms) \enemy -> push $ EnemyWillAttack (enemyAttack enemy attrs iid)
+      selectOne (investigatorEngagedWith eid') >>= \case
+        Just iid -> do
+          swarms <- select $ SwarmOf eid'
+          for_ (eid' : swarms) \enemy -> push $ EnemyWillAttack (enemyAttack enemy attrs iid)
+        Nothing -> withLocationOf eid' $ placeDoomOn attrs 1
 
       pure t
     _ -> EndlessWeaving <$> liftRunMessage msg attrs

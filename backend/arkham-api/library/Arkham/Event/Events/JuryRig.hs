@@ -18,10 +18,15 @@ juryRig = event JuryRig Cards.juryRig
 
 instance HasAbilities JuryRig where
   getAbilities (JuryRig a) =
-    [ controlled
+    [ restricted
         a
         1
-        (DuringSkillTest $ SkillTestSourceMatches $ SourceIsAsset $ assetWithAttachedEvent a)
+        ( DuringSkillTest
+            $ SkillTestSourceMatches
+            $ SourceIsAsset
+            $ assetWithAttachedEvent a
+            <> AssetControlledBy You
+        )
         $ FastAbility
         $ EventUseCost (EventWithId a.id) Durability 1
     ]

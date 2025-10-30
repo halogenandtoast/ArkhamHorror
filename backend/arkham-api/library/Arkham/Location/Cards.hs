@@ -7096,7 +7096,7 @@ pumpRoom =
 holdingCells :: CardDef
 holdingCells =
   victory 1
-    $ singleSided
+    $ otherSideIs "07252"
     $ location
       "07252b"
       "Holding Cells"

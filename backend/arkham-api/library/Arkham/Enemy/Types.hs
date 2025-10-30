@@ -85,6 +85,7 @@ data instance Field Enemy :: Type -> Type where
   EnemySealedChaosTokens :: Field Enemy [ChaosToken]
   EnemyKeys :: Field Enemy (Set ArkhamKey)
   EnemySpawnedBy :: Field Enemy (Maybe InvestigatorId)
+  EnemySpawnDetails :: Field Enemy (Maybe SpawnDetails)
   EnemyAttacking :: Field Enemy (Maybe EnemyAttackDetails)
   EnemyWantsToAttack :: Field Enemy Bool
   EnemyBearer :: Field Enemy (Maybe InvestigatorId)
@@ -137,6 +138,7 @@ instance FromJSON (SomeField Enemy) where
     "EnemySealedChaosTokens" -> pure $ SomeField EnemySealedChaosTokens
     "EnemyKeys" -> pure $ SomeField EnemyKeys
     "EnemySpawnedBy" -> pure $ SomeField EnemySpawnedBy
+    "EnemySpawnDetails" -> pure $ SomeField EnemySpawnDetails
     "EnemyAttacking" -> pure $ SomeField EnemyAttacking
     "EnemyBearer" -> pure $ SomeField EnemyBearer
     "EnemyCardsUnderneath" -> pure $ SomeField EnemyCardsUnderneath
@@ -480,6 +482,7 @@ fieldLens = \case
   EnemySealedChaosTokens -> sealedChaosTokensL
   EnemyKeys -> keysL
   EnemySpawnedBy -> spawnedByL
+  EnemySpawnDetails -> spawnDetailsL
   EnemyAttacking -> attackingL
   EnemyWantsToAttack -> wantsToAttackL
   EnemyBearer -> bearerL

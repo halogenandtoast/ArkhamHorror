@@ -383,3 +383,12 @@ getEnemyField fld eid = do
     Nothing -> case eqT @a @(Maybe (FlatField a)) of
       Just Refl -> join val
       Nothing -> Nothing
+
+{- | Create an enemy with doom tokens already on it
+
+Uses the @Do@ message to place the tokens without triggering windows beforehand
+-}
+createWithDoom
+  :: Sourceable source => source -> Int -> EnemyCreation Message -> EnemyCreation Message
+createWithDoom source n ec = ec {enemyCreationBefore = [Do (PlaceTokens (toSource source) (toTarget ec.enemy) #doom n)]}
+{-# INLINE createWithDoom #-}

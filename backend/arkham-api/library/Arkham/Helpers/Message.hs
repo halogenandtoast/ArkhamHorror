@@ -264,6 +264,11 @@ createEnemyAtEdit c lid mTarget f = do
 createEnemyAt_ :: MonadRandom m => Card -> LocationId -> Maybe Target -> m Message
 createEnemyAt_ c lid mTarget = snd <$> createEnemyAt c lid mTarget
 
+createEnemyAtLocationMatchingEdit :: MonadRandom m => Card -> LocationMatcher -> (EnemyCreation Message -> EnemyCreation Message) -> m (EnemyId, Message)
+createEnemyAtLocationMatchingEdit c matcher f = do
+  creation <- createEnemy c matcher
+  pure (enemyCreationEnemyId creation, CreateEnemy $ f creation)
+
 createEnemyAtLocationMatching :: MonadRandom m => Card -> LocationMatcher -> m (EnemyId, Message)
 createEnemyAtLocationMatching c matcher = do
   creation <- createEnemy c matcher

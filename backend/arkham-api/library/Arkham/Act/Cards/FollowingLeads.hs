@@ -9,6 +9,7 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Enemy (createWithDoom)
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Query (getInvestigators, getJustLocationByName)
 import Arkham.Matcher
@@ -101,6 +102,7 @@ instance RunMessage FollowingLeads where
           mTomeOfRituals <- selectOne $ assetIs Assets.tomeOfRituals
           mSinisterSolution <- selectOne $ assetIs Assets.sinisterSolution
           mTimeWornLocket <- selectOne $ assetIs Assets.timeWornLocket
+          push $ RemoveAllDoomFromPlay defaultRemoveDoomMatchers
           case (mAlienDevice, mTimeWornLocket, mSinisterSolution, mManagersKey, mTomeOfRituals) of
             (Just alienDevice, Just timeWornLocket, _, _, _) -> do
               agenda <- genCard Agendas.theTrueCulpritV1
@@ -117,9 +119,8 @@ instance RunMessage FollowingLeads where
               removeClues attrs alienDevice clues
               placeClues attrs sinisterSolution clues
               card <- fetchCard Enemies.otherworldlyMeddler
-              otherworldlyMeddler <- createEnemyAtLocationMatching card "Hotel Roof"
               doom <- perPlayer 1
-              placeDoom attrs otherworldlyMeddler doom
+              createEnemyAtLocationMatchingEdit_ card "Hotel Roof" (createWithDoom attrs doom)
             (Just alienDevice, _, _, Just managersKey, _) -> do
               agenda <- genCard Agendas.theTrueCulpritV3
               push $ SetCurrentAgendaDeck 1 [agenda]
@@ -135,9 +136,8 @@ instance RunMessage FollowingLeads where
               removeClues attrs alienDevice clues
               placeClues attrs tomeOfRituals clues
               card <- fetchCard Enemies.otherworldlyMeddler
-              otherworldlyMeddler <- createEnemyAtLocationMatching card "Hotel Roof"
               doom <- perPlayer 2
-              placeDoom attrs otherworldlyMeddler (2 + doom)
+              createEnemyAtLocationMatchingEdit_ card "Hotel Roof" (createWithDoom attrs $ 2 + doom)
             (_, Just timeWornLocket, Just sinisterSolution, _, _) -> do
               agenda <- genCard Agendas.theTrueCulpritV5
               push $ SetCurrentAgendaDeck 1 [agenda]
@@ -202,7 +202,6 @@ instance RunMessage FollowingLeads where
             _ -> error "invalid combination"
 
           story theTruth7
-          push $ RemoveAllDoomFromPlay defaultRemoveDoomMatchers
           toDiscard GameSource attrs
         _ -> error "unknown step"
 

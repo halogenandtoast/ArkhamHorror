@@ -1124,10 +1124,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
               -- When only one card we want to prompt the user before putting back
               unless (all null (toList targetCards)) do
                 pushAll
-                  $ [ PreSearchFound iid Nothing deck (concat $ toList targetCards)
-                    , After (PreSearchFound iid Nothing deck (concat $ toList targetCards))
-                    ]
-                  <> [chooseOne player [Label "Done" []] | length (toList targetCards) > 1]
+                  [ PreSearchFound iid Nothing deck (concat $ toList targetCards)
+                  , After (PreSearchFound iid Nothing deck (concat $ toList targetCards))
+                  , chooseOne player [Label "Done" []]
+                  ]
       _ -> pure ()
     pure a
   After (PreSearchFound iid mSearchTarget Deck.EncounterDeck _) -> do

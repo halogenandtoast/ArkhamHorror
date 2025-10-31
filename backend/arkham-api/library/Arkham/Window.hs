@@ -302,7 +302,7 @@ data WindowType
   | SkillTest SkillTestType
   | SkillTestEnded SkillTest
   | SuccessfulAttackEnemy InvestigatorId Source EnemyId Int
-  | SuccessfulEvadeEnemy InvestigatorId EnemyId Int
+  | SuccessfulEvadeEnemy InvestigatorId Source EnemyId Int
   | SuccessfulInvestigation InvestigatorId LocationId
   | SuccessfulParley InvestigatorId
   | TakeDamage Source DamageEffect Target Int

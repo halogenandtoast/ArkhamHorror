@@ -17,7 +17,10 @@ instance HasAbilities ReturnToXochimilco where
     extendRevealed1 a
       $ mkAbility a 1
       $ freeReaction
-      $ SkillTestResult #after (You <> at_ (be a)) (oneOf [#fighting, #evading]) #success
+      $ oneOf
+        [ EnemyEvadedSuccessfully #after (You <> at_ (be a)) AnySource AnyEnemy
+        , EnemyAttackedSuccessfully #after (You <> at_ (be a)) AnySource AnyEnemy
+        ]
 
 instance RunMessage ReturnToXochimilco where
   runMessage msg l@(ReturnToXochimilco attrs) = runQueueT $ case msg of

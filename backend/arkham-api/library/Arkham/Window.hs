@@ -25,7 +25,7 @@ import Arkham.ScenarioLogKey
 import {-# SOURCE #-} Arkham.SkillTest.Base
 import Arkham.SkillTest.Step
 import Arkham.SkillTest.Type
-import Arkham.Source (Source)
+import Arkham.Source (Source (GameSource))
 import Arkham.Strategy (DamageStrategy)
 import Arkham.Target (Target)
 import Arkham.Timing (Timing)
@@ -347,6 +347,11 @@ mconcat
         parseJSON = withObject "WindowType" \o -> do
           tag :: Text <- o .: "tag"
           case tag of
+            "SuccessfulEvadeEnemy" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left (i, e, n) -> pure $ SuccessfulEvadeEnemy i GameSource e n
+                Right (i, s, e, n) -> pure $ SuccessfulEvadeEnemy i s e n
             "WouldDrawCard" -> do
               contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
               case contents of

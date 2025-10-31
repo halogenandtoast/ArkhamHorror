@@ -2844,6 +2844,29 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
       pure $ foldr canHold mempty mods
 
     let
+      -- Helper function to find adjustable slots that could be moved to target slot type
+      findAdjustableSlotsFor :: SlotType -> [(SlotType, Slot)] -> [(SlotType, Slot)]
+      findAdjustableSlotsFor targetSlotType slots' = 
+        [ (sType, slot)
+        | (sType, slot) <- slots'
+        , sType /= targetSlotType
+        , case slot of
+            AdjustableSlot _ _ stypes _ -> targetSlotType `elem` stypes
+            _ -> False
+        ]
+
+      -- Version for Map SlotType [Slot]
+      findAdjustableSlotsForMap :: SlotType -> Map SlotType [Slot] -> [(SlotType, Slot)]
+      findAdjustableSlotsForMap targetSlotType slotsMap =
+        [ (sType, slot)
+        | (sType, slotsOfType) <- Map.toList slotsMap
+        , sType /= targetSlotType
+        , slot <- slotsOfType
+        , case slot of
+            AdjustableSlot _ _ stypes _ -> targetSlotType `elem` stypes
+            _ -> False
+        ]
+
       lookupSlot :: SlotType -> [(SlotType, Slot)] -> [Slot]
       lookupSlot k = map snd . filter ((== k) . fst)
       go :: HasGame m => [(AssetId, Card, SlotType)] -> [(SlotType, Slot)] -> m [SlotType]
@@ -2855,14 +2878,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           [] -> case findWithDefault [] slotType canHoldMap of
             [] -> do
               -- Check for AdjustableSlots in other slot types that could be moved to slotType
-              let adjustableSlotPairs = 
-                    [ (sType, slot)
-                    | (sType, slot) <- slots
-                    , sType /= slotType
-                    , case slot of
-                        AdjustableSlot _ _ stypes _ -> slotType `elem` stypes
-                        _ -> False
-                    ]
+              let adjustableSlotPairs = findAdjustableSlotsFor slotType slots
               (availableAdjustable, unusedAdjustable) <- partitionM (canPutIntoSlot card . snd) adjustableSlotPairs
               case availableAdjustable of
                 [] -> (slotType :) <$> go rs slots
@@ -2894,15 +2910,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
           [] -> case findWithDefault [] slotType canHoldMap of
             [] -> do
               -- Check for AdjustableSlots in other slot types that could be moved to slotType
-              let adjustableSlotPairs = 
-                    [ (sType, slot)
-                    | (sType, slotsOfType) <- Map.toList slots
-                    , sType /= slotType
-                    , slot <- slotsOfType
-                    , case slot of
-                        AdjustableSlot _ _ stypes _ -> slotType `elem` stypes
-                        _ -> False
-                    ]
+              let adjustableSlotPairs = findAdjustableSlotsForMap slotType slots
               (availableAdjustable, _unusedAdjustable) <- partitionM (canPutIntoSlot card . snd) adjustableSlotPairs
               case availableAdjustable of
                 [] -> pure slots -- suppose we get dendromorphosis and the king in yellow

@@ -5582,6 +5582,7 @@ runMessages gameId mLogger = do
                       _ -> pure True
                     anyValidChoice = \case
                       ChooseOne choices -> anyM validChoice choices
+                      ChooseOneAtATime choices -> anyM validChoice choices
                       _ -> pure True
                   canAsk <- runReaderT (anyValidChoice q) g
                   if canAsk

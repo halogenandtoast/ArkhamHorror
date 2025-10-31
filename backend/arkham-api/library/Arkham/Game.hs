@@ -3535,7 +3535,7 @@ enemyMatcherFilter es matcher' = do
           -- Dirty Fighting has to fight the evaded enemy, we are saying this is
           -- the one that must be fought
           pure $ filter ((== eid) . toId) es'
-        Nothing -> flip filterM es' \enemy -> do
+        Nothing -> es' & filterM \enemy -> do
           enemyModifiers <- getModifiers enemy.id
           sourceModifiers <- case source of
             AbilitySource abSource idx -> do
@@ -3590,17 +3590,13 @@ enemyMatcherFilter es matcher' = do
       iid <- view activeInvestigatorIdL <$> getGame
       imodifiers' <- getModifiers iid
       let cannotAttackEnemy e = CannotAttackEnemy e.id `elem` imodifiers'
-      let es' = filter (not . cannotAttackEnemy) es
-      flip filterM es' \enemy -> do
+      es & filter (not . cannotAttackEnemy) & filterM \enemy -> do
         modifiers' <- getModifiers (EnemyTarget $ toId enemy)
         let
           enemyFilters =
-            mapMaybe
-              ( \case
-                  CannotFight m -> Just m
-                  _ -> Nothing
-              )
-              modifiers'
+            modifiers' & mapMaybe \case
+              CannotFight m -> Just m
+              _ -> Nothing
           window = mkWindow #when Window.NonFast
         excluded <-
           elem (toId enemy) <$> select (mconcat $ EnemyWithModifier CannotBeAttacked : enemyFilters)

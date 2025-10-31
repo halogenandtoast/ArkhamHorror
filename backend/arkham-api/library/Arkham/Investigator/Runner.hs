@@ -2650,7 +2650,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         pure a
       _ -> liftRunMessage (RemoveTokens s (toTarget a) tType amount) a
   ForInvestigator iid (MoveTokens s source@(isSource a -> True) target Clue amount) | amount > 0 && iid == investigatorId -> do
-    assetsWithClues <- selectWithField AssetClues (assetControlledBy a.id <> AssetWithAnyClues)
+    let
+      wrapper = case target.asset of
+        Just aid -> (<> not_ (AssetWithId aid))
+        Nothing -> id
+    assetsWithClues <-
+      selectWithField AssetClues $ wrapper $ assetControlledBy a.id <> AssetWithAnyClues
     let total = sum (map snd assetsWithClues) + investigatorClues a
     if total == amount
       then do

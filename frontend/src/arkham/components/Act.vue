@@ -4,7 +4,7 @@ import { type Game } from '@/arkham/types/Game'
 import { type Card, cardImage } from '@/arkham/types/Card'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue';
-import Key from '@/arkham/components/Key.vue';
+import KeyToken from '@/arkham/components/Key.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, type Message } from '@/arkham/types/Message'
@@ -191,7 +191,7 @@ const breaches = computed(() => {
         :amount="act.clues"
       />
       <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
-      <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="$emit('choose', $event)" />
+      <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="$emit('choose', $event)" />
     </div>
   </div>
 </template>

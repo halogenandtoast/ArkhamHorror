@@ -8,7 +8,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import DebugLocation from '@/arkham/components/debug/Location.vue';
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message';
 import ConcealedCard from '@/arkham/components/ConcealedCard.vue';
-import Key from '@/arkham/components/Key.vue';
+import KeyToken from '@/arkham/components/Key.vue';
 import Seal from '@/arkham/components/Seal.vue';
 import Locus from '@/arkham/components/Locus.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
@@ -393,7 +393,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
           </div>
 
           <div class="pool location-pool" v-if="hasPool">
-            <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
+            <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
             <Seal v-for="seal in seals" :key="seal.sealKind" :seal="seal" />
             <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
             <PoolItem v-if="horror && horror > 0" type="horror" :amount="horror" />

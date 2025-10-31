@@ -6,7 +6,7 @@ import { TokenType, Token } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
 import { keyToId } from '@/arkham/types/Key'
 import type { Game } from '@/arkham/types/Game';
-import Key from '@/arkham/components/Key.vue';
+import KeyToken from '@/arkham/components/Key.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import TokenView from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Asset';
@@ -74,7 +74,7 @@ const hasPool = computed(() => {
           </div>
           <div v-if="hasPool" class="pool">
             <div class="keys" v-if="keys.length > 0">
-              <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" />
+              <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" />
             </div>
             <template v-for="[use, amount] in uses" :key="use">
               <PoolItem

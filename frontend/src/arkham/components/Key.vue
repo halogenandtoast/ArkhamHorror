@@ -10,7 +10,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken'
 
 const props = defineProps<{
-  name: ArkhamKey
+  keyToken: ArkhamKey
   game?: Game
   playerId?: string
 }>()
@@ -33,22 +33,22 @@ const keyToImage = (k: ArkhamKey): string => {
   }
 }
 
-const keyImage = computed<string>(() => keyToImage(props.name))
+const keyImage = computed<string>(() => keyToImage(props.keyToken))
 const dragging = ref(false)
 const choices = computed(() => {
   if (!props.game || !props.playerId) return []
   return ArkhamGame.choices(props.game, props.playerId)
 })
 
-const tokenKey = computed(() => props.name.tag === 'TokenKey')
+const tokenKey = computed(() => props.keyToken.tag === 'TokenKey')
 
 function canInteract(c: Message): boolean {
   if (c.tag === MessageType.KEY_LABEL) {
     if (c.key.tag === 'TokenKey') {
-      if (props.name.tag !== 'TokenKey') return false
-      return c.key.contents.id === props.name.contents.id
+      if (props.keyToken.tag !== 'TokenKey') return false
+      return c.key.contents.id === props.keyToken.contents.id
     } else {
-      return c.key.tag === props.name.tag
+      return c.key.tag === props.keyToken.tag
     }
   }
 
@@ -68,11 +68,11 @@ function choose() {
 function startDrag(event: DragEvent) {
   dragging.value = true
   if (event.dataTransfer) {
-    event.dataTransfer.effectAllowed = 'move'
-    if (props.name.tag == 'TokenKey') {
-      event.dataTransfer.setData('text/plain', JSON.stringify({ tag: "KeyTarget", contents: { tag: "TokenKey", contents: {chaosTokenId: props.name.contents.id, chaosTokenFace: props.name.contents.face, chaosTokenRevealedBy: null, chaosTokenCancelled: false, chaosTokenSealed: false } } }))
+    event.dataTransfer.dropEffect = 'move'
+    if (props.keyToken.tag == 'TokenKey') {
+      event.dataTransfer.setData('text/plain', JSON.stringify({ tag: "KeyTarget", contents: { tag: "TokenKey", contents: {chaosTokenId: props.keyToken.contents.id, chaosTokenFace: props.keyToken.contents.face, chaosTokenRevealedBy: null, chaosTokenCancelled: false, chaosTokenSealed: false } } }))
     } else {
-      event.dataTransfer.setData('text/plain', JSON.stringify({ tag: "KeyTarget", contents: { tag: props.name } }))
+      event.dataTransfer.setData('text/plain', JSON.stringify({ tag: "KeyTarget", contents: props.keyToken }))
     }
   }
 }

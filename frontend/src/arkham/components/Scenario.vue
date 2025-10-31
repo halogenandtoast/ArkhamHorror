@@ -34,7 +34,7 @@ import Agenda from '@/arkham/components/Agenda.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import EnemyView from '@/arkham/components/Enemy.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
-import Key from '@/arkham/components/Key.vue';
+import KeyToken from '@/arkham/components/Key.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
 import Connections from '@/arkham/components/Connections.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
@@ -895,7 +895,7 @@ async function addChaosToken(face: any){
             <PoolItem class="civilians-slain" v-if="civiliansSlain" type="resource" :amount="civiliansSlain" />
             <PoolItem class="targets" v-if="targets" type="resource" :amount="targets" />
             <div class="spent-keys" v-if="spentKeys.length > 0">
-              <Key v-for="key in spentKeys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
+              <KeyToken v-for="k in spentKeys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
             </div>
             <PoolItem
               v-if="signOfTheGods"
@@ -917,7 +917,7 @@ async function addChaosToken(face: any){
             <PoolItem v-if="damage && damage > 0" type="damage" :amount="damage" />
           </div>
           <div class="keys" v-if="keys.length > 0">
-            <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
+            <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
           </div>
           <button v-if="cardsUnderScenarioReference.length > 0" class="view-cards-under-button" @click="showCardsUnderScenarioReference">{{viewUnderScenarioReference}}</button>
         </div>

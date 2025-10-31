@@ -319,6 +319,7 @@ instance RunMessage EnemyAttrs where
             & (spawnDetailsL ?~ details)
             & (exhaustedL ||~ spawnDetailsExhausted details)
             & (delayEngagementL .~ False)
+            & (defeatedL .~ False)
 
       getSpawnLocation details.spawnAt >>= \case
         Nothing -> do
@@ -330,7 +331,7 @@ instance RunMessage EnemyAttrs where
             pushM $ checkWindows [mkWhen (Window.EnemySpawns enemyId lid)]
           do_ msg
           pure $ a' & placementL .~ AtLocation lid
-    Do (EnemySpawn originalDetails) | originalDetails.enemy == enemyId -> do
+    Do (EnemySpawn originalDetails) | originalDetails.enemy == enemyId && not enemyDefeated -> do
       let details = fromMaybe originalDetails enemySpawnDetails
       let miid = details.investigator
       let eid = enemyId

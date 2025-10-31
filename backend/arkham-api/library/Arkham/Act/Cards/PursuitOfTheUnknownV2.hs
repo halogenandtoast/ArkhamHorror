@@ -34,20 +34,14 @@ instance RunMessage PursuitOfTheUnknownV2 where
       pure a
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       eachInvestigator \iid -> do
-        search
-          iid
-          (attrs.ability 1)
-          attrs
-          [fromDeck]
-          (basic $ CardWithTitle "Tekeli-li")
-          (defer attrs IsNotDraw)
+        search iid (attrs.ability 1) iid [fromDeck] (basic "Tekeli-li") (defer attrs IsNotDraw)
 
       pure a
     SearchFound iid (isTarget attrs -> True) _ [] -> do
       chooseOneM iid $ labeled "No Cards Found" nothing
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
-      chooseTargetM iid cards $ shuffleCardsIntoDeck TekeliliDeck . only
+      chooseTargetM iid cards \_ -> shuffleCardsIntoDeck TekeliliDeck cards
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advancedWithOther attrs

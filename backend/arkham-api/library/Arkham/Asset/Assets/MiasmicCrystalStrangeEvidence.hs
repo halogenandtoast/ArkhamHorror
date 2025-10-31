@@ -18,7 +18,8 @@ miasmicCrystalStrangeEvidence = asset MiasmicCrystalStrangeEvidence Cards.miasmi
 
 instance HasAbilities MiasmicCrystalStrangeEvidence where
   getAbilities (MiasmicCrystalStrangeEvidence a) =
-    [ storyControlled_ a 1
+    [ noLimit
+        $ storyControlled_ a 1
         $ triggered
           (DrawCard #when (affectsOthers $ at_ YourLocation) (basic $ CardFromEncounterSet Tekelili) AnyDeck)
           (assetUseCost a Charge 1)

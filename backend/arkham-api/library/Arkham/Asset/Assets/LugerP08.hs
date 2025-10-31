@@ -16,7 +16,7 @@ lugerP08 = asset LugerP08 Cards.lugerP08
 
 instance HasAbilities LugerP08 where
   getAbilities (LugerP08 a) =
-    [ restricted a 1 ControlsThis $ FastAbility' (exhaust a <> assetUseCost a Ammo 1) [#fight]
+    [ controlled_ a 1 $ FastAbility' (exhaust a <> assetUseCost a Ammo 1) [#fight]
     , controlled a 2 (thisExists a $ oneOf [AssetExhausted, AssetNotAtUsesX])
         $ actionAbilityWithCost (ResourceCost 1)
     ]

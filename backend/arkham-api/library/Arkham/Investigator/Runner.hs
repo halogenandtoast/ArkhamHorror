@@ -4451,7 +4451,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                ]
             <> map
               ((\f -> f windows [] [PlayerWindow iid additionalActions isAdditional]) . AbilityLabel investigatorId)
-              (filter (not . isActionAbility) actions)
+              (filter (or . sequence [isFastAbility, not . isActionAbility]) actions)
       player <- getPlayer investigatorId
       unless (null choices) $ push $ AskPlayer $ Ask player $ PlayerWindowChooseOne choices
     pure a

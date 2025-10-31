@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Helpers.Location where
 
 import Arkham.Asset.Types (AssetAttrs, Field (..))
@@ -227,7 +229,7 @@ getCanMoveToLocations iid source = cached (CanMoveToLocationsKey iid (toSource s
       $ includeEmpty
       $ Matcher.canEnterLocation iid
       <> Matcher.NotLocation (Matcher.LocationWithInvestigator $ InvestigatorWithId iid)
-  getCanMoveToLocations_ iid source ls
+  getCanMoveToLocations_ iid source (traceShowId ls)
 
 getCanMoveToLocations_
   :: (Sourceable source, HasGame m, Tracing m)
@@ -263,7 +265,9 @@ getCanMoveToMatchingLocations
   -> m [LocationId]
 getCanMoveToMatchingLocations iid source matcher = do
   ls <- getCanMoveToLocations iid source
-  filter (`elem` ls) <$> select matcher
+  modifiers <- getModifiers iid
+  let includeEmpty = if CanEnterEmptySpace `elem` modifiers then IncludeEmptySpace else id
+  filter (`elem` ls) <$> select (includeEmpty matcher)
 
 -- TODO: CACHE
 getConnectedMoveLocations

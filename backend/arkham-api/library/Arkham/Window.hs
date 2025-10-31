@@ -347,7 +347,11 @@ mconcat
         parseJSON = withObject "WindowType" \o -> do
           tag :: Text <- o .: "tag"
           case tag of
-            "SuccessfulEvadeEnemy" -> o .: "contents" <|> (o .: "contents" <&> \(i, e, n) -> SuccessfulEvadeEnemy i GameSource e n)
+            "SuccessfulEvadeEnemy" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left (i, e, n) -> pure $ SuccessfulEvadeEnemy i GameSource e n
+                Right (i, s, e, n) -> pure $ SuccessfulEvadeEnemy i s e n
             "WouldDrawCard" -> do
               contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
               case contents of

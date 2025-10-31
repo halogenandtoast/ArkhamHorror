@@ -1,16 +1,10 @@
-module Arkham.Enemy.Cards.JoyceLittleBookshopOwner (
-  joyceLittleBookshopOwner,
-  JoyceLittleBookshopOwner (..),
-)
-where
+module Arkham.Enemy.Cards.JoyceLittleBookshopOwner (joyceLittleBookshopOwner) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.SkillTest.Lifted
-import Arkham.Matcher
-import Arkham.Message.Lifted.Placement
 
 newtype JoyceLittleBookshopOwner = JoyceLittleBookshopOwner EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -21,16 +15,13 @@ joyceLittleBookshopOwner = enemy JoyceLittleBookshopOwner Cards.joyceLittleBooks
 
 instance HasAbilities JoyceLittleBookshopOwner where
   getAbilities (JoyceLittleBookshopOwner a) =
-    extend
-      a
-      [skillTestAbility $ restrictedAbility a 1 OnSameLocation parleyAction_]
+    extend1 a $ skillTestAbility $ restricted a 1 OnSameLocation parleyAction_
 
 instance RunMessage JoyceLittleBookshopOwner where
   runMessage msg e@(JoyceLittleBookshopOwner attrs) = runQueueT $ case msg of
     Revelation _ (isSource attrs -> True) -> do
       placeClues attrs attrs =<< perPlayer 1
-      place attrs =<< selectJust (LocationWithTitle "The Little Bookshop")
-      pure e
+      pure $ updateAttrs e (spawnAtL ?~ "The Little Bookshop")
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getId
       parley sid iid (attrs.ability 1) attrs #willpower (Fixed 3)

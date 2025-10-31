@@ -1,158 +1,158 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is 1 more than the current agenda number.",
-      "cultist": "-3 (-5 instead if there is a _Monster_ enemy at your location).",
-      "tablet": "-3. If there is a _Saturnite_ enemy at your location, reveal another token.",
-      "elderThing": "-3. If you fail and there is a _Dinosaur_ enemy at your location, ready that enemy. That enemy attacks you."
+      "skull": "-X. X est le numéro de l'intrigue en cours +1.",
+      "cultist": "-3 (-5 à la place si un ennemi _Monstre_ est dans votre lieu).",
+      "tablet": "-3. Si un ennemi _Saturnien_ est dans votre lieu, révélez un autre pion.",
+      "elderThing": "-3. En cas d'échec et qu'un ennemi _Dinosaure_ est dans votre lieu, redressez cet ennemi. Cet ennemi vous attaque."
     },
     "hardExpert": {
-      "skull": "-X. X is 2 more than the current agenda number.",
-      "cultist": "-4 (-6 instead if there is a _Monster_ enemy at your location).",
-      "tablet": "-4. If there is a _Saturnite_ enemy at your location, reveal another token.",
-      "elderThing": "-4. If you fail and there is a _Dinosaur_ enemy at your location, ready that enemy. That enemy attacks you."
+      "skull": "-X. X est le numéro de l'intrigue en cours +2.",
+      "cultist": "-4 (-6 à la place si un ennemi _Monstre_ est dans votre lieu).",
+      "tablet": "-4. Si un ennemi _Saturnien_ est dans votre lieu, révélez un autre pion.",
+      "elderThing": "-4. En cas d'échec et qu'un ennemi _Dinosaure_ est dans votre lieu, redressez cet ennemi. Cet ennemi vous attaque."
     }
   },
   "label": {
     "andresRequest": {
-      "takeAndre": "Find the set-aside André Patel story asset and put it into play under the control of any investigator. He does not take up an ally slot for the remainder of the scenario.",
-      "setAside": "Choose one Prop to set aside, out of play"
+      "takeAndre": "Trouvez le soutien d'histoire André Patel et mettez-le en jeu sous le contrôle de n'importe quel investigateur. Il n'occupe aucun emplacement d'allié pour le reste du scénario.",
+      "setAside": "Mettre de côté, hors jeu, un soutien Accessoire"
     },
     "action": {
-      "option": "Each investigator at your location takes 1 damage and 1 horror"
+      "option": "Chaque investigateur dans votre lieu subit 1 dégât et 1 horreur"
     },
     "breakALeg": {
-      "option": "Choose and discard a non-story _Item_ asset you control"
+      "option": "Choisir et défausser un soutien _Objet_ que vous contrôlez qui ne soit pas un soutien d'histoire"
     },
     "lostAsteroid": {
-      "pay": "Pay 4 resources to automatically succeed"
+      "pay": "Dépenser 4 ressources pour réussir automatiquement"
     },
     "tarPit": {
-      "option": "Discard an _Ally_ or _Footware_ asset you control"
+      "option": "Défausser un soutien _Allié_ ou _Paire de Chaussures_ que vous contrôlez"
     },
     "jungleRiver": {
-      "option": "Discard an _Weapon_ or _Clothing_ asset you control"
+      "option": "Défausser un soutien _Arme_ ou _Vêtement_ que vous contrôlez"
     },
     "allosaurus": {
-      "option": "Allosaurus defeats an _Ally_ asset you control"
+      "option": "L'Allosaurus vainc un soutien Allié dans votre lieu"
     }
   },
   "tooltips": {
     "rocketShip": {
-      "move": "Blast off!"
+      "move": "Décollage !"
     },
     "ruinsOfTheSerpentKing": {
-      "exhaustEnemy": "Choose an enemy at Ruins of the Serpent King and spend X clues, where X is that enemy's fight value: Exhaust that enemy.",
-      "attemptToWrestStaff": "You attempt to wrest the staff from the altar."
+      "exhaustEnemy": "Choisissez un ennemi dans les Ruines du Roi Serpent et dépensez X indices, X étant la valeur de combat de cet ennemi : inclinez cet ennemi.",
+      "attemptToWrestStaff": "Vous essayez d'arracher le sceptre de l'autel."
     },
     "castleHallways": {
-      "haunted": "Choose and discard 1 card with at least 1 {'{'}intellect{'}'} skill icon from your hand. If you cannot, ready The Contessa and move her to this location."
+      "haunted": "Choisissez et défaussez de votre main 1 carte ayant au moins 1 icône de compétence {'{'}intellect{'}'}. Si vous ne pouvez pas, redressez La Contessa et déplacez-la vers ce lieu."
     },
     "moonlitGarden": {
-      "haunted": "Heal 2 damage from the nearest enemy. If no damage was healed by this effect, ready The Contessa and move her to this location."
+      "haunted": "Soignez 2 dégâts de l'ennemi le plus proche. Si aucun dégât n'a été ainsi soigné, redressez La Contessa et déplacez-la vers ce lieu."
     },
     "catacombs": {
-      "haunted": "Ready the nearest enemy. It moves and attacks as if it were the enemy phase."
+      "haunted": "Redressez l'ennemi le plus proche. Il se déplace et attaque comme s'il s'agissait de la phase des Ennemis."
     }
   },
   "remembered": {
-    "theInvestigatorsMadeTheirCallTime": "The investigators made their call time"
+    "theInvestigatorsMadeTheirCallTime": "Les investigateurs sont entrés en scène"
   },
   "intro": {
-    "title": "Film Fatale",
-    "body": "<p>You have arrived in Hollywood at the request of your contact, the silent film actor André Patel. According to André, something strange is happening on Lot C. Cameras and props have gone missing, and a series of accidents nearly halted production. Rumors have spread between the cast members that the films are “cursed.” None of it was taken seriously until one of the cast members was found dead.</p><p>The late afternoon sun beats down on the hot pavement as you scan the crowd for signs of André. Half a dozen extras in alien masks whisk past you, followed by a stagehand dragging a large dinosaur foot by wagon. Across the lot, you finally spot him standing with a trio of werewolves. His eyes light up, and he strides briskly through the busy lot once he sees you.</p><p>“Finally!” he takes a bow. “I thought you’d never arrive. And just in time, too! Please, follow me.” As the silent film star leads you across the lot, you catch glimpses of the various sets. A Cosmic Journey features a cheap-looking rocket, a robed wizard, and alien “Saturnites.” Meanwhile, The Forgotten Island is filled with crudely painted pyramids and gargantuan paper mache dinosaurs. A bloodcurdling scream echoes out of the gothic horror set for The Abominable Contessa as you walk past.</p><p>“I don’t think the mishaps lately are just bad luck,” André says gravely. “Unfortunately, my reputation has made it difficult to get a straight answer out of the cast and crew. Nobody wants to tell their star actor that something’s going wrong on set. Which is why I need you to ask around the film sets. See what they think is really going on.” André’s demeanor brightens. “This could be quite fun, actually. I hope you’re up to the task.”</p>"
+    "title": "Film Fatal",
+    "body": "<p>Vous êtes arrivé à Hollywood à la demande de votre contact, l'acteur de films muets André Patel. Selon lui, il se passe quelque chose d'étrange au Studio C. Des caméras et des accessoires ont disparu, et une série d'accidents a failli interrompre la production. Des rumeurs se répandent parmi les acteurs, selon lesquelles les films seraient « maudits ». Rien de tout cela n'a été pris au sérieux jusqu'à ce que l'un d'eux soit retrouvé mort.</p><p>Le soleil de fin d'après-midi darde ses rayons sur la chaussée brûlante tandis que vous scrutez la foule à la recherche de signes d'André. Une demi-douzaine de figurants portant des masques d'extraterrestres passe devant vous, suivie d'un machiniste traînant un gros dinosaure sur un chariot. De l'autre côté du studio, vous l'apercevez enfin aux côtés d'un trio de loups-garous. Ses yeux s'illuminent et il traverse à grandes enjambées les plateaux en effervescence dès qu'il vous aperçoit.</p><p>« Enfin ! », dit-il en s'inclinant. « Je pensais que vous n'arriveriez jamais. Vous tombez à pic ! Suivez-moi, s'il vous plait. » Tandis que la star du cinéma muet vous guide à travers le bâtiment, vous apercevez les différents décors. Un voyage cosmique met en scène une fusée bon marché, un magicien vêtu de robes et des extraterrestres « saturniens ». Le plateau de L'île oubliée, quant à lui, est rempli de pyramides grossièrement peintes et de dinosaures gargantuesques en papier mâché. Un cri à glacer le sang résonne dans le décor gothique de L'Abominable Contessa lorsque vous passez à proximité.</p><p>« Je ne pense pas que les mésaventures de ces derniers temps soient dues à la malchance », déclare André d'un air grave. « Malheureusement, ma réputation fait qu'il m'est difficile d'obtenir une réponse claire de la part des acteurs et de l'équipe. Personne ne veut dire à sa vedette que quelque chose ne va pas sur le plateau. C'est pourquoi j'ai besoin que vous meniez l'enquête. Découvrez ce qu'ils pensent réellement des récents événements ». L'attitude d'André se fait plus enjouée. « Cela pourrait être très amusant, en fait. J'espère que vous serez à la hauteur. »</p>"
   },
   "setup": {
-    "gatherSets": "Gather all cards from the *Film Fatale* encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/film-fatale.png' /></section>",
-    "placeLocations": "Put Central Lot into play, (*Quiet On Set*) side faceup. Put Space Set, Jungle Set, and Gothic Set into play.",
-    "beginPlay": "Each investigator begins play at Central Lot.",
-    "props": "Gather all three _Prop_ assets, shuffle them together, and place them in a stack, facedown, beneath Central Lot.",
-    "setOutOfPlay": "Set the André Patel story asset aside, out of play.",
-    "setSetsOutOfPlay": "Set the following encounter sets aside, out of play: *Cosmic Journey*, *Forgotten Island*, and *Abominable Contessa*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/cosmic-journey.png' /><img src='{setImgPath}/forgotten-island.png' /><img src='{setImgPath}/abominable-contessa.png' /></section>",
-    "note": "(Note: *If you are playing* Film Fatale *as a side-story, use the Standalone chaos bag instead of your campaign chaos bag for the duration of the scenario.*)",
-    "begin": "You are now ready to begin."
+    "gatherSets": "Réunissez toutes les cartes du set de rencontre *Film Fatal*. Ce set est reconnaissable à l'icône suivante :<section class='encounter-sets'><img src='{setImgPath}/film-fatale.png' /></section>",
+    "placeLocations": "Mettez en jeu le Studio Central, face (*Silence, ça Tourne*) visible. Mettez en jeu le Décor de l'Espace, le Décor de la Jungle et le Décor Gothique.",
+    "beginPlay": "Chaque investigateur commence la partie dans le Studio Central.",
+    "props": "Réunissez les trois soutiens _Accessoire_, mélangez-les ensemble et placez-les en pile, face cachée, sous le Studio Central.",
+    "setOutOfPlay": "Mettez de côté le soutien d'histoire André Patel, hors jeu.",
+    "setSetsOutOfPlay": "Mettez de côté les sets de rencontre suivants, hors jeu : *Voyage Cosmique*, *Île Oubliée* et *Abominable Contessa*. Ces sets sont reconnaissables aux icônes suivantes :<section class='encounter-sets'><img src='{setImgPath}/cosmic-journey.png' /><img src='{setImgPath}/forgotten-island.png' /><img src='{setImgPath}/abominable-contessa.png' /></section>",
+    "note": "(Note : *si vous jouez Film Fatal en tant qu'aventure annexe, utilisez la réserve du Chaos du mode Indépendant à la place de la réserve du Chaos de votre campagne le temps de ce scénario*).",
+    "begin": "Vous êtes maintenant prêts à commencer."
 
   },
   "interlude": {
-    "instructions": "Check the victory display. If there are three Prop assets in the victory display, add a “0” token to the chaos bag and choose one Prop to set aside, out of play. Then, if…",
-    "heliosTelescope": "…the Helios Telescope is not in the victory display, proceed to _A Cosmic Journey_",
-    "staffOfTheSerpent": "…the Staff of the Serpent is not in the victory display, proceed to _The Forgotten Island_",
-    "accursedCape": "…the Accursed Cape is not in the victory display, proceed to _The Abominable Contessa_.",
+    "instructions": "Vérifiez la pile de victoire. Si 3 soutiens _Accessoire_ sont dans la pile de victoire, ajoutez un pion « 0 » à la réserve du Chaos et choisissez un _Accessoire_ à mettre de côté, hors jeu. Ensuite, si…",
+    "heliosTelescope": "…le Télescope Hélios n'est pas dans la pile de victoire, continuez à _Un Voyage Cosmique_.",
+    "staffOfTheSerpent": "…le Sceptre du Serpent n'est pas dans la pile de victoire, passez à _L'Île Oubliée_.",
+    "accursedCape": "…la Cape Maudite n'est pas dans la pile de victoire, passez à _L'Abominable Contessa_.",
     "aCosmicJourney": {
-      "body": "<p>_A Cosmic Journey_: “It always does seem as though we are missing an extra around here,” André notes. All is quiet on set as you search for the centerpiece prop for A Cosmic Journey. According to some accounts, several fires have mysteriously broken out, each of them near the Helios Telescope. After several minutes of searching, a low metallic growl cuts through the silence, coming from the rocket ship. André puts one hand to the wooden hull. “It’s warm,” he says quietly. The vessel rattles as the film star opens the hatch.</p><p>Following André inside, you feel your footsteps echo on solid metal. What you discover within defies explanation. The ship is far larger and more elaborate inside than out; its paneled walls are covered in metal tubes and glowing consoles. You follow André to a shattered lens cap lying on the floor. “This was part of the telescope, but where is the rest?” he asks. As if in answer, the rocket ship judders to life.</p><p>You rush to a glass porthole and look outside to see the emptiness of deep space, dotted with stars. André looks outside, disbelieving.</p><p>“I don’t think we’re in Hollywood anymore.”</p>",
-      "gatherSets": "Gather the *Cosmic Journey* encounter set. This encounter set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/cosmic-journey.png' /></section>",
-      "set": "Discard each enemy from play. Move each investigator to Space Set and set each other _Set_ location aside, out of play, discarding all tokens and cards at those locations.",
-      "locations": "Put each location from the *Cosmic Journey* encounter set into play",
-      "rocketShip": "Put the Rocket Ship story asset into play at Space Set. Each investigator enters Rocket Ship.",
-      "placeClues": "Place clues on Space Set up to its clue value.",
-      "saturniteMonarch": "Put the Saturnite Monarch enemy into play at High Ruler’s Bastion, (*Gracious Host*) side faceup.",
-      "acts": "Add act 2a—A Cosmic Journey and act 3a—From Whence They Came to the current act deck.",
-      "storyAsset": "Put the set-aside Helios Telescope story asset into play next to the act deck.",
-      "shuffleRemaining": "Shuffle each remaining card in the *Cosmic Journey* encounter set into the encounter deck, along with the encounter discard pile.",
-      "reelDeck": "Gather each single-sided encounter card from the set-aside *Forgotten Island* and *Abominable Contessa* encounter sets. Shuffle them together to make the “Reel deck.” Place the Reel deck next to the scenario reference card.",
-      "tokens": "Add 2 {'{'}tablet{'}'} tokens to the chaos bag.",
-      "continue": "Continue playing."
+      "body": "<p>_Un Voyage Cosmique_ : « On a toujours l'impression de manquer de figurants, ici » remarque André. Tout est calme sur le plateau pendant que vous cherchez l'accessoire principal d'Un voyage cosmique. Selon certains témoignages, plusieurs incendies se sont mystérieusement déclarés, tous à proximité du télescope Hélios. Après plusieurs minutes d'exploration, un faible grondement métallique perce le silence, en provenance de la fusée. André pose une main sur la coque en bois. « C'est chaud », dit-il à voix basse. Le vaisseau s'ébranle lorsque la star du cinéma ouvre l'écoutille.</p><p>En suivant André à l'intérieur, vous avez le sentiment de marcher sur des passerelles faites de métal. Ce que vous découvrez ensuite défie toute explication. Le vaisseau est bien plus grand et plus complexe à l'intérieur qu'à l'extérieur : ses murs lambrissés sont couverts de tubes métalliques et de consoles lumineuses, Vous suivez André jusqu'à un capuchon de lentille brisé gisant au sol. « Cela faisait partie du télescope, mais où est le reste ? » demande-t-il. Comme pour répondre à cette question, la fusée s'anime et prend vie.</p><p>Vous vous précipitez vers un hublot et regardez à l'extérieur pour découvrir le vide sidéral, parsemé d'étoiles. André vous rejoint, et peine à croire ce qu'il voit.</p><p>« Je ne crois pas que nous soyons encore à Hollywood. »</p>",
+      "gatherSets": "Réunissez le set de rencontre *Voyage Cosmique*. Ce set de rencontre est reconnaissable à l'icône suivante :<section class='encounter-sets'><img src='{setImgPath}/cosmic-journey.png' /></section>",
+      "set": "Défaussez chaque ennemi en jeu. Déplacez chaque investigateur vers le Décor de l'Espace et mettez de côté chaque autre lieu _Décor_, hors jeu, en défaussant tous les pions et toutes les cartes de ces lieux.",
+      "locations": "Mettez en jeu chaque lieu du set de rencontre *Voyage Cosmique*",
+      "rocketShip": "Mettez en jeu le soutien d'histoire Fusée dans le Décor de l'Espace. Chaque investigateur entre dans la Fusée.",
+      "placeClues": "Placez des indices sur le Décor de l'Espace jusqu'à atteindre sa valeur d'indice.",
+      "saturniteMonarch": "Mettez en jeu l'ennemi Monarque Saturnien dans le Bastion du Grand Régisseur, face (*Hôte de Marque*) visible.",
+      "acts": "Ajoutez au deck Acte en cours, l'Acte 2a—Un Voyage Cosmique et l'Acte 3a—D'Où Ils Étaient Venus.",
+      "storyAsset": "Mettez en jeu, près du deck Acte, le soutien d'histoire Télescope Hélios mis de côté.",
+      "shuffleRemaining": "Mélangez dans le deck Rencontre chaque carte restante du set de rencontre *Voyage Cosmique*, ainsi que la pile de défausse Rencontre.",
+      "reelDeck": "Réunissez chaque carte Rencontre mono-face des sets de rencontre *Île Oubliée* et *Abominable Contessa*. Mélangez-les ensemble pour former le « deck Bobine ». Placez le deck Bobine près de la carte de Référence du Scénario.",
+      "tokens": "Ajoutez 2 pions {'{'}tablet{'}'} à la réserve du Chaos.",
+      "continue": "Continuez à jouer."
     },
     "theForgottenIsland": {
-      "body": "<p>_The Forgotten Island_: André follows you through the set dressing of The Forgotten Island: plastic foliage, cheap green turf, the hiss of a fog machine. According to André, one member of the production was found babbling on set with the film’s signature prop, the Staff of the Serpent, in hand. As you search for the prop, the ground begins to feel softer underfoot. Looking down, you see your shoe sinking in wet, loamy soil. The air has grown oppressively humid and is filled with the buzzing of cicadas and the cries of distant birds. You look up to see thick green leaves partially obscuring a bright blue sky. You are no longer in the jungle set but in the jungle itself.</p><p>“What is this madness?” André wipes his brow, then jumps as a long snake slithers across his shoes and into the underbrush. Recoiling from the serpent, you look beyond to a serpentine path that leads deeper into the jungle. Someone—or something— retreated away from Lot C and ventured into this other world. Based on what you heard, the missing film prop seems to be at the heart of this strange phenomenon.</p>",
-      "gatherSets": "Gather the *Forgotten Island* encounter set. This encounter set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/forgotten-island.png' /></section>",
-      "set": "Discard each enemy from play. Move each investigator to Jungle Path and set each other _Set_ location aside, out of play, discarding all tokens and cards at those locations.",
-      "locations": "Put each location from the *Forgotten Island* encounter set into play.",
-      "seals": "Place 4 resources on Ruins of the Serpent King, as seals. Put the set-aside Staff of the Serpent story asset into play at Ruins of the Serpent King.",
-      "allosaurus": "Spawn the double-sided Allosaurus enemy at Jungle River, (*Indomitable Predator*) side faceup.",
-      "acts": "Add act 2a—The Forgotten Island and act 3a—Destroy the Source to the current act deck.",
-      "shuffleRemaining": "Shuffle each remaining card in the *Forgotten Island* encounter set into the encounter deck, along with the encounter discard pile.",
-      "reelDeck": "Gather each single-sided encounter card from the set-aside *Cosmic Journey* and *Abominable Contessa* encounter sets. Shuffle them together to make the “Reel deck.” Place the Reel deck next to the scenario reference card.",
-      "tokens": "Add 2 {'{'}elderThing{'}'} tokens to the chaos bag.",
-      "continue": "Continue playing."
+      "body": "<p>_L’Île Oubliée_ : André vous fait découvrir les décors de L'Île Oubliée : feuillage en plastique, gazon vert bon marché, sifflement d'une machine à brouillard. Selon André, un membre de la production a été surpris en pleine conversation sur le plateau avec l'accessoire emblématique du film qu'il tenait à la main : le Sceptre du Serpent. Une fois à la recherche de l'objet, le sol commence à se dérober sous vos pieds. En regardant vers le bas, vous voyez votre chaussure s'enfoncer dans un sol humide et glaiseux. L'air est chargé d'une humidité oppressante, du bourdonnement des cigales et des cris d'oiseaux lointains. En levant les yeux, vous apercevez d'épaisses feuilles vertes masquant partiellement un ciel d'un bleu éclatant. Vous n'êtes plus dans le décor de la jungle, mais dans la jungle elle-même.</p><p>« Quelle est cette folie ? » André s'essuie le front avant de sursauter lorsqu'un long serpent se faufile entre ses jambes pour gagner le sous-bois. Reculant devant le reptile, vous regardez au-delà en direction d'un sentier tortueux s'enfonçant dans la jungle. Quelqu'un, ou quelque chose, a quitté le Studio C et s'est aventuré dans cet autre monde. D'après ce que vous avez entendu, l'accessoire qui a disparu du plateau semble être au cœur de cet étrange phénomène.</p>",
+      "gatherSets": "Réunissez le set de rencontre *Île Oubliée*. Ce set de rencontre est reconnaissable à l'icône suivante :<section class='encounter-sets'><img src='{setImgPath}/forgotten-island.png' /></section>",
+      "set": "Défaussez chaque ennemi en jeu. Déplacez chaque investigateur vers le Décor de la Jungle et mettez de côté chaque autre lieu _Décor_, hors jeu, en défaussant tous les pions et toutes les cartes de ces lieux.",
+      "locations": "Mettez en jeu chaque lieu du set de rencontre *Île Oubliée*.",
+      "seals": "Placez 4 ressources sur les Ruines du Roi Serpent, en tant que sceaux. Mettez en jeu dans les Ruines du Roi Serpent, le soutien d'histoire Sceptre du Serpent mis de côté.",
+      "allosaurus": "Générez l'ennemi double-face Allosaurus dans la Rivière de la Jungle, face (*Prédateur Indomptable*) visible.",
+      "acts": "Ajoutez au deck Acte en cours, l'Acte 2a—L'Île Oubliée et l'Acte 3a—Détruire la Source.",
+      "shuffleRemaining": "Mélangez dans le deck Rencontre chaque carte restante du set de rencontre *Île Oubliée*, ainsi que la pile de défausse Rencontre.",
+      "reelDeck": "Réunissez chaque carte Rencontre mono-face des sets de rencontre *Voyage Cosmique* et *Abominable Contessa*. Mélangez-les ensemble pour former le « deck Bobine ». Placez le deck Bobine près de la carte de Référence du Scénario.",
+      "tokens": "Ajoutez 2 pions {'{'}elderThing{'}'} à la réserve du Chaos.",
+      "continue": "Continuez à jouer."
     },
     "theAbominableContessa": {
-      "body": "<p>_The Abominable Contessa_: “Rumor has it that some of the actors on this production have gotten a little too into their performances. But there’s more. Just last week, an assistant was nearly strangled by the contessa’s Accursed Cape—although they weren’t even wearing it.” André says, leading you onto the set for The Abominable Contessa.</p><p>A pale moon shines in a matte sky, casting long shadows on a field of graves. The backdrop depicts a moody gothic castle with towering spires, sneering gargoyles, and stained-glass windows. Your vision begins to swim as the scenery warps before your eyes. The castle and surroundings come into focus. You look up to see the set roof has disappeared, replaced by a starlit sky, and the walls have been replaced with a sprawling forest. Looming over all of it is the dark castle, suddenly real.</p><p>“This is impossible,” André looks at the bleak landscape. Before you can reply, a howl breaks the stillness. Several nightmarish forms emerge from the nearby trees. Together, you dash up the hill to take refuge in the ominous castle. As the massive doors slam behind you, the sound of maniacal laughter echoes through the vast foyer. A gorgeous woman with pale skin and blood-red lips steps out from the shadows. She holds a large goblet in one hand. “Welcome to my humble home. I am Contessa Demetriou. I assume you are here for the banquet? Unfortunately, it is you who are on the menu!” Cackling, she vanishes in a cloud of bats.</p><p>As the sound of gnashing and clawing intensifies outside, André turns to you. “There’ve been some strange rumors on set about that cape, and now the Contessa is wearing it. Perhaps if we take it from her, we may be able to end…all of this,” he gestures at your surroundings.</p>",
-      "gatherSets": "Gather the *Abominable Contessa* encounter set. This encounter set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/abominable-contessa.png' /></section>",
-      "set": "Discard each enemy from play. Move each investigator to Gothic Set and set each other _Set_ location aside, out of play, discarding all tokens and cards at those locations.",
-      "locations": "Put each location from the *Abominable Contessa* encounter set into play.",
-      "contessa": "Spawn The Contessa at Throne of Blood, (*Needlessly Smug*) side faceup.",
-      "placeClues": "Place clues on Gothic Set up to its clue value.",
-      "acts": "Add act 2a—The Abominable Contessa and act 3a— Bloodbath to the act deck.",
-      "shuffleRemaining": "Shuffle each remaining card in the *Abominable Contessa* encounter set into the encounter deck, along with the encounter discard pile.",
-      "reelDeck": "Gather each single-sided encounter card from the set-aside *Cosmic Journey* and *Forgotten Island* encounter sets. Shuffle them together to make the “Reel deck.” Place the Reel deck next to the scenario reference card.",
-      "tokens": "Add 2 {'{'}cultist{'}'} tokens to the chaos bag.",
-      "continue": "Continue playing."
+      "body": "<p>_L’Abominable Contessa_ : « D'après certaines rumeurs, il semblerait que des acteurs se soient un peu trop mis dans la peau de leur personnage pour ce film. Mais ce n'est pas tout. La semaine dernière, un assistant a failli être étranglé par la Cape Maudite de \"La Contessa\" alors qu'il ne la portait même pas. » André vous fait part de ce témoignage en vous conduisant sur le plateau de L'AbominabIe Contessa.</p><p>Une lune pâle brille dans un ciel mat, projetant des ombres longues et émaciées sur un champ de pierres tombales. La toile de fond représente un château gothique sinistre orné de tours imposantes, de gargouilles grimaçantes et de vitraux enfer forgé. Votre vision commence à se troubler lorsque le paysage se déforme sous vos yeux. Le château et ses environs prennent vie. Vous levez les yeux et constatez que le toit a disparu, remplacé par un ciel étoilé. Les murs ont fait place à une forêt tentaculaire. Stoplombant le tout, le sinistre édifice est soudain devenu bien réel.</p><p>« C'est impossible », dit André en regardant le morne paysage. Avant que vous ne puissiez répondre, un hurlement rompt le silence. Plusieurs formes cauchemardesques émergent des arbres voisins. Ensemble, vous grimpez la colline pour vous réfugier dans l'inquiétant château. Alors que les portes massives claquent derrière vous, un rire démoniaque résonne dans le vaste hall d'entrée. Une femme magnifique à la peau pâle et aux lèvres rouge sang sort de l'ombre. Elle tient une grande coupe dans sa main, « Bienvenue dans mon humble demeure. Je suis La Contessa Demetriou. Je suppose que vous êtes venus pour le banquet ? Malheureusement, c'est vous qui êtes au menu ! » Avec un gloussement, elle disparaît dans une nuée de chauves-souris.</p><p>Alors que les claquements des mâchoires et les crissements des griffes s'intensifient à l'extérieur, André se tourne vers vous. « J'ai entendu d'étranges rumeurs sur le plateau à propos de cette cape, et maintenant la voilà sur les épaules de La Contessa. Peut-être que si nous la lui prenions, nous pourrions mettre fin à… tout cela », dit-il en désignant ce qui vous entoure.</p>",
+      "gatherSets": "Réunissez le set de rencontre *Abominable Contessa*. Ce set de rencontre est reconnaissable à l'icône suivante :<section class='encounter-sets'><img src='{setImgPath}/abominable-contessa.png' /></section>",
+      "set": "Défaussez chaque ennemi en jeu. Déplacez chaque investigateur vers le Décor Gothique et mettez de côté chaque autre lieu _Décor_, hors jeu, en défaussant tous les pions et toutes les cartes de ces lieux.",
+      "locations": "Mettez en jeu chaque lieu du set de rencontre *Abominable Contessa*.",
+      "contessa": "Générez la Contessa dans le Trône de Sang, face (*Outrageusement Suffisante*) visible.",
+      "placeClues": "Placez des indices sur le Décor Gothique jusqu'à atteindre sa valeur d'indice.",
+      "acts": "Ajoutez au deck Acte en cours, l'Acte 2a—L'Abominable Contessa et l'Acte 3a—Bain de Sang.",
+      "shuffleRemaining": "Mélangez dans le deck Rencontre chaque carte restante du set de rencontre *Abominable Contessa*, ainsi que la pile de défausse Rencontre.",
+      "reelDeck": "Réunissez chaque carte Rencontre mono-face des sets de rencontre *Voyage Cosmique* et *Île Oubliée*. Mélangez-les ensemble pour former le « deck Bobine ». Placez le deck Bobine près de la carte de Référence du Scénario.",
+      "tokens": "Ajoutez 2 pions {'{'}cultist{'}'} à la réserve du Chaos.",
+      "continue": "Continuez à jouer."
     }
   },
   "resolutions": {
     "xp": {
       "bonus": {
-        "score": "Made their call time"
+        "score": "Les investigateurs sont entrés en scène"
       }
     },
     "noResolution": {
-      "title": "No Resolution",
-      "body": "<p>_If no resolution was reached (each investigator was defeated):_ Whatever madness has gripped Lot C, it has taken you as well. You find difficulty in remembering who you were before today’s events. Are you yourself? Are you just playing a part? As you try to find the truth, the end credits begin to roll.</p><ul><li>Each investigator must search the collection for a random basic _Madness_ or _Flaw_ weakness and permanently add it to their deck. This card does not count toward that investigator’s deck size.</li><li>Proceed to _Fin_.</li></ul>"
+      "title": "Pas de conclusion",
+      "body": "<p>_Si aucune conclusion n'a été atteinte (chaque investigateur a été vaincu)_ : Quelle que soit la folie qui s'est emparée du Studio C, elle vous a également imprégné. Vous éprouvez des difficultés à vous souvenir de qui vous étiez avant les événements d'aujourd'hui. Êtes-vous qui vous croyez être ? Êtes-vous en train de jouer un rôle ? Alors que vous luttez pour découvrir la vérité, le générique de fin a déjà commencé.</p><ul><li>Chaque investigateur doit chercher une faiblesse de base _Folie_ ou _Défaut_ au hasard dans la collection et l'ajouter à son deck de manière permanente. Cette carte ne compte pas dans la Taille du Deck de cet investigateur.</li><li>Continuez à la _Fin_.</li></ul>"
     },
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<p>_Resolution 1:_ Furious, the Monarch fires the Helios Telescope wildly at set pieces and extras alike. As you flee the scene, you look behind you to see André disappear in the path of a kaleidoscopic beam. Once outside, all you can hear is an insidious clicking from Lot C. It almost sounds like laughter.</p><ul><li>Remove the André Patel story asset from the game.</li><li>Proceed to _Fin_.</li></ul>"
+      "title": "Conclusion 1",
+      "body": "<p>_Conclusion 1_ : Furieux, le Monarque déclenche le Télescope Hélios sur tout ce qui l'entoure sans faire de distinction entre les éléments du plateau et les figurants. Tandis que vousfuyez la scène, vous regardez derrière vous pour voir André disparaître sur le chemin d'un rayon multicolore. Une fois dehors, tout ce que vous parvenez à entendre est un cliquètement vicieux en provenance du Studio C. En y prétant attention, on dirait presque un rire.</p><ul><li>Retirez de la partie le soutien d'histoire André Patel.</li><li>Continuez à la _Fin_.</li></ul>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<p>_Resolution 2_: André pats you on the back, then rubs his eyes with a sigh. “Bien joué, mon ami. I could not have survived this without you.” You hold the telescope, now inert, in your hands as your mind wanders to the amazing things you’ve just seen. Saturn, the alien creatures, and the vastness of space. You won’t need to see A Cosmic Journey when it releases; you’ve already lived it.</p><ul><li>Proceed to _Resolution 5_.</li></ul>"
+      "title": "Conclusion 2",
+      "body": "<p>_Conclusion 2_ : André vous donne une tape dans le dos, puis se frotte les yeux en soupirant. « Bien joué, mon ami. Je n'aurais pas pu survivre sans vous ». Dans vos mains, vous tenez le télescope, désormais inactif, tandis que votre esprit vagabonde en repensant aux choses incroyables que vous venez de voir. Saturne, les créatures extraterrestres et l'immensité de l'espace. Vous n'aurez pas besoin de voir Un voyage Cosmique lorsqu'il sortira : vous l'avez déjà vécu.</p><ul><li>Continuez à la _Conclusion 5_.</li></ul>"
     },
     "resolution3": {
-      "title": "Resolution 3",
-      "body": "<p>_Resolution 3_: “Those giant creatures!” André exclaims. “I never thought it would be possible to witness such things. And you, you were absolutely brilliant. I cannot thank you enough, dear friend.” The film star does not seem rattled in the least at the strange and wondrous horrors you encountered. The remains of the staff’s gem lie shattered at your feet. Maybe you’re not cut out for Hollywood, you think to yourself.</p><ul><li>Proceed to _Resolution 5_.</li></ul>"
+      "title": "Conclusion 3",
+      "body": "<p>_Conclusion 3_ : « Ces créatures géantes ! » s'exclame André. « Je n'aurais jamais cru possible de voir un jour ces choses de mes yeux. Et vous, vous avez été absolument fantastique. Je ne peux que vous remercier, cher ami ». La vedette de cinéma ne semble pas du tout secouée par les horreurs étranges et mystérieuses que vous avez dû affronter. Les vestiges du joyau qui ornait le sceptre gisent à vos pieds. En votre for intérieur, vous doutez d'être fait pour vivre à Hollywood.</p><ul><li>Continuez à la _Conclusion 5_.</li></ul>"
     },
     "resolution4": {
-      "title": "Resolution 4",
-      "body": "<p>_Resolution 4_: André brushes a heavy dusting of grave dirt off his vest and begins fidgeting with his cane. “I’m not certain, but The Abominable Contessa may have just lost its leading lady. I’m still not sure quite what happened, or why, but I’m glad you were here to help.”</p><ul><li>Proceed to _Resolution 5_.</li></ul>"
+      "title": "Conclusion 4",
+      "body": "<p>_Conclusion 4_ : André époussette sa veste d'un revers de la main pour chasser une épaisse couche de poussière sépulcrale et commence à remuer sa canne. « Je n'en suis pas certain, mais il me semble que L'Abominable Contessa vient peut-être de perdre son premier rôle féminin. Je ne comprends toujours pas ce qu'il s'est passé, ni pourquoi, mais je suis heureux que vous ayez été là pour m'aider. »</p><ul><li>Continuez à la _Conclusion 5_.</li></ul>"
     },
     "resolution5": {
-      "title": "Resolution 5",
-      "body": "<p>_Resolution 5_: Some hours later, you find André standing over Erika Strand, the producer. She sits against the wall, head held between her hands. “Rough day, my friend?” André leans down and puts a steaming cup of tea next to her. After a tentative sip, Erika looks to André. “What happened? And why do I feel like I just lost a wrestling match with a train?” she asks.</p><p>André looks over her as his apprehension gives way to curiosity. “I’m not certain, but you definitely weren’t yourself. I suppose we have much to discuss.” Erika nods along as the film star relays the strange and fantastical events of the day. After finishing the tale, André snatches his hat and cane from a nearby table. “I must go. It appears the mystery is not yet fully unraveled, but I bid you all adieu.” The actor turns just as he walks out the door and smiles mischievously. “Nous nous reverrons, mon ami.”</p><ul><li>Proceed to _Fin_.</li></ul>"
+      "title": "Conclusion 5",
+      "body": "<p>_Conclusion 5_ : Quelques heures plus tard, vous retrouvez André devant Erika Strand, la productrice. Elle est assise contre le mur, la tête entre les mains. « Dure journée mon ami ? » André se penche et pose une tasse de thé fumante à côté d'elle. Après une timide gorgée, Erika se retourne vers André. « Que s'est-il passé ? Et pourquoi ai-je l'impression d'avoir perdu un combat de catch avec un train ? » demande-t-elle.</p><p>André pose les yeux sur elle, l'appréhension faisant place à la curiosité. « Je n'en suis pas certain, mais vous n'étiez définitivement pas vous-même. Je suppose que nous avons beaucoup de choses à nous dire. » Erika acquiesce tandis que la vedette lui raconte les événements étranges et fantastiques de la journée, Une fois le récit terminé, André prend son chapeau et sa canne sur une table voisine. « Je dois partir. II semble que le mystère ne soit pas encore totalement élucidé, mais je vous dis à tous adieu. » L'acteur se retourne au moment de franchir la porte et vous sourit malicieusement. « Nous nous reverrons un jour ou l'autre, mon ami. »</p><ul><li>Continuez à la _Fin_.</li></ul>"
     },
     "fin": {
       "title": "Fin",
-      "body": "<p>_Fin_: Somewhere off in the distance, a twisted laugh pierces the air. After a few moments, it pauses and yells “… and cut! That’s a wrap.”</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>If “the investigators made their call time,” each investigator earns 1 bonus experience.</li><li>_Experience_: {xp}</li></ul></li><li>If the André Patel story asset was under control of an investigator when the scenario ended, any investigator may add him to their deck for the remainder of their campaign. This asset does not count toward that investigator’s deck size.</li><li>If you are playing in Campaign Mode, reset your campaign chaos bag.</li></ul>"
+      "body": "<p>_Fin_ : Quelque part au loin, un rire cruel perce le silence. Après quelques instants, il s'interrompt pour crier « … et coupez ! C'est dans la boîte. »</p><ul><li>Chaque investigateur reçoit un total de points d'expérience égal à la somme des valeurs de Victoire X des cartes qui se trouvent dans la pile de victoire.<ul><li>Si « les investigateurs sont entrés en scène », chaque investigateur reçoit 1 point d'expérience bonus.</li><li>_Expérience_ : {xp}</li></ul></li><li>Si le soutien d'histoire André Patel était sous le contrôle d'un investigateur quand le scénario s'est terminé, n'importe quel investigateur a le droit de l'ajouter à son deck pour le reste de sa campagne. Ce soutien ne compte pas dans la Taille du Deck de cet investigateur.</li><li>Si vous jouez en mode Campagne, réinitialisez la réserve du Chaos de votre campagne.</li></ul>"
     }
   }
 }

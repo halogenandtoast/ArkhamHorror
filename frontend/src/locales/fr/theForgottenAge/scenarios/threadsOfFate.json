@@ -35,13 +35,13 @@
   },
   "intro": {
     "title": "Scénario III : Les Fils du Destin",
-    "beWary": "« Nous devrions nous méfier d’eux. »",
-    "listed": "« Après tout, je devrais peut-être les écouter… »",
+    "beWary": "« Nous devrions nous méfier d’eux. »",
+    "listed": "« Après tout, je devrais peut-être les écouter… »",
     "label": {
-      "beWary": "« Nous devrions nous méfier d’eux. »",
-      "listen": "« Après tout, je devrais peut-être les écouter… »",
-      "skipToIntro4": "« Vous n’irez nulle part avant de m’avoir expliqué ce qui se passe. » Continuez à l’_Introduction 4_.",
-      "proceedToIntro4": "« Vous n’irez nulle part avant de m’avoir expliqué ce qui se passe. » Continuez à l’_Introduction 4_.",
+      "beWary": "« Nous devrions nous méfier d’eux. »",
+      "listen": "« Après tout, je devrais peut-être les écouter… »",
+      "skipToIntro4": "« Vous n’irez nulle part avant de m’avoir expliqué ce qui se passe. » Continuez à l’_Introduction 4_.",
+      "proceedToIntro4": "« Vous n’irez nulle part avant de m’avoir expliqué ce qui se passe. » Continuez à l’_Introduction 4_.",
       "skipToIntro5": "« Comme vous voulez. » Passez à l’_Introduction 5_."
     },
     "intro1": "<p>_Introduction 1_ : Ichtaca dort dans votre salon cette nuit. L’esprit tiraillé entre inquiétude et incrédulité, vous ne parvenez pas à dormir. Son histoire est absurde mais vous vous sentez obligé d’y croire malgré tout. Vous avez su que la relique des ruines eztli cachait quelque chose dès que vous avez posé les yeux dessus. Quand vous sortez de votre chambre le lendemain matin, votre « invitée » est assise à la table de votre salle à manger, les bras croisés sur la poitrine. Ses yeux perçants scrutent le moindre de vos mouvements tel un oiseau fixant sa proie. Aucune amabilité n’est échangée. « Où se trouve la relique maintenant ? » demande impatiemment Ichtaca. « Où l’avez-vous emportée ? » Vous lui expliquez que la relique est en sécurité entre de bonnes mains. Elle secoue la tête, les poings serrés de frustration. « Je vous assure que ce n’est pas le cas. »</p><p class='basic right'>Vérifiez votre Carnet de Campagne. Si *les investigateurs ont confié la relique à Alejandro* ou si *Alejandro a trouvé la Relique des Âges* : continuez à l’_Introduction 2_.</p><p class='basic right'>Si *les investigateurs ont confié la relique à Harlan Earnstone* : passez à l’_Introduction 3_.</p>",

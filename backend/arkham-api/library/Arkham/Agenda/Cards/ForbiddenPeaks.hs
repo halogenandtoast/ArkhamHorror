@@ -1,6 +1,5 @@
 module Arkham.Agenda.Cards.ForbiddenPeaks (forbiddenPeaks) where
 
-import Arkham.FlavorText
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted hiding (terror)
@@ -9,6 +8,7 @@ import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.DamageEffect (nonAttack)
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.FlavorText
 import Arkham.Helpers.Message (pushWhen)
 import Arkham.Helpers.Text
 import Arkham.Matcher hiding (AssetDefeated)
@@ -65,5 +65,6 @@ instance RunMessage ForbiddenPeaks where
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       discardAllClues (attrs.ability 1) iid
+      selectEach (assetControlledBy iid <> AssetWithAnyClues) $ removeAllClues attrs
       pure a
     _ -> ForbiddenPeaks <$> liftRunMessage msg attrs

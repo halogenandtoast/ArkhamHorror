@@ -1760,8 +1760,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , case enemyMatcher of
                 AnyEnemy -> pure True
                 _ ->
-                  matches enemyId
-                    $ if timing == #after then oneOf [DefeatedEnemy enemyMatcher, enemyMatcher] else enemyMatcher
+                  if timing == #after
+                    then orM [matches enemyId $ DefeatedEnemy enemyMatcher, matches enemyId enemyMatcher]
+                    else matches enemyId enemyMatcher
             , defeatedByMatches defeatedBy defeatedByMatcher
             ]
         Window.EnemyDefeated Nothing defeatedBy enemyId | whoMatcher == Matcher.You -> do
@@ -1769,8 +1770,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             [ case enemyMatcher of
                 AnyEnemy -> pure True
                 _ ->
-                  matches enemyId
-                    $ if timing == #after then oneOf [DefeatedEnemy enemyMatcher, enemyMatcher] else enemyMatcher
+                  if timing == #after
+                    then orM [matches enemyId $ DefeatedEnemy enemyMatcher, matches enemyId enemyMatcher]
+                    else matches enemyId enemyMatcher
             , defeatedByMatches
                 defeatedBy
                 (defeatedByMatcher <> Matcher.BySource (Matcher.SourceOwnedBy $ Matcher.InvestigatorWithId iid))

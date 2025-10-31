@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Microscope4 (microscope4, Microscope4 (..)) where
+module Arkham.Asset.Assets.Microscope4 (microscope4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -21,14 +21,13 @@ microscope4 = asset Microscope4 Cards.microscope4
 
 instance HasAbilities Microscope4 where
   getAbilities (Microscope4 x) =
-    [ restrictedAbility x 1 ControlsThis
+    [ controlled_ x 1
         $ freeReaction
-          ( oneOf
-              [ EnemyDefeated #after Anyone ByAny $ EnemyAt YourLocation
-              , EnemyEvaded #after Anyone $ EnemyAt YourLocation
-              ]
-          )
-    , restrictedAbility x 2 ControlsThis $ ActionAbility [#investigate] (ActionCost 2)
+        $ oneOf
+          [ EnemyDefeated #after Anyone ByAny $ EnemyAt YourLocation
+          , EnemyEvadedSuccessfully #after (InvestigatorAt YourLocation) AnySource AnyEnemy
+          ]
+    , controlled_ x 2 $ ActionAbility [#investigate] (ActionCost 2)
     ]
 
 instance RunMessage Microscope4 where

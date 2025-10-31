@@ -32,14 +32,14 @@ const usingSpectral = computed(() => {
 
 const revealTopCard = computed(() => {
   return Object.values(props.game.investigators).some((i) => {
-    const { modifiers } = investigator?.value ?? { modifiers: [] }
-    return modifiers.some((m) => m.type.tag === "OtherModifier" && m.type.contents === "TopCardOfEncounterDeckIsRevealed")
+    const { modifiers } = i
+    return (modifiers ?? []).some((m) => m.type.tag === "OtherModifier" && m.type.contents === "TopCardOfEncounterDeckIsRevealed")
   })
 })
 
 const deckImage = computed(() => {
   if (revealTopCard.value) {
-    let card = props.game.scenario.encounterDeck[0]
+    let card = props.game.scenario?.encounterDeck[0]
     if (card) {
       return imgsrc(`cards/${card.cardCode.replace('c', '')}.avif`)
     }

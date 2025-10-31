@@ -29,8 +29,9 @@ instance RunMessage SecondFloorHall where
       requestChaosTokens iid (attrs.ability 1) 1
       pure l
     RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
-      resetChaosTokens (attrs.ability 1)
-      when (any ((`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . chaosTokenFace) tokens) do
-        drawEncounterCard iid (attrs.ability 1)
+      continue iid do
+        resetChaosTokens (attrs.ability 1)
+        when (any ((`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) . chaosTokenFace) tokens) do
+          drawEncounterCard iid (attrs.ability 1)
       pure l
     _ -> SecondFloorHall <$> liftRunMessage msg attrs

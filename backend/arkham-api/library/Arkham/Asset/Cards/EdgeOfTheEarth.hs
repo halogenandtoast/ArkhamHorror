@@ -907,7 +907,7 @@ takadaHirokoAeroplaneMechanicResolute =
 
 greenSoapstoneJinxedIdol :: CardDef
 greenSoapstoneJinxedIdol =
-  (storyAsset "08614" ("Green Soapstone" <:> "Jinxed Idol") 1 ToTheForbiddenPeaks)
+  (storyAsset "08614" ("Green Soapstone" <:> "Jinxed Idol") 0 ToTheForbiddenPeaks)
     { cdCardTraits = setFromList [Item, Trait.Expedition]
     , cdCardType = AssetType
     , cdUses = uses Charge 4
@@ -916,7 +916,7 @@ greenSoapstoneJinxedIdol =
 
 woodenSledge :: CardDef
 woodenSledge =
-  (storyAsset "08615" "Wooden Sledge" 1 ToTheForbiddenPeaks)
+  (storyAsset "08615" "Wooden Sledge" 0 ToTheForbiddenPeaks)
     { cdCardTraits = setFromList [Item, Trait.Expedition]
     , cdCardType = AssetType
     , cdSkills = [#agility, #wild, #wild]
@@ -924,7 +924,7 @@ woodenSledge =
 
 dynamite :: CardDef
 dynamite =
-  (storyAsset "08616" "Dynamite" 1 ToTheForbiddenPeaks)
+  (storyAsset "08616" "Dynamite" 0 ToTheForbiddenPeaks)
     { cdCardTraits = setFromList [Item, Trait.Expedition]
     , cdCardType = AssetType
     , cdUses = uses Supply 2
@@ -933,7 +933,7 @@ dynamite =
 
 miasmicCrystalStrangeEvidence :: CardDef
 miasmicCrystalStrangeEvidence =
-  (storyAsset "08617" ("Miasmic Crystal" <:> "Strange Evidence") 1 ToTheForbiddenPeaks)
+  (storyAsset "08617" ("Miasmic Crystal" <:> "Strange Evidence") 0 ToTheForbiddenPeaks)
     { cdCardTraits = setFromList [Item, Relic, Trait.Expedition]
     , cdCardType = AssetType
     , cdUses = uses Charge 3

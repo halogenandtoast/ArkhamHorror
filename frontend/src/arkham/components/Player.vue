@@ -791,6 +791,10 @@ function toggleHandAreaMarginBottom(event: Event) {
   &.can-interact {
     border: 2px solid var(--select);
   }
+
+  &.Reversed {
+    transform: rotate(180deg);
+  }
 }
 
 .split-view .hand {

@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.DarrellsKodak (darrellsKodak, DarrellsKodak (..)) where
+module Arkham.Asset.Assets.DarrellsKodak (darrellsKodak) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted hiding (DiscoverClues)
 import Arkham.Helpers.Ref
 import Arkham.Helpers.Window (discoveredClues, discoveredLocation)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Token
 import Arkham.Window (Window, windowType)
 import Arkham.Window qualified as Window
@@ -19,11 +20,11 @@ darrellsKodak = asset DarrellsKodak Cards.darrellsKodak
 
 instance HasAbilities DarrellsKodak where
   getAbilities (DarrellsKodak a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+    [ controlled_ a 1
+        $ triggered
           (oneOf [EnemySpawns #after Anywhere AnyEnemy, TreacheryEntersPlay #after AnyTreachery])
           (exhaust a)
-    , restrictedAbility a 2 ControlsThis
+    , controlled_ a 2
         $ freeReaction
         $ DiscoverClues
           #after
@@ -32,7 +33,14 @@ instance HasAbilities DarrellsKodak where
               [LocationWithEnemy (EnemyWithToken Evidence), LocationWithTreachery (TreacheryWithToken Evidence)]
           )
           AnyValue
-    , controlled a 2 (oneOf [exists (EnemyWithToken Evidence <> not_ (EnemyAt Anywhere)), exists (TreacheryWithToken Evidence <> not_ (TreacheryAt Anywhere))])
+    , controlled
+        a
+        2
+        ( oneOf
+            [ exists (EnemyWithToken Evidence <> not_ (EnemyAt Anywhere))
+            , exists (TreacheryWithToken Evidence <> not_ (TreacheryAt Anywhere))
+            ]
+        )
         $ freeReaction
         $ DiscoverClues #after You Anywhere AnyValue
     ]
@@ -56,14 +64,9 @@ instance RunMessage DarrellsKodak where
       treacheries <-
         selectTargets $ TreacheryWithToken Evidence <> oneOf [treacheryAt lid, not_ (TreacheryAt Anywhere)]
       when (notNull enemies || notNull treacheries) do
-        chooseOrRunOne
-          iid
-          [ targetLabel
-            target
-            [ MoveTokens (attrs.ability 2) (targetToSource target) (toTarget attrs) Evidence 1
-            , DoStep (n - 1) msg'
-            ]
-          | target <- enemies <> treacheries
-          ]
+        chooseOrRunOneM iid do
+          targets (enemies <> treacheries) \target -> do
+            moveTokens (attrs.ability 2) (targetToSource target) attrs Evidence 1
+            doStep (n - 1) msg'
       pure a
     _ -> DarrellsKodak <$> liftRunMessage msg attrs

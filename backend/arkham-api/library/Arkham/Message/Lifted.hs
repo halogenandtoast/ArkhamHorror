@@ -669,14 +669,16 @@ createEnemyAtLocationMatching c matcher = do
   pure eid
 
 createEnemyAtLocationMatchingEdit
-  :: (ReverseQueue m, IsCard card) => card -> LocationMatcher -> (EnemyCreation Message -> EnemyCreation Message) -> m EnemyId
+  :: (ReverseQueue m, IsCard card)
+  => card -> LocationMatcher -> (EnemyCreation Message -> EnemyCreation Message) -> m EnemyId
 createEnemyAtLocationMatchingEdit c matcher f = do
   (eid, msg) <- Msg.createEnemyAtLocationMatchingEdit (toCard c) matcher f
   Msg.push msg
   pure eid
 
 createEnemyAtLocationMatchingEdit_
-  :: (ReverseQueue m, IsCard card) => card -> LocationMatcher -> (EnemyCreation Message -> EnemyCreation Message) -> m ()
+  :: (ReverseQueue m, IsCard card)
+  => card -> LocationMatcher -> (EnemyCreation Message -> EnemyCreation Message) -> m ()
 createEnemyAtLocationMatchingEdit_ c matcher f = void $ createEnemyAtLocationMatchingEdit c matcher f
 
 createSetAsideEnemy
@@ -2449,8 +2451,11 @@ gainActions (asId -> iid) (toSource -> source) n = push $ Msg.GainActions iid so
 takeActionAsIfTurn :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 takeActionAsIfTurn iid (toSource -> source) = do
   gainActions iid source 1
+  mactive <- selectOne ActiveInvestigator
   temporaryModifier iid source (AsIfTurn iid) do
+    push $ SetActiveInvestigator iid
     push $ PlayerWindow iid [] False
+    for_ mactive $ push . SetActiveInvestigator
 
 nonAttackEnemyDamage
   :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m, Sourceable a)

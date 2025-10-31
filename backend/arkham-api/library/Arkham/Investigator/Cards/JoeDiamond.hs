@@ -40,15 +40,12 @@ hunchDeck = Map.findWithDefault [] HunchDeck . investigatorDecks
 
 instance HasModifiersFor JoeDiamond where
   getModifiersFor (JoeDiamond (a `With` Metadata mcid)) =
-    case mcid of
-      Nothing -> pure mempty
-      Just cid -> case hunchDeck a of
-        x : _ | x.id == cid -> modifySelf a [ReduceCostOf (CardWithId x.id) 2, AsIfInHand x]
-        _ -> pure mempty
+    for_ mcid \cid -> case hunchDeck a of
+      x : _ | x.id == cid -> modifySelf a [ReduceCostOf (CardWithId x.id) 2, AsIfInHandForPlay x.id]
+      _ -> pure mempty
 
 instance HasAbilities JoeDiamond where
-  getAbilities (JoeDiamond (a `With` _)) =
-    [restrictedAbility a 1 Self $ forced $ PhaseBegins #when #investigation]
+  getAbilities (JoeDiamond (a `With` _)) = [selfAbility_ a 1 $ forced $ PhaseBegins #when #investigation]
 
 instance HasChaosTokenValue JoeDiamond where
   getChaosTokenValue iid ElderSign (JoeDiamond (attrs `With` _)) | attrs `is` iid = do
@@ -102,12 +99,11 @@ instance RunMessage JoeDiamond where
           push $ ShuffleCardsIntoDeck (Deck.HunchDeck attrs.id) [x]
         _ -> pure ()
       pure i
-    InitiatePlayCard iid card mTarget payment windows' asAction | attrs `is` iid && Just card.id == revealedHunchCard meta -> do
-      costModifier attrs iid (AsIfInHandForPlay card.id)
+    InitiatePlayCard iid card _ _ _ _ | attrs `is` iid && Just card.id == revealedHunchCard meta -> do
       costModifier iid iid (ReduceCostOf (CardWithId card.id) 2)
-      push $ InitiatePlayCard iid card mTarget payment windows' asAction
       let hunchDeck' = filter (/= card) (hunchDeck attrs)
-      pure $ JoeDiamond . (`with` Metadata Nothing) $ attrs & decksL . at HunchDeck ?~ hunchDeck'
+      attrs' <- liftRunMessage msg (attrs & decksL . at HunchDeck ?~ hunchDeck')
+      pure $ JoeDiamond $ attrs' `with` Metadata Nothing
     CreateEventAt _ card _ -> do
       let hunchDeck' = filter (/= card) (hunchDeck attrs)
       pure $ JoeDiamond . (`with` Metadata Nothing) $ attrs & decksL . at HunchDeck ?~ hunchDeck'

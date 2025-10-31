@@ -4,9 +4,10 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
+import Arkham.Helpers.SkillTest (getSkillTestId)
 import Arkham.Effect.Builder
-import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Token
 
 newtype FluxStabilizerActive = FluxStabilizerActive AssetAttrs
@@ -29,9 +30,12 @@ instance RunMessage FluxStabilizerActive where
       push $ ReplaceInvestigatorAsset iid attrs.id (flipCard $ toCard attrs)
       pure $ FluxStabilizerActive $ attrs & flippedL .~ True
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      withSource (attrs.ability 1) $ effect iid do
-        apply $ AnySkillValue 2
-        during $ #nextSkillTest iid
-        removeOn #endOfCurrentPhase
+      getSkillTestId >>= \case
+        Just st -> skillTestModifier st attrs iid (AnySkillValue 2)
+        Nothing ->
+          withSource (attrs.ability 1) $ effect iid do
+            apply $ AnySkillValue 2
+            during $ #nextSkillTest iid
+            removeOn #endOfCurrentPhase
       pure a
     _ -> FluxStabilizerActive <$> liftRunMessage msg attrs

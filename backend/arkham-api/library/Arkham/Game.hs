@@ -63,7 +63,13 @@ import Arkham.Helpers
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Action
 import Arkham.Helpers.Calculation (GameCalculation (LocationMaybeFieldCalculation), calculate)
-import Arkham.Helpers.Card (cardListMatches, extendedCardMatch, getHasVictoryPoints, iconsForCard)
+import Arkham.Helpers.Card (
+  cardListMatches,
+  extendedCardMatch,
+  getHasVictoryPoints,
+  getVictoryPoints,
+  iconsForCard,
+ )
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Cost
@@ -4599,6 +4605,7 @@ instance Query ExtendedCardMatcher where
               _ -> []
             Nothing -> []
           _ -> []
+      CardWithVictory -> cs & filterM (fmap isJust . getVictoryPoints)
       CardWithSharedTraitToAttackingEnemy -> do
         mEnemy <- selectOne AttackingEnemy
         case mEnemy of

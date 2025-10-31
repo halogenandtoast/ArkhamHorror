@@ -84,6 +84,7 @@ data ExtendedCardMatcher
   | CardIdentifiedByScenarioMetaKey Key
   | ActiveCard
   | ResolvingCard
+  | CardWithVictory
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not ExtendedCardMatcher where

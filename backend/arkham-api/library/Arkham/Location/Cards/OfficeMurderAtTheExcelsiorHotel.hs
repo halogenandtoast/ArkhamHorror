@@ -2,6 +2,7 @@ module Arkham.Location.Cards.OfficeMurderAtTheExcelsiorHotel (officeMurderAtTheE
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types (Field (AssetClues, AssetController))
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
@@ -52,14 +53,20 @@ instance RunMessage OfficeMurderAtTheExcelsiorHotel where
       beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 0)
       pure l
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
-      iids <- selectWithField InvestigatorClues $ investigatorAt (toId attrs) <> InvestigatorWithAnyClues
       managersKey <- selectOne $ assetIs Assets.managersKey
+      cluesOnKey <- maybe (pure 0) (field AssetClues) managersKey
+      mcontroller <- join <$> traverse (field AssetController) managersKey
+
+      iids <-
+        selectWithField InvestigatorClues (investigatorAt (toId attrs) <> InvestigatorWithAnyClues) <&> mapMaybe \(iid', clues) -> do
+          let total = if Just iid' == mcontroller then clues - cluesOnKey else clues
+          guard (total > 0) $> (iid', max 0 total)
 
       unless (null iids || isNothing managersKey) do
         named <- traverse (\(iid', x) -> (,x) <$> field InvestigatorName iid') iids
         chooseAmounts
           iid
-          "number of clues to move to Alien Device"
+          "number of clues to move to Manager's Key"
           (MaxAmountTarget n)
           (map (\(name, x) -> (toTitle name, (0, x))) named)
           (toTarget attrs)

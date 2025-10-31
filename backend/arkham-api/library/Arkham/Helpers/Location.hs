@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Helpers.Location where
 
 import Arkham.Asset.Types (AssetAttrs, Field (..))
@@ -229,7 +227,7 @@ getCanMoveToLocations iid source = cached (CanMoveToLocationsKey iid (toSource s
       $ includeEmpty
       $ Matcher.canEnterLocation iid
       <> Matcher.NotLocation (Matcher.LocationWithInvestigator $ InvestigatorWithId iid)
-  getCanMoveToLocations_ iid source (traceShowId ls)
+  getCanMoveToLocations_ iid source ls
 
 getCanMoveToLocations_
   :: (Sourceable source, HasGame m, Tracing m)

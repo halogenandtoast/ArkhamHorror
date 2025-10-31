@@ -91,7 +91,9 @@ sourceMatches s = \case
     EnemyAttackSource eid -> elem eid <$> select em
     _ -> pure False
   Matcher.SourceIsTreacheryEffect tm -> case s.treachery of
-    Just tid -> elem tid <$> select tm
+    Just tid -> case tm of
+      Matcher.AnyTreachery -> pure True
+      _ -> elem tid <$> select tm
     Nothing -> pure False
   Matcher.SourceIsEnemy em -> case s.enemy of
     Nothing -> pure False

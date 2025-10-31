@@ -289,7 +289,7 @@ evadedEnemy :: HasCallStack => [Window] -> EnemyId
 evadedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case
     (windowType -> Window.EnemyEvaded _ eid) -> Just eid
-    (windowType -> Window.SuccessfulEvadeEnemy _ eid _) -> Just eid
+    (windowType -> Window.SuccessfulEvadeEnemy _ _ eid _) -> Just eid
     _ -> Nothing
 
 fromAsset :: HasCallStack => [Window] -> AssetId
@@ -484,7 +484,7 @@ getPassedBy :: [Window] -> Int
 getPassedBy = \case
   [] -> 0
   ((windowType -> Window.PassInvestigationSkillTest _ _ n) : _) -> n
-  ((windowType -> Window.SuccessfulEvadeEnemy _ _ n) : _) -> n
+  ((windowType -> Window.SuccessfulEvadeEnemy _ _ _ n) : _) -> n
   ((windowType -> Window.PassSkillTest _ _ _ n) : _) -> n
   (_ : rest) -> getPassedBy rest
 
@@ -1557,7 +1557,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
                         , matches enemyId enemyMatcher
                         ]
                     _ -> noMatch
-                  Window.SuccessfulEvadeEnemy who enemyId n -> case skillMatcher of
+                  Window.SuccessfulEvadeEnemy who _ enemyId n -> case skillMatcher of
                     Matcher.WhileEvadingAnEnemy enemyMatcher ->
                       andM
                         [ matchWho iid who whoMatcher
@@ -1651,6 +1651,15 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.EnemyAttackedSuccessfully timing whoMatcher sourceMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.SuccessfulAttackEnemy who source' enemyId _ -> do
+          andM
+            [ matchWho iid who whoMatcher
+            , matches enemyId enemyMatcher
+            , sourceMatches source' sourceMatcher
+            ]
+        _ -> noMatch
+    Matcher.EnemyEvadedSuccessfully timing whoMatcher sourceMatcher enemyMatcher ->
+      guardTiming timing $ \case
+        Window.SuccessfulEvadeEnemy who source' enemyId _ -> do
           andM
             [ matchWho iid who whoMatcher
             , matches enemyId enemyMatcher

@@ -1021,8 +1021,8 @@ instance RunMessage EnemyAttrs where
         Nothing -> error "No evade value"
       pure a
     PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ n | isActionTarget a target -> do
-      whenWindow <- checkWindows [mkWhen $ Window.SuccessfulEvadeEnemy iid enemyId n]
-      afterWindow <- checkWindows [mkAfter $ Window.SuccessfulEvadeEnemy iid enemyId n]
+      whenWindow <- checkWindows [mkWhen $ Window.SuccessfulEvadeEnemy iid source enemyId n]
+      afterWindow <- checkWindows [mkAfter $ Window.SuccessfulEvadeEnemy iid source enemyId n]
       pushAll
         [ whenWindow
         , UpdateHistory iid (HistoryItem HistorySuccessfulEvasions 1)

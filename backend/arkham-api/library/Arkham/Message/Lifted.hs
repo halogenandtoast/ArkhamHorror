@@ -2457,6 +2457,11 @@ takeActionAsIfTurn iid (toSource -> source) = do
     push $ PlayerWindow iid [] False
     for_ mactive $ push . SetActiveInvestigator
 
+ifCardExists :: (ReverseQueue m) => ExtendedCardMatcher -> QueueT Message m () -> m ()
+ifCardExists matcher body = do
+  msgs <- capture body
+  push $ IfCardExists matcher msgs
+
 nonAttackEnemyDamage
   :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m, Sourceable a)
   => Maybe InvestigatorId -> a -> Int -> enemy -> m ()

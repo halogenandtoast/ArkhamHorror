@@ -379,6 +379,9 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   IfEnemyExists eMatcher msgs -> do
     whenM (selectAny eMatcher) $ pushAll msgs
     pure g
+  IfCardExists cMatcher msgs -> do
+    whenM (selectAny cMatcher) $ pushAll msgs
+    pure g
   BeginAction ->
     pure
       $ g
@@ -3301,8 +3304,10 @@ preloadEntities g = do
 
   let isInScenario = isJust $ modeScenario $ g ^. modeL
   handEntities <- if isInScenario then foldM preloadHandEntities mempty investigators else pure mempty
-  discardEntities <- if isInScenario then foldM preloadDiscardEntities mempty investigators else pure mempty
-  topOfDeckEntities <- if isInScenario then foldM preloadTopOfDeckEntities mempty investigators else pure mempty
+  discardEntities <-
+    if isInScenario then foldM preloadDiscardEntities mempty investigators else pure mempty
+  topOfDeckEntities <-
+    if isInScenario then foldM preloadTopOfDeckEntities mempty investigators else pure mempty
 
   pure
     $ g

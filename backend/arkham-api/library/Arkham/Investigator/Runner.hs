@@ -2869,7 +2869,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                 ((fromType, adjustableSlot) : _) -> do
                   -- Move the adjustable slot to the target slot type and place the asset in it
                   slots' <- placeInAvailableSlot aid card [adjustableSlot]
-                  let remainingSlots = filter (\(t, s) -> not (t == fromType && s == adjustableSlot)) slots
+                  -- Remove all adjustable slots that we considered (both used and unused)
+                  let remainingSlots = filter (\s -> s `notElem` adjustableSlotPairs) slots
+                  -- Add back: remaining slots, the used slot in new location, and unused adjustable slots in original locations
                   go rs $ remainingSlots <> map (slotType,) slots' <> unusedAdjustable
             [other] -> do
               (availableSlots2, unused2) <- partitionM (canPutIntoSlot card) (lookupSlot other slots)

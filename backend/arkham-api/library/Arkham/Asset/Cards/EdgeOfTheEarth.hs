@@ -951,7 +951,7 @@ mineralSpecimen =
 
 smallRadio :: CardDef
 smallRadio =
-  (storyAsset "08619" "Small Radio" 1 ToTheForbiddenPeaks)
+  (storyAsset "08619" "Small Radio" 0 ToTheForbiddenPeaks)
     { cdCardTraits = setFromList [Item, Trait.Expedition]
     , cdCardType = AssetType
     , cdUses = uses Supply 3
@@ -960,7 +960,7 @@ smallRadio =
 
 spareParts :: CardDef
 spareParts =
-  (storyAsset "08620" "Spare Parts" 1 ToTheForbiddenPeaks)
+  (storyAsset "08620" "Spare Parts" 0 ToTheForbiddenPeaks)
     { cdCardTraits = setFromList [Item, Trait.Expedition]
     , cdCardType = AssetType
     , cdUses = uses Supply 3

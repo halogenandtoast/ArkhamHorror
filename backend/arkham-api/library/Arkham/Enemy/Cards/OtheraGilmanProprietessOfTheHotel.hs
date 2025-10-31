@@ -1,15 +1,9 @@
-module Arkham.Enemy.Cards.OtheraGilmanProprietessOfTheHotel (
-  otheraGilmanProprietessOfTheHotel,
-  OtheraGilmanProprietessOfTheHotel (..),
-)
-where
+module Arkham.Enemy.Cards.OtheraGilmanProprietessOfTheHotel (otheraGilmanProprietessOfTheHotel) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue
-import Arkham.Matcher
-import Arkham.Message.Lifted.Placement
 
 newtype OtheraGilmanProprietessOfTheHotel = OtheraGilmanProprietessOfTheHotel EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -25,16 +19,13 @@ otheraGilmanProprietessOfTheHotel =
 
 instance HasAbilities OtheraGilmanProprietessOfTheHotel where
   getAbilities (OtheraGilmanProprietessOfTheHotel a) =
-    extend
-      a
-      [restrictedAbility a 1 OnSameLocation $ parleyAction $ ResourceCost 3]
+    extend1 a $ restricted a 1 OnSameLocation $ parleyAction $ ResourceCost 3
 
 instance RunMessage OtheraGilmanProprietessOfTheHotel where
   runMessage msg e@(OtheraGilmanProprietessOfTheHotel attrs) = runQueueT $ case msg of
     Revelation _ (isSource attrs -> True) -> do
       placeClues attrs attrs =<< perPlayer 1
-      place attrs =<< selectJust (LocationWithTitle "Gilman House")
-      pure e
+      pure $ updateAttrs e (spawnAtL ?~ "Gilman House")
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       moveTokens (attrs.ability 1) attrs iid #clue 1
       doStep 2 msg

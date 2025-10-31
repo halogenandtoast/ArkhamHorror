@@ -1190,6 +1190,7 @@ data Message
   | If WindowType [Message]
   | SendMessage Target Message
   | IfEnemyExists EnemyMatcher [Message]
+  | IfCardExists ExtendedCardMatcher [Message]
   | ExcessDamage EnemyId [Message]
   | AddDeckBuildingAdjustment InvestigatorId DeckBuildingAdjustment
   | IncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]

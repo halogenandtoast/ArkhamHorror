@@ -1,16 +1,10 @@
-module Arkham.Enemy.Cards.ZadokAllenDrunkAndDisorderly (
-  zadokAllenDrunkAndDisorderly,
-  ZadokAllenDrunkAndDisorderly (..),
-)
-where
+module Arkham.Enemy.Cards.ZadokAllenDrunkAndDisorderly (zadokAllenDrunkAndDisorderly) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.SkillTest.Lifted
-import Arkham.Matcher
-import Arkham.Message.Lifted.Placement
 
 newtype ZadokAllenDrunkAndDisorderly = ZadokAllenDrunkAndDisorderly EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -21,16 +15,13 @@ zadokAllenDrunkAndDisorderly = enemy ZadokAllenDrunkAndDisorderly Cards.zadokAll
 
 instance HasAbilities ZadokAllenDrunkAndDisorderly where
   getAbilities (ZadokAllenDrunkAndDisorderly a) =
-    extend
-      a
-      [skillTestAbility $ restrictedAbility a 1 OnSameLocation parleyAction_]
+    extend1 a $ skillTestAbility $ restricted a 1 OnSameLocation parleyAction_
 
 instance RunMessage ZadokAllenDrunkAndDisorderly where
   runMessage msg e@(ZadokAllenDrunkAndDisorderly attrs) = runQueueT $ case msg of
     Revelation _ (isSource attrs -> True) -> do
       placeClues attrs attrs =<< perPlayer 1
-      place attrs =<< selectJust (LocationWithTitle "Fish Street Bridge")
-      pure e
+      pure $ updateAttrs e (spawnAtL ?~ "Fish Street Bridge")
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getId
       parley sid iid (attrs.ability 1) attrs #agility (Fixed 3)

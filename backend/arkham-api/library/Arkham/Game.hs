@@ -3535,72 +3535,69 @@ enemyMatcherFilter es matcher' = do
           -- Dirty Fighting has to fight the evaded enemy, we are saying this is
           -- the one that must be fought
           pure $ filter ((== eid) . toId) es'
-        Nothing -> flip filterM es' \enemy -> do
-          enemyModifiers <- getModifiers enemy.id
-          sourceModifiers <- case source of
-            AbilitySource abSource idx -> do
-              abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-              foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
-            UseAbilitySource _ abSource idx -> do
-              abilities <- getAbilitiesMatching $ AbilityIs abSource idx
-              foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
-            _ -> pure []
-          let
-            isOverride = \case
-              EnemyFightActionCriteria override -> Just override
-              CanModify (EnemyFightActionCriteria override) -> Just override
-              _ -> Nothing
-            overrides = mapMaybe isOverride (enemyModifiers <> sourceModifiers)
-            enemyFilters = mapMaybe (preview _CannotFight) modifiers'
-            window = mkWindow #when Window.NonFast
-            overrideFunc = case nonEmpty overrides of
-              Nothing -> id
-              Just os -> overrideAbilityCriteria $ combineOverrides os
-          excluded <- elem (toId enemy) <$> select (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
-          sourceIsExcluded <- flip anyM enemyModifiers \case
-            CanOnlyBeAttackedByAbilityOn cardCodes -> case source.asset of
-              Just aid -> (`notMember` cardCodes) <$> field AssetCardCode aid
-              _ -> pure True
-            CannotBeAttackedByPlayerSourcesExcept sourceMatcher ->
-              not <$> sourceMatches source sourceMatcher
-            _ -> pure False
-          if excluded || sourceIsExcluded
-            then pure False
-            else
-              if isSource enemy source
-                then
-                  anyM
-                    ( andM
-                        . sequence
-                          [ pure . (`abilityIs` Action.Fight)
-                          , getCanPerformAbility iid [window] . overrideFunc
-                          ]
-                    )
-                    (map (setRequestor source) $ getAbilities enemy)
-                else ignoreActionCost iid do
-                  anyM
-                    ( andM
-                        . sequence
-                          [ pure . (`abilityIs` Action.Fight)
-                          , getCanPerformAbility iid [window] . overrideFunc
-                          ]
-                    )
-                    (map (setRequestor source) $ getAbilities enemy)
+        Nothing ->
+          es' & filterM \enemy -> do
+            enemyModifiers <- getModifiers enemy.id
+            sourceModifiers <- case source of
+              AbilitySource abSource idx -> do
+                abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+                foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
+              UseAbilitySource _ abSource idx -> do
+                abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+                foldMapM (getModifiers . AbilityTarget iid . abilityToRef) abilities
+              _ -> pure []
+            let
+              isOverride = \case
+                EnemyFightActionCriteria override -> Just override
+                CanModify (EnemyFightActionCriteria override) -> Just override
+                _ -> Nothing
+              overrides = mapMaybe isOverride (enemyModifiers <> sourceModifiers)
+              enemyFilters = mapMaybe (preview _CannotFight) modifiers'
+              window = mkWindow #when Window.NonFast
+              overrideFunc = case nonEmpty overrides of
+                Nothing -> id
+                Just os -> overrideAbilityCriteria $ combineOverrides os
+            excluded <- elem (toId enemy) <$> select (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
+            sourceIsExcluded <- flip anyM enemyModifiers \case
+              CanOnlyBeAttackedByAbilityOn cardCodes -> case source.asset of
+                Just aid -> (`notMember` cardCodes) <$> field AssetCardCode aid
+                _ -> pure True
+              CannotBeAttackedByPlayerSourcesExcept sourceMatcher ->
+                not <$> sourceMatches source sourceMatcher
+              _ -> pure False
+            if excluded || sourceIsExcluded
+              then pure False
+              else
+                if isSource enemy source
+                  then
+                    anyM
+                      ( andM
+                          . sequence
+                            [ pure . (`abilityIs` Action.Fight)
+                            , getCanPerformAbility iid [window] . overrideFunc
+                            ]
+                      )
+                      (map (setRequestor source) $ getAbilities enemy)
+                  else ignoreActionCost iid do
+                    anyM
+                      ( andM
+                          . sequence
+                            [ pure . (`abilityIs` Action.Fight)
+                            , getCanPerformAbility iid [window] . overrideFunc
+                            ]
+                      )
+                      (map (setRequestor source) $ getAbilities enemy)
     CanFightEnemyWithOverride override -> do
       iid <- view activeInvestigatorIdL <$> getGame
       imodifiers' <- getModifiers iid
       let cannotAttackEnemy e = CannotAttackEnemy e.id `elem` imodifiers'
-      let es' = filter (not . cannotAttackEnemy) es
-      flip filterM es' \enemy -> do
+      es & filter (not . cannotAttackEnemy) & filterM \enemy -> do
         modifiers' <- getModifiers (EnemyTarget $ toId enemy)
         let
           enemyFilters =
-            mapMaybe
-              ( \case
-                  CannotFight m -> Just m
-                  _ -> Nothing
-              )
-              modifiers'
+            modifiers' & mapMaybe \case
+              CannotFight m -> Just m
+              _ -> Nothing
           window = mkWindow #when Window.NonFast
         excluded <-
           elem (toId enemy) <$> select (mconcat $ EnemyWithModifier CannotBeAttacked : enemyFilters)

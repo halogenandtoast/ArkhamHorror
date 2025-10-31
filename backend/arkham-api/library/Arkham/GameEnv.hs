@@ -76,7 +76,7 @@ getCard :: (HasCallStack, HasGame m) => CardId -> m Card
 getCard cardId = do
   g <- getGame
   case lookup cardId (gameCards g) of
-    Nothing -> error $ "Unregistered card id: " <> show cardId
+    Nothing -> error $ "Unregistered card id: " <> show cardId <> "\n" <> prettyCallStack callStack
     Just card -> pure card
 
 findAllCards :: HasGame m => (Card -> Bool) -> m [Card]

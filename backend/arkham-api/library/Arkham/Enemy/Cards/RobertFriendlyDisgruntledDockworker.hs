@@ -1,16 +1,10 @@
-module Arkham.Enemy.Cards.RobertFriendlyDisgruntledDockworker (
-  robertFriendlyDisgruntledDockworker,
-  RobertFriendlyDisgruntledDockworker (..),
-)
-where
+module Arkham.Enemy.Cards.RobertFriendlyDisgruntledDockworker (robertFriendlyDisgruntledDockworker) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.SkillTest.Lifted
-import Arkham.Matcher
-import Arkham.Message.Lifted.Placement
 
 newtype RobertFriendlyDisgruntledDockworker = RobertFriendlyDisgruntledDockworker EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -26,16 +20,13 @@ robertFriendlyDisgruntledDockworker =
 
 instance HasAbilities RobertFriendlyDisgruntledDockworker where
   getAbilities (RobertFriendlyDisgruntledDockworker a) =
-    extend
-      a
-      [skillTestAbility $ restrictedAbility a 1 OnSameLocation parleyAction_]
+    extend1 a $ skillTestAbility $ restricted a 1 OnSameLocation parleyAction_
 
 instance RunMessage RobertFriendlyDisgruntledDockworker where
   runMessage msg e@(RobertFriendlyDisgruntledDockworker attrs) = runQueueT $ case msg of
     Revelation _ (isSource attrs -> True) -> do
       placeClues attrs attrs =<< perPlayer 1
-      place attrs =<< selectJust (LocationWithTitle "Innsmouth Harbour")
-      pure e
+      pure $ updateAttrs e (spawnAtL ?~ "Innsmouth Harbour")
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getId
       parley sid iid (attrs.ability 1) attrs #agility (Fixed 2)

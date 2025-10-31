@@ -956,7 +956,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
             iid
             source
             t@(toScenarioHandleDeck -> Just (deck, _))
-            _
+            zones
             cardMatcher
             foundStrategy
             foundCards
@@ -1122,12 +1122,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                           <> [after]
             ReturnCards -> do
               -- When only one card we want to prompt the user before putting back
+              let needsDone = none (\(_, strat) -> strat == PutBackInAnyOrder) zones
               unless (all null (toList targetCards)) do
                 pushAll
-                  [ PreSearchFound iid Nothing deck (concat $ toList targetCards)
-                  , After (PreSearchFound iid Nothing deck (concat $ toList targetCards))
-                  , chooseOne player [Label "Done" []]
-                  ]
+                  $ [ PreSearchFound iid Nothing deck (concat $ toList targetCards)
+                    , After (PreSearchFound iid Nothing deck (concat $ toList targetCards))
+                    ]
+                  <> [chooseOne player [Label "Done" []] | needsDone]
       _ -> pure ()
     pure a
   After (PreSearchFound iid mSearchTarget Deck.EncounterDeck _) -> do

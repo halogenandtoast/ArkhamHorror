@@ -68,6 +68,7 @@ data InvestigatorMatcher
   | InVehicleMatching AssetMatcher
   | IsDriverOf AssetMatcher
   | CanTakeUntakenAction
+  | InvestigatorSkippedWindow
   | TakenActionThisRound ActionMatcher
   | TakenActionThisTurn ActionMatcher
   | SuccessfullyEvadedThisRound

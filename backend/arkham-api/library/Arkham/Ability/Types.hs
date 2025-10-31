@@ -45,6 +45,7 @@ data Ability = Ability
   , abilityTriggersSkillTest :: Bool
   , abilityWantsSkillTest :: Maybe SkillTestMatcher
   , abilityTarget :: Maybe Target -- used to highlight the target of the ability in the UI
+  , abilitySkipForAll :: Bool
   }
   deriving stock (Show, Ord, Data)
 
@@ -79,6 +80,7 @@ buildAbility source idx abilityType =
     , abilityTriggersSkillTest = False
     , abilityWantsSkillTest = Nothing
     , abilityTarget = Nothing
+    , abilitySkipForAll = False
     }
 
 withHighlight :: Targetable target => target -> Ability -> Ability
@@ -95,6 +97,9 @@ setRequestor source ab = ab {abilityRequestor = toSource source}
 
 instance HasCost Ability where
   overCost f ab = ab {Arkham.Ability.Types.abilityType = overCost f (abilityType ab)}
+
+instance HasField "skipForAll" Ability Bool where
+  getField = abilitySkipForAll
 
 instance HasField "wantsSkillTest" Ability (Maybe SkillTestMatcher) where
   getField = abilityWantsSkillTest
@@ -236,6 +241,7 @@ instance FromJSON Ability where
     abilityTriggersSkillTest <- o .:? "triggersSkillTest" .!= False
     abilityWantsSkillTest <- o .:? "wantsSkillTest" .!= Nothing
     abilityTarget <- o .:? "target"
+    abilitySkipForAll <- o .:? "skipForAll" .!= False
 
     pure Ability {..}
 

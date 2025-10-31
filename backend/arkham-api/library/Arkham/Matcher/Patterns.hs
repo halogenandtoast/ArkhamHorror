@@ -396,6 +396,11 @@ pattern PlayerTreachery <- CardWithType PlayerTreacheryType
   where
     PlayerTreachery = CardWithType PlayerTreacheryType
 
+pattern CardWithoutVictory :: ExtendedCardMatcher
+pattern CardWithoutVictory <- NotExtendedCard CardWithVictory
+  where
+    CardWithoutVictory = NotExtendedCard CardWithVictory
+
 -- ** Value Patterns **
 
 atLeast :: Int -> ValueMatcher

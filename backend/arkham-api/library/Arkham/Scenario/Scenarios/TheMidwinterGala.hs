@@ -15,6 +15,7 @@ import Arkham.Enemy.Creation (createExhausted)
 import Arkham.Exception
 import Arkham.Helpers
 import Arkham.Helpers.Agenda
+import Arkham.Helpers.Deck (getDeck)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location (getLocationOf)
@@ -22,7 +23,9 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
 import Arkham.I18n
-import Arkham.Investigator.Types (Field (InvestigatorDamage, InvestigatorHorror))
+import Arkham.Investigator.Types (
+  Field (InvestigatorDamage, InvestigatorHand, InvestigatorHorror, InvestigatorResources),
+ )
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
@@ -98,7 +101,7 @@ instance HasChaosTokenValue TheMidwinterGala where
 
 calculateScore :: (HasGame m, Tracing m) => ScenarioAttrs -> m (Map Tally Int)
 calculateScore attrs = do
-  let Meta {rival} = toResult attrs.meta
+  let Meta {rival, ally} = toResult attrs.meta
   manorNoClue <-
     selectCount
       $ LocationWithTrait Manor
@@ -134,7 +137,25 @@ calculateScore attrs = do
       if not defeatedAny && totalHorror <= playerCount * 2
         then 3
         else 0
-    alliedScore = 0
+  alliedScore <- case ally of
+    TheFoundation -> do
+      n <- selectCount $ InPlayEnemy NonWeaknessEnemy
+      pure $ case n of
+        0 -> 4
+        1 -> 2
+        _ -> 0
+    MiskatonicUniversity -> do
+      x <- perPlayer 2
+      min 4 . (`div` x) <$> selectSumWith length InvestigatorHand Anyone
+    TheSyndicate -> do
+      x <- perPlayer 3
+      min 4 . (`div` x) <$> selectSum InvestigatorResources Anyone
+    TheSilverTwilightLodge -> do
+      min 4 <$> selectCount (VictoryDisplayCardMatch $ #treachery <> CardWithoutVictory)
+    LocalsOfKingsport -> do
+      x <- length <$> getDeck (Deck.ScenarioDeckByKey GuestDeck)
+      pure $ max 0 (4 - x)
+
   pure
     $ mapFromList
       [ (ManorsWithNoClues, manorNoClue)

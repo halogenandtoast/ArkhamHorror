@@ -61,6 +61,8 @@ getCanPerformAbility !iid !ws !ability = do
       Just lid -> Matcher.replaceThisLocation lid ability.window
 
   runValidT do
+    when ability.skipForAll do
+      liftGuardM $ selectNone Matcher.InvestigatorSkippedWindow
     liftGuardM
       $ getCanAffordCost iid (toSource ability) actions ws (mconcat $ cost : additionalCosts)
     liftGuardM $ meetsActionRestrictions iid ws ability

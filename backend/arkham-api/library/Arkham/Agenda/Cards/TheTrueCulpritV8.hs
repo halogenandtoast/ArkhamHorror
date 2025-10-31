@@ -27,29 +27,32 @@ instance HasAbilities TheTrueCulpritV8 where
   getAbilities (TheTrueCulpritV8 attrs) =
     guard (onSide A attrs)
       *> ( [ restrictedAbility
-            (proxied (assetIs asset) attrs)
-            1
-            ControlsThis
-            (actionAbilityWithCost $ AssetClueCost (toTitle asset) (assetIs asset) $ Static 1)
+               (proxied (assetIs asset) attrs)
+               1
+               ControlsThis
+               (actionAbilityWithCost $ AssetClueCost (toTitle asset) (assetIs asset) $ Static 1)
            | asset <-
-              [ Cards.alienDevice
-              , Cards.managersKey
-              , Cards.sinisterSolution
-              , Cards.timeWornLocket
-              , Cards.tomeOfRituals
-              ]
-           ]
-            <> [ mkAbility attrs 2 $ ReactionAbility (EnemyDefeated #after Anyone ByAny $ EnemyWithTrait Staff) Free
-               , restrictedAbility
-                  attrs
-                  3
-                  ( exists
-                      $ treacheryIs Treacheries.harvestedBrain
-                      <> TreacheryWithHorror (AtLeast $ StaticWithPerPlayer 2 1)
-                  )
-                  $ Objective
-                  $ ForcedAbility AnyWindow
+               [ Cards.alienDevice
+               , Cards.managersKey
+               , Cards.sinisterSolution
+               , Cards.timeWornLocket
+               , Cards.tomeOfRituals
                ]
+           ]
+             <> [ skipForAll
+                    $ groupLimit PerTestOrAbility
+                    $ mkAbility attrs 2
+                    $ freeReaction (EnemyDefeated #after Anyone ByAny $ EnemyWithTrait Staff)
+                , restrictedAbility
+                    attrs
+                    3
+                    ( exists
+                        $ treacheryIs Treacheries.harvestedBrain
+                        <> TreacheryWithHorror (AtLeast $ StaticWithPerPlayer 2 1)
+                    )
+                    $ Objective
+                    $ ForcedAbility AnyWindow
+                ]
          )
 
 instance RunMessage TheTrueCulpritV8 where

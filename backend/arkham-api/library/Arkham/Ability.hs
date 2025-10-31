@@ -276,6 +276,9 @@ abilityEffect a actions cost = mkAbility a (-1) (AbilityEffect actions cost)
 basicAbility :: Ability -> Ability
 basicAbility ab = ab {abilityBasic = True}
 
+skipForAll :: Ability -> Ability
+skipForAll ab = ab {abilitySkipForAll = True}
+
 mkAbility :: (Sourceable a, HasCardCode a) => a -> Int -> AbilityType -> Ability
 mkAbility entity idx type' =
   Ability
@@ -298,6 +301,7 @@ mkAbility entity idx type' =
     , abilityAdditionalCosts = []
     , abilityWantsSkillTest = Nothing
     , abilityTarget = Nothing
+    , abilitySkipForAll = False
     }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability

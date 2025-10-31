@@ -2,7 +2,7 @@
 import { TokenType } from '@/arkham/types/Token'
 import { keyToId } from '@/arkham/types/Key'
 import PoolItem from '@/arkham/components/PoolItem.vue'
-import Key from '@/arkham/components/Key.vue'
+import KeyToken from '@/arkham/components/Key.vue'
 import Seal from '@/arkham/components/Seal.vue'
 import {computed} from 'vue'
 import type { Message } from '@/arkham/types/Message'
@@ -81,7 +81,7 @@ const choose = (index: number) => emits('choose', index)
 <template>
   <div class="resources">
     <div class="keys" v-if="keys.length > 0">
-      <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
+      <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
     </div>
     <div class="seals" v-if="seals.length > 0">
       <Seal v-for="seal in seals" :key="seal.sealKind" :seal="seal" />

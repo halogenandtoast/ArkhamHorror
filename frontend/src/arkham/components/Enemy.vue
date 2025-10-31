@@ -10,7 +10,7 @@ import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/typ
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import DebugEnemy from '@/arkham/components/debug/Enemy.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
-import Key from '@/arkham/components/Key.vue'
+import KeyToken from '@/arkham/components/Key.vue'
 import Treachery from '@/arkham/components/Treachery.vue'
 import Asset from '@/arkham/components/Asset.vue'
 import Event from '@/arkham/components/Event.vue'
@@ -212,6 +212,27 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
   }
 }
 
+
+const dragover = (e: DragEvent) => {
+  e.preventDefault()
+  if (e.dataTransfer) {
+    e.dataTransfer.dropEffect = 'move'
+  }
+}
+
+function onDrop(event: DragEvent) {
+  event.preventDefault()
+  if (event.dataTransfer) {
+    const data = event.dataTransfer.getData('text/plain')
+    if (data) {
+      const json = JSON.parse(data)
+      if (json.tag === "KeyTarget") {
+        debug.send(props.game.id, {tag: 'PlaceKey', contents: [{tag: 'EnemyTarget', contents: id.value}, json.contents]})
+      }
+    }
+  }
+}
+
 </script>
 
 <template>
@@ -248,12 +269,15 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
               :data-image-id="imageId"
               :data-swarm="isSwarm || undefined"
               @click="clicked"
+              @drop="onDrop"
+              @dragover.prevent="dragover"
+              @dragenter.prevent
             />
           </div>
 
           <div class="pool">
             <div class="keys" v-if="keys.length > 0">
-              <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
+              <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
             </div>
             <PoolItem v-if="!omnipotent && !attached" type="health" :amount="enemyDamage" />
             <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />

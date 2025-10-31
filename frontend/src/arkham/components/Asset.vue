@@ -10,7 +10,7 @@ import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Messa
 import type { AbilityType } from '@/arkham/types/Ability';
 import { MessageType } from '@/arkham/types/Message';
 import DebugAsset from '@/arkham/components/debug/Asset.vue';
-import Key from '@/arkham/components/Key.vue';
+import KeyToken from '@/arkham/components/Key.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import Event from '@/arkham/components/Event.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
@@ -244,7 +244,7 @@ const assetStory = computed(() => {
         </div>
         <div v-if="hasPool" class="pool">
           <div class="keys" v-if="keys.length > 0">
-            <Key v-for="key in keys" :key="keyToId(key)" :name="key" :game="game" :playerId="playerId" @choose="choose" />
+            <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
           </div>
           <template v-for="[use, amount] in uses" :key="use">
             <PoolItem

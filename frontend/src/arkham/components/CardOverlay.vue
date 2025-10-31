@@ -2,7 +2,7 @@
 import { ComputedRef, reactive, ref, computed, watch, watchEffect, onMounted, onUnmounted } from 'vue'
 import { imgsrc, isLocalized, toCamelCase } from '@/arkham/helpers'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
-import Key from '@/arkham/components/Key.vue'
+import KeyToken from '@/arkham/components/Key.vue'
 import { type ArkhamKey, keyToId } from '@/arkham/types/Key'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
@@ -525,7 +525,7 @@ watch(card, (src) => { if (src) loadAR(src) })
     <img class="horror horror-3" v-if="horror && horror >= 3" :src="imgsrc('horror-overlay.png')"/>
     <PoolItem class="depth" v-if="depth" type="resource" :amount="depth" />
     <div class="spent-keys" v-if="spentKeys.length > 0">
-      <Key v-for="key in spentKeys" :key="keyToId(key)" :name="key" @choose="() => {}"/>
+      <KeyToken v-for="k in spentKeys" :key="keyToId(k)" :keyToken="k" @choose="() => {}"/>
     </div>
     <div v-if="customizationsCard" class="customizations-wrapper" :class="{mutated}">
       <img :src="customizationsCard" />

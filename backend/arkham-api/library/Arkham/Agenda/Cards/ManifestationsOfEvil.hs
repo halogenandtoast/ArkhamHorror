@@ -31,6 +31,7 @@ instance HasAbilities ManifestationsOfEvil where
 instance RunMessage ManifestationsOfEvil where
   runMessage msg a@(ManifestationsOfEvil attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
+      don't $ ForTarget (toTarget attrs) AdvanceAgendaIfThresholdSatisfied
       lead <- getLead
       select TargetWithDoom >>= \case
         [x] -> removeDoom (attrs.ability 1) x 2

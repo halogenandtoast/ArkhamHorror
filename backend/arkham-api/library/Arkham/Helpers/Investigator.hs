@@ -711,7 +711,7 @@ getAsIfInHandCards iid = do
     modifierPermitsPlayOfDeck (c, depth) = \case
       CanPlayTopOfDeck cardMatcher | depth == 0 -> cardMatch c cardMatcher
       _ -> False
-  cardsAddedViaModifiers <- flip mapMaybeM (traceShowId modifiers) $ \case
+  cardsAddedViaModifiers <- flip mapMaybeM modifiers $ \case
     AsIfInHand c -> pure $ Just c
     AsIfInHandForPlay c -> Just <$> getCard c
     _ -> pure Nothing

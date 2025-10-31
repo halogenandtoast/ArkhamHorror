@@ -2853,7 +2853,24 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         (availableSlots1, unused1) <- partitionM (canPutIntoSlot card) (lookupSlot slotType slots)
         case availableSlots1 of
           [] -> case findWithDefault [] slotType canHoldMap of
-            [] -> (slotType :) <$> go rs slots
+            [] -> do
+              -- Check for AdjustableSlots in other slot types that could be moved to slotType
+              let adjustableSlotPairs = 
+                    [ (sType, slot)
+                    | (sType, slot) <- slots
+                    , sType /= slotType
+                    , case slot of
+                        AdjustableSlot _ _ stypes _ -> slotType `elem` stypes
+                        _ -> False
+                    ]
+              (availableAdjustable, unusedAdjustable) <- partitionM (canPutIntoSlot card . snd) adjustableSlotPairs
+              case availableAdjustable of
+                [] -> (slotType :) <$> go rs slots
+                ((fromType, adjustableSlot) : _) -> do
+                  -- Move the adjustable slot to the target slot type and place the asset in it
+                  slots' <- placeInAvailableSlot aid card [adjustableSlot]
+                  let remainingSlots = filter (\(t, s) -> not (t == fromType && s == adjustableSlot)) slots
+                  go rs $ remainingSlots <> map (slotType,) slots' <> unusedAdjustable
             [other] -> do
               (availableSlots2, unused2) <- partitionM (canPutIntoSlot card) (lookupSlot other slots)
               case availableSlots2 of
@@ -2873,7 +2890,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         (availableSlots1, _unused1) <- partitionM (canPutIntoSlot card) (slots ^. at slotType . non [])
         case availableSlots1 of
           [] -> case findWithDefault [] slotType canHoldMap of
-            [] -> pure slots -- suppose we get dendromorphosis and the king in yellow
+            [] -> do
+              -- Check for AdjustableSlots in other slot types that could be moved to slotType
+              let adjustableSlotPairs = 
+                    [ (sType, slot)
+                    | (sType, slotsOfType) <- Map.toList slots
+                    , sType /= slotType
+                    , slot <- slotsOfType
+                    , case slot of
+                        AdjustableSlot _ _ stypes _ -> slotType `elem` stypes
+                        _ -> False
+                    ]
+              (availableAdjustable, _unusedAdjustable) <- partitionM (canPutIntoSlot card . snd) adjustableSlotPairs
+              case availableAdjustable of
+                [] -> pure slots -- suppose we get dendromorphosis and the king in yellow
+                ((fromType, adjustableSlot) : _) -> do
+                  -- Move the adjustable slot to the target slot type and place the asset in it
+                  let slotsWithoutAdjustable = slots & at fromType . non [] %~ filter (/= adjustableSlot)
+                  slots' <- placeInAvailableSlot aid card [emptySlot adjustableSlot]
+                  fill rs (slotsWithoutAdjustable & at slotType . non [] %~ (<> slots'))
             [other] -> do
               (availableSlots2, _unused2) <- partitionM (canPutIntoSlot card) (slots ^. at other . non [])
               case availableSlots2 of

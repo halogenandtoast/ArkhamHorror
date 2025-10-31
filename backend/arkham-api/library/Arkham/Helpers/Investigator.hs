@@ -274,10 +274,26 @@ availableSlotTypesFor
   -> m [SlotType]
 availableSlotTypesFor slotType canHoldMap a initSlots = do
   let possibleSlotTypes = slotType : findWithDefault [] slotType canHoldMap
-  concatForM possibleSlotTypes $ \sType -> do
+  
+  -- Check slots in the requested slot type and its canHoldMap alternatives
+  directSlots <- concatForM possibleSlotTypes $ \sType -> do
     let slots = findWithDefault [] sType initSlots
     xs <- filterM (canPutIntoSlot a) slots
     pure $ replicate (length xs) sType
+  
+  -- Also check AdjustableSlots in OTHER slot types that could be adjusted to the requested slot type
+  adjustableSlots <- concatForM (Map.toList initSlots) $ \(sType, slots) ->
+    if sType `elem` possibleSlotTypes
+      then pure [] -- already checked above
+      else do
+        let adjustableSlotsForTargetType = filter (\case
+              AdjustableSlot _ _ stypes _ -> slotType `elem` stypes
+              _ -> False) slots
+        xs <- filterM (canPutIntoSlot a) adjustableSlotsForTargetType
+        -- These adjustable slots could be moved to slotType, so report slotType as available
+        pure $ replicate (length xs) slotType
+  
+  pure $ directSlots <> adjustableSlots
 
 nonEmptySlotsFirst :: [Slot] -> [Slot]
 nonEmptySlotsFirst = sortOn isEmptySlot

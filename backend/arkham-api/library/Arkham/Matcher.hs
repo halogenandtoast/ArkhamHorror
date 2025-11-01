@@ -400,6 +400,9 @@ eventAt = EventAt . LocationWithId
 eventControlledBy :: InvestigatorId -> EventMatcher
 eventControlledBy = EventControlledBy . InvestigatorWithId
 
+eventPlayedBy :: InvestigatorId -> EventMatcher
+eventPlayedBy = EventPlayedBy . InvestigatorWithId
+
 -- ** Skill Helpers **
 
 skillIs :: HasCardCode a => a -> SkillMatcher

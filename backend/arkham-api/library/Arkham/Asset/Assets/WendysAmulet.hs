@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Asset.Assets.WendysAmulet (wendysAmulet) where
 
 import Arkham.Asset.Cards qualified as Cards
@@ -16,7 +17,7 @@ wendysAmulet = asset WendysAmulet Cards.wendysAmulet
 instance HasModifiersFor WendysAmulet where
   getModifiersFor (WendysAmulet a) = for_ a.controller \iid -> do
     controllerGets a [CanPlayTopmostOfDiscard (Just EventType, [])]
-    modifySelect a (eventControlledBy iid) [PlaceOnBottomOfDeckInsteadOfDiscard]
+    modifySelect a (eventPlayedBy iid) [PlaceOnBottomOfDeckInsteadOfDiscard]
 
 instance RunMessage WendysAmulet where
   runMessage msg (WendysAmulet attrs) = WendysAmulet <$> runMessage msg attrs

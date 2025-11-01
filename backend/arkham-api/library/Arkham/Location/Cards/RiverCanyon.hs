@@ -7,6 +7,7 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype RiverCanyon = RiverCanyon LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,12 +20,19 @@ instance HasAbilities RiverCanyon where
   getAbilities (RiverCanyon a) =
     extendRevealed1 a
       $ playerLimit PerGame
-      $ restricted a 1 (Here <> exists (HealableInvestigator (a.ability 1) #damage You)) actionAbility
+      $ restricted
+        a
+        1
+        (Here <> exists (HealableInvestigator (a.ability 1) #damage (investigatorAt a)))
+        actionAbility
 
 instance RunMessage RiverCanyon where
   runMessage msg l@(RiverCanyon attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasCanteen <- getHasSupply iid Canteen
-      healDamage iid (attrs.ability 1) (if hasCanteen then 3 else 1)
+      investigators <-
+        select $ HealableInvestigator (attrs.ability 1) #damage (affectsOthers $ investigatorAt attrs)
+      chooseOrRunOneM iid do
+        targets investigators \iid' -> healDamage iid' (attrs.ability 1) (if hasCanteen then 3 else 1)
       pure l
     _ -> RiverCanyon <$> liftRunMessage msg attrs

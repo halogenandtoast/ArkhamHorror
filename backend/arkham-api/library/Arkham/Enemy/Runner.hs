@@ -365,7 +365,7 @@ instance RunMessage EnemyAttrs where
                     then do
                       afterSpawns <- checkWindows [mkAfter (Window.EnemySpawns enemyId lid)]
                       pushAll $ EnemyEntered enemyId lid
-                        : [EnemyEngageInvestigator enemyId iid | not (spawnDetailsUnengaged details) && not forcedEngagement]
+                        : [EnemyEngageInvestigator enemyId iid | not (spawnDetailsUnengaged details) || forcedEngagement]
                           <> [afterSpawns, EnemySpawned details]
                       case swarms of
                         [] -> pure ()

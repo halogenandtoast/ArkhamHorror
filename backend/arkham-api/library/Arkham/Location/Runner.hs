@@ -75,6 +75,7 @@ import Arkham.Tracing
 import Arkham.Trait
 import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
+import Control.Lens ((&&~))
 import Data.Function (on)
 import Data.List (nubBy)
 import Data.Map.Strict qualified as Map
@@ -153,7 +154,7 @@ instance RunMessage LocationAttrs where
       pure $ a & tokensL %~ flipClues n & withoutCluesL .~ (clueCount == 0)
     FlipDoom target n | isTarget a target -> do
       let flipCount = min n $ locationDoom a
-      pure $ a & tokensL %~ flipDoom n & withoutCluesL .~ (flipCount >= 0)
+      pure $ a & tokensL %~ flipDoom n & withoutCluesL &&~ (flipCount == 0)
     Investigate investigation | investigation.location == locationId && not investigation.isAction -> do
       let iid = investigation.investigator
       allowed <- getInvestigateAllowed iid a

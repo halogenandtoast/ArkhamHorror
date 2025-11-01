@@ -14,3 +14,5 @@ instance Show Source
 class Sourceable a where
   toSource :: a -> Source
   isSource :: a -> Source -> Bool
+  isSource = (==) . toSource
+  {-# MINIMAL toSource #-}

@@ -228,6 +228,7 @@ data Criterion
   | ControlsThis -- really controls this
   | OwnsThis -- just the owner
   | PlayableCardExists CostStatus ExtendedCardMatcher
+  | PlayableCardExistsIgnoreModifiersFromSelf CostStatus ExtendedCardMatcher
   | PlayableCardExistsWithCostReduction CostReduction ExtendedCardMatcher
   | ResourcesOnThis ValueMatcher
   | ResourcesOnLocation Where ValueMatcher

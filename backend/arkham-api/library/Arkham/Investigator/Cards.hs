@@ -104,6 +104,7 @@ allInvestigatorCards =
       , rexMurphyParallel
       , fatherMateoParallel
       , jennyBarnesParallel
+      , lolaHayesParallel
       ]
 
 allEncounterInvestigatorCards :: Map CardCode CardDef
@@ -712,3 +713,7 @@ fatherMateoParallel =
 jennyBarnesParallel :: CardDef
 jennyBarnesParallel =
   investigator "90084" ("Jenny Barnes" <:> "The Dilettante") Rogue [Drifter, Socialite]
+
+lolaHayesParallel :: CardDef
+lolaHayesParallel =
+  investigator "90087" ("Lola Hayes" <:> "The Actress") Neutral [Performer]

@@ -105,5 +105,6 @@
   { "name": "Path to the Righteous", "min": 90059, "max": 90061, "playerCards": 3, "code": "ptr", "cycle": 90 },
   { "name": "Relics of the Past", "min": 90062, "max": 90077, "playerCards": 3, "code": "rop", "cycle": 90 },
   { "name": "Hunting for Answers", "min": 90078, "max": 90080, "playerCards": 3, "code": "hfa", "cycle": 90 },
-  { "name": "Pistols and Pearls", "min": 90084, "max": 90086, "playerCards": 3, "code": "pap", "cycle": 90 }
+  { "name": "Pistols and Pearls", "min": 90084, "max": 90086, "playerCards": 3, "code": "pap", "cycle": 90 },
+  { "name": "Enthralling Encore", "min": 90087, "max": 90097, "playerCards": 7, "code": "ee", "cycle": 90 }
 ]

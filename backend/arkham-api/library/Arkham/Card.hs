@@ -20,6 +20,7 @@ import Arkham.Action (Action)
 import Arkham.Calculation
 import Arkham.Card.EncounterCard
 import Arkham.Card.PlayerCard
+import Arkham.ClassSymbol (ClassSymbol)
 import Arkham.Classes.GameLogger
 import Arkham.Customization
 import Arkham.EncounterCard
@@ -370,6 +371,9 @@ instance HasField "title" Card Text where
 
 instance HasField "cardCode" Card CardCode where
   getField = toCardCode
+
+instance HasField "classes" Card (Set ClassSymbol) where
+  getField = cdClassSymbols . toCardDef
 
 instance HasField "keywords" Card (Set Keyword) where
   getField = cdKeywords . toCardDef

@@ -169,3 +169,12 @@ jennysTwin45sAdvanced =
       , cdUses = uses Ammo 0
       , cdKeywords = singleton Keyword.Advanced
       }
+
+samuelBlakeObsessiveProducer :: CardDef
+samuelBlakeObsessiveProducer =
+  (weakness "90093" ("Samuel Blake" <:> "Obsessive Producer"))
+    { cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdSlots = [#ally]
+    , cdCost = Just (StaticCost 3)
+    , cdKeywords = setFromList [Keyword.Replacement, Keyword.Peril, Keyword.Hidden]
+    }

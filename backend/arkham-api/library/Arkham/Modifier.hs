@@ -39,6 +39,7 @@ import {-# SOURCE #-} Arkham.Target
 import Arkham.Trait
 import Data.Aeson.TH
 import GHC.OverloadedLabels
+import GHC.Records
 
 data ModifierType
   = CriteriaModifier Criterion ModifierType
@@ -485,6 +486,18 @@ data Modifier = Modifier
   , modifierCard :: Maybe Card
   }
   deriving stock (Show, Eq, Ord, Data)
+
+instance HasField "source" Modifier Source where
+  getField = modifierSource
+
+instance HasField "kind" Modifier ModifierType where
+  getField = modifierType
+
+instance HasField "activeDuringSetup" Modifier Bool where
+  getField = modifierActiveDuringSetup
+
+instance HasField "card" Modifier (Maybe Card) where
+  getField = modifierCard
 
 overModifierTypeM :: Monad m => (ModifierType -> m ModifierType) -> Modifier -> m Modifier
 overModifierTypeM f m = f (modifierType m) <&> \mt -> m {modifierType = mt}

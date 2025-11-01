@@ -10,3 +10,7 @@ instance FromJSON Source
 instance Eq Source
 instance Ord Source
 instance Show Source
+
+class Sourceable a where
+  toSource :: a -> Source
+  isSource :: a -> Source -> Bool

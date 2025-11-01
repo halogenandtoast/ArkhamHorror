@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useSettings } from '@/stores/settings';
 import { storeToRefs } from 'pinia';
-import { watchEffect, onUnmounted, onMounted, computed, ref, watch } from 'vue'
+import { onUnmounted, onMounted, computed, ref, watch } from 'vue'
 import Draggable from '@/components/Draggable.vue';
 import CardView from '@/arkham/components/Card.vue';
 import Modifiers from '@/arkham/components/Modifiers.vue';
@@ -146,7 +146,7 @@ const image = computed(() => {
   }
 
   const mutated = props.investigator.mutated ? `_${props.investigator.mutated}` : ''
-  const classVariant = props.investigator.cardCode === 'c03006' && props.investigator.class !== 'Neutral' ? `_${props.investigator.class}` : ''
+  const classVariant = ['c03006', 'c90087'].includes(props.investigator.cardCode) && props.investigator.class !== 'Neutral' ? `_${props.investigator.class}` : ''
   return imgsrc(`cards/${props.investigator.art.replace('c', '')}${classVariant}${mutated}.avif`);
 })
 

@@ -288,3 +288,15 @@ hasEvadeActions
 hasEvadeActions iid window windows' =
   anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1)
     =<< select (AbilityIsAction #evade <> AbilityWindow window)
+
+hasInvestigateActions
+  :: (Sourceable source, Tracing m, HasGame m)
+  => InvestigatorId
+  -> source
+  -> WindowMatcher
+  -> [Window]
+  -> m Bool
+hasInvestigateActions iid requestor window windows' =
+  anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1)
+    . map (setRequestor requestor)
+    =<< select (BasicAbility <> AbilityIsAction #investigate <> AbilityWindow window)

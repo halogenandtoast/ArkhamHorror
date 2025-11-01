@@ -1359,7 +1359,11 @@ runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
     pure g
   PlayCard iid card mtarget payment windows' False -> do
     investigator' <- getInvestigator iid
-    isPlayable <- getIsPlayable iid (toSource iid) Cost.PaidCost windows' card
+    let ignoreSelfModifiers = card.cardCode `elem` ["90088", "90089", "90090", "90091", "90092"]
+    isPlayable <-
+      if ignoreSelfModifiers
+        then withoutModifiersFrom iid $ getIsPlayable iid (toSource iid) Cost.PaidCost windows' card
+        else getIsPlayable iid (toSource iid) Cost.PaidCost windows' card
     if isPlayable
       then do
         mods <- getModifiers iid

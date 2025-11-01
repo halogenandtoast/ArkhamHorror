@@ -11,13 +11,13 @@ import Arkham.Event.Cards.Standalone as X
 import Arkham.Event.Cards.Starter as X
 import Arkham.Event.Cards.TheCircleUndone as X
 import Arkham.Event.Cards.TheDreamEaters as X
+import Arkham.Event.Cards.TheDrownedCity as X
 import Arkham.Event.Cards.TheDunwichLegacy as X
 import Arkham.Event.Cards.TheFeastOfHemlochVale as X
 import Arkham.Event.Cards.TheForgottenAge as X
 import Arkham.Event.Cards.TheInnsmouthConspiracy as X
 import Arkham.Event.Cards.ThePathToCarcosa as X
 import Arkham.Event.Cards.TheScarletKeys as X
-import Arkham.Event.Cards.TheDrownedCity as X
 import Arkham.Prelude hiding (catch)
 
 allPlayerEventCards :: Map CardCode CardDef
@@ -252,6 +252,11 @@ allPlayerEventCards =
       , keepFaith2
       , kickingTheHornetsNest
       , knowledgeIsPower
+      , leadingLadyEnchantress
+      , leadingLadyFemmeFatale
+      , leadingLadyFinalGirl
+      , leadingLadyHeroine
+      , leadingLadyMentor
       , lessonLearned2
       , letGodSortThemOut
       , letMeHandleThis

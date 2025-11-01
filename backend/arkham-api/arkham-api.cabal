@@ -1256,6 +1256,7 @@ library
       Arkham.Asset.Assets.SacredOathOathOfWisdom5
       Arkham.Asset.Assets.Safeguard
       Arkham.Asset.Assets.Safeguard2
+      Arkham.Asset.Assets.SamuelBlakeObsessiveProducer
       Arkham.Asset.Assets.SarahVanShaw
       Arkham.Asset.Assets.SawedOffShotgun5
       Arkham.Asset.Assets.Scavenging
@@ -2374,6 +2375,11 @@ library
       Arkham.Event.Events.KeepFaith2
       Arkham.Event.Events.KickingTheHornetsNest
       Arkham.Event.Events.KnowledgeIsPower
+      Arkham.Event.Events.LeadingLadyEnchantress
+      Arkham.Event.Events.LeadingLadyFemmeFatale
+      Arkham.Event.Events.LeadingLadyFinalGirl
+      Arkham.Event.Events.LeadingLadyHeroine
+      Arkham.Event.Events.LeadingLadyMentor
       Arkham.Event.Events.LessonLearned2
       Arkham.Event.Events.LetGodSortThemOut
       Arkham.Event.Events.LetMeHandleThis
@@ -2736,6 +2742,7 @@ library
       Arkham.Investigator.Cards.LeoAnderson
       Arkham.Investigator.Cards.LilyChen
       Arkham.Investigator.Cards.LolaHayes
+      Arkham.Investigator.Cards.LolaHayesParallel
       Arkham.Investigator.Cards.LostHomunculus
       Arkham.Investigator.Cards.LuciusGalloway
       Arkham.Investigator.Cards.LukeRobinson

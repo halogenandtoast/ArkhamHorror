@@ -773,6 +773,12 @@ allEvents =
       SomeEventCard darkMemoryAdvanced
     , -- Hunting for Answers
       SomeEventCard searchForTheTruthAdvanced
+    , -- Enthralling Encore
+      SomeEventCard leadingLadyHeroine
+    , SomeEventCard leadingLadyMentor
+    , SomeEventCard leadingLadyFemmeFatale
+    , SomeEventCard leadingLadyEnchantress
+    , SomeEventCard leadingLadyFinalGirl
     , -- Promo
       -- The Dirge of Reason
       SomeEventCard mysteriesRemain

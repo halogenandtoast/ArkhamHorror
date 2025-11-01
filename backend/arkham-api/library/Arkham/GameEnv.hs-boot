@@ -33,6 +33,8 @@ withModifiers'
   -> m [Modifier]
   -> ReaderT Game m a
   -> m a
+
+withoutModifiersFrom :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
 getAllModifiers :: HasGame m => m (Map Target [Modifier])
 getActiveAbilities :: HasGame m => m [Ability]
 getPhase :: HasGame m => m Phase

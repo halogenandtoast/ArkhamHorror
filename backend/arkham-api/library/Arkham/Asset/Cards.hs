@@ -709,6 +709,7 @@ allPlayerAssetCards =
       , sacredOathOathOfWisdom5
       , safeguard
       , safeguard2
+      , samuelBlakeObsessiveProducer
       , sarahVanShaw
       , sawedOffShotgun5
       , scavenging

@@ -32,6 +32,7 @@ import Arkham.Phase
 import Arkham.Prelude
 import Arkham.Random
 import Arkham.SkillTest.Base
+import {-# SOURCE #-} Arkham.Source
 import Arkham.Target
 import Arkham.Tracing
 import Arkham.Window
@@ -67,7 +68,7 @@ instance CardGen GameT where
       (g {gameCards = deleteMap cardId (gameCards g)}, ())
   clearCardCache = do
     ref <- asks gameEnvGame
-    atomicModifyIORef' ref $ \g -> (g {gameCards = mempty }, ())
+    atomicModifyIORef' ref $ \g -> (g {gameCards = mempty}, ())
 
 instance HasGameRef GameEnv where
   gameRefL = lens gameEnvGame $ \m x -> m {gameEnvGame = x}
@@ -214,6 +215,19 @@ withModifiers' (toTarget -> target) mods body = do
   let
     modifiers = gameModifiers game
     modifiers' = insertWith (<>) target mods' modifiers
+  runReaderT body $ game & modifiersL .~ modifiers'
+
+-- Primarily used for Parallel Lola right now, we may want to make this more generic
+withoutModifiersFrom
+  :: HasGame m
+  => InvestigatorId
+  -> ReaderT Game m a
+  -> m a
+withoutModifiersFrom iid body = do
+  game <- getGame
+  let
+    modifiers = gameModifiers game
+    modifiers' = Map.adjust (filter ((/= (toSource iid)) . (.source))) (toTarget iid) modifiers
   runReaderT body $ game & modifiersL .~ modifiers'
 
 withActiveInvestigator :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a

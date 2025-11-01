@@ -1364,6 +1364,8 @@ allAssets =
       SomeAssetCard theCodexOfAgesAdvanced
     , --- Pistols and Pearls
       SomeAssetCard jennysTwin45sAdvanced
+    , --- Enthralling Encore
+      SomeAssetCard samuelBlakeObsessiveProducer
     , -- Promo
       --- Hour of the Huntress
       SomeAssetCard greenManMedallionHourOfTheHuntress

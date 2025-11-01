@@ -1,11 +1,13 @@
 module Arkham.Event.Events.IllTakeThat (illTakeThat) where
 
+import Arkham.Asset.Types (Field (..))
 import Arkham.Cost.Status
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.Window (getPassedBy)
-import Arkham.Matcher
+import Arkham.Matcher hiding (AssetCard)
+import Arkham.Projection
 import Arkham.Trait (Trait (Illicit))
 
 newtype IllTakeThat = IllTakeThat EventAttrs
@@ -16,8 +18,10 @@ illTakeThat :: EventCard IllTakeThat
 illTakeThat = event IllTakeThat Cards.illTakeThat
 
 instance HasModifiersFor IllTakeThat where
-  getModifiersFor (IllTakeThat attrs) = case attrs.attachedTo of
-    Just target -> modified_ attrs target [AddTrait Illicit]
+  getModifiersFor (IllTakeThat attrs) = case attrs.attachedTo.asset of
+    Just target -> do
+      modified_ attrs target [AddTrait Illicit]
+      field AssetCard target >>= \c -> modified_ attrs c [AddTrait Illicit]
     _ -> pure mempty
 
 instance RunMessage IllTakeThat where

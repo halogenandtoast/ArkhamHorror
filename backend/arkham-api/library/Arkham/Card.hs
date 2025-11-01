@@ -205,6 +205,24 @@ isCard (toCardCode -> a) (toCardCode -> b) = a == b
 printedCardCost :: IsCard a => a -> Int
 printedCardCost = maybe 0 toPrintedCost . cdCost . toCardDef
 
+data CardWithTraits a where
+  CardWithTraits :: IsCard a => a -> Set Trait -> CardWithTraits a
+
+instance IsCard (CardWithTraits a) where
+  toCard (CardWithTraits a _) = toCard a
+  toCardId (CardWithTraits a _) = toCardId a
+  toCardOwner (CardWithTraits a _) = toCardOwner a
+
+instance HasTraits (CardWithTraits a) where
+  toTraits (CardWithTraits a extraTraits) =
+    toTraits a <> extraTraits
+
+instance HasCardDef (CardWithTraits a) where
+  toCardDef (CardWithTraits a _) = toCardDef a
+
+instance HasCardCode (CardWithTraits a) where
+  toCardCode (CardWithTraits a _) = toCardCode a
+
 cardMatch :: (IsCard a, IsCardMatcher cardMatcher, HasCallStack) => a -> cardMatcher -> Bool
 cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   AnyCard -> True

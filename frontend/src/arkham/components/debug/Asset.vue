@@ -50,6 +50,15 @@ const horror = computed(() => props.asset.tokens[TokenType.Horror])
 
 const tokenTypes = Object.values(TokenType);
 
+const showSlots = ref(false)
+const slots = computed(() => {
+  const {owner} = props.asset
+  if (!owner) return []
+  const investigator = Object.values(props.game.investigators).find(i => i.id === owner)
+  if (!investigator) return []
+  return investigator.slots.filter((s) => s.assets.includes(props.asset.id))
+});
+
 const hasPool = computed(() => {
   const {
     sanity,
@@ -105,7 +114,10 @@ const hasPool = computed(() => {
           <option v-for="token in tokenTypes" :key="token" :value="token">{{ token }}</option>
         </select>
         <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{ tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}, placeTokenType, 1]})">Place</button>
-        <button @click="placeTokens = false">Back</button>
+      </div>
+      <div v-if="showSlots" class="buttons">
+        <div class="slots">{{slots}}</div>
+        <button @click="showSlots = false">Back</button>
       </div>
       <div v-else class="buttons">
         <button @click="placeTokens = true">Place Tokens</button>
@@ -115,8 +127,10 @@ const hasPool = computed(() => {
         <button v-else @click="debug.send(game.id, {tag: 'Exhaust', contents: { tag: 'AssetTarget', contents: id}})">Exhaust</button>
         <button v-if="asset.health || asset.sanity" @click="debug.send(game.id, {tag: 'AssetDefeated', contents: [{ tag: 'GameSource' }, id]})">Defeat</button>
         <button v-if="asset.owner" @click="debug.send(game.id, {tag: 'Discard', contents: [null, { tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}]})">Discard</button>
+        <button v-if="slots.length > 0" @click="showSlots = true">Show Slots</button>
         <button @click="emit('close')">Close</button>
       </div>
+
     </div>
   </Draggable>
 </template>
@@ -227,5 +241,10 @@ const hasPool = computed(() => {
   padding: 10px;
   border-radius: 20px;
   transform: translateX(-50%) translateY(-50%);
+}
+
+.slots {
+  font-size: 0.8em;
+  color: #ccc;
 }
 </style>

@@ -34,6 +34,7 @@ data EventMatcher
   | EventWithToken Token
   | EventControlledBy InvestigatorMatcher
   | EventOwnedBy InvestigatorMatcher
+  | EventPlayedBy InvestigatorMatcher
   | EventAt LocationMatcher
   | EventWithDoom ValueMatcher
   | EventAttachedToAsset AssetMatcher

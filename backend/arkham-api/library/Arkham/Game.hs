@@ -2949,6 +2949,9 @@ getEventsMatching matcher = case matcher of
         _ -> pure False
     EventWithPlacement placement -> pure $ filter ((== placement) . attr eventPlacement) as
     ActiveEvent -> pure $ filter ((== Limbo) . attr eventPlacement) as
+    EventPlayedBy investigatorMatcher -> do
+      iids <- select investigatorMatcher
+      pure $ filter ((`elem` iids) . attr eventController) as
     EventControlledBy investigatorMatcher -> do
       iids <- select investigatorMatcher
       pure $ filter ((`elem` iids) . attr eventController) as

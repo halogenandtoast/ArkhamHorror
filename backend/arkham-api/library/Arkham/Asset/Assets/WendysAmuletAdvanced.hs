@@ -16,7 +16,7 @@ wendysAmuletAdvanced = asset WendysAmuletAdvanced Cards.wendysAmuletAdvanced
 instance HasModifiersFor WendysAmuletAdvanced where
   getModifiersFor (WendysAmuletAdvanced a) = for_ a.controller \iid -> do
     controllerGets a [CanPlayFromDiscard #event]
-    modifySelect a (EventOwnedBy $ InvestigatorWithId iid) [PlaceOnBottomOfDeckInsteadOfDiscard]
+    modifySelect a (eventPlayedBy iid) [PlaceOnBottomOfDeckInsteadOfDiscard]
 
 instance RunMessage WendysAmuletAdvanced where
   runMessage msg (WendysAmuletAdvanced attrs) = WendysAmuletAdvanced <$> runMessage msg attrs

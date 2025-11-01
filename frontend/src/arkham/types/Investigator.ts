@@ -187,22 +187,23 @@ export const slotTypeDecoder = JsonDecoder.oneOf<SlotType>([
   JsonDecoder.literal('AllySlot'),
 ], 'SlotType')
 
+export type Restriction = any
+
 export type Slot = {
   tag: SlotType
   empty: boolean
+  assets: string[]
+  restriction?: Restriction | null
 }
 
-export const slotDecoder = JsonDecoder.object<Slot>({
-  tag: slotTypeDecoder,
-  empty: JsonDecoder.boolean(),
-}, 'Slot')
-
 type SlotContents = {
+  restriction?: Restriction | null
   assets: string[]
 }
 
 const slotContentsDecoder = JsonDecoder.object<SlotContents>({
   assets: JsonDecoder.array(JsonDecoder.string(), 'AssetId[]'),
+  restriction: v2Optional(JsonDecoder.succeed()),
 }, 'SlotContents')
 
 export const slotsDecoder = JsonDecoder.
@@ -214,7 +215,7 @@ export const slotsDecoder = JsonDecoder.
   , 'Slot[]').
   map((arr) =>
       arr.flatMap(([key, value]) =>
-        value.map((contents) => ({ tag: key , empty: contents.assets.length === 0})
+        value.map((contents) => ({ tag: key , empty: contents.assets.length === 0, ...contents })
   )))
 
 export const investigatorDetailsDecoder = JsonDecoder.object<InvestigatorDetails>({

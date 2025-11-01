@@ -14,6 +14,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Slot as X
 import Arkham.Tracing
+import Data.Set qualified as Set
 
 isEmptySlot :: Slot -> Bool
 isEmptySlot = null . slotItems
@@ -23,28 +24,33 @@ isStandardSlot Slot {} = True
 isStandardSlot _ = False
 
 canPutIntoSlot :: (HasGame m, IsCard a) => a -> Slot -> m Bool
-canPutIntoSlot a = \case
-  slot@(Slot _ []) -> pure $ isEmptySlot slot
-  slot@(AdjustableSlot _ restriction _ []) -> pure $ isEmptySlot slot && maybe True (cardMatch a) restriction
-  tslot@(RestrictedSlot _ matcher []) -> pure $ isEmptySlot tslot && cardMatch a matcher
-  Slot _ (x : xs) -> do
-    mods <- getModifiers x
-    let canFit = \case
-          SharesSlotWith n matcher -> length xs + 1 < n && cardMatch a matcher
-          _ -> False
-    pure $ any canFit mods
-  RestrictedSlot _ matcher (x : xs) -> do
-    mods <- getModifiers x
-    let canFit = \case
-          SharesSlotWith n matcher' -> length xs + 1 < n && cardMatch a matcher'
-          _ -> False
-    pure $ any canFit mods && cardMatch a matcher
-  AdjustableSlot _ restriction _ (x : xs) -> do
-    mods <- getModifiers x
-    let canFit = \case
-          SharesSlotWith n matcher -> length xs + 1 < n && cardMatch a matcher
-          _ -> False
-    pure $ any canFit mods && maybe True (cardMatch a) restriction
+canPutIntoSlot a' s = do
+  cmods <- getModifiers (toCardId a')
+  let extraTraits = Set.fromList [t | AddTrait t <- cmods]
+  let a = CardWithTraits a' extraTraits
+  case s of
+    slot@(Slot _ []) -> pure $ isEmptySlot slot
+    slot@(AdjustableSlot _ restriction _ []) -> pure $ isEmptySlot slot && maybe True (cardMatch a) restriction
+    tslot@(RestrictedSlot _ matcher []) -> do
+      pure $ isEmptySlot tslot && cardMatch a matcher
+    Slot _ (x : xs) -> do
+      mods <- getModifiers x
+      let canFit = \case
+            SharesSlotWith n matcher -> length xs + 1 < n && cardMatch a matcher
+            _ -> False
+      pure $ any canFit mods
+    RestrictedSlot _ matcher (x : xs) -> do
+      mods <- getModifiers x
+      let canFit = \case
+            SharesSlotWith n matcher' -> length xs + 1 < n && cardMatch a matcher'
+            _ -> False
+      pure $ any canFit mods && cardMatch a matcher
+    AdjustableSlot _ restriction _ (x : xs) -> do
+      mods <- getModifiers x
+      let canFit = \case
+            SharesSlotWith n matcher -> length xs + 1 < n && cardMatch a matcher
+            _ -> False
+      pure $ any canFit mods && maybe True (cardMatch a) restriction
 
 putIntoSlot :: AssetId -> Slot -> Slot
 putIntoSlot aid = \case

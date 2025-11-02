@@ -51,7 +51,7 @@ rememberIchtacasPrey eid (toCardDef -> card) = do
     $ gameModifier
       ScenarioSource
       eid
-      (UIModifier $ ImportantToScenario $ ikey "labels.ichtacasPrey")
+      (UIModifier $ ImportantToScenario $ ikey' "ui.ichtacasPrey")
   remember $ IchtacasPrey $ Labeled (toName card) eid `With` Envelope @"cardCode" card.cardCode
 
 rememberIchtacasDestination :: (ReverseQueue m, HasCardDef card) => LocationId -> card -> m ()
@@ -60,7 +60,7 @@ rememberIchtacasDestination lid (toCardDef -> card) = do
     $ gameModifier
       ScenarioSource
       lid
-      (UIModifier $ ImportantToScenario $ ikey "labels.ichtacasDestination")
+      (UIModifier $ ImportantToScenario $ ikey' "ui.ichtacasDestination")
   remember $ IchtacasDestination $ Labeled (toName card) lid `With` Envelope @"cardCode" card.cardCode
 
 scenarioI18n :: (HasI18n => a) -> a

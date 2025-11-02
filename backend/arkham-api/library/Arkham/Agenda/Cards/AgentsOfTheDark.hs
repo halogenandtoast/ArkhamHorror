@@ -60,8 +60,8 @@ instance RunMessage AgentsOfTheDark where
       let
         aboveEffect :: ReverseQueue m => InvestigatorId -> m ()
         aboveEffect iid = chooseOneM iid $ scenarioI18n do
-          labeled' "cluesUnveiled" $ placeTokens attrs theUnveiling Clue 1
-          labeled' "cultist" $ findAndDrawEncounterCard iid $ card_ $ #enemy <> #cultist
+          labeled' "agentsOfTheDark.cluesUnveiled" $ placeTokens attrs theUnveiling Clue 1
+          labeled' "agentsOfTheDark.cultist" $ findAndDrawEncounterCard iid $ card_ $ #enemy <> #cultist
       investigators <- getInvestigators
       for_ investigators aboveEffect
       repeated (attrs.token Eclipse) $ leadChooseOrRunOneM $ targets investigators aboveEffect

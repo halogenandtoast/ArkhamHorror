@@ -71,6 +71,9 @@ instance AsId ScarletKeyAttrs where
   type IdOf ScarletKeyAttrs = ScarletKeyId
   asId = keyId
 
+instance HasField "placement" ScarletKey Placement where
+  getField = attr keyPlacement
+
 instance HasField "cardId" ScarletKeyAttrs CardId where
   getField = keyCardId
 
@@ -170,7 +173,7 @@ instance HasAbilities ScarletKey where
   getAbilities (ScarletKey a) = getAbilities a
 
 instance HasModifiersFor ScarletKey where
-  getModifiersFor (ScarletKey a) = getModifiersFor a
+  getModifiersFor x@(ScarletKey a) = unless x.placement.outOfGame $ getModifiersFor a
 
 instance Entity ScarletKey where
   type EntityId ScarletKey = ScarletKeyId

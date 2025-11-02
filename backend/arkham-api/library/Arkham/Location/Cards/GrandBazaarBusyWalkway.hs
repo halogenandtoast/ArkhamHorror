@@ -8,7 +8,7 @@ newtype GrandBazaarBusyWalkway = GrandBazaarBusyWalkway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grandBazaarBusyWalkway :: LocationCard GrandBazaarBusyWalkway
-grandBazaarBusyWalkway = location GrandBazaarBusyWalkway Cards.grandBazaarBusyWalkway 1 (PerPlayer 1)
+grandBazaarBusyWalkway = locationWith GrandBazaarBusyWalkway Cards.grandBazaarBusyWalkway 1 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities GrandBazaarBusyWalkway where
   getAbilities (GrandBazaarBusyWalkway attrs) =

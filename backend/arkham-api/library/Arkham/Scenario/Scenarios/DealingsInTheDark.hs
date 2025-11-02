@@ -13,6 +13,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -77,7 +78,7 @@ instance RunMessage DealingsInTheDark where
     Setup -> runScenarioSetup DealingsInTheDark attrs do
       n <- getTime
       workingWithEce <- getHasRecord TheCellIsWorkingWithEce
-      deciveingEce <- getHasRecord TheCellIsDecievingEce
+      deceivingEce <- getHasRecord TheCellIsDecievingEce
       setup $ ul do
         li "gatherSets"
         li "theUnveiling"
@@ -89,14 +90,15 @@ instance RunMessage DealingsInTheDark where
         li.nested "placeLocations" do
           li "beginPlay"
         li.nested "checkCampaignLog" do
-          li.validate (workingWithEce || deciveingEce) "eceInvolved"
-          li.validate (not $ workingWithEce || deciveingEce) "eceNotInvolved"
+          li.validate (workingWithEce || deceivingEce) "eceInvolved"
+          li.validate (not $ workingWithEce || deceivingEce) "eceNotInvolved"
         li "setAside"
         li "miniCards"
         unscoped $ li "shuffleRemainder"
         li "cultists"
         unscoped $ li "readyToBegin"
 
+      setUsesGrid
       gather Set.DealingsInTheDark
       gather Set.AgentsOfYuggoth
       gather Set.DarkVeiling
@@ -108,8 +110,10 @@ instance RunMessage DealingsInTheDark where
       setAgendaDeck [Agendas.agentsOfTheDark]
       setActDeck [Acts.searchForTheManuscript, Acts.searchForTheTalisman]
 
-      startAt =<< place Locations.hagiaSophia
-      placeAll [Locations.istanbulUniversity, Locations.obeliskOfTheodosius, Locations.galata]
+      startAt =<< placeInGrid (Pos 0 0) Locations.hagiaSophia
+      placeInGrid_ (Pos (-1) 1) Locations.istanbulUniversity
+      placeInGrid_ (Pos (-1) (-1)) Locations.obeliskOfTheodosius
+      placeInGrid_ (Pos (-2) 0) Locations.galata
 
       setAside
         $ [ Agendas.theChase
@@ -125,7 +129,7 @@ instance RunMessage DealingsInTheDark where
           , Enemies.umbralHarbinger
           , Enemies.emissaryFromYuggoth
           ]
-        <> [Assets.eceSahinTheVermillionVeiledLady | workingWithEce || deciveingEce]
+        <> [Assets.eceSahinTheVermillionVeiledLady | workingWithEce || deceivingEce]
 
       theUnveiling <- genCard Stories.theUnveiling
       push $ PlaceStory theUnveiling Global

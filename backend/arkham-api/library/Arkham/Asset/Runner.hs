@@ -75,10 +75,15 @@ hasUses = any (> 0) . toList . assetUses
 
 instance RunMessage Asset where
   runMessage msg x@(Asset a) = withSpan_ ("Asset[" <> unCardCode (toCardCode x) <> "].runMessage") do
-    inPlay <- elem (toId x) <$> select AnyAsset
-    modifiers' <- if inPlay then getModifiers (toTarget x) else pure []
-    let msg' = if any (`elem` modifiers') [Blank, BlankExceptForcedAbilities] then Blanked msg else msg
-    Asset <$> runMessage msg' a
+    if x.placement.outOfGame
+      then case msg of
+        ReturnLocationToGame _ -> Asset <$> runMessage msg a
+        _ -> pure x
+      else do
+        inPlay <- elem (toId x) <$> select AnyAsset
+        modifiers' <- if inPlay then getModifiers (toTarget x) else pure []
+        let msg' = if any (`elem` modifiers') [Blank, BlankExceptForcedAbilities] then Blanked msg else msg
+        Asset <$> runMessage msg' a
 
 instance RunMessage AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
@@ -721,4 +726,14 @@ instance RunMessage AssetAttrs where
             & (metaMapL %~ KeyMap.delete "spellbound")
         else do
           pure $ a & flippedL .~ True
+    SetLocationOutOfGame lid -> do
+      case assetPlacement of
+        AtLocation lid' | lid' == lid -> pure $ a & placementL .~ OutOfGame assetPlacement
+        AttachedToLocation lid' | lid' == lid -> pure $ a & placementL .~ OutOfGame assetPlacement
+        _ -> pure a
+    ReturnLocationToGame lid -> do
+      case assetPlacement of
+        OutOfGame p@(AtLocation lid') | lid' == lid -> pure $ a & placementL .~ p
+        OutOfGame p@(AttachedToLocation lid') | lid' == lid -> pure $ a & placementL .~ p
+        _ -> pure a
     _ -> pure a

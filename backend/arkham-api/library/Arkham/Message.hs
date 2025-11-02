@@ -1206,6 +1206,8 @@ data Message
   | PlaceConcealedCards InvestigatorId [ConcealedCardId] [LocationId]
   | PlaceConcealedCard InvestigatorId ConcealedCardId Placement
   | RemoveAllConcealed
+  | SetLocationOutOfGame LocationId
+  | ReturnLocationToGame LocationId
   | -- Commit
     Do Message
   | DoBatch BatchId Message

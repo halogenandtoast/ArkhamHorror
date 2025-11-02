@@ -8,7 +8,7 @@ newtype GrandBazaarCrowdedShops = GrandBazaarCrowdedShops LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grandBazaarCrowdedShops :: LocationCard GrandBazaarCrowdedShops
-grandBazaarCrowdedShops = location GrandBazaarCrowdedShops Cards.grandBazaarCrowdedShops 3 (PerPlayer 1)
+grandBazaarCrowdedShops = locationWith GrandBazaarCrowdedShops Cards.grandBazaarCrowdedShops 3 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities GrandBazaarCrowdedShops where
   getAbilities (GrandBazaarCrowdedShops attrs) =

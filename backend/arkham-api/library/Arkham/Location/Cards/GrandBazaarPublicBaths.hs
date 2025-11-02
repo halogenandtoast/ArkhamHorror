@@ -8,7 +8,7 @@ newtype GrandBazaarPublicBaths = GrandBazaarPublicBaths LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grandBazaarPublicBaths :: LocationCard GrandBazaarPublicBaths
-grandBazaarPublicBaths = location GrandBazaarPublicBaths Cards.grandBazaarPublicBaths 2 (PerPlayer 1)
+grandBazaarPublicBaths = locationWith GrandBazaarPublicBaths Cards.grandBazaarPublicBaths 2 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities GrandBazaarPublicBaths where
   getAbilities (GrandBazaarPublicBaths attrs) =

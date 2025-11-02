@@ -37,7 +37,11 @@ createEvent a iid eid =
 
 instance RunMessage Event where
   runMessage msg x@(Event a) = withSpan_ ("Event[" <> unCardCode (toCardCode x) <> "].runMessage") do
-    Event <$> runMessage msg a
+    if x.placement.outOfGame
+      then case msg of
+        ReturnLocationToGame {} -> Event <$> runMessage msg a
+        _ -> pure x
+      else Event <$> runMessage msg a
 
 lookupEvent :: CardCode -> InvestigatorId -> EventId -> CardId -> Event
 lookupEvent cardCode = case lookup cardCode allEvents of

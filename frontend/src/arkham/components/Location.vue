@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'; 
 import { onBeforeUnmount, ComputedRef, ref, computed, watch, nextTick } from 'vue';
 import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
@@ -32,6 +33,7 @@ export interface Props {
   playerId: string
 }
 
+const { t } = useI18n()
 const explosionPNG = `url(${imgsrc('explosion.png')})`
 const frame = ref(null)
 const debugging = ref(false)
@@ -73,8 +75,19 @@ const locus = computed(() => {
   return modifiers.value?.some((m) => m.type.tag === "UIModifier" && m.type.contents === "Locus") ?? false
 })
 
-const important = computed(() => {
-  return modifiers.value?.some((m) => m.type.tag === "UIModifier" && m.type.contents.tag === "ImportantToScenario") ?? false
+type Important = string
+
+
+
+const important = computed<Important[]>(() => {
+  return (modifiers.value ?? []).reduce<Important[]>((acc, m) => {
+    if (m.type.tag !== "UIModifier") return acc
+    if (typeof m.type.contents === "string") return acc
+    if (m.type.contents.tag !== "ImportantToScenario") return acc
+    const { contents } = m.type.contents
+    const text = contents.startsWith('$') ? t(contents.slice(1)) : contents
+    return [...acc, text as Important]
+  }, [])
 })
 
 function isCardAction(c: Message): boolean {
@@ -362,10 +375,10 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
         </div>
       </div>
       <div class="location-column">
-        <div class="card-frame" :class="{ explosion }" ref="frame">
+        <div class="card-frame" :class="{ explosion }" ref="frame" @click="clicked">
           <Locus v-if="locus" class="locus" />
           <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
-          <span class="important" v-if="important">
+            <span v-for="ui in important" class="important" :class="{ 'important--can-interact': canInteract }" v-tooltip="ui">
             <font-awesome-icon :icon="['fa', 'circle-exclamation']" />
           </span>
 
@@ -382,7 +395,6 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
                 @drop="onDrop"
                 @dragover.prevent="dragover"
                 @dragenter.prevent
-                @click="clicked"
               />
             </template>
           </div>
@@ -616,7 +628,7 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   border-radius: 1000px;
   font-size: 2.6em;
   color: var(--important);
-  pointer-events: none;
+  /*pointer-events: none;*/
   z-index: 1;
   max-width: 40%;
   max-height: min-content;
@@ -625,6 +637,10 @@ const highlighted = computed(() => highlighter.highlighted.value === props.locat
   align-items: center;
   justify-content: center;
   filter: drop-shadow(0px 0px 1px #000) drop-shadow(0px 0px 2px #000);
+}
+
+.important--can-interact {
+  cursor: pointer;
 }
 
 .card-container {

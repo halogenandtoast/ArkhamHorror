@@ -340,7 +340,7 @@ instance HasAbilities Treachery where
   getAbilities (Treachery a) = getAbilities a
 
 instance HasModifiersFor Treachery where
-  getModifiersFor (Treachery a) = getModifiersFor a
+  getModifiersFor t@(Treachery a) = unless t.placement.outOfGame $ getModifiersFor a
 
 instance HasCardCode Treachery where
   toCardCode = toCardCode . toAttrs

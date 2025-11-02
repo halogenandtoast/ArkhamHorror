@@ -20,6 +20,13 @@ instance RunMessage ScarletKey where
   runMessage msg (ScarletKey a) = ScarletKey <$> runMessage msg a
 
 instance RunMessage ScarletKeyAttrs where
+  runMessage msg attrs | attrs.placement.outOfGame = case msg of
+    ReturnLocationToGame lid -> do
+      case attrs.placement of
+        OutOfGame p@(AtLocation lid') | lid' == lid -> pure $ attrs {keyPlacement = p}
+        OutOfGame p@(AttachedToLocation lid') | lid' == lid -> pure $ attrs {keyPlacement = p}
+        _ -> pure attrs
+    _ -> pure attrs
   runMessage msg attrs = case msg of
     PlaceScarletKey skid p | skid == attrs.id -> do
       case p of
@@ -31,4 +38,9 @@ instance RunMessage ScarletKeyAttrs where
     UseAbility _ ab _ | isSource attrs ab.source || isProxySource attrs ab.source -> do
       push $ Do msg
       pure attrs
+    SetLocationOutOfGame lid -> do
+      case attrs.placement of
+        p@(AtLocation lid') | lid' == lid -> pure $ attrs {keyPlacement = OutOfGame p}
+        p@(AttachedToLocation lid') | lid' == lid -> pure $ attrs {keyPlacement = OutOfGame p}
+        _ -> pure attrs
     _ -> pure attrs

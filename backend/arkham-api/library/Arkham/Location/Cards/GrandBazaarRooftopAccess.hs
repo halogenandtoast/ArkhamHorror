@@ -8,7 +8,13 @@ newtype GrandBazaarRooftopAccess = GrandBazaarRooftopAccess LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grandBazaarRooftopAccess :: LocationCard GrandBazaarRooftopAccess
-grandBazaarRooftopAccess = location GrandBazaarRooftopAccess Cards.grandBazaarRooftopAccess 4 (PerPlayer 1)
+grandBazaarRooftopAccess =
+  locationWith
+    GrandBazaarRooftopAccess
+    Cards.grandBazaarRooftopAccess
+    4
+    (PerPlayer 1)
+    connectsToAdjacent
 
 instance HasAbilities GrandBazaarRooftopAccess where
   getAbilities (GrandBazaarRooftopAccess attrs) =

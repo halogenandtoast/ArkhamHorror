@@ -3,6 +3,7 @@
 
 module Arkham.Matcher.Enemy where
 
+import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Card.CardCode
 import Arkham.Card.Id
 import Arkham.Criteria.Override
@@ -73,11 +74,13 @@ data EnemyMatcher
   | EnemyWithDamage ValueMatcher
   | EnemyWithDoom ValueMatcher
   | EnemyWithMostDoom EnemyMatcher
+  | EnemyWithMostClues EnemyMatcher
   | EnemyIsEngagedWith InvestigatorMatcher
   | EnemyWithAsset AssetMatcher
   | EnemyWithAttachedEvent EventMatcher
   | EnemyWithAttachedAsset AssetMatcher
   | EnemyWithAttachedTreachery TreacheryMatcher
+  | EnemyWithScarletKey ScarletKeyMatcher
   | FarthestEnemyFrom InvestigatorId EnemyMatcher
   | FarthestEnemyFromAll EnemyMatcher
   | NearestEnemyTo InvestigatorId EnemyMatcher

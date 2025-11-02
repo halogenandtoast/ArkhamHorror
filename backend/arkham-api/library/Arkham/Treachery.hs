@@ -25,9 +25,13 @@ createTreachery a iid tid =
 
 instance RunMessage Treachery where
   runMessage msg t@(Treachery a) = withSpan_ ("Treachery[" <> unCardCode (toCardCode t) <> "].runMessage") do
-    case msg of
-      Revelation iid (isSource t -> True) -> Treachery <$> runMessage msg (overAttrs ((resolvedL %~ insertSet iid) . (waitingL .~ True)) a)
-      _ -> Treachery <$> runMessage msg a
+    if t.placement.outOfGame
+      then case msg of
+        ReturnLocationToGame _ -> Treachery <$> runMessage msg a
+        _ -> pure t
+      else case msg of
+        Revelation iid (isSource t -> True) -> Treachery <$> runMessage msg (overAttrs ((resolvedL %~ insertSet iid) . (waitingL .~ True)) a)
+        _ -> Treachery <$> runMessage msg a
 
 lookupTreachery :: CardCode -> InvestigatorId -> TreacheryId -> CardId -> Treachery
 lookupTreachery cardCode = case lookup cardCode allTreacheries of

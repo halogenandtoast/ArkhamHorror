@@ -501,6 +501,9 @@ getEnemy = \case
   ((windowType -> Window.EnemyMoves eid _) : _) -> eid
   ((windowType -> Window.EnemyEnters eid _) : _) -> eid
   ((windowType -> Window.EnemyWouldSpawnAt eid _) : _) -> eid
+  ((windowType -> Window.EnemyAttacks details) : _) -> details.enemy
+  ((windowType -> Window.WouldReady (EnemyTarget eid)) : _) -> eid
+  ((windowType -> Window.WouldPlaceDoom _ (EnemyTarget eid) _) : _) -> eid
   (_ : rest) -> getEnemy rest
   _ -> error "invalid window"
 

@@ -51,15 +51,13 @@ data LocationAttrs = LocationAttrs
   , locationFloodLevel :: Maybe FloodLevel
   , locationBrazier :: Maybe Brazier
   , locationBreaches :: Maybe BreachStatus
-  , -- We need to track if a location has no clues because timings will interact
-    -- with the location being revealed and claim there are no clues before they
-    -- are placed. TODO: this could be a hasBeenRevealed bool
-    locationWithoutClues :: Bool
+  , locationWithoutClues :: Bool
   , locationMeta :: Value
   , locationGlobalMeta :: Map Aeson.Key Value
   , locationPosition :: Maybe Pos
   , locationBeingRemoved :: Bool
   , locationConcealedCards :: [ConcealedCardId]
+  , locationOutOfGame :: Bool
   }
   deriving stock (Show, Eq)
 
@@ -187,5 +185,6 @@ instance FromJSON LocationAttrs where
     locationPosition <- o .:? "position"
     locationBeingRemoved <- o .:? "beingRemoved" .!= False
     locationConcealedCards <- o .:? "concealedCards" .!= []
+    locationOutOfGame <- o .:? "outOfGame" .!= False
 
     pure LocationAttrs {..}

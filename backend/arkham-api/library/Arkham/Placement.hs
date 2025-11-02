@@ -47,10 +47,16 @@ data Placement
   | OutOfPlay OutOfPlayZone
   | Near Target
   | InTheShadows
+  | OutOfGame Placement
   deriving stock (Show, Eq, Ord, Data, Generic)
 
 instance HasField "attachedTo" Placement (Maybe Target) where
   getField = placementToAttached
+
+instance HasField "outOfGame" Placement Bool where
+  getField = \case
+    OutOfGame _ -> True
+    _ -> False
 
 instance HasField "isAttached" Placement Bool where
   getField = isJust . placementToAttached
@@ -99,6 +105,7 @@ placementToAttached = \case
   HiddenInHand _ -> Nothing
   OnTopOfDeck _ -> Nothing
   InTheShadows -> Nothing
+  OutOfGame _ -> Nothing
 
 isOutOfPlayPlacement :: Placement -> Bool
 isOutOfPlayPlacement = not . isInPlayPlacement
@@ -129,6 +136,7 @@ isInPlayPlacement = \case
   OnTopOfDeck _ -> False
   Near _ -> True
   InTheShadows -> True
+  OutOfGame _ -> False
 
 isHiddenPlacement :: Placement -> Bool
 isHiddenPlacement = \case

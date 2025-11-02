@@ -412,6 +412,9 @@ atMost n = AtMost (Static n)
 lessThan :: Int -> ValueMatcher
 lessThan n = LessThan (Static n)
 
+moreThan :: Int -> ValueMatcher
+moreThan n = GreaterThan (Static n)
+
 static :: Int -> ValueMatcher
 static n = EqualTo (Static n)
 

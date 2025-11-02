@@ -494,6 +494,12 @@ getDefeatedDetails = \case
   (_ : rest) -> getDefeatedDetails rest
   [] -> error "missing"
 
+getDoomAmount :: [Window] -> Int
+getDoomAmount = \case
+  ((windowType -> Window.PlacedDoom _ _ n) : _) -> n
+  (_ : rest) -> getDoomAmount rest
+  [] -> 0
+
 getEnemy :: [Window] -> EnemyId
 getEnemy = \case
   ((windowType -> Window.EnemySpawns eid _) : _) -> eid
@@ -504,6 +510,7 @@ getEnemy = \case
   ((windowType -> Window.EnemyAttacks details) : _) -> details.enemy
   ((windowType -> Window.WouldReady (EnemyTarget eid)) : _) -> eid
   ((windowType -> Window.WouldPlaceDoom _ (EnemyTarget eid) _) : _) -> eid
+  ((windowType -> Window.PlacedDoom _ (EnemyTarget eid) _) : _) -> eid
   (_ : rest) -> getEnemy rest
   _ -> error "invalid window"
 

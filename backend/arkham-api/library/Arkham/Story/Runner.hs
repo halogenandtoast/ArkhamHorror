@@ -22,7 +22,7 @@ import Arkham.Card.CardCode
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Scenario
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Token (subtractTokens)
+import Arkham.Token (subtractTokens, Token(Clue))
 import Arkham.Tracing
 import Control.Lens (non)
 
@@ -69,6 +69,8 @@ instance RunMessage StoryAttrs where
     PlaceTokens _source target tType n | isTarget attrs target -> do
       pure $ attrs & tokensL . at tType . non 0 %~ (+ n)
     MoveTokens s source _ tType n | isSource attrs source -> runMessage (RemoveTokens s (toTarget attrs) tType n) attrs
+    MoveTokens _s (InvestigatorSource _) target Clue _ | isTarget attrs target -> pure attrs
+    MoveTokens s _ target tType n | isTarget attrs target -> runMessage (PlaceTokens s (toTarget attrs) tType n) attrs
     RemoveTokens _ target tType n | isTarget attrs target -> do
       pure $ attrs & tokensL %~ subtractTokens tType n
     _ -> pure attrs

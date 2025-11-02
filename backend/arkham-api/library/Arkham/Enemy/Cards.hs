@@ -988,13 +988,13 @@ poltergeist =
 
 maniac :: CardDef
 maniac =
-  (enemy "03095" "Seer of the Sign" HastursGift 2)
+  (enemy "03095" "Maniac" HastursGift 2)
     { cdCardTraits = setFromList [Humanoid, Lunatic]
     }
 
 youngPsychopath :: CardDef
 youngPsychopath =
-  (enemy "03096" "Puppet of Hastur" HastursGift 2)
+  (enemy "03096" "Young Psychopath" HastursGift 2)
     { cdCardTraits = setFromList [Humanoid, Lunatic]
     }
 
@@ -1061,7 +1061,7 @@ asylumGorger =
 
 madPatient :: CardDef
 madPatient =
-  (enemy "03184" "Haunted Patient" TheUnspeakableOath 3)
+  (enemy "03184" "Mad Patient" TheUnspeakableOath 3)
     { cdCardTraits = setFromList [Humanoid, Lunatic]
     }
 

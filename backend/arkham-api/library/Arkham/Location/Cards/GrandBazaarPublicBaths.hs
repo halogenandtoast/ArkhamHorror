@@ -1,19 +1,21 @@
 module Arkham.Location.Cards.GrandBazaarPublicBaths (grandBazaarPublicBaths) where
 
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
 
 newtype GrandBazaarPublicBaths = GrandBazaarPublicBaths LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 grandBazaarPublicBaths :: LocationCard GrandBazaarPublicBaths
-grandBazaarPublicBaths = locationWith GrandBazaarPublicBaths Cards.grandBazaarPublicBaths 2 (PerPlayer 1) connectsToAdjacent
+grandBazaarPublicBaths =
+  locationWith GrandBazaarPublicBaths Cards.grandBazaarPublicBaths 2 (PerPlayer 1) connectsToAdjacent
 
-instance HasAbilities GrandBazaarPublicBaths where
-  getAbilities (GrandBazaarPublicBaths attrs) =
-    extendRevealed attrs []
+instance HasModifiersFor GrandBazaarPublicBaths where
+  getModifiersFor (GrandBazaarPublicBaths a) = do
+    modifySelect a (AssetControlledBy $ InvestigatorAt $ be a) [Blank]
 
 instance RunMessage GrandBazaarPublicBaths where
-  runMessage msg (GrandBazaarPublicBaths attrs) = runQueueT $ case msg of
-    _ -> GrandBazaarPublicBaths <$> liftRunMessage msg attrs
+  runMessage msg (GrandBazaarPublicBaths attrs) = GrandBazaarPublicBaths <$> runMessage msg attrs

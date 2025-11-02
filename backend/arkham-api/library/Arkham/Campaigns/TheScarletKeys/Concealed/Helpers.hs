@@ -103,3 +103,8 @@ shuffleConcealedAt location = do
   case known <> unknown of
     (x : _) -> push $ Msg.PlaceConcealedCard "00000" x.id (AtLocation $ asId location)
     [] -> pure ()
+
+distributeEvenlyBetween :: (ReverseQueue m, ToId a ConcealedCardId) => [a] -> [LocationId] -> m ()
+distributeEvenlyBetween concealed locations = do
+  lead  <- getLead
+  do1 $ forTargets locations (Msg.PlaceConcealedCards lead (map asId concealed) locations)

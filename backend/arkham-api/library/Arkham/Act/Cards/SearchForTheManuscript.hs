@@ -87,7 +87,7 @@ instance RunMessage SearchForTheManuscript where
 
       for_ (take 1 locations) (moveAllTo attrs)
 
-      push $ PlaceConcealedCards lead concealed locations
+      distributeEvenlyBetween concealed locations
       pure a
     RequestedChaosTokens (isSource attrs -> True) _ tkns -> do
       lead <- getLead

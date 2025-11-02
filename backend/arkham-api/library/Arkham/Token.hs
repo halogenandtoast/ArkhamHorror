@@ -38,6 +38,7 @@ data Token
   | Secret
   | Shard
   | Shell
+  | Study
   | Supply
   | Suspicion
   | Target

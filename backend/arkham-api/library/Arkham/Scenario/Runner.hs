@@ -1814,4 +1814,20 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
                   push $ PlaceConcealedCard iid card (AtLocation lid)
                   Lifted.forTargets original $ PlaceConcealedCards iid cards (deleteFirst lid lids)
     pure a
+  Do (ForTargets ls (PlaceConcealedCards iid (card : cards) lids)) -> do
+    let original = [l | LocationTarget l <- ls]
+    case lids of
+      []
+        | notNull original ->
+            Lifted.do1 $ Lifted.forTargets original $ PlaceConcealedCards iid (card : cards) original
+      [lid] -> do
+        push $ PlaceConcealedCard iid card (AtLocation lid)
+        Lifted.do1 $ Lifted.forTargets original $ PlaceConcealedCards iid cards (deleteFirst lid lids)
+      _ -> do
+        if length lids == length (card : cards)
+          then for_ (zip (card : cards) lids) \(c, lid) -> push $ PlaceConcealedCard iid c (AtLocation lid)
+          else chooseTargetM iid lids \lid -> do
+            push $ PlaceConcealedCard iid card (AtLocation lid)
+            Lifted.do1 $ Lifted.forTargets original $ PlaceConcealedCards iid cards (deleteFirst lid lids)
+    pure a
   _ -> pure a

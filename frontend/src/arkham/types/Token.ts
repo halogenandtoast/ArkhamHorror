@@ -32,6 +32,7 @@ export type Token
   | 'Secret'
   | 'Shard'
   | 'Shell'
+  | 'Study'
   | 'Supply'
   | 'Suspicion'
   | 'Target'
@@ -75,6 +76,7 @@ export const TokenType = {
   Secret: 'Secret',
   Shard: 'Shard',
   Shell: 'Shell',
+  Study: 'Study',
   Supply: 'Supply',
   Suspicion: 'Suspicion',
   Target: 'Target',
@@ -119,6 +121,7 @@ export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>
   JsonDecoder.literal('Secret'),
   JsonDecoder.literal('Shard'),
   JsonDecoder.literal('Shell'),
+  JsonDecoder.literal('Study'),
   JsonDecoder.literal('Supply'),
   JsonDecoder.literal('Suspicion'),
   JsonDecoder.literal('Target'),

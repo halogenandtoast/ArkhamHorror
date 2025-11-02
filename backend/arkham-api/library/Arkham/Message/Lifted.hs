@@ -955,6 +955,16 @@ moveTokensTo
   -> m ()
 moveTokensTo source from token n destination = moveTokens source from destination token n
 
+moveTokensFrom
+  :: (ReverseQueue m, Sourceable source, Sourceable from, Targetable destination)
+  => source
+  -> destination
+  -> Token
+  -> Int
+  -> from
+  -> m ()
+moveTokensFrom source destination token n from = moveTokens source from destination token n
+
 sourceTokens :: (HasCallStack, ReverseQueue m, Sourceable source, Show source) => source -> m Tokens
 sourceTokens source = case toSource source of
   EnemySource eid -> field EnemyTokens eid
@@ -2457,7 +2467,7 @@ takeActionAsIfTurn iid (toSource -> source) = do
     push $ PlayerWindow iid [] False
     for_ mactive $ push . SetActiveInvestigator
 
-ifCardExists :: (ReverseQueue m) => ExtendedCardMatcher -> QueueT Message m () -> m ()
+ifCardExists :: ReverseQueue m => ExtendedCardMatcher -> QueueT Message m () -> m ()
 ifCardExists matcher body = do
   msgs <- capture body
   push $ IfCardExists matcher msgs
@@ -2627,6 +2637,12 @@ doStep n msg = push $ Msg.DoStep n msg
 
 do_ :: ReverseQueue m => Message -> m ()
 do_ msg = push $ Msg.Do msg
+
+do1 :: ReverseQueue m => QueueT Message m () -> m ()
+do1 body =
+  capture body >>= \case
+    [msg] -> push $ Msg.Do msg
+    _ -> error "do1 expects exactly one message"
 
 twice :: ReverseQueue m => m () -> m ()
 twice = repeated 2

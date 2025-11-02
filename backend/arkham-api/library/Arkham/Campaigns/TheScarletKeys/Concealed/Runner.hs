@@ -13,6 +13,7 @@ import Arkham.Classes.RunMessage
 import Arkham.Constants
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Fight.Types
+import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Helpers.SkillTest.Lifted (beginSkillTestEdit, evade, fight)
 import Arkham.Id
 import Arkham.Location.Types (Field (..))
@@ -64,7 +65,13 @@ instance RunMessage ConcealedCard where
       case c.placement of
         AtLocation location -> do
           sid <- getRandom
-          let difficulty = LocationMaybeFieldCalculation location LocationShroud
+          mods <- getModifiers (toTarget c)
+          let
+            x = sum [n | EnemyFight n <- mods]
+            difficulty = 
+              if x > 0
+                then SumCalculation [Fixed x, LocationMaybeFieldCalculation location LocationShroud]
+                else LocationMaybeFieldCalculation location LocationShroud
           beginSkillTestEdit sid iid (c.ability AbilityAttack) c #combat difficulty \st ->
             st {skillTestAction = Just #fight}
         _ -> pure ()
@@ -80,7 +87,13 @@ instance RunMessage ConcealedCard where
       case c.placement of
         AtLocation location -> do
           sid <- getRandom
-          let difficulty = LocationMaybeFieldCalculation location LocationShroud
+          mods <- getModifiers (toTarget c)
+          let
+            x = sum [n | EnemyEvade n <- mods]
+            difficulty =
+              if x > 0
+                then SumCalculation [Fixed x, LocationMaybeFieldCalculation location LocationShroud]
+                else LocationMaybeFieldCalculation location LocationShroud
           beginSkillTestEdit sid iid (c.ability AbilityEvade) c #agility difficulty \st ->
             st {skillTestAction = Just #evade}
         _ -> pure ()

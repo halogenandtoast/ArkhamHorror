@@ -1,4 +1,7 @@
 {
+  "ui": {
+    "lastKnownLocation": "Last Known Location"
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the number of targets on this card.",

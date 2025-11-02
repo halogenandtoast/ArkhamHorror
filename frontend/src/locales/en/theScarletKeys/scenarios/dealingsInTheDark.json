@@ -1,4 +1,14 @@
 {
+  "ui": {
+    "entrance": "Entrance",
+    "eastGate": "East Gate"
+  },
+  "label": {
+    "agentsOfTheDark": {
+      "cluesUnveiled": "Place 1 clue (*from the token pool*) on Clues Unveiled",
+      "cultist": "Search the encounter deck and discard pile for a Cultist enemy and draw it"
+    }
+  },
   "intro": {
     "label": {
       "giveToEce": "“All right. We will find it and place it in your care.”",

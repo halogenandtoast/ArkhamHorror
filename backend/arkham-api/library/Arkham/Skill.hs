@@ -42,12 +42,16 @@ createSkill a iid sId =
 
 instance RunMessage Skill where
   runMessage msg x@(Skill a) = withSpan_ ("Skill[" <> unCardCode (toCardCode x) <> "].runMessage") do
-    case msg of
-      SkillTestEnds {} ->
-        if isInPlayPlacement $ attr (.placement) a
-          then pure $ Skill a
-          else Skill <$> runMessage msg a
-      _ -> Skill <$> runMessage msg a
+    if x.placement.outOfGame
+      then case msg of
+        ReturnLocationToGame _ -> Skill <$> runMessage msg a
+        _ -> pure x
+      else case msg of
+        SkillTestEnds {} ->
+          if isInPlayPlacement $ attr (.placement) a
+            then pure $ Skill a
+            else Skill <$> runMessage msg a
+        _ -> Skill <$> runMessage msg a
 
 lookupSkill :: CardCode -> InvestigatorId -> SkillId -> CardId -> Skill
 lookupSkill cardCode = case lookup cardCode allSkills of

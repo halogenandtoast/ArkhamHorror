@@ -1,4 +1,8 @@
 {
+  "ui": {
+    "ichtacasDestination": "Ichtaca's Destination",
+    "ichtacasPrey": "Ichtaca's Prey"
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-X. X is the highest number of doom on a _Cultist_ enemy.",

@@ -93,6 +93,7 @@ placementLocation = \case
   NextToAgenda -> pure Nothing
   Near _ -> pure Nothing
   InTheShadows -> pure Nothing
+  OutOfGame _ -> pure Nothing
 
 class Locateable a where
   getLocationOf :: (HasGame m, Tracing m) => a -> m (Maybe LocationId)

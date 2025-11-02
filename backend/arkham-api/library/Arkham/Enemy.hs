@@ -8,6 +8,7 @@ import Arkham.Enemy.Enemies
 import Arkham.Enemy.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Tracing
 
@@ -22,13 +23,18 @@ instance RunMessage Enemy where
     -- we must check that an enemy exists when grabbing modifiers
     -- as some messages are not masked when targetting cards in the
     -- discard.
-    allEnemyIds <- select AnyEnemy
-    modifiers' <-
-      if toId e `elem` allEnemyIds
-        then getModifiers (toTarget e)
-        else pure []
-    let msg' = if Blank `elem` modifiers' then Blanked msg else msg
-    Enemy <$> runMessage msg' x
+    case attr enemyPlacement e of
+      OutOfGame _ -> case msg of
+        ReturnLocationToGame {} -> Enemy <$> runMessage msg x
+        _ -> pure e
+      _ -> do
+        allEnemyIds <- select AnyEnemy
+        modifiers' <-
+          if toId e `elem` allEnemyIds
+            then getModifiers (toTarget e)
+            else pure []
+        let msg' = if Blank `elem` modifiers' then Blanked msg else msg
+        Enemy <$> runMessage msg' x
 
 lookupEnemy :: HasCallStack => CardCode -> EnemyId -> CardId -> Enemy
 lookupEnemy cardCode = case lookup cardCode allEnemies of

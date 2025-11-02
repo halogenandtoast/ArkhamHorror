@@ -36,6 +36,9 @@ data TargetMatcher
 instance IsLabel "any" TargetMatcher where
   fromLabel = AnyTarget
 
+instance IsLabel "enemy" TargetMatcher where
+  fromLabel = EnemyTargetMatches AnyEnemy
+
 instance Not TargetMatcher where
   not_ = NotTarget
 

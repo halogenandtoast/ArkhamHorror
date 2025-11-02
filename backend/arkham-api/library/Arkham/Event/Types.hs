@@ -299,7 +299,7 @@ instance HasAbilities Event where
   getAbilities (Event a) = getAbilities a
 
 instance HasModifiersFor Event where
-  getModifiersFor (Event a) = getModifiersFor a
+  getModifiersFor x@(Event a) = unless x.placement.outOfGame $ getModifiersFor a
 
 instance Entity Event where
   type EntityId Event = EventId

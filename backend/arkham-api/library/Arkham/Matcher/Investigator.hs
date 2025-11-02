@@ -6,6 +6,7 @@ module Arkham.Matcher.Investigator where
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Campaigns.TheForgottenAge.Supply
+import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Card.CardCode
 import Arkham.ChaosToken.Types
 import Arkham.ClassSymbol
@@ -186,6 +187,7 @@ data InvestigatorMatcher
   | InvestigatorCanRemoveCardsFromDeck
   | InvestigatorCanAddCardsToDeck
   | InvestigatorCanGainXp
+  | InvestigatorWithScarletKey ScarletKeyMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 investigatorWithRecord :: IsCampaignLogKey k => k -> InvestigatorMatcher

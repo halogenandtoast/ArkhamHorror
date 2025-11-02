@@ -423,8 +423,8 @@ instance HasAbilities Enemy where
 -- If the enemy has been defeated, we won't have removed it yet ourselves, but
 -- the printed effects should be disabled
 instance HasModifiersFor Enemy where
-  getModifiersFor (Enemy a) =
-    unless (attr enemyDefeated a) $ getModifiersFor a
+  getModifiersFor e@(Enemy a) =
+    unless (attr enemyDefeated a || e.placement.outOfGame) $ getModifiersFor a
 
 instance Entity Enemy where
   type EntityId Enemy = EnemyId

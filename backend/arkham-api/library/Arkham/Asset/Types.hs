@@ -107,7 +107,7 @@ instance HasAbilities Asset where
   getAbilities (Asset a) = getAbilities a
 
 instance HasModifiersFor Asset where
-  getModifiersFor (Asset a) = getModifiersFor a
+  getModifiersFor x@(Asset a) = unless x.placement.outOfGame $ getModifiersFor a
 
 instance Entity Asset where
   type EntityId Asset = AssetId

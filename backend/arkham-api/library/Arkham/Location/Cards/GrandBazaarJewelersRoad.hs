@@ -8,7 +8,7 @@ newtype GrandBazaarJewelersRoad = GrandBazaarJewelersRoad LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grandBazaarJewelersRoad :: LocationCard GrandBazaarJewelersRoad
-grandBazaarJewelersRoad = location GrandBazaarJewelersRoad Cards.grandBazaarJewelersRoad 3 (Static 2)
+grandBazaarJewelersRoad = locationWith GrandBazaarJewelersRoad Cards.grandBazaarJewelersRoad 3 (Static 2) connectsToAdjacent
 
 instance HasAbilities GrandBazaarJewelersRoad where
   getAbilities (GrandBazaarJewelersRoad attrs) =

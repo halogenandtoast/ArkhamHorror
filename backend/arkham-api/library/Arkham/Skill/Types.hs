@@ -249,6 +249,7 @@ instance HasAbilities Skill where
 instance HasModifiersFor Skill where
   getModifiersFor s@(Skill a) = case s.placement of
     OutOfPlay _ -> pure ()
+    OutOfGame _ -> pure ()
     _ -> getModifiersFor a
 
 instance Entity Skill where

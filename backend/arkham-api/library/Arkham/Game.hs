@@ -537,7 +537,9 @@ instance Tracing Identity where
 instance ToJSON gid => ToJSON (PublicGame gid) where
   toEncoding (FailedToLoadGame e) = pairs ("tag" .= String "FailedToLoadGame" <> "error" .= toJSON e)
   toEncoding (PublicGame gid name glog g@Game {..}) = flip runReader g do
-    locations <- traverse withLocationConnectionData =<< traverse withModifiers (gameLocations g)
+    locations <-
+      traverse withLocationConnectionData
+        =<< traverse withModifiers (filterMap (attr (not . locationOutOfGame)) $ gameLocations g)
     investigators <-
       traverse withInvestigatorConnectionData
         =<< traverse (withModifiers . WithDeckSize) (gameInvestigators g)
@@ -630,7 +632,9 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
           $ Map.keys (campaignDecks attrs)
   toJSON (FailedToLoadGame e) = object ["tag" .= String "FailedToLoadGame", "error" .= toJSON e]
   toJSON (PublicGame gid name glog g@Game {..}) = flip runReader g do
-    locations <- traverse withLocationConnectionData =<< traverse withModifiers (gameLocations g)
+    locations <-
+      traverse withLocationConnectionData
+        =<< traverse withModifiers (filterMap (attr (not . locationOutOfGame)) $ gameLocations g)
     investigators <-
       traverse withInvestigatorConnectionData
         =<< traverse (withModifiers . WithDeckSize) (gameInvestigators g)
@@ -956,6 +960,8 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       selectAny $ assetMatcher <> assetControlledBy (toId i)
     HasMatchingTreachery treacheryMatcher -> flip runMatchesM as $ \i ->
       selectAny (treacheryMatcher <> TreacheryInThreatAreaOf (InvestigatorWithId $ toId i))
+    InvestigatorWithScarletKey sm -> do
+      as & runMatchesM \i -> selectAny (ScarletKeyWithPlacement (AttachedToInvestigator $ toId i) <> sm)
     InvestigatorWithTreacheryInHand treacheryMatcher -> flip runMatchesM as $ \i ->
       selectAny (treacheryMatcher <> TreacheryInHandOf (InvestigatorWithId $ toId i))
     HasMatchingEvent eventMatcher -> flip runMatchesM as $ \i ->
@@ -1469,7 +1475,9 @@ getRemainingActsMatching matcher = do
 
 getTreacheriesMatching :: (HasCallStack, HasGame m, Tracing m) => TreacheryMatcher -> m [Treachery]
 getTreacheriesMatching matcher = do
-  allGameTreacheries <- toList . view (entitiesL . treacheriesL) <$> getGame
+  let isOutOfGame t = t.placement.outOfGame
+  allGameTreacheries <-
+    filter (not . isOutOfGame) . toList . view (entitiesL . treacheriesL) <$> getGame
   outOfPlayTreacheries <- case matcher of
     IncludeOutOfPlayTreachery _ -> toList . view (actionRemovedEntitiesL . treacheriesL) <$> getGame
     _ -> pure []
@@ -1801,6 +1809,8 @@ replaceMatcherSources ability = case abilitySource ability of
 
 getLocationsMatching
   :: forall m. (HasCallStack, HasGame m, Tracing m) => LocationMatcher -> m [Location]
+getLocationsMatching OutOfGameLocation = do
+  filter (attr locationOutOfGame) . toList . view (entitiesL . locationsL) <$> getGame
 getLocationsMatching lmatcher = do
   g <- getGame
   let allowEmpty = gameAllowEmptySpaces g
@@ -1809,11 +1819,17 @@ getLocationsMatching lmatcher = do
       IncludeEmptySpace inner -> (True, inner, const True)
       _ -> (allowEmpty, lmatcher, if allowEmpty then const True else (/= "xempty") . toCardCode)
 
-  ls <- filter isEmptySpaceFilter . toList . view (entitiesL . locationsL) <$> getGame
+  ls <-
+    filter (not . attr locationOutOfGame)
+      . filter isEmptySpaceFilter
+      . toList
+      . view (entitiesL . locationsL)
+      <$> getGame
   flip runReaderT (g {gameAllowEmptySpaces = doAllowEmpty}) $ go ls lmatcher'
  where
   go [] = const (pure [])
   go ls = \case
+    OutOfGameLocation -> pure [] -- Handled above
     ThatLocation -> error "ThatLocation must be resolved in criteria"
     IncludeEmptySpace inner -> go ls inner
     LocationWithCardId cardId -> pure $ filter ((== cardId) . toCardId) ls
@@ -2600,7 +2616,13 @@ getAssetsMatching matcher = do
     ignoreVisibility = case matcher of
       IgnoreVisibility _ -> const True
       _ -> attr assetVisible
-  assets <- filter ignoreVisibility . toList . view (entitiesL . assetsL) <$> getGame
+  let isOutOfGame a = a.placement.outOfGame
+  assets <-
+    filter (not . isOutOfGame)
+      . filter ignoreVisibility
+      . toList
+      . view (entitiesL . assetsL)
+      <$> getGame
   filterMatcher assets matcher
  where
   canBeDiscarded =
@@ -2916,7 +2938,8 @@ getEventsMatching matcher = case matcher of
     removedEvents <- toList . view (actionRemovedEntitiesL . eventsL) <$> getGame
     filterMatcher (inPlay <> removedEvents) inner'
   other -> do
-    events <- toList . view (entitiesL . eventsL) <$> getGame
+    let isOutOfGame a = a.placement.outOfGame
+    events <- filter (not . isOutOfGame) . toList . view (entitiesL . eventsL) <$> getGame
     filterMatcher events other
  where
   filterMatcher as = \case
@@ -2993,7 +3016,8 @@ getEventsMatching matcher = case matcher of
 
 getSkillsMatching :: (HasGame m, Tracing m) => SkillMatcher -> m [Skill]
 getSkillsMatching matcher = do
-  skills <- toList . view (entitiesL . skillsL) <$> getGame
+  let isOutOfGame a = a.placement.outOfGame
+  skills <- filter (not . isOutOfGame) . toList . view (entitiesL . skillsL) <$> getGame
   filterMatcher skills matcher
  where
   filterMatcher as = \case
@@ -3053,10 +3077,17 @@ getScarletKeysMatching matcher = do
   filterMatcher as = \case
     ScarletKeyMatchAll ms -> foldM filterMatcher as ms
     ScarletKeyWithPlacement placement -> pure $ filter ((== placement) . attr keyPlacement) as
+    ScarletKeyIs cCode -> pure $ filter ((== cCode) . toCardCode) as
     ScarletKeyAny -> pure as
     ScarletKeyWithBearer im -> do
       iids <- selectMap toTarget im
       pure $ filter ((`elem` iids) . attr keyBearer) as
+    ScarletKeyWithInvestigator im -> do
+      placements <- selectMap AttachedToInvestigator im
+      pure $ filter ((`elem` placements) . attr keyPlacement) as
+    ScarletKeyWithEnemy em -> do
+      placements <- selectMap AttachedToEnemy em
+      pure $ filter ((`elem` placements) . attr keyPlacement) as
     ScarletKeyWithEnemyBearer em -> do
       eids <- selectMap toTarget em
       pure $ filter ((`elem` eids) . attr keyBearer) as
@@ -3104,10 +3135,12 @@ getEnemiesMatching matcher' = do
       allDefeatedEnemies <- map wrapEnemy . toList <$> scenarioField ScenarioDefeatedEnemies
       enemyMatcherFilter allDefeatedEnemies matcher
     IncludeOmnipotent matcher -> do
-      allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
+      let isOutOfGame e = e.placement.outOfGame
+      allGameEnemies <- filter (not . isOutOfGame) . toList . view (entitiesL . enemiesL) <$> getGame
       enemyMatcherFilter allGameEnemies matcher
     matcher -> do
-      allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
+      let isOutOfGame e = e.placement.outOfGame
+      allGameEnemies <- filter (not . isOutOfGame) . toList . view (entitiesL . enemiesL) <$> getGame
       enemyMatcherFilter allGameEnemies (matcher <> EnemyWithoutModifier Omnipotent)
 
 enemyMatcherFilter :: (HasCallStack, HasGame m, Tracing m) => [Enemy] -> EnemyMatcher -> m [Enemy]
@@ -3278,6 +3311,8 @@ enemyMatcherFilter es matcher' = do
           case placement of
             AttachedToEnemy eid' -> eid' == enemy.id
             _ -> False
+    EnemyWithScarletKey sm -> do
+      es & filterM \enemy -> selectAny (ScarletKeyWithPlacement (AttachedToEnemy enemy.id) <> sm)
     EnemyWithAttachedTreachery treacheryMatcher -> do
       treacheries <- selectWithField TreacheryPlacement treacheryMatcher
       pure $ flip filter es \enemy -> do
@@ -3423,6 +3458,10 @@ enemyMatcherFilter es matcher' = do
     EnemyWithMostDoom enemyMatcher -> do
       matches' <- getEnemiesMatching enemyMatcher
       mosts <- maxes <$> forToSnd matches' (field EnemyDoom . toId)
+      pure $ filter (`elem` mosts) es
+    EnemyWithMostClues enemyMatcher -> do
+      matches' <- getEnemiesMatching enemyMatcher
+      mosts <- maxes <$> forToSnd matches' (field EnemyClues . toId)
       pure $ filter (`elem` mosts) es
     EnemyWithDamage gameValueMatcher -> flip filterM es \enemy -> do
       damage <- field EnemyDamage (toId enemy)
@@ -4956,6 +4995,7 @@ instance HasModifiersFor Entities where
     traverse_ getModifiersFor (e ^. skillsL)
     traverse_ getModifiersFor (e ^. treacheriesL)
     traverse_ getModifiersFor (e ^. investigatorsL)
+    traverse_ getModifiersFor (e ^. storiesL)
 
 -- the results will have the initial location at 0, we need to drop
 -- this otherwise this will only ever return the current location

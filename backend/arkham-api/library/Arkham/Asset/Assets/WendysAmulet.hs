@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Asset.Assets.WendysAmulet (wendysAmulet) where
 
 import Arkham.Asset.Cards qualified as Cards

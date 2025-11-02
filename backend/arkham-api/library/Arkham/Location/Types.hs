@@ -327,6 +327,7 @@ locationWith f def shroud' revealClues g =
             , locationPosition = Nothing
             , locationBeingRemoved = False
             , locationConcealedCards = []
+            , locationOutOfGame = False
             }
     }
 

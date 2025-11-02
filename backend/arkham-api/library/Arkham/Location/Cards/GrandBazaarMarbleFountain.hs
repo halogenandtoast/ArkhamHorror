@@ -8,7 +8,7 @@ newtype GrandBazaarMarbleFountain = GrandBazaarMarbleFountain LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grandBazaarMarbleFountain :: LocationCard GrandBazaarMarbleFountain
-grandBazaarMarbleFountain = location GrandBazaarMarbleFountain Cards.grandBazaarMarbleFountain 5 (Static 3)
+grandBazaarMarbleFountain = locationWith GrandBazaarMarbleFountain Cards.grandBazaarMarbleFountain 5 (Static 3) connectsToAdjacent
 
 instance HasAbilities GrandBazaarMarbleFountain where
   getAbilities (GrandBazaarMarbleFountain attrs) =

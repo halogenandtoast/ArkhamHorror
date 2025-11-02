@@ -8,7 +8,7 @@ newtype HagiaSophia = HagiaSophia LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hagiaSophia :: LocationCard HagiaSophia
-hagiaSophia = symbolLabel $ location HagiaSophia Cards.hagiaSophia 2 (PerPlayer 1)
+hagiaSophia = symbolLabel $ locationWith HagiaSophia Cards.hagiaSophia 2 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities HagiaSophia where
   getAbilities (HagiaSophia attrs) =

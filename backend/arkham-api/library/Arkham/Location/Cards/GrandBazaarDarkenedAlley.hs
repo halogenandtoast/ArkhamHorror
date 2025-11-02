@@ -8,7 +8,7 @@ newtype GrandBazaarDarkenedAlley = GrandBazaarDarkenedAlley LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grandBazaarDarkenedAlley :: LocationCard GrandBazaarDarkenedAlley
-grandBazaarDarkenedAlley = location GrandBazaarDarkenedAlley Cards.grandBazaarDarkenedAlley 2 (Static 1)
+grandBazaarDarkenedAlley = locationWith GrandBazaarDarkenedAlley Cards.grandBazaarDarkenedAlley 2 (Static 1) connectsToAdjacent
 
 instance HasAbilities GrandBazaarDarkenedAlley where
   getAbilities (GrandBazaarDarkenedAlley attrs) =

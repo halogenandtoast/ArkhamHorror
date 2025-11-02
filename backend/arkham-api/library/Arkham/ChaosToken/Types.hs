@@ -173,6 +173,41 @@ instance IsLabel "frost" ChaosTokenFace where
 allChaosTokenFaces :: [ChaosTokenFace]
 allChaosTokenFaces = [minBound ..]
 
+instance HasField "isNumber" ChaosTokenFace Bool where
+  getField = isNumberChaosToken
+
+instance HasField "isSymbol" ChaosTokenFace Bool where
+  getField = isSymbolChaosToken
+
+instance HasField "isEven" ChaosTokenFace Bool where
+  getField = isEvenChaosToken
+
+instance HasField "isOdd" ChaosTokenFace Bool where
+  getField = isOddChaosToken
+
+instance HasField "isNonNegative" ChaosTokenFace Bool where
+  getField = isNonNegativeChaosToken
+
+instance HasField "isNegative" ChaosTokenFace Bool where
+  getField = isNegativeChaosToken
+
+instance HasField "faceValue" ChaosTokenFace Int where
+  getField = chaosTokenToFaceValue
+
+instance HasField "label" ChaosTokenFace Text where
+  getField = chaosTokenLabel
+
+{- FOURMOLU_DISABLE -}
+instance HasField "isStandard" ChaosTokenFace Bool where
+  getField = (`elem` standardTokens)
+    where
+      standardTokens =
+        [ PlusOne, Zero, MinusOne, MinusTwo, MinusThree, MinusFour
+        , MinusFive, MinusSix, MinusSeven, MinusEight
+        , Skull, Cultist, Tablet, ElderThing, AutoFail, ElderSign
+        ]
+{- FOURMOLU_ENABLE -}
+
 isNumberChaosToken :: ChaosTokenFace -> Bool
 isNumberChaosToken = \case
   PlusOne -> True

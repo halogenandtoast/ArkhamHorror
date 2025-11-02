@@ -127,6 +127,10 @@ getModifiedRevealClueCountWithMods mods attrs =
 
 instance RunMessage LocationAttrs where
   runMessage msg a@LocationAttrs {..} = runQueueT $ case msg of
+    SetLocationOutOfGame lid | lid == locationId -> do
+      pure $ a & outOfGameL .~ True
+    ReturnLocationToGame lid | lid == locationId -> do
+      pure $ a & outOfGameL .~ False
     UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> do
       push $ Do msg
       pure a

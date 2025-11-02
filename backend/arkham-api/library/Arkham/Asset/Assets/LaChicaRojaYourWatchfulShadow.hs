@@ -9,10 +9,12 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
 import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelect)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Modifier (UIModifier (..))
+import Arkham.Scenarios.SanguineShadows.Helpers
 import Arkham.Spawn
 
 newtype LaChicaRojaYourWatchfulShadow = LaChicaRojaYourWatchfulShadow AssetAttrs
@@ -41,8 +43,8 @@ newtype LaChicaRojaYourWatchfulShadowEffect = LaChicaRojaYourWatchfulShadowEffec
 
 instance HasModifiersFor LaChicaRojaYourWatchfulShadowEffect where
   getModifiersFor (LaChicaRojaYourWatchfulShadowEffect a) = do
-    for_ a.metaTarget.location \lid -> do
-      modified_ a lid [UIModifier $ ImportantToScenario "lastKnownLocation"]
+    for_ a.metaTarget.location \lid -> scenarioI18n $ do
+      modified_ a lid [UIModifier $ ImportantToScenario $ ikey' "ui.lastKnownLocation"]
 
       for_ a.target.investigator \iid -> do
         modifySelect a AnyEnemy [ChangeSpawnWith iid $ SpawnAtLocation lid]

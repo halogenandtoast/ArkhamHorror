@@ -169,6 +169,7 @@ data LocationMatcher
   | LocationInColumnOf LocationMatcher
   | LocationInPosition Pos
   | LocationWhenCriteria Criterion
+  | OutOfGameLocation
   | -- | Must be replaced
     ThatLocation
   deriving stock (Show, Eq, Ord, Data)

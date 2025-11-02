@@ -162,4 +162,14 @@ instance RunMessage ConcealedCard where
     UseAbility _ ab _ | isSource c ab.source || isProxySource c ab.source -> do
       do_ msg
       pure c
+    SetLocationOutOfGame lid -> do
+      case c.placement of
+        p@(AtLocation lid') | lid' == lid -> pure $ c {concealedCardPlacement = OutOfGame p}
+        p@(AttachedToLocation lid') | lid' == lid -> pure $ c {concealedCardPlacement = OutOfGame p}
+        _ -> pure c
+    ReturnLocationToGame lid -> do
+      case c.placement of
+        OutOfGame p@(AtLocation lid') | lid' == lid -> pure $ c {concealedCardPlacement = p}
+        OutOfGame p@(AttachedToLocation lid') | lid' == lid -> pure $ c {concealedCardPlacement = p}
+        _ -> pure c
     _ -> pure c

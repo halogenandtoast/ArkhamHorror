@@ -24,7 +24,7 @@ instance RunMessage EliyahAshevakDogHandler where
   runMessage msg a@(EliyahAshevakDogHandler attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #agility 6)
+      skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #agility 5)
       chooseEvadeEnemy sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTest iid (isSource attrs -> True) -> do

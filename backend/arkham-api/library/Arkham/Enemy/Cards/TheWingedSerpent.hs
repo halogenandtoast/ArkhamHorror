@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
-import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Token (Token (Pillar))
 

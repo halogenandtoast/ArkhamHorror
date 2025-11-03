@@ -29,8 +29,9 @@ instance RunMessage FlipTheScript where
       playerClueCount <- field InvestigatorClues iid
       chooseOrRunOneM iid $ withI18n do
         countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
-        when (playerClueCount > 0) do
-          countVar 1 $ labeled' "placeCluesOnYourLocation" $ placeCluesOnLocation iid attrs n
+        countVar 1
+          $ labeledValidate' (playerClueCount > 0) "placeCluesOnYourLocation"
+          $ placeCluesOnLocation iid attrs 1
       doStep (n - 1) msg'
       pure t
     _ -> FlipTheScript <$> liftRunMessage msg attrs

@@ -1880,15 +1880,18 @@ getLocationsMatching lmatcher = do
           let lowestShroud = getMin $ foldMap (Min . snd) ls''
           filterM (maybe (pure False) (\v -> (< lowestShroud) <$> getGameValue v) . attr locationShroud) ls
     LocationWithDiscoverableCluesBy whoMatcher -> do
-      go
-        ls
-        ( oneOf
-            [ LocationWithAnyClues
-            , LocationWithConcealedCard <> LocationWithoutModifier (CampaignModifier "noExposeAt")
+      ls & filterM \l -> do
+        selectAny
+          $ whoMatcher
+          <> oneOf
+            [ InvestigatorCanDiscoverCluesAt (LocationWithId l.id <> LocationWithAnyClues)
+            , InvestigatorCanDiscoverCluesAt
+                ( LocationWithId l.id
+                    <> LocationWithConcealedCard
+                    <> LocationWithoutModifier (CampaignModifier "noExposeAt")
+                )
+                <> InvestigatorWithoutModifier (CampaignModifier "cannotExpose")
             ]
-        )
-        >>= filterM \l -> do
-          selectAny $ whoMatcher <> InvestigatorCanDiscoverCluesAt (LocationWithId l.id)
     LocationWithConcealedCard ->
       ls & filterM \l -> do
         concealedCards <- field LocationConcealedCards (toId l)

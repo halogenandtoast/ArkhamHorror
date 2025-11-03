@@ -18,7 +18,7 @@ instance HasAbilities Galata where
   getAbilities (Galata a) =
     extendRevealed1 a
       $ groupLimit PerRound
-      $ restricted a 1 (Here <> exists ConcealedCardAny)
+      $ restricted a 1 (Here <> exists ConcealedCardAny <> youExist InvestigatorCanExpose)
       $ FastAbility' (ResourceCost 3) [#parley]
 
 instance RunMessage Galata where

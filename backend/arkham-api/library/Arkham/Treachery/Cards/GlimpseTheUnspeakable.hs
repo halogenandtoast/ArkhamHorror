@@ -20,6 +20,6 @@ instance RunMessage GlimpseTheUnspeakable where
       when (null cards) $ gainSurge attrs
       for_ cards \card -> do
         cardResolutionModifier card attrs card.id ShuffleIntoAnyDeckInsteadOfDiscard
-        drawCardFrom iid card TekeliliDeck
+        drawCardFrom iid TekeliliDeck card
       pure t
     _ -> GlimpseTheUnspeakable <$> liftRunMessage msg attrs

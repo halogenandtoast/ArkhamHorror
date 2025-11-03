@@ -22,6 +22,6 @@ instance RunMessage Overzealous where
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       for_ drewCards.cards \card -> do
         cardResolutionModifier card attrs card (AddKeyword Keyword.Surge)
-        drawCardFrom iid (toCard card) EncounterDeck
+        drawCardFrom iid EncounterDeck (toCard card)
       pure t
     _ -> Overzealous <$> liftRunMessage msg attrs

@@ -24,6 +24,6 @@ instance RunMessage CovenInitiate where
       deckEmpty <- scenarioFieldMap ScenarioEncounterDeck null
       when deckEmpty $ do
         mHexCard <- findTopOfDiscard (CardWithTrait Hex)
-        for_ mHexCard \hex -> drawCardFrom iid hex Deck.EncounterDiscard
+        for_ mHexCard $ drawCardFrom iid Deck.EncounterDiscard
       pure e
     _ -> CovenInitiate <$> liftRunMessage msg attrs

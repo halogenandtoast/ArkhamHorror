@@ -2,6 +2,7 @@ module Arkham.Location.Cards.DeepDrifts (deepDrifts) where
 
 import Arkham.Ability
 import Arkham.Card
+import Arkham.Deck
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -17,10 +18,7 @@ deepDrifts = locationWith DeepDrifts Cards.deepDrifts 1 (PerPlayer 3) (connectsT
 
 instance HasAbilities DeepDrifts where
   getAbilities (DeepDrifts a) =
-    extendRevealed1 a
-      $ mkAbility a 1
-      $ forced
-      $ Moves #after You AnySource (below a) (be a)
+    extendRevealed1 a $ mkAbility a 1 $ forced $ Moves #after You AnySource (below a) (be a)
 
 instance HasModifiersFor DeepDrifts where
   getModifiersFor (DeepDrifts l) =
@@ -33,6 +31,9 @@ instance RunMessage DeepDrifts where
       pure l
     DiscardedTopOfDeck iid cards (isAbilitySource attrs 1 -> True) (isTarget attrs -> True) -> do
       let weaknesses = filterCards WeaknessCard cards
-      focusCards weaknesses $ chooseOneAtATimeM iid $ targets weaknesses $ drawCard iid
+      focusCards weaknesses
+        $ chooseOneAtATimeM iid
+        $ targets weaknesses
+        $ drawCardFrom iid (InvestigatorDiscard iid)
       pure l
     _ -> DeepDrifts <$> liftRunMessage msg attrs

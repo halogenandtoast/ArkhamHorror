@@ -42,6 +42,6 @@ instance RunMessage TheGallowsSpectral_169 where
       cards <- scenarioFieldMap ScenarioEncounterDeck (take 3 . unDeck)
       let (witches, rest) = partition (member Witch . toTraits) cards
       addToEncounterDiscard rest
-      for_ witches \witch -> drawCardFrom iid witch Deck.EncounterDeck
+      for_ witches $ drawCardFrom iid Deck.EncounterDeck
       pure l
     _ -> TheGallowsSpectral_169 <$> liftRunMessage msg attrs

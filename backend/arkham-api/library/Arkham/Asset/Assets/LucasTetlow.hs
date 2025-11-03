@@ -35,7 +35,7 @@ instance RunMessage LucasTetlow where
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       chooseTargetM iid cards \card -> do
-        drawCardFrom iid card iid
+        drawCardFrom iid iid card
         let traits = toTraits card
         when (Relic `member` traits) $ gainResources iid (attrs.ability 1) 2
         when (Tome `member` traits) $ do

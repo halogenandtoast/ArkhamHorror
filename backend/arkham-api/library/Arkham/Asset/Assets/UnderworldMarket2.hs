@@ -60,7 +60,7 @@ instance RunMessage UnderworldMarket2 where
                   for_ (eachWithRest xs) \(card, cs) -> do
                     targeting card do
                       unfocusCards
-                      drawCardFrom iid card (Deck.InvestigatorDeckByKey iid DeckKey.UnderworldMarketDeck)
+                      drawCardFrom iid (Deck.InvestigatorDeckByKey iid DeckKey.UnderworldMarketDeck) card
                       focusCards cs do
                         chooseOrRunOneAtATimeM iid $ targets cs $ handleTarget iid (attrs.ability 2)
                         unfocusCards

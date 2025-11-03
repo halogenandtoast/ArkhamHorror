@@ -6,10 +6,12 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
+import Arkham.Campaigns.TheScarletKeys.Meta
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (allInvestigators)
@@ -20,6 +22,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Story
 import Arkham.Placement
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.DealingsInTheDark.Helpers
 import Arkham.Story.Cards qualified as Stories
@@ -148,5 +151,62 @@ instance RunMessage DealingsInTheDark where
       shuffleEncounterDiscardBackIn
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just ec) -> do
       drawCard iid ec
+      pure s
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> do
+          n <- getCurrentActStep
+          if n == 1 || n == 2
+            then do
+              markTime 1
+              setBearer Keys.theTwistedAntiprism $ keyWithEnemy Enemies.theRedGlovedManShroudedInMystery
+              resolutionWithXp "noResolution" $ allGainXp' attrs
+              endOfScenario
+            else do
+              resolution "noResolutionAct3"
+              push R6
+        Resolution 1 -> do
+          theCellRefusedEcesOffer <- getHasRecord TheCellRefusedEcesOffer
+          resolutionFlavor do
+            setTitle "resolution1.title"
+            p "resolution1.body"
+            ul do
+              li.nested "checkCampaignLog" do
+                li.validate theCellRefusedEcesOffer "resolution1.theCellRefusedEcesOffer"
+                li.validate (not theCellRefusedEcesOffer) "resolution1.theCellIsWorkingWithEce"
+          push $ if theCellRefusedEcesOffer then R2 else R3
+        Resolution 2 -> do
+          markTime 2
+          resolutionWithXp "resolution2" $ allGainXp' attrs
+          chooseBearer Keys.theTwistedAntiprism
+          endOfScenario
+        Resolution 3 -> do
+          working <- getHasRecord TheCellIsWorkingWithEce
+          resolutionFlavor do
+            setTitle "resolution3.title"
+            p "resolution3.body"
+            ul do
+              li.nested "checkCampaignLog" do
+                li.validate working "resolution3.theCellIsWorkingWithEce"
+                li.validate (not working) "resolution3.theCellIsDeceivingEce"
+          push $ if working then R4 else R5
+        Resolution 4 -> do
+          markTime 3
+          record EceTrustsTheCell
+          setBearer Keys.theTwistedAntiprism $ keyWithEnemy Assets.eceSahinTheVermillionVeiledLady
+          resolutionWithXp "resolution4" $ allGainXp' attrs
+          endOfScenario
+        Resolution 5 -> do
+          markTime 3
+          record EceDoesNotTrustTheCell
+          resolutionWithXp "resolution5" $ allGainXp' attrs
+          chooseBearer Keys.theTwistedAntiprism
+          endOfScenario
+        Resolution 6 -> do
+          markTime 2
+          setBearer Keys.theTwistedAntiprism $ keyWithEnemy Enemies.theRedGlovedManShroudedInMystery
+          resolutionWithXp "resolution6" $ allGainXp' attrs
+          endOfScenario
+        _ -> error "Unknown resolution for Dead Heat"
       pure s
     _ -> DealingsInTheDark <$> liftRunMessage msg attrs

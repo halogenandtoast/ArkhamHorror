@@ -222,6 +222,14 @@ fromGathered matcher = do
   removeCards cards
   pure cards
 
+fromGathered1 :: (HasCallStack, ReverseQueue m) => CardDef -> ScenarioBuilderT m Card
+fromGathered1 def = do
+  amongGathered (cardIs def) >>= \case
+    [card] -> do
+      removeCards [card]
+      pure card
+    _ -> error "expected exactly one matching card in gathered cards"
+
 removeCards :: Monad m => [Card] -> ScenarioBuilderT m ()
 removeCards xs = do
   attrsL . encounterDeckL %= filter ((`notElem` xs) . toCard)

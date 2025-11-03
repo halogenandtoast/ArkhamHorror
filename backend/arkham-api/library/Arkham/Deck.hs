@@ -2,13 +2,13 @@
 
 module Arkham.Deck where
 
-import Arkham.Prelude
-
 import Arkham.Id
 import Arkham.Investigator.Deck
 import Arkham.Investigator.Deck qualified as Key
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Data.Aeson.TH
+import GHC.OverloadedLabels
 
 deckSignifierToScenarioDeckKey :: DeckSignifier -> Maybe ScenarioDeckKey
 deckSignifierToScenarioDeckKey (ScenarioDeckByKey key) = Just key
@@ -24,6 +24,15 @@ data DeckSignifier
   | EncounterDeckByKey ScenarioEncounterDeckKey
   | NoDeck
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "none" DeckSignifier where
+  fromLabel = NoDeck
+
+instance IsLabel "encounterDeck" DeckSignifier where
+  fromLabel = EncounterDeck
+
+instance IsLabel "encounterDiscard" DeckSignifier where
+  fromLabel = EncounterDiscard
 
 class IsDeck a where
   toDeck :: a -> DeckSignifier

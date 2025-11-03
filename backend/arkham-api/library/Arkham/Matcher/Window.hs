@@ -34,12 +34,51 @@ import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.SkillTest.Step
 import Arkham.Timing
+import Control.Monad.Fail
 import Data.Aeson.TH
+import Data.Aeson.Types
 import GHC.OverloadedLabels
 
-data MovesVia = MovedViaHunter | MovedViaOther | MovedViaAny
+data MovesVia = MovedViaHunter | MovedViaOther | MovedViaPatrol
   deriving stock (Show, Eq, Ord, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass ToJSON
+
+instance FromJSON MovesVia where
+  parseJSON = withText "MovesVia" \case
+    "MovedViaHunter" -> pure MovedViaHunter
+    "MovedViaOther" -> pure MovedViaOther
+    "MovedViaPatrol" -> pure MovedViaPatrol
+    _ -> pure MovedViaOther
+
+data MovesViaMatcher = MovedVia MovesVia | MovedViaOneOf [MovesViaMatcher] | MovedViaAny
+  deriving stock (Show, Eq, Ord, Generic, Data)
+  deriving anyclass ToJSON
+
+instance FromJSON MovesViaMatcher where
+  parseJSON obj@(Object _) = flip (withObject "MovesViaMatcher") obj \o -> do
+    t :: Text <- o .: "tag"
+    case t of
+      "MovedViaAny" -> pure MovedViaAny
+      "MovedVia" -> MovedVia <$> o .: "contents"
+      "MovedViaOneOf" -> MovedViaOneOf <$> o .: "contents"
+      _ -> fail $ "Could not parse MovesViaMatcher from: " <> show o
+  parseJSON s@(String _) = flip (withText "MovesViaMatcher") s \case
+    "MovedViaHunter" -> pure $ MovedVia MovedViaHunter
+    "MovedViaOther" -> pure $ MovedVia MovedViaOther
+    "MovedViaAny" -> pure MovedViaAny
+    _ -> fail $ "Could not parse MovesViaMatcher from: " <> show s
+  parseJSON invalid = typeMismatch "MovesViaMatcher" invalid
+
+instance IsLabel "hunter" MovesViaMatcher where
+  fromLabel = MovedVia MovedViaHunter
+
+instance IsLabel "patrol" MovesViaMatcher where
+  fromLabel = MovedVia MovedViaPatrol
+
+movesViaMatches :: MovesVia -> MovesViaMatcher -> Bool
+movesViaMatches _ MovedViaAny = True
+movesViaMatches mv (MovedVia mvMatcher) = mv == mvMatcher
+movesViaMatches mv (MovedViaOneOf matchers) = any (movesViaMatches mv) matchers
 
 type FromWhere = Where
 type ToWhere = Where
@@ -177,7 +216,7 @@ data WindowMatcher
   | EnemySpawns Timing Where EnemyMatcher
   | EnemyPlaced Timing Placement EnemyMatcher
   | EnemyEntersPlay Timing EnemyMatcher
-  | EnemyMovedTo Timing Where MovesVia EnemyMatcher
+  | EnemyMovedTo Timing Where MovesViaMatcher EnemyMatcher
   | EnemyMoves Timing Where EnemyMatcher
   | FastPlayerWindow
   | TurnBegins Timing Who

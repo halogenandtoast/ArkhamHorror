@@ -236,7 +236,7 @@ labeled' label action = unterminated do
   msgs <- lift $ capture action
   tell [Label ("$" <> ikey ("label." <> label)) msgs]
 
-info' :: (ReverseQueue m) => FlavorTextBuilder () -> ChooseT m ()
+info' :: ReverseQueue m => FlavorTextBuilder () -> ChooseT m ()
 info' flavor = unterminated $ tell [Info $ buildFlavor flavor]
 
 labeledI :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
@@ -288,6 +288,9 @@ chooseBeginSkillTestEdit sid iid source target kinds n f = do
 
 skip :: ReverseQueue m => Text -> ChooseT m ()
 skip = (`labeled` nothing)
+
+skip_ :: (HasI18n, ReverseQueue m) => ChooseT m ()
+skip_ = labeled' "skip" nothing
 
 gridLabeled :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
 gridLabeled label action = unterminated do

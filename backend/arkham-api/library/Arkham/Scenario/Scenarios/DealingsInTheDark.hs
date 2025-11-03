@@ -12,6 +12,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
@@ -115,21 +116,29 @@ instance RunMessage DealingsInTheDark where
       placeInGrid_ (Pos (-1) (-1)) Locations.obeliskOfTheodosius
       placeInGrid_ (Pos (-2) 0) Locations.galata
 
+      if workingWithEce || deceivingEce
+        then do
+          investigators <- allInvestigators
+          eceSahin <- fromGathered1 Assets.eceSahinTheVermillionVeiledLady
+          leadChooseOneM do
+            questionLabeledCard eceSahin
+            portraits investigators $ createAssetAt_ eceSahin . InPlayArea
+        else removeEvery [Assets.eceSahinTheVermillionVeiledLady]
+
       setAside
-        $ [ Agendas.theChase
-          , Locations.galataDocks
-          , Locations.grandBazaarPublicBaths
-          , Locations.grandBazaarBusyWalkway
-          , Locations.grandBazaarCrowdedShops
-          , Locations.grandBazaarJewelersRoad
-          , Locations.grandBazaarDarkenedAlley
-          , Locations.grandBazaarRooftopAccess
-          , Locations.grandBazaarMarbleFountain
-          , Keys.theTwistedAntiprism
-          , Enemies.umbralHarbinger
-          , Enemies.emissaryFromYuggoth
-          ]
-        <> [Assets.eceSahinTheVermillionVeiledLady | workingWithEce || deceivingEce]
+        [ Agendas.theChase
+        , Locations.galataDocks
+        , Locations.grandBazaarPublicBaths
+        , Locations.grandBazaarBusyWalkway
+        , Locations.grandBazaarCrowdedShops
+        , Locations.grandBazaarJewelersRoad
+        , Locations.grandBazaarDarkenedAlley
+        , Locations.grandBazaarRooftopAccess
+        , Locations.grandBazaarMarbleFountain
+        , Keys.theTwistedAntiprism
+        , Enemies.umbralHarbinger
+        , Enemies.emissaryFromYuggoth
+        ]
 
       theUnveiling <- genCard Stories.theUnveiling
       push $ PlaceStory theUnveiling Global

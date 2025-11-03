@@ -5,6 +5,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Token
 
 newtype Basilisk = Basilisk EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -22,7 +23,7 @@ instance HasAbilities Basilisk where
       $ limitedAbility (MaxPer Cards.basilisk PerRound 1)
       $ mkAbility a 1
       $ forced
-      $ PlacedCounterOnLocation #after "Mouth of K'n-yan" AnySource #resource AnyValue
+      $ PlacedCounterOnLocation #after "Mouth of K'n-yan" AnySource Pillar AnyValue
 
 instance RunMessage Basilisk where
   runMessage msg e@(Basilisk attrs) = runQueueT $ case msg of

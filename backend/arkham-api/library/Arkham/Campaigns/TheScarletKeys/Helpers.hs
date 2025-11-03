@@ -59,9 +59,10 @@ exposed iid enemy c body = do
 
 exposedDecoy :: ReverseQueue m => InvestigatorId -> m ()
 exposedDecoy iid = do
-  let ekey = "exposed[decoy]"
-  checkWhen $ Window.CampaignEvent ekey (Just iid) Null
-  checkAfter $ Window.CampaignEvent ekey (Just iid) Null
+  whenM (matches iid $ InvestigatorWithoutModifier (CampaignModifier "cannotExpose")) do
+    let ekey = "exposed[decoy]"
+    checkWhen $ Window.CampaignEvent ekey (Just iid) Null
+    checkAfter $ Window.CampaignEvent ekey (Just iid) Null
 
 whenExposed :: HasCardCode c => c -> WindowMatcher
 whenExposed c = CampaignEvent #when Nothing ekey

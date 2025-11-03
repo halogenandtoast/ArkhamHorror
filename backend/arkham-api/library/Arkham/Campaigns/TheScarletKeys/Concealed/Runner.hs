@@ -68,7 +68,7 @@ instance RunMessage ConcealedCard where
           mods <- getModifiers (toTarget c)
           let
             x = sum [n | EnemyFight n <- mods]
-            difficulty = 
+            difficulty =
               if x > 0
                 then SumCalculation [Fixed x, LocationMaybeFieldCalculation location LocationShroud]
                 else LocationMaybeFieldCalculation location LocationShroud
@@ -80,7 +80,8 @@ instance RunMessage ConcealedCard where
       case c.placement of
         AtLocation location -> do
           whenM (matches location $ LocationWithoutModifier (CampaignModifier "noExposeAt")) do
-            push $ Flip iid (c.ability AbilityAttack) (toTarget c)
+            whenM (matches iid $ InvestigatorWithoutModifier (CampaignModifier "cannotExpose")) do
+              push $ Flip iid (c.ability AbilityAttack) (toTarget c)
         _ -> push $ Flip iid (c.ability AbilityAttack) (toTarget c)
       pure c
     UseThisAbility iid (isSource c -> True) AbilityEvade -> do
@@ -102,7 +103,8 @@ instance RunMessage ConcealedCard where
       case c.placement of
         AtLocation location -> do
           whenM (matches location $ LocationWithoutModifier (CampaignModifier "noExposeAt")) do
-            push $ Flip iid (c.ability AbilityEvade) (toTarget c)
+            whenM (matches iid $ InvestigatorWithoutModifier (CampaignModifier "cannotExpose")) do
+              push $ Flip iid (c.ability AbilityEvade) (toTarget c)
         _ -> push $ Flip iid (c.ability AbilityEvade) (toTarget c)
       pure c
     Flip iid _ (isTarget c -> True) -> do

@@ -108,3 +108,7 @@ distributeEvenlyBetween :: (ReverseQueue m, ToId a ConcealedCardId) => [a] -> [L
 distributeEvenlyBetween concealed locations = do
   lead  <- getLead
   do1 $ forTargets locations (Msg.PlaceConcealedCards lead (map asId concealed) locations)
+
+pattern InvestigatorCanExpose :: InvestigatorMatcher
+pattern InvestigatorCanExpose <- InvestigatorWithoutModifier (CampaignModifier "cannotExpose") where
+  InvestigatorCanExpose = InvestigatorWithoutModifier (CampaignModifier "cannotExpose")

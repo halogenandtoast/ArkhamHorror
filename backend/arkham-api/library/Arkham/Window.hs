@@ -239,7 +239,7 @@ data WindowType
   | EnemyMovesTo LocationId MovesVia EnemyId
   | EnemyMoves EnemyId LocationId
   | HuntersMoveStep
-  | Moves InvestigatorId Source (Maybe LocationId) LocationId
+  | Moves InvestigatorId Source (Maybe LocationId) LocationId MovementId
   | WouldMove InvestigatorId Source LocationId LocationId
   | NonFast
   | PassInvestigationSkillTest InvestigatorId LocationId Int
@@ -347,6 +347,11 @@ mconcat
         parseJSON = withObject "WindowType" \o -> do
           tag :: Text <- o .: "tag"
           case tag of
+            "Moves" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left (i, s, md1, d1) -> pure $ Moves i s md1 d1 (MovementId UUID.nil)
+                Right (i, s, md1, d1, mId) -> pure $ Moves i s md1 d1 mId
             "SuccessfulEvadeEnemy" -> do
               contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
               case contents of

@@ -32,7 +32,7 @@ instance HasAbilities Safeguard where
 
 getMovedToLocation :: [Window] -> LocationId
 getMovedToLocation [] = error "invalid call"
-getMovedToLocation ((windowType -> Window.Moves _ _ _ lid) : _) = lid
+getMovedToLocation ((windowType -> Window.Moves _ _ _ lid _) : _) = lid
 getMovedToLocation (_ : xs) = getMovedToLocation xs
 
 instance RunMessage Safeguard where

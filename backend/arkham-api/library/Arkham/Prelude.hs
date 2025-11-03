@@ -440,6 +440,9 @@ concatMapMaybe f = concat . mapMaybe f
 notNullOr :: [a] -> [a] -> [a]
 notNullOr as bs = if null as then bs else as
 
+orWhenNull :: (Applicative m, MonoFoldable c) => c -> m c -> m c
+orWhenNull c mc = if null c then mc else pure c
+
 toSentence :: Show a => [a] -> Text
 toSentence = go False
  where

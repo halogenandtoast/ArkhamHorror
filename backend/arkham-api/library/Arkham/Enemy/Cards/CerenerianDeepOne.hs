@@ -21,7 +21,7 @@ instance HasAbilities CerenerianDeepOne where
 instance RunMessage CerenerianDeepOne where
   runMessage msg e@(CerenerianDeepOne attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      n <- min 1 <$> getRemainingCurseTokens
+      n <- min 2 <$> getRemainingCurseTokens
       repeated n $ addChaosToken #curse
       pure e
     _ -> CerenerianDeepOne <$> liftRunMessage msg attrs

@@ -22,8 +22,8 @@ instance HasModifiersFor TrackShoes where
 instance HasAbilities TrackShoes where
   getAbilities (TrackShoes a) =
     [ skillTestAbility
-        $ restricted a 1 ControlsThis
-        $ ReactionAbility (MovedButBeforeEnemyEngagement #after You Anywhere) (exhaust a)
+        $ controlled_ a 1
+        $ triggered (MovedButBeforeEnemyEngagement #after You Anywhere) (exhaust a)
     ]
 
 instance RunMessage TrackShoes where

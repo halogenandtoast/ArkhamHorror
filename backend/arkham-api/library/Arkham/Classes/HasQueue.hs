@@ -182,7 +182,7 @@ insertAfterMatching msgs p = withQueue_ \queue ->
   let (before, rest) = break p queue
    in case rest of
         (x : xs) -> before <> (x : msgs <> xs)
-        _ -> error "no matching message"
+        _ -> error $ "no matching message:\n" <> prettyCallStack callStack
 
 insertAfterMatchingOrNow :: HasQueue msg m => [msg] -> (msg -> Bool) -> m ()
 insertAfterMatchingOrNow msgs p = do

@@ -23,7 +23,7 @@ instance HasAbilities Basilisk where
       $ limitedAbility (MaxPer Cards.basilisk PerRound 1)
       $ mkAbility a 1
       $ forced
-      $ PlacedCounterOnLocation #after "Mouth of K'n-yan" AnySource Pillar AnyValue
+      $ PlacedToken #after AnySource (LocationTargetMatches "Mouth of K'n-yan") Pillar
 
 instance RunMessage Basilisk where
   runMessage msg e@(Basilisk attrs) = runQueueT $ case msg of

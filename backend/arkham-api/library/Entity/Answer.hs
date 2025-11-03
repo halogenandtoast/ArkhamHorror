@@ -6,6 +6,7 @@ import Import.NoFoundation hiding (get)
 
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
+import Arkham.CampaignStep qualified as CS
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Partner
@@ -41,6 +42,7 @@ data Answer
   | PickDestinyAnswer [DestinyDrawing]
   | CampaignSpecificAnswer Text Value
   | ExchangeAmountsAnswer { source :: Source, fromInvestigator :: InvestigatorId, toInvestigator :: InvestigatorId, token :: Token, amount :: Int }
+  | CampaignStepAnswer CS.CampaignStep
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
 
@@ -256,6 +258,7 @@ answerPlayer = \case
   DeckAnswer _ pid -> Just pid
   PickDestinyAnswer _ -> Nothing
   ExchangeAmountsAnswer {} -> Nothing
+  CampaignStepAnswer _ -> Nothing
 
 playerInvestigator :: Entities -> PlayerId -> InvestigatorId
 playerInvestigator Entities {..} pid = case find ((== pid) . attr investigatorPlayerId) (toList entitiesInvestigators) of
@@ -287,6 +290,8 @@ handleAnswer Game {..} playerId = \case
     handled [SetCampaignLog campaignLog']
   CampaignSpecificAnswer k v -> do
     handled [CampaignSpecific k v]
+  CampaignStepAnswer k -> do
+    handled [NextCampaignStep (Just k)]
   PickDestinyAnswer choices -> do
     handled [SetDestiny $ Map.fromList $ map (\(DestinyDrawing scope card) -> (scope, card)) choices]
   ExchangeAmountsAnswer source fromInvestigator toInvestigator token n -> do

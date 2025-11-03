@@ -146,6 +146,7 @@ filterOutEnemyMessages eid ask'@(Ask pid q) = case q of
   PickCampaignSettings -> Just (Ask pid PickCampaignSettings)
   PickCampaignSpecific {} -> Just ask'
   ChooseExchangeAmounts {} -> Just ask'
+  ContinueCampaign {} -> Just ask'
 filterOutEnemyMessages eid msg = case msg of
   InitiateEnemyAttack details | eid == attackEnemy details -> Nothing
   EnemyAttack details | eid == attackEnemy details -> Nothing

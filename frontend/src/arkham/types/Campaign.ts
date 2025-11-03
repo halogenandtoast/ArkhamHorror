@@ -17,6 +17,7 @@ export type Campaign = {
   id: string;
   log: LogContents;
   step: CampaignStep | null;
+  completedSteps: CampaignStep[] | null;
   difficulty: Difficulty;
   meta: any;
   xpBreakdown: XpBreakdown;
@@ -36,6 +37,7 @@ export const campaignDecoder = JsonDecoder.object<Campaign>({
   difficulty: difficultyDecoder,
   log: logContentsDecoder,
   step: JsonDecoder.nullable(campaignStepDecoder),
+  completedSteps: JsonDecoder.array(campaignStepDecoder, 'CampaignStep[]'),
   meta: JsonDecoder.succeed(),
   xpBreakdown: xpBreakdownDecoder,
   storyCards: JsonDecoder.record(JsonDecoder.array(cardDecoder, 'CardDef[]'), 'CardDef[]'),

@@ -18,8 +18,7 @@ instance IsCampaign ReturnToNightOfTheZealot where
     PrologueStep -> Just ReturnToTheGathering
     ReturnToTheGathering -> Just (UpgradeDeckStep ReturnToTheMidnightMasks)
     ReturnToTheMidnightMasks -> Just (UpgradeDeckStep ReturnToTheDevourerBelow)
-    UpgradeDeckStep nextStep' -> Just nextStep'
-    _ -> Nothing
+    other -> defaultNextStep other
 
 returnToNightOfTheZealot :: Difficulty -> ReturnToNightOfTheZealot
 returnToNightOfTheZealot =

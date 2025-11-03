@@ -32,8 +32,7 @@ instance IsCampaign ThePathToCarcosa where
     ThePallidMask -> Just (UpgradeDeckStep BlackStarsRise)
     BlackStarsRise -> Just (UpgradeDeckStep DimCarcosa)
     DimCarcosa -> Just EpilogueStep
-    UpgradeDeckStep nextStep' -> Just nextStep'
-    _ -> Nothing
+    other -> defaultNextStep other
 
 thePathToCarcosa :: Difficulty -> ThePathToCarcosa
 thePathToCarcosa = campaign ThePathToCarcosa (CampaignId "03") "The Path to Carcosa"

@@ -1,13 +1,16 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
+import type { Campaign } from '@/arkham/types/Campaign';
 import StoryQuestion from '@/arkham/components/StoryQuestion.vue';
 import Scenario from '@/arkham/components/Scenario.vue';
 import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
 import ChooseDeck from '@/arkham/components/ChooseDeck.vue';
+import ContinueCampaign from '@/arkham/components/ContinueCampaign.vue';
 
 const props = defineProps<{
   game: Game
+  campaign: Campaign
   playerId: string
 }>()
 
@@ -53,6 +56,11 @@ const questionLabel = computed(() => {
   }
 
   return question.tag === 'QuestionLabel' ? question.label : null
+})
+
+const continueCampaign = computed(() => {
+  if (props.game.campaign && props.game.campaign.step?.tag === 'ContinueCampaignStep') return props.game.campaign.step.contents
+  return null
 })
 
 const upgradeDeck = computed(() => {
@@ -101,11 +109,14 @@ const questionHash = computed(() => {
 
 <template>
   <div v-if="upgradeDeck" id="game" class="game">
-    <UpgradeDeck :game="game" :key="playerId" :playerId="playerId" @choose="choose" />
+    <UpgradeDeck :game="game" :playerId="playerId" @choose="choose" />
   </div>
   <div v-else-if="chooseDeck" id="game" class="game">
     <h2 v-if="questionLabel" class="title question-label">{{ questionLabel }}</h2>
-    <ChooseDeck :game="game" :key="playerId" :playerId="playerId" @choose="choose" />
+    <ChooseDeck :game="game" :playerId="playerId" @choose="choose" />
+  </div>
+  <div v-else-if="continueCampaign" id="game" class="game">
+    <ContinueCampaign :game="game" :campaign="campaign" :playerId="playerId" :step="continueCampaign" @choose="choose" />
   </div>
   <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">
     <template v-if="pickDestiny">

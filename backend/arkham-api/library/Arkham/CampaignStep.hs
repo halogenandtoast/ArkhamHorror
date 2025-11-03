@@ -18,11 +18,20 @@ data CampaignStep
   | ResupplyPoint
   | CheckpointStep Int
   | CampaignSpecificStep Text
+  | ContinueCampaignStep CampaignStep
+  | StandaloneScenarioStep ScenarioId CampaignStep
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 instance HasField "normalize" CampaignStep CampaignStep where
   getField = normalizedCampaignStep
+
+defaultNextStep :: CampaignStep -> Maybe CampaignStep
+defaultNextStep = \case
+  UpgradeDeckStep nextStep' -> Just nextStep'
+  ContinueCampaignStep nextStep' -> Just nextStep'
+  StandaloneScenarioStep _ nextStep' -> Just nextStep'
+  _ -> Nothing
 
 data InterludeKey
   = DanielSurvived
@@ -60,3 +69,5 @@ normalizedCampaignStep = \case
   ResupplyPoint -> ResupplyPoint
   CheckpointStep n -> CheckpointStep n
   CampaignSpecificStep t -> CampaignSpecificStep t
+  ContinueCampaignStep c -> ContinueCampaignStep c
+  StandaloneScenarioStep sid c -> StandaloneScenarioStep sid c

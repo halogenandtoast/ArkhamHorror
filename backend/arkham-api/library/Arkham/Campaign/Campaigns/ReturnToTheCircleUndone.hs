@@ -42,8 +42,7 @@ instance IsCampaign ReturnToTheCircleUndone where
     InterludeStep 4 _ -> Just (UpgradeDeckStep ReturnToBeforeTheBlackThrone)
     ReturnToBeforeTheBlackThrone -> Just EpilogueStep
     EpilogueStep -> Nothing
-    UpgradeDeckStep nextStep' -> Just nextStep'
-    _ -> Nothing
+    other -> defaultNextStep other
 
 instance RunMessage ReturnToTheCircleUndone where
   runMessage msg c@(ReturnToTheCircleUndone theCircleUndone') = runQueueT $ campaignI18n $ case msg of

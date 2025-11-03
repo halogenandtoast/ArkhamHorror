@@ -3,13 +3,11 @@
 import { replaceIcons, imgsrc } from '@/arkham/helpers';
 import { handleI18n } from '@/arkham/i18n';
 import { computed } from 'vue'
-import scenarios from '@/arkham/data/scenarios'
 import { XpEntry } from '@/arkham/types/Xp'
 import { type Investigator } from '@/arkham/types/Investigator'
-import { CampaignStep } from '@/arkham/types/CampaignStep'
+import { type CampaignStep, campaignStepName } from '@/arkham/types/CampaignStep'
 import { Game } from '@/arkham/types/Game'
 import { useI18n } from 'vue-i18n';
-import { toCamelCase } from '@/arkham/helpers'
 import { useDbCardStore } from '@/stores/dbCards'
 
 const { t, te } = useI18n()
@@ -25,41 +23,7 @@ const props = defineProps<{
 }>()
 
 // need to drop the first letter of the scenario code
-const name = computed(() => {
-  if (props.step.tag === 'ScenarioStep') {
-    const scenarioId = props.step.contents.slice(1)
-    const result = scenarios.find((s) => s.id === scenarioId || (s.returnTo && s.returnTo === scenarioId))
-    if (result && result.returnTo && result.returnTo === scenarioId) {
-      return result.returnToName
-    }
-    return result?.name || "Unknown Scenario"
-  }
-
-  if (props.step.tag === 'InterludeStep') {
-    if (props.game.campaign) {
-      const key = `${toCamelCase(props.game.campaign.name)}.interludes.${props.step.contents}`
-      if (te(key)) {
-        return t(key)
-      }
-    }
-    return `Interlude ${props.step.contents}`
-  }
-
-  if (props.step.tag === 'CheckpointStep') {
-    return `Checkpoint ${props.step.contents}`
-  }
-
-  if (props.step.tag === 'ResupplyPoint') {
-    return "Resupply Point"
-  }
-
-  if (props.step.tag === 'PrologueStep') {
-    // This is a lie, we might need to split this out somehow
-    return "Deck Creation"
-  }
-
-  return "Unknown step: " + props.step.tag
-})
+const name = computed(() => campaignStepName(props.game, props.step))
 
 const unspendableXp = computed(() => {
   if (!props.game.campaign?.meta?.bonusXp) return null;

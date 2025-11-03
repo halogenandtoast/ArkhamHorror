@@ -889,6 +889,7 @@ onUnmounted(() => {
           :game="game"
           :gameLog="gameLog"
           :playerId="playerId"
+          :campaign="game.campaign"
           @choose="choose"
           @update="update"
         />
@@ -913,7 +914,7 @@ onUnmounted(() => {
           <button class="replay-button" @click="router.push({name: 'ReplayGame', params: { gameId }})">{{ $t('watchReplay') }}</button>
           <CampaignLog v-if="game !== null" :game="game" :cards="cards" :playerId="playerId" />
         </div>
-        <div class="sidebar" v-if="game.scenario === null">
+        <div class="sidebar" v-if="showSidebar && game.scenario === null">
           <GameLog :game="game" :gameLog="gameLog" @undo="undo" />
         </div>
       </div>
@@ -937,6 +938,9 @@ onUnmounted(() => {
   flex-direction: column;
   flex: 1;
   overflow: hidden;
+  &:has(.scroll-container) {
+    overflow: auto;
+  }
 }
 
 .game-main {
@@ -944,9 +948,6 @@ onUnmounted(() => {
   height: calc(100vh - 80px);
   display: flex;
   flex: 1;
-  &:has(.scroll-container) {
-    overflow: auto;
-  }
 }
 
 .socketWarning  {

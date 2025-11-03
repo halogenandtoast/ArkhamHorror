@@ -61,8 +61,7 @@ instance IsCampaign TheForgottenAge where
     ShatteredAeons -> Nothing
     EpilogueStep -> Just (UpgradeDeckStep TurnBackTime)
     TurnBackTime -> Nothing
-    UpgradeDeckStep nextStep' -> Just nextStep'
-    _ -> Nothing
+    other -> defaultNextStep other
 
 theForgottenAge :: Difficulty -> TheForgottenAge
 theForgottenAge = campaign TheForgottenAge (CampaignId "04") "The Forgotten Age"

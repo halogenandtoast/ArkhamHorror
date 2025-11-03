@@ -1,9 +1,29 @@
-import * as JsonDecoder from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json'
+import scenarios from '@/arkham/data/scenarios'
+import type { Game } from '@/arkham/types/Game'
+import { toCamelCase } from '@/arkham/helpers'
+import { useI18n } from 'vue-i18n';
 
-export type CampaignStep = PrologueStep | ScenarioStep | InterludeStep | InterludeStepPart | UpgradeDeckStep | EpilogueStep | ResupplyPoint | CheckpointStep | CampaignSpecificStep;
+export type CampaignStep
+  = PrologueStep
+  | ScenarioStep
+  | InterludeStep
+  | InterludeStepPart
+  | UpgradeDeckStep
+  | EpilogueStep
+  | ResupplyPoint
+  | CheckpointStep
+  | CampaignSpecificStep
+  | ContinueCampaignStep
+  | StandaloneScenarioStep
 
 export type PrologueStep = {
-  tag: 'PrologueStep';
+  tag: 'PrologueStep'
+}
+
+export type StandaloneScenarioStep = {
+  tag: 'StandaloneScenarioStep'
+  contents: [string, any]
 }
 
 export type ResupplyPoint = {
@@ -16,6 +36,11 @@ export type CampaignSpecificStep = {
 
 export type EpilogueStep = {
   tag: 'EpilogueStep';
+}
+
+export type ContinueCampaignStep = {
+  tag: 'ContinueCampaignStep';
+  contents: CampaignStep;
 }
 
 export const prologueStepDecoder = JsonDecoder.object<PrologueStep>(
@@ -50,6 +75,14 @@ export type ScenarioStep = {
   tag: 'ScenarioStep';
   contents: string;
 }
+
+export const standaloneScenarioStepDecoder = JsonDecoder.object<StandaloneScenarioStep>(
+  {
+    tag: JsonDecoder.literal('StandaloneScenarioStep'),
+    contents: JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.succeed()], 'contents'),
+  },
+  'StandabloneScenarioStep',
+);
 
 export const scenarioStepDecoder = JsonDecoder.object<ScenarioStep>(
   {
@@ -109,18 +142,73 @@ export const upgradeStepDecoder = JsonDecoder.object<UpgradeDeckStep>(
   'UpgradeDeckStep',
 );
 
+export const continueCampaignStepDecoder: JsonDecoder.Decoder<ContinueCampaignStep> = JsonDecoder.object<ContinueCampaignStep>(
+  {
+    tag: JsonDecoder.literal('ContinueCampaignStep'),
+    contents: JsonDecoder.lazy<CampaignStep>(() => campaignStepDecoder)
+  },
+  'ContinueCampaignStep',
+);
+
 export const campaignStepDecoder = JsonDecoder.oneOf<CampaignStep>(
   [
     prologueStepDecoder,
     resupplyPointStepDecoder,
     campaignSpecificStepDecoder,
     scenarioStepDecoder,
+    standaloneScenarioStepDecoder,
     interludeStepDecoder,
     interludeStepPartDecoder,
     checkpointStepDecoder,
     upgradeStepDecoder,
-    epilogueStepDecoder
+    epilogueStepDecoder,
+    continueCampaignStepDecoder
   ],
   'Question',
 );
 
+export function campaignStepName(game: Game, step: CampaignStep) {
+  const { t, te } = useI18n();
+  if (step.tag === 'ScenarioStep') {
+    const scenarioId = step.contents.slice(1)
+    const result = scenarios.find((s) => s.id === scenarioId || (s.returnTo && s.returnTo === scenarioId))
+    if (result && result.returnTo && result.returnTo === scenarioId) {
+      return result.returnToName
+    }
+    return result?.name || "Unknown Scenario"
+  }
+
+  if (step.tag === 'StandaloneScenarioStep') {
+    const scenarioId = step.contents[0].slice(1)
+    const result = scenarios.find((s) => s.id === scenarioId || (s.returnTo && s.returnTo === scenarioId))
+    if (result && result.returnTo && result.returnTo === scenarioId) {
+      return result.returnToName
+    }
+    return result?.name || "Unknown Scenario"
+  }
+
+  if (step.tag === 'InterludeStep') {
+    if (game.campaign) {
+      const key = `${toCamelCase(game.campaign.name)}.interludes.${step.contents}`
+      if (te(key)) {
+        return t(key)
+      }
+    }
+    return `Interlude ${step.contents}`
+  }
+
+  if (step.tag === 'CheckpointStep') {
+    return `Checkpoint ${step.contents}`
+  }
+
+  if (step.tag === 'ResupplyPoint') {
+    return "Resupply Point"
+  }
+
+  if (step.tag === 'PrologueStep') {
+    // This is a lie, we might need to split this out somehow
+    return "Deck Creation"
+  }
+
+  return "Unknown step: " + step.tag
+}

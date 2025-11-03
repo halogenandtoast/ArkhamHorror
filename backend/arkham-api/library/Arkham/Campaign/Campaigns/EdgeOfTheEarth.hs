@@ -54,8 +54,7 @@ instance IsCampaign EdgeOfTheEarth where
     TheHeartOfMadnessPart1 -> Just (UpgradeDeckStep $ CheckpointStep 3)
     TheHeartOfMadnessPart2 -> Just EpilogueStep
     EpilogueStep -> Nothing
-    UpgradeDeckStep nextStep' -> Just nextStep'
-    _ -> Nothing
+    other -> defaultNextStep other
 
 instance RunMessage EdgeOfTheEarth where
   runMessage msg c@(EdgeOfTheEarth attrs) = runQueueT $ campaignI18n $ case msg of

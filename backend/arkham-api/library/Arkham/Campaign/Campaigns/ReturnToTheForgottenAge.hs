@@ -28,8 +28,7 @@ instance IsCampaign ReturnToTheForgottenAge where
     ReturnToShatteredAeons -> Nothing
     EpilogueStep -> Just (UpgradeDeckStep ReturnToTurnBackTime)
     ReturnToTurnBackTime -> Nothing
-    UpgradeDeckStep nextStep' -> Just nextStep'
-    _ -> Nothing
+    other -> defaultNextStep other
 
 returnToTheForgottenAge :: Difficulty -> ReturnToTheForgottenAge
 returnToTheForgottenAge =

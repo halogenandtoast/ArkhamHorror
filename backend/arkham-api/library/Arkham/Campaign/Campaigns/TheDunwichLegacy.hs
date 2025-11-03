@@ -54,8 +54,7 @@ instance IsCampaign TheDunwichLegacy where
     UndimensionedAndUnseen -> Just (UpgradeDeckStep WhereDoomAwaits)
     WhereDoomAwaits -> Just (UpgradeDeckStep LostInTimeAndSpace)
     LostInTimeAndSpace -> Just EpilogueStep
-    UpgradeDeckStep nextStep' -> Just nextStep'
-    _ -> Nothing
+    other -> defaultNextStep other
 
 theDunwichLegacy :: Difficulty -> TheDunwichLegacy
 theDunwichLegacy = campaign TheDunwichLegacy (CampaignId "02") "The Dunwich Legacy"

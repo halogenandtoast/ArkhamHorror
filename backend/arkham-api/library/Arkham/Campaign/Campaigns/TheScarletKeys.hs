@@ -80,8 +80,7 @@ instance IsCampaign TheScarletKeys where
     DeadHeat -> Just (CampaignSpecificStep "embark")
     SanguineShadows -> Just (CampaignSpecificStep "embark")
     EpilogueStep -> Nothing
-    UpgradeDeckStep nextStep' -> Just nextStep'
-    _ -> Nothing
+    other -> defaultNextStep other
 
 instance RunMessage TheScarletKeys where
   runMessage msg c@(TheScarletKeys attrs) = runQueueT $ campaignI18n $ case msg of

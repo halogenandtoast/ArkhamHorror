@@ -38,8 +38,7 @@ instance IsCampaign TheInnsmouthConspiracy where
     InterludeStep 4 _ -> Just (UpgradeDeckStep IntoTheMaelstrom)
     IntoTheMaelstrom -> Just EpilogueStep
     EpilogueStep -> Nothing
-    UpgradeDeckStep nextStep' -> Just nextStep'
-    _ -> Nothing
+    other -> defaultNextStep other
 
 instance RunMessage TheInnsmouthConspiracy where
   runMessage msg c@(TheInnsmouthConspiracy _attrs) = runQueueT $ campaignI18n $ case msg of

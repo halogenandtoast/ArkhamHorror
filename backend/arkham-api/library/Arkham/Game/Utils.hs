@@ -301,7 +301,11 @@ createActiveCostForCard iid card isPlayAction windows' = do
           mods' <- lift $ getModifiers lid
           pure [c | AdditionalCostToInvestigate c <- mods']
 
-        let additionalActionModifiers = if isPlayAction == NotPlayAction then allModifiers else cardMods
+        let
+          additionalActionModifiers =
+            if isPlayAction == NotPlayAction
+              then allModifiers
+              else cardMods
         additionalActionCosts <-
           sum <$> flip mapMaybeM additionalActionModifiers \case
             AdditionalCost (Cost.ActionCost n) -> pure $ Just n
@@ -317,7 +321,9 @@ createActiveCostForCard iid card isPlayAction windows' = do
             then do
               pure $ if additionalActionCosts > 0 then Cost.ActionCost additionalActionCosts else Cost.Free
             else
-              Cost.ActionCost . (+ additionalActionCosts) <$> getActionCost (toAttrs investigator') card.actions
+              Cost.ActionCost
+                . (+ additionalActionCosts)
+                <$> getActionCost (toAttrs investigator') (#play : card.actions)
 
         additionalCosts <- flip mapMaybeM allModifiers $ \case
           AdditionalCost (Cost.ActionCost _) -> pure Nothing

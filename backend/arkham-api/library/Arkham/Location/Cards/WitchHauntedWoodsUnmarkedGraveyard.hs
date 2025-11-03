@@ -24,9 +24,9 @@ instance RunMessage WitchHauntedWoodsUnmarkedGraveyard where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       findTopOfDiscard (#treachery <> #hex) >>= \case
         Nothing -> discardUntilFirst iid attrs Deck.EncounterDeck (#treachery <> #hex)
-        Just hex -> drawCardFrom iid hex Deck.EncounterDeck
+        Just hex -> drawCardFrom iid Deck.EncounterDeck hex
       pure l
     RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just hex) -> do
-      drawCardFrom iid hex Deck.EncounterDeck
+      drawCardFrom iid Deck.EncounterDeck hex
       pure l
     _ -> WitchHauntedWoodsUnmarkedGraveyard <$> liftRunMessage msg attrs

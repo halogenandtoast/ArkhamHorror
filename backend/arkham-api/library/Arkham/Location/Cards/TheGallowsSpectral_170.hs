@@ -41,6 +41,6 @@ instance RunMessage TheGallowsSpectral_170 where
       cards <- take 3 . unDeck <$> getSpectralDeck
       let (geists, rest) = partition (member Geist . toTraits) cards
       addToEncounterDiscard rest
-      for_ geists \geist -> drawCardFrom iid geist (Deck.EncounterDeckByKey SpectralEncounterDeck)
+      for_ geists $ drawCardFrom iid (Deck.EncounterDeckByKey SpectralEncounterDeck)
       pure l
     _ -> TheGallowsSpectral_170 <$> liftRunMessage msg attrs

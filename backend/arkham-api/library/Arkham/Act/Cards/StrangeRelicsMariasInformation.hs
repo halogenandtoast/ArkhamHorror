@@ -39,6 +39,6 @@ instance RunMessage StrangeRelicsMariasInformation where
       advanceToAct attrs Acts.strangeOccurences E
       pure a
     DiscardedTopOfEncounterDeck iid [card] _ (isTarget attrs -> True) -> do
-      when (toCardType card == TreacheryType) $ drawCardFrom iid card Deck.EncounterDeck
+      when (toCardType card == TreacheryType) $ drawCardFrom iid Deck.EncounterDeck card
       pure a
     _ -> StrangeRelicsMariasInformation <$> liftRunMessage msg attrs

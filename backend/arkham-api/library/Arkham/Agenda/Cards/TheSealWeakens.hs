@@ -44,7 +44,7 @@ instance RunMessage TheSealWeakens where
       focusCards (card : cards) do
         chooseOneM iid $ targeting card do
           cardResolutionModifier card attrs card LeaveCardWhereItIs
-          drawCardFrom iid card deck
+          drawCardFrom iid deck card
       doStep 1 $ SearchFound iid target deck cards
       pure a
     DoStep 2 (SearchFound _iid (isTarget attrs -> True) deck _) -> do

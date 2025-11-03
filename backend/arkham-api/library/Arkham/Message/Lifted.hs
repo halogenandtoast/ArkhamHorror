@@ -3235,13 +3235,13 @@ placeCluesOnLocation
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 placeCluesOnLocation iid source n = push $ InvestigatorPlaceCluesOnLocation iid (toSource source) n
 
-drawCardFrom :: (IsDeck deck, IsCard card, ReverseQueue m) => InvestigatorId -> card -> deck -> m ()
-drawCardFrom iid (toCard -> card) deck = do
+drawCardFrom :: (IsDeck deck, IsCard card, ReverseQueue m) => InvestigatorId -> deck -> card -> m ()
+drawCardFrom iid deck (toCard -> card) = do
   obtainCard $ toCard card
   case card of
     EncounterCard ec -> push $ InvestigatorDrewEncounterCardFrom iid ec (Just $ toDeck deck)
     PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc (Just $ toDeck deck)
-    VengeanceCard vc -> Arkham.Message.Lifted.drawCardFrom iid vc deck
+    VengeanceCard vc -> Arkham.Message.Lifted.drawCardFrom iid deck vc
 
 drawCard :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 drawCard iid card = do

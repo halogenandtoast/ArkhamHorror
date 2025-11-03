@@ -311,7 +311,7 @@ fishingVessel =
 
 wavewornIdol :: CardDef
 wavewornIdol =
-  (storyAsset "07179" "Waveworn Idol" 2 DevilReef)
+  (storyAsset "07179" "Waveworn Idol" 1 DevilReef)
     { cdSkills = [#intellect, #wild]
     , cdCardTraits = setFromList [Item, Relic]
     }

@@ -34,8 +34,7 @@ instance IsCampaign ReturnToTheDunwichLegacy where
     ReturnToUndimensionedAndUnseen -> Just (UpgradeDeckStep ReturnToWhereDoomAwaits)
     ReturnToWhereDoomAwaits -> Just (UpgradeDeckStep ReturnToLostInTimeAndSpace)
     ReturnToLostInTimeAndSpace -> Just EpilogueStep
-    UpgradeDeckStep nextStep' -> Just nextStep'
-    _ -> Nothing
+    other -> defaultNextStep other
 
 returnToTheDunwichLegacy :: Difficulty -> ReturnToTheDunwichLegacy
 returnToTheDunwichLegacy =

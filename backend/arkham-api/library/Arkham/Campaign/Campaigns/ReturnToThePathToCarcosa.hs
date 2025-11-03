@@ -22,8 +22,7 @@ instance IsCampaign ReturnToThePathToCarcosa where
     ReturnToThePallidMask -> Just (UpgradeDeckStep ReturnToBlackStarsRise)
     ReturnToBlackStarsRise -> Just (UpgradeDeckStep ReturnToDimCarcosa)
     ReturnToDimCarcosa -> Just EpilogueStep
-    UpgradeDeckStep nextStep' -> Just nextStep'
-    _ -> Nothing
+    other -> defaultNextStep other
 
 returnToThePathToCarcosa :: Difficulty -> ReturnToThePathToCarcosa
 returnToThePathToCarcosa =

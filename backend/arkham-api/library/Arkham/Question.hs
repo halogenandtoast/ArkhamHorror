@@ -170,6 +170,7 @@ data Question msg
       , investigator2InitialAmount :: Int
       , token :: Token
       }
+  | ContinueCampaign
   deriving stock (Show, Ord, Eq, Data)
 
 data DestinyDrawing = DestinyDrawing

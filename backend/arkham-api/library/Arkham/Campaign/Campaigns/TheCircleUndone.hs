@@ -47,8 +47,7 @@ instance IsCampaign TheCircleUndone where
     InterludeStep 4 _ -> Just (UpgradeDeckStep BeforeTheBlackThrone)
     BeforeTheBlackThrone -> Just EpilogueStep
     EpilogueStep -> Nothing
-    UpgradeDeckStep nextStep' -> Just nextStep'
-    _ -> Nothing
+    other -> defaultNextStep other
 
 theCircleUndone :: Difficulty -> TheCircleUndone
 theCircleUndone =

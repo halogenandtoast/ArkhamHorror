@@ -205,8 +205,7 @@ instance IsCampaign TheDreamEaters where
                   PartialMode _ -> EpilogueStep
               )
           EpilogueStep -> Nothing
-          UpgradeDeckStep nextStep' -> Just nextStep'
-          _ -> Nothing
+          other -> defaultNextStep other
 
 theDreamQuestSteps :: [CampaignStep]
 theDreamQuestSteps = [BeyondTheGatesOfSleep, TheSearchForKadath, DarkSideOfTheMoon, WhereTheGodsDwell]

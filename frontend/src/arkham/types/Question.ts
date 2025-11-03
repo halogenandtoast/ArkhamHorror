@@ -27,6 +27,7 @@ export type Question =
   | PickDestiny 
   | PickCampaignSpecific
   | ChooseExchangeAmounts
+  | ContinueCampaign
 
 export enum QuestionType {
   CHOOSE_ONE = 'ChooseOne',
@@ -50,7 +51,12 @@ export enum QuestionType {
   PICK_SCENARIO_SETTINGS = 'PickScenarioSettings',
   PICK_CAMPAIGN_SETTINGS = 'PickCampaignSettings',
   PICK_CAMPAIGN_SPECIFIC = 'PickCampaignSpecific',
-  CHOOSE_EXCHANGE_AMOUNTS = 'ChooseExchangeAmounts'
+  CHOOSE_EXCHANGE_AMOUNTS = 'ChooseExchangeAmounts',
+  CONTINUE_CAMPAIGN = 'ContinueCampaign'
+}
+
+export type ContinueCampaign = {
+  tag: QuestionType.CONTINUE_CAMPAIGN;
 }
 
 export type ChooseExchangeAmounts = {
@@ -473,6 +479,13 @@ export const chooseOneAtATimeWithAutoDecoder = JsonDecoder.object<ChooseOneAtATi
   'ChooseOneAtATimeWithAuto',
 );
 
+export const continueCampaignDecoder = JsonDecoder.object<ContinueCampaign>(
+  {
+    tag: JsonDecoder.literal(QuestionType.CONTINUE_CAMPAIGN),
+  },
+  'ContinueCampaign',
+);
+
 export const questionDecoder = JsonDecoder.oneOf<Question>(
   [
     chooseOneDecoder,
@@ -496,6 +509,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     dropDownDecoder,
     pickScenarioSettingsDecoder,
     pickCampaignSettingsDecoder,
+    continueCampaignDecoder,
     JsonDecoder.succeed().flatMap((f) => {
       return JsonDecoder.fail(f)
     })

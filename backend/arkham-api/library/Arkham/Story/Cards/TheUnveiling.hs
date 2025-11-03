@@ -10,9 +10,9 @@ import Arkham.Helpers.Window (getDoomAmount, getEnemy)
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Scenarios.DealingsInTheDark.Helpers
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
-import Arkham.Token
 
 newtype TheUnveiling = TheUnveiling StoryAttrs
   deriving anyclass IsStory
@@ -29,10 +29,10 @@ instance HasAbilities TheUnveiling where
 
 instance HasModifiersFor TheUnveiling where
   getModifiersFor (TheUnveiling a) = do
-    cultistClues <- selectSum EnemyClues (InPlayEnemy #cultist)
+    cultistClues <- getCluesPossesedByTheCult
     act <- getCurrentActStep
     n <- perPlayer (4 * act)
-    when (cultistClues + a.token Clue >= n) do
+    when (cultistClues >= n) do
       modifySelf a [ScenarioModifier "cultHasEnoughClues"]
 
 instance RunMessage TheUnveiling where

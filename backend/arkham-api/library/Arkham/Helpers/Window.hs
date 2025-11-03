@@ -506,6 +506,12 @@ getMovementId = \case
   (_ : rest) -> getMovementId rest
   [] -> Nothing
 
+getEnemyMovedVia :: [Window] -> MovesVia
+getEnemyMovedVia = \case
+  ((windowType -> Window.EnemyMovesTo _ via _) : _) -> via
+  (_ : rest) -> getEnemyMovedVia rest
+  [] -> error "missing enemy moved via"
+
 getEnemy :: [Window] -> EnemyId
 getEnemy = \case
   ((windowType -> Window.EnemySpawns eid _) : _) -> eid
@@ -517,6 +523,7 @@ getEnemy = \case
   ((windowType -> Window.WouldReady (EnemyTarget eid)) : _) -> eid
   ((windowType -> Window.WouldPlaceDoom _ (EnemyTarget eid) _) : _) -> eid
   ((windowType -> Window.PlacedDoom _ (EnemyTarget eid) _) : _) -> eid
+  ((windowType -> Window.EnemyMovesTo _ _ eid) : _) -> eid
   (_ : rest) -> getEnemy rest
   _ -> error "invalid window"
 
@@ -982,10 +989,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.MovedFromHunter timing enemyMatcher -> guardTiming timing $ \case
       Window.MovedFromHunter eid -> elem eid <$> select enemyMatcher
       _ -> noMatch
-    Matcher.EnemyMovedTo timing locationMatcher movesVia enemyMatcher -> guardTiming timing $ \case
-      Window.EnemyMovesTo lid movesVia' eid
-        | movesVia == Matcher.MovedViaAny || movesVia == movesVia' ->
-            andM [elem eid <$> select enemyMatcher, elem lid <$> select locationMatcher]
+    Matcher.EnemyMovedTo timing locationMatcher movesViaMatcher enemyMatcher -> guardTiming timing $ \case
+      Window.EnemyMovesTo lid movesVia eid ->
+        andM
+          [ pure $ movesViaMatches movesVia movesViaMatcher
+          , elem eid <$> select enemyMatcher
+          , elem lid <$> select locationMatcher
+          ]
       _ -> noMatch
     Matcher.EnemyMoves timing locationMatcher enemyMatcher -> guardTiming timing $ \case
       Window.EnemyMoves eid lid ->
@@ -1407,7 +1417,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       _ -> noMatch
     Matcher.Moves timing whoMatcher sourceMatcher fromMatcher toMatcher ->
       guardTiming timing $ \case
-        Window.Moves iid' source' mFromLid toLid  _ -> do
+        Window.Moves iid' source' mFromLid toLid _ -> do
           andM
             [ matchWho iid iid' whoMatcher
             , sourceMatches source' sourceMatcher

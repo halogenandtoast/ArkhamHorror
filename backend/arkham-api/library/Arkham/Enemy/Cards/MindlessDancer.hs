@@ -27,7 +27,7 @@ instance HasAbilities MindlessDancer where
       $ groupLimit PerRound
       $ mkAbility a 1
       $ forced
-      $ EnemyMovedTo #after (IncludeEmptySpace $ locationIs Locations.emptySpace) MovedViaHunter (be a)
+      $ EnemyMovedTo #after (IncludeEmptySpace $ locationIs Locations.emptySpace) #hunter (be a)
 
 instance HasModifiersFor MindlessDancer where
   getModifiersFor (MindlessDancer attrs) = modifySelf attrs [CanEnterEmptySpace]

@@ -35,7 +35,7 @@ instance HasAbilities FirstNationalGroceryInTooDeep where
 
 getMovedFrom :: [Window] -> LocationId
 getMovedFrom [] = error "getLocationsInMove: not a Moves event"
-getMovedFrom ((Window.windowType -> Window.Moves _ _ (Just from) _) : _) = from
+getMovedFrom ((Window.windowType -> Window.Moves _ _ (Just from) _ _) : _) = from
 getMovedFrom (_ : rest) = getMovedFrom rest
 
 instance RunMessage FirstNationalGroceryInTooDeep where

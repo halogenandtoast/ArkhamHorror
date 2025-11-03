@@ -5,6 +5,7 @@ module Arkham.Ability.Limit where
 import Arkham.Prelude
 
 import Arkham.Card.CardDef
+import Arkham.Id
 import Arkham.Trait
 import Data.Aeson.TH
 
@@ -40,7 +41,8 @@ data AbilityLimitType
   | PerTurn
   | PerWindow
   | PerAttack
-  | PerMove
+  | PerMove -- DEPRECATED
+  | PerMovement MovementId
   | PerSpawn
   | PerTest
   | PerTestOrAbility

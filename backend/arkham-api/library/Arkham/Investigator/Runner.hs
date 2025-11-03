@@ -1399,7 +1399,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                   else pure mempty
 
               let
-                (whenMoves, atIfMoves, afterMoves) = timings (Window.Moves iid source mFromLocation destinationLocationId)
+                (whenMoves, atIfMoves, afterMoves) = timings (Window.Moves iid source mFromLocation destinationLocationId movement.id)
                 (mWhenLeaving, mAtIfLeaving, mAfterLeaving) = case mFromLocation of
                   Just from ->
                     batchedTimings batchId (Window.Leaving iid from) & \case
@@ -1448,8 +1448,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
                           , PayAdditionalCost iid batchId enterCosts
                           , runWhenMoves
                           , runAtIfMoves
-                          , MoveTo movement
+                          , ResolveMovement iid
                           , runAfterMoves
+                          , ResolvedMovement iid movement.id
                           ]
                        <> maybeToList mRunAfterLeaving
                    ]
@@ -2739,15 +2740,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         }
     pure a
   MoveTo movement | isTarget a (moveTarget movement) -> do
-    pushAll [ResolveMovement investigatorId, ResolvedMovement investigatorId]
+    pushAll [ResolveMovement investigatorId, ResolvedMovement investigatorId movement.id]
     pure $ a & movementL ?~ movement
   EnemySpawned details -> do
     pure
       $ a
       & usedAbilitiesL
       %~ filter \ab -> ab.limitType /= Just PerSpawn || maybe True (not . isTarget details.enemy) ab.target
-  ResolvedMovement iid | iid == investigatorId -> do
-    pure $ a & (usedAbilitiesL %~ filter (\ab -> ab.limitType /= Just PerMove))
+  ResolvedMovement iid movementId | iid == investigatorId -> do
+    pure
+      $ a
+      & ( usedAbilitiesL
+            %~ filter (\ab -> ab.limitType /= Just PerMove && ab.limitType /= Just (PerMovement movementId))
+        )
   ResolveMovement iid | iid == investigatorId -> do
     mods <- getModifiers iid
     let canMove =
@@ -4548,9 +4553,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = withSpan_ "runInvestigator
         -- anymore (see: Spires of Carcosa)
         traits' <- sourceTraits $ abilitySource ability
         let
+          mMovementId = maybe (Helpers.getMovementId windows) (Just . (.id)) investigatorMovement
+          upgradePerMove :: Ability -> Ability
+          upgradePerMove = case mMovementId of
+            Nothing -> id
+            Just m -> over biplate \case
+              PerMove -> PerMovement m
+              other -> other
+        let
           used =
             UsedAbility
-              { usedAbility = ability
+              { usedAbility = upgradePerMove ability
               , usedAbilityInitiator = iid
               , usedAbilityWindows = windows
               , usedTimes = 1

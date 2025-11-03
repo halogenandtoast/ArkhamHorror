@@ -500,6 +500,12 @@ getDoomAmount = \case
   (_ : rest) -> getDoomAmount rest
   [] -> 0
 
+getMovementId :: [Window] -> Maybe MovementId
+getMovementId = \case
+  ((windowType -> Window.Moves _ _ _ _ mid) : _) -> Just mid
+  (_ : rest) -> getMovementId rest
+  [] -> Nothing
+
 getEnemy :: [Window] -> EnemyId
 getEnemy = \case
   ((windowType -> Window.EnemySpawns eid _) : _) -> eid
@@ -1165,7 +1171,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       Window.Exhausts (EnemyTarget eid) -> matches eid enemyMatcher
       _ -> noMatch
     Matcher.MovedBy timing whoMatcher sourceMatcher -> guardTiming timing $ \case
-      Window.Moves who source' _ _ ->
+      Window.Moves who source' _ _ _ ->
         andM
           [ matchWho iid who whoMatcher
           , sourceMatches source' sourceMatcher
@@ -1401,7 +1407,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       _ -> noMatch
     Matcher.Moves timing whoMatcher sourceMatcher fromMatcher toMatcher ->
       guardTiming timing $ \case
-        Window.Moves iid' source' mFromLid toLid -> do
+        Window.Moves iid' source' mFromLid toLid  _ -> do
           andM
             [ matchWho iid iid' whoMatcher
             , sourceMatches source' sourceMatcher

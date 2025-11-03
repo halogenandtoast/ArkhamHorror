@@ -22,10 +22,7 @@ instance HasModifiersFor WhiteBluff where
 
 instance HasAbilities WhiteBluff where
   getAbilities (WhiteBluff a) =
-    extendRevealed1 a
-      $ mkAbility a 1
-      $ forced
-      $ Moves #after You AnySource (below a) (be a)
+    extendRevealed1 a $ mkAbility a 1 $ forced $ Moves #after You AnySource (below a) (be a)
 
 instance RunMessage WhiteBluff where
   runMessage msg l@(WhiteBluff attrs) = runQueueT $ case msg of

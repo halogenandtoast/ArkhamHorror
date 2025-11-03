@@ -867,7 +867,7 @@ data Message
   | -- | Actual movement, will add MovedBy, MovedBut, and after Entering windows
     MoveTo Movement
   | ResolveMovement InvestigatorId
-  | ResolvedMovement InvestigatorId
+  | ResolvedMovement InvestigatorId MovementId
   | -- | Move target one location toward a matching location
     MoveToward Target LocationMatcher
   | -- | Move target one location at a time until arrive at location
@@ -1226,6 +1226,11 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "ResolvedMovement" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Right (a, b) -> pure $ ResolvedMovement a b
+          Left a -> pure $ ResolvedMovement a (MovementId UUID.nil)
       "CheckAttackOfOpportunity" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

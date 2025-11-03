@@ -49,6 +49,19 @@ data Ability = Ability
   }
   deriving stock (Show, Ord, Data)
 
+-- Traversal focusing on the AbilityLimitType inside an Ability, if present
+limitType :: Traversal' Ability AbilityLimitType
+limitType f ability = case ability.abilityLimit of
+  PerInvestigatorLimit t n ->
+    (\t' -> ability { abilityLimit = PerInvestigatorLimit t' n }) <$> f t
+  PlayerLimit t n ->
+    (\t' -> ability { abilityLimit = PlayerLimit t' n }) <$> f t
+  GroupLimit t n ->
+    (\t' -> ability { abilityLimit = GroupLimit t' n }) <$> f t
+  MaxPer cd t n ->
+    (\t' -> ability { abilityLimit = MaxPer cd t' n }) <$> f t
+  NoLimit -> pure ability
+
 overAbilityActions :: ([Action] -> [Action]) -> Ability -> Ability
 overAbilityActions f ab = ab {Arkham.Ability.Types.abilityType = overAbilityTypeActions f ab.kind}
 

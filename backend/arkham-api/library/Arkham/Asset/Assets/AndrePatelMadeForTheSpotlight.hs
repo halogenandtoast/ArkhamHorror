@@ -27,6 +27,6 @@ instance HasAbilities AndrePatelMadeForTheSpotlight where
 instance RunMessage AndrePatelMadeForTheSpotlight where
   runMessage msg a@(AndrePatelMadeForTheSpotlight attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      takeActionAsIfTurn iid (attrs.ability 1)
+      afterSkillTest iid "Andre Patel" $ takeActionAsIfTurn iid (attrs.ability 1)
       pure a
     _ -> AndrePatelMadeForTheSpotlight <$> liftRunMessage msg attrs

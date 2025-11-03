@@ -26,11 +26,7 @@ instance HasAbilities TheWingedSerpent where
     extend1 a
       $ mkAbility a 1
       $ forced
-      $ PlacedToken
-        #after
-        AnySource
-        (LocationTargetMatches $ locationIs Locations.mouthOfKnYanTheCavernsMaw)
-        Pillar
+      $ PlacedToken #after AnySource (LocationTargetMatches "Mouth of K'n-yan") Pillar
 
 instance RunMessage TheWingedSerpent where
   runMessage msg e@(TheWingedSerpent attrs) = runQueueT $ case msg of

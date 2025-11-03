@@ -137,6 +137,7 @@ const allResolved = computed(() => {
   flex-direction: column;
   border: 1px solid rgba(255, 255, 255, 0.2);
   flex-grow: 0;
+  min-width: fit-content;
   @media (max-width: 800px) and (orientation: portrait) {
     margin: 0;
     margin-top: -8px;

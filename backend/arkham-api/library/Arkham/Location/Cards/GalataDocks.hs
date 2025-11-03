@@ -1,19 +1,26 @@
 module Arkham.Location.Cards.GalataDocks (galataDocks) where
 
+import Arkham.Cost
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
 
 newtype GalataDocks = GalataDocks LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 galataDocks :: LocationCard GalataDocks
 galataDocks = symbolLabel $ location GalataDocks Cards.galataDocks 5 (PerPlayer 1)
 
-instance HasAbilities GalataDocks where
-  getAbilities (GalataDocks attrs) =
-    extendRevealed attrs []
+instance HasModifiersFor GalataDocks where
+  getModifiersFor (GalataDocks attrs) = do
+    modifySelf attrs [AdditionalCostToEnter $ SameSkillIconCost 3]
+    -- We include galata docks itself so the blocked icon does not show
+    modifySelect
+      attrs
+      (not_ $ InvestigatorAt (oneOf [locationIs Cards.galata, locationIs Cards.galataDocks]))
+      [CannotEnter attrs.id]
 
 instance RunMessage GalataDocks where
-  runMessage msg (GalataDocks attrs) = runQueueT $ case msg of
-    _ -> GalataDocks <$> liftRunMessage msg attrs
+  runMessage msg (GalataDocks attrs) = GalataDocks <$> runMessage msg attrs

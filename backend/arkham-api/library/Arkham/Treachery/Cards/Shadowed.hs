@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.Shadowed (shadowed) where
+module Arkham.Treachery.Cards.Shadowed (shadowed, Shadowed(..)) where
 
 import Arkham.Enemy.Types
 import Arkham.Matcher

@@ -141,8 +141,7 @@ instance RunMessage DarkSideOfTheMoon where
           skillValue <- getSkillTestModifiedSkillValue
           when (alarmLevel > skillValue) do
             afterSkillTestQuiet $ drawEncounterCard iid Cultist
-        Tablet -> do
-          placeTokens TabletEffect iid AlarmLevel 1
+        Tablet -> raiseAlarmLevel Tablet [iid]
         _ -> pure ()
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do

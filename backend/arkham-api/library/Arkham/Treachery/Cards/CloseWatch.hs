@@ -1,12 +1,10 @@
-module Arkham.Treachery.Cards.CloseWatch (closeWatch, CloseWatch (..)) where
+module Arkham.Treachery.Cards.CloseWatch (closeWatch) where
 
-import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Message.Lifted
-import Arkham.Prelude
-import Arkham.Token
+import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.DarkSideOfTheMoon.Helpers (raiseAlarmLevel)
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner hiding (chooseOrRunOne)
+import Arkham.Treachery.Import.Lifted
 
 newtype CloseWatch = CloseWatch TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -19,16 +17,14 @@ instance RunMessage CloseWatch where
   runMessage msg t@(CloseWatch attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push $ revelationSkillTest sid iid attrs #agility (Fixed 4)
+      revelationSkillTest sid iid attrs #agility (Fixed 4)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       anyAssets <- selectAny $ AssetWithHighestPrintedCost $ assetControlledBy iid <> DiscardableAsset
-      chooseOrRunOne iid
-        $ [ Label
-            "Discard the asset you control with the highest printed cost"
-            [ChooseAndDiscardAsset iid (toSource attrs) $ AssetWithHighestPrintedCost AnyAsset]
-          | anyAssets
-          ]
-        <> [Label "Raise your alarm level by 1" [PlaceTokens (toSource attrs) (toTarget iid) AlarmLevel 1]]
+      chooseOrRunOneM iid do
+        when anyAssets do
+          labeled "Discard the asset you control with the highest printed cost" do
+            chooseAndDiscardAssetMatching iid attrs $ AssetWithHighestPrintedCost AnyAsset
+          labeled "Raise your alarm level by 1" $ raiseAlarmLevel attrs [iid]
       pure t
     _ -> CloseWatch <$> liftRunMessage msg attrs

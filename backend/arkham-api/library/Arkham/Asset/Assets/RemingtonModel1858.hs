@@ -20,15 +20,15 @@ instance HasAbilities RemingtonModel1858 where
     , controlled a 2 (exists $ CanFightEnemy (toSource a)) $ freeReaction (AssetLeavesPlay #when (be a))
     ]
 
-doAbility1 :: ReverseQueue m => InvestigatorId -> AssetAttrs -> m ()
-doAbility1 iid attrs = do
+doAbility1 :: ReverseQueue m => InvestigatorId -> AssetAttrs -> Int -> m ()
+doAbility1 iid attrs n = do
   sid <- getRandom
-  skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat 1, DamageDealt 1]
-  chooseFightEnemy sid iid (attrs.ability 1)
+  skillTestModifiers sid (attrs.ability n) iid [SkillModifier #combat 1, DamageDealt 1]
+  chooseFightEnemy sid iid (attrs.ability n)
 
 instance RunMessage RemingtonModel1858 where
   runMessage msg a@(RemingtonModel1858 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) n | n `elem` [1, 2] -> do
-      doAbility1 iid attrs
+      doAbility1 iid attrs n
       pure a
     _ -> RemingtonModel1858 <$> liftRunMessage msg attrs

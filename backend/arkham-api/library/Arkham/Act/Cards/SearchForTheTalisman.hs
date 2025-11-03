@@ -9,7 +9,6 @@ import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as ScarletKeys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Campaigns.TheScarletKeys.Key.Types
 import Arkham.Direction
-import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
@@ -20,6 +19,7 @@ import Arkham.Message.Lifted.Move
 import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Scenarios.DealingsInTheDark.Helpers
 import Arkham.Story.Cards qualified as Stories
 
 newtype SearchForTheTalisman = SearchForTheTalisman ActAttrs
@@ -68,7 +68,7 @@ instance RunMessage SearchForTheTalisman where
       fetchCard Locations.galataDocks >>= placeLocationInGrid_ (Pos (-2) 1)
 
       when cultReachedTheTalisman do
-        cultistClues <- selectSum EnemyClues (InPlayEnemy #cultist)
+        cultistClues <- getCluesPossesedByTheCult
         playerClues <- selectSum InvestigatorClues Anyone
         n <- perPlayer 1
         let x = max 0 (cultistClues - playerClues) `div` n

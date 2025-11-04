@@ -77,10 +77,15 @@ pattern ReturnToTheBoundaryBeyond <- ScenarioStep "53038"
   where
     ReturnToTheBoundaryBeyond = ScenarioStep "53038"
 
-pattern ReturnToHeartOfTheElders :: CampaignStep
-pattern ReturnToHeartOfTheElders <- ScenarioStep "53045"
+pattern ReturnToHeartOfTheEldersPart1 :: CampaignStep
+pattern ReturnToHeartOfTheEldersPart1 <- ScenarioStep "53045"
   where
-    ReturnToHeartOfTheElders = ScenarioStep "53045"
+    ReturnToHeartOfTheEldersPart1 = ScenarioStep "53045"
+
+pattern ReturnToHeartOfTheEldersPart2 :: CampaignStep
+pattern ReturnToHeartOfTheEldersPart2 <- ScenarioStep "53048"
+  where
+    ReturnToHeartOfTheEldersPart2 = ScenarioStep "53048"
 
 pattern ReturnToTheCityOfArchives :: CampaignStep
 pattern ReturnToTheCityOfArchives <- ScenarioStep "53053"

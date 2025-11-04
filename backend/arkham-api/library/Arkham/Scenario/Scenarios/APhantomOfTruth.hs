@@ -199,7 +199,7 @@ instance RunMessage APhantomOfTruth where
         p.validate (not theKingClaimedItsVictims) "readIntro2"
       flavor $ h "title" >> p (if theKingClaimedItsVictims then "intro1" else "intro2")
 
-      flavor $ h "title" >> p "dream1"
+      doStep 1 PreScenarioSetup
       unlessStandalone do
         lostSouls <- replicateM 4 (genCard Treacheries.lostSoul)
         for_ (zip investigators lostSouls) \(iid, lostSoul) ->
@@ -252,6 +252,12 @@ instance RunMessage APhantomOfTruth where
           labeled' "dream10.dream11" $ doStep 11 PreScenarioSetup
           labeled' "dream10.dream12" $ doStep 12 PreScenarioSetup
 
+      pure s
+    DoStep 1 PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "dream1"
+      pure s
+    DoStep 5 PreScenarioSetup -> scope "intro" do
+      flavor $ h "title" >> p "dream5"
       pure s
     DoStep n PreScenarioSetup -> scope "intro" do
       when (n == 11) do
@@ -326,5 +332,12 @@ instance RunMessage APhantomOfTruth where
       pure s
     UseCardAbility _ ScenarioSource 1 _ _ -> do
       shuffleSetAsideIntoEncounterDeck $ cardIs Treacheries.figureInTheShadows
+      pure s
+    KonamiCode -> do
+      dream5Already <- fromQueue (elem (DoStep 5 PreScenarioSetup))
+      unless dream5Already do
+        insteadOf (DoStep 1 PreScenarioSetup) do
+          doStep 5 PreScenarioSetup
+          doStep 1 PreScenarioSetup
       pure s
     _ -> APhantomOfTruth <$> liftRunMessage msg attrs

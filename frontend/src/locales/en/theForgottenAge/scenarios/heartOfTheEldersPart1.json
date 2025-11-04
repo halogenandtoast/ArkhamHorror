@@ -1,0 +1,103 @@
+{
+  "heading": "Scenario V-A",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 (-3 instead if you are in a _Cave_ location).",
+      "cultist": "-2. If you fail, place 1 doom on your location.",
+      "tablet": "-2. If you are poisoned, this test automatically fails instead.",
+      "elderThing": "-3. If you fail, take 1 horror."
+    },
+    "hardExpert": {
+      "skull": "-2 (-4 instead if you are in a _Cave_ location).",
+      "cultist": "-3. If you fail, place 1 doom on your location.",
+      "tablet": "-3. If you are poisoned, this test automatically fails instead. If you are not poisoned and you fail, put a set-aside Poisoned weakness into play in your threat area.",
+      "elderThing": "-4. If you fail, take 1 horror."
+    }
+  },
+  "label": {
+    "pitfall": {
+      "jumpTheGap": "Test {agility} (3) to attempt to jump the gap. For each point you fail by, take 1 damage.",
+      "shuffle": "Shuffle Pitfall into the exploration deck. You cannot choose this option if Pitfall was drawn from the exploration deck."
+    },
+    "descentToYoth": {
+      "placeDoom": "Place 1 doom on Descent to Yoth",
+      "draw": "Draw the top 2 cards of the encounter deck"
+    }
+  },
+  "tooltips": {
+    "mouthOfKnYanTheCavernsMaw": {
+      "resign": "\"Let's make camp and solve this puzzle tomorrow.\""
+    },
+    "featheredSerpent": {
+      "evade": "Check your supplies. If you have a mysterious scepter, you automatically evade the serpent and command it to deal its damage to another enemy at its location."
+    }
+  },
+  "part1": {
+    "intro": {
+      "title": "Scenario V-A: Heart of the Elders, Part 1",
+      "intro1": "<p>_Intro 1_: It has been several days since your party ventured forth into the rainforest once more, and each day, the hazards you face grow more dangerous and frequent. Securing enough food and supplies for the journey is a constant struggle, and you are harrassed at every turn by the jungle’s inhabitants. Fortunately, you have seen no sign yet of the serpent people who attacked the previous expedition, but you’re positive they are out there. Watching. Waiting.</p><p>On the morning of the sixth day, you find the entrance. It is a huge cave opening, partially obscured by trees, brush, and vines. You nearly missed the great cavern maw altogether, despite its enormity. Surrounding the cavern’s entrance are six stone pillars, each covered in strange grooves and carvings that glow with a dim red hue. Perhaps one of your guides will understand what this means?</p><ul><li>The investigators must decide (choose one):<ul><li>*Let’s consult with Ichtaca*. Choose this option only if Ichtaca is in an investigator’s deck. Proceed to _Intro 2_.</li><li>*Let’s consult with Alejandro*. Choose this option only if Alejandro Vela is in an investigator’s deck. Proceed to _Intro 3_.</li><li>*Let’s consult the expedition journal*. Choose this option only if the Expedition Journal is in an investigator’s deck. Skip to _Intro 4_.</li><li>*I wish we knew more about this...* Skip to _Setup_.</li></ul></li>",
+      "label": {
+        "ichtaca": "*Let’s consult with Ichtaca*",
+        "alejandro": "*Let’s consult with Alejandro*",
+        "expeditionJournal": "*Let’s consult the expedition journal*",
+        "else": "*I wish we knew more about this...*"
+      },
+      "intro2": "<p>_Intro 2_: “The entrance is warded against intruders,” Ichtaca says cryptically, her eyes closed as though probing the cavern with unnatural senses. “These pillars are the key. Each is a test of wit and will.” She steps toward one of them and touches it with her palm, and its glow brightens. You notice now that the grooves along the pillar’s foundation depict a pattern you have seen somewhere before. If Ichtaca believes this place to be warded, you trust her opinion—there must be some way to break these wards…</p><p class='basic right'>Begin this scenario with Ichtaca in play. Skip to _Setup_.</p>",
+      "intro3": "<p>_Intro 3_: Alejandro examines each of the pillars studiously. “It is a lock of some sort. Look here, see? The grooves do not line up perfectly.” He twists one of the pillars, and you can see the pattern along its side shifting. “I wager if we entered the cave, we would not get very far without these pillars in the correct formation. Just a hunch, I suppose…But I think we should examine this area further before we proceed.” You know Alejandro well enough by now to know that his hunches tend to be correct.</p><p class='basic right'>Begin this scenario with Alejandro Vela in play. Skip to _Setup_.</p>",
+      "intro4": "<p>_Intro 4_: The previous expedition’s journal doesn’t have all the answers, but as you browse its pages, you are struck by a familiar diagram—one drawn by Lorenzo, an expedition member who never made it back to Arkham. It is a delicate recreation of a carving that was on the wall of one of the Eztli ruins. Many of the patterns and hieroglyphs you see in this drawing are shared among these pillars. It cannot simply be a coincidence. These pillars are surely the key to finding your way to N’kai…</p><p class='basic right'>Begin this scenario with Expedition Journal in play. Proceed to _Setup_.</p>"
+    },
+    "setup": {
+      "pathsKnownToYou": "Check Campaign Log. *If 6 paths are known to you*, skip this scenario and proceed immediately to _Resolution 1_.",
+      "gatherSets": "Gather all cards from the following encounter sets: *Pillars of Judgment*, *Heart of the Elders*, *Rainforest*, *Serpents*, *Expedition*, and *Poison*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/pillars-of-judgement.png' /><img src='{setImgPath}/heart-of-the-elders.png' /><img src='{setImgPath}/rainforest.png' /><img src='{setImgPath}/serpents.png' /><img src='{setImgPath}/expedition.png' /><img src='{setImgPath}/poison.png' /></section>",
+      "placeLocations": "Put the Mouth of K’n-yan into play, (*The Cavern’s Maw*) side faceup. Each investigator begins play at the Mouth of K’n-yan (*The Cavern’s Maw*).",
+      "insightIntoHowToEnterKnYan": "Check Campaign Log. Your journey beyond the boundary of time has granted you insight into how to enter K’n-yan. *For each path that is known to you*, place 1 resource on the Mouth of K’n-yan, as a pillar token.",
+      "playedBefore": "If you have played this scenario before during this campaign and have reached act 2 before, flip act 1a over and place it in the Mouth of K’n-yan.",
+      "explorationDeck": "Create the exploration deck. This is done by taking the 6 single-sided _Jungle_ locations and shuffling them together, along with 1 copy each of the following encounter cards: Pitfall, Ants!, Lost in the Wilds, and Low on Supplies.",
+      "chooseLocations": "Randomly choose one of the following 3 _Ruins_ locations: Overgrown Ruins, Temple of the Fang, and Stone Altar. Shuffle the randomly chosen location into the exploration deck. Remove the other 2 from the game.",
+      "mappedOutTheWayForward": "Check Campaign Log. *If the investigators mapped out the way forward*, instead of shuffling the randomly chosen location into the exploration deck, put it into play.",
+      "poisoned": "Set aside each Poisoned weakness that is not already in an investigator’s deck."
+    },
+    "resolutions": {
+      "noResolution": {
+        "label": {
+          "replay": "Replay _Scenario V-A: Heart of the Elders, Part 1_",
+          "resolution2": "Proceed to _Resolution 2_"
+        },
+        "title": "No Resolution",
+        "body": "<p>_If no resolution was reached (each investigator resigned or was defeated)_: The hazards of the jungle are too dangerous for you to continue exploring. If you remain any longer, these odd pillars will mark your grave. You decide to flee for now, returning to a familiar clearing several miles away where you can recuperate. You know that you must eventually return to the pillars and figure out the pattern that will open the way forward…but for now, at least you are safe.</p><ul><li>If there are more pillar tokens on the Mouth of K’n-yan than there were when the scenario began, in your Campaign Log, cross out how many *paths are known to you*. Then, record that *X paths are known to you*. X is the number of pillar tokens on the Mouth of K’n-yan.</li><li>The investigators must replay _Scenario V-A: Heart of the Elders, Part 1_. Reset the game to this scenario’s _Setup_. Do not record anything else in your Campaign Log except for any trauma suffered from your previous game. No experience points are earned from your previous game. Any player whose investigator was killed or driven insane must choose a new investigator to play, as normal.</li></ul>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1_: Swallowing your fear, you enter the cavern…</p><ul><li>In your Campaign Log, record that *the jungle watches*. Next to this, in parentheses, record the names of each card with Vengeance X in the victory display. Do not record any tally marks under “Yig’s Fury.”</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>Investigators may not spend experience or alter their decks in between Scenarios V-A and V-B. Proceed immediately to _Scenario V-B: Heart of the Elders, Part 2._</li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2_: You haven’t yet completed the puzzle of the six pillars that serve as the entrance to K’n-yan, but you don’t wish to tarry any further in this hostile jungle. You decide to enter the cavern anyway, hoping that whatever “wards” the pillars represent are nothing but ancient superstition…</p><ul><li>You have trespassed in a hostile land. Place pillar tokens on the Mouth of K’n-yan until there are exactly 6 pillar tokens. Then, for every pillar token added in this way, record two tally marks under “Yig’s Fury” in your Campaign Log.</li><li>As you pass by the pillars, intense pain wrenches its way through your body, and you are afflicted with a terrible curse. Each investigator who is poisoned takes 1 mental trauma. Each investigator who is not poisoned adds a set‑aside Poisoned weakness to their deck.</li><li>Proceed to _Resolution 1_.</li></ul>"
+      }
+    }
+  },
+  "part2": {
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: *K’n-yan*, *Heart of the Elders*, *Agents of Yig*, *Yig’s Venom*, *Forgotten Ruins*, *Deadly Traps*, and *Poison*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/knyan.png' /><img src='{setImgPath}/heart-of-the-elders.png' /><img src='{setImgPath}/agents-of-yig.png' /><img src='{setImgPath}/yigs-venom.png' /><img src='{setImgPath}/forgotten-ruins.png' /><img src='{setImgPath}/deadly-traps.png' /><img src='{setImgPath}/poison.png' /></section>",
+      "placeLocations": "Put the Mouth of K’n-yan into play, (*The Depths Beneath*) side faceup. Each investigator begins play at the Mouth of K’n-yan (*The Depths Beneath*).",
+      "theJungleWatches": "Search the collection for each card listed in parentheses next to *“the jungle watches”* in your Campaign Log. Add those cards to the victory display.",
+      "setAside": "Set the Descent to Yoth location aside, out of play.",
+      "explorationDeck": "Create the exploration deck. This is done by taking the 5 remaining single-sided locations from the *K’n-yan* encounter set and shuffling them together, along with 1 copy each of the following encounter cards: Pitfall, No Turning Back, Deep Dark, and Final Mistake.",
+      "poisoned": "Set aside each Poisoned weakness that is not already in an investigator’s deck."
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "No Resolution",
+        "body": "<p>_If no resolution was reached (each investigator was defeated):_ You awaken, lying on rough stone in a place much colder and deeper than before. You stand and take stock of your surroundings, noting the red glow that seems to emanate from the cavern to your left. You follow it for several minutes, until finally it leads you into a well-lit entryway, filled with stone pillars. At the far end of the room lies an ornate and elaborately decorated doorway, a stone disc that has been rolled aside to unveil the hellish realm beyond.</p><ul><li>Check Campaign Log.<ul><li>*If the investigators rescued Alejandro*, proceed to _Resolution 1_.</li><li>*If Alejandro is missing*, proceed to _Resolution 2_.</li></ul></li></ul>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1_: “Finally! Yoth, cavern of the serpents! The cursed ones, who fled the destruction of Valusia!” Alejandro examines the entryway with wonder in his eyes, arms raised in exultation. You know not of what he speaks, and you are beginning to grow worried. Just then, something scutters behind you, and a sound like the click-clacking of a claw catches you by surprise. Emerging from the darkness behind you are several alien creatures, the likes of which you have never seen: ten feet tall, with conical bodies that end in four strange appendages of varying lengths. “There you are,” Alejandro says calmly. One of the creatures responds by clicking its claws against one another in a deliberate pattern. “Take their minds,” Alejandro commands the creatures. “We have no further use for them.” It is your last human memory.</p><ul><li>If the Harbinger of Valusia entered play during this scenario:<ul><li>If it is in the victory display, cross out “*the Harbinger is still alive*” in your Campaign Log.</li><li>If it is still in play or is set aside, next to “*the Harbinger is still alive*” in your Campaign Log, record in parentheses how much damage is on the Harbinger of Valusia, replacing the number that was previously in parentheses.</li></ul></li><li>For each vengeance point in the victory display, record one tally mark under “Yig’s Fury” in your Campaign Log.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2_: Before you are able to cross into the next layer of the cavern, a sound like the click-clacking of a claw catches you by surprise. Emerging from the darkness behind you are several alien creatures, the likes of which you have never seen: ten feet tall, with conical bodies that end in four strange appendages of varying lengths. You are stunned to see a human figure standing at the head of the group: none other than Alejandro Vela. “Take their minds,” Alejandro commands the creatures. “We have no further use for them.” It is your last human memory.</p><ul><li>If the Harbinger of Valusia entered play during this scenario:<ul><li>If it is in the victory display, cross out “*the Harbinger is still alive*” in your Campaign Log.</li><li>If it is still in play or is set aside, next to “*the Harbinger is still alive*” in your Campaign Log, record in parentheses how much damage is on the Harbinger of Valusia, replacing the number that was previously in parentheses.</li></ul></li><li>For each vengeance point in the victory display, record one tally mark under “Yig’s Fury” in your Campaign Log.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li></ul>"
+      }
+    }
+  }
+}

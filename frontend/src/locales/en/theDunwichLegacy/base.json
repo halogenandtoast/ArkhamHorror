@@ -1,4 +1,8 @@
 {
+  "interludes": {
+    "1": "Armitage's Fate",
+    "2": "The Survivors"
+  },
   "key": {
     "professorWarrenRiceWasKidnapped": "Professor Warren Rice was kidnapped",
     "theInvestigatorsRescuedProfessorWarrenRice": "The investigators rescued Professor Warren Rice",

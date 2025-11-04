@@ -7,6 +7,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
@@ -37,6 +38,7 @@ instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
       leadChooseOrRunOneM do
         targets farthestBrotherhoodCultists \cultist -> do
           createAssetAt_ Assets.relicOfAgesADeviceOfSomeSort (AttachedToEnemy cultist)
+          gameModifier attrs cultist (ScenarioModifier "withRelicOfAges")
           when (deckCount <= 2) $ placeDoom attrs cultist 1
       pure a
     FoundEncounterCard _ target card | isTarget attrs target -> do

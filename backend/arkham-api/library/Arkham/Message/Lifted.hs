@@ -15,7 +15,7 @@ import Arkham.Asset.Types qualified as Field
 import Arkham.Asset.Uses (UseType)
 import Arkham.Attack
 import Arkham.Calculation
-import Arkham.CampaignStep
+import Arkham.CampaignStep hiding (continue)
 import Arkham.Capability
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy

@@ -44,6 +44,7 @@ import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Calculation
+import Arkham.Helpers.Enemy
 import Arkham.Helpers.Card
 import Arkham.Helpers.Deck
 import Arkham.Helpers.Investigator
@@ -641,15 +642,15 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       Nothing -> pure $ a & (victoryDisplayL %~ nub . (card :))
       Just _ -> pure a
   Discarded (EnemyTarget eid) _ _ -> do
-    card <- convertToCard eid
-    placement <- field EnemyPlacement eid
-    case placement of
-      AsSwarm {} -> pure a
+    getEnemyField EnemyPlacement eid >>= \case
+      Just (AsSwarm {}) -> pure a
       _ -> do
-        handler <- getEncounterDeckHandler $ toCardId card
+        card <- convertToCard eid
         case card of
           PlayerCard _ -> pure a
-          EncounterCard ec -> pure $ a & discardLens handler %~ (ec :)
+          EncounterCard ec -> do
+            handler <- getEncounterDeckHandler $ toCardId card
+            pure $ a & discardLens handler %~ (ec :)
           VengeanceCard _ -> error "vengeance card"
   Discarded (LocationTarget lid) _ _ -> do
     card <- convertToCard lid

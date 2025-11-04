@@ -1,4 +1,8 @@
 {
+  "interludes": {
+    "1": "Lunacy’s Reward",
+    "2": "Lost Soul"
+  },
   "key": {
     "theStrangerIsOnToYou": "The Stranger is on to you",
     "chasingTheStranger": "Chasing the Stranger",

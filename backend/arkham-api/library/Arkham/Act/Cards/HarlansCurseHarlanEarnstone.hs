@@ -9,6 +9,7 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (AssetCard)
+import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Projection
 
@@ -42,6 +43,7 @@ instance RunMessage HarlansCurseHarlanEarnstone where
       pure a
     DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       harlan <- selectJust $ enemyIs Enemies.harlanEarnstoneCrazedByTheCurse
+      gameModifier attrs harlan (ScenarioModifier "withRelicOfAges")
       createAssetAt_ Assets.relicOfAgesADeviceOfSomeSort (AttachedToEnemy harlan)
       pure a
     _ -> HarlansCurseHarlanEarnstone <$> liftRunMessage msg attrs

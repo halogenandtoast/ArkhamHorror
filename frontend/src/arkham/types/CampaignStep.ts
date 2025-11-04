@@ -94,13 +94,13 @@ export const scenarioStepDecoder = JsonDecoder.object<ScenarioStep>(
 
 export type InterludeStep = {
   tag: 'InterludeStep';
-  contents: number;
+  contents: [number, any];
 }
 
 export const interludeStepDecoder = JsonDecoder.object<InterludeStep>(
   {
     tag: JsonDecoder.literal('InterludeStep'),
-    contents: JsonDecoder.tuple([JsonDecoder.number(), JsonDecoder.succeed()], 'contents').map(([contents]) => contents),
+    contents: JsonDecoder.tuple([JsonDecoder.number(), JsonDecoder.succeed()], 'contents')
   },
   'InterludeStep',
 );
@@ -189,12 +189,12 @@ export function campaignStepName(game: Game, step: CampaignStep) {
 
   if (step.tag === 'InterludeStep') {
     if (game.campaign) {
-      const key = `${toCamelCase(game.campaign.name)}.interludes.${step.contents}`
+      const key = `${toCamelCase(game.campaign.name)}.interludes.${step.contents[0]}`
       if (te(key)) {
         return t(key)
       }
     }
-    return `Interlude ${step.contents}`
+    return `Interlude ${step.contents[0]}`
   }
 
   if (step.tag === 'CheckpointStep') {
@@ -206,8 +206,16 @@ export function campaignStepName(game: Game, step: CampaignStep) {
   }
 
   if (step.tag === 'PrologueStep') {
+    return t('headings.prologue')
+  }
+
+  if (step.tag === 'ContinueCampaignStep') {
+    return t('headings.deckCreation')
     // This is a lie, we might need to split this out somehow
-    return "Deck Creation"
+  }
+
+  if (step.tag === 'EpilogueStep') {
+    return t('headings.epilogue')
   }
 
   return "Unknown step: " + step.tag

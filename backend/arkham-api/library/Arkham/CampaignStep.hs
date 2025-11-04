@@ -23,6 +23,9 @@ data CampaignStep
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
+continue :: CampaignStep -> Maybe CampaignStep
+continue = Just . ContinueCampaignStep
+
 instance HasField "normalize" CampaignStep CampaignStep where
   getField = normalizedCampaignStep
 

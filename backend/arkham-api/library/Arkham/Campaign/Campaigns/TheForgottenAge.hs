@@ -44,22 +44,24 @@ instance FromJSON TheForgottenAge where
 instance IsCampaign TheForgottenAge where
   campaignTokens = chaosBagContents
   nextStep a = case (toAttrs a).normalizedStep of
-    PrologueStep -> Just TheUntamedWilds
-    TheUntamedWilds -> Just (InterludeStep 1 Nothing)
-    InterludeStep 1 _ -> Just (UpgradeDeckStep TheDoomOfEztli)
-    TheDoomOfEztli -> Just (UpgradeDeckStep $ InterludeStep 2 Nothing)
-    InterludeStep 2 _ -> Just ThreadsOfFate
-    ThreadsOfFate -> Just ResupplyPoint
-    ResupplyPoint -> Just (UpgradeDeckStep TheBoundaryBeyond)
-    TheBoundaryBeyond -> Just (UpgradeDeckStep $ InterludeStep 3 Nothing)
-    InterludeStep 3 _ -> Just HeartOfTheElders
-    HeartOfTheElders -> Just (UpgradeDeckStep TheCityOfArchives)
-    TheCityOfArchives -> Just (UpgradeDeckStep $ InterludeStep 4 Nothing)
-    InterludeStep 4 _ -> Just TheDepthsOfYoth
-    TheDepthsOfYoth -> Just (UpgradeDeckStep $ InterludeStep 5 Nothing)
-    InterludeStep 5 _ -> Just ShatteredAeons
+    PrologueStep -> continue TheUntamedWilds
+    TheUntamedWilds -> continue $ InterludeStep 1 Nothing
+    InterludeStep 1 _ -> continue TheDoomOfEztli
+    TheDoomOfEztli -> continue $ InterludeStep 2 Nothing
+    InterludeStep 2 _ -> continue ThreadsOfFate
+    ThreadsOfFate -> continue ResupplyPoint
+    ResupplyPoint -> continue TheBoundaryBeyond
+    TheBoundaryBeyond -> continue $ InterludeStep 3 Nothing
+    InterludeStep 3 _ -> continue HeartOfTheEldersPart1
+    HeartOfTheElders -> continue TheCityOfArchives
+    HeartOfTheEldersPart1 -> continue HeartOfTheEldersPart2
+    HeartOfTheEldersPart2 -> continue TheCityOfArchives
+    TheCityOfArchives -> continue $ InterludeStep 4 Nothing
+    InterludeStep 4 _ -> continue TheDepthsOfYoth
+    TheDepthsOfYoth -> continue $ InterludeStep 5 Nothing
+    InterludeStep 5 _ -> continue ShatteredAeons
     ShatteredAeons -> Nothing
-    EpilogueStep -> Just (UpgradeDeckStep TurnBackTime)
+    EpilogueStep -> continue TurnBackTime
     TurnBackTime -> Nothing
     other -> defaultNextStep other
 
@@ -244,13 +246,14 @@ instance RunMessage TheForgottenAge where
         let extraXp = Map.findWithDefault 0 iid (bonusXp metadata)
         xp <- field InvestigatorXp iid
         when (xp + extraXp >= 2) do
-          countVar extraXp $ chooseAmount'
-            iid
-            (if extraXp > 0 then "supplyPointsToGainWithExtra" else "supplyPointsToGain")
-            "$supplyPoints"
-            0
-            (min 5 $ xp + extraXp `div` 2)
-            CampaignTarget
+          countVar extraXp
+            $ chooseAmount'
+              iid
+              (if extraXp > 0 then "supplyPointsToGainWithExtra" else "supplyPointsToGain")
+              "$supplyPoints"
+              0
+              (min 5 $ xp + extraXp `div` 2)
+              CampaignTarget
         pure c
       ResolveAmounts iid (getChoiceAmount "$supplyPoints" -> n) CampaignTarget | n > 0 -> do
         let total = n * 2 -- amount of xp to spend
@@ -679,7 +682,7 @@ instance RunMessage TheForgottenAge where
         -- We can only get here if we've turned back time, but may want to check
         flavor $ setTitle "title" >> p "body"
         let isReturnTo = attrs.id == "53"
-        setNextCampaignStep $ if isReturnTo then ReturnToTurnBackTime else TurnBackTime
+        setNextCampaignStep $ ContinueCampaignStep $ if isReturnTo then ReturnToTurnBackTime else TurnBackTime
         pure c
       HandleTargetChoice _ CampaignSource (InvestigatorTarget iid) -> do
         mods <- map setActiveDuringSetup <$> toModifiers CampaignSource [StartingResources (-3)]

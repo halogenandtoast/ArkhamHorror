@@ -289,13 +289,13 @@ instance RunMessage TheUnspeakableOath where
           eachInvestigator (`sufferPhysicalTrauma` 1)
           updateSlain
           replaceSymbolTokens Tablet
-          endOfScenarioThen (InterludeStep 2 (Just interludeResult))
+          endOfScenarioThen (ContinueCampaignStep $ InterludeStep 2 (Just interludeResult))
         Resolution 3 -> do
           resolutionWithXp "resolution3" $ allGainXp' attrs
           record TheInvestigatorsEscapedTheAsylum
           updateSlain
           replaceSymbolTokens ElderThing
-          endOfScenarioThen (InterludeStep 2 (Just interludeResult))
+          endOfScenarioThen (ContinueCampaignStep $ InterludeStep 2 (Just interludeResult))
         _ -> throw $ UnknownResolution r
       pure s
     _ -> TheUnspeakableOath <$> liftRunMessage msg attrs

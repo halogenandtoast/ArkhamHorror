@@ -13,7 +13,7 @@ returnToHeartOfTheEldersPart1 difficulty =
   scenarioWith
     (ReturnToHeartOfTheEldersPart1 . HeartOfTheElders . (`with` HeartOfTheEldersMetadata One False))
     "53045"
-    "Return to The Heart of the Elders"
+    "Return to Heart of the Elders"
     difficulty
     [ ".        .        circle    circle    .     ."
     , ".        .        circle    circle    .     ."

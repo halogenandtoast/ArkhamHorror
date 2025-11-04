@@ -7,6 +7,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype RecoverTheRelic = RecoverTheRelic ActAttrs
@@ -25,8 +26,8 @@ instance HasAbilities RecoverTheRelic where
     [ mkAbility a 1
         $ Objective
         $ forced
-        $ EnemyLeavesPlay #when
-        $ EnemyWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
+        $ EnemyLeavesPlay #after
+        $ EnemyWithModifier (ScenarioModifier "withRelicOfAges")
     ]
 
 instance RunMessage RecoverTheRelic where
@@ -35,7 +36,9 @@ instance RunMessage RecoverTheRelic where
       advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      relicOfAges <- selectJust $ assetIs Assets.relicOfAgesADeviceOfSomeSort
+      relicOfAges <-
+        selectOne (assetIs Assets.relicOfAgesADeviceOfSomeSort)
+          `orWhenNothingM` createAssetAt Assets.relicOfAgesADeviceOfSomeSort Unplaced
       iids <- select $ NearestToEnemy $ EnemyWithAsset $ assetIs Assets.relicOfAgesADeviceOfSomeSort
       leadChooseOrRunOneM $ targets iids (`takeControlOfAsset` relicOfAges)
       deckCount <- getActDecksInPlayCount
